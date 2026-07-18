@@ -1,0 +1,20 @@
+[envelope]
+wall_r = 40
+roof_r = 60
+window_u = 0.25
+ach50 = 1.0
+interior_setpoint_f = 70
+interior_relative_humidity = 0.35
+exterior_relative_humidity = 0.80
+south_wwr_threshold = 0.40
+adequate_overhang_ft = 0.0
+
+[framing]
+module_in = 16
+corner = "three-stud"
+max_window_ro_unbroken_in = 14
+max_window_ro_nonbearing_in = 30
+max_window_ro_bearing_in = 27
+
+[units]
+system = "imperial"

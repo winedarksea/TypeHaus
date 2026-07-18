@@ -347,11 +347,12 @@ def serve(
 def new(
     directory: Path = typer.Argument(..., help="new house directory to scaffold"),
     name: str = typer.Option("My House", help="project display name"),
+    template: str = typer.Option("catlin", help="catlin (the real house, #22) | minimal"),
 ) -> None:
-    """Scaffold a new house: brief.md, preferences.toml, plan/ skeleton (WP2.12)."""
+    """Scaffold a new house: brief.md, preferences.toml, plan/ skeleton (WP2.12, #22)."""
     from typehaus.cli.scaffold import scaffold_house
 
-    created = scaffold_house(directory, name)
+    created = scaffold_house(directory, name, template=template)
     for p in created:
         console.print(f"created {p}")
     console.print(f"[green]new house ready[/green] — try: haus serve {directory}")

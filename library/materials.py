@@ -34,4 +34,10 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              hatch="rigid", color="#f0f0e6"),
     Material(tag="plywood-subfloor", name="3/4\" plywood subfloor", r_per_inch=1.25,
              density=600.0, hatch="osb", color="#c9a86a"),
+    Material(tag="eps", name="EPS rigid insulation", r_per_inch=4.0, perm_rating=3.0,
+             hatch="rigid", color="#eef0f2"),
+    Material(tag="xps", name="XPS rigid insulation", r_per_inch=5.0, perm_rating=1.0,
+             hatch="rigid", color="#f2b8c6"),
+    Material(tag="cedar-tg", name="Cedar T&G paneling", r_per_inch=1.0, perm_rating=20.0,
+             hatch="lumber", color="#c98d5f"),
 )

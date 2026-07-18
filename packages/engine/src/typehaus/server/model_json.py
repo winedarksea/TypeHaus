@@ -125,6 +125,18 @@ def model_to_dict(
              ], "provenance": _provenance(provenance, stair.tag)}
             for stair in sorted(model.stairs, key=lambda item: item.uid)
         ],
+        "floors": [
+            {"uid": floor.uid, "tag": floor.tag, "storey": floor.storey,
+             "direction": floor.direction,
+             "provenance": _provenance(provenance, floor.tag),
+             "members": [
+                 {"key": member.child_key, "category": member.category,
+                  "profile": member.profile, "p0": list(member.p0), "p1": list(member.p1),
+                  "z0_m": member.z0_m, "z1_m": member.z1_m}
+                 for member in floor.members
+             ]}
+            for floor in sorted(model.floors, key=lambda item: item.uid)
+        ],
         "rooms": [
             {"uid": r.uid, "tag": r.tag, "storey": r.storey, "occupancy": r.occupancy,
              "provenance": _provenance(provenance, r.tag),

@@ -126,6 +126,20 @@ class ResolvedStair:
 
 
 @dataclass(frozen=True)
+class ResolvedFloor:
+    """A framed floor deck: joists generated from a FloorSystem's JoistSpec (M3).
+
+    Matches the old catlin builder's semantics: one joist line per spacing position
+    across the deck, split into spans at each bearing line."""
+
+    uid: str
+    tag: str
+    storey: str
+    direction: str  # joist span direction: "x" | "y"
+    members: tuple[FramedMember, ...]
+
+
+@dataclass(frozen=True)
 class ResolvedRoom:
     uid: str
     tag: str
@@ -166,6 +180,7 @@ class ResolvedModel:
     solids: list[ResolvedSolid] = field(default_factory=list)
     roofs: list[ResolvedRoof] = field(default_factory=list)
     stairs: list[ResolvedStair] = field(default_factory=list)
+    floors: list[ResolvedFloor] = field(default_factory=list)
     rooms: list[ResolvedRoom] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
@@ -179,4 +194,6 @@ class ResolvedModel:
             out.extend(w.members)
         for stair in self.stairs:
             out.extend(stair.members)
+        for floor in self.floors:
+            out.extend(floor.members)
         return out

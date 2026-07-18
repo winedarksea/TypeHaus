@@ -48,11 +48,15 @@ class FloorSystem(Element):
 
 @register_element
 class Slab(Element):
-    """Slab-on-grade (a storey may have this instead of a FloorSystem)."""
+    """Slab-on-grade or structural concrete deck (instead of a FloorSystem).
+
+    Like a FloorSystem it may own FloorOpenings (the catlin main deck is a 9"
+    slab with a stair hole, → 30 WP3.1)."""
 
     outline: tuple[Point2D, ...]
     thickness: Length
     assembly: str | None = None
+    openings: tuple[str, ...] = ()  # FloorOpening tags
 
 
 @register_element

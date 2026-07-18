@@ -58,7 +58,7 @@ class Point2D:
                 x, y = value
                 return Point2D(x if isinstance(x, Length) else m(float(x)),
                                y if isinstance(y, Length) else m(float(y)))
-            raise TypeError(f"cannot coerce {value!r} into Point2D")
+            raise ValueError(f"cannot coerce {value!r} into Point2D")
 
         return core_schema.no_info_plain_validator_function(
             _validate,

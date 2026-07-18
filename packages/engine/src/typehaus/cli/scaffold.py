@@ -8,14 +8,26 @@ preferences by this scaffolder so checks read exactly one file (→ 20 §brief.m
 
 from __future__ import annotations
 
+import re
+import shutil
 import uuid
 from pathlib import Path
 
 from typehaus.model.ids import new_uid
 
 
-def scaffold_house(directory: Path, name: str) -> list[Path]:
+def scaffold_house(directory: Path, name: str, template: str = "catlin") -> list[Path]:
+    """Scaffold a new house. The default template is the catlin house verbatim (#22);
+    ``--template minimal`` keeps the single-room starter available."""
     directory = directory.resolve()
+    if template == "catlin":
+        source = _find_catlin_template(directory)
+        if source is not None:
+            return _copy_template(source, directory, name)
+        # Outside a checkout that carries houses/catlin, fall back honestly.
+        template = "minimal"
+    if template != "minimal":
+        raise ValueError(f"unknown template {template!r} (catlin | minimal)")
     (directory / "plan" / "storeys").mkdir(parents=True, exist_ok=True)
     files: dict[str, str] = {
         "brief.md": _BRIEF.format(name=name),
@@ -34,6 +46,46 @@ def scaffold_house(directory: Path, name: str) -> list[Path]:
         path = directory / rel
         path.write_text(content)
         written.append(path)
+    return written
+
+
+def _find_catlin_template(start: Path) -> Path | None:
+    """Walk up from the new house dir (then cwd) to find ``houses/catlin``."""
+    for base in (start, Path.cwd()):
+        for parent in (base, *base.parents):
+            candidate = parent / "houses" / "catlin"
+            if (candidate / "plan" / "manifest.py").is_file():
+                return candidate
+    return None
+
+
+def _copy_template(source: Path, directory: Path, name: str) -> list[Path]:
+    """Copy the catlin plan source verbatim, minting a fresh project uuid + name.
+
+    Element uids are kept: GlobalIds derive from (project_uuid, uid), so a fresh
+    project uuid is what makes the copy a distinct project (→ 10 §IDs).
+    """
+    directory.mkdir(parents=True, exist_ok=True)
+    written: list[Path] = []
+    for rel in ("plan", "params", "notes"):
+        src = source / rel
+        if src.is_dir():
+            shutil.copytree(src, directory / rel, dirs_exist_ok=True,
+                            ignore=shutil.ignore_patterns("__pycache__"))
+            written.extend(sorted(p for p in (directory / rel).rglob("*") if p.is_file()))
+    for rel in ("brief.md", "preferences.toml", "CLAUDE.md"):
+        src = source / rel
+        if src.is_file():
+            dest = directory / rel
+            shutil.copyfile(src, dest)
+            written.append(dest)
+    manifest = directory / "plan" / "manifest.py"
+    text = manifest.read_text()
+    text = re.sub(r'PROJECT_UUID = uuid\.UUID\("[0-9a-fA-F-]+"\)',
+                  f'PROJECT_UUID = uuid.UUID("{uuid.uuid4()}")', text)
+    if name and name != "My House":
+        text = text.replace('name="Catlin House"', f'name="{name}"')
+    manifest.write_text(text)
     return written
 
 

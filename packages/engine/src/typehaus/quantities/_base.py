@@ -45,7 +45,9 @@ def pydantic_quantity_schema(
             return from_source_str(value)
         if isinstance(value, (int, float)):
             return to_canonical(float(value))
-        raise TypeError(f"cannot coerce {value!r} into {cls.__name__}")
+        # ValueError (not TypeError) so pydantic treats this as a failed union arm
+        # and can fall through to e.g. the ToRoof/FollowRoof member (#43, M3).
+        raise ValueError(f"cannot coerce {value!r} into {cls.__name__}")
 
     return core_schema.no_info_plain_validator_function(
         _validate,

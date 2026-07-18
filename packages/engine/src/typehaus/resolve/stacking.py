@@ -48,11 +48,21 @@ def resolve_stacking(model: ResolvedModel) -> list[Finding]:
     for rw in model.walls:
         walls_by_storey.setdefault(rw.storey, []).append(rw)
 
-    for lower_s, upper_s in zip(ordered, ordered[1:]):
+    # For each wall, stack against the first storey above that carries a collinear
+    # wall. Interleaved storeys of *other* freestanding structures (the catlin garage
+    # storey sits between main and second) must not break a structure's own stack.
+    for index, lower_s in enumerate(ordered):
         lowers = walls_by_storey.get(lower_s.tag, [])
-        uppers = walls_by_storey.get(upper_s.tag, [])
         for lw in lowers:
-            candidates = [(uw, ov) for uw in uppers if (ov := _axis_match(lw, uw)) >= _MIN_OVERLAP]
+            candidates: list[tuple[ResolvedWall, float]] = []
+            for upper_s in ordered[index + 1:]:
+                uppers = walls_by_storey.get(upper_s.tag, [])
+                candidates = [
+                    (uw, ov) for uw in uppers
+                    if (ov := _axis_match(lw, uw)) >= _MIN_OVERLAP
+                ]
+                if candidates:
+                    break
             if not candidates:
                 continue
             if len(candidates) > 1:

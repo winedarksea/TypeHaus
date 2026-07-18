@@ -170,11 +170,13 @@ def _resolve_stair(
     if stair.to_storey != _element_storey(model, opening.tag):
         return None, [_error("integrity.stair_opening", f"stair {stair.tag} must use an "
                              "opening on its destination storey", stair.tag)]
-    destination_floor = next((element for element in model.plan.storey_elements(stair.to_storey)
-                              if isinstance(element, FloorSystem)), None)
+    # The destination deck (wood FloorSystem or concrete Slab) must own the opening.
+    destination_floor = next(
+        (element for element in model.plan.storey_elements(stair.to_storey)
+         if isinstance(element, (FloorSystem, Slab))), None)
     if destination_floor is None or opening.tag not in destination_floor.openings:
         return None, [_error("integrity.stair_opening", f"stair {stair.tag} opening must be "
-                             "owned by the destination FloorSystem", stair.tag)]
+                             "owned by the destination FloorSystem/Slab", stair.tag)]
     rise = target.elevation.meters - source.elevation.meters
     if rise <= 0:
         return None, [_error("integrity.stair_rise", f"stair {stair.tag} does not rise to "
