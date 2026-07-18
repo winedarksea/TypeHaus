@@ -1,5 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "./state/store";
+import { subscribePwa, promptInstall, type PwaState } from "./pwa/register";
+import { fsAccessSupported } from "./engine/openHouse";
 import { Toolbar } from "./components/Toolbar";
 import { Canvas2D } from "./components/Canvas2D";
 import { Panel3D } from "./components/Panel3D";
@@ -18,6 +20,16 @@ export function App() {
   const error = useStore((s) => s.error);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
+  const offline = useStore((s) => s.offline);
+  const offlineHouse = useStore((s) => s.offlineHouse);
+  const openOfflineHouse = useStore((s) => s.openOfflineHouse);
+
+  const [pwa, setPwa] = useState<PwaState>({
+    online: true,
+    installable: false,
+    installed: false,
+  });
+  useEffect(() => subscribePwa(setPwa), []);
 
   useEffect(() => {
     void init();
@@ -41,7 +53,17 @@ export function App() {
       <div className="topbar">
         <span className="title">Type:Haus</span>
         <span className="muted">{model?.project.name ?? "—"}</span>
+        {offline && (
+          <span className="badge-offline" title={`offline — ${offlineHouse ?? "in-browser engine"}`}>
+            OFFLINE{offlineHouse ? ` · ${offlineHouse}` : ""}
+          </span>
+        )}
         <div className="spacer" />
+        {pwa.installable && (
+          <button className="btn" onClick={() => void promptInstall()} title="Install Type:Haus">
+            Install
+          </button>
+        )}
         {(["2d", "split", "3d"] as const).map((m) => (
           <button
             key={m}
@@ -77,6 +99,17 @@ export function App() {
                 Cannot reach engine: {error}
                 <br />
                 <span className="muted">Run `haus serve` in the house directory.</span>
+                {fsAccessSupported() && (
+                  <div style={{ marginTop: 16 }}>
+                    <button className="btn" onClick={() => void openOfflineHouse()}>
+                      Open house folder (offline)
+                    </button>
+                    <div className="muted" style={{ marginTop: 6, fontSize: 12 }}>
+                      Runs the engine in your browser — view, checks, and 3D. Editing needs
+                      `haus serve`.
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <Canvas2D />

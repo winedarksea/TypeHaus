@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Type:Haus">
+  <rect width="512" height="512" rx="96" fill="#0e1116"/>
+  <g fill="none" stroke="#6d8a96" stroke-width="20" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M104 232 256 120 408 232" />
+    <path d="M136 210 136 392 376 392 376 210" />
+  </g>
+  <g stroke="#d8c9a6" stroke-width="12">
+    <line x1="180" y1="232" x2="180" y2="392"/>
+    <line x1="224" y1="232" x2="224" y2="392"/>
+    <line x1="288" y1="232" x2="288" y2="392"/>
+    <line x1="332" y1="232" x2="332" y2="392"/>
+  </g>
+  <rect x="236" y="316" width="40" height="76" fill="#6d8a96"/>
+</svg>

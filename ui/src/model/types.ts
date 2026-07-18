@@ -113,4 +113,5 @@ export interface Model {
   rooms: Room[];
   conditions: Condition[];
   stack_edges: StackEdge[];
+  ok?: boolean; // server/offline resolve status (state.py / bootstrap.py add this)
 }

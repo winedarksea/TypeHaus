@@ -31,3 +31,11 @@ mode remains the primary, fully-supported path regardless of outcome.
 
 Gate decision recorded (go / degraded / skip) with the spike evidence; on any "go", the M2
 Playwright drawing script passes against `PyodideEngineClient` offline.
+
+## Gate decision
+
+**Recorded 2026-07-18 → (b) Degraded offline mode, GO.** Spike evidence and the full
+dependency-reachability audit are in `40-m4-gate.md`. Summary: the `.glb` render path (#51) is
+pure stdlib and the only wasm blockers — libcst, ifcopenshell, pyproj — are confined to the
+writeback and IFC-emit seams, so resolve/checks/model.json/glb all run offline in-browser while
+mutation and IFC export are marked "requires local install". Implemented in WP4.2 below.

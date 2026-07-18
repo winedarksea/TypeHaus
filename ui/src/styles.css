@@ -214,6 +214,18 @@ body {
   color: var(--accent);
 }
 
+.badge-offline {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  margin-left: 8px;
+  border-radius: 6px;
+  color: #fff;
+  background: var(--accent);
+}
+
 .finding {
   font-size: 12px;
   padding: 6px 8px;

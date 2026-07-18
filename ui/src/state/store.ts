@@ -7,6 +7,8 @@ import { create } from "zustand";
 import type { EngineClient, EngineEvent, PatchOp } from "../engine/EngineClient";
 import { RevisionConflict } from "../engine/EngineClient";
 import { HttpEngineClient } from "../engine/HttpEngineClient";
+import { PyodideEngineClient } from "../engine/PyodideEngineClient";
+import { pickHouseDirectory } from "../engine/openHouse";
 import type { Finding, Model } from "../model/types";
 
 export type Tool = "select" | "wall" | "opening" | "room" | "dimension";
@@ -37,6 +39,8 @@ export interface Toast {
 
 interface StoreState {
   client: EngineClient;
+  offline: boolean; // true once running against the in-browser pyodide engine
+  offlineHouse: string | null;
   connected: boolean;
   loading: boolean;
   model: Model | null;
@@ -56,6 +60,7 @@ interface StoreState {
   // actions
   init: () => Promise<void>;
   reload: () => Promise<void>;
+  openOfflineHouse: () => Promise<void>;
   setTool: (t: Tool) => void;
   setViewMode: (v: ViewMode) => void;
   setThreeMode: (m: ThreeMode) => void;
@@ -75,8 +80,12 @@ interface StoreState {
 
 let toastSeq = 1;
 
+let unsubscribeEvents: (() => void) | null = null;
+
 export const useStore = create<StoreState>((set, get) => ({
   client: new HttpEngineClient(),
+  offline: false,
+  offlineHouse: null,
   connected: false,
   loading: true,
   model: null,
@@ -95,11 +104,34 @@ export const useStore = create<StoreState>((set, get) => ({
 
   init: async () => {
     const { client } = get();
-    client.events(
+    unsubscribeEvents?.();
+    unsubscribeEvents = client.events(
       (e) => handleEvent(get, set, e),
       (up) => set({ connected: up }),
     );
     await get().reload();
+  },
+
+  // Switch to the offline in-browser engine (→ 40): pick a house folder via the File System
+  // Access API and run the pyodide EngineClient. No server required.
+  openOfflineHouse: async () => {
+    try {
+      const opened = await pickHouseDirectory();
+      if (!opened) return; // user cancelled
+      const client = new PyodideEngineClient(opened.files);
+      set({
+        client,
+        offline: true,
+        offlineHouse: opened.name,
+        connected: false,
+        loading: true,
+        error: null,
+        model: null,
+      });
+      await get().init();
+    } catch (err) {
+      get().toast((err as Error).message, "error");
+    }
   },
 
   reload: async () => {
