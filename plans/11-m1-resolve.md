@@ -89,7 +89,8 @@ checked like every other boundary.
 - **Wall-line stacks** (chains bottom → top, including `FoundationWall` at the bottom) are a
   first-class `ResolvedModel` product with three consumers:
   1. **Boundary conditions** — each stack edge through a `FloorSystem` emits a
-     **storey-stack condition** (the rim/band condition), and each stack edge where assembly
+     **storey-stack condition** (the rim/band condition, anchored to the generated rim joist,
+     §Floors), and each stack edge where assembly
      widths differ additionally emits a **stack-width-change condition** with per-layer face
      jogs quantified (same computation as assembly-change nodes, §Wall variation below).
      Both feed the transition system (→ 11b §Transitions).
@@ -113,7 +114,13 @@ owners** — model them separately and the tension disappears:
 - **`FloorSystem` (owner: Storey) — the structural deck.** One per framed level (a storey may
   have zero for slab-on-grade — that's what `Slab` remains for). Carries:
   - `JoistSpec(member, spacing, direction, bearing_refs)` — bearing refs are wall/beam tags;
-    the framing solver generates joists between them, running straight over partitions.
+    the framing solver generates joists between them, running straight over partitions, **plus
+    the rim/band joist** closing the joist ends around the deck perimeter (and rim blocking at
+    intermediate bearing lines) — a real generated member of joist depth following the
+    FloorSystem's outer edge, with deterministic child uids like every other framed member.
+    This is the member the storey-stack (rim/band) condition and its air-sealing transition
+    anchor to (#43, §Vertical stacking): the detail now flashes over a member that actually
+    exists in 3D, in section slices, and in the BOM — not a described-but-unbuilt board.
   - `subfloor` layer (material + thickness) and `ceiling_below` layer (the drywall on the
     underside), so the deck is a real assembly-like stack: its total depth **feeds the storey
     elevation delta**, which is exactly what the stair designer's derived floor-to-floor rise
@@ -132,8 +139,9 @@ owners** — model them separately and the tension disappears:
   with overlapping storey `Soffit`s. **All area takeoffs (#25) — carpet, tile, underlayment
   sq ft — read this tier;** structural BOM (joist count/length, subfloor sheets) reads the
   FloorSystem.
-- **Emission:** FloorSystem → `IfcSlab` (deck) + aggregated `IfcMember` joists at framed LOD +
-  `IfcOpeningElement` per FloorOpening; FloorFinish → `IfcCovering(FLOORING)` per room — which
+- **Emission:** FloorSystem → `IfcSlab` (deck) + aggregated `IfcMember` joists **and rim/band
+  joists** at framed LOD + `IfcOpeningElement` per FloorOpening; FloorFinish →
+  `IfcCovering(FLOORING)` per room — which
   is also exactly how Revit expects to receive floor finishes.
 - **`Soffit` — storey-level dropped ceiling (#40).** `Soffit(polygon, drop |
   underside_elevation, framing: FramingSpec | None = None)` owned by the Storey — the polygon
@@ -163,15 +171,23 @@ a core pipeline stage. It is a pure, deterministic function
 deterministic child uids under their parent (→ 10 §Stable IDs) so GUIDs are stable
 build-to-build.
 
-`FramingSpec` (per Assembly's STRUCTURE layer):
+`FramingSpec` (per Assembly layer — the STRUCTURE layer always, plus any `FURRING` layer that
+carries one):
 
 - **Layout:** stud spacing (16"/24" o.c., configurable), member size (2x4/2x6…), layout origin
   rule (from which node the grid counts), bottom plate + double top plate (single-top /
-  advanced-framing option).
+  advanced-framing option). **Partition layouts (#50):** `staggered` (e.g. 2x4 studs
+  alternating on a 2x6 plate) and `double` (two independent stud rows with a declared gap,
+  each row with its own plates) are first-class layout options — the STC-rated library
+  partitions must frame truthfully under #20, not render as ordinary single-row walls.
 - **Openings:** king + jack (trimmer) studs per opening-width table, header sizing pulled from
   the same tables `checks/structural/` uses (one table module, two consumers), cripple studs
   above headers and below sills, sill plates — driven by the `DoorType`/`WindowType`
-  rough-opening size. This is also what powers the "framing bumpers" overlay (→ 30).
+  rough-opening size. This is also what powers the "framing bumpers" overlay (→ 30). Applies
+  to **rectangular ROs in framed walls only**: openings in masonry/concrete walls (the
+  `MasonrySpec` path below) — including **arched openings** (catlin's poured-concrete arches,
+  → 10 §Element model) — are cut and shown but grow no wood members; a non-rectangular opening
+  in a framed wall is a finding, never silently approximated with a rectangular header.
 - **Corners & intersections:** junction-solver output tells the framer the condition; default
   three-stud California corner (four-stud and ladder-blocking T options per spec) — corners
   are framed correctly *because* walls are edges in a solved graph, not independent boxes.
@@ -179,6 +195,33 @@ build-to-build.
   wall-line stacks (#43)** and with joist layout (in-line framing), giving visibly aligned
   load paths in section views — the stacking pass supplies which walls stack; the framer only
   aligns grids.
+- **Raked tops & rafters (M3 — closing the gable-end gap):** a wall whose `top: ToRoof(ref)`
+  resolves (§Wall topology) hands the framer its *clipped* polygon: studs generate on the
+  same layout grid but are cut individually to the rake line, top plates follow the rake as
+  sloped plates, and opening framing (king/jack/header/cripple) composes with the raked top
+  exactly as with a level one. Rake overhangs > 0 get ladder/lookout framing via the roof
+  `ConstructionRule` family (#45); zero-overhang rakes (catlin) need none. Roof planes
+  themselves frame from the roof assembly's STRUCTURE-layer `FramingSpec` — rafters at
+  spacing between ridge and bearing refs, with birdsmouth/bearing-plate geometry supplied by
+  `ConstructionRule`s (§Interfaces below) — so gable ends and roof planes are framed, cut by
+  slices, rendered in 3D, and counted in takeoffs like every other member. M1's solver
+  handles level tops only; this arm activates with the M3 roofs (→ 30 WP3.11), where the
+  golden matrix grows gable-end fixtures.
+- **Furring & strapping (the rainscreen / standing-seam path):** a `FURRING` layer may carry
+  its own `FramingSpec`, and the solver generates its strapping as **real members on the
+  layer's own grid** — *independent of the stud layout* (24" o.c. strapping over 16" o.c.
+  studs is the normal case, and the grids need not divide evenly). The spec's **`direction`**
+  chooses how the members run: vertical furring for horizontal cladding, horizontal girts for
+  vertical standing-seam panels — so the strapping runs the right way for the cladding it
+  carries. Members get deterministic child uids like studs and sit inside the resolved furring
+  layer's envelope (which still wraps/butts at junctions per `JunctionPolicy`, §Junction
+  policy), so they feed all four sinks: shown between sheathing and cladding in 3D and every
+  section slice, drawn on S-sheets, and counted in the takeoff as **strapping lineal feet**.
+  This is the visible **panel → furring → stud/sheathing** fastening path. Fasteners
+  themselves stay a schedule note, not modeled members (the standard procurement-item
+  exclusion, → 21b §Takeoff dashboard). **The same layer path frames roof battens/counter-battens** over
+  a roof plane (vented over-batten metal roofs); catlin's hot roof lands the panel directly on
+  the deck and grows none.
 - **Masonry (#23):** CMU/ICF STRUCTURE layers carry `MasonrySpec(unit_size, coursing,
   core_fill, rebar_spacing)` instead — the walls render as accurate layered solids (insulation
   and air-barrier layers hatched exactly like wood assemblies), and the takeoff computes
@@ -332,7 +375,8 @@ then layer in fixtures/electrical/HRV.
   `haus explain --transitions` lists its conditions.
 - **WP1.4b Wall framing solver.** Stud layout, plates, king/jack/cripple + header generation
   at openings, corner conditions from junction output; deterministic child uids; masonry
-  walls take the `MasonrySpec` quantity path (no members). *Tests:* golden matrix (spacing ×
+  walls take the `MasonrySpec` quantity path (no members). Level wall tops only — the
+  raked-top/rafter arm (§Framing solver above) lands with M3 roofs (→ 30 WP3.11). *Tests:* golden matrix (spacing ×
   opening widths × corner types); **< 200 ms whole-house budget asserted in CI** from this WP
   onward. *Done when:* the demo plan's framed member list feeds both the IFC emit and a stud
   count that matches a hand count.

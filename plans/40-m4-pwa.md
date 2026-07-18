@@ -11,17 +11,15 @@ mode remains the primary, fully-supported path regardless of outcome.
   **IfcOpenShell** (C++ CPython extension; no official pyodide build today) and **libcst**
   (native Rust parser). Everything else either ships in the pyodide distribution (shapely,
   scipy, numpy, matplotlib, pydantic-core) or is pure Python installable via micropip (ezdxf,
-  typer). Spike outcome is one of:
+  typer, trimesh). Spike outcome is one of:
   - **(a) Full go:** the full engine runs under pyodide (a workable IfcOpenShell wasm build
     exists) → proceed to WP4.2.
   - **(b) Degraded offline mode:** resolve/checks/drawing-IR/DXF/PDF/model.json all run
-    in-browser; the 3D panel renders a **glTF (.glb) emitted straight from `ResolvedModel`**
-    (trimesh or hand-rolled — the resolver already owns the solids; .glb is native to the web
-    and fast) rather than parsing IFC; IFC binary emit and libcst writeback are marked
-    "requires local install" → go if still judged useful. This makes IFC purely the
-    *interchange* artifact and glTF the *render* artifact — a split worth having anyway
-    (it is also risk 4's fallback (b), → 02 §Risk register, so the glTF emitter pays for
-    itself even if M4 is skipped).
+    in-browser; the 3D panel renders the **glTF (.glb) emitted straight from `ResolvedModel`**
+    — which under #51 is already the UI's primary render artifact, so this mode reuses the
+    M2 emitter as-is; IFC binary emit and libcst writeback are marked "requires local
+    install" → go if still judged useful. The IFC-as-interchange / glTF-as-render split is
+    already in place from M2 (#51), so M4 inherits it for free.
   - **(c) Neither viable → skip**, per the locked decision. Document the finding and close
     the milestone.
 - **WP4.2 PWA packaging** (only on go): service worker + offline asset caching, pyodide

@@ -126,19 +126,38 @@ submittal value regardless.
 - **WP3.8 MN submittal checklist as a check** + docs (permit guide); archive old repo.
 - **WP3.9 Library contribution seam.** Per-item validation CI for `library/` (schema check +
   render smoke test per item), CONTRIBUTING.md documenting the promote-from-house-to-library
-  PR flow (→ 02 §Git topology).
+  PR flow (→ 02 §Git topology). **Curated STC partition presets (#50)** land here: a handful
+  of interior partition assemblies transcribed from published tested data (single-stud +
+  mineral wool, resilient-channel, staggered-stud, double-stud; double-gyp variants), each
+  with `stc` + its test-reference `source` note, framing truthfully via the → 11 partition
+  layouts. Shipping these flips the acoustic-adjacency advisory (→ 12 §Checks) from
+  off-by-default to available.
 - **WP3.10 UI intelligence pack.** `Furniture` + `Fixture` models with starter
-  `FurnitureType`/`FixtureType` library entries; `Alarm` elements + R314/R315 placement
-  check; sun indicator; space dashboard + storage ratio; service filters; clearance overlays
+  `FurnitureType`/`FixtureType` library entries; **furniture mesh import (#49):**
+  `haus import furniture <file.glb|.gltf|.dae>` (trimesh) writes a `FurnitureType` with the
+  mesh as a `.glb` sidecar, footprint auto-derived (projected outline, simplified) and height
+  from the bounding box — clearance zones and `needs` filled by the user/agent afterward;
+  the 3D panel renders the mesh, plans render the footprint symbol, core-LOD IFC emits
+  `IfcFurnishingElement`. This is the IKEA/3D-Warehouse path (docs cover downloading
+  glTF/Collada or converting .skp); imported Warehouse meshes stay house-local — `library/`
+  furniture must be original or redistributably licensed. Also: `Alarm` elements + R314/R315
+  placement check; sun indicator; space dashboard + storage ratio; service filters; clearance overlays
   + framing bumpers (with their warn-tier checks); kitchen work-triangle advisory (unblocked
   by fixtures landing here); **wet-wall depth advisory** (above); **`FloorHeat` end-to-end**
   (serpentine plan rendering, slice dots, wire-length/mat takeoff, fixture keep-out warnings
   — keep-outs need the fixture footprints landing here).
-- **WP3.11 Roof designer panel (#29).** **Strictly gable/shed** — pitch/ridge/bearing
-  selection, live section preview showing the roof assembly, attic headroom shading (the
-  ≥ 5' / ≥ 7' R305 zones over the floor below), overhang entry where **0 is a first-class
-  value** (catlin; per-edge overrides), `FollowRoof` ceiling resolution + R305 check wired
-  through, `Roof(...)` writeback; valley-requiring footprints and other unsupported forms
+- **WP3.11 Roof designer panel (#29) + roof/gable framing.** **Strictly gable/shed** —
+  pitch/ridge/bearing selection, live section preview showing the roof assembly, attic
+  headroom shading (the ≥ 5' / ≥ 7' R305 zones over the floor below), overhang entry where
+  **0 is a first-class value** (catlin; per-edge overrides), `FollowRoof` ceiling resolution +
+  R305 check wired through, `Roof(...)` writeback; **activates the framing solver's raked-top
+  arm (→ 11 §Framing solver):** `ToRoof` walls frame with individually-cut gable studs and
+  sloped top plates, roof planes frame rafters from the roof assembly's `FramingSpec`
+  (birdsmouth/bearing via `ConstructionRule`), rake overhangs get ladder/lookout framing, and a
+  roof-assembly `FURRING` layer frames battens/counter-battens via the same furring path
+  (vented over-batten metal — catlin's hot roof grows none) —
+  all feeding the S-101 sheets, section slices, 3D view, and takeoffs; golden gable-end
+  fixtures join the framing matrix; valley-requiring footprints and other unsupported forms
   (→ 10 §Element model) detected and rejected with findings; out-of-range attic
   configurations render red with the code ref, same as stairs. Exercised end-to-end by the
   catlin attic.
@@ -147,7 +166,10 @@ submittal value regardless.
 
 New-engine catlin IFC is semantically equivalent to the old one (WP3.7 test); the catlin
 attic is modeled as a habitable room under a `FollowRoof` ceiling passing R305, over
-foundation elements that appear on S-100; the hallway duct soffit shows framed in 3D, dashed
+foundation elements that appear on S-100; **the attic gable-end walls frame with raked studs
+and sloped plates, visible in the section slices and counted in the takeoff** (→ 11 §Framing
+solver); an imported 3D-Warehouse furniture mesh (`haus import furniture`) places in a room,
+renders in the 3D panel, and shows its footprint + clearance overlay on the plan (#49); the hallway duct soffit shows framed in 3D, dashed
 on the floor plan, and passes per-room ceiling checks; slab `FloorHeat` zones appear on plans
 and in the slab detail slice with wire-length takeoffs; **every derived boundary condition on
 the catlin model is transition-covered**, and bumping the exterior CI from 2 to 3 layers
@@ -156,7 +178,8 @@ re-flows the eave and basement details without hand edits; **the side wall line'
 stack-width-change conditions are transition-covered, and the air-barrier continuity walk
 passes vertically from foundation to roof**; `haus print` produces a complete permit PDF
 passing the encoded MN checklist; `haus print --handoff` produces the full architect bundle
-(verified by import into a professional BIM tool, → 02 §Verification); old repo archived.
+(verified by import into Bonsai/Blender — the tested target, #48, → 02 §Verification);
+old repo archived.
 
 ## Risks owned
 

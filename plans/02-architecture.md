@@ -149,7 +149,8 @@ plan source ──parse────► PlanModel      (Pydantic; authored units 
             │                            derived rooms, framing members, stair/roof geometry,
             │                            derived boundary conditions, SI coords,
             │                            provenance map tag → file:line)
-            ──emit─────► IFC │ DXF │ PDF sheets │ model.json (UI) │ diff baseline
+            ──emit─────► IFC │ glTF (render artifact, #51) │ DXF │ PDF sheets │
+                         model.json (UI) │ diff baseline
 ```
 
 - **`ResolvedModel` is whole-building, not per-storey.** Each storey resolves in the shared
@@ -209,9 +210,17 @@ haus energy            [--json] block heating/cooling load estimate (#42, M5, �
 haus migrate           [--dry-run] apply the format_version source migration (#31); requires
                        clean git tree, validates with a full build
 haus compare <a> <b>   resolve two members of a variant set for the side-by-side compare
-                       view (→ 11b §Fork)
+                       view (→ 11b §Fork); given assembly names, renders the assembly delta
+                       compare card instead (#53, → 21b)
+haus import furniture <file.glb|.gltf|.dae>
+                       trimesh-based mesh import → FurnitureType with derived footprint +
+                       height (#49, M3, → 30 WP3.10)
+haus render            [--view plan|section|3d] [--storey N] [--out png|svg] headless
+                       snapshots for agent visual feedback (#52): plan/section from the
+                       drawing IR, 3d offscreen from the glTF render artifact (#51)
 haus ls / explain <tag|assembly>
-                       element inspection for humans and agents; explain --bearing walks the
+                       element inspection for humans and agents; ls --summary emits the
+                       compact whole-plan digest (#52); explain --bearing walks the
                        derived load path (→ 11 §Foundations); explain --transitions lists
                        derived boundary conditions + coverage (→ 11b §Transitions);
                        explain <assembly> --card renders the assembly section card
@@ -241,7 +250,7 @@ mitigating design pattern concretely.
 | 1 | **libcst writeback complexity** (the novel part) | Strict editable dialect keeps the CST surface tiny; property-based round-trip tests; `haus fmt` normalizer; worst-case degradation = regenerate one element's statement (losing only that statement's comments) | → 20 |
 | 2 | **Junction/topology solver math** (mitered multi-layer corners, T-junction layer priorities) | Lean on shapely; enumerate junction cases as a golden test matrix in M1; ship "structure-butts, finish-wraps" defaults via `JunctionPolicy`, refine per-assembly later | → 11 |
 | 3 | **Permit-quality elevations/sections** (hidden-line projection is the hardest 2D output) | Scheduled last (M3); reuse `ifcopenshell.draw` prior art; painter's-order silhouette is acceptable for residential; plans/details/schedules carry most submittal value regardless | → 30 |
-| 4 | **ThatOpen/web-ifc churn** (young ecosystem) | Viewer isolated behind a `ModelViewer` interface; pin versions; fallbacks in order: (a) raw web-ifc + three.js; (b) emit **glTF from `ResolvedModel`** and render with plain three.js — sidestepping in-browser IFC parsing entirely (IFC stays the interchange artifact, glb becomes the render artifact; same emitter WP4.1(b) wants); (c) "open in Bonsai" (UI fully usable 2D-only) | → 21 |
+| 4 | **ThatOpen/web-ifc churn** (young ecosystem) | **Largely retired by #51:** the primary render path is now **glTF emitted from `ResolvedModel`**, rendered with plain three.js — self-owned end-to-end, no in-browser IFC parsing in the hot path (IFC stays the interchange artifact, glb is the render artifact; same emitter WP4.1(b) wants). Viewer still isolated behind a `ModelViewer` interface; web-ifc/ThatOpen loading of the built IFC is the secondary path (and an emitter cross-check); "open in Bonsai" the final fallback (UI fully usable 2D-only) | → 21 |
 | 5 | **IfcOpenShell API instability** (0.7→0.8 reshape already bit the ecosystem) | Pin 0.8.x; all calls confined to `emit/ifc/lowlevel.py` (~600-line adapter, exactly what `ifc_utils.py` proved out); golden IFC snapshots detect drift on any bump | → 12 |
 | 6 | **Framing solver in the hot path** (#20 makes it run on every build and edit — correctness *and* latency now gate the core loop) | Closed-form arithmetic, no geometry kernel: members are records until emit; CI asserts the < 200 ms whole-house budget from WP1.4b onward; the golden junction/opening test matrix covers the rule combinatorics; the 2D cut + UI consume the same member list as the IFC emit, so there is exactly one solver to get right | → 11 |
 | 7 | **Overlay/transition anchor robustness** (details must re-flow, not drift, when assemblies change) | Anchors reuse the dimension reference scheme (uid + face role) — one resolver, one failure surface; an unresolvable anchor is an error finding, never a silently wrong drawing; golden-image tests re-render every `library/` transition across assembly parameter sweeps (CI thickness bumps, layer swaps, lining overrides) | → 11b, → 30 |
@@ -258,10 +267,15 @@ mitigating design pattern concretely.
   room; assert plan-file diff is minimal and comments survive; edit the file in a text editor
   and assert UI hot-reload; modify a copy of the IFC in Blender, run `haus diff`, assert the
   change report; repeat the drawing script in a touch-emulated tablet viewport (#14).
+  **Cold-start gate (time-to-first-delight):** on a clean machine without node,
+  `pip install typehaus && haus new && haus serve` reaches a navigable Nordic-preset 3D view
+  of the starter house — a complete, attractive small house, not an empty canvas — within a
+  minutes-scale budget; the first UI edit round-trips < 2 s. The experimenter's first 20
+  minutes are an acceptance surface, not a hope.
 - **M3:** WP3.7 equivalence test vs old catlin model; print the permit set and review each
   sheet against the encoded MN checklist; verify DXF opens correctly in a second CAD tool
   (e.g. LibreCAD or an online viewer) with correct layers/units; **handoff-quality bar
-  (→ 00 §Success):** import the `--handoff` IFC into a professional BIM tool (Revit or
-  Archicad; trial/viewer acceptable) and verify walls arrive as typed layered walls with
-  spaces and schedules populated — i.e. an architect could continue the model rather than
-  redraw it.
+  (→ 00 §Success, #48):** import the `--handoff` IFC into **Bonsai (Blender)** — the tested
+  target — and verify walls arrive as typed layered walls with spaces and schedules
+  populated — i.e. an architect could continue the model rather than redraw it. (Revit/
+  Archicad import stays untested-aspirational; `--lod core` is shaped for it regardless.)

@@ -95,8 +95,11 @@ Project ── Site (lat, lon, elevation, crs="EPSG:26915", true_north, parcel r
 Libraries: Assembly (+ variants — → 11 §Wall variation), Material, DoorType, WindowType,
            Transition (bridge details — → 11b §Transitions),
            FurnitureType/FixtureType (footprint, height, clearance zones, storage: bool,
-                                      needs: set[Service])  # Service = water_hot | water_cold |
-                                                            #   drain | gas | power_240 | vent
+                                      needs: set[Service],  # Service = water_hot | water_cold |
+                                      mesh: MeshRef | None) #   drain | gas | power_240 | vent
+                                      # mesh: .glb sidecar under the house dir, written by
+                                      #   `haus import furniture` (#49, M3 → 30 WP3.10);
+                                      #   footprint/height derived from it at import
 ```
 
 - **Wall** — connects exactly two nodes; required `assembly`; **top constraint**
@@ -111,7 +114,13 @@ Libraries: Assembly (+ variants — → 11 §Wall variation), Material, DoorType
   both feed the M5 load estimator and future daylighting work — glazing, operation,
   rough-opening size → drive schedules + energy checks). Compiles to `IfcOpeningElement` +
   `IfcRelVoidsElement` + `IfcDoor`/`IfcWindow` + `IfcRelFillsElement` — replacing today's
-  voids baked into wall profiles.
+  voids baked into wall profiles. **The void profile may be non-rectangular** — an `arched`
+  head (`Arch(rise=...)` on the opening) cuts an arched void and shows correctly in 3D and
+  slices. Arched openings are supported today only in **masonry/concrete walls**
+  (`MasonrySpec` path — catlin's poured-concrete arches, authored in `params/`): the profile
+  is cut and rendered, with no wood member framing to generate. A non-rectangular opening in a
+  **framed** (wood-STRUCTURE) wall is an integrity finding, not a silent approximation —
+  curved-header wood framing is out of scope (→ 11 §Framing solver).
 - **Room:** rooms are **derived** from the wall graph (face extraction via `shapely` — node
   the axis network, `polygonize`), then **claimed** by declaration:
   `Room(tag="RM-Kitchen", seed=pt(ft(6), ft(22)), ceiling=None, occupancy=Occupancy.KITCHEN,
@@ -134,6 +143,10 @@ Libraries: Assembly (+ variants — → 11 §Wall variation), Material, DoorType
   MEMBRANE|INSULATION|AIRGAP|FURRING|CLADDING|FINISH, framing: FramingSpec | None,
   control: set[AIR|WATER|VAPOR|THERMAL] = ∅)` — `control` tags which layers are the building's
   control layers, feeding the continuity checks (→ 11b §Transitions, → 12 §Checks).
+  **`framing` is not structure-only:** a `FURRING` layer carrying a `FramingSpec` (with a
+  `direction`) generates strapping/battens as real members on their own grid — the standing-seam
+  rainscreen path on walls, batten/counter-batten on roofs (→ 11 §Framing solver) — not merely a
+  continuous airgap.
   **Two-tier split (#34):** the assembly proper is the **core** (the structural layer and
   everything outboard); the interior-of-structure finish stack is its **`default_lining`**,
   overridable per room-face. **Variants (#35):** `variant_of` + layer-span substitutions
@@ -157,15 +170,12 @@ Libraries: Assembly (+ variants — → 11 §Wall variation), Material, DoorType
   building in for costs — a future embodied-carbon estimator would read a user-supplied
   `carbon.toml` (kg CO2e per unit, parallel to `prices.toml`) and multiply through the BOM
   volumes #25 already computes. Same rationale, same shape, zero new schema surface.
-  Every library material and assembly value that feeds a check/card carries compact
-  `Evidence(source, basis, applicability, revised_on, kind=sourced|assumption)` (#46).
-  `basis` is a test standard, manufacturer data sheet, code table, or plainly named generic
-  assumption; `applicability` can constrain climate, orientation, installation, or below-grade
-  use. The engine renders provenance beside calculated output and returns UNKNOWN/WARN when a
-  value is absent or used outside its limits. Local plan entries may use assumptions, but
-  cannot masquerade as catalog evidence. All numeric material fields are optional; a material
-  missing one is simply excluded from the calc that needs it —
-  a Finding, not a crash (#32's UNKNOWN pattern).
+  Provenance stays lightweight (#46, revised): `Material` and `Assembly` carry one optional
+  freeform `source: str | None` (URL, standard, or "generic assumption"), rendered on the
+  section card when present — never required, never validated. All numeric material fields are
+  optional; a material missing one is simply excluded from the calc that needs it —
+  a Finding, not a crash (#32's UNKNOWN pattern). That tri-state honesty, not citations, is
+  what keeps missing data from masquerading as authority.
 - **Detail → superseded by `Slice` + `Transition` (#36/#37):** a detail is a
   `Slice(kind="detail")` cut from the resolved model, cropped tight around a boundary
   condition, with its build-science overlay (flashing, sealant, screens) supplied by the
@@ -186,7 +196,17 @@ Libraries: Assembly (+ variants — → 11 §Wall variation), Material, DoorType
   **Unsupported roof forms fail loudly:** footprints requiring valleys, dormers, intersecting
   masses, crickets, or partial gables are *detected and rejected* with an integrity finding —
   never quietly approximated. **Stair:** rise derived from storey elevations; solves
-  tread/riser against code constraints; errors if unsolvable.
+  tread/riser/landings against code constraints (R311.7); errors if unsolvable. The stair is
+  **real resolved geometry, not just a solved number** (full build lands with the M2 stair
+  designer, → 21b WP2.13) — the resolver generates stringers, treads, risers, and landing
+  platforms as framed members with
+  deterministic child uids under the stair's uid (same scheme as wall/floor framing), so the
+  stair is cut correctly by section slices, rendered in 3D, and counted in takeoffs (stringer
+  lineal feet, tread/riser counts). Emits `IfcStair` aggregating one `IfcStairFlight` per
+  flight (`IfcMember` stringers, `IfcSlab` landings) via `IfcRelAggregates`, parent GUID
+  stable across LODs like walls. The plan slice draws the **standard stair symbol** — tread
+  lines, the direction/break line at the cut, and an `UP N R` / `DN N R` label — rather than
+  an outline (§ drawing IR, → 20).
 - **Psets, repurposed** (source of truth flipped): every emitted element gets
   `Pset_HF_Source = {uid, tag, plan_content_hash, assembly}` — the round-trip anchor and a
   Bonsai-user affordance. Also emit *standard* psets: `Pset_WallCommon` (IsExternal,
@@ -301,6 +321,10 @@ carrying hundreds of authored elements:
   conditions every load calc needs (for catlin, roughly -15°F / 90°F). `preferences.toml
   [envelope] ach50` (air-leakage target) is already in the schema (→ 12 §Checks).
 - **`Room.occupancy`** closed Enum (above) — also tightens the existing R310 egress check.
+- **Acoustics (#50 — deliberately minimal):** `Assembly.stc: int | None` and
+  `FloorSystem.iic: int | None` — **empirical lookup values from published lab tests, never
+  computed** — with the #46 freeform `source` note carrying the test reference. Absent →
+  acoustic questions report UNKNOWN (#32). No other acoustic fields; no flanking model.
 - **Space-boundary closure — already true, now asserted:** WP1.5's zero-gap integrity check
   keeps the `IfcSpace` closure a tested regression.
 - Dynamic simulation and ASHRAE 62.2 stay **unscheduled** (headroom rows above).

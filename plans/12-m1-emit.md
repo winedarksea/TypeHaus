@@ -41,9 +41,11 @@ moment they touch it — not after the M3 detail slices land.
   clamped via `ExaggerationSpec` with true thicknesses labeled), material hatch/color from
   the shared palette (→ 21 §Nordic preset), layer names + thicknesses, the **R-value rollup**
   (core + `default_lining`, per #34), **control-layer tags** (AIR/WATER/VAPOR/THERMAL badges
-  on the layers that carry them), the core/lining boundary, and #46 evidence badges. An
-  evidence badge names whether the value is sourced or an assumption and links its source/basis
-  in machine-readable card metadata; absent/out-of-applicability evidence is visibly UNKNOWN.
+  on the layers that carry them), and the core/lining boundary. An **STC badge** renders beside
+  the R-value rollup when `Assembly.stc` is set (#50) — always with its `source` note, the
+  value being a lab-test lookup, never computed. A freeform `source` note renders
+  when a library value carries one (#46, revised — no structured evidence); a calc missing an
+  input renders visibly as UNKNOWN with the material named (#32).
   Variants render grouped under their base with the substituted span highlighted.
 - **Where it appears:**
   - **M1 (WP1.9):** `haus explain <assembly> --card [--out card.svg]` — SVG (PNG via
@@ -52,7 +54,9 @@ moment they touch it — not after the M3 detail slices land.
     pulled forward; the card is deliberately model-free (it renders an Assembly definition,
     not resolved geometry), so it needs nothing from the resolve pipeline.
   - **M2:** the UI **assembly inspector panel** (→ 21 §Assembly picker) renders the same card
-    live — the "possibly via UI" affordance for assemblies.
+    live — and because the card is model-free, it doubles as the **live canvas of the assembly
+    editor** (→ 21b §Assembly editor, WP2.4d/e), re-rendering on every layer edit, not only a
+    read view.
   - **M3:** the A-401 sheet's per-assembly header block reuses it (→ 30).
   - **M5:** the Glaser condensation plot lands *on* the card (→ 50) — temperature/vapor
     curves drawn beside the same stack. One artifact, progressively enriched.
@@ -104,7 +108,11 @@ moment they touch it — not after the M3 detail slices land.
     walk each tagged air/water/vapor/thermal layer across junctions *and stack edges* and
     warn where one dead-ends at a boundary whose transition doesn't declare continuity;
     `FloorHeat` zones under fixed fixtures; **wet-wall depth** (M3, → 30): a drain-needing
-    fixture on a wall too thin for its stack. Every advisory finding states *why* in the
+    fixture on a wall too thin for its stack; **acoustic adjacency (#50, M3)**: a quiet-class
+    room (bedroom) sharing a partition with a noisy-class room (bathroom, mechanical, media)
+    where the partition's `stc` is unset or below a `preferences.toml` threshold — reported as
+    the adjacency fact plus the assembly's STC status, one rule, warn-only, off by default
+    until the STC library presets exist. Every advisory finding states *why* in the
     message and is individually suppressible in `preferences.toml`.
   - `checks/structural/` — table-driven, clearly labeled "advisory, not engineering":
     I-joist span lookup (covers catlin's 18-ft spans), header sizing over openings — one

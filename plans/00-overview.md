@@ -35,6 +35,11 @@ Two views define the product, and the design must make them one model:
   **UI**, which carries helpers for the classically hard parts (stair design, roof design,
   closure guarantees).
 
+Assemblies are not only the envelope: **interior partitions are a co-equal assembly domain** —
+acoustic partitions (STC-rated stacks, staggered/double-stud framing, #50), plumbing/wet walls,
+and closet walls get the same layered-assembly treatment, the same section card, and the same
+truthful framing; M1 schema decisions must not quietly assume "wall = exterior wall".
+
 They combine in a (fairly basic) 3D rendering, with the product's signature feature everywhere:
 **the actual framing in the walls** — floorplan cuts show real studs, headers, insulation hatch,
 never a generic gray box — which supports design-exact material takeoffs within a declared
@@ -109,22 +114,30 @@ service (git is the collaboration layer), replacing the architect/engineer of re
 | Product goal | Where it lands |
 |---|---|
 | Building-science-backed assemblies, seen in vertical slices | Element model (→ 10), wall variation (→ 11), slices/transitions (→ 11b), assembly section card (→ 12 §Assembly card) |
+| Assemblies authorable in the UI, not only via code/agent | Assembly editor mode on the inspector (→ 21b §Assembly editor, WP2.4d/e); shares one writeback path with `/add-assembly` (→ 20) |
 | Floorplans designed in the UI, with helpers | Editor (→ 21), stair designer (→ 21b), roof designer (→ 30), closure-guaranteeing drawing UX (→ 21) |
 | Assemblies driven mostly by agentic AI | Checks-as-pytest (→ 12 §Checks framework), agent scaffolding (→ 20 §Agent scaffolding), card feedback loop (→ 12) |
 | Real framing visible in floorplan + 3D; scoped design-exact takeoffs | #20/#25/#47; framing solver (→ 11 §Framing solver); takeoff dashboard + BOM (→ 21b) |
 | Permit-ready drawings, or architect-friendly DXF/IFC | Sheet set + `haus print` + `--handoff` (→ 30); DXF/IFC emission (→ 20, → 12) |
 | **Assembly transitions across floor levels** (the flagged uncertainty) | **#43 vertical stacking** (→ 11 §Vertical stacking), storey-stack conditions (→ 11b §Transitions), catlin 2x6→2x4→2x4 acceptance test (→ 30 §Acceptance) |
 | Coherent transitions as layers change | **#44/#45 interface contracts + construction rules** (→ 11, → 11b): resolver-owned geometry first, transition-owned presentation second |
-| Building-science-backed assemblies | **#46 evidence/provenance** on materials and assemblies (→ 10): applicability and missing inputs appear as UNKNOWN, never as authority |
+| Building-science honesty without paperwork | tri-state UNKNOWN on missing inputs (#32) + lightweight optional `source` notes (#46, → 10): missing data is visible, never authority |
+| Gable ends framed like every other wall | raked-top framing arm of the solver (→ 11 §Framing solver) + roof designer (→ 30 WP3.11): gable studs, sloped plates, rafters — cut, rendered, counted |
+| IKEA-scale furniture as a design reference | **#49 mesh import** — `haus import furniture` (glTF/GLB/Collada, → 30 WP3.10) + `FurnitureType` clearances feeding overlays and dashboards (→ 30) |
+| Quieter interior partitions, without acoustic-modeling complexity | **#50 lightweight acoustics** — empirical STC/IIC lookup fields + card badge (→ 12), library STC partition presets (→ 30), staggered/double-stud framing (→ 11), one warn-only adjacency advisory (→ 12) |
+| Claude proposes designs it can actually *see* | **#52 agent visual feedback** — `haus render` headless plan/section/3D snapshots + `haus ls --summary` digest, wired into the skills loop (→ 20 §Agent scaffolding) |
+| Seamless, self-owned 3D that always matches the model | **#51 glTF render artifact** from `ResolvedModel` (→ 21 §3D panel); IFC unchanged as the interchange/handoff output (#48) |
+| Perfecting an assembly = comparing alternatives | **#53 assembly delta compare** — side-by-side cards + delta row, CLI and inspector (→ 21b §Variant compare) |
+| First 20 minutes delight an experimenter | Polished `houses/starter/` + cold-start gate: install → `haus new` → `haus serve` → navigable Nordic 3D house, minutes-scale, no node (→ 02 §Verification) |
 
-## Decisions still needing owner direction
+## Formerly open decisions — resolved by owner
 
-The conservative defaults in the phase docs keep implementation moving, but these alter the
-product boundary and should be confirmed before M3:
-
-1. **First permit target:** retain MN-only as the first encoded profile, or make M3 a
-   jurisdiction-neutral drawing/handoff package and defer a jurisdiction-specific permit bar?
-2. **Handoff acceptance target(s):** which one or two applications should be the tested IFC
-   import targets? Interoperability is practical only when verified against named software.
-3. **Catalog evidence policy:** may the bundled material/assembly library include clearly
-   marked generic assumptions, or must every bundled entry be source-backed?
+1. **First permit target: Minnesota** (#8/#10 stand). The versioned-profile scheme
+   (`mn-2024`, `mn-2020`, …) is already the pluggability seam; additional jurisdictions are
+   additional profiles later, not an M3 concern.
+2. **Handoff acceptance target: Bonsai (Blender)** — new #48. It is the one importer already
+   proven against this Python IFC stack; the M3 gate tests it. Revit-friendliness of
+   `--lod core` remains by construction, untested.
+3. **Catalog evidence policy: dissolved** by the #46 revision — no structured evidence; bundled
+   entries may use generic values, missing inputs surface as UNKNOWN (#32), and a freeform
+   `source` note is welcome but never required.

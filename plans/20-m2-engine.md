@@ -12,7 +12,11 @@ IR with its DXF/PDF writers, the semantic diff, and the agent scaffolding. The U
 - `GET /model.ifc` → latest core-LOD build
 - `GET /checks` → current findings
 - `PATCH /plan` → ops `{op: add|update|delete, type, tag, fields}` — fields carry
-  authored-unit strings (`"12'-6\""`) which serialize to `ft(12, 6)` in source
+  authored-unit strings (`"12'-6\""`) which serialize to `ft(12, 6)` in source. `type` spans
+  storey elements **and** library objects: `assembly | layer | material` targets (the UI
+  assembly editor, → 21b §Assembly editor) ride the same op shape — a `layer` reorder is an
+  ordered-list field update on the parent `assembly`; no new grammar, since the dialect printer
+  only ever emits keyword-arg constructor calls (§libcst writeback).
 - `POST /build`, `POST /undo`, `POST /redo`
 - `WS /events` (build done / findings changed / file changed)
 - `watchfiles` watches plan source, so edits by VSCode/Claude hot-reload the UI — the
@@ -131,8 +135,10 @@ AnchorRef = (uid, face_role) | NamedPoint                       # the → 21b di
   writer draws to sheet scale with the title block. Neither writer computes geometry — all
   placement math happens IR-side, once.
 - **Every 2D view is a `Slice` (→ 11b, #36):** floorplans are the auto-scaffolded plan slices
-  (cut 4' above each storey floor); wall polygons/openings/stairs projected from the IR —
-  never redrawn from scalar specs (the old failure mode). **The cut slices real framing
+  (cut 4' above each storey floor); wall polygons/openings projected from the IR, **stairs
+  drawn as the standard plan symbol** (tread lines + break/direction line + `UP N R` label,
+  from the resolved stair geometry — → 10 §Element model) — never redrawn from scalar specs
+  (the old failure mode). **The cut slices real framing
   (→ 11 §Framing solver):** stud sections, insulation hatch, sheathing and drywall linework
   per assembly layer — the signature framed-floorplan look is the default everywhere, with
   the per-sheet `simplified_poche` toggle for jurisdictions that prefer gray poché.
@@ -179,12 +185,21 @@ deferred. Rejections are logged to a decision file for the reply to the architec
 - **CLAUDE.md:** project map; invariants (never edit `out/`; always `haus build && house
   check` after edits; all dimensions via quantity constructors, never bare floats; tag
   conventions; editable-dialect rules; read `brief.md` **and** `preferences.toml` before
-  proposing designs); command crib sheet. Keep this concise, hints rather than full
-  descriptions.
+  proposing designs; **look at what you made** — `haus render` after spatial edits); command
+  crib sheet. Keep this concise, hints rather than full descriptions.
+- **Agent eyes (#52) — the loop is edit → build → check → *look* → fix:** `haus render
+  --view plan|section|3d` emits headless PNG/SVG snapshots (plan/section straight from the
+  drawing IR, 3D offscreen from the #51 glTF artifact) that Claude reads natively — spatial
+  judgment ("the hallway is awkward", "the massing works") joins the text-only findings loop.
+  `haus ls --summary` emits a compact whole-plan digest (storeys, rooms + areas, wall runs +
+  assemblies, open findings) sized for a context window, so a fresh session re-orients from
+  one command instead of re-reading plan files.
 - **Skills** (`.claude/skills/`):
   - `/add-room` — nodes + walls + room claim + run checks
   - `/add-assembly` — Assembly (or variant) + **render the section card** (→ 12) + detail
-    Slice/Transition stubs + notes + R-value check vs preferences
+    Slice/Transition stubs + notes + R-value check vs preferences. Shares one writeback path
+    and artifact set with the UI assembly editor (→ 21b §Assembly editor), so UI- and
+    agent-authored assemblies are indistinguishable in source and diff.
   - `/import-review` — the diff flow above
   - `/permit-check` — full check suite + sheet-completeness audit, summarize gaps
   - `/port-detail` — migrate an old matplotlib detail to the drawing IR (M3 helper)
@@ -224,9 +239,12 @@ deferred. Rejections are logged to a decision file for the reply to the architec
 - **WP2.10 `haus diff` v1.** GlobalId matcher + Hungarian fallback + replace detection +
   diff.json + human table. *Tests:* fixture pairs per change class; a Blender-modified copy
   reports the known edit set.
-- **WP2.11 Agent scaffolding v1.** CLAUDE.md complete, `/add-room`, `/import-review` skills.
-  *Done when:* Claude adds a room to the demo plan via the skill and checks pass.
-- **WP2.12 CLI complete.** `new | serve | print | diff | fmt` join the M1 set (→ 02 §CLI).
+- **WP2.11 Agent scaffolding v1.** CLAUDE.md complete, `/add-room`, `/import-review` skills;
+  `haus render` + `haus ls --summary` (#52) wired into the skills so mutating edits end with
+  a rendered snapshot. *Done when:* Claude adds a room to the demo plan via the skill, checks
+  pass, and the skill's final output includes the rendered plan snapshot.
+- **WP2.12 CLI complete.** `new | serve | print | diff | fmt | render` join the M1 set
+  (→ 02 §CLI).
 
 ## Risks owned
 
