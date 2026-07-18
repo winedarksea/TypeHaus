@@ -136,6 +136,14 @@ def _import_manifest(house_dir: Path, findings: list[Finding]) -> PlanModel | No
     inserted = added not in sys.path
     if inserted:
         sys.path.insert(0, added)
+    # A plan may reference the shared ``library`` package (the community seam). In a
+    # pip-installed setup it is already importable; in the monorepo (or any checkout that
+    # keeps houses beside a ``library/``) it sits at a directory above the house. Discover
+    # it by walking up without assuming the engine lives in the monorepo (#17).
+    lib_root = _find_library_root(house_dir)
+    lib_added = lib_root is not None and str(lib_root) not in sys.path
+    if lib_added:
+        sys.path.insert(0, str(lib_root))
     try:
         for mod in [m for m in sys.modules if m == "plan" or m.startswith("plan.")]:
             del sys.modules[mod]
@@ -169,6 +177,20 @@ def _import_manifest(house_dir: Path, findings: list[Finding]) -> PlanModel | No
     finally:
         if inserted:
             sys.path.remove(added)
+        if lib_added and lib_root is not None:
+            sys.path.remove(str(lib_root))
+
+
+def _find_library_root(house_dir: Path) -> Path | None:
+    """Walk up from ``house_dir`` to find the directory *containing* a ``library`` package.
+
+    Returns the parent that should go on ``sys.path`` so ``import library`` resolves, or
+    ``None`` if no checkout-local ``library/`` exists (a pip-installed one needs no help).
+    """
+    for parent in [house_dir, *house_dir.parents]:
+        if (parent / "library" / "__init__.py").is_file():
+            return parent
+    return None
 
 
 def _consistency_check(plan: PlanModel, prov: Provenance, findings: list[Finding]) -> None:
