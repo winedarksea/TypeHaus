@@ -76,6 +76,56 @@ class ResolvedOpening:
 
 
 @dataclass(frozen=True)
+class ResolvedSolid:
+    """A resolved horizontal or below-grade solid with a plan outline.
+
+    Slabs, pads, and footings all use this compact representation.  Keeping their
+    outline in the shared IR makes the model.json, glTF, IFC, and energy consumers
+    agree on the same geometry instead of each rebuilding it from authored inputs.
+    """
+
+    uid: str
+    tag: str
+    storey: str
+    category: str  # "slab" | "footing" | "pad"
+    outline: Ring
+    z0_m: float
+    z1_m: float
+    assembly: str | None = None
+
+
+@dataclass(frozen=True)
+class ResolvedRoof:
+    """A constrained gable/shed roof derived from its bearing-wall envelope."""
+
+    uid: str
+    tag: str
+    storey: str
+    form: str
+    footprint: Ring
+    eave_z_m: float
+    ridge_z_m: float
+    ridge_direction: str
+    assembly: str
+    surface_area_m2: float
+
+
+@dataclass(frozen=True)
+class ResolvedStair:
+    """A code-sized single-flight stair and its generated framing members."""
+
+    uid: str
+    tag: str
+    storey: str
+    to_storey: str
+    outline: Ring
+    riser_count: int
+    riser_height_m: float
+    tread_depth_m: float
+    members: tuple[FramedMember, ...]
+
+
+@dataclass(frozen=True)
 class ResolvedRoom:
     uid: str
     tag: str
@@ -113,6 +163,9 @@ class ResolvedModel:
     plan: PlanModel
     walls: list[ResolvedWall] = field(default_factory=list)
     openings: list[ResolvedOpening] = field(default_factory=list)
+    solids: list[ResolvedSolid] = field(default_factory=list)
+    roofs: list[ResolvedRoof] = field(default_factory=list)
+    stairs: list[ResolvedStair] = field(default_factory=list)
     rooms: list[ResolvedRoom] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
@@ -124,4 +177,6 @@ class ResolvedModel:
         out: list[FramedMember] = []
         for w in self.walls:
             out.extend(w.members)
+        for stair in self.stairs:
+            out.extend(stair.members)
         return out

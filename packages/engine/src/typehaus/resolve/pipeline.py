@@ -11,6 +11,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.framing.solver import frame_model
+from typehaus.resolve.envelope import resolve_envelope_geometry
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedOpening
 from typehaus.resolve.rooms import resolve_rooms
@@ -32,6 +33,7 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
 
     _resolve_openings(plan, model, findings)
     frame_model(plan, model)
+    findings.extend(resolve_envelope_geometry(model))
     findings.extend(resolve_rooms(plan, model))
     findings.extend(resolve_stacking(model))
     _assembly_change_conditions(model)

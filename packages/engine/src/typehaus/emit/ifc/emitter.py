@@ -42,6 +42,15 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     for rw in sorted(model.walls, key=lambda w: w.uid):
         _emit_wall(f, body, rw, storeys, project_uuid, lod)
 
+    for solid in sorted(model.solids, key=lambda item: item.uid):
+        _emit_solid(f, body, solid, storeys, project_uuid)
+
+    for roof in sorted(model.roofs, key=lambda item: item.uid):
+        _emit_roof(f, body, roof, storeys, project_uuid)
+
+    for stair in sorted(model.stairs, key=lambda item: item.uid):
+        _emit_stair(f, stair, storeys, project_uuid, lod)
+
     for room in sorted(model.rooms, key=lambda r: r.uid):
         _emit_space(f, body, room, storeys, project_uuid)
 
@@ -66,6 +75,8 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
     ll.ensure_pset(f, wall, "Pset_WallCommon", {
         "IsExternal": not rw.tag.startswith("INT"),
     })
+    if rw.is_foundation:
+        ll.ensure_pset(f, wall, "Pset_HF_FoundationWall", {"IsFoundation": True})
     ll.assign_container(f, wall, storeys[rw.storey])
 
     if lod == "framed" and rw.members:
@@ -89,6 +100,50 @@ def _emit_space(f: Any, body: Any, room: Any, storeys: dict[str, Any],
         "IsExternal": False, "PubliclyAccessible": False,
     })
     ll.assign_container(f, space, storeys[room.storey])
+
+
+def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_uuid: Any) -> None:
+    ifc_class = "IfcSlab" if solid.category == "slab" else "IfcFooting"
+    element = ll.create_entity(f, ifc_class, name=solid.tag)
+    element.GlobalId = derive_guid(project_uuid, solid.uid)
+    if solid.outline:
+        _assign_representation(
+            f, element, ll.add_prism_from_profile(f, body, solid.outline, solid.z1_m - solid.z0_m,
+                                                   solid.z0_m)
+        )
+    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": solid.uid, "tag": solid.tag,
+                                               "category": solid.category})
+    ll.assign_container(f, element, storeys[solid.storey])
+
+
+def _emit_roof(f: Any, body: Any, roof: Any, storeys: dict[str, Any], project_uuid: Any) -> None:
+    element = ll.create_entity(f, "IfcRoof", name=roof.tag)
+    element.GlobalId = derive_guid(project_uuid, roof.uid)
+    # IFC consumers still receive a stable roof object at core LOD.  The glTF path preserves
+    # the pitched surface for interactive viewing; M3 can replace this core envelope with
+    # faceted IFC roof-plane geometry without changing identity.
+    _assign_representation(f, element, ll.add_prism_from_profile(
+        f, body, roof.footprint, 0.0254, roof.eave_z_m
+    ))
+    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": roof.uid, "tag": roof.tag,
+                                               "assembly": roof.assembly})
+    ll.assign_container(f, element, storeys[roof.storey])
+
+
+def _emit_stair(f: Any, stair: Any, storeys: dict[str, Any], project_uuid: Any, lod: str) -> None:
+    element = ll.create_entity(f, "IfcStair", name=stair.tag)
+    element.GlobalId = derive_guid(project_uuid, stair.uid)
+    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": stair.uid, "tag": stair.tag})
+    ll.assign_container(f, element, storeys[stair.storey])
+    if lod != "framed":
+        return
+    members = []
+    for member in sorted(stair.members, key=lambda item: item.child_key):
+        child = ll.create_entity(f, "IfcMember", name=f"{stair.tag}/{member.child_key}")
+        child.GlobalId = derive_child_guid(project_uuid, stair.uid, member.child_key)
+        members.append(child)
+    if members:
+        ll.aggregate(f, element, members)
 
 
 def _georef(f: Any, ifc_project: Any, model: ResolvedModel) -> None:

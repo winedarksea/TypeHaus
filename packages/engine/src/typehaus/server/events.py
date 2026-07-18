@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 from typing import Any
 
 
@@ -11,12 +10,13 @@ class EventBus:
 
     def __init__(self) -> None:
         self._clients: set[Any] = set()
-        self._lock = asyncio.Lock()
 
     async def connect(self, ws: Any) -> None:
         await ws.accept()
-        async with self._lock:
-            self._clients.add(ws)
+        # All access happens on the FastAPI event loop.  Keeping this free of an
+        # eagerly-bound asyncio.Lock also lets an app be constructed before its
+        # lifespan event loop exists (as TestClient and ASGI hosts commonly do).
+        self._clients.add(ws)
 
     def disconnect(self, ws: Any) -> None:
         self._clients.discard(ws)

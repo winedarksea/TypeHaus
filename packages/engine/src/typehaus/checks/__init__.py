@@ -17,9 +17,9 @@ from typehaus.checks.registry import (
     registered,
     run_checks,
 )
-from typehaus.checks.run import build_context, load_preferences, run
+from typehaus.checks.run import build_context, load_preferences, run, run_from_model
 
 __all__ = [
-    "run", "build_context", "load_preferences", "run_checks", "registered", "check",
+    "run", "run_from_model", "build_context", "load_preferences", "run_checks", "registered", "check",
     "CheckContext", "CheckReport", "Preferences", "JurisdictionProfile", "Tier",
 ]

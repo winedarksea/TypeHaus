@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typehaus.analysis import assembly_r_value
 from typehaus.checks.building_science.wwr import _facade_for_wall, _wall_length
 from typehaus.checks.registry import Preferences
+from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.model import ResolvedModel
 
 _M2_TO_FT2 = 10.7639104167
@@ -22,7 +23,7 @@ class LoadComponent:
 
     def as_dict(self) -> dict[str, float | str]:
         return {"kind": self.kind, "area_ft2": self.area_ft2,
-                "ua_btu_per_hour_f": self.ua_btu_per_hour,
+                "ua_btu_per_hour_f": self.ua_btu_per_hour_f,
                 "solar_gain_btu_per_hour": self.solar_gain_btu_per_hour}
 
 
@@ -42,15 +43,14 @@ class EnergyReport:
                 "components": [component.as_dict() for component in self.components],
                 "wall_comparison": self.wall_comparison,
                 "unknown_inputs": list(self.unknown_inputs),
-                "scope": "resolved walls, windows, and doors; roof/slab geometry is not resolved"}
+                "scope": "resolved walls, foundations, roof, slabs, windows, and doors"}
 
 
 def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> EnergyReport:
     """Sum exposed resolved wall/opening UA plus orientation-weighted window solar gain.
 
-    Existing M5 inputs let the resolver quantify walls and their hosted openings. Roof and
-    slab/foundation surface geometry are still intentionally absent from the resolved IR,
-    so they are named in ``unknown_inputs`` rather than fabricated from plan extents.
+    Every area comes from the resolved IR.  Missing geometry or thermal data remains named
+    UNKNOWN rather than being replaced by a rule-of-thumb area or U-factor.
     """
     site = model.plan.project.site
     if site.design_temp_heating is None or site.design_temp_cooling is None:
@@ -62,13 +62,13 @@ def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> Energ
                       for wall in model.walls}
     opening_area_ft2: dict[str, float] = {tag: 0.0 for tag in wall_gross_ft2}
     components: list[LoadComponent] = []
-    unknown: list[str] = ["roof/slab resolved geometry"]
+    unknown: list[str] = []
 
     for opening in model.openings:
         opening_area_ft2[opening.host_wall] = opening_area_ft2.get(opening.host_wall, 0.0) + (
             opening.width_m * opening.height_m * _M2_TO_FT2
         )
-    walls_area = walls_ua = 0.0
+    walls_area = walls_ua = foundation_area = foundation_ua = 0.0
     for wall in model.walls:
         area = max(0.0, wall_gross_ft2[wall.tag] - opening_area_ft2.get(wall.tag, 0.0))
         assembly = model.plan.library.resolve_assembly(wall.assembly)
@@ -79,9 +79,47 @@ def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> Energ
         if r_value.value is None or r_value.value.r_us <= 0:
             unknown.extend(r_value.unknown_materials or (f"R-value {assembly.tag}",))
             continue
-        walls_area += area
-        walls_ua += area / r_value.value.r_us
+        if wall.is_foundation:
+            foundation_area += area
+            foundation_ua += area / r_value.value.r_us
+        else:
+            walls_area += area
+            walls_ua += area / r_value.value.r_us
     components.append(LoadComponent("walls", walls_area, walls_ua))
+    if foundation_area:
+        components.append(LoadComponent("foundation_walls", foundation_area, foundation_ua))
+
+    roof_area = roof_ua = slab_area = slab_ua = 0.0
+    has_roofs = bool(model.roofs)
+    has_slabs = any(solid.category == "slab" for solid in model.solids)
+    if not has_roofs and not has_slabs:
+        # Keep the original combined diagnostic stable for existing consumers while
+        # still reporting the missing side precisely when only one is absent.
+        unknown.append("roof/slab resolved geometry")
+    elif not has_roofs:
+        unknown.append("roof resolved geometry")
+    for roof in model.roofs:
+        r_value = _assembly_r_value(model, roof.assembly, unknown)
+        if r_value is not None:
+            area = roof.surface_area_m2 * _M2_TO_FT2
+            roof_area += area
+            roof_ua += area / r_value
+    if roof_area:
+        components.append(LoadComponent("roof", roof_area, roof_ua))
+    slabs = [solid for solid in model.solids if solid.category == "slab"]
+    if not slabs and has_roofs:
+        unknown.append("slab resolved geometry")
+    for slab in slabs:
+        if slab.assembly is None:
+            unknown.append(f"slab {slab.tag} assembly")
+            continue
+        r_value = _assembly_r_value(model, slab.assembly, unknown)
+        if r_value is not None:
+            area = abs(polygon_area(slab.outline)) * _M2_TO_FT2
+            slab_area += area
+            slab_ua += area / r_value
+    if slab_area:
+        components.append(LoadComponent("slab", slab_area, slab_ua))
 
     window_area = window_ua = window_solar = door_area = door_ua = 0.0
     solar_orientation = {"N": 0.25, "E": 0.70, "S": 1.0, "W": 0.85}
@@ -124,6 +162,18 @@ def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> Energ
     return EnergyReport(heating, cooling, cooling / 12000.0, tuple(components),
                         wall_comparison=_two_by_four_vs_six(model, heating_delta),
                         unknown_inputs=tuple(dict.fromkeys(unknown)))
+
+
+def _assembly_r_value(model: ResolvedModel, tag: str, unknown: list[str]) -> float | None:
+    assembly = model.plan.library.resolve_assembly(tag)
+    if assembly is None:
+        unknown.append(f"assembly {tag}")
+        return None
+    r_value = assembly_r_value(assembly, model.plan.library)
+    if r_value.value is None or r_value.value.r_us <= 0:
+        unknown.extend(r_value.unknown_materials or (f"R-value {assembly.tag}",))
+        return None
+    return r_value.value.r_us
 
 
 def _two_by_four_vs_six(

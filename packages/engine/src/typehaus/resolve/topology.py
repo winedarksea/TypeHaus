@@ -104,6 +104,14 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
         if not cavity:
             pos = span_out
 
+    if is_foundation:
+        # Foundation elevations are absolute project elevations so a walkout wall
+        # can differ from the storey's ordinary wall height without a shadow model.
+        z0 = wall.bottom_elevation.meters if wall.bottom_elevation is not None else z0
+        z1 = wall.top_elevation.meters if wall.top_elevation is not None else z1
+    elif getattr(wall, "top", None) is not None and hasattr(wall.top, "meters"):
+        z1 = z0 + wall.top.meters
+
     return ResolvedWall(
         uid=wall.uid, tag=wall.tag, storey=storey_tag, assembly=wall.assembly,
         axis=(p0, p1), layers=tuple(layers), z0_m=z0, z1_m=z1,

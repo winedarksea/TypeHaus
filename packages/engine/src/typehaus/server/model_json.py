@@ -96,6 +96,35 @@ def model_to_dict(
              "center_along_m": o.center_along_m}
             for o in model.openings
         ],
+        "solids": [
+            {"uid": solid.uid, "tag": solid.tag, "storey": solid.storey,
+             "category": solid.category, "outline": [list(point) for point in solid.outline],
+             "z0_m": solid.z0_m, "z1_m": solid.z1_m, "assembly": solid.assembly,
+             "provenance": _provenance(provenance, solid.tag)}
+            for solid in sorted(model.solids, key=lambda item: item.uid)
+        ],
+        "roofs": [
+            {"uid": roof.uid, "tag": roof.tag, "storey": roof.storey, "form": roof.form,
+             "footprint": [list(point) for point in roof.footprint],
+             "eave_z_m": roof.eave_z_m, "ridge_z_m": roof.ridge_z_m,
+             "ridge_direction": roof.ridge_direction, "assembly": roof.assembly,
+             "surface_area_m2": roof.surface_area_m2,
+             "provenance": _provenance(provenance, roof.tag)}
+            for roof in sorted(model.roofs, key=lambda item: item.uid)
+        ],
+        "stairs": [
+            {"uid": stair.uid, "tag": stair.tag, "storey": stair.storey,
+             "to_storey": stair.to_storey, "outline": [list(point) for point in stair.outline],
+             "riser_count": stair.riser_count, "riser_height_m": stair.riser_height_m,
+             "tread_depth_m": stair.tread_depth_m,
+             "members": [
+                 {"key": member.child_key, "category": member.category,
+                  "profile": member.profile, "p0": list(member.p0), "p1": list(member.p1),
+                  "z0_m": member.z0_m, "z1_m": member.z1_m}
+                 for member in stair.members
+             ], "provenance": _provenance(provenance, stair.tag)}
+            for stair in sorted(model.stairs, key=lambda item: item.uid)
+        ],
         "rooms": [
             {"uid": r.uid, "tag": r.tag, "storey": r.storey, "occupancy": r.occupancy,
              "provenance": _provenance(provenance, r.tag),

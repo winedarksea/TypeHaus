@@ -54,6 +54,7 @@ def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
     for wall in walls:
         _emit_wall(b, wall)
     _emit_openings(b, model, {w.tag for w in walls})
+    _emit_stairs(b, model, storey)
     _emit_rooms(b, model, storey)
     _emit_dimension_chain(b, walls)
     return b.build()
@@ -116,6 +117,28 @@ def _emit_rooms(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                    layer="A-AREA-IDEN", align="center"))
         b.add(Text(anchor=_in((cx, cy - 0.3)), content=f"{area_sf:.0f} SF", height=3.0,
                    layer="A-AREA-IDEN", align="center"))
+
+
+def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
+    """Plan-symbol treads plus the required direction/count label (R311.7 workflow)."""
+    for stair in model.stairs:
+        if stair.storey != storey or len(stair.outline) < 3:
+            continue
+        xs, ys = [point[0] for point in stair.outline], [point[1] for point in stair.outline]
+        minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
+        along_x = any(member.p0[0] != member.p1[0] for member in stair.members[:2])
+        for member in stair.members:
+            if member.category != "tread":
+                continue
+            b.add(Polyline(points=(_in(member.p0), _in(member.p1)), layer="A-STAIR",
+                           lineweight=0.25, uid=stair.uid, tag=member.child_key))
+        start = (minx, (miny + maxy) / 2) if along_x else ((minx + maxx) / 2, miny)
+        end = (maxx, (miny + maxy) / 2) if along_x else ((minx + maxx) / 2, maxy)
+        b.add(Polyline(points=(_in(start), _in(end)), layer="A-STAIR", lineweight=0.5,
+                       uid=stair.uid, tag=f"{stair.tag}-direction"))
+        label = f"UP {stair.riser_count} R"
+        b.add(Text(anchor=_in(((minx + maxx) / 2, (miny + maxy) / 2)), content=label,
+                   height=3.0, layer="A-STAIR", align="center"))
 
 
 def _emit_dimension_chain(b: SceneBuilder, walls: list[ResolvedWall]) -> None:

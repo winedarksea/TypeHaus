@@ -17,7 +17,7 @@ import json
 import struct
 from pathlib import Path
 
-from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedWall
+from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoof, ResolvedWall
 
 # function/category → RGBA color (linear, 0..1). Keys are lowercased layer functions and
 # member categories; anything unmatched falls back to a neutral gray.
@@ -35,9 +35,15 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "stud": (0.70, 0.52, 0.33, 1.0),
     "plate": (0.66, 0.48, 0.30, 1.0),
     "header": (0.60, 0.42, 0.26, 1.0),
+    "stringer": (0.60, 0.42, 0.26, 1.0),
+    "tread": (0.70, 0.52, 0.33, 1.0),
     "joist": (0.72, 0.55, 0.36, 1.0),
     "rim": (0.66, 0.48, 0.30, 1.0),
     "floor": (0.82, 0.80, 0.76, 1.0),
+    "roof": (0.35, 0.37, 0.40, 1.0),
+    "slab": (0.55, 0.56, 0.57, 1.0),
+    "footing": (0.48, 0.49, 0.50, 1.0),
+    "pad": (0.50, 0.51, 0.52, 1.0),
 }
 _FALLBACK = (0.70, 0.70, 0.70, 1.0)
 
@@ -90,6 +96,14 @@ class _MeshBuilder:
         ring = [(ax + nx, ay + ny), (bx + nx, by + ny),
                 (bx - nx, by - ny), (ax - nx, ay - ny)]
         self.add_prism(ring, az, bz, color)
+
+    def add_triangles(self, triangles: list[tuple[Vec3, Vec3, Vec3]],
+                      color: tuple[float, float, float, float]) -> None:
+        positions, indices = self._bucket(color)
+        for triangle in triangles:
+            base = len(positions)
+            positions.extend(triangle)
+            indices.extend((base, base + 1, base + 2))
 
     def is_empty(self) -> bool:
         return not any(pos for pos, _ in self._buckets.values())
@@ -206,6 +220,39 @@ def _add_member(mb: _MeshBuilder, member: FramedMember) -> None:
                (member.p1[0], member.p1[1], member.z1_m), half, _color(member.category))
 
 
+def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof) -> None:
+    """Render the resolved gable/shed planes rather than a misleading flat prism."""
+    (minx, miny), (maxx, _), (_, maxy), _ = roof.footprint
+    eave, ridge = roof.eave_z_m, roof.ridge_z_m
+    if roof.ridge_direction == "x":
+        mid = (miny + maxy) / 2
+        ridge_a, ridge_b = (minx, mid, ridge), (maxx, mid, ridge)
+        triangles = [
+            ((minx, miny, eave), (maxx, miny, eave), ridge_b),
+            ((minx, miny, eave), ridge_b, ridge_a),
+            (ridge_a, ridge_b, (maxx, maxy, eave)),
+            (ridge_a, (maxx, maxy, eave), (minx, maxy, eave)),
+        ]
+    else:
+        mid = (minx + maxx) / 2
+        ridge_a, ridge_b = (mid, miny, ridge), (mid, maxy, ridge)
+        triangles = [
+            ((minx, miny, eave), ridge_a, ridge_b),
+            ((minx, miny, eave), ridge_b, (minx, maxy, eave)),
+            (ridge_a, (maxx, miny, eave), (maxx, maxy, eave)),
+            (ridge_a, (maxx, maxy, eave), ridge_b),
+        ]
+    if roof.form == "shed":
+        if roof.ridge_direction == "x":
+            triangles = [((minx, miny, eave), (maxx, miny, eave), (maxx, maxy, ridge)),
+                         ((minx, miny, eave), (maxx, maxy, ridge), (minx, maxy, ridge))]
+        else:
+            triangles = [((minx, miny, eave), (maxx, miny, ridge), (maxx, maxy, ridge)),
+                         ((minx, miny, eave), (maxx, maxy, ridge), (minx, maxy, eave))]
+    mb.add_triangles([tuple(_to_gltf(*point) for point in triangle) for triangle in triangles],
+                     _color("roof"))
+
+
 def _member_half_width(profile: str) -> float:
     # "2x6" → nominal 1.5" actual thickness; half of that in meters.
     try:
@@ -225,6 +272,14 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         if room.clear_face:
             storey_z = _room_z(model, room.storey)
             mb.add_prism(room.clear_face, storey_z, storey_z + 0.02, _color("floor"))
+    for solid in sorted(model.solids, key=lambda item: item.uid):
+        if solid.outline:
+            mb.add_prism(solid.outline, solid.z0_m, solid.z1_m, _color(solid.category))
+    for roof in sorted(model.roofs, key=lambda item: item.uid):
+        _add_roof(mb, roof)
+    for stair in sorted(model.stairs, key=lambda item: item.uid):
+        for member in stair.members:
+            _add_member(mb, member)
     if mb.is_empty():  # keep the container valid even for an empty model
         mb.add_prism([(0, 0), (0.001, 0), (0.001, 0.001)], 0.0, 0.001, _FALLBACK)
     return mb.build()

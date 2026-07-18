@@ -9,6 +9,9 @@ from typehaus.resolve.model import (
     ResolvedModel,
     ResolvedOpening,
     ResolvedRoom,
+    ResolvedRoof,
+    ResolvedSolid,
+    ResolvedStair,
     ResolvedWall,
     StackEdge,
 )
@@ -16,5 +19,6 @@ from typehaus.resolve.pipeline import resolve
 
 __all__ = [
     "resolve", "ResolvedModel", "ResolvedWall", "ResolvedLayer", "ResolvedOpening",
-    "ResolvedRoom", "FramedMember", "BoundaryCondition", "StackEdge",
+    "ResolvedRoom", "ResolvedSolid", "ResolvedRoof", "ResolvedStair", "FramedMember",
+    "BoundaryCondition", "StackEdge",
 ]
