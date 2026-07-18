@@ -1,0 +1,103 @@
+"""PlanModel — the validated whole-building authored model (→ 02 §Pipeline)."""
+
+from __future__ import annotations
+
+from collections.abc import Iterable, Iterator
+
+from pydantic import Field
+
+from typehaus.model.assembly import Assembly, ConstructionRule
+from typehaus.model.base import Element, HausModel
+from typehaus.model.materials import Material
+from typehaus.model.project import Project, Storey
+from typehaus.model.types import DoorType, FixtureType, FurnitureType, WindowType
+from typehaus.model.views import Transition
+
+
+class Library(HausModel):
+    """Shared definitions the plan references by tag (assemblies, materials, types)."""
+
+    materials: tuple[Material, ...] = ()
+    assemblies: tuple[Assembly, ...] = ()
+    door_types: tuple[DoorType, ...] = ()
+    window_types: tuple[WindowType, ...] = ()
+    furniture_types: tuple[FurnitureType, ...] = ()
+    fixture_types: tuple[FixtureType, ...] = ()
+    transitions: tuple[Transition, ...] = ()
+    construction_rules: tuple[ConstructionRule, ...] = ()
+
+    def assembly(self, tag: str) -> Assembly | None:
+        return next((a for a in self.assemblies if a.tag == tag), None)
+
+    def material(self, tag: str) -> Material | None:
+        return next((m for m in self.materials if m.tag == tag), None)
+
+    def resolve_assembly(self, tag: str) -> Assembly | None:
+        """Resolve a variant against its base — unchanged layers track the base (#35)."""
+        asm = self.assembly(tag)
+        if asm is None or asm.variant_of is None:
+            return asm
+        base = self.resolve_assembly(asm.variant_of)
+        if base is None:
+            return asm
+        layers = list(base.layers)
+        for sub in asm.substitute:
+            layers = _apply_substitution(layers, sub)
+        return base.model_copy(
+            update={
+                "tag": asm.tag,
+                "layers": tuple(layers),
+                "variant_of": asm.variant_of,
+                "stc": asm.stc if asm.stc is not None else base.stc,
+            }
+        )
+
+
+def _apply_substitution(layers: list, sub: object) -> list:
+    from typehaus.model.assembly import Substitution
+
+    assert isinstance(sub, Substitution)
+    names = [layer.name for layer in layers]
+    span = sub.span
+    if span.mode == "outside_of":
+        i = names.index(span.anchor)
+        return layers[: i + 1] + list(sub.replacement)
+    if span.mode == "inside_of":
+        i = names.index(span.anchor)
+        return list(sub.replacement) + layers[i:]
+    a, b = names.index(span.anchor), names.index(span.anchor_b)  # type: ignore[arg-type]
+    lo, hi = sorted((a, b))
+    return layers[:lo] + list(sub.replacement) + layers[hi + 1 :]
+
+
+class PlanModel(HausModel):
+    """The validated authored model, before resolve. Whole-building (→ 02 §Pipeline)."""
+
+    project: Project
+    library: Library = Library()
+    # Per-storey element lists, keyed by storey tag. Storey defs live in `storeys`.
+    storeys: tuple[Storey, ...] = ()
+    elements: dict[str, tuple[Element, ...]] = Field(default_factory=dict)
+
+    def storey(self, tag: str) -> Storey | None:
+        return next((s for s in self.storeys if s.tag == tag), None)
+
+    def storey_elements(self, storey_tag: str) -> tuple[Element, ...]:
+        return self.elements.get(storey_tag, ())
+
+    def all_elements(self) -> Iterator[Element]:
+        for group in self.elements.values():
+            yield from group
+
+    def elements_of_kind(self, kind: str) -> Iterator[Element]:
+        for el in self.all_elements():
+            if el.element_kind == kind:
+                yield el
+
+    def by_tag(self, tag: str) -> Element | None:
+        return next((el for el in self.all_elements() if el.tag == tag), None)
+
+    def with_elements(self, storey_tag: str, items: Iterable[Element]) -> PlanModel:
+        merged = dict(self.elements)
+        merged[storey_tag] = tuple(items)
+        return self.model_copy(update={"elements": merged})

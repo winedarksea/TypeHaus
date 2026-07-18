@@ -1,0 +1,8 @@
+[envelope]
+wall_r = 40
+roof_r = 60
+window_u = 0.25
+ach50 = 1.0
+
+[units]
+system = "imperial"

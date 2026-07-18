@@ -181,3 +181,8 @@ cython_debug/
 .cursorindexingignore
 
 **/.DS_Store
+
+# build artifacts
+houses/*/out/
+**/out/
+.venv/

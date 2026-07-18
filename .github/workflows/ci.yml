@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  engine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      - name: Set up Python 3.11
+        run: uv python install 3.11
+      - name: Sync workspace
+        run: uv sync --all-extras
+      - name: Ruff
+        run: uv run ruff check packages/engine/src library
+      - name: mypy --strict
+        run: uv run mypy packages/engine/src
+      - name: pytest
+        run: uv run pytest packages/engine/tests -q
+      - name: Checks-as-tests on the starter house
+        env:
+          TYPEHAUS_HOUSE: houses/starter
+        run: uv run pytest packages/engine/src/typehaus/checks/pytest_plugin.py -q
+      - name: Starter-house build smoke test
+        run: uv run haus build houses/starter
+      - name: Build determinism (two builds byte-identical)
+        run: |
+          uv run haus build houses/starter --only json
+          cp houses/starter/out/model.json /tmp/a.json
+          uv run haus build houses/starter --only json
+          diff /tmp/a.json houses/starter/out/model.json

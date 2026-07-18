@@ -1,0 +1,37 @@
+"""Starter materials ported/adapted from ifcplot/assemblies.py (→ 02 migration table)."""
+
+from __future__ import annotations
+
+from typehaus.model import Material
+
+STARTER_MATERIALS: tuple[Material, ...] = (
+    Material(tag="spf", name="SPF framing lumber", r_per_inch=1.25, density=460.0,
+             hatch="lumber", color="#d8c9a6"),
+    Material(tag="lsl", name="Laminated strand lumber", r_per_inch=1.25, density=650.0,
+             hatch="lumber", color="#cbb98e"),
+    Material(tag="osb", name="OSB sheathing", r_per_inch=1.25, density=650.0,
+             hatch="osb", color="#c9a86a"),
+    Material(tag="zip-r", name="ZIP System R-sheathing", r_per_inch=4.0,
+             perm_rating=2.0, hatch="osb", color="#3f6d3a",
+             source="Huber ZIP System R-sheathing published values"),
+    Material(tag="polyiso", name="Polyisocyanurate CI", r_per_inch=5.6, perm_rating=1.5,
+             hatch="rigid", color="#e8d64f"),
+    Material(tag="fiberglass", name="Fiberglass batt", r_per_inch=3.7, perm_rating=30.0,
+             hatch="batt", color="#f3c6d0"),
+    Material(tag="mineral-wool", name="Mineral wool batt", r_per_inch=4.2,
+             perm_rating=30.0, hatch="batt", color="#c7c2bd"),
+    Material(tag="gwb", name="5/8\" gypsum board", r_per_inch=0.9, perm_rating=50.0,
+             hatch="gypsum", color="#efeae2"),
+    Material(tag="air-barrier", name="Air/weather-resistive barrier", r_per_inch=0.0,
+             perm_rating=10.0, hatch="membrane", color="#4a4a4a"),
+    Material(tag="fiber-cement", name="Fiber-cement lap siding", r_per_inch=0.15,
+             density=1700.0, hatch="siding", color="#b8bcc0"),
+    Material(tag="standing-seam", name="Standing-seam steel", r_per_inch=0.0,
+             density=7800.0, hatch="metal", color="#6b7076"),
+    Material(tag="concrete", name="Cast-in-place concrete", r_per_inch=0.08,
+             density=2400.0, hatch="concrete", color="#a9a9a9"),
+    Material(tag="icf-eps", name="ICF EPS form", r_per_inch=4.0, perm_rating=2.0,
+             hatch="rigid", color="#f0f0e6"),
+    Material(tag="plywood-subfloor", name="3/4\" plywood subfloor", r_per_inch=1.25,
+             density=600.0, hatch="osb", color="#c9a86a"),
+)

@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "typehaus"
+version = "0.1.0a0"
+description = "Type:Haus — infrastructure-as-code for residential houses. Pre-alpha."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Colin Catlin", email = "colin.catlin@gmail.com" }]
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.6",
+    "typer>=0.12",
+    "rich>=13.0",
+    "shapely>=2.0",
+    "libcst>=1.1",
+    "ifcopenshell>=0.8,<0.9",
+    "ezdxf>=1.1",
+    "matplotlib>=3.8",
+    "pyproj>=3.6",
+    "trimesh>=4.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "hypothesis>=6.90", "mypy>=1.9", "ruff>=0.4"]
+
+[project.scripts]
+haus = "typehaus.cli.app:main"
+
+[project.entry-points.pytest11]
+typehaus_checks = "typehaus.checks.pytest_plugin"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/typehaus"]
+# The pre-built UI ships inside the wheel so `pip install typehaus && haus serve`
+# works without node (→ 02 §Repo layout).
+artifacts = ["src/typehaus/server/static/**"]
