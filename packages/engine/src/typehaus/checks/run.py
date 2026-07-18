@@ -32,6 +32,14 @@ def load_preferences(house_dir: Path) -> Preferences:
     return Preferences(
         wall_r=env.get("wall_r"), roof_r=env.get("roof_r"),
         window_u=env.get("window_u"), ach50=env.get("ach50"),
+        interior_setpoint_f=env.get("interior_setpoint_f", 70.0),
+        interior_relative_humidity=env.get("interior_relative_humidity", 0.35),
+        exterior_relative_humidity=env.get("exterior_relative_humidity", 0.80),
+        south_wwr_threshold=env.get("south_wwr_threshold", 0.40),
+        adequate_overhang_ft=env.get("adequate_overhang_ft", 2.0),
+        cooling_solar_gain_btu_per_hour_ft2=env.get(
+            "cooling_solar_gain_btu_per_hour_ft2", 164.0
+        ),
         suppressed=suppressed,
     )
 

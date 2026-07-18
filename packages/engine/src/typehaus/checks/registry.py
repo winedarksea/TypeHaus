@@ -32,6 +32,12 @@ class Preferences:
     roof_r: float | None = None
     window_u: float | None = None
     ach50: float | None = None
+    interior_setpoint_f: float = 70.0
+    interior_relative_humidity: float = 0.35
+    exterior_relative_humidity: float = 0.80
+    south_wwr_threshold: float = 0.40
+    adequate_overhang_ft: float = 2.0
+    cooling_solar_gain_btu_per_hour_ft2: float = 164.0
     suppressed: frozenset[str] = frozenset()
 
 

@@ -129,6 +129,7 @@ class OfflineEngine:
         return {"ok": self.ok, "revision": self._revision, "findings": self.findings_json()}
 
     def model_json(self) -> dict[str, Any]:
+        from typehaus.checks import load_preferences
         from typehaus.server.model_json import model_to_dict
 
         if self.model is None:
@@ -144,6 +145,7 @@ class OfflineEngine:
             revision=self._revision,
             provenance=self.provenance,
             findings=self.findings,
+            preferences=load_preferences(self.house_dir),
         )
         payload["ok"] = self.ok
         return payload

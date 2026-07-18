@@ -1,3 +1,5 @@
 from __future__ import annotations
 
-# checks/building_science is scaffolded empty in M1; populated in M5 (#42, → 50).
+"""Building-science checks — advisory physics analyses introduced in M5."""
+
+from typehaus.checks.building_science import condensation, wwr  # noqa: F401 - register

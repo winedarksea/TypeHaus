@@ -80,6 +80,41 @@ export interface StackEdge {
   width_change: boolean;
 }
 
+export interface FacadeWWR {
+  facade: "N" | "E" | "S" | "W";
+  gross_wall_area_ft2: number;
+  glazing_area_ft2: number;
+  ratio: number;
+}
+
+export interface CondensationProfile {
+  assembly: string;
+  status: "safe" | "risk" | "unknown";
+  crossing_layer: string | null;
+  crossing_fraction: number | null;
+  unknown_materials: string[];
+  points: { position: number; temperature_c: number; vapor_pressure_pa: number; saturation_pressure_pa: number }[];
+}
+
+export interface EnergyReport {
+  heating_load_btu_per_hour: number;
+  cooling_load_btu_per_hour: number;
+  cooling_tons: number;
+  unknown_inputs: string[];
+  wall_comparison: {
+    baseline_assembly: string;
+    upgrade_assembly: string;
+    area_ft2: number;
+    heating_savings_btu_per_hour: number;
+  } | null;
+}
+
+export interface BuildingScience {
+  wwr: FacadeWWR[];
+  condensation: CondensationProfile[];
+  energy: EnergyReport;
+}
+
 export interface Storey {
   tag: string;
   elevation_m: number;
@@ -113,5 +148,6 @@ export interface Model {
   rooms: Room[];
   conditions: Condition[];
   stack_edges: StackEdge[];
+  building_science?: BuildingScience | null;
   ok?: boolean; // server/offline resolve status (state.py / bootstrap.py add this)
 }

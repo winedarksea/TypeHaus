@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from typehaus.checks import load_preferences
 from typehaus.findings import Finding, Severity
 from typehaus.resolve import resolve
 from typehaus.resolve.model import ResolvedModel
@@ -49,7 +50,12 @@ class ProjectState:
                 self.ok = False
                 return
             model, rfindings = resolve(result.plan)
-            self.findings.extend(rfindings)
+            # The dashboard and `/checks` use the same registry as `haus check`, including
+            # M5's building-science warnings; never maintain a second server-only rule path.
+            from typehaus.checks import run_from_model
+
+            report = run_from_model(model, rfindings, self.house_dir)
+            self.findings.extend(report.findings)
             self.model = model
             self.ok = not any(f.severity is Severity.ERROR for f in self.findings)
 
@@ -67,6 +73,7 @@ class ProjectState:
                 revision=self.coordinator.revision(),
                 provenance=self.provenance,
                 findings=self.findings,
+                preferences=load_preferences(self.house_dir),
             )
             payload["ok"] = self.ok
             return payload

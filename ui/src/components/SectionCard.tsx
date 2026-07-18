@@ -1,4 +1,4 @@
-import type { Layer } from "../model/types";
+import type { CondensationProfile, Layer } from "../model/types";
 import { formatFtIn } from "../model/geometry";
 import { CONTROL_COLOR, materialColor } from "../nordic/palette";
 
@@ -6,7 +6,9 @@ import { CONTROL_COLOR, materialColor } from "../nordic/palette";
 // picker, → 12 §Assembly card). Renders the selected wall's layer stack to scale from
 // model.json layer thicknesses, with control-layer badges and a total-thickness rollup.
 // Model-free by design: it consumes only the layer list already resolved server-side.
-export function SectionCard({ layers, title }: { layers: Layer[]; title: string }) {
+export function SectionCard({ layers, title, condensation }: {
+  layers: Layer[]; title: string; condensation?: CondensationProfile;
+}) {
   if (layers.length === 0) return <div className="muted">No layers resolved.</div>;
   const total = layers.reduce((a, l) => a + l.thickness_m, 0) || 1;
   const W = 280;
@@ -71,6 +73,33 @@ export function SectionCard({ layers, title }: { layers: Layer[]; title: string 
         <span className="k">Total thickness</span>
         <span>{formatFtIn(total)}</span>
       </div>
+      {condensation && <CondensationPlot profile={condensation} />}
     </div>
   );
+}
+
+function CondensationPlot({ profile }: { profile: CondensationProfile }) {
+  if (profile.status === "unknown") {
+    return <div className="muted" style={{ marginTop: 8 }}>Glaser: unknown — {profile.unknown_materials.join(", ")}</div>;
+  }
+  const points = profile.points;
+  const vapor = points.map((p) => p.vapor_pressure_pa);
+  const saturation = points.map((p) => p.saturation_pressure_pa);
+  const temperature = points.map((p) => p.temperature_c);
+  const path = (values: number[]) => {
+    const lo = Math.min(...values);
+    const hi = Math.max(...values);
+    return points.map((p, i) => `${i ? "L" : "M"}${p.position * 260} ${72 - ((values[i] - lo) / (hi - lo || 1)) * 64}`).join(" ");
+  };
+  return <div style={{ marginTop: 10 }}>
+    <span className="k">Glaser profile</span>
+    <svg width="100%" viewBox="0 0 260 88" style={{ display: "block", marginTop: 3 }}>
+      <rect width="260" height="72" fill="#f8f7f3" stroke="#b7b2aa" />
+      <path d={path(temperature)} fill="none" stroke="#d67d24" strokeWidth="2" />
+      <path d={path(vapor)} fill="none" stroke="#246a9f" strokeWidth="2" />
+      <path d={path(saturation)} fill="none" stroke="#bf3e36" strokeWidth="2" />
+      <text x="0" y="85" fontSize="9" fill="#6e6a64">temp · vapor · saturation</text>
+    </svg>
+    {profile.status === "risk" && <div className="finding warn">Dew point: {profile.crossing_layer}</div>}
+  </div>;
 }

@@ -57,9 +57,10 @@ def build(
     out.mkdir(exist_ok=True)
 
     if only in (None, "json"):
+        from typehaus.checks import load_preferences
         from typehaus.server.model_json import write_model_json
 
-        p = write_model_json(model, out / "model.json")
+        p = write_model_json(model, out / "model.json", preferences=load_preferences(d))
         console.print(f"wrote {p}")
     if only in (None, "ifc"):
         try:
@@ -76,7 +77,7 @@ def build(
 def check(
     house: Optional[Path] = typer.Argument(None),
     profile: str = typer.Option("mn-2024"),
-    tier: Optional[str] = typer.Option(None, help="integrity|code|advisory|structural"),
+    tier: Optional[str] = typer.Option(None, help="integrity|code|advisory|structural|building_science"),
     as_json: bool = typer.Option(False, "--json"),
 ) -> None:
     """Run the checks registry (same registry pytest runs)."""
@@ -105,6 +106,38 @@ def check(
             f"{p + f + u} encoded rules; this profile covers a declared subset of the code."
         )
     raise typer.Exit(1 if report.errors else 0)
+
+
+@app.command()
+def energy(
+    house: Optional[Path] = typer.Argument(None),
+    as_json: bool = typer.Option(False, "--json"),
+) -> None:
+    """Estimate a transparent design-day block heating/cooling load (Manual J lite)."""
+    from typehaus.checks import build_context
+    from typehaus.energy import estimate_block_load
+    from typehaus.source import load_plan
+
+    d = _resolve_house(house)
+    result = load_plan(d)
+    if result.plan is None:
+        _print_findings(result.findings)
+        raise typer.Exit(1)
+    ctx, _ = build_context(result.plan, d)
+    report = estimate_block_load(ctx.model, ctx.preferences)
+    if as_json:
+        import json
+
+        console.print_json(json.dumps(report.as_dict()))
+        return
+    console.print(f"[bold]Heating:[/bold] {report.heating_load_btu_per_hour:,.0f} BTU/h")
+    console.print(f"[bold]Cooling:[/bold] {report.cooling_load_btu_per_hour:,.0f} BTU/h "
+                  f"({report.cooling_tons:.2f} tons)")
+    for component in report.components:
+        console.print(f"  {component.kind:8} {component.area_ft2:,.0f} sf  "
+                      f"UA {component.ua_btu_per_hour_f:,.1f}")
+    if report.unknown_inputs:
+        console.print("[yellow]Not included / unknown: " + ", ".join(report.unknown_inputs) + "[/yellow]")
 
 
 @app.command()
@@ -164,6 +197,8 @@ def explain(
     asm = plan.library.resolve_assembly(target)
     if asm is not None:
         from typehaus.analysis import assembly_r_value
+        from typehaus.checks import load_preferences
+        from typehaus.checks.building_science.condensation import analyze_assembly
         from typehaus.emit.draw import render_card_svg
 
         rv = assembly_r_value(asm, plan.library)
@@ -172,7 +207,13 @@ def explain(
         for layer in list(asm.default_lining) + list(asm.layers):
             console.print(f"  {layer.function.value:9} {layer.name:12} {layer.thickness.fmt()}")
         if card or out:
-            svg = render_card_svg(asm, plan.library)
+            heating = plan.project.site.design_temp_heating
+            condensation = analyze_assembly(
+                asm, plan.library,
+                heating_design_temp_f=heating.fahrenheit if heating else None,
+                preferences=load_preferences(d),
+            )
+            svg = render_card_svg(asm, plan.library, condensation)
             dest = out or (d / "out" / f"card_{asm.tag}.svg")
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(svg)

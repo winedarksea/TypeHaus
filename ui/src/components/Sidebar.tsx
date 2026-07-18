@@ -2,6 +2,7 @@ import { findingsFor, useStore } from "../state/store";
 import type { Finding, Model, Wall } from "../model/types";
 import { formatFtIn, wallLength } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
+import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
 
 // The right-hand inspector: selection details + provenance + inline findings, the
 // assembly section card for a selected wall (→ 21 §Assembly inspector), the assembly
@@ -19,6 +20,7 @@ export function Sidebar() {
         <div className="muted">Tap an element to inspect it.</div>
       )}
       {model && <AssemblyPicker model={model} />}
+      {model && <BuildingScienceDashboard science={model.building_science} />}
       {model && <FindingsPanel findings={model.findings} />}
     </div>
   );
@@ -130,7 +132,8 @@ function WallInspector({ model, w }: { model: Model; w: Wall }) {
       </div>
       <Provenance p={w.provenance} />
       <div style={{ height: 10 }} />
-      <SectionCard layers={w.layers} title={w.assembly || "Assembly"} />
+      <SectionCard layers={w.layers} title={w.assembly || "Assembly"}
+        condensation={model.building_science?.condensation.find((item) => item.assembly === w.assembly)} />
       <InlineFindings model={model} uid={w.uid} />
       <div style={{ marginTop: 8 }}>
         <span className="muted">Openings hosted: </span>

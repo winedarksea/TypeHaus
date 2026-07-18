@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from typehaus.checks.registry import Preferences
 from typehaus.findings import Finding
 from typehaus.resolve.model import ResolvedModel
 from typehaus.source.provenance import Provenance
@@ -32,12 +33,32 @@ def model_to_dict(
     revision: str = "",
     provenance: Provenance | None = None,
     findings: list[Finding] | None = None,
+    preferences: Preferences | None = None,
 ) -> dict[str, Any]:
+    building_science: dict[str, Any] | None = None
+    if preferences is not None:
+        from typehaus.checks.building_science.condensation import analyze_assembly
+        from typehaus.checks.building_science.wwr import analyze_wwr
+        from typehaus.energy import estimate_block_load
+
+        heating = model.plan.project.site.design_temp_heating
+        building_science = {
+            "wwr": [item.as_dict() for item in analyze_wwr(model)],
+            "energy": estimate_block_load(model, preferences).as_dict(),
+            "condensation": [
+                analyze_assembly(
+                    assembly, model.plan.library,
+                    heating_design_temp_f=heating.fahrenheit if heating else None,
+                    preferences=preferences,
+                ).as_dict()
+                for assembly in model.plan.library.assemblies
+            ],
+        }
     return {
         # revision is the PATCH /plan precondition (#30); UI echoes it back on every op.
         "revision": revision,
         "units": "imperial",
-        "projectNorth": 0.0,
+        "projectNorth": model.plan.project.site.true_north.degrees,
         "findings": _findings_json(findings),
         "project": {
             "name": model.plan.project.name,
@@ -91,6 +112,7 @@ def model_to_dict(
              "width_change": e.width_change}
             for e in model.stack_edges
         ],
+        "building_science": building_science,
     }
 
 
@@ -101,10 +123,12 @@ def write_model_json(
     revision: str = "",
     provenance: Provenance | None = None,
     findings: list[Finding] | None = None,
+    preferences: Preferences | None = None,
 ) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = model_to_dict(
-        model, revision=revision, provenance=provenance, findings=findings
+        model, revision=revision, provenance=provenance, findings=findings,
+        preferences=preferences,
     )
     # sort_keys for byte-determinism (→ 02 §Determinism).
     path.write_text(json.dumps(payload, indent=2, sort_keys=True))
