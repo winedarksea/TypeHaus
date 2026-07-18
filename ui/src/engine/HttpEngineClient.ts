@@ -10,10 +10,17 @@ import {
   type EngineClient,
   type EngineEvent,
   type HistoryResult,
+  type MacroRequest,
+  type MacroResult,
   type PatchOp,
   type PatchResult,
   RevisionConflict,
 } from "./EngineClient";
+
+const ARTIFACT_PATHS: Record<EngineArtifact, string> = {
+  ifc: "/model.ifc",
+  glb: "/model.glb",
+};
 
 async function readError(res: Response): Promise<string> {
   try {
@@ -55,6 +62,17 @@ export class HttpEngineClient implements EngineClient {
     return (await res.json()) as PatchResult;
   }
 
+  async runMacro(request: MacroRequest, revision: string): Promise<MacroResult> {
+    const res = await fetch(this.url("/macro"), {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...request, revision }),
+    });
+    if (res.status === 409) throw new RevisionConflict(await readError(res));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as MacroResult;
+  }
+
   async build(): Promise<BuildResult> {
     const res = await fetch(this.url("/build"), { method: "POST" });
     if (!res.ok) throw new EngineError(await readError(res), res.status);
@@ -76,8 +94,9 @@ export class HttpEngineClient implements EngineClient {
   }
 
   async getArtifact(kind: EngineArtifact): Promise<Blob> {
-    if (kind !== "ifc") throw new EngineError(`unknown artifact ${kind}`, 400);
-    const res = await fetch(this.url("/model.ifc"));
+    const path = ARTIFACT_PATHS[kind];
+    if (!path) throw new EngineError(`unknown artifact ${kind}`, 400);
+    const res = await fetch(this.url(path));
     if (!res.ok) throw new EngineError(await readError(res), res.status);
     return await res.blob();
   }

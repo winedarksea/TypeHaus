@@ -8,9 +8,11 @@ targets is rewritten, so the file stays human-readable and merge-friendly after 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 import libcst as cst
 
+from typehaus.model.registry import element_kinds
 from typehaus.model.ids import new_uid
 from typehaus.source.ops import DELETE_FIELD, PatchOp, RawExpr, encode_value
 
@@ -49,11 +51,20 @@ def _make_arg(name: str, source_expr: str) -> cst.Arg:
     )
 
 
+def _kind_has_uid(kind: str) -> bool:
+    """Element kinds carry a uid; library objects (Assembly/Layer/Material) do not."""
+    cls = element_kinds().get(kind)
+    return cls is not None and "uid" in getattr(cls, "model_fields", {})
+
+
 def _build_call(op: PatchOp, uid: str) -> cst.Call:
-    # An explicit uid in fields (e.g. the inverse of a delete) is preserved verbatim so
-    # undo restores the element's immutable identity; otherwise use the freshly minted one.
-    effective_uid = op.fields.get("uid") or uid
-    args = [_make_arg("uid", f'"{effective_uid}"'), _make_arg("tag", f'"{op.tag}"')]
+    args: list[cst.Arg] = []
+    if _kind_has_uid(op.type):
+        # An explicit uid in fields (e.g. the inverse of a delete) is preserved verbatim so
+        # undo restores the element's immutable identity; otherwise use the freshly minted one.
+        effective_uid = op.fields.get("uid") or uid
+        args.append(_make_arg("uid", f'"{effective_uid}"'))
+    args.append(_make_arg("tag", f'"{op.tag}"'))
     for name, value in op.fields.items():
         if name in ("uid", "tag"):
             continue
@@ -134,9 +145,13 @@ class _ApplyTransformer(cst.CSTTransformer):
             new_el = cst.Element(value=call, comma=cst.Comma())
         else:  # single-line list [a, b]
             space = cst.Comma(whitespace_after=cst.SimpleWhitespace(" "))
+            # The new element inherits the prior last element's trailing-comma state (usually
+            # none), so a later delete of it restores the exact original — no dangling comma.
+            prev_trailing: Any = cst.MaybeSentinel.DEFAULT
             if els:
+                prev_trailing = els[-1].comma
                 els[-1] = els[-1].with_changes(comma=space)
-            new_el = cst.Element(value=call, comma=cst.Comma())
+            new_el = cst.Element(value=call, comma=prev_trailing)
         self.applied = True
         return updated.with_changes(elements=[*els, new_el])
 
@@ -182,7 +197,13 @@ def apply_ops_to_source(source: str, ops: list[PatchOp]) -> WritebackResult:
             )
         if minted_uid is not None:
             minted[op.tag] = minted_uid
-    return WritebackResult(source=module.code, minted_uids=minted)
+    # Keep the model-import line in sync with what the file references — a canonical,
+    # reversible function of content, so an add's injected import is removed when the add is
+    # undone (→ 21b WP2.4d byte-identical undo). No-op when the referenced set is unchanged.
+    from typehaus.source.imports import sync_model_imports
+
+    source_out = sync_model_imports(module.code)
+    return WritebackResult(source=source_out, minted_uids=minted)
 
 
 def enclosing_list_name(source: str, kind: str, tag: str) -> str | None:

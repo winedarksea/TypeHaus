@@ -110,7 +110,9 @@ class _DialectVisitor(cst.CSTVisitor):
             return  # module-level constant / import reference
         elif isinstance(expr, cst.Attribute):
             return  # enum member access, e.g. Occupancy.KITCHEN
-        elif isinstance(expr, (cst.Tuple, cst.List)):
+        elif isinstance(expr, (cst.Tuple, cst.List, cst.Set)):
+            # Set literals carry control-layer tags (``control={ControlLayer.AIR}``) — the one
+            # collection the assembly editor writes; still a pure data literal, no operators.
             for el in expr.elements:
                 self._check_expr(el.value)
         elif isinstance(expr, cst.UnaryOperation) and isinstance(expr.operator, cst.Minus):

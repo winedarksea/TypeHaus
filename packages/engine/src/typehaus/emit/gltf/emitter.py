@@ -1,0 +1,257 @@
+"""glTF 2.0 binary writer over :class:`~typehaus.resolve.model.ResolvedModel` (#51).
+
+No external dependency: geometry is built from the resolved layer polygons (already SI meters,
+project-north frame) by vertical extrusion, and packed into a standard ``.glb`` container
+(12-byte header + JSON chunk + BIN chunk). glTF is Y-up; our plan frame is (x east, y north,
+z up), so we map model ``(x, y, z) → glTF (x, z, -y)`` once, here.
+
+Triangles are grouped into materials by a small function-based palette so the massing reads
+(sheathing gray, insulation amber, framing brown, floors muted). One mesh, one primitive per
+color, one node — enough for the 3D panel and the agent-eyes snapshot.
+"""
+
+from __future__ import annotations
+
+import base64
+import json
+import struct
+from pathlib import Path
+
+from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedWall
+
+# function/category → RGBA color (linear, 0..1). Keys are lowercased layer functions and
+# member categories; anything unmatched falls back to a neutral gray.
+_PALETTE: dict[str, tuple[float, float, float, float]] = {
+    "structure": (0.62, 0.45, 0.28, 1.0),
+    "insulation": (0.93, 0.74, 0.36, 1.0),
+    "sheathing": (0.72, 0.72, 0.70, 1.0),
+    "cladding": (0.55, 0.58, 0.60, 1.0),
+    "lining": (0.90, 0.89, 0.86, 1.0),
+    "finish": (0.90, 0.89, 0.86, 1.0),
+    "membrane": (0.30, 0.45, 0.55, 1.0),
+    "air_gap": (0.80, 0.85, 0.90, 0.35),
+    "furring": (0.68, 0.52, 0.34, 1.0),
+    # framing member categories
+    "stud": (0.70, 0.52, 0.33, 1.0),
+    "plate": (0.66, 0.48, 0.30, 1.0),
+    "header": (0.60, 0.42, 0.26, 1.0),
+    "joist": (0.72, 0.55, 0.36, 1.0),
+    "rim": (0.66, 0.48, 0.30, 1.0),
+    "floor": (0.82, 0.80, 0.76, 1.0),
+}
+_FALLBACK = (0.70, 0.70, 0.70, 1.0)
+
+Vec3 = tuple[float, float, float]
+
+
+class _MeshBuilder:
+    """Accumulates triangles bucketed by color; emits interleaved position + index buffers."""
+
+    def __init__(self) -> None:
+        # color -> (positions: list[Vec3], indices: list[int])
+        self._buckets: dict[tuple[float, float, float, float],
+                            tuple[list[Vec3], list[int]]] = {}
+
+    def _bucket(self, color: tuple[float, float, float, float]):
+        return self._buckets.setdefault(color, ([], []))
+
+    def add_prism(self, ring: list[tuple[float, float]], z0: float, z1: float,
+                  color: tuple[float, float, float, float]) -> None:
+        """Extrude a plan polygon ring between z0 and z1 into a closed solid."""
+        ring = _dedupe_ring(ring)
+        if len(ring) < 3:
+            return
+        positions, indices = self._bucket(color)
+        base = len(positions)
+        n = len(ring)
+        for (x, y) in ring:  # bottom loop then top loop
+            positions.append(_to_gltf(x, y, z0))
+        for (x, y) in ring:
+            positions.append(_to_gltf(x, y, z1))
+        # side walls
+        for i in range(n):
+            j = (i + 1) % n
+            b0, b1, t0, t1 = base + i, base + j, base + n + i, base + n + j
+            indices += [b0, b1, t1, b0, t1, t0]
+        # caps via fan triangulation (rings are convex-ish quads in practice)
+        for i in range(1, n - 1):
+            indices += [base, base + i + 1, base + i]                 # bottom (down)
+            indices += [base + n, base + n + i, base + n + i + 1]     # top (up)
+
+    def add_box(self, p0: Vec3, p1: Vec3, size: float,
+                color: tuple[float, float, float, float]) -> None:
+        """A member segment as a box of half-width ``size`` around the p0→p1 axis (xy)."""
+        (ax, ay, az), (bx, by, bz) = p0, p1
+        dx, dy = bx - ax, by - ay
+        length = (dx * dx + dy * dy) ** 0.5
+        if length == 0:
+            return
+        nx, ny = -dy / length * size, dx / length * size
+        ring = [(ax + nx, ay + ny), (bx + nx, by + ny),
+                (bx - nx, by - ny), (ax - nx, ay - ny)]
+        self.add_prism(ring, az, bz, color)
+
+    def is_empty(self) -> bool:
+        return not any(pos for pos, _ in self._buckets.values())
+
+    def build(self) -> dict:
+        """Assemble the glTF dict + embedded base64 buffer for all buckets."""
+        blob = bytearray()
+        buffer_views: list[dict] = []
+        accessors: list[dict] = []
+        materials: list[dict] = []
+        primitives: list[dict] = []
+
+        for color, (positions, indices) in self._buckets.items():
+            if not positions:
+                continue
+            pos_acc = _append_positions(blob, buffer_views, accessors, positions)
+            idx_acc = _append_indices(blob, buffer_views, accessors, indices)
+            mat = len(materials)
+            materials.append({
+                "pbrMetallicRoughness": {
+                    "baseColorFactor": list(color), "metallicFactor": 0.0,
+                    "roughnessFactor": 0.9,
+                },
+                "alphaMode": "BLEND" if color[3] < 1.0 else "OPAQUE",
+                "doubleSided": True,
+            })
+            primitives.append({
+                "attributes": {"POSITION": pos_acc}, "indices": idx_acc, "material": mat,
+            })
+
+        uri = "data:application/octet-stream;base64," + base64.b64encode(bytes(blob)).decode()
+        return {
+            "asset": {"version": "2.0", "generator": "typehaus"},
+            "scene": 0,
+            "scenes": [{"nodes": [0]}],
+            "nodes": [{"mesh": 0, "name": "building"}],
+            "meshes": [{"primitives": primitives}],
+            "materials": materials,
+            "accessors": accessors,
+            "bufferViews": buffer_views,
+            "buffers": [{"byteLength": len(blob), "uri": uri}],
+        }, bytes(blob)
+
+
+def _append_positions(blob: bytearray, views: list[dict], accessors: list[dict],
+                      positions: list[Vec3]) -> int:
+    _align(blob)
+    offset = len(blob)
+    for (x, y, z) in positions:
+        blob += struct.pack("<fff", x, y, z)
+    views.append({"buffer": 0, "byteOffset": offset,
+                  "byteLength": len(positions) * 12, "target": 34962})
+    xs = [p[0] for p in positions]
+    ys = [p[1] for p in positions]
+    zs = [p[2] for p in positions]
+    accessors.append({
+        "bufferView": len(views) - 1, "componentType": 5126, "count": len(positions),
+        "type": "VEC3", "min": [min(xs), min(ys), min(zs)], "max": [max(xs), max(ys), max(zs)],
+    })
+    return len(accessors) - 1
+
+
+def _append_indices(blob: bytearray, views: list[dict], accessors: list[dict],
+                    indices: list[int]) -> int:
+    _align(blob)
+    offset = len(blob)
+    for i in indices:
+        blob += struct.pack("<I", i)
+    views.append({"buffer": 0, "byteOffset": offset,
+                  "byteLength": len(indices) * 4, "target": 34963})
+    accessors.append({
+        "bufferView": len(views) - 1, "componentType": 5125, "count": len(indices),
+        "type": "SCALAR",
+    })
+    return len(accessors) - 1
+
+
+def _align(blob: bytearray, boundary: int = 4) -> None:
+    while len(blob) % boundary:
+        blob.append(0)
+
+
+def _to_gltf(x: float, y: float, z: float) -> Vec3:
+    return (x, z, -y)  # (x east, y north, z up) → glTF Y-up
+
+
+def _dedupe_ring(ring: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    out: list[tuple[float, float]] = []
+    for pt in ring:
+        if not out or (abs(pt[0] - out[-1][0]) > 1e-9 or abs(pt[1] - out[-1][1]) > 1e-9):
+            out.append(pt)
+    if len(out) > 1 and out[0] == out[-1]:
+        out.pop()
+    return out
+
+
+def _color(key: str) -> tuple[float, float, float, float]:
+    return _PALETTE.get(key.lower(), _FALLBACK)
+
+
+def _add_wall(mb: _MeshBuilder, wall: ResolvedWall, lod: str) -> None:
+    if lod == "framed" and wall.members:
+        for member in wall.members:
+            _add_member(mb, member)
+        return
+    for layer in wall.layers:
+        if layer.polygon:
+            mb.add_prism(layer.polygon, wall.z0_m, wall.z1_m, _color(layer.function))
+
+
+def _add_member(mb: _MeshBuilder, member: FramedMember) -> None:
+    half = _member_half_width(member.profile)
+    mb.add_box((member.p0[0], member.p0[1], member.z0_m),
+               (member.p1[0], member.p1[1], member.z1_m), half, _color(member.category))
+
+
+def _member_half_width(profile: str) -> float:
+    # "2x6" → nominal 1.5" actual thickness; half of that in meters.
+    try:
+        nominal = float(profile.lower().split("x")[0])
+    except (ValueError, IndexError):
+        nominal = 2.0
+    actual_in = max(nominal - 0.5, 0.75)
+    return actual_in * 0.0254 / 2.0
+
+
+def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes]:
+    """Build the glTF JSON dict + binary blob for ``model`` (no file written)."""
+    mb = _MeshBuilder()
+    for wall in sorted(model.walls, key=lambda w: w.uid):
+        _add_wall(mb, wall, lod)
+    for room in sorted(model.rooms, key=lambda r: r.uid):
+        if room.clear_face:
+            storey_z = _room_z(model, room.storey)
+            mb.add_prism(room.clear_face, storey_z, storey_z + 0.02, _color("floor"))
+    if mb.is_empty():  # keep the container valid even for an empty model
+        mb.add_prism([(0, 0), (0.001, 0), (0.001, 0.001)], 0.0, 0.001, _FALLBACK)
+    return mb.build()
+
+
+def _room_z(model: ResolvedModel, storey_tag: str) -> float:
+    for w in model.walls:
+        if w.storey == storey_tag:
+            return w.z0_m
+    return 0.0
+
+
+def emit_glb(model: ResolvedModel, out_path: Path, lod: str = "core") -> Path:
+    """Write a binary glTF (``.glb``) file for ``model``. Returns the path."""
+    gltf, blob = emit_gltf_dict(model, lod)
+    # In a .glb the single buffer is the BIN chunk — it must not also carry a data URI.
+    gltf["buffers"][0].pop("uri", None)
+    json_bytes = json.dumps(gltf, separators=(",", ":")).encode()
+    json_bytes += b" " * ((4 - len(json_bytes) % 4) % 4)  # pad to 4 with spaces
+    bin_pad = b"\x00" * ((4 - len(blob) % 4) % 4)
+    bin_chunk = blob + bin_pad
+    total = 12 + 8 + len(json_bytes) + 8 + len(bin_chunk)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "wb") as fh:
+        fh.write(struct.pack("<III", 0x46546C67, 2, total))          # "glTF", version, length
+        fh.write(struct.pack("<II", len(json_bytes), 0x4E4F534A))    # JSON chunk header
+        fh.write(json_bytes)
+        fh.write(struct.pack("<II", len(bin_chunk), 0x004E4942))     # BIN chunk header
+        fh.write(bin_chunk)
+    return out_path

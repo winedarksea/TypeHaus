@@ -31,11 +31,19 @@ def render_views(
             if not any(w.storey == storey for w in model.walls):
                 continue
             written.append(render_plan(model, storey, out_dir / f"plan_{storey}.{fmt}"))
-    elif view in ("section", "3d"):
-        # Section/3D snapshots build on the M3 sheet + glTF artifact; emit a placeholder
-        # marker file so the skills loop degrades without crashing.
-        marker = out_dir / f"{view}_unavailable.txt"
-        marker.write_text(f"{view} render not available in M2 (needs → 30/#51)\n")
+    elif view == "3d":
+        # 3D is the offscreen glTF artifact (#51): emit a self-contained .glb the UI panel
+        # and a glTF viewer both read. A raster snapshot needs an offscreen GL context (M3);
+        # the .glb is the durable artifact the agent-eyes loop and UI share.
+        from typehaus.emit.gltf import emit_glb
+
+        lod = "framed" if any(w.members for w in model.walls) else "core"
+        written.append(emit_glb(model, out_dir / "model.glb", lod=lod))
+    elif view == "section":
+        # Section snapshots build on the M3 sheet machinery; emit a marker so the skills
+        # loop degrades without crashing.
+        marker = out_dir / "section_unavailable.txt"
+        marker.write_text("section render not available in M2 (needs → 30)\n")
         written.append(marker)
     else:
         raise ValueError(f"unknown view {view!r} (plan|section|3d)")

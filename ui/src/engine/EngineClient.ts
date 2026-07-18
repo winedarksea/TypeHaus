@@ -43,12 +43,38 @@ export type EngineEvent =
   | { type: "redo"; revision: string; undo: number; redo: number }
   | { type: "file-changed"; revision: string; ok: boolean };
 
-export type EngineArtifact = "ifc";
+export type EngineArtifact = "ifc" | "glb";
+
+// A server-side geometry macro (server/macros_api.py). The UI sends screen intent (draw
+// endpoints, the wall to split, a drag delta) as authored-unit strings; the engine owns all
+// geometry math and returns ordinary journaled ops plus the #33 reference remap.
+export type MacroRequest =
+  | { macro: "draw_wall"; storey: string; start: [string, string]; end: [string, string]; assembly: string; tag?: string; hint_file?: string }
+  | { macro: "move_nodes"; storey: string; nodes: string[]; dx: string; dy: string }
+  | { macro: "split_wall"; storey: string; wall: string; at: [string, string] }
+  | { macro: "heal_walls"; storey: string; node: string }
+  // Library macros (no storey): the assembly-editor clone-and-tweak flow (→ 21b WP2.4d/e).
+  | { macro: "duplicate_assembly"; source: string; tag: string }
+  | { macro: "blank_assembly"; tag: string }
+  | { macro: "add_material"; material: { tag: string; name: string; r_per_inch?: number; perm_rating?: number; density?: number } };
+
+export interface ReferenceRemap {
+  renamed: Record<string, string>;
+  deleted: string[];
+  rehost: Record<string, string>;
+}
+
+export interface MacroResult extends PatchResult {
+  remap: ReferenceRemap;
+  deleted: string[];
+  warnings: string[];
+}
 
 export interface EngineClient {
   getModel(): Promise<Model>;
   getChecks(): Promise<Finding[]>;
   patchPlan(ops: PatchOp[], revision: string): Promise<PatchResult>;
+  runMacro(request: MacroRequest, revision: string): Promise<MacroResult>;
   build(): Promise<BuildResult>;
   undo(): Promise<HistoryResult>;
   redo(): Promise<HistoryResult>;

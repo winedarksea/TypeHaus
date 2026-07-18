@@ -83,6 +83,46 @@ def create_app(house_dir: Path) -> Any:
         return JSONResponse({"revision": result.revision, "minted": result.minted_uids,
                              "undo": result.undo_depth, "redo": result.redo_depth})
 
+    @app.post("/macro")
+    async def post_macro(body: dict[str, Any]) -> Any:
+        from typehaus.server.macros_api import build_macro_ops, MacroRequestError
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        try:
+            result = build_macro_ops(state.model.plan, body)
+        except MacroRequestError as exc:
+            return JSONResponse({"error": str(exc)}, status_code=400)
+        try:
+            patch = state.coordinator.apply_patch(result.ops, body.get("revision"))
+        except RevisionMismatch as exc:
+            return JSONResponse({"error": str(exc)}, status_code=409)
+        except (WritebackError, ExternalEdit) as exc:
+            return JSONResponse({"error": str(exc)}, status_code=422)
+        state.rebuild()
+        await bus.broadcast({"type": "patched", "revision": patch.revision,
+                             "minted": patch.minted_uids,
+                             "undo": patch.undo_depth, "redo": patch.redo_depth})
+        return JSONResponse({
+            "revision": patch.revision, "minted": patch.minted_uids,
+            "undo": patch.undo_depth, "redo": patch.redo_depth,
+            "remap": {"renamed": result.remap.renamed,
+                      "deleted": sorted(result.remap.deleted),
+                      "rehost": result.remap.rehost},
+            "deleted": list(result.deleted_tags),
+            "warnings": list(result.warnings),
+        })
+
+    @app.get("/model.glb")
+    def get_glb() -> Any:
+        out = state.house_dir / "out" / "model.glb"
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        from typehaus.emit.gltf import emit_glb
+
+        emit_glb(state.model, out)
+        return FileResponse(out, media_type="model/gltf-binary")
+
     @app.post("/build")
     async def post_build() -> Any:
         state.rebuild()
