@@ -1,0 +1,126 @@
+"""WP2.2 — libcst writeback, write-safety coordinator, undo/redo, fmt (→ 20 §WP2.2)."""
+
+from __future__ import annotations
+
+import shutil
+from pathlib import Path
+
+import pytest
+
+from typehaus.source import load_plan
+from typehaus.source.coordinator import (
+    ExternalEdit,
+    ProjectCoordinator,
+    RevisionMismatch,
+)
+from typehaus.source.fmt import fmt_source
+from typehaus.source.ops import PatchOp, RawExpr
+from typehaus.source.writeback import WritebackError, apply_ops_to_source
+
+
+@pytest.fixture
+def house(tmp_path: Path, starter_dir: Path) -> Path:
+    dst = tmp_path / "starter"
+    shutil.copytree(starter_dir, dst)
+    return dst
+
+
+@pytest.fixture
+def coord(house: Path) -> ProjectCoordinator:
+    return ProjectCoordinator(house)
+
+
+def _main(house: Path) -> str:
+    return (house / "plan" / "storeys" / "main.py").read_text()
+
+
+def test_update_changes_only_target_field_and_preserves_comments(coord, house):
+    before = _main(house)
+    assert "# ---" in before  # a comment we must not disturb
+    coord.apply_patch([PatchOp("update", "Wall", "W-101", {"top": "10'"})], coord.revision())
+    after = _main(house)
+    assert "top=ft(10)" in after
+    assert "# ---" in after
+    assert load_plan(house).ok
+
+
+def test_add_and_delete_round_trip_to_identity(coord, house):
+    before = _main(house)
+    coord.apply_patch(
+        [PatchOp("add", "Window", "WIN-9", {
+            "host": "W-102", "type_ref": "WT-3050",
+            "position": RawExpr("centered()"), "sill_height": "2'"})],
+        coord.revision(),
+    )
+    assert "WIN-9" in _main(house)
+    coord.undo()
+    assert _main(house) == before  # add → undo is byte-identical
+
+
+def test_delete_undo_preserves_uid_and_origin_file(coord, house):
+    coord.apply_patch([PatchOp("delete", "Window", "WIN-101", {})], coord.revision())
+    assert "WIN-101" not in _main(house)
+    coord.undo()
+    restored = _main(house)
+    assert "WN10AAAAAA" in restored and "WIN-101" in restored  # immutable uid preserved
+    assert "WIN-101" not in (house / "plan" / "storeys" / "upper.py").read_text()
+    assert load_plan(house).ok
+
+
+def test_redo_reapplies(coord, house):
+    coord.apply_patch([PatchOp("update", "Wall", "W-101", {"top": "12'"})], coord.revision())
+    coord.undo()
+    assert "top=ft(12)" not in _main(house)
+    coord.redo()
+    assert "top=ft(12)" in _main(house)
+
+
+def test_revision_mismatch_rejects_write(coord, house):
+    before = _main(house)
+    with pytest.raises(RevisionMismatch):
+        coord.apply_patch([PatchOp("update", "Wall", "W-101", {"top": "12'"})], "STALE")
+    assert _main(house) == before  # no partial write
+
+
+def test_external_edit_seals_journal(coord, house):
+    coord.apply_patch([PatchOp("update", "Wall", "W-101", {"top": "12'"})], coord.revision())
+    main = house / "plan" / "storeys" / "main.py"
+    main.write_text(main.read_text() + "\n# external edit\n")
+    assert coord.check_external_edit() is True
+    assert not coord._journal.can_redo
+
+
+def test_fifty_edits_keep_file_human_readable(coord, house):
+    for i in range(50):
+        coord.apply_patch(
+            [PatchOp("update", "Wall", "W-101", {"top": "9'" if i % 2 else "10'"})],
+            coord.revision(),
+        )
+    after = _main(house)
+    assert "# ---" in after
+    assert after.count("Wall(") >= 4
+    assert load_plan(house).ok
+
+
+def test_missing_target_raises():
+    src = "# haus: editable\nWALLS = []\n"
+    with pytest.raises(WritebackError):
+        apply_ops_to_source(src, [PatchOp("update", "Wall", "NOPE", {"top": "9'"})])
+
+
+def test_fmt_inserts_missing_uid():
+    src = '# haus: editable\nfrom typehaus import Node, pt, ft\nNODES = [Node(tag="N-1", position=pt(ft(0), ft(0)))]\n'
+    result = fmt_source(src)
+    assert result.uids_added == 1
+    assert "uid=" in result.source
+    # idempotent: a second pass adds nothing
+    assert fmt_source(result.source).uids_added == 0
+
+
+def test_op_inverse_op_identity_property(coord, house):
+    """update → inverse → update returns the file to its post-first-update state."""
+    coord.apply_patch([PatchOp("update", "Wall", "W-101", {"top": "7'"})], coord.revision())
+    snapshot = _main(house)
+    coord.apply_patch([PatchOp("update", "Wall", "W-101", {"top": "8'"})], coord.revision())
+    coord.undo()
+    assert _main(house) == snapshot

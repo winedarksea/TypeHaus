@@ -24,7 +24,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "hypothesis>=6.90", "mypy>=1.9", "ruff>=0.4"]
+# The FastAPI server (`haus serve`) + live-reload watcher — optional so a headless
+# build/check/render install stays lean (→ 20 §FastAPI server).
+server = ["fastapi>=0.110", "uvicorn>=0.29", "watchfiles>=0.21"]
+dev = [
+    "pytest>=8.0", "hypothesis>=6.90", "mypy>=1.9", "ruff>=0.4",
+    "fastapi>=0.110", "uvicorn>=0.29", "watchfiles>=0.21", "httpx>=0.27",
+]
 
 [project.scripts]
 haus = "typehaus.cli.app:main"

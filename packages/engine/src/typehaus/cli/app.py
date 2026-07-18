@@ -192,16 +192,128 @@ def explain(
 
 @app.command()
 def fmt(house: Optional[Path] = typer.Argument(None)) -> None:
-    """Normalize editable plan files and assign missing uids (basic M1 stub)."""
-    from typehaus.source import editable_files, missing_uid_findings
+    """Normalize editable plan files and assign missing uids (WP2.2)."""
+    from typehaus.source import fmt_house
 
     d = _resolve_house(house)
-    total = 0
-    for f in editable_files(d):
-        rel = f.relative_to(d).as_posix()
-        missing = missing_uid_findings(rel, f.read_text())
-        total += len(missing)
-    console.print(f"{total} element(s) missing uid (full fmt writeback lands in M2 WP2.2)")
+    report = fmt_house(d)
+    total = sum(report.values())
+    for rel, added in report.items():
+        if added:
+            console.print(f"  {rel}: +{added} uid(s)")
+    console.print(f"[green]fmt ok[/green] — assigned {total} missing uid(s)")
+
+
+@app.command()
+def render(
+    house: Optional[Path] = typer.Argument(None),
+    view: str = typer.Option("plan", help="plan | section | 3d (#52 agent eyes)"),
+    fmt: str = typer.Option("png", help="png | svg"),
+) -> None:
+    """Emit headless plan/section snapshots for the edit→build→check→look loop (#52)."""
+    from typehaus.emit.draw import render_views
+    from typehaus.resolve import resolve
+    from typehaus.source import load_plan
+
+    d = _resolve_house(house)
+    result = load_plan(d)
+    if result.plan is None:
+        _print_findings(result.findings)
+        raise typer.Exit(1)
+    model, _ = resolve(result.plan)
+    paths = render_views(model, d / "out" / "render", view=view, fmt=fmt)
+    for p in paths:
+        console.print(f"wrote {p}")
+
+
+@app.command(name="print")
+def print_sheets(
+    house: Optional[Path] = typer.Argument(None),
+    fmt: str = typer.Option("both", help="dxf | pdf | both"),
+) -> None:
+    """Write one floor-plan sheet per storey as DXF and/or PDF (WP2.6/2.7)."""
+    from typehaus.emit.draw import build_floorplan, write_dxf, write_pdf
+    from typehaus.resolve import resolve
+    from typehaus.source import load_plan
+
+    d = _resolve_house(house)
+    result = load_plan(d)
+    if result.plan is None:
+        _print_findings(result.findings)
+        raise typer.Exit(1)
+    model, _ = resolve(result.plan)
+    out = d / "out" / "sheets"
+    for storey in {w.storey for w in model.walls}:
+        scene = build_floorplan(model, storey)
+        if fmt in ("dxf", "both"):
+            console.print(f"wrote {write_dxf(scene, out / f'plan_{storey}.dxf')}")
+        if fmt in ("pdf", "both"):
+            console.print(f"wrote {write_pdf(scene, out / f'plan_{storey}.pdf')}")
+
+
+@app.command()
+def diff(
+    external: Path = typer.Argument(..., help="architect-modified IFC to compare"),
+    house: Optional[Path] = typer.Argument(None),
+) -> None:
+    """Semantic diff of an external IFC against the deterministic baseline (WP2.10)."""
+    from typehaus.diff import build_report
+    from typehaus.diff.ifc_adapter import baseline_elems, external_elems
+    from typehaus.resolve import resolve
+    from typehaus.source import load_plan
+
+    d = _resolve_house(house)
+    result = load_plan(d)
+    if result.plan is None:
+        _print_findings(result.findings)
+        raise typer.Exit(1)
+    model, _ = resolve(result.plan)
+    try:
+        ext = external_elems(external)
+    except RuntimeError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(2) from exc
+    report = build_report(baseline_elems(model), ext)
+    table = Table("change", "tag", "class", "delta")
+    for c in report.substantive():
+        was = f" (was {c.was_tag})" if c.was_tag else ""
+        table.add_row(c.kind.value, c.tag + was, c.ifc_class, c.delta)
+    console.print(table)
+    p = report.write(d / "out" / "diff.json")
+    console.print(f"wrote {p} — {report.counts()}")
+
+
+@app.command()
+def serve(
+    house: Optional[Path] = typer.Argument(None),
+    host: str = typer.Option("127.0.0.1"),
+    port: int = typer.Option(8765),
+) -> None:
+    """Run the FastAPI server: model.json, PATCH /plan, undo/redo, live reload (WP2.1)."""
+    try:
+        import uvicorn
+    except ImportError as exc:
+        console.print("[red]serve needs uvicorn: pip install 'typehaus[server]'[/red]")
+        raise typer.Exit(2) from exc
+    from typehaus.server.app import create_app
+
+    d = _resolve_house(house)
+    console.print(f"serving {d} on http://{host}:{port}")
+    uvicorn.run(create_app(d), host=host, port=port)
+
+
+@app.command()
+def new(
+    directory: Path = typer.Argument(..., help="new house directory to scaffold"),
+    name: str = typer.Option("My House", help="project display name"),
+) -> None:
+    """Scaffold a new house: brief.md, preferences.toml, plan/ skeleton (WP2.12)."""
+    from typehaus.cli.scaffold import scaffold_house
+
+    created = scaffold_house(directory, name)
+    for p in created:
+        console.print(f"created {p}")
+    console.print(f"[green]new house ready[/green] — try: haus serve {directory}")
 
 
 def _detail(el: object) -> str:
