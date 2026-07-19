@@ -13,6 +13,7 @@ from urllib.parse import quote
 
 from typehaus.checks.registry import Preferences
 from typehaus.findings import Finding
+from typehaus.model.spatial import Stair
 from typehaus.resolve.model import ResolvedModel
 from typehaus.source.provenance import Provenance
 
@@ -247,6 +248,14 @@ def model_to_dict(
         "stairs": [
             {"uid": stair.uid, "tag": stair.tag, "storey": stair.storey,
              "to_storey": stair.to_storey, "outline": [list(point) for point in stair.outline],
+             # The designer edits these authored inputs; all of the geometry below remains
+             # resolver-owned so the browser never becomes a second stair solver.
+             "floor_opening": authored.floor_opening,
+             "width_m": authored.width.meters,
+             "run_direction": authored.run_direction,
+             "run_reversed": authored.run_reversed,
+             "winder_count": authored.winder_count,
+             "start": list(authored.start.xy_m) if authored.start is not None else None,
              "riser_count": stair.riser_count, "riser_height_m": stair.riser_height_m,
              "tread_depth_m": stair.tread_depth_m,
              "members": [
@@ -256,6 +265,7 @@ def model_to_dict(
                  for member in stair.members
              ], "provenance": _provenance(provenance, stair.tag)}
             for stair in sorted(model.stairs, key=lambda item: item.uid)
+            if isinstance((authored := model.plan.by_tag(stair.tag)), Stair)
         ],
         "floors": [
             {"uid": floor.uid, "tag": floor.tag, "storey": floor.storey,

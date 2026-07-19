@@ -245,6 +245,28 @@ export interface Roof {
   assembly: string;
 }
 
+// A stair's scalar inputs are authored, while its risers, treads, and framing members are
+// resolver output. Keeping both in this contract lets the designer preview its next valid
+// solve without treating client-side arithmetic as the source of truth.
+export interface Stair {
+  uid: string;
+  tag: string;
+  storey: string;
+  to_storey: string;
+  floor_opening: string;
+  outline: Vec2[];
+  width_m: number;
+  run_direction: "x" | "y";
+  run_reversed: boolean;
+  winder_count: number;
+  start: Vec2 | null;
+  riser_count: number;
+  riser_height_m: number;
+  tread_depth_m: number;
+  members: Member[];
+  provenance: Provenance | null;
+}
+
 export type Severity = "error" | "warn" | "info";
 
 export interface Finding {
@@ -273,6 +295,7 @@ export interface Model {
   nodes?: PlanNode[]; // authored wall-graph vertices (→ _catalog sibling); absent on older json
   openings: Opening[];
   roofs?: Roof[];
+  stairs?: Stair[];
   fixtures?: Fixture[];
   furniture?: Furniture[];
   rooms: Room[];

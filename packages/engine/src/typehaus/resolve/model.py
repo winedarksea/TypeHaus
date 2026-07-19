@@ -122,7 +122,7 @@ class ResolvedRoof:
 
 @dataclass(frozen=True)
 class ResolvedStair:
-    """A code-sized single-flight stair and its generated framing members."""
+    """A code-sized straight or two-winder stair and its generated framing members."""
 
     uid: str
     tag: str
@@ -132,6 +132,9 @@ class ResolvedStair:
     riser_count: int
     riser_height_m: float
     tread_depth_m: float
+    run_direction: str
+    run_reversed: bool
+    winder_count: int
     members: tuple[FramedMember, ...]
 
 

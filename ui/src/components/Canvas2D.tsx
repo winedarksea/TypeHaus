@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
-import type { Model, Opening, PlanNode, Underlay, Vec2, Wall } from "../model/types";
+import type { Model, Opening, PlanNode, Stair, Underlay, Vec2, Wall } from "../model/types";
 import {
   deriveNodes,
   formatFtIn,
@@ -420,6 +420,11 @@ export function Canvas2D() {
         onPointerCancel={onPointerUp}
         onDoubleClick={onDoubleClick}
       >
+        <defs>
+          <marker id="stair-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#704c34" />
+          </marker>
+        </defs>
         <BackgroundGrid view={view} />
         {(model.underlays ?? [])
           .filter((underlay) => !activeStorey || underlay.storey === activeStorey)
@@ -483,6 +488,12 @@ export function Canvas2D() {
             />
           );
         })}
+        {(model.stairs ?? [])
+          .filter((stair) => !activeStorey || stair.storey === activeStorey)
+          .map((stair) => <StairShape key={stair.uid} stair={stair} project={project}
+            selected={selection.uid === stair.uid} hovered={hoverUid === stair.uid}
+            onSelect={() => tool === "select" && select("stair", stair.uid)}
+            onHover={(hovered) => setHover(hovered ? stair.uid : null)} />)}
         {(model.fixtures ?? [])
           .filter((fixture) => !activeStorey || fixture.storey === activeStorey)
           .map((fixture) => <FixtureFootprint key={fixture.uid} fixture={fixture} project={project}
@@ -868,6 +879,44 @@ function OpeningShape({ o, host, project, scale, selected, onSelect, onEdit }: {
       {selected && <circle cx={cx} cy={cy} r={5} fill={NORDIC_ACCENT} />}
     </g>
   );
+}
+
+function StairShape({ stair, project, selected, hovered, onSelect, onHover }: {
+  stair: Stair;
+  project: (p: Vec2) => Vec2;
+  selected: boolean;
+  hovered: boolean;
+  onSelect: () => void;
+  onHover: (hovered: boolean) => void;
+}) {
+  if (stair.outline.length < 3) return null;
+  const outline = stair.outline.map(project).map((point) => point.join(",")).join(" ");
+  const xs = stair.outline.map((point) => point[0]);
+  const ys = stair.outline.map((point) => point[1]);
+  const minX = Math.min(...xs); const maxX = Math.max(...xs);
+  const minY = Math.min(...ys); const maxY = Math.max(...ys);
+  const start: Vec2 = stair.run_direction === "x"
+    ? [minX, (minY + maxY) / 2] : [(minX + maxX) / 2, minY];
+  const end: Vec2 = stair.run_direction === "x"
+    ? [maxX, (minY + maxY) / 2] : [(minX + maxX) / 2, maxY];
+  const [directionStart, directionEnd] = stair.run_reversed ? [end, start] : [start, end];
+  const [labelX, labelY] = project([(minX + maxX) / 2, (minY + maxY) / 2]);
+  const stroke = selected ? NORDIC_ACCENT : hovered ? NORDIC_INK : "#704c34";
+  const [arrowStartX, arrowStartY] = project(directionStart);
+  const [arrowEndX, arrowEndY] = project(directionEnd);
+  return <g onClick={onSelect} onPointerEnter={() => onHover(true)} onPointerLeave={() => onHover(false)}
+    style={{ cursor: "pointer" }}>
+    <polygon points={outline} fill="rgba(112,76,52,0.08)" stroke={stroke}
+      strokeWidth={selected ? 2.5 : 1.25} />
+    {stair.members.filter((member) => member.category === "tread" || member.category === "winder").map((member) => {
+      const [x0, y0] = project(member.p0); const [x1, y1] = project(member.p1);
+      return <line key={member.key} x1={x0} y1={y0} x2={x1} y2={y1} stroke={stroke} strokeWidth={1} />;
+    })}
+    <line x1={arrowStartX} y1={arrowStartY} x2={arrowEndX} y2={arrowEndY} stroke={stroke}
+      strokeWidth={1.5} markerEnd="url(#stair-arrow)" />
+    <text x={labelX} y={labelY - 5} textAnchor="middle" fontSize={10} fill={stroke}
+      style={{ paintOrder: "stroke" }} stroke="#fff" strokeWidth={3}>UP {stair.riser_count} R</text>
+  </g>;
 }
 
 function WallDimension({ w, project }: { w: Wall; project: (p: Vec2) => Vec2 }) {

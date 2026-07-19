@@ -23,7 +23,7 @@ export type ViewMode = "2d" | "split" | "3d";
 export type ThreeMode = "nordic" | "schematic";
 
 export interface Selection {
-  kind: "wall" | "opening" | "room" | null;
+  kind: "wall" | "opening" | "room" | "stair" | null;
   uid: string | null;
 }
 
@@ -173,7 +173,8 @@ export const useStore = create<StoreState>((set, get) => ({
     const model = get().model;
     if (!model) return;
     const pool =
-      kind === "wall" ? model.walls : kind === "opening" ? model.openings : model.rooms;
+      kind === "wall" ? model.walls : kind === "opening" ? model.openings
+        : kind === "room" ? model.rooms : model.stairs ?? [];
     const hit = pool.find((e) => e.tag === tag);
     if (hit) set({ selection: { kind, uid: hit.uid } });
   },
@@ -241,6 +242,9 @@ export const useStore = create<StoreState>((set, get) => ({
     } else if (selection.kind === "room") {
       const r = model.rooms.find((x) => x.uid === selection.uid);
       type = "Room"; tag = r?.tag ?? null;
+    } else if (selection.kind === "stair") {
+      const stair = (model.stairs ?? []).find((x) => x.uid === selection.uid);
+      type = "Stair"; tag = stair?.tag ?? null;
     }
     if (!type || !tag) return;
     const ok = await applyOps([{ op: "delete", type, tag }]);

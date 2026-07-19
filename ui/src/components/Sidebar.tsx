@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { findingsFor, useStore } from "../state/store";
-import type { Finding, Model, Wall } from "../model/types";
+import type { Finding, Model, Stair, Wall } from "../model/types";
 import { formatFtIn, wallLength } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
 import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
 import { SpaceDashboard } from "./SpaceDashboard";
 import { RoofDesigner } from "./RoofDesigner";
+import { StairDesigner } from "./StairDesigner";
 import { AssemblyEditor } from "./AssemblyEditor";
 
 // The right-hand inspector: selection details + provenance + inline findings, the
@@ -26,6 +27,7 @@ export function Sidebar() {
       {model && <AssemblyPicker model={model} onEdit={() => setEditingAssemblies(true)} />}
       {model && <BuildingScienceDashboard science={model.building_science} />}
       {model && <SpaceDashboard summary={model.space_summary} />}
+      {model && <StairDesigner model={model} />}
       {model && <RoofDesigner model={model} />}
       {model && <FindingsPanel findings={model.findings} />}
       {editingAssemblies && <AssemblyEditor onClose={() => setEditingAssemblies(false)} />}
@@ -113,7 +115,27 @@ function SelectionInspector({
       </div>
     );
   }
+  if (kind === "stair") {
+    const stair = (model.stairs ?? []).find((item) => item.uid === uid);
+    if (!stair) return null;
+    return <StairInspector model={model} stair={stair} />;
+  }
   return null;
+}
+
+function StairInspector({ model, stair }: { model: Model; stair: Stair }) {
+  const rise = storeyRise(model, stair);
+  return <div>
+    <h3>Stair · {stair.tag}</h3>
+    <div className="kv">
+      <span className="k">Route</span><span>{stair.storey} → {stair.to_storey}</span>
+      <span className="k">Rise</span><span>{formatFtIn(rise)}</span>
+      <span className="k">Resolved</span><span>{stair.riser_count} risers · {formatFtIn(stair.tread_depth_m)} tread{stair.winder_count ? ` · ${stair.winder_count} winders` : ""}</span>
+      <span className="k">Framing</span><span>{stair.members.length} members</span>
+    </div>
+    <Provenance p={stair.provenance} />
+    <InlineFindings model={model} uid={stair.uid} />
+  </div>;
 }
 
 function WallInspector({ model, w }: { model: Model; w: Wall }) {
@@ -236,7 +258,9 @@ function FindingsPanel({ findings }: { findings: Finding[] }) {
         ? "opening"
         : model.rooms.some((r) => r.uid === uid)
           ? "room"
-          : null;
+          : (model.stairs ?? []).some((stair) => stair.uid === uid)
+            ? "stair"
+            : null;
     if (kind) select(kind, uid);
   };
   return (
@@ -250,4 +274,10 @@ function FindingsPanel({ findings }: { findings: Finding[] }) {
       ))}
     </div>
   );
+}
+
+function storeyRise(model: Model, stair: Stair): number {
+  const from = model.storeys.find((storey) => storey.tag === stair.storey);
+  const to = model.storeys.find((storey) => storey.tag === stair.to_storey);
+  return from && to ? to.elevation_m - from.elevation_m : 0;
 }

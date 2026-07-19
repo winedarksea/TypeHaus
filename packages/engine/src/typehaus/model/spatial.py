@@ -36,13 +36,15 @@ class Room(Element):
 
 @register_element
 class Stair(Element):
-    """Rise derived from storey elevations; solves treads/risers vs R311.7 (→ 10)."""
+    """Rise derived from storey elevations; solves straight and two-winder flights."""
 
     floor_opening: str  # FloorOpening tag in the storey above
     from_storey: str
     to_storey: str
     width: Length
     run_direction: str = "x"
+    run_reversed: bool = False
+    winder_count: int = 0  # constrained to 0 or 2 by the resolver
     start: Point2D | None = None
 
 

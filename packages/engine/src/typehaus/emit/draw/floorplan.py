@@ -129,14 +129,16 @@ def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
             continue
         xs, ys = [point[0] for point in stair.outline], [point[1] for point in stair.outline]
         minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
-        along_x = any(member.p0[0] != member.p1[0] for member in stair.members[:2])
+        along_x = stair.run_direction == "x"
         for member in stair.members:
-            if member.category != "tread":
+            if member.category not in {"tread", "winder"}:
                 continue
             b.add(Polyline(points=(_in(member.p0), _in(member.p1)), layer="A-STAIR",
                            lineweight=0.25, uid=stair.uid, tag=member.child_key))
         start = (minx, (miny + maxy) / 2) if along_x else ((minx + maxx) / 2, miny)
         end = (maxx, (miny + maxy) / 2) if along_x else ((minx + maxx) / 2, maxy)
+        if stair.run_reversed:
+            start, end = end, start
         b.add(Polyline(points=(_in(start), _in(end)), layer="A-STAIR", lineweight=0.5,
                        uid=stair.uid, tag=f"{stair.tag}-direction"))
         label = f"UP {stair.riser_count} R"

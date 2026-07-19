@@ -447,6 +447,24 @@ def test_stairs_resolve_with_code_risers(catlin_model):
         assert stair.riser_count == 14
         assert stair.riser_height_m <= inch(7.75).meters + 1e-9
         assert stair.tread_depth_m >= inch(10.0).meters - 1e-9
+    attic = stairs["ST-S2A"]
+    assert attic.winder_count == 2
+    assert attic.run_reversed is True
+    assert len([member for member in attic.members if member.category == "winder"]) == 2
+
+
+def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
+    """The editor receives editable inputs alongside resolver-owned stair geometry."""
+    from typehaus.server.model_json import model_to_dict
+
+    stairs = {item["tag"]: item for item in model_to_dict(catlin_model)["stairs"]}
+    assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A"}
+    assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 6).meters, abs=1e-9)
+    assert stairs["ST-B2M"]["floor_opening"] == "FO-M-STAIR"
+    assert stairs["ST-B2M"]["run_direction"] == "y"
+    assert stairs["ST-B2M"]["start"] == pytest.approx([ft(14, 6).meters, ft(25).meters])
+    assert stairs["ST-S2A"]["winder_count"] == 2
+    assert stairs["ST-S2A"]["run_reversed"] is True
 
 
 def test_ifc_emission_when_available(catlin_model, tmp_path):

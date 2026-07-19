@@ -164,7 +164,9 @@ FLOOR = [
 STAIRS = [
     Stair(uid="CST703AAAA", tag="ST-S2A", floor_opening="FO-A-STAIR",
           from_storey="second", to_storey="attic", width=ft(3),
-          run_direction="x", start=pt(ft(22, 8), ft(10, 4))),
+          # Enter north at the east edge, then two lower winders turn the climb west.
+          run_direction="x", run_reversed=True, winder_count=2,
+          start=pt(ft(36), ft(8, 8))),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *ROOFS, *BEAMS, *FLOOR_OPENINGS,
