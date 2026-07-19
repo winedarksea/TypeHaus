@@ -10,6 +10,9 @@ from typehaus.checks.code import mn_residential  # noqa: F401 - register
 from typehaus.checks.registry import (
     CheckContext,
     CheckReport,
+    FramingPreferences,
+    PlumbingPreferences,
+    ReferenceUnderlay,
     JurisdictionProfile,
     Preferences,
     Tier,
@@ -18,8 +21,10 @@ from typehaus.checks.registry import (
     run_checks,
 )
 from typehaus.checks.run import build_context, load_preferences, run, run_from_model
+from typehaus.checks.permit import PermitChecklist, PermitChecklistItem, evaluate_permit_checklist
 
 __all__ = [
     "run", "run_from_model", "build_context", "load_preferences", "run_checks", "registered", "check",
-    "CheckContext", "CheckReport", "Preferences", "JurisdictionProfile", "Tier",
+    "CheckContext", "CheckReport", "Preferences", "FramingPreferences", "PlumbingPreferences", "ReferenceUnderlay", "JurisdictionProfile", "Tier",
+    "PermitChecklist", "PermitChecklistItem", "evaluate_permit_checklist",
 ]

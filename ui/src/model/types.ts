@@ -67,6 +67,58 @@ export interface Room {
   floor_finish: string | null;
 }
 
+export interface Fixture {
+  uid: string;
+  tag: string;
+  storey: string;
+  type: string;
+  room: string;
+  wall_ref: string | null;
+  position: Vec2;
+  footprint_m: [number, number];
+  clearance_m: [number, number, number, number] | null;
+  needs: string[];
+}
+
+export interface Furniture {
+  uid: string;
+  tag: string;
+  storey: string;
+  type: string;
+  position: Vec2;
+  footprint_m: [number, number];
+  height_m: number;
+  storage: boolean;
+  clearance_m: [number, number, number, number] | null;
+  mesh: string | null;
+}
+
+export interface SpaceSummaryRow {
+  storey?: string;
+  conditioned_sf: number;
+  unconditioned_sf: number;
+  usable_sf: number;
+  storage_sf: number;
+  storage_ratio: number;
+}
+
+export interface SpaceSummary {
+  storeys: (SpaceSummaryRow & { storey: string })[];
+  overall: SpaceSummaryRow;
+}
+
+export interface Underlay {
+  path: string;
+  storey: string;
+  origin_x_m: number;
+  origin_y_m: number;
+  width_m: number;
+  height_m: number;
+  rotation_deg: number;
+  opacity: number;
+  url: string;
+}
+
 export interface Condition {
   kind: string;
   key: string;
@@ -121,6 +173,18 @@ export interface Storey {
   ceiling_m: number;
 }
 
+export interface Roof {
+  uid: string;
+  tag: string;
+  storey: string;
+  form: string;
+  footprint: Vec2[];
+  eave_z_m: number;
+  ridge_z_m: number;
+  ridge_direction: "x" | "y";
+  assembly: string;
+}
+
 export type Severity = "error" | "warn" | "info";
 
 export interface Finding {
@@ -142,10 +206,16 @@ export interface Model {
   projectNorth: number;
   findings: Finding[];
   project: { name: string; uuid: string };
+  site?: { lat: number; lon: number; true_north_deg: number };
+  underlays?: Underlay[];
   storeys: Storey[];
   walls: Wall[];
   openings: Opening[];
+  roofs?: Roof[];
+  fixtures?: Fixture[];
+  furniture?: Furniture[];
   rooms: Room[];
+  space_summary?: SpaceSummary;
   conditions: Condition[];
   stack_edges: StackEdge[];
   building_science?: BuildingScience | null;

@@ -123,6 +123,31 @@ def create_app(house_dir: Path) -> Any:
         emit_glb(state.model, out)
         return FileResponse(out, media_type="model/gltf-binary")
 
+    @app.get("/underlay/{asset_path:path}")
+    def get_underlay(asset_path: str) -> Any:
+        """Serve only configured project-reference files, never arbitrary local paths."""
+        candidate = (state.house_dir / asset_path).resolve()
+        root = _reference_root(state.house_dir)
+        try:
+            candidate.relative_to(root)
+        except ValueError:
+            return JSONResponse({"error": "underlay path escapes the project reference root"}, status_code=403)
+        if not candidate.is_file():
+            return JSONResponse({"error": "underlay file not found"}, status_code=404)
+        return FileResponse(candidate)
+
+    @app.put("/underlays/calibrate")
+    async def calibrate_underlay(body: dict[str, Any]) -> Any:
+        """Persist a view-only underlay transform without touching authored plan geometry."""
+        try:
+            _write_underlay_calibration(state.house_dir / "preferences.toml", body)
+        except (KeyError, TypeError, ValueError) as exc:
+            return JSONResponse({"error": str(exc)}, status_code=422)
+        state.rebuild()
+        await bus.broadcast({"type": "file-changed", "revision": state.coordinator.revision(),
+                             "ok": state.ok})
+        return JSONResponse({"ok": state.ok})
+
     @app.post("/build")
     async def post_build() -> Any:
         state.rebuild()
@@ -147,6 +172,44 @@ def create_app(house_dir: Path) -> Any:
             bus.disconnect(ws)
 
     return app
+
+
+def _reference_root(house_dir: Path) -> Path:
+    """A checkout may keep reference drawings beside ``houses/``; standalone houses stay local."""
+    return house_dir.parent.parent if house_dir.parent.name == "houses" else house_dir
+
+
+def _write_underlay_calibration(preferences_path: Path, body: dict[str, Any]) -> None:
+    """Replace one repeated TOML underlay table while preserving unrelated preferences.
+
+    Underlays are a deliberately small, schema-owned TOML surface.  Rewriting just the matched
+    table avoids introducing a general-purpose TOML formatter into the source-writeback path.
+    """
+    path = str(body["path"])
+    storey = str(body["storey"])
+    numeric_keys = ("origin_x_m", "origin_y_m", "width_m", "height_m", "rotation_deg", "opacity")
+    values = {key: float(body[key]) for key in numeric_keys}
+    if values["width_m"] <= 0 or values["height_m"] <= 0 or not 0 < values["opacity"] <= 1:
+        raise ValueError("underlay width/height must be positive and opacity must be in (0, 1]")
+    lines = preferences_path.read_text().splitlines(keepends=True)
+    starts = [index for index, line in enumerate(lines) if line.strip() == "[[underlay]]"]
+    for start in starts:
+        end = next((index for index in range(start + 1, len(lines))
+                    if lines[index].lstrip().startswith("[")), len(lines))
+        fields = {}
+        for line in lines[start + 1:end]:
+            if "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            fields[key.strip()] = value.strip().strip('"')
+        if fields.get("path") != path or fields.get("storey") != storey:
+            continue
+        replacement = ["[[underlay]]\n", f'path = "{path}"\n', f'storey = "{storey}"\n']
+        replacement.extend(f"{key} = {values[key]:.8g}\n" for key in numeric_keys)
+        lines[start:end] = replacement
+        preferences_path.write_text("".join(lines))
+        return
+    raise ValueError(f"configured underlay not found for {storey}: {path}")
 
 
 async def _history(state: ProjectState, bus: EventBus, undo: bool) -> Any:

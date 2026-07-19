@@ -21,6 +21,9 @@ uv sync                                   # or: pip install -e packages/engine
 haus ls houses/starter --summary          # compact plan digest
 haus build houses/starter                 # -> houses/starter/out/model.json (+ IFC)
 haus check houses/starter                 # integrity/code/advisory/structural findings
+haus permit-check houses/catlin           # declared MN permit-submittal subset
+haus print houses/catlin --handoff        # gate + permit PDF, DXFs, architect bundle
+haus import furniture chair.glb houses/catlin --room RM-M-LIVING --at-m 7.0,4.0
 haus explain HOUSE_WALL_2X6_WITH_ZIPR houses/starter --card   # assembly section card SVG
 haus explain transitions houses/starter   # derived boundary conditions
 ```

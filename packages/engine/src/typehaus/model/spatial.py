@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from typehaus.model.assembly import Layer
 from typehaus.model.base import Element
-from typehaus.model.enums import Occupancy, RoofForm
+from typehaus.model.enums import AlarmKind, Occupancy, RoofForm
 from typehaus.model.floors import FinishZone
 from typehaus.model.refs import FollowRoof
 from typehaus.model.registry import register_constructor, register_element
@@ -78,12 +78,21 @@ class Annotation(Element):
 
 
 @register_element
+class Alarm(Element):
+    """A smoke/CO life-safety symbol associated with one room (M3)."""
+
+    kind: AlarmKind
+    room: str
+
+
+@register_element
 class Fixture(Element):
     """A placed plumbing/equipment fixture (M3)."""
 
     type_ref: str
     room: str
     position: Point2D
+    wall_ref: str | None = None  # drain-stack wall when services need a vertical chase
     rotation: object | None = None  # Angle | None
 
 
@@ -102,6 +111,7 @@ for _name, _obj in (
     ("Roof", Roof),
     ("GridAxis", GridAxis),
     ("Annotation", Annotation),
+    ("Alarm", Alarm),
     ("Fixture", Fixture),
     ("Furniture", Furniture),
     ("WallLiningException", WallLiningException),

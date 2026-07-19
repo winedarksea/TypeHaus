@@ -62,7 +62,7 @@ BREEZEWAY_PADS = [
     Pad(uid=f"CP{i}00AAAAA", tag=f"PD-BW-{i}",
         outline=(pt(ft(x - 1), ft(y - 1)), pt(ft(x + 1), ft(y - 1)),
                  pt(ft(x + 1), ft(y + 1)), pt(ft(x - 1), ft(y + 1))),
-        thickness=ft(1))
+        thickness=ft(1), bottom_elevation=ft(-_FROST))
     for i, (x, y) in enumerate(_POST_XY, start=1)
 ]
 

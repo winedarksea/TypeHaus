@@ -14,6 +14,8 @@ and opening voids. Thin layers honor ``ExaggerationSpec`` with true-dimension la
 from __future__ import annotations
 
 from typehaus.model.views import Slice
+from typehaus.model.enums import SliceKind
+from typehaus.quantities import m, pt
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.emit.draw.scene import Hatch, Polyline, Scene, SceneBuilder, Text
 
@@ -119,13 +121,25 @@ def build_section(model: ResolvedModel, view: Slice) -> Scene:
     return b.build()
 
 
+def build_center_section(model: ResolvedModel) -> Scene:
+    """Default north/south building section for headless rendering and A-301."""
+    house_walls = [wall for wall in model.walls if wall.tag.startswith("W-")
+                   and wall.storey in {"basement", "main", "second", "attic"}]
+    stations = [coordinate for wall in house_walls for coordinate in (wall.axis[0][1], wall.axis[1][1])]
+    station = (min(stations) + max(stations)) / 2.0 if stations else 0.0
+    view = Slice(uid="RNDSEC00001", tag="SECTION-HOUSE-CENTER", kind=SliceKind.SECTION,
+                 cut_origin=pt(m(0), m(station)), cut_direction="x")
+    return build_section(model, view)
+
+
 def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
                    is_detail, min_draw) -> None:
     openings = [op for op in model.openings if op.host_wall == wall.tag]
     label_z = None
+    wall_top = _wall_top_at_cut(wall, direction, station)
     for layer in wall.layers:
         for (u0, u1) in _ring_cut_intervals(layer.polygon, direction, station):
-            rect = _clip_rect(u0, u1, wall.z0_m, wall.z1_m, crop)
+            rect = _clip_rect(u0, u1, wall.z0_m, wall_top, crop)
             if rect is None:
                 continue
             ru0, ru1, rz0, rz1 = rect
@@ -191,6 +205,18 @@ def _opening_splits(wall, openings, direction, station, z0, z1):
     if head_z < z1:
         bands.append((max(head_z, z0), z1, False))
     return bands or [(z0, z1, False)]
+
+
+def _wall_top_at_cut(wall: ResolvedWall, direction: str, station: float) -> float:
+    """Interpolate a ``ToRoof`` wall's raked top at the section intersection."""
+    start_top = wall.top_z0_m if wall.top_z0_m is not None else wall.z1_m
+    end_top = wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
+    (x0, y0), (x1, y1) = wall.axis
+    cross0, cross1 = (y0, y1) if direction == "x" else (x0, x1)
+    if abs(cross1 - cross0) < 1e-9:
+        return max(start_top, end_top)
+    fraction = min(1.0, max(0.0, (station - cross0) / (cross1 - cross0)))
+    return start_top + (end_top - start_top) * fraction
 
 
 def _emit_roof_cut(b, model, roof, direction, station, crop) -> None:

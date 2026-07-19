@@ -9,6 +9,7 @@ from typehaus.model import (
     Layer,
     LayerFunction,
     MasonrySpec,
+    PartitionLayout,
     inch,
     r_us,
 )
@@ -100,7 +101,9 @@ HOUSE_ROOF = Assembly(
     ),
 )
 
-# STC-rated interior partition preset (#50) — value is an empirical lab-test lookup.
+# STC-rated interior partition presets (#50).  STC is always a published test result,
+# never a value calculated from the layers below.  Preserve each source's framing and
+# lining configuration when selecting one; substitutions require a new tested rating.
 INT_2X4_PARTITION = Assembly(
     tag="INT_2X4_PARTITION",
     layers=(
@@ -108,11 +111,118 @@ INT_2X4_PARTITION = Assembly(
               function=LayerFunction.FINISH),
         Layer(name="stud", material_ref="spf", thickness=inch(3.5),
               function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x4")),
+        Layer(name="mineral-wool", material_ref="mineral-wool", thickness=inch(3.5),
+              function=LayerFunction.INSULATION),
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
-    stc=34,
-    source="Generic single-stud 1/2\" GWB both sides (GA-600 class). Generic assumption.",
+    stc=36,
+    source=("ROCKWOOL, How to Soundproof a Room: 2x4 wood studs at 16 in. o.c., "
+            "3.5 in. Comfortbatt, 5/8 in. gypsum both sides, STC 36; "
+            "https://www.rockwool.com/north-america/advice-and-inspiration/blog/"
+            "using-acoustic-insulation-to-soundproof-a-room/"),
+)
+
+INT_2X4_RC = Assembly(
+    tag="INT_2X4_RC",
+    layers=(
+        Layer(name="gwb-resilient", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="resilient-channel", material_ref="resilient-channel", thickness=inch(0.5),
+              function=LayerFunction.FURRING,
+              framing=FramingSpec(member="25 ga. resilient channel", spacing=inch(24),
+                                  direction="horizontal")),
+        Layer(name="stud", material_ref="spf", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", spacing=inch(16))),
+        Layer(name="fiberglass", material_ref="fiberglass", thickness=inch(3.5),
+              function=LayerFunction.INSULATION),
+        Layer(name="gwb-direct", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+    ),
+    stc=48,
+    source=("USG/UL U305, USG-US-CA-EN-W-P-1-08: 2x4 wood studs at 16 in. o.c., "
+            "3.5 in. fiberglass, 1/2 in. resilient channel at 24 in. o.c., 5/8 in. "
+            "gypsum each side, STC 48; "
+            "https://assemblies-tools.usg.com/content/usgcom/en_CA_east/design-studio/"
+            "wall-assemblies/assembly-detail.30235.html"),
+)
+
+INT_2X4_RC_DOUBLE_GWB = Assembly(
+    tag="INT_2X4_RC_DOUBLE_GWB",
+    layers=(
+        Layer(name="gwb-a-outer", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="gwb-a-inner", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="resilient-channel", material_ref="resilient-channel", thickness=inch(0.5),
+              function=LayerFunction.FURRING,
+              framing=FramingSpec(member="25 ga. resilient channel", spacing=inch(24),
+                                  direction="horizontal")),
+        Layer(name="stud", material_ref="spf", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", spacing=inch(16))),
+        Layer(name="fiberglass", material_ref="fiberglass", thickness=inch(3.5),
+              function=LayerFunction.INSULATION),
+        Layer(name="gwb-b-inner", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="gwb-b-outer", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+    ),
+    stc=54,
+    source=("USG/UL U301: 2x4 wood studs at 16 in. o.c., 3.5 in. fiberglass, 1/2 in. "
+            "resilient channel at 24 in. o.c., two 5/8 in. gypsum layers each side, STC 54; "
+            "https://assemblies-tools.usg.com/content/usgcom/en/design-studio/"
+            "assemblies/assembly-detail.30269.html"),
+)
+
+INT_2X4_STAGGERED_DOUBLE_GWB = Assembly(
+    tag="INT_2X4_STAGGERED_DOUBLE_GWB",
+    layers=(
+        Layer(name="gwb-a-outer", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="gwb-a-inner", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="staggered-studs", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", spacing=inch(8),
+                                  layout=PartitionLayout.STAGGERED,
+                                  stagger_gap=inch(1.5))),
+        Layer(name="fiberglass", material_ref="fiberglass", thickness=inch(3.5),
+              function=LayerFunction.INSULATION),
+        Layer(name="gwb-b-inner", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="gwb-b-outer", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+    ),
+    stc=52,
+    source=("USG/GA WP 5530: 2x4 wood studs staggered at 8 in. o.c. on 2x6 plates, "
+            "3.5 in. fiberglass, two 5/8 in. gypsum layers each side, STC 52; "
+            "https://assemblies-tools.usg.com/content/usgcom/en/design-studio/"
+            "assemblies/assembly-detail.30226.html"),
+)
+
+INT_2X4_DOUBLE_STUD_MINERAL_WOOL = Assembly(
+    tag="INT_2X4_DOUBLE_STUD_MINERAL_WOOL",
+    layers=(
+        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.5),
+              function=LayerFunction.FINISH),
+        Layer(name="double-studs", material_ref="spf", thickness=inch(8.0),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", spacing=inch(16),
+                                  layout=PartitionLayout.DOUBLE,
+                                  stagger_gap=inch(1))),
+        Layer(name="mineral-wool", material_ref="mineral-wool", thickness=inch(3.5),
+              function=LayerFunction.INSULATION),
+        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.5),
+              function=LayerFunction.FINISH),
+    ),
+    stc=52,
+    source=("ROCKWOOL Acoustic Wall Assemblies Catalog, IWS-11 / NGC 2010072: 2x4 "
+            "wood double-stud wall at 16 in. o.c. with a 1 in. air gap, 3.5 in. "
+            "Comfortbatt per row, 1/2 in. gypsum each side, STC 52; "
+            "https://www.rockwool.com/syssiteassets/o2-rockwool/documentation/technical-guides/"
+            "commercial/acoustic-wall-assemblies-catalog-techincal-guide.pdf"),
 )
 
 STARTER_FLOOR = {"subfloor": "plywood-subfloor", "joist": "11.875 I-joist"}
@@ -124,4 +234,8 @@ ALL_ASSEMBLIES: tuple[Assembly, ...] = (
     GARAGE_ICF,
     HOUSE_ROOF,
     INT_2X4_PARTITION,
+    INT_2X4_RC,
+    INT_2X4_RC_DOUBLE_GWB,
+    INT_2X4_STAGGERED_DOUBLE_GWB,
+    INT_2X4_DOUBLE_STUD_MINERAL_WOOL,
 )

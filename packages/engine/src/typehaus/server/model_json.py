@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from typehaus.checks.registry import Preferences
 from typehaus.findings import Finding
@@ -35,6 +36,8 @@ def model_to_dict(
     findings: list[Finding] | None = None,
     preferences: Preferences | None = None,
 ) -> dict[str, Any]:
+    from typehaus.server.space_summary import build_space_summary
+
     building_science: dict[str, Any] | None = None
     if preferences is not None:
         from typehaus.checks.building_science.condensation import analyze_assembly
@@ -64,6 +67,20 @@ def model_to_dict(
             "name": model.plan.project.name,
             "uuid": str(model.plan.project.project_uuid),
         },
+        "site": {
+            "lat": model.plan.project.site.lat,
+            "lon": model.plan.project.site.lon,
+            "true_north_deg": model.plan.project.site.true_north.degrees,
+        },
+        "underlays": [
+            {"path": item.path, "storey": item.storey, "origin_x_m": item.origin_x_m,
+             "origin_y_m": item.origin_y_m, "width_m": item.width_m, "height_m": item.height_m,
+             "rotation_deg": item.rotation_deg, "opacity": item.opacity,
+             # Encode '../' rather than letting the browser normalize a reference path before
+             # it reaches the deliberately sandboxed /underlay route.
+             "url": "/underlay/" + quote(item.path, safe="")}
+            for item in (preferences.underlays if preferences is not None else ())
+        ],
         "storeys": [
             {"tag": s.tag, "elevation_m": s.elevation.meters,
              "ceiling_m": s.default_ceiling_height.meters}
@@ -74,7 +91,8 @@ def model_to_dict(
                 "uid": w.uid, "tag": w.tag, "storey": w.storey, "assembly": w.assembly,
                 "provenance": _provenance(provenance, w.tag),
                 "axis": [list(w.axis[0]), list(w.axis[1])],
-                "z0_m": w.z0_m, "z1_m": w.z1_m, "is_foundation": w.is_foundation,
+                "z0_m": w.z0_m, "z1_m": w.z1_m, "top_z0_m": w.top_z0_m,
+                "top_z1_m": w.top_z1_m, "is_foundation": w.is_foundation,
                 "layers": [
                     {"name": ly.name, "function": ly.function, "material": ly.material_ref,
                      "thickness_m": ly.thickness_m, "polygon": [list(p) for p in ly.polygon],
@@ -83,7 +101,8 @@ def model_to_dict(
                 ],
                 "members": [
                     {"key": m.child_key, "category": m.category, "profile": m.profile,
-                     "p0": list(m.p0), "p1": list(m.p1), "z0_m": m.z0_m, "z1_m": m.z1_m}
+                     "p0": list(m.p0), "p1": list(m.p1), "z0_m": m.z0_m, "z1_m": m.z1_m,
+                     "z0_end_m": m.z0_end_m, "z1_end_m": m.z1_end_m}
                     for m in w.members
                 ],
             }
@@ -95,6 +114,45 @@ def model_to_dict(
              "width_m": o.width_m, "height_m": o.height_m, "sill_m": o.sill_m,
              "center_along_m": o.center_along_m}
             for o in model.openings
+        ],
+        "alarms": [
+            {"uid": alarm.uid, "tag": alarm.tag, "storey": storey.tag,
+             "kind": alarm.kind.value, "room": alarm.room,
+             "provenance": _provenance(provenance, alarm.tag)}
+            for storey in model.plan.storeys
+            for alarm in model.plan.storey_elements(storey.tag)
+            if alarm.element_kind == "Alarm"
+        ],
+        "fixtures": [
+            {"uid": fixture.uid, "tag": fixture.tag, "storey": storey.tag,
+             "type": fixture.type_ref, "room": fixture.room,
+             "wall_ref": fixture.wall_ref,
+             "position": list(fixture.position.xy_m),
+             "provenance": _provenance(provenance, fixture.tag),
+             "footprint_m": [dimension.meters for dimension in fixture_type.footprint],
+             "clearance_m": ([dimension.meters for dimension in fixture_type.clearance]
+                             if fixture_type.clearance is not None else None),
+             "needs": sorted(service.value for service in fixture_type.needs)}
+            for storey in model.plan.storeys
+            for fixture in model.plan.storey_elements(storey.tag)
+            if fixture.element_kind == "Fixture"
+            for fixture_type in model.plan.library.fixture_types
+            if fixture_type.tag == fixture.type_ref
+        ],
+        "furniture": [
+            {"uid": furniture.uid, "tag": furniture.tag, "storey": storey.tag,
+             "type": furniture.type_ref, "position": list(furniture.position.xy_m),
+             "provenance": _provenance(provenance, furniture.tag),
+             "footprint_m": [dimension.meters for dimension in furniture_type.footprint],
+             "height_m": furniture_type.height.meters, "storage": furniture_type.storage,
+             "clearance_m": ([dimension.meters for dimension in furniture_type.clearance]
+                             if furniture_type.clearance is not None else None),
+             "mesh": furniture_type.mesh.path if furniture_type.mesh is not None else None}
+            for storey in model.plan.storeys
+            for furniture in model.plan.storey_elements(storey.tag)
+            if furniture.element_kind == "Furniture"
+            for furniture_type in model.plan.library.furniture_types
+            if furniture_type.tag == furniture.type_ref
         ],
         "solids": [
             {"uid": solid.uid, "tag": solid.tag, "storey": solid.storey,
@@ -109,6 +167,13 @@ def model_to_dict(
              "eave_z_m": roof.eave_z_m, "ridge_z_m": roof.ridge_z_m,
              "ridge_direction": roof.ridge_direction, "assembly": roof.assembly,
              "surface_area_m2": roof.surface_area_m2,
+             "members": [
+                 {"key": member.child_key, "category": member.category,
+                  "profile": member.profile, "p0": list(member.p0), "p1": list(member.p1),
+                  "z0_m": member.z0_m, "z1_m": member.z1_m,
+                  "z0_end_m": member.z0_end_m, "z1_end_m": member.z1_end_m}
+                 for member in roof.members
+             ],
              "provenance": _provenance(provenance, roof.tag)}
             for roof in sorted(model.roofs, key=lambda item: item.uid)
         ],
@@ -137,6 +202,12 @@ def model_to_dict(
              ]}
             for floor in sorted(model.floors, key=lambda item: item.uid)
         ],
+        "floor_heat": [
+            {"uid": zone.uid, "tag": zone.tag, "storey": zone.storey, "system": zone.system,
+             "zone": [list(point) for point in zone.zone], "spacing_m": zone.spacing_m,
+             "wire_length_m": zone.wire_length_m}
+            for zone in model.floor_heat
+        ],
         "rooms": [
             {"uid": r.uid, "tag": r.tag, "storey": r.storey, "occupancy": r.occupancy,
              "provenance": _provenance(provenance, r.tag),
@@ -144,6 +215,7 @@ def model_to_dict(
              "clear_face": [list(p) for p in r.clear_face], "floor_finish": r.floor_finish}
             for r in model.rooms
         ],
+        "space_summary": build_space_summary(model),
         "conditions": [
             {"kind": c.kind.value, "key": c.key, "elements": list(c.element_tags)}
             for c in model.conditions

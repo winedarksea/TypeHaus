@@ -178,6 +178,9 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     target = new THREE.Vector3(0, 1.2, 0);
 
     for (const w of m.walls) buildWall(content, w, cx, cz, mode, picks, byUid);
+    for (const furniture of m.furniture ?? [])
+      buildFurniture(content, furniture, cx, cz, mode,
+        m.storeys.find((storey) => storey.tag === furniture.storey)?.elevation_m ?? 0);
 
     // frame the model
     const box = new THREE.Box3().setFromObject(content);
@@ -206,6 +209,26 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
       mount.removeChild(el);
     },
   };
+}
+
+function buildFurniture(
+  parent: THREE.Group,
+  furniture: NonNullable<Model["furniture"]>[number],
+  cx: number,
+  cz: number,
+  mode: "nordic" | "schematic",
+  elevation: number,
+) {
+  const geometry = new THREE.BoxGeometry(
+    furniture.footprint_m[0], furniture.height_m, furniture.footprint_m[1],
+  );
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x704c34, roughness: mode === "nordic" ? 0.88 : 1, flatShading: mode === "schematic",
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.position.set(furniture.position[0] - cx, elevation + furniture.height_m / 2,
+    furniture.position[1] - cz);
+  parent.add(mesh);
 }
 
 // Build one wall: an extruded prism per layer polygon + framing lines. World plan (x,y)

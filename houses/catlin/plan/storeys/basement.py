@@ -4,13 +4,17 @@
 # concrete exterior face so the 4" of exterior XPS stacks directly under the framed
 # wall's 4" polyiso+EPS (#43 control-layer continuity).
 from typehaus import (
+    Alarm,
+    AlarmKind,
     Door,
+    FloorHeat,
     FloorOpening,
     FoundationWall,
     Layer,
     LayerFunction,
     Node,
     Occupancy,
+    RadiantSystem,
     Room,
     Slab,
     Wall,
@@ -18,6 +22,7 @@ from typehaus import (
     face,
     from_node,
     ft,
+    in_slab,
     inch,
     pt,
 )
@@ -127,13 +132,13 @@ OPENINGS = [
     Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3", type_ref="DT-PATIO60",
          position=from_node("N-B-S2", ft(1, 4))),
     Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2",
-           type_ref="WT-3050", position=from_node("N-B-S1", ft(2, 9)),
+           type_ref="WT-3050", position=from_node("N-B-S1", ft(2, 6)),
            sill_height=ft(3)),
     Window(uid="CBX302AAAA", tag="WIN-B-WSHOP", host="W-B-S1",
-           type_ref="WT-3050", position=from_node("N-B-SW", ft(3, 9)),
+           type_ref="WT-3050", position=from_node("N-B-SW", ft(3, 10)),
            sill_height=ft(3)),
     Window(uid="CBX303AAAA", tag="WIN-B-GYM", host="W-B-S3",
-           type_ref="WT-3050", position=from_node("N-B-SE", ft(4, 9)),
+           type_ref="WT-3050", position=from_node("N-B-SE", ft(4, 6)),
            sill_height=ft(3)),
 ]
 
@@ -156,6 +161,16 @@ ROOMS = [
          occupancy=Occupancy.LIVING, floor_finish="rubber"),
 ]
 
+ALARMS = [
+    Alarm(uid="CBA701AAAA", tag="AL-B-COMBO", kind=AlarmKind.COMBO, room="RM-B-PLAY-N"),
+]
+
+FLOOR_HEAT = [
+    FloorHeat(uid="CBH801AAAA", tag="FH-B-SAUNA", room_ref="RM-B-SAUNA",
+              system=RadiantSystem.ELECTRIC, spacing=inch(6), embed=in_slab(inch(1.5)),
+              stat=pt(ft(12), ft(14))),
+]
+
 SLABS = [
     Slab(uid="CBS501AAAA", tag="SL-B-FLOOR",
          outline=(pt(ft(0), ft(0)), pt(ft(36), ft(0)), pt(ft(36), ft(36)),
@@ -167,4 +182,4 @@ FLOOR_OPENINGS = [
     # Shower recess is a finish-zone concern; the stair arrives via the slab above.
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *SLABS, *FLOOR_OPENINGS]
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SLABS, *FLOOR_OPENINGS]

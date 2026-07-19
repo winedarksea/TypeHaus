@@ -99,6 +99,14 @@ def resolve_stacking(model: ResolvedModel) -> list[Finding]:
                     key=f"storey_stack:rim:{'|'.join(asms)}",
                 )
             )
+            if lw.is_foundation and not uw.is_foundation:
+                model.conditions.append(
+                    BoundaryCondition(
+                        kind=ConditionKind.WALL_FOUNDATION, assemblies=asms,
+                        detail="foundation-to-framed", element_tags=(lw.tag, uw.tag),
+                        key=f"wall_foundation:{'|'.join(asms)}",
+                    )
+                )
             if width_change:
                 model.conditions.append(
                     BoundaryCondition(

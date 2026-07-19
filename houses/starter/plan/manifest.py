@@ -49,6 +49,6 @@ PLAN = (
     )
     .with_elements(
         "upper",
-        [*upper.NODES, *upper.WALLS, *upper.OPENINGS, *upper.ROOMS],
+        [*upper.NODES, *upper.WALLS, *upper.OPENINGS, *upper.ROOMS, *upper.ALARMS],
     )
 )

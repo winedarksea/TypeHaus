@@ -66,6 +66,128 @@ def control_layer_continuity(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+@check(Tier.ADVISORY, "advisory.wet_wall_depth")
+def wet_wall_depth(ctx: CheckContext) -> list[Finding]:
+    """Drain fixtures need a real service chase, not an assumed 2x4-wall stack."""
+    from typehaus.model.enums import Service
+
+    types = {item.tag: item for item in ctx.plan.library.fixture_types}
+    required = ctx.preferences.plumbing.drain_stack_required_structure_in * 0.0254
+    out: list[Finding] = []
+    for fixture in (element for element in ctx.plan.all_elements()
+                    if element.element_kind == "Fixture"):
+        fixture_type = types.get(fixture.type_ref)
+        if fixture_type is None or Service.DRAIN not in fixture_type.needs:
+            continue
+        if fixture.wall_ref is None:
+            out.append(_warn("advisory.wet_wall_depth",
+                             f"drain fixture {fixture.tag} has no wall_ref for a service chase",
+                             (fixture.tag,)))
+            continue
+        wall = ctx.model.wall(fixture.wall_ref)
+        if wall is None:
+            out.append(_warn("advisory.wet_wall_depth",
+                             f"drain fixture {fixture.tag} references missing wall {fixture.wall_ref}",
+                             (fixture.tag, fixture.wall_ref)))
+            continue
+        structure = next((layer for layer in wall.layers if layer.function == "structure"), None)
+        if structure is None or structure.thickness_m + 1e-9 < required:
+            actual = structure.thickness_m / 0.0254 if structure is not None else 0.0
+            out.append(_warn(
+                "advisory.wet_wall_depth",
+                f"drain fixture {fixture.tag} uses {fixture.wall_ref} with {actual:.1f}\" structure; "
+                f"planning allowance requires {required / 0.0254:.1f}\" for its drain stack",
+                (fixture.tag, fixture.wall_ref),
+            ))
+    return out
+
+
+@check(Tier.ADVISORY, "advisory.floor_heat_fixture_keepout")
+def floor_heat_fixture_keepout(ctx: CheckContext) -> list[Finding]:
+    """Radiant wire zones must not run beneath a fixture's authored footprint."""
+    from shapely.geometry import Polygon, box
+
+    types = {item.tag: item for item in ctx.plan.library.fixture_types}
+    fixtures = [
+        (storey.tag, element)
+        for storey in ctx.plan.storeys
+        for element in ctx.plan.storey_elements(storey.tag)
+        if element.element_kind == "Fixture"
+    ]
+    out: list[Finding] = []
+    for zone in ctx.model.floor_heat:
+        zone_polygon = Polygon(zone.zone)
+        for storey, fixture in fixtures:
+            if storey != zone.storey or fixture.type_ref not in types:
+                continue
+            width, depth = (value.meters for value in types[fixture.type_ref].footprint)
+            x, y = fixture.position.xy_m
+            footprint = box(x - width / 2, y - depth / 2, x + width / 2, y + depth / 2)
+            if zone_polygon.intersects(footprint):
+                out.append(_warn(
+                    "advisory.floor_heat_fixture_keepout",
+                    f"floor-heat zone {zone.tag} overlaps fixture {fixture.tag}; "
+                    "exclude the fixture footprint from the heating loop",
+                    (zone.tag, fixture.tag),
+                ))
+    return out
+
+
+@check(Tier.ADVISORY, "advisory.clearance_overlap")
+def clearance_overlap(ctx: CheckContext) -> list[Finding]:
+    """Surface authored fixture/furniture use-zone conflicts in both CLI and canvas.
+
+    Clearances are intentionally a planning envelope, not a code-compliance calculation:
+    rotations and wall-side semantics remain authored decisions.  A bounding envelope catches
+    the high-value case—another placed object occupies a declared use zone—without quietly
+    asserting that every item has a universal code clearance.
+    """
+    from shapely.geometry import box
+
+    fixtures = {item.tag: item for item in ctx.plan.library.fixture_types}
+    furniture = {item.tag: item for item in ctx.plan.library.furniture_types}
+    placed: list[tuple[str, object, tuple[float, float], tuple[float, float, float, float] | None]] = []
+    for storey in ctx.plan.storeys:
+        for element in ctx.plan.storey_elements(storey.tag):
+            if element.element_kind == "Fixture":
+                item = fixtures.get(element.type_ref)
+            elif element.element_kind == "Furniture":
+                item = furniture.get(element.type_ref)
+            else:
+                continue
+            if item is None:
+                continue
+            footprint = tuple(value.meters for value in item.footprint)
+            clearance = (tuple(value.meters for value in item.clearance)
+                         if item.clearance is not None else None)
+            placed.append((storey.tag, element, footprint, clearance))
+
+    out: list[Finding] = []
+    reported: set[tuple[str, str]] = set()
+    for storey, source, footprint, clearance in placed:
+        if clearance is None:
+            continue
+        front, back, left, right = clearance
+        x, y = source.position.xy_m
+        zone = box(x - footprint[0] / 2 - left, y - footprint[1] / 2 - back,
+                   x + footprint[0] / 2 + right, y + footprint[1] / 2 + front)
+        for other_storey, other, other_footprint, _ in placed:
+            if other_storey != storey or other.uid == source.uid:
+                continue
+            ox, oy = other.position.xy_m
+            other_box = box(ox - other_footprint[0] / 2, oy - other_footprint[1] / 2,
+                            ox + other_footprint[0] / 2, oy + other_footprint[1] / 2)
+            key = tuple(sorted((source.tag, other.tag)))
+            if zone.intersects(other_box) and key not in reported:
+                reported.add(key)
+                out.append(_warn(
+                    "advisory.clearance_overlap",
+                    f"declared clearance for {source.tag} overlaps {other.tag}; review the use zone",
+                    key,
+                ))
+    return out
+
+
 def _matches(pattern: str, key: str) -> bool:
     import fnmatch
 

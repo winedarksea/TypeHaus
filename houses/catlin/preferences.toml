@@ -16,5 +16,47 @@ max_window_ro_unbroken_in = 14
 max_window_ro_nonbearing_in = 30
 max_window_ro_bearing_in = 27
 
+[plumbing]
+drain_stack_required_structure_in = 5.5
+
 [units]
 system = "imperial"
+
+# Reference only: calibrated from the legacy drawing's labelled 24' garage width.
+# These pages intentionally remain dim and are never permit/model geometry; the new 36'
+# structural module and 16 in. grid remain authoritative where the old page disagrees.
+[[underlay]]
+path = "../../catlin_floorplan/Colin House - Basement • Level 1.png"
+storey = "basement"
+origin_x_m = -2.55
+origin_y_m = -2.70
+width_m = 16.30
+height_m = 22.50
+opacity = 0.16
+
+[[underlay]]
+path = "../../catlin_floorplan/Colin House - 1st Floor.png"
+storey = "main"
+origin_x_m = -2.55
+origin_y_m = -2.70
+width_m = 16.30
+height_m = 22.50
+opacity = 0.16
+
+[[underlay]]
+path = "../../catlin_floorplan/Colin House - 2nd Floor.png"
+storey = "second"
+origin_x_m = -2.55
+origin_y_m = -2.70
+width_m = 16.30
+height_m = 22.50
+opacity = 0.16
+
+[[underlay]]
+path = "../../catlin_floorplan/Colin House - 3rd Floor.png"
+storey = "attic"
+origin_x_m = -2.55
+origin_y_m = -2.70
+width_m = 16.30
+height_m = 22.50
+opacity = 0.16

@@ -3,6 +3,8 @@
 # 5' knee walls east/west (eave sides), gable walls north/south frame ToRoof,
 # ridge runs N-S over the center wall line, 4:12, zero overhang (first-class).
 from typehaus import (
+    Alarm,
+    AlarmKind,
     Beam,
     Door,
     FloorOpening,
@@ -99,15 +101,15 @@ OPENINGS = [
     Window(uid="CAX301AAAA", tag="WIN-A-DEN-S", host="W-A-S2", type_ref="WT-3060",
            position=from_node("N-A-S1", ft(2, 9)), sill_height=ft(2, 6)),
     Window(uid="CAX302AAAA", tag="WIN-A-STUDY-S1", host="W-A-S3",
-           type_ref="WT-3060", position=from_node("N-A-S2", ft(6, 5)),
+           type_ref="WT-3060", position=from_node("N-A-S2", ft(6, 9)),
            sill_height=ft(2, 6)),
     Window(uid="CAX303AAAA", tag="WIN-A-STUDY-S2", host="W-A-S3",
-           type_ref="WT-3060", position=from_node("N-A-S2", ft(11, 9)),
+           type_ref="WT-3060", position=from_node("N-A-S2", ft(12, 1)),
            sill_height=ft(2, 6)),
     Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3060",
-           position=from_node("N-A-NW", ft(6, 5)), sill_height=ft(2, 6)),
+           position=from_node("N-A-NW", ft(6, 1)), sill_height=ft(2, 6)),
     Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-3060",
-           position=from_node("N-A-NE", ft(6, 5)), sill_height=ft(2, 6)),
+           position=from_node("N-A-NE", ft(6, 9)), sill_height=ft(2, 6)),
     Window(uid="CAX306AAAA", tag="WIN-A-W-SM", host="W-A-W1", type_ref="WT-1448",
            position=from_node("N-A-NW", ft(17, 5)), sill_height=ft(0, 8)),
 ]
@@ -125,6 +127,10 @@ ROOMS = [
     Room(uid="CAR404AAAA", tag="RM-A-STUDY", seed=pt(ft(27), ft(4)),
          occupancy=Occupancy.OFFICE, floor_finish="oak",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
+]
+
+ALARMS = [
+    Alarm(uid="CAA701AAAA", tag="AL-A-COMBO", kind=AlarmKind.COMBO, room="RM-A-WEST"),
 ]
 
 # The hot roof itself: gable, 4:12, ridge N-S, zero overhang (first-class #29).
@@ -161,5 +167,5 @@ STAIRS = [
           run_direction="x", start=pt(ft(22, 8), ft(10, 4))),
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS, *BEAMS, *FLOOR_OPENINGS,
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *ROOFS, *BEAMS, *FLOOR_OPENINGS,
             *FLOOR, *STAIRS]

@@ -108,6 +108,44 @@ def check(
     raise typer.Exit(1 if report.errors else 0)
 
 
+@app.command(name="permit-check")
+def permit_check(
+    house: Optional[Path] = typer.Argument(None),
+    profile: str = typer.Option("mn-2024"),
+    as_json: bool = typer.Option(False, "--json"),
+) -> None:
+    """Gate the declared M3 permit subset; unknowns and failures stop printing."""
+    import json
+
+    from typehaus.checks import evaluate_permit_checklist, run
+    from typehaus.source import load_plan
+
+    d = _resolve_house(house)
+    loaded = load_plan(d)
+    if loaded.plan is None:
+        _print_findings(loaded.findings)
+        raise typer.Exit(1)
+    report = run(loaded.plan, d, profile=profile)
+    checklist = evaluate_permit_checklist(report, profile)
+    if as_json:
+        console.print_json(json.dumps({
+            "profile": checklist.profile_name,
+            "ok": checklist.ok,
+            "items": [item.__dict__ | {"result": item.result.value}
+                      for item in checklist.items],
+        }))
+    else:
+        table = Table("Result", "Requirement", "Detail")
+        for item in checklist.items:
+            color = {Result.PASS: "green", Result.FAIL: "red", Result.UNKNOWN: "yellow"}[item.result]
+            table.add_row(f"[{color}]{item.result.value.upper()}[/{color}]", item.label, item.detail)
+        console.print(table)
+        console.print(
+            "Declared MN subset only; local amendments, engineering, MEP, and energy review remain external."
+        )
+    raise typer.Exit(0 if checklist.ok else 1)
+
+
 @app.command()
 def energy(
     house: Optional[Path] = typer.Argument(None),
@@ -138,6 +176,76 @@ def energy(
                       f"UA {component.ua_btu_per_hour_f:,.1f}")
     if report.unknown_inputs:
         console.print("[yellow]Not included / unknown: " + ", ".join(report.unknown_inputs) + "[/yellow]")
+
+
+@app.command()
+def takeoff(
+    house: Optional[Path] = typer.Argument(None),
+    as_json: bool = typer.Option(False, "--json"),
+) -> None:
+    """Report resolved framing counts and radiant-wire lengths (M3)."""
+    from collections import Counter
+    import json
+
+    from typehaus.resolve import resolve
+    from typehaus.source import load_plan
+
+    d = _resolve_house(house)
+    loaded = load_plan(d)
+    if loaded.plan is None:
+        _print_findings(loaded.findings)
+        raise typer.Exit(1)
+    model, findings = resolve(loaded.plan)
+    if any(finding.severity is Severity.ERROR for finding in findings):
+        _print_findings(findings)
+        raise typer.Exit(1)
+    framing = Counter(f"{member.category}:{member.profile}" for member in model.all_members())
+    radiant = [{"tag": zone.tag, "storey": zone.storey, "system": zone.system,
+                "wire_length_ft": round(zone.wire_length_m / 0.3048, 1)}
+               for zone in model.floor_heat]
+    payload = {"framing": dict(sorted(framing.items())), "floor_heat": radiant}
+    if as_json:
+        console.print_json(json.dumps(payload))
+        return
+    console.print("[bold]Framing members[/bold]")
+    for item, count in payload["framing"].items():
+        console.print(f"  {item}: {count}")
+    if radiant:
+        console.print("[bold]Radiant floor heat[/bold]")
+        for zone in radiant:
+            console.print(f"  {zone['tag']} ({zone['system']}): {zone['wire_length_ft']:.1f} LF")
+
+
+@app.command(name="import")
+def import_asset(
+    kind: str = typer.Argument(..., help="currently: furniture"),
+    source: Path = typer.Argument(..., help=".glb | .gltf | .dae mesh to import"),
+    house: Optional[Path] = typer.Argument(None, help="House directory (default: cwd)"),
+    tag: Optional[str] = typer.Option(None, help="Type tag suffix (for example lounge-chair)"),
+    name: Optional[str] = typer.Option(None, help="Display name"),
+    room: Optional[str] = typer.Option(None, help="Room tag; requires --at-m"),
+    at_m: Optional[str] = typer.Option(None, help="Placement as 'x,y' meters; requires --room"),
+    storage: bool = typer.Option(False, help="Count this type toward the storage ratio"),
+) -> None:
+    """Import a house-local asset; ``haus import furniture`` is the M3 mesh path."""
+    if kind != "furniture":
+        raise typer.BadParameter("only 'furniture' is supported")
+    position = _parse_xy_meters(at_m) if at_m is not None else None
+    from typehaus.cli.furniture_import import import_furniture_mesh
+
+    result = import_furniture_mesh(source, _resolve_house(house), tag=tag, name=name,
+                                   room=room, position_m=position, storage=storage)
+    console.print(f"imported {result['type']['tag']} → {result['mesh']}")
+    if result["instance"] is not None:
+        console.print(f"placed {result['instance']['tag']} in {result['instance']['room']}")
+
+
+def _parse_xy_meters(value: str) -> tuple[float, float]:
+    try:
+        x, y = (float(item.strip()) for item in value.split(","))
+    except ValueError as exc:
+        raise typer.BadParameter("--at-m must be 'x,y' in meters") from exc
+    return x, y
 
 
 @app.command()
@@ -173,6 +281,7 @@ def explain(
     card: bool = typer.Option(False, help="render the assembly section card"),
     out: Optional[Path] = typer.Option(None, help="write card SVG to this path"),
     transitions: bool = typer.Option(False, help="enumerate derived boundary conditions"),
+    bearing: bool = typer.Option(False, help="show authored bearing walls and resolved stack edges"),
 ) -> None:
     """Explain an element, render an assembly card, or list transitions."""
     from typehaus.source import load_plan
@@ -191,6 +300,27 @@ def explain(
         table = Table("kind", "key", "elements")
         for cond in model.conditions:
             table.add_row(cond.kind.value, cond.key, ", ".join(cond.element_tags))
+        console.print(table)
+        return
+
+    if bearing:
+        from typehaus.resolve import resolve
+
+        model, findings = resolve(plan)
+        _print_findings(findings)
+        table = Table("storey", "bearing wall", "assembly", "supports / stack relation")
+        authored = {element.tag: element for element in plan.all_elements()
+                    if element.element_kind in ("Wall", "FoundationWall")}
+        for wall in sorted(model.walls, key=lambda item: (item.storey, item.tag)):
+            source = authored.get(wall.tag)
+            role = getattr(getattr(source, "structural_role", None), "value", "unknown")
+            lower = [edge.lower_wall for edge in model.stack_edges if edge.upper_wall == wall.tag]
+            upper = [edge.upper_wall for edge in model.stack_edges if edge.lower_wall == wall.tag]
+            if role != "bearing" and not lower and not upper:
+                continue
+            relation = ", ".join([*(f"on {tag}" for tag in lower),
+                                  *(f"to {tag}" for tag in upper)]) or "bearing role"
+            table.add_row(wall.storey, wall.tag, wall.assembly, relation)
         console.print(table)
         return
 
@@ -271,9 +401,11 @@ def render(
 def print_sheets(
     house: Optional[Path] = typer.Argument(None),
     fmt: str = typer.Option("both", help="dxf | pdf | both"),
+    handoff: bool = typer.Option(False, help="also write the architect-handoff bundle"),
 ) -> None:
-    """Write one floor-plan sheet per storey as DXF and/or PDF (WP2.6/2.7)."""
-    from typehaus.emit.draw import build_floorplan, write_dxf, write_pdf
+    """Compose the permit-set PDF, plan DXFs, and optional architect handoff (M3)."""
+    from typehaus.checks import evaluate_permit_checklist, run
+    from typehaus.emit.draw import write_permit_set, write_plan_dxfs
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
 
@@ -282,14 +414,49 @@ def print_sheets(
     if result.plan is None:
         _print_findings(result.findings)
         raise typer.Exit(1)
+    checklist = evaluate_permit_checklist(run(result.plan, d), "mn-2024")
+    if not checklist.ok:
+        console.print("[red]permit print blocked: declared checklist has failures or unknowns[/red]")
+        for item in checklist.items:
+            if item.result is not Result.PASS:
+                console.print(f"  {item.label}: {item.detail}")
+        raise typer.Exit(1)
     model, _ = resolve(result.plan)
-    out = d / "out" / "sheets"
-    for storey in {w.storey for w in model.walls}:
-        scene = build_floorplan(model, storey)
-        if fmt in ("dxf", "both"):
-            console.print(f"wrote {write_dxf(scene, out / f'plan_{storey}.dxf')}")
-        if fmt in ("pdf", "both"):
-            console.print(f"wrote {write_pdf(scene, out / f'plan_{storey}.pdf')}")
+    out = d / "out"
+    if fmt in ("dxf", "both"):
+        for path in write_plan_dxfs(model, out / "sheets"):
+            console.print(f"wrote {path}")
+    if fmt in ("pdf", "both"):
+        path, _ = write_permit_set(model, out / "permit_set.pdf")
+        console.print(f"wrote {path}")
+    if handoff:
+        _write_handoff_bundle(d, model)
+
+
+def _write_handoff_bundle(house: Path, model) -> None:
+    """Copy only generated/project-owned artifacts into the architect handoff."""
+    import shutil
+
+    from typehaus.emit.draw import write_permit_set, write_plan_dxfs
+    from typehaus.server.model_json import write_model_json
+
+    handoff = house / "out" / "handoff"
+    handoff.mkdir(parents=True, exist_ok=True)
+    write_permit_set(model, handoff / "permit_set.pdf")
+    write_plan_dxfs(model, handoff / "dxfs")
+    write_model_json(model, handoff / "model.json")
+    for source, destination in ((house / "brief.md", handoff / "brief.md"),
+                                (house.parent.parent / "plans" / "01-decisions.md",
+                                 handoff / "decision_log.md")):
+        if source.exists():
+            shutil.copy2(source, destination)
+    try:
+        from typehaus.emit.ifc import emit_ifc
+
+        emit_ifc(model, handoff / "model_core.ifc", lod="core")
+    except RuntimeError as exc:
+        console.print(f"[yellow]handoff IFC unavailable: {exc}[/yellow]")
+    console.print(f"wrote {handoff}")
 
 
 @app.command()

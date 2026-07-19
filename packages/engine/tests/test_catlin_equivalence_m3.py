@@ -11,12 +11,15 @@ north, and the freestanding arched sunken-garden structure.
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 from typehaus.quantities import ft, inch
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
+from typehaus.checks import run
+from typehaus.findings import Result
 
 # Old CatlinHouseSpec contract values.
 HOUSE_SIZE_FT = 36.0
@@ -57,6 +60,52 @@ def test_floor_joist_counts_match_old_model(catlin_model):
         assert spans == {GRID_FT}
 
 
+def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables():
+    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+    findings = [finding for finding in report.findings
+                if finding.check_id in {"structural.ijoist_span", "structural.frost_depth"}]
+    assert findings
+    assert all(finding.result is Result.PASS for finding in findings)
+
+
+def test_catlin_permit_checklist_passes_declared_minnesota_subset():
+    from typehaus.checks import evaluate_permit_checklist
+
+    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+    checklist = evaluate_permit_checklist(report, "mn-2024")
+    assert checklist.ok
+    assert all(item.result is Result.PASS for item in checklist.items)
+
+
+def test_site_plan_keeps_freestanding_roofs_and_foundation_supports_visible(catlin_model):
+    from typehaus.emit.draw import build_site_plan
+
+    scene = build_site_plan(catlin_model)
+    tags = {node.tag for node in scene.nodes if getattr(node, "tag", None)}
+    assert {"RF-HOUSE", "RF-GARAGE"} <= tags
+    assert any(getattr(node, "layer", None) == "A-SITE-FOUND" for node in scene.nodes)
+
+
+def test_catlin_legacy_floorplans_are_dim_view_only_underlays():
+    from typehaus.checks import load_preferences
+
+    underlays = load_preferences(CATLIN_DIR).underlays
+    assert {item.storey for item in underlays} == {"basement", "main", "second", "attic"}
+    assert all(item.path.startswith("../../catlin_floorplan/") for item in underlays)
+    assert all(0.0 < item.opacity <= 0.25 for item in underlays)
+
+
+def test_configured_reference_underlay_is_served_through_the_sandboxed_route():
+    fastapi_testclient = pytest.importorskip("fastapi.testclient")
+    from typehaus.server.app import create_app
+
+    with fastapi_testclient.TestClient(create_app(CATLIN_DIR)) as client:
+        url = client.get("/model").json()["underlays"][0]["url"]
+        response = client.get(url)
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("image/png")
+
+
 def test_centerline_bearing_wall_runs_full_length_on_both_framed_storeys(catlin_model):
     center_x = ft(GRID_FT).meters
     for storey in ("main", "second"):
@@ -91,6 +140,226 @@ def test_roof_matches_old_pitch_knee_and_ridge(catlin_model):
     assert max(ys) - min(ys) == pytest.approx(ft(HOUSE_SIZE_FT).meters)
     rise_over_run = (roof.ridge_z_m - roof.eave_z_m) / (ft(HOUSE_SIZE_FT / 2).meters)
     assert rise_over_run == pytest.approx(4.0 / 12.0)
+    rafters = [member for member in roof.members if member.category == "rafter"]
+    assert len(rafters) == 56  # 28 lines at 16" o.c., two gable planes.
+    assert all(member.z1_end_m == pytest.approx(roof.ridge_z_m) for member in rafters)
+
+
+def test_attic_to_roof_walls_frame_with_raked_studs_and_plates(catlin_model):
+    """The gable ends are true raked walls, not 11' rectangular placeholders."""
+    gable = next(w for w in catlin_model.walls if w.tag == "W-A-S1")
+    assert gable.top_z0_m == pytest.approx(ft(5).meters + ft(ATTIC_ELEV_FT).meters)
+    assert gable.top_z1_m > gable.top_z0_m
+    studs = [member for member in gable.members if member.category == "stud"]
+    assert len(studs) >= 2
+    assert max(member.z1_m for member in studs) > min(member.z1_m for member in studs)
+    assert any(member.category == "raked_plate" for member in gable.members)
+
+
+def test_attic_follow_roof_rooms_pass_r305(catlin_model):
+    report = run(catlin_model.plan, CATLIN_DIR, tier=None)
+    findings = [finding for finding in report.findings
+                if finding.check_id == "code.R305_ceiling_height"
+                and "follows RF-HOUSE" in finding.message]
+    assert findings
+    assert all(finding.result is Result.PASS for finding in findings)
+
+
+def test_center_section_cuts_the_raked_attic_walls(catlin_model):
+    from typehaus.emit.draw.section import build_center_section
+
+    scene = build_center_section(catlin_model)
+    assert any(getattr(node, "tag", "").startswith("W-A-") for node in scene.nodes)
+
+
+def test_exterior_elevations_include_resolved_openings_and_roof_profiles(catlin_model):
+    from typehaus.emit.draw.elevation import build_elevation
+
+    scene = build_elevation(catlin_model, "south")
+    tags = {getattr(node, "tag", None) for node in scene.nodes}
+    assert "RF-HOUSE" in tags
+    assert "WIN-M-BED-S1" in tags
+
+
+def test_roof_plan_uses_resolved_plane_footprints_and_ridges(catlin_model):
+    from typehaus.emit.draw.roofplan import build_roof_plan
+
+    scene = build_roof_plan(catlin_model)
+    tags = {getattr(node, "tag", None) for node in scene.nodes}
+    assert {"RF-HOUSE", "RF-HOUSE-ridge", "RF-GARAGE", "RF-GARAGE-ridge"} <= tags
+
+
+def test_exterior_corners_include_strength_first_third_stud(catlin_model):
+    """A third stud supplements the two intersecting endpoint studs at true corners."""
+    for tag in ("W-M-S1", "W-M-E1", "W-M-N1", "W-M-W1"):
+        wall = next(item for item in catlin_model.walls if item.tag == tag)
+        assert any(member.category == "corner" for member in wall.members), tag
+
+
+def test_bedroom_egress_is_associated_with_its_own_bounding_wall():
+    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+    findings = [finding for finding in report.findings if finding.check_id == "code.R310_egress"]
+    assert len(findings) == 5
+    assert all(finding.result is Result.PASS for finding in findings)
+    assert all("WIN-B-SAUNA" not in finding.message for finding in findings)
+
+
+def test_catlin_window_openings_follow_the_sixteen_inch_framing_module():
+    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+    findings = [finding for finding in report.findings
+                if finding.check_id == "structural.window_framing_module"]
+    assert not findings, [finding.message for finding in findings]
+
+
+def test_every_catlin_boundary_condition_has_a_transition_binding():
+    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+    findings = [finding for finding in report.findings
+                if finding.check_id == "integrity.condition_coverage"]
+    assert not findings, [finding.message for finding in findings]
+
+
+def test_ci_thickness_bump_reflows_resolved_envelope_without_losing_transition_coverage():
+    """M3's details must follow layer geometry rather than preserve a hand-drawn offset."""
+    from typehaus.emit.draw import build_center_section
+
+    plan = load_plan(CATLIN_DIR).plan
+    baseline, baseline_findings = resolve(plan)
+    assert not [finding for finding in baseline_findings if finding.severity.value == "error"]
+    base_assembly = next(item for item in plan.library.assemblies if item.tag == "CATLIN_EXT_2X6")
+    thicker_layers = tuple(
+        layer.model_copy(update={"thickness": inch(3)}) if layer.name == "polyiso" else layer
+        for layer in base_assembly.layers
+    )
+    thicker_assembly = base_assembly.model_copy(update={"layers": thicker_layers})
+    updated_library = plan.library.model_copy(update={
+        "assemblies": tuple(thicker_assembly if item.tag == thicker_assembly.tag else item
+                            for item in plan.library.assemblies),
+    })
+    bumped_plan = plan.model_copy(update={"library": updated_library})
+    bumped, bumped_findings = resolve(bumped_plan)
+    assert not [finding for finding in bumped_findings if finding.severity.value == "error"]
+    base_wall = next(item for item in baseline.walls if item.tag == "W-M-E1")
+    bumped_wall = next(item for item in bumped.walls if item.tag == "W-M-E1")
+    assert bumped_wall.layers[-1].polygon != base_wall.layers[-1].polygon
+    assert build_center_section(bumped).nodes
+    report = run(bumped_plan, CATLIN_DIR, tier=None)
+    assert not [finding for finding in report.findings
+                if finding.check_id == "integrity.condition_coverage"], [
+                    finding.message for finding in report.findings
+                    if finding.check_id == "integrity.condition_coverage"]
+
+
+def test_catlin_has_required_smoke_co_alarm_coverage_and_json_symbols(tmp_path):
+    from typehaus.server.model_json import model_to_dict
+
+    plan = load_plan(CATLIN_DIR).plan
+    report = run(plan, CATLIN_DIR, tier=None)
+    assert not [finding for finding in report.findings
+                if finding.check_id == "code.R314_R315_alarms" and finding.result is Result.FAIL]
+    model, _ = resolve(plan)
+    alarms = model_to_dict(model)["alarms"]
+    assert {alarm["tag"] for alarm in alarms} >= {"AL-M-BED", "AL-M-HALL", "AL-S-HALL"}
+
+
+def test_catlin_fixtures_render_as_footprints_and_serialize_services(catlin_model):
+    from typehaus.emit.draw.floorplan import build_floorplan
+    from typehaus.server.model_json import model_to_dict
+
+    fixture_tags = {getattr(node, "tag", None) for node in build_floorplan(catlin_model, "main").nodes}
+    assert "FX-M-BATH1-WC" in fixture_tags
+    fixtures = model_to_dict(catlin_model)["fixtures"]
+    washer = next(item for item in fixtures if item["tag"] == "FX-M-LAUNDRY")
+    assert {"water_hot", "water_cold", "drain", "power_240"} <= set(washer["needs"])
+
+
+def test_catlin_drain_fixtures_use_six_inch_wet_walls():
+    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+    findings = [finding for finding in report.findings if finding.check_id == "advisory.wet_wall_depth"]
+    assert not findings, [finding.message for finding in findings]
+
+
+def test_catlin_sauna_floor_heat_has_no_fixture_keepout_conflict():
+    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+    findings = [finding for finding in report.findings
+                if finding.check_id == "advisory.floor_heat_fixture_keepout"]
+    assert not findings, [finding.message for finding in findings]
+
+
+def test_house_local_furniture_import_creates_a_type_and_placed_instance(tmp_path, monkeypatch):
+    """The M3 mesh importer never touches shared library source or a manifest."""
+    from typehaus.cli.furniture_import import import_furniture_mesh
+    from typehaus.source.imported_furniture import load_imported_furniture
+
+    source = tmp_path / "warehouse-chair.glb"
+    source.write_bytes(b"mesh")
+
+    class FakeScene:
+        class Vector(list):
+            def __sub__(self, other):
+                return FakeScene.Vector(a - b for a, b in zip(self, other))
+
+        bounds = (Vector((0.0, 0.0, 0.0)), Vector((0.6, 0.7, 1.1)))
+
+        def export(self, path, file_type):
+            assert file_type == "glb"
+            Path(path).write_bytes(b"converted-glb")
+
+    monkeypatch.setitem(__import__("sys").modules, "trimesh",
+                        SimpleNamespace(load=lambda *_args, **_kwargs: FakeScene()))
+    import_furniture_mesh(source, tmp_path, tag="reading-chair", room="RM-M-LIVING",
+                          position_m=(7.0, 4.0), storage=True)
+    plan = load_plan(CATLIN_DIR).plan
+    assert plan is not None
+    findings = []
+    augmented = load_imported_furniture(tmp_path, plan, findings)
+    assert not findings
+    furniture_type = next(item for item in augmented.library.furniture_types
+                          if item.tag == "FURN-READING-CHAIR")
+    assert furniture_type.mesh is not None
+    instance = next(item for item in augmented.storey_elements("main")
+                    if item.tag == "F-READING-CHAIR")
+    assert instance.element_kind == "Furniture"
+    model, resolve_findings = resolve(augmented)
+    assert not [finding for finding in resolve_findings if finding.severity.value == "error"]
+    from typehaus.emit.gltf import emit_glb
+    from typehaus.server.model_json import model_to_dict
+
+    glb = emit_glb(model, tmp_path / "furniture.glb")
+    assert glb.exists() and glb.stat().st_size > 0
+    assert any(item["tag"] == "F-READING-CHAIR" for item in model_to_dict(model)["furniture"])
+    ifcopenshell = pytest.importorskip("ifcopenshell")
+    from typehaus.emit.ifc import emit_ifc
+
+    ifc = emit_ifc(model, tmp_path / "furniture.ifc", lod="core")
+    assert any(item.Name == "F-READING-CHAIR"
+               for item in ifcopenshell.open(ifc).by_type("IfcFurnishingElement"))
+
+
+def test_catlin_model_json_has_derived_space_dashboard_metrics(catlin_model):
+    from typehaus.server.model_json import model_to_dict
+
+    summary = model_to_dict(catlin_model)["space_summary"]
+    assert summary["overall"]["conditioned_sf"] > 0
+    assert summary["overall"]["storage_ratio"] > 0
+    assert {row["storey"] for row in summary["storeys"]} >= {"basement", "main", "second"}
+
+
+def test_catlin_bearing_view_has_continuous_house_load_path(catlin_model):
+    bearing_tags = {wall.tag for wall in catlin_model.walls
+                    if getattr(catlin_model.plan.by_tag(wall.tag), "structural_role", None)
+                    and catlin_model.plan.by_tag(wall.tag).structural_role.value == "bearing"}
+    stacked = {edge.lower_wall for edge in catlin_model.stack_edges} | {
+        edge.upper_wall for edge in catlin_model.stack_edges
+    }
+    assert {"W-M-C1", "W-S-C1"} <= bearing_tags
+    assert {"W-M-C1", "W-S-C1"} <= stacked
+
+
+def test_catlin_sauna_floor_heat_has_a_plan_zone_and_wire_takeoff(catlin_model):
+    zone = next(item for item in catlin_model.floor_heat if item.tag == "FH-B-SAUNA")
+    assert zone.system == "electric"
+    assert zone.wire_length_m > 0
+    assert len(zone.zone) >= 3
 
 
 def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
@@ -181,8 +450,12 @@ def test_stairs_resolve_with_code_risers(catlin_model):
 
 
 def test_ifc_emission_when_available(catlin_model, tmp_path):
-    pytest.importorskip("ifcopenshell")
+    ifcopenshell = pytest.importorskip("ifcopenshell")
+    import ifcopenshell.validate
     from typehaus.emit.ifc import emit_ifc
 
     path = emit_ifc(catlin_model, tmp_path / "catlin.ifc", lod="framed")
     assert path.exists() and path.stat().st_size > 0
+    logger = ifcopenshell.validate.json_logger()
+    ifcopenshell.validate.validate(str(path), logger, express_rules=True)
+    assert not logger.statements, logger.statements

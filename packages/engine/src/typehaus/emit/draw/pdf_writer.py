@@ -30,10 +30,17 @@ _LAYER_STYLE = {
     "S-FRAM": ("#8a5a20", 1.0),
     "A-DOOR": ("#a05a20", 0.9),
     "A-GLAZ": ("#3a6a8a", 0.7),
+    "A-ROOF": ("#2d3b46", 1.2),
     "A-AREA-IDEN": ("#333333", 0.0),
     "A-ANNO-DIMS": ("#204070", 0.6),
     "A-ANNO-TEXT": ("#333333", 0.6),
     "A-ANNO-SYMB": ("#555555", 0.6),
+    "A-FLR-HEAT": ("#c05030", 0.35),
+    "A-FIXT": ("#4d7080", 0.55),
+    "A-SITE-ROOF": ("#2d3b46", 0.8),
+    "A-SITE-WALL": ("#333333", 0.6),
+    "A-SITE-FOUND": ("#777777", 0.4),
+    "A-SITE-ANNO": ("#204070", 0.6),
 }
 _HATCH_MPL = {"batt": "....", "osb": "//", "lumber": "\\\\", "concrete": "..", "SOLID": None}
 

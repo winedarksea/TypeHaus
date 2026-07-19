@@ -15,6 +15,7 @@ import {
   type PatchOp,
   type PatchResult,
   RevisionConflict,
+  type UnderlayCalibration,
 } from "./EngineClient";
 
 const ARTIFACT_PATHS: Record<EngineArtifact, string> = {
@@ -99,6 +100,15 @@ export class HttpEngineClient implements EngineClient {
     const res = await fetch(this.url(path));
     if (!res.ok) throw new EngineError(await readError(res), res.status);
     return await res.blob();
+  }
+
+  async calibrateUnderlay(calibration: UnderlayCalibration): Promise<void> {
+    const res = await fetch(this.url("/underlays/calibrate"), {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(calibration),
+    });
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
   }
 
   events(onEvent: (e: EngineEvent) => void, onStatus?: (up: boolean) => void): () => void {

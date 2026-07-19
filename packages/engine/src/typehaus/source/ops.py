@@ -15,7 +15,7 @@ from enum import Enum
 from typing import Any
 
 from typehaus.model.registry import element_kinds
-from typehaus.quantities import Angle, Length, RValue, Temperature, UFactor
+from typehaus.quantities import Angle, Length, Pitch, RValue, Temperature, UFactor
 
 
 @dataclass(frozen=True)
@@ -116,6 +116,12 @@ def encode_value(kind: str, name: str, value: Any) -> str:
         return f"{value}"
 
     if isinstance(value, str):
+        if _has_quantity(annotation, Pitch):
+            try:
+                rise, run = (float(part.strip()) for part in value.replace(":", "/").split("/"))
+                return Pitch(rise, run).to_source()
+            except (TypeError, ValueError):
+                raise ValueError(f"invalid pitch {value!r}; use rise/run, e.g. 4/12") from None
         # Quantity-typed field: parse the authored-unit string into a constructor call.
         for quantity, parser in _QUANTITY_PARSERS:
             if _has_quantity(annotation, quantity) and hasattr(parser, "parse"):

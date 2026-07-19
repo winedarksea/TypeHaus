@@ -5,6 +5,8 @@
 # Smaller windows follow the stud-bay rules: WT-1448 fits one bay unbroken; WT-3060
 # breaks one stud (non-bearing walls only); WT-2760 adds jacks on bearing walls.
 from typehaus import (
+    Alarm,
+    AlarmKind,
     Door,
     DoorType,
     FloorOpening,
@@ -209,46 +211,46 @@ OPENINGS = [
                  height=ft(6, 8)),
     # Windows — west (bearing: WT-2760), south (non-bearing: WT-3060), east (bearing)
     Window(uid="CMX301AAAA", tag="WIN-M-BED-W1", host="W-M-W4",
-           type_ref="WT-2760", position=from_node("N-M-SW", ft(3, 10.5)),
+           type_ref="WT-2760", position=from_node("N-M-SW", ft(4, 2.5)),
            sill_height=ft(2)),
     Window(uid="CMX302AAAA", tag="WIN-M-BED-W2", host="W-M-W4",
-           type_ref="WT-2760", position=from_node("N-M-SW", ft(8, 10.5)),
+           type_ref="WT-2760", position=from_node("N-M-SW", ft(9, 6.5)),
            sill_height=ft(2)),
     Window(uid="CMX303AAAA", tag="WIN-M-BED-S1", host="W-M-S1",
-           type_ref="WT-3060", position=from_node("N-M-SW", ft(3, 9)),
+           type_ref="WT-3060", position=from_node("N-M-SW", ft(4, 1)),
            sill_height=ft(2)),
     Window(uid="CMX304AAAA", tag="WIN-M-BED-S2", host="W-M-S1",
-           type_ref="WT-3060", position=from_node("N-M-SW", ft(9, 1)),
+           type_ref="WT-3060", position=from_node("N-M-SW", ft(9, 5)),
            sill_height=ft(2)),
     Window(uid="CMX305AAAA", tag="WIN-M-BATH2", host="W-M-W3",
-           type_ref="WT-1448", position=from_node("N-M-W3", ft(4, 1)),
+           type_ref="WT-1448", position=from_node("N-M-W3", ft(4, 5)),
            sill_height=ft(4)),
     Window(uid="CMX306AAAA", tag="WIN-M-STOR", host="W-M-W1",
-           type_ref="WT-2760", position=from_node("N-M-NW", ft(3, 10.5)),
+           type_ref="WT-2760", position=from_node("N-M-NW", ft(4, 2.5)),
            sill_height=ft(3)),
     Window(uid="CMX307AAAA", tag="WIN-M-LIV-S1", host="W-M-S2",
-           type_ref="WT-3060", position=from_node("N-M-SE", ft(3, 9)),
+           type_ref="WT-3060", position=from_node("N-M-SE", ft(3, 5)),
            sill_height=ft(2)),
     Window(uid="CMX308AAAA", tag="WIN-M-LIV-S2", host="W-M-S2",
-           type_ref="WT-3060", position=from_node("N-M-SE", ft(8, 1)),
+           type_ref="WT-3060", position=from_node("N-M-SE", ft(7, 5)),
            sill_height=ft(2)),
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
            type_ref="WT-2760", position=from_node("N-M-SE", ft(6, 10.5)),
            sill_height=ft(2, 6)),
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
-           type_ref="WT-2760", position=from_node("N-M-SE", ft(11, 2.5)),
+           type_ref="WT-2760", position=from_node("N-M-SE", ft(10, 10.5)),
            sill_height=ft(2, 6)),
     Window(uid="CMX311AAAA", tag="WIN-M-DIN-E1", host="W-M-E2",
            type_ref="WT-2760", position=from_node("N-M-E1", ft(2, 10.5)),
            sill_height=ft(2, 6)),
     Window(uid="CMX312AAAA", tag="WIN-M-DIN-E2", host="W-M-E2",
-           type_ref="WT-2760", position=from_node("N-M-E1", ft(7, 2.5)),
+           type_ref="WT-2760", position=from_node("N-M-E1", ft(6, 10.5)),
            sill_height=ft(2, 6)),
     Window(uid="CMX313AAAA", tag="WIN-M-KITCH", host="W-M-E2",
-           type_ref="WT-2760", position=from_node("N-M-NE", ft(2, 10.5)),
+           type_ref="WT-2760", position=from_node("N-M-NE", ft(2, 2.5)),
            sill_height=ft(3, 6)),
     Window(uid="CMX314AAAA", tag="WIN-M-KITCH-N", host="W-M-N1",
-           type_ref="WT-3060", position=from_node("N-M-NE", ft(3, 9)),
+           type_ref="WT-3060", position=from_node("N-M-NE", ft(4, 1)),
            sill_height=ft(3, 6)),
 ]
 
@@ -275,6 +277,11 @@ ROOMS = [
          occupancy=Occupancy.STAIR, floor_finish="oak"),
 ]
 
+ALARMS = [
+    Alarm(uid="CMA701AAAA", tag="AL-M-BED", kind=AlarmKind.COMBO, room="RM-M-BED"),
+    Alarm(uid="CMA702AAAA", tag="AL-M-HALL", kind=AlarmKind.COMBO, room="RM-M-HALL"),
+]
+
 # Structural deck of the main floor: 9" concrete over the basement.
 SLABS = [
     Slab(uid="CMS501AAAA", tag="SL-M-DECK",
@@ -295,4 +302,4 @@ STAIRS = [
           run_direction="y", start=pt(ft(14, 6), ft(25))),
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *SLABS, *FLOOR_OPENINGS, *STAIRS]
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SLABS, *FLOOR_OPENINGS, *STAIRS]

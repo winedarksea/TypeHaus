@@ -11,11 +11,14 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.framing.solver import frame_model
+from typehaus.resolve.framing.roof import frame_roofs
 from typehaus.resolve.envelope import resolve_envelope_geometry
 from typehaus.resolve.floors import resolve_floors
+from typehaus.resolve.floor_heat import resolve_floor_heat
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedOpening
 from typehaus.resolve.rooms import resolve_rooms
+from typehaus.resolve.roof_geometry import apply_to_roof_wall_tops
 from typehaus.resolve.stacking import resolve_stacking
 from typehaus.resolve.topology import detect_gaps, resolve_storey_walls
 
@@ -33,10 +36,13 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         model.walls.extend(resolve_storey_walls(plan, storey.tag, z0, z1))
 
     _resolve_openings(plan, model, findings)
-    frame_model(plan, model)
-    findings.extend(resolve_floors(model))
     findings.extend(resolve_envelope_geometry(model))
+    apply_to_roof_wall_tops(model)
+    frame_model(plan, model)
+    frame_roofs(model)
+    findings.extend(resolve_floors(model))
     findings.extend(resolve_rooms(plan, model))
+    findings.extend(resolve_floor_heat(model))
     findings.extend(resolve_stacking(model))
     _assembly_change_conditions(model)
 

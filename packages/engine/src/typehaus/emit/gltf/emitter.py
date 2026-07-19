@@ -35,6 +35,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "stud": (0.70, 0.52, 0.33, 1.0),
     "plate": (0.66, 0.48, 0.30, 1.0),
     "header": (0.60, 0.42, 0.26, 1.0),
+    "raked_plate": (0.66, 0.48, 0.30, 1.0),
+    "corner": (0.64, 0.46, 0.29, 1.0),
     "stringer": (0.60, 0.42, 0.26, 1.0),
     "tread": (0.70, 0.52, 0.33, 1.0),
     "joist": (0.72, 0.55, 0.36, 1.0),
@@ -44,6 +46,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "slab": (0.55, 0.56, 0.57, 1.0),
     "footing": (0.48, 0.49, 0.50, 1.0),
     "pad": (0.50, 0.51, 0.52, 1.0),
+    "furniture": (0.46, 0.31, 0.20, 1.0),
 }
 _FALLBACK = (0.70, 0.70, 0.70, 1.0)
 
@@ -96,6 +99,36 @@ class _MeshBuilder:
         ring = [(ax + nx, ay + ny), (bx + nx, by + ny),
                 (bx - nx, by - ny), (ax - nx, ay - ny)]
         self.add_prism(ring, az, bz, color)
+
+    def add_member_box(self, p0: Vec3, p1: Vec3, half_width: float,
+                       color: tuple[float, float, float, float],
+                       z0_end: float | None = None, z1_end: float | None = None) -> None:
+        """Add a real 3D member, including vertical studs and sloped top plates."""
+        ax, ay, az0 = p0
+        bx, by, az1 = p1
+        lower_end = az0 if z0_end is None else z0_end
+        upper_end = az1 if z1_end is None else z1_end
+        dx, dy = bx - ax, by - ay
+        run = (dx * dx + dy * dy) ** 0.5
+        if run < 1e-9:
+            ring = [(ax - half_width, ay - half_width), (ax + half_width, ay - half_width),
+                    (ax + half_width, ay + half_width), (ax - half_width, ay + half_width)]
+            self.add_prism(ring, az0, az1, color)
+            return
+        nx, ny = -dy / run * half_width, dx / run * half_width
+        plan_vertices = [
+            (ax + nx, ay + ny, az0), (bx + nx, by + ny, lower_end),
+            (bx - nx, by - ny, lower_end), (ax - nx, ay - ny, az0),
+            (ax + nx, ay + ny, az1), (bx + nx, by + ny, upper_end),
+            (bx - nx, by - ny, upper_end), (ax - nx, ay - ny, az1),
+        ]
+        positions, indices = self._bucket(color)
+        base = len(positions)
+        positions.extend(_to_gltf(*point) for point in plan_vertices)
+        for face in ((0, 1, 2, 3), (4, 7, 6, 5), (0, 4, 5, 1),
+                     (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)):
+            a, b, c, d = (base + index for index in face)
+            indices.extend((a, b, c, a, c, d))
 
     def add_triangles(self, triangles: list[tuple[Vec3, Vec3, Vec3]],
                       color: tuple[float, float, float, float]) -> None:
@@ -216,8 +249,11 @@ def _add_wall(mb: _MeshBuilder, wall: ResolvedWall, lod: str) -> None:
 
 def _add_member(mb: _MeshBuilder, member: FramedMember) -> None:
     half = _member_half_width(member.profile)
-    mb.add_box((member.p0[0], member.p0[1], member.z0_m),
-               (member.p1[0], member.p1[1], member.z1_m), half, _color(member.category))
+    mb.add_member_box(
+        (member.p0[0], member.p0[1], member.z0_m),
+        (member.p1[0], member.p1[1], member.z1_m), half, _color(member.category),
+        z0_end=member.z0_end_m, z1_end=member.z1_end_m,
+    )
 
 
 def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof) -> None:
@@ -251,6 +287,60 @@ def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof) -> None:
                          ((minx, miny, eave), (maxx, maxy, ridge), (minx, maxy, eave))]
     mb.add_triangles([tuple(_to_gltf(*point) for point in triangle) for triangle in triangles],
                      _color("roof"))
+    for member in roof.members:
+        _add_member(mb, member)
+
+
+def _add_furniture(mb: _MeshBuilder, model: ResolvedModel) -> None:
+    """Add imported GLB geometry when available, with a truthful footprint fallback."""
+    types = {item.tag: item for item in model.plan.library.furniture_types}
+    root = Path(model.plan.source_root or ".")
+    for storey in model.plan.storeys:
+        z0 = storey.elevation.meters
+        for item in model.plan.storey_elements(storey.tag):
+            if item.element_kind != "Furniture":
+                continue
+            furniture_type = types.get(item.type_ref)
+            if furniture_type is None:
+                continue
+            if furniture_type.mesh is not None and _add_mesh_sidecar(
+                mb, root / furniture_type.mesh.path, item.position.xy_m, z0
+            ):
+                continue
+            _add_furniture_box(mb, item.position.xy_m, z0, furniture_type)
+
+
+def _add_mesh_sidecar(mb: _MeshBuilder, path: Path, position: tuple[float, float], z0: float) -> bool:
+    try:
+        import trimesh
+
+        loaded = trimesh.load(path, force="mesh")
+        mesh = loaded.dump(concatenate=True) if isinstance(loaded, trimesh.Scene) else loaded
+        vertices, faces = mesh.vertices, mesh.faces
+        if len(vertices) == 0 or len(faces) == 0:
+            return False
+        minimum = vertices.min(axis=0)
+        maximum = vertices.max(axis=0)
+        center_x = (minimum[0] + maximum[0]) / 2
+        center_y = (minimum[1] + maximum[1]) / 2
+        triangles = [
+            tuple(_to_gltf(float(vertices[index][0] - center_x + position[0]),
+                           float(vertices[index][1] - center_y + position[1]),
+                           float(vertices[index][2] - minimum[2] + z0)) for index in face)
+            for face in faces
+        ]
+        mb.add_triangles(triangles, _color("furniture"))
+        return True
+    except (ImportError, OSError, ValueError, AttributeError):
+        return False
+
+
+def _add_furniture_box(mb: _MeshBuilder, position: tuple[float, float], z0: float, furniture_type) -> None:
+    width, depth = (value.meters for value in furniture_type.footprint)
+    x, y = position
+    mb.add_prism([(x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
+                  (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2)],
+                 z0, z0 + furniture_type.height.meters, _color("furniture"))
 
 
 def _member_half_width(profile: str) -> float:
@@ -280,6 +370,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
     for stair in sorted(model.stairs, key=lambda item: item.uid):
         for member in stair.members:
             _add_member(mb, member)
+    _add_furniture(mb, model)
     if mb.is_empty():  # keep the container valid even for an empty model
         mb.add_prism([(0, 0), (0.001, 0), (0.001, 0.001)], 0.0, 0.001, _FALLBACK)
     return mb.build()

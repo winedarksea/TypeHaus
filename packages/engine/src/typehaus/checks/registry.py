@@ -25,6 +25,38 @@ class Tier(Enum):
 
 
 @dataclass
+class FramingPreferences:
+    """Module and opening rules that keep framing, panels, and openings coordinated."""
+
+    module_in: float = 16.0
+    corner: str = "three-stud"
+    max_window_ro_unbroken_in: float = 14.0
+    max_window_ro_nonbearing_in: float = 30.0
+    max_window_ro_bearing_in: float = 27.0
+
+
+@dataclass
+class PlumbingPreferences:
+    """Planning allowances for advisory service checks, not plumbing sizing."""
+
+    drain_stack_required_structure_in: float = 5.5
+
+
+@dataclass(frozen=True)
+class ReferenceUnderlay:
+    """A view-only calibrated reference image; never emitted as building geometry."""
+
+    path: str
+    storey: str
+    origin_x_m: float = 0.0
+    origin_y_m: float = 0.0
+    width_m: float = 1.0
+    height_m: float = 1.0
+    rotation_deg: float = 0.0
+    opacity: float = 0.25
+
+
+@dataclass
 class Preferences:
     """`preferences.toml` values the warn-tier checks consume (→ 12)."""
 
@@ -38,6 +70,9 @@ class Preferences:
     south_wwr_threshold: float = 0.40
     adequate_overhang_ft: float = 2.0
     cooling_solar_gain_btu_per_hour_ft2: float = 164.0
+    framing: FramingPreferences = field(default_factory=FramingPreferences)
+    plumbing: PlumbingPreferences = field(default_factory=PlumbingPreferences)
+    underlays: tuple[ReferenceUnderlay, ...] = ()
     suppressed: frozenset[str] = frozenset()
 
 
@@ -50,6 +85,7 @@ class JurisdictionProfile:
     effective_date: str
     irc_base: str
     coverage_statement: str
+    frost_depth_in: float | None = None
 
 
 @dataclass

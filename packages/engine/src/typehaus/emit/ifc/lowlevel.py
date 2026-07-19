@@ -69,6 +69,15 @@ def add_prism_from_profile(f: Any, body_ctx: Any, points_m: list[tuple[float, fl
     return f.createIfcShapeRepresentation(body_ctx, "Body", "SweptSolid", [solid])
 
 
+def ensure_local_placement(f: Any, element: Any) -> None:
+    """Give a represented product an explicit identity placement in the project frame."""
+    if getattr(element, "ObjectPlacement", None) is not None:
+        return
+    origin = f.createIfcCartesianPoint((0.0, 0.0, 0.0))
+    axis = f.createIfcAxis2Placement3D(origin, None, None)
+    element.ObjectPlacement = f.createIfcLocalPlacement(None, axis)
+
+
 def ensure_pset(f: Any, element: Any, name: str, props: dict[str, Any]) -> None:
     """Attach a property set to an element (ported ensure_pset)."""
     import ifcopenshell.api

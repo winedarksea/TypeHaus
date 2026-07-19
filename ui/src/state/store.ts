@@ -4,7 +4,7 @@
 // loop: render → edit → patch → rebuild → WebSocket push → re-render).
 
 import { create } from "zustand";
-import type { EngineClient, EngineEvent, PatchOp } from "../engine/EngineClient";
+import type { EngineClient, EngineEvent, PatchOp, UnderlayCalibration } from "../engine/EngineClient";
 import { RevisionConflict } from "../engine/EngineClient";
 import { HttpEngineClient } from "../engine/HttpEngineClient";
 import { PyodideEngineClient } from "../engine/PyodideEngineClient";
@@ -74,6 +74,7 @@ interface StoreState {
   dismissToast: (id: number) => void;
 
   applyOps: (ops: PatchOp[]) => Promise<boolean>;
+  calibrateUnderlay: (calibration: UnderlayCalibration) => Promise<boolean>;
   undo: () => Promise<void>;
   redo: () => Promise<void>;
 }
@@ -179,6 +180,18 @@ export const useStore = create<StoreState>((set, get) => ({
       } else {
         get().toast((err as Error).message, "error");
       }
+      return false;
+    }
+  },
+
+  calibrateUnderlay: async (calibration) => {
+    try {
+      await get().client.calibrateUnderlay(calibration);
+      await get().reload();
+      get().toast("Underlay calibration saved");
+      return true;
+    } catch (err) {
+      get().toast((err as Error).message, "error");
       return false;
     }
   },

@@ -44,6 +44,10 @@ class FramedMember:
     z0_m: float
     z1_m: float
     length_m: float
+    # A raked member has different lower/upper elevations at its second endpoint.
+    # ``None`` preserves the ordinary prismatic member convention.
+    z0_end_m: float | None = None
+    z1_end_m: float | None = None
 
 
 @dataclass(frozen=True)
@@ -60,6 +64,11 @@ class ResolvedWall:
     z1_m: float
     is_foundation: bool = False
     members: tuple[FramedMember, ...] = ()
+    # ``ToRoof`` walls retain their full bounding height in ``z1_m`` for consumers
+    # that only understand prisms, while these endpoint elevations carry the actual
+    # raked top for framing, sections, and the interactive model.
+    top_z0_m: float | None = None
+    top_z1_m: float | None = None
 
 
 @dataclass(frozen=True)
@@ -108,6 +117,7 @@ class ResolvedRoof:
     ridge_direction: str
     assembly: str
     surface_area_m2: float
+    members: tuple[FramedMember, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -137,6 +147,19 @@ class ResolvedFloor:
     storey: str
     direction: str  # joist span direction: "x" | "y"
     members: tuple[FramedMember, ...]
+
+
+@dataclass(frozen=True)
+class ResolvedFloorHeat:
+    """A resolved radiant zone with its plan footprint and transparent wire estimate."""
+
+    uid: str
+    tag: str
+    storey: str
+    system: str
+    zone: Ring
+    spacing_m: float
+    wire_length_m: float
 
 
 @dataclass(frozen=True)
@@ -181,6 +204,7 @@ class ResolvedModel:
     roofs: list[ResolvedRoof] = field(default_factory=list)
     stairs: list[ResolvedStair] = field(default_factory=list)
     floors: list[ResolvedFloor] = field(default_factory=list)
+    floor_heat: list[ResolvedFloorHeat] = field(default_factory=list)
     rooms: list[ResolvedRoom] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
@@ -196,4 +220,6 @@ class ResolvedModel:
             out.extend(stair.members)
         for floor in self.floors:
             out.extend(floor.members)
+        for roof in self.roofs:
+            out.extend(roof.members)
         return out

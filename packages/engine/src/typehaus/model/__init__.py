@@ -18,6 +18,7 @@ from typehaus.model.assembly import (
 from typehaus.model.base import Element, HausModel
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
 from typehaus.model.enums import (
+    AlarmKind,
     ConditionKind,
     ControlLayer,
     FloorOpeningPurpose,
@@ -69,6 +70,7 @@ from typehaus.model.registry import (
 from typehaus.model.structure import Beam, Footing, FoundationWall, Pad, Post
 from typehaus.model.spatial import (
     Annotation,
+    Alarm,
     Fixture,
     Furniture,
     GridAxis,
@@ -136,12 +138,13 @@ __all__ = [
     "JoistSpec", "DeckLayer", "FloorSystem", "FloorOpening", "Slab", "Soffit",
     "FloorHeat", "FinishZone",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture",
+    "Alarm",
     "WallLiningException",
     "Slice", "Transition", "Continuity", "ExaggerationSpec",
     "FaceRef", "face", "ToRoof", "FollowRoof", "Arch", "LayerSpan", "OpeningPosition",
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",
-    "LayerFunction", "ControlLayer", "JunctionPolicy", "Occupancy", "Service",
+    "LayerFunction", "ControlLayer", "JunctionPolicy", "Occupancy", "Service", "AlarmKind",
     "StructuralRole", "SliceKind", "FloorOpeningPurpose", "RadiantSystem",
     "PartitionLayout", "RoofForm", "ConditionKind",
     "Length", "Area", "Angle", "Pitch", "RValue", "UFactor", "Temperature", "Point2D",

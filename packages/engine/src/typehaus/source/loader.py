@@ -110,6 +110,10 @@ def load_plan(house_dir: Path) -> LoadResult:
         return LoadResult(plan=None, findings=findings, provenance=prov)
 
     plan = _import_manifest(house_dir, findings)
+    if plan is not None:
+        from typehaus.source.imported_furniture import load_imported_furniture
+
+        plan = load_imported_furniture(house_dir, plan, findings)
     result = LoadResult(
         plan=plan, findings=findings, provenance=prov, content_hash=_content_hash(house_dir)
     )

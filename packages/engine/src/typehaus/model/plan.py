@@ -78,6 +78,9 @@ class PlanModel(HausModel):
     # Per-storey element lists, keyed by storey tag. Storey defs live in `storeys`.
     storeys: tuple[Storey, ...] = ()
     elements: dict[str, tuple[Element, ...]] = Field(default_factory=dict)
+    # Set by the loader, never serialized into authored plan source.  Sidecar asset paths
+    # (for example imported house-local furniture) resolve relative to this directory.
+    source_root: str | None = None
 
     def storey(self, tag: str) -> Storey | None:
         return next((s for s in self.storeys if s.tag == tag), None)

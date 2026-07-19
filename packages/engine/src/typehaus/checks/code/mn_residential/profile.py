@@ -20,6 +20,7 @@ MN_2024 = JurisdictionProfile(
         "structural, mechanical, electrical, plumbing, or energy chapters. "
         "This profile covers a declared subset of the code; results are never 'code compliant'."
     ),
+    frost_depth_in=42.0,
 )
 
 PROFILES: dict[str, JurisdictionProfile] = {"mn-2024": MN_2024}

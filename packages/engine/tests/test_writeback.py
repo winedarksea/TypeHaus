@@ -14,7 +14,7 @@ from typehaus.source.coordinator import (
     RevisionMismatch,
 )
 from typehaus.source.fmt import fmt_source
-from typehaus.source.ops import PatchOp, RawExpr
+from typehaus.source.ops import PatchOp, RawExpr, encode_value
 from typehaus.source.writeback import WritebackError, apply_ops_to_source
 
 
@@ -106,6 +106,13 @@ def test_missing_target_raises():
     src = "# haus: editable\nWALLS = []\n"
     with pytest.raises(WritebackError):
         apply_ops_to_source(src, [PatchOp("update", "Wall", "NOPE", {"top": "9'"})])
+
+
+def test_roof_pitch_editor_value_encodes_as_typed_pitch():
+    assert encode_value("Roof", "pitch", "4/12") == "Pitch(rise=4, run=12)"
+    assert encode_value("Roof", "pitch", "4:12") == "Pitch(rise=4, run=12)"
+    with pytest.raises(ValueError, match="invalid pitch"):
+        encode_value("Roof", "pitch", "steep")
 
 
 def test_fmt_inserts_missing_uid():

@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
-import type { Model, Opening, Vec2, Wall } from "../model/types";
+import type { Model, Opening, Underlay, Vec2, Wall } from "../model/types";
 import {
   deriveNodes,
   formatFtIn,
@@ -9,6 +9,7 @@ import {
 } from "../model/geometry";
 import { materialColor, NORDIC_ACCENT, NORDIC_INK, NORDIC_LINE } from "../nordic/palette";
 import { FtInKeypad } from "./FtInKeypad";
+import { SunIndicator } from "./SunIndicator";
 
 // The SVG floorplan editor (→ 21 §Stack: SVG editor). Renders model.json faithfully —
 // framed studs + layer hatching or a schematic fill — with tap-select, pinch/drag
@@ -34,12 +35,18 @@ export function Canvas2D() {
   const activeStorey = useStore((s) => s.activeStorey);
   const tool = useStore((s) => s.tool);
   const applyOps = useStore((s) => s.applyOps);
+  const calibrateUnderlay = useStore((s) => s.calibrateUnderlay);
 
   const svgRef = useRef<SVGSVGElement>(null);
   const pointers = useRef<Map<number, Vec2>>(new Map());
   const pinch = useRef<{ dist: number; scale: number } | null>(null);
   const panLast = useRef<Vec2 | null>(null);
   const [pending, setPending] = useState<Pending | null>(null);
+  const [activeService, setActiveService] = useState<string>("");
+  const [showClearances, setShowClearances] = useState(false);
+  const [calibrationPoints, setCalibrationPoints] = useState<Vec2[]>([]);
+  const [calibrationDistanceFt, setCalibrationDistanceFt] = useState("24");
+  const [calibrationMode, setCalibrationMode] = useState(false);
 
   // World meters → screen px. SVG y grows downward, so flip.
   const project = useCallback(
@@ -51,6 +58,12 @@ export function Canvas2D() {
   const openEnds = useMemo(() => openEndKeys(model), [model]);
 
   const wallsOnStorey = model.walls.filter((w) => !activeStorey || w.storey === activeStorey);
+  const serviceOptions = useMemo(() => [...new Set((model.fixtures ?? [])
+    .flatMap((fixture) => fixture.needs))].sort(), [model.fixtures]);
+  const visibleFixtures = (model.fixtures ?? []).filter((fixture) =>
+    (!activeStorey || fixture.storey === activeStorey) &&
+    (!activeService || fixture.needs.includes(activeService)));
+  const activeUnderlay = (model.underlays ?? []).find((underlay) => underlay.storey === activeStorey) ?? null;
 
   // ---- pan / zoom -----------------------------------------------------------
   const onWheel = (e: React.WheelEvent) => {
@@ -100,6 +113,39 @@ export function Canvas2D() {
     if (pointers.current.size === 0) panLast.current = null;
   };
 
+  const onDoubleClick = (event: React.MouseEvent<SVGSVGElement>) => {
+    if (!activeUnderlay || !calibrationMode) return;
+    const rect = svgRef.current!.getBoundingClientRect();
+    const point: Vec2 = [(event.clientX - rect.left - view.tx) / view.scale,
+      (view.ty - (event.clientY - rect.top)) / view.scale];
+    setCalibrationPoints((points) => points.length >= 2 ? [point] : [...points, point]);
+  };
+
+  const saveCalibration = async () => {
+    if (!activeUnderlay || calibrationPoints.length !== 2) return;
+    const distanceFt = Number(calibrationDistanceFt);
+    const measured = Math.hypot(calibrationPoints[1][0] - calibrationPoints[0][0],
+      calibrationPoints[1][1] - calibrationPoints[0][1]);
+    if (!Number.isFinite(distanceFt) || distanceFt <= 0 || measured <= 0) {
+      useStore.getState().toast("Enter a positive known distance in feet", "error");
+      return;
+    }
+    const scale = distanceFt * 0.3048 / measured;
+    // Anchor the first marked feature while scaling its source image about that point.
+    const [anchorX, anchorY] = calibrationPoints[0];
+    const ok = await calibrateUnderlay({
+      ...activeUnderlay,
+      origin_x_m: anchorX - (anchorX - activeUnderlay.origin_x_m) * scale,
+      origin_y_m: anchorY - (anchorY - activeUnderlay.origin_y_m) * scale,
+      width_m: activeUnderlay.width_m * scale,
+      height_m: activeUnderlay.height_m * scale,
+    });
+    if (ok) {
+      setCalibrationPoints([]);
+      setCalibrationMode(false);
+    }
+  };
+
   // ---- edits ----------------------------------------------------------------
   const editOpening = (o: Opening) => {
     setPending({ opening: o, field: "position", initial: formatFtIn(o.center_along_m) });
@@ -130,8 +176,30 @@ export function Canvas2D() {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
+        onDoubleClick={onDoubleClick}
       >
         <BackgroundGrid view={view} />
+        {/* Underlays are locked reference pixels, deliberately behind resolved room geometry. */}
+        {(model.underlays ?? [])
+          .filter((underlay) => !activeStorey || underlay.storey === activeStorey)
+          .map((underlay) => {
+            const [x, y] = project([underlay.origin_x_m, underlay.origin_y_m]);
+            const width = underlay.width_m * view.scale;
+            const height = underlay.height_m * view.scale;
+            return (
+              <image key={`${underlay.storey}:${underlay.path}`} href={underlay.url}
+                x={x} y={y - height} width={width} height={height} opacity={underlay.opacity}
+                pointerEvents="none"
+                transform={`rotate(${-underlay.rotation_deg} ${x} ${y})`} />
+            );
+          })}
+        {calibrationPoints.map((point, index) => {
+          const [x, y] = project(point);
+          return <g key={`calibration-${index}`} pointerEvents="none">
+            <circle cx={x} cy={y} r={6} fill="#c55842" />
+            <text x={x + 8} y={y - 8} fontSize={11} fill="#9a321f">{index + 1}</text>
+          </g>;
+        })}
         {/* rooms first (tinted fills, behind walls) */}
         {model.rooms
           .filter((r) => !activeStorey || r.storey === activeStorey)
@@ -174,6 +242,29 @@ export function Canvas2D() {
             />
           );
         })}
+        {/* Typed fixture footprints share the server's dimensions and service identity. */}
+        {(model.fixtures ?? [])
+          .filter((fixture) => !activeStorey || fixture.storey === activeStorey)
+          .map((fixture) => <FixtureFootprint key={fixture.uid} fixture={fixture} project={project}
+            scale={view.scale} dimmed={Boolean(activeService)} />)}
+        {(model.furniture ?? [])
+          .filter((furniture) => !activeStorey || furniture.storey === activeStorey)
+          .map((furniture) => {
+            const [x, y] = project(furniture.position);
+            const width = furniture.footprint_m[0] * view.scale;
+            const depth = furniture.footprint_m[1] * view.scale;
+            return (
+              <g key={furniture.uid} opacity={0.9}>
+                <rect x={x - width / 2} y={y - depth / 2} width={width} height={depth}
+                  fill="rgba(112,76,52,0.14)" stroke="#704c34" strokeWidth={1.2} />
+                <text x={x} y={y + 3} textAnchor="middle" fontSize={9} fill="#553522">
+                  {furniture.type.replace("FURN-", "")}
+                </text>
+              </g>
+            );
+          })}
+        {showClearances && <ClearanceOverlays model={model} storey={activeStorey} project={project}
+          scale={view.scale} />}
         {/* nodes + open-end markers */}
         {[...nodes.values()].map((n) => {
           const [x, y] = project(n.p);
@@ -205,6 +296,11 @@ export function Canvas2D() {
             if (!w) return null;
             return <WallDimension w={w} project={project} />;
           })()}
+        {activeService && <>
+          <rect width="100%" height="100%" fill="rgba(245,243,237,0.74)" pointerEvents="none" />
+          {visibleFixtures.map((fixture) => <FixtureFootprint key={`service-${fixture.uid}`}
+            fixture={fixture} project={project} scale={view.scale} dimmed={false} />)}
+        </>}
       </svg>
       {pending && (
         <FtInKeypad
@@ -215,6 +311,21 @@ export function Canvas2D() {
         />
       )}
       <StoreyTabs model={model} />
+      <SunIndicator model={model} />
+      <div className="hud" style={{ left: 12, top: 12, display: "flex", gap: 6, alignItems: "center" }}>
+        <label style={{ fontSize: 12 }}>Services <select value={activeService}
+          onChange={(event) => setActiveService(event.target.value)}>
+          <option value="">all</option>
+          {serviceOptions.map((service) => <option key={service} value={service}>{service}</option>)}
+        </select></label>
+        <button className="btn" onClick={() => setShowClearances(!showClearances)}>
+          {showClearances ? "Hide clearances" : "Clearances"}
+        </button>
+      </div>
+      {activeUnderlay && <UnderlayCalibrationControl underlay={activeUnderlay}
+        points={calibrationPoints} distanceFt={calibrationDistanceFt} onDistance={setCalibrationDistanceFt}
+        active={calibrationMode} onStart={() => { setCalibrationMode(true); setCalibrationPoints([]); }}
+        onSave={() => void saveCalibration()} />}
       {tool !== "select" && (
         <div className="hud" style={{ left: "auto", right: 12, bottom: "auto", top: 12 }}>
           {tool} tool — tap an element; editing lands as a journaled patch.
@@ -222,6 +333,71 @@ export function Canvas2D() {
       )}
     </>
   );
+}
+
+function UnderlayCalibrationControl({ underlay, points, distanceFt, onDistance, active, onStart, onSave }: {
+  underlay: Underlay;
+  points: Vec2[];
+  distanceFt: string;
+  onDistance: (value: string) => void;
+  active: boolean;
+  onStart: () => void;
+  onSave: () => void;
+}) {
+  const pathParts = underlay.path.split("/");
+  const filename = pathParts[pathParts.length - 1];
+  return <div className="hud" style={{ left: 12, top: 48, maxWidth: 270 }}>
+    <div style={{ fontSize: 12 }}>Reference: {filename}</div>
+    {!active ? <button className="btn" onClick={onStart}>Calibrate underlay</button> : <>
+      <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+        Double-click two known points on the drawing ({points.length}/2).
+      </div>
+      {points.length === 2 && <label style={{ display: "block", marginTop: 5, fontSize: 12 }}>
+        Known distance (ft) <input value={distanceFt} inputMode="decimal"
+          onChange={(event) => onDistance(event.target.value)} style={{ width: 52 }} />
+        <button className="btn" onClick={onSave} style={{ marginLeft: 5 }}>Save</button>
+      </label>}
+    </>}
+  </div>;
+}
+
+function FixtureFootprint({ fixture, project, scale, dimmed }: {
+  fixture: NonNullable<Model["fixtures"]>[number];
+  project: (point: Vec2) => Vec2;
+  scale: number;
+  dimmed: boolean;
+}) {
+  const [x, y] = project(fixture.position);
+  const width = fixture.footprint_m[0] * scale;
+  const depth = fixture.footprint_m[1] * scale;
+  return <g opacity={dimmed ? 0.35 : 0.9}>
+    <rect x={x - width / 2} y={y - depth / 2} width={width} height={depth}
+      fill="rgba(77,112,128,0.12)" stroke="#4d7080" strokeWidth={1.2} />
+    <text x={x} y={y + 3} textAnchor="middle" fontSize={9} fill="#33505c">
+      {fixture.type.replace("FX-", "")}
+    </text>
+  </g>;
+}
+
+function ClearanceOverlays({ model, storey, project, scale }: {
+  model: Model;
+  storey: string | null;
+  project: (point: Vec2) => Vec2;
+  scale: number;
+}) {
+  const items = [
+    ...(model.fixtures ?? []).map((item) => ({ ...item, kind: "fixture" as const })),
+    ...(model.furniture ?? []).map((item) => ({ ...item, kind: "furniture" as const })),
+  ].filter((item) => (!storey || item.storey === storey) && item.clearance_m);
+  return <g pointerEvents="none">{items.map((item) => {
+    const [front, back, left, right] = item.clearance_m!;
+    const [x, y] = project(item.position);
+    const width = (item.footprint_m[0] + left + right) * scale;
+    const depth = (item.footprint_m[1] + front + back) * scale;
+    return <rect key={`clearance-${item.uid}`} x={x - width / 2} y={y - depth / 2}
+      width={width} height={depth} fill="rgba(197,88,66,0.10)" stroke="#c55842"
+      strokeDasharray="4 3" strokeWidth={1} />;
+  })}</g>;
 }
 
 function clampScale(s: number): number {

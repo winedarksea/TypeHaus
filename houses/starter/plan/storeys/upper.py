@@ -1,5 +1,5 @@
 # haus: editable
-from typehaus import Node, Occupancy, Room, Wall, Window, centered, ft, pt
+from typehaus import Alarm, AlarmKind, Node, Occupancy, Room, Wall, Window, centered, ft, pt
 
 # Upper storey shares the wall lines of the main storey so the vertical stacking
 # pass (#43) derives a wall-line stack and emits a storey-stack condition.
@@ -29,4 +29,8 @@ OPENINGS = [
 ROOMS = [
     Room(uid="RMUPAAAAAA", tag="RM-Upper", seed=pt(ft(12), ft(10)),
          occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
+]
+
+ALARMS = [
+    Alarm(uid="ALUPAAAAAA", tag="AL-Upper-Bed", kind=AlarmKind.COMBO, room="RM-Upper"),
 ]

@@ -69,6 +69,28 @@ def test_undo_with_empty_journal_is_409(client):
     assert c.post("/undo").status_code == 409
 
 
+def test_underlay_calibration_rewrites_only_the_matching_toml_table(tmp_path: Path):
+    from typehaus.server.app import _write_underlay_calibration
+
+    preferences = tmp_path / "preferences.toml"
+    preferences.write_text(
+        "[envelope]\nwall_r = 40\n\n"
+        "[[underlay]]\npath = \"a.png\"\nstorey = \"main\"\n"
+        "origin_x_m = 0\norigin_y_m = 0\nwidth_m = 10\nheight_m = 10\n"
+        "rotation_deg = 0\nopacity = 0.25\n\n"
+        "[[underlay]]\npath = \"b.png\"\nstorey = \"second\"\n"
+        "origin_x_m = 1\norigin_y_m = 2\nwidth_m = 3\nheight_m = 4\n"
+        "rotation_deg = 5\nopacity = 0.2\n"
+    )
+    _write_underlay_calibration(preferences, {
+        "path": "a.png", "storey": "main", "origin_x_m": 4, "origin_y_m": 5,
+        "width_m": 6, "height_m": 7, "rotation_deg": 8, "opacity": 0.15,
+    })
+    text = preferences.read_text()
+    assert "wall_r = 40" in text and 'path = "b.png"' in text
+    assert "origin_x_m = 4" in text and "rotation_deg = 8" in text
+
+
 def test_event_bus_broadcasts_to_clients():
     class _FakeWS:
         def __init__(self) -> None:

@@ -46,10 +46,11 @@ OPENINGS = [
          type_ref="DT-GARAGE192", position=from_node("N-G-SE", ft(4))),
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT36",
          position=from_node("N-G-SW", ft(5))),
-    Window(uid="CGX301AAAA", tag="WIN-G-N1", host="W-G-N", type_ref="WT-3060",
-           position=from_node("N-G-NW", ft(6, 5)), sill_height=ft(3, 6)),
-    Window(uid="CGX302AAAA", tag="WIN-G-N2", host="W-G-N", type_ref="WT-3060",
-           position=from_node("N-G-NW", ft(14, 5)), sill_height=ft(3, 6)),
+    # Bearing gable wall: use the 27" RO/jack-stud module, centered on stud lines.
+    Window(uid="CGX301AAAA", tag="WIN-G-N1", host="W-G-N", type_ref="WT-2760",
+           position=from_node("N-G-NW", ft(6, 10.5)), sill_height=ft(3, 6)),
+    Window(uid="CGX302AAAA", tag="WIN-G-N2", host="W-G-N", type_ref="WT-2760",
+           position=from_node("N-G-NW", ft(14, 10.5)), sill_height=ft(3, 6)),
 ]
 
 ROOMS = [

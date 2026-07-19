@@ -21,11 +21,12 @@ from typehaus.resolve.model import ResolvedModel, ResolvedWall
 def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     """Emit the resolved model to an IFC4 file at ``out_path``. Returns the path."""
     f = ll.new_file(IFC_APP_NAME)
-    body = ll.add_context(f)
     project_uuid = model.plan.project.project_uuid
-
     ifc_project = ll.create_entity(f, "IfcProject", name=model.plan.project.name)
-    _georef(f, ifc_project, model)
+    # IfcOpenShell attaches representation contexts to IfcProject; creating this first is
+    # required by current 0.8.x APIs and keeps the output portable to Blender/Bonsai.
+    body = ll.add_context(f)
+    _georef(f, ifc_project, model, body.ParentContext)
     site = ll.create_entity(f, "IfcSite", name="Site")
     building = ll.create_entity(f, "IfcBuilding", name=model.plan.project.building.name)
     _relate(f, ifc_project, [site])
@@ -46,13 +47,15 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
         _emit_solid(f, body, solid, storeys, project_uuid)
 
     for roof in sorted(model.roofs, key=lambda item: item.uid):
-        _emit_roof(f, body, roof, storeys, project_uuid)
+        _emit_roof(f, body, roof, storeys, project_uuid, lod)
 
     for stair in sorted(model.stairs, key=lambda item: item.uid):
         _emit_stair(f, stair, storeys, project_uuid, lod)
 
     for room in sorted(model.rooms, key=lambda r: r.uid):
         _emit_space(f, body, room, storeys, project_uuid)
+
+    _emit_furniture(f, body, model, storeys, project_uuid)
 
     f.write(str(out_path))
     return out_path
@@ -99,7 +102,35 @@ def _emit_space(f: Any, body: Any, room: Any, storeys: dict[str, Any],
     ll.ensure_pset(f, space, "Pset_SpaceCommon", {
         "IsExternal": False, "PubliclyAccessible": False,
     })
-    ll.assign_container(f, space, storeys[room.storey])
+    # IfcSpace is itself a spatial structure, so it belongs in the storey aggregation
+    # rather than an IfcRelContainedInSpatialStructure product relationship.
+    _relate(f, storeys[room.storey], [space])
+
+
+def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, Any],
+                    project_uuid: Any) -> None:
+    """Core-LOD furnishing elements use declared footprint and height, not mesh triangles."""
+    types = {item.tag: item for item in model.plan.library.furniture_types}
+    elevations = {storey.tag: storey.elevation.meters for storey in model.plan.storeys}
+    for storey in model.plan.storeys:
+        for furniture in model.plan.storey_elements(storey.tag):
+            if furniture.element_kind != "Furniture" or furniture.type_ref not in types:
+                continue
+            furniture_type = types[furniture.type_ref]
+            width, depth = (dimension.meters for dimension in furniture_type.footprint)
+            x, y = furniture.position.xy_m
+            outline = [(x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
+                       (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2)]
+            element = ll.create_entity(f, "IfcFurnishingElement", name=furniture.tag)
+            element.GlobalId = derive_guid(project_uuid, furniture.uid)
+            _assign_representation(f, element, ll.add_prism_from_profile(
+                f, body, outline, furniture_type.height.meters, elevations[storey.tag]
+            ))
+            ll.ensure_pset(f, element, PSET_SOURCE, {
+                "uid": furniture.uid, "tag": furniture.tag, "type": furniture.type_ref,
+                "mesh": furniture_type.mesh.path if furniture_type.mesh is not None else "",
+            })
+            ll.assign_container(f, element, storeys[storey.tag])
 
 
 def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_uuid: Any) -> None:
@@ -116,7 +147,8 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
     ll.assign_container(f, element, storeys[solid.storey])
 
 
-def _emit_roof(f: Any, body: Any, roof: Any, storeys: dict[str, Any], project_uuid: Any) -> None:
+def _emit_roof(f: Any, body: Any, roof: Any, storeys: dict[str, Any], project_uuid: Any,
+               lod: str) -> None:
     element = ll.create_entity(f, "IfcRoof", name=roof.tag)
     element.GlobalId = derive_guid(project_uuid, roof.uid)
     # IFC consumers still receive a stable roof object at core LOD.  The glTF path preserves
@@ -128,6 +160,13 @@ def _emit_roof(f: Any, body: Any, roof: Any, storeys: dict[str, Any], project_uu
     ll.ensure_pset(f, element, PSET_SOURCE, {"uid": roof.uid, "tag": roof.tag,
                                                "assembly": roof.assembly})
     ll.assign_container(f, element, storeys[roof.storey])
+    if lod == "framed" and roof.members:
+        members = []
+        for member in sorted(roof.members, key=lambda item: item.child_key):
+            child = ll.create_entity(f, "IfcMember", name=f"{roof.tag}/{member.child_key}")
+            child.GlobalId = derive_child_guid(project_uuid, roof.uid, member.child_key)
+            members.append(child)
+        ll.aggregate(f, element, members)
 
 
 def _emit_stair(f: Any, stair: Any, storeys: dict[str, Any], project_uuid: Any, lod: str) -> None:
@@ -146,7 +185,7 @@ def _emit_stair(f: Any, stair: Any, storeys: dict[str, Any], project_uuid: Any, 
         ll.aggregate(f, element, members)
 
 
-def _georef(f: Any, ifc_project: Any, model: ResolvedModel) -> None:
+def _georef(f: Any, ifc_project: Any, model: ResolvedModel, source_context: Any) -> None:
     """IfcProjectedCRS + IfcMapConversion from Site (pyproj transforms, → 12)."""
     site = model.plan.project.site
     crs = f.createIfcProjectedCRS(site.crs)
@@ -158,7 +197,7 @@ def _georef(f: Any, ifc_project: Any, model: ResolvedModel) -> None:
     except Exception:  # noqa: BLE001 - georef is best-effort in M1
         easting, northing = 0.0, 0.0
     f.createIfcMapConversion(
-        None, crs, easting, northing, site.elevation.meters,
+        source_context, crs, easting, northing, site.elevation.meters,
         1.0, 0.0,  # XAxisAbscissa/Ordinate — true_north rotation applied here
         1.0,
     )
@@ -180,6 +219,10 @@ def _content_hash(rw: ResolvedWall) -> str:
 
 def _assign_representation(f: Any, element: Any, rep: Any) -> None:
     element.Representation = f.createIfcProductDefinitionShape(None, None, [rep])
+    # Geometry is authored in the shared project frame inside its swept solid. IFC still
+    # requires every represented product to carry an ObjectPlacement; an identity placement
+    # expresses that frame explicitly and satisfies both schema validation and BIM importers.
+    ll.ensure_local_placement(f, element)
 
 
 def _relate(f: Any, parent: Any, children: list[Any]) -> None:

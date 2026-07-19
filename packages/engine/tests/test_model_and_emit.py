@@ -36,6 +36,29 @@ def test_card_renders_for_every_library_assembly() -> None:
         assert asm.tag in svg
 
 
+def test_acoustic_library_presets_have_published_rating_and_truthful_layout() -> None:
+    """Library STC values are documented empirical results, never estimates."""
+    from library.assemblies import ALL_ASSEMBLIES
+    from typehaus.model import LayerFunction, PartitionLayout
+
+    acoustic_assemblies = [assembly for assembly in ALL_ASSEMBLIES if assembly.tag.startswith("INT_")]
+    assert len(acoustic_assemblies) >= 5
+    assert all(assembly.stc is not None and assembly.source and "https://" in assembly.source
+               for assembly in acoustic_assemblies)
+    assert any(
+        layer.framing and layer.framing.layout is PartitionLayout.STAGGERED
+        for assembly in acoustic_assemblies
+        for layer in assembly.layers
+        if layer.function is LayerFunction.STRUCTURE
+    )
+    assert any(
+        layer.framing and layer.framing.layout is PartitionLayout.DOUBLE
+        for assembly in acoustic_assemblies
+        for layer in assembly.layers
+        if layer.function is LayerFunction.STRUCTURE
+    )
+
+
 def test_variant_resolves_against_base() -> None:
     from typehaus.model import (
         Assembly,

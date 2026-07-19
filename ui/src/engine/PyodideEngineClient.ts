@@ -18,6 +18,7 @@ import {
   type MacroResult,
   type PatchOp,
   type PatchResult,
+  type UnderlayCalibration,
 } from "./EngineClient";
 
 // A house loaded from disk via the File System Access API: relative path -> text content.
@@ -112,6 +113,10 @@ export class PyodideEngineClient implements EngineClient {
     if (kind === "ifc") throw new OfflineUnsupported("IFC export");
     const bytes = await this.call<Uint8Array>("glb");
     return new Blob([bytes as unknown as BlobPart], { type: "model/gltf-binary" });
+  }
+
+  calibrateUnderlay(_calibration: UnderlayCalibration): Promise<void> {
+    return Promise.reject(new OfflineUnsupported("Saving underlay calibration"));
   }
 
   // --- Mutation surface: libcst-gated, unavailable offline (→ 40 gate outcome b) -----------

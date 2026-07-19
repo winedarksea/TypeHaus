@@ -74,6 +74,14 @@ class Service(Enum):
     VENT = "vent"
 
 
+class AlarmKind(Enum):
+    """Residential life-safety alarm types (R314/R315)."""
+
+    SMOKE = "smoke"
+    CO = "co"
+    COMBO = "combo"
+
+
 class StructuralRole(Enum):
     """Authored bearing intent — the derived load path never guesses (#27)."""
 

@@ -34,6 +34,7 @@ class Pad(Element):
 
     outline: tuple[Point2D, ...]
     thickness: Length
+    bottom_elevation: Length | None = None
 
 
 @register_element

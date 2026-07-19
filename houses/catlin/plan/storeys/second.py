@@ -2,6 +2,8 @@
 # Second floor — CATLIN_EXT_2X4 on the same sheathing plane (#43 stack jog),
 # three east bedrooms, west suite, plant room + study south, duct soffit (WP3.1).
 from typehaus import (
+    Alarm,
+    AlarmKind,
     Door,
     FloorOpening,
     FloorSystem,
@@ -198,28 +200,28 @@ OPENINGS = [
            position=from_node("N-S-E4", ft(2, 10.5)), sill_height=ft(3)),
     # West suite (bearing wall)
     Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W2", type_ref="WT-2760",
-           position=from_node("N-S-W1", ft(3, 10.5)), sill_height=ft(3)),
+           position=from_node("N-S-W1", ft(4, 2.5)), sill_height=ft(3)),
     Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W2", type_ref="WT-2760",
            position=from_node("N-S-W1", ft(8, 2.5)), sill_height=ft(3)),
     # Plant room — south glazing (non-bearing: WT-3060 row)
     Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-3060",
-           position=from_node("N-S-SW", ft(2, 5)), sill_height=ft(2)),
+           position=from_node("N-S-SW", ft(2, 9)), sill_height=ft(2)),
     Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3060",
-           position=from_node("N-S-SW", ft(6, 5)), sill_height=ft(2)),
+           position=from_node("N-S-SW", ft(6, 9)), sill_height=ft(2)),
     Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-S1", type_ref="WT-3060",
-           position=from_node("N-S-SW", ft(10, 5)), sill_height=ft(2)),
+           position=from_node("N-S-SW", ft(10, 9)), sill_height=ft(2)),
     # Study 2 — south
     Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3060",
-           position=from_node("N-S-SE", ft(4, 5)), sill_height=ft(2, 6)),
+           position=from_node("N-S-SE", ft(4, 9)), sill_height=ft(2, 6)),
     Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3060",
-           position=from_node("N-S-SE", ft(9, 5)), sill_height=ft(2, 6)),
+           position=from_node("N-S-SE", ft(8, 9)), sill_height=ft(2, 6)),
     # Baths + north
     Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1448",
-           position=from_node("N-S-NW", ft(5, 1)), sill_height=ft(4)),
-    Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1448",
            position=from_node("N-S-NW", ft(4, 5)), sill_height=ft(4)),
+    Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1448",
+           position=from_node("N-S-NW", ft(4, 1)), sill_height=ft(4)),
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3060",
-           position=from_node("N-S-NE", ft(7, 1)), sill_height=ft(3)),
+           position=from_node("N-S-NE", ft(6, 9)), sill_height=ft(3)),
 ]
 
 ROOMS = [
@@ -245,6 +247,14 @@ ROOMS = [
          occupancy=Occupancy.HALLWAY, floor_finish="oak"),
     Room(uid="CSR410AAAA", tag="RM-S-STAIR", seed=pt(ft(14, 6), ft(31)),
          occupancy=Occupancy.STAIR, floor_finish="oak"),
+]
+
+ALARMS = [
+    Alarm(uid="CSA701AAAA", tag="AL-S-BED1", kind=AlarmKind.COMBO, room="RM-S-BED1"),
+    Alarm(uid="CSA702AAAA", tag="AL-S-BED2", kind=AlarmKind.COMBO, room="RM-S-BED2"),
+    Alarm(uid="CSA703AAAA", tag="AL-S-BED3", kind=AlarmKind.COMBO, room="RM-S-BED3"),
+    Alarm(uid="CSA704AAAA", tag="AL-S-SUITE", kind=AlarmKind.COMBO, room="RM-S-SUITE"),
+    Alarm(uid="CSA705AAAA", tag="AL-S-HALL", kind=AlarmKind.COMBO, room="RM-S-HALL"),
 ]
 
 # The hallway duct soffit (HRV + heat mains) — dashed on plan, framed in 3D.
@@ -276,5 +286,5 @@ STAIRS = [
           run_direction="y", start=pt(ft(14, 6), ft(25))),
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *SOFFITS, *FLOOR_OPENINGS, *FLOOR,
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SOFFITS, *FLOOR_OPENINGS, *FLOOR,
             *STAIRS]

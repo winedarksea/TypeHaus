@@ -40,11 +40,11 @@ def render_views(
         lod = "framed" if any(w.members for w in model.walls) else "core"
         written.append(emit_glb(model, out_dir / "model.glb", lod=lod))
     elif view == "section":
-        # Section snapshots build on the M3 sheet machinery; emit a marker so the skills
-        # loop degrades without crashing.
-        marker = out_dir / "section_unavailable.txt"
-        marker.write_text("section render not available in M2 (needs → 30)\n")
-        written.append(marker)
+        from typehaus.emit.draw.pdf_writer import write_raster
+        from typehaus.emit.draw.section import build_center_section
+
+        written.append(write_raster(build_center_section(model), out_dir / f"section_house.{fmt}",
+                                    title="section · house center"))
     else:
         raise ValueError(f"unknown view {view!r} (plan|section|3d)")
     return written

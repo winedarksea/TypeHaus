@@ -56,6 +56,9 @@ def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
     _emit_openings(b, model, {w.tag for w in walls})
     _emit_stairs(b, model, storey)
     _emit_rooms(b, model, storey)
+    _emit_floor_heat(b, model, storey)
+    _emit_alarms(b, model, storey)
+    _emit_fixtures(b, model, storey)
     _emit_dimension_chain(b, walls)
     return b.build()
 
@@ -139,6 +142,56 @@ def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         label = f"UP {stair.riser_count} R"
         b.add(Text(anchor=_in(((minx + maxx) / 2, (miny + maxy) / 2)), content=label,
                    height=3.0, layer="A-STAIR", align="center"))
+
+
+def _emit_alarms(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
+    """Place code-life-safety symbols at their hosted room seed points."""
+    rooms = {element.tag: element for element in model.plan.storey_elements(storey)
+             if element.element_kind == "Room"}
+    for alarm in (element for element in model.plan.storey_elements(storey)
+                  if element.element_kind == "Alarm"):
+        room = rooms.get(alarm.room)
+        if room is None:
+            continue
+        label = {"smoke": "SD", "co": "CO", "combo": "SD/CO"}[alarm.kind.value]
+        b.add(Symbol(name="alarm", insert=_in(room.seed.xy_m), layer="A-ANNO-SYMB"))
+        b.add(Text(anchor=_in((room.seed.xy_m[0] + 0.08, room.seed.xy_m[1] + 0.08)),
+                   content=label, height=2.0, layer="A-ANNO-TEXT"))
+
+
+def _emit_floor_heat(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
+    """Draw a serpentine guide from the resolved zone, not a generic fixture icon."""
+    for zone in (item for item in model.floor_heat if item.storey == storey):
+        xs, ys = [point[0] for point in zone.zone], [point[1] for point in zone.zone]
+        minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
+        lines = max(1, int((maxy - miny) / zone.spacing_m))
+        points: list[tuple[float, float]] = []
+        for index in range(lines + 1):
+            y = min(maxy, miny + index * zone.spacing_m)
+            points.extend(((minx, y), (maxx, y)) if index % 2 == 0 else ((maxx, y), (minx, y)))
+        b.add(Polyline(points=tuple(_in(point) for point in points), layer="A-FLR-HEAT",
+                       lineweight=0.25, uid=zone.uid, tag=zone.tag))
+        b.add(Text(anchor=_in(((minx + maxx) / 2, (miny + maxy) / 2)),
+                   content=f"{zone.tag} {zone.wire_length_m / 0.3048:.0f} LF", height=2.5,
+                   layer="A-ANNO-TEXT", align="center"))
+
+
+def _emit_fixtures(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
+    """Draw typed fixture footprints; the schedule and service data share type refs."""
+    fixture_types = {item.tag: item for item in model.plan.library.fixture_types}
+    for fixture in (element for element in model.plan.storey_elements(storey)
+                    if element.element_kind == "Fixture"):
+        fixture_type = fixture_types.get(fixture.type_ref)
+        if fixture_type is None:
+            continue
+        width, depth = (dimension.meters for dimension in fixture_type.footprint)
+        x, y = fixture.position.xy_m
+        outline = ((x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
+                   (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2))
+        b.add(Polyline(points=tuple(_in(point) for point in outline), layer="A-FIXT",
+                       closed=True, lineweight=0.25, uid=fixture.uid, tag=fixture.tag))
+        b.add(Text(anchor=_in((x, y)), content=fixture.type_ref.removeprefix("FX-"), height=2.0,
+                   layer="A-ANNO-TEXT", align="center"))
 
 
 def _emit_dimension_chain(b: SceneBuilder, walls: list[ResolvedWall]) -> None:

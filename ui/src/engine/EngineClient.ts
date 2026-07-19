@@ -35,6 +35,17 @@ export interface BuildResult {
   revision: string;
 }
 
+export interface UnderlayCalibration {
+  path: string;
+  storey: string;
+  origin_x_m: number;
+  origin_y_m: number;
+  width_m: number;
+  height_m: number;
+  rotation_deg: number;
+  opacity: number;
+}
+
 // Server push events over the WebSocket (server/app.py broadcasts).
 export type EngineEvent =
   | { type: "patched"; revision: string; minted: Record<string, string>; undo: number; redo: number }
@@ -79,6 +90,7 @@ export interface EngineClient {
   undo(): Promise<HistoryResult>;
   redo(): Promise<HistoryResult>;
   getArtifact(kind: EngineArtifact): Promise<Blob>;
+  calibrateUnderlay(calibration: UnderlayCalibration): Promise<void>;
   // Subscribe to server push; returns an unsubscribe function.
   events(onEvent: (e: EngineEvent) => void, onStatus?: (up: boolean) => void): () => void;
 }

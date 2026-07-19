@@ -3,6 +3,8 @@ import type { Finding, Model, Wall } from "../model/types";
 import { formatFtIn, wallLength } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
 import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
+import { SpaceDashboard } from "./SpaceDashboard";
+import { RoofDesigner } from "./RoofDesigner";
 
 // The right-hand inspector: selection details + provenance + inline findings, the
 // assembly section card for a selected wall (→ 21 §Assembly inspector), the assembly
@@ -21,6 +23,8 @@ export function Sidebar() {
       )}
       {model && <AssemblyPicker model={model} />}
       {model && <BuildingScienceDashboard science={model.building_science} />}
+      {model && <SpaceDashboard summary={model.space_summary} />}
+      {model && <RoofDesigner model={model} />}
       {model && <FindingsPanel findings={model.findings} />}
     </div>
   );

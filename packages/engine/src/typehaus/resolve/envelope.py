@@ -7,9 +7,12 @@ import math
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Roof, Stair
+from typehaus.model.refs import ToRoof
+from typehaus.model.enums import ConditionKind
 from typehaus.model.structure import Footing, Pad, Post
 from typehaus.resolve.geometry import polygon_area, rect_between
 from typehaus.resolve.model import (
+    BoundaryCondition,
     FramedMember,
     ResolvedModel,
     ResolvedRoof,
@@ -50,9 +53,11 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                                            f"pad {element.tag} needs a closed outline",
                                            element.tag))
                     continue
+                bottom = (element.bottom_elevation.meters if element.bottom_elevation is not None
+                          else elevation - element.thickness.meters)
                 model.solids.append(ResolvedSolid(
                     element.uid, element.tag, storey.tag, "pad", outline,
-                    elevation - element.thickness.meters, elevation,
+                    bottom, elevation,
                 ))
             elif isinstance(element, Footing):
                 solid = _resolve_footing(model, element, storey.tag)
@@ -67,12 +72,33 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                 findings.extend(roof_findings)
                 if roof is not None:
                     model.roofs.append(roof)
+                    _roof_wall_conditions(model, element, roof)
             elif isinstance(element, Stair):
                 stair, stair_findings = _resolve_stair(model, element, storey.tag)
                 findings.extend(stair_findings)
                 if stair is not None:
                     model.stairs.append(stair)
     return findings
+
+
+def _roof_wall_conditions(model: ResolvedModel, authored_roof: Roof,
+                          roof: ResolvedRoof) -> None:
+    """Emit one transition-bindable condition for every wall terminating at a roof."""
+    wall_tags = set(authored_roof.bearing_refs)
+    for element in model.plan.storey_elements(roof.storey):
+        if isinstance(getattr(element, "top", None), ToRoof) and element.top.roof_ref == roof.tag:
+            wall_tags.add(element.tag)
+    for wall_tag in sorted(wall_tags):
+        wall = model.wall(wall_tag)
+        if wall is None:
+            continue
+        assemblies = tuple(sorted((wall.assembly, roof.assembly)))
+        model.conditions.append(
+            BoundaryCondition(
+                kind=ConditionKind.WALL_ROOF, assemblies=assemblies, detail="roof-bearing",
+                element_tags=(wall.tag, roof.tag), key=f"wall_roof:{'|'.join(assemblies)}",
+            )
+        )
 
 
 def _resolve_footing(model: ResolvedModel, footing: Footing, storey: str) -> ResolvedSolid | None:

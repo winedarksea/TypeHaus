@@ -7,3 +7,13 @@
 Max (N-2) 14" window without breaking stud line (14" is tight but doable)
 Max (N*2 - 6) 30" (non load bearing wall, one stud broken)
 Max (N* 2 - 9) 27" (load bearing, jack studs added)
+
+## Remaining Work
+M2 UI editing loop is unfinished. Wall, opening, room, dimension, and assembly tools are mostly UI labels; only limited opening edits are wired. The sidebar explicitly defers authoring ([Canvas2D.tsx (line 329)](/Users/colincatlin/Documents-NoCloud/TypeHaus/ui/src/components/Canvas2D.tsx:329), [Sidebar.tsx (line 9)](/Users/colincatlin/Documents-NoCloud/TypeHaus/ui/src/components/Sidebar.tsx:9)).
+Missing M2 features: assembly editor/blank builder, stair designer, variants/compare, full takeoff/BOM, and Playwright acceptance tests.
+The 3D UI builds geometry directly from model.json and renders furniture as boxes; it does not yet consume the planned glTF artifact ([Panel3D.tsx (line 7)](/Users/colincatlin/Documents-NoCloud/TypeHaus/ui/src/components/Panel3D.tsx:7)).
+M3 details are incomplete: Catlin has transitions, but no authored detail Slices. The permit composer emits placeholder/generic sheets; S-100/S-101 are reused floor/energy views rather than complete foundation/framing sheets ([sheets.py (line 30)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/emit/draw/sheets.py:30)).
+M3 site work is incomplete: no parcel/contour GeoJSON basemap support.
+M3 equivalence is only hardcoded contract testing, not an actual old-IFC semantic comparison.
+Catlin’s full checks still report two failures and 13 building-science UNKNOWNs. The declared permit-check passes only because it intentionally covers a narrow subset.
+M5 is not acceptance-complete: condensation analysis lacks material permeance inputs, producing UNKNOWN results ([plans/50-m5-science.md (line 61)](/Users/colincatlin/Documents-NoCloud/TypeHaus/plans/50-m5-science.md:61)).
