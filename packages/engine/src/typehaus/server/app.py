@@ -31,6 +31,23 @@ def create_app(house_dir: Path) -> Any:
 
     @asynccontextmanager
     async def lifespan(app: Any):  # watchfiles reloader lives for the server's lifetime
+        loop = asyncio.get_running_loop()
+
+        def _notify_diverged() -> None:
+            async def _broadcast() -> None:
+                await bus.broadcast({"type": "file-changed", "revision": state.revision(),
+                                     "ok": state.ok})
+            loop.call_soon_threadsafe(lambda: asyncio.create_task(_broadcast()))
+
+        state._notify_diverged = _notify_diverged
+
+        def _notify_checks() -> None:
+            async def _broadcast() -> None:
+                await bus.broadcast({"type": "checks", "revision": state.revision(),
+                                     "ok": state.ok, "findings": state.findings_json()})
+            loop.call_soon_threadsafe(lambda: asyncio.create_task(_broadcast()))
+
+        state._notify_checks = _notify_checks
         task = asyncio.create_task(_watch(state, bus))
         try:
             yield
@@ -71,17 +88,50 @@ def create_app(house_dir: Path) -> Any:
         except ValueError as exc:
             return JSONResponse({"error": str(exc)}, status_code=400)
         try:
-            result = state.coordinator.apply_patch(ops, body.get("revision"))
+            result = state.apply_edit(ops, body.get("revision"))
         except RevisionMismatch as exc:
             return JSONResponse({"error": str(exc)}, status_code=409)
         except (WritebackError, ExternalEdit) as exc:
             return JSONResponse({"error": str(exc)}, status_code=422)
-        state.rebuild()
         await bus.broadcast({"type": "patched", "revision": result.revision,
                              "minted": result.minted_uids,
                              "undo": result.undo_depth, "redo": result.redo_depth})
         return JSONResponse({"revision": result.revision, "minted": result.minted_uids,
                              "undo": result.undo_depth, "redo": result.redo_depth})
+
+    @app.post("/preview")
+    def post_preview(body: dict[str, Any]) -> Any:
+        """→ Phase 4: a live drag preview. Read-only reduced-resolve geometry for ``ops``
+        against the current plan — no revision bump, no writeback, no checks. The client
+        polls this while the mouse is down and commits with the real PATCH /plan on mouseup."""
+        try:
+            ops = [PatchOp.from_json(o) for o in body.get("ops", [])]
+        except ValueError as exc:
+            return JSONResponse({"error": str(exc)}, status_code=400)
+        preview = state.preview(ops)
+        if preview is None:
+            return JSONResponse({"error": "ops cannot be previewed in memory"}, status_code=422)
+        return JSONResponse(preview)
+
+    @app.post("/macro/preview")
+    def post_macro_preview(body: dict[str, Any]) -> Any:
+        """→ Phase 4: the macro-request form of ``/preview`` — builds the same ops
+        ``/macro`` would (e.g. move_nodes' dx/dy → per-node PatchOps) but only previews them,
+        so a client dragging a node can reuse the macro request shape it already sends on
+        mouseup instead of hand-building dialect PatchOps for a live overlay."""
+        from typehaus.server.macros_api import build_macro_ops, MacroRequestError
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        try:
+            result = build_macro_ops(state.model.plan, body)
+        except MacroRequestError as exc:
+            return JSONResponse({"error": str(exc)}, status_code=400)
+        preview = state.preview(result.ops)
+        if preview is None:
+            return JSONResponse({"error": "macro ops cannot be previewed in memory"},
+                                status_code=422)
+        return JSONResponse(preview)
 
     @app.post("/macro")
     async def post_macro(body: dict[str, Any]) -> Any:
@@ -94,12 +144,11 @@ def create_app(house_dir: Path) -> Any:
         except MacroRequestError as exc:
             return JSONResponse({"error": str(exc)}, status_code=400)
         try:
-            patch = state.coordinator.apply_patch(result.ops, body.get("revision"))
+            patch = state.apply_edit(result.ops, body.get("revision"))
         except RevisionMismatch as exc:
             return JSONResponse({"error": str(exc)}, status_code=409)
         except (WritebackError, ExternalEdit) as exc:
             return JSONResponse({"error": str(exc)}, status_code=422)
-        state.rebuild()
         await bus.broadcast({"type": "patched", "revision": patch.revision,
                              "minted": patch.minted_uids,
                              "undo": patch.undo_depth, "redo": patch.redo_depth})
@@ -144,15 +193,15 @@ def create_app(house_dir: Path) -> Any:
         except (KeyError, TypeError, ValueError) as exc:
             return JSONResponse({"error": str(exc)}, status_code=422)
         state.rebuild()
-        await bus.broadcast({"type": "file-changed", "revision": state.coordinator.revision(),
+        await bus.broadcast({"type": "file-changed", "revision": state.revision(),
                              "ok": state.ok})
         return JSONResponse({"ok": state.ok})
 
     @app.post("/build")
     async def post_build() -> Any:
         state.rebuild()
-        await bus.broadcast({"type": "build", "revision": state.coordinator.revision()})
-        return JSONResponse({"ok": state.ok, "revision": state.coordinator.revision()})
+        await bus.broadcast({"type": "build", "revision": state.revision()})
+        return JSONResponse({"ok": state.ok, "revision": state.revision()})
 
     @app.post("/undo")
     async def post_undo() -> Any:
@@ -216,10 +265,9 @@ async def _history(state: ProjectState, bus: EventBus, undo: bool) -> Any:
     from fastapi.responses import JSONResponse
 
     try:
-        result = state.coordinator.undo() if undo else state.coordinator.redo()
+        result = state.history(undo=undo)
     except RuntimeError as exc:
         return JSONResponse({"error": str(exc)}, status_code=409)
-    state.rebuild()
     await bus.broadcast({"type": "undo" if undo else "redo", "revision": result.revision,
                          "undo": result.undo_depth, "redo": result.redo_depth})
     return JSONResponse({"revision": result.revision,
@@ -235,5 +283,5 @@ async def _watch(state: ProjectState, bus: EventBus) -> None:
         if state.coordinator.check_external_edit():
             state.rebuild()
             await bus.broadcast({"type": "file-changed",
-                                 "revision": state.coordinator.revision(),
+                                 "revision": state.revision(),
                                  "ok": state.ok})

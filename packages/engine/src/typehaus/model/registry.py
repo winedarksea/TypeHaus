@@ -43,6 +43,15 @@ def constructor_names() -> frozenset[str]:
     return frozenset(_CONSTRUCTORS)
 
 
+def constructor_namespace() -> dict[str, object]:
+    """The dialect call namespace (Wall, Node, ft, pt, enums, …) for evaluating a single
+    authored constructor expression in-memory — the same names a plan module imports.
+
+    Used by the in-memory op applicator to build a pydantic element from the exact source
+    text the libcst writeback would emit, so there is one value-encoding path, not two."""
+    return dict(_CONSTRUCTORS)
+
+
 # --- capability protocols (drawing IR / checks consume these, not concretes) -----
 @runtime_checkable
 class HasAxis(Protocol):

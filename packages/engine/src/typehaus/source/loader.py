@@ -10,6 +10,7 @@ import ast
 import hashlib
 import importlib.util
 import sys
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -37,6 +38,8 @@ class LoadResult:
     findings: list[Finding] = field(default_factory=list)
     provenance: Provenance = field(default_factory=Provenance)
     content_hash: str = ""
+    # Sub-stage timings in milliseconds (Phase 0 instrumentation): lint, import, hash.
+    timings: dict[str, float] = field(default_factory=dict)
 
     @property
     def ok(self) -> bool:
@@ -89,6 +92,27 @@ def lint_only(house_dir: Path) -> list[Finding]:
     return findings
 
 
+# Per-file scan cache: absolute path → (content sha, lint+uid findings, provenance pairs).
+# The libcst lint + provenance scan is ~98% of rebuild cost (Phase 0) and depends *only* on
+# that file's exact bytes, so a rebuild after a one-file edit re-scans just the changed file
+# and replays the rest from cache. Source stays the ground truth — the cache key is the file
+# content itself, so a stale entry can never be served.
+_SCAN_CACHE: dict[str, tuple[str, list[Finding], list[tuple[str, "SourceLoc"]]]] = {}
+
+
+def _scan_file(rel: str, src: str) -> tuple[list[Finding], list[tuple[str, SourceLoc]]]:
+    import libcst as cst
+
+    # Parse + wrap once; the three scans share the resolved PositionProvider (Phase 0).
+    wrapper = cst.MetadataWrapper(cst.parse_module(src))
+    findings: list[Finding] = []
+    findings.extend(lint_source(rel, src, wrapper))
+    findings.extend(missing_uid_findings(rel, src, wrapper))
+    file_prov = Provenance()
+    scan_provenance(rel, src, file_prov, wrapper)
+    return findings, file_prov.items()
+
+
 def load_plan(house_dir: Path) -> LoadResult:
     """Full load: dialect lint (all editable files) → import manifest → PlanModel.
 
@@ -98,24 +122,48 @@ def load_plan(house_dir: Path) -> LoadResult:
     house_dir = house_dir.resolve()
     findings: list[Finding] = []
     prov = Provenance()
+    timings: dict[str, float] = {}
 
+    t0 = time.perf_counter()
+    live_keys: set[str] = set()
     for f in editable_files(house_dir):
         rel = f.relative_to(house_dir).as_posix()
         src = f.read_text()
-        findings.extend(lint_source(rel, src))
-        findings.extend(missing_uid_findings(rel, src))
-        scan_provenance(rel, src, prov)
+        key = str(f)
+        live_keys.add(key)
+        sha = hashlib.sha256(src.encode()).hexdigest()
+        cached = _SCAN_CACHE.get(key)
+        if cached is not None and cached[0] == sha:
+            file_findings, prov_pairs = cached[1], cached[2]
+        else:
+            file_findings, prov_pairs = _scan_file(rel, src)
+            _SCAN_CACHE[key] = (sha, file_findings, prov_pairs)
+        findings.extend(file_findings)
+        for tag, loc in prov_pairs:
+            prov.add(tag, loc)
+    # Evict entries for files that no longer exist (renames/deletes) to bound the cache.
+    for stale in [k for k in _SCAN_CACHE if k not in live_keys and k.startswith(str(house_dir))]:
+        del _SCAN_CACHE[stale]
+    timings["lint_provenance"] = (time.perf_counter() - t0) * 1000.0
 
     if any(f.severity is Severity.ERROR for f in findings):
-        return LoadResult(plan=None, findings=findings, provenance=prov)
+        return LoadResult(plan=None, findings=findings, provenance=prov, timings=timings)
 
+    t0 = time.perf_counter()
     plan = _import_manifest(house_dir, findings)
     if plan is not None:
         from typehaus.source.imported_furniture import load_imported_furniture
 
         plan = load_imported_furniture(house_dir, plan, findings)
+    timings["import"] = (time.perf_counter() - t0) * 1000.0
+
+    t0 = time.perf_counter()
+    content_hash = _content_hash(house_dir)
+    timings["content_hash"] = (time.perf_counter() - t0) * 1000.0
+
     result = LoadResult(
-        plan=plan, findings=findings, provenance=prov, content_hash=_content_hash(house_dir)
+        plan=plan, findings=findings, provenance=prov, content_hash=content_hash,
+        timings=timings,
     )
     if plan is not None:
         _consistency_check(plan, prov, findings)

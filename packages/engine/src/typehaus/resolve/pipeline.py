@@ -7,6 +7,9 @@ rooms → vertical stacking → derived boundary conditions.
 
 from __future__ import annotations
 
+import time
+from contextlib import contextmanager
+
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
@@ -28,25 +31,63 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
     model = ResolvedModel(plan=plan)
     findings: list[Finding] = []
 
+    @contextmanager
+    def _stage(name: str):
+        t0 = time.perf_counter()
+        try:
+            yield
+        finally:
+            model.timings[name] = (time.perf_counter() - t0) * 1000.0
+
+    with _stage("junctions"):
+        ordered = sorted(plan.storeys, key=lambda s: s.elevation.meters)
+        for storey in ordered:
+            z0 = storey.elevation.meters
+            z1 = z0 + storey.default_ceiling_height.meters
+            findings.extend(detect_gaps(plan, storey.tag))
+            model.walls.extend(resolve_storey_walls(plan, storey.tag, z0, z1))
+
+    with _stage("openings"):
+        _resolve_openings(plan, model, findings)
+    with _stage("envelope"):
+        findings.extend(resolve_envelope_geometry(model))
+        apply_to_roof_wall_tops(model)
+    with _stage("framing"):
+        frame_model(plan, model)
+        frame_roofs(model)
+    with _stage("floors"):
+        findings.extend(resolve_floors(model))
+    with _stage("rooms"):
+        findings.extend(resolve_rooms(plan, model))
+    with _stage("floor_heat"):
+        findings.extend(resolve_floor_heat(model))
+    with _stage("stacking"):
+        findings.extend(resolve_stacking(model))
+    with _stage("conditions"):
+        _assembly_change_conditions(model)
+
+    return model, findings
+
+
+def resolve_preview(plan: PlanModel) -> ResolvedModel:
+    """A reduced resolve for a live drag preview (→ responsiveness plan, Phase 4): junctions,
+    openings, envelope, and rooms only — skips framing/floors/floor_heat/stacking/conditions,
+    which a ghost preview during a drag doesn't render and which are the pipeline's costlier
+    stages. Runs no checks and produces no findings; callers must not treat this as the
+    authoritative resolved model, only as fast-turnaround geometry for the overlay."""
+    model = ResolvedModel(plan=plan)
+    findings: list[Finding] = []
+
     ordered = sorted(plan.storeys, key=lambda s: s.elevation.meters)
     for storey in ordered:
         z0 = storey.elevation.meters
         z1 = z0 + storey.default_ceiling_height.meters
-        findings.extend(detect_gaps(plan, storey.tag))
         model.walls.extend(resolve_storey_walls(plan, storey.tag, z0, z1))
-
     _resolve_openings(plan, model, findings)
-    findings.extend(resolve_envelope_geometry(model))
+    resolve_envelope_geometry(model)
     apply_to_roof_wall_tops(model)
-    frame_model(plan, model)
-    frame_roofs(model)
-    findings.extend(resolve_floors(model))
-    findings.extend(resolve_rooms(plan, model))
-    findings.extend(resolve_floor_heat(model))
-    findings.extend(resolve_stacking(model))
-    _assembly_change_conditions(model)
-
-    return model, findings
+    resolve_rooms(plan, model)
+    return model
 
 
 def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Finding]) -> None:

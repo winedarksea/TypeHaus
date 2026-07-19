@@ -22,14 +22,25 @@ class Provenance:
     def tags(self) -> frozenset[str]:
         return frozenset(self._by_tag)
 
+    def items(self) -> list[tuple[str, SourceLoc]]:
+        """(tag, location) pairs — used to cache/replay a single file's provenance."""
+        return list(self._by_tag.items())
+
     def __len__(self) -> int:
         return len(self._by_tag)
 
 
-def scan_provenance(file: str, source: str, prov: Provenance) -> None:
-    """Record the source location of every constructor call carrying a ``tag=`` kwarg."""
-    module = cst.parse_module(source)
-    wrapper = cst.MetadataWrapper(module)
+def scan_provenance(
+    file: str, source: str, prov: Provenance,
+    wrapper: "cst.MetadataWrapper | None" = None,
+) -> None:
+    """Record the source location of every constructor call carrying a ``tag=`` kwarg.
+
+    ``wrapper`` may be a pre-built :class:`MetadataWrapper` shared with the loader's dialect
+    lint so libcst parses each file once per rebuild rather than three times (Phase 0).
+    """
+    if wrapper is None:
+        wrapper = cst.MetadataWrapper(cst.parse_module(source))
     positions = wrapper.resolve(cst.metadata.PositionProvider)
 
     class _V(cst.CSTVisitor):

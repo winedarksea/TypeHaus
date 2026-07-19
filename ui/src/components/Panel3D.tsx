@@ -97,6 +97,21 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     camera.lookAt(target);
   };
 
+  // Render-on-demand (Phase 1c): instead of an unconditional RAF loop pinning the GPU/CPU
+  // while the scene is static, coalesce a single frame whenever something visibly changes —
+  // orbit/dolly, resize, setModel, or a highlight toggle.
+  let raf = 0;
+  let renderPending = false;
+  const requestRender = () => {
+    if (renderPending) return;
+    renderPending = true;
+    raf = requestAnimationFrame(() => {
+      renderPending = false;
+      place();
+      renderer.render(scene, camera);
+    });
+  };
+
   const el = renderer.domElement;
   const raycaster = new THREE.Raycaster();
   let downAt = [0, 0];
@@ -112,6 +127,7 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     theta -= (e.clientX - last[0]) * 0.008;
     phi = Math.min(Math.PI / 2 - 0.05, Math.max(0.1, phi - (e.clientY - last[1]) * 0.008));
     last = [e.clientX, e.clientY];
+    requestRender();
   });
   el.addEventListener("pointerup", (e) => {
     dragging = false;
@@ -131,6 +147,7 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
   el.addEventListener("wheel", (e) => {
     e.preventDefault();
     radius = Math.min(120, Math.max(2, radius * Math.exp(e.deltaY * 0.001)));
+    requestRender();
   });
 
   const resize = () => {
@@ -139,18 +156,11 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    requestRender();
   };
   const ro = new ResizeObserver(resize);
   ro.observe(mount);
   resize();
-
-  let raf = 0;
-  const loop = () => {
-    place();
-    renderer.render(scene, camera);
-    raf = requestAnimationFrame(loop);
-  };
-  loop();
 
   const clear = () => {
     content.clear();
@@ -187,6 +197,7 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     const size = box.getSize(new THREE.Vector3());
     radius = Math.max(6, Math.max(size.x, size.z) * 1.4);
     target.y = size.y * 0.4;
+    requestRender();
   };
 
   const highlight = (uid: string | null) => {
@@ -197,6 +208,7 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     if (uid && byUid.has(uid))
       for (const mat of byUid.get(uid)!)
         (mat as THREE.MeshStandardMaterial).emissive?.setHex(0x2a3d45);
+    requestRender();
   };
 
   return {

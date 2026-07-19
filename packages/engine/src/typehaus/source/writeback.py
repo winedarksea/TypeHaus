@@ -8,6 +8,7 @@ targets is rewritten, so the file stays human-readable and merge-friendly after 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Any
 
 import libcst as cst
@@ -15,6 +16,19 @@ import libcst as cst
 from typehaus.model.registry import element_kinds
 from typehaus.model.ids import new_uid
 from typehaus.source.ops import DELETE_FIELD, PatchOp, RawExpr, encode_value
+
+
+@lru_cache(maxsize=64)
+def parse_cached(source: str) -> cst.Module:
+    """Parse ``source`` once and reuse the (immutable) tree across read-only scans.
+
+    A single coordinator ``_commit`` locates each op's target, computes its inverse, and
+    reads uids by scanning every editable file's source repeatedly — each a full libcst
+    parse (Phase 0: parsing dominates the mutation path). libcst nodes are immutable and
+    ``Module.visit`` returns a new tree without mutating the original, so sharing one parsed
+    tree per source string across the read paths is safe; only the write path re-parses.
+    """
+    return cst.parse_module(source)
 
 
 class WritebackError(RuntimeError):
@@ -208,7 +222,7 @@ def apply_ops_to_source(source: str, ops: list[PatchOp]) -> WritebackResult:
 
 def enclosing_list_name(source: str, kind: str, tag: str) -> str | None:
     """Return the module-level list variable that holds element ``kind``/``tag``, if any."""
-    module = cst.parse_module(source)
+    module = parse_cached(source)
     result: str | None = None
 
     class _V(cst.CSTVisitor):
@@ -229,7 +243,7 @@ def enclosing_list_name(source: str, kind: str, tag: str) -> str | None:
 
 def file_has_list_named(source: str, name: str) -> bool:
     """True if ``source`` has a module-level ``name = [...]`` list assignment."""
-    module = cst.parse_module(source)
+    module = parse_cached(source)
     found = False
 
     class _V(cst.CSTVisitor):
@@ -251,7 +265,7 @@ def read_element_fields(source: str, kind: str, tag: str) -> dict[str, RawExpr] 
     Used by the journal to compute inverse ops that restore the exact prior text.
     Returns ``None`` if no matching element is found in this file.
     """
-    module = cst.parse_module(source)
+    module = parse_cached(source)
     found: dict[str, RawExpr] | None = None
 
     class _Reader(cst.CSTVisitor):

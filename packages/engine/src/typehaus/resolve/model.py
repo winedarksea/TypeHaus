@@ -211,6 +211,9 @@ class ResolvedModel:
     rooms: list[ResolvedRoom] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
+    # Per-stage resolve timings in milliseconds (Phase 0 instrumentation). Not serialized
+    # as source; surfaced to the UI via the `perf` payload for measurement, not correctness.
+    timings: dict[str, float] = field(default_factory=dict)
 
     def wall(self, tag: str) -> ResolvedWall | None:
         return next((w for w in self.walls if w.tag == tag), None)

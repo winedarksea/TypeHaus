@@ -307,6 +307,30 @@ def model_to_dict(
     }
 
 
+def preview_to_dict(model: ResolvedModel) -> dict[str, Any]:
+    """A minimal geometry payload for a live drag preview (→ Phase 4): just wall axes,
+    opening placements, and room outlines — no layers/members/checks/catalog, so the
+    reduced-resolve win isn't spent again re-serializing fields a ghost overlay never
+    draws. Not the model.json contract; a preview client discards this once the drag ends
+    and the next ``GET /model`` (post the real ``PATCH /plan``) lands."""
+    return {
+        "walls": [
+            {"tag": w.tag, "storey": w.storey, "axis": [list(w.axis[0]), list(w.axis[1])]}
+            for w in sorted(model.walls, key=lambda x: x.uid)
+        ],
+        "openings": [
+            {"tag": o.tag, "host": o.host_wall, "is_door": o.is_door,
+             "width_m": o.width_m, "center_along_m": o.center_along_m}
+            for o in model.openings
+        ],
+        "rooms": [
+            {"tag": r.tag, "storey": r.storey, "area_m2": r.area_m2,
+             "clear_face": [list(p) for p in r.clear_face]}
+            for r in model.rooms
+        ],
+    }
+
+
 def write_model_json(
     model: ResolvedModel,
     path: Path,

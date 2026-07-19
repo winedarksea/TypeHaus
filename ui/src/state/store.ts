@@ -10,6 +10,7 @@ import type {
   MacroRequest,
   MacroResult,
   PatchOp,
+  PreviewGeometry,
   UnderlayCalibration,
 } from "../engine/EngineClient";
 import { RevisionConflict } from "../engine/EngineClient";
@@ -67,6 +68,9 @@ interface StoreState {
   // actions
   init: () => Promise<void>;
   reload: () => Promise<void>;
+  // Revision-deduped reload: skips the fetch when the model already matches `revision`,
+  // and coalesces the mutation-action reload with the WS-echo reload into one GET /model.
+  reloadIfStale: (revision?: string) => Promise<void>;
   openOfflineHouse: () => Promise<void>;
   setTool: (t: Tool) => void;
   setViewMode: (v: ViewMode) => void;
@@ -83,6 +87,10 @@ interface StoreState {
 
   applyOps: (ops: PatchOp[]) => Promise<boolean>;
   runMacro: (request: MacroRequest) => Promise<MacroResult | null>;
+  // Self-throttled live drag preview (→ Phase 4): coalesces to the latest request if a
+  // preview is already in flight, so a fast pointermove stream never queues up requests.
+  // Never journaled/mutating; swallows errors (offline, ops that can't preview) as `null`.
+  previewMacro: (request: MacroRequest) => Promise<PreviewGeometry | null>;
   deleteSelection: () => Promise<void>;
   calibrateUnderlay: (calibration: UnderlayCalibration) => Promise<boolean>;
   undo: () => Promise<void>;
@@ -92,6 +100,18 @@ interface StoreState {
 let toastSeq = 1;
 
 let unsubscribeEvents: (() => void) | null = null;
+
+// One in-flight GET /model at a time, tagged with the revision it targets. A second caller
+// asking for the same (or an already-loaded) revision rides the existing promise instead of
+// firing a duplicate fetch — this is what collapses the old action+WS double reload (1a).
+let inflightReload: { revision: string | null; promise: Promise<void> } | null = null;
+
+// One in-flight POST /macro/preview at a time; a request arriving mid-flight replaces
+// `pendingPreviewRequest` instead of firing another fetch, and the in-flight call's resolver
+// re-fires itself once against the latest request when it lands — the drag only ever waits
+// for one round trip, no matter how fast pointermove fires.
+let previewInFlight = false;
+let pendingPreviewRequest: MacroRequest | null = null;
 
 export const useStore = create<StoreState>((set, get) => ({
   client: new HttpEngineClient(),
@@ -162,6 +182,29 @@ export const useStore = create<StoreState>((set, get) => ({
     }
   },
 
+  reloadIfStale: (revision) => {
+    // Already showing this exact revision and nothing in flight → nothing to do.
+    const current = get().model?.revision;
+    if (revision !== undefined && current === revision && !inflightReload) {
+      return Promise.resolve();
+    }
+    // A fetch targeting this revision (or an untargeted one) is already running → join it.
+    if (
+      inflightReload &&
+      (revision === undefined || inflightReload.revision === revision ||
+        inflightReload.revision === null)
+    ) {
+      return inflightReload.promise;
+    }
+    const promise = get()
+      .reload()
+      .finally(() => {
+        if (inflightReload?.promise === promise) inflightReload = null;
+      });
+    inflightReload = { revision: revision ?? null, promise };
+    return promise;
+  },
+
   setTool: (tool) => set({ tool }),
   setViewMode: (viewMode) => set({ viewMode }),
   setThreeMode: (threeMode) => set({ threeMode }),
@@ -190,10 +233,10 @@ export const useStore = create<StoreState>((set, get) => ({
     const { client, model } = get();
     if (!model) return false;
     try {
-      await client.patchPlan(ops, model.revision);
-      // The server broadcasts "patched"; the WS handler reloads. Reload here too so the
-      // action resolves against fresh state even if the socket is down.
-      await get().reload();
+      const res = await client.patchPlan(ops, model.revision);
+      // The server broadcasts "patched"; the WS handler also reloads. reloadIfStale keyed on
+      // the post-patch revision coalesces the two into a single GET /model (1a).
+      await get().reloadIfStale(res.revision);
       return true;
     } catch (err) {
       if (err instanceof RevisionConflict) {
@@ -213,7 +256,7 @@ export const useStore = create<StoreState>((set, get) => ({
     if (!model) return null;
     try {
       const result = await client.runMacro(request, model.revision);
-      await get().reload();
+      await get().reloadIfStale(result.revision);
       for (const warning of result.warnings ?? []) get().toast(warning);
       return result;
     } catch (err) {
@@ -223,6 +266,24 @@ export const useStore = create<StoreState>((set, get) => ({
         get().toast((err as Error).message, "error");
       }
       return null;
+    }
+  },
+
+  previewMacro: async (request) => {
+    if (previewInFlight) {
+      pendingPreviewRequest = request; // superseded: only the latest pointer position matters
+      return null;
+    }
+    previewInFlight = true;
+    try {
+      return await get().client.previewMacro(request);
+    } catch {
+      return null; // offline, or ops that can't apply in memory — caller keeps last geometry
+    } finally {
+      previewInFlight = false;
+      const next = pendingPreviewRequest;
+      pendingPreviewRequest = null;
+      if (next) void get().previewMacro(next);
     }
   },
 
@@ -265,8 +326,8 @@ export const useStore = create<StoreState>((set, get) => ({
 
   undo: async () => {
     try {
-      await get().client.undo();
-      await get().reload();
+      const res = await get().client.undo();
+      await get().reloadIfStale(res.revision);
     } catch (err) {
       get().toast((err as Error).message, "error");
     }
@@ -274,8 +335,8 @@ export const useStore = create<StoreState>((set, get) => ({
 
   redo: async () => {
     try {
-      await get().client.redo();
-      await get().reload();
+      const res = await get().client.redo();
+      await get().reloadIfStale(res.revision);
     } catch (err) {
       get().toast((err as Error).message, "error");
     }
@@ -291,16 +352,16 @@ function handleEvent(
     case "file-changed": {
       // External VSCode/Claude edit. If the user has no pending local edit, hot-reload
       // silently; the conflict banner is reserved for the 409 precondition path (#30).
-      void get().reload();
+      void get().reloadIfStale(e.revision);
       break;
     }
     case "patched":
     case "build":
     case "undo":
     case "redo":
-      // Our own mutations already reload() in the action; a bare reload here keeps other
-      // tabs / the two-screen workflow in sync without double-fetching aggressively.
-      void get().reload();
+      // Our own mutation already kicked a reloadIfStale keyed on this same revision, so this
+      // echo joins that in-flight fetch (no double GET); for other tabs it fetches fresh (1a).
+      void get().reloadIfStale(e.revision);
       break;
   }
   set({});

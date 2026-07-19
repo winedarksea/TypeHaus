@@ -14,6 +14,7 @@ import {
   type MacroResult,
   type PatchOp,
   type PatchResult,
+  type PreviewGeometry,
   RevisionConflict,
   type UnderlayCalibration,
 } from "./EngineClient";
@@ -72,6 +73,16 @@ export class HttpEngineClient implements EngineClient {
     if (res.status === 409) throw new RevisionConflict(await readError(res));
     if (!res.ok) throw new EngineError(await readError(res), res.status);
     return (await res.json()) as MacroResult;
+  }
+
+  async previewMacro(request: MacroRequest): Promise<PreviewGeometry> {
+    const res = await fetch(this.url("/macro/preview"), {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(request),
+    });
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as PreviewGeometry;
   }
 
   async build(): Promise<BuildResult> {

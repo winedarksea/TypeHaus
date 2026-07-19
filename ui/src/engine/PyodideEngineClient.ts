@@ -18,6 +18,7 @@ import {
   type MacroResult,
   type PatchOp,
   type PatchResult,
+  type PreviewGeometry,
   type UnderlayCalibration,
 } from "./EngineClient";
 
@@ -125,6 +126,9 @@ export class PyodideEngineClient implements EngineClient {
   }
   runMacro(_request: MacroRequest, _revision: string): Promise<MacroResult> {
     return Promise.reject(new OfflineUnsupported("Editing the plan"));
+  }
+  previewMacro(_request: MacroRequest): Promise<PreviewGeometry> {
+    return Promise.reject(new OfflineUnsupported("Drag preview"));
   }
   undo(): Promise<HistoryResult> {
     return Promise.reject(new OfflineUnsupported("Undo"));

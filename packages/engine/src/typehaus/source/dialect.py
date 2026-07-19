@@ -168,23 +168,32 @@ def _dotted(node: cst.BaseExpression) -> str:
     return ""
 
 
-def lint_source(file: str, source: str) -> list[Finding]:
-    """Lint one editable file's source text against the dialect grammar."""
+def lint_source(
+    file: str, source: str, wrapper: cst.MetadataWrapper | None = None
+) -> list[Finding]:
+    """Lint one editable file's source text against the dialect grammar.
+
+    ``wrapper`` may be a pre-built :class:`MetadataWrapper` for ``source`` so the libcst
+    parse + PositionProvider resolution is shared across the loader's three scans (Phase 0
+    found this scan is ~98% of rebuild cost; one parse per file instead of three).
+    """
     allowed = constructor_names()
-    module = cst.parse_module(source)
-    wrapper = cst.MetadataWrapper(module)
+    if wrapper is None:
+        wrapper = cst.MetadataWrapper(cst.parse_module(source))
     visitor = _DialectVisitor(file, allowed)
     wrapper.visit(visitor)
     return visitor.findings
 
 
-def missing_uid_findings(file: str, source: str) -> list[Finding]:
+def missing_uid_findings(
+    file: str, source: str, wrapper: cst.MetadataWrapper | None = None
+) -> list[Finding]:
     """Every element constructor call must carry a ``uid=`` kwarg; else fmt auto-fixes."""
     from typehaus.model.registry import is_registered_element
 
     findings: list[Finding] = []
-    module = cst.parse_module(source)
-    wrapper = cst.MetadataWrapper(module)
+    if wrapper is None:
+        wrapper = cst.MetadataWrapper(cst.parse_module(source))
     positions = wrapper.resolve(cst.metadata.PositionProvider)
 
     class _V(cst.CSTVisitor):

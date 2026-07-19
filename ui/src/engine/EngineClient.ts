@@ -35,6 +35,32 @@ export interface BuildResult {
   revision: string;
 }
 
+// Reduced-resolve geometry for a live drag preview (→ responsiveness plan, Phase 4). Only
+// what a ghost overlay draws — no layers/members/findings; not the model.json contract.
+export interface PreviewWall {
+  tag: string;
+  storey: string;
+  axis: [[number, number], [number, number]];
+}
+export interface PreviewOpening {
+  tag: string;
+  host: string;
+  is_door: boolean;
+  width_m: number;
+  center_along_m: number;
+}
+export interface PreviewRoom {
+  tag: string;
+  storey: string;
+  area_m2: number;
+  clear_face: [number, number][];
+}
+export interface PreviewGeometry {
+  walls: PreviewWall[];
+  openings: PreviewOpening[];
+  rooms: PreviewRoom[];
+}
+
 export interface UnderlayCalibration {
   path: string;
   storey: string;
@@ -89,6 +115,11 @@ export interface EngineClient {
   getChecks(): Promise<Finding[]>;
   patchPlan(ops: PatchOp[], revision: string): Promise<PatchResult>;
   runMacro(request: MacroRequest, revision: string): Promise<MacroResult>;
+  // Read-only, no revision precondition — never journaled, safe to call at drag-move
+  // frequency. Rejects (OfflineUnsupported offline) if the macro's ops can't preview in
+  // memory. Mirrors runMacro's request shape so a drag can reuse the same MacroRequest it
+  // will later commit with runMacro on mouseup.
+  previewMacro(request: MacroRequest): Promise<PreviewGeometry>;
   build(): Promise<BuildResult>;
   undo(): Promise<HistoryResult>;
   redo(): Promise<HistoryResult>;

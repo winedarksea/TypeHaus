@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
+import type { Selection } from "../state/store";
+import type { PreviewGeometry } from "../engine/EngineClient";
 import type { Model, Opening, PlanNode, Stair, Underlay, Vec2, Wall } from "../model/types";
 import {
   deriveNodes,
@@ -58,12 +60,12 @@ export function Canvas2D() {
   const select = useStore((s) => s.select);
   const selectByTag = useStore((s) => s.selectByTag);
   const hoverUid = useStore((s) => s.hoverUid);
-  const setHover = useStore((s) => s.setHover);
   const showFraming = useStore((s) => s.showFraming);
   const activeStorey = useStore((s) => s.activeStorey);
   const tool = useStore((s) => s.tool);
   const applyOps = useStore((s) => s.applyOps);
   const runMacro = useStore((s) => s.runMacro);
+  const previewMacro = useStore((s) => s.previewMacro);
   const deleteSelection = useStore((s) => s.deleteSelection);
   const offline = useStore((s) => s.offline);
   const calibrateUnderlay = useStore((s) => s.calibrateUnderlay);
@@ -79,6 +81,11 @@ export function Canvas2D() {
   const [draft, setDraft] = useState<WallDraft | null>(null);
   const [cursor, setCursor] = useState<Vec2 | null>(null); // world-space hover/rubber-band
   const [nodeDrag, setNodeDrag] = useState<NodeDrag | null>(null);
+  // Live cascading geometry for the wall(s)/room(s) touched by an in-progress node drag
+  // (→ Phase 4). Fetched off the reduced-resolve /macro/preview endpoint, self-throttled by
+  // the store to one in-flight request; cleared on drag end/cancel so it never lingers past
+  // the drag it belongs to and shadows the committed model.
+  const [previewGeom, setPreviewGeom] = useState<PreviewGeometry | null>(null);
   const [placement, setPlacement] = useState<Placement | null>(null);
   const [dimWall, setDimWall] = useState<Wall | null>(null);
   const [drawAssembly, setDrawAssembly] = useState<string>("");
@@ -103,6 +110,24 @@ export function Canvas2D() {
     },
     [view],
   );
+
+  // Stable per-element handlers so the memoized shapes below don't re-render the whole
+  // subtree on every hover/selection change (Phase 1b): identity never changes across
+  // renders, and tool state is read live from the store at call time.
+  const selectEl = useCallback(
+    (kind: Selection["kind"], uid: string) => {
+      const s = useStore.getState();
+      if (s.tool === "select") s.select(kind, uid);
+    },
+    [],
+  );
+  const hoverEl = useCallback((uid: string | null) => {
+    useStore.getState().setHover(uid);
+  }, []);
+  const editOpeningStable = useCallback((o: Opening) => {
+    if (useStore.getState().tool !== "select") return;
+    setPending({ opening: o, field: "position", initial: formatFtIn(o.center_along_m) });
+  }, []);
 
   const nodes = useMemo(() => deriveNodes(model.walls), [model.walls]);
   const openEnds = useMemo(() => openEndKeys(model), [model]);
@@ -320,6 +345,7 @@ export function Canvas2D() {
 
   const commitNodeDrag = async (drag: NodeDrag) => {
     setNodeDrag(null);
+    setPreviewGeom(null); // the real commit's reload supersedes the preview geometry
     const dx = drag.to[0] - drag.from[0];
     const dy = drag.to[1] - drag.from[1];
     if (Math.hypot(dx, dy) < 1e-4 || !activeStorey) return;
@@ -349,6 +375,7 @@ export function Canvas2D() {
       if (target && (target.tagName === "INPUT" || target.tagName === "SELECT" || target.tagName === "TEXTAREA")) return;
       if (e.key === "Escape") {
         setDraft(null); setPlacement(null); setDimWall(null); setNodeDrag(null); setPending(null);
+        setPreviewGeom(null);
         if (calibrationMode) { setCalibrationMode(false); setCalibrationPoints([]); }
       } else if ((e.key === "Delete" || e.key === "Backspace") && selection.uid && !offline) {
         e.preventDefault();
@@ -384,9 +411,6 @@ export function Canvas2D() {
   };
 
   // ---- opening driven-dimension edit (double-click an opening) ---------------
-  const editOpening = (o: Opening) => {
-    setPending({ opening: o, field: "position", initial: formatFtIn(o.center_along_m) });
-  };
   const commitPending = async (meters: number) => {
     if (!pending) return;
     const o = pending.opening;
@@ -446,31 +470,41 @@ export function Canvas2D() {
             <text x={x + 8} y={y - 8} fontSize={11} fill="#9a321f">{index + 1}</text>
           </g>;
         })}
-        {/* rooms first (tinted fills, behind walls) */}
+        {/* rooms first (tinted fills, behind walls) — a live drag's preview cascades into
+            neighboring rooms' clear-face polygons, matched by tag against the last preview */}
         {model.rooms
           .filter((r) => !activeStorey || r.storey === activeStorey)
-          .map((r) => (
-            <polygon
-              key={r.uid}
-              points={r.clear_face.map(project).map((p) => p.join(",")).join(" ")}
-              fill={selection.uid === r.uid ? "rgba(109,138,150,0.28)" : "rgba(109,138,150,0.12)"}
-              stroke="none"
-              onClick={() => tool === "select" && select("room", r.uid)}
+          .map((r) => {
+            const clearFace = previewGeom?.rooms.find((x) => x.tag === r.tag)?.clear_face
+              ?? r.clear_face;
+            return (
+              <polygon
+                key={r.uid}
+                points={clearFace.map(project).map((p) => p.join(",")).join(" ")}
+                fill={selection.uid === r.uid ? "rgba(109,138,150,0.28)" : "rgba(109,138,150,0.12)"}
+                stroke="none"
+                onClick={() => tool === "select" && select("room", r.uid)}
+              />
+            );
+          })}
+        {/* walls — likewise shown at their previewed axis (tag-matched) while a node drag is
+            in flight, so connected walls visibly stretch/shrink before the commit lands */}
+        {wallsOnStorey.map((w) => {
+          const previewAxis = previewGeom?.walls.find((x) => x.tag === w.tag)?.axis;
+          const displayWall = previewAxis ? { ...w, axis: previewAxis as [Vec2, Vec2] } : w;
+          return (
+            <WallShape
+              key={w.uid}
+              w={displayWall}
+              project={project}
+              selected={selection.uid === w.uid}
+              hovered={hoverUid === w.uid}
+              showFraming={showFraming}
+              onSelect={selectEl}
+              onHover={hoverEl}
             />
-          ))}
-        {/* walls */}
-        {wallsOnStorey.map((w) => (
-          <WallShape
-            key={w.uid}
-            w={w}
-            project={project}
-            selected={selection.uid === w.uid}
-            hovered={hoverUid === w.uid}
-            showFraming={showFraming}
-            onSelect={() => tool === "select" && select("wall", w.uid)}
-            onHover={(h) => setHover(h ? w.uid : null)}
-          />
-        ))}
+          );
+        })}
         {/* openings */}
         {model.openings.map((o) => {
           const host = model.walls.find((w) => w.uid === o.host);
@@ -483,8 +517,8 @@ export function Canvas2D() {
               project={project}
               scale={view.scale}
               selected={selection.uid === o.uid}
-              onSelect={() => tool === "select" && select("opening", o.uid)}
-              onEdit={() => tool === "select" && editOpening(o)}
+              onSelect={selectEl}
+              onEdit={editOpeningStable}
             />
           );
         })}
@@ -492,8 +526,7 @@ export function Canvas2D() {
           .filter((stair) => !activeStorey || stair.storey === activeStorey)
           .map((stair) => <StairShape key={stair.uid} stair={stair} project={project}
             selected={selection.uid === stair.uid} hovered={hoverUid === stair.uid}
-            onSelect={() => tool === "select" && select("stair", stair.uid)}
-            onHover={(hovered) => setHover(hovered ? stair.uid : null)} />)}
+            onSelect={selectEl} onHover={hoverEl} />)}
         {(model.fixtures ?? [])
           .filter((fixture) => !activeStorey || fixture.storey === activeStorey)
           .map((fixture) => <FixtureFootprint key={fixture.uid} fixture={fixture} project={project}
@@ -550,13 +583,20 @@ export function Canvas2D() {
                 const tag = nearestNodeTag(p);
                 if (tag) setNodeDrag({ tag, from: p, to: p });
               }}
-              onMove={(clientX, clientY) => setNodeDrag((d) => d ? ({
-                ...d, to: (() => {
-                  const raw = unproject(clientX, clientY);
-                  const others = new Map([...snapNodes].filter(([t]) => t !== d.tag));
-                  return snapWorld(raw, others, tolM, gridM).point;
-                })(),
-              }) : d)}
+              onMove={(clientX, clientY) => setNodeDrag((d) => {
+                if (!d) return d;
+                const raw = unproject(clientX, clientY);
+                const others = new Map([...snapNodes].filter(([t]) => t !== d.tag));
+                const to = snapWorld(raw, others, tolM, gridM).point;
+                if (activeStorey) {
+                  const dx = to[0] - d.from[0];
+                  const dy = to[1] - d.from[1];
+                  void previewMacro({
+                    macro: "move_nodes", storey: activeStorey, nodes: [d.tag], dx, dy,
+                  }).then((geom) => { if (geom) setPreviewGeom(geom); });
+                }
+                return { ...d, to };
+              })}
               onEnd={() => setNodeDrag((d) => { if (d) void commitNodeDrag(d); return null; })}
             />
           ));
@@ -820,19 +860,20 @@ function BackgroundGrid({ view }: { view: { scale: number; tx: number; ty: numbe
   );
 }
 
-function WallShape({ w, project, selected, hovered, showFraming, onSelect, onHover }: {
+const WallShape = memo(function WallShape({ w, project, selected, hovered, showFraming, onSelect, onHover }: {
   w: Wall;
   project: (p: Vec2) => Vec2;
   selected: boolean;
   hovered: boolean;
   showFraming: boolean;
-  onSelect: () => void;
-  onHover: (h: boolean) => void;
+  onSelect: (kind: Selection["kind"], uid: string) => void;
+  onHover: (uid: string | null) => void;
 }) {
   const poly = (pts: Vec2[]) => pts.map(project).map((p) => p.join(",")).join(" ");
   const stroke = selected ? NORDIC_ACCENT : hovered ? NORDIC_INK : NORDIC_LINE;
   return (
-    <g onClick={onSelect} onPointerEnter={() => onHover(true)} onPointerLeave={() => onHover(false)}
+    <g onClick={() => onSelect("wall", w.uid)}
+      onPointerEnter={() => onHover(w.uid)} onPointerLeave={() => onHover(null)}
       style={{ cursor: "pointer" }}>
       {w.layers.map((ly, i) =>
         ly.polygon.length >= 3 ? (
@@ -851,16 +892,16 @@ function WallShape({ w, project, selected, hovered, showFraming, onSelect, onHov
         strokeWidth={selected ? 2.5 : 1.5} strokeDasharray={w.layers.length === 0 ? "4 4" : undefined} />
     </g>
   );
-}
+});
 
-function OpeningShape({ o, host, project, scale, selected, onSelect, onEdit }: {
+const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selected, onSelect, onEdit }: {
   o: Opening;
   host: Wall;
   project: (p: Vec2) => Vec2;
   scale: number;
   selected: boolean;
-  onSelect: () => void;
-  onEdit: () => void;
+  onSelect: (kind: Selection["kind"], uid: string) => void;
+  onEdit: (o: Opening) => void;
 }) {
   const center = pointAlong(host, o.center_along_m);
   const [cx, cy] = project(center);
@@ -870,7 +911,8 @@ function OpeningShape({ o, host, project, scale, selected, onSelect, onEdit }: {
   const dx = Math.cos(ang) * halfPx;
   const dy = Math.sin(ang) * halfPx;
   return (
-    <g onClick={onSelect} onDoubleClick={onEdit} style={{ cursor: "pointer" }}>
+    <g onClick={() => onSelect("opening", o.uid)} onDoubleClick={() => onEdit(o)}
+      style={{ cursor: "pointer" }}>
       <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
         stroke={selected ? NORDIC_ACCENT : "#fff"} strokeWidth={selected ? 6 : 5} />
       <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
@@ -879,15 +921,15 @@ function OpeningShape({ o, host, project, scale, selected, onSelect, onEdit }: {
       {selected && <circle cx={cx} cy={cy} r={5} fill={NORDIC_ACCENT} />}
     </g>
   );
-}
+});
 
-function StairShape({ stair, project, selected, hovered, onSelect, onHover }: {
+const StairShape = memo(function StairShape({ stair, project, selected, hovered, onSelect, onHover }: {
   stair: Stair;
   project: (p: Vec2) => Vec2;
   selected: boolean;
   hovered: boolean;
-  onSelect: () => void;
-  onHover: (hovered: boolean) => void;
+  onSelect: (kind: Selection["kind"], uid: string) => void;
+  onHover: (uid: string | null) => void;
 }) {
   if (stair.outline.length < 3) return null;
   const outline = stair.outline.map(project).map((point) => point.join(",")).join(" ");
@@ -904,7 +946,8 @@ function StairShape({ stair, project, selected, hovered, onSelect, onHover }: {
   const stroke = selected ? NORDIC_ACCENT : hovered ? NORDIC_INK : "#704c34";
   const [arrowStartX, arrowStartY] = project(directionStart);
   const [arrowEndX, arrowEndY] = project(directionEnd);
-  return <g onClick={onSelect} onPointerEnter={() => onHover(true)} onPointerLeave={() => onHover(false)}
+  return <g onClick={() => onSelect("stair", stair.uid)}
+    onPointerEnter={() => onHover(stair.uid)} onPointerLeave={() => onHover(null)}
     style={{ cursor: "pointer" }}>
     <polygon points={outline} fill="rgba(112,76,52,0.08)" stroke={stroke}
       strokeWidth={selected ? 2.5 : 1.25} />
@@ -917,7 +960,7 @@ function StairShape({ stair, project, selected, hovered, onSelect, onHover }: {
     <text x={labelX} y={labelY - 5} textAnchor="middle" fontSize={10} fill={stroke}
       style={{ paintOrder: "stroke" }} stroke="#fff" strokeWidth={3}>UP {stair.riser_count} R</text>
   </g>;
-}
+});
 
 function WallDimension({ w, project }: { w: Wall; project: (p: Vec2) => Vec2 }) {
   const [a, b] = w.axis;

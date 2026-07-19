@@ -229,7 +229,9 @@ class ProjectCoordinator:
 def _file_has_kind_list(source: str, kind: str) -> bool:
     import libcst as cst
 
-    module = cst.parse_module(source)
+    from typehaus.source.writeback import parse_cached
+
+    module = parse_cached(source)
     found = False
 
     class _V(cst.CSTVisitor):
@@ -247,7 +249,9 @@ def _file_has_kind_list(source: str, kind: str) -> bool:
 def _read_uid(source: str, kind: str, tag: str) -> str | None:
     import libcst as cst
 
-    module = cst.parse_module(source)
+    from typehaus.source.writeback import parse_cached
+
+    module = parse_cached(source)
     uid: str | None = None
 
     class _V(cst.CSTVisitor):

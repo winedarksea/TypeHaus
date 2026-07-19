@@ -50,12 +50,16 @@ def test_patch_requires_matching_revision(client):
 
 def test_patch_undo_redo_round_trip(client):
     c, house = client
+    state = c.app.state.project
     rev = c.get("/model").json()["revision"]
     ok = c.patch("/plan", json={
         "revision": rev,
         "ops": [{"op": "update", "type": "Wall", "tag": "W-101", "fields": {"top": "11'"}}],
     })
     assert ok.status_code == 200
+    # The fast path answers before the source writeback lands (→ Phase 2b); flush it before
+    # asserting on disk. undo()/redo() flush internally (source is the ground truth there).
+    state._flush_writes()
     main = house / "plan" / "storeys" / "main.py"
     assert "ft(11)" in main.read_text()
     assert c.post("/undo").status_code == 200
@@ -64,9 +68,56 @@ def test_patch_undo_redo_round_trip(client):
     assert "ft(11)" in main.read_text()
 
 
+def test_preview_returns_reduced_geometry_without_mutating_state(client):
+    c, house = client
+    state = c.app.state.project
+    rev = c.get("/model").json()["revision"]
+    resp = c.post("/preview", json={
+        "ops": [{"op": "update", "type": "Wall", "tag": "W-101", "fields": {"top": "11'"}}],
+    })
+    assert resp.status_code == 200
+    body = resp.json()
+    assert "walls" in body and "openings" in body and "rooms" in body
+    assert any(w["tag"] == "W-101" for w in body["walls"])
+    # A preview never mutates project state: revision unchanged, nothing queued to disk.
+    assert state.revision() == rev
+    main = house / "plan" / "storeys" / "main.py"
+    assert "ft(11)" not in main.read_text()
+
+
+def test_preview_rejects_ops_that_cannot_apply_in_memory(client):
+    c, _ = client
+    resp = c.post("/preview", json={
+        "ops": [{"op": "update", "type": "Wall", "tag": "NO-SUCH-WALL", "fields": {"top": "11'"}}],
+    })
+    assert resp.status_code == 422
+
+
 def test_undo_with_empty_journal_is_409(client):
     c, _ = client
     assert c.post("/undo").status_code == 409
+
+
+def test_checks_run_async_after_a_fast_edit(client):
+    """→ Phase 3: the fast path's response lands before the check-tier job finishes; the
+    findings/ok update in place afterwards without a further revision bump."""
+    c, _ = client
+    state = c.app.state.project
+    state._flush_checks()  # settle the initial open()'s check job before asserting deltas
+    rev = c.get("/model").json()["revision"]
+    ok = c.patch("/plan", json={
+        "revision": rev,
+        "ops": [{"op": "update", "type": "Wall", "tag": "W-101", "fields": {"top": "11'"}}],
+    })
+    assert ok.status_code == 200
+    new_rev = ok.json()["revision"]
+    assert new_rev != rev
+    state._flush_checks()
+    assert state.checks_pending is False
+    model = c.get("/model").json()
+    assert model["revision"] == new_rev  # checks landing doesn't bump the client revision
+    assert model["checksPending"] is False
+    state._flush_writes()
 
 
 def test_underlay_calibration_rewrites_only_the_matching_toml_table(tmp_path: Path):

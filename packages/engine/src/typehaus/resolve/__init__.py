@@ -16,10 +16,10 @@ from typehaus.resolve.model import (
     ResolvedWall,
     StackEdge,
 )
-from typehaus.resolve.pipeline import resolve
+from typehaus.resolve.pipeline import resolve, resolve_preview
 
 __all__ = [
-    "resolve", "ResolvedModel", "ResolvedWall", "ResolvedLayer", "ResolvedOpening",
+    "resolve", "resolve_preview", "ResolvedModel", "ResolvedWall", "ResolvedLayer", "ResolvedOpening",
     "ResolvedRoom", "ResolvedSolid", "ResolvedRoof", "ResolvedStair", "ResolvedFloorHeat", "FramedMember",
     "BoundaryCondition", "StackEdge",
 ]
