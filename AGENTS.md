@@ -1,6 +1,6 @@
-# MinimapPR Agent Guidelines
+# TypeHaus Agent Guidelines
 
-This document provides guidelines for agents working on the MinimapPR codebase.
+This document provides guidelines for agents working on the TypeHaus codebase.
 
 ## Architectural Principles
 

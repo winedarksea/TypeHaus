@@ -2,11 +2,11 @@
 
 **Infrastructure as code, but the infrastructure is a residential house.** Author a house
 plan as typed, declarative Python; compile it to an IFC4 model, DXF, permit-ready PDFs, and
-a 2D/3D editing UI. Terraform for houses.
+a 2D/3D editing UI.
 
-> **Pre-alpha.** APIs, schema, and outputs change without notice. Not for production use.
+The vision here is for non-architects to be able to use vibe coding and simple UIs to 'play around' with a house design until they capture most of their vision for their home, then be able to export a practical, usable home design in a format architects can easily load into the software of their choice to polish and refine. This also aims to go beyond many "floor plan" apps by allowing users to get into the assemblies and building science of their home. Although it does not aim for 1:1 parity with leading architectural tools, this library does aim to export permit ready construction drawings for homes completely from the tools here.
 
-## Why
+## How
 
 You describe walls, rooms, openings, assemblies, and foundations as frozen typed objects.
 The engine resolves topology (gap-free mitered corners), stacks walls across storeys, frames
