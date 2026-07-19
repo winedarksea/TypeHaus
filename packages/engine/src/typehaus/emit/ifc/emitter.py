@@ -71,6 +71,9 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     _emit_registers_equipment_devices(f, body, model, storeys, project_uuid)
     _emit_utilities(f, body, model, project_uuid)
 
+    for bedding in sorted(model.footing_beddings, key=lambda item: item.uid):
+        _emit_footing_bedding(f, body, bedding, storeys, project_uuid)
+
     f.write(str(out_path))
     return out_path
 
@@ -391,6 +394,29 @@ def _emit_sleeve(f: Any, body: Any, sleeve: Any, storeys: dict[str, Any],
         "serves_fixture": sleeve.serves_fixture or "",
     })
     ll.assign_container(f, element, storeys[sleeve.storey])
+
+
+def _emit_footing_bedding(f: Any, body: Any, bedding: Any, storeys: dict[str, Any],
+                          project_uuid: Any) -> None:
+    """Excavation/bedding prep as a proxy solid under the footing (its own outline,
+    from the compacted-stone-bed underside up to the footing underside)."""
+    element = ll.create_entity(f, "IfcBuildingElementProxy", name=bedding.tag)
+    element.GlobalId = derive_guid(project_uuid, bedding.uid)
+    _assign_representation(f, element, ll.add_prism_from_profile(
+        f, body, bedding.outline, bedding.z1_m - bedding.z0_m, bedding.z0_m,
+    ))
+    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": bedding.uid, "tag": bedding.tag,
+                                               "host": bedding.host_footing})
+    ll.ensure_pset(f, element, "TypeHaus_FootingBedding", {
+        "host": bedding.host_footing,
+        "aggregate": bedding.aggregate,
+        "geotextile": bedding.geotextile,
+        "drain_tile": bedding.drain_tile,
+        "perimeter_insulation_in": (bedding.perimeter_insulation_m * 39.37007874015748
+                                    if bedding.perimeter_insulation_m is not None else 0.0),
+        "cast_foam_in_aggregate": bedding.cast_foam_in_aggregate,
+    })
+    ll.assign_container(f, element, storeys[bedding.storey])
 
 
 def _georef(f: Any, ifc_project: Any, model: ResolvedModel, source_context: Any) -> None:

@@ -115,6 +115,19 @@ CATLIN_BASEMENT_12 = Assembly(
     source="catlin-house basement: 12\" wall + 2x2\" exterior XPS",
 )
 
+# Basement slab-on-grade: 3" XPS below the slab (R-15 @ 40 psi compressive — rated for
+# slab loading, not the lighter foundation-wall grade) breaks direct slab-to-clay contact.
+CATLIN_SLAB_FLOOR = Assembly(
+    tag="CATLIN_SLAB_FLOOR",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE),
+        Layer(name="xps-below", material_ref="xps", thickness=inch(3.0),
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+    ),
+    source="catlin-house basement slab: 3\" below-slab XPS, R-15 @ 40 psi compressive",
+)
+
 CATLIN_CONC_12_INT = Assembly(
     tag="CATLIN_CONC_12_INT",
     layers=(
@@ -226,6 +239,7 @@ ASSEMBLIES = [
     CATLIN_EXT_2X4,
     CATLIN_ROOF,
     CATLIN_BASEMENT_12,
+    CATLIN_SLAB_FLOOR,
     CATLIN_CONC_12_INT,
     CATLIN_CONC_8_INT,
     SUNKEN_GARDEN_WALL,

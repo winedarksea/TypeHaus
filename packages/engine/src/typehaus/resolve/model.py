@@ -222,6 +222,24 @@ class ResolvedSleeve:
 
 
 @dataclass(frozen=True)
+class ResolvedFootingBedding:
+    """Sub-footing excavation/bedding prep resolved against its host footing solid."""
+
+    uid: str
+    tag: str
+    storey: str
+    host_footing: str
+    outline: Ring
+    z0_m: float  # bottom of excavation (compacted stone-bed underside)
+    z1_m: float  # top of bedding == footing underside
+    aggregate: str
+    geotextile: bool
+    drain_tile: bool
+    perimeter_insulation_m: float | None
+    cast_foam_in_aggregate: bool
+
+
+@dataclass(frozen=True)
 class ResolvedDuct:
     """A validated duct run — bay occupancy/bearing-crossing derived by ``resolve.mep``."""
 
@@ -265,6 +283,7 @@ class ResolvedModel:
     pipe_runs: list[ResolvedPipeRun] = field(default_factory=list)
     sleeves: list[ResolvedSleeve] = field(default_factory=list)
     ducts: list[ResolvedDuct] = field(default_factory=list)
+    footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)
     # Per-stage resolve timings in milliseconds (Phase 0 instrumentation). Not serialized
     # as source; surfaced to the UI via the `perf` payload for measurement, not correctness.
     timings: dict[str, float] = field(default_factory=dict)

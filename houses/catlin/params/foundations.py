@@ -5,11 +5,24 @@
   wood walls bear on top (the ``garage`` storey elevation), footing under.
 - Breezeway: the porch roof between house and garage rides on freestanding 6x6
   posts on isolated pads — never attached to either structure.
+- House footings additionally get a bedding-prep record (undercut, geotextile, drain
+  tile, compacted washed-stone bed, perimeter foam) — see ``HOUSE_FOOTING_BEDDING``.
 """
 
 from __future__ import annotations
 
-from typehaus import Footing, FoundationWall, Node, Pad, Post, Slab, ft, inch, pt
+from typehaus import (
+    Footing,
+    FootingBedding,
+    FoundationWall,
+    Node,
+    Pad,
+    Post,
+    Slab,
+    ft,
+    inch,
+    pt,
+)
 
 # --- house strip footings --------------------------------------------------------
 _HOUSE_WALL_TAGS = [
@@ -22,6 +35,18 @@ HOUSE_FOOTINGS = [
     Footing(uid=f"CF{i:03d}AAAAA", tag=f"FT-{t[2:]}", under=t,
             width=inch(20), depth=inch(8))
     for i, t in enumerate(_HOUSE_WALL_TAGS, start=1)
+]
+
+# Bearing prep below every house footing: dig 6-8" (7" nominal) past the footing
+# underside, line with non-woven (no-slip) geotextile, run drain tile through the bed,
+# then compacted ASTM C33 #57 washed crushed stone — a well-drained bearing surface
+# that also breaks direct footing-to-wet-clay thermal contact. Perimeter foam (4",
+# matching CATLIN_BASEMENT_12's 2x2" exterior XPS) continues the wall's insulation
+# down over the footing sides.
+HOUSE_FOOTING_BEDDING = [
+    FootingBedding(uid=f"CFB{i:03d}AAAA", tag=f"FB-{f.tag[3:]}", host_ref=f.tag,
+                   undercut=inch(7), perimeter_insulation=inch(4))
+    for i, f in enumerate(HOUSE_FOOTINGS, start=1)
 ]
 
 # --- garage ICF stem (basement storey; absolute elevations) -----------------------
@@ -79,6 +104,6 @@ GARAGE_SLAB = Slab(
     thickness=inch(3.5),
 )
 
-BASEMENT_ELEMENTS = [*HOUSE_FOOTINGS, *GARAGE_STEM_NODES, *GARAGE_STEM_WALLS,
-                     *GARAGE_FOOTINGS]
+BASEMENT_ELEMENTS = [*HOUSE_FOOTINGS, *HOUSE_FOOTING_BEDDING, *GARAGE_STEM_NODES,
+                     *GARAGE_STEM_WALLS, *GARAGE_FOOTINGS]
 MAIN_ELEMENTS = [*BREEZEWAY_PADS, *BREEZEWAY_POSTS, GARAGE_SLAB]

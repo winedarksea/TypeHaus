@@ -82,7 +82,7 @@ from typehaus.model.registry import (
     register_constructor,
 )
 from typehaus.model.site import SetbackSpec, SpotElevation, UtilityLine
-from typehaus.model.structure import Beam, Footing, FoundationWall, Pad, Post
+from typehaus.model.structure import Beam, Footing, FootingBedding, FoundationWall, Pad, Post
 from typehaus.model.spatial import (
     Annotation,
     Alarm,
@@ -146,7 +146,7 @@ __all__ = [
     "PlanModel", "Library", "Project", "Site", "Building", "Storey",
     "Element", "HausModel",
     "Node", "Wall", "Door", "Window", "RoughOpening",
-    "FoundationWall", "Footing", "Pad", "Post", "Beam",
+    "FoundationWall", "Footing", "Pad", "FootingBedding", "Post", "Beam",
     "Assembly", "Layer", "FramingSpec", "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material",
     "DoorType", "WindowType", "FurnitureType", "FixtureType", "MeshRef",

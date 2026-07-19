@@ -175,7 +175,7 @@ SLABS = [
     Slab(uid="CBS501AAAA", tag="SL-B-FLOOR",
          outline=(pt(ft(0), ft(0)), pt(ft(36), ft(0)), pt(ft(36), ft(36)),
                   pt(ft(0), ft(36))),
-         thickness=inch(3.5)),
+         thickness=inch(3.5), assembly="CATLIN_SLAB_FLOOR"),
 ]
 
 FLOOR_OPENINGS = [

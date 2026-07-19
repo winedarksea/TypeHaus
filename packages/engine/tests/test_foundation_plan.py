@@ -62,9 +62,51 @@ def test_foundation_plan_has_footing_leaders(catlin_model):
     assert any("CONT. FTG." in leader.text for leader in leaders)
 
 
+def test_catlin_house_footings_resolve_bedding(catlin_model):
+    house_footings = {tag for tag in
+                      (s.tag for s in catlin_model.solids if s.category == "footing")
+                      if tag.startswith("FT-B-")}
+    bedding_hosts = {fb.host_footing for fb in catlin_model.footing_beddings}
+    assert house_footings
+    assert house_footings <= bedding_hosts
+
+
+def test_footing_bedding_undercut_and_insulation(catlin_model):
+    bedding = next(fb for fb in catlin_model.footing_beddings if fb.host_footing == "FT-B-S1")
+    assert bedding.z1_m > bedding.z0_m  # bed sits below the footing underside
+    assert 0.15 < bedding.z1_m - bedding.z0_m < 0.22  # ~7" undercut
+    assert bedding.geotextile and bedding.drain_tile
+    assert bedding.perimeter_insulation_m is not None
+    assert "#57" in bedding.aggregate
+
+
+def test_foundation_plan_has_footing_bedding_leader(catlin_model):
+    scene = build_foundation_plan(catlin_model)
+    leaders = [n for n in scene.nodes if isinstance(n, Leader)]
+    assert any("WASHED CRUSHED STONE" in leader.text for leader in leaders)
+    assert any("GEOTEXTILE" in leader.text for leader in leaders)
+
+
 def test_starter_foundation_plan_is_empty(starter_model):
     scene = build_foundation_plan(starter_model)
     assert scene.nodes == ()
+
+
+def test_footing_bedding_rejects_missing_host():
+    from typehaus.model.structure import FootingBedding
+    from typehaus.quantities import inch
+    from typehaus.resolve.envelope import _resolve_footing_bedding
+    from typehaus.resolve.model import ResolvedModel
+
+    class _Plan:
+        pass
+
+    bedding = FootingBedding(uid="FB1", tag="FB-MISSING", host_ref="FT-NOPE",
+                             undercut=inch(7))
+    model = ResolvedModel(plan=_Plan())
+    resolved, findings = _resolve_footing_bedding(model, bedding, "basement")
+    assert resolved is None
+    assert findings and findings[0].check_id == "integrity.footing_bedding_host"
 
 
 def test_foundation_plan_dxf_round_trips(catlin_model, tmp_path: Path):

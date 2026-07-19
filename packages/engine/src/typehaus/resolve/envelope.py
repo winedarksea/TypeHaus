@@ -9,11 +9,12 @@ from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Roof, Stair
 from typehaus.model.refs import ToRoof
 from typehaus.model.enums import ConditionKind
-from typehaus.model.structure import Footing, Pad, Post
+from typehaus.model.structure import Footing, FootingBedding, Pad, Post
 from typehaus.resolve.geometry import polygon_area, rect_between
 from typehaus.resolve.model import (
     BoundaryCondition,
     FramedMember,
+    ResolvedFootingBedding,
     ResolvedModel,
     ResolvedRoof,
     ResolvedSolid,
@@ -78,7 +79,34 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                 findings.extend(stair_findings)
                 if stair is not None:
                     model.stairs.append(stair)
+    # Second pass: FootingBedding resolves against footing solids, so every storey's
+    # footings must already be in model.solids regardless of authoring order.
+    for storey in plan.storeys:
+        for element in plan.storey_elements(storey.tag):
+            if isinstance(element, FootingBedding):
+                bedding, bedding_findings = _resolve_footing_bedding(model, element, storey.tag)
+                findings.extend(bedding_findings)
+                if bedding is not None:
+                    model.footing_beddings.append(bedding)
     return findings
+
+
+def _resolve_footing_bedding(
+    model: ResolvedModel, bedding: FootingBedding, storey: str
+) -> tuple[ResolvedFootingBedding | None, list[Finding]]:
+    host = next((s for s in model.solids if s.tag == bedding.host_ref and s.category == "footing"),
+                None)
+    if host is None:
+        return None, [_error("integrity.footing_bedding_host",
+                             f"footing bedding {bedding.tag} references missing footing "
+                             f"{bedding.host_ref!r}", bedding.tag)]
+    perimeter_m = (bedding.perimeter_insulation.meters
+                  if bedding.perimeter_insulation is not None else None)
+    return ResolvedFootingBedding(
+        bedding.uid, bedding.tag, storey, host.tag, host.outline,
+        host.z0_m - bedding.undercut.meters, host.z0_m, bedding.aggregate,
+        bedding.geotextile, bedding.drain_tile, perimeter_m, bedding.cast_foam_in_aggregate,
+    ), []
 
 
 def _roof_wall_conditions(model: ResolvedModel, authored_roof: Roof,

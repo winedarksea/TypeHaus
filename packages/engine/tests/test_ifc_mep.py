@@ -53,3 +53,24 @@ def test_ifc_has_duct_segments_and_air_terminals(catlin_model, tmp_path: Path):
 
     terminals = f.by_type("IfcAirTerminal")
     assert len(terminals) == 6  # REGISTERS in houses/catlin/plan/mep.py
+
+
+def test_ifc_has_footing_bedding_proxies(catlin_model, tmp_path: Path):
+    ifcopenshell = pytest.importorskip("ifcopenshell")
+    from typehaus.emit.ifc.emitter import emit_ifc
+
+    out = emit_ifc(catlin_model, tmp_path / "model3.ifc")
+    f = ifcopenshell.open(str(out))
+
+    proxies = f.by_type("IfcBuildingElementProxy")
+    bedding_tags = {fb.tag for fb in catlin_model.footing_beddings}
+    assert bedding_tags
+    proxy_names = {p.Name for p in proxies}
+    assert bedding_tags <= proxy_names
+
+    proxy = next(p for p in proxies if p.Name == "FB-B-S1")
+    pset = next(rel.RelatingPropertyDefinition for rel in proxy.IsDefinedBy
+               if rel.RelatingPropertyDefinition.Name == "TypeHaus_FootingBedding")
+    props = {prop.Name: prop.NominalValue.wrappedValue for prop in pset.HasProperties}
+    assert "#57" in props["aggregate"]
+    assert props["geotextile"] is True

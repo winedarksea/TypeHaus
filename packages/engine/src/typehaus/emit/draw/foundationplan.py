@@ -53,6 +53,7 @@ def build_foundation_plan(model: ResolvedModel) -> Scene:
     _emit_slabs(b, model, storey)
     _emit_posts(b, model, storey)
     _emit_elevation_notes(b, walls)
+    _emit_footing_bedding_note(b, model, storey)
     _emit_sleeve_pour_dimensions(b, model, walls, storey)
     if walls:
         emit_bbox_dimension_chain(b, walls)
@@ -178,6 +179,36 @@ def _emit_elevation_notes(b: SceneBuilder, walls: list) -> None:
         b.add(Text(anchor=_in((walls[0].axis[0][0], walls[0].axis[0][1] - 0.6)),
                    content="FROST DEPTH: 42\" MIN BELOW GRADE (MN 2024 RES CODE)",
                    height=2.5, layer="A-ANNO-TEXT"))
+
+
+def _emit_footing_bedding_note(b: SceneBuilder, model: ResolvedModel, storey: str | None) -> None:
+    """One leader per unique bedding spec — never a blanket note the plan didn't author."""
+    beddings = [fb for fb in model.footing_beddings if fb.storey == storey]
+    seen: set[tuple] = set()
+    for bedding in beddings:
+        key = (bedding.aggregate, bedding.geotextile, bedding.drain_tile,
+              bedding.perimeter_insulation_m, bedding.cast_foam_in_aggregate,
+              round(bedding.z1_m - bedding.z0_m, 3))
+        if key in seen:
+            continue
+        seen.add(key)
+        undercut_in = (bedding.z1_m - bedding.z0_m) * 39.37007874015748
+        parts = [f"UNDERCUT {undercut_in:.0f}\" BELOW FTG, COMPACTED {bedding.aggregate.upper()}"]
+        if bedding.geotextile:
+            parts.append("NON-WOVEN GEOTEXTILE LINER")
+        if bedding.drain_tile:
+            parts.append("DRAIN TILE IN BED")
+        if bedding.perimeter_insulation_m is not None:
+            perim_in = bedding.perimeter_insulation_m * 39.37007874015748
+            parts.append(f"{perim_in:.0f}\" RIGID FOAM PERIMETER INSULATION")
+        if bedding.cast_foam_in_aggregate:
+            parts.append("CAST-IN-PLACE FOAM IN AGGREGATE")
+        cx, cy = _outline_center(bedding.outline)
+        b.add(Leader(
+            anchor=NamedPoint(xy=_in((cx, cy)), name=bedding.tag),
+            at=_in((cx, cy)), to=_in((cx, cy - 2.0)),
+            text=" — ".join(parts), layer="S-FNDN-FTNG",
+        ))
 
 
 def _outline_center(outline) -> tuple[float, float]:

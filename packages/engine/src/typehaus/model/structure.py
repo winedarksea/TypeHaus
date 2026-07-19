@@ -38,6 +38,26 @@ class Pad(Element):
 
 
 @register_element
+class FootingBedding(Element):
+    """Sub-footing excavation/bedding prep beneath a strip Footing.
+
+    Digs an extra ``undercut`` below the footing underside for a compacted washed-stone
+    bed on non-woven geotextile (no-slip) with a drain tile — breaks direct footing-to-wet-
+    clay contact (thermal loss) and drains the bearing surface. ``perimeter_insulation``
+    continues the foundation wall's exterior rigid foam down over the footing sides;
+    ``cast_foam_in_aggregate`` optionally casts foam into the stone itself for a further
+    thermal cut. Never resizes/moves the footing — an annotation + bearing-prep record."""
+
+    host_ref: str  # Footing tag
+    undercut: Length  # additional depth dug below the footing underside
+    aggregate: str = "ASTM C33 #57 washed crushed stone"
+    geotextile: bool = True
+    drain_tile: bool = True
+    perimeter_insulation: Length | None = None
+    cast_foam_in_aggregate: bool = False
+
+
+@register_element
 class Post(Element):
     """A point structural member (→ IfcColumn)."""
 
@@ -62,6 +82,7 @@ for _name, _obj in (
     ("FoundationWall", FoundationWall),
     ("Footing", Footing),
     ("Pad", Pad),
+    ("FootingBedding", FootingBedding),
     ("Post", Post),
     ("Beam", Beam),
 ):
