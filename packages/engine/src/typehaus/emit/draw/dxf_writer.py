@@ -23,6 +23,11 @@ from typehaus.emit.draw.scene import (
 
 _XDATA_APPID = "TYPEHAUS"
 
+_DEVICE_SYMBOLS = frozenset({
+    "register-supply", "register-return", "receptacle", "gfci", "receptacle_240",
+    "switch", "light", "panel", "spot-elev", "utility-entry", "level-marker",
+})
+
 # AIA layer → (ACI color, lineweight in 1/100 mm). A small default palette.
 _LAYER_STYLE = {
     "A-WALL": (7, 35),
@@ -36,6 +41,30 @@ _LAYER_STYLE = {
     "A-ANNO-DIMS": (1, 13),
     "A-ANNO-TEXT": (2, 18),
     "A-ANNO-SYMB": (6, 18),
+    "S-FNDN": (9, 60),
+    "S-FNDN-FTNG": (9, 25),
+    "A-SLAB": (9, 25),
+    "S-COLS": (3, 45),
+    "S-BEAM": (3, 45),
+    "S-WALL": (7, 70),
+    "S-WALL-BELW": (9, 15),
+    "S-FRAM-OPEN": (30, 25),
+    "A-WALL-BELW": (9, 15),
+    "P-SANR-PIPE": (33, 30),
+    "P-DOMW-PIPE": (5, 30),
+    "M-HVAC-SDFF": (92, 30),
+    "M-HVAC-RDFF": (94, 30),
+    "M-HVAC-EQPM": (92, 40),
+    "E-POWR-DEVC": (10, 25),
+    "E-LITE": (50, 25),
+    "C-PROP": (7, 30),
+    "C-PROP-SETB": (1, 15),
+    "C-UTIL-WATER": (5, 15),
+    "C-UTIL-SEWER": (33, 15),
+    "C-UTIL-GAS": (50, 15),
+    "C-UTIL-POWER": (10, 15),
+    "C-TOPO-ARRW": (94, 13),
+    "L-SITE-GRAD": (94, 70),
 }
 
 
@@ -102,7 +131,8 @@ def _xdata(entity: object, node: Polyline) -> None:
 def _add_polyline(msp: object, node: Polyline) -> None:
     e = msp.add_lwpolyline(  # type: ignore[attr-defined]
         list(node.points), close=node.closed,
-        dxfattribs={"layer": node.layer, "lineweight": int(node.lineweight * 100)},
+        dxfattribs={"layer": node.layer, "lineweight": int(node.lineweight * 100),
+                    "linetype": node.linetype},
     )
     _xdata(e, node)
 
@@ -127,9 +157,15 @@ def _add_text(msp: object, node: Text) -> None:
 
 
 def _add_dimension(msp: object, node: ArchDimension) -> None:
+    dx, dy = node.p1[0] - node.p0[0], node.p1[1] - node.p0[1]
+    if abs(dx) < abs(dy):  # vertical dimension (→ elevation vertical dim string)
+        base = (node.p0[0] + node.offset, node.p0[1])
+        angle = 90.0
+    else:
+        base = (node.p0[0], node.p0[1] + node.offset)
+        angle = 0.0
     dim = msp.add_linear_dim(  # type: ignore[attr-defined]
-        base=(node.p0[0], node.p0[1] + node.offset),
-        p1=node.p0, p2=node.p1,
+        base=base, p1=node.p0, p2=node.p1, angle=angle,
         dimstyle="ARCH",
         override={"dimtxt": 3.0},
         dxfattribs={"layer": node.layer},
@@ -153,6 +189,26 @@ def _add_symbol(msp: object, node: Symbol) -> None:
             start_angle=node.rotation, end_angle=node.rotation + 90,
             dxfattribs={"layer": node.layer},
         )
+    elif node.name == "post":
+        half = max(w * 0.1, 2.0)
+        x, y = node.insert
+        msp.add_lwpolyline(  # type: ignore[attr-defined]
+            [(x - half, y - half), (x + half, y - half), (x + half, y + half),
+             (x - half, y + half)], close=True, dxfattribs={"layer": node.layer},
+        )
+    elif node.name == "span-arrow":
+        a = math.radians(node.rotation)
+        half = max(w, 12.0) / 2
+        x, y = node.insert
+        end = (x + half * math.cos(a), y + half * math.sin(a))
+        start = (x - half * math.cos(a), y - half * math.sin(a))
+        msp.add_line(start, end, dxfattribs={"layer": node.layer})  # type: ignore[attr-defined]
+    elif node.name == "sleeve":
+        msp.add_circle(node.insert, radius=max(w * 0.5, 1.0),  # type: ignore[attr-defined]
+                       dxfattribs={"layer": node.layer})
+    elif node.name in _DEVICE_SYMBOLS:
+        msp.add_circle(node.insert, radius=max(w * 0.15, 1.5),  # type: ignore[attr-defined]
+                       dxfattribs={"layer": node.layer})
     else:  # window mark: a short cross tick
         msp.add_circle(node.insert, radius=max(w * 0.1, 1.0),  # type: ignore[attr-defined]
                        dxfattribs={"layer": node.layer})

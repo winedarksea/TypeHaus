@@ -121,6 +121,59 @@ class RoofForm(Enum):
     SHED = "shed"
 
 
+class PipeSystem(Enum):
+    """Plumbing systems an authored ``PipeRun`` carries (→ MEP Phase 2)."""
+
+    DRAIN = "drain"
+    VENT = "vent"
+    WATER_HOT = "water_hot"
+    WATER_COLD = "water_cold"
+    GAS = "gas"
+
+
+class DuctSystem(Enum):
+    """HVAC air-side system a ``DuctRun``/``Register`` belongs to (→ MEP Phase 3)."""
+
+    SUPPLY = "supply"
+    RETURN = "return"
+
+
+class DuctRouting(Enum):
+    """How a duct run is concealed — ``JOIST_BAY`` is checked against framing."""
+
+    JOIST_BAY = "joist_bay"
+    SOFFIT = "soffit"
+    CHASE = "chase"
+    EXPOSED = "exposed"
+
+
+class EquipmentKind(Enum):
+    FURNACE = "furnace"
+    AIR_HANDLER = "air_handler"
+    WATER_HEATER = "water_heater"
+    ERV = "erv"
+
+
+class DeviceKind(Enum):
+    """Electrical symbols-only vocabulary (panel/circuit schedule deferred, decision 1)."""
+
+    RECEPTACLE = "receptacle"
+    RECEPTACLE_GFCI = "gfci"
+    RECEPTACLE_240 = "receptacle_240"
+    SWITCH = "switch"
+    LIGHT = "light"
+    PANEL = "panel"
+
+
+class UtilityKind(Enum):
+    """Site utility service kinds (→ Permit-ready plan set Phase 4)."""
+
+    WATER = "water"
+    SEWER = "sewer"
+    GAS = "gas"
+    POWER = "power"
+
+
 class ConditionKind(Enum):
     """Derived boundary-condition kinds keyed for Transition matching (→ 11b)."""
 

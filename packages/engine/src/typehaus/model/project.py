@@ -7,7 +7,8 @@ import uuid
 from typehaus.model.base import Element, HausModel
 from typehaus.model.refs import FaceRef, face
 from typehaus.model.registry import register_constructor, register_element
-from typehaus.quantities import Angle, Length, Temperature, deg
+from typehaus.model.site import SetbackSpec, SpotElevation, UtilityLine
+from typehaus.quantities import Angle, Length, Point2D, Temperature, deg
 
 
 class Site(HausModel):
@@ -22,6 +23,10 @@ class Site(HausModel):
     parcel_refs: tuple[str, ...] = ()
     design_temp_heating: Temperature | None = None  # 99% heating design temp
     design_temp_cooling: Temperature | None = None  # 1% cooling design temp
+    parcel: tuple[Point2D, ...] = ()  # closed CCW ring, plan frame
+    setbacks: tuple[SetbackSpec, ...] = ()
+    spot_elevations: tuple[SpotElevation, ...] = ()
+    utilities: tuple[UtilityLine, ...] = ()
 
 
 @register_element

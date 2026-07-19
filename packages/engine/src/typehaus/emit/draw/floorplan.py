@@ -9,41 +9,15 @@ come from the ``ResolvedModel`` (→ 20 "the UI never re-measures" rule, applied
 
 from __future__ import annotations
 
-from typehaus.emit.draw.scene import (
-    ArchDimension,
-    FaceAnchor,
-    Hatch,
-    NamedPoint,
-    Polyline,
-    Scene,
-    SceneBuilder,
-    Symbol,
-    Text,
+from typehaus.emit.draw._shared import (
+    M_TO_IN,
+    emit_bbox_dimension_chain,
+    emit_fixtures,
+    emit_wall,
+    to_in as _in,
 )
-from typehaus.resolve.model import ResolvedModel, ResolvedWall
-
-M_TO_IN = 39.37007874015748
-
-# AIA CAD Layer Guidelines mapping per assembly-layer function (→ 20 §DXF conventions).
-_FUNCTION_LAYER = {
-    "structure": "A-WALL",
-    "sheathing": "A-WALL",
-    "cladding": "A-WALL",
-    "finish": "A-WALL-FINI",
-    "insulation": "A-WALL-INSU",
-    "membrane": "A-WALL-PATT",
-    "airgap": "A-WALL-PATT",
-    "furring": "A-WALL",
-}
-_HATCH_PATTERN = {
-    "insulation": "batt",
-    "sheathing": "osb",
-    "structure": "lumber",
-}
-
-
-def _in(p: tuple[float, float]) -> tuple[float, float]:
-    return (p[0] * M_TO_IN, p[1] * M_TO_IN)
+from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
+from typehaus.resolve.model import ResolvedModel
 
 
 def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
@@ -52,39 +26,15 @@ def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
     walls = [w for w in model.walls if w.storey == storey]
 
     for wall in walls:
-        _emit_wall(b, wall)
+        emit_wall(b, wall)
     _emit_openings(b, model, {w.tag for w in walls})
     _emit_stairs(b, model, storey)
     _emit_rooms(b, model, storey)
     _emit_floor_heat(b, model, storey)
     _emit_alarms(b, model, storey)
-    _emit_fixtures(b, model, storey)
-    _emit_dimension_chain(b, walls)
+    emit_fixtures(b, model, storey)
+    emit_bbox_dimension_chain(b, walls)
     return b.build()
-
-
-def _emit_wall(b: SceneBuilder, wall: ResolvedWall) -> None:
-    for layer in wall.layers:
-        if len(layer.polygon) < 2:
-            continue
-        aia = _FUNCTION_LAYER.get(layer.function, "A-WALL")
-        b.add(Polyline(
-            points=tuple(_in(p) for p in layer.polygon),
-            layer=aia, closed=True, lineweight=0.35 if aia == "A-WALL" else 0.18,
-            uid=wall.uid, tag=wall.tag,
-        ))
-        pattern = _HATCH_PATTERN.get(layer.function)
-        if pattern is not None and len(layer.polygon) >= 3:
-            b.add(Hatch(
-                boundary=tuple(_in(p) for p in layer.polygon),
-                pattern=pattern, layer="A-WALL-PATT",
-            ))
-    # Real framing member sections on S-FRAM (the signature framed-floorplan look).
-    for m in wall.members:
-        b.add(Polyline(
-            points=(_in(m.p0), _in(m.p1)),
-            layer="S-FRAM", lineweight=0.5, uid=wall.uid, tag=m.child_key,
-        ))
 
 
 def _emit_openings(b: SceneBuilder, model: ResolvedModel, wall_tags: set[str]) -> None:
@@ -176,47 +126,6 @@ def _emit_floor_heat(b: SceneBuilder, model: ResolvedModel, storey: str) -> None
         b.add(Text(anchor=_in(((minx + maxx) / 2, (miny + maxy) / 2)),
                    content=f"{zone.tag} {zone.wire_length_m / 0.3048:.0f} LF", height=2.5,
                    layer="A-ANNO-TEXT", align="center"))
-
-
-def _emit_fixtures(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
-    """Draw typed fixture footprints; the schedule and service data share type refs."""
-    fixture_types = {item.tag: item for item in model.plan.library.fixture_types}
-    for fixture in (element for element in model.plan.storey_elements(storey)
-                    if element.element_kind == "Fixture"):
-        fixture_type = fixture_types.get(fixture.type_ref)
-        if fixture_type is None:
-            continue
-        width, depth = (dimension.meters for dimension in fixture_type.footprint)
-        x, y = fixture.position.xy_m
-        outline = ((x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
-                   (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2))
-        b.add(Polyline(points=tuple(_in(point) for point in outline), layer="A-FIXT",
-                       closed=True, lineweight=0.25, uid=fixture.uid, tag=fixture.tag))
-        b.add(Text(anchor=_in((x, y)), content=fixture.type_ref.removeprefix("FX-"), height=2.0,
-                   layer="A-ANNO-TEXT", align="center"))
-
-
-def _emit_dimension_chain(b: SceneBuilder, walls: list[ResolvedWall]) -> None:
-    """Overall bounding-box dimension chain below the plan (auto-dimensioner v1)."""
-    pts = [p for w in walls for p in (w.axis[0], w.axis[1])]
-    if not pts:
-        return
-    xs = [p[0] for p in pts]
-    ys = [p[1] for p in pts]
-    minx, maxx, miny = min(xs), max(xs), min(ys)
-    off = -18.0  # 18" below the plan
-    b.add(ArchDimension(
-        kind="linear",
-        ends=(NamedPoint(xy=_in((minx, miny)), name="W"),
-              NamedPoint(xy=_in((maxx, miny)), name="E")),
-        p0=_in((minx, miny)), p1=_in((maxx, miny)), offset=off,
-    ))
-    b.add(ArchDimension(
-        kind="linear",
-        ends=(FaceAnchor(uid=walls[0].uid, face_role="start"),
-              NamedPoint(xy=_in((min(xs), max(ys))), name="N")),
-        p0=_in((minx, miny)), p1=_in((minx, max(ys))), offset=off,
-    ))
 
 
 def _angle(sx: float, sy: float, ex: float, ey: float) -> float:

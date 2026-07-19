@@ -73,8 +73,15 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset():
 
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     checklist = evaluate_permit_checklist(report, "mn-2024")
-    assert checklist.ok
-    assert all(item.result is Result.PASS for item in checklist.items)
+    # code.energy_prescriptive (→ Permit-ready plan set Phase 7) honestly reports UNKNOWN
+    # for SL-B-FLOOR/SL-M-DECK — neither concrete slab has an authored assembly with an
+    # R-value yet. That is the intended behavior (never a silent pass on missing thermal
+    # data, not a regression) — every other declared item still passes.
+    energy_label = "Energy prescriptive envelope"
+    non_energy_items = [item for item in checklist.items if item.label != energy_label]
+    assert all(item.result is Result.PASS for item in non_energy_items)
+    energy_item = next(item for item in checklist.items if item.label == energy_label)
+    assert energy_item.result is Result.UNKNOWN
 
 
 def test_site_plan_keeps_freestanding_roofs_and_foundation_supports_visible(catlin_model):

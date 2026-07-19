@@ -20,7 +20,7 @@ import uuid
 from typehaus import Building, Library, PlanModel, Project, Storey, ft
 
 from params import foundations, sunken_garden
-from plan import assemblies, fixtures, site, transitions
+from plan import assemblies, fixtures, mep, site, transitions, views
 from plan.storeys import attic, basement, garage, main, second
 
 format_version = 1
@@ -65,15 +65,15 @@ PLAN = (
     .with_elements(
         "basement",
         [*basement.ELEMENTS, *sunken_garden.BASEMENT_ELEMENTS,
-         *foundations.BASEMENT_ELEMENTS],
+         *foundations.BASEMENT_ELEMENTS, *mep.BASEMENT_ELEMENTS],
     )
     .with_elements(
         "main",
         [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *sunken_garden.MAIN_ELEMENTS,
-         *foundations.MAIN_ELEMENTS],
+         *foundations.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS, *views.DETAIL_SLICES],
     )
     .with_elements("garage", [*garage.ELEMENTS])
     .with_elements("second", [*second.ELEMENTS, *fixtures.SECOND_FIXTURES,
-                                *sunken_garden.SECOND_ELEMENTS])
+                                *sunken_garden.SECOND_ELEMENTS, *mep.SECOND_ELEMENTS])
     .with_elements("attic", [*attic.ELEMENTS])
 )

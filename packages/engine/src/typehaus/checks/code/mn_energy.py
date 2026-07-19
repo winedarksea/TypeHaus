@@ -1,0 +1,146 @@
+"""MN climate-zone-6 prescriptive envelope check (→ Permit-ready plan set Phase 7).
+
+``evaluate_envelope`` is the pure analysis both the check and the EN-1 sheet consume (the
+same "one function, two consumers" shape as ``analyze_wwr``/``estimate_block_load``).
+Per-assembly rows are tri-state: an assembly with ``unknown_materials`` (missing
+``r_per_inch``) surfaces UNKNOWN, never a silent PASS — the honest-EN-1 point of this
+phase (catlin's 9" concrete ``SL-M-DECK`` currently has no R-value input at all).
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from typehaus.analysis import assembly_r_value
+from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.findings import Finding, Result, Severity
+from typehaus.model.plan import PlanModel
+from typehaus.resolve.model import ResolvedModel
+
+
+@dataclass(frozen=True)
+class PrescriptiveEnvelope:
+    """MN 2024 Residential Code, IRC Table N1102.1.2, climate zone 6 (Minnesota)."""
+
+    ceiling_r: float = 49.0
+    wood_wall_r: float = 21.0
+    floor_r: float = 30.0
+    basement_wall_r: float = 15.0
+    slab_r: float = 10.0
+    window_u_max: float = 0.32
+
+
+MN_ZONE_6 = PrescriptiveEnvelope()
+
+
+@dataclass(frozen=True)
+class PrescriptiveRow:
+    """One EN-1 table row: a component checked against its MN zone-6 requirement."""
+
+    component: str  # tag (assembly or window type)
+    role: str  # "roof" | "above-grade wall" | "foundation wall" | "slab" | "window"
+    required: str  # "R-49" | "U-0.32"
+    provided: str  # "R-95.2" | "UNKNOWN (missing r_per_inch: ...)"
+    verdict: str  # "pass" | "fail" | "unknown"
+
+
+def _storey_is_conditioned(plan: PlanModel, storey_tag: str) -> bool:
+    """The prescriptive envelope only binds the conditioned envelope — catlin's detached
+    garage (RM-GARAGE, ``conditioned=False``) has no R-49 ceiling requirement."""
+    rooms = [el for el in plan.storey_elements(storey_tag) if el.element_kind == "Room"]
+    if not rooms:
+        return True
+    return any(room.conditioned for room in rooms)
+
+
+def _is_freestanding_exterior_wall(wall) -> bool:
+    """Freestanding, unoccupied structures (catlin's sunken-garden porch/retaining walls,
+    tag prefix ``W-SG-``) have no Room and no ``conditioned`` flag to key off of — they
+    are filed under the house's own "basement" storey key (→ Phase 2's sleeve check hit
+    the same "one storey key, several physical structures" seam) but aren't part of the
+    conditioned envelope this code binds."""
+    return wall.tag.startswith("W-SG-")
+
+
+def _is_interior_assembly(tag: str) -> bool:
+    """Interior partitions/cross-walls carry no prescriptive R-value requirement — they
+    aren't part of the thermal envelope. This codebase's own naming convention already
+    marks them with an "INT" token (CATLIN_CONC_12_INT, INT_2X6_PLUMBING, ...); the IFC
+    emitter's ``Pset_WallCommon.IsExternal`` uses the same signal on the wall tag."""
+    return "INT" in tag.split("_")
+
+
+def _row_for_assembly(plan: PlanModel, tag: str, role: str, required_r: float) -> PrescriptiveRow:
+    assembly = plan.library.resolve_assembly(tag)
+    if assembly is None:
+        return PrescriptiveRow(tag, role, f"R-{required_r:.0f}",
+                               f"UNKNOWN (assembly {tag} not found)", "unknown")
+    result = assembly_r_value(assembly, plan.library)
+    if result.value is None:
+        return PrescriptiveRow(tag, role, f"R-{required_r:.0f}", result.fmt(), "unknown")
+    r = result.value.r_us
+    verdict = "pass" if r + 1e-6 >= required_r else "fail"
+    return PrescriptiveRow(tag, role, f"R-{required_r:.0f}", f"R-{r:.1f}", verdict)
+
+
+def evaluate_envelope(model: ResolvedModel, plan: PlanModel,
+                      envelope: PrescriptiveEnvelope = MN_ZONE_6) -> list[PrescriptiveRow]:
+    """Classify every roof/wall/slab assembly + window type and check it against the MN
+    zone-6 prescriptive table. Pure — no Findings, no CheckContext; the check below and
+    the EN-1 sheet both consume this directly."""
+    rows: list[PrescriptiveRow] = []
+
+    for tag in sorted({roof.assembly for roof in model.roofs
+                       if _storey_is_conditioned(plan, roof.storey)}):
+        rows.append(_row_for_assembly(plan, tag, "roof", envelope.ceiling_r))
+    for tag in sorted({w.assembly for w in model.walls
+                       if not w.is_foundation and _storey_is_conditioned(plan, w.storey)
+                       and not _is_freestanding_exterior_wall(w)}):
+        if _is_interior_assembly(tag):
+            continue
+        rows.append(_row_for_assembly(plan, tag, "above-grade wall", envelope.wood_wall_r))
+    for tag in sorted({w.assembly for w in model.walls
+                       if w.is_foundation and _storey_is_conditioned(plan, w.storey)
+                       and not _is_freestanding_exterior_wall(w)}):
+        if _is_interior_assembly(tag):
+            continue
+        rows.append(_row_for_assembly(plan, tag, "foundation wall", envelope.basement_wall_r))
+    for slab in sorted((s for s in model.solids if s.category == "slab"
+                       and _storey_is_conditioned(plan, s.storey)), key=lambda s: s.tag):
+        if slab.assembly is None:
+            rows.append(PrescriptiveRow(slab.tag, "slab", f"R-{envelope.slab_r:.0f}",
+                                        "UNKNOWN (no assembly authored)", "unknown"))
+        else:
+            row = _row_for_assembly(plan, slab.assembly, "slab", envelope.slab_r)
+            rows.append(PrescriptiveRow(slab.tag, row.role, row.required, row.provided,
+                                        row.verdict))
+
+    for window_type in plan.library.window_types:
+        if window_type.u_factor is None:
+            rows.append(PrescriptiveRow(window_type.tag, "window",
+                                        f"U-{envelope.window_u_max:.2f}", "UNKNOWN (no U-factor)",
+                                        "unknown"))
+            continue
+        u = window_type.u_factor.u_us
+        verdict = "pass" if u <= envelope.window_u_max + 1e-6 else "fail"
+        rows.append(PrescriptiveRow(window_type.tag, "window", f"U-{envelope.window_u_max:.2f}",
+                                    f"U-{u:.2f}", verdict))
+    return rows
+
+
+def _to_finding(row: PrescriptiveRow) -> Finding:
+    message = f"{row.role} {row.component}: {row.provided} vs. {row.required} required"
+    if row.verdict == "unknown":
+        return Finding(severity=Severity.WARN, check_id="code.energy_prescriptive",
+                       message=f"UNKNOWN — {row.role} {row.component} {row.provided}",
+                       element_tags=(row.component,), result=Result.UNKNOWN)
+    if row.verdict == "pass":
+        return Finding(severity=Severity.WARN, check_id="code.energy_prescriptive",
+                       message=message, element_tags=(row.component,), result=Result.PASS)
+    return Finding(severity=Severity.ERROR, check_id="code.energy_prescriptive", message=message,
+                   element_tags=(row.component,), result=Result.FAIL)
+
+
+@check(Tier.CODE, "code.energy_prescriptive")
+def energy_prescriptive(ctx: CheckContext) -> list[Finding]:
+    return [_to_finding(row) for row in evaluate_envelope(ctx.model, ctx.plan)]

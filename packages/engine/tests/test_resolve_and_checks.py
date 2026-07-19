@@ -110,4 +110,7 @@ def test_tri_state_counts(project) -> None:
     report = run(_rect_plan(project))
     p, f, u = report.counts()
     assert p + f + u == len(report.findings)
-    assert not report.errors  # rect plan resolves with no ERROR findings
+    # The fixture's minimal "EXT" assembly (R-8, → _lib()) is a resolve/geometry test
+    # double, not a code-compliant wall — code.energy_prescriptive correctly flags it.
+    non_energy_errors = [e for e in report.errors if e.check_id != "code.energy_prescriptive"]
+    assert not non_energy_errors

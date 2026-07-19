@@ -189,6 +189,57 @@ class BoundaryCondition:
 
 
 @dataclass(frozen=True)
+class ResolvedPipeRun:
+    """One validated plumbing run — a plan-frame polyline with invert elevations."""
+
+    uid: str
+    tag: str
+    storey: str
+    system: str
+    path: Ring
+    diameter_m: float
+    z_start_m: float | None
+    z_end_m: float | None
+    length_m: float
+
+
+@dataclass(frozen=True)
+class ResolvedSleeve:
+    """A cast-in-place sleeve, plus how far it sits from the fixture's expected drain point."""
+
+    uid: str
+    tag: str
+    storey: str
+    host_slab: str
+    center: tuple[float, float]
+    pipe_d_m: float
+    sleeve_d_m: float
+    z0_m: float
+    z1_m: float
+    serves_fixture: str | None
+    expected_center: tuple[float, float] | None  # None -> UNKNOWN, not silent PASS
+    offset_m: float | None
+
+
+@dataclass(frozen=True)
+class ResolvedDuct:
+    """A validated duct run — bay occupancy/bearing-crossing derived by ``resolve.mep``."""
+
+    uid: str
+    tag: str
+    storey: str
+    system: str
+    path: Ring
+    width_m: float
+    depth_m: float
+    routing: str
+    floor_ref: str | None
+    crossings: tuple[tuple[float, float], ...]  # bearing-line crossing points
+    conflicts: tuple[str, ...]  # non-empty -> structural FAIL, named per conflict
+    depth_ok: bool  # duct depth fits within the joist depth
+
+
+@dataclass(frozen=True)
 class StackEdge:
     """A derived vertical wall-line stack edge (lower ↔ upper) (#43)."""
 
@@ -211,6 +262,9 @@ class ResolvedModel:
     rooms: list[ResolvedRoom] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
+    pipe_runs: list[ResolvedPipeRun] = field(default_factory=list)
+    sleeves: list[ResolvedSleeve] = field(default_factory=list)
+    ducts: list[ResolvedDuct] = field(default_factory=list)
     # Per-stage resolve timings in milliseconds (Phase 0 instrumentation). Not serialized
     # as source; surfaced to the UI via the `perf` payload for measurement, not correctness.
     timings: dict[str, float] = field(default_factory=dict)

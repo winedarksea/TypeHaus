@@ -11,7 +11,7 @@ import uuid
 
 from typehaus import Building, Library, PlanModel, Project, Storey, ft
 
-from plan import assemblies, site
+from plan import assemblies, site, views
 from plan.storeys import main, upper
 
 format_version = 1
@@ -45,7 +45,8 @@ PLAN = (
     PlanModel(project=_project, library=_library, storeys=_storeys)
     .with_elements(
         "main",
-        [*main.NODES, *main.WALLS, *main.OPENINGS, *main.ROOMS],
+        [*main.NODES, *main.WALLS, *main.OPENINGS, *main.ROOMS, *main.FLOOR,
+         *views.DETAIL_SLICES],
     )
     .with_elements(
         "upper",

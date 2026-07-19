@@ -60,6 +60,17 @@ def _facade_for_wall(wall: ResolvedWall, model: ResolvedModel) -> str:
     return ("N", "E", "S", "W")[int((angle + math.pi / 4) // (math.pi / 2)) % 4]
 
 
+def wwr_summary(model: ResolvedModel) -> dict[str, object]:
+    """Overall + per-facade WWR — a pure summary for the EN-1 sheet (→ Phase 7)."""
+    per_facade = analyze_wwr(model)
+    total_wall = sum(item.gross_wall_area_m2 for item in per_facade)
+    total_glazing = sum(item.glazing_area_m2 for item in per_facade)
+    return {
+        "overall": total_glazing / total_wall if total_wall else 0.0,
+        "per_facade": per_facade,
+    }
+
+
 def analyze_wwr(model: ResolvedModel) -> tuple[FacadeWWR, ...]:
     buckets = {name: [0.0, 0.0] for name in ("N", "E", "S", "W")}
     wall_by_tag = {w.tag: w for w in model.walls}

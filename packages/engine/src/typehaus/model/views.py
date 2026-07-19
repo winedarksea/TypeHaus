@@ -29,6 +29,7 @@ class Slice(Element):
     scale: str = "1/4\"=1'"
     exaggeration: ExaggerationSpec | None = None
     simplified_poche: bool = False  # conventional gray-box plan for jurisdictions
+    title: str | None = None  # sheet name override (→ Permit-ready plan set Phase 6)
 
 
 class ConditionKey(HausModel):

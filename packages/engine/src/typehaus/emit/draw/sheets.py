@@ -1,65 +1,138 @@
-"""Small, deterministic M3 permit-sheet composer built on the drawing IR."""
+"""Declarative permit-sheet composer built on the drawing IR (→ 20).
+
+``build_sheet_index`` is the single source of truth for the sheet list: the cover's
+printed index and the emitted pages are both derived from it, so they cannot drift.
+Every plan/section/elevation sheet is a pure ``Scene`` builder; only the cover, opening
+schedule, and energy summary compose matplotlib tables directly (no IR benefit for a table
+page).
+"""
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
+from typing import TYPE_CHECKING, Callable
 
-from typehaus.emit.draw.floorplan import build_floorplan
+from typehaus.emit.draw.electricalplan import build_electrical_plan, has_electrical_content
 from typehaus.emit.draw.elevation import build_elevation
-from typehaus.emit.draw.roofplan import build_roof_plan
-from typehaus.emit.draw.siteplan import build_site_plan
+from typehaus.emit.draw.floorplan import build_floorplan
+from typehaus.emit.draw.foundationplan import build_foundation_plan, has_foundation_content
+from typehaus.emit.draw.framingplan import build_framing_plan
+from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
 from typehaus.emit.draw.pdf_writer import _fig
-from typehaus.emit.draw.section import build_center_section
+from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
+from typehaus.emit.draw.roofplan import build_roof_plan
+from typehaus.emit.draw.scene import Scene
+from typehaus.emit.draw.section import build_center_section, build_section
+from typehaus.emit.draw.siteplan import build_site_plan
 from typehaus.resolve.model import ResolvedModel
 
+if TYPE_CHECKING:
+    from typehaus.checks.registry import Preferences
 
-def write_permit_set(model: ResolvedModel, output: Path) -> tuple[Path, dict[str, object]]:
-    """Compose the Catlin permit-set baseline into one multi-page PDF.
+SceneFn = Callable[[ResolvedModel], Scene]
+PageFn = Callable[["object", ResolvedModel, str, str], None]  # pdf: PdfPages
+
+
+@dataclass(frozen=True)
+class SheetSpec:
+    number: str                # "S-100"
+    title: str                 # "Foundation plan"
+    scale_note: str = "1/4\" = 1'-0\""
+    scene: SceneFn | None = None       # IR-backed sheets
+    page: PageFn | None = None         # table/cover pages
+
+
+def build_sheet_index(model: ResolvedModel,
+                      preferences: "Preferences | None" = None) -> list[SheetSpec]:
+    """Assemble the ordered permit-set sheet list — the one place sheet order/content lives."""
+    sheets: list[SheetSpec] = [SheetSpec("A-000", "Cover / code summary")]
+    sheets.append(SheetSpec("C-101", "Site plan", "project north", scene=build_site_plan))
+
+    if has_foundation_content(model):
+        sheets.append(SheetSpec("S-100", "Foundation plan", scene=build_foundation_plan))
+
+    floors = sorted(model.floors, key=lambda f: _storey_elevation(model, f.storey))
+    for index, floor in enumerate(floors, start=1):
+        number = "S-101" if len(floors) == 1 else f"S-101.{index}"
+        sheets.append(SheetSpec(number, f"Framing plan — {floor.storey}",
+                                scene=partial(build_framing_plan, floor_tag=floor.tag)))
+
+    storeys = sorted(model.plan.storeys, key=lambda s: s.elevation.meters)
+    floor_pages = [(f"A-{101 + i:03d}", storey.tag) for i, storey in enumerate(storeys)
+                   if any(wall.storey == storey.tag for wall in model.walls)]
+    for number, storey in floor_pages:
+        sheets.append(SheetSpec(number, f"{storey.title()} floor plan",
+                                scene=partial(build_floorplan, storey=storey)))
+
+    sheets.append(SheetSpec(f"A-{101 + len(floor_pages):03d}", "Roof plan",
+                            scene=build_roof_plan))
+    sheets.append(SheetSpec("A-301", "Building section", scene=build_center_section))
+    for number, facing in (("A-201", "north"), ("A-202", "south"),
+                           ("A-203", "east"), ("A-204", "west")):
+        sheets.append(SheetSpec(number, f"{facing.title()} exterior elevation",
+                                scene=partial(build_elevation, facing=facing)))
+
+    details = [item for item in model.plan.elements_of_kind("Slice")
+              if item.kind.value == "detail"]
+    for index, detail in enumerate(details, start=401):
+        sheets.append(SheetSpec(f"A-{index}", detail.title or detail.tag,
+                                scene=partial(build_section, view=detail)))
+
+    sheets.append(SheetSpec("A-601", "Door / window schedule", page=_write_opening_schedule))
+
+    plumbing_storeys = [s.tag for s in storeys if has_plumbing_content(model, s.tag)]
+    for index, storey_tag in enumerate(plumbing_storeys, start=1):
+        sheets.append(SheetSpec(f"P-{100 + index}", f"Plumbing plan — {storey_tag}",
+                                scene=partial(build_plumbing_plan, storey=storey_tag)))
+
+    hvac_storeys = [s.tag for s in storeys if has_hvac_content(model, s.tag)]
+    for index, storey_tag in enumerate(hvac_storeys, start=1):
+        sheets.append(SheetSpec(f"M-{100 + index}", f"HVAC plan — {storey_tag}",
+                                scene=partial(build_hvac_plan, storey=storey_tag)))
+
+    electrical_storeys = [s.tag for s in storeys if has_electrical_content(model, s.tag)]
+    for index, storey_tag in enumerate(electrical_storeys, start=1):
+        sheets.append(SheetSpec(f"E-{100 + index}", f"Electrical plan — {storey_tag}",
+                                scene=partial(build_electrical_plan, storey=storey_tag)))
+
+    sheets.append(SheetSpec("EN-1", "Energy compliance summary",
+                            page=partial(_write_energy_sheet, preferences=preferences)))
+    return sheets
+
+
+def _storey_elevation(model: ResolvedModel, storey_tag: str) -> float:
+    storey = next((s for s in model.plan.storeys if s.tag == storey_tag), None)
+    return storey.elevation.meters if storey is not None else 0.0
+
+
+def write_permit_set(model: ResolvedModel, output: Path,
+                     preferences: "Preferences | None" = None) -> tuple[Path, dict[str, object]]:
+    """Compose the permit-set baseline into one multi-page PDF.
 
     The source plan remains authoritative: plans are drawing-IR scenes and schedules are
-    derived from the same resolved openings.  The intentionally modest title-block format
-    lets jurisdictions accept an 11×17 residential review set while retaining the exact
+    derived from the same resolved openings. The intentionally modest title-block format
+    lets jurisdictions accept an 11x17 residential review set while retaining the exact
     sheets needed for a professional handoff.
     """
     from matplotlib.backends.backend_pdf import PdfPages
-    import matplotlib.pyplot as plt
 
     output.parent.mkdir(parents=True, exist_ok=True)
-    storeys = sorted(model.plan.storeys, key=lambda item: item.elevation.meters)
-    floor_pages = [(f"A-{101 + index:03d}", storey.tag)
-                   for index, storey in enumerate(storeys)]
-    page_index: list[tuple[str, str]] = [
-        ("A-000", "Cover / code summary"), ("C-101", "Site plan"),
-        ("S-100", "Foundation plan"),
-        *[(number, f"{storey.title()} floor plan") for number, storey in floor_pages],
-        (f"A-{101 + len(floor_pages):03d}", "Roof plan"), ("A-301", "Building section"),
-        ("A-201", "North exterior elevation"), ("A-202", "South exterior elevation"),
-        ("A-203", "East exterior elevation"), ("A-204", "West exterior elevation"),
-        ("A-601", "Door / window schedule"), ("S-101", "Framing plans"),
-        ("EN-1", "Energy compliance summary"),
-    ]
+    sheets = build_sheet_index(model, preferences)
+    index = [(sheet.number, sheet.title) for sheet in sheets]
     with PdfPages(output) as pdf:
-        _write_cover(pdf, model, page_index)
-        for number, name in page_index[1:]:
-            if number == "C-101":
-                _write_site_plan(pdf, model, number, name)
-            elif number == "S-100":
-                _write_plan(pdf, model, "basement", number, name)
-            elif number in dict(floor_pages):
-                _write_plan(pdf, model, dict(floor_pages)[number], number, name)
-            elif name == "Roof plan":
-                _write_roof_plan(pdf, model, number, name)
-            elif number == "A-301":
-                _write_section_summary(pdf, model, number, name)
-            elif number.startswith("A-20"):
-                _write_elevation(pdf, model, number, name)
-            elif number == "A-601":
-                _write_opening_schedule(pdf, model, number, name)
-            elif number == "S-101":
-                _write_plan(pdf, model, "second", number, name)
-            else:
-                _write_energy_summary(pdf, model, number, name)
-    return output, {"index": page_index}
+        for sheet in sheets:
+            if sheet.number == "A-000":
+                _write_cover(pdf, model, index)
+            elif sheet.page is not None:
+                sheet.page(pdf, model, sheet.number, sheet.title)
+            elif sheet.scene is not None:
+                title = f"{sheet.number} · {sheet.title} · {sheet.scale_note}"
+                fig = _fig(sheet.scene(model), title)
+                pdf.savefig(fig)
+                _close(fig)
+    return output, {"index": index}
 
 
 def write_plan_dxfs(model: ResolvedModel, output_dir: Path) -> list[Path]:
@@ -100,37 +173,6 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]]) -> Non
     plt.close(fig)
 
 
-def _write_plan(pdf, model: ResolvedModel, storey: str, number: str, name: str) -> None:
-    fig = _fig(build_floorplan(model, storey), f"{number} · {name} · 1/4\" = 1'-0\"")
-    pdf.savefig(fig)
-    _close(fig)
-
-
-def _write_site_plan(pdf, model: ResolvedModel, number: str, name: str) -> None:
-    fig = _fig(build_site_plan(model), f"{number} · {name} · project north")
-    pdf.savefig(fig)
-    _close(fig)
-
-
-def _write_section_summary(pdf, model: ResolvedModel, number: str, name: str) -> None:
-    fig = _fig(build_center_section(model), f"{number} · {name} · 1/4\" = 1'-0\"")
-    pdf.savefig(fig)
-    _close(fig)
-
-
-def _write_elevation(pdf, model: ResolvedModel, number: str, name: str) -> None:
-    facing = name.split()[0].lower()
-    fig = _fig(build_elevation(model, facing), f"{number} · {name} · 1/4\" = 1'-0\"")
-    pdf.savefig(fig)
-    _close(fig)
-
-
-def _write_roof_plan(pdf, model: ResolvedModel, number: str, name: str) -> None:
-    fig = _fig(build_roof_plan(model), f"{number} · {name} · 1/4\" = 1'-0\"")
-    pdf.savefig(fig)
-    _close(fig)
-
-
 def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str) -> None:
     import matplotlib.pyplot as plt
 
@@ -155,21 +197,67 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str) -
     plt.close(fig)
 
 
-def _write_energy_summary(pdf, model: ResolvedModel, number: str, name: str) -> None:
+def _write_energy_sheet(pdf, model: ResolvedModel, number: str, name: str,
+                        preferences: "Preferences | None" = None) -> None:
+    """Three honest tables: prescriptive envelope, WWR, and a declared-not-Manual-J
+    block load — the EN-1 rewrite (→ Permit-ready plan set Phase 7)."""
     import matplotlib.pyplot as plt
-    from typehaus.analysis import assembly_r_value
 
-    fig, axis = plt.subplots(figsize=(11, 8.5))
+    from typehaus.checks.building_science.wwr import wwr_summary
+    from typehaus.checks.code.mn_energy import evaluate_envelope
+    from typehaus.checks.registry import Preferences
+    from typehaus.energy import estimate_block_load
+
+    prefs = preferences if preferences is not None else Preferences()
+
+    fig, axis = plt.subplots(figsize=(11, 14))
     axis.axis("off")
-    rows = [(assembly.tag, assembly_r_value(assembly, model.plan.library).fmt())
-            for assembly in model.plan.library.assemblies]
-    rows.extend((f"{zone.tag} radiant wire", f"{zone.wire_length_m / 0.3048:.0f} LF")
-                for zone in model.floor_heat)
-    axis.text(0.06, 0.94, f"{number} · {name}", fontsize=16, family="monospace")
-    axis.table(cellText=rows, colLabels=("Assembly", "Nominal R-value"), loc="center",
-               cellLoc="left", colLoc="left", fontsize=7)
+    axis.text(0.04, 0.985, f"{number} · {name}", fontsize=16, family="monospace")
+
+    axis.text(0.04, 0.95, "PRESCRIPTIVE ENVELOPE — MN 2024, CLIMATE ZONE 6", fontsize=10,
+              family="monospace", weight="bold")
+    prescriptive_rows = [
+        (row.component, row.role, row.required, row.provided, row.verdict.upper())
+        for row in evaluate_envelope(model, model.plan)
+    ]
+    _add_table(fig, prescriptive_rows,
+              ("Component", "Use", "Required", "Provided", "Verdict"),
+              bbox=(0.04, 0.66, 0.92, 0.27))
+
+    axis.text(0.04, 0.615, "WINDOW-TO-WALL RATIO", fontsize=10, family="monospace", weight="bold")
+    wwr = wwr_summary(model)
+    wwr_rows = [("OVERALL", f"{wwr['overall']:.1%}")]
+    wwr_rows.extend((item.facade, f"{item.ratio:.1%}") for item in wwr["per_facade"])
+    _add_table(fig, wwr_rows, ("Facade", "Glazing / gross wall"), bbox=(0.04, 0.44, 0.4, 0.15))
+
+    axis.text(0.04, 0.37, "BLOCK LOAD — NOT A MANUAL J", fontsize=10, family="monospace",
+              weight="bold")
+    load = estimate_block_load(model, prefs)
+    load_rows = [(component.kind, f"{component.area_ft2:,.0f}",
+                 f"{component.ua_btu_per_hour_f:,.1f}") for component in load.components]
+    load_rows.append(("TOTAL HEATING", "", f"{load.heating_load_btu_per_hour:,.0f} BTU/h"))
+    load_rows.append(("TOTAL COOLING", "", f"{load.cooling_load_btu_per_hour:,.0f} BTU/h "
+                                            f"({load.cooling_tons:.1f} tons)"))
+    _add_table(fig, load_rows, ("Component", "Area (ft2)", "UA / total"),
+              bbox=(0.04, 0.14, 0.5, 0.19))
+    if load.unknown_inputs:
+        axis.text(0.04, 0.10, "NOT A MANUAL J — unknown inputs: "
+                  + ", ".join(load.unknown_inputs), fontsize=7, family="sans-serif", wrap=True)
+    else:
+        axis.text(0.04, 0.10, "NOT A MANUAL J — a transparent block-load estimate only.",
+                  fontsize=7, family="sans-serif")
     pdf.savefig(fig)
     plt.close(fig)
+
+
+def _add_table(fig, rows: list[tuple], col_labels: tuple[str, ...],
+               bbox: tuple[float, float, float, float]) -> None:
+    if not rows:
+        return
+    ax = fig.add_axes(bbox)
+    ax.axis("off")
+    ax.table(cellText=rows, colLabels=col_labels, loc="upper left", cellLoc="left",
+             colLoc="left", fontsize=6)
 
 
 def _close(fig: object) -> None:

@@ -15,6 +15,7 @@ from typing import Any
 from typehaus._meta import IFC_APP_NAME, PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.model.ids import derive_child_guid, derive_guid
+from typehaus.resolve.geometry import polygon_area, rect_between
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 
@@ -31,6 +32,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     building = ll.create_entity(f, "IfcBuilding", name=model.plan.project.building.name)
     _relate(f, ifc_project, [site])
     _relate(f, site, [building])
+    _emit_site_representation(f, body, site, model)
 
     storeys: dict[str, Any] = {}
     for storey in sorted(model.plan.storeys, key=lambda s: s.elevation.meters):
@@ -57,8 +59,58 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
 
     _emit_furniture(f, body, model, storeys, project_uuid)
 
+    for run in sorted(model.pipe_runs, key=lambda item: item.uid):
+        _emit_pipe_run(f, body, run, storeys, project_uuid)
+
+    for sleeve in sorted(model.sleeves, key=lambda item: item.uid):
+        _emit_sleeve(f, body, sleeve, storeys, project_uuid)
+
+    for duct in sorted(model.ducts, key=lambda item: item.uid):
+        _emit_duct_run(f, body, model, duct, storeys, project_uuid)
+
+    _emit_registers_equipment_devices(f, body, model, storeys, project_uuid)
+    _emit_utilities(f, body, model, project_uuid)
+
     f.write(str(out_path))
     return out_path
+
+
+def _emit_site_representation(f: Any, body: Any, ifc_site: Any, model: ResolvedModel) -> None:
+    """A 5cm pad prism of the parcel ring at grade — imports as a lot slab (Phase 4)."""
+    site = model.plan.project.site
+    parcel = [p.xy_m for p in site.parcel]
+    if len(parcel) < 3:
+        return
+    grade_z = site.grade.meters if site.grade is not None else 0.0
+    _assign_representation(f, ifc_site, ll.add_prism_from_profile(f, body, parcel, 0.05, grade_z))
+    props = {"parcel_area_m2": abs(polygon_area(parcel))}
+    for spec in site.setbacks:
+        key = f"setback_edge{spec.edge}_{spec.label or 'UNLABELED'}_ft"
+        props[key] = spec.distance.inches / 12.0
+    ll.ensure_pset(f, ifc_site, "TypeHaus_Site", props)
+
+
+def _emit_utilities(f: Any, body: Any, model: ResolvedModel, project_uuid: Any) -> None:
+    site = model.plan.project.site
+    grade_z = site.grade.meters if site.grade is not None else 0.0
+    for line in site.utilities:
+        path = [p.xy_m for p in line.path]
+        if len(path) < 2:
+            continue
+        depth_m = line.depth.meters if line.depth is not None else 1.0
+        z0 = grade_z - depth_m
+        for index in range(len(path) - 1):
+            profile = rect_between(path[index], path[index + 1], -0.05, 0.05)
+            child_key = f"seg-{index:02d}"
+            uid = f"{line.kind.value}/{line.entry.xy_m}/{child_key}"
+            element = ll.create_entity(f, "IfcBuildingElementProxy",
+                                       name=f"UTIL-{line.kind.value}/{child_key}")
+            element.GlobalId = derive_child_guid(project_uuid, "site-utilities", uid)
+            _assign_representation(f, element, ll.add_prism_from_profile(f, body, profile, 0.1, z0))
+            ll.ensure_pset(f, element, "TypeHaus_Utility", {
+                "kind": line.kind.value, "entry_x_m": line.entry.xy_m[0],
+                "entry_y_m": line.entry.xy_m[1],
+            })
 
 
 def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
@@ -183,6 +235,162 @@ def _emit_stair(f: Any, stair: Any, storeys: dict[str, Any], project_uuid: Any, 
         members.append(child)
     if members:
         ll.aggregate(f, element, members)
+
+
+def _emit_pipe_run(f: Any, body: Any, run: Any, storeys: dict[str, Any], project_uuid: Any) -> None:
+    """One IfcPipeSegment per path segment — a plan rectangle of width ``diameter_m``
+    around the centerline, extruded ``diameter_m`` tall at the segment's interpolated
+    invert (a boxy placeholder profile, not a true cylindrical sweep, → Phase 2 spec)."""
+    half = run.diameter_m / 2.0
+    cumulative = 0.0
+    for index in range(len(run.path) - 1):
+        p0, p1 = run.path[index], run.path[index + 1]
+        seg_len = ((p1[0] - p0[0]) ** 2 + (p1[1] - p0[1]) ** 2) ** 0.5
+        z0 = _interpolated_invert(run, cumulative, cumulative + seg_len)
+        cumulative += seg_len
+        profile = rect_between(p0, p1, -half, half)
+        child_key = f"seg-{index:02d}"
+        element = ll.create_entity(f, "IfcPipeSegment", name=f"{run.tag}/{child_key}")
+        element.GlobalId = derive_child_guid(project_uuid, run.uid, child_key)
+        _assign_representation(f, element, ll.add_prism_from_profile(
+            f, body, profile, run.diameter_m, z0 - half,
+        ))
+        ll.ensure_pset(f, element, PSET_SOURCE, {"uid": run.uid, "tag": run.tag})
+        ll.ensure_pset(f, element, "TypeHaus_Pipe", {
+            "system": run.system, "diameter_m": run.diameter_m,
+            "slope": _slope_text(run),
+        })
+        ll.assign_container(f, element, storeys[run.storey])
+
+
+def _interpolated_invert(run: Any, from_len: float, to_len: float) -> float:
+    """Invert elevation at the segment midpoint, linearly interpolated along the run."""
+    if run.z_start_m is None or run.z_end_m is None or run.length_m <= 1e-9:
+        return run.z_start_m if run.z_start_m is not None else 0.0
+    mid = (from_len + to_len) / 2.0
+    t = mid / run.length_m
+    return run.z_start_m + t * (run.z_end_m - run.z_start_m)
+
+
+def _slope_text(run: Any) -> str:
+    if run.z_start_m is None or run.z_end_m is None or run.length_m <= 1e-9:
+        return "unknown"
+    drop_in = (run.z_start_m - run.z_end_m) * 39.37007874015748
+    slope_in_per_ft = drop_in / (run.length_m * 3.280839895)
+    return f"{slope_in_per_ft:.3f} in/ft"
+
+
+def _emit_duct_run(f: Any, body: Any, model: ResolvedModel, duct: Any, storeys: dict[str, Any],
+                   project_uuid: Any) -> None:
+    """One IfcDuctSegment per path segment, a width x depth box at the floor's joist
+    ``z0_m`` for JOIST_BAY routing (→ Phase 3 spec)."""
+    half = duct.width_m / 2.0
+    floor = next((item for item in model.floors if item.tag == duct.floor_ref), None)
+    if duct.routing == "joist_bay" and floor is not None and floor.members:
+        z0 = floor.members[0].z0_m
+    else:
+        z0 = next((s.elevation.meters for s in model.plan.storeys if s.tag == duct.storey), 0.0)
+    for index in range(len(duct.path) - 1):
+        p0, p1 = duct.path[index], duct.path[index + 1]
+        profile = rect_between(p0, p1, -half, half)
+        child_key = f"seg-{index:02d}"
+        element = ll.create_entity(f, "IfcDuctSegment", name=f"{duct.tag}/{child_key}")
+        element.GlobalId = derive_child_guid(project_uuid, duct.uid, child_key)
+        _assign_representation(f, element, ll.add_prism_from_profile(
+            f, body, profile, duct.depth_m, z0,
+        ))
+        ll.ensure_pset(f, element, PSET_SOURCE, {"uid": duct.uid, "tag": duct.tag})
+        ll.ensure_pset(f, element, "TypeHaus_Duct", {
+            "system": duct.system, "width_in": duct.width_m * 39.37007874015748,
+            "depth_in": duct.depth_m * 39.37007874015748, "routing": duct.routing,
+        })
+        ll.assign_container(f, element, storeys[duct.storey])
+
+
+def _emit_registers_equipment_devices(f: Any, body: Any, model: ResolvedModel,
+                                      storeys: dict[str, Any], project_uuid: Any) -> None:
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            if element.element_kind == "Register":
+                _emit_register(f, body, element, storey, storeys, project_uuid)
+            elif element.element_kind == "Equipment":
+                _emit_equipment(f, body, element, storey, storeys, project_uuid)
+            elif element.element_kind == "ElectricalDevice":
+                _emit_device(f, body, element, storey, storeys, project_uuid)
+
+
+def _emit_register(f: Any, body: Any, register: Any, storey: Any, storeys: dict[str, Any],
+                   project_uuid: Any) -> None:
+    x, y = register.position.xy_m
+    half = 0.10
+    outline = [(x - half, y - half), (x + half, y - half),
+               (x + half, y + half), (x - half, y + half)]
+    element = ll.create_entity(f, "IfcAirTerminal", name=register.tag)
+    element.GlobalId = derive_guid(project_uuid, register.uid)
+    _assign_representation(f, element, ll.add_prism_from_profile(
+        f, body, outline, 0.05, storey.elevation.meters,
+    ))
+    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": register.uid, "tag": register.tag})
+    ll.assign_container(f, element, storeys[storey.tag])
+
+
+def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dict[str, Any],
+                    project_uuid: Any) -> None:
+    width, depth = (dim.meters for dim in equipment.footprint)
+    x, y = equipment.position.xy_m
+    outline = [(x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
+               (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2)]
+    element = ll.create_entity(f, "IfcBuildingElementProxy", name=equipment.tag)
+    element.GlobalId = derive_guid(project_uuid, equipment.uid)
+    _assign_representation(f, element, ll.add_prism_from_profile(
+        f, body, outline, 1.5, storey.elevation.meters,
+    ))
+    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": equipment.uid, "tag": equipment.tag})
+    ll.ensure_pset(f, element, "TypeHaus_Equipment", {"kind": equipment.kind.value})
+    ll.assign_container(f, element, storeys[storey.tag])
+
+
+def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str, Any],
+                 project_uuid: Any) -> None:
+    x, y = device.position.xy_m
+    half = 0.05  # 4"x4" nominal device box
+    outline = [(x - half, y - half), (x + half, y - half),
+               (x + half, y + half), (x - half, y + half)]
+    outlet_kinds = ("receptacle", "gfci", "receptacle_240")
+    mount_default = 1.219 if device.kind.value in outlet_kinds else 0.406
+    mount = device.mount_height.meters if device.mount_height is not None else mount_default
+    z0 = storey.elevation.meters + mount
+    element = ll.create_entity(f, "IfcBuildingElementProxy", name=device.tag)
+    element.GlobalId = derive_guid(project_uuid, device.uid)
+    _assign_representation(f, element, ll.add_prism_from_profile(f, body, outline, 0.05, z0))
+    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": device.uid, "tag": device.tag})
+    ll.ensure_pset(f, element, "TypeHaus_Device", {
+        "kind": device.kind.value, "circuit": device.circuit or "",
+    })
+    ll.assign_container(f, element, storeys[storey.tag])
+
+
+def _emit_sleeve(f: Any, body: Any, sleeve: Any, storeys: dict[str, Any],
+                 project_uuid: Any) -> None:
+    """A visible marker at the exact cast-in-place point (host slab's full z0..z1)."""
+    half = sleeve.sleeve_d_m / 2.0
+    cx, cy = sleeve.center
+    outline = [(cx - half, cy - half), (cx + half, cy - half),
+               (cx + half, cy + half), (cx - half, cy + half)]
+    element = ll.create_entity(f, "IfcBuildingElementProxy", name=sleeve.tag)
+    element.GlobalId = derive_guid(project_uuid, sleeve.uid)
+    _assign_representation(f, element, ll.add_prism_from_profile(
+        f, body, outline, sleeve.z1_m - sleeve.z0_m, sleeve.z0_m,
+    ))
+    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": sleeve.uid, "tag": sleeve.tag,
+                                               "host": sleeve.host_slab})
+    ll.ensure_pset(f, element, "TypeHaus_Sleeve", {
+        "host": sleeve.host_slab,
+        "pipe_diameter_in": sleeve.pipe_d_m * 39.37007874015748,
+        "sleeve_diameter_in": sleeve.sleeve_d_m * 39.37007874015748,
+        "serves_fixture": sleeve.serves_fixture or "",
+    })
+    ll.assign_container(f, element, storeys[sleeve.storey])
 
 
 def _georef(f: Any, ifc_project: Any, model: ResolvedModel, source_context: Any) -> None:

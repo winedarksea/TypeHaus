@@ -19,6 +19,7 @@ from typehaus.resolve.envelope import resolve_envelope_geometry
 from typehaus.resolve.floors import resolve_floors
 from typehaus.resolve.floor_heat import resolve_floor_heat
 from typehaus.resolve.geometry import length, sub
+from typehaus.resolve.mep import resolve_mep
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedOpening
 from typehaus.resolve.rooms import resolve_rooms
 from typehaus.resolve.roof_geometry import apply_to_roof_wall_tops
@@ -57,6 +58,8 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         frame_roofs(model)
     with _stage("floors"):
         findings.extend(resolve_floors(model))
+    with _stage("mep"):
+        findings.extend(resolve_mep(model))
     with _stage("rooms"):
         findings.extend(resolve_rooms(plan, model))
     with _stage("floor_heat"):

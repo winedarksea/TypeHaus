@@ -21,16 +21,22 @@ from typehaus.model.enums import (
     AlarmKind,
     ConditionKind,
     ControlLayer,
+    DeviceKind,
+    DuctRouting,
+    DuctSystem,
+    EquipmentKind,
     FloorOpeningPurpose,
     JunctionPolicy,
     LayerFunction,
     Occupancy,
     PartitionLayout,
+    PipeSystem,
     RadiantSystem,
     RoofForm,
     Service,
     SliceKind,
     StructuralRole,
+    UtilityKind,
 )
 from typehaus.model.floors import (
     DeckLayer,
@@ -43,6 +49,14 @@ from typehaus.model.floors import (
     Soffit,
 )
 from typehaus.model.materials import Material
+from typehaus.model.mep import (
+    DuctRun,
+    ElectricalDevice,
+    Equipment,
+    PipeRun,
+    Register,
+    SleevePenetration,
+)
 from typehaus.model.plan import Library, PlanModel
 from typehaus.model.project import Building, Project, Site, Storey
 from typehaus.model.refs import (
@@ -67,6 +81,7 @@ from typehaus.model.registry import (
     element_kinds,
     register_constructor,
 )
+from typehaus.model.site import SetbackSpec, SpotElevation, UtilityLine
 from typehaus.model.structure import Beam, Footing, FoundationWall, Pad, Post
 from typehaus.model.spatial import (
     Annotation,
@@ -144,9 +159,12 @@ __all__ = [
     "FaceRef", "face", "ToRoof", "FollowRoof", "Arch", "LayerSpan", "OpeningPosition",
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",
+    "PipeRun", "SleevePenetration", "DuctRun", "Register", "Equipment", "ElectricalDevice",
+    "SetbackSpec", "SpotElevation", "UtilityLine",
     "LayerFunction", "ControlLayer", "JunctionPolicy", "Occupancy", "Service", "AlarmKind",
     "StructuralRole", "SliceKind", "FloorOpeningPurpose", "RadiantSystem",
     "PartitionLayout", "RoofForm", "ConditionKind",
+    "PipeSystem", "DuctSystem", "DuctRouting", "EquipmentKind", "DeviceKind", "UtilityKind",
     "Length", "Area", "Angle", "Pitch", "RValue", "UFactor", "Temperature", "Point2D",
     "ft", "inch", "mm", "m", "deg", "rad", "sqft", "sqm", "r_us", "rsi", "u_us",
     "degC", "degF", "pt",

@@ -404,7 +404,7 @@ def print_sheets(
     handoff: bool = typer.Option(False, help="also write the architect-handoff bundle"),
 ) -> None:
     """Compose the permit-set PDF, plan DXFs, and optional architect handoff (M3)."""
-    from typehaus.checks import evaluate_permit_checklist, run
+    from typehaus.checks import evaluate_permit_checklist, load_preferences, run
     from typehaus.emit.draw import write_permit_set, write_plan_dxfs
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
@@ -422,18 +422,19 @@ def print_sheets(
                 console.print(f"  {item.label}: {item.detail}")
         raise typer.Exit(1)
     model, _ = resolve(result.plan)
+    preferences = load_preferences(d)
     out = d / "out"
     if fmt in ("dxf", "both"):
         for path in write_plan_dxfs(model, out / "sheets"):
             console.print(f"wrote {path}")
     if fmt in ("pdf", "both"):
-        path, _ = write_permit_set(model, out / "permit_set.pdf")
+        path, _ = write_permit_set(model, out / "permit_set.pdf", preferences)
         console.print(f"wrote {path}")
     if handoff:
-        _write_handoff_bundle(d, model)
+        _write_handoff_bundle(d, model, preferences)
 
 
-def _write_handoff_bundle(house: Path, model) -> None:
+def _write_handoff_bundle(house: Path, model, preferences=None) -> None:
     """Copy only generated/project-owned artifacts into the architect handoff."""
     import shutil
 
@@ -442,7 +443,7 @@ def _write_handoff_bundle(house: Path, model) -> None:
 
     handoff = house / "out" / "handoff"
     handoff.mkdir(parents=True, exist_ok=True)
-    write_permit_set(model, handoff / "permit_set.pdf")
+    write_permit_set(model, handoff / "permit_set.pdf", preferences)
     write_plan_dxfs(model, handoff / "dxfs")
     write_model_json(model, handoff / "model.json")
     for source, destination in ((house / "brief.md", handoff / "brief.md"),

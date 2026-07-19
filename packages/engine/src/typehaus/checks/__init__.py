@@ -5,8 +5,8 @@ Importing this package imports every tier module, registering all checks.
 
 from __future__ import annotations
 
-from typehaus.checks import advisory, building_science, integrity, structural  # noqa: F401 - register
-from typehaus.checks.code import mn_residential  # noqa: F401 - register
+from typehaus.checks import advisory, building_science, integrity, mep, structural  # noqa: F401 - register
+from typehaus.checks.code import mn_energy, mn_residential, site  # noqa: F401 - register
 from typehaus.checks.registry import (
     CheckContext,
     CheckReport,

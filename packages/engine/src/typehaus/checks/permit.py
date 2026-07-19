@@ -52,6 +52,18 @@ def evaluate_permit_checklist(report: CheckReport, profile_name: str) -> PermitC
     items.append(_item_from_findings(
         "I-joist span table", ("structural.ijoist_span",), report.findings,
     ))
+    items.append(_item_from_findings(
+        "Plumbing sleeve alignment", ("mep.sleeve_alignment",), report.findings,
+    ))
+    items.append(_item_from_findings(
+        "Plumbing drain slope", ("mep.drain_slope",), report.findings,
+    ))
+    items.append(_item_from_findings(
+        "Site setbacks", ("code.site_setback",), report.findings,
+    ))
+    items.append(_item_from_findings(
+        "Energy prescriptive envelope", ("code.energy_prescriptive",), report.findings,
+    ))
     items.append(_integrity_item(report.findings))
     return PermitChecklist(profile_name=profile_name, items=tuple(items))
 

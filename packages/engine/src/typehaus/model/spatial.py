@@ -95,6 +95,7 @@ class Fixture(Element):
     room: str
     position: Point2D
     wall_ref: str | None = None  # drain-stack wall when services need a vertical chase
+    drain_position: Point2D | None = None  # contractor override; default = position
     rotation: object | None = None  # Angle | None
 
 

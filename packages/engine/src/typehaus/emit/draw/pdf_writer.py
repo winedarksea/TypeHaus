@@ -41,8 +41,42 @@ _LAYER_STYLE = {
     "A-SITE-WALL": ("#333333", 0.6),
     "A-SITE-FOUND": ("#777777", 0.4),
     "A-SITE-ANNO": ("#204070", 0.6),
+    "S-FNDN": ("#555555", 1.2),
+    "S-FNDN-FTNG": ("#888888", 0.5),
+    "A-SLAB": ("#777777", 0.5),
+    "S-COLS": ("#8a5a20", 0.9),
+    "S-BEAM": ("#8a5a20", 0.9),
+    "S-WALL": ("#1a1a1a", 1.4),
+    "S-WALL-BELW": ("#aaaaaa", 0.3),
+    "S-FRAM-OPEN": ("#a05a20", 0.5),
+    "A-WALL-BELW": ("#aaaaaa", 0.3),
+    "P-SANR-PIPE": ("#6a4a2a", 0.6),
+    "P-DOMW-PIPE": ("#3a6a8a", 0.6),
+    "M-HVAC-SDFF": ("#2a6a4a", 0.6),
+    "M-HVAC-RDFF": ("#4a8a6a", 0.6),
+    "M-HVAC-EQPM": ("#2a6a4a", 0.8),
+    "E-POWR-DEVC": ("#8a2a2a", 0.5),
+    "E-LITE": ("#c08a00", 0.5),
+    "C-PROP": ("#333333", 0.6),
+    "C-PROP-SETB": ("#204070", 0.4),
+    "C-UTIL-WATER": ("#3a6a8a", 0.4),
+    "C-UTIL-SEWER": ("#6a4a2a", 0.4),
+    "C-UTIL-GAS": ("#c08a00", 0.4),
+    "C-UTIL-POWER": ("#8a2a2a", 0.4),
+    "C-TOPO-ARRW": ("#5a8a5a", 0.4),
+    "L-SITE-GRAD": ("#5a8a5a", 0.7),
 }
 _HATCH_MPL = {"batt": "....", "osb": "//", "lumber": "\\\\", "concrete": "..", "SOLID": None}
+
+# name -> (marker, color) for the simple device/register/equipment symbol vocabulary.
+_MARKER_STYLE = {
+    "register-supply": ("^", "#2a6a4a"), "register-return": ("v", "#4a8a6a"),
+    "receptacle": ("o", "#8a2a2a"), "gfci": ("D", "#8a2a2a"),
+    "receptacle_240": ("s", "#8a2a2a"), "switch": ("$S$", "#c08a00"),
+    "light": ("*", "#c08a00"), "panel": ("P", "#8a2a2a"),
+    "spot-elev": ("+", "#5a8a5a"), "utility-entry": ("x", "#333333"),
+    "level-marker": ("<", "#204070"),
+}
 
 
 def _fig(scene: Scene, title: str | None):
@@ -97,13 +131,21 @@ def _render_nodes(ax: object, scene: Scene) -> None:
 
 
 def _draw_dimension(ax: object, node: ArchDimension) -> None:
-    y = node.p0[1] + node.offset
-    ax.annotate("", xy=(node.p1[0], y), xytext=(node.p0[0], y),
-                arrowprops=dict(arrowstyle="<->", color="#204070", lw=0.6))
-    dist_in = math.hypot(node.p1[0] - node.p0[0], node.p1[1] - node.p0[1])
+    dx, dy = node.p1[0] - node.p0[0], node.p1[1] - node.p0[1]
+    dist_in = math.hypot(dx, dy)
     label = node.text or _feet_inches(dist_in)
-    ax.text((node.p0[0] + node.p1[0]) / 2, y + 2, label, fontsize=6.5, ha="center",
-            family="monospace", color="#204070")
+    if abs(dx) < abs(dy):  # vertical dimension (→ elevation vertical dim string)
+        x = node.p0[0] + node.offset
+        ax.annotate("", xy=(x, node.p1[1]), xytext=(x, node.p0[1]),
+                    arrowprops=dict(arrowstyle="<->", color="#204070", lw=0.6))
+        ax.text(x + 2, (node.p0[1] + node.p1[1]) / 2, label, fontsize=6.5, va="center",
+                family="monospace", color="#204070", rotation=90)
+    else:
+        y = node.p0[1] + node.offset
+        ax.annotate("", xy=(node.p1[0], y), xytext=(node.p0[0], y),
+                    arrowprops=dict(arrowstyle="<->", color="#204070", lw=0.6))
+        ax.text((node.p0[0] + node.p1[0]) / 2, y + 2, label, fontsize=6.5, ha="center",
+                family="monospace", color="#204070")
 
 
 def _draw_symbol(ax: object, node: Symbol, Arc: object) -> None:
@@ -116,6 +158,22 @@ def _draw_symbol(ax: object, node: Symbol, Arc: object) -> None:
         ax.add_patch(Arc(node.insert, 2 * w, 2 * w, angle=0,
                          theta1=node.rotation, theta2=node.rotation + 90,
                          edgecolor="#a05a20", linewidth=0.6))
+    elif node.name == "post":
+        ax.plot(node.insert[0], node.insert[1], marker="s", markersize=5,
+                color="#8a5a20", markerfacecolor="none")
+    elif node.name == "span-arrow":
+        a = math.radians(node.rotation)
+        dx, dy = w * math.cos(a), w * math.sin(a)
+        ax.annotate("", xy=(node.insert[0] + dx, node.insert[1] + dy),
+                    xytext=(node.insert[0] - dx, node.insert[1] - dy),
+                    arrowprops=dict(arrowstyle="->", color="#8a5a20", lw=1.0))
+    elif node.name == "sleeve":
+        size = max(w, 2.0)
+        ax.plot(node.insert[0], node.insert[1], marker="o", markersize=size,
+                markerfacecolor="none", markeredgecolor="#6a4a2a", markeredgewidth=0.8)
+    elif node.name in _MARKER_STYLE:
+        marker, color = _MARKER_STYLE[node.name]
+        ax.plot(node.insert[0], node.insert[1], marker=marker, markersize=5, color=color)
     else:
         ax.plot(node.insert[0], node.insert[1], marker="o", markersize=2,
                 color="#3a6a8a")

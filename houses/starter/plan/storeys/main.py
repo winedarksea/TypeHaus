@@ -2,6 +2,7 @@
 from typehaus import (
     Door,
     DoorType,
+    FloorSystem,
     JoistSpec,
     Node,
     Occupancy,
@@ -59,6 +60,7 @@ ROOMS = [
 ]
 
 FLOOR = [
-    JoistSpec(member="11.875 I-joist", spacing=inch(16), direction="y",
-              bearing_refs=("W-101", "W-103")),
+    FloorSystem(uid="FSMNAAAAAA", tag="FS-MAIN",
+                joists=JoistSpec(member="11.875 I-joist", spacing=inch(16), direction="y",
+                                 bearing_refs=("W-101", "W-103"))),
 ]
