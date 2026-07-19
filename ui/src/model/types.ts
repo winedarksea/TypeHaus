@@ -55,6 +55,15 @@ export interface Opening {
   center_along_m: number;
 }
 
+export interface PlanNode {
+  tag: string;
+  storey: string;
+  x_m: number;
+  y_m: number;
+  open_end: boolean;
+  provenance: Provenance | null;
+}
+
 export interface Room {
   uid: string;
   tag: string;
@@ -173,6 +182,57 @@ export interface Storey {
   ceiling_m: number;
 }
 
+// --- Authoring catalog (→ server model_json._catalog). The palette the placement and
+// assembly tools draw from: product types to place, the occupancy vocabulary, and every
+// assembly with its resolved layer stack. `editable` assemblies live in the house's plan/
+// source (a layer edit can write back); the rest are library presets — duplicate to tweak.
+export interface WindowTypeSpec {
+  tag: string;
+  width_m: number;
+  height_m: number;
+  operation: string;
+}
+
+export interface DoorTypeSpec {
+  tag: string;
+  width_m: number;
+  height_m: number;
+  operation: string;
+  exterior: boolean;
+}
+
+export interface MaterialSpec {
+  tag: string;
+  name: string;
+  r_per_inch: number | null;
+  perm_rating: number | null;
+  density: number | null;
+}
+
+export interface CatalogLayer {
+  name: string;
+  material: string;
+  function: string;
+  thickness_m: number;
+}
+
+export interface AssemblySpec {
+  tag: string;
+  editable: boolean;
+  provenance: Provenance | null;
+  stc: number | null;
+  variant_of: string | null;
+  layers: CatalogLayer[];
+}
+
+export interface Catalog {
+  window_types: WindowTypeSpec[];
+  door_types: DoorTypeSpec[];
+  occupancies: string[];
+  materials: MaterialSpec[];
+  assemblies: AssemblySpec[];
+}
+
 export interface Roof {
   uid: string;
   tag: string;
@@ -210,6 +270,7 @@ export interface Model {
   underlays?: Underlay[];
   storeys: Storey[];
   walls: Wall[];
+  nodes?: PlanNode[]; // authored wall-graph vertices (→ _catalog sibling); absent on older json
   openings: Opening[];
   roofs?: Roof[];
   fixtures?: Fixture[];
@@ -219,5 +280,6 @@ export interface Model {
   conditions: Condition[];
   stack_edges: StackEdge[];
   building_science?: BuildingScience | null;
+  catalog?: Catalog; // authoring palette (→ _catalog); absent on older model.json
   ok?: boolean; // server/offline resolve status (state.py / bootstrap.py add this)
 }

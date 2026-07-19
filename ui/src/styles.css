@@ -157,6 +157,20 @@ body {
   touch-action: none;
 }
 
+.canvas-draw {
+  cursor: crosshair;
+}
+
+.tool-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.popover {
+  bottom: auto;
+  max-width: 220px;
+}
+
 .hud {
   position: absolute;
   bottom: 12px;
@@ -330,6 +344,69 @@ body {
 .toast.error {
   border-color: var(--error);
   color: var(--error);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+
+.modal {
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 16px;
+  width: min(720px, 92vw);
+  max-height: 86vh;
+  overflow-y: auto;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.assembly-editor-body {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 16px;
+}
+
+.assembly-list {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.assembly-detail {
+  min-width: 0;
+}
+
+.layer-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.layer-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.layer-edit-row select,
+.layer-edit-row input {
+  font-size: 12px;
+}
+
+.finding.selected {
+  outline: 2px solid var(--accent);
 }
 
 .section-card {

@@ -4,7 +4,14 @@
 // loop: render → edit → patch → rebuild → WebSocket push → re-render).
 
 import { create } from "zustand";
-import type { EngineClient, EngineEvent, PatchOp, UnderlayCalibration } from "../engine/EngineClient";
+import type {
+  EngineClient,
+  EngineEvent,
+  MacroRequest,
+  MacroResult,
+  PatchOp,
+  UnderlayCalibration,
+} from "../engine/EngineClient";
 import { RevisionConflict } from "../engine/EngineClient";
 import { HttpEngineClient } from "../engine/HttpEngineClient";
 import { PyodideEngineClient } from "../engine/PyodideEngineClient";
@@ -66,6 +73,7 @@ interface StoreState {
   setThreeMode: (m: ThreeMode) => void;
   setShowFraming: (v: boolean) => void;
   select: (kind: Selection["kind"], uid: string | null) => void;
+  selectByTag: (kind: Selection["kind"], tag: string) => void;
   setHover: (uid: string | null) => void;
   setActiveStorey: (tag: string | null) => void;
   setView: (v: Partial<ViewTransform>) => void;
@@ -74,6 +82,8 @@ interface StoreState {
   dismissToast: (id: number) => void;
 
   applyOps: (ops: PatchOp[]) => Promise<boolean>;
+  runMacro: (request: MacroRequest) => Promise<MacroResult | null>;
+  deleteSelection: () => Promise<void>;
   calibrateUnderlay: (calibration: UnderlayCalibration) => Promise<boolean>;
   undo: () => Promise<void>;
   redo: () => Promise<void>;
@@ -157,6 +167,16 @@ export const useStore = create<StoreState>((set, get) => ({
   setThreeMode: (threeMode) => set({ threeMode }),
   setShowFraming: (showFraming) => set({ showFraming }),
   select: (kind, uid) => set({ selection: { kind, uid } }),
+  // Select an element by its authored tag (uids are minted server-side, so a freshly drawn
+  // wall / placed opening is only addressable by tag until the next reload lands).
+  selectByTag: (kind, tag) => {
+    const model = get().model;
+    if (!model) return;
+    const pool =
+      kind === "wall" ? model.walls : kind === "opening" ? model.openings : model.rooms;
+    const hit = pool.find((e) => e.tag === tag);
+    if (hit) set({ selection: { kind, uid: hit.uid } });
+  },
   setHover: (hoverUid) => set({ hoverUid }),
   setActiveStorey: (activeStorey) => set({ activeStorey }),
   setView: (v) => set((s) => ({ view: { ...s.view, ...v } })),
@@ -182,6 +202,49 @@ export const useStore = create<StoreState>((set, get) => ({
       }
       return false;
     }
+  },
+
+  // Geometry / library macros (server owns the math, → 21b). Same journaled patch path as
+  // applyOps, but returns the MacroResult so callers can select minted elements and surface
+  // any warnings (pinned nodes held, openings re-hosted on a split).
+  runMacro: async (request) => {
+    const { client, model } = get();
+    if (!model) return null;
+    try {
+      const result = await client.runMacro(request, model.revision);
+      await get().reload();
+      for (const warning of result.warnings ?? []) get().toast(warning);
+      return result;
+    } catch (err) {
+      if (err instanceof RevisionConflict) {
+        set({ conflict: { message: err.message } });
+      } else {
+        get().toast((err as Error).message, "error");
+      }
+      return null;
+    }
+  },
+
+  // Delete the current selection (Del key or the toolbar trash button, → 21b). Resolves
+  // uid → {type, tag} from the live model since PatchOp addresses elements by tag.
+  deleteSelection: async () => {
+    const { model, selection, applyOps, select } = get();
+    if (!model || !selection.uid) return;
+    let type: string | null = null;
+    let tag: string | null = null;
+    if (selection.kind === "wall") {
+      const w = model.walls.find((x) => x.uid === selection.uid);
+      type = "Wall"; tag = w?.tag ?? null;
+    } else if (selection.kind === "opening") {
+      const o = model.openings.find((x) => x.uid === selection.uid);
+      type = o?.is_door ? "Door" : "Window"; tag = o?.tag ?? null;
+    } else if (selection.kind === "room") {
+      const r = model.rooms.find((x) => x.uid === selection.uid);
+      type = "Room"; tag = r?.tag ?? null;
+    }
+    if (!type || !tag) return;
+    const ok = await applyOps([{ op: "delete", type, tag }]);
+    if (ok) { get().toast(`${tag} deleted`); select(null, null); }
   },
 
   calibrateUnderlay: async (calibration) => {

@@ -14,12 +14,17 @@ from __future__ import annotations
 
 from typing import Union
 
-from typehaus.model.elements import Node, Wall
+from typehaus.model.elements import Door, Node, Wall, Window
+from typehaus.model.enums import Occupancy
 from typehaus.model.plan import PlanModel
+from typehaus.model.refs import from_node
 from typehaus.model.remap import MutationResult, ReferenceRemap, remap_ops_for
+from typehaus.model.spatial import Room
 from typehaus.quantities import Length
 from typehaus.quantities.length import ft, m
+from typehaus.quantities.point import pt
 from typehaus.source.ops import PatchOp, RawExpr
+from typehaus.source.serialize import element_add_op
 
 # Node coincidence tolerance — nodes closer than this fuse (T-junction heal), in meters.
 SNAP_M = 0.02
@@ -133,6 +138,90 @@ def _pending_nodes(plan: PlanModel, storey: str, minted: list[str]) -> list:
 
 def _wall_list(plan: PlanModel, storey: str) -> str | None:
     return "WALLS" if any(_walls(plan, storey)) else None
+
+
+# --- opening / room placement ------------------------------------------------
+
+def _openings(plan: PlanModel, storey: str) -> list:
+    kinds = {"Window", "Door", "RoughOpening"}
+    return [e for e in plan.storey_elements(storey) if e.element_kind in kinds]
+
+
+def _rooms(plan: PlanModel, storey: str) -> list:
+    return [e for e in plan.storey_elements(storey) if e.element_kind == "Room"]
+
+
+def place_opening(
+    plan: PlanModel,
+    storey: str,
+    *,
+    host: str,
+    type_ref: str,
+    along: float | str,
+    is_door: bool,
+    sill: float | str | None = None,
+    hint_file: str | None = None,
+    tag: str | None = None,
+) -> MutationResult:
+    """Add a window or door to a wall at ``along`` metres from the wall's start node (→ 21b).
+
+    Position is authored as ``from_node(start, offset)`` so the opening tracks the wall's
+    a-node under later stretches. The whole ``Window``/``Door`` declaration is serialized to
+    source and added to the storey's ``OPENINGS`` list on ``hint_file`` (the host wall's file,
+    passed by the client from its provenance so the op lands on the right storey).
+    """
+    wall = next((w for w in _walls(plan, storey) if w.tag == host), None)
+    if wall is None:
+        raise MacroError(f"no wall {host!r} on storey {storey!r}")
+    offset = _as_length(along)
+    position = from_node(wall.start_node, offset)
+    if is_door:
+        new_tag = tag or _next_tag(_openings(plan, storey), "D-")
+        element: object = Door(
+            tag=new_tag, host=host, type_ref=type_ref, position=position,
+            sill_height=_as_length(sill) if sill is not None else None,
+        )
+    else:
+        new_tag = tag or _next_tag(_openings(plan, storey), "WIN-")
+        element = Window(
+            tag=new_tag, host=host, type_ref=type_ref, position=position,
+            sill_height=_as_length(sill) if sill is not None else ft(3),
+        )
+    op = element_add_op(element, tag=new_tag, hint_list="OPENINGS", hint_file=hint_file)
+    # OpeningPosition is authored through its `from_node(...)` helper, not the bare model
+    # constructor (which the plan dialect deliberately doesn't allow, → 10 §dialect).
+    op.fields["position"] = RawExpr(
+        f'from_node("{wall.start_node}", {offset.to_source()})'
+    )
+    return MutationResult(ops=[op])
+
+
+def place_room(
+    plan: PlanModel,
+    storey: str,
+    *,
+    seed: XY,
+    occupancy: str,
+    floor_finish: str | None = None,
+    hint_file: str | None = None,
+    tag: str | None = None,
+) -> MutationResult:
+    """Claim a room by dropping a seed point in an enclosed area (→ 11 §Room, → 21b).
+
+    The clear-face polygon is derived server-side from the wall graph on the next resolve;
+    the macro only authors the seed + occupancy. Added to the storey's ``ROOMS`` list.
+    """
+    try:
+        occ = Occupancy(occupancy)
+    except ValueError as exc:
+        raise MacroError(f"unknown occupancy {occupancy!r}") from exc
+    new_tag = tag or _next_tag(_rooms(plan, storey), "RM-")
+    room = Room(
+        tag=new_tag, seed=pt(_as_length(seed[0]), _as_length(seed[1])), occupancy=occ,
+        floor_finish=floor_finish or None,
+    )
+    op = element_add_op(room, tag=new_tag, hint_list="ROOMS", hint_file=hint_file)
+    return MutationResult(ops=[op])
 
 
 # --- rubber-band stretch -----------------------------------------------------

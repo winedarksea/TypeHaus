@@ -154,3 +154,72 @@ export function wallLength(w: Wall): number {
   const [a, b] = w.axis;
   return Math.hypot(b[0] - a[0], b[1] - a[1]);
 }
+
+// --- Authoring hit-tests (view-only; the server re-derives authoritative geometry). ------
+
+export interface WallHit {
+  wall: Wall;
+  along_m: number; // distance from the a-node along the axis
+  point: Vec2; // the projected point on the axis
+  dist_m: number; // perpendicular distance from `world` to the axis
+}
+
+// Closest wall axis to a world point, clamped to the segment. Used by the opening and
+// dimension tools to resolve which wall a tap landed on without an element onClick.
+export function nearestWallHit(walls: Wall[], world: Vec2): WallHit | null {
+  let best: WallHit | null = null;
+  for (const wall of walls) {
+    const [a, b] = wall.axis;
+    const dx = b[0] - a[0];
+    const dy = b[1] - a[1];
+    const len2 = dx * dx + dy * dy;
+    if (len2 === 0) continue;
+    let t = ((world[0] - a[0]) * dx + (world[1] - a[1]) * dy) / len2;
+    t = Math.max(0, Math.min(1, t));
+    const point: Vec2 = [a[0] + t * dx, a[1] + t * dy];
+    const dist_m = Math.hypot(world[0] - point[0], world[1] - point[1]);
+    if (!best || dist_m < best.dist_m) {
+      best = { wall, along_m: t * Math.sqrt(len2), point, dist_m };
+    }
+  }
+  return best;
+}
+
+// Snap a world point to the nearest existing node within `tol_m`, else to a `grid_m` grid,
+// else leave it free. Returns the snapped point and the node id when a node was hit.
+export interface Snap {
+  point: Vec2;
+  nodeId: string | null;
+}
+
+export function snapWorld(
+  world: Vec2,
+  nodes: Map<string, Node>,
+  tol_m: number,
+  grid_m: number | null,
+): Snap {
+  let bestNode: Node | null = null;
+  let bestDist = tol_m;
+  for (const n of nodes.values()) {
+    const d = Math.hypot(world[0] - n.p[0], world[1] - n.p[1]);
+    if (d <= bestDist) {
+      bestDist = d;
+      bestNode = n;
+    }
+  }
+  if (bestNode) return { point: bestNode.p, nodeId: bestNode.id };
+  if (grid_m && grid_m > 0) {
+    return {
+      point: [Math.round(world[0] / grid_m) * grid_m, Math.round(world[1] / grid_m) * grid_m],
+      nodeId: null,
+    };
+  }
+  return { point: world, nodeId: null };
+}
+
+// Ortho-lock a point to the horizontal/vertical from an anchor (whichever axis is dominant).
+export function orthoLock(anchor: Vec2, p: Vec2): Vec2 {
+  return Math.abs(p[0] - anchor[0]) >= Math.abs(p[1] - anchor[1])
+    ? [p[0], anchor[1]]
+    : [anchor[0], p[1]];
+}

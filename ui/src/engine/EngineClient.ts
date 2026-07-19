@@ -61,12 +61,15 @@ export type EngineArtifact = "ifc" | "glb";
 // geometry math and returns ordinary journaled ops plus the #33 reference remap.
 export type MacroRequest =
   | { macro: "draw_wall"; storey: string; start: [string, string]; end: [string, string]; assembly: string; tag?: string; hint_file?: string }
-  | { macro: "move_nodes"; storey: string; nodes: string[]; dx: string; dy: string }
+  | { macro: "move_nodes"; storey: string; nodes: string[]; dx: number | string; dy: number | string }
   | { macro: "split_wall"; storey: string; wall: string; at: [string, string] }
   | { macro: "heal_walls"; storey: string; node: string }
+  | { macro: "place_opening"; storey: string; host: string; type_ref: string; along: string; is_door: boolean; sill?: string; hint_file?: string }
+  | { macro: "place_room"; storey: string; seed: [string, string]; occupancy: string; floor_finish?: string; hint_file?: string }
   // Library macros (no storey): the assembly-editor clone-and-tweak flow (→ 21b WP2.4d/e).
   | { macro: "duplicate_assembly"; source: string; tag: string }
   | { macro: "blank_assembly"; tag: string }
+  | { macro: "edit_assembly_layers"; tag: string; layers: { name: string; material: string; function: string; thickness: number | string }[] }
   | { macro: "add_material"; material: { tag: string; name: string; r_per_inch?: number; perm_rating?: number; density?: number } };
 
 export interface ReferenceRemap {

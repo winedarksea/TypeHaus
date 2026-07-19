@@ -65,12 +65,35 @@ def _heal_walls(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationR
     return macros.heal_walls(plan, storey, body["node"])
 
 
+def _place_opening(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.place_opening(
+        plan, storey, host=body["host"], type_ref=body["type_ref"], along=body["along"],
+        is_door=bool(body.get("is_door")), sill=body.get("sill"),
+        hint_file=body.get("hint_file"), tag=body.get("tag"),
+    )
+
+
+def _place_room(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.place_room(
+        plan, storey, seed=_xy(body["seed"]), occupancy=body["occupancy"],
+        floor_finish=body.get("floor_finish"), hint_file=body.get("hint_file"),
+        tag=body.get("tag"),
+    )
+
+
 def _duplicate_assembly(plan: PlanModel, _s: str, body: dict[str, Any]) -> MutationResult:
     return assembly_ops.duplicate_assembly(plan, body["source"], body["tag"])
 
 
 def _blank_assembly(plan: PlanModel, _s: str, body: dict[str, Any]) -> MutationResult:
     return assembly_ops.blank_assembly(plan, body["tag"])
+
+
+def _edit_assembly_layers(plan: PlanModel, _s: str, body: dict[str, Any]) -> MutationResult:
+    layers = body.get("layers")
+    if not isinstance(layers, list):
+        raise MacroRequestError("edit_assembly_layers needs a 'layers' list")
+    return assembly_ops.edit_assembly_layers(plan, body["tag"], layers)
 
 
 def _add_material(plan: PlanModel, _s: str, body: dict[str, Any]) -> MutationResult:
@@ -89,10 +112,15 @@ _DISPATCH = {
     "move_nodes": _move_nodes,
     "split_wall": _split_wall,
     "heal_walls": _heal_walls,
+    "place_opening": _place_opening,
+    "place_room": _place_room,
     "duplicate_assembly": _duplicate_assembly,
     "blank_assembly": _blank_assembly,
+    "edit_assembly_layers": _edit_assembly_layers,
     "add_material": _add_material,
 }
 
 # Macros that operate on the project library rather than a storey (no 'storey' required).
-_LIBRARY_MACROS = frozenset({"duplicate_assembly", "blank_assembly", "add_material"})
+_LIBRARY_MACROS = frozenset({
+    "duplicate_assembly", "blank_assembly", "edit_assembly_layers", "add_material",
+})

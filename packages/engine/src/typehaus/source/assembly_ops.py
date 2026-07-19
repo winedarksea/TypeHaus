@@ -15,12 +15,17 @@ stack. No schema change — the model already carries every authored field (→ 
 
 from __future__ import annotations
 
-from typehaus.model.assembly import Assembly
+from typing import Any
+
+from typehaus.model.assembly import Assembly, Layer
+from typehaus.model.enums import LayerFunction
 from typehaus.model.materials import Material
 from typehaus.model.plan import PlanModel
 from typehaus.model.remap import MutationResult
+from typehaus.quantities.length import Length
 from typehaus.source.macros import MacroError
-from typehaus.source.serialize import element_add_op
+from typehaus.source.ops import PatchOp, RawExpr
+from typehaus.source.serialize import element_add_op, value_source
 
 # Project source files the editor writes to (never ``library/``, → 21b feature 7).
 ASSEMBLIES_FILE = "plan/assemblies.py"
@@ -54,6 +59,60 @@ def add_material(plan: PlanModel, material: Material) -> MutationResult:
         raise MacroError(f"material {material.tag!r} already exists")
     op = element_add_op(material, tag=material.tag, hint_list=MATERIALS_LIST,
                         hint_file=ASSEMBLIES_FILE)
+    return MutationResult(ops=[op])
+
+
+def _layer_thickness(raw: Any) -> Length:
+    if isinstance(raw, str):
+        return Length.parse(raw)
+    from typehaus.quantities.length import m
+
+    return m(float(raw))
+
+
+def edit_assembly_layers(
+    plan: PlanModel, tag: str, layers: list[dict[str, Any]]
+) -> MutationResult:
+    """Rewrite a project assembly's layer stack (WP2.4e layer add/remove/reorder/swap).
+
+    The client sends the full ordered layer list — each ``{name, material, function,
+    thickness}`` a plain scalar/authored-unit spec, no source syntax. Framing and control-layer
+    metadata are inherited by layer *name* from the current stack, so bumping a thickness or
+    reordering never silently drops a structural stud layout. Emits one ``update Assembly``
+    op carrying the serialized ``Layer(...)`` tuple, riding the standard journal.
+    """
+    current = plan.library.assembly(tag)
+    if current is None:
+        raise MacroError(f"no assembly {tag!r} to edit")
+    if current.variant_of is not None:
+        raise MacroError(f"{tag!r} is a variant; duplicate it before editing layers")
+    resolved = plan.library.resolve_assembly(tag) or current
+    prior = {ly.name: ly for ly in resolved.layers}
+    built: list[Layer] = []
+    seen: set[str] = set()
+    for spec in layers:
+        try:
+            name = str(spec["name"])
+            material = str(spec["material"])
+            function = LayerFunction(str(spec["function"]))
+        except (KeyError, ValueError) as exc:
+            raise MacroError(f"bad layer spec {spec!r}: {exc}") from exc
+        if name in seen:
+            raise MacroError(f"duplicate layer name {name!r}")
+        seen.add(name)
+        if plan.library.material(material) is None:
+            raise MacroError(f"unknown material {material!r}")
+        base = prior.get(name)
+        built.append(Layer(
+            name=name,
+            material_ref=material,
+            thickness=_layer_thickness(spec["thickness"]),
+            function=function,
+            framing=base.framing if base is not None else None,
+            masonry=base.masonry if base is not None else None,
+            control=base.control if base is not None else frozenset(),
+        ))
+    op = PatchOp("update", "Assembly", tag, {"layers": RawExpr(value_source(tuple(built)))})
     return MutationResult(ops=[op])
 
 

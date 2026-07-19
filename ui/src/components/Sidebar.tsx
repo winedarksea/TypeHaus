@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { findingsFor, useStore } from "../state/store";
 import type { Finding, Model, Wall } from "../model/types";
 import { formatFtIn, wallLength } from "../model/geometry";
@@ -5,14 +6,15 @@ import { SectionCard } from "./SectionCard";
 import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
 import { SpaceDashboard } from "./SpaceDashboard";
 import { RoofDesigner } from "./RoofDesigner";
+import { AssemblyEditor } from "./AssemblyEditor";
 
 // The right-hand inspector: selection details + provenance + inline findings, the
 // assembly section card for a selected wall (→ 21 §Assembly inspector), the assembly
-// picker, and the global findings list. Authoring (the editor mode, WP2.4d/e) attaches
-// here later; this is the read affordance.
+// picker + editor (WP2.4d/e authoring), and the global findings list.
 export function Sidebar() {
   const model = useStore((s) => s.model);
   const selection = useStore((s) => s.selection);
+  const [editingAssemblies, setEditingAssemblies] = useState(false);
 
   return (
     <div className="sidebar">
@@ -21,11 +23,12 @@ export function Sidebar() {
       ) : (
         <div className="muted">Tap an element to inspect it.</div>
       )}
-      {model && <AssemblyPicker model={model} />}
+      {model && <AssemblyPicker model={model} onEdit={() => setEditingAssemblies(true)} />}
       {model && <BuildingScienceDashboard science={model.building_science} />}
       {model && <SpaceDashboard summary={model.space_summary} />}
       {model && <RoofDesigner model={model} />}
       {model && <FindingsPanel findings={model.findings} />}
+      {editingAssemblies && <AssemblyEditor onClose={() => setEditingAssemblies(false)} />}
     </div>
   );
 }
@@ -115,14 +118,26 @@ function SelectionInspector({
 
 function WallInspector({ model, w }: { model: Model; w: Wall }) {
   const select = useStore((s) => s.select);
+  const applyOps = useStore((s) => s.applyOps);
+  const toast = useStore((s) => s.toast);
   const confirmed = w.assembly && w.assembly !== "UNCONFIGURED";
+  const assemblies = model.catalog?.assemblies ?? [];
+  const assignAssembly = async (tag: string) => {
+    const ok = await applyOps([{ op: "update", type: "Wall", tag: w.tag, fields: { assembly: tag } }]);
+    if (ok) toast(`${w.tag} → ${tag}`);
+  };
   return (
     <div>
       <h3>Wall · {w.tag}</h3>
       <div className="kv">
         <span className="k">Assembly</span>
         <span>
-          {w.assembly || "—"}{" "}
+          {assemblies.length > 0 ? (
+            <select value={w.assembly || ""} onChange={(e) => void assignAssembly(e.target.value)}>
+              {!w.assembly && <option value="">—</option>}
+              {assemblies.map((a) => <option key={a.tag} value={a.tag}>{a.tag}</option>)}
+            </select>
+          ) : (w.assembly || "—")}{" "}
           {!confirmed && <span className="badge confirm">confirm</span>}
         </span>
         <span className="k">Length</span>
@@ -162,7 +177,7 @@ function WallInspector({ model, w }: { model: Model; w: Wall }) {
   );
 }
 
-function AssemblyPicker({ model }: { model: Model }) {
+function AssemblyPicker({ model, onEdit }: { model: Model; onEdit: () => void }) {
   const select = useStore((s) => s.select);
   const selection = useStore((s) => s.selection);
   // Group walls by assembly with a computed representative layer count. Live R-value would
@@ -174,7 +189,10 @@ function AssemblyPicker({ model }: { model: Model }) {
   }
   return (
     <div style={{ marginTop: 16 }}>
-      <h3>Assemblies</h3>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h3 style={{ margin: 0 }}>Assemblies</h3>
+        <button className="btn" onClick={onEdit}>Edit</button>
+      </div>
       {[...byAssembly.entries()].map(([name, walls]) => (
         <div
           key={name}

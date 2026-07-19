@@ -28,6 +28,62 @@ def _findings_json(findings: list[Finding] | None) -> list[dict[str, Any]]:
     return [f.model_dump(mode="json") for f in (findings or [])]
 
 
+def _enum_value(value: Any) -> Any:
+    return value.value if hasattr(value, "value") else value
+
+
+def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, Any]:
+    """The authoring palette the UI's placement + assembly tools draw from (→ 21b).
+
+    Everything the editor can *add* — window/door product types, the occupancy vocabulary,
+    every library + project assembly with its resolved layer stack, and the material list —
+    surfaced from the plan's :class:`~typehaus.model.plan.Library` so the client never has to
+    hard-code a catalog. ``editable`` flags assemblies authored in the house's ``plan/``
+    (provenance-tracked, so a layer edit can write back) versus shared ``library/`` presets
+    the editor must duplicate before tweaking.
+    """
+    from typehaus.model.enums import Occupancy
+
+    lib = model.plan.library
+    assemblies: list[dict[str, Any]] = []
+    for asm in lib.assemblies:
+        resolved = lib.resolve_assembly(asm.tag)
+        if resolved is None:
+            continue
+        prov = _provenance(provenance, asm.tag)
+        assemblies.append({
+            "tag": asm.tag,
+            "editable": prov is not None,
+            "provenance": prov,
+            "stc": resolved.stc,
+            "variant_of": asm.variant_of,
+            "layers": [
+                {"name": ly.name, "material": ly.material_ref,
+                 "function": _enum_value(ly.function), "thickness_m": ly.thickness.meters}
+                for ly in resolved.layers
+            ],
+        })
+    return {
+        "window_types": [
+            {"tag": wt.tag, "width_m": wt.width.meters, "height_m": wt.height.meters,
+             "operation": wt.operation}
+            for wt in lib.window_types
+        ],
+        "door_types": [
+            {"tag": dt.tag, "width_m": dt.width.meters, "height_m": dt.height.meters,
+             "operation": dt.operation, "exterior": dt.exterior}
+            for dt in lib.door_types
+        ],
+        "occupancies": [o.value for o in Occupancy],
+        "materials": [
+            {"tag": mat.tag, "name": mat.name, "r_per_inch": mat.r_per_inch,
+             "perm_rating": mat.perm_rating, "density": mat.density}
+            for mat in lib.materials
+        ],
+        "assemblies": assemblies,
+    }
+
+
 def model_to_dict(
     model: ResolvedModel,
     *,
@@ -114,6 +170,17 @@ def model_to_dict(
              "width_m": o.width_m, "height_m": o.height_m, "sill_m": o.sill_m,
              "center_along_m": o.center_along_m}
             for o in model.openings
+        ],
+        # Authored plan nodes: the editor addresses stretch / heal / draw-snap by node *tag*
+        # (uids are minted, positions round-trip), so the wall-graph vertices ride along with
+        # their tag + storey. Positions are the same project-north SI metres as wall axes.
+        "nodes": [
+            {"tag": node.tag, "storey": storey.tag,
+             "x_m": node.position.xy_m[0], "y_m": node.position.xy_m[1],
+             "open_end": node.open_end, "provenance": _provenance(provenance, node.tag)}
+            for storey in model.plan.storeys
+            for node in model.plan.storey_elements(storey.tag)
+            if node.element_kind == "Node"
         ],
         "alarms": [
             {"uid": alarm.uid, "tag": alarm.tag, "storey": storey.tag,
@@ -226,6 +293,7 @@ def model_to_dict(
             for e in model.stack_edges
         ],
         "building_science": building_science,
+        "catalog": _catalog(model, provenance),
     }
 
 
