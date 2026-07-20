@@ -49,6 +49,13 @@ type Placement =
   | { kind: "opening"; screen: Vec2; wall: Wall; along_m: number }
   | { kind: "room"; screen: Vec2; seed: Vec2 };
 
+// A read-only wall summary kept local to the canvas. The inspector remains the source for
+// edits; this card only makes the essential assembly information available at the click.
+interface WallAssemblyPopup {
+  wallUid: string;
+  screen: Vec2;
+}
+
 const TAP_PX = 6; // pointer travel under this on up = a tap, not a pan
 const HIT_PX = 16; // wall pick tolerance in screen px
 
@@ -89,6 +96,7 @@ export function Canvas2D() {
   // the drag it belongs to and shadows the committed model.
   const [previewGeom, setPreviewGeom] = useState<PreviewGeometry | null>(null);
   const [placement, setPlacement] = useState<Placement | null>(null);
+  const [wallAssemblyPopup, setWallAssemblyPopup] = useState<WallAssemblyPopup | null>(null);
   const [dimWall, setDimWall] = useState<Wall | null>(null);
   const [drawAssembly, setDrawAssembly] = useState<string>("");
   const [activeService, setActiveService] = useState<string>("");
@@ -130,6 +138,17 @@ export function Canvas2D() {
     if (useStore.getState().tool !== "select") return;
     setPending({ opening: o, field: "position", initial: formatFtIn(o.center_along_m) });
   }, []);
+  const selectWallWithPopup = useCallback((wall: Wall, event: React.MouseEvent<SVGGElement>) => {
+    const s = useStore.getState();
+    if (s.tool !== "select") return;
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    s.select("wall", wall.uid);
+    setWallAssemblyPopup({
+      wallUid: wall.uid,
+      screen: [event.clientX - rect.left, event.clientY - rect.top],
+    });
+  }, []);
 
   const nodes = useMemo(() => deriveNodes(model.walls), [model.walls]);
   const openEnds = useMemo(() => openEndKeys(model), [model]);
@@ -165,6 +184,19 @@ export function Canvas2D() {
     (!activeStorey || fixture.storey === activeStorey) &&
     (!activeService || fixture.needs.includes(activeService)));
   const activeUnderlay = (model.underlays ?? []).find((underlay) => underlay.storey === activeStorey) ?? null;
+  const popupWall = useMemo(
+    () => wallAssemblyPopup ? model.walls.find((wall) => wall.uid === wallAssemblyPopup.wallUid) ?? null : null,
+    [model.walls, wallAssemblyPopup],
+  );
+
+  // A popup is meaningful only while its wall remains selected. This also covers selection
+  // changes initiated by the sidebar rather than by the SVG itself.
+  useEffect(() => {
+    if (!wallAssemblyPopup) return;
+    if (selection.kind !== "wall" || selection.uid !== wallAssemblyPopup.wallUid || !popupWall) {
+      setWallAssemblyPopup(null);
+    }
+  }, [popupWall, selection, wallAssemblyPopup]);
 
   // The authored model is in metres, while screen dimensions are only known after the
   // SVG enters its pane.  Fit once per storey so a fresh single-pane view starts with
@@ -327,6 +359,7 @@ export function Canvas2D() {
       case "select": {
         // Element onClick handles selection; a bare-canvas tap clears it.
         select(null, null);
+        setWallAssemblyPopup(null);
         break;
       }
       case "wall": {
@@ -439,7 +472,7 @@ export function Canvas2D() {
       const target = e.target as HTMLElement;
       if (target && (target.tagName === "INPUT" || target.tagName === "SELECT" || target.tagName === "TEXTAREA")) return;
       if (e.key === "Escape") {
-        setDraft(null); setPlacement(null); setDimWall(null); setNodeDrag(null); setPending(null);
+        setDraft(null); setPlacement(null); setWallAssemblyPopup(null); setDimWall(null); setNodeDrag(null); setPending(null);
         setPreviewGeom(null);
         if (calibrationMode) { setCalibrationMode(false); setCalibrationPoints([]); }
       } else if ((e.key === "Delete" || e.key === "Backspace") && selection.uid && !offline) {
@@ -566,7 +599,7 @@ export function Canvas2D() {
               selected={selection.uid === w.uid}
               hovered={hoverUid === w.uid}
               showFraming={showFraming}
-              onSelect={selectEl}
+              onSelect={selectWallWithPopup}
               onHover={hoverEl}
             />
           );
@@ -733,6 +766,14 @@ export function Canvas2D() {
           runMacro={runMacro}
           selectByTag={selectByTag}
           onClose={() => setPlacement(null)}
+        />
+      )}
+      {wallAssemblyPopup && popupWall && (
+        <WallAssemblyPopupCard
+          wall={popupWall}
+          screen={wallAssemblyPopup.screen}
+          viewport={svgRef.current?.getBoundingClientRect() ?? null}
+          onClose={() => setWallAssemblyPopup(null)}
         />
       )}
       <SunIndicator model={model} />
@@ -934,13 +975,13 @@ const WallShape = memo(function WallShape({ w, project, selected, hovered, showF
   selected: boolean;
   hovered: boolean;
   showFraming: boolean;
-  onSelect: (kind: Selection["kind"], uid: string) => void;
+  onSelect: (wall: Wall, event: React.MouseEvent<SVGGElement>) => void;
   onHover: (uid: string | null) => void;
 }) {
   const poly = (pts: Vec2[]) => pts.map(project).map((p) => p.join(",")).join(" ");
   const stroke = selected ? NORDIC_ACCENT : hovered ? NORDIC_INK : NORDIC_LINE;
   return (
-    <g onClick={() => onSelect("wall", w.uid)}
+    <g onClick={(event) => onSelect(w, event)}
       onPointerEnter={() => onHover(w.uid)} onPointerLeave={() => onHover(null)}
       style={{ cursor: "pointer" }}>
       {w.layers.map((ly, i) =>
@@ -961,6 +1002,47 @@ const WallShape = memo(function WallShape({ w, project, selected, hovered, showF
     </g>
   );
 });
+
+function WallAssemblyPopupCard({ wall, screen, viewport, onClose }: {
+  wall: Wall;
+  screen: Vec2;
+  viewport: DOMRect | null;
+  onClose: () => void;
+}) {
+  const totalThickness = wall.layers.reduce((sum, layer) => sum + layer.thickness_m, 0);
+  // Keep the card in the pane even when the click is close to an edge. The CSS height cap
+  // makes this conservative vertical allowance work for long assemblies on small screens.
+  const left = Math.max(12, Math.min(screen[0] + 12, Math.max(12, (viewport?.width ?? 0) - 292)));
+  const top = Math.max(12, Math.min(screen[1] + 12, Math.max(12, (viewport?.height ?? 0) - 372)));
+
+  return (
+    <aside className="wall-assembly-popup" style={{ left, top }} aria-label={`${wall.tag} wall assembly`}>
+      <div className="wall-assembly-popup-header">
+        <div>
+          <div className="wall-assembly-popup-title">Wall · {wall.tag}</div>
+          <div className="wall-assembly-popup-assembly">{wall.assembly || "UNCONFIGURED"}</div>
+        </div>
+        <button className="wall-assembly-popup-close" onClick={onClose} aria-label="Close wall assembly popup">×</button>
+      </div>
+      <div className="wall-assembly-popup-dimensions">
+        <span><b>Length</b>{formatFtIn(wallLength(wall))}</span>
+        <span><b>Height</b>{formatFtIn(wall.z1_m - wall.z0_m)}</span>
+        <span><b>Thickness</b>{formatFtIn(totalThickness)}</span>
+      </div>
+      <div className="wall-assembly-popup-layers">
+        <div className="wall-assembly-popup-layer-heading">Resolved layers</div>
+        {wall.layers.length > 0 ? wall.layers.map((layer, index) => (
+          <div className="layer-row" key={`${layer.name}-${index}`}>
+            <span className="swatch" style={{ background: materialColor(layer.material) }} />
+            <span className="wall-assembly-popup-layer-name">{layer.name}</span>
+            <span>{formatFtIn(layer.thickness_m)}</span>
+            <span className="wall-assembly-popup-layer-material">{layer.material}</span>
+          </div>
+        )) : <div className="muted">No resolved layers.</div>}
+      </div>
+    </aside>
+  );
+}
 
 const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selected, onSelect, onEdit }: {
   o: Opening;
