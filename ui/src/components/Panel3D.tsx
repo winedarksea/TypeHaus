@@ -293,9 +293,52 @@ function buildFurniture(
   parent.add(mesh);
 }
 
+// A ToRoof wall's raked top elevation at a plan point, interpolated along the wall axis
+// (mirrors emit/draw/section.py::_wall_top_at_cut). Falls back to the flat z1_m top for
+// ordinary rectangular walls (top_z0_m/top_z1_m both null).
+function rakedTopAt(w: Wall, x: number, y: number): number {
+  if (w.top_z0_m == null && w.top_z1_m == null) return w.z1_m;
+  const start = w.top_z0_m ?? w.z1_m;
+  const end = w.top_z1_m ?? w.z1_m;
+  const [[x0, y0], [x1, y1]] = w.axis;
+  const dx = x1 - x0, dy = y1 - y0;
+  const len2 = dx * dx + dy * dy;
+  const t = len2 < 1e-9 ? 0 : Math.min(1, Math.max(0, ((x - x0) * dx + (y - y0) * dy) / len2));
+  return start + (end - start) * t;
+}
+
+// Extrude a layer polygon between z0 and a per-vertex raked top (rather than a flat height) —
+// a wall under a sloped roof (gable end, ToRoof) must stop at its actual rake, or its full
+// bounding-height rectangle engulfs the roof geometry and hides it from outside (#WP-roof-hide).
+function buildRakedLayerGeometry(
+  polygon: [number, number][], z0: number, w: Wall, cx: number, cz: number,
+): THREE.BufferGeometry {
+  const n = polygon.length;
+  const bottom = polygon.map(([x, y]) => new THREE.Vector3(x - cx, z0, y - cz));
+  const top = polygon.map(([x, y]) => new THREE.Vector3(x - cx, rakedTopAt(w, x, y), y - cz));
+  const positions: number[] = [];
+  const pushTri = (a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3) => {
+    positions.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+  };
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    pushTri(bottom[i], bottom[j], top[j]);
+    pushTri(bottom[i], top[j], top[i]);
+  }
+  for (let i = 1; i < n - 1; i++) {
+    pushTri(bottom[0], bottom[i + 1], bottom[i]); // bottom cap (down-facing)
+    pushTri(top[0], top[i], top[i + 1]); // top cap (up-facing)
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geo.computeVertexNormals();
+  return geo;
+}
+
 // Build one wall: an extruded prism per layer polygon (→ "walls" trade) + its solid framing
 // members (→ "framing" trade, WP8). World plan (x,y) maps to three (x, z); height runs
-// along +Y. Centered on (cx,cz).
+// along +Y. Centered on (cx,cz). Raked (ToRoof) walls extrude to their actual sloped top,
+// not the flat bounding height, so the roof they carry stays visible from outside.
 function buildWall(
   tradeGroups: Record<Trade, THREE.Group>,
   w: Wall,
@@ -305,20 +348,26 @@ function buildWall(
   picks: THREE.Mesh[],
   byUid: Map<string, THREE.Material[]>,
 ) {
+  const raked = w.top_z0_m != null || w.top_z1_m != null;
   const h = Math.max(0.01, w.z1_m - w.z0_m);
   const mats: THREE.Material[] = [];
   for (const ly of w.layers) {
     if (ly.polygon.length < 3) continue;
-    const shape = new THREE.Shape();
-    ly.polygon.forEach((p, i) => {
-      const x = p[0] - cx;
-      const y = p[1] - cz;
-      if (i === 0) shape.moveTo(x, y);
-      else shape.lineTo(x, y);
-    });
-    const geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false });
-    geo.rotateX(-Math.PI / 2); // shape XY plane → ground XZ, extrude → +Y
-    geo.translate(0, w.z0_m, 0);
+    let geo: THREE.BufferGeometry;
+    if (raked) {
+      geo = buildRakedLayerGeometry(ly.polygon, w.z0_m, w, cx, cz);
+    } else {
+      const shape = new THREE.Shape();
+      ly.polygon.forEach((p, i) => {
+        const x = p[0] - cx;
+        const y = p[1] - cz;
+        if (i === 0) shape.moveTo(x, y);
+        else shape.lineTo(x, y);
+      });
+      geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false });
+      geo.rotateX(-Math.PI / 2); // shape XY plane → ground XZ, extrude → +Y
+      geo.translate(0, w.z0_m, 0);
+    }
     const mat = new THREE.MeshStandardMaterial({
       color: new THREE.Color(materialColor(ly.material)),
       roughness: mode === "nordic" ? 0.85 : 1,

@@ -3,11 +3,6 @@
 * UI contractor focused view toggles (ie concrete, framing, plumbing)
 * bypass libcst entirely for the mutation path for fully offline PWA (high risk)
 
-/goal implement m3 of the plan. Note we've also added images of the floorplan for this design in @catlin_floorplan/ (JPG, PNG, SVG, DXF, all should reflect the same). These drawings are "close" but not quite perfectly in alignment on all dimensions. A reminder that the sunken garden / porch / balcony are all the same concrete arched structure that is right next to the house but freestanding, and the garage is also freestanding (porch / breezeway to it mounted on freestanding 6x6 posts) The main determinant of the outer dimensions was clear framing at 16" oc spacing (which should line up, structural studs, standing seam siding panels, i-joists for floors). Because we are going with exterior insulation, we don't need to pack insulation as critically into the corner, so a three stud or four stud corner (focused on high strength) is what we prefer. Note that for smaller windows, we prefer to align them so they evenly fall between the studs, and they can be resized slightly to fit the stud arrangment better:
-Max (N-2) 14" window without breaking stud line (14" is tight but doable)
-Max (N*2 - 6) 30" (non load bearing wall, one stud broken)
-Max (N* 2 - 9) 27" (load bearing, jack studs added)
-
 ## Remaining Work
 Still missing for full M2:
 variants/compare, full takeoff/BOM, and Playwright acceptance tests.
@@ -22,3 +17,7 @@ Need to be able to cleanly turn parts on/off in the 2d and 3d views, either by t
 
 IFC openings (WP7 follow-ups): glTF core-LOD opening cutouts (windows/doors currently emit voids + fillings only in IFC, not the glTF core mesh); shared IfcWindowType/IfcDoorType so repeated openings reference one type rather than per-instance property sets.
 Transition details (11b follow-ups): birdsmouth seat-cut so the eave rafter reads as a notched member (v1 draws a straight raked bar); gutter/flashing profiles as detail-component symbols; I-joist flange dashes; anchor-relative annotation drag→PatchOp editor (v1 detail viewer is read-only).
+
+Attic level stairs have a bug with their winders. This was due to incorrectly asking for 2 winders, when really it should have been "as many as needed to get around 90 degrees" (probably 3). The current two trends are also incorrectly angled opposed to each other, another part of the bug.
+
+Roof joists are badly angled

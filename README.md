@@ -27,6 +27,10 @@ haus import furniture chair.glb houses/catlin --room RM-M-LIVING --at-m 7.0,4.0
 haus explain HOUSE_WALL_2X6_WITH_ZIPR houses/starter --card   # assembly section card SVG
 haus explain transitions houses/starter   # derived boundary conditions
 ```
+for dev (not pip installed) run first:
+```bash
+alias haus='PYTHONPATH=packages/engine/src python3 -m typehaus.cli.app'
+```
 
 ## UI Start
 Terminal 1
