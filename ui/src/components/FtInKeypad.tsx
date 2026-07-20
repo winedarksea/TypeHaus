@@ -52,7 +52,7 @@ export function FtInKeypad({
         </button>
         <button
           className="key wide"
-          style={{ background: valid ? "var(--accent)" : "#eee", color: valid ? "#fff" : "#999" }}
+          style={{ background: valid ? "var(--accent)" : "var(--hover)", color: valid ? "var(--canvas-white)" : "var(--line)" }}
           disabled={!valid}
           onClick={() => valid && onCommit(meters!, text)}
         >

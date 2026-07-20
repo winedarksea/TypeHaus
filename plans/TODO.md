@@ -30,8 +30,6 @@ Some interior walls seem to be shown with a pink layer (insulation?), it is uncl
 
 Catlin house stairs are supposed to be u-shaped from basement to main floor and main floor to second floor. U-shape stairs have a two landings in the split (separated by a single step themselves). This type of stair should be properly part of the stair designer (as should the right angle with winder which the attic stairs have, but which seems might be partly hacked on the side)
 
-Clicking on a wall in the 2d view should show a popup with the wall assembly type and dimensions
-
 Most of the corners don't seem to show proper 3 stud framing (it's defined in code, but not present in most corners).
 
 Some of the windows are too tall, headers going above the height of the ceiling (two in the garage stand out as examples, although it is hard to tell door vs window because the 2d floor plan does not show doors or windows elegantly)

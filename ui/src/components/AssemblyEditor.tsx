@@ -162,7 +162,7 @@ export function AssemblyEditor({ onClose }: { onClose: () => void }) {
                   <button className="btn" onClick={() => setShowNewMaterial((v) => !v)}>+ Material</button>
                   <div style={{ flex: 1 }} />
                   <button className="btn" disabled={busy || !dirty || draft.length === 0}
-                    style={{ background: dirty ? "var(--accent)" : undefined, color: dirty ? "#fff" : undefined }}
+                    style={{ background: dirty ? "var(--accent)" : undefined, color: dirty ? "var(--canvas-white)" : undefined }}
                     onClick={() => void save()}>
                     Save
                   </button>

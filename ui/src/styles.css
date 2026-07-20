@@ -8,11 +8,97 @@
   --line: #5b574f;
   --accent: #6d8a96;
   --panel: #fbfaf7;
+  --raised: #ffffff;
   --panel-line: #ddd7cb;
   --error: #c0392b;
   --warn: #d08a1d;
   --ok: #4a7a52;
+  --error-bg: #fdecea;
+  --warn-bg: #fff5e6;
+  --code-bg: #eef3f5;
+  --hover: #eeeae1;
+  --overlay: rgba(0, 0, 0, 0.25);
+  --canvas-dim: rgba(245, 243, 237, 0.74);
+  --canvas-white: #fff;
+  --canvas-wood: #704c34;
+  --canvas-wood-soft: rgba(112, 76, 52, 0.14);
+  --canvas-selection: rgba(109, 138, 150, 0.18);
+  --canvas-grid: #e6e1d6;
+  --detail-ink: #333;
+  --detail-line: #555;
+  --detail-muted: #777;
+  --detail-symbol: #888;
+  --detail-batt: #c9a94f;
+  --detail-rigid: #7aa7c7;
+  --detail-osb: #b98a4f;
+  --detail-lumber: #9c7b45;
+  --detail-concrete: #9aa0a6;
+  --detail-foam: #f2d9b0;
+  --detail-foam-dot: #e0b878;
+  --material-lumber: #d8c9a6;
+  --material-osb: #c9a86a;
+  --material-rigid: #e8d64f;
+  --material-batt: #f3c6d0;
+  --material-gypsum: #efeae2;
+  --material-membrane: #4a4a4a;
+  --material-siding: #b8bcc0;
+  --material-metal: #6b7076;
+  --material-concrete: #a9a9a9;
+  --material-fallback: #cfc9bd;
+  --control-air: #c0392b;
+  --control-water: #2980b9;
+  --control-vapor: #8e44ad;
+  --control-thermal: #e67e22;
   --hit: 44px;
+}
+
+:root[data-theme="dark"] {
+  --bg: #2E3440;
+  --ink: #ECEFF4;
+  --line: #D8DEE9;
+  --accent: #88C0D0;
+  --panel: #3B4252;
+  --raised: #434C5E;
+  --panel-line: #4C566A;
+  --error: #BF616A;
+  --warn: #EBCB8B;
+  --ok: #A3BE8C;
+  --error-bg: #4a2d36;
+  --warn-bg: #51472e;
+  --code-bg: #344957;
+  --hover: #4C566A;
+  --overlay: rgba(0, 0, 0, 0.5);
+  --canvas-dim: rgba(46, 52, 64, 0.78);
+  --canvas-white: #ECEFF4;
+  --canvas-wood: #D6B06F;
+  --canvas-wood-soft: rgba(214, 176, 111, 0.18);
+  --canvas-selection: rgba(136, 192, 208, 0.25);
+  --canvas-grid: #4C566A;
+  --detail-ink: #ECEFF4;
+  --detail-line: #D8DEE9;
+  --detail-muted: #BFC8D5;
+  --detail-symbol: #AEB8C6;
+  --detail-batt: #EBCB8B;
+  --detail-rigid: #88C0D0;
+  --detail-osb: #D6B06F;
+  --detail-lumber: #D6B06F;
+  --detail-concrete: #BFC8D5;
+  --detail-foam: #D6B06F;
+  --detail-foam-dot: #EBCB8B;
+  --material-lumber: #D6B06F;
+  --material-osb: #D09A57;
+  --material-rigid: #EBCB8B;
+  --material-batt: #D9A4B2;
+  --material-gypsum: #D8DEE9;
+  --material-membrane: #BFC8D5;
+  --material-siding: #AEB8C6;
+  --material-metal: #9AA8BA;
+  --material-concrete: #B0B8C4;
+  --material-fallback: #C4BDAE;
+  --control-air: #BF616A;
+  --control-water: #88C0D0;
+  --control-vapor: #B48EAD;
+  --control-thermal: #EBCB8B;
 }
 
 * {
@@ -34,6 +120,31 @@ body {
   -webkit-user-select: none;
   user-select: none;
   overflow: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: var(--ink);
+}
+
+input,
+select,
+textarea {
+  background: var(--raised);
+  border: 1px solid var(--panel-line);
+  border-radius: 4px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .app {
@@ -107,8 +218,18 @@ body {
 .tool-btn.active,
 .seg-btn.active {
   background: var(--accent);
-  color: #fff;
+  color: var(--canvas-white);
   border-color: var(--accent);
+}
+
+.theme-selector {
+  display: flex;
+  gap: 2px;
+}
+
+.theme-selector .seg-btn {
+  min-width: auto;
+  padding: 0 8px;
 }
 
 .btn:active,
@@ -198,7 +319,7 @@ body {
   position: absolute;
   bottom: 12px;
   left: 12px;
-  background: rgba(251, 250, 247, 0.92);
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
   border: 1px solid var(--panel-line);
   border-radius: 8px;
   padding: 8px 10px;
@@ -221,7 +342,7 @@ body {
   max-height: min(360px, calc(100% - 24px));
   overflow-y: auto;
   padding: 10px;
-  background: rgba(251, 250, 247, 0.98);
+  background: color-mix(in srgb, var(--panel) 98%, transparent);
   border: 1px solid var(--panel-line);
   border-radius: 8px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
@@ -260,7 +381,7 @@ body {
 }
 
 .wall-assembly-popup-close:hover {
-  background: #eeeae1;
+  background: var(--hover);
 }
 
 .wall-assembly-popup-dimensions {
@@ -315,7 +436,7 @@ body {
   top: 8px;
   left: 50%;
   transform: translateX(-50%);
-  background: #fdecea;
+  background: var(--error-bg);
   border: 1px solid var(--error);
   color: var(--error);
   border-radius: 8px;
@@ -332,17 +453,17 @@ body {
   padding: 1px 6px;
   border-radius: 6px;
   border: 1px solid var(--panel-line);
-  background: #fff;
+  background: var(--raised);
 }
 
 .badge.confirm {
-  background: #fff5e6;
+  background: var(--warn-bg);
   border-color: var(--warn);
   color: var(--warn);
 }
 
 .badge.code {
-  background: #eef3f5;
+  background: var(--code-bg);
   border-color: var(--accent);
   color: var(--accent);
 }
@@ -355,7 +476,7 @@ body {
   padding: 2px 8px;
   margin-left: 8px;
   border-radius: 6px;
-  color: #fff;
+  color: var(--canvas-white);
   background: var(--accent);
 }
 
@@ -365,7 +486,7 @@ body {
   border-radius: 6px;
   margin-bottom: 6px;
   border-left: 3px solid var(--line);
-  background: #fff;
+  background: var(--raised);
   cursor: pointer;
 }
 
@@ -400,7 +521,7 @@ body {
 .keypad {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--overlay);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -423,7 +544,7 @@ body {
   font-variant-numeric: tabular-nums;
   text-align: right;
   padding: 8px 12px;
-  background: #fff;
+  background: var(--raised);
   border: 1px solid var(--panel-line);
   border-radius: 8px;
 }
@@ -432,7 +553,7 @@ body {
   min-height: 52px;
   font-size: 18px;
   border: 1px solid var(--panel-line);
-  background: #fff;
+  background: var(--raised);
   border-radius: 8px;
   cursor: pointer;
 }
@@ -468,7 +589,7 @@ body {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -531,7 +652,7 @@ body {
 .section-card {
   border: 1px solid var(--panel-line);
   border-radius: 8px;
-  background: #fff;
+  background: var(--raised);
   padding: 8px;
 }
 
@@ -550,7 +671,7 @@ body {
   width: 14px;
   height: 14px;
   border-radius: 3px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--panel-line);
   flex: 0 0 auto;
 }
 

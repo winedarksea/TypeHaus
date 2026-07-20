@@ -59,7 +59,7 @@ export function DetailViewer({ onClose }: { onClose: () => void }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" style={{ width: "90vw", height: "85vh", display: "flex" }} onClick={(e) => e.stopPropagation()}>
-        <div style={{ width: 260, overflowY: "auto", borderRight: "1px solid var(--border, #ccc)", paddingRight: 8 }}>
+        <div style={{ width: 260, overflowY: "auto", borderRight: "1px solid var(--panel-line)", paddingRight: 8 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h3 style={{ margin: 0 }}>Details</h3>
             <button className="btn" onClick={onClose}>Close</button>
@@ -100,7 +100,7 @@ export function DetailViewer({ onClose }: { onClose: () => void }) {
 
 function NotesPanel({ payload }: { payload: DetailPayload }) {
   return (
-    <div style={{ maxHeight: 160, overflowY: "auto", borderTop: "1px solid var(--border, #ccc)", paddingTop: 6 }}>
+    <div style={{ maxHeight: 160, overflowY: "auto", borderTop: "1px solid var(--panel-line)", paddingTop: 6 }}>
       {payload.notes && <div className="muted" style={{ fontSize: 12 }}>Notes: {payload.notes}</div>}
       {payload.annotations.length > 0 ? (
         payload.annotations.map((a, i) => (

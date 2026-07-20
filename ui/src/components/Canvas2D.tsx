@@ -556,7 +556,7 @@ export function Canvas2D() {
       >
         <defs>
           <marker id="stair-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#704c34" />
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--canvas-wood)" />
           </marker>
         </defs>
         <BackgroundGrid view={view} />
@@ -576,8 +576,8 @@ export function Canvas2D() {
         {calibrationPoints.map((point, index) => {
           const [x, y] = project(point);
           return <g key={`calibration-${index}`} pointerEvents="none">
-            <circle cx={x} cy={y} r={6} fill="#c55842" />
-            <text x={x + 8} y={y - 8} fontSize={11} fill="#9a321f">{index + 1}</text>
+            <circle cx={x} cy={y} r={6} fill="var(--error)" />
+            <text x={x + 8} y={y - 8} fontSize={11} fill="var(--error)">{index + 1}</text>
           </g>;
         })}
         {/* rooms first (tinted fills, behind walls) — a live drag's preview cascades into
@@ -591,7 +591,7 @@ export function Canvas2D() {
               <polygon
                 key={r.uid}
                 points={clearFace.map(project).map((p) => p.join(",")).join(" ")}
-                fill={selection.uid === r.uid ? "rgba(109,138,150,0.28)" : "rgba(109,138,150,0.12)"}
+                fill="var(--canvas-selection)"
                 stroke="none"
                 onClick={() => tool === "select" && select("room", r.uid)}
               />
@@ -650,8 +650,8 @@ export function Canvas2D() {
             return (
               <g key={furniture.uid} opacity={0.9} pointerEvents="none">
                 <rect x={x - width / 2} y={y - depth / 2} width={width} height={depth}
-                  fill="rgba(112,76,52,0.14)" stroke="#704c34" strokeWidth={1.2} />
-                <text x={x} y={y + 3} textAnchor="middle" fontSize={9} fill="#553522">
+                  fill="var(--canvas-wood-soft)" stroke="var(--canvas-wood)" strokeWidth={1.2} />
+                <text x={x} y={y + 3} textAnchor="middle" fontSize={9} fill="var(--canvas-wood)">
                   {furniture.type.replace("FURN-", "")}
                 </text>
               </g>
@@ -669,7 +669,7 @@ export function Canvas2D() {
             <g key={n.id}>
               <circle
                 cx={x} cy={y} r={open ? 7 : healable ? 6 : 3.5}
-                fill={open ? "#c0392b" : healable ? NORDIC_ACCENT : NORDIC_LINE}
+                fill={open ? "var(--error)" : healable ? NORDIC_ACCENT : NORDIC_LINE}
                 opacity={open ? 0.9 : healable ? 0.85 : 0.5}
                 style={{ cursor: healable ? "pointer" : "default" }}
                 onClick={healable && tag ? () => void healNode(tag) : undefined}
@@ -722,10 +722,10 @@ export function Canvas2D() {
               <line x1={sx} y1={sy} x2={ex} y2={ey} stroke={NORDIC_ACCENT} strokeWidth={2}
                 strokeDasharray="6 4" />
               <circle cx={sx} cy={sy} r={5} fill={NORDIC_ACCENT} />
-              <circle cx={ex} cy={ey} r={5} fill="#fff" stroke={NORDIC_ACCENT} strokeWidth={2} />
+              <circle cx={ex} cy={ey} r={5} fill="var(--canvas-white)" stroke={NORDIC_ACCENT} strokeWidth={2} />
               {rubber && rubber.len > 0.01 && (
                 <text x={mx} y={my - 8} fill={NORDIC_INK} fontSize={12} textAnchor="middle"
-                  style={{ paintOrder: "stroke" }} stroke="#fff" strokeWidth={3}>
+                  style={{ paintOrder: "stroke" }} stroke="var(--canvas-white)" strokeWidth={3}>
                   {formatFtIn(rubber.len)}
                 </text>
               )}
@@ -738,7 +738,7 @@ export function Canvas2D() {
           if (!snap.nodeId && !gridM) return null;
           const [x, y] = project(snap.point);
           return <circle cx={x} cy={y} r={snap.nodeId ? 7 : 4} fill="none"
-            stroke={snap.nodeId ? "#c0392b" : NORDIC_ACCENT} strokeWidth={1.5} pointerEvents="none" />;
+            stroke={snap.nodeId ? "var(--error)" : NORDIC_ACCENT} strokeWidth={1.5} pointerEvents="none" />;
         })()}
         {/* dimension line for selected wall */}
         {selection.kind === "wall" && (() => {
@@ -747,7 +747,7 @@ export function Canvas2D() {
           return <WallDimension w={w} project={project} />;
         })()}
         {activeService && <>
-          <rect width="100%" height="100%" fill="rgba(245,243,237,0.74)" pointerEvents="none" />
+          <rect width="100%" height="100%" fill="var(--canvas-dim)" pointerEvents="none" />
           {visibleFixtures.map((fixture) => <FixtureFootprint key={`service-${fixture.uid}`}
             fixture={fixture} project={project} scale={view.scale} dimmed={false} />)}
         </>}
@@ -866,7 +866,7 @@ function NodeHandle({ world, project, onStart, onMove, onEnd }: {
   const [x, y] = project(world);
   return (
     <circle
-      cx={x} cy={y} r={7} fill="#fff" stroke={NORDIC_ACCENT} strokeWidth={2.5}
+      cx={x} cy={y} r={7} fill="var(--canvas-white)" stroke={NORDIC_ACCENT} strokeWidth={2.5}
       style={{ cursor: "grab" }}
       onPointerDown={(e) => {
         e.stopPropagation();
@@ -930,8 +930,8 @@ function FixtureFootprint({ fixture, project, scale, dimmed }: {
   const depth = fixture.footprint_m[1] * scale;
   return <g opacity={dimmed ? 0.35 : 0.9} pointerEvents="none">
     <rect x={x - width / 2} y={y - depth / 2} width={width} height={depth}
-      fill="rgba(77,112,128,0.12)" stroke="#4d7080" strokeWidth={1.2} />
-    <text x={x} y={y + 3} textAnchor="middle" fontSize={9} fill="#33505c">
+      fill="var(--canvas-selection)" stroke="var(--accent)" strokeWidth={1.2} />
+    <text x={x} y={y + 3} textAnchor="middle" fontSize={9} fill="var(--ink)">
       {fixture.type.replace("FX-", "")}
     </text>
   </g>;
@@ -953,7 +953,7 @@ function ClearanceOverlays({ model, storey, project, scale }: {
     const width = (item.footprint_m[0] + left + right) * scale;
     const depth = (item.footprint_m[1] + front + back) * scale;
     return <rect key={`clearance-${item.uid}`} x={x - width / 2} y={y - depth / 2}
-      width={width} height={depth} fill="rgba(197,88,66,0.10)" stroke="#c55842"
+      width={width} height={depth} fill="var(--canvas-wood-soft)" stroke="var(--error)"
       strokeDasharray="4 3" strokeWidth={1} />;
   })}</g>;
 }
@@ -972,7 +972,7 @@ function BackgroundGrid({ view }: { view: { scale: number; tx: number; ty: numbe
       <defs>
         <pattern id={id} width={size} height={size} patternUnits="userSpaceOnUse"
           patternTransform={`translate(${view.tx % size},${view.ty % size})`}>
-          <path d={`M ${size} 0 L 0 0 0 ${size}`} fill="none" stroke="#e6e1d6" strokeWidth={1} />
+          <path d={`M ${size} 0 L 0 0 0 ${size}`} fill="none" stroke="var(--canvas-grid)" strokeWidth={1} />
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill={`url(#${id})`} />
@@ -998,13 +998,13 @@ const WallShape = memo(function WallShape({ w, project, selected, hovered, showF
       {w.layers.map((ly, i) =>
         ly.polygon.length >= 3 ? (
           <polygon key={i} points={poly(ly.polygon)} fill={materialColor(ly.material)}
-            stroke="rgba(0,0,0,0.18)" strokeWidth={0.5} />
+            stroke="var(--panel-line)" strokeWidth={0.5} />
         ) : null,
       )}
       {showFraming && w.members.map((m) => {
         const [x0, y0] = project(m.p0);
         const [x1, y1] = project(m.p1);
-        return <line key={m.key} x1={x0} y1={y0} x2={x1} y2={y1} stroke="#8a6d3b"
+        return <line key={m.key} x1={x0} y1={y0} x2={x1} y2={y1} stroke="var(--canvas-wood)"
           strokeWidth={1.5} opacity={0.85} />;
       })}
       <line x1={project(w.axis[0])[0]} y1={project(w.axis[0])[1]}
@@ -1075,9 +1075,9 @@ const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selec
     <g onClick={() => onSelect("opening", o.uid)} onDoubleClick={() => onEdit(o)}
       style={{ cursor: "pointer" }}>
       <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
-        stroke={selected ? NORDIC_ACCENT : "#fff"} strokeWidth={selected ? 6 : 5} />
+        stroke={selected ? NORDIC_ACCENT : "var(--canvas-white)"} strokeWidth={selected ? 6 : 5} />
       <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
-        stroke={o.is_door ? "#7a5230" : NORDIC_ACCENT} strokeWidth={2}
+      stroke={o.is_door ? "var(--canvas-wood)" : NORDIC_ACCENT} strokeWidth={2}
         strokeDasharray={o.is_door ? undefined : "3 2"} />
       {selected && <circle cx={cx} cy={cy} r={5} fill={NORDIC_ACCENT} />}
     </g>
@@ -1104,13 +1104,13 @@ const StairShape = memo(function StairShape({ stair, project, selected, hovered,
     ? [maxX, (minY + maxY) / 2] : [(minX + maxX) / 2, maxY];
   const [directionStart, directionEnd] = stair.run_reversed ? [end, start] : [start, end];
   const [labelX, labelY] = project([(minX + maxX) / 2, (minY + maxY) / 2]);
-  const stroke = selected ? NORDIC_ACCENT : hovered ? NORDIC_INK : "#704c34";
+  const stroke = selected ? NORDIC_ACCENT : hovered ? NORDIC_INK : "var(--canvas-wood)";
   const [arrowStartX, arrowStartY] = project(directionStart);
   const [arrowEndX, arrowEndY] = project(directionEnd);
   return <g onClick={() => onSelect("stair", stair.uid)}
     onPointerEnter={() => onHover(stair.uid)} onPointerLeave={() => onHover(null)}
     style={{ cursor: "pointer" }}>
-    <polygon points={outline} fill="rgba(112,76,52,0.08)" stroke={stroke}
+    <polygon points={outline} fill="var(--canvas-wood-soft)" stroke={stroke}
       strokeWidth={selected ? 2.5 : 1.25} />
     {stair.members.filter((member) => member.category === "tread" || member.category === "winder").map((member) => {
       const [x0, y0] = project(member.p0); const [x1, y1] = project(member.p1);
@@ -1119,7 +1119,7 @@ const StairShape = memo(function StairShape({ stair, project, selected, hovered,
     <line x1={arrowStartX} y1={arrowStartY} x2={arrowEndX} y2={arrowEndY} stroke={stroke}
       strokeWidth={1.5} markerEnd="url(#stair-arrow)" />
     <text x={labelX} y={labelY - 5} textAnchor="middle" fontSize={10} fill={stroke}
-      style={{ paintOrder: "stroke" }} stroke="#fff" strokeWidth={3}>UP {stair.riser_count} R</text>
+      style={{ paintOrder: "stroke" }} stroke="var(--canvas-white)" strokeWidth={3}>UP {stair.riser_count} R</text>
   </g>;
 });
 

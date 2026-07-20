@@ -9,8 +9,10 @@ import { Sidebar } from "./components/Sidebar";
 import { ConflictBanner } from "./components/ConflictBanner";
 import { ExtentsHUD } from "./components/ExtentsHUD";
 import { Toasts } from "./components/Toasts";
+import { useTheme, type ThemePreference } from "./theme/theme";
 
 export function App() {
+  const { preference: themePreference, setPreference: setThemePreference } = useTheme();
   const init = useStore((s) => s.init);
   const connected = useStore((s) => s.connected);
   const viewMode = useStore((s) => s.viewMode);
@@ -73,6 +75,19 @@ export function App() {
             {m.toUpperCase()}
           </button>
         ))}
+        <div className="theme-selector" role="group" aria-label="Appearance">
+          {(["system", "light", "dark"] as ThemePreference[]).map((choice) => (
+            <button
+              key={choice}
+              className={`seg-btn${themePreference === choice ? " active" : ""}`}
+              onClick={() => setThemePreference(choice)}
+              title={`Use ${choice === "system" ? "system appearance" : `${choice} appearance`}`}
+              aria-pressed={themePreference === choice}
+            >
+              {choice === "system" ? "System" : choice[0].toUpperCase() + choice.slice(1)}
+            </button>
+          ))}
+        </div>
         <button className="btn" onClick={() => void undo()}>
           ↶
         </button>

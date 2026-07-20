@@ -2,8 +2,9 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { ALL_TRADES, useStore, type Trade } from "../state/store";
 import type { Model, Roof, Solid, Floor, Stair, Wall, EnvelopeBand } from "../model/types";
-import { materialColor, NORDIC_BG } from "../nordic/palette";
+import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
+import { useTheme } from "../theme/theme";
 
 // The 3D panel behind an implicit ModelViewer seam (→ 21 §3D panel). The primary path is
 // glTF from ResolvedModel; until the server emits it, this builds an equivalent scene
@@ -28,8 +29,11 @@ export function Panel3D() {
   const selection = useStore((s) => s.selection);
   const visibleTrades = useStore((s) => s.visibleTrades);
   const setTradeVisible = useStore((s) => s.setTradeVisible);
+  const { theme } = useTheme();
   const mountRef = useRef<HTMLDivElement>(null);
   const api = useRef<SceneApi | null>(null);
+  const renderedModel = useRef<Model | null>(null);
+  const renderedTheme = useRef<string | null>(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -39,8 +43,13 @@ export function Panel3D() {
   }, [select]);
 
   useEffect(() => {
-    if (model) api.current?.setModel(model, threeMode);
-  }, [model, threeMode]);
+    if (!model) return;
+    const preserveView = renderedModel.current === model && renderedTheme.current !== null;
+    api.current?.setModel(model, threeMode, RESOLVED_NORDIC_PALETTE[theme], preserveView);
+    api.current?.highlight(selection.kind === "wall" ? selection.uid : null);
+    renderedModel.current = model;
+    renderedTheme.current = theme;
+  }, [model, threeMode, theme]);
 
   useEffect(() => {
     api.current?.highlight(selection.kind === "wall" ? selection.uid : null);
@@ -96,7 +105,7 @@ export function Panel3D() {
 }
 
 interface SceneApi {
-  setModel: (m: Model, mode: "nordic" | "schematic") => void;
+  setModel: (m: Model, mode: "nordic" | "schematic", palette: ResolvedNordicPalette, preserveView: boolean) => void;
   pan: (direction: PanDirection) => void;
   resetView: () => void;
   highlight: (uid: string | null) => void;
@@ -106,7 +115,7 @@ interface SceneApi {
 
 function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneApi {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(NORDIC_BG);
+  scene.background = new THREE.Color(RESOLVED_NORDIC_PALETTE.light.bg);
   const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 500);
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
@@ -125,6 +134,7 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
   let picks: THREE.Mesh[] = [];
   const byUid = new Map<string, THREE.Material[]>();
   let highlighted: string | null = null;
+  let activePalette = RESOLVED_NORDIC_PALETTE.light;
 
   // Lighting: soft neutral environment (Nordic). Hemisphere + a key light.
   const hemi = new THREE.HemisphereLight(0xffffff, 0xbcb6a8, 0.9);
@@ -255,8 +265,10 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     requestRender();
   };
 
-  const setModel = (m: Model, mode: "nordic" | "schematic") => {
+  const setModel = (m: Model, mode: "nordic" | "schematic", palette: ResolvedNordicPalette, preserveView: boolean) => {
     clear();
+    activePalette = palette;
+    scene.background = new THREE.Color(palette.bg);
     // Center on the plan's structural bounds.
     let cx = 0;
     let cz = 0;
@@ -271,22 +283,22 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
       cx /= n;
       cz /= n;
     }
-    target = new THREE.Vector3(0, 1.2, 0);
+    if (!preserveView) target = new THREE.Vector3(0, 1.2, 0);
 
-    for (const band of m.envelope_bands ?? []) buildEnvelopeBand(tradeGroups.walls, band, cx, cz, mode);
-    for (const w of m.walls) buildWall(tradeGroups, w, cx, cz, mode, picks, byUid);
-    for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, cx, cz, mode);
-    for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, cx, cz, mode);
-    for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, cx, cz, mode);
+    for (const band of m.envelope_bands ?? []) buildEnvelopeBand(tradeGroups.walls, band, cx, cz, mode, palette);
+    for (const w of m.walls) buildWall(tradeGroups, w, cx, cz, mode, palette, picks, byUid);
+    for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, cx, cz, mode, palette);
+    for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, cx, cz, mode, palette);
+    for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, cx, cz, mode, palette);
     for (const stair of m.stairs ?? []) buildStair(tradeGroups.stairs, stair, cx, cz, mode);
     for (const furniture of m.furniture ?? [])
-      buildFurniture(tradeGroups.furniture, furniture, cx, cz, mode,
+      buildFurniture(tradeGroups.furniture, furniture, cx, cz, mode, palette,
         m.storeys.find((storey) => storey.tag === furniture.storey)?.elevation_m ?? 0);
 
     // Frame the full rendered bounds, including its vertical origin. The old target only
     // considered height, leaving models whose base was above zero visibly low in the canvas.
     const box = new THREE.Box3().setFromObject(content);
-    if (!box.isEmpty()) {
+    if (!box.isEmpty() && !preserveView) {
       const sphere = box.getBoundingSphere(new THREE.Sphere());
       const verticalHalfFov = THREE.MathUtils.degToRad(camera.fov) / 2;
       const horizontalHalfFov = Math.atan(Math.tan(verticalHalfFov) * camera.aspect);
@@ -311,7 +323,7 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     highlighted = uid;
     if (uid && byUid.has(uid))
       for (const mat of byUid.get(uid)!)
-        (mat as THREE.MeshStandardMaterial).emissive?.setHex(0x2a3d45);
+        (mat as THREE.MeshStandardMaterial).emissive?.set(activePalette.highlight);
     requestRender();
   };
 
@@ -342,13 +354,14 @@ function buildFurniture(
   cx: number,
   cz: number,
   mode: "nordic" | "schematic",
+  palette: ResolvedNordicPalette,
   elevation: number,
 ) {
   const geometry = new THREE.BoxGeometry(
     furniture.footprint_m[0], furniture.height_m, furniture.footprint_m[1],
   );
   const material = new THREE.MeshStandardMaterial({
-    color: 0x704c34, roughness: mode === "nordic" ? 0.88 : 1, flatShading: mode === "schematic",
+    color: palette.member.wood, roughness: mode === "nordic" ? 0.88 : 1, flatShading: mode === "schematic",
   });
   const mesh = new THREE.Mesh(geometry, material);
   mesh.position.set(furniture.position[0] - cx, elevation + furniture.height_m / 2,
@@ -408,6 +421,7 @@ function buildWall(
   cx: number,
   cz: number,
   mode: "nordic" | "schematic",
+  palette: ResolvedNordicPalette,
   picks: THREE.Mesh[],
   byUid: Map<string, THREE.Material[]>,
 ) {
@@ -432,7 +446,7 @@ function buildWall(
       geo.translate(0, w.z0_m, 0);
     }
     const mat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(materialColor(ly.material)),
+      color: new THREE.Color(materialColor(ly.material, palette)),
       roughness: mode === "nordic" ? 0.85 : 1,
       metalness: 0,
       flatShading: mode === "schematic",
@@ -447,7 +461,7 @@ function buildWall(
     if (mode === "nordic") {
       const edges = new THREE.LineSegments(
         new THREE.EdgesGeometry(geo, 25),
-        new THREE.LineBasicMaterial({ color: 0x4a463d, transparent: true, opacity: 0.35 }),
+        new THREE.LineBasicMaterial({ color: palette.edge, transparent: true, opacity: 0.35 }),
       );
       tradeGroups.walls.add(edges);
     }
@@ -457,7 +471,7 @@ function buildWall(
 }
 
 function buildEnvelopeBand(parent: THREE.Group, band: EnvelopeBand, cx: number, cz: number,
-  mode: "nordic" | "schematic") {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
   for (const layer of band.layers) {
     if (layer.polygon.length < 3) continue;
     const shape = new THREE.Shape();
@@ -469,7 +483,7 @@ function buildEnvelopeBand(parent: THREE.Group, band: EnvelopeBand, cx: number, 
     geometry.rotateX(-Math.PI / 2);
     geometry.translate(0, band.z0_m, 0);
     parent.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
-      color: new THREE.Color(materialColor(layer.material)), roughness: mode === "nordic" ? 0.85 : 1,
+      color: new THREE.Color(materialColor(layer.material, palette)), roughness: mode === "nordic" ? 0.85 : 1,
       flatShading: mode === "schematic",
     })));
   }
@@ -478,7 +492,7 @@ function buildEnvelopeBand(parent: THREE.Group, band: EnvelopeBand, cx: number, 
 
 // Slabs, footings, pads: same outline-extrusion recipe as wall layers, concrete grey.
 function buildSolid(parent: THREE.Group, solid: Solid, cx: number, cz: number,
-  mode: "nordic" | "schematic") {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
   if (solid.outline.length < 3) return;
   const shape = new THREE.Shape();
   solid.outline.forEach((p, i) => {
@@ -492,13 +506,13 @@ function buildSolid(parent: THREE.Group, solid: Solid, cx: number, cz: number,
   geo.rotateX(-Math.PI / 2);
   geo.translate(0, solid.z0_m, 0);
   const mat = new THREE.MeshStandardMaterial({
-    color: 0x9a9a96, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",
+    color: palette.member.concrete, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",
   });
   parent.add(new THREE.Mesh(geo, mat));
 }
 
 function buildFloor(parent: THREE.Group, floor: Floor, cx: number, cz: number,
-  mode: "nordic" | "schematic") {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
   if (floor.subfloor && floor.members.length) {
     const points = floor.members.flatMap((member) => [member.p0, member.p1]);
     const minX = Math.min(...points.map((point) => point[0]));
@@ -521,7 +535,7 @@ function buildFloor(parent: THREE.Group, floor: Floor, cx: number, cz: number,
     geometry.rotateX(-Math.PI / 2);
     geometry.translate(0, z, 0);
     parent.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
-      color: new THREE.Color(materialColor(floor.subfloor.material)), roughness: mode === "nordic" ? 0.85 : 1,
+      color: new THREE.Color(materialColor(floor.subfloor.material, palette)), roughness: mode === "nordic" ? 0.85 : 1,
       flatShading: mode === "schematic",
     })));
   }
@@ -531,7 +545,7 @@ function buildFloor(parent: THREE.Group, floor: Floor, cx: number, cz: number,
 // Sloped quads from footprint/eave_z/ridge_z/ridge_direction — mirrors
 // emit/gltf/emitter.py's _add_roof — plus the roof's own members (rafters, ridge beam).
 function buildRoof(parent: THREE.Group, roof: Roof, cx: number, cz: number,
-  mode: "nordic" | "schematic") {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
   const xs = roof.footprint.map((p) => p[0] - cx);
   const ys = roof.footprint.map((p) => p[1] - cz);
   const minx = Math.min(...xs), maxx = Math.max(...xs);
@@ -568,7 +582,7 @@ function buildRoof(parent: THREE.Group, roof: Roof, cx: number, cz: number,
   const geo = new THREE.BufferGeometry().setFromPoints(triangles);
   geo.computeVertexNormals();
   const mat = new THREE.MeshStandardMaterial({
-    color: 0x595d63, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",
+    color: palette.material.metal, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",
     transparent: true, opacity: 0.65, side: THREE.DoubleSide,
   });
   parent.add(new THREE.Mesh(geo, mat));

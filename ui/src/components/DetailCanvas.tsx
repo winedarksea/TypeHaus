@@ -21,42 +21,42 @@ function feetInches(totalIn: number): string {
 const HATCH_DEFS: Record<string, JSX.Element> = {
   batt: (
     <pattern id="h-batt" width="6" height="6" patternUnits="userSpaceOnUse">
-      <path d="M0 3 Q1.5 0 3 3 T6 3" fill="none" stroke="#c9a94f" strokeWidth="0.4" />
+      <path d="M0 3 Q1.5 0 3 3 T6 3" fill="none" stroke="var(--detail-batt)" strokeWidth="0.4" />
     </pattern>
   ),
   rigid: (
     <pattern id="h-rigid" width="5" height="5" patternUnits="userSpaceOnUse">
       <rect width="5" height="5" fill="none" />
-      <path d="M0 5 L5 0" stroke="#7aa7c7" strokeWidth="0.4" />
+      <path d="M0 5 L5 0" stroke="var(--detail-rigid)" strokeWidth="0.4" />
     </pattern>
   ),
   osb: (
     <pattern id="h-osb" width="4" height="4" patternUnits="userSpaceOnUse">
-      <circle cx="1" cy="1" r="0.4" fill="#b98a4f" />
-      <circle cx="3" cy="3" r="0.4" fill="#b98a4f" />
+      <circle cx="1" cy="1" r="0.4" fill="var(--detail-osb)" />
+      <circle cx="3" cy="3" r="0.4" fill="var(--detail-osb)" />
     </pattern>
   ),
   lumber: (
     <pattern id="h-lumber" width="6" height="6" patternUnits="userSpaceOnUse">
-      <path d="M0 0 L6 6" stroke="#9c7b45" strokeWidth="0.4" />
+      <path d="M0 0 L6 6" stroke="var(--detail-lumber)" strokeWidth="0.4" />
     </pattern>
   ),
   concrete: (
     <pattern id="h-concrete" width="7" height="7" patternUnits="userSpaceOnUse">
-      <circle cx="2" cy="2" r="0.5" fill="#9aa0a6" />
-      <path d="M4 5 L6 5" stroke="#9aa0a6" strokeWidth="0.4" />
+      <circle cx="2" cy="2" r="0.5" fill="var(--detail-concrete)" />
+      <path d="M4 5 L6 5" stroke="var(--detail-concrete)" strokeWidth="0.4" />
     </pattern>
   ),
   "spray-foam": (
     <pattern id="h-spray-foam" width="5" height="5" patternUnits="userSpaceOnUse">
-      <rect width="5" height="5" fill="#f2d9b0" />
-      <circle cx="2.5" cy="2.5" r="0.9" fill="#e0b878" />
+      <rect width="5" height="5" fill="var(--detail-foam)" />
+      <circle cx="2.5" cy="2.5" r="0.9" fill="var(--detail-foam-dot)" />
     </pattern>
   ),
 };
 
 function hatchFill(pattern: string): string {
-  if (pattern === "SOLID") return "#dcdcdc";
+  if (pattern === "SOLID") return "var(--material-concrete)";
   return HATCH_DEFS[pattern] ? `url(#h-${pattern})` : "none";
 }
 
@@ -136,7 +136,7 @@ export function DetailCanvas({
   return (
     <svg
       viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`}
-      style={{ width: "100%", height: "100%", background: "var(--panel, #fff)", cursor: "grab" }}
+      style={{ width: "100%", height: "100%", background: "var(--panel)", cursor: "grab" }}
       onWheel={onWheel}
       onMouseDown={onDown}
       onMouseMove={onMove}
@@ -169,7 +169,7 @@ function SceneNode({
   switch (node.node) {
     case "polyline": {
       const pts = (node.points as Pt[]).map(([x, y]) => `${x},${fy(y, bounds)}`).join(" ");
-      const stroke = "#222";
+      const stroke = "var(--detail-ink)";
       const sw = (node.lineweight as number) ?? 0.25;
       return node.closed ? (
         <polygon points={pts} fill="none" stroke={stroke} strokeWidth={sw} {...dataUid} />
@@ -200,7 +200,7 @@ function SceneNode({
           fontSize={(node.height as number) ?? 3}
           textAnchor={anchor}
           transform={node.rotation ? `rotate(${-node.rotation} ${x} ${fy(y, bounds)})` : undefined}
-          fill="#333"
+          fill="var(--detail-ink)"
           onClick={pick}
           style={pick ? { cursor: "pointer" } : undefined}
           {...dataUid}
@@ -214,9 +214,9 @@ function SceneNode({
       const [tx, ty] = node.to as Pt;
       return (
         <g onClick={pick} style={pick ? { cursor: "pointer" } : undefined} {...dataUid}>
-          <line x1={ax} y1={fy(ay, bounds)} x2={tx} y2={fy(ty, bounds)} stroke="#555" strokeWidth={0.3} />
-          <circle cx={tx} cy={fy(ty, bounds)} r={0.8} fill="#555" />
-          <text x={ax + 1} y={fy(ay, bounds)} fontSize={3} fill="#333">
+          <line x1={ax} y1={fy(ay, bounds)} x2={tx} y2={fy(ty, bounds)} stroke="var(--detail-line)" strokeWidth={0.3} />
+          <circle cx={tx} cy={fy(ty, bounds)} r={0.8} fill="var(--detail-line)" />
+          <text x={ax + 1} y={fy(ay, bounds)} fontSize={3} fill="var(--detail-ink)">
             {node.text as string}
           </text>
         </g>
@@ -230,8 +230,8 @@ function SceneNode({
       const my = fy((y0 + y1) / 2, bounds);
       return (
         <g {...dataUid}>
-          <line x1={x0} y1={fy(y0, bounds)} x2={x1} y2={fy(y1, bounds)} stroke="#777" strokeWidth={0.3} />
-          <text x={mx} y={my - 1} fontSize={3} textAnchor="middle" fill="#333">
+          <line x1={x0} y1={fy(y0, bounds)} x2={x1} y2={fy(y1, bounds)} stroke="var(--detail-muted)" strokeWidth={0.3} />
+          <text x={mx} y={my - 1} fontSize={3} textAnchor="middle" fill="var(--detail-ink)">
             {label}
           </text>
         </g>
@@ -239,7 +239,7 @@ function SceneNode({
     }
     case "symbol": {
       const [x, y] = node.insert as Pt;
-      return <circle cx={x} cy={fy(y, bounds)} r={2} fill="none" stroke="#888" strokeWidth={0.3} {...dataUid} />;
+      return <circle cx={x} cy={fy(y, bounds)} r={2} fill="none" stroke="var(--detail-symbol)" strokeWidth={0.3} {...dataUid} />;
     }
     default:
       return null;
