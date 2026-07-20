@@ -82,6 +82,61 @@ def derive_detail_slices(model: ResolvedModel) -> list[DerivedDetail]:
     return out
 
 
+# Per junction kind: how far the crop reaches (metres) below/above the junction plane, and
+# beyond the wall's inboard/outboard faces. A detail is a close-up — the window has to hold
+# the junction and the things drawn around it (footing, drain and grade below a foundation;
+# the overhang and gutter outboard of an eave) and nothing else, or it reads as a sliver
+# floating in white space.
+_CROP_WINDOWS = {
+    #                     below,  above,  inboard, outboard
+    "wall_roof":         (0.75,   0.45,   0.30,    0.35),
+    "wall_foundation":   (1.30,   0.90,   0.55,    0.90),
+    "wall_slab":         (1.00,   0.70,   0.55,    0.70),
+    "storey_stack":      (0.55,   0.55,   0.25,    0.25),
+    "stack_width_change": (0.50,  0.50,   0.25,    0.25),
+    "assembly_change":   (0.50,   0.50,   0.30,    0.30),
+    "opening_perimeter": (0.45,   0.45,   0.25,    0.25),
+}
+_DEFAULT_WINDOW = (0.50, 0.50, 0.25, 0.25)
+
+
+def _wall_u_extent(wall, direction: str, station: float,
+                   fallback_center: float) -> tuple[float, float]:
+    """The wall's inboard/outboard face positions in section coordinates."""
+    from typehaus.emit.draw.section import _ring_cut_intervals
+
+    bounds: list[float] = []
+    for layer in wall.layers:
+        for (u0, u1) in _ring_cut_intervals(layer.polygon, direction, station):
+            bounds.extend((u0, u1))
+    if not bounds:
+        half = wall.thickness_m / 2.0
+        return fallback_center - half, fallback_center + half
+    return min(bounds), max(bounds)
+
+
+def _junction_z(model, cond, wall) -> float:
+    """The elevation the detail is *about* — what the crop's below/above measure from.
+
+    For the stacked kinds that is the *shared* plane between the two elements, i.e. the top
+    of the lower one. Using the host wall's own base instead put the foundation detail a
+    storey below its own junction, showing the footing and nothing of the wall it carries.
+    """
+    top = wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
+    kind = cond.kind.value
+    if kind == "wall_roof":
+        return top
+    if kind in ("wall_foundation", "storey_stack", "stack_width_change", "assembly_change"):
+        walls = [w for w in (model.wall(tag) for tag in cond.element_tags) if w is not None]
+        if len(walls) >= 2:
+            lower = min(walls, key=lambda w: w.z0_m)
+            return lower.z1_m
+        return top
+    if kind == "wall_slab":
+        return wall.z0_m
+    return (wall.z0_m + top) / 2.0
+
+
 def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
     (x0, y0), (x1, y1) = wall.axis
     mx, my = (x0 + x1) / 2.0, (y0 + y1) / 2.0
@@ -91,22 +146,22 @@ def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
         direction, station, center_u = "y", mx, my
     else:
         direction, station, center_u = "x", my, mx
-    top = wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
-    kind = cond.kind.value
-    if kind == "wall_roof":
-        z0, z1 = top - 1.0, top + 0.5
-    elif kind in ("wall_foundation", "wall_slab"):
-        z0, z1 = wall.z0_m - 0.6, wall.z0_m + 0.9
-    else:
-        z0, z1 = wall.z0_m - 0.3, top + 0.3
-    half_u = 0.9  # ~3 ft window around the wall line
+
+    below, above, inboard, outboard = _CROP_WINDOWS.get(cond.kind.value, _DEFAULT_WINDOW)
+    junction_z = _junction_z(model, cond, wall)
+    z0, z1 = junction_z - below, junction_z + above
+
+    # Measure the margins off the wall's real faces, not its axis: a wall aligned on its
+    # sheathing plane is nowhere near centred on its axis, so an axis-centred window leaves
+    # a wide empty band on one side and clips the drawing on the other.
+    u_lo, u_hi = _wall_u_extent(wall, direction, station, center_u)
     view = Slice(
         uid="", tag=f"D-{_key_slug(cond.key)}", kind=SliceKind.DETAIL,
         title=(tr.tag if tr is not None else cond.key),
         cut_origin=pt(m(station if direction == "y" else center_u),
                       m(center_u if direction == "y" else station)),
         cut_direction=direction,
-        crop=(pt(m(center_u - half_u), m(z0)), pt(m(center_u + half_u), m(z1))),
+        crop=(pt(m(u_lo - inboard), m(z0)), pt(m(u_hi + outboard), m(z1))),
     )
     return DerivedDetail(key=cond.key, condition=cond, transition=tr, view=view,
                          direction=direction, station=station)
@@ -175,18 +230,48 @@ def build_detail(model: ResolvedModel, derived: DerivedDetail) -> tuple[Scene, l
     joints = build_joint_plan(model, derived.condition, derived.transition,
                               derived.direction, derived.station)
     scene = build_section(model, derived.view, joints=joints)
+
+    # Detail components (grade, soil, perimeter drain) go in *behind* the cut geometry —
+    # they are the context the junction sits in, not something drawn over it.
+    context = _detail_components(model, derived)
+    if context:
+        scene = scene.model_copy(update={"nodes": tuple(context) + scene.nodes})
+
     nodes, findings = _annotation_nodes(model, derived)
     if nodes:
         scene = scene.model_copy(update={"nodes": scene.nodes + tuple(nodes)})
     return scene, findings
 
 
+def _detail_components(model: ResolvedModel, derived: DerivedDetail) -> list:
+    """Derived 2D detail components for this junction, or nothing if it has none."""
+    from typehaus.emit.draw.detail_components import build_below_grade_components
+
+    crop = derived.view.crop
+    if crop is None:
+        return []
+    window = (crop[0].xy_m, crop[1].xy_m)
+    out: list = []
+    for tag in derived.condition.element_tags:
+        wall = model.wall(tag)
+        if wall is None or not wall.is_foundation:
+            continue
+        out.extend(build_below_grade_components(model, wall, window,
+                                                derived.direction, derived.station))
+    return out
+
+
 def _frame(derived: DerivedDetail):
-    """Return a (world_xy) -> (u_in, z_in) mapper for the detail's cut frame."""
+    """Return a (world_xy) -> (u_in, z_in) mapper for the detail's cut frame.
+
+    Must match the cutter's convention (``section._ring_cut_intervals``): for a cut plane at
+    x = const (``direction == "y"``) the in-section coordinate is world **y**, and vice
+    versa. Getting this backwards puts every annotation anchor on the wrong axis.
+    """
     direction = derived.direction
 
     def to_uz(x: float, y: float, z: float) -> tuple[float, float]:
-        u = x if direction == "y" else y
+        u = y if direction == "y" else x
         return (u * M_TO_IN, z * M_TO_IN)
 
     return to_uz
@@ -227,25 +312,81 @@ def _point_anchor(point):
     return NamedPoint(xy=point)
 
 
+ANNOTATION_TEXT_H = 1.6  # model inches; the writer converts to points at the drawn scale
+
+
+def _face_role(face: str) -> str:
+    """``Continuity`` face names (``"sheathing-ext"``) → an anchor role (``layer:sheathing:out``).
+
+    Continuity claims are authored against a face — layer name plus which side of it — while
+    the anchor vocabulary spells the side separately. Without this translation every seed
+    callout degrades to unanchored text.
+    """
+    for suffix, side in (("-ext", "out"), ("-int", "in")):
+        if face.endswith(suffix):
+            return f"layer:{face[:-len(suffix)]}:{side}"
+    return f"layer:{face}:out"
+
+
 def _seed_nodes(model: ResolvedModel, derived: DerivedDetail) -> list:
-    """Read-only seed annotations (uid=None) from the transition overlay id + continuity."""
+    """Read-only seed annotations (uid=None) leadered to the layers they describe.
+
+    A continuity claim is *about* a named face, so the seed points at that face rather than
+    stacking raw text beside the drawing. The markdown behind ``Transition.notes`` belongs in
+    the notes column, not in a callout — only its title is worth a leader.
+    """
     tr = derived.transition
     if tr is None:
         return []
     crop = derived.view.crop
-    (cu0, _), (cu1, cz1) = (crop[0].xy_m, crop[1].xy_m)
-    x = cu1 * M_TO_IN + 6.0
-    y = cz1 * M_TO_IN
+    (cu0, cz0), (cu1, cz1) = (crop[0].xy_m, crop[1].xy_m)
+    frame = _frame(derived)
+    wall = _host_wall(model, derived.condition)
+
+    # Callouts stack down a column just outboard of the *wall*, not of the crop: the crop's
+    # outboard margin is reserved for what gets drawn there (overhang, grade, drainage), and
+    # hanging text off its far edge strands the notes in empty space.
+    if wall is not None:
+        _, wall_u_hi = _wall_u_extent(wall, derived.direction, derived.station,
+                                      (cu0 + cu1) / 2.0)
+    else:
+        wall_u_hi = (cu0 + cu1) / 2.0
+    text_x = wall_u_hi * M_TO_IN + 5.0
+    top_y = cz1 * M_TO_IN - 2.0
+    step = ANNOTATION_TEXT_H * 2.4
+
+    # A layer anchor resolves at its wall's mid-height, which for a storey-tall wall is far
+    # outside a junction crop. What the callout is about is the layer *at the junction*, so
+    # pin the elevation there and only take the layer's position across the wall depth.
+    junction_z = _junction_z(model, derived.condition, wall) * M_TO_IN if wall else None
+    # Either side of a junction may own the layer being claimed — at a foundation detail the
+    # sheathing and WRB belong to the framed wall above, not the concrete below.
+    candidates = [w for w in (model.wall(t) for t in derived.condition.element_tags)
+                  if w is not None]
+
+    def _anchor(face_name):
+        for candidate in candidates:
+            point, err = _wall_anchor(candidate, _face_role(face_name), frame)
+            if err is None:
+                return (point[0], junction_z if junction_z is not None else point[1])
+        return None
+
     nodes: list = []
-    lines = []
-    if getattr(tr, "overlay", None):
-        lines.append(f"[{tr.overlay}]")
+    row = 0
     for cont in getattr(tr, "continuity", ()):
-        lines.append(f"{cont.control}: {cont.from_face}→{cont.to_face}")
-    if getattr(tr, "notes", None):
-        lines.append(str(tr.notes))
-    for i, line in enumerate(lines):
-        nodes.append(Text(anchor=(x, y - i * 3.0), content=line, height=1.5,
+        target = _anchor(cont.from_face)
+        at = (text_x, top_y - row * step)
+        content = f"{cont.control} continuity — {cont.from_face} → {cont.to_face}"
+        if target is None:
+            nodes.append(Text(anchor=at, content=content, height=ANNOTATION_TEXT_H,
+                              layer="A-ANNO-TEXT", uid=None))
+        else:
+            nodes.append(Leader(anchor=_point_anchor(target), at=at, to=target,
+                                text=content, uid=None))
+        row += 1
+    if getattr(tr, "overlay", None):
+        nodes.append(Text(anchor=(cu0 * M_TO_IN, cz0 * M_TO_IN - 4.0),
+                          content=f"{tr.tag}  ·  {tr.overlay}", height=ANNOTATION_TEXT_H,
                           layer="A-ANNO-TEXT", uid=None))
     return nodes
 
@@ -288,11 +429,32 @@ def _wall_anchor(wall, face: str, frame):
         return _layer_point(layer, wall, frame, "in" if face == "int-face" else "out"), None
     if face.startswith("layer:"):
         _, name, side = (face.split(":") + ["out"])[:3]
-        layer = next((l for l in wall.layers if l.name == name), None)
+        layer = _find_layer(wall, name)
         if layer is None:
             return frame(mx, my, top), _unresolved(wall.uid, face)
         return _layer_point(layer, wall, frame, side), None
     return frame(mx, my, top), _unresolved(wall.uid, face)
+
+
+# Control-layer role → the ``ControlLayer`` value a layer must carry to realise it. A
+# continuity claim names the role it is about ("ci-ext" = the continuous insulation plane),
+# not the layer that happens to provide it, so a variant may re-spell its layers without
+# invalidating the claim (#44).
+_ROLE_CONTROL = {"ci": "thermal", "thermal": "thermal", "air": "air",
+                 "water": "water", "vapor": "vapor"}
+
+
+def _find_layer(wall, name: str):
+    """Resolve a layer by name, then by the control-layer role it publishes."""
+    exact = next((l for l in wall.layers if l.name == name), None)
+    if exact is not None:
+        return exact
+    control = _ROLE_CONTROL.get(name)
+    if control is None:
+        return None
+    # Outermost layer carrying that control: the plane a transition laps to.
+    matching = [l for l in wall.layers if control in l.control]
+    return matching[-1] if matching else None
 
 
 def _layer_point(layer, wall, frame, side: str):

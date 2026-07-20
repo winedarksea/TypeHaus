@@ -47,6 +47,15 @@ TRANSITIONS = (
     Transition(uid="CATR012AAAA", tag="TR-CATLIN-ASSEMBLY-JOG",
                condition_pattern="assembly_change:*", overlay="assembly-change-jog",
                continuity=AIR_WATER_THERMAL),
+    # The sauna door breaks the hot side's vapour control layer — the foil-faced polyiso
+    # has to be returned into the jamb and sealed, not just butted.
+    Transition(uid="CATR014AAAA", tag="TR-CATLIN-SAUNA-OPENING",
+               condition_pattern="opening_perimeter:SAUNA_*",
+               notes="notes/sauna_basement_wall_detail.md", overlay="sauna-liner-opening",
+               continuity=(Continuity(control="vapor", from_face="foil-polyiso",
+                                      to_face="foil-polyiso"),
+                           Continuity(control="air", from_face="foil-polyiso",
+                                      to_face="foil-polyiso"))),
     Transition(uid="CATR013AAAA", tag="TR-CATLIN-RIDGE-BEAM",
                condition_pattern="roof_ridge:*", overlay="lvl-ridge-hanger"),
 )

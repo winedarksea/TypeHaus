@@ -13,7 +13,7 @@ _MIN_OVERLAP = ft(2).meters
 
 
 def _total_thickness(rw: ResolvedWall) -> float:
-    return sum(layer.thickness_m for layer in rw.layers)
+    return rw.thickness_m
 
 
 def _axis_match(lower: ResolvedWall, upper: ResolvedWall) -> float:

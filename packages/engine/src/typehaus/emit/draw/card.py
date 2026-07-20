@@ -51,6 +51,21 @@ def render_card(asm: Assembly, library: Library,
         d.add(Rect(_LEFT, y, _STACK_W, h, fill=color, hatch=hatch, stroke="#4a463f"))
         label = f"{layer.name} — {layer.thickness.fmt()}"
         d.add(Text(_LEFT + _STACK_W + 12, y + h / 2 + 4, label, size=11))
+        if layer.cavity is not None:
+            # Cavity fill occupies the same depth as its host framing — draw it as an
+            # inset band over the structure swatch, never as a stack entry of its own.
+            fill = layer.cavity
+            fill_mat = library.material(fill.material_ref)
+            fill_thk = fill.thickness if fill.thickness is not None else layer.thickness
+            frac = min(1.0, fill_thk.inches / layer.thickness.inches) if \
+                layer.thickness.inches else 1.0
+            d.add(Rect(_LEFT + 6, y + 2, _STACK_W - 12, max(2.0, h * frac - 4),
+                       fill=material_color(fill_mat.hatch if fill_mat else None,
+                                           fill_mat.color if fill_mat else None),
+                       hatch="batt", stroke="#4a463f"))
+            d.add(Text(_LEFT + _STACK_W + 12, y + h / 2 + 17,
+                       f"↳ cavity: {fill.material_ref} — {fill_thk.fmt()}"
+                       f" (ff {fill.framing_factor:.0%})", size=9, fill="#8a857b"))
         bx = _LEFT + _STACK_W + 250
         for ctrl in sorted(c.value for c in layer.control):
             d.add(Badge(bx, y + h / 2 - 7, ctrl.upper()[:1], CONTROL_COLOR[ctrl]))

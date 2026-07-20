@@ -76,9 +76,10 @@ def edit_assembly_layers(
     """Rewrite a project assembly's layer stack (WP2.4e layer add/remove/reorder/swap).
 
     The client sends the full ordered layer list — each ``{name, material, function,
-    thickness}`` a plain scalar/authored-unit spec, no source syntax. Framing and control-layer
-    metadata are inherited by layer *name* from the current stack, so bumping a thickness or
-    reordering never silently drops a structural stud layout. Emits one ``update Assembly``
+    thickness}`` a plain scalar/authored-unit spec, no source syntax. Framing, cavity fill and
+    control-layer metadata are inherited by layer *name* from the current stack, so bumping a
+    thickness or reordering never silently drops a stud layout or the batt in its bays. Emits
+    one ``update Assembly``
     op carrying the serialized ``Layer(...)`` tuple, riding the standard journal.
     """
     current = plan.library.assembly(tag)
@@ -111,6 +112,7 @@ def edit_assembly_layers(
             framing=base.framing if base is not None else None,
             masonry=base.masonry if base is not None else None,
             control=base.control if base is not None else frozenset(),
+            cavity=base.cavity if base is not None else None,
         ))
     op = PatchOp("update", "Assembly", tag, {"layers": RawExpr(value_source(tuple(built)))})
     return MutationResult(ops=[op])

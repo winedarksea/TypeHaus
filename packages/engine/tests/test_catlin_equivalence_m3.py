@@ -203,14 +203,23 @@ def test_floors_get_two_rim_boards_at_the_outer_bearing_lines(catlin_model):
         assert all(m.profile.endswith(" rim") for m in rims)
 
 
-def test_platform_rim_has_exportable_continuous_exterior_layers(catlin_model):
-    """The rim is framing-only; sheathing and outboard control layers bridge it."""
-    bands = [band for band in catlin_model.envelope_bands if band.lower_wall == "W-M-S1"]
-    assert len(bands) == 1
-    band = bands[0]
-    assert band.z1_m - band.z0_m == pytest.approx(ft(1).meters)
-    assert [layer.name for layer in band.layers][:2] == ["sheathing", "wrb"]
-    assert all(layer.name != "batt" for layer in band.layers)
+def test_exterior_wall_spans_floor_to_floor_across_the_rim(catlin_model):
+    """Revit convention: one wall from its base level to the next, no band proxy object.
+
+    The wall's own layers carry the envelope across the joist band; its *framing* still
+    stops at the double top plate, so the band is rim board and joists, not studs.
+    """
+    lower = catlin_model.wall("W-M-S1")
+    upper = catlin_model.wall("W-S-S1")
+    assert lower.z1_m == pytest.approx(upper.z0_m), "no void left at the storey line"
+    assert lower.plate_top_z_m is not None
+    assert lower.z1_m - lower.plate_top_z_m == pytest.approx(ft(1).meters)
+
+    plate_tops = [m.z1_m for m in lower.members if m.category == "plate"]
+    assert max(plate_tops) == pytest.approx(lower.plate_top_z_m, abs=1e-6), \
+        "studs and plates must not run up into the joist band"
+    studs = [m for m in lower.members if m.category == "stud"]
+    assert studs and max(m.z1_m for m in studs) < lower.plate_top_z_m + 1e-6
 
 
 def test_raked_gable_king_studs_match_roof_plane_at_own_station(catlin_model):

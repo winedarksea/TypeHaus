@@ -7,6 +7,7 @@ level wall tops only; the raked-top/rafter arm activates with M3 roofs (→ 30 W
 from __future__ import annotations
 
 import math
+from dataclasses import replace
 
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
@@ -151,8 +152,14 @@ def _framing_axis(rw: ResolvedWall) -> tuple[tuple[float, float], tuple[float, f
 
 
 def _wall_top_elevations(rw: ResolvedWall) -> tuple[float, float]:
-    return (rw.top_z0_m if rw.top_z0_m is not None else rw.z1_m,
-            rw.top_z1_m if rw.top_z1_m is not None else rw.z1_m)
+    """Where the framing tops out — the double top plate, not the wall's overall top.
+
+    A platform-framed wall spans floor-to-floor, but studs stop at the plate; the band
+    above is the rim board and joists (``plate_top_z_m``, set by the stacking extension).
+    """
+    default = rw.plate_top_z_m if rw.plate_top_z_m is not None else rw.z1_m
+    return (rw.top_z0_m if rw.top_z0_m is not None else default,
+            rw.top_z1_m if rw.top_z1_m is not None else default)
 
 
 def _plate(rw: ResolvedWall, p0, p1, key: str, z0: float, z1: float,
@@ -252,14 +259,9 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> None:
     for rw in model.walls:
         members = frame_wall(plan, rw, by_host.get(rw.tag, []),
                              corner_start=_owns_exterior_corner(plan, rw))
-        framed.append(
-            ResolvedWall(
-                uid=rw.uid, tag=rw.tag, storey=rw.storey, assembly=rw.assembly,
-                axis=rw.axis, layers=rw.layers, z0_m=rw.z0_m, z1_m=rw.z1_m,
-                is_foundation=rw.is_foundation, members=members,
-                top_z0_m=rw.top_z0_m, top_z1_m=rw.top_z1_m,
-            )
-        )
+        # ``replace`` rather than a field-by-field rebuild: this pass only adds members,
+        # and respelling the constructor here silently drops any field added later.
+        framed.append(replace(rw, members=members))
     model.walls = framed
 
 

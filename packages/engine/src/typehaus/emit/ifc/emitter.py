@@ -46,9 +46,6 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     for rw in sorted(model.walls, key=lambda w: w.uid):
         wall_entities[rw.tag] = _emit_wall(f, body, rw, storeys, project_uuid, lod)
 
-    for band in sorted(model.envelope_bands, key=lambda item: item.uid):
-        _emit_envelope_band(f, body, band, storeys, project_uuid)
-
     for opening in sorted(model.openings, key=lambda o: o.uid):
         _emit_opening(f, body, opening, model, wall_entities, storeys, project_uuid)
 
@@ -140,6 +137,7 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
     ll.ensure_pset(f, wall, "Pset_WallCommon", {
         "IsExternal": not rw.tag.startswith("INT"),
     })
+    _assign_wall_material(f, wall, rw)
     if rw.is_foundation:
         ll.ensure_pset(f, wall, "Pset_HF_FoundationWall", {"IsFoundation": True})
     ll.assign_container(f, wall, storeys[rw.storey])
@@ -154,27 +152,32 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
     return wall
 
 
-def _emit_envelope_band(f: Any, body: Any, band: Any, storeys: dict[str, Any],
-                        project_uuid: Any) -> None:
-    """Export each physical rim-cover layer as an IFC proxy solid.
+def _assign_wall_material(f: Any, wall: Any, rw: ResolvedWall) -> None:
+    """IfcMaterialLayerSet from the depth-bearing layers + a pset per cavity fill.
 
-    IFC has no portable standard wall-layer segment primitive; separate solids preserve
-    the actual geometry for Revit/SketchUp import while their property set retains the
-    construction role, material reference, and host walls.
+    Cavity insulation is deliberately not a layer: IFC layer thicknesses must sum to the
+    wall depth, and a batt between studs shares that depth with the framing. It rides along
+    as ``TypeHaus_CavityFill`` so the information survives the round trip without lying
+    about geometry.
     """
-    for index, layer in enumerate(band.layers):
-        element = ll.create_entity(f, "IfcBuildingElementProxy",
-                                   name=f"{band.tag}/{layer.name}")
-        child_key = f"layer-{index:02d}-{layer.name}"
-        element.GlobalId = derive_child_guid(project_uuid, band.uid, child_key)
-        rep = ll.add_prism_from_profile(f, body, layer.polygon, band.z1_m - band.z0_m, band.z0_m)
-        _assign_representation(f, element, rep)
-        ll.ensure_pset(f, element, PSET_SOURCE, {
-            "uid": band.uid, "tag": band.tag, "layer": layer.name,
-            "material_ref": layer.material_ref, "function": layer.function,
-            "lower_wall": band.lower_wall, "upper_wall": band.upper_wall,
+    depth_layers = rw.depth_layers()
+    if not depth_layers:
+        return
+    ll.assign_material_layer_set(
+        f, wall,
+        [{"name": ly.name, "material_ref": ly.material_ref,
+          "thickness_m": ly.thickness_m, "category": ly.function}
+         for ly in depth_layers],
+        name=rw.assembly,
+    )
+    for ly in rw.layers:
+        if not ly.is_cavity:
+            continue
+        ll.ensure_pset(f, wall, "TypeHaus_CavityFill", {
+            "HostLayer": ly.cavity_host or "",
+            "Material": ly.material_ref,
+            "Thickness": ly.thickness_m,
         })
-        ll.assign_container(f, element, storeys[band.storey])
 
 
 def _opening_segment(rw: ResolvedWall, opening: Any) -> tuple[tuple[float, float],
@@ -185,7 +188,7 @@ def _opening_segment(rw: ResolvedWall, opening: Any) -> tuple[tuple[float, float
     ux, uy = (ex - sx) / length, (ey - sy) / length
     c0 = opening.center_along_m - opening.width_m / 2
     c1 = opening.center_along_m + opening.width_m / 2
-    thickness = sum(layer.thickness_m for layer in rw.layers) or 0.15
+    thickness = rw.thickness_m or 0.15
     return (sx + ux * c0, sy + uy * c0), (sx + ux * c1, sy + uy * c1), thickness
 
 

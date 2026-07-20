@@ -51,7 +51,8 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
 def _layer_json(layer) -> dict[str, Any]:
     return {"name": layer.name, "material": layer.material_ref, "function": layer.function,
             "thickness_m": layer.thickness_m, "polygon": [list(point) for point in layer.polygon],
-            "control": sorted(layer.control)}
+            "control": sorted(layer.control),
+            "is_cavity": layer.is_cavity, "cavity_host": layer.cavity_host}
 
 
 def _findings_json(findings: list[Finding] | None) -> list[dict[str, Any]]:
@@ -179,12 +180,7 @@ def model_to_dict(
                 "axis": [list(w.axis[0]), list(w.axis[1])],
                 "z0_m": w.z0_m, "z1_m": w.z1_m, "top_z0_m": w.top_z0_m,
                 "top_z1_m": w.top_z1_m, "is_foundation": w.is_foundation,
-                "layers": [
-                    {"name": ly.name, "function": ly.function, "material": ly.material_ref,
-                     "thickness_m": ly.thickness_m, "polygon": [list(p) for p in ly.polygon],
-                     "control": sorted(ly.control)}
-                    for ly in w.layers
-                ],
+                "layers": [_layer_json(ly) for ly in w.layers],
                 "members": [_member_json(m) for m in w.members],
             }
             for w in sorted(model.walls, key=lambda x: x.uid)
@@ -296,13 +292,6 @@ def model_to_dict(
              "provenance": _provenance(provenance, floor.tag),
              "members": [_member_json(member) for member in floor.members]}
             for floor in sorted(model.floors, key=lambda item: item.uid)
-        ],
-        "envelope_bands": [
-            {"uid": band.uid, "tag": band.tag, "storey": band.storey,
-             "lower_wall": band.lower_wall, "upper_wall": band.upper_wall,
-             "z0_m": band.z0_m, "z1_m": band.z1_m,
-             "layers": [_layer_json(layer) for layer in band.layers]}
-            for band in sorted(model.envelope_bands, key=lambda item: item.uid)
         ],
         "floor_heat": [
             {"uid": zone.uid, "tag": zone.tag, "storey": zone.storey, "system": zone.system,

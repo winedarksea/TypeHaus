@@ -17,7 +17,16 @@ from typehaus.model.views import Slice
 from typehaus.model.enums import SliceKind
 from typehaus.quantities import m, pt
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
-from typehaus.emit.draw.scene import Hatch, Polyline, Scene, SceneBuilder, Text
+from typehaus.emit.draw.palette import detail_hatch
+from typehaus.emit.draw.scene import (
+    Hatch,
+    Leader,
+    NamedPoint,
+    Polyline,
+    Scene,
+    SceneBuilder,
+    Text,
+)
 
 M_TO_IN = 39.37007874015748
 
@@ -70,18 +79,73 @@ def _clip_rect(u0, u1, z0, z1, crop) -> tuple[float, float, float, float] | None
     return (u0, u1, z0, z1)
 
 
-def _rect_nodes(u0, u1, z0, z1, layer, pattern, uid, tag) -> list:
+# Vertical step between successive layer labels in a detail, model inches.
+_LABEL_RUNG_IN = 2.6
+
+
+def _clip_polygon(points, crop):
+    """Sutherland–Hodgman clip of a (u, z) polygon to the crop rectangle.
+
+    ``_clip_rect`` only handles axis-aligned bands; a sloped roof band needs a real
+    polygon clip or it runs straight off the detail's crop window.
+    """
+    if crop is None:
+        return list(points)
+    (cu0, cz0), (cu1, cz1) = crop
+    u_lo, u_hi = min(cu0, cu1), max(cu0, cu1)
+    z_lo, z_hi = min(cz0, cz1), max(cz0, cz1)
+
+    def clip(poly, inside, intersect):
+        out = []
+        for index, current in enumerate(poly):
+            previous = poly[index - 1]
+            cur_in, prev_in = inside(current), inside(previous)
+            if cur_in:
+                if not prev_in:
+                    out.append(intersect(previous, current))
+                out.append(current)
+            elif prev_in:
+                out.append(intersect(previous, current))
+        return out
+
+    def cut(poly, axis, bound, keep_greater):
+        def inside(p):
+            return p[axis] >= bound if keep_greater else p[axis] <= bound
+
+        def intersect(a, b):
+            span = b[axis] - a[axis]
+            t = 0.0 if abs(span) < 1e-12 else (bound - a[axis]) / span
+            return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+
+        return clip(poly, inside, intersect)
+
+    poly = list(points)
+    for axis, bound, keep_greater in (
+        (0, u_lo, True), (0, u_hi, False), (1, z_lo, True), (1, z_hi, False),
+    ):
+        if not poly:
+            return []
+        poly = cut(poly, axis, bound, keep_greater)
+    return poly
+
+
+def _rect_nodes(u0, u1, z0, z1, layer, pattern, uid, tag, outline: bool = True,
+                material: str | None = None) -> list:
     pts = tuple((u * M_TO_IN, z * M_TO_IN) for u, z in
                 ((u0, z0), (u1, z0), (u1, z1), (u0, z1)))
-    nodes: list = [Polyline(points=pts, layer=layer, closed=True,
-                            lineweight=0.35 if layer == "A-WALL" else 0.18,
-                            uid=uid, tag=tag)]
+    nodes: list = []
+    if outline:
+        nodes.append(Polyline(points=pts, layer=layer, closed=True,
+                              lineweight=0.35 if layer == "A-WALL" else 0.18,
+                              uid=uid, tag=tag))
     if pattern:
-        nodes.append(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT"))
+        nodes.append(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT",
+                           material=material))
     return nodes
 
 
-def _quad_nodes(u0, u1, z0, z1_left, z1_right, layer, pattern, uid, tag) -> list:
+def _quad_nodes(u0, u1, z0, z1_left, z1_right, layer, pattern, uid, tag,
+                material: str | None = None) -> list:
     """Like ``_rect_nodes`` but with a sloped top: left/right top elevations differ.
 
     Sibling of ``_rect_nodes`` for per-layer sloped terminations (Revit layer extension
@@ -93,7 +157,8 @@ def _quad_nodes(u0, u1, z0, z1_left, z1_right, layer, pattern, uid, tag) -> list
                             lineweight=0.35 if layer == "A-WALL" else 0.18,
                             uid=uid, tag=tag)]
     if pattern:
-        nodes.append(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT"))
+        nodes.append(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT",
+                           material=material))
     return nodes
 
 
@@ -127,7 +192,8 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
             if rect is None:
                 continue
             b.extend(_rect_nodes(*rect, "S-FNDN" if solid.category != "slab" else "A-SLAB",
-                                 "concrete", solid.uid, solid.tag))
+                                 "concrete", solid.uid, solid.tag,
+                                 material="concrete"))
 
     for roof in model.roofs:
         _emit_roof_cut(b, model, roof, direction, station, crop, joints)
@@ -161,6 +227,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
                    is_detail, min_draw, joints=None) -> None:
     openings = [op for op in model.openings if op.host_wall == wall.tag]
     label_z = None
+    label_row = [0]  # mutable so the label ladder advances across the layer loop
     wall_top = _wall_top_at_cut(wall, direction, station)
     for layer in wall.layers:
         term = joints.termination(wall.uid, layer.name) if joints is not None else None
@@ -178,7 +245,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
                 ru0, ru1 = ru0 - grow, ru1 + grow
                 exaggerated = True
             aia = _FUNCTION_LAYER.get(layer.function, "A-WALL")
-            pattern = _HATCH_PATTERN.get(layer.function)
+            pattern = detail_hatch(layer.material_ref, layer.function)
             sloped = term is not None and abs(layer_top_l - layer_top_r) > 1e-6
             if sloped:
                 # Raked layer termination against the interface plane — single sloped quad,
@@ -186,7 +253,8 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
                 tl = min(layer_top_l, rz1)
                 tr = min(layer_top_r, rz1)
                 b.extend(_quad_nodes(ru0, ru1, rz0, tl, tr,
-                                     aia, pattern, wall.uid, f"{wall.tag}/{layer.name}"))
+                                     aia, pattern, wall.uid, f"{wall.tag}/{layer.name}",
+                                     material=layer.material_ref))
                 continue
             zs = _opening_splits(wall, openings, direction, station, rz0, rz1)
             for (z0, z1, void) in zs:
@@ -198,17 +266,28 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
                                    uid=wall.uid, tag=f"{wall.tag}-void"))
                     continue
                 b.extend(_rect_nodes(ru0, ru1, z0, z1, aia, pattern, wall.uid,
-                                     f"{wall.tag}/{layer.name}"))
-            if is_detail:
-                # true-dimension label per layer (exaggeration labels true size, #36)
+                                     f"{wall.tag}/{layer.name}",
+                                     outline=not layer.is_cavity,
+                                     material=layer.material_ref))
+            if is_detail and not layer.is_cavity:
+                # True-dimension label per layer (exaggeration labels true size, #36).
+                # Stacked vertically in a ladder: at detail scale a membrane and its
+                # neighbours are hundredths of an inch apart, so labels sharing one
+                # baseline overprint into an unreadable smear.
                 thickness_in = true_thickness * M_TO_IN
                 label = f"{layer.name} {thickness_in:.3g}\""
                 if exaggerated:
                     label += " (NTS)"
                 z_lab = label_z if label_z is not None else rz1
-                b.add(Text(anchor=(((ru0 + ru1) / 2) * M_TO_IN, (z_lab * M_TO_IN) + 2.0),
-                           content=label, height=1.5, rotation=90.0, align="left",
-                           layer="A-ANNO-TEXT"))
+                # Horizontal, laddered off the inboard face and leadered back to the layer.
+                # Rotated labels sharing one baseline overprint into vertical smears at
+                # detail scale, where a membrane and its neighbours are hundredths apart.
+                rung = (z_lab * M_TO_IN) - _LABEL_RUNG_IN * label_row[0] - 1.0
+                label_row[0] += 1
+                mid_u = ((ru0 + ru1) / 2) * M_TO_IN
+                text_u = (crop[0][0] * M_TO_IN) - 1.0 if crop is not None else mid_u - 14.0
+                b.add(Leader(anchor=NamedPoint(xy=(mid_u, rung)), at=(text_u, rung),
+                             to=(mid_u, rung), text=label, layer="A-ANNO-TEXT"))
 
 
 def _opening_splits(wall, openings, direction, station, z0, z1):
@@ -306,15 +385,21 @@ def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None) -> Non
             for (layer, d0, d1) in detail_layers:
                 band_top = [(u, z - d0) for (u, z) in top]
                 band_bot = [(u, z - d1) for (u, z) in reversed(top)]
-                pts = tuple((u * M_TO_IN, z * M_TO_IN) for (u, z) in band_top + band_bot)
+                clipped = _clip_polygon(band_top + band_bot, crop)
+                if len(clipped) < 3:
+                    continue
+                pts = tuple((u * M_TO_IN, z * M_TO_IN) for (u, z) in clipped)
                 b.add(Polyline(points=pts, layer="A-ROOF", closed=True, lineweight=0.18,
                                uid=roof.uid, tag=f"{roof.tag}/{layer.name}"))
-                pat = _HATCH_PATTERN.get(layer.function, "batt")
-                b.add(Hatch(boundary=pts, pattern=pat, layer="A-WALL-PATT",
-                            uid=roof.uid))
+                pat = detail_hatch(layer.material_ref, layer.function.value)
+                b.add(Hatch(boundary=pts, pattern=pat or "batt", layer="A-WALL-PATT",
+                            uid=roof.uid, material=layer.material_ref))
             continue
         bottom = [(u, z - thickness) for (u, z) in reversed(top)]
-        pts = tuple((u * M_TO_IN, z * M_TO_IN) for (u, z) in top + bottom)
+        clipped = _clip_polygon(top + bottom, crop)
+        if len(clipped) < 3:
+            continue
+        pts = tuple((u * M_TO_IN, z * M_TO_IN) for (u, z) in clipped)
         b.add(Polyline(points=pts, layer="A-ROOF", closed=True, lineweight=0.35,
                        uid=roof.uid, tag=roof.tag))
         b.add(Hatch(boundary=pts, pattern="batt", layer="A-WALL-PATT"))

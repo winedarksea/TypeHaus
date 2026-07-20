@@ -61,6 +61,10 @@ class Hatch(_IRBase):
     angle: float = 0.0
     layer: str = "A-WALL-PATT"
     uid: str | None = None  # hit-testing / annotation provenance (→ detail editor)
+    # Material tag this fill represents. A detail reads by material, not layer function —
+    # concrete, XPS, EPS and polyiso must be distinguishable at a glance — so the writers
+    # resolve fill colour through ``palette.detail_fill`` rather than the pattern alone.
+    material: str | None = None
 
 
 class Text(_IRBase):

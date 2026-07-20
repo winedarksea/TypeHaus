@@ -60,6 +60,28 @@ function hatchFill(pattern: string): string {
   return HATCH_DEFS[pattern] ? `url(#h-${pattern})` : "none";
 }
 
+// Per-material fill for cut layers — must match the engine's palette.detail_fill so the
+// app and the rendered PNG/PDF of the same detail agree. A pattern alone cannot tell
+// concrete, XPS, EPS and polyiso apart; the fill underneath the hatch is what does.
+const DETAIL_FILL: Record<string, string> = {
+  concrete: "#bfbfbf", spf: "#c8a26a", lsl: "#bb955c",
+  osb: "#d9c8a0", "struct-1-plywood": "#d9c8a0", "plywood-subfloor": "#d9c8a0",
+  "zip-r": "#3f6d3a", gwb: "#e6e6e6",
+  polyiso: "#f4e6b1", "polyiso-foil": "#efdf9e",
+  eps: "#c8e0f8", "icf-eps": "#d8e8fa", xps: "#a7d7c5",
+  "mineral-wool": "#a8a8a8", fiberglass: "#ddecc8",
+  "air-barrier": "#1e3a5f", "standing-seam": "#2f2f2f", "fiber-cement": "#e6e6e6",
+  "cedar-tg": "#c8a26a", "sauna-tg": "#e6d4ae", "resilient-channel": "#91979d",
+  aggregate: "#7f7f7f", "river-rock": "#a9a9a9", soil: "#d2b48c",
+  "spray-foam": "#ffd966", sealant: "#6e4f2a", flashing: "#7a0c0c",
+  metal: "#ffffff", "metal-dark": "#2f2f2f", rubber: "#3a3a3a",
+  glass: "#bee3f8", gutter: "#8b8b8b",
+};
+
+function materialFill(material: string | null | undefined): string | null {
+  return (material && DETAIL_FILL[material]) || null;
+}
+
 interface Bounds {
   minX: number;
   minY: number;
@@ -179,15 +201,19 @@ function SceneNode({
     }
     case "hatch": {
       const pts = (node.boundary as Pt[]).map(([x, y]) => `${x},${fy(y, bounds)}`).join(" ");
+      const base = materialFill(node.material as string | undefined);
       return (
-        <polygon
-          points={pts}
-          fill={hatchFill(node.pattern as string)}
-          stroke="none"
-          onClick={pick}
-          style={pick ? { cursor: "pointer" } : undefined}
-          {...dataUid}
-        />
+        <>
+          {base && <polygon points={pts} fill={base} stroke="none" />}
+          <polygon
+            points={pts}
+            fill={hatchFill(node.pattern as string)}
+            stroke="none"
+            onClick={pick}
+            style={pick ? { cursor: "pointer" } : undefined}
+            {...dataUid}
+          />
+        </>
       );
     }
     case "text": {

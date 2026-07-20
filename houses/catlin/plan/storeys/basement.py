@@ -90,8 +90,12 @@ WALLS = [
                    alignment=face("concrete-ext"),
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     # Center cross walls (12" concrete) — the 18' bearing grid.
-    FoundationWall(uid="CBW111AAAA", tag="W-B-CS", start_node="N-B-S2",
-                   end_node="N-B-C1", assembly="CATLIN_CONC_12_INT",
+    # This segment is exactly the sauna's east boundary, so it carries the liner stack
+    # directly on the concrete. Aligned on the concrete's far face so the 18' bearing
+    # grid stays put and the liner grows into the sauna.
+    FoundationWall(uid="CBW111AAAA", tag="W-B-CS", start_node="N-B-C1",
+                   end_node="N-B-S2", assembly="SAUNA_LINER_ON_CONCRETE",
+                   alignment=face("concrete-ext", offset=inch(-6)),
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     FoundationWall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
                    end_node="N-B-C", assembly="CATLIN_CONC_12_INT",
@@ -109,11 +113,14 @@ WALLS = [
     FoundationWall(uid="CBW116AAAA", tag="W-B-STR", start_node="N-B-N2",
                    end_node="N-B-STR", assembly="CATLIN_CONC_8_INT",
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
-    # Sauna partitions (2x4), east wall is the center concrete wall.
+    # Sauna partitions — SAUNA_2X4 carries the hot-side liner (T&G over furring over
+    # foil-faced polyiso) as part of the wall type, so the vapour control layer is a
+    # property of the assembly rather than a room finish override. East wall is the
+    # center concrete wall, which takes the liner via SAUNA_LINER_ON_CONCRETE.
     Wall(uid="CBW117AAAA", tag="W-B-SA-W", start_node="N-B-S1",
-         end_node="N-B-SA1", assembly="INT_2X4_PARTITION", top=ft(7, 6)),
+         end_node="N-B-SA1", assembly="SAUNA_2X4", top=ft(7, 6)),
     Wall(uid="CBW118AAAA", tag="W-B-SA-N", start_node="N-B-SA1",
-         end_node="N-B-C1", assembly="INT_2X4_PARTITION", top=ft(7, 6)),
+         end_node="N-B-C1", assembly="SAUNA_2X4", top=ft(7, 6)),
 ]
 
 OPENINGS = [
@@ -142,19 +149,14 @@ OPENINGS = [
            sill_height=ft(3)),
 ]
 
-_SAUNA_LINING = (
-    Layer(name="cedar-tg", material_ref="cedar-tg", thickness=inch(0.75),
-          function=LayerFunction.FINISH),
-)
-
 ROOMS = [
     Room(uid="CBR401AAAA", tag="RM-B-FURNACE", seed=pt(ft(5), ft(30)),
          occupancy=Occupancy.MECHANICAL, floor_finish="sealed-concrete"),
     Room(uid="CBR402AAAA", tag="RM-B-WORKSHOP", seed=pt(ft(5), ft(8)),
          occupancy=Occupancy.UTILITY, floor_finish="sealed-concrete"),
+    # No wall_lining override: the liner is part of SAUNA_2X4 / SAUNA_LINER_ON_CONCRETE.
     Room(uid="CBR403AAAA", tag="RM-B-SAUNA", seed=pt(ft(14), ft(6)),
-         occupancy=Occupancy.BATHROOM, floor_finish="tile",
-         wall_lining=_SAUNA_LINING),
+         occupancy=Occupancy.BATHROOM, floor_finish="tile"),
     Room(uid="CBR404AAAA", tag="RM-B-PLAY-N", seed=pt(ft(27), ft(27)),
          occupancy=Occupancy.MEDIA, floor_finish="carpet"),
     Room(uid="CBR405AAAA", tag="RM-B-GYM", seed=pt(ft(27), ft(9)),

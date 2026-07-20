@@ -41,6 +41,25 @@ class MasonrySpec(HausModel):
     rebar_spacing: Length | None = None
 
 
+class CavityFill(HausModel):
+    """Insulation living *inside* a STRUCTURE layer's stud/joist bays — never its own layer.
+
+    A batt between studs occupies the framing depth; it adds no thickness to the assembly
+    and shares its host layer's polygon. Modelling it as a sibling ``Layer`` double-counts
+    both the wall depth and the R-value (the fill and the framing are a parallel path, not
+    a series one) and exports an ``IfcMaterialLayerSet`` that no longer sums to the wall
+    thickness — which is what Revit/SketchUp read on import.
+
+    ``thickness`` defaults to the host layer's thickness (a full-depth bay); a shallower
+    fill (R-13 batt in a 2x6 bay) states its own, and the remainder is treated as still air.
+    """
+
+    material_ref: str
+    thickness: Length | None = None  # None => the host STRUCTURE layer's thickness
+    framing_factor: float = 0.23  # fraction of area that is framing, not fill
+    control: frozenset[ControlLayer] = frozenset()
+
+
 class Layer(HausModel):
     """One layer of an assembly stack (→ 10 §Element model)."""
 
@@ -51,6 +70,8 @@ class Layer(HausModel):
     framing: FramingSpec | None = None
     masonry: MasonrySpec | None = None
     control: frozenset[ControlLayer] = frozenset()
+    # STRUCTURE layers only: insulation in the framing bays (non-additive, → CavityFill).
+    cavity: CavityFill | None = None
 
 
 class AssemblyInterface(HausModel):
@@ -113,6 +134,7 @@ class ConstructionRule(HausModel):
 
 for _name, _obj in (
     ("Layer", Layer),
+    ("CavityFill", CavityFill),
     ("FramingSpec", FramingSpec),
     ("MasonrySpec", MasonrySpec),
     ("Assembly", Assembly),

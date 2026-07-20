@@ -5,11 +5,13 @@
 # (2x6 → 2x4) keeps the sheathing plane and every control layer continuous.
 from typehaus import (
     Assembly,
+    CavityFill,
     ControlLayer,
     FramingSpec,
     Layer,
     LayerFunction,
     MasonrySpec,
+    Material,
     Substitution,
     inch,
     layers,
@@ -26,9 +28,8 @@ CATLIN_EXT_2X6 = Assembly(
     tag="CATLIN_EXT_2X6",
     layers=(
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
-        Layer(name="batt", material_ref="mineral-wool", thickness=inch(5.5),
-              function=LayerFunction.INSULATION),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6"),
+              cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
         Layer(name="wrb", material_ref="air-barrier", thickness=inch(0.02),
@@ -54,13 +55,12 @@ CATLIN_EXT_2X4 = Assembly(
     variant_of="CATLIN_EXT_2X6",
     substitute=(
         Substitution(
-            span=layers("stud", "batt"),
+            span=layers("stud", "stud"),
             replacement=(
                 Layer(name="stud", material_ref="spf", thickness=inch(3.5),
                       function=LayerFunction.STRUCTURE,
-                      framing=FramingSpec(member="2x4")),
-                Layer(name="batt", material_ref="mineral-wool", thickness=inch(3.5),
-                      function=LayerFunction.INSULATION),
+                      framing=FramingSpec(member="2x4"),
+                      cavity=CavityFill(material_ref="mineral-wool")),
             ),
         ),
     ),
@@ -72,9 +72,9 @@ CATLIN_ROOF = Assembly(
     layers=(
         Layer(name="rafter", material_ref="spf", thickness=inch(11.875),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="11.875 I-joist")),
-        Layer(name="cavity", material_ref="mineral-wool", thickness=inch(11.875),
-              function=LayerFunction.INSULATION),
+              framing=FramingSpec(member="11.875 I-joist"),
+              # I-joist webs are thin, so the framing fraction is far below a stud wall's.
+              cavity=CavityFill(material_ref="mineral-wool", framing_factor=0.07)),
         Layer(name="deck", material_ref="struct-1-plywood", thickness=inch(0.75),
               function=LayerFunction.SHEATHING),
         Layer(name="membrane", material_ref="air-barrier", thickness=inch(0.25),
@@ -174,9 +174,8 @@ GARAGE_WALL_2X6 = Assembly(
     tag="GARAGE_WALL_2X6",
     layers=(
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
-        Layer(name="batt", material_ref="mineral-wool", thickness=inch(5.5),
-              function=LayerFunction.INSULATION),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6"),
+              cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="zip-r", material_ref="zip-r", thickness=inch(1.5),
               function=LayerFunction.SHEATHING,
               control={ControlLayer.AIR, ControlLayer.WATER, ControlLayer.THERMAL}),
@@ -233,7 +232,58 @@ INT_2X6_PLUMBING = Assembly(
     source="wet wall — depth for 3\" stacks",
 )
 
-MATERIALS = STARTER_MATERIALS
+# --- sauna ---------------------------------------------------------------------
+# The hot side of a sauna is its own wall type, not a lining override on a partition:
+# the foil-faced polyiso is the vapour/air control layer and the T&G liner is a
+# low-conductivity species chosen so the boards stay touchable at löyly temperatures.
+# Per notes/sauna_basement_wall_detail.md.
+_SAUNA_LINER = (
+    Layer(name="tg-liner", material_ref="sauna-tg", thickness=inch(1.0),
+          function=LayerFunction.FINISH),
+    Layer(name="liner-furring", material_ref="struct-1-plywood", thickness=inch(0.5),
+          function=LayerFunction.FURRING,
+          framing=FramingSpec(member="1x4", direction="horizontal")),
+    Layer(name="foil-polyiso", material_ref="polyiso-foil", thickness=inch(2.0),
+          function=LayerFunction.INSULATION,
+          control={ControlLayer.THERMAL, ControlLayer.VAPOR, ControlLayer.AIR}),
+)
+
+# Sauna partition: hot side liner, 2x4 framing, gwb on the cold side.
+SAUNA_2X4 = Assembly(
+    tag="SAUNA_2X4",
+    layers=(
+        *_SAUNA_LINER,
+        Layer(name="stud", material_ref="spf", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x4"),
+              cavity=CavityFill(material_ref="mineral-wool")),
+        Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+    ),
+    source="catlin-house sauna_basement_wall_detail.py + notes/sauna_basement_wall_detail.md",
+)
+
+# Where the sauna's hot side lands on the center concrete wall there is no framing to
+# fill — the liner stack applies directly to the concrete.
+SAUNA_LINER_ON_CONCRETE = Assembly(
+    tag="SAUNA_LINER_ON_CONCRETE",
+    layers=(
+        *_SAUNA_LINER,
+        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house sauna_basement_wall_detail.py (liner on the center bearing wall)",
+)
+
+MATERIALS = [
+    *STARTER_MATERIALS,
+    Material(tag="sauna-tg", name="Basswood/aspen T&G sauna liner (5/4)", r_per_inch=1.3,
+             perm_rating=20.0, hatch="lumber", color="#e6d4ae",
+             source="notes/sauna_basement_wall_detail.md — low-conductivity species (American basswood, Canadian poplar, aspen)"),
+    Material(tag="polyiso-foil", name="Foil-faced polyisocyanurate", r_per_inch=6.0,
+             perm_rating=0.03, hatch="rigid", color="#d9d2a8",
+             source="foil facer is the sauna's vapour retarder as well as its CI"),
+]
+
 ASSEMBLIES = [
     CATLIN_EXT_2X6,
     CATLIN_EXT_2X4,
@@ -249,4 +299,6 @@ ASSEMBLIES = [
     CATLIN_INT_2X6_BRG,
     INT_2X6_PLUMBING,
     INT_2X4_PARTITION,
+    SAUNA_2X4,
+    SAUNA_LINER_ON_CONCRETE,
 ]

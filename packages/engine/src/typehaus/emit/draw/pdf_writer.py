@@ -11,6 +11,7 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
+from typehaus.emit.draw.palette import detail_fill
 from typehaus.emit.draw.scene import (
     ArchDimension,
     Hatch,
@@ -66,7 +67,11 @@ _LAYER_STYLE = {
     "C-TOPO-ARRW": ("#5a8a5a", 0.4),
     "L-SITE-GRAD": ("#5a8a5a", 0.7),
 }
-_HATCH_MPL = {"batt": "....", "osb": "//", "lumber": "\\\\", "concrete": "..", "SOLID": None}
+_HATCH_MPL = {
+    "batt": "....", "osb": "//", "lumber": "\\\\", "concrete": "..", "SOLID": None,
+    "rigid": "xx", "gypsum": None, "membrane": None, "metal": None,
+    "gravel": "oo", "soil": "..", "foam": "**",
+}
 
 # name -> (marker, color) for the simple device/register/equipment symbol vocabulary.
 _MARKER_STYLE = {
@@ -79,26 +84,107 @@ _MARKER_STYLE = {
 }
 
 
+# Leader notes have no authored height; this is their model-space size in inches.
+_LEADER_TEXT_H = 1.6
+# Clamps in points, so a sheet-scale plan's labels stay readable and a tight detail's
+# lettering cannot swallow the drawing.
+_MIN_PT, _MAX_PT = 3.0, 14.0
+
+
+def _scene_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
+    """Model-space bbox of the scene, allowing for the width labels occupy.
+
+    Text is placed by its anchor, so a bbox over anchors alone crops the lettering off the
+    sheet — a detail's callout column would run past the right edge every time.
+    """
+    us: list[float] = []
+    zs: list[float] = []
+    for node in scene.nodes:
+        points = getattr(node, "points", None) or getattr(node, "boundary", None)
+        if points:
+            us.extend(p[0] for p in points)
+            zs.extend(p[1] for p in points)
+        elif isinstance(node, (Text, Leader)):
+            content = node.content if isinstance(node, Text) else node.text
+            height = node.height if isinstance(node, Text) else _LEADER_TEXT_H
+            anchor = node.anchor if isinstance(node, Text) else node.at
+            if not isinstance(anchor, tuple):
+                continue
+            width = max(len(line) for line in content.split("\n")) * height * _CHAR_ASPECT
+            lines = content.count("\n") + 1
+            align = getattr(node, "align", "left")
+            u0 = {"left": anchor[0], "center": anchor[0] - width / 2,
+                  "right": anchor[0] - width}[align]
+            us.extend((u0, u0 + width))
+            zs.extend((anchor[1] - height * lines, anchor[1] + height * lines))
+    if not us or not zs:
+        return None
+    return min(us), min(zs), max(us), max(zs)
+
+
+# Monospace advance width as a fraction of cap height — used only to reserve room.
+_CHAR_ASPECT = 0.62
+_MAX_FIG = (14.0, 11.0)
+_MIN_FIG = (5.0, 4.0)
+
+
 def _fig(scene: Scene, title: str | None):
     import matplotlib
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    fig, ax = plt.subplots(figsize=(11, 8.5))
+    bounds = _scene_bounds(scene)
+    figsize = (11.0, 8.5)
+    if bounds is not None:
+        u0, z0, u1, z1 = bounds
+        span_u, span_z = max(u1 - u0, 1e-6), max(z1 - z0, 1e-6)
+        # Fit the drawing's own aspect inside the sheet envelope, so a tall detail is
+        # rendered tall rather than stranded in the middle of a landscape page.
+        scale = min(_MAX_FIG[0] / span_u, _MAX_FIG[1] / span_z)
+        figsize = (max(_MIN_FIG[0], span_u * scale), max(_MIN_FIG[1], span_z * scale))
+
+    fig, ax = plt.subplots(figsize=figsize)
     ax.set_aspect("equal")
     ax.axis("off")
-    _render_nodes(ax, scene)
+    scaled_text = _render_nodes(ax, scene)
     if title:
         ax.set_title(title, fontsize=9, family="monospace", loc="left")
-    ax.autoscale_view()
+    if bounds is not None:
+        u0, z0, u1, z1 = bounds
+        pad = max(u1 - u0, z1 - z0) * 0.02
+        ax.set_xlim(u0 - pad, u1 + pad)
+        ax.set_ylim(z0 - pad, z1 + pad)
+    else:
+        ax.autoscale_view()
     fig.tight_layout()
+    _apply_text_scale(fig, ax, scaled_text)
     return fig
+
+
+def _apply_text_scale(fig, ax, scaled_text) -> None:
+    """Convert each label's model-space height into a point size at the drawn scale."""
+    if not scaled_text:
+        return
+    origin = ax.transData.transform((0.0, 0.0))
+    unit = ax.transData.transform((0.0, 1.0))
+    pixels_per_unit = abs(unit[1] - origin[1])
+    if pixels_per_unit <= 0.0:
+        return
+    points_per_unit = pixels_per_unit * 72.0 / fig.dpi
+    for artist, height in scaled_text:
+        artist.set_fontsize(min(_MAX_PT, max(_MIN_PT, height * points_per_unit)))
 
 
 def _render_nodes(ax: object, scene: Scene) -> None:
     from matplotlib.patches import Arc, PathPatch, Polygon
     from matplotlib.path import Path as MplPath
+
+    # (artist, model-space height in inches) — resized once the data limits are known.
+    # ``Text.height`` is model space (→ scene.py), so it cannot be handed to matplotlib as
+    # a point size: a detail cropped to 3 ft and a plan spanning 40 ft would otherwise get
+    # identical, and in the detail's case invisible, lettering.
+    scaled_text: list[tuple[object, float]] = []
 
     for node in scene.nodes:
         if isinstance(node, Polyline):
@@ -111,23 +197,40 @@ def _render_nodes(ax: object, scene: Scene) -> None:
             else:
                 ax.plot(xs, ys, color=color, linewidth=lw, solid_capstyle="round")
         elif isinstance(node, Hatch):
+            # Fill by material, then overlay the hatch — an unfilled hatch alone makes
+            # concrete, XPS, EPS and polyiso read as the same grey stipple.
             hatch = _HATCH_MPL.get(node.pattern, "..")
-            ax.add_patch(Polygon(list(node.boundary), closed=True, fill=False,
-                                 hatch=hatch, edgecolor="#9a8a5a", linewidth=0.0))
+            fill = detail_fill(node.material, None)
+            ax.add_patch(Polygon(list(node.boundary), closed=True, facecolor=fill,
+                                 edgecolor="none", linewidth=0.0, zorder=0.5))
+            if hatch:
+                ax.add_patch(Polygon(list(node.boundary), closed=True, fill=False,
+                                     hatch=hatch, edgecolor="#6f6a5e", linewidth=0.0,
+                                     zorder=0.6))
         elif isinstance(node, Text):
             ha = {"left": "left", "center": "center", "right": "right"}[node.align]
-            ax.text(node.anchor[0], node.anchor[1], node.content, fontsize=node.height * 1.7,
-                    ha=ha, va="center", rotation=node.rotation, family="monospace",
-                    color="#222")
+            scaled_text.append((
+                ax.text(node.anchor[0], node.anchor[1], node.content,
+                        ha=ha, va="center", rotation=node.rotation, family="monospace",
+                        color="#222"),
+                node.height,
+            ))
         elif isinstance(node, ArchDimension):
             _draw_dimension(ax, node)
         elif isinstance(node, Symbol):
             _draw_symbol(ax, node, Arc)
         elif isinstance(node, Leader):
-            ax.plot([node.at[0], node.to[0]], [node.at[1], node.to[1]],
+            # Leader geometry is anchor→shoulder; the note sits at the free end (``at``).
+            ax.plot([node.to[0], node.at[0]], [node.to[1], node.at[1]],
                     color="#555", linewidth=0.5)
-            ax.text(node.to[0], node.to[1], node.text, fontsize=6, family="monospace")
+            ax.plot([node.to[0]], [node.to[1]], marker=".", markersize=2, color="#555")
+            scaled_text.append((
+                ax.text(node.at[0], node.at[1], node.text, family="monospace",
+                        va="center", color="#222"),
+                _LEADER_TEXT_H,
+            ))
     _ = (PathPatch, MplPath)  # imported for parity with richer node kinds
+    return scaled_text
 
 
 def _draw_dimension(ax: object, node: ArchDimension) -> None:

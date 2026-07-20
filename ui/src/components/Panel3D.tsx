@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { ALL_TRADES, useStore, type Trade } from "../state/store";
-import type { Model, Roof, Solid, Floor, Stair, Wall, EnvelopeBand } from "../model/types";
+import type { Model, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
 import { createPlanPrismGeometry } from "../three/planGeometry";
@@ -286,7 +286,6 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     }
     if (!preserveView) target = new THREE.Vector3(0, 1.2, 0);
 
-    for (const band of m.envelope_bands ?? []) buildEnvelopeBand(tradeGroups.walls, band, cx, cz, mode, palette);
     for (const w of m.walls) buildWall(tradeGroups, w, cx, cz, mode, palette, picks, byUid);
     for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, cx, cz, mode, palette);
     for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, cx, cz, mode, palette);
@@ -435,6 +434,9 @@ function buildWall(
   const mats: THREE.Material[] = [];
   for (const ly of w.layers) {
     if (ly.polygon.length < 3) continue;
+    // Cavity fill shares its host structure layer's polygon — extruding it would only
+    // z-fight with the studs it lives between.
+    if (ly.is_cavity) continue;
     let geo: THREE.BufferGeometry;
     if (raked) {
       geo = buildRakedLayerGeometry(ly.polygon, w.z0_m, w, cx, cz);
@@ -467,20 +469,6 @@ function buildWall(
   buildMembers(tradeGroups.framing, w.members, cx, cz, mode);
   byUid.set(w.uid, mats);
 }
-
-function buildEnvelopeBand(parent: THREE.Group, band: EnvelopeBand, cx: number, cz: number,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
-  for (const layer of band.layers) {
-    if (layer.polygon.length < 3) continue;
-    const geometry = createPlanPrismGeometry(translatePlanRing(layer.polygon, cx, cz), band.z0_m, band.z1_m);
-    if (!geometry) continue;
-    parent.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
-      color: new THREE.Color(materialColor(layer.material, palette)), roughness: mode === "nordic" ? 0.85 : 1,
-      flatShading: mode === "schematic",
-    })));
-  }
-}
-
 
 // Slabs, footings, pads: same outline-extrusion recipe as wall layers, concrete grey.
 function buildSolid(parent: THREE.Group, solid: Solid, cx: number, cz: number,

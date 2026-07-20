@@ -9,6 +9,7 @@ from __future__ import annotations
 from typehaus.model.assembly import (
     Assembly,
     AssemblyInterface,
+    CavityFill,
     ConstructionRule,
     FramingSpec,
     Layer,
@@ -154,7 +155,7 @@ __all__ = [
     "Element", "HausModel",
     "Node", "Wall", "Door", "Window", "RoughOpening",
     "FoundationWall", "Footing", "Pad", "FootingBedding", "Post", "Beam",
-    "Assembly", "Layer", "FramingSpec", "MasonrySpec", "AssemblyInterface",
+    "Assembly", "Layer", "CavityFill", "FramingSpec", "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material",
     "DoorType", "WindowType", "FurnitureType", "FixtureType", "MeshRef",
     "JoistSpec", "DeckLayer", "FloorSystem", "FloorOpening", "Slab", "Soffit",

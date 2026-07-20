@@ -17,6 +17,10 @@ export interface Layer {
   thickness_m: number;
   polygon: Vec2[];
   control: string[];
+  // Insulation filling a STRUCTURE layer's framing bays: shares that layer's polygon and
+  // adds no wall depth, so consumers must not treat it as a band of its own.
+  is_cavity?: boolean;
+  cavity_host?: string | null;
 }
 
 // Orientation convention (defined once, engine side: resolve/framing/profiles.py):
@@ -301,17 +305,6 @@ export interface Floor {
   members: Member[];
 }
 
-export interface EnvelopeBand {
-  uid: string;
-  tag: string;
-  storey: string;
-  lower_wall: string;
-  upper_wall: string;
-  z0_m: number;
-  z1_m: number;
-  layers: Layer[];
-}
-
 // A stair's scalar inputs are authored, while its risers, treads, and framing members are
 // resolver output. Keeping both in this contract lets the designer preview its next valid
 // solve without treating client-side arithmetic as the source of truth.
@@ -364,7 +357,6 @@ export interface Model {
   roofs?: Roof[];
   solids?: Solid[];
   floors?: Floor[];
-  envelope_bands?: EnvelopeBand[];
   stairs?: Stair[];
   fixtures?: Fixture[];
   furniture?: Furniture[];

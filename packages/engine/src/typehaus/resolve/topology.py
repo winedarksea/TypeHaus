@@ -17,26 +17,52 @@ from typehaus.resolve.model import ResolvedLayer, ResolvedWall
 _EPS = 1e-4  # meters — cavity-insulation coincidence tolerance
 
 
+def _cavity_host(layers: list, index: int) -> int | None:
+    """Index of the STRUCTURE layer a legacy sibling batt fills, or None.
+
+    Back-compat only: assemblies used to spell cavity insulation as its own INSULATION
+    layer next to the studs, at the same thickness. Those add no depth and share the
+    structure layer's polygon — the modern spelling is ``Layer.cavity`` (:class:`CavityFill`).
+    """
+    layer = layers[index]
+    if layer.function is not LayerFunction.INSULATION:
+        return None
+    for j in (index - 1, index + 1):
+        if 0 <= j < len(layers) and layers[j].function is LayerFunction.STRUCTURE:
+            if abs(layers[j].thickness.meters - layer.thickness.meters) < _EPS:
+                return j
+    return None
+
+
 def _added_thicknesses(layers: list) -> list[tuple[object, float, bool]]:
-    """Per layer: (layer, added_thickness_m, is_cavity). Cavity insulation whose
-    thickness matches an adjacent STRUCTURE layer adds no wall depth (→ resolver note)."""
+    """Per layer: (layer, added_thickness_m, is_cavity).
+
+    Cavity insulation — whether the modern ``Layer.cavity`` (which is not a list entry at
+    all) or a legacy sibling batt layer — occupies the framing bays and adds no wall depth.
+    """
     out: list[tuple[object, float, bool]] = []
     for i, layer in enumerate(layers):
-        t = layer.thickness.meters
-        cavity = False
-        if layer.function is LayerFunction.INSULATION:
-            for j in (i - 1, i + 1):
-                if 0 <= j < len(layers) and layers[j].function is LayerFunction.STRUCTURE:
-                    if abs(layers[j].thickness.meters - t) < _EPS:
-                        cavity = True
-                        break
-        out.append((layer, 0.0 if cavity else t, cavity))
+        cavity = _cavity_host(layers, i) is not None
+        out.append((layer, 0.0 if cavity else layer.thickness.meters, cavity))
     return out
 
 
 def _axis_offset_from_interior(layers: list, added: list, alignment: object,
                                total: float) -> float:
-    """Where the node-to-node axis sits, measured from the interior face outward."""
+    """Where the node-to-node axis sits, measured from the interior face outward.
+
+    ``FaceRef.offset`` shifts the axis off the named face, positive = further outboard.
+    That is what lets a layer be added to one side of an existing wall without moving the
+    layer that actually holds the datum — e.g. lining the sauna side of a bearing wall
+    while the concrete stays centred on the structural grid.
+    """
+    base = _face_offset_from_interior(layers, added, alignment, total)
+    shift = getattr(alignment, "offset", None) if alignment is not None else None
+    return base + (shift.meters if shift is not None else 0.0)
+
+
+def _face_offset_from_interior(layers: list, added: list, alignment: object,
+                               total: float) -> float:
     if alignment is None:
         return total / 2.0
     role = getattr(alignment, "role", "center")
@@ -76,33 +102,58 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
     ext0 = half_by_node.get(wall.start_node, total / 2.0)
     ext1 = half_by_node.get(wall.end_node, total / 2.0)
 
-    layers: list[ResolvedLayer] = []
+    # Interior→exterior spans, walked over the depth-bearing layers only. A cavity layer
+    # borrows its host structure layer's span, so it must be placed after the walk rather
+    # than during it (a batt authored *before* the studs would otherwise land nowhere).
+    spans: list[tuple[float, float]] = []
     pos = 0.0
-    for (layer, add_t, cavity) in added:
-        # Cavity insulation shares the strip of its structure neighbour (draw in place).
-        span_in = pos
-        span_out = pos + (add_t if not cavity else 0.0)
-        if cavity:
-            # locate structure neighbour span already emitted or upcoming: reuse current pos
-            span_out = pos + layer.thickness.meters
-            left = span_in - axis_from_int
-            right = span_out - axis_from_int
+    for (_layer, add_t, cavity) in added:
+        spans.append((pos, pos + add_t))
+        if not cavity:
+            pos += add_t
+
+    def _ring(span_in: float, span_out: float):
+        return rect_between(p0, p1, span_in - axis_from_int, span_out - axis_from_int,
+                            ext0, ext1)
+
+    layers: list[ResolvedLayer] = []
+    for index, (layer, _add_t, cavity) in enumerate(added):
+        host_index = _cavity_host(stack, index) if cavity else None
+        if host_index is not None:
+            # Share the host structure layer's strip, inset from its interior face.
+            host_in, _host_out = spans[host_index]
+            span_in, span_out = host_in, host_in + layer.thickness.meters
         else:
-            left = span_in - axis_from_int
-            right = span_out - axis_from_int
-        ring = rect_between(p0, p1, left, right, ext0, ext1)
+            span_in, span_out = spans[index]
+        host_name = stack[host_index].name if host_index is not None else None
         layers.append(
             ResolvedLayer(
                 name=layer.name,
                 material_ref=layer.material_ref,
                 function=layer.function.value,
                 thickness_m=layer.thickness.meters,
-                polygon=ring,
+                polygon=_ring(span_in, span_out),
                 control=frozenset(c.value for c in layer.control),
+                is_cavity=cavity,
+                cavity_host=host_name,
             )
         )
-        if not cavity:
-            pos = span_out
+        fill = getattr(layer, "cavity", None)
+        if fill is not None:
+            fill_t = fill.thickness.meters if fill.thickness is not None else \
+                layer.thickness.meters
+            layers.append(
+                ResolvedLayer(
+                    name=f"{layer.name}-cavity",
+                    material_ref=fill.material_ref,
+                    function=LayerFunction.INSULATION.value,
+                    thickness_m=fill_t,
+                    polygon=_ring(span_in, span_in + fill_t),
+                    control=frozenset(c.value for c in fill.control),
+                    is_cavity=True,
+                    cavity_host=layer.name,
+                )
+            )
 
     if is_foundation:
         # Foundation elevations are absolute project elevations so a walkout wall

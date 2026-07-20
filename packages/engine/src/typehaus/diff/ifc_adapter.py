@@ -31,7 +31,7 @@ def _guid(project_uuid: uuid.UUID, uid: str) -> str:
 def _wall_geometry(w: ResolvedWall) -> tuple[tuple[float, float, float], tuple[float, float, float], tuple[float, float]]:
     (sx, sy), (ex, ey) = w.axis
     length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5
-    thickness = sum(ly.thickness_m for ly in w.layers) or 0.15
+    thickness = w.thickness_m or 0.15
     height = w.z1_m - w.z0_m
     cx, cy, cz = (sx + ex) / 2, (sy + ey) / 2, (w.z0_m + w.z1_m) / 2
     dir_ = ((ex - sx) / length, (ey - sy) / length) if length else (0.0, 0.0)

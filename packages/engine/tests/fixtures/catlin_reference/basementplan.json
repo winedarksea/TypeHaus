@@ -1,0 +1,27 @@
+{
+  "basement_elevation_m": -2.7432000000000003,
+  "basement_grid_m": 5.486400000000001,
+  "basement_wall_thickness_m": 0.30479999999999996,
+  "house_size_m": 10.972800000000001,
+  "sauna_rect_m": {
+    "h_m": 2.4384,
+    "w_m": 3.6576000000000004,
+    "x0_m": 1.8288000000000002,
+    "y0_m": 0.0
+  },
+  "sauna_shower_note": "Sauna+shower located west of centerline wall, against south wall (placeholder geometry)",
+  "shower_rect_m": {
+    "h_m": 1.2192,
+    "recess_m": 0.1016,
+    "w_m": 1.2192,
+    "x0_m": 4.267200000000001,
+    "y0_m": 0.0
+  },
+  "stair_opening_note": "Located on north side, immediately west of centerline wall (per house_description.md)",
+  "stair_opening_rect_m": {
+    "h_m": 2.9464,
+    "w_m": 2.1336,
+    "x0_m": 3.3528000000000007,
+    "y0_m": 8.0264
+  }
+}

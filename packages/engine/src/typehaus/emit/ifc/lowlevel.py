@@ -102,6 +102,49 @@ def aggregate(f: Any, parent: Any, children: list[Any]) -> None:
                          relating_object=parent)
 
 
+def assign_material_layer_set(f: Any, element: Any, layers: list[dict[str, Any]],
+                              name: str) -> Any:
+    """Attach an ``IfcMaterialLayerSet`` to a wall — how Revit reads a wall type's layers.
+
+    ``layers`` is interior→exterior; each entry is
+    ``{"name", "material_ref", "thickness_m", "category"}``. The set's thicknesses must sum
+    to the element's real depth, so cavity fill (which lives inside a structure layer) must
+    already be excluded by the caller — an over-thick layer set is the classic import
+    artifact where a Revit wall type ends up thicker than its geometry.
+    """
+    materials: dict[str, Any] = {}
+    ifc_layers = []
+    for spec in layers:
+        ref = spec["material_ref"]
+        material = materials.get(ref)
+        if material is None:
+            # IfcMaterial is not a rooted entity — no GlobalId/OwnerHistory, so it must
+            # bypass ``create_entity`` (which stamps both).
+            material = f.create_entity("IfcMaterial", Name=ref)
+            materials[ref] = material
+        ifc_layer = f.create_entity(
+            "IfcMaterialLayer",
+            Material=material,
+            LayerThickness=float(spec["thickness_m"]),
+            Name=spec["name"],
+            Category=spec.get("category"),
+        )
+        ifc_layers.append(ifc_layer)
+    if not ifc_layers:
+        return None
+    layer_set = f.create_entity("IfcMaterialLayerSet", MaterialLayers=ifc_layers,
+                                LayerSetName=name)
+    f.create_entity("IfcRelAssociatesMaterial", GlobalId=new_guid(),
+                    RelatedObjects=[element], RelatingMaterial=layer_set)
+    return layer_set
+
+
+def new_guid() -> str:
+    import ifcopenshell.guid
+
+    return ifcopenshell.guid.new()
+
+
 def add_opening(f: Any, wall: Any, opening: Any) -> None:
     """IfcRelVoidsElement — the opening element voids its host wall (ported add_opening).
 

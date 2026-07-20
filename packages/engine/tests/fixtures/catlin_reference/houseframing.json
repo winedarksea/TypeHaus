@@ -1,0 +1,13 @@
+{
+  "centerline_wall_thickness_in": 5.5,
+  "floor_joists": {
+    "depth_in": 11.875,
+    "width_in": 1.5
+  },
+  "roof_joists": {
+    "depth_in": 11.875,
+    "pitch_rise_over_run": 0.3333333333333333,
+    "width_in": 1.5
+  },
+  "spacing_in": 16.0
+}

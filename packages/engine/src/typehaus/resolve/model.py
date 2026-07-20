@@ -27,6 +27,11 @@ class ResolvedLayer:
     thickness_m: float
     polygon: Ring
     control: frozenset[str] = frozenset()
+    # Insulation in a STRUCTURE layer's framing bays: shares that layer's polygon and adds
+    # no wall depth. Consumers must not treat it as a band of its own (→ CavityFill).
+    is_cavity: bool = False
+    # For a cavity layer, the name of the STRUCTURE layer whose bays it fills.
+    cavity_host: str | None = None
 
 
 @dataclass(frozen=True)
@@ -77,6 +82,21 @@ class ResolvedWall:
     # raked top for framing, sections, and the interactive model.
     top_z0_m: float | None = None
     top_z1_m: float | None = None
+    # Platform framing (#43): an exterior/bearing wall runs base level → next level, so one
+    # IfcWall covers the floor band and Revit/SketchUp read a continuous envelope. The
+    # *framing* still stops at the double top plate — the band above it is rim board and
+    # joists, not studs — so that elevation is carried separately here. ``None`` means the
+    # wall is not extended and its framing tops out at ``z1_m``/``top_z*_m`` as before.
+    plate_top_z_m: float | None = None
+
+    @property
+    def thickness_m(self) -> float:
+        """Total wall depth. Cavity layers sit inside their host and add nothing."""
+        return sum(ly.thickness_m for ly in self.layers if not ly.is_cavity)
+
+    def depth_layers(self) -> tuple[ResolvedLayer, ...]:
+        """The layers that occupy their own slice of the wall depth, interior→exterior."""
+        return tuple(ly for ly in self.layers if not ly.is_cavity)
 
 
 @dataclass(frozen=True)
@@ -109,20 +129,6 @@ class ResolvedSolid:
     z0_m: float
     z1_m: float
     assembly: str | None = None
-
-
-@dataclass(frozen=True)
-class ResolvedEnvelopeBand:
-    """Outboard wall layers carried continuously across a platform-rim zone."""
-
-    uid: str
-    tag: str
-    storey: str
-    lower_wall: str
-    upper_wall: str
-    z0_m: float
-    z1_m: float
-    layers: tuple[ResolvedLayer, ...]
 
 
 @dataclass(frozen=True)
@@ -295,7 +301,6 @@ class ResolvedModel:
     walls: list[ResolvedWall] = field(default_factory=list)
     openings: list[ResolvedOpening] = field(default_factory=list)
     solids: list[ResolvedSolid] = field(default_factory=list)
-    envelope_bands: list[ResolvedEnvelopeBand] = field(default_factory=list)
     roofs: list[ResolvedRoof] = field(default_factory=list)
     stairs: list[ResolvedStair] = field(default_factory=list)
     floors: list[ResolvedFloor] = field(default_factory=list)

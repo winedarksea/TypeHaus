@@ -243,15 +243,11 @@ def _add_wall(mb: _MeshBuilder, wall: ResolvedWall, lod: str) -> None:
         for member in wall.members:
             _add_member(mb, member)
         return
-    for layer in wall.layers:
+    # Core LOD draws one prism per depth-bearing layer. Cavity fill shares the structure
+    # layer's polygon, so extruding it too would only z-fight with the studs.
+    for layer in wall.depth_layers():
         if layer.polygon:
             mb.add_prism(layer.polygon, wall.z0_m, wall.z1_m, _color(layer.function))
-
-
-def _add_envelope_band(mb: _MeshBuilder, band) -> None:
-    for layer in band.layers:
-        if layer.polygon:
-            mb.add_prism(layer.polygon, band.z0_m, band.z1_m, _color(layer.function))
 
 
 def _add_member(mb: _MeshBuilder, member: FramedMember) -> None:
@@ -365,8 +361,6 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
     mb = _MeshBuilder()
     for wall in sorted(model.walls, key=lambda w: w.uid):
         _add_wall(mb, wall, lod)
-    for band in sorted(model.envelope_bands, key=lambda item: item.uid):
-        _add_envelope_band(mb, band)
     for room in sorted(model.rooms, key=lambda r: r.uid):
         if room.clear_face:
             storey_z = _room_z(model, room.storey)
