@@ -13,6 +13,7 @@ from urllib.parse import quote
 
 from typehaus.checks.registry import Preferences
 from typehaus.findings import Finding
+from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.spatial import Stair
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedModel
@@ -45,6 +46,12 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
         "orient": list(m.orient) if m.orient is not None else None,
         "connection": m.connection,
     }
+
+
+def _layer_json(layer) -> dict[str, Any]:
+    return {"name": layer.name, "material": layer.material_ref, "function": layer.function,
+            "thickness_m": layer.thickness_m, "polygon": [list(point) for point in layer.polygon],
+            "control": sorted(layer.control)}
 
 
 def _findings_json(findings: list[Finding] | None) -> list[dict[str, Any]]:
@@ -277,9 +284,25 @@ def model_to_dict(
         "floors": [
             {"uid": floor.uid, "tag": floor.tag, "storey": floor.storey,
              "direction": floor.direction,
+             "subfloor": ({"material": authored.subfloor.material_ref,
+                            "thickness_m": authored.subfloor.thickness.meters}
+                           if isinstance((authored := model.plan.by_tag(floor.tag)), FloorSystem)
+                           and authored.subfloor is not None else None),
+             "openings": [[list(point.xy_m) for point in opening.outline]
+                          for opening in model.plan.storey_elements(floor.storey)
+                          if isinstance(opening, FloorOpening)
+                          and isinstance(authored, FloorSystem)
+                          and opening.tag in authored.openings],
              "provenance": _provenance(provenance, floor.tag),
              "members": [_member_json(member) for member in floor.members]}
             for floor in sorted(model.floors, key=lambda item: item.uid)
+        ],
+        "envelope_bands": [
+            {"uid": band.uid, "tag": band.tag, "storey": band.storey,
+             "lower_wall": band.lower_wall, "upper_wall": band.upper_wall,
+             "z0_m": band.z0_m, "z1_m": band.z1_m,
+             "layers": [_layer_json(layer) for layer in band.layers]}
+            for band in sorted(model.envelope_bands, key=lambda item: item.uid)
         ],
         "floor_heat": [
             {"uid": zone.uid, "tag": zone.tag, "storey": zone.storey, "system": zone.system,

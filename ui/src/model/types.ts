@@ -295,8 +295,21 @@ export interface Floor {
   tag: string;
   storey: string;
   direction: "x" | "y";
+  subfloor: { material: string; thickness_m: number } | null;
+  openings: Vec2[][];
   provenance: Provenance | null;
   members: Member[];
+}
+
+export interface EnvelopeBand {
+  uid: string;
+  tag: string;
+  storey: string;
+  lower_wall: string;
+  upper_wall: string;
+  z0_m: number;
+  z1_m: number;
+  layers: Layer[];
 }
 
 // A stair's scalar inputs are authored, while its risers, treads, and framing members are
@@ -351,6 +364,7 @@ export interface Model {
   roofs?: Roof[];
   solids?: Solid[];
   floors?: Floor[];
+  envelope_bands?: EnvelopeBand[];
   stairs?: Stair[];
   fixtures?: Fixture[];
   furniture?: Furniture[];

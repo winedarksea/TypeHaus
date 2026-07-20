@@ -246,13 +246,13 @@ def _resolve_stair(
     if width + 1e-9 < stair.width.meters:
         return None, [_error("integrity.stair_width", f"stair {stair.tag} is wider than its "
                              "floor opening", stair.tag)]
-    if stair.winder_count not in (0, 2):
+    if stair.winder_count and stair.winder_count < 3:
         return None, [_error("integrity.stair_winders", f"stair {stair.tag} must use zero "
-                             "or two winders", stair.tag)]
+                             "or at least three winders for a quarter turn", stair.tag)]
     risers = math.ceil(rise / _MAX_RISER_M)
     treads = max(0, risers - 1)
     straight_treads = treads - stair.winder_count
-    # Two winders consume a square whose side is the stair width. The remaining treads
+    # A winder turn consumes a square whose side is the stair width. The remaining treads
     # must still meet the 10 in. minimum on their straight walking line.
     straight_run = run - stair.width.meters if stair.winder_count else run
     tread = straight_run / straight_treads if straight_treads else 0.0
@@ -281,7 +281,7 @@ def _element_storey(model: ResolvedModel, tag: str) -> str | None:
 def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: int,
                    riser: float, tread: float) -> tuple[FramedMember, ...]:
     if stair.winder_count:
-        return _two_winder_stair_members(stair, minx, miny, z0, risers, riser, tread)
+        return _winder_stair_members(stair, minx, miny, z0, risers, riser, tread)
     along_x = stair.run_direction == "x"
     start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
     width = stair.width.meters
@@ -312,14 +312,15 @@ def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: in
     return tuple(out)
 
 
-def _two_winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
-                               risers: int, riser: float, tread: float) -> tuple[FramedMember, ...]:
-    """Generate the Catlin-style lower turn: two winders, then a straight flight.
+def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
+                          risers: int, riser: float, tread: float) -> tuple[FramedMember, ...]:
+    """Generate a lower quarter-turn with consistently fanned winder treads.
 
     ``start`` is the lower outside corner of the winder square.  The straight flight leaves
     that square in ``run_direction``; ``run_reversed`` selects west/south rather than the
-    conventional east/north direction. The winder members are diagonal tread edges, which
-    lets plan, section, and framed 3D all show the same turn without a second geometry path.
+    conventional east/north direction. Each tread edge shares the inside corner and fans
+    across the outside of the turn, preventing the opposed-diagonal geometry two winders
+    produced.
     """
     start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
     straight_treads = risers - 1 - stair.winder_count
@@ -335,12 +336,16 @@ def _two_winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
             out.append(FramedMember(stair.uid, f"stringer-{index}", "stringer", "2x12", a, b,
                                     z0, z0 + riser * risers,
                                     math.hypot(tread * straight_treads, riser * risers)))
-        # Ascending north at the east end turns west through these two tapered tread edges.
-        winder_edges = (((start_x, start_y),
-                         (turn_x, start_y + stair.width.meters / 2)),
-                        ((start_x + sign * stair.width.meters / 2, start_y),
-                         (turn_x, start_y + stair.width.meters)))
-        for index, (a, b) in enumerate(winder_edges):
+        inside = (turn_x, start_y)
+        for index in range(stair.winder_count):
+            fraction = (index + 1) / stair.winder_count
+            # First half follows the entering outside edge, second half the departing edge.
+            if fraction <= 0.5:
+                outer = (start_x, start_y + stair.width.meters * fraction * 2)
+            else:
+                outer = (start_x + sign * stair.width.meters * (fraction * 2 - 1),
+                         start_y + stair.width.meters)
+            a, b = inside, outer
             out.append(FramedMember(stair.uid, f"winder-{index:03d}", "winder", "tapered tread",
                                     a, b, step_z(index), step_z(index) + 0.0381,
                                     math.hypot(b[0] - a[0], b[1] - a[1])))
@@ -362,11 +367,15 @@ def _two_winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
             out.append(FramedMember(stair.uid, f"stringer-{index}", "stringer", "2x12", a, b,
                                     z0, z0 + riser * risers,
                                     math.hypot(tread * straight_treads, riser * risers)))
-        winder_edges = (((start_x, start_y),
-                         (start_x + stair.width.meters / 2, turn_y)),
-                        ((start_x, start_y + sign * stair.width.meters / 2),
-                         (start_x + stair.width.meters, turn_y)))
-        for index, (a, b) in enumerate(winder_edges):
+        inside = (start_x, turn_y)
+        for index in range(stair.winder_count):
+            fraction = (index + 1) / stair.winder_count
+            if fraction <= 0.5:
+                outer = (start_x + stair.width.meters * fraction * 2, start_y)
+            else:
+                outer = (start_x + stair.width.meters, start_y + sign * stair.width.meters *
+                         (fraction * 2 - 1))
+            a, b = inside, outer
             out.append(FramedMember(stair.uid, f"winder-{index:03d}", "winder", "tapered tread",
                                     a, b, step_z(index), step_z(index) + 0.0381,
                                     math.hypot(b[0] - a[0], b[1] - a[1])))

@@ -44,7 +44,9 @@ class Stair(Element):
     width: Length
     run_direction: str = "x"
     run_reversed: bool = False
-    winder_count: int = 0  # constrained to 0 or 2 by the resolver
+    # A quarter-turn needs at least three winders to keep the walking line usable.
+    # The resolver accepts zero for a straight flight or any count >= 3.
+    winder_count: int = 0
     start: Point2D | None = None
 
 

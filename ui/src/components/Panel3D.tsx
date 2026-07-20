@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { ALL_TRADES, useStore, type Trade } from "../state/store";
-import type { Model, Roof, Solid, Floor, Stair, Wall } from "../model/types";
+import type { Model, Roof, Solid, Floor, Stair, Wall, EnvelopeBand } from "../model/types";
 import { materialColor, NORDIC_BG } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
 
@@ -273,6 +273,7 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     }
     target = new THREE.Vector3(0, 1.2, 0);
 
+    for (const band of m.envelope_bands ?? []) buildEnvelopeBand(tradeGroups.walls, band, cx, cz, mode);
     for (const w of m.walls) buildWall(tradeGroups, w, cx, cz, mode, picks, byUid);
     for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, cx, cz, mode);
     for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, cx, cz, mode);
@@ -455,6 +456,26 @@ function buildWall(
   byUid.set(w.uid, mats);
 }
 
+function buildEnvelopeBand(parent: THREE.Group, band: EnvelopeBand, cx: number, cz: number,
+  mode: "nordic" | "schematic") {
+  for (const layer of band.layers) {
+    if (layer.polygon.length < 3) continue;
+    const shape = new THREE.Shape();
+    layer.polygon.forEach((point, index) => {
+      if (index === 0) shape.moveTo(point[0] - cx, point[1] - cz);
+      else shape.lineTo(point[0] - cx, point[1] - cz);
+    });
+    const geometry = new THREE.ExtrudeGeometry(shape, { depth: band.z1_m - band.z0_m, bevelEnabled: false });
+    geometry.rotateX(-Math.PI / 2);
+    geometry.translate(0, band.z0_m, 0);
+    parent.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
+      color: new THREE.Color(materialColor(layer.material)), roughness: mode === "nordic" ? 0.85 : 1,
+      flatShading: mode === "schematic",
+    })));
+  }
+}
+
+
 // Slabs, footings, pads: same outline-extrusion recipe as wall layers, concrete grey.
 function buildSolid(parent: THREE.Group, solid: Solid, cx: number, cz: number,
   mode: "nordic" | "schematic") {
@@ -476,10 +497,34 @@ function buildSolid(parent: THREE.Group, solid: Solid, cx: number, cz: number,
   parent.add(new THREE.Mesh(geo, mat));
 }
 
-// Floors have no deck surface of their own in the resolved model — just joists + rim
-// boards; render those into the "floors" trade so they're hideable for stair continuity.
 function buildFloor(parent: THREE.Group, floor: Floor, cx: number, cz: number,
   mode: "nordic" | "schematic") {
+  if (floor.subfloor && floor.members.length) {
+    const points = floor.members.flatMap((member) => [member.p0, member.p1]);
+    const minX = Math.min(...points.map((point) => point[0]));
+    const maxX = Math.max(...points.map((point) => point[0]));
+    const minY = Math.min(...points.map((point) => point[1]));
+    const maxY = Math.max(...points.map((point) => point[1]));
+    const shape = new THREE.Shape();
+    [[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]].forEach(([x, y], index) => {
+      if (index === 0) shape.moveTo(x - cx, y - cz); else shape.lineTo(x - cx, y - cz);
+    });
+    for (const opening of floor.openings) {
+      const hole = new THREE.Path();
+      opening.forEach(([x, y], index) => {
+        if (index === 0) hole.moveTo(x - cx, y - cz); else hole.lineTo(x - cx, y - cz);
+      });
+      shape.holes.push(hole);
+    }
+    const z = Math.max(...floor.members.map((member) => member.z1_m));
+    const geometry = new THREE.ExtrudeGeometry(shape, { depth: floor.subfloor.thickness_m, bevelEnabled: false });
+    geometry.rotateX(-Math.PI / 2);
+    geometry.translate(0, z, 0);
+    parent.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
+      color: new THREE.Color(materialColor(floor.subfloor.material)), roughness: mode === "nordic" ? 0.85 : 1,
+      flatShading: mode === "schematic",
+    })));
+  }
   buildMembers(parent, floor.members, cx, cz, mode);
 }
 

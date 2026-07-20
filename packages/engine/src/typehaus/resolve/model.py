@@ -112,6 +112,20 @@ class ResolvedSolid:
 
 
 @dataclass(frozen=True)
+class ResolvedEnvelopeBand:
+    """Outboard wall layers carried continuously across a platform-rim zone."""
+
+    uid: str
+    tag: str
+    storey: str
+    lower_wall: str
+    upper_wall: str
+    z0_m: float
+    z1_m: float
+    layers: tuple[ResolvedLayer, ...]
+
+
+@dataclass(frozen=True)
 class ResolvedRoof:
     """A constrained gable/shed roof derived from its bearing-wall envelope."""
 
@@ -281,6 +295,7 @@ class ResolvedModel:
     walls: list[ResolvedWall] = field(default_factory=list)
     openings: list[ResolvedOpening] = field(default_factory=list)
     solids: list[ResolvedSolid] = field(default_factory=list)
+    envelope_bands: list[ResolvedEnvelopeBand] = field(default_factory=list)
     roofs: list[ResolvedRoof] = field(default_factory=list)
     stairs: list[ResolvedStair] = field(default_factory=list)
     floors: list[ResolvedFloor] = field(default_factory=list)

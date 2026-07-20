@@ -35,7 +35,7 @@ def frame_roofs(model: ResolvedModel) -> list[Finding]:
             rafters = tuple(_trim_rafter_to_beam(r, roof, beam_width_m) for r in rafters)
             model.conditions.append(_ridge_condition(roof, beam_member))
         rafters = tuple(replace(r, connection=_RAFTER_CONNECTION) for r in rafters)
-        members = rafters + ((beam_member,) if beam_member is not None else ())
+        members = rafters + _bearing_stiffeners(rafters) + ((beam_member,) if beam_member is not None else ())
         framed.append(ResolvedRoof(
             uid=roof.uid, tag=roof.tag, storey=roof.storey, form=roof.form,
             footprint=roof.footprint, eave_z_m=roof.eave_z_m, ridge_z_m=roof.ridge_z_m,
@@ -87,6 +87,25 @@ def _roof_rafters(model: ResolvedModel, roof: ResolvedRoof) -> tuple[FramedMembe
             z0_end_m=roof.ridge_z_m - depth, z1_end_m=roof.ridge_z_m,
         ))
     return tuple(members)
+
+
+def _bearing_stiffeners(rafters: tuple[FramedMember, ...]) -> tuple[FramedMember, ...]:
+    """Model the I-joist eave web stiffener as a distinct bearing member.
+
+    The seat itself remains a rafter connection annotation because the lightweight
+    member IR cannot subtract a birdsmouth notch, while this solid makes the required
+    beveled bearing reinforcement visible and countable in every emitter.
+    """
+    stiffeners: list[FramedMember] = []
+    for rafter in rafters:
+        if "I-joist" not in rafter.profile:
+            continue
+        stiffeners.append(FramedMember(
+            rafter.parent_uid, f"{rafter.child_key}-eave-stiffener", "bearing_stiffener",
+            "2x4", rafter.p0, rafter.p0, rafter.z0_m, rafter.z1_m,
+            rafter.z1_m - rafter.z0_m, connection="eave:beveled-web-stiffener",
+        ))
+    return tuple(stiffeners)
 
 
 def _find_ridge_beam(model: ResolvedModel, roof: ResolvedRoof) -> Beam | None:

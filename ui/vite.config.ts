@@ -15,6 +15,8 @@ export default defineConfig({
     proxy: {
       "/model": ENGINE,
       "/checks": ENGINE,
+      "/details": ENGINE,
+      "/detail": ENGINE,
       "/plan": ENGINE,
       "/build": ENGINE,
       "/undo": ENGINE,

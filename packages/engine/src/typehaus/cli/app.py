@@ -189,6 +189,7 @@ def takeoff(
 
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
+    from typehaus.takeoff import sheet_goods_takeoff
 
     d = _resolve_house(house)
     loaded = load_plan(d)
@@ -203,7 +204,8 @@ def takeoff(
     radiant = [{"tag": zone.tag, "storey": zone.storey, "system": zone.system,
                 "wire_length_ft": round(zone.wire_length_m / 0.3048, 1)}
                for zone in model.floor_heat]
-    payload = {"framing": dict(sorted(framing.items())), "floor_heat": radiant}
+    payload = {"framing": dict(sorted(framing.items())), "floor_heat": radiant,
+               "sheet_goods": sheet_goods_takeoff(model)}
     if as_json:
         console.print_json(json.dumps(payload))
         return
@@ -214,6 +216,12 @@ def takeoff(
         console.print("[bold]Radiant floor heat[/bold]")
         for zone in radiant:
             console.print(f"  {zone['tag']} ({zone['system']}): {zone['wire_length_ft']:.1f} LF")
+    if payload["sheet_goods"]:
+        console.print("[bold]Sheet goods (4x8 panels)[/bold]")
+        for item in payload["sheet_goods"]:
+            console.print(f"  {item['scope']}: {item['sheets_4x8']} sheets of "
+                          f"{item['thickness_in']}\" {item['material']} "
+                          f"({item['net_area_sqft']} sf net)")
 
 
 @app.command(name="import")

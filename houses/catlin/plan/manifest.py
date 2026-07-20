@@ -54,9 +54,10 @@ _storeys = (
            default_ceiling_height=ft(9)),
     Storey(uid="STGARAAAAA", tag="garage", elevation=ft(1, 10),
            default_ceiling_height=ft(8)),
-    Storey(uid="STSECDAAAA", tag="second", elevation=ft(9),
+    # Platform framing: 9' stud wall plus the nominal 12" floor system above it.
+    Storey(uid="STSECDAAAA", tag="second", elevation=ft(10),
            default_ceiling_height=ft(9)),
-    Storey(uid="STATTCAAAA", tag="attic", elevation=ft(18),
+    Storey(uid="STATTCAAAA", tag="attic", elevation=ft(20),
            default_ceiling_height=ft(11)),
 )
 

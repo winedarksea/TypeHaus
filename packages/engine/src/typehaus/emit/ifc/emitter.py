@@ -46,6 +46,9 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     for rw in sorted(model.walls, key=lambda w: w.uid):
         wall_entities[rw.tag] = _emit_wall(f, body, rw, storeys, project_uuid, lod)
 
+    for band in sorted(model.envelope_bands, key=lambda item: item.uid):
+        _emit_envelope_band(f, body, band, storeys, project_uuid)
+
     for opening in sorted(model.openings, key=lambda o: o.uid):
         _emit_opening(f, body, opening, model, wall_entities, storeys, project_uuid)
 
@@ -149,6 +152,29 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
             members.append(member)
         ll.aggregate(f, wall, members)
     return wall
+
+
+def _emit_envelope_band(f: Any, body: Any, band: Any, storeys: dict[str, Any],
+                        project_uuid: Any) -> None:
+    """Export each physical rim-cover layer as an IFC proxy solid.
+
+    IFC has no portable standard wall-layer segment primitive; separate solids preserve
+    the actual geometry for Revit/SketchUp import while their property set retains the
+    construction role, material reference, and host walls.
+    """
+    for index, layer in enumerate(band.layers):
+        element = ll.create_entity(f, "IfcBuildingElementProxy",
+                                   name=f"{band.tag}/{layer.name}")
+        child_key = f"layer-{index:02d}-{layer.name}"
+        element.GlobalId = derive_child_guid(project_uuid, band.uid, child_key)
+        rep = ll.add_prism_from_profile(f, body, layer.polygon, band.z1_m - band.z0_m, band.z0_m)
+        _assign_representation(f, element, rep)
+        ll.ensure_pset(f, element, PSET_SOURCE, {
+            "uid": band.uid, "tag": band.tag, "layer": layer.name,
+            "material_ref": layer.material_ref, "function": layer.function,
+            "lower_wall": band.lower_wall, "upper_wall": band.upper_wall,
+        })
+        ll.assign_container(f, element, storeys[band.storey])
 
 
 def _opening_segment(rw: ResolvedWall, opening: Any) -> tuple[tuple[float, float],

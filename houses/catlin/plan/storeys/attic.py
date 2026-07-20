@@ -7,6 +7,7 @@ from typehaus import (
     AlarmKind,
     Beam,
     Door,
+    DeckLayer,
     FloorOpening,
     FloorSystem,
     FollowRoof,
@@ -158,14 +159,15 @@ FLOOR = [
                 joists=JoistSpec(member="11.875 I-joist", spacing=inch(16),
                                  direction="x",
                                  bearing_refs=("W-S-W2", "W-S-C3", "W-S-E4")),
+                subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=inch(0.75)),
                 openings=("FO-A-STAIR",)),
 ]
 
 STAIRS = [
     Stair(uid="CST703AAAA", tag="ST-S2A", floor_opening="FO-A-STAIR",
           from_storey="second", to_storey="attic", width=ft(3),
-          # Enter north at the east edge, then two lower winders turn the climb west.
-          run_direction="x", run_reversed=True, winder_count=2,
+          # Enter north at the east edge, then three lower winders turn the climb west.
+          run_direction="x", run_reversed=True, winder_count=3,
           start=pt(ft(36), ft(8, 8))),
 ]
 

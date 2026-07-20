@@ -28,6 +28,10 @@ const CATEGORY_COLOR: Record<string, number> = {
   ridge_beam: 0x8c6238,
   king: 0xb3854f,
   jack: 0xb3854f,
+  cripple: 0xb3854f,
+  sill: 0xa87a4c,
+  winder: 0xb3854f,
+  bearing_stiffener: 0x996b41,
 };
 const CATEGORY_FALLBACK = 0xb0b0b0;
 
@@ -173,8 +177,9 @@ function buildRakedMesh(group: THREE.Group, members: Member[], cx: number, cz: n
   group.add(new THREE.Mesh(geo, material));
 }
 
-// Three shared InstancedMeshes (top flange, bottom flange, web), one instance per member,
-// all sharing the member's horizontal axis transform (flat run — see module doc).
+// Three shared InstancedMeshes (top flange, bottom flange, web), one instance per member.
+// The run axis includes its resolved rise, so roof I-joists follow the roof plane instead
+// of appearing flat in the model.
 function buildIJoists(group: THREE.Group, members: Member[], cx: number, cz: number,
   mode: "nordic" | "schematic") {
   if (!members.length) return;
@@ -190,20 +195,24 @@ function buildIJoists(group: THREE.Group, members: Member[], cx: number, cz: num
     const dx = m.p1[0] - m.p0[0];
     const dz = m.p1[1] - m.p0[1];
     const runLen = Math.hypot(dx, dz);
-    const run = runLen > 1e-9 ? new THREE.Vector3(dx / runLen, 0, dz / runLen) : new THREE.Vector3(1, 0, 0);
-    const across = new THREE.Vector3(-run.z, 0, run.x);
+    const horizontalRun = runLen > 1e-9 ? new THREE.Vector3(dx / runLen, 0, dz / runLen) : new THREE.Vector3(1, 0, 0);
+    const rise = (m.z0_end_m ?? m.z0_m) - m.z0_m;
+    const run = new THREE.Vector3(dx, rise, dz).normalize();
+    const across = new THREE.Vector3(-horizontalRun.z, 0, horizontalRun.x);
+    const normal = new THREE.Vector3().crossVectors(across, run).normalize();
     const depth = m.z1_m - m.z0_m;
     const flangeT = m.flange_thickness_m ?? depth * 0.1;
     const flangeW = m.flange_width_m ?? m.width_m;
     const webT = m.web_thickness_m ?? Math.min(flangeW, 0.01);
     const color = categoryColor(m.category);
     const base = _pos.set(m.p0[0] - cx, m.z0_m, m.p0[1] - cz).clone();
+    const slopedLength = Math.hypot(runLen, rise);
 
-    setBoxInstance(bottom, i, base, across, flangeW, run, runLen, UP, flangeT, color);
-    setBoxInstance(top, i, base.clone().addScaledVector(UP, depth - flangeT), across, flangeW,
-      run, runLen, UP, flangeT, color);
-    setBoxInstance(web, i, base.clone().addScaledVector(UP, flangeT), across, webT,
-      run, runLen, UP, Math.max(depth - 2 * flangeT, 1e-4), color);
+    setBoxInstance(bottom, i, base, across, flangeW, run, slopedLength, normal, flangeT, color);
+    setBoxInstance(top, i, base.clone().addScaledVector(normal, depth - flangeT), across, flangeW,
+      run, slopedLength, normal, flangeT, color);
+    setBoxInstance(web, i, base.clone().addScaledVector(normal, flangeT), across, webT,
+      run, slopedLength, normal, Math.max(depth - 2 * flangeT, 1e-4), color);
   });
   for (const mesh of [top, bottom, web]) {
     mesh.instanceMatrix.needsUpdate = true;

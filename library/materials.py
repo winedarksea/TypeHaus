@@ -11,6 +11,8 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              hatch="lumber", color="#cbb98e"),
     Material(tag="osb", name="OSB sheathing", r_per_inch=1.25, density=650.0,
              hatch="osb", color="#c9a86a"),
+    Material(tag="struct-1-plywood", name="Structural 1 plywood", r_per_inch=1.25,
+             density=600.0, hatch="osb", color="#c9a86a"),
     Material(tag="zip-r", name="ZIP System R-sheathing", r_per_inch=4.0,
              perm_rating=2.0, hatch="osb", color="#3f6d3a",
              source="Huber ZIP System R-sheathing published values"),

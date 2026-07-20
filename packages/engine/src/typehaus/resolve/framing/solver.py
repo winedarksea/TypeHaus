@@ -172,9 +172,16 @@ def _frame_opening(rw, d, p0, center, width, height, sill, is_door, member,
     from typehaus.quantities import m as _m
 
     out: list[FramedMember] = []
+    plate_h = 1.5 * 0.0254
     kings, jacks = king_jack_counts(_m(width))
     half = width / 2
     header_bottom = (z0 + sill + height) if not is_door else (z0 + height)
+    header_depth = 0.14
+    # Keep the header directly over the jack studs.  The small extension reaches the
+    # jack centreline on each side rather than stopping at the rough-opening edge.
+    bearing = 0.01 + max(0, jacks - 1) * 0.04
+    header_left_station = center - half - bearing
+    header_right_station = center + half + bearing
     for side, sign in (("l", -1), ("r", +1)):
         edge = center + sign * half
         for k in range(kings):
@@ -187,12 +194,51 @@ def _frame_opening(rw, d, p0, center, width, height, sill, is_door, member,
             pos = add(p0, scale(d, edge + sign * (0.01 + j * 0.04)))
             out.append(FramedMember(rw.uid, f"jack-{oi}-{side}{j}", "jack", member,
                                     pos, pos, z0, header_bottom, header_bottom - z0, orient=d))
-    hl = add(p0, scale(d, center - half))
-    hr = add(p0, scale(d, center + half))
+    hl = add(p0, scale(d, header_left_station))
+    hr = add(p0, scale(d, header_right_station))
     out.append(FramedMember(rw.uid, f"header-{oi}", "header",
                             header_size(_m(width), rw is not None), hl, hr,
-                            header_bottom, header_bottom + 0.14, width))
+                            header_bottom, header_bottom + header_depth,
+                            width + 2 * bearing))
+
+    if not is_door:
+        sill_z0 = z0 + sill
+        sill_z1 = sill_z0 + plate_h
+        out.append(FramedMember(
+            rw.uid, f"sill-{oi}", "sill", member, hl, hr, sill_z0, sill_z1,
+            width + 2 * bearing,
+        ))
+        # Cripples under the rough sill and above the header retain the normal stud
+        # module without placing framing through the opening itself.
+        _append_opening_cripples(out, rw.uid, oi, d, p0, center, half, z0, sill_z0,
+                                 header_bottom + header_depth, top_at, member)
     return out
+
+
+def _append_opening_cripples(out: list[FramedMember], parent_uid: str, opening_index: int,
+                             direction, wall_start, center: float, half: float,
+                             bottom: float, sill: float, header_top: float, top_at,
+                             member: str) -> None:
+    """Add deterministic sill and header cripples at a 16 in. maximum spacing."""
+    spacing = DEFAULT_SPACING.meters
+    start, end = center - half, center + half
+    stations = [start + index * spacing for index in range(int((end - start) // spacing) + 1)]
+    if not stations or stations[-1] < end - 1e-6:
+        stations.append(end)
+    # Edge stations coincide with jack framing, so only interior stations are cripples.
+    for index, station in enumerate(stations):
+        if station <= start + 1e-6 or station >= end - 1e-6:
+            continue
+        position = add(wall_start, scale(direction, station))
+        if sill - bottom > 1e-6:
+            out.append(FramedMember(parent_uid, f"cripple-sill-{opening_index}-{index:02d}",
+                                    "cripple", member, position, position, bottom, sill,
+                                    sill - bottom, orient=direction))
+        wall_top = top_at(station)
+        if wall_top - header_top > 1e-6:
+            out.append(FramedMember(parent_uid, f"cripple-head-{opening_index}-{index:02d}",
+                                    "cripple", member, position, position, header_top,
+                                    wall_top, wall_top - header_top, orient=direction))
 
 
 def frame_model(plan: PlanModel, model: ResolvedModel) -> None:

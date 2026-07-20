@@ -29,7 +29,7 @@ FRAMING_SPACING_IN = 16.0
 GRID_FT = 18.0
 KNEE_FT = 5.0
 RIDGE_OVER_ATTIC_FT = 11.0
-ATTIC_ELEV_FT = 18.0
+ATTIC_ELEV_FT = 20.0
 GARAGE_SIZE_FT = 24.0
 GARAGE_GAP_FT = 12.0
 GARAGE_OVERHANG_IN = 16.0
@@ -201,6 +201,16 @@ def test_floors_get_two_rim_boards_at_the_outer_bearing_lines(catlin_model):
         rims = [m for m in floor.members if m.category == "rim"]
         assert len(rims) == 2, tag
         assert all(m.profile.endswith(" rim") for m in rims)
+
+
+def test_platform_rim_has_exportable_continuous_exterior_layers(catlin_model):
+    """The rim is framing-only; sheathing and outboard control layers bridge it."""
+    bands = [band for band in catlin_model.envelope_bands if band.lower_wall == "W-M-S1"]
+    assert len(bands) == 1
+    band = bands[0]
+    assert band.z1_m - band.z0_m == pytest.approx(ft(1).meters)
+    assert [layer.name for layer in band.layers][:2] == ["sheathing", "wrb"]
+    assert all(layer.name != "batt" for layer in band.layers)
 
 
 def test_raked_gable_king_studs_match_roof_plane_at_own_station(catlin_model):
@@ -550,13 +560,16 @@ def test_stairs_resolve_with_code_risers(catlin_model):
     stairs = {s.tag: s for s in catlin_model.stairs}
     assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A"}
     for stair in stairs.values():
-        assert stair.riser_count == 14
+        assert stair.riser_count in {14, 16}
         assert stair.riser_height_m <= inch(7.75).meters + 1e-9
         assert stair.tread_depth_m >= inch(10.0).meters - 1e-9
     attic = stairs["ST-S2A"]
-    assert attic.winder_count == 2
+    assert attic.winder_count == 3
     assert attic.run_reversed is True
-    assert len([member for member in attic.members if member.category == "winder"]) == 2
+    winders = [member for member in attic.members if member.category == "winder"]
+    assert len(winders) == 3
+    # All three radial tread edges share the inside turn, never opposed diagonals.
+    assert len({member.p0 for member in winders}) == 1
 
 
 def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
@@ -569,7 +582,7 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     assert stairs["ST-B2M"]["floor_opening"] == "FO-M-STAIR"
     assert stairs["ST-B2M"]["run_direction"] == "y"
     assert stairs["ST-B2M"]["start"] == pytest.approx([ft(14, 6).meters, ft(25).meters])
-    assert stairs["ST-S2A"]["winder_count"] == 2
+    assert stairs["ST-S2A"]["winder_count"] == 3
     assert stairs["ST-S2A"]["run_reversed"] is True
 
 

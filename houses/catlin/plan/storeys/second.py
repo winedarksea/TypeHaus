@@ -5,6 +5,7 @@ from typehaus import (
     Alarm,
     AlarmKind,
     Door,
+    DeckLayer,
     FloorOpening,
     FloorSystem,
     JoistSpec,
@@ -267,7 +268,7 @@ SOFFITS = [
 
 FLOOR_OPENINGS = [
     FloorOpening(uid="CSF602AAAA", tag="FO-S-STAIR",
-                 outline=(pt(ft(11), ft(25)), pt(ft(18), ft(25)),
+                 outline=(pt(ft(11), ft(23, 6)), pt(ft(18), ft(23, 6)),
                           pt(ft(18), ft(36)), pt(ft(11), ft(36)))),
 ]
 
@@ -277,13 +278,14 @@ FLOOR = [
                 joists=JoistSpec(member="11.875 I-joist", spacing=inch(16),
                                  direction="x",
                                  bearing_refs=("W-M-W2", "W-M-C2", "W-M-E1")),
+                subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=inch(0.75)),
                 openings=("FO-S-STAIR",)),
 ]
 
 STAIRS = [
     Stair(uid="CST702AAAA", tag="ST-M2S", floor_opening="FO-S-STAIR",
           from_storey="main", to_storey="second", width=ft(3, 6),
-          run_direction="y", start=pt(ft(14, 6), ft(25))),
+          run_direction="y", start=pt(ft(14, 6), ft(23, 6))),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SOFFITS, *FLOOR_OPENINGS, *FLOOR,
