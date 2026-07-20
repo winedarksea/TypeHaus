@@ -37,3 +37,11 @@ Most of the corners don't seem to show proper 3 stud framing (it's defined in co
 Some of the windows are too tall, headers going above the height of the ceiling (two in the garage stand out as examples, although it is hard to tell door vs window because the 2d floor plan does not show doors or windows elegantly)
 
 Arches are missing on the balcony/porch concrete.
+The current modeled concrete arches are:
+2 arches per wall, on the north and south porch walls
+Each opening: 8 ft wide × 8 ft high
+Semicircular top: 4 ft radius
+Straight vertical portion: 4 ft high
+Outer concrete piers: 1 ft wide
+Porch wall thickness: 12 in
+

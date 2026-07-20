@@ -11,7 +11,7 @@
  * CACHE_VERSION is bumped by the build (see scripts/build-pwa-assets.mjs) so a new deploy
  * evicts the old shell on activate.
  */
-const CACHE_VERSION = "typehaus-v1";
+const CACHE_VERSION = "typehaus-v2";
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -26,7 +26,8 @@ const SHELL_ASSETS = [
 
 // Engine API surface (server/app.py) — never cached; these belong to `haus serve`.
 const API_PREFIXES = [
-  "/model", "/checks", "/plan", "/macro", "/build", "/undo", "/redo", "/events",
+  "/model", "/checks", "/details", "/detail", "/plan", "/preview", "/macro",
+  "/build", "/undo", "/redo", "/events", "/underlays",
 ];
 
 self.addEventListener("install", (event) => {
