@@ -141,9 +141,9 @@ ROOFS = [
 ]
 
 BEAMS = [
-    # Ridge beam over the center wall line (5.5 x 11.875).
+    # Ridge beam over the center wall line: 3 plies of 1.75x11.875 LVL (5.25x11.875).
     Beam(uid="CABM01AAAA", tag="RB-HOUSE", start_node="N-A-S2",
-         end_node="N-A-N1", size="5.5x11.875 LVL",
+         end_node="N-A-N1", size="3-1.75x11.875 LVL",
          bearing_refs=("W-A-S2", "W-A-N1")),
 ]
 

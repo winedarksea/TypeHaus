@@ -47,4 +47,6 @@ TRANSITIONS = (
     Transition(uid="CATR012AAAA", tag="TR-CATLIN-ASSEMBLY-JOG",
                condition_pattern="assembly_change:*", overlay="assembly-change-jog",
                continuity=AIR_WATER_THERMAL),
+    Transition(uid="CATR013AAAA", tag="TR-CATLIN-RIDGE-BEAM",
+               condition_pattern="roof_ridge:*", overlay="lvl-ridge-hanger"),
 )

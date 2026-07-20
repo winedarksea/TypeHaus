@@ -55,7 +55,7 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         apply_to_roof_wall_tops(model)
     with _stage("framing"):
         frame_model(plan, model)
-        frame_roofs(model)
+        findings.extend(frame_roofs(model))
     with _stage("floors"):
         findings.extend(resolve_floors(model))
     with _stage("mep"):

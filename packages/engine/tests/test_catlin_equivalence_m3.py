@@ -10,6 +10,7 @@ north, and the freestanding arched sunken-garden structure.
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -17,6 +18,7 @@ import pytest
 
 from typehaus.quantities import ft, inch
 from typehaus.resolve import resolve
+from typehaus.resolve.framing.profiles import RIDGE_BEAM_DEFAULT, cross_section
 from typehaus.source import load_plan
 from typehaus.checks import run
 from typehaus.findings import Result
@@ -149,7 +151,36 @@ def test_roof_matches_old_pitch_knee_and_ridge(catlin_model):
     assert rise_over_run == pytest.approx(4.0 / 12.0)
     rafters = [member for member in roof.members if member.category == "rafter"]
     assert len(rafters) == 56  # 28 lines at 16" o.c., two gable planes.
-    assert all(member.z1_end_m == pytest.approx(roof.ridge_z_m) for member in rafters)
+    # WP4: rafter ridge ends are trimmed back to bear on the ridge beam rather than
+    # crossing to the exact ridge centerline — z1_end drops by half the beam width
+    # times the roof slope, staying on the roof plane.
+    beam_width_m = cross_section(RIDGE_BEAM_DEFAULT).width_m
+    expected_z1_end = roof.ridge_z_m - (4.0 / 12.0) * (beam_width_m / 2.0)
+    assert all(member.z1_end_m == pytest.approx(expected_z1_end) for member in rafters)
+    assert all(member.connection == "ridge:adjustable-slope-hanger;eave:birdsmouth-1.17in"
+              for member in rafters)
+
+
+def test_ridge_beam_member_and_condition(catlin_model):
+    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
+    beams = [member for member in roof.members if member.category == "ridge_beam"]
+    assert len(beams) == 1
+    beam = beams[0]
+    assert beam.profile == RIDGE_BEAM_DEFAULT
+    assert beam.z1_m == pytest.approx(roof.ridge_z_m)
+    section = cross_section(beam.profile)
+    assert beam.z0_m == pytest.approx(roof.ridge_z_m - section.depth_m)
+    assert any(c.kind.value == "roof_ridge" for c in catlin_model.conditions)
+
+
+def test_garage_gable_roof_with_no_ridge_beam_warns_not_errors(catlin_model):
+    garage_roof = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
+    assert not [m for m in garage_roof.members if m.category == "ridge_beam"]
+    _, resolve_findings = resolve(load_plan(CATLIN_DIR).plan)
+    ridge_warnings = [f for f in resolve_findings if f.check_id == "structural.ridge_support"]
+    assert any(f.element_tags == ("RF-GARAGE",) and f.severity.value == "warn"
+              for f in ridge_warnings)
+    assert not [f for f in ridge_warnings if f.severity.value == "error"]
 
 
 def test_attic_to_roof_walls_frame_with_raked_studs_and_plates(catlin_model):
@@ -161,6 +192,47 @@ def test_attic_to_roof_walls_frame_with_raked_studs_and_plates(catlin_model):
     assert len(studs) >= 2
     assert max(member.z1_m for member in studs) > min(member.z1_m for member in studs)
     assert any(member.category == "raked_plate" for member in gable.members)
+
+
+def test_floors_get_two_rim_boards_at_the_outer_bearing_lines(catlin_model):
+    """WP3: rim (band) joists cap the deck ends, one per outermost bearing line."""
+    for tag in ("FS-SECOND", "FS-ATTIC"):
+        floor = next(f for f in catlin_model.floors if f.tag == tag)
+        rims = [m for m in floor.members if m.category == "rim"]
+        assert len(rims) == 2, tag
+        assert all(m.profile.endswith(" rim") for m in rims)
+
+
+def test_raked_gable_king_studs_match_roof_plane_at_own_station(catlin_model):
+    """WP0: king-stud tops on a raked wall follow the roof line at their own plan
+    position. A prior bug reused the last regular stud's leftover top for every
+    king on the wall, regardless of the opening's actual station."""
+    wall = next(w for w in catlin_model.walls if w.tag == "W-A-S3")  # two windows
+    assert wall.top_z0_m is not None and wall.top_z1_m is not None
+    (x0, y0), (x1, y1) = wall.axis
+    axis_len = math.hypot(x1 - x0, y1 - y0)
+    dx, dy = (x1 - x0) / axis_len, (y1 - y0) / axis_len
+    plate_h = inch(1.5).meters
+    top_plates = 2  # CATLIN_EXT_2X4 double top plate, not advanced framing
+
+    kings = [m for m in wall.members if m.category == "king"]
+    assert len(kings) >= 4  # two windows, at least one king per side each
+
+    for king in kings:
+        px, py = king.p0
+        # Project onto the wall axis direction (king.p0 sits on the structure-layer
+        # centerline, offset perpendicular from the datum axis — hypot would pick up
+        # that perpendicular offset and skew the station).
+        s = (px - x0) * dx + (py - y0) * dy
+        fraction = s / axis_len
+        expected = (wall.top_z0_m + (wall.top_z1_m - wall.top_z0_m) * fraction
+                    - plate_h * top_plates)
+        assert king.z1_m == pytest.approx(expected, abs=1e-6)
+
+    # Kings on the two different windows sit at different stations, so their
+    # tops must differ — exactly what the leftover-loop-variable bug broke.
+    tops = {round(k.z1_m, 6) for k in kings}
+    assert len(tops) > 1
 
 
 def test_attic_follow_roof_rooms_pass_r305(catlin_model):

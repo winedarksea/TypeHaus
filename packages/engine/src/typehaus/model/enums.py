@@ -184,3 +184,4 @@ class ConditionKind(Enum):
     OPENING_PERIMETER = "opening_perimeter"
     STOREY_STACK = "storey_stack"
     STACK_WIDTH_CHANGE = "stack_width_change"
+    ROOF_RIDGE = "roof_ridge"

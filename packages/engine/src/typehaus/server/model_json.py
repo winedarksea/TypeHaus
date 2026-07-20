@@ -14,7 +14,8 @@ from urllib.parse import quote
 from typehaus.checks.registry import Preferences
 from typehaus.findings import Finding
 from typehaus.model.spatial import Stair
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.model import FramedMember, ResolvedModel
 from typehaus.source.provenance import Provenance
 
 
@@ -23,6 +24,27 @@ def _provenance(prov: Provenance | None, tag: str) -> dict[str, Any] | None:
         return None
     loc = prov.location(tag)
     return {"file": loc.file, "line": loc.line} if loc is not None else None
+
+
+def _member_json(m: FramedMember) -> dict[str, Any]:
+    """The one member serialization every trade (walls/roofs/floors/stairs) shares.
+
+    The UI never parses ``profile`` strings — this is the only place that calls
+    :func:`cross_section`, so every consumer gets ``shape``/``width_m``/``depth_m``
+    (and i-joist flange/web dims) pre-resolved.
+    """
+    section = cross_section(m.profile)
+    return {
+        "key": m.child_key, "category": m.category, "profile": m.profile,
+        "p0": list(m.p0), "p1": list(m.p1), "z0_m": m.z0_m, "z1_m": m.z1_m,
+        "z0_end_m": m.z0_end_m, "z1_end_m": m.z1_end_m,
+        "shape": section.shape, "width_m": section.width_m, "depth_m": section.depth_m,
+        "flange_width_m": section.flange_width_m,
+        "flange_thickness_m": section.flange_thickness_m,
+        "web_thickness_m": section.web_thickness_m, "plies": section.plies,
+        "orient": list(m.orient) if m.orient is not None else None,
+        "connection": m.connection,
+    }
 
 
 def _findings_json(findings: list[Finding] | None) -> list[dict[str, Any]]:
@@ -156,12 +178,7 @@ def model_to_dict(
                      "control": sorted(ly.control)}
                     for ly in w.layers
                 ],
-                "members": [
-                    {"key": m.child_key, "category": m.category, "profile": m.profile,
-                     "p0": list(m.p0), "p1": list(m.p1), "z0_m": m.z0_m, "z1_m": m.z1_m,
-                     "z0_end_m": m.z0_end_m, "z1_end_m": m.z1_end_m}
-                    for m in w.members
-                ],
+                "members": [_member_json(m) for m in w.members],
             }
             for w in sorted(model.walls, key=lambda x: x.uid)
         ],
@@ -235,13 +252,7 @@ def model_to_dict(
              "eave_z_m": roof.eave_z_m, "ridge_z_m": roof.ridge_z_m,
              "ridge_direction": roof.ridge_direction, "assembly": roof.assembly,
              "surface_area_m2": roof.surface_area_m2,
-             "members": [
-                 {"key": member.child_key, "category": member.category,
-                  "profile": member.profile, "p0": list(member.p0), "p1": list(member.p1),
-                  "z0_m": member.z0_m, "z1_m": member.z1_m,
-                  "z0_end_m": member.z0_end_m, "z1_end_m": member.z1_end_m}
-                 for member in roof.members
-             ],
+             "members": [_member_json(member) for member in roof.members],
              "provenance": _provenance(provenance, roof.tag)}
             for roof in sorted(model.roofs, key=lambda item: item.uid)
         ],
@@ -258,12 +269,8 @@ def model_to_dict(
              "start": list(authored.start.xy_m) if authored.start is not None else None,
              "riser_count": stair.riser_count, "riser_height_m": stair.riser_height_m,
              "tread_depth_m": stair.tread_depth_m,
-             "members": [
-                 {"key": member.child_key, "category": member.category,
-                  "profile": member.profile, "p0": list(member.p0), "p1": list(member.p1),
-                  "z0_m": member.z0_m, "z1_m": member.z1_m}
-                 for member in stair.members
-             ], "provenance": _provenance(provenance, stair.tag)}
+             "members": [_member_json(member) for member in stair.members],
+             "provenance": _provenance(provenance, stair.tag)}
             for stair in sorted(model.stairs, key=lambda item: item.uid)
             if isinstance((authored := model.plan.by_tag(stair.tag)), Stair)
         ],
@@ -271,12 +278,7 @@ def model_to_dict(
             {"uid": floor.uid, "tag": floor.tag, "storey": floor.storey,
              "direction": floor.direction,
              "provenance": _provenance(provenance, floor.tag),
-             "members": [
-                 {"key": member.child_key, "category": member.category,
-                  "profile": member.profile, "p0": list(member.p0), "p1": list(member.p1),
-                  "z0_m": member.z0_m, "z1_m": member.z1_m}
-                 for member in floor.members
-             ]}
+             "members": [_member_json(member) for member in floor.members]}
             for floor in sorted(model.floors, key=lambda item: item.uid)
         ],
         "floor_heat": [

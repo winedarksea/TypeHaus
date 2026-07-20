@@ -1,16 +1,22 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { useStore } from "../state/store";
-import type { Model, Wall } from "../model/types";
+import { ALL_TRADES, useStore, type Trade } from "../state/store";
+import type { Model, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { materialColor, NORDIC_BG } from "../nordic/palette";
+import { buildMembers, disposeGroup } from "../three/members";
 
 // The 3D panel behind an implicit ModelViewer seam (→ 21 §3D panel). The primary path is
 // glTF from ResolvedModel; until the server emits it, this builds an equivalent scene
-// directly from model.json (extruded wall layers + framing lines), which is always
-// available and guarantees the 3D view shows exactly what the resolver computed. The
-// Nordic passes (soft lighting + edge linework) attach to the three.js scene, so they
-// survive the eventual glTF route unchanged. Clicking a wall cross-highlights the 2D plan
-// and surfaces its file:line provenance.
+// directly from model.json (extruded wall/solid/roof surfaces + solid instanced framing
+// members), which is always available and guarantees the 3D view shows exactly what the
+// resolver computed. The Nordic passes (soft lighting + edge linework) attach to the
+// three.js scene, so they survive the eventual glTF route unchanged. Clicking a wall
+// cross-highlights the 2D plan and surfaces its file:line provenance.
+
+const TRADE_LABEL: Record<Trade, string> = {
+  walls: "Walls", framing: "Framing", floors: "Floors", concrete: "Concrete",
+  roof: "Roof", stairs: "Stairs", furniture: "Furniture",
+};
 
 export function Panel3D() {
   const model = useStore((s) => s.model);
@@ -18,6 +24,8 @@ export function Panel3D() {
   const setThreeMode = useStore((s) => s.setThreeMode);
   const select = useStore((s) => s.select);
   const selection = useStore((s) => s.selection);
+  const visibleTrades = useStore((s) => s.visibleTrades);
+  const setTradeVisible = useStore((s) => s.setTradeVisible);
   const mountRef = useRef<HTMLDivElement>(null);
   const api = useRef<SceneApi | null>(null);
 
@@ -36,6 +44,10 @@ export function Panel3D() {
     api.current?.highlight(selection.kind === "wall" ? selection.uid : null);
   }, [selection]);
 
+  useEffect(() => {
+    for (const trade of ALL_TRADES) api.current?.setVisibility(trade, visibleTrades[trade]);
+  }, [visibleTrades]);
+
   return (
     <div style={{ position: "absolute", inset: 0 }}>
       <div ref={mountRef} style={{ position: "absolute", inset: 0 }} />
@@ -50,6 +62,18 @@ export function Panel3D() {
           </button>
         ))}
       </div>
+      <div className="hud" style={{ bottom: 12, top: "auto", right: 12, left: "auto", display: "flex", gap: 4, flexWrap: "wrap", maxWidth: 260 }}>
+        {ALL_TRADES.map((trade) => (
+          <button
+            key={trade}
+            className={`seg-btn${visibleTrades[trade] ? " active" : ""}`}
+            onClick={() => setTradeVisible(trade, !visibleTrades[trade])}
+            title={`Toggle ${TRADE_LABEL[trade]}`}
+          >
+            {TRADE_LABEL[trade]}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -57,6 +81,7 @@ export function Panel3D() {
 interface SceneApi {
   setModel: (m: Model, mode: "nordic" | "schematic") => void;
   highlight: (uid: string | null) => void;
+  setVisibility: (trade: Trade, visible: boolean) => void;
   dispose: () => void;
 }
 
@@ -70,6 +95,14 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
 
   const content = new THREE.Group();
   scene.add(content);
+  // One persistent THREE.Group per trade (→ WP7): created once, repopulated by setModel,
+  // visibility flipped in place — never rebuilt, never re-created, so toggling a trade off
+  // and back on costs nothing but a bool flip + one render.
+  const tradeGroups = Object.fromEntries(
+    ALL_TRADES.map((trade) => [trade, new THREE.Group()]),
+  ) as Record<Trade, THREE.Group>;
+  for (const trade of ALL_TRADES) content.add(tradeGroups[trade]);
+
   let picks: THREE.Mesh[] = [];
   const byUid = new Map<string, THREE.Material[]>();
   let highlighted: string | null = null;
@@ -162,8 +195,14 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
   ro.observe(mount);
   resize();
 
+  // Dispose every mesh's geometry/material before dropping it — the previous version left
+  // these leaking on every setModel() (content.clear() only detaches Object3Ds, it never
+  // calls .dispose()).
   const clear = () => {
-    content.clear();
+    for (const trade of ALL_TRADES) {
+      disposeGroup(tradeGroups[trade]);
+      tradeGroups[trade].clear();
+    }
     picks = [];
     byUid.clear();
     highlighted = null;
@@ -187,9 +226,13 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     }
     target = new THREE.Vector3(0, 1.2, 0);
 
-    for (const w of m.walls) buildWall(content, w, cx, cz, mode, picks, byUid);
+    for (const w of m.walls) buildWall(tradeGroups, w, cx, cz, mode, picks, byUid);
+    for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, cx, cz, mode);
+    for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, cx, cz, mode);
+    for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, cx, cz, mode);
+    for (const stair of m.stairs ?? []) buildStair(tradeGroups.stairs, stair, cx, cz, mode);
     for (const furniture of m.furniture ?? [])
-      buildFurniture(content, furniture, cx, cz, mode,
+      buildFurniture(tradeGroups.furniture, furniture, cx, cz, mode,
         m.storeys.find((storey) => storey.tag === furniture.storey)?.elevation_m ?? 0);
 
     // frame the model
@@ -211,12 +254,19 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     requestRender();
   };
 
+  const setVisibility = (trade: Trade, visible: boolean) => {
+    tradeGroups[trade].visible = visible;
+    requestRender();
+  };
+
   return {
     setModel,
     highlight,
+    setVisibility,
     dispose: () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      for (const trade of ALL_TRADES) disposeGroup(tradeGroups[trade]);
       renderer.dispose();
       mount.removeChild(el);
     },
@@ -243,10 +293,11 @@ function buildFurniture(
   parent.add(mesh);
 }
 
-// Build one wall: an extruded prism per layer polygon + framing lines. World plan (x,y)
-// maps to three (x, z); height runs along +Y. Centered on (cx,cz).
+// Build one wall: an extruded prism per layer polygon (→ "walls" trade) + its solid framing
+// members (→ "framing" trade, WP8). World plan (x,y) maps to three (x, z); height runs
+// along +Y. Centered on (cx,cz).
 function buildWall(
-  parent: THREE.Group,
+  tradeGroups: Record<Trade, THREE.Group>,
   w: Wall,
   cx: number,
   cz: number,
@@ -277,7 +328,7 @@ function buildWall(
     const mesh = new THREE.Mesh(geo, mat);
     mesh.userData.uid = w.uid;
     mesh.userData.tag = w.tag;
-    parent.add(mesh);
+    tradeGroups.walls.add(mesh);
     picks.push(mesh);
     mats.push(mat);
 
@@ -286,19 +337,89 @@ function buildWall(
         new THREE.EdgesGeometry(geo, 25),
         new THREE.LineBasicMaterial({ color: 0x4a463d, transparent: true, opacity: 0.35 }),
       );
-      parent.add(edges);
+      tradeGroups.walls.add(edges);
     }
   }
-  // framing members as vertical lines (fast; the instanced path lands with the glTF emit)
-  if (w.members.length) {
-    const pts: number[] = [];
-    for (const mbr of w.members) {
-      pts.push(mbr.p0[0] - cx, mbr.z0_m, mbr.p0[1] - cz);
-      pts.push(mbr.p1[0] - cx, mbr.z1_m, mbr.p1[1] - cz);
-    }
-    const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-    parent.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0x8a6d3b })));
-  }
+  buildMembers(tradeGroups.framing, w.members, cx, cz, mode);
   byUid.set(w.uid, mats);
+}
+
+// Slabs, footings, pads: same outline-extrusion recipe as wall layers, concrete grey.
+function buildSolid(parent: THREE.Group, solid: Solid, cx: number, cz: number,
+  mode: "nordic" | "schematic") {
+  if (solid.outline.length < 3) return;
+  const shape = new THREE.Shape();
+  solid.outline.forEach((p, i) => {
+    const x = p[0] - cx;
+    const y = p[1] - cz;
+    if (i === 0) shape.moveTo(x, y);
+    else shape.lineTo(x, y);
+  });
+  const h = Math.max(0.01, solid.z1_m - solid.z0_m);
+  const geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false });
+  geo.rotateX(-Math.PI / 2);
+  geo.translate(0, solid.z0_m, 0);
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0x9a9a96, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",
+  });
+  parent.add(new THREE.Mesh(geo, mat));
+}
+
+// Floors have no deck surface of their own in the resolved model — just joists + rim
+// boards; render those into the "floors" trade so they're hideable for stair continuity.
+function buildFloor(parent: THREE.Group, floor: Floor, cx: number, cz: number,
+  mode: "nordic" | "schematic") {
+  buildMembers(parent, floor.members, cx, cz, mode);
+}
+
+// Sloped quads from footprint/eave_z/ridge_z/ridge_direction — mirrors
+// emit/gltf/emitter.py's _add_roof — plus the roof's own members (rafters, ridge beam).
+function buildRoof(parent: THREE.Group, roof: Roof, cx: number, cz: number,
+  mode: "nordic" | "schematic") {
+  const xs = roof.footprint.map((p) => p[0] - cx);
+  const ys = roof.footprint.map((p) => p[1] - cz);
+  const minx = Math.min(...xs), maxx = Math.max(...xs);
+  const miny = Math.min(...ys), maxy = Math.max(...ys);
+  const eave = roof.eave_z_m;
+  const ridge = roof.ridge_z_m;
+  const v = (x: number, y: number, z: number) => new THREE.Vector3(x, z, y);
+  let triangles: THREE.Vector3[];
+  if (roof.form === "shed") {
+    triangles = roof.ridge_direction === "x"
+      ? [v(minx, miny, eave), v(maxx, miny, eave), v(maxx, maxy, ridge),
+         v(minx, miny, eave), v(maxx, maxy, ridge), v(minx, maxy, ridge)]
+      : [v(minx, miny, eave), v(maxx, miny, ridge), v(maxx, maxy, ridge),
+         v(minx, miny, eave), v(maxx, maxy, ridge), v(minx, maxy, eave)];
+  } else if (roof.ridge_direction === "x") {
+    const mid = (miny + maxy) / 2;
+    const ra = v(minx, mid, ridge), rb = v(maxx, mid, ridge);
+    triangles = [
+      v(minx, miny, eave), v(maxx, miny, eave), rb,
+      v(minx, miny, eave), rb, ra,
+      ra, rb, v(maxx, maxy, eave),
+      ra, v(maxx, maxy, eave), v(minx, maxy, eave),
+    ];
+  } else {
+    const mid = (minx + maxx) / 2;
+    const ra = v(mid, miny, ridge), rb = v(mid, maxy, ridge);
+    triangles = [
+      v(minx, miny, eave), ra, rb,
+      v(minx, miny, eave), rb, v(minx, maxy, eave),
+      ra, v(maxx, miny, eave), v(maxx, maxy, eave),
+      ra, v(maxx, maxy, eave), rb,
+    ];
+  }
+  const geo = new THREE.BufferGeometry().setFromPoints(triangles);
+  geo.computeVertexNormals();
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0x595d63, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",
+    transparent: true, opacity: 0.65, side: THREE.DoubleSide,
+  });
+  parent.add(new THREE.Mesh(geo, mat));
+  buildMembers(parent, roof.members, cx, cz, mode);
+}
+
+function buildStair(parent: THREE.Group, stair: Stair, cx: number, cz: number,
+  mode: "nordic" | "schematic") {
+  buildMembers(parent, stair.members, cx, cz, mode);
 }

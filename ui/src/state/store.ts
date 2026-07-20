@@ -23,6 +23,16 @@ export type Tool = "select" | "wall" | "opening" | "room" | "dimension";
 export type ViewMode = "2d" | "split" | "3d";
 export type ThreeMode = "nordic" | "schematic";
 
+// 3D trade visibility (→ 21 §3D panel WP7): one THREE.Group per trade so toggling never
+// rebuilds the scene, just flips group.visible. "walls" is layer polygons (sheathing,
+// insulation, cladding); "framing" is wall members (studs/plates/headers); "floors" is
+// floor decks (hideable for stair continuity); "concrete" is resolved solids (slabs,
+// footings, pads); "roof" is the roof surface + its members (incl. ridge beam).
+export type Trade = "walls" | "framing" | "floors" | "concrete" | "roof" | "stairs" | "furniture";
+export const ALL_TRADES: Trade[] = [
+  "walls", "framing", "floors", "concrete", "roof", "stairs", "furniture",
+];
+
 export interface Selection {
   kind: "wall" | "opening" | "room" | "stair" | null;
   uid: string | null;
@@ -62,6 +72,7 @@ interface StoreState {
   activeStorey: string | null;
   view: ViewTransform;
   showFraming: boolean; // framed floorplan vs. schematic wall fills
+  visibleTrades: Record<Trade, boolean>;
   conflict: Conflict | null;
   toasts: Toast[];
 
@@ -76,6 +87,7 @@ interface StoreState {
   setViewMode: (v: ViewMode) => void;
   setThreeMode: (m: ThreeMode) => void;
   setShowFraming: (v: boolean) => void;
+  setTradeVisible: (trade: Trade, visible: boolean) => void;
   select: (kind: Selection["kind"], uid: string | null) => void;
   selectByTag: (kind: Selection["kind"], tag: string) => void;
   setHover: (uid: string | null) => void;
@@ -130,6 +142,10 @@ export const useStore = create<StoreState>((set, get) => ({
   activeStorey: null,
   view: { scale: 120, tx: 80, ty: 80 },
   showFraming: true,
+  visibleTrades: {
+    walls: true, framing: true, floors: true, concrete: true, roof: true,
+    stairs: true, furniture: true,
+  },
   conflict: null,
   toasts: [],
 
@@ -209,6 +225,8 @@ export const useStore = create<StoreState>((set, get) => ({
   setViewMode: (viewMode) => set({ viewMode }),
   setThreeMode: (threeMode) => set({ threeMode }),
   setShowFraming: (showFraming) => set({ showFraming }),
+  setTradeVisible: (trade, visible) =>
+    set((s) => ({ visibleTrades: { ...s.visibleTrades, [trade]: visible } })),
   select: (kind, uid) => set({ selection: { kind, uid } }),
   // Select an element by its authored tag (uids are minted server-side, so a freshly drawn
   // wall / placed opening is only addressable by tag until the next reload lands).

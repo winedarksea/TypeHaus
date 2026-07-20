@@ -48,6 +48,14 @@ class FramedMember:
     # ``None`` preserves the ordinary prismatic member convention.
     z0_end_m: float | None = None
     z1_end_m: float | None = None
+    # Plan-frame axis a vertical member (p0 == p1) is oriented along — e.g. a stud's
+    # wall direction — so the UI can place its cross-section without reaching back to
+    # the host wall. ``None`` for horizontal/sloped members, which carry their own
+    # axis in p0->p1.
+    orient: tuple[float, float] | None = None
+    # Free-form connection annotation (e.g. "ridge:adjustable-slope-hanger") for the
+    # 2D detail pipeline to bind later. Geometry stays a plain box; no seat cuts here.
+    connection: str | None = None
 
 
 @dataclass(frozen=True)

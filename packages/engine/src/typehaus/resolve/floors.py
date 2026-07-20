@@ -8,21 +8,17 @@ sheets consume these members as-is.
 
 from __future__ import annotations
 
-import re
-
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.floors import FloorSystem
 from typehaus.quantities import inch
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel
 
 _DEFAULT_SPACING_M = inch(16).meters
-_DEFAULT_DEPTH_M = inch(11.875).meters
 
 
 def _member_depth_m(member: str) -> float:
-    """Leading number in a member string is its depth in inches ('11.875 I-joist')."""
-    match = re.match(r"\s*(\d+(?:\.\d+)?)", member)
-    return inch(float(match.group(1))).meters if match else _DEFAULT_DEPTH_M
+    return cross_section(member).depth_m
 
 
 def resolve_floors(model: ResolvedModel) -> list[Finding]:
@@ -95,6 +91,20 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
                 system.uid, f"joist-{span_index}-{index:03d}", "joist", spec.member,
                 p0, p1, z0, z1, b - a,
             ))
+
+    # Rim (band) boards cap the joist ends along the two outermost bearing lines —
+    # perpendicular to the joists, not a duplicate of the parallel edge joists above.
+    depth_in = depth / inch(1).meters
+    rim_profile = f"1.25x{depth_in:g} rim"
+    for rim_index, boundary in enumerate((boundaries[0], boundaries[-1])):
+        if along_x:
+            r0, r1 = (boundary, perp0), (boundary, perp1)
+        else:
+            r0, r1 = (perp0, boundary), (perp1, boundary)
+        members.append(FramedMember(
+            system.uid, f"rim-{rim_index}", "rim", rim_profile, r0, r1, z0, z1,
+            perp1 - perp0,
+        ))
 
     return ResolvedFloor(
         uid=system.uid, tag=system.tag, storey=storey.tag,

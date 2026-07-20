@@ -19,14 +19,37 @@ export interface Layer {
   control: string[];
 }
 
+// Orientation convention (defined once, engine side: resolve/framing/profiles.py):
+// width_m is always the "thickness" face — 1.5" for a stud along the wall axis, the
+// narrow face of a joist/rafter along its span. depth_m is always the "wide" face —
+// 3.5"+ through a wall, or the vertical depth of a joist/rafter/beam. Holds regardless
+// of the member's plan orientation, including "i_joist" (there width_m is flange width).
+export type MemberShape = "rect" | "i_joist";
+
 export interface Member {
   key: string;
-  category: string; // stud | plate | header | joist | ...
-  profile: string;
+  category: string; // stud | plate | header | joist | rim | ridge_beam | ...
+  profile: string; // never parsed client-side — shape/width_m/depth_m are pre-resolved below
   p0: Vec2;
   p1: Vec2;
   z0_m: number;
   z1_m: number;
+  // A raked member has different lower/upper elevations at its second endpoint.
+  z0_end_m: number | null;
+  z1_end_m: number | null;
+  shape: MemberShape;
+  width_m: number;
+  depth_m: number;
+  flange_width_m: number | null; // i_joist only
+  flange_thickness_m: number | null; // i_joist only
+  web_thickness_m: number | null; // i_joist only
+  plies: number;
+  // Plan-frame axis a vertical member (p0 == p1) is oriented along, e.g. a stud's wall
+  // direction — null for horizontal/sloped members, which carry their own axis in p0->p1.
+  orient: Vec2 | null;
+  // Free-form connection annotation (e.g. "ridge:adjustable-slope-hanger") for the 2D
+  // detail pipeline; not structured, not geometry.
+  connection: string | null;
 }
 
 export interface Wall {
@@ -243,6 +266,32 @@ export interface Roof {
   ridge_z_m: number;
   ridge_direction: "x" | "y";
   assembly: string;
+  surface_area_m2: number;
+  members: Member[];
+  provenance: Provenance | null;
+}
+
+// Slabs, pads, and footings — a resolved horizontal or below-grade solid with a plan
+// outline (→ resolve/model.py ResolvedSolid).
+export interface Solid {
+  uid: string;
+  tag: string;
+  storey: string;
+  category: string; // slab | footing | pad
+  outline: Vec2[];
+  z0_m: number;
+  z1_m: number;
+  assembly: string | null;
+  provenance: Provenance | null;
+}
+
+export interface Floor {
+  uid: string;
+  tag: string;
+  storey: string;
+  direction: "x" | "y";
+  provenance: Provenance | null;
+  members: Member[];
 }
 
 // A stair's scalar inputs are authored, while its risers, treads, and framing members are
@@ -295,6 +344,8 @@ export interface Model {
   nodes?: PlanNode[]; // authored wall-graph vertices (→ _catalog sibling); absent on older json
   openings: Opening[];
   roofs?: Roof[];
+  solids?: Solid[];
+  floors?: Floor[];
   stairs?: Stair[];
   fixtures?: Fixture[];
   furniture?: Furniture[];

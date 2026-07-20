@@ -8,10 +8,9 @@ from typehaus.checks.registry import Preferences
 from typehaus.emit.draw import build_floorplan
 from typehaus.energy import estimate_block_load
 from typehaus.model import (
-    Assembly, Building, FloorOpening, FloorSystem, Footing, FoundationWall, FramingSpec, JoistSpec,
-    Layer, LayerFunction, Library, Material, Node, PlanModel, Project, Roof, RoofForm, Site, Slab,
-    Stair,
-    Storey, Wall, degF, ft, inch, pt,
+    Assembly, Beam, Building, FloorOpening, FloorSystem, Footing, FoundationWall, FramingSpec,
+    JoistSpec, Layer, LayerFunction, Library, Material, Node, PlanModel, Project, Roof, RoofForm,
+    Site, Slab, Stair, Storey, Wall, degF, ft, inch, pt,
 )
 from typehaus.quantities import Pitch
 from typehaus.resolve import resolve
@@ -60,7 +59,14 @@ def _envelope_plan() -> PlanModel:
                          Stair(uid="SR00000001", tag="S-1", floor_opening="FO-1",
                                from_storey="basement", to_storey="main", width=ft(3),
                                run_direction="x", start=pt(ft(0), ft(0))))
-    main_elements = (*nodes, *main_walls,
+    # Ridge runs x-direction at the roof's mid-y (7'); the beam nodes sit on that
+    # line so resolve.framing.roof finds a supporting ridge Beam (no ridge_support
+    # WARN) — this fixture predates ridge-beam resolution and stays finding-clean.
+    ridge_nodes = (
+        Node(uid="NBEAM0001", tag="N-B1", position=pt(ft(0), ft(7))),
+        Node(uid="NBEAM0002", tag="N-B2", position=pt(ft(20), ft(7))),
+    )
+    main_elements = (*nodes, *main_walls, *ridge_nodes,
                      FloorOpening(uid="FO00000001", tag="FO-1", outline=(
                          pt(ft(0), ft(0)), pt(ft(12), ft(0)), pt(ft(12), ft(3)), pt(ft(0), ft(3)),
                      )),
@@ -70,7 +76,8 @@ def _envelope_plan() -> PlanModel:
                          pt(ft(0), ft(0)), pt(ft(20), ft(0)), pt(ft(20), ft(14)), pt(ft(0), ft(14)),
                      ), thickness=inch(4), assembly="EXT"),
                      Roof(uid="RF00000001", tag="R-1", form=RoofForm.GABLE, pitch=Pitch(4),
-                          bearing_refs=("W-1", "W-3"), assembly="EXT", overhang=ft(1)))
+                          bearing_refs=("W-1", "W-3"), assembly="EXT", overhang=ft(1)),
+                     Beam(uid="BM00000001", tag="RB-1", start_node="N-B1", end_node="N-B2"))
     return plan.with_elements("basement", basement_elements).with_elements("main", main_elements)
 
 

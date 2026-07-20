@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from typehaus.model.base import HausModel
 from typehaus.model.enums import (
     ControlLayer,
@@ -27,6 +29,7 @@ class FramingSpec(HausModel):
     advanced_framing: bool = False  # single top plate + in-line stud stacking
     stagger_gap: Length | None = None  # for STAGGERED/DOUBLE partition layouts
     direction: str | None = None  # FURRING only: "vertical" | "horizontal"
+    corner_style: Literal["3-stud", "4-stud"] = "3-stud"
 
 
 class MasonrySpec(HausModel):

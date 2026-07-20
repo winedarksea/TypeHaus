@@ -54,7 +54,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
     members: list[FramedMember] = []
 
     # --- plates ---------------------------------------------------------------
-    members.append(_plate(rw, p0, p1, "plate-bottom", z0, z0 + plate_h))
+    members.append(_plate(rw, p0, p1, "plate-bottom", z0, z0 + plate_h, member))
     top_plates = 2 if spec.double_top_plate and not spec.advanced_framing else 1
     top_start, top_end = _wall_top_elevations(rw)
     for i in range(top_plates):
@@ -62,17 +62,27 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
         end_bottom = top_end - plate_h * (i + 1)
         if abs(start_bottom - end_bottom) < 1e-9:
             members.append(_plate(rw, p0, p1, f"plate-top-{i}", start_bottom,
-                                  start_bottom + plate_h))
+                                  start_bottom + plate_h, member))
         else:
             members.append(FramedMember(
-                rw.uid, f"plate-raked-{i}", "raked_plate", "plate", p0, p1,
+                rw.uid, f"plate-raked-{i}", "raked_plate", member, p0, p1,
                 start_bottom, start_bottom + plate_h, axis_len,
                 z0_end_m=end_bottom, z1_end_m=end_bottom + plate_h,
             ))
 
     # --- studs at spacing, skipping those inside an opening's rough width ------
     stud_z0 = z0 + plate_h
-    stud_z1 = z1 - plate_h * top_plates
+
+    def top_at(s: float) -> float:
+        """Framing top (below the top plate(s)) at station ``s`` along the wall axis.
+
+        Interpolates between the wall's raked endpoints so every vertical member —
+        regular stud, corner stud, or king stud in an opening — gets the top that
+        matches the roof plane at its own plan position, not some other member's.
+        """
+        fraction = s / axis_len if axis_len else 0.0
+        return top_start + (top_end - top_start) * fraction - plate_h * top_plates
+
     n = int(axis_len // spacing)
     idx = 0
     for i in range(n + 1):
@@ -82,11 +92,10 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
         if _inside_opening(s, openings):
             continue
         pt = add(p0, scale(d, s))
-        fraction = s / axis_len if axis_len else 0.0
-        stud_z1 = top_start + (top_end - top_start) * fraction - plate_h * top_plates
+        stud_top = top_at(s)
         members.append(
             FramedMember(rw.uid, f"stud-{idx:03d}", "stud", member, pt, pt,
-                         stud_z0, stud_z1, stud_z1 - stud_z0)
+                         stud_z0, stud_top, stud_top - stud_z0, orient=d)
         )
         idx += 1
 
@@ -94,19 +103,26 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
         # A third stud at the owned end of each exterior corner favors the requested
         # strength-first 3/4-stud layout.  It is deliberately outside the regular
         # 16" module; the normal endpoint studs retain module continuity for sheathing,
-        # standing-seam panels, and floor framing.
+        # standing-seam panels, and floor framing. corner_style="4-stud" adds a second
+        # supplemental stud one bay further in, for the box-corner variant.
         corner_offset = min(1.5 * 0.0254, axis_len / 2.0)
         pt = add(p0, scale(d, corner_offset))
-        fraction = corner_offset / axis_len if axis_len else 0.0
-        corner_top = top_start + (top_end - top_start) * fraction - plate_h * top_plates
+        corner_top = top_at(corner_offset)
         members.append(FramedMember(rw.uid, "corner-start", "corner", member, pt, pt,
-                                    stud_z0, corner_top, corner_top - stud_z0))
+                                    stud_z0, corner_top, corner_top - stud_z0, orient=d))
+        if spec.corner_style == "4-stud":
+            corner_offset2 = min(2 * 1.5 * 0.0254, axis_len / 2.0)
+            pt2 = add(p0, scale(d, corner_offset2))
+            corner_top2 = top_at(corner_offset2)
+            members.append(FramedMember(rw.uid, "corner-start-2", "corner", member,
+                                        pt2, pt2, stud_z0, corner_top2,
+                                        corner_top2 - stud_z0, orient=d))
 
     # --- opening framing (king/jack/header/cripple/sill) ----------------------
     for oi, (center, width, height, sill, is_door) in enumerate(openings):
         members.extend(
             _frame_opening(rw, d, p0, center, width, height, sill, is_door, member,
-                           stud_z0, stud_z1, oi)
+                           stud_z0, top_at, oi)
         )
     return tuple(members)
 
@@ -139,8 +155,9 @@ def _wall_top_elevations(rw: ResolvedWall) -> tuple[float, float]:
             rw.top_z1_m if rw.top_z1_m is not None else rw.z1_m)
 
 
-def _plate(rw: ResolvedWall, p0, p1, key: str, z0: float, z1: float) -> FramedMember:
-    return FramedMember(rw.uid, key, "plate", "plate", p0, p1, z0, z1, length(sub(p1, p0)))
+def _plate(rw: ResolvedWall, p0, p1, key: str, z0: float, z1: float,
+          profile: str) -> FramedMember:
+    return FramedMember(rw.uid, key, "plate", profile, p0, p1, z0, z1, length(sub(p1, p0)))
 
 
 def _inside_opening(s: float, openings) -> bool:
@@ -151,7 +168,7 @@ def _inside_opening(s: float, openings) -> bool:
 
 
 def _frame_opening(rw, d, p0, center, width, height, sill, is_door, member,
-                   z0, z1, oi) -> list[FramedMember]:
+                   z0, top_at, oi) -> list[FramedMember]:
     from typehaus.quantities import m as _m
 
     out: list[FramedMember] = []
@@ -161,13 +178,15 @@ def _frame_opening(rw, d, p0, center, width, height, sill, is_door, member,
     for side, sign in (("l", -1), ("r", +1)):
         edge = center + sign * half
         for k in range(kings):
-            pos = add(p0, scale(d, edge + sign * (0.04 + k * 0.04)))
+            s = edge + sign * (0.04 + k * 0.04)
+            pos = add(p0, scale(d, s))
+            king_top = top_at(s)
             out.append(FramedMember(rw.uid, f"king-{oi}-{side}{k}", "king", member,
-                                    pos, pos, z0, z1, z1 - z0))
+                                    pos, pos, z0, king_top, king_top - z0, orient=d))
         for j in range(jacks):
             pos = add(p0, scale(d, edge + sign * (0.01 + j * 0.04)))
             out.append(FramedMember(rw.uid, f"jack-{oi}-{side}{j}", "jack", member,
-                                    pos, pos, z0, header_bottom, header_bottom - z0))
+                                    pos, pos, z0, header_bottom, header_bottom - z0, orient=d))
     hl = add(p0, scale(d, center - half))
     hr = add(p0, scale(d, center + half))
     out.append(FramedMember(rw.uid, f"header-{oi}", "header",
