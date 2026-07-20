@@ -5,6 +5,8 @@
 import type { Finding, Model } from "../model/types";
 import {
   type BuildResult,
+  type DetailIndexEntry,
+  type DetailPayload,
   EngineError,
   type EngineArtifact,
   type EngineClient,
@@ -51,6 +53,19 @@ export class HttpEngineClient implements EngineClient {
     if (!res.ok) throw new EngineError(await readError(res), res.status);
     const body = (await res.json()) as { findings: Finding[] };
     return body.findings;
+  }
+
+  async getDetailIndex(): Promise<DetailIndexEntry[]> {
+    const res = await fetch(this.url("/details"));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    const body = (await res.json()) as { details: DetailIndexEntry[] };
+    return body.details;
+  }
+
+  async getDetail(key: string): Promise<DetailPayload> {
+    const res = await fetch(this.url(`/detail?key=${encodeURIComponent(key)}`));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as DetailPayload;
   }
 
   async patchPlan(ops: PatchOp[], revision: string): Promise<PatchResult> {

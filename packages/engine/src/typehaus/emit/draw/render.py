@@ -45,6 +45,15 @@ def render_views(
 
         written.append(write_raster(build_center_section(model), out_dir / f"section_house.{fmt}",
                                     title="section · house center"))
+    elif view == "details":
+        from typehaus.emit.draw.details import build_detail, derive_detail_slices
+        from typehaus.emit.draw.pdf_writer import write_raster
+
+        for derived in derive_detail_slices(model):
+            scene, _findings = build_detail(model, derived)
+            slug = derived.view.tag.replace("/", "_")
+            written.append(write_raster(scene, out_dir / f"detail_{slug}.{fmt}",
+                                        title=f"detail · {derived.key}"))
     else:
-        raise ValueError(f"unknown view {view!r} (plan|section|3d)")
+        raise ValueError(f"unknown view {view!r} (plan|section|3d|details)")
     return written

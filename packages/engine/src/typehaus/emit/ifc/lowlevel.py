@@ -100,3 +100,19 @@ def aggregate(f: Any, parent: Any, children: list[Any]) -> None:
 
     ifcopenshell.api.run("aggregate.assign_object", f, products=children,
                          relating_object=parent)
+
+
+def add_opening(f: Any, wall: Any, opening: Any) -> None:
+    """IfcRelVoidsElement — the opening element voids its host wall (ported add_opening).
+
+    ifcopenshell 0.8 exposes voiding under the ``feature`` api (``add_feature``)."""
+    import ifcopenshell.api.feature
+
+    ifcopenshell.api.feature.add_feature(f, feature=opening, element=wall)
+
+
+def add_filling(f: Any, opening: Any, filling: Any) -> None:
+    """IfcRelFillsElement — a window/door fills its opening (ported add_filling)."""
+    import ifcopenshell.api.feature
+
+    ifcopenshell.api.feature.add_filling(f, opening=opening, element=filling)

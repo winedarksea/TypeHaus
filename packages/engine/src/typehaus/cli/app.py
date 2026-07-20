@@ -279,6 +279,7 @@ def explain(
     target: str = typer.Argument(..., help="element tag | assembly tag | 'transitions'"),
     house: Optional[Path] = typer.Argument(None),
     card: bool = typer.Option(False, help="render the assembly section card"),
+    detail: bool = typer.Option(False, help="render the transition detail(s) for a TR-* tag"),
     out: Optional[Path] = typer.Option(None, help="write card SVG to this path"),
     transitions: bool = typer.Option(False, help="enumerate derived boundary conditions"),
     bearing: bool = typer.Option(False, help="show authored bearing walls and resolved stack edges"),
@@ -322,6 +323,28 @@ def explain(
                                   *(f"to {tag}" for tag in upper)]) or "bearing role"
             table.add_row(wall.storey, wall.tag, wall.assembly, relation)
         console.print(table)
+        return
+
+    if detail:
+        from typehaus.emit.draw.details import build_detail, derive_detail_slices
+        from typehaus.emit.draw.pdf_writer import write_raster
+        from typehaus.resolve import resolve
+
+        model, _ = resolve(plan)
+        details = [d for d in derive_detail_slices(model)
+                   if d.transition is not None and d.transition.tag == target]
+        if not details:
+            console.print(f"[red]no derived detail bound to transition {target!r}[/red]")
+            raise typer.Exit(1)
+        dest_dir = out or (d / "out" / "render")
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        for derived in details:
+            scene, findings = build_detail(model, derived)
+            _print_findings(findings)
+            slug = derived.view.tag.replace("/", "_")
+            path = write_raster(scene, dest_dir / f"detail_{slug}.png",
+                                title=f"detail · {derived.key}")
+            console.print(f"wrote {path}")
         return
 
     asm = plan.library.resolve_assembly(target)
@@ -378,7 +401,7 @@ def fmt(house: Optional[Path] = typer.Argument(None)) -> None:
 @app.command()
 def render(
     house: Optional[Path] = typer.Argument(None),
-    view: str = typer.Option("plan", help="plan | section | 3d (#52 agent eyes)"),
+    view: str = typer.Option("plan", help="plan | section | details | 3d (#52 agent eyes)"),
     fmt: str = typer.Option("png", help="png | svg"),
 ) -> None:
     """Emit headless plan/section snapshots for the edit→build→check→look loop (#52)."""

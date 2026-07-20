@@ -299,6 +299,16 @@ def model_to_dict(
             {"kind": c.kind.value, "key": c.key, "elements": list(c.element_tags)}
             for c in model.conditions
         ],
+        "transitions": [
+            {"tag": t.tag, "pattern": t.condition_pattern, "overlay": t.overlay,
+             "notes": t.notes,
+             "continuity": [{"control": c.control, "from_face": c.from_face,
+                             "to_face": c.to_face} for c in t.continuity],
+             "joins": [{"layer": j.layer, "side": j.side,
+                        "termination_m": j.termination.meters, "treatment": j.treatment}
+                       for j in t.joins]}
+            for t in model.plan.library.transitions
+        ],
         "stack_edges": [
             {"lower": e.lower_wall, "upper": e.upper_wall, "overlap_m": e.overlap_m,
              "width_change": e.width_change}

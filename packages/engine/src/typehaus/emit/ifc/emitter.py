@@ -42,8 +42,12 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
         storeys[storey.tag] = ifc_storey
     _relate(f, building, list(storeys.values()))
 
+    wall_entities: dict[str, Any] = {}
     for rw in sorted(model.walls, key=lambda w: w.uid):
-        _emit_wall(f, body, rw, storeys, project_uuid, lod)
+        wall_entities[rw.tag] = _emit_wall(f, body, rw, storeys, project_uuid, lod)
+
+    for opening in sorted(model.openings, key=lambda o: o.uid):
+        _emit_opening(f, body, opening, model, wall_entities, storeys, project_uuid)
 
     for solid in sorted(model.solids, key=lambda item: item.uid):
         _emit_solid(f, body, solid, storeys, project_uuid)
@@ -144,6 +148,61 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
             member.GlobalId = derive_child_guid(project_uuid, rw.uid, m.child_key)
             members.append(member)
         ll.aggregate(f, wall, members)
+    return wall
+
+
+def _opening_segment(rw: ResolvedWall, opening: Any) -> tuple[tuple[float, float],
+                                                              tuple[float, float], float]:
+    """The opening's plan sub-segment along the host axis + the wall thickness (meters)."""
+    (sx, sy), (ex, ey) = rw.axis
+    length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5 or 1.0
+    ux, uy = (ex - sx) / length, (ey - sy) / length
+    c0 = opening.center_along_m - opening.width_m / 2
+    c1 = opening.center_along_m + opening.width_m / 2
+    thickness = sum(layer.thickness_m for layer in rw.layers) or 0.15
+    return (sx + ux * c0, sy + uy * c0), (sx + ux * c1, sy + uy * c1), thickness
+
+
+def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
+                  wall_entities: dict[str, Any], storeys: dict[str, Any],
+                  project_uuid: Any) -> None:
+    """One IfcOpeningElement voiding the host wall + a filling IfcWindow/IfcDoor.
+
+    Void GUID = derive_child_guid(uuid, opening.uid, "void"); the filling GUID =
+    derive_guid(uuid, opening.uid) so it matches the diff adapter's prediction (round-trip
+    closes). Headers stay generated-ephemeral (Revit parity)."""
+    rw = model.wall(opening.host_wall)
+    wall = wall_entities.get(opening.host_wall)
+    if rw is None or wall is None:
+        return
+    a, b, thickness = _opening_segment(rw, opening)
+    z0 = rw.z0_m + opening.sill_m
+    # Void: full wall thickness prism from sill to head.
+    void_profile = rect_between(a, b, -thickness / 2, thickness / 2)
+    void = ll.create_entity(f, "IfcOpeningElement", name=f"{opening.tag}/void")
+    void.GlobalId = derive_child_guid(project_uuid, opening.uid, "void")
+    _assign_representation(f, void, ll.add_prism_from_profile(
+        f, body, void_profile, opening.height_m, z0))
+    ll.add_opening(f, wall, void)
+
+    # Filling: a thin frame prism (a Revit-style panel), tagged for the round-trip.
+    ifc_class = "IfcDoor" if opening.is_door else "IfcWindow"
+    frame_profile = rect_between(a, b, -0.025, 0.025)
+    filling = ll.create_entity(f, ifc_class, name=opening.tag)
+    filling.GlobalId = derive_guid(project_uuid, opening.uid)
+    filling.OverallWidth = opening.width_m
+    filling.OverallHeight = opening.height_m
+    _assign_representation(f, filling, ll.add_prism_from_profile(
+        f, body, frame_profile, opening.height_m, z0))
+    is_external = not rw.tag.startswith("INT")
+    ll.ensure_pset(f, filling, PSET_SOURCE, {
+        "uid": opening.uid, "tag": opening.tag, "type": opening.type_ref or "",
+        "host_wall": opening.host_wall,
+    })
+    ll.ensure_pset(f, filling, "Pset_DoorCommon" if opening.is_door else "Pset_WindowCommon",
+                   {"IsExternal": is_external})
+    ll.assign_container(f, filling, storeys[rw.storey])
+    ll.add_filling(f, void, filling)
 
 
 def _emit_space(f: Any, body: Any, room: Any, storeys: dict[str, Any],

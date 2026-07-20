@@ -68,6 +68,25 @@ def create_app(house_dir: Path) -> Any:
     def get_checks() -> Any:
         return JSONResponse({"findings": state.findings_json()})
 
+    @app.get("/details")
+    def get_details() -> Any:
+        from typehaus.emit.draw.details import detail_index
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        return JSONResponse({"details": detail_index(state.model)})
+
+    @app.get("/detail")
+    def get_detail(key: str) -> Any:  # key carries '|'/':' — a query param, not a path seg
+        from typehaus.emit.draw.details import detail_payload
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        payload = detail_payload(state.model, key)
+        if payload is None:
+            return JSONResponse({"error": f"no detail {key!r}"}, status_code=404)
+        return JSONResponse(payload)
+
     @app.get("/model.ifc")
     def get_ifc() -> Any:
         out = state.house_dir / "out" / "model.ifc"

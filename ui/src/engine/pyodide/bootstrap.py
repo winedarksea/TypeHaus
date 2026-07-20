@@ -153,6 +153,20 @@ class OfflineEngine:
     def findings_json(self) -> list[dict[str, Any]]:
         return [f.model_dump(mode="json") for f in self.findings]
 
+    def detail_index(self) -> list[dict[str, Any]]:
+        from typehaus.emit.draw.details import detail_index
+
+        if self.model is None:
+            return []
+        return detail_index(self.model)
+
+    def detail_payload(self, key: str) -> dict[str, Any] | None:
+        from typehaus.emit.draw.details import detail_payload
+
+        if self.model is None:
+            return None
+        return detail_payload(self.model, key)
+
     def glb_bytes(self) -> bytes:
         from typehaus.emit.gltf.emitter import emit_glb
 

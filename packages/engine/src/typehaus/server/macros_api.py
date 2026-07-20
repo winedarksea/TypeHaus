@@ -13,7 +13,7 @@ from typing import Any
 from typehaus.model.materials import Material
 from typehaus.model.plan import PlanModel
 from typehaus.model.remap import MutationResult
-from typehaus.source import assembly_ops, macros
+from typehaus.source import assembly_ops, detail_ops, macros
 
 
 class MacroRequestError(ValueError):
@@ -96,6 +96,17 @@ def _edit_assembly_layers(plan: PlanModel, _s: str, body: dict[str, Any]) -> Mut
     return assembly_ops.edit_assembly_layers(plan, body["tag"], layers)
 
 
+def _seed_detail_annotations(plan: PlanModel, _s: str, body: dict[str, Any]) -> MutationResult:
+    annotations = body.get("annotations")
+    if not isinstance(annotations, list):
+        raise MacroRequestError("seed_detail_annotations needs an 'annotations' list")
+    try:
+        return detail_ops.seed_detail_annotations(plan, body.get("condition_key", ""),
+                                                  annotations)
+    except detail_ops.MacroError as exc:
+        raise MacroRequestError(str(exc)) from exc
+
+
 def _add_material(plan: PlanModel, _s: str, body: dict[str, Any]) -> MutationResult:
     spec = dict(body.get("material") or {})
     if "tag" not in spec or "name" not in spec:
@@ -118,9 +129,11 @@ _DISPATCH = {
     "blank_assembly": _blank_assembly,
     "edit_assembly_layers": _edit_assembly_layers,
     "add_material": _add_material,
+    "seed_detail_annotations": _seed_detail_annotations,
 }
 
 # Macros that operate on the project library rather than a storey (no 'storey' required).
 _LIBRARY_MACROS = frozenset({
     "duplicate_assembly", "blank_assembly", "edit_assembly_layers", "add_material",
+    "seed_detail_annotations",
 })

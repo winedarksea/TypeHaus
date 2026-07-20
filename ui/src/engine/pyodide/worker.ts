@@ -22,9 +22,14 @@ interface LoadHouseMsg {
 }
 interface CallMsg {
   id: number;
-  type: "model" | "checks" | "glb";
+  type: "model" | "checks" | "glb" | "detailIndex";
 }
-type InMsg = InitMsg | LoadHouseMsg | CallMsg;
+interface DetailMsg {
+  id: number;
+  type: "detail";
+  key: string;
+}
+type InMsg = InitMsg | LoadHouseMsg | CallMsg | DetailMsg;
 
 let pyodide: any = null;
 let engine: any = null;
@@ -95,6 +100,21 @@ async function handle(msg: InMsg): Promise<unknown> {
       const bytes = b.toJs(); // Uint8Array
       b.destroy();
       return bytes;
+    }
+    case "detailIndex": {
+      await ensureReady();
+      const d = engine.detail_index();
+      const out = d.toJs({ dict_converter: Object.fromEntries });
+      d.destroy();
+      return out;
+    }
+    case "detail": {
+      await ensureReady();
+      const d = engine.detail_payload(msg.key);
+      if (d === undefined || d === null) return null;
+      const out = d.toJs({ dict_converter: Object.fromEntries });
+      d.destroy();
+      return out;
     }
   }
 }

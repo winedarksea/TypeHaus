@@ -17,9 +17,25 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 
+CATLIN = REPO_ROOT / "houses" / "catlin"
+
+
 @pytest.fixture(scope="session")
 def starter_dir() -> Path:
     return STARTER
+
+
+@pytest.fixture(scope="module")
+def catlin_model():
+    """The resolved catlin model — shared by detail-sheet and transition-detail tests."""
+    from typehaus.resolve import resolve
+    from typehaus.source import load_plan
+
+    result = load_plan(CATLIN)
+    model, findings = resolve(result.plan)
+    errors = [f for f in findings if f.severity.value == "error"]
+    assert not errors, errors
+    return model
 
 
 @pytest.fixture

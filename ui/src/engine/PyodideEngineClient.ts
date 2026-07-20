@@ -9,6 +9,8 @@ import type { Finding, Model } from "../model/types";
 import PyodideWorker from "./pyodide/worker?worker";
 import {
   type BuildResult,
+  type DetailIndexEntry,
+  type DetailPayload,
   EngineError,
   type EngineArtifact,
   type EngineClient,
@@ -100,6 +102,18 @@ export class PyodideEngineClient implements EngineClient {
   async getChecks(): Promise<Finding[]> {
     await this.initialized;
     return this.call<Finding[]>("checks");
+  }
+
+  async getDetailIndex(): Promise<DetailIndexEntry[]> {
+    await this.initialized;
+    return this.call<DetailIndexEntry[]>("detailIndex");
+  }
+
+  async getDetail(key: string): Promise<DetailPayload> {
+    await this.initialized;
+    const payload = await this.call<DetailPayload | null>("detail", { key });
+    if (payload === null) throw new EngineError(`no detail ${key}`, 404);
+    return payload;
   }
 
   async build(): Promise<BuildResult> {

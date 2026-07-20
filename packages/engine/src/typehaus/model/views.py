@@ -30,6 +30,8 @@ class Slice(Element):
     exaggeration: ExaggerationSpec | None = None
     simplified_poche: bool = False  # conventional gray-box plan for jurisdictions
     title: str | None = None  # sheet name override (→ Permit-ready plan set Phase 6)
+    condition_key: str | None = None  # authored DETAIL claims this condition, suppressing
+    # its auto-scaffold (→ 11b transition details)
 
 
 class ConditionKey(HausModel):
@@ -50,6 +52,20 @@ class Continuity(HausModel):
     to_face: str
 
 
+class LayerJoin(HausModel):
+    """A per-layer termination at a junction — Revit layer extension distance (→ 11b).
+
+    ``layer`` is a name/function glob (fnmatch) over the participating assembly's layers;
+    ``side`` names which participant ("from"|"to", matching :class:`Continuity`); a signed
+    ``termination`` offset from the interface plane (+ extends past it, - stops short);
+    an optional ``treatment`` id (e.g. "spray-foam", "sealant", "tape", "flashing")."""
+
+    layer: str  # fnmatch glob over layer name / function
+    side: str  # "from" | "to"
+    termination: Length  # signed offset from interface plane; + extends past
+    treatment: str | None = None
+
+
 @register_element
 class Transition(Element):
     """Binds a condition pattern to an anchored overlay recipe + continuity claims (#37).
@@ -60,13 +76,33 @@ class Transition(Element):
     notes: str | None = None
     continuity: tuple[Continuity, ...] = ()
     documents_rules: tuple[str, ...] = ()  # ConstructionRule tags
-    overlay: str | None = None  # overlay recipe id (2D-only, → 11b)
+    overlay: str | None = None  # default-annotation seed-set id (→ 11b transition details)
+    joins: tuple[LayerJoin, ...] = ()  # per-layer terminations (Revit extension distances)
+
+
+@register_element
+class DetailAnnotation(Element):
+    """An authored 2D annotation on a transition detail — note/leader/dimension (→ 11b).
+
+    Anchored to a resolved element face ``(anchor_uid, anchor_face)`` plus a 2D slice-frame
+    ``offset`` relative to the anchor point, so it rides the anchor when geometry changes.
+    Unresolvable anchor → ``detail.anchor_unresolved`` finding, never a silently stale note.
+    Edited via ordinary PatchOps (generic over any registered element kind)."""
+
+    condition_key: str
+    kind: str  # "note" | "leader" | "dimension"
+    anchor_uid: str
+    anchor_face: str
+    offset: Point2D | None = None  # slice-frame offset from anchor point
+    text: str = ""
 
 
 for _name, _obj in (
     ("Slice", Slice),
     ("Transition", Transition),
+    ("DetailAnnotation", DetailAnnotation),
     ("ExaggerationSpec", ExaggerationSpec),
     ("Continuity", Continuity),
+    ("LayerJoin", LayerJoin),
 ):
     register_constructor(_name, _obj)

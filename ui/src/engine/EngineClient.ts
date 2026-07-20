@@ -96,7 +96,39 @@ export type MacroRequest =
   | { macro: "duplicate_assembly"; source: string; tag: string }
   | { macro: "blank_assembly"; tag: string }
   | { macro: "edit_assembly_layers"; tag: string; layers: { name: string; material: string; function: string; thickness: number | string }[] }
-  | { macro: "add_material"; material: { tag: string; name: string; r_per_inch?: number; perm_rating?: number; density?: number } };
+  | { macro: "add_material"; material: { tag: string; name: string; r_per_inch?: number; perm_rating?: number; density?: number } }
+  // Materialize a transition detail's seed annotations into authored source (→ 11b WP3).
+  | { macro: "seed_detail_annotations"; condition_key: string; annotations: { kind: string; anchor_uid: string; anchor_face: string; text: string; offset?: [number, number] }[] };
+
+// A transition detail — a live-cut junction drawing (→ 11b). The index lists scaffolded
+// details; getDetail returns the scene JSON (rendered client-side by DetailCanvas) plus its
+// annotations and notes. Keys carry '|'/':' so getDetail passes them as a query param.
+export interface DetailIndexEntry {
+  key: string;
+  kind: string;
+  title: string;
+  transition: string | null;
+  overlay: string | null;
+  elements: string[];
+  state: "authored" | "seed";
+}
+export interface DetailAnnotationSpec {
+  uid: string | null;
+  kind: string;
+  anchor_uid: string;
+  anchor_face: string;
+  text: string;
+  offset: [number, number] | null;
+  state: string;
+}
+export interface DetailPayload {
+  key: string;
+  // The drawing IR scene (emit/draw/scene.py Scene.model_dump) — DetailCanvas renders it.
+  scene: { name: string; units: "in" | "mm"; nodes: Record<string, unknown>[] };
+  annotations: DetailAnnotationSpec[];
+  notes: string | null;
+  findings: { check_id: string; message: string }[];
+}
 
 export interface ReferenceRemap {
   renamed: Record<string, string>;
@@ -113,6 +145,9 @@ export interface MacroResult extends PatchResult {
 export interface EngineClient {
   getModel(): Promise<Model>;
   getChecks(): Promise<Finding[]>;
+  // Transition details — read-only scene JSON, rendered client-side (→ 11b).
+  getDetailIndex(): Promise<DetailIndexEntry[]>;
+  getDetail(key: string): Promise<DetailPayload>;
   patchPlan(ops: PatchOp[], revision: string): Promise<PatchResult>;
   runMacro(request: MacroRequest, revision: string): Promise<MacroResult>;
   // Read-only, no revision precondition — never journaled, safe to call at drag-move

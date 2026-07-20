@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
+from typehaus.model.patterns import matches as _matches
 
 
 def _err(check_id: str, msg: str, tags: tuple[str, ...] = (), hint: str | None = None,
@@ -117,9 +118,3 @@ def condition_coverage(ctx: CheckContext) -> list[Finding]:
                              f"boundary condition {cond.key} has no Transition binding",
                              cond.element_tags))
     return out
-
-
-def _matches(pattern: str, key: str) -> bool:
-    import fnmatch
-
-    return fnmatch.fnmatch(key, pattern)

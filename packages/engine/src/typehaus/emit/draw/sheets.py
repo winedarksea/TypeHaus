@@ -24,9 +24,15 @@ from typehaus.emit.draw.pdf_writer import _fig
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
 from typehaus.emit.draw.roofplan import build_roof_plan
 from typehaus.emit.draw.scene import Scene
+from typehaus.emit.draw.details import DerivedDetail, build_detail, derive_detail_slices
 from typehaus.emit.draw.section import build_center_section, build_section
 from typehaus.emit.draw.siteplan import build_site_plan
 from typehaus.resolve.model import ResolvedModel
+
+
+def _derived_detail_scene(model: ResolvedModel, derived: "DerivedDetail") -> Scene:
+    scene, _findings = build_detail(model, derived)
+    return scene
 
 if TYPE_CHECKING:
     from typehaus.checks.registry import Preferences
@@ -76,9 +82,18 @@ def build_sheet_index(model: ResolvedModel,
 
     details = [item for item in model.plan.elements_of_kind("Slice")
               if item.kind.value == "detail"]
-    for index, detail in enumerate(details, start=401):
-        sheets.append(SheetSpec(f"A-{index}", detail.title or detail.tag,
+    next_detail = 401
+    for detail in details:
+        sheets.append(SheetSpec(f"A-{next_detail}", detail.title or detail.tag,
                                 scene=partial(build_section, view=detail)))
+        next_detail += 1
+
+    # Derived transition details — one per distinct bound condition key, sorted by key,
+    # continuing the A-4xx block after any authored details (→ 11b transition details).
+    for derived in derive_detail_slices(model):
+        sheets.append(SheetSpec(f"A-{next_detail}", derived.view.title or derived.key,
+                                scene=partial(_derived_detail_scene, derived=derived)))
+        next_detail += 1
 
     sheets.append(SheetSpec("A-601", "Door / window schedule", page=_write_opening_schedule))
 

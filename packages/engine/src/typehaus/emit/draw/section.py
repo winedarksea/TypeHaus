@@ -81,8 +81,29 @@ def _rect_nodes(u0, u1, z0, z1, layer, pattern, uid, tag) -> list:
     return nodes
 
 
-def build_section(model: ResolvedModel, view: Slice) -> Scene:
-    """Build the section/detail IR scene for one authored Slice."""
+def _quad_nodes(u0, u1, z0, z1_left, z1_right, layer, pattern, uid, tag) -> list:
+    """Like ``_rect_nodes`` but with a sloped top: left/right top elevations differ.
+
+    Sibling of ``_rect_nodes`` for per-layer sloped terminations (Revit layer extension
+    distances against a raked interface plane) — threads through detail cuts only.
+    """
+    pts = tuple((u * M_TO_IN, z * M_TO_IN) for u, z in
+                ((u0, z0), (u1, z0), (u1, z1_right), (u0, z1_left)))
+    nodes: list = [Polyline(points=pts, layer=layer, closed=True,
+                            lineweight=0.35 if layer == "A-WALL" else 0.18,
+                            uid=uid, tag=tag)]
+    if pattern:
+        nodes.append(Hatch(boundary=pts, pattern=pattern, layer="A-WALL-PATT"))
+    return nodes
+
+
+def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
+    """Build the section/detail IR scene for one authored Slice.
+
+    ``joints`` (a :class:`~typehaus.emit.draw.joints.JointPlan`) is detail-mode only; when
+    given, per-layer terminations, sloped roof bands, cut framing members, and treatment
+    fills are honored. ``None`` preserves plain-section behaviour (existing callers/goldens).
+    """
     direction = view.cut_direction or "x"
     origin = view.cut_origin
     if origin is None:
@@ -98,7 +119,7 @@ def build_section(model: ResolvedModel, view: Slice) -> Scene:
     b = SceneBuilder(name=f"{view.kind.value}-{view.tag}", units="in")
 
     for wall in model.walls:
-        _emit_wall_cut(b, model, wall, direction, station, crop, is_detail, min_draw)
+        _emit_wall_cut(b, model, wall, direction, station, crop, is_detail, min_draw, joints)
 
     for solid in model.solids:
         for (u0, u1) in _ring_cut_intervals(solid.outline, direction, station):
@@ -109,10 +130,14 @@ def build_section(model: ResolvedModel, view: Slice) -> Scene:
                                  "concrete", solid.uid, solid.tag))
 
     for roof in model.roofs:
-        _emit_roof_cut(b, model, roof, direction, station, crop)
+        _emit_roof_cut(b, model, roof, direction, station, crop, joints)
 
     for floor in model.floors:
         _emit_floor_cut(b, floor, direction, station, crop)
+
+    if joints is not None:
+        _emit_member_cuts(b, model, direction, station, crop)
+        b.extend(list(joints.treatments))
 
     if crop is not None:
         (cu0, cz0), (cu1, cz1) = crop
@@ -133,13 +158,16 @@ def build_center_section(model: ResolvedModel) -> Scene:
 
 
 def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
-                   is_detail, min_draw) -> None:
+                   is_detail, min_draw, joints=None) -> None:
     openings = [op for op in model.openings if op.host_wall == wall.tag]
     label_z = None
     wall_top = _wall_top_at_cut(wall, direction, station)
     for layer in wall.layers:
+        term = joints.termination(wall.uid, layer.name) if joints is not None else None
         for (u0, u1) in _ring_cut_intervals(layer.polygon, direction, station):
-            rect = _clip_rect(u0, u1, wall.z0_m, wall_top, crop)
+            layer_top_l = term.z(u0) if term is not None else wall_top
+            layer_top_r = term.z(u1) if term is not None else wall_top
+            rect = _clip_rect(u0, u1, wall.z0_m, max(layer_top_l, layer_top_r), crop)
             if rect is None:
                 continue
             ru0, ru1, rz0, rz1 = rect
@@ -151,6 +179,15 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
                 exaggerated = True
             aia = _FUNCTION_LAYER.get(layer.function, "A-WALL")
             pattern = _HATCH_PATTERN.get(layer.function)
+            sloped = term is not None and abs(layer_top_l - layer_top_r) > 1e-6
+            if sloped:
+                # Raked layer termination against the interface plane — single sloped quad,
+                # clipped to the crop's z-window (rz0/rz1 already crop-clipped).
+                tl = min(layer_top_l, rz1)
+                tr = min(layer_top_r, rz1)
+                b.extend(_quad_nodes(ru0, ru1, rz0, tl, tr,
+                                     aia, pattern, wall.uid, f"{wall.tag}/{layer.name}"))
+                continue
             zs = _opening_splits(wall, openings, direction, station, rz0, rz1)
             for (z0, z1, void) in zs:
                 if void:
@@ -219,12 +256,21 @@ def _wall_top_at_cut(wall: ResolvedWall, direction: str, station: float) -> floa
     return start_top + (end_top - start_top) * fraction
 
 
-def _emit_roof_cut(b, model, roof, direction, station, crop) -> None:
+def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None) -> None:
     intervals = _ring_cut_intervals(roof.footprint, direction, station)
     if not intervals:
         return
     asm = model.plan.library.resolve_assembly(roof.assembly)
     thickness = sum(l.thickness.meters for l in asm.layers) if asm is not None else 0.3
+    detail_layers = None
+    if joints is not None and asm is not None:
+        # Per-layer sloped bands (cumulative offsets from the deck top downward).
+        detail_layers = []
+        depth = 0.0
+        for layer in asm.layers:
+            t = layer.thickness.meters
+            detail_layers.append((layer, depth, depth + t))
+            depth += t
     xs = [p[0] for p in roof.footprint]
     ys = [p[1] for p in roof.footprint]
     lo, hi = (min(xs), max(xs)) if roof.ridge_direction == "y" else (min(ys), max(ys))
@@ -254,6 +300,19 @@ def _emit_roof_cut(b, model, roof, direction, station, crop) -> None:
         else:
             z = z_at(station)
             top = [(u0, z), (u1, z)]
+        if detail_layers is not None:
+            # Per-layer sloped bands: each band offset down from the deck top by its
+            # cumulative depth, so the roof reads as its real assembly in the detail.
+            for (layer, d0, d1) in detail_layers:
+                band_top = [(u, z - d0) for (u, z) in top]
+                band_bot = [(u, z - d1) for (u, z) in reversed(top)]
+                pts = tuple((u * M_TO_IN, z * M_TO_IN) for (u, z) in band_top + band_bot)
+                b.add(Polyline(points=pts, layer="A-ROOF", closed=True, lineweight=0.18,
+                               uid=roof.uid, tag=f"{roof.tag}/{layer.name}"))
+                pat = _HATCH_PATTERN.get(layer.function, "batt")
+                b.add(Hatch(boundary=pts, pattern=pat, layer="A-WALL-PATT",
+                            uid=roof.uid))
+            continue
         bottom = [(u, z - thickness) for (u, z) in reversed(top)]
         pts = tuple((u * M_TO_IN, z * M_TO_IN) for (u, z) in top + bottom)
         b.add(Polyline(points=pts, layer="A-ROOF", closed=True, lineweight=0.35,
@@ -285,5 +344,47 @@ def _emit_floor_cut(b, floor, direction, station, crop) -> None:
         rect = _clip_rect(u - half, u + half, member.z0_m, member.z1_m, crop)
         if rect is None:
             continue
+        b.extend(_rect_nodes(*rect, "S-FRAM", "lumber", member.parent_uid,
+                             member.child_key))
+
+
+def _emit_member_cuts(b, model, direction, station, crop) -> None:
+    """Detail-mode: draw wall + roof framing members crossing the cut (top plates, rafters).
+
+    Generalizes the floor crossing math to raked members — a member with ``z0_end_m`` /
+    ``z1_end_m`` set interpolates its elevation at the crossing station."""
+    for wall in model.walls:
+        for member in wall.members:
+            _emit_one_member(b, member, direction, station, crop)
+    for roof in model.roofs:
+        for member in roof.members:
+            _emit_one_member(b, member, direction, station, crop)
+
+
+def _emit_one_member(b, member, direction, station, crop) -> None:
+    (x0, y0), (x1, y1) = member.p0, member.p1
+    a0, a1 = (y0, y1) if direction == "x" else (x0, x1)
+    u0, u1 = (x0, x1) if direction == "x" else (y0, y1)
+    z0_a, z1_a = member.z0_m, member.z1_m
+    z0_b = member.z0_end_m if member.z0_end_m is not None else member.z0_m
+    z1_b = member.z1_end_m if member.z1_end_m is not None else member.z1_m
+    if abs(a0 - a1) < 1e-12:
+        # member runs along the cut axis at a station (e.g. a top plate parallel to the cut)
+        if abs(a0 - station) > 1e-9:
+            return
+        rect = _clip_rect(min(u0, u1), max(u0, u1), min(z0_a, z0_b), max(z1_a, z1_b), crop)
+        if rect is not None:
+            b.extend(_rect_nodes(*rect, "S-FRAM", "lumber", member.parent_uid,
+                                 member.child_key))
+        return
+    if (a0 - station) * (a1 - station) > 0:
+        return
+    t = (station - a0) / ((a1 - a0) or 1e-12)
+    u = u0 + t * (u1 - u0)
+    z0 = z0_a + t * (z0_b - z0_a)
+    z1 = z1_a + t * (z1_b - z1_a)
+    half = 0.75 * 0.0254
+    rect = _clip_rect(u - half, u + half, min(z0, z1), max(z0, z1), crop)
+    if rect is not None:
         b.extend(_rect_nodes(*rect, "S-FRAM", "lumber", member.parent_uid,
                              member.child_key))

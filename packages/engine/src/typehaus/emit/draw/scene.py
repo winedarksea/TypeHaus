@@ -60,6 +60,7 @@ class Hatch(_IRBase):
     scale: float = 1.0
     angle: float = 0.0
     layer: str = "A-WALL-PATT"
+    uid: str | None = None  # hit-testing / annotation provenance (→ detail editor)
 
 
 class Text(_IRBase):
@@ -71,6 +72,7 @@ class Text(_IRBase):
     style: str = "ARCH"
     layer: str = "A-ANNO-TEXT"
     align: Literal["left", "center", "right"] = "left"
+    uid: str | None = None  # DetailAnnotation uid for hit-testing (→ detail editor)
 
 
 class ArchDimension(_IRBase):
@@ -82,6 +84,7 @@ class ArchDimension(_IRBase):
     offset: float  # perpendicular offset of the dimension line, inches
     layer: str = "A-ANNO-DIMS"
     text: str | None = None  # override; None → writer formats the measured distance
+    uid: str | None = None  # DetailAnnotation uid for hit-testing (→ detail editor)
 
 
 class Leader(_IRBase):
@@ -91,6 +94,7 @@ class Leader(_IRBase):
     to: Pt
     text: str
     layer: str = "A-ANNO-TEXT"
+    uid: str | None = None  # DetailAnnotation uid for hit-testing (→ detail editor)
 
 
 class Symbol(_IRBase):
@@ -101,6 +105,7 @@ class Symbol(_IRBase):
     scale: float = 1.0
     layer: str = "A-ANNO-SYMB"
     params: dict[str, float] = Field(default_factory=dict)
+    uid: str | None = None  # DetailAnnotation uid for hit-testing (→ detail editor)
 
 
 class Viewport(_IRBase):

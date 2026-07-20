@@ -101,7 +101,14 @@ from typehaus.model.types import (
     MeshRef,
     WindowType,
 )
-from typehaus.model.views import Continuity, ExaggerationSpec, Slice, Transition
+from typehaus.model.views import (
+    Continuity,
+    DetailAnnotation,
+    ExaggerationSpec,
+    LayerJoin,
+    Slice,
+    Transition,
+)
 from typehaus.quantities import (
     Angle,
     Area,
@@ -156,6 +163,7 @@ __all__ = [
     "Alarm",
     "WallLiningException",
     "Slice", "Transition", "Continuity", "ExaggerationSpec",
+    "DetailAnnotation", "LayerJoin",
     "FaceRef", "face", "ToRoof", "FollowRoof", "Arch", "LayerSpan", "OpeningPosition",
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",

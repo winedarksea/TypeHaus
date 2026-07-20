@@ -8,6 +8,7 @@ import { SpaceDashboard } from "./SpaceDashboard";
 import { RoofDesigner } from "./RoofDesigner";
 import { StairDesigner } from "./StairDesigner";
 import { AssemblyEditor } from "./AssemblyEditor";
+import { DetailViewer } from "./DetailViewer";
 
 // The right-hand inspector: selection details + provenance + inline findings, the
 // assembly section card for a selected wall (→ 21 §Assembly inspector), the assembly
@@ -16,13 +17,19 @@ export function Sidebar() {
   const model = useStore((s) => s.model);
   const selection = useStore((s) => s.selection);
   const [editingAssemblies, setEditingAssemblies] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   return (
     <div className="sidebar">
       {model && selection.uid ? (
-        <SelectionInspector model={model} kind={selection.kind} uid={selection.uid} />
+        <SelectionInspector model={model} kind={selection.kind} uid={selection.uid} onShowDetails={() => setShowDetails(true)} />
       ) : (
         <div className="muted">Tap an element to inspect it.</div>
+      )}
+      {model && (
+        <div style={{ marginTop: 12 }}>
+          <button className="btn" onClick={() => setShowDetails(true)}>Transition details…</button>
+        </div>
       )}
       {model && <AssemblyPicker model={model} onEdit={() => setEditingAssemblies(true)} />}
       {model && <BuildingScienceDashboard science={model.building_science} />}
@@ -31,6 +38,7 @@ export function Sidebar() {
       {model && <RoofDesigner model={model} />}
       {model && <FindingsPanel findings={model.findings} />}
       {editingAssemblies && <AssemblyEditor onClose={() => setEditingAssemblies(false)} />}
+      {showDetails && <DetailViewer onClose={() => setShowDetails(false)} />}
     </div>
   );
 }
@@ -62,15 +70,17 @@ function SelectionInspector({
   model,
   kind,
   uid,
+  onShowDetails,
 }: {
   model: Model;
   kind: string | null;
   uid: string;
+  onShowDetails: () => void;
 }) {
   if (kind === "wall") {
     const w = model.walls.find((x) => x.uid === uid);
     if (!w) return null;
-    return <WallInspector model={model} w={w} />;
+    return <WallInspector model={model} w={w} onShowDetails={onShowDetails} />;
   }
   if (kind === "opening") {
     const o = model.openings.find((x) => x.uid === uid);
@@ -138,8 +148,10 @@ function StairInspector({ model, stair }: { model: Model; stair: Stair }) {
   </div>;
 }
 
-function WallInspector({ model, w }: { model: Model; w: Wall }) {
+function WallInspector({ model, w, onShowDetails }: { model: Model; w: Wall; onShowDetails: () => void }) {
   const select = useStore((s) => s.select);
+  // Does this wall participate in any derived boundary condition? (→ 11b transition details)
+  const inCondition = (model.conditions ?? []).some((c) => c.elements.includes(w.tag));
   const applyOps = useStore((s) => s.applyOps);
   const toast = useStore((s) => s.toast);
   const confirmed = w.assembly && w.assembly !== "UNCONFIGURED";
@@ -175,6 +187,11 @@ function WallInspector({ model, w }: { model: Model; w: Wall }) {
       <div style={{ height: 10 }} />
       <SectionCard layers={w.layers} title={w.assembly || "Assembly"}
         condensation={model.building_science?.condensation.find((item) => item.assembly === w.assembly)} />
+      {inCondition && (
+        <div style={{ marginTop: 6 }}>
+          <button className="btn" onClick={onShowDetails}>View junction detail…</button>
+        </div>
+      )}
       <InlineFindings model={model} uid={w.uid} />
       <div style={{ marginTop: 8 }}>
         <span className="muted">Openings hosted: </span>

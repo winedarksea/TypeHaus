@@ -14,22 +14,19 @@ from typehaus.source import load_plan
 CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, errors
-    return model
-
-
-def test_catlin_emits_four_detail_sheets(catlin_model):
+def test_catlin_emits_authored_then_derived_detail_sheets(catlin_model):
     sheets = build_sheet_index(catlin_model)
-    detail_numbers = [s.number for s in sheets if s.number.startswith("A-40")]
-    assert detail_numbers == ["A-401", "A-402", "A-403", "A-404"]
-    titles = {s.number: s.title for s in sheets if s.number in detail_numbers}
+    detail_numbers = [s.number for s in sheets if s.number.startswith("A-4")]
+    # The four authored details keep A-401..A-404, in order, ahead of derived details.
+    assert detail_numbers[:4] == ["A-401", "A-402", "A-403", "A-404"]
+    titles = {s.number: s.title for s in sheets}
     assert titles["A-401"] == "Foundation detail"
     assert titles["A-402"] == "Deck bearing detail"
+    # Derived transition details continue the A-4xx block (catlin binds many conditions).
+    assert len(detail_numbers) > 4
+    # numbering is contiguous
+    nums = [int(n.split("-")[1]) for n in detail_numbers]
+    assert nums == list(range(401, 401 + len(nums)))
 
 
 def test_deckbrg_scene_contains_deck_hatch_spanning_its_thickness(catlin_model):
