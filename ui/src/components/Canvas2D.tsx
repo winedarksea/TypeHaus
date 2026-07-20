@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
 import type { Selection } from "../state/store";
 import type { PreviewGeometry } from "../engine/EngineClient";
@@ -76,6 +76,8 @@ export function Canvas2D() {
   const pinch = useRef<{ dist: number; scale: number } | null>(null);
   const panLast = useRef<Vec2 | null>(null);
   const gesture = useRef<{ x: number; y: number; moved: boolean } | null>(null);
+  const suppressPostPanClick = useRef(false);
+  const fittedStorey = useRef<string | null>(null);
   const shift = useRef(false);
   const [pending, setPending] = useState<Pending | null>(null);
   const [draft, setDraft] = useState<WallDraft | null>(null);
@@ -164,6 +166,49 @@ export function Canvas2D() {
     (!activeService || fixture.needs.includes(activeService)));
   const activeUnderlay = (model.underlays ?? []).find((underlay) => underlay.storey === activeStorey) ?? null;
 
+  // The authored model is in metres, while screen dimensions are only known after the
+  // SVG enters its pane.  Fit once per storey so a fresh single-pane view starts with
+  // the whole floor visible rather than an arbitrary 120 px/m slice near the origin.
+  useLayoutEffect(() => {
+    if (!activeStorey || fittedStorey.current === activeStorey) return;
+    const svg = svgRef.current;
+    if (!svg) return;
+
+    const points: Vec2[] = [
+      ...wallsOnStorey.flatMap((wall) => [wall.axis[0], wall.axis[1],
+        ...wall.layers.flatMap((layer) => layer.polygon)]),
+      ...model.rooms.filter((room) => room.storey === activeStorey)
+        .flatMap((room) => room.clear_face),
+    ];
+    if (activeUnderlay) {
+      const { origin_x_m: x, origin_y_m: y, width_m: width, height_m: height } = activeUnderlay;
+      points.push([x, y], [x + width, y], [x, y + height], [x + width, y + height]);
+    }
+    if (!points.length) return;
+
+    const fit = () => {
+      const { width, height } = svg.getBoundingClientRect();
+      if (width <= 0 || height <= 0) return;
+      const xs = points.map(([x]) => x);
+      const ys = points.map(([, y]) => y);
+      const spanX = Math.max(0.1, Math.max(...xs) - Math.min(...xs));
+      const spanY = Math.max(0.1, Math.max(...ys) - Math.min(...ys));
+      const padding = 64;
+      const scale = clampScale(Math.min((width - padding * 2) / spanX, (height - padding * 2) / spanY));
+      setView({
+        scale,
+        tx: width / 2 - ((Math.min(...xs) + Math.max(...xs)) / 2) * scale,
+        ty: height / 2 + ((Math.min(...ys) + Math.max(...ys)) / 2) * scale,
+      });
+      fittedStorey.current = activeStorey;
+    };
+
+    const observer = new ResizeObserver(fit);
+    observer.observe(svg);
+    fit();
+    return () => observer.disconnect();
+  }, [activeStorey, activeUnderlay, model.rooms, setView, wallsOnStorey]);
+
   const tolM = 12 / view.scale;
   const gridM = view.scale * M_PER_FT >= 14 ? M_PER_FT : null;
   const fmt = (m: number) => formatFtIn(m);
@@ -198,7 +243,10 @@ export function Canvas2D() {
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
-    (e.target as Element).setPointerCapture?.(e.pointerId);
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    // Capturing on the viewport (instead of the pressed wall/image child) keeps the
+    // gesture alive after the pointer leaves that child or the SVG bounds.
+    e.currentTarget.setPointerCapture(e.pointerId);
     pointers.current.set(e.pointerId, [e.clientX, e.clientY]);
     if (pointers.current.size === 2) {
       const [a, b] = [...pointers.current.values()];
@@ -230,19 +278,36 @@ export function Canvas2D() {
       const dx = e.clientX - panLast.current[0];
       const dy = e.clientY - panLast.current[1];
       panLast.current = [e.clientX, e.clientY];
-      setView({ tx: view.tx + dx, ty: view.ty + dy });
+      const currentView = useStore.getState().view;
+      setView({ tx: currentView.tx + dx, ty: currentView.ty + dy });
     }
   };
 
   const onPointerUp = (e: React.PointerEvent) => {
     const wasTap = gesture.current && !gesture.current.moved;
+    const wasPan = gesture.current?.moved ?? false;
     pointers.current.delete(e.pointerId);
     if (pointers.current.size < 2) pinch.current = null;
     if (pointers.current.size === 0) panLast.current = null;
     if (wasTap && pointers.current.size === 0) {
       handleTap(unproject(e.clientX, e.clientY));
     }
+    if (wasPan) {
+      // Native click follows pointerup.  Let the event finish, then clear the guard
+      // so a drag across geometry never becomes an accidental selection.
+      suppressPostPanClick.current = true;
+      window.setTimeout(() => { suppressPostPanClick.current = false; }, 0);
+    }
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
     gesture.current = null;
+  };
+
+  const onClickCapture = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!suppressPostPanClick.current) return;
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   const onDoubleClick = (event: React.MouseEvent<SVGSVGElement>) => {
@@ -442,6 +507,7 @@ export function Canvas2D() {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
+        onClickCapture={onClickCapture}
         onDoubleClick={onDoubleClick}
       >
         <defs>
@@ -669,9 +735,10 @@ export function Canvas2D() {
           onClose={() => setPlacement(null)}
         />
       )}
-      <StoreyTabs model={model} />
       <SunIndicator model={model} />
-      <div className="hud" style={{ left: 12, top: 12, display: "flex", gap: 6, alignItems: "center" }}>
+      <div className="canvas-context-controls">
+        <StoreyTabs model={model} />
+      <div className="hud" style={{ display: "flex", gap: 6, alignItems: "center" }}>
         <label style={{ fontSize: 12 }}>Services <select value={activeService}
           onChange={(event) => setActiveService(event.target.value)}>
           <option value="">all</option>
@@ -685,6 +752,7 @@ export function Canvas2D() {
         points={calibrationPoints} distanceFt={calibrationDistanceFt} onDistance={setCalibrationDistanceFt}
         active={calibrationMode} onStart={() => { setCalibrationMode(true); setCalibrationPoints([]); }}
         onSave={() => void saveCalibration()} />}
+      </div>
       {tool !== "select" && (
         <div className="hud" style={{ left: "auto", right: 12, bottom: "auto", top: 12, maxWidth: 260 }}>
           <ToolHint tool={tool} draft={Boolean(draft)}
@@ -784,7 +852,7 @@ function UnderlayCalibrationControl({ underlay, points, distanceFt, onDistance, 
 }) {
   const pathParts = underlay.path.split("/");
   const filename = pathParts[pathParts.length - 1];
-  return <div className="hud" style={{ left: 12, top: 48, maxWidth: 270 }}>
+  return <div className="hud" style={{ maxWidth: 270 }}>
     <div style={{ fontSize: 12 }}>Reference: {filename}</div>
     {!active ? <button className="btn" onClick={onStart}>Calibrate underlay</button> : <>
       <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
@@ -978,7 +1046,7 @@ function StoreyTabs({ model }: { model: Model }) {
   const setActiveStorey = useStore((s) => s.setActiveStorey);
   if (model.storeys.length <= 1) return null;
   return (
-    <div className="hud" style={{ bottom: "auto", top: 12, left: 12, display: "flex", gap: 6 }}>
+    <div className="hud" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
       {model.storeys.map((s) => (
         <button key={s.tag} className={`seg-btn${activeStorey === s.tag ? " active" : ""}`}
           onClick={() => setActiveStorey(s.tag)}>

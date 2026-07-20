@@ -123,7 +123,7 @@ export const useStore = create<StoreState>((set, get) => ({
   error: null,
 
   tool: "select",
-  viewMode: "split",
+  viewMode: "2d",
   threeMode: "nordic",
   selection: { kind: null, uid: null },
   hoverUid: null,

@@ -402,6 +402,33 @@ def test_garage_is_freestanding_12ft_north_with_icf_stem(catlin_model):
         ft(GARAGE_SIZE_FT).meters + 2 * inch(GARAGE_OVERHANG_IN).meters)
 
 
+def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
+    """Wood members must follow studs rather than the exterior ZIP-R datum axis."""
+    stems = {wall.tag.removeprefix("W-GF-"): wall for wall in catlin_model.walls
+             if wall.tag.startswith("W-GF-")}
+    garage_walls = [wall for wall in catlin_model.walls if wall.tag.startswith("W-G-")]
+    assert len(garage_walls) == 4
+
+    for wall in garage_walls:
+        stem = stems[wall.tag.removeprefix("W-G-")]
+        assert wall.axis == stem.axis  # both systems share the intended garage footprint
+        structure = next(layer for layer in wall.layers if layer.function == "structure")
+        start, end = wall.axis
+        dx, dy = end[0] - start[0], end[1] - start[1]
+        span = (dx * dx + dy * dy) ** 0.5
+        normal_x, normal_y = -dy / span, dx / span
+        center_offset = sum(
+            (point[0] - start[0]) * normal_x + (point[1] - start[1]) * normal_y
+            for point in structure.polygon
+        ) / len(structure.polygon)
+
+        assert wall.members
+        for member in wall.members:
+            for point in (member.p0, member.p1):
+                offset = (point[0] - start[0]) * normal_x + (point[1] - start[1]) * normal_y
+                assert offset == pytest.approx(center_offset, abs=1e-9)
+
+
 def test_sunken_garden_structure_matches_old_spec(catlin_model):
     """One freestanding structure: 7 wall segments, two-tier arches, 18x28 garden."""
     walls = [w for w in catlin_model.walls if w.tag.startswith("W-SG-")]

@@ -16,7 +16,7 @@ from typehaus.resolve.framing.tables import (
     king_jack_counts,
     member_actual,
 )
-from typehaus.resolve.geometry import add, length, scale, sub, unit
+from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedWall
 
 
@@ -43,7 +43,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
     if spec is None:
         return ()
 
-    p0, p1 = rw.axis
+    p0, p1 = _framing_axis(rw)
     axis_len = length(sub(p1, p0))
     d = unit(sub(p1, p0))
     spacing = (spec.spacing or DEFAULT_SPACING).meters
@@ -109,6 +109,29 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
                            stud_z0, stud_z1, oi)
         )
     return tuple(members)
+
+
+def _framing_axis(rw: ResolvedWall) -> tuple[tuple[float, float], tuple[float, float]]:
+    """Translate the wall datum axis to the resolved structure-layer centerline.
+
+    The wall axis may intentionally name an exterior sheathing face.  Framing keeps
+    its authored direction and along-wall opening distances, but must sit inside the
+    structure layer represented by the resolved polygon.
+    """
+    structure = next((layer for layer in rw.layers if layer.function == "structure"), None)
+    if structure is None or not structure.polygon:
+        return rw.axis
+    raw_start, raw_end = rw.axis
+    perpendicular = normal(unit(sub(raw_end, raw_start)))
+    if perpendicular == (0.0, 0.0):
+        return rw.axis
+    offsets = [
+        (point[0] - raw_start[0]) * perpendicular[0]
+        + (point[1] - raw_start[1]) * perpendicular[1]
+        for point in structure.polygon
+    ]
+    translation = scale(perpendicular, sum(offsets) / len(offsets))
+    return add(raw_start, translation), add(raw_end, translation)
 
 
 def _wall_top_elevations(rw: ResolvedWall) -> tuple[float, float]:
