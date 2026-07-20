@@ -322,7 +322,10 @@ export function Canvas2D() {
     if (pointers.current.size < 2) pinch.current = null;
     if (pointers.current.size === 0) panLast.current = null;
     if (wasTap && pointers.current.size === 0) {
-      handleTap(unproject(e.clientX, e.clientY));
+      handleTap(unproject(e.clientX, e.clientY), [
+        e.clientX - e.currentTarget.getBoundingClientRect().left,
+        e.clientY - e.currentTarget.getBoundingClientRect().top,
+      ]);
     }
     if (wasPan) {
       // Native click follows pointerup.  Let the event finish, then clear the guard
@@ -351,15 +354,23 @@ export function Canvas2D() {
   };
 
   // ---- tool tap dispatch ----------------------------------------------------
-  const handleTap = (world: Vec2) => {
+  const handleTap = (world: Vec2, screen: Vec2) => {
     if (calibrationMode) return;
     if (placement) { setPlacement(null); return; }
     if (offline && tool !== "select") { toast("Editing needs the server (offline)", "error"); return; }
     switch (tool) {
       case "select": {
-        // Element onClick handles selection; a bare-canvas tap clears it.
-        select(null, null);
-        setWallAssemblyPopup(null);
+        // Resolve wall taps here instead of relying solely on SVG click bubbling. Pointer
+        // capture keeps pan/touch gestures reliable, but can make child click delivery vary
+        // across browsers and installed-PWA shells.
+        const hit = nearestWallHit(wallsOnStorey, world);
+        if (hit && hit.dist_m * view.scale < HIT_PX) {
+          select("wall", hit.wall.uid);
+          setWallAssemblyPopup({ wallUid: hit.wall.uid, screen });
+        } else {
+          select(null, null);
+          setWallAssemblyPopup(null);
+        }
         break;
       }
       case "wall": {
