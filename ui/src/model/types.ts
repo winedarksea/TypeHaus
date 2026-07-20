@@ -61,6 +61,11 @@ export interface Wall {
   axis: [Vec2, Vec2];
   z0_m: number;
   z1_m: number;
+  // A `ToRoof` wall's raked top elevations at its two axis endpoints (null for ordinary
+  // rectangular walls, where z1_m alone is the top) — the same fields the 2D section
+  // cutter uses to interpolate a sloped top (→ emit/draw/section.py::_wall_top_at_cut).
+  top_z0_m: number | null;
+  top_z1_m: number | null;
   is_foundation: boolean;
   layers: Layer[];
   members: Member[];
