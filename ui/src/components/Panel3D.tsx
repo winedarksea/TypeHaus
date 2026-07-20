@@ -4,6 +4,7 @@ import { ALL_TRADES, useStore, type Trade } from "../state/store";
 import type { Model, Roof, Solid, Floor, Stair, Wall, EnvelopeBand } from "../model/types";
 import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
+import { createPlanPrismGeometry } from "../three/planGeometry";
 import { useTheme } from "../theme/theme";
 
 // The 3D panel behind an implicit ModelViewer seam (→ 21 §3D panel). The primary path is
@@ -411,6 +412,10 @@ function buildRakedLayerGeometry(
   return geo;
 }
 
+function translatePlanRing(points: readonly [number, number][], cx: number, cz: number): [number, number][] {
+  return points.map(([x, y]) => [x - cx, y - cz]);
+}
+
 // Build one wall: an extruded prism per layer polygon (→ "walls" trade) + its solid framing
 // members (→ "framing" trade, WP8). World plan (x,y) maps to three (x, z); height runs
 // along +Y. Centered on (cx,cz). Raked (ToRoof) walls extrude to their actual sloped top,
@@ -434,16 +439,9 @@ function buildWall(
     if (raked) {
       geo = buildRakedLayerGeometry(ly.polygon, w.z0_m, w, cx, cz);
     } else {
-      const shape = new THREE.Shape();
-      ly.polygon.forEach((p, i) => {
-        const x = p[0] - cx;
-        const y = p[1] - cz;
-        if (i === 0) shape.moveTo(x, y);
-        else shape.lineTo(x, y);
-      });
-      geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false });
-      geo.rotateX(-Math.PI / 2); // shape XY plane → ground XZ, extrude → +Y
-      geo.translate(0, w.z0_m, 0);
+      const planPrism = createPlanPrismGeometry(translatePlanRing(ly.polygon, cx, cz), w.z0_m, w.z0_m + h);
+      if (!planPrism) continue;
+      geo = planPrism;
     }
     const mat = new THREE.MeshStandardMaterial({
       color: new THREE.Color(materialColor(ly.material, palette)),
@@ -474,14 +472,8 @@ function buildEnvelopeBand(parent: THREE.Group, band: EnvelopeBand, cx: number, 
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
   for (const layer of band.layers) {
     if (layer.polygon.length < 3) continue;
-    const shape = new THREE.Shape();
-    layer.polygon.forEach((point, index) => {
-      if (index === 0) shape.moveTo(point[0] - cx, point[1] - cz);
-      else shape.lineTo(point[0] - cx, point[1] - cz);
-    });
-    const geometry = new THREE.ExtrudeGeometry(shape, { depth: band.z1_m - band.z0_m, bevelEnabled: false });
-    geometry.rotateX(-Math.PI / 2);
-    geometry.translate(0, band.z0_m, 0);
+    const geometry = createPlanPrismGeometry(translatePlanRing(layer.polygon, cx, cz), band.z0_m, band.z1_m);
+    if (!geometry) continue;
     parent.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
       color: new THREE.Color(materialColor(layer.material, palette)), roughness: mode === "nordic" ? 0.85 : 1,
       flatShading: mode === "schematic",
@@ -494,17 +486,9 @@ function buildEnvelopeBand(parent: THREE.Group, band: EnvelopeBand, cx: number, 
 function buildSolid(parent: THREE.Group, solid: Solid, cx: number, cz: number,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
   if (solid.outline.length < 3) return;
-  const shape = new THREE.Shape();
-  solid.outline.forEach((p, i) => {
-    const x = p[0] - cx;
-    const y = p[1] - cz;
-    if (i === 0) shape.moveTo(x, y);
-    else shape.lineTo(x, y);
-  });
-  const h = Math.max(0.01, solid.z1_m - solid.z0_m);
-  const geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false });
-  geo.rotateX(-Math.PI / 2);
-  geo.translate(0, solid.z0_m, 0);
+  const geo = createPlanPrismGeometry(translatePlanRing(solid.outline, cx, cz), solid.z0_m,
+    Math.max(solid.z1_m, solid.z0_m + 0.01));
+  if (!geo) return;
   const mat = new THREE.MeshStandardMaterial({
     color: palette.member.concrete, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",
   });
@@ -519,21 +503,14 @@ function buildFloor(parent: THREE.Group, floor: Floor, cx: number, cz: number,
     const maxX = Math.max(...points.map((point) => point[0]));
     const minY = Math.min(...points.map((point) => point[1]));
     const maxY = Math.max(...points.map((point) => point[1]));
-    const shape = new THREE.Shape();
-    [[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]].forEach(([x, y], index) => {
-      if (index === 0) shape.moveTo(x - cx, y - cz); else shape.lineTo(x - cx, y - cz);
-    });
-    for (const opening of floor.openings) {
-      const hole = new THREE.Path();
-      opening.forEach(([x, y], index) => {
-        if (index === 0) hole.moveTo(x - cx, y - cz); else hole.lineTo(x - cx, y - cz);
-      });
-      shape.holes.push(hole);
-    }
     const z = Math.max(...floor.members.map((member) => member.z1_m));
-    const geometry = new THREE.ExtrudeGeometry(shape, { depth: floor.subfloor.thickness_m, bevelEnabled: false });
-    geometry.rotateX(-Math.PI / 2);
-    geometry.translate(0, z, 0);
+    const geometry = createPlanPrismGeometry(
+      translatePlanRing([[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]], cx, cz),
+      z,
+      z + floor.subfloor.thickness_m,
+      floor.openings.map((opening) => translatePlanRing(opening, cx, cz)),
+    );
+    if (!geometry) return;
     parent.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
       color: new THREE.Color(materialColor(floor.subfloor.material, palette)), roughness: mode === "nordic" ? 0.85 : 1,
       flatShading: mode === "schematic",

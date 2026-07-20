@@ -26,13 +26,13 @@ Roof assembly still isn't showing on the 3d model.
 
 Studs seem to go too high on the exterior walls, to the top level of the joists. It should instead be top plate, floor joists and rim joist, then sheathing (platform framing standard). In Catlin house, the first and second floor are 9' high with then another 12" nominal for the joist.
 
-Some interior walls seem to be shown with a pink layer (insulation?), it is unclear why.
-
-Catlin house stairs are supposed to be u-shaped from basement to main floor and main floor to second floor. U-shape stairs have a two landings in the split (separated by a single step themselves). This type of stair should be properly part of the stair designer (as should the right angle with winder which the attic stairs have, but which seems might be partly hacked on the side)
+Catlin house stairs are supposed to be u-shaped from basement to main floor and main floor to second floor. U-shape stairs have a two landings in the split (separated by a single step themselves). This type of stair should be properly part of the stair designer (as should the right angle with winder which the attic stairs have, but which seems might be partly hacked on the side). Also between floors the stairs don't have the matching gap they need in the floor above (it seems sheathing is removed but joists are not worked around. Here this will be handled by the wall to the west of the stairs, between RM-M-STORAGE and the stairs on the main floor, being a load bearing wall, on top of a concrete load bearing wall in the basement underneath it)
 
 Most of the corners don't seem to show proper 3 stud framing (it's defined in code, but not present in most corners).
 
-Some of the windows are too tall, headers going above the height of the ceiling (two in the garage stand out as examples, although it is hard to tell door vs window because the 2d floor plan does not show doors or windows elegantly)
+Some of the windows are too tall, headers going above the height of the ceiling (two in the garage stand out as examples)
+
+The render png of the floorplans nicely shows the IDs of the rooms, and it shows door. We would like to be able to see the IDs and sq ft in the UI for the 2d floor plan view, see and edit the doors, and add to both the png and UI of the floorplan a clear illustration of the windows location (which are already somewhat shown in 3d framing, just not in 2d anywhere visibly).
 
 Arches are missing on the balcony/porch concrete.
 The current modeled concrete arches are:
