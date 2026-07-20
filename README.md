@@ -28,6 +28,17 @@ haus explain HOUSE_WALL_2X6_WITH_ZIPR houses/starter --card   # assembly section
 haus explain transitions houses/starter   # derived boundary conditions
 ```
 
+## UI Start
+Terminal 1
+```bash
+PYTHONPATH=packages/engine/src /Users/colincatlin/mambaforge/bin/python3.10 -m typehaus.cli.app serve houses/starter --port 8000
+```
+Terminal 2
+```bash
+cd ui && HAUS_ENGINE=http://127.0.0.1:8000 npm run dev
+```
+
+
 ## Layout
 
 - `packages/engine/` — the `typehaus` Python package (quantities, model, resolve, emit,
