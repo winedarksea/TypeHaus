@@ -18,6 +18,8 @@ const TRADE_LABEL: Record<Trade, string> = {
   roof: "Roof", stairs: "Stairs", furniture: "Furniture",
 };
 
+type PanDirection = "left" | "right" | "up" | "down";
+
 export function Panel3D() {
   const model = useStore((s) => s.model);
   const threeMode = useStore((s) => s.threeMode);
@@ -51,6 +53,21 @@ export function Panel3D() {
   return (
     <div style={{ position: "absolute", inset: 0 }}>
       <div ref={mountRef} style={{ position: "absolute", inset: 0 }} />
+      <div
+        className="hud"
+        aria-label="3D view navigation"
+        style={{ bottom: 12, top: "auto", left: 12, right: "auto", display: "grid", gridTemplateColumns: "repeat(3, var(--hit))", gap: 4, padding: 4 }}
+      >
+        <span />
+        <button className="seg-btn" aria-label="Pan view up" title="Pan up" onClick={() => api.current?.pan("up")}>↑</button>
+        <span />
+        <button className="seg-btn" aria-label="Pan view left" title="Pan left" onClick={() => api.current?.pan("left")}>←</button>
+        <button className="seg-btn" aria-label="Reset 3D view" title="Reset view" onClick={() => api.current?.resetView()}>⌾</button>
+        <button className="seg-btn" aria-label="Pan view right" title="Pan right" onClick={() => api.current?.pan("right")}>→</button>
+        <span />
+        <button className="seg-btn" aria-label="Pan view down" title="Pan down" onClick={() => api.current?.pan("down")}>↓</button>
+        <span />
+      </div>
       <div className="hud" style={{ bottom: "auto", top: 12, right: 12, left: "auto", display: "flex", gap: 6 }}>
         {(["nordic", "schematic"] as const).map((m) => (
           <button
@@ -80,6 +97,8 @@ export function Panel3D() {
 
 interface SceneApi {
   setModel: (m: Model, mode: "nordic" | "schematic") => void;
+  pan: (direction: PanDirection) => void;
+  resetView: () => void;
   highlight: (uid: string | null) => void;
   setVisibility: (trade: Trade, visible: boolean) => void;
   dispose: () => void;
@@ -118,6 +137,11 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
   let phi = Math.PI * 0.32;
   let radius = 12;
   let target = new THREE.Vector3(0, 1, 0);
+  let fittedTheta = theta;
+  let fittedPhi = phi;
+  let fittedRadius = radius;
+  let fittedTarget = target.clone();
+  let panStep = 1;
   let dragging = false;
   let last = [0, 0];
 
@@ -208,6 +232,29 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     highlighted = null;
   };
 
+  const resetView = () => {
+    theta = fittedTheta;
+    phi = fittedPhi;
+    radius = fittedRadius;
+    target.copy(fittedTarget);
+    requestRender();
+  };
+
+  const pan = (direction: PanDirection) => {
+    // Translate the target in the camera's screen plane. place() refreshes its orientation
+    // first so pan remains intuitive after orbiting, while the spherical camera offset stays
+    // unchanged and therefore cannot alter the current rotation or zoom.
+    place();
+    const screenRight = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+    const screenUp = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+    const offset = direction === "left" ? screenRight.multiplyScalar(-panStep)
+      : direction === "right" ? screenRight.multiplyScalar(panStep)
+        : direction === "up" ? screenUp.multiplyScalar(panStep)
+          : screenUp.multiplyScalar(-panStep);
+    target.add(offset);
+    requestRender();
+  };
+
   const setModel = (m: Model, mode: "nordic" | "schematic") => {
     clear();
     // Center on the plan's structural bounds.
@@ -235,11 +282,24 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
       buildFurniture(tradeGroups.furniture, furniture, cx, cz, mode,
         m.storeys.find((storey) => storey.tag === furniture.storey)?.elevation_m ?? 0);
 
-    // frame the model
+    // Frame the full rendered bounds, including its vertical origin. The old target only
+    // considered height, leaving models whose base was above zero visibly low in the canvas.
     const box = new THREE.Box3().setFromObject(content);
-    const size = box.getSize(new THREE.Vector3());
-    radius = Math.max(6, Math.max(size.x, size.z) * 1.4);
-    target.y = size.y * 0.4;
+    if (!box.isEmpty()) {
+      const sphere = box.getBoundingSphere(new THREE.Sphere());
+      const verticalHalfFov = THREE.MathUtils.degToRad(camera.fov) / 2;
+      const horizontalHalfFov = Math.atan(Math.tan(verticalHalfFov) * camera.aspect);
+      const limitingHalfFov = Math.min(verticalHalfFov, horizontalHalfFov);
+      theta = Math.PI * 0.25;
+      phi = Math.PI * 0.32;
+      radius = Math.max(2, sphere.radius / Math.sin(limitingHalfFov) * 1.15);
+      target.copy(sphere.center);
+      panStep = Math.max(0.2, sphere.radius * 0.3);
+      fittedTheta = theta;
+      fittedPhi = phi;
+      fittedRadius = radius;
+      fittedTarget.copy(target);
+    }
     requestRender();
   };
 
@@ -261,6 +321,8 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
 
   return {
     setModel,
+    pan,
+    resetView,
     highlight,
     setVisibility,
     dispose: () => {
