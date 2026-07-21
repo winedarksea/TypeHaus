@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { findingsFor, useStore, visibleFindings } from "../state/store";
 import type { Finding, Model, Opening, Stair, Wall } from "../model/types";
-import { formatFtIn, wallLength } from "../model/geometry";
+import { formatFtIn, openingHostWall, wallLength } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
 import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
 import { SpaceDashboard } from "./SpaceDashboard";
@@ -121,7 +121,7 @@ function OpeningInspector({ model, opening }: { model: Model; opening: Opening }
   const applyOps = useStore((state) => state.applyOps);
   const runMacro = useStore((state) => state.runMacro);
   const toast = useStore((state) => state.toast);
-  const host = model.walls.find((wall) => wall.uid === opening.host);
+  const host = openingHostWall(model.walls, opening);
   const types = opening.is_door ? model.catalog?.door_types ?? [] : model.catalog?.window_types ?? [];
   const [along, setAlong] = useState(() => formatFtIn(opening.center_along_m));
   const [sill, setSill] = useState(() => formatFtIn(opening.sill_m));
@@ -240,11 +240,11 @@ function WallInspector({ model, w, onShowDetails }: { model: Model; w: Wall; onS
       <InlineFindings model={model} uid={w.uid} />
       <div style={{ marginTop: 8 }}>
         <span className="muted">Openings hosted: </span>
-        {model.openings.filter((o) => o.host === w.uid).length === 0 ? (
+        {model.openings.filter((o) => o.host === w.tag).length === 0 ? (
           <span className="muted">none</span>
         ) : (
           model.openings
-            .filter((o) => o.host === w.uid)
+            .filter((o) => o.host === w.tag)
             .map((o) => (
               <button
                 key={o.uid}

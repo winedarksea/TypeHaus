@@ -12,19 +12,22 @@ type Placement =
   | { kind: "opening"; screen: Vec2; wall: Wall; along_m: number }
   | { kind: "room"; screen: Vec2; seed: Vec2 };
 
-export function PlacementPopover({ placement, catalog, hintFile, storey, runMacro, selectByTag, onClose }: {
+export function PlacementPopover({ placement, catalog, hintFile, storey, runMacro, selectByTag, toast, onClose }: {
   placement: Placement;
   catalog: Catalog | undefined;
   hintFile: string | undefined;
   storey: string | null;
   runMacro: (request: MacroRequest) => Promise<MacroResult | null>;
   selectByTag: (kind: "wall" | "opening" | "room", tag: string) => void;
+  toast: (message: string, kind?: "info" | "error") => void;
   onClose: () => void;
 }) {
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const place = async (request: MacroRequest, kind: "opening" | "room") => {
     if (!storey || busy) return;
+    setError(null);
     setBusy(true);
     const res = await runMacro(request);
     setBusy(false);
@@ -32,8 +35,13 @@ export function PlacementPopover({ placement, catalog, hintFile, storey, runMacr
       const tag = Object.keys(res.minted).find((t) =>
         kind === "opening" ? t.startsWith("WIN-") || t.startsWith("D-") : t.startsWith("RM-"))
         ?? Object.keys(res.minted)[0];
-      if (tag) selectByTag(kind, tag);
+      if (tag) {
+        selectByTag(kind, tag);
+        toast(`${tag} placed`);
+      }
       onClose();
+    } else {
+      setError("Could not add this opening. Review the error message and try again.");
     }
   };
 
@@ -50,12 +58,14 @@ export function PlacementPopover({ placement, catalog, hintFile, storey, runMacr
     const doors = catalog?.door_types ?? [];
     return (
       <div className="hud popover" style={style} onClick={(e) => e.stopPropagation()}>
-        <div className="muted" style={{ fontSize: 11, marginBottom: 4 }}>
-          {placement.wall.tag} @ {formatFtIn(placement.along_m)}
+        <div style={{ fontWeight: 700, marginBottom: 4 }}>Place opening</div>
+        <div className="muted" style={{ fontSize: 11, marginBottom: 8 }}>
+          Wall {placement.wall.tag} · {formatFtIn(placement.along_m)} from start
         </div>
         {windows.length === 0 && doors.length === 0 && (
           <div className="muted">No window/door types in the library.</div>
         )}
+        {windows.length > 0 && <div className="muted" style={{ fontSize: 11, fontWeight: 700, margin: "6px 0 4px" }}>Windows</div>}
         {windows.map((wt) => (
           <button key={wt.tag} className="btn" disabled={busy} style={{ display: "block", width: "100%", marginBottom: 4 }}
             onClick={() => void place({
@@ -63,9 +73,10 @@ export function PlacementPopover({ placement, catalog, hintFile, storey, runMacr
               type_ref: wt.tag, along: formatFtIn(placement.along_m), is_door: false,
               hint_file: hintFile,
             }, "opening")}>
-            ❒ {wt.tag} · {formatFtIn(wt.width_m)}×{formatFtIn(wt.height_m)}
+            {busy ? "Adding…" : `Window · ${wt.tag} · ${formatFtIn(wt.width_m)} × ${formatFtIn(wt.height_m)}`}
           </button>
         ))}
+        {doors.length > 0 && <div className="muted" style={{ fontSize: 11, fontWeight: 700, margin: "6px 0 4px" }}>Doors</div>}
         {doors.map((dt) => (
           <button key={dt.tag} className="btn" disabled={busy} style={{ display: "block", width: "100%", marginBottom: 4 }}
             onClick={() => void place({
@@ -73,10 +84,11 @@ export function PlacementPopover({ placement, catalog, hintFile, storey, runMacr
               type_ref: dt.tag, along: formatFtIn(placement.along_m), is_door: true,
               hint_file: hintFile,
             }, "opening")}>
-            🚪 {dt.tag} · {formatFtIn(dt.width_m)}×{formatFtIn(dt.height_m)}
+            {busy ? "Adding…" : `Door · ${dt.tag} · ${formatFtIn(dt.width_m)} × ${formatFtIn(dt.height_m)}`}
           </button>
         ))}
-        <button className="btn" onClick={onClose}>Cancel</button>
+        {error && <div role="alert" style={{ color: "var(--error)", fontSize: 11, margin: "6px 0" }}>{error}</div>}
+        <button className="btn" disabled={busy} onClick={onClose}>Cancel</button>
       </div>
     );
   }

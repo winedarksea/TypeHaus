@@ -41,10 +41,15 @@ def test_model_contract_carries_revision_and_provenance(client):
 
 def test_model_contract_carries_opening_product_and_handing(client):
     c, _ = client
-    opening = c.get("/model").json()["openings"][0]
+    model = c.get("/model").json()
+    opening = model["openings"][0]
     assert opening["type_ref"]
     assert isinstance(opening["flip_hinge"], bool)
     assert isinstance(opening["flip_swing"], bool)
+    wall_tags = {wall["tag"] for wall in model["walls"]}
+    wall_uids = {wall["uid"] for wall in model["walls"]}
+    assert all(item["host"] in wall_tags for item in model["openings"])
+    assert all(item["host"] not in wall_uids for item in model["openings"])
 
 
 def test_patch_requires_matching_revision(client):

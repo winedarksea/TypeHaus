@@ -8,6 +8,7 @@ import {
   formatFtIn,
   M_PER_FT,
   nearestWallHit,
+  openingHostWall,
   type Node as GeoNode,
   orthoLock,
   pointAlong,
@@ -634,7 +635,7 @@ export function Canvas2D() {
             <WallShape
               key={w.uid}
               w={displayWall}
-              openings={model.openings.filter((opening) => opening.host === w.uid)}
+              openings={model.openings.filter((opening) => opening.host === w.tag)}
               project={project}
               selected={selection.uid === w.uid}
               hovered={hoverUid === w.uid}
@@ -646,7 +647,7 @@ export function Canvas2D() {
         })}
         {/* openings */}
         {model.openings.map((o) => {
-          const host = model.walls.find((w) => w.uid === o.host);
+          const host = openingHostWall(model.walls, o);
           if (!host || (activeStorey && host.storey !== activeStorey)) return null;
           return (
             <OpeningShape
@@ -804,6 +805,7 @@ export function Canvas2D() {
           storey={activeStorey}
           runMacro={runMacro}
           selectByTag={selectByTag}
+          toast={toast}
           onClose={() => setPlacement(null)}
         />
       )}
@@ -1073,7 +1075,7 @@ const WallShape = memo(function WallShape({ w, openings, project, selected, hove
 });
 
 function hostStorey(model: Model, opening: Opening): string {
-  return model.walls.find((wall) => wall.uid === opening.host)?.storey ?? "";
+  return openingHostWall(model.walls, opening)?.storey ?? "";
 }
 
 function WallAssemblyPopupCard({ wall, screen, viewport, onClose }: {

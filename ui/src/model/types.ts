@@ -78,7 +78,9 @@ export interface Wall {
 export interface Opening {
   uid: string;
   tag: string;
-  host: string; // host wall uid
+  // The engine serializes the authored host-wall tag (for example, "W-101"), not its
+  // minted UID. Keep this aligned with model_json.py so 2D host resolution is reliable.
+  host: string;
   is_door: boolean;
   provenance: Provenance | null;
   type_ref: string | null;

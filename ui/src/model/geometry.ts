@@ -3,7 +3,7 @@
 // for display, and deriving *view-only* aggregates (the node graph for hit-testing, the
 // bounding extents for the HUD readout) from the numbers model.json already resolved.
 
-import type { Model, Vec2, Wall } from "./types";
+import type { Model, Opening, Vec2, Wall } from "./types";
 
 export const M_PER_FT = 0.3048;
 
@@ -153,6 +153,12 @@ export function pointAlong(w: Wall, alongM: number): Vec2 {
 export function wallLength(w: Wall): number {
   const [a, b] = w.axis;
   return Math.hypot(b[0] - a[0], b[1] - a[1]);
+}
+
+// Opening.host is the authored wall tag in model.json. Centralizing this lookup prevents
+// presentation code from accidentally comparing it to the server-minted wall UID.
+export function openingHostWall(walls: Wall[], opening: Opening): Wall | undefined {
+  return walls.find((wall) => wall.tag === opening.host);
 }
 
 // --- Authoring hit-tests (view-only; the server re-derives authoritative geometry). ------
