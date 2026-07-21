@@ -66,6 +66,10 @@ WINDOW_TYPES = [
                shgc=0.35, vt=0.5, operation="casement"),
     WindowType(tag="WT-1436-ATTIC", width=inch(14), height=ft(3), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="awning"),
+    # The 5' attic knee wall also needs room for the modeled header above this
+    # 14" side-wall opening; 24" leaves clearance below the top plate.
+    WindowType(tag="WT-1424-ATTIC", width=inch(14), height=ft(2), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="awning"),
 ]
 
 NODES = [

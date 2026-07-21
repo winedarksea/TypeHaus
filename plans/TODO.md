@@ -111,6 +111,8 @@ Straight vertical portion: 4 ft high
 Outer concrete piers: 1 ft wide
 Porch wall thickness: 12 in
 
+Very small windows that don't break the stud line don't need a header added.
+
 ## Current Orientation:
 +X: east
 +Y: north

@@ -114,7 +114,7 @@ OPENINGS = [
            position=from_node("N-A-NW", ft(6, 1)), sill_height=ft(2)),
     Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-3036-ATTIC",
            position=from_node("N-A-NE", ft(6, 9)), sill_height=ft(2)),
-    Window(uid="CAX306AAAA", tag="WIN-A-W-SM", host="W-A-W1", type_ref="WT-1436-ATTIC",
+    Window(uid="CAX306AAAA", tag="WIN-A-W-SM", host="W-A-W1", type_ref="WT-1424-ATTIC",
            position=from_node("N-A-NW", ft(17, 5)), sill_height=ft(2)),
 ]
 
