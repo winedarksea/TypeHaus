@@ -11,11 +11,10 @@ Need to be able to cleanly turn parts on/off in the 2d and 3d views, either by t
 
 IFC openings (WP7 follow-ups): glTF core-LOD opening cutouts (windows/doors currently emit voids + fillings only in IFC, not the glTF core mesh); shared IfcWindowType/IfcDoorType so repeated openings reference one type rather than per-instance property sets.
 
-Interior walls do not consider the roof slope for the sloped attic level ceiling.
-
-Roof assembly still isn't showing on the 3d model.
-
-The render png of the floorplans nicely shows the IDs of the rooms, and it shows door. We would like to be able to see the IDs and sq ft in the UI for the 2d floor plan view, see and edit the doors, and add to both the png and UI of the floorplan a clear illustration of the windows location (which are already somewhat shown in 3d framing, just not in 2d anywhere visibly).
+French/double-swing doors now render in the 2D plan (PNG + UI) and are editable via a
+click-to-open door settings popover (type, hinge/swing, position, sill height); the 3D
+glTF/Panel3D view still cuts doors as plain void rectangles with no leaf panel geometry
+(single or double) — see `emit/gltf/emitter.py:_add_wall`.
 
 ## Catlin detail parity — remaining
 

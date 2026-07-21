@@ -16,6 +16,7 @@ import {
   wallLength,
 } from "../model/geometry";
 import { materialColor, NORDIC_ACCENT, NORDIC_INK, NORDIC_LINE } from "../nordic/palette";
+import { DoorSettingsPopover } from "./DoorSettingsPopover";
 import { FtInKeypad } from "./FtInKeypad";
 import { SunIndicator } from "./SunIndicator";
 import { PlacementPopover } from "./PlacementPopover";
@@ -54,6 +55,12 @@ type Placement =
 // edits; this card only makes the essential assembly information available at the click.
 interface WallAssemblyPopup {
   wallUid: string;
+  screen: Vec2;
+}
+
+// A door settings popover request (type/handing), anchored at the opening's screen point.
+interface DoorPopup {
+  opening: Opening;
   screen: Vec2;
 }
 
@@ -98,6 +105,7 @@ export function Canvas2D() {
   const [previewGeom, setPreviewGeom] = useState<PreviewGeometry | null>(null);
   const [placement, setPlacement] = useState<Placement | null>(null);
   const [wallAssemblyPopup, setWallAssemblyPopup] = useState<WallAssemblyPopup | null>(null);
+  const [doorPopup, setDoorPopup] = useState<DoorPopup | null>(null);
   const [dimWall, setDimWall] = useState<Wall | null>(null);
   const [drawAssembly, setDrawAssembly] = useState<string>("");
   const [activeService, setActiveService] = useState<string>("");
@@ -135,9 +143,13 @@ export function Canvas2D() {
   const hoverEl = useCallback((uid: string | null) => {
     useStore.getState().setHover(uid);
   }, []);
-  const editOpeningStable = useCallback((o: Opening) => {
+  const editOpeningStable = useCallback((o: Opening, screen: Vec2) => {
     if (useStore.getState().tool !== "select") return;
-    setPending({ opening: o, field: "position", initial: formatFtIn(o.center_along_m) });
+    if (o.is_door) {
+      setDoorPopup({ opening: o, screen });
+    } else {
+      setPending({ opening: o, field: "position", initial: formatFtIn(o.center_along_m) });
+    }
   }, []);
   const selectWallWithPopup = useCallback((wall: Wall, event: React.MouseEvent<SVGGElement>) => {
     const s = useStore.getState();
@@ -383,6 +395,7 @@ export function Canvas2D() {
         } else {
           select(null, null);
           setWallAssemblyPopup(null);
+          setDoorPopup(null);
         }
         break;
       }
@@ -496,7 +509,7 @@ export function Canvas2D() {
       const target = e.target as HTMLElement;
       if (target && (target.tagName === "INPUT" || target.tagName === "SELECT" || target.tagName === "TEXTAREA")) return;
       if (e.key === "Escape") {
-        setDraft(null); setPlacement(null); setWallAssemblyPopup(null); setDimWall(null); setNodeDrag(null); setPending(null);
+        setDraft(null); setPlacement(null); setWallAssemblyPopup(null); setDimWall(null); setNodeDrag(null); setPending(null); setDoorPopup(null);
         setPreviewGeom(null);
         if (calibrationMode) { setCalibrationMode(false); setCalibrationPoints([]); }
       } else if ((e.key === "Delete" || e.key === "Backspace") && selection.uid && !offline) {
@@ -649,6 +662,8 @@ export function Canvas2D() {
         {model.openings.map((o) => {
           const host = openingHostWall(model.walls, o);
           if (!host || (activeStorey && host.storey !== activeStorey)) return null;
+          const doubleLeaf = o.is_door
+            && model.catalog?.door_types.find((dt) => dt.tag === o.type_ref)?.operation === "double_swing";
           return (
             <OpeningShape
               key={o.uid}
@@ -657,6 +672,7 @@ export function Canvas2D() {
               project={project}
               scale={view.scale}
               selected={selection.uid === o.uid}
+              doubleLeaf={doubleLeaf}
               onSelect={selectEl}
               onEdit={editOpeningStable}
             />
@@ -787,6 +803,26 @@ export function Canvas2D() {
           initial={pending.initial}
           onCommit={(m) => void commitPending(m)}
           onCancel={() => setPending(null)}
+        />
+      )}
+      {doorPopup && (
+        <DoorSettingsPopover
+          opening={doorPopup.opening}
+          screen={doorPopup.screen}
+          doorTypes={model.catalog?.door_types ?? []}
+          applyOps={applyOps}
+          toast={toast}
+          onEditPosition={() => {
+            setPending({ opening: doorPopup.opening, field: "position",
+              initial: formatFtIn(doorPopup.opening.center_along_m) });
+            setDoorPopup(null);
+          }}
+          onEditSillHeight={() => {
+            setPending({ opening: doorPopup.opening, field: "sill_height",
+              initial: formatFtIn(doorPopup.opening.sill_m) });
+            setDoorPopup(null);
+          }}
+          onClose={() => setDoorPopup(null)}
         />
       )}
       {dimWall && (
@@ -1119,14 +1155,15 @@ function WallAssemblyPopupCard({ wall, screen, viewport, onClose }: {
   );
 }
 
-const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selected, onSelect, onEdit }: {
+const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selected, doubleLeaf, onSelect, onEdit }: {
   o: Opening;
   host: Wall;
   project: (p: Vec2) => Vec2;
   scale: number;
   selected: boolean;
+  doubleLeaf?: boolean;
   onSelect: (kind: Selection["kind"], uid: string) => void;
-  onEdit: (o: Opening) => void;
+  onEdit: (o: Opening, screen: Vec2) => void;
 }) {
   const center = pointAlong(host, o.center_along_m);
   const [cx, cy] = project(center);
@@ -1147,19 +1184,36 @@ const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selec
   const wallArcY = hingeY - hingeDirection * 2 * dy;
   const windowTick = Math.min(6, Math.max(3, scale * 0.08));
   return (
-    <g onClick={() => onSelect("opening", o.uid)} onDoubleClick={() => onEdit(o)}
+    <g onClick={() => onSelect("opening", o.uid)} onDoubleClick={() => onEdit(o, [cx, cy])}
       style={{ cursor: "pointer" }}>
       <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
         stroke={selected ? NORDIC_ACCENT : "var(--canvas-white)"} strokeWidth={selected ? 6 : 5} />
       <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
       stroke={o.is_door ? "var(--canvas-wood)" : NORDIC_ACCENT} strokeWidth={2}
         strokeDasharray={o.is_door ? undefined : "3 2"} />
-      {o.is_door ? <>
+      {o.is_door ? (doubleLeaf ? <>
+        {/* French/double door — two half-width leaves hinged at the jambs, meeting at
+            a centre mullion. Both leaves swing to the same side. */}
+        {([-1, 1] as const).map((side) => {
+          const jx = cx + side * dx;
+          const jy = cy + side * dy;
+          const lx = jx + swingSign * Math.sin(ang) * halfPx;
+          const ly = jy - swingSign * Math.cos(ang) * halfPx;
+          return (
+            <g key={side}>
+              <line x1={jx} y1={jy} x2={lx} y2={ly}
+                stroke="var(--canvas-wood)" strokeWidth={1.5} />
+              <path d={`M ${cx} ${cy} A ${halfPx} ${halfPx} 0 0 ${swingSign > 0 ? 0 : 1} ${lx} ${ly}`}
+                fill="none" stroke="var(--canvas-wood)" strokeWidth={1} />
+            </g>
+          );
+        })}
+      </> : <>
         <line x1={hingeX} y1={hingeY} x2={leafX} y2={leafY}
           stroke="var(--canvas-wood)" strokeWidth={1.5} />
         <path d={`M ${wallArcX} ${wallArcY} A ${o.width_m * scale} ${o.width_m * scale} 0 0 ${swingSign > 0 ? 0 : 1} ${leafX} ${leafY}`}
           fill="none" stroke="var(--canvas-wood)" strokeWidth={1} />
-      </> : <>
+      </>) : <>
         <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
           stroke={NORDIC_ACCENT} strokeWidth={3} />
         <line x1={cx - Math.sin(ang) * windowTick} y1={cy + Math.cos(ang) * windowTick}

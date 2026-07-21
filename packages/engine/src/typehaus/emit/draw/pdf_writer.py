@@ -264,6 +264,29 @@ def _draw_symbol(ax: object, node: Symbol, Arc: object) -> None:
         ax.add_patch(Arc(node.insert, 2 * w, 2 * w, angle=0,
                          theta1=theta_start, theta2=theta_end,
                          edgecolor="#a05a20", linewidth=0.6))
+    elif node.name == "door-swing-double":
+        # Two half-width leaves hinged at the jambs, meeting at a centre mullion.
+        # The second leaf reuses the same per-leaf math with its rotation flipped
+        # 180° and swing sign negated so both leaves open to the same physical side.
+        a = math.radians(node.rotation)
+        swing_sign = float(node.params.get("swing_sign", 1))
+        half = w / 2
+        along = (math.cos(a), math.sin(a))
+        cx, cy = node.insert
+
+        def _leaf(hinge: tuple[float, float], rotation: float, sign: float) -> None:
+            ar = math.radians(rotation)
+            end = (hinge[0] + sign * half * math.cos(ar + math.pi / 2),
+                   hinge[1] + sign * half * math.sin(ar + math.pi / 2))
+            ax.plot([hinge[0], end[0]], [hinge[1], end[1]], color="#a05a20", lw=0.9)
+            theta1 = rotation if sign > 0 else rotation - 90
+            theta2 = rotation + 90 if sign > 0 else rotation
+            ax.add_patch(Arc(hinge, 2 * half, 2 * half, angle=0,
+                             theta1=theta1, theta2=theta2,
+                             edgecolor="#a05a20", linewidth=0.6))
+
+        _leaf((cx - half * along[0], cy - half * along[1]), node.rotation, swing_sign)
+        _leaf((cx + half * along[0], cy + half * along[1]), node.rotation + 180, -swing_sign)
     elif node.name == "post":
         ax.plot(node.insert[0], node.insert[1], marker="s", markersize=5,
                 color="#8a5a20", markerfacecolor="none")

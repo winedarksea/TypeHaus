@@ -15,7 +15,7 @@ class DoorType(HausModel):
     width: Length
     height: Length
     u_factor: UFactor | None = None
-    operation: str = "swing"  # swing | slide | pocket | bifold
+    operation: str = "swing"  # swing | double_swing | slide | pocket | bifold
     exterior: bool = False
     source: str | None = None
 

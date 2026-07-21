@@ -187,10 +187,10 @@ OPENINGS = [
     RoughOpening(uid="CSD209AAAA", tag="O-S-STAIRTOP", host="W-S-BD-N2",
                  position=from_node("N-S-STR2", ft(0, 6)), width=ft(6),
                  height=ft(6, 8)),
-    # Deck doors (south wall, flanking the center line)
-    Door(uid="CSD210AAAA", tag="D-S-DECK-W", host="W-S-S1", type_ref="DT-EXT36",
+    # Deck doors (south wall, flanking the center line) — French (double-swing) leaves.
+    Door(uid="CSD210AAAA", tag="D-S-DECK-W", host="W-S-S1", type_ref="DT-FRENCH36",
          position=from_node("N-S-S1", ft(2))),
-    Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-EXT36",
+    Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-FRENCH36",
          position=from_node("N-S-S1", ft(2))),
     # Windows — east bedrooms (bearing wall: WT-2760, egress-capable)
     Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E3", type_ref="WT-2760",

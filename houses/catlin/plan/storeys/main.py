@@ -32,6 +32,8 @@ from typehaus import (
 DOOR_TYPES = [
     DoorType(tag="DT-EXT36", width=ft(3), height=ft(6, 8), exterior=True,
              u_factor=u_us(0.20)),
+    DoorType(tag="DT-FRENCH36", width=ft(3), height=ft(6, 8), exterior=True,
+             operation="double_swing", u_factor=u_us(0.20)),
     DoorType(tag="DT-PATIO60", width=ft(5), height=ft(6, 8), exterior=True,
              operation="slide", u_factor=u_us(0.25)),
     DoorType(tag="DT-INT32", width=ft(2, 8), height=ft(6, 8)),

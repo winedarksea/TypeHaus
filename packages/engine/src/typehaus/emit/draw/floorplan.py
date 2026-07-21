@@ -37,6 +37,13 @@ def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
     return b.build()
 
 
+def _door_operation(model: ResolvedModel, type_ref: str | None) -> str:
+    if type_ref is None:
+        return "swing"
+    door_type = next((t for t in model.plan.library.door_types if t.tag == type_ref), None)
+    return door_type.operation if door_type is not None else "swing"
+
+
 def _emit_openings(b: SceneBuilder, model: ResolvedModel, wall_tags: set[str]) -> None:
     for op in model.openings:
         if op.host_wall not in wall_tags:
@@ -53,6 +60,20 @@ def _emit_openings(b: SceneBuilder, model: ResolvedModel, wall_tags: set[str]) -
         flip_hinge = bool(getattr(authored, "flip_hinge", False))
         flip_swing = bool(getattr(authored, "flip_swing", False))
         angle = _angle(sx, sy, ex, ey)
+        is_double = op.is_door and _door_operation(model, op.type_ref) == "double_swing"
+        if is_double:
+            # Two leaves hinged at the jambs, meeting at a centre mullion — the insert
+            # point is the opening centre rather than a single hinge.
+            b.add(Symbol(
+                name="door-swing-double",
+                insert=_in((cx, cy)),
+                rotation=angle,
+                scale=op.width_m * M_TO_IN,
+                layer=layer,
+                params={"width_in": op.width_m * M_TO_IN,
+                        "swing_sign": -1 if flip_swing else 1},
+            ))
+            continue
         # The symbol is anchored at the hinge, not the opening centre.  This makes the
         # rendered leaf and arc describe the authored handing instead of a generic glyph.
         hinge_direction = -1.0 if flip_hinge else 1.0

@@ -82,13 +82,15 @@ WALLS = [
     Wall(uid="CAW110AAAA", tag="W-A-C2", start_node="N-A-C1", end_node="N-A-N1",
          assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE"),
          stacks_on="W-S-C3"),
-    # South rooms: den (west of center) + study (east of center).
+    # South rooms: den (west of center) + study (east of center). Framed to the roof
+    # deck like the other attic partitions; the den's ft(7,6) dropped ceiling (see its
+    # Room.ceiling below) is a finish elevation for headroom checks, not a wall height.
     Wall(uid="CAW111AAAA", tag="W-A-DN", start_node="N-A-D1", end_node="N-A-C1",
-         assembly="INT_2X4_PARTITION", top=ft(7, 6)),
+         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
     Wall(uid="CAW112AAAA", tag="W-A-DW", start_node="N-A-S1", end_node="N-A-D1",
-         assembly="INT_2X4_PARTITION", top=ft(7, 6)),
+         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
     Wall(uid="CAW113AAAA", tag="W-A-SN", start_node="N-A-C1", end_node="N-A-E1",
-         assembly="INT_2X4_PARTITION", top=ft(7, 6)),
+         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
 ]
 
 OPENINGS = [
