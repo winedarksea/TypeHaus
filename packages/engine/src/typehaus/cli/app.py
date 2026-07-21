@@ -226,36 +226,44 @@ def takeoff(
 
 @app.command(name="import")
 def import_asset(
-    kind: str = typer.Argument(..., help="currently: furniture"),
-    source: Path = typer.Argument(..., help=".glb | .gltf | .dae mesh to import"),
+    kind: str = typer.Argument(..., help="furniture | plumbing | appliance | mechanical | register | electrical"),
+    source: Path = typer.Argument(..., help=".glb | .gltf | .dae | .svg | .ifc asset to import"),
     house: Optional[Path] = typer.Argument(None, help="House directory (default: cwd)"),
     tag: Optional[str] = typer.Option(None, help="Type tag suffix (for example lounge-chair)"),
     name: Optional[str] = typer.Option(None, help="Display name"),
-    room: Optional[str] = typer.Option(None, help="Room tag; requires --at-m"),
-    at_m: Optional[str] = typer.Option(None, help="Placement as 'x,y' meters; requires --room"),
-    storage: bool = typer.Option(False, help="Count this type toward the storage ratio"),
+    analyze: bool = typer.Option(False, help="Analyze only; do not mutate the project"),
+    confirm: bool = typer.Option(False, help="Commit a confirmed project-local catalog type"),
+    units: str = typer.Option("m", help="Confirmed source units: m | mm | ft"),
+    up_axis: str = typer.Option("y", help="Confirmed up axis: y | z"),
+    origin: str = typer.Option("floor_center", help="Confirmed origin: floor_center"),
+    ifc_occurrence: Optional[str] = typer.Option(None, help="Analyzed IFC occurrence ID or GlobalId to extract"),
 ) -> None:
-    """Import a house-local asset; ``haus import furniture`` is the M3 mesh path."""
-    if kind != "furniture":
-        raise typer.BadParameter("only 'furniture' is supported")
-    position = _parse_xy_meters(at_m) if at_m is not None else None
-    from typehaus.cli.furniture_import import import_furniture_mesh
-
-    result = import_furniture_mesh(source, _resolve_house(house), tag=tag, name=name,
-                                   room=room, position_m=position, storage=storage)
-    console.print(f"imported {result['type']['tag']} → {result['mesh']}")
-    if result["instance"] is not None:
-        console.print(f"placed {result['instance']['tag']} in {result['instance']['room']}")
-
-
-def _parse_xy_meters(value: str) -> tuple[float, float]:
-    try:
-        x, y = (float(item.strip()) for item in value.split(","))
-    except ValueError as exc:
-        raise typer.BadParameter("--at-m must be 'x,y' in meters") from exc
-    return x, y
-
-
+    """Analyze, then explicitly commit a house-local placeable visual asset."""
+    from typehaus.source.placeable_import import (ImportConfirmation, analyze_placeable_asset,
+                                                  commit_placeable_asset)
+    house_dir = _resolve_house(house)
+    asset_analysis = analyze_placeable_asset(source)
+    if analyze:
+        console.print({"format": asset_analysis.format, "content_hash": asset_analysis.content_hash,
+                       "total_bytes": asset_analysis.total_bytes,
+                       "dependencies": [str(path) for path in asset_analysis.dependencies],
+                       "ifc_candidates": [{"id": item.occurrence_id, "global_id": item.global_id,
+                                           "class": item.ifc_class, "name": item.name,
+                                           "type_global_id": item.type_global_id, "bounds_m": item.bounds_m,
+                                           "footprint_m": item.footprint_m,
+                                           "orientation_degrees": item.orientation_degrees,
+                                           "materials": item.materials, "properties": item.properties,
+                                           "ports": item.ports}
+                                          for item in asset_analysis.ifc_candidates]})
+        return
+    if not confirm:
+        raise typer.BadParameter("review analysis first, then rerun with --confirm and normalization decisions")
+    if tag is None or name is None:
+        raise typer.BadParameter("--tag and --name are required for confirmed catalog imports")
+    record = commit_placeable_asset(asset_analysis, house_dir, domain=kind, tag=tag, name=name,
+                                    confirmation=ImportConfirmation(units=units, up_axis=up_axis, origin=origin),
+                                    ifc_occurrence=ifc_occurrence)
+    console.print(f"imported {record['tag']} into assets/placeables.json")
 @app.command()
 def ls(
     house: Optional[Path] = typer.Argument(None),

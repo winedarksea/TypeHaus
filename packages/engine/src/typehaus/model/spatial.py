@@ -8,6 +8,7 @@ from typehaus.model.base import Element
 from typehaus.model.enums import AlarmKind, Occupancy, RoofForm
 from typehaus.model.floors import FinishZone
 from typehaus.model.refs import FollowRoof
+from typehaus.model.placeables import Location, Mount
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Pitch, Point2D
 
@@ -90,7 +91,7 @@ class Alarm(Element):
     """A smoke/CO life-safety symbol associated with one room (M3)."""
 
     kind: AlarmKind
-    room: str
+    room: str | None = None
 
 
 @register_element
@@ -103,6 +104,8 @@ class Fixture(Element):
     wall_ref: str | None = None  # drain-stack wall when services need a vertical chase
     drain_position: Point2D | None = None  # contractor override; default = position
     rotation: object | None = None  # Angle | None
+    location: Location | None = None
+    mount: Mount = Mount()
 
 
 @register_element
@@ -112,6 +115,23 @@ class Furniture(Element):
     type_ref: str
     position: Point2D
     rotation: object | None = None  # Angle | None
+    room: str | None = None
+    location: Location | None = None
+    mount: Mount = Mount()
+
+
+@register_element
+class Appliance(Element):
+    """A service-bearing free or wall-attached product, separate from plumbing fixtures."""
+
+    type_ref: str
+    position: Point2D
+    room: str | None = None
+    rotation: object | None = None
+    location: Location | None = None
+    mount: Mount = Mount()
+    wall_ref: str | None = None
+    drain_position: Point2D | None = None
 
 
 for _name, _obj in (
@@ -123,6 +143,7 @@ for _name, _obj in (
     ("Alarm", Alarm),
     ("Fixture", Fixture),
     ("Furniture", Furniture),
+    ("Appliance", Appliance),
     ("WallLiningException", WallLiningException),
 ):
     register_constructor(_name, _obj)

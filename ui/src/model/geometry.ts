@@ -155,6 +155,18 @@ export function wallLength(w: Wall): number {
   return Math.hypot(b[0] - a[0], b[1] - a[1]);
 }
 
+// Opening macros store a station to the *start* jamb, while the resolved model exposes a
+// center station for drawing. Keeping this conversion here prevents drag commits from
+// shifting an opening by half its width.
+export function openingStartFromCenter(centerAlongM: number, widthM: number): number {
+  return centerAlongM - widthM / 2;
+}
+
+export function openingFitsWall(wall: Wall, centerAlongM: number, widthM: number): boolean {
+  const start = openingStartFromCenter(centerAlongM, widthM);
+  return start >= 0 && start + widthM <= wallLength(wall);
+}
+
 // Opening.host is the authored wall tag in model.json. Centralizing this lookup prevents
 // presentation code from accidentally comparing it to the server-minted wall UID.
 export function openingHostWall(walls: Wall[], opening: Opening): Wall | undefined {

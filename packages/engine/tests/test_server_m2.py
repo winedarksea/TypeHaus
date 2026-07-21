@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 from typehaus.server.events import EventBus
+from typehaus.server.app import _is_project_source_change
 
 
 @pytest.fixture
@@ -37,6 +38,13 @@ def test_model_contract_carries_revision_and_provenance(client):
     wall = model["walls"][0]
     assert wall["provenance"]["file"].endswith(".py")
     assert wall["provenance"]["line"] > 0
+
+
+def test_asset_creation_is_watched_without_observing_output_files(tmp_path: Path):
+    house = tmp_path / "house"
+    assert _is_project_source_change(house, house / "assets" / "placeables.json")
+    assert _is_project_source_change(house, house / "plan" / "main.py")
+    assert not _is_project_source_change(house, house / "out" / "model.ifc")
 
 
 def test_model_contract_carries_opening_product_and_handing(client):

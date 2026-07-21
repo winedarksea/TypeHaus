@@ -92,8 +92,17 @@ export type MacroRequest =
   | { macro: "split_wall"; storey: string; wall: string; at: [string, string] }
   | { macro: "heal_walls"; storey: string; node: string }
   | { macro: "place_opening"; storey: string; host: string; type_ref: string; along: string; is_door: boolean; sill?: string; hint_file?: string }
+  | { macro: "place_rough_opening"; storey: string; host: string; width: string; height: string; along: string; sill?: string; hint_file?: string }
   | { macro: "move_opening"; storey: string; tag: string; along: string }
+  | { macro: "rehost_opening"; storey: string; tag: string; host: string; along: string }
   | { macro: "place_room"; storey: string; seed: [string, string]; occupancy: string; floor_finish?: string; hint_file?: string }
+  | { macro: "move_placeable"; storey: string; tag: string; position: [number | string, number | string] }
+  | { macro: "rotate_placeable"; storey: string; tag: string; degrees: number; free_rotation?: boolean }
+  | { macro: "attach_placeable"; storey: string; tag: string; wall: string; face: "left" | "right"; distance: number | string; gap?: number | string; rotation_offset?: number }
+  | { macro: "detach_placeable"; storey: string; tag: string; position?: [string, string] }
+  | { macro: "place_placeable"; storey: string; type_ref: string; position: [string, string]; hint_file?: string; tag?: string }
+  | { macro: "assign_placeable_room"; storey: string; tag: string; room?: string | null }
+  | { macro: "duplicate_canvas_object"; storey: string; tag: string }
   // Library macros (no storey): the assembly-editor clone-and-tweak flow (→ 21b WP2.4d/e).
   | { macro: "duplicate_assembly"; source: string; tag: string }
   | { macro: "blank_assembly"; tag: string }

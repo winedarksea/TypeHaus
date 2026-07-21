@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { findingsFor, useStore, visibleFindings } from "../state/store";
 import type { Finding, Model, Opening, Stair, Wall } from "../model/types";
-import { formatFtIn, openingHostWall, wallLength } from "../model/geometry";
+import { formatFtIn, openingHostWall, openingStartFromCenter, wallLength } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
 import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
 import { SpaceDashboard } from "./SpaceDashboard";
@@ -114,7 +114,97 @@ function SelectionInspector({
     if (!stair) return null;
     return <StairInspector model={model} stair={stair} />;
   }
+  if (kind === "canvas_object") {
+    const item = (model.canvas_objects ?? []).find((object) => object.uid === uid);
+    if (!item) return null;
+    return <CanvasObjectInspector model={model} item={item} />;
+  }
   return null;
+}
+
+function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullable<Model["canvas_objects"]>[number] }) {
+  const applyOps = useStore((state) => state.applyOps);
+  const runMacro = useStore((state) => state.runMacro);
+  const toast = useStore((state) => state.toast);
+  const type = model.catalog?.canvas_object_types?.find((candidate) => candidate.tag === item.type);
+  const compatibleTypes = (model.catalog?.canvas_object_types ?? []).filter((candidate) => candidate.kind === item.kind);
+  const [rotation, setRotation] = useState(String(item.rotation ?? 0));
+  const [freeRotation, setFreeRotation] = useState(false);
+  const [wall, setWall] = useState(item.attachment?.wall ?? "");
+  const [face, setFace] = useState<"left" | "right">(item.attachment?.face === "right" ? "right" : "left");
+  const [distance, setDistance] = useState("0");
+  const [x, setX] = useState(String(item.position_m?.[0] ?? 0));
+  const [y, setY] = useState(String(item.position_m?.[1] ?? 0));
+  const [room, setRoom] = useState(item.room ?? "");
+  const updateRotation = async () => {
+    const degrees = Number(rotation);
+    if (!Number.isFinite(degrees)) return toast("Rotation must be numeric", "error");
+    const result = await runMacro({ macro: "rotate_placeable", storey: item.storey, tag: item.tag, degrees, free_rotation: freeRotation });
+    if (!result) toast("Could not rotate object", "error");
+  };
+  const attach = async () => {
+    const numericDistance = Number(distance);
+    if (!wall || !Number.isFinite(numericDistance)) return toast("Choose a wall and distance in metres", "error");
+    const result = await runMacro({ macro: "attach_placeable", storey: item.storey, tag: item.tag,
+      wall, face, distance: numericDistance });
+    if (!result) toast("Could not attach object", "error");
+  };
+  const move = async () => {
+    if (!Number.isFinite(Number(x)) || !Number.isFinite(Number(y))) return toast("Position must be numeric metres", "error");
+    const result = await runMacro({ macro: "move_placeable", storey: item.storey, tag: item.tag, position: [x, y] });
+    if (!result) toast("Could not move object", "error");
+  };
+  const assignRoom = async () => {
+    const result = await runMacro({ macro: "assign_placeable_room", storey: item.storey, tag: item.tag,
+      room: room || null });
+    if (!result) toast("Could not update room", "error");
+  };
+  const changeType = async (typeRef: string) => {
+    if (!typeRef || typeRef === item.type) return;
+    const ok = await applyOps([{ op: "update", type: item.kind, tag: item.tag, fields: { type_ref: typeRef } }]);
+    if (!ok) toast("Could not change object type", "error");
+  };
+  return <div>
+    <h3>{type?.name ?? item.kind} · {item.tag}</h3>
+    <div className="kv">
+      <span className="k">Category</span><span>{item.domain}</span>
+      <span className="k">Type</span><span>{item.type ?? "—"}</span>
+      <span className="k">Room</span><span>{item.room ?? "unassigned"}</span>
+      <span className="k">Mount</span><span>{item.attachment ? `attached to ${item.attachment.wall} (${item.attachment.face})` : "free"}</span>
+      <span className="k">Ports</span><span>{type?.ports.map((port) => port.service).join(", ") || "—"}</span>
+    </div>
+    <label className="field">Product type
+      <select value={item.type ?? ""} onChange={(event) => void changeType(event.target.value)}>
+        {compatibleTypes.map((candidate) => <option key={candidate.tag} value={candidate.tag}>
+          {candidate.tag} · {candidate.name}
+        </option>)}
+      </select>
+    </label>
+    <label className="field">Rotation ° <input value={rotation} inputMode="decimal" onChange={(event) => setRotation(event.target.value)} />
+      <button className="btn" onClick={() => void updateRotation()}>Apply</button></label>
+    <label className="muted" style={{ display: "block", fontSize: 11 }}><input type="checkbox" checked={freeRotation} onChange={(event) => setFreeRotation(event.target.checked)} /> Free rotation (otherwise snaps to 15°)</label>
+    <div className="field" style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: 4, marginTop: 8 }}>
+      <input aria-label="X position in metres" value={x} inputMode="decimal" onChange={(event) => setX(event.target.value)} />
+      <input aria-label="Y position in metres" value={y} inputMode="decimal" onChange={(event) => setY(event.target.value)} />
+      <button className="btn" onClick={() => void move()}>Move</button>
+    </div>
+    <label className="field" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 4, marginTop: 8 }}>Room
+      <span><select value={room} onChange={(event) => setRoom(event.target.value)}><option value="">Unassigned</option>
+        {model.rooms.filter((candidate) => candidate.storey === item.storey).map((candidate) => <option key={candidate.uid} value={candidate.tag}>{candidate.tag}</option>)}</select>
+        <button className="btn" onClick={() => void assignRoom()}>Apply</button></span>
+    </label>
+    <div className="field" style={{ display: "grid", gap: 4, marginTop: 8 }}>
+      <span>Wall attachment</span>
+      <select value={wall} onChange={(event) => setWall(event.target.value)}>
+        <option value="">Choose wall…</option>{model.walls.filter((candidate) => candidate.storey === item.storey)
+          .map((candidate) => <option key={candidate.uid} value={candidate.tag}>{candidate.tag}</option>)}</select>
+      <select value={face} onChange={(event) => setFace(event.target.value as "left" | "right")}><option value="left">Left face</option><option value="right">Right face</option></select>
+      <input value={distance} inputMode="decimal" aria-label="Distance from wall start in metres" onChange={(event) => setDistance(event.target.value)} />
+      <button className="btn" onClick={() => void attach()}>Attach</button>
+      {item.attachment && <button className="btn" onClick={() => void runMacro({ macro: "detach_placeable", storey: item.storey, tag: item.tag })}>Detach</button>}
+    </div>
+    <InlineFindings model={model} uid={item.uid} />
+  </div>;
 }
 
 function OpeningInspector({ model, opening }: { model: Model; opening: Opening }) {
@@ -122,13 +212,17 @@ function OpeningInspector({ model, opening }: { model: Model; opening: Opening }
   const runMacro = useStore((state) => state.runMacro);
   const toast = useStore((state) => state.toast);
   const host = openingHostWall(model.walls, opening);
-  const types = opening.is_door ? model.catalog?.door_types ?? [] : model.catalog?.window_types ?? [];
-  const [along, setAlong] = useState(() => formatFtIn(opening.center_along_m));
+  const rough = opening.kind === "rough_opening";
+  const types = rough ? [] : opening.is_door ? model.catalog?.door_types ?? [] : model.catalog?.window_types ?? [];
+  const [along, setAlong] = useState(() => formatFtIn(
+    openingStartFromCenter(opening.center_along_m, opening.width_m),
+  ));
   const [sill, setSill] = useState(() => formatFtIn(opening.sill_m));
+  const [targetHost, setTargetHost] = useState(opening.host);
 
   const update = async (fields: Record<string, unknown>) => {
     const ok = await applyOps([{
-      op: "update", type: opening.is_door ? "Door" : "Window", tag: opening.tag, fields,
+      op: "update", type: rough ? "RoughOpening" : opening.is_door ? "Door" : "Window", tag: opening.tag, fields,
     }]);
     if (ok) toast(`${opening.tag} updated`);
   };
@@ -138,30 +232,41 @@ function OpeningInspector({ model, opening }: { model: Model; opening: Opening }
     if (result) toast(`${opening.tag} position updated`);
   };
   const remove = async () => {
-    const ok = await applyOps([{ op: "delete", type: opening.is_door ? "Door" : "Window", tag: opening.tag }]);
+    const ok = await applyOps([{ op: "delete", type: rough ? "RoughOpening" : opening.is_door ? "Door" : "Window", tag: opening.tag }]);
     if (ok) toast(`${opening.tag} deleted`);
+  };
+  const rehost = async () => {
+    if (!host) return;
+    const result = await runMacro({ macro: "rehost_opening", storey: host.storey, tag: opening.tag,
+      host: targetHost, along });
+    if (result) toast(`${opening.tag} rehosted to ${targetHost}`);
   };
 
   return <div>
-    <h3>{opening.is_door ? "Door" : "Window"} · {opening.tag}</h3>
+    <h3>{rough ? "Rough opening" : opening.is_door ? "Door" : "Window"} · {opening.tag}</h3>
     <div className="kv">
       <span className="k">Host wall</span><span>{host?.tag ?? opening.host}</span>
       <span className="k">Width</span><span>{formatFtIn(opening.width_m)}</span>
       <span className="k">Height</span><span>{formatFtIn(opening.height_m)}</span>
     </div>
-    <label className="field-label">Position along wall
+    <label className="field-label">Start-jamb station along wall
       <span><input value={along} onChange={(event) => setAlong(event.target.value)} />
         <button className="btn" onClick={() => void move()} disabled={!host}>Move</button></span>
+    </label>
+    <label className="field-label">Host wall
+      <span><select value={targetHost} onChange={(event) => setTargetHost(event.target.value)}>
+        {model.walls.filter((wall) => wall.storey === host?.storey).map((wall) => <option key={wall.uid} value={wall.tag}>{wall.tag}</option>)}</select>
+        <button className="btn" onClick={() => void rehost()} disabled={!host || targetHost === opening.host}>Rehost</button></span>
     </label>
     <label className="field-label">{opening.is_door ? "Threshold" : "Sill height"}
       <span><input value={sill} onChange={(event) => setSill(event.target.value)} />
         <button className="btn" onClick={() => void update({ sill_height: sill })}>Apply</button></span>
     </label>
-    <label className="field-label">Product type
+    {!rough && <label className="field-label">Product type
       <select value={opening.type_ref ?? ""} onChange={(event) => void update({ type_ref: event.target.value })}>
         {types.map((type) => <option key={type.tag} value={type.tag}>{type.tag} · {formatFtIn(type.width_m)}×{formatFtIn(type.height_m)}</option>)}
       </select>
-    </label>
+    </label>}
     {opening.is_door && <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
       <button className="btn" onClick={() => void update({ flip_hinge: !opening.flip_hinge })}>
         Flip hinge
@@ -171,7 +276,7 @@ function OpeningInspector({ model, opening }: { model: Model; opening: Opening }
       </button>
     </div>}
     <button className="btn" style={{ marginTop: 8, color: "var(--error)" }} onClick={() => void remove()}>
-      Delete {opening.is_door ? "door" : "window"}
+      Delete {rough ? "rough opening" : opening.is_door ? "door" : "window"}
     </button>
     <Provenance p={opening.provenance} />
     <InlineFindings model={model} uid={opening.uid} />

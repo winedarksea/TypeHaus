@@ -102,6 +102,13 @@ def assign_container(f: Any, element: Any, container: Any) -> None:
     )
 
 
+def assign_type(f: Any, occurrence: Any, type_object: Any) -> None:
+    """Keep occurrence/type semantics explicit for BIM consumers and schedules."""
+    import ifcopenshell.api
+
+    ifcopenshell.api.run("type.assign_type", f, related_objects=[occurrence], relating_type=type_object)
+
+
 def aggregate(f: Any, parent: Any, children: list[Any]) -> None:
     """IfcRelAggregates parent ← children (framed-LOD member aggregation)."""
     import ifcopenshell.api

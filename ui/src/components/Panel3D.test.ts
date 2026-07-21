@@ -1,5 +1,5 @@
 import type { Opening, Wall, Model } from "../model/types";
-import { earthElevation, earthOutline, EARTH_FALLBACK_HALF_SIZE_M, wallLayerPieces } from "./Panel3D";
+import { canvasObjectFallbackGeometry, earthElevation, earthOutline, EARTH_FALLBACK_HALF_SIZE_M, wallLayerPieces } from "./Panel3D";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -51,4 +51,11 @@ export function runEarthGeometryTests() {
   assert(earthElevation({ site: { lat: 0, lon: 0, true_north_deg: 0, grade_m: 1.5 } } as Model) === 1.5,
     "Earth uses the serialized site grade");
   assert(earthElevation({} as Model) === 0, "Earth defaults to the main-floor datum");
+}
+
+export function runCanvasObjectGeometryTests() {
+  assert(canvasObjectFallbackGeometry("cylinder", 0.4, 1, 0.6).type === "CylinderGeometry",
+    "Configured cylinder primitives are rendered before their GLB is ready");
+  assert(canvasObjectFallbackGeometry("unsupported", 0.4, 1, 0.6).type === "BoxGeometry",
+    "Unknown primitives retain the footprint-box fallback");
 }

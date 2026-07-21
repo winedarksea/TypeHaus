@@ -2,13 +2,15 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { useStore } from "../state/store";
 import type { Selection } from "../state/store";
 import type { PreviewGeometry } from "../engine/EngineClient";
-import type { Model, Opening, PlanNode, Stair, Underlay, Vec2, Wall } from "../model/types";
+import type { CanvasObject, CanvasObjectType, Model, Opening, PlanNode, Stair, Underlay, Vec2, Wall } from "../model/types";
 import {
   deriveNodes,
   formatFtIn,
   M_PER_FT,
   nearestWallHit,
   openingHostWall,
+  openingFitsWall,
+  openingStartFromCenter,
   type Node as GeoNode,
   orthoLock,
   pointAlong,
@@ -46,9 +48,16 @@ interface NodeDrag {
   to: Vec2;
 }
 
+interface OpeningDragPreview {
+  opening: Opening;
+  host: Wall;
+  valid: boolean;
+}
+
 // A placement popover request (opening on a wall, or a room seed) anchored at screen px.
 type Placement =
   | { kind: "opening"; screen: Vec2; wall: Wall; along_m: number }
+  | { kind: "placeable"; screen: Vec2; position: Vec2 }
   | { kind: "room"; screen: Vec2; seed: Vec2 };
 
 // A read-only wall summary kept local to the canvas. The inspector remains the source for
@@ -82,6 +91,7 @@ export function Canvas2D() {
   const runMacro = useStore((s) => s.runMacro);
   const previewMacro = useStore((s) => s.previewMacro);
   const deleteSelection = useStore((s) => s.deleteSelection);
+  const duplicateSelection = useStore((s) => s.duplicateSelection);
   const offline = useStore((s) => s.offline);
   const calibrateUnderlay = useStore((s) => s.calibrateUnderlay);
   const toast = useStore((s) => s.toast);
@@ -103,6 +113,7 @@ export function Canvas2D() {
   // the store to one in-flight request; cleared on drag end/cancel so it never lingers past
   // the drag it belongs to and shadows the committed model.
   const [previewGeom, setPreviewGeom] = useState<PreviewGeometry | null>(null);
+  const [openingDragPreview, setOpeningDragPreview] = useState<OpeningDragPreview | null>(null);
   const [placement, setPlacement] = useState<Placement | null>(null);
   const [wallAssemblyPopup, setWallAssemblyPopup] = useState<WallAssemblyPopup | null>(null);
   const [doorPopup, setDoorPopup] = useState<DoorPopup | null>(null);
@@ -148,9 +159,44 @@ export function Canvas2D() {
     if (o.is_door) {
       setDoorPopup({ opening: o, screen });
     } else {
-      setPending({ opening: o, field: "position", initial: formatFtIn(o.center_along_m) });
+      setPending({ opening: o, field: "position",
+        initial: formatFtIn(openingStartFromCenter(o.center_along_m, o.width_m)) });
     }
   }, []);
+  const movePlaceableFromDrag = useCallback((item: CanvasObject, position: Vec2) => {
+    if (useStore.getState().tool !== "select") return;
+    void runMacro({ macro: "move_placeable", storey: item.storey, tag: item.tag,
+      position });
+  }, [runMacro]);
+  const rotatePlaceableFromHandle = useCallback((item: CanvasObject, degrees: number, freeRotation: boolean) => {
+    if (useStore.getState().tool !== "select") return;
+    void runMacro({ macro: "rotate_placeable", storey: item.storey, tag: item.tag, degrees,
+      free_rotation: freeRotation });
+  }, [runMacro]);
+  const moveOpeningFromDrag = useCallback((opening: Opening, host: Wall, position: Vec2) => {
+    if (useStore.getState().tool !== "select") return;
+    const target = nearestOpeningHost(model.walls, host.storey, position);
+    setOpeningDragPreview(null);
+    if (!target || target.distance_m > 0.6) return;
+    const along = formatFtIn(openingStartFromCenter(target.along_m, opening.width_m));
+    if (target.wall.tag === host.tag) {
+      void runMacro({ macro: "move_opening", storey: host.storey, tag: opening.tag, along });
+    } else {
+      void runMacro({ macro: "rehost_opening", storey: host.storey, tag: opening.tag,
+        host: target.wall.tag, along });
+    }
+  }, [model.walls, runMacro]);
+  const previewOpeningFromDrag = useCallback((opening: Opening, host: Wall, position: Vec2) => {
+    const target = nearestOpeningHost(model.walls, host.storey, position);
+    if (!target || target.distance_m > 0.6) {
+      setOpeningDragPreview(null);
+      return;
+    }
+    setOpeningDragPreview({
+      opening: { ...opening, center_along_m: target.along_m }, host: target.wall,
+      valid: openingFitsWall(target.wall, target.along_m, opening.width_m),
+    });
+  }, [model.walls]);
   const selectWallWithPopup = useCallback((wall: Wall, event: React.MouseEvent<SVGGElement>) => {
     const s = useStore.getState();
     if (s.tool !== "select") return;
@@ -203,12 +249,14 @@ export function Canvas2D() {
   }, [wallsOnStorey, model.catalog]);
   const wallAssembly = drawAssembly || defaultAssembly;
 
-  const serviceOptions = useMemo(() => [...new Set((model.fixtures ?? [])
-    .flatMap((fixture) => fixture.needs))].sort(), [model.fixtures]);
-  const visibleFixtures = (model.fixtures ?? []).filter((fixture) =>
-    (!activeStorey || fixture.storey === activeStorey) &&
-    (!activeService || fixture.needs.includes(activeService)));
+  const serviceOptions = useMemo(() => [...new Set((model.catalog?.canvas_object_types ?? [])
+    .flatMap((type) => type.ports.map((port) => port.service)))].sort(), [model.catalog?.canvas_object_types]);
   const activeUnderlay = (model.underlays ?? []).find((underlay) => underlay.storey === activeStorey) ?? null;
+  const canvasTypes = useMemo(() => new Map((model.catalog?.canvas_object_types ?? [])
+    .map((item) => [item.tag, item])), [model.catalog?.canvas_object_types]);
+  const visibleServiceObjects = (model.canvas_objects ?? []).filter((item) =>
+    item.position_m && (!activeStorey || item.storey === activeStorey) &&
+    (!activeService || (item.type ? canvasTypes.get(item.type)?.ports.some((port) => port.service === activeService) : false)));
   const popupWall = useMemo(
     () => wallAssemblyPopup ? model.walls.find((wall) => wall.uid === wallAssemblyPopup.wallUid) ?? null : null,
     [model.walls, wallAssemblyPopup],
@@ -419,6 +467,11 @@ export function Canvas2D() {
         }
         break;
       }
+      case "placeable": {
+        const [sx, sy] = project(world);
+        setPlacement({ kind: "placeable", screen: [sx, sy], position: world });
+        break;
+      }
       case "room": {
         const [sx, sy] = project(world);
         setPlacement({ kind: "room", screen: [sx, sy], seed: world });
@@ -515,11 +568,15 @@ export function Canvas2D() {
       } else if ((e.key === "Delete" || e.key === "Backspace") && selection.uid && !offline) {
         e.preventDefault();
         void deleteSelection();
+      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "d" && selection.uid && !offline
+          && (selection.kind === "opening" || selection.kind === "canvas_object")) {
+        e.preventDefault();
+        void duplicateSelection();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selection.uid, offline, deleteSelection, calibrationMode]);
+  }, [selection.uid, selection.kind, offline, deleteSelection, duplicateSelection, calibrationMode]);
 
   // End a wall run when leaving the wall tool.
   useEffect(() => { if (tool !== "wall") { setDraft(null); setCursor(null); } }, [tool]);
@@ -644,11 +701,14 @@ export function Canvas2D() {
         {wallsOnStorey.map((w) => {
           const previewAxis = previewGeom?.walls.find((x) => x.tag === w.tag)?.axis;
           const displayWall = previewAxis ? { ...w, axis: previewAxis as [Vec2, Vec2] } : w;
+          const displayedOpenings = model.openings
+            .filter((opening) => opening.host === w.tag && opening.uid !== openingDragPreview?.opening.uid);
+          if (openingDragPreview?.host.tag === w.tag) displayedOpenings.push(openingDragPreview.opening);
           return (
             <WallShape
               key={w.uid}
               w={displayWall}
-              openings={model.openings.filter((opening) => opening.host === w.tag)}
+              openings={displayedOpenings}
               project={project}
               selected={selection.uid === w.uid}
               hovered={hoverUid === w.uid}
@@ -675,33 +735,40 @@ export function Canvas2D() {
               doubleLeaf={doubleLeaf}
               onSelect={selectEl}
               onEdit={editOpeningStable}
+              toWorld={unproject}
+              onMove={moveOpeningFromDrag}
+              onPreview={previewOpeningFromDrag}
+              onPreviewEnd={() => setOpeningDragPreview(null)}
             />
           );
         })}
+        {openingDragPreview && <OpeningShape
+          key={`preview-${openingDragPreview.opening.uid}`}
+          o={openingDragPreview.opening}
+          host={openingDragPreview.host}
+          project={project}
+          scale={view.scale}
+          selected={false}
+          preview={openingDragPreview.valid ? "valid" : "invalid"}
+          onSelect={selectEl}
+          onEdit={editOpeningStable}
+          toWorld={unproject}
+          onMove={moveOpeningFromDrag}
+        />}
         {stairsOnStorey
           .map((stair) => <StairShape key={stair.uid} stair={stair} project={project}
             selected={selection.uid === stair.uid} hovered={hoverUid === stair.uid}
             onSelect={selectEl} onHover={hoverEl} />)}
-        {(model.fixtures ?? [])
-          .filter((fixture) => !activeStorey || fixture.storey === activeStorey)
-          .map((fixture) => <FixtureFootprint key={fixture.uid} fixture={fixture} project={project}
-            scale={view.scale} dimmed={Boolean(activeService)} />)}
-        {(model.furniture ?? [])
-          .filter((furniture) => !activeStorey || furniture.storey === activeStorey)
-          .map((furniture) => {
-            const [x, y] = project(furniture.position);
-            const width = furniture.footprint_m[0] * view.scale;
-            const depth = furniture.footprint_m[1] * view.scale;
-            return (
-              <g key={furniture.uid} opacity={0.9} pointerEvents="none">
-                <rect x={x - width / 2} y={y - depth / 2} width={width} height={depth}
-                  fill="var(--canvas-wood-soft)" stroke="var(--canvas-wood)" strokeWidth={1.2} />
-                <text x={x} y={y + 3} textAnchor="middle" fontSize={9} fill="var(--canvas-wood)">
-                  {furniture.type.replace("FURN-", "")}
-                </text>
-              </g>
-            );
-          })}
+        {(model.canvas_objects ?? [])
+          // Doors/windows remain topology-aware SVG shapes below; their normalized records
+          // serve inspection/interchange consumers and must not render a second footprint.
+          .filter((item) => item.domain !== "opening" && item.position_m &&
+            (!activeStorey || item.storey === activeStorey))
+          .map((item) => <CanvasObjectFootprint key={item.uid} item={item}
+            type={item.type ? canvasTypes.get(item.type) : undefined} project={project} scale={view.scale}
+            walls={wallsOnStorey}
+            selected={selection.uid === item.uid} onSelect={selectEl} toWorld={unproject}
+            onMove={movePlaceableFromDrag} onRotate={rotatePlaceableFromHandle} />)}
         {showClearances && <ClearanceOverlays model={model} storey={activeStorey} project={project}
           scale={view.scale} />}
         {/* nodes + open-end markers; heal affordance on collinear 2-wall joints (select tool) */}
@@ -793,13 +860,16 @@ export function Canvas2D() {
         })()}
         {activeService && <>
           <rect width="100%" height="100%" fill="var(--canvas-dim)" pointerEvents="none" />
-          {visibleFixtures.map((fixture) => <FixtureFootprint key={`service-${fixture.uid}`}
-            fixture={fixture} project={project} scale={view.scale} dimmed={false} />)}
+          {visibleServiceObjects.map((item) => <CanvasObjectFootprint key={`service-${item.uid}`} item={item}
+            type={item.type ? canvasTypes.get(item.type) : undefined} project={project} scale={view.scale}
+            walls={wallsOnStorey}
+            selected={selection.uid === item.uid} onSelect={selectEl} toWorld={unproject}
+            onMove={movePlaceableFromDrag} onRotate={rotatePlaceableFromHandle} />)}
         </>}
       </svg>
       {pending && (
         <FtInKeypad
-          label={`${pending.opening.tag} · ${pending.field === "position" ? "position along wall" : "sill height"}`}
+          label={`${pending.opening.tag} · ${pending.field === "position" ? "start-jamb station along wall" : "sill height"}`}
           initial={pending.initial}
           onCommit={(m) => void commitPending(m)}
           onCancel={() => setPending(null)}
@@ -814,7 +884,9 @@ export function Canvas2D() {
           toast={toast}
           onEditPosition={() => {
             setPending({ opening: doorPopup.opening, field: "position",
-              initial: formatFtIn(doorPopup.opening.center_along_m) });
+              initial: formatFtIn(openingStartFromCenter(
+                doorPopup.opening.center_along_m, doorPopup.opening.width_m,
+              )) });
             setDoorPopup(null);
           }}
           onEditSillHeight={() => {
@@ -985,21 +1057,92 @@ function UnderlayCalibrationControl({ underlay, points, distanceFt, onDistance, 
   </div>;
 }
 
-function FixtureFootprint({ fixture, project, scale, dimmed }: {
-  fixture: NonNullable<Model["fixtures"]>[number];
+function CanvasObjectFootprint({ item, type, project, scale, walls, selected, onSelect, toWorld, onMove, onRotate }: {
+  item: CanvasObject;
+  type?: CanvasObjectType;
   project: (point: Vec2) => Vec2;
   scale: number;
-  dimmed: boolean;
+  walls: Wall[];
+  selected: boolean;
+  onSelect: (kind: Selection["kind"], uid: string) => void;
+  toWorld: (clientX: number, clientY: number) => Vec2;
+  onMove: (item: CanvasObject, position: Vec2) => void;
+  onRotate: (item: CanvasObject, degrees: number, freeRotation: boolean) => void;
 }) {
-  const [x, y] = project(fixture.position);
-  const width = fixture.footprint_m[0] * scale;
-  const depth = fixture.footprint_m[1] * scale;
-  return <g opacity={dimmed ? 0.35 : 0.9} pointerEvents="none">
-    <rect x={x - width / 2} y={y - depth / 2} width={width} height={depth}
-      fill="var(--canvas-selection)" stroke="var(--accent)" strokeWidth={1.2} />
-    <text x={x} y={y + 3} textAnchor="middle" fontSize={9} fill="var(--ink)">
-      {fixture.type.replace("FX-", "")}
+  const [draggedPosition, setDraggedPosition] = useState<Vec2 | null>(null);
+  const [draggedRotation, setDraggedRotation] = useState<number | null>(null);
+  const [alignmentPoint, setAlignmentPoint] = useState<Vec2 | null>(null);
+  if (!item.position_m) return null;
+  const position = draggedPosition ?? item.position_m;
+  const [x, y] = project(position);
+  const [widthM, depthM] = type?.footprint_m ?? [0.45, 0.45];
+  const width = widthM * scale;
+  const depth = depthM * scale;
+  const rotation = draggedRotation ?? item.rotation ?? 0;
+  const colors: Record<string, [string, string]> = {
+    furniture: ["var(--canvas-wood-soft)", "var(--canvas-wood)"],
+    plumbing: ["var(--canvas-selection)", "var(--accent)"],
+    electrical: ["#fff2bd", "#a66f00"],
+    mechanical: ["#dceafb", "#37658d"],
+    appliance: ["#e5e7eb", "#4b5563"],
+  };
+  const [fill, stroke] = colors[item.domain] ?? ["#e5e7eb", "#4b5563"];
+  return <g opacity={0.92} style={{ cursor: "grab" }}
+    onPointerDown={(event) => { event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId); onSelect("canvas_object", item.uid); }}
+    onPointerMove={(event) => {
+      if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+      const next = toWorld(event.clientX, event.clientY);
+      setDraggedPosition(next);
+      const hit = nearestWallHit(walls, next);
+      setAlignmentPoint(hit && hit.dist_m <= .35 ? hit.point : null);
+    }}
+    onPointerUp={(event) => {
+      if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+      event.currentTarget.releasePointerCapture(event.pointerId);
+      const next = toWorld(event.clientX, event.clientY);
+      setDraggedPosition(null);
+      setAlignmentPoint(null);
+      if (Math.hypot(next[0] - item.position_m![0], next[1] - item.position_m![1]) > 0.001) onMove(item, next);
+    }}
+    onPointerCancel={() => { setDraggedPosition(null); setAlignmentPoint(null); }}>
+    {type?.plan_svg ? <image href={type.plan_svg} x={x - width / 2} y={y - depth / 2} width={width} height={depth}
+      transform={`rotate(${-rotation} ${x} ${y})`} />
+      : <rect x={x - width / 2} y={y - depth / 2} width={width} height={depth}
+        fill={fill} stroke={selected ? "var(--ink)" : stroke} strokeWidth={selected ? 2.4 : 1.2}
+        transform={`rotate(${-rotation} ${x} ${y})`} />}
+    <text x={x} y={y + 3} textAnchor="middle" fontSize={9} fill="var(--ink)" pointerEvents="none">
+      {(type?.name ?? item.type ?? item.kind).replace(/^[A-Z]+-/, "")}
     </text>
+    {selected && <g>
+      <line x1={x} y1={y - depth / 2} x2={x} y2={y - depth / 2 - 18}
+        stroke="var(--ink)" strokeWidth={1.2} pointerEvents="none" />
+      <circle cx={x} cy={y - depth / 2 - 23} r={5} fill="var(--canvas-selection)" stroke="var(--ink)"
+        strokeWidth={1.2} style={{ cursor: "crosshair" }}
+        onPointerDown={(event) => {
+          event.stopPropagation();
+          event.currentTarget.setPointerCapture(event.pointerId);
+        }}
+        onPointerMove={(event) => {
+          if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+          const [worldX, worldY] = toWorld(event.clientX, event.clientY);
+          const raw = Math.atan2(worldY - position[1], worldX - position[0]) * 180 / Math.PI;
+          setDraggedRotation(event.shiftKey ? raw : Math.round(raw / 15) * 15);
+        }}
+        onPointerUp={(event) => {
+          if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+          event.currentTarget.releasePointerCapture(event.pointerId);
+          const [worldX, worldY] = toWorld(event.clientX, event.clientY);
+          const raw = Math.atan2(worldY - position[1], worldX - position[0]) * 180 / Math.PI;
+          const next = event.shiftKey ? raw : Math.round(raw / 15) * 15;
+          setDraggedRotation(null);
+          if (Math.abs(next - (item.rotation ?? 0)) > 0.01) onRotate(item, next, event.shiftKey);
+        }} />
+    </g>}
+    {alignmentPoint && draggedPosition && (() => {
+      const [ax, ay] = project(alignmentPoint);
+      return <line x1={x} y1={y} x2={ax} y2={ay} stroke={NORDIC_ACCENT}
+        strokeWidth={1.5} strokeDasharray="4 3" pointerEvents="none" />;
+    })()}
   </g>;
 }
 
@@ -1009,11 +1152,32 @@ function ClearanceOverlays({ model, storey, project, scale }: {
   project: (point: Vec2) => Vec2;
   scale: number;
 }) {
-  const items = [
+  const legacyItems = [
     ...(model.fixtures ?? []).map((item) => ({ ...item, kind: "fixture" as const })),
     ...(model.furniture ?? []).map((item) => ({ ...item, kind: "furniture" as const })),
   ].filter((item) => (!storey || item.storey === storey) && item.clearance_m);
-  return <g pointerEvents="none">{items.map((item) => {
+  const resolvedItems = (model.canvas_objects ?? []).filter((item) =>
+    (!storey || item.storey === storey) && ((item.required_clearances?.length ?? 0) > 0 || (item.recommended_clearances?.length ?? 0) > 0));
+  const openingOverlays = model.openings.filter((opening) => {
+    const host = openingHostWall(model.walls, opening);
+    return (!storey || host?.storey === storey) && ((opening.swing_clearance?.length ?? 0) > 0 ||
+      (opening.framing_bumper?.length ?? 0) > 0);
+  });
+  return <g pointerEvents="none">{resolvedItems.flatMap((item) => [
+    ...(item.required_clearances ?? []).map((polygon, index) => ({ item, polygon, required: true, index })),
+    ...(item.recommended_clearances ?? []).map((polygon, index) => ({ item, polygon, required: false, index })),
+  ]).map(({ item, polygon, required, index }) => <polygon key={`resolved-clearance-${item.uid}-${index}`}
+    points={polygon.map((point) => project(point).join(",")).join(" ")}
+    fill={required ? "var(--canvas-selection)" : "var(--canvas-wood-soft)"}
+    fillOpacity={0.22} stroke={required ? "var(--error)" : "var(--canvas-wood)"}
+    strokeDasharray="4 3" strokeWidth={required ? 1.4 : 1} />)}
+  {openingOverlays.map((opening) => <g key={`opening-overlay-${opening.uid}`}>
+    {opening.swing_clearance && <polygon points={opening.swing_clearance.map((point) => project(point).join(",")).join(" ")}
+      fill="var(--canvas-wood-soft)" fillOpacity={.22} stroke="var(--canvas-wood)" strokeDasharray="4 3" strokeWidth={1} />}
+    {opening.framing_bumper && <polygon points={opening.framing_bumper.map((point) => project(point).join(",")).join(" ")}
+      fill="none" stroke={NORDIC_ACCENT} strokeDasharray="2 2" strokeWidth={1} />}
+  </g>)}
+  {legacyItems.map((item) => {
     const [front, back, left, right] = item.clearance_m!;
     const [x, y] = project(item.position);
     const width = (item.footprint_m[0] + left + right) * scale;
@@ -1114,6 +1278,25 @@ function hostStorey(model: Model, opening: Opening): string {
   return openingHostWall(model.walls, opening)?.storey ?? "";
 }
 
+function nearestOpeningHost(walls: Wall[], storey: string, point: Vec2):
+  { wall: Wall; along_m: number; distance_m: number } | null {
+  let best: { wall: Wall; along_m: number; distance_m: number } | null = null;
+  for (const wall of walls) {
+    if (wall.storey !== storey) continue;
+    const [a, b] = wall.axis;
+    const dx = b[0] - a[0];
+    const dy = b[1] - a[1];
+    const length = Math.hypot(dx, dy);
+    if (length < 1e-9) continue;
+    const raw = ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / (length * length);
+    const t = Math.max(0, Math.min(1, raw));
+    const projected: Vec2 = [a[0] + t * dx, a[1] + t * dy];
+    const distance_m = Math.hypot(point[0] - projected[0], point[1] - projected[1]);
+    if (best === null || distance_m < best.distance_m) best = { wall, along_m: t * length, distance_m };
+  }
+  return best;
+}
+
 function WallAssemblyPopupCard({ wall, screen, viewport, onClose }: {
   wall: Wall;
   screen: Vec2;
@@ -1155,7 +1338,8 @@ function WallAssemblyPopupCard({ wall, screen, viewport, onClose }: {
   );
 }
 
-const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selected, doubleLeaf, onSelect, onEdit }: {
+const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selected, doubleLeaf, onSelect, onEdit,
+  toWorld, onMove, onPreview, onPreviewEnd, preview }: {
   o: Opening;
   host: Wall;
   project: (p: Vec2) => Vec2;
@@ -1164,6 +1348,11 @@ const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selec
   doubleLeaf?: boolean;
   onSelect: (kind: Selection["kind"], uid: string) => void;
   onEdit: (o: Opening, screen: Vec2) => void;
+  toWorld: (clientX: number, clientY: number) => Vec2;
+  onMove: (opening: Opening, host: Wall, position: Vec2) => void;
+  onPreview?: (opening: Opening, host: Wall, position: Vec2) => void;
+  onPreviewEnd?: () => void;
+  preview?: "valid" | "invalid";
 }) {
   const center = pointAlong(host, o.center_along_m);
   const [cx, cy] = project(center);
@@ -1184,8 +1373,26 @@ const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selec
   const wallArcY = hingeY - hingeDirection * 2 * dy;
   const windowTick = Math.min(6, Math.max(3, scale * 0.08));
   return (
-    <g onClick={() => onSelect("opening", o.uid)} onDoubleClick={() => onEdit(o, [cx, cy])}
-      style={{ cursor: "pointer" }}>
+    <g onClick={() => !preview && onSelect("opening", o.uid)} onDoubleClick={() => !preview && onEdit(o, [cx, cy])}
+      onPointerDown={(event) => {
+        if (preview) return;
+        event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId);
+      }}
+      onPointerMove={(event) => {
+        if (!preview) onPreview?.(o, host, toWorld(event.clientX, event.clientY));
+      }}
+      onPointerUp={(event) => {
+        if (preview) return;
+        if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+        event.currentTarget.releasePointerCapture(event.pointerId);
+        const next = toWorld(event.clientX, event.clientY);
+        onPreviewEnd?.();
+        if (Math.hypot(next[0] - center[0], next[1] - center[1]) > 0.001) onMove(o, host, next);
+      }}
+      onPointerCancel={() => !preview && onPreviewEnd?.()}
+      pointerEvents={preview ? "none" : undefined}
+      opacity={preview ? .65 : 1}
+      style={{ cursor: preview ? undefined : "pointer" }}>
       <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
         stroke={selected ? NORDIC_ACCENT : "var(--canvas-white)"} strokeWidth={selected ? 6 : 5} />
       <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
@@ -1224,6 +1431,8 @@ const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selec
           style={{ paintOrder: "stroke", stroke: "var(--canvas-white)", strokeWidth: 3 }}>{o.tag}</text>
       </>}
       {selected && <circle cx={cx} cy={cy} r={5} fill={NORDIC_ACCENT} />}
+      {preview && <circle cx={cx} cy={cy} r={Math.max(6, scale * .08)} fill="none"
+        stroke={preview === "valid" ? "var(--success)" : "var(--error)"} strokeWidth={2} />}
     </g>
   );
 });

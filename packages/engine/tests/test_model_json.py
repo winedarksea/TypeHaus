@@ -80,6 +80,12 @@ def test_opening_kind_serializes_all_interchange_categories(catlin_model):
     assert rough["is_door"] is False
 
 
+def test_openings_serialize_swing_and_framing_overlays(catlin_payload):
+    door = next(opening for opening in catlin_payload["openings"] if opening["is_door"])
+    assert len(door["swing_clearance"]) == 10
+    assert len(door["framing_bumper"]) == 4
+
+
 def test_site_context_serializes_grade_parcel_and_spot_elevations(catlin_payload):
     site = catlin_payload["site"]
     assert {"grade_m", "parcel", "spot_elevations"} <= site.keys()
@@ -87,3 +93,7 @@ def test_site_context_serializes_grade_parcel_and_spot_elevations(catlin_payload
     assert isinstance(site["parcel"], list)
     assert all(set(spot) == {"position", "elevation_m"}
                for spot in site["spot_elevations"])
+
+
+def test_project_serializes_the_active_clearance_code_profile(catlin_payload):
+    assert "active_code_profile" in catlin_payload["project"]

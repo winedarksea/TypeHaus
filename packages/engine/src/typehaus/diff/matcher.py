@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
 
 from typehaus.diff.model import DiffElem
@@ -36,12 +37,19 @@ def match_elements(baseline: list[DiffElem], external: list[DiffElem]) -> list[M
     """Match two element sets. Order: GlobalId keys, then Hungarian over the leftovers."""
     matches: list[Match] = []
     by_gid = {e.global_id: e for e in external if e.global_id}
+    baseline_guid_counts = Counter(e.global_id for e in baseline if e.global_id)
+    external_guid_counts = Counter(e.global_id for e in external if e.global_id)
     used_ext: set[int] = set()
 
     # 1. Key by GlobalId (survives tools that preserve GUIDs; identity is the immutable uid).
     unkeyed_base: list[DiffElem] = []
     for b in baseline:
-        ext = by_gid.get(b.global_id) if b.global_id else None
+        # Empty/legacy source UIDs can derive the same GlobalId for multiple elements.
+        # Treat a duplicate as unkeyed; a geometric match is safer than silently pairing
+        # unrelated occurrences based on an invalid non-unique IFC identifier.
+        ext = (by_gid.get(b.global_id) if b.global_id
+               and baseline_guid_counts[b.global_id] == 1
+               and external_guid_counts[b.global_id] == 1 else None)
         if ext is not None:
             matches.append(Match(b, ext, keyed=True, cost=_pair_cost(b, ext)))
             used_ext.add(id(ext))

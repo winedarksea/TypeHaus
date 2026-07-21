@@ -204,6 +204,16 @@ def create_app(house_dir: Path) -> Any:
             return JSONResponse({"error": "underlay file not found"}, status_code=404)
         return FileResponse(candidate)
 
+    @app.get("/asset/{asset_path:path}")
+    def get_placeable_asset(asset_path: str) -> Any:
+        """Serve only project-local imported visual assets, never arbitrary house files."""
+        roots = ((state.house_dir / "assets" / "placeables").resolve(),
+                 (state.house_dir / "furniture" / "meshes").resolve())
+        candidate = (state.house_dir / asset_path).resolve()
+        if not any(root in candidate.parents for root in roots) or not candidate.is_file():
+            return JSONResponse({"error": "asset not found"}, status_code=404)
+        return FileResponse(candidate)
+
     @app.put("/underlays/calibrate")
     async def calibrate_underlay(body: dict[str, Any]) -> Any:
         """Persist a view-only underlay transform without touching authored plan geometry."""
@@ -297,10 +307,22 @@ async def _watch(state: ProjectState, bus: EventBus) -> None:
     """Watch plan source; on an external edit, seal the journal, rebuild, and notify (< 2 s)."""
     from watchfiles import awatch
 
-    plan_dir = state.house_dir / "plan"
-    async for _changes in awatch(plan_dir):
+    # Watch the stable house root rather than only an already-existing assets directory.
+    # The event filter below excludes `out/` and other runtime byproducts, while allowing
+    # the very first confirmed catalog import to create assets/placeables.json after serve.
+    async for changes in awatch(state.house_dir):
+        if not any(_is_project_source_change(state.house_dir, Path(path)) for _kind, path in changes):
+            continue
         if state.coordinator.check_external_edit():
             state.rebuild()
             await bus.broadcast({"type": "file-changed",
                                  "revision": state.revision(),
                                  "ok": state.ok})
+
+
+def _is_project_source_change(house_dir: Path, path: Path) -> bool:
+    try:
+        relative = path.resolve().relative_to(house_dir.resolve())
+    except ValueError:
+        return False
+    return relative.parts[:1] in {("plan",), ("assets",)}

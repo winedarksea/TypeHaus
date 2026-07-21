@@ -7,6 +7,7 @@ from typehaus.resolve.model import (
     FramedMember,
     ResolvedLayer,
     ResolvedFloorHeat,
+    ResolvedCanvasObject,
     ResolvedModel,
     ResolvedOpening,
     ResolvedRoom,
@@ -20,6 +21,6 @@ from typehaus.resolve.pipeline import resolve, resolve_preview
 
 __all__ = [
     "resolve", "resolve_preview", "ResolvedModel", "ResolvedWall", "ResolvedLayer", "ResolvedOpening",
-    "ResolvedRoom", "ResolvedSolid", "ResolvedRoof", "ResolvedStair", "ResolvedFloorHeat", "FramedMember",
+    "ResolvedRoom", "ResolvedSolid", "ResolvedRoof", "ResolvedStair", "ResolvedFloorHeat", "ResolvedCanvasObject", "FramedMember",
     "BoundaryCondition", "StackEdge",
 ]

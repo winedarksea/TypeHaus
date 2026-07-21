@@ -84,21 +84,25 @@ def emit_wall(
             ))
 
 
-def emit_fixtures(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
-    """Draw typed fixture footprints; the schedule and service data share type refs."""
-    fixture_types = {item.tag: item for item in model.plan.library.fixture_types}
-    for fixture in (element for element in model.plan.storey_elements(storey)
-                    if element.element_kind == "Fixture"):
-        fixture_type = fixture_types.get(fixture.type_ref)
-        if fixture_type is None:
+def emit_fixtures(b: SceneBuilder, model: ResolvedModel, storey: str,
+                  domains: frozenset[str] | None = None) -> None:
+    """Draw resolved placeable polygons when detailed SVG cannot safely enter technical output.
+
+    The drawing IR deliberately stays vector-primitive-only.  Using resolver geometry keeps
+    rotation, wall attachment, custom footprint shapes, and imported products consistent
+    with canvas/IFC without attempting to embed arbitrary third-party SVG into PDF or DXF.
+    """
+    layers = {"furniture": "A-FURN", "plumbing": "A-FIXT", "appliance": "A-FIXT",
+              "mechanical": "M-EQPT", "electrical": "E-POWR"}
+    for item in model.canvas_objects:
+        if item.storey != storey or (domains is not None and item.domain not in domains):
             continue
-        width, depth = (dimension.meters for dimension in fixture_type.footprint)
-        x, y = fixture.position.xy_m
-        outline = ((x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
-                   (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2))
-        b.add(Polyline(points=tuple(to_in(point) for point in outline), layer="A-FIXT",
-                       closed=True, lineweight=0.25, uid=fixture.uid, tag=fixture.tag))
-        b.add(Text(anchor=to_in((x, y)), content=fixture.type_ref.removeprefix("FX-"),
+        if len(item.footprint) < 3:
+            continue
+        b.add(Polyline(points=tuple(to_in(point) for point in item.footprint),
+                       layer=layers.get(item.domain, "A-FIXT"), closed=True, lineweight=0.25,
+                       uid=item.uid, tag=item.tag))
+        b.add(Text(anchor=to_in(item.position), content=item.type_ref or item.tag,
                    height=2.0, layer="A-ANNO-TEXT", align="center"))
 
 

@@ -78,6 +78,12 @@ def _content_hash(house_dir: Path) -> str:
     for p in sorted((house_dir / "plan").rglob("*.py")):
         h.update(p.relative_to(house_dir).as_posix().encode())
         h.update(p.read_bytes())
+    # Project-local catalog data changes resolution and must therefore invalidate the
+    # same optimistic-concurrency revision as authored Python source.
+    placeables = house_dir / "assets" / "placeables.json"
+    if placeables.exists():
+        h.update(placeables.relative_to(house_dir).as_posix().encode())
+        h.update(placeables.read_bytes())
     return h.hexdigest()[:16]
 
 
@@ -153,8 +159,10 @@ def load_plan(house_dir: Path) -> LoadResult:
     plan = _import_manifest(house_dir, findings)
     if plan is not None:
         from typehaus.source.imported_furniture import load_imported_furniture
+        from typehaus.source.placeables import load_project_placeables
 
         plan = load_imported_furniture(house_dir, plan, findings)
+        plan = load_project_placeables(house_dir, plan, findings)
     timings["import"] = (time.perf_counter() - t0) * 1000.0
 
     t0 = time.perf_counter()

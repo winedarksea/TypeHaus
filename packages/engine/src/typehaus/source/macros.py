@@ -14,22 +14,30 @@ from __future__ import annotations
 
 from typing import Union
 
-from typehaus.model.elements import Door, Node, Wall, Window
+from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
 from typehaus.model.enums import Occupancy
 from typehaus.model.plan import PlanModel
 from typehaus.model.refs import from_node
 from typehaus.model.remap import MutationResult, ReferenceRemap, remap_ops_for
-from typehaus.model.spatial import Room
-from typehaus.quantities import Length
+from typehaus.model.spatial import Appliance, Fixture, Furniture, Room
+from typehaus.model.mep import ElectricalDevice, Equipment, Register
+from typehaus.model.enums import DeviceKind, DuctSystem, EquipmentKind
+from typehaus.quantities import Length, deg
 from typehaus.quantities.length import ft, m
 from typehaus.quantities.point import pt
-from typehaus.source.ops import PatchOp, RawExpr
+from typehaus.source.ops import DELETE_FIELD, PatchOp, RawExpr
 from typehaus.source.serialize import element_add_op
 
 # Node coincidence tolerance — nodes closer than this fuse (T-junction heal), in meters.
 SNAP_M = 0.02
+# Product rotations default to the same 15° increment in every canvas adapter. The explicit
+# macro flag keeps free rotation intentional rather than an accidental floating-point drift.
+ROTATION_SNAP_DEGREES = 15.0
 # Collinearity tolerance for heal/merge (cross-product of unit axes), dimensionless.
 COLLINEAR_TOL = 1e-3
+# Room faces resolve at finish surfaces while authored nodes lie on wall axes.  This is the
+# maximum practical finish/half-wall offset for identifying a room's boundary graph.
+ROOM_BOUNDARY_NODE_TOLERANCE_M = 0.35
 
 XY = tuple[Union[float, str], Union[float, str]]
 
@@ -70,6 +78,17 @@ def _next_tag(existing: list, prefix: str) -> str:
     while n in used:
         n += 1
     return f"{prefix}{n}"
+
+
+def _copy_tag(plan: PlanModel, source_tag: str) -> str:
+    """Return a readable unused duplicate tag without changing the original identity."""
+    used = {item.tag for storey in plan.storeys for item in plan.storey_elements(storey.tag)}
+    candidate = f"{source_tag}-COPY"
+    index = 2
+    while candidate in used:
+        candidate = f"{source_tag}-COPY-{index}"
+        index += 1
+    return candidate
 
 
 def _find_node_near(plan: PlanModel, storey: str, xy_m: tuple[float, float]) -> Node | None:
@@ -187,12 +206,31 @@ def place_opening(
             tag=new_tag, host=host, type_ref=type_ref, position=position,
             sill_height=_as_length(sill) if sill is not None else ft(3),
         )
+    _validate_opening_station(plan, storey, element, wall, offset)
     op = element_add_op(element, tag=new_tag, hint_list="OPENINGS", hint_file=hint_file)
     # OpeningPosition is authored through its `from_node(...)` helper, not the bare model
     # constructor (which the plan dialect deliberately doesn't allow, → 10 §dialect).
     op.fields["position"] = RawExpr(
         f'from_node("{wall.start_node}", {offset.to_source()})'
     )
+    return MutationResult(ops=[op])
+
+
+def place_rough_opening(plan: PlanModel, storey: str, *, host: str, width: float | str,
+                        height: float | str, along: float | str, sill: float | str | None = None,
+                        hint_file: str | None = None, tag: str | None = None) -> MutationResult:
+    """Place a bare framed opening with the same host and conflict checks as products."""
+    wall = next((item for item in _walls(plan, storey) if item.tag == host), None)
+    if wall is None:
+        raise MacroError(f"no wall {host!r} on storey {storey!r}")
+    offset, opening_width, opening_height = _as_length(along), _as_length(width), _as_length(height)
+    new_tag = tag or _next_tag(_openings(plan, storey), "RO-")
+    element = RoughOpening(tag=new_tag, host=host, position=from_node(wall.start_node, offset),
+                           width=opening_width, height=opening_height,
+                           sill_height=_as_length(sill) if sill is not None else m(0))
+    _validate_opening_station(plan, storey, element, wall, offset)
+    op = element_add_op(element, tag=new_tag, hint_list="OPENINGS", hint_file=hint_file)
+    op.fields["position"] = RawExpr(f'from_node("{wall.start_node}", {offset.to_source()})')
     return MutationResult(ops=[op])
 
 
@@ -216,10 +254,69 @@ def move_opening(
     if wall is None:
         raise MacroError(f"opening {tag!r} hosts on missing wall {opening.host!r}")
     offset = _as_length(along)
+    _validate_opening_station(plan, storey, opening, wall, offset, ignore_tag=opening.tag)
     return MutationResult(ops=[PatchOp(
         "update", opening.element_kind, tag,
         {"position": RawExpr(f'from_node("{wall.start_node}", {offset.to_source()})')},
     )])
+
+
+def rehost_opening(plan: PlanModel, storey: str, *, tag: str, host: str,
+                   along: float | str) -> MutationResult:
+    """Atomically move an opening onto another compatible wall while retaining its UID."""
+    opening = next((item for item in _openings(plan, storey) if item.tag == tag), None)
+    if opening is None:
+        raise MacroError(f"no opening {tag!r} on storey {storey!r}")
+    target = next((item for item in _walls(plan, storey) if item.tag == host), None)
+    if target is None:
+        raise MacroError(f"no wall {host!r} on storey {storey!r}")
+    offset = _as_length(along)
+    _validate_opening_station(plan, storey, opening, target, offset, ignore_tag=opening.tag)
+    return MutationResult(ops=[PatchOp("update", opening.element_kind, tag, {
+        "host": host,
+        "position": RawExpr(f'from_node("{target.start_node}", {offset.to_source()})'),
+    })])
+
+
+def _opening_width(plan: PlanModel, opening: object) -> float:
+    if isinstance(opening, Door):
+        item = next((candidate for candidate in plan.library.door_types if candidate.tag == opening.type_ref), None)
+    elif isinstance(opening, Window):
+        item = next((candidate for candidate in plan.library.window_types if candidate.tag == opening.type_ref), None)
+    else:
+        return float(getattr(opening, "width").meters)
+    if item is None:
+        raise MacroError(f"opening {opening.tag!r} references missing type")
+    return item.width.meters
+
+
+def _validate_opening_station(plan: PlanModel, storey: str, opening: object, wall: object,
+                              offset: object, ignore_tag: str | None = None) -> None:
+    """Reject out-of-bounds or overlapping host stations before an opening patch exists."""
+    start = next((item for item in _nodes(plan, storey) if item.tag == wall.start_node), None)
+    end = next((item for item in _nodes(plan, storey) if item.tag == wall.end_node), None)
+    if start is None or end is None:
+        raise MacroError(f"wall {wall.tag!r} has unresolved endpoints")
+    length_m = ((start.position.x.meters - end.position.x.meters) ** 2 +
+                (start.position.y.meters - end.position.y.meters) ** 2) ** 0.5
+    if offset.meters < 0 or offset.meters + _opening_width(plan, opening) > length_m + 1e-9:
+        raise MacroError(f"opening {opening.tag!r} does not fit on wall {wall.tag!r}")
+    candidate_end = offset.meters + _opening_width(plan, opening)
+    for peer in _openings(plan, storey):
+        if peer.tag == ignore_tag or peer.host != wall.tag:
+            continue
+        peer_width = _opening_width(plan, peer)
+        peer_start = _opening_start_offset(peer, wall, length_m, peer_width)
+        if offset.meters < peer_start + peer_width - 1e-9 and candidate_end > peer_start + 1e-9:
+            raise MacroError(f"opening {opening.tag!r} conflicts with {peer.tag!r} on wall {wall.tag!r}")
+
+
+def _opening_start_offset(opening: object, wall: object, wall_length_m: float, width_m: float) -> float:
+    position = opening.position
+    if position.mode == "centered":
+        return (wall_length_m - width_m) / 2
+    offset = position.offset.meters if position.offset is not None else 0.0
+    return wall_length_m - offset - width_m if position.node == wall.end_node else offset
 
 
 def place_room(
@@ -250,6 +347,184 @@ def place_room(
     return MutationResult(ops=[op])
 
 
+# --- shared placeable editing ------------------------------------------------
+
+_PLACEABLE_KINDS = (Furniture, Fixture, Appliance, Equipment, Register, ElectricalDevice)
+
+
+def _placeable(plan: PlanModel, storey: str, tag: str):
+    return next((item for item in plan.storey_elements(storey)
+                 if isinstance(item, _PLACEABLE_KINDS) and item.tag == tag), None)
+
+
+def move_placeable(plan: PlanModel, storey: str, *, tag: str, position: XY) -> MutationResult:
+    """Move a free object and persist the room containing its new footprint center."""
+    item = _placeable(plan, storey, tag)
+    if item is None:
+        raise MacroError(f"no placeable {tag!r} on storey {storey!r}")
+    x, y = _meters(position[0]), _meters(position[1])
+    return MutationResult(ops=[PatchOp("update", item.element_kind, tag, {
+        "position": _point_expr(position[0], position[1]), "location": DELETE_FIELD,
+        "room": _containing_room(plan, storey, (x, y)),
+    })])
+
+
+def rotate_placeable(plan: PlanModel, storey: str, *, tag: str, degrees: float,
+                     free_rotation: bool = False) -> MutationResult:
+    item = _placeable(plan, storey, tag)
+    if item is None:
+        raise MacroError(f"no placeable {tag!r} on storey {storey!r}")
+    resolved_degrees = float(degrees) if free_rotation else round(float(degrees) / ROTATION_SNAP_DEGREES) * ROTATION_SNAP_DEGREES
+    return MutationResult(ops=[PatchOp("update", item.element_kind, tag,
+                                       {"rotation": RawExpr(deg(resolved_degrees).to_source())})])
+
+
+def attach_placeable(plan: PlanModel, storey: str, *, tag: str, wall: str, face: str,
+                     distance: float | str, gap: float | str = 0,
+                     rotation_offset: float = 0) -> MutationResult:
+    item = _placeable(plan, storey, tag)
+    if item is None:
+        raise MacroError(f"no placeable {tag!r} on storey {storey!r}")
+    if face not in {"left", "right"}:
+        raise MacroError("attachment face must be 'left' or 'right'")
+    if not any(candidate.tag == wall for candidate in _walls(plan, storey)):
+        raise MacroError(f"no wall {wall!r} on storey {storey!r}")
+    d, normal_gap = _as_length(distance), _as_length(gap)
+    location = (f'Location(attachment=WallAttachment(wall_ref="{wall}", face="{face}", '
+                f'distance_from_start={d.to_source()}, normal_gap={normal_gap.to_source()}, '
+                f'rotation_offset={deg(rotation_offset).to_source()}))')
+    return MutationResult(ops=[PatchOp("update", item.element_kind, tag,
+                                       {"location": RawExpr(location)})])
+
+
+def detach_placeable(plan: PlanModel, storey: str, *, tag: str,
+                     position: XY | None = None) -> MutationResult:
+    item = _placeable(plan, storey, tag)
+    if item is None:
+        raise MacroError(f"no placeable {tag!r} on storey {storey!r}")
+    fields: dict[str, object] = {"location": DELETE_FIELD}
+    if position is not None:
+        fields["position"] = _point_expr(position[0], position[1])
+        fields["room"] = _containing_room(plan, storey, (_meters(position[0]), _meters(position[1])))
+    return MutationResult(ops=[PatchOp("update", item.element_kind, tag, fields)])
+
+
+def assign_placeable_room(plan: PlanModel, storey: str, *, tag: str,
+                          room: str | None) -> MutationResult:
+    """Set or clear the explicit room claim; geometry containment remains resolver-owned."""
+    item = _placeable(plan, storey, tag)
+    if item is None:
+        raise MacroError(f"no placeable {tag!r} on storey {storey!r}")
+    if room is not None and not any(candidate.tag == room for candidate in _rooms(plan, storey)):
+        raise MacroError(f"no room {room!r} on storey {storey!r}")
+    return MutationResult(ops=[PatchOp("update", item.element_kind, tag, {"room": room})])
+
+
+def duplicate_canvas_object(plan: PlanModel, storey: str, *, tag: str) -> MutationResult:
+    """Duplicate a canvas instance through the same source-backed macro path as placement.
+
+    New instances deliberately receive a fresh mutable tag/UID.  Free placeables are offset
+    by one foot so the duplicate is immediately visible; hosted openings seek the next
+    non-overlapping station on their existing wall.
+    """
+    placeable = _placeable(plan, storey, tag)
+    if placeable is not None:
+        if placeable.type_ref is None:
+            raise MacroError(f"placeable {tag!r} has no catalog type")
+        x, y = placeable.position.xy_m
+        return place_placeable(plan, storey, type_ref=placeable.type_ref,
+                               position=(x + 0.3048, y + 0.3048), tag=_copy_tag(plan, tag),
+                               kind=getattr(getattr(placeable, "kind", None), "value", None))
+    opening = next((item for item in _openings(plan, storey) if item.tag == tag), None)
+    if opening is None:
+        raise MacroError(f"no canvas object {tag!r} on storey {storey!r}")
+    wall = next((item for item in _walls(plan, storey) if item.tag == opening.host), None)
+    if wall is None:
+        raise MacroError(f"opening {tag!r} hosts on missing wall {opening.host!r}")
+    start = next((item for item in _nodes(plan, storey) if item.tag == wall.start_node), None)
+    end = next((item for item in _nodes(plan, storey) if item.tag == wall.end_node), None)
+    if start is None or end is None:
+        raise MacroError(f"wall {wall.tag!r} has unresolved endpoints")
+    length = ((start.position.x.meters - end.position.x.meters) ** 2 +
+              (start.position.y.meters - end.position.y.meters) ** 2) ** .5
+    width = _opening_width(plan, opening)
+    original = _opening_start_offset(opening, wall, length, width)
+    for station in (original + width + .1524, original - width - .1524):
+        try:
+            if isinstance(opening, RoughOpening):
+                copied = RoughOpening(tag=_copy_tag(plan, tag), host=wall.tag,
+                                      position=from_node(wall.start_node, m(station)),
+                                      width=opening.width, height=opening.height,
+                                      sill_height=opening.sill_height, arch=opening.arch)
+                _validate_opening_station(plan, storey, copied, wall, m(station))
+                op = element_add_op(copied, tag=copied.tag, hint_list="OPENINGS")
+                op.fields["position"] = RawExpr(f'from_node("{wall.start_node}", {m(station).to_source()})')
+                return MutationResult(ops=[op])
+            return place_opening(plan, storey, host=wall.tag, type_ref=opening.type_ref,
+                                 along=station, is_door=isinstance(opening, Door),
+                                 sill=opening.sill_height.meters if opening.sill_height is not None else None,
+                                 tag=_copy_tag(plan, tag))
+        except MacroError as exc:
+            if "does not fit" not in str(exc) and "conflicts" not in str(exc):
+                raise
+    raise MacroError(f"no non-overlapping station available to duplicate opening {tag!r}")
+
+
+def place_placeable(plan: PlanModel, storey: str, *, type_ref: str, position: XY,
+                    hint_file: str | None = None, tag: str | None = None,
+                    kind: str | None = None) -> MutationResult:
+    """Instantiate a catalog type at a project position through the ordinary undo journal."""
+    x, y = _as_length(position[0]), _as_length(position[1])
+    collection_map = (
+        ("furniture_types", Furniture, "FURNITURE", "F-"),
+        ("fixture_types", Fixture, "FIXTURES", "FX-"),
+        ("appliance_types", Appliance, "APPLIANCES", "APPL-"),
+        ("equipment_types", Equipment, "EQUIPMENT", "EQ-"),
+        ("register_types", Register, "REGISTERS", "REG-"),
+        ("electrical_device_types", ElectricalDevice, "DEVICES", "ED-"),
+    )
+    selected = next(((cls, list_name, prefix) for collection, cls, list_name, prefix in collection_map
+                     if any(product.tag == type_ref for product in getattr(plan.library, collection))), None)
+    if selected is None:
+        raise MacroError(f"unknown placeable type {type_ref!r}")
+    cls, list_name, prefix = selected
+    # Project source owns a mixed editable placeables list for each storey.  Keeping all
+    # product domains together lets an imported appliance/device use the same journal path.
+    list_name = f"{storey.upper()}_PLACEABLES"
+    new_tag = tag or _next_tag(list(plan.storey_elements(storey)), prefix)
+    common = {"tag": new_tag, "type_ref": type_ref, "position": pt(x, y),
+              "room": _containing_room(plan, storey, (x.meters, y.meters))}
+    if cls is Equipment:
+        item = Equipment(**common, kind=EquipmentKind(kind or EquipmentKind.FURNACE.value), footprint=(ft(2), ft(2)))
+    elif cls is Register:
+        item = Register(**common, kind=DuctSystem(kind or DuctSystem.SUPPLY.value))
+    elif cls is ElectricalDevice:
+        item = ElectricalDevice(**common, kind=DeviceKind(kind or DeviceKind.RECEPTACLE.value))
+    else:
+        item = cls(**common)
+    return MutationResult(ops=[element_add_op(item, tag=new_tag, hint_list=list_name,
+                                               hint_file=hint_file)])
+
+
+def _containing_room(plan: PlanModel, storey: str, position: tuple[float, float]) -> str | None:
+    """Resolve room faces once at the mutation edge so authored assignment follows a drag.
+
+    A room seed alone is not a boundary, so this deliberately uses the same resolver as the
+    canvas.  If a partially authored plan cannot resolve, leaving the claim empty is safer
+    than retaining a now-wrong previous room assignment; the normal resolver then reports
+    any topology problem as its own finding.
+    """
+    try:
+        from shapely.geometry import Point, Polygon
+        from typehaus.resolve import resolve
+
+        model, _ = resolve(plan)
+        return next((room.tag for room in model.rooms if room.storey == storey and
+                     Polygon(room.clear_face).covers(Point(position))), None)
+    except Exception:  # noqa: BLE001 - macros must remain usable while a plan is mid-edit
+        return None
+
+
 # --- rubber-band stretch -----------------------------------------------------
 
 def move_nodes(
@@ -277,8 +552,48 @@ def move_nodes(
         px, py = nd.position.xy_m
         ops.append(PatchOp("update", "Node", tag,
                            {"position": _point_expr_m(px + dxm, py + dym)}))
+    # A completed room-boundary translation is a rigid move; a partial boundary selection
+    # is a resize and intentionally leaves contents at their project coordinates.
+    translated_rooms = _rooms_with_moved_boundaries(plan, storey, set(movable))
+    for room in _rooms(plan, storey):
+        if room.tag not in translated_rooms:
+            continue
+        x, y = room.seed.xy_m
+        ops.append(PatchOp("update", "Room", room.tag,
+                           {"seed": _point_expr_m(x + dxm, y + dym)}))
+    for item in plan.storey_elements(storey):
+        if not isinstance(item, _PLACEABLE_KINDS) or getattr(item, "room", None) not in translated_rooms:
+            continue
+        location = getattr(item, "location", None)
+        if location is not None and location.attachment is not None:
+            continue
+        x, y = item.position.xy_m
+        ops.append(PatchOp("update", item.element_kind, item.tag,
+                           {"position": _point_expr_m(x + dxm, y + dym)}))
     warnings = (f"pinned nodes held: {', '.join(pinned)}",) if pinned else ()
     return MutationResult(ops=ops, warnings=warnings)
+
+
+def _rooms_with_moved_boundaries(plan: PlanModel, storey: str, moved_nodes: set[str]) -> set[str]:
+    """Return rooms whose complete authored boundary node set participates in this move."""
+    try:
+        from shapely.geometry import Point, Polygon
+        from typehaus.resolve import resolve
+
+        model, _ = resolve(plan)
+        nodes = _nodes(plan, storey)
+        translated: set[str] = set()
+        for room in model.rooms:
+            if room.storey != storey or len(room.clear_face) < 3:
+                continue
+            boundary = Polygon(room.clear_face).boundary
+            boundary_nodes = {node.tag for node in nodes
+                              if boundary.distance(Point(node.position.xy_m)) <= ROOM_BOUNDARY_NODE_TOLERANCE_M}
+            if boundary_nodes and boundary_nodes <= moved_nodes:
+                translated.add(room.tag)
+        return translated
+    except Exception:  # noqa: BLE001 - a half-authored room must not make node edits fail
+        return set()
 
 
 def _point_expr_m(x_m: float, y_m: float) -> RawExpr:

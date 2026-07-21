@@ -69,6 +69,16 @@ def test_replace_detection(baseline):
     assert replaced[0].was_tag == "W-101"
 
 
+def test_rotation_and_rehost_are_explicit_reconciliation_categories():
+    original = DiffElem(global_id="stable", tag="D-1", ifc_class="IfcDoor", storey="main",
+                        centroid=(0, 0, 1), bbox=(1, .1, 2), axis_dir=(0, 0),
+                        attrs={"host_wall": "W-1", "rotation_degrees": "0.000000"})
+    rotated = dataclasses.replace(original, attrs={**original.attrs, "rotation_degrees": "15.000000"})
+    assert build_report([original], [rotated]).changes[0].kind is ChangeKind.ROTATED
+    rehosted = dataclasses.replace(original, attrs={**original.attrs, "host_wall": "W-2"})
+    assert build_report([original], [rehosted]).changes[0].kind is ChangeKind.REHOSTED
+
+
 def test_diff_json_is_deterministic(baseline):
     ext = [dataclasses.replace(e) for e in baseline if e.tag != "W-103"]
     report = build_report(baseline, ext)

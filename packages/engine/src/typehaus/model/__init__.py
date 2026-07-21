@@ -89,6 +89,7 @@ from typehaus.model.spatial import (
     Alarm,
     Fixture,
     Furniture,
+    Appliance,
     GridAxis,
     Roof,
     Room,
@@ -97,10 +98,18 @@ from typehaus.model.spatial import (
 )
 from typehaus.model.types import (
     DoorType,
+    ApplianceType,
+    ElectricalDeviceType,
+    EquipmentType,
     FixtureType,
     FurnitureType,
     MeshRef,
     WindowType,
+    RegisterType,
+)
+from typehaus.model.placeables import (
+    ClearancePolicy, ClearanceZone, Footprint2D, Location, ModelRepresentation, Mount,
+    MountKind, PlacementStrategy, PlanRepresentation, ServicePort, WallAttachment,
 )
 from typehaus.model.views import (
     Continuity,
@@ -147,6 +156,9 @@ for _name, _obj in (
     ("in_slab", in_slab), ("under_subfloor", under_subfloor),
     ("ToRoof", ToRoof), ("FollowRoof", FollowRoof), ("Arch", Arch),
     ("Library", Library), ("PlanModel", PlanModel),
+    ("Footprint2D", Footprint2D), ("ClearanceZone", ClearanceZone), ("ServicePort", ServicePort),
+    ("PlanRepresentation", PlanRepresentation), ("ModelRepresentation", ModelRepresentation),
+    ("Location", Location), ("WallAttachment", WallAttachment), ("Mount", Mount),
 ):
     register_constructor(_name, _obj)
 
@@ -157,10 +169,11 @@ __all__ = [
     "FoundationWall", "Footing", "Pad", "FootingBedding", "Post", "Beam",
     "Assembly", "Layer", "CavityFill", "FramingSpec", "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material",
-    "DoorType", "WindowType", "FurnitureType", "FixtureType", "MeshRef",
+    "DoorType", "WindowType", "FurnitureType", "FixtureType", "ApplianceType", "EquipmentType",
+    "RegisterType", "ElectricalDeviceType", "MeshRef",
     "JoistSpec", "DeckLayer", "FloorSystem", "FloorOpening", "Slab", "Soffit",
     "FloorHeat", "FinishZone",
-    "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture",
+    "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",
     "WallLiningException",
     "Slice", "Transition", "Continuity", "ExaggerationSpec",
@@ -174,6 +187,8 @@ __all__ = [
     "StructuralRole", "SliceKind", "FloorOpeningPurpose", "RadiantSystem",
     "PartitionLayout", "RoofForm", "ConditionKind",
     "PipeSystem", "DuctSystem", "DuctRouting", "EquipmentKind", "DeviceKind", "UtilityKind",
+    "PlacementStrategy", "MountKind", "ClearancePolicy", "Footprint2D", "ClearanceZone",
+    "ServicePort", "PlanRepresentation", "ModelRepresentation", "Location", "WallAttachment", "Mount",
     "Length", "Area", "Angle", "Pitch", "RValue", "UFactor", "Temperature", "Point2D",
     "ft", "inch", "mm", "m", "deg", "rad", "sqft", "sqm", "r_us", "rsi", "u_us",
     "degC", "degF", "pt",

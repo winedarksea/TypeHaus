@@ -10,7 +10,8 @@ from typehaus.model.assembly import Assembly, ConstructionRule
 from typehaus.model.base import Element, HausModel
 from typehaus.model.materials import Material
 from typehaus.model.project import Project, Storey
-from typehaus.model.types import DoorType, FixtureType, FurnitureType, WindowType
+from typehaus.model.types import (ApplianceType, DoorType, ElectricalDeviceType, EquipmentType,
+                                  FixtureType, FurnitureType, RegisterType, WindowType)
 from typehaus.model.views import Transition
 
 
@@ -23,6 +24,10 @@ class Library(HausModel):
     window_types: tuple[WindowType, ...] = ()
     furniture_types: tuple[FurnitureType, ...] = ()
     fixture_types: tuple[FixtureType, ...] = ()
+    appliance_types: tuple[ApplianceType, ...] = ()
+    equipment_types: tuple[EquipmentType, ...] = ()
+    register_types: tuple[RegisterType, ...] = ()
+    electrical_device_types: tuple[ElectricalDeviceType, ...] = ()
     transitions: tuple[Transition, ...] = ()
     construction_rules: tuple[ConstructionRule, ...] = ()
 

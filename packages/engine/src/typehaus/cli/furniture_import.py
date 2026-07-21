@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 
 from typehaus.model.ids import new_uid
+from typehaus.source.placeable_import import analyze_placeable_asset
 
 
 def import_furniture_mesh(source: Path, house_dir: Path, *, tag: str | None = None,
@@ -21,6 +22,7 @@ def import_furniture_mesh(source: Path, house_dir: Path, *, tag: str | None = No
     object.
     """
     source = source.resolve()
+    analysis = analyze_placeable_asset(source)
     if source.suffix.lower() not in {".glb", ".gltf", ".dae"}:
         raise ValueError("furniture import accepts .glb, .gltf, or .dae")
     if not source.is_file():
@@ -55,6 +57,7 @@ def import_furniture_mesh(source: Path, house_dir: Path, *, tag: str | None = No
         "storage": storage,
         "mesh": mesh_rel.as_posix(),
         "source": f"House-local import from {source.name}; verify redistribution rights before library promotion.",
+        "content_hash": analysis.content_hash,
     }
     catalog["types"].append(record)
     instance: dict[str, object] | None = None

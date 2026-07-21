@@ -114,6 +114,8 @@ class ResolvedOpening:
     # bare rough void from a window for IFC and visualization consumers.
     kind: str  # "door" | "window" | "rough_opening"
     is_door: bool
+    swing_clearance: Ring = ()
+    framing_bumper: Ring = ()
 
 
 @dataclass(frozen=True)
@@ -302,6 +304,27 @@ class StackEdge:
     width_change: bool
 
 
+@dataclass(frozen=True)
+class ResolvedCanvasObject:
+    """Resolved physical-space geometry for a free or wall-attached placeable."""
+
+    uid: str
+    tag: str
+    storey: str
+    domain: str
+    kind: str
+    type_ref: str | None
+    room: str | None
+    position: tuple[float, float]
+    z_m: float
+    rotation_degrees: float
+    footprint: Ring
+    required_clearances: tuple[Ring, ...] = ()
+    recommended_clearances: tuple[Ring, ...] = ()
+    attachment_wall: str | None = None
+    attachment_face: str | None = None
+
+
 @dataclass
 class ResolvedModel:
     plan: PlanModel
@@ -319,6 +342,7 @@ class ResolvedModel:
     sleeves: list[ResolvedSleeve] = field(default_factory=list)
     ducts: list[ResolvedDuct] = field(default_factory=list)
     footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)
+    canvas_objects: list[ResolvedCanvasObject] = field(default_factory=list)
     # Per-stage resolve timings in milliseconds (Phase 0 instrumentation). Not serialized
     # as source; surfaced to the UI via the `perf` payload for measurement, not correctness.
     timings: dict[str, float] = field(default_factory=dict)

@@ -7,6 +7,7 @@ rooms → vertical stacking → derived boundary conditions.
 
 from __future__ import annotations
 
+import math
 import time
 from contextlib import contextmanager
 
@@ -22,6 +23,7 @@ from typehaus.resolve.floor_heat import resolve_floor_heat
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.mep import resolve_mep
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedOpening
+from typehaus.resolve.placeables import resolve_placeables
 from typehaus.resolve.rooms import resolve_rooms
 from typehaus.resolve.roof_geometry import apply_to_roof_wall_tops
 from typehaus.resolve.stacking import resolve_stacking
@@ -64,6 +66,8 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_mep(model))
     with _stage("rooms"):
         findings.extend(resolve_rooms(plan, model))
+    with _stage("placeables"):
+        findings.extend(resolve_placeables(plan, model))
     with _stage("floor_heat"):
         findings.extend(resolve_floor_heat(model))
     with _stage("stacking"):
@@ -93,6 +97,7 @@ def resolve_preview(plan: PlanModel) -> ResolvedModel:
     resolve_envelope_geometry(model)
     apply_to_roof_wall_tops(model)
     resolve_rooms(plan, model)
+    resolve_placeables(plan, model)
     return model
 
 
@@ -116,11 +121,14 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
             axis_len = length(sub(rw.axis[1], rw.axis[0]))
             center = _opening_center(plan, el, rw, axis_len, width)
             sill = _opening_sill(el)
+            swing_clearance = _door_swing_clearance(rw, center, width, el) if is_door else ()
+            framing_bumper = _opening_framing_bumper(rw, center, width)
             model.openings.append(
                 ResolvedOpening(
                     uid=el.uid, tag=el.tag, host_wall=el.host, type_ref=type_ref,
                     width_m=width, height_m=height, sill_m=sill,
                     center_along_m=center, kind=kind, is_door=is_door,
+                    swing_clearance=swing_clearance, framing_bumper=framing_bumper,
                 )
             )
             model.conditions.append(
@@ -160,6 +168,40 @@ def _opening_sill(el) -> float:
     if el.element_kind == "Door":
         return el.sill_height.meters if el.sill_height else 0.0
     return el.sill_height.meters if getattr(el, "sill_height", None) else 0.0
+
+
+def _opening_framing_bumper(wall, center_along_m: float, width_m: float) -> list[tuple[float, float]]:
+    """A thin resolved overlay around a rough opening for framing-aware placement preview."""
+    (sx, sy), (ex, ey) = wall.axis
+    length = math.hypot(ex - sx, ey - sy) or 1.0
+    tangent = ((ex - sx) / length, (ey - sy) / length)
+    normal = (-tangent[1], tangent[0])
+    center = (sx + tangent[0] * center_along_m, sy + tangent[1] * center_along_m)
+    half_width = width_m / 2 + .05
+    half_depth = wall.thickness_m / 2 + .05
+    return [(center[0] + sign_u * tangent[0] * half_width + sign_n * normal[0] * half_depth,
+             center[1] + sign_u * tangent[1] * half_width + sign_n * normal[1] * half_depth)
+            for sign_u, sign_n in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+
+
+def _door_swing_clearance(wall, center_along_m: float, width_m: float, door) -> list[tuple[float, float]]:
+    """Approximate the door leaf sweep as a true local-sector polygon in plan space."""
+    (sx, sy), (ex, ey) = wall.axis
+    length = math.hypot(ex - sx, ey - sy) or 1.0
+    tangent = ((ex - sx) / length, (ey - sy) / length)
+    start = (sx + tangent[0] * (center_along_m - width_m / 2),
+             sy + tangent[1] * (center_along_m - width_m / 2))
+    hinge_at_start = not bool(getattr(door, "flip_hinge", False))
+    hinge = start if hinge_at_start else (start[0] + tangent[0] * width_m, start[1] + tangent[1] * width_m)
+    closed = tangent if hinge_at_start else (-tangent[0], -tangent[1])
+    direction = -1 if bool(getattr(door, "flip_swing", False)) else 1
+    points = [hinge]
+    for index in range(9):
+        angle = direction * math.pi / 2 * index / 8
+        cos, sin = math.cos(angle), math.sin(angle)
+        points.append((hinge[0] + width_m * (closed[0] * cos - closed[1] * sin),
+                       hinge[1] + width_m * (closed[0] * sin + closed[1] * cos)))
+    return points
 
 
 def _assembly_change_conditions(model: ResolvedModel) -> None:

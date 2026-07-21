@@ -197,14 +197,15 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str) -
     rows = [(opening.tag, "Door" if opening.is_door else "Window", opening.type_ref or "RO",
              f"{opening.width_m / 0.0254:.0f}\" × {opening.height_m / 0.0254:.0f}\"")
             for opening in sorted(model.openings, key=lambda item: item.tag)]
-    types = {item.tag: item for item in model.plan.library.fixture_types}
+    types = {item.tag: item for item in (*model.plan.library.fixture_types,
+                                         *model.plan.library.appliance_types)}
     rows.extend(
-        (fixture.tag, "Fixture", fixture.type_ref,
+        (fixture.tag, fixture.element_kind, fixture.type_ref,
          f"{types[fixture.type_ref].footprint[0].inches:.0f}\" × "
          f"{types[fixture.type_ref].footprint[1].inches:.0f}\"")
         for storey in model.plan.storeys
         for fixture in model.plan.storey_elements(storey.tag)
-        if fixture.element_kind == "Fixture" and fixture.type_ref in types
+        if fixture.element_kind in {"Fixture", "Appliance"} and fixture.type_ref in types
     )
     axis.table(cellText=rows, colLabels=("Tag", "Kind", "Type", "Nominal footprint"),
                loc="center", cellLoc="left", colLoc="left", fontsize=6)

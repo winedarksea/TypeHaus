@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { ALL_TRADES, useStore, type Trade } from "../state/store";
-import type { Catalog, Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
+import type { CanvasObject, CanvasObjectType, Catalog, Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
 import { createStandingSeamMaterial, isStandingSeam } from "../three/materials";
@@ -31,7 +32,8 @@ export const EARTH_FALLBACK_HALF_SIZE_M = 50;
 
 const TRADE_LABEL: Record<Trade, string> = {
   walls: "Walls", openings: "Openings", framing: "Framing", floors: "Floors", concrete: "Concrete",
-  roof: "Roof", stairs: "Stairs", furniture: "Furniture", earth: "Earth",
+  roof: "Roof", stairs: "Stairs", furniture: "Furniture", plumbing: "Plumbing", electrical: "Electrical",
+  mechanical: "Mechanical", earth: "Earth",
 };
 
 type PanDirection = "left" | "right" | "up" | "down";
@@ -52,7 +54,7 @@ export function Panel3D() {
 
   useEffect(() => {
     if (!mountRef.current) return;
-    const a = createScene(mountRef.current, (uid) => select("wall", uid));
+    const a = createScene(mountRef.current, (kind, uid) => select(kind, uid));
     api.current = a;
     return () => a.dispose();
   }, [select]);
@@ -65,13 +67,13 @@ export function Panel3D() {
     if (!model) return;
     const preserveView = renderedModel.current === model && renderedTheme.current !== null;
     api.current?.setModel(model, threeMode, RESOLVED_NORDIC_PALETTE[theme], preserveView);
-    api.current?.highlight(selection.kind === "wall" ? selection.uid : null);
+    api.current?.highlight(selection.kind === "wall" || selection.kind === "canvas_object" ? selection.uid : null);
     renderedModel.current = model;
     renderedTheme.current = theme;
   }, [model, threeMode, theme]);
 
   useEffect(() => {
-    api.current?.highlight(selection.kind === "wall" ? selection.uid : null);
+    api.current?.highlight(selection.kind === "wall" || selection.kind === "canvas_object" ? selection.uid : null);
   }, [selection]);
 
   useEffect(() => {
@@ -133,7 +135,7 @@ interface SceneApi {
   dispose: () => void;
 }
 
-function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneApi {
+function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object", uid: string) => void): SceneApi {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(RESOLVED_NORDIC_PALETTE.light.bg);
   const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 500);
@@ -154,6 +156,7 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
   for (const trade of ALL_TRADES) content.add(tradeGroups[trade]);
 
   let picks: THREE.Mesh[] = [];
+  let sceneGeneration = 0;
   const byUid = new Map<string, THREE.Material[]>();
   let highlighted: string | null = null;
   let activePalette = RESOLVED_NORDIC_PALETTE.light;
@@ -239,7 +242,8 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
       raycaster.setFromCamera(ndc, camera);
       const hit = raycaster.intersectObjects(picks, false)[0];
       const uid = hit?.object.userData.uid as string | undefined;
-      if (uid) onPick(uid);
+      const kind = hit?.object.userData.selectionKind as "wall" | "canvas_object" | undefined;
+      if (uid && kind) onPick(kind, uid);
     }
   });
   el.addEventListener("wheel", (e) => {
@@ -264,6 +268,7 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
   // these leaking on every setModel() (content.clear() only detaches Object3Ds, it never
   // calls .dispose()).
   const clear = () => {
+    sceneGeneration++;
     for (const trade of ALL_TRADES) {
       disposeGroup(tradeGroups[trade]);
       tradeGroups[trade].clear();
@@ -330,9 +335,50 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, center, mode, palette);
     for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette, m.catalog);
     for (const stair of m.stairs ?? []) buildStair(tradeGroups.stairs, stair, center, mode);
-    for (const furniture of m.furniture ?? [])
-      buildFurniture(tradeGroups.furniture, furniture, center, mode, palette,
-        m.storeys.find((storey) => storey.tag === furniture.storey)?.elevation_m ?? 0);
+    const types = new Map((m.catalog?.canvas_object_types ?? []).map((type) => [type.tag, type]));
+    for (const item of m.canvas_objects ?? []) {
+      // Hosted openings retain their dedicated cut/fill meshes above. The normalized
+      // record is for shared inspection and interchange, not a second 3D proxy.
+      if (item.domain === "opening") continue;
+      if (!item.position_m) continue;
+      const group = item.domain === "plumbing" ? tradeGroups.plumbing
+        : item.domain === "electrical" ? tradeGroups.electrical
+          : item.domain === "mechanical" ? tradeGroups.mechanical : tradeGroups.furniture;
+      const type = types.get(item.type ?? "");
+      const fallback = buildCanvasObject(group, item, type, center, mode, palette,
+        item.z_m ?? m.storeys.find((storey) => storey.tag === item.storey)?.elevation_m ?? 0, picks, byUid);
+      if (type?.model_glb && fallback) {
+        const generation = sceneGeneration;
+        new GLTFLoader().load(type.model_glb, (gltf) => {
+          if (generation !== sceneGeneration || !item.position_m) {
+            disposeGroup(gltf.scene);
+            return;
+          }
+          group.remove(fallback);
+          fallback.geometry.dispose();
+          (fallback.material as THREE.Material).dispose();
+          picks = picks.filter((mesh) => mesh !== fallback);
+          const visual = gltf.scene;
+          visual.position.copy(projectPointToScene(item.position_m,
+            item.z_m ?? m.storeys.find((storey) => storey.tag === item.storey)?.elevation_m ?? 0, center));
+          visual.rotation.y = -((item.rotation ?? 0) * Math.PI / 180);
+          const materials: THREE.Material[] = [];
+          visual.traverse((node) => {
+            if (!(node instanceof THREE.Mesh)) return;
+            node.castShadow = true;
+            node.receiveShadow = true;
+            node.userData.uid = item.uid;
+            node.userData.selectionKind = "canvas_object";
+            picks.push(node);
+            const material = node.material;
+            materials.push(...(Array.isArray(material) ? material : [material]));
+          });
+          byUid.set(item.uid, materials);
+          group.add(visual);
+          requestRender();
+        });
+      }
+    }
 
     // Frame the full rendered bounds, including its vertical origin. The old target only
     // considered height, leaving models whose base was above zero visibly low in the canvas.
@@ -444,23 +490,52 @@ function buildEarth(parent: THREE.Group, model: Model, center: PlanCenter, mode:
   parent.add(new THREE.Mesh(geometry, material));
 }
 
-function buildFurniture(
+function buildCanvasObject(
   parent: THREE.Group,
-  furniture: NonNullable<Model["furniture"]>[number],
+  item: CanvasObject,
+  type: CanvasObjectType | undefined,
   center: PlanCenter,
   mode: "nordic" | "schematic",
   palette: ResolvedNordicPalette,
   elevation: number,
-) {
-  const geometry = new THREE.BoxGeometry(
-    furniture.footprint_m[0], furniture.height_m, furniture.footprint_m[1],
-  );
-  const material = new THREE.MeshStandardMaterial({
-    color: palette.member.wood, roughness: mode === "nordic" ? 0.88 : 1, flatShading: mode === "schematic",
-  });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.copy(projectPointToScene(furniture.position, elevation + furniture.height_m / 2, center));
+  picks: THREE.Mesh[],
+  byUid: Map<string, THREE.Material[]>,
+): THREE.Mesh | null {
+  if (!item.position_m) return null;
+  const [width, depth] = type?.footprint_m ?? [0.45, 0.45];
+  const height = type?.height_m ?? 0.25;
+  const color = item.domain === "electrical" ? 0xd69e2e
+    : item.domain === "plumbing" ? 0x4299e1 : item.domain === "mechanical" ? 0x718096 : palette.member.wood;
+  const material = new THREE.MeshStandardMaterial({ color, roughness: mode === "nordic" ? 0.82 : 1,
+    flatShading: mode === "schematic" });
+  // Keep a configured primitive visible while a potentially large GLB loads.
+  const mesh = new THREE.Mesh(canvasObjectFallbackGeometry(
+    item.model_primitive ?? type?.model_primitive, width, height, depth,
+  ), material);
+  mesh.position.copy(projectPointToScene(item.position_m, elevation + height / 2, center));
+  mesh.rotation.y = -((item.rotation ?? 0) * Math.PI / 180);
+  mesh.userData.uid = item.uid;
+  mesh.userData.selectionKind = "canvas_object";
   parent.add(mesh);
+  picks.push(mesh);
+  byUid.set(item.uid, [material]);
+  return mesh;
+}
+
+export function canvasObjectFallbackGeometry(
+  primitive: string | null | undefined,
+  width: number,
+  height: number,
+  depth: number,
+): THREE.BufferGeometry {
+  switch (primitive?.toLowerCase()) {
+    case "cylinder":
+      return new THREE.CylinderGeometry(Math.max(width, depth) / 2, Math.max(width, depth) / 2, height, 24);
+    case "sphere":
+      return new THREE.SphereGeometry(Math.max(width, height, depth) / 2, 24, 16);
+    default:
+      return new THREE.BoxGeometry(width, height, depth);
+  }
 }
 
 // A ToRoof wall's raked top elevation at a plan point, interpolated along the wall axis
@@ -526,6 +601,7 @@ function buildWall(
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       mesh.userData.uid = w.uid;
+      mesh.userData.selectionKind = "wall";
       mesh.userData.tag = w.tag;
       tradeGroups.walls.add(mesh);
       picks.push(mesh);

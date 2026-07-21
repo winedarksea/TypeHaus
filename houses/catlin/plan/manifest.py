@@ -20,7 +20,7 @@ import uuid
 from typehaus import Building, Library, PlanModel, Project, Storey, ft
 
 from params import foundations, sunken_garden
-from plan import assemblies, fixtures, mep, site, transitions, views
+from plan import assemblies, fixtures, mep, placeables, site, transitions, views
 from plan.storeys import attic, basement, garage, main, second
 
 format_version = 1
@@ -35,6 +35,10 @@ _library = Library(
     door_types=tuple(main.DOOR_TYPES),
     window_types=tuple(main.WINDOW_TYPES),
     fixture_types=fixtures.FIXTURE_TYPES,
+    appliance_types=fixtures.APPLIANCE_TYPES,
+    register_types=mep.REGISTER_TYPES,
+    equipment_types=mep.EQUIPMENT_TYPES,
+    electrical_device_types=mep.ELECTRICAL_DEVICE_TYPES,
     transitions=transitions.TRANSITIONS,
 )
 
@@ -66,15 +70,15 @@ PLAN = (
     .with_elements(
         "basement",
         [*basement.ELEMENTS, *sunken_garden.BASEMENT_ELEMENTS,
-         *foundations.BASEMENT_ELEMENTS, *mep.BASEMENT_ELEMENTS],
+         *foundations.BASEMENT_ELEMENTS, *mep.BASEMENT_ELEMENTS, *placeables.BASEMENT_PLACEABLES],
     )
     .with_elements(
         "main",
         [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *sunken_garden.MAIN_ELEMENTS,
-         *foundations.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS, *views.DETAIL_SLICES],
+         *foundations.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS, *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES],
     )
-    .with_elements("garage", [*garage.ELEMENTS])
+    .with_elements("garage", [*garage.ELEMENTS, *placeables.GARAGE_PLACEABLES])
     .with_elements("second", [*second.ELEMENTS, *fixtures.SECOND_FIXTURES,
-                                *sunken_garden.SECOND_ELEMENTS, *mep.SECOND_ELEMENTS])
-    .with_elements("attic", [*attic.ELEMENTS])
+                                *sunken_garden.SECOND_ELEMENTS, *mep.SECOND_ELEMENTS, *placeables.SECOND_PLACEABLES])
+    .with_elements("attic", [*attic.ELEMENTS, *placeables.ATTIC_PLACEABLES])
 )

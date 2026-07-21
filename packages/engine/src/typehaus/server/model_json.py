@@ -14,6 +14,7 @@ from urllib.parse import quote
 from typehaus.checks.registry import Preferences
 from typehaus.findings import Finding
 from typehaus.model.floors import FloorOpening, FloorSystem
+from typehaus.model.canvas import canvas_object_types, resolved_canvas_objects
 from typehaus.model.spatial import Stair
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedModel
@@ -148,11 +149,13 @@ def model_to_dict(
         # revision is the PATCH /plan precondition (#30); UI echoes it back on every op.
         "revision": revision,
         "units": "imperial",
+        "canvas_objects": resolved_canvas_objects(model),
         "projectNorth": model.plan.project.site.true_north.degrees,
         "findings": _findings_json(findings),
         "project": {
             "name": model.plan.project.name,
             "uuid": str(model.plan.project.project_uuid),
+            "active_code_profile": model.plan.project.active_code_profile,
         },
         "site": {
             "lat": model.plan.project.site.lat,
@@ -201,6 +204,8 @@ def model_to_dict(
              "type_ref": o.type_ref,
              "width_m": o.width_m, "height_m": o.height_m, "sill_m": o.sill_m,
              "center_along_m": o.center_along_m,
+             "swing_clearance": [list(point) for point in o.swing_clearance],
+             "framing_bumper": [list(point) for point in o.framing_bumper],
              # Handing is authored data, rather than resolved geometry, but it changes the
              # plan symbol and must therefore cross the UI boundary with the opening.
              "flip_hinge": bool(getattr(model.plan.by_tag(o.tag), "flip_hinge", False)),
@@ -238,8 +243,8 @@ def model_to_dict(
              "needs": sorted(service.value for service in fixture_type.needs)}
             for storey in model.plan.storeys
             for fixture in model.plan.storey_elements(storey.tag)
-            if fixture.element_kind == "Fixture"
-            for fixture_type in model.plan.library.fixture_types
+            if fixture.element_kind in {"Fixture", "Appliance"}
+            for fixture_type in (*model.plan.library.fixture_types, *model.plan.library.appliance_types)
             if fixture_type.tag == fixture.type_ref
         ],
         "furniture": [
@@ -345,7 +350,7 @@ def model_to_dict(
             for e in model.stack_edges
         ],
         "building_science": building_science,
-        "catalog": _catalog(model, provenance),
+        "catalog": {**_catalog(model, provenance), "canvas_object_types": canvas_object_types(model.plan)},
     }
 
 

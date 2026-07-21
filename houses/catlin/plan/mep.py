@@ -21,15 +21,56 @@ from typehaus import (
     DuctRun,
     DuctSystem,
     ElectricalDevice,
+    ElectricalDeviceType,
     Equipment,
     EquipmentKind,
+    EquipmentType,
     PipeRun,
     PipeSystem,
     Register,
+    RegisterType,
+    Service,
+    ServicePort,
     SleevePenetration,
     ft,
     inch,
     pt,
+)
+
+REGISTER_TYPES = (
+    RegisterType(tag="REG-T-SUPPLY", name="Supply register", footprint=(inch(12), inch(6)), height=inch(1),
+                 ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
+                                    position=(ft(0), ft(0), ft(0))),)),
+    RegisterType(tag="REG-T-RETURN", name="Return grille", footprint=(inch(14), inch(8)), height=inch(1),
+                 ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
+                                    position=(ft(0), ft(0), ft(0))),)),
+)
+
+EQUIPMENT_TYPES = (
+    EquipmentType(tag="EQ-T-FURNACE", name="Gas furnace", footprint=(inch(24), inch(28)), height=ft(5),
+                  ports=(ServicePort(tag="gas", service=Service.GAS, position=(ft(0), ft(0), ft(0))),
+                         ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
+                         ServicePort(tag="supply", service=Service.SUPPLY_AIR, position=(ft(0), ft(0), ft(4))),
+                         ServicePort(tag="return", service=Service.RETURN_AIR, position=(ft(0), ft(0), ft(4))))),
+    EquipmentType(tag="EQ-T-WATER-HEATER", name="Water heater", footprint=(inch(24), inch(24)), height=ft(5),
+                  ports=(ServicePort(tag="cold", service=Service.WATER_COLD, position=(ft(0), ft(0), ft(4))),
+                         ServicePort(tag="hot", service=Service.WATER_HOT, position=(ft(0), ft(0), ft(4))),
+                         ServicePort(tag="gas", service=Service.GAS, position=(ft(0), ft(0), ft(0))))),
+)
+
+ELECTRICAL_DEVICE_TYPES = (
+    ElectricalDeviceType(tag="ED-T-PANEL", name="Electrical panel", footprint=(inch(20), inch(4)), height=ft(3),
+                          ports=(ServicePort(tag="service", service=Service.POWER_240,
+                                             position=(ft(0), ft(0), ft(0))),)),
+    ElectricalDeviceType(tag="ED-T-LIGHT", name="Ceiling light", footprint=(inch(8), inch(8)), height=inch(2),
+                          ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                             position=(ft(0), ft(0), ft(0))),)),
+    ElectricalDeviceType(tag="ED-T-SWITCH", name="Wall switch", footprint=(inch(4), inch(2)), height=inch(2),
+                          ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                             position=(ft(0), ft(0), ft(0))),)),
+    ElectricalDeviceType(tag="ED-T-RECEPTACLE", name="Receptacle", footprint=(inch(4), inch(2)), height=inch(2),
+                          ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                             position=(ft(0), ft(0), ft(0))),)),
 )
 
 SLEEVES = [
@@ -72,30 +113,30 @@ DUCTS = [
 
 REGISTERS = [
     Register(uid="CMR901AAAA", tag="REG-S-SUP1", kind=DuctSystem.SUPPLY,
-            position=pt(ft(9), ft(4)), duct_ref="DU-M-SUP-TRUNK"),
+            position=pt(ft(9), ft(4)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY"),
     Register(uid="CMR902AAAA", tag="REG-S-SUP2", kind=DuctSystem.SUPPLY,
-            position=pt(ft(27), ft(4)), duct_ref="DU-M-SUP-TRUNK"),
+            position=pt(ft(27), ft(4)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY"),
     Register(uid="CMR903AAAA", tag="REG-S-SUP3", kind=DuctSystem.SUPPLY,
-            position=pt(ft(29), ft(16)), duct_ref="DU-M-SUP-TRUNK"),
+            position=pt(ft(29), ft(16)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY"),
     Register(uid="CMR904AAAA", tag="REG-S-SUP4", kind=DuctSystem.SUPPLY,
-            position=pt(ft(29), ft(32)), duct_ref="DU-M-SUP-TRUNK"),
+            position=pt(ft(29), ft(32)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY"),
     Register(uid="CMR905AAAA", tag="REG-S-RET1", kind=DuctSystem.RETURN,
-            position=pt(ft(20), ft(20)), duct_ref="DU-M-RET-TRUNK"),
+            position=pt(ft(20), ft(20)), duct_ref="DU-M-RET-TRUNK", type_ref="REG-T-RETURN"),
     Register(uid="CMR906AAAA", tag="REG-S-RET2", kind=DuctSystem.RETURN,
-            position=pt(ft(9), ft(20)), duct_ref="DU-M-RET-TRUNK"),
+            position=pt(ft(9), ft(20)), duct_ref="DU-M-RET-TRUNK", type_ref="REG-T-RETURN"),
 ]
 
 EQUIPMENT = [
     Equipment(uid="CME901AAAA", tag="EQ-B-FURNACE", kind=EquipmentKind.FURNACE,
-             position=pt(ft(4), ft(29)), footprint=(inch(24), inch(28)), room="RM-B-FURNACE"),
+             position=pt(ft(4), ft(29)), footprint=(inch(24), inch(28)), room="RM-B-FURNACE", type_ref="EQ-T-FURNACE"),
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(ft(7), ft(29)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE"),
+             position=pt(ft(7), ft(29)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER"),
 ]
 
 # --- Electrical: symbols-only (decision 1 — panel/circuit schedule deferred) -------
 PANEL = [
     ElectricalDevice(uid="CEP901AAAA", tag="ED-B-PANEL", kind=DeviceKind.PANEL,
-                     position=pt(ft(2), ft(29)), mount_height=ft(5)),
+                     position=pt(ft(2), ft(29)), mount_height=ft(5), type_ref="ED-T-PANEL"),
 ]
 
 # (room tag, storey, x, y, is_bedroom) — one light + switch per habitable room, one
@@ -121,15 +162,15 @@ def _room_devices():
         uid_light = f"CED{index:03d}K1AA"
         uid_switch = f"CED{index:03d}K2AA"
         light = ElectricalDevice(uid=uid_light, tag=f"ED-{room[3:]}-LT", kind=DeviceKind.LIGHT,
-                                 position=pt(ft(x), ft(y)), mount_height=ft(8))
+                                 position=pt(ft(x), ft(y)), mount_height=ft(8), type_ref="ED-T-LIGHT")
         switch = ElectricalDevice(uid=uid_switch, tag=f"ED-{room[3:]}-SW", kind=DeviceKind.SWITCH,
-                                  position=pt(ft(x - 1), ft(y)), mount_height=inch(48))
+                                  position=pt(ft(x - 1), ft(y)), mount_height=inch(48), type_ref="ED-T-SWITCH")
         devices = [light, switch]
         if is_bedroom:
             uid_recep = f"CED{index:03d}K3AA"
             devices.append(ElectricalDevice(
                 uid=uid_recep, tag=f"ED-{room[3:]}-RC1", kind=DeviceKind.RECEPTACLE,
-                position=pt(ft(x + 1), ft(y)), mount_height=inch(16),
+                position=pt(ft(x + 1), ft(y)), mount_height=inch(16), type_ref="ED-T-RECEPTACLE",
             ))
         (main_devices if storey == "main" else second_devices).extend(devices)
     return main_devices, second_devices

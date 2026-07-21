@@ -19,6 +19,7 @@ from library.assemblies import (
     STARTER_FLOOR,
 )
 from library.materials import STARTER_MATERIALS
+from library.placeables import STARTER_APPLIANCE_TYPES, STARTER_FURNITURE_TYPES
 
 __all__ = [
     "STARTER_MATERIALS",
@@ -32,4 +33,6 @@ __all__ = [
     "INT_2X4_STAGGERED_DOUBLE_GWB",
     "INT_2X4_DOUBLE_STUD_MINERAL_WOOL",
     "STARTER_FLOOR",
+    "STARTER_FURNITURE_TYPES",
+    "STARTER_APPLIANCE_TYPES",
 ]

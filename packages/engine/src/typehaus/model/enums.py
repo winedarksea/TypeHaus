@@ -70,7 +70,10 @@ class Service(Enum):
     WATER_COLD = "water_cold"
     DRAIN = "drain"
     GAS = "gas"
+    POWER_120 = "power_120"
     POWER_240 = "power_240"
+    SUPPLY_AIR = "supply_air"
+    RETURN_AIR = "return_air"
     VENT = "vent"
 
 

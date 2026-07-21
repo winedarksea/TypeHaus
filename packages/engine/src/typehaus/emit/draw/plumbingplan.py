@@ -42,7 +42,7 @@ def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
         if wall.storey == storey:
             emit_wall(b, wall, layer_override="A-WALL-BELW", weight_override=0.15,
                      hatch=False, members=False)
-    emit_fixtures(b, model, storey)
+    emit_fixtures(b, model, storey, frozenset({"plumbing", "appliance"}))
 
     for run in model.pipe_runs:
         if run.storey != storey:

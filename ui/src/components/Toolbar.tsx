@@ -4,6 +4,7 @@ const TOOLS: { id: Tool; label: string; title: string }[] = [
   { id: "select", label: "⌖", title: "Select (tap)" },
   { id: "wall", label: "▟", title: "Draw wall (tap → tap; Shift = ortho)" },
   { id: "opening", label: "❒", title: "Place a window or door on a wall" },
+  { id: "placeable", label: "▦", title: "Place furniture, fixtures, and devices" },
   { id: "room", label: "▣", title: "Claim a room" },
   { id: "dimension", label: "↔", title: "Drive a wall's length" },
 ];
@@ -16,6 +17,8 @@ export function Toolbar() {
   const offline = useStore((s) => s.offline);
   const selection = useStore((s) => s.selection);
   const deleteSelection = useStore((s) => s.deleteSelection);
+  const duplicateSelection = useStore((s) => s.duplicateSelection);
+  const canDuplicate = selection.kind === "opening" || selection.kind === "canvas_object";
 
   return (
     <div className="toolrail">
@@ -36,6 +39,12 @@ export function Toolbar() {
         );
       })}
       <div style={{ flex: 1 }} />
+      {selection.uid && !offline && canDuplicate && (
+        <button className="tool-btn" title="Duplicate selected opening or placeable (⌘/Ctrl+D)"
+          onClick={() => void duplicateSelection()}>
+          ⧉
+        </button>
+      )}
       {selection.uid && !offline && (
         <button className="tool-btn" title="Delete selected (Del)" onClick={() => void deleteSelection()}>
           🗑

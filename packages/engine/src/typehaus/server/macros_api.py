@@ -73,8 +73,19 @@ def _place_opening(plan: PlanModel, storey: str, body: dict[str, Any]) -> Mutati
     )
 
 
+def _place_rough_opening(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.place_rough_opening(
+        plan, storey, host=body["host"], width=body["width"], height=body["height"],
+        along=body["along"], sill=body.get("sill"), hint_file=body.get("hint_file"), tag=body.get("tag"),
+    )
+
+
 def _move_opening(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
     return macros.move_opening(plan, storey, tag=body["tag"], along=body["along"])
+
+
+def _rehost_opening(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.rehost_opening(plan, storey, tag=body["tag"], host=body["host"], along=body["along"])
 
 
 def _place_room(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
@@ -83,6 +94,39 @@ def _place_room(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationR
         floor_finish=body.get("floor_finish"), hint_file=body.get("hint_file"),
         tag=body.get("tag"),
     )
+
+
+def _move_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.move_placeable(plan, storey, tag=body["tag"], position=_xy(body["position"]))
+
+
+def _rotate_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.rotate_placeable(plan, storey, tag=body["tag"], degrees=float(body["degrees"]),
+                                   free_rotation=bool(body.get("free_rotation")))
+
+
+def _attach_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.attach_placeable(plan, storey, tag=body["tag"], wall=body["wall"],
+                                   face=body["face"], distance=body["distance"],
+                                   gap=body.get("gap", 0), rotation_offset=float(body.get("rotation_offset", 0)))
+
+
+def _detach_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.detach_placeable(plan, storey, tag=body["tag"],
+                                   position=_xy(body["position"]) if body.get("position") is not None else None)
+
+
+def _place_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.place_placeable(plan, storey, type_ref=body["type_ref"], position=_xy(body["position"]),
+                                  hint_file=body.get("hint_file"), tag=body.get("tag"))
+
+
+def _assign_placeable_room(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.assign_placeable_room(plan, storey, tag=body["tag"], room=body.get("room"))
+
+
+def _duplicate_canvas_object(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.duplicate_canvas_object(plan, storey, tag=body["tag"])
 
 
 def _duplicate_assembly(plan: PlanModel, _s: str, body: dict[str, Any]) -> MutationResult:
@@ -128,8 +172,17 @@ _DISPATCH = {
     "split_wall": _split_wall,
     "heal_walls": _heal_walls,
     "place_opening": _place_opening,
+    "place_rough_opening": _place_rough_opening,
     "move_opening": _move_opening,
+    "rehost_opening": _rehost_opening,
     "place_room": _place_room,
+    "move_placeable": _move_placeable,
+    "rotate_placeable": _rotate_placeable,
+    "attach_placeable": _attach_placeable,
+    "detach_placeable": _detach_placeable,
+    "place_placeable": _place_placeable,
+    "assign_placeable_room": _assign_placeable_room,
+    "duplicate_canvas_object": _duplicate_canvas_object,
     "duplicate_assembly": _duplicate_assembly,
     "blank_assembly": _blank_assembly,
     "edit_assembly_layers": _edit_assembly_layers,

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typehaus.model.base import HausModel
 from typehaus.model.enums import Service
+from typehaus.model.placeables import (ClearanceZone, Footprint2D, ModelRepresentation,
+                                       Mount, PlacementStrategy, PlanRepresentation, ServicePort)
 from typehaus.model.registry import register_constructor
 from typehaus.quantities import Length, UFactor
 
@@ -50,6 +52,16 @@ class FurnitureType(HausModel):
     clearance: tuple[Length, Length, Length, Length] | None = None  # front/back/L/R
     mesh: MeshRef | None = None
     source: str | None = None
+    # Project-local imports retain their source facts separately from the read-only library
+    # source label, so IFC handoff can identify a visual asset without parsing a JSON sidecar.
+    import_provenance: dict[str, object] | None = None
+    placement: PlacementStrategy = PlacementStrategy.FREE_PLACED
+    footprint_shape: Footprint2D | None = None
+    clearances: tuple[ClearanceZone, ...] = ()
+    ports: tuple[ServicePort, ...] = ()
+    plan_representation: PlanRepresentation | None = None
+    model_representation: ModelRepresentation | None = None
+    mount: Mount = Mount()
 
 
 class FixtureType(HausModel):
@@ -62,6 +74,32 @@ class FixtureType(HausModel):
     needs: frozenset[Service] = frozenset()
     clearance: tuple[Length, Length, Length, Length] | None = None
     source: str | None = None
+    import_provenance: dict[str, object] | None = None
+    placement: PlacementStrategy = PlacementStrategy.FREE_PLACED
+    footprint_shape: Footprint2D | None = None
+    clearances: tuple[ClearanceZone, ...] = ()
+    ports: tuple[ServicePort, ...] = ()
+    plan_representation: PlanRepresentation | None = None
+    model_representation: ModelRepresentation | None = None
+    mount: Mount = Mount()
+
+
+class ApplianceType(FurnitureType):
+    """A product requiring services but not a plumbing fixture (for example a washer)."""
+
+    needs: frozenset[Service] = frozenset()
+
+
+class EquipmentType(FurnitureType):
+    needs: frozenset[Service] = frozenset()
+
+
+class RegisterType(FurnitureType):
+    needs: frozenset[Service] = frozenset({Service.SUPPLY_AIR})
+
+
+class ElectricalDeviceType(FurnitureType):
+    needs: frozenset[Service] = frozenset({Service.POWER_120})
 
 
 for _name, _obj in (
@@ -69,6 +107,10 @@ for _name, _obj in (
     ("WindowType", WindowType),
     ("FurnitureType", FurnitureType),
     ("FixtureType", FixtureType),
+    ("ApplianceType", ApplianceType),
+    ("EquipmentType", EquipmentType),
+    ("RegisterType", RegisterType),
+    ("ElectricalDeviceType", ElectricalDeviceType),
     ("MeshRef", MeshRef),
 ):
     register_constructor(_name, _obj)

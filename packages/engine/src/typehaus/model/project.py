@@ -51,6 +51,7 @@ class Project(HausModel):
     building: Building = Building()
     format_version: int = 1
     requires_engine: str = ">=0.1,<0.2"
+    active_code_profile: str | None = None
 
 
 for _name, _obj in (

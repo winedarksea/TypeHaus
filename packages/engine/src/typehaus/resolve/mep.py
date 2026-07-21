@@ -12,7 +12,7 @@ from __future__ import annotations
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import DuctRouting, Service
 from typehaus.model.mep import DuctRun, PipeRun, SleevePenetration
-from typehaus.model.spatial import Fixture
+from typehaus.model.spatial import Appliance, Fixture
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import ResolvedDuct, ResolvedModel, ResolvedPipeRun, ResolvedSleeve
@@ -106,13 +106,13 @@ def _expected_drain_point(model: ResolvedModel,
     if fixture_tag is None:
         return None
     fixture = model.plan.by_tag(fixture_tag)
-    if not isinstance(fixture, Fixture):
+    if not isinstance(fixture, (Fixture, Appliance)):
         return None
     if fixture.drain_position is not None:
         return fixture.drain_position.xy_m
-    fixture_type = next(
-        (t for t in model.plan.library.fixture_types if t.tag == fixture.type_ref), None
-    )
+    fixture_type = next((t for t in (*model.plan.library.fixture_types,
+                                     *model.plan.library.appliance_types)
+                         if t.tag == fixture.type_ref), None)
     if fixture_type is None:
         return None
     # A water closet is the only common fixture with no hot-water connection — the one

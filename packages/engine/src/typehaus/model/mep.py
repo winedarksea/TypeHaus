@@ -17,6 +17,7 @@ from typehaus.model.enums import (
     Service,
 )
 from typehaus.model.registry import register_constructor, register_element
+from typehaus.model.placeables import Location, Mount
 from typehaus.quantities import Length, Point2D
 
 
@@ -63,6 +64,11 @@ class Register(Element):
     kind: DuctSystem
     position: Point2D
     duct_ref: str | None = None
+    type_ref: str | None = None
+    room: str | None = None
+    rotation: object | None = None
+    location: Location | None = None
+    mount: Mount = Mount()
 
 
 @register_element
@@ -73,6 +79,10 @@ class Equipment(Element):
     position: Point2D
     footprint: tuple[Length, Length]
     room: str | None = None
+    type_ref: str | None = None
+    rotation: object | None = None
+    location: Location | None = None
+    mount: Mount = Mount()
 
 
 @register_element
@@ -84,6 +94,11 @@ class ElectricalDevice(Element):
     wall_ref: str | None = None
     mount_height: Length | None = None
     circuit: str | None = None  # future panel-schedule hook; no consumer yet
+    type_ref: str | None = None
+    room: str | None = None
+    rotation: object | None = None
+    location: Location | None = None
+    mount: Mount = Mount()
 
 
 for _name, _obj in (

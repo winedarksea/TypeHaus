@@ -19,7 +19,7 @@ import { PyodideEngineClient } from "../engine/PyodideEngineClient";
 import { pickHouseDirectory } from "../engine/openHouse";
 import type { Finding, Model } from "../model/types";
 
-export type Tool = "select" | "wall" | "opening" | "room" | "dimension";
+export type Tool = "select" | "wall" | "opening" | "placeable" | "room" | "dimension";
 export type ViewMode = "2d" | "split" | "3d";
 export type ThreeMode = "nordic" | "schematic";
 
@@ -29,13 +29,13 @@ export type ThreeMode = "nordic" | "schematic";
 // floor decks (hideable for stair continuity); "concrete" is resolved solids (slabs,
 // footings, pads); "roof" is the roof surface + its members (incl. ridge beam); "earth"
 // is the translucent site context sheet.
-export type Trade = "walls" | "openings" | "framing" | "floors" | "concrete" | "roof" | "stairs" | "furniture" | "earth";
+export type Trade = "walls" | "openings" | "framing" | "floors" | "concrete" | "roof" | "stairs" | "furniture" | "plumbing" | "electrical" | "mechanical" | "earth";
 export const ALL_TRADES: Trade[] = [
-  "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture", "earth",
+  "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth",
 ];
 
 export interface Selection {
-  kind: "wall" | "opening" | "room" | "stair" | null;
+  kind: "wall" | "opening" | "room" | "stair" | "canvas_object" | null;
   uid: string | null;
 }
 
@@ -105,6 +105,7 @@ interface StoreState {
   // Never journaled/mutating; swallows errors (offline, ops that can't preview) as `null`.
   previewMacro: (request: MacroRequest) => Promise<PreviewGeometry | null>;
   deleteSelection: () => Promise<void>;
+  duplicateSelection: () => Promise<void>;
   calibrateUnderlay: (calibration: UnderlayCalibration) => Promise<boolean>;
   undo: () => Promise<void>;
   redo: () => Promise<void>;
@@ -145,7 +146,7 @@ export const useStore = create<StoreState>((set, get) => ({
   showFraming: true,
   visibleTrades: {
     walls: true, openings: true, framing: true, floors: true, concrete: true, roof: true,
-    stairs: true, furniture: true, earth: true,
+    stairs: true, furniture: true, plumbing: true, electrical: true, mechanical: true, earth: true,
   },
   conflict: null,
   toasts: [],
@@ -236,7 +237,8 @@ export const useStore = create<StoreState>((set, get) => ({
     if (!model) return;
     const pool =
       kind === "wall" ? model.walls : kind === "opening" ? model.openings
-        : kind === "room" ? model.rooms : model.stairs ?? [];
+        : kind === "room" ? model.rooms : kind === "canvas_object" ? model.canvas_objects ?? []
+          : model.stairs ?? [];
     const hit = pool.find((e) => e.tag === tag);
     if (hit) set({ selection: { kind, uid: hit.uid } });
   },
@@ -318,17 +320,41 @@ export const useStore = create<StoreState>((set, get) => ({
       type = "Wall"; tag = w?.tag ?? null;
     } else if (selection.kind === "opening") {
       const o = model.openings.find((x) => x.uid === selection.uid);
-      type = o?.is_door ? "Door" : "Window"; tag = o?.tag ?? null;
+      type = o?.kind === "rough_opening" ? "RoughOpening" : o?.is_door ? "Door" : "Window";
+      tag = o?.tag ?? null;
     } else if (selection.kind === "room") {
       const r = model.rooms.find((x) => x.uid === selection.uid);
       type = "Room"; tag = r?.tag ?? null;
     } else if (selection.kind === "stair") {
       const stair = (model.stairs ?? []).find((x) => x.uid === selection.uid);
       type = "Stair"; tag = stair?.tag ?? null;
+    } else if (selection.kind === "canvas_object") {
+      const item = (model.canvas_objects ?? []).find((x) => x.uid === selection.uid);
+      type = item?.kind ?? null; tag = item?.tag ?? null;
     }
     if (!type || !tag) return;
     const ok = await applyOps([{ op: "delete", type, tag }]);
     if (ok) { get().toast(`${tag} deleted`); select(null, null); }
+  },
+
+  duplicateSelection: async () => {
+    const { model, selection, runMacro } = get();
+    if (!model || !selection.uid) return;
+    let tag: string | null = null;
+    let storey: string | null = null;
+    if (selection.kind === "canvas_object") {
+      const item = (model.canvas_objects ?? []).find((x) => x.uid === selection.uid);
+      tag = item?.tag ?? null;
+      storey = item?.storey ?? null;
+    } else if (selection.kind === "opening") {
+      const opening = model.openings.find((x) => x.uid === selection.uid);
+      const host = opening && model.walls.find((wall) => wall.tag === opening.host);
+      tag = opening?.tag ?? null;
+      storey = host?.storey ?? null;
+    }
+    if (!tag || !storey) return;
+    const result = await runMacro({ macro: "duplicate_canvas_object", storey, tag });
+    if (result) get().toast(`${tag} duplicated`);
   },
 
   calibrateUnderlay: async (calibration) => {

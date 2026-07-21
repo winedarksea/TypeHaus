@@ -22,6 +22,8 @@ class ChangeKind(str, Enum):
     DELETED = "deleted"
     REPLACED = "replaced"
     MOVED = "moved"
+    ROTATED = "rotated"
+    REHOSTED = "rehosted"
     RESIZED = "resized"
     ATTR_CHANGED = "attr-changed"
 
@@ -97,6 +99,10 @@ def _classify_pair(m: Match) -> Change:
     if size > _SIZE_TOL_M:
         return Change(ChangeKind.RESIZED, b.tag or e.tag, b.ifc_class,
                       _size_delta(b, e), conf)
+    if b.attrs.get("host_wall") != e.attrs.get("host_wall"):
+        return Change(ChangeKind.REHOSTED, b.tag or e.tag, b.ifc_class, _attr_delta(b, e), conf)
+    if b.attrs.get("rotation_degrees") != e.attrs.get("rotation_degrees"):
+        return Change(ChangeKind.ROTATED, b.tag or e.tag, b.ifc_class, _attr_delta(b, e), conf)
     attr_delta = _attr_delta(b, e)
     if attr_delta:
         return Change(ChangeKind.ATTR_CHANGED, b.tag or e.tag, b.ifc_class, attr_delta, conf)

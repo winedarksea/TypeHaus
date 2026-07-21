@@ -53,15 +53,24 @@ def test_filling_guid_matches_diff_adapter_prediction(catlin_model, catlin_ifc):
         assert derive_guid(puid, opening.uid) in emitted
 
 
+def test_opening_occurrences_are_assigned_to_stable_product_types(catlin_model, catlin_ifc):
+    import ifcopenshell
+
+    f = ifcopenshell.open(str(catlin_ifc))
+    typed_occurrences = {occurrence.GlobalId for relation in f.by_type("IfcRelDefinesByType")
+                         for occurrence in relation.RelatedObjects}
+    expected = {derive_guid(catlin_model.plan.project.project_uuid, opening.uid)
+                for opening in catlin_model.openings if opening.type_ref is not None}
+    assert expected <= typed_occurrences
+    assert len(f.by_type("IfcDoorType")) == len(catlin_model.plan.library.door_types)
+    assert len(f.by_type("IfcWindowType")) == len(catlin_model.plan.library.window_types)
+
+
 def test_openings_survive_the_self_diff_by_global_id(catlin_model, catlin_ifc):
-    # The diff adapter predicts each window/door GUID as derive_guid(uuid, opening.uid); a
-    # self-emitted IFC must therefore match every opening by GlobalId — never add or delete
-    # one (placement centroids are a separate whole-model convention, out of scope here).
+    # A self-export must have no reconciliation work: geometry, type, and identity all round
+    # trip through IFC instead of merely avoiding add/delete matches by GlobalId.
     report = build_report(baseline_elems(catlin_model), external_elems(catlin_ifc))
-    kinds = {c.kind.value if hasattr(c.kind, "value") else c.kind for c in report.substantive()}
-    added_deleted = [c for c in report.substantive()
-                     if (getattr(c.kind, "value", c.kind) in ("added", "deleted"))]
-    assert added_deleted == [], f"round-trip should match all elements by GUID; {kinds}"
+    assert report.substantive() == []
 
 
 def test_rough_opening_emits_only_the_wall_void(catlin_model, tmp_path):

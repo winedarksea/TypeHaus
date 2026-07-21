@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
+import json
 from typing import Any
 
 from typehaus._meta import IFC_APP_NAME, PSET_SOURCE
@@ -46,8 +47,10 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     for rw in sorted(model.walls, key=lambda w: w.uid):
         wall_entities[rw.tag] = _emit_wall(f, body, rw, storeys, project_uuid, lod)
 
+    opening_types = _emit_opening_types(f, model, project_uuid)
+
     for opening in sorted(model.openings, key=lambda o: o.uid):
-        _emit_opening(f, body, opening, model, wall_entities, storeys, project_uuid)
+        _emit_opening(f, body, opening, model, wall_entities, storeys, project_uuid, opening_types)
 
     for solid in sorted(model.solids, key=lambda item: item.uid):
         _emit_solid(f, body, solid, storeys, project_uuid)
@@ -62,6 +65,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
         _emit_space(f, body, room, storeys, project_uuid)
 
     _emit_furniture(f, body, model, storeys, project_uuid)
+    _emit_resolved_placeables(f, body, model, storeys, project_uuid)
 
     for run in sorted(model.pipe_runs, key=lambda item: item.uid):
         _emit_pipe_run(f, body, run, storeys, project_uuid)
@@ -192,9 +196,22 @@ def _opening_segment(rw: ResolvedWall, opening: Any) -> tuple[tuple[float, float
     return (sx + ux * c0, sy + uy * c0), (sx + ux * c1, sy + uy * c1), thickness
 
 
+def _emit_opening_types(f: Any, model: ResolvedModel, project_uuid: Any) -> dict[str, Any]:
+    """Create one stable IFC type per authored door/window product type."""
+    result: dict[str, Any] = {}
+    for kind, items in (("door", model.plan.library.door_types),
+                        ("window", model.plan.library.window_types)):
+        for item in items:
+            entity = ll.create_entity(f, "IfcDoorType" if kind == "door" else "IfcWindowType", name=item.tag)
+            entity.GlobalId = derive_child_guid(project_uuid, f"{kind}-types", item.tag)
+            ll.ensure_pset(f, entity, "TypeHaus_Identity", {"tag": item.tag, "source_type": item.tag})
+            result[item.tag] = entity
+    return result
+
+
 def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
                   wall_entities: dict[str, Any], storeys: dict[str, Any],
-                  project_uuid: Any) -> None:
+                  project_uuid: Any, opening_types: dict[str, Any]) -> None:
     """One IfcOpeningElement voiding the host wall, with an optional product filling.
 
     Void GUID = derive_child_guid(uuid, opening.uid, "void"); the filling GUID =
@@ -212,6 +229,10 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     void.GlobalId = derive_child_guid(project_uuid, opening.uid, "void")
     _assign_representation(f, void, ll.add_prism_from_profile(
         f, body, void_profile, opening.height_m, z0))
+    ll.ensure_pset(f, void, PSET_SOURCE, {
+        "uid": opening.uid, "tag": opening.tag, "type": opening.type_ref or "",
+        "host_wall": opening.host_wall,
+    })
     ll.add_opening(f, wall, void)
 
     # A RoughOpening is intentionally only a void. Emitting it as IfcWindow used to
@@ -236,6 +257,8 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     ll.ensure_pset(f, filling, "Pset_DoorCommon" if opening.is_door else "Pset_WindowCommon",
                    {"IsExternal": is_external})
     ll.assign_container(f, filling, storeys[rw.storey])
+    if opening.type_ref in opening_types:
+        ll.assign_type(f, filling, opening_types[opening.type_ref])
     ll.add_filling(f, void, filling)
 
 
@@ -259,26 +282,106 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
                     project_uuid: Any) -> None:
     """Core-LOD furnishing elements use declared footprint and height, not mesh triangles."""
     types = {item.tag: item for item in model.plan.library.furniture_types}
-    elevations = {storey.tag: storey.elevation.meters for storey in model.plan.storeys}
+    ifc_types: dict[str, Any] = {}
+    for tag, furniture_type in types.items():
+        type_object = ll.create_entity(f, "IfcFurnitureType", name=furniture_type.name)
+        type_object.GlobalId = derive_child_guid(project_uuid, "furniture-types", tag)
+        ll.ensure_pset(f, type_object, "TypeHaus_Identity", _type_identity(furniture_type))
+        ifc_types[tag] = type_object
+    resolved_furniture = {item.uid: item for item in model.canvas_objects if item.domain == "furniture"}
     for storey in model.plan.storeys:
         for furniture in model.plan.storey_elements(storey.tag):
             if furniture.element_kind != "Furniture" or furniture.type_ref not in types:
                 continue
             furniture_type = types[furniture.type_ref]
-            width, depth = (dimension.meters for dimension in furniture_type.footprint)
-            x, y = furniture.position.xy_m
-            outline = [(x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
-                       (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2)]
-            element = ll.create_entity(f, "IfcFurnishingElement", name=furniture.tag)
+            resolved = resolved_furniture.get(furniture.uid)
+            if resolved is None:
+                continue
+            element = ll.create_entity(f, "IfcFurniture", name=furniture.tag)
             element.GlobalId = derive_guid(project_uuid, furniture.uid)
             _assign_representation(f, element, ll.add_prism_from_profile(
-                f, body, outline, furniture_type.height.meters, elevations[storey.tag]
+                f, body, resolved.footprint, furniture_type.height.meters, resolved.z_m
             ))
             ll.ensure_pset(f, element, PSET_SOURCE, {
                 "uid": furniture.uid, "tag": furniture.tag, "type": furniture.type_ref,
                 "mesh": furniture_type.mesh.path if furniture_type.mesh is not None else "",
+                "rotation_degrees": f"{resolved.rotation_degrees:.6f}",
             })
+            ll.ensure_pset(f, element, "TypeHaus_Identity", {
+                "uid": furniture.uid, "tag": furniture.tag, "source_type": furniture.type_ref,
+            })
+            _emit_service_ports(f, element, furniture_type.ports, project_uuid, furniture.uid)
+            ll.assign_type(f, element, ifc_types[furniture.type_ref])
             ll.assign_container(f, element, storeys[storey.tag])
+
+
+def _emit_service_ports(f: Any, occurrence: Any, ports: tuple[Any, ...], project_uuid: Any,
+                        occurrence_uid: str) -> None:
+    """Attach stable IFC endpoint identities without prematurely inventing routing."""
+    if not ports:
+        return
+    entities = []
+    for port in ports:
+        entity = ll.create_entity(f, "IfcDistributionPort", name=port.tag)
+        entity.GlobalId = derive_child_guid(project_uuid, occurrence_uid, f"port/{port.tag}")
+        ll.ensure_pset(f, entity, "TypeHaus_Port", {
+            "tag": port.tag, "service": port.service.value,
+            "x_m": port.position[0].meters, "y_m": port.position[1].meters,
+            "z_m": port.position[2].meters, "notes": port.notes or "",
+        })
+        entities.append(entity)
+    relation = f.create_entity("IfcRelNests", GlobalId=derive_child_guid(
+        project_uuid, occurrence_uid, "ports"), RelatingObject=occurrence, RelatedObjects=entities)
+    relation.Name = "Service ports"
+
+
+def _type_identity(product_type: Any) -> dict[str, str]:
+    """Keep import provenance on the semantic IFC type without inventing IFC properties.
+
+    Import records are intentionally flat JSON.  A compact deterministic JSON value keeps
+    arbitrary source facts (including future IFC GUIDs) available to BIM tools while the
+    standard class and type relationship remain the primary interchange contract.
+    """
+    result = {"tag": product_type.tag, "source_type": product_type.tag}
+    if product_type.import_provenance:
+        result["import_provenance"] = json.dumps(product_type.import_provenance, sort_keys=True)
+    return result
+
+
+def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, Any],
+                              project_uuid: Any) -> None:
+    """Export resolved plumbing fixtures and appliances with semantic, stable identities."""
+    fixture_types = {item.tag: item for item in model.plan.library.fixture_types}
+    appliance_types = {item.tag: item for item in model.plan.library.appliance_types}
+    type_cache: dict[tuple[str, str], Any] = {}
+    for item in model.canvas_objects:
+        if item.domain not in {"plumbing", "appliance"}:
+            continue
+        product_type = (fixture_types if item.domain == "plumbing" else appliance_types).get(item.type_ref)
+        if product_type is None:
+            continue
+        ifc_class = "IfcSanitaryTerminal" if item.domain == "plumbing" else "IfcBuildingElementProxy"
+        type_class = "IfcSanitaryTerminalType" if item.domain == "plumbing" else "IfcBuildingElementProxyType"
+        type_key = (ifc_class, product_type.tag)
+        type_object = type_cache.get(type_key)
+        if type_object is None:
+            type_object = ll.create_entity(f, type_class, name=product_type.name)
+            type_object.GlobalId = derive_child_guid(project_uuid, f"{item.domain}-types", product_type.tag)
+            ll.ensure_pset(f, type_object, "TypeHaus_Identity", _type_identity(product_type))
+            type_cache[type_key] = type_object
+        element = ll.create_entity(f, ifc_class, name=item.tag)
+        element.GlobalId = derive_guid(project_uuid, item.uid)
+        _assign_representation(f, element, ll.add_prism_from_profile(
+            f, body, item.footprint, product_type.height.meters, item.z_m,
+        ))
+        ll.ensure_pset(f, element, PSET_SOURCE, {"uid": item.uid, "tag": item.tag,
+                                                   "type": product_type.tag,
+                                                   "rotation_degrees": f"{item.rotation_degrees:.6f}"})
+        ll.ensure_pset(f, element, "TypeHaus_Identity", {"uid": item.uid, "tag": item.tag,
+                                                            "source_type": product_type.tag})
+        _emit_service_ports(f, element, product_type.ports, project_uuid, item.uid)
+        ll.assign_type(f, element, type_object)
+        ll.assign_container(f, element, storeys[item.storey])
 
 
 def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_uuid: Any) -> None:
@@ -405,65 +508,142 @@ def _emit_duct_run(f: Any, body: Any, model: ResolvedModel, duct: Any, storeys: 
 
 def _emit_registers_equipment_devices(f: Any, body: Any, model: ResolvedModel,
                                       storeys: dict[str, Any], project_uuid: Any) -> None:
+    type_collections = {
+        "Register": {item.tag: item for item in model.plan.library.register_types},
+        "Equipment": {item.tag: item for item in model.plan.library.equipment_types},
+        "ElectricalDevice": {item.tag: item for item in model.plan.library.electrical_device_types},
+    }
+    resolved = {item.uid: item for item in model.canvas_objects}
+    type_cache: dict[tuple[str, str], Any] = {}
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):
+            product_type = type_collections.get(element.element_kind, {}).get(getattr(element, "type_ref", None))
+            resolved_item = resolved.get(element.uid)
             if element.element_kind == "Register":
-                _emit_register(f, body, element, storey, storeys, project_uuid)
+                _emit_register(f, body, element, storey, storeys, project_uuid, product_type, resolved_item,
+                               _placeable_ifc_type(f, type_cache, product_type, "IfcAirTerminal",
+                                                   "IfcAirTerminalType", project_uuid))
             elif element.element_kind == "Equipment":
-                _emit_equipment(f, body, element, storey, storeys, project_uuid)
+                _emit_equipment(f, body, element, storey, storeys, project_uuid, product_type, resolved_item,
+                                _placeable_ifc_type(f, type_cache, product_type, "IfcBuildingElementProxy",
+                                                    "IfcBuildingElementProxyType", project_uuid))
             elif element.element_kind == "ElectricalDevice":
-                _emit_device(f, body, element, storey, storeys, project_uuid)
+                ifc_class, type_class = _device_ifc_classes(element.kind.value)
+                _emit_device(f, body, element, storey, storeys, project_uuid, product_type, resolved_item,
+                             _placeable_ifc_type(f, type_cache, product_type, ifc_class, type_class, project_uuid))
 
 
 def _emit_register(f: Any, body: Any, register: Any, storey: Any, storeys: dict[str, Any],
-                   project_uuid: Any) -> None:
+                   project_uuid: Any, product_type: Any | None, resolved: Any | None,
+                   type_object: Any | None) -> None:
     x, y = register.position.xy_m
-    half = 0.10
-    outline = [(x - half, y - half), (x + half, y - half),
-               (x + half, y + half), (x - half, y + half)]
+    outline = resolved.footprint if resolved is not None else _rectangle(x, y, 0.10, 0.10)
+    height = product_type.height.meters if product_type is not None else 0.05
+    z0 = resolved.z_m if resolved is not None else storey.elevation.meters
     element = ll.create_entity(f, "IfcAirTerminal", name=register.tag)
     element.GlobalId = derive_guid(project_uuid, register.uid)
     _assign_representation(f, element, ll.add_prism_from_profile(
-        f, body, outline, 0.05, storey.elevation.meters,
+        f, body, outline, height, z0,
     ))
-    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": register.uid, "tag": register.tag})
+    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": register.uid, "tag": register.tag,
+                                               "rotation_degrees": _rotation_metadata(register, resolved)})
+    ll.ensure_pset(f, element, "TypeHaus_Identity", {"uid": register.uid, "tag": register.tag,
+                                                        "source_type": register.type_ref or ""})
+    if product_type is not None:
+        _emit_service_ports(f, element, product_type.ports, project_uuid, register.uid)
+    if type_object is not None:
+        ll.assign_type(f, element, type_object)
     ll.assign_container(f, element, storeys[storey.tag])
 
 
+def _rotation_metadata(element: Any, resolved: Any | None) -> str:
+    """Persist the resolved plan bearing so IFC reconciliation can name rotation edits."""
+    degrees = resolved.rotation_degrees if resolved is not None else getattr(
+        getattr(element, "rotation", None), "degrees", 0.0,
+    )
+    return f"{degrees:.6f}"
+
+
 def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dict[str, Any],
-                    project_uuid: Any) -> None:
+                    project_uuid: Any, product_type: Any | None, resolved: Any | None,
+                    type_object: Any | None) -> None:
     width, depth = (dim.meters for dim in equipment.footprint)
     x, y = equipment.position.xy_m
-    outline = [(x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
-               (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2)]
+    outline = resolved.footprint if resolved is not None else _rectangle(x, y, width, depth)
+    height = product_type.height.meters if product_type is not None else 1.5
+    z0 = resolved.z_m if resolved is not None else storey.elevation.meters
     element = ll.create_entity(f, "IfcBuildingElementProxy", name=equipment.tag)
     element.GlobalId = derive_guid(project_uuid, equipment.uid)
     _assign_representation(f, element, ll.add_prism_from_profile(
-        f, body, outline, 1.5, storey.elevation.meters,
+        f, body, outline, height, z0,
     ))
-    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": equipment.uid, "tag": equipment.tag})
+    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": equipment.uid, "tag": equipment.tag,
+                                               "rotation_degrees": _rotation_metadata(equipment, resolved)})
+    ll.ensure_pset(f, element, "TypeHaus_Identity", {"uid": equipment.uid, "tag": equipment.tag,
+                                                        "source_type": equipment.type_ref or ""})
     ll.ensure_pset(f, element, "TypeHaus_Equipment", {"kind": equipment.kind.value})
+    if product_type is not None:
+        _emit_service_ports(f, element, product_type.ports, project_uuid, equipment.uid)
+    if type_object is not None:
+        ll.assign_type(f, element, type_object)
     ll.assign_container(f, element, storeys[storey.tag])
 
 
 def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str, Any],
-                 project_uuid: Any) -> None:
+                 project_uuid: Any, product_type: Any | None, resolved: Any | None,
+                 type_object: Any | None) -> None:
     x, y = device.position.xy_m
     half = 0.05  # 4"x4" nominal device box
-    outline = [(x - half, y - half), (x + half, y - half),
-               (x + half, y + half), (x - half, y + half)]
+    outline = resolved.footprint if resolved is not None else _rectangle(x, y, half * 2, half * 2)
     outlet_kinds = ("receptacle", "gfci", "receptacle_240")
     mount_default = 1.219 if device.kind.value in outlet_kinds else 0.406
     mount = device.mount_height.meters if device.mount_height is not None else mount_default
-    z0 = storey.elevation.meters + mount
-    element = ll.create_entity(f, "IfcBuildingElementProxy", name=device.tag)
+    z0 = resolved.z_m if resolved is not None else storey.elevation.meters + mount
+    ifc_class, _ = _device_ifc_classes(device.kind.value)
+    element = ll.create_entity(f, ifc_class, name=device.tag)
     element.GlobalId = derive_guid(project_uuid, device.uid)
-    _assign_representation(f, element, ll.add_prism_from_profile(f, body, outline, 0.05, z0))
-    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": device.uid, "tag": device.tag})
+    _assign_representation(f, element, ll.add_prism_from_profile(
+        f, body, outline, product_type.height.meters if product_type is not None else 0.05, z0))
+    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": device.uid, "tag": device.tag,
+                                               "rotation_degrees": _rotation_metadata(device, resolved)})
+    ll.ensure_pset(f, element, "TypeHaus_Identity", {"uid": device.uid, "tag": device.tag,
+                                                        "source_type": device.type_ref or ""})
     ll.ensure_pset(f, element, "TypeHaus_Device", {
         "kind": device.kind.value, "circuit": device.circuit or "",
     })
+    if product_type is not None:
+        _emit_service_ports(f, element, product_type.ports, project_uuid, device.uid)
+    if type_object is not None:
+        ll.assign_type(f, element, type_object)
     ll.assign_container(f, element, storeys[storey.tag])
+
+
+def _placeable_ifc_type(f: Any, cache: dict[tuple[str, str], Any], product_type: Any | None,
+                        ifc_class: str, type_class: str, project_uuid: Any) -> Any | None:
+    if product_type is None:
+        return None
+    key = (ifc_class, product_type.tag)
+    if key not in cache:
+        entity = ll.create_entity(f, type_class, name=product_type.name)
+        entity.GlobalId = derive_child_guid(project_uuid, f"{ifc_class}-types", product_type.tag)
+        ll.ensure_pset(f, entity, "TypeHaus_Identity", _type_identity(product_type))
+        cache[key] = entity
+    return cache[key]
+
+
+def _device_ifc_classes(kind: str) -> tuple[str, str]:
+    return {
+        "receptacle": ("IfcOutlet", "IfcOutletType"), "gfci": ("IfcOutlet", "IfcOutletType"),
+        "receptacle_240": ("IfcOutlet", "IfcOutletType"),
+        "switch": ("IfcSwitchingDevice", "IfcSwitchingDeviceType"),
+        "light": ("IfcLightFixture", "IfcLightFixtureType"),
+        "panel": ("IfcElectricDistributionBoard", "IfcElectricDistributionBoardType"),
+    }.get(kind, ("IfcBuildingElementProxy", "IfcBuildingElementProxyType"))
+
+
+def _rectangle(x: float, y: float, width: float, depth: float) -> list[tuple[float, float]]:
+    return [(x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
+            (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2)]
 
 
 def _emit_sleeve(f: Any, body: Any, sleeve: Any, storeys: dict[str, Any],

@@ -91,6 +91,8 @@ export interface Opening {
   height_m: number;
   sill_m: number;
   center_along_m: number;
+  swing_clearance?: Vec2[];
+  framing_bumper?: Vec2[];
   flip_hinge: boolean;
   flip_swing: boolean;
 }
@@ -140,6 +142,49 @@ export interface Furniture {
   storage: boolean;
   clearance_m: [number, number, number, number] | null;
   mesh: string | null;
+}
+
+// All non-topological placeables share this transport shape. Detailed legacy fixture and
+// furniture fields remain above during the transition, while the canvas uses this list
+// for appliances, mechanical, and electrical domains too.
+export interface CanvasObject {
+  uid: string;
+  tag: string;
+  storey: string;
+  kind: string;
+  type: string | null;
+  domain: string;
+  room: string | null;
+  position_m: Vec2 | null;
+  z_m?: number;
+  rotation: number | null;
+  host: string | null;
+  attachment: { wall: string; face: string } | null;
+  footprint?: Vec2[];
+  required_clearances?: Vec2[][];
+  recommended_clearances?: Vec2[][];
+  framing_bumper?: Vec2[];
+  ports?: { tag: string; service: string }[];
+  plan_svg?: string | null;
+  model_glb?: string | null;
+  model_primitive?: string | null;
+}
+
+export interface CanvasObjectType {
+  tag: string;
+  name: string;
+  domain: string;
+  kind: string;
+  placement: "opening_hosted" | "free_placed" | "wall_attached";
+  footprint_m: [number, number] | null;
+  footprint_shape_m?: Vec2[] | null;
+  height_m: number | null;
+  clearances?: { footprint_m: Vec2[]; purpose: string; policy: "required" | "recommended"; source: string | null; code_profile?: string | null }[];
+  mount?: { kind: "floor" | "wall" | "ceiling"; elevation_m: number | null; drop_m: number | null } | null;
+  ports: { tag: string; service: string }[];
+  plan_svg?: string | null;
+  model_glb?: string | null;
+  model_primitive?: string | null;
 }
 
 export interface SpaceSummaryRow {
@@ -271,6 +316,7 @@ export interface Catalog {
   occupancies: string[];
   materials: MaterialSpec[];
   assemblies: AssemblySpec[];
+  canvas_object_types?: CanvasObjectType[];
 }
 
 export interface Roof {
@@ -361,7 +407,7 @@ export interface Model {
   units: string;
   projectNorth: number;
   findings: Finding[];
-  project: { name: string; uuid: string };
+  project: { name: string; uuid: string; active_code_profile?: string | null };
   site?: {
     lat: number;
     lon: number;
@@ -381,6 +427,7 @@ export interface Model {
   stairs?: Stair[];
   fixtures?: Fixture[];
   furniture?: Furniture[];
+  canvas_objects?: CanvasObject[];
   rooms: Room[];
   space_summary?: SpaceSummary;
   conditions: Condition[];

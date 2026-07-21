@@ -15,6 +15,9 @@ from pathlib import Path
 import pytest
 
 from typehaus.emit.gltf import emit_glb, emit_gltf_dict
+from typehaus.model.elements import RoughOpening
+from typehaus.model.refs import from_node
+from typehaus.quantities import ft
 from typehaus.model.remap import ReferenceRemap, registered_ref_fields, remap_ops_for
 from typehaus.resolve import resolve
 from typehaus.source import load_plan, macros
@@ -78,6 +81,41 @@ def test_move_opening_rewrites_structured_position_on_its_current_host(plan):
 def test_move_opening_rejects_wrong_storey(plan):
     with pytest.raises(macros.MacroError):
         macros.move_opening(plan, "upper", tag="D-101", along="5'")
+
+
+def test_move_opening_rejects_a_station_that_does_not_fit_the_host(plan):
+    with pytest.raises(macros.MacroError, match="does not fit"):
+        macros.move_opening(plan, "main", tag="D-101", along="100'")
+
+
+def test_place_opening_rejects_an_overlapping_host_station(plan):
+    with pytest.raises(macros.MacroError, match="conflicts"):
+        macros.place_opening(plan, "main", host="W-101", type_ref="DT-EXT36",
+                             along="5'", is_door=True)
+
+
+def test_duplicate_opening_finds_a_non_overlapping_station(plan):
+    (op,) = macros.duplicate_canvas_object(plan, "main", tag="D-101").ops
+    assert (op.op, op.type, op.tag) == ("add", "Door", "D-101-COPY")
+
+
+def test_duplicate_rough_opening_keeps_its_unfilled_opening_semantics(plan):
+    original = next(item for item in plan.storey_elements("main") if item.tag == "D-101")
+    rough = RoughOpening(uid=original.uid, tag="RO-1", host=original.host,
+                         position=from_node("N-1", ft(5)), width=ft(2), height=ft(6), sill_height=ft(0))
+    copied_plan = plan.model_copy(update={
+        "elements": {**plan.elements, "main": tuple(
+            rough if item.tag == original.tag else item for item in plan.storey_elements("main")
+        )},
+    })
+    (op,) = macros.duplicate_canvas_object(copied_plan, "main", tag="RO-1").ops
+    assert (op.op, op.type, op.tag, op.hint_list) == ("add", "RoughOpening", "RO-1-COPY", "OPENINGS")
+
+
+def test_place_rough_opening_uses_the_shared_host_validation(plan):
+    (op,) = macros.place_rough_opening(plan, "main", host="W-101", width="2'", height="6'",
+                                       along="12'", tag="RO-NEW").ops
+    assert (op.op, op.type, op.tag, op.hint_list) == ("add", "RoughOpening", "RO-NEW", "OPENINGS")
 
 
 # --- split + remap -----------------------------------------------------------
