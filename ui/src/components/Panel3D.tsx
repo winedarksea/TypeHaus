@@ -4,7 +4,13 @@ import { ALL_TRADES, useStore, type Trade } from "../state/store";
 import type { Model, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
-import { createPlanPrismGeometry } from "../three/planGeometry";
+import {
+  createPlanPrismGeometry,
+  createProjectedSurfaceGeometry,
+  createRakedPlanPrismGeometry,
+  projectPointToScene,
+  type PlanCenter,
+} from "../three/planGeometry";
 import { useTheme } from "../theme/theme";
 
 // The 3D panel behind an implicit ModelViewer seam (→ 21 §3D panel). The primary path is
@@ -286,13 +292,14 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     }
     if (!preserveView) target = new THREE.Vector3(0, 1.2, 0);
 
-    for (const w of m.walls) buildWall(tradeGroups, w, cx, cz, mode, palette, picks, byUid);
-    for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, cx, cz, mode, palette);
-    for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, cx, cz, mode, palette);
-    for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, cx, cz, mode, palette);
-    for (const stair of m.stairs ?? []) buildStair(tradeGroups.stairs, stair, cx, cz, mode);
+    const center: PlanCenter = [cx, cz];
+    for (const w of m.walls) buildWall(tradeGroups, w, center, mode, palette, picks, byUid);
+    for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, center, mode, palette);
+    for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, center, mode, palette);
+    for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette);
+    for (const stair of m.stairs ?? []) buildStair(tradeGroups.stairs, stair, center, mode);
     for (const furniture of m.furniture ?? [])
-      buildFurniture(tradeGroups.furniture, furniture, cx, cz, mode, palette,
+      buildFurniture(tradeGroups.furniture, furniture, center, mode, palette,
         m.storeys.find((storey) => storey.tag === furniture.storey)?.elevation_m ?? 0);
 
     // Frame the full rendered bounds, including its vertical origin. The old target only
@@ -351,8 +358,7 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
 function buildFurniture(
   parent: THREE.Group,
   furniture: NonNullable<Model["furniture"]>[number],
-  cx: number,
-  cz: number,
+  center: PlanCenter,
   mode: "nordic" | "schematic",
   palette: ResolvedNordicPalette,
   elevation: number,
@@ -364,8 +370,7 @@ function buildFurniture(
     color: palette.member.wood, roughness: mode === "nordic" ? 0.88 : 1, flatShading: mode === "schematic",
   });
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.set(furniture.position[0] - cx, elevation + furniture.height_m / 2,
-    furniture.position[1] - cz);
+  mesh.position.copy(projectPointToScene(furniture.position, elevation + furniture.height_m / 2, center));
   parent.add(mesh);
 }
 
@@ -386,35 +391,6 @@ function rakedTopAt(w: Wall, x: number, y: number): number {
 // Extrude a layer polygon between z0 and a per-vertex raked top (rather than a flat height) —
 // a wall under a sloped roof (gable end, ToRoof) must stop at its actual rake, or its full
 // bounding-height rectangle engulfs the roof geometry and hides it from outside (#WP-roof-hide).
-function buildRakedLayerGeometry(
-  polygon: [number, number][], z0: number, w: Wall, cx: number, cz: number,
-): THREE.BufferGeometry {
-  const n = polygon.length;
-  const bottom = polygon.map(([x, y]) => new THREE.Vector3(x - cx, z0, y - cz));
-  const top = polygon.map(([x, y]) => new THREE.Vector3(x - cx, rakedTopAt(w, x, y), y - cz));
-  const positions: number[] = [];
-  const pushTri = (a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3) => {
-    positions.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
-  };
-  for (let i = 0; i < n; i++) {
-    const j = (i + 1) % n;
-    pushTri(bottom[i], bottom[j], top[j]);
-    pushTri(bottom[i], top[j], top[i]);
-  }
-  for (let i = 1; i < n - 1; i++) {
-    pushTri(bottom[0], bottom[i + 1], bottom[i]); // bottom cap (down-facing)
-    pushTri(top[0], top[i], top[i + 1]); // top cap (up-facing)
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  geo.computeVertexNormals();
-  return geo;
-}
-
-function translatePlanRing(points: readonly [number, number][], cx: number, cz: number): [number, number][] {
-  return points.map(([x, y]) => [x - cx, y - cz]);
-}
-
 // Build one wall: an extruded prism per layer polygon (→ "walls" trade) + its solid framing
 // members (→ "framing" trade, WP8). World plan (x,y) maps to three (x, z); height runs
 // along +Y. Centered on (cx,cz). Raked (ToRoof) walls extrude to their actual sloped top,
@@ -422,8 +398,7 @@ function translatePlanRing(points: readonly [number, number][], cx: number, cz: 
 function buildWall(
   tradeGroups: Record<Trade, THREE.Group>,
   w: Wall,
-  cx: number,
-  cz: number,
+  center: PlanCenter,
   mode: "nordic" | "schematic",
   palette: ResolvedNordicPalette,
   picks: THREE.Mesh[],
@@ -439,9 +414,12 @@ function buildWall(
     if (ly.is_cavity) continue;
     let geo: THREE.BufferGeometry;
     if (raked) {
-      geo = buildRakedLayerGeometry(ly.polygon, w.z0_m, w, cx, cz);
+      const rakedGeometry = createRakedPlanPrismGeometry(ly.polygon, w.z0_m,
+        (point) => rakedTopAt(w, point[0], point[1]), center);
+      if (!rakedGeometry) continue;
+      geo = rakedGeometry;
     } else {
-      const planPrism = createPlanPrismGeometry(translatePlanRing(ly.polygon, cx, cz), w.z0_m, w.z0_m + h);
+      const planPrism = createPlanPrismGeometry(ly.polygon, w.z0_m, w.z0_m + h, [], center);
       if (!planPrism) continue;
       geo = planPrism;
     }
@@ -466,16 +444,15 @@ function buildWall(
       tradeGroups.walls.add(edges);
     }
   }
-  buildMembers(tradeGroups.framing, w.members, cx, cz, mode);
+  buildMembers(tradeGroups.framing, w.members, center, mode);
   byUid.set(w.uid, mats);
 }
 
 // Slabs, footings, pads: same outline-extrusion recipe as wall layers, concrete grey.
-function buildSolid(parent: THREE.Group, solid: Solid, cx: number, cz: number,
+function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
   if (solid.outline.length < 3) return;
-  const geo = createPlanPrismGeometry(translatePlanRing(solid.outline, cx, cz), solid.z0_m,
-    Math.max(solid.z1_m, solid.z0_m + 0.01));
+  const geo = createPlanPrismGeometry(solid.outline, solid.z0_m, Math.max(solid.z1_m, solid.z0_m + 0.01), [], center);
   if (!geo) return;
   const mat = new THREE.MeshStandardMaterial({
     color: palette.member.concrete, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",
@@ -483,7 +460,7 @@ function buildSolid(parent: THREE.Group, solid: Solid, cx: number, cz: number,
   parent.add(new THREE.Mesh(geo, mat));
 }
 
-function buildFloor(parent: THREE.Group, floor: Floor, cx: number, cz: number,
+function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
   if (floor.subfloor && floor.members.length) {
     const points = floor.members.flatMap((member) => [member.p0, member.p1]);
@@ -493,10 +470,11 @@ function buildFloor(parent: THREE.Group, floor: Floor, cx: number, cz: number,
     const maxY = Math.max(...points.map((point) => point[1]));
     const z = Math.max(...floor.members.map((member) => member.z1_m));
     const geometry = createPlanPrismGeometry(
-      translatePlanRing([[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]], cx, cz),
+      [[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]],
       z,
       z + floor.subfloor.thickness_m,
-      floor.openings.map((opening) => translatePlanRing(opening, cx, cz)),
+      floor.openings,
+      center,
     );
     if (!geometry) return;
     parent.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
@@ -504,21 +482,21 @@ function buildFloor(parent: THREE.Group, floor: Floor, cx: number, cz: number,
       flatShading: mode === "schematic",
     })));
   }
-  buildMembers(parent, floor.members, cx, cz, mode);
+  buildMembers(parent, floor.members, center, mode);
 }
 
 // Sloped quads from footprint/eave_z/ridge_z/ridge_direction — mirrors
 // emit/gltf/emitter.py's _add_roof — plus the roof's own members (rafters, ridge beam).
-function buildRoof(parent: THREE.Group, roof: Roof, cx: number, cz: number,
+function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
-  const xs = roof.footprint.map((p) => p[0] - cx);
-  const ys = roof.footprint.map((p) => p[1] - cz);
+  const xs = roof.footprint.map((p) => p[0]);
+  const ys = roof.footprint.map((p) => p[1]);
   const minx = Math.min(...xs), maxx = Math.max(...xs);
   const miny = Math.min(...ys), maxy = Math.max(...ys);
   const eave = roof.eave_z_m;
   const ridge = roof.ridge_z_m;
-  const v = (x: number, y: number, z: number) => new THREE.Vector3(x, z, y);
-  let triangles: THREE.Vector3[];
+  const v = (x: number, y: number, z: number): [[number, number], number] => [[x, y], z];
+  let triangles: [[number, number], number][];
   if (roof.form === "shed") {
     triangles = roof.ridge_direction === "x"
       ? [v(minx, miny, eave), v(maxx, miny, eave), v(maxx, maxy, ridge),
@@ -544,17 +522,16 @@ function buildRoof(parent: THREE.Group, roof: Roof, cx: number, cz: number,
       ra, v(maxx, maxy, eave), rb,
     ];
   }
-  const geo = new THREE.BufferGeometry().setFromPoints(triangles);
-  geo.computeVertexNormals();
+  const geo = createProjectedSurfaceGeometry([triangles], center);
   const mat = new THREE.MeshStandardMaterial({
     color: palette.material.metal, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",
     transparent: true, opacity: 0.65, side: THREE.DoubleSide,
   });
   parent.add(new THREE.Mesh(geo, mat));
-  buildMembers(parent, roof.members, cx, cz, mode);
+  buildMembers(parent, roof.members, center, mode);
 }
 
-function buildStair(parent: THREE.Group, stair: Stair, cx: number, cz: number,
+function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter,
   mode: "nordic" | "schematic") {
-  buildMembers(parent, stair.members, cx, cz, mode);
+  buildMembers(parent, stair.members, center, mode);
 }

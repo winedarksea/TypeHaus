@@ -115,3 +115,9 @@ Each item names the reference drawing it comes from.
 - Some windows are too tall, headers going above the ceiling height (two in the garage are
   the clearest examples).
 
+## Current Orientation:
++X: east
++Y: north
++Z: vertical/up
+will need to support rotating the house off axis in the future
+

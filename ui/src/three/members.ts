@@ -12,6 +12,7 @@
 //      would render level rather than raked — square-cut, plumb ends not modeled.
 import * as THREE from "three";
 import type { Member } from "../model/types";
+import { projectPlanDirectionToScene, projectPointToScene, type PlanCenter } from "./planGeometry";
 
 // Mirrors emit/gltf/emitter.py's _PALETTE (member-category keys only; layer-function
 // colors live in nordic/palette.ts for wall fills).
@@ -73,11 +74,11 @@ function setBoxInstance(mesh: THREE.InstancedMesh, index: number, origin: THREE.
 // the in-plan axis the solver placed it along (its width_m face); the through-member
 // axis (depth_m) is perpendicular to that, both horizontal.
 function setVerticalInstance(mesh: THREE.InstancedMesh, index: number, m: Member,
-  cx: number, cz: number) {
+  center: PlanCenter) {
   const [ox, oz] = m.orient ?? [1, 0];
-  const orient = new THREE.Vector3(ox, 0, oz).normalize();
+  const orient = projectPlanDirectionToScene([ox, oz]).normalize();
   const perp = new THREE.Vector3(-orient.z, 0, orient.x);
-  const origin = _pos.set(m.p0[0] - cx, m.z0_m, m.p0[1] - cz).clone();
+  const origin = _pos.copy(projectPointToScene(m.p0, m.z0_m, center)).clone();
   setBoxInstance(mesh, index, origin, orient, m.width_m, UP, m.z1_m - m.z0_m, perp, m.depth_m,
     categoryColor(m.category));
 }
@@ -87,13 +88,13 @@ function setVerticalInstance(mesh: THREE.InstancedMesh, index: number, m: Member
 // scaled by the engine's own z1-z0 (already the physically correct depth for this member,
 // whether it's lying flat or standing on edge — see crossWidth for the horizontal face).
 function setHorizontalInstance(mesh: THREE.InstancedMesh, index: number, m: Member,
-  cx: number, cz: number) {
+  center: PlanCenter) {
   const dx = m.p1[0] - m.p0[0];
   const dz = m.p1[1] - m.p0[1];
   const runLen = Math.hypot(dx, dz);
-  const run = runLen > 1e-9 ? new THREE.Vector3(dx / runLen, 0, dz / runLen) : new THREE.Vector3(1, 0, 0);
+  const run = runLen > 1e-9 ? projectPlanDirectionToScene([dx / runLen, dz / runLen]) : new THREE.Vector3(1, 0, 0);
   const across = new THREE.Vector3(-run.z, 0, run.x);
-  const origin = _pos.set(m.p0[0] - cx, m.z0_m, m.p0[1] - cz).clone();
+  const origin = _pos.copy(projectPointToScene(m.p0, m.z0_m, center)).clone();
   setBoxInstance(mesh, index, origin, across, crossWidth(m), run, runLen, UP, m.z1_m - m.z0_m,
     categoryColor(m.category));
 }
@@ -118,7 +119,7 @@ function bucket(members: Member[]): Buckets {
   return out;
 }
 
-function buildRectInstances(group: THREE.Group, members: Member[], cx: number, cz: number,
+function buildRectInstances(group: THREE.Group, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic") {
   if (!members.length) return;
   const material = new THREE.MeshStandardMaterial({
@@ -126,8 +127,8 @@ function buildRectInstances(group: THREE.Group, members: Member[], cx: number, c
   });
   const mesh = new THREE.InstancedMesh(UNIT_BOX, material, members.length);
   members.forEach((m, i) => {
-    if (isVertical(m)) setVerticalInstance(mesh, i, m, cx, cz);
-    else setHorizontalInstance(mesh, i, m, cx, cz);
+    if (isVertical(m)) setVerticalInstance(mesh, i, m, center);
+    else setHorizontalInstance(mesh, i, m, center);
   });
   mesh.instanceMatrix.needsUpdate = true;
   if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
@@ -136,7 +137,7 @@ function buildRectInstances(group: THREE.Group, members: Member[], cx: number, c
 
 // Exact 8-vertex raked box: vertical ends, sloped top/bottom — mirrors
 // emit/gltf/emitter.py's add_member_box. One merged geometry (vertex colors) per trade.
-function buildRakedMesh(group: THREE.Group, members: Member[], cx: number, cz: number,
+function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic") {
   if (!members.length) return;
   const positions: number[] = [];
@@ -144,8 +145,10 @@ function buildRakedMesh(group: THREE.Group, members: Member[], cx: number, cz: n
   const colors: number[] = [];
   const faces = [[0, 1, 2, 3], [4, 7, 6, 5], [0, 4, 5, 1], [1, 5, 6, 2], [2, 6, 7, 3], [3, 7, 4, 0]];
   for (const m of members) {
-    const ax = m.p0[0] - cx, ay = m.p0[1] - cz;
-    const bx = m.p1[0] - cx, by = m.p1[1] - cz;
+    const a = projectPointToScene(m.p0, 0, center);
+    const b = projectPointToScene(m.p1, 0, center);
+    const ax = a.x, ay = a.z;
+    const bx = b.x, by = b.z;
     const az0 = m.z0_m, az1 = m.z1_m;
     const bz0 = m.z0_end_m ?? m.z0_m, bz1 = m.z1_end_m ?? m.z1_m;
     const dx = bx - ax, dy = by - ay;
@@ -180,7 +183,7 @@ function buildRakedMesh(group: THREE.Group, members: Member[], cx: number, cz: n
 // Three shared InstancedMeshes (top flange, bottom flange, web), one instance per member.
 // The run axis includes its resolved rise, so roof I-joists follow the roof plane instead
 // of appearing flat in the model.
-function buildIJoists(group: THREE.Group, members: Member[], cx: number, cz: number,
+function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic") {
   if (!members.length) return;
   const mkMesh = () => new THREE.InstancedMesh(
@@ -195,9 +198,9 @@ function buildIJoists(group: THREE.Group, members: Member[], cx: number, cz: num
     const dx = m.p1[0] - m.p0[0];
     const dz = m.p1[1] - m.p0[1];
     const runLen = Math.hypot(dx, dz);
-    const horizontalRun = runLen > 1e-9 ? new THREE.Vector3(dx / runLen, 0, dz / runLen) : new THREE.Vector3(1, 0, 0);
+    const horizontalRun = runLen > 1e-9 ? projectPlanDirectionToScene([dx / runLen, dz / runLen]) : new THREE.Vector3(1, 0, 0);
     const rise = (m.z0_end_m ?? m.z0_m) - m.z0_m;
-    const run = new THREE.Vector3(dx, rise, dz).normalize();
+    const run = projectPlanDirectionToScene([dx, dz]).setY(rise).normalize();
     const across = new THREE.Vector3(-horizontalRun.z, 0, horizontalRun.x);
     const normal = new THREE.Vector3().crossVectors(across, run).normalize();
     const depth = m.z1_m - m.z0_m;
@@ -205,7 +208,7 @@ function buildIJoists(group: THREE.Group, members: Member[], cx: number, cz: num
     const flangeW = m.flange_width_m ?? m.width_m;
     const webT = m.web_thickness_m ?? Math.min(flangeW, 0.01);
     const color = categoryColor(m.category);
-    const base = _pos.set(m.p0[0] - cx, m.z0_m, m.p0[1] - cz).clone();
+    const base = _pos.copy(projectPointToScene(m.p0, m.z0_m, center)).clone();
     const slopedLength = Math.hypot(runLen, rise);
 
     setBoxInstance(bottom, i, base, across, flangeW, run, slopedLength, normal, flangeT, color);
@@ -221,13 +224,13 @@ function buildIJoists(group: THREE.Group, members: Member[], cx: number, cz: num
   }
 }
 
-export function buildMembers(group: THREE.Group, members: Member[], cx: number, cz: number,
+export function buildMembers(group: THREE.Group, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic") {
   if (!members.length) return;
   const buckets = bucket(members);
-  buildRectInstances(group, buckets.rect, cx, cz, mode);
-  buildRakedMesh(group, buckets.raked, cx, cz, mode);
-  buildIJoists(group, buckets.ijoist, cx, cz, mode);
+  buildRectInstances(group, buckets.rect, center, mode);
+  buildRakedMesh(group, buckets.raked, center, mode);
+  buildIJoists(group, buckets.ijoist, center, mode);
 }
 
 export function disposeGroup(root: THREE.Object3D) {
