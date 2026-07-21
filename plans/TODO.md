@@ -15,18 +15,7 @@ Interior walls do not consider the roof slope for the sloped attic level ceiling
 
 Roof assembly still isn't showing on the 3d model.
 
-Catlin house stairs are supposed to be u-shaped from basement to main floor and main floor to second floor. U-shape stairs have a two landings in the split (separated by a single step themselves). This type of stair should be properly part of the stair designer (as should the right angle with winder which the attic stairs have, but which seems might be partly hacked on the side). Also between floors the stairs don't have the matching gap they need in the floor above (it seems sheathing is removed but joists are not worked around. Here this will be handled by the wall to the west of the stairs, between RM-M-STORAGE and the stairs on the main floor, being a load bearing wall, on top of a concrete load bearing wall in the basement underneath it)
-
 The render png of the floorplans nicely shows the IDs of the rooms, and it shows door. We would like to be able to see the IDs and sq ft in the UI for the 2d floor plan view, see and edit the doors, and add to both the png and UI of the floorplan a clear illustration of the windows location (which are already somewhat shown in 3d framing, just not in 2d anywhere visibly).
-
-Arches are missing on the balcony/porch concrete.
-The current modeled concrete arches are:
-2 arches per wall, on the north and south porch walls
-Each opening: 8 ft wide × 8 ft high
-Semicircular top: 4 ft radius
-Straight vertical portion: 4 ft high
-Outer concrete piers: 1 ft wide
-Porch wall thickness: 12 in
 
 ## Catlin detail parity — remaining
 
@@ -83,7 +72,7 @@ Each item names the reference drawing it comes from.
   assembly puts the exterior insulation at *high* u — but `SL-M-DECK` also occupies high u,
   which would put the slab outdoors. One of the two is mirrored. The detail components read
   the exterior side off layer order and so follow the assembly, which is why the foundation
-  detail currently draws soil over the slab edge. Needs a design-intent call, not a guess.
+  detail currently draws soil over the slab edge. Answer: deck, balcony, and sunken garden are structurally separate concrete structure right next to the house. The deck/balcony/garden don't have insulation, are unconditioned outside, so interior doesn't matter.
 - **French drain diameter has nowhere to live.** The reference fixes 4"
   (`basementconstruction.json`), but `FootingBedding` models drain tile as a bool.
   `detail_components.py` hardcodes the 4"/10"/8" drain and rock dimensions; they should come
@@ -112,6 +101,14 @@ Each item names the reference drawing it comes from.
 * clean import/export (so ship to another computer running this app)
 * bypass libcst entirely for the mutation path for fully offline PWA (high risk, deferred)
 
+Arches are missing on the balcony/porch concrete.
+The current modeled concrete arches are:
+2 arches per wall, on the north and south porch walls
+Each opening: 8 ft wide × 8 ft high
+Semicircular top: 4 ft radius
+Straight vertical portion: 4 ft high
+Outer concrete piers: 1 ft wide
+Porch wall thickness: 12 in
 
 ## Current Orientation:
 +X: east

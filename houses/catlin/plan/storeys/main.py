@@ -54,6 +54,10 @@ WINDOW_TYPES = [
                shgc=0.35, vt=0.5, operation="casement"),
     WindowType(tag="WT-3050", width=ft(3), height=ft(5), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
+    # 27" RO, short — garage's 8' wall can't take WT-2760's 60" height at a 42" sill
+    # (header would land above the top plate); same bearing-wall width module, shorter.
+    WindowType(tag="WT-2736", width=inch(27), height=ft(3), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement"),
 ]
 
 NODES = [

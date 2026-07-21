@@ -86,6 +86,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
 
     n = int(axis_len // spacing)
     idx = 0
+    last_s = None
     for i in range(n + 1):
         s = i * spacing
         if s > axis_len + 1e-6:
@@ -99,6 +100,23 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
                          stud_z0, stud_top, stud_top - stud_z0, orient=d)
         )
         idx += 1
+        last_s = s
+
+    # A stud at the wall's far end regardless of module alignment: standard framing
+    # practice puts a stud at both ends of every wall, but the spacing loop above only
+    # reaches the end when axis_len happens to be an exact multiple of the module. The
+    # off-module remainder was silently leaving one end bare — most visibly at exterior
+    # corners, where the *incoming* wall's own end stud is exactly what the neighbor's
+    # ``corner_start`` supplemental stud assumes exists (see WP-corner-3-stud).
+    if last_s is None or axis_len - last_s > 1e-6:
+        if not _inside_opening(axis_len, openings):
+            pt = add(p0, scale(d, axis_len))
+            stud_top = top_at(axis_len)
+            members.append(
+                FramedMember(rw.uid, f"stud-{idx:03d}", "stud", member, pt, pt,
+                             stud_z0, stud_top, stud_top - stud_z0, orient=d)
+            )
+            idx += 1
 
     if corner_start:
         # A third stud at the owned end of each exterior corner favors the requested
