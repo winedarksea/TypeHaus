@@ -70,12 +70,13 @@ Each item names the reference drawing it comes from.
 
 ### Model questions surfaced by the details
 
-- **Which side of the basement wall is outdoors?** `W-B-S1`'s layers resolve
-  interior→exterior as concrete (u −12"..0") then damp-proof and XPS (0"..4.05"), so the
-  assembly puts the exterior insulation at *high* u — but `SL-M-DECK` also occupies high u,
-  which would put the slab outdoors. One of the two is mirrored. The detail components read
-  the exterior side off layer order and so follow the assembly, which is why the foundation
-  detail currently draws soil over the slab edge. Answer: deck, balcony, and sunken garden are structurally separate concrete structure right next to the house. The deck/balcony/garden don't have insulation, are unconditioned outside, so interior doesn't matter.
+- **Per-layer corner junctions (deferred).** `resolve/topology.py` extends *every* layer of
+  both walls at a node by the same max half-thickness, so at a corner each wall's insulation
+  and cladding poke past its neighbour's cladding — visible in the 3D view as coloured
+  vertical stripes of exposed layer end-face at every building corner. The fix is per-layer
+  junction resolution implementing the `STRUCTURE_BUTTS_FINISH_WRAPS` policy that
+  `JunctionPolicy` already declares; it changes 2D plans, details and IFC as well as the 3D
+  view, so it is its own piece of work.
 - **French drain diameter has nowhere to live.** The reference fixes 4"
   (`basementconstruction.json`), but `FootingBedding` models drain tile as a bool.
   `detail_components.py` hardcodes the 4"/10"/8" drain and rock dimensions; they should come

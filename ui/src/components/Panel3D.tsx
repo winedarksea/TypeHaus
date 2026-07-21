@@ -1,15 +1,19 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { ALL_TRADES, useStore, type Trade } from "../state/store";
-import type { Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
+import type { Catalog, Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
+import { createStandingSeamMaterial, isStandingSeam } from "../three/materials";
+import { aboveStructureLayers, boundaryEdges, roofOffsetter, roofPlaneTriangles } from "../three/roofGeometry";
 import {
   createPlanPrismGeometry,
   createProjectedSurfaceGeometry,
   createRakedPlanPrismGeometry,
   projectPointToScene,
   type PlanCenter,
+  type ProjectVertex,
 } from "../three/planGeometry";
 import { useTheme } from "../theme/theme";
 
@@ -135,6 +139,8 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
   const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 500);
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   mount.appendChild(renderer.domElement);
 
   const content = new THREE.Group();
@@ -156,7 +162,16 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
   const hemi = new THREE.HemisphereLight(0xffffff, 0xbcb6a8, 0.9);
   const key = new THREE.DirectionalLight(0xffffff, 0.7);
   key.position.set(4, 8, 6);
-  scene.add(hemi, key);
+  key.castShadow = true;
+  key.shadow.bias = -0.0001;
+  key.shadow.mapSize.set(2048, 2048);
+  scene.add(hemi, key, key.target);
+
+  // Painted metal is only metal if there is something to reflect. RoomEnvironment ships
+  // inside the `three` package, so the PWA keeps working offline — no HDRI download.
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const environment = pmrem.fromScene(new RoomEnvironment(), 0.04);
+  scene.environment = environment.texture;
 
   // Simple orbit: drag to rotate, wheel to dolly (no external controls dependency).
   let theta = Math.PI * 0.25;
@@ -313,7 +328,7 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     buildEarth(tradeGroups.earth, m, center, mode);
     for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, center, mode, palette);
     for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, center, mode, palette);
-    for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette);
+    for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette, m.catalog);
     for (const stair of m.stairs ?? []) buildStair(tradeGroups.stairs, stair, center, mode);
     for (const furniture of m.furniture ?? [])
       buildFurniture(tradeGroups.furniture, furniture, center, mode, palette,
@@ -322,6 +337,21 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     // Frame the full rendered bounds, including its vertical origin. The old target only
     // considered height, leaving models whose base was above zero visibly low in the canvas.
     const box = new THREE.Box3().setFromObject(content);
+    if (!box.isEmpty()) {
+      // Fit the sun's orthographic shadow frustum to the building, otherwise the default
+      // 5m box clips every house and the shadow map resolution is wasted on empty space.
+      const bounds = box.getBoundingSphere(new THREE.Sphere());
+      const cam = key.shadow.camera;
+      cam.left = -bounds.radius; cam.right = bounds.radius;
+      cam.top = bounds.radius; cam.bottom = -bounds.radius;
+      cam.near = 0.1; cam.far = bounds.radius * 6;
+      cam.updateProjectionMatrix();
+      key.target.position.copy(bounds.center);
+      key.position.copy(bounds.center).add(
+        new THREE.Vector3(0.6, 1.1, 0.45).normalize().multiplyScalar(bounds.radius * 2.5),
+      );
+      key.target.updateMatrixWorld();
+    }
     if (!box.isEmpty() && !preserveView) {
       const sphere = box.getBoundingSphere(new THREE.Sphere());
       const verticalHalfFov = THREE.MathUtils.degToRad(camera.fov) / 2;
@@ -373,6 +403,8 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
       cancelAnimationFrame(raf);
       ro.disconnect();
       for (const trade of ALL_TRADES) disposeGroup(tradeGroups[trade]);
+      environment.dispose();
+      pmrem.dispose();
       renderer.dispose();
       mount.removeChild(el);
     },
@@ -468,12 +500,18 @@ function buildWall(
     // Cavity fill shares its host structure layer's polygon — extruding it would only
     // z-fight with the studs it lives between.
     if (ly.is_cavity) continue;
-    const mat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(materialColor(ly.material, palette)),
-      roughness: mode === "nordic" ? 0.85 : 1,
-      metalness: 0,
-      flatShading: mode === "schematic",
-    });
+    const seam = ly.function === "cladding" && isStandingSeam(ly.material);
+    const mat = seam
+      ? createStandingSeamMaterial(mode, [
+        Math.hypot(w.axis[1][0] - w.axis[0][0], w.axis[1][1] - w.axis[0][1]),
+        Math.max(0.1, w.z1_m - w.z0_m),
+      ])
+      : new THREE.MeshStandardMaterial({
+        color: new THREE.Color(materialColor(ly.material, palette)),
+        roughness: mode === "nordic" ? 0.85 : 1,
+        metalness: 0,
+        flatShading: mode === "schematic",
+      });
     mats.push(mat);
     for (const piece of wallLayerPieces(w, ly.polygon, openings)) {
       let geo: THREE.BufferGeometry | null;
@@ -485,6 +523,8 @@ function buildWall(
       }
       if (!geo) continue;
       const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
       mesh.userData.uid = w.uid;
       mesh.userData.tag = w.tag;
       tradeGroups.walls.add(mesh);
@@ -594,7 +634,6 @@ function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center:
     // Two leaves meeting at a center mullion, matching the 2D French-door symbol.
     const mullionWidth = Math.min(frameWidth, (opening.width_m - 2 * frameWidth) / 6);
     const leafWidth = Math.max(0.01, (opening.width_m - 2 * frameWidth - mullionWidth) / 2);
-    console.log("DEBUG double-swing", opening.tag, { frameWidth, mullionWidth, leafWidth, width_m: opening.width_m });
     const panelElevation = wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2;
     addBox(mullionWidth, availableHeight, depth, 0, midElevation, frameMaterial);
     addBox(leafWidth, panelHeight, 0.045, -mullionWidth / 2 - leafWidth / 2, panelElevation, frameMaterial);
@@ -648,48 +687,48 @@ function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter,
 }
 
 // Sloped quads from footprint/eave_z/ridge_z/ridge_direction — mirrors
-// emit/gltf/emitter.py's _add_roof — plus the roof's own members (rafters, ridge beam).
+// emit/gltf/emitter.py's _add_roof — thickened into the authored assembly, plus the
+// roof's own members (rafters, ridge beam).
 function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
-  const xs = roof.footprint.map((p) => p[0]);
-  const ys = roof.footprint.map((p) => p[1]);
-  const minx = Math.min(...xs), maxx = Math.max(...xs);
-  const miny = Math.min(...ys), maxy = Math.max(...ys);
-  const eave = roof.eave_z_m;
-  const ridge = roof.ridge_z_m;
-  const v = (x: number, y: number, z: number): [[number, number], number] => [[x, y], z];
-  let triangles: [[number, number], number][];
-  if (roof.form === "shed") {
-    triangles = roof.ridge_direction === "x"
-      ? [v(minx, miny, eave), v(maxx, miny, eave), v(maxx, maxy, ridge),
-         v(minx, miny, eave), v(maxx, maxy, ridge), v(minx, maxy, ridge)]
-      : [v(minx, miny, eave), v(maxx, miny, ridge), v(maxx, maxy, ridge),
-         v(minx, miny, eave), v(maxx, maxy, ridge), v(minx, maxy, eave)];
-  } else if (roof.ridge_direction === "x") {
-    const mid = (miny + maxy) / 2;
-    const ra = v(minx, mid, ridge), rb = v(maxx, mid, ridge);
-    triangles = [
-      v(minx, miny, eave), v(maxx, miny, eave), rb,
-      v(minx, miny, eave), rb, ra,
-      ra, rb, v(maxx, maxy, eave),
-      ra, v(maxx, maxy, eave), v(minx, maxy, eave),
-    ];
-  } else {
-    const mid = (minx + maxx) / 2;
-    const ra = v(mid, miny, ridge), rb = v(mid, maxy, ridge);
-    triangles = [
-      v(minx, miny, eave), ra, rb,
-      v(minx, miny, eave), rb, v(minx, maxy, eave),
-      ra, v(maxx, miny, eave), v(maxx, maxy, eave),
-      ra, v(maxx, maxy, eave), rb,
-    ];
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog?: Catalog) {
+  const triangles = roofPlaneTriangles(roof);
+  const offsetAt = roofOffsetter(triangles);
+  const perimeter = boundaryEdges(triangles);
+  const assembly = catalog?.assemblies.find((a) => a.tag === roof.assembly);
+  // eave_z_m/ridge_z_m is the rafter *top*, so the stack starts at zero and grows up.
+  const layers = aboveStructureLayers(assembly);
+  const stack = layers.length ? layers
+    : [{ name: "roofing", function: "cladding", material: "standing-seam", thickness_m: 0.05 }];
+
+  let base = 0;
+  for (const layer of stack) {
+    const top = base + layer.thickness_m;
+    const faces: ProjectVertex[][] = [];
+    for (const tri of triangles) {
+      faces.push([offsetAt(tri[0], top), offsetAt(tri[1], top), offsetAt(tri[2], top)]);
+      faces.push([offsetAt(tri[0], base), offsetAt(tri[2], base), offsetAt(tri[1], base)]);
+    }
+    // Close the eave and rake so the layer stack reads as real thickness from outside.
+    for (const [a, b] of perimeter) {
+      faces.push([offsetAt(a, base), offsetAt(b, base), offsetAt(b, top)]);
+      faces.push([offsetAt(a, base), offsetAt(b, top), offsetAt(a, top)]);
+    }
+    const geo = createProjectedSurfaceGeometry(faces, center);
+    const seam = layer.function === "cladding" && isStandingSeam(layer.material);
+    const mat = seam
+      ? createStandingSeamMaterial(mode, [Math.sqrt(roof.surface_area_m2), Math.sqrt(roof.surface_area_m2)])
+      : new THREE.MeshStandardMaterial({
+        color: new THREE.Color(materialColor(layer.material, palette)),
+        roughness: mode === "nordic" ? 0.9 : 1,
+        flatShading: mode === "schematic",
+        side: THREE.DoubleSide,
+      });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    parent.add(mesh);
+    base = top;
   }
-  const geo = createProjectedSurfaceGeometry([triangles], center);
-  const mat = new THREE.MeshStandardMaterial({
-    color: palette.material.metal, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",
-    transparent: true, opacity: 0.65, side: THREE.DoubleSide,
-  });
-  parent.add(new THREE.Mesh(geo, mat));
   buildMembers(parent, roof.members, center, mode);
 }
 

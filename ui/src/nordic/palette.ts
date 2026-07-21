@@ -74,6 +74,7 @@ export function familyOf(materialRef: string | null | undefined): string | null 
     ["siding", "siding"],
     ["clad", "siding"],
     ["metal", "metal"],
+    ["seam", "metal"],
     ["steel", "metal"],
     ["concrete", "concrete"],
     ["conc", "concrete"],

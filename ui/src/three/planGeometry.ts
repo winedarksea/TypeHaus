@@ -73,6 +73,17 @@ export function createPlanPrismGeometry(
   return geometry;
 }
 
+/** Shoelace area of a plan ring; positive is counter-clockwise in plan coordinates. */
+export function planRingSignedArea(ring: readonly Vec2[]): number {
+  let sum = 0;
+  for (let i = 0; i < ring.length; i++) {
+    const [x0, y0] = ring[i];
+    const [x1, y1] = ring[(i + 1) % ring.length];
+    sum += x0 * y1 - x1 * y0;
+  }
+  return sum / 2;
+}
+
 export function createRakedPlanPrismGeometry(
   outline: readonly Vec2[],
   z0M: number,
@@ -80,6 +91,12 @@ export function createRakedPlanPrismGeometry(
   center: PlanCenter = [0, 0],
 ): THREE.BufferGeometry | null {
   if (outline.length < 3) return null;
+  // Unlike `createPlanPrismGeometry`, nothing downstream normalizes winding for us:
+  // the fixed vertex order below only faces outward for one input orientation, so a
+  // ring authored the other way renders inside-out and vanishes to backface culling.
+  // Plan +Y maps to scene +Z, which flips handedness — a clockwise plan ring is the
+  // one that gives outward normals here.
+  outline = planRingSignedArea(outline) > 0 ? [...outline].reverse() : outline;
   const triangles: ProjectVertex[][] = [];
   for (let index = 0; index < outline.length; index++) {
     const next = (index + 1) % outline.length;

@@ -13,6 +13,7 @@ from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.geometry import length, rect_between, sub
 from typehaus.resolve.model import ResolvedLayer, ResolvedWall
+from typehaus.resolve.orientation import storey_outward_sign
 
 _EPS = 1e-4  # meters — cavity-insulation coincidence tolerance
 
@@ -82,7 +83,8 @@ def _face_offset_from_interior(layers: list, added: list, alignment: object,
 
 def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                           z1: float, half_by_node: dict[str, float],
-                          is_foundation: bool) -> ResolvedWall | None:
+                          is_foundation: bool,
+                          outward_sign: float = 1.0) -> ResolvedWall | None:
     """Build a ResolvedWall with per-layer polygons for one authored wall."""
     nodes = {e.tag: e for e in plan.storey_elements(storey_tag) if e.element_kind == "Node"}
     n0, n1 = nodes.get(wall.start_node), nodes.get(wall.end_node)
@@ -113,8 +115,8 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
             pos += add_t
 
     def _ring(span_in: float, span_out: float):
-        return rect_between(p0, p1, span_in - axis_from_int, span_out - axis_from_int,
-                            ext0, ext1)
+        return rect_between(p0, p1, (span_in - axis_from_int) * outward_sign,
+                            (span_out - axis_from_int) * outward_sign, ext0, ext1)
 
     layers: list[ResolvedLayer] = []
     for index, (layer, _add_t, cavity) in enumerate(added):
@@ -219,11 +221,13 @@ def _walls(plan: PlanModel, storey_tag: str) -> list:
 def resolve_storey_walls(plan: PlanModel, storey_tag: str, z0: float,
                          z1: float) -> list[ResolvedWall]:
     half = storey_wall_half_thickness(plan, storey_tag)
+    sign = storey_outward_sign(plan, storey_tag)
     out: list[ResolvedWall] = []
     for wall in _walls(plan, storey_tag):
         rw = resolve_wall_geometry(
             plan, wall, storey_tag, z0, z1, half,
             is_foundation=wall.element_kind == "FoundationWall",
+            outward_sign=sign,
         )
         if rw is not None:
             out.append(rw)

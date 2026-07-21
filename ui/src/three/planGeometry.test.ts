@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { Member } from "../model/types";
+import type { Member, Vec2 } from "../model/types";
 import { buildMembers } from "./members";
 import {
   createPlanPrismGeometry,
@@ -104,4 +104,37 @@ export function runPlanGeometryTests() {
     if (Array.isArray(material)) material.forEach((entry) => entry.dispose());
     else material?.dispose();
   });
+
+  checkRakedWindingIsNormalized();
+}
+
+/**
+ * Raked walls are the one prism path that does not go through THREE.Shape, so nothing
+ * fixes their winding for us. Both author orders must produce outward-facing triangles,
+ * or gable ends turn invisible and you see straight through to the studs.
+ */
+function checkRakedWindingIsNormalized() {
+  const ccw: Vec2[] = [[0, 0], [4, 0], [4, 1], [0, 1]];
+  const cw: Vec2[] = [...ccw].reverse();
+  for (const [label, ring] of [["CCW", ccw], ["CW", cw]] as const) {
+    const geometry = createRakedPlanPrismGeometry(ring, 0, ([x]) => 2 + x * 0.25, [2, 0.5]);
+    if (!geometry) throw new Error(`Expected raked prism for ${label} ring`);
+    const position = geometry.getAttribute("position");
+    const normal = geometry.getAttribute("normal");
+    const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+    // The shape is convex, so every face normal must point away from its centroid.
+    const center = boundsFor(geometry).getCenter(new THREE.Vector3());
+    for (let i = 0; i < position.count; i += 3) {
+      a.fromBufferAttribute(position, i);
+      b.fromBufferAttribute(position, i + 1);
+      c.fromBufferAttribute(position, i + 2);
+      const centroid = a.clone().add(b).add(c).divideScalar(3);
+      const face = new THREE.Vector3().fromBufferAttribute(normal, i);
+      const alignment = face.dot(centroid.sub(center).normalize());
+      if (alignment < -1e-6) {
+        throw new Error(`${label} raked prism face ${i / 3} points inward (${alignment})`);
+      }
+    }
+    geometry.dispose();
+  }
 }

@@ -188,6 +188,11 @@ def _resolve_roof(
             "valleys/intersecting roof masses are unsupported", roof.tag,
         )]
     points = [point for wall in walls if wall is not None for point in wall.axis]
+    # The bearing walls' outermost layer, for the cladding lap below.
+    clad = [
+        point for wall in walls if wall is not None and wall.depth_layers()
+        for point in wall.depth_layers()[-1].polygon
+    ] or points
     xs, ys = [point[0] for point in points], [point[1] for point in points]
     if max(xs) - min(xs) < 1e-6 or max(ys) - min(ys) < 1e-6:
         return None, [_error("integrity.roof_footprint", f"roof {roof.tag} bearing walls do "
@@ -196,8 +201,14 @@ def _resolve_roof(
     default = roof.overhang.meters if roof.overhang is not None else 0.0
     west, east = overhangs.get("west", default), overhangs.get("east", default)
     south, north = overhangs.get("south", default), overhangs.get("north", default)
-    minx, maxx = min(xs) - west, max(xs) + east
-    miny, maxy = min(ys) - south, max(ys) + north
+    # An authored overhang already clears the cladding; only a roof with (near-)zero
+    # overhang needs the lap, so this never silently deepens a designed eave.
+    # A roof authored with no overhang would otherwise stop at the wall axis, leaving the
+    # cladding standing proud of its own roof edge. Lap it. An authored overhang already
+    # clears the cladding, so taking the outer of the two never deepens a designed eave.
+    clad_xs, clad_ys = [p[0] for p in clad], [p[1] for p in clad]
+    minx, maxx = min(min(xs) - west, min(clad_xs)), max(max(xs) + east, max(clad_xs))
+    miny, maxy = min(min(ys) - south, min(clad_ys)), max(max(ys) + north, max(clad_ys))
     footprint = [(minx, miny), (maxx, miny), (maxx, maxy), (minx, maxy)]
     run = (maxy - miny) if roof.ridge_direction == "x" else (maxx - minx)
     if run <= 1e-6:

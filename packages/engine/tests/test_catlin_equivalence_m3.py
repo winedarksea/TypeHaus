@@ -138,22 +138,39 @@ def test_centerline_bearing_wall_runs_full_length_on_both_framed_storeys(catlin_
             assert structure.thickness_m == pytest.approx(inch(5.5).meters)
 
 
+def _cladding_lap(model) -> float:
+    """The attic bearing wall's depth — bounds how far its cladding can lap the roof.
+
+    The axis is not centred in the stack (``Wall.alignment``), so the exact lap is an
+    alignment detail; the wall depth is the honest upper bound.
+    """
+    wall = next(w for w in model.walls if w.tag == "W-A-S1")
+    return wall.thickness_m
+
+
 def test_roof_matches_old_pitch_knee_and_ridge(catlin_model):
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     eave_ft = roof.eave_z_m / ft(1).meters
     ridge_ft = roof.ridge_z_m / ft(1).meters
     assert eave_ft == pytest.approx(ATTIC_ELEV_FT + KNEE_FT)
-    assert ridge_ft == pytest.approx(ATTIC_ELEV_FT + RIDGE_OVER_ATTIC_FT)
-    # 4:12 over the 18' half-run; ridge runs N-S; zero overhang (footprint == house).
+    # The old builder set the roof out from the bearing-wall axes, giving an 11' ridge over
+    # a 36' run. A zero-overhang roof that stops at the axis leaves the cladding standing
+    # proud of its own edge, so the footprint now laps the outermost wall layer — the run,
+    # and with it the ridge, grows by that lap on each side. The 4:12 pitch is unchanged.
+    lap = _cladding_lap(catlin_model)
+    assert ATTIC_ELEV_FT + RIDGE_OVER_ATTIC_FT < ridge_ft <= \
+        ATTIC_ELEV_FT + RIDGE_OVER_ATTIC_FT + (lap / 3.0) / ft(1).meters + 1e-6
     assert roof.ridge_direction == "y"
     xs = [p[0] for p in roof.footprint]
     ys = [p[1] for p in roof.footprint]
-    assert max(xs) - min(xs) == pytest.approx(ft(HOUSE_SIZE_FT).meters)
-    assert max(ys) - min(ys) == pytest.approx(ft(HOUSE_SIZE_FT).meters)
-    rise_over_run = (roof.ridge_z_m - roof.eave_z_m) / (ft(HOUSE_SIZE_FT / 2).meters)
+    for span in (max(xs) - min(xs), max(ys) - min(ys)):
+        assert ft(HOUSE_SIZE_FT).meters < span <= ft(HOUSE_SIZE_FT).meters + 2 * lap + 1e-6
+    rise_over_run = (roof.ridge_z_m - roof.eave_z_m) / ((max(xs) - min(xs)) / 2)
     assert rise_over_run == pytest.approx(4.0 / 12.0)
     rafters = [member for member in roof.members if member.category == "rafter"]
-    assert len(rafters) == 56  # 28 lines at 16" o.c., two gable planes.
+    # 29 lines at 16" o.c. over two gable planes — one line more than the old builder's
+    # 28, because the footprint now laps the cladding at each rake.
+    assert len(rafters) == 58
     # WP4: rafter ridge ends are trimmed back to bear on the ridge beam rather than
     # crossing to the exact ridge centerline — z1_end drops by half the beam width
     # times the roof slope, staying on the roof plane.
@@ -189,7 +206,10 @@ def test_garage_gable_roof_with_no_ridge_beam_warns_not_errors(catlin_model):
 def test_attic_to_roof_walls_frame_with_raked_studs_and_plates(catlin_model):
     """The gable ends are true raked walls, not 11' rectangular placeholders."""
     gable = next(w for w in catlin_model.walls if w.tag == "W-A-S1")
-    assert gable.top_z0_m == pytest.approx(ft(5).meters + ft(ATTIC_ELEV_FT).meters)
+    # Knee height above the attic floor, plus the roof plane's cladding lap (see
+    # test_roof_matches_old_pitch_knee_and_ridge).
+    knee = ft(5).meters + ft(ATTIC_ELEV_FT).meters
+    assert knee < gable.top_z0_m <= knee + _cladding_lap(catlin_model) / 3.0 + 1e-6
     assert gable.top_z1_m > gable.top_z0_m
     studs = [member for member in gable.members if member.category == "stud"]
     assert len(studs) >= 2
