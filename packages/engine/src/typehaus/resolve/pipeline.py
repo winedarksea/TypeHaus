@@ -112,6 +112,7 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                 )
                 continue
             width, height, is_door, type_ref = _opening_size(plan, el)
+            kind = {"Door": "door", "Window": "window", "RoughOpening": "rough_opening"}[el.element_kind]
             axis_len = length(sub(rw.axis[1], rw.axis[0]))
             center = _opening_center(plan, el, rw, axis_len, width)
             sill = _opening_sill(el)
@@ -119,13 +120,13 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                 ResolvedOpening(
                     uid=el.uid, tag=el.tag, host_wall=el.host, type_ref=type_ref,
                     width_m=width, height_m=height, sill_m=sill,
-                    center_along_m=center, is_door=is_door,
+                    center_along_m=center, kind=kind, is_door=is_door,
                 )
             )
             model.conditions.append(
                 BoundaryCondition(
                     kind=ConditionKind.OPENING_PERIMETER, assemblies=(rw.assembly,),
-                    detail="door" if is_door else "window", element_tags=(el.tag,),
+                    detail=kind, element_tags=(el.tag,),
                     key=f"opening_perimeter:{rw.assembly}",
                 )
             )

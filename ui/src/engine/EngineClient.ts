@@ -45,6 +45,7 @@ export interface PreviewWall {
 export interface PreviewOpening {
   tag: string;
   host: string;
+  kind: "door" | "window" | "rough_opening";
   is_door: boolean;
   width_m: number;
   center_along_m: number;

@@ -81,6 +81,9 @@ export interface Opening {
   // The engine serializes the authored host-wall tag (for example, "W-101"), not its
   // minted UID. Keep this aligned with model_json.py so 2D host resolution is reliable.
   host: string;
+  // Semantic kind is authoritative. `is_door` remains for compatibility with existing
+  // editor consumers while RoughOpening support reaches every presentation surface.
+  kind: "door" | "window" | "rough_opening";
   is_door: boolean;
   provenance: Provenance | null;
   type_ref: string | null;

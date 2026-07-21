@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -29,11 +31,12 @@ def test_every_opening_emits_a_void_and_a_filling(catlin_model, catlin_ifc):
     assert n > 0
     windows = f.by_type("IfcWindow")
     doors = f.by_type("IfcDoor")
-    assert len(windows) + len(doors) == n
-    # one IfcOpeningElement + IfcRelVoidsElement + IfcRelFillsElement per opening
+    filled = [opening for opening in catlin_model.openings if opening.kind != "rough_opening"]
+    assert len(windows) + len(doors) == len(filled)
+    # Every opening voids its host; only installed products receive filling relationships.
     assert len(f.by_type("IfcOpeningElement")) == n
     assert len(f.by_type("IfcRelVoidsElement")) == n
-    assert len(f.by_type("IfcRelFillsElement")) == n
+    assert len(f.by_type("IfcRelFillsElement")) == len(filled)
     # doors vs windows follow the resolved is_door flag
     assert len(doors) == sum(1 for o in catlin_model.openings if o.is_door)
 
@@ -45,6 +48,8 @@ def test_filling_guid_matches_diff_adapter_prediction(catlin_model, catlin_ifc):
     emitted = {p.GlobalId for p in f.by_type("IfcWindow") + f.by_type("IfcDoor")}
     puid = catlin_model.plan.project.project_uuid
     for opening in catlin_model.openings:
+        if opening.kind == "rough_opening":
+            continue
         assert derive_guid(puid, opening.uid) in emitted
 
 
@@ -57,3 +62,19 @@ def test_openings_survive_the_self_diff_by_global_id(catlin_model, catlin_ifc):
     added_deleted = [c for c in report.substantive()
                      if (getattr(c.kind, "value", c.kind) in ("added", "deleted"))]
     assert added_deleted == [], f"round-trip should match all elements by GUID; {kinds}"
+
+
+def test_rough_opening_emits_only_the_wall_void(catlin_model, tmp_path):
+    import ifcopenshell
+
+    model = deepcopy(catlin_model)
+    source = model.openings[0]
+    model.openings[0] = replace(source, kind="rough_opening", is_door=False, type_ref=None)
+    out = tmp_path / "rough-opening.ifc"
+    emit_ifc(model, out, lod="core")
+
+    f = ifcopenshell.open(str(out))
+    assert len(f.by_type("IfcOpeningElement")) == len(model.openings)
+    filled = [opening for opening in model.openings if opening.kind != "rough_opening"]
+    assert len(f.by_type("IfcWindow")) + len(f.by_type("IfcDoor")) == len(filled)
+    assert len(f.by_type("IfcRelFillsElement")) == len(filled)

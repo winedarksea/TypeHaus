@@ -186,7 +186,7 @@ def model_to_dict(
             for w in sorted(model.walls, key=lambda x: x.uid)
         ],
         "openings": [
-            {"uid": o.uid, "tag": o.tag, "host": o.host_wall, "is_door": o.is_door,
+            {"uid": o.uid, "tag": o.tag, "host": o.host_wall, "kind": o.kind, "is_door": o.is_door,
              "provenance": _provenance(provenance, o.tag),
              "type_ref": o.type_ref,
              "width_m": o.width_m, "height_m": o.height_m, "sill_m": o.sill_m,
@@ -351,7 +351,7 @@ def preview_to_dict(model: ResolvedModel) -> dict[str, Any]:
             for w in sorted(model.walls, key=lambda x: x.uid)
         ],
         "openings": [
-            {"tag": o.tag, "host": o.host_wall, "is_door": o.is_door,
+            {"tag": o.tag, "host": o.host_wall, "kind": o.kind, "is_door": o.is_door,
              "width_m": o.width_m, "center_along_m": o.center_along_m}
             for o in model.openings
         ],

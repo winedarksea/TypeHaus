@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { ALL_TRADES, useStore, type Trade } from "../state/store";
-import type { Model, Roof, Solid, Floor, Stair, Wall } from "../model/types";
+import type { Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
 import {
@@ -22,7 +22,7 @@ import { useTheme } from "../theme/theme";
 // cross-highlights the 2D plan and surfaces its file:line provenance.
 
 const TRADE_LABEL: Record<Trade, string> = {
-  walls: "Walls", framing: "Framing", floors: "Floors", concrete: "Concrete",
+  walls: "Walls", openings: "Openings", framing: "Framing", floors: "Floors", concrete: "Concrete",
   roof: "Roof", stairs: "Stairs", furniture: "Furniture",
 };
 
@@ -293,7 +293,11 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     if (!preserveView) target = new THREE.Vector3(0, 1.2, 0);
 
     const center: PlanCenter = [cx, cz];
-    for (const w of m.walls) buildWall(tradeGroups, w, center, mode, palette, picks, byUid);
+    for (const w of m.walls) {
+      const wallOpenings = m.openings.filter((opening) => opening.host === w.tag);
+      buildWall(tradeGroups, w, wallOpenings, center, mode, palette, picks, byUid);
+      for (const opening of wallOpenings) buildOpening(tradeGroups.openings, opening, w, center, mode, palette);
+    }
     for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, center, mode, palette);
     for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, center, mode, palette);
     for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette);
@@ -398,54 +402,150 @@ function rakedTopAt(w: Wall, x: number, y: number): number {
 function buildWall(
   tradeGroups: Record<Trade, THREE.Group>,
   w: Wall,
+  openings: Opening[],
   center: PlanCenter,
   mode: "nordic" | "schematic",
   palette: ResolvedNordicPalette,
   picks: THREE.Mesh[],
   byUid: Map<string, THREE.Material[]>,
 ) {
-  const raked = w.top_z0_m != null || w.top_z1_m != null;
-  const h = Math.max(0.01, w.z1_m - w.z0_m);
   const mats: THREE.Material[] = [];
   for (const ly of w.layers) {
     if (ly.polygon.length < 3) continue;
     // Cavity fill shares its host structure layer's polygon — extruding it would only
     // z-fight with the studs it lives between.
     if (ly.is_cavity) continue;
-    let geo: THREE.BufferGeometry;
-    if (raked) {
-      const rakedGeometry = createRakedPlanPrismGeometry(ly.polygon, w.z0_m,
-        (point) => rakedTopAt(w, point[0], point[1]), center);
-      if (!rakedGeometry) continue;
-      geo = rakedGeometry;
-    } else {
-      const planPrism = createPlanPrismGeometry(ly.polygon, w.z0_m, w.z0_m + h, [], center);
-      if (!planPrism) continue;
-      geo = planPrism;
-    }
     const mat = new THREE.MeshStandardMaterial({
       color: new THREE.Color(materialColor(ly.material, palette)),
       roughness: mode === "nordic" ? 0.85 : 1,
       metalness: 0,
       flatShading: mode === "schematic",
     });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.userData.uid = w.uid;
-    mesh.userData.tag = w.tag;
-    tradeGroups.walls.add(mesh);
-    picks.push(mesh);
     mats.push(mat);
+    for (const piece of wallLayerPieces(w, ly.polygon, openings)) {
+      let geo: THREE.BufferGeometry | null;
+      if (piece.topIsRaked) {
+        geo = createRakedPlanPrismGeometry(piece.polygon, piece.z0_m,
+          (point) => rakedTopAt(w, point[0], point[1]), center);
+      } else {
+        geo = createPlanPrismGeometry(piece.polygon, piece.z0_m, piece.z1_m, [], center);
+      }
+      if (!geo) continue;
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.userData.uid = w.uid;
+      mesh.userData.tag = w.tag;
+      tradeGroups.walls.add(mesh);
+      picks.push(mesh);
 
-    if (mode === "nordic") {
-      const edges = new THREE.LineSegments(
-        new THREE.EdgesGeometry(geo, 25),
-        new THREE.LineBasicMaterial({ color: palette.edge, transparent: true, opacity: 0.35 }),
-      );
-      tradeGroups.walls.add(edges);
+      if (mode === "nordic") {
+        tradeGroups.walls.add(new THREE.LineSegments(
+          new THREE.EdgesGeometry(geo, 25),
+          new THREE.LineBasicMaterial({ color: palette.edge, transparent: true, opacity: 0.35 }),
+        ));
+      }
     }
   }
   buildMembers(tradeGroups.framing, w.members, center, mode);
   byUid.set(w.uid, mats);
+}
+
+export interface WallLayerPiece {
+  polygon: [number, number][];
+  z0_m: number;
+  z1_m: number;
+  topIsRaked: boolean;
+}
+
+// Resolved wall layers are rectangular strips along a wall axis. Splitting that strip at
+// each opening jamb makes true partial-height voids without a CSG dependency: the central
+// strip contributes only the sill and header pieces while side strips remain full height.
+export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][], openings: Opening[]): WallLayerPiece[] {
+  const [[x0, y0], [x1, y1]] = wall.axis;
+  const length = Math.hypot(x1 - x0, y1 - y0);
+  if (length < 1e-9 || polygon.length < 3) return [];
+  const direction: [number, number] = [(x1 - x0) / length, (y1 - y0) / length];
+  const normal: [number, number] = [-direction[1], direction[0]];
+  const local = polygon.map(([x, y]) => {
+    const px = x - x0, py = y - y0;
+    return [px * direction[0] + py * direction[1], px * normal[0] + py * normal[1]] as const;
+  });
+  const minAlong = Math.min(...local.map(([along]) => along));
+  const maxAlong = Math.max(...local.map(([along]) => along));
+  const minAcross = Math.min(...local.map(([, across]) => across));
+  const maxAcross = Math.max(...local.map(([, across]) => across));
+  const relevant = openings.map((opening) => ({
+    opening,
+    start: Math.max(minAlong, opening.center_along_m - opening.width_m / 2),
+    end: Math.min(maxAlong, opening.center_along_m + opening.width_m / 2),
+  })).filter(({ start, end }) => end - start > 1e-9);
+  const boundaries = Array.from(new Set([minAlong, maxAlong, ...relevant.flatMap(({ start, end }) => [start, end])]))
+    .sort((a, b) => a - b);
+  const point = (along: number, across: number): [number, number] => [
+    x0 + direction[0] * along + normal[0] * across,
+    y0 + direction[1] * along + normal[1] * across,
+  ];
+  const ring = (start: number, end: number): [number, number][] => [
+    point(start, minAcross), point(end, minAcross), point(end, maxAcross), point(start, maxAcross),
+  ];
+  const raked = wall.top_z0_m != null || wall.top_z1_m != null;
+  const pieces: WallLayerPiece[] = [];
+  for (let index = 0; index < boundaries.length - 1; index++) {
+    const start = boundaries[index], end = boundaries[index + 1];
+    const active = relevant.find(({ start: openingStart, end: openingEnd }) =>
+      (start + end) / 2 >= openingStart && (start + end) / 2 <= openingEnd)?.opening;
+    const strip = ring(start, end);
+    if (!active) {
+      pieces.push({ polygon: strip, z0_m: wall.z0_m, z1_m: wall.z1_m, topIsRaked: raked });
+      continue;
+    }
+    const openingBottom = wall.z0_m + active.sill_m;
+    const openingTop = openingBottom + active.height_m;
+    if (openingBottom > wall.z0_m + 1e-9)
+      pieces.push({ polygon: strip, z0_m: wall.z0_m, z1_m: openingBottom, topIsRaked: false });
+    const minTop = Math.min(...strip.map(([x, y]) => rakedTopAt(wall, x, y)));
+    if (minTop > openingTop + 1e-9)
+      pieces.push({ polygon: strip, z0_m: openingTop, z1_m: wall.z1_m, topIsRaked: raked });
+  }
+  return pieces;
+}
+
+function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
+  if (opening.kind === "rough_opening") return;
+  const [[x0, y0], [x1, y1]] = wall.axis;
+  const length = Math.hypot(x1 - x0, y1 - y0);
+  if (length < 1e-9) return;
+  const direction: [number, number] = [(x1 - x0) / length, (y1 - y0) / length];
+  const position: [number, number] = [x0 + direction[0] * opening.center_along_m, y0 + direction[1] * opening.center_along_m];
+  const availableHeight = Math.max(0, Math.min(opening.height_m,
+    rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m - opening.width_m / 2), y0 + direction[1] * (opening.center_along_m - opening.width_m / 2)) - wall.z0_m - opening.sill_m,
+    rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m + opening.width_m / 2), y0 + direction[1] * (opening.center_along_m + opening.width_m / 2)) - wall.z0_m - opening.sill_m));
+  if (availableHeight <= 1e-9) return;
+  const rotation = -Math.atan2(direction[1], direction[0]);
+  const frameWidth = Math.min(0.075, opening.width_m / 4, availableHeight / 4);
+  const depth = 0.08;
+  const frameMaterial = new THREE.MeshStandardMaterial({ color: palette.member.wood, roughness: mode === "nordic" ? 0.85 : 1, flatShading: mode === "schematic" });
+  const addBox = (width: number, height: number, thickness: number, along: number, elevation: number, material: THREE.Material) => {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, thickness), material);
+    mesh.position.copy(projectPointToScene([position[0] + direction[0] * along, position[1] + direction[1] * along], elevation, center));
+    mesh.rotation.y = rotation;
+    parent.add(mesh);
+  };
+  const midElevation = wall.z0_m + opening.sill_m + availableHeight / 2;
+  addBox(frameWidth, availableHeight, depth, -opening.width_m / 2 + frameWidth / 2, midElevation, frameMaterial);
+  addBox(frameWidth, availableHeight, depth, opening.width_m / 2 - frameWidth / 2, midElevation, frameMaterial);
+  addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial);
+  addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + frameWidth / 2, frameMaterial);
+  const panelHeight = Math.max(0.01, availableHeight - 2 * frameWidth);
+  if (opening.kind === "door") {
+    addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, 0.045, 0,
+      wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, frameMaterial);
+  } else {
+    const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x8fb7c9, transparent: true, opacity: 0.48,
+      roughness: 0.2, metalness: 0.05, flatShading: mode === "schematic", depthWrite: false });
+    addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, 0.015, 0,
+      wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, glassMaterial);
+  }
 }
 
 // Slabs, footings, pads: same outline-extrusion recipe as wall layers, concrete grey.

@@ -3,6 +3,8 @@ cross-section (the UI never parses ``profile`` strings itself)."""
 
 from __future__ import annotations
 
+from copy import deepcopy
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -64,3 +66,15 @@ def test_ridge_beam_member_carries_multi_ply_width(catlin_payload):
     assert len(beams) == 1
     assert beams[0]["plies"] == 3
     assert beams[0]["shape"] == "rect"
+
+
+def test_opening_kind_serializes_all_interchange_categories(catlin_model):
+    model = deepcopy(catlin_model)
+    source = model.openings[0]
+    model.openings[0] = replace(source, kind="rough_opening", is_door=False, type_ref=None)
+
+    payload = model_to_dict(model)
+    kinds = {opening["kind"] for opening in payload["openings"]}
+    assert {"door", "window", "rough_opening"} <= kinds
+    rough = next(opening for opening in payload["openings"] if opening["kind"] == "rough_opening")
+    assert rough["is_door"] is False

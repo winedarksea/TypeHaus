@@ -109,6 +109,10 @@ class ResolvedOpening:
     height_m: float
     sill_m: float
     center_along_m: float  # distance from wall start along the axis
+    # Preserve the authored semantic category at the resolved interchange boundary.
+    # `is_door` remains for existing framing/check consumers, but cannot distinguish a
+    # bare rough void from a window for IFC and visualization consumers.
+    kind: str  # "door" | "window" | "rough_opening"
     is_door: bool
 
 

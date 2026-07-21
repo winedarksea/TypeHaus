@@ -28,9 +28,9 @@ export type ThreeMode = "nordic" | "schematic";
 // insulation, cladding); "framing" is wall members (studs/plates/headers); "floors" is
 // floor decks (hideable for stair continuity); "concrete" is resolved solids (slabs,
 // footings, pads); "roof" is the roof surface + its members (incl. ridge beam).
-export type Trade = "walls" | "framing" | "floors" | "concrete" | "roof" | "stairs" | "furniture";
+export type Trade = "walls" | "openings" | "framing" | "floors" | "concrete" | "roof" | "stairs" | "furniture";
 export const ALL_TRADES: Trade[] = [
-  "walls", "framing", "floors", "concrete", "roof", "stairs", "furniture",
+  "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture",
 ];
 
 export interface Selection {
@@ -143,7 +143,7 @@ export const useStore = create<StoreState>((set, get) => ({
   view: { scale: 120, tx: 80, ty: 80 },
   showFraming: true,
   visibleTrades: {
-    walls: true, framing: true, floors: true, concrete: true, roof: true,
+    walls: true, openings: true, framing: true, floors: true, concrete: true, roof: true,
     stairs: true, furniture: true,
   },
   conflict: null,

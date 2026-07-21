@@ -195,7 +195,7 @@ def _opening_segment(rw: ResolvedWall, opening: Any) -> tuple[tuple[float, float
 def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
                   wall_entities: dict[str, Any], storeys: dict[str, Any],
                   project_uuid: Any) -> None:
-    """One IfcOpeningElement voiding the host wall + a filling IfcWindow/IfcDoor.
+    """One IfcOpeningElement voiding the host wall, with an optional product filling.
 
     Void GUID = derive_child_guid(uuid, opening.uid, "void"); the filling GUID =
     derive_guid(uuid, opening.uid) so it matches the diff adapter's prediction (round-trip
@@ -213,6 +213,11 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     _assign_representation(f, void, ll.add_prism_from_profile(
         f, body, void_profile, opening.height_m, z0))
     ll.add_opening(f, wall, void)
+
+    # A RoughOpening is intentionally only a void. Emitting it as IfcWindow used to
+    # destroy the distinction required by round-trip authoring applications.
+    if opening.kind == "rough_opening":
+        return
 
     # Filling: a thin frame prism (a Revit-style panel), tagged for the round-trip.
     ifc_class = "IfcDoor" if opening.is_door else "IfcWindow"

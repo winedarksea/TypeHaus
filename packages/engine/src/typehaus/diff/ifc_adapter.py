@@ -51,6 +51,9 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
             attrs={"assembly": w.assembly},
         ))
     for o in model.openings:
+        # Rough openings intentionally have no IfcDoor/IfcWindow filling to diff.
+        if o.kind == "rough_opening":
+            continue
         host = wall_by_tag.get(o.host_wall)
         if host is None:
             continue
