@@ -162,6 +162,18 @@ export function Canvas2D() {
     () => (model.nodes ?? []).filter((n) => !activeStorey || n.storey === activeStorey),
     [model.nodes, activeStorey],
   );
+  const stairsOnStorey = useMemo(() => {
+    const candidates = (model.stairs ?? [])
+      .filter((stair) => !activeStorey || stair.storey === activeStorey || stair.to_storey === activeStorey)
+      .sort((a, b) => Number(a.storey !== activeStorey) - Number(b.storey !== activeStorey) || a.uid.localeCompare(b.uid));
+    const seenOutlines = new Set<string>();
+    return candidates.filter((stair) => {
+      const outlineKey = stair.outline.map(([x, y]) => `${x.toFixed(6)},${y.toFixed(6)}`).sort().join(";");
+      if (seenOutlines.has(outlineKey)) return false;
+      seenOutlines.add(outlineKey);
+      return true;
+    });
+  }, [model.stairs, activeStorey]);
   const snapNodes = useMemo(() => {
     const m = new Map<string, GeoNode>();
     for (const n of storeyNodes) m.set(n.tag, { id: n.tag, p: [n.x_m, n.y_m], walls: [] });
@@ -649,8 +661,7 @@ export function Canvas2D() {
             />
           );
         })}
-        {(model.stairs ?? [])
-          .filter((stair) => !activeStorey || stair.storey === activeStorey)
+        {stairsOnStorey
           .map((stair) => <StairShape key={stair.uid} stair={stair} project={project}
             selected={selection.uid === stair.uid} hovered={hoverUid === stair.uid}
             onSelect={selectEl} onHover={hoverEl} />)}

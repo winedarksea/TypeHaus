@@ -373,6 +373,22 @@ def test_catlin_fixtures_render_as_footprints_and_serialize_services(catlin_mode
     assert {"water_hot", "water_cold", "drain", "power_240"} <= set(washer["needs"])
 
 
+def test_stairs_render_on_both_connected_storey_plans(catlin_model):
+    from typehaus.emit.draw.floorplan import build_floorplan
+
+    expected_uids = {
+        "basement": {"CST701AAAA"},
+        # ST-B2M and ST-M2S have the same footprint here; the departing main flight wins.
+        "main": {"CST702AAAA"},
+        "second": {"CST702AAAA", "CST703AAAA"},
+        "attic": {"CST703AAAA"},
+    }
+    for storey, expected in expected_uids.items():
+        seen = {getattr(node, "uid", None) for node in build_floorplan(catlin_model, storey).nodes
+                if getattr(node, "uid", None) in expected}
+        assert seen == expected
+
+
 def test_catlin_drain_fixtures_use_six_inch_wet_walls():
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     findings = [finding for finding in report.findings if finding.check_id == "advisory.wet_wall_depth"]

@@ -88,10 +88,17 @@ def _emit_rooms(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
 
 
 def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
-    """Plan-symbol treads plus the required direction/count label (R311.7 workflow)."""
-    for stair in model.stairs:
-        if stair.storey != storey or len(stair.outline) < 3:
+    """Draw every stair on both connected plans, without duplicate coincident symbols."""
+    candidates = [stair for stair in model.stairs
+                  if len(stair.outline) >= 3 and storey in {stair.storey, stair.to_storey}]
+    # At a shared footprint, the departing flight is more useful than the one below.
+    candidates.sort(key=lambda stair: (stair.storey != storey, stair.uid))
+    seen_outlines: set[tuple[tuple[float, float], ...]] = set()
+    for stair in candidates:
+        outline_key = tuple(sorted((round(x, 6), round(y, 6)) for x, y in stair.outline))
+        if outline_key in seen_outlines:
             continue
+        seen_outlines.add(outline_key)
         xs, ys = [point[0] for point in stair.outline], [point[1] for point in stair.outline]
         minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
         along_x = stair.run_direction == "x"

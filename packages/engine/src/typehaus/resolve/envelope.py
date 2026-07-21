@@ -286,7 +286,9 @@ def _resolve_stair(
                              f"floor opening {opening.tag!r}", stair.tag)]
     members = _stair_members(stair, min(xs), min(ys), source.elevation.meters, risers, riser,
                              tread)
-    return ResolvedStair(stair.uid, stair.tag, storey, stair.to_storey, outline, risers, riser,
+    # A stair declaration lives with its destination deck so it can own the opening, but
+    # its resolved plan-storey identity is the floor it rises *from*.
+    return ResolvedStair(stair.uid, stair.tag, stair.from_storey, stair.to_storey, outline, risers, riser,
                          tread, stair.run_direction, stair.run_reversed, stair.layout,
                          stair.turn_direction, stair.winder_count, members), []
 
