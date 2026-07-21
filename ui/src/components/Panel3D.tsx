@@ -296,7 +296,10 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     for (const w of m.walls) {
       const wallOpenings = m.openings.filter((opening) => opening.host === w.tag);
       buildWall(tradeGroups, w, wallOpenings, center, mode, palette, picks, byUid);
-      for (const opening of wallOpenings) buildOpening(tradeGroups.openings, opening, w, center, mode, palette);
+      for (const opening of wallOpenings) {
+        const isDoubleSwing = m.catalog?.door_types.find((dt) => dt.tag === opening.type_ref)?.operation === "double_swing";
+        buildOpening(tradeGroups.openings, opening, w, center, mode, palette, isDoubleSwing);
+      }
     }
     for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, center, mode, palette);
     for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, center, mode, palette);
@@ -510,7 +513,7 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
 }
 
 function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, isDoubleSwing: boolean) {
   if (opening.kind === "rough_opening") return;
   const [[x0, y0], [x1, y1]] = wall.axis;
   const length = Math.hypot(x1 - x0, y1 - y0);
@@ -537,7 +540,16 @@ function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center:
   addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial);
   addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + frameWidth / 2, frameMaterial);
   const panelHeight = Math.max(0.01, availableHeight - 2 * frameWidth);
-  if (opening.kind === "door") {
+  if (opening.kind === "door" && isDoubleSwing) {
+    // Two leaves meeting at a center mullion, matching the 2D French-door symbol.
+    const mullionWidth = Math.min(frameWidth, (opening.width_m - 2 * frameWidth) / 6);
+    const leafWidth = Math.max(0.01, (opening.width_m - 2 * frameWidth - mullionWidth) / 2);
+    console.log("DEBUG double-swing", opening.tag, { frameWidth, mullionWidth, leafWidth, width_m: opening.width_m });
+    const panelElevation = wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2;
+    addBox(mullionWidth, availableHeight, depth, 0, midElevation, frameMaterial);
+    addBox(leafWidth, panelHeight, 0.045, -mullionWidth / 2 - leafWidth / 2, panelElevation, frameMaterial);
+    addBox(leafWidth, panelHeight, 0.045, mullionWidth / 2 + leafWidth / 2, panelElevation, frameMaterial);
+  } else if (opening.kind === "door") {
     addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, 0.045, 0,
       wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, frameMaterial);
   } else {

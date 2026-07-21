@@ -12,9 +12,12 @@ Need to be able to cleanly turn parts on/off in the 2d and 3d views, either by t
 IFC openings (WP7 follow-ups): glTF core-LOD opening cutouts (windows/doors currently emit voids + fillings only in IFC, not the glTF core mesh); shared IfcWindowType/IfcDoorType so repeated openings reference one type rather than per-instance property sets.
 
 French/double-swing doors now render in the 2D plan (PNG + UI) and are editable via a
-click-to-open door settings popover (type, hinge/swing, position, sill height); the 3D
-glTF/Panel3D view still cuts doors as plain void rectangles with no leaf panel geometry
-(single or double) — see `emit/gltf/emitter.py:_add_wall`.
+click-to-open door settings popover (type, hinge/swing, position, sill height). Panel3D
+now cuts real per-opening voids (jamb-split wall layers) and draws a frame + door panel
+or glass pane — see `Panel3D.tsx:buildOpening`. Still missing there: it always draws one
+full-width panel, so double-swing/French doors don't get a split two-leaf panel, and the
+static glTF export (`emit/gltf/emitter.py:_add_wall`) is untouched and still cuts plain
+void rectangles.
 
 ## Catlin detail parity — remaining
 
