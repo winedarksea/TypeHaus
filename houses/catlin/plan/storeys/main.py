@@ -60,6 +60,12 @@ WINDOW_TYPES = [
     # (header would land above the top plate); same bearing-wall width module, shorter.
     WindowType(tag="WT-2736", width=inch(27), height=ft(3), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
+    # Attic windows are shortened to keep their heads below the cathedral-roof
+    # framing while retaining the same width modules as the standard types.
+    WindowType(tag="WT-3036-ATTIC", width=inch(30), height=ft(3), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement"),
+    WindowType(tag="WT-1436-ATTIC", width=inch(14), height=ft(3), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="awning"),
 ]
 
 NODES = [

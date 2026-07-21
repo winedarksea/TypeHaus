@@ -100,21 +100,22 @@ OPENINGS = [
          position=from_node("N-A-D1", ft(1))),
     Door(uid="CAD203AAAA", tag="D-A-STUDY", host="W-A-SN", type_ref="DT-INT30",
          position=from_node("N-A-C1", ft(1))),
-    # Gable windows (non-bearing walls: WT-3060)
-    Window(uid="CAX301AAAA", tag="WIN-A-DEN-S", host="W-A-S2", type_ref="WT-3060",
-           position=from_node("N-A-S1", ft(2, 9)), sill_height=ft(2, 6)),
+    # Attic windows are 36" tall so their heads stay below the roof framing;
+    # every opening starts 24" above the finished attic floor per the brief.
+    Window(uid="CAX301AAAA", tag="WIN-A-DEN-S", host="W-A-S2", type_ref="WT-3036-ATTIC",
+           position=from_node("N-A-S1", ft(2, 9)), sill_height=ft(2)),
     Window(uid="CAX302AAAA", tag="WIN-A-STUDY-S1", host="W-A-S3",
-           type_ref="WT-3060", position=from_node("N-A-S2", ft(6, 9)),
-           sill_height=ft(2, 6)),
+           type_ref="WT-3036-ATTIC", position=from_node("N-A-S2", ft(6, 9)),
+           sill_height=ft(2)),
     Window(uid="CAX303AAAA", tag="WIN-A-STUDY-S2", host="W-A-S3",
-           type_ref="WT-3060", position=from_node("N-A-S2", ft(12, 1)),
-           sill_height=ft(2, 6)),
-    Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3060",
-           position=from_node("N-A-NW", ft(6, 1)), sill_height=ft(2, 6)),
-    Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-3060",
-           position=from_node("N-A-NE", ft(6, 9)), sill_height=ft(2, 6)),
-    Window(uid="CAX306AAAA", tag="WIN-A-W-SM", host="W-A-W1", type_ref="WT-1448",
-           position=from_node("N-A-NW", ft(17, 5)), sill_height=ft(0, 8)),
+           type_ref="WT-3036-ATTIC", position=from_node("N-A-S2", ft(12, 1)),
+           sill_height=ft(2)),
+    Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3036-ATTIC",
+           position=from_node("N-A-NW", ft(6, 1)), sill_height=ft(2)),
+    Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-3036-ATTIC",
+           position=from_node("N-A-NE", ft(6, 9)), sill_height=ft(2)),
+    Window(uid="CAX306AAAA", tag="WIN-A-W-SM", host="W-A-W1", type_ref="WT-1436-ATTIC",
+           position=from_node("N-A-NW", ft(17, 5)), sill_height=ft(2)),
 ]
 
 ROOMS = [

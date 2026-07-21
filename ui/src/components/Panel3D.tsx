@@ -54,6 +54,10 @@ export function Panel3D() {
   }, [select]);
 
   useEffect(() => {
+    api.current?.setPalette(RESOLVED_NORDIC_PALETTE[theme]);
+  }, [theme]);
+
+  useEffect(() => {
     if (!model) return;
     const preserveView = renderedModel.current === model && renderedTheme.current !== null;
     api.current?.setModel(model, threeMode, RESOLVED_NORDIC_PALETTE[theme], preserveView);
@@ -117,6 +121,7 @@ export function Panel3D() {
 
 interface SceneApi {
   setModel: (m: Model, mode: "nordic" | "schematic", palette: ResolvedNordicPalette, preserveView: boolean) => void;
+  setPalette: (palette: ResolvedNordicPalette) => void;
   pan: (direction: PanDirection) => void;
   resetView: () => void;
   highlight: (uid: string | null) => void;
@@ -335,6 +340,12 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
     requestRender();
   };
 
+  const setPalette = (palette: ResolvedNordicPalette) => {
+    activePalette = palette;
+    scene.background = new THREE.Color(palette.bg);
+    requestRender();
+  };
+
   const highlight = (uid: string | null) => {
     if (highlighted && byUid.has(highlighted))
       for (const mat of byUid.get(highlighted)!)
@@ -353,6 +364,7 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
 
   return {
     setModel,
+    setPalette,
     pan,
     resetView,
     highlight,
