@@ -1,5 +1,5 @@
-import type { Opening, Wall } from "../model/types";
-import { wallLayerPieces } from "./Panel3D";
+import type { Opening, Wall, Model } from "../model/types";
+import { earthElevation, earthOutline, EARTH_FALLBACK_HALF_SIZE_M, wallLayerPieces } from "./Panel3D";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -34,4 +34,21 @@ export function runOpeningGeometryTests() {
 
   const raked = wallLayerPieces(wall([[0, 0], [4, 0]], 3, 2.4), [[0, -0.1], [4, -0.1], [4, 0.1], [0, 0.1]], [opening(2, 0.9, 1)]);
   assert(raked.some((piece) => piece.topIsRaked), "Header pieces preserve a raked wall top");
+}
+
+export function runEarthGeometryTests() {
+  const model = { site: { lat: 0, lon: 0, true_north_deg: 0,
+    parcel: [[-2, -1], [4, -1], [4, 3], [-2, 3]] } } as Model;
+  const parcel = earthOutline(model, [0, 0]);
+  assert(parcel.length === 4 && parcel[0][0] === -2 && parcel[2][1] === 3,
+    "Earth uses the authored parcel outline");
+
+  const fallback = earthOutline({} as Model, [3, 5]);
+  assert(fallback[0][0] === 3 - EARTH_FALLBACK_HALF_SIZE_M &&
+    fallback[2][1] === 5 + EARTH_FALLBACK_HALF_SIZE_M,
+    "Earth falls back to a large centered sheet without a parcel");
+
+  assert(earthElevation({ site: { lat: 0, lon: 0, true_north_deg: 0, grade_m: 1.5 } } as Model) === 1.5,
+    "Earth uses the serialized site grade");
+  assert(earthElevation({} as Model) === 0, "Earth defaults to the main-floor datum");
 }

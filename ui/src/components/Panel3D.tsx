@@ -21,9 +21,13 @@ import { useTheme } from "../theme/theme";
 // three.js scene, so they survive the eventual glTF route unchanged. Clicking a wall
 // cross-highlights the 2D plan and surfaces its file:line provenance.
 
+export const EARTH_PLANE_OPACITY = 0.28;
+export const EARTH_PLANE_THICKNESS_M = 0.01;
+export const EARTH_FALLBACK_HALF_SIZE_M = 50;
+
 const TRADE_LABEL: Record<Trade, string> = {
   walls: "Walls", openings: "Openings", framing: "Framing", floors: "Floors", concrete: "Concrete",
-  roof: "Roof", stairs: "Stairs", furniture: "Furniture",
+  roof: "Roof", stairs: "Stairs", furniture: "Furniture", earth: "Earth",
 };
 
 type PanDirection = "left" | "right" | "up" | "down";
@@ -301,6 +305,7 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
         buildOpening(tradeGroups.openings, opening, w, center, mode, palette, isDoubleSwing);
       }
     }
+    buildEarth(tradeGroups.earth, m, center, mode);
     for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, center, mode, palette);
     for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, center, mode, palette);
     for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette);
@@ -360,6 +365,39 @@ function createScene(mount: HTMLElement, onPick: (uid: string) => void): SceneAp
       mount.removeChild(el);
     },
   };
+}
+
+export function earthOutline(model: Model, center: PlanCenter): [number, number][] {
+  const parcel = model.site?.parcel;
+  if (parcel && parcel.length >= 3) return parcel.map(([x, y]) => [x, y]);
+  const [cx, cz] = center;
+  const half = EARTH_FALLBACK_HALF_SIZE_M;
+  return [[cx - half, cz - half], [cx + half, cz - half],
+    [cx + half, cz + half], [cx - half, cz + half]];
+}
+
+export function earthElevation(model: Model): number {
+  return model.site?.grade_m ?? 0;
+}
+
+function buildEarth(parent: THREE.Group, model: Model, center: PlanCenter, mode: "nordic" | "schematic") {
+  const outline = earthOutline(model, center);
+  const grade = earthElevation(model);
+  const geometry = createPlanPrismGeometry(
+    outline, grade - EARTH_PLANE_THICKNESS_M, grade,
+    [], center,
+  );
+  if (!geometry) return;
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x806040,
+    transparent: true,
+    opacity: EARTH_PLANE_OPACITY,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+    roughness: mode === "nordic" ? 0.95 : 1,
+    flatShading: mode === "schematic",
+  });
+  parent.add(new THREE.Mesh(geometry, material));
 }
 
 function buildFurniture(

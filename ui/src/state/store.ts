@@ -27,10 +27,11 @@ export type ThreeMode = "nordic" | "schematic";
 // rebuilds the scene, just flips group.visible. "walls" is layer polygons (sheathing,
 // insulation, cladding); "framing" is wall members (studs/plates/headers); "floors" is
 // floor decks (hideable for stair continuity); "concrete" is resolved solids (slabs,
-// footings, pads); "roof" is the roof surface + its members (incl. ridge beam).
-export type Trade = "walls" | "openings" | "framing" | "floors" | "concrete" | "roof" | "stairs" | "furniture";
+// footings, pads); "roof" is the roof surface + its members (incl. ridge beam); "earth"
+// is the translucent site context sheet.
+export type Trade = "walls" | "openings" | "framing" | "floors" | "concrete" | "roof" | "stairs" | "furniture" | "earth";
 export const ALL_TRADES: Trade[] = [
-  "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture",
+  "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture", "earth",
 ];
 
 export interface Selection {
@@ -144,7 +145,7 @@ export const useStore = create<StoreState>((set, get) => ({
   showFraming: true,
   visibleTrades: {
     walls: true, openings: true, framing: true, floors: true, concrete: true, roof: true,
-    stairs: true, furniture: true,
+    stairs: true, furniture: true, earth: true,
   },
   conflict: null,
   toasts: [],

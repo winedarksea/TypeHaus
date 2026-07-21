@@ -158,6 +158,16 @@ def model_to_dict(
             "lat": model.plan.project.site.lat,
             "lon": model.plan.project.site.lon,
             "true_north_deg": model.plan.project.site.true_north.degrees,
+            "grade_m": (model.plan.project.site.grade.meters
+                        if model.plan.project.site.grade is not None else None),
+            "parcel": [list(point.xy_m) for point in model.plan.project.site.parcel],
+            # Spot elevations are currently consumed by 2D site/elevation emitters. Keep
+            # them in the shared UI contract so a future earth surface can triangulate the
+            # same authored grade data without inventing a second source of truth.
+            "spot_elevations": [
+                {"position": list(spot.position.xy_m), "elevation_m": spot.elevation.meters}
+                for spot in model.plan.project.site.spot_elevations
+            ],
         },
         "underlays": [
             {"path": item.path, "storey": item.storey, "origin_x_m": item.origin_x_m,

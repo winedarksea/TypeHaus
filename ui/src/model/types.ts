@@ -362,7 +362,14 @@ export interface Model {
   projectNorth: number;
   findings: Finding[];
   project: { name: string; uuid: string };
-  site?: { lat: number; lon: number; true_north_deg: number };
+  site?: {
+    lat: number;
+    lon: number;
+    true_north_deg: number;
+    grade_m?: number | null;
+    parcel?: Vec2[];
+    spot_elevations?: { position: Vec2; elevation_m: number }[];
+  };
   underlays?: Underlay[];
   storeys: Storey[];
   walls: Wall[];
