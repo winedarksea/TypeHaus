@@ -19,6 +19,7 @@ import {
 } from "../model/geometry";
 import { materialColor, NORDIC_ACCENT, NORDIC_INK, NORDIC_LINE } from "../nordic/palette";
 import { DoorSettingsPopover } from "./DoorSettingsPopover";
+import { WindowSettingsPopover } from "./WindowSettingsPopover";
 import { FtInKeypad } from "./FtInKeypad";
 import { SunIndicator } from "./SunIndicator";
 import { PlacementPopover } from "./PlacementPopover";
@@ -67,7 +68,8 @@ interface WallAssemblyPopup {
   screen: Vec2;
 }
 
-// A door settings popover request (type/handing), anchored at the opening's screen point.
+// An opening settings popover request (door: type/handing; window: type), anchored at the
+// opening's screen point.
 interface DoorPopup {
   opening: Opening;
   screen: Vec2;
@@ -117,6 +119,7 @@ export function Canvas2D() {
   const [placement, setPlacement] = useState<Placement | null>(null);
   const [wallAssemblyPopup, setWallAssemblyPopup] = useState<WallAssemblyPopup | null>(null);
   const [doorPopup, setDoorPopup] = useState<DoorPopup | null>(null);
+  const [windowPopup, setWindowPopup] = useState<DoorPopup | null>(null);
   const [dimWall, setDimWall] = useState<Wall | null>(null);
   const [drawAssembly, setDrawAssembly] = useState<string>("");
   const [activeService, setActiveService] = useState<string>("");
@@ -159,8 +162,7 @@ export function Canvas2D() {
     if (o.is_door) {
       setDoorPopup({ opening: o, screen });
     } else {
-      setPending({ opening: o, field: "position",
-        initial: formatFtIn(openingStartFromCenter(o.center_along_m, o.width_m)) });
+      setWindowPopup({ opening: o, screen });
     }
   }, []);
   const movePlaceableFromDrag = useCallback((item: CanvasObject, position: Vec2) => {
@@ -444,6 +446,7 @@ export function Canvas2D() {
           select(null, null);
           setWallAssemblyPopup(null);
           setDoorPopup(null);
+          setWindowPopup(null);
         }
         break;
       }
@@ -562,7 +565,7 @@ export function Canvas2D() {
       const target = e.target as HTMLElement;
       if (target && (target.tagName === "INPUT" || target.tagName === "SELECT" || target.tagName === "TEXTAREA")) return;
       if (e.key === "Escape") {
-        setDraft(null); setPlacement(null); setWallAssemblyPopup(null); setDimWall(null); setNodeDrag(null); setPending(null); setDoorPopup(null);
+        setDraft(null); setPlacement(null); setWallAssemblyPopup(null); setDimWall(null); setNodeDrag(null); setPending(null); setDoorPopup(null); setWindowPopup(null);
         setPreviewGeom(null);
         if (calibrationMode) { setCalibrationMode(false); setCalibrationPoints([]); }
       } else if ((e.key === "Delete" || e.key === "Backspace") && selection.uid && !offline) {
@@ -895,6 +898,33 @@ export function Canvas2D() {
             setDoorPopup(null);
           }}
           onClose={() => setDoorPopup(null)}
+        />
+      )}
+      {windowPopup && (
+        <WindowSettingsPopover
+          opening={windowPopup.opening}
+          screen={windowPopup.screen}
+          windowTypes={model.catalog?.window_types ?? []}
+          applyOps={applyOps}
+          toast={toast}
+          onEditPosition={() => {
+            setPending({ opening: windowPopup.opening, field: "position",
+              initial: formatFtIn(openingStartFromCenter(
+                windowPopup.opening.center_along_m, windowPopup.opening.width_m,
+              )) });
+            setWindowPopup(null);
+          }}
+          onEditSillHeight={() => {
+            setPending({ opening: windowPopup.opening, field: "sill_height",
+              initial: formatFtIn(windowPopup.opening.sill_m) });
+            setWindowPopup(null);
+          }}
+          onDelete={() => {
+            useStore.getState().select("opening", windowPopup.opening.uid);
+            void useStore.getState().deleteSelection();
+            setWindowPopup(null);
+          }}
+          onClose={() => setWindowPopup(null)}
         />
       )}
       {dimWall && (
@@ -1372,24 +1402,45 @@ const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selec
   const wallArcX = hingeX - hingeDirection * 2 * dx;
   const wallArcY = hingeY - hingeDirection * 2 * dy;
   const windowTick = Math.min(6, Math.max(3, scale * 0.08));
+  // Press → drag vs. click discrimination (mirrors CanvasObjectFootprint): the ghost
+  // preview only follows once the pointer has been captured AND moved past a small px
+  // threshold, so a bare hover never drifts the symbol. A press that never crosses the
+  // threshold is a click → select + open settings; one that does → commit the move.
+  const downRef = useRef<Vec2 | null>(null);
+  const movedRef = useRef(false);
+  const DRAG_THRESHOLD_PX = 4;
   return (
-    <g onClick={() => !preview && onSelect("opening", o.uid)} onDoubleClick={() => !preview && onEdit(o, [cx, cy])}
+    <g onDoubleClick={() => !preview && onEdit(o, [cx, cy])}
       onPointerDown={(event) => {
         if (preview) return;
         event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId);
+        downRef.current = [event.clientX, event.clientY];
+        movedRef.current = false;
       }}
       onPointerMove={(event) => {
-        if (!preview) onPreview?.(o, host, toWorld(event.clientX, event.clientY));
+        if (preview) return;
+        if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+        if (!movedRef.current && downRef.current &&
+          Math.hypot(event.clientX - downRef.current[0], event.clientY - downRef.current[1]) < DRAG_THRESHOLD_PX) return;
+        movedRef.current = true;
+        onPreview?.(o, host, toWorld(event.clientX, event.clientY));
       }}
       onPointerUp={(event) => {
         if (preview) return;
         if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
         event.currentTarget.releasePointerCapture(event.pointerId);
-        const next = toWorld(event.clientX, event.clientY);
+        downRef.current = null;
         onPreviewEnd?.();
-        if (Math.hypot(next[0] - center[0], next[1] - center[1]) > 0.001) onMove(o, host, next);
+        if (movedRef.current) {
+          const next = toWorld(event.clientX, event.clientY);
+          if (Math.hypot(next[0] - center[0], next[1] - center[1]) > 0.001) onMove(o, host, next);
+        } else {
+          onSelect("opening", o.uid);
+          onEdit(o, [cx, cy]);
+        }
+        movedRef.current = false;
       }}
-      onPointerCancel={() => !preview && onPreviewEnd?.()}
+      onPointerCancel={() => { if (!preview) { downRef.current = null; movedRef.current = false; onPreviewEnd?.(); } }}
       pointerEvents={preview ? "none" : undefined}
       opacity={preview ? .65 : 1}
       style={{ cursor: preview ? undefined : "pointer" }}>

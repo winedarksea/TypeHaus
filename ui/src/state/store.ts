@@ -13,7 +13,7 @@ import type {
   PreviewGeometry,
   UnderlayCalibration,
 } from "../engine/EngineClient";
-import { RevisionConflict } from "../engine/EngineClient";
+import { EngineError, RevisionConflict } from "../engine/EngineClient";
 import { HttpEngineClient } from "../engine/HttpEngineClient";
 import { PyodideEngineClient } from "../engine/PyodideEngineClient";
 import { pickHouseDirectory } from "../engine/openHouse";
@@ -374,7 +374,10 @@ export const useStore = create<StoreState>((set, get) => ({
       const res = await get().client.undo();
       await get().reloadIfStale(res.revision);
     } catch (err) {
-      get().toast((err as Error).message, "error");
+      // An empty history (409) isn't an error — a stray Undo after a no-op edit
+      // shouldn't flash a red toast; report it as neutral info instead.
+      if (err instanceof EngineError && err.status === 409) get().toast(err.message, "info");
+      else get().toast((err as Error).message, "error");
     }
   },
 
@@ -383,7 +386,8 @@ export const useStore = create<StoreState>((set, get) => ({
       const res = await get().client.redo();
       await get().reloadIfStale(res.revision);
     } catch (err) {
-      get().toast((err as Error).message, "error");
+      if (err instanceof EngineError && err.status === 409) get().toast(err.message, "info");
+      else get().toast((err as Error).message, "error");
     }
   },
 }));

@@ -26,10 +26,12 @@ dependencies = [
 [project.optional-dependencies]
 # The FastAPI server (`haus serve`) + live-reload watcher — optional so a headless
 # build/check/render install stays lean (→ 20 §FastAPI server).
-server = ["fastapi>=0.110", "uvicorn>=0.29", "watchfiles>=0.21"]
+# `websockets` is required for the `/events` live-reload socket — bare `uvicorn`
+# ships no WS implementation and rejects every upgrade with 403.
+server = ["fastapi>=0.110", "uvicorn>=0.29", "websockets>=12", "watchfiles>=0.21"]
 dev = [
     "pytest>=8.0", "hypothesis>=6.90", "mypy>=1.9", "ruff>=0.4",
-    "fastapi>=0.110", "uvicorn>=0.29", "watchfiles>=0.21", "httpx>=0.27",
+    "fastapi>=0.110", "uvicorn>=0.29", "websockets>=12", "watchfiles>=0.21", "httpx>=0.27",
 ]
 
 [project.scripts]
