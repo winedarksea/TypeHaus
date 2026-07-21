@@ -196,6 +196,32 @@ def place_opening(
     return MutationResult(ops=[op])
 
 
+def move_opening(
+    plan: PlanModel,
+    storey: str,
+    *,
+    tag: str,
+    along: float | str,
+) -> MutationResult:
+    """Move an opening along its existing host wall without inventing a second geometry solver.
+
+    ``OpeningPosition`` is an authored structured value, so a normal scalar patch cannot
+    safely express it.  Re-emitting ``from_node`` keeps the opening attached to the wall's
+    start node as that wall is stretched later.
+    """
+    opening = next((item for item in _openings(plan, storey) if item.tag == tag), None)
+    if opening is None:
+        raise MacroError(f"no opening {tag!r} on storey {storey!r}")
+    wall = next((item for item in _walls(plan, storey) if item.tag == opening.host), None)
+    if wall is None:
+        raise MacroError(f"opening {tag!r} hosts on missing wall {opening.host!r}")
+    offset = _as_length(along)
+    return MutationResult(ops=[PatchOp(
+        "update", opening.element_kind, tag,
+        {"position": RawExpr(f'from_node("{wall.start_node}", {offset.to_source()})')},
+    )])
+
+
 def place_room(
     plan: PlanModel,
     storey: str,

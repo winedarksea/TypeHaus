@@ -91,6 +91,7 @@ export type MacroRequest =
   | { macro: "split_wall"; storey: string; wall: string; at: [string, string] }
   | { macro: "heal_walls"; storey: string; node: string }
   | { macro: "place_opening"; storey: string; host: string; type_ref: string; along: string; is_door: boolean; sill?: string; hint_file?: string }
+  | { macro: "move_opening"; storey: string; tag: string; along: string }
   | { macro: "place_room"; storey: string; seed: [string, string]; occupancy: string; floor_finish?: string; hint_file?: string }
   // Library macros (no storey): the assembly-editor clone-and-tweak flow (→ 21b WP2.4d/e).
   | { macro: "duplicate_assembly"; source: string; tag: string }

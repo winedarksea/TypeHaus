@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { findingsFor, useStore } from "../state/store";
-import type { Finding, Model, Stair, Wall } from "../model/types";
+import type { Finding, Model, Opening, Stair, Wall } from "../model/types";
 import { formatFtIn, wallLength } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
 import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
@@ -85,23 +85,7 @@ function SelectionInspector({
   if (kind === "opening") {
     const o = model.openings.find((x) => x.uid === uid);
     if (!o) return null;
-    return (
-      <div>
-        <h3>{o.is_door ? "Door" : "Window"}</h3>
-        <div className="kv">
-          <span className="k">Tag</span>
-          <span>{o.tag}</span>
-          <span className="k">Width</span>
-          <span>{formatFtIn(o.width_m)}</span>
-          <span className="k">Height</span>
-          <span>{formatFtIn(o.height_m)}</span>
-          <span className="k">Sill</span>
-          <span>{formatFtIn(o.sill_m)}</span>
-        </div>
-        <Provenance p={o.provenance} />
-        <InlineFindings model={model} uid={uid} />
-      </div>
-    );
+    return <OpeningInspector key={o.uid} model={model} opening={o} />;
   }
   if (kind === "room") {
     const r = model.rooms.find((x) => x.uid === uid);
@@ -131,6 +115,67 @@ function SelectionInspector({
     return <StairInspector model={model} stair={stair} />;
   }
   return null;
+}
+
+function OpeningInspector({ model, opening }: { model: Model; opening: Opening }) {
+  const applyOps = useStore((state) => state.applyOps);
+  const runMacro = useStore((state) => state.runMacro);
+  const toast = useStore((state) => state.toast);
+  const host = model.walls.find((wall) => wall.uid === opening.host);
+  const types = opening.is_door ? model.catalog?.door_types ?? [] : model.catalog?.window_types ?? [];
+  const [along, setAlong] = useState(() => formatFtIn(opening.center_along_m));
+  const [sill, setSill] = useState(() => formatFtIn(opening.sill_m));
+
+  const update = async (fields: Record<string, unknown>) => {
+    const ok = await applyOps([{
+      op: "update", type: opening.is_door ? "Door" : "Window", tag: opening.tag, fields,
+    }]);
+    if (ok) toast(`${opening.tag} updated`);
+  };
+  const move = async () => {
+    if (!host) return;
+    const result = await runMacro({ macro: "move_opening", storey: host.storey, tag: opening.tag, along });
+    if (result) toast(`${opening.tag} position updated`);
+  };
+  const remove = async () => {
+    const ok = await applyOps([{ op: "delete", type: opening.is_door ? "Door" : "Window", tag: opening.tag }]);
+    if (ok) toast(`${opening.tag} deleted`);
+  };
+
+  return <div>
+    <h3>{opening.is_door ? "Door" : "Window"} · {opening.tag}</h3>
+    <div className="kv">
+      <span className="k">Host wall</span><span>{host?.tag ?? opening.host}</span>
+      <span className="k">Width</span><span>{formatFtIn(opening.width_m)}</span>
+      <span className="k">Height</span><span>{formatFtIn(opening.height_m)}</span>
+    </div>
+    <label className="field-label">Position along wall
+      <span><input value={along} onChange={(event) => setAlong(event.target.value)} />
+        <button className="btn" onClick={() => void move()} disabled={!host}>Move</button></span>
+    </label>
+    <label className="field-label">{opening.is_door ? "Threshold" : "Sill height"}
+      <span><input value={sill} onChange={(event) => setSill(event.target.value)} />
+        <button className="btn" onClick={() => void update({ sill_height: sill })}>Apply</button></span>
+    </label>
+    <label className="field-label">Product type
+      <select value={opening.type_ref ?? ""} onChange={(event) => void update({ type_ref: event.target.value })}>
+        {types.map((type) => <option key={type.tag} value={type.tag}>{type.tag} · {formatFtIn(type.width_m)}×{formatFtIn(type.height_m)}</option>)}
+      </select>
+    </label>
+    {opening.is_door && <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+      <button className="btn" onClick={() => void update({ flip_hinge: !opening.flip_hinge })}>
+        Flip hinge
+      </button>
+      <button className="btn" onClick={() => void update({ flip_swing: !opening.flip_swing })}>
+        Flip swing
+      </button>
+    </div>}
+    <button className="btn" style={{ marginTop: 8, color: "var(--error)" }} onClick={() => void remove()}>
+      Delete {opening.is_door ? "door" : "window"}
+    </button>
+    <Provenance p={opening.provenance} />
+    <InlineFindings model={model} uid={opening.uid} />
+  </div>;
 }
 
 function StairInspector({ model, stair }: { model: Model; stair: Stair }) {

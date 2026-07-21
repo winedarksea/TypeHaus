@@ -49,14 +49,29 @@ def _emit_openings(b: SceneBuilder, model: ResolvedModel, wall_tags: set[str]) -
         t = op.center_along_m / length
         cx, cy = sx + (ex - sx) * t, sy + (ey - sy) * t
         layer = "A-DOOR" if op.is_door else "A-GLAZ"
+        authored = model.plan.by_tag(op.tag)
+        flip_hinge = bool(getattr(authored, "flip_hinge", False))
+        flip_swing = bool(getattr(authored, "flip_swing", False))
+        angle = _angle(sx, sy, ex, ey)
+        # The symbol is anchored at the hinge, not the opening centre.  This makes the
+        # rendered leaf and arc describe the authored handing instead of a generic glyph.
+        hinge_direction = -1.0 if flip_hinge else 1.0
+        hinge_x = cx + hinge_direction * (ex - sx) / length * op.width_m / 2
+        hinge_y = cy + hinge_direction * (ey - sy) / length * op.width_m / 2
         b.add(Symbol(
             name="door-swing" if op.is_door else "window-mark",
-            insert=_in((cx, cy)),
-            rotation=_angle(sx, sy, ex, ey),
+            insert=_in((hinge_x, hinge_y) if op.is_door else (cx, cy)),
+            rotation=angle,
             scale=op.width_m * M_TO_IN,
             layer=layer,
-            params={"width_in": op.width_m * M_TO_IN},
+            params={"width_in": op.width_m * M_TO_IN,
+                    "swing_sign": -1 if flip_swing else 1},
         ))
+        if not op.is_door:
+            # Keep labels clear of the glazed opening while retaining the wall orientation.
+            normal_x, normal_y = -(ey - sy) / length, (ex - sx) / length
+            b.add(Text(anchor=_in((cx + normal_x * 0.18, cy + normal_y * 0.18)),
+                       content=op.tag, height=2.2, layer="A-GLAZ", align="center"))
 
 
 def _emit_rooms(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:

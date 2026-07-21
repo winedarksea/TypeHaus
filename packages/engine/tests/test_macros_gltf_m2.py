@@ -68,6 +68,18 @@ def test_move_nodes_translates_each(plan):
     assert all(o.op == "update" for o in result.ops)
 
 
+def test_move_opening_rewrites_structured_position_on_its_current_host(plan):
+    result = macros.move_opening(plan, "main", tag="D-101", along="5'")
+    (op,) = result.ops
+    assert op.type == "Door" and op.tag == "D-101"
+    assert op.fields["position"].expr == 'from_node("N-1", ft(5))'
+
+
+def test_move_opening_rejects_wrong_storey(plan):
+    with pytest.raises(macros.MacroError):
+        macros.move_opening(plan, "upper", tag="D-101", along="5'")
+
+
 # --- split + remap -----------------------------------------------------------
 
 def test_split_keeps_survivor_and_adds_segment(plan):

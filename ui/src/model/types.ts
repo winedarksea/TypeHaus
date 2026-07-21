@@ -81,10 +81,13 @@ export interface Opening {
   host: string; // host wall uid
   is_door: boolean;
   provenance: Provenance | null;
+  type_ref: string | null;
   width_m: number;
   height_m: number;
   sill_m: number;
   center_along_m: number;
+  flip_hinge: boolean;
+  flip_swing: boolean;
 }
 
 export interface PlanNode {

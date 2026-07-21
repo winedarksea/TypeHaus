@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import copy
 from pathlib import Path
 
 import pytest
 
 from typehaus.emit.draw import build_floorplan, write_dxf, write_pdf, write_raster
-from typehaus.emit.draw.scene import Polyline, Scene
+from typehaus.emit.draw.scene import Polyline, Scene, Symbol, Text
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
 
@@ -38,6 +39,30 @@ def test_floorplan_has_framing_and_aia_layers(scene: Scene):
     # framing members carry element provenance for XDATA
     fram = [n for n in layers["S-FRAM"] if isinstance(n, Polyline)]
     assert fram and all(n.uid for n in fram)
+
+
+def test_floorplan_marks_windows_by_tag_and_carries_door_handing(scene: Scene):
+    symbols = [node for node in scene.nodes if isinstance(node, Symbol)]
+    windows = [node for node in symbols if node.name == "window-mark"]
+    doors = [node for node in symbols if node.name == "door-swing"]
+    labels = [node.content for node in scene.nodes if isinstance(node, Text)]
+    assert windows and doors
+    assert all(node.layer == "A-GLAZ" and node.params["width_in"] > 0 for node in windows)
+    assert all(node.params["swing_sign"] in {-1, 1} for node in doors)
+    assert "WIN-101" in labels
+
+
+def test_floorplan_door_symbol_reflects_both_handing_flips(model):
+    flipped = copy.deepcopy(model)
+    door = flipped.plan.by_tag("D-101")
+    replacement = door.model_copy(update={"flip_hinge": True, "flip_swing": True})
+    flipped.plan = flipped.plan.with_elements(
+        "main", [replacement if item.tag == door.tag else item
+                 for item in flipped.plan.storey_elements("main")],
+    )
+    symbols = [node for node in build_floorplan(flipped, "main").nodes if isinstance(node, Symbol)]
+    (door_symbol,) = [node for node in symbols if node.name == "door-swing"]
+    assert door_symbol.params["swing_sign"] == -1
 
 
 def test_dxf_round_trips_with_layers_and_units(scene: Scene, tmp_path: Path):

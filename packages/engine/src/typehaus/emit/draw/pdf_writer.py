@@ -255,11 +255,14 @@ def _draw_symbol(ax: object, node: Symbol, Arc: object) -> None:
     w = node.params.get("width_in", node.scale) or node.scale
     if node.name == "door-swing":
         a = math.radians(node.rotation)
-        end = (node.insert[0] + w * math.cos(a + math.pi / 2),
-               node.insert[1] + w * math.sin(a + math.pi / 2))
+        swing_sign = float(node.params.get("swing_sign", 1))
+        end = (node.insert[0] + swing_sign * w * math.cos(a + math.pi / 2),
+               node.insert[1] + swing_sign * w * math.sin(a + math.pi / 2))
         ax.plot([node.insert[0], end[0]], [node.insert[1], end[1]], color="#a05a20", lw=0.9)
+        theta_start = node.rotation if swing_sign > 0 else node.rotation - 90
+        theta_end = node.rotation + 90 if swing_sign > 0 else node.rotation
         ax.add_patch(Arc(node.insert, 2 * w, 2 * w, angle=0,
-                         theta1=node.rotation, theta2=node.rotation + 90,
+                         theta1=theta_start, theta2=theta_end,
                          edgecolor="#a05a20", linewidth=0.6))
     elif node.name == "post":
         ax.plot(node.insert[0], node.insert[1], marker="s", markersize=5,
@@ -277,9 +280,14 @@ def _draw_symbol(ax: object, node: Symbol, Arc: object) -> None:
     elif node.name in _MARKER_STYLE:
         marker, color = _MARKER_STYLE[node.name]
         ax.plot(node.insert[0], node.insert[1], marker=marker, markersize=5, color=color)
-    else:
-        ax.plot(node.insert[0], node.insert[1], marker="o", markersize=2,
-                color="#3a6a8a")
+    else:  # window mark: glass bar across the full opening plus a short centre mullion
+        a = math.radians(node.rotation)
+        dx, dy = w * math.cos(a) / 2, w * math.sin(a) / 2
+        nx, ny = -math.sin(a) * 2.5, math.cos(a) * 2.5
+        ax.plot([node.insert[0] - dx, node.insert[0] + dx],
+                [node.insert[1] - dy, node.insert[1] + dy], color="#3a6a8a", lw=2.2)
+        ax.plot([node.insert[0] - nx, node.insert[0] + nx],
+                [node.insert[1] - ny, node.insert[1] + ny], color="#3a6a8a", lw=0.8)
 
 
 def _feet_inches(total_in: float) -> str:

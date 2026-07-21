@@ -39,6 +39,14 @@ def test_model_contract_carries_revision_and_provenance(client):
     assert wall["provenance"]["line"] > 0
 
 
+def test_model_contract_carries_opening_product_and_handing(client):
+    c, _ = client
+    opening = c.get("/model").json()["openings"][0]
+    assert opening["type_ref"]
+    assert isinstance(opening["flip_hinge"], bool)
+    assert isinstance(opening["flip_swing"], bool)
+
+
 def test_patch_requires_matching_revision(client):
     c, house = client
     stale = c.patch("/plan", json={

@@ -523,10 +523,13 @@ export function Canvas2D() {
   const commitPending = async (meters: number) => {
     if (!pending) return;
     const o = pending.opening;
-    const ok = await applyOps([{
-      op: "update", type: o.is_door ? "Door" : "Window", tag: o.tag,
-      fields: { [pending.field]: formatFtIn(meters) },
-    }]);
+    const ok = pending.field === "position"
+      ? Boolean(await runMacro({ macro: "move_opening", storey: hostStorey(model, o), tag: o.tag,
+        along: formatFtIn(meters) }))
+      : await applyOps([{
+        op: "update", type: o.is_door ? "Door" : "Window", tag: o.tag,
+        fields: { sill_height: formatFtIn(meters) },
+      }]);
     if (ok) toast(`${o.tag} ${pending.field} updated`);
     setPending(null);
   };
@@ -588,13 +591,26 @@ export function Canvas2D() {
             const clearFace = previewGeom?.rooms.find((x) => x.tag === r.tag)?.clear_face
               ?? r.clear_face;
             return (
-              <polygon
-                key={r.uid}
-                points={clearFace.map(project).map((p) => p.join(",")).join(" ")}
-                fill="var(--canvas-selection)"
-                stroke="none"
-                onClick={() => tool === "select" && select("room", r.uid)}
-              />
+              <g key={r.uid} onClick={() => tool === "select" && select("room", r.uid)}
+                style={{ cursor: tool === "select" ? "pointer" : undefined }}>
+                <polygon points={clearFace.map(project).map((p) => p.join(",")).join(" ")}
+                  fill="var(--canvas-selection)" stroke="none" />
+                {clearFace.length > 0 && (() => {
+                  const centroid: Vec2 = [
+                    clearFace.reduce((sum, point) => sum + point[0], 0) / clearFace.length,
+                    clearFace.reduce((sum, point) => sum + point[1], 0) / clearFace.length,
+                  ];
+                  const [x, y] = project(centroid);
+                  return <text x={x} y={y - 5} textAnchor="middle" pointerEvents="none"
+                    fill="var(--canvas-ink)" fontSize={12} fontWeight={700}
+                    style={{ paintOrder: "stroke", stroke: "var(--canvas-white)", strokeWidth: 3 }}>
+                    <tspan x={x}>{r.tag}</tspan>
+                    <tspan x={x} dy={14} fontSize={10} fontWeight={500}>
+                      {Math.round(r.area_m2 * 10.7639)} SF
+                    </tspan>
+                  </text>;
+                })()}
+              </g>
             );
           })}
         {/* walls — likewise shown at their previewed axis (tag-matched) while a node drag is
@@ -1014,6 +1030,10 @@ const WallShape = memo(function WallShape({ w, project, selected, hovered, showF
   );
 });
 
+function hostStorey(model: Model, opening: Opening): string {
+  return model.walls.find((wall) => wall.uid === opening.host)?.storey ?? "";
+}
+
 function WallAssemblyPopupCard({ wall, screen, viewport, onClose }: {
   wall: Wall;
   screen: Vec2;
@@ -1071,6 +1091,17 @@ const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selec
   const ang = Math.atan2(-(b[1] - a[1]), b[0] - a[0]);
   const dx = Math.cos(ang) * halfPx;
   const dy = Math.sin(ang) * halfPx;
+  const hingeDirection = o.flip_hinge ? -1 : 1;
+  const hingeX = cx + hingeDirection * dx;
+  const hingeY = cy + hingeDirection * dy;
+  const swingSign = o.flip_swing ? -1 : 1;
+  // SVG's y axis is inverted from plan coordinates, so the screen-space +90° normal is
+  // [sin(angle), -cos(angle)].  It matches the shared drawing IR's handed plan symbol.
+  const leafX = hingeX + swingSign * Math.sin(ang) * o.width_m * scale;
+  const leafY = hingeY - swingSign * Math.cos(ang) * o.width_m * scale;
+  const wallArcX = hingeX - hingeDirection * 2 * dx;
+  const wallArcY = hingeY - hingeDirection * 2 * dy;
+  const windowTick = Math.min(6, Math.max(3, scale * 0.08));
   return (
     <g onClick={() => onSelect("opening", o.uid)} onDoubleClick={() => onEdit(o)}
       style={{ cursor: "pointer" }}>
@@ -1079,6 +1110,21 @@ const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selec
       <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
       stroke={o.is_door ? "var(--canvas-wood)" : NORDIC_ACCENT} strokeWidth={2}
         strokeDasharray={o.is_door ? undefined : "3 2"} />
+      {o.is_door ? <>
+        <line x1={hingeX} y1={hingeY} x2={leafX} y2={leafY}
+          stroke="var(--canvas-wood)" strokeWidth={1.5} />
+        <path d={`M ${wallArcX} ${wallArcY} A ${o.width_m * scale} ${o.width_m * scale} 0 0 ${swingSign > 0 ? 0 : 1} ${leafX} ${leafY}`}
+          fill="none" stroke="var(--canvas-wood)" strokeWidth={1} />
+      </> : <>
+        <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
+          stroke={NORDIC_ACCENT} strokeWidth={3} />
+        <line x1={cx - Math.sin(ang) * windowTick} y1={cy + Math.cos(ang) * windowTick}
+          x2={cx + Math.sin(ang) * windowTick} y2={cy - Math.cos(ang) * windowTick}
+          stroke="var(--canvas-white)" strokeWidth={1.2} />
+        <text x={cx - Math.sin(ang) * 14} y={cy + Math.cos(ang) * 14} textAnchor="middle"
+          fill={NORDIC_ACCENT} fontSize={9} fontWeight={700}
+          style={{ paintOrder: "stroke", stroke: "var(--canvas-white)", strokeWidth: 3 }}>{o.tag}</text>
+      </>}
       {selected && <circle cx={cx} cy={cy} r={5} fill={NORDIC_ACCENT} />}
     </g>
   );

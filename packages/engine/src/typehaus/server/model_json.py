@@ -188,8 +188,13 @@ def model_to_dict(
         "openings": [
             {"uid": o.uid, "tag": o.tag, "host": o.host_wall, "is_door": o.is_door,
              "provenance": _provenance(provenance, o.tag),
+             "type_ref": o.type_ref,
              "width_m": o.width_m, "height_m": o.height_m, "sill_m": o.sill_m,
-             "center_along_m": o.center_along_m}
+             "center_along_m": o.center_along_m,
+             # Handing is authored data, rather than resolved geometry, but it changes the
+             # plan symbol and must therefore cross the UI boundary with the opening.
+             "flip_hinge": bool(getattr(model.plan.by_tag(o.tag), "flip_hinge", False)),
+             "flip_swing": bool(getattr(model.plan.by_tag(o.tag), "flip_swing", False))}
             for o in model.openings
         ],
         # Authored plan nodes: the editor addresses stretch / heal / draw-snap by node *tag*

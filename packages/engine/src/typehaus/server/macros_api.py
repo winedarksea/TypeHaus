@@ -73,6 +73,10 @@ def _place_opening(plan: PlanModel, storey: str, body: dict[str, Any]) -> Mutati
     )
 
 
+def _move_opening(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.move_opening(plan, storey, tag=body["tag"], along=body["along"])
+
+
 def _place_room(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
     return macros.place_room(
         plan, storey, seed=_xy(body["seed"]), occupancy=body["occupancy"],
@@ -124,6 +128,7 @@ _DISPATCH = {
     "split_wall": _split_wall,
     "heal_walls": _heal_walls,
     "place_opening": _place_opening,
+    "move_opening": _move_opening,
     "place_room": _place_room,
     "duplicate_assembly": _duplicate_assembly,
     "blank_assembly": _blank_assembly,

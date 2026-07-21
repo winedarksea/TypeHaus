@@ -180,13 +180,15 @@ def _add_symbol(msp: object, node: Symbol) -> None:
     if node.name == "door-swing":
         # Leaf + 90° swing arc, oriented along the wall.
         a = math.radians(node.rotation)
+        swing_sign = float(node.params.get("swing_sign", 1))
         hinge = node.insert
-        leaf_end = (hinge[0] + w * math.cos(a + math.pi / 2),
-                    hinge[1] + w * math.sin(a + math.pi / 2))
+        leaf_end = (hinge[0] + swing_sign * w * math.cos(a + math.pi / 2),
+                    hinge[1] + swing_sign * w * math.sin(a + math.pi / 2))
         msp.add_line(hinge, leaf_end, dxfattribs={"layer": node.layer})  # type: ignore[attr-defined]
         msp.add_arc(  # type: ignore[attr-defined]
             center=hinge, radius=w,
-            start_angle=node.rotation, end_angle=node.rotation + 90,
+            start_angle=node.rotation if swing_sign > 0 else node.rotation - 90,
+            end_angle=node.rotation + 90 if swing_sign > 0 else node.rotation,
             dxfattribs={"layer": node.layer},
         )
     elif node.name == "post":
@@ -209,9 +211,16 @@ def _add_symbol(msp: object, node: Symbol) -> None:
     elif node.name in _DEVICE_SYMBOLS:
         msp.add_circle(node.insert, radius=max(w * 0.15, 1.5),  # type: ignore[attr-defined]
                        dxfattribs={"layer": node.layer})
-    else:  # window mark: a short cross tick
-        msp.add_circle(node.insert, radius=max(w * 0.1, 1.0),  # type: ignore[attr-defined]
-                       dxfattribs={"layer": node.layer})
+    else:  # window mark: full glazing bar with a centre mullion tick
+        a = math.radians(node.rotation)
+        dx, dy = w * math.cos(a) / 2, w * math.sin(a) / 2
+        nx, ny = -math.sin(a) * 2.5, math.cos(a) * 2.5
+        msp.add_line((node.insert[0] - dx, node.insert[1] - dy),
+                     (node.insert[0] + dx, node.insert[1] + dy),
+                     dxfattribs={"layer": node.layer})  # type: ignore[attr-defined]
+        msp.add_line((node.insert[0] - nx, node.insert[1] - ny),
+                     (node.insert[0] + nx, node.insert[1] + ny),
+                     dxfattribs={"layer": node.layer})  # type: ignore[attr-defined]
 
 
 def _add_leader(msp: object, node: Leader) -> None:

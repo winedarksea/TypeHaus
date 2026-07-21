@@ -518,6 +518,26 @@ textarea:focus-visible,
   color: var(--line);
 }
 
+.field-label {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.field-label > span {
+  display: flex;
+  gap: 6px;
+}
+
+.field-label input,
+.field-label select {
+  min-width: 0;
+  flex: 1;
+  padding: 5px 7px;
+}
+
 .keypad {
   position: fixed;
   inset: 0;

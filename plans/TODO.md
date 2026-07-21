@@ -1,12 +1,9 @@
 # Unorganized TODO tasks
 * clean import/export (so ship to another computer running this app)
-* UI contractor focused view toggles (ie concrete, framing, plumbing)
 * bypass libcst entirely for the mutation path for fully offline PWA (high risk, deferred)
-* needs a dark mode
 
 ## Remaining Work
-Still missing for full M2:
-variants/compare, full takeoff/BOM, and Playwright acceptance tests.
+Still missing for full M2: variants/compare, full takeoff/BOM
 The 3D UI builds geometry directly from model.json and renders furniture as boxes; it does not yet consume the planned glTF artifact ([Panel3D.tsx (line 7)](/Users/colincatlin/Documents-NoCloud/TypeHaus/ui/src/components/Panel3D.tsx:7)).
 M3 details are incomplete: Catlin has transitions, but no authored detail Slices. The permit composer emits placeholder/generic sheets; S-100/S-101 are reused floor/energy views rather than complete foundation/framing sheets ([sheets.py (line 30)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/emit/draw/sheets.py:30)).
 M3 site work is incomplete: no parcel/contour GeoJSON basemap support.
