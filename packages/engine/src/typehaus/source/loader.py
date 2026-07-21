@@ -174,7 +174,7 @@ def load_plan(house_dir: Path) -> LoadResult:
         timings=timings,
     )
     if plan is not None:
-        _consistency_check(plan, prov, findings)
+        _consistency_check(plan, prov, findings, house_dir)
     return result
 
 
@@ -253,23 +253,75 @@ def _find_library_root(house_dir: Path) -> Path | None:
     return None
 
 
-def _consistency_check(plan: PlanModel, prov: Provenance, findings: list[Finding]) -> None:
+# Element kinds the UI can move/edit (drag, rehost, retype, delete). Their edits POST a
+# writeback op, which the coordinator can only apply to a `# haus: editable` source file
+# (loader.editable_files). If such an instance is authored in a non-editable module, the
+# edit fails at commit with no source change — the silent "move didn't save" bug. We make
+# that a hard load-time ERROR so the house can never contain an un-editable movable element.
+_UI_EDITABLE_KINDS = frozenset({
+    "Furniture", "Fixture", "Appliance", "Equipment", "Register", "ElectricalDevice",
+    "Door", "Window", "RoughOpening", "Wall", "Room", "Node", "Stair",
+})
+
+
+def _noneditable_authored(house_dir: Path, kind: str, tag: str) -> bool:
+    """True if a `kind`/`tag` constructor is written literally in a non-editable plan
+    module (excluding manifest.py). Distinguishes an element *authored* in a file that
+    forgot the `# haus: editable` header (the writeback-breaking bug) from one *generated*
+    by a params/ math module (legitimately sourceless — no constructor to write back to)."""
+    from typehaus.source.writeback import read_element_fields
+    plan_dir = house_dir / "plan"
+    if not plan_dir.is_dir():
+        return False
+    for p in plan_dir.rglob("*.py"):
+        if p.name == "manifest.py":
+            continue
+        src = p.read_text()
+        if is_editable(src):
+            continue
+        if read_element_fields(src, kind, tag) is not None:
+            return True
+    return False
+
+
+def _consistency_check(
+    plan: PlanModel, prov: Provenance, findings: list[Finding], house_dir: Path
+) -> None:
     """Assert the import view and the libcst view agree on the authored tag set."""
-    import_tags = {el.tag for el in plan.all_elements()}
-    # Provenance may legitimately hold library/storey tags too; only warn on plan
+    kinds = {el.tag: el.element_kind for el in plan.all_elements()}
+    import_tags = set(kinds)
+    # Provenance may legitimately hold library/storey tags too; only flag plan
     # elements the libcst path never saw (params/-generated ones are exempt).
     prov_tags = prov.tags()
     missing = import_tags - prov_tags
     generated = _params_generated_tags(plan)
     for tag in sorted(missing - generated):
-        findings.append(
-            Finding(
-                severity=Severity.WARN,
-                check_id="loader.provenance_gap",
-                message=f"element {tag} has no editable-source location (params-generated?)",
-                element_tags=(tag,),
+        # A UI-movable element authored in a non-editable plan module is a hard error:
+        # its drag/edit POSTs a writeback op the coordinator can't apply, so the move
+        # silently fails to persist. Params-generated geometry has no constructor to
+        # write back to and stays a benign provenance warning.
+        if kinds.get(tag) in _UI_EDITABLE_KINDS and _noneditable_authored(house_dir, kinds[tag], tag):
+            findings.append(
+                Finding(
+                    severity=Severity.ERROR,
+                    check_id="loader.uneditable_movable_element",
+                    message=(
+                        f"{kinds[tag]} {tag} is UI-movable but authored in a non-editable "
+                        f"source file; add the '# haus: editable' header to its module (or "
+                        f"move the declaration into one) so edits can be written back"
+                    ),
+                    element_tags=(tag,),
+                )
             )
-        )
+        else:
+            findings.append(
+                Finding(
+                    severity=Severity.WARN,
+                    check_id="loader.provenance_gap",
+                    message=f"element {tag} has no editable-source location (params-generated?)",
+                    element_tags=(tag,),
+                )
+            )
 
 
 def _params_generated_tags(plan: PlanModel) -> set[str]:

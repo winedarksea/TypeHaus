@@ -134,7 +134,7 @@ OPENINGS = [
     Door(uid="CBD204AAAA", tag="D-B-NE", host="W-B-CN", type_ref="DT-INT32",
          position=from_node("N-B-C", ft(4))),
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-SA-W", type_ref="DT-INT24",
-         position=from_node("N-B-S1", ft(2))),
+         position=from_node("N-B-S1", ft(10, 10.4375))),
     # Walkout to the sunken garden (south wall) + garden-lit glazing.
     Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3", type_ref="DT-PATIO60",
          position=from_node("N-B-S2", ft(1, 4))),

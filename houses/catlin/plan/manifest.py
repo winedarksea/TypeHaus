@@ -20,7 +20,7 @@ import uuid
 from typehaus import Building, Library, PlanModel, Project, Storey, ft
 
 from params import foundations, sunken_garden
-from plan import assemblies, fixtures, mep, placeables, site, transitions, views
+from plan import assemblies, fixture_types, fixtures, mep, placeables, site, transitions, views
 from plan.storeys import attic, basement, garage, main, second
 
 format_version = 1
@@ -34,8 +34,8 @@ _library = Library(
     assemblies=tuple(assemblies.ASSEMBLIES),
     door_types=tuple(main.DOOR_TYPES),
     window_types=tuple(main.WINDOW_TYPES),
-    fixture_types=fixtures.FIXTURE_TYPES,
-    appliance_types=fixtures.APPLIANCE_TYPES,
+    fixture_types=fixture_types.FIXTURE_TYPES,
+    appliance_types=fixture_types.APPLIANCE_TYPES,
     register_types=mep.REGISTER_TYPES,
     equipment_types=mep.EQUIPMENT_TYPES,
     electrical_device_types=mep.ELECTRICAL_DEVICE_TYPES,

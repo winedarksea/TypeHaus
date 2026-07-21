@@ -1,35 +1,10 @@
-"""Permit-schedule plumbing fixtures for Catlin (M3 WP3.4/WP3.10)."""
+# haus: editable
+# Permit-schedule plumbing fixture/appliance *instances* for Catlin (M3 WP3.4/WP3.10).
+# `# haus: editable` so UI drags (moving a toilet, the washer, …) round-trip to source.
+# Their FixtureType/ApplianceType catalog lives in the non-editable `fixture_types.py`
+# (it uses `frozenset(...)`, which the editable dialect forbids).
 
-from __future__ import annotations
-
-from typehaus import (Appliance, ApplianceType, ClearancePolicy, ClearanceZone, Fixture,
-                      FixtureType, Footprint2D, Service, ft, pt)
-
-FIXTURE_TYPES = (
-    FixtureType(tag="FX-TOILET", name="Water closet", footprint=(ft(2, 6), ft(2, 6)),
-                height=ft(2, 6), needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-                clearances=(ClearanceZone(
-                    footprint=Footprint2D(points=(pt(ft(-1, 3), ft(-1, 3)), pt(ft(1, 3), ft(-1, 3)),
-                                                  pt(ft(1, 3), ft(3)), pt(ft(-1, 3), ft(3)))),
-                    purpose="water-closet clearance", policy=ClearancePolicy.REQUIRED,
-                    source="MN/IRC planning profile: 30 in side clearance and 21 in front clearance",
-                    code_profile="MN/IRC",
-                ),),
-                source="Residential planning allowance; final fixture selection by owner."),
-    FixtureType(tag="FX-LAV", name="Lavatory", footprint=(ft(2), ft(1, 9)), height=ft(3),
-                needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN}),
-                source="Residential planning allowance; final fixture selection by owner."),
-    FixtureType(tag="FX-SHOWER", name="Shower", footprint=(ft(3), ft(3)), height=ft(7),
-                needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN}),
-                source="Residential planning allowance; final fixture selection by owner."),
-)
-
-APPLIANCE_TYPES = (
-    ApplianceType(tag="APPL-WASHER", name="Clothes washer", footprint=(ft(2, 3), ft(2, 6)),
-                  height=ft(3), needs=frozenset({Service.WATER_HOT, Service.WATER_COLD,
-                                                  Service.DRAIN, Service.POWER_240}),
-                  source="Residential planning allowance; final appliance selection by owner."),
-)
+from typehaus import Appliance, Fixture, ft, pt
 
 MAIN_FIXTURES = (
     Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOILET", room="RM-M-BATH1",

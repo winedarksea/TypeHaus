@@ -1,19 +1,21 @@
-"""Catlin MEP: plumbing sleeves/drains (Phase 2) + HVAC trunk ducts + electrical (Phase 3).
-
-Authored routing only — the user places runs/ducts/devices; the resolver validates them
-against the framing (joist bays, bearing lines, slab hosts) and the sheets draw them.
-
-Plumbing: sleeve positions are the exact pre-pour centers the concrete crew works from —
-the resolver validates them against the fixture drain point they serve
-(``mep.sleeve_alignment``); nothing here is derived. Second-floor ensuite drains drop
-through the framed floor into the existing INT_2X6_PLUMBING wet wall (W-S-BD-N) with no
-sleeve needed — only a cast concrete deck needs a pre-positioned penetration.
-
-HVAC: the second-floor trunks run in the FS-SECOND joist bays (11.875" I-joist, 16" o.c.,
-direction "x"). Bay centers are ``8" + n*16"`` from the joist-line math in
-resolve/floors.py; bay 15 (y=20'-8") and bay 17 (y=23'-4") are both clear of the stair
-FloorOpening (x:11'-18', y:25'-36') and both cross the central bearing wall at x=18'.
-"""
+# haus: editable
+# Catlin MEP: plumbing sleeves/drains (Phase 2) + HVAC trunk ducts + electrical (Phase 3).
+#
+# Authored routing only — the user places runs/ducts/devices; the resolver validates them
+# against the framing (joist bays, bearing lines, slab hosts) and the sheets draw them.
+# This file is `# haus: editable` so UI moves (e.g. dragging the water heater) round-trip
+# back to source; every element below is an explicit constructor, no generators.
+#
+# Plumbing: sleeve positions are the exact pre-pour centers the concrete crew works from —
+# the resolver validates them against the fixture drain point they serve
+# (`mep.sleeve_alignment`); nothing here is derived. Second-floor ensuite drains drop
+# through the framed floor into the existing INT_2X6_PLUMBING wet wall (W-S-BD-N) with no
+# sleeve needed — only a cast concrete deck needs a pre-positioned penetration.
+#
+# HVAC: the second-floor trunks run in the FS-SECOND joist bays (11.875" I-joist, 16" o.c.,
+# direction "x"). Bay centers are `8" + n*16"` from the joist-line math in
+# resolve/floors.py; bay 15 (y=20'-8") and bay 17 (y=23'-4") are both clear of the stair
+# FloorOpening (x:11'-18', y:25'-36') and both cross the central bearing wall at x=18'.
 
 from typehaus import (
     DeviceKind,
@@ -36,6 +38,7 @@ from typehaus import (
     inch,
     pt,
 )
+from typehaus.model import m
 
 REGISTER_TYPES = (
     RegisterType(tag="REG-T-SUPPLY", name="Supply register", footprint=(inch(12), inch(6)), height=inch(1),
@@ -130,7 +133,7 @@ EQUIPMENT = [
     Equipment(uid="CME901AAAA", tag="EQ-B-FURNACE", kind=EquipmentKind.FURNACE,
              position=pt(ft(4), ft(29)), footprint=(inch(24), inch(28)), room="RM-B-FURNACE", type_ref="EQ-T-FURNACE"),
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(ft(7), ft(29)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER"),
+             position=pt(m(1.81187), m(10.0473)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER"),
 ]
 
 # --- Electrical: symbols-only (decision 1 — panel/circuit schedule deferred) -------
@@ -139,45 +142,63 @@ PANEL = [
                      position=pt(ft(2), ft(29)), mount_height=ft(5), type_ref="ED-T-PANEL"),
 ]
 
-# (room tag, storey, x, y, is_bedroom) — one light + switch per habitable room, one
-# code-minimum receptacle per bedroom (bare minimum, not NEC 210.52 spacing).
-_HABITABLE_ROOMS = (
-    ("RM-M-LIVING", "main", 27, 12, False),
-    ("RM-M-BED", "main", 9, 6, True),
-    ("RM-M-STUDY", "main", 15.667, 20, False),
-    ("RM-S-PLANT", "second", 9, 4, False),
-    ("RM-S-STUDY2", "second", 27, 4, False),
-    ("RM-S-BED1", "second", 29, 16, True),
-    ("RM-S-BED2", "second", 29, 24, True),
-    ("RM-S-BED3", "second", 29, 32, True),
-    ("RM-S-SUITE", "second", 9, 20, True),
-)
+# One light + switch per habitable room, one code-minimum receptacle per bedroom (bare
+# minimum, not NEC 210.52 spacing). Switch sits 1' toward -x of the light; receptacle 1'
+# toward +x. Uids avoid the letters I/L/O/U (Crockford base32, → model/ids.py). These were
+# formerly generated from a `_HABITABLE_ROOMS` table; expanded to explicit constructors so
+# the file is `# haus: editable` and UI edits round-trip.
+MAIN_DEVICES = [
+    ElectricalDevice(uid="CED001K1AA", tag="ED-M-LIVING-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(27), ft(12)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+    ElectricalDevice(uid="CED001K2AA", tag="ED-M-LIVING-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(26), ft(12)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+    ElectricalDevice(uid="CED002K1AA", tag="ED-M-BED-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(9), ft(6)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+    ElectricalDevice(uid="CED002K2AA", tag="ED-M-BED-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(8), ft(6)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+    ElectricalDevice(uid="CED002K3AA", tag="ED-M-BED-RC1", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(10), ft(6)), mount_height=inch(16), type_ref="ED-T-RECEPTACLE"),
+    ElectricalDevice(uid="CED003K1AA", tag="ED-M-STUDY-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(15.667), ft(20)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+    ElectricalDevice(uid="CED003K2AA", tag="ED-M-STUDY-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(14.667), ft(20)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+]
 
+SECOND_DEVICES = [
+    ElectricalDevice(uid="CED004K1AA", tag="ED-S-PLANT-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(9), ft(4)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+    ElectricalDevice(uid="CED004K2AA", tag="ED-S-PLANT-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(8), ft(4)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+    ElectricalDevice(uid="CED005K1AA", tag="ED-S-STUDY2-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(27), ft(4)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+    ElectricalDevice(uid="CED005K2AA", tag="ED-S-STUDY2-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(26), ft(4)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+    ElectricalDevice(uid="CED006K1AA", tag="ED-S-BED1-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(29), ft(16)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+    ElectricalDevice(uid="CED006K2AA", tag="ED-S-BED1-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(28), ft(16)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+    ElectricalDevice(uid="CED006K3AA", tag="ED-S-BED1-RC1", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(30), ft(16)), mount_height=inch(16), type_ref="ED-T-RECEPTACLE"),
+    ElectricalDevice(uid="CED007K1AA", tag="ED-S-BED2-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(29), ft(24)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+    ElectricalDevice(uid="CED007K2AA", tag="ED-S-BED2-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(28), ft(24)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+    ElectricalDevice(uid="CED007K3AA", tag="ED-S-BED2-RC1", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(30), ft(24)), mount_height=inch(16), type_ref="ED-T-RECEPTACLE"),
+    ElectricalDevice(uid="CED008K1AA", tag="ED-S-BED3-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(29), ft(32)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+    ElectricalDevice(uid="CED008K2AA", tag="ED-S-BED3-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(28), ft(32)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+    ElectricalDevice(uid="CED008K3AA", tag="ED-S-BED3-RC1", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(30), ft(32)), mount_height=inch(16), type_ref="ED-T-RECEPTACLE"),
+    ElectricalDevice(uid="CED009K1AA", tag="ED-S-SUITE-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(9), ft(20)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+    ElectricalDevice(uid="CED009K2AA", tag="ED-S-SUITE-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(8), ft(20)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+    ElectricalDevice(uid="CED009K3AA", tag="ED-S-SUITE-RC1", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(10), ft(20)), mount_height=inch(16), type_ref="ED-T-RECEPTACLE"),
+]
 
-def _room_devices():
-    main_devices, second_devices = [], []
-    for index, (room, storey, x, y, is_bedroom) in enumerate(_HABITABLE_ROOMS, start=1):
-        # Uids avoid the letters I/L/O/U (Crockford base32, → model/ids.py) even though
-        # non-editable plan files aren't dialect-linted — keeps the scheme consistent.
-        uid_light = f"CED{index:03d}K1AA"
-        uid_switch = f"CED{index:03d}K2AA"
-        light = ElectricalDevice(uid=uid_light, tag=f"ED-{room[3:]}-LT", kind=DeviceKind.LIGHT,
-                                 position=pt(ft(x), ft(y)), mount_height=ft(8), type_ref="ED-T-LIGHT")
-        switch = ElectricalDevice(uid=uid_switch, tag=f"ED-{room[3:]}-SW", kind=DeviceKind.SWITCH,
-                                  position=pt(ft(x - 1), ft(y)), mount_height=inch(48), type_ref="ED-T-SWITCH")
-        devices = [light, switch]
-        if is_bedroom:
-            uid_recep = f"CED{index:03d}K3AA"
-            devices.append(ElectricalDevice(
-                uid=uid_recep, tag=f"ED-{room[3:]}-RC1", kind=DeviceKind.RECEPTACLE,
-                position=pt(ft(x + 1), ft(y)), mount_height=inch(16), type_ref="ED-T-RECEPTACLE",
-            ))
-        (main_devices if storey == "main" else second_devices).extend(devices)
-    return main_devices, second_devices
-
-
-_MAIN_DEVICES, _SECOND_DEVICES = _room_devices()
-
-MAIN_ELEMENTS = [*SLEEVES, *_MAIN_DEVICES]
+MAIN_ELEMENTS = [*SLEEVES, *MAIN_DEVICES]
 BASEMENT_ELEMENTS = [*DRAINS, *EQUIPMENT, *PANEL]
-SECOND_ELEMENTS = [*DUCTS, *REGISTERS, *_SECOND_DEVICES]
+SECOND_ELEMENTS = [*DUCTS, *REGISTERS, *SECOND_DEVICES]

@@ -8,10 +8,21 @@ proposing any design change.
 ## Project map
 - `plan/manifest.py` — plain-Python assembler (NOT editable); wires modules + params.
 - `plan/storeys/{basement,main,second,attic,garage}.py` — `# haus: editable` elements.
-- `plan/assemblies.py`, `plan/site.py` — editable assemblies + site.
+- `plan/assemblies.py`, `plan/site.py`, `plan/placeables.py` — editable assemblies/site/placeables.
+- `plan/mep.py`, `plan/fixtures.py` — `# haus: editable` MEP + plumbing-fixture *instances*
+  (so UI drags round-trip). Only explicit constructors here — no functions/generators.
+- `plan/fixture_types.py` — the FixtureType/ApplianceType *catalog* (NOT editable: uses
+  `frozenset(...)`, which the dialect forbids). Type libraries stay non-editable; movable
+  instances that reference them live in the editable modules above.
 - `params/sunken_garden.py` — the freestanding arched porch/garden structure (math OK here).
 - `params/foundations.py` — footings, garage ICF stem, breezeway posts.
 - `notes/*.md` — construction detail notes migrated from the original repo.
+
+**Editability rule (enforced):** any UI-movable element (Furniture/Fixture/Appliance/
+Equipment/Register/ElectricalDevice/Door/Window/Wall/Room/Node/Stair) must be authored in a
+`# haus: editable` file, or its canvas edits can't be written back. The loader raises
+`loader.uneditable_movable_element` (a hard build error) if one is authored in a non-editable
+module. Params-generated geometry (no constructor to write back to) is exempt.
 
 ## House facts that must stay true
 - Four structures: house, freestanding garage (12' north), freestanding sunken-garden/
