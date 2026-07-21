@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { findingsFor, useStore } from "../state/store";
+import { findingsFor, useStore, visibleFindings } from "../state/store";
 import type { Finding, Model, Opening, Stair, Wall } from "../model/types";
 import { formatFtIn, wallLength } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
@@ -304,7 +304,8 @@ function AssemblyPicker({ model, onEdit }: { model: Model; onEdit: () => void })
 function FindingsPanel({ findings }: { findings: Finding[] }) {
   const select = useStore((s) => s.select);
   const model = useStore((s) => s.model);
-  if (findings.length === 0)
+  const visible = visibleFindings(findings);
+  if (visible.length === 0)
     return (
       <div style={{ marginTop: 16 }}>
         <h3>Checks</h3>
@@ -327,8 +328,8 @@ function FindingsPanel({ findings }: { findings: Finding[] }) {
   };
   return (
     <div style={{ marginTop: 16 }}>
-      <h3>Checks · {findings.length}</h3>
-      {findings.map((f, i) => (
+      <h3>Checks · {visible.length}</h3>
+      {visible.map((f, i) => (
         <div key={i} className={`finding ${f.severity}`} onClick={() => jump(f)}>
           {f.code && <b>{f.code} </b>}
           {f.message}

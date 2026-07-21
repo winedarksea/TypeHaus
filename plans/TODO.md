@@ -94,8 +94,6 @@ Each item names the reference drawing it comes from.
 
 - Most corners don't show proper 3-stud framing (it's defined in code but not present in
   most corners).
-- Some windows are too tall, headers going above the ceiling height (two in the garage are
-  the clearest examples).
 
 # Deferred TODO tasks
 * clean import/export (so ship to another computer running this app)

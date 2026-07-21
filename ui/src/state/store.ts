@@ -387,9 +387,16 @@ function handleEvent(
 
 // Selector helpers ----------------------------------------------------------
 
+// Passing checks still travel through model.findings (the tri-state PASS/FAIL/UNKNOWN
+// result is tracked separately from severity), but the UI only surfaces the ones that
+// need attention.
+export function visibleFindings(findings: Finding[]): Finding[] {
+  return findings.filter((f) => f.result !== "pass");
+}
+
 export function findingsFor(model: Model | null, uid: string | null): Finding[] {
   if (!model || !uid) return [];
-  return model.findings.filter(
-    (f) => f.element === uid || (f.elements ?? []).includes(uid),
+  return visibleFindings(
+    model.findings.filter((f) => f.element === uid || (f.elements ?? []).includes(uid)),
   );
 }

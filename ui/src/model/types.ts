@@ -335,6 +335,8 @@ export interface Stair {
 
 export type Severity = "error" | "warn" | "info";
 
+export type CheckResult = "pass" | "fail" | "unknown";
+
 export interface Finding {
   // The checks framework's Finding (→ 12 §Checks). Fields are permissive because
   // different check families carry different metadata; the UI reads the common ones.
@@ -345,6 +347,7 @@ export interface Finding {
   elements?: string[];
   file?: string | null;
   line?: number | null;
+  result?: CheckResult;
   [k: string]: unknown;
 }
 
