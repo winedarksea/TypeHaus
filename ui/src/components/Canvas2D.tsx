@@ -622,6 +622,7 @@ export function Canvas2D() {
             <WallShape
               key={w.uid}
               w={displayWall}
+              openings={model.openings.filter((opening) => opening.host === w.uid)}
               project={project}
               selected={selection.uid === w.uid}
               hovered={hoverUid === w.uid}
@@ -996,8 +997,9 @@ function BackgroundGrid({ view }: { view: { scale: number; tx: number; ty: numbe
   );
 }
 
-const WallShape = memo(function WallShape({ w, project, selected, hovered, showFraming, onSelect, onHover }: {
+const WallShape = memo(function WallShape({ w, openings, project, selected, hovered, showFraming, onSelect, onHover }: {
   w: Wall;
+  openings: Opening[];
   project: (p: Vec2) => Vec2;
   selected: boolean;
   hovered: boolean;
@@ -1007,25 +1009,54 @@ const WallShape = memo(function WallShape({ w, project, selected, hovered, showF
 }) {
   const poly = (pts: Vec2[]) => pts.map(project).map((p) => p.join(",")).join(" ");
   const stroke = selected ? NORDIC_ACCENT : hovered ? NORDIC_INK : NORDIC_LINE;
+  const [axisStart, axisEnd] = w.axis;
+  const axisLength = Math.hypot(axisEnd[0] - axisStart[0], axisEnd[1] - axisStart[1]) || 1;
+  const wallNormal: Vec2 = [
+    -(axisEnd[1] - axisStart[1]) / axisLength,
+    (axisEnd[0] - axisStart[0]) / axisLength,
+  ];
+  const pixelsPerMeter = Math.abs(project([1, 0])[0] - project([0, 0])[0]);
+  // Resolved wall layers are continuous polygons.  Punch openings out of the complete wall
+  // stack before drawing their plan symbols so a thick rendered wall cannot cover a door.
+  const wallThicknessPx = Math.max(8, ...w.layers.flatMap((layer) => layer.polygon.map((point) =>
+    Math.abs((point[0] - axisStart[0]) * wallNormal[0] + (point[1] - axisStart[1]) * wallNormal[1])
+      * pixelsPerMeter,
+  )));
+  const [startX, startY] = project(axisStart);
+  const [endX, endY] = project(axisEnd);
+  const screenAngleDeg = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+  const openingMaskId = `wall-opening-mask-${w.uid}`;
   return (
     <g onClick={(event) => onSelect(w, event)}
       onPointerEnter={() => onHover(w.uid)} onPointerLeave={() => onHover(null)}
       style={{ cursor: "pointer" }}>
-      {w.layers.map((ly, i) =>
-        ly.polygon.length >= 3 ? (
-          <polygon key={i} points={poly(ly.polygon)} fill={materialColor(ly.material)}
-            stroke="var(--panel-line)" strokeWidth={0.5} />
-        ) : null,
-      )}
-      {showFraming && w.members.map((m) => {
-        const [x0, y0] = project(m.p0);
-        const [x1, y1] = project(m.p1);
-        return <line key={m.key} x1={x0} y1={y0} x2={x1} y2={y1} stroke="var(--canvas-wood)"
-          strokeWidth={1.5} opacity={0.85} />;
-      })}
-      <line x1={project(w.axis[0])[0]} y1={project(w.axis[0])[1]}
-        x2={project(w.axis[1])[0]} y2={project(w.axis[1])[1]} stroke={stroke}
-        strokeWidth={selected ? 2.5 : 1.5} strokeDasharray={w.layers.length === 0 ? "4 4" : undefined} />
+      <mask id={openingMaskId} maskUnits="userSpaceOnUse">
+        <rect x={-100000} y={-100000} width={200000} height={200000} fill="white" />
+        {openings.map((opening) => {
+          const [x, y] = project(pointAlong(w, opening.center_along_m));
+          const openingWidthPx = opening.width_m * pixelsPerMeter;
+          return <rect key={opening.uid} x={x - openingWidthPx / 2 - 1}
+            y={y - wallThicknessPx - 1} width={openingWidthPx + 2}
+            height={2 * wallThicknessPx + 2} fill="black"
+            transform={`rotate(${screenAngleDeg} ${x} ${y})`} />;
+        })}
+      </mask>
+      <g mask={`url(#${openingMaskId})`}>
+        {w.layers.map((ly, i) =>
+          ly.polygon.length >= 3 ? (
+            <polygon key={i} points={poly(ly.polygon)} fill={materialColor(ly.material)}
+              stroke="var(--panel-line)" strokeWidth={0.5} />
+          ) : null,
+        )}
+        {showFraming && w.members.map((m) => {
+          const [x0, y0] = project(m.p0);
+          const [x1, y1] = project(m.p1);
+          return <line key={m.key} x1={x0} y1={y0} x2={x1} y2={y1} stroke="var(--canvas-wood)"
+            strokeWidth={1.5} opacity={0.85} />;
+        })}
+        <line x1={startX} y1={startY} x2={endX} y2={endY} stroke={stroke}
+          strokeWidth={selected ? 2.5 : 1.5} strokeDasharray={w.layers.length === 0 ? "4 4" : undefined} />
+      </g>
     </g>
   );
 });
