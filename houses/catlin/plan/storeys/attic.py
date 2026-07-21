@@ -167,6 +167,7 @@ STAIRS = [
     Stair(uid="CST703AAAA", tag="ST-S2A", floor_opening="FO-A-STAIR",
           from_storey="second", to_storey="attic", width=ft(3),
           # Enter north at the east edge, then three lower winders turn the climb west.
+          layout="right_angle_winder", turn_direction="left",
           run_direction="x", run_reversed=True, winder_count=3,
           start=pt(ft(36), ft(8, 8))),
 ]

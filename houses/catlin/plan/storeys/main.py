@@ -141,11 +141,15 @@ WALLS = [
     Wall(uid="CMW116AAAA", tag="W-M-C5", start_node="N-M-C3", end_node="N-M-N1",
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
-    # --- stair / storage block (stair bay runs to y=25 for the 14-riser flight) --
+    # --- stair / storage block --------------------------------------------------
+    # This wall line carries the cut second-floor joists and stacks directly over the
+    # basement concrete stair wall.  It is split only at the storage-wall tee.
     Wall(uid="CMW117AAAA", tag="W-M-STRW", start_node="N-M-N2",
-         end_node="N-M-STRJ", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-STRJ", assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
     Wall(uid="CMW134AAAA", tag="W-M-STRW2", start_node="N-M-STRJ",
-         end_node="N-M-STR1", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-STR1", assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
     Wall(uid="CMW118AAAA", tag="W-M-STRS", start_node="N-M-STR1",
          end_node="N-M-C3B", assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CMW119AAAA", tag="W-M-STOS", start_node="N-M-W1",
@@ -293,13 +297,14 @@ SLABS = [
 FLOOR_OPENINGS = [
     FloorOpening(uid="CMF601AAAA", tag="FO-M-STAIR",
                  outline=(pt(ft(11), ft(25)), pt(ft(18), ft(25)),
-                          pt(ft(18), ft(36)), pt(ft(11), ft(36)))),
+                          pt(ft(18), ft(36)), pt(ft(11), ft(36))),
+                 bearing_refs=("W-M-STRW", "W-M-STRW2")),
 ]
 
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
           from_storey="basement", to_storey="main", width=ft(3, 6),
-          run_direction="y", start=pt(ft(14, 6), ft(25))),
+          layout="u_split_landing", run_direction="y", start=pt(ft(11), ft(25))),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SLABS, *FLOOR_OPENINGS, *STAIRS]

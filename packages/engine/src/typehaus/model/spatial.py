@@ -36,7 +36,7 @@ class Room(Element):
 
 @register_element
 class Stair(Element):
-    """Rise derived from storey elevations; solves straight and two-winder flights."""
+    """Rise derived from storey elevations; geometry is selected by ``layout``."""
 
     floor_opening: str  # FloorOpening tag in the storey above
     from_storey: str
@@ -44,8 +44,12 @@ class Stair(Element):
     width: Length
     run_direction: str = "x"
     run_reversed: bool = False
-    # A quarter-turn needs at least three winders to keep the walking line usable.
-    # The resolver accepts zero for a straight flight or any count >= 3.
+    # ``straight`` | ``u_split_landing`` | ``right_angle_winder``.
+    # The explicit vocabulary prevents a non-zero winder count from silently meaning a
+    # particular turn shape.
+    layout: str = "straight"
+    # Relative to ascent; required for a right-angle winder only.
+    turn_direction: str | None = None
     winder_count: int = 0
     start: Point2D | None = None
 

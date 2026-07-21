@@ -57,9 +57,12 @@ def test_floor_joist_counts_match_old_model(catlin_model):
         floor = next(f for f in catlin_model.floors if f.tag == tag)
         joists = [m for m in floor.members if m.category == "joist"]
         assert len(joists) == expected_pair_count, tag
-        # 18' clear-span pairs bearing on the west / center / east lines.
+        # Most joists retain the 18' bearing span; lines crossing a stair opening are
+        # clipped at its framed edge rather than running through the stairwell.
         spans = {round(m.length_m / ft(1).meters, 3) for m in joists}
-        assert spans == {GRID_FT}
+        assert GRID_FT in spans
+        if tag == "FS-SECOND":
+            assert 11.0 in spans
 
 
 def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables():
@@ -579,6 +582,12 @@ def test_stairs_resolve_with_code_risers(catlin_model):
     assert len(winders) == 3
     # All three radial tread edges share the inside turn, never opposed diagonals.
     assert len({member.p0 for member in winders}) == 1
+    for tag in ("ST-B2M", "ST-M2S"):
+        stair = stairs[tag]
+        assert stair.layout == "u_split_landing"
+        assert {member.child_key for member in stair.members} >= {
+            "landing-lower", "step-between-landings", "landing-upper",
+        }
 
 
 def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
@@ -590,7 +599,11 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 6).meters, abs=1e-9)
     assert stairs["ST-B2M"]["floor_opening"] == "FO-M-STAIR"
     assert stairs["ST-B2M"]["run_direction"] == "y"
-    assert stairs["ST-B2M"]["start"] == pytest.approx([ft(14, 6).meters, ft(25).meters])
+    assert stairs["ST-B2M"]["layout"] == "u_split_landing"
+    assert stairs["ST-B2M"]["start"] == pytest.approx([ft(11).meters, ft(25).meters])
+    assert stairs["ST-M2S"]["layout"] == "u_split_landing"
+    assert stairs["ST-S2A"]["layout"] == "right_angle_winder"
+    assert stairs["ST-S2A"]["turn_direction"] == "left"
     assert stairs["ST-S2A"]["winder_count"] == 3
     assert stairs["ST-S2A"]["run_reversed"] is True
 

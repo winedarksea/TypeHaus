@@ -452,7 +452,7 @@ function buildWall(
 function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
   if (solid.outline.length < 3) return;
-  const geo = createPlanPrismGeometry(solid.outline, solid.z0_m, Math.max(solid.z1_m, solid.z0_m + 0.01), [], center);
+  const geo = createPlanPrismGeometry(solid.outline, solid.z0_m, Math.max(solid.z1_m, solid.z0_m + 0.01), solid.voids ?? [], center);
   if (!geo) return;
   const mat = new THREE.MeshStandardMaterial({
     color: palette.member.concrete, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",

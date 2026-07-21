@@ -129,6 +129,7 @@ class ResolvedSolid:
     z0_m: float
     z1_m: float
     assembly: str | None = None
+    voids: tuple[Ring, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -150,7 +151,7 @@ class ResolvedRoof:
 
 @dataclass(frozen=True)
 class ResolvedStair:
-    """A code-sized straight or two-winder stair and its generated framing members."""
+    """A code-sized stair and its generated framing members."""
 
     uid: str
     tag: str
@@ -162,6 +163,8 @@ class ResolvedStair:
     tread_depth_m: float
     run_direction: str
     run_reversed: bool
+    layout: str
+    turn_direction: str | None
     winder_count: int
     members: tuple[FramedMember, ...]
 

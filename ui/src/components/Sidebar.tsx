@@ -185,7 +185,7 @@ function StairInspector({ model, stair }: { model: Model; stair: Stair }) {
     <div className="kv">
       <span className="k">Route</span><span>{stair.storey} → {stair.to_storey}</span>
       <span className="k">Rise</span><span>{formatFtIn(rise)}</span>
-      <span className="k">Resolved</span><span>{stair.riser_count} risers · {formatFtIn(stair.tread_depth_m)} tread{stair.winder_count ? ` · ${stair.winder_count} winders` : ""}</span>
+      <span className="k">Resolved</span><span>{stair.riser_count} risers · {formatFtIn(stair.tread_depth_m)} tread · {stair.layout.replaceAll("_", " ")}{stair.winder_count ? ` · ${stair.winder_count} winders` : ""}</span>
       <span className="k">Framing</span><span>{stair.members.length} members</span>
     </div>
     <Provenance p={stair.provenance} />

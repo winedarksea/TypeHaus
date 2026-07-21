@@ -96,7 +96,7 @@ def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
         along_x = stair.run_direction == "x"
         for member in stair.members:
-            if member.category not in {"tread", "winder"}:
+            if member.category not in {"tread", "winder", "landing"}:
                 continue
             b.add(Polyline(points=(_in(member.p0), _in(member.p1)), layer="A-STAIR",
                            lineweight=0.25, uid=stair.uid, tag=member.child_key))

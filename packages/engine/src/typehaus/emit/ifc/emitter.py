@@ -283,7 +283,7 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
     if solid.outline:
         _assign_representation(
             f, element, ll.add_prism_from_profile(f, body, solid.outline, solid.z1_m - solid.z0_m,
-                                                   solid.z0_m)
+                                                   solid.z0_m, solid.voids)
         )
     ll.ensure_pset(f, element, PSET_SOURCE, {"uid": solid.uid, "tag": solid.tag,
                                                "category": solid.category})

@@ -291,6 +291,7 @@ export interface Solid {
   storey: string;
   category: string; // slab | footing | pad
   outline: Vec2[];
+  voids: Vec2[][];
   z0_m: number;
   z1_m: number;
   assembly: string | null;
@@ -321,6 +322,8 @@ export interface Stair {
   width_m: number;
   run_direction: "x" | "y";
   run_reversed: boolean;
+  layout: "straight" | "u_split_landing" | "right_angle_winder";
+  turn_direction: "left" | "right" | null;
   winder_count: number;
   start: Vec2 | null;
   riser_count: number;

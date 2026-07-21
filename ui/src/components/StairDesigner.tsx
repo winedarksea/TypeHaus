@@ -7,8 +7,8 @@ const MAX_RISER_M = 7.75 * 0.0254;
 const MIN_TREAD_M = 10 * 0.0254;
 const MIN_HEADROOM_M = 6 * 0.3048 + 8 * 0.0254;
 
-// The resolver remains authoritative: this component only mirrors its small, deterministic
-// single-flight solve to give immediate feedback before the authored Stair is written back.
+// The resolver remains authoritative: this component only mirrors the scalar constraints
+// required to prevent writing an obviously invalid layout.
 export function StairDesigner({ model }: { model: Model }) {
   const stairs = model.stairs ?? [];
   const applyOps = useStore((state) => state.applyOps);
@@ -19,7 +19,9 @@ export function StairDesigner({ model }: { model: Model }) {
   const [width, setWidth] = useState("");
   const [runDirection, setRunDirection] = useState<"x" | "y">("x");
   const [runReversed, setRunReversed] = useState(false);
-  const [winderCount, setWinderCount] = useState<0 | 2>(0);
+  const [layout, setLayout] = useState<Stair["layout"]>("straight");
+  const [turnDirection, setTurnDirection] = useState<"left" | "right">("left");
+  const [winderCount, setWinderCount] = useState(0);
 
   useEffect(() => {
     if (!stair) return;
@@ -27,18 +29,22 @@ export function StairDesigner({ model }: { model: Model }) {
     setWidth(formatFtIn(stair.width_m));
     setRunDirection(stair.run_direction);
     setRunReversed(stair.run_reversed);
-    setWinderCount(stair.winder_count === 2 ? 2 : 0);
-  }, [stair?.uid, stair?.width_m, stair?.run_direction, stair?.run_reversed, stair?.winder_count]);
+    setLayout(stair.layout ?? "straight");
+    setTurnDirection(stair.turn_direction ?? "left");
+    setWinderCount(stair.winder_count);
+  }, [stair?.uid, stair?.width_m, stair?.run_direction, stair?.run_reversed, stair?.layout, stair?.turn_direction, stair?.winder_count]);
 
-  const solved = useMemo(() => stair ? previewStair(model, stair, width, runDirection, runReversed, winderCount) : null,
-    [model, stair, width, runDirection, runReversed, winderCount]);
+  const solved = useMemo(() => stair ? previewStair(model, stair, width, runDirection, runReversed, layout, winderCount) : null,
+    [model, stair, width, runDirection, runReversed, layout, winderCount]);
   if (!stair || !solved) return null;
 
   const save = async () => {
     if (!solved.ok) return;
     const ok = await applyOps([{
       op: "update", type: "Stair", tag: stair.tag,
-      fields: { width, run_direction: runDirection, run_reversed: runReversed, winder_count: winderCount },
+      fields: { width, run_direction: runDirection, run_reversed: runReversed, layout,
+        turn_direction: layout === "right_angle_winder" ? turnDirection : null,
+        winder_count: layout === "right_angle_winder" ? winderCount : 0 },
     }]);
     if (ok) select("stair", stair.uid);
   };
@@ -65,10 +71,17 @@ export function StairDesigner({ model }: { model: Model }) {
       <option value="forward">{runDirection === "x" ? "east" : "north"}</option>
       <option value="reverse">{runDirection === "x" ? "west" : "south"}</option>
     </select></label>
-    <label style={{ display: "block", marginTop: 5 }}>Winders <select value={winderCount}
-      onChange={(event) => setWinderCount(Number(event.target.value) as 0 | 2)}>
-      <option value={0}>none</option><option value={2}>two at lower turn</option>
+    <label style={{ display: "block", marginTop: 5 }}>Layout <select value={layout}
+      onChange={(event) => setLayout(event.target.value as Stair["layout"])}>
+      <option value="straight">straight</option><option value="u_split_landing">U · two landings + one step</option>
+      <option value="right_angle_winder">right angle · winders</option>
     </select></label>
+    {layout === "right_angle_winder" && <><label style={{ display: "block", marginTop: 5 }}>Turn <select value={turnDirection}
+      onChange={(event) => setTurnDirection(event.target.value as "left" | "right")}><option value="left">left</option><option value="right">right</option>
+    </select></label><label style={{ display: "block", marginTop: 5 }}>Winders <select value={winderCount}
+      onChange={(event) => setWinderCount(Number(event.target.value))}>
+      <option value={3}>three</option><option value={4}>four</option>
+    </select></label></>}
     <StairRule pass={solved.riser <= MAX_RISER_M} label={`R311.7.5 · riser ≤ 7¾" (${formatFtIn(solved.riser)})`} />
     <StairRule pass={solved.tread >= MIN_TREAD_M} label={`R311.7.5 · tread ≥ 10" (${formatFtIn(solved.tread)})`} />
     <StairRule pass={solved.widthFits} label={`Clear width fits the ${formatFtIn(solved.openingWidth)} opening`} />
@@ -104,7 +117,7 @@ interface StairPreview {
 }
 
 function previewStair(model: Model, stair: Stair, widthText: string, direction: "x" | "y",
-                      reversed: boolean, winderCount: 0 | 2): StairPreview {
+                      reversed: boolean, layout: Stair["layout"], winderCount: number): StairPreview {
   const from = model.storeys.find((storey) => storey.tag === stair.storey);
   const to = model.storeys.find((storey) => storey.tag === stair.to_storey);
   const rise = Math.max(0, (to?.elevation_m ?? 0) - (from?.elevation_m ?? 0));
@@ -117,17 +130,20 @@ function previewStair(model: Model, stair: Stair, widthText: string, direction: 
   const riserCount = Math.ceil(rise / MAX_RISER_M);
   const riser = riserCount ? rise / riserCount : Infinity;
   const requestedWidth = parseLength(widthText);
-  const straightTreads = riserCount - 1 - winderCount;
-  const tread = straightTreads > 0 ? (run - (winderCount ? requestedWidth ?? Infinity : 0)) / straightTreads : 0;
+  const straightTreads = layout === "u_split_landing" ? Math.floor((riserCount - 2) / 2) : riserCount - 1 - winderCount;
+  const tread = straightTreads > 0 ? (run - (layout === "straight" ? 0 : requestedWidth ?? Infinity)) / straightTreads : 0;
   const widthFits = requestedWidth !== null && requestedWidth <= openingWidth + 1e-9;
   const [startX, startY] = stair.start ?? defaultStart(direction, reversed, [minX, minY], [maxX, maxY]);
   const signedRun = (reversed ? -1 : 1) * run;
-  const flightFits = direction === "x"
+  const flightFits = layout === "u_split_landing"
+    ? (direction === "x" ? 2 * (requestedWidth ?? Infinity) <= openingWidth + 1e-9 : 2 * (requestedWidth ?? Infinity) <= openingWidth + 1e-9)
+    : direction === "x"
     ? Math.min(startX, startX + signedRun) >= minX - 1e-9 && Math.max(startX, startX + signedRun) <= maxX + 1e-9
       && startY >= minY - 1e-9 && startY + (requestedWidth ?? Infinity) <= maxY + 1e-9
     : Math.min(startY, startY + signedRun) >= minY - 1e-9 && Math.max(startY, startY + signedRun) <= maxY + 1e-9
       && startX >= minX - 1e-9 && startX + (requestedWidth ?? Infinity) <= maxX + 1e-9;
-  const ok = rise > 0 && riser <= MAX_RISER_M && tread >= MIN_TREAD_M && widthFits && flightFits;
+  const validWinders = layout !== "right_angle_winder" || winderCount >= 3;
+  const ok = rise > 0 && riser <= MAX_RISER_M && tread >= MIN_TREAD_M && widthFits && flightFits && validWinders;
   return { rise, run, openingWidth, riserCount, riser, tread, widthFits, flightFits, ok };
 }
 

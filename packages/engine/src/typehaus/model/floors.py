@@ -29,6 +29,9 @@ class FloorOpening(Element):
 
     outline: tuple[Point2D, ...]
     purpose: FloorOpeningPurpose = FloorOpeningPurpose.STAIR
+    # Authored support intent for opening edges.  The framing resolver never assumes
+    # that a nearby partition can receive cut joists.
+    bearing_refs: tuple[str, ...] = ()
 
 
 @register_element

@@ -69,6 +69,19 @@ def test_framing_plan_draws_stair_opening(catlin_model):
     assert "FO-S-STAIR" in opening_tags
 
 
+def test_stair_opening_clips_joists_and_uses_declared_west_bearing(catlin_model):
+    floor = next(floor for floor in catlin_model.floors if floor.tag == "FS-SECOND")
+    crossing_joists = [member for member in floor.members if member.category == "joist"
+                       and 25 <= member.p0[1] / 0.3048 <= 36]
+    assert crossing_joists
+    assert all(member.p1[0] <= 11 * 0.3048 + 1e-9 or member.p0[0] >= 18 * 0.3048 - 1e-9
+               for member in crossing_joists)
+    headers = [member for member in floor.members if member.category == "header"
+               and "FO-S-STAIR" in member.child_key]
+    # The west edge bears on W-M-STRW/W-M-STRW2, so only the unsupported east edge needs a header.
+    assert len(headers) == 1
+
+
 def test_framing_plan_scene_snapshot_is_deterministic(catlin_model):
     a = build_framing_plan(catlin_model, "FS-SECOND")
     b = build_framing_plan(catlin_model, "FS-SECOND")

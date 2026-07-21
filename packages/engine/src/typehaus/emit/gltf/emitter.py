@@ -88,6 +88,36 @@ class _MeshBuilder:
             indices += [base, base + i + 1, base + i]                 # bottom (down)
             indices += [base + n, base + n + i, base + n + i + 1]     # top (up)
 
+    def add_prism_with_rectangular_voids(self, ring: list[tuple[float, float]],
+                                         voids: tuple[tuple[tuple[float, float], ...], ...],
+                                         z0: float, z1: float,
+                                         color: tuple[float, float, float, float]) -> None:
+        """Emit a rectangular slab as strips around rectangular voids.
+
+        The floor-opening framing contract currently accepts orthogonal rectangles, so
+        this produces a true hole without introducing a second polygon triangulator.
+        Irregular solids intentionally retain their outer prism until they gain a general
+        mesh path.
+        """
+        xs, ys = {p[0] for p in ring}, {p[1] for p in ring}
+        if len(xs) != 2 or len(ys) != 2 or len(voids) != 1:
+            self.add_prism(ring, z0, z1, color)
+            return
+        hole = voids[0]
+        hx, hy = {p[0] for p in hole}, {p[1] for p in hole}
+        if len(hx) != 2 or len(hy) != 2:
+            self.add_prism(ring, z0, z1, color)
+            return
+        minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
+        hminx, hmaxx, hminy, hmaxy = min(hx), max(hx), min(hy), max(hy)
+        for rect in (
+            [(minx, miny), (maxx, miny), (maxx, hminy), (minx, hminy)],
+            [(minx, hmaxy), (maxx, hmaxy), (maxx, maxy), (minx, maxy)],
+            [(minx, hminy), (hminx, hminy), (hminx, hmaxy), (minx, hmaxy)],
+            [(hmaxx, hminy), (maxx, hminy), (maxx, hmaxy), (hmaxx, hmaxy)],
+        ):
+            self.add_prism(rect, z0, z1, color)
+
     def add_box(self, p0: Vec3, p1: Vec3, size: float,
                 color: tuple[float, float, float, float]) -> None:
         """A member segment as a box of half-width ``size`` around the p0→p1 axis (xy)."""
@@ -367,7 +397,8 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             mb.add_prism(room.clear_face, storey_z, storey_z + 0.02, _color("floor"))
     for solid in sorted(model.solids, key=lambda item: item.uid):
         if solid.outline:
-            mb.add_prism(solid.outline, solid.z0_m, solid.z1_m, _color(solid.category))
+            mb.add_prism_with_rectangular_voids(solid.outline, solid.voids, solid.z0_m,
+                                                solid.z1_m, _color(solid.category))
     for roof in sorted(model.roofs, key=lambda item: item.uid):
         _add_roof(mb, roof)
     for stair in sorted(model.stairs, key=lambda item: item.uid):

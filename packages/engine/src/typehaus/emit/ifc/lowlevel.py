@@ -57,11 +57,19 @@ def create_entity(f: Any, ifc_class: str, **kwargs: Any) -> Any:
 
 
 def add_prism_from_profile(f: Any, body_ctx: Any, points_m: list[tuple[float, float]],
-                           height_m: float, z0_m: float = 0.0) -> Any:
+                           height_m: float, z0_m: float = 0.0,
+                           voids_m: tuple[tuple[tuple[float, float], ...], ...] = ()) -> Any:
     """Extrude a closed polygon profile to a solid (ported add_prism_from_profile)."""
     pts = [f.createIfcCartesianPoint((x, y)) for (x, y) in points_m]
     polyline = f.createIfcPolyline(pts + [pts[0]])
-    profile = f.createIfcArbitraryClosedProfileDef("AREA", None, polyline)
+    if voids_m:
+        inners = []
+        for void in voids_m:
+            inner_points = [f.createIfcCartesianPoint((x, y)) for (x, y) in void]
+            inners.append(f.createIfcPolyline(inner_points + [inner_points[0]]))
+        profile = f.createIfcArbitraryProfileDefWithVoids("AREA", None, polyline, inners)
+    else:
+        profile = f.createIfcArbitraryClosedProfileDef("AREA", None, polyline)
     origin = f.createIfcCartesianPoint((0.0, 0.0, z0_m))
     placement = f.createIfcAxis2Placement3D(origin, None, None)
     direction = f.createIfcDirection((0.0, 0.0, 1.0))

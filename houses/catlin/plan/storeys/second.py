@@ -268,8 +268,9 @@ SOFFITS = [
 
 FLOOR_OPENINGS = [
     FloorOpening(uid="CSF602AAAA", tag="FO-S-STAIR",
-                 outline=(pt(ft(11), ft(23, 6)), pt(ft(18), ft(23, 6)),
-                          pt(ft(18), ft(36)), pt(ft(11), ft(36)))),
+                 outline=(pt(ft(11), ft(25)), pt(ft(18), ft(25)),
+                          pt(ft(18), ft(36)), pt(ft(11), ft(36))),
+                 bearing_refs=("W-M-STRW", "W-M-STRW2")),
 ]
 
 # Structural deck: 11-7/8" I-joists spanning E-W on the three bearing lines.
@@ -285,7 +286,7 @@ FLOOR = [
 STAIRS = [
     Stair(uid="CST702AAAA", tag="ST-M2S", floor_opening="FO-S-STAIR",
           from_storey="main", to_storey="second", width=ft(3, 6),
-          run_direction="y", start=pt(ft(14, 6), ft(23, 6))),
+          layout="u_split_landing", run_direction="y", start=pt(ft(11), ft(25))),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SOFFITS, *FLOOR_OPENINGS, *FLOOR,

@@ -1,7 +1,3 @@
-# Unorganized TODO tasks
-* clean import/export (so ship to another computer running this app)
-* bypass libcst entirely for the mutation path for fully offline PWA (high risk, deferred)
-
 ## Remaining Work
 Still missing for full M2: variants/compare, full takeoff/BOM
 The 3D UI builds geometry directly from model.json and renders furniture as boxes; it does not yet consume the planned glTF artifact ([Panel3D.tsx (line 7)](/Users/colincatlin/Documents-NoCloud/TypeHaus/ui/src/components/Panel3D.tsx:7)).
@@ -112,9 +108,15 @@ Each item names the reference drawing it comes from.
 - Some windows are too tall, headers going above the ceiling height (two in the garage are
   the clearest examples).
 
+# Deferred TODO tasks
+* clean import/export (so ship to another computer running this app)
+* bypass libcst entirely for the mutation path for fully offline PWA (high risk, deferred)
+
+
 ## Current Orientation:
 +X: east
 +Y: north
 +Z: vertical/up
 will need to support rotating the house off axis in the future
+
 

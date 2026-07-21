@@ -250,6 +250,7 @@ def model_to_dict(
         "solids": [
             {"uid": solid.uid, "tag": solid.tag, "storey": solid.storey,
              "category": solid.category, "outline": [list(point) for point in solid.outline],
+             "voids": [[list(point) for point in ring] for ring in solid.voids],
              "z0_m": solid.z0_m, "z1_m": solid.z1_m, "assembly": solid.assembly,
              "provenance": _provenance(provenance, solid.tag)}
             for solid in sorted(model.solids, key=lambda item: item.uid)
@@ -273,6 +274,8 @@ def model_to_dict(
              "width_m": authored.width.meters,
              "run_direction": authored.run_direction,
              "run_reversed": authored.run_reversed,
+             "layout": authored.layout,
+             "turn_direction": authored.turn_direction,
              "winder_count": authored.winder_count,
              "start": list(authored.start.xy_m) if authored.start is not None else None,
              "riser_count": stair.riser_count, "riser_height_m": stair.riser_height_m,
