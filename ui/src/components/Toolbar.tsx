@@ -17,6 +17,7 @@ const GROUPS: GroupSpec[] = [
   { id: "build", glyph: "▟", label: "Build", tools: [
     { id: "wall", glyph: "▟", label: "Wall", hint: "Draw wall (tap → tap; Shift = ortho)" },
     { id: "room", glyph: "▣", label: "Room", hint: "Claim a room" },
+    { id: "stair", glyph: "▤", label: "Stair", hint: "Add a stair (tap on a floor)" },
   ] },
   { id: "openings", glyph: "❒", label: "Openings", tools: [
     { id: "opening", glyph: "❒", label: "Window / Door", hint: "Place a window or door on a wall" },
@@ -34,6 +35,7 @@ const GROUP_OF_TOOL: Record<Tool, ToolGroup> = {
   select: "select",
   wall: "build",
   room: "build",
+  stair: "build",
   opening: "openings",
   placeable: "components",
   dimension: "measure",

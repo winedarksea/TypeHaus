@@ -4,43 +4,81 @@ import type { Model, Wall } from "../model/types";
 import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
 import { SpaceDashboard } from "./SpaceDashboard";
 import { RoofDesigner } from "./RoofDesigner";
-import { DetailViewer } from "./DetailViewer";
 import { DetailsNavigator } from "./DetailsNavigator";
 
 // Left project drawer (Phase 3 relocation; Phase 6 grows the object hierarchy + Views).
 // Houses the always-on dashboards evicted from the strict inspector. Opens as one of the
-// two large side panels; toggled from the top bar.
+// two large side panels; toggled from the top bar. The body is organized into collapsible
+// DrawerSections so the drawer reads as a single, consistent, scannable outline.
 export function ProjectDrawer() {
   const model = useStore((s) => s.model);
   const open = useStore((s) => s.projectDrawerOpen);
   const setOpen = useStore((s) => s.setProjectDrawerOpen);
   const setWorkbench = useStore((s) => s.setWorkbench);
-  const [showDetails, setShowDetails] = useState(false);
 
   if (!open || !model) return null;
 
   return (
     <aside className="project-drawer">
       <div className="drawer-header">
-        <h3 style={{ margin: 0 }}>Project</h3>
+        <h3 style={{ margin: 0 }}>{model.project.name}</h3>
         <button className="btn" onClick={() => setOpen(false)} title="Close project drawer">
           ✕
         </button>
       </div>
-      <Hierarchy model={model} />
-      <div style={{ marginTop: 12 }}>
-        <button className="btn" onClick={() => setShowDetails(true)}>Transition details…</button>
-      </div>
-      <AssemblyPicker model={model} onEdit={() => setWorkbench("assembly")} />
-      <div style={{ marginTop: 8 }}>
-        <button className="btn" onClick={() => setWorkbench("stair")}>Stair workbench…</button>
-      </div>
-      <BuildingScienceDashboard science={model.building_science} />
-      <SpaceDashboard summary={model.space_summary} buildingHeight={model.building_height_summary} />
-      <RoofDesigner model={model} />
-      <DetailsNavigator />
-      {showDetails && <DetailViewer onClose={() => setShowDetails(false)} />}
+
+      <DrawerSection title="Project" defaultOpen>
+        <Hierarchy model={model} />
+      </DrawerSection>
+
+      <DrawerSection
+        title="Assemblies"
+        defaultOpen
+        right={<button className="btn" onClick={() => setWorkbench("assembly")}>Edit</button>}
+      >
+        <AssemblyPicker model={model} />
+      </DrawerSection>
+
+      <DrawerSection title="Building science">
+        <BuildingScienceDashboard science={model.building_science} />
+      </DrawerSection>
+
+      <DrawerSection title="Space">
+        <SpaceDashboard summary={model.space_summary} buildingHeight={model.building_height_summary} />
+      </DrawerSection>
+
+      <DrawerSection title="Roof">
+        <RoofDesigner model={model} />
+      </DrawerSection>
+
+      <DrawerSection title="Details">
+        <DetailsNavigator />
+      </DrawerSection>
     </aside>
+  );
+}
+
+// Lightweight collapsible section: owns its own open/closed state and renders a header button
+// (with a chevron and an optional inline action) over a body. Replaces the ad-hoc per-child
+// <h3> + magic-number margins the drawer used to stack.
+function DrawerSection({ title, defaultOpen = false, right, children }: {
+  title: string;
+  defaultOpen?: boolean;
+  right?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className="drawer-section">
+      <button className="drawer-section-head" aria-expanded={open} onClick={() => setOpen(!open)}>
+        <span className="chev">{open ? "▾" : "▸"}</span>
+        <span className="drawer-section-title">{title}</span>
+        {right && (
+          <span className="drawer-section-right" onClick={(e) => e.stopPropagation()}>{right}</span>
+        )}
+      </button>
+      {open && <div className="drawer-section-body">{children}</div>}
+    </section>
   );
 }
 
@@ -59,7 +97,6 @@ function Hierarchy({ model }: { model: Model }) {
   ];
   return (
     <div>
-      <h3>{model.project.name}</h3>
       <div className="hierarchy-levels">
         {model.storeys.map((s) => (
           <button
@@ -83,7 +120,7 @@ function Hierarchy({ model }: { model: Model }) {
   );
 }
 
-function AssemblyPicker({ model, onEdit }: { model: Model; onEdit: () => void }) {
+function AssemblyPicker({ model }: { model: Model }) {
   const select = useStore((s) => s.select);
   const selection = useStore((s) => s.selection);
   const byAssembly = new Map<string, Wall[]>();
@@ -92,30 +129,23 @@ function AssemblyPicker({ model, onEdit }: { model: Model; onEdit: () => void })
     (byAssembly.get(key) ?? byAssembly.set(key, []).get(key)!).push(w);
   }
   return (
-    <div style={{ marginTop: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h3 style={{ margin: 0 }}>Assemblies</h3>
-        <button className="btn" onClick={onEdit}>Edit</button>
-      </div>
-      {[...byAssembly.entries()].map(([name, walls]) => (
-        <div
-          key={name}
-          className="finding info"
-          onClick={() => select("wall", walls[0].uid)}
-          style={{
-            outline:
-              selection.kind === "wall" && walls.some((w) => w.uid === selection.uid)
-                ? "2px solid var(--accent)"
-                : "none",
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span>{name}</span>
-            <span className="muted">×{walls.length}</span>
+    <div>
+      {[...byAssembly.entries()].map(([name, walls]) => {
+        const selected = selection.kind === "wall" && walls.some((w) => w.uid === selection.uid);
+        return (
+          <div
+            key={name}
+            className={`finding info${selected ? " selected" : ""}`}
+            onClick={() => select("wall", walls[0].uid)}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>{name}</span>
+              <span className="muted">×{walls.length}</span>
+            </div>
+            <span className="muted">{walls[0].layers.length} layers</span>
           </div>
-          <span className="muted">{walls[0].layers.length} layers</span>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

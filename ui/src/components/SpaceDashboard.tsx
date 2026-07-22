@@ -8,9 +8,8 @@ export function SpaceDashboard({ summary, buildingHeight }: {
   if (!summary && !buildingHeight) return null;
   const overall = summary?.overall;
   return (
-    <div style={{ marginTop: 16 }}>
+    <div>
       {overall && <>
-        <h3>Space</h3>
         <div className="kv">
           <span className="k">Conditioned</span><span>{overall.conditioned_sf.toFixed(0)} sf</span>
           <span className="k">Unconditioned</span><span>{overall.unconditioned_sf.toFixed(0)} sf</span>
@@ -24,7 +23,7 @@ export function SpaceDashboard({ summary, buildingHeight }: {
         </div>
       ))}
       {buildingHeight && <>
-        <h3 style={{ marginTop: 16 }}>Height above average grade</h3>
+        <div style={{ fontWeight: 600, marginTop: 12, marginBottom: 4 }}>Height above average grade</div>
         {buildingHeight.roofs.map((roof) => (
           <div key={roof.roof_tag} className="kv" style={{ marginTop: 5 }}>
             <span className="k">{roof.roof_tag} midpoint</span><span>{metersToFeet(roof.midpoint_above_grade_m)}</span>

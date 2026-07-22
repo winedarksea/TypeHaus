@@ -96,6 +96,13 @@ def _place_room(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationR
     )
 
 
+def _place_stair(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.place_stair(
+        plan, storey, seed=_xy(body["seed"]), to_storey=body.get("to_storey"),
+        hint_file=body.get("hint_file"), tag=body.get("tag"),
+    )
+
+
 def _move_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
     return macros.move_placeable(plan, storey, tag=body["tag"], position=_xy(body["position"]))
 
@@ -176,6 +183,7 @@ _DISPATCH = {
     "move_opening": _move_opening,
     "rehost_opening": _rehost_opening,
     "place_room": _place_room,
+    "place_stair": _place_stair,
     "move_placeable": _move_placeable,
     "rotate_placeable": _rotate_placeable,
     "attach_placeable": _attach_placeable,

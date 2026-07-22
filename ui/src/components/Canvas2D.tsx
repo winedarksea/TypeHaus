@@ -475,6 +475,11 @@ export function Canvas2D() {
         setPlacement({ kind: "room", screen: [sx, sy], seed: world });
         break;
       }
+      case "stair": {
+        if (!activeStorey) { toast("Pick a storey first", "error"); return; }
+        void commitStair(world);
+        break;
+      }
       case "dimension": {
         const hit = nearestWallHit(wallsOnStorey, world);
         if (hit && hit.dist_m * view.scale < HIT_PX) {
@@ -510,6 +515,31 @@ export function Canvas2D() {
     } else {
       setDraft(null);
     }
+  };
+
+  // Default-then-refine stair placement: the resolver owns the run geometry, so a click just
+  // seeds a straight stair up to the next storey, then selects it so the Inspector opens the
+  // stair designer for immediate refinement (mirrors the room tool's minted-then-select flow).
+  const commitStair = async (seed: Vec2) => {
+    if (!activeStorey) return;
+    // The stair + its FloorOpening live in the *upper* storey's lists (a stair from basement→main
+    // is authored in main's file), so target that storey explicitly and pin its editable file —
+    // otherwise the coordinator would route to whichever file merely has a STAIRS list.
+    const here = model.storeys.find((s) => s.tag === activeStorey);
+    const above = here
+      ? model.storeys
+          .filter((s) => s.elevation_m > here.elevation_m + 1e-6)
+          .sort((a, b) => a.elevation_m - b.elevation_m)[0]
+      : undefined;
+    if (!above) { toast("No storey above this level for a stair", "error"); return; }
+    const upperFile = model.walls.find((w) => w.storey === above.tag && w.provenance)?.provenance?.file;
+    const res = await runMacro({
+      macro: "place_stair", storey: activeStorey, to_storey: above.tag,
+      seed: [fmt(seed[0]), fmt(seed[1])], hint_file: upperFile ?? undefined,
+    });
+    if (!res) return;
+    const entry = Object.entries(res.minted).find(([tag]) => tag.startsWith("ST-"));
+    if (entry) select("stair", entry[1]);
   };
 
   const commitDim = async (newLenM: number) => {
@@ -1022,6 +1052,7 @@ function ToolHint({ tool, draft, assembly, assemblies, onAssembly, onSplit }: {
     wall: draft ? "Tap the next corner · Shift = ortho · type a length for exact · Esc ends" : "Tap to start a wall (snaps to nodes / grid)",
     opening: "Tap a wall to place a window or door",
     room: "Tap inside an enclosed area to claim a room",
+    stair: "Tap on a floor to add a stair up to the next level",
     dimension: "Tap a wall to drive its length",
   };
   return (

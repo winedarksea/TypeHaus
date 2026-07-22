@@ -12,6 +12,7 @@ lives here (the "server owns all geometry" rule, → 21b) — the client only se
 
 from __future__ import annotations
 
+import math
 from typing import Union
 
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
@@ -19,7 +20,8 @@ from typehaus.model.enums import Occupancy
 from typehaus.model.plan import PlanModel
 from typehaus.model.refs import from_node
 from typehaus.model.remap import MutationResult, ReferenceRemap, remap_ops_for
-from typehaus.model.spatial import Appliance, Fixture, Furniture, Room
+from typehaus.model.floors import FloorOpening, FloorSystem, Slab
+from typehaus.model.spatial import Appliance, Fixture, Furniture, Room, Stair
 from typehaus.model.mep import ElectricalDevice, Equipment, Register
 from typehaus.model.enums import DeviceKind, DuctSystem, EquipmentKind
 from typehaus.quantities import Length, deg
@@ -345,6 +347,112 @@ def place_room(
     )
     op = element_add_op(room, tag=new_tag, hint_list="ROOMS", hint_file=hint_file)
     return MutationResult(ops=[op])
+
+
+def _stairs(plan: PlanModel, storey: str) -> list:
+    return [e for e in plan.storey_elements(storey) if e.element_kind == "Stair"]
+
+
+def _floor_openings(plan: PlanModel, storey: str) -> list:
+    return [e for e in plan.storey_elements(storey) if e.element_kind == "FloorOpening"]
+
+
+def _point_in_polygon(point: tuple[float, float], polygon: list[tuple[float, float]]) -> bool:
+    """Even-odd ray cast; polygon is a list of (x_m, y_m) in the plan frame."""
+    x, y = point
+    inside = False
+    n = len(polygon)
+    for i in range(n):
+        x0, y0 = polygon[i]
+        x1, y1 = polygon[(i + 1) % n]
+        if (y0 > y) != (y1 > y):
+            x_cross = x0 + (y - y0) * (x1 - x0) / (y1 - y0)
+            if x < x_cross:
+                inside = not inside
+    return inside
+
+
+def _destination_deck(plan: PlanModel, storey: str, seed: tuple[float, float]):
+    """The Slab/FloorSystem of ``storey`` whose outline encloses ``seed`` (the stair's deck)."""
+    decks = [e for e in plan.storey_elements(storey) if isinstance(e, (Slab, FloorSystem))]
+    for deck in decks:
+        outline = getattr(deck, "outline", None)
+        if outline and _point_in_polygon(seed, [p.xy_m for p in outline]):
+            return deck
+    # A FloorSystem carries no outline to test; if the storey has a single deck, use it.
+    return decks[0] if len(decks) == 1 else None
+
+
+def _storey_above(plan: PlanModel, storey: str) -> str | None:
+    """Tag of the next storey up by elevation, or None if this is the top storey."""
+    here = plan.storey(storey)
+    if here is None:
+        return None
+    above = [s for s in plan.storeys if s.elevation.meters > here.elevation.meters + 1e-6]
+    if not above:
+        return None
+    return min(above, key=lambda s: s.elevation.meters).tag
+
+
+# Default footprint of a freshly-placed straight stair. The run length is sized from the
+# storey rise so the seeded default already clears IRC R311.7 (≥10" tread, ≤7.75" riser)
+# rather than tripping a geometry error the moment it lands.
+_STAIR_DEFAULT_WIDTH = ft(3)
+_STAIR_MAX_RISER = ft(0, 7.5)  # 7.5" — below the 7.75" code max, with margin
+_STAIR_TREAD = ft(0, 11)  # 11" — above the 10" code min, with margin
+
+
+def place_stair(
+    plan: PlanModel,
+    storey: str,
+    *,
+    seed: XY,
+    to_storey: str | None = None,
+    hint_file: str | None = None,
+    tag: str | None = None,
+) -> MutationResult:
+    """Drop a default straight stair from ``storey`` up to the storey above (→ 11 §Stair).
+
+    Authors a companion :class:`FloorOpening` in the upper storey's deck (a Stair references
+    one by tag and the resolver derives rise/geometry from the storey elevations), then the
+    :class:`Stair` itself. Both land in the upper storey's list so the model matches how
+    authored stairs are wired. The resolver owns the run geometry; this only seeds a default
+    the user refines in the stair designer.
+    """
+    up = to_storey or _storey_above(plan, storey)
+    if up is None:
+        raise MacroError(f"no storey above {storey!r} to land a stair")
+
+    sx, sy = _as_length(seed[0]), _as_length(seed[1])
+    width = _STAIR_DEFAULT_WIDTH
+    # Size the run from the storey rise: risers to climb it (≤ max riser), one fewer tread.
+    here_st, up_st = plan.storey(storey), plan.storey(up)
+    rise_m = abs(up_st.elevation.meters - here_st.elevation.meters) if here_st and up_st else 2.75
+    risers = max(2, math.ceil(rise_m / _STAIR_MAX_RISER.meters))
+    run = m((risers - 1) * _STAIR_TREAD.meters)
+    # Rectangle along +x (run) by width in +y; matches the default run_direction="x".
+    x0, y0 = sx.meters, sy.meters
+    x1, y1 = x0 + run.meters, y0 + width.meters
+    outline = (pt(m(x0), m(y0)), pt(m(x1), m(y0)), pt(m(x1), m(y1)), pt(m(x0), m(y1)))
+
+    fo_tag = _next_tag(_floor_openings(plan, up), "FO-")
+    stair_tag = tag or _next_tag(_stairs(plan, up), "ST-")
+    floor_opening = FloorOpening(tag=fo_tag, outline=outline)
+    stair = Stair(
+        tag=stair_tag, floor_opening=fo_tag, from_storey=storey, to_storey=up,
+        width=width, layout="straight", run_direction="x", start=pt(sx, sy),
+    )
+    ops = [
+        element_add_op(floor_opening, tag=fo_tag, hint_list="FLOOR_OPENINGS", hint_file=hint_file),
+        element_add_op(stair, tag=stair_tag, hint_list="STAIRS", hint_file=hint_file),
+    ]
+    # A stair's FloorOpening must be owned by the destination deck (integrity.stair_opening).
+    deck = _destination_deck(plan, up, (x0, y0))
+    if deck is not None:
+        openings = (*deck.openings, fo_tag)
+        expr = "(" + ", ".join(f'"{tag}"' for tag in openings) + ",)"
+        ops.append(PatchOp("update", deck.element_kind, deck.tag, {"openings": RawExpr(expr)}))
+    return MutationResult(ops=ops)
 
 
 # --- shared placeable editing ------------------------------------------------

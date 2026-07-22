@@ -19,7 +19,7 @@ import { PyodideEngineClient } from "../engine/PyodideEngineClient";
 import { pickHouseDirectory } from "../engine/openHouse";
 import type { Finding, Model } from "../model/types";
 
-export type Tool = "select" | "wall" | "opening" | "placeable" | "room" | "dimension";
+export type Tool = "select" | "wall" | "opening" | "placeable" | "room" | "stair" | "dimension";
 // Task-rail groups (Phase 2): high-level buckets whose flyout palettes expand to the
 // concrete Tools above. `null` = no flyout open.
 export type ToolGroup = "select" | "build" | "openings" | "components" | "measure";

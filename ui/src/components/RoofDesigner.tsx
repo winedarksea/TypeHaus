@@ -29,8 +29,7 @@ export function RoofDesigner({ model }: { model: Model }) {
     if (refs.length >= 2) fields.bearing_refs = refs;
     await applyOps([{ op: "update", type: "Roof", tag: roof.tag, fields }]);
   };
-  return <div style={{ marginTop: 16 }}>
-    <h3>Roof designer</h3>
+  return <div>
     <select value={roof.tag} onChange={(event) => setSelectedTag(event.target.value)}>
       {roofs.map((item) => <option key={item.tag}>{item.tag}</option>)}
     </select>

@@ -96,6 +96,7 @@ export type MacroRequest =
   | { macro: "move_opening"; storey: string; tag: string; along: string }
   | { macro: "rehost_opening"; storey: string; tag: string; host: string; along: string }
   | { macro: "place_room"; storey: string; seed: [string, string]; occupancy: string; floor_finish?: string; hint_file?: string }
+  | { macro: "place_stair"; storey: string; seed: [string, string]; to_storey?: string; hint_file?: string; tag?: string }
   | { macro: "move_placeable"; storey: string; tag: string; position: [number | string, number | string] }
   | { macro: "rotate_placeable"; storey: string; tag: string; degrees: number; free_rotation?: boolean }
   | { macro: "attach_placeable"; storey: string; tag: string; wall: string; face: "left" | "right"; distance: number | string; gap?: number | string; rotation_offset?: number }

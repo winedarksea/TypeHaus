@@ -5,8 +5,7 @@ export function BuildingScienceDashboard({ science }: { science: BuildingScience
   if (!science) return null;
   const risk = science.condensation.filter((item) => item.status === "risk");
   return (
-    <div style={{ marginTop: 16 }}>
-      <h3>Building science</h3>
+    <div>
       <div className="kv">
         <span className="k">Heat load</span>
         <span>{Math.round(science.energy.heating_load_btu_per_hour).toLocaleString()} BTU/h</span>
