@@ -438,10 +438,21 @@ export function Canvas2D() {
           select("wall", hit.wall.uid);
           setWallAssemblyPopup({ wallUid: hit.wall.uid, screen });
         } else {
-          select(null, null);
-          setWallAssemblyPopup(null);
-          setDoorPopup(null);
-          setWindowPopup(null);
+          // Pointer capture on the viewport keeps pan/touch reliable but swallows the
+          // per-<g> click on filled shapes, so stairs (unlike rooms/placeables, which run
+          // their own onPointerDown) must be resolved here by containment.
+          const stairHit = stairsOnStorey.find((stair) => pointInPolygon(world, stair.outline));
+          if (stairHit) {
+            select("stair", stairHit.uid);
+            setWallAssemblyPopup(null);
+            setDoorPopup(null);
+            setWindowPopup(null);
+          } else {
+            select(null, null);
+            setWallAssemblyPopup(null);
+            setDoorPopup(null);
+            setWindowPopup(null);
+          }
         }
         break;
       }
@@ -1336,6 +1347,21 @@ const WallShape = memo(function WallShape({ w, openings, project, selected, hove
 
 function hostStorey(model: Model, opening: Opening): string {
   return openingHostWall(model.walls, opening)?.storey ?? "";
+}
+
+// Even-odd ray cast — used to resolve a select-tool tap that lands inside a filled shape
+// (e.g. a stair footprint) since the viewport's pointer capture swallows child <g> clicks.
+function pointInPolygon(point: Vec2, polygon: Vec2[]): boolean {
+  const [x, y] = point;
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const [xi, yi] = polygon[i];
+    const [xj, yj] = polygon[j];
+    if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) {
+      inside = !inside;
+    }
+  }
+  return inside;
 }
 
 function nearestOpeningHost(walls: Wall[], storey: string, point: Vec2):
