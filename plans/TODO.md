@@ -100,6 +100,8 @@ Each item names the reference drawing it comes from.
 - Anchor-relative annotation drag → PatchOp editor; the v1 detail viewer is read-only.
 - 3D model naviagation (pan, zoom) is functional but awkward. Also the "default zoom" for reset is poorly calculated.
 - Toast popups of done tasks don't have a 'clear' option
+- The "air", "water", and "thermal" views are great ideas but don't seem to be hooked up to any real backend yet
+- 3d model doesn't seem to show the gravel footing beds anywhere
 
 ### Framing follow-ups found while working on the above
 
@@ -108,8 +110,9 @@ Each item names the reference drawing it comes from.
 - Stairs aren't framed properly (no support for landings, note the basement stair is special in that it anchors off hangers from the concrete walls). Landings don't have a size input in the stair designer and aren't rendered correctly. The partition wall between the up and down sides of a U of stairs is also not present and not framed correctly. It actually looks like there are partition walls but they extend below the house's foundation.
 - Garage needs trusses for the roof instead (raised heel trusses)
 - Roof-eave-wall still needs works. The 3d model still shows the roof exposed at the edges, not integrated into the wall cleanly (fully designed in reference packages/engine/tests/fixtures/catlin_reference/scripts/roof_wall_eave_detail_ifc.py, just not implemented here yet fully)
-- The framing of "floors" seems to be incomplete. The top plate, rim joist, floor joists, and sheathing all need to follow proper platform framing conventions.
-- Windows smaller (by 1.5" I believe) than the stud spacing (here 14" probably should fit between 16" oc studs) don't need a header.
+- The framing of "floors" seems to be incomplete. The double top plates, rim joist, floor joists, subfloor, sole plate, and sheathing all need to follow proper platform framing conventions (and be counted by length buckets in the BOM). Sills and sill anchor positions should be improved as well.
+- Windows smaller (by 1.5" I believe) than the stud spacing (here 14" probably should fit between 16" oc studs) don't need a header. Furthermore, we probably want windows to have some more clear guidance on when they are breaking the stud line with their position awkwardly, and how many studs they break with their given width (relative to the configured OC framing spacing)
+- Support for adding blocking in stud line
 
 # Deferred TODO tasks
 * clean import/export (so ship to another computer running this app)

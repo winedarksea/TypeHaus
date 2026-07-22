@@ -135,9 +135,9 @@ OPENINGS = [
          position=from_node("N-B-C", ft(4))),
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-SA-W", type_ref="DT-INT24",
          position=from_node("N-B-S1", ft(10, 10.4375))),
-    # Walkout to the sunken garden (south wall) + garden-lit glazing.
+    # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.
     Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3", type_ref="DT-PATIO60",
-         position=from_node("N-B-S2", ft(1, 4))),
+         position=from_node("N-B-S2", ft(1, 4)), sill_height=inch(7)),
     Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2",
            type_ref="WT-3050", position=from_node("N-B-S1", ft(2, 6)),
            sill_height=ft(3)),
