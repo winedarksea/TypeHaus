@@ -1,3 +1,6 @@
+# TODO
+Reminder: all items should design around clean export to Revit/Sketchup/IFC (follow industry standards where practical), and also be coded in accessible, "vibe code friendly" configs.
+
 ## Remaining Work
 Still missing for full M2: variants/compare, full takeoff/BOM
 The 3D UI builds geometry directly from model.json and renders furniture as boxes; it does not yet consume the planned glTF artifact ([Panel3D.tsx (line 7)](/Users/colincatlin/Documents-NoCloud/TypeHaus/ui/src/components/Panel3D.tsx:7)).
@@ -19,6 +22,8 @@ split at a center mullion when the door's type is `double_swing` — see
 `Panel3D.tsx:buildOpening`. Still missing: the static glTF export
 (`emit/gltf/emitter.py:_add_wall`) is untouched and still cuts plain void rectangles with
 no frame/panel/leaf geometry at all.
+
+Site grading should reflect code, "IRC says, within 10 feet of building's foundation, grades away from foundations is to be at a 5% slope. Impervious surfaces at 2%"
 
 ## Catlin detail parity — remaining
 
@@ -93,12 +98,18 @@ Each item names the reference drawing it comes from.
 ### Editor
 
 - Anchor-relative annotation drag → PatchOp editor; the v1 detail viewer is read-only.
+- 3D model naviagation (pan, zoom) is functional but awkward. Also the "default zoom" for reset is poorly calculated.
+- Toast popups of done tasks don't have a 'clear' option
 
 ### Framing follow-ups found while working on the above
 
 - Most corners don't show proper 3-stud framing (it's defined in code but not present in
   most corners).
-- Stairs aren't framed properly (no support for landings, note the basement stair is special in that it anchors off hangers from the concrete walls). Landings don't have a size input in the stair designer and aren't rendered correctly. The partition wall between the up and down sides of a U of stairs is also not present and not framed correctly.
+- Stairs aren't framed properly (no support for landings, note the basement stair is special in that it anchors off hangers from the concrete walls). Landings don't have a size input in the stair designer and aren't rendered correctly. The partition wall between the up and down sides of a U of stairs is also not present and not framed correctly. It actually looks like there are partition walls but they extend below the house's foundation.
+- Garage needs trusses for the roof instead (raised heel trusses)
+- Roof-eave-wall still needs works. The 3d model still shows the roof exposed at the edges, not integrated into the wall cleanly (fully designed in reference packages/engine/tests/fixtures/catlin_reference/scripts/roof_wall_eave_detail_ifc.py, just not implemented here yet fully)
+- The framing of "floors" seems to be incomplete. The top plate, rim joist, floor joists, and sheathing all need to follow proper platform framing conventions.
+- Windows smaller (by 1.5" I believe) than the stud spacing (here 14" probably should fit between 16" oc studs) don't need a header.
 
 # Deferred TODO tasks
 * clean import/export (so ship to another computer running this app)

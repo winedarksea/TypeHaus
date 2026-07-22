@@ -124,6 +124,7 @@ def model_to_dict(
     findings: list[Finding] | None = None,
     preferences: Preferences | None = None,
 ) -> dict[str, Any]:
+    from typehaus.server.building_height_summary import build_building_height_summary
     from typehaus.server.space_summary import build_space_summary
 
     building_science: dict[str, Any] | None = None
@@ -330,6 +331,7 @@ def model_to_dict(
             for r in model.rooms
         ],
         "space_summary": build_space_summary(model),
+        "building_height_summary": build_building_height_summary(model),
         "conditions": [
             {"kind": c.kind.value, "key": c.key, "elements": list(c.element_tags)}
             for c in model.conditions

@@ -95,5 +95,13 @@ def test_site_context_serializes_grade_parcel_and_spot_elevations(catlin_payload
                for spot in site["spot_elevations"])
 
 
+def test_model_json_serializes_finished_height_above_average_grade(catlin_payload):
+    summary = catlin_payload["building_height_summary"]
+    assert summary["average_ground_grade_m"] == pytest.approx(0.0)
+    assert {row["roof_tag"] for row in summary["roofs"]} == {"RF-HOUSE", "RF-GARAGE"}
+    assert all(row["peak_above_grade_m"] > row["midpoint_above_grade_m"] > 0
+               for row in summary["roofs"])
+
+
 def test_project_serializes_the_active_clearance_code_profile(catlin_payload):
     assert "active_code_profile" in catlin_payload["project"]

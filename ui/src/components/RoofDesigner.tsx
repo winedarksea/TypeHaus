@@ -13,6 +13,7 @@ export function RoofDesigner({ model }: { model: Model }) {
   const [ridgeDirection, setRidgeDirection] = useState<"x" | "y">("x");
   const [bearings, setBearings] = useState("");
   const [overhang, setOverhang] = useState("0'");
+  const height = model.building_height_summary?.roofs.find((item) => item.roof_tag === roof?.tag);
 
   useEffect(() => {
     if (!roof) return;
@@ -35,7 +36,11 @@ export function RoofDesigner({ model }: { model: Model }) {
     </select>
     <div className="kv" style={{ marginTop: 6 }}>
       <span className="k">Form</span><span>{roof.form}</span>
-      <span className="k">Eave / ridge</span><span>{metersToFeet(roof.eave_z_m)} / {metersToFeet(roof.ridge_z_m)}</span>
+      <span className="k">Structural eave / ridge</span><span>{metersToFeet(roof.eave_z_m)} / {metersToFeet(roof.ridge_z_m)}</span>
+      {height && <>
+        <span className="k">Finished midpoint above average grade</span><span>{metersToFeet(height.midpoint_above_grade_m)}</span>
+        <span className="k">Finished peak above average grade</span><span>{metersToFeet(height.peak_above_grade_m)}</span>
+      </>}
     </div>
     <label style={{ display: "block", marginTop: 5 }}>Pitch <input value={pitch}
       onChange={(event) => setPitch(event.target.value)} /></label>

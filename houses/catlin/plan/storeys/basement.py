@@ -141,12 +141,6 @@ OPENINGS = [
     Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2",
            type_ref="WT-3050", position=from_node("N-B-S1", ft(2, 6)),
            sill_height=ft(3)),
-    Window(uid="CBX302AAAA", tag="WIN-B-WSHOP", host="W-B-S1",
-           type_ref="WT-3050", position=from_node("N-B-SW", ft(3, 10)),
-           sill_height=ft(3)),
-    Window(uid="CBX303AAAA", tag="WIN-B-GYM", host="W-B-S3",
-           type_ref="WT-3050", position=from_node("N-B-SE", ft(4, 6)),
-           sill_height=ft(3)),
 ]
 
 ROOMS = [

@@ -201,6 +201,17 @@ export interface SpaceSummary {
   overall: SpaceSummaryRow;
 }
 
+export interface BuildingHeightRow {
+  roof_tag: string;
+  midpoint_above_grade_m: number;
+  peak_above_grade_m: number;
+}
+
+export interface BuildingHeightSummary {
+  average_ground_grade_m: number;
+  roofs: BuildingHeightRow[];
+}
+
 export interface Underlay {
   path: string;
   storey: string;
@@ -430,6 +441,7 @@ export interface Model {
   canvas_objects?: CanvasObject[];
   rooms: Room[];
   space_summary?: SpaceSummary;
+  building_height_summary?: BuildingHeightSummary;
   conditions: Condition[];
   stack_edges: StackEdge[];
   building_science?: BuildingScience | null;

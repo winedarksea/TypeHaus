@@ -36,7 +36,7 @@ export function ProjectDrawer() {
         <button className="btn" onClick={() => setWorkbench("stair")}>Stair workbench…</button>
       </div>
       <BuildingScienceDashboard science={model.building_science} />
-      <SpaceDashboard summary={model.space_summary} />
+      <SpaceDashboard summary={model.space_summary} buildingHeight={model.building_height_summary} />
       <RoofDesigner model={model} />
       <DetailsNavigator />
       {showDetails && <DetailViewer onClose={() => setShowDetails(false)} />}
