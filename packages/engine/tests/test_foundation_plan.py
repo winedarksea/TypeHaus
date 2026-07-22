@@ -10,6 +10,7 @@ from typehaus.emit.draw.foundationplan import build_foundation_plan, has_foundat
 from typehaus.emit.draw.scene import Leader, Polyline
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
+from typehaus.quantities import inch
 
 CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
@@ -78,6 +79,24 @@ def test_footing_bedding_undercut_and_insulation(catlin_model):
     assert bedding.geotextile and bedding.drain_tile
     assert bedding.perimeter_insulation_m is not None
     assert "#57" in bedding.aggregate
+
+
+def test_sunken_garden_t_wall_footings_bear_on_42_inches_of_aggregate(catlin_model):
+    garden_footings = {
+        solid.tag for solid in catlin_model.solids
+        if solid.category == "footing" and solid.tag.startswith("FT-SG-")
+    }
+    garden_bedding = {
+        bedding.host_footing: bedding
+        for bedding in catlin_model.footing_beddings
+        if bedding.host_footing.startswith("FT-SG-")
+    }
+
+    assert garden_footings
+    assert garden_footings == set(garden_bedding)
+    for bedding in garden_bedding.values():
+        assert bedding.z1_m - bedding.z0_m == pytest.approx(inch(42).meters)
+        assert "#57" in bedding.aggregate
 
 
 def test_foundation_plan_has_footing_bedding_leader(catlin_model):

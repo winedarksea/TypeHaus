@@ -16,6 +16,7 @@ from dataclasses import dataclass
 from typehaus import (
     Arch,
     Footing,
+    FootingBedding,
     FoundationWall,
     Node,
     RoughOpening,
@@ -38,6 +39,7 @@ class SunkenGardenSpec:
     wall_thickness_in: float = 12.0
     footing_width_in: float = 84.0  # 36" toe + 12" wall + 36" heel
     footing_thickness_in: float = 12.0
+    aggregate_bedding_depth_in: float = 42.0
     house_size_ft: float = 36.0
     house_ext_layers_in: float = 5.0  # polyiso+EPS+furring+cladding beyond sheathing
     basement_depth_ft: float = 9.0
@@ -120,6 +122,19 @@ FOOTINGS = [
     for i, w in enumerate(WALLS, start=1)
 ]
 
+# The cantilever retaining-wall footings bear on a full 42" compacted aggregate
+# section. Keep this as an authored bedding record so the depth is represented in
+# resolved geometry, foundation notes, and emitted IFC—not only in a detail note.
+FOOTING_BEDDING = [
+    FootingBedding(
+        uid=f"SGB{i:03d}AAAA",
+        tag=f"FB-{f.tag[3:]}",
+        host_ref=f.tag,
+        undercut=inch(SPEC.aggregate_bedding_depth_in),
+    )
+    for i, f in enumerate(FOOTINGS, start=1)
+]
+
 # --- arches -------------------------------------------------------------------
 # Both arched walls carry two tiers of arches: garden level and porch level.
 _axis_len = _x_ax_e - _x_ax_w
@@ -192,6 +207,7 @@ DECK_FLOOR = Slab(
     thickness=inch(SPEC.deck_thickness_in),
 )
 
-BASEMENT_ELEMENTS = [*NODES, *WALLS, *FOOTINGS, *ARCH_OPENINGS, GARDEN_SLAB]
+BASEMENT_ELEMENTS = [*NODES, *WALLS, *FOOTINGS, *FOOTING_BEDDING, *ARCH_OPENINGS,
+                     GARDEN_SLAB]
 MAIN_ELEMENTS = [PORCH_FLOOR]
 SECOND_ELEMENTS = [DECK_FLOOR]
