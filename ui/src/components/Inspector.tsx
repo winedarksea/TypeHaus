@@ -4,6 +4,7 @@ import type { Model, Opening, Stair, Wall } from "../model/types";
 import { formatFtIn, openingHostWall, openingStartFromCenter, wallLength } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
 import { DetailViewer } from "./DetailViewer";
+import { StairDesigner } from "./StairDesigner";
 
 // Strict contextual inspector (Phase 3): answers only "what can I change about the selected
 // thing?" — hidden when nothing is selected. Extracted from the retired Sidebar; the
@@ -307,19 +308,9 @@ function OpeningInspector({ model, opening }: { model: Model; opening: Opening }
 }
 
 function StairInspector({ model, stair }: { model: Model; stair: Stair }) {
-  const rise = storeyRise(model, stair);
-  const setWorkbench = useStore((s) => s.setWorkbench);
   return <div>
     <h3>Stair · {stair.tag}</h3>
-    <div className="kv">
-      <span className="k">Route</span><span>{stair.storey} → {stair.to_storey}</span>
-      <span className="k">Rise</span><span>{formatFtIn(rise)}</span>
-      <span className="k">Resolved</span><span>{stair.riser_count} risers · {formatFtIn(stair.tread_depth_m)} tread · {stair.layout.replaceAll("_", " ")}{stair.winder_count ? ` · ${stair.winder_count} winders` : ""}</span>
-      <span className="k">Framing</span><span>{stair.members.length} members</span>
-    </div>
-    <button className="btn" style={{ marginTop: 8 }} onClick={() => setWorkbench("stair")}>
-      Open stair workbench…
-    </button>
+    <StairDesigner model={model} focus={stair} />
     <Provenance p={stair.provenance} />
   </div>;
 }

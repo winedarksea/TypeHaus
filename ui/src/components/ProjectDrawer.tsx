@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useStore } from "../state/store";
 import type { Model, Wall } from "../model/types";
 import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
@@ -110,10 +110,10 @@ function Hierarchy({ model }: { model: Model }) {
       </div>
       <div className="kv" style={{ marginTop: 8 }}>
         {counts.map(([label, n]) => (
-          <span key={label} style={{ display: "contents" }}>
+          <Fragment key={label}>
             <span className="k">{label}</span>
             <span className="num">{n}</span>
-          </span>
+          </Fragment>
         ))}
       </div>
     </div>

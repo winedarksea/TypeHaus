@@ -6,6 +6,7 @@
   --bg: #f4f2ed;
   --ink: #33312c;
   --line: #5b574f;
+  --muted: #837d70;
   --accent: #6d8a96;
   --panel: #fbfaf7;
   --raised: #ffffff;
@@ -113,6 +114,7 @@
   --bg: #2E3440;
   --ink: #ECEFF4;
   --line: #D8DEE9;
+  --muted: #939cad;
   --accent: #88C0D0;
   --panel: #3B4252;
   --raised: #434C5E;
@@ -832,7 +834,7 @@ textarea:focus-visible,
 }
 
 .kv .k {
-  color: var(--line);
+  color: var(--muted);
 }
 
 .field-label {
@@ -1617,16 +1619,30 @@ textarea:focus-visible,
   }
 }
 
-/* Collapsible drawer sections (ProjectDrawer) — one consistent section rhythm. */
+/* Collapsible drawer sections (ProjectDrawer) — one consistent section rhythm. Each section
+   is a divider-topped block whose header reads as the single title for its body. */
 .drawer-section { border-top: 1px solid var(--panel-line); }
 .drawer-section:first-of-type { border-top: none; }
 .drawer-section-head {
-  display: flex; align-items: center; gap: 6px; width: 100%;
+  display: flex; align-items: center; gap: 8px; width: 100%;
   background: none; border: none; cursor: pointer;
-  padding: 8px 0; color: var(--line);
-  font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;  /* matches panel h3 */
+  padding: 10px 6px; margin: 0 -6px; border-radius: var(--radius-input);
+  color: var(--ink);
+  font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+  transition: background var(--dur-fast) var(--ease);
 }
-.drawer-section-head .chev { color: var(--line); font-size: 11px; }
+.drawer-section-head:hover { background: var(--hover); }
+.drawer-section-head .chev { color: var(--muted); font-size: 10px; width: 10px; }
 .drawer-section-title { flex: 1; text-align: left; }
-.drawer-section-right { text-transform: none; letter-spacing: 0; }
-.drawer-section-body { padding-bottom: 10px; }
+.drawer-section-right { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.drawer-section-body { padding: 2px 0 12px; }
+
+/* Table-like readouts inside the drawer get hairline row separators so the label/value
+   columns scan as a table rather than a wall of text (esp. in dark mode). */
+.project-drawer .kv { gap: 0 12px; margin-bottom: 4px; }
+.project-drawer .kv > * {
+  padding: 5px 0;
+  border-bottom: 1px solid var(--panel-line);
+}
+.project-drawer .kv > *:nth-last-child(-n + 2) { border-bottom: none; }
+.project-drawer .kv > span:not(.k) { color: var(--ink); }

@@ -102,6 +102,7 @@ Each item names the reference drawing it comes from.
 - Toast popups of done tasks don't have a 'clear' option
 - The "air", "water", and "thermal" views are great ideas but don't seem to be hooked up to any real backend yet
 - 3d model doesn't seem to show the gravel footing beds anywhere
+- Door opening drawings in 2d view aren't very accurate. The swing lines aren't always accurately concave and the double doors often look a bit weird (one convex, one concave for the swing lines)
 
 ### Framing follow-ups found while working on the above
 

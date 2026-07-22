@@ -8,14 +8,16 @@ const MIN_TREAD_M = 10 * 0.0254;
 const MIN_HEADROOM_M = 6 * 0.3048 + 8 * 0.0254;
 
 // The resolver remains authoritative: this component only mirrors the scalar constraints
-// required to prevent writing an obviously invalid layout.
-export function StairDesigner({ model }: { model: Model }) {
+// required to prevent writing an obviously invalid layout. When `focus` is passed (the
+// inspector selected a specific stair on the canvas) the picker is hidden and the editor is
+// pinned to that stair, so selecting a stair opens its own designer directly.
+export function StairDesigner({ model, focus }: { model: Model; focus?: Stair }) {
   const stairs = model.stairs ?? [];
   const applyOps = useStore((state) => state.applyOps);
   const select = useStore((state) => state.select);
   const offline = useStore((state) => state.offline);
-  const [selectedTag, setSelectedTag] = useState(stairs[0]?.tag ?? "");
-  const stair = stairs.find((item) => item.tag === selectedTag) ?? stairs[0];
+  const [selectedTag, setSelectedTag] = useState(focus?.tag ?? stairs[0]?.tag ?? "");
+  const stair = focus ?? stairs.find((item) => item.tag === selectedTag) ?? stairs[0];
   const [width, setWidth] = useState("");
   const [runDirection, setRunDirection] = useState<"x" | "y">("x");
   const [runReversed, setRunReversed] = useState(false);
@@ -49,11 +51,13 @@ export function StairDesigner({ model }: { model: Model }) {
     if (ok) select("stair", stair.uid);
   };
 
-  return <div style={{ marginTop: 16 }}>
-    <h3>Stair designer</h3>
-    <select value={stair.tag} onChange={(event) => setSelectedTag(event.target.value)}>
-      {stairs.map((item) => <option key={item.tag} value={item.tag}>{item.tag} · {item.storey} → {item.to_storey}</option>)}
-    </select>
+  return <div style={{ marginTop: focus ? 0 : 16 }}>
+    {!focus && <>
+      <h3>Stair designer</h3>
+      <select value={stair.tag} onChange={(event) => setSelectedTag(event.target.value)}>
+        {stairs.map((item) => <option key={item.tag} value={item.tag}>{item.tag} · {item.storey} → {item.to_storey}</option>)}
+      </select>
+    </>}
     <div className="kv" style={{ marginTop: 6 }}>
       <span className="k">Floor-to-floor rise</span><span>{formatFtIn(solved.rise)}</span>
       <span className="k">Opening</span><span>{formatFtIn(solved.run)} × {formatFtIn(solved.openingWidth)}</span>
