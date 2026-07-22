@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { findingsFor, useStore } from "../state/store";
+import { useStore } from "../state/store";
 import type { Model, Opening, Stair, Wall } from "../model/types";
 import { formatFtIn, openingHostWall, openingStartFromCenter, wallLength } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
@@ -92,20 +92,6 @@ export function Provenance({ p }: { p: { file: string; line: number } | null }) 
   );
 }
 
-export function InlineFindings({ model, uid }: { model: Model; uid: string }) {
-  const fs = findingsFor(model, uid);
-  if (fs.length === 0) return null;
-  return (
-    <div style={{ marginTop: 8 }}>
-      {fs.map((f, i) => (
-        <div key={i} className={`finding ${f.severity}`}>
-          {f.message}
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function SelectionInspector({
   model,
   kind,
@@ -145,7 +131,6 @@ function SelectionInspector({
           <span>{r.floor_finish ?? "—"}</span>
         </div>
         <Provenance p={r.provenance} />
-        <InlineFindings model={model} uid={uid} />
       </div>
     );
   }
@@ -243,7 +228,6 @@ function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullabl
       <button className="btn" onClick={() => void attach()}>Attach</button>
       {item.attachment && <button className="btn" onClick={() => void runMacro({ macro: "detach_placeable", storey: item.storey, tag: item.tag })}>Detach</button>}
     </div>
-    <InlineFindings model={model} uid={item.uid} />
   </div>;
 }
 
@@ -319,7 +303,6 @@ function OpeningInspector({ model, opening }: { model: Model; opening: Opening }
       Delete {rough ? "rough opening" : opening.is_door ? "door" : "window"}
     </button>
     <Provenance p={opening.provenance} />
-    <InlineFindings model={model} uid={opening.uid} />
   </div>;
 }
 
@@ -338,7 +321,6 @@ function StairInspector({ model, stair }: { model: Model; stair: Stair }) {
       Open stair workbench…
     </button>
     <Provenance p={stair.provenance} />
-    <InlineFindings model={model} uid={stair.uid} />
   </div>;
 }
 
@@ -391,7 +373,6 @@ function WallInspector({ model, w, onShowDetails }: { model: Model; w: Wall; onS
           <button className="btn" onClick={onShowDetails}>View junction detail…</button>
         </div>
       )}
-      <InlineFindings model={model} uid={w.uid} />
       <div style={{ marginTop: 8 }}>
         <span className="muted">Openings hosted: </span>
         {model.openings.filter((o) => o.host === w.tag).length === 0 ? (

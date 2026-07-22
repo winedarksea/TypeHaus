@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useStore, visibleFindings } from "../state/store";
-import type { Finding, Model, Wall } from "../model/types";
+import { useStore } from "../state/store";
+import type { Model, Wall } from "../model/types";
 import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
 import { SpaceDashboard } from "./SpaceDashboard";
 import { RoofDesigner } from "./RoofDesigner";
@@ -39,7 +39,6 @@ export function ProjectDrawer() {
       <SpaceDashboard summary={model.space_summary} />
       <RoofDesigner model={model} />
       <DetailsNavigator />
-      <FindingsPanel findings={model.findings} />
       {showDetails && <DetailViewer onClose={() => setShowDetails(false)} />}
     </aside>
   );
@@ -115,44 +114,6 @@ function AssemblyPicker({ model, onEdit }: { model: Model; onEdit: () => void })
             <span className="muted">×{walls.length}</span>
           </div>
           <span className="muted">{walls[0].layers.length} layers</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function FindingsPanel({ findings }: { findings: Finding[] }) {
-  const select = useStore((s) => s.select);
-  const model = useStore((s) => s.model);
-  const visible = visibleFindings(findings);
-  if (visible.length === 0)
-    return (
-      <div style={{ marginTop: 16 }}>
-        <h3>Checks</h3>
-        <span className="muted">All checks pass.</span>
-      </div>
-    );
-  const jump = (f: Finding) => {
-    const uid = f.element ?? f.elements?.[0] ?? null;
-    if (!uid || !model) return;
-    const kind = model.walls.some((w) => w.uid === uid)
-      ? "wall"
-      : model.openings.some((o) => o.uid === uid)
-        ? "opening"
-        : model.rooms.some((r) => r.uid === uid)
-          ? "room"
-          : (model.stairs ?? []).some((stair) => stair.uid === uid)
-            ? "stair"
-            : null;
-    if (kind) select(kind, uid);
-  };
-  return (
-    <div style={{ marginTop: 16 }}>
-      <h3>Checks · {visible.length}</h3>
-      {visible.map((f, i) => (
-        <div key={i} className={`finding ${f.severity}`} onClick={() => jump(f)}>
-          {f.code && <b>{f.code} </b>}
-          {f.message}
         </div>
       ))}
     </div>

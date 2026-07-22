@@ -98,6 +98,7 @@ Each item names the reference drawing it comes from.
 
 - Most corners don't show proper 3-stud framing (it's defined in code but not present in
   most corners).
+- Stairs aren't framed properly (no support for landings, note the basement stair is special in that it anchors off hangers from the concrete walls). Landings don't have a size input in the stair designer and aren't rendered correctly. The partition wall between the up and down sides of a U of stairs is also not present and not framed correctly.
 
 # Deferred TODO tasks
 * clean import/export (so ship to another computer running this app)
@@ -106,6 +107,7 @@ Each item names the reference drawing it comes from.
 * bypass libcst entirely for the mutation path for fully offline PWA (high risk, deferred), pure python (needs to be efficient)
 * isolate IFC export as a future extension. It should be feasible using the experimental ifcopenshell wasm build and possibly replacing pyproj if needed
 * build landing page and app deployment for type-house.com and type-house.com/app. Likely include an install script link like /Users/colincatlin/Documents-NoCloud/MinimapPR/landing/install.sh alongside the fully web-backed PWA.
+* catlin house should be loaded up by default for new users of the PWA
 
 Arches are missing on the balcony/porch concrete.
 The current modeled concrete arches are:

@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { useStore } from "../state/store";
 import type { Selection } from "../state/store";
 import type { PreviewGeometry } from "../engine/EngineClient";
-import type { CanvasObject, CanvasObjectType, Model, Opening, PlanNode, Stair, Underlay, Vec2, Wall } from "../model/types";
+import type { CanvasObject, CanvasObjectType, Model, Opening, PlanNode, Stair, Vec2, Wall } from "../model/types";
 import {
   deriveNodes,
   formatFtIn,
@@ -96,7 +96,6 @@ export function Canvas2D() {
   const deleteSelection = useStore((s) => s.deleteSelection);
   const duplicateSelection = useStore((s) => s.duplicateSelection);
   const offline = useStore((s) => s.offline);
-  const calibrateUnderlay = useStore((s) => s.calibrateUnderlay);
   const toast = useStore((s) => s.toast);
 
   const svgRef = useRef<SVGSVGElement>(null);
@@ -137,9 +136,6 @@ export function Canvas2D() {
   const setDrawAssembly = useStore((s) => s.setDrawAssembly);
   const [activeService, setActiveService] = useState<string>("");
   const [showClearances, setShowClearances] = useState(false);
-  const [calibrationPoints, setCalibrationPoints] = useState<Vec2[]>([]);
-  const [calibrationDistanceFt, setCalibrationDistanceFt] = useState("24");
-  const [calibrationMode, setCalibrationMode] = useState(false);
 
   // World meters → screen px. SVG y grows downward, so flip.
   const project = useCallback(
@@ -266,7 +262,6 @@ export function Canvas2D() {
 
   const serviceOptions = useMemo(() => [...new Set((model.catalog?.canvas_object_types ?? [])
     .flatMap((type) => type.ports.map((port) => port.service)))].sort(), [model.catalog?.canvas_object_types]);
-  const activeUnderlay = (model.underlays ?? []).find((underlay) => underlay.storey === activeStorey) ?? null;
   const canvasTypes = useMemo(() => new Map((model.catalog?.canvas_object_types ?? [])
     .map((item) => [item.tag, item])), [model.catalog?.canvas_object_types]);
   const visibleServiceObjects = (model.canvas_objects ?? []).filter((item) =>
@@ -300,10 +295,6 @@ export function Canvas2D() {
       ...model.rooms.filter((room) => room.storey === activeStorey)
         .flatMap((room) => room.clear_face),
     ];
-    if (activeUnderlay) {
-      const { origin_x_m: x, origin_y_m: y, width_m: width, height_m: height } = activeUnderlay;
-      points.push([x, y], [x + width, y], [x, y + height], [x + width, y + height]);
-    }
     if (!points.length) return;
 
     const fit = () => {
@@ -327,7 +318,7 @@ export function Canvas2D() {
     observer.observe(svg);
     fit();
     return () => observer.disconnect();
-  }, [activeStorey, activeUnderlay, model.rooms, setView, wallsOnStorey]);
+  }, [activeStorey, model.rooms, setView, wallsOnStorey]);
 
   const tolM = 12 / view.scale;
   const gridM = view.scale * M_PER_FT >= 14 ? M_PER_FT : null;
@@ -433,17 +424,8 @@ export function Canvas2D() {
     e.stopPropagation();
   };
 
-  const onDoubleClick = (event: React.MouseEvent<SVGSVGElement>) => {
-    if (!activeUnderlay || !calibrationMode) return;
-    const rect = svgRef.current!.getBoundingClientRect();
-    const point: Vec2 = [(event.clientX - rect.left - view.tx) / view.scale,
-      (view.ty - (event.clientY - rect.top)) / view.scale];
-    setCalibrationPoints((points) => points.length >= 2 ? [point] : [...points, point]);
-  };
-
   // ---- tool tap dispatch ----------------------------------------------------
   const handleTap = (world: Vec2, screen: Vec2) => {
-    if (calibrationMode) return;
     if (placement) { setPlacement(null); return; }
     if (offline && tool !== "select") { toast("Editing needs the server (offline)", "error"); return; }
     switch (tool) {
@@ -582,7 +564,6 @@ export function Canvas2D() {
       if (e.key === "Escape") {
         setDraft(null); setPlacement(null); setWallAssemblyPopup(null); setDimWall(null); setNodeDrag(null); setPending(null); setDoorPopup(null); setWindowPopup(null);
         setPreviewGeom(null); setLengthEntry(null);
-        if (calibrationMode) { setCalibrationMode(false); setCalibrationPoints([]); }
       } else if ((e.key === "Enter" || /^[0-9]$/.test(e.key)) && draftRef.current && !lengthEntryOpen.current) {
         // Precise segment: type a length to place the next corner at an exact distance along the
         // current rubber-band direction (falls back to +x when the pointer sits on the start).
@@ -603,7 +584,7 @@ export function Canvas2D() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selection.uid, selection.kind, offline, deleteSelection, duplicateSelection, calibrationMode]);
+  }, [selection.uid, selection.kind, offline, deleteSelection, duplicateSelection]);
 
   // End a wall run when leaving the wall tool.
   useEffect(() => { if (tool !== "wall") { setDraft(null); setCursor(null); } }, [tool]);
@@ -612,27 +593,6 @@ export function Canvas2D() {
   // label and App's Esc hierarchy (Phase 2) can see it.
   const setSubOperation = useStore((s) => s.setSubOperation);
   useEffect(() => { setSubOperation(draft != null); }, [draft, setSubOperation]);
-
-  const saveCalibration = async () => {
-    if (!activeUnderlay || calibrationPoints.length !== 2) return;
-    const distanceFt = Number(calibrationDistanceFt);
-    const measured = Math.hypot(calibrationPoints[1][0] - calibrationPoints[0][0],
-      calibrationPoints[1][1] - calibrationPoints[0][1]);
-    if (!Number.isFinite(distanceFt) || distanceFt <= 0 || measured <= 0) {
-      toast("Enter a positive known distance in feet", "error");
-      return;
-    }
-    const scale = distanceFt * 0.3048 / measured;
-    const [anchorX, anchorY] = calibrationPoints[0];
-    const ok = await calibrateUnderlay({
-      ...activeUnderlay,
-      origin_x_m: anchorX - (anchorX - activeUnderlay.origin_x_m) * scale,
-      origin_y_m: anchorY - (anchorY - activeUnderlay.origin_y_m) * scale,
-      width_m: activeUnderlay.width_m * scale,
-      height_m: activeUnderlay.height_m * scale,
-    });
-    if (ok) { setCalibrationPoints([]); setCalibrationMode(false); }
-  };
 
   // ---- opening driven-dimension edit (double-click an opening) ---------------
   const commitPending = async (meters: number) => {
@@ -673,7 +633,6 @@ export function Canvas2D() {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         onClickCapture={onClickCapture}
-        onDoubleClick={onDoubleClick}
         onContextMenu={(e) => {
           const rect = svgRef.current?.getBoundingClientRect();
           if (!rect) return;
@@ -687,26 +646,6 @@ export function Canvas2D() {
           </marker>
         </defs>
         <BackgroundGrid view={view} />
-        {(model.underlays ?? [])
-          .filter((underlay) => !activeStorey || underlay.storey === activeStorey)
-          .map((underlay) => {
-            const [x, y] = project([underlay.origin_x_m, underlay.origin_y_m]);
-            const width = underlay.width_m * view.scale;
-            const height = underlay.height_m * view.scale;
-            return (
-              <image key={`${underlay.storey}:${underlay.path}`} href={underlay.url}
-                x={x} y={y - height} width={width} height={height} opacity={underlay.opacity}
-                pointerEvents="none"
-                transform={`rotate(${-underlay.rotation_deg} ${x} ${y})`} />
-            );
-          })}
-        {calibrationPoints.map((point, index) => {
-          const [x, y] = project(point);
-          return <g key={`calibration-${index}`} pointerEvents="none">
-            <circle cx={x} cy={y} r={6} fill="var(--error)" />
-            <text x={x + 8} y={y - 8} fontSize={11} fill="var(--error)">{index + 1}</text>
-          </g>;
-        })}
         {/* rooms first (tinted fills, behind walls) — a live drag's preview cascades into
             neighboring rooms' clear-face polygons, matched by tag against the last preview */}
         {model.rooms
@@ -1034,10 +973,6 @@ export function Canvas2D() {
           {showClearances ? "Hide clearances" : "Clearances"}
         </button>
       </div>
-      {activeUnderlay && <UnderlayCalibrationControl underlay={activeUnderlay}
-        points={calibrationPoints} distanceFt={calibrationDistanceFt} onDistance={setCalibrationDistanceFt}
-        active={calibrationMode} onStart={() => { setCalibrationMode(true); setCalibrationPoints([]); }}
-        onSave={() => void saveCalibration()} />}
       </div>
       {tool !== "select" && (
         <div className="hud" style={{ left: 12, right: "auto", bottom: "auto", top: "calc(44px + 84px)", maxWidth: 260 }}>
@@ -1149,32 +1084,6 @@ function NodeHandle({ world, project, onStart, onMove, onEnd }: {
         pointerEvents="none" />
     </g>
   );
-}
-
-function UnderlayCalibrationControl({ underlay, points, distanceFt, onDistance, active, onStart, onSave }: {
-  underlay: Underlay;
-  points: Vec2[];
-  distanceFt: string;
-  onDistance: (value: string) => void;
-  active: boolean;
-  onStart: () => void;
-  onSave: () => void;
-}) {
-  const pathParts = underlay.path.split("/");
-  const filename = pathParts[pathParts.length - 1];
-  return <div className="hud" style={{ maxWidth: 270 }}>
-    <div style={{ fontSize: 12 }}>Reference: {filename}</div>
-    {!active ? <button className="btn" onClick={onStart}>Calibrate underlay</button> : <>
-      <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
-        Double-click two known points on the drawing ({points.length}/2).
-      </div>
-      {points.length === 2 && <label style={{ display: "block", marginTop: 5, fontSize: 12 }}>
-        Known distance (ft) <input value={distanceFt} inputMode="decimal"
-          onChange={(event) => onDistance(event.target.value)} style={{ width: 52 }} />
-        <button className="btn" onClick={onSave} style={{ marginLeft: 5 }}>Save</button>
-      </label>}
-    </>}
-  </div>;
 }
 
 function CanvasObjectFootprint({ item, type, project, scale, walls, selected, onSelect, toWorld, onMove, onRotate }: {

@@ -127,10 +127,10 @@ OPENINGS = [
     # Interior circulation
     Door(uid="CBD201AAAA", tag="D-B-FURN", host="W-B-CW", type_ref="DT-INT32",
          position=from_node("N-B-W1", ft(3))),
-    Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT60",
+    Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT56",
          position=from_node("N-B-C", ft(6))),
     Door(uid="CBD203AAAA", tag="D-B-GYM", host="W-B-CS2", type_ref="DT-INT32",
-         position=from_node("N-B-C1", ft(1))),
+         position=from_node("N-B-C1", ft(1)), flip_swing=False, flip_hinge=False),
     Door(uid="CBD204AAAA", tag="D-B-NE", host="W-B-CN", type_ref="DT-INT32",
          position=from_node("N-B-C", ft(4))),
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-SA-W", type_ref="DT-INT24",
