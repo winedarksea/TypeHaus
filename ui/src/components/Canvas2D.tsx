@@ -220,13 +220,14 @@ export function Canvas2D() {
     });
   }, []);
 
-  const nodes = useMemo(() => deriveNodes(model.walls), [model.walls]);
-  const openEnds = useMemo(() => openEndKeys(model), [model]);
-
   const wallsOnStorey = useMemo(
     () => model.walls.filter((w) => !activeStorey || w.storey === activeStorey),
     [model.walls, activeStorey],
   );
+  // Node markers are view-local: deriving them from every storey makes unrelated
+  // endpoints appear on the active floorplan when storeys share coordinates.
+  const nodes = useMemo(() => deriveNodes(wallsOnStorey), [wallsOnStorey]);
+  const openEnds = useMemo(() => openEndKeys(wallsOnStorey), [wallsOnStorey]);
   // Authored nodes on the active storey → the snap/heal/stretch vocabulary (addressed by tag).
   const storeyNodes = useMemo(
     () => (model.nodes ?? []).filter((n) => !activeStorey || n.storey === activeStorey),
@@ -1610,8 +1611,8 @@ function StoreyTabs({ model }: { model: Model }) {
   );
 }
 
-function openEndKeys(model: Model): Set<string> {
-  const nodes = deriveNodes(model.walls);
+function openEndKeys(walls: Wall[]): Set<string> {
+  const nodes = deriveNodes(walls);
   const open = new Set<string>();
   for (const n of nodes.values()) if (n.walls.length < 2) open.add(n.id);
   return open;
