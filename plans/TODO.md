@@ -101,7 +101,11 @@ Each item names the reference drawing it comes from.
 
 # Deferred TODO tasks
 * clean import/export (so ship to another computer running this app)
-* bypass libcst entirely for the mutation path for fully offline PWA (high risk, deferred)
+
+## PWA
+* bypass libcst entirely for the mutation path for fully offline PWA (high risk, deferred), pure python (needs to be efficient)
+* isolate IFC export as a future extension. It should be feasible using the experimental ifcopenshell wasm build and possibly replacing pyproj if needed
+* build landing page and app deployment for type-house.com and type-house.com/app. Likely include an install script link like /Users/colincatlin/Documents-NoCloud/MinimapPR/landing/install.sh alongside the fully web-backed PWA.
 
 Arches are missing on the balcony/porch concrete.
 The current modeled concrete arches are:

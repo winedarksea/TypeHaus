@@ -20,8 +20,17 @@ import { pickHouseDirectory } from "../engine/openHouse";
 import type { Finding, Model } from "../model/types";
 
 export type Tool = "select" | "wall" | "opening" | "placeable" | "room" | "dimension";
+// Task-rail groups (Phase 2): high-level buckets whose flyout palettes expand to the
+// concrete Tools above. `null` = no flyout open.
+export type ToolGroup = "select" | "build" | "openings" | "components" | "measure";
 export type ViewMode = "2d" | "split" | "3d";
 export type ThreeMode = "nordic" | "schematic";
+// Phase 6 — three previously-conflated concepts pulled apart:
+export type Workspace = "design" | "analyze" | "document"; // tool/drawer emphasis
+export type Representation = "conceptual" | "schematic" | "detailed" | "fabrication"; // detail level
+// Building-science lenses (Phase 9): a lens semantically re-frames the model to answer one
+// question. Shipping air · water · thermal first.
+export type Lens = "none" | "air" | "water" | "thermal";
 
 // 3D trade visibility (→ 21 §3D panel WP7): one THREE.Group per trade so toggling never
 // rebuilds the scene, just flips group.visible. "walls" is layer polygons (sheathing,
@@ -66,6 +75,20 @@ interface StoreState {
   error: string | null;
 
   tool: Tool;
+  toolGroup: ToolGroup | null; // which task-rail flyout is open
+  subOperation: boolean; // true mid-draw (e.g. wall chain in progress) — drives Esc hierarchy
+  drawAssembly: string | null; // ContextBar-selected wall assembly for new walls
+  chainDraw: boolean; // keep the wall tool armed after each segment
+  projectDrawerOpen: boolean; // left project drawer (dashboards, hierarchy — Phase 6)
+  commandPaletteOpen: boolean; // ⌘K fuzzy command surface (Phase 4)
+  recentCommands: string[]; // command ids, most-recent first (Phase 4)
+  issuesDrawerOpen: boolean; // bottom Issues drawer (Phase 5)
+  activeWorkspace: Workspace; // DESIGN / ANALYZE / DOCUMENT (Phase 6)
+  representation: Representation; // conceptual → fabrication detail level (Phase 6)
+  viewsPanelOpen: boolean; // Views control panel (Phase 6)
+  workbench: "assembly" | "stair" | null; // focus-mode workbench for complex edits (Phase 7)
+  activeLens: Lens; // building-science lens (Phase 9)
+  preview3DOpen: boolean; // floating synchronized 3D preview over the 2D plan (Phase 10)
   viewMode: ViewMode;
   threeMode: ThreeMode;
   selection: Selection;
@@ -85,6 +108,20 @@ interface StoreState {
   reloadIfStale: (revision?: string) => Promise<void>;
   openOfflineHouse: () => Promise<void>;
   setTool: (t: Tool) => void;
+  setToolGroup: (g: ToolGroup | null) => void;
+  setSubOperation: (v: boolean) => void;
+  setDrawAssembly: (tag: string | null) => void;
+  setChainDraw: (v: boolean) => void;
+  setProjectDrawerOpen: (v: boolean) => void;
+  setCommandPaletteOpen: (v: boolean) => void;
+  pushRecentCommand: (id: string) => void;
+  setIssuesDrawerOpen: (v: boolean) => void;
+  setActiveWorkspace: (w: Workspace) => void;
+  setRepresentation: (r: Representation) => void;
+  setViewsPanelOpen: (v: boolean) => void;
+  setWorkbench: (w: "assembly" | "stair" | null) => void;
+  setActiveLens: (l: Lens) => void;
+  setPreview3DOpen: (v: boolean) => void;
   setViewMode: (v: ViewMode) => void;
   setThreeMode: (m: ThreeMode) => void;
   setShowFraming: (v: boolean) => void;
@@ -94,6 +131,9 @@ interface StoreState {
   setHover: (uid: string | null) => void;
   setActiveStorey: (tag: string | null) => void;
   setView: (v: Partial<ViewTransform>) => void;
+  // Navigate to an element (Phase 5 issue jump): switch to its storey, select + highlight it,
+  // and pan the 2D view so its centroid sits at the viewport center.
+  zoomToUid: (uid: string) => void;
   dismissConflict: () => void;
   toast: (message: string, kind?: Toast["kind"]) => void;
   dismissToast: (id: number) => void;
@@ -137,6 +177,20 @@ export const useStore = create<StoreState>((set, get) => ({
   error: null,
 
   tool: "select",
+  toolGroup: null,
+  subOperation: false,
+  drawAssembly: null,
+  chainDraw: true,
+  projectDrawerOpen: false,
+  commandPaletteOpen: false,
+  recentCommands: [],
+  issuesDrawerOpen: false,
+  activeWorkspace: "design",
+  representation: "detailed",
+  viewsPanelOpen: false,
+  workbench: null,
+  activeLens: "none",
+  preview3DOpen: false,
   viewMode: "2d",
   threeMode: "nordic",
   selection: { kind: null, uid: null },
@@ -223,7 +277,28 @@ export const useStore = create<StoreState>((set, get) => ({
     return promise;
   },
 
-  setTool: (tool) => set({ tool }),
+  setTool: (tool) => set({ tool, toolGroup: null, subOperation: false }),
+  setToolGroup: (toolGroup) => set({ toolGroup }),
+  setSubOperation: (subOperation) => set({ subOperation }),
+  setDrawAssembly: (drawAssembly) => set({ drawAssembly }),
+  setChainDraw: (chainDraw) => set({ chainDraw }),
+  // Left side hosts one large panel at a time (reviewer rule): opening one closes the other.
+  setProjectDrawerOpen: (projectDrawerOpen) =>
+    set(projectDrawerOpen ? { projectDrawerOpen, viewsPanelOpen: false } : { projectDrawerOpen }),
+  setCommandPaletteOpen: (commandPaletteOpen) => set({ commandPaletteOpen }),
+  pushRecentCommand: (id) =>
+    set((s) => ({ recentCommands: [id, ...s.recentCommands.filter((c) => c !== id)].slice(0, 6) })),
+  setIssuesDrawerOpen: (issuesDrawerOpen) => set({ issuesDrawerOpen }),
+  setActiveWorkspace: (activeWorkspace) => set({ activeWorkspace }),
+  // Representation generalizes the old showFraming boolean: detailed/fabrication show framing,
+  // conceptual/schematic show wall fills only.
+  setRepresentation: (representation) =>
+    set({ representation, showFraming: representation === "detailed" || representation === "fabrication" }),
+  setViewsPanelOpen: (viewsPanelOpen) =>
+    set(viewsPanelOpen ? { viewsPanelOpen, projectDrawerOpen: false } : { viewsPanelOpen }),
+  setWorkbench: (workbench) => set({ workbench }),
+  setActiveLens: (activeLens) => set({ activeLens }),
+  setPreview3DOpen: (preview3DOpen) => set({ preview3DOpen }),
   setViewMode: (viewMode) => set({ viewMode }),
   setThreeMode: (threeMode) => set({ threeMode }),
   setShowFraming: (showFraming) => set({ showFraming }),
@@ -245,6 +320,53 @@ export const useStore = create<StoreState>((set, get) => ({
   setHover: (hoverUid) => set({ hoverUid }),
   setActiveStorey: (activeStorey) => set({ activeStorey }),
   setView: (v) => set((s) => ({ view: { ...s.view, ...v } })),
+  zoomToUid: (uid) => {
+    const { model, view, viewMode } = get();
+    if (!model) return;
+    // Resolve the element, its kind, storey, and a plan-space centroid.
+    let kind: Selection["kind"] = null;
+    let storey: string | null = null;
+    let centroid: [number, number] | null = null;
+    const wall = model.walls.find((w) => w.uid === uid);
+    if (wall) {
+      kind = "wall"; storey = wall.storey;
+      centroid = [(wall.axis[0][0] + wall.axis[1][0]) / 2, (wall.axis[0][1] + wall.axis[1][1]) / 2];
+    }
+    const opening = !wall ? model.openings.find((o) => o.uid === uid) : undefined;
+    if (opening) {
+      const host = model.walls.find((w) => w.tag === opening.host);
+      kind = "opening"; storey = host?.storey ?? null;
+      if (host) centroid = [(host.axis[0][0] + host.axis[1][0]) / 2, (host.axis[0][1] + host.axis[1][1]) / 2];
+    }
+    const room = !wall && !opening ? model.rooms.find((r) => r.uid === uid) : undefined;
+    if (room) {
+      kind = "room"; storey = room.storey;
+      const pts = room.clear_face;
+      if (pts.length) centroid = [
+        pts.reduce((a, p) => a + p[0], 0) / pts.length,
+        pts.reduce((a, p) => a + p[1], 0) / pts.length,
+      ];
+    }
+    const stair = !wall && !opening && !room ? (model.stairs ?? []).find((x) => x.uid === uid) : undefined;
+    if (stair) {
+      kind = "stair"; storey = stair.storey;
+      const pts = stair.outline;
+      if (pts.length) centroid = [
+        pts.reduce((a, p) => a + p[0], 0) / pts.length,
+        pts.reduce((a, p) => a + p[1], 0) / pts.length,
+      ];
+    }
+    if (!kind) return;
+    if (viewMode === "3d") set({ viewMode: "split" }); // make sure the 2D plan is visible
+    if (storey) set({ activeStorey: storey });
+    set({ selection: { kind, uid }, hoverUid: uid });
+    // Pan so the centroid lands at the viewport center (project: sx = tx + x·scale, sy = ty − y·scale).
+    if (centroid) {
+      const w = typeof window !== "undefined" ? window.innerWidth : 1200;
+      const h = typeof window !== "undefined" ? window.innerHeight : 800;
+      set({ view: { ...view, tx: w / 2 - centroid[0] * view.scale, ty: h / 2 + centroid[1] * view.scale } });
+    }
+  },
   dismissConflict: () => set({ conflict: null }),
   toast: (message, kind = "info") =>
     set((s) => ({ toasts: [...s.toasts, { id: toastSeq++, message, kind }] })),

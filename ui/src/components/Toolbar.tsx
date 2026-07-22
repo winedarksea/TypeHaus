@@ -1,17 +1,49 @@
-import { type Tool, useStore } from "../state/store";
+import { type Tool, type ToolGroup, useStore } from "../state/store";
 
-const TOOLS: { id: Tool; label: string; title: string }[] = [
-  { id: "select", label: "⌖", title: "Select (tap)" },
-  { id: "wall", label: "▟", title: "Draw wall (tap → tap; Shift = ortho)" },
-  { id: "opening", label: "❒", title: "Place a window or door on a wall" },
-  { id: "placeable", label: "▦", title: "Place furniture, fixtures, and devices" },
-  { id: "room", label: "▣", title: "Claim a room" },
-  { id: "dimension", label: "↔", title: "Drive a wall's length" },
+// Task rail (Phase 2): high-level groups. A group with a single tool activates it directly;
+// a multi-tool group opens a small flyout palette. Tools map onto the existing Tool union so
+// every entry is functional against the current engine + Canvas2D handlers.
+interface GroupSpec {
+  id: ToolGroup;
+  glyph: string;
+  label: string;
+  tools: { id: Tool; glyph: string; label: string; hint: string }[];
+}
+
+const GROUPS: GroupSpec[] = [
+  { id: "select", glyph: "⌖", label: "Select", tools: [
+    { id: "select", glyph: "⌖", label: "Select", hint: "Select and move elements" },
+  ] },
+  { id: "build", glyph: "▟", label: "Build", tools: [
+    { id: "wall", glyph: "▟", label: "Wall", hint: "Draw wall (tap → tap; Shift = ortho)" },
+    { id: "room", glyph: "▣", label: "Room", hint: "Claim a room" },
+  ] },
+  { id: "openings", glyph: "❒", label: "Openings", tools: [
+    { id: "opening", glyph: "❒", label: "Window / Door", hint: "Place a window or door on a wall" },
+  ] },
+  { id: "components", glyph: "▦", label: "Components", tools: [
+    { id: "placeable", glyph: "▦", label: "Place", hint: "Place furniture, fixtures, and devices" },
+  ] },
+  { id: "measure", glyph: "↔", label: "Measure", tools: [
+    { id: "dimension", glyph: "↔", label: "Dimension", hint: "Drive a wall's length" },
+  ] },
 ];
+
+// Which group owns the currently-active tool (drives the active highlight on the rail).
+const GROUP_OF_TOOL: Record<Tool, ToolGroup> = {
+  select: "select",
+  wall: "build",
+  room: "build",
+  opening: "openings",
+  placeable: "components",
+  dimension: "measure",
+};
 
 export function Toolbar() {
   const tool = useStore((s) => s.tool);
   const setTool = useStore((s) => s.setTool);
+  const toolGroup = useStore((s) => s.toolGroup);
+  const setToolGroup = useStore((s) => s.setToolGroup);
   const showFraming = useStore((s) => s.showFraming);
   const setShowFraming = useStore((s) => s.setShowFraming);
   const offline = useStore((s) => s.offline);
@@ -20,22 +52,50 @@ export function Toolbar() {
   const duplicateSelection = useStore((s) => s.duplicateSelection);
   const canDuplicate = selection.kind === "opening" || selection.kind === "canvas_object";
 
+  const activeGroup = GROUP_OF_TOOL[tool];
+
+  const onGroup = (g: GroupSpec) => {
+    if (g.tools.length === 1) {
+      setTool(g.tools[0].id); // single tool → activate immediately (setTool closes the flyout)
+    } else {
+      setToolGroup(toolGroup === g.id ? null : g.id); // toggle the flyout palette
+    }
+  };
+
   return (
     <div className="toolrail">
-      {TOOLS.map((t) => {
-        // Authoring is gated offline (→ 40): the in-browser engine can't run libcst
-        // writeback, so drawing/placing tools stay visible but disabled with a hint.
-        const disabled = offline && t.id !== "select";
+      {GROUPS.map((g) => {
+        // Authoring is gated offline (→ 40); only Select survives.
+        const disabled = offline && g.id !== "select";
         return (
-          <button
-            key={t.id}
-            className={`tool-btn${tool === t.id ? " active" : ""}`}
-            title={disabled ? "Editing needs `haus serve` — unavailable offline" : t.title}
-            disabled={disabled}
-            onClick={() => setTool(t.id)}
-          >
-            {t.label}
-          </button>
+          <div key={g.id} className="tool-group">
+            <button
+              className={`tool-btn${activeGroup === g.id ? " active" : ""}`}
+              title={disabled ? "Editing needs `haus serve` — unavailable offline" : g.label}
+              disabled={disabled}
+              aria-haspopup={g.tools.length > 1 || undefined}
+              aria-expanded={toolGroup === g.id || undefined}
+              onClick={() => onGroup(g)}
+            >
+              {g.glyph}
+            </button>
+            {toolGroup === g.id && g.tools.length > 1 && (
+              <div className="tool-flyout" role="menu">
+                {g.tools.map((t) => (
+                  <button
+                    key={t.id}
+                    role="menuitem"
+                    className={`flyout-item${tool === t.id ? " active" : ""}`}
+                    title={t.hint}
+                    onClick={() => setTool(t.id)}
+                  >
+                    <span className="flyout-glyph">{t.glyph}</span>
+                    <span>{t.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         );
       })}
       <div style={{ flex: 1 }} />

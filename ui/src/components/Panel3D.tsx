@@ -30,22 +30,14 @@ export const EARTH_PLANE_OPACITY = 0.28;
 export const EARTH_PLANE_THICKNESS_M = 0.01;
 export const EARTH_FALLBACK_HALF_SIZE_M = 50;
 
-const TRADE_LABEL: Record<Trade, string> = {
-  walls: "Walls", openings: "Openings", framing: "Framing", floors: "Floors", concrete: "Concrete",
-  roof: "Roof", stairs: "Stairs", furniture: "Furniture", plumbing: "Plumbing", electrical: "Electrical",
-  mechanical: "Mechanical", earth: "Earth",
-};
-
 type PanDirection = "left" | "right" | "up" | "down";
 
 export function Panel3D() {
   const model = useStore((s) => s.model);
   const threeMode = useStore((s) => s.threeMode);
-  const setThreeMode = useStore((s) => s.setThreeMode);
   const select = useStore((s) => s.select);
   const selection = useStore((s) => s.selection);
   const visibleTrades = useStore((s) => s.visibleTrades);
-  const setTradeVisible = useStore((s) => s.setTradeVisible);
   const { theme } = useTheme();
   const mountRef = useRef<HTMLDivElement>(null);
   const api = useRef<SceneApi | null>(null);
@@ -98,29 +90,8 @@ export function Panel3D() {
         <button className="seg-btn" aria-label="Pan view down" title="Pan down" onClick={() => api.current?.pan("down")}>↓</button>
         <span />
       </div>
-      <div className="hud" style={{ bottom: "auto", top: 12, right: 12, left: "auto", display: "flex", gap: 6 }}>
-        {(["nordic", "schematic"] as const).map((m) => (
-          <button
-            key={m}
-            className={`seg-btn${threeMode === m ? " active" : ""}`}
-            onClick={() => setThreeMode(m)}
-          >
-            {m}
-          </button>
-        ))}
-      </div>
-      <div className="hud" style={{ bottom: 12, top: "auto", right: 12, left: "auto", display: "flex", gap: 4, flexWrap: "wrap", maxWidth: 260 }}>
-        {ALL_TRADES.map((trade) => (
-          <button
-            key={trade}
-            className={`seg-btn${visibleTrades[trade] ? " active" : ""}`}
-            onClick={() => setTradeVisible(trade, !visibleTrades[trade])}
-            title={`Toggle ${TRADE_LABEL[trade]}`}
-          >
-            {TRADE_LABEL[trade]}
-          </button>
-        ))}
-      </div>
+      {/* Nordic/schematic switch + discipline toggles now live in the shared Views panel
+          (Phase 6), reachable from the view-chip bar. */}
     </div>
   );
 }

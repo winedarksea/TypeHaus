@@ -1,49 +1,89 @@
-import { useState } from "react";
-import { findingsFor, useStore, visibleFindings } from "../state/store";
-import type { Finding, Model, Opening, Stair, Wall } from "../model/types";
+import { useEffect, useRef, useState } from "react";
+import { findingsFor, useStore } from "../state/store";
+import type { Model, Opening, Stair, Wall } from "../model/types";
 import { formatFtIn, openingHostWall, openingStartFromCenter, wallLength } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
-import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
-import { SpaceDashboard } from "./SpaceDashboard";
-import { RoofDesigner } from "./RoofDesigner";
-import { StairDesigner } from "./StairDesigner";
-import { AssemblyEditor } from "./AssemblyEditor";
 import { DetailViewer } from "./DetailViewer";
 
-// The right-hand inspector: selection details + provenance + inline findings, the
-// assembly section card for a selected wall (→ 21 §Assembly inspector), the assembly
-// picker + editor (WP2.4d/e authoring), and the global findings list.
-export function Sidebar() {
+// Strict contextual inspector (Phase 3): answers only "what can I change about the selected
+// thing?" — hidden when nothing is selected. Extracted from the retired Sidebar; the
+// dashboards + pickers now live in the ProjectDrawer. Resizable 320–400px.
+const INSPECTOR_WIDTH_KEY = "typehaus.inspector-width";
+const MIN_W = 320;
+const MAX_W = 400;
+
+function savedWidth(): number {
+  try {
+    const v = Number(window.localStorage.getItem(INSPECTOR_WIDTH_KEY));
+    return Number.isFinite(v) && v >= MIN_W && v <= MAX_W ? v : MIN_W;
+  } catch {
+    return MIN_W;
+  }
+}
+
+export function Inspector() {
   const model = useStore((s) => s.model);
   const selection = useStore((s) => s.selection);
-  const [editingAssemblies, setEditingAssemblies] = useState(false);
+  const setHover = useStore((s) => s.setHover);
   const [showDetails, setShowDetails] = useState(false);
+  const [width, setWidth] = useState(savedWidth);
+  const [dragging, setDragging] = useState(false);
+  const widthRef = useRef(width);
+  widthRef.current = width;
+
+  useEffect(() => {
+    if (!dragging) return;
+    const onMove = (e: PointerEvent) => {
+      // The panel is anchored to the right; dragging its left edge leftward widens it.
+      const next = Math.min(MAX_W, Math.max(MIN_W, window.innerWidth - e.clientX - 12));
+      setWidth(next);
+    };
+    const onUp = () => {
+      setDragging(false);
+      try {
+        window.localStorage.setItem(INSPECTOR_WIDTH_KEY, String(widthRef.current));
+      } catch {
+        /* private browsing */
+      }
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+  }, [dragging]);
+
+  // Strict: no selection → no panel.
+  if (!model || !selection.uid) return null;
 
   return (
-    <div className="sidebar">
-      {model && selection.uid ? (
-        <SelectionInspector model={model} kind={selection.kind} uid={selection.uid} onShowDetails={() => setShowDetails(true)} />
-      ) : (
-        <div className="muted">Tap an element to inspect it.</div>
-      )}
-      {model && (
-        <div style={{ marginTop: 12 }}>
-          <button className="btn" onClick={() => setShowDetails(true)}>Transition details…</button>
-        </div>
-      )}
-      {model && <AssemblyPicker model={model} onEdit={() => setEditingAssemblies(true)} />}
-      {model && <BuildingScienceDashboard science={model.building_science} />}
-      {model && <SpaceDashboard summary={model.space_summary} />}
-      {model && <StairDesigner model={model} />}
-      {model && <RoofDesigner model={model} />}
-      {model && <FindingsPanel findings={model.findings} />}
-      {editingAssemblies && <AssemblyEditor onClose={() => setEditingAssemblies(false)} />}
+    <aside
+      className="inspector"
+      style={{ width }}
+      onMouseEnter={() => setHover(selection.uid)}
+      onMouseLeave={() => setHover(null)}
+    >
+      <div
+        className="inspector-resizer"
+        onPointerDown={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
+        title="Drag to resize"
+      />
+      <SelectionInspector
+        model={model}
+        kind={selection.kind}
+        uid={selection.uid}
+        onShowDetails={() => setShowDetails(true)}
+      />
       {showDetails && <DetailViewer onClose={() => setShowDetails(false)} />}
-    </div>
+    </aside>
   );
 }
 
-function Provenance({ p }: { p: { file: string; line: number } | null }) {
+export function Provenance({ p }: { p: { file: string; line: number } | null }) {
   if (!p) return <span className="badge">edit in code</span>;
   return (
     <span className="prov">
@@ -52,7 +92,7 @@ function Provenance({ p }: { p: { file: string; line: number } | null }) {
   );
 }
 
-function InlineFindings({ model, uid }: { model: Model; uid: string }) {
+export function InlineFindings({ model, uid }: { model: Model; uid: string }) {
   const fs = findingsFor(model, uid);
   if (fs.length === 0) return null;
   return (
@@ -285,6 +325,7 @@ function OpeningInspector({ model, opening }: { model: Model; opening: Opening }
 
 function StairInspector({ model, stair }: { model: Model; stair: Stair }) {
   const rise = storeyRise(model, stair);
+  const setWorkbench = useStore((s) => s.setWorkbench);
   return <div>
     <h3>Stair · {stair.tag}</h3>
     <div className="kv">
@@ -293,6 +334,9 @@ function StairInspector({ model, stair }: { model: Model; stair: Stair }) {
       <span className="k">Resolved</span><span>{stair.riser_count} risers · {formatFtIn(stair.tread_depth_m)} tread · {stair.layout.replaceAll("_", " ")}{stair.winder_count ? ` · ${stair.winder_count} winders` : ""}</span>
       <span className="k">Framing</span><span>{stair.members.length} members</span>
     </div>
+    <button className="btn" style={{ marginTop: 8 }} onClick={() => setWorkbench("stair")}>
+      Open stair workbench…
+    </button>
     <Provenance p={stair.provenance} />
     <InlineFindings model={model} uid={stair.uid} />
   </div>;
@@ -300,10 +344,12 @@ function StairInspector({ model, stair }: { model: Model; stair: Stair }) {
 
 function WallInspector({ model, w, onShowDetails }: { model: Model; w: Wall; onShowDetails: () => void }) {
   const select = useStore((s) => s.select);
+  const setHover = useStore((s) => s.setHover);
   // Does this wall participate in any derived boundary condition? (→ 11b transition details)
   const inCondition = (model.conditions ?? []).some((c) => c.elements.includes(w.tag));
   const applyOps = useStore((s) => s.applyOps);
   const toast = useStore((s) => s.toast);
+  const setWorkbench = useStore((s) => s.setWorkbench);
   const confirmed = w.assembly && w.assembly !== "UNCONFIGURED";
   const assemblies = model.catalog?.assemblies ?? [];
   const assignAssembly = async (tag: string) => {
@@ -337,6 +383,9 @@ function WallInspector({ model, w, onShowDetails }: { model: Model; w: Wall; onS
       <div style={{ height: 10 }} />
       <SectionCard layers={w.layers} title={w.assembly || "Assembly"}
         condensation={model.building_science?.condensation.find((item) => item.assembly === w.assembly)} />
+      <div style={{ marginTop: 6 }}>
+        <button className="btn" onClick={() => setWorkbench("assembly")}>Edit assembly…</button>
+      </div>
       {inCondition && (
         <div style={{ marginTop: 6 }}>
           <button className="btn" onClick={onShowDetails}>View junction detail…</button>
@@ -355,6 +404,8 @@ function WallInspector({ model, w, onShowDetails }: { model: Model; w: Wall; onS
                 key={o.uid}
                 className="badge"
                 onClick={() => select("opening", o.uid)}
+                onMouseEnter={() => setHover(o.uid)}
+                onMouseLeave={() => setHover(null)}
                 style={{ marginRight: 4, cursor: "pointer" }}
               >
                 {o.tag}
@@ -366,85 +417,7 @@ function WallInspector({ model, w, onShowDetails }: { model: Model; w: Wall; onS
   );
 }
 
-function AssemblyPicker({ model, onEdit }: { model: Model; onEdit: () => void }) {
-  const select = useStore((s) => s.select);
-  const selection = useStore((s) => s.selection);
-  // Group walls by assembly with a computed representative layer count. Live R-value would
-  // come from the section card feed; here we list assemblies present in the plan.
-  const byAssembly = new Map<string, Wall[]>();
-  for (const w of model.walls) {
-    const key = w.assembly || "UNCONFIGURED";
-    (byAssembly.get(key) ?? byAssembly.set(key, []).get(key)!).push(w);
-  }
-  return (
-    <div style={{ marginTop: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h3 style={{ margin: 0 }}>Assemblies</h3>
-        <button className="btn" onClick={onEdit}>Edit</button>
-      </div>
-      {[...byAssembly.entries()].map(([name, walls]) => (
-        <div
-          key={name}
-          className="finding info"
-          onClick={() => select("wall", walls[0].uid)}
-          style={{
-            outline:
-              selection.kind === "wall" &&
-              walls.some((w) => w.uid === selection.uid)
-                ? "2px solid var(--accent)"
-                : "none",
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span>{name}</span>
-            <span className="muted">×{walls.length}</span>
-          </div>
-          <span className="muted">{walls[0].layers.length} layers</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function FindingsPanel({ findings }: { findings: Finding[] }) {
-  const select = useStore((s) => s.select);
-  const model = useStore((s) => s.model);
-  const visible = visibleFindings(findings);
-  if (visible.length === 0)
-    return (
-      <div style={{ marginTop: 16 }}>
-        <h3>Checks</h3>
-        <span className="muted">All checks pass.</span>
-      </div>
-    );
-  const jump = (f: Finding) => {
-    const uid = f.element ?? f.elements?.[0] ?? null;
-    if (!uid || !model) return;
-    const kind = model.walls.some((w) => w.uid === uid)
-      ? "wall"
-      : model.openings.some((o) => o.uid === uid)
-        ? "opening"
-        : model.rooms.some((r) => r.uid === uid)
-          ? "room"
-          : (model.stairs ?? []).some((stair) => stair.uid === uid)
-            ? "stair"
-            : null;
-    if (kind) select(kind, uid);
-  };
-  return (
-    <div style={{ marginTop: 16 }}>
-      <h3>Checks · {visible.length}</h3>
-      {visible.map((f, i) => (
-        <div key={i} className={`finding ${f.severity}`} onClick={() => jump(f)}>
-          {f.code && <b>{f.code} </b>}
-          {f.message}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function storeyRise(model: Model, stair: Stair): number {
+export function storeyRise(model: Model, stair: Stair): number {
   const from = model.storeys.find((storey) => storey.tag === stair.storey);
   const to = model.storeys.find((storey) => storey.tag === stair.to_storey);
   return from && to ? to.elevation_m - from.elevation_m : 0;

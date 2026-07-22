@@ -13,7 +13,7 @@ const LAYER_FUNCTIONS = [
   "structure", "sheathing", "membrane", "insulation", "airgap", "furring", "cladding", "finish",
 ];
 
-export function AssemblyEditor({ onClose }: { onClose: () => void }) {
+export function AssemblyEditor({ onClose, embedded = false }: { onClose: () => void; embedded?: boolean }) {
   const catalog = useStore((s) => s.model?.catalog);
   const runMacro = useStore((s) => s.runMacro);
   const assemblies = catalog?.assemblies ?? [];
@@ -24,6 +24,10 @@ export function AssemblyEditor({ onClose }: { onClose: () => void }) {
   const [busy, setBusy] = useState(false);
   const [newTag, setNewTag] = useState("");
   const [showNewMaterial, setShowNewMaterial] = useState(false);
+  // Drag-reorder of the layer stack (workbench, → Phase 7). `dragIndex` is the row being
+  // dragged; `overIndex` is the row it would drop before, driving the insertion caret.
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
 
   const selected = useMemo(
     () => assemblies.find((a) => a.tag === selectedTag) ?? null,
@@ -86,20 +90,32 @@ export function AssemblyEditor({ onClose }: { onClose: () => void }) {
       [copy[i], copy[j]] = [copy[j], copy[i]];
       return copy;
     });
+  const reorderLayer = (from: number, to: number) =>
+    setDraft((d) => {
+      if (from === to || from < 0 || from >= d.length) return d;
+      const copy = [...d];
+      const [moved] = copy.splice(from, 1);
+      // `to` is expressed as a drop-before index against the original array; account for the
+      // removed element when it sat above the target.
+      copy.splice(to > from ? to - 1 : to, 0, moved);
+      return copy;
+    });
   const removeLayer = (i: number) => setDraft((d) => d.filter((_, idx) => idx !== i));
   const addLayer = () => setDraft((d) => [...d, {
     name: `layer-${d.length + 1}`, material: materials[0]?.tag ?? "", function: "structure",
     thickness_m: 0.0127,
   }]);
 
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal assembly-editor" onClick={(e) => e.stopPropagation()}>
+  // Embedded (workbench) mode drops the modal chrome — the workbench frame owns the surface.
+  const body = (
+    <>
+      {!embedded && (
         <div className="modal-header">
           <h3 style={{ margin: 0 }}>Assemblies</h3>
           <button className="btn" onClick={onClose}>✕</button>
         </div>
-        <div className="assembly-editor-body">
+      )}
+        <div className={`assembly-editor-body${embedded ? " embedded" : ""}`}>
           <div className="assembly-list">
             {assemblies.map((a) => (
               <div key={a.tag} className={`finding info${a.tag === selectedTag ? " selected" : ""}`}
@@ -127,7 +143,7 @@ export function AssemblyEditor({ onClose }: { onClose: () => void }) {
                 <div className="muted" style={{ marginBottom: 8 }}>
                   {selected.tag} is a shared library preset — duplicate it into the project to edit its layers.
                 </div>
-                <SectionCard layers={previewLayers} title={selected.tag} />
+                {!embedded && <SectionCard layers={previewLayers} title={selected.tag} />}
                 <button className="btn" style={{ marginTop: 8 }} disabled={busy}
                   onClick={() => void duplicate(selected)}>
                   Duplicate to edit
@@ -137,7 +153,23 @@ export function AssemblyEditor({ onClose }: { onClose: () => void }) {
               <div>
                 <div className="layer-editor">
                   {draft.map((ly, i) => (
-                    <div key={i} className="layer-edit-row">
+                    <div
+                      key={i}
+                      className={`layer-edit-row${dragIndex === i ? " dragging" : ""}${overIndex === i ? " drop-before" : ""}`}
+                      onDragOver={(e) => { if (dragIndex !== null) { e.preventDefault(); setOverIndex(i); } }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        if (dragIndex !== null) reorderLayer(dragIndex, i);
+                        setDragIndex(null); setOverIndex(null);
+                      }}
+                    >
+                      <span
+                        className="drag-handle"
+                        draggable
+                        title="Drag to reorder"
+                        onDragStart={() => setDragIndex(i)}
+                        onDragEnd={() => { setDragIndex(null); setOverIndex(null); }}
+                      >⠿</span>
                       <input value={ly.name} onChange={(e) => updateLayer(i, { name: e.target.value })}
                         style={{ width: 84 }} />
                       <select value={ly.material} onChange={(e) => updateLayer(i, { material: e.target.value })}>
@@ -151,11 +183,23 @@ export function AssemblyEditor({ onClose }: { onClose: () => void }) {
                           const m = parseFtIn(e.target.value);
                           if (m !== null) updateLayer(i, { thickness_m: m });
                         }} />
-                      <button className="btn" onClick={() => moveLayer(i, -1)} disabled={i === 0}>↑</button>
-                      <button className="btn" onClick={() => moveLayer(i, 1)} disabled={i === draft.length - 1}>↓</button>
-                      <button className="btn" onClick={() => removeLayer(i)}>✕</button>
+                      <button className="btn" onClick={() => moveLayer(i, -1)} disabled={i === 0} title="Move up">↑</button>
+                      <button className="btn" onClick={() => moveLayer(i, 1)} disabled={i === draft.length - 1} title="Move down">↓</button>
+                      <button className="btn" onClick={() => removeLayer(i)} title="Remove layer">✕</button>
                     </div>
                   ))}
+                  {/* trailing drop zone so a layer can be dragged to the very bottom */}
+                  {dragIndex !== null && (
+                    <div
+                      className={`layer-drop-tail${overIndex === draft.length ? " drop-before" : ""}`}
+                      onDragOver={(e) => { e.preventDefault(); setOverIndex(draft.length); }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        reorderLayer(dragIndex, draft.length);
+                        setDragIndex(null); setOverIndex(null);
+                      }}
+                    />
+                  )}
                 </div>
                 <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
                   <button className="btn" onClick={addLayer}>+ Layer</button>
@@ -168,13 +212,33 @@ export function AssemblyEditor({ onClose }: { onClose: () => void }) {
                   </button>
                 </div>
                 {showNewMaterial && <NewMaterialForm onDone={() => setShowNewMaterial(false)} />}
-                <div style={{ marginTop: 10 }}>
-                  <SectionCard layers={previewLayers} title={`${selected.tag} (preview)`} />
-                </div>
+                {!embedded && (
+                  <div style={{ marginTop: 10 }}>
+                    <SectionCard layers={previewLayers} title={`${selected.tag} (preview)`} />
+                  </div>
+                )}
               </div>
             )}
           </div>
+          {/* Third column (workbench only): a live section that updates as layers are edited or
+              dragged, so the stack's spatial order reads at a glance (exterior → interior). */}
+          {embedded && selected && (
+            <div className="assembly-preview">
+              <SectionCard layers={previewLayers} title={`${selected.tag} · section`} />
+              <div className="muted" style={{ marginTop: 8, fontSize: 12 }}>
+                Drag the ⠿ handles to reorder layers from exterior to interior.
+              </div>
+            </div>
+          )}
         </div>
+    </>
+  );
+
+  if (embedded) return <div className="assembly-editor">{body}</div>;
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal assembly-editor" onClick={(e) => e.stopPropagation()}>
+        {body}
       </div>
     </div>
   );

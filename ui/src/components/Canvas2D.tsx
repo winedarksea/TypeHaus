@@ -88,6 +88,7 @@ export function Canvas2D() {
   const hoverUid = useStore((s) => s.hoverUid);
   const showFraming = useStore((s) => s.showFraming);
   const activeStorey = useStore((s) => s.activeStorey);
+  const workspace = useStore((s) => s.activeWorkspace);
   const tool = useStore((s) => s.tool);
   const applyOps = useStore((s) => s.applyOps);
   const runMacro = useStore((s) => s.runMacro);
@@ -106,6 +107,11 @@ export function Canvas2D() {
   const suppressPostPanClick = useRef(false);
   const fittedStorey = useRef<string | null>(null);
   const shift = useRef(false);
+  // Latest draft + rubber-band, mirrored into refs so the global keydown handler can open the
+  // exact-length keypad without re-subscribing on every pointer move.
+  const draftRef = useRef<WallDraft | null>(null);
+  const rubberRef = useRef<{ end: Vec2; len: number } | null>(null);
+  const lengthEntryOpen = useRef(false);
   const [pending, setPending] = useState<Pending | null>(null);
   const [draft, setDraft] = useState<WallDraft | null>(null);
   const [cursor, setCursor] = useState<Vec2 | null>(null); // world-space hover/rubber-band
@@ -121,7 +127,14 @@ export function Canvas2D() {
   const [doorPopup, setDoorPopup] = useState<DoorPopup | null>(null);
   const [windowPopup, setWindowPopup] = useState<DoorPopup | null>(null);
   const [dimWall, setDimWall] = useState<Wall | null>(null);
-  const [drawAssembly, setDrawAssembly] = useState<string>("");
+  // Exact-length entry for the wall being drawn (CAD precision): type a length and the next
+  // segment lands at that distance along the current rubber-band direction. `dir` is a unit
+  // vector captured when the keypad opens; committing draws start → start + dir·length.
+  const [lengthEntry, setLengthEntry] = useState<{ start: Vec2; dir: Vec2; initial: string } | null>(null);
+  // Desktop-first right-click context menu (Phase 10), anchored in pane coordinates.
+  const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(null);
+  const drawAssembly = useStore((s) => s.drawAssembly) ?? "";
+  const setDrawAssembly = useStore((s) => s.setDrawAssembly);
   const [activeService, setActiveService] = useState<string>("");
   const [showClearances, setShowClearances] = useState(false);
   const [calibrationPoints, setCalibrationPoints] = useState<Vec2[]>([]);
@@ -508,8 +521,10 @@ export function Canvas2D() {
       const wallUid = Object.values(res.minted).find((uid) =>
         useStore.getState().model?.walls.some((w) => w.uid === uid && w.assembly === wallAssembly));
       if (wallUid) select("wall", wallUid);
-      // Chain: keep drawing from this endpoint (Esc / tool switch ends the run).
-      setDraft({ start: end, startNode: null });
+      // Chain: keep drawing from this endpoint when armed (ContextBar toggle); otherwise
+      // end the run after one segment. Esc / tool switch always ends it.
+      if (useStore.getState().chainDraw) setDraft({ start: end, startNode: null });
+      else setDraft(null);
     } else {
       setDraft(null);
     }
@@ -566,8 +581,17 @@ export function Canvas2D() {
       if (target && (target.tagName === "INPUT" || target.tagName === "SELECT" || target.tagName === "TEXTAREA")) return;
       if (e.key === "Escape") {
         setDraft(null); setPlacement(null); setWallAssemblyPopup(null); setDimWall(null); setNodeDrag(null); setPending(null); setDoorPopup(null); setWindowPopup(null);
-        setPreviewGeom(null);
+        setPreviewGeom(null); setLengthEntry(null);
         if (calibrationMode) { setCalibrationMode(false); setCalibrationPoints([]); }
+      } else if ((e.key === "Enter" || /^[0-9]$/.test(e.key)) && draftRef.current && !lengthEntryOpen.current) {
+        // Precise segment: type a length to place the next corner at an exact distance along the
+        // current rubber-band direction (falls back to +x when the pointer sits on the start).
+        const d = draftRef.current;
+        const r = rubberRef.current;
+        let dir: Vec2 = [1, 0];
+        if (r && r.len > 1e-4) dir = [(r.end[0] - d.start[0]) / r.len, (r.end[1] - d.start[1]) / r.len];
+        e.preventDefault();
+        setLengthEntry({ start: d.start, dir, initial: /^[0-9]$/.test(e.key) ? e.key : formatFtIn(r?.len ?? 0) });
       } else if ((e.key === "Delete" || e.key === "Backspace") && selection.uid && !offline) {
         e.preventDefault();
         void deleteSelection();
@@ -583,6 +607,11 @@ export function Canvas2D() {
 
   // End a wall run when leaving the wall tool.
   useEffect(() => { if (tool !== "wall") { setDraft(null); setCursor(null); } }, [tool]);
+
+  // Mirror the in-flight draw gesture into the store so the ContextBar / interaction-state
+  // label and App's Esc hierarchy (Phase 2) can see it.
+  const setSubOperation = useStore((s) => s.setSubOperation);
+  useEffect(() => { setSubOperation(draft != null); }, [draft, setSubOperation]);
 
   const saveCalibration = async () => {
     if (!activeUnderlay || calibrationPoints.length !== 2) return;
@@ -627,6 +656,9 @@ export function Canvas2D() {
     const end = shift.current ? orthoLock(draft.start, snap.point) : snap.point;
     return { end, len: Math.hypot(end[0] - draft.start[0], end[1] - draft.start[1]) };
   }, [tool, draft, cursor, snapNodes, tolM, gridM]);
+  draftRef.current = draft;
+  rubberRef.current = rubber;
+  lengthEntryOpen.current = lengthEntry != null;
 
   const cursorClass = tool === "select" ? "" : "canvas-draw";
 
@@ -642,6 +674,12 @@ export function Canvas2D() {
         onPointerCancel={onPointerUp}
         onClickCapture={onClickCapture}
         onDoubleClick={onDoubleClick}
+        onContextMenu={(e) => {
+          const rect = svgRef.current?.getBoundingClientRect();
+          if (!rect) return;
+          e.preventDefault();
+          setCtxMenu({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+        }}
       >
         <defs>
           <marker id="stair-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
@@ -855,6 +893,22 @@ export function Canvas2D() {
           return <circle cx={x} cy={y} r={snap.nodeId ? 7 : 4} fill="none"
             stroke={snap.nodeId ? "var(--error)" : NORDIC_ACCENT} strokeWidth={1.5} pointerEvents="none" />;
         })()}
+        {/* detail markers (Phase 8): D-tags at junctions, shown in the DOCUMENT workspace */}
+        {workspace === "document" && (model.conditions ?? []).map((c, i) => {
+          const wall = model.walls.find((w) => c.elements.includes(w.tag) && w.storey === activeStorey);
+          if (!wall) return null;
+          const mid: Vec2 = [(wall.axis[0][0] + wall.axis[1][0]) / 2, (wall.axis[0][1] + wall.axis[1][1]) / 2];
+          const [x, y] = project(mid);
+          return (
+            <g key={`detail-${c.key}`} pointerEvents="auto" style={{ cursor: "pointer" }}
+              onClick={() => select("wall", wall.uid)}>
+              <circle cx={x} cy={y} r={9} fill="var(--canvas-white)" stroke={NORDIC_ACCENT} strokeWidth={1.5} />
+              <text x={x} y={y + 3} fill={NORDIC_ACCENT} fontSize={9} textAnchor="middle" fontWeight={700}>
+                D{i + 1}
+              </text>
+            </g>
+          );
+        })}
         {/* dimension line for selected wall */}
         {selection.kind === "wall" && (() => {
           const w = wallsOnStorey.find((x) => x.uid === selection.uid);
@@ -935,6 +989,18 @@ export function Canvas2D() {
           onCancel={() => setDimWall(null)}
         />
       )}
+      {lengthEntry && (
+        <FtInKeypad
+          label="Segment length · exact distance along the current direction"
+          initial={lengthEntry.initial}
+          onCommit={(m) => {
+            const { start, dir } = lengthEntry;
+            setLengthEntry(null);
+            void commitWall(start, [start[0] + dir[0] * m, start[1] + dir[1] * m]);
+          }}
+          onCancel={() => setLengthEntry(null)}
+        />
+      )}
       {placement && (
         <PlacementPopover
           placement={placement}
@@ -974,7 +1040,7 @@ export function Canvas2D() {
         onSave={() => void saveCalibration()} />}
       </div>
       {tool !== "select" && (
-        <div className="hud" style={{ left: "auto", right: 12, bottom: "auto", top: 12, maxWidth: 260 }}>
+        <div className="hud" style={{ left: 12, right: "auto", bottom: "auto", top: "calc(44px + 84px)", maxWidth: 260 }}>
           <ToolHint tool={tool} draft={Boolean(draft)}
             assembly={tool === "wall" ? wallAssembly : null}
             assemblies={model.catalog?.assemblies.map((a) => a.tag) ?? []}
@@ -984,6 +1050,26 @@ export function Canvas2D() {
               if (w) void splitWall(w);
             } : null} />
         </div>
+      )}
+      {ctxMenu && (
+        <>
+          <div className="ctx-overlay" onPointerDown={() => setCtxMenu(null)} onContextMenu={(e) => { e.preventDefault(); setCtxMenu(null); }} />
+          <div className="ctx-menu" style={{ left: ctxMenu.x, top: ctxMenu.y }} role="menu">
+            {selection.uid ? (
+              <>
+                <button role="menuitem" onClick={() => { select(null, null); setCtxMenu(null); }}>Deselect</button>
+                {!offline && (selection.kind === "opening" || selection.kind === "canvas_object") && (
+                  <button role="menuitem" onClick={() => { void duplicateSelection(); setCtxMenu(null); }}>Duplicate</button>
+                )}
+                {!offline && (
+                  <button role="menuitem" className="ctx-danger" onClick={() => { void deleteSelection(); setCtxMenu(null); }}>Delete</button>
+                )}
+              </>
+            ) : (
+              <button role="menuitem" disabled>Nothing selected</button>
+            )}
+          </div>
+        </>
       )}
     </>
   );
@@ -998,7 +1084,7 @@ function ToolHint({ tool, draft, assembly, assemblies, onAssembly, onSplit }: {
   onSplit: (() => void) | null;
 }) {
   const hints: Record<string, string> = {
-    wall: draft ? "Tap the next corner · Shift = ortho · Esc ends the run" : "Tap to start a wall (snaps to nodes / grid)",
+    wall: draft ? "Tap the next corner · Shift = ortho · type a length for exact · Esc ends" : "Tap to start a wall (snaps to nodes / grid)",
     opening: "Tap a wall to place a window or door",
     room: "Tap inside an enclosed area to claim a room",
     dimension: "Tap a wall to drive its length",
@@ -1032,13 +1118,13 @@ function NodeHandle({ world, project, onStart, onMove, onEnd }: {
   const dragging = useRef(false);
   const raf = useRef<number | null>(null);
   const [x, y] = project(world);
+  // A generous transparent halo (r=13 → 26px) carries the pointer gesture so the endpoint is
+  // easy to grab on touch and at a glance, while the visible dot stays small and uncluttered.
   return (
-    <circle
-      cx={x} cy={y} r={7} fill="var(--canvas-white)" stroke={NORDIC_ACCENT} strokeWidth={2.5}
-      style={{ cursor: "grab" }}
+    <g style={{ cursor: "grab" }}
       onPointerDown={(e) => {
         e.stopPropagation();
-        (e.target as Element).setPointerCapture(e.pointerId);
+        (e.currentTarget as Element).setPointerCapture(e.pointerId);
         dragging.current = true;
         onStart();
       }}
@@ -1057,7 +1143,11 @@ function NodeHandle({ world, project, onStart, onMove, onEnd }: {
         if (raf.current != null) { cancelAnimationFrame(raf.current); raf.current = null; }
         onEnd();
       }}
-    />
+    >
+      <circle cx={x} cy={y} r={13} fill="transparent" />
+      <circle cx={x} cy={y} r={7} fill="var(--canvas-white)" stroke={NORDIC_ACCENT} strokeWidth={2.5}
+        pointerEvents="none" />
+    </g>
   );
 }
 
