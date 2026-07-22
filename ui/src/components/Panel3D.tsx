@@ -6,7 +6,7 @@ import { ALL_TRADES, useStore, type Trade } from "../state/store";
 import type { CanvasObject, CanvasObjectType, Catalog, Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
-import { createStandingSeamMaterial, isStandingSeam } from "../three/materials";
+import { applyStandingSeamWallUv, createStandingSeamMaterial, isStandingSeam } from "../three/materials";
 import { aboveStructureLayers, boundaryEdges, roofOffsetter, roofPlaneTriangles } from "../three/roofGeometry";
 import {
   createPlanPrismGeometry,
@@ -551,7 +551,7 @@ function buildWall(
       ? createStandingSeamMaterial(mode, [
         Math.hypot(w.axis[1][0] - w.axis[0][0], w.axis[1][1] - w.axis[0][1]),
         Math.max(0.1, w.z1_m - w.z0_m),
-      ])
+      ], 0xE8E8E2, true)
       : new THREE.MeshStandardMaterial({
         color: new THREE.Color(materialColor(ly.material, palette)),
         roughness: mode === "nordic" ? 0.85 : 1,
@@ -568,6 +568,7 @@ function buildWall(
         geo = createPlanPrismGeometry(piece.polygon, piece.z0_m, piece.z1_m, [], center);
       }
       if (!geo) continue;
+      if (seam) applyStandingSeamWallUv(geo, w.axis, center);
       const mesh = new THREE.Mesh(geo, mat);
       mesh.castShadow = true;
       mesh.receiveShadow = true;

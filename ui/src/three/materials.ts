@@ -17,6 +17,7 @@ export const SEAM_PAN_WIDTH_M = 0.4064; // 16"
 const NORMAL_MAP_PX = 256;
 /** How many pan modules the shared normal map covers, so `repeat` stays in whole pans. */
 const PANS_PER_TILE = 4;
+const SEAM_TILE_SIZE_M = SEAM_PAN_WIDTH_M * PANS_PER_TILE;
 
 let sharedNormalMap: THREE.Texture | null = null;
 
@@ -81,6 +82,7 @@ export function createStandingSeamMaterial(
   mode: "nordic" | "schematic",
   worldSizeM: readonly [number, number],
   color = 0xE8E8E2,
+  worldScaledUv = false,
 ): THREE.Material {
   if (mode === "schematic") {
     return new THREE.MeshStandardMaterial({ color, roughness: 1, metalness: 0, flatShading: true });
@@ -92,13 +94,47 @@ export function createStandingSeamMaterial(
   });
   const map = standingSeamNormalMap().clone();
   map.needsUpdate = true;
+  // Wall extrusion UVs are based on the polygon's local shape and therefore rotate or
+  // collapse as wall runs change direction. Wall cladding opts into explicit world-scaled
+  // UVs below; roof surfaces retain the legacy surface-size repeat until they have their
+  // own slope-aware coordinate frame.
   map.repeat.set(
-    Math.max(1, Math.round(worldSizeM[0] / (SEAM_PAN_WIDTH_M * PANS_PER_TILE))),
-    Math.max(1, Math.round(worldSizeM[1] / (SEAM_PAN_WIDTH_M * PANS_PER_TILE))),
+    worldScaledUv ? 1 : Math.max(1, Math.round(worldSizeM[0] / SEAM_TILE_SIZE_M)),
+    worldScaledUv ? 1 : Math.max(1, Math.round(worldSizeM[1] / SEAM_TILE_SIZE_M)),
   );
   material.normalMap = map;
   material.normalScale = new THREE.Vector2(0.6, 0.6);
   return material;
+}
+
+/**
+ * Give a wall's standing-seam map a stable architectural coordinate frame. The map's
+ * x-axis is across the 16-inch pans, so its seam ridges stay constant along the wall's
+ * horizontal run and continue vertically from the wall base to its top.
+ */
+export function applyStandingSeamWallUv(
+  geometry: THREE.BufferGeometry,
+  wallAxis: readonly [readonly [number, number], readonly [number, number]],
+  center: readonly [number, number],
+): void {
+  const [[x0, y0], [x1, y1]] = wallAxis;
+  const dx = x1 - x0;
+  const dy = y1 - y0;
+  const length = Math.hypot(dx, dy);
+  if (length < 1e-9) return;
+  const directionX = dx / length;
+  const directionY = dy / length;
+  const positions = geometry.getAttribute("position");
+  const uv = new Float32Array(positions.count * 2);
+  for (let index = 0; index < positions.count; index++) {
+    const sceneX = positions.getX(index) + center[0];
+    const elevation = positions.getY(index);
+    const sceneZ = positions.getZ(index) + center[1];
+    const along = (sceneX - x0) * directionX + (sceneZ - y0) * directionY;
+    uv[index * 2] = along / SEAM_TILE_SIZE_M;
+    uv[index * 2 + 1] = elevation / SEAM_TILE_SIZE_M;
+  }
+  geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
 }
 
 /** Drop the process-wide normal map — only for teardown in tests/hot reload. */
