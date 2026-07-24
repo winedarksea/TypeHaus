@@ -192,6 +192,7 @@ class TrimKind(Enum):
     """Envelope edge trim/roofing accessory kinds along a deck or roof edge."""
 
     FASCIA = "fascia"                    # PVC/wood fascia board
+    SOFFIT = "soffit"                    # panel closing the underside of an overhang
     GUTTER = "gutter"                    # hung gutter channel
     DRIP_FLASHING = "drip_flashing"      # front-edge drip flashing into the gutter
     WRB_COUNTERFLASHING = "wrb_counterflashing"  # rear flashing tucked into the house WRB

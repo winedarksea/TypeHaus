@@ -7,8 +7,10 @@ Two declarative framing modes, chosen per roof assembly's STRUCTURE ``FramingSpe
   ``connection`` annotation string): the box member IR cannot subtract the notch, so the
   seat is a distinct clipped member that reads in the 3D model, section, and BOM.
 * **truss** — a fabricated top-chord + bottom-chord + web assembly with a *raised heel* at
-  the eave bearing, so full insulation depth carries over the top plate. The roof surface is
-  lifted by the heel so the top chords lie on the deck plane and the heel block is real.
+  the eave bearing, so full insulation depth carries over the top plate. The heel lift of the
+  roof surface is applied during the envelope stage (``roof_geometry.apply_truss_heel_lift``),
+  so the plane this module frames to is already final. The two end trusses are gable-end
+  trusses carrying the rake overhang (``roof_gable``).
 
 Also resolves an authored ridge :class:`Beam` (WP4) for *rafter* roofs: trims the rafter
 ridge ends back by half the beam's width so they land on top of it, and records the ridge
@@ -27,16 +29,20 @@ from typehaus.model.spatial import Roof
 from typehaus.model.structure import Beam
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.roof_gable import (
+    build_truss_layout,
+    gable_end_members,
+    is_gable_end_position,
+)
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.model import BoundaryCondition, FramedMember, ResolvedModel, ResolvedRoof
+from typehaus.resolve.roof_geometry import roof_structure_framing
 
 _RAFTER_CONNECTION = "ridge:adjustable-slope-hanger;eave:birdsmouth-1.17in"
 # Reference birdsmouth seat cut (roof_wall_eave_detail_ifc.py): a 1.17" notch depth, seated
 # over the width of the top plate the rafter bears on.
 _BIRDSMOUTH_DEPTH_M = inch(1.17).meters
 _SEAT_LEN_M = inch(3.5).meters
-# A standard raised ("energy") heel when a truss assembly does not declare its own.
-_DEFAULT_TRUSS_HEEL_M = inch(9.25).meters
 
 
 def frame_roofs(model: ResolvedModel) -> list[Finding]:
@@ -44,10 +50,9 @@ def frame_roofs(model: ResolvedModel) -> list[Finding]:
     findings: list[Finding] = []
     framed: list[ResolvedRoof] = []
     for roof in model.roofs:
-        spec = _structure_framing(model, roof)
+        spec = roof_structure_framing(model, roof)
         if spec is not None and spec.roof_frame == "truss":
-            new_roof, members = _frame_trusses(model, roof, spec)
-            framed.append(replace(new_roof, members=members))
+            framed.append(replace(roof, members=_frame_trusses(model, roof, spec)))
             continue
         rafters = _roof_rafters(model, roof)
         beam_member, beam_findings = _resolve_ridge_beam(model, roof)
@@ -68,15 +73,6 @@ def frame_roofs(model: ResolvedModel) -> list[Finding]:
         ))
     model.roofs = framed
     return findings
-
-
-def _structure_framing(model: ResolvedModel, roof: ResolvedRoof) -> FramingSpec | None:
-    assembly = model.plan.library.resolve_assembly(roof.assembly)
-    if assembly is None:
-        return None
-    layer = next((ly for ly in assembly.layers
-                  if ly.function is LayerFunction.STRUCTURE and ly.framing is not None), None)
-    return layer.framing if layer is not None else None
 
 
 def _roof_element(model: ResolvedModel, roof: ResolvedRoof) -> Roof | None:
@@ -190,118 +186,71 @@ def _bearing_plate_top(model: ResolvedModel, roof: ResolvedRoof) -> float | None
 
 def _frame_trusses(
     model: ResolvedModel, roof: ResolvedRoof, spec: FramingSpec
-) -> tuple[ResolvedRoof, tuple[FramedMember, ...]]:
+) -> tuple[FramedMember, ...]:
     """Raised-heel trusses: top + bottom chords, king post + diagonal webs, heel blocks.
 
-    Returns the roof (its surface lifted by the raised heel so the top chords sit on the
-    deck plane) and the emitted truss members. Falls back to the unchanged roof + no members
-    if the bearing geometry cannot be resolved.
+    The roof plane arrives already lifted by its raised heel (``apply_truss_heel_lift`` in
+    the envelope stage), so the top chords simply lie on ``roof.eave_z_m``/``ridge_z_m``.
+    The two end stations are gable-end drop trusses with rake framing (``roof_gable``).
+    Emits nothing if the bearing geometry cannot be resolved.
     """
-    element = _roof_element(model, roof)
-    if element is None:
-        return roof, ()
-    span_ax = 1 if roof.ridge_direction == "x" else 0
-    ridge_ax = 1 - span_ax
-    bearings: list[tuple[float, float]] = []  # (span coordinate, plate top z)
-    along_lo = along_hi = None
-    for tag in element.bearing_refs:
-        wall = model.wall(tag)
-        if wall is None:
-            continue
-        (ax, ay), (bx, by) = wall.axis
-        span_coord = ay if span_ax == 1 else ax
-        r0, r1 = (ay, by) if ridge_ax == 1 else (ax, bx)
-        lo, hi = min(r0, r1), max(r0, r1)
-        along_lo = lo if along_lo is None else min(along_lo, lo)
-        along_hi = hi if along_hi is None else max(along_hi, hi)
-        bearings.append((span_coord, wall.z1_m))
-    if along_lo is None or len(bearings) < 2:
-        return roof, ()
-    bearings.sort()
-    bear_lo, bear_hi = bearings[0][0], bearings[-1][0]
-    plate_top = max(z for _, z in bearings)
-
-    span_vals = [p[span_ax] for p in roof.footprint]
-    foot_lo, foot_hi = min(span_vals), max(span_vals)
-    span_mid = (foot_lo + foot_hi) / 2.0
-    half = (foot_hi - foot_lo) / 2.0 or 1.0
-
-    chord = spec.chord_member or spec.member
-    web = spec.web_member or "2x4"
-    cd = cross_section(chord).depth_m
-    wd = cross_section(web).depth_m
-    heel = spec.heel_height.meters if spec.heel_height is not None else _DEFAULT_TRUSS_HEEL_M
-
-    def plane_z(s: float, eave: float, ridge: float) -> float:
-        return ridge - (ridge - eave) * abs(s - span_mid) / half
-
-    # Lift the surface so the top-chord underside clears the raised heel over each bearing.
-    needed = plate_top + heel + cd
-    delta = 0.0
-    for bear, _ in bearings:
-        delta = max(delta, needed - plane_z(bear, roof.eave_z_m, roof.ridge_z_m))
-    new_eave = roof.eave_z_m + delta
-    new_ridge = roof.ridge_z_m + delta
-    new_roof = replace(roof, eave_z_m=new_eave, ridge_z_m=new_ridge)
-
-    orient = (1.0, 0.0) if roof.ridge_direction == "x" else (0.0, 1.0)
-
-    def plan_pt(pos: float, s: float) -> tuple[float, float]:
-        return (pos, s) if roof.ridge_direction == "x" else (s, pos)
-
-    spacing = (spec.spacing or DEFAULT_SPACING).meters
-    count = int(round((along_hi - along_lo) / spacing))
-    positions = [min(along_hi, along_lo + i * spacing) for i in range(count + 1)]
-    if positions[-1] < along_hi - 1e-9:
-        positions.append(along_hi)
+    layout = build_truss_layout(model, roof, spec)
+    if layout is None:
+        return ()
+    cd, wd = layout.chord_depth_m, layout.web_depth_m
+    plate_top = layout.plate_top_m
+    span_mid = layout.span_mid
+    eave, ridge = layout.eave_z_m, layout.ridge_z_m
+    orient = layout.truss_orient
 
     members: list[FramedMember] = []
-    top_at_lo = plane_z(bear_lo, new_eave, new_ridge)
-    top_at_hi = plane_z(bear_hi, new_eave, new_ridge)
-    for ti, pos in enumerate(positions):
+    top_at_lo = layout.plane_z(layout.bear_lo)
+    top_at_hi = layout.plane_z(layout.bear_hi)
+    for ti, pos in enumerate(layout.positions):
         tag = f"truss-{ti:03d}"
+        if is_gable_end_position(layout, ti):
+            members.extend(gable_end_members(layout, ti, tag))
+            continue
         # Bottom chord (ceiling): horizontal, bearing-to-bearing on the top plates.
         members.append(FramedMember(
-            roof.uid, f"{tag}-bc", "bottom_chord", chord,
-            plan_pt(pos, bear_lo), plan_pt(pos, bear_hi),
-            plate_top, plate_top + cd, abs(bear_hi - bear_lo),
+            roof.uid, f"{tag}-bc", "bottom_chord", layout.chord,
+            layout.plan_pt(pos, layout.bear_lo), layout.plan_pt(pos, layout.bear_hi),
+            plate_top, plate_top + cd, abs(layout.bear_hi - layout.bear_lo),
         ))
         # Top chords: eave tail → apex, lying on the (lifted) deck plane.
-        apex = plan_pt(pos, span_mid)
-        members.append(FramedMember(
-            roof.uid, f"{tag}-tc-lo", "top_chord", chord, plan_pt(pos, foot_lo), apex,
-            new_eave - cd, new_eave, math.hypot(span_mid - foot_lo, new_ridge - new_eave),
-            z0_end_m=new_ridge - cd, z1_end_m=new_ridge,
-        ))
-        members.append(FramedMember(
-            roof.uid, f"{tag}-tc-hi", "top_chord", chord, plan_pt(pos, foot_hi), apex,
-            new_eave - cd, new_eave, math.hypot(foot_hi - span_mid, new_ridge - new_eave),
-            z0_end_m=new_ridge - cd, z1_end_m=new_ridge,
-        ))
+        apex = layout.plan_pt(pos, span_mid)
+        for side, foot in (("lo", layout.foot_lo), ("hi", layout.foot_hi)):
+            members.append(FramedMember(
+                roof.uid, f"{tag}-tc-{side}", "top_chord", layout.chord,
+                layout.plan_pt(pos, foot), apex, eave - cd, eave,
+                math.hypot(span_mid - foot, ridge - eave),
+                z0_end_m=ridge - cd, z1_end_m=ridge,
+            ))
         # Raised-heel blocks: plate top → top-chord underside at each bearing.
-        for side, bear, top_at in (("lo", bear_lo, top_at_lo), ("hi", bear_hi, top_at_hi)):
-            pt = plan_pt(pos, bear)
+        for side, bear, top_at in (("lo", layout.bear_lo, top_at_lo),
+                                   ("hi", layout.bear_hi, top_at_hi)):
+            pt = layout.plan_pt(pos, bear)
             heel_top = max(plate_top + cd, top_at - cd)
             members.append(FramedMember(
                 roof.uid, f"{tag}-heel-{side}", "truss_heel",
-                web, pt, pt, plate_top, heel_top, heel_top - plate_top, orient=orient,
+                layout.web, pt, pt, plate_top, heel_top, heel_top - plate_top, orient=orient,
             ))
         # King post: bottom-chord top → apex underside.
         members.append(FramedMember(
-            roof.uid, f"{tag}-king", "truss_web", web, apex, apex,
-            plate_top + cd, new_ridge - cd, (new_ridge - cd) - (plate_top + cd), orient=orient,
+            roof.uid, f"{tag}-king", "truss_web", layout.web, apex, apex,
+            plate_top + cd, ridge - cd, (ridge - cd) - (plate_top + cd), orient=orient,
         ))
         # Diagonal webs: bottom-chord quarter points → apex (a simple Fink reading).
-        for side, bear in (("lo", bear_lo), ("hi", bear_hi)):
+        for side, bear in (("lo", layout.bear_lo), ("hi", layout.bear_hi)):
             quarter = (bear + span_mid) / 2.0
             members.append(FramedMember(
-                roof.uid, f"{tag}-web-{side}", "truss_web", web,
-                plan_pt(pos, quarter), apex,
+                roof.uid, f"{tag}-web-{side}", "truss_web", layout.web,
+                layout.plan_pt(pos, quarter), apex,
                 plate_top + cd, plate_top + cd + wd,
-                math.hypot(span_mid - quarter, (new_ridge - cd) - (plate_top + cd)),
-                z0_end_m=new_ridge - cd - wd, z1_end_m=new_ridge - cd,
+                math.hypot(span_mid - quarter, (ridge - cd) - (plate_top + cd)),
+                z0_end_m=ridge - cd - wd, z1_end_m=ridge - cd,
             ))
-    return new_roof, tuple(members)
+    return tuple(members)
 
 
 # --- ridge beam (rafter roofs) -----------------------------------------------------------

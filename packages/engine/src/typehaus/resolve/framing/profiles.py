@@ -44,6 +44,19 @@ _RE_MULTI_NOMINAL = re.compile(r"^(?P<plies>\d+)-(?P<nominal>\d+x\d+)$")
 _RE_NOMINAL = re.compile(r"^\d+x\d+$")
 # Round column, e.g. a 12" sonotube-cast concrete pier: "12 round".
 _RE_ROUND = re.compile(r"^(?P<dia>\d+(?:\.\d+)?)\s+round$")
+# Sheet goods swept as a member rather than milled lumber — a soffit panel, or the
+# sheathing/cladding band that closes a raised heel or a gable end. Written
+# "<width>x<thickness> panel" in inches: ``width`` is the face the panel presents across
+# its run, ``thickness`` its sheet thickness. Real panels come in arbitrary dimensions,
+# so they cannot be spelled as a nominal lumber size.
+_RE_PANEL = re.compile(
+    r"^(?P<width>\d+(?:\.\d+)?)x(?P<thickness>\d+(?:\.\d+)?)\s+panel$"
+)
+
+
+def panel_profile(width_in: float, thickness_in: float) -> str:
+    """The canonical ``"<width>x<thickness> panel"`` profile string for sheet goods."""
+    return f"{width_in:g}x{thickness_in:g} panel"
 
 
 @dataclass(frozen=True)
@@ -105,6 +118,9 @@ def cross_section(profile: str) -> CrossSection:
     if _RE_NOMINAL.match(text):
         thickness_in, depth_in = LUMBER_ACTUAL.get(text, _FALLBACK_ACTUAL_IN)
         return _rect(thickness_in, depth_in)
+
+    if match := _RE_PANEL.match(text):
+        return _rect(float(match["width"]), float(match["thickness"]))
 
     if match := _RE_ROUND.match(text):
         dia_m = inch(float(match["dia"])).meters

@@ -493,7 +493,8 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
                      "railing": "IfcRailing", "dowel": "IfcReinforcingBar",
                      "connector": "IfcMechanicalFastener", "sump": "IfcTank",
                      "vent": "IfcBuildingElementProxy", "gutter": "IfcBuildingElementProxy",
-                     "fascia": "IfcCovering", "flashing": "IfcCovering",
+                     "fascia": "IfcCovering", "soffit": "IfcCovering",
+                     "flashing": "IfcCovering",
                      "thermal_break": "IfcBuildingElementProxy"}.get(solid.category,
                                                                       "IfcFooting")
     element = ll.create_entity(f, ifc_class, name=solid.tag)
