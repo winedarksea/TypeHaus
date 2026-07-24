@@ -86,16 +86,33 @@ _FALLBACK = (0.70, 0.70, 0.70, 1.0)
 Vec3 = tuple[float, float, float]
 
 
+class _TriangleIndices(list):
+    """A bucket's triangle index list, plus the analytic per-corner normals that a few faces
+    want instead of the geometric one.
+
+    Keyed by triangle ordinal (``index position // 3``). Only curved surfaces register — today
+    just the arch soffit, whose facets lie on a true cylinder — so ``_deindex_with_normals`` can
+    shade them as one curve while every other face keeps its crisp geometric normal. Carried on
+    the list itself so a bucket still travels as one thing through the scene assembler.
+    """
+
+    __slots__ = ("smooth_face_normals",)
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.smooth_face_normals: dict[int, tuple[Vec3, Vec3, Vec3]] = {}
+
+
 class _MeshBuilder:
     """Accumulates triangles bucketed by color; emits interleaved position + index buffers."""
 
     def __init__(self) -> None:
-        # color -> (positions: list[Vec3], indices: list[int])
+        # color -> (positions: list[Vec3], indices: _TriangleIndices)
         self._buckets: dict[tuple[float, float, float, float],
-                            tuple[list[Vec3], list[int]]] = {}
+                            tuple[list[Vec3], _TriangleIndices]] = {}
 
     def _bucket(self, color: tuple[float, float, float, float]):
-        return self._buckets.setdefault(color, ([], []))
+        return self._buckets.setdefault(color, ([], _TriangleIndices()))
 
     def add_prism(self, ring: list[tuple[float, float]], z0: float, z1: float,
                   color: tuple[float, float, float, float]) -> None:
@@ -242,30 +259,55 @@ class _MeshBuilder:
     def add_arched_spandrel(self, edges, opening_start: float, opening_end: float,
                             z1: float, springline: float, radius: float,
                             color: tuple[float, float, float, float]) -> None:
-        """Add one continuous curved concrete head, not a stack of prism strips."""
+        """Add one continuous curved concrete head, not a stack of prism strips.
+
+        The soffit is a cylinder about a horizontal axis through the springlines, so each of its
+        facets registers the analytic surface normal (:class:`_TriangleIndices`). Without that,
+        an importer shades it as ``_arch_soffit_segment_count`` flat strips however finely it is
+        tessellated. Every other face — flat top, wall-depth sides, jambs — keeps its crisp
+        geometric normal.
+        """
         positions, indices = self._bucket(color)
+        segment_count = _arch_soffit_segment_count(radius)
         base = len(positions)
-        for segment in range(_ARCH_CURVE_SEGMENTS + 1):
-            fraction = opening_start + (
-                (opening_end - opening_start) * segment / _ARCH_CURVE_SEGMENTS
-            )
-            offset = ((segment / _ARCH_CURVE_SEGMENTS) - 0.5) * radius * 2.0
-            soffit = min(z1, springline + math.sqrt(max(0.0, radius * radius - offset * offset)))
+        # The soffit normal rotates in the vertical plane containing the wall axis.
+        (edge_start, edge_end) = edges[0]
+        run = math.hypot(edge_end[0] - edge_start[0], edge_end[1] - edge_start[1]) or 1.0
+        ux, uy = (edge_end[0] - edge_start[0]) / run, (edge_end[1] - edge_start[1]) / run
+        soffit_normals: list[Vec3 | None] = []
+        for segment in range(segment_count + 1):
+            offset, height = _arch_soffit_sample(segment, segment_count, radius)
+            fraction = opening_start + (opening_end - opening_start) * (
+                (offset + radius) / (2.0 * radius))
+            crown = springline + height
+            soffit = min(z1, crown)
             front = _lerp(edges[0][0], edges[0][1], fraction)
             back = _lerp(edges[1][0], edges[1][1], fraction)
             positions.extend((_to_gltf(*front, soffit), _to_gltf(*back, soffit),
                               _to_gltf(*front, z1), _to_gltf(*back, z1)))
-        for segment in range(_ARCH_CURVE_SEGMENTS):
+            # A sample clipped by the wall top no longer sits on the circle, so it earns no
+            # analytic normal and its facets fall back to the geometric one.
+            soffit_normals.append(None if soffit < crown - 1e-9 else _to_gltf(
+                offset / radius * ux, offset / radius * uy, height / radius))
+        for segment in range(segment_count):
             current, next_ = base + segment * 4, base + (segment + 1) * 4
-            # Curved soffit and flat top.
-            indices.extend((current, next_ + 1, next_, current, current + 1, next_ + 1))
+            here, there = soffit_normals[segment], soffit_normals[segment + 1]
+            # Curved soffit — two triangles carrying the cylinder's own normals.
+            for corners in ((current, next_ + 1, next_), (current, current + 1, next_ + 1)):
+                ordinal = len(indices) // 3
+                indices.extend(corners)
+                if here is not None and there is not None:
+                    indices.smooth_face_normals[ordinal] = tuple(
+                        here if corner in (current, current + 1) else there
+                        for corner in corners)
+            # Flat top.
             indices.extend((current + 2, next_ + 2, next_ + 3,
                             current + 2, next_ + 3, current + 3))
             # The two wall-depth faces are continuous across the full arch.
             indices.extend((current, next_, next_ + 2, current, next_ + 2, current + 2,
                             current + 1, current + 3, next_ + 3, current + 1, next_ + 3, next_ + 1))
         # Close the jamb faces at each springline.
-        for section in (base, base + _ARCH_CURVE_SEGMENTS * 4):
+        for section in (base, base + segment_count * 4):
             indices.extend((section, section + 2, section + 3, section, section + 3, section + 1))
 
     def is_empty(self) -> bool:
@@ -420,7 +462,13 @@ def _deindex_with_normals(positions: list[Vec3],
                           indices: list[int]) -> tuple[list[Vec3], list[Vec3]]:
     """Expand an indexed triangle mesh into flat triangle soup with one geometric normal per
     face. Hard edges stay crisp (each face carries its own normal on unshared vertices) and
-    degenerate zero-area triangles are dropped."""
+    degenerate zero-area triangles are dropped.
+
+    A face listed in ``indices.smooth_face_normals`` (see :class:`_TriangleIndices`; today only
+    the arch soffit, which lies on a true cylinder) ships the supplied analytic per-corner
+    normals instead, so adjacent facets shade as one continuous curve.
+    """
+    smooth_faces = getattr(indices, "smooth_face_normals", {})
     out_pos: list[Vec3] = []
     out_nrm: list[Vec3] = []
     for i in range(0, len(indices) - 2, 3):
@@ -429,7 +477,16 @@ def _deindex_with_normals(positions: list[Vec3],
         if normal is None:
             continue
         out_pos.extend((a, b, c))
-        out_nrm.extend((normal, normal, normal))
+        smooth = smooth_faces.get(i // 3)
+        if smooth is None:
+            out_nrm.extend((normal, normal, normal))
+            continue
+        # Replace the facet's direction only. The outward sense stays whatever the triangle
+        # winding established, so the single-sided-material contract is untouched; all three
+        # corners flip together or not at all.
+        agreement = sum(sum(s * f for s, f in zip(corner, normal)) for corner in smooth)
+        sign = -1.0 if agreement < 0.0 else 1.0
+        out_nrm.extend(tuple(sign * component for component in corner) for corner in smooth)
     return out_pos, out_nrm
 
 
@@ -598,23 +655,93 @@ def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, floa
     return _color(solid.category)
 
 
-_ARCH_CURVE_SEGMENTS = 64  # smooth tessellation for the single curved arch mesh
+# A soffit facet may deviate from the true circle by at most this. The segment count then falls
+# out of the arch's radius, so an 8'-wide garden arch and a small niche head are equally smooth.
+_ARCH_SOFFIT_CHORD_TOLERANCE_M = 0.0005
+_ARCH_SOFFIT_MIN_SEGMENTS = 24
+_ARCH_SOFFIT_MAX_SEGMENTS = 192
+# A vertex this far off the chord between its neighbours is a real corner; closer is padding.
+_COLLINEAR_VERTEX_TOLERANCE_M = 1e-6
+
+
+def _arch_soffit_segment_count(radius_m: float) -> int:
+    """Segments for a half-circle soffit sampled at even angular steps. One step's mid-chord
+    sagitta is ``r * (1 - cos(pi / 2n))``, so inverting it ties tessellation to the arch's actual
+    size instead of a flat guess. Mirrors ``archSoffitSegmentCount`` in Panel3D.tsx."""
+    if radius_m <= _ARCH_SOFFIT_CHORD_TOLERANCE_M:
+        return _ARCH_SOFFIT_MIN_SEGMENTS
+    half_step = math.acos(max(-1.0, 1.0 - _ARCH_SOFFIT_CHORD_TOLERANCE_M / radius_m))
+    count = math.ceil(math.pi / (2.0 * half_step))
+    return max(_ARCH_SOFFIT_MIN_SEGMENTS, min(_ARCH_SOFFIT_MAX_SEGMENTS, count))
+
+
+def _arch_soffit_sample(segment: int, segment_count: int,
+                        radius_m: float) -> tuple[float, float]:
+    """(offset from the arch centreline, height above the springline) at one angular step.
+
+    The arc is walked by *angle*: stepping evenly in x collapses near the springlines, where a
+    semicircle turns vertical, so the outermost step alone spanned ~40 cm of rise on the catlin
+    arches — the "striping". Mirrors ``archSoffitSample`` in Panel3D.tsx.
+    """
+    angle = math.pi * segment / segment_count
+    return -radius_m * math.cos(angle), radius_m * math.sin(angle)
+
+
+def _without_collinear_vertices(ring, tolerance_m: float = _COLLINEAR_VERTEX_TOLERANCE_M):
+    """Drop vertices that sit on the straight line between their neighbours.
+
+    Junction resolution splits a wall layer's long edges at every crossing wall, so an authored
+    rectangle serializes as five, six or eight points (77 of catlin's 607 layers). Anything that
+    needs to *recognise* a rectangle has to reduce first. Mirrors ``withoutCollinearVertices``
+    in ui/src/components/Panel3D.tsx — keep the two in step.
+
+    A fully collinear (degenerate) ring reduces to nothing; callers decide what that means.
+    """
+    deduped = _dedupe_ring(list(ring))
+    if len(deduped) < 3:
+        return deduped
+    corners = []
+    count = len(deduped)
+    for index in range(count):
+        (px, py) = deduped[index - 1]
+        (cx, cy) = deduped[index]
+        (qx, qy) = deduped[(index + 1) % count]
+        span_x, span_y = qx - px, qy - py
+        span = math.hypot(span_x, span_y)
+        # Perpendicular distance, in metres, of this vertex from the chord between its neighbours.
+        offset = (math.hypot(cx - px, cy - py) if span < tolerance_m
+                  else abs((cx - px) * span_y - (cy - py) * span_x) / span)
+        if offset > tolerance_m:
+            corners.append((cx, cy))
+    return corners
 
 
 def _thin_rect_edges(poly, axis):
     """The two long edges of a wall layer's thin-rectangle footprint, each oriented
-    start→end along the wall axis, so a fractional slice maps to along-axis position."""
+    start→end along the wall axis, so a fractional slice maps to along-axis position.
+
+    The ring is reduced to real corners first, then the edges are read off *their* wall-local
+    bounding rectangle. Sorting the raw ring instead picked two vertices off the same face of a
+    collinear-padded ring, which exported the 16" sunken-garden arch wall as an 8" one — 182 of
+    catlin's 607 layers reached the .glb at the wrong thickness that way.
+    """
     (p0x, p0y), (p1x, p1y) = axis
     tx, ty = p1x - p0x, p1y - p0y
     length = math.hypot(tx, ty) or 1.0
     tx, ty = tx / length, ty / length
     nx, ny = -ty, tx
-    along = lambda v: (v[0] - p0x) * tx + (v[1] - p0y) * ty
-    perp = lambda v: (v[0] - p0x) * nx + (v[1] - p0y) * ny
-    ordered = sorted(poly, key=along)
-    starts = sorted(ordered[:2], key=perp)
-    ends = sorted(ordered[2:], key=perp)
-    return (starts[0], ends[0]), (starts[1], ends[1])
+    # A fully collinear (degenerate) ring reduces to nothing; its raw extent is all there is.
+    corners = _without_collinear_vertices(poly) or list(poly)
+    alongs = [(v[0] - p0x) * tx + (v[1] - p0y) * ty for v in corners]
+    perps = [(v[0] - p0x) * nx + (v[1] - p0y) * ny for v in corners]
+    min_along, max_along = min(alongs), max(alongs)
+    min_perp, max_perp = min(perps), max(perps)
+
+    def at(along: float, perp: float) -> tuple[float, float]:
+        return (p0x + tx * along + nx * perp, p0y + ty * along + ny * perp)
+
+    return ((at(min_along, min_perp), at(max_along, min_perp)),
+            (at(min_along, max_perp), at(max_along, max_perp)))
 
 
 def _lerp(p, q, t):
