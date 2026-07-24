@@ -55,7 +55,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             model.canvas_objects.append(ResolvedCanvasObject(
                 uid=item.uid, tag=item.tag, storey=storey.tag, domain=domain, kind=item.element_kind, type_ref=type_ref,
                 room=explicit_room or resolved_room, position=center, rotation_degrees=rotation,
-                z_m=_resolved_mount_elevation(storey, item),
+                z_m=resolved_mount_elevation(storey, item),
                 footprint=footprint, required_clearances=required, recommended_clearances=recommended,
                 attachment_wall=attachment, attachment_face=attachment_face,
             ))
@@ -64,16 +64,24 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     return findings
 
 
-def _resolved_mount_elevation(storey: object, item: object) -> float:
-    """Resolve floor, wall, and ceiling mount elevations into the project Z frame."""
+def resolved_mount_elevation(storey: object, item: object) -> float:
+    """The one project-frame Z for a placeable — glTF, the UI, and IFC all read this.
+
+    ``Mount`` is the single authoritative height contract: an explicit ``elevation`` is a
+    storey-relative height and wins outright, because a ceiling-mounted fixture hung at a
+    stated 8' must stay at 8' whatever the storey's default ceiling height is. Only a
+    ceiling mount with no stated elevation falls back to hanging off the ceiling plane.
+    """
     mount = getattr(item, "mount", None)
     floor = storey.elevation.meters
     if mount is None:
         return floor
+    if mount.elevation is not None:
+        return floor + mount.elevation.meters
     if mount.kind.value == "ceiling":
         drop = mount.drop.meters if mount.drop is not None else 0.0
         return floor + storey.default_ceiling_height.meters - drop
-    return floor + (mount.elevation.meters if mount.elevation is not None else 0.0)
+    return floor
 
 
 def _resolve_location(item: object, product_type: object | None, model: ResolvedModel,

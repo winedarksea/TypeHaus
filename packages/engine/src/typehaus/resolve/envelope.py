@@ -12,7 +12,7 @@ from typehaus.model.refs import ToRoof
 from typehaus.model.enums import ConditionKind
 from typehaus.model.structure import Beam, Footing, FootingBedding, Pad, Post
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.geometry import polygon_area, rect_between
+from typehaus.resolve.geometry import circle_outline, polygon_area, rect_between
 from typehaus.resolve.model import (
     BoundaryCondition,
     FramedMember,
@@ -794,10 +794,7 @@ def _resolve_post(post: Post, storey_tag: str, elevation: float,
 def _post_outline(center: tuple[float, float], cs) -> list[tuple[float, float]]:
     cx, cy = center
     if cs.shape == "round":
-        r = cs.width_m / 2.0
-        return [(cx + r * math.cos(2 * math.pi * k / _COLUMN_FACETS),
-                 cy + r * math.sin(2 * math.pi * k / _COLUMN_FACETS))
-                for k in range(_COLUMN_FACETS)]
+        return circle_outline(center, cs.width_m / 2.0, _COLUMN_FACETS)
     hw, hd = cs.width_m / 2.0, cs.depth_m / 2.0
     return [(cx - hw, cy - hd), (cx + hw, cy - hd), (cx + hw, cy + hd), (cx - hw, cy + hd)]
 
