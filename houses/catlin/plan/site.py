@@ -8,6 +8,7 @@
 # retaining-wall top just above grade, the garden floor at -9', and the ~3'
 # raised-garden block wall at the far south.
 from typehaus import (
+    ImperviousSurface,
     Site,
     SetbackSpec,
     SpotElevation,
@@ -61,6 +62,28 @@ SITE = Site(
         SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9)),
         SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(3, 6)),
         SpotElevation(position=pt(ft(26), ft(-29)), elevation=ft(3, 6)),
+    ),
+    # Impervious hardscapes abutting the main house (footprint x[0,36'] y[0,36']). R401.3 needs
+    # each to fall >= 2% away from the foundation within 10'; code.R401_3_impervious asserts it.
+    # near_elevation is the grade where the slab meets the foundation (just below the main-floor
+    # datum); far_elevation is the outer edge, dropped enough to clear 2% over the run.
+    impervious_surfaces=(
+        # front entry walk on the north wall (y=36'), draining north into the house/garage gap
+        ImperviousSurface(
+            label="front walk",
+            outline=(pt(ft(14), ft(36)), pt(ft(22), ft(36)),
+                     pt(ft(22), ft(41)), pt(ft(14), ft(41))),
+            near_elevation=ft(0, -1),   # -1" at the foundation
+            far_elevation=ft(0, -3.5),  # -3.5" at the 5' outer edge (4.2% away)
+        ),
+        # side patio on the east wall (x=36'), draining east toward the side-yard grade
+        ImperviousSurface(
+            label="patio",
+            outline=(pt(ft(36), ft(10)), pt(ft(42), ft(10)),
+                     pt(ft(42), ft(22)), pt(ft(36), ft(22))),
+            near_elevation=ft(0, -1),   # -1" at the foundation
+            far_elevation=ft(0, -4),    # -4" at the 6' outer edge (4.2% away)
+        ),
     ),
     utilities=(
         UtilityLine(kind=UtilityKind.SEWER, path=(pt(ft(3), ft(-20)), pt(ft(3), ft(0))),

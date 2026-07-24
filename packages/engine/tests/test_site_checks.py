@@ -83,3 +83,56 @@ def test_grading_unknown_without_spot_elevations(catlin_model):
     report = run_from_model(model, [], tier=Tier.CODE)
     matched = [f for f in report.findings if f.check_id == "code.R401_3_grading"]
     assert matched and all(f.result.value == "unknown" for f in matched)
+
+
+def test_catlin_impervious_grading_passes(catlin_model):
+    report = run_from_model(catlin_model, [], tier=Tier.CODE)
+    matched = [f for f in report.findings if f.check_id == "code.R401_3_impervious"]
+    assert matched and all(f.result.value == "pass" for f in matched)
+    assert all(f.code_ref == "R401.3" for f in matched)
+
+
+def test_impervious_grading_fails_when_surface_slopes_toward_foundation(catlin_model):
+    from typehaus.model.site import ImperviousSurface
+    from typehaus.quantities import ft, pt
+
+    # A patio abutting the east wall (x=36') whose outer edge sits ABOVE its foundation edge:
+    # the slab drains back toward the house instead of away from it.
+    back_pitched = ImperviousSurface(
+        label="bad patio",
+        outline=(pt(ft(36), ft(10)), pt(ft(42), ft(10)),
+                 pt(ft(42), ft(22)), pt(ft(36), ft(22))),
+        near_elevation=ft(0, -4),
+        far_elevation=ft(0, -1),
+    )
+    model = _model_with_site(catlin_model, impervious_surfaces=(back_pitched,))
+    report = run_from_model(model, [], tier=Tier.CODE)
+    matched = [f for f in report.findings if f.check_id == "code.R401_3_impervious"]
+    assert matched and any(f.result.value == "fail" for f in matched)
+
+
+def test_impervious_grading_fails_when_slope_below_two_percent(catlin_model):
+    from typehaus.model.site import ImperviousSurface
+    from typehaus.quantities import ft, pt
+
+    # 6' patio that falls only 1" (1.4%) — away from the foundation but short of the 2% minimum.
+    shallow = ImperviousSurface(
+        label="shallow patio",
+        outline=(pt(ft(36), ft(10)), pt(ft(42), ft(10)),
+                 pt(ft(42), ft(22)), pt(ft(36), ft(22))),
+        near_elevation=ft(0, -1),
+        far_elevation=ft(0, -2),
+    )
+    model = _model_with_site(catlin_model, impervious_surfaces=(shallow,))
+    report = run_from_model(model, [], tier=Tier.CODE)
+    matched = [f for f in report.findings if f.check_id == "code.R401_3_impervious"]
+    assert matched and any(f.result.value == "fail" for f in matched)
+
+
+def test_impervious_grading_silent_without_surfaces(catlin_model):
+    # With no impervious surfaces modeled the rule does not apply — it emits no finding
+    # (never a spurious fail or unknown).
+    model = _model_with_site(catlin_model, impervious_surfaces=())
+    report = run_from_model(model, [], tier=Tier.CODE)
+    matched = [f for f in report.findings if f.check_id == "code.R401_3_impervious"]
+    assert matched == []

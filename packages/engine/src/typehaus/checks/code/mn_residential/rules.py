@@ -23,11 +23,13 @@ _MAX_EGRESS_SILL = inch(44)
 _MIN_EGRESS_AREA_SF = 5.7  # grade-floor 5.0; upper 5.7 (R310.2.1)
 _MIN_DOOR_CLEAR = inch(31.75)  # 32" nominal clear (R311.2)
 
-# R401.3 lot drainage: grade must fall >= 6" within the first 10' from the foundation
-# (5% for pervious ground; impervious surfaces need only 2%, but those are not separately
-# modeled). We evaluate the pervious ground slope from spot elevations.
+# R401.3 lot drainage: grade must fall away from the foundation within the first 10'. Pervious
+# ground needs 5% (6" per 10'), measured from spot elevations (code.R401_3_grading). Impervious
+# surfaces (walks, patios, driveways, slabs abutting the house) need only 2%, evaluated from the
+# authored ImperviousSurface hardscapes (code.R401_3_impervious).
 _GRADING_BAND = ft(10)
-_MIN_GROUND_SLOPE = 0.05  # 6" per 10' away from the foundation
+_MIN_GROUND_SLOPE = 0.05  # 6" per 10' away from the foundation (pervious ground)
+_MIN_IMPERVIOUS_SLOPE = 0.02  # 2% away from the foundation (walks/patios/slabs)
 _SLOPE_EPS = 1e-3
 
 
@@ -234,8 +236,8 @@ def foundation_grading(ctx: CheckContext) -> list[Finding]:
 
     The primary building footprint is reconstructed from the foundation walls; every spot
     elevation outside it and within 10' is a drainage station, and the shallowest measured
-    slope must reach 5% (6" per 10'). Impervious-surface grading (2%) is a documented
-    sibling requirement but is not separately modeled, so it is not asserted here.
+    slope must reach 5% (6" per 10'). Impervious-surface grading (2%) is the sibling
+    requirement asserted separately by ``code.R401_3_impervious``.
     """
     from shapely.geometry import LineString, Point
     from shapely.ops import polygonize, unary_union
@@ -293,3 +295,78 @@ def foundation_grading(ctx: CheckContext) -> list[Finding]:
                   f"grade falls at least {_MIN_GROUND_SLOPE * 100:.0f}% away from the foundation "
                   f"at all {stations} station(s) within 10' (shallowest {slope * 100:.1f}%)",
                   "R401.3")]
+
+
+def _foundation_footprint(ctx: CheckContext):
+    """Largest foundation-wall enclosure (the primary building), or None if unavailable."""
+    from shapely.geometry import LineString
+    from shapely.ops import polygonize, unary_union
+
+    segments = [LineString([wall.axis[0], wall.axis[1]])
+                for wall in ctx.model.walls if wall.is_foundation]
+    if not segments:
+        return None
+    faces = list(polygonize(unary_union(segments)))
+    if not faces:
+        return None
+    merged = unary_union(faces)
+    polys = list(merged.geoms) if merged.geom_type == "MultiPolygon" else [merged]
+    return max(polys, key=lambda poly: poly.area)
+
+
+@check(Tier.CODE, "code.R401_3_impervious")
+def impervious_surface_grading(ctx: CheckContext) -> list[Finding]:
+    """R401.3 — impervious surfaces abutting the house must slope >= 2% away from the foundation.
+
+    Each authored ``ImperviousSurface`` (walk/patio/driveway/slab) whose nearest edge lies within
+    10' of the primary foundation footprint is a station. The run away from the foundation comes
+    from the outline (far-edge reach minus near-edge reach), the fall from the authored near/far
+    grade elevations, and the shallowest surface slope must reach 2%. Mirrors
+    ``code.R401_3_grading`` and emits one finding for the worst surface.
+    """
+    from shapely.geometry import Point
+
+    site = ctx.plan.project.site
+    surfaces = getattr(site, "impervious_surfaces", ())
+    if not surfaces:
+        return []  # no impervious surfaces modeled abutting the foundation; rule does not apply
+    footprint = _foundation_footprint(ctx)
+    if footprint is None:
+        return [_unknown("code.R401_3_impervious",
+                         "no foundation footprint to grade impervious surfaces against",
+                         (), "R401.3")]
+    boundary = footprint.exterior
+    band_m = _GRADING_BAND.meters
+    worst: tuple[float, str, float, float] | None = None  # (slope, label, run_m, drop_m)
+    stations = 0
+    for surface in surfaces:
+        verts = [p.xy_m for p in surface.outline]
+        if len(verts) < 2:
+            continue
+        dists = [boundary.distance(Point(v)) for v in verts]
+        near_i = min(range(len(verts)), key=dists.__getitem__)
+        far_i = max(range(len(verts)), key=dists.__getitem__)
+        if dists[near_i] > band_m + 1e-9:
+            continue  # surface lies entirely beyond 10' of the foundation
+        run_m = dists[far_i] - dists[near_i]
+        if run_m <= _SLOPE_EPS:
+            continue  # degenerate outline with no reach away from the foundation
+        stations += 1
+        drop_m = surface.near_elevation.meters - surface.far_elevation.meters
+        slope = drop_m / run_m  # positive = falls away from the foundation
+        if worst is None or slope < worst[0]:
+            worst = (slope, surface.label, run_m, drop_m)
+    if worst is None:
+        return []  # no impervious surface within 10' of the foundation to grade
+    slope, label, run_m, drop_m = worst
+    if slope + _SLOPE_EPS < _MIN_IMPERVIOUS_SLOPE:
+        fall_in = drop_m / 0.0254
+        run_ft = run_m / 0.3048
+        return [_fail("code.R401_3_impervious",
+                      f"impervious surface '{label}' only falls {slope * 100:.1f}% away from the "
+                      f"foundation ({fall_in:+.1f}\" over {run_ft:.1f}'); R401.3 requires "
+                      f"{_MIN_IMPERVIOUS_SLOPE * 100:.0f}% for walks/patios/slabs", (), "R401.3")]
+    return [_pass("code.R401_3_impervious",
+                  f"impervious surfaces slope at least {_MIN_IMPERVIOUS_SLOPE * 100:.0f}% away "
+                  f"from the foundation at all {stations} surface(s) within 10' "
+                  f"(shallowest {slope * 100:.1f}% at '{label}')", "R401.3")]
