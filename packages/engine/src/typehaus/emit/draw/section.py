@@ -259,6 +259,16 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
             zs = _opening_splits(wall, openings, direction, station, rz0, rz1)
             for (z0, z1, void) in zs:
                 if void:
+                    # A full-height glazing line that spans the whole crop reads as a
+                    # mistake in a junction detail — the cut is passing through pure
+                    # glass with neither head nor sill in frame. Drop it and let the
+                    # neighbouring solid bands' edges show the actual head/sill of the
+                    # cut instead (#opening-void). Keep the line where a real jamb edge
+                    # is in frame (an opening genuinely cut in a plan/elevation).
+                    full_span = (crop is not None and z0 <= rz0 + 1e-9
+                                 and z1 >= rz1 - 1e-9)
+                    if is_detail and full_span:
+                        continue
                     # glazing/void line at the opening
                     b.add(Polyline(points=(((ru0 + ru1) / 2 * M_TO_IN, z0 * M_TO_IN),
                                            ((ru0 + ru1) / 2 * M_TO_IN, z1 * M_TO_IN)),
