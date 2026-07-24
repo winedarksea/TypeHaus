@@ -507,6 +507,7 @@ def _hex_rgba(hex_str: str) -> tuple[float, float, float, float]:
 _SEAM_BASE = "#e8e8e2"          # Panel3D.tsx createStandingSeamMaterial base (0xE8E8E2)
 _CMU_BASE = "#9c988f"           # materials.ts CMU_STYLE.base
 _WHITE_BRICK_BASE = "#e9e6df"   # materials.ts WHITE_BRICK_STYLE.base
+_DECK_BOARD_BASE = "#b9bcc0"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0xb9bcc0)
 
 
 def _is_standing_seam(material_ref: str | None) -> bool:
@@ -528,6 +529,16 @@ def _is_white_brick(material_ref: str | None) -> bool:
     return "white" in s or "limewash" in s or "whitewash" in s
 
 
+def _is_aluminum_deck_board(material_ref: str | None) -> bool:
+    """Aluminum plank decking — the viewer's grooved 5.5" board finish (materials.ts
+    isAluminumDeckBoard). The metal family colour would read as dark flashing, so the
+    export pins the plank's own mill-finish base instead."""
+    if not material_ref:
+        return False
+    s = material_ref.lower()
+    return "deck" in s and ("alum" in s or family_of(material_ref) == "metal")
+
+
 def _material_finish_color(material_ref: str | None,
                            function: str) -> tuple[float, float, float, float]:
     """Colour a material by its family + finish classification, mirroring the viewer's
@@ -535,6 +546,8 @@ def _material_finish_color(material_ref: str | None,
     for the standing-seam test and as the fallback palette key when no family is recognised."""
     if function == "cladding" and _is_standing_seam(material_ref):
         return _hex_rgba(_SEAM_BASE)
+    if _is_aluminum_deck_board(material_ref):
+        return _hex_rgba(_DECK_BOARD_BASE)
     if family_of(material_ref) == "masonry":
         if _is_cmu(material_ref):
             return _hex_rgba(_CMU_BASE)
@@ -560,6 +573,8 @@ def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, floa
         if assembly is not None and assembly.layers:
             idx = assembly.structure_index()
             layer = assembly.layers[idx if idx is not None else 0]
+            if _is_aluminum_deck_board(layer.material_ref):
+                return _hex_rgba(_DECK_BOARD_BASE)
             material = next((m for m in model.plan.library.materials
                              if m.tag == layer.material_ref), None)
             if material is not None:

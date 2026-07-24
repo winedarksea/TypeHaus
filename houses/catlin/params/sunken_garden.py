@@ -293,11 +293,14 @@ PORCH_FLOOR = Slab(
 # Six pillars: front (south) row on the arch railing, rear (north) row — outer two on the
 # side-wall railings, center on the porch decking. All bear on the porch deck (their bases
 # embed in the CMU grout fill of the railing they pass through) so they are anchored at the
-# porch floor (0') and stand UP to the balcony-beam soffit — not hung from the deck above.
+# porch floor and stand UP to the balcony-beam soffit — not hung from the deck above.
 # The rear (north, house-side) row is 2" taller so the deck crowns at the rear and drains
 # south, away from the house.  Beam soffit = balcony level less the 2x10 beam depth (9.25").
+# `supported_by` puts the base on SL-SG-PORCH's *top*, i.e. the composite walking surface
+# laid over the porch joists, so the authored height is the exposed pillar above the boards.
 _balcony_beam_depth_ft = 9.25 / 12.0
-_front_h = ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft)
+_front_h = (ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft)
+            - inch(SPEC.porch_deck_thickness_in))
 _rear_h = _front_h + inch(SPEC.rear_pillar_rise_in)
 _PILLAR_X = (_x_ax_w, _cx, _x_ax_e)
 PILLARS = []

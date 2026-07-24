@@ -37,6 +37,7 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                                    "non-positive resolved height", wall.tag))
     for storey in plan.storeys:
         elevation = storey.elevation.meters
+        framed_deck_footprints = _framed_deck_footprints(plan, storey.tag)
         for element in plan.storey_elements(storey.tag):
             if isinstance(element, Slab):
                 outline = [point.xy_m for point in element.outline]
@@ -45,9 +46,10 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                                            f"slab {element.tag} needs a closed outline",
                                            element.tag))
                     continue
+                z0, z1 = _slab_elevations(element, elevation, framed_deck_footprints)
                 model.solids.append(ResolvedSolid(
-                    element.uid, element.tag, storey.tag, "slab", outline,
-                    elevation - element.thickness.meters, elevation, element.assembly,
+                    element.uid, element.tag, storey.tag, "slab", outline, z0, z1,
+                    element.assembly,
                     tuple(tuple(point.xy_m for point in model.plan.by_tag(tag).outline)
                           for tag in element.openings
                           if isinstance(model.plan.by_tag(tag), FloorOpening)),
@@ -94,6 +96,40 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                 if bedding is not None:
                     model.footing_beddings.append(bedding)
     return findings
+
+
+# Ordering / winding / start corner of an authored ring must not change its identity, and
+# rounding to 0.1 mm keeps float noise from splitting two rings that were authored equal.
+_FOOTPRINT_ROUNDING_PLACES = 4
+
+
+def _footprint_key(outline) -> tuple[tuple[float, float], ...]:
+    return tuple(sorted((round(point.xy_m[0], _FOOTPRINT_ROUNDING_PLACES),
+                         round(point.xy_m[1], _FOOTPRINT_ROUNDING_PLACES))
+                        for point in outline))
+
+
+def _framed_deck_footprints(plan, storey_tag: str) -> set[tuple[tuple[float, float], ...]]:
+    """Footprints of the storey's explicitly-outlined FloorSystems (joisted decks)."""
+    return {_footprint_key(element.outline)
+            for element in plan.storey_elements(storey_tag)
+            if isinstance(element, FloorSystem) and element.outline}
+
+
+def _slab_elevations(slab: Slab, elevation: float,
+                     framed_deck_footprints: set) -> tuple[float, float]:
+    """The slab's vertical extent, honouring the one storey datum: top of floor structure.
+
+    A structural slab *is* the floor structure, so it hangs its thickness below the datum.
+    A slab that shares its footprint with a FloorSystem on the same storey is instead that
+    deck's walking surface — aluminum/composite boards laid over joists that already top
+    out at the datum — so it rides on top, exactly like a FloorSystem's own subfloor sheet.
+    Hanging it below the datum buried the boards inside the top inch of their own joists.
+    """
+    thickness = slab.thickness.meters
+    if _footprint_key(slab.outline) in framed_deck_footprints:
+        return elevation, elevation + thickness
+    return elevation - thickness, elevation
 
 
 def _resolve_footing_bedding(

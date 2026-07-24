@@ -6,7 +6,7 @@ import { ALL_TRADES, useStore, type Trade } from "../state/store";
 import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
-import { applyMasonryWallUv, applyStandingSeamWallUv, createMasonryMaterial, createStandingSeamMaterial, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM } from "../three/materials";
+import { applyDeckBoardUv, applyMasonryWallUv, applyStandingSeamWallUv, createDeckBoardMaterial, createMasonryMaterial, createStandingSeamMaterial, isAluminumDeckBoard, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM } from "../three/materials";
 import { aboveStructureLayers, boundaryEdges, roofOffsetter, roofPlaneTriangles } from "../three/roofGeometry";
 import {
   createPlanPrismGeometry,
@@ -493,7 +493,7 @@ function createScene(
       }
     }
     buildEarth(tradeGroups.earth, m, center, mode);
-    for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, center, mode, palette);
+    for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, center, mode, palette, m.catalog);
     for (const bedding of m.footing_beddings ?? []) buildFootingBedding(tradeGroups.concrete, bedding, center, mode);
     for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, center, mode, palette);
     for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette, m.catalog);
@@ -1101,13 +1101,17 @@ function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center:
   }
 }
 
-// Slabs, footings, pads: same outline-extrusion recipe as wall layers, concrete grey.
+// Slabs, footings, pads: same outline-extrusion recipe as wall layers, concrete grey — except
+// a slab whose assembly is plank decking, which gets the 5½" aluminum board finish instead.
 function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog?: Catalog) {
   if (solid.outline.length < 3) return;
   const geo = createPlanPrismGeometry(solid.outline, solid.z0_m, Math.max(solid.z1_m, solid.z0_m + 0.01), solid.voids ?? [], center);
   if (!geo) return;
-  const mat = new THREE.MeshStandardMaterial({
+  const deckBoards = catalog?.assemblies.find((a) => a.tag === solid.assembly)?.layers
+    .some((layer) => isAluminumDeckBoard(layer.material));
+  if (deckBoards) applyDeckBoardUv(geo, center);
+  const mat = deckBoards ? createDeckBoardMaterial(mode) : new THREE.MeshStandardMaterial({
     color: palette.member.concrete, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",
   });
   parent.add(new THREE.Mesh(geo, mat));

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import type { Member, Vec2 } from "../model/types";
-import { buildMembers } from "./members";
+import { buildMembers, categoryColor, disposeGroup } from "./members";
 import {
   createPlanPrismGeometry,
   createProjectedSurfaceGeometry,
@@ -13,7 +13,7 @@ import {
   projectScenePointToPlan,
   swingArcSweepFlag,
 } from "./planGeometry";
-import { applyStandingSeamWallUv, SEAM_PAN_WIDTH_M } from "./materials";
+import { applyDeckBoardUv, applyStandingSeamWallUv, DECK_BOARD_WIDTH_M, SEAM_PAN_WIDTH_M } from "./materials";
 
 function closeTo(actual: number, expected: number, message: string) {
   if (Math.abs(actual - expected) > 1e-6) {
@@ -31,6 +31,7 @@ function boundsForObject(object: THREE.Object3D): THREE.Box3 {
   object.updateMatrixWorld(true);
   return new THREE.Box3().setFromObject(object);
 }
+
 
 function member(overrides: Partial<Member>): Member {
   return {
@@ -114,19 +115,88 @@ export function runPlanGeometryTests() {
   closeTo(framingBounds.min.z, -7.1, "Framing uses the same centered north axis");
   closeTo(framingBounds.max.z, -2.9, "Framing remains aligned with schematic north");
   closeTo(framingBounds.min.x, 1.95, "Vertical member uses the shared centered X axis");
-  framing.traverse((object) => {
-    const mesh = object as THREE.Mesh;
-    mesh.geometry?.dispose();
-    const material = mesh.material;
-    if (Array.isArray(material)) material.forEach((entry) => entry.dispose());
-    else material?.dispose();
-  });
+  closeTo(framingBounds.min.y, 1, "Vertical member starts at its authored z0");
+  closeTo(framingBounds.max.y, 5.2, "Raked plate preserves its authored high-end z1");
+  disposeGroup(framing);
 
+  checkMemberVerticalExtents();
   checkRakedWindingIsNormalized();
   checkAsymmetricPlanIsNotReflected();
   checkGeographicBearings();
   checkWallUvUsesProjectCoordinates();
+  checkDeckBoardUvRunsNorthSouth();
   checkDoorSwingArcsPivotOnHinge();
+}
+
+// Horizontal members (rims, joists, plates, headers, the U-stair well partition) used to be
+// drawn centred on z0 instead of spanning z0→z1, so each one hung half its own depth too low
+// — an 11⅞" rim band read ~6" below the subfloor and a 9'-tall stair partition dropped
+// 4'6" through the basement slab. The original framing assertions only covered plan (x/z)
+// bounds, which is exactly why it shipped; every case below asserts the vertical extent.
+function checkMemberVerticalExtents() {
+  const center: [number, number] = [10, 20];
+  const bandDepth = 0.3016; // 11⅞" floor band
+  const bandWidth = 0.03175; // 1¼" rim stock
+  const datum = 2.6; // storey datum = top of floor structure
+
+  const rim = new THREE.Group();
+  buildMembers(rim, [member({
+    key: "rim", category: "rim", profile: "1.25x11.875 rim", p0: [13, 27], p1: [18, 27],
+    z0_m: datum - bandDepth, z1_m: datum, width_m: bandWidth, depth_m: 0.038, orient: null,
+  })], center, "schematic");
+  const rimBounds = boundsForObject(rim);
+  closeTo(rimBounds.min.y, datum - bandDepth, "Rim band hangs its full depth below the datum");
+  closeTo(rimBounds.max.y, datum, "Rim band tops out flush at the datum, not half a depth low");
+  closeTo(rimBounds.min.x, 3, "Rim band spans from its authored p0");
+  closeTo(rimBounds.max.x, 8, "Rim band spans to its authored p1");
+  closeTo(rimBounds.min.z, -7 - bandWidth / 2, "Rim band stays centred across its own width");
+  closeTo(rimBounds.max.z, -7 + bandWidth / 2, "Rim band stays centred across its own width");
+  disposeGroup(rim);
+
+  // The catlin basement→main U-stair: a 9' well partition springing from the basement
+  // subfloor. Centred on z0 it drew from −13.5' to −4.5', i.e. a wall under the foundation.
+  const stairBase = -2.7432; // −9'
+  const partition = new THREE.Group();
+  buildMembers(partition, [member({
+    key: "well-partition", category: "partition", profile: "2x4", p0: [13, 27], p1: [16, 27],
+    z0_m: stairBase, z1_m: 0, width_m: 0.0381, depth_m: 0.0889, orient: null,
+  })], center, "schematic");
+  const partitionBounds = boundsForObject(partition);
+  closeTo(partitionBounds.min.y, stairBase, "Stair well partition bears on the storey it springs from");
+  closeTo(partitionBounds.max.y, 0, "Stair well partition rises to the arrival deck");
+  disposeGroup(partition);
+  if (categoryColor("partition") === categoryColor("no-such-category")) {
+    throw new Error("Stair well partition must have a framing colour, not the grey fallback");
+  }
+
+  // I-joist plies: bottom flange, web, top flange must tile the section soffit-to-top with
+  // no gaps. Each was previously centred on its own offset, delaminating the section.
+  const flangeThickness = 0.0349;
+  const webDepth = bandDepth - 2 * flangeThickness;
+  const ijoist = new THREE.Group();
+  buildMembers(ijoist, [member({
+    key: "joist", category: "joist", profile: "11.875 I-joist", shape: "i_joist",
+    p0: [13, 27], p1: [18, 27], z0_m: datum - bandDepth, z1_m: datum,
+    width_m: 0.0635, depth_m: bandDepth, flange_width_m: 0.0635,
+    flange_thickness_m: flangeThickness, web_thickness_m: 0.0095, orient: null,
+  })], center, "schematic");
+  const soffit = datum - bandDepth;
+  const expectedPlies: [number, number, string][] = [
+    [soffit, soffit + flangeThickness, "bottom flange"],
+    [soffit + flangeThickness, soffit + flangeThickness + webDepth, "web"],
+    [datum - flangeThickness, datum, "top flange"],
+  ];
+  const plies = ijoist.children
+    .map((child) => boundsForObject(child))
+    .sort((a, b) => a.min.y - b.min.y);
+  if (plies.length !== expectedPlies.length) {
+    throw new Error(`Expected ${expectedPlies.length} i-joist plies, received ${plies.length}`);
+  }
+  expectedPlies.forEach(([low, high, label], index) => {
+    closeTo(plies[index].min.y, low, `I-joist ${label} starts at its section offset`);
+    closeTo(plies[index].max.y, high, `I-joist ${label} ends at its section offset`);
+  });
+  disposeGroup(ijoist);
 }
 
 function checkAsymmetricPlanIsNotReflected() {
@@ -182,6 +252,39 @@ function checkWallUvUsesProjectCoordinates() {
     );
     closeTo(uv.getX(index), (projectY - 20) / (SEAM_PAN_WIDTH_M * 4),
       "Wall UV distance follows authored project Y after scene reflection is removed");
+  }
+  geometry.dispose();
+}
+
+// The deck-board normal map's x-axis runs across the 5½" planks, so tying u to project X is
+// what makes the boards run north–south (perpendicular to the house and to the balcony's
+// east–west joists). A u that varied with project Y would lay them the wrong way.
+function checkDeckBoardUvRunsNorthSouth() {
+  const center: [number, number] = [10, 20];
+  const tile = DECK_BOARD_WIDTH_M * 4;
+  const geometry = createPlanPrismGeometry(
+    [[10, 20], [14, 20], [14, 26], [10, 26]], 3.048, 3.086, [], center,
+  );
+  if (!geometry) throw new Error("Expected deck prism for board-UV orientation test");
+  applyDeckBoardUv(geometry, center);
+  const positions = geometry.getAttribute("position");
+  const uv = geometry.getAttribute("uv");
+  const uByProjectX = new Map<number, number>();
+  for (let index = 0; index < positions.count; index++) {
+    const [projectX, projectY] = projectScenePointToPlan(
+      positions.getX(index), positions.getZ(index), center,
+    );
+    closeTo(uv.getX(index), projectX / tile, "Deck board U counts planks across project X");
+    closeTo(uv.getY(index), projectY / tile, "Deck board V runs along the plank in project Y");
+    const key = Math.round(projectX * 1e6);
+    const seen = uByProjectX.get(key);
+    if (seen !== undefined) {
+      closeTo(uv.getX(index), seen, "Deck boards stay constant along project north");
+    }
+    uByProjectX.set(key, uv.getX(index));
+  }
+  if (uByProjectX.size < 2) {
+    throw new Error("Deck board UV test needs at least two distinct project-X columns");
   }
   geometry.dispose();
 }
