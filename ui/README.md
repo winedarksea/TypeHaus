@@ -56,3 +56,11 @@ no server. Editing routes back to `haus serve`. `scripts/build-pwa-assets.mjs` (
 
 The degraded-mode path is verified end-to-end against real pyodide in
 `../plans/40-m4-gate.md` (load `houses/starter` → model.json + checks + valid `.glb`).
+
+### Client-side IFC export
+
+IFC export is the one offline feature still gated on an external artifact: an ifcopenshell wheel
+built for pyodide/wasm, which is not bundled here. The runtime path is fully wired — drop a wheel
+at `ui/vendor/` (the build copies it to `public/`) and/or set `VITE_IFC_WASM_URL`, and it
+activates automatically; without it the export cleanly degrades. Sourcing/building the wheel is
+out of scope. See [docs/ifc-wasm.md](docs/ifc-wasm.md).

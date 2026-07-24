@@ -37,8 +37,7 @@ const PYODIDE_INDEX_URL = "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/";
 // completes the client-side export path; without it the user gets a precise "run haus serve
 // locally" degradation (see worker.ts ensureIfc). Same-origin, so it works from the served PWA.
 const IFC_EXT_TAR = "typehaus-ifc-ext.tar";
-const IFC_WASM_URL: string | undefined =
-  (import.meta.env.VITE_IFC_WASM_URL as string | undefined) || undefined;
+const IFC_WASM_URL: string | undefined = import.meta.env.VITE_IFC_WASM_URL || undefined;
 
 // Thrown for calls that the offline engine cannot serve without a local install.
 export class OfflineUnsupported extends EngineError {
