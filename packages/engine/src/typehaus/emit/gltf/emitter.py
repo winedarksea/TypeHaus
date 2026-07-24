@@ -52,6 +52,10 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "column": (0.60, 0.60, 0.62, 1.0),  # concrete/wood posts (sonotube, 6x6 pillars)
     "beam": (0.62, 0.46, 0.28, 1.0),  # PT / built-up wood beams
     "furniture": (0.46, 0.31, 0.20, 1.0),
+    # opening fillings — frame/leaf/panel read as wood; glazing is translucent blue-grey
+    # (0x8fb7c9 @ 0.48), matching ui/src/components/Panel3D.tsx buildOpening.
+    "opening_frame": (0.60, 0.42, 0.26, 1.0),
+    "glass": (0.561, 0.718, 0.788, 0.48),
 }
 _FALLBACK = (0.70, 0.70, 0.70, 1.0)
 
@@ -399,6 +403,65 @@ def _add_layer_with_openings(mb, poly, axis, z0, z1, length, ops, color) -> None
         mb.add_prism(_slice(edges, cursor, 1.0), z0, z1, color)
 
 
+def _add_opening_filling(mb: _MeshBuilder, wall: ResolvedWall, opening,
+                         is_double_swing: bool) -> None:
+    """Draw the door/window product itself — frame + panel/leaf/glass — as boxes.
+
+    A straight port of ui/src/components/Panel3D.tsx ``buildOpening`` into the plan frame:
+    a four-piece frame, then either a single door panel, two leaves split at a center
+    mullion (``double_swing``), or a translucent glass pane (window). Rough openings are a
+    bare void with no product, so they draw nothing. Emitted regardless of LOD so the leaf
+    geometry shows for both the core wall prism and the framed stud model.
+    """
+    if opening.kind == "rough_opening":
+        return
+    (x0, y0), (x1, y1) = wall.axis
+    length = math.hypot(x1 - x0, y1 - y0)
+    if length < 1e-9:
+        return
+    ux, uy = (x1 - x0) / length, (y1 - y0) / length
+    nx, ny = -uy, ux  # right-hand wall normal (across the wall depth)
+    posx, posy = x0 + ux * opening.center_along_m, y0 + uy * opening.center_along_m
+    z0, sill = wall.z0_m, opening.sill_m
+    available_height = max(0.0, min(opening.height_m, wall.z1_m - z0 - sill))
+    if available_height <= 1e-9:
+        return
+    width = opening.width_m
+    frame_width = min(0.075, width / 4.0, available_height / 4.0)
+    depth = 0.08
+    frame_color = _color("opening_frame")
+
+    def add_box(box_w: float, box_h: float, box_t: float, along: float,
+                elevation: float, color) -> None:
+        cx, cy = posx + ux * along, posy + uy * along
+        hw, ht = box_w / 2.0, box_t / 2.0
+        ring = [
+            (cx + ux * hw + nx * ht, cy + uy * hw + ny * ht),
+            (cx + ux * hw - nx * ht, cy + uy * hw - ny * ht),
+            (cx - ux * hw - nx * ht, cy - uy * hw - ny * ht),
+            (cx - ux * hw + nx * ht, cy - uy * hw + ny * ht),
+        ]
+        mb.add_prism(ring, elevation - box_h / 2.0, elevation + box_h / 2.0, color)
+
+    mid_elev = z0 + sill + available_height / 2.0
+    add_box(frame_width, available_height, depth, -width / 2.0 + frame_width / 2.0, mid_elev, frame_color)
+    add_box(frame_width, available_height, depth, width / 2.0 - frame_width / 2.0, mid_elev, frame_color)
+    add_box(width, frame_width, depth, 0.0, z0 + sill + available_height - frame_width / 2.0, frame_color)
+    add_box(width, frame_width, depth, 0.0, z0 + sill + frame_width / 2.0, frame_color)
+    panel_height = max(0.01, available_height - 2.0 * frame_width)
+    panel_elev = z0 + sill + frame_width + panel_height / 2.0
+    if opening.kind == "door" and is_double_swing:
+        mullion_width = min(frame_width, (width - 2.0 * frame_width) / 6.0)
+        leaf_width = max(0.01, (width - 2.0 * frame_width - mullion_width) / 2.0)
+        add_box(mullion_width, available_height, depth, 0.0, mid_elev, frame_color)
+        add_box(leaf_width, panel_height, 0.045, -mullion_width / 2.0 - leaf_width / 2.0, panel_elev, frame_color)
+        add_box(leaf_width, panel_height, 0.045, mullion_width / 2.0 + leaf_width / 2.0, panel_elev, frame_color)
+    elif opening.kind == "door":
+        add_box(max(0.01, width - 2.0 * frame_width), panel_height, 0.045, 0.0, panel_elev, frame_color)
+    else:
+        add_box(max(0.01, width - 2.0 * frame_width), panel_height, 0.015, 0.0, panel_elev, _color("glass"))
+
+
 def _add_member(mb: _MeshBuilder, member: FramedMember) -> None:
     half = _member_half_width(member.profile)
     mb.add_member_box(
@@ -513,6 +576,14 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         openings_by_wall.setdefault(op.host_wall, []).append(op)
     for wall in sorted(model.walls, key=lambda w: w.uid):
         _add_wall(mb, wall, lod, openings_by_wall.get(wall.tag, ()))
+    door_operations = {dt.tag: dt.operation for dt in model.plan.library.door_types}
+    walls_by_tag = {wall.tag: wall for wall in model.walls}
+    for op in sorted(model.openings, key=lambda item: item.uid):
+        host = walls_by_tag.get(op.host_wall)
+        if host is None:
+            continue
+        is_double_swing = op.is_door and door_operations.get(op.type_ref) == "double_swing"
+        _add_opening_filling(mb, host, op, is_double_swing)
     for room in sorted(model.rooms, key=lambda r: r.uid):
         if room.clear_face:
             storey_z = _room_z(model, room.storey)
