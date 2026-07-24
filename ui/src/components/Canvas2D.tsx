@@ -2,7 +2,8 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { useStore } from "../state/store";
 import type { Selection } from "../state/store";
 import type { PreviewGeometry } from "../engine/EngineClient";
-import type { CanvasObject, CanvasObjectType, Model, Opening, PlanNode, Stair, Vec2, Wall } from "../model/types";
+import type { CanvasObject, CanvasObjectType, DoorOperation, Model, Opening, PlanNode, Stair, Vec2, Wall } from "../model/types";
+import { bifoldDoorStrokes, overheadDoorStrokes } from "../model/doorSymbols";
 import {
   deriveNodes,
   formatFtIn,
@@ -746,8 +747,9 @@ export function Canvas2D() {
         {model.openings.map((o) => {
           const host = openingHostWall(model.walls, o);
           if (!host || (activeStorey && host.storey !== activeStorey)) return null;
-          const doubleLeaf = o.is_door
-            && model.catalog?.door_types.find((dt) => dt.tag === o.type_ref)?.operation === "double_swing";
+          const operation = o.is_door
+            ? model.catalog?.door_types.find((dt) => dt.tag === o.type_ref)?.operation
+            : undefined;
           return (
             <OpeningShape
               key={o.uid}
@@ -756,7 +758,7 @@ export function Canvas2D() {
               project={project}
               scale={view.scale}
               selected={selection.uid === o.uid}
-              doubleLeaf={doubleLeaf}
+              operation={operation}
               onSelect={selectEl}
               onEdit={editOpeningStable}
               toWorld={unproject}
@@ -1430,14 +1432,14 @@ function WallAssemblyPopupCard({ wall, screen, viewport, onClose }: {
   );
 }
 
-const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selected, doubleLeaf, onSelect, onEdit,
+const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selected, operation, onSelect, onEdit,
   toWorld, onMove, onPreview, onPreviewEnd, preview }: {
   o: Opening;
   host: Wall;
   project: (p: Vec2) => Vec2;
   scale: number;
   selected: boolean;
-  doubleLeaf?: boolean;
+  operation?: DoorOperation;
   onSelect: (kind: Selection["kind"], uid: string) => void;
   onEdit: (o: Opening, screen: Vec2) => void;
   toWorld: (clientX: number, clientY: number) => Vec2;
@@ -1511,7 +1513,18 @@ const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selec
       <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
       stroke={o.is_door ? "var(--canvas-wood)" : NORDIC_ACCENT} strokeWidth={2}
         strokeDasharray={o.is_door ? undefined : "3 2"} />
-      {o.is_door ? (doubleLeaf ? <>
+      {o.is_door ? (operation === "overhead" || operation === "bifold" ? <>
+        {/* Neither operation swings: an overhead sectional rides ceiling track and a
+            bifold folds against its jambs, so both are pure stroke glyphs. */}
+        {(operation === "overhead"
+          ? overheadDoorStrokes([cx, cy], ang, swingSign, o.width_m * scale, o.height_m * scale)
+          : bifoldDoorStrokes([cx, cy], ang, swingSign, o.width_m * scale)
+        ).map((stroke, index) => (
+          <polyline key={index} points={stroke.points.map((point) => point.join(",")).join(" ")}
+            fill="none" stroke="var(--canvas-wood)" strokeWidth={stroke.dashed ? 1 : 1.5}
+            strokeDasharray={stroke.dashed ? "4 3" : undefined} />
+        ))}
+      </> : operation === "double_swing" ? <>
         {/* French/double door — two half-width leaves hinged at the jambs, meeting at
             a centre mullion. Both leaves swing to the same side. */}
         {([-1, 1] as const).map((side) => {

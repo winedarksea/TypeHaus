@@ -33,6 +33,11 @@ const CATEGORY_COLOR: Record<string, number> = {
   sill: 0xa87a4c,
   winder: 0xb3854f,
   bearing_stiffener: 0x996b41,
+  // Stair carriage framing (→ resolve/envelope.py _stair_members). Without these the
+  // U-stair well partition fell through to the grey fallback and read as a wall.
+  partition: 0xb3854f,
+  trimmer: 0xa87a4c,
+  landing: 0xb88c5c,
 };
 const CATEGORY_FALLBACK = 0xb0b0b0;
 
@@ -42,13 +47,23 @@ export function categoryColor(category: string): number {
 
 const UP = new THREE.Vector3(0, 1, 0);
 const _m = new THREE.Matrix4();
-const _pos = new THREE.Vector3();
+const _scale = new THREE.Vector3();
 const _color = new THREE.Color();
+// Degenerate extents would collapse the instance matrix (and its normals); 0.1 mm is far
+// below any real member dimension but keeps the basis invertible.
+const MIN_EXTENT_M = 1e-4;
 
-// A unit box: X,Z in [-0.5, 0.5] (the two cross-section axes), Y in [0, 1] (the run/length
-// axis, base at the local origin) — every rect/i-joist instance is this geometry, scaled +
-// rotated + translated per instance.
-const UNIT_BOX = new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0);
+// A unit box centred on its local origin in ALL THREE axes — every rect/i-joist instance is
+// this geometry, scaled + rotated + translated per instance.
+//
+// The symmetry is the point. This box used to be base-at-origin on local Y only, which made
+// the three axis slots of the instance setter non-interchangeable: passing world-up into one
+// of the two centred slots silently drew a member spanning z0 ± depth/2 instead of z0 → z1,
+// i.e. half its own depth too low. That is exactly what happened to every horizontal member
+// (11.875" rim bands ~6" low; the stair well partition plunging through the foundation).
+// With every axis centred there is no special slot to get wrong: the caller states the box
+// centre once, and each axis is a symmetric ±extent/2.
+const UNIT_BOX = new THREE.BoxGeometry(1, 1, 1);
 
 // Lying-flat members (plates) put their wide face (depth_m) across the wall; on-edge
 // members (headers/joists/rims/beams) put their thin face (width_m) across instead —
@@ -57,15 +72,16 @@ function crossWidth(m: Member): number {
   return m.category === "plate" || m.category === "raked_plate" ? m.depth_m : m.width_m;
 }
 
-// Sets instance `index` of `mesh` to a box with local X along `xAxis` (scale xScale),
-// local Y along `yAxis` (scale yScale, base at `origin`), local Z along `zAxis` (scale
-// zScale). The three axes must already be mutually orthogonal unit vectors.
-function setBoxInstance(mesh: THREE.InstancedMesh, index: number, origin: THREE.Vector3,
-  xAxis: THREE.Vector3, xScale: number, yAxis: THREE.Vector3, yScale: number,
-  zAxis: THREE.Vector3, zScale: number, color: number) {
+// Sets instance `index` of `mesh` to a box centred on `boxCenter`, extending ±extent/2 along
+// each of `xAxis`/`yAxis`/`zAxis` (which must already be mutually orthogonal unit vectors).
+// Every axis behaves identically — see UNIT_BOX for why that symmetry is load-bearing.
+function setCenteredBoxInstance(mesh: THREE.InstancedMesh, index: number, boxCenter: THREE.Vector3,
+  xAxis: THREE.Vector3, xExtent: number, yAxis: THREE.Vector3, yExtent: number,
+  zAxis: THREE.Vector3, zExtent: number, color: number) {
   _m.makeBasis(xAxis, yAxis, zAxis);
-  _m.scale(new THREE.Vector3(xScale, Math.max(yScale, 1e-4), Math.max(zScale, 1e-4)));
-  _m.setPosition(origin);
+  _m.scale(_scale.set(Math.max(xExtent, MIN_EXTENT_M), Math.max(yExtent, MIN_EXTENT_M),
+    Math.max(zExtent, MIN_EXTENT_M)));
+  _m.setPosition(boxCenter);
   mesh.setMatrixAt(index, _m);
   mesh.setColorAt(index, _color.setHex(color));
 }
@@ -78,15 +94,17 @@ function setVerticalInstance(mesh: THREE.InstancedMesh, index: number, m: Member
   const [ox, oz] = m.orient ?? [1, 0];
   const orient = projectPlanDirectionToScene([ox, oz]).normalize();
   const perp = new THREE.Vector3(-orient.z, 0, orient.x);
-  const origin = _pos.copy(projectPointToScene(m.p0, m.z0_m, center)).clone();
-  setBoxInstance(mesh, index, origin, orient, m.width_m, UP, m.z1_m - m.z0_m, perp, m.depth_m,
-    categoryColor(m.category));
+  const boxCenter = projectPointToScene(m.p0, (m.z0_m + m.z1_m) / 2, center);
+  setCenteredBoxInstance(mesh, index, boxCenter, orient, m.width_m, UP, m.z1_m - m.z0_m,
+    perp, m.depth_m, categoryColor(m.category));
 }
 
 // Horizontal member (p0 != p1): the free axis is its own p0->p1 direction (length_m).
 // The through-member axis is in-plan perpendicular to that; the vertical axis is world-up,
 // scaled by the engine's own z1-z0 (already the physically correct depth for this member,
 // whether it's lying flat or standing on edge — see crossWidth for the horizontal face).
+// The box centre is therefore the plan midpoint of p0->p1 at the member's mid-depth, so it
+// occupies exactly z0..z1 the way emit/gltf/emitter.py's add_member_box does.
 function setHorizontalInstance(mesh: THREE.InstancedMesh, index: number, m: Member,
   center: PlanCenter) {
   const dx = m.p1[0] - m.p0[0];
@@ -94,9 +112,10 @@ function setHorizontalInstance(mesh: THREE.InstancedMesh, index: number, m: Memb
   const runLen = Math.hypot(dx, dz);
   const run = runLen > 1e-9 ? projectPlanDirectionToScene([dx / runLen, dz / runLen]) : new THREE.Vector3(1, 0, 0);
   const across = new THREE.Vector3(-run.z, 0, run.x);
-  const origin = _pos.copy(projectPointToScene(m.p0, m.z0_m, center)).clone();
-  setBoxInstance(mesh, index, origin, across, crossWidth(m), run, runLen, UP, m.z1_m - m.z0_m,
-    categoryColor(m.category));
+  const boxCenter = projectPointToScene(
+    [(m.p0[0] + m.p1[0]) / 2, (m.p0[1] + m.p1[1]) / 2], (m.z0_m + m.z1_m) / 2, center);
+  setCenteredBoxInstance(mesh, index, boxCenter, across, crossWidth(m), run, runLen,
+    UP, m.z1_m - m.z0_m, categoryColor(m.category));
 }
 
 interface Buckets {
@@ -210,14 +229,21 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
     const flangeW = m.flange_width_m ?? m.width_m;
     const webT = m.web_thickness_m ?? Math.min(flangeW, 0.01);
     const color = categoryColor(m.category);
-    const base = _pos.copy(projectPointToScene(m.p0, m.z0_m, center)).clone();
+    const webDepth = Math.max(depth - 2 * flangeT, MIN_EXTENT_M);
     const slopedLength = Math.hypot(runLen, rise);
+    // p0/z0 is the joist soffit at the near end; the three plies share that run centre and
+    // differ only in how far their own mid-thickness sits up the section from the soffit.
+    const runCenter = projectPointToScene(m.p0, m.z0_m, center)
+      .addScaledVector(run, slopedLength / 2);
+    const plyCenter = (offsetFromSoffit: number) =>
+      runCenter.clone().addScaledVector(normal, offsetFromSoffit);
 
-    setBoxInstance(bottom, i, base, across, flangeW, run, slopedLength, normal, flangeT, color);
-    setBoxInstance(top, i, base.clone().addScaledVector(normal, depth - flangeT), across, flangeW,
+    setCenteredBoxInstance(bottom, i, plyCenter(flangeT / 2), across, flangeW,
       run, slopedLength, normal, flangeT, color);
-    setBoxInstance(web, i, base.clone().addScaledVector(normal, flangeT), across, webT,
-      run, slopedLength, normal, Math.max(depth - 2 * flangeT, 1e-4), color);
+    setCenteredBoxInstance(web, i, plyCenter(flangeT + webDepth / 2), across, webT,
+      run, slopedLength, normal, webDepth, color);
+    setCenteredBoxInstance(top, i, plyCenter(depth - flangeT / 2), across, flangeW,
+      run, slopedLength, normal, flangeT, color);
   });
   for (const mesh of [top, bottom, web]) {
     mesh.instanceMatrix.needsUpdate = true;

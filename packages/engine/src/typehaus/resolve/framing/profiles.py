@@ -19,6 +19,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from typehaus.model.assembly import FramingSpec
 from typehaus.quantities import inch
 from typehaus.resolve.framing.tables import LUMBER_ACTUAL
 
@@ -44,6 +45,19 @@ _RE_MULTI_NOMINAL = re.compile(r"^(?P<plies>\d+)-(?P<nominal>\d+x\d+)$")
 _RE_NOMINAL = re.compile(r"^\d+x\d+$")
 # Round column, e.g. a 12" sonotube-cast concrete pier: "12 round".
 _RE_ROUND = re.compile(r"^(?P<dia>\d+(?:\.\d+)?)\s+round$")
+# Sheet goods swept as a member rather than milled lumber — a soffit panel, or the
+# sheathing/cladding band that closes a raised heel or a gable end. Written
+# "<width>x<thickness> panel" in inches: ``width`` is the face the panel presents across
+# its run, ``thickness`` its sheet thickness. Real panels come in arbitrary dimensions,
+# so they cannot be spelled as a nominal lumber size.
+_RE_PANEL = re.compile(
+    r"^(?P<width>\d+(?:\.\d+)?)x(?P<thickness>\d+(?:\.\d+)?)\s+panel$"
+)
+
+
+def panel_profile(width_in: float, thickness_in: float) -> str:
+    """The canonical ``"<width>x<thickness> panel"`` profile string for sheet goods."""
+    return f"{width_in:g}x{thickness_in:g} panel"
 
 
 @dataclass(frozen=True)
@@ -106,6 +120,9 @@ def cross_section(profile: str) -> CrossSection:
         thickness_in, depth_in = LUMBER_ACTUAL.get(text, _FALLBACK_ACTUAL_IN)
         return _rect(thickness_in, depth_in)
 
+    if match := _RE_PANEL.match(text):
+        return _rect(float(match["width"]), float(match["thickness"]))
+
     if match := _RE_ROUND.match(text):
         dia_m = inch(float(match["dia"])).meters
         return CrossSection(shape="round", width_m=dia_m, depth_m=dia_m)
@@ -114,3 +131,13 @@ def cross_section(profile: str) -> CrossSection:
         return _rect(*_ENGINEERED_LVL_ACTUAL_IN)
 
     return _rect(*_FALLBACK_ACTUAL_IN)
+
+
+def truss_chord_depth_m(spec: FramingSpec) -> float:
+    """Depth of a truss chord: the chord member when specified, else the wall member.
+
+    Lives here rather than in ``resolve.roof_geometry`` because both that module and
+    ``resolve.framing.roof_gable`` need it, and ``roof_geometry`` already imports this
+    one — hosting it there put a cycle between them one import-order change away.
+    """
+    return cross_section(spec.chord_member or spec.member).depth_m

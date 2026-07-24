@@ -78,24 +78,50 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "sump": (0.30, 0.32, 0.34, 1.0),       # pit
     "vent": (0.88, 0.88, 0.86, 1.0),       # painted vent pipe
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
+    "soffit": (0.88, 0.88, 0.85, 1.0),     # vented soffit panel under the overhang
     "gutter": (0.85, 0.86, 0.87, 1.0),     # metal gutter
     "flashing": (0.75, 0.77, 0.80, 1.0),   # metal flashing
 }
 _FALLBACK = (0.70, 0.70, 0.70, 1.0)
 
+# The selection-kind vocabulary the UI honours — mirrors ``SelectionKind`` in
+# ui/src/state/store.ts and the ``kind`` accepted by Panel3D.wholeHouseGlbAssignment. Held as
+# an explicit set so a typo raises here instead of silently shipping an unselectable node.
+_SELECTION_KINDS = frozenset({
+    "wall", "opening", "room", "solid", "footing_bedding", "floor", "roof", "stair",
+    "canvas_object",
+})
+
 Vec3 = tuple[float, float, float]
+
+
+class _TriangleIndices(list):
+    """A bucket's triangle index list, plus the analytic per-corner normals that a few faces
+    want instead of the geometric one.
+
+    Keyed by triangle ordinal (``index position // 3``). Only curved surfaces register — today
+    just the arch soffit, whose facets lie on a true cylinder — so ``_deindex_with_normals`` can
+    shade them as one curve while every other face keeps its crisp geometric normal. Carried on
+    the list itself so a bucket still travels as one thing through the scene assembler.
+    """
+
+    __slots__ = ("smooth_face_normals",)
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.smooth_face_normals: dict[int, tuple[Vec3, Vec3, Vec3]] = {}
 
 
 class _MeshBuilder:
     """Accumulates triangles bucketed by color; emits interleaved position + index buffers."""
 
     def __init__(self) -> None:
-        # color -> (positions: list[Vec3], indices: list[int])
+        # color -> (positions: list[Vec3], indices: _TriangleIndices)
         self._buckets: dict[tuple[float, float, float, float],
-                            tuple[list[Vec3], list[int]]] = {}
+                            tuple[list[Vec3], _TriangleIndices]] = {}
 
     def _bucket(self, color: tuple[float, float, float, float]):
-        return self._buckets.setdefault(color, ([], []))
+        return self._buckets.setdefault(color, ([], _TriangleIndices()))
 
     def add_prism(self, ring: list[tuple[float, float]], z0: float, z1: float,
                   color: tuple[float, float, float, float]) -> None:
@@ -242,30 +268,55 @@ class _MeshBuilder:
     def add_arched_spandrel(self, edges, opening_start: float, opening_end: float,
                             z1: float, springline: float, radius: float,
                             color: tuple[float, float, float, float]) -> None:
-        """Add one continuous curved concrete head, not a stack of prism strips."""
+        """Add one continuous curved concrete head, not a stack of prism strips.
+
+        The soffit is a cylinder about a horizontal axis through the springlines, so each of its
+        facets registers the analytic surface normal (:class:`_TriangleIndices`). Without that,
+        an importer shades it as ``_arch_soffit_segment_count`` flat strips however finely it is
+        tessellated. Every other face — flat top, wall-depth sides, jambs — keeps its crisp
+        geometric normal.
+        """
         positions, indices = self._bucket(color)
+        segment_count = _arch_soffit_segment_count(radius)
         base = len(positions)
-        for segment in range(_ARCH_CURVE_SEGMENTS + 1):
-            fraction = opening_start + (
-                (opening_end - opening_start) * segment / _ARCH_CURVE_SEGMENTS
-            )
-            offset = ((segment / _ARCH_CURVE_SEGMENTS) - 0.5) * radius * 2.0
-            soffit = min(z1, springline + math.sqrt(max(0.0, radius * radius - offset * offset)))
+        # The soffit normal rotates in the vertical plane containing the wall axis.
+        (edge_start, edge_end) = edges[0]
+        run = math.hypot(edge_end[0] - edge_start[0], edge_end[1] - edge_start[1]) or 1.0
+        ux, uy = (edge_end[0] - edge_start[0]) / run, (edge_end[1] - edge_start[1]) / run
+        soffit_normals: list[Vec3 | None] = []
+        for segment in range(segment_count + 1):
+            offset, height = _arch_soffit_sample(segment, segment_count, radius)
+            fraction = opening_start + (opening_end - opening_start) * (
+                (offset + radius) / (2.0 * radius))
+            crown = springline + height
+            soffit = min(z1, crown)
             front = _lerp(edges[0][0], edges[0][1], fraction)
             back = _lerp(edges[1][0], edges[1][1], fraction)
             positions.extend((_to_gltf(*front, soffit), _to_gltf(*back, soffit),
                               _to_gltf(*front, z1), _to_gltf(*back, z1)))
-        for segment in range(_ARCH_CURVE_SEGMENTS):
+            # A sample clipped by the wall top no longer sits on the circle, so it earns no
+            # analytic normal and its facets fall back to the geometric one.
+            soffit_normals.append(None if soffit < crown - 1e-9 else _to_gltf(
+                offset / radius * ux, offset / radius * uy, height / radius))
+        for segment in range(segment_count):
             current, next_ = base + segment * 4, base + (segment + 1) * 4
-            # Curved soffit and flat top.
-            indices.extend((current, next_ + 1, next_, current, current + 1, next_ + 1))
+            here, there = soffit_normals[segment], soffit_normals[segment + 1]
+            # Curved soffit — two triangles carrying the cylinder's own normals.
+            for corners in ((current, next_ + 1, next_), (current, current + 1, next_ + 1)):
+                ordinal = len(indices) // 3
+                indices.extend(corners)
+                if here is not None and there is not None:
+                    indices.smooth_face_normals[ordinal] = tuple(
+                        here if corner in (current, current + 1) else there
+                        for corner in corners)
+            # Flat top.
             indices.extend((current + 2, next_ + 2, next_ + 3,
                             current + 2, next_ + 3, current + 3))
             # The two wall-depth faces are continuous across the full arch.
             indices.extend((current, next_, next_ + 2, current, next_ + 2, current + 2,
                             current + 1, current + 3, next_ + 3, current + 1, next_ + 3, next_ + 1))
         # Close the jamb faces at each springline.
-        for section in (base, base + _ARCH_CURVE_SEGMENTS * 4):
+        for section in (base, base + segment_count * 4):
             indices.extend((section, section + 2, section + 3, section, section + 3, section + 1))
 
     def is_empty(self) -> bool:
@@ -318,13 +369,17 @@ class _SceneBuilder:
 
     def add_object(self, mb: "_MeshBuilder", trade: str,
                    kind: str | None = None, uid: str | None = None) -> None:
-        """Emit one node for ``mb``'s geometry, tagged so the UI can classify it by trade.
+        """Emit one node for ``mb``'s geometry, tagged so the UI can classify and select it.
 
-        ``kind`` is only ever ``"wall"`` or ``"canvas_object"`` (the selectable kinds the UI
-        honours); ``uid`` is only carried for those selectable nodes. Envelope geometry passes
-        neither, so it lands in the right visibility group without becoming pickable. A node with
-        no geometry is skipped entirely, so it can never become an unclassifiable renderable mesh.
+        ``kind`` is one of ``_SELECTION_KINDS`` — the same vocabulary the live viewer's pick
+        handler emits — and ``uid`` is the model uid picking and highlight resolve against.
+        Geometry that belongs to a parent element (a wall's studs, a floor's joists) passes its
+        *parent's* kind + uid, matching the viewer: individual framing members are merged into
+        shared draw calls and never carry an identity of their own. A node with no geometry is
+        skipped entirely, so it can never become an unclassifiable renderable mesh.
         """
+        if kind is not None and kind not in _SELECTION_KINDS:
+            raise ValueError(f"unknown selection kind {kind!r}; expected one of {sorted(_SELECTION_KINDS)}")
         primitives: list[dict] = []
         for color, positions, indices in mb.buckets():
             # De-index into flat triangle soup with one geometric normal per face. Every builder
@@ -420,7 +475,13 @@ def _deindex_with_normals(positions: list[Vec3],
                           indices: list[int]) -> tuple[list[Vec3], list[Vec3]]:
     """Expand an indexed triangle mesh into flat triangle soup with one geometric normal per
     face. Hard edges stay crisp (each face carries its own normal on unshared vertices) and
-    degenerate zero-area triangles are dropped."""
+    degenerate zero-area triangles are dropped.
+
+    A face listed in ``indices.smooth_face_normals`` (see :class:`_TriangleIndices`; today only
+    the arch soffit, which lies on a true cylinder) ships the supplied analytic per-corner
+    normals instead, so adjacent facets shade as one continuous curve.
+    """
+    smooth_faces = getattr(indices, "smooth_face_normals", {})
     out_pos: list[Vec3] = []
     out_nrm: list[Vec3] = []
     for i in range(0, len(indices) - 2, 3):
@@ -429,7 +490,16 @@ def _deindex_with_normals(positions: list[Vec3],
         if normal is None:
             continue
         out_pos.extend((a, b, c))
-        out_nrm.extend((normal, normal, normal))
+        smooth = smooth_faces.get(i // 3)
+        if smooth is None:
+            out_nrm.extend((normal, normal, normal))
+            continue
+        # Replace the facet's direction only. The outward sense stays whatever the triangle
+        # winding established, so the single-sided-material contract is untouched; all three
+        # corners flip together or not at all.
+        agreement = sum(sum(s * f for s, f in zip(corner, normal)) for corner in smooth)
+        sign = -1.0 if agreement < 0.0 else 1.0
+        out_nrm.extend(tuple(sign * component for component in corner) for corner in smooth)
     return out_pos, out_nrm
 
 
@@ -504,9 +574,22 @@ def _hex_rgba(hex_str: str) -> tuple[float, float, float, float]:
 # viewer's procedural finishes with one flat base colour (no baked textures): a standing-seam
 # wall reads near-white, CMU reads grey block, white brick reads whitewashed, and any other
 # recognised material falls back to its material-family colour.
+#
+# ``_FINISH_BASE`` is keyed by the engine's finish vocabulary (model/materials.py
+# ``Material.finish``, mirrored by MASONRY_STYLES in ui/src/three/materials.ts). A resolved
+# layer carries only its material *ref*, not the authored Material, so the ref is matched
+# against that vocabulary by name first — an exact, spelling-independent hit for any material
+# whose tag is its finish — and only then falls back to the substring guesswork below.
 _SEAM_BASE = "#e8e8e2"          # Panel3D.tsx createStandingSeamMaterial base (0xE8E8E2)
 _CMU_BASE = "#9c988f"           # materials.ts CMU_STYLE.base
 _WHITE_BRICK_BASE = "#e9e6df"   # materials.ts WHITE_BRICK_STYLE.base
+_DECK_BOARD_BASE = "#b9bcc0"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0xb9bcc0)
+
+_FINISH_BASE: dict[str, str] = {
+    "standing-seam": _SEAM_BASE,
+    "cmu": _CMU_BASE,
+    "white-brick": _WHITE_BRICK_BASE,
+}
 
 
 def _is_standing_seam(material_ref: str | None) -> bool:
@@ -528,13 +611,29 @@ def _is_white_brick(material_ref: str | None) -> bool:
     return "white" in s or "limewash" in s or "whitewash" in s
 
 
+def _is_aluminum_deck_board(material_ref: str | None) -> bool:
+    """Aluminum plank decking — the viewer's grooved 5.5" board finish (materials.ts
+    isAluminumDeckBoard). The metal family colour would read as dark flashing, so the
+    export pins the plank's own mill-finish base instead."""
+    if not material_ref:
+        return False
+    s = material_ref.lower()
+    return "deck" in s and ("alum" in s or family_of(material_ref) == "metal")
+
+
 def _material_finish_color(material_ref: str | None,
                            function: str) -> tuple[float, float, float, float]:
-    """Colour a material by its family + finish classification, mirroring the viewer's
-    materialColor. ``function`` is the lowercased layer function string ("cladding", …), used
-    for the standing-seam test and as the fallback palette key when no family is recognised."""
+    """Colour a material by its named finish, else its family + finish classification, mirroring
+    the viewer's materialColor. ``function`` is the lowercased layer function string
+    ("cladding", …), used for the standing-seam test and as the fallback palette key when no
+    family is recognised."""
+    named = _FINISH_BASE.get((material_ref or "").lower())
+    if named is not None:
+        return _hex_rgba(named)
     if function == "cladding" and _is_standing_seam(material_ref):
         return _hex_rgba(_SEAM_BASE)
+    if _is_aluminum_deck_board(material_ref):
+        return _hex_rgba(_DECK_BOARD_BASE)
     if family_of(material_ref) == "masonry":
         if _is_cmu(material_ref):
             return _hex_rgba(_CMU_BASE)
@@ -560,6 +659,8 @@ def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, floa
         if assembly is not None and assembly.layers:
             idx = assembly.structure_index()
             layer = assembly.layers[idx if idx is not None else 0]
+            if _is_aluminum_deck_board(layer.material_ref):
+                return _hex_rgba(_DECK_BOARD_BASE)
             material = next((m for m in model.plan.library.materials
                              if m.tag == layer.material_ref), None)
             if material is not None:
@@ -567,23 +668,93 @@ def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, floa
     return _color(solid.category)
 
 
-_ARCH_CURVE_SEGMENTS = 64  # smooth tessellation for the single curved arch mesh
+# A soffit facet may deviate from the true circle by at most this. The segment count then falls
+# out of the arch's radius, so an 8'-wide garden arch and a small niche head are equally smooth.
+_ARCH_SOFFIT_CHORD_TOLERANCE_M = 0.0005
+_ARCH_SOFFIT_MIN_SEGMENTS = 24
+_ARCH_SOFFIT_MAX_SEGMENTS = 192
+# A vertex this far off the chord between its neighbours is a real corner; closer is padding.
+_COLLINEAR_VERTEX_TOLERANCE_M = 1e-6
+
+
+def _arch_soffit_segment_count(radius_m: float) -> int:
+    """Segments for a half-circle soffit sampled at even angular steps. One step's mid-chord
+    sagitta is ``r * (1 - cos(pi / 2n))``, so inverting it ties tessellation to the arch's actual
+    size instead of a flat guess. Mirrors ``archSoffitSegmentCount`` in Panel3D.tsx."""
+    if radius_m <= _ARCH_SOFFIT_CHORD_TOLERANCE_M:
+        return _ARCH_SOFFIT_MIN_SEGMENTS
+    half_step = math.acos(max(-1.0, 1.0 - _ARCH_SOFFIT_CHORD_TOLERANCE_M / radius_m))
+    count = math.ceil(math.pi / (2.0 * half_step))
+    return max(_ARCH_SOFFIT_MIN_SEGMENTS, min(_ARCH_SOFFIT_MAX_SEGMENTS, count))
+
+
+def _arch_soffit_sample(segment: int, segment_count: int,
+                        radius_m: float) -> tuple[float, float]:
+    """(offset from the arch centreline, height above the springline) at one angular step.
+
+    The arc is walked by *angle*: stepping evenly in x collapses near the springlines, where a
+    semicircle turns vertical, so the outermost step alone spanned ~40 cm of rise on the catlin
+    arches — the "striping". Mirrors ``archSoffitSample`` in Panel3D.tsx.
+    """
+    angle = math.pi * segment / segment_count
+    return -radius_m * math.cos(angle), radius_m * math.sin(angle)
+
+
+def _without_collinear_vertices(ring, tolerance_m: float = _COLLINEAR_VERTEX_TOLERANCE_M):
+    """Drop vertices that sit on the straight line between their neighbours.
+
+    Junction resolution splits a wall layer's long edges at every crossing wall, so an authored
+    rectangle serializes as five, six or eight points (77 of catlin's 607 layers). Anything that
+    needs to *recognise* a rectangle has to reduce first. Mirrors ``withoutCollinearVertices``
+    in ui/src/components/Panel3D.tsx — keep the two in step.
+
+    A fully collinear (degenerate) ring reduces to nothing; callers decide what that means.
+    """
+    deduped = _dedupe_ring(list(ring))
+    if len(deduped) < 3:
+        return deduped
+    corners = []
+    count = len(deduped)
+    for index in range(count):
+        (px, py) = deduped[index - 1]
+        (cx, cy) = deduped[index]
+        (qx, qy) = deduped[(index + 1) % count]
+        span_x, span_y = qx - px, qy - py
+        span = math.hypot(span_x, span_y)
+        # Perpendicular distance, in metres, of this vertex from the chord between its neighbours.
+        offset = (math.hypot(cx - px, cy - py) if span < tolerance_m
+                  else abs((cx - px) * span_y - (cy - py) * span_x) / span)
+        if offset > tolerance_m:
+            corners.append((cx, cy))
+    return corners
 
 
 def _thin_rect_edges(poly, axis):
     """The two long edges of a wall layer's thin-rectangle footprint, each oriented
-    start→end along the wall axis, so a fractional slice maps to along-axis position."""
+    start→end along the wall axis, so a fractional slice maps to along-axis position.
+
+    The ring is reduced to real corners first, then the edges are read off *their* wall-local
+    bounding rectangle. Sorting the raw ring instead picked two vertices off the same face of a
+    collinear-padded ring, which exported the 16" sunken-garden arch wall as an 8" one — 182 of
+    catlin's 607 layers reached the .glb at the wrong thickness that way.
+    """
     (p0x, p0y), (p1x, p1y) = axis
     tx, ty = p1x - p0x, p1y - p0y
     length = math.hypot(tx, ty) or 1.0
     tx, ty = tx / length, ty / length
     nx, ny = -ty, tx
-    along = lambda v: (v[0] - p0x) * tx + (v[1] - p0y) * ty
-    perp = lambda v: (v[0] - p0x) * nx + (v[1] - p0y) * ny
-    ordered = sorted(poly, key=along)
-    starts = sorted(ordered[:2], key=perp)
-    ends = sorted(ordered[2:], key=perp)
-    return (starts[0], ends[0]), (starts[1], ends[1])
+    # A fully collinear (degenerate) ring reduces to nothing; its raw extent is all there is.
+    corners = _without_collinear_vertices(poly) or list(poly)
+    alongs = [(v[0] - p0x) * tx + (v[1] - p0y) * ty for v in corners]
+    perps = [(v[0] - p0x) * nx + (v[1] - p0y) * ny for v in corners]
+    min_along, max_along = min(alongs), max(alongs)
+    min_perp, max_perp = min(perps), max(perps)
+
+    def at(along: float, perp: float) -> tuple[float, float]:
+        return (p0x + tx * along + nx * perp, p0y + ty * along + ny * perp)
+
+    return ((at(min_along, min_perp), at(max_along, min_perp)),
+            (at(min_along, max_perp), at(max_along, max_perp)))
 
 
 def _lerp(p, q, t):
@@ -961,7 +1132,9 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
     the 3D UI can promote the whole-house glb to the primary scene. Trades mirror
     Panel3D.setModel: walls→walls, wall/roof/floor/stair framing members→framing, openings→
     openings, solids & footing beddings→concrete, rooms & floors→floors, roofs→roof,
-    stairs→stairs, canvas objects routed by domain.
+    stairs→stairs, canvas objects routed by domain. Every node carries a kind + uid so the
+    export preserves the same per-element identity the viewer picks against; a framing node
+    inherits the kind + uid of the wall / roof / floor / stair that owns it.
     """
     scene = _SceneBuilder()
     openings_by_wall: dict[str, list] = {}
@@ -978,7 +1151,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             framing = _MeshBuilder()
             for member in wall.members:
                 _add_member(framing, member)
-            scene.add_object(framing, trade="framing")
+            scene.add_object(framing, trade="framing", kind="wall", uid=wall.uid)
 
     door_operations = {dt.tag: dt.operation for dt in model.plan.library.door_types}
     walls_by_tag = {wall.tag: wall for wall in model.walls}
@@ -989,44 +1162,44 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         mb = _MeshBuilder()
         is_double_swing = op.is_door and door_operations.get(op.type_ref) == "double_swing"
         _add_opening_filling(mb, host, op, is_double_swing)
-        scene.add_object(mb, trade="openings")
+        scene.add_object(mb, trade="openings", kind="opening", uid=op.uid)
 
     for room in sorted(model.rooms, key=lambda r: r.uid):
         if room.clear_face:
             storey_z = _room_z(model, room.storey)
             mb = _MeshBuilder()
             mb.add_prism(room.clear_face, storey_z, storey_z + 0.02, _color("floor"))
-            scene.add_object(mb, trade="floors")
+            scene.add_object(mb, trade="floors", kind="room", uid=room.uid)
 
     for solid in sorted(model.solids, key=lambda item: item.uid):
         if solid.outline:
             mb = _MeshBuilder()
             mb.add_prism_with_rectangular_voids(solid.outline, solid.voids, solid.z0_m,
                                                 solid.z1_m, _solid_color(model, solid))
-            scene.add_object(mb, trade="concrete")
+            scene.add_object(mb, trade="concrete", kind="solid", uid=solid.uid)
 
     for bedding in sorted(model.footing_beddings, key=lambda item: item.uid):
         if bedding.outline and bedding.z1_m > bedding.z0_m:
             mb = _MeshBuilder()
             mb.add_prism(bedding.outline, bedding.z0_m, bedding.z1_m, _color("pad"))
-            scene.add_object(mb, trade="concrete")
+            scene.add_object(mb, trade="concrete", kind="footing_bedding", uid=bedding.uid)
 
     for roof in sorted(model.roofs, key=lambda item: item.uid):
         mb = _MeshBuilder()
         _add_roof(mb, roof, model)
-        scene.add_object(mb, trade="roof")
+        scene.add_object(mb, trade="roof", kind="roof", uid=roof.uid)
 
     for floor in sorted(model.floors, key=lambda item: item.uid):
         mb = _MeshBuilder()
         for member in floor.members:
             _add_member(mb, member)
-        scene.add_object(mb, trade="floors")
+        scene.add_object(mb, trade="floors", kind="floor", uid=floor.uid)
 
     for stair in sorted(model.stairs, key=lambda item: item.uid):
         mb = _MeshBuilder()
         for member in stair.members:
             _add_member(mb, member)
-        scene.add_object(mb, trade="stairs")
+        scene.add_object(mb, trade="stairs", kind="stair", uid=stair.uid)
 
     _add_canvas_objects(scene, model)
 

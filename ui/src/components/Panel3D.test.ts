@@ -1,9 +1,19 @@
 import * as THREE from "three";
-import type { FootingBedding, Opening, Wall, Model } from "../model/types";
-import { buildFootingBedding, canvasObjectFallbackGeometry, compassBearingScreenDirection, earthElevation, earthOutline, earthVoids, EARTH_FALLBACK_HALF_SIZE_M, FOOTING_BEDDING_COLOR, wallLayerPieces, wholeHouseGlbAssignment } from "./Panel3D";
+import type { Catalog, Floor, FootingBedding, Member, Opening, Roof, Solid, Stair, Wall, Model } from "../model/types";
+import { archSoffitSegmentCount, buildFloor, buildFootingBedding, buildOpening, buildRoof, buildSolid, buildStair, canvasObjectFallbackGeometry, compassBearingScreenDirection, createSmoothArchedWallLayerGeometry, earthElevation, earthOutline, earthVoids, EARTH_FALLBACK_HALF_SIZE_M, FOOTING_BEDDING_COLOR, wallLayerPieces, wholeHouseGlbAssignment, withoutCollinearVertices } from "./Panel3D";
+import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
+import { SOLID_CATEGORY_COLOR, createSolidMaterial, solidColor } from "../three/solidMaterials";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
+}
+
+const PALETTE = RESOLVED_NORDIC_PALETTE.light;
+
+// A fresh, empty selection registry — the two structures createScene threads through every
+// builder (the raycast target list and the uid → materials index the highlight pass drives).
+function registry() {
+  return { picks: [] as THREE.Mesh[], byUid: new Map<string, THREE.Material[]>() };
 }
 
 function wall(axis: Wall["axis"], topZ0: number | null = null, topZ1: number | null = null): Wall {
@@ -14,10 +24,10 @@ function wall(axis: Wall["axis"], topZ0: number | null = null, topZ1: number | n
   };
 }
 
-function opening(centerAlongM: number, sillM = 0.9, heightM = 1.2, archRiseM = 0): Opening {
+function opening(centerAlongM: number, sillM = 0.9, heightM = 1.2, archRiseM = 0, widthM = 1): Opening {
   return {
     uid: "opening", tag: "O-1", host: "W-1", kind: "window", is_door: false,
-    provenance: null, type_ref: "WIN", width_m: 1, height_m: heightM, sill_m: sillM,
+    provenance: null, type_ref: "WIN", width_m: widthM, height_m: heightM, sill_m: sillM,
     center_along_m: centerAlongM, arch_rise_m: archRiseM, flip_hinge: false, flip_swing: false,
   };
 }
@@ -30,11 +40,18 @@ export function runOpeningGeometryTests() {
   assert(!horizontal.some((piece) => piece.z0_m < 2.1 && piece.z1_m > 0.9 && piece.polygon.some(([x]) => x > 1.5 && x < 2.5)),
     "No horizontal-wall piece fills the window void");
 
-  const arched = wallLayerPieces(wall([[0, 0], [4, 0]]), [[0, -0.1], [4, -0.1], [4, 0.1], [0, 0.1]], [opening(2, 0, 1, 0.5)]);
-  const archSpandrels = arched.filter((piece) => piece.z0_m > 0);
-  assert(archSpandrels.length === 32, "Strip fallback retains a smooth arch curve for complex wall layers");
+  // A raked wall cannot be swept as one Shape, so its arch still falls back to stepped strips —
+  // but they are stepped by angle, so no single strip carries a springline-sized riser.
+  const rakedArch = wallLayerPieces(wall([[0, 0], [4, 0]], 3, 2.4),
+    [[0, -0.1], [4, -0.1], [4, 0.1], [0, 0.1]], [opening(2, 0, 1, 0.5)]);
+  const archSpandrels = rakedArch.filter((piece) => piece.z0_m > 0);
+  assert(archSpandrels.length === archSoffitSegmentCount(0.5),
+    "Strip fallback tessellates the arch to its radius-derived segment count");
   assert(Math.max(...archSpandrels.map((piece) => piece.z0_m)) > Math.min(...archSpandrels.map((piece) => piece.z0_m)),
     "Arch soffit rises from its springlines to a visible crown");
+  const risers = archSpandrels.slice(1).map((piece, index) => Math.abs(piece.z0_m - archSpandrels[index].z0_m));
+  assert(Math.max(...risers) < 0.5 / 2,
+    "Angular sampling keeps every soffit step well under the radius — even-x steps dropped ~85% of it at the springline");
 
   const vertical = wallLayerPieces(wall([[0, 0], [0, 4]]), [[-0.1, 0], [0.1, 0], [0.1, 4], [-0.1, 4]], [opening(2)]);
   assert(vertical.length === 4, "Vertical wall uses the same axis-relative opening split");
@@ -49,6 +66,62 @@ export function runOpeningGeometryTests() {
   );
   assert(mitered.some((piece) => piece.polygon.some(([x, y]) => x === -0.25 && y === 0)),
     "Opening splitting preserves a junction-solved miter vertex");
+}
+
+// Arches must read as true half circles, not a stack of stripes. That needs the swept-Shape
+// path — and the guard that admits a layer to it has to see past the collinear vertices
+// junction resolution leaves on the ring, or every real arched wall falls back to strips.
+export function runArchGeometryTests() {
+  assert(withoutCollinearVertices([[0, 0], [2, 0], [4, 0], [4, 1], [0, 1]]).length === 4,
+    "A rectangle padded with an edge-splitting vertex reduces to its four corners");
+  assert(withoutCollinearVertices([[-0.25, 0], [0, -0.25], [4, -0.25], [4, 0.25], [0, 0.25]]).length === 5,
+    "A junction-solved miter vertex is a real corner and survives reduction");
+  assert(withoutCollinearVertices([[0, 0], [4, 0], [4, 1], [4, 1], [0, 1]]).length === 4,
+    "Duplicate vertices collapse without inventing a corner");
+
+  assert(archSoffitSegmentCount(1.2192) > archSoffitSegmentCount(0.3),
+    "Tessellation follows the arch radius rather than a flat constant");
+
+  // W-SG-ARCH's serialized 16" concrete layer: one rectangle, six points.
+  const archWall = wall([[0, 0], [6, 0]]);
+  const paddedThinRect: [number, number][] = [[0.5, -0.2], [0.5, 0], [0.5, 0.2], [5.5, 0.2], [5.5, 0], [5.5, -0.2]];
+  const arch = opening(3, 0.1, 2.4, 1.2, 2.4);
+  const smooth = createSmoothArchedWallLayerGeometry(archWall, paddedThinRect, [arch], [0, 0]);
+  assert(smooth !== null, "A collinear-padded rectangle still takes the smooth swept-arch path");
+  const box = new THREE.Box3().setFromBufferAttribute(smooth.getAttribute("position") as THREE.BufferAttribute);
+  assert(Math.abs((box.max.z - box.min.z) - 0.4) < 1e-6,
+    "The swept layer keeps its full authored thickness");
+
+  // Every soffit vertex carries the analytic cylinder normal, so adjacent facets shade as one
+  // curve instead of ARCH segment-count flats. Wall axis is +x, so scene x/y are the shape plane.
+  const position = smooth.getAttribute("position");
+  const normal = smooth.getAttribute("normal");
+  const springline = archWall.z0_m + arch.sill_m + (arch.height_m - (arch.arch_rise_m ?? 0));
+  let soffitVertices = 0;
+  for (let index = 0; index < position.count; index++) {
+    // The front/back caps also have vertices on the arc; they must keep their axial normals.
+    if (Math.abs(normal.getZ(index)) > 0.5) continue;
+    const dx = position.getX(index) - arch.center_along_m;
+    const dy = position.getY(index) - springline;
+    const distance = Math.hypot(dx, dy);
+    // Positions are float32, so allow a hair of slack around the circle and the springline.
+    if (dy < 1e-4 || Math.abs(distance - 1.2) > 1e-4) continue;
+    soffitVertices++;
+    const aligned = Math.abs(normal.getX(index) * dx / distance + normal.getY(index) * dy / distance);
+    assert(aligned > 1 - 1e-5 && Math.abs(normal.getZ(index)) < 1e-5,
+      "Soffit normals are radial to the arch circle, not per-facet");
+  }
+  assert(soffitVertices > archSoffitSegmentCount(1.2),
+    "The soffit ring was actually found and smoothed");
+
+  assert(createSmoothArchedWallLayerGeometry(archWall, paddedThinRect, [opening(3)], [0, 0]) === null,
+    "A wall with no arched opening keeps the ordinary extrusion path");
+  assert(createSmoothArchedWallLayerGeometry(
+    wall([[0, 0], [6, 0]], 3, 2.4), paddedThinRect, [arch], [0, 0]) === null,
+    "A raked wall cannot be swept as one Shape and falls back to strips");
+  assert(createSmoothArchedWallLayerGeometry(archWall,
+    [[-0.25, 0], [0, -0.2], [6, -0.2], [6, 0.2], [0, 0.2]], [arch], [0, 0]) === null,
+    "A genuinely non-rectangular (mitered) footprint still falls back to strips");
 }
 
 export function runEarthGeometryTests() {
@@ -96,7 +169,8 @@ export function runFootingBeddingGeometryTests() {
     aggregate: "washed-stone", geotextile: true, drain_tile: true, provenance: null,
   } as FootingBedding;
   const group = new THREE.Group();
-  buildFootingBedding(group, bedding, [0, 0], "schematic");
+  const schematic = registry();
+  buildFootingBedding(group, bedding, [0, 0], "schematic", schematic.picks, schematic.byUid);
   const meshes = group.children.filter((child): child is THREE.Mesh => child instanceof THREE.Mesh);
   assert(meshes.length === 1, "Footing bedding renders one gravel prism (schematic omits the edge overlay)");
   const box = new THREE.Box3().setFromObject(meshes[0]);
@@ -107,13 +181,148 @@ export function runFootingBeddingGeometryTests() {
 
   // Nordic mode adds a faceted edge overlay for legibility.
   const nordic = new THREE.Group();
-  buildFootingBedding(nordic, bedding, [0, 0], "nordic");
+  const nordicRegistry = registry();
+  buildFootingBedding(nordic, bedding, [0, 0], "nordic", nordicRegistry.picks, nordicRegistry.byUid);
   assert(nordic.children.some((child) => child instanceof THREE.LineSegments),
     "Nordic footing bedding gains an edge overlay");
+  assert(nordicRegistry.picks.length === 1,
+    "The edge overlay stays out of the raycast set — only the gravel prism is pickable");
 
   const degenerate = new THREE.Group();
-  buildFootingBedding(degenerate, { ...bedding, z1_m: -1.2 } as FootingBedding, [0, 0], "schematic");
+  const skipped = registry();
+  buildFootingBedding(degenerate, { ...bedding, z1_m: -1.2 } as FootingBedding, [0, 0], "schematic",
+    skipped.picks, skipped.byUid);
   assert(degenerate.children.length === 0, "Zero-thickness bedding produces no geometry");
+  assert(skipped.picks.length === 0, "Geometry-free bedding registers nothing to pick");
+}
+
+// --- B7: solid finishes ------------------------------------------------------
+// Every non-wall prism used to render as one concrete grey. Category + assembly now drive the
+// finish, mirroring emit/gltf/emitter.py::_solid_color / _PALETTE.
+
+const POST_PAINT_CATALOG = {
+  window_types: [], door_types: [], occupancies: [], materials: [],
+  assemblies: [{
+    tag: "POST_WHITE_PAINT", editable: false, provenance: null, stc: null, variant_of: null,
+    layers: [{ name: "post-paint-white", material: "post-paint-white", function: "structure", thickness_m: 0.1397 }],
+  }],
+} as Catalog;
+
+function solid(category: string, assembly: string | null = null, uid = "S-1"): Solid {
+  return {
+    uid, tag: uid, storey: "L1", category, assembly, provenance: null,
+    outline: [[0, 0], [1, 0], [1, 0.2], [0, 0.2]], voids: [], z0_m: 0, z1_m: 2.4,
+  };
+}
+
+export function runSolidMaterialTests() {
+  assert(solidColor(solid("beam"), undefined, PALETTE) === SOLID_CATEGORY_COLOR.beam,
+    "An unfinished beam reads as wood from the category palette");
+  assert(SOLID_CATEGORY_COLOR.beam !== PALETTE.member.concrete,
+    "The beam colour is wood, not the concrete fallback the old buildSolid used");
+
+  // The TODO's headline case: six 6x6 posts carry assembly=POST_WHITE_PAINT.
+  const painted = solidColor(solid("column", "POST_WHITE_PAINT"), POST_PAINT_CATALOG, PALETTE);
+  assert(painted === 0xf4f2ee, `A painted post reads as its paint colour, got ${painted.toString(16)}`);
+  assert(painted !== SOLID_CATEGORY_COLOR.column,
+    "The authored assembly overrides the bare column palette entry");
+
+  // Gutters, fascia and flashings were invisible grey slivers before B7.
+  for (const category of ["gutter", "fascia", "flashing"]) {
+    const color = solidColor(solid(category), undefined, PALETTE);
+    assert(color === SOLID_CATEGORY_COLOR[category], `${category} uses its own palette entry`);
+    assert(color !== PALETTE.member.concrete, `${category} no longer renders as concrete grey`);
+  }
+
+  // Construction returns ("return:pt-sill-plate") have no palette entry in either renderer;
+  // both fall back to neutral rather than inventing a colour from the rule name.
+  assert(solidColor(solid("return:pt-sill-plate"), undefined, PALETTE) === PALETTE.member.concrete,
+    "An unmapped category falls back to the theme's neutral, matching the emitter's _FALLBACK");
+
+  const metal = createSolidMaterial(solid("gutter"), undefined, "nordic", PALETTE);
+  assert(metal.metalness > 0, "Shop-finished metal accessories render metallic");
+  const concrete = createSolidMaterial(solid("slab"), undefined, "nordic", PALETTE);
+  assert(concrete.metalness === 0, "Cast concrete stays fully dielectric");
+}
+
+// --- B7: pick registration ---------------------------------------------------
+// picks[] is the only raycast target and byUid drives the emissive highlight, so a builder that
+// forgets either leaves its element unselectable. One assertion per builder that opts in.
+
+function member(key: string): Member {
+  return {
+    key, category: "joist", profile: "2x10", p0: [0, 0], p1: [3, 0], z0_m: 2.4, z1_m: 2.65,
+    z0_end_m: null, z1_end_m: null, shape: "rect", width_m: 0.038, depth_m: 0.235,
+    flange_width_m: null, flange_thickness_m: null, web_thickness_m: null, plies: 1,
+    orient: null,
+  } as Member;
+}
+
+function registered(group: THREE.Group, uid: string, kind: string, picks: THREE.Mesh[],
+  byUid: Map<string, THREE.Material[]>, label: string) {
+  const mine = picks.filter((mesh) => mesh.userData.uid === uid);
+  assert(mine.length > 0, `${label} pushes at least one mesh into the raycast set`);
+  assert(mine.every((mesh) => mesh.userData.selectionKind === kind),
+    `${label} tags every pickable mesh with selectionKind "${kind}"`);
+  assert((byUid.get(uid) ?? []).length > 0, `${label} indexes its materials for the highlight pass`);
+  assert(group.children.length > 0, `${label} actually built geometry`);
+}
+
+export function runSelectionRegistrationTests() {
+  const solidGroup = new THREE.Group();
+  const solids = registry();
+  buildSolid(solidGroup, solid("column", null, "SO-1"), [0, 0], "schematic", PALETTE, undefined,
+    solids.picks, solids.byUid);
+  registered(solidGroup, "SO-1", "solid", solids.picks, solids.byUid, "buildSolid");
+
+  const beddingGroup = new THREE.Group();
+  const beddings = registry();
+  buildFootingBedding(beddingGroup, {
+    uid: "FB-9", tag: "FB-9", storey: "L1", host_footing: "F-1",
+    outline: [[0, 0], [3, 0], [3, 1], [0, 1]], z0_m: -1.2, z1_m: -0.9,
+    aggregate: "washed-stone", geotextile: true, drain_tile: true, provenance: null,
+  } as FootingBedding, [0, 0], "schematic", beddings.picks, beddings.byUid);
+  registered(beddingGroup, "FB-9", "footing_bedding", beddings.picks, beddings.byUid, "buildFootingBedding");
+
+  // A floor's joists are merged into shared draw calls; the whole bucket must resolve to the
+  // floor, since three/members.ts deliberately gives individual members no identity.
+  const floorGroup = new THREE.Group();
+  const floors = registry();
+  buildFloor(floorGroup, {
+    uid: "FL-1", tag: "FL-1", storey: "L1", direction: "x", provenance: null, openings: [],
+    subfloor: { material: "osb", thickness_m: 0.019 }, members: [member("J-1"), member("J-2")],
+  } as Floor, [0, 0], "schematic", PALETTE, floors.picks, floors.byUid);
+  registered(floorGroup, "FL-1", "floor", floors.picks, floors.byUid, "buildFloor");
+  assert(floors.picks.length > 1, "Both the subfloor deck and the joist bucket select as the floor");
+
+  const roofGroup = new THREE.Group();
+  const roofs = registry();
+  buildRoof(roofGroup, {
+    uid: "R-1", tag: "R-1", storey: "L1", form: "gable",
+    footprint: [[0, 0], [6, 0], [6, 4], [0, 4]], eave_z_m: 3, ridge_z_m: 4.5,
+    ridge_direction: "x", assembly: "ROOF-1", surface_area_m2: 26, members: [], provenance: null,
+  } as Roof, [0, 0], "schematic", PALETTE, undefined, roofs.picks, roofs.byUid);
+  registered(roofGroup, "R-1", "roof", roofs.picks, roofs.byUid, "buildRoof");
+
+  const stairGroup = new THREE.Group();
+  const stairs = registry();
+  buildStair(stairGroup, { uid: "ST-1", members: [member("T-1"), member("T-2")] } as Stair,
+    [0, 0], "schematic", stairs.picks, stairs.byUid);
+  registered(stairGroup, "ST-1", "stair", stairs.picks, stairs.byUid, "buildStair");
+
+  const openingGroup = new THREE.Group();
+  const openings = registry();
+  buildOpening(openingGroup, opening(2), wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
+    false, openings.picks, openings.byUid);
+  registered(openingGroup, "opening", "opening", openings.picks, openings.byUid, "buildOpening");
+
+  // A rough opening has no filling to click on, so it must register nothing at all.
+  const roughGroup = new THREE.Group();
+  const rough = registry();
+  buildOpening(roughGroup, { ...opening(2), kind: "rough_opening" } as Opening,
+    wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE, false, rough.picks, rough.byUid);
+  assert(rough.picks.length === 0 && roughGroup.children.length === 0,
+    "An unfilled rough opening builds nothing and registers nothing");
 }
 
 export function runCanvasObjectGeometryTests() {
@@ -167,4 +376,14 @@ export function runWholeHouseGlbTests() {
   const extrasWinName = wholeHouseGlbAssignment("walls|wall|FROM-NAME", { trade: "concrete", uid: "FROM-EXTRAS", kind: "wall" });
   assert(extrasWinName !== null && extrasWinName.trade === "concrete" && extrasWinName.uid === "FROM-EXTRAS",
     "Explicit extras take precedence over the name convention");
+
+  // B7 widened the kind vocabulary on both sides of the export
+  // (emit/gltf/emitter.py::_SELECTION_KINDS ↔ state/store.ts SelectionKind).
+  for (const kind of ["opening", "room", "solid", "footing_bedding", "floor", "roof", "stair"]) {
+    const widened = wholeHouseGlbAssignment(undefined, { trade: "concrete", uid: "X-1", kind });
+    assert(widened !== null && widened.kind === kind, `glb nodes may declare kind "${kind}"`);
+  }
+  const bogus = wholeHouseGlbAssignment(undefined, { trade: "concrete", uid: "X-1", kind: "gutter" });
+  assert(bogus !== null && bogus.kind === null,
+    "A kind outside the shared vocabulary is dropped rather than trusted");
 }

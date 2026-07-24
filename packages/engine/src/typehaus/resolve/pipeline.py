@@ -26,7 +26,8 @@ from typehaus.resolve.mep import resolve_mep
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedOpening
 from typehaus.resolve.placeables import resolve_placeables
 from typehaus.resolve.platform import extend_walls_to_platform
-from typehaus.resolve.roof_geometry import apply_to_roof_wall_tops
+from typehaus.resolve.roof_edge import resolve_roof_edges
+from typehaus.resolve.roof_geometry import apply_to_roof_wall_tops, apply_truss_heel_lift
 from typehaus.resolve.rooms import resolve_rooms
 from typehaus.resolve.stacking import resolve_stacking
 from typehaus.resolve.topology import detect_gaps, resolve_storey_walls
@@ -63,6 +64,10 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         _resolve_openings(plan, model, findings)
     with _stage("envelope"):
         findings.extend(resolve_envelope_geometry(model))
+        # A truss roof's deck rises by its raised heel; establish that *before* anything
+        # reads the plane, or every ToRoof wall rakes to a stale roof and stops a
+        # heel-plus-chord short of it (a band of daylight at the gable).
+        apply_truss_heel_lift(model)
         apply_to_roof_wall_tops(model)
     with _stage("construction"):
         # Pre-framing (#45): apply authored ConstructionRule returns (sill/foam/liner/masonry
@@ -71,6 +76,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
     with _stage("framing"):
         findings.extend(frame_model(plan, model))
         findings.extend(frame_roofs(model))
+        # After roof framing: the wall→roof closure and the eave/rake trim attach to the
+        # roof's member list, which frame_roofs rebuilds.
+        resolve_roof_edges(model)
         # After roof framing so authored ridge Beams are already emitted as roof members.
         findings.extend(resolve_columns_and_beams(model))
     with _stage("floors"):
@@ -116,6 +124,7 @@ def resolve_preview(plan: PlanModel) -> ResolvedModel:
     extend_walls_to_platform(model)
     _resolve_openings(plan, model, findings)
     resolve_envelope_geometry(model)
+    apply_truss_heel_lift(model)
     apply_to_roof_wall_tops(model)
     resolve_rooms(plan, model)
     resolve_placeables(plan, model)

@@ -109,3 +109,25 @@ def test_sunken_garden_arch_voids_use_vertical_curved_profiles(catlin_model, cat
         assert solid.Depth == pytest.approx(0.4064)
         assert solid.Position.Axis.DirectionRatios[2] == pytest.approx(0.0)
         assert solid.ExtrudedDirection.DirectionRatios == (0.0, 0.0, 1.0)
+
+
+def test_door_types_export_their_authored_operation(catlin_model, catlin_ifc):
+    """Without OperationType every door reads as a plain swing in the receiving app."""
+    import ifcopenshell
+
+    from typehaus.model.enums import DoorOperation
+
+    f = ifcopenshell.open(str(catlin_ifc))
+    operations = {door_type.Name: door_type.OperationType
+                  for door_type in f.by_type("IfcDoorType")}
+    assert operations["DT-GARAGE192"] == "ROLLINGUP"  # IFC4 has no OVERHEAD_DOOR term
+    assert operations["DT-INT60"] == "FOLDING_TO_LEFT"
+    assert operations["DT-FRENCH36"] == "DOUBLE_DOOR_SINGLE_SWING"
+    assert operations["DT-PATIO60"] == "SLIDING_TO_LEFT"
+    assert operations["DT-EXT36"] == "SINGLE_SWING_LEFT"
+    assert all(door_type.PredefinedType == "DOOR"
+               for door_type in f.by_type("IfcDoorType"))
+    # Every authored operation must be a member of the closed enum the mapping is keyed on,
+    # so a new operation fails here rather than silently at export in front of an architect.
+    authored = {door_type.operation for door_type in catlin_model.plan.library.door_types}
+    assert authored <= set(DoorOperation)

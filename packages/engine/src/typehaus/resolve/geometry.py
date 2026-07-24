@@ -61,6 +61,18 @@ def rect_between(p0: Vec, p1: Vec, left: float, right: float,
     ]
 
 
+def circle_outline(center: Vec, radius: float, facets: int) -> list[Vec]:
+    """A regular ``facets``-gon approximating a circle of ``radius`` about ``center``.
+
+    Round sections (sonotube columns, vent pipes) have no first-class representation in
+    the prism-only solid IR, so every consumer renders them as this faceted plan outline
+    extruded vertically. One helper keeps the facet geometry identical across resolvers.
+    """
+    return [(center[0] + radius * math.cos(2 * math.pi * index / facets),
+             center[1] + radius * math.sin(2 * math.pi * index / facets))
+            for index in range(facets)]
+
+
 def polygon_area(ring: list[Vec]) -> float:
     """Signed area via the shoelace formula (positive = CCW)."""
     s = 0.0

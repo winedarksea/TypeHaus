@@ -18,10 +18,12 @@ from shapely.ops import unary_union
 
 from typehaus._meta import IFC_APP_NAME, PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
+from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import polygon_area, rect_between
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.resolve.placeables import resolved_mount_elevation
 
 
 def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
@@ -277,6 +279,22 @@ def _opening_profile(rw: ResolvedWall, opening: Any) -> list[tuple[float, float]
     return rect_between(a, b, -thickness / 2, thickness / 2)
 
 
+# DoorOperation → IfcDoorTypeOperationEnum (IFC4). Handing is authored per *instance*
+# (``flip_hinge``), not per product type, so the handed members all take the LEFT variant —
+# a type-level guess at RIGHT would be no more accurate and would churn the round-trip.
+# Two of our operations have no exact IFC4 term: a pocket door is exported as sliding
+# (IFC4 draws no pocket distinction), and a sectional overhead door as ROLLINGUP, which is
+# the schema's only overhead-track category — there is no OVERHEAD_DOOR in IFC4.
+_IFC_DOOR_OPERATION = {
+    DoorOperation.SWING: "SINGLE_SWING_LEFT",
+    DoorOperation.DOUBLE_SWING: "DOUBLE_DOOR_SINGLE_SWING",
+    DoorOperation.SLIDE: "SLIDING_TO_LEFT",
+    DoorOperation.POCKET: "SLIDING_TO_LEFT",
+    DoorOperation.BIFOLD: "FOLDING_TO_LEFT",
+    DoorOperation.OVERHEAD: "ROLLINGUP",
+}
+
+
 def _emit_opening_types(f: Any, model: ResolvedModel, project_uuid: Any) -> dict[str, Any]:
     """Create one stable IFC type per authored door/window product type."""
     result: dict[str, Any] = {}
@@ -285,6 +303,11 @@ def _emit_opening_types(f: Any, model: ResolvedModel, project_uuid: Any) -> dict
         for item in items:
             entity = ll.create_entity(f, "IfcDoorType" if kind == "door" else "IfcWindowType", name=item.tag)
             entity.GlobalId = derive_child_guid(project_uuid, f"{kind}-types", item.tag)
+            if kind == "door":
+                # Without these the authored operation is lost on export and every door
+                # reads as a plain swing in the receiving application.
+                entity.PredefinedType = "DOOR"
+                entity.OperationType = _IFC_DOOR_OPERATION[item.operation]
             ll.ensure_pset(f, entity, "TypeHaus_Identity", {"tag": item.tag, "source_type": item.tag})
             result[item.tag] = entity
     return result
@@ -493,7 +516,8 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
                      "railing": "IfcRailing", "dowel": "IfcReinforcingBar",
                      "connector": "IfcMechanicalFastener", "sump": "IfcTank",
                      "vent": "IfcBuildingElementProxy", "gutter": "IfcBuildingElementProxy",
-                     "fascia": "IfcCovering", "flashing": "IfcCovering",
+                     "fascia": "IfcCovering", "soffit": "IfcCovering",
+                     "flashing": "IfcCovering",
                      "thermal_break": "IfcBuildingElementProxy"}.get(solid.category,
                                                                       "IfcFooting")
     element = ll.create_entity(f, ifc_class, name=solid.tag)
@@ -756,10 +780,9 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
     x, y = device.position.xy_m
     half = 0.05  # 4"x4" nominal device box
     outline = resolved.footprint if resolved is not None else _rectangle(x, y, half * 2, half * 2)
-    outlet_kinds = ("receptacle", "gfci", "receptacle_240")
-    mount_default = 1.219 if device.kind.value in outlet_kinds else 0.406
-    mount = device.mount_height.meters if device.mount_height is not None else mount_default
-    z0 = resolved.z_m if resolved is not None else storey.elevation.meters + mount
+    # The placeable resolver owns the Mount contract, so IFC reads the same elevation as
+    # glTF and the UI instead of carrying its own per-kind defaults (which used to diverge).
+    z0 = resolved.z_m if resolved is not None else resolved_mount_elevation(storey, device)
     ifc_class, _ = _device_ifc_classes(device.kind.value)
     element = ll.create_entity(f, ifc_class, name=device.tag)
     element.GlobalId = derive_guid(project_uuid, device.uid)
