@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Type:Haus — infrastructure-as-code for houses</title>
+    <meta
+      name="description"
+      content="Type:Haus is a building-science-aligned design engine for residential houses: edit plan source, export clean IFC/Revit/SketchUp, and run it entirely in your browser."
+    />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        --bg: #0f1115;
+        --panel: #171a21;
+        --ink: #e8ebf0;
+        --muted: #9aa4b2;
+        --line: #262b34;
+        --accent: #5b9dff;
+        --accent-ink: #0b1220;
+        --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+        --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #f7f8fa;
+          --panel: #ffffff;
+          --ink: #1a1e26;
+          --muted: #5a6472;
+          --line: #e3e7ee;
+          --accent: #2f6fe0;
+          --accent-ink: #ffffff;
+        }
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: var(--sans);
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: var(--accent); }
+      .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+      header {
+        border-bottom: 1px solid var(--line);
+        position: sticky;
+        top: 0;
+        background: color-mix(in srgb, var(--bg) 85%, transparent);
+        backdrop-filter: blur(8px);
+        z-index: 5;
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 24px;
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      .brand { font-weight: 700; letter-spacing: -0.02em; font-size: 18px; }
+      .brand span { color: var(--accent); }
+      .nav a { color: var(--muted); text-decoration: none; margin-left: 20px; font-size: 14px; }
+      .nav a:hover { color: var(--ink); }
+      .hero { padding: 88px 0 56px; text-align: center; }
+      .hero h1 {
+        font-size: clamp(34px, 6vw, 56px);
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+        margin: 0 0 18px;
+      }
+      .hero p.lede { font-size: clamp(17px, 2.4vw, 21px); color: var(--muted); max-width: 640px; margin: 0 auto 32px; }
+      .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 22px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 15px;
+        text-decoration: none;
+        border: 1px solid var(--line);
+      }
+      .btn-primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+      .btn-ghost { background: var(--panel); color: var(--ink); }
+      .btn:hover { filter: brightness(1.06); }
+      .install {
+        margin: 40px auto 0;
+        max-width: 620px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 18px 20px;
+        text-align: left;
+      }
+      .install .label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
+      .install code {
+        display: block;
+        font-family: var(--mono);
+        font-size: 14px;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px 14px;
+        overflow-x: auto;
+        white-space: pre;
+      }
+      .install .note { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
+      section { padding: 56px 0; border-top: 1px solid var(--line); }
+      section h2 { font-size: 26px; letter-spacing: -0.02em; margin: 0 0 8px; }
+      section .sub { color: var(--muted); margin: 0 0 28px; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
+      .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+      .card h3 { margin: 0 0 6px; font-size: 16px; }
+      .card p { margin: 0; color: var(--muted); font-size: 14px; }
+      .steps { counter-reset: step; display: grid; gap: 14px; }
+      .step { display: flex; gap: 14px; align-items: flex-start; }
+      .step .n {
+        flex: 0 0 auto;
+        width: 28px; height: 28px; border-radius: 50%;
+        background: var(--accent); color: var(--accent-ink);
+        display: grid; place-items: center; font-weight: 700; font-size: 14px;
+      }
+      .step code { font-family: var(--mono); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+      footer { border-top: 1px solid var(--line); padding: 32px 0 56px; color: var(--muted); font-size: 13px; text-align: center; }
+      .pill { display: inline-block; font-size: 12px; color: var(--accent); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; margin-bottom: 18px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="nav">
+        <div class="brand">Type<span>:</span>Haus</div>
+        <div>
+          <a href="#features">Features</a>
+          <a href="#install">Install</a>
+          <a href="/app">Open the app</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="hero wrap">
+        <div class="pill">Pre-alpha · building-science-aligned</div>
+        <h1>Infrastructure-as-code<br />for houses.</h1>
+        <p class="lede">
+          Design a real, buildable house as readable source. Edit in a 2D/3D browser editor or a
+          vibe-code-friendly config, then export clean IFC, Revit, and SketchUp. No account, no
+          upload — the whole engine runs in your browser.
+        </p>
+        <div class="cta">
+          <a class="btn btn-primary" href="/app">Try it in your browser →</a>
+          <a class="btn btn-ghost" href="#install">Install the CLI</a>
+        </div>
+
+        <div class="install" id="install">
+          <div class="label">Install the local engine</div>
+          <code>curl -LsSf https://type-house.com/install.sh | sh</code>
+          <p class="note">
+            Installs the <code>haus</code> command (build · check · render · serve) with pipx.
+            No uv required. Windows:
+            <code>irm https://type-house.com/install.ps1 | iex</code>
+          </p>
+        </div>
+      </div>
+
+      <section id="features" class="wrap">
+        <h2>What it does</h2>
+        <p class="sub">One source of truth, from sketch to permit set.</p>
+        <div class="grid">
+          <div class="card">
+            <h3>Plan source you can read</h3>
+            <p>Nodes, walls, openings, rooms and assemblies are plain keyword-arg declarations — diffable, mergeable, and safe to hand-edit or vibe-code.</p>
+          </div>
+          <div class="card">
+            <h3>Runs fully offline</h3>
+            <p>The engine compiles to WebAssembly and edits plan source in a pure-Python writeback path — no server round-trip, works on a plane.</p>
+          </div>
+          <div class="card">
+            <h3>Clean exports</h3>
+            <p>Deterministic IFC with stable GlobalIds, plus DXF/PDF sheets — round-trip an architect's IFC changes back into source.</p>
+          </div>
+          <div class="card">
+            <h3>Building science built in</h3>
+            <p>Assemblies carry control layers and R-values; checks flag code, structural, and envelope issues as you edit.</p>
+          </div>
+          <div class="card">
+            <h3>Stable identity</h3>
+            <p>Every element keeps an immutable uid, so retagging or moving between storeys never breaks its downstream references.</p>
+          </div>
+          <div class="card">
+            <h3>Look, don't guess</h3>
+            <p>Render plan and 3D snapshots after every edit — spatial judgment joins the text findings.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="wrap">
+        <h2>Two ways in</h2>
+        <p class="sub">Start in the browser; drop to the CLI when you want full IFC export and macros.</p>
+        <div class="steps">
+          <div class="step"><div class="n">1</div><div><strong>Open the app.</strong> <a href="/app">type-house.com/app</a> loads the Catlin reference house by default — pan, edit a wall, undo, all offline.</div></div>
+          <div class="step"><div class="n">2</div><div><strong>Install locally.</strong> <code>curl -LsSf https://type-house.com/install.sh | sh</code> for the full engine.</div></div>
+          <div class="step"><div class="n">3</div><div><strong>Serve your own house.</strong> <code>haus new my-house</code> then <code>haus serve</code> — same editor, plus IFC export and parametric macros.</div></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        Type:Haus · MIT-licensed · <a href="/app">Open the app</a> ·
+        <a href="https://github.com/">Source</a>
+      </div>
+    </footer>
+  </body>
+</html>

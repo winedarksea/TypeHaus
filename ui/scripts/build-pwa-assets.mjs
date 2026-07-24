@@ -29,8 +29,17 @@ mkdirSync(outDir, { recursive: true });
 // topology) — both must be importable from the worker's sys.path offline.
 const EXCLUDES = ["--exclude", "__pycache__", "--exclude", "*.pyc"];
 
-// Create with typehaus, then append library from the repo root.
-execFileSync("tar", ["-cf", outTar, "-C", engineSrc, ...EXCLUDES, "typehaus"], {
+// IFC export is an OPTIONAL extension, not part of the core offline bundle (U9): it needs
+// ifcopenshell (+ pyproj), which have no standard pyodide wheels — only an experimental
+// ifcopenshell wasm build. So the core tarball ships without typehaus/emit/ifc; nothing on the
+// offline compute path (resolve → model.json → glb) imports it (the CLI/server import it lazily
+// only when writing IFC). A future IFC extension ships emit/ifc + the wasm build separately and
+// unpacks it onto the same sys.path, with no change to the core bundle.
+const IFC_PKG = "typehaus/emit/ifc";
+const CORE_EXCLUDES = [...EXCLUDES, "--exclude", IFC_PKG];
+
+// Create with typehaus (minus the IFC extension), then append library from the repo root.
+execFileSync("tar", ["-cf", outTar, "-C", engineSrc, ...CORE_EXCLUDES, "typehaus"], {
   stdio: "inherit",
 });
 if (existsSync(resolve(repoRoot, "library", "__init__.py"))) {
@@ -38,5 +47,14 @@ if (existsSync(resolve(repoRoot, "library", "__init__.py"))) {
     stdio: "inherit",
   });
 }
+console.log(`[pwa] wrote ${outTar} (core, IFC excluded)`);
 
-console.log(`[pwa] wrote ${outTar}`);
+// The optional IFC extension bundle — built but not loaded by the core PWA. A later
+// ifcopenshell-wasm integration fetches this alongside the wasm module.
+const ifcTar = resolve(outDir, "typehaus-ifc-ext.tar");
+if (existsSync(resolve(engineSrc, IFC_PKG, "__init__.py"))) {
+  execFileSync("tar", ["-cf", ifcTar, "-C", engineSrc, ...EXCLUDES, IFC_PKG], {
+    stdio: "inherit",
+  });
+  console.log(`[pwa] wrote ${ifcTar} (optional IFC extension)`);
+}

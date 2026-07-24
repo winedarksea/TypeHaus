@@ -41,6 +41,23 @@ export interface OpenedHouse {
   files: HouseFiles;
 }
 
+// The Catlin house bundled into the app (built by scripts/build-house-asset.mjs). Loaded by
+// default when the PWA runs standalone (no local `haus serve`), so a first-time visitor lands
+// in a real house with no folder pick (U9).
+export async function loadBundledHouse(
+  file = "catlin-house.json",
+  name = "Catlin house (demo)",
+): Promise<OpenedHouse> {
+  const url = new URL(file, document.baseURI).href;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`bundled house ${res.status} @ ${url}`);
+  const files = (await res.json()) as HouseFiles;
+  if (!Object.keys(files).some((p) => p.includes("plan"))) {
+    throw new Error("bundled house asset has no plan/ files");
+  }
+  return { name, files };
+}
+
 export async function pickHouseDirectory(): Promise<OpenedHouse | null> {
   const picker = (window as {
     showDirectoryPicker?: () => Promise<DirHandle>;

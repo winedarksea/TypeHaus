@@ -1,0 +1,6 @@
+# Static-host redirect/rewrite rules (Netlify / Cloudflare Pages style).
+# The PWA is a single-page app served under /app — rewrite deep links back to its index so
+# client-side routing works, without shadowing the hashed asset files it loads.
+/app              /app/index.html   200
+/app/             /app/index.html   200
+/app/*            /app/index.html   200

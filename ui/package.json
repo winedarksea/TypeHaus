@@ -5,8 +5,8 @@
   "type": "module",
   "description": "Type:Haus M2 editor — SVG 2D editor + three.js 3D panel over model.json (→ 21).",
   "scripts": {
-    "dev": "node scripts/build-pwa-assets.mjs && vite",
-    "prebuild": "node scripts/build-pwa-assets.mjs",
+    "dev": "node scripts/build-pwa-assets.mjs && node scripts/build-house-asset.mjs && vite",
+    "prebuild": "node scripts/build-pwa-assets.mjs && node scripts/build-house-asset.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",

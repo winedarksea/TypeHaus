@@ -1,9 +1,10 @@
-// The offline EngineClient (→ 40 WP4.2, gate outcome b). Runs the engine in a pyodide Web
+// The offline EngineClient (→ 40 WP4.2; editing added in U9). Runs the engine in a pyodide Web
 // Worker; no server, no network after first load. Read/compute is fully supported — getModel,
-// getChecks, build, getArtifact("glb"). Mutation (patchPlan/runMacro/undo/redo) and IFC export
-// are libcst/ifcopenshell-gated and surface as a clear "requires local install" degradation
-// (#15: the local FastAPI mode stays the primary editing path). No editor code changes: this is
-// the second implementation of the same interface HttpEngineClient satisfies.
+// getChecks, build, getArtifact("glb"). Editing (patchPlan/undo/redo) is now served in-browser by
+// the pure-Python, libcst-free writeback backend, so the PWA is a real editor offline. Macros
+// (generative params/ logic) and IFC export stay local-serve features and surface as a clear
+// "requires local install" degradation. This is the second implementation of the same interface
+// HttpEngineClient satisfies.
 
 import type { Finding, Model } from "../model/types";
 import PyodideWorker from "./pyodide/worker?worker";
@@ -134,21 +135,26 @@ export class PyodideEngineClient implements EngineClient {
     return Promise.reject(new OfflineUnsupported("Saving underlay calibration"));
   }
 
-  // --- Mutation surface: libcst-gated, unavailable offline (→ 40 gate outcome b) -----------
-  patchPlan(_ops: PatchOp[], _revision: string): Promise<PatchResult> {
-    return Promise.reject(new OfflineUnsupported("Editing the plan"));
+  // --- Mutation surface: the pure-Python (libcst-free) writeback backend runs in-worker (U9).
+  async patchPlan(ops: PatchOp[], revision: string): Promise<PatchResult> {
+    await this.initialized;
+    return this.call<PatchResult>("patch", { ops, revision });
   }
+  // Macros (parametric multi-element edits, e.g. drag-to-add) remain a local-serve feature:
+  // they run generative params/ logic the offline compute path doesn't host.
   runMacro(_request: MacroRequest, _revision: string): Promise<MacroResult> {
-    return Promise.reject(new OfflineUnsupported("Editing the plan"));
+    return Promise.reject(new OfflineUnsupported("This tool"));
   }
   previewMacro(_request: MacroRequest): Promise<PreviewGeometry> {
     return Promise.reject(new OfflineUnsupported("Drag preview"));
   }
-  undo(): Promise<HistoryResult> {
-    return Promise.reject(new OfflineUnsupported("Undo"));
+  async undo(): Promise<HistoryResult> {
+    await this.initialized;
+    return this.call<HistoryResult>("undo");
   }
-  redo(): Promise<HistoryResult> {
-    return Promise.reject(new OfflineUnsupported("Redo"));
+  async redo(): Promise<HistoryResult> {
+    await this.initialized;
+    return this.call<HistoryResult>("redo");
   }
 
   // No server push offline; report readiness once the worker has booted the house.
