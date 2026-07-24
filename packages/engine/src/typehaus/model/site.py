@@ -7,10 +7,14 @@ them by tag.
 
 from __future__ import annotations
 
+import json
+from dataclasses import dataclass
+from pathlib import Path
+
 from typehaus.model.base import HausModel
 from typehaus.model.enums import UtilityKind
 from typehaus.model.registry import register_constructor
-from typehaus.quantities import Length, Point2D
+from typehaus.quantities import Length, Point2D, ft, m, pt
 
 
 class SetbackSpec(HausModel):
@@ -37,9 +41,78 @@ class UtilityLine(HausModel):
     depth: Length | None = None
 
 
+class Contour(HausModel):
+    """A survey contour line at a constant grade elevation (site-plan basemap topo).
+
+    Elevation is relative to the main-floor 0 datum, like ``SpotElevation`` — a GeoJSON
+    basemap in feet above the datum is normalized to that convention on load.
+    """
+
+    elevation: Length
+    points: tuple[Point2D, ...]
+
+
+@dataclass(frozen=True)
+class Basemap:
+    """Parsed GeoJSON site basemap: the parcel ring plus survey contour lines.
+
+    Held as a plain value object (not a plan element) — the loader hands it to the
+    manifest, which attaches the contours to :class:`Site` and may adopt the parcel.
+    """
+
+    parcel: tuple[Point2D, ...] = ()
+    contours: tuple[Contour, ...] = ()
+
+
+def load_basemap_geojson(path: str | Path, *, unit: str = "ft") -> Basemap:
+    """Load a parcel boundary + contour lines from a GeoJSON ``FeatureCollection``.
+
+    Coordinates are read in the project plan frame (default feet, not lon/lat) so a
+    freshly surveyed basemap drops straight onto the authored geometry.  A feature is a
+    *parcel* when its ``role`` property is ``"parcel"`` or its geometry is a ``Polygon``;
+    a *contour* when ``role`` is ``"contour"`` or the geometry is a ``LineString``.
+    Contour grade comes from the ``elevation`` (or ``elev``/``z``) property.
+    """
+    if unit not in ("ft", "m"):
+        raise ValueError(f"unsupported basemap unit {unit!r}; use 'ft' or 'm'")
+    to_length = ft if unit == "ft" else m
+    data = json.loads(Path(path).read_text())
+    features = data.get("features", []) if data.get("type") == "FeatureCollection" else [data]
+
+    parcel: tuple[Point2D, ...] = ()
+    contours: list[Contour] = []
+    for feature in features:
+        geometry = feature.get("geometry") or {}
+        properties = feature.get("properties") or {}
+        role = properties.get("role")
+        gtype = geometry.get("type")
+        coords = geometry.get("coordinates") or []
+        if role == "parcel" or (role is None and gtype == "Polygon"):
+            ring = coords[0] if gtype == "Polygon" and coords else coords
+            parcel = _ring_to_points(ring, to_length)
+        elif role == "contour" or (role is None and gtype in ("LineString", "MultiLineString")):
+            elevation = properties.get("elevation",
+                                       properties.get("elev", properties.get("z", 0.0)))
+            lines = coords if gtype == "MultiLineString" else [coords]
+            for line in lines:
+                pts = tuple(pt(to_length(c[0]), to_length(c[1])) for c in line)
+                if len(pts) >= 2:
+                    contours.append(Contour(elevation=to_length(elevation), points=pts))
+    return Basemap(parcel=parcel, contours=tuple(contours))
+
+
+def _ring_to_points(ring: list, to_length) -> tuple[Point2D, ...]:
+    pts = [pt(to_length(c[0]), to_length(c[1])) for c in ring]
+    # GeoJSON polygons repeat the first vertex to close the ring; the plan frame does not.
+    if len(pts) >= 2 and pts[0].xy_m == pts[-1].xy_m:
+        pts = pts[:-1]
+    return tuple(pts)
+
+
 for _name, _obj in (
     ("SetbackSpec", SetbackSpec),
     ("SpotElevation", SpotElevation),
     ("UtilityLine", UtilityLine),
+    ("Contour", Contour),
 ):
     register_constructor(_name, _obj)

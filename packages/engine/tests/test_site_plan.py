@@ -76,3 +76,62 @@ def test_site_plan_dxf_round_trips(catlin_model, tmp_path: Path):
     assert doc.units == 1
     names = {layer.dxf.name for layer in doc.layers}
     assert {"C-PROP", "C-PROP-SETB"} <= names
+
+
+def test_geojson_contours_render_as_topo_basemap(catlin_model):
+    from typehaus.emit.draw.scene import Polyline, Text
+
+    assert catlin_model.plan.project.site.contours, "manifest should load basemap contours"
+    scene = build_site_plan(catlin_model)
+    contour_lines = [n for n in scene.nodes
+                     if isinstance(n, Polyline) and n.layer == "C-TOPO-MINR"]
+    labels = [n.content for n in scene.nodes
+              if isinstance(n, Text) and n.layer == "C-TOPO-MINR"]
+    assert len(contour_lines) == len(catlin_model.plan.project.site.contours)
+    assert any("'" in label for label in labels)  # each contour labels its grade elevation
+
+
+def test_foundation_grading_arrows_point_away_and_read_slope(catlin_model):
+    from typehaus.emit.draw.scene import Polyline, Text
+
+    scene = build_site_plan(catlin_model)
+    arrows = [n for n in scene.nodes
+              if isinstance(n, Polyline) and n.layer == "C-TOPO-GRAD"]
+    labels = [n.content for n in scene.nodes
+              if isinstance(n, Text) and n.layer == "C-TOPO-GRAD"]
+    assert arrows  # one grade-away arrow per near-foundation spot station
+    assert labels and all("AWAY" in label for label in labels)
+
+
+def test_load_basemap_geojson_parses_parcel_and_contours(tmp_path: Path):
+    import json
+
+    from typehaus.model.site import load_basemap_geojson
+
+    geojson = {
+        "type": "FeatureCollection",
+        "features": [
+            {"type": "Feature", "properties": {"role": "parcel"},
+             "geometry": {"type": "Polygon",
+                          "coordinates": [[[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]]]}},
+            {"type": "Feature", "properties": {"role": "contour", "elevation": -1.5},
+             "geometry": {"type": "LineString", "coordinates": [[0, 5], [10, 5]]}},
+        ],
+    }
+    path = tmp_path / "bm.geojson"
+    path.write_text(json.dumps(geojson))
+    basemap = load_basemap_geojson(path)
+    assert len(basemap.parcel) == 4  # closing vertex dropped
+    assert basemap.parcel[1].xy_m[0] == pytest.approx(10 * 0.3048)
+    assert len(basemap.contours) == 1
+    assert basemap.contours[0].elevation.meters == pytest.approx(-1.5 * 0.3048)
+    assert len(basemap.contours[0].points) == 2
+
+
+def test_catlin_basemap_fixture_loads(catlin_model):
+    from typehaus.model.site import load_basemap_geojson
+
+    fixture = CATLIN_DIR / "plan" / "basemap.geojson"
+    basemap = load_basemap_geojson(fixture)
+    assert len(basemap.parcel) == 4
+    assert basemap.contours  # contour lines present in the survey fixture

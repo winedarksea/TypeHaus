@@ -36,14 +36,27 @@ SITE = Site(
         SetbackSpec(edge=2, distance=ft(30), label="FRONT"),
         SetbackSpec(edge=3, distance=ft(10), label="SIDE"),
     ),
-    # Spread across both x (facade width) and y (north-south depth) so every elevation's
-    # 10'-deep capture band picks up distinct, non-degenerate stations: south/north see
-    # only the near-wall transition (subtle), east/west see the full sunken-garden drop.
+    # Grade stations. Two rings per house side let code.R401_3_grading measure the fall
+    # away from the foundation: a near-wall point (~2-3' out) plus a ~9'-out point that has
+    # dropped 6" (5%+ per IRC R401.3, "6 inches within the first 10 feet"). Each side reads
+    # slightly below datum right at the wall and keeps falling. Distinct y-stations also feed
+    # every elevation's 10'-deep grade-capture band. The four southern garden points hold the
+    # sunken-garden condition (decision 2): garden floor at -9', raised planter block at +3'-6".
     spot_elevations=(
-        SpotElevation(position=pt(ft(4), ft(5)), elevation=ft(0)),
-        SpotElevation(position=pt(ft(32), ft(5)), elevation=ft(0)),
-        SpotElevation(position=pt(ft(6), ft(-4)), elevation=ft(0, 6)),
-        SpotElevation(position=pt(ft(30), ft(-4)), elevation=ft(0, 6)),
+        # south side (house wall at y=0), draining down toward the sunken garden
+        SpotElevation(position=pt(ft(12), ft(-2)), elevation=ft(0, -2)),
+        SpotElevation(position=pt(ft(26), ft(-3)), elevation=ft(0, -3)),
+        SpotElevation(position=pt(ft(18), ft(-9)), elevation=ft(0, -6)),
+        # north side (house wall at y=36')
+        SpotElevation(position=pt(ft(12), ft(39)), elevation=ft(0, -2)),
+        SpotElevation(position=pt(ft(24), ft(45)), elevation=ft(0, -6)),
+        # east side (house wall at x=36')
+        SpotElevation(position=pt(ft(39), ft(12)), elevation=ft(0, -2)),
+        SpotElevation(position=pt(ft(45), ft(26)), elevation=ft(0, -6)),
+        # west side (house wall at x=0)
+        SpotElevation(position=pt(ft(-3), ft(14)), elevation=ft(0, -2)),
+        SpotElevation(position=pt(ft(-9), ft(28)), elevation=ft(0, -6)),
+        # sunken garden floor and the raised-garden block wall at the far south
         SpotElevation(position=pt(ft(8), ft(-20)), elevation=ft(-9)),
         SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9)),
         SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(3, 6)),

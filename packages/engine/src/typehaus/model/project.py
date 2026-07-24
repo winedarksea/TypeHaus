@@ -7,7 +7,7 @@ import uuid
 from typehaus.model.base import Element, HausModel
 from typehaus.model.refs import FaceRef, face
 from typehaus.model.registry import register_constructor, register_element
-from typehaus.model.site import SetbackSpec, SpotElevation, UtilityLine
+from typehaus.model.site import Contour, SetbackSpec, SpotElevation, UtilityLine
 from typehaus.quantities import Angle, Length, Point2D, Temperature, deg
 
 
@@ -27,6 +27,7 @@ class Site(HausModel):
     setbacks: tuple[SetbackSpec, ...] = ()
     spot_elevations: tuple[SpotElevation, ...] = ()
     utilities: tuple[UtilityLine, ...] = ()
+    contours: tuple[Contour, ...] = ()  # survey topo lines from a GeoJSON basemap
 
 
 @register_element

@@ -88,7 +88,14 @@ from typehaus.model.registry import (
     element_kinds,
     register_constructor,
 )
-from typehaus.model.site import SetbackSpec, SpotElevation, UtilityLine
+from typehaus.model.site import (
+    Basemap,
+    Contour,
+    SetbackSpec,
+    SpotElevation,
+    UtilityLine,
+    load_basemap_geojson,
+)
 from typehaus.model.structure import (
     Beam,
     Connector,
@@ -200,7 +207,8 @@ __all__ = [
     "in_slab", "under_subfloor",
     "PipeRun", "SleevePenetration", "DuctRun", "Register", "Equipment", "ElectricalDevice",
     "Sump", "VentRun",
-    "SetbackSpec", "SpotElevation", "UtilityLine",
+    "SetbackSpec", "SpotElevation", "UtilityLine", "Contour", "Basemap",
+    "load_basemap_geojson",
     "LayerFunction", "ControlLayer", "JunctionPolicy", "Occupancy", "Service", "AlarmKind",
     "StructuralRole", "SliceKind", "FloorOpeningPurpose", "RadiantSystem",
     "PartitionLayout", "RoofForm", "ConditionKind",

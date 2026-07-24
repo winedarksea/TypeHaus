@@ -39,6 +39,12 @@ def render_views(
 
         lod = "framed" if any(w.members for w in model.walls) else "core"
         written.append(emit_glb(model, out_dir / "model.glb", lod=lod))
+    elif view == "site":
+        from typehaus.emit.draw.pdf_writer import write_raster
+        from typehaus.emit.draw.siteplan import build_site_plan
+
+        written.append(write_raster(build_site_plan(model), out_dir / f"site_plan.{fmt}",
+                                    title="site · C-101"))
     elif view == "section":
         from typehaus.emit.draw.pdf_writer import write_raster
         from typehaus.emit.draw.section import build_center_section
@@ -55,5 +61,5 @@ def render_views(
             written.append(write_raster(scene, out_dir / f"detail_{slug}.{fmt}",
                                         title=f"detail · {derived.key}"))
     else:
-        raise ValueError(f"unknown view {view!r} (plan|section|3d|details)")
+        raise ValueError(f"unknown view {view!r} (plan|site|section|3d|details)")
     return written

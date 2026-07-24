@@ -434,7 +434,7 @@ def fmt(house: Optional[Path] = typer.Argument(None)) -> None:
 @app.command()
 def render(
     house: Optional[Path] = typer.Argument(None),
-    view: str = typer.Option("plan", help="plan | section | details | 3d (#52 agent eyes)"),
+    view: str = typer.Option("plan", help="plan | site | section | details | 3d (#52 agent eyes)"),
     fmt: str = typer.Option("png", help="png | svg"),
 ) -> None:
     """Emit headless plan/section snapshots for the edit→build→check→look loop (#52)."""
