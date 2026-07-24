@@ -10,6 +10,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+
+ARCH_OPENING_SEGMENT_COUNT = 12
+
 if TYPE_CHECKING:
     import ifcopenshell
 
@@ -74,6 +77,47 @@ def add_prism_from_profile(f: Any, body_ctx: Any, points_m: list[tuple[float, fl
     placement = f.createIfcAxis2Placement3D(origin, None, None)
     direction = f.createIfcDirection((0.0, 0.0, 1.0))
     solid = f.createIfcExtrudedAreaSolid(profile, placement, direction, height_m)
+    return f.createIfcShapeRepresentation(body_ctx, "Body", "SweptSolid", [solid])
+
+
+def add_arched_opening_prism(f: Any, body_ctx: Any, *, center_m: tuple[float, float],
+                             wall_direction: tuple[float, float], wall_thickness_m: float,
+                             width_m: float, height_m: float, arch_rise_m: float,
+                             z0_m: float) -> Any:
+    """Extrude a rectangular-jamb, semicircular-head opening through a wall.
+
+    The profile lies in the opening's vertical plane: its local x-axis follows the wall and
+    its local y-axis is vertical.  The swept local z-axis points through the wall, avoiding
+    the horizontal footprint extrusion used for ordinary rectangular openings.
+    """
+    ux, uy = wall_direction
+    direction_length = (ux * ux + uy * uy) ** 0.5 or 1.0
+    ux, uy = ux / direction_length, uy / direction_length
+    # Choosing the right-hand wall normal makes local y = local z × local x point upward.
+    normal = (uy, -ux)
+    half_width = width_m / 2.0
+    springline = max(0.0, height_m - arch_rise_m)
+    radius = half_width
+    profile_points = [(-half_width, 0.0), (half_width, 0.0), (half_width, springline)]
+    for segment in range(1, ARCH_OPENING_SEGMENT_COUNT + 1):
+        x = half_width - width_m * segment / ARCH_OPENING_SEGMENT_COUNT
+        y = springline + (max(0.0, radius * radius - x * x) ** 0.5)
+        profile_points.append((x, y))
+    profile_points.append((-half_width, 0.0))
+    points = [f.createIfcCartesianPoint(point) for point in profile_points]
+    outer_curve = f.createIfcPolyline(points)
+    profile = f.createIfcArbitraryClosedProfileDef("AREA", None, outer_curve)
+    placement = f.createIfcAxis2Placement3D(
+        # Swept solids extrude from their placement plane in one direction; offset the
+        # plane by half the wall depth so the resulting void stays centered on the wall axis.
+        f.createIfcCartesianPoint((center_m[0] - normal[0] * wall_thickness_m / 2.0,
+                                   center_m[1] - normal[1] * wall_thickness_m / 2.0, z0_m)),
+        f.createIfcDirection((normal[0], normal[1], 0.0)),
+        f.createIfcDirection((ux, uy, 0.0)),
+    )
+    solid = f.createIfcExtrudedAreaSolid(
+        profile, placement, f.createIfcDirection((0.0, 0.0, 1.0)), wall_thickness_m,
+    )
     return f.createIfcShapeRepresentation(body_ctx, "Body", "SweptSolid", [solid])
 
 

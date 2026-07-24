@@ -298,13 +298,27 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     wall = wall_entities.get(opening.host_wall)
     if rw is None or wall is None:
         return
-    opening_profile = _opening_profile(rw, opening)
     z0 = rw.z0_m + opening.sill_m
-    # Void: full wall thickness prism from sill to head.
+    # Void: an arched profile is swept through the wall; ordinary openings retain the
+    # footprint prism used by the established rectangular IFC representation.
     void = ll.create_entity(f, "IfcOpeningElement", name=f"{opening.tag}/void")
     void.GlobalId = derive_child_guid(project_uuid, opening.uid, "void")
-    _assign_representation(f, void, ll.add_prism_from_profile(
-        f, body, opening_profile, opening.height_m, z0))
+    if opening.arch_rise_m > 1e-6:
+        (sx, sy), (ex, ey) = rw.axis
+        wall_length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5 or 1.0
+        direction = ((ex - sx) / wall_length, (ey - sy) / wall_length)
+        center = (sx + direction[0] * opening.center_along_m,
+                  sy + direction[1] * opening.center_along_m)
+        representation = ll.add_arched_opening_prism(
+            f, body, center_m=center, wall_direction=direction,
+            wall_thickness_m=rw.thickness_m or 0.15, width_m=opening.width_m,
+            height_m=opening.height_m, arch_rise_m=opening.arch_rise_m, z0_m=z0,
+        )
+    else:
+        representation = ll.add_prism_from_profile(
+            f, body, _opening_profile(rw, opening), opening.height_m, z0,
+        )
+    _assign_representation(f, void, representation)
     ll.ensure_pset(f, void, PSET_SOURCE, {
         "uid": opening.uid, "tag": opening.tag, "type": opening.type_ref or "",
         "host_wall": opening.host_wall,

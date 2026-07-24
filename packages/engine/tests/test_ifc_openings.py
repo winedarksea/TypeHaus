@@ -87,3 +87,21 @@ def test_rough_opening_emits_only_the_wall_void(catlin_model, tmp_path):
     filled = [opening for opening in model.openings if opening.kind != "rough_opening"]
     assert len(f.by_type("IfcWindow")) + len(f.by_type("IfcDoor")) == len(filled)
     assert len(f.by_type("IfcRelFillsElement")) == len(filled)
+
+
+def test_sunken_garden_arch_voids_use_vertical_curved_profiles(catlin_model, catlin_ifc):
+    import ifcopenshell
+
+    f = ifcopenshell.open(str(catlin_ifc))
+    arches = [opening for opening in f.by_type("IfcOpeningElement")
+              if opening.Name.startswith("AO-ARCH-")]
+    assert len(arches) == 2
+    for opening in arches:
+        solid = opening.Representation.Representations[0].Items[0]
+        assert solid.is_a("IfcExtrudedAreaSolid")
+        assert solid.SweptArea.is_a("IfcArbitraryClosedProfileDef")
+        assert len(solid.SweptArea.OuterCurve.Points) == 16
+        assert max(point.Coordinates[1] for point in solid.SweptArea.OuterCurve.Points) == pytest.approx(2.4384)
+        assert solid.Depth == pytest.approx(0.4064)
+        assert solid.Position.Axis.DirectionRatios[2] == pytest.approx(0.0)
+        assert solid.ExtrudedDirection.DirectionRatios == (0.0, 0.0, 1.0)

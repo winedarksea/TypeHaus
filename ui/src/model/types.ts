@@ -91,6 +91,8 @@ export interface Opening {
   height_m: number;
   sill_m: number;
   center_along_m: number;
+  // A nonzero rise turns the rectangular head into a semicircular arch soffit.
+  arch_rise_m: number;
   swing_clearance?: Vec2[];
   framing_bumper?: Vec2[];
   flip_hinge: boolean;

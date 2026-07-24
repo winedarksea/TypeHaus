@@ -86,6 +86,13 @@ def test_openings_serialize_swing_and_framing_overlays(catlin_payload):
     assert len(door["framing_bumper"]) == 4
 
 
+def test_sunken_garden_arch_openings_serialize_their_rise(catlin_payload):
+    arches = [opening for opening in catlin_payload["openings"]
+              if opening["tag"].startswith("AO-ARCH-")]
+    assert len(arches) == 2
+    assert all(opening["arch_rise_m"] == pytest.approx(1.2192) for opening in arches)
+
+
 def test_site_context_serializes_grade_parcel_and_spot_elevations(catlin_payload):
     site = catlin_payload["site"]
     assert {"grade_m", "parcel", "spot_elevations"} <= site.keys()

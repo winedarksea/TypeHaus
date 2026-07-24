@@ -29,6 +29,9 @@ import { useTheme } from "../theme/theme";
 export const EARTH_PLANE_OPACITY = 0.28;
 export const EARTH_PLANE_THICKNESS_M = 0.01;
 export const EARTH_FALLBACK_HALF_SIZE_M = 50;
+// Keep this in step with emit/gltf/emitter.py: enough facets for an architectural arch
+// without turning every concrete opening into a dense collection of wall meshes.
+export const ARCH_OPENING_SEGMENT_COUNT = 12;
 
 type PanDirection = "left" | "right" | "up" | "down";
 
@@ -662,6 +665,27 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
     const openingTop = openingBottom + active.height_m;
     if (openingBottom > wall.z0_m + 1e-9)
       pieces.push({ polygon: strip, z0_m: wall.z0_m, z1_m: openingBottom, topIsRaked: false });
+    const archRise = active.arch_rise_m ?? 0;
+    if (archRise > 1e-9) {
+      const springline = openingBottom + Math.max(0, active.height_m - archRise);
+      const radius = active.width_m / 2;
+      const openingStart = active.center_along_m - radius;
+      for (let segment = 0; segment < ARCH_OPENING_SEGMENT_COUNT; segment++) {
+        const segmentStart = openingStart + active.width_m * segment / ARCH_OPENING_SEGMENT_COUNT;
+        const segmentEnd = openingStart + active.width_m * (segment + 1) / ARCH_OPENING_SEGMENT_COUNT;
+        const clippedStart = Math.max(start, segmentStart);
+        const clippedEnd = Math.min(end, segmentEnd);
+        if (clippedEnd - clippedStart <= 1e-9) continue;
+        const midpoint = (clippedStart + clippedEnd) / 2;
+        const offset = midpoint - active.center_along_m;
+        const curve = radius * radius - offset * offset;
+        const soffit = springline + Math.sqrt(Math.max(0, curve));
+        if (wall.z1_m > soffit + 1e-9)
+          pieces.push({ polygon: ring(clippedStart, clippedEnd), z0_m: soffit,
+            z1_m: wall.z1_m, topIsRaked: raked });
+      }
+      continue;
+    }
     const minTop = Math.min(...strip.map(([x, y]) => rakedTopAt(wall, x, y)));
     if (minTop > openingTop + 1e-9)
       pieces.push({ polygon: strip, z0_m: openingTop, z1_m: wall.z1_m, topIsRaked: raked });

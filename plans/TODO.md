@@ -31,7 +31,8 @@ The fidelity bar is the five hand-authored reference details in
 `/Users/colincatlin/Documents-NoCloud/house/catlin-house/catlin_house/out/*_ifc.png`; the
 scripts that draw them and the parameter dicts behind them are copied read-only into
 `packages/engine/tests/fixtures/catlin_reference/` (see its README). Compare against
-`houses/catlin/out/render/detail_*.png` after `haus render . --view details`.
+`houses/catlin/out/render/detail_*.png` after `haus render . --view details`. 
+Right now, the details of the transitions still miss much of the item and style alignment with these reference drawings.
 
 Done so far: cavity fill lives on the structure layer (parallel-path R, no polygon overlap,
 IfcMaterialLayerSet summing to true depth); the sauna is a real wall type; exterior walls
@@ -123,6 +124,7 @@ authored:
 - Door opening drawings in 2d view aren't very accurate. The swing lines aren't always accurately concave and the double doors often look a bit weird (one convex, one concave for the swing lines)
 - improve the appearance of brick and masonry in the 3d viewer to be more accurate.
 - the "site earth" plane interests interior spaces where it should be excluded
+- clean import/export (so ship to another computer running this app)
 
 ### Framing follow-ups found while working on the above
 
@@ -137,9 +139,6 @@ authored:
 
 ### Other Catlin House
 Sump with radon vent. This radon vent runs up the same mechanical space that the plumbing vent does. The radon and plumbing vent both exit near the attic ceiling, making a 90 degree (ish) turn outside, then 90 degrees straight back up where they are attached to the siding using standing seam clamps (S-5! or similar) and terminate 12" above the roof. Also running out here (mounted on the siding also with an S-5! clamp) is an outdoor-rated (NEMA 3R weatherproof) junction box on the exterior wall sealed with a gasketed, weatherproof blank cover plate.
-
-# Deferred TODO tasks
-* clean import/export (so ship to another computer running this app)
 
 ## PWA
 * bypass libcst entirely for the mutation path for fully offline PWA (high risk, deferred), pure python (needs to be efficient)
@@ -157,13 +156,9 @@ aluminum decking; composite decking on the porch). Posts→IfcColumn, standalone
 and floor joists now resolve and render in glTF; deck slabs carry composite/aluminum
 assemblies (material in glTF + IFC). Still deferred:
 
-- **Arched opening voids — IFC only.** DONE in resolve + glTF: `ResolvedOpening` now carries
-  `arch_rise_m` (populated from `el.arch` in `resolve/pipeline.py::_resolve_openings`), and the
-  glTF wall path (`emit/gltf/emitter.py::_add_layer_with_openings`) carves every wall opening as
-  a real void — square-headed for windows/doors, and a strip-approximated semicircular soffit for
-  the two front arches (three piers + arched head). Still remaining: `emit/ifc/emitter.py::_emit_opening`
-  cuts a rectangular IfcOpeningElement regardless of `arch_rise_m`, so Revit/IFC shows a square
-  head. Give it a rect+semicircle IfcArbitraryClosedProfileDef when the rise is non-zero.
+- **Arched opening voids.** DONE in resolve, glTF, the browser viewer, and IFC. `ResolvedOpening`
+  carries `arch_rise_m`; glTF and the viewer carve strip-approximated semicircular soffits, while
+  IFC emits a vertical `IfcArbitraryClosedProfileDef` swept through the host wall.
 - **Metal fascia-mounted balcony guardrail** as a first-class `Railing` element (model + resolve
   + emit + UI). The masonry railing is modeled (as a parapet wall); the metal guardrail is not.
 - **PVC fascia, front gutter, front-edge flashing into the gutter, rear flashing into the house
@@ -182,3 +177,7 @@ Very small windows that don't break the stud line don't need a header added.
 +Y: north
 +Z: vertical/up
 will need to support rotating the house off axis in the future
+
+## General Polishing Tasks
+- Make sure all warnings are cleared up
+- Make sure the BOM shows all members listed out, grouped usually by size and type

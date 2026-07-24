@@ -227,7 +227,7 @@ def model_to_dict(
              "provenance": _provenance(provenance, o.tag),
              "type_ref": o.type_ref,
              "width_m": o.width_m, "height_m": o.height_m, "sill_m": o.sill_m,
-             "center_along_m": o.center_along_m,
+             "center_along_m": o.center_along_m, "arch_rise_m": o.arch_rise_m,
              "swing_clearance": [list(point) for point in o.swing_clearance],
              "framing_bumper": [list(point) for point in o.framing_bumper],
              # Handing is authored data, rather than resolved geometry, but it changes the
