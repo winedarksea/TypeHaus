@@ -195,27 +195,85 @@ deck fix; work them down here (or suppress `structural.member_interference` per-
 `preferences.toml` until then).
 
 ## Follow Up after First Subagent Pass
-- CMU look like bricks. They should look like full CMU
-- We want white (with gray mortar) bricks as a color option for bricks — DONE. `white-brick`
-  material (grey mortar) clads the porch railing. Appearance is now *authored*, not guessed:
-  `Material.color`/`Material.finish` ship in `model.json`'s catalog and outrank the substring
-  family inference in both the viewer and the glTF export.
-- Arches are 'striped' and should be smoother, mathematical half circles properly (for sure in 3d viewer, in IFC exports too if possible)
-- More items need to be selectable (ie footing beds, posts, etc). Ideally most distinct elements are selectable in 3d view.
-- ~~Garage door needs a dedicated 2d door look, and likely a dedicated pattern to match its
-  framing needs, as it's not a swing door like shown in 2D.~~ Done: `DoorOperation` is a closed
-  enum, `door-overhead`/`door-bifold` symbols draw in the canvas + PDF + DXF, and overhead doors
-  get a span-sized jamb pack, a real engineered header depth and track framing. Sliding and
-  pocket doors still fall through to the swing glyph — they need their own symbols next.
 
-- gable ends of garage are not handled (truss is exposed)
-- need a fascia board on the truss ends of the garage (two layers, one wood, one pvc cellular). The side wall needs to extend up the raised heel (the Zip R at least), and there needs to be a soffit
-- the sewer ventilation pipe and radon vent are coming out a bit too high. Also the pipes could look a little more pipe like.
-- 6x6 posts and beams above them are not rendered as wood (beams as wood, 6x6 posts as painted white)
-- still some weird walls extending beneath the foundation somehow related to the stairs
-- one of the masonry porch railings as the exterior side flipped around. Brick should face exterior on wall three sides of that. — DONE. `W-SG-RAIL-E` was authored NE→ME, mirroring the other two, so its stack built inside out; also corrected the same latent winding on `W-SG-E1`/`W-SG-E2`. New `advisory.cladding_side_mismatch` guards the class of bug.
-- ceiling lights appear to be defined but sitting on the floor.
-- there is a glowing red dot on the basement. Some sort of warning, however you can't click on it to tell what it is, so it isn't very helpful in this form.
+Addressed across seven parallel worktrees (B1–B7). Most of the list turned out to be a
+handful of shared root causes, not fourteen separate defects.
+
+### Still open
+- CMU look like bricks. They should look like full CMU.
+- **Glowing red dot on the basement** — deliberately deferred, and the premise was wrong:
+  there is no findings→3D marker system at all. `Finding` (`findings.py`) carries no
+  coordinates and findings surface only as DOM rows in `IssuesDrawer.tsx`; the only red in
+  the 3D palette is the masonry wall-layer colour. It is near-certainly a small brick sliver.
+  Re-check now that white brick and per-solid selection have landed — every solid is
+  clickable, so identifying it is one click.
+- Sliding and pocket doors still fall through to the swing glyph — they need their own
+  2D symbols (they do now have enum values, framing dispatch and IFC mapping).
+- The vent's horizontal jog is four stacked square bands, not a swept round section. The
+  risers are true 12-gons; the jog still reads faceted up close.
+- Fascia/soffit runs overlap at the four rake corners instead of mitering.
+- Wall framing members are not individually pickable (wall bodies are). Per-stud selection
+  was scoped out; it needs `InstancedMesh` instanceId picking plus a member-uid scheme.
+
+### Done
+- ~~White (with gray mortar) brick as a colour option~~ — `white-brick` material clads the
+  porch railing. Appearance is now *authored*, not guessed: `Material.color`/`Material.finish`
+  ship in `model.json`'s catalog and outrank the substring family inference in both the viewer
+  and the glTF export.
+- ~~Arches are 'striped'~~ — two real causes. `createSmoothArchedWallLayerGeometry` bailed
+  unless the polygon had exactly 4 points, and junction resolution leaves collinear vertices,
+  so Catlin's arches always took the 32-stacked-box fallback; *and* both tessellators stepped
+  the semicircle evenly in x, which collapses at the springlines. Both now reduce collinear
+  vertices and walk the arc by angle, with the segment count solved from the radius against a
+  0.5 mm chord tolerance. Also fixed `_thin_rect_edges`, which mis-measured **182 of 607**
+  layers in the glTF export — the 16" arched wall exported as 8". IFC was already exact.
+- ~~More items selectable~~ — solids, footing beds, roofs, floors, stairs and openings all
+  register `uid` + `selectionKind` and raycast; `SelectionKind` widened to nine kinds shared
+  by the store, the viewer and the exporter. Deleting derived geometry now explains itself
+  instead of silently no-opping.
+- ~~Garage door 2D look + framing; bifold doors~~ — `DoorOperation` is a closed enum,
+  `door-overhead`/`door-bifold` symbols draw in the canvas + PDF + DXF from one shared
+  geometry contract, and overhead doors get a span-sized jamb pack, a real engineered header
+  depth and track framing.
+- ~~Gable ends of garage (truss exposed)~~ + ~~fascia, raised heel, soffit~~ — the blocker was
+  pipeline ordering: `apply_to_roof_wall_tops` ran in the envelope stage but truss framing
+  lifted the roof plane by the raised-heel delta afterwards, so any `ToRoof` wall was raked
+  to a stale plane. The lift now happens in the envelope stage. Gable triangles and the heel
+  band are closed by carrying each wall's skin up to the roof underside (a `ToRoof` gable wall
+  would have needed `W-G-E` split at the ridge, which is exactly where the 16' overhead door
+  sits). `TrimKind.SOFFIT` + `EaveSoffit` are new; fascia/soffit derive from the resolved
+  plane rather than authored absolutes.
+- ~~Vents too high / not pipe-like~~ — termination is derived as 12" above the roof surface at
+  the riser's plan point (27.14', was a hand-authored 33' — 2 ft above the ridge), guarded by
+  a new `mep.vent_termination_height` check. Risers are round sections.
+- ~~6x6 posts and beams not wood~~ — `buildSolid` hardcoded concrete grey for *every* solid.
+  It now resolves assembly → material → colour with a category palette mirroring the
+  exporter's. `Beam.assembly` added so beams can carry a finish like posts already could.
+- ~~Weird walls beneath the foundation near the stairs~~ and ~~floors ~6" too low~~ — one bug.
+  `UNIT_BOX` was base-at-origin on local Y only, so passing world-up into one of the two
+  *centred* axis slots drew every horizontal member spanning `z0 ± depth/2`. An 11-7/8" rim
+  landed 5.94" low; the U-stair well partition (basement −9' → main 0') drew −13.5' to −4.5',
+  through the footings. The box is now symmetric on all three axes so no slot can be misused.
+- ~~Masonry porch railing flipped~~ — `W-SG-RAIL-E` was authored NE→ME, mirroring the other
+  two, so its stack built inside out; the same latent winding on `W-SG-E1`/`W-SG-E2` is
+  corrected too. New `advisory.cladding_side_mismatch` guards the class of bug.
+- ~~Ceiling lights sitting on the floor~~ — `mount_height` was authored on the lights but read
+  by nothing except IFC, which then shadowed it with the floor elevation. `Mount` is now the
+  single authoritative field (`mount_height` removed, 25 Catlin devices migrated), so glTF,
+  the viewer and IFC agree.
+- ~~Gutters and flashings not shown in 3D~~ — they were modelled, resolved and exported all
+  along, just rendered as grey slivers by `buildSolid`. Now visible and selectable. (Roof-eave
+  gutters/fascia are newly authored on the garage; before this only the balcony had any.)
+
+### Found while working, fixed here
+- Deck walking surfaces were embedded inside the top inch of their own joists — slabs hung
+  below the storey datum while `FloorSystem.subfloor` sat above it. `Slab.datum`
+  (`structure` | `walking_surface`) makes the choice explicit.
+- Both guards measured 42" from the *structural* datum, so raising the walking surface left
+  them 40.5" (balcony) and 41" (porch) above the deck underfoot. Both now measure a true 42".
+- Merging B2 and B3 exposed a `resolve.framing` ↔ `roof_geometry` import cycle: the framing
+  package root eagerly imported the solver and roof framer, so importing a *leaf* module
+  dragged them in. Re-exports are lazy now, and `truss_chord_depth_m` moved to `profiles`.
 
 ## General Polishing Tasks
 - Make sure all warnings are cleared up
