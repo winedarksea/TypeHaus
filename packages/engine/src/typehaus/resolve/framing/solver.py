@@ -76,8 +76,12 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
                 z0_end_m=end_bottom, z1_end_m=end_bottom + plate_h,
             ))
 
-    # --- studs at spacing, skipping those inside an opening's rough width ------
+    # --- studs at spacing, skipping those inside an opening's king/jack pack --
     stud_z0 = z0 + plate_h
+    # A regular module stud that would fall inside an opening's trimmer/king pack is
+    # redundant (the pack already carries the load there) and would only interpenetrate
+    # it. Exclude the full pack width, not just the rough opening.
+    stud_zones = _opening_exclusions(openings, member_actual(member)[0] * 0.0254)
 
     def top_at(s: float) -> float:
         """Framing top (below the top plate(s)) at station ``s`` along the wall axis.
@@ -92,11 +96,12 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
     n = int(axis_len // spacing)
     idx = 0
     last_s = None
+    stud_stations: list[float] = []  # placed regular-stud stations, for in-line blocking
     for i in range(n + 1):
         s = i * spacing
         if s > axis_len + 1e-6:
             break
-        if _inside_opening(s, openings):
+        if _in_exclusion(s, stud_zones):
             continue
         pt = add(p0, scale(d, s))
         stud_top = top_at(s)
@@ -106,6 +111,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
         )
         idx += 1
         last_s = s
+        stud_stations.append(s)
 
     # A stud at the wall's far end regardless of module alignment: standard framing
     # practice puts a stud at both ends of every wall, but the spacing loop above only
@@ -114,7 +120,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
     # corners, where the *incoming* wall's own end stud is exactly what the neighbor's
     # ``corner_start`` supplemental stud assumes exists (see WP-corner-3-stud).
     if (last_s is None or axis_len - last_s > 1e-6) \
-            and not _inside_opening(axis_len, openings):
+            and not _in_exclusion(axis_len, stud_zones):
         pt = add(p0, scale(d, axis_len))
         stud_top = top_at(axis_len)
         members.append(
@@ -122,6 +128,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
                          stud_z0, stud_top, stud_top - stud_z0, orient=d)
         )
         idx += 1
+        stud_stations.append(axis_len)
 
     def append_corner(endpoint: str) -> None:
         # A third stud at the owned end of each exterior corner favors the requested
@@ -161,9 +168,43 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
     for oi, (center, width, height, sill, is_door) in enumerate(openings):
         members.extend(
             _frame_opening(rw, d, p0, center, width, height, sill, is_door, member,
-                           stud_z0, top_at, oi)
+                           stud_z0, top_at, oi, spacing)
         )
+
+    # --- in-line blocking courses (fire/backing blocking) ---------------------
+    _append_blocking_rows(members, rw, spec, member, d, p0, stud_z0, spacing,
+                          stud_stations)
     return tuple(members)
+
+
+def _append_blocking_rows(members: list[FramedMember], rw: ResolvedWall, spec, member: str,
+                          direction, wall_start, stud_bottom: float, spacing: float,
+                          stud_stations: list[float]) -> None:
+    """Emit a horizontal blocking course fitted between studs at each configured height.
+
+    One block per stud bay, butting the flanking studs (the same-wall blocking/stud
+    contact the interference check treats as intended nailing). Bays wider than ~1.5
+    modules — an opening — are skipped so a block never spans an opening.
+    """
+    heights = getattr(spec, "blocking_heights", ()) or ()
+    if not heights or len(stud_stations) < 2:
+        return
+    thickness = member_actual(member)[0] * 0.0254
+    block_height = thickness  # a flat 2x course
+    max_bay = spacing * 1.5
+    stations = sorted(stud_stations)
+    for hi, height in enumerate(heights):
+        base = stud_bottom + height.meters
+        for bi in range(len(stations) - 1):
+            s0, s1 = stations[bi], stations[bi + 1]
+            if s1 - s0 > max_bay or s1 - s0 <= thickness:
+                continue  # opening bay, or studs too close to fit a block
+            a = add(wall_start, scale(direction, s0 + thickness / 2))
+            b = add(wall_start, scale(direction, s1 - thickness / 2))
+            members.append(FramedMember(
+                rw.uid, f"blocking-{hi}-{bi:03d}", "blocking", member, a, b,
+                base, base + block_height, s1 - s0 - thickness,
+            ))
 
 
 def _append_tee_backing(members: list[FramedMember], rw: ResolvedWall, spec,
@@ -253,46 +294,97 @@ def _inside_opening(s: float, openings) -> bool:
     return False
 
 
+def _opening_exclusions(openings, thickness: float) -> list[tuple[float, float]]:
+    """(center, half-width) bands to keep regular module studs clear of each opening.
+
+    The band covers the rough opening *and* the full trimmer+king pack on each side, so a
+    module stud never lands inside the pack (redundant load path, guaranteed clash).
+    """
+    from typehaus.quantities import m as _m
+
+    zones: list[tuple[float, float]] = []
+    for (center, width, _h, _sill, _door) in openings:
+        kings, jacks = king_jack_counts(_m(width))
+        zones.append((center, width / 2 + (kings + jacks) * thickness + 0.005))
+    return zones
+
+
+def _in_exclusion(s: float, zones: list[tuple[float, float]]) -> bool:
+    return any(abs(s - center) <= half for center, half in zones)
+
+
+def _studs_broken(center: float, half: float, spacing: float) -> int:
+    """How many on-module stud lines an opening interrupts (0 => it fits inside a bay)."""
+    import math
+
+    lo = math.ceil((center - half) / spacing - 1e-9)
+    hi = math.floor((center + half) / spacing + 1e-9)
+    return max(0, hi - lo + 1)
+
+
 def _frame_opening(rw, d, p0, center, width, height, sill, is_door, member,
-                   z0, top_at, oi) -> list[FramedMember]:
+                   z0, top_at, oi, spacing) -> list[FramedMember]:
     from typehaus.quantities import m as _m
 
     out: list[FramedMember] = []
     plate_h = 1.5 * 0.0254
+    thickness = member_actual(member)[0] * 0.0254  # stud face dimension along the wall
     kings, jacks = king_jack_counts(_m(width))
     half = width / 2
     header_bottom = (z0 + sill + height) if not is_door else (z0 + height)
     header_depth = 0.14
-    # Keep the header directly over the jack studs.  The small extension reaches the
-    # jack centreline on each side rather than stopping at the rough-opening edge.
-    bearing = 0.01 + max(0, jacks - 1) * 0.04
-    header_left_station = center - half - bearing
-    header_right_station = center + half + bearing
+
+    # A window narrower than the stud module that lands wholly inside one bay breaks no
+    # stud line: the load path over it is uninterrupted, so it needs no structural header
+    # (and no king/jack trimmers). It gets a flat rough sill + rough head nailer between
+    # the intact bounding studs. Doors always reach the floor and break the run, so they
+    # always frame fully.
+    if not is_door and _studs_broken(center, half, spacing) == 0:
+        sl = add(p0, scale(d, center - half))
+        sr = add(p0, scale(d, center + half))
+        sill_z0 = z0 + sill
+        out.append(FramedMember(rw.uid, f"sill-{oi}", "sill", member, sl, sr,
+                                sill_z0, sill_z0 + plate_h, width))
+        out.append(FramedMember(rw.uid, f"roughhead-{oi}", "blocking", member, sl, sr,
+                                header_bottom, header_bottom + plate_h, width))
+        return out
+    # Trimmers (jacks) and kings pack face-to-face outward from each rough-opening edge:
+    # the innermost jack's inner face sits on the RO edge (centreline at half a thickness
+    # in), each following member is one full thickness further out. Spacing members by
+    # their real thickness makes the stud pack *touch* rather than interpenetrate — the
+    # box IR then shows a face-nailed pack as adjacency, not a clash.
     for side, sign in (("l", -1), ("r", +1)):
         edge = center + sign * half
+        for j in range(jacks):
+            s = edge + sign * (thickness / 2 + j * thickness)
+            pos = add(p0, scale(d, s))
+            out.append(FramedMember(rw.uid, f"jack-{oi}-{side}{j}", "jack", member,
+                                    pos, pos, z0, header_bottom, header_bottom - z0, orient=d))
         for k in range(kings):
-            s = edge + sign * (0.04 + k * 0.04)
+            s = edge + sign * (thickness / 2 + (jacks + k) * thickness)
             pos = add(p0, scale(d, s))
             king_top = top_at(s)
             out.append(FramedMember(rw.uid, f"king-{oi}-{side}{k}", "king", member,
                                     pos, pos, z0, king_top, king_top - z0, orient=d))
-        for j in range(jacks):
-            pos = add(p0, scale(d, edge + sign * (0.01 + j * 0.04)))
-            out.append(FramedMember(rw.uid, f"jack-{oi}-{side}{j}", "jack", member,
-                                    pos, pos, z0, header_bottom, header_bottom - z0, orient=d))
-    hl = add(p0, scale(d, header_left_station))
-    hr = add(p0, scale(d, header_right_station))
+    # The header bears on both trimmer stacks; its ends land on the king inner faces
+    # (RO half-width + the full trimmer stack), so it butts the kings without crossing them.
+    header_half = half + jacks * thickness
+    hl = add(p0, scale(d, center - header_half))
+    hr = add(p0, scale(d, center + header_half))
     out.append(FramedMember(rw.uid, f"header-{oi}", "header",
                             header_size(_m(width), rw is not None), hl, hr,
                             header_bottom, header_bottom + header_depth,
-                            width + 2 * bearing))
+                            2 * header_half))
 
     if not is_door:
         sill_z0 = z0 + sill
         sill_z1 = sill_z0 + plate_h
+        # The rough sill fits *between* the trimmers, spanning the rough opening only, so
+        # its ends butt the jack inner faces instead of running through them.
+        sl = add(p0, scale(d, center - half))
+        sr = add(p0, scale(d, center + half))
         out.append(FramedMember(
-            rw.uid, f"sill-{oi}", "sill", member, hl, hr, sill_z0, sill_z1,
-            width + 2 * bearing,
+            rw.uid, f"sill-{oi}", "sill", member, sl, sr, sill_z0, sill_z1, width,
         ))
         # Cripples under the rough sill and above the header retain the normal stud
         # module without placing framing through the opening itself.

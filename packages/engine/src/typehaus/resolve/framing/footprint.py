@@ -34,20 +34,24 @@ def member_footprint(member: FramedMember) -> tuple[Ring, float, float]:
     z_lo, z_hi = min(zs), max(zs)
 
     if run < 1e-9:
-        # Vertical member: an oriented width_m × depth_m rectangle centered at p0,
-        # long axis along member.orient (axis-aligned when orient is None).
+        # Vertical member: an oriented width_m × depth_m rectangle centered at p0.
+        # Per the profiles.py convention, ``orient`` is the *thickness* (width) axis —
+        # for a stud that is the wall-run direction (1.5" along the wall); the wide
+        # depth face (5.5") then runs perpendicular, through the wall. Placing depth
+        # along ``orient`` instead would model every stud rotated 90°, so a 1.5"-spaced
+        # king/jack pack would read as a gross clash rather than a face-nailed pack.
         hw, hd = cs.width_m / 2.0, cs.depth_m / 2.0
         if member.orient is not None:
             ox, oy = member.orient
             olen = math.hypot(ox, oy)
             if olen > 1e-9:
-                ux, uy = ox / olen, oy / olen  # depth (long) axis
-                px, py = -uy, ux  # width (thickness) axis
+                ux, uy = ox / olen, oy / olen  # width (thickness) axis — along the wall
+                px, py = -uy, ux  # depth (wide) axis — through the wall
                 ring = [
-                    (x0 + ux * hd + px * hw, y0 + uy * hd + py * hw),
-                    (x0 - ux * hd + px * hw, y0 - uy * hd + py * hw),
-                    (x0 - ux * hd - px * hw, y0 - uy * hd - py * hw),
-                    (x0 + ux * hd - px * hw, y0 + uy * hd - py * hw),
+                    (x0 + ux * hw + px * hd, y0 + uy * hw + py * hd),
+                    (x0 - ux * hw + px * hd, y0 - uy * hw + py * hd),
+                    (x0 - ux * hw - px * hd, y0 - uy * hw - py * hd),
+                    (x0 + ux * hw - px * hd, y0 + uy * hw - py * hd),
                 ]
                 return ring, z_lo, z_hi
         ring = [(x0 - hw, y0 - hd), (x0 + hw, y0 - hd),

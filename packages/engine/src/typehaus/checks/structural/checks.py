@@ -23,10 +23,20 @@ _IJOIST_SPAN_FT: dict[str, float] = {
 }
 
 
-def _advisory(cid: str, msg: str, tags: tuple[str, ...], result: Result) -> Finding:
+def _advisory(cid: str, msg: str, tags: tuple[str, ...], result: Result,
+              fix_hint: str | None = None) -> Finding:
     return Finding(severity=Severity.WARN, check_id=cid,
                    message=f"[advisory, not engineering] {msg}", element_tags=tags,
-                   result=result)
+                   result=result, fix_hint=fix_hint)
+
+
+def _studs_broken(center_m: float, half_m: float, spacing_m: float) -> int:
+    """How many on-module stud lines an opening interrupts (0 => it fits inside a bay)."""
+    import math
+
+    lo = math.ceil((center_m - half_m) / spacing_m - 1e-9)
+    hi = math.floor((center_m + half_m) / spacing_m + 1e-9)
+    return max(0, hi - lo + 1)
 
 
 @check(Tier.STRUCTURAL, "structural.header_prescriptive")
@@ -146,13 +156,21 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
             continue  # concrete / masonry openings do not consume stud bays
         role = authored.structural_role
         width_in = opening.width_m / 0.0254
+        broken = _studs_broken(opening.center_along_m, opening.width_m / 2, spacing)
+        # How many studs the opening *ought* to break: none if it fits inside a bay,
+        # otherwise one (a symmetric window centered on a single stud line).
+        expected_break = 0 if width_in <= rules.max_window_ro_unbroken_in else 1
+        break_note = (f"breaks {broken} stud line{'s' if broken != 1 else ''} at "
+                      f"{rules.module_in:.0f}\" o.c.")
         maximum = (rules.max_window_ro_bearing_in if role is StructuralRole.BEARING
                    else rules.max_window_ro_nonbearing_in)
         if width_in > maximum + 1e-6:
             out.append(_advisory(
                 "structural.window_framing_module",
                 f"window {opening.tag} RO {width_in:.0f}\" exceeds the {maximum:.0f}\" "
-                f"{role.value} framing limit", (opening.tag,), Result.FAIL,
+                f"{role.value} framing limit ({break_note})", (opening.tag,), Result.FAIL,
+                fix_hint=(f"a {role.value} window this wide needs an engineered header; keep "
+                          f"RO <= {maximum:.0f}\" to stay on the prescriptive module"),
             ))
             continue
         # A <=14" window stays centered in an unbroken bay.  The 27"/30" choices are
@@ -162,10 +180,17 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
                                  - spacing / 2)
         if distance_to_target > tolerance:
             target_label = "bay center" if target else "stud line"
+            # Flag the awkward case explicitly: a window breaking more stud lines than it
+            # should (an off-center 30" RO clipping two studs instead of one) doubles the
+            # jack/header work and wastes a stud bay.
+            awkward = (f"; it {break_note} instead of {expected_break}"
+                       if broken > expected_break else "")
             out.append(_advisory(
                 "structural.window_framing_module",
                 f"window {opening.tag} is {distance_to_target / 0.0254:.1f}\" off its "
-                f"{target_label}; resize/reposition to the {rules.module_in:.0f}\" module",
-                (opening.tag,), Result.FAIL,
+                f"{target_label}{awkward}; resize/reposition to the {rules.module_in:.0f}\" "
+                f"module", (opening.tag,), Result.FAIL,
+                fix_hint=(f"shift the RO center onto its {target_label} so it breaks "
+                          f"{expected_break} stud line{'s' if expected_break != 1 else ''}"),
             ))
     return out
