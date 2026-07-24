@@ -216,6 +216,14 @@ _ALL_TRADES = {
     "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth",
 }
 
+# The selection kinds the UI honours (ui/src/state/store.ts SelectionKind). Spelled out here
+# rather than imported from the emitter so a change to the vocabulary has to be made twice —
+# once in the writer, once against the UI contract it is claiming to satisfy.
+_SELECTION_KINDS = {
+    "wall", "opening", "room", "solid", "footing_bedding", "floor", "roof", "stair",
+    "canvas_object",
+}
+
 
 def test_emit_gltf_dict_emits_per_object_nodes_with_trade_extras(plan):
     """Per-object identity (U1): one node per source object, each tagged so the 3D UI can
@@ -230,7 +238,7 @@ def test_emit_gltf_dict_emits_per_object_nodes_with_trade_extras(plan):
         extras = node.get("extras")
         assert extras is not None, f"every node needs extras: {node.get('name')}"
         assert extras["trade"] in _ALL_TRADES, f"trade must be an allowlisted token: {extras}"
-        assert extras.get("kind") in (None, "wall", "canvas_object")
+        assert extras.get("kind") in _SELECTION_KINDS, f"kind must be an allowlisted token: {extras}"
         # The node name mirrors extras as a "<trade>|<kind|>|<uid|>" fallback.
         assert node["name"].split("|")[0] == extras["trade"]
 
@@ -241,6 +249,48 @@ def test_emit_gltf_dict_emits_per_object_nodes_with_trade_extras(plan):
     assert wall["extras"]["trade"] == "walls"
     assert wall["extras"]["uid"]
     assert wall["name"].split("|") == ["walls", "wall", wall["extras"]["uid"]]
+
+
+def test_emit_gltf_dict_tags_every_node_with_a_kind_and_uid(plan):
+    """B7: the export carries the same per-element identity the live viewer picks against —
+    openings, rooms, solids, footing beddings, roofs, floors and stairs all used to ship with a
+    trade and nothing else, which made them unselectable had the glb ever been promoted."""
+    model, _ = resolve(plan)
+    gltf, _blob = emit_gltf_dict(model)
+
+    for node in gltf["nodes"]:
+        extras = node["extras"]
+        assert extras.get("kind"), f"node {node['name']} needs a selection kind"
+        assert extras.get("uid"), f"node {node['name']} needs a model uid"
+        assert node["name"].split("|") == [extras["trade"], extras["kind"], extras["uid"]]
+
+    # Whatever this plan actually resolves to must appear in the export, tagged — derived from
+    # the model rather than hard-coded so a fixture gaining solids or a roof widens the test.
+    kinds = {node["extras"]["kind"] for node in gltf["nodes"]}
+    expected = {kind for kind, records in (
+        ("wall", model.walls), ("opening", model.openings), ("room", model.rooms),
+        ("solid", model.solids), ("footing_bedding", model.footing_beddings),
+        ("roof", model.roofs), ("floor", model.floors), ("stair", model.stairs),
+    ) if records}
+    assert expected <= kinds, f"missing kinds: {expected - kinds}"
+    assert {"wall", "opening", "room", "floor"} <= kinds, "fixture regression: plan lost content"
+
+    # A wall's framing node inherits the wall's identity: individual studs are merged into one
+    # draw call in the viewer, so a stud selects the wall that owns it.
+    framing = [n for n in gltf["nodes"] if n["extras"]["trade"] == "framing"]
+    assert framing, "expected at least one framing node"
+    wall_uids = {w.uid for w in model.walls}
+    assert all(n["extras"]["kind"] == "wall" and n["extras"]["uid"] in wall_uids for n in framing)
+
+
+def test_add_object_rejects_an_unknown_selection_kind(plan):
+    """A typo'd kind must fail here, not silently ship a node the UI drops on pick."""
+    from typehaus.emit.gltf.emitter import _MeshBuilder, _SceneBuilder
+
+    mb = _MeshBuilder()
+    mb.add_prism([(0, 0), (1, 0), (1, 1)], 0.0, 1.0, (0.5, 0.5, 0.5, 1.0))
+    with pytest.raises(ValueError):
+        _SceneBuilder().add_object(mb, trade="concrete", kind="gutter", uid="X-1")
 
 
 def test_emit_gltf_dict_emits_canvas_object_nodes(plan):
