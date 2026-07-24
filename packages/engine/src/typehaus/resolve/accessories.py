@@ -14,7 +14,7 @@ import math
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.mep import Sump, VentRun
 from typehaus.model.structure import Connector, Dowel, Railing
-from typehaus.model.trim import Fascia, Flashing, Gutter
+from typehaus.model.trim import EaveSoffit, Fascia, Flashing, Gutter
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import circle_outline, length, rect_between, sub
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
@@ -33,6 +33,7 @@ _PIPE_BUNDLE_SPACING = 1.6  # centre-to-centre spacing of bundled risers, in dia
 # Trim ``TrimKind`` values collapse onto a small render/IFC category set.
 _TRIM_CATEGORY = {
     "fascia": "fascia",
+    "soffit": "soffit",
     "gutter": "gutter",
     "drip_flashing": "flashing",
     "wrb_counterflashing": "flashing",
@@ -55,7 +56,7 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
                 _resolve_sump(model, el, storey)
             elif isinstance(el, VentRun):
                 findings.extend(_resolve_vent(model, el, storey.tag))
-            elif isinstance(el, (Fascia, Gutter, Flashing)):
+            elif isinstance(el, (EaveSoffit, Fascia, Gutter, Flashing)):
                 _resolve_edge_run(model, el, storey.tag)
     return findings
 

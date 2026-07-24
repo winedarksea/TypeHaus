@@ -7,7 +7,11 @@ from __future__ import annotations
 import pytest
 
 from typehaus.quantities import inch
-from typehaus.resolve.framing.profiles import RIDGE_BEAM_DEFAULT, cross_section
+from typehaus.resolve.framing.profiles import (
+    RIDGE_BEAM_DEFAULT,
+    cross_section,
+    panel_profile,
+)
 from typehaus.resolve.framing.tables import LUMBER_ACTUAL
 
 
@@ -75,6 +79,15 @@ def test_rim_board():
     assert section.plies == 1
     assert section.width_m == pytest.approx(inch(1.25).meters)
     assert section.depth_m == pytest.approx(inch(11.875).meters)
+
+
+def test_panel_sheet_good():
+    """Sheet goods (soffit panels, heel/gable closure bands) carry arbitrary dimensions."""
+    section = cross_section(panel_profile(13.625, 0.5))
+    assert section.shape == "rect"
+    assert section.plies == 1
+    assert section.width_m == pytest.approx(inch(13.625).meters)
+    assert section.depth_m == pytest.approx(inch(0.5).meters)
 
 
 def test_engineered_lvl_fallback_is_sane():
