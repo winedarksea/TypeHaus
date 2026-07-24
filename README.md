@@ -6,6 +6,8 @@ a 2D/3D editing UI.
 
 The vision here is for non-architects to be able to use vibe coding and simple UIs to 'play around' with a house design until they capture most of their vision for their home, then be able to export a practical, usable home design in a format architects can easily load into the software of their choice to polish and refine. This also aims to go beyond many "floor plan" apps by allowing users to get into the assemblies and building science of their home. Although it does not aim for 1:1 parity with leading architectural tools, this library does aim to export permit ready construction drawings for homes completely from the tools here.
 
+Note that we don't intend to make this "visually stunning". The idea here is users can pass an elevation/screenshot to an AI process to get a "photorealistic render" as needed. We do aim for quality, realistic portrayals of surface where feasible without great complexity.
+
 ## How
 
 You describe walls, rooms, openings, assemblies, and foundations as frozen typed objects.
