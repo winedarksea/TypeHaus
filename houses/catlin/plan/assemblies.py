@@ -208,6 +208,17 @@ BALCONY_DECK_ALUMINUM = Assembly(
     source="catlin-house balcony — Wahoo AridDeck-style aluminum plank on 2x8 joists",
 )
 
+# Finish-only assembly for the balcony 6x6 pillars so they render (glTF) and read (IFC) as
+# white-painted rather than the default bare-wood post colour. Single 5.5" layer = the 6x6.
+POST_WHITE_PAINT = Assembly(
+    tag="POST_WHITE_PAINT",
+    layers=(
+        Layer(name="post-paint-white", material_ref="post-paint-white", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house balcony 6x6 pillars — white-painted finish",
+)
+
 # --- garage (freestanding: ICF stem + 2x6 wood wall) ---------------------------
 GARAGE_ICF_8 = Assembly(
     tag="GARAGE_ICF_8",
@@ -355,6 +366,9 @@ MATERIALS = [
     Material(tag="aluminum-deck", name="Aluminum deck board (Wahoo AridDeck-style)",
              r_per_inch=0.0, density=2700.0, hatch="metal", color="#b9bcc0",
              source="balcony walking surface — waterproof aluminum plank"),
+    Material(tag="post-paint-white", name="White-painted PT lumber", r_per_inch=1.24,
+             density=500.0, hatch="lumber", color="#f4f2ee",
+             source="balcony 6x6 pillars — exterior white paint finish"),
 ]
 
 ASSEMBLIES = [
@@ -370,6 +384,7 @@ ASSEMBLIES = [
     PORCH_RAILING_MASONRY,
     PORCH_DECK_COMPOSITE,
     BALCONY_DECK_ALUMINUM,
+    POST_WHITE_PAINT,
     GARAGE_ICF_8,
     GARAGE_WALL_2X6,
     GARAGE_ROOF,

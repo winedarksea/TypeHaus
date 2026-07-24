@@ -125,12 +125,15 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
             sill = _opening_sill(el)
             swing_clearance = _door_swing_clearance(rw, center, width, el) if is_door else ()
             framing_bumper = _opening_framing_bumper(rw, center, width)
+            arch = getattr(el, "arch", None)
+            arch_rise = arch.rise.meters if arch is not None else 0.0
             model.openings.append(
                 ResolvedOpening(
                     uid=el.uid, tag=el.tag, host_wall=el.host, type_ref=type_ref,
                     width_m=width, height_m=height, sill_m=sill,
                     center_along_m=center, kind=kind, is_door=is_door,
                     swing_clearance=swing_clearance, framing_bumper=framing_bumper,
+                    arch_rise_m=arch_rise,
                 )
             )
             model.conditions.append(

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import base64
 import json
+import math
 import struct
 from pathlib import Path
 
@@ -293,16 +294,86 @@ def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, floa
     return _color(solid.category)
 
 
-def _add_wall(mb: _MeshBuilder, wall: ResolvedWall, lod: str) -> None:
+_ARCH_STRIPS = 12  # segments approximating a semicircular arch soffit in 3D
+
+
+def _thin_rect_edges(poly, axis):
+    """The two long edges of a wall layer's thin-rectangle footprint, each oriented
+    start→end along the wall axis, so a fractional slice maps to along-axis position."""
+    (p0x, p0y), (p1x, p1y) = axis
+    tx, ty = p1x - p0x, p1y - p0y
+    length = math.hypot(tx, ty) or 1.0
+    tx, ty = tx / length, ty / length
+    nx, ny = -ty, tx
+    along = lambda v: (v[0] - p0x) * tx + (v[1] - p0y) * ty
+    perp = lambda v: (v[0] - p0x) * nx + (v[1] - p0y) * ny
+    ordered = sorted(poly, key=along)
+    starts = sorted(ordered[:2], key=perp)
+    ends = sorted(ordered[2:], key=perp)
+    return (starts[0], ends[0]), (starts[1], ends[1])
+
+
+def _lerp(p, q, t):
+    return (p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t)
+
+
+def _slice(edges, t0, t1):
+    (a0, a1), (b0, b1) = edges
+    return [_lerp(a0, a1, t0), _lerp(a0, a1, t1), _lerp(b0, b1, t1), _lerp(b0, b1, t0)]
+
+
+def _add_wall(mb: _MeshBuilder, wall: ResolvedWall, lod: str, openings=()) -> None:
     if lod == "framed" and wall.members:
         for member in wall.members:
             _add_member(mb, member)
         return
-    # Core LOD draws one prism per depth-bearing layer. Cavity fill shares the structure
-    # layer's polygon, so extruding it too would only z-fight with the studs.
+    # Core LOD draws one prism per depth-bearing layer, carved around any hosted openings so
+    # windows/doors read as voids and the arched front wall reads as piers + an arched head.
+    # Cavity fill shares the structure layer's polygon, so extruding it too would only z-fight.
+    ops = sorted(openings, key=lambda o: o.center_along_m)
+    length = math.hypot(wall.axis[1][0] - wall.axis[0][0],
+                        wall.axis[1][1] - wall.axis[0][1]) or 1.0
     for layer in wall.depth_layers():
-        if layer.polygon:
-            mb.add_prism(layer.polygon, wall.z0_m, wall.z1_m, _color(layer.function))
+        if not layer.polygon:
+            continue
+        color = _color(layer.function)
+        if not ops:
+            mb.add_prism(layer.polygon, wall.z0_m, wall.z1_m, color)
+            continue
+        _add_layer_with_openings(mb, layer.polygon, wall.axis, wall.z0_m, wall.z1_m,
+                                 length, ops, color)
+
+
+def _add_layer_with_openings(mb, poly, axis, z0, z1, length, ops, color) -> None:
+    edges = _thin_rect_edges(poly, axis)
+    cursor = 0.0
+    for op in ops:
+        o0 = max(0.0, (op.center_along_m - op.width_m / 2) / length)
+        o1 = min(1.0, (op.center_along_m + op.width_m / 2) / length)
+        if o1 <= o0:
+            continue
+        if o0 > cursor + 1e-6:  # solid pier before this opening
+            mb.add_prism(_slice(edges, cursor, o0), z0, z1, color)
+        bottom = min(z0 + op.sill_m, z1)
+        head = min(bottom + op.height_m, z1)
+        if bottom > z0 + 1e-6:  # sill band under the opening
+            mb.add_prism(_slice(edges, o0, o1), z0, bottom, color)
+        if op.arch_rise_m > 1e-6:  # spandrel above a semicircular/segmental arch soffit
+            springline = bottom + max(0.0, op.height_m - op.arch_rise_m)
+            radius = op.width_m / 2.0
+            for strip in range(_ARCH_STRIPS):
+                s0 = o0 + (o1 - o0) * strip / _ARCH_STRIPS
+                s1 = o0 + (o1 - o0) * (strip + 1) / _ARCH_STRIPS
+                offset = ((strip + 0.5) / _ARCH_STRIPS - 0.5) * op.width_m
+                curve = radius * radius - offset * offset
+                soffit = min(springline + (math.sqrt(curve) if curve > 0 else 0.0), z1)
+                if z1 > soffit + 1e-6:
+                    mb.add_prism(_slice(edges, s0, s1), soffit, z1, color)
+        elif z1 > head + 1e-6:  # square-head header
+            mb.add_prism(_slice(edges, o0, o1), head, z1, color)
+        cursor = max(cursor, o1)
+    if cursor < 1.0 - 1e-6:  # trailing pier
+        mb.add_prism(_slice(edges, cursor, 1.0), z0, z1, color)
 
 
 def _add_member(mb: _MeshBuilder, member: FramedMember) -> None:
@@ -414,8 +485,11 @@ def _member_half_width(profile: str) -> float:
 def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes]:
     """Build the glTF JSON dict + binary blob for ``model`` (no file written)."""
     mb = _MeshBuilder()
+    openings_by_wall: dict[str, list] = {}
+    for op in model.openings:
+        openings_by_wall.setdefault(op.host_wall, []).append(op)
     for wall in sorted(model.walls, key=lambda w: w.uid):
-        _add_wall(mb, wall, lod)
+        _add_wall(mb, wall, lod, openings_by_wall.get(wall.tag, ()))
     for room in sorted(model.rooms, key=lambda r: r.uid):
         if room.clear_face:
             storey_z = _room_z(model, room.storey)

@@ -103,6 +103,8 @@ Each item names the reference drawing it comes from.
 - The "air", "water", and "thermal" views are great ideas but don't seem to be hooked up to any real backend yet
 - 3d model doesn't seem to show the gravel footing beds anywhere
 - Door opening drawings in 2d view aren't very accurate. The swing lines aren't always accurately concave and the double doors often look a bit weird (one convex, one concave for the swing lines)
+- improve the appearance of brick and masonry in the 3d viewer to be more accurate.
+- the "site earth" plane interests interior spaces where it should be excluded
 
 ### Framing follow-ups found while working on the above
 
@@ -137,12 +139,13 @@ aluminum decking; composite decking on the porch). Posts→IfcColumn, standalone
 and floor joists now resolve and render in glTF; deck slabs carry composite/aluminum
 assemblies (material in glTF + IFC). Still deferred:
 
-- **Arched opening voids.** The two front-wall arches (8' wide, 4' straight + 4' semicircular
-  rise) still cut as *rectangular* IfcOpeningElements — dimensionally correct but square-headed.
-  Cutting a true arched profile means extending `ResolvedOpening` with the arch rise, reading
-  `el.arch` in `resolve/pipeline.py::_resolve_openings`, and building a rect+semicircle profile
-  in `emit/ifc/emitter.py::_emit_opening` (and the glTF opening path). Touches the shared
-  window/door opening path, so it is its own piece of work.
+- **Arched opening voids — IFC only.** DONE in resolve + glTF: `ResolvedOpening` now carries
+  `arch_rise_m` (populated from `el.arch` in `resolve/pipeline.py::_resolve_openings`), and the
+  glTF wall path (`emit/gltf/emitter.py::_add_layer_with_openings`) carves every wall opening as
+  a real void — square-headed for windows/doors, and a strip-approximated semicircular soffit for
+  the two front arches (three piers + arched head). Still remaining: `emit/ifc/emitter.py::_emit_opening`
+  cuts a rectangular IfcOpeningElement regardless of `arch_rise_m`, so Revit/IFC shows a square
+  head. Give it a rect+semicircle IfcArbitraryClosedProfileDef when the rise is non-zero.
 - **Metal fascia-mounted balcony guardrail** as a first-class `Railing` element (model + resolve
   + emit + UI). The masonry railing is modeled (as a parapet wall); the metal guardrail is not.
 - **PVC fascia, front gutter, front-edge flashing into the gutter, rear flashing into the house

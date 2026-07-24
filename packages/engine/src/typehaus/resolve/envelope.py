@@ -590,7 +590,8 @@ def _resolve_post(post: Post, storey_tag: str, elevation: float,
     else:
         z0, z1 = elevation - height, elevation
     return ResolvedSolid(post.uid, post.tag, storey_tag, "column",
-                         tuple(_post_outline(post.position.xy_m, cs)), z0, z1)
+                         tuple(_post_outline(post.position.xy_m, cs)), z0, z1,
+                         assembly=post.assembly)
 
 
 def _post_outline(center: tuple[float, float], cs) -> list[tuple[float, float]]:

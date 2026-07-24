@@ -65,6 +65,7 @@ class Post(Element):
     size: str = "6x6"
     height: Length | None = None
     supported_by: str | None = None  # pad/footing tag
+    assembly: str | None = None  # optional finish assembly (e.g. paint) for render/IFC material
 
 
 @register_element

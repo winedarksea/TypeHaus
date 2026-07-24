@@ -116,6 +116,10 @@ class ResolvedOpening:
     is_door: bool
     swing_clearance: Ring = ()
     framing_bumper: Ring = ()
+    # Arched head: semicircular/segmental rise above the rectangular jamb height. 0 = square
+    # head. The opening's total height_m already includes this rise (straight run = height -
+    # rise), so an 8'-tall opening with a 4' rise is a 4' rectangle capped by a 4' semicircle.
+    arch_rise_m: float = 0.0
 
 
 @dataclass(frozen=True)

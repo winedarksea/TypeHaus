@@ -81,7 +81,6 @@ class SunkenGardenSpec:
     porch_deck_thickness_in: float = 1.0  # composite plank
     # balcony framing
     pillar_size: str = "6x6"
-    pillar_height_ft: float = 9.0  # porch floor -> balcony bearing (front row)
     rear_pillar_rise_in: float = 2.0  # rear row taller for drainage slope
     balcony_beam: str = "2-2x10"  # three N-S beams over the pillar lines
     balcony_joist: str = "2x8"
@@ -105,11 +104,13 @@ _x_in_e = _cx + SPEC.clear_width_ft / 2.0  # 27.5
 _x_ax_w = _x_in_w - _half  # 8.0
 _x_ax_e = _x_in_e + _half  # 28.0
 
-# N-S: north edge sits gap_to_house south of the house cladding face. No north wall — the
-# porch's north edge is the beam/column line at _y_in_n.
-_y_out_n = -(SPEC.house_ext_layers_in + SPEC.gap_to_house_in) / 12.0
-_y_ax_n = _y_out_n - _half  # basement side-wall north-end node line
-_y_in_n = _y_out_n - _t  # porch deck north edge / back-beam + column line
+# N-S: the whole structure's north face sits gap_to_house south of the house cladding face
+# (a 5" insulation gap). With the north wall removed there is no wall thickness to inset —
+# the side-wall north-end nodes, the porch deck edge, and the back-beam/column line all land
+# on that one north-edge line so the deck actually reaches to within 5" of the house.
+_y_out_n = -(SPEC.house_ext_layers_in + SPEC.gap_to_house_in) / 12.0  # -0.833'
+_y_ax_n = _y_out_n  # side-wall north-end nodes (open ends terminate here → face at the gap)
+_y_in_n = _y_out_n  # porch deck north edge / back-beam + column line
 _y_in_arch = _y_in_n - SPEC.porch_clear_depth_ft  # north (inner) face of the 16" front wall
 _y_ax_arch = _y_in_arch - _arch_half  # front-wall axis (arch nodes + arch railing + front pillars)
 _y_in_s = _y_in_n - SPEC.clear_length_ft
@@ -160,12 +161,14 @@ WALLS = [
 ]
 
 # Sonotube column (12" round) at the porch's north edge midspan, carrying the two back
-# beams. Slightly shorter than the front wall so the beams seat on its top.
-# Base at the column footing top (~-9'); top ~-1' leaves room for the 2x12 back beam
-# below the 0' deck, so the column reads "slightly shorter than the arched front wall".
+# beams. Its top lands on the 2x12 back-beam soffit (one beam depth below the 0' porch
+# deck), so the beams seat directly on the column and it reads "slightly shorter than the
+# arched front wall". Base at the column footing top (basement elevation, -9').
+_back_beam_depth_ft = 11.25 / 12.0  # 2x12 actual depth
 COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
               position=pt(ft(_cx), ft(_y_in_n)), size="12 round",
-              height=ft(8), supported_by="FT-SG-COL")
+              height=ft(SPEC.basement_depth_ft - _back_beam_depth_ft),
+              supported_by="FT-SG-COL")
 
 FOOTINGS = [
     Footing(uid=f"SGF10{i}AAAA", tag=f"FT-{w.tag[2:]}", under=w.tag,
@@ -278,18 +281,25 @@ PORCH_FLOOR = Slab(
 # Second (balcony, ~10'): 6x6 pillars, three 2x10 beams, aluminum deck.
 # ============================================================================
 # Six pillars: front (south) row on the arch railing, rear (north) row — outer two on the
-# side-wall railings, center on the porch decking. Rear row 2" taller for drainage slope.
-_rear_h = ft(SPEC.pillar_height_ft) + inch(SPEC.rear_pillar_rise_in)
-_front_h = ft(SPEC.pillar_height_ft)
+# side-wall railings, center on the porch decking. All bear on the porch deck (their bases
+# embed in the CMU grout fill of the railing they pass through) so they are anchored at the
+# porch floor (0') and stand UP to the balcony-beam soffit — not hung from the deck above.
+# The rear (north, house-side) row is 2" taller so the deck crowns at the rear and drains
+# south, away from the house.  Beam soffit = balcony level less the 2x10 beam depth (9.25").
+_balcony_beam_depth_ft = 9.25 / 12.0
+_front_h = ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft)
+_rear_h = _front_h + inch(SPEC.rear_pillar_rise_in)
 _PILLAR_X = (_x_ax_w, _cx, _x_ax_e)
 PILLARS = []
 for _i, _x in enumerate(_PILLAR_X, start=1):
     PILLARS.append(Post(uid=f"SGPB{_i}0AAAA", tag=f"PT-SG-BR{_i}",
                         position=pt(ft(_x), ft(_y_in_n)), size=SPEC.pillar_size,
-                        height=_rear_h))  # rear (north) row
+                        height=_rear_h, supported_by="SL-SG-PORCH",
+                        assembly="POST_WHITE_PAINT"))  # rear (north) row
     PILLARS.append(Post(uid=f"SGPB{_i}1AAAA", tag=f"PT-SG-BF{_i}",
                         position=pt(ft(_x), ft(_y_ax_arch)), size=SPEC.pillar_size,
-                        height=_front_h))  # front (south) row
+                        height=_front_h, supported_by="SL-SG-PORCH",
+                        assembly="POST_WHITE_PAINT"))  # front (south) row
 
 SECOND_NODES = [
     Node(uid="SGNB01AAAA", tag="N-SGB-NW", position=pt(ft(_x_ax_w), ft(_y_in_n))),
