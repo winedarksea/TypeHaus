@@ -193,14 +193,21 @@ def test_ridge_beam_member_and_condition(catlin_model):
     assert any(c.kind.value == "roof_ridge" for c in catlin_model.conditions)
 
 
-def test_garage_gable_roof_with_no_ridge_beam_warns_not_errors(catlin_model):
+def test_garage_gable_roof_frames_raised_heel_trusses(catlin_model):
+    """The garage roof is framed as raised-heel trusses: top + bottom chords, web members,
+    and a raised heel at each eave bearing. A truss carries its own ridge, so it needs no
+    authored ridge Beam and must not raise the ridge_support advisory."""
     garage_roof = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
-    assert not [m for m in garage_roof.members if m.category == "ridge_beam"]
+    categories = {m.category for m in garage_roof.members}
+    assert {"top_chord", "bottom_chord", "truss_web", "truss_heel"} <= categories
+    assert "ridge_beam" not in categories
+    # The raised heel lifts the top chord above the plate at the bearing.
+    heels = [m for m in garage_roof.members if m.category == "truss_heel"]
+    assert heels and all(m.z1_m - m.z0_m > 0.2 for m in heels)  # ~9.25" energy heel
     _, resolve_findings = resolve(load_plan(CATLIN_DIR).plan)
-    ridge_warnings = [f for f in resolve_findings if f.check_id == "structural.ridge_support"]
-    assert any(f.element_tags == ("RF-GARAGE",) and f.severity.value == "warn"
-              for f in ridge_warnings)
-    assert not [f for f in ridge_warnings if f.severity.value == "error"]
+    ridge = [f for f in resolve_findings if f.check_id == "structural.ridge_support"]
+    assert not [f for f in ridge if f.element_tags == ("RF-GARAGE",)]
+    assert not [f for f in ridge if f.severity.value == "error"]
 
 
 def test_attic_to_roof_walls_frame_with_raked_studs_and_plates(catlin_model):

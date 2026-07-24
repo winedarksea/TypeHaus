@@ -26,6 +26,16 @@ class FramingSpec(HausModel):
     spacing: Length | None = None  # o.c.; defaults to 16" at the solver
     layout: PartitionLayout = PartitionLayout.SINGLE
     double_top_plate: bool = True
+    # Roof STRUCTURE layers only: "rafter" (plain sloped members, the default) or "truss"
+    # (top + bottom chord + web members with a raised heel at the eave bearing). Declarative,
+    # so a roof assembly asks for engineered trusses without touching the framing solver.
+    roof_frame: Literal["rafter", "truss"] = "rafter"
+    # truss only — the raised-heel height (top of plate → underside of the top chord at the
+    # bearing) so full insulation depth carries over the wall. None uses the solver default.
+    heel_height: Length | None = None
+    # truss only — chord/web nominal sizes; each defaults to ``member`` (chord) / "2x4" (web).
+    chord_member: str | None = None
+    web_member: str | None = None
     advanced_framing: bool = False  # single top plate + in-line stud stacking
     stagger_gap: Length | None = None  # for STAGGERED/DOUBLE partition layouts
     direction: str | None = None  # FURRING only: "vertical" | "horizontal"

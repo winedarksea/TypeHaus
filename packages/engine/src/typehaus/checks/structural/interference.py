@@ -101,6 +101,11 @@ _STAIR_SUPPORT = frozenset({"stringer", "landing", "plate", "raked_plate", "jois
 # (studs, plates, headers, T-backing blocking, and the rafters/ridge landing on a gable).
 _JUNCTION_FRAMING = (_STUD_KINDS | _PLATE_KINDS
                      | frozenset({"header", "blocking", "rafter", "ridge_beam"}))
+# The members of a fabricated roof truss (top/bottom chords, web members, the raised heel):
+# all share the roof's ``parent_uid`` and meet at panel points, so their shared volume there
+# is the fabricated joint, never an elevation bug. The seat-cut solid is the birdsmouth seat
+# a rafter/chord bears on the plate with — bonded to its member, seated on the wall top.
+_TRUSS_KINDS = frozenset({"top_chord", "bottom_chord", "truss_web", "truss_heel"})
 
 
 def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
@@ -132,6 +137,18 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     # ridge dips into the plate or the top of the stud/king it bears on.
     wall_top_kinds = _PLATE_KINDS | _STUD_KINDS
     if kinds & {"rafter", "ridge_beam"} and kinds & wall_top_kinds:
+        return True
+    # A fabricated truss: its own chords/webs/heel meet at panel points (same roof parent),
+    # and the whole truss (or a rafter's seat cut) bears down onto the wall top plate it
+    # lands on. The box IR carries no gusset plate or heel seat, so those reads as shared
+    # volume — all intended joinery, never an elevation bug.
+    if kinds <= _TRUSS_KINDS and same_parent:
+        return True
+    if kinds & (_TRUSS_KINDS | {"seat_cut"}) and kinds & wall_top_kinds:
+        return True
+    # The birdsmouth seat-cut solid is bonded to the rafter it seats and to the truss chord
+    # it caps; shared volume with its own roof's members is the point.
+    if "seat_cut" in kinds and same_parent:
         return True
     # eave web stiffener bonded to its own rafter.
     if "bearing_stiffener" in kinds and "rafter" in kinds and same_parent:
