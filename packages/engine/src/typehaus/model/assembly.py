@@ -109,6 +109,10 @@ class Assembly(HausModel):
     layers: tuple[Layer, ...] = ()
     default_lining: tuple[Layer, ...] = ()
     junction_policy: JunctionPolicy = JunctionPolicy.STRUCTURE_BUTTS_FINISH_WRAPS
+    # Named physical-face roles this assembly publishes (#44). The junction solver binds
+    # mixed-assembly corners/tees to these roles instead of layer names/indices, so a
+    # variant may add or replace layers without invalidating the junction rule.
+    interfaces: tuple[AssemblyInterface, ...] = ()
     # Variants (#35): resolve live against the base; unchanged layers track it forever.
     variant_of: str | None = None
     substitute: tuple[Substitution, ...] = ()
@@ -121,6 +125,10 @@ class Assembly(HausModel):
             if layer.function is LayerFunction.STRUCTURE:
                 return i
         return None
+
+    def interface(self, role: str) -> AssemblyInterface | None:
+        """The published face role, or None. Roles are matched by name, never layer index."""
+        return next((iface for iface in self.interfaces if iface.role == role), None)
 
 
 class ConstructionRule(HausModel):

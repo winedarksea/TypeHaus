@@ -42,6 +42,11 @@ class JunctionIncident:
     endpoint: str  # "start" | "end"
     direction: tuple[float, float]  # node -> wall interior
     assembly: str
+    # Absolute elevation extent (metres) of this wall. Two incidents whose extents do not
+    # overlap are different bearing tiers of the same plan node — a masonry guard stacked on
+    # a concrete porch wall is one plan point but two independent junctions, not a five-way.
+    z0_m: float = 0.0
+    z1_m: float = 0.0
 
 
 @dataclass(frozen=True)

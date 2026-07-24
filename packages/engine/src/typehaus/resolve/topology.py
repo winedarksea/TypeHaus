@@ -235,8 +235,167 @@ def _is_basic_mixed_tee(plan: PlanModel, through: list[JunctionIncident],
     )
 
 
+# Named face role the junction solver binds to. Two walls that publish the same bearing
+# material are structurally continuous, regardless of finish/insulation layers around it.
+_BEARING_ROLE = "bearing"
+
+
+def _bearing_layer(plan: PlanModel, assembly_tag: str):
+    """The load-bearing layer via the assembly's published ``bearing`` interface role.
+
+    Falls back to the first STRUCTURE layer when an assembly publishes no role, so a plan
+    that has not yet authored interfaces still resolves — the *match* is always by role,
+    never by layer index or a hard-coded layer name.
+    """
+    assembly = plan.library.resolve_assembly(assembly_tag)
+    if assembly is None:
+        return None
+    stack = list(assembly.default_lining) + list(assembly.layers)
+    role = assembly.interface(_BEARING_ROLE)
+    if role is not None:
+        by_name = next((layer for layer in stack if layer.name == role.layer_name), None)
+        if by_name is not None:
+            return by_name
+    return next((layer for layer in assembly.layers
+                 if layer.function is LayerFunction.STRUCTURE), None)
+
+
+def _bearing_material(plan: PlanModel, assembly_tag: str) -> str | None:
+    layer = _bearing_layer(plan, assembly_tag)
+    return layer.material_ref if layer is not None else None
+
+
+def _through_continuous(plan: PlanModel, through: list[JunctionIncident]) -> bool:
+    """The through pair carries one continuous bearing element (same bearing material)."""
+    materials = {_bearing_material(plan, item.assembly) for item in through}
+    return bool(through) and None not in materials and len(materials) == 1
+
+
+def _can_butt(plan: PlanModel, assembly_tag: str) -> bool:
+    """A branch can terminate against a continuous host iff it has a bearing element."""
+    return _bearing_material(plan, assembly_tag) is not None
+
+
+def _shared_bearing(plan: PlanModel, incidents: list[JunctionIncident]) -> bool:
+    """Every incident carries the same bearing material — a mixed corner that still miters
+    cleanly because the load-bearing layers meet on one continuous plane (2x4 partition ⟂
+    2x6 bearing wall, both SPF; concrete ⟂ concrete)."""
+    materials = {_bearing_material(plan, item.assembly) for item in incidents}
+    return None not in materials and len(materials) == 1
+
+
+def _wall_z_range(storey, wall) -> tuple[float, float]:
+    """Absolute elevation extent of a wall, used to split stacked bearing tiers apart."""
+    base = storey.elevation.meters if storey is not None else 0.0
+    if wall.element_kind == "FoundationWall":
+        z0 = wall.bottom_elevation.meters if wall.bottom_elevation is not None else base
+        z1 = wall.top_elevation.meters if wall.top_elevation is not None else base
+        return (z0, z1) if z0 <= z1 else (z1, z0)
+    top = getattr(wall, "top", None)
+    height = top.meters if top is not None and hasattr(top, "meters") else (
+        storey.default_ceiling_height.meters if storey is not None else 0.0)
+    return base, base + height
+
+
+def _tiers(incidents: list[JunctionIncident]) -> list[list[JunctionIncident]]:
+    """Partition a plan node's incidents into vertically-overlapping bearing tiers.
+
+    Two walls that share a plan point but not an elevation band (a masonry guard stacked on
+    a concrete porch wall) are independent junctions, not one high-valence node. Incidents
+    join a tier when their elevation extents overlap by at least half the shorter wall — a
+    retaining wall poking a few inches above grade does not fuse with the guard above it.
+    """
+    parent = list(range(len(incidents)))
+
+    def find(i: int) -> int:
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    for i in range(len(incidents)):
+        for j in range(i + 1, len(incidents)):
+            a, b = incidents[i], incidents[j]
+            overlap = min(a.z1_m, b.z1_m) - max(a.z0_m, b.z0_m)
+            span = min(a.z1_m - a.z0_m, b.z1_m - b.z0_m)
+            joined = overlap > -_EPS if span <= _EPS else overlap >= 0.5 * span
+            if joined:
+                parent[find(i)] = find(j)
+
+    groups: dict[int, list[JunctionIncident]] = {}
+    for index, incident in enumerate(incidents):
+        groups.setdefault(find(index), []).append(incident)
+    return sorted(groups.values(), key=lambda tier: (
+        min(item.z0_m for item in tier), tuple(item.wall_tag for item in tier)))
+
+
+def _classify_tier(plan: PlanModel, node_tag: str, storey_tag: str,
+                   point: tuple[float, float],
+                   incidents: list[JunctionIncident]) -> ResolvedJunction:
+    """Classify one bearing tier of a plan node into a resolved junction record."""
+    count = len(incidents)
+    pair = _through_pair(incidents)
+    if count == 1:
+        kind = "open_end"
+    elif count == 2:
+        kind = "collinear" if pair is not None else "l"
+    elif count == 3:
+        kind = "t" if pair is not None else "complex"
+    elif count == 4:
+        remaining = [item for index, item in enumerate(incidents)
+                     if pair is None or index not in pair]
+        kind = "x" if pair is not None and len(remaining) == 2 \
+            and _opposite(remaining[0].direction, remaining[1].direction) else "complex"
+    else:
+        kind = "complex"
+
+    through = [incidents[index] for index in pair] if pair is not None else []
+    branches = [item for item in incidents if item not in through]
+    same_assembly = len({item.assembly for item in incidents}) == 1
+    # A mixed tee/multi-branch node resolves when the through pair is one continuous bearing
+    # element (concrete-to-concrete return, partition-to-bearing tee) and every branch has a
+    # bearing element to butt against it. High-valence tiers with a continuous through pair
+    # are owned the same way — the extra walls are just more branches.
+    continuous_tee = (
+        bool(through)
+        and _through_continuous(plan, through)
+        and all(_can_butt(plan, item.assembly) for item in branches)
+    )
+    supported = (
+        kind == "open_end"
+        or (kind in {"collinear", "l", "t", "x"} and same_assembly)
+        or (kind == "t" and _is_basic_mixed_tee(plan, through, branches))
+        or (kind in {"t", "x", "complex"} and continuous_tee)
+        or (kind in {"collinear", "l"} and _shared_bearing(plan, incidents))
+    )
+    diagnostic = None if supported else (
+        "mixed-assembly junction requires interface rules"
+        if kind != "complex" else
+        f"{count}-way junction requires a project-specific construction rule"
+    )
+    framing_owner = None
+    if kind == "l":
+        starting = [item.wall_tag for item in incidents if item.endpoint == "start"]
+        framing_owner = min(starting or [item.wall_tag for item in incidents])
+    elif through:
+        framing_owner = min(item.wall_tag for item in through)
+    return ResolvedJunction(
+        node_tag=node_tag,
+        storey=storey_tag,
+        point=point,
+        kind=kind,
+        incidents=tuple(incidents),
+        through_walls=tuple(sorted(item.wall_tag for item in through)),
+        branch_walls=tuple(sorted(item.wall_tag for item in branches)),
+        framing_owner=framing_owner,
+        supported=supported,
+        diagnostic=diagnostic,
+    )
+
+
 def classify_storey_junctions(plan: PlanModel, storey_tag: str) -> list[ResolvedJunction]:
     """Classify every wall-graph node without depending on wall authoring direction."""
+    storey = plan.storey(storey_tag)
     nodes = {
         element.tag: element.position.xy_m
         for element in plan.storey_elements(storey_tag)
@@ -251,63 +410,20 @@ def classify_storey_junctions(plan: PlanModel, storey_tag: str) -> list[Resolved
         direction = unit(sub(end, start))
         if length(direction) <= _DIRECTION_EPS:
             continue
+        z0, z1 = _wall_z_range(storey, wall)
         by_node.setdefault(wall.start_node, []).append(JunctionIncident(
-            wall.tag, "start", direction, wall.assembly,
+            wall.tag, "start", direction, wall.assembly, z0, z1,
         ))
         by_node.setdefault(wall.end_node, []).append(JunctionIncident(
-            wall.tag, "end", (-direction[0], -direction[1]), wall.assembly,
+            wall.tag, "end", (-direction[0], -direction[1]), wall.assembly, z0, z1,
         ))
 
     junctions: list[ResolvedJunction] = []
     for node_tag, raw_incidents in sorted(by_node.items()):
         incidents = sorted(raw_incidents, key=lambda item: (item.wall_tag, item.endpoint))
-        count = len(incidents)
-        pair = _through_pair(incidents)
-        if count == 1:
-            kind = "open_end"
-        elif count == 2:
-            kind = "collinear" if pair is not None else "l"
-        elif count == 3:
-            kind = "t" if pair is not None else "complex"
-        elif count == 4:
-            remaining = [item for index, item in enumerate(incidents)
-                         if pair is None or index not in pair]
-            kind = "x" if pair is not None and len(remaining) == 2 \
-                and _opposite(remaining[0].direction, remaining[1].direction) else "complex"
-        else:
-            kind = "complex"
-
-        through = [incidents[index] for index in pair] if pair is not None else []
-        branches = [item for item in incidents if item not in through]
-        same_assembly = len({item.assembly for item in incidents}) == 1
-        supported = (
-            kind == "open_end"
-            or (kind in {"collinear", "l", "t", "x"} and same_assembly)
-            or (kind == "t" and _is_basic_mixed_tee(plan, through, branches))
-        )
-        diagnostic = None if supported else (
-            "mixed-assembly junction requires interface rules"
-            if kind != "complex" else
-            f"{count}-way junction requires a project-specific construction rule"
-        )
-        framing_owner = None
-        if kind == "l":
-            starting = [item.wall_tag for item in incidents if item.endpoint == "start"]
-            framing_owner = min(starting or [item.wall_tag for item in incidents])
-        elif kind in {"t", "x"} and through:
-            framing_owner = min(item.wall_tag for item in through)
-        junctions.append(ResolvedJunction(
-            node_tag=node_tag,
-            storey=storey_tag,
-            point=nodes[node_tag],
-            kind=kind,
-            incidents=tuple(incidents),
-            through_walls=tuple(sorted(item.wall_tag for item in through)),
-            branch_walls=tuple(sorted(item.wall_tag for item in branches)),
-            framing_owner=framing_owner,
-            supported=supported,
-            diagnostic=diagnostic,
-        ))
+        for tier in _tiers(incidents):
+            junctions.append(
+                _classify_tier(plan, node_tag, storey_tag, nodes[node_tag], tier))
     return junctions
 
 
@@ -497,7 +613,7 @@ def solve_junction_polygons(resolved_walls: list[ResolvedWall],
     for junction in junctions:
         if junction.kind == "l":
             _clip_l_corner(walls, junction)
-        if junction.kind in {"t", "x"} and junction.through_walls:
+        if junction.through_walls and (junction.kind in {"t", "x"} or junction.supported):
             _butt_branches(walls, junction)
         if not junction.supported:
             _remove_fallback_overlaps(walls, junction)

@@ -5,7 +5,9 @@
 # (2x6 → 2x4) keeps the sheathing plane and every control layer continuous.
 from typehaus import (
     Assembly,
+    AssemblyInterface,
     CavityFill,
+    ConstructionRule,
     ControlLayer,
     FramingSpec,
     Layer,
@@ -17,6 +19,15 @@ from typehaus import (
     layers,
 )
 from library import INT_2X4_PARTITION, STARTER_MATERIALS
+
+# Named face roles the junction solver binds mixed-assembly corners/tees to (#44). The
+# ``bearing`` role names the load-bearing layer whose face carries structural continuity
+# through a return, so two walls are "continuous" when they publish the same bearing
+# material (concrete↔concrete, SPF↔SPF) regardless of the finish/insulation around it —
+# never by layer name or index. Variants inherit these from their base assembly.
+_CONCRETE_BEARING = AssemblyInterface(role="bearing", layer_name="concrete", outboard=False)
+_STUD_BEARING = AssemblyInterface(role="bearing", layer_name="stud", outboard=False)
+_CMU_BEARING = AssemblyInterface(role="bearing", layer_name="cmu", outboard=False)
 
 _GWB_LINING = (
     Layer(name="gwb-int", material_ref="gwb", thickness=inch(0.625),
@@ -45,6 +56,7 @@ CATLIN_EXT_2X6 = Assembly(
         Layer(name="cladding", material_ref="standing-seam", thickness=inch(0.5),
               function=LayerFunction.CLADDING),
     ),
+    interfaces=(_STUD_BEARING,),
     default_lining=_GWB_LINING,
     source="catlin-house ifcplot/catlin_house.py wall siding stack",
 )
@@ -112,6 +124,7 @@ CATLIN_BASEMENT_12 = Assembly(
         Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     ),
+    interfaces=(_CONCRETE_BEARING,),
     source="catlin-house basement: 12\" wall + 2x2\" exterior XPS",
 )
 
@@ -134,6 +147,7 @@ CATLIN_CONC_12_INT = Assembly(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE),
     ),
+    interfaces=(_CONCRETE_BEARING,),
 )
 
 CATLIN_CONC_8_INT = Assembly(
@@ -142,6 +156,7 @@ CATLIN_CONC_8_INT = Assembly(
         Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
               function=LayerFunction.STRUCTURE),
     ),
+    interfaces=(_CONCRETE_BEARING,),
 )
 
 # Freestanding sunken-garden / porch / balcony structure — exposed concrete.
@@ -151,6 +166,7 @@ SUNKEN_GARDEN_WALL = Assembly(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE),
     ),
+    interfaces=(_CONCRETE_BEARING,),
     source="catlin-house sunken_garden_retaining_wall_detail.py",
 )
 
@@ -162,6 +178,7 @@ SUNKEN_GARDEN_ARCH_16 = Assembly(
         Layer(name="concrete", material_ref="concrete", thickness=inch(16.0),
               function=LayerFunction.STRUCTURE),
     ),
+    interfaces=(_CONCRETE_BEARING,),
     source="catlin-house porch arched front wall — 16\" for joist bearing (3.5\") + arch piers",
 )
 
@@ -182,6 +199,7 @@ PORCH_RAILING_MASONRY = Assembly(
         Layer(name="brick", material_ref="brick", thickness=inch(3.625),
               function=LayerFunction.CLADDING),
     ),
+    interfaces=(_CMU_BEARING,),
     source="catlin-house porch railing — brick / air gap / grouted CMU / stucco",
 )
 
@@ -281,6 +299,7 @@ CATLIN_INT_2X6_BRG = Assembly(
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
+    interfaces=(_STUD_BEARING,),
     source="catlin-house centerline bearing wall (2x6)",
 )
 
@@ -294,6 +313,7 @@ INT_2X6_PLUMBING = Assembly(
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
+    interfaces=(_STUD_BEARING,),
     source="wet wall — depth for 3\" stacks",
 )
 
@@ -324,6 +344,7 @@ SAUNA_2X4 = Assembly(
         Layer(name="gwb-cold", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
+    interfaces=(_STUD_BEARING,),
     source="catlin-house sauna_basement_wall_detail.py + notes/sauna_basement_wall_detail.md",
 )
 
@@ -336,6 +357,7 @@ SAUNA_LINER_ON_CONCRETE = Assembly(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE),
     ),
+    interfaces=(_CONCRETE_BEARING,),
     source="catlin-house sauna_basement_wall_detail.py (liner on the center bearing wall)",
 )
 
@@ -369,6 +391,44 @@ MATERIALS = [
     Material(tag="post-paint-white", name="White-painted PT lumber", r_per_inch=1.24,
              density=500.0, hatch="lumber", color="#f4f2ee",
              source="balcony 6x6 pillars — exterior white paint finish"),
+]
+
+# --- construction rules: pre-resolve returns at mixed-assembly junctions (#45) ----------
+# Typed, pre-resolve declarations of the physical returns the junction solver leaves for
+# framing/takeoff. Each is documented (never drawn) by a Transition overlay; none mutates
+# construction geometry. They record the real material that closes a resolved return: a PT
+# sill where framed walls land on concrete, the sauna liner wrapping onto the center wall,
+# the exterior foundation foam turning the corner for thermal continuity, and the masonry
+# guard's corner return.
+CONSTRUCTION_RULES = [
+    ConstructionRule(
+        tag="CR-CONC-TO-FRAMED-SILL",
+        applies_to="wall:framed_on_concrete",
+        kind="bearing_plate",
+        dimension=inch(1.5),
+        takeoff_category="pt-sill-plate",
+    ),
+    ConstructionRule(
+        tag="CR-SAUNA-LINER-RETURN",
+        applies_to="wall:sauna_liner_return",
+        kind="blocking",
+        dimension=inch(3.5),
+        takeoff_category="sauna-liner-return",
+    ),
+    ConstructionRule(
+        tag="CR-FOUNDATION-FOAM-RETURN",
+        applies_to="wall:foundation_foam_return",
+        kind="blocking",
+        dimension=inch(24.0),
+        takeoff_category="foundation-foam-return",
+    ),
+    ConstructionRule(
+        tag="CR-PORCH-MASONRY-RETURN",
+        applies_to="wall:porch_masonry_return",
+        kind="blocking",
+        dimension=inch(7.625),
+        takeoff_category="masonry-corner-return",
+    ),
 ]
 
 ASSEMBLIES = [

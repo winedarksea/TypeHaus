@@ -74,10 +74,13 @@ def _butt_joint(a: _Candidate, b: _Candidate, tol: float) -> bool:
     bug this check exists for. A joist bearing on a beam is *also* geometrically an
     endpoint-on-axis, but its elevation is what we police — so a beam is never a valid
     partner here. Cleared cases: a joist end butting a rim board (coplanar by design),
-    and a post/column seated under a beam (the vertical bearing, incl. the intended 2"
-    rear-row drainage poke)."""
+    a post/column seated under a beam (the vertical bearing, incl. the intended 2"
+    rear-row drainage poke), and two wall plates lapping where their walls meet at an
+    L/T (the bottom/top plates of a branch wall run to the through wall they tee into —
+    the single most common intended framing joint, resolved as a lap in real framing)."""
     if not (a.kind == "rim" or b.kind == "rim"
-            or a.kind == "column" or b.kind == "column"):
+            or a.kind == "column" or b.kind == "column"
+            or (a.kind == "plate" and b.kind == "plate")):
         return False
     for pt in a.seg:
         if _point_on_segment(pt, b.seg[0], b.seg[1], tol):
