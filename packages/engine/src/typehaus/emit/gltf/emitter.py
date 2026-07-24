@@ -19,7 +19,14 @@ import struct
 from pathlib import Path
 
 from typehaus.emit.draw.palette import material_color
-from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoof, ResolvedWall
+from typehaus.model.canvas import canvas_object_types
+from typehaus.resolve.model import (
+    FramedMember,
+    ResolvedCanvasObject,
+    ResolvedModel,
+    ResolvedRoof,
+    ResolvedWall,
+)
 
 # function/category → RGBA color (linear, 0..1). Keys are lowercased layer functions and
 # member categories; anything unmatched falls back to a neutral gray.
@@ -225,21 +232,38 @@ class _MeshBuilder:
     def is_empty(self) -> bool:
         return not any(pos for pos, _ in self._buckets.values())
 
-    def build(self) -> dict:
-        """Assemble the glTF dict + embedded base64 buffer for all buckets."""
-        blob = bytearray()
-        buffer_views: list[dict] = []
-        accessors: list[dict] = []
-        materials: list[dict] = []
-        primitives: list[dict] = []
-
+    def buckets(self):
+        """Non-empty (color, positions, indices) tuples for the scene assembler."""
         for color, (positions, indices) in self._buckets.items():
-            if not positions:
-                continue
-            pos_acc = _append_positions(blob, buffer_views, accessors, positions)
-            idx_acc = _append_indices(blob, buffer_views, accessors, indices)
-            mat = len(materials)
-            materials.append({
+            if positions:
+                yield color, positions, indices
+
+
+class _SceneBuilder:
+    """Assembles per-object glTF nodes into one document + shared binary buffer.
+
+    Each source object contributes its own :class:`_MeshBuilder` (color-bucketed within that
+    object) and becomes exactly one glTF node carrying ``extras`` (and a ``<trade>|<kind>|<uid>``
+    name) so the 3D UI can promote the whole-house glb to the primary scene (see the emitter
+    contract in ``ui/src/components/Panel3D.tsx``). Materials are deduplicated by color across
+    every object, so the palette stays compact.
+    """
+
+    def __init__(self) -> None:
+        self._blob = bytearray()
+        self._buffer_views: list[dict] = []
+        self._accessors: list[dict] = []
+        self._materials: list[dict] = []
+        self._material_index: dict[tuple[float, float, float, float], int] = {}
+        self._meshes: list[dict] = []
+        self._nodes: list[dict] = []
+
+    def _material(self, color: tuple[float, float, float, float]) -> int:
+        index = self._material_index.get(color)
+        if index is None:
+            index = len(self._materials)
+            self._material_index[color] = index
+            self._materials.append({
                 "pbrMetallicRoughness": {
                     "baseColorFactor": list(color), "metallicFactor": 0.0,
                     "roughnessFactor": 0.9,
@@ -247,22 +271,55 @@ class _MeshBuilder:
                 "alphaMode": "BLEND" if color[3] < 1.0 else "OPAQUE",
                 "doubleSided": True,
             })
-            primitives.append({
-                "attributes": {"POSITION": pos_acc}, "indices": idx_acc, "material": mat,
-            })
+        return index
 
-        uri = "data:application/octet-stream;base64," + base64.b64encode(bytes(blob)).decode()
+    def add_object(self, mb: "_MeshBuilder", trade: str,
+                   kind: str | None = None, uid: str | None = None) -> None:
+        """Emit one node for ``mb``'s geometry, tagged so the UI can classify it by trade.
+
+        ``kind`` is only ever ``"wall"`` or ``"canvas_object"`` (the selectable kinds the UI
+        honours); ``uid`` is only carried for those selectable nodes. Envelope geometry passes
+        neither, so it lands in the right visibility group without becoming pickable. A node with
+        no geometry is skipped entirely, so it can never become an unclassifiable renderable mesh.
+        """
+        primitives: list[dict] = []
+        for color, positions, indices in mb.buckets():
+            pos_acc = _append_positions(self._blob, self._buffer_views, self._accessors, positions)
+            idx_acc = _append_indices(self._blob, self._buffer_views, self._accessors, indices)
+            primitives.append({
+                "attributes": {"POSITION": pos_acc}, "indices": idx_acc,
+                "material": self._material(color),
+            })
+        if not primitives:
+            return
+        mesh_index = len(self._meshes)
+        self._meshes.append({"primitives": primitives})
+        extras: dict[str, str] = {"trade": trade}
+        if kind is not None:
+            extras["kind"] = kind
+        if uid is not None:
+            extras["uid"] = uid
+        # A "<trade>|<kind|>|<uid|>" name is a belt-and-suspenders fallback; extras is primary.
+        name = "|".join((trade, kind or "", uid or ""))
+        self._nodes.append({"mesh": mesh_index, "name": name, "extras": extras})
+
+    def is_empty(self) -> bool:
+        return not self._nodes
+
+    def build(self) -> tuple[dict, bytes]:
+        """Assemble the glTF dict + embedded base64 buffer across all objects."""
+        uri = "data:application/octet-stream;base64," + base64.b64encode(bytes(self._blob)).decode()
         return {
             "asset": {"version": "2.0", "generator": "typehaus"},
             "scene": 0,
-            "scenes": [{"nodes": [0]}],
-            "nodes": [{"mesh": 0, "name": "building"}],
-            "meshes": [{"primitives": primitives}],
-            "materials": materials,
-            "accessors": accessors,
-            "bufferViews": buffer_views,
-            "buffers": [{"byteLength": len(blob), "uri": uri}],
-        }, bytes(blob)
+            "scenes": [{"nodes": list(range(len(self._nodes)))}],
+            "nodes": self._nodes,
+            "meshes": self._meshes,
+            "materials": self._materials,
+            "accessors": self._accessors,
+            "bufferViews": self._buffer_views,
+            "buffers": [{"byteLength": len(self._blob), "uri": uri}],
+        }, bytes(self._blob)
 
 
 def _append_positions(blob: bytearray, views: list[dict], accessors: list[dict],
@@ -371,10 +428,11 @@ def _slice(edges, t0, t1):
     return [_lerp(a0, a1, t0), _lerp(a0, a1, t1), _lerp(b0, b1, t1), _lerp(b0, b1, t0)]
 
 
-def _add_wall(mb: _MeshBuilder, wall: ResolvedWall, lod: str, openings=()) -> None:
+def _add_wall_body(mb: _MeshBuilder, wall: ResolvedWall, lod: str, openings=()) -> None:
+    """Draw a wall's selectable body (its depth-layer prisms). Framing members are emitted as a
+    separate ``framing`` node by the caller, so the framed LOD leaves the body empty and lets the
+    stud model stand on its own."""
     if lod == "framed" and wall.members:
-        for member in wall.members:
-            _add_member(mb, member)
         return
     # Core LOD draws one prism per depth-bearing layer, carved around any hosted openings so
     # windows/doors read as voids and the arched front wall reads as piers + an arched head.
@@ -522,23 +580,39 @@ def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof) -> None:
         _add_member(mb, member)
 
 
-def _add_furniture(mb: _MeshBuilder, model: ResolvedModel) -> None:
-    """Add imported GLB geometry when available, with a truthful footprint fallback."""
-    types = {item.tag: item for item in model.plan.library.furniture_types}
+_CANVAS_TRADES = {"plumbing": "plumbing", "electrical": "electrical", "mechanical": "mechanical"}
+
+
+def _canvas_trade(domain: str) -> str:
+    """Route a resolved canvas object to its visibility trade, mirroring Panel3D.setModel:
+    plumbing/electrical/mechanical keep their discipline; everything else (furniture,
+    appliances, ...) lands in the furniture trade."""
+    return _CANVAS_TRADES.get(domain, "furniture")
+
+
+def _add_canvas_objects(scene: _SceneBuilder, model: ResolvedModel) -> None:
+    """Emit one node per ResolvedCanvasObject (furniture, fixtures, MEP devices).
+
+    Imported GLB furniture keeps its sidecar mesh; everything else extrudes its resolved
+    (already rotation-baked) footprint to the type's height, matching Panel3D's canvas-object
+    fallback box. ``domain=="opening"`` objects are skipped — they are already drawn as wall
+    cuts + fillings — so they never produce an unclassifiable node.
+    """
+    furniture_types = {item.tag: item for item in model.plan.library.furniture_types}
+    heights = {t["tag"]: t.get("height_m") for t in canvas_object_types(model.plan)}
     root = Path(model.plan.source_root or ".")
-    for storey in model.plan.storeys:
-        z0 = storey.elevation.meters
-        for item in model.plan.storey_elements(storey.tag):
-            if item.element_kind != "Furniture":
-                continue
-            furniture_type = types.get(item.type_ref)
-            if furniture_type is None:
-                continue
-            if furniture_type.mesh is not None and _add_mesh_sidecar(
-                mb, root / furniture_type.mesh.path, item.position.xy_m, z0
-            ):
-                continue
-            _add_furniture_box(mb, item.position.xy_m, z0, furniture_type)
+    for item in sorted(model.canvas_objects, key=lambda co: co.uid):
+        if item.domain == "opening":
+            continue
+        mb = _MeshBuilder()
+        furniture_type = furniture_types.get(item.type_ref)
+        drawn = False
+        if furniture_type is not None and getattr(furniture_type, "mesh", None) is not None:
+            drawn = _add_mesh_sidecar(mb, root / furniture_type.mesh.path, item.position, item.z_m)
+        if not drawn:
+            _add_canvas_box(mb, item, heights.get(item.type_ref))
+        scene.add_object(mb, trade=_canvas_trade(item.domain),
+                         kind="canvas_object", uid=item.uid)
 
 
 def _add_mesh_sidecar(mb: _MeshBuilder, path: Path, position: tuple[float, float], z0: float) -> bool:
@@ -566,12 +640,13 @@ def _add_mesh_sidecar(mb: _MeshBuilder, path: Path, position: tuple[float, float
         return False
 
 
-def _add_furniture_box(mb: _MeshBuilder, position: tuple[float, float], z0: float, furniture_type) -> None:
-    width, depth = (value.meters for value in furniture_type.footprint)
-    x, y = position
-    mb.add_prism([(x - width / 2, y - depth / 2), (x + width / 2, y - depth / 2),
-                  (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2)],
-                 z0, z0 + furniture_type.height.meters, _color("furniture"))
+def _add_canvas_box(mb: _MeshBuilder, item: ResolvedCanvasObject, height_m: float | None) -> None:
+    """Extrude a canvas object's resolved footprint into a box (Panel3D's fallback shape)."""
+    ring = [tuple(point) for point in item.footprint]
+    if len(ring) < 3:
+        return
+    height = height_m if height_m else 0.25  # Panel3D uses type.height_m ?? 0.25
+    mb.add_prism(ring, item.z_m, item.z_m + height, _color("furniture"))
 
 
 def _member_half_width(profile: str) -> float:
@@ -585,41 +660,86 @@ def _member_half_width(profile: str) -> float:
 
 
 def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes]:
-    """Build the glTF JSON dict + binary blob for ``model`` (no file written)."""
-    mb = _MeshBuilder()
+    """Build the glTF JSON dict + binary blob for ``model`` (no file written).
+
+    Emits one glTF node per source object, each tagged with ``extras`` (trade / kind / uid) so
+    the 3D UI can promote the whole-house glb to the primary scene. Trades mirror
+    Panel3D.setModel: walls→walls, wall/roof/floor/stair framing members→framing, openings→
+    openings, solids & footing beddings→concrete, rooms & floors→floors, roofs→roof,
+    stairs→stairs, canvas objects routed by domain.
+    """
+    scene = _SceneBuilder()
     openings_by_wall: dict[str, list] = {}
     for op in model.openings:
         openings_by_wall.setdefault(op.host_wall, []).append(op)
+
     for wall in sorted(model.walls, key=lambda w: w.uid):
-        _add_wall(mb, wall, lod, openings_by_wall.get(wall.tag, ()))
+        # Wall layer prisms are the selectable "walls" body; its framing members are their own
+        # "framing" node so the framing visibility toggle reaches the studs.
+        body = _MeshBuilder()
+        _add_wall_body(body, wall, lod, openings_by_wall.get(wall.tag, ()))
+        scene.add_object(body, trade="walls", kind="wall", uid=wall.uid)
+        if wall.members:
+            framing = _MeshBuilder()
+            for member in wall.members:
+                _add_member(framing, member)
+            scene.add_object(framing, trade="framing")
+
     door_operations = {dt.tag: dt.operation for dt in model.plan.library.door_types}
     walls_by_tag = {wall.tag: wall for wall in model.walls}
     for op in sorted(model.openings, key=lambda item: item.uid):
         host = walls_by_tag.get(op.host_wall)
         if host is None:
             continue
+        mb = _MeshBuilder()
         is_double_swing = op.is_door and door_operations.get(op.type_ref) == "double_swing"
         _add_opening_filling(mb, host, op, is_double_swing)
+        scene.add_object(mb, trade="openings")
+
     for room in sorted(model.rooms, key=lambda r: r.uid):
         if room.clear_face:
             storey_z = _room_z(model, room.storey)
+            mb = _MeshBuilder()
             mb.add_prism(room.clear_face, storey_z, storey_z + 0.02, _color("floor"))
+            scene.add_object(mb, trade="floors")
+
     for solid in sorted(model.solids, key=lambda item: item.uid):
         if solid.outline:
+            mb = _MeshBuilder()
             mb.add_prism_with_rectangular_voids(solid.outline, solid.voids, solid.z0_m,
                                                 solid.z1_m, _solid_color(model, solid))
+            scene.add_object(mb, trade="concrete")
+
+    for bedding in sorted(model.footing_beddings, key=lambda item: item.uid):
+        if bedding.outline and bedding.z1_m > bedding.z0_m:
+            mb = _MeshBuilder()
+            mb.add_prism(bedding.outline, bedding.z0_m, bedding.z1_m, _color("pad"))
+            scene.add_object(mb, trade="concrete")
+
     for roof in sorted(model.roofs, key=lambda item: item.uid):
+        mb = _MeshBuilder()
         _add_roof(mb, roof)
+        scene.add_object(mb, trade="roof")
+
     for floor in sorted(model.floors, key=lambda item: item.uid):
+        mb = _MeshBuilder()
         for member in floor.members:
             _add_member(mb, member)
+        scene.add_object(mb, trade="floors")
+
     for stair in sorted(model.stairs, key=lambda item: item.uid):
+        mb = _MeshBuilder()
         for member in stair.members:
             _add_member(mb, member)
-    _add_furniture(mb, model)
-    if mb.is_empty():  # keep the container valid even for an empty model
+        scene.add_object(mb, trade="stairs")
+
+    _add_canvas_objects(scene, model)
+
+    if scene.is_empty():  # keep the container valid even for an empty model
+        mb = _MeshBuilder()
         mb.add_prism([(0, 0), (0.001, 0), (0.001, 0.001)], 0.0, 0.001, _FALLBACK)
-    return mb.build()
+        scene.add_object(mb, trade="earth")
+    return scene.build()
 
 
 def _room_z(model: ResolvedModel, storey_tag: str) -> float:

@@ -208,6 +208,60 @@ def test_glb_endpoint_serves_binary(client):
     assert resp.content[:4] == b"glTF"
 
 
+# The 12 visibility trades the UI honours (ui/src/state/store.ts ALL_TRADES). A whole-house glb
+# is only promoted to the primary scene when every node classifies to one of these.
+_ALL_TRADES = {
+    "walls", "openings", "framing", "floors", "concrete", "roof",
+    "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth",
+}
+
+
+def test_emit_gltf_dict_emits_per_object_nodes_with_trade_extras(plan):
+    """Per-object identity (U1): one node per source object, each tagged so the 3D UI can
+    promote the whole-house glb to the primary scene (see Panel3D.wholeHouseGlbAssignment)."""
+    model, _ = resolve(plan)
+    gltf, _blob = emit_gltf_dict(model)
+
+    nodes = gltf["nodes"]
+    assert len(nodes) > 1, "the emitter must emit per-object nodes, not one 'building' node"
+
+    for node in nodes:
+        extras = node.get("extras")
+        assert extras is not None, f"every node needs extras: {node.get('name')}"
+        assert extras["trade"] in _ALL_TRADES, f"trade must be an allowlisted token: {extras}"
+        assert extras.get("kind") in (None, "wall", "canvas_object")
+        # The node name mirrors extras as a "<trade>|<kind|>|<uid|>" fallback.
+        assert node["name"].split("|")[0] == extras["trade"]
+
+    # A wall carries its selection kind + uid, so the glb stays pickable and highlightable.
+    wall_nodes = [n for n in nodes if n["extras"].get("kind") == "wall"]
+    assert wall_nodes, "expected at least one selectable wall node"
+    wall = wall_nodes[0]
+    assert wall["extras"]["trade"] == "walls"
+    assert wall["extras"]["uid"]
+    assert wall["name"].split("|") == ["walls", "wall", wall["extras"]["uid"]]
+
+
+def test_emit_gltf_dict_emits_canvas_object_nodes(plan):
+    """A resolved canvas object becomes a selectable node routed to its domain's trade."""
+    from typehaus.resolve.model import ResolvedCanvasObject
+
+    model, _ = resolve(plan)
+    model.canvas_objects.append(ResolvedCanvasObject(
+        uid="CO-TEST-1", tag="CO-TEST-1", storey=model.walls[0].storey, domain="furniture",
+        kind="Furniture", type_ref=None, room=None, position=(1.0, 1.0), z_m=0.0,
+        rotation_degrees=0.0,
+        footprint=((0.5, 0.5), (1.5, 0.5), (1.5, 1.5), (0.5, 1.5)),
+    ))
+    gltf, _blob = emit_gltf_dict(model)
+
+    canvas = [n for n in gltf["nodes"] if n["extras"].get("uid") == "CO-TEST-1"]
+    assert len(canvas) == 1, "the resolved canvas object must emit exactly one node"
+    extras = canvas[0]["extras"]
+    assert extras["trade"] == "furniture" and extras["kind"] == "canvas_object"
+    assert canvas[0]["name"] == "furniture|canvas_object|CO-TEST-1"
+
+
 # --- assembly editor write flows (WP2.4d/e) ----------------------------------
 
 def test_duplicate_assembly_resolves_and_undoes_byte_identical(client):
