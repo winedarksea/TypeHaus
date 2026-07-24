@@ -231,15 +231,40 @@ def build_detail(model: ResolvedModel, derived: DerivedDetail) -> tuple[Scene, l
                               derived.direction, derived.station)
     scene = build_section(model, derived.view, joints=joints)
 
+    # ``build_section`` stamps an oversized slice tag above the crop; the derived
+    # detail's own title block (below) carries the identity, so drop the duplicate
+    # rather than let a 40-character tag sprawl across the top of the drawing.
+    tag_text = derived.view.tag
+    scene = scene.model_copy(update={"nodes": tuple(
+        n for n in scene.nodes
+        if not (isinstance(n, Text) and n.content == tag_text))})
+
     # Detail components (grade, soil, perimeter drain) go in *behind* the cut geometry —
     # they are the context the junction sits in, not something drawn over it.
     context = _detail_components(model, derived)
     if context:
         scene = scene.model_copy(update={"nodes": tuple(context) + scene.nodes})
 
+    # Overlay-driven flashings/gutter/gaskets go *over* the cut — they are sheet metal
+    # and sealant applied at the junction, not context behind it.
+    overlay = _overlay_components(model, derived)
+    if overlay:
+        scene = scene.model_copy(update={"nodes": scene.nodes + tuple(overlay)})
+
     nodes, findings = _annotation_nodes(model, derived)
     if nodes:
         scene = scene.model_copy(update={"nodes": scene.nodes + tuple(nodes)})
+
+    # Dimension strings live *in* the drawing, measured off the resolved layers.
+    dims = _dimension_nodes(model, derived)
+    if dims:
+        scene = scene.model_copy(update={"nodes": scene.nodes + tuple(dims)})
+
+    # Legend / notes / title block sit *around* the drawing — each placed on a clear
+    # side of the current scene bounds so nothing overprints the cut or its callouts.
+    chrome = _chrome(model, derived, scene)
+    if chrome:
+        scene = scene.model_copy(update={"nodes": scene.nodes + tuple(chrome)})
     return scene, findings
 
 
@@ -258,6 +283,139 @@ def _detail_components(model: ResolvedModel, derived: DerivedDetail) -> list:
             continue
         out.extend(build_below_grade_components(model, wall, window,
                                                 derived.direction, derived.station))
+    return out
+
+
+def _overlay_components(model: ResolvedModel, derived: DerivedDetail) -> list:
+    """Per-detail vocabulary dispatched off ``Transition.overlay`` (recipe id)."""
+    from typehaus.emit.draw.detail_components import build_overlay_components
+
+    return build_overlay_components(model, derived)
+
+
+def _dimension_nodes(model: ResolvedModel, derived: DerivedDetail) -> list:
+    from typehaus.emit.draw.detail_components import dimension_strings
+
+    crop = derived.view.crop
+    if crop is None:
+        return []
+    return dimension_strings(model, derived, (crop[0].xy_m, crop[1].xy_m),
+                             derived.direction, derived.station)
+
+
+def _chrome(model: ResolvedModel, derived: DerivedDetail, scene: Scene) -> list:
+    """Material legend (below), notes column (right), title block (above).
+
+    Placement is measured off the current scene bounds — including the width text
+    occupies — so the legend, notes and title each clear the cut and its callouts
+    instead of overprinting them.
+    """
+    from typehaus.emit.draw.detail_components import material_legend
+    from typehaus.emit.draw.pdf_writer import _scene_bounds
+
+    crop = derived.view.crop
+    if crop is None:
+        return []
+    bounds = _scene_bounds(scene)
+    if bounds is None:
+        (cu0, cz0), (cu1, cz1) = (crop[0].xy_m, crop[1].xy_m)
+        bounds = (cu0 * M_TO_IN, cz0 * M_TO_IN, cu1 * M_TO_IN, cz1 * M_TO_IN)
+    min_u, min_z, max_u, max_z = bounds
+    span = max(max_u - min_u, max_z - min_z)
+    margin = max(4.0, span * 0.03)
+
+    # Notes start at the crop's top edge, not the scene's — that keeps them below the
+    # oversized sheet tag the section emits above the crop.
+    (_cu0, _cz0), (_cu1, cz1) = (crop[0].xy_m, crop[1].xy_m)
+    notes_top = min(max_z, cz1 * M_TO_IN)
+
+    out: list = []
+    out.extend(_title_block(model, derived, min_u, max_z + margin))
+    out.extend(material_legend(model, derived, min_u, min_z - margin))
+    out.extend(_notes_column(model, derived, max_u + margin, notes_top))
+    return out
+
+
+def _title_block(model: ResolvedModel, derived: DerivedDetail, u: float,
+                 z: float) -> list:
+    """Project/attribution title, stacked upward from ``z`` so it clears the drawing."""
+    project = model.plan.project
+    tr = derived.transition
+    title = (tr.tag if tr is not None else derived.view.title) or derived.key
+    overlay = getattr(tr, "overlay", "") or ""
+    # bottom → top; anchors advance upward so every line sits above the cut.
+    lines = [
+        ("Type:Haus — derived transition detail", 1.4),
+        (f"{title}  ·  {overlay}".strip().rstrip(" ·"), 2.0),
+        (project.name, 3.2),
+    ]
+    out: list = []
+    y = z
+    for content, height in lines:
+        out.append(Text(anchor=(u, y), content=content, height=height,
+                        layer="A-ANNO-TEXT"))
+        y += height * 2.4
+    return out
+
+
+_NOTES_WRAP = 42
+
+
+def _notes_column(model: ResolvedModel, derived: DerivedDetail, u: float,
+                  z_top: float) -> list:
+    """Load ``Transition.notes`` markdown, wrap it, lay it out in a right-hand column."""
+    tr = derived.transition
+    rel = getattr(tr, "notes", None) if tr is not None else None
+    if not rel:
+        return []
+    root = getattr(model.plan, "source_root", None)
+    if not root:
+        return []
+    from pathlib import Path
+
+    path = Path(root) / rel
+    if not path.exists():
+        return []
+    lines = _load_markdown_notes(path)
+    out: list = []
+    height = 1.5
+    step = height * 2.0
+    y = z_top
+    for line in lines:
+        out.append(Text(anchor=(u, y), content=line, height=height,
+                        layer="A-ANNO-TEXT"))
+        y -= step
+    return out
+
+
+def _load_markdown_notes(path) -> list[str]:
+    """Front-matter-stripped, bulleted, wrapped note lines (port of detail_utils)."""
+    import textwrap
+
+    raw = path.read_text(encoding="utf-8").splitlines()
+    i = 0
+    if raw and raw[0].strip() == "---":
+        i = 1
+        while i < len(raw) and raw[i].strip() != "---":
+            i += 1
+        i = min(i + 1, len(raw))
+
+    out: list[str] = ["NOTES:"]
+    for line in raw[i:]:
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("#"):
+            # The column already carries a "NOTES:" header; markdown headings would
+            # only duplicate it.
+            continue
+        if stripped.startswith(("- ", "* ")):
+            body = stripped[2:].strip()
+            wrapped = textwrap.wrap(body, width=_NOTES_WRAP) or [body]
+            out.append(f"• {wrapped[0]}")
+            out.extend(f"  {w}" for w in wrapped[1:])
+            continue
+        out.extend(textwrap.wrap(stripped, width=_NOTES_WRAP) or [stripped])
     return out
 
 
