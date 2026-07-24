@@ -56,30 +56,36 @@ def storey_outward_sign(plan: PlanModel, storey_tag: str) -> float:
     if not adjacency:
         return 1.0
 
-    # The lowest (y, then x) vertex is on the convex hull, hence on the outer boundary.
-    start = min(adjacency, key=lambda t: (nodes[t][1], nodes[t][0]))
-    walk: list[str] = [start]
-    current, incoming = start, (1.0, 0.0)
-    for _ in range(len(adjacency) + 1):
-        candidates = adjacency[current]
-        best, best_turn = None, None
-        for nxt in candidates:
-            if len(candidates) > 1 and len(walk) > 1 and nxt == walk[-2]:
-                continue  # never backtrack unless it is the only way out
-            turn = _turn(incoming, unit(sub(nodes[nxt], nodes[current])))
-            if best_turn is None or turn < best_turn:
-                best, best_turn = nxt, turn
-        if best is None:
-            return 1.0
-        incoming = unit(sub(nodes[best], nodes[current]))
-        current = best
-        if current == start:
-            break
-        walk.append(current)
-    else:
-        return 1.0  # never closed
-    if current != start or len(walk) < 3:
+    # A storey can contain multiple disconnected wall loops (the Catlin basement also
+    # contains the sunken garden). Choose the largest closed loop rather than assuming
+    # the globally lowest node belongs to the building's exterior boundary.
+    candidate_walks: list[list[str]] = []
+    for start in adjacency:
+        walk: list[str] = [start]
+        current, incoming = start, (1.0, 0.0)
+        for _ in range(len(adjacency) + 1):
+            candidates = adjacency[current]
+            best, best_turn = None, None
+            for nxt in candidates:
+                if len(candidates) > 1 and len(walk) > 1 and nxt == walk[-2]:
+                    continue  # never backtrack unless it is the only way out
+                turn = _turn(incoming, unit(sub(nodes[nxt], nodes[current])))
+                if best_turn is None or turn < best_turn:
+                    best, best_turn = nxt, turn
+            if best is None:
+                break
+            incoming = unit(sub(nodes[best], nodes[current]))
+            current = best
+            if current == start:
+                break
+            walk.append(current)
+        if current == start and len(walk) >= 3:
+            candidate_walks.append(walk)
+
+    if not candidate_walks:
         return 1.0
+    walk = max(candidate_walks,
+               key=lambda candidate: abs(polygon_area([nodes[t] for t in candidate])))
 
     ring = [nodes[t] for t in walk]
     walk_ccw = polygon_area(ring) > 0.0

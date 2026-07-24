@@ -102,6 +102,23 @@ def test_basement_exterior_insulation_matches_the_reference(catlin_model):
         assert layer.thickness.inches == pytest.approx(float(params["xps_layer_in"]))
 
 
+def test_basement_wall_layers_run_interior_to_exterior(catlin_model):
+    asm = catlin_model.plan.library.resolve_assembly("CATLIN_BASEMENT_12")
+    assert [layer.name for layer in asm.layers] == [
+        "concrete", "damp-proof", "xps-a", "xps-b"
+    ]
+
+
+def test_basement_exterior_xps_resolves_outboard_of_concrete(catlin_model):
+    wall = next(w for w in catlin_model.walls if w.tag == "W-B-S1")
+    average_y_by_layer = {
+        layer.name: sum(point[1] for point in layer.polygon) / len(layer.polygon)
+        for layer in wall.depth_layers()
+    }
+    # W-B-S1 faces south, so the exterior layer has the lower y coordinate.
+    assert average_y_by_layer["xps-b"] < average_y_by_layer["concrete"]
+
+
 def test_framing_matches_the_reference(catlin_model):
     params = _params("houseframing")
     joist_depth = float(params["floor_joists"]["depth_in"])
