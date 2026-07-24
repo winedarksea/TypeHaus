@@ -83,6 +83,32 @@ def _clip_rect(u0, u1, z0, z1, crop) -> tuple[float, float, float, float] | None
 _LABEL_RUNG_IN = 2.6
 
 
+def _clip_segment(p0, p1, crop):
+    """Liang–Barsky clip of a (u, z) segment to the crop rectangle, or None if outside."""
+    if crop is None:
+        return (p0, p1)
+    (cu0, cz0), (cu1, cz1) = crop
+    u_lo, u_hi = min(cu0, cu1), max(cu0, cu1)
+    z_lo, z_hi = min(cz0, cz1), max(cz0, cz1)
+    du, dz = p1[0] - p0[0], p1[1] - p0[1]
+    t0, t1 = 0.0, 1.0
+    for p, q in ((-du, p0[0] - u_lo), (du, u_hi - p0[0]),
+                 (-dz, p0[1] - z_lo), (dz, z_hi - p0[1])):
+        if abs(p) < 1e-12:
+            if q < 0:
+                return None
+            continue
+        r = q / p
+        if p < 0:
+            t0 = max(t0, r)
+        else:
+            t1 = min(t1, r)
+    if t0 > t1:
+        return None
+    return ((p0[0] + t0 * du, p0[1] + t0 * dz),
+            (p0[0] + t1 * du, p0[1] + t1 * dz))
+
+
 def _clip_polygon(points, crop):
     """Sutherland–Hodgman clip of a (u, z) polygon to the crop rectangle.
 
@@ -429,6 +455,8 @@ def _emit_floor_cut(b, floor, direction, station, crop) -> None:
                 continue
             b.extend(_rect_nodes(*rect, "S-FRAM", None, member.parent_uid,
                                  member.child_key))
+            b.extend(_member_flange_nodes(*rect, member.profile, member.parent_uid,
+                                          member.child_key))
             continue
         if (a0 - station) * (a1 - station) > 0:
             continue
@@ -441,6 +469,8 @@ def _emit_floor_cut(b, floor, direction, station, crop) -> None:
             continue
         b.extend(_rect_nodes(*rect, "S-FRAM", "lumber", member.parent_uid,
                              member.child_key))
+        b.extend(_member_flange_nodes(*rect, member.profile, member.parent_uid,
+                                      member.child_key))
 
 
 def _emit_member_cuts(b, model, direction, station, crop) -> None:
@@ -452,8 +482,141 @@ def _emit_member_cuts(b, model, direction, station, crop) -> None:
         for member in wall.members:
             _emit_one_member(b, member, direction, station, crop)
     for roof in model.roofs:
+        # A birdsmouth rafter runs *along* the cut plane, so it only draws when a rafter
+        # lands exactly on the station — which a wall-midpoint cut rarely does. Show the
+        # single nearest one as the representative rafter so the eave detail carries its
+        # seat cut, and let all other members follow the ordinary crossing/parallel rules.
+        parallel_rafters = []
         for member in roof.members:
-            _emit_one_member(b, member, direction, station, crop)
+            if (_birdsmouth_depth_in(member.connection) is not None
+                    and _member_is_parallel(member, direction)
+                    and _member_u_overlaps_crop(member, direction, crop)):
+                parallel_rafters.append(member)
+            else:
+                _emit_one_member(b, member, direction, station, crop)
+        if parallel_rafters and not any(
+                abs(_member_perp(m, direction) - station) < 1e-9 for m in parallel_rafters):
+            nearest = min(parallel_rafters,
+                          key=lambda m: abs(_member_perp(m, direction) - station))
+            _emit_one_member(b, nearest, direction, _member_perp(nearest, direction), crop)
+
+
+def _member_u_overlaps_crop(member, direction: str, crop) -> bool:
+    """Whether the member's in-section (u) span overlaps the crop's u-window.
+
+    Two rafters share every y at a gable (one per roof plane); only the one whose run is
+    actually under the crop is the eave the detail is about.
+    """
+    if crop is None:
+        return True
+    (x0, y0), (x1, y1) = member.p0, member.p1
+    u0, u1 = (x0, x1) if direction == "x" else (y0, y1)
+    (cu0, _), (cu1, _) = crop
+    lo, hi = min(cu0, cu1), max(cu0, cu1)
+    return min(u0, u1) <= hi and max(u0, u1) >= lo
+
+
+def _member_is_parallel(member, direction: str) -> bool:
+    (x0, y0), (x1, y1) = member.p0, member.p1
+    a0, a1 = (y0, y1) if direction == "x" else (x0, x1)
+    return abs(a0 - a1) < 1e-12
+
+
+def _member_perp(member, direction: str) -> float:
+    """The member's coordinate perpendicular to the cut (its station if parallel)."""
+    (x0, y0), _ = member.p0, member.p1
+    return y0 if direction == "x" else x0
+
+
+def _birdsmouth_depth_in(connection: str | None) -> float | None:
+    """Seat-cut depth (inches) parsed off a rafter's ``eave:birdsmouth-<d>in`` tag.
+
+    The connection string is the only carrier of the notch depth (``resolve.model`` keeps
+    the member a plain box — no seat cut in the solid), so the 2D section is where the
+    birdsmouth becomes drawn linework.
+    """
+    if not connection:
+        return None
+    for token in connection.split(";"):
+        token = token.strip()
+        if "birdsmouth-" in token:
+            tail = token.split("birdsmouth-", 1)[1]
+            digits = tail[:-2] if tail.endswith("in") else tail
+            try:
+                return float(digits)
+            except ValueError:
+                return None
+    return None
+
+
+def _member_flange_nodes(u0, u1, z0, z1, profile, uid, tag) -> list:
+    """Two thin flange-delineation lines so an I-joist reads as an I, not a solid bar.
+
+    A cut I-joist member is otherwise a plain rectangle; the flange lines (offset from the
+    top and bottom edges by the real flange thickness) are what tell it apart from sawn
+    lumber at detail scale. Coordinates in metres, converted to inches like ``_rect_nodes``.
+    """
+    from typehaus.resolve.framing.profiles import cross_section
+
+    section = cross_section(profile)
+    if section.shape != "i_joist" or section.flange_thickness_m is None:
+        return []
+    ft = section.flange_thickness_m
+    if (z1 - z0) <= 2.2 * ft:
+        return []
+    nodes: list = []
+    for z in (z0 + ft, z1 - ft):
+        nodes.append(Polyline(points=((u0 * M_TO_IN, z * M_TO_IN), (u1 * M_TO_IN, z * M_TO_IN)),
+                              layer="S-FRAM", lineweight=0.13, uid=uid,
+                              tag=f"{tag}/flange"))
+    return nodes
+
+
+def _emit_raked_rafter(b, member, u0, u1, z0_a, z0_b, z1_a, z1_b, crop,
+                       depth_in) -> None:
+    """A raked rafter drawn as its true sloped profile with a birdsmouth seat-cut notch.
+
+    Replaces the bounding-box rectangle the parallel-member path would draw (which loses the
+    rake entirely) with the actual parallelogram, then notches the underside at the eave
+    (low) end so the rafter reads as a seated, notched member. The notch is a plumb heel cut
+    of ``depth_in`` plus a horizontal seat bearing on the plate.
+    """
+    d = depth_in / M_TO_IN
+    eave_at_u0 = z1_a <= z1_b  # eave = lower-top end (zero-overhang tail bears here)
+    span_u = abs(u1 - u0) or 1e-9
+    slope_bot = (z0_b - z0_a) / (u1 - u0)
+    run = min(3.5 / M_TO_IN, span_u * 0.35)  # seat run ~ a 2x4 plate bearing
+    if eave_at_u0:
+        heel = (u0, z0_a + d)
+        toe = (u0 + run, z0_a + slope_bot * run + d)
+        poly = [(u0, z1_a), (u1, z1_b), (u1, z0_b), toe, heel]
+    else:
+        heel = (u1, z0_b + d)
+        toe = (u1 - run, z0_b - slope_bot * run + d)
+        poly = [(u1, z1_b), (u0, z1_a), (u0, z0_a), toe, heel]
+    clipped = _clip_polygon(poly, crop)
+    if len(clipped) < 3:
+        return
+    pts = tuple((u * M_TO_IN, z * M_TO_IN) for (u, z) in clipped)
+    b.add(Polyline(points=pts, layer="S-FRAM", closed=True, lineweight=0.35,
+                   uid=member.parent_uid, tag=member.child_key))
+    b.add(Hatch(boundary=pts, pattern="lumber", layer="A-WALL-PATT",
+                uid=member.parent_uid, material="spf"))
+    # An I-joist rafter carries flange lines along its raked top/bottom edges so it reads
+    # as an I-joist, not a solid rafter — offset inward from each edge by the flange depth.
+    from typehaus.resolve.framing.profiles import cross_section
+
+    section = cross_section(member.profile)
+    if section.shape == "i_joist" and section.flange_thickness_m is not None:
+        ft = section.flange_thickness_m
+        for (za, zb) in ((z0_a + ft, z0_b + ft), (z1_a - ft, z1_b - ft)):
+            seg = _clip_segment((u0, za), (u1, zb), crop)
+            if seg is not None:
+                (su0, sz0), (su1, sz1) = seg
+                b.add(Polyline(points=((su0 * M_TO_IN, sz0 * M_TO_IN),
+                                       (su1 * M_TO_IN, sz1 * M_TO_IN)),
+                               layer="S-FRAM", lineweight=0.13,
+                               uid=member.parent_uid, tag=f"{member.child_key}/flange"))
 
 
 def _emit_one_member(b, member, direction, station, crop) -> None:
@@ -467,10 +630,18 @@ def _emit_one_member(b, member, direction, station, crop) -> None:
         # member runs along the cut axis at a station (e.g. a top plate parallel to the cut)
         if abs(a0 - station) > 1e-9:
             return
+        raked = member.z0_end_m is not None or member.z1_end_m is not None
+        birdsmouth = _birdsmouth_depth_in(member.connection)
+        if raked and birdsmouth is not None and abs(u1 - u0) > 1e-9:
+            _emit_raked_rafter(b, member, u0, u1, z0_a, z0_b, z1_a, z1_b, crop,
+                               birdsmouth)
+            return
         rect = _clip_rect(min(u0, u1), max(u0, u1), min(z0_a, z0_b), max(z1_a, z1_b), crop)
         if rect is not None:
             b.extend(_rect_nodes(*rect, "S-FRAM", "lumber", member.parent_uid,
                                  member.child_key))
+            b.extend(_member_flange_nodes(*rect, member.profile, member.parent_uid,
+                                          member.child_key))
         return
     if (a0 - station) * (a1 - station) > 0:
         return
@@ -483,3 +654,5 @@ def _emit_one_member(b, member, direction, station, crop) -> None:
     if rect is not None:
         b.extend(_rect_nodes(*rect, "S-FRAM", "lumber", member.parent_uid,
                              member.child_key))
+        b.extend(_member_flange_nodes(*rect, member.profile, member.parent_uid,
+                                      member.child_key))
