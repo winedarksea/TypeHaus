@@ -31,7 +31,7 @@ export function runOpeningGeometryTests() {
 
   const arched = wallLayerPieces(wall([[0, 0], [4, 0]]), [[0, -0.1], [4, -0.1], [4, 0.1], [0, 0.1]], [opening(2, 0, 1, 0.5)]);
   const archSpandrels = arched.filter((piece) => piece.z0_m > 0);
-  assert(archSpandrels.length === 12, "Arch head is approximated by twelve spandrel strips");
+  assert(archSpandrels.length === 32, "Strip fallback retains a smooth arch curve for complex wall layers");
   assert(Math.max(...archSpandrels.map((piece) => piece.z0_m)) > Math.min(...archSpandrels.map((piece) => piece.z0_m)),
     "Arch soffit rises from its springlines to a visible crown");
 

@@ -10,9 +10,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-
-ARCH_OPENING_SEGMENT_COUNT = 12
-
 if TYPE_CHECKING:
     import ifcopenshell
 
@@ -98,14 +95,23 @@ def add_arched_opening_prism(f: Any, body_ctx: Any, *, center_m: tuple[float, fl
     half_width = width_m / 2.0
     springline = max(0.0, height_m - arch_rise_m)
     radius = half_width
-    profile_points = [(-half_width, 0.0), (half_width, 0.0), (half_width, springline)]
-    for segment in range(1, ARCH_OPENING_SEGMENT_COUNT + 1):
-        x = half_width - width_m * segment / ARCH_OPENING_SEGMENT_COUNT
-        y = springline + (max(0.0, radius * radius - x * x) ** 0.5)
-        profile_points.append((x, y))
-    profile_points.append((-half_width, 0.0))
-    points = [f.createIfcCartesianPoint(point) for point in profile_points]
-    outer_curve = f.createIfcPolyline(points)
+    left_bottom = f.createIfcCartesianPoint((-half_width, 0.0))
+    right_bottom = f.createIfcCartesianPoint((half_width, 0.0))
+    right_spring = f.createIfcCartesianPoint((half_width, springline))
+    left_spring = f.createIfcCartesianPoint((-half_width, springline))
+    bottom = f.createIfcPolyline((left_bottom, right_bottom))
+    right_jamb = f.createIfcPolyline((right_bottom, right_spring))
+    circle = f.createIfcCircle(
+        f.createIfcAxis2Placement2D(f.createIfcCartesianPoint((0.0, springline)), None), radius,
+    )
+    arch = f.createIfcTrimmedCurve(circle, (right_spring,), (left_spring,), True, "CARTESIAN")
+    left_jamb = f.createIfcPolyline((left_spring, left_bottom))
+    outer_curve = f.createIfcCompositeCurve([
+        f.createIfcCompositeCurveSegment("CONTINUOUS", True, bottom),
+        f.createIfcCompositeCurveSegment("CONTINUOUS", True, right_jamb),
+        f.createIfcCompositeCurveSegment("CONTINUOUS", True, arch),
+        f.createIfcCompositeCurveSegment("CONTINUOUS", True, left_jamb),
+    ], False)
     profile = f.createIfcArbitraryClosedProfileDef("AREA", None, outer_curve)
     placement = f.createIfcAxis2Placement3D(
         # Swept solids extrude from their placement plane in one direction; offset the

@@ -157,8 +157,8 @@ and floor joists now resolve and render in glTF; deck slabs carry composite/alum
 assemblies (material in glTF + IFC). Still deferred:
 
 - **Arched opening voids.** DONE in resolve, glTF, the browser viewer, and IFC. `ResolvedOpening`
-  carries `arch_rise_m`; glTF and the viewer carve strip-approximated semicircular soffits, while
-  IFC emits a vertical `IfcArbitraryClosedProfileDef` swept through the host wall.
+  carries `arch_rise_m`; glTF and the viewer emit continuous curved concrete heads, while IFC
+  emits a vertical `IfcArbitraryClosedProfileDef` with a true circular curve swept through the wall.
 - **Metal fascia-mounted balcony guardrail** as a first-class `Railing` element (model + resolve
   + emit + UI). The masonry railing is modeled (as a parapet wall); the metal guardrail is not.
 - **PVC fascia, front gutter, front-edge flashing into the gutter, rear flashing into the house

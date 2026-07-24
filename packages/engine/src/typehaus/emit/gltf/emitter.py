@@ -173,6 +173,35 @@ class _MeshBuilder:
             positions.extend(triangle)
             indices.extend((base, base + 1, base + 2))
 
+    def add_arched_spandrel(self, edges, opening_start: float, opening_end: float,
+                            z1: float, springline: float, radius: float,
+                            color: tuple[float, float, float, float]) -> None:
+        """Add one continuous curved concrete head, not a stack of prism strips."""
+        positions, indices = self._bucket(color)
+        base = len(positions)
+        for segment in range(_ARCH_CURVE_SEGMENTS + 1):
+            fraction = opening_start + (
+                (opening_end - opening_start) * segment / _ARCH_CURVE_SEGMENTS
+            )
+            offset = ((segment / _ARCH_CURVE_SEGMENTS) - 0.5) * radius * 2.0
+            soffit = min(z1, springline + math.sqrt(max(0.0, radius * radius - offset * offset)))
+            front = _lerp(edges[0][0], edges[0][1], fraction)
+            back = _lerp(edges[1][0], edges[1][1], fraction)
+            positions.extend((_to_gltf(*front, soffit), _to_gltf(*back, soffit),
+                              _to_gltf(*front, z1), _to_gltf(*back, z1)))
+        for segment in range(_ARCH_CURVE_SEGMENTS):
+            current, next_ = base + segment * 4, base + (segment + 1) * 4
+            # Curved soffit and flat top.
+            indices.extend((current, next_ + 1, next_, current, current + 1, next_ + 1))
+            indices.extend((current + 2, next_ + 2, next_ + 3,
+                            current + 2, next_ + 3, current + 3))
+            # The two wall-depth faces are continuous across the full arch.
+            indices.extend((current, next_, next_ + 2, current, next_ + 2, current + 2,
+                            current + 1, current + 3, next_ + 3, current + 1, next_ + 3, next_ + 1))
+        # Close the jamb faces at each springline.
+        for section in (base, base + _ARCH_CURVE_SEGMENTS * 4):
+            indices.extend((section, section + 2, section + 3, section, section + 3, section + 1))
+
     def is_empty(self) -> bool:
         return not any(pos for pos, _ in self._buckets.values())
 
@@ -294,7 +323,7 @@ def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, floa
     return _color(solid.category)
 
 
-_ARCH_STRIPS = 12  # segments approximating a semicircular arch soffit in 3D
+_ARCH_CURVE_SEGMENTS = 64  # smooth tessellation for the single curved arch mesh
 
 
 def _thin_rect_edges(poly, axis):
@@ -361,14 +390,8 @@ def _add_layer_with_openings(mb, poly, axis, z0, z1, length, ops, color) -> None
         if op.arch_rise_m > 1e-6:  # spandrel above a semicircular/segmental arch soffit
             springline = bottom + max(0.0, op.height_m - op.arch_rise_m)
             radius = op.width_m / 2.0
-            for strip in range(_ARCH_STRIPS):
-                s0 = o0 + (o1 - o0) * strip / _ARCH_STRIPS
-                s1 = o0 + (o1 - o0) * (strip + 1) / _ARCH_STRIPS
-                offset = ((strip + 0.5) / _ARCH_STRIPS - 0.5) * op.width_m
-                curve = radius * radius - offset * offset
-                soffit = min(springline + (math.sqrt(curve) if curve > 0 else 0.0), z1)
-                if z1 > soffit + 1e-6:
-                    mb.add_prism(_slice(edges, s0, s1), soffit, z1, color)
+            if z1 > springline + 1e-6:
+                mb.add_arched_spandrel(edges, o0, o1, z1, springline, radius, color)
         elif z1 > head + 1e-6:  # square-head header
             mb.add_prism(_slice(edges, o0, o1), head, z1, color)
         cursor = max(cursor, o1)

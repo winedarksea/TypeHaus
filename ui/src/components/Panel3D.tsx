@@ -29,9 +29,8 @@ import { useTheme } from "../theme/theme";
 export const EARTH_PLANE_OPACITY = 0.28;
 export const EARTH_PLANE_THICKNESS_M = 0.01;
 export const EARTH_FALLBACK_HALF_SIZE_M = 50;
-// Keep this in step with emit/gltf/emitter.py: enough facets for an architectural arch
-// without turning every concrete opening into a dense collection of wall meshes.
-export const ARCH_OPENING_SEGMENT_COUNT = 12;
+// Curve tessellation for one continuous viewer mesh; no internal wall-piece seams are emitted.
+export const ARCH_OPENING_SEGMENT_COUNT = 32;
 
 type PanDirection = "left" | "right" | "up" | "down";
 
@@ -562,14 +561,14 @@ function buildWall(
         flatShading: mode === "schematic",
       });
     mats.push(mat);
-    for (const piece of wallLayerPieces(w, ly.polygon, openings)) {
-      let geo: THREE.BufferGeometry | null;
-      if (piece.topIsRaked) {
-        geo = createRakedPlanPrismGeometry(piece.polygon, piece.z0_m,
-          (point) => rakedTopAt(w, point[0], point[1]), center);
-      } else {
-        geo = createPlanPrismGeometry(piece.polygon, piece.z0_m, piece.z1_m, [], center);
-      }
+    const smoothArchGeometry = createSmoothArchedWallLayerGeometry(w, ly.polygon, openings, center);
+    const geometries: (THREE.BufferGeometry | null)[] = smoothArchGeometry
+      ? [smoothArchGeometry]
+      : wallLayerPieces(w, ly.polygon, openings).map((piece) => piece.topIsRaked
+        ? createRakedPlanPrismGeometry(piece.polygon, piece.z0_m,
+          (point) => rakedTopAt(w, point[0], point[1]), center)
+        : createPlanPrismGeometry(piece.polygon, piece.z0_m, piece.z1_m, [], center));
+    for (const geo of geometries) {
       if (!geo) continue;
       if (seam) applyStandingSeamWallUv(geo, w.axis, center);
       const mesh = new THREE.Mesh(geo, mat);
@@ -598,6 +597,75 @@ export interface WallLayerPiece {
   z0_m: number;
   z1_m: number;
   topIsRaked: boolean;
+}
+
+// A concrete arch should read as one continuous cast surface. Extruding a Shape with opening
+// holes gives the soffit a single smooth mesh; the strip fallback below is retained for raked
+// and junction-mitered wall layers whose non-rectangular plan footprint cannot be swept safely.
+function createSmoothArchedWallLayerGeometry(
+  wall: Wall, polygon: readonly [number, number][], openings: Opening[], center: PlanCenter,
+): THREE.BufferGeometry | null {
+  if (!openings.some((opening) => (opening.arch_rise_m ?? 0) > 1e-9) || polygon.length !== 4 ||
+      wall.top_z0_m != null || wall.top_z1_m != null) return null;
+  const [[sx, sy], [ex, ey]] = wall.axis;
+  const length = Math.hypot(ex - sx, ey - sy);
+  if (length < 1e-9) return null;
+  const ux = (ex - sx) / length, uy = (ey - sy) / length;
+  const nx = -uy, ny = ux;
+  const local = polygon.map(([x, y]) => [
+    (x - sx) * ux + (y - sy) * uy,
+    (x - sx) * nx + (y - sy) * ny,
+  ] as const);
+  const alongs = local.map(([along]) => along), acrosses = local.map(([, across]) => across);
+  const minAlong = Math.min(...alongs), maxAlong = Math.max(...alongs);
+  const minAcross = Math.min(...acrosses), maxAcross = Math.max(...acrosses);
+  const corners = new Set(local.map(([along, across]) => `${along.toFixed(8)},${across.toFixed(8)}`));
+  if (corners.size !== 4 || ![
+    [minAlong, minAcross], [minAlong, maxAcross], [maxAlong, minAcross], [maxAlong, maxAcross],
+  ].every(([along, across]) => corners.has(`${along.toFixed(8)},${across.toFixed(8)}`))) return null;
+
+  const shape = new THREE.Shape();
+  shape.moveTo(minAlong, wall.z0_m);
+  shape.lineTo(maxAlong, wall.z0_m);
+  shape.lineTo(maxAlong, wall.z1_m);
+  shape.lineTo(minAlong, wall.z1_m);
+  shape.closePath();
+  for (const opening of openings) {
+    const start = Math.max(minAlong, opening.center_along_m - opening.width_m / 2);
+    const end = Math.min(maxAlong, opening.center_along_m + opening.width_m / 2);
+    const bottom = Math.max(wall.z0_m, wall.z0_m + opening.sill_m);
+    if (end - start <= 1e-9 || bottom >= wall.z1_m - 1e-9) continue;
+    const hole = new THREE.Path();
+    const archRise = opening.arch_rise_m ?? 0;
+    if (archRise <= 1e-9) {
+      const top = Math.min(wall.z1_m, bottom + opening.height_m);
+      hole.moveTo(start, bottom); hole.lineTo(start, top); hole.lineTo(end, top); hole.lineTo(end, bottom);
+    } else {
+      const radius = opening.width_m / 2;
+      const springline = bottom + Math.max(0, opening.height_m - archRise);
+      hole.moveTo(start, bottom);
+      hole.lineTo(start, Math.min(wall.z1_m, springline));
+      for (let segment = 0; segment <= ARCH_OPENING_SEGMENT_COUNT; segment++) {
+        const x = -radius + opening.width_m * segment / ARCH_OPENING_SEGMENT_COUNT;
+        const curve = radius * radius - x * x;
+        hole.lineTo(opening.center_along_m + x, Math.min(wall.z1_m,
+          springline + Math.sqrt(Math.max(0, curve))));
+      }
+      hole.lineTo(end, bottom);
+    }
+    hole.closePath();
+    shape.holes.push(hole);
+  }
+  const geometry = new THREE.ExtrudeGeometry(shape, {
+    depth: maxAcross - minAcross, bevelEnabled: false, curveSegments: 1,
+  });
+  geometry.applyMatrix4(new THREE.Matrix4().set(
+    ux, 0, nx, sx + nx * minAcross - center[0],
+    0, 1, 0, 0,
+    uy, 0, ny, sy + ny * minAcross - center[1],
+    0, 0, 0, 1,
+  ));
+  return geometry;
 }
 
 // Split an arbitrary junction-solved layer polygon at opening jamb stations. Clipping the

@@ -100,8 +100,12 @@ def test_sunken_garden_arch_voids_use_vertical_curved_profiles(catlin_model, cat
         solid = opening.Representation.Representations[0].Items[0]
         assert solid.is_a("IfcExtrudedAreaSolid")
         assert solid.SweptArea.is_a("IfcArbitraryClosedProfileDef")
-        assert len(solid.SweptArea.OuterCurve.Points) == 16
-        assert max(point.Coordinates[1] for point in solid.SweptArea.OuterCurve.Points) == pytest.approx(2.4384)
+        outer_curve = solid.SweptArea.OuterCurve
+        assert outer_curve.is_a("IfcCompositeCurve")
+        arch = outer_curve.Segments[2].ParentCurve
+        assert arch.is_a("IfcTrimmedCurve")
+        assert arch.BasisCurve.is_a("IfcCircle")
+        assert arch.BasisCurve.Radius == pytest.approx(1.2192)
         assert solid.Depth == pytest.approx(0.4064)
         assert solid.Position.Axis.DirectionRatios[2] == pytest.approx(0.0)
         assert solid.ExtrudedDirection.DirectionRatios == (0.0, 0.0, 1.0)
