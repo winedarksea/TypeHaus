@@ -75,6 +75,37 @@ def test_redo_reapplies(coord, house):
     assert "top=ft(12)" in _main(house)
 
 
+_ANNOTATION_SRC = '''# haus: editable
+from typehaus import DetailAnnotation, m, pt
+
+DETAIL_NOTES = [
+    DetailAnnotation(tag="DA-1", condition_key="wall_roof:*", kind="note",
+                     anchor_uid="W101AAAAAA", anchor_face="layer:sheathing:out",
+                     offset=pt(m(0.1), m(0.2)), text="drip edge"),
+    DetailAnnotation(tag="DA-2", condition_key="wall_roof:*", kind="leader",
+                     anchor_uid="W101AAAAAA", anchor_face="layer:sheathing:out",
+                     text="no offset yet"),
+]
+'''
+
+
+def test_detail_annotation_offset_update_writes_canonical_point():
+    # The detail editor commits an anchor-relative drag as a plain offset update; the new
+    # anchor-relative offset (metres) must serialize to a canonical pt(m(...)) call, not a
+    # bare tuple, so it round-trips through `haus fmt` unchanged.
+    op = PatchOp("update", "DetailAnnotation", "DA-1", {"offset": [0.15, -0.05]})
+    result = apply_ops_to_source(_ANNOTATION_SRC, [op])
+    assert "offset=pt(m(0.15), m(-0.05))" in result.source
+    assert "pt(m(0.1), m(0.2))" not in result.source  # old offset replaced
+
+
+def test_detail_annotation_offset_update_adds_missing_field():
+    # An annotation authored without an offset still accepts a drag: update inserts the kwarg.
+    op = PatchOp("update", "DetailAnnotation", "DA-2", {"offset": [0.0, 0.25]})
+    result = apply_ops_to_source(_ANNOTATION_SRC, [op])
+    assert "offset=pt(m(0), m(0.25))" in result.source
+
+
 def test_revision_mismatch_rejects_write(coord, house):
     before = _main(house)
     with pytest.raises(RevisionMismatch):

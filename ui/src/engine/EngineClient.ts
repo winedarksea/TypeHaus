@@ -126,6 +126,8 @@ export interface DetailIndexEntry {
 }
 export interface DetailAnnotationSpec {
   uid: string | null;
+  // The authored element tag (e.g. "DA-WALL-ROOF-1") — the PatchOp address for an offset edit.
+  tag: string;
   kind: string;
   anchor_uid: string;
   anchor_face: string;
