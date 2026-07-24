@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import type { FootingBedding, Opening, Wall, Model } from "../model/types";
-import { buildFootingBedding, canvasObjectFallbackGeometry, compassBearingScreenDirection, earthElevation, earthOutline, earthVoids, EARTH_FALLBACK_HALF_SIZE_M, FOOTING_BEDDING_COLOR, wallLayerPieces } from "./Panel3D";
+import { buildFootingBedding, canvasObjectFallbackGeometry, compassBearingScreenDirection, earthElevation, earthOutline, earthVoids, EARTH_FALLBACK_HALF_SIZE_M, FOOTING_BEDDING_COLOR, wallLayerPieces, wholeHouseGlbAssignment } from "./Panel3D";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -140,4 +140,31 @@ export function runCanvasObjectGeometryTests() {
     northFromSoutheast[0] - rotatedTrueNorth[0],
     northFromSoutheast[1] - rotatedTrueNorth[1],
   ) > 0.5, "Compass north responds to site true-north rotation");
+}
+
+// The whole-house glb only becomes the primary scene when its nodes map back to trades (and,
+// for selectable elements, model uids). A single untagged "building" node — today's emitter
+// output — must classify as unstructured so the model.json baseline stands with no regression.
+export function runWholeHouseGlbTests() {
+  assert(wholeHouseGlbAssignment("building", undefined) === null,
+    "The monolithic color-bucketed node is unstructured → glb is not promoted");
+  assert(wholeHouseGlbAssignment(undefined, {}) === null, "A node with no trade is unassigned");
+  assert(wholeHouseGlbAssignment("not-a-trade|wall|W-1", undefined) === null,
+    "An unknown trade token does not classify");
+
+  const fromExtras = wholeHouseGlbAssignment(undefined, { trade: "walls", uid: "W-1", kind: "wall" });
+  assert(fromExtras !== null && fromExtras.trade === "walls" && fromExtras.uid === "W-1"
+    && fromExtras.kind === "wall", "glTF extras assign trade + uid + selection kind");
+
+  const fromName = wholeHouseGlbAssignment("furniture|canvas_object|CO-9", undefined);
+  assert(fromName !== null && fromName.trade === "furniture" && fromName.uid === "CO-9"
+    && fromName.kind === "canvas_object", "The <trade>|<kind>|<uid> name convention is the fallback");
+
+  const envelopeOnly = wholeHouseGlbAssignment("roof", undefined);
+  assert(envelopeOnly !== null && envelopeOnly.trade === "roof" && envelopeOnly.uid === null
+    && envelopeOnly.kind === null, "Non-selectable envelope geometry only needs its trade");
+
+  const extrasWinName = wholeHouseGlbAssignment("walls|wall|FROM-NAME", { trade: "concrete", uid: "FROM-EXTRAS", kind: "wall" });
+  assert(extrasWinName !== null && extrasWinName.trade === "concrete" && extrasWinName.uid === "FROM-EXTRAS",
+    "Explicit extras take precedence over the name convention");
 }
