@@ -28,11 +28,12 @@ import { useTheme } from "../theme/theme";
 // 3D view shows exactly what the resolver computed and works offline in the Pyodide PWA where
 // the glb may be absent. On top of that, setModel asks the engine for its whole-house glb
 // (server /model.glb, or the Pyodide engine's glb artifact). When that glb carries per-object
-// trade metadata, setWholeHouseGlb promotes it to the PRIMARY scene, distributed across the
+// trade metadata, setWholeHouseGlb can promote it to the PRIMARY scene, distributed across the
 // same trade groups so selection, highlight and the trade/role toggles keep working (see the
-// emitter contract on setWholeHouseGlb). Today's emitter writes one color-bucketed "building"
-// node with no per-object identity, so it cannot drive those features — in that case the glb
-// is discarded and the model.json baseline stands, unchanged. The Nordic passes (soft lighting
+// emitter contract on setWholeHouseGlb). The emitter now writes per-object nodes, but promotion
+// stays gated off (WHOLE_HOUSE_GLB_PRIMARY) until it reaches visual parity with this baseline —
+// flat-extruded tops and palette-only wall finishes still lag the model.json render path — so
+// the glb is discarded and the model.json baseline stands, unchanged. The Nordic passes (soft lighting
 // + edge linework) attach to the three.js scene, so they survive either route. Clicking a wall
 // cross-highlights the 2D plan and surfaces its file:line provenance.
 
@@ -41,6 +42,15 @@ export const EARTH_PLANE_THICKNESS_M = 0.01;
 export const EARTH_FALLBACK_HALF_SIZE_M = 50;
 // Curve tessellation for one continuous viewer mesh; no internal wall-piece seams are emitted.
 export const ARCH_OPENING_SEGMENT_COUNT = 32;
+
+// Whether a fully-tagged whole-house glb may take over from the model.json baseline scene.
+// Held OFF until the glTF emitter reaches visual parity with the model.json render path: it
+// still (a) extrudes walls flat between z0..z1 rather than raking gable/ToRoof tops to the roof
+// slope, and (b) ships flat palette colors instead of the procedural standing-seam / CMU wall
+// finishes. Promoting it before then silently downgrades those envelope details, so the glb —
+// though now correctly per-object tagged (its identity metadata is still emitted and consumed
+// for anything that reads it) — stays a secondary artifact until the emitter closes those gaps.
+export const WHOLE_HOUSE_GLB_PRIMARY = false;
 
 type PanDirection = "left" | "right" | "up" | "down";
 
@@ -590,6 +600,10 @@ function createScene(
   };
 
   const applyWholeHouseGlb = (root: THREE.Object3D) => {
+    // Gated off until the emitter reaches parity (see WHOLE_HOUSE_GLB_PRIMARY): promoting the glb
+    // today drops raked wall tops and the procedural standing-seam/CMU finishes. Keep the richer
+    // model.json baseline that setModel built.
+    if (!WHOLE_HOUSE_GLB_PRIMARY) { disposeGroup(root); return; }
     // Classify first: only take over when every renderable node maps to a trade. Walk up from
     // each mesh so a tagged parent covers its (often untagged) child primitives.
     const tagged: { mesh: THREE.Mesh; assignment: GlbNodeAssignment }[] = [];
