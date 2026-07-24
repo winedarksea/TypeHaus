@@ -195,6 +195,14 @@ deck fix; work them down here (or suppress `structural.member_interference` per-
 - More items need to be selectable (ie footing beds, posts, etc). Ideally most distinct elements are selectable in 3d view.
 - Garage door needs a dedicated 2d door look, and likely a dedicated pattern to match its framing needs, as it's not a swing door like shown in 2D.
 
+- gable ends of garage are not handled (truss is exposed)
+- need a fascia board on the truss ends of the garage (two layers, one wood, one pvc cellular). The side wall needs to extend up the raised heel (the Zip R at least), and there needs to be a soffit
+- the sewer ventilation pipe and radon vent are coming out a bit too high. Also the pipes could look a little more pipe like.
+- 6x6 posts and beams above them are not rendered as wood (beams as wood, 6x6 posts as painted white)
+- still some weird walls extending beneath the foundation somehow related to the stairs
+- one of the masonry porch railings as the exterior side flipped around. Brick should face exterior on wall three sides of that.
+- ceiling lights appear to be defined but sitting on the floor.
+
 ## General Polishing Tasks
 - Make sure all warnings are cleared up
 - Make sure the BOM shows all members listed out, grouped usually by size and type
