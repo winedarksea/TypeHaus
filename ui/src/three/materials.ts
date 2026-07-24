@@ -142,3 +142,150 @@ export function disposeStandingSeamTextures(): void {
   sharedNormalMap?.dispose();
   sharedNormalMap = null;
 }
+
+// ── Masonry (brick / block / stone veneer) ────────────────────────────────────────────
+// The old path painted masonry as one flat fill, so a brick veneer read as drywall. Like
+// the standing-seam finish above, the coursing + recessed mortar + per-unit colour variation
+// are carried by shared procedural maps (colour + normal), world-scaled so units sit at true
+// size. No external texture, so the offline PWA still renders it.
+
+/** Nominal running-bond module including joints: modular brick is 8" × 2⅔" with ⅜" joints. */
+export const BRICK_UNIT_M: readonly [number, number] = [0.2032, 0.0679]; // [length, course]
+const MASONRY_TEX_PX = 512;
+const MASONRY_COURSES_PER_TILE = 6;
+const MASONRY_UNITS_PER_TILE = 3;
+export const MASONRY_TILE_SIZE_M: readonly [number, number] = [
+  BRICK_UNIT_M[0] * MASONRY_UNITS_PER_TILE,
+  BRICK_UNIT_M[1] * MASONRY_COURSES_PER_TILE,
+];
+
+// Keyed by base-colour hex: the colour is baked into the map, so light/dark brick need one
+// tile each. The normal map is colour-independent but rebuilt alongside for simplicity; the
+// map stays small (only a couple of colours ever exist).
+const masonryMapCache = new Map<string, { colorMap: THREE.Texture; normalMap: THREE.Texture }>();
+
+/** True when a wall layer's cladding should be finished as brick/stone masonry. */
+export function isMasonry(materialRef: string | null | undefined): boolean {
+  return familyOf(materialRef) === "masonry";
+}
+
+// Deterministic per-unit jitter so a course looks laid, not printed — no Math.random, so the
+// two shared maps stay reproducible across reloads.
+function hashUnit(course: number, unit: number): number {
+  const h = Math.sin(course * 12.9898 + unit * 78.233) * 43758.5453;
+  return h - Math.floor(h);
+}
+
+function buildMasonryMaps(color: THREE.Color): { colorMap: THREE.Texture; normalMap: THREE.Texture } {
+  const key = color.getHexString();
+  const cached = masonryMapCache.get(key);
+  if (cached) return cached;
+  const colorCanvas = document.createElement("canvas");
+  const normalCanvas = document.createElement("canvas");
+  colorCanvas.width = colorCanvas.height = MASONRY_TEX_PX;
+  normalCanvas.width = normalCanvas.height = MASONRY_TEX_PX;
+  const cctx = colorCanvas.getContext("2d");
+  const nctx = normalCanvas.getContext("2d");
+  if (!cctx || !nctx) throw new Error("2D canvas unavailable for masonry maps");
+
+  const courseH = MASONRY_TEX_PX / MASONRY_COURSES_PER_TILE;
+  const unitW = MASONRY_TEX_PX / MASONRY_UNITS_PER_TILE;
+  const jointPx = Math.max(2, unitW * 0.05);
+  const mortar = "#cfc8ba";
+
+  cctx.fillStyle = mortar;
+  cctx.fillRect(0, 0, MASONRY_TEX_PX, MASONRY_TEX_PX);
+  // Normal map: flat (recessed joints are drawn as darker steps, i.e. z-facing everywhere,
+  // joints tilted). Base is the neutral +Z normal (128,128,255).
+  nctx.fillStyle = "rgb(128,128,255)";
+  nctx.fillRect(0, 0, MASONRY_TEX_PX, MASONRY_TEX_PX);
+
+  const base = color.clone();
+  for (let course = 0; course < MASONRY_COURSES_PER_TILE; course++) {
+    const y = course * courseH;
+    const offset = course % 2 === 0 ? 0 : unitW / 2; // running bond: alternate half-lap
+    for (let unit = -1; unit < MASONRY_UNITS_PER_TILE + 1; unit++) {
+      const x = unit * unitW + offset;
+      const jitter = hashUnit(course, unit);
+      const shade = base.clone().offsetHSL(
+        (jitter - 0.5) * 0.02, (jitter - 0.5) * 0.08, (jitter - 0.5) * 0.16,
+      );
+      cctx.fillStyle = `#${shade.getHexString()}`;
+      cctx.fillRect(x + jointPx / 2, y + jointPx / 2, unitW - jointPx, courseH - jointPx);
+      // Bevel the unit edges in the normal map so the recessed mortar catches light.
+      nctx.fillStyle = "rgb(150,128,235)"; // faces +X near the left joint
+      nctx.fillRect(x + jointPx / 2, y + jointPx / 2, jointPx, courseH - jointPx);
+      nctx.fillStyle = "rgb(106,128,235)"; // faces −X near the right joint
+      nctx.fillRect(x + unitW - jointPx * 1.5, y + jointPx / 2, jointPx, courseH - jointPx);
+      nctx.fillStyle = "rgb(128,150,235)";
+      nctx.fillRect(x + jointPx / 2, y + jointPx / 2, unitW - jointPx, jointPx);
+      nctx.fillStyle = "rgb(128,106,235)";
+      nctx.fillRect(x + jointPx / 2, y + courseH - jointPx * 1.5, unitW - jointPx, jointPx);
+    }
+  }
+
+  const colorMap = new THREE.CanvasTexture(colorCanvas);
+  colorMap.wrapS = colorMap.wrapT = THREE.RepeatWrapping;
+  colorMap.colorSpace = THREE.SRGBColorSpace;
+  const normalMap = new THREE.CanvasTexture(normalCanvas);
+  normalMap.wrapS = normalMap.wrapT = THREE.RepeatWrapping;
+  normalMap.colorSpace = THREE.NoColorSpace;
+  const maps = { colorMap, normalMap };
+  masonryMapCache.set(key, maps);
+  return maps;
+}
+
+/** Brick/stone masonry finish. `color` is the resolved family colour (brick red by default). */
+export function createMasonryMaterial(mode: "nordic" | "schematic", color: THREE.ColorRepresentation): THREE.Material {
+  if (mode === "schematic") {
+    return new THREE.MeshStandardMaterial({ color, roughness: 1, metalness: 0, flatShading: true });
+  }
+  const { colorMap, normalMap } = buildMasonryMaps(new THREE.Color(color));
+  return new THREE.MeshStandardMaterial({
+    color: 0xffffff, // colour lives in the map; white base avoids double-tinting
+    map: colorMap,
+    normalMap,
+    normalScale: new THREE.Vector2(0.5, 0.5),
+    roughness: 0.94,
+    metalness: 0,
+  });
+}
+
+/**
+ * World-scaled UVs for a masonry wall layer: courses run true-height up the wall and units
+ * run true-length along it, so the bond stays put as walls change direction (same coordinate
+ * frame idea as the standing-seam wall UV).
+ */
+export function applyMasonryWallUv(
+  geometry: THREE.BufferGeometry,
+  wallAxis: readonly [readonly [number, number], readonly [number, number]],
+  center: readonly [number, number],
+): void {
+  const [[x0, y0], [x1, y1]] = wallAxis;
+  const dx = x1 - x0;
+  const dy = y1 - y0;
+  const length = Math.hypot(dx, dy);
+  if (length < 1e-9) return;
+  const directionX = dx / length;
+  const directionY = dy / length;
+  const positions = geometry.getAttribute("position");
+  const uv = new Float32Array(positions.count * 2);
+  for (let index = 0; index < positions.count; index++) {
+    const sceneX = positions.getX(index) + center[0];
+    const elevation = positions.getY(index);
+    const sceneZ = positions.getZ(index) + center[1];
+    const along = (sceneX - x0) * directionX + (sceneZ - y0) * directionY;
+    uv[index * 2] = along / MASONRY_TILE_SIZE_M[0];
+    uv[index * 2 + 1] = elevation / MASONRY_TILE_SIZE_M[1];
+  }
+  geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+}
+
+/** Drop the process-wide masonry maps — only for teardown in tests/hot reload. */
+export function disposeMasonryTextures(): void {
+  for (const { colorMap, normalMap } of masonryMapCache.values()) {
+    colorMap.dispose();
+    normalMap.dispose();
+  }
+  masonryMapCache.clear();
+}

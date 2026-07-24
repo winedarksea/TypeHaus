@@ -15,6 +15,7 @@ export const HATCH_FAMILY_COLOR: Record<string, string> = {
   lumber: "var(--material-lumber)", osb: "var(--material-osb)", rigid: "var(--material-rigid)",
   batt: "var(--material-batt)", gypsum: "var(--material-gypsum)", membrane: "var(--material-membrane)",
   siding: "var(--material-siding)", metal: "var(--material-metal)", concrete: "var(--material-concrete)",
+  masonry: "var(--material-masonry)",
 };
 
 export const CONTROL_COLOR: Record<string, string> = {
@@ -34,12 +35,12 @@ export interface ResolvedNordicPalette {
 export const RESOLVED_NORDIC_PALETTE: Record<"light" | "dark", ResolvedNordicPalette> = {
   light: {
     bg: "#f4f2ed", edge: "#4a463d", highlight: "#2a3d45",
-    material: { lumber: "#d8c9a6", osb: "#c9a86a", rigid: "#e8d64f", batt: "#f3c6d0", gypsum: "#efeae2", membrane: "#4a4a4a", siding: "#b8bcc0", metal: "#6b7076", concrete: "#a9a9a9", fallback: "#cfc9bd" },
+    material: { lumber: "#d8c9a6", osb: "#c9a86a", rigid: "#e8d64f", batt: "#f3c6d0", gypsum: "#efeae2", membrane: "#4a4a4a", siding: "#b8bcc0", metal: "#6b7076", concrete: "#a9a9a9", masonry: "#9c5a45", fallback: "#cfc9bd" },
     member: { wood: 0xb3854f, concrete: 0xb0b0b0 },
   },
   dark: {
     bg: "#2E3440", edge: "#D8DEE9", highlight: "#88C0D0",
-    material: { lumber: "#D6B06F", osb: "#D09A57", rigid: "#EBCB8B", batt: "#D9A4B2", gypsum: "#D8DEE9", membrane: "#BFC8D5", siding: "#AEB8C6", metal: "#9AA8BA", concrete: "#B0B8C4", fallback: "#C4BDAE" },
+    material: { lumber: "#D6B06F", osb: "#D09A57", rigid: "#EBCB8B", batt: "#D9A4B2", gypsum: "#D8DEE9", membrane: "#BFC8D5", siding: "#AEB8C6", metal: "#9AA8BA", concrete: "#B0B8C4", masonry: "#A86550", fallback: "#C4BDAE" },
     member: { wood: 0xd6b06f, concrete: 0xb0b8c4 },
   },
 };
@@ -79,6 +80,12 @@ export function familyOf(materialRef: string | null | undefined): string | null 
     ["concrete", "concrete"],
     ["conc", "concrete"],
     ["slab", "concrete"],
+    ["brick", "masonry"],
+    ["masonry", "masonry"],
+    ["cmu", "masonry"],
+    ["block", "masonry"],
+    ["stone", "masonry"],
+    ["veneer", "masonry"],
   ];
   for (const [needle, fam] of table) if (s.includes(needle)) return fam;
   return null;

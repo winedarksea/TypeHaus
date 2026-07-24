@@ -96,6 +96,7 @@ interface StoreState {
   activeStorey: string | null;
   view: ViewTransform;
   showFraming: boolean; // framed floorplan vs. schematic wall fills
+  showSpaceLabels: boolean; // room/area name (or id) label overlay in the 2D plan (default on)
   visibleTrades: Record<Trade, boolean>;
   conflict: Conflict | null;
   toasts: Toast[];
@@ -125,6 +126,7 @@ interface StoreState {
   setViewMode: (v: ViewMode) => void;
   setThreeMode: (m: ThreeMode) => void;
   setShowFraming: (v: boolean) => void;
+  setShowSpaceLabels: (v: boolean) => void;
   setTradeVisible: (trade: Trade, visible: boolean) => void;
   select: (kind: Selection["kind"], uid: string | null) => void;
   selectByTag: (kind: Selection["kind"], tag: string) => void;
@@ -137,6 +139,7 @@ interface StoreState {
   dismissConflict: () => void;
   toast: (message: string, kind?: Toast["kind"]) => void;
   dismissToast: (id: number) => void;
+  clearToasts: () => void;
 
   applyOps: (ops: PatchOp[]) => Promise<boolean>;
   runMacro: (request: MacroRequest) => Promise<MacroResult | null>;
@@ -198,6 +201,7 @@ export const useStore = create<StoreState>((set, get) => ({
   activeStorey: null,
   view: { scale: 120, tx: 80, ty: 80 },
   showFraming: true,
+  showSpaceLabels: true,
   visibleTrades: {
     walls: true, openings: true, framing: true, floors: true, concrete: true, roof: true,
     stairs: true, furniture: true, plumbing: true, electrical: true, mechanical: true, earth: true,
@@ -302,6 +306,7 @@ export const useStore = create<StoreState>((set, get) => ({
   setViewMode: (viewMode) => set({ viewMode }),
   setThreeMode: (threeMode) => set({ threeMode }),
   setShowFraming: (showFraming) => set({ showFraming }),
+  setShowSpaceLabels: (showSpaceLabels) => set({ showSpaceLabels }),
   setTradeVisible: (trade, visible) =>
     set((s) => ({ visibleTrades: { ...s.visibleTrades, [trade]: visible } })),
   select: (kind, uid) => set({ selection: { kind, uid } }),
@@ -371,6 +376,7 @@ export const useStore = create<StoreState>((set, get) => ({
   toast: (message, kind = "info") =>
     set((s) => ({ toasts: [...s.toasts, { id: toastSeq++, message, kind }] })),
   dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
+  clearToasts: () => set({ toasts: [] }),
 
   applyOps: async (ops) => {
     const { client, model } = get();

@@ -6,6 +6,7 @@ import {
   createProjectedSurfaceGeometry,
   createRakedPlanPrismGeometry,
   projectPointToScene,
+  swingArcSweepFlag,
 } from "./planGeometry";
 
 function closeTo(actual: number, expected: number, message: string) {
@@ -106,6 +107,58 @@ export function runPlanGeometryTests() {
   });
 
   checkRakedWindingIsNormalized();
+  checkDoorSwingArcsPivotOnHinge();
+}
+
+// Reconstruct an SVG elliptical-arc centre (F.6.5, rx=ry=r, rotation 0, large-arc 0) from
+// its endpoints and sweep flag, so we can assert the drawn swing arc really pivots on the
+// hinge rather than bowing convex off the wrong centre.
+function svgArcCenter(from: Vec2, to: Vec2, r: number, sweep: 0 | 1): Vec2 {
+  const x1p = (from[0] - to[0]) / 2;
+  const y1p = (from[1] - to[1]) / 2;
+  const num = r * r * r * r - r * r * y1p * y1p - r * r * x1p * x1p;
+  const denom = r * r * y1p * y1p + r * r * x1p * x1p;
+  const sign = sweep === 1 ? 1 : -1; // (large-arc 0) !== sweep → +1, else −1
+  const coef = sign * Math.sqrt(Math.max(0, num / denom));
+  const cxp = coef * y1p;
+  const cyp = coef * -x1p;
+  return [cxp + (from[0] + to[0]) / 2, cyp + (from[1] + to[1]) / 2];
+}
+
+function checkDoorSwingArcsPivotOnHinge() {
+  const near = (a: Vec2, b: Vec2, message: string) => {
+    if (Math.hypot(a[0] - b[0], a[1] - b[1]) > 1e-6) {
+      throw new Error(`${message}: expected (${b}), received (${a})`);
+    }
+  };
+  // Single leaf: hinge at one jamb, closed leaf along the wall at the far jamb, open leaf
+  // perpendicular. The arc must pivot on the hinge for every hinge/swing handing.
+  const r = 1;
+  for (const hingeDir of [1, -1]) {
+    for (const swingSign of [1, -1]) {
+      const hinge: Vec2 = [hingeDir * 0.5, 0];
+      const closed: Vec2 = [-hingeDir * 0.5, 0];
+      const open: Vec2 = [hinge[0] + swingSign * 0, hinge[1] - swingSign * r];
+      const flag = swingArcSweepFlag(hinge, closed, open);
+      near(svgArcCenter(closed, open, r, flag), hinge,
+        `Single door swing arc pivots on hinge (hinge ${hingeDir}, swing ${swingSign})`);
+    }
+  }
+  // Double door: leaves hinge at opposite jambs and mirror across the mullion. Each must
+  // pivot on its own jamb, which forces the two sweep flags to differ.
+  const rh = 0.5;
+  const leftJamb: Vec2 = [-0.5, 0];
+  const rightJamb: Vec2 = [0.5, 0];
+  const mullion: Vec2 = [0, 0];
+  const leftOpen: Vec2 = [leftJamb[0], leftJamb[1] - rh];
+  const rightOpen: Vec2 = [rightJamb[0], rightJamb[1] - rh];
+  const leftFlag = swingArcSweepFlag(leftJamb, mullion, leftOpen);
+  const rightFlag = swingArcSweepFlag(rightJamb, mullion, rightOpen);
+  near(svgArcCenter(mullion, leftOpen, rh, leftFlag), leftJamb, "Double door left leaf pivots on its jamb");
+  near(svgArcCenter(mullion, rightOpen, rh, rightFlag), rightJamb, "Double door right leaf pivots on its jamb");
+  if (leftFlag === rightFlag) {
+    throw new Error("Double door leaves must use opposite sweep flags, else one renders convex");
+  }
 }
 
 /**
