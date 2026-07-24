@@ -20,6 +20,12 @@ class Material(HausModel):
     # Presentation: hatch/color key into the Nordic palette (→ 21 §Nordic preset).
     hatch: str | None = None
     color: str | None = None
+    # Presentation: the named 3D finish recipe (coursing module, mortar colour, jitter) this
+    # material renders with — "brick", "white-brick", "cmu", "standing-seam". Authoring it is
+    # how a material *declares* its appearance; without it the renderers fall back to guessing
+    # from substrings in the tag, which cannot tell white brick from red. Recipes are defined
+    # once per surface (ui/src/three/materials.ts MASONRY_STYLES, emit/gltf/emitter.py).
+    finish: str | None = None
     # Optional freeform provenance (URL, standard, or "generic assumption") (#46).
     source: str | None = None
 

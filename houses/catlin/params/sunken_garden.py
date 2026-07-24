@@ -13,7 +13,7 @@ Vertical stack (project-north frame; +X east, +Y north, +Z up):
   concrete wall. That north edge is carried by a 12" sonotube column at midspan plus two
   PT 2x12 back beams hung into the side walls. PT 2x8 joists span N-S from the front-wall
   sill to the back beams; composite decking is the walking surface. Porch floor = main (0').
-- A masonry "railing" (brick / air gap / grouted CMU / stucco) rides the front + side
+- A masonry "railing" (white brick / air gap / grouted CMU / stucco) rides the front + side
   walls as the porch guard; its grouted CMU cores receive the balcony post bases.
 - The *balcony* one storey up (second, ~9-10') rides six 6x6 pillars (10' o.c. E-W, 8'
   o.c. N-S; rear row 2" taller for drainage slope) carrying three N-S double-2x10 beams,
@@ -155,15 +155,20 @@ WALLS = [
     FoundationWall(uid="SGW103AAAA", tag="W-SG-W1", start_node="N-SG-NW",
                    end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom),
-    FoundationWall(uid="SGW104AAAA", tag="W-SG-E1", start_node="N-SG-NE",
-                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
+    # East runs south→north (and the west runs north→south) so both side walls wind the same
+    # way around the garden: with the basement storey's outward sign of -1, a wall's exterior
+    # is the *right*-hand normal of its authored direction, so the east wall must be authored
+    # ME→NE for its outer face to land east. (Latent here — SUNKEN_GARDEN_WALL is one layer of
+    # concrete — but the same winding drives the layered railing above, so keep them in step.)
+    FoundationWall(uid="SGW104AAAA", tag="W-SG-E1", start_node="N-SG-ME",
+                   end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom),
     # Garden retaining run (to just above grade), the U south of the porch.
     FoundationWall(uid="SGW105AAAA", tag="W-SG-W2", start_node="N-SG-MW",
                    end_node="N-SG-SW", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom),
-    FoundationWall(uid="SGW106AAAA", tag="W-SG-E2", start_node="N-SG-ME",
-                   end_node="N-SG-SE", assembly="SUNKEN_GARDEN_WALL",
+    FoundationWall(uid="SGW106AAAA", tag="W-SG-E2", start_node="N-SG-SE",
+                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom),
     FoundationWall(uid="SGW107AAAA", tag="W-SG-S", start_node="N-SG-SW",
                    end_node="N-SG-SE", assembly="SUNKEN_GARDEN_WALL",
@@ -254,8 +259,10 @@ RAILING_WALLS = [
     FoundationWall(uid="SGRW02AAAA", tag="W-SG-RAIL-W", start_node="N-SG-NW",
                    end_node="N-SG-MW", assembly="PORCH_RAILING_MASONRY",
                    top_elevation=_railing_top, bottom_elevation=_porch_top),
-    FoundationWall(uid="SGRW03AAAA", tag="W-SG-RAIL-E", start_node="N-SG-NE",
-                   end_node="N-SG-ME", assembly="PORCH_RAILING_MASONRY",
+    # ME→NE (not NE→ME): the layered railing stack lays out along the wall's right-hand
+    # normal on this storey, so the mirrored winding put the brick wythe on the porch side.
+    FoundationWall(uid="SGRW03AAAA", tag="W-SG-RAIL-E", start_node="N-SG-ME",
+                   end_node="N-SG-NE", assembly="PORCH_RAILING_MASONRY",
                    top_elevation=_railing_top, bottom_elevation=_porch_top),
 ]
 

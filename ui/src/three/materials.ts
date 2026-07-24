@@ -151,11 +151,12 @@ export function disposeStandingSeamTextures(): void {
 // are carried by shared procedural maps (colour + normal), world-scaled so units sit at true
 // size. No external texture, so the offline PWA still renders it.
 //
-// A masonry layer is finished according to a MasonryStyle chosen from its material ref:
+// A masonry layer is finished according to a MasonryStyle named by the material's authored
+// `finish` (catalog), or inferred from its ref when the material declares none:
 //   • CMU / concrete block → the big 16"×8" nominal face module, grey, tight uniform coursing
 //     (visually distinct from brick, which shares the "masonry" hatch family but is 8"×2⅔").
 //   • white brick → the brick module but a whitewashed unit colour over GREY mortar (a
-//     selectable finish variant; the material ref opts in with "white"/"limewash").
+//     selectable finish variant; `finish: "white-brick"`, or a ref saying "white"/"limewash").
 //   • everything else (default) → the classic red-brick running bond over tan mortar.
 
 /** Nominal running-bond module including joints: modular brick is 8" × 2⅔" with ⅜" joints. */
@@ -220,8 +221,26 @@ function isWhiteBrickRef(materialRef: string | null | undefined): boolean {
   return s.includes("white") || s.includes("limewash") || s.includes("whitewash");
 }
 
-/** Pick the masonry finish recipe for a material ref (CMU → white brick → default red brick). */
-export function masonryStyleFor(materialRef: string | null | undefined): MasonryStyle {
+/**
+ * The finish recipes a material can name via its authored `Material.finish`. Keys are the
+ * engine's finish vocabulary (model/materials.py); the Python glTF emitter mirrors this table.
+ */
+export const MASONRY_STYLES: Readonly<Record<string, MasonryStyle>> = {
+  brick: BRICK_STYLE,
+  "white-brick": WHITE_BRICK_STYLE,
+  cmu: CMU_STYLE,
+};
+
+/**
+ * Pick the masonry finish recipe. An authored `finish` from the catalog is definitive — that
+ * is the material declaring its own appearance. Absent one (or naming a recipe this build does
+ * not know), fall back to inferring from the ref: CMU → white brick → default red brick.
+ */
+export function masonryStyleFor(
+  materialRef: string | null | undefined, finish?: string | null,
+): MasonryStyle {
+  const declared = finish ? MASONRY_STYLES[finish] : undefined;
+  if (declared) return declared;
   if (isCmu(materialRef)) return CMU_STYLE;
   if (isWhiteBrickRef(materialRef)) return WHITE_BRICK_STYLE;
   return BRICK_STYLE;
@@ -246,10 +265,12 @@ function hashUnit(course: number, unit: number): number {
   return h - Math.floor(h);
 }
 
+// `unitColor` is already resolved (authored → style.base → family) by createMasonryMaterial;
+// this only lays the bond and jitters each unit around it.
 function buildMasonryMaps(
-  style: MasonryStyle, color: THREE.Color,
+  style: MasonryStyle, unitColor: THREE.Color,
 ): { colorMap: THREE.Texture; normalMap: THREE.Texture } {
-  const key = `${style.key}:${color.getHexString()}`;
+  const key = `${style.key}:${unitColor.getHexString()}`;
   const cached = masonryMapCache.get(key);
   if (cached) return cached;
   const colorCanvas = document.createElement("canvas");
@@ -272,7 +293,7 @@ function buildMasonryMaps(
   nctx.fillStyle = "rgb(128,128,255)";
   nctx.fillRect(0, 0, MASONRY_TEX_PX, MASONRY_TEX_PX);
 
-  const base = (style.base ? new THREE.Color(style.base) : color).clone();
+  const base = unitColor.clone();
   for (let course = 0; course < style.coursesPerTile; course++) {
     const y = course * courseH;
     const offset = course % 2 === 0 ? 0 : offsetPx; // running bond: alternate half-lap
@@ -310,19 +331,24 @@ function buildMasonryMaps(
 }
 
 /**
- * Brick/CMU/stone masonry finish. `style` selects the module + mortar + colour recipe (see
- * masonryStyleFor); `color` is the resolved family colour, used only when the style leaves its
- * unit colour open (default red brick). CMU and white brick carry their own fixed unit colour.
+ * Brick/CMU/stone masonry finish. `style` selects the module + mortar + jitter recipe (see
+ * masonryStyleFor). The unit colour resolves authored → recipe default → family: an authored
+ * `Material.color` is the material speaking for itself and outranks the recipe's stock hex, so
+ * two white-brick materials with different whites render differently; `style.base` covers the
+ * recipes that carry a fixed unit colour (CMU, white brick); `color` — the palette family
+ * colour — is the last resort for a recipe that leaves its unit colour open (default red brick).
  */
 export function createMasonryMaterial(
   mode: "nordic" | "schematic", style: MasonryStyle, color: THREE.ColorRepresentation,
+  authoredColor?: string | null,
 ): THREE.Material {
+  const unitColor = authoredColor ?? style.base ?? color;
   if (mode === "schematic") {
     return new THREE.MeshStandardMaterial({
-      color: style.base ?? color, roughness: 1, metalness: 0, flatShading: true,
+      color: unitColor, roughness: 1, metalness: 0, flatShading: true,
     });
   }
-  const { colorMap, normalMap } = buildMasonryMaps(style, new THREE.Color(color));
+  const { colorMap, normalMap } = buildMasonryMaps(style, new THREE.Color(unitColor));
   return new THREE.MeshStandardMaterial({
     color: 0xffffff, // colour lives in the map; white base avoids double-tinting
     map: colorMap,

@@ -150,8 +150,8 @@ Sump with radon vent. This radon vent runs up the same mechanical space that the
 
 The freestanding porch/balcony was redesigned in `params/sunken_garden.py` (16" arched
 front wall with two arches + three piers; no north wall — the deck's north edge rides a 12"
-sonotube column + two PT 2x12 back beams into the side-wall hangers; a brick/air-gap/grouted-
-CMU/stucco masonry railing; six 6x6 pillars carrying three double-2x10 beams, 2x8 joists, and
+sonotube column + two PT 2x12 back beams into the side-wall hangers; a white-brick/air-gap/
+grouted-CMU/stucco masonry railing; six 6x6 pillars carrying three double-2x10 beams, 2x8 joists, and
 aluminum decking; composite decking on the porch). Posts→IfcColumn, standalone Beams→IfcBeam,
 and floor joists now resolve and render in glTF; deck slabs carry composite/aluminum
 assemblies (material in glTF + IFC). Still deferred:
@@ -169,6 +169,12 @@ assemblies (material in glTF + IFC). Still deferred:
   house/garden footings: recorded via `FootingBedding.cast_foam_in_aggregate` + a note; no dowel
   primitive in the schema yet. (The porch/balcony floor joists render in the 2D framing plan +
   glTF but are still not emitted as IFC members — same gap as the house floors.)
+- **Per-component outward sign.** `resolve/orientation.storey_outward_sign` derives one scalar
+  per storey from the largest closed loop, so the house basement and the sunken garden filed on
+  that same storey key are forced to share a winding — every garden wall must be authored
+  against the garden's own natural direction or its layer stack builds inside out (B5 fixed
+  three by hand). Trace an outward sign per connected wall component instead, so each structure
+  can wind independently; `advisory.cladding_side_mismatch` is the interim guard.
 
 Very small windows that don't break the stud line don't need a header added.
 
@@ -190,7 +196,10 @@ deck fix; work them down here (or suppress `structural.member_interference` per-
 
 ## Follow Up after First Subagent Pass
 - CMU look like bricks. They should look like full CMU
-- We want white (with gray mortar) bricks as a color option for bricks
+- We want white (with gray mortar) bricks as a color option for bricks — DONE. `white-brick`
+  material (grey mortar) clads the porch railing. Appearance is now *authored*, not guessed:
+  `Material.color`/`Material.finish` ship in `model.json`'s catalog and outrank the substring
+  family inference in both the viewer and the glTF export.
 - Arches are 'striped' and should be smoother, mathematical half circles properly (for sure in 3d viewer, in IFC exports too if possible)
 - More items need to be selectable (ie footing beds, posts, etc). Ideally most distinct elements are selectable in 3d view.
 - Garage door needs a dedicated 2d door look, and likely a dedicated pattern to match its framing needs, as it's not a swing door like shown in 2D.
@@ -200,7 +209,7 @@ deck fix; work them down here (or suppress `structural.member_interference` per-
 - the sewer ventilation pipe and radon vent are coming out a bit too high. Also the pipes could look a little more pipe like.
 - 6x6 posts and beams above them are not rendered as wood (beams as wood, 6x6 posts as painted white)
 - still some weird walls extending beneath the foundation somehow related to the stairs
-- one of the masonry porch railings as the exterior side flipped around. Brick should face exterior on wall three sides of that.
+- one of the masonry porch railings as the exterior side flipped around. Brick should face exterior on wall three sides of that. — DONE. `W-SG-RAIL-E` was authored NE→ME, mirroring the other two, so its stack built inside out; also corrected the same latent winding on `W-SG-E1`/`W-SG-E2`. New `advisory.cladding_side_mismatch` guards the class of bug.
 - ceiling lights appear to be defined but sitting on the floor.
 - there is a glowing red dot on the basement. Some sort of warning, however you can't click on it to tell what it is, so it isn't very helpful in this form.
 

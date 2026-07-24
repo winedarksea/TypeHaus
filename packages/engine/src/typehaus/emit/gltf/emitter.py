@@ -504,10 +504,22 @@ def _hex_rgba(hex_str: str) -> tuple[float, float, float, float]:
 # viewer's procedural finishes with one flat base colour (no baked textures): a standing-seam
 # wall reads near-white, CMU reads grey block, white brick reads whitewashed, and any other
 # recognised material falls back to its material-family colour.
+#
+# ``_FINISH_BASE`` is keyed by the engine's finish vocabulary (model/materials.py
+# ``Material.finish``, mirrored by MASONRY_STYLES in ui/src/three/materials.ts). A resolved
+# layer carries only its material *ref*, not the authored Material, so the ref is matched
+# against that vocabulary by name first — an exact, spelling-independent hit for any material
+# whose tag is its finish — and only then falls back to the substring guesswork below.
 _SEAM_BASE = "#e8e8e2"          # Panel3D.tsx createStandingSeamMaterial base (0xE8E8E2)
 _CMU_BASE = "#9c988f"           # materials.ts CMU_STYLE.base
 _WHITE_BRICK_BASE = "#e9e6df"   # materials.ts WHITE_BRICK_STYLE.base
 _DECK_BOARD_BASE = "#b9bcc0"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0xb9bcc0)
+
+_FINISH_BASE: dict[str, str] = {
+    "standing-seam": _SEAM_BASE,
+    "cmu": _CMU_BASE,
+    "white-brick": _WHITE_BRICK_BASE,
+}
 
 
 def _is_standing_seam(material_ref: str | None) -> bool:
@@ -541,9 +553,13 @@ def _is_aluminum_deck_board(material_ref: str | None) -> bool:
 
 def _material_finish_color(material_ref: str | None,
                            function: str) -> tuple[float, float, float, float]:
-    """Colour a material by its family + finish classification, mirroring the viewer's
-    materialColor. ``function`` is the lowercased layer function string ("cladding", …), used
-    for the standing-seam test and as the fallback palette key when no family is recognised."""
+    """Colour a material by its named finish, else its family + finish classification, mirroring
+    the viewer's materialColor. ``function`` is the lowercased layer function string
+    ("cladding", …), used for the standing-seam test and as the fallback palette key when no
+    family is recognised."""
+    named = _FINISH_BASE.get((material_ref or "").lower())
+    if named is not None:
+        return _hex_rgba(named)
     if function == "cladding" and _is_standing_seam(material_ref):
         return _hex_rgba(_SEAM_BASE)
     if _is_aluminum_deck_board(material_ref):
