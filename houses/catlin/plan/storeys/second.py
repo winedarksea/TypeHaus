@@ -285,7 +285,8 @@ FLOOR = [
 STAIRS = [
     Stair(uid="CST702AAAA", tag="ST-M2S", floor_opening="FO-S-STAIR",
           from_storey="main", to_storey="second", width=ft(3, 6),
-          layout="u_split_landing", run_direction="y", start=pt(ft(11), ft(25))),
+          layout="u_split_landing", run_direction="y", start=pt(ft(11), ft(25)),
+          landing_depth=ft(4)),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SOFFITS, *FLOOR_OPENINGS, *FLOOR,

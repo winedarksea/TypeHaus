@@ -320,7 +320,8 @@ FLOOR_OPENINGS = [
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
           from_storey="basement", to_storey="main", width=ft(3, 6),
-          layout="u_split_landing", run_direction="y", start=pt(ft(11), ft(25))),
+          layout="u_split_landing", run_direction="y", start=pt(ft(11), ft(25)),
+          landing_depth=ft(4)),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SLABS, *FLOOR_OPENINGS, *STAIRS]

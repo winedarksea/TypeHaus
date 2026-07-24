@@ -95,8 +95,12 @@ _PLATE_KINDS = frozenset({"plate", "raked_plate"})
 _STUD_KINDS = frozenset({"stud", "corner", "king", "jack", "cripple"})
 # Stair carriage/infill categories, and the members a stair frame bears on or butts.
 _STAIR_HOUSED = frozenset({"tread", "winder"})
+# ``partition`` (the U-stair well wall between the up/down runs) and ``hanger`` (the
+# ledger let into a concrete foundation wall that carries a basement stringer) are stair
+# carriage members: they share volume with the treads/stringers/landing by design.
 _STAIR_SUPPORT = frozenset({"stringer", "landing", "plate", "raked_plate", "joist",
-                            "blocking", "trimmer", "header"}) | _STUD_KINDS
+                            "blocking", "trimmer", "header", "partition",
+                            "hanger"}) | _STUD_KINDS
 # Wall/roof framing that legitimately interpenetrates where two walls meet at a junction
 # (studs, plates, headers, T-backing blocking, and the rafters/ridge landing on a gable).
 _JUNCTION_FRAMING = (_STUD_KINDS | _PLATE_KINDS
