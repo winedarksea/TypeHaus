@@ -2,10 +2,11 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { ALL_TRADES, useStore, type Trade } from "../state/store";
+import { ALL_SELECTION_KINDS, ALL_TRADES, useStore, type SelectionKind, type Trade } from "../state/store";
 import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
+import { createSolidMaterial } from "../three/solidMaterials";
 import { applyMasonryWallUv, applyStandingSeamWallUv, createMasonryMaterial, createStandingSeamMaterial, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM } from "../three/materials";
 import { aboveStructureLayers, boundaryEdges, roofOffsetter, roofPlaneTriangles } from "../three/roofGeometry";
 import {
@@ -56,13 +57,14 @@ type PanDirection = "left" | "right" | "up" | "down";
 
 // How a whole-house glb node maps back to an interactive element. A node earns an assignment
 // via glTF `extras` (GLTFLoader copies these onto object.userData) or, as a fallback, a
-// "<trade>|<kind>|<uid>" node name. `kind`/`uid` are optional: envelope geometry only needs a
-// trade (to land in the right visibility group), while a selectable wall/object also carries
-// its model uid so picking and highlight resolve to the same record model.json uses.
+// "<trade>|<kind>|<uid>" node name. `kind`/`uid` are optional: untagged envelope geometry only
+// needs a trade (to land in the right visibility group), while a selectable node also carries
+// its model uid so picking and highlight resolve to the same record model.json uses. The `kind`
+// vocabulary is the shared SelectionKind (→ state/store.ts, emit/gltf/emitter.py).
 export interface GlbNodeAssignment {
   trade: Trade;
   uid: string | null;
-  kind: "wall" | "canvas_object" | null;
+  kind: SelectionKind | null;
 }
 
 export function wholeHouseGlbAssignment(
@@ -73,9 +75,38 @@ export function wholeHouseGlbAssignment(
   const tradeRaw = typeof userData?.trade === "string" ? userData.trade : parts[0];
   if (!tradeRaw || !(ALL_TRADES as readonly string[]).includes(tradeRaw)) return null;
   const kindRaw = typeof userData?.kind === "string" ? userData.kind : parts[1];
-  const kind = kindRaw === "wall" || kindRaw === "canvas_object" ? kindRaw : null;
+  const kind = (ALL_SELECTION_KINDS as readonly string[]).includes(kindRaw)
+    ? kindRaw as SelectionKind : null;
   const uidRaw = typeof userData?.uid === "string" ? userData.uid : parts[2];
   return { trade: tradeRaw as Trade, uid: uidRaw || null, kind };
+}
+
+// Make every mesh a builder just added to `parent` resolve to one model element: snapshot
+// parent.children.length before building, pass it here afterwards. Framing members are merged
+// into shared instanced/merged draw calls (→ three/members.ts) and carry no identity of their
+// own, so a click on a joist, a tread or a rafter deliberately selects the floor / stair / roof
+// that owns it. Nordic edge overlays are LineSegments, so they stay out of the raycast set.
+function registerSelectable(
+  parent: THREE.Object3D,
+  firstChildIndex: number,
+  uid: string,
+  kind: SelectionKind,
+  picks: THREE.Mesh[],
+  byUid: Map<string, THREE.Material[]>,
+) {
+  // Deduped: an opening's frame material is shared by half a dozen boxes, and the highlight
+  // pass would otherwise set the same emissive over and over.
+  const materials = new Set(byUid.get(uid) ?? []);
+  for (let index = firstChildIndex; index < parent.children.length; index++) {
+    const child = parent.children[index];
+    if (!(child instanceof THREE.Mesh)) continue;
+    child.userData.uid = uid;
+    child.userData.selectionKind = kind;
+    picks.push(child);
+    const material = child.material;
+    for (const one of Array.isArray(material) ? material : [material]) materials.add(one);
+  }
+  if (materials.size) byUid.set(uid, [...materials]);
 }
 
 export function Panel3D() {
@@ -107,7 +138,9 @@ export function Panel3D() {
     if (!model) return;
     const preserveView = renderedModel.current === model && renderedTheme.current !== null;
     api.current?.setModel(model, threeMode, RESOLVED_NORDIC_PALETTE[theme], preserveView);
-    api.current?.highlight(selection.kind === "wall" || selection.kind === "canvas_object" ? selection.uid : null);
+    // The uid index only holds what the 3D builders registered, so a plan-only selection
+    // (a room) simply clears the previous highlight rather than needing a kind test here.
+    api.current?.highlight(selection.uid);
     renderedModel.current = model;
     renderedTheme.current = theme;
     // Ask the engine for its whole-house glb and, when it carries per-object metadata, promote
@@ -122,7 +155,7 @@ export function Panel3D() {
   }, [model, threeMode, theme, client]);
 
   useEffect(() => {
-    api.current?.highlight(selection.kind === "wall" || selection.kind === "canvas_object" ? selection.uid : null);
+    api.current?.highlight(selection.uid);
   }, [selection]);
 
   useEffect(() => {
@@ -203,7 +236,7 @@ export function compassBearingScreenDirection(
 function createScene(
   mount: HTMLElement,
   compass: SVGSVGElement | null,
-  onPick: (kind: "wall" | "canvas_object", uid: string) => void,
+  onPick: (kind: SelectionKind, uid: string) => void,
 ): SceneApi {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(RESOLVED_NORDIC_PALETTE.light.bg);
@@ -380,7 +413,7 @@ function createScene(
       raycaster.setFromCamera(ndc, camera);
       const hit = raycaster.intersectObjects(picks, false)[0];
       const uid = hit?.object.userData.uid as string | undefined;
-      const kind = hit?.object.userData.selectionKind as "wall" | "canvas_object" | undefined;
+      const kind = hit?.object.userData.selectionKind as SelectionKind | undefined;
       if (uid && kind) onPick(kind, uid);
     }
   });
@@ -489,15 +522,17 @@ function createScene(
       buildWall(tradeGroups, w, wallOpenings, center, mode, palette, picks, byUid);
       for (const opening of wallOpenings) {
         const isDoubleSwing = m.catalog?.door_types.find((dt) => dt.tag === opening.type_ref)?.operation === "double_swing";
-        buildOpening(tradeGroups.openings, opening, w, center, mode, palette, isDoubleSwing);
+        buildOpening(tradeGroups.openings, opening, w, center, mode, palette, isDoubleSwing, picks, byUid);
       }
     }
+    // The site sheet is context, not an element: it has no uid in model.json, so it stays out
+    // of the raycast set and a click through it falls to whatever building geometry is behind.
     buildEarth(tradeGroups.earth, m, center, mode);
-    for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, center, mode, palette);
-    for (const bedding of m.footing_beddings ?? []) buildFootingBedding(tradeGroups.concrete, bedding, center, mode);
-    for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, center, mode, palette);
-    for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette, m.catalog);
-    for (const stair of m.stairs ?? []) buildStair(tradeGroups.stairs, stair, center, mode);
+    for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, center, mode, palette, m.catalog, picks, byUid);
+    for (const bedding of m.footing_beddings ?? []) buildFootingBedding(tradeGroups.concrete, bedding, center, mode, picks, byUid);
+    for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, center, mode, palette, picks, byUid);
+    for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette, m.catalog, picks, byUid);
+    for (const stair of m.stairs ?? []) buildStair(tradeGroups.stairs, stair, center, mode, picks, byUid);
     const types = new Map((m.catalog?.canvas_object_types ?? []).map((type) => [type.tag, type]));
     for (const item of m.canvas_objects ?? []) {
       // Hosted openings retain their dedicated cut/fill meshes above. The normalized
@@ -1054,9 +1089,11 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
   return pieces;
 }
 
-function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, isDoubleSwing: boolean) {
+export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, isDoubleSwing: boolean,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
   if (opening.kind === "rough_opening") return;
+  const firstChildIndex = parent.children.length;
   const [[x0, y0], [x1, y1]] = wall.axis;
   const length = Math.hypot(x1 - x0, y1 - y0);
   if (length < 1e-9) return;
@@ -1099,18 +1136,27 @@ function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center:
     addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, 0.015, 0,
       wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, glassMaterial);
   }
+  // Frame, leaf/mullion and glazing are one door or window: clicking any of them selects the
+  // opening record, which the Inspector already knows how to edit.
+  registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
 }
 
-// Slabs, footings, pads: same outline-extrusion recipe as wall layers, concrete grey.
-function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
+// Every resolved prism that is not a wall, floor or roof: slabs, footings and pads, but also
+// 6x6 posts, beams, guard rails, dowels, thermal breaks, connectors, sump pits, vent risers,
+// fascia, gutters and flashings. Same outline-extrusion recipe as wall layers; the finish comes
+// from the solid's authored assembly when it has one, else its category (→ three/solidMaterials.ts).
+export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
   if (solid.outline.length < 3) return;
   const geo = createPlanPrismGeometry(solid.outline, solid.z0_m, Math.max(solid.z1_m, solid.z0_m + 0.01), solid.voids ?? [], center);
   if (!geo) return;
-  const mat = new THREE.MeshStandardMaterial({
-    color: palette.member.concrete, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",
-  });
-  parent.add(new THREE.Mesh(geo, mat));
+  const firstChildIndex = parent.children.length;
+  const mesh = new THREE.Mesh(geo, createSolidMaterial(solid, catalog, mode, palette));
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  parent.add(mesh);
+  registerSelectable(parent, firstChildIndex, solid.uid, "solid", picks, byUid);
 }
 
 // Compacted washed-stone footing bed: a below-grade gravel prism under a strip footing.
@@ -1118,10 +1164,11 @@ function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
 export const FOOTING_BEDDING_COLOR = 0x8b8478;
 
 export function buildFootingBedding(parent: THREE.Group, bedding: FootingBedding, center: PlanCenter,
-  mode: "nordic" | "schematic") {
+  mode: "nordic" | "schematic", picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
   if (bedding.outline.length < 3 || bedding.z1_m <= bedding.z0_m) return;
   const geo = createPlanPrismGeometry(bedding.outline, bedding.z0_m, bedding.z1_m, [], center);
   if (!geo) return;
+  const firstChildIndex = parent.children.length;
   const mat = new THREE.MeshStandardMaterial({
     color: FOOTING_BEDDING_COLOR,
     roughness: 1,
@@ -1138,10 +1185,13 @@ export function buildFootingBedding(parent: THREE.Group, bedding: FootingBedding
       new THREE.LineBasicMaterial({ color: 0x5c574d, transparent: true, opacity: 0.4 }),
     ));
   }
+  registerSelectable(parent, firstChildIndex, bedding.uid, "footing_bedding", picks, byUid);
 }
 
-function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette) {
+export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter,
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  const firstChildIndex = parent.children.length;
   if (floor.subfloor && floor.members.length) {
     const points = floor.members.flatMap((member) => [member.p0, member.p1]);
     const minX = Math.min(...points.map((point) => point[0]));
@@ -1163,13 +1213,16 @@ function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter,
     })));
   }
   buildMembers(parent, floor.members, center, mode);
+  registerSelectable(parent, firstChildIndex, floor.uid, "floor", picks, byUid);
 }
 
 // Sloped quads from footprint/eave_z/ridge_z/ridge_direction — mirrors
 // emit/gltf/emitter.py's _add_roof — thickened into the authored assembly, plus the
 // roof's own members (rafters, ridge beam).
-function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog?: Catalog) {
+export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  const firstChildIndex = parent.children.length;
   const triangles = roofPlaneTriangles(roof);
   const offsetAt = roofOffsetter(triangles);
   const perimeter = boundaryEdges(triangles);
@@ -1209,9 +1262,14 @@ function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
     base = top;
   }
   buildMembers(parent, roof.members, center, mode);
+  registerSelectable(parent, firstChildIndex, roof.uid, "roof", picks, byUid);
 }
 
-function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter,
-  mode: "nordic" | "schematic") {
+// A stair is nothing but its generated members (stringers, treads, risers), so its whole
+// framing bucket is what a click has to land on.
+export function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter,
+  mode: "nordic" | "schematic", picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  const firstChildIndex = parent.children.length;
   buildMembers(parent, stair.members, center, mode);
+  registerSelectable(parent, firstChildIndex, stair.uid, "stair", picks, byUid);
 }

@@ -786,4 +786,7 @@ def _resolve_beam(beam: Beam, storey_tag: str, elevation: float,
     # ``bearing_refs`` are untouched — the lowered beam seats into their hanger.
     z1 = elevation - joist_drop.get(beam.tag, 0.0)
     z0 = z1 - cs.depth_m
-    return ResolvedSolid(beam.uid, beam.tag, storey_tag, "beam", tuple(outline), z0, z1)
+    # An unset assembly leaves the solid on the "beam" palette entry (wood) rather than the
+    # neutral fallback, so an unfinished beam still reads as lumber in every renderer.
+    return ResolvedSolid(beam.uid, beam.tag, storey_tag, "beam", tuple(outline), z0, z1,
+                         assembly=beam.assembly)

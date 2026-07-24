@@ -83,6 +83,14 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
 }
 _FALLBACK = (0.70, 0.70, 0.70, 1.0)
 
+# The selection-kind vocabulary the UI honours — mirrors ``SelectionKind`` in
+# ui/src/state/store.ts and the ``kind`` accepted by Panel3D.wholeHouseGlbAssignment. Held as
+# an explicit set so a typo raises here instead of silently shipping an unselectable node.
+_SELECTION_KINDS = frozenset({
+    "wall", "opening", "room", "solid", "footing_bedding", "floor", "roof", "stair",
+    "canvas_object",
+})
+
 Vec3 = tuple[float, float, float]
 
 
@@ -318,13 +326,17 @@ class _SceneBuilder:
 
     def add_object(self, mb: "_MeshBuilder", trade: str,
                    kind: str | None = None, uid: str | None = None) -> None:
-        """Emit one node for ``mb``'s geometry, tagged so the UI can classify it by trade.
+        """Emit one node for ``mb``'s geometry, tagged so the UI can classify and select it.
 
-        ``kind`` is only ever ``"wall"`` or ``"canvas_object"`` (the selectable kinds the UI
-        honours); ``uid`` is only carried for those selectable nodes. Envelope geometry passes
-        neither, so it lands in the right visibility group without becoming pickable. A node with
-        no geometry is skipped entirely, so it can never become an unclassifiable renderable mesh.
+        ``kind`` is one of ``_SELECTION_KINDS`` — the same vocabulary the live viewer's pick
+        handler emits — and ``uid`` is the model uid picking and highlight resolve against.
+        Geometry that belongs to a parent element (a wall's studs, a floor's joists) passes its
+        *parent's* kind + uid, matching the viewer: individual framing members are merged into
+        shared draw calls and never carry an identity of their own. A node with no geometry is
+        skipped entirely, so it can never become an unclassifiable renderable mesh.
         """
+        if kind is not None and kind not in _SELECTION_KINDS:
+            raise ValueError(f"unknown selection kind {kind!r}; expected one of {sorted(_SELECTION_KINDS)}")
         primitives: list[dict] = []
         for color, positions, indices in mb.buckets():
             # De-index into flat triangle soup with one geometric normal per face. Every builder
@@ -961,7 +973,9 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
     the 3D UI can promote the whole-house glb to the primary scene. Trades mirror
     Panel3D.setModel: walls→walls, wall/roof/floor/stair framing members→framing, openings→
     openings, solids & footing beddings→concrete, rooms & floors→floors, roofs→roof,
-    stairs→stairs, canvas objects routed by domain.
+    stairs→stairs, canvas objects routed by domain. Every node carries a kind + uid so the
+    export preserves the same per-element identity the viewer picks against; a framing node
+    inherits the kind + uid of the wall / roof / floor / stair that owns it.
     """
     scene = _SceneBuilder()
     openings_by_wall: dict[str, list] = {}
@@ -978,7 +992,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             framing = _MeshBuilder()
             for member in wall.members:
                 _add_member(framing, member)
-            scene.add_object(framing, trade="framing")
+            scene.add_object(framing, trade="framing", kind="wall", uid=wall.uid)
 
     door_operations = {dt.tag: dt.operation for dt in model.plan.library.door_types}
     walls_by_tag = {wall.tag: wall for wall in model.walls}
@@ -989,44 +1003,44 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         mb = _MeshBuilder()
         is_double_swing = op.is_door and door_operations.get(op.type_ref) == "double_swing"
         _add_opening_filling(mb, host, op, is_double_swing)
-        scene.add_object(mb, trade="openings")
+        scene.add_object(mb, trade="openings", kind="opening", uid=op.uid)
 
     for room in sorted(model.rooms, key=lambda r: r.uid):
         if room.clear_face:
             storey_z = _room_z(model, room.storey)
             mb = _MeshBuilder()
             mb.add_prism(room.clear_face, storey_z, storey_z + 0.02, _color("floor"))
-            scene.add_object(mb, trade="floors")
+            scene.add_object(mb, trade="floors", kind="room", uid=room.uid)
 
     for solid in sorted(model.solids, key=lambda item: item.uid):
         if solid.outline:
             mb = _MeshBuilder()
             mb.add_prism_with_rectangular_voids(solid.outline, solid.voids, solid.z0_m,
                                                 solid.z1_m, _solid_color(model, solid))
-            scene.add_object(mb, trade="concrete")
+            scene.add_object(mb, trade="concrete", kind="solid", uid=solid.uid)
 
     for bedding in sorted(model.footing_beddings, key=lambda item: item.uid):
         if bedding.outline and bedding.z1_m > bedding.z0_m:
             mb = _MeshBuilder()
             mb.add_prism(bedding.outline, bedding.z0_m, bedding.z1_m, _color("pad"))
-            scene.add_object(mb, trade="concrete")
+            scene.add_object(mb, trade="concrete", kind="footing_bedding", uid=bedding.uid)
 
     for roof in sorted(model.roofs, key=lambda item: item.uid):
         mb = _MeshBuilder()
         _add_roof(mb, roof, model)
-        scene.add_object(mb, trade="roof")
+        scene.add_object(mb, trade="roof", kind="roof", uid=roof.uid)
 
     for floor in sorted(model.floors, key=lambda item: item.uid):
         mb = _MeshBuilder()
         for member in floor.members:
             _add_member(mb, member)
-        scene.add_object(mb, trade="floors")
+        scene.add_object(mb, trade="floors", kind="floor", uid=floor.uid)
 
     for stair in sorted(model.stairs, key=lambda item: item.uid):
         mb = _MeshBuilder()
         for member in stair.members:
             _add_member(mb, member)
-        scene.add_object(mb, trade="stairs")
+        scene.add_object(mb, trade="stairs", kind="stair", uid=stair.uid)
 
     _add_canvas_objects(scene, model)
 
