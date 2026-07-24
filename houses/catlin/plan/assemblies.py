@@ -275,9 +275,14 @@ GARAGE_WALL_2X6 = Assembly(
 GARAGE_ROOF = Assembly(
     tag="GARAGE_ROOF",
     layers=(
-        Layer(name="rafter", material_ref="spf", thickness=inch(11.875),
+        # Raised-heel trusses (2x4 chords + webs) with a 9.25" energy heel so full
+        # insulation depth carries over the top plate; the truss carries the ridge, so no
+        # ridge beam is required. `haus` frames the chords/webs/heel as first-class members.
+        Layer(name="truss", material_ref="spf", thickness=inch(11.875),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="11.875 I-joist")),
+              framing=FramingSpec(member="2x4", roof_frame="truss",
+                                  heel_height=inch(9.25),
+                                  chord_member="2x4", web_member="2x4")),
         Layer(name="deck", material_ref="struct-1-plywood", thickness=inch(0.75),
               function=LayerFunction.SHEATHING),
         Layer(name="membrane", material_ref="air-barrier", thickness=inch(0.02),

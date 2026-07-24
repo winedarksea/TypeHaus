@@ -44,6 +44,12 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "joist": (0.72, 0.55, 0.36, 1.0),
     "rim": (0.66, 0.48, 0.30, 1.0),
     "ridge_beam": (0.55, 0.38, 0.22, 1.0),
+    # roof truss members + the birdsmouth seat cut
+    "top_chord": (0.70, 0.52, 0.33, 1.0),
+    "bottom_chord": (0.66, 0.48, 0.30, 1.0),
+    "truss_web": (0.74, 0.57, 0.38, 1.0),
+    "truss_heel": (0.60, 0.42, 0.26, 1.0),
+    "seat_cut": (0.58, 0.40, 0.24, 1.0),
     "floor": (0.82, 0.80, 0.76, 1.0),
     "roof": (0.35, 0.37, 0.40, 1.0),
     "slab": (0.55, 0.56, 0.57, 1.0),
