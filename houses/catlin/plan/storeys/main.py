@@ -42,7 +42,7 @@ DOOR_TYPES = [
     DoorType(tag="DT-INT60", width=ft(5), height=ft(6, 8), operation="bifold"),
     DoorType(tag="DT-INT56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),
     DoorType(tag="DT-GARAGE192", width=ft(16), height=ft(7), exterior=True,
-             operation="slide", source="overhead sectional"),
+             operation="overhead"),
 ]
 WINDOW_TYPES = [
     # 14" RO — falls between studs on the 16" grid without breaking a stud line.

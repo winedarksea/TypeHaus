@@ -193,7 +193,11 @@ deck fix; work them down here (or suppress `structural.member_interference` per-
 - We want white (with gray mortar) bricks as a color option for bricks
 - Arches are 'striped' and should be smoother, mathematical half circles properly (for sure in 3d viewer, in IFC exports too if possible)
 - More items need to be selectable (ie footing beds, posts, etc). Ideally most distinct elements are selectable in 3d view.
-- Garage door needs a dedicated 2d door look, and likely a dedicated pattern to match its framing needs, as it's not a swing door like shown in 2D.
+- ~~Garage door needs a dedicated 2d door look, and likely a dedicated pattern to match its
+  framing needs, as it's not a swing door like shown in 2D.~~ Done: `DoorOperation` is a closed
+  enum, `door-overhead`/`door-bifold` symbols draw in the canvas + PDF + DXF, and overhead doors
+  get a span-sized jamb pack, a real engineered header depth and track framing. Sliding and
+  pocket doors still fall through to the swing glyph — they need their own symbols next.
 
 - gable ends of garage are not handled (truss is exposed)
 - need a fascia board on the truss ends of the garage (two layers, one wood, one pvc cellular). The side wall needs to extend up the raised heel (the Zip R at least), and there needs to be a soffit

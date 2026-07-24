@@ -10,6 +10,7 @@ try {
   const { runPlanGeometryTests } = await server.ssrLoadModule("/src/three/planGeometry.test.ts");
   const { runCanvasObjectGeometryTests, runOpeningGeometryTests, runEarthGeometryTests, runFootingBeddingGeometryTests, runWholeHouseGlbTests } = await server.ssrLoadModule("/src/components/Panel3D.test.ts");
   const { runModelGeometryTests } = await server.ssrLoadModule("/src/model/geometry.test.ts");
+  const { runDoorSymbolTests } = await server.ssrLoadModule("/src/model/doorSymbols.test.ts");
   const { runRoofGeometryTests } = await server.ssrLoadModule("/src/three/roofGeometry.test.ts");
   const { runMaterialGeometryTests } = await server.ssrLoadModule("/src/three/materials.test.ts");
   const { runDetailAnnotationTests } = await server.ssrLoadModule("/src/components/DetailCanvas.test.ts");
@@ -20,6 +21,7 @@ try {
   runCanvasObjectGeometryTests();
   runWholeHouseGlbTests();
   runModelGeometryTests();
+  runDoorSymbolTests();
   runRoofGeometryTests();
   runMaterialGeometryTests();
   runDetailAnnotationTests();
