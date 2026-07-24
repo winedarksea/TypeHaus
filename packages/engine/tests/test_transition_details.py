@@ -86,6 +86,52 @@ def test_detail_scene_is_deterministic(catlin_model):
     assert a.to_json() == b.to_json()
 
 
+def _garage_foundation(model):
+    detail = next((d for d in derive_detail_slices(model)
+                   if d.key.startswith("wall_foundation") and "GARAGE" in d.key), None)
+    assert detail is not None, "catlin should scaffold a garage wall_foundation detail"
+    return detail
+
+
+def test_eave_overlay_emits_apron_flashing(catlin_model):
+    scene, _ = build_detail(catlin_model, _eave(catlin_model))
+    assert "detail-component:apron-flashing" in _tags(scene), (
+        "apron flashing is a named component distinct from the drip/Z/L flashings")
+
+
+def test_garage_foundation_draws_slab_thermal_break(catlin_model):
+    # The 1" thermal break is its own labelled component (xps + sealant cap), drawn where a
+    # slab-on-grade edge meets the foundation wall — the garage ICF stem.
+    scene, _ = build_detail(catlin_model, _garage_foundation(catlin_model))
+    tags = _tags(scene)
+    assert "detail-component:thermal-break" in tags
+    assert "detail-component:thermal-break-sealant" in tags
+    # It stays polyline+hatch, never a bare Symbol.
+    assert not any(getattr(n, "node", None) == "symbol" for n in scene.nodes)
+
+
+def test_birdsmouth_rafter_reads_as_a_notched_member(catlin_model):
+    # The eave detail's representative rafter is drawn as a raked, notched profile (a 5-point
+    # polygon: eave-top, ridge-top, ridge-bottom, seat toe, heel), not a straight bar.
+    scene, _ = build_detail(catlin_model, _eave(catlin_model))
+    rafters = [n for n in scene.nodes if isinstance(n, Polyline) and n.layer == "S-FRAM"
+               and (n.tag or "").startswith("rafter") and "/flange" not in (n.tag or "")]
+    assert rafters, "the eave detail should carry a representative rafter"
+    assert any(len(r.points) == 5 for r in rafters), "rafter should be a notched profile"
+    # I-joist rafters carry flange delineation lines.
+    flanges = [n for n in scene.nodes if isinstance(n, Polyline)
+               and (n.tag or "").endswith("/flange")]
+    assert flanges, "I-joist rafter should carry flange lines"
+
+
+def test_birdsmouth_depth_parsed_from_connection():
+    from typehaus.emit.draw.section import _birdsmouth_depth_in
+
+    assert _birdsmouth_depth_in("ridge:adjustable-slope-hanger;eave:birdsmouth-1.17in") == 1.17
+    assert _birdsmouth_depth_in("eave:beveled-web-stiffener") is None
+    assert _birdsmouth_depth_in(None) is None
+
+
 def test_unresolvable_anchor_yields_finding_no_crash(catlin_model):
     wall = catlin_model.walls[0]
     frame = lambda x, y, z: (x, z)  # noqa: E731 - trivial test frame

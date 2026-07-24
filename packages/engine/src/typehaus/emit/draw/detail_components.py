@@ -222,6 +222,16 @@ GUTTER_HEIGHT_IN = 5.0
 SILL_GASKET_IN = 0.25   # 1/4" sill gasket (Pset_ifcPlot BasementToFramedWall)
 SCREEN_IN = 0.6         # insect-screen band height
 
+# Discrete slab-perimeter thermal break (catlin-house Pset_ifcPlot slab), inches. Named and
+# drawn as its own component, distinct from the roof→wall spray-foam wedge.
+THERMAL_BREAK_IN = 1.0
+TB_SEALANT_IN = 0.5     # polyurethane sealant cap over the thermal break
+
+# Sauna liner base (catlin-house Pset_ifcPlot_SaunaShowerDetail.finish), inches.
+SAUNA_BASEBOARD_IN = 6.0
+SAUNA_FLASH_IN = 0.35
+SAUNA_MEMBRANE_IN = 0.25
+
 
 def _path_from_steps(start_uz, steps) -> list[tuple[float, float]]:
     """Polyline from a start point + a list of (du, dz) steps (flashing profiles)."""
@@ -340,6 +350,13 @@ def zero_overhang_eave(model, wall, condition, crop, direction, station) -> list
     clad_out = _face(clad, outboard_is_high, outer=True)
 
     nodes: list[IRNode] = []
+    # Apron flashing: laps down off the roof edge over the head of the wall cladding, behind
+    # the drip edge — the reference's roofing-membrane-return-to-wall executed in metal. A
+    # named component in its own right (the drip edge / Z / L flashings are separate).
+    apron = _path_from_steps((clad_out - out_sign * 2.6, junction_z + 2.2),
+                             [(out_sign * 2.4, 0.0), (0.0, -3.0)])
+    nodes += flashing_nodes(apron, tag="apron-flashing")
+
     # Drip edge: turns down off the roof deck edge onto the fascia.
     drip = _path_from_steps((clad_out - out_sign * 0.5, junction_z + 1.0),
                             [(out_sign * 1.6, 0.0), (0.0, -2.4)])
@@ -426,6 +443,109 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
         nodes += _closed(_rect_pts(min(s_lo, s_hi), junction_z, max(s_lo, s_hi),
                                    junction_z + SILL_GASKET_IN),
                          "sill-gasket", "rubber", None, lineweight=0.35)
+
+    # Discrete 1" thermal break where the slab edge meets the foundation wall (drawn only
+    # when a slab is actually in frame — e.g. the garage slab-on-grade at the ICF stem).
+    if concrete is not None:
+        nodes += slab_thermal_break(model, concrete, crop, direction, station)
+    return nodes
+
+
+def _slab_at_junction(model, wall, crop, direction, station, face_u_m):
+    """The floor slab whose cut edge meets ``wall`` at ``face_u_m`` inside the crop, or None.
+
+    Only a slab *below the junction* qualifies: the detail is about the floor a wall bears
+    on, so a suspended floor deck sitting at the junction plane itself (e.g. the main-floor
+    deck at a rim junction) is not the slab-edge a thermal break or liner base belongs to.
+    Picks the highest qualifying slab so a stacked structure resolves to the one bearing here.
+    """
+    from typehaus.emit.draw.section import _ring_cut_intervals
+
+    (cu0, cz0), (cu1, cz1) = crop
+    lo_z, hi_z = min(cz0, cz1), max(cz0, cz1)
+    mid_z = (lo_z + hi_z) / 2.0
+    best = None
+    for s in model.solids:
+        if s.category != "slab" or not (lo_z <= s.z1_m < mid_z):
+            continue
+        for (a, bb) in _ring_cut_intervals(s.outline, direction, station):
+            lo, hi = min(a, bb), max(a, bb)
+            if lo - 0.15 <= face_u_m <= hi + 0.15:  # slab edge within ~6" of the wall face
+                if best is None or s.z1_m > best.z1_m:
+                    best = s
+                break
+    return best
+
+
+def slab_thermal_break(model, wall, crop, direction, station) -> list[IRNode]:
+    """Discrete 1" XPS thermal break + polyurethane sealant cap at the slab→wall edge.
+
+    Its own labelled component, distinct from the roof→wall spray-foam wedge: the reference
+    fixes the perimeter slab break at 1" XPS capped with 1/2" sealant. Derived from the
+    resolved slab + wall face, drawn only when a slab edge is genuinely in frame.
+    """
+    outboard_is_high = _outboard_is_high(wall, direction, station)
+    if outboard_is_high is None:
+        return []
+    u_lo, u_hi = _wall_faces(wall, direction, station)
+    if u_lo is None:
+        return []
+    inboard_face = u_lo if outboard_is_high else u_hi
+    in_sign = -1.0 if outboard_is_high else 1.0
+    slab = _slab_at_junction(model, wall, crop, direction, station, inboard_face)
+    if slab is None:
+        return []
+    face = inboard_face * M_TO_IN
+    slab_top = slab.z1_m * M_TO_IN
+    slab_bot = slab.z0_m * M_TO_IN
+    w0, w1 = face, face + in_sign * THERMAL_BREAK_IN
+    nodes = _closed(_rect_pts(min(w0, w1), slab_bot, max(w0, w1), slab_top),
+                    "thermal-break", "xps", "rigid", lineweight=0.35)
+    nodes += _closed(_rect_pts(min(w0, w1), slab_top, max(w0, w1), slab_top + TB_SEALANT_IN),
+                     "thermal-break-sealant", "sealant", "metal", lineweight=0.3)
+    return nodes
+
+
+def sauna_liner_base(model, wall, crop, direction, station) -> list[IRNode]:
+    """Fiber-cement baseboard + flashing + up-turned floor membrane at the sauna liner base.
+
+    Ported from sauna_basement_wall_detail_ifc.png: the bottom 6" of the hot-side liner is
+    fiber-cement baseboard (in place of furring + T&G), a flashing turns out over its top,
+    and the liquid floor membrane runs up the baseboard face. Drawn only when the sauna
+    floor slab is in frame, so it never floats in a wall-top junction crop.
+    """
+    outboard_is_high = _outboard_is_high(wall, direction, station)
+    if outboard_is_high is None:
+        return []
+    u_lo, u_hi = _wall_faces(wall, direction, station)
+    if u_lo is None:
+        return []
+    hot_face_m = u_hi if outboard_is_high else u_lo  # liner's finished (interior) face
+    slab = _slab_at_junction(model, wall, crop, direction, station, hot_face_m)
+    if slab is None:
+        return []
+    intervals = _layer_intervals(wall, direction, station)
+    bands = [iv for iv in (_by_function(intervals, "finish"),
+                           _by_function(intervals, "furring")) if iv is not None]
+    if not bands:
+        return []
+    lo = min(min(iv[0], iv[1]) for iv in bands)
+    hi = max(max(iv[0], iv[1]) for iv in bands)
+    hot_face = hot_face_m * M_TO_IN
+    in_sign = -1.0 if outboard_is_high else 1.0  # toward the wall core, away from the room
+    slab_top = slab.z1_m * M_TO_IN
+    z1 = slab_top + SAUNA_BASEBOARD_IN
+    nodes = _closed(_rect_pts(min(lo, hi), slab_top, max(lo, hi), z1),
+                    "sauna-baseboard", "fiber-cement", "metal", lineweight=0.35)
+    # Flashing turning out over the baseboard top.
+    flash = _path_from_steps((hot_face - in_sign * abs(hi - lo), z1 + SAUNA_FLASH_IN),
+                             [(in_sign * abs(hi - lo), 0.0),
+                              (0.0, -SAUNA_FLASH_IN * 2.0)])
+    nodes += flashing_nodes(flash, tag="sauna-baseboard-flashing")
+    # Liquid floor membrane run up the baseboard face (thin strip on the hot side).
+    m0, m1 = hot_face, hot_face - in_sign * SAUNA_MEMBRANE_IN
+    nodes += _closed(_rect_pts(min(m0, m1), slab_top, max(m0, m1), z1),
+                     "sauna-membrane", "air-barrier", "membrane", lineweight=0.25)
     return nodes
 
 
@@ -448,21 +568,32 @@ def build_overlay_components(model, derived) -> list[IRNode]:
     walls = [w for w in (model.wall(t) for t in derived.condition.element_tags)
              if w is not None]
 
+    nodes: list[IRNode] = []
+
     if overlay == "zero-overhang-eave":
         wall = next((w for w in walls if not w.is_foundation), None) or (
             walls[0] if walls else None)
-        if wall is None:
-            return []
-        return zero_overhang_eave(model, wall, derived.condition, crop, direction, station)
+        if wall is not None:
+            nodes += zero_overhang_eave(model, wall, derived.condition, crop,
+                                        direction, station)
 
-    if overlay == "basement-framed-wall":
+    elif overlay == "basement-framed-wall":
         framed = next((w for w in walls if not w.is_foundation), None)
         concrete = next((w for w in walls if w.is_foundation), None)
-        if framed is None:
-            return []
-        return basement_framed_wall(model, framed, concrete, crop, direction, station)
+        if framed is not None:
+            nodes += basement_framed_wall(model, framed, concrete, crop, direction,
+                                          station)
 
-    return []
+    # Sauna liner vocabulary rides on whichever junction the liner wall appears in: the
+    # fiber-cement baseboard/flashing/membrane at the liner base and the 1" slab thermal
+    # break. Both self-gate on the slab being in frame, so they add nothing to a wall-top
+    # crop and only draw where the sauna floor is actually cut.
+    for wall in walls:
+        if "SAUNA" in (wall.assembly or ""):
+            nodes += sauna_liner_base(model, wall, crop, direction, station)
+            nodes += slab_thermal_break(model, wall, crop, direction, station)
+
+    return nodes
 
 
 # ===========================================================================
@@ -546,6 +677,8 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
     Total continuous insulation and stud depth on the framed wall; XPS layer
     count × thickness on the foundation side.
     """
+    from typehaus.emit.draw.section import _ring_cut_intervals
+
     nodes: list[IRNode] = []
     walls = [w for w in (model.wall(t) for t in derived.condition.element_tags)
              if w is not None]
@@ -584,4 +717,20 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
             z_here = (concrete.z0_m + concrete.z1_m) / 2.0 * M_TO_IN
             _dim((lo, z_here), (hi, z_here), 3.0,
                  f'{total:.3g}" XPS ({len(xps)} layers)')
+
+    # Footing width + depth, from the resolved strip footing — drawn only when the footing
+    # is actually in the crop, so a wall-top junction (footing out of frame) gets neither.
+    (cu0, cz0), (cu1, cz1) = crop
+    lo_z, hi_z = min(cz0, cz1), max(cz0, cz1)
+    footing_wall = concrete if concrete is not None else framed
+    footing = _footing_under(model, footing_wall) if footing_wall is not None else None
+    if footing is not None and lo_z <= footing.z0_m and footing.z1_m <= hi_z:
+        ivs = _ring_cut_intervals(footing.outline, direction, station)
+        if ivs:
+            f_lo = min(min(iv) for iv in ivs) * M_TO_IN
+            f_hi = max(max(iv) for iv in ivs) * M_TO_IN
+            top = footing.z1_m * M_TO_IN
+            bot = footing.z0_m * M_TO_IN
+            _dim((f_lo, bot - 3.0), (f_hi, bot - 3.0), 3.0, f'{f_hi - f_lo:.3g}" ftg width')
+            _dim((f_lo - 3.0, bot), (f_lo - 3.0, top), 3.0, f'{top - bot:.3g}" ftg depth')
     return nodes
