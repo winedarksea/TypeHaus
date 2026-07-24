@@ -51,7 +51,17 @@ def _library() -> Library:
         Layer(name="cladding", material_ref="metal", thickness=inch(0.5),
               function=LayerFunction.CLADDING),
     ))
-    return Library(materials=materials, assemblies=(interior, exterior))
+    # A second, different interior assembly that shares the SPF bearing material — a mixed
+    # junction the solver resolves by structural continuity, not by a matching layer name.
+    plumbing = Assembly(tag="PLUMB", layers=(
+        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="wet-stud", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
+        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+    ))
+    return Library(materials=materials, assemblies=(interior, exterior, plumbing))
 
 
 def _plan(project, coordinates, edges) -> PlanModel:
@@ -158,6 +168,66 @@ def test_x_junction_and_json_diagnostics_are_deterministic(project) -> None:
     encoded = next(item for item in model_to_dict(model)["junctions"] if item["node"] == "C")
     assert encoded["through_walls"] == sorted(encoded["through_walls"])
     assert encoded["supported"] is True
+
+
+def test_mixed_interior_tee_resolves_by_structural_continuity(project) -> None:
+    # Two INT through walls (one continuous SPF bearing line) with a different-assembly SPF
+    # branch: mixed assembly, no cladding, so it is neither same-assembly nor a basic mixed
+    # tee — it resolves through the shared bearing role and the branch butts the host.
+    plan = _plan(
+        project,
+        {"L": (-10, 0), "C": (0, 0), "R": (10, 0), "B": (0, -10)},
+        [
+            ("W-L", "L", "C", "INT"),
+            ("W-R", "C", "R", "INT"),
+            ("W-B", "B", "C", "PLUMB"),
+        ],
+    )
+    model, findings = resolve(plan)
+    junction = next(item for item in model.junctions if item.node_tag == "C")
+    assert junction.kind == "t" and junction.supported
+    assert not [f for f in findings if f.check_id == "integrity.junction_fallback"]
+    host = unary_union([
+        Polygon(layer.polygon)
+        for tag in ("W-L", "W-R")
+        for layer in model.wall(tag).depth_layers()
+    ])
+    branch = unary_union([
+        Polygon(layer.polygon) for layer in model.wall("W-B").depth_layers()
+    ])
+    assert host.intersection(branch).area < 1e-10
+    assert host.distance(branch) < 1e-9
+
+
+def test_mixed_l_corner_shares_bearing_and_is_supported(project) -> None:
+    plan = _plan(
+        project,
+        {"C": (0, 0), "E": (10, 0), "N": (0, 10)},
+        [("W-E", "C", "E", "INT"), ("W-N", "C", "N", "PLUMB")],
+    )
+    model, findings = resolve(plan)
+    junction = next(item for item in model.junctions if item.node_tag == "C")
+    assert junction.kind == "l" and junction.supported
+    assert not [f for f in findings if f.check_id == "integrity.junction_fallback"]
+    east = Polygon(next(ly for ly in model.wall("W-E").layers if ly.name == "stud").polygon)
+    north = Polygon(next(ly for ly in model.wall("W-N").layers
+                         if ly.name == "wet-stud").polygon)
+    assert east.intersection(north).area < 1e-10
+
+
+def test_stacked_walls_at_one_node_split_into_elevation_tiers() -> None:
+    from typehaus.resolve.model import JunctionIncident
+    from typehaus.resolve.topology import _classify_tier, _tiers
+
+    # Two walls sharing a plan point but not an elevation band — a guard stacked on a wall.
+    lower = JunctionIncident("LOWER", "start", (1.0, 0.0), "CONC", -3.0, 0.0)
+    upper = JunctionIncident("UPPER", "start", (1.0, 0.0), "RAIL", 0.0, 1.1)
+    tiers = _tiers([lower, upper])
+    assert len(tiers) == 2, "stacked walls must not fuse into one high-valence node"
+    # A retaining wall poking a little above grade still fuses with its own run below.
+    a = JunctionIncident("A", "start", (1.0, 0.0), "CONC", -3.0, 0.15)
+    b = JunctionIncident("B", "end", (-1.0, 0.0), "CONC", -3.0, 0.0)
+    assert len(_tiers([a, b])) == 1
 
 
 def test_junction_solved_polygons_round_trip_through_dxf(project, tmp_path) -> None:

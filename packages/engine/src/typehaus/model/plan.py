@@ -54,6 +54,7 @@ class Library(HausModel):
                 "layers": tuple(layers),
                 "variant_of": asm.variant_of,
                 "stc": asm.stc if asm.stc is not None else base.stc,
+                "interfaces": asm.interfaces or base.interfaces,
             }
         )
 

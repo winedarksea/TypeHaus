@@ -16,7 +16,8 @@ TRANSITIONS = (
     Transition(uid="CATR002AAAA", tag="TR-CATLIN-FOUNDATION",
                condition_pattern="wall_foundation:*",
                notes="notes/basement_to_framed_wall_detail.md",
-               overlay="basement-framed-wall", continuity=AIR_WATER_THERMAL),
+               overlay="basement-framed-wall", continuity=AIR_WATER_THERMAL,
+               documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-FOUNDATION-FOAM-RETURN")),
     Transition(uid="CATR003AAAA", tag="TR-CATLIN-RIM-BAND",
                condition_pattern="storey_stack:rim:*", overlay="rim-band-air-seal",
                continuity=AIR_WATER_THERMAL),
@@ -46,7 +47,9 @@ TRANSITIONS = (
                overlay="bearing-partition-opening"),
     Transition(uid="CATR012AAAA", tag="TR-CATLIN-ASSEMBLY-JOG",
                condition_pattern="assembly_change:*", overlay="assembly-change-jog",
-               continuity=AIR_WATER_THERMAL),
+               continuity=AIR_WATER_THERMAL,
+               documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-SAUNA-LINER-RETURN",
+                                "CR-PORCH-MASONRY-RETURN")),
     # The sauna door breaks the hot side's vapour control layer — the foil-faced polyiso
     # has to be returned into the jamb and sealed, not just butted.
     Transition(uid="CATR014AAAA", tag="TR-CATLIN-SAUNA-OPENING",
