@@ -16,7 +16,8 @@ MN_2024 = JurisdictionProfile(
     irc_base="2018 IRC + MN amendments",
     coverage_statement=(
         "Encodes a declared subset: R305 ceiling height, R310 emergency escape openings, "
-        "R311.7 stairways, R311.6 hallway width, and egress door width. Does NOT cover "
+        "R311.7 stairways, R311.6 hallway width, egress door width, and R401.3 lot "
+        "drainage away from the foundation. Does NOT cover "
         "structural, mechanical, electrical, plumbing, or energy chapters. "
         "This profile covers a declared subset of the code; results are never 'code compliant'."
     ),

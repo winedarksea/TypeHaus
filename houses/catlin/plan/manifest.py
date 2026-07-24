@@ -16,8 +16,9 @@ reads ``format_version``/``requires_engine`` via the dialect path (AST, no impor
 from __future__ import annotations
 
 import uuid
+from pathlib import Path
 
-from typehaus import Building, Library, PlanModel, Project, Storey, ft
+from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_basemap_geojson
 
 from params import foundations, sunken_garden
 from plan import assemblies, fixture_types, fixtures, mep, placeables, site, transitions, views
@@ -42,10 +43,16 @@ _library = Library(
     transitions=transitions.TRANSITIONS,
 )
 
+# Survey basemap (parcel + contour topo) loaded from GeoJSON. The parcel/setbacks the user
+# edits still live in the editable ``plan/site.py``; the GeoJSON only supplies the site-plan
+# contour lines, so a real survey drops in without touching the editable source.
+_basemap = load_basemap_geojson(Path(__file__).with_name("basemap.geojson"))
+_site = site.SITE.model_copy(update={"contours": _basemap.contours})
+
 _project = Project(
     name="Catlin House",
     project_uuid=PROJECT_UUID,
-    site=site.SITE,
+    site=_site,
     building=Building(name="Catlin House"),
     format_version=format_version,
     requires_engine=requires_engine,

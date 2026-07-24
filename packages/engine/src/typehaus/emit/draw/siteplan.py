@@ -1,8 +1,9 @@
 """Site-plan drawing IR derived from the shared project coordinate frame (→ 20).
 
-Real C-101: parcel ring, setback lines + dimensions, utility runs, spot elevations, and
-downhill drainage arrows, layered on top of the existing footprint/footing/north-arrow
-content (→ Permit-ready plan set Phase 4).
+Real C-101: a GeoJSON survey contour basemap under the parcel ring, setback lines +
+dimensions, utility runs, spot elevations, downhill drainage arrows, and foundation
+grade-away callouts (R401.3), layered on top of the footprint/footing/north-arrow content
+(→ Permit-ready plan set Phase 4).
 """
 
 from __future__ import annotations
@@ -32,14 +33,83 @@ def build_site_plan(model: ResolvedModel) -> Scene:
     garden, or breezeway belong to the main building envelope.
     """
     builder = SceneBuilder(name="site-plan", units="in")
+    site = model.plan.project.site
+    _emit_contours(builder, site)  # survey topo basemap, drawn under everything else
     _emit_roofs_or_wall_footprints(builder, model)
     _emit_foundation_and_post_supports(builder, model)
-    site = model.plan.project.site
     _emit_parcel_and_setbacks(builder, model, site)
     _emit_utilities(builder, site)
     _emit_spot_elevations_and_drainage(builder, site)
+    _emit_foundation_grading(builder, model, site)
     _emit_north_arrow(builder, model)
     return builder.build()
+
+
+def _emit_contours(builder: SceneBuilder, site) -> None:
+    """Draw the GeoJSON survey contours as the site basemap, each labeled with its grade."""
+    for contour in getattr(site, "contours", ()):
+        pts = [p.xy_m for p in contour.points]
+        if len(pts) < 2:
+            continue
+        builder.add(Polyline(points=tuple(_in(p) for p in pts), layer="C-TOPO-MINR",
+                             lineweight=0.18, linetype="CONTINUOUS"))
+        elevation_ft = contour.elevation.meters * 3.280839895
+        builder.add(Text(anchor=_in((pts[0][0], pts[0][1])),
+                         content=f"{elevation_ft:+.1f}'", height=1.6,
+                         layer="C-TOPO-MINR"))
+
+
+def _emit_foundation_grading(builder: SceneBuilder, model: ResolvedModel, site) -> None:
+    """Arrow + slope callout at each grade station within 10' of the primary footprint.
+
+    Mirrors ``code.R401_3_grading``: grade must fall away from the foundation (>=5% for the
+    first 10'). Each arrow points from the foundation outward to the surveyed spot, labeled
+    with the measured slope so the sheet shows the direction and magnitude of the fall.
+    """
+    if site.grade is None or not site.spot_elevations:
+        return
+    footprint = _primary_footprint(model)
+    if footprint is None:
+        return
+    from shapely.geometry import Point
+
+    boundary = footprint.exterior
+    grade_m = site.grade.meters
+    band_m = 10.0 * 0.3048
+    for spot in site.spot_elevations:
+        point = Point(spot.position.xy_m)
+        if footprint.covers(point):
+            continue
+        distance_m = boundary.distance(point)
+        if distance_m <= 1e-6 or distance_m > band_m + 1e-9:
+            continue
+        foot = boundary.interpolate(boundary.project(point))
+        tail, tip = (foot.x, foot.y), spot.position.xy_m
+        slope = (grade_m - spot.elevation.meters) / distance_m
+        builder.add(Polyline(points=(_in(tail), _in(tip)), layer="C-TOPO-GRAD",
+                             lineweight=0.3))
+        builder.add(Symbol(name="span-arrow", insert=_in(tip),
+                           rotation=math.degrees(math.atan2(tip[1] - tail[1], tip[0] - tail[0])),
+                           scale=10.0, layer="C-TOPO-GRAD"))
+        builder.add(Text(anchor=_in((tip[0] + 0.2, tip[1] - 0.6)),
+                         content=f"{slope * 100:.0f}% AWAY", height=1.8, layer="C-TOPO-GRAD"))
+
+
+def _primary_footprint(model: ResolvedModel):
+    """Largest foundation-wall enclosure (the main building), or None if unavailable."""
+    from shapely.geometry import LineString
+    from shapely.ops import polygonize, unary_union
+
+    segments = [LineString([wall.axis[0], wall.axis[1]])
+                for wall in model.walls if wall.is_foundation]
+    if not segments:
+        return None
+    faces = list(polygonize(unary_union(segments)))
+    if not faces:
+        return None
+    merged = unary_union(faces)
+    polys = list(merged.geoms) if merged.geom_type == "MultiPolygon" else [merged]
+    return max(polys, key=lambda poly: poly.area)
 
 
 def _emit_roofs_or_wall_footprints(builder: SceneBuilder, model: ResolvedModel) -> None:

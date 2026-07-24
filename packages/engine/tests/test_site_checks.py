@@ -56,3 +56,30 @@ def test_no_parcel_is_unknown(catlin_model):
     report = run_from_model(model, [], tier=Tier.CODE)
     matched = [f for f in report.findings if f.check_id == "code.site_setback"]
     assert matched and all(f.result.value == "unknown" for f in matched)
+
+
+def test_catlin_foundation_grading_passes(catlin_model):
+    report = run_from_model(catlin_model, [], tier=Tier.CODE)
+    matched = [f for f in report.findings if f.check_id == "code.R401_3_grading"]
+    assert matched and all(f.result.value == "pass" for f in matched)
+    assert all(f.code_ref == "R401.3" for f in matched)
+
+
+def test_grading_fails_when_grade_rises_toward_foundation(catlin_model):
+    from typehaus.model.site import SpotElevation
+    from typehaus.quantities import ft, pt
+
+    # A spot 2' south of the house south wall (y=0) that sits +6" ABOVE the datum: grade
+    # rises toward the foundation instead of falling away from it.
+    rising = SpotElevation(position=pt(ft(18), ft(-2)), elevation=ft(0, 6))
+    model = _model_with_site(catlin_model, spot_elevations=(rising,))
+    report = run_from_model(model, [], tier=Tier.CODE)
+    matched = [f for f in report.findings if f.check_id == "code.R401_3_grading"]
+    assert matched and any(f.result.value == "fail" for f in matched)
+
+
+def test_grading_unknown_without_spot_elevations(catlin_model):
+    model = _model_with_site(catlin_model, spot_elevations=())
+    report = run_from_model(model, [], tier=Tier.CODE)
+    matched = [f for f in report.findings if f.check_id == "code.R401_3_grading"]
+    assert matched and all(f.result.value == "unknown" for f in matched)

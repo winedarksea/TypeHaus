@@ -23,6 +23,13 @@ _MAX_EGRESS_SILL = inch(44)
 _MIN_EGRESS_AREA_SF = 5.7  # grade-floor 5.0; upper 5.7 (R310.2.1)
 _MIN_DOOR_CLEAR = inch(31.75)  # 32" nominal clear (R311.2)
 
+# R401.3 lot drainage: grade must fall >= 6" within the first 10' from the foundation
+# (5% for pervious ground; impervious surfaces need only 2%, but those are not separately
+# modeled). We evaluate the pervious ground slope from spot elevations.
+_GRADING_BAND = ft(10)
+_MIN_GROUND_SLOPE = 0.05  # 6" per 10' away from the foundation
+_SLOPE_EPS = 1e-3
+
 
 def _pass(cid: str, msg: str, code: str) -> Finding:
     return Finding(severity=Severity.WARN, check_id=cid, message=msg, code_ref=code,
@@ -219,3 +226,70 @@ def smoke_and_co_alarm_placement(ctx: CheckContext) -> list[Finding]:
             out.append(_pass("code.R314_R315_alarms",
                              f"{storey.tag} has outside-sleeping smoke alarm {shared.tag}", "R314.3"))
     return out
+
+
+@check(Tier.CODE, "code.R401_3_grading")
+def foundation_grading(ctx: CheckContext) -> list[Finding]:
+    """R401.3 lot drainage — grade must fall away from the foundation within 10 feet.
+
+    The primary building footprint is reconstructed from the foundation walls; every spot
+    elevation outside it and within 10' is a drainage station, and the shallowest measured
+    slope must reach 5% (6" per 10'). Impervious-surface grading (2%) is a documented
+    sibling requirement but is not separately modeled, so it is not asserted here.
+    """
+    from shapely.geometry import LineString, Point
+    from shapely.ops import polygonize, unary_union
+
+    site = ctx.plan.project.site
+    if site.grade is None:
+        return [_unknown("code.R401_3_grading", "no average-grade datum on the site",
+                         (), "R401.3")]
+    if not site.spot_elevations:
+        return [_unknown("code.R401_3_grading",
+                         "no spot elevations to measure grade slope", (), "R401.3")]
+    segments = [LineString([wall.axis[0], wall.axis[1]])
+                for wall in ctx.model.walls if wall.is_foundation]
+    if not segments:
+        return [_unknown("code.R401_3_grading", "no foundation walls to grade around",
+                         (), "R401.3")]
+    faces = list(polygonize(unary_union(segments)))
+    if not faces:
+        return [_unknown("code.R401_3_grading",
+                         "could not reconstruct a foundation footprint", (), "R401.3")]
+    merged = unary_union(faces)
+    polys = list(merged.geoms) if merged.geom_type == "MultiPolygon" else [merged]
+    footprint = max(polys, key=lambda poly: poly.area)  # primary (largest) enclosure
+    boundary = footprint.exterior
+
+    grade_m = site.grade.meters
+    band_m = _GRADING_BAND.meters
+    worst: tuple[float, float, float] | None = None  # (slope, distance_m, elevation_m)
+    stations = 0
+    for spot in site.spot_elevations:
+        point = Point(spot.position.xy_m)
+        if footprint.covers(point):
+            continue  # interior grade point, not a perimeter drainage station
+        distance_m = boundary.distance(point)
+        if distance_m <= 1e-6 or distance_m > band_m + 1e-9:
+            continue
+        stations += 1
+        elevation_m = spot.elevation.meters
+        slope = (grade_m - elevation_m) / distance_m  # positive = falls away from the wall
+        if worst is None or slope < worst[0]:
+            worst = (slope, distance_m, elevation_m)
+    if worst is None:
+        return [_unknown("code.R401_3_grading",
+                         "no spot elevations within 10' of the building foundation",
+                         (), "R401.3")]
+    slope, distance_m, elevation_m = worst
+    if slope + _SLOPE_EPS < _MIN_GROUND_SLOPE:
+        fall_in = (grade_m - elevation_m) / 0.0254
+        run_ft = distance_m / 0.3048
+        return [_fail("code.R401_3_grading",
+                      f"grade only falls {slope * 100:.1f}% away from the foundation "
+                      f"({fall_in:+.1f}\" over {run_ft:.1f}'); R401.3 requires "
+                      f"{_MIN_GROUND_SLOPE * 100:.0f}% (6\" within 10')", (), "R401.3")]
+    return [_pass("code.R401_3_grading",
+                  f"grade falls at least {_MIN_GROUND_SLOPE * 100:.0f}% away from the foundation "
+                  f"at all {stations} station(s) within 10' (shallowest {slope * 100:.1f}%)",
+                  "R401.3")]
