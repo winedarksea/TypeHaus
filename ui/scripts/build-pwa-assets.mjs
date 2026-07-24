@@ -6,7 +6,7 @@
 // the writeback/IFC seams stay "requires local install" per the M4 gate (→ 40-m4-gate.md).
 
 import { execFileSync } from "node:child_process";
-import { mkdirSync, existsSync } from "node:fs";
+import { mkdirSync, existsSync, readdirSync, copyFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -57,4 +57,21 @@ if (existsSync(resolve(engineSrc, IFC_PKG, "__init__.py"))) {
     stdio: "inherit",
   });
   console.log(`[pwa] wrote ${ifcTar} (optional IFC extension)`);
+}
+
+// Optional: vendor an ifcopenshell pyodide/wasm wheel so the client-side IFC export path
+// activates. The wheel is NOT produced by this build and is NOT bundled in the repo — it must be
+// sourced/built externally (see ../docs/ifc-wasm.md). If a maintainer drops one at ui/vendor/, we
+// copy it into public/ so it ships in dist/ and is served same-origin by `haus serve`'s SPA
+// static mount; VITE_IFC_WASM_URL can then point at it (or any URL). If no wheel is present this
+// is a silent no-op — the build must still succeed exactly as before.
+const vendorDir = resolve(here, "..", "vendor");
+if (existsSync(vendorDir)) {
+  const wheels = readdirSync(vendorDir).filter(
+    (f) => f.startsWith("ifcopenshell") && f.endsWith(".whl"),
+  );
+  for (const wheel of wheels) {
+    copyFileSync(resolve(vendorDir, wheel), resolve(outDir, wheel));
+    console.log(`[pwa] copied vendored IFC wheel ${wheel} -> public/`);
+  }
 }
