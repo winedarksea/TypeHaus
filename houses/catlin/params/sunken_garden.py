@@ -127,9 +127,13 @@ _y_in_s = _y_in_n - SPEC.clear_length_ft
 _y_ax_s = _y_in_s - _half
 
 _wall_bottom = ft(-(SPEC.basement_depth_ft + 0.75))
-_porch_top = ft(SPEC.porch_top_ft)
+_porch_top = ft(SPEC.porch_top_ft)  # storey datum = top of joist; the masonry bears here
 _ret_top = ft(SPEC.retaining_top_ft)
-_railing_top = ft(SPEC.porch_top_ft + SPEC.railing_height_ft)
+# The guard's 42" is measured from the surface underfoot — the composite boards over the
+# porch joists — while the masonry itself still bears on the structure below them. Topping
+# out at porch_top + 42" would leave only 41" of guard above the deck.
+_railing_top = (ft(SPEC.porch_top_ft + SPEC.railing_height_ft)
+                + inch(SPEC.porch_deck_thickness_in))
 _balcony = ft(SPEC.balcony_level_ft)
 
 # ============================================================================
@@ -292,6 +296,7 @@ PORCH_FLOOR = Slab(
              pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n))),
     thickness=inch(SPEC.porch_deck_thickness_in),
     assembly="PORCH_DECK_COMPOSITE",
+    datum="walking_surface",  # boards laid over FS-SG-PORCH, not the structure itself
 )
 
 # ============================================================================
@@ -352,6 +357,7 @@ DECK_FLOOR = Slab(
              pt(ft(_deck_x_e), ft(_y_in_n)), pt(ft(_deck_x_w), ft(_y_in_n))),
     thickness=inch(SPEC.balcony_deck_thickness_in),
     assembly="BALCONY_DECK_ALUMINUM",
+    datum="walking_surface",  # boards laid over FS-SG-DECK, not the structure itself
 )
 
 # --- joist framing under the two decks (rendered members beneath the surface slabs) ---
@@ -433,13 +439,18 @@ _BASE_CONNECTORS = [c for c in CONNECTORS if c.kind is not ConnectorKind.KNEEBRA
 # draining deck via a front-edge drip flashing; the rear (house) edge gets a counter-
 # flashing tucked up into the house WRB. Deck drains SOUTH (rear pillars 2" taller).
 # ============================================================================
-_deck_top = ft(SPEC.balcony_level_ft)  # 10'
+_deck_top = ft(SPEC.balcony_level_ft)  # 10' — storey datum = top of joist
+# Guard height is measured from the surface a person stands on, which is the top of the
+# aluminum boards, not the joists they sit on. Basing the guard on _deck_top instead would
+# make the authored 42" measure 40.5" in the field and fail the guard-height rule.
+_deck_walking_surface = _deck_top + inch(SPEC.balcony_deck_thickness_in)
 # Guard the three open edges (west, front/south, east); the north edge abuts the house.
 _GUARD_PATH = (pt(ft(_deck_x_w), ft(_y_in_n)), pt(ft(_deck_x_w), ft(_y_ax_arch)),
                pt(ft(_deck_x_e), ft(_y_ax_arch)), pt(ft(_deck_x_e), ft(_y_in_n)))
 BALCONY_GUARD = Railing(
     uid="SGRA01AAAA", tag="RL-SG-BALCONY", path=_GUARD_PATH,
-    kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5), base_elevation=_deck_top,
+    kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
+    base_elevation=_deck_walking_surface,
     post_spacing=inch(60), post_size="2x2", rail_count=2, mount="fascia",
     assembly="POST_WHITE_PAINT")
 

@@ -141,11 +141,17 @@ def test_vent_termination_derives_from_the_wall_the_riser_rides(catlin_model) ->
 
 
 def test_catlin_balcony_guard_is_a_42in_railing(catlin_model) -> None:
+    """42" is measured from the surface underfoot, not from the storey datum.
+
+    The aluminum boards sit *on* the joists whose tops define the datum, so a guard based
+    on the datum stands only 40.5" above the deck someone actually walks on.
+    """
+    deck = next(s for s in catlin_model.solids if s.tag == "SL-SG-DECK")
     posts = [s for s in _solids(catlin_model, "railing") if "POST" in s.tag]
     assert posts, "railing posts expected"
     for post in posts:
-        assert math.isclose(post.z0_m, 10 * FT, abs_tol=0.02)
-        assert math.isclose(post.z1_m - post.z0_m, 3.5 * FT, abs_tol=0.02)
+        assert math.isclose(post.z0_m, deck.z1_m, abs_tol=0.02), "guard must start on the boards"
+        assert math.isclose(post.z1_m - deck.z1_m, 3.5 * FT, abs_tol=0.02)
 
 
 def test_catlin_sump_sits_below_the_basement_slab(catlin_model) -> None:
