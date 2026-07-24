@@ -105,7 +105,11 @@ class Fixture(Element):
     """A placed plumbing/equipment fixture (M3)."""
 
     type_ref: str
-    room: str
+    # Nullable like every other placeable kind (Furniture/Appliance/Register/Equipment/
+    # ElectricalDevice): the shared drag macros clear the claim when a drop lands outside a
+    # resolvable room, so a required str made a legal UI move write unloadable source.
+    # A fixture that ends up without a room is a check finding, not a load error.
+    room: str | None = None
     position: Point2D
     wall_ref: str | None = None  # drain-stack wall when services need a vertical chase
     drain_position: Point2D | None = None  # contractor override; default = position

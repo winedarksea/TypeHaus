@@ -301,6 +301,26 @@ def test_placeable_drag_updates_the_explicit_containing_room_assignment() -> Non
     assert op.fields["room"] == "RM-M-BATH1"
 
 
+def test_fixture_dragged_clear_of_every_room_writes_source_that_still_loads(tmp_path: Path) -> None:
+    """A drop outside any resolvable room clears the claim (`_containing_room` returns None),
+    and the placeable macros are kind-agnostic — so every placeable's ``room`` must be
+    nullable. While ``Fixture.room`` was a required str this legal drag wrote source the
+    loader then rejected, taking `haus build` and the live server down until hand-repaired."""
+    house = tmp_path / "catlin"
+    shutil.copytree(Path(__file__).resolve().parents[3] / "houses" / "catlin", house)
+    plan = load_plan(house).plan
+    assert plan is not None
+    ops = move_placeable(plan, "main", tag="FX-M-BATH1-WC", position=(50.0, 50.0)).ops
+    assert ops[0].fields["room"] is None
+    coordinator = ProjectCoordinator(house)
+    coordinator.apply_patch(ops, coordinator.revision())
+    reloaded = load_plan(house)
+    assert reloaded.plan is not None, [finding.message for finding in reloaded.findings]
+    moved = next(item for item in reloaded.plan.storey_elements("main")
+                 if item.tag == "FX-M-BATH1-WC")
+    assert moved.room is None
+
+
 def test_resolved_attachment_preserves_the_authored_wall_face() -> None:
     house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
     plan = load_plan(house).plan

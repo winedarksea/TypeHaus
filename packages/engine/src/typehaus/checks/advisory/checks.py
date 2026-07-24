@@ -102,6 +102,19 @@ def wet_wall_depth(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+@check(Tier.ADVISORY, "advisory.fixture_room_unassigned")
+def fixture_room_unassigned(ctx: CheckContext) -> list[Finding]:
+    """A permit fixture schedule lists a room per fixture, so an unassignable one is worth
+    saying out loud.  This is the finding that replaced ``Fixture.room`` being a required
+    string: a drag that lands a fixture outside every resolvable room stays loadable and
+    keeps its authored position, and the gap is reported here instead of at import time."""
+    return [_warn("advisory.fixture_room_unassigned",
+                  f"fixture {obj.tag} is in no room — the fixture schedule needs one; move it "
+                  "inside a room or extend the room boundary", (obj.tag,))
+            for obj in ctx.model.canvas_objects
+            if obj.kind == "Fixture" and obj.room is None]
+
+
 @check(Tier.ADVISORY, "advisory.floor_heat_fixture_keepout")
 def floor_heat_fixture_keepout(ctx: CheckContext) -> list[Finding]:
     """Radiant wire zones must not run beneath a fixture's authored footprint."""
