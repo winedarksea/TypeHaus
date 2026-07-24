@@ -16,7 +16,7 @@ from typehaus.model.enums import LayerFunction
 from typehaus.model.refs import ToRoof
 from typehaus.model.spatial import Roof
 from typehaus.quantities import inch
-from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.profiles import cross_section, truss_chord_depth_m
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof, ResolvedWall
 
 # A standard raised ("energy") heel when a truss assembly does not declare its own.
@@ -52,10 +52,6 @@ def roof_structure_framing(model: ResolvedModel, roof: ResolvedRoof) -> FramingS
 def truss_heel_height_m(spec: FramingSpec) -> float:
     """Authored raised-heel height, or the standard energy heel."""
     return spec.heel_height.meters if spec.heel_height is not None else DEFAULT_TRUSS_HEEL_M
-
-
-def truss_chord_depth_m(spec: FramingSpec) -> float:
-    return cross_section(spec.chord_member or spec.member).depth_m
 
 
 def roof_structure_depth_m(model: ResolvedModel, roof: ResolvedRoof) -> float:

@@ -23,10 +23,9 @@ from dataclasses import dataclass
 from typehaus.model.assembly import FramingSpec
 from typehaus.model.spatial import Roof
 from typehaus.quantities import inch
-from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.profiles import cross_section, truss_chord_depth_m
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoof
-from typehaus.resolve.roof_geometry import truss_chord_depth_m
 
 # Vertical gable studs infill the end truss at ordinary stud spacing so the gable end
 # sheathes like a wall rather than reading as an exposed truss.

@@ -19,6 +19,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from typehaus.model.assembly import FramingSpec
 from typehaus.quantities import inch
 from typehaus.resolve.framing.tables import LUMBER_ACTUAL
 
@@ -130,3 +131,13 @@ def cross_section(profile: str) -> CrossSection:
         return _rect(*_ENGINEERED_LVL_ACTUAL_IN)
 
     return _rect(*_FALLBACK_ACTUAL_IN)
+
+
+def truss_chord_depth_m(spec: FramingSpec) -> float:
+    """Depth of a truss chord: the chord member when specified, else the wall member.
+
+    Lives here rather than in ``resolve.roof_geometry`` because both that module and
+    ``resolve.framing.roof_gable`` need it, and ``roof_geometry`` already imports this
+    one — hosting it there put a cycle between them one import-order change away.
+    """
+    return cross_section(spec.chord_member or spec.member).depth_m
