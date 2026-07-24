@@ -86,7 +86,7 @@ export function Panel3D() {
         className="hud"
         aria-label="Geographic orientation compass"
         viewBox="0 0 72 72"
-        style={{ top: 12, bottom: "auto", width: 72, height: 72, padding: 0, pointerEvents: "none" }}
+        style={{ top: 96, bottom: "auto", left: 76, width: 72, height: 72, padding: 0, pointerEvents: "none" }}
       >
         <circle cx="36" cy="36" r="27" fill="var(--panel)" fillOpacity="0.82"
           stroke="var(--line)" strokeWidth="1" />
