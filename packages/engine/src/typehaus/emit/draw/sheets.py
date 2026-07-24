@@ -24,7 +24,12 @@ from typehaus.emit.draw.pdf_writer import _fig
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
 from typehaus.emit.draw.roofplan import build_roof_plan
 from typehaus.emit.draw.scene import Scene
-from typehaus.emit.draw.details import DerivedDetail, build_detail, derive_detail_slices
+from typehaus.emit.draw.details import (
+    DerivedDetail,
+    build_authored_detail_scene,
+    build_detail,
+    derive_detail_slices,
+)
 from typehaus.emit.draw.section import build_center_section, build_section
 from typehaus.emit.draw.siteplan import build_site_plan
 from typehaus.resolve.model import ResolvedModel
@@ -89,7 +94,7 @@ def build_sheet_index(model: ResolvedModel,
     next_detail = 401
     for detail in details:
         sheets.append(SheetSpec(f"A-{next_detail}", detail.title or detail.tag,
-                                scene=partial(build_section, view=detail)))
+                                scene=partial(build_authored_detail_scene, view=detail)))
         next_detail += 1
 
     # Derived transition details — one per distinct bound condition key, sorted by key,

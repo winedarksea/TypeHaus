@@ -132,6 +132,63 @@ def test_birdsmouth_depth_parsed_from_connection():
     assert _birdsmouth_depth_in(None) is None
 
 
+def _sauna_slice(model):
+    detail = next((s for s in model.plan.elements_of_kind("Slice")
+                   if s.tag == "SL-D-SAUNA"), None)
+    assert detail is not None, "catlin should author a sauna room-section detail slice"
+    return detail
+
+
+def test_authored_sauna_detail_draws_room_scale_vocabulary(catlin_model):
+    # The authored sauna floor-section routes through build_authored_detail_scene, which
+    # layers the sauna liner base + room-scale vocabulary over the plain cut.
+    from typehaus.emit.draw.details import build_authored_detail_scene
+
+    scene = build_authored_detail_scene(catlin_model, _sauna_slice(catlin_model))
+    tags = _tags(scene)
+    # Liner base + slab thermal break (previously dormant components).
+    assert "detail-component:sauna-baseboard" in tags
+    assert "detail-component:thermal-break" in tags
+    # New room-scale vocabulary.
+    assert "detail-component:sauna-bench" in tags, "two-tier benches expected"
+    assert "detail-component:sauna-heater" in tags, "heater clearance box expected"
+    assert "detail-component:sauna-floor-slope" in tags, "floor slope to drain expected"
+    assert "detail-component:sauna-drop-ceiling" in tags, "hung drop ceiling expected"
+    # Everything stays polyline/hatch geometry, never a bare Symbol.
+    assert not any(getattr(n, "node", None) == "symbol" for n in scene.nodes)
+
+
+def test_authored_non_sauna_detail_is_unchanged(catlin_model):
+    # A non-sauna authored detail must be byte-identical to the plain section cut — the sauna
+    # overlay self-gates on sauna walls being in the cut, so it never touches other details.
+    from typehaus.emit.draw.details import build_authored_detail_scene
+    from typehaus.emit.draw.section import build_section
+
+    fndn = next(s for s in catlin_model.plan.elements_of_kind("Slice")
+                if s.tag == "SL-D-FNDN")
+    assert (build_authored_detail_scene(catlin_model, fndn).to_json()
+            == build_section(catlin_model, fndn).to_json())
+
+
+def test_sauna_bench_geometry_matches_reference(catlin_model):
+    # Bench tops at 18"/36" above the floor slab, 1.5" boards — the reference numbers.
+    from typehaus.emit.draw.detail_components import (
+        M_TO_IN,
+        SAUNA_BENCH_LOWER_TOP_IN,
+        SAUNA_BENCH_UPPER_TOP_IN,
+        sauna_benches,
+    )
+
+    floor = next(s for s in catlin_model.solids if s.tag == "SL-B-FLOOR")
+    floor_z = floor.z1_m * M_TO_IN
+    nodes = sauna_benches(120.0, 210.0, floor_z)
+    seats = [n for n in nodes if getattr(n, "tag", None) == "detail-component:sauna-bench"]
+    assert len(seats) == 2, "a lower and an upper bench"
+    tops = sorted(max(z for _u, z in seat.points) for seat in seats)
+    assert abs(tops[0] - (floor_z + SAUNA_BENCH_LOWER_TOP_IN)) < 1e-6
+    assert abs(tops[1] - (floor_z + SAUNA_BENCH_UPPER_TOP_IN)) < 1e-6
+
+
 def test_unresolvable_anchor_yields_finding_no_crash(catlin_model):
     wall = catlin_model.walls[0]
     frame = lambda x, y, z: (x, z)  # noqa: E731 - trivial test frame

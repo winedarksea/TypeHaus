@@ -34,4 +34,15 @@ DETAIL_SLICES = [
          title="Ridge beam connection",
          cut_origin=pt(ft(0), ft(18)), cut_direction="x",
          crop=(pt(ft(10), ft(26)), pt(ft(26), ft(31)))),
+    # Sauna room section — transverse cut across the 8'-wide sauna (x=10'→18') at y=6',
+    # below the door (D-B-SAUNA sits high on the west wall) so the cut is clean interior.
+    # This documentation-only crop reaches the floor slab, so the sauna liner base, slab
+    # thermal break and room-scale vocabulary (two-tier benches, heater clearance, floor
+    # slope to drain, hung drop ceiling below the main-floor deck) all render. The crop runs
+    # floor-to-ceiling: z from ~9" below the floor up past the deck underside.
+    Slice(uid="CVD905AAAA", tag="SL-D-SAUNA", kind=SliceKind.DETAIL,
+         title="Sauna room section",
+         cut_origin=pt(ft(14), ft(6)), cut_direction="x",
+         crop=(pt(ft(9), inch(-116)), pt(ft(19, 6), inch(6))),
+         exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
 ]
