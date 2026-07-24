@@ -91,6 +91,7 @@ from typehaus.model.registry import (
 from typehaus.model.site import (
     Basemap,
     Contour,
+    ImperviousSurface,
     SetbackSpec,
     SpotElevation,
     UtilityLine,
@@ -207,7 +208,7 @@ __all__ = [
     "in_slab", "under_subfloor",
     "PipeRun", "SleevePenetration", "DuctRun", "Register", "Equipment", "ElectricalDevice",
     "Sump", "VentRun",
-    "SetbackSpec", "SpotElevation", "UtilityLine", "Contour", "Basemap",
+    "SetbackSpec", "SpotElevation", "ImperviousSurface", "UtilityLine", "Contour", "Basemap",
     "load_basemap_geojson",
     "LayerFunction", "ControlLayer", "JunctionPolicy", "Occupancy", "Service", "AlarmKind",
     "StructuralRole", "SliceKind", "FloorOpeningPurpose", "RadiantSystem",

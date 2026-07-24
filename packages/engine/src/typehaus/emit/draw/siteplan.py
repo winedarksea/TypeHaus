@@ -41,6 +41,7 @@ def build_site_plan(model: ResolvedModel) -> Scene:
     _emit_utilities(builder, site)
     _emit_spot_elevations_and_drainage(builder, site)
     _emit_foundation_grading(builder, model, site)
+    _emit_impervious_grading(builder, model, site)
     _emit_north_arrow(builder, model)
     return builder.build()
 
@@ -93,6 +94,48 @@ def _emit_foundation_grading(builder: SceneBuilder, model: ResolvedModel, site) 
                            scale=10.0, layer="C-TOPO-GRAD"))
         builder.add(Text(anchor=_in((tip[0] + 0.2, tip[1] - 0.6)),
                          content=f"{slope * 100:.0f}% AWAY", height=1.8, layer="C-TOPO-GRAD"))
+
+
+def _emit_impervious_grading(builder: SceneBuilder, model: ResolvedModel, site) -> None:
+    """Hardscape outline + slope callout for each impervious surface within 10' of the footprint.
+
+    Mirrors ``code.R401_3_impervious``: walks, patios and slabs abutting the house must fall away
+    from the foundation (>=2% for the first 10'). Each surface is drawn as a dashed hardscape ring
+    with an arrow from its near edge (at the foundation) to its far edge, labeled with the measured
+    slope so the sheet shows the direction and magnitude of the fall.
+    """
+    surfaces = getattr(site, "impervious_surfaces", ())
+    if not surfaces:
+        return
+    footprint = _primary_footprint(model)
+    if footprint is None:
+        return
+    from shapely.geometry import Point
+
+    boundary = footprint.exterior
+    band_m = 10.0 * 0.3048
+    for surface in surfaces:
+        verts = [p.xy_m for p in surface.outline]
+        if len(verts) < 2:
+            continue
+        builder.add(Polyline(points=tuple(_in(v) for v in verts), closed=True,
+                             layer="C-TOPO-IMPV", lineweight=0.3, linetype="DASHED"))
+        dists = [boundary.distance(Point(v)) for v in verts]
+        near_i = min(range(len(verts)), key=dists.__getitem__)
+        far_i = max(range(len(verts)), key=dists.__getitem__)
+        run_m = dists[far_i] - dists[near_i]
+        if dists[near_i] > band_m + 1e-9 or run_m <= 1e-3:
+            continue
+        tail, tip = verts[near_i], verts[far_i]
+        slope = (surface.near_elevation.meters - surface.far_elevation.meters) / run_m
+        builder.add(Polyline(points=(_in(tail), _in(tip)), layer="C-TOPO-IMPV", lineweight=0.3))
+        builder.add(Symbol(name="span-arrow", insert=_in(tip),
+                           rotation=math.degrees(math.atan2(tip[1] - tail[1], tip[0] - tail[0])),
+                           scale=10.0, layer="C-TOPO-IMPV"))
+        mid = ((tail[0] + tip[0]) / 2, (tail[1] + tip[1]) / 2)
+        builder.add(Text(anchor=_in((mid[0] + 0.2, mid[1] - 0.6)),
+                         content=f"{surface.label.upper()} {slope * 100:.0f}% AWAY", height=1.8,
+                         layer="C-TOPO-IMPV"))
 
 
 def _primary_footprint(model: ResolvedModel):

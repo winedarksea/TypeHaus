@@ -32,6 +32,22 @@ class SpotElevation(HausModel):
     elevation: Length
 
 
+class ImperviousSurface(HausModel):
+    """A hardscape abutting the building (walk, patio, driveway, slab) — R401.3 requires it to
+    slope away from the foundation at a minimum of 2% within the first 10 feet.
+
+    Declarative and vibe-code-friendly: author the hardscape ``outline`` in the plan frame plus
+    the grade ``near_elevation`` at the edge meeting the foundation and the ``far_elevation`` at
+    the outer edge (both datum-relative, like :class:`SpotElevation`). ``code.R401_3_impervious``
+    derives the run away from the foundation from the outline and computes the fall/run slope.
+    """
+
+    label: str  # "front walk" | "patio" | "driveway" | ...
+    outline: tuple[Point2D, ...]  # hardscape polygon ring, plan frame
+    near_elevation: Length  # grade where the surface meets the foundation
+    far_elevation: Length  # grade at the outer edge, away from the foundation
+
+
 class UtilityLine(HausModel):
     """A utility run from the street/main to a building penetration point."""
 
@@ -112,6 +128,7 @@ def _ring_to_points(ring: list, to_length) -> tuple[Point2D, ...]:
 for _name, _obj in (
     ("SetbackSpec", SetbackSpec),
     ("SpotElevation", SpotElevation),
+    ("ImperviousSurface", ImperviousSurface),
     ("UtilityLine", UtilityLine),
     ("Contour", Contour),
 ):
