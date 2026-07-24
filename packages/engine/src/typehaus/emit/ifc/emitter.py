@@ -19,6 +19,7 @@ from shapely.ops import unary_union
 from typehaus._meta import IFC_APP_NAME, PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.model.ids import derive_child_guid, derive_guid
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import polygon_area, rect_between
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
@@ -63,6 +64,9 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
 
     for roof in sorted(model.roofs, key=lambda item: item.uid):
         _emit_roof(f, body, roof, storeys, project_uuid, lod)
+
+    for floor in sorted(model.floors, key=lambda item: item.uid):
+        _emit_floor(f, body, floor, storeys, project_uuid)
 
     for stair in sorted(model.stairs, key=lambda item: item.uid):
         _emit_stair(f, stair, storeys, project_uuid, lod)
@@ -530,6 +534,38 @@ def _emit_roof(f: Any, body: Any, roof: Any, storeys: dict[str, Any], project_uu
             child.GlobalId = derive_child_guid(project_uuid, roof.uid, member.child_key)
             members.append(child)
         ll.aggregate(f, element, members)
+
+
+_BEAM_PREDEFINED_TYPE = {"joist": "JOIST", "rim": "BEAM", "blocking": "BEAM"}
+
+
+def _emit_floor(f: Any, body: Any, floor: Any, storeys: dict[str, Any],
+                project_uuid: Any) -> None:
+    """Emit each generated floor joist/rim as an ``IfcBeam`` with real geometry.
+
+    House decks and the porch/balcony deck both resolve to ``FramedMember`` joists that
+    previously appeared only in the 2D framing plan and glTF. Emitting them here as IfcBeam
+    (JOIST-predefined) gives BIM consumers the structural members with stable child GUIDs,
+    following the standalone-beam pattern (``_emit_solid`` for category ``beam``)."""
+    container = storeys.get(floor.storey)
+    if container is None:
+        return
+    for member in sorted(floor.members, key=lambda item: item.child_key):
+        if (member.p0[0] - member.p1[0]) ** 2 + (member.p0[1] - member.p1[1]) ** 2 < 1e-12:
+            continue  # a zero-length record has no sweepable footprint
+        half = cross_section(member.profile).width_m / 2.0
+        profile = rect_between(member.p0, member.p1, -half, half)
+        beam = ll.create_entity(f, "IfcBeam", name=f"{floor.tag}/{member.child_key}")
+        beam.GlobalId = derive_child_guid(project_uuid, floor.uid, member.child_key)
+        beam.PredefinedType = _BEAM_PREDEFINED_TYPE.get(member.category, "BEAM")
+        _assign_representation(f, beam, ll.add_prism_from_profile(
+            f, body, profile, max(member.z1_m - member.z0_m, 1e-4), member.z0_m,
+        ))
+        ll.ensure_pset(f, beam, PSET_SOURCE, {
+            "uid": floor.uid, "tag": f"{floor.tag}/{member.child_key}",
+            "category": member.category, "profile": member.profile,
+        })
+        ll.assign_container(f, beam, container)
 
 
 def _emit_stair(f: Any, stair: Any, storeys: dict[str, Any], project_uuid: Any, lod: str) -> None:
