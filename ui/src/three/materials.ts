@@ -143,31 +143,99 @@ export function disposeStandingSeamTextures(): void {
   sharedNormalMap = null;
 }
 
-// ── Masonry (brick / block / stone veneer) ────────────────────────────────────────────
+// ── Masonry (brick / CMU / stone veneer) ──────────────────────────────────────────────
 // The old path painted masonry as one flat fill, so a brick veneer read as drywall. Like
 // the standing-seam finish above, the coursing + recessed mortar + per-unit colour variation
 // are carried by shared procedural maps (colour + normal), world-scaled so units sit at true
 // size. No external texture, so the offline PWA still renders it.
+//
+// A masonry layer is finished according to a MasonryStyle chosen from its material ref:
+//   • CMU / concrete block → the big 16"×8" nominal face module, grey, tight uniform coursing
+//     (visually distinct from brick, which shares the "masonry" hatch family but is 8"×2⅔").
+//   • white brick → the brick module but a whitewashed unit colour over GREY mortar (a
+//     selectable finish variant; the material ref opts in with "white"/"limewash").
+//   • everything else (default) → the classic red-brick running bond over tan mortar.
 
 /** Nominal running-bond module including joints: modular brick is 8" × 2⅔" with ⅜" joints. */
 export const BRICK_UNIT_M: readonly [number, number] = [0.2032, 0.0679]; // [length, course]
+/** Nominal CMU face module including joints: a standard block is 16" × 8" with ⅜" joints. */
+export const CMU_UNIT_M: readonly [number, number] = [0.4064, 0.2032]; // [length, course]
 const MASONRY_TEX_PX = 512;
-const MASONRY_COURSES_PER_TILE = 6;
-const MASONRY_UNITS_PER_TILE = 3;
-export const MASONRY_TILE_SIZE_M: readonly [number, number] = [
-  BRICK_UNIT_M[0] * MASONRY_UNITS_PER_TILE,
-  BRICK_UNIT_M[1] * MASONRY_COURSES_PER_TILE,
-];
 
-// Keyed by base-colour hex: the colour is baked into the map, so light/dark brick need one
-// tile each. The normal map is colour-independent but rebuilt alongside for simplicity; the
-// map stays small (only a couple of colours ever exist).
-const masonryMapCache = new Map<string, { colorMap: THREE.Texture; normalMap: THREE.Texture }>();
+/**
+ * The recipe for one masonry finish: unit module, how many units/courses a repeat tile spans,
+ * the running-bond offset, joint width (as a fraction of the unit length), mortar colour, an
+ * optional fixed unit colour (null → use the palette-resolved family colour), and the per-unit
+ * HSL jitter magnitude. `key` seeds the map cache so distinct styles never collide.
+ */
+export interface MasonryStyle {
+  readonly key: string;
+  readonly unitM: readonly [number, number]; // [length, course], nominal incl. joints
+  readonly unitsPerTile: number;
+  readonly coursesPerTile: number;
+  readonly jointFraction: number; // joint width ÷ unit length
+  readonly halfLap: number; // bond offset ÷ unit length on odd courses (0.5 = running bond)
+  readonly mortar: string; // CSS hex
+  readonly base: string | null; // fixed unit hex, or null to take the palette family colour
+  readonly jitterHSL: readonly [number, number, number]; // [hue, sat, light] jitter magnitude
+}
 
-/** True when a wall layer's cladding should be finished as brick/stone masonry. */
+const BRICK_STYLE: MasonryStyle = {
+  key: "brick", unitM: BRICK_UNIT_M, unitsPerTile: 3, coursesPerTile: 6,
+  jointFraction: 0.05, halfLap: 0.5, mortar: "#cfc8ba", base: null,
+  jitterHSL: [0.02, 0.08, 0.16],
+};
+// White brick over grey mortar. The unit colour is fixed (whitewashed clay), so it ignores the
+// brick-red family colour; jitter is muted because painted/whitewashed brick reads uniform.
+const WHITE_BRICK_STYLE: MasonryStyle = {
+  key: "white-brick", unitM: BRICK_UNIT_M, unitsPerTile: 3, coursesPerTile: 6,
+  jointFraction: 0.06, halfLap: 0.5, mortar: "#8f8f8c", base: "#e9e6df",
+  jitterHSL: [0.006, 0.02, 0.05],
+};
+// Concrete block: the large face module, a fixed neutral grey, tighter joints and very low
+// jitter so it reads as cast block rather than laid brick.
+const CMU_STYLE: MasonryStyle = {
+  key: "cmu", unitM: CMU_UNIT_M, unitsPerTile: 2, coursesPerTile: 3,
+  jointFraction: 0.028, halfLap: 0.5, mortar: "#b6b3ac", base: "#9c988f",
+  jitterHSL: [0.004, 0.015, 0.05],
+};
+
+/** True when a wall layer's cladding should be finished as brick/block/stone masonry. */
 export function isMasonry(materialRef: string | null | undefined): boolean {
   return familyOf(materialRef) === "masonry";
 }
+
+/** True when a masonry material is concrete masonry unit / block, not brick or stone. */
+export function isCmu(materialRef: string | null | undefined): boolean {
+  if (familyOf(materialRef) !== "masonry") return false;
+  const s = (materialRef ?? "").toLowerCase();
+  return s.includes("cmu") || s.includes("block") || s.includes("concrete mason");
+}
+
+/** True when a brick material opts into the whitewashed / white-brick finish variant. */
+function isWhiteBrickRef(materialRef: string | null | undefined): boolean {
+  const s = (materialRef ?? "").toLowerCase();
+  return s.includes("white") || s.includes("limewash") || s.includes("whitewash");
+}
+
+/** Pick the masonry finish recipe for a material ref (CMU → white brick → default red brick). */
+export function masonryStyleFor(materialRef: string | null | undefined): MasonryStyle {
+  if (isCmu(materialRef)) return CMU_STYLE;
+  if (isWhiteBrickRef(materialRef)) return WHITE_BRICK_STYLE;
+  return BRICK_STYLE;
+}
+
+/** World size (meters) of one repeat tile for a style: [along-wall length, up-wall height]. */
+export function masonryTileSizeM(style: MasonryStyle): readonly [number, number] {
+  return [style.unitM[0] * style.unitsPerTile, style.unitM[1] * style.coursesPerTile];
+}
+
+/** Default (red brick) repeat tile size, retained for callers/tests keyed to the brick module. */
+export const MASONRY_TILE_SIZE_M: readonly [number, number] = masonryTileSizeM(BRICK_STYLE);
+
+// Keyed by style + base-colour hex: the colour is baked into the map, so each finish/colour
+// combination needs one tile. The map stays small (only a couple ever exist per session).
+const masonryMapCache = new Map<string, { colorMap: THREE.Texture; normalMap: THREE.Texture }>();
 
 // Deterministic per-unit jitter so a course looks laid, not printed — no Math.random, so the
 // two shared maps stay reproducible across reloads.
@@ -176,8 +244,10 @@ function hashUnit(course: number, unit: number): number {
   return h - Math.floor(h);
 }
 
-function buildMasonryMaps(color: THREE.Color): { colorMap: THREE.Texture; normalMap: THREE.Texture } {
-  const key = color.getHexString();
+function buildMasonryMaps(
+  style: MasonryStyle, color: THREE.Color,
+): { colorMap: THREE.Texture; normalMap: THREE.Texture } {
+  const key = `${style.key}:${color.getHexString()}`;
   const cached = masonryMapCache.get(key);
   if (cached) return cached;
   const colorCanvas = document.createElement("canvas");
@@ -188,27 +258,29 @@ function buildMasonryMaps(color: THREE.Color): { colorMap: THREE.Texture; normal
   const nctx = normalCanvas.getContext("2d");
   if (!cctx || !nctx) throw new Error("2D canvas unavailable for masonry maps");
 
-  const courseH = MASONRY_TEX_PX / MASONRY_COURSES_PER_TILE;
-  const unitW = MASONRY_TEX_PX / MASONRY_UNITS_PER_TILE;
-  const jointPx = Math.max(2, unitW * 0.05);
-  const mortar = "#cfc8ba";
+  const courseH = MASONRY_TEX_PX / style.coursesPerTile;
+  const unitW = MASONRY_TEX_PX / style.unitsPerTile;
+  const jointPx = Math.max(2, unitW * style.jointFraction);
+  const offsetPx = unitW * style.halfLap;
 
-  cctx.fillStyle = mortar;
+  cctx.fillStyle = style.mortar;
   cctx.fillRect(0, 0, MASONRY_TEX_PX, MASONRY_TEX_PX);
   // Normal map: flat (recessed joints are drawn as darker steps, i.e. z-facing everywhere,
   // joints tilted). Base is the neutral +Z normal (128,128,255).
   nctx.fillStyle = "rgb(128,128,255)";
   nctx.fillRect(0, 0, MASONRY_TEX_PX, MASONRY_TEX_PX);
 
-  const base = color.clone();
-  for (let course = 0; course < MASONRY_COURSES_PER_TILE; course++) {
+  const base = (style.base ? new THREE.Color(style.base) : color).clone();
+  for (let course = 0; course < style.coursesPerTile; course++) {
     const y = course * courseH;
-    const offset = course % 2 === 0 ? 0 : unitW / 2; // running bond: alternate half-lap
-    for (let unit = -1; unit < MASONRY_UNITS_PER_TILE + 1; unit++) {
+    const offset = course % 2 === 0 ? 0 : offsetPx; // running bond: alternate half-lap
+    for (let unit = -1; unit < style.unitsPerTile + 1; unit++) {
       const x = unit * unitW + offset;
       const jitter = hashUnit(course, unit);
       const shade = base.clone().offsetHSL(
-        (jitter - 0.5) * 0.02, (jitter - 0.5) * 0.08, (jitter - 0.5) * 0.16,
+        (jitter - 0.5) * style.jitterHSL[0],
+        (jitter - 0.5) * style.jitterHSL[1],
+        (jitter - 0.5) * style.jitterHSL[2],
       );
       cctx.fillStyle = `#${shade.getHexString()}`;
       cctx.fillRect(x + jointPx / 2, y + jointPx / 2, unitW - jointPx, courseH - jointPx);
@@ -235,12 +307,20 @@ function buildMasonryMaps(color: THREE.Color): { colorMap: THREE.Texture; normal
   return maps;
 }
 
-/** Brick/stone masonry finish. `color` is the resolved family colour (brick red by default). */
-export function createMasonryMaterial(mode: "nordic" | "schematic", color: THREE.ColorRepresentation): THREE.Material {
+/**
+ * Brick/CMU/stone masonry finish. `style` selects the module + mortar + colour recipe (see
+ * masonryStyleFor); `color` is the resolved family colour, used only when the style leaves its
+ * unit colour open (default red brick). CMU and white brick carry their own fixed unit colour.
+ */
+export function createMasonryMaterial(
+  mode: "nordic" | "schematic", style: MasonryStyle, color: THREE.ColorRepresentation,
+): THREE.Material {
   if (mode === "schematic") {
-    return new THREE.MeshStandardMaterial({ color, roughness: 1, metalness: 0, flatShading: true });
+    return new THREE.MeshStandardMaterial({
+      color: style.base ?? color, roughness: 1, metalness: 0, flatShading: true,
+    });
   }
-  const { colorMap, normalMap } = buildMasonryMaps(new THREE.Color(color));
+  const { colorMap, normalMap } = buildMasonryMaps(style, new THREE.Color(color));
   return new THREE.MeshStandardMaterial({
     color: 0xffffff, // colour lives in the map; white base avoids double-tinting
     map: colorMap,
@@ -254,12 +334,13 @@ export function createMasonryMaterial(mode: "nordic" | "schematic", color: THREE
 /**
  * World-scaled UVs for a masonry wall layer: courses run true-height up the wall and units
  * run true-length along it, so the bond stays put as walls change direction (same coordinate
- * frame idea as the standing-seam wall UV).
+ * frame idea as the standing-seam wall UV). `tileSizeM` is the chosen style's repeat extent.
  */
 export function applyMasonryWallUv(
   geometry: THREE.BufferGeometry,
   wallAxis: readonly [readonly [number, number], readonly [number, number]],
   center: readonly [number, number],
+  tileSizeM: readonly [number, number] = MASONRY_TILE_SIZE_M,
 ): void {
   const [[x0, y0], [x1, y1]] = wallAxis;
   const dx = x1 - x0;
@@ -275,8 +356,8 @@ export function applyMasonryWallUv(
     const elevation = positions.getY(index);
     const sceneZ = positions.getZ(index) + center[1];
     const along = (sceneX - x0) * directionX + (sceneZ - y0) * directionY;
-    uv[index * 2] = along / MASONRY_TILE_SIZE_M[0];
-    uv[index * 2 + 1] = elevation / MASONRY_TILE_SIZE_M[1];
+    uv[index * 2] = along / tileSizeM[0];
+    uv[index * 2 + 1] = elevation / tileSizeM[1];
   }
   geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
 }

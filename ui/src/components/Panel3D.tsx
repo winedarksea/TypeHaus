@@ -6,7 +6,7 @@ import { ALL_TRADES, useStore, type Trade } from "../state/store";
 import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
-import { applyMasonryWallUv, applyStandingSeamWallUv, createMasonryMaterial, createStandingSeamMaterial, isMasonry, isStandingSeam } from "../three/materials";
+import { applyMasonryWallUv, applyStandingSeamWallUv, createMasonryMaterial, createStandingSeamMaterial, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM } from "../three/materials";
 import { aboveStructureLayers, boundaryEdges, roofOffsetter, roofPlaneTriangles } from "../three/roofGeometry";
 import {
   createPlanPrismGeometry,
@@ -18,12 +18,19 @@ import {
 } from "../three/planGeometry";
 import { useTheme } from "../theme/theme";
 
-// The 3D panel behind an implicit ModelViewer seam (→ 21 §3D panel). The primary path is
-// glTF from ResolvedModel; until the server emits it, this builds an equivalent scene
-// directly from model.json (extruded wall/solid/roof surfaces + solid instanced framing
-// members), which is always available and guarantees the 3D view shows exactly what the
-// resolver computed. The Nordic passes (soft lighting + edge linework) attach to the
-// three.js scene, so they survive the eventual glTF route unchanged. Clicking a wall
+// The 3D panel behind an implicit ModelViewer seam (→ 21 §3D panel).
+//
+// Two scene sources cooperate. The always-available baseline rebuilds the scene directly from
+// model.json (extruded wall/solid/roof surfaces + solid instanced framing members), so the
+// 3D view shows exactly what the resolver computed and works offline in the Pyodide PWA where
+// the glb may be absent. On top of that, setModel asks the engine for its whole-house glb
+// (server /model.glb, or the Pyodide engine's glb artifact). When that glb carries per-object
+// trade metadata, setWholeHouseGlb promotes it to the PRIMARY scene, distributed across the
+// same trade groups so selection, highlight and the trade/role toggles keep working (see the
+// emitter contract on setWholeHouseGlb). Today's emitter writes one color-bucketed "building"
+// node with no per-object identity, so it cannot drive those features — in that case the glb
+// is discarded and the model.json baseline stands, unchanged. The Nordic passes (soft lighting
+// + edge linework) attach to the three.js scene, so they survive either route. Clicking a wall
 // cross-highlights the 2D plan and surfaces its file:line provenance.
 
 export const EARTH_PLANE_OPACITY = 0.28;
@@ -34,12 +41,37 @@ export const ARCH_OPENING_SEGMENT_COUNT = 32;
 
 type PanDirection = "left" | "right" | "up" | "down";
 
+// How a whole-house glb node maps back to an interactive element. A node earns an assignment
+// via glTF `extras` (GLTFLoader copies these onto object.userData) or, as a fallback, a
+// "<trade>|<kind>|<uid>" node name. `kind`/`uid` are optional: envelope geometry only needs a
+// trade (to land in the right visibility group), while a selectable wall/object also carries
+// its model uid so picking and highlight resolve to the same record model.json uses.
+export interface GlbNodeAssignment {
+  trade: Trade;
+  uid: string | null;
+  kind: "wall" | "canvas_object" | null;
+}
+
+export function wholeHouseGlbAssignment(
+  name: string | undefined,
+  userData: Record<string, unknown> | undefined,
+): GlbNodeAssignment | null {
+  const parts = (name ?? "").split("|");
+  const tradeRaw = typeof userData?.trade === "string" ? userData.trade : parts[0];
+  if (!tradeRaw || !(ALL_TRADES as readonly string[]).includes(tradeRaw)) return null;
+  const kindRaw = typeof userData?.kind === "string" ? userData.kind : parts[1];
+  const kind = kindRaw === "wall" || kindRaw === "canvas_object" ? kindRaw : null;
+  const uidRaw = typeof userData?.uid === "string" ? userData.uid : parts[2];
+  return { trade: tradeRaw as Trade, uid: uidRaw || null, kind };
+}
+
 export function Panel3D() {
   const model = useStore((s) => s.model);
   const threeMode = useStore((s) => s.threeMode);
   const select = useStore((s) => s.select);
   const selection = useStore((s) => s.selection);
   const visibleTrades = useStore((s) => s.visibleTrades);
+  const client = useStore((s) => s.client);
   const { theme } = useTheme();
   const mountRef = useRef<HTMLDivElement>(null);
   const api = useRef<SceneApi | null>(null);
@@ -64,7 +96,16 @@ export function Panel3D() {
     api.current?.highlight(selection.kind === "wall" || selection.kind === "canvas_object" ? selection.uid : null);
     renderedModel.current = model;
     renderedTheme.current = theme;
-  }, [model, threeMode, theme]);
+    // Ask the engine for its whole-house glb and, when it carries per-object metadata, promote
+    // it to the primary scene. Any failure (monolithic/older glb, or offline without a glb)
+    // silently keeps the model.json baseline built above. setWholeHouseGlb is guarded by the
+    // scene generation, so a load that resolves after the next setModel is dropped.
+    let cancelled = false;
+    client.getArtifact("glb")
+      .then((blob) => { if (!cancelled) api.current?.setWholeHouseGlb(blob); })
+      .catch(() => { /* keep the model.json baseline */ });
+    return () => { cancelled = true; };
+  }, [model, threeMode, theme, client]);
 
   useEffect(() => {
     api.current?.highlight(selection.kind === "wall" || selection.kind === "canvas_object" ? selection.uid : null);
@@ -100,6 +141,7 @@ export function Panel3D() {
 
 interface SceneApi {
   setModel: (m: Model, mode: "nordic" | "schematic", palette: ResolvedNordicPalette, preserveView: boolean) => void;
+  setWholeHouseGlb: (blob: Blob) => void;
   setPalette: (palette: ResolvedNordicPalette) => void;
   pan: (direction: PanDirection) => void;
   resetView: () => void;
@@ -466,6 +508,77 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
     requestRender();
   };
 
+  // Promote the engine's whole-house glb to the primary scene when it carries per-object trade
+  // metadata; otherwise leave the model.json baseline that setModel built. Async and guarded by
+  // the scene generation captured at call time, so a load resolving after the next setModel is
+  // dropped. Emitter contract to make the glb primary (see the module header): every renderable
+  // node declares its trade + element via glTF `extras`
+  // { trade: <Trade>, uid?: string, kind?: "wall"|"canvas_object" } or a "<trade>|<kind>|<uid>"
+  // node name. A single untagged node (today's color-bucketed "building" mesh) is treated as
+  // unstructured and discarded, so nothing regresses until the emitter opts in.
+  const setWholeHouseGlb = (blob: Blob) => {
+    const generation = sceneGeneration;
+    blob.arrayBuffer().then((buffer) => {
+      if (generation !== sceneGeneration) return;
+      new GLTFLoader().parse(buffer, "", (gltf) => {
+        if (generation !== sceneGeneration) { disposeGroup(gltf.scene); return; }
+        applyWholeHouseGlb(gltf.scene);
+      }, () => { /* parse failure → keep the model.json baseline */ });
+    }).catch(() => { /* read failure → keep the model.json baseline */ });
+  };
+
+  const applyWholeHouseGlb = (root: THREE.Object3D) => {
+    // Classify first: only take over when every renderable node maps to a trade. Walk up from
+    // each mesh so a tagged parent covers its (often untagged) child primitives.
+    const tagged: { mesh: THREE.Mesh; assignment: GlbNodeAssignment }[] = [];
+    let renderable = 0;
+    let unstructured = false;
+    root.traverse((node) => {
+      if (unstructured || !(node instanceof THREE.Mesh)) return;
+      renderable++;
+      let assignment: GlbNodeAssignment | null = null;
+      for (let o: THREE.Object3D | null = node; o && !assignment; o = o.parent) {
+        assignment = wholeHouseGlbAssignment(o.name, o.userData);
+      }
+      if (!assignment) { unstructured = true; return; }
+      tagged.push({ mesh: node, assignment });
+    });
+    if (renderable === 0 || unstructured) { disposeGroup(root); return; }
+
+    // Structured glb → take over. Bump the generation so any pending per-item furniture loaders
+    // from the superseded model.json scene are dropped, then replace every trade group's
+    // contents with the glb's nodes (re-parented in place, world transform baked).
+    sceneGeneration++;
+    const selectedUid = highlighted; // re-apply against the rebuilt materials below
+    for (const trade of ALL_TRADES) {
+      disposeGroup(tradeGroups[trade]);
+      tradeGroups[trade].clear();
+    }
+    picks = [];
+    byUid.clear();
+    highlighted = null;
+    root.updateMatrixWorld(true);
+    for (const { mesh, assignment } of tagged) {
+      const world = mesh.matrixWorld.clone();
+      const group = tradeGroups[assignment.trade];
+      group.add(mesh); // trade groups sit at the world origin, so world == local below
+      world.decompose(mesh.position, mesh.quaternion, mesh.scale);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      if (assignment.uid) {
+        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        byUid.set(assignment.uid, [...(byUid.get(assignment.uid) ?? []), ...materials]);
+        if (assignment.kind) {
+          mesh.userData.uid = assignment.uid;
+          mesh.userData.selectionKind = assignment.kind;
+          picks.push(mesh);
+        }
+      }
+    }
+    disposeGroup(root); // drop any leftover empty container nodes
+    highlight(selectedUid); // restore the current selection's emissive against the new materials
+  };
+
   const setPalette = (palette: ResolvedNordicPalette) => {
     activePalette = palette;
     scene.background = new THREE.Color(palette.bg);
@@ -490,6 +603,7 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
 
   return {
     setModel,
+    setWholeHouseGlb,
     setPalette,
     pan,
     resetView,
@@ -642,17 +756,18 @@ function buildWall(
     // z-fight with the studs it lives between.
     if (ly.is_cavity) continue;
     const seam = ly.function === "cladding" && isStandingSeam(ly.material);
-    // Masonry (brick/block/stone) gets coursing + recessed mortar, not a flat fill — a brick
-    // veneer or CMU wythe otherwise read like painted drywall. Applies to any layer function
-    // so structural CMU is finished the same as a brick cladding wythe.
-    const masonry = !seam && isMasonry(ly.material);
+    // Masonry (brick/CMU/stone) gets coursing + recessed mortar, not a flat fill — a brick
+    // veneer or CMU wythe otherwise read like painted drywall. The style (module + mortar +
+    // colour) is chosen from the material ref, so CMU reads as 16"×8" grey block and a
+    // "white" brick ref reads as whitewash over grey mortar; everything else stays red brick.
+    const masonryStyle = !seam && isMasonry(ly.material) ? masonryStyleFor(ly.material) : null;
     const mat = seam
       ? createStandingSeamMaterial(mode, [
         Math.hypot(w.axis[1][0] - w.axis[0][0], w.axis[1][1] - w.axis[0][1]),
         Math.max(0.1, w.z1_m - w.z0_m),
       ], 0xE8E8E2, true)
-      : masonry
-        ? createMasonryMaterial(mode, materialColor(ly.material, palette))
+      : masonryStyle
+        ? createMasonryMaterial(mode, masonryStyle, materialColor(ly.material, palette))
         : new THREE.MeshStandardMaterial({
           color: new THREE.Color(materialColor(ly.material, palette)),
           roughness: mode === "nordic" ? 0.85 : 1,
@@ -670,7 +785,7 @@ function buildWall(
     for (const geo of geometries) {
       if (!geo) continue;
       if (seam) applyStandingSeamWallUv(geo, w.axis, center);
-      else if (masonry) applyMasonryWallUv(geo, w.axis, center);
+      else if (masonryStyle) applyMasonryWallUv(geo, w.axis, center, masonryTileSizeM(masonryStyle));
       const mesh = new THREE.Mesh(geo, mat);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
