@@ -65,6 +65,10 @@ def build_sheet_index(model: ResolvedModel,
         sheets.append(SheetSpec(number, f"Framing plan — {floor.storey}",
                                 scene=partial(build_framing_plan, floor_tag=floor.tag)))
 
+    if model.all_members():
+        sheets.append(SheetSpec("S-102", "Framing schedule / bill of materials",
+                                page=_write_framing_bom))
+
     storeys = sorted(model.plan.storeys, key=lambda s: s.elevation.meters)
     floor_pages = [(f"A-{101 + i:03d}", storey.tag) for i, storey in enumerate(storeys)
                    if any(wall.storey == storey.tag for wall in model.walls)]
@@ -209,6 +213,43 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str) -
     )
     axis.table(cellText=rows, colLabels=("Tag", "Kind", "Type", "Nominal footprint"),
                loc="center", cellLoc="left", colLoc="left", fontsize=6)
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
+def _write_framing_bom(pdf, model: ResolvedModel, number: str, name: str) -> None:
+    """The framing bill of materials: a rollup by lumber size, then the full grouped-by-size
+    -and-type cut list with per-stock-length buckets, both derived from the resolved members
+    (→ takeoff.framing_takeoff — one row per resolved member, nothing dropped)."""
+    import matplotlib.pyplot as plt
+
+    from typehaus.takeoff import framing_bom_by_size, framing_takeoff
+
+    fig = plt.figure(figsize=(11, 17))
+    fig.text(0.04, 0.97, f"{number} · {name}", fontsize=16, family="monospace")
+
+    by_size = framing_bom_by_size(model)
+    fig.text(0.04, 0.94, "SUMMARY BY LUMBER SIZE", fontsize=10, family="monospace",
+             weight="bold")
+    size_rows = [(row["profile"], f"{row['pieces']:,}", f"{row['order_length_ft']:,}",
+                  f"{row['board_feet']:,.0f}" if row["board_feet"] else "—")
+                 for row in by_size]
+    size_rows.append(("TOTAL", f"{sum(int(r['pieces']) for r in by_size):,}",
+                      f"{sum(int(r['order_length_ft']) for r in by_size):,}", ""))
+    _add_table(fig, size_rows, ("Size", "Pieces", "Ordered LF", "Board ft"),
+               bbox=(0.04, 0.66, 0.5, 0.26))
+
+    fig.text(0.04, 0.62, "CUT LIST — BY SIZE AND MEMBER TYPE", fontsize=10,
+             family="monospace", weight="bold")
+    bom_rows = [
+        (row["profile"], row["category"], f"{row['pieces']:,}",
+         f"{row['cut_length_ft']:,.0f}",
+         ", ".join(f"{b['count']}×{b['length_ft']}'" for b in row["stock"]))
+        for row in framing_takeoff(model)
+    ]
+    _add_table(fig, bom_rows,
+               ("Size", "Type", "Pieces", "Cut LF", "Stock lengths"),
+               bbox=(0.04, 0.03, 0.92, 0.57))
     pdf.savefig(fig)
     plt.close(fig)
 
