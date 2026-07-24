@@ -18,6 +18,21 @@ from typehaus.model.registry import element_kinds
 from typehaus.quantities import Angle, Length, Pitch, RValue, Temperature, UFactor
 
 
+class WritebackError(RuntimeError):
+    """An op could not be applied to the given source (missing target, no host list…).
+
+    Defined here (the pure-Python op model) rather than in ``writeback`` so both the libcst
+    and the ast (libcst-free) writeback backends can share one exception type without a
+    circular import.
+    """
+
+
+@dataclass
+class WritebackResult:
+    source: str
+    minted_uids: dict[str, str]  # tag -> newly minted uid (add ops only)
+
+
 @dataclass(frozen=True)
 class RawExpr:
     """A pre-encoded dialect expression (e.g. a prior field value read from source).

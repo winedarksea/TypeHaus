@@ -22,14 +22,20 @@ interface LoadHouseMsg {
 }
 interface CallMsg {
   id: number;
-  type: "model" | "checks" | "glb" | "detailIndex";
+  type: "model" | "checks" | "glb" | "detailIndex" | "undo" | "redo";
 }
 interface DetailMsg {
   id: number;
   type: "detail";
   key: string;
 }
-type InMsg = InitMsg | LoadHouseMsg | CallMsg | DetailMsg;
+interface PatchMsg {
+  id: number;
+  type: "patch";
+  ops: unknown[];
+  revision: string | null;
+}
+type InMsg = InitMsg | LoadHouseMsg | CallMsg | DetailMsg | PatchMsg;
 
 let pyodide: any = null;
 let engine: any = null;
@@ -112,6 +118,27 @@ async function handle(msg: InMsg): Promise<unknown> {
       await ensureReady();
       const d = engine.detail_payload(msg.key);
       if (d === undefined || d === null) return null;
+      const out = d.toJs({ dict_converter: Object.fromEntries });
+      d.destroy();
+      return out;
+    }
+    // Mutation surface — served by the pure-Python (libcst-free) writeback backend (U9).
+    case "patch": {
+      await ensureReady();
+      const opsProxy = pyodide.toPy(msg.ops);
+      try {
+        const d = engine.patch(opsProxy, msg.revision);
+        const out = d.toJs({ dict_converter: Object.fromEntries });
+        d.destroy();
+        return out;
+      } finally {
+        opsProxy.destroy();
+      }
+    }
+    case "undo":
+    case "redo": {
+      await ensureReady();
+      const d = msg.type === "undo" ? engine.undo() : engine.redo();
       const out = d.toJs({ dict_converter: Object.fromEntries });
       d.destroy();
       return out;

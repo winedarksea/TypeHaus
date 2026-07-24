@@ -7,15 +7,45 @@ targets is rewritten, so the file stays human-readable and merge-friendly after 
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import os
 from functools import lru_cache
 from typing import Any
 
 import libcst as cst
 
-from typehaus.model.registry import element_kinds
 from typehaus.model.ids import new_uid
-from typehaus.source.ops import DELETE_FIELD, PatchOp, RawExpr, encode_value
+from typehaus.model.registry import element_kinds
+from typehaus.source.ops import (
+    DELETE_FIELD,
+    PatchOp,
+    RawExpr,
+    WritebackError,
+    WritebackResult,
+    encode_value,
+)
+
+# --- backend selection -------------------------------------------------------
+# The libcst path is the default (byte-for-byte round-trip, dialect-linted). The offline PWA
+# has no libcst wheel, so it selects the pure-Python ast backend via TYPEHAUS_WRITEBACK=py (or
+# set_backend). Both backends produce identical output on the editable-plan dialect — proven by
+# tests/test_writeback_parity.py — so every writeback entry point below dispatches on the flag.
+_BACKEND = os.environ.get("TYPEHAUS_WRITEBACK", "libcst").lower()
+
+
+def set_backend(name: str) -> None:
+    """Select the writeback backend: ``"libcst"`` (default) or ``"py"`` (pure-Python/offline)."""
+    global _BACKEND
+    if name not in ("libcst", "py"):
+        raise ValueError(f"unknown writeback backend {name!r} (libcst|py)")
+    _BACKEND = name
+
+
+def backend() -> str:
+    return _BACKEND
+
+
+def _use_py() -> bool:
+    return _BACKEND == "py"
 
 
 @lru_cache(maxsize=64)
@@ -29,16 +59,6 @@ def parse_cached(source: str) -> cst.Module:
     tree per source string across the read paths is safe; only the write path re-parses.
     """
     return cst.parse_module(source)
-
-
-class WritebackError(RuntimeError):
-    """An op could not be applied to the given source (missing target, no host list…)."""
-
-
-@dataclass
-class WritebackResult:
-    source: str
-    minted_uids: dict[str, str]  # tag -> newly minted uid (add ops only)
 
 
 def _call_tag(call: cst.Call) -> str | None:
@@ -196,7 +216,7 @@ def _list_holds_kind(node: cst.List, kind: str) -> bool:
     return False
 
 
-def apply_ops_to_source(source: str, ops: list[PatchOp]) -> WritebackResult:
+def _cst_apply_ops_to_source(source: str, ops: list[PatchOp]) -> WritebackResult:
     """Apply ``ops`` (all targeting elements in this file) to one editable file's source."""
     module = cst.parse_module(source)
     minted: dict[str, str] = {}
@@ -220,7 +240,7 @@ def apply_ops_to_source(source: str, ops: list[PatchOp]) -> WritebackResult:
     return WritebackResult(source=source_out, minted_uids=minted)
 
 
-def enclosing_list_name(source: str, kind: str, tag: str) -> str | None:
+def _cst_enclosing_list_name(source: str, kind: str, tag: str) -> str | None:
     """Return the module-level list variable that holds element ``kind``/``tag``, if any."""
     module = parse_cached(source)
     result: str | None = None
@@ -241,7 +261,7 @@ def enclosing_list_name(source: str, kind: str, tag: str) -> str | None:
     return result
 
 
-def file_has_list_named(source: str, name: str) -> bool:
+def _cst_file_has_list_named(source: str, name: str) -> bool:
     """True if ``source`` has a module-level ``name = [...]`` list assignment."""
     module = parse_cached(source)
     found = False
@@ -259,7 +279,7 @@ def file_has_list_named(source: str, name: str) -> bool:
     return found
 
 
-def read_element_fields(source: str, kind: str, tag: str) -> dict[str, RawExpr] | None:
+def _cst_read_element_fields(source: str, kind: str, tag: str) -> dict[str, RawExpr] | None:
     """Read the authored kwargs of one element as raw source exprs (uid/tag excluded).
 
     Used by the journal to compute inverse ops that restore the exact prior text.
@@ -282,3 +302,86 @@ def read_element_fields(source: str, kind: str, tag: str) -> dict[str, RawExpr] 
 
     module.visit(_Reader())
     return found
+
+
+def _cst_file_has_kind_list(source: str, kind: str) -> bool:
+    """True if any list literal in the file holds a call constructing ``kind``."""
+    module = parse_cached(source)
+    found = False
+
+    class _V(cst.CSTVisitor):
+        def visit_List(self, node: cst.List) -> None:
+            nonlocal found
+            for el in node.elements:
+                if isinstance(el.value, cst.Call) and isinstance(el.value.func, cst.Name) \
+                        and el.value.func.value == kind:
+                    found = True
+
+    module.visit(_V())
+    return found
+
+
+def _cst_read_uid(source: str, kind: str, tag: str) -> str | None:
+    """Read the ``uid=`` of the element ``kind``/``tag``, if present."""
+    module = parse_cached(source)
+    uid: str | None = None
+
+    class _V(cst.CSTVisitor):
+        def visit_Call(self, node: cst.Call) -> None:
+            nonlocal uid
+            if not (isinstance(node.func, cst.Name) and node.func.value == kind):
+                return
+            args = {a.keyword.value: a.value for a in node.args if a.keyword is not None}
+            tag_node = args.get("tag")
+            if isinstance(tag_node, cst.SimpleString) and tag_node.evaluated_value == tag:
+                uid_node = args.get("uid")
+                if isinstance(uid_node, cst.SimpleString):
+                    uid = uid_node.evaluated_value
+
+    module.visit(_V())
+    return uid
+
+
+# --- dispatchers -------------------------------------------------------------
+# Public API: each routes to the libcst or the pure-Python backend per set_backend().
+
+def apply_ops_to_source(source: str, ops: list[PatchOp]) -> WritebackResult:
+    if _use_py():
+        from typehaus.source import writeback_py
+        return writeback_py.apply_ops_to_source(source, ops)
+    return _cst_apply_ops_to_source(source, ops)
+
+
+def enclosing_list_name(source: str, kind: str, tag: str) -> str | None:
+    if _use_py():
+        from typehaus.source import writeback_py
+        return writeback_py.enclosing_list_name(source, kind, tag)
+    return _cst_enclosing_list_name(source, kind, tag)
+
+
+def file_has_list_named(source: str, name: str) -> bool:
+    if _use_py():
+        from typehaus.source import writeback_py
+        return writeback_py.file_has_list_named(source, name)
+    return _cst_file_has_list_named(source, name)
+
+
+def read_element_fields(source: str, kind: str, tag: str) -> dict[str, RawExpr] | None:
+    if _use_py():
+        from typehaus.source import writeback_py
+        return writeback_py.read_element_fields(source, kind, tag)
+    return _cst_read_element_fields(source, kind, tag)
+
+
+def file_has_kind_list(source: str, kind: str) -> bool:
+    if _use_py():
+        from typehaus.source import writeback_py
+        return writeback_py.file_has_kind_list(source, kind)
+    return _cst_file_has_kind_list(source, kind)
+
+
+def read_uid(source: str, kind: str, tag: str) -> str | None:
+    if _use_py():
+        from typehaus.source import writeback_py
+        return writeback_py.read_uid(source, kind, tag)
+    return _cst_read_uid(source, kind, tag)

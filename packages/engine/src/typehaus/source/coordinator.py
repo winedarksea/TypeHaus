@@ -18,17 +18,19 @@ import threading
 from dataclasses import dataclass
 from pathlib import Path
 
+from typehaus.findings import Severity
 from typehaus.source.dialect import lint_source
 from typehaus.source.journal import Journal
 from typehaus.source.loader import _content_hash, editable_files
-from typehaus.findings import Severity
 from typehaus.source.ops import DELETE_FIELD, PatchOp, RawExpr
 from typehaus.source.writeback import (
     WritebackError,
     apply_ops_to_source,
     enclosing_list_name,
+    file_has_kind_list,
     file_has_list_named,
     read_element_fields,
+    read_uid,
 )
 
 
@@ -165,7 +167,7 @@ class ProjectCoordinator:
             return read_element_fields(src, op.type, op.tag) is not None
         if op.hint_list is not None:
             return file_has_list_named(src, op.hint_list)
-        return _file_has_kind_list(src, op.type)
+        return file_has_kind_list(src, op.type)
 
     def _compute_inverse(
         self, ops: list[PatchOp], files: dict[Path, str]
@@ -206,7 +208,7 @@ class ProjectCoordinator:
 
     def _read_uid_any(self, op: PatchOp, files: dict[Path, str]) -> str | None:
         for src in files.values():
-            uid = _read_uid(src, op.type, op.tag)
+            uid = read_uid(src, op.type, op.tag)
             if uid:
                 return uid
         return None
@@ -219,55 +221,11 @@ class ProjectCoordinator:
             if op.op != "add":
                 continue
             for src in files.values():
-                uid = _read_uid(src, op.type, op.tag)
+                uid = read_uid(src, op.type, op.tag)
                 if uid:
                     minted[op.tag] = uid
                     break
         return minted
-
-
-def _file_has_kind_list(source: str, kind: str) -> bool:
-    import libcst as cst
-
-    from typehaus.source.writeback import parse_cached
-
-    module = parse_cached(source)
-    found = False
-
-    class _V(cst.CSTVisitor):
-        def visit_List(self, node: cst.List) -> None:
-            nonlocal found
-            for el in node.elements:
-                if isinstance(el.value, cst.Call) and isinstance(el.value.func, cst.Name) \
-                        and el.value.func.value == kind:
-                    found = True
-
-    module.visit(_V())
-    return found
-
-
-def _read_uid(source: str, kind: str, tag: str) -> str | None:
-    import libcst as cst
-
-    from typehaus.source.writeback import parse_cached
-
-    module = parse_cached(source)
-    uid: str | None = None
-
-    class _V(cst.CSTVisitor):
-        def visit_Call(self, node: cst.Call) -> None:
-            nonlocal uid
-            if not (isinstance(node.func, cst.Name) and node.func.value == kind):
-                return
-            args = {a.keyword.value: a.value for a in node.args if a.keyword is not None}
-            tag_node = args.get("tag")
-            if isinstance(tag_node, cst.SimpleString) and tag_node.evaluated_value == tag:
-                uid_node = args.get("uid")
-                if isinstance(uid_node, cst.SimpleString):
-                    uid = uid_node.evaluated_value
-
-    module.visit(_V())
-    return uid
 
 
 def _atomic_write(path: Path, content: str) -> None:

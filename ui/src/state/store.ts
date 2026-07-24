@@ -16,7 +16,12 @@ import type {
 import { EngineError, RevisionConflict } from "../engine/EngineClient";
 import { HttpEngineClient } from "../engine/HttpEngineClient";
 import { PyodideEngineClient } from "../engine/PyodideEngineClient";
-import { pickHouseDirectory } from "../engine/openHouse";
+import { loadBundledHouse, pickHouseDirectory } from "../engine/openHouse";
+
+// The standalone PWA (built for type-house.com/app) has no local server: it boots the bundled
+// Catlin house in the in-browser pyodide engine by default. `haus serve` builds leave this unset
+// and keep the HttpEngineClient default.
+const PWA_STANDALONE = import.meta.env.VITE_PWA_STANDALONE === "1";
 import type { Finding, Model } from "../model/types";
 
 export type Tool = "select" | "wall" | "opening" | "placeable" | "room" | "stair" | "dimension";
@@ -206,6 +211,23 @@ export const useStore = create<StoreState>((set, get) => ({
   toasts: [],
 
   init: async () => {
+    // Standalone PWA first boot: replace the default HttpEngineClient with the offline pyodide
+    // engine seeded with the bundled Catlin house, so new visitors get a working editor with no
+    // server and no folder pick.
+    if (PWA_STANDALONE && !get().offline) {
+      try {
+        const opened = await loadBundledHouse();
+        set({
+          client: new PyodideEngineClient(opened.files),
+          offline: true,
+          offlineHouse: opened.name,
+          model: null,
+          loading: true,
+        });
+      } catch (err) {
+        get().toast(`offline demo failed: ${(err as Error).message}`, "error");
+      }
+    }
     const { client } = get();
     unsubscribeEvents?.();
     unsubscribeEvents = client.events(

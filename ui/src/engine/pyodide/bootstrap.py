@@ -9,6 +9,7 @@ stubbed module raises ``RequiresLocalInstall``, which the worker maps to a clear
 
 from __future__ import annotations
 
+import os
 import sys
 import types
 from pathlib import Path
@@ -76,6 +77,12 @@ for _dep in ("ifcopenshell", "pyproj"):
 for _sub in ("ifcopenshell.api", "ifcopenshell.guid"):
     sys.modules.setdefault(_sub, sys.modules["ifcopenshell"])
 
+# U9: the offline PWA now *edits* plan source too, via the pure-Python (ast) writeback backend
+# — no libcst. Selecting it before typehaus.source is imported means every mutation entry point
+# (writeback, coordinator read helpers, import sync) routes to the libcst-free path. The libcst
+# stub above still lets the modules import; the py backend never calls into it.
+os.environ["TYPEHAUS_WRITEBACK"] = "py"
+
 
 class OfflineEngine:
     """One loaded house + its resolved model, recomputed on each loadHouse (→ server/state.py)."""
@@ -87,6 +94,7 @@ class OfflineEngine:
         self.provenance: Any = None
         self.ok: bool = False
         self._revision: str = "0"
+        self._coord: Any = None  # lazily-built ProjectCoordinator (owns the undo journal)
 
     def load_house(self, root: str, files: dict[str, str]) -> dict[str, Any]:
         base = Path(root)
@@ -100,7 +108,46 @@ class OfflineEngine:
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(content)
         self.house_dir = base
+        self._coord = None  # a new house resets the mutation journal
         return self.rebuild()
+
+    def coordinator(self) -> Any:
+        """The mutation coordinator for the loaded house (built once, keeps the journal)."""
+        from typehaus.source.coordinator import ProjectCoordinator
+
+        assert self.house_dir is not None
+        if self._coord is None:
+            self._coord = ProjectCoordinator(self.house_dir)
+        return self._coord
+
+    # --- mutation surface (libcst-free, U9) --------------------------------------------
+    def patch(self, ops_json: list[dict[str, Any]], expected_revision: str | None) -> dict[str, Any]:
+        from typehaus.source.ops import PatchOp
+
+        ops = [
+            PatchOp(
+                op=o["op"], type=o["type"], tag=o["tag"],
+                fields=dict(o.get("fields") or {}),
+                hint_file=o.get("hint_file"), hint_list=o.get("hint_list"),
+            )
+            for o in ops_json
+        ]
+        result = self.coordinator().apply_patch(ops, expected_revision)
+        self.rebuild()
+        return {
+            "revision": result.revision, "minted": dict(result.minted_uids),
+            "undo": result.undo_depth, "redo": result.redo_depth,
+        }
+
+    def undo(self) -> dict[str, Any]:
+        result = self.coordinator().undo()
+        self.rebuild()
+        return {"revision": result.revision, "undo": result.undo_depth, "redo": result.redo_depth}
+
+    def redo(self) -> dict[str, Any]:
+        result = self.coordinator().redo()
+        self.rebuild()
+        return {"revision": result.revision, "undo": result.undo_depth, "redo": result.redo_depth}
 
     def rebuild(self) -> dict[str, Any]:
         # Offline load path (→ 40 gate b): import the manifest directly (pure `exec`, no
@@ -116,7 +163,9 @@ class OfflineEngine:
         assert self.house_dir is not None
         self.provenance = Provenance()
         self.findings = []
-        self._revision = _revision_of(self.house_dir)
+        # Use the loader's content hash so the model revision the UI echoes back on a patch
+        # matches the coordinator's optimistic-concurrency revision (both are _content_hash).
+        self._revision = loader._content_hash(self.house_dir)
         plan = loader._import_manifest(self.house_dir, self.findings)
         if plan is None:
             self.model = None
@@ -175,17 +224,6 @@ class OfflineEngine:
         out = Path("/tmp/offline_model.glb")
         emit_glb(self.model, out)
         return out.read_bytes()
-
-
-def _revision_of(house_dir: Path) -> str:
-    import hashlib
-
-    h = hashlib.sha256()
-    for p in sorted(house_dir.rglob("*")):
-        if p.is_file():
-            h.update(p.relative_to(house_dir).as_posix().encode())
-            h.update(p.read_bytes())
-    return h.hexdigest()[:12]
 
 
 ENGINE = OfflineEngine()
