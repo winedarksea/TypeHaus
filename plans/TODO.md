@@ -188,6 +188,13 @@ rafter-on-plate bearings, and stair stringer/tread joints. These are tracked to-
 deck fix; work them down here (or suppress `structural.member_interference` per-check in
 `preferences.toml` until then).
 
+## Follow Up after First Subagent Pass
+- CMU look like bricks. They should look like full CMU
+- We want white (with gray mortar) bricks as a color option for bricks
+- Arches are 'striped' and should be smoother, mathematical half circles properly (for sure in 3d viewer, in IFC exports too if possible)
+- More items need to be selectable (ie footing beds, posts, etc). Ideally most distinct elements are selectable in 3d view.
+- Garage door needs a dedicated 2d door look, and likely a dedicated pattern to match its framing needs, as it's not a swing door like shown in 2D.
+
 ## General Polishing Tasks
 - Make sure all warnings are cleared up
 - Make sure the BOM shows all members listed out, grouped usually by size and type

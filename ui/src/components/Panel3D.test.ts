@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import type { FootingBedding, Opening, Wall, Model } from "../model/types";
-import { buildFootingBedding, canvasObjectFallbackGeometry, earthElevation, earthOutline, earthVoids, EARTH_FALLBACK_HALF_SIZE_M, FOOTING_BEDDING_COLOR, wallLayerPieces } from "./Panel3D";
+import { buildFootingBedding, canvasObjectFallbackGeometry, compassBearingScreenDirection, earthElevation, earthOutline, earthVoids, EARTH_FALLBACK_HALF_SIZE_M, FOOTING_BEDDING_COLOR, wallLayerPieces } from "./Panel3D";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -121,4 +121,23 @@ export function runCanvasObjectGeometryTests() {
     "Configured cylinder primitives are rendered before their GLB is ready");
   assert(canvasObjectFallbackGeometry("unsupported", 0.4, 1, 0.6).type === "BoxGeometry",
     "Unknown primitives retain the footprint-box fallback");
+
+  const target = new THREE.Vector3(0, 0, 0);
+  const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+  camera.position.set(5, 5, 5);
+  camera.lookAt(target);
+  const northFromSoutheast = compassBearingScreenDirection(camera, target, 0, 0);
+  camera.position.set(-5, 5, 5);
+  camera.lookAt(target);
+  const northFromSouthwest = compassBearingScreenDirection(camera, target, 0, 0);
+  assert(Math.abs(northFromSoutheast[0] - northFromSouthwest[0]) > 0.5,
+    "Compass north responds to camera orbit");
+
+  camera.position.set(5, 5, 5);
+  camera.lookAt(target);
+  const rotatedTrueNorth = compassBearingScreenDirection(camera, target, 0, 90);
+  assert(Math.hypot(
+    northFromSoutheast[0] - rotatedTrueNorth[0],
+    northFromSoutheast[1] - rotatedTrueNorth[1],
+  ) > 0.5, "Compass north responds to site true-north rotation");
 }

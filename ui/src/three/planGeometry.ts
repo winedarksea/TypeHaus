@@ -4,16 +4,42 @@ import type { Vec2 } from "../model/types";
 export type PlanCenter = readonly [number, number];
 export type ProjectVertex = readonly [point: Vec2, elevationM: number];
 
-// This is the only project-to-Three.js boundary. TypeHaus is authored as
-// (project X, project Y/north, elevation); Three.js is (X, elevation, Z). Do not
-// use rotateX() as a coordinate conversion in individual builders: it is too easy
-// for one path to reflect north while another follows the canonical framing axis.
+// This is the only project-to-Three.js boundary. TypeHaus is authored in the
+// right-handed frame (project X/east, project Y/north, elevation). Three.js is
+// Y-up, so project north maps to scene -Z: east × north must still equal up.
 export function projectPointToScene([x, y]: Vec2, elevationM: number, center: PlanCenter = [0, 0]): THREE.Vector3 {
-  return new THREE.Vector3(x - center[0], elevationM, y - center[1]);
+  return new THREE.Vector3(x - center[0], elevationM, -(y - center[1]));
 }
 
 export function projectPlanDirectionToScene([x, y]: Vec2): THREE.Vector3 {
-  return new THREE.Vector3(x, 0, y);
+  return new THREE.Vector3(x, 0, -y);
+}
+
+export function projectScenePointToPlan(sceneX: number, sceneZ: number, center: PlanCenter = [0, 0]): Vec2 {
+  return [sceneX + center[0], center[1] - sceneZ];
+}
+
+export function projectPlanRotationToSceneRadians(rotationDegrees: number): number {
+  return THREE.MathUtils.degToRad(rotationDegrees);
+}
+
+/** Geographic bearing (clockwise from true north) expressed in the shared scene frame. */
+export function geographicBearingToSceneDirection(
+  bearingDegrees: number,
+  trueNorthDegrees: number,
+): THREE.Vector3 {
+  const projectBearingRadians = THREE.MathUtils.degToRad(bearingDegrees + trueNorthDegrees);
+  return new THREE.Vector3(
+    Math.sin(projectBearingRadians),
+    0,
+    -Math.cos(projectBearingRadians),
+  );
+}
+
+/** Scene-orbit azimuth for a camera geographically southeast of the model. */
+export function geographicSoutheastSceneAzimuthRadians(trueNorthDegrees: number): number {
+  const southeastDirection = geographicBearingToSceneDirection(135, trueNorthDegrees);
+  return Math.atan2(southeastDirection.z, southeastDirection.x);
 }
 
 export function projectTriangleVerticesToScene(vertices: readonly ProjectVertex[], center: PlanCenter = [0, 0]): THREE.Vector3[] {
@@ -33,9 +59,8 @@ export function createProjectedSurfaceGeometry(
 /**
  * Extrude an authored plan ring from `z0M` to `z1M` in the shared scene frame.
  *
- * `ExtrudeGeometry` grows along local +Z. Rotating it +90 degrees about X makes plan
- * +Y become scene +Z and local extrusion depth become scene -Y; translating to z1M
- * therefore places the prism exactly between z0M and z1M without reflecting north.
+ * `ExtrudeGeometry` grows along local +Z. Rotating it -90 degrees about X maps
+ * plan +Y to scene -Z and extrusion depth to scene +Y.
  */
 export function createPlanPrismGeometry(
   outline: readonly Vec2[],
@@ -66,10 +91,8 @@ export function createPlanPrismGeometry(
     depth: z1M - z0M,
     bevelEnabled: false,
   });
-  // ExtrudeGeometry grows along local +Z. This rotation maps authored plan +Y to
-  // scene +Z; translating to z1 puts the reversed extrusion depth at its elevation.
-  geometry.rotateX(Math.PI / 2);
-  geometry.translate(0, z1M, 0);
+  geometry.rotateX(-Math.PI / 2);
+  geometry.translate(0, z0M, 0);
   return geometry;
 }
 
@@ -111,9 +134,9 @@ export function createRakedPlanPrismGeometry(
   // Unlike `createPlanPrismGeometry`, nothing downstream normalizes winding for us:
   // the fixed vertex order below only faces outward for one input orientation, so a
   // ring authored the other way renders inside-out and vanishes to backface culling.
-  // Plan +Y maps to scene +Z, which flips handedness — a clockwise plan ring is the
-  // one that gives outward normals here.
-  outline = planRingSignedArea(outline) > 0 ? [...outline].reverse() : outline;
+  // The shared transform preserves handedness, so counter-clockwise plan rings give
+  // outward side normals and upward top-cap normals.
+  outline = planRingSignedArea(outline) < 0 ? [...outline].reverse() : outline;
   const triangles: ProjectVertex[][] = [];
   for (let index = 0; index < outline.length; index++) {
     const next = (index + 1) % outline.length;

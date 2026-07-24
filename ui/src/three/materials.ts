@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { projectScenePointToPlan, type PlanCenter } from "./planGeometry";
 import { familyOf } from "../nordic/palette";
 
 /**
@@ -115,7 +116,7 @@ export function createStandingSeamMaterial(
 export function applyStandingSeamWallUv(
   geometry: THREE.BufferGeometry,
   wallAxis: readonly [readonly [number, number], readonly [number, number]],
-  center: readonly [number, number],
+  center: PlanCenter,
 ): void {
   const [[x0, y0], [x1, y1]] = wallAxis;
   const dx = x1 - x0;
@@ -127,10 +128,11 @@ export function applyStandingSeamWallUv(
   const positions = geometry.getAttribute("position");
   const uv = new Float32Array(positions.count * 2);
   for (let index = 0; index < positions.count; index++) {
-    const sceneX = positions.getX(index) + center[0];
+    const [projectX, projectY] = projectScenePointToPlan(
+      positions.getX(index), positions.getZ(index), center,
+    );
     const elevation = positions.getY(index);
-    const sceneZ = positions.getZ(index) + center[1];
-    const along = (sceneX - x0) * directionX + (sceneZ - y0) * directionY;
+    const along = (projectX - x0) * directionX + (projectY - y0) * directionY;
     uv[index * 2] = along / SEAM_TILE_SIZE_M;
     uv[index * 2 + 1] = elevation / SEAM_TILE_SIZE_M;
   }
@@ -259,7 +261,7 @@ export function createMasonryMaterial(mode: "nordic" | "schematic", color: THREE
 export function applyMasonryWallUv(
   geometry: THREE.BufferGeometry,
   wallAxis: readonly [readonly [number, number], readonly [number, number]],
-  center: readonly [number, number],
+  center: PlanCenter,
 ): void {
   const [[x0, y0], [x1, y1]] = wallAxis;
   const dx = x1 - x0;
@@ -271,10 +273,11 @@ export function applyMasonryWallUv(
   const positions = geometry.getAttribute("position");
   const uv = new Float32Array(positions.count * 2);
   for (let index = 0; index < positions.count; index++) {
-    const sceneX = positions.getX(index) + center[0];
+    const [projectX, projectY] = projectScenePointToPlan(
+      positions.getX(index), positions.getZ(index), center,
+    );
     const elevation = positions.getY(index);
-    const sceneZ = positions.getZ(index) + center[1];
-    const along = (sceneX - x0) * directionX + (sceneZ - y0) * directionY;
+    const along = (projectX - x0) * directionX + (projectY - y0) * directionY;
     uv[index * 2] = along / MASONRY_TILE_SIZE_M[0];
     uv[index * 2 + 1] = elevation / MASONRY_TILE_SIZE_M[1];
   }

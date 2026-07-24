@@ -5,9 +5,15 @@ import {
   createPlanPrismGeometry,
   createProjectedSurfaceGeometry,
   createRakedPlanPrismGeometry,
+  geographicBearingToSceneDirection,
+  geographicSoutheastSceneAzimuthRadians,
+  projectPlanDirectionToScene,
+  projectPlanRotationToSceneRadians,
   projectPointToScene,
+  projectScenePointToPlan,
   swingArcSweepFlag,
 } from "./planGeometry";
+import { applyStandingSeamWallUv, SEAM_PAN_WIDTH_M } from "./materials";
 
 function closeTo(actual: number, expected: number, message: string) {
   if (Math.abs(actual - expected) > 1e-6) {
@@ -42,7 +48,14 @@ export function runPlanGeometryTests() {
   const projectPoint = projectPointToScene([3.25, 8.5], 1.75);
   closeTo(projectPoint.x, 3.25, "Project X maps to scene X");
   closeTo(projectPoint.y, 1.75, "Project elevation maps to scene Y");
-  closeTo(projectPoint.z, 8.5, "Project +Y maps to positive scene Z");
+  closeTo(projectPoint.z, -8.5, "Project +Y/north maps to negative scene Z");
+
+  const east = projectPlanDirectionToScene([1, 0]);
+  const north = projectPlanDirectionToScene([0, 1]);
+  const up = new THREE.Vector3().crossVectors(east, north);
+  closeTo(up.x, 0, "Mapped east × north has no X component");
+  closeTo(up.y, 1, "Mapped east × north equals scene up");
+  closeTo(up.z, 0, "Mapped east × north has no Z component");
 
   const outline: [number, number][] = [[3, 7], [8, 7], [8, 11], [3, 11]];
   const geometry = createPlanPrismGeometry(outline, 1.25, 2.75);
@@ -50,8 +63,8 @@ export function runPlanGeometryTests() {
   const bounds = boundsFor(geometry);
   closeTo(bounds.min.x, 3, "Prism preserves minimum project X");
   closeTo(bounds.max.x, 8, "Prism preserves maximum project X");
-  closeTo(bounds.min.z, 7, "Prism preserves minimum project Y as scene Z");
-  closeTo(bounds.max.z, 11, "Prism preserves maximum project Y as scene Z");
+  closeTo(bounds.min.z, -11, "Prism maps maximum project Y to minimum scene Z");
+  closeTo(bounds.max.z, -7, "Prism maps minimum project Y to maximum scene Z");
   closeTo(bounds.min.y, 1.25, "Prism starts at authored z0");
   closeTo(bounds.max.y, 2.75, "Prism ends at authored z1");
   geometry.dispose();
@@ -59,13 +72,16 @@ export function runPlanGeometryTests() {
   const center: [number, number] = [10, 20];
   const centeredPoint = projectPointToScene([13.25, 28.5], 1.75, center);
   closeTo(centeredPoint.x, 3.25, "Centering only translates project X");
-  closeTo(centeredPoint.z, 8.5, "Centering preserves positive project Y/north");
+  closeTo(centeredPoint.z, -8.5, "Centering preserves north as negative scene Z");
+  const roundTrip = projectScenePointToPlan(centeredPoint.x, centeredPoint.z, center);
+  closeTo(roundTrip[0], 13.25, "Scene-to-plan inverse restores project X");
+  closeTo(roundTrip[1], 28.5, "Scene-to-plan inverse restores project Y");
 
   const centeredPrism = createPlanPrismGeometry([[13, 27], [18, 27], [18, 31], [13, 31]], 1.25, 2.75, [], center);
   if (!centeredPrism) throw new Error("Expected centered prism");
   const centeredBounds = boundsFor(centeredPrism);
   closeTo(centeredBounds.min.x, 3, "Centered prism translates X consistently");
-  closeTo(centeredBounds.min.z, 7, "Centered prism translates north consistently");
+  closeTo(centeredBounds.min.z, -11, "Centered prism translates north consistently");
   centeredPrism.dispose();
 
   const raked = createRakedPlanPrismGeometry(
@@ -75,8 +91,8 @@ export function runPlanGeometryTests() {
   );
   if (!raked) throw new Error("Expected raked prism");
   const rakedBounds = boundsFor(raked);
-  closeTo(rakedBounds.min.z, 7, "Gable wall preserves north minimum");
-  closeTo(rakedBounds.max.z, 11, "Gable wall preserves north maximum");
+  closeTo(rakedBounds.min.z, -11, "Gable wall maps north maximum to scene Z minimum");
+  closeTo(rakedBounds.max.z, -7, "Gable wall maps north minimum to scene Z maximum");
   closeTo(rakedBounds.max.y, 5, "Gable wall preserves authored rake elevation");
   raked.dispose();
 
@@ -85,8 +101,8 @@ export function runPlanGeometryTests() {
     [[[13, 27], 3], [[18, 31], 5], [[13, 31], 3]],
   ], center);
   const roofBounds = boundsFor(roofSurface);
-  closeTo(roofBounds.min.z, 7, "Roof preserves north minimum");
-  closeTo(roofBounds.max.z, 11, "Roof preserves north maximum");
+  closeTo(roofBounds.min.z, -11, "Roof maps north maximum to scene Z minimum");
+  closeTo(roofBounds.max.z, -7, "Roof maps north minimum to scene Z maximum");
   roofSurface.dispose();
 
   const framing = new THREE.Group();
@@ -95,8 +111,8 @@ export function runPlanGeometryTests() {
     z1_m: 3.2, z0_end_m: 5, z1_end_m: 5.2, orient: null,
   })], center, "schematic");
   const framingBounds = boundsForObject(framing);
-  closeTo(framingBounds.min.z, 2.9, "Framing uses the same centered north axis");
-  closeTo(framingBounds.max.z, 7.1, "Framing remains aligned with schematic north");
+  closeTo(framingBounds.min.z, -7.1, "Framing uses the same centered north axis");
+  closeTo(framingBounds.max.z, -2.9, "Framing remains aligned with schematic north");
   closeTo(framingBounds.min.x, 1.95, "Vertical member uses the shared centered X axis");
   framing.traverse((object) => {
     const mesh = object as THREE.Mesh;
@@ -107,7 +123,67 @@ export function runPlanGeometryTests() {
   });
 
   checkRakedWindingIsNormalized();
+  checkAsymmetricPlanIsNotReflected();
+  checkGeographicBearings();
+  checkWallUvUsesProjectCoordinates();
   checkDoorSwingArcsPivotOnHinge();
+}
+
+function checkAsymmetricPlanIsNotReflected() {
+  // An L-plan plus independent north/east landmarks catches a reflection that symmetric
+  // bounds cannot. Every scene point must invert to its exact authored plan location.
+  const asymmetricPlan: Vec2[] = [[0, 0], [5, 0], [5, 2], [2, 2], [2, 6], [0, 6]];
+  const center: [number, number] = [2.5, 3];
+  for (const point of asymmetricPlan) {
+    const scenePoint = projectPointToScene(point, 0, center);
+    const restored = projectScenePointToPlan(scenePoint.x, scenePoint.z, center);
+    closeTo(restored[0], point[0], "Asymmetric plan round-trip preserves east/west");
+    closeTo(restored[1], point[1], "Asymmetric plan round-trip preserves north/south");
+  }
+  const northLandmark = projectPointToScene([1, 5], 0, center);
+  const southLandmark = projectPointToScene([1, 1], 0, center);
+  if (northLandmark.z >= southLandmark.z) {
+    throw new Error("The asymmetric plan's north landmark must remain north at negative scene Z");
+  }
+  const rotatedEast = new THREE.Vector3(1, 0, 0).applyAxisAngle(
+    new THREE.Vector3(0, 1, 0),
+    projectPlanRotationToSceneRadians(90),
+  );
+  closeTo(rotatedEast.z, -1, "Positive plan rotation turns east toward north in 3D");
+}
+
+function checkGeographicBearings() {
+  const northAtZero = geographicBearingToSceneDirection(0, 0);
+  closeTo(northAtZero.x, 0, "True north at 0° has no east component");
+  closeTo(northAtZero.z, -1, "True north at 0° follows project north");
+  const northAtNinety = geographicBearingToSceneDirection(0, 90);
+  closeTo(northAtNinety.x, 1, "True north at 90° follows project east");
+  closeTo(northAtNinety.z, 0, "True north at 90° has no project-north component");
+  const southeastAtThirty = geographicBearingToSceneDirection(135, 30);
+  const resetAzimuth = geographicSoutheastSceneAzimuthRadians(30);
+  closeTo(Math.cos(resetAzimuth), southeastAtThirty.x,
+    "Reset camera X follows geographic southeast at a non-cardinal angle");
+  closeTo(Math.sin(resetAzimuth), southeastAtThirty.z,
+    "Reset camera Z follows geographic southeast at a non-cardinal angle");
+}
+
+function checkWallUvUsesProjectCoordinates() {
+  const center: [number, number] = [10, 20];
+  const geometry = createPlanPrismGeometry(
+    [[10, 20], [10, 24], [10.1, 24], [10.1, 20]], 0, 3, [], center,
+  );
+  if (!geometry) throw new Error("Expected wall prism for UV orientation test");
+  applyStandingSeamWallUv(geometry, [[10, 20], [10, 24]], center);
+  const positions = geometry.getAttribute("position");
+  const uv = geometry.getAttribute("uv");
+  for (let index = 0; index < positions.count; index++) {
+    const [, projectY] = projectScenePointToPlan(
+      positions.getX(index), positions.getZ(index), center,
+    );
+    closeTo(uv.getX(index), (projectY - 20) / (SEAM_PAN_WIDTH_M * 4),
+      "Wall UV distance follows authored project Y after scene reflection is removed");
+  }
+  geometry.dispose();
 }
 
 // Reconstruct an SVG elliptical-arc centre (F.6.5, rx=ry=r, rotation 0, large-arc 0) from

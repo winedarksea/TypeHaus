@@ -12,6 +12,9 @@ import {
   createPlanPrismGeometry,
   createProjectedSurfaceGeometry,
   createRakedPlanPrismGeometry,
+  geographicBearingToSceneDirection,
+  geographicSoutheastSceneAzimuthRadians,
+  projectPlanRotationToSceneRadians,
   projectPointToScene,
   type PlanCenter,
   type ProjectVertex,
@@ -42,13 +45,14 @@ export function Panel3D() {
   const visibleTrades = useStore((s) => s.visibleTrades);
   const { theme } = useTheme();
   const mountRef = useRef<HTMLDivElement>(null);
+  const compassRef = useRef<SVGSVGElement>(null);
   const api = useRef<SceneApi | null>(null);
   const renderedModel = useRef<Model | null>(null);
   const renderedTheme = useRef<string | null>(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
-    const a = createScene(mountRef.current, (kind, uid) => select(kind, uid));
+    const a = createScene(mountRef.current, compassRef.current, (kind, uid) => select(kind, uid));
     api.current = a;
     return () => a.dispose();
   }, [select]);
@@ -77,6 +81,25 @@ export function Panel3D() {
   return (
     <div style={{ position: "absolute", inset: 0 }}>
       <div ref={mountRef} style={{ position: "absolute", inset: 0 }} />
+      <svg
+        ref={compassRef}
+        className="hud"
+        aria-label="Geographic orientation compass"
+        viewBox="0 0 72 72"
+        style={{ top: 12, bottom: "auto", width: 72, height: 72, padding: 0, pointerEvents: "none" }}
+      >
+        <circle cx="36" cy="36" r="27" fill="var(--panel)" fillOpacity="0.82"
+          stroke="var(--line)" strokeWidth="1" />
+        <circle cx="36" cy="36" r="2" fill="var(--muted)" />
+        {(["N", "E", "S", "W"] as const).map((label, index) => (
+          <text key={label} data-compass-bearing={index * 90} x="36" y="15"
+            textAnchor="middle" dominantBaseline="middle" fontSize="11"
+            fontWeight={label === "N" ? 800 : 600}
+            fill={label === "N" ? "var(--accent)" : "var(--ink)"}>
+            {label}
+          </text>
+        ))}
+      </svg>
       <div
         className="hud"
         aria-label="3D view navigation"
@@ -108,7 +131,28 @@ interface SceneApi {
   dispose: () => void;
 }
 
-function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object", uid: string) => void): SceneApi {
+export function compassBearingScreenDirection(
+  camera: THREE.Camera,
+  target: THREE.Vector3,
+  bearingDegrees: number,
+  trueNorthDegrees: number,
+): readonly [x: number, y: number] {
+  camera.updateMatrixWorld(true);
+  const projectedTarget = target.clone().project(camera);
+  const projectedDirection = target.clone()
+    .add(geographicBearingToSceneDirection(bearingDegrees, trueNorthDegrees))
+    .project(camera);
+  const dx = projectedDirection.x - projectedTarget.x;
+  const dy = projectedTarget.y - projectedDirection.y;
+  const length = Math.hypot(dx, dy);
+  return length < 1e-9 ? [0, -1] : [dx / length, dy / length];
+}
+
+function createScene(
+  mount: HTMLElement,
+  compass: SVGSVGElement | null,
+  onPick: (kind: "wall" | "canvas_object", uid: string) => void,
+): SceneApi {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(RESOLVED_NORDIC_PALETTE.light.bg);
   const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 500);
@@ -154,6 +198,7 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
   let phi = Math.PI * 0.32;
   let radius = 12;
   let target = new THREE.Vector3(0, 1, 0);
+  let trueNorthDegrees = 0;
   let fittedTheta = theta;
   let fittedPhi = phi;
   let fittedRadius = radius;
@@ -163,6 +208,16 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
   let panning = false; // orbit vs. screen-pan for the active pointer drag
   let last = [0, 0];
 
+  const updateCompass = () => {
+    if (!compass) return;
+    for (const label of compass.querySelectorAll<SVGTextElement>("[data-compass-bearing]")) {
+      const bearing = Number(label.dataset.compassBearing);
+      const [dx, dy] = compassBearingScreenDirection(camera, target, bearing, trueNorthDegrees);
+      label.setAttribute("x", String(36 + dx * 21));
+      label.setAttribute("y", String(36 + dy * 21));
+    }
+  };
+
   const place = () => {
     camera.position.set(
       target.x + radius * Math.sin(phi) * Math.cos(theta),
@@ -170,6 +225,7 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
       target.z + radius * Math.sin(phi) * Math.sin(theta),
     );
     camera.lookAt(target);
+    updateCompass();
   };
 
   // Render-on-demand (Phase 1c): instead of an unconditional RAF loop pinning the GPU/CPU
@@ -353,6 +409,12 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
     clear();
     activePalette = palette;
     scene.background = new THREE.Color(palette.bg);
+    const nextTrueNorthDegrees = m.site?.true_north_deg ?? 0;
+    const trueNorthChanged = nextTrueNorthDegrees !== trueNorthDegrees;
+    trueNorthDegrees = nextTrueNorthDegrees;
+    if (trueNorthChanged) {
+      fittedTheta = geographicSoutheastSceneAzimuthRadians(trueNorthDegrees);
+    }
     // Center on the plan's structural bounds.
     let cx = 0;
     let cz = 0;
@@ -410,7 +472,7 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
           const visual = gltf.scene;
           visual.position.copy(projectPointToScene(item.position_m,
             item.z_m ?? m.storeys.find((storey) => storey.tag === item.storey)?.elevation_m ?? 0, center));
-          visual.rotation.y = -((item.rotation ?? 0) * Math.PI / 180);
+          visual.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
           const materials: THREE.Material[] = [];
           visual.traverse((node) => {
             if (!(node instanceof THREE.Mesh)) return;
@@ -453,7 +515,7 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
       const verticalHalfFov = THREE.MathUtils.degToRad(camera.fov) / 2;
       const horizontalHalfFov = Math.atan(Math.tan(verticalHalfFov) * camera.aspect);
       const limitingHalfFov = Math.min(verticalHalfFov, horizontalHalfFov);
-      theta = Math.PI * 0.25;
+      theta = geographicSoutheastSceneAzimuthRadians(trueNorthDegrees);
       phi = Math.PI * 0.32;
       radius = Math.max(2, sphere.radius / Math.sin(limitingHalfFov) * 1.15);
       target.copy(sphere.center);
@@ -579,7 +641,7 @@ function buildCanvasObject(
     item.model_primitive ?? type?.model_primitive, width, height, depth,
   ), material);
   mesh.position.copy(projectPointToScene(item.position_m, elevation + height / 2, center));
-  mesh.rotation.y = -((item.rotation ?? 0) * Math.PI / 180);
+  mesh.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
   mesh.userData.uid = item.uid;
   mesh.userData.selectionKind = "canvas_object";
   parent.add(mesh);
@@ -759,10 +821,12 @@ function createSmoothArchedWallLayerGeometry(
   const geometry = new THREE.ExtrudeGeometry(shape, {
     depth: maxAcross - minAcross, bevelEnabled: false, curveSegments: 1,
   });
+  // Extrude from the maximum-across face toward the minimum-across face. This keeps
+  // the local-to-scene matrix right-handed while mapping project north to scene -Z.
   geometry.applyMatrix4(new THREE.Matrix4().set(
-    ux, 0, nx, sx + nx * minAcross - center[0],
+    ux, 0, -nx, sx + nx * maxAcross - center[0],
     0, 1, 0, 0,
-    uy, 0, ny, sy + ny * minAcross - center[1],
+    -uy, 0, ny, center[1] - sy - ny * maxAcross,
     0, 0, 0, 1,
   ));
   return geometry;
@@ -873,7 +937,7 @@ function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center:
     rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m - opening.width_m / 2), y0 + direction[1] * (opening.center_along_m - opening.width_m / 2)) - wall.z0_m - opening.sill_m,
     rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m + opening.width_m / 2), y0 + direction[1] * (opening.center_along_m + opening.width_m / 2)) - wall.z0_m - opening.sill_m));
   if (availableHeight <= 1e-9) return;
-  const rotation = -Math.atan2(direction[1], direction[0]);
+  const rotation = Math.atan2(direction[1], direction[0]);
   const frameWidth = Math.min(0.075, opening.width_m / 4, availableHeight / 4);
   const depth = 0.08;
   const frameMaterial = new THREE.MeshStandardMaterial({ color: palette.member.wood, roughness: mode === "nordic" ? 0.85 : 1, flatShading: mode === "schematic" });

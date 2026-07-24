@@ -166,7 +166,9 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
       positions.push(v[0], v[1], v[2]);
       colors.push(col.r, col.g, col.b);
     }
-    for (const [a, b, c, d] of faces) indices.push(base + a, base + b, base + c, base + a, base + c, base + d);
+    // These quads were authored for the old reflected project frame. Reverse their
+    // winding now that project-to-scene preserves handedness.
+    for (const [a, b, c, d] of faces) indices.push(base + a, base + c, base + b, base + a, base + d, base + c);
   }
   if (!positions.length) return;
   const geo = new THREE.BufferGeometry();
