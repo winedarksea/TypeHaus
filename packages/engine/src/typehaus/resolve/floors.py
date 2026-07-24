@@ -100,9 +100,16 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     if positions and positions[-1] < perp1 - 1e-6:
         positions.append(perp1)
 
+    cant_m = spec.cantilever.meters if spec.cantilever else 0.0
     for index, perp in enumerate(positions):
         for span_index in range(len(boundaries) - 1):
             a, b = boundaries[span_index], boundaries[span_index + 1]
+            # Cantilever only the two outer joist tips past the outermost bearing lines;
+            # interior spans and opening-clipping are unchanged.
+            if span_index == 0:
+                a -= cant_m
+            if span_index == len(boundaries) - 2:
+                b += cant_m
             segments = [(a, b)]
             for _opening, minx, maxx, miny, maxy in opening_boxes:
                 opening_perp0, opening_perp1 = (miny, maxy) if along_x else (minx, maxx)
@@ -145,11 +152,12 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
                     p0, p1, z0, z1, abs((p1[0] - p0[0]) if along_x else (p1[1] - p0[1])),
                 ))
 
-    # Rim (band) boards cap the joist ends along the two outermost bearing lines —
-    # perpendicular to the joists, not a duplicate of the parallel edge joists above.
+    # Rim (band) boards cap the joist ends — perpendicular to the joists, not a duplicate
+    # of the parallel edge joists above. When the outer spans cantilever, the band rides
+    # out to the joist tips (the fascia line), not the beam axis it oversails.
     depth_in = depth / inch(1).meters
     rim_profile = f"1.25x{depth_in:g} rim"
-    for rim_index, boundary in enumerate((boundaries[0], boundaries[-1])):
+    for rim_index, boundary in enumerate((boundaries[0] - cant_m, boundaries[-1] + cant_m)):
         if along_x:
             r0, r1 = (boundary, perp0), (boundary, perp1)
         else:

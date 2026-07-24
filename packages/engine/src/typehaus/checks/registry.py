@@ -33,6 +33,9 @@ class FramingPreferences:
     max_window_ro_unbroken_in: float = 14.0
     max_window_ro_nonbearing_in: float = 30.0
     max_window_ro_bearing_in: float = 27.0
+    # z-overlap tolerance for the model-wide member-interference check: a bearing/
+    # stacking joint clears this band; anything deeper is flagged.
+    interference_tolerance_in: float = 0.25
 
 
 @dataclass

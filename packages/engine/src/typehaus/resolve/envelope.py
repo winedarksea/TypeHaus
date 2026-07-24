@@ -551,11 +551,41 @@ def _error(check_id: str, message: str, tag: str) -> Finding:
 _COLUMN_FACETS = 16
 
 
+def _bearing_stack_drops(model: ResolvedModel) -> tuple[dict[str, float], dict[str, float]]:
+    """Derive the post → beam → joist bearing stack from the authored bearing graph.
+
+    The storey datum stays top-of-joist, so a beam carrying joists must drop its whole
+    depth *below* the deepest joist bearing on it, and a post carrying that beam must
+    shorten to land at the beam soffit. Returns:
+
+    - ``joist_drop``: beam tag → deepest joist depth (m) bearing on that beam.
+    - ``post_drop``: post tag → joist drop (m) of the deepest-joist beam it carries, so
+      the post can shorten by exactly that amount and preserve any authored base offset
+      (e.g. the intentional 2" rear-row drainage rise).
+    """
+    joist_drop: dict[str, float] = {}
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            if isinstance(element, FloorSystem):
+                depth = cross_section(element.joists.member).depth_m
+                for ref in element.joists.bearing_refs:
+                    joist_drop[ref] = max(joist_drop.get(ref, 0.0), depth)
+    post_drop: dict[str, float] = {}
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            if isinstance(element, Beam):
+                drop = joist_drop.get(element.tag, 0.0)
+                for ref in element.bearing_refs:
+                    post_drop[ref] = max(post_drop.get(ref, 0.0), drop)
+    return joist_drop, post_drop
+
+
 def resolve_columns_and_beams(model: ResolvedModel) -> list[Finding]:
     findings: list[Finding] = []
     solid_top = {s.tag: s.z1_m for s in model.solids}
     ridge_uids = {m.parent_uid for roof in model.roofs for m in roof.members
                   if m.category == "ridge_beam"}
+    joist_drop, post_drop = _bearing_stack_drops(model)
     for storey in model.plan.storeys:
         elevation = storey.elevation.meters
         nodes = {e.tag: e.position.xy_m for e in model.plan.storey_elements(storey.tag)
@@ -563,9 +593,9 @@ def resolve_columns_and_beams(model: ResolvedModel) -> list[Finding]:
         for element in model.plan.storey_elements(storey.tag):
             if isinstance(element, Post):
                 model.solids.append(_resolve_post(element, storey.tag, elevation, solid_top,
-                                                   storey))
+                                                   storey, post_drop))
             elif isinstance(element, Beam) and element.uid not in ridge_uids:
-                solid = _resolve_beam(element, storey.tag, elevation, nodes)
+                solid = _resolve_beam(element, storey.tag, elevation, nodes, joist_drop)
                 if solid is None:
                     findings.append(_error("integrity.beam_nodes",
                                            f"beam {element.tag} references missing node(s) "
@@ -577,18 +607,25 @@ def resolve_columns_and_beams(model: ResolvedModel) -> list[Finding]:
 
 
 def _resolve_post(post: Post, storey_tag: str, elevation: float,
-                  solid_top: dict[str, float], storey) -> ResolvedSolid:
+                  solid_top: dict[str, float], storey,
+                  post_drop: dict[str, float]) -> ResolvedSolid:
     """A post supported by a footing/pad stands up from that support; otherwise its top
     sits at its storey's deck elevation (it carries that level) and it hangs down by its
-    height."""
+    height.
+
+    A post carrying joist-loaded beams shortens by that beam's joist drop so its top
+    lands at the (lowered) beam soffit. Shortening the authored height rather than
+    overriding the top preserves any intentional base offset (the 2" rear-row drainage
+    rise), and leaves breezeway/other non-carrying posts untouched."""
     cs = cross_section(post.size)
     height = (post.height.meters if post.height is not None
               else storey.default_ceiling_height.meters)
     base = solid_top.get(post.supported_by) if post.supported_by else None
+    drop = post_drop.get(post.tag, 0.0)
     if base is not None:
-        z0, z1 = base, base + height
+        z0, z1 = base, base + height - drop
     else:
-        z0, z1 = elevation - height, elevation
+        z0, z1 = elevation - height, elevation - drop
     return ResolvedSolid(post.uid, post.tag, storey_tag, "column",
                          tuple(_post_outline(post.position.xy_m, cs)), z0, z1,
                          assembly=post.assembly)
@@ -606,7 +643,8 @@ def _post_outline(center: tuple[float, float], cs) -> list[tuple[float, float]]:
 
 
 def _resolve_beam(beam: Beam, storey_tag: str, elevation: float,
-                  nodes: dict[str, tuple[float, float]]) -> ResolvedSolid | None:
+                  nodes: dict[str, tuple[float, float]],
+                  joist_drop: dict[str, float]) -> ResolvedSolid | None:
     p0, p1 = nodes.get(beam.start_node), nodes.get(beam.end_node)
     if p0 is None or p1 is None:
         return None
@@ -619,7 +657,9 @@ def _resolve_beam(beam: Beam, storey_tag: str, elevation: float,
     nx, ny = -dy / length * hw, dx / length * hw  # perpendicular half-width offset
     outline = [(p0[0] + nx, p0[1] + ny), (p1[0] + nx, p1[1] + ny),
                (p1[0] - nx, p1[1] - ny), (p0[0] - nx, p0[1] - ny)]
-    # The beam supports the deck at its storey elevation; hang its depth below that.
-    z1 = elevation
+    # The beam carries the joists that top out at the storey datum, so its own top sits
+    # a joist depth below that datum; hang the beam's depth below that. Walls in
+    # ``bearing_refs`` are untouched — the lowered beam seats into their hanger.
+    z1 = elevation - joist_drop.get(beam.tag, 0.0)
     z0 = z1 - cs.depth_m
     return ResolvedSolid(beam.uid, beam.tag, storey_tag, "beam", tuple(outline), z0, z1)

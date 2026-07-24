@@ -16,6 +16,9 @@ class JoistSpec(HausModel):
     spacing: Length | None = None  # o.c.; defaults to 16" at the solver
     direction: str = "x"  # "x" | "y" — joist span direction in the plan frame
     bearing_refs: tuple[str, ...] = ()
+    # Overhang past the two outermost bearing lines (a balcony/porch deck cantilevers its
+    # joist tips beyond the beam so the decking covers them). None = flush ends.
+    cantilever: Length | None = None
 
 
 class DeckLayer(HausModel):

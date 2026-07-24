@@ -59,6 +59,7 @@ def load_preferences(house_dir: Path) -> Preferences:
             max_window_ro_unbroken_in=framing.get("max_window_ro_unbroken_in", 14.0),
             max_window_ro_nonbearing_in=framing.get("max_window_ro_nonbearing_in", 30.0),
             max_window_ro_bearing_in=framing.get("max_window_ro_bearing_in", 27.0),
+            interference_tolerance_in=framing.get("interference_tolerance_in", 0.25),
         ),
         plumbing=PlumbingPreferences(
             drain_stack_required_structure_in=plumbing.get("drain_stack_required_structure_in", 5.5),

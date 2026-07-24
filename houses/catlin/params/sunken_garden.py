@@ -86,6 +86,7 @@ class SunkenGardenSpec:
     balcony_joist: str = "2x8"
     balcony_joist_oc_in: float = 16.0
     balcony_deck_thickness_in: float = 1.5  # aluminum plank
+    joist_cantilever_in: float = 6.0  # deck joist tips overhang the outer beams
     balcony_level_ft: float = 10.0  # second storey
 
 
@@ -321,10 +322,15 @@ BALCONY_BEAMS = [
 ]
 
 # Aluminum decking walking surface (framing = 2x8 joists, E-W @ 16" o.c., on the 3 beams).
+# The joists cantilever 6" past the outer (west/east) beam axes, so the decking reaches to
+# those tips (beam axis ± cantilever), not just to the inner-face line the beams sit inboard of.
+_cant_ft = SPEC.joist_cantilever_in / 12.0
+_deck_x_w = _x_ax_w - _cant_ft
+_deck_x_e = _x_ax_e + _cant_ft
 DECK_FLOOR = Slab(
     uid="SGS503AAAA", tag="SL-SG-DECK",
-    outline=(pt(ft(_x_in_w), ft(_y_ax_arch)), pt(ft(_x_in_e), ft(_y_ax_arch)),
-             pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n))),
+    outline=(pt(ft(_deck_x_w), ft(_y_ax_arch)), pt(ft(_deck_x_e), ft(_y_ax_arch)),
+             pt(ft(_deck_x_e), ft(_y_in_n)), pt(ft(_deck_x_w), ft(_y_in_n))),
     thickness=inch(SPEC.balcony_deck_thickness_in),
     assembly="BALCONY_DECK_ALUMINUM",
 )
@@ -335,7 +341,7 @@ DECK_FLOOR = Slab(
 PORCH_JOISTS = FloorSystem(
     uid="SGFS01AAAA", tag="FS-SG-PORCH",
     joists=JoistSpec(member=SPEC.porch_joist, spacing=inch(SPEC.porch_joist_oc_in),
-                     direction="y",
+                     direction="y", cantilever=inch(SPEC.joist_cantilever_in),
                      bearing_refs=("W-SG-ARCH", "BM-SG-BKW", "BM-SG-BKE")),
     outline=PORCH_FLOOR.outline,
     source="porch floor — PT 2x8 joists, front sill -> back beams",
@@ -345,7 +351,7 @@ PORCH_JOISTS = FloorSystem(
 BALCONY_JOISTS = FloorSystem(
     uid="SGFS02AAAA", tag="FS-SG-DECK",
     joists=JoistSpec(member=SPEC.balcony_joist, spacing=inch(SPEC.balcony_joist_oc_in),
-                     direction="x",
+                     direction="x", cantilever=inch(SPEC.joist_cantilever_in),
                      bearing_refs=("BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE")),
     outline=DECK_FLOOR.outline,
     source="balcony — 2x8 joists on three double-2x10 beams",

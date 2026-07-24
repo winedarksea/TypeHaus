@@ -178,6 +178,16 @@ Very small windows that don't break the stud line don't need a header added.
 +Z: vertical/up
 will need to support rotating the house off axis in the future
 
+## Framing interference (structural.member_interference)
+The new model-wide `structural.member_interference` check (a WARN-tier regression guard)
+now flags any two wood members that share plan area *and* interpenetrate vertically. The
+sunken-garden deck bearing stack (post → beam → joist, with 6" cantilevered joist tips) is
+fixed and reports **zero** findings. The check still surfaces ~2.6k pre-existing overlaps in
+other, known-incomplete framing — corner/T-junction studs, doubled corner plates,
+rafter-on-plate bearings, and stair stringer/tread joints. These are tracked to-dos, not the
+deck fix; work them down here (or suppress `structural.member_interference` per-check in
+`preferences.toml` until then).
+
 ## General Polishing Tasks
 - Make sure all warnings are cleared up
 - Make sure the BOM shows all members listed out, grouped usually by size and type
