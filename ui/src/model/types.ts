@@ -5,6 +5,15 @@
 
 export type Vec2 = [number, number];
 
+/** Mirror of the engine's `DoorOperation` enum (model/enums.py). */
+export type DoorOperation =
+  | "swing"
+  | "double_swing"
+  | "slide"
+  | "pocket"
+  | "bifold"
+  | "overhead";
+
 export interface Provenance {
   file: string;
   line: number;
@@ -313,7 +322,9 @@ export interface DoorTypeSpec {
   tag: string;
   width_m: number;
   height_m: number;
-  operation: string;
+  // Closed vocabulary mirroring the engine's `DoorOperation` enum; it selects the plan
+  // symbol, the framing pattern and the IFC operation type.
+  operation: DoorOperation;
   exterior: boolean;
 }
 

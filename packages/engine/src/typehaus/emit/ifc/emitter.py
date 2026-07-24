@@ -18,6 +18,7 @@ from shapely.ops import unary_union
 
 from typehaus._meta import IFC_APP_NAME, PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
+from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import polygon_area, rect_between
@@ -278,6 +279,22 @@ def _opening_profile(rw: ResolvedWall, opening: Any) -> list[tuple[float, float]
     return rect_between(a, b, -thickness / 2, thickness / 2)
 
 
+# DoorOperation → IfcDoorTypeOperationEnum (IFC4). Handing is authored per *instance*
+# (``flip_hinge``), not per product type, so the handed members all take the LEFT variant —
+# a type-level guess at RIGHT would be no more accurate and would churn the round-trip.
+# Two of our operations have no exact IFC4 term: a pocket door is exported as sliding
+# (IFC4 draws no pocket distinction), and a sectional overhead door as ROLLINGUP, which is
+# the schema's only overhead-track category — there is no OVERHEAD_DOOR in IFC4.
+_IFC_DOOR_OPERATION = {
+    DoorOperation.SWING: "SINGLE_SWING_LEFT",
+    DoorOperation.DOUBLE_SWING: "DOUBLE_DOOR_SINGLE_SWING",
+    DoorOperation.SLIDE: "SLIDING_TO_LEFT",
+    DoorOperation.POCKET: "SLIDING_TO_LEFT",
+    DoorOperation.BIFOLD: "FOLDING_TO_LEFT",
+    DoorOperation.OVERHEAD: "ROLLINGUP",
+}
+
+
 def _emit_opening_types(f: Any, model: ResolvedModel, project_uuid: Any) -> dict[str, Any]:
     """Create one stable IFC type per authored door/window product type."""
     result: dict[str, Any] = {}
@@ -286,6 +303,11 @@ def _emit_opening_types(f: Any, model: ResolvedModel, project_uuid: Any) -> dict
         for item in items:
             entity = ll.create_entity(f, "IfcDoorType" if kind == "door" else "IfcWindowType", name=item.tag)
             entity.GlobalId = derive_child_guid(project_uuid, f"{kind}-types", item.tag)
+            if kind == "door":
+                # Without these the authored operation is lost on export and every door
+                # reads as a plain swing in the receiving application.
+                entity.PredefinedType = "DOOR"
+                entity.OperationType = _IFC_DOOR_OPERATION[item.operation]
             ll.ensure_pset(f, entity, "TypeHaus_Identity", {"tag": item.tag, "source_type": item.tag})
             result[item.tag] = entity
     return result

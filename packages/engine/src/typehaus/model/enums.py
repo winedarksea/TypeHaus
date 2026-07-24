@@ -77,6 +77,23 @@ class Service(Enum):
     VENT = "vent"
 
 
+class DoorOperation(str, Enum):  # noqa: UP042 — StrEnum needs 3.11; the toolchain is 3.9
+    """How a door leaf moves — drives the plan symbol, framing pattern and IFC export.
+
+    The ``str`` mixin is deliberate: this value crosses three untyped boundaries (the
+    plan/model JSON, the UI catalog, the glTF emitter) where it is compared against and
+    serialized as a bare string, so widening ``DoorType.operation`` from ``str`` to this
+    enum stays backward compatible in both directions.
+    """
+
+    SWING = "swing"
+    DOUBLE_SWING = "double_swing"  # French pair: two leaves, each single-swing
+    SLIDE = "slide"
+    POCKET = "pocket"
+    BIFOLD = "bifold"
+    OVERHEAD = "overhead"  # sectional garage door, panels running up onto ceiling track
+
+
 class AlarmKind(Enum):
     """Residential life-safety alarm types (R314/R315)."""
 

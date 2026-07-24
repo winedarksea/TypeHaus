@@ -12,6 +12,7 @@ from types import SimpleNamespace
 from typehaus.model.assembly import FramingSpec, Layer
 from typehaus.model.enums import LayerFunction
 from typehaus.quantities import inch
+from typehaus.resolve.framing.openings import WallOpening
 from typehaus.resolve.framing.solver import frame_wall
 from typehaus.resolve.model import ResolvedWall
 
@@ -123,7 +124,7 @@ def test_window_that_fits_in_a_bay_gets_no_structural_header():
     plan, rw = _wall_and_plan("3-stud")
     # A 14" window (< 16" module) centered on a bay center (4.5 modules) breaks no stud.
     center = 4.5 * inch(16).meters
-    openings = [(center, inch(14).meters, inch(36).meters, inch(24).meters, False)]
+    openings = [WallOpening(center, inch(14).meters, inch(36).meters, inch(24).meters, False)]
     members = frame_wall(plan, rw, openings=openings)
     assert not [m for m in members if m.category == "header"]
     assert not [m for m in members if m.category in ("king", "jack")]
@@ -134,7 +135,7 @@ def test_window_that_fits_in_a_bay_gets_no_structural_header():
 def test_window_that_breaks_a_stud_line_gets_a_header():
     plan, rw = _wall_and_plan("3-stud")
     # A 30" window centered on a stud line breaks the run and needs a header.
-    openings = [(2.0, inch(30).meters, inch(36).meters, inch(24).meters, False)]
+    openings = [WallOpening(2.0, inch(30).meters, inch(36).meters, inch(24).meters, False)]
     members = frame_wall(plan, rw, openings=openings)
     assert [m for m in members if m.category == "header"]
     assert [m for m in members if m.category == "jack"]
