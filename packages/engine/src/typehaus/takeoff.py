@@ -110,6 +110,34 @@ def framing_bom_by_size(model: ResolvedModel) -> list[dict[str, object]]:
     return [by_size[profile] for profile in sorted(by_size)]
 
 
+def construction_returns_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
+    """Bill the pre-framing ConstructionRule returns (#45), one row per take-off category.
+
+    Each authored :class:`~typehaus.model.assembly.ConstructionRule` return
+    (:class:`~typehaus.resolve.model.ResolvedConstructionReturn`) contributes its lineal run
+    and count to the ``takeoff_category`` it declares — a PT sill plate, the sauna liner
+    return, the foundation foam return, the masonry corner return. Rows reconcile 1:1 with
+    ``model.construction_returns`` so the BOM matches the geometry the section/3D/IFC render.
+    """
+    Row = dict[str, object]
+    groups: dict[tuple[str, str], Row] = {}
+    for ret in model.construction_returns:
+        category = ret.takeoff_category or ret.kind
+        key = (category, ret.material_ref)
+        row = groups.get(key)
+        if row is None:
+            row = groups[key] = {"category": category, "material": ret.material_ref,
+                                 "kind": ret.kind, "count": 0, "length_m": 0.0}
+        row["count"] = int(row["count"]) + 1
+        row["length_m"] = float(row["length_m"]) + ret.length_m
+    return [
+        {"category": row["category"], "material": row["material"], "kind": row["kind"],
+         "count": int(row["count"]),
+         "length_ft": round(float(row["length_m"]) * _M_TO_FT, 1)}
+        for row in (groups[key] for key in sorted(groups))
+    ]
+
+
 def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Return net-area and whole-sheet quantities for wall, roof, and subfloor sheathing.
 

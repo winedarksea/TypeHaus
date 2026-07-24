@@ -154,6 +154,48 @@ class ResolvedOpening:
 
 
 @dataclass(frozen=True)
+class ResolvedConstructionReturn:
+    """A pre-framing construction-rule return (#45): the physical membrane / foam / liner /
+    masonry lap that closes a resolved junction, plus the overlay metadata a detail recipe
+    needs.
+
+    Emitted by :mod:`typehaus.resolve.construction` from a ``PlanModel.construction_rules``
+    entry — authoring a :class:`~typehaus.model.assembly.ConstructionRule` is enough to get
+    geometry + BOM + overlay. The same outline/z is also appended to ``model.solids`` so the
+    glTF, IFC, section, and model.json paths render it. It bills through
+    :func:`typehaus.takeoff.construction_returns_takeoff` (honouring ``takeoff_category``),
+    and carries the element tags + lap / sealant / flashing / thermal-continuity an overlay
+    recipe binds to. It never mutates construction geometry: a Transition *documents* it
+    (via ``documents_rules``), keyed to the existing boundary condition named here.
+    """
+
+    uid: str
+    tag: str  # the ConstructionRule tag, e.g. "CR-CONC-TO-FRAMED-SILL"
+    storey: str
+    kind: str  # rule.kind: "bearing_plate" | "blocking" | ...
+    applies_to: str  # the rule.applies_to predicate that matched
+    takeoff_category: str | None
+    material_ref: str
+    # Participating wall/junction tags — what the overlay recipe anchors to.
+    element_tags: tuple[str, ...]
+    outline: Ring
+    z0_m: float
+    z1_m: float
+    thickness_m: float  # the returning material's depth (strip width in plan)
+    length_m: float  # the run of the return (lineal take-off quantity)
+    # Overlay metadata for the detail recipe (worker V3 binds these):
+    lap_m: float  # the authored return/lap dimension
+    thermal_continuity: bool = False
+    air_vapor_continuity: bool = False
+    sealant: str | None = None
+    flashing: str | None = None
+    returning_layer: str | None = None  # name of the layer that turns the corner
+    # The existing derived boundary-condition key this return documents (stacking /
+    # assembly-change), so an overlay can join return -> condition -> Transition.
+    condition_key: str | None = None
+
+
+@dataclass(frozen=True)
 class ResolvedSolid:
     """A resolved horizontal or below-grade solid with a plan outline.
 
@@ -367,6 +409,7 @@ class ResolvedModel:
     junctions: list[ResolvedJunction] = field(default_factory=list)
     openings: list[ResolvedOpening] = field(default_factory=list)
     solids: list[ResolvedSolid] = field(default_factory=list)
+    construction_returns: list[ResolvedConstructionReturn] = field(default_factory=list)
     roofs: list[ResolvedRoof] = field(default_factory=list)
     stairs: list[ResolvedStair] = field(default_factory=list)
     floors: list[ResolvedFloor] = field(default_factory=list)

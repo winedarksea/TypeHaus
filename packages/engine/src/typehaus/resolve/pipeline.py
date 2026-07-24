@@ -15,6 +15,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.accessories import resolve_accessories
+from typehaus.resolve.construction import apply_construction_rules
 from typehaus.resolve.envelope import resolve_columns_and_beams, resolve_envelope_geometry
 from typehaus.resolve.floor_heat import resolve_floor_heat
 from typehaus.resolve.floors import resolve_floors
@@ -63,6 +64,10 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
     with _stage("envelope"):
         findings.extend(resolve_envelope_geometry(model))
         apply_to_roof_wall_tops(model)
+    with _stage("construction"):
+        # Pre-framing (#45): apply authored ConstructionRule returns (sill/foam/liner/masonry
+        # laps) as construction geometry + take-off + overlay data, before members are framed.
+        findings.extend(apply_construction_rules(model))
     with _stage("framing"):
         findings.extend(frame_model(plan, model))
         findings.extend(frame_roofs(model))
