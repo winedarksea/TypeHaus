@@ -9,13 +9,26 @@ invents a position or a route.
 
 from __future__ import annotations
 
-from typehaus.findings import Finding
+import math
+
+from typehaus.findings import Finding, Result, Severity
 from typehaus.model.mep import Sump, VentRun
 from typehaus.model.structure import Connector, Dowel, Railing
 from typehaus.model.trim import Fascia, Flashing, Gutter
 from typehaus.quantities import inch
-from typehaus.resolve.geometry import length, rect_between, sub
+from typehaus.resolve.geometry import circle_outline, length, rect_between, sub
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
+from typehaus.resolve.vent_termination import (
+    derived_termination_elevation,
+    exterior_riser_point,
+)
+
+# Pipe risers are round sections faceted into the prism-only solid IR. A horizontal run
+# cannot be a vertical prism at all, so it is stacked out of bands whose plan width tracks
+# the circle; four bands is where the silhouette stops reading as a square post.
+_PIPE_FACETS = 12
+_PIPE_SWEEP_BANDS = 4
+_PIPE_BUNDLE_SPACING = 1.6  # centre-to-centre spacing of bundled risers, in diameters
 
 # Trim ``TrimKind`` values collapse onto a small render/IFC category set.
 _TRIM_CATEGORY = {
@@ -27,7 +40,9 @@ _TRIM_CATEGORY = {
 
 
 def resolve_accessories(model: ResolvedModel) -> list[Finding]:
-    """Append accessory solids to ``model.solids``. Never fails a build (geometry only)."""
+    """Append accessory solids to ``model.solids``. Geometry only, so the findings it can
+    return are WARN-tier reports of geometry it could not derive — never a build failure."""
+    findings: list[Finding] = []
     for storey in model.plan.storeys:
         for el in model.plan.storey_elements(storey.tag):
             if isinstance(el, Dowel):
@@ -39,10 +54,10 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
             elif isinstance(el, Sump):
                 _resolve_sump(model, el, storey)
             elif isinstance(el, VentRun):
-                _resolve_vent(model, el, storey.tag)
+                findings.extend(_resolve_vent(model, el, storey.tag))
             elif isinstance(el, (Fascia, Gutter, Flashing)):
                 _resolve_edge_run(model, el, storey.tag)
-    return []
+    return findings
 
 
 # --- helpers ----------------------------------------------------------------
@@ -172,37 +187,69 @@ def _resolve_sump(model: ResolvedModel, el: Sump, storey) -> None:
     ))
 
 
-def _resolve_vent(model: ResolvedModel, el: VentRun, storey: str) -> None:
+def _round_run_bands(start: tuple[float, float], end: tuple[float, float], radius: float,
+                     center_z: float) -> list[tuple[list[tuple[float, float]], float, float]]:
+    """Approximate a horizontal pipe as ``(outline, z0, z1)`` bands stacked in Z.
+
+    ``ResolvedSolid`` only extrudes a plan outline vertically, so a horizontal run has no
+    round cross-section available to it. Each band spans an equal arc of the circle and is
+    as wide as the chord at that arc's midpoint, so the stack neither inscribes nor
+    circumscribes the pipe and its silhouette stays centred on the true diameter.
+    """
+    bands = []
+    for index in range(_PIPE_SWEEP_BANDS):
+        low_angle = math.pi * index / _PIPE_SWEEP_BANDS
+        high_angle = math.pi * (index + 1) / _PIPE_SWEEP_BANDS
+        half_width = radius * math.sin((low_angle + high_angle) / 2.0)
+        bands.append((rect_between(start, end, -half_width, half_width),
+                      center_z - radius * math.cos(low_angle),
+                      center_z - radius * math.cos(high_angle)))
+    return bands
+
+
+def _resolve_vent(model: ResolvedModel, el: VentRun, storey: str) -> list[Finding]:
     cx, cy = el.chase_position.xy_m
     ox, oy = el.exit_offset.xy_m
-    ex, ey = cx + ox, cy + oy
+    ex, ey = exterior_riser_point(el)
     z_start, z_exit = el.start_elevation.meters, el.exit_elevation.meters
-    z_top = el.roof_termination_elevation.meters
-    dia = el.diameter.meters
+    # The termination is a *derived* dimension: 12" above the roof plane at the riser, not
+    # an independent input. Authored elevations only stand in where no roof is derivable.
+    derived_top = derived_termination_elevation(model, el)
+    authored_top = (el.roof_termination_elevation.meters
+                    if el.roof_termination_elevation is not None else None)
+    z_top = derived_top if derived_top is not None else authored_top
+    if z_top is None:
+        return [Finding(
+            severity=Severity.WARN, check_id="integrity.vent_termination_unresolved",
+            message=(f"vent {el.tag} clears no derivable roof and authors no "
+                     "roof_termination_elevation — its exterior riser is not resolved"),
+            element_tags=(el.tag,), result=Result.FAIL)]
+    radius = el.diameter.meters / 2.0
     # Parallel risers, one per bundled system, offset perpendicular to the horizontal jog.
     perp_x = abs(oy) >= abs(ox)  # offset in x when the jog is mostly along y
     n = max(len(el.systems), 1)
     for i, system in enumerate(el.systems or (None,)):
-        d = (i - (n - 1) / 2.0) * dia * 1.6
+        d = (i - (n - 1) / 2.0) * el.diameter.meters * _PIPE_BUNDLE_SPACING
         dx, dy = (d, 0.0) if perp_x else (0.0, d)
         sysname = system.value if system is not None else "vent"
         key = f"{el.uid}-{sysname}"
         # 1) up the chase
         model.solids.append(ResolvedSolid(
             uid=f"{key}-riser", tag=f"{el.tag}-{sysname}-CHASE", storey=storey,
-            category="vent", outline=_square(cx + dx, cy + dy, dia / 2.0, dia / 2.0),
+            category="vent", outline=circle_outline((cx + dx, cy + dy), radius, _PIPE_FACETS),
             z0_m=z_start, z1_m=z_exit))
         # 2) 90° out through the wall
-        model.solids.append(ResolvedSolid(
-            uid=f"{key}-out", tag=f"{el.tag}-{sysname}-OUT", storey=storey,
-            category="vent",
-            outline=rect_between((cx + dx, cy + dy), (ex + dx, ey + dy), -dia / 2.0, dia / 2.0),
-            z0_m=z_exit - dia / 2.0, z1_m=z_exit + dia / 2.0))
+        for band, (outline, z0, z1) in enumerate(
+                _round_run_bands((cx + dx, cy + dy), (ex + dx, ey + dy), radius, z_exit)):
+            model.solids.append(ResolvedSolid(
+                uid=f"{key}-out{band:02d}", tag=f"{el.tag}-{sysname}-OUT{band + 1}", storey=storey,
+                category="vent", outline=outline, z0_m=z0, z1_m=z1))
         # 3) 90° up the siding to 12" above the roof
         model.solids.append(ResolvedSolid(
             uid=f"{key}-term", tag=f"{el.tag}-{sysname}-TERM", storey=storey,
-            category="vent", outline=_square(ex + dx, ey + dy, dia / 2.0, dia / 2.0),
+            category="vent", outline=circle_outline((ex + dx, ey + dy), radius, _PIPE_FACETS),
             z0_m=z_exit, z1_m=z_top))
+    return []
 
 
 def _resolve_edge_run(model: ResolvedModel, el, storey: str) -> None:

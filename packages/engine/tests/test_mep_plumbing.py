@@ -154,6 +154,83 @@ def test_drain_slope_unknown_without_inverts():
     assert model.pipe_runs[0].z_end_m is None
 
 
+def _vent_termination_context(authored_termination):
+    """A one-roof, one-vent context for the termination check.
+
+    Gable, ridge along y, eave 3 m, ridge 5 m over a 10x10 footprint: the riser at x=2 m
+    sits 40% of the way up the rake, so the roof plane there is 3.8 m and the derived
+    termination 12" above it.
+    """
+    from typehaus.checks.registry import CheckContext, JurisdictionProfile, Preferences
+    from typehaus.model.enums import PipeSystem
+    from typehaus.model.mep import VentRun
+    from typehaus.quantities import inch, m, pt
+    from typehaus.resolve.model import ResolvedModel, ResolvedRoof
+
+    vent = VentRun(uid="V1", tag="VR-TEST", systems=(PipeSystem.VENT,), diameter=inch(3),
+                   chase_position=pt(m(2), m(2)), start_elevation=m(0), exit_elevation=m(3),
+                   exit_offset=pt(m(0), m(1)),
+                   roof_termination_elevation=authored_termination)
+
+    class _FakePlan:
+        storeys: list = []
+
+        def storey_elements(self, tag):
+            return [vent]
+
+        def by_tag(self, tag):
+            return vent if tag == vent.tag else None
+
+    class _FakeStorey:
+        tag = "attic"
+
+    _FakePlan.storeys = [_FakeStorey()]
+    plan = _FakePlan()
+    model = ResolvedModel(plan=plan)
+    model.roofs.append(ResolvedRoof(
+        uid="R1", tag="RF-TEST", storey="attic", form="gable",
+        footprint=[(0.0, 0.0), (10.0, 0.0), (10.0, 10.0), (0.0, 10.0)],
+        eave_z_m=3.0, ridge_z_m=5.0, ridge_direction="y", assembly="A",
+        surface_area_m2=100.0,
+    ))
+    return CheckContext(plan=plan, model=model, preferences=Preferences(),
+                        profile=JurisdictionProfile(name="t", edition="t", effective_date="t",
+                                                     irc_base="t", coverage_statement="t"))
+
+
+def test_vent_termination_height_flags_an_authored_elevation_above_the_roof():
+    from typehaus.checks.mep.plumbing import vent_termination_height
+    from typehaus.quantities import m
+
+    findings = vent_termination_height(_vent_termination_context(m(5.5)))
+    assert [f.result.value for f in findings] == ["fail"]
+    assert "1.4" in findings[0].message or "too high" in findings[0].message
+    # Advisory findings never block the permit gate (see plumbing.py's _advisory_fail).
+    assert findings[0].severity.value == "warn"
+
+
+def test_vent_termination_height_passes_an_authored_elevation_that_matches():
+    from typehaus.checks.mep.plumbing import vent_termination_height
+    from typehaus.quantities import inch, m
+
+    matching = m(3.8 + inch(12).meters)
+    findings = vent_termination_height(_vent_termination_context(matching))
+    assert [f.result.value for f in findings] == ["pass"]
+
+
+def test_vent_termination_height_passes_when_the_elevation_is_left_derived():
+    from typehaus.checks.mep.plumbing import vent_termination_height
+
+    findings = vent_termination_height(_vent_termination_context(None))
+    assert [f.result.value for f in findings] == ["pass"]
+
+
+def test_catlin_vent_termination_height_passes(catlin_model):
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    matched = [f for f in report.findings if f.check_id == "mep.vent_termination_height"]
+    assert matched and all(f.result.value == "pass" for f in matched)
+
+
 def test_missing_sleeve_over_slab_fails():
     from typehaus.checks.mep.plumbing import _missing_sleeve_findings
     from typehaus.checks.registry import CheckContext, JurisdictionProfile, Preferences

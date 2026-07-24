@@ -10,12 +10,21 @@ from __future__ import annotations
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import Service
+from typehaus.model.mep import VentRun
+from typehaus.resolve.vent_termination import (
+    VENT_TERMINATION_CLEARANCE_M,
+    derived_termination_elevation,
+)
 
 _ALIGNMENT_TOLERANCE_M = 0.0127  # 1/2"
 _M_TO_IN = 39.37007874015748
+_M_TO_FT = 3.280839895
 _MIN_SLOPE_SMALL_IN_PER_FT = 0.25  # <= 3" diameter
 _MIN_SLOPE_LARGE_IN_PER_FT = 0.125  # > 3" diameter
 _LARGE_DIAMETER_M = 0.0762  # 3"
+# A hand-authored termination is a dimension a builder reads off the plan set, so it only
+# has to agree with the derived plane to within the 1" the elevation is drawn at.
+_TERMINATION_TOLERANCE_M = 0.0254  # 1"
 
 
 def _pass(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
@@ -134,6 +143,55 @@ def drain_slope(ctx: CheckContext) -> list[Finding]:
                 f"pipe run {run.tag} slopes {slope_in_per_ft:.3f}\"/ft, below the "
                 f"{minimum}\"/ft minimum", (run.tag,),
             ))
+    return out
+
+
+@check(Tier.ADVISORY, "mep.vent_termination_height")
+def vent_termination_height(ctx: CheckContext) -> list[Finding]:
+    """A hand-authored ``roof_termination_elevation`` must agree with the roof it clears.
+
+    The resolver terminates every riser 12" above the roof plane *at the riser's own plan
+    point*, so an authored absolute is an assertion, not an input. Flagging the disagreement
+    is what catches a riser authored above its own ridge — the plan set prints the authored
+    number, and a builder sets the pipe from the print.
+    """
+    out: list[Finding] = []
+    clearance_in = VENT_TERMINATION_CLEARANCE_M * _M_TO_IN
+    for storey in ctx.plan.storeys:
+        for vent in ctx.plan.storey_elements(storey.tag):
+            if not isinstance(vent, VentRun):
+                continue
+            derived = derived_termination_elevation(ctx.model, vent)
+            if derived is None:
+                out.append(_unknown(
+                    "mep.vent_termination_height",
+                    f"vent {vent.tag} clears no derivable roof (wall_ref={vent.wall_ref!r})",
+                    (vent.tag,),
+                ))
+                continue
+            if vent.roof_termination_elevation is None:
+                out.append(_pass(
+                    "mep.vent_termination_height",
+                    f"vent {vent.tag} terminates at {derived * _M_TO_FT:.2f}', "
+                    f"{clearance_in:.0f}\" above the roof plane at its riser", (vent.tag,),
+                ))
+                continue
+            authored = vent.roof_termination_elevation.meters
+            delta_in = (authored - derived) * _M_TO_IN
+            if abs(delta_in) <= _TERMINATION_TOLERANCE_M * _M_TO_IN:
+                out.append(_pass(
+                    "mep.vent_termination_height",
+                    f"vent {vent.tag}'s authored termination matches the roof plane "
+                    f"{clearance_in:.0f}\" clearance", (vent.tag,),
+                ))
+            else:
+                out.append(_advisory_fail(
+                    "mep.vent_termination_height",
+                    f"vent {vent.tag} authors a {authored * _M_TO_FT:.2f}' termination "
+                    f"but the roof plane at its riser puts it at "
+                    f"{derived * _M_TO_FT:.2f}' — {abs(delta_in):.0f}\" too "
+                    f"{'high' if delta_in > 0 else 'low'}", (vent.tag,),
+                ))
     return out
 
 

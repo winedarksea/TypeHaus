@@ -22,6 +22,7 @@ from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import polygon_area, rect_between
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.resolve.placeables import resolved_mount_elevation
 
 
 def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
@@ -756,10 +757,9 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
     x, y = device.position.xy_m
     half = 0.05  # 4"x4" nominal device box
     outline = resolved.footprint if resolved is not None else _rectangle(x, y, half * 2, half * 2)
-    outlet_kinds = ("receptacle", "gfci", "receptacle_240")
-    mount_default = 1.219 if device.kind.value in outlet_kinds else 0.406
-    mount = device.mount_height.meters if device.mount_height is not None else mount_default
-    z0 = resolved.z_m if resolved is not None else storey.elevation.meters + mount
+    # The placeable resolver owns the Mount contract, so IFC reads the same elevation as
+    # glTF and the UI instead of carrying its own per-kind defaults (which used to diverge).
+    z0 = resolved.z_m if resolved is not None else resolved_mount_elevation(storey, device)
     ifc_class, _ = _device_ifc_classes(device.kind.value)
     element = ll.create_entity(f, ifc_class, name=device.tag)
     element.GlobalId = derive_guid(project_uuid, device.uid)

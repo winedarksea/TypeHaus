@@ -106,31 +106,40 @@ class Sump(Element):
 class VentRun(Element):
     """A vertical vent riser bundling one or more systems up a shared mechanical chase.
 
-    Encodes the Catlin routing intent: up the chase to ``exit_elevation`` (near the attic
-    ceiling), a 90° turn out through the wall by ``exit_offset``, then 90° back up the
-    siding — clamped to the standing seam — terminating ``roof_termination_elevation``
-    (12" above the roof). The resolver derives the 4-point 3D polyline from these fields;
-    it never invents the route. ``systems`` is typically (RADON, VENT)."""
+    Encodes the Catlin routing intent: up the chase to ``exit_elevation`` (below the roof
+    plane, so the jog stays inside), a 90° turn out through the wall by ``exit_offset``,
+    then 90° back up the siding — clamped to the standing seam — terminating 12" above the
+    roof. The resolver derives the 4-point 3D polyline from these fields; it never invents
+    the route. ``systems`` is typically (RADON, VENT).
+
+    The termination height is *derived* from the roof plane at the exterior riser
+    (resolve/vent_termination.py), not authored: an authored absolute cannot follow a rake
+    it does not know about. ``roof_termination_elevation`` is therefore optional — supply
+    it only where no roof is derivable, or as an assertion the ``mep.vent_termination_height``
+    check validates against the derived value."""
 
     systems: tuple[PipeSystem, ...]
     diameter: Length
     chase_position: Point2D  # plan location of the chase
     start_elevation: Length  # where the riser starts (project-frame absolute)
-    exit_elevation: Length  # near the attic ceiling, where it turns out
+    exit_elevation: Length  # below the roof plane at the chase, where it turns out
     exit_offset: Point2D  # horizontal delta chase -> exterior riser plan location
-    roof_termination_elevation: Length  # top of riser (12" above roof), project-frame
+    roof_termination_elevation: Length | None = None  # optional; normally derived
     wall_ref: str | None = None  # exterior wall the riser penetrates / rides
     attachment: str = "standing_seam_clamp"  # how the exterior riser is fixed to the siding
 
 
 @register_element
 class ElectricalDevice(Element):
-    """A device symbol — schema keeps a ``circuit`` hook for a future panel schedule."""
+    """A device symbol — schema keeps a ``circuit`` hook for a future panel schedule.
+
+    Height comes from ``mount`` like every other placeable; the former ``mount_height``
+    scalar was a second, device-only source of truth that the placeable resolver never
+    read, so every light silently resolved to the floor."""
 
     kind: DeviceKind
     position: Point2D
     wall_ref: str | None = None
-    mount_height: Length | None = None
     circuit: str | None = None  # future panel-schedule hook; no consumer yet
     type_ref: str | None = None
     room: str | None = None

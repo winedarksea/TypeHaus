@@ -33,6 +33,7 @@ from typehaus.model import (
     WallAttachment,
     deg,
     ft,
+    inch,
     m,
     pt,
     from_node,
@@ -285,12 +286,31 @@ def test_mount_resolution_uses_floor_wall_and_ceiling_reference_frames() -> None
             Furniture(tag="FLOOR", type_ref="F", position=pt(m(0), m(0))),
             Furniture(tag="WALL", type_ref="F", position=pt(m(1), m(0)), mount=Mount(kind=MountKind.WALL, elevation=m(1.2))),
             Furniture(tag="CEILING", type_ref="F", position=pt(m(2), m(0)), mount=Mount(kind=MountKind.CEILING, drop=m(0.3))),
+            # An explicit elevation wins over the storey's ceiling height: a fixture hung
+            # at a stated height stays there whatever the ceiling above it does.
+            Furniture(tag="CEILING_AT_HEIGHT", type_ref="F", position=pt(m(3), m(0)),
+                      mount=Mount(kind=MountKind.CEILING, elevation=m(2.4))),
         )},
     )
     model, findings = resolve(plan)
     assert not [finding for finding in findings if finding.severity.value == "error"]
     heights = {item.tag: item.z_m for item in model.canvas_objects}
-    assert heights == {"FLOOR": 10.0, "WALL": 11.2, "CEILING": 12.7}
+    assert heights == {"FLOOR": 10.0, "WALL": 11.2, "CEILING": 12.7,
+                       "CEILING_AT_HEIGHT": 12.4}
+
+
+def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
+    """Lights used to resolve to the floor: ``mount_height`` was a second, unread field."""
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    plan = load_plan(house).plan
+    model, _ = resolve(plan)
+    storey_elevation = {storey.tag: storey.elevation.meters for storey in plan.storeys}
+    lights = [item for item in model.canvas_objects if item.type_ref == "ED-T-LIGHT"]
+    assert lights
+    for light in lights:
+        assert light.z_m - storey_elevation[light.storey] == pytest.approx(ft(8).meters)
+    switch = next(item for item in model.canvas_objects if item.tag == "ED-M-LIVING-SW")
+    assert switch.z_m == pytest.approx(inch(48).meters)
 
 
 def test_placeable_drag_updates_the_explicit_containing_room_assignment() -> None:
