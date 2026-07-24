@@ -323,6 +323,11 @@ export interface MaterialSpec {
   r_per_inch: number | null;
   perm_rating: number | null;
   density: number | null;
+  // Authored appearance (server/model_json.py). `color` is the material's own hex; `finish`
+  // names its 3D recipe ("brick" | "white-brick" | "cmu" | ...). Both are optional: a material
+  // that authors neither falls back to the family inferred from its tag (nordic/palette.ts).
+  color?: string | null;
+  finish?: string | null;
 }
 
 export interface CatalogLayer {

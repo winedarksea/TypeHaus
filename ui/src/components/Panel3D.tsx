@@ -3,8 +3,8 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { ALL_TRADES, useStore, type Trade } from "../state/store";
-import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
-import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
+import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, MaterialSpec, Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
+import { authoredAppearance, materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
 import { applyMasonryWallUv, applyStandingSeamWallUv, createMasonryMaterial, createStandingSeamMaterial, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM } from "../three/materials";
 import { aboveStructureLayers, boundaryEdges, roofOffsetter, roofPlaneTriangles } from "../three/roofGeometry";
@@ -486,7 +486,8 @@ function createScene(
     const center: PlanCenter = [cx, cz];
     for (const w of m.walls) {
       const wallOpenings = m.openings.filter((opening) => opening.host === w.tag);
-      buildWall(tradeGroups, w, wallOpenings, center, mode, palette, picks, byUid);
+      buildWall(tradeGroups, w, wallOpenings, center, mode, palette, picks, byUid,
+        m.catalog?.materials);
       for (const opening of wallOpenings) {
         const isDoubleSwing = m.catalog?.door_types.find((dt) => dt.tag === opening.type_ref)?.operation === "double_swing";
         buildOpening(tradeGroups.openings, opening, w, center, mode, palette, isDoubleSwing);
@@ -824,6 +825,7 @@ function buildWall(
   palette: ResolvedNordicPalette,
   picks: THREE.Mesh[],
   byUid: Map<string, THREE.Material[]>,
+  materials?: MaterialSpec[],
 ) {
   const mats: THREE.Material[] = [];
   for (const ly of w.layers) {
@@ -834,18 +836,22 @@ function buildWall(
     const seam = ly.function === "cladding" && isStandingSeam(ly.material);
     // Masonry (brick/CMU/stone) gets coursing + recessed mortar, not a flat fill — a brick
     // veneer or CMU wythe otherwise read like painted drywall. The style (module + mortar +
-    // colour) is chosen from the material ref, so CMU reads as 16"×8" grey block and a
-    // "white" brick ref reads as whitewash over grey mortar; everything else stays red brick.
-    const masonryStyle = !seam && isMasonry(ly.material) ? masonryStyleFor(ly.material) : null;
+    // jitter) comes from the material's authored `finish`, so CMU reads as 16"×8" grey block
+    // and white brick as whitewash over grey mortar; only a material that declares nothing
+    // falls back to guessing from its tag.
+    const appearance = authoredAppearance(ly.material, materials);
+    const masonryStyle = !seam && isMasonry(ly.material)
+      ? masonryStyleFor(ly.material, appearance?.finish) : null;
     const mat = seam
       ? createStandingSeamMaterial(mode, [
         Math.hypot(w.axis[1][0] - w.axis[0][0], w.axis[1][1] - w.axis[0][1]),
         Math.max(0.1, w.z1_m - w.z0_m),
       ], 0xE8E8E2, true)
       : masonryStyle
-        ? createMasonryMaterial(mode, masonryStyle, materialColor(ly.material, palette))
+        ? createMasonryMaterial(mode, masonryStyle,
+          materialColor(ly.material, palette, materials), appearance?.color)
         : new THREE.MeshStandardMaterial({
-          color: new THREE.Color(materialColor(ly.material, palette)),
+          color: new THREE.Color(materialColor(ly.material, palette, materials)),
           roughness: mode === "nordic" ? 0.85 : 1,
           metalness: 0,
           flatShading: mode === "schematic",
