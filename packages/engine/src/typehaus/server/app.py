@@ -20,7 +20,16 @@ from typehaus.source.ops import PatchOp
 from typehaus.source.writeback import WritebackError
 
 
-def create_app(house_dir: Path) -> Any:
+def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
+    """Build the FastAPI app.
+
+    ``ui_dist`` — when given a built UI directory (``ui/dist`` holding ``index.html``) the
+    compiled single-page app is served at ``/`` alongside the API, so a user on another
+    machine runs one ``haus serve`` command and opens the app in a browser (V6). The API
+    routes are registered first and always win; a trailing SPA catch-all serves real static
+    files and falls back to ``index.html`` for client-side routes. Omit it (the default) to
+    keep the historical API-only server used by the test-suite.
+    """
     from contextlib import asynccontextmanager
 
     from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -249,7 +258,38 @@ def create_app(house_dir: Path) -> Any:
         except WebSocketDisconnect:
             bus.disconnect(ws)
 
+    # V6 — serve the compiled SPA (must be registered LAST so every API route above wins the
+    # match; this GET catch-all only fires for paths no API route claimed).
+    if ui_dist is not None:
+        _mount_spa(app, ui_dist)
+
     return app
+
+
+def _mount_spa(app: Any, ui_dist: Path) -> None:
+    """Serve the compiled UI at ``/`` with a single-page-app fallback (V6).
+
+    Real files under ``ui_dist`` (``index.html``, hashed ``assets/*``, the PWA tarballs, the
+    service worker) are returned directly; any other GET path falls back to ``index.html`` so
+    client-side routes deep-link. Paths that escape ``ui_dist`` (``..`` traversal) 404.
+    """
+    from fastapi.responses import FileResponse, JSONResponse
+
+    root = ui_dist.resolve()
+    index = root / "index.html"
+
+    @app.get("/{full_path:path}")
+    def spa(full_path: str) -> Any:
+        if full_path:
+            candidate = (root / full_path).resolve()
+            if candidate.is_file() and (candidate == root or root in candidate.parents):
+                return FileResponse(candidate)
+        if index.is_file():
+            return FileResponse(index, media_type="text/html")
+        return JSONResponse(
+            {"error": "UI not built — run `npm run build` in ui/ to produce ui/dist"},
+            status_code=404,
+        )
 
 
 def _reference_root(house_dir: Path) -> Path:

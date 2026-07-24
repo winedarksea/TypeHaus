@@ -2,8 +2,9 @@
 // Worker; no server, no network after first load. Read/compute is fully supported — getModel,
 // getChecks, build, getArtifact("glb"). Editing (patchPlan/undo/redo) is now served in-browser by
 // the pure-Python, libcst-free writeback backend, so the PWA is a real editor offline. Macros
-// (generative params/ logic) and IFC export stay local-serve features and surface as a clear
-// "requires local install" degradation. This is the second implementation of the same interface
+// (generative params/ logic) stay local-serve features. IFC export now live-loads the packaged
+// extension tarball client-side (V6); until an ifcopenshell-wasm wheel is bundled it still
+// surfaces a clear "requires local install" degradation. This is the second implementation of the same interface
 // HttpEngineClient satisfies.
 
 import type { Finding, Model } from "../model/types";
@@ -29,6 +30,15 @@ import {
 export type HouseFiles = Record<string, string>;
 
 const PYODIDE_INDEX_URL = "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/";
+
+// The optional IFC extension (built by scripts/build-pwa-assets.mjs). The tarball ships the
+// `typehaus/emit/ifc` sources the core bundle excludes; it is fetched + unpacked lazily on the
+// first IFC export, not at boot. `VITE_IFC_WASM_URL`, when set to an ifcopenshell-wasm wheel,
+// completes the client-side export path; without it the user gets a precise "run haus serve
+// locally" degradation (see worker.ts ensureIfc). Same-origin, so it works from the served PWA.
+const IFC_EXT_TAR = "typehaus-ifc-ext.tar";
+const IFC_WASM_URL: string | undefined =
+  (import.meta.env.VITE_IFC_WASM_URL as string | undefined) || undefined;
 
 // Thrown for calls that the offline engine cannot serve without a local install.
 export class OfflineUnsupported extends EngineError {
@@ -83,6 +93,8 @@ export class PyodideEngineClient implements EngineClient {
     await this.call("init", {
       pyodideIndexUrl: PYODIDE_INDEX_URL,
       engineTarUrl: new URL("typehaus-engine.tar", document.baseURI).href,
+      ifcExtTarUrl: new URL(IFC_EXT_TAR, document.baseURI).href,
+      ifcWasmUrl: IFC_WASM_URL,
     });
     await this.call("loadHouse", { root: this.root, files: this.files });
     for (const l of this.statusListeners) l(true);
@@ -126,7 +138,23 @@ export class PyodideEngineClient implements EngineClient {
 
   async getArtifact(kind: EngineArtifact): Promise<Blob> {
     await this.initialized;
-    if (kind === "ifc") throw new OfflineUnsupported("IFC export");
+    if (kind === "ifc") {
+      // Live-load the packaged IFC extension and emit client-side (V6). The worker fetches +
+      // unpacks typehaus-ifc-ext.tar and, when a wasm wheel is configured, instantiates
+      // ifcopenshell; otherwise it rejects with the documented "requires ifcopenshell-wasm /
+      // run haus serve" message, which we normalise to OfflineUnsupported for the UI banner.
+      try {
+        const bytes = await this.call<Uint8Array>("ifc");
+        return new Blob([bytes as unknown as BlobPart], { type: "application/x-step" });
+      } catch (err) {
+        // Surface the precise worker reason (no wasm wheel bundled, tarball fetch failure, …)
+        // while keeping the OfflineUnsupported type the UI degradation banner keys off.
+        const reason = err instanceof Error ? err.message : String(err);
+        const wrapped = new OfflineUnsupported("IFC export");
+        wrapped.message = reason;
+        throw wrapped;
+      }
+    }
     const bytes = await this.call<Uint8Array>("glb");
     return new Blob([bytes as unknown as BlobPart], { type: "model/gltf-binary" });
   }

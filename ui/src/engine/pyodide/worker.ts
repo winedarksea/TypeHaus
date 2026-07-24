@@ -1,8 +1,9 @@
 /// <reference lib="webworker" />
 // Pyodide Web Worker — the offline engine host (→ 40 WP4.2). Loads pyodide + pydantic + shapely,
 // unpacks the bundled engine tarball onto sys.path, runs the bootstrap, then serves RPC:
-// loadHouse / model / checks / glb. Mutation + IFC are refused in bootstrap.py (stubbed deps),
-// so the client surfaces them as "requires local install" without ever reaching here.
+// loadHouse / model / checks / glb / ifc. IFC export lazily unpacks the packaged extension
+// tarball (see ensureIfc); without a bundled ifcopenshell-wasm wheel it surfaces a precise
+// "requires local install" degradation rather than a silent failure.
 
 import bootstrapSrc from "./bootstrap.py?raw";
 
@@ -13,6 +14,9 @@ interface InitMsg {
   type: "init";
   pyodideIndexUrl: string;
   engineTarUrl: string;
+  // Optional IFC extension (loaded lazily on the first IFC export, not at boot):
+  ifcExtTarUrl?: string; // typehaus-ifc-ext.tar (the emit/ifc sources excluded from core)
+  ifcWasmUrl?: string; // ifcopenshell-wasm wheel to micropip-install, when available
 }
 interface LoadHouseMsg {
   id: number;
@@ -22,7 +26,7 @@ interface LoadHouseMsg {
 }
 interface CallMsg {
   id: number;
-  type: "model" | "checks" | "glb" | "detailIndex" | "undo" | "redo";
+  type: "model" | "checks" | "glb" | "ifc" | "detailIndex" | "undo" | "redo";
 }
 interface DetailMsg {
   id: number;
@@ -40,8 +44,14 @@ type InMsg = InitMsg | LoadHouseMsg | CallMsg | DetailMsg | PatchMsg;
 let pyodide: any = null;
 let engine: any = null;
 let ready: Promise<void> | null = null;
+// IFC extension: URLs captured at init, loaded lazily (once) on the first IFC export.
+let ifcExtTarUrl: string | undefined;
+let ifcWasmUrl: string | undefined;
+let ifcReady: Promise<void> | null = null;
 
 async function init(msg: InitMsg): Promise<void> {
+  ifcExtTarUrl = msg.ifcExtTarUrl;
+  ifcWasmUrl = msg.ifcWasmUrl;
   const { loadPyodide } = await import(
     /* @vite-ignore */ `${msg.pyodideIndexUrl}pyodide.mjs`
   );
@@ -65,6 +75,51 @@ async function init(msg: InitMsg): Promise<void> {
 function ensureReady(): Promise<void> {
   if (!ready) throw new Error("worker not initialized");
   return ready;
+}
+
+// Lazily wire the optional IFC export path (runs at most once, on the first IFC export):
+//  1. fetch + unpack typehaus-ifc-ext.tar — the `typehaus/emit/ifc` sources the core bundle
+//     excludes — onto the same /engine sys.path,
+//  2. when an ifcopenshell-wasm wheel URL is configured, micropip-install it and drop the
+//     bootstrap's blocking `ifcopenshell` stub so the real module is imported,
+//  3. assert a real ifcopenshell is present (engine.enable_ifc raises a documented degradation
+//     otherwise).
+// If no wasm wheel is bundled, steps 1+3 still run: the emitter sources load, and the user gets
+// a precise "requires the ifcopenshell-wasm module / run haus serve locally" message instead of
+// a silent failure. Wiring the actual wasm wheel is the one remaining piece (see U9/40 notes).
+async function ensureIfc(): Promise<void> {
+  if (ifcReady) return ifcReady;
+  ifcReady = (async () => {
+    if (!ifcExtTarUrl) {
+      throw new Error(
+        "IFC export is not configured in this build (no typehaus-ifc-ext.tar) — run `haus serve` locally",
+      );
+    }
+    const res = await fetch(ifcExtTarUrl);
+    if (!res.ok) throw new Error(`IFC extension tarball ${res.status} @ ${ifcExtTarUrl}`);
+    pyodide.unpackArchive(await res.arrayBuffer(), "tar", { extractDir: "/engine" });
+    if (ifcWasmUrl) {
+      await pyodide.loadPackage("micropip");
+      const micropip = pyodide.pyimport("micropip");
+      try {
+        await micropip.install(ifcWasmUrl);
+      } finally {
+        micropip.destroy?.();
+      }
+      // Drop the bootstrap's blocking ifcopenshell stub so the freshly installed real module
+      // (and its submodules) are imported on next access.
+      pyodide.runPython(
+        "import sys\n" +
+          "for _m in [m for m in sys.modules if m == 'ifcopenshell' or m.startswith('ifcopenshell.')]:\n" +
+          "    del sys.modules[_m]\n",
+      );
+    }
+    engine.enable_ifc(); // raises RequiresLocalInstall if no real ifcopenshell is present
+  })().catch((err) => {
+    ifcReady = null; // allow a later retry (e.g. after configuring a wheel URL)
+    throw err;
+  });
+  return ifcReady;
 }
 
 async function handle(msg: InMsg): Promise<unknown> {
@@ -103,6 +158,14 @@ async function handle(msg: InMsg): Promise<unknown> {
     case "glb": {
       await ensureReady();
       const b = engine.glb_bytes();
+      const bytes = b.toJs(); // Uint8Array
+      b.destroy();
+      return bytes;
+    }
+    case "ifc": {
+      await ensureReady();
+      await ensureIfc();
+      const b = engine.ifc_bytes();
       const bytes = b.toJs(); // Uint8Array
       b.destroy();
       return bytes;
