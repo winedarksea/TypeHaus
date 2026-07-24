@@ -483,12 +483,19 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
                 model: Any = None) -> None:
     # NB: IfcPipeSegment is reserved for authored PipeRuns (test_ifc_mep asserts the count
     # equals pipe-run segments) — accessory vents/gutters stay generic proxies.
-    ifc_class = {"slab": "IfcSlab", "column": "IfcColumn", "beam": "IfcBeam",
-                 "railing": "IfcRailing", "dowel": "IfcReinforcingBar",
-                 "connector": "IfcMechanicalFastener", "sump": "IfcTank",
-                 "vent": "IfcBuildingElementProxy", "gutter": "IfcBuildingElementProxy",
-                 "fascia": "IfcCovering", "flashing": "IfcCovering",
-                 "thermal_break": "IfcBuildingElementProxy"}.get(solid.category, "IfcFooting")
+    # ConstructionRule returns (#45) are membrane/foam/liner/masonry laps — coverings on the
+    # face they return onto, not footings; carry them as IfcCovering so import reads them as
+    # finishes, not structure.
+    if solid.category.startswith("return:"):
+        ifc_class = "IfcCovering"
+    else:
+        ifc_class = {"slab": "IfcSlab", "column": "IfcColumn", "beam": "IfcBeam",
+                     "railing": "IfcRailing", "dowel": "IfcReinforcingBar",
+                     "connector": "IfcMechanicalFastener", "sump": "IfcTank",
+                     "vent": "IfcBuildingElementProxy", "gutter": "IfcBuildingElementProxy",
+                     "fascia": "IfcCovering", "flashing": "IfcCovering",
+                     "thermal_break": "IfcBuildingElementProxy"}.get(solid.category,
+                                                                      "IfcFooting")
     element = ll.create_entity(f, ifc_class, name=solid.tag)
     element.GlobalId = derive_guid(project_uuid, solid.uid)
     if solid.outline:
