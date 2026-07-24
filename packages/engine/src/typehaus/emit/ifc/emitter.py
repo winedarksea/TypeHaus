@@ -9,9 +9,12 @@ elements keep their GlobalId. Determinism: sorted iteration + pinned OwnerHistor
 from __future__ import annotations
 
 import hashlib
-from pathlib import Path
 import json
+from pathlib import Path
 from typing import Any
+
+from shapely.geometry import Polygon
+from shapely.ops import unary_union
 
 from typehaus._meta import IFC_APP_NAME, PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
@@ -43,9 +46,12 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
         storeys[storey.tag] = ifc_storey
     _relate(f, building, list(storeys.values()))
 
+    wall_types = _emit_wall_types(f, model, project_uuid)
     wall_entities: dict[str, Any] = {}
     for rw in sorted(model.walls, key=lambda w: w.uid):
-        wall_entities[rw.tag] = _emit_wall(f, body, rw, storeys, project_uuid, lod)
+        wall_entities[rw.tag] = _emit_wall(
+            f, body, rw, storeys, project_uuid, lod, wall_types
+        )
 
     opening_types = _emit_opening_types(f, model, project_uuid)
 
@@ -124,16 +130,40 @@ def _emit_utilities(f: Any, body: Any, model: ResolvedModel, project_uuid: Any) 
             })
 
 
+def _emit_wall_types(f: Any, model: ResolvedModel,
+                     project_uuid: Any) -> dict[str, tuple[Any, Any]]:
+    result: dict[str, tuple[Any, Any]] = {}
+    representatives = {
+        wall.assembly: wall for wall in sorted(model.walls, key=lambda item: item.uid)
+    }
+    for assembly_tag, representative in sorted(representatives.items()):
+        wall_type = ll.create_entity(f, "IfcWallType", name=assembly_tag)
+        wall_type.GlobalId = derive_child_guid(project_uuid, "wall-types", assembly_tag)
+        layer_set = ll.assign_material_layer_set(
+            f, wall_type,
+            [{"name": layer.name, "material_ref": layer.material_ref,
+              "thickness_m": layer.thickness_m, "category": layer.function}
+             for layer in representative.depth_layers()],
+            name=assembly_tag,
+        )
+        result[assembly_tag] = (wall_type, layer_set)
+    return result
+
+
 def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
-               project_uuid: Any, lod: str) -> None:
+               project_uuid: Any, lod: str,
+               wall_types: dict[str, tuple[Any, Any]]) -> Any:
     guid = derive_guid(project_uuid, rw.uid)
     ifc_class = "IfcWall"
     wall = ll.create_entity(f, ifc_class, name=rw.tag)
     wall.GlobalId = guid
-    # Whole-wall body from the union of layer polygons (outer profile).
-    outer = _outer_profile(rw)
-    rep = ll.add_prism_from_profile(f, body, outer, rw.z1_m - rw.z0_m, rw.z0_m)
-    _assign_representation(f, wall, rep)
+    body_representation = ll.add_prisms_from_profiles(
+        f, body,
+        [layer.polygon for layer in rw.depth_layers() if len(layer.polygon) >= 3],
+        rw.z1_m - rw.z0_m, rw.z0_m,
+    )
+    axis_representation = ll.add_axis_representation(f, body, rw.axis)
+    _assign_representations(f, wall, [axis_representation, body_representation])
     ll.ensure_pset(f, wall, PSET_SOURCE, {
         "uid": rw.uid, "tag": rw.tag, "assembly": rw.assembly,
         "plan_content_hash": _content_hash(rw),
@@ -141,7 +171,9 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
     ll.ensure_pset(f, wall, "Pset_WallCommon", {
         "IsExternal": not rw.tag.startswith("INT"),
     })
-    _assign_wall_material(f, wall, rw)
+    wall_type, layer_set = wall_types[rw.assembly]
+    ll.assign_type(f, wall, wall_type)
+    _assign_wall_material(f, wall, rw, layer_set)
     if rw.is_foundation:
         ll.ensure_pset(f, wall, "Pset_HF_FoundationWall", {"IsFoundation": True})
     ll.assign_container(f, wall, storeys[rw.storey])
@@ -156,7 +188,8 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
     return wall
 
 
-def _assign_wall_material(f: Any, wall: Any, rw: ResolvedWall) -> None:
+def _assign_wall_material(f: Any, wall: Any, rw: ResolvedWall,
+                          type_layer_set: Any) -> None:
     """IfcMaterialLayerSet from the depth-bearing layers + a pset per cavity fill.
 
     Cavity insulation is deliberately not a layer: IFC layer thicknesses must sum to the
@@ -167,12 +200,8 @@ def _assign_wall_material(f: Any, wall: Any, rw: ResolvedWall) -> None:
     depth_layers = rw.depth_layers()
     if not depth_layers:
         return
-    ll.assign_material_layer_set(
-        f, wall,
-        [{"name": ly.name, "material_ref": ly.material_ref,
-          "thickness_m": ly.thickness_m, "category": ly.function}
-         for ly in depth_layers],
-        name=rw.assembly,
+    ll.assign_material_layer_usage(
+        f, wall, type_layer_set, _layer_reference_offset(rw)
     )
     for ly in rw.layers:
         if not ly.is_cavity:
@@ -182,6 +211,19 @@ def _assign_wall_material(f: Any, wall: Any, rw: ResolvedWall) -> None:
             "Material": ly.material_ref,
             "Thickness": ly.thickness_m,
         })
+
+
+def _layer_reference_offset(rw: ResolvedWall) -> float:
+    if not rw.depth_layers():
+        return 0.0
+    (x0, y0), (x1, y1) = rw.axis
+    wall_length = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5 or 1.0
+    normal = (-(y1 - y0) / wall_length, (x1 - x0) / wall_length)
+    return min(
+        (point[0] - x0) * normal[0] + (point[1] - y0) * normal[1]
+        for layer in rw.depth_layers()
+        for point in layer.polygon
+    )
 
 
 def _opening_segment(rw: ResolvedWall, opening: Any) -> tuple[tuple[float, float],
@@ -194,6 +236,41 @@ def _opening_segment(rw: ResolvedWall, opening: Any) -> tuple[tuple[float, float
     c1 = opening.center_along_m + opening.width_m / 2
     thickness = rw.thickness_m or 0.15
     return (sx + ux * c0, sy + uy * c0), (sx + ux * c1, sy + uy * c1), thickness
+
+
+def _opening_profile(rw: ResolvedWall, opening: Any) -> list[tuple[float, float]]:
+    """Intersect the real host footprint with the opening's jamb station strip."""
+    (sx, sy), (ex, ey) = rw.axis
+    wall_length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5 or 1.0
+    direction = ((ex - sx) / wall_length, (ey - sy) / wall_length)
+    normal = (-direction[1], direction[0])
+    start = opening.center_along_m - opening.width_m / 2
+    end = opening.center_along_m + opening.width_m / 2
+    transverse_extent = max(rw.thickness_m * 4.0, 1.0)
+
+    def point(along: float, across: float) -> tuple[float, float]:
+        return (
+            sx + direction[0] * along + normal[0] * across,
+            sy + direction[1] * along + normal[1] * across,
+        )
+
+    station_strip = Polygon([
+        point(start, -transverse_extent), point(end, -transverse_extent),
+        point(end, transverse_extent), point(start, transverse_extent),
+    ])
+    host_footprint = unary_union([
+        Polygon(layer.polygon) for layer in rw.depth_layers()
+        if len(layer.polygon) >= 3
+    ])
+    clipped = host_footprint.intersection(station_strip)
+    polygons = [clipped] if isinstance(clipped, Polygon) else [
+        item for item in getattr(clipped, "geoms", ()) if isinstance(item, Polygon)
+    ]
+    if polygons:
+        polygon = max(polygons, key=lambda item: item.area)
+        return [(float(x), float(y)) for x, y in list(polygon.exterior.coords)[:-1]]
+    a, b, thickness = _opening_segment(rw, opening)
+    return rect_between(a, b, -thickness / 2, thickness / 2)
 
 
 def _emit_opening_types(f: Any, model: ResolvedModel, project_uuid: Any) -> dict[str, Any]:
@@ -221,14 +298,13 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     wall = wall_entities.get(opening.host_wall)
     if rw is None or wall is None:
         return
-    a, b, thickness = _opening_segment(rw, opening)
+    opening_profile = _opening_profile(rw, opening)
     z0 = rw.z0_m + opening.sill_m
     # Void: full wall thickness prism from sill to head.
-    void_profile = rect_between(a, b, -thickness / 2, thickness / 2)
     void = ll.create_entity(f, "IfcOpeningElement", name=f"{opening.tag}/void")
     void.GlobalId = derive_child_guid(project_uuid, opening.uid, "void")
     _assign_representation(f, void, ll.add_prism_from_profile(
-        f, body, void_profile, opening.height_m, z0))
+        f, body, opening_profile, opening.height_m, z0))
     ll.ensure_pset(f, void, PSET_SOURCE, {
         "uid": opening.uid, "tag": opening.tag, "type": opening.type_ref or "",
         "host_wall": opening.host_wall,
@@ -242,6 +318,7 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
 
     # Filling: a thin frame prism (a Revit-style panel), tagged for the round-trip.
     ifc_class = "IfcDoor" if opening.is_door else "IfcWindow"
+    a, b, _thickness = _opening_segment(rw, opening)
     frame_profile = rect_between(a, b, -0.025, 0.025)
     filling = ll.create_entity(f, ifc_class, name=opening.tag)
     filling.GlobalId = derive_guid(project_uuid, opening.uid)
@@ -732,21 +809,40 @@ def _georef(f: Any, ifc_project: Any, model: ResolvedModel, source_context: Any)
 
 
 def _outer_profile(rw: ResolvedWall) -> list[tuple[float, float]]:
-    """Union outer ring across layers — for M1 use the full-thickness band extents."""
-    xs = [pt for layer in rw.layers for pt in layer.polygon]
-    if not xs:
+    """Exact union outer ring across resolved depth-bearing layer polygons."""
+    polygons = [
+        Polygon(layer.polygon) for layer in rw.depth_layers()
+        if len(layer.polygon) >= 3
+    ]
+    if not polygons:
         return [(0, 0), (1, 0), (1, 0.1), (0, 0.1)]
-    # first (interior) + last (exterior) layer outer corners give the wall band
-    return rw.layers[0].polygon[:2] + rw.layers[-1].polygon[2:]
+    geometry = unary_union(polygons)
+    candidates = [geometry] if isinstance(geometry, Polygon) else [
+        item for item in geometry.geoms if isinstance(item, Polygon)
+    ]
+    polygon = max(candidates, key=lambda item: item.area)
+    return [(float(x), float(y)) for x, y in list(polygon.exterior.coords)[:-1]]
 
 
 def _content_hash(rw: ResolvedWall) -> str:
-    h = hashlib.sha256(f"{rw.uid}{rw.assembly}{rw.axis}".encode())
+    geometry = tuple(
+        (layer.name, layer.thickness_m, tuple(layer.polygon))
+        for layer in rw.layers
+    )
+    h = hashlib.sha256(
+        repr((rw.uid, rw.assembly, rw.axis, rw.z0_m, rw.z1_m, geometry)).encode()
+    )
     return h.hexdigest()[:12]
 
 
 def _assign_representation(f: Any, element: Any, rep: Any) -> None:
-    element.Representation = f.createIfcProductDefinitionShape(None, None, [rep])
+    _assign_representations(f, element, [rep])
+
+
+def _assign_representations(f: Any, element: Any, representations: list[Any]) -> None:
+    element.Representation = f.createIfcProductDefinitionShape(
+        None, None, representations
+    )
     # Geometry is authored in the shared project frame inside its swept solid. IFC still
     # requires every represented product to carry an ObjectPlacement; an identity placement
     # expresses that frame explicitly and satisfies both schema validation and BIM importers.

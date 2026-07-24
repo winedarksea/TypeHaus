@@ -16,6 +16,7 @@ LUMBER_ACTUAL: dict[str, tuple[float, float]] = {
 }
 
 DEFAULT_SPACING = inch(16)
+DEFAULT_TEE_BLOCKING_SPACING = inch(24)
 
 
 def member_actual(nominal: str) -> tuple[float, float]:

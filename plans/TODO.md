@@ -75,13 +75,10 @@ Each item names the reference drawing it comes from.
 
 ### Model questions surfaced by the details
 
-- **Per-layer corner junctions (deferred).** `resolve/topology.py` extends *every* layer of
-  both walls at a node by the same max half-thickness, so at a corner each wall's insulation
-  and cladding poke past its neighbour's cladding — visible in the 3D view as coloured
-  vertical stripes of exposed layer end-face at every building corner. The fix is per-layer
-  junction resolution implementing the `STRUCTURE_BUTTS_FINISH_WRAPS` policy that
-  `JunctionPolicy` already declares; it changes 2D plans, details and IFC as well as the 3D
-  view, so it is its own piece of work.
+- **Per-layer corner junctions — Phase 1 complete.** Same-assembly L/T/X nodes and ordinary
+  exterior-wall/interior-partition tees now resolve per layer and feed 2D, 3D, DXF, and IFC
+  from the same polygons. Mixed/high-valence Catlin construction details remain in the
+  Phase 2 list below.
 - **French drain diameter has nowhere to live.** The reference fixes 4"
   (`basementconstruction.json`), but `FootingBedding` models drain tile as a bool.
   `detail_components.py` hardcodes the 4"/10"/8" drain and rock dimensions; they should come
@@ -94,6 +91,27 @@ Each item names the reference drawing it comes from.
   window (visible as long blue verticals in the foundation detail). They are inside the crop
   and dimensionally correct, but at detail scale a glazing centreline through the whole
   drawing reads as an error; the cut should show the actual jamb/head/sill instead.
+
+### Phase 2 — Complete Catlin junctions
+
+Phase 1 resolves same-assembly L/T/X geometry and ordinary exterior-wall/interior-partition
+tees. The remaining Catlin conditions intentionally emit `integrity.junction_fallback`
+warnings and conservative non-overlapping geometry until their construction rules are
+authored:
+
+- Resolve mixed-assembly L corners and collinear assembly changes through named
+  `AssemblyInterface` roles rather than layer-name or layer-index matching.
+- Author concrete-to-framed basement returns, sauna-liner returns, foundation-foam returns,
+  and porch/masonry returns as pre-resolve construction rules.
+- Resolve the porch/basement five-way and other high-valence Catlin nodes with explicit
+  bearing and layer-continuity ownership.
+- Render transition/detail overlays from the resolved junctions, including membrane laps,
+  sealants, flashing, and thermal-control continuity. `Transition` remains post-resolve
+  documentation and must not mutate construction geometry.
+- Add `Node.junction_override` only if the Catlin audit proves an assembly/interface rule
+  cannot express a real condition.
+- Re-import the completed Catlin IFC/DXF in Revit and SketchUp and verify scale, storeys,
+  wall categorization, openings, layer returns, and the absence of gaps or overlapping faces.
 
 ### Editor
 
@@ -164,5 +182,3 @@ Very small windows that don't break the stud line don't need a header added.
 +Y: north
 +Z: vertical/up
 will need to support rotating the house off axis in the future
-
-

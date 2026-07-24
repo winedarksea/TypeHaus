@@ -59,3 +59,26 @@ def test_vertical_members_carry_orient_but_plates_do_not():
     assert vertical and all(m.orient == (1.0, 0.0) for m in vertical)
     plates = [m for m in members if m.category == "plate"]
     assert plates and all(m.orient is None for m in plates)
+
+
+def test_end_owned_corner_offsets_inward_from_far_endpoint():
+    plan, rw = _wall_and_plan("3-stud")
+    members = frame_wall(plan, rw, openings=[], corner_end=True)
+    corner = next(member for member in members if member.category == "corner")
+    assert corner.child_key == "corner-end"
+    assert 0.0 < corner.p0[0] < rw.axis[1][0]
+
+
+def test_ladder_and_stud_pack_tee_backing_are_configurable():
+    plan, rw = _wall_and_plan("3-stud")
+    ladder = frame_wall(plan, rw, openings=[], tee_stations=((2.0, "N-T"),))
+    assert any(member.category == "blocking" for member in ladder)
+
+    structure = plan.library.resolve_assembly("TEST_ASM").layers[0]
+    packed = structure.model_copy(update={
+        "framing": structure.framing.model_copy(update={"tee_backing_style": "stud-pack"})
+    })
+    plan.library.resolve_assembly = lambda _tag: SimpleNamespace(layers=(packed,))
+    stud_pack = frame_wall(plan, rw, openings=[], tee_stations=((2.0, "N-T"),))
+    assert len([member for member in stud_pack
+                if member.child_key.startswith("tee-N-T-stud-")]) == 2

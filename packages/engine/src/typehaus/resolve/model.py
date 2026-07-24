@@ -35,6 +35,32 @@ class ResolvedLayer:
 
 
 @dataclass(frozen=True)
+class JunctionIncident:
+    """One wall endpoint participating in a resolved plan junction."""
+
+    wall_tag: str
+    endpoint: str  # "start" | "end"
+    direction: tuple[float, float]  # node -> wall interior
+    assembly: str
+
+
+@dataclass(frozen=True)
+class ResolvedJunction:
+    """Topology decision shared by layer geometry, framing, diagnostics, and emitters."""
+
+    node_tag: str
+    storey: str
+    point: tuple[float, float]
+    kind: str  # "open_end" | "collinear" | "l" | "t" | "x" | "complex"
+    incidents: tuple[JunctionIncident, ...]
+    through_walls: tuple[str, ...] = ()
+    branch_walls: tuple[str, ...] = ()
+    framing_owner: str | None = None
+    supported: bool = True
+    diagnostic: str | None = None
+
+
+@dataclass(frozen=True)
 class FramedMember:
     """A framing member as a lightweight record (no geometry kernel) until emit (risk 6)."""
 
@@ -333,6 +359,7 @@ class ResolvedCanvasObject:
 class ResolvedModel:
     plan: PlanModel
     walls: list[ResolvedWall] = field(default_factory=list)
+    junctions: list[ResolvedJunction] = field(default_factory=list)
     openings: list[ResolvedOpening] = field(default_factory=list)
     solids: list[ResolvedSolid] = field(default_factory=list)
     roofs: list[ResolvedRoof] = field(default_factory=list)

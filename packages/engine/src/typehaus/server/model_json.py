@@ -13,8 +13,8 @@ from urllib.parse import quote
 
 from typehaus.checks.registry import Preferences
 from typehaus.findings import Finding
-from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.canvas import canvas_object_types, resolved_canvas_objects
+from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.spatial import Stair
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedModel
@@ -198,6 +198,29 @@ def model_to_dict(
                 "members": [_member_json(m) for m in w.members],
             }
             for w in sorted(model.walls, key=lambda x: x.uid)
+        ],
+        "junctions": [
+            {
+                "node": junction.node_tag,
+                "storey": junction.storey,
+                "point": list(junction.point),
+                "kind": junction.kind,
+                "incidents": [
+                    {
+                        "wall": incident.wall_tag,
+                        "endpoint": incident.endpoint,
+                        "direction": list(incident.direction),
+                        "assembly": incident.assembly,
+                    }
+                    for incident in junction.incidents
+                ],
+                "through_walls": list(junction.through_walls),
+                "branch_walls": list(junction.branch_walls),
+                "framing_owner": junction.framing_owner,
+                "supported": junction.supported,
+                "diagnostic": junction.diagnostic,
+            }
+            for junction in model.junctions
         ],
         "openings": [
             {"uid": o.uid, "tag": o.tag, "host": o.host_wall, "kind": o.kind, "is_door": o.is_door,

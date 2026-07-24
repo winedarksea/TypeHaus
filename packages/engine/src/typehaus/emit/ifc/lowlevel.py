@@ -77,6 +77,34 @@ def add_prism_from_profile(f: Any, body_ctx: Any, points_m: list[tuple[float, fl
     return f.createIfcShapeRepresentation(body_ctx, "Body", "SweptSolid", [solid])
 
 
+def add_prisms_from_profiles(f: Any, body_ctx: Any,
+                             profiles_m: list[list[tuple[float, float]]],
+                             height_m: float, z0_m: float = 0.0) -> Any:
+    """One Body representation containing the resolved non-overlapping layer solids."""
+    solids = []
+    for profile_points in profiles_m:
+        if len(profile_points) < 3:
+            continue
+        points = [f.createIfcCartesianPoint(point) for point in profile_points]
+        curve = f.createIfcPolyline(points + [points[0]])
+        profile = f.createIfcArbitraryClosedProfileDef("AREA", None, curve)
+        placement = f.createIfcAxis2Placement3D(
+            f.createIfcCartesianPoint((0.0, 0.0, z0_m)), None, None
+        )
+        solids.append(f.createIfcExtrudedAreaSolid(
+            profile, placement, f.createIfcDirection((0.0, 0.0, 1.0)), height_m
+        ))
+    return f.createIfcShapeRepresentation(body_ctx, "Body", "SweptSolid", solids)
+
+
+def add_axis_representation(f: Any, body_ctx: Any,
+                            points_m: tuple[tuple[float, float], tuple[float, float]]) -> Any:
+    points = [f.createIfcCartesianPoint(point) for point in points_m]
+    return f.createIfcShapeRepresentation(
+        body_ctx, "Axis", "Curve2D", [f.createIfcPolyline(points)]
+    )
+
+
 def ensure_local_placement(f: Any, element: Any) -> None:
     """Give a represented product an explicit identity placement in the project frame."""
     if getattr(element, "ObjectPlacement", None) is not None:
@@ -152,6 +180,32 @@ def assign_material_layer_set(f: Any, element: Any, layers: list[dict[str, Any]]
     f.create_entity("IfcRelAssociatesMaterial", GlobalId=new_guid(),
                     RelatedObjects=[element], RelatingMaterial=layer_set)
     return layer_set
+
+
+def assign_material_layer_usage(f: Any, element: Any, layer_set: Any,
+                                offset_from_reference_line_m: float) -> Any:
+    # IfcOpenShell's type assignment creates a default occurrence usage when the wall
+    # type already owns a layer set. Update that relationship instead of creating an
+    # EXPRESS-invalid second material association.
+    for relation in f.by_type("IfcRelAssociatesMaterial"):
+        if element not in relation.RelatedObjects:
+            continue
+        related_material = relation.RelatingMaterial
+        if related_material.is_a("IfcMaterialLayerSetUsage"):
+            related_material.OffsetFromReferenceLine = float(offset_from_reference_line_m)
+            return related_material
+    usage = f.create_entity(
+        "IfcMaterialLayerSetUsage",
+        ForLayerSet=layer_set,
+        LayerSetDirection="AXIS2",
+        DirectionSense="POSITIVE",
+        OffsetFromReferenceLine=float(offset_from_reference_line_m),
+    )
+    f.create_entity(
+        "IfcRelAssociatesMaterial", GlobalId=new_guid(),
+        RelatedObjects=[element], RelatingMaterial=usage,
+    )
+    return usage
 
 
 def new_guid() -> str:

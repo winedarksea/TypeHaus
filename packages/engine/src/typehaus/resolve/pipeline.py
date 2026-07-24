@@ -14,18 +14,18 @@ from contextlib import contextmanager
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
-from typehaus.resolve.framing.solver import frame_model
-from typehaus.resolve.framing.roof import frame_roofs
 from typehaus.resolve.envelope import resolve_columns_and_beams, resolve_envelope_geometry
-from typehaus.resolve.platform import extend_walls_to_platform
-from typehaus.resolve.floors import resolve_floors
 from typehaus.resolve.floor_heat import resolve_floor_heat
+from typehaus.resolve.floors import resolve_floors
+from typehaus.resolve.framing.roof import frame_roofs
+from typehaus.resolve.framing.solver import frame_model
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.mep import resolve_mep
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedOpening
 from typehaus.resolve.placeables import resolve_placeables
-from typehaus.resolve.rooms import resolve_rooms
+from typehaus.resolve.platform import extend_walls_to_platform
 from typehaus.resolve.roof_geometry import apply_to_roof_wall_tops
+from typehaus.resolve.rooms import resolve_rooms
 from typehaus.resolve.stacking import resolve_stacking
 from typehaus.resolve.topology import detect_gaps, resolve_storey_walls
 
@@ -49,7 +49,12 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
             z0 = storey.elevation.meters
             z1 = z0 + storey.default_ceiling_height.meters
             findings.extend(detect_gaps(plan, storey.tag))
-            model.walls.extend(resolve_storey_walls(plan, storey.tag, z0, z1))
+            walls, junctions, junction_findings = resolve_storey_walls(
+                plan, storey.tag, z0, z1
+            )
+            model.walls.extend(walls)
+            model.junctions.extend(junctions)
+            findings.extend(junction_findings)
         extend_walls_to_platform(model)
 
     with _stage("openings"):
@@ -58,7 +63,7 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_envelope_geometry(model))
         apply_to_roof_wall_tops(model)
     with _stage("framing"):
-        frame_model(plan, model)
+        findings.extend(frame_model(plan, model))
         findings.extend(frame_roofs(model))
         # After roof framing so authored ridge Beams are already emitted as roof members.
         findings.extend(resolve_columns_and_beams(model))
@@ -93,7 +98,11 @@ def resolve_preview(plan: PlanModel) -> ResolvedModel:
     for storey in ordered:
         z0 = storey.elevation.meters
         z1 = z0 + storey.default_ceiling_height.meters
-        model.walls.extend(resolve_storey_walls(plan, storey.tag, z0, z1))
+        walls, junctions, _junction_findings = resolve_storey_walls(
+            plan, storey.tag, z0, z1
+        )
+        model.walls.extend(walls)
+        model.junctions.extend(junctions)
     extend_walls_to_platform(model)
     _resolve_openings(plan, model, findings)
     resolve_envelope_geometry(model)

@@ -597,9 +597,8 @@ export interface WallLayerPiece {
   topIsRaked: boolean;
 }
 
-// Resolved wall layers are rectangular strips along a wall axis. Splitting that strip at
-// each opening jamb makes true partial-height voids without a CSG dependency: the central
-// strip contributes only the sill and header pieces while side strips remain full height.
+// Split an arbitrary junction-solved layer polygon at opening jamb stations. Clipping the
+// actual ring (instead of rebuilding its local bounds) preserves mitered and butted ends.
 export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][], openings: Opening[]): WallLayerPiece[] {
   const [[x0, y0], [x1, y1]] = wall.axis;
   const length = Math.hypot(x1 - x0, y1 - y0);
@@ -612,8 +611,6 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
   });
   const minAlong = Math.min(...local.map(([along]) => along));
   const maxAlong = Math.max(...local.map(([along]) => along));
-  const minAcross = Math.min(...local.map(([, across]) => across));
-  const maxAcross = Math.max(...local.map(([, across]) => across));
   const relevant = openings.map((opening) => ({
     opening,
     start: Math.max(minAlong, opening.center_along_m - opening.width_m / 2),
@@ -625,9 +622,30 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
     x0 + direction[0] * along + normal[0] * across,
     y0 + direction[1] * along + normal[1] * across,
   ];
-  const ring = (start: number, end: number): [number, number][] => [
-    point(start, minAcross), point(end, minAcross), point(end, maxAcross), point(start, maxAcross),
-  ];
+  const clip = (
+    ring: readonly (readonly [number, number])[],
+    boundary: number,
+    keepGreater: boolean,
+  ): [number, number][] => {
+    const output: [number, number][] = [];
+    const inside = ([along]: readonly [number, number]) =>
+      keepGreater ? along >= boundary - 1e-9 : along <= boundary + 1e-9;
+    for (let index = 0; index < ring.length; index++) {
+      const current = ring[index], next = ring[(index + 1) % ring.length];
+      const currentInside = inside(current), nextInside = inside(next);
+      if (currentInside) output.push([current[0], current[1]]);
+      if (currentInside !== nextInside) {
+        const denominator = next[0] - current[0];
+        if (Math.abs(denominator) > 1e-12) {
+          const fraction = (boundary - current[0]) / denominator;
+          output.push([boundary, current[1] + (next[1] - current[1]) * fraction]);
+        }
+      }
+    }
+    return output;
+  };
+  const ring = (start: number, end: number): [number, number][] =>
+    clip(clip(local, start, true), end, false).map(([along, across]) => point(along, across));
   const raked = wall.top_z0_m != null || wall.top_z1_m != null;
   const pieces: WallLayerPiece[] = [];
   for (let index = 0; index < boundaries.length - 1; index++) {
@@ -635,6 +653,7 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
     const active = relevant.find(({ start: openingStart, end: openingEnd }) =>
       (start + end) / 2 >= openingStart && (start + end) / 2 <= openingEnd)?.opening;
     const strip = ring(start, end);
+    if (strip.length < 3) continue;
     if (!active) {
       pieces.push({ polygon: strip, z0_m: wall.z0_m, z1_m: wall.z1_m, topIsRaked: raked });
       continue;

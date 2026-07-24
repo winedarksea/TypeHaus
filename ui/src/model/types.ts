@@ -106,6 +106,24 @@ export interface PlanNode {
   provenance: Provenance | null;
 }
 
+export interface Junction {
+  node: string;
+  storey: string;
+  point: Vec2;
+  kind: "open_end" | "collinear" | "l" | "t" | "x" | "complex";
+  incidents: {
+    wall: string;
+    endpoint: "start" | "end";
+    direction: Vec2;
+    assembly: string;
+  }[];
+  through_walls: string[];
+  branch_walls: string[];
+  framing_owner: string | null;
+  supported: boolean;
+  diagnostic: string | null;
+}
+
 export interface Room {
   uid: string;
   tag: string;
@@ -430,6 +448,7 @@ export interface Model {
   underlays?: Underlay[];
   storeys: Storey[];
   walls: Wall[];
+  junctions?: Junction[];
   nodes?: PlanNode[]; // authored wall-graph vertices (→ _catalog sibling); absent on older json
   openings: Opening[];
   roofs?: Roof[];

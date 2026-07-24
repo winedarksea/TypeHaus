@@ -34,6 +34,14 @@ export function runOpeningGeometryTests() {
 
   const raked = wallLayerPieces(wall([[0, 0], [4, 0]], 3, 2.4), [[0, -0.1], [4, -0.1], [4, 0.1], [0, 0.1]], [opening(2, 0.9, 1)]);
   assert(raked.some((piece) => piece.topIsRaked), "Header pieces preserve a raked wall top");
+
+  const mitered = wallLayerPieces(
+    wall([[0, 0], [4, 0]]),
+    [[-0.25, 0], [0, -0.25], [4, -0.25], [4, 0.25], [0, 0.25]],
+    [opening(2)],
+  );
+  assert(mitered.some((piece) => piece.polygon.some(([x, y]) => x === -0.25 && y === 0)),
+    "Opening splitting preserves a junction-solved miter vertex");
 }
 
 export function runEarthGeometryTests() {

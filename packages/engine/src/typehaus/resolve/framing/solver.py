@@ -6,19 +6,22 @@ level wall tops only; the raked-top/rafter arm activates with M3 roofs (→ 30 W
 
 from __future__ import annotations
 
-import math
 from dataclasses import replace
 
+from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.framing.tables import (
     DEFAULT_SPACING,
+    DEFAULT_TEE_BLOCKING_SPACING,
     header_size,
     king_jack_counts,
     member_actual,
 )
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedWall
+
+_EPSILON = 1e-9
 
 
 def _structure_layer(plan: PlanModel, assembly_tag: str):
@@ -32,7 +35,9 @@ def _structure_layer(plan: PlanModel, assembly_tag: str):
 
 
 def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
-               corner_start: bool = False) -> tuple[FramedMember, ...]:
+               corner_start: bool = False, corner_end: bool = False,
+               tee_stations: tuple[tuple[float, str], ...] = ()) \
+        -> tuple[FramedMember, ...]:
     """Generate studs, plates, and opening framing for one resolved wall.
 
     ``openings`` is a list of (center_m, width_m, height_m, sill_m, is_door) tuples.
@@ -49,7 +54,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
     d = unit(sub(p1, p0))
     spacing = (spec.spacing or DEFAULT_SPACING).meters
     member = spec.member
-    z0, z1 = rw.z0_m, rw.z1_m
+    z0 = rw.z0_m
     plate_h = 1.5 * 0.0254
 
     members: list[FramedMember] = []
@@ -108,34 +113,49 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
     # off-module remainder was silently leaving one end bare — most visibly at exterior
     # corners, where the *incoming* wall's own end stud is exactly what the neighbor's
     # ``corner_start`` supplemental stud assumes exists (see WP-corner-3-stud).
-    if last_s is None or axis_len - last_s > 1e-6:
-        if not _inside_opening(axis_len, openings):
-            pt = add(p0, scale(d, axis_len))
-            stud_top = top_at(axis_len)
-            members.append(
-                FramedMember(rw.uid, f"stud-{idx:03d}", "stud", member, pt, pt,
-                             stud_z0, stud_top, stud_top - stud_z0, orient=d)
-            )
-            idx += 1
+    if (last_s is None or axis_len - last_s > 1e-6) \
+            and not _inside_opening(axis_len, openings):
+        pt = add(p0, scale(d, axis_len))
+        stud_top = top_at(axis_len)
+        members.append(
+            FramedMember(rw.uid, f"stud-{idx:03d}", "stud", member, pt, pt,
+                         stud_z0, stud_top, stud_top - stud_z0, orient=d)
+        )
+        idx += 1
 
-    if corner_start:
+    def append_corner(endpoint: str) -> None:
         # A third stud at the owned end of each exterior corner favors the requested
         # strength-first 3/4-stud layout.  It is deliberately outside the regular
         # 16" module; the normal endpoint studs retain module continuity for sheathing,
         # standing-seam panels, and floor framing. corner_style="4-stud" adds a second
         # supplemental stud one bay further in, for the box-corner variant.
+        direction_sign = 1.0 if endpoint == "start" else -1.0
+        endpoint_station = 0.0 if endpoint == "start" else axis_len
         corner_offset = min(1.5 * 0.0254, axis_len / 2.0)
-        pt = add(p0, scale(d, corner_offset))
-        corner_top = top_at(corner_offset)
-        members.append(FramedMember(rw.uid, "corner-start", "corner", member, pt, pt,
+        station = endpoint_station + direction_sign * corner_offset
+        pt = add(p0, scale(d, station))
+        corner_top = top_at(station)
+        members.append(FramedMember(rw.uid, f"corner-{endpoint}", "corner", member, pt, pt,
                                     stud_z0, corner_top, corner_top - stud_z0, orient=d))
         if spec.corner_style == "4-stud":
             corner_offset2 = min(2 * 1.5 * 0.0254, axis_len / 2.0)
-            pt2 = add(p0, scale(d, corner_offset2))
-            corner_top2 = top_at(corner_offset2)
-            members.append(FramedMember(rw.uid, "corner-start-2", "corner", member,
+            station2 = endpoint_station + direction_sign * corner_offset2
+            pt2 = add(p0, scale(d, station2))
+            corner_top2 = top_at(station2)
+            members.append(FramedMember(rw.uid, f"corner-{endpoint}-2", "corner", member,
                                         pt2, pt2, stud_z0, corner_top2,
                                         corner_top2 - stud_z0, orient=d))
+
+    if corner_start:
+        append_corner("start")
+    if corner_end:
+        append_corner("end")
+
+    for station, junction_key in tee_stations:
+        _append_tee_backing(
+            members, rw, spec, member, d, p0, axis_len, station, junction_key,
+            stud_z0, top_at,
+        )
 
     # --- opening framing (king/jack/header/cripple/sill) ----------------------
     for oi, (center, width, height, sill, is_door) in enumerate(openings):
@@ -144,6 +164,47 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list,
                            stud_z0, top_at, oi)
         )
     return tuple(members)
+
+
+def _append_tee_backing(members: list[FramedMember], rw: ResolvedWall, spec,
+                        member: str, direction, wall_start, axis_len: float,
+                        station: float, junction_key: str, stud_bottom: float,
+                        top_at) -> None:
+    """Emit the through-wall backing selected by ``FramingSpec`` at one T branch."""
+    station = min(max(station, 0.0), axis_len)
+    if spec.tee_backing_style == "none":
+        return
+    center = add(wall_start, scale(direction, station))
+    if spec.tee_backing_style == "stud-pack":
+        thickness_m = member_actual(member)[0] * 0.0254
+        for index, offset in enumerate((-thickness_m, thickness_m)):
+            stud_station = min(max(station + offset, 0.0), axis_len)
+            point = add(wall_start, scale(direction, stud_station))
+            stud_top = top_at(stud_station)
+            members.append(FramedMember(
+                rw.uid, f"tee-{junction_key}-stud-{index}", "corner", member,
+                point, point, stud_bottom, stud_top, stud_top - stud_bottom,
+                orient=direction,
+            ))
+        return
+
+    depth_m = member_actual(member)[1] * 0.0254
+    perpendicular = (-direction[1], direction[0])
+    half_depth = depth_m / 2.0
+    block_start = add(center, scale(perpendicular, -half_depth))
+    block_end = add(center, scale(perpendicular, half_depth))
+    block_height = member_actual(member)[0] * 0.0254
+    spacing = (spec.tee_blocking_spacing or DEFAULT_TEE_BLOCKING_SPACING).meters
+    top = top_at(station)
+    elevation = stud_bottom + spacing
+    index = 0
+    while elevation + block_height < top - _EPSILON:
+        members.append(FramedMember(
+            rw.uid, f"tee-{junction_key}-block-{index:02d}", "blocking", member,
+            block_start, block_end, elevation, elevation + block_height, depth_m,
+        ))
+        elevation += spacing
+        index += 1
 
 
 def _framing_axis(rw: ResolvedWall) -> tuple[tuple[float, float], tuple[float, float]]:
@@ -266,50 +327,82 @@ def _append_opening_cripples(out: list[FramedMember], parent_uid: str, opening_i
                                     wall_top, wall_top - header_top, orient=direction))
 
 
-def frame_model(plan: PlanModel, model: ResolvedModel) -> None:
-    """Attach framed members to every resolved wall (mutates the model in place)."""
+def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
+    """Attach members using the shared junction decisions; return configuration findings."""
     by_host: dict[str, list] = {}
     for op in model.openings:
         by_host.setdefault(op.host_wall, []).append(
             (op.center_along_m, op.width_m, op.height_m, op.sill_m, op.is_door)
         )
+    corner_endpoints: dict[str, set[str]] = {}
+    tee_points: dict[str, list[tuple[tuple[float, float], str]]] = {}
+    findings: list[Finding] = []
+    for junction in model.junctions:
+        if junction.kind == "l" and junction.framing_owner:
+            owner_incident = next((
+                item for item in junction.incidents
+                if item.wall_tag == junction.framing_owner
+            ), None)
+            if owner_incident is not None:
+                corner_endpoints.setdefault(owner_incident.wall_tag, set()).add(
+                    owner_incident.endpoint
+                )
+            corner_styles = {
+                layer.framing.corner_style
+                for item in junction.incidents
+                if (layer := _structure_layer(plan, item.assembly)) is not None
+                and layer.framing is not None
+            }
+            if len(corner_styles) > 1:
+                findings.append(_framing_junction_finding(
+                    junction, "incompatible corner_style values"
+                ))
+        elif junction.kind == "t" and junction.framing_owner:
+            tee_points.setdefault(junction.framing_owner, []).append(
+                (junction.point, junction.node_tag)
+            )
+            tee_styles = {
+                layer.framing.tee_backing_style
+                for item in junction.incidents
+                if item.wall_tag in junction.through_walls
+                and (layer := _structure_layer(plan, item.assembly)) is not None
+                and layer.framing is not None
+            }
+            if len(tee_styles) > 1:
+                findings.append(_framing_junction_finding(
+                    junction, "incompatible tee_backing_style values"
+                ))
+
     framed: list[ResolvedWall] = []
     for rw in model.walls:
+        framing_start, framing_end = _framing_axis(rw)
+        framing_direction = unit(sub(framing_end, framing_start))
+        tee_stations = tuple(
+            (
+                sub(point, framing_start)[0] * framing_direction[0]
+                + sub(point, framing_start)[1] * framing_direction[1],
+                node_tag,
+            )
+            for point, node_tag in sorted(tee_points.get(rw.tag, []))
+        )
+        endpoints = corner_endpoints.get(rw.tag, set())
         members = frame_wall(plan, rw, by_host.get(rw.tag, []),
-                             corner_start=_owns_exterior_corner(plan, rw))
+                             corner_start="start" in endpoints,
+                             corner_end="end" in endpoints,
+                             tee_stations=tee_stations)
         # ``replace`` rather than a field-by-field rebuild: this pass only adds members,
         # and respelling the constructor here silently drops any field added later.
         framed.append(replace(rw, members=members))
     model.walls = framed
+    return findings
 
 
-def _owns_exterior_corner(plan: PlanModel, rw: ResolvedWall) -> bool:
-    """Assign one supplemental corner stud to the wall starting at each true corner."""
-    authored = plan.by_tag(rw.tag)
-    if authored is None or not _is_exterior_wall(rw):
-        return False
-    siblings = [element for element in plan.storey_elements(rw.storey)
-                if element.element_kind == "Wall" and element.tag != rw.tag
-                and getattr(element, "end_node", None) == authored.start_node]
-    if not siblings:
-        return False
-    nodes = {element.tag: element.position.xy_m for element in plan.storey_elements(rw.storey)
-             if element.element_kind == "Node"}
-    start, end = nodes.get(authored.start_node), nodes.get(authored.end_node)
-    if start is None or end is None:
-        return False
-    direction = (end[0] - start[0], end[1] - start[1])
-    for sibling in siblings:
-        sibling_start = nodes.get(sibling.start_node)
-        if sibling_start is None:
-            continue
-        incoming = (start[0] - sibling_start[0], start[1] - sibling_start[1])
-        if math.hypot(*incoming) > 1e-9 and math.hypot(*direction) > 1e-9:
-            cross = incoming[0] * direction[1] - incoming[1] * direction[0]
-            if abs(cross) > 1e-9:
-                return True
-    return False
-
-
-def _is_exterior_wall(wall: ResolvedWall) -> bool:
-    return any(layer.function == "cladding" for layer in wall.layers)
+def _framing_junction_finding(junction, problem: str) -> Finding:
+    return Finding(
+        severity=Severity.WARN,
+        check_id="structural.junction_framing_conflict",
+        message=f"node {junction.node_tag}: {problem}",
+        element_tags=tuple(item.wall_tag for item in junction.incidents),
+        fix_hint="make incident FramingSpec junction settings agree",
+        result=Result.UNKNOWN,
+    )

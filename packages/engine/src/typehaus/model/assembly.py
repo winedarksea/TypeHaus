@@ -30,6 +30,9 @@ class FramingSpec(HausModel):
     stagger_gap: Length | None = None  # for STAGGERED/DOUBLE partition layouts
     direction: str | None = None  # FURRING only: "vertical" | "horizontal"
     corner_style: Literal["3-stud", "4-stud"] = "3-stud"
+    tee_backing_style: Literal["ladder", "stud-pack", "none"] = "ladder"
+    # None uses the framing solver's named domain default.
+    tee_blocking_spacing: Length | None = None
 
 
 class MasonrySpec(HausModel):

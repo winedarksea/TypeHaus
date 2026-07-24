@@ -102,15 +102,27 @@ def test_ifc_material_layer_set_sums_to_the_wall_thickness(catlin_model, tmp_pat
     walls = {w.Name: w for w in f.by_type("IfcWall")}
     assert "W-M-S1" in walls
 
-    layer_sets = [
+    usages = [
         rel.RelatingMaterial for rel in f.by_type("IfcRelAssociatesMaterial")
         if walls["W-M-S1"] in rel.RelatedObjects
-        and rel.RelatingMaterial.is_a("IfcMaterialLayerSet")
+        and rel.RelatingMaterial.is_a("IfcMaterialLayerSetUsage")
     ]
-    assert layer_sets, "wall should carry an IfcMaterialLayerSet for Revit import"
-    total = sum(ly.LayerThickness for ly in layer_sets[0].MaterialLayers)
+    assert usages, "wall should carry an IfcMaterialLayerSetUsage for Revit import"
+    layer_set = usages[0].ForLayerSet
+    total = sum(ly.LayerThickness for ly in layer_set.MaterialLayers)
     assert total == pytest.approx(catlin_model.wall("W-M-S1").thickness_m, abs=1e-6)
     # the batt is not a layer — it rides as a property set instead
     assert "mineral-wool" not in [
-        ly.Material.Name for ly in layer_sets[0].MaterialLayers
+        ly.Material.Name for ly in layer_set.MaterialLayers
     ]
+    assert usages[0].LayerSetDirection == "AXIS2"
+    assert usages[0].DirectionSense == "POSITIVE"
+
+    wall_type = next(iter(walls["W-M-S1"].IsTypedBy)).RelatingType
+    assert wall_type.is_a("IfcWallType")
+    body = next(rep for rep in walls["W-M-S1"].Representation.Representations
+                if rep.RepresentationIdentifier == "Body")
+    axis = next(rep for rep in walls["W-M-S1"].Representation.Representations
+                if rep.RepresentationIdentifier == "Axis")
+    assert len(body.Items) == len(catlin_model.wall("W-M-S1").depth_layers())
+    assert len(axis.Items) == 1

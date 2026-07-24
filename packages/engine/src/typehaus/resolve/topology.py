@@ -1,21 +1,36 @@
-"""Wall topology + junction solver → per-layer polygons, gap detection (→ 11 §Topology).
+"""Wall topology + junction solver → per-layer polygons and explicit junction records.
 
-Walls are edges between shared nodes. The junction solver closes corners by construction:
-each wall's layer band is extended along its axis at each node by the neighbouring walls'
-half-thickness, so orthogonal L/T corners resolve gap-free (the "no gaps" fix). Multi-way
-priority follows JunctionPolicy; M1 ships the STRUCTURE_BUTTS_FINISH_WRAPS default.
+The authored wall graph is classified before any bands are built.  Each endpoint then uses
+the same topology decision for layer geometry and framing: collinear seams cap at the node,
+L corners share an angular-bisector miter, and T/X branches butt against a continuous host.
+Unsupported mixed/high-valence conditions are made non-overlapping and reported instead of
+silently exporting intersecting solids.
 """
 
 from __future__ import annotations
 
+from dataclasses import replace
+
+from shapely.geometry import GeometryCollection, MultiPolygon, Polygon
+from shapely.ops import unary_union
+
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
-from typehaus.resolve.geometry import length, rect_between, sub
-from typehaus.resolve.model import ResolvedLayer, ResolvedWall
+from typehaus.resolve.geometry import length, rect_between, sub, unit
+from typehaus.resolve.model import (
+    JunctionIncident,
+    ResolvedJunction,
+    ResolvedLayer,
+    ResolvedWall,
+)
 from typehaus.resolve.orientation import storey_outward_sign
 
 _EPS = 1e-4  # meters — cavity-insulation coincidence tolerance
+_DIRECTION_EPS = 1e-9
+_COLLINEAR_CROSS_TOLERANCE = 1e-5
+_L_CORNER_EXTENSION_MULTIPLIER = 4.0
+_MIN_POLYGON_AREA_M2 = 1e-10
 
 
 def _cavity_host(layers: list, index: int) -> int | None:
@@ -82,7 +97,7 @@ def _face_offset_from_interior(layers: list, added: list, alignment: object,
 
 
 def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
-                          z1: float, half_by_node: dict[str, float],
+                          z1: float, endpoint_extensions: dict[tuple[str, str], float],
                           is_foundation: bool,
                           outward_sign: float = 1.0) -> ResolvedWall | None:
     """Build a ResolvedWall with per-layer polygons for one authored wall."""
@@ -101,8 +116,8 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
     total = sum(a for (_l, a, _c) in added)
     axis_from_int = _axis_offset_from_interior(stack, added, wall.alignment, total)
 
-    ext0 = half_by_node.get(wall.start_node, total / 2.0)
-    ext1 = half_by_node.get(wall.end_node, total / 2.0)
+    ext0 = endpoint_extensions.get((wall.tag, "start"), 0.0)
+    ext1 = endpoint_extensions.get((wall.tag, "end"), 0.0)
 
     # Interior→exterior spans, walked over the depth-bearing layers only. A cavity layer
     # borrows its host structure layer's span, so it must be placed after the walk rather
@@ -172,18 +187,340 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
     )
 
 
-def storey_wall_half_thickness(plan: PlanModel, storey_tag: str) -> dict[str, float]:
-    """Per node: the max half-thickness of walls meeting there (for corner extension)."""
-    half: dict[str, float] = {}
+def _wall_total_thickness(plan: PlanModel, wall) -> float:
+    assembly = plan.library.resolve_assembly(wall.assembly)
+    if assembly is None:
+        return 0.0
+    stack = list(assembly.default_lining) + list(assembly.layers)
+    return sum(added for (_layer, added, _cavity) in _added_thicknesses(stack))
+
+
+def _cross(a: tuple[float, float], b: tuple[float, float]) -> float:
+    return a[0] * b[1] - a[1] * b[0]
+
+
+def _dot(a: tuple[float, float], b: tuple[float, float]) -> float:
+    return a[0] * b[0] + a[1] * b[1]
+
+
+def _opposite(a: tuple[float, float], b: tuple[float, float]) -> bool:
+    return abs(_cross(a, b)) <= _COLLINEAR_CROSS_TOLERANCE and _dot(a, b) < 0.0
+
+
+def _through_pair(incidents: list[JunctionIncident]) -> tuple[int, int] | None:
+    pairs = [
+        (i, j) for i in range(len(incidents)) for j in range(i + 1, len(incidents))
+        if _opposite(incidents[i].direction, incidents[j].direction)
+    ]
+    if not pairs:
+        return None
+    return min(pairs, key=lambda pair: (
+        incidents[pair[0]].wall_tag, incidents[pair[1]].wall_tag
+    ))
+
+
+def _is_exterior_assembly(plan: PlanModel, assembly_tag: str) -> bool:
+    assembly = plan.library.resolve_assembly(assembly_tag)
+    return bool(assembly and any(
+        layer.function is LayerFunction.CLADDING for layer in assembly.layers
+    ))
+
+
+def _is_basic_mixed_tee(plan: PlanModel, through: list[JunctionIncident],
+                        branches: list[JunctionIncident]) -> bool:
+    return (
+        bool(through)
+        and all(_is_exterior_assembly(plan, item.assembly) for item in through)
+        and all(not _is_exterior_assembly(plan, item.assembly) for item in branches)
+    )
+
+
+def classify_storey_junctions(plan: PlanModel, storey_tag: str) -> list[ResolvedJunction]:
+    """Classify every wall-graph node without depending on wall authoring direction."""
+    nodes = {
+        element.tag: element.position.xy_m
+        for element in plan.storey_elements(storey_tag)
+        if element.element_kind == "Node"
+    }
+    by_node: dict[str, list[JunctionIncident]] = {}
     for wall in _walls(plan, storey_tag):
-        asm = plan.library.resolve_assembly(wall.assembly)
-        if asm is None:
+        start = nodes.get(wall.start_node)
+        end = nodes.get(wall.end_node)
+        if start is None or end is None:
             continue
-        stack = list(asm.default_lining) + list(asm.layers)
-        total = sum(a for (_l, a, _c) in _added_thicknesses(stack))
-        for node_tag in (wall.start_node, wall.end_node):
-            half[node_tag] = max(half.get(node_tag, 0.0), total / 2.0)
-    return half
+        direction = unit(sub(end, start))
+        if length(direction) <= _DIRECTION_EPS:
+            continue
+        by_node.setdefault(wall.start_node, []).append(JunctionIncident(
+            wall.tag, "start", direction, wall.assembly,
+        ))
+        by_node.setdefault(wall.end_node, []).append(JunctionIncident(
+            wall.tag, "end", (-direction[0], -direction[1]), wall.assembly,
+        ))
+
+    junctions: list[ResolvedJunction] = []
+    for node_tag, raw_incidents in sorted(by_node.items()):
+        incidents = sorted(raw_incidents, key=lambda item: (item.wall_tag, item.endpoint))
+        count = len(incidents)
+        pair = _through_pair(incidents)
+        if count == 1:
+            kind = "open_end"
+        elif count == 2:
+            kind = "collinear" if pair is not None else "l"
+        elif count == 3:
+            kind = "t" if pair is not None else "complex"
+        elif count == 4:
+            remaining = [item for index, item in enumerate(incidents)
+                         if pair is None or index not in pair]
+            kind = "x" if pair is not None and len(remaining) == 2 \
+                and _opposite(remaining[0].direction, remaining[1].direction) else "complex"
+        else:
+            kind = "complex"
+
+        through = [incidents[index] for index in pair] if pair is not None else []
+        branches = [item for item in incidents if item not in through]
+        same_assembly = len({item.assembly for item in incidents}) == 1
+        supported = (
+            kind == "open_end"
+            or (kind in {"collinear", "l", "t", "x"} and same_assembly)
+            or (kind == "t" and _is_basic_mixed_tee(plan, through, branches))
+        )
+        diagnostic = None if supported else (
+            "mixed-assembly junction requires interface rules"
+            if kind != "complex" else
+            f"{count}-way junction requires a project-specific construction rule"
+        )
+        framing_owner = None
+        if kind == "l":
+            starting = [item.wall_tag for item in incidents if item.endpoint == "start"]
+            framing_owner = min(starting or [item.wall_tag for item in incidents])
+        elif kind in {"t", "x"} and through:
+            framing_owner = min(item.wall_tag for item in through)
+        junctions.append(ResolvedJunction(
+            node_tag=node_tag,
+            storey=storey_tag,
+            point=nodes[node_tag],
+            kind=kind,
+            incidents=tuple(incidents),
+            through_walls=tuple(sorted(item.wall_tag for item in through)),
+            branch_walls=tuple(sorted(item.wall_tag for item in branches)),
+            framing_owner=framing_owner,
+            supported=supported,
+            diagnostic=diagnostic,
+        ))
+    return junctions
+
+
+def _endpoint_extensions(plan: PlanModel, junctions: list[ResolvedJunction]) \
+        -> dict[tuple[str, str], float]:
+    walls = {wall.tag: wall for wall in _walls(plan, junctions[0].storey)} if junctions else {}
+    extensions: dict[tuple[str, str], float] = {}
+    for junction in junctions:
+        if junction.kind != "l":
+            continue
+        maximum_thickness = max(
+            (_wall_total_thickness(plan, walls[item.wall_tag])
+             for item in junction.incidents if item.wall_tag in walls),
+            default=0.0,
+        )
+        extension = maximum_thickness * _L_CORNER_EXTENSION_MULTIPLIER
+        for item in junction.incidents:
+            extensions[(item.wall_tag, item.endpoint)] = extension
+    return extensions
+
+
+def _clip_to_incident_sector(ring: list[tuple[float, float]],
+                             node: tuple[float, float],
+                             own_direction: tuple[float, float],
+                             other_direction: tuple[float, float]) \
+        -> list[tuple[float, float]]:
+    """Clip a convex wall band to its side of the two-ray angular bisector."""
+    normal = (
+        own_direction[0] - other_direction[0],
+        own_direction[1] - other_direction[1],
+    )
+
+    def signed(point: tuple[float, float]) -> float:
+        return (point[0] - node[0]) * normal[0] + (point[1] - node[1]) * normal[1]
+
+    result: list[tuple[float, float]] = []
+    for current, following in zip(ring, ring[1:] + ring[:1]):  # noqa: B905
+        current_distance = signed(current)
+        following_distance = signed(following)
+        current_inside = current_distance >= -_EPS
+        following_inside = following_distance >= -_EPS
+        if current_inside:
+            result.append(current)
+        if current_inside != following_inside:
+            denominator = current_distance - following_distance
+            if abs(denominator) > _DIRECTION_EPS:
+                fraction = current_distance / denominator
+                result.append((
+                    current[0] + (following[0] - current[0]) * fraction,
+                    current[1] + (following[1] - current[1]) * fraction,
+                ))
+    return result
+
+
+def _polygon_component(geometry, original: list[tuple[float, float]]) -> Polygon | None:
+    if geometry.is_empty:
+        return None
+    candidates: list[Polygon]
+    if isinstance(geometry, Polygon):
+        candidates = [geometry]
+    elif isinstance(geometry, (MultiPolygon, GeometryCollection)):
+        candidates = [item for item in geometry.geoms if isinstance(item, Polygon)]
+    else:
+        candidates = []
+    if not candidates:
+        return None
+    original_polygon = Polygon(original)
+    representative = original_polygon.representative_point()
+    containing = [item for item in candidates if item.buffer(_EPS).contains(representative)]
+    return max(containing or candidates, key=lambda item: item.area)
+
+
+def _normalized_ring(geometry, original: list[tuple[float, float]]) \
+        -> list[tuple[float, float]]:
+    component = _polygon_component(geometry, original)
+    if component is None or component.area <= _MIN_POLYGON_AREA_M2:
+        return []
+    if not component.is_valid:
+        component = _polygon_component(component.buffer(0), original)
+        if component is None:
+            return []
+    points = [(float(x), float(y)) for x, y in list(component.exterior.coords)[:-1]]
+    if len(points) < 3:
+        return []
+    if Polygon(points).exterior.is_ccw:
+        points.reverse()
+    start = min(range(len(points)), key=lambda index: (
+        round(points[index][0], 12), round(points[index][1], 12)
+    ))
+    return points[start:] + points[:start]
+
+
+def _replace_layer_polygon(wall: ResolvedWall, layer_index: int,
+                           polygon: list[tuple[float, float]]) -> ResolvedWall:
+    layers = list(wall.layers)
+    layers[layer_index] = replace(layers[layer_index], polygon=polygon)
+    return replace(wall, layers=tuple(layers))
+
+
+def _clip_l_corner(walls: dict[str, ResolvedWall], junction: ResolvedJunction) -> None:
+    first, second = junction.incidents
+    for own, other in ((first, second), (second, first)):
+        if own.wall_tag not in walls:
+            continue
+        wall = walls[own.wall_tag]
+        for index, layer in enumerate(wall.layers):
+            clipped = _clip_to_incident_sector(
+                layer.polygon, junction.point, own.direction, other.direction,
+            )
+            wall = _replace_layer_polygon(
+                wall, index, _normalized_ring(Polygon(clipped), layer.polygon),
+            )
+        walls[own.wall_tag] = wall
+
+
+def _through_envelope(walls: dict[str, ResolvedWall], wall_tags: tuple[str, ...]):
+    polygons = [
+        Polygon(layer.polygon)
+        for wall_tag in wall_tags
+        for layer in walls[wall_tag].depth_layers()
+        if len(layer.polygon) >= 3
+    ]
+    return unary_union(polygons) if polygons else GeometryCollection()
+
+
+def _butt_branches(walls: dict[str, ResolvedWall], junction: ResolvedJunction) -> None:
+    envelope = _through_envelope(walls, junction.through_walls)
+    if envelope.is_empty:
+        return
+    for wall_tag in junction.branch_walls:
+        if wall_tag not in walls:
+            continue
+        wall = walls[wall_tag]
+        for index, layer in enumerate(wall.layers):
+            original = layer.polygon
+            difference = Polygon(original).difference(envelope)
+            wall = _replace_layer_polygon(
+                wall, index, _normalized_ring(difference, original),
+            )
+        walls[wall_tag] = wall
+
+
+def _remove_fallback_overlaps(walls: dict[str, ResolvedWall],
+                              junction: ResolvedJunction) -> None:
+    occupied = GeometryCollection()
+    for incident in junction.incidents:
+        if incident.wall_tag not in walls:
+            continue
+        wall = walls[incident.wall_tag]
+        for index, layer in enumerate(wall.layers):
+            if layer.is_cavity or len(layer.polygon) < 3:
+                continue
+            original = layer.polygon
+            polygon = Polygon(original)
+            resolved = polygon.difference(occupied)
+            normalized = _normalized_ring(resolved, original)
+            # A fallback must never erase a real authored wall. Complete containment
+            # means this condition needs a project-specific rule, not a guessed deletion.
+            if not normalized:
+                normalized = original
+            wall = _replace_layer_polygon(
+                wall, index, normalized,
+            )
+            occupied = unary_union((occupied, polygon))
+        walls[incident.wall_tag] = wall
+
+
+def _synchronize_cavity_polygons(walls: dict[str, ResolvedWall]) -> None:
+    for wall_tag, wall in list(walls.items()):
+        layers = list(wall.layers)
+        by_name = {layer.name: layer for layer in layers if not layer.is_cavity}
+        changed = False
+        for index, layer in enumerate(layers):
+            host = by_name.get(layer.cavity_host or "") if layer.is_cavity else None
+            if host is not None and layer.polygon != host.polygon:
+                layers[index] = replace(layer, polygon=list(host.polygon))
+                changed = True
+        if changed:
+            walls[wall_tag] = replace(wall, layers=tuple(layers))
+
+
+def solve_junction_polygons(resolved_walls: list[ResolvedWall],
+                            junctions: list[ResolvedJunction]) -> tuple[list[ResolvedWall],
+                                                                       list[Finding]]:
+    walls = {wall.tag: wall for wall in resolved_walls}
+    findings: list[Finding] = []
+    for junction in junctions:
+        if junction.kind == "l":
+            _clip_l_corner(walls, junction)
+        if junction.kind in {"t", "x"} and junction.through_walls:
+            _butt_branches(walls, junction)
+        if not junction.supported:
+            _remove_fallback_overlaps(walls, junction)
+            findings.append(Finding(
+                severity=Severity.WARN,
+                check_id="integrity.junction_fallback",
+                message=f"node {junction.node_tag}: {junction.diagnostic}",
+                element_tags=tuple(item.wall_tag for item in junction.incidents),
+                fix_hint="author assembly interface/construction rules for this junction",
+                result=Result.UNKNOWN,
+            ))
+    _synchronize_cavity_polygons(walls)
+    for wall in walls.values():
+        for layer in wall.layers:
+            if len(layer.polygon) < 3 or not Polygon(layer.polygon).is_valid:
+                findings.append(Finding(
+                    severity=Severity.ERROR,
+                    check_id="integrity.junction_polygon",
+                    message=f"{wall.tag}/{layer.name} resolved to an invalid junction polygon",
+                    element_tags=(wall.tag,),
+                    result=Result.FAIL,
+                ))
+    return [walls[wall.tag] for wall in resolved_walls], findings
 
 
 def detect_gaps(plan: PlanModel, storey_tag: str) -> list[Finding]:
@@ -219,19 +556,22 @@ def _walls(plan: PlanModel, storey_tag: str) -> list:
 
 
 def resolve_storey_walls(plan: PlanModel, storey_tag: str, z0: float,
-                         z1: float) -> list[ResolvedWall]:
-    half = storey_wall_half_thickness(plan, storey_tag)
+                         z1: float) -> tuple[list[ResolvedWall], list[ResolvedJunction],
+                                             list[Finding]]:
+    junctions = classify_storey_junctions(plan, storey_tag)
+    endpoint_extensions = _endpoint_extensions(plan, junctions)
     sign = storey_outward_sign(plan, storey_tag)
     out: list[ResolvedWall] = []
     for wall in _walls(plan, storey_tag):
         rw = resolve_wall_geometry(
-            plan, wall, storey_tag, z0, z1, half,
+            plan, wall, storey_tag, z0, z1, endpoint_extensions,
             is_foundation=wall.element_kind == "FoundationWall",
             outward_sign=sign,
         )
         if rw is not None:
             out.append(rw)
-    return out
+    solved, findings = solve_junction_polygons(out, junctions)
+    return solved, junctions, findings
 
 
 def wall_axis_length(rw: ResolvedWall) -> float:
