@@ -53,6 +53,12 @@ class Stair(Element):
     turn_direction: str | None = None
     winder_count: int = 0
     start: Point2D | None = None
+    # Depth of the turn landing (in the run direction) for a ``u_split_landing``.
+    # ``None`` keeps the historical behaviour of reserving one stair width for the
+    # 180° turn; authoring a value renders a deeper walk-off platform and shortens the
+    # flights to suit. IRC R311.7.6 wants a landing at least the stair width deep, so a
+    # sub-width value is treated as the width floor by the resolver.
+    landing_depth: Length | None = None
 
 
 @register_element

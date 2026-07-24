@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.floors import FloorOpening, FloorSystem, Slab
@@ -277,13 +278,18 @@ def _resolve_stair(
     risers = math.ceil(rise / _MAX_RISER_M)
     treads = max(0, risers - 1)
     straight_treads = treads - stair.winder_count
+    # Turn-landing depth (in the run direction) for the U-stair. Unset reproduces the
+    # historical "reserve one stair width" behaviour; an authored value renders a deeper
+    # walk-off platform. IRC R311.7.6 floors the landing at the stair width.
+    landing_depth_m = (max(stair.landing_depth.meters, stair.width.meters)
+                       if stair.landing_depth is not None else stair.width.meters)
     # A winder turn consumes a square whose side is the stair width. The remaining treads
     # must still meet the 10 in. minimum on their straight walking line.
     if stair.layout == "u_split_landing":
-        # The parallel flights each use the opening length less one landing depth;
+        # The parallel flights each use the opening length less the landing depth;
         # the one intervening step consumes the remaining tread in the riser count.
         flight_treads = (treads - 1) // 2
-        straight_run = run - stair.width.meters
+        straight_run = run - landing_depth_m
         tread = straight_run / flight_treads if flight_treads else 0.0
     else:
         straight_run = run - stair.width.meters if stair.layout == "right_angle_winder" else run
@@ -293,11 +299,17 @@ def _resolve_stair(
                              f"risers but its opening only permits {tread / 0.0254:.1f}\" treads "
                              "(IRC R311.7 requires 10\")", stair.tag)]
     riser = rise / risers
-    if not _stair_fits_opening(stair, min(xs), max(xs), min(ys), max(ys), tread, risers):
+    if not _stair_fits_opening(stair, min(xs), max(xs), min(ys), max(ys), tread, risers,
+                               landing_depth_m):
         return None, [_error("integrity.stair_opening", f"stair {stair.tag} extends outside "
                              f"floor opening {opening.tag!r}", stair.tag)]
     members = _stair_members(stair, min(xs), min(ys), source.elevation.meters, risers, riser,
-                             tread)
+                             tread, landing_depth_m)
+    # Structural guards: the flight never drops below the subfloor it springs from (so a
+    # U-stair well partition cannot poke through the foundation), and a stair rising off a
+    # concrete foundation is hung on that concrete rather than floating on stud framing.
+    members = _clip_stair_to_subfloor(members, source.elevation.meters)
+    members = _anchor_stair_on_concrete(model, stair, members, source.elevation.meters)
     # A stair declaration lives with its destination deck so it can own the opening, but
     # its resolved plan-storey identity is the floor it rises *from*.
     return ResolvedStair(stair.uid, stair.tag, stair.from_storey, stair.to_storey, outline, risers, riser,
@@ -313,11 +325,13 @@ def _element_storey(model: ResolvedModel, tag: str) -> str | None:
 
 
 def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: int,
-                   riser: float, tread: float) -> tuple[FramedMember, ...]:
+                   riser: float, tread: float,
+                   landing_depth_m: float) -> tuple[FramedMember, ...]:
     if stair.layout == "right_angle_winder":
         return _winder_stair_members(stair, minx, miny, z0, risers, riser, tread)
     if stair.layout == "u_split_landing":
-        return _u_split_landing_members(stair, minx, miny, z0, risers, riser, tread)
+        return _u_split_landing_members(stair, minx, miny, z0, risers, riser, tread,
+                                        landing_depth_m)
     along_x = stair.run_direction == "x"
     start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
     width = stair.width.meters
@@ -349,7 +363,8 @@ def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: in
 
 
 def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
-                             risers: int, riser: float, tread: float) -> tuple[FramedMember, ...]:
+                             risers: int, riser: float, tread: float,
+                             landing_depth_m: float) -> tuple[FramedMember, ...]:
     """Generate two parallel flights with distinct landings and one connecting step."""
     width = stair.width.meters
     # One tread is the step between landings; distribute every remaining tread across the
@@ -412,6 +427,42 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
             y = upper_start - sign * tread * index
             a, b = (lane1, y), (lane1 + width, y)
         out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", "2x12", a, b, z, z + 0.0381, width))
+    # The 180° turn platform: a real walk-off deck spanning both flights (2× width) and
+    # ``landing_depth`` deep, filling the reserved zone beyond the flight tops. Framed as
+    # joists across the well so a deeper authored landing renders as a deeper platform.
+    well = 2.0 * width
+    joist_spacing = 0.4064  # 16" o.c.
+    joists = max(1, math.ceil(abs(landing_depth_m) / joist_spacing))
+    for index in range(joists + 1):
+        offset = sign * min(landing_depth_m, joist_spacing * index)
+        if along_x:
+            x = lower_end + offset
+            a, b = (x, lane0), (x, lane0 + well)
+        else:
+            y = lower_end + offset
+            a, b = (lane0, y), (lane0 + well, y)
+        out.append(FramedMember(stair.uid, f"landing-joist-{index:03d}", "landing", "2x12",
+                                a, b, lower_landing_z, lower_landing_z + 0.0381, well))
+    # Well partition between the up and down flights. It bears on the subfloor the stair
+    # springs from and rises to the arrival deck — it must NOT run past the subfloor into
+    # the foundation below, so its base is clamped there (the flight-clip guard is the
+    # backstop). Authored as generated framing (no constructor), exempt from the editable
+    # rule like the rest of the stair carriage.
+    partition_top = z0 + riser * risers
+    lane_boundary = lane0 + width  # the plane dividing the up run from the down run
+    # Hold the partition off the opening perimeter so its ends do not foul the surrounding
+    # trimmed-deck framing / stair-block walls where the flights meet the arrival deck.
+    inset = 0.20
+    run_start, run_end = (minx, lower_end) if along_x else (miny, lower_end)
+    lo, hi = sorted((run_start, run_end))
+    lo, hi = lo + inset, hi - inset
+    if hi > lo:
+        if along_x:
+            pa, pb = (lo, lane_boundary), (hi, lane_boundary)
+        else:
+            pa, pb = (lane_boundary, lo), (lane_boundary, hi)
+        out.append(FramedMember(stair.uid, "well-partition", "partition", "2x4", pa, pb,
+                                z0, partition_top, hi - lo))
     return tuple(out)
 
 
@@ -494,8 +545,81 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     return tuple(out)
 
 
+def _clip_stair_to_subfloor(members: tuple[FramedMember, ...],
+                            subfloor: float) -> tuple[FramedMember, ...]:
+    """Clamp generated stair framing to the subfloor the flight springs from.
+
+    The U-stair well partition (and any carriage member) bears on the first framed deck
+    and must never drop into the foundation below it. This is the clip guard the audit
+    called for; for a flight already sized off that deck it is a no-op backstop.
+    """
+    out: list[FramedMember] = []
+    for member in members:
+        z0 = max(member.z0_m, subfloor)
+        z1 = max(member.z1_m, subfloor)
+        z0e = None if member.z0_end_m is None else max(member.z0_end_m, subfloor)
+        z1e = None if member.z1_end_m is None else max(member.z1_end_m, subfloor)
+        if (z0, z1, z0e, z1e) == (member.z0_m, member.z1_m, member.z0_end_m, member.z1_end_m):
+            out.append(member)
+        else:
+            out.append(replace(member, z0_m=z0, z1_m=z1, z0_end_m=z0e, z1_end_m=z1e))
+    return tuple(out)
+
+
+def _wall_carries_run(wall, p0: tuple[float, float], p1: tuple[float, float]) -> bool:
+    """True when an axis-aligned stringer p0->p1 runs against a wall's axis (a bearing)."""
+    (wx0, wy0), (wx1, wy1) = wall.axis
+    if abs(wx1 - wx0) < 1e-6 and abs(p1[0] - p0[0]) < 1e-6:  # both run in y
+        if abs(p0[0] - wx0) > 0.20:
+            return False
+        lo, hi = sorted((p0[1], p1[1]))
+        wlo, whi = sorted((wy0, wy1))
+        return min(hi, whi) - max(lo, wlo) > 0.10
+    if abs(wy1 - wy0) < 1e-6 and abs(p1[1] - p0[1]) < 1e-6:  # both run in x
+        if abs(p0[1] - wy0) > 0.20:
+            return False
+        lo, hi = sorted((p0[0], p1[0]))
+        wlo, whi = sorted((wx0, wx1))
+        return min(hi, whi) - max(lo, wlo) > 0.10
+    return False
+
+
+def _anchor_stair_on_concrete(model: ResolvedModel, stair: Stair,
+                              members: tuple[FramedMember, ...],
+                              subfloor: float) -> tuple[FramedMember, ...]:
+    """Hang a stair that springs off a concrete foundation on that concrete.
+
+    A basement stair does not float on stud framing: its outer stringers run against the
+    poured foundation walls and are carried on wall-mounted (joist-hanger-style) ledgers
+    let into the concrete. Annotate every stringer that lands on such a wall with the
+    connection the 2D detail pipeline binds, and emit a ledger/hanger band as connector
+    geometry so the bearing reads structurally. Stairs that spring off a framed deck (no
+    foundation walls on the storey they rise from) are left untouched.
+    """
+    conc_walls = [w for w in model.walls
+                  if w.storey == stair.from_storey and getattr(w, "is_foundation", False)]
+    if not conc_walls:
+        return members
+    out: list[FramedMember] = []
+    for member in members:
+        if member.category == "stringer":
+            host = next((w for w in conc_walls
+                         if _wall_carries_run(w, member.p0, member.p1)), None)
+            if host is not None:
+                tag = f"concrete-wall-hanger:{host.tag}"
+                out.append(replace(member, connection=tag))
+                top = max(member.z0_m, member.z1_m)
+                out.append(FramedMember(
+                    stair.uid, f"hanger-{host.tag}-{member.child_key}", "hanger", "hanger",
+                    member.p0, member.p1, max(subfloor, top - 0.2032), top,
+                    member.length_m, connection=tag))
+                continue
+        out.append(member)
+    return tuple(out)
+
+
 def _stair_fits_opening(stair: Stair, minx: float, maxx: float, miny: float, maxy: float,
-                        tread: float, risers: int) -> bool:
+                        tread: float, risers: int, landing_depth_m: float) -> bool:
     """Keep the generated flight entirely within its destination deck opening.
 
     The opening is the structural headroom contract shared by both storeys.  Resolving a
@@ -505,7 +629,7 @@ def _stair_fits_opening(stair: Stair, minx: float, maxx: float, miny: float, max
     start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
     if stair.layout == "u_split_landing":
         flight_treads = max((risers - 2 + 1) // 2, risers - 2 - ((risers - 2 + 1) // 2))
-        required_run = stair.width.meters + tread * flight_treads
+        required_run = landing_depth_m + tread * flight_treads
         if stair.run_direction == "x":
             return (2 * stair.width.meters <= maxy - miny + 1e-9
                     and required_run <= maxx - minx + 1e-9)
