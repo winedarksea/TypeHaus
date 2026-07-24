@@ -40,8 +40,22 @@ import { useTheme } from "../theme/theme";
 export const EARTH_PLANE_OPACITY = 0.28;
 export const EARTH_PLANE_THICKNESS_M = 0.01;
 export const EARTH_FALLBACK_HALF_SIZE_M = 50;
-// Curve tessellation for one continuous viewer mesh; no internal wall-piece seams are emitted.
-export const ARCH_OPENING_SEGMENT_COUNT = 32;
+// Arch tessellation for one continuous viewer mesh; no internal wall-piece seams are emitted.
+// The segment count is derived per arch from its radius (archSoffitSegmentCount) so that a
+// soffit facet never strays further than this from the true circle, whatever the arch's size.
+export const ARCH_SOFFIT_CHORD_TOLERANCE_M = 0.0005;
+export const ARCH_SOFFIT_MIN_SEGMENT_COUNT = 24;
+export const ARCH_SOFFIT_MAX_SEGMENT_COUNT = 192;
+// A vertex counts as being on the soffit circle within this distance of it. The samples are
+// computed from the circle, so the only slack needed is ExtrudeGeometry's float32 storage
+// (~3e-7 m at house coordinates); anything beyond was clipped away by the wall top.
+const ARCH_SOFFIT_RING_TOLERANCE_M = 1e-5;
+// ExtrudeGeometry gives its front/back caps normals along the sweep axis and its swept side
+// walls normals in the shape plane; only the latter can belong to an arch soffit.
+const ARCH_SOFFIT_SWEPT_FACE_MAX_AXIAL_NORMAL = 0.5;
+// Junction resolution splits a layer ring's straight edges at every crossing wall. A vertex
+// this far off the chord between its neighbours is a real corner; anything closer is padding.
+export const COLLINEAR_VERTEX_TOLERANCE_M = 1e-6;
 
 // Whether a fully-tagged whole-house glb may take over from the model.json baseline scene.
 // Held OFF until the glTF emitter reaches visual parity with the model.json render path: it
@@ -890,20 +904,110 @@ export interface WallLayerPiece {
   topIsRaked: boolean;
 }
 
+// Drop vertices that sit on the straight line between their neighbours. Junction resolution
+// splits a wall layer's long edges at every crossing wall, so an authored rectangle serializes
+// as five, six or eight points (the 16" sunken-garden arch wall arrives as six). Anything that
+// needs to *recognise* a rectangle has to reduce first. Mirrors `_without_collinear_vertices`
+// in packages/engine/src/typehaus/emit/gltf/emitter.py — keep the two in step.
+export function withoutCollinearVertices(
+  polygon: readonly (readonly [number, number])[],
+  toleranceM: number = COLLINEAR_VERTEX_TOLERANCE_M,
+): [number, number][] {
+  const ring: [number, number][] = [];
+  for (const [x, y] of polygon) {
+    const last = ring[ring.length - 1];
+    if (!last || Math.hypot(x - last[0], y - last[1]) > toleranceM) ring.push([x, y]);
+  }
+  while (ring.length > 1 && Math.hypot(ring[0][0] - ring[ring.length - 1][0],
+    ring[0][1] - ring[ring.length - 1][1]) <= toleranceM) ring.pop();
+  if (ring.length < 3) return ring;
+  const corners: [number, number][] = [];
+  for (let index = 0; index < ring.length; index++) {
+    const [px, py] = ring[(index - 1 + ring.length) % ring.length];
+    const [cx, cy] = ring[index];
+    const [nextX, nextY] = ring[(index + 1) % ring.length];
+    const spanX = nextX - px, spanY = nextY - py;
+    const span = Math.hypot(spanX, spanY);
+    // Perpendicular distance, in metres, of this vertex from the chord between its neighbours.
+    const offset = span < toleranceM
+      ? Math.hypot(cx - px, cy - py)
+      : Math.abs((cx - px) * spanY - (cy - py) * spanX) / span;
+    if (offset > toleranceM) corners.push([cx, cy]);
+  }
+  return corners;
+}
+
+// Segments for a half-circle soffit sampled at even angular steps. One step's mid-chord sagitta
+// is r·(1 − cos(π/2n)), so inverting it ties tessellation to the arch's actual size instead of a
+// flat guess: an 8'-wide garden arch and a small niche head come out equally smooth. Mirrors
+// `_arch_soffit_segment_count` in the glTF emitter.
+export function archSoffitSegmentCount(radiusM: number): number {
+  if (!(radiusM > ARCH_SOFFIT_CHORD_TOLERANCE_M)) return ARCH_SOFFIT_MIN_SEGMENT_COUNT;
+  const halfStep = Math.acos(Math.max(-1, 1 - ARCH_SOFFIT_CHORD_TOLERANCE_M / radiusM));
+  return Math.min(ARCH_SOFFIT_MAX_SEGMENT_COUNT,
+    Math.max(ARCH_SOFFIT_MIN_SEGMENT_COUNT, Math.ceil(Math.PI / (2 * halfStep))));
+}
+
+// One soffit sample as (offset from the arch centreline, height above the springline). The arc
+// is walked by *angle*: stepping evenly in x collapses near the springlines, where a semicircle
+// turns vertical, so the last step alone dropped ~40 cm on the catlin arches — the striping.
+// Mirrors `_arch_soffit_sample` in the glTF emitter.
+export function archSoffitSample(
+  segment: number, segmentCount: number, radiusM: number,
+): { offsetM: number; heightM: number } {
+  const angle = Math.PI * segment / segmentCount;
+  return { offsetM: -radiusM * Math.cos(angle), heightM: radiusM * Math.sin(angle) };
+}
+
+interface ArchSoffitCylinder { centerAlongM: number; springlineM: number; radiusM: number }
+
+// ExtrudeGeometry sweeps every hole edge as its own detached quad, so the soffit ships per-facet
+// normals and shades as N flat strips however finely it is tessellated. Overwrite just the swept
+// soffit ring with the analytic cylinder normal; jambs, wall ends and the front/back caps keep
+// their extruded normals, so the prism's corners stay crisp. Runs in ExtrudeGeometry's local
+// frame (shape in XY, sweep along Z), before the layer is placed into the scene.
+function applySmoothArchSoffitNormals(
+  geometry: THREE.BufferGeometry, soffits: readonly ArchSoffitCylinder[],
+): void {
+  if (soffits.length === 0) return;
+  const position = geometry.getAttribute("position");
+  const normal = geometry.getAttribute("normal");
+  if (!position || !normal) return;
+  for (let index = 0; index < position.count; index++) {
+    if (Math.abs(normal.getZ(index)) > ARCH_SOFFIT_SWEPT_FACE_MAX_AXIAL_NORMAL) continue;
+    const along = position.getX(index), elevation = position.getY(index);
+    for (const { centerAlongM, springlineM, radiusM } of soffits) {
+      const dx = along - centerAlongM, dy = elevation - springlineM;
+      const distance = Math.hypot(dx, dy);
+      if (dy < -ARCH_SOFFIT_RING_TOLERANCE_M ||
+        Math.abs(distance - radiusM) > ARCH_SOFFIT_RING_TOLERANCE_M) continue;
+      // Replace the facet's direction only — its outward sense stays whatever the sweep
+      // established, so the void keeps facing into the opening.
+      const sign = normal.getX(index) * dx + normal.getY(index) * dy < 0 ? -1 : 1;
+      normal.setXYZ(index, sign * dx / distance, sign * dy / distance, 0);
+      break;
+    }
+  }
+  normal.needsUpdate = true;
+}
+
 // A concrete arch should read as one continuous cast surface. Extruding a Shape with opening
 // holes gives the soffit a single smooth mesh; the strip fallback below is retained for raked
 // and junction-mitered wall layers whose non-rectangular plan footprint cannot be swept safely.
-function createSmoothArchedWallLayerGeometry(
+export function createSmoothArchedWallLayerGeometry(
   wall: Wall, polygon: readonly [number, number][], openings: Opening[], center: PlanCenter,
 ): THREE.BufferGeometry | null {
-  if (!openings.some((opening) => (opening.arch_rise_m ?? 0) > 1e-9) || polygon.length !== 4 ||
+  if (!openings.some((opening) => (opening.arch_rise_m ?? 0) > 1e-9) ||
       wall.top_z0_m != null || wall.top_z1_m != null) return null;
   const [[sx, sy], [ex, ey]] = wall.axis;
   const length = Math.hypot(ex - sx, ey - sy);
   if (length < 1e-9) return null;
   const ux = (ex - sx) / length, uy = (ey - sy) / length;
   const nx = -uy, ny = ux;
-  const local = polygon.map(([x, y]) => [
+  // A padded ring is still a rectangle; only its *corners* decide whether it can be swept.
+  const footprint = withoutCollinearVertices(polygon);
+  if (footprint.length !== 4) return null;
+  const local = footprint.map(([x, y]) => [
     (x - sx) * ux + (y - sy) * uy,
     (x - sx) * nx + (y - sy) * ny,
   ] as const);
@@ -921,6 +1025,7 @@ function createSmoothArchedWallLayerGeometry(
   shape.lineTo(maxAlong, wall.z1_m);
   shape.lineTo(minAlong, wall.z1_m);
   shape.closePath();
+  const soffits: ArchSoffitCylinder[] = [];
   for (const opening of openings) {
     const start = Math.max(minAlong, opening.center_along_m - opening.width_m / 2);
     const end = Math.min(maxAlong, opening.center_along_m + opening.width_m / 2);
@@ -932,17 +1037,17 @@ function createSmoothArchedWallLayerGeometry(
       const top = Math.min(wall.z1_m, bottom + opening.height_m);
       hole.moveTo(start, bottom); hole.lineTo(start, top); hole.lineTo(end, top); hole.lineTo(end, bottom);
     } else {
-      const radius = opening.width_m / 2;
-      const springline = bottom + Math.max(0, opening.height_m - archRise);
+      const radiusM = opening.width_m / 2;
+      const springlineM = bottom + Math.max(0, opening.height_m - archRise);
+      const segmentCount = archSoffitSegmentCount(radiusM);
       hole.moveTo(start, bottom);
-      hole.lineTo(start, Math.min(wall.z1_m, springline));
-      for (let segment = 0; segment <= ARCH_OPENING_SEGMENT_COUNT; segment++) {
-        const x = -radius + opening.width_m * segment / ARCH_OPENING_SEGMENT_COUNT;
-        const curve = radius * radius - x * x;
-        hole.lineTo(opening.center_along_m + x, Math.min(wall.z1_m,
-          springline + Math.sqrt(Math.max(0, curve))));
+      hole.lineTo(start, Math.min(wall.z1_m, springlineM));
+      for (let segment = 0; segment <= segmentCount; segment++) {
+        const { offsetM, heightM } = archSoffitSample(segment, segmentCount, radiusM);
+        hole.lineTo(opening.center_along_m + offsetM, Math.min(wall.z1_m, springlineM + heightM));
       }
       hole.lineTo(end, bottom);
+      soffits.push({ centerAlongM: opening.center_along_m, springlineM, radiusM });
     }
     hole.closePath();
     shape.holes.push(hole);
@@ -950,6 +1055,7 @@ function createSmoothArchedWallLayerGeometry(
   const geometry = new THREE.ExtrudeGeometry(shape, {
     depth: maxAcross - minAcross, bevelEnabled: false, curveSegments: 1,
   });
+  applySmoothArchSoffitNormals(geometry, soffits);
   // Extrude from the maximum-across face toward the minimum-across face. This keeps
   // the local-to-scene matrix right-handed while mapping project north to scene -Z.
   geometry.applyMatrix4(new THREE.Matrix4().set(
@@ -1030,10 +1136,11 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
     if (archRise > 1e-9) {
       const springline = openingBottom + Math.max(0, active.height_m - archRise);
       const radius = active.width_m / 2;
-      const openingStart = active.center_along_m - radius;
-      for (let segment = 0; segment < ARCH_OPENING_SEGMENT_COUNT; segment++) {
-        const segmentStart = openingStart + active.width_m * segment / ARCH_OPENING_SEGMENT_COUNT;
-        const segmentEnd = openingStart + active.width_m * (segment + 1) / ARCH_OPENING_SEGMENT_COUNT;
+      // Angular steps here too: even-x strips leave a ~40 cm riser at each springline.
+      const segmentCount = archSoffitSegmentCount(radius);
+      for (let segment = 0; segment < segmentCount; segment++) {
+        const segmentStart = active.center_along_m + archSoffitSample(segment, segmentCount, radius).offsetM;
+        const segmentEnd = active.center_along_m + archSoffitSample(segment + 1, segmentCount, radius).offsetM;
         const clippedStart = Math.max(start, segmentStart);
         const clippedEnd = Math.min(end, segmentEnd);
         if (clippedEnd - clippedStart <= 1e-9) continue;

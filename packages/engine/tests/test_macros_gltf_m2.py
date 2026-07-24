@@ -8,6 +8,7 @@ standard journal (undo byte-identical), and the self-contained ``.glb`` artifact
 from __future__ import annotations
 
 import json
+import math
 import shutil
 import struct
 from pathlib import Path
@@ -271,9 +272,10 @@ def _accessor_vec3(gltf, blob, accessor_index):
     return [struct.unpack_from("<fff", blob, off + 12 * i) for i in range(a["count"])]
 
 
-def test_every_primitive_has_flat_unit_normals(plan):
-    """Every primitive ships per-face NORMALs (de-indexed triangle soup) so Revit/SketchUp and
-    the viewer shade the export correctly instead of inferring from winding."""
+def test_every_primitive_ships_explicit_unit_normals(plan):
+    """Every primitive ships NORMALs (de-indexed triangle soup) so Revit/SketchUp and the viewer
+    shade the export correctly instead of inferring from winding. Faces are geometric/per-face
+    except the arch soffit, which carries its analytic cylinder normal; both must be unit."""
     import math
 
     model, _ = resolve(plan)
@@ -298,6 +300,103 @@ def test_opaque_materials_single_sided_translucent_double(plan):
     for material in gltf["materials"]:
         translucent = material["alphaMode"] == "BLEND"
         assert material["doubleSided"] is translucent
+
+
+def test_thin_rect_edges_survive_collinear_ring_padding():
+    """Junction resolution splits a layer's long edges, so an authored rectangle arrives with
+    collinear vertices. Sorting the raw ring picked two points off the *same* face and exported
+    catlin's 16" arched wall as 8"; reducing to real corners first restores the true thickness."""
+    from typehaus.emit.gltf.emitter import _thin_rect_edges, _without_collinear_vertices
+
+    # W-SG-ARCH's serialized concrete layer: one 16" (0.4064 m) rectangle as six points.
+    padded = [(2.5908, -3.0988), (2.5908, -2.8956), (2.5908, -2.6924),
+              (8.382, -2.6924), (8.382, -2.8956), (8.382, -3.0988)]
+    axis = ((2.4384, -2.8956), (8.5344, -2.8956))
+    assert len(_without_collinear_vertices(padded)) == 4
+    (front_start, front_end), (back_start, back_end) = _thin_rect_edges(padded, axis)
+    assert math.hypot(front_start[0] - back_start[0],
+                      front_start[1] - back_start[1]) == pytest.approx(0.4064)
+    assert math.hypot(front_end[0] - back_end[0],
+                      front_end[1] - back_end[1]) == pytest.approx(0.4064)
+    # Both edges still run start→end along the axis, so fractional slicing is unchanged.
+    assert front_start[0] < front_end[0] and back_start[0] < back_end[0]
+
+    # An unpadded rectangle keeps its previous answer exactly.
+    plain = [(2.5908, -3.0988), (2.5908, -2.6924), (8.382, -2.6924), (8.382, -3.0988)]
+    flatten = lambda edges: [c for edge in edges for point in edge for c in point]
+    assert flatten(_thin_rect_edges(plain, axis)) == pytest.approx(flatten(_thin_rect_edges(padded, axis)))
+
+    # A real mitre vertex is a corner, not padding, and survives the reduction.
+    assert len(_without_collinear_vertices(
+        [(0.0, 0.0), (0.25, -0.25), (4.0, -0.25), (4.0, 0.25), (0.0, 0.25)])) == 5
+
+
+def test_arched_wall_layer_exports_its_authored_thickness(catlin_model):
+    """End-to-end: catlin's arched sunken-garden wall reaches the .glb at its authored 16",
+    not the 8" half-thickness the raw-ring edge pick produced."""
+    from typehaus.emit.gltf import emit_gltf_dict
+
+    wall = next(w for w in catlin_model.walls if w.tag == "W-SG-ARCH")
+    gltf, blob = emit_gltf_dict(catlin_model)
+    node = next(n for n in gltf["nodes"] if n.get("extras", {}).get("uid") == wall.uid)
+    depths = []
+    for prim in gltf["meshes"][node["mesh"]]["primitives"]:
+        accessor = gltf["accessors"][prim["attributes"]["POSITION"]]
+        # The wall runs east-west, so its depth is the glTF z extent (model -y).
+        depths.append(accessor["max"][2] - accessor["min"][2])
+    assert max(depths) == pytest.approx(wall.thickness_m, abs=1e-6)
+    assert wall.thickness_m == pytest.approx(0.4064)
+
+
+def test_arch_soffit_ships_smooth_cylinder_normals():
+    """The soffit lies on a true cylinder, so its facets carry the analytic normal and shade as
+    one curve; the flat top and wall-depth faces keep their crisp geometric normals."""
+    from typehaus.emit.gltf.emitter import (
+        _MeshBuilder,
+        _arch_soffit_segment_count,
+        _deindex_with_normals,
+    )
+
+    radius, springline, z1 = 1.2192, 1.4, 3.0
+    edges = (((0.0, 0.0), (6.0, 0.0)), ((0.0, 0.4064), (6.0, 0.4064)))
+    mb = _MeshBuilder()
+    mb.add_arched_spandrel(edges, 0.2, 0.6, z1, springline, radius, (0.5, 0.5, 0.5, 1.0))
+    (_color, positions, indices), = mb.buckets()
+    assert len(indices.smooth_face_normals) == 2 * _arch_soffit_segment_count(radius)
+
+    _pos, normals = _deindex_with_normals(positions, indices)
+    assert len({tuple(round(c, 6) for c in n) for n in normals}) > _arch_soffit_segment_count(radius)
+    for x, y, z in normals:
+        assert math.hypot(math.hypot(x, y), z) == pytest.approx(1.0)
+    # Every soffit normal points down into the opening (glTF y is up); a per-facet-only export
+    # would still satisfy that, so the distinct-normal count above is what proves smoothness.
+    soffit_normals = [n for n in normals if n[1] < -1e-6]
+    assert soffit_normals, "the curved soffit faces downward into the opening"
+
+
+def test_arch_soffit_segment_count_follows_the_radius():
+    """Tessellation is derived from the arch radius (chord tolerance), not a flat constant."""
+    from typehaus.emit.gltf.emitter import (
+        _ARCH_SOFFIT_CHORD_TOLERANCE_M,
+        _ARCH_SOFFIT_MAX_SEGMENTS,
+        _ARCH_SOFFIT_MIN_SEGMENTS,
+        _arch_soffit_sample,
+        _arch_soffit_segment_count,
+    )
+
+    assert _arch_soffit_segment_count(1.2192) > _arch_soffit_segment_count(0.3)
+    assert _ARCH_SOFFIT_MIN_SEGMENTS <= _arch_soffit_segment_count(0.01) <= _ARCH_SOFFIT_MAX_SEGMENTS
+    assert _arch_soffit_segment_count(50.0) == _ARCH_SOFFIT_MAX_SEGMENTS
+
+    # Angular sampling: samples run springline → crown → springline and no step's rise
+    # approaches the radius (an even-x walk drops ~35% of it in its outermost step alone).
+    count = _arch_soffit_segment_count(1.2192)
+    heights = [_arch_soffit_sample(s, count, 1.2192)[1] for s in range(count + 1)]
+    assert heights[0] == pytest.approx(0.0) and heights[-1] == pytest.approx(0.0, abs=1e-9)
+    # The crown sample sits within the chord tolerance of the true crown — the guarantee the
+    # segment count was solved for (an odd count never lands a sample exactly on it).
+    assert 0.0 <= 1.2192 - max(heights) <= _ARCH_SOFFIT_CHORD_TOLERANCE_M
+    assert max(abs(b - a) for a, b in zip(heights, heights[1:])) < 1.2192 / 10
 
 
 def _outward_fraction(mb):
