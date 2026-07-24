@@ -262,6 +262,147 @@ def test_emit_gltf_dict_emits_canvas_object_nodes(plan):
     assert canvas[0]["name"] == "furniture|canvas_object|CO-TEST-1"
 
 
+# --- glTF ↔ viewer parity: normals, winding, material family, raked tops, roof thickness ---
+
+def _accessor_vec3(gltf, blob, accessor_index):
+    a = gltf["accessors"][accessor_index]
+    view = gltf["bufferViews"][a["bufferView"]]
+    off = view["byteOffset"]
+    return [struct.unpack_from("<fff", blob, off + 12 * i) for i in range(a["count"])]
+
+
+def test_every_primitive_has_flat_unit_normals(plan):
+    """Every primitive ships per-face NORMALs (de-indexed triangle soup) so Revit/SketchUp and
+    the viewer shade the export correctly instead of inferring from winding."""
+    import math
+
+    model, _ = resolve(plan)
+    gltf, blob = emit_gltf_dict(model)
+    for mesh in gltf["meshes"]:
+        for prim in mesh["primitives"]:
+            attrs = prim["attributes"]
+            assert "POSITION" in attrs and "NORMAL" in attrs
+            assert "indices" not in prim, "primitives are non-indexed triangle soup"
+            normal = gltf["accessors"][attrs["NORMAL"]]
+            position = gltf["accessors"][attrs["POSITION"]]
+            assert normal["type"] == "VEC3" and normal["count"] == position["count"]
+            for (x, y, z) in _accessor_vec3(gltf, blob, attrs["NORMAL"]):
+                assert abs(math.sqrt(x * x + y * y + z * z) - 1.0) < 1e-4
+
+
+def test_opaque_materials_single_sided_translucent_double(plan):
+    """Opaque solids are single-sided (verified outward winding — no SketchUp back-faces);
+    translucent glass stays double-sided."""
+    model, _ = resolve(plan)
+    gltf, _ = emit_gltf_dict(model)
+    for material in gltf["materials"]:
+        translucent = material["alphaMode"] == "BLEND"
+        assert material["doubleSided"] is translucent
+
+
+def _outward_fraction(mb):
+    """Fraction of a single-solid mesh's triangles whose winding normal faces away from the
+    solid centroid — 1.0 means every face is outward (single-sided-safe). The bucket stores
+    indexed geometry, so triangles are formed via the index list, not consecutive vertices."""
+    outward = total = 0
+    for _c, pos, idx in mb.buckets():
+        cx = sum(p[0] for p in pos) / len(pos)
+        cy = sum(p[1] for p in pos) / len(pos)
+        cz = sum(p[2] for p in pos) / len(pos)
+        for k in range(0, len(idx), 3):
+            a, b, c = pos[idx[k]], pos[idx[k + 1]], pos[idx[k + 2]]
+            ux, uy, uz = b[0] - a[0], b[1] - a[1], b[2] - a[2]
+            vx, vy, vz = c[0] - a[0], c[1] - a[1], c[2] - a[2]
+            nx, ny, nz = uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx
+            fx = (a[0] + b[0] + c[0]) / 3 - cx
+            fy = (a[1] + b[1] + c[1]) / 3 - cy
+            fz = (a[2] + b[2] + c[2]) / 3 - cz
+            total += 1
+            if nx * fx + ny * fy + nz * fz > 0:
+                outward += 1
+    return outward / total
+
+
+def test_prism_faces_point_outward_regardless_of_ring_winding():
+    """add_prism normalizes ring winding so a single solid's faces all point outward (the
+    invariant that makes single-sided export safe) whether the input ring is CW or CCW."""
+    from typehaus.emit.gltf.emitter import _MeshBuilder
+
+    ccw = [(0.0, 0.0), (2.0, 0.0), (2.0, 1.0), (0.0, 1.0)]
+    cw = list(reversed(ccw))
+    for ring in (ccw, cw):
+        mb = _MeshBuilder()
+        mb.add_prism(ring, 0.0, 1.5, (0.5, 0.5, 0.5, 1.0))
+        assert _outward_fraction(mb) == 1.0
+
+
+def test_member_box_faces_point_outward():
+    """add_member_box builds a closed box whose faces all point outward by construction."""
+    from typehaus.emit.gltf.emitter import _MeshBuilder
+
+    mb = _MeshBuilder()
+    # p0/p1 z are the box's bottom/top elevations, so give it a real vertical extent.
+    mb.add_member_box((0.0, 0.0, 0.0), (3.0, 0.0, 0.4), 0.05, (0.6, 0.4, 0.2, 1.0))
+    assert _outward_fraction(mb) == 1.0
+
+
+def test_material_finish_colour_mirrors_viewer_families():
+    """Layers colour by material family (viewer parity), with the flat standing-seam / CMU
+    finish approximations, and fall back to the function palette when unrecognised."""
+    from typehaus.emit.draw.palette import material_family_color
+    from typehaus.emit.gltf.emitter import (
+        _CMU_BASE,
+        _SEAM_BASE,
+        _color,
+        _hex_rgba,
+        _material_finish_color,
+    )
+
+    assert _material_finish_color("2x6-spf", "structure") == _hex_rgba(material_family_color("2x6-spf"))
+    assert _material_finish_color("standing-seam", "cladding") == _hex_rgba(_SEAM_BASE)
+    assert _material_finish_color("cmu-8", "cladding") == _hex_rgba(_CMU_BASE)
+    assert _material_finish_color(None, "structure") == _color("structure")
+
+
+def test_raked_wall_body_follows_the_rake():
+    """A gable/ToRoof wall extrudes to its per-vertex raked top, not the flat z1_m bounding box
+    that engulfs (and z-fights) the roof — the 'buzzing wall' fix."""
+    from typehaus.emit.gltf.emitter import _MeshBuilder, _add_wall_body
+    from typehaus.resolve.model import ResolvedLayer, ResolvedWall
+
+    layer = ResolvedLayer(name="stud", material_ref="2x6-spf", function="structure",
+                          thickness_m=0.14, polygon=[(0, 0), (4, 0), (4, 0.14), (0, 0.14)])
+    wall = ResolvedWall(uid="w1", tag="W1", storey="L1", assembly="EXT", axis=((0, 0), (4, 0)),
+                        layers=(layer,), z0_m=0.0, z1_m=4.0, top_z0_m=2.5, top_z1_m=4.0)
+    mb = _MeshBuilder()
+    _add_wall_body(mb, wall, "core", ())
+    pts = [p for _c, pos, _i in mb.buckets() for p in pos]  # gltf (x, elevation, -y)
+    top_start = max(p[1] for p in pts if abs(p[0] - 0.0) < 1e-6)
+    top_end = max(p[1] for p in pts if abs(p[0] - 4.0) < 1e-6)
+    assert abs(top_start - 2.5) < 1e-6  # raked down at the low end, not the z1=4.0 box
+    assert abs(top_end - 4.0) < 1e-6
+
+
+def test_roof_emits_real_thickness():
+    """The roof is a thickened, mitered shell (rises above the ridge by its assembly thickness),
+    not a zero-thickness plane that imports as a non-manifold surface."""
+    import types
+
+    from typehaus.emit.gltf.emitter import _MeshBuilder, _add_roof
+    from typehaus.resolve.model import ResolvedRoof
+
+    roof = ResolvedRoof(uid="r1", tag="R1", storey="L1", form="gable",
+                        footprint=[(0, 0), (8, 0), (8, 6), (0, 6)], eave_z_m=3.0, ridge_z_m=5.0,
+                        ridge_direction="x", assembly="ROOF", surface_area_m2=50.0)
+    model = types.SimpleNamespace(plan=types.SimpleNamespace(
+        library=types.SimpleNamespace(resolve_assembly=lambda _t: None)))
+    mb = _MeshBuilder()
+    _add_roof(mb, roof, model)
+    ys = [p[1] for _c, pos, _i in mb.buckets() for p in pos]
+    assert max(ys) > 5.0 + 1e-3, "thickened shell rises above the bare ridge"
+    assert min(ys) <= 3.0 + 1e-9
+
+
 # --- assembly editor write flows (WP2.4d/e) ----------------------------------
 
 def test_duplicate_assembly_resolves_and_undoes_byte_identical(client):

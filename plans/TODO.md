@@ -202,6 +202,7 @@ deck fix; work them down here (or suppress `structural.member_interference` per-
 - still some weird walls extending beneath the foundation somehow related to the stairs
 - one of the masonry porch railings as the exterior side flipped around. Brick should face exterior on wall three sides of that.
 - ceiling lights appear to be defined but sitting on the floor.
+- there is a glowing red dot on the basement. Some sort of warning, however you can't click on it to tell what it is, so it isn't very helpful in this form.
 
 ## General Polishing Tasks
 - Make sure all warnings are cleared up

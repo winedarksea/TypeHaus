@@ -19,7 +19,55 @@ HATCH_FAMILY_COLOR: dict[str, str] = {
     "siding": "#b8bcc0",
     "metal": "#6b7076",
     "concrete": "#a9a9a9",
+    "masonry": "#9c5a45",
 }
+
+# The material-family fallback colour (light preset) — matches
+# RESOLVED_NORDIC_PALETTE.light.material.fallback in ui/src/nordic/palette.ts.
+_FAMILY_FALLBACK = "#cfc9bd"
+
+# Ordered substring table mirroring familyOf() in ui/src/nordic/palette.ts. First match
+# wins, so more specific needles precede broader ones. Both surfaces infer a hatch family
+# from the raw material ref so the 3D viewer and the glTF export agree on wood/gyp/metal/…
+_FAMILY_NEEDLES: tuple[tuple[str, str], ...] = (
+    ("gyp", "gypsum"), ("dry", "gypsum"),
+    ("osb", "osb"), ("zip", "osb"), ("ply", "osb"),
+    ("stud", "lumber"), ("lumber", "lumber"), ("wood", "lumber"), ("spf", "lumber"),
+    ("rigid", "rigid"), ("xps", "rigid"), ("eps", "rigid"), ("poly", "rigid"),
+    ("batt", "batt"), ("mineral", "batt"), ("fiberglass", "batt"), ("cellulose", "batt"),
+    ("wrb", "membrane"), ("membrane", "membrane"), ("barrier", "membrane"),
+    ("siding", "siding"), ("clad", "siding"),
+    ("metal", "metal"), ("seam", "metal"), ("steel", "metal"),
+    ("concrete", "concrete"), ("conc", "concrete"), ("slab", "concrete"),
+    ("brick", "masonry"), ("masonry", "masonry"), ("cmu", "masonry"),
+    ("block", "masonry"), ("stone", "masonry"), ("veneer", "masonry"),
+)
+
+
+def family_of(material_ref: str | None) -> str | None:
+    """Infer a hatch/material family from a material ref by substring (first match wins).
+
+    A Python mirror of familyOf() in ui/src/nordic/palette.ts so the glTF export colours a
+    layer by its material family (wood/gyp/metal/…) exactly as the 3D viewer does.
+    """
+    if not material_ref:
+        return None
+    s = material_ref.lower()
+    for needle, fam in _FAMILY_NEEDLES:
+        if needle in s:
+            return fam
+    return None
+
+
+def material_family_color(material_ref: str | None) -> str:
+    """Family-resolved colour for a material ref, falling back to the neutral family colour.
+
+    Mirrors materialColor() in ui/src/nordic/palette.ts against the light (export) preset.
+    """
+    fam = family_of(material_ref)
+    if fam is not None and fam in HATCH_FAMILY_COLOR:
+        return HATCH_FAMILY_COLOR[fam]
+    return _FAMILY_FALLBACK
 
 # Control-layer badge colors.
 CONTROL_COLOR: dict[str, str] = {

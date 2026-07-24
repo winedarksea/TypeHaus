@@ -18,8 +18,9 @@ import math
 import struct
 from pathlib import Path
 
-from typehaus.emit.draw.palette import material_color
+from typehaus.emit.draw.palette import family_of, material_color, material_family_color
 from typehaus.model.canvas import canvas_object_types
+from typehaus.model.enums import LayerFunction
 from typehaus.resolve.model import (
     FramedMember,
     ResolvedCanvasObject,
@@ -102,6 +103,11 @@ class _MeshBuilder:
         ring = _dedupe_ring(ring)
         if len(ring) < 3:
             return
+        # The fixed side/cap winding below faces outward only for a counter-clockwise ring
+        # (same convention as add_raked_prism); normalize so every prism's faces — and the
+        # per-face normals derived from them — point outward, which single-sided import needs.
+        if _ring_signed_area(ring) < 0:
+            ring = list(reversed(ring))
         positions, indices = self._bucket(color)
         base = len(positions)
         n = len(ring)
@@ -118,6 +124,39 @@ class _MeshBuilder:
         for i in range(1, n - 1):
             indices += [base, base + i + 1, base + i]                 # bottom (down)
             indices += [base + n, base + n + i, base + n + i + 1]     # top (up)
+
+    def add_raked_prism(self, ring: list[tuple[float, float]], z0: float,
+                        top_at, color: tuple[float, float, float, float]) -> None:
+        """Extrude a plan ring from a flat ``z0`` to a per-vertex raked top ``top_at(x, y)``.
+
+        A direct port of ui/src/three/planGeometry.ts ``createRakedPlanPrismGeometry``: a wall
+        under a sloped roof (gable end, ToRoof) must stop at its actual rake, or its full
+        bounding-height box engulfs and z-fights the roof it carries. Nothing normalizes winding
+        for the fixed triangle order below, so the ring is reoriented counter-clockwise first.
+        """
+        ring = _dedupe_ring(ring)
+        if len(ring) < 3:
+            return
+        if _ring_signed_area(ring) < 0:  # only CCW rings give outward side + upward cap normals
+            ring = list(reversed(ring))
+        n = len(ring)
+
+        def top(pt):
+            return top_at(pt[0], pt[1])
+
+        def g(pt, elev):
+            return _to_gltf(pt[0], pt[1], elev)
+
+        triangles: list[tuple[Vec3, Vec3, Vec3]] = []
+        for i in range(n):  # side walls, base loop → per-vertex raked top
+            j = (i + 1) % n
+            triangles.append((g(ring[i], z0), g(ring[j], z0), g(ring[j], top(ring[j]))))
+            triangles.append((g(ring[i], z0), g(ring[j], top(ring[j])), g(ring[i], top(ring[i]))))
+        for i in range(1, n - 1):  # flat bottom cap (down) + raked top cap (up) via fans
+            triangles.append((g(ring[0], z0), g(ring[i + 1], z0), g(ring[i], z0)))
+            triangles.append((g(ring[0], top(ring[0])), g(ring[i], top(ring[i])),
+                              g(ring[i + 1], top(ring[i + 1]))))
+        self.add_triangles(triangles, color)
 
     def add_prism_with_rectangular_voids(self, ring: list[tuple[float, float]],
                                          voids: tuple[tuple[tuple[float, float], ...], ...],
@@ -263,13 +302,17 @@ class _SceneBuilder:
         if index is None:
             index = len(self._materials)
             self._material_index[color] = index
+            translucent = color[3] < 1.0
             self._materials.append({
                 "pbrMetallicRoughness": {
                     "baseColorFactor": list(color), "metallicFactor": 0.0,
                     "roughnessFactor": 0.9,
                 },
-                "alphaMode": "BLEND" if color[3] < 1.0 else "OPAQUE",
-                "doubleSided": True,
+                "alphaMode": "BLEND" if translucent else "OPAQUE",
+                # Opaque solids are single-sided with verified outward winding (what Revit/
+                # SketchUp want — no blue back-faces); translucent glass stays double-sided so
+                # both faces of a thin pane read.
+                "doubleSided": translucent,
             })
         return index
 
@@ -284,10 +327,17 @@ class _SceneBuilder:
         """
         primitives: list[dict] = []
         for color, positions, indices in mb.buckets():
-            pos_acc = _append_positions(self._blob, self._buffer_views, self._accessors, positions)
-            idx_acc = _append_indices(self._blob, self._buffer_views, self._accessors, indices)
+            # De-index into flat triangle soup with one geometric normal per face. Every builder
+            # emits triangles into these buckets, so this single step gives all of them crisp
+            # per-face normals (shared corners would round under averaged normals) and hands
+            # Revit/SketchUp explicit normals. Non-indexed is smaller than re-emitting indices.
+            tri_positions, tri_normals = _deindex_with_normals(positions, indices)
+            if not tri_positions:
+                continue
+            pos_acc = _append_positions(self._blob, self._buffer_views, self._accessors, tri_positions)
+            nrm_acc = _append_normals(self._blob, self._buffer_views, self._accessors, tri_normals)
             primitives.append({
-                "attributes": {"POSITION": pos_acc}, "indices": idx_acc,
+                "attributes": {"POSITION": pos_acc, "NORMAL": nrm_acc},
                 "material": self._material(color),
             })
         if not primitives:
@@ -340,19 +390,47 @@ def _append_positions(blob: bytearray, views: list[dict], accessors: list[dict],
     return len(accessors) - 1
 
 
-def _append_indices(blob: bytearray, views: list[dict], accessors: list[dict],
-                    indices: list[int]) -> int:
+def _append_normals(blob: bytearray, views: list[dict], accessors: list[dict],
+                    normals: list[Vec3]) -> int:
     _align(blob)
     offset = len(blob)
-    for i in indices:
-        blob += struct.pack("<I", i)
+    for (x, y, z) in normals:
+        blob += struct.pack("<fff", x, y, z)
     views.append({"buffer": 0, "byteOffset": offset,
-                  "byteLength": len(indices) * 4, "target": 34963})
+                  "byteLength": len(normals) * 12, "target": 34962})
     accessors.append({
-        "bufferView": len(views) - 1, "componentType": 5125, "count": len(indices),
-        "type": "SCALAR",
+        "bufferView": len(views) - 1, "componentType": 5126, "count": len(normals),
+        "type": "VEC3",
     })
     return len(accessors) - 1
+
+
+def _face_normal(a: Vec3, b: Vec3, c: Vec3) -> Vec3 | None:
+    """Unit outward normal of triangle a→b→c (right-hand rule), or ``None`` if degenerate."""
+    ux, uy, uz = b[0] - a[0], b[1] - a[1], b[2] - a[2]
+    vx, vy, vz = c[0] - a[0], c[1] - a[1], c[2] - a[2]
+    nx, ny, nz = uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx
+    length = math.sqrt(nx * nx + ny * ny + nz * nz)
+    if length < 1e-12:
+        return None
+    return (nx / length, ny / length, nz / length)
+
+
+def _deindex_with_normals(positions: list[Vec3],
+                          indices: list[int]) -> tuple[list[Vec3], list[Vec3]]:
+    """Expand an indexed triangle mesh into flat triangle soup with one geometric normal per
+    face. Hard edges stay crisp (each face carries its own normal on unshared vertices) and
+    degenerate zero-area triangles are dropped."""
+    out_pos: list[Vec3] = []
+    out_nrm: list[Vec3] = []
+    for i in range(0, len(indices) - 2, 3):
+        a, b, c = positions[indices[i]], positions[indices[i + 1]], positions[indices[i + 2]]
+        normal = _face_normal(a, b, c)
+        if normal is None:
+            continue
+        out_pos.extend((a, b, c))
+        out_nrm.extend((normal, normal, normal))
+    return out_pos, out_nrm
 
 
 def _align(blob: bytearray, boundary: int = 4) -> None:
@@ -374,15 +452,104 @@ def _dedupe_ring(ring: list[tuple[float, float]]) -> list[tuple[float, float]]:
     return out
 
 
+def _ring_signed_area(ring: list[tuple[float, float]]) -> float:
+    """Shoelace area of a plan ring; positive is counter-clockwise (planGeometry.ts)."""
+    total = 0.0
+    n = len(ring)
+    for i in range(n):
+        x0, y0 = ring[i]
+        x1, y1 = ring[(i + 1) % n]
+        total += x0 * y1 - x1 * y0
+    return total / 2.0
+
+
+def _wall_top_at(wall: ResolvedWall, x: float, y: float) -> float:
+    """A raked (ToRoof/gable) wall's top elevation at a plan point, interpolated along the wall
+    axis. Mirrors ui/src/components/Panel3D.tsx ``rakedTopAt``; a wall with no rake tops out flat
+    at ``z1_m``."""
+    if wall.top_z0_m is None and wall.top_z1_m is None:
+        return wall.z1_m
+    start = wall.z1_m if wall.top_z0_m is None else wall.top_z0_m
+    end = wall.z1_m if wall.top_z1_m is None else wall.top_z1_m
+    (x0, y0), (x1, y1) = wall.axis
+    dx, dy = x1 - x0, y1 - y0
+    len2 = dx * dx + dy * dy
+    t = 0.0 if len2 < 1e-9 else min(1.0, max(0.0, ((x - x0) * dx + (y - y0) * dy) / len2))
+    return start + (end - start) * t
+
+
+def _emit_wall_slice(mb, ring, z0, z1, color, top_at) -> None:
+    """A solid wall slice (pier / full layer): raked to ``top_at`` when the wall is raked, else a
+    flat prism to ``z1``."""
+    if top_at is not None:
+        mb.add_raked_prism(ring, z0, top_at, color)
+    else:
+        mb.add_prism(ring, z0, z1, color)
+
+
 def _color(key: str) -> tuple[float, float, float, float]:
     return _PALETTE.get(key.lower(), _FALLBACK)
 
 
 def _hex_rgba(hex_str: str) -> tuple[float, float, float, float]:
+    # Fed straight into baseColorFactor like the existing _solid_color path; no sRGB→linear
+    # conversion, matching the emitter's other palette values which are authored directly.
     h = hex_str.lstrip("#")
     if len(h) == 6:
         return (int(h[0:2], 16) / 255, int(h[2:4], 16) / 255, int(h[4:6], 16) / 255, 1.0)
     return _FALLBACK
+
+
+# Finish classification mirrors ui/src/three/materials.ts so the export approximates the
+# viewer's procedural finishes with one flat base colour (no baked textures): a standing-seam
+# wall reads near-white, CMU reads grey block, white brick reads whitewashed, and any other
+# recognised material falls back to its material-family colour.
+_SEAM_BASE = "#e8e8e2"          # Panel3D.tsx createStandingSeamMaterial base (0xE8E8E2)
+_CMU_BASE = "#9c988f"           # materials.ts CMU_STYLE.base
+_WHITE_BRICK_BASE = "#e9e6df"   # materials.ts WHITE_BRICK_STYLE.base
+
+
+def _is_standing_seam(material_ref: str | None) -> bool:
+    if not material_ref:
+        return False
+    s = material_ref.lower()
+    return "seam" in s or (family_of(material_ref) == "metal" and "standing" in s)
+
+
+def _is_cmu(material_ref: str | None) -> bool:
+    if family_of(material_ref) != "masonry":
+        return False
+    s = (material_ref or "").lower()
+    return "cmu" in s or "block" in s or "concrete mason" in s
+
+
+def _is_white_brick(material_ref: str | None) -> bool:
+    s = (material_ref or "").lower()
+    return "white" in s or "limewash" in s or "whitewash" in s
+
+
+def _material_finish_color(material_ref: str | None,
+                           function: str) -> tuple[float, float, float, float]:
+    """Colour a material by its family + finish classification, mirroring the viewer's
+    materialColor. ``function`` is the lowercased layer function string ("cladding", …), used
+    for the standing-seam test and as the fallback palette key when no family is recognised."""
+    if function == "cladding" and _is_standing_seam(material_ref):
+        return _hex_rgba(_SEAM_BASE)
+    if family_of(material_ref) == "masonry":
+        if _is_cmu(material_ref):
+            return _hex_rgba(_CMU_BASE)
+        if _is_white_brick(material_ref):
+            return _hex_rgba(_WHITE_BRICK_BASE)
+        return _hex_rgba(material_family_color(material_ref))  # default red brick → masonry
+    if family_of(material_ref) is not None:
+        return _hex_rgba(material_family_color(material_ref))
+    return _color(function)
+
+
+def _layer_color(layer) -> tuple[float, float, float, float]:
+    """Colour a resolved wall layer by material family; falls back to the function palette for
+    layers with no recognisable material ref."""
+    return _material_finish_color(layer.material_ref, layer.function)
 
 
 def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, float]:
@@ -437,21 +604,26 @@ def _add_wall_body(mb: _MeshBuilder, wall: ResolvedWall, lod: str, openings=()) 
     # Core LOD draws one prism per depth-bearing layer, carved around any hosted openings so
     # windows/doors read as voids and the arched front wall reads as piers + an arched head.
     # Cavity fill shares the structure layer's polygon, so extruding it too would only z-fight.
+    # A gable/ToRoof wall rakes its top to the roof slope; ``top_at`` interpolates that top per
+    # plan point (None for ordinary flat walls). Piers and the square header follow the rake;
+    # the sill band stays flat under the opening (mirrors wallLayerPieces' topIsRaked rules).
+    raked = wall.top_z0_m is not None or wall.top_z1_m is not None
+    top_at = (lambda x, y: _wall_top_at(wall, x, y)) if raked else None
     ops = sorted(openings, key=lambda o: o.center_along_m)
     length = math.hypot(wall.axis[1][0] - wall.axis[0][0],
                         wall.axis[1][1] - wall.axis[0][1]) or 1.0
     for layer in wall.depth_layers():
         if not layer.polygon:
             continue
-        color = _color(layer.function)
+        color = _layer_color(layer)
         if not ops:
-            mb.add_prism(layer.polygon, wall.z0_m, wall.z1_m, color)
+            _emit_wall_slice(mb, layer.polygon, wall.z0_m, wall.z1_m, color, top_at)
             continue
         _add_layer_with_openings(mb, layer.polygon, wall.axis, wall.z0_m, wall.z1_m,
-                                 length, ops, color)
+                                 length, ops, color, top_at)
 
 
-def _add_layer_with_openings(mb, poly, axis, z0, z1, length, ops, color) -> None:
+def _add_layer_with_openings(mb, poly, axis, z0, z1, length, ops, color, top_at=None) -> None:
     edges = _thin_rect_edges(poly, axis)
     cursor = 0.0
     for op in ops:
@@ -460,21 +632,30 @@ def _add_layer_with_openings(mb, poly, axis, z0, z1, length, ops, color) -> None
         if o1 <= o0:
             continue
         if o0 > cursor + 1e-6:  # solid pier before this opening
-            mb.add_prism(_slice(edges, cursor, o0), z0, z1, color)
+            _emit_wall_slice(mb, _slice(edges, cursor, o0), z0, z1, color, top_at)
         bottom = min(z0 + op.sill_m, z1)
         head = min(bottom + op.height_m, z1)
-        if bottom > z0 + 1e-6:  # sill band under the opening
+        if bottom > z0 + 1e-6:  # sill band under the opening — always flat, below the rake
             mb.add_prism(_slice(edges, o0, o1), z0, bottom, color)
         if op.arch_rise_m > 1e-6:  # spandrel above a semicircular/segmental arch soffit
+            # v1: arch heads stay flat-topped even under a rake (a rare combination); the
+            # raked square header below handles the common gable-end window/door case.
             springline = bottom + max(0.0, op.height_m - op.arch_rise_m)
             radius = op.width_m / 2.0
             if z1 > springline + 1e-6:
                 mb.add_arched_spandrel(edges, o0, o1, z1, springline, radius, color)
-        elif z1 > head + 1e-6:  # square-head header
-            mb.add_prism(_slice(edges, o0, o1), head, z1, color)
+        else:  # square-head header, raked to the roof slope where the wall is raked
+            header = _slice(edges, o0, o1)
+            if top_at is not None:
+                # Only emit when the whole strip's raked top clears the opening head, or the
+                # header would invert (mirrors wallLayerPieces minTop > openingTop).
+                if min(top_at(px, py) for (px, py) in header) > head + 1e-6:
+                    mb.add_raked_prism(header, head, top_at, color)
+            elif z1 > head + 1e-6:
+                mb.add_prism(header, head, z1, color)
         cursor = max(cursor, o1)
     if cursor < 1.0 - 1e-6:  # trailing pier
-        mb.add_prism(_slice(edges, cursor, 1.0), z0, z1, color)
+        _emit_wall_slice(mb, _slice(edges, cursor, 1.0), z0, z1, color, top_at)
 
 
 def _add_opening_filling(mb: _MeshBuilder, wall: ResolvedWall, opening,
@@ -545,37 +726,151 @@ def _add_member(mb: _MeshBuilder, member: FramedMember) -> None:
     )
 
 
-def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof) -> None:
-    """Render the resolved gable/shed planes rather than a misleading flat prism."""
-    (minx, miny), (maxx, _), (_, maxy), _ = roof.footprint
+_RoofVertex = tuple[float, float, float]  # plan-space (x, y, z_elevation)
+
+
+def _roof_plane_triangles(roof: ResolvedRoof) -> list[list[_RoofVertex]]:
+    """The sloped gable/shed planes as plan-space triangles. A port of roofGeometry.ts
+    ``roofPlaneTriangles``; robust to footprint winding (min/max over all corners)."""
+    xs = [p[0] for p in roof.footprint]
+    ys = [p[1] for p in roof.footprint]
+    minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
     eave, ridge = roof.eave_z_m, roof.ridge_z_m
-    if roof.ridge_direction == "x":
-        mid = (miny + maxy) / 2
-        ridge_a, ridge_b = (minx, mid, ridge), (maxx, mid, ridge)
-        triangles = [
-            ((minx, miny, eave), (maxx, miny, eave), ridge_b),
-            ((minx, miny, eave), ridge_b, ridge_a),
-            (ridge_a, ridge_b, (maxx, maxy, eave)),
-            (ridge_a, (maxx, maxy, eave), (minx, maxy, eave)),
-        ]
-    else:
-        mid = (minx + maxx) / 2
-        ridge_a, ridge_b = (mid, miny, ridge), (mid, maxy, ridge)
-        triangles = [
-            ((minx, miny, eave), ridge_a, ridge_b),
-            ((minx, miny, eave), ridge_b, (minx, maxy, eave)),
-            (ridge_a, (maxx, miny, eave), (maxx, maxy, eave)),
-            (ridge_a, (maxx, maxy, eave), ridge_b),
-        ]
     if roof.form == "shed":
         if roof.ridge_direction == "x":
-            triangles = [((minx, miny, eave), (maxx, miny, eave), (maxx, maxy, ridge)),
-                         ((minx, miny, eave), (maxx, maxy, ridge), (minx, maxy, ridge))]
+            flat = [(minx, miny, eave), (maxx, miny, eave), (maxx, maxy, ridge),
+                    (minx, miny, eave), (maxx, maxy, ridge), (minx, maxy, ridge)]
         else:
-            triangles = [((minx, miny, eave), (maxx, miny, ridge), (maxx, maxy, ridge)),
-                         ((minx, miny, eave), (maxx, maxy, ridge), (minx, maxy, eave))]
-    mb.add_triangles([tuple(_to_gltf(*point) for point in triangle) for triangle in triangles],
-                     _color("roof"))
+            flat = [(minx, miny, eave), (maxx, miny, ridge), (maxx, maxy, ridge),
+                    (minx, miny, eave), (maxx, maxy, ridge), (minx, maxy, eave)]
+    elif roof.ridge_direction == "x":
+        mid = (miny + maxy) / 2
+        ra, rb = (minx, mid, ridge), (maxx, mid, ridge)
+        flat = [(minx, miny, eave), (maxx, miny, eave), rb,
+                (minx, miny, eave), rb, ra,
+                ra, rb, (maxx, maxy, eave),
+                ra, (maxx, maxy, eave), (minx, maxy, eave)]
+    else:
+        mid = (minx + maxx) / 2
+        ra, rb = (mid, miny, ridge), (mid, maxy, ridge)
+        flat = [(minx, miny, eave), ra, rb,
+                (minx, miny, eave), rb, (minx, maxy, eave),
+                ra, (maxx, miny, eave), (maxx, maxy, eave),
+                ra, (maxx, maxy, eave), rb]
+    return [flat[i:i + 3] for i in range(0, len(flat), 3)]
+
+
+def _roof_vertex_key(v: _RoofVertex) -> str:
+    return ",".join(f"{n:.4f}" for n in v)
+
+
+def _roof_face_normal(tri: list[_RoofVertex]) -> _RoofVertex:
+    """Unit normal of a roof plane, always the up-slope side (roofGeometry.ts ``faceNormal``)."""
+    a, b, c = tri
+    ab = (b[0] - a[0], b[1] - a[1], b[2] - a[2])
+    ac = (c[0] - a[0], c[1] - a[1], c[2] - a[2])
+    nx = ab[1] * ac[2] - ab[2] * ac[1]
+    ny = ab[2] * ac[0] - ab[0] * ac[2]
+    nz = ab[0] * ac[1] - ab[1] * ac[0]
+    length = math.sqrt(nx * nx + ny * ny + nz * nz) or 1.0
+    nx, ny, nz = nx / length, ny / length, nz / length
+    return (-nx, -ny, -nz) if nz < 0 else (nx, ny, nz)
+
+
+def _roof_offsetter(triangles: list[list[_RoofVertex]]):
+    """Offset the roof surface perpendicular to its slope with a mitered ridge, so every layer
+    keeps its true thickness instead of opening a wedge. Port of roofGeometry.ts
+    ``roofOffsetter``: average over distinct *planes* (not triangles) at each shared vertex."""
+    normals = [_roof_face_normal(t) for t in triangles]
+    planes: dict[str, dict[str, _RoofVertex]] = {}
+    for i, tri in enumerate(triangles):
+        for v in tri:
+            key = _roof_vertex_key(v)
+            per = planes.setdefault(key, {})
+            per[",".join(f"{c:.5f}" for c in normals[i])] = normals[i]
+    miters: dict[str, _RoofVertex] = {}
+    for key, per in planes.items():
+        faces = list(per.values())
+        sx = sum(n[0] for n in faces)
+        sy = sum(n[1] for n in faces)
+        sz = sum(n[2] for n in faces)
+        length = math.sqrt(sx * sx + sy * sy + sz * sz) or 1.0
+        dx, dy, dz = sx / length, sy / length, sz / length
+        dot = dx * faces[0][0] + dy * faces[0][1] + dz * faces[0][2]
+        scale = 1.0 / max(0.2, dot)
+        miters[key] = (dx * scale, dy * scale, dz * scale)
+
+    def offset_at(v: _RoofVertex, distance: float) -> _RoofVertex:
+        mx, my, mz = miters[_roof_vertex_key(v)]
+        return (v[0] + mx * distance, v[1] + my * distance, v[2] + mz * distance)
+
+    return offset_at
+
+
+def _roof_boundary_edges(triangles: list[list[_RoofVertex]]):
+    """Edges used by exactly one triangle — the eave/rake perimeter to close for thickness."""
+    counts: dict[str, list] = {}
+    for tri in triangles:
+        for i in range(3):
+            a, b = tri[i], tri[(i + 1) % 3]
+            key = "|".join(sorted((_roof_vertex_key(a), _roof_vertex_key(b))))
+            if key in counts:
+                counts[key][1] += 1
+            else:
+                counts[key] = [(a, b), 1]
+    return [edge for edge, count in counts.values() if count == 1]
+
+
+def _above_structure_layers(assembly) -> list:
+    """The assembly layers outboard of the structure — everything the sky sees (roofGeometry.ts
+    ``aboveStructureLayers``)."""
+    if assembly is None:
+        return []
+    last = -1
+    for i, layer in enumerate(assembly.layers):
+        if layer.function is LayerFunction.STRUCTURE:
+            last = i
+    return list(assembly.layers[last + 1:])
+
+
+def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof, model: ResolvedModel) -> None:
+    """Render the roof as its authored above-structure assembly stack — each layer offset
+    perpendicular to the slope with a mitered ridge and a closed eave/rake perimeter, so it
+    reads (and imports into Revit/SketchUp) as a real solid, not a zero-thickness plane."""
+    triangles = _roof_plane_triangles(roof)
+    offset_at = _roof_offsetter(triangles)
+    perimeter = _roof_boundary_edges(triangles)
+    assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
+    layers = _above_structure_layers(assembly)
+
+    def gltf(v: _RoofVertex) -> Vec3:
+        return _to_gltf(v[0], v[1], v[2])
+
+    base = 0.0
+    # No assembly layers above structure → one default standing-seam roofing skin (matches the
+    # viewer's buildRoof fallback), so the roof still has real thickness.
+    stack = layers if layers else [None]
+    for layer in stack:
+        if layer is None:
+            thickness = 0.05
+            color = _material_finish_color("standing-seam", "cladding")
+        else:
+            thickness = layer.thickness.meters
+            color = _material_finish_color(layer.material_ref, layer.function.value)
+        top = base + thickness
+        tris: list[tuple[Vec3, Vec3, Vec3]] = []
+        for tri in triangles:  # top skin (up) + bottom skin (reversed, down)
+            tris.append((gltf(offset_at(tri[0], top)), gltf(offset_at(tri[1], top)),
+                         gltf(offset_at(tri[2], top))))
+            tris.append((gltf(offset_at(tri[0], base)), gltf(offset_at(tri[2], base)),
+                         gltf(offset_at(tri[1], base))))
+        for a, b in perimeter:  # close the eave/rake so the layer reads as real thickness
+            tris.append((gltf(offset_at(a, base)), gltf(offset_at(b, base)),
+                         gltf(offset_at(b, top))))
+            tris.append((gltf(offset_at(a, base)), gltf(offset_at(b, top)),
+                         gltf(offset_at(a, top))))
+        mb.add_triangles(tris, color)
+        base = top
     for member in roof.members:
         _add_member(mb, member)
 
@@ -718,7 +1013,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
 
     for roof in sorted(model.roofs, key=lambda item: item.uid):
         mb = _MeshBuilder()
-        _add_roof(mb, roof)
+        _add_roof(mb, roof, model)
         scene.add_object(mb, trade="roof")
 
     for floor in sorted(model.floors, key=lambda item: item.uid):
