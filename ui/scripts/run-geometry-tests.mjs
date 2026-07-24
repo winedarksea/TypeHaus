@@ -8,12 +8,13 @@ const server = await createServer({
 
 try {
   const { runPlanGeometryTests } = await server.ssrLoadModule("/src/three/planGeometry.test.ts");
-  const { runCanvasObjectGeometryTests, runOpeningGeometryTests, runEarthGeometryTests } = await server.ssrLoadModule("/src/components/Panel3D.test.ts");
+  const { runCanvasObjectGeometryTests, runOpeningGeometryTests, runEarthGeometryTests, runFootingBeddingGeometryTests } = await server.ssrLoadModule("/src/components/Panel3D.test.ts");
   const { runModelGeometryTests } = await server.ssrLoadModule("/src/model/geometry.test.ts");
   const { runRoofGeometryTests } = await server.ssrLoadModule("/src/three/roofGeometry.test.ts");
   runPlanGeometryTests();
   runOpeningGeometryTests();
   runEarthGeometryTests();
+  runFootingBeddingGeometryTests();
   runCanvasObjectGeometryTests();
   runModelGeometryTests();
   runRoofGeometryTests();

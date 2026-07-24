@@ -3,10 +3,10 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { ALL_TRADES, useStore, type Trade } from "../state/store";
-import type { CanvasObject, CanvasObjectType, Catalog, Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
+import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
-import { applyStandingSeamWallUv, createStandingSeamMaterial, isStandingSeam } from "../three/materials";
+import { applyMasonryWallUv, applyStandingSeamWallUv, createMasonryMaterial, createStandingSeamMaterial, isMasonry, isStandingSeam } from "../three/materials";
 import { aboveStructureLayers, boundaryEdges, roofOffsetter, roofPlaneTriangles } from "../three/roofGeometry";
 import {
   createPlanPrismGeometry,
@@ -160,6 +160,7 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
   let fittedTarget = target.clone();
   let panStep = 1;
   let dragging = false;
+  let panning = false; // orbit vs. screen-pan for the active pointer drag
   let last = [0, 0];
 
   const place = () => {
@@ -186,20 +187,76 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
     });
   };
 
+  // Eased camera move (reset view): interpolate orbit angles / dolly / target over a short
+  // ease-in-out so the reset glides instead of snapping. Any user interaction cancels it.
+  let tween = 0;
+  const stopTween = () => { if (tween) { cancelAnimationFrame(tween); tween = 0; } };
+  const animateTo = (toTheta: number, toPhi: number, toRadius: number, toTarget: THREE.Vector3) => {
+    stopTween();
+    const fromTheta = theta, fromPhi = phi, fromRadius = radius;
+    const fromTarget = target.clone();
+    const start = performance.now();
+    const duration = 320;
+    const tick = () => {
+      const raw = Math.min(1, (performance.now() - start) / duration);
+      const eased = raw < 0.5 ? 2 * raw * raw : 1 - Math.pow(-2 * raw + 2, 2) / 2;
+      theta = fromTheta + (toTheta - fromTheta) * eased;
+      phi = fromPhi + (toPhi - fromPhi) * eased;
+      radius = fromRadius + (toRadius - fromRadius) * eased;
+      target.copy(fromTarget).lerp(toTarget, eased);
+      place();
+      renderer.render(scene, camera);
+      tween = raw < 1 ? requestAnimationFrame(tick) : 0;
+    };
+    tween = requestAnimationFrame(tick);
+  };
+
   const el = renderer.domElement;
   const raycaster = new THREE.Raycaster();
+  const groundPlane = new THREE.Plane();
   let downAt = [0, 0];
   el.style.touchAction = "none";
+
+  // Where the pointer ray meets the horizontal plane through the current target — the anchor
+  // for cursor-centric zoom and the reference depth for screen-space panning.
+  const pointerGroundPoint = (clientX: number, clientY: number): THREE.Vector3 | null => {
+    const r = el.getBoundingClientRect();
+    const ndc = new THREE.Vector2(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
+    place();
+    raycaster.setFromCamera(ndc, camera);
+    groundPlane.set(new THREE.Vector3(0, 1, 0), -target.y);
+    const hit = new THREE.Vector3();
+    return raycaster.ray.intersectPlane(groundPlane, hit) ? hit : null;
+  };
+
+  el.addEventListener("contextmenu", (e) => e.preventDefault()); // right-drag pans, no menu
   el.addEventListener("pointerdown", (e) => {
+    stopTween();
     dragging = true;
+    // Middle/right button or a held modifier pans; plain left-drag orbits (matches most
+    // 3D tools and keeps single-button/trackpad orbit as the default).
+    panning = e.button === 1 || e.button === 2 || e.shiftKey || e.metaKey;
     last = [e.clientX, e.clientY];
     downAt = [e.clientX, e.clientY];
     el.setPointerCapture(e.pointerId);
   });
   el.addEventListener("pointermove", (e) => {
     if (!dragging) return;
-    theta -= (e.clientX - last[0]) * 0.008;
-    phi = Math.min(Math.PI / 2 - 0.05, Math.max(0.1, phi - (e.clientY - last[1]) * 0.008));
+    const dx = e.clientX - last[0];
+    const dy = e.clientY - last[1];
+    if (panning) {
+      // Move the target in the screen plane so the grabbed point tracks the cursor. Scale by
+      // world-units-per-pixel at the target depth, so pan speed feels constant at any zoom.
+      const height = mount.clientHeight || 1;
+      const worldPerPixel = (2 * radius * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2)) / height;
+      const screenRight = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+      const screenUp = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+      target.add(screenRight.multiplyScalar(-dx * worldPerPixel));
+      target.add(screenUp.multiplyScalar(dy * worldPerPixel));
+    } else {
+      theta -= dx * 0.008;
+      phi = Math.min(Math.PI / 2 - 0.05, Math.max(0.1, phi - dy * 0.008));
+    }
     last = [e.clientX, e.clientY];
     requestRender();
   });
@@ -221,7 +278,17 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
   });
   el.addEventListener("wheel", (e) => {
     e.preventDefault();
-    radius = Math.min(120, Math.max(2, radius * Math.exp(e.deltaY * 0.001)));
+    stopTween();
+    // Gentler, exponent-based dolly with a firm clamp; zoom homes on the point under the
+    // cursor (the old wheel kept the target fixed, so zooming in drifted off whatever you
+    // were inspecting).
+    const anchor = pointerGroundPoint(e.clientX, e.clientY);
+    const nextRadius = Math.min(120, Math.max(1.5, radius * Math.exp(e.deltaY * 0.0012)));
+    if (anchor) {
+      const zoomInFraction = THREE.MathUtils.clamp(1 - nextRadius / radius, 0, 0.6);
+      target.lerp(anchor, zoomInFraction);
+    }
+    radius = nextRadius;
     requestRender();
   });
 
@@ -252,11 +319,19 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
   };
 
   const resetView = () => {
-    theta = fittedTheta;
-    phi = fittedPhi;
-    radius = fittedRadius;
-    target.copy(fittedTarget);
-    requestRender();
+    animateTo(fittedTheta, fittedPhi, fittedRadius, fittedTarget);
+  };
+
+  // The framing bounds must exclude the translucent site sheet: the earth spans the whole
+  // parcel (or a 50 m fallback), so folding it into the fit shrank the building to a speck
+  // and left the default/reset zoom far too wide.
+  const buildingBox = (): THREE.Box3 => {
+    const box = new THREE.Box3();
+    for (const trade of ALL_TRADES) {
+      if (trade === "earth") continue;
+      box.expandByObject(tradeGroups[trade]);
+    }
+    return box;
   };
 
   const pan = (direction: PanDirection) => {
@@ -305,6 +380,7 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
     }
     buildEarth(tradeGroups.earth, m, center, mode);
     for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, center, mode, palette);
+    for (const bedding of m.footing_beddings ?? []) buildFootingBedding(tradeGroups.concrete, bedding, center, mode);
     for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, center, mode, palette);
     for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette, m.catalog);
     for (const stair of m.stairs ?? []) buildStair(tradeGroups.stairs, stair, center, mode);
@@ -353,9 +429,10 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
       }
     }
 
-    // Frame the full rendered bounds, including its vertical origin. The old target only
-    // considered height, leaving models whose base was above zero visibly low in the canvas.
-    const box = new THREE.Box3().setFromObject(content);
+    // Frame the building bounds (earth excluded, or the site sheet dominates), including its
+    // vertical origin. The old target only considered height, leaving models whose base was
+    // above zero visibly low in the canvas.
+    const box = buildingBox();
     if (!box.isEmpty()) {
       // Fit the sun's orthographic shadow frustum to the building, otherwise the default
       // 5m box clips every house and the shadow map resolution is wasted on empty space.
@@ -420,6 +497,7 @@ function createScene(mount: HTMLElement, onPick: (kind: "wall" | "canvas_object"
     setVisibility,
     dispose: () => {
       cancelAnimationFrame(raf);
+      stopTween();
       ro.disconnect();
       for (const trade of ALL_TRADES) disposeGroup(tradeGroups[trade]);
       environment.dispose();
@@ -443,12 +521,27 @@ export function earthElevation(model: Model): number {
   return model.site?.grade_m ?? 0;
 }
 
+// Holes punched in the site sheet so the translucent earth stops at the building footprint
+// instead of bleeding up through interior floors. One cut per plan footprint is enough, so
+// only the ground storey's rooms contribute — stacked upper storeys would otherwise pile
+// overlapping holes onto the same plan area (rooms on one storey partition it, never overlap).
+export function earthVoids(model: Model): [number, number][][] {
+  const rooms = model.rooms ?? [];
+  if (!rooms.length) return [];
+  const storeys = model.storeys ?? [];
+  const elevationOf = (tag: string) => storeys.find((s) => s.tag === tag)?.elevation_m ?? 0;
+  const groundElevation = Math.min(...rooms.map((room) => elevationOf(room.storey)));
+  return rooms
+    .filter((room) => elevationOf(room.storey) === groundElevation && room.clear_face.length >= 3)
+    .map((room) => room.clear_face.map(([x, y]) => [x, y] as [number, number]));
+}
+
 function buildEarth(parent: THREE.Group, model: Model, center: PlanCenter, mode: "nordic" | "schematic") {
   const outline = earthOutline(model, center);
   const grade = earthElevation(model);
   const geometry = createPlanPrismGeometry(
     outline, grade - EARTH_PLANE_THICKNESS_M, grade,
-    [], center,
+    earthVoids(model), center,
   );
   if (!geometry) return;
   const material = new THREE.MeshStandardMaterial({
@@ -549,17 +642,23 @@ function buildWall(
     // z-fight with the studs it lives between.
     if (ly.is_cavity) continue;
     const seam = ly.function === "cladding" && isStandingSeam(ly.material);
+    // Masonry (brick/block/stone) gets coursing + recessed mortar, not a flat fill — a brick
+    // veneer or CMU wythe otherwise read like painted drywall. Applies to any layer function
+    // so structural CMU is finished the same as a brick cladding wythe.
+    const masonry = !seam && isMasonry(ly.material);
     const mat = seam
       ? createStandingSeamMaterial(mode, [
         Math.hypot(w.axis[1][0] - w.axis[0][0], w.axis[1][1] - w.axis[0][1]),
         Math.max(0.1, w.z1_m - w.z0_m),
       ], 0xE8E8E2, true)
-      : new THREE.MeshStandardMaterial({
-        color: new THREE.Color(materialColor(ly.material, palette)),
-        roughness: mode === "nordic" ? 0.85 : 1,
-        metalness: 0,
-        flatShading: mode === "schematic",
-      });
+      : masonry
+        ? createMasonryMaterial(mode, materialColor(ly.material, palette))
+        : new THREE.MeshStandardMaterial({
+          color: new THREE.Color(materialColor(ly.material, palette)),
+          roughness: mode === "nordic" ? 0.85 : 1,
+          metalness: 0,
+          flatShading: mode === "schematic",
+        });
     mats.push(mat);
     const smoothArchGeometry = createSmoothArchedWallLayerGeometry(w, ly.polygon, openings, center);
     const geometries: (THREE.BufferGeometry | null)[] = smoothArchGeometry
@@ -571,6 +670,7 @@ function buildWall(
     for (const geo of geometries) {
       if (!geo) continue;
       if (seam) applyStandingSeamWallUv(geo, w.axis, center);
+      else if (masonry) applyMasonryWallUv(geo, w.axis, center);
       const mesh = new THREE.Mesh(geo, mat);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
@@ -818,6 +918,33 @@ function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
     color: palette.member.concrete, roughness: mode === "nordic" ? 0.9 : 1, flatShading: mode === "schematic",
   });
   parent.add(new THREE.Mesh(geo, mat));
+}
+
+// Compacted washed-stone footing bed: a below-grade gravel prism under a strip footing.
+// Rendered granular (flat-shaded, high roughness) so it reads as aggregate, not concrete.
+export const FOOTING_BEDDING_COLOR = 0x8b8478;
+
+export function buildFootingBedding(parent: THREE.Group, bedding: FootingBedding, center: PlanCenter,
+  mode: "nordic" | "schematic") {
+  if (bedding.outline.length < 3 || bedding.z1_m <= bedding.z0_m) return;
+  const geo = createPlanPrismGeometry(bedding.outline, bedding.z0_m, bedding.z1_m, [], center);
+  if (!geo) return;
+  const mat = new THREE.MeshStandardMaterial({
+    color: FOOTING_BEDDING_COLOR,
+    roughness: 1,
+    metalness: 0,
+    flatShading: true, // faceted normals read as loose aggregate in both shading modes
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  parent.add(mesh);
+  if (mode === "nordic") {
+    parent.add(new THREE.LineSegments(
+      new THREE.EdgesGeometry(geo, 20),
+      new THREE.LineBasicMaterial({ color: 0x5c574d, transparent: true, opacity: 0.4 }),
+    ));
+  }
 }
 
 function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter,

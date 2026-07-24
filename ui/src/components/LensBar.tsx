@@ -1,5 +1,33 @@
 import { useEffect } from "react";
 import { useStore, type Lens } from "../state/store";
+import type { Model } from "../model/types";
+
+// Continuity of a tagged control layer across storey-stack / assembly-change transitions is
+// checked server-side (advisory.control_continuity, → checks/advisory). The lens surfaces
+// those findings plus the count of wall layers actually carrying the control layer, so the
+// overlay reflects the resolved model instead of a static caption.
+const CONTINUITY_CODE = "advisory.control_continuity";
+
+export interface LensData {
+  controlLayerCount: number; // wall layers carrying this control across the model
+  discontinuities: { message: string; element: string | null }[];
+}
+
+// `domain` is the control keyword ("air" | "water" | "thermal"); substring match tolerates
+// either the bare enum value or a "ControlLayer.AIR"-style serialization.
+export function lensData(model: Model | null, domain: string): LensData {
+  if (!model) return { controlLayerCount: 0, discontinuities: [] };
+  let controlLayerCount = 0;
+  for (const wall of model.walls) {
+    for (const layer of wall.layers) {
+      if ((layer.control ?? []).some((c) => c.toLowerCase().includes(domain))) controlLayerCount++;
+    }
+  }
+  const discontinuities = (model.findings ?? [])
+    .filter((f) => f.code === CONTINUITY_CODE)
+    .map((f) => ({ message: f.message, element: f.element ?? f.elements?.[0] ?? null }));
+  return { controlLayerCount, discontinuities };
+}
 
 // Building-science lenses (Phase 9). A lens mutes ordinary geometry and makes one control
 // layer dominant. Encoding is never color-only: each legend entry pairs color + line pattern
@@ -23,6 +51,8 @@ const LENSES: LensSpec[] = [
 export function LensBar() {
   const activeLens = useStore((s) => s.activeLens);
   const setActiveLens = useStore((s) => s.setActiveLens);
+  const model = useStore((s) => s.model);
+  const zoomToUid = useStore((s) => s.zoomToUid);
 
   // Drive a root attribute so CSS can mute base geometry while a lens is active.
   useEffect(() => {
@@ -31,6 +61,7 @@ export function LensBar() {
   }, [activeLens]);
 
   const active = LENSES.find((l) => l.id === activeLens) ?? LENSES[0];
+  const data = activeLens === "none" ? null : lensData(model, activeLens);
 
   return (
     <>
@@ -48,7 +79,7 @@ export function LensBar() {
         ))}
       </div>
 
-      {activeLens !== "none" && (
+      {activeLens !== "none" && data && (
         <div className="lens-legend" role="note">
           <div className="lens-legend-title">
             <span aria-hidden>{active.icon}</span> {active.label} lens
@@ -60,6 +91,32 @@ export function LensBar() {
             </svg>
             <span>{active.legend}</span>
           </div>
+          {/* Real resolved-model data, not a static caption: how many wall layers carry this
+              control layer, and the server's control-continuity findings (click to jump). */}
+          <div className="lens-legend-row lens-legend-stat">
+            {model
+              ? `${data.controlLayerCount} wall layer${data.controlLayerCount === 1 ? "" : "s"} carry the ${active.label.toLowerCase()}-control layer`
+              : "Model not loaded"}
+          </div>
+          {data.discontinuities.length > 0 ? (
+            <ul className="lens-legend-issues">
+              {data.discontinuities.map((issue, index) => (
+                <li key={index}>
+                  <button
+                    type="button"
+                    className="lens-issue"
+                    onClick={() => issue.element && zoomToUid(issue.element)}
+                    disabled={!issue.element}
+                    title={issue.element ? "Jump to element" : undefined}
+                  >
+                    {issue.message}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : model ? (
+            <div className="lens-legend-row lens-legend-ok">No continuity gaps flagged.</div>
+          ) : null}
         </div>
       )}
     </>

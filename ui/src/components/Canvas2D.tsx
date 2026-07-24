@@ -17,6 +17,7 @@ import {
   snapWorld,
   wallLength,
 } from "../model/geometry";
+import { swingArcSweepFlag } from "../three/planGeometry";
 import { materialColor, NORDIC_ACCENT, NORDIC_INK, NORDIC_LINE } from "../nordic/palette";
 import { DoorSettingsPopover } from "./DoorSettingsPopover";
 import { WindowSettingsPopover } from "./WindowSettingsPopover";
@@ -87,6 +88,7 @@ export function Canvas2D() {
   const selectByTag = useStore((s) => s.selectByTag);
   const hoverUid = useStore((s) => s.hoverUid);
   const showFraming = useStore((s) => s.showFraming);
+  const showSpaceLabels = useStore((s) => s.showSpaceLabels);
   const activeStorey = useStore((s) => s.activeStorey);
   const workspace = useStore((s) => s.activeWorkspace);
   const tool = useStore((s) => s.tool);
@@ -700,7 +702,7 @@ export function Canvas2D() {
                 style={{ cursor: tool === "select" ? "pointer" : undefined }}>
                 <polygon points={clearFace.map(project).map((p) => p.join(",")).join(" ")}
                   fill="var(--canvas-selection)" stroke="none" />
-                {clearFace.length > 0 && (() => {
+                {showSpaceLabels && clearFace.length > 0 && (() => {
                   const centroid: Vec2 = [
                     clearFace.reduce((sum, point) => sum + point[0], 0) / clearFace.length,
                     clearFace.reduce((sum, point) => sum + point[1], 0) / clearFace.length,
@@ -1161,6 +1163,9 @@ function CanvasObjectFootprint({ item, type, project, scale, walls, selected, on
   const [fill, stroke] = colors[item.domain] ?? ["#e5e7eb", "#4b5563"];
   return <g opacity={0.92} style={{ cursor: "grab" }}
     onPointerDown={(event) => { event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId); onSelect("canvas_object", item.uid); }}
+    // Double-click opens the object's details (Inspector), matching the door/window affordance
+    // and guaranteeing the panel opens even if a stray drag swallowed the pointer-up select.
+    onDoubleClick={(event) => { event.stopPropagation(); onSelect("canvas_object", item.uid); }}
     onPointerMove={(event) => {
       if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
       const next = toWorld(event.clientX, event.clientY);
@@ -1518,7 +1523,9 @@ const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selec
             <g key={side}>
               <line x1={jx} y1={jy} x2={lx} y2={ly}
                 stroke="var(--canvas-wood)" strokeWidth={1.5} />
-              <path d={`M ${cx} ${cy} A ${halfPx} ${halfPx} 0 0 ${swingSign > 0 ? 0 : 1} ${lx} ${ly}`}
+              {/* Arc pivots on the jamb (jx,jy); its two leaves mirror across the mullion,
+                  so each resolves to the sweep flag that keeps that jamb as the centre. */}
+              <path d={`M ${cx} ${cy} A ${halfPx} ${halfPx} 0 0 ${swingArcSweepFlag([jx, jy], [cx, cy], [lx, ly])} ${lx} ${ly}`}
                 fill="none" stroke="var(--canvas-wood)" strokeWidth={1} />
             </g>
           );
@@ -1526,7 +1533,10 @@ const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selec
       </> : <>
         <line x1={hingeX} y1={hingeY} x2={leafX} y2={leafY}
           stroke="var(--canvas-wood)" strokeWidth={1.5} />
-        <path d={`M ${wallArcX} ${wallArcY} A ${o.width_m * scale} ${o.width_m * scale} 0 0 ${swingSign > 0 ? 0 : 1} ${leafX} ${leafY}`}
+        {/* Swing arc pivots on the hinge; the closed leaf lies along the wall at the far
+            jamb (wallArc) and opens to leaf. The flag must keep the hinge as the arc
+            centre so the arc bows concave toward the hinge, not convex away from it. */}
+        <path d={`M ${wallArcX} ${wallArcY} A ${o.width_m * scale} ${o.width_m * scale} 0 0 ${swingArcSweepFlag([hingeX, hingeY], [wallArcX, wallArcY], [leafX, leafY])} ${leafX} ${leafY}`}
           fill="none" stroke="var(--canvas-wood)" strokeWidth={1} />
       </>) : <>
         <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}

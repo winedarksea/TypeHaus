@@ -20,6 +20,20 @@ const TRADE_LABEL: Record<Trade, string> = {
 
 const REPRESENTATIONS: Representation[] = ["conceptual", "schematic", "detailed", "fabrication"];
 
+// Role presets: the trades each discipline reviews. Selecting one shows exactly those
+// trades (and hides the rest) so, e.g., Structure can read stair continuity with the floor
+// decks dropped. `roleMatches` lights the active preset when the visible set equals it.
+const ROLE_TRADES: Record<string, Trade[]> = {
+  Architecture: ["walls", "openings", "floors", "roof", "stairs", "furniture"],
+  Structure: ["framing", "concrete", "roof", "stairs"],
+  MEP: ["plumbing", "electrical", "mechanical"],
+  Site: ["earth", "concrete"],
+};
+function roleMatches(role: keyof typeof ROLE_TRADES, visible: Record<Trade, boolean>): boolean {
+  const wanted = new Set(ROLE_TRADES[role]);
+  return ALL_TRADES.every((trade) => visible[trade] === wanted.has(trade));
+}
+
 interface SavedView {
   name: string;
   activeStorey: string | null;
@@ -27,6 +41,7 @@ interface SavedView {
   threeMode: ThreeMode;
   representation: Representation;
   visibleTrades: Record<Trade, boolean>;
+  showSpaceLabels?: boolean; // optional: older saved recipes predate the overlay toggle
   view: ViewTransform;
 }
 const SAVED_VIEWS_KEY = "typehaus.saved-views";
@@ -89,6 +104,8 @@ export function ViewsPanel() {
   const setThreeMode = useStore((s) => s.setThreeMode);
   const visibleTrades = useStore((s) => s.visibleTrades);
   const setTradeVisible = useStore((s) => s.setTradeVisible);
+  const showSpaceLabels = useStore((s) => s.showSpaceLabels);
+  const setShowSpaceLabels = useStore((s) => s.setShowSpaceLabels);
 
   const [views, setViews] = useState<SavedView[]>(loadViews);
   const [newName, setNewName] = useState("");
@@ -105,6 +122,7 @@ export function ViewsPanel() {
       threeMode: s.threeMode,
       representation: s.representation,
       visibleTrades: { ...s.visibleTrades },
+      showSpaceLabels: s.showSpaceLabels,
       view: { ...s.view },
     };
     const next = [...views.filter((v) => v.name !== name), recipe];
@@ -120,6 +138,7 @@ export function ViewsPanel() {
     s.setThreeMode(v.threeMode);
     s.setRepresentation(v.representation);
     for (const trade of ALL_TRADES) s.setTradeVisible(trade, v.visibleTrades[trade] ?? true);
+    s.setShowSpaceLabels(v.showSpaceLabels ?? true);
     s.setView(v.view);
   };
 
@@ -161,6 +180,26 @@ export function ViewsPanel() {
         ))}
       </div>
 
+      <h3>Roles</h3>
+      {/* Role presets isolate the trades one discipline cares about in a single tap — e.g.
+          Structure drops floor decks so stair runs stay legible across levels, without
+          hunting through the per-trade checkboxes below. */}
+      <div className="seg-row" style={{ flexWrap: "wrap" }}>
+        {(Object.keys(ROLE_TRADES) as (keyof typeof ROLE_TRADES)[]).map((role) => (
+          <button
+            key={role}
+            className={`seg-btn${roleMatches(role, visibleTrades) ? " active" : ""}`}
+            onClick={() => { for (const trade of ALL_TRADES) setTradeVisible(trade, ROLE_TRADES[role].includes(trade)); }}
+            title={`Show only ${role} trades`}
+          >
+            {role}
+          </button>
+        ))}
+        <button className="seg-btn" onClick={() => { for (const trade of ALL_TRADES) setTradeVisible(trade, true); }}>
+          All
+        </button>
+      </div>
+
       <h3>Disciplines</h3>
       <div className="trade-grid">
         {ALL_TRADES.map((trade) => (
@@ -174,6 +213,16 @@ export function ViewsPanel() {
           </label>
         ))}
       </div>
+
+      <h3>Plan overlays</h3>
+      <label className={`trade-chip${showSpaceLabels ? " on" : ""}`}>
+        <input
+          type="checkbox"
+          checked={showSpaceLabels}
+          onChange={(e) => setShowSpaceLabels(e.target.checked)}
+        />
+        Space labels
+      </label>
 
       <h3>Saved views</h3>
       <div style={{ display: "flex", gap: 6 }}>

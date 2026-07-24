@@ -380,6 +380,22 @@ export interface Solid {
   provenance: Provenance | null;
 }
 
+// Compacted washed-stone bed dug beneath a strip footing (→ resolve/model.py
+// ResolvedFootingBedding). Drawn in 3D as a gravel prism between z0_m and z1_m.
+export interface FootingBedding {
+  uid: string;
+  tag: string;
+  storey: string;
+  host_footing: string;
+  outline: Vec2[];
+  z0_m: number;
+  z1_m: number;
+  aggregate: string;
+  geotextile: boolean;
+  drain_tile: boolean;
+  provenance: Provenance | null;
+}
+
 export interface Floor {
   uid: string;
   tag: string;
@@ -455,6 +471,7 @@ export interface Model {
   openings: Opening[];
   roofs?: Roof[];
   solids?: Solid[];
+  footing_beddings?: FootingBedding[];
   floors?: Floor[];
   stairs?: Stair[];
   fixtures?: Fixture[];

@@ -45,6 +45,7 @@
   --material-siding: #b8bcc0;
   --material-metal: #6b7076;
   --material-concrete: #a9a9a9;
+  --material-masonry: #9c5a45;
   --material-fallback: #cfc9bd;
   --control-air: #c0392b;
   --control-water: #2980b9;
@@ -153,6 +154,7 @@
   --material-siding: #AEB8C6;
   --material-metal: #9AA8BA;
   --material-concrete: #B0B8C4;
+  --material-masonry: #A86550;
   --material-fallback: #C4BDAE;
   --control-air: #BF616A;
   --control-water: #88C0D0;
@@ -925,6 +927,24 @@ textarea:focus-visible,
   color: var(--error);
 }
 
+.toast-clear {
+  align-self: flex-end;
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted, inherit);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.toast-clear:hover {
+  color: inherit;
+  border-color: var(--ink, currentColor);
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1129,6 +1149,43 @@ textarea:focus-visible,
   align-items: center;
   gap: 8px;
   color: var(--line);
+}
+.lens-legend-stat {
+  margin-top: 6px;
+  font-weight: 600;
+  color: inherit;
+}
+.lens-legend-ok {
+  margin-top: 4px;
+  color: var(--success, #3a7d44);
+}
+.lens-legend-issues {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+.lens-issue {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid var(--panel-line);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: var(--text-xs);
+  color: inherit;
+  cursor: pointer;
+}
+.lens-issue:hover:not(:disabled) {
+  border-color: currentColor;
+}
+.lens-issue:disabled {
+  cursor: default;
+  opacity: 0.7;
 }
 /* When a lens is active, ordinary geometry is muted so the lens reads as dominant. */
 :root:not([data-lens="none"]) .stage {

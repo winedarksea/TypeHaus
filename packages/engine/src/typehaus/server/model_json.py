@@ -294,6 +294,17 @@ def model_to_dict(
              "provenance": _provenance(provenance, solid.tag)}
             for solid in sorted(model.solids, key=lambda item: item.uid)
         ],
+        # Compacted washed-stone footing beds (undercut beneath each strip footing). The 3D
+        # viewer draws these as a gravel prism so the bearing prep is visible below grade.
+        "footing_beddings": [
+            {"uid": bedding.uid, "tag": bedding.tag, "storey": bedding.storey,
+             "host_footing": bedding.host_footing,
+             "outline": [list(point) for point in bedding.outline],
+             "z0_m": bedding.z0_m, "z1_m": bedding.z1_m, "aggregate": bedding.aggregate,
+             "geotextile": bedding.geotextile, "drain_tile": bedding.drain_tile,
+             "provenance": _provenance(provenance, bedding.tag)}
+            for bedding in sorted(model.footing_beddings, key=lambda item: item.uid)
+        ],
         "roofs": [
             {"uid": roof.uid, "tag": roof.tag, "storey": roof.storey, "form": roof.form,
              "footprint": [list(point) for point in roof.footprint],
