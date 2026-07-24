@@ -268,6 +268,25 @@ def build_detail(model: ResolvedModel, derived: DerivedDetail) -> tuple[Scene, l
     return scene, findings
 
 
+def build_authored_detail_scene(model: ResolvedModel, view: Slice) -> Scene:
+    """Authored DETAIL Slice → scene, with sauna detail vocabulary layered over the cut.
+
+    Authored Slices go straight through ``build_section``, which bypasses the derived
+    detail-component machinery. A hand-authored sauna floor section still wants the liner
+    base, thermal break and room-scale vocabulary the derived path dispatches, so this wraps
+    ``build_section`` and appends those components. It self-gates on sauna walls being in the
+    cut (via ``sauna_overlay_for_slice``), so a non-sauna authored detail is byte-identical to
+    the plain ``build_section`` output and nothing here mutates construction geometry.
+    """
+    from typehaus.emit.draw.detail_components import sauna_overlay_for_slice
+
+    scene = build_section(model, view)
+    overlay = sauna_overlay_for_slice(model, view)
+    if overlay:
+        scene = scene.model_copy(update={"nodes": scene.nodes + tuple(overlay)})
+    return scene
+
+
 def _detail_components(model: ResolvedModel, derived: DerivedDetail) -> list:
     """Derived 2D detail components for this junction, or nothing if it has none."""
     from typehaus.emit.draw.detail_components import build_below_grade_components

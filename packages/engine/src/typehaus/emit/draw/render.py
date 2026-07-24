@@ -52,9 +52,22 @@ def render_views(
         written.append(write_raster(build_center_section(model), out_dir / f"section_house.{fmt}",
                                     title="section · house center"))
     elif view == "details":
-        from typehaus.emit.draw.details import build_detail, derive_detail_slices
+        from typehaus.emit.draw.details import (
+            build_authored_detail_scene,
+            build_detail,
+            derive_detail_slices,
+        )
         from typehaus.emit.draw.pdf_writer import write_raster
 
+        # Authored DETAIL Slices (e.g. the sauna floor section) — routed through the
+        # detail-component machinery so their overlay vocabulary renders here too.
+        for detail in model.plan.elements_of_kind("Slice"):
+            if detail.kind.value != "detail":
+                continue
+            scene = build_authored_detail_scene(model, detail)
+            slug = detail.tag.replace("/", "_")
+            written.append(write_raster(scene, out_dir / f"detail_{slug}.{fmt}",
+                                        title=f"detail · {detail.title or detail.tag}"))
         for derived in derive_detail_slices(model):
             scene, _findings = build_detail(model, derived)
             slug = derived.view.tag.replace("/", "_")

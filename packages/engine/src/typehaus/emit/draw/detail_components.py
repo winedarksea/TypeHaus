@@ -232,6 +232,23 @@ SAUNA_BASEBOARD_IN = 6.0
 SAUNA_FLASH_IN = 0.35
 SAUNA_MEMBRANE_IN = 0.25
 
+# Sauna room-scale vocabulary (catlin-house Pset_ifcPlot_SaunaShowerDetail), inches.
+# benches / heater / floor slope / drop ceiling — the drawn context a room-scale sauna
+# section carries beyond the wall-base liner. All schematic, all derived from the resolved
+# floor slab + ceiling structure + the sauna walls in frame, so they track a geometry edit.
+SAUNA_BENCH_DEPTH_IN = 20.0
+SAUNA_BENCH_LOWER_TOP_IN = 18.0
+SAUNA_BENCH_UPPER_TOP_IN = 36.0
+SAUNA_BENCH_THK_IN = 1.5
+SAUNA_HEATER_W_IN = 10.0
+SAUNA_HEATER_H_IN = 18.0
+SAUNA_FLOOR_RISE_IN = 1.0
+SAUNA_FLOOR_RUN_IN = 96.0   # 1" fall over an 8' run, sloped to a drain
+SAUNA_CEILING_SLAB_IN = 9.0
+SAUNA_CLEAR_HEIGHT_IN = 108.0
+SAUNA_DROP_DEPTH_IN = 3.5
+SAUNA_DROP_GAP_IN = 1.0
+
 
 def _path_from_steps(start_uz, steps) -> list[tuple[float, float]]:
     """Polyline from a start point + a list of (du, dz) steps (flashing profiles)."""
@@ -549,6 +566,192 @@ def sauna_liner_base(model, wall, crop, direction, station) -> list[IRNode]:
     return nodes
 
 
+# ===========================================================================
+# Sauna room-scale vocabulary. Where sauna_liner_base / slab_thermal_break are
+# per-wall components, these are per-room: they read the sauna's interior u-span
+# (between the innermost faces of the sauna walls the cut crosses) and the floor
+# slab + ceiling structure in frame, and draw once for the room. Section coords
+# throughout: (u, z) in inches.
+# ===========================================================================
+
+def _sauna_room_interval(walls, direction: str, station: float):
+    """Interior u-span (inches) of the sauna room, between the innermost faces of the two
+    sauna walls the cut crosses, or None if fewer than two are in the cut."""
+    from typehaus.emit.draw.section import _ring_cut_intervals
+
+    spans: list[tuple[float, float]] = []
+    for wall in walls:
+        bounds: list[float] = []
+        for layer in wall.layers:
+            for (a, b) in _ring_cut_intervals(layer.polygon, direction, station):
+                bounds.extend((a, b))
+        if bounds:
+            spans.append((min(bounds) * M_TO_IN, max(bounds) * M_TO_IN))
+    if len(spans) < 2:
+        return None
+    spans.sort(key=lambda s: (s[0] + s[1]) / 2.0)
+    u_lo = spans[0][1]   # inner (high) face of the leftmost wall
+    u_hi = spans[-1][0]  # inner (low) face of the rightmost wall
+    if u_hi - u_lo < 12.0:  # a real room is wider than a foot; guard against a degenerate cut
+        return None
+    return u_lo, u_hi
+
+
+def _ceiling_slab_over(model, crop, direction, station, u_lo_in, u_hi_in):
+    """The slab forming the sauna ceiling: the lowest-underside slab above the crop midpoint
+    whose cut edge overlaps the room interior, or None (drop ceiling then draws nothing)."""
+    from typehaus.emit.draw.section import _ring_cut_intervals
+
+    (cu0, cz0), (cu1, cz1) = crop
+    lo_z, hi_z = min(cz0, cz1), max(cz0, cz1)
+    mid_z = (lo_z + hi_z) / 2.0
+    best = None
+    for s in model.solids:
+        if s.category != "slab" or not (mid_z < s.z0_m <= hi_z + 0.05):
+            continue
+        for (a, b) in _ring_cut_intervals(s.outline, direction, station):
+            lo, hi = min(a, b) * M_TO_IN, max(a, b) * M_TO_IN
+            if lo <= u_hi_in and hi >= u_lo_in:
+                if best is None or s.z0_m < best.z0_m:
+                    best = s
+                break
+    return best
+
+
+def sauna_benches(u_lo: float, u_hi: float, floor_z: float) -> list[IRNode]:
+    """Two-tier sauna benches (Law of Löyly): lower seat at 18", upper at 36", 20" deep,
+    1.5" boards. Cantilevered off the room's high-u wall, projecting into the room, each seat
+    carried on a front leg so it reads as a bench rather than a floating board."""
+    wall_u = u_hi
+    front = wall_u - SAUNA_BENCH_DEPTH_IN
+    nodes: list[IRNode] = []
+    for top_in in (SAUNA_BENCH_LOWER_TOP_IN, SAUNA_BENCH_UPPER_TOP_IN):
+        z_top = floor_z + top_in
+        z_bot = z_top - SAUNA_BENCH_THK_IN
+        nodes += _closed(_rect_pts(min(front, wall_u), z_bot, max(front, wall_u), z_top),
+                         "sauna-bench", "sauna-tg", "lumber", lineweight=0.4)
+        # Front leg: a slat down from the seat underside to the floor at the seat's front edge.
+        leg0, leg1 = front, front + SAUNA_BENCH_THK_IN
+        nodes += _closed(_rect_pts(min(leg0, leg1), floor_z, max(leg0, leg1), z_bot),
+                         "sauna-bench-leg", "sauna-tg", "lumber", lineweight=0.3)
+    return nodes
+
+
+def sauna_heater_clearance(u_lo: float, u_hi: float, floor_z: float) -> list[IRNode]:
+    """The sauna heater's required clearance envelope against the room's low-u wall: a 10" ×
+    18" dashed box on the floor. Drawn as an open (unfilled) box — it is a keep-clear zone, not
+    built fabric."""
+    u0, u1 = u_lo, u_lo + SAUNA_HEATER_W_IN
+    z0, z1 = floor_z, floor_z + SAUNA_HEATER_H_IN
+    return [Polyline(points=_rect_pts(min(u0, u1), z0, max(u0, u1), z1),
+                     layer=LAYER, closed=True, lineweight=0.35, linetype="DASHED",
+                     tag="detail-component:sauna-heater")]
+
+
+def sauna_floor_slope(u_lo: float, u_hi: float, floor_z: float) -> list[IRNode]:
+    """The sloped mortar screed over the floor slab: 1" fall over an 8' run, high at the low-u
+    wall, draining at the high-u wall. Drawn as the screed wedge plus a drain grate at the low
+    point, so the fall to drain reads at a glance."""
+    width = u_hi - u_lo
+    rise = min(SAUNA_FLOOR_RISE_IN, width / SAUNA_FLOOR_RUN_IN * SAUNA_FLOOR_RISE_IN)
+    # Wedge sitting on the slab top: thick (rise) at u_lo, tapering to zero at the drain (u_hi).
+    nodes = _closed(((u_lo, floor_z), (u_hi, floor_z), (u_lo, floor_z + rise)),
+                    "sauna-floor-slope", "sealant", None, lineweight=0.35)
+    # Drain grate at the low corner, flush with the floor.
+    d = 3.0
+    nodes += _closed(_rect_pts(u_hi - d, floor_z - 1.0, u_hi, floor_z + 0.5),
+                     "sauna-floor-drain", "metal-dark", "SOLID", lineweight=0.4)
+    return nodes
+
+
+def sauna_drop_ceiling(u_lo: float, u_hi: float, ceiling_underside_z: float) -> list[IRNode]:
+    """The suspended drop ceiling hung below the structural ceiling slab: a 3.5"-deep panel
+    with a 1" gap above it, spanning the room interior. Short hangers tie it up to the slab."""
+    z_top = ceiling_underside_z - SAUNA_DROP_GAP_IN
+    z_bot = z_top - SAUNA_DROP_DEPTH_IN
+    nodes = _closed(_rect_pts(u_lo, z_bot, u_hi, z_top),
+                    "sauna-drop-ceiling", "sauna-tg", "lumber", lineweight=0.4)
+    for frac in (0.2, 0.5, 0.8):
+        u = u_lo + (u_hi - u_lo) * frac
+        nodes.append(Polyline(points=((u, z_top), (u, ceiling_underside_z)),
+                              layer=LAYER, lineweight=0.2,
+                              tag="detail-component:sauna-ceiling-hanger"))
+    return nodes
+
+
+def build_sauna_room_components(model, walls, crop, direction, station) -> list[IRNode]:
+    """Per-room sauna vocabulary (benches, heater clearance, floor slope, drop ceiling).
+
+    Self-gates on the room being genuinely in frame: at least two sauna walls in the cut (so
+    the interior is bounded), the interior overlapping the crop, and the floor slab in frame.
+    Draws once per room, from the resolved floor slab + ceiling structure — so it never floats
+    in a wall-top crop and tracks a geometry edit rather than freezing coordinates.
+    """
+    interval = _sauna_room_interval(walls, direction, station)
+    if interval is None:
+        return []
+    u_lo, u_hi = interval
+    (cu0, _cz0), (cu1, _cz1) = crop
+    cul, cuh = min(cu0, cu1) * M_TO_IN, max(cu0, cu1) * M_TO_IN
+    if u_hi <= cul or u_lo >= cuh:  # room interior not in frame
+        return []
+    floor = _slab_at_junction(model, walls[0], crop, direction, station,
+                              (u_lo + u_hi) / 2.0 / M_TO_IN)
+    if floor is None:
+        return []
+    floor_z = floor.z1_m * M_TO_IN
+    nodes: list[IRNode] = []
+    nodes += sauna_floor_slope(u_lo, u_hi, floor_z)
+    nodes += sauna_benches(u_lo, u_hi, floor_z)
+    nodes += sauna_heater_clearance(u_lo, u_hi, floor_z)
+    ceiling = _ceiling_slab_over(model, crop, direction, station, u_lo, u_hi)
+    if ceiling is not None:
+        nodes += sauna_drop_ceiling(u_lo, u_hi, ceiling.z0_m * M_TO_IN)
+    return nodes
+
+
+def _wall_in_frame(wall, direction: str, station: float, crop) -> bool:
+    """Whether the cut crosses ``wall`` and its cut interval overlaps the crop's u-window."""
+    from typehaus.emit.draw.section import _ring_cut_intervals
+
+    bounds: list[float] = []
+    for layer in wall.layers:
+        for (a, b) in _ring_cut_intervals(layer.polygon, direction, station):
+            bounds.extend((a, b))
+    if not bounds:
+        return False
+    (cu0, _), (cu1, _) = crop
+    lo, hi = min(cu0, cu1), max(cu0, cu1)
+    return min(bounds) <= hi and max(bounds) >= lo
+
+
+def sauna_overlay_for_slice(model, view) -> list[IRNode]:
+    """Sauna detail vocabulary for an authored floor-section Slice (documentation-only path).
+
+    The authored-Slice pipeline (section.build_section) bypasses the derived detail-component
+    machinery, so a hand-authored sauna floor section would otherwise get none of the liner
+    base, thermal break, or room-scale vocabulary. This gives that authored Slice the same
+    components the derived path dispatches — self-gated on sauna walls actually being in the
+    cut, so it adds nothing to a non-sauna Slice and never mutates construction geometry.
+    """
+    if view.crop is None or view.cut_origin is None:
+        return []
+    direction = view.cut_direction or "x"
+    station = view.cut_origin.xy_m[1] if direction == "x" else view.cut_origin.xy_m[0]
+    crop = (view.crop[0].xy_m, view.crop[1].xy_m)
+    sauna_walls = [w for w in model.walls
+                   if "SAUNA" in (w.assembly or "")
+                   and _wall_in_frame(w, direction, station, crop)]
+    if not sauna_walls:
+        return []
+    nodes: list[IRNode] = []
+    for wall in sauna_walls:
+        nodes += sauna_liner_base(model, wall, crop, direction, station)
+        nodes += slab_thermal_break(model, wall, crop, direction, station)
+    nodes += build_sauna_room_components(model, sauna_walls, crop, direction, station)
+    return nodes
+
+
 def build_overlay_components(model, derived) -> list[IRNode]:
     """Dispatch per-detail flashing/gutter/gasket vocabulary off the overlay id.
 
@@ -588,10 +791,15 @@ def build_overlay_components(model, derived) -> list[IRNode]:
     # fiber-cement baseboard/flashing/membrane at the liner base and the 1" slab thermal
     # break. Both self-gate on the slab being in frame, so they add nothing to a wall-top
     # crop and only draw where the sauna floor is actually cut.
-    for wall in walls:
-        if "SAUNA" in (wall.assembly or ""):
-            nodes += sauna_liner_base(model, wall, crop, direction, station)
-            nodes += slab_thermal_break(model, wall, crop, direction, station)
+    sauna_walls = [w for w in walls if "SAUNA" in (w.assembly or "")]
+    for wall in sauna_walls:
+        nodes += sauna_liner_base(model, wall, crop, direction, station)
+        nodes += slab_thermal_break(model, wall, crop, direction, station)
+    # Room-scale vocabulary (benches, heater, floor slope, drop ceiling) draws once per room
+    # and self-gates on the room being bounded + in frame, so a wall-top junction crop gets
+    # nothing while a floor-depth sauna crop gets the full room.
+    if sauna_walls:
+        nodes += build_sauna_room_components(model, sauna_walls, crop, direction, station)
 
     return nodes
 
