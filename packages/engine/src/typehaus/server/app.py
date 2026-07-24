@@ -249,14 +249,22 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
     async def post_redo() -> Any:
         return await _history(state, bus, undo=False)
 
-    @app.websocket("/events")
-    async def events(ws: WebSocket) -> None:
+    async def events(ws) -> None:
         await bus.connect(ws)
         try:
             while True:
                 await ws.receive_text()  # keep-alive; server is push-only
         except WebSocketDisconnect:
             bus.disconnect(ws)
+
+    # `from __future__ import annotations` stores the parameter annotation as the *string*
+    # "WebSocket", and FastAPI resolves it against this module's globals — where the deferred
+    # `fastapi` import above is invisible. Recent FastAPI leaves such a name as an unresolved
+    # ForwardRef instead of raising, so an annotated `ws: WebSocket` silently degrades into a
+    # required `ws` query parameter and every handshake is closed unaccepted (uvicorn: 403).
+    # Binding the class object itself keeps the deferred import and the endpoint contract.
+    events.__annotations__["ws"] = WebSocket
+    app.websocket("/events")(events)
 
     # V6 — serve the compiled SPA (must be registered LAST so every API route above wins the
     # match; this GET catch-all only fires for paths no API route claimed).

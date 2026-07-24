@@ -163,6 +163,16 @@ def test_underlay_calibration_rewrites_only_the_matching_toml_table(tmp_path: Pa
     assert "origin_x_m = 4" in text and "rotation_deg = 8" in text
 
 
+def test_events_socket_accepts_the_handshake_and_pushes_build_events(client):
+    """The UI's liveness signal is the WS handshake itself — a rejected upgrade reads to the
+    user as "haus serve not running" even while every GET succeeds (deferred-import ForwardRef
+    regression: the endpoint degraded into a required `ws` query param, closing with 403)."""
+    c, _ = client
+    with c.websocket_connect("/events") as ws:
+        c.post("/build")
+        assert ws.receive_json()["type"] == "build"
+
+
 def test_event_bus_broadcasts_to_clients():
     class _FakeWS:
         def __init__(self) -> None:
