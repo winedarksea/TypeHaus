@@ -14,6 +14,7 @@ from contextlib import contextmanager
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
+from typehaus.resolve.accessories import resolve_accessories
 from typehaus.resolve.envelope import resolve_columns_and_beams, resolve_envelope_geometry
 from typehaus.resolve.floor_heat import resolve_floor_heat
 from typehaus.resolve.floors import resolve_floors
@@ -71,6 +72,10 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_floors(model))
     with _stage("mep"):
         findings.extend(resolve_mep(model))
+    with _stage("accessories"):
+        # Dowels/connectors/railings/sumps/vents/edge-trim → solids. After floors+mep so
+        # slabs a sump hosts into already exist in model.solids.
+        findings.extend(resolve_accessories(model))
     with _stage("rooms"):
         findings.extend(resolve_rooms(plan, model))
     with _stage("placeables"):

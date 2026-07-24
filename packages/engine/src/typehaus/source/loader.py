@@ -260,7 +260,7 @@ def _find_library_root(house_dir: Path) -> Path | None:
 # that a hard load-time ERROR so the house can never contain an un-editable movable element.
 _UI_EDITABLE_KINDS = frozenset({
     "Furniture", "Fixture", "Appliance", "Equipment", "Register", "ElectricalDevice",
-    "Door", "Window", "RoughOpening", "Wall", "Room", "Node", "Stair",
+    "Door", "Window", "RoughOpening", "Wall", "Room", "Node", "Stair", "Railing",
 })
 
 

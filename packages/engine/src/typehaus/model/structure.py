@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typehaus.model.base import Element
 from typehaus.model.elements import Wall
+from typehaus.model.enums import ConnectorKind, RailingKind
 from typehaus.model.refs import FaceRef
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D
@@ -79,6 +80,65 @@ class Beam(Element):
     datum: FaceRef | None = None
 
 
+@register_element
+class Dowel(Element):
+    """A fiberglass (GFRP) rebar dowel tying two footings across a thermal break.
+
+    The house and the sunken-garden footings share a compacted bed; where they abut, GFRP
+    dowels pin them together *through* a rigid-foam block so the connection transfers shear
+    without bridging heat. The dowel is the schema primitive (previously the foam was only
+    recorded via ``FootingBedding.cast_foam_in_aggregate`` + a note). ``foam_thickness`` /
+    ``foam_psi`` describe the XPS block the dowel passes through — resolved as its own solid
+    so the thermal break reads in the model, IFC, and take-off."""
+
+    position: Point2D  # plan center of the dowel span (midpoint of the break)
+    axis: str = "y"  # "x" | "y": the direction the dowel bar runs across the break
+    length: Length  # embedment-to-embedment span across the joint
+    diameter: Length  # bar diameter (e.g. #5 GFRP ≈ 0.625")
+    elevation: Length  # bar centerline, project-frame absolute
+    count: int = 1  # bars in the row
+    spacing: Length | None = None  # o.c. spacing when count > 1 (perpendicular to axis)
+    connects: tuple[str, ...] = ()  # the two footing tags doweled together
+    foam_thickness: Length | None = None  # XPS thermal-break block thickness (along axis)
+    foam_height: Length | None = None  # block height (defaults to footing thickness)
+    foam_psi: float = 40.0  # XPS compressive rating
+
+
+@register_element
+class Connector(Element):
+    """Modeled connection hardware — joist hangers, hurricane ties, knee braces, post bases.
+
+    Previously carried only as text/notes; this makes the fastener a first-class element
+    with a small resolved solid at its connection point (→ IfcMechanicalFastener /
+    IfcDiscreteAccessory), and named refs to the members it joins."""
+
+    kind: ConnectorKind
+    position: Point2D
+    elevation: Length | None = None  # connector center, project-frame absolute
+    size: str = ""  # product model, e.g. "APVKB", "H2.5A", "LUS28", "ABU66"
+    connects: tuple[str, ...] = ()  # member/wall/post tags the hardware joins
+    axis: str | None = None  # optional in-plane run direction ("x" | "y") for braces
+
+
+@register_element
+class Railing(Element):
+    """A first-class guard rail framed from posts + rails along a plan path (→ IfcRailing).
+
+    The metal fascia-mounted balcony guard is modeled here rather than approximated as a
+    parapet wall. The resolver frames posts at ``post_spacing`` o.c. along ``path`` plus
+    ``rail_count`` horizontal rails, all riding at ``base_elevation`` (the deck top)."""
+
+    path: tuple[Point2D, ...]  # guard line, >= 2 plan points
+    kind: RailingKind = RailingKind.METAL_FASCIA_MOUNT
+    height: Length  # guard height above the deck
+    base_elevation: Length  # deck top, project-frame absolute
+    post_spacing: Length  # posts o.c. along the path
+    post_size: str = "2x2"  # nominal post cross-section
+    rail_count: int = 2  # horizontal rails (top + bottom)
+    mount: str = "fascia"  # "fascia" | "surface"
+    assembly: str | None = None  # optional finish assembly for render/IFC material
+
+
 for _name, _obj in (
     ("FoundationWall", FoundationWall),
     ("Footing", Footing),
@@ -86,5 +146,8 @@ for _name, _obj in (
     ("FootingBedding", FootingBedding),
     ("Post", Post),
     ("Beam", Beam),
+    ("Dowel", Dowel),
+    ("Connector", Connector),
+    ("Railing", Railing),
 ):
     register_constructor(_name, _obj)

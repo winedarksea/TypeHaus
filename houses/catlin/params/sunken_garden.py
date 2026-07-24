@@ -32,15 +32,24 @@ from dataclasses import dataclass
 from typehaus import (
     Arch,
     Beam,
+    Connector,
+    ConnectorKind,
+    Dowel,
+    Fascia,
+    Flashing,
     FloorSystem,
     Footing,
     FootingBedding,
     FoundationWall,
+    Gutter,
     JoistSpec,
     Node,
     Post,
+    Railing,
+    RailingKind,
     RoughOpening,
     Slab,
+    TrimKind,
     from_node,
     ft,
     inch,
@@ -358,9 +367,99 @@ BALCONY_JOISTS = FloorSystem(
 )
 
 # ============================================================================
+# Fiberglass (GFRP) rebar dowels + 40 psi XPS foam thermal break between the shared
+# house/garden footings. The three house-adjacent footings (two porch side walls + the
+# sonotube column, along the north edge) pin to the house footing across a 2" XPS block so
+# the joint transfers shear without a thermal bridge. Bars at mid-footing (-9.25').
+# ============================================================================
+_dowel_z = ft(-(SPEC.basement_depth_ft + 0.75) + SPEC.footing_thickness_in / 24.0)  # -9.25'
+_DOWEL_AT = (("W1", _x_ax_w), ("E1", _x_ax_e), ("COL", _cx))
+DOWELS = [
+    Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}", position=pt(ft(x), ft(_y_in_n)),
+          axis="y", length=inch(24), diameter=inch(0.625), elevation=_dowel_z,
+          count=3, spacing=inch(8),
+          connects=(f"FT-SG-{name}", "FT-B-S2"),
+          foam_thickness=inch(2), foam_height=inch(SPEC.footing_thickness_in), foam_psi=40.0)
+    for i, (name, x) in enumerate(_DOWEL_AT, start=1)
+]
+
+# ============================================================================
+# Connector hardware as modeled geometry (was text/notes only). Standoff post bases under
+# the six 6x6 balcony pillars, APVKB knee braces at the pillar tops, plus joist hangers /
+# hurricane ties at the porch back-beam pockets.
+# ============================================================================
+_kb_z = ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft - 0.25)  # just under the beam soffit
+CONNECTORS = []
+for _i, _x in enumerate(_PILLAR_X, start=1):
+    for _row, _y in (("R", _y_in_n), ("F", _y_ax_arch)):
+        CONNECTORS.append(Connector(
+            uid=f"SGCB{_i}{_row}AAAA", tag=f"CN-SG-BASE-{_row}{_i}",
+            kind=ConnectorKind.POST_BASE, position=pt(ft(_x), ft(_y)), elevation=_porch_top,
+            size="ABU66", connects=(f"PT-SG-B{_row}{_i}", "SL-SG-PORCH")))
+        CONNECTORS.append(Connector(
+            uid=f"SGCK{_i}{_row}AAAA", tag=f"CN-SG-KB-{_row}{_i}",
+            kind=ConnectorKind.KNEEBRACE, position=pt(ft(_x), ft(_y)), elevation=_kb_z,
+            size="APVKB", axis="y", connects=(f"PT-SG-B{_row}{_i}",)))
+# Porch back-beam pockets: joist hanger into the side wall + hurricane tie over the column.
+CONNECTORS += [
+    Connector(uid="SGCH01AAAA", tag="CN-SG-HGR-W", kind=ConnectorKind.JOIST_HANGER,
+              position=pt(ft(_x_ax_w), ft(_y_in_n)), elevation=_porch_top, size="LUS210",
+              connects=("BM-SG-BKW", "W-SG-W1")),
+    Connector(uid="SGCH02AAAA", tag="CN-SG-HGR-E", kind=ConnectorKind.JOIST_HANGER,
+              position=pt(ft(_x_ax_e), ft(_y_in_n)), elevation=_porch_top, size="LUS210",
+              connects=("BM-SG-BKE", "W-SG-E1")),
+    Connector(uid="SGCT01AAAA", tag="CN-SG-TIE-COL", kind=ConnectorKind.HURRICANE_TIE,
+              position=pt(ft(_cx), ft(_y_in_n)), elevation=_porch_top, size="H2.5A",
+              connects=("BM-SG-BKW", "BM-SG-BKE", "PT-SG-COL")),
+]
+# Split by storey the hardware sits at: knee braces ride at the balcony beam soffit
+# (second), everything else at the porch deck (main).
+_TOP_CONNECTORS = [c for c in CONNECTORS if c.kind is ConnectorKind.KNEEBRACE]
+_BASE_CONNECTORS = [c for c in CONNECTORS if c.kind is not ConnectorKind.KNEEBRACE]
+
+# ============================================================================
+# Balcony guard + edge trim. The metal fascia-mounted guardrail is a first-class Railing
+# (not a parapet). PVC fascia closes the joist ends; a front gutter catches the south-
+# draining deck via a front-edge drip flashing; the rear (house) edge gets a counter-
+# flashing tucked up into the house WRB. Deck drains SOUTH (rear pillars 2" taller).
+# ============================================================================
+_deck_top = ft(SPEC.balcony_level_ft)  # 10'
+# Guard the three open edges (west, front/south, east); the north edge abuts the house.
+_GUARD_PATH = (pt(ft(_deck_x_w), ft(_y_in_n)), pt(ft(_deck_x_w), ft(_y_ax_arch)),
+               pt(ft(_deck_x_e), ft(_y_ax_arch)), pt(ft(_deck_x_e), ft(_y_in_n)))
+BALCONY_GUARD = Railing(
+    uid="SGRA01AAAA", tag="RL-SG-BALCONY", path=_GUARD_PATH,
+    kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5), base_elevation=_deck_top,
+    post_spacing=inch(60), post_size="2x2", rail_count=2, mount="fascia",
+    assembly="POST_WHITE_PAINT")
+
+BALCONY_FASCIA = Fascia(
+    uid="SGFC01AAAA", tag="TR-SG-FASCIA", kind=TrimKind.FASCIA, path=_GUARD_PATH,
+    top_elevation=_deck_top, depth=inch(9), thickness=inch(1), material="PVC",
+    host_ref="SL-SG-DECK")
+# Front (south, low) edge only.
+_FRONT_PATH = (pt(ft(_deck_x_w), ft(_y_ax_arch)), pt(ft(_deck_x_e), ft(_y_ax_arch)))
+BALCONY_GUTTER = Gutter(
+    uid="SGGT01AAAA", tag="TR-SG-GUTTER", kind=TrimKind.GUTTER, path=_FRONT_PATH,
+    top_elevation=_deck_top - inch(9), depth=inch(4), thickness=inch(5), material="aluminum",
+    host_ref="TR-SG-FASCIA", slope="1/16 in/ft to SE downspout")
+BALCONY_DRIP = Flashing(
+    uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,
+    top_elevation=_deck_top, depth=inch(3), thickness=inch(3), material="aluminum",
+    host_ref="TR-SG-GUTTER")
+# Rear (north, house-side) counter-flashing tucked up into the house WRB.
+_REAR_PATH = (pt(ft(_deck_x_w), ft(_y_in_n)), pt(ft(_deck_x_e), ft(_y_in_n)))
+BALCONY_REAR_FLASH = Flashing(
+    uid="SGFF02AAAA", tag="TR-SG-WRB-FLASH", kind=TrimKind.WRB_COUNTERFLASHING,
+    path=_REAR_PATH, top_elevation=_deck_top + inch(6), depth=inch(8), thickness=inch(2),
+    material="aluminum", host_ref="SL-SG-DECK")
+
+# ============================================================================
 # Per-storey exports (spliced into plan/manifest.py).
 # ============================================================================
 BASEMENT_ELEMENTS = [*NODES, *WALLS, *RAILING_WALLS, COLUMN, *FOOTINGS,
-                     *FOOTING_BEDDING, *ARCH_OPENINGS, GARDEN_SLAB]
-MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, PORCH_FLOOR, PORCH_JOISTS]
-SECOND_ELEMENTS = [*SECOND_NODES, *BALCONY_BEAMS, *PILLARS, DECK_FLOOR, BALCONY_JOISTS]
+                     *FOOTING_BEDDING, *ARCH_OPENINGS, GARDEN_SLAB, *DOWELS]
+MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, PORCH_FLOOR, PORCH_JOISTS, *_BASE_CONNECTORS]
+SECOND_ELEMENTS = [*SECOND_NODES, *BALCONY_BEAMS, *PILLARS, DECK_FLOOR, BALCONY_JOISTS,
+                   *_TOP_CONNECTORS, BALCONY_GUARD, BALCONY_FASCIA, BALCONY_GUTTER,
+                   BALCONY_DRIP, BALCONY_REAR_FLASH]

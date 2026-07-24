@@ -52,6 +52,16 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "column": (0.60, 0.60, 0.62, 1.0),  # concrete/wood posts (sonotube, 6x6 pillars)
     "beam": (0.62, 0.46, 0.28, 1.0),  # PT / built-up wood beams
     "furniture": (0.46, 0.31, 0.20, 1.0),
+    # accessories (→ resolve/accessories.py)
+    "railing": (0.80, 0.81, 0.83, 1.0),   # aluminum guard
+    "dowel": (0.20, 0.55, 0.35, 1.0),     # GFRP rebar (green)
+    "thermal_break": (0.95, 0.55, 0.15, 1.0),  # XPS foam block (orange)
+    "connector": (0.35, 0.36, 0.38, 1.0),  # galvanized hardware
+    "sump": (0.30, 0.32, 0.34, 1.0),       # pit
+    "vent": (0.88, 0.88, 0.86, 1.0),       # painted vent pipe
+    "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
+    "gutter": (0.85, 0.86, 0.87, 1.0),     # metal gutter
+    "flashing": (0.75, 0.77, 0.80, 1.0),   # metal flashing
 }
 _FALLBACK = (0.70, 0.70, 0.70, 1.0)
 

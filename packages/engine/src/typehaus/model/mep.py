@@ -86,6 +86,44 @@ class Equipment(Element):
 
 
 @register_element
+class Sump(Element):
+    """A sump pit (basement slab low point) with an optional radon-vent takeoff.
+
+    The pit is cast below the slab; when ``radon_vent`` is set it is a sealed radon sump
+    whose passive vent leaves the sealed cover and rises through the mechanical chase —
+    the ``vent_ref`` names the shared ``VentRun`` it feeds."""
+
+    position: Point2D
+    diameter: Length  # pit inside diameter
+    depth: Length  # pit depth below the slab underside
+    host_ref: str | None = None  # slab the pit is cast into
+    sealed_cover: bool = True  # gasketed/sealed cover (required for a radon sump)
+    radon_vent: bool = True
+    vent_ref: str | None = None  # VentRun tag the radon takeoff joins
+
+
+@register_element
+class VentRun(Element):
+    """A vertical vent riser bundling one or more systems up a shared mechanical chase.
+
+    Encodes the Catlin routing intent: up the chase to ``exit_elevation`` (near the attic
+    ceiling), a 90° turn out through the wall by ``exit_offset``, then 90° back up the
+    siding — clamped to the standing seam — terminating ``roof_termination_elevation``
+    (12" above the roof). The resolver derives the 4-point 3D polyline from these fields;
+    it never invents the route. ``systems`` is typically (RADON, VENT)."""
+
+    systems: tuple[PipeSystem, ...]
+    diameter: Length
+    chase_position: Point2D  # plan location of the chase
+    start_elevation: Length  # where the riser starts (project-frame absolute)
+    exit_elevation: Length  # near the attic ceiling, where it turns out
+    exit_offset: Point2D  # horizontal delta chase -> exterior riser plan location
+    roof_termination_elevation: Length  # top of riser (12" above roof), project-frame
+    wall_ref: str | None = None  # exterior wall the riser penetrates / rides
+    attachment: str = "standing_seam_clamp"  # how the exterior riser is fixed to the siding
+
+
+@register_element
 class ElectricalDevice(Element):
     """A device symbol — schema keeps a ``circuit`` hook for a future panel schedule."""
 
@@ -108,5 +146,7 @@ for _name, _obj in (
     ("Register", Register),
     ("Equipment", Equipment),
     ("ElectricalDevice", ElectricalDevice),
+    ("Sump", Sump),
+    ("VentRun", VentRun),
 ):
     register_constructor(_name, _obj)

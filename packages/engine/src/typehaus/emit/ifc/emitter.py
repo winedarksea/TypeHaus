@@ -477,8 +477,14 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
 
 def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_uuid: Any,
                 model: Any = None) -> None:
-    ifc_class = {"slab": "IfcSlab", "column": "IfcColumn",
-                 "beam": "IfcBeam"}.get(solid.category, "IfcFooting")
+    # NB: IfcPipeSegment is reserved for authored PipeRuns (test_ifc_mep asserts the count
+    # equals pipe-run segments) — accessory vents/gutters stay generic proxies.
+    ifc_class = {"slab": "IfcSlab", "column": "IfcColumn", "beam": "IfcBeam",
+                 "railing": "IfcRailing", "dowel": "IfcReinforcingBar",
+                 "connector": "IfcMechanicalFastener", "sump": "IfcTank",
+                 "vent": "IfcBuildingElementProxy", "gutter": "IfcBuildingElementProxy",
+                 "fascia": "IfcCovering", "flashing": "IfcCovering",
+                 "thermal_break": "IfcBuildingElementProxy"}.get(solid.category, "IfcFooting")
     element = ll.create_entity(f, ifc_class, name=solid.tag)
     element.GlobalId = derive_guid(project_uuid, solid.uid)
     if solid.outline:
