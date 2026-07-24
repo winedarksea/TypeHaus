@@ -103,3 +103,26 @@ def test_deck_bearing_stack_has_no_interference():
         if any(t.startswith(_DECK_PREFIXES) for t in f.element_tags)
     ]
     assert not deck_findings, [f.message for f in deck_findings]
+
+
+def test_catlin_framing_interference_stays_near_zero():
+    """Guards the ~2662 -> 0 cleanup (correct stud orientation, slope-aware z, intended
+    corner/tee/bearing/stair joints). A small ceiling keeps it robust to model tweaks."""
+    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+    findings = member_interference(ctx)
+    assert len(findings) <= 5, [f.message for f in findings]
+
+
+def test_check_still_flags_a_genuine_overlap():
+    """The many intended-joint clears must not neuter the check: two beams sharing the
+    same volume, away from any wall junction, is a real clash and must still report."""
+    from types import SimpleNamespace
+
+    a = FramedMember("B1", "beam", "beam", "2x10", (0.0, 0.0), (3.0, 0.0),
+                     z0_m=0.0, z1_m=0.24, length_m=3.0)
+    b = FramedMember("B2", "beam", "beam", "2x10", (0.5, 0.0), (3.5, 0.0),
+                     z0_m=0.1, z1_m=0.34, length_m=3.0)
+    model = SimpleNamespace(all_members=lambda: [a, b], solids=(), junctions=())
+    prefs = SimpleNamespace(framing=SimpleNamespace(interference_tolerance_in=0.25))
+    ctx = SimpleNamespace(model=model, preferences=prefs)
+    assert member_interference(ctx)

@@ -33,6 +33,10 @@ class FramingSpec(HausModel):
     tee_backing_style: Literal["ladder", "stud-pack", "none"] = "ladder"
     # None uses the framing solver's named domain default.
     tee_blocking_spacing: Length | None = None
+    # In-line blocking courses (fire/backing blocking) at these heights above the sole
+    # plate. Each height adds one horizontal row of blocking fitted between the studs in
+    # every bay. Empty (the default) emits no blocking, so existing walls are unchanged.
+    blocking_heights: tuple[Length, ...] = ()
 
 
 class MasonrySpec(HausModel):
