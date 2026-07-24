@@ -18,6 +18,8 @@
 # FloorOpening (x:11'-18', y:25'-36') and both cross the central bearing wall at x=18'.
 
 from typehaus import (
+    Connector,
+    ConnectorKind,
     DeviceKind,
     DuctRouting,
     DuctRun,
@@ -34,6 +36,8 @@ from typehaus import (
     Service,
     ServicePort,
     SleevePenetration,
+    Sump,
+    VentRun,
     ft,
     inch,
     pt,
@@ -72,6 +76,11 @@ ELECTRICAL_DEVICE_TYPES = (
                           ports=(ServicePort(tag="power", service=Service.POWER_120,
                                              position=(ft(0), ft(0), ft(0))),)),
     ElectricalDeviceType(tag="ED-T-RECEPTACLE", name="Receptacle", footprint=(inch(4), inch(2)), height=inch(2),
+                          ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                             position=(ft(0), ft(0), ft(0))),)),
+    # NEMA 3R weatherproof exterior junction box with a gasketed blank cover plate.
+    ElectricalDeviceType(tag="ED-T-JBOX", name="NEMA 3R weatherproof junction box",
+                          footprint=(inch(6), inch(6)), height=inch(4),
                           ports=(ServicePort(tag="power", service=Service.POWER_120,
                                              position=(ft(0), ft(0), ft(0))),)),
 )
@@ -199,6 +208,51 @@ SECOND_DEVICES = [
                      position=pt(ft(10), ft(20)), mount_height=inch(16), type_ref="ED-T-RECEPTACLE"),
 ]
 
-MAIN_ELEMENTS = [*SLEEVES, *MAIN_DEVICES]
-BASEMENT_ELEMENTS = [*DRAINS, *EQUIPMENT, *PANEL]
+# --- Radon sump + shared radon/plumbing vent riser ---------------------------------
+# A sealed radon sump in the NW basement furnace room. Its passive radon vent and the
+# plumbing vent share one mechanical chase up to near the attic ceiling (29'), turn 90°
+# out through the north gable siding, then 90° back up — clamped to the standing seam with
+# S-5!-style clamps — terminating 12" above the roof (33'). Elevations are project-frame.
+RADON_SUMP = [
+    Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(ft(3), ft(33)),
+         diameter=inch(18), depth=inch(24), host_ref="SL-B-FLOOR",
+         sealed_cover=True, radon_vent=True, vent_ref="VR-M-RADON-VENT"),
+]
+
+VENT_RISERS = [
+    VentRun(uid="CMVR01AAAA", tag="VR-M-RADON-VENT",
+            systems=(PipeSystem.RADON, PipeSystem.VENT), diameter=inch(3),
+            chase_position=pt(ft(3), ft(33)), start_elevation=ft(-8.5),
+            exit_elevation=ft(29), exit_offset=pt(ft(0), ft(4)),
+            roof_termination_elevation=ft(33), wall_ref="W-A-N1",
+            attachment="standing_seam_clamp"),
+]
+
+# S-5! standing-seam clamps fixing the exterior riser to the north gable siding.
+VENT_CLAMPS = [
+    Connector(uid="CMVC01AAAA", tag="CN-M-VENT-CLAMP1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(ft(3), ft(37)), elevation=ft(30), size="S-5!",
+              connects=("VR-M-RADON-VENT", "W-A-N1")),
+    Connector(uid="CMVC02AAAA", tag="CN-M-VENT-CLAMP2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(ft(3), ft(37)), elevation=ft(31, 6), size="S-5!",
+              connects=("VR-M-RADON-VENT", "W-A-N1")),
+    Connector(uid="CMVC03AAAA", tag="CN-M-VENT-CLAMP3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(ft(3), ft(37)), elevation=ft(33), size="S-5!",
+              connects=("VR-M-RADON-VENT", "W-A-N1")),
+]
+
+# --- Outdoor NEMA 3R weatherproof junction box on the north siding ------------------
+# Gasketed blank cover plate; mounted to the standing seam with an S-5!-style clamp.
+NEMA_BOX = [
+    ElectricalDevice(uid="CEJ901AAAA", tag="ED-M-NEMA-JB", kind=DeviceKind.JUNCTION_BOX,
+                     position=pt(ft(6), ft(37)), mount_height=ft(6), type_ref="ED-T-JBOX"),
+]
+NEMA_CLAMP = [
+    Connector(uid="CMNC01AAAA", tag="CN-M-NEMA-CLAMP", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(ft(6), ft(37)), elevation=ft(6), size="S-5!",
+              connects=("ED-M-NEMA-JB", "W-M-N")),
+]
+
+MAIN_ELEMENTS = [*SLEEVES, *MAIN_DEVICES, *NEMA_BOX, *NEMA_CLAMP]
+BASEMENT_ELEMENTS = [*DRAINS, *EQUIPMENT, *PANEL, *RADON_SUMP, *VENT_RISERS, *VENT_CLAMPS]
 SECOND_ELEMENTS = [*DUCTS, *REGISTERS, *SECOND_DEVICES]

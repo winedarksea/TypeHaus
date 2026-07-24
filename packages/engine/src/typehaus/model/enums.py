@@ -132,6 +132,7 @@ class PipeSystem(Enum):
     WATER_HOT = "water_hot"
     WATER_COLD = "water_cold"
     GAS = "gas"
+    RADON = "radon"  # passive soil-gas vent, routed alongside the plumbing vent
 
 
 class DuctSystem(Enum):
@@ -166,6 +167,34 @@ class DeviceKind(Enum):
     SWITCH = "switch"
     LIGHT = "light"
     PANEL = "panel"
+    JUNCTION_BOX = "junction_box"  # NEMA 3R weatherproof exterior box (blank/gasketed)
+
+
+class ConnectorKind(Enum):
+    """Modeled connection hardware (→ IfcMechanicalFastener / IfcDiscreteAccessory)."""
+
+    JOIST_HANGER = "joist_hanger"          # e.g. Simpson LUS/HUS face-mount hanger
+    HURRICANE_TIE = "hurricane_tie"        # e.g. Simpson H2.5A rafter/joist-to-plate tie
+    KNEEBRACE = "kneebrace"                # e.g. Simpson APVKB angled knee brace
+    POST_BASE = "post_base"                # standoff post base (e.g. Simpson ABU/CBSQ)
+    STANDING_SEAM_CLAMP = "standing_seam_clamp"  # S-5!-style seam clamp on the siding
+
+
+class RailingKind(Enum):
+    """Guard-rail construction the resolver frames into posts/rails."""
+
+    METAL_FASCIA_MOUNT = "metal_fascia_mount"  # aluminum guard, fascia-mounted brackets
+    METAL_SURFACE_MOUNT = "metal_surface_mount"  # aluminum guard, deck-surface base plates
+    MASONRY = "masonry"                          # solid masonry parapet guard
+
+
+class TrimKind(Enum):
+    """Envelope edge trim/roofing accessory kinds along a deck or roof edge."""
+
+    FASCIA = "fascia"                    # PVC/wood fascia board
+    GUTTER = "gutter"                    # hung gutter channel
+    DRIP_FLASHING = "drip_flashing"      # front-edge drip flashing into the gutter
+    WRB_COUNTERFLASHING = "wrb_counterflashing"  # rear flashing tucked into the house WRB
 
 
 class UtilityKind(Enum):

@@ -21,6 +21,7 @@ from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
 from typehaus.model.enums import (
     AlarmKind,
     ConditionKind,
+    ConnectorKind,
     ControlLayer,
     DeviceKind,
     DuctRouting,
@@ -33,10 +34,12 @@ from typehaus.model.enums import (
     PartitionLayout,
     PipeSystem,
     RadiantSystem,
+    RailingKind,
     RoofForm,
     Service,
     SliceKind,
     StructuralRole,
+    TrimKind,
     UtilityKind,
 )
 from typehaus.model.floors import (
@@ -57,7 +60,10 @@ from typehaus.model.mep import (
     PipeRun,
     Register,
     SleevePenetration,
+    Sump,
+    VentRun,
 )
+from typehaus.model.trim import Fascia, Flashing, Gutter
 from typehaus.model.plan import Library, PlanModel
 from typehaus.model.project import Building, Project, Site, Storey
 from typehaus.model.refs import (
@@ -83,7 +89,17 @@ from typehaus.model.registry import (
     register_constructor,
 )
 from typehaus.model.site import SetbackSpec, SpotElevation, UtilityLine
-from typehaus.model.structure import Beam, Footing, FootingBedding, FoundationWall, Pad, Post
+from typehaus.model.structure import (
+    Beam,
+    Connector,
+    Dowel,
+    Footing,
+    FootingBedding,
+    FoundationWall,
+    Pad,
+    Post,
+    Railing,
+)
 from typehaus.model.spatial import (
     Annotation,
     Alarm,
@@ -167,6 +183,7 @@ __all__ = [
     "Element", "HausModel",
     "Node", "Wall", "Door", "Window", "RoughOpening",
     "FoundationWall", "Footing", "Pad", "FootingBedding", "Post", "Beam",
+    "Dowel", "Connector", "Railing", "Fascia", "Gutter", "Flashing",
     "Assembly", "Layer", "CavityFill", "FramingSpec", "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material",
     "DoorType", "WindowType", "FurnitureType", "FixtureType", "ApplianceType", "EquipmentType",
@@ -182,11 +199,13 @@ __all__ = [
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",
     "PipeRun", "SleevePenetration", "DuctRun", "Register", "Equipment", "ElectricalDevice",
+    "Sump", "VentRun",
     "SetbackSpec", "SpotElevation", "UtilityLine",
     "LayerFunction", "ControlLayer", "JunctionPolicy", "Occupancy", "Service", "AlarmKind",
     "StructuralRole", "SliceKind", "FloorOpeningPurpose", "RadiantSystem",
     "PartitionLayout", "RoofForm", "ConditionKind",
     "PipeSystem", "DuctSystem", "DuctRouting", "EquipmentKind", "DeviceKind", "UtilityKind",
+    "ConnectorKind", "RailingKind", "TrimKind",
     "PlacementStrategy", "MountKind", "ClearancePolicy", "Footprint2D", "ClearanceZone",
     "ServicePort", "PlanRepresentation", "ModelRepresentation", "Location", "WallAttachment", "Mount",
     "Length", "Area", "Angle", "Pitch", "RValue", "UFactor", "Temperature", "Point2D",
