@@ -105,7 +105,9 @@ def test_basement_exterior_insulation_matches_the_reference(catlin_model):
 def test_framing_matches_the_reference(catlin_model):
     params = _params("houseframing")
     joist_depth = float(params["floor_joists"]["depth_in"])
-    floors = [f for f in catlin_model.floors if f.members]
+    # The freestanding sunken-garden porch/balcony decks frame with their own PT 2x8
+    # joists, not the house's I-joists — check only the house floors against the reference.
+    floors = [f for f in catlin_model.floors if f.members and not f.tag.startswith("FS-SG-")]
     assert floors, "catlin should resolve framed floors"
     for floor in floors:
         joists = [m for m in floor.members if m.category == "joist"]

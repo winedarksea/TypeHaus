@@ -9,12 +9,17 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import StructuralRole
 
-# Simplified I-joist allowable spans (ft) by depth (in), 16" o.c., residential floor.
+# Simplified allowable joist spans (ft) at 16" o.c., residential floor (40 psf live).
+# I-joists by depth; dimensional lumber per IRC R502.3.1(1), SPF #2.
 _IJOIST_SPAN_FT: dict[str, float] = {
     "9.5 I-joist": 15.0,
     "11.875 I-joist": 18.5,
     "14 I-joist": 22.0,
     "16 I-joist": 25.0,
+    "2x6": 9.9,
+    "2x8": 13.1,
+    "2x10": 16.4,
+    "2x12": 19.1,
 }
 
 

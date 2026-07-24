@@ -42,6 +42,8 @@ _RE_RIM = re.compile(r"^(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?)\s+rim$
 _RE_IJOIST = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+I-joist$")
 _RE_MULTI_NOMINAL = re.compile(r"^(?P<plies>\d+)-(?P<nominal>\d+x\d+)$")
 _RE_NOMINAL = re.compile(r"^\d+x\d+$")
+# Round column, e.g. a 12" sonotube-cast concrete pier: "12 round".
+_RE_ROUND = re.compile(r"^(?P<dia>\d+(?:\.\d+)?)\s+round$")
 
 
 @dataclass(frozen=True)
@@ -52,8 +54,8 @@ class CrossSection:
     every shape, including ``"i_joist"`` (there, ``width_m`` is the flange width).
     """
 
-    shape: str  # "rect" | "i_joist"
-    width_m: float
+    shape: str  # "rect" | "i_joist" | "round"
+    width_m: float  # for "round": the diameter (width_m == depth_m)
     depth_m: float
     flange_width_m: float | None = None
     flange_thickness_m: float | None = None
@@ -103,6 +105,10 @@ def cross_section(profile: str) -> CrossSection:
     if _RE_NOMINAL.match(text):
         thickness_in, depth_in = LUMBER_ACTUAL.get(text, _FALLBACK_ACTUAL_IN)
         return _rect(thickness_in, depth_in)
+
+    if match := _RE_ROUND.match(text):
+        dia_m = inch(float(match["dia"])).meters
+        return CrossSection(shape="round", width_m=dia_m, depth_m=dia_m)
 
     if text == "engineered-LVL":
         return _rect(*_ENGINEERED_LVL_ACTUAL_IN)

@@ -9,7 +9,8 @@ from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Roof, Stair
 from typehaus.model.refs import ToRoof
 from typehaus.model.enums import ConditionKind
-from typehaus.model.structure import Footing, FootingBedding, Pad, Post
+from typehaus.model.structure import Beam, Footing, FootingBedding, Pad, Post
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import polygon_area, rect_between
 from typehaus.resolve.model import (
     BoundaryCondition,
@@ -541,3 +542,83 @@ def _stair_fits_opening(stair: Stair, minx: float, maxx: float, miny: float, max
 def _error(check_id: str, message: str, tag: str) -> Finding:
     return Finding(severity=Severity.ERROR, check_id=check_id, message=message,
                    element_tags=(tag,), result=Result.FAIL)
+
+
+# --- point + linear structural members (columns / beams) --------------------------
+# Posts (→ IfcColumn) and standalone Beams (→ IfcBeam) become ResolvedSolids so the same
+# glTF/IFC/model.json consumers that draw slabs also draw the framing. Run this AFTER roof
+# framing so authored ridge Beams (already emitted as roof members) are excluded.
+_COLUMN_FACETS = 16
+
+
+def resolve_columns_and_beams(model: ResolvedModel) -> list[Finding]:
+    findings: list[Finding] = []
+    solid_top = {s.tag: s.z1_m for s in model.solids}
+    ridge_uids = {m.parent_uid for roof in model.roofs for m in roof.members
+                  if m.category == "ridge_beam"}
+    for storey in model.plan.storeys:
+        elevation = storey.elevation.meters
+        nodes = {e.tag: e.position.xy_m for e in model.plan.storey_elements(storey.tag)
+                 if e.element_kind == "Node"}
+        for element in model.plan.storey_elements(storey.tag):
+            if isinstance(element, Post):
+                model.solids.append(_resolve_post(element, storey.tag, elevation, solid_top,
+                                                   storey))
+            elif isinstance(element, Beam) and element.uid not in ridge_uids:
+                solid = _resolve_beam(element, storey.tag, elevation, nodes)
+                if solid is None:
+                    findings.append(_error("integrity.beam_nodes",
+                                           f"beam {element.tag} references missing node(s) "
+                                           f"{element.start_node!r}/{element.end_node!r}",
+                                           element.tag))
+                else:
+                    model.solids.append(solid)
+    return findings
+
+
+def _resolve_post(post: Post, storey_tag: str, elevation: float,
+                  solid_top: dict[str, float], storey) -> ResolvedSolid:
+    """A post supported by a footing/pad stands up from that support; otherwise its top
+    sits at its storey's deck elevation (it carries that level) and it hangs down by its
+    height."""
+    cs = cross_section(post.size)
+    height = (post.height.meters if post.height is not None
+              else storey.default_ceiling_height.meters)
+    base = solid_top.get(post.supported_by) if post.supported_by else None
+    if base is not None:
+        z0, z1 = base, base + height
+    else:
+        z0, z1 = elevation - height, elevation
+    return ResolvedSolid(post.uid, post.tag, storey_tag, "column",
+                         tuple(_post_outline(post.position.xy_m, cs)), z0, z1)
+
+
+def _post_outline(center: tuple[float, float], cs) -> list[tuple[float, float]]:
+    cx, cy = center
+    if cs.shape == "round":
+        r = cs.width_m / 2.0
+        return [(cx + r * math.cos(2 * math.pi * k / _COLUMN_FACETS),
+                 cy + r * math.sin(2 * math.pi * k / _COLUMN_FACETS))
+                for k in range(_COLUMN_FACETS)]
+    hw, hd = cs.width_m / 2.0, cs.depth_m / 2.0
+    return [(cx - hw, cy - hd), (cx + hw, cy - hd), (cx + hw, cy + hd), (cx - hw, cy + hd)]
+
+
+def _resolve_beam(beam: Beam, storey_tag: str, elevation: float,
+                  nodes: dict[str, tuple[float, float]]) -> ResolvedSolid | None:
+    p0, p1 = nodes.get(beam.start_node), nodes.get(beam.end_node)
+    if p0 is None or p1 is None:
+        return None
+    cs = cross_section(beam.size)
+    dx, dy = p1[0] - p0[0], p1[1] - p0[1]
+    length = math.hypot(dx, dy)
+    if length < 1e-9:
+        return None
+    hw = cs.width_m / 2.0
+    nx, ny = -dy / length * hw, dx / length * hw  # perpendicular half-width offset
+    outline = [(p0[0] + nx, p0[1] + ny), (p1[0] + nx, p1[1] + ny),
+               (p1[0] - nx, p1[1] - ny), (p0[0] - nx, p0[1] - ny)]
+    # The beam supports the deck at its storey elevation; hang its depth below that.
+    z1 = elevation
+    z0 = z1 - cs.depth_m
+    return ResolvedSolid(beam.uid, beam.tag, storey_tag, "beam", tuple(outline), z0, z1)

@@ -559,21 +559,47 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
                 assert offset == pytest.approx(center_offset, abs=1e-9)
 
 
-def test_sunken_garden_structure_matches_old_spec(catlin_model):
-    """One freestanding structure: 7 wall segments, two-tier arches, 18x28 garden."""
+def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
+    """Freestanding porch/balcony redesign: no north wall, single 16" arched front wall
+    with two arches, a masonry railing, a sonotube column + PT back beams, six 6x6 pillars
+    + three balcony beams, and a 19x28 garden."""
     walls = [w for w in catlin_model.walls if w.tag.startswith("W-SG-")]
-    assert len(walls) == 7
+    # 6 concrete (ARCH + W1/E1/W2/E2/S) + 3 masonry railing (RAIL-F/W/E); no north wall.
+    assert len(walls) == 9
     assert all(w.is_foundation for w in walls)
-    # Two arched walls x two levels x two arches + two side doorways = 10 openings.
+    assert not any(w.tag == "W-SG-N" for w in walls)
+    arch_wall = next(w for w in walls if w.tag == "W-SG-ARCH")
+    assert arch_wall.assembly == "SUNKEN_GARDEN_ARCH_16"
+    railings = [w for w in walls if w.tag.startswith("W-SG-RAIL-")]
+    assert len(railings) == 3
+    assert all(w.assembly == "PORCH_RAILING_MASONRY" for w in railings)
+
+    # A single garden-level tier of two 8'-wide arches across the front wall.
     arches = [o for o in catlin_model.openings if o.tag.startswith("AO-")]
-    assert len(arches) == 10
-    eight_ft_arches = [o for o in arches if o.width_m == pytest.approx(ft(8).meters)]
-    assert len(eight_ft_arches) == 8
+    assert len(arches) == 2
+    assert all(o.width_m == pytest.approx(ft(8).meters) for o in arches)
+    assert all(o.host_wall == "W-SG-ARCH" for o in arches)
+
     garden = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
     xs = [p[0] for p in garden.outline]
     ys = [p[1] for p in garden.outline]
-    assert max(xs) - min(xs) == pytest.approx(ft(18).meters)
+    assert max(xs) - min(xs) == pytest.approx(ft(19).meters)
     assert max(ys) - min(ys) == pytest.approx(ft(28).meters)
+
+    # The porch/balcony framing members are authored (their 3D resolution is Phase 2).
+    elements = [el for tag in ("basement", "main", "second")
+                for el in catlin_model.plan.storey_elements(tag)]
+    posts = {el.tag for el in elements if el.element_kind == "Post" and el.tag.startswith("PT-SG-")}
+    beams = {el.tag for el in elements if el.element_kind == "Beam" and el.tag.startswith("BM-SG-")}
+    assert "PT-SG-COL" in posts  # sonotube column
+    assert len([t for t in posts if t.startswith("PT-SG-B")]) == 6  # 6x6 pillars
+    assert len(beams) == 5  # 2 PT 2x12 back beams + 3 double-2x10 balcony beams
+
+    # Both exterior decks carry a decking assembly.
+    porch = next(s for s in catlin_model.solids if s.tag == "SL-SG-PORCH")
+    deck = next(s for s in catlin_model.solids if s.tag == "SL-SG-DECK")
+    assert porch.assembly == "PORCH_DECK_COMPOSITE"
+    assert deck.assembly == "BALCONY_DECK_ALUMINUM"
 
 
 def test_stack_width_change_resolves_on_the_side_wall_line(catlin_model):

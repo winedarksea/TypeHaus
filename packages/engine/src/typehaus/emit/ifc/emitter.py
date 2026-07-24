@@ -53,7 +53,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
         _emit_opening(f, body, opening, model, wall_entities, storeys, project_uuid, opening_types)
 
     for solid in sorted(model.solids, key=lambda item: item.uid):
-        _emit_solid(f, body, solid, storeys, project_uuid)
+        _emit_solid(f, body, solid, storeys, project_uuid, model)
 
     for roof in sorted(model.roofs, key=lambda item: item.uid):
         _emit_roof(f, body, roof, storeys, project_uuid, lod)
@@ -384,8 +384,10 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
         ll.assign_container(f, element, storeys[item.storey])
 
 
-def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_uuid: Any) -> None:
-    ifc_class = "IfcSlab" if solid.category == "slab" else "IfcFooting"
+def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_uuid: Any,
+                model: Any = None) -> None:
+    ifc_class = {"slab": "IfcSlab", "column": "IfcColumn",
+                 "beam": "IfcBeam"}.get(solid.category, "IfcFooting")
     element = ll.create_entity(f, ifc_class, name=solid.tag)
     element.GlobalId = derive_guid(project_uuid, solid.uid)
     if solid.outline:
@@ -393,9 +395,28 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
             f, element, ll.add_prism_from_profile(f, body, solid.outline, solid.z1_m - solid.z0_m,
                                                    solid.z0_m, solid.voids)
         )
+    if model is not None:
+        _assign_solid_material(f, element, solid, model)
     ll.ensure_pset(f, element, PSET_SOURCE, {"uid": solid.uid, "tag": solid.tag,
                                                "category": solid.category})
     ll.assign_container(f, element, storeys[solid.storey])
+
+
+def _assign_solid_material(f: Any, element: Any, solid: Any, model: Any) -> None:
+    """Attach an IfcMaterialLayerSet to a slab that carries an authored assembly (e.g. the
+    composite / aluminum deck surfaces) so Revit reads its material, like walls do."""
+    if not solid.assembly:
+        return
+    assembly = model.plan.library.resolve_assembly(solid.assembly)
+    if assembly is None or not assembly.layers:
+        return
+    ll.assign_material_layer_set(
+        f, element,
+        [{"name": ly.name, "material_ref": ly.material_ref,
+          "thickness_m": ly.thickness.meters, "category": ly.function.value}
+         for ly in assembly.layers],
+        name=solid.assembly,
+    )
 
 
 def _emit_roof(f: Any, body: Any, roof: Any, storeys: dict[str, Any], project_uuid: Any,

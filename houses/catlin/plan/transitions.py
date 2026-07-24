@@ -34,7 +34,7 @@ TRANSITIONS = (
                condition_pattern="opening_perimeter:CATLIN_BASEMENT_12",
                notes="notes/basement_to_framed_wall_detail.md", overlay="foundation-window"),
     Transition(uid="CATR008AAAA", tag="TR-CATLIN-GARDEN-ARCH",
-               condition_pattern="opening_perimeter:SUNKEN_GARDEN_WALL",
+               condition_pattern="opening_perimeter:SUNKEN_GARDEN_*",
                notes="notes/basement_to_framed_wall_detail.md", overlay="concrete-arch"),
     Transition(uid="CATR009AAAA", tag="TR-CATLIN-GARAGE-OPENING",
                condition_pattern="opening_perimeter:GARAGE_WALL_2X6",

@@ -62,6 +62,15 @@ def _is_freestanding_exterior_wall(wall) -> bool:
     return wall.tag.startswith("W-SG-")
 
 
+def _is_freestanding_exterior_slab(tag: str) -> bool:
+    """The freestanding sunken-garden structure's decks (``SL-SG-`` — the porch composite
+    deck and the balcony aluminum deck) are exterior walking surfaces over open air, filed
+    on the house's conditioned storeys only because they share the plan frame. They are not
+    thermal-envelope floors, so the R-10 slab minimum does not bind them — mirrors
+    ``_is_freestanding_exterior_wall``."""
+    return tag.startswith("SL-SG-")
+
+
 def _is_interior_assembly(tag: str) -> bool:
     """Interior partitions/cross-walls carry no prescriptive R-value requirement — they
     aren't part of the thermal envelope. This codebase's own naming convention already
@@ -106,7 +115,8 @@ def evaluate_envelope(model: ResolvedModel, plan: PlanModel,
             continue
         rows.append(_row_for_assembly(plan, tag, "foundation wall", envelope.basement_wall_r))
     for slab in sorted((s for s in model.solids if s.category == "slab"
-                       and _storey_is_conditioned(plan, s.storey)), key=lambda s: s.tag):
+                       and _storey_is_conditioned(plan, s.storey)
+                       and not _is_freestanding_exterior_slab(s.tag)), key=lambda s: s.tag):
         if slab.assembly is None:
             rows.append(PrescriptiveRow(slab.tag, "slab", f"R-{envelope.slab_r:.0f}",
                                         "UNKNOWN (no assembly authored)", "unknown"))

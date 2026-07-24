@@ -154,6 +154,60 @@ SUNKEN_GARDEN_WALL = Assembly(
     source="catlin-house sunken_garden_retaining_wall_detail.py",
 )
 
+# The porch "front" (arched) cross-wall is 16" so it reads as three piers + an arched
+# beam AND gives the porch-floor joists 3.5" of bearing on top of the sill plate.
+SUNKEN_GARDEN_ARCH_16 = Assembly(
+    tag="SUNKEN_GARDEN_ARCH_16",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(16.0),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house porch arched front wall — 16\" for joist bearing (3.5\") + arch piers",
+)
+
+# Masonry "railing" / parapet on top of the porch front + side walls. The balcony 6x6
+# pillars land in the grout-filled CMU cores. Layer order interior (porch/deck side) ->
+# exterior (garden side): stucco on the CMU back, grout-filled CMU, air gap, face brick.
+PORCH_RAILING_MASONRY = Assembly(
+    tag="PORCH_RAILING_MASONRY",
+    layers=(
+        Layer(name="stucco", material_ref="stucco", thickness=inch(0.5),
+              function=LayerFunction.FINISH),
+        Layer(name="cmu", material_ref="cmu", thickness=inch(7.625),
+              function=LayerFunction.STRUCTURE,
+              masonry=MasonrySpec(unit_size="8x8x16 CMU", core_fill=True,
+                                  rebar_spacing=inch(48))),
+        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.0),
+              function=LayerFunction.AIRGAP),
+        Layer(name="brick", material_ref="brick", thickness=inch(3.625),
+              function=LayerFunction.CLADDING),
+    ),
+    source="catlin-house porch railing — brick / air gap / grouted CMU / stucco",
+)
+
+# Deck walking surfaces (single-layer). The joists/beams under them are separate framing
+# members; these are just the finished plank surface so the slab reads with the right
+# material in plans/IFC.
+PORCH_DECK_COMPOSITE = Assembly(
+    tag="PORCH_DECK_COMPOSITE",
+    layers=(
+        # The plank is the spanning walking surface (STRUCTURE); the 2x8 joists beneath it
+        # are separate framing members.
+        Layer(name="composite-deck", material_ref="composite-deck", thickness=inch(1.0),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house porch floor — composite decking on PT 2x8 joists",
+)
+
+BALCONY_DECK_ALUMINUM = Assembly(
+    tag="BALCONY_DECK_ALUMINUM",
+    layers=(
+        Layer(name="aluminum-deck", material_ref="aluminum-deck", thickness=inch(1.5),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house balcony — Wahoo AridDeck-style aluminum plank on 2x8 joists",
+)
+
 # --- garage (freestanding: ICF stem + 2x6 wood wall) ---------------------------
 GARAGE_ICF_8 = Assembly(
     tag="GARAGE_ICF_8",
@@ -282,6 +336,25 @@ MATERIALS = [
     Material(tag="polyiso-foil", name="Foil-faced polyisocyanurate", r_per_inch=6.0,
              perm_rating=0.03, hatch="rigid", color="#d9d2a8",
              source="foil facer is the sauna's vapour retarder as well as its CI"),
+    # --- porch / balcony masonry + decking -------------------------------------
+    Material(tag="brick", name="Face brick", r_per_inch=0.20, density=1920.0,
+             perm_rating=1.0, hatch="concrete", color="#9c5a4a",
+             source="porch railing outer wythe"),
+    Material(tag="cmu", name="Grouted CMU (8\")", r_per_inch=0.11, density=2000.0,
+             hatch="concrete", color="#b8b3ab",
+             source="porch railing inner wythe — cores grouted for pillar anchorage"),
+    Material(tag="grout", name="Masonry grout", r_per_inch=0.08, density=2240.0,
+             hatch="concrete", color="#9a958c",
+             source="fills the CMU cores that receive the balcony post bases"),
+    Material(tag="stucco", name="Portland-cement stucco", r_per_inch=0.20, density=1900.0,
+             perm_rating=10.0, hatch="concrete", color="#d9d2c4",
+             source="porch railing CMU back-face finish"),
+    Material(tag="composite-deck", name="Composite decking (capped PVC/wood)",
+             r_per_inch=1.0, density=1000.0, hatch="lumber", color="#8a7f70",
+             source="porch floor walking surface"),
+    Material(tag="aluminum-deck", name="Aluminum deck board (Wahoo AridDeck-style)",
+             r_per_inch=0.0, density=2700.0, hatch="metal", color="#b9bcc0",
+             source="balcony walking surface — waterproof aluminum plank"),
 ]
 
 ASSEMBLIES = [
@@ -293,6 +366,10 @@ ASSEMBLIES = [
     CATLIN_CONC_12_INT,
     CATLIN_CONC_8_INT,
     SUNKEN_GARDEN_WALL,
+    SUNKEN_GARDEN_ARCH_16,
+    PORCH_RAILING_MASONRY,
+    PORCH_DECK_COMPOSITE,
+    BALCONY_DECK_ALUMINUM,
     GARAGE_ICF_8,
     GARAGE_WALL_2X6,
     GARAGE_ROOF,

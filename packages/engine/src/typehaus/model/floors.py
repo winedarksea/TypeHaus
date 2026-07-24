@@ -45,6 +45,10 @@ class FloorSystem(Element):
     subfloor: DeckLayer | None = None
     ceiling_below: DeckLayer | None = None
     openings: tuple[str, ...] = ()  # FloorOpening tags
+    # Optional explicit footprint. When given, the joist field is scoped to this outline's
+    # perpendicular extent instead of the storey's whole wall bbox — needed for a deck that
+    # frames a freestanding sub-structure sharing a storey with the main building.
+    outline: tuple[Point2D, ...] = ()
     iic: int | None = None  # empirical lookup (#50)
     source: str | None = None
 

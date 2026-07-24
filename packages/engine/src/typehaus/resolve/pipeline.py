@@ -16,7 +16,7 @@ from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.framing.solver import frame_model
 from typehaus.resolve.framing.roof import frame_roofs
-from typehaus.resolve.envelope import resolve_envelope_geometry
+from typehaus.resolve.envelope import resolve_columns_and_beams, resolve_envelope_geometry
 from typehaus.resolve.platform import extend_walls_to_platform
 from typehaus.resolve.floors import resolve_floors
 from typehaus.resolve.floor_heat import resolve_floor_heat
@@ -60,6 +60,8 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
     with _stage("framing"):
         frame_model(plan, model)
         findings.extend(frame_roofs(model))
+        # After roof framing so authored ridge Beams are already emitted as roof members.
+        findings.extend(resolve_columns_and_beams(model))
     with _stage("floors"):
         findings.extend(resolve_floors(model))
     with _stage("mep"):

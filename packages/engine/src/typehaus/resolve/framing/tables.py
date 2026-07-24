@@ -12,6 +12,7 @@ LUMBER_ACTUAL: dict[str, tuple[float, float]] = {
     "2x10": (1.5, 9.25),
     "2x12": (1.5, 11.25),
     "1x4": (0.75, 3.5),
+    "6x6": (5.5, 5.5),  # dressed post (e.g. balcony pillars)
 }
 
 DEFAULT_SPACING = inch(16)

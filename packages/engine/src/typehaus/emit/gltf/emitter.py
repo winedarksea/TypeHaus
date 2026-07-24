@@ -17,6 +17,7 @@ import json
 import struct
 from pathlib import Path
 
+from typehaus.emit.draw.palette import material_color
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoof, ResolvedWall
 
 # function/category → RGBA color (linear, 0..1). Keys are lowercased layer functions and
@@ -47,6 +48,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "slab": (0.55, 0.56, 0.57, 1.0),
     "footing": (0.48, 0.49, 0.50, 1.0),
     "pad": (0.50, 0.51, 0.52, 1.0),
+    "column": (0.60, 0.60, 0.62, 1.0),  # concrete/wood posts (sonotube, 6x6 pillars)
+    "beam": (0.62, 0.46, 0.28, 1.0),  # PT / built-up wood beams
     "furniture": (0.46, 0.31, 0.20, 1.0),
 }
 _FALLBACK = (0.70, 0.70, 0.70, 1.0)
@@ -268,6 +271,28 @@ def _color(key: str) -> tuple[float, float, float, float]:
     return _PALETTE.get(key.lower(), _FALLBACK)
 
 
+def _hex_rgba(hex_str: str) -> tuple[float, float, float, float]:
+    h = hex_str.lstrip("#")
+    if len(h) == 6:
+        return (int(h[0:2], 16) / 255, int(h[2:4], 16) / 255, int(h[4:6], 16) / 255, 1.0)
+    return _FALLBACK
+
+
+def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, float]:
+    """A solid with an authored assembly (e.g. a composite/aluminum deck) reads with its
+    material colour; otherwise it falls back to the per-category palette."""
+    if solid.assembly:
+        assembly = model.plan.library.resolve_assembly(solid.assembly)
+        if assembly is not None and assembly.layers:
+            idx = assembly.structure_index()
+            layer = assembly.layers[idx if idx is not None else 0]
+            material = next((m for m in model.plan.library.materials
+                             if m.tag == layer.material_ref), None)
+            if material is not None:
+                return _hex_rgba(material_color(material.hatch, material.color))
+    return _color(solid.category)
+
+
 def _add_wall(mb: _MeshBuilder, wall: ResolvedWall, lod: str) -> None:
     if lod == "framed" and wall.members:
         for member in wall.members:
@@ -398,9 +423,12 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
     for solid in sorted(model.solids, key=lambda item: item.uid):
         if solid.outline:
             mb.add_prism_with_rectangular_voids(solid.outline, solid.voids, solid.z0_m,
-                                                solid.z1_m, _color(solid.category))
+                                                solid.z1_m, _solid_color(model, solid))
     for roof in sorted(model.roofs, key=lambda item: item.uid):
         _add_roof(mb, roof)
+    for floor in sorted(model.floors, key=lambda item: item.uid):
+        for member in floor.members:
+            _add_member(mb, member)
     for stair in sorted(model.stairs, key=lambda item: item.uid):
         for member in stair.members:
             _add_member(mb, member)

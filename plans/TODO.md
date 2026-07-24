@@ -115,6 +115,9 @@ Each item names the reference drawing it comes from.
 - Windows smaller (by 1.5" I believe) than the stud spacing (here 14" probably should fit between 16" oc studs) don't need a header. Furthermore, we probably want windows to have some more clear guidance on when they are breaking the stud line with their position awkwardly, and how many studs they break with their given width (relative to the configured OC framing spacing)
 - Support for adding blocking in stud line
 
+### Other Catlin House
+Sump with radon vent. This radon vent runs up the same mechanical space that the plumbing vent does. The radon and plumbing vent both exit near the attic ceiling, making a 90 degree (ish) turn outside, then 90 degrees straight back up where they are attached to the siding using standing seam clamps (S-5! or similar) and terminate 12" above the roof. Also running out here (mounted on the siding also with an S-5! clamp) is an outdoor-rated (NEMA 3R weatherproof) junction box on the exterior wall sealed with a gasketed, weatherproof blank cover plate.
+
 # Deferred TODO tasks
 * clean import/export (so ship to another computer running this app)
 
@@ -124,14 +127,32 @@ Each item names the reference drawing it comes from.
 * build landing page and app deployment for type-house.com and type-house.com/app. Likely include an install script link like /Users/colincatlin/Documents-NoCloud/MinimapPR/landing/install.sh alongside the fully web-backed PWA.
 * catlin house should be loaded up by default for new users of the PWA
 
-Arches are missing on the balcony/porch concrete.
-The current modeled concrete arches are:
-2 arches per wall, on the north and south porch walls
-Each opening: 8 ft wide × 8 ft high
-Semicircular top: 4 ft radius
-Straight vertical portion: 4 ft high
-Outer concrete piers: 1 ft wide
-Porch wall thickness: 12 in
+## Sunken garden / porch / balcony — follow-ups
+
+The freestanding porch/balcony was redesigned in `params/sunken_garden.py` (16" arched
+front wall with two arches + three piers; no north wall — the deck's north edge rides a 12"
+sonotube column + two PT 2x12 back beams into the side-wall hangers; a brick/air-gap/grouted-
+CMU/stucco masonry railing; six 6x6 pillars carrying three double-2x10 beams, 2x8 joists, and
+aluminum decking; composite decking on the porch). Posts→IfcColumn, standalone Beams→IfcBeam,
+and floor joists now resolve and render in glTF; deck slabs carry composite/aluminum
+assemblies (material in glTF + IFC). Still deferred:
+
+- **Arched opening voids.** The two front-wall arches (8' wide, 4' straight + 4' semicircular
+  rise) still cut as *rectangular* IfcOpeningElements — dimensionally correct but square-headed.
+  Cutting a true arched profile means extending `ResolvedOpening` with the arch rise, reading
+  `el.arch` in `resolve/pipeline.py::_resolve_openings`, and building a rect+semicircle profile
+  in `emit/ifc/emitter.py::_emit_opening` (and the glTF opening path). Touches the shared
+  window/door opening path, so it is its own piece of work.
+- **Metal fascia-mounted balcony guardrail** as a first-class `Railing` element (model + resolve
+  + emit + UI). The masonry railing is modeled (as a parapet wall); the metal guardrail is not.
+- **PVC fascia, front gutter, front-edge flashing into the gutter, rear flashing into the house
+  WRB** (detail layer; ties into the box-gutter/flashing items above).
+- **Connector hardware** — joist hangers, hurricane ties, kneebraces (APVKB), standoff post
+  bases — are text/notes only, not modeled geometry.
+- **Fiberglass rebar dowels + 40 psi XPS foam thermal-break block** between the shared
+  house/garden footings: recorded via `FootingBedding.cast_foam_in_aggregate` + a note; no dowel
+  primitive in the schema yet. (The porch/balcony floor joists render in the 2D framing plan +
+  glTF but are still not emitted as IFC members — same gap as the house floors.)
 
 Very small windows that don't break the stud line don't need a header added.
 

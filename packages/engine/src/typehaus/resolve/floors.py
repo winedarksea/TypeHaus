@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.floors import FloorOpening, FloorSystem
+from typehaus.model.structure import Beam
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel
@@ -40,8 +41,8 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     along_x = spec.direction == "x"
     if not spec.bearing_refs:
         return None, []  # nothing to frame yet — bearing refs are the M3 opt-in
-    bearing_walls = [model.wall(tag) for tag in spec.bearing_refs]
-    missing = [tag for tag, wall in zip(spec.bearing_refs, bearing_walls) if wall is None]
+    bearing_axes = [_bearing_axis(model, tag) for tag in spec.bearing_refs]
+    missing = [tag for tag, axis in zip(spec.bearing_refs, bearing_axes) if axis is None]
     if missing or len(spec.bearing_refs) < 2:
         return None, [Finding(
             severity=Severity.ERROR, check_id="integrity.floor_bearing",
@@ -49,21 +50,26 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
                     f"(missing: {', '.join(missing) or 'none'})",
             element_tags=(system.tag,), result=Result.FAIL,
         )]
+    resolved_axes = [axis for axis in bearing_axes if axis is not None]
 
-    # Span boundaries: bearing wall axis positions along the joist direction.
-    def _axis_coord(wall) -> float:
-        (x0, y0), (x1, y1) = wall.axis
+    # Span boundaries: bearing (wall/beam) axis positions along the joist direction.
+    def _axis_coord(axis) -> float:
+        (x0, y0), (x1, y1) = axis
         return (x0 + x1) / 2.0 if along_x else (y0 + y1) / 2.0
 
-    boundaries = sorted(_axis_coord(w) for w in bearing_walls)
+    boundaries = sorted(_axis_coord(a) for a in resolved_axes)
 
-    # Perpendicular extent: bbox of the deck storey's walls (the deck spans its storey).
-    storey_walls = [w for w in model.walls if w.storey == storey.tag]
-    if not storey_walls:
-        storey_walls = bearing_walls
-    perp_coords = [
-        (p[1] if along_x else p[0]) for w in storey_walls for p in w.axis
-    ]
+    # Perpendicular extent: an explicit deck outline (a freestanding sub-structure sharing
+    # the storey) scopes the field; otherwise it spans the deck storey's whole wall bbox.
+    if system.outline:
+        perp_coords = [(p.xy_m[1] if along_x else p.xy_m[0]) for p in system.outline]
+    else:
+        storey_walls = [w for w in model.walls if w.storey == storey.tag]
+        perp_coords = [
+            (p[1] if along_x else p[0])
+            for w in (storey_walls or [])
+            for p in w.axis
+        ] or [(p[1] if along_x else p[0]) for a in resolved_axes for p in a]
     perp0, perp1 = min(perp_coords), max(perp_coords)
 
     spacing = (spec.spacing.meters if spec.spacing is not None else _DEFAULT_SPACING_M)
@@ -157,6 +163,23 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         uid=system.uid, tag=system.tag, storey=storey.tag,
         direction=spec.direction, members=tuple(members),
     ), []
+
+
+def _bearing_axis(model: ResolvedModel, tag: str):
+    """The plan axis (p0, p1) of a joist bearing ref — a resolved wall, or an authored
+    standalone Beam (looked up through its per-storey nodes)."""
+    wall = model.wall(tag)
+    if wall is not None:
+        return wall.axis
+    beam = model.plan.by_tag(tag)
+    if isinstance(beam, Beam):
+        for storey in model.plan.storeys:
+            nodes = {e.tag: e.position.xy_m for e in model.plan.storey_elements(storey.tag)
+                     if e.element_kind == "Node"}
+            p0, p1 = nodes.get(beam.start_node), nodes.get(beam.end_node)
+            if p0 is not None and p1 is not None:
+                return (p0, p1)
+    return None
 
 
 def _rectangular_opening_box(opening: FloorOpening) -> tuple[float, float, float, float] | None:
