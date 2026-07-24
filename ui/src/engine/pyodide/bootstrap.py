@@ -57,7 +57,11 @@ def _install_libcst_stub() -> None:
 
 
 def _install_blocking_stub(name: str) -> None:
-    """A stub whose every use raises — for deps reached only at call time (ifc emit)."""
+    """A stub whose every use raises — for deps reached only at call time (ifc emit).
+
+    Marked ``__typehaus_stub__`` so the optional IFC extension (``enable_ifc``) can detect that
+    no real ifcopenshell has replaced it and surface a precise degradation.
+    """
     if name in sys.modules:
         return
     mod = types.ModuleType(name)
@@ -68,6 +72,7 @@ def _install_blocking_stub(name: str) -> None:
         )
 
     mod.__getattr__ = lambda _attr: _blocked  # type: ignore[attr-defined]
+    mod.__typehaus_stub__ = True  # type: ignore[attr-defined]
     sys.modules[name] = mod
 
 
@@ -223,6 +228,32 @@ class OfflineEngine:
             raise RequiresLocalInstall("model does not resolve — nothing to render")
         out = Path("/tmp/offline_model.glb")
         emit_glb(self.model, out)
+        return out.read_bytes()
+
+    # --- optional IFC extension (loaded on demand from the packaged ext tarball) -----------
+    def enable_ifc(self) -> None:
+        """Assert a *real* ifcopenshell is importable before an IFC export is attempted.
+
+        The worker unpacks ``typehaus-ifc-ext.tar`` (the ``typehaus/emit/ifc`` sources excluded
+        from the core bundle) onto sys.path and, when configured, installs an ifcopenshell-wasm
+        wheel — which then replaces the blocking stub in ``sys.modules``. If no real module is
+        present we raise a precise, documented degradation rather than letting the stub raise a
+        generic error deep inside the emitter."""
+        mod = sys.modules.get("ifcopenshell")
+        if mod is None or getattr(mod, "__typehaus_stub__", False):
+            raise RequiresLocalInstall(
+                "IFC export needs the ifcopenshell-wasm module, which is not bundled in this "
+                "build. The engine's IFC emitter sources are unpacked and ready — supply an "
+                "ifcopenshell-wasm wheel (ifcWasmUrl) or run `haus serve` locally for IFC export."
+            )
+
+    def ifc_bytes(self, lod: str = "core") -> bytes:
+        from typehaus.emit.ifc import emit_ifc
+
+        if self.model is None:
+            raise RequiresLocalInstall("model does not resolve — nothing to export")
+        out = Path("/tmp/offline_model.ifc")
+        emit_ifc(self.model, out, lod=lod)
         return out.read_bytes()
 
 
