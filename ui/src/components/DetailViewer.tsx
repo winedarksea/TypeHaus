@@ -10,6 +10,11 @@ import { DetailCanvas } from "./DetailCanvas";
 
 export function DetailViewer({ onClose }: { onClose: () => void }) {
   const client = useStore((s) => s.client);
+  const applyOps = useStore((s) => s.applyOps);
+  const toast = useStore((s) => s.toast);
+  // Refetch the drawing after any patch: a committed annotation drag bumps the revision, and
+  // the fresh payload carries the persisted (anchor-relative) offset.
+  const revision = useStore((s) => s.model?.revision);
   const [index, setIndex] = useState<DetailIndexEntry[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [payload, setPayload] = useState<DetailPayload | null>(null);
@@ -31,20 +36,32 @@ export function DetailViewer({ onClose }: { onClose: () => void }) {
     };
   }, [client]);
 
+  // Drop the old drawing when the user picks a different detail (but not on a same-key refetch).
+  useEffect(() => { setPayload(null); }, [selectedKey]);
+
   useEffect(() => {
     if (!selectedKey) return;
     let live = true;
     setLoading(true);
-    setPayload(null);
     client
       .getDetail(selectedKey)
+      // Keep the prior drawing on screen while a revision-triggered refetch is in flight — a
+      // committed drag would otherwise flash the detail away and reset pan/zoom mid-edit.
       .then((p) => live && setPayload(p))
       .catch((e: Error) => live && setError(e.message))
       .finally(() => live && setLoading(false));
     return () => {
       live = false;
     };
-  }, [client, selectedKey]);
+  }, [client, selectedKey, revision]);
+
+  const moveAnnotation = async (tag: string, offset: [number, number]): Promise<boolean> => {
+    const ok = await applyOps([
+      { op: "update", type: "DetailAnnotation", tag, fields: { offset } },
+    ]);
+    if (ok) toast(`${tag} moved`);
+    return ok;
+  };
 
   const grouped = useMemo(() => {
     const byKind = new Map<string, DetailIndexEntry[]>();
@@ -88,8 +105,8 @@ export function DetailViewer({ onClose }: { onClose: () => void }) {
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingLeft: 8 }}>
           <div style={{ flex: 1, minHeight: 0 }}>
-            {loading && <div className="muted">Rendering…</div>}
-            {payload && <DetailCanvas payload={payload} />}
+            {loading && !payload && <div className="muted">Rendering…</div>}
+            {payload && <DetailCanvas payload={payload} onMoveAnnotation={moveAnnotation} />}
           </div>
           {payload && <NotesPanel payload={payload} />}
         </div>

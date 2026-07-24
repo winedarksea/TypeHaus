@@ -214,7 +214,7 @@ def _annotation_specs(model: ResolvedModel, derived: DerivedDetail) -> list[dict
     specs = []
     for a in authored:
         specs.append({
-            "uid": a.uid or None, "kind": a.kind, "anchor_uid": a.anchor_uid,
+            "uid": a.uid or None, "tag": a.tag, "kind": a.kind, "anchor_uid": a.anchor_uid,
             "anchor_face": a.anchor_face, "text": a.text,
             "offset": [a.offset.x.meters, a.offset.y.meters] if a.offset is not None else None,
             "state": "authored",

@@ -1,15 +1,36 @@
-import { useMemo, useRef, useState } from "react";
-import type { DetailPayload } from "../engine/EngineClient";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { DetailAnnotationSpec, DetailPayload } from "../engine/EngineClient";
 
 // Client-side renderer for a transition-detail scene (→ 11b). The engine ships scene JSON
 // (emit/draw/scene.py) — not opaque SVG — so every node is hit-testable here, the read-only
 // v1 viewer and the future permit-ready editor sharing one contract. Six drawable node kinds
-// map to SVG DOM; each carries its `data-uid` for the (later) hit-test → PatchOp editor hook.
+// map to SVG DOM; each carries its `data-uid` for the hit-test → PatchOp editor hook.
 //
 // Scene coordinates are model-space inches with z up; SVG y grows downward, so we flip y.
+//
+// Editing (U10): an authored DetailAnnotation node can be dragged. The drag delta is measured
+// in the scene's own inch frame (via the group's inverse screen-CTM), added to the annotation's
+// existing anchor-relative offset, and committed as a single-field `offset` PatchOp — so the
+// stored value stays relative to the resolved anchor and rides it when geometry changes, never
+// an absolute pixel position.
 
 type Pt = [number, number];
 type Node = Record<string, any>;
+
+// Model inches per metre — must match emit/draw/details.py M_TO_IN so a committed offset
+// (authored in metres) lands exactly where it was dragged.
+export const M_TO_IN = 39.37007874015748;
+
+// A drag delta in the group's local (SVG-user) frame — x grows right, y grows *down* — added
+// to an annotation's existing anchor-relative offset (metres) → the new offset (metres). The
+// scene z axis grows up while local y grows down, hence the sign flip on the second component.
+export function draggedOffsetMeters(
+  base: Pt,
+  dxLocal: number,
+  dyLocal: number,
+): Pt {
+  return [base[0] + dxLocal / M_TO_IN, base[1] - dyLocal / M_TO_IN];
+}
 
 // Feet-inches formatter, ported from pdf_writer._feet_inches (one dimension convention).
 function feetInches(totalIn: number): string {
@@ -116,15 +137,38 @@ function computeBounds(nodes: Node[]): Bounds {
 // Flip y (z up in model → y down in SVG) around the scene's max-y.
 const fy = (y: number, b: Bounds) => b.maxY + b.minY - y;
 
+// One draggable annotation: its authored tag + current anchor-relative offset (metres).
+interface Editable {
+  tag: string;
+  base: Pt;
+}
+
+// A live local-frame (SVG-user) translate applied to a node while/after a drag.
+type DragDelta = { dx: number; dy: number };
+
+function editableMap(annotations: DetailAnnotationSpec[]): Map<string, Editable> {
+  const out = new Map<string, Editable>();
+  for (const a of annotations) {
+    // Only authored annotations carry a minted uid + tag; seed nodes (uid=null) stay read-only.
+    if (a.uid && a.tag) out.set(a.uid, { tag: a.tag, base: a.offset ?? [0, 0] });
+  }
+  return out;
+}
+
 export function DetailCanvas({
   payload,
   onPickUid,
+  onMoveAnnotation,
 }: {
   payload: DetailPayload;
   onPickUid?: (uid: string | null) => void;
+  // Commit an anchor-relative offset edit; resolves true on a persisted PatchOp, false if the
+  // write was rejected (revision conflict / error) so the optimistic drag can snap back.
+  onMoveAnnotation?: (tag: string, offsetMeters: Pt) => Promise<boolean>;
 }) {
   const nodes = (payload.scene.nodes ?? []) as Node[];
   const bounds = useMemo(() => computeBounds(nodes), [nodes]);
+  const editable = useMemo(() => editableMap(payload.annotations), [payload.annotations]);
   const pad = Math.max(6, (bounds.maxX - bounds.minX) * 0.08);
   const vb = {
     x: bounds.minX - pad,
@@ -135,41 +179,135 @@ export function DetailCanvas({
 
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState<Pt>([0, 0]);
-  const drag = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
+  const pans = useRef<{ x: number; y: number; px: number; py: number } | null>(null);
+  const gRef = useRef<SVGGElement | null>(null);
+
+  // Annotation-drag state. The ref drives the commit math (no stale closures); `live` mirrors
+  // it into render, and `committed` holds a node in its dragged position across the async commit
+  // + payload refetch, so it never snaps back to the anchor and then jump to the saved offset.
+  const annoDrag = useRef<
+    { uid: string; tag: string; base: Pt; startLocal: Pt; startClient: Pt; last: DragDelta } | null
+  >(null);
+  const [live, setLive] = useState<{ uid: string; delta: DragDelta } | null>(null);
+  const [committed, setCommitted] = useState<Record<string, DragDelta>>({});
+
+  // A fresh payload (post-commit refetch, or a different detail) carries the authoritative
+  // offsets, so any optimistic local deltas are done. Clear them *before* paint so the frame
+  // that first shows the persisted offset never also carries the now-stale drag delta.
+  useLayoutEffect(() => {
+    annoDrag.current = null;
+    setLive(null);
+    setCommitted({});
+  }, [payload]);
+
+  // Map a client point into the group's local (SVG-user) frame, where the scene is drawn.
+  const clientToLocal = (clientX: number, clientY: number): Pt | null => {
+    const g = gRef.current;
+    const ctm = g?.getScreenCTM();
+    if (!g || !ctm) return null;
+    const svg = g.ownerSVGElement;
+    if (!svg) return null;
+    const p = svg.createSVGPoint();
+    p.x = clientX;
+    p.y = clientY;
+    const local = p.matrixTransform(ctm.inverse());
+    return [local.x, local.y];
+  };
 
   const onWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     setZoom((z) => Math.min(8, Math.max(0.3, z * (e.deltaY < 0 ? 1.1 : 0.9))));
   };
-  const onDown = (e: React.MouseEvent) => {
-    drag.current = { x: e.clientX, y: e.clientY, px: pan[0], py: pan[1] };
-  };
-  const onMove = (e: React.MouseEvent) => {
-    if (!drag.current) return;
-    setPan([
-      drag.current.px + (e.clientX - drag.current.x),
-      drag.current.py + (e.clientY - drag.current.y),
-    ]);
-  };
-  const onUp = () => {
-    drag.current = null;
+
+  const onAnnotationDown = (uid: string, ed: Editable, e: React.MouseEvent) => {
+    // Claim the event so the background pan handler doesn't also fire.
+    e.stopPropagation();
+    const start = clientToLocal(e.clientX, e.clientY);
+    if (!start) return;
+    annoDrag.current = {
+      uid, tag: ed.tag, base: ed.base, startLocal: start,
+      startClient: [e.clientX, e.clientY], last: { dx: 0, dy: 0 },
+    };
+    setLive({ uid, delta: { dx: 0, dy: 0 } });
   };
 
+  const onDown = (e: React.MouseEvent) => {
+    pans.current = { x: e.clientX, y: e.clientY, px: pan[0], py: pan[1] };
+  };
+
+  const onMove = (e: React.MouseEvent) => {
+    const ad = annoDrag.current;
+    if (ad) {
+      const cur = clientToLocal(e.clientX, e.clientY);
+      if (!cur) return;
+      const delta = { dx: cur[0] - ad.startLocal[0], dy: cur[1] - ad.startLocal[1] };
+      ad.last = delta;
+      setLive({ uid: ad.uid, delta });
+      return;
+    }
+    if (!pans.current) return;
+    setPan([
+      pans.current.px + (e.clientX - pans.current.x),
+      pans.current.py + (e.clientY - pans.current.y),
+    ]);
+  };
+
+  const endAnnotationDrag = (e: React.MouseEvent) => {
+    const ad = annoDrag.current;
+    if (!ad) return false;
+    annoDrag.current = null;
+    setLive(null);
+    // A negligible move is a click, not a drag — don't churn a no-op PatchOp.
+    const moved = Math.hypot(e.clientX - ad.startClient[0], e.clientY - ad.startClient[1]);
+    if (moved < 3) return true;
+    const { uid, tag, base, last } = ad;
+    setCommitted((c) => ({ ...c, [uid]: last }));
+    const offset = draggedOffsetMeters(base, last.dx, last.dy);
+    void onMoveAnnotation?.(tag, offset).then((ok) => {
+      if (!ok) setCommitted((c) => { const n = { ...c }; delete n[uid]; return n; });
+    });
+    return true;
+  };
+
+  const onUp = (e: React.MouseEvent) => {
+    if (endAnnotationDrag(e)) return;
+    pans.current = null;
+  };
+
+  const onLeave = (e: React.MouseEvent) => {
+    endAnnotationDrag(e);
+    pans.current = null;
+  };
+
+  const dragging = live !== null;
   return (
     <svg
       viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`}
-      style={{ width: "100%", height: "100%", background: "var(--panel)", cursor: "grab" }}
+      style={{ width: "100%", height: "100%", background: "var(--panel)", cursor: dragging ? "grabbing" : "grab" }}
       onWheel={onWheel}
       onMouseDown={onDown}
       onMouseMove={onMove}
       onMouseUp={onUp}
-      onMouseLeave={onUp}
+      onMouseLeave={onLeave}
     >
       <defs>{Object.values(HATCH_DEFS)}</defs>
-      <g transform={`translate(${pan[0]} ${pan[1]}) scale(${zoom})`}>
-        {nodes.map((n, i) => (
-          <SceneNode key={i} node={n} bounds={bounds} onPickUid={onPickUid} />
-        ))}
+      <g ref={gRef} transform={`translate(${pan[0]} ${pan[1]}) scale(${zoom})`}>
+        {nodes.map((n, i) => {
+          const uid = n.uid as string | undefined;
+          const ed = uid ? editable.get(uid) : undefined;
+          const delta = uid && live?.uid === uid ? live.delta : uid ? committed[uid] : undefined;
+          return (
+            <SceneNode
+              key={i}
+              node={n}
+              bounds={bounds}
+              onPickUid={onPickUid}
+              editable={ed}
+              drag={delta ?? null}
+              onAnnotationDown={onMoveAnnotation ? onAnnotationDown : undefined}
+            />
+          );
+        })}
       </g>
     </svg>
   );
@@ -179,14 +317,27 @@ function SceneNode({
   node,
   bounds,
   onPickUid,
+  editable,
+  drag,
+  onAnnotationDown,
 }: {
   node: Node;
   bounds: Bounds;
   onPickUid?: (uid: string | null) => void;
+  editable?: Editable;
+  drag?: DragDelta | null;
+  onAnnotationDown?: (uid: string, ed: Editable, e: React.MouseEvent) => void;
 }) {
   const uid = (node.uid as string | undefined) ?? undefined;
   const pick = uid && onPickUid ? () => onPickUid(uid) : undefined;
   const dataUid = uid ? { "data-uid": uid } : {};
+  // A node is draggable only when it is an authored annotation and the viewer wired a commit.
+  const canDrag = !!(uid && editable && onAnnotationDown);
+  const down = canDrag
+    ? (e: React.MouseEvent) => onAnnotationDown!(uid!, editable!, e)
+    : undefined;
+  const dx = drag?.dx ?? 0;
+  const dy = drag?.dy ?? 0;
 
   switch (node.node) {
     case "polyline": {
@@ -218,17 +369,20 @@ function SceneNode({
     }
     case "text": {
       const [x, y] = node.anchor as Pt;
+      const xS = x + dx;
+      const yS = fy(y, bounds) + dy;
       const anchor = node.align === "center" ? "middle" : node.align === "right" ? "end" : "start";
       return (
         <text
-          x={x}
-          y={fy(y, bounds)}
+          x={xS}
+          y={yS}
           fontSize={(node.height as number) ?? 3}
           textAnchor={anchor}
-          transform={node.rotation ? `rotate(${-node.rotation} ${x} ${fy(y, bounds)})` : undefined}
+          transform={node.rotation ? `rotate(${-node.rotation} ${xS} ${yS})` : undefined}
           fill="var(--detail-ink)"
+          onMouseDown={down}
           onClick={pick}
-          style={pick ? { cursor: "pointer" } : undefined}
+          style={canDrag ? { cursor: "move" } : pick ? { cursor: "pointer" } : undefined}
           {...dataUid}
         >
           {node.content as string}
@@ -238,11 +392,18 @@ function SceneNode({
     case "leader": {
       const [ax, ay] = node.at as Pt;
       const [tx, ty] = node.to as Pt;
+      // The offset positions the label end (`at`); the pointer tip (`to`) stays on the anchor,
+      // so a drag moves only the label while the leader keeps pointing at the same geometry.
+      const axS = ax + dx;
+      const ayS = fy(ay, bounds) + dy;
+      const txS = tx;
+      const tyS = fy(ty, bounds);
       return (
-        <g onClick={pick} style={pick ? { cursor: "pointer" } : undefined} {...dataUid}>
-          <line x1={ax} y1={fy(ay, bounds)} x2={tx} y2={fy(ty, bounds)} stroke="var(--detail-line)" strokeWidth={0.3} />
-          <circle cx={tx} cy={fy(ty, bounds)} r={0.8} fill="var(--detail-line)" />
-          <text x={ax + 1} y={fy(ay, bounds)} fontSize={3} fill="var(--detail-ink)">
+        <g onMouseDown={down} onClick={pick}
+          style={canDrag ? { cursor: "move" } : pick ? { cursor: "pointer" } : undefined} {...dataUid}>
+          <line x1={axS} y1={ayS} x2={txS} y2={tyS} stroke="var(--detail-line)" strokeWidth={0.3} />
+          <circle cx={txS} cy={tyS} r={0.8} fill="var(--detail-line)" />
+          <text x={axS + 1} y={ayS} fontSize={3} fill="var(--detail-ink)">
             {node.text as string}
           </text>
         </g>

@@ -16,6 +16,8 @@ from typing import Any
 
 from typehaus.model.registry import element_kinds
 from typehaus.quantities import Angle, Length, Pitch, RValue, Temperature, UFactor
+from typehaus.quantities.length import m as _m
+from typehaus.quantities.point import Point2D
 
 
 @dataclass(frozen=True)
@@ -85,8 +87,12 @@ def _union_members(annotation: Any) -> tuple[Any, ...]:
     return (annotation,)
 
 
+def _has_type(annotation: Any, target: type) -> bool:
+    return any(member is target for member in _union_members(annotation))
+
+
 def _has_quantity(annotation: Any, quantity: type) -> bool:
-    return any(m is quantity for m in _union_members(annotation))
+    return _has_type(annotation, quantity)
 
 
 # --- value encoding ----------------------------------------------------------
@@ -136,6 +142,15 @@ def encode_value(kind: str, name: str, value: Any) -> str:
         return _quote(value)
 
     if isinstance(value, (list, tuple)):
+        # A Point2D-typed field (e.g. a DetailAnnotation offset dragged in the detail editor)
+        # arrives as ``[x_m, y_m]`` over the JSON seam; author it canonically as ``pt(m(x),
+        # m(y))`` so it round-trips through ``haus fmt`` without a diff, rather than as a bare
+        # tuple the loader would only coerce implicitly.
+        if len(value) == 2 and _has_type(annotation, Point2D) and all(
+            isinstance(v, (int, float)) and not isinstance(v, bool) for v in value
+        ):
+            x, y = (_m(float(v)).to_source() for v in value)
+            return f"pt({x}, {y})"
         inner = ", ".join(encode_value(kind, name, v) for v in value)
         return f"({inner},)" if len(value) == 1 else f"({inner})"
 
