@@ -12,8 +12,33 @@ from dataclasses import dataclass
 
 from typehaus.checks.registry import CheckContext, Preferences, Tier, check
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.assembly import Assembly
+from typehaus.model.assembly import Assembly, Layer
+from typehaus.model.enums import LayerFunction, Occupancy
 from typehaus.model.plan import Library
+
+# Layers whose vapor role is "moisture source/store", interior of any rainscreen cavity.
+_WETTABLE = {
+    LayerFunction.STRUCTURE, LayerFunction.SHEATHING, LayerFunction.INSULATION,
+}
+_VENTED = {LayerFunction.AIRGAP, LayerFunction.FURRING}
+
+
+def _glaser_layers(layers: list[Layer]) -> list[Layer]:
+    """Truncate the stack at an exterior ventilated rainscreen cavity.
+
+    A furring/airgap layer that sits outboard of the structure/sheathing/insulation is a
+    drained-and-back-vented cavity open to outdoor air: everything from that plane outward
+    (the vent and its cladding) is pressure-equalised with the exterior, so it carries no
+    part of the interior-to-exterior vapor drive. Standard Glaser practice terminates the
+    analysis there rather than modeling the cladding as a cold-side vapor trap. Assemblies
+    with no such cavity (concrete, direct-applied finishes) walk their full depth.
+    """
+    for index, layer in enumerate(layers):
+        if layer.function in _VENTED and any(
+            inner.function in _WETTABLE for inner in layers[:index]
+        ):
+            return layers[:index]
+    return layers
 
 
 @dataclass(frozen=True)
@@ -77,7 +102,7 @@ def analyze_assembly(
     resistance is thickness-inches / perm. This is the dimensional relationship the
     authored material scalar was introduced to support.
     """
-    layers = list(assembly.default_lining) + list(assembly.layers)
+    layers = _glaser_layers(list(assembly.default_lining) + list(assembly.layers))
     missing: list[str] = []
     thermal_resistances: list[float] = []
     vapor_resistances: list[float] = []
@@ -141,12 +166,63 @@ def analyze_assembly(
     return CondensationAnalysis(assembly.tag, tuple(points))
 
 
+# Occupancies that are not part of the conditioned (heated/humidified) building volume, so
+# the fixed interior design conditions this screening tool assumes do not apply to them.
+_UNCONDITIONED = {Occupancy.GARAGE, Occupancy.UNCONDITIONED}
+
+
+def conditioned_envelope_assemblies(ctx: CheckContext) -> list[str]:
+    """Assembly tags on the conditioned exterior envelope, in first-seen order.
+
+    Glaser screening with an outdoor-air boundary only means something across an assembly
+    that actually separates the conditioned interior (70 F / design RH) from the exterior
+    at the heating design temperature. It excludes:
+
+    * interior partitions and interior concrete/bearing walls — no cross-envelope gradient;
+    * an unconditioned detached garage and freestanding site structures — the interior side
+      is not conditioned, so the fixed interior conditions do not apply;
+    * below-grade foundation walls — these are ground-coupled (soil near +10 C, not the
+      -15 F design air), so an outdoor-air Glaser walk would invent a risk that does not run.
+
+    An above-grade exterior wall is identified by its outermost cladding layer; the analysis
+    is scoped to those walls and to roofs, on storeys that hold conditioned rooms.
+    """
+    conditioned: set[str] = set()
+    for storey in ctx.plan.storeys:
+        for element in ctx.plan.storey_elements(storey.tag):
+            occ = getattr(element, "occupancy", None)
+            if element.element_kind == "Room" and occ not in _UNCONDITIONED:
+                conditioned.add(storey.tag)
+                break
+
+    tags: list[str] = []
+    seen: set[str] = set()
+
+    def _add(tag: str | None) -> None:
+        if tag and tag not in seen:
+            seen.add(tag)
+            tags.append(tag)
+
+    for wall in ctx.model.walls:
+        if wall.storey not in conditioned:
+            continue
+        if any(layer.function == "cladding" for layer in wall.layers):
+            _add(wall.assembly)
+    for roof in ctx.model.roofs:
+        if getattr(roof, "storey", None) in conditioned:
+            _add(roof.assembly)
+    return tags
+
+
 @check(Tier.BUILDING_SCIENCE, "building_science.condensation")
 def condensation_risk(ctx: CheckContext) -> list[Finding]:
     heating = ctx.plan.project.site.design_temp_heating
     temperature_f = heating.fahrenheit if heating is not None else None
     findings: list[Finding] = []
-    for assembly in ctx.plan.library.assemblies:
+    for tag in conditioned_envelope_assemblies(ctx):
+        assembly = ctx.plan.library.resolve_assembly(tag)
+        if assembly is None:
+            continue
         analysis = analyze_assembly(
             assembly, ctx.plan.library, heating_design_temp_f=temperature_f,
             preferences=ctx.preferences,

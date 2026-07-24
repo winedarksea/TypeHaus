@@ -189,7 +189,7 @@ def takeoff(
 
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
-    from typehaus.takeoff import sheet_goods_takeoff
+    from typehaus.takeoff import framing_bom_by_size, framing_takeoff, sheet_goods_takeoff
 
     d = _resolve_house(house)
     loaded = load_plan(d)
@@ -201,17 +201,29 @@ def takeoff(
         _print_findings(findings)
         raise typer.Exit(1)
     framing = Counter(f"{member.category}:{member.profile}" for member in model.all_members())
+    framing_bom = framing_takeoff(model)
+    framing_by_size = framing_bom_by_size(model)
     radiant = [{"tag": zone.tag, "storey": zone.storey, "system": zone.system,
                 "wire_length_ft": round(zone.wire_length_m / 0.3048, 1)}
                for zone in model.floor_heat]
-    payload = {"framing": dict(sorted(framing.items())), "floor_heat": radiant,
-               "sheet_goods": sheet_goods_takeoff(model)}
+    payload = {"framing": dict(sorted(framing.items())),
+               "framing_bom": framing_bom, "framing_by_size": framing_by_size,
+               "floor_heat": radiant, "sheet_goods": sheet_goods_takeoff(model)}
     if as_json:
         console.print_json(json.dumps(payload))
         return
-    console.print("[bold]Framing members[/bold]")
-    for item, count in payload["framing"].items():
-        console.print(f"  {item}: {count}")
+    console.print("[bold]Framing bill of materials[/bold]  (size · type: pieces / lineal ft)")
+    for row in framing_bom:
+        buckets = ", ".join(f"{b['count']}×{b['length_ft']}'" for b in row["stock"])
+        bf = f" · {row['board_feet']} bf" if row["board_feet"] else ""
+        console.print(f"  {row['profile']:>18} {row['category']:<18} "
+                      f"{row['pieces']:>4} pc / {row['cut_length_ft']:>7.1f} LF cut "
+                      f"[{buckets}]{bf}")
+    console.print("[bold]Framing rollup by size[/bold]")
+    for row in framing_by_size:
+        bf = f" · {row['board_feet']} bf" if row["board_feet"] else ""
+        console.print(f"  {row['profile']:>18}: {row['pieces']:>4} pc / "
+                      f"{row['order_length_ft']:>5} LF ordered{bf}")
     if radiant:
         console.print("[bold]Radiant floor heat[/bold]")
         for zone in radiant:

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typehaus.checks.building_science.condensation import analyze_assembly
+from typehaus.checks.building_science.condensation import _glaser_layers, analyze_assembly
 from typehaus.checks.building_science.wwr import analyze_wwr
 from typehaus.checks.registry import Preferences
 from typehaus.energy import estimate_block_load
@@ -34,6 +34,33 @@ def test_glaser_reports_crossing_and_missing_perm() -> None:
     unknown = analyze_assembly(assembly, Library(materials=(wool, unknown_material)),
                                heating_design_temp_f=-15, preferences=Preferences())
     assert unknown.unknown_materials == ("Vapor closed membrane",)
+
+
+def test_vented_rainscreen_truncates_the_glaser_walk() -> None:
+    """A furring/airgap cavity outboard of the insulation is a back-vented rainscreen: the
+    vent and everything beyond it (cladding) are pressure-equalised with outdoor air and
+    must be dropped from the interior-to-exterior vapor walk. An interior service cavity
+    (no wettable layer inboard) is not a rainscreen and must be kept."""
+    def layer(name: str, function: LayerFunction) -> Layer:
+        return Layer(name=name, material_ref="m", thickness=inch(1.0), function=function)
+
+    rainscreen = [
+        layer("gwb", LayerFunction.FINISH),
+        layer("stud", LayerFunction.STRUCTURE),
+        layer("ci", LayerFunction.INSULATION),
+        layer("furring", LayerFunction.FURRING),
+        layer("cladding", LayerFunction.CLADDING),
+    ]
+    kept = _glaser_layers(rainscreen)
+    assert [item.name for item in kept] == ["gwb", "stud", "ci"]
+
+    interior_service_cavity = [
+        layer("finish", LayerFunction.FINISH),
+        layer("service-gap", LayerFunction.AIRGAP),
+        layer("stud", LayerFunction.STRUCTURE),
+        layer("sheathing", LayerFunction.SHEATHING),
+    ]
+    assert len(_glaser_layers(interior_service_cavity)) == 4
 
 
 def _envelope_plan() -> PlanModel:
