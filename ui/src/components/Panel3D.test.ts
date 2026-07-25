@@ -1,6 +1,23 @@
 import * as THREE from "three";
 import type { CanvasObject, Catalog, Floor, FootingBedding, Member, ModelPart, Opening, Roof, Solid, Stair, Vec2, Wall, Model } from "../model/types";
-import { archSoffitSegmentCount, frameRadiusForBounds, isRenderedInScene, normalizedWheelDeltaPx, VIEW_FIT_MIN_RADIUS_M, VIEW_FIT_POLAR_ANGLE, WHEEL_MAX_STEP_PX, buildCanvasObjectParts, buildFloor, buildFootingBedding, buildOpening, buildRoof, buildSolid, buildStair, canvasObjectFallbackGeometry, compassBearingScreenDirection, createSmoothArchedWallLayerGeometry, earthElevation, earthOutline, earthVoids, EARTH_FALLBACK_HALF_SIZE_M, FOOTING_BEDDING_COLOR, wallLayerPieces, wholeHouseGlbAssignment, withoutCollinearVertices } from "./Panel3D";
+import { compassBearingScreenDirection } from "./Panel3D";
+import {
+  frameRadiusForBounds, normalizedWheelDeltaPx, VIEW_FIT_MIN_RADIUS_M, VIEW_FIT_POLAR_ANGLE,
+  WHEEL_MAX_STEP_PX,
+} from "../three/cameraFraming";
+import { wholeHouseGlbAssignment } from "../three/wholeHouseGlb";
+import { isRenderedInScene } from "../three/build/registry";
+import {
+  buildCanvasObjectParts, canvasObjectFallbackGeometry, earthElevation, earthOutline, earthVoids,
+  EARTH_FALLBACK_HALF_SIZE_M,
+} from "../three/build/site";
+import {
+  archSoffitSegmentCount, buildOpening, createSmoothArchedWallLayerGeometry, wallLayerPieces,
+  withoutCollinearVertices,
+} from "../three/build/walls";
+import {
+  buildFloor, buildFootingBedding, buildRoof, buildSolid, buildStair, FOOTING_BEDDING_COLOR,
+} from "../three/build/structure";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { SOLID_CATEGORY_COLOR, createSolidMaterial, solidColor } from "../three/solidMaterials";
 import { carriesMemberIdentity, resolveMemberPickUid } from "../three/memberPicking";
