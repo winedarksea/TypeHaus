@@ -77,7 +77,26 @@ _LAYER_STYLE = {
     "C-UTIL-GAS": (50, 15),
     "C-UTIL-POWER": (10, 15),
     "C-TOPO-ARRW": (94, 13),
+    "C-TOPO-GRAD": (94, 18),
+    "C-TOPO-MINR": (94, 9),
+    "C-TOPO-IMPV": (43, 18),
     "L-SITE-GRAD": (94, 70),
+    # Layers the PDF writer styled but the DXF table never carried, so they fell back to the
+    # default pen on export. Colours track the PDF palette so a sheet reads the same in CAD.
+    "A-ROOF": (7, 40),
+    "A-FIXT": (4, 18),
+    "A-FLR-HEAT": (12, 9),
+    "A-SITE-ROOF": (7, 25),
+    "A-SITE-WALL": (2, 18),
+    "A-SITE-FOUND": (9, 13),
+    "A-SITE-ANNO": (1, 18),
+    "A-STAIR": (7, 25),
+    "A-FURN": (43, 15),
+    "E-POWR": (10, 25),
+    "M-EQPT": (92, 25),
+    "A-ANNO-TABL": (2, 15),
+    "A-DETL-CMPT": (8, 18),
+    "A-DETL-TRMT": (33, 18),
 }
 
 
