@@ -58,8 +58,11 @@ WALLS = [
 ]
 
 OPENINGS = [
+    # The 16' opening is past the prescriptive header table, so the engineered beam
+    # is named on the instance: a 2-ply 14" LVL across the overhead door.
     Door(uid="CGD201AAAA", tag="D-G-OVERHEAD", host="W-G-E",
-         type_ref="DT-GARAGE192", position=from_node("N-G-SE", ft(4))),
+         type_ref="DT-GARAGE192", position=from_node("N-G-SE", ft(4)),
+         header_spec='2-ply 14" LVL'),
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT36",
          position=from_node("N-G-SW", ft(5))),
     # Bearing gable wall: use the 27" RO/jack-stud module, centered on stud lines.

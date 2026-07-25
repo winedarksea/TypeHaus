@@ -190,7 +190,7 @@ FLOOR = [
 
 STAIRS = [
     Stair(uid="CST703AAAA", tag="ST-S2A", floor_opening="FO-A-STAIR",
-          from_storey="second", to_storey="attic", width=ft(3),
+          from_storey="second", to_storey="attic", width=ft(3), newel_profile="6x6",
           # Enter north at the east edge, then three lower winders turn the climb west.
           layout="right_angle_winder", turn_direction="left",
           run_direction="x", run_reversed=True, winder_count=3,
