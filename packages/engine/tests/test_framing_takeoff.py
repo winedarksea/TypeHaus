@@ -78,7 +78,35 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     bom = bill_of_materials(catlin_model)
     assert set(bom) == {"framing", "framing_by_size", "structural_solids",
                         "construction_returns", "sheet_goods", "glazing_panels",
-                        "glazing_trim", "hardware"}
+                        "glazing_trim", "hardware", "placeables", "floor_heat"}
     assert all(section for section in bom.values()), "no BOM section may come back empty"
     # The framing section still reconciles 1:1 with the resolved members.
     assert sum(int(row["pieces"]) for row in bom["framing"]) == len(catlin_model.all_members())
+
+
+def test_placeables_takeoff_reconciles_with_canvas_objects(catlin_model) -> None:
+    """The engine twin of the UI BOM's placeablesSection: every free-placed or
+    wall-attached product is counted, hosted openings are billed elsewhere, and the
+    grouped counts reconcile 1:1 with ``model.canvas_objects``."""
+    from typehaus.takeoff.placeables import placeables_takeoff
+
+    rows = placeables_takeoff(catlin_model)
+    assert rows, "the catlin house places furniture/appliances/fixtures"
+    billable = [item for item in catlin_model.canvas_objects if item.domain != "opening"]
+    assert sum(int(row["count"]) for row in rows) == len(billable)
+    assert {tag for row in rows for tag in row["tags"]} == {item.tag for item in billable}
+    assert all(row["domain"] != "opening" for row in rows)
+    # Grouping key is (type, domain, storey) — each appears exactly once.
+    keys = [(row["type"], row["domain"], row["storey"]) for row in rows]
+    assert len(keys) == len(set(keys))
+
+
+def test_floor_heat_rides_in_the_bom(catlin_model) -> None:
+    """The radiant zones moved out of the CLI patch: bill_of_materials carries them."""
+    bom = bill_of_materials(catlin_model)
+    rows = {row["tag"]: row for row in bom["floor_heat"]}
+    assert set(rows) == {zone.tag for zone in catlin_model.floor_heat}
+    sauna = rows["FH-B-SAUNA"]
+    zone = next(z for z in catlin_model.floor_heat if z.tag == "FH-B-SAUNA")
+    assert sauna["wire_length_ft"] == round(zone.wire_length_m / 0.3048, 1)
+    assert sauna["system"] == zone.system and sauna["storey"] == zone.storey

@@ -184,7 +184,7 @@ class OfflineEngine:
 
     def model_json(self) -> dict[str, Any]:
         from typehaus.checks import load_preferences
-        from typehaus.server.model_json import model_to_dict
+        from typehaus.server.model_json import load_variant_catalog, model_to_dict
 
         if self.model is None:
             return {
@@ -200,6 +200,9 @@ class OfflineEngine:
             provenance=self.provenance,
             findings=self.findings,
             preferences=load_preferences(self.house_dir),
+            # Offline PWA: a house bundle without variants.toml (or one whose catalog fails
+            # to parse in-worker) degrades to an empty variant list, never a worker error.
+            variants=load_variant_catalog(self.house_dir),
         )
         payload["ok"] = self.ok
         return payload

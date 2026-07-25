@@ -34,7 +34,7 @@ from typehaus.findings import Finding, Severity
 from typehaus.model.plan import PlanModel
 from typehaus.resolve import resolve, resolve_preview
 from typehaus.resolve.model import ResolvedModel
-from typehaus.server.model_json import model_to_dict, preview_to_dict
+from typehaus.server.model_json import load_variant_catalog, model_to_dict, preview_to_dict
 from typehaus.source import load_plan
 from typehaus.source.coordinator import ProjectCoordinator
 from typehaus.source.inmemory import InMemoryApplyError, apply_ops_to_plan, can_apply_in_memory
@@ -355,6 +355,9 @@ class ProjectState:
                 provenance=self.provenance,
                 findings=self.findings,
                 preferences=load_preferences(self.house_dir),
+                # Graceful: absent or malformed variants.toml serves an empty catalog
+                # rather than failing the GET /model contract.
+                variants=load_variant_catalog(self.house_dir),
             )
             payload["ok"] = self.ok
             payload["perf"] = dict(self.timings)

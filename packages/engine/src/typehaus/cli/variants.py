@@ -83,13 +83,20 @@ def compare_variants_command(
     checks: bool = typer.Option(True, "--checks/--no-checks",
                                 help="Run each variant's checks and diff the results"),
 ) -> None:
-    """Build two declared variants and report every delta between them."""
+    """Build two declared variants and report every delta between them.
+
+    If the house supplies a ``prices.toml`` (user-authored — see
+    :mod:`typehaus.cli.prices` for the format; none is ever shipped), the framing-takeoff
+    table gains an estimated Δ $ column, honest about ranges and unpriced sizes.
+    """
+    from typehaus.cli.prices import load_prices
     from typehaus.diff.compare import compare_variants
     from typehaus.diff.variants import find_variant
 
     directory = _house(house)
     specs = _declared(directory)
     try:
+        prices = load_prices(directory)
         selection_a = find_variant(specs, variant_a).selection(directory)
         selection_b = find_variant(specs, variant_b).selection(directory)
         report = compare_variants(selection_a, selection_b, include_checks=checks)
@@ -100,12 +107,12 @@ def compare_variants_command(
     if as_json:
         console.print_json(json.dumps(report.as_dict()))
     else:
-        _print_compare_tables(report)
+        _print_compare_tables(report, prices)
     path = report.write(directory / "out" / "compare.json")
     console.print(f"wrote {path}")
 
 
-def _print_compare_tables(report) -> None:
+def _print_compare_tables(report, prices=None) -> None:
     console.print(f"[bold]A[/bold] {report.label_a}   [bold]B[/bold] {report.label_b}")
     elements = Table("change", "tag", "class", "delta", title="elements")
     for change in report.diff.substantive():
@@ -114,11 +121,27 @@ def _print_compare_tables(report) -> None:
     console.print(elements)
 
     if report.quantity_deltas:
-        quantities = Table("size", "metric", "A", "B", "Δ", title="framing takeoff")
+        columns = ["size", "metric", "A", "B", "Δ"] + (["Δ $ (est)"] if prices else [])
+        quantities = Table(*columns, title="framing takeoff")
+        total_cost = None
         for item in report.quantity_deltas:
-            quantities.add_row(item.profile, item.metric, f"{item.baseline:,.1f}",
-                               f"{item.variant:,.1f}", f"{item.delta:+,.1f}")
+            row = [item.profile, item.metric, f"{item.baseline:,.1f}",
+                   f"{item.variant:,.1f}", f"{item.delta:+,.1f}"]
+            if prices:
+                # $ rides on the ordered lineal feet — the metric a lumber quote is against.
+                price = (prices.framing.get(item.profile)
+                         if item.metric == "order_length_ft" else None)
+                if price is None:
+                    row.append("—")
+                else:
+                    cost = price.times(item.delta)
+                    row.append(cost.fmt(signed=True))
+                    total_cost = cost if total_cost is None else total_cost.plus(cost)
+            quantities.add_row(*row)
         console.print(quantities)
+        if prices and total_cost is not None:
+            console.print(f"  [bold]framing Δ $ (est):[/bold] {total_cost.fmt(signed=True)}"
+                          f"  [dim](from {prices.path.name}; unpriced sizes excluded)[/dim]")
     if report.envelope_deltas:
         envelope = Table("assembly", "metric", "A", "B", "Δ", title="envelope")
         for item in report.envelope_deltas:
