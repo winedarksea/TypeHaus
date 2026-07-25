@@ -124,6 +124,9 @@ export function MemberInspector({ located }: { located: LocatedMember }) {
       <span className="k">Elevation</span>
       <span>{formatFtIn(member.z0_m)} → {formatFtIn(member.z1_m)}{raked ? " (raked)" : ""}</span>
       <span className="k">Material</span><span>{member.material ?? "lumber"}</span>
+      {/* Only shown when the resolver actually overrode the category default — otherwise the
+          trade is whatever the category implies and repeating it here is noise. */}
+      {member.trade && <><span className="k">Trade</span><span>{member.trade}</span></>}
       {member.connection && <><span className="k">Connection</span><span>{member.connection}</span></>}
       <span className="k">Framed for</span><span>{ownerKind} {ownerTag}</span>
       <span className="k">Storey</span><span>{located.storey ?? "—"}</span>

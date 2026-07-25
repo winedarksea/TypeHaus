@@ -74,6 +74,10 @@ export interface Member {
   // finished, for standing seam) like the wall and roof layer stacks instead of by category.
   // Null for ordinary framing.
   material: string | null;
+  // Explicit visibility trade, when the resolver had to override the category-derived default —
+  // a fascia is envelope trim by category but the carpenter frames it. Null leaves the consumer
+  // on its own default (three/members.ts's ROOF_SKIN_CATEGORIES split).
+  trade: string | null;
 }
 
 export interface Wall {
