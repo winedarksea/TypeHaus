@@ -329,7 +329,7 @@ def test_raked_gable_king_studs_match_roof_plane_at_own_station(catlin_model):
     axis_len = math.hypot(x1 - x0, y1 - y0)
     dx, dy = (x1 - x0) / axis_len, (y1 - y0) / axis_len
     plate_h = inch(1.5).meters
-    top_plates = 2  # CATLIN_EXT_2X4 double top plate, not advanced framing
+    top_plates = 2  # CATLIN_EXT_2X6 double top plate, not advanced framing
 
     kings = [m for m in wall.members if m.category == "king"]
     assert len(kings) >= 4  # two windows, at least one king per side each

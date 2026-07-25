@@ -1,5 +1,5 @@
 # haus: editable
-# Attic — habitable hot-roofed cathedral storey (WP3.1, WP3.11).
+# Attic — habitable hot-roofed cathedral storey (WP3.1, WP3.11); 2x6 envelope walls.
 # 5' knee walls east/west (eave sides), gable walls north/south frame ToRoof,
 # ridge runs N-S over the center wall line, 4:12, zero overhang (first-class).
 from typehaus import (
@@ -48,34 +48,34 @@ NODES = [
 WALLS = [
     # Gable ends (south/north) — raked studs, sloped plates via ToRoof (WP3.11).
     Wall(uid="CAW101AAAA", tag="W-A-S1", start_node="N-A-SW", end_node="N-A-S1",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S1"),
     Wall(uid="CAW102AAAA", tag="W-A-S2", start_node="N-A-S1", end_node="N-A-S2",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S1"),
     Wall(uid="CAW103AAAA", tag="W-A-S3", start_node="N-A-S2", end_node="N-A-SE",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S2"),
     Wall(uid="CAW104AAAA", tag="W-A-N1", start_node="N-A-NE", end_node="N-A-N1",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-N1"),
     Wall(uid="CAW105AAAA", tag="W-A-N2", start_node="N-A-N1", end_node="N-A-NW",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-N2"),
     # Knee walls (east/west eave sides) — 5', carry the low roof edge.
     Wall(uid="CAW106AAAA", tag="W-A-E1", start_node="N-A-SE", end_node="N-A-E1",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(5),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-E1"),
     Wall(uid="CAW107AAAA", tag="W-A-E2", start_node="N-A-E1", end_node="N-A-NE",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(5),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-E3"),
     Wall(uid="CAW108AAAA", tag="W-A-W1", start_node="N-A-NW", end_node="N-A-SW",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(5),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-W1"),
     # Center bearing wall under the ridge, full length, frames to the roof. This is
     # NOT a partition: RB-HOUSE bears on it continuously, so it is the reason the roof

@@ -31,8 +31,10 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   posts spanning that 4' gap door-to-door (`params/breezeway.py`).
 - 36'x36' at sheathing; everything on the 16" o.c. module; exterior walls carry
   `alignment=face("sheathing-ext")` so the sheathing plane is the vertical datum (#43).
-- The side-wall stack is 2x6 (main) → 2x4 (second) → 2x4 (attic) — sheathing plane
-  continuous, stud depth jogs inward.
+- The side-wall stack is 2x6 throughout — one `CATLIN_EXT_2X6` on main, second and
+  attic, sheathing plane continuous, no stud-depth jog. Main-storey studs are LSL,
+  the upper storeys standard dimensional 2x6 (a purchasing note recorded in the
+  assembly's `source`, not a separate assembly).
 - Bearing lines: west wall, center N-S wall (x=18'), east wall; 18' I-joist spans E-W.
 - Attic is a habitable hot-roofed cathedral space: 5' knee walls E/W, gables N/S,
   ridge N-S, 4:12, **zero overhang**.
