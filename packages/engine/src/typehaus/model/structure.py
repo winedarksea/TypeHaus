@@ -78,6 +78,10 @@ class Beam(Element):
     size: str = "3.5x11.875 LVL"
     bearing_refs: tuple[str, ...] = ()
     datum: FaceRef | None = None
+    # Optional finish assembly (paint/stain), same contract as Post.assembly: the resolver
+    # forwards it to the beam's solid so render/IFC read the finish instead of the bare
+    # per-category palette colour. Unset leaves the beam its structural wood colour.
+    assembly: str | None = None
 
 
 @register_element

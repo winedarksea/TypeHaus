@@ -5,6 +5,15 @@
 
 export type Vec2 = [number, number];
 
+/** Mirror of the engine's `DoorOperation` enum (model/enums.py). */
+export type DoorOperation =
+  | "swing"
+  | "double_swing"
+  | "slide"
+  | "pocket"
+  | "bifold"
+  | "overhead";
+
 export interface Provenance {
   file: string;
   line: number;
@@ -313,7 +322,9 @@ export interface DoorTypeSpec {
   tag: string;
   width_m: number;
   height_m: number;
-  operation: string;
+  // Closed vocabulary mirroring the engine's `DoorOperation` enum; it selects the plan
+  // symbol, the framing pattern and the IFC operation type.
+  operation: DoorOperation;
   exterior: boolean;
 }
 
@@ -323,6 +334,11 @@ export interface MaterialSpec {
   r_per_inch: number | null;
   perm_rating: number | null;
   density: number | null;
+  // Authored appearance (server/model_json.py). `color` is the material's own hex; `finish`
+  // names its 3D recipe ("brick" | "white-brick" | "cmu" | ...). Both are optional: a material
+  // that authors neither falls back to the family inferred from its tag (nordic/palette.ts).
+  color?: string | null;
+  finish?: string | null;
 }
 
 export interface CatalogLayer {
@@ -351,7 +367,7 @@ export interface Catalog {
 }
 
 // Per-layer plan setback (m, positive inward) from the roof footprint edge — the golden
-// eave detail's clip faces, computed by the engine (resolve/roof_edges.py).
+// eave detail's clip faces, computed by the engine (resolve/roof_layer_setbacks.py).
 export interface RoofLayerSetback {
   layer: string;
   west: number;

@@ -91,7 +91,36 @@ export function familyOf(materialRef: string | null | undefined): string | null 
   return null;
 }
 
-export function materialColor(materialRef: string | null | undefined, palette?: ResolvedNordicPalette): string {
+// The authored-appearance slice of a catalog material (ui/src/model/types.ts MaterialSpec).
+// Structural so palette.ts stays free of model imports and tests can pass literals.
+export interface MaterialAppearance {
+  readonly tag: string;
+  readonly color?: string | null;
+  readonly finish?: string | null;
+}
+
+/** The catalog entry for a material tag, when the model shipped one. */
+export function authoredAppearance(
+  materialRef: string | null | undefined,
+  materials?: readonly MaterialAppearance[],
+): MaterialAppearance | undefined {
+  if (!materialRef || !materials) return undefined;
+  return materials.find((material) => material.tag === materialRef);
+}
+
+/**
+ * Colour for a material ref. An authored `color` from the catalog wins: the material states
+ * what it looks like, which is the only way white brick can read as anything but the masonry
+ * family's red. Only when nothing is authored do we fall back to inferring a hatch family from
+ * substrings in the tag — a guess that is right for generic refs and wrong for finish variants.
+ */
+export function materialColor(
+  materialRef: string | null | undefined,
+  palette?: ResolvedNordicPalette,
+  materials?: readonly MaterialAppearance[],
+): string {
+  const authored = authoredAppearance(materialRef, materials)?.color;
+  if (authored) return authored;
   const fam = familyOf(materialRef);
   if (palette) return palette.material[fam ?? "fallback"] ?? palette.material.fallback;
   if (fam && HATCH_FAMILY_COLOR[fam]) return HATCH_FAMILY_COLOR[fam];

@@ -12,8 +12,8 @@ from typehaus.model.refs import ToRoof
 from typehaus.model.enums import ConditionKind
 from typehaus.model.structure import Beam, Footing, FootingBedding, Pad, Post
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.geometry import polygon_area, rect_between
-from typehaus.resolve.roof_edges import deck_rise_m, layer_edge_setbacks
+from typehaus.resolve.geometry import circle_outline, polygon_area, rect_between
+from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
 from typehaus.resolve.model import (
     BoundaryCondition,
     FramedMember,
@@ -46,9 +46,10 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                                            f"slab {element.tag} needs a closed outline",
                                            element.tag))
                     continue
+                z0, z1 = _slab_elevations(element, elevation)
                 model.solids.append(ResolvedSolid(
-                    element.uid, element.tag, storey.tag, "slab", outline,
-                    elevation - element.thickness.meters, elevation, element.assembly,
+                    element.uid, element.tag, storey.tag, "slab", outline, z0, z1,
+                    element.assembly,
                     tuple(tuple(point.xy_m for point in model.plan.by_tag(tag).outline)
                           for tag in element.openings
                           if isinstance(model.plan.by_tag(tag), FloorOpening)),
@@ -95,6 +96,21 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                 if bedding is not None:
                     model.footing_beddings.append(bedding)
     return findings
+
+
+def _slab_elevations(slab: Slab, elevation: float) -> tuple[float, float]:
+    """The slab's vertical extent, honouring the one storey datum: top of floor structure.
+
+    A ``datum="structure"`` slab *is* the floor structure, so it hangs its thickness below
+    the datum. A ``datum="walking_surface"`` slab is decking over a FloorSystem whose joists
+    already top out at the datum, so it rides on top — exactly like that FloorSystem's own
+    subfloor sheet. Hanging the latter below the datum buried the boards inside the top inch
+    of their own joists.
+    """
+    thickness = slab.thickness.meters
+    if slab.datum == "walking_surface":
+        return elevation, elevation + thickness
+    return elevation - thickness, elevation
 
 
 def _resolve_footing_bedding(
@@ -772,10 +788,7 @@ def _resolve_post(post: Post, storey_tag: str, elevation: float,
 def _post_outline(center: tuple[float, float], cs) -> list[tuple[float, float]]:
     cx, cy = center
     if cs.shape == "round":
-        r = cs.width_m / 2.0
-        return [(cx + r * math.cos(2 * math.pi * k / _COLUMN_FACETS),
-                 cy + r * math.sin(2 * math.pi * k / _COLUMN_FACETS))
-                for k in range(_COLUMN_FACETS)]
+        return circle_outline(center, cs.width_m / 2.0, _COLUMN_FACETS)
     hw, hd = cs.width_m / 2.0, cs.depth_m / 2.0
     return [(cx - hw, cy - hd), (cx + hw, cy - hd), (cx + hw, cy + hd), (cx - hw, cy + hd)]
 
@@ -800,4 +813,7 @@ def _resolve_beam(beam: Beam, storey_tag: str, elevation: float,
     # ``bearing_refs`` are untouched — the lowered beam seats into their hanger.
     z1 = elevation - joist_drop.get(beam.tag, 0.0)
     z0 = z1 - cs.depth_m
-    return ResolvedSolid(beam.uid, beam.tag, storey_tag, "beam", tuple(outline), z0, z1)
+    # An unset assembly leaves the solid on the "beam" palette entry (wood) rather than the
+    # neutral fallback, so an unfinished beam still reads as lumber in every renderer.
+    return ResolvedSolid(beam.uid, beam.tag, storey_tag, "beam", tuple(outline), z0, z1,
+                         assembly=beam.assembly)

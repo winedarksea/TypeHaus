@@ -151,11 +151,12 @@ export function disposeStandingSeamTextures(): void {
 // are carried by shared procedural maps (colour + normal), world-scaled so units sit at true
 // size. No external texture, so the offline PWA still renders it.
 //
-// A masonry layer is finished according to a MasonryStyle chosen from its material ref:
+// A masonry layer is finished according to a MasonryStyle named by the material's authored
+// `finish` (catalog), or inferred from its ref when the material declares none:
 //   • CMU / concrete block → the big 16"×8" nominal face module, grey, tight uniform coursing
 //     (visually distinct from brick, which shares the "masonry" hatch family but is 8"×2⅔").
 //   • white brick → the brick module but a whitewashed unit colour over GREY mortar (a
-//     selectable finish variant; the material ref opts in with "white"/"limewash").
+//     selectable finish variant; `finish: "white-brick"`, or a ref saying "white"/"limewash").
 //   • everything else (default) → the classic red-brick running bond over tan mortar.
 
 /** Nominal running-bond module including joints: modular brick is 8" × 2⅔" with ⅜" joints. */
@@ -220,8 +221,26 @@ function isWhiteBrickRef(materialRef: string | null | undefined): boolean {
   return s.includes("white") || s.includes("limewash") || s.includes("whitewash");
 }
 
-/** Pick the masonry finish recipe for a material ref (CMU → white brick → default red brick). */
-export function masonryStyleFor(materialRef: string | null | undefined): MasonryStyle {
+/**
+ * The finish recipes a material can name via its authored `Material.finish`. Keys are the
+ * engine's finish vocabulary (model/materials.py); the Python glTF emitter mirrors this table.
+ */
+export const MASONRY_STYLES: Readonly<Record<string, MasonryStyle>> = {
+  brick: BRICK_STYLE,
+  "white-brick": WHITE_BRICK_STYLE,
+  cmu: CMU_STYLE,
+};
+
+/**
+ * Pick the masonry finish recipe. An authored `finish` from the catalog is definitive — that
+ * is the material declaring its own appearance. Absent one (or naming a recipe this build does
+ * not know), fall back to inferring from the ref: CMU → white brick → default red brick.
+ */
+export function masonryStyleFor(
+  materialRef: string | null | undefined, finish?: string | null,
+): MasonryStyle {
+  const declared = finish ? MASONRY_STYLES[finish] : undefined;
+  if (declared) return declared;
   if (isCmu(materialRef)) return CMU_STYLE;
   if (isWhiteBrickRef(materialRef)) return WHITE_BRICK_STYLE;
   return BRICK_STYLE;
@@ -246,10 +265,12 @@ function hashUnit(course: number, unit: number): number {
   return h - Math.floor(h);
 }
 
+// `unitColor` is already resolved (authored → style.base → family) by createMasonryMaterial;
+// this only lays the bond and jitters each unit around it.
 function buildMasonryMaps(
-  style: MasonryStyle, color: THREE.Color,
+  style: MasonryStyle, unitColor: THREE.Color,
 ): { colorMap: THREE.Texture; normalMap: THREE.Texture } {
-  const key = `${style.key}:${color.getHexString()}`;
+  const key = `${style.key}:${unitColor.getHexString()}`;
   const cached = masonryMapCache.get(key);
   if (cached) return cached;
   const colorCanvas = document.createElement("canvas");
@@ -272,7 +293,7 @@ function buildMasonryMaps(
   nctx.fillStyle = "rgb(128,128,255)";
   nctx.fillRect(0, 0, MASONRY_TEX_PX, MASONRY_TEX_PX);
 
-  const base = (style.base ? new THREE.Color(style.base) : color).clone();
+  const base = unitColor.clone();
   for (let course = 0; course < style.coursesPerTile; course++) {
     const y = course * courseH;
     const offset = course % 2 === 0 ? 0 : offsetPx; // running bond: alternate half-lap
@@ -310,19 +331,24 @@ function buildMasonryMaps(
 }
 
 /**
- * Brick/CMU/stone masonry finish. `style` selects the module + mortar + colour recipe (see
- * masonryStyleFor); `color` is the resolved family colour, used only when the style leaves its
- * unit colour open (default red brick). CMU and white brick carry their own fixed unit colour.
+ * Brick/CMU/stone masonry finish. `style` selects the module + mortar + jitter recipe (see
+ * masonryStyleFor). The unit colour resolves authored → recipe default → family: an authored
+ * `Material.color` is the material speaking for itself and outranks the recipe's stock hex, so
+ * two white-brick materials with different whites render differently; `style.base` covers the
+ * recipes that carry a fixed unit colour (CMU, white brick); `color` — the palette family
+ * colour — is the last resort for a recipe that leaves its unit colour open (default red brick).
  */
 export function createMasonryMaterial(
   mode: "nordic" | "schematic", style: MasonryStyle, color: THREE.ColorRepresentation,
+  authoredColor?: string | null,
 ): THREE.Material {
+  const unitColor = authoredColor ?? style.base ?? color;
   if (mode === "schematic") {
     return new THREE.MeshStandardMaterial({
-      color: style.base ?? color, roughness: 1, metalness: 0, flatShading: true,
+      color: unitColor, roughness: 1, metalness: 0, flatShading: true,
     });
   }
-  const { colorMap, normalMap } = buildMasonryMaps(style, new THREE.Color(color));
+  const { colorMap, normalMap } = buildMasonryMaps(style, new THREE.Color(unitColor));
   return new THREE.MeshStandardMaterial({
     color: 0xffffff, // colour lives in the map; white base avoids double-tinting
     map: colorMap,
@@ -372,4 +398,123 @@ export function disposeMasonryTextures(): void {
     normalMap.dispose();
   }
   masonryMapCache.clear();
+}
+
+// ── Aluminum deck boards (Wahoo AridDeck-style) ───────────────────────────────────────
+// The balcony walking surface used to render as one flat 1.5" plate, so a plank deck read
+// as a poured slab. Same trick as the standing seam above — one shared procedural normal
+// map, world-scaled UVs, no external texture — but the module is a 5½" plank and the
+// modulation is a *recessed* drainage gap between planks rather than a raised seam. An
+// extruded aluminum plank is far stiffer than roll-formed sheet, so there is deliberately
+// no oil canning here; only a faint lengthwise mill/brush grain.
+
+/** Nominal face width of one aluminum deck plank. */
+export const DECK_BOARD_WIDTH_M = 0.1397; // 5½"
+/** Drainage gap between adjacent planks — the visible groove. */
+const DECK_BOARD_GAP_M = 0.00635; // ¼"
+/** How many planks the shared normal map covers, so `repeat` stays in whole boards. */
+const BOARDS_PER_TILE = 4;
+const DECK_TILE_SIZE_M = DECK_BOARD_WIDTH_M * BOARDS_PER_TILE;
+const DECK_NORMAL_MAP_PX = 256;
+/** Mill-finish aluminum plank; mirrors the `aluminum-deck` material colour. */
+export const ALUMINUM_DECK_BASE_COLOR = 0xb9bcc0;
+
+let sharedDeckBoardNormalMap: THREE.Texture | null = null;
+
+/** True when a surface's material should be finished as aluminum plank decking. */
+export function isAluminumDeckBoard(materialRef: string | null | undefined): boolean {
+  if (!materialRef) return false;
+  const s = materialRef.toLowerCase();
+  return s.includes("deck") && (s.includes("alum") || familyOf(materialRef) === "metal");
+}
+
+/**
+ * One canvas, generated on first use and shared by every deck surface. Each plank edge is a
+ * pair of opposing slopes falling into the gap (the inverse of a standing seam's raised
+ * ridge); the pan between them carries only a faint high-frequency grain.
+ */
+function deckBoardNormalMap(): THREE.Texture {
+  if (sharedDeckBoardNormalMap) return sharedDeckBoardNormalMap;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = DECK_NORMAL_MAP_PX;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("2D canvas unavailable for the deck-board normal map");
+  const image = ctx.createImageData(DECK_NORMAL_MAP_PX, DECK_NORMAL_MAP_PX);
+  const boardPx = DECK_NORMAL_MAP_PX / BOARDS_PER_TILE;
+  const halfGapPx = boardPx * (DECK_BOARD_GAP_M / DECK_BOARD_WIDTH_M) / 2;
+
+  for (let y = 0; y < DECK_NORMAL_MAP_PX; y++) {
+    for (let x = 0; x < DECK_NORMAL_MAP_PX; x++) {
+      const withinBoard = x % boardPx;
+      // dx is the surface slope across the plank. Both halves of a groove straddle a board
+      // boundary, so the wall on this board's left edge falls the opposite way from the
+      // wall on its right edge — together they read as a channel, not a ridge.
+      let dx = 0;
+      if (withinBoard < halfGapPx) dx = 1 - withinBoard / halfGapPx;
+      else if (withinBoard > boardPx - halfGapPx) dx = -(1 - (boardPx - withinBoard) / halfGapPx);
+      else dx = 0.03 * Math.sin(withinBoard * 1.7); // extrusion/brush grain along the plank
+      const n = new THREE.Vector3(-dx, 0, 1).normalize();
+      const i = (y * DECK_NORMAL_MAP_PX + x) * 4;
+      image.data[i] = (n.x * 0.5 + 0.5) * 255;
+      image.data[i + 1] = (n.y * 0.5 + 0.5) * 255;
+      image.data[i + 2] = (n.z * 0.5 + 0.5) * 255;
+      image.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(image, 0, 0);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  texture.colorSpace = THREE.NoColorSpace;
+  sharedDeckBoardNormalMap = texture;
+  return texture;
+}
+
+/**
+ * Plank decking finish. Always paired with applyDeckBoardUv, which supplies the world-scaled
+ * UVs this material's `repeat` of 1 assumes.
+ */
+export function createDeckBoardMaterial(
+  mode: "nordic" | "schematic",
+  color: THREE.ColorRepresentation = ALUMINUM_DECK_BASE_COLOR,
+): THREE.Material {
+  if (mode === "schematic") {
+    return new THREE.MeshStandardMaterial({ color, roughness: 1, metalness: 0, flatShading: true });
+  }
+  const material = new THREE.MeshPhysicalMaterial({
+    // Powder-coated extrusion: mostly dielectric paint over metal, with a low clearcoat for
+    // the satin sheen. Slightly more metallic than painted siding, far less than raw mill.
+    color, metalness: 0.2, roughness: 0.55, clearcoat: 0.2, clearcoatRoughness: 0.25,
+  });
+  const map = deckBoardNormalMap().clone();
+  map.needsUpdate = true;
+  material.normalMap = map;
+  material.normalScale = new THREE.Vector2(0.8, 0.8);
+  return material;
+}
+
+/**
+ * Give a deck surface's board map a stable architectural coordinate frame: the map's x-axis
+ * is across the 5½" planks, so tying it to project X makes every board run north–south —
+ * perpendicular to the house (and to the balcony's east–west joists), which is how plank
+ * decking is actually laid. The prism's thin edge faces inherit the same frame; at 1½" of
+ * plank thickness the smear is invisible next to getting the top face right.
+ */
+export function applyDeckBoardUv(geometry: THREE.BufferGeometry, center: PlanCenter): void {
+  const positions = geometry.getAttribute("position");
+  const uv = new Float32Array(positions.count * 2);
+  for (let index = 0; index < positions.count; index++) {
+    const [projectX, projectY] = projectScenePointToPlan(
+      positions.getX(index), positions.getZ(index), center,
+    );
+    uv[index * 2] = projectX / DECK_TILE_SIZE_M;
+    uv[index * 2 + 1] = projectY / DECK_TILE_SIZE_M;
+  }
+  geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+}
+
+/** Drop the process-wide deck-board normal map — only for teardown in tests/hot reload. */
+export function disposeDeckBoardTextures(): void {
+  sharedDeckBoardNormalMap?.dispose();
+  sharedDeckBoardNormalMap = null;
 }

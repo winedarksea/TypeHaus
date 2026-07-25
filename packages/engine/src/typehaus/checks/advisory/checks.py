@@ -201,6 +201,96 @@ def clearance_overlap(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+def _polygon_centroid(polygon) -> tuple[float, float] | None:
+    """Vertex mean — enough to locate a layer's thin rectangle relative to its neighbours."""
+    if not polygon:
+        return None
+    return (sum(p[0] for p in polygon) / len(polygon),
+            sum(p[1] for p in polygon) / len(polygon))
+
+
+def _cladding_offset(wall) -> tuple[float, float] | None:
+    """Innermost layer → cladding layer, i.e. the direction this wall calls "outdoors".
+
+    ``None`` for walls with nothing to orient: a single-layer or uncladded assembly is
+    symmetric, so no winding can put it on backwards.
+    """
+    layers = wall.depth_layers()
+    cladding = next((layer for layer in reversed(layers) if layer.function == "cladding"), None)
+    if cladding is None or len(layers) < 2 or cladding is layers[0]:
+        return None
+    inner = _polygon_centroid(layers[0].polygon)
+    outer = _polygon_centroid(cladding.polygon)
+    if inner is None or outer is None:
+        return None
+    return (outer[0] - inner[0], outer[1] - inner[1])
+
+
+@check(Tier.ADVISORY, "advisory.cladding_side_mismatch")
+def cladding_side_mismatch(ctx: CheckContext) -> list[Finding]:
+    """Adjacent clad walls must put their cladding on the same side of the run they form.
+
+    A wall's layers are laid out interior→exterior along its authored start→end direction
+    (times the storey's outward sign, → resolve/orientation), so authoring one wall of a run
+    backwards silently turns its stack inside out — face brick pointing at the porch, stucco
+    at the weather. Nothing downstream notices, because each wall is individually well-formed
+    and the storey still has a single outward sign. Comparing neighbours across a shared node
+    catches it without having to decide which side of the run is outdoors: walk node ``a→n``
+    then ``n→b`` and the cladding must sit on the same hand of both legs.
+    """
+    import math
+
+    out: list[Finding] = []
+    for storey in ctx.plan.storeys:
+        elements = ctx.plan.storey_elements(storey.tag)
+        positions = {e.tag: e.position.xy_m for e in elements if e.element_kind == "Node"}
+        # node tag -> [(wall tag, far-end node tag, cladding offset)]
+        incident: dict[str, list[tuple[str, str, tuple[float, float]]]] = {}
+        for element in elements:
+            if element.element_kind not in ("Wall", "FoundationWall"):
+                continue
+            resolved = ctx.model.wall(element.tag)
+            if resolved is None:
+                continue
+            offset = _cladding_offset(resolved)
+            if offset is None:
+                continue
+            a, b = element.start_node, element.end_node
+            if a not in positions or b not in positions or a == b:
+                continue
+            incident.setdefault(a, []).append((element.tag, b, offset))
+            incident.setdefault(b, []).append((element.tag, a, offset))
+
+        for node, legs in sorted(incident.items()):
+            # Only an unambiguous two-wall corner/joint has one traversal; at a branch the
+            # "same side" question has no single answer, so say nothing rather than guess.
+            if len(legs) != 2:
+                continue
+            (tag_a, far_a, offset_a), (tag_b, far_b, offset_b) = legs
+            here = positions[node]
+            # Traverse the run far_a -> node -> far_b, then take each leg's cladding hand.
+            hands = []
+            for (far, offset, incoming) in ((far_a, offset_a, True), (far_b, offset_b, False)):
+                direction = ((here[0] - positions[far][0], here[1] - positions[far][1])
+                             if incoming
+                             else (positions[far][0] - here[0], positions[far][1] - here[1]))
+                length = math.hypot(*direction)
+                if length < 1e-9:
+                    break
+                hands.append((direction[0] * offset[1] - direction[1] * offset[0]) / length)
+            if len(hands) != 2 or min(abs(h) for h in hands) < 1e-9:
+                continue
+            if hands[0] * hands[1] < 0.0:
+                out.append(_warn(
+                    "advisory.cladding_side_mismatch",
+                    f"{tag_a} and {tag_b} meet at {node} but their cladding faces opposite "
+                    "sides of the run — one of them is authored end-to-start, so its layer "
+                    "stack is inside out; swap that wall's start_node/end_node",
+                    (tag_a, tag_b, node),
+                ))
+    return out
+
+
 def _matches(pattern: str, key: str) -> bool:
     import fnmatch
 

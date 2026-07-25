@@ -110,6 +110,19 @@ _JUNCTION_FRAMING = (_STUD_KINDS | _PLATE_KINDS
 # is the fabricated joint, never an elevation bug. The seat-cut solid is the birdsmouth seat
 # a rafter/chord bears on the plate with — bonded to its member, seated on the wall top.
 _TRUSS_KINDS = frozenset({"top_chord", "bottom_chord", "truss_web", "truss_heel"})
+# Non-structural envelope skin and trim emitted at the roof edge (resolve/roof_edge.py):
+# the sheathing/rainscreen/cladding band carrying a wall past its plate to the roof
+# underside, and the fascia/soffit hung off the roof edge. These are sheet goods and trim
+# boards *fastened over* framing — shared volume with the member they nail to, or with each
+# other where an eave and a rake miter, is the fastening. None of them carries load, so
+# none of them can be the elevation-arithmetic bug this check exists to catch.
+# "insulation"/"membrane" appear only as closure-band layers (a wall stack like the catlin
+# siding carries CI foam + WRB outboard of its sheathing), never as framing members.
+_ENVELOPE_SKIN_KINDS = frozenset({"sheathing", "furring", "cladding", "fascia", "soffit",
+                                  "insulation", "membrane"})
+# Rake framing (resolve/framing/roof_gable.py): outlookers run *over* the dropped gable
+# truss and land on the barge rafter. Interpenetration there is the joint the drop creates.
+_RAKE_KINDS = frozenset({"outlooker", "barge_rafter"})
 
 
 def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
@@ -138,6 +151,13 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     """
     kinds = {a.kind, b.kind}
     same_parent = a.parent == b.parent
+    # Envelope skin/trim fastened over framing (see _ENVELOPE_SKIN_KINDS) — never load-bearing.
+    if kinds & _ENVELOPE_SKIN_KINDS:
+        return True
+    # Rake framing meeting the truss it drops for, the barge rafter it lands on, or the
+    # gable studs beneath it.
+    if kinds & _RAKE_KINDS and kinds <= (_RAKE_KINDS | _TRUSS_KINDS | _STUD_KINDS):
+        return True
     # A roof member bearing on the wall top it lands on — the birdsmouthed rafter seat, or
     # a ridge beam pocketed into a gable wall. The box IR has no seat cut, so the rafter/
     # ridge dips into the plate or the top of the stud/king it bears on.

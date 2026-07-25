@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from typehaus.model.base import HausModel
-from typehaus.model.enums import Service
+from typehaus.model.enums import DoorOperation, Service
 from typehaus.model.placeables import (ClearanceZone, Footprint2D, ModelRepresentation,
                                        Mount, PlacementStrategy, PlanRepresentation, ServicePort)
 from typehaus.model.registry import register_constructor
@@ -17,7 +17,7 @@ class DoorType(HausModel):
     width: Length
     height: Length
     u_factor: UFactor | None = None
-    operation: str = "swing"  # swing | double_swing | slide | pocket | bifold
+    operation: DoorOperation = DoorOperation.SWING
     exterior: bool = False
     source: str | None = None
 

@@ -1,4 +1,8 @@
-"""Roof-edge geometry shared by the resolver and both 3D emitters (glTF + three.js).
+"""Roof-plane datum + per-layer edge setbacks shared by the resolver and both 3D emitters.
+
+Distinct from :mod:`typehaus.resolve.roof_edge` (B2), which emits wall→roof closure and
+fascia/soffit trim *members* during the framing stage: this module computes the pure
+geometry the envelope stage and the roof-shell emitters (glTF + three.js) share.
 
 Two derived quantities keep the 3D roof integrated with the wall stacks, per the golden
 eave reference (``tests/fixtures/catlin_reference/scripts/roof_wall_eave_detail_ifc.py``

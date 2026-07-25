@@ -5,6 +5,8 @@ import { formatFtIn, openingHostWall, openingStartFromCenter, wallLength } from 
 import { SectionCard } from "./SectionCard";
 import { DetailViewer } from "./DetailViewer";
 import { StairDesigner } from "./StairDesigner";
+import { Provenance } from "./Provenance";
+import { FloorInspector, FootingBeddingInspector, RoofInspector, SolidInspector } from "./DerivedInspectors";
 
 // Strict contextual inspector (Phase 3): answers only "what can I change about the selected
 // thing?" — hidden when nothing is selected. Extracted from the retired Sidebar; the
@@ -84,15 +86,6 @@ export function Inspector() {
   );
 }
 
-export function Provenance({ p }: { p: { file: string; line: number } | null }) {
-  if (!p) return <span className="badge">edit in code</span>;
-  return (
-    <span className="prov">
-      {p.file}:{p.line}
-    </span>
-  );
-}
-
 function SelectionInspector({
   model,
   kind,
@@ -144,6 +137,23 @@ function SelectionInspector({
     const item = (model.canvas_objects ?? []).find((object) => object.uid === uid);
     if (!item) return null;
     return <CanvasObjectInspector model={model} item={item} />;
+  }
+  // Derived geometry, selectable in 3D since B7 (→ components/DerivedInspectors.tsx).
+  if (kind === "solid") {
+    const solid = (model.solids ?? []).find((item) => item.uid === uid);
+    return solid ? <SolidInspector solid={solid} /> : null;
+  }
+  if (kind === "footing_bedding") {
+    const bedding = (model.footing_beddings ?? []).find((item) => item.uid === uid);
+    return bedding ? <FootingBeddingInspector bedding={bedding} /> : null;
+  }
+  if (kind === "roof") {
+    const roof = (model.roofs ?? []).find((item) => item.uid === uid);
+    return roof ? <RoofInspector model={model} roof={roof} /> : null;
+  }
+  if (kind === "floor") {
+    const floor = (model.floors ?? []).find((item) => item.uid === uid);
+    return floor ? <FloorInspector floor={floor} /> : null;
   }
   return null;
 }

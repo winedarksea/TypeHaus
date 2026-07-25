@@ -237,7 +237,7 @@ class ResolvedRoof:
     bearing_z_m: float | None = None
     # Per-layer plan setbacks from the footprint edge, one dict per above-structure
     # layer: {"layer": name, "west": m, "east": m, "south": m, "north": m}. Computed by
-    # resolve/roof_edges.py from the golden eave detail's clip rules; consumed by BOTH
+    # resolve/roof_layer_setbacks.py from the golden eave detail's clip rules; consumed by BOTH
     # the glTF emitter and the three.js viewer (ui/src/three/roofGeometry.ts).
     layer_edge_setbacks: tuple = ()
 

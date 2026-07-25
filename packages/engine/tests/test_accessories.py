@@ -88,29 +88,72 @@ def test_catlin_dowels_and_foam_bridge_the_footing_joint(catlin_model) -> None:
 
 
 def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
+    from typehaus.resolve.roof_geometry import roof_height_at
+
     vent = _solids(catlin_model, "vent")
-    assert len(vent) == 6  # radon + plumbing vent, each: chase + out + term
     chases = [s for s in vent if s.tag.endswith("CHASE")]
     terms = [s for s in vent if s.tag.endswith("TERM")]
-    outs = [s for s in vent if s.tag.endswith("OUT")]
-    assert len(chases) == len(terms) == len(outs) == 2
-    # Chase rises from below grade to near the attic ceiling (~29').
+    outs = [s for s in vent if "-OUT" in s.tag]
+    assert len(chases) == len(terms) == 2  # radon + plumbing vent
+    assert len(outs) == 8  # each horizontal jog is stacked out of 4 round bands
+    exit_z = ft(24, 6).meters
+    # Chase rises from below grade to the turn-out, which stays *under* the rake.
     for c in chases:
-        assert c.z0_m < -2.0 and abs(c.z1_m - 29 * FT) < 0.05
-    # Out segment is horizontal near the attic ceiling.
+        assert c.z0_m < -2.0 and abs(c.z1_m - exit_z) < 0.05
     for o in outs:
-        assert abs((o.z0_m + o.z1_m) / 2 - 29 * FT) < 0.1
-    # Termination tops 12" above the roof (33').
+        assert abs((o.z0_m + o.z1_m) / 2 - exit_z) < inch(2).meters
+    # Termination is derived: 12" above the roof plane at the exterior riser, not the
+    # 33' that was authored — that sat 2' above the ridge of this 4:12 gable.
+    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
+    expected = roof_height_at(roof, (ft(3).meters, ft(37).meters)) + inch(12).meters
+    # ~28.05': eave_z_m is the deck plane, ~10.7" above the knee-wall plate (golden eave
+    # detail), so the derived termination rides that much higher than the bare-plate datum.
+    assert expected < 29 * FT
     for t in terms:
-        assert abs(t.z1_m - 33 * FT) < 0.05
+        assert abs(t.z0_m - exit_z) < 0.05
+        assert abs(t.z1_m - expected) < 1e-6
+
+
+def test_catlin_vent_pipes_are_round_sections(catlin_model) -> None:
+    """A 3" vent used to render as a square post; risers now carry a faceted circle."""
+    from typehaus.resolve.accessories import _PIPE_FACETS
+
+    radius = inch(3).meters / 2.0
+    for solid in _solids(catlin_model, "vent"):
+        if not (solid.tag.endswith("CHASE") or solid.tag.endswith("TERM")):
+            continue
+        assert len(solid.outline) == _PIPE_FACETS
+        cx = sum(x for x, _ in solid.outline) / _PIPE_FACETS
+        cy = sum(y for _, y in solid.outline) / _PIPE_FACETS
+        for x, y in solid.outline:
+            assert abs(math.hypot(x - cx, y - cy) - radius) < 1e-9
+
+
+def test_vent_termination_derives_from_the_wall_the_riser_rides(catlin_model) -> None:
+    """The zero-overhang rake leaves the riser outside every roof footprint, so the
+    derivation has to come off the gable wall's ``ToRoof`` top, not plan containment."""
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.resolve.vent_termination import exterior_riser_point, roof_cleared_by
+
+    vent = catlin_model.plan.by_tag("VR-M-RADON-VENT")
+    riser = Point(exterior_riser_point(vent))
+    assert not any(Polygon(roof.footprint).covers(riser) for roof in catlin_model.roofs)
+    assert roof_cleared_by(catlin_model, vent).tag == "RF-HOUSE"
 
 
 def test_catlin_balcony_guard_is_a_42in_railing(catlin_model) -> None:
+    """42" is measured from the surface underfoot, not from the storey datum.
+
+    The aluminum boards sit *on* the joists whose tops define the datum, so a guard based
+    on the datum stands only 40.5" above the deck someone actually walks on.
+    """
+    deck = next(s for s in catlin_model.solids if s.tag == "SL-SG-DECK")
     posts = [s for s in _solids(catlin_model, "railing") if "POST" in s.tag]
     assert posts, "railing posts expected"
     for post in posts:
-        assert math.isclose(post.z0_m, 10 * FT, abs_tol=0.02)
-        assert math.isclose(post.z1_m - post.z0_m, 3.5 * FT, abs_tol=0.02)
+        assert math.isclose(post.z0_m, deck.z1_m, abs_tol=0.02), "guard must start on the boards"
+        assert math.isclose(post.z1_m - deck.z1_m, 3.5 * FT, abs_tol=0.02)
 
 
 def test_catlin_sump_sits_below_the_basement_slab(catlin_model) -> None:
