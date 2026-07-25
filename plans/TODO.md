@@ -59,6 +59,13 @@ work.
   `Elevation` nor a placement, so the M3 semantic equivalence cannot compare storey
   elevations at all. `test_catlin_equivalence_m3.py` asserts the current state explicitly, so
   it will fail loudly and demand a real comparison once elevations are emitted.
+- **Most IFC framing members still have no geometry.** Measured on the current export:
+  **383 of 2005 `IfcMember`s carry a representation — and all 383 are roof members.** The
+  roof case was fixed; **1515 wall members and 107 stair members are still bare
+  aggregation**. Same class of gap, and it directly undermines the "clean export to
+  Revit/SketchUp/IFC" reminder at the top of this file: a consultant opening the IFC sees an
+  empty stud wall. Port the swept-solid emission the roof members now use
+  (`emit/ifc/roof.py`) to wall and stair framing.
 - **Opening details are never scaffolded.** 70 `opening_perimeter` conditions exist and 9
   overlay ids target them, but `derive_detail_slices` produces no slice for any (it requires a
   host wall + junction elevation). Same for the single `roof_ridge` condition. This is the
