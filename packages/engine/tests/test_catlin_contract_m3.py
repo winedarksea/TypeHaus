@@ -41,9 +41,10 @@ GARAGE_SIZE_FT = 24.0
 GARAGE_GAP_FT = 5.0
 GARAGE_OVERHANG_IN = 16.0
 # eave_z_m is the rafter-top (deck) plane: the 11.875" I-joist rises above the knee-wall
-# plate by its depth less the birdsmouth (3.5" stud depth x 4:12 pitch = 1.1667"), per the
-# golden eave detail (roof_wall_eave_detail_ifc.py).
-DECK_RISE_FT = (11.875 - 3.5 / 3.0) / 12.0
+# plate by its depth less the seat drop across the stud (5.5" 2x6 depth x 4:12 pitch =
+# 1.8333" — the knee walls went 2x6 with the rest of the envelope), per the golden eave
+# detail (roof_wall_eave_detail_ifc.py). The birdsmouth notch itself stays 1.17" deep.
+DECK_RISE_FT = (11.875 - 5.5 / 3.0) / 12.0
 
 CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
@@ -225,7 +226,7 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
     authored = catlin_model.plan.by_tag("RF-HOUSE")
     plate_top = max(catlin_model.wall(tag).z1_m for tag in authored.bearing_refs)
     assert roof.bearing_z_m == pytest.approx(plate_top)
-    # eave rides the deck plane, ~10.71" (0.2719 m) above the plate.
+    # eave rides the deck plane, ~10.04" (0.2551 m) above the plate.
     assert roof.eave_z_m - roof.bearing_z_m == pytest.approx(ft(DECK_RISE_FT).meters)
 
     birdsmouth = inch(1.17).meters
@@ -329,7 +330,7 @@ def test_raked_gable_king_studs_match_roof_plane_at_own_station(catlin_model):
     axis_len = math.hypot(x1 - x0, y1 - y0)
     dx, dy = (x1 - x0) / axis_len, (y1 - y0) / axis_len
     plate_h = inch(1.5).meters
-    top_plates = 2  # CATLIN_EXT_2X4 double top plate, not advanced framing
+    top_plates = 2  # CATLIN_EXT_2X6 double top plate, not advanced framing
 
     kings = [m for m in wall.members if m.category == "king"]
     assert len(kings) >= 4  # two windows, at least one king per side each
@@ -680,7 +681,11 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
 
 
 def test_stack_width_change_resolves_on_the_side_wall_line(catlin_model):
-    """M3 acceptance: 2x6 -> 2x4 -> 2x4 stack with a width-change edge (#43)."""
+    """M3 acceptance: a main->second stack edge with a width change still resolves.
+
+    The exterior stack is 2x6 on every storey now, so the surviving width-change
+    edges are interior — the 2x4 storage partitions (W-M-STOS/STOS2) under the
+    second floor's 2x6 plumbing wall (W-S-BD-N)."""
     width_changes = [e for e in catlin_model.stack_edges if e.width_change]
     main_to_second = [
         e for e in width_changes

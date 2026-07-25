@@ -1,6 +1,6 @@
 # haus: editable
-# Second floor — CATLIN_EXT_2X4 on the same sheathing plane (#43 stack jog),
-# three east bedrooms, west suite, plant room + study south, duct soffit (WP3.1).
+# Second floor — CATLIN_EXT_2X6 on the same sheathing plane (2x6 on every framed
+# storey), three east bedrooms, west suite, plant room + study south, duct soffit (WP3.1).
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -60,51 +60,51 @@ NODES = [
 ]
 
 WALLS = [
-    # --- exterior loop (2x4 storey of the #43 stack) ---------------------------
+    # --- exterior loop (2x6, same stack as main) -------------------------------
     Wall(uid="CSW101AAAA", tag="W-S-S1", start_node="N-S-SW", end_node="N-S-S1",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-S1"),
     Wall(uid="CSW102AAAA", tag="W-S-S2", start_node="N-S-S1", end_node="N-S-SE",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-S2"),
     Wall(uid="CSW103AAAA", tag="W-S-E1", start_node="N-S-SE", end_node="N-S-E1",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-E1"),
     Wall(uid="CSW102BAAA", tag="W-S-E2", start_node="N-S-E1", end_node="N-S-E2",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-E1"),
     Wall(uid="CSW104AAAA", tag="W-S-E3", start_node="N-S-E2", end_node="N-S-E3",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-E2"),
     Wall(uid="CSW105AAAA", tag="W-S-E4", start_node="N-S-E3", end_node="N-S-E4",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-E2"),
     Wall(uid="CSW106AAAA", tag="W-S-E5", start_node="N-S-E4", end_node="N-S-NE",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-E2"),
     Wall(uid="CSW107AAAA", tag="W-S-N1", start_node="N-S-NE", end_node="N-S-B5",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N1"),
     Wall(uid="CSW135AAAA", tag="W-S-N1B", start_node="N-S-B5", end_node="N-S-N1",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N1"),
     Wall(uid="CSW108AAAA", tag="W-S-N2", start_node="N-S-N1", end_node="N-S-N2",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N2"),
     Wall(uid="CSW109AAAA", tag="W-S-N3", start_node="N-S-N2", end_node="N-S-NW",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N3"),
     Wall(uid="CSW110AAAA", tag="W-S-W1", start_node="N-S-NW", end_node="N-S-W1",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-W1"),
     Wall(uid="CSW111AAAA", tag="W-S-W2", start_node="N-S-W1", end_node="N-S-W2",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-W3"),
     Wall(uid="CSW112AAAA", tag="W-S-W3", start_node="N-S-W2", end_node="N-S-W3",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-W4"),
     Wall(uid="CSW113AAAA", tag="W-S-W4", start_node="N-S-W3", end_node="N-S-SW",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(9),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-W4"),
     # --- center bearing wall (2x6 carries the attic floor) ---------------------
     Wall(uid="CSW114AAAA", tag="W-S-C1", start_node="N-S-S1", end_node="N-S-C1",
@@ -188,39 +188,39 @@ OPENINGS = [
          position=from_node("N-S-S1", ft(2))),
     Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-FRENCH36",
          position=from_node("N-S-S1", ft(2))),
-    # Windows — east bedrooms (bearing wall: WT-2760, egress-capable)
-    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E3", type_ref="WT-2760",
+    # Windows — east bedrooms (bearing wall: WT-2736, egress-capable)
+    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E3", type_ref="WT-2736",
            position=from_node("N-S-E2", ft(2, 10.5)), sill_height=ft(3)),
-    Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E4", type_ref="WT-2760",
+    Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E4", type_ref="WT-2736",
            position=from_node("N-S-E3", ft(2, 10.5)), sill_height=ft(3)),
-    Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E5", type_ref="WT-2760",
+    Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E5", type_ref="WT-2736",
            position=from_node("N-S-E4", ft(2, 10.5)), sill_height=ft(3)),
     # West suite (bearing wall)
-    Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W2", type_ref="WT-2760",
+    Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W2", type_ref="WT-2736",
            position=from_node("N-S-W1", ft(4, 2.5)), sill_height=ft(3)),
-    Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W2", type_ref="WT-2760",
+    Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W2", type_ref="WT-2736",
            position=from_node("N-S-W1", ft(8, 2.5)), sill_height=ft(3)),
-    # Plant room — south glazing (non-bearing: WT-3060 row)
-    Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-3060",
+    # Plant room — south glazing (non-bearing: WT-3036 row)
+    Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-3036",
            position=from_node("N-S-SW", ft(2, 9)), sill_height=ft(2)),
-    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3060",
+    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3036",
            position=from_node("N-S-SW", ft(6, 9)), sill_height=ft(2)),
     # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
     # type and not the 30" south-glazing one — "resize windows to fit the grid" (CLAUDE.md).
-    Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2760",
+    Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736",
            position=from_node("N-S-W3", ft(4, 2.5)), sill_height=ft(2)),
-    Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3060",
+    Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3036",
            position=from_node("N-S-SE", ft(4, 9)), sill_height=ft(2, 6)),
-    Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3060",
+    Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3036",
            position=from_node("N-S-SE", ft(8, 9)), sill_height=ft(2, 6)),
     # Baths + north
     # W-S-N3 shortened by 1' when N-S-N2 moved to the stair shaft's new line, which moved
     # every 16" bay centre on it by 4"; the RO follows so it still fits one clear bay.
-    Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1448",
+    Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1424",
            position=from_node("N-S-NW", ft(4, 9)), sill_height=ft(4)),
-    Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1448",
+    Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424",
            position=from_node("N-S-NW", ft(4, 1)), sill_height=ft(4)),
-    Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3060",
+    Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3036",
            position=from_node("N-S-NE", ft(6, 9)), sill_height=ft(3)),
 ]
 

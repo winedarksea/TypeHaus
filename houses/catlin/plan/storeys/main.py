@@ -2,8 +2,8 @@
 # Main floor — 36'x36' at sheathing, 16" o.c. module, east half open living (WP3.1).
 # Exterior walls: CATLIN_EXT_2X6, sheathing exterior face on the 0/36 lines.
 # Bearing lines: west wall, center N-S wall (x=18), east wall (18' I-joist spans, E-W).
-# Smaller windows follow the stud-bay rules: WT-1448 fits one bay unbroken; WT-3060
-# breaks one stud (non-bearing walls only); WT-2760 adds jacks on bearing walls.
+# Smaller windows follow the stud-bay rules: WT-1424 fits one bay unbroken; WT-3036
+# breaks one stud (non-bearing walls only); WT-2736 adds jacks on bearing walls.
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -44,32 +44,26 @@ DOOR_TYPES = [
     DoorType(tag="DT-GARAGE192", width=ft(16), height=ft(7), exterior=True,
              operation="overhead"),
 ]
+# One size per width family: every placement of a family shares one height, chosen as
+# the tallest that still fits the family's most constrained wall anywhere in the house.
 WINDOW_TYPES = [
-    # 14" RO — falls between studs on the 16" grid without breaking a stud line.
-    WindowType(tag="WT-1448", width=inch(14), height=ft(4), u_factor=u_us(0.25),
+    # 14" RO — falls between studs on the 16" grid without breaking a stud line. 24"
+    # tall because the 5' attic knee wall (WIN-A-W-SM) needs room for the modeled
+    # header above the opening below its top plate.
+    WindowType(tag="WT-1424", width=inch(14), height=ft(2), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="awning"),
-    # 27" RO — bearing-wall size (N*2-9): one stud broken, jacks added.
-    WindowType(tag="WT-2760", width=inch(27), height=ft(5), u_factor=u_us(0.25),
-               shgc=0.35, vt=0.5, operation="casement"),
-    # 30" RO — non-load-bearing size (N*2-6): one stud broken.
-    WindowType(tag="WT-3060", width=inch(30), height=ft(5), u_factor=u_us(0.25),
-               shgc=0.35, vt=0.5, operation="casement"),
-    WindowType(tag="WT-3050", width=ft(3), height=ft(5), u_factor=u_us(0.25),
-               shgc=0.35, vt=0.5, operation="casement"),
-    # 27" RO, short — garage's 8' wall can't take WT-2760's 60" height at a 42" sill
-    # (header would land above the top plate); same bearing-wall width module, shorter.
+    # 27" RO — bearing-wall size (N*2-9): one stud broken, jacks added. 36" tall
+    # because the garage's 8' wall can't take a 60" height at a 42" sill (header would
+    # land above the top plate). 27x36 still clears R310 egress (6.75 sf > 5.7).
     WindowType(tag="WT-2736", width=inch(27), height=ft(3), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
-    # Attic windows are shortened to keep their heads below the cathedral-roof
-    # framing while retaining the same width modules as the standard types.
-    WindowType(tag="WT-3036-ATTIC", width=inch(30), height=ft(3), u_factor=u_us(0.25),
+    # 30" RO — non-load-bearing size (N*2-6): one stud broken. 36" tall keeps the
+    # attic-gable heads below the cathedral-roof framing.
+    WindowType(tag="WT-3036", width=inch(30), height=ft(3), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
-    WindowType(tag="WT-1436-ATTIC", width=inch(14), height=ft(3), u_factor=u_us(0.25),
-               shgc=0.35, vt=0.5, operation="awning"),
-    # The 5' attic knee wall also needs room for the modeled header above this
-    # 14" side-wall opening; 24" leaves clearance below the top plate.
-    WindowType(tag="WT-1424-ATTIC", width=inch(14), height=ft(2), u_factor=u_us(0.25),
-               shgc=0.35, vt=0.5, operation="awning"),
+    # 36" RO — concrete basement wall only (no stud module to respect down there).
+    WindowType(tag="WT-3660", width=ft(3), height=ft(5), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement"),
 ]
 
 NODES = [
@@ -232,36 +226,36 @@ OPENINGS = [
     RoughOpening(uid="CMD211AAAA", tag="O-M-DRESS", host="W-M-C2",
                  position=from_node("N-M-C1", ft(0, 6)), width=ft(3),
                  height=ft(6, 8)),
-    # Windows — west (bearing: WT-2760), south (non-bearing: WT-3060), east (bearing)
+    # Windows — west (bearing: WT-2736), south (non-bearing: WT-3036), east (bearing)
     Window(uid="CMX301AAAA", tag="WIN-M-BED-W1", host="W-M-W4",
-           type_ref="WT-2760", position=from_node("N-M-SW", ft(4, 2.5)),
+           type_ref="WT-2736", position=from_node("N-M-SW", ft(4, 2.5)),
            sill_height=ft(2)),
     Window(uid="CMX302AAAA", tag="WIN-M-BED-W2", host="W-M-W4",
-           type_ref="WT-2760", position=from_node("N-M-SW", ft(9, 6.5)),
+           type_ref="WT-2736", position=from_node("N-M-SW", ft(9, 6.5)),
            sill_height=ft(2)),
     Window(uid="CMX303AAAA", tag="WIN-M-BED-S1", host="W-M-S1",
-           type_ref="WT-3060", position=from_node("N-M-SW", ft(4, 1)),
+           type_ref="WT-3036", position=from_node("N-M-SW", ft(4, 1)),
            sill_height=ft(2)),
     Window(uid="CMX304AAAA", tag="WIN-M-BED-S2", host="W-M-S1",
-           type_ref="WT-3060", position=from_node("N-M-SW", ft(9, 5)),
+           type_ref="WT-3036", position=from_node("N-M-SW", ft(9, 5)),
            sill_height=ft(2)),
     Window(uid="CMX305AAAA", tag="WIN-M-BATH2", host="W-M-W3",
-           type_ref="WT-1448", position=from_node("N-M-W3", ft(4, 5)),
+           type_ref="WT-1424", position=from_node("N-M-W3", ft(4, 5)),
            sill_height=ft(4)),
     Window(uid="CMX306AAAA", tag="WIN-M-STOR", host="W-M-W1",
-           type_ref="WT-2760", position=from_node("N-M-NW", ft(4, 2.5)),
+           type_ref="WT-2736", position=from_node("N-M-NW", ft(4, 2.5)),
            sill_height=ft(3)),
     Window(uid="CMX307AAAA", tag="WIN-M-LIV-S1", host="W-M-S2",
-           type_ref="WT-3060", position=from_node("N-M-SE", ft(3, 5)),
+           type_ref="WT-3036", position=from_node("N-M-SE", ft(3, 5)),
            sill_height=ft(2)),
     Window(uid="CMX308AAAA", tag="WIN-M-LIV-S2", host="W-M-S2",
-           type_ref="WT-3060", position=from_node("N-M-SE", ft(7, 5)),
+           type_ref="WT-3036", position=from_node("N-M-SE", ft(7, 5)),
            sill_height=ft(2)),
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
-           type_ref="WT-2760", position=from_node("N-M-SE", ft(6, 10.5)),
+           type_ref="WT-2736", position=from_node("N-M-SE", ft(6, 10.5)),
            sill_height=ft(2, 6)),
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
-           type_ref="WT-2760", position=from_node("N-M-SE", ft(10, 10.5)),
+           type_ref="WT-2736", position=from_node("N-M-SE", ft(10, 10.5)),
            sill_height=ft(2, 6)),
     # The dining pair, pushed south of where it started (centres were 22' and 26'). The 48"
     # pantry closet now takes the east wall from 22'-8" to 26'-8" and a tall cabinet over a
@@ -276,13 +270,13 @@ OPENINGS = [
     # W-M-E2 — and 4'-8" apart is where that lands them. The node at y=18' is a collinear
     # split rather than a corner, so the wall itself runs through unbroken.
     Window(uid="CMX311AAAA", tag="WIN-M-DIN-E1", host="W-M-E1",
-           type_ref="WT-2760", position=from_node("N-M-SE", ft(14, 10.5)),
+           type_ref="WT-2736", position=from_node("N-M-SE", ft(14, 10.5)),
            sill_height=ft(2, 6)),
     Window(uid="CMX312AAAA", tag="WIN-M-DIN-E2", host="W-M-E2",
-           type_ref="WT-2760", position=from_node("N-M-E1", ft(1, 6.5)),
+           type_ref="WT-2736", position=from_node("N-M-E1", ft(1, 6.5)),
            sill_height=ft(2, 6)),
     Window(uid="CMX313AAAA", tag="WIN-M-KITCH", host="W-M-E2",
-           type_ref="WT-2760", position=from_node("N-M-NE", ft(2, 2.5)),
+           type_ref="WT-2736", position=from_node("N-M-NE", ft(2, 2.5)),
            sill_height=ft(3, 6)),
     # The cooking window, and the north wall's only one. A recirculating hood moves no air
     # outdoors, so the only way to clear a scorched pan is to open something next to the
@@ -292,7 +286,7 @@ OPENINGS = [
     # 29'-5"..31'-11" is gone: that stretch of wall is now one 5'-6" run of uppers, which is
     # the trade this kitchen wants — a north window on a north wall buys little light, and the
     # east wall's WIN-M-KITCH already lights the sink.
-    Window(uid="82WVR597PA", tag="WIN-M-KITCH-N", host="W-M-N1", type_ref="WT-1448",
+    Window(uid="82WVR597PA", tag="WIN-M-KITCH-N", host="W-M-N1", type_ref="WT-1424",
            position=from_node("N-M-NE", ft(10, 9)), sill_height=ft(3, 6)),
 ]
 

@@ -1,5 +1,5 @@
 # haus: editable
-# Attic — habitable hot-roofed cathedral storey (WP3.1, WP3.11).
+# Attic — habitable hot-roofed cathedral storey (WP3.1, WP3.11); 2x6 envelope walls.
 # 5' knee walls east/west (eave sides), gable walls north/south frame ToRoof,
 # ridge runs N-S over the center wall line, 4:12, zero overhang (first-class).
 from typehaus import (
@@ -48,34 +48,34 @@ NODES = [
 WALLS = [
     # Gable ends (south/north) — raked studs, sloped plates via ToRoof (WP3.11).
     Wall(uid="CAW101AAAA", tag="W-A-S1", start_node="N-A-SW", end_node="N-A-S1",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S1"),
     Wall(uid="CAW102AAAA", tag="W-A-S2", start_node="N-A-S1", end_node="N-A-S2",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S1"),
     Wall(uid="CAW103AAAA", tag="W-A-S3", start_node="N-A-S2", end_node="N-A-SE",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S2"),
     Wall(uid="CAW104AAAA", tag="W-A-N1", start_node="N-A-NE", end_node="N-A-N1",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-N1"),
     Wall(uid="CAW105AAAA", tag="W-A-N2", start_node="N-A-N1", end_node="N-A-NW",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-N2"),
     # Knee walls (east/west eave sides) — 5', carry the low roof edge.
     Wall(uid="CAW106AAAA", tag="W-A-E1", start_node="N-A-SE", end_node="N-A-E1",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(5),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-E1"),
     Wall(uid="CAW107AAAA", tag="W-A-E2", start_node="N-A-E1", end_node="N-A-NE",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(5),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-E3"),
     Wall(uid="CAW108AAAA", tag="W-A-W1", start_node="N-A-NW", end_node="N-A-SW",
-         assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(5),
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-W1"),
     # Center bearing wall under the ridge, full length, frames to the roof. This is
     # NOT a partition: RB-HOUSE bears on it continuously, so it is the reason the roof
@@ -106,21 +106,22 @@ OPENINGS = [
          position=from_node("N-A-D1", ft(1))),
     Door(uid="CAD203AAAA", tag="D-A-STUDY", host="W-A-SN", type_ref="DT-INT30",
          position=from_node("N-A-C1", ft(1))),
-    # Attic windows are 36" tall so their heads stay below the roof framing;
-    # every opening starts 24" above the finished attic floor per the brief.
-    Window(uid="CAX301AAAA", tag="WIN-A-DEN-S", host="W-A-S2", type_ref="WT-3036-ATTIC",
+    # The gables take the shared 30"x36" type (its 36" height was chosen for exactly
+    # these walls — heads below the cathedral-roof framing); every opening starts 24"
+    # above the finished attic floor per the brief.
+    Window(uid="CAX301AAAA", tag="WIN-A-DEN-S", host="W-A-S2", type_ref="WT-3036",
            position=from_node("N-A-S1", ft(2, 9)), sill_height=ft(2)),
     Window(uid="CAX302AAAA", tag="WIN-A-STUDY-S1", host="W-A-S3",
-           type_ref="WT-3036-ATTIC", position=from_node("N-A-S2", ft(6, 9)),
+           type_ref="WT-3036", position=from_node("N-A-S2", ft(6, 9)),
            sill_height=ft(2)),
     Window(uid="CAX303AAAA", tag="WIN-A-STUDY-S2", host="W-A-S3",
-           type_ref="WT-3036-ATTIC", position=from_node("N-A-S2", ft(12, 1)),
+           type_ref="WT-3036", position=from_node("N-A-S2", ft(12, 1)),
            sill_height=ft(2)),
-    Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3036-ATTIC",
+    Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3036",
            position=from_node("N-A-NW", ft(6, 1)), sill_height=ft(2)),
-    Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-3036-ATTIC",
+    Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-3036",
            position=from_node("N-A-NE", ft(6, 9)), sill_height=ft(2)),
-    Window(uid="CAX306AAAA", tag="WIN-A-W-SM", host="W-A-W1", type_ref="WT-1424-ATTIC",
+    Window(uid="CAX306AAAA", tag="WIN-A-W-SM", host="W-A-W1", type_ref="WT-1424",
            position=from_node("N-A-NW", ft(17, 5)), sill_height=ft(2)),
 ]
 
@@ -189,7 +190,7 @@ FLOOR = [
 
 STAIRS = [
     Stair(uid="CST703AAAA", tag="ST-S2A", floor_opening="FO-A-STAIR",
-          from_storey="second", to_storey="attic", width=ft(3),
+          from_storey="second", to_storey="attic", width=ft(3), newel_profile="6x6",
           # Enter north at the east edge, then three lower winders turn the climb west.
           layout="right_angle_winder", turn_direction="left",
           run_direction="x", run_reversed=True, winder_count=3,

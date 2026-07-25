@@ -1,8 +1,8 @@
 # haus: editable
 # Catlin house assemblies — ported from catlin-house ifcplot (WP3.1).
-# Layer order is interior → exterior. The exterior wall family shares one siding stack
-# (sheathing / WRB / 2" polyiso / 2" EPS / furring / standing seam) so the #43 stack jog
-# (2x6 → 2x4) keeps the sheathing plane and every control layer continuous.
+# Layer order is interior → exterior. The exterior wall family is one 2x6 stack on every
+# framed storey (sheathing / WRB / 2" polyiso / 2" EPS / furring / standing seam), so the
+# sheathing plane and every control layer are continuous with no stud-depth jog.
 from typehaus import (
     Assembly,
     AssemblyInterface,
@@ -14,9 +14,7 @@ from typehaus import (
     LayerFunction,
     MasonrySpec,
     Material,
-    Substitution,
     inch,
-    layers,
 )
 from library import INT_2X4_PARTITION, STARTER_MATERIALS
 
@@ -34,7 +32,12 @@ _GWB_LINING = (
           function=LayerFunction.FINISH),
 )
 
-# --- exterior wall family (the #43 motivating stack) --------------------------
+# --- exterior wall family -----------------------------------------------------
+# One 2x6 exterior wall type for main, second and attic. Storey nuance that is a
+# purchasing note rather than a different assembly: the MAIN storey's studs are LSL
+# (straightness under the 9' first-floor glazing/cabinet runs); second + attic are
+# standard dimensional 2x6 SPF. Same 5.5" depth either way, so one assembly tells
+# the truth about the geometry and the source string records the material split.
 CATLIN_EXT_2X6 = Assembly(
     tag="CATLIN_EXT_2X6",
     layers=(
@@ -58,24 +61,7 @@ CATLIN_EXT_2X6 = Assembly(
     ),
     interfaces=(_STUD_BEARING,),
     default_lining=_GWB_LINING,
-    source="catlin-house ifcplot/catlin_house.py wall siding stack",
-)
-
-# Second storey + attic: same envelope, shallower studs (#43 stack-width change).
-CATLIN_EXT_2X4 = Assembly(
-    tag="CATLIN_EXT_2X4",
-    variant_of="CATLIN_EXT_2X6",
-    substitute=(
-        Substitution(
-            span=layers("stud", "stud"),
-            replacement=(
-                Layer(name="stud", material_ref="spf", thickness=inch(3.5),
-                      function=LayerFunction.STRUCTURE,
-                      framing=FramingSpec(member="2x4"),
-                      cavity=CavityFill(material_ref="mineral-wool")),
-            ),
-        ),
-    ),
+    source="catlin-house ifcplot/catlin_house.py wall siding stack; main-storey studs are LSL, second/attic standard dimensional 2x6",
 )
 
 # --- hot roof (unvented; no batten framing grows — → 30 §WP3.11) --------------
@@ -555,7 +541,6 @@ CONSTRUCTION_RULES = [
 
 ASSEMBLIES = [
     CATLIN_EXT_2X6,
-    CATLIN_EXT_2X4,
     CATLIN_ROOF,
     CATLIN_BASEMENT_12,
     CATLIN_SLAB_FLOOR,

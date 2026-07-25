@@ -31,8 +31,10 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   posts spanning that 4' gap door-to-door (`params/breezeway.py`).
 - 36'x36' at sheathing; everything on the 16" o.c. module; exterior walls carry
   `alignment=face("sheathing-ext")` so the sheathing plane is the vertical datum (#43).
-- The side-wall stack is 2x6 (main) → 2x4 (second) → 2x4 (attic) — sheathing plane
-  continuous, stud depth jogs inward.
+- The side-wall stack is 2x6 throughout — one `CATLIN_EXT_2X6` on main, second and
+  attic, sheathing plane continuous, no stud-depth jog. Main-storey studs are LSL,
+  the upper storeys standard dimensional 2x6 (a purchasing note recorded in the
+  assembly's `source`, not a separate assembly).
 - Bearing lines: west wall, center N-S wall (x=18'), east wall; 18' I-joist spans E-W.
 - Attic is a habitable hot-roofed cathedral space: 5' knee walls E/W, gables N/S,
   ridge N-S, 4:12, **zero overhang**.
@@ -42,6 +44,9 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   without a beam under it dumps ~1.5 klf of thrust into knee walls that can take ~0.1.
 - Window rules: 14" RO fits a stud bay; 30" RO max non-bearing (one stud broken);
   27" RO max bearing (jacks added). Resize windows to fit the grid, not vice versa.
+  One type per width family — WT-1424, WT-2736, WT-3036, WT-3660 (basement concrete
+  only) — each family sharing the one height that fits its most constrained wall
+  (attic knee wall for 14", the garage's 8' wall for 27", the attic gables for 30").
 
 ## The loop: edit → build → check → *look* → fix
 ```
