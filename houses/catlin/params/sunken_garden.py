@@ -11,8 +11,10 @@ Vertical stack (project-north frame; +X east, +Y north, +Z up):
 - The north 8' of that U is the *porch*: a 16" arched "front" cross-wall (three piers +
   two arches) on the south, two 12" side walls, and — on the north (house) side — NO
   concrete wall. That north edge is carried by a 12" sonotube column at midspan plus two
-  PT 2x12 back beams hung into the side walls. PT 2x8 joists span N-S from the front-wall
-  sill to the back beams; composite decking is the walking surface. Porch floor = main (0').
+  PT 2x12 back beams hung into the side walls; column and beam line sit a SPEC south-offset
+  inside the edge (so the tube and its bell footing clear the house), and the deck edge
+  cantilevers over them. PT 2x8 joists span N-S from the front-wall sill to the back
+  beams; composite decking is the walking surface. Porch floor = main (0').
 - A masonry "railing" (white brick / air gap / grouted CMU / stucco) rides the front + side
   walls as the porch guard; its grouted CMU cores receive the balcony post bases.
 - The *balcony* one storey up (second, ~9-10') rides six 6x6 pillars (10' o.c. E-W, 8'
@@ -85,6 +87,11 @@ class SunkenGardenSpec:
     arch_opening_height_ft: float = 8.0  # total: 4' straight + 4' semicircular rise
     # porch framing
     column_diameter_in: float = 12.0  # sonotube back-beam support
+    # Sonotube centre set south of the deck's north-edge line. Centred *on* that line the
+    # 12" tube pokes 6" north — through the 5" insulation gap and into the house cladding —
+    # and its 30" bell footing reaches 15" toward the house footing. 15" tucks the bell's
+    # north face exactly onto the north-edge line, where the doweled thermal-break joint is.
+    column_south_offset_in: float = 15.0
     porch_joist: str = "2x8"
     porch_joist_oc_in: float = 16.0
     back_beam: str = "2-2x12"  # PT, two ~9'6" spans column -> side-wall hangers
@@ -121,7 +128,7 @@ _x_ax_e = _x_in_e + _half  # 28.0
 # on that one north-edge line so the deck actually reaches to within 5" of the house.
 _y_out_n = -(SPEC.house_ext_layers_in + SPEC.gap_to_house_in) / 12.0  # -0.833'
 _y_ax_n = _y_out_n  # side-wall north-end nodes (open ends terminate here → face at the gap)
-_y_in_n = _y_out_n  # porch deck north edge / back-beam + column line
+_y_in_n = _y_out_n  # porch deck north edge (back beams + column sit a SPEC offset south)
 _y_in_arch = _y_in_n - SPEC.porch_clear_depth_ft  # north (inner) face of the 16" front wall
 _y_ax_arch = _y_in_arch - _arch_half  # front-wall axis (arch nodes + arch railing + front pillars)
 _y_in_s = _y_in_n - SPEC.clear_length_ft
@@ -191,13 +198,19 @@ RETAINING_WALL_SPAN_X_FT = (_x_ax_w, _x_ax_e)
 RETAINING_WALL_TOP_FT = SPEC.retaining_top_ft
 RETAINING_WALL_THICKNESS_IN = SPEC.wall_thickness_in
 
-# Sonotube column (12" round) at the porch's north edge midspan, carrying the two back
-# beams. Its top lands on the 2x12 back-beam soffit (one beam depth below the 0' porch
-# deck), so the beams seat directly on the column and it reads "slightly shorter than the
-# arched front wall". Base at the column footing top (basement elevation, -9').
+# Sonotube column (12" round) at midspan, a SPEC south-offset inside the porch rather than
+# on the deck's north-edge line (see ``column_south_offset_in`` — on the line, the tube and
+# its bell footing both poked north into the house). The whole back-beam line re-anchors to
+# the same offset — nodes, hangers, and tie all at ``_y_col`` — so the two beams stay
+# collinear and the deck's north edge cantilevers over them to the house gap.
+# Its top lands on the 2x12 back-beam soffit (one beam depth below the 0' porch deck), so
+# the beams seat directly on the column and it reads "slightly shorter than the arched
+# front wall". Base at the column footing top (basement elevation, -9').
 _back_beam_depth_ft = 11.25 / 12.0  # 2x12 actual depth
+_y_col = _y_in_n - SPEC.column_south_offset_in / 12.0
+_col_footing_width_in = 30.0  # spread footing (bell) under the sonotube
 COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
-              position=pt(ft(_cx), ft(_y_in_n)), size="12 round",
+              position=pt(ft(_cx), ft(_y_col)), size="12 round",
               height=ft(SPEC.basement_depth_ft - _back_beam_depth_ft),
               supported_by="FT-SG-COL")
 
@@ -209,7 +222,7 @@ FOOTINGS = [
 # Spread footing (bell) under the sonotube column.
 FOOTINGS.append(
     Footing(uid="SGF199AAAA", tag="FT-SG-COL", under="PT-SG-COL",
-            width=inch(30), depth=inch(12))
+            width=inch(_col_footing_width_in), depth=inch(12))
 )
 
 # All footings bear on a shared 42" compacted-aggregate section. The footings adjacent to
@@ -285,12 +298,15 @@ RAILING_WALLS = [
 # ============================================================================
 # Main (porch, 0'): back beams on the column, composite deck.
 # ============================================================================
+# The back-beam line rides at the column's south-offset (``_y_col``), not on the deck's
+# north-edge line: the beams stay collinear through the column and the deck edge
+# cantilevers the offset over them toward the house gap.
 MAIN_NODES = [
-    Node(uid="SGNM01AAAA", tag="N-SGM-NW", position=pt(ft(_x_ax_w), ft(_y_in_n)),
+    Node(uid="SGNM01AAAA", tag="N-SGM-NW", position=pt(ft(_x_ax_w), ft(_y_col)),
          open_end=True),
-    Node(uid="SGNM02AAAA", tag="N-SGM-NE", position=pt(ft(_x_ax_e), ft(_y_in_n)),
+    Node(uid="SGNM02AAAA", tag="N-SGM-NE", position=pt(ft(_x_ax_e), ft(_y_col)),
          open_end=True),
-    Node(uid="SGNM03AAAA", tag="N-SGM-COL", position=pt(ft(_cx), ft(_y_in_n))),
+    Node(uid="SGNM03AAAA", tag="N-SGM-COL", position=pt(ft(_cx), ft(_y_col))),
 ]
 
 # Two PT 2x12 back beams: sonotube column -> side-wall hangers (two ~9'6" spans).
@@ -330,11 +346,16 @@ _balcony_joist_depth_ft = 7.25 / 12.0  # 2x8 deck joist
 # land here — see _balcony_beam_soffit below for where it actually ends up. Subtracting the
 # joist depth here as well would double-count it and shorten every pillar by 7.25".
 _beam_soffit = ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft)
-# The *resolved* soffit: what the E-W girts hang from and the N-S braces land on.
+# The *resolved* soffit: the pillar-top plane the beams and E-W girts sit on, and the
+# plane both brace families rise to.
 _balcony_beam_soffit = ft(SPEC.balcony_level_ft - _balcony_joist_depth_ft
                           - _balcony_beam_depth_ft)  # 8.625'
-_girt_depth_ft = 7.25 / 12.0  # 2-2x8
-_girt_soffit = _balcony_beam_soffit - ft(_girt_depth_ft)  # 8.021'
+_girt_depth_ft = 9.25 / 12.0  # 2x10 — same depth as the double-2x10 beams, so tops finish flush
+# The girts ride ON the pillar tops now (not bolted to the faces a girt-depth lower), so
+# their soffit IS the resolved pillar-top / beam-soffit plane and the E-W knee braces land
+# at the same soffit the N-S braces do.
+_girt_soffit = _balcony_beam_soffit  # 8.625'
+_girt_top = _balcony_beam_soffit + ft(_girt_depth_ft)  # 9.396' — flush with the beam tops
 _porch_walking_surface = inch(SPEC.porch_deck_thickness_in)  # top of SL-SG-PORCH
 _PILLAR_X = (_x_ax_w, _cx, _x_ax_e)
 # (row, x index) -> the railing wall whose grouted cores hold that pillar's base.
@@ -376,20 +397,46 @@ BALCONY_BEAMS = [
          size=SPEC.balcony_beam, bearing_refs=("PT-SG-BR3", "PT-SG-BF3")),
 ]
 
-# Two E-W girts, one per pillar row, through-bolted to the 6x6 faces just under the N-S
-# beams. They carry no joists — the deck spans E-W onto the beams above them — and exist so
-# the balcony has a load path in its second principal direction at all. Without an E-W member
-# at the pillar tops there is nothing for an E-W knee brace to reach, and a freestanding deck
-# on standoff post bases (pinned top and bottom) has no other lateral resistance that way.
-# Each runs the full 20' across all three pillars in its row; the un-braced centre pillar butts
-# into it as a leaning column.
+# E-W girts, one pair of segments per pillar row, up ON the pillar tops in the same
+# horizontal band as the N-S beams (soffit at the resolved pillar-top plane, tops flush
+# with the beam tops one joist depth under the deck datum). They carry no joists — the deck
+# spans E-W onto the beams beside them — and exist so the balcony has a load path in its
+# second principal direction at all. Without an E-W member at the pillar tops there is
+# nothing for an E-W knee brace to reach, and a freestanding deck on standoff post bases
+# (pinned top and bottom) has no other lateral resistance that way.
+#
+# A girt sharing the beams' band cannot run the full 20' — it would pass *through* the
+# three N-S beams — so each row is two segments meeting the beams cleanly:
+# - Front row: segment ends at the beam faces (±1.5" off the pillar axes). The end laps
+#   onto the 1.25" pillar-top strip beside the double-2x10 and butts the beam side.
+# - Rear row: the rear pillars run 2" proud of the shared soffit (the drainage rise), so
+#   the segments stop at the pillar faces (±2.75") and butt that proud pillar top instead;
+#   the 1.25" back to the beam face is the hanger's saddle at each end.
+_beam_face_ft = 1.5 / 12.0   # half the 3"-wide double-2x10 N-S beam
+_pillar_face_ft = 2.75 / 12.0  # half the 5.5" actual 6x6
+GIRT_NODES = [
+    Node(uid="SGNG01AAAA", tag="N-SGG-RW1", position=pt(ft(_x_ax_w + _pillar_face_ft), ft(_y_in_n))),
+    Node(uid="SGNG02AAAA", tag="N-SGG-RW2", position=pt(ft(_cx - _pillar_face_ft), ft(_y_in_n))),
+    Node(uid="SGNG03AAAA", tag="N-SGG-RE1", position=pt(ft(_cx + _pillar_face_ft), ft(_y_in_n))),
+    Node(uid="SGNG04AAAA", tag="N-SGG-RE2", position=pt(ft(_x_ax_e - _pillar_face_ft), ft(_y_in_n))),
+    Node(uid="SGNG05AAAA", tag="N-SGG-FW1", position=pt(ft(_x_ax_w + _beam_face_ft), ft(_y_ax_arch))),
+    Node(uid="SGNG06AAAA", tag="N-SGG-FW2", position=pt(ft(_cx - _beam_face_ft), ft(_y_ax_arch))),
+    Node(uid="SGNG07AAAA", tag="N-SGG-FE1", position=pt(ft(_cx + _beam_face_ft), ft(_y_ax_arch))),
+    Node(uid="SGNG08AAAA", tag="N-SGG-FE2", position=pt(ft(_x_ax_e - _beam_face_ft), ft(_y_ax_arch))),
+]
 BALCONY_GIRTS = [
-    Beam(uid="SGBG01AAAA", tag="BM-SG-GIRT-R", start_node="N-SGB-NW", end_node="N-SGB-NE",
-         size="2-2x8", top_elevation=_balcony_beam_soffit,
-         bearing_refs=("PT-SG-BR1", "PT-SG-BR2", "PT-SG-BR3")),
-    Beam(uid="SGBG02AAAA", tag="BM-SG-GIRT-F", start_node="N-SGB-SW", end_node="N-SGB-SE",
-         size="2-2x8", top_elevation=_balcony_beam_soffit,
-         bearing_refs=("PT-SG-BF1", "PT-SG-BF2", "PT-SG-BF3")),
+    Beam(uid="SGBG01AAAA", tag="BM-SG-GIRT-RW", start_node="N-SGG-RW1", end_node="N-SGG-RW2",
+         size="2x10", top_elevation=_girt_top,
+         bearing_refs=("PT-SG-BR1", "PT-SG-BR2")),
+    Beam(uid="SGBG03AAAA", tag="BM-SG-GIRT-RE", start_node="N-SGG-RE1", end_node="N-SGG-RE2",
+         size="2x10", top_elevation=_girt_top,
+         bearing_refs=("PT-SG-BR2", "PT-SG-BR3")),
+    Beam(uid="SGBG02AAAA", tag="BM-SG-GIRT-FW", start_node="N-SGG-FW1", end_node="N-SGG-FW2",
+         size="2x10", top_elevation=_girt_top,
+         bearing_refs=("PT-SG-BF1", "PT-SG-BF2")),
+    Beam(uid="SGBG04AAAA", tag="BM-SG-GIRT-FE", start_node="N-SGG-FE1", end_node="N-SGG-FE2",
+         size="2x10", top_elevation=_girt_top,
+         bearing_refs=("PT-SG-BF2", "PT-SG-BF3")),
 ]
 
 # Aluminum decking walking surface (framing = 2x8 joists, E-W @ 16" o.c., on the 3 beams).
@@ -436,14 +483,19 @@ BALCONY_JOISTS = FloorSystem(
 # the joint transfers shear without a thermal bridge. Bars at mid-footing (-9.25').
 # ============================================================================
 _dowel_z = ft(-(SPEC.basement_depth_ft + 0.75) + SPEC.footing_thickness_in / 24.0)  # -9.25'
-_DOWEL_AT = (("W1", _x_ax_w), ("E1", _x_ax_e), ("COL", _cx))
+# The side-wall dowels sit on the north-edge line; the column's follow the column to its
+# bell footing's *north face* — the plane that actually abuts the house footing now that
+# the column stands a south-offset inside the porch. (At the default 15" offset that face
+# lands back on the north-edge line, so the joint the bars cross is the same plane.)
+_col_joint_y = _y_col + _col_footing_width_in / 24.0
+_DOWEL_AT = (("W1", _x_ax_w, _y_in_n), ("E1", _x_ax_e, _y_in_n), ("COL", _cx, _col_joint_y))
 DOWELS = [
-    Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}", position=pt(ft(x), ft(_y_in_n)),
+    Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}", position=pt(ft(x), ft(y)),
           axis="y", length=inch(24), diameter=inch(0.625), elevation=_dowel_z,
           count=3, spacing=inch(8),
           connects=(f"FT-SG-{name}", "FT-B-S2"),
           foam_thickness=inch(2), foam_height=inch(SPEC.footing_thickness_in), foam_psi=40.0)
-    for i, (name, x) in enumerate(_DOWEL_AT, start=1)
+    for i, (name, x, y) in enumerate(_DOWEL_AT, start=1)
 ]
 
 # ============================================================================
@@ -465,13 +517,13 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
 # Porch back-beam pockets: joist hanger into the side wall + hurricane tie over the column.
 CONNECTORS += [
     Connector(uid="SGCH01AAAA", tag="CN-SG-HGR-W", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(_x_ax_w), ft(_y_in_n)), elevation=_porch_top, size="LUS210",
+              position=pt(ft(_x_ax_w), ft(_y_col)), elevation=_porch_top, size="LUS210",
               connects=("BM-SG-BKW", "W-SG-W1")),
     Connector(uid="SGCH02AAAA", tag="CN-SG-HGR-E", kind=ConnectorKind.JOIST_HANGER,
-              position=pt(ft(_x_ax_e), ft(_y_in_n)), elevation=_porch_top, size="LUS210",
+              position=pt(ft(_x_ax_e), ft(_y_col)), elevation=_porch_top, size="LUS210",
               connects=("BM-SG-BKE", "W-SG-E1")),
     Connector(uid="SGCT01AAAA", tag="CN-SG-TIE-COL", kind=ConnectorKind.HURRICANE_TIE,
-              position=pt(ft(_cx), ft(_y_in_n)), elevation=_porch_top, size="H2.5A",
+              position=pt(ft(_cx), ft(_y_col)), elevation=_porch_top, size="H2.5A",
               connects=("BM-SG-BKW", "BM-SG-BKE", "PT-SG-COL")),
 ]
 
@@ -490,8 +542,9 @@ CONNECTORS += [
 #   thrust into PT-SG-BR2, which is the one pillar bearing on the porch decking rather than
 #   on grouted masonry — the worst place in the frame to load laterally.
 # - One brace per element. Each pillar is a beam *end*, so only one brace fits in the beam's
-#   own plane; the second brace at a corner is the E-W one, against the girt a girt-depth
-#   lower. The old "matched pair per joint" rule billed 12 braces that could not be built.
+#   own plane; the second brace at a corner is the E-W one, against the girt segment in its
+#   row — now at the same soffit as the beams, since the girts ride the pillar tops. The
+#   old "matched pair per joint" rule billed 12 braces that could not be built.
 # ============================================================================
 # (row, pillar index, N-S lean, E-W lean). Rear posts brace south toward the beam's midspan
 # and front posts brace north; the west pillar of each row braces east, the east one west.
@@ -506,7 +559,10 @@ _EW_BRACE_UID = {("R", 1): "SGKX1RAAAA", ("R", 3): "SGKX3RAAAA",
                  ("F", 1): "SGKX1FAAAA", ("F", 3): "SGKX3FAAAA"}
 _ROW_Y = {"R": _y_in_n, "F": _y_ax_arch}
 _NS_BEAM = {1: "BM-SG-BLW", 3: "BM-SG-BLE"}
-_EW_GIRT = {"R": "BM-SG-GIRT-R", "F": "BM-SG-GIRT-F"}
+# The west pillar of each row braces east into its row's west girt segment; the east
+# pillar braces west into the east segment.
+_EW_GIRT = {("R", 1): "BM-SG-GIRT-RW", ("R", 3): "BM-SG-GIRT-RE",
+            ("F", 1): "BM-SG-GIRT-FW", ("F", 3): "BM-SG-GIRT-FE"}
 KNEE_BRACES = []
 for _row, _i, _ns, _ew in _BRACED_CORNERS:
     _post = f"PT-SG-B{_row}{_i}"
@@ -520,7 +576,7 @@ for _row, _i, _ns, _ew in _BRACED_CORNERS:
         uid=_EW_BRACE_UID[(_row, _i)], tag=f"KB-SG-{_row}{_i}-EW", position=_at,
         soffit_elevation=_girt_soffit, leg=_BRACE_LEG, axis="x", direction=_ew,
         member="2x6", post_size=SPEC.pillar_size,
-        connects=(_post, _EW_GIRT[_row])))
+        connects=(_post, _EW_GIRT[(_row, _i)])))
 
 # ============================================================================
 # Balcony guard + edge trim. The metal fascia-mounted guardrail is a first-class Railing
@@ -549,14 +605,18 @@ BALCONY_FASCIA = Fascia(
     host_ref="SL-SG-DECK")
 # Front (south, low) edge only.
 _FRONT_PATH = (pt(ft(_deck_x_w), ft(_y_ax_arch)), pt(ft(_deck_x_e), ft(_y_ax_arch)))
+# The gutter's rim meets the drip flashing's lower edge (drip top = deck top, its depth
+# below that), so water shedding off the drip lands straight in the trough. Hung 9" down
+# it cleared the drip by 6" and the sheet overshot the trough entirely.
+_drip_depth_in = 3.0
 BALCONY_GUTTER = Gutter(
     uid="SGGT01AAAA", tag="TR-SG-GUTTER", kind=TrimKind.GUTTER, path=_FRONT_PATH,
-    top_elevation=_deck_top - inch(9), depth=inch(4), thickness=inch(5), material="aluminum",
-    host_ref="TR-SG-FASCIA", slope="1/16 in/ft to SE downspout")
+    top_elevation=_deck_top - inch(_drip_depth_in), depth=inch(4), thickness=inch(5),
+    material="aluminum", host_ref="TR-SG-FASCIA", slope="1/16 in/ft to SE downspout")
 BALCONY_DRIP = Flashing(
     uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,
-    top_elevation=_deck_top, depth=inch(3), thickness=inch(3), material="aluminum",
-    host_ref="TR-SG-GUTTER")
+    top_elevation=_deck_top, depth=inch(_drip_depth_in), thickness=inch(3),
+    material="aluminum", host_ref="TR-SG-GUTTER")
 # Rear (north, house-side) counter-flashing tucked up into the house WRB.
 _REAR_PATH = (pt(ft(_deck_x_w), ft(_y_in_n)), pt(ft(_deck_x_e), ft(_y_in_n)))
 BALCONY_REAR_FLASH = Flashing(
@@ -572,6 +632,6 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *RAILING_WALLS, COLUMN, *FOOTINGS,
 # Every remaining connector is porch hardware at the deck (post bases, hangers, the column
 # tie), so main takes them whole; the knee braces are the only second-storey hardware.
 MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, PORCH_FLOOR, PORCH_JOISTS, *CONNECTORS]
-SECOND_ELEMENTS = [*SECOND_NODES, *BALCONY_BEAMS, *BALCONY_GIRTS, *PILLARS, DECK_FLOOR,
+SECOND_ELEMENTS = [*SECOND_NODES, *GIRT_NODES, *BALCONY_BEAMS, *BALCONY_GIRTS, *PILLARS, DECK_FLOOR,
                    BALCONY_JOISTS, *KNEE_BRACES, BALCONY_GUARD, BALCONY_FASCIA,
                    BALCONY_GUTTER, BALCONY_DRIP, BALCONY_REAR_FLASH]

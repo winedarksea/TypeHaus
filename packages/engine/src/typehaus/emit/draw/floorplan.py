@@ -33,6 +33,7 @@ def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
 
     for wall in walls:
         emit_wall(b, wall)
+    _emit_slabs(b, model, storey)
     _emit_openings(b, model, {w.tag for w in walls})
     _emit_stairs(b, model, storey)
     _emit_rooms(b, model, storey)
@@ -117,6 +118,31 @@ def _emit_rooms(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                    layer="A-AREA-IDEN", align="center"))
         b.add(Text(anchor=_in((cx, cy - 0.3)), content=f"{area_sf:.0f} SF", height=3.0,
                    layer="A-AREA-IDEN", align="center"))
+
+
+def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
+    """Draw every resolved slab outline on its storey's plan (decks included).
+
+    The plan slice showed no slabs at all, so a walking surface with no enclosing walls —
+    the porch's composite deck on main, the balcony's aluminum deck on second — was
+    invisible in 2D. Same dedupe idiom as ``_emit_stairs``: sort for a stable draw order,
+    then skip a slab whose outline coincides with one already drawn.
+    """
+    slabs = sorted((s for s in model.solids
+                    if s.category == "slab" and s.storey == storey),
+                   key=lambda s: s.uid)
+    seen_outlines: set[tuple[tuple[float, float], ...]] = set()
+    for slab in slabs:
+        outline_key = tuple(sorted((round(x, 6), round(y, 6)) for x, y in slab.outline))
+        if outline_key in seen_outlines:
+            continue
+        seen_outlines.add(outline_key)
+        b.add(Polyline(points=tuple(_in(p) for p in slab.outline), layer="A-SLAB",
+                       closed=True, lineweight=0.35, uid=slab.uid, tag=slab.tag))
+        cx = sum(p[0] for p in slab.outline) / len(slab.outline)
+        cy = sum(p[1] for p in slab.outline) / len(slab.outline)
+        b.add(Text(anchor=_in((cx, cy)), content=slab.tag, height=2.2, layer="A-SLAB",
+                   align="center"))
 
 
 def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:

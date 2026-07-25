@@ -129,3 +129,30 @@ def test_raised_garden_is_not_part_of_the_thermal_envelope(catlin_model) -> None
     # The inner cheek reuses the sunken garden's cast section; it must not drag that
     # already-exempt assembly back into the table either.
     assert "SUNKEN_GARDEN_WALL" not in components
+
+
+# --- porch third pass: sonotube south-offset + gutter at the drip edge -------
+def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> None:
+    """PT-SG-COL stands a SPEC south-offset (15") inside the deck's north edge, so the
+    12" tube clears the house cladding and its 30" bell footing's north face lands exactly
+    on the north-edge line — the doweled thermal-break joint plane."""
+    deck_edge_y = max(p[1] for p in _solid(catlin_model, "SL-SG-PORCH").outline)
+    column = _solid(catlin_model, "PT-SG-COL")
+    column_y = sum(p[1] for p in column.outline) / len(column.outline)
+    assert column_y == pytest.approx(deck_edge_y - 15 * INCH)
+    assert max(p[1] for p in column.outline) < deck_edge_y  # tube fully inside the edge
+    bell = _solid(catlin_model, "FT-SG-COL")
+    assert max(p[1] for p in bell.outline) == pytest.approx(deck_edge_y)
+    # The back-beam line (and its midspan node) re-anchors to the same offset, collinear.
+    for tag in ("BM-SG-BKW", "BM-SG-BKE"):
+        beam = _solid(catlin_model, tag)
+        for _, y in beam.outline:
+            assert y == pytest.approx(column_y, abs=2 * INCH)  # within the beam half-width
+
+
+def test_balcony_gutter_rim_meets_the_drip_edge(catlin_model) -> None:
+    """Water shedding off the drip flashing lands in the trough: the gutter's top meets
+    the drip's lower edge instead of hanging 6" of open air below it."""
+    gutter = _solid(catlin_model, "TR-SG-GUTTER-1")
+    drip = _solid(catlin_model, "TR-SG-DRIP-1")
+    assert gutter.z1_m == pytest.approx(drip.z0_m)

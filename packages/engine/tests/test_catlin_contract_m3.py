@@ -484,6 +484,19 @@ def test_stairs_render_on_both_connected_storey_plans(catlin_model):
         assert seen == expected
 
 
+def test_deck_slabs_render_on_their_storey_plans(catlin_model):
+    """The porch composite deck (main) and balcony aluminum deck (second) enclose no
+    walls, so without slab outlines the plan slice drew them as empty air."""
+    from typehaus.emit.draw.floorplan import build_floorplan
+    from typehaus.emit.draw.scene import Polyline
+
+    for storey, tag in (("main", "SL-SG-PORCH"), ("second", "SL-SG-DECK")):
+        outlines = [node for node in build_floorplan(catlin_model, storey).nodes
+                    if isinstance(node, Polyline) and getattr(node, "tag", None) == tag]
+        assert len(outlines) == 1, (storey, tag)
+        assert outlines[0].layer == "A-SLAB" and outlines[0].closed
+
+
 def test_catlin_drain_fixtures_use_six_inch_wet_walls():
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     findings = [finding for finding in report.findings if finding.check_id == "advisory.wet_wall_depth"]
@@ -668,10 +681,12 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     beams = {el.tag for el in elements if el.element_kind == "Beam" and el.tag.startswith("BM-SG-")}
     assert "PT-SG-COL" in posts  # sonotube column
     assert len([t for t in posts if t.startswith("PT-SG-B")]) == 6  # 6x6 pillars
-    # 2 PT 2x12 back beams + 3 double-2x10 N-S balcony beams + 2 E-W girts (the girts give
-    # the freestanding balcony a member to brace against in its second principal direction).
-    assert len(beams) == 7
-    assert {"BM-SG-GIRT-R", "BM-SG-GIRT-F"} <= beams
+    # 2 PT 2x12 back beams + 3 double-2x10 N-S balcony beams + 4 E-W girt segments (two
+    # per pillar row, butting the beams; the girts give the freestanding balcony a member
+    # to brace against in its second principal direction).
+    assert len(beams) == 9
+    assert {"BM-SG-GIRT-RW", "BM-SG-GIRT-RE",
+            "BM-SG-GIRT-FW", "BM-SG-GIRT-FE"} <= beams
 
     # Both exterior decks carry a decking assembly.
     porch = next(s for s in catlin_model.solids if s.tag == "SL-SG-PORCH")
