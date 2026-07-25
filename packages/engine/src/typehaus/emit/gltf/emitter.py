@@ -61,6 +61,14 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "joist": (0.72, 0.55, 0.36, 1.0),
     "rim": (0.66, 0.48, 0.30, 1.0),
     "ridge_beam": (0.55, 0.38, 0.22, 1.0),
+    # Stick-framed roof lumber + the blocking that fills between it. These had no entry at
+    # all, so ~260 members rendered as the neutral gray fallback in *both* renderers (the
+    # "garage truss should visualize as wood" report). Values chosen to round-trip exactly
+    # to the hex literals in ui/src/three/members.ts CATEGORY_COLOR.
+    "rafter": (0.678, 0.498, 0.310, 1.0),        # 0xad7f4f
+    "blocking": (0.639, 0.463, 0.247, 1.0),      # 0xa3763f
+    "outlooker": (0.722, 0.549, 0.361, 1.0),     # 0xb88c5c
+    "barge_rafter": (0.549, 0.384, 0.220, 1.0),  # 0x8c6238
     # roof truss members + the birdsmouth seat cut
     "top_chord": (0.70, 0.52, 0.33, 1.0),
     "bottom_chord": (0.66, 0.48, 0.30, 1.0),

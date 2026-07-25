@@ -28,6 +28,12 @@ class Wall(Element):
     top: Length | ToRoof | None = None  # None => underside of FloorSystem above
     # Which assembly face lies on the node-to-node axis.
     alignment: FaceRef | None = None  # None => center
+    # Which side layer 0 (the assembly's *interior* face) looks at, named by Room tag.
+    # The storey's outer loop settles this for an exterior wall, but an interior partition
+    # has rooms on both sides, so an asymmetric assembly (a sauna liner, say) needs the side
+    # declared. A Room reference rather than a bare flip: swapping start_node/end_node would
+    # silently invert a flip, and does not touch this.
+    interior_room: str | None = None  # None => follow the storey's outward sign
     structural_role: StructuralRole = StructuralRole.UNKNOWN
     # Vertical stacking (#43).
     vertical_datum: FaceRef | None = None  # None => storey default

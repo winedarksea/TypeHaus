@@ -3,8 +3,13 @@
 The four Catlin returns (CR-CONC-TO-FRAMED-SILL, CR-SAUNA-LINER-RETURN,
 CR-FOUNDATION-FOAM-RETURN, CR-PORCH-MASONRY-RETURN) are authored on
 ``PlanModel.construction_rules`` and were, before this pass, consumed by nothing. These
-tests assert each now emits a resolved return, a render solid, and a take-off row, and
-carries the overlay metadata a detail recipe binds to — without touching framing members.
+tests assert each now emits a resolved return and a take-off row, and carries the overlay
+metadata a detail recipe binds to — without touching framing members.
+
+A return is documentation + take-off, *not* render geometry: a correctly-placed return
+duplicates the mitred layer polygon its host wall already draws, so the pass emits no
+``ResolvedSolid``. (It used to, and those prisms rendered as gray fins floating off the
+house in 3D and as phantom concrete rectangles in every building section.)
 """
 
 from __future__ import annotations
@@ -27,25 +32,26 @@ def test_all_authored_returns_are_emitted(catlin_model) -> None:
     assert _RULE_TAGS <= emitted, _RULE_TAGS - emitted
 
 
-def test_returns_emit_valid_render_geometry(catlin_model) -> None:
-    """Each return has a real (positive-area, valid) plan polygon and a z extent, and is
-    mirrored into ``model.solids`` so section/3D/IFC/model.json render it."""
-    solid_uids = {solid.uid for solid in catlin_model.solids}
+def test_returns_carry_valid_quantity_geometry(catlin_model) -> None:
+    """Each return has a real (positive-area, valid) plan polygon and a z extent — the
+    quantity the take-off and the overlay recipe measure."""
     for ret in catlin_model.construction_returns:
         poly = Polygon(ret.outline)
         assert poly.is_valid and poly.area > 0.0, ret.tag
         assert ret.z1_m > ret.z0_m, ret.tag
-        assert ret.uid in solid_uids, ret.tag  # renders via the shared solid path
 
 
-def test_returns_do_not_pose_as_structural_solids(catlin_model) -> None:
-    """Returns must never be emitted as column/beam solids — those are the only solids the
-    member-interference check inspects, so a return must not create a false clash."""
+def test_returns_emit_no_solids(catlin_model) -> None:
+    """Regression guard: no return may reach ``model.solids``.
+
+    A solid here duplicated geometry the host wall already draws (z-fighting in 3D) and put
+    49 phantom concrete rectangles on layer S-FNDN in every section and detail sheet. Both
+    the uid and the old ``return:`` category prefix are checked, so neither route comes back.
+    """
     return_uids = {ret.uid for ret in catlin_model.construction_returns}
-    for solid in catlin_model.solids:
-        if solid.uid in return_uids:
-            assert solid.category not in ("column", "beam")
-            assert solid.category.startswith("return:")
+    assert return_uids  # the guard is only meaningful if returns exist at all
+    assert not [s for s in catlin_model.solids if s.uid in return_uids]
+    assert not [s for s in catlin_model.solids if s.category.startswith("return:")]
 
 
 def test_returns_contribute_takeoff_rows(catlin_model) -> None:

@@ -414,6 +414,33 @@ export interface Solid {
   provenance: Provenance | null;
 }
 
+// A ConstructionRule return (→ resolve/model.py ResolvedConstructionReturn): the membrane /
+// foam / liner / masonry lap that closes a resolved junction. Documentation + take-off, not
+// render geometry — a correctly-placed return duplicates the mitred layer polygon its host
+// wall already draws, so nothing in 3D draws these; the Inspector reads them.
+export interface ConstructionReturn {
+  uid: string;
+  tag: string; // the ConstructionRule tag, e.g. "CR-CONC-TO-FRAMED-SILL"
+  storey: string;
+  kind: string; // bearing_plate | blocking | ...
+  takeoff_category: string | null;
+  material_ref: string;
+  element_tags: string[]; // participating wall/junction tags
+  outline: Vec2[];
+  z0_m: number;
+  z1_m: number;
+  thickness_m: number;
+  length_m: number;
+  lap_m: number;
+  thermal_continuity: boolean;
+  air_vapor_continuity: boolean;
+  sealant: string | null;
+  flashing: string | null;
+  returning_layer: string | null;
+  condition_key: string | null;
+  provenance: Provenance | null;
+}
+
 // Compacted washed-stone bed dug beneath a strip footing (→ resolve/model.py
 // ResolvedFootingBedding). Drawn in 3D as a gravel prism between z0_m and z1_m.
 export interface FootingBedding {
@@ -509,6 +536,7 @@ export interface Model {
   openings: Opening[];
   roofs?: Roof[];
   solids?: Solid[];
+  construction_returns?: ConstructionReturn[];
   footing_beddings?: FootingBedding[];
   floors?: Floor[];
   stairs?: Stair[];

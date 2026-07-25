@@ -302,6 +302,23 @@ def model_to_dict(
              "provenance": _provenance(provenance, solid.tag)}
             for solid in sorted(model.solids, key=lambda item: item.uid)
         ],
+        # ConstructionRule returns (#45): documentation + take-off records, not render
+        # geometry — a correctly-placed return duplicates the host wall's own mitred layer
+        # polygon, so no solid is emitted for one. Carried here for the inspector/overlay.
+        "construction_returns": [
+            {"uid": ret.uid, "tag": ret.tag, "storey": ret.storey, "kind": ret.kind,
+             "takeoff_category": ret.takeoff_category, "material_ref": ret.material_ref,
+             "element_tags": list(ret.element_tags),
+             "outline": [list(point) for point in ret.outline],
+             "z0_m": ret.z0_m, "z1_m": ret.z1_m, "thickness_m": ret.thickness_m,
+             "length_m": ret.length_m, "lap_m": ret.lap_m,
+             "thermal_continuity": ret.thermal_continuity,
+             "air_vapor_continuity": ret.air_vapor_continuity,
+             "sealant": ret.sealant, "flashing": ret.flashing,
+             "returning_layer": ret.returning_layer, "condition_key": ret.condition_key,
+             "provenance": _provenance(provenance, ret.tag)}
+            for ret in sorted(model.construction_returns, key=lambda item: item.uid)
+        ],
         # Compacted washed-stone footing beds (undercut beneath each strip footing). The 3D
         # viewer draws these as a gravel prism so the bearing prep is visible below grade.
         "footing_beddings": [

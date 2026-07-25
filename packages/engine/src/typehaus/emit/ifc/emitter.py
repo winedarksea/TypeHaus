@@ -64,6 +64,9 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     for solid in sorted(model.solids, key=lambda item: item.uid):
         _emit_solid(f, body, solid, storeys, project_uuid, model)
 
+    for ret in sorted(model.construction_returns, key=lambda item: item.uid):
+        _emit_construction_return(f, body, ret, storeys, project_uuid)
+
     for roof in sorted(model.roofs, key=lambda item: item.uid):
         _emit_roof(f, body, roof, storeys, project_uuid, lod)
 
@@ -506,20 +509,14 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
                 model: Any = None) -> None:
     # NB: IfcPipeSegment is reserved for authored PipeRuns (test_ifc_mep asserts the count
     # equals pipe-run segments) — accessory vents/gutters stay generic proxies.
-    # ConstructionRule returns (#45) are membrane/foam/liner/masonry laps — coverings on the
-    # face they return onto, not footings; carry them as IfcCovering so import reads them as
-    # finishes, not structure.
-    if solid.category.startswith("return:"):
-        ifc_class = "IfcCovering"
-    else:
-        ifc_class = {"slab": "IfcSlab", "column": "IfcColumn", "beam": "IfcBeam",
-                     "railing": "IfcRailing", "dowel": "IfcReinforcingBar",
-                     "connector": "IfcMechanicalFastener", "sump": "IfcTank",
-                     "vent": "IfcBuildingElementProxy", "gutter": "IfcBuildingElementProxy",
-                     "fascia": "IfcCovering", "soffit": "IfcCovering",
-                     "flashing": "IfcCovering",
-                     "thermal_break": "IfcBuildingElementProxy"}.get(solid.category,
-                                                                      "IfcFooting")
+    ifc_class = {"slab": "IfcSlab", "column": "IfcColumn", "beam": "IfcBeam",
+                 "railing": "IfcRailing", "dowel": "IfcReinforcingBar",
+                 "connector": "IfcMechanicalFastener", "sump": "IfcTank",
+                 "vent": "IfcBuildingElementProxy", "gutter": "IfcBuildingElementProxy",
+                 "fascia": "IfcCovering", "soffit": "IfcCovering",
+                 "flashing": "IfcCovering",
+                 "thermal_break": "IfcBuildingElementProxy"}.get(solid.category,
+                                                                  "IfcFooting")
     element = ll.create_entity(f, ifc_class, name=solid.tag)
     element.GlobalId = derive_guid(project_uuid, solid.uid)
     if solid.outline:
@@ -532,6 +529,38 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
     ll.ensure_pset(f, element, PSET_SOURCE, {"uid": solid.uid, "tag": solid.tag,
                                                "category": solid.category})
     ll.assign_container(f, element, storeys[solid.storey])
+
+
+def _emit_construction_return(f: Any, body: Any, ret: Any, storeys: dict[str, Any],
+                              project_uuid: Any) -> None:
+    """A ConstructionRule return (#45) as an ``IfcCovering``.
+
+    The membrane / foam / liner / masonry lap that closes a resolved junction is a *finish*
+    on the face it returns onto, not structure — so it never wanted a ``ResolvedSolid`` (the
+    resolver emits none). The record's own outline/z carry the geometry; the overlay metadata
+    (lap, sealant, flashing, continuity) rides along on the source pset.
+    """
+    element = ll.create_entity(f, "IfcCovering", name=ret.tag)
+    element.GlobalId = derive_guid(project_uuid, ret.uid)
+    if ret.outline:
+        _assign_representation(
+            f, element, ll.add_prism_from_profile(
+                f, body, ret.outline, ret.z1_m - ret.z0_m, ret.z0_m)
+        )
+    ll.ensure_pset(f, element, PSET_SOURCE, {
+        "uid": ret.uid, "tag": ret.tag, "kind": ret.kind,
+        "category": f"return:{ret.takeoff_category or ret.kind}",
+        "material_ref": ret.material_ref,
+        "element_tags": ",".join(ret.element_tags),
+        "lap_m": f"{ret.lap_m:.6f}",
+        "thermal_continuity": ret.thermal_continuity,
+        "air_vapor_continuity": ret.air_vapor_continuity,
+        "sealant": ret.sealant or "",
+        "flashing": ret.flashing or "",
+        "returning_layer": ret.returning_layer or "",
+        "condition_key": ret.condition_key or "",
+    })
+    ll.assign_container(f, element, storeys[ret.storey])
 
 
 def _assign_solid_material(f: Any, element: Any, solid: Any, model: Any) -> None:

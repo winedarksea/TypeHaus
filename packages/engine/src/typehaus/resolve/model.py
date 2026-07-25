@@ -167,8 +167,10 @@ class ResolvedConstructionReturn:
 
     Emitted by :mod:`typehaus.resolve.construction` from a ``PlanModel.construction_rules``
     entry — authoring a :class:`~typehaus.model.assembly.ConstructionRule` is enough to get
-    geometry + BOM + overlay. The same outline/z is also appended to ``model.solids`` so the
-    glTF, IFC, section, and model.json paths render it. It bills through
+    the record + BOM + overlay. It is documentation geometry, not render geometry: no
+    ``ResolvedSolid`` is emitted (a correctly-placed return duplicates the mitred layer
+    polygon its host wall already draws), but the record is serialized to ``model.json`` and
+    emitted as an ``IfcCovering``. It bills through
     :func:`typehaus.takeoff.construction_returns_takeoff` (honouring ``takeoff_category``),
     and carries the element tags + lap / sealant / flashing / thermal-continuity an overlay
     recipe binds to. It never mutates construction geometry: a Transition *documents* it

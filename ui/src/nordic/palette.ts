@@ -74,6 +74,10 @@ export function familyOf(materialRef: string | null | undefined): string | null 
     ["barrier", "membrane"],
     ["siding", "siding"],
     ["clad", "siding"],
+    // Cellular-PVC trim: the derived fascia / soffit / drip members name it, and without an
+    // entry they read as the neutral `fallback` rather than as painted trim.
+    // (`air-barrier` already lands on "membrane" via the "barrier" needle above.)
+    ["pvc", "siding"],
     ["metal", "metal"],
     ["seam", "metal"],
     ["steel", "metal"],

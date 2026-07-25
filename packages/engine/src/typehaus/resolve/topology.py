@@ -24,7 +24,7 @@ from typehaus.resolve.model import (
     ResolvedLayer,
     ResolvedWall,
 )
-from typehaus.resolve.orientation import storey_outward_sign
+from typehaus.resolve.orientation import storey_outward_sign, wall_outward_sign
 
 _EPS = 1e-4  # meters — cavity-insulation coincidence tolerance
 _DIRECTION_EPS = 1e-9
@@ -676,13 +676,14 @@ def resolve_storey_walls(plan: PlanModel, storey_tag: str, z0: float,
                                              list[Finding]]:
     junctions = classify_storey_junctions(plan, storey_tag)
     endpoint_extensions = _endpoint_extensions(plan, junctions)
+    # One graph trace per storey; each wall then only reads its own authored interior_room.
     sign = storey_outward_sign(plan, storey_tag)
     out: list[ResolvedWall] = []
     for wall in _walls(plan, storey_tag):
         rw = resolve_wall_geometry(
             plan, wall, storey_tag, z0, z1, endpoint_extensions,
             is_foundation=wall.element_kind == "FoundationWall",
-            outward_sign=sign,
+            outward_sign=wall_outward_sign(plan, wall, storey_tag, sign),
         )
         if rw is not None:
             out.append(rw)
