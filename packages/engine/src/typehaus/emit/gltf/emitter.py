@@ -20,7 +20,7 @@ from pathlib import Path
 
 from typehaus.emit.draw.palette import family_of, material_color, material_family_color
 from typehaus.model.canvas import canvas_object_types
-from typehaus.model.enums import LayerFunction
+from typehaus.resolve.roof_edges import above_structure_layers
 from typehaus.resolve.model import (
     FramedMember,
     ResolvedCanvasObject,
@@ -729,34 +729,63 @@ def _add_member(mb: _MeshBuilder, member: FramedMember) -> None:
 _RoofVertex = tuple[float, float, float]  # plan-space (x, y, z_elevation)
 
 
-def _roof_plane_triangles(roof: ResolvedRoof) -> list[list[_RoofVertex]]:
-    """The sloped gable/shed planes as plan-space triangles. A port of roofGeometry.ts
-    ``roofPlaneTriangles``; robust to footprint winding (min/max over all corners)."""
+def _roof_plane_z(roof: ResolvedRoof, x: float, y: float) -> float:
+    """Base roof-plane elevation at a plan point (mirrors roof_geometry.roof_height_at,
+    but *unclamped* so a slightly-outset layer edge lands just below the eave plane)."""
     xs = [p[0] for p in roof.footprint]
     ys = [p[1] for p in roof.footprint]
-    minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
-    eave, ridge = roof.eave_z_m, roof.ridge_z_m
+    coordinate = y if roof.ridge_direction == "x" else x
+    low, high = (min(ys), max(ys)) if roof.ridge_direction == "x" else (min(xs), max(xs))
+    span = high - low
+    if span <= 1e-9:
+        return roof.eave_z_m
+    if roof.form == "shed":
+        return roof.eave_z_m + (coordinate - low) / span * (roof.ridge_z_m - roof.eave_z_m)
+    midpoint = (low + high) / 2.0
+    ratio = 1.0 - abs(coordinate - midpoint) / (span / 2.0)
+    return roof.eave_z_m + ratio * (roof.ridge_z_m - roof.eave_z_m)
+
+
+def _roof_plane_triangles(
+    roof: ResolvedRoof, rect: tuple[float, float, float, float] | None = None,
+) -> list[list[_RoofVertex]]:
+    """The sloped gable/shed planes as plan-space triangles. A port of roofGeometry.ts
+    ``roofPlaneTriangles``; robust to footprint winding (min/max over all corners).
+
+    ``rect`` (minx, maxx, miny, maxy) builds the planes over a per-layer inset rectangle
+    instead of the footprint; vertex z is always evaluated from the *base* plane (the
+    full footprint), so inset edges land at the right height and the ridge line stays at
+    the footprint's midline.
+    """
+    xs = [p[0] for p in roof.footprint]
+    ys = [p[1] for p in roof.footprint]
+    fminx, fmaxx, fminy, fmaxy = min(xs), max(xs), min(ys), max(ys)
+    minx, maxx, miny, maxy = rect if rect is not None else (fminx, fmaxx, fminy, fmaxy)
+
+    def v(x: float, y: float) -> _RoofVertex:
+        return (x, y, _roof_plane_z(roof, x, y))
+
     if roof.form == "shed":
         if roof.ridge_direction == "x":
-            flat = [(minx, miny, eave), (maxx, miny, eave), (maxx, maxy, ridge),
-                    (minx, miny, eave), (maxx, maxy, ridge), (minx, maxy, ridge)]
+            flat = [v(minx, miny), v(maxx, miny), v(maxx, maxy),
+                    v(minx, miny), v(maxx, maxy), v(minx, maxy)]
         else:
-            flat = [(minx, miny, eave), (maxx, miny, ridge), (maxx, maxy, ridge),
-                    (minx, miny, eave), (maxx, maxy, ridge), (minx, maxy, eave)]
+            flat = [v(minx, miny), v(maxx, miny), v(maxx, maxy),
+                    v(minx, miny), v(maxx, maxy), v(minx, maxy)]
     elif roof.ridge_direction == "x":
-        mid = (miny + maxy) / 2
-        ra, rb = (minx, mid, ridge), (maxx, mid, ridge)
-        flat = [(minx, miny, eave), (maxx, miny, eave), rb,
-                (minx, miny, eave), rb, ra,
-                ra, rb, (maxx, maxy, eave),
-                ra, (maxx, maxy, eave), (minx, maxy, eave)]
+        mid = (fminy + fmaxy) / 2
+        ra, rb = v(minx, mid), v(maxx, mid)
+        flat = [v(minx, miny), v(maxx, miny), rb,
+                v(minx, miny), rb, ra,
+                ra, rb, v(maxx, maxy),
+                ra, v(maxx, maxy), v(minx, maxy)]
     else:
-        mid = (minx + maxx) / 2
-        ra, rb = (mid, miny, ridge), (mid, maxy, ridge)
-        flat = [(minx, miny, eave), ra, rb,
-                (minx, miny, eave), rb, (minx, maxy, eave),
-                ra, (maxx, miny, eave), (maxx, maxy, eave),
-                ra, (maxx, maxy, eave), rb]
+        mid = (fminx + fmaxx) / 2
+        ra, rb = v(mid, miny), v(mid, maxy)
+        flat = [v(minx, miny), ra, rb,
+                v(minx, miny), rb, v(minx, maxy),
+                ra, v(maxx, miny), v(maxx, maxy),
+                ra, v(maxx, maxy), rb]
     return [flat[i:i + 3] for i in range(0, len(flat), 3)]
 
 
@@ -823,25 +852,62 @@ def _roof_boundary_edges(triangles: list[list[_RoofVertex]]):
 
 def _above_structure_layers(assembly) -> list:
     """The assembly layers outboard of the structure — everything the sky sees (roofGeometry.ts
-    ``aboveStructureLayers``)."""
-    if assembly is None:
-        return []
-    last = -1
-    for i, layer in enumerate(assembly.layers):
-        if layer.function is LayerFunction.STRUCTURE:
-            last = i
-    return list(assembly.layers[last + 1:])
+    ``aboveStructureLayers``). Delegates to resolve/roof_edges.py, the single source of the
+    ordering ``ResolvedRoof.layer_edge_setbacks`` is keyed to."""
+    return above_structure_layers(assembly)
+
+
+def _layer_inset_rect(
+    roof: ResolvedRoof, entry: dict, base_offset: float,
+) -> tuple[float, float, float, float]:
+    """Per-layer inset rectangle from serialized edge setbacks + eave drift compensation.
+
+    Serialized setbacks are final *plan* positions (golden-detail clip faces). Offsetting
+    a layer perpendicular to the slope drifts its eave edge down-slope (outward) by
+    ``base_offset x sin(theta)``, so that drift is added to the eave-edge insets here;
+    rake edges run parallel to the slope's fall line and have no drift. Identical math
+    lives in ui/src/three/roofGeometry.ts ``layerInsetRect`` (GLB/viewer parity gate).
+    """
+    xs = [p[0] for p in roof.footprint]
+    ys = [p[1] for p in roof.footprint]
+    minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
+    west, east = float(entry.get("west", 0.0)), float(entry.get("east", 0.0))
+    south, north = float(entry.get("south", 0.0)), float(entry.get("north", 0.0))
+    span = (maxy - miny) if roof.ridge_direction == "x" else (maxx - minx)
+    run = span / 2.0 if roof.form != "shed" else span
+    rise = roof.ridge_z_m - roof.eave_z_m
+    if run > 1e-9 and rise > 1e-9 and base_offset != 0.0:
+        pitch = rise / run
+        drift = base_offset * pitch / math.sqrt(1.0 + pitch * pitch)
+        if roof.form == "shed":
+            # One plane: the low (eave) edge drifts outward, the high edge inward.
+            if roof.ridge_direction == "x":
+                south, north = south + drift, north - drift
+            else:
+                west, east = west + drift, east - drift
+        elif roof.ridge_direction == "x":
+            south, north = south + drift, north + drift
+        else:
+            west, east = west + drift, east + drift
+    return (minx + west, maxx - east, miny + south, maxy - north)
 
 
 def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof, model: ResolvedModel) -> None:
     """Render the roof as its authored above-structure assembly stack — each layer offset
     perpendicular to the slope with a mitered ridge and a closed eave/rake perimeter, so it
-    reads (and imports into Revit/SketchUp) as a real solid, not a zero-thickness plane."""
+    reads (and imports into Revit/SketchUp) as a real solid, not a zero-thickness plane.
+
+    When the resolver serialized per-layer edge setbacks (``roof.layer_edge_setbacks``),
+    each layer is built over its own inset rectangle so the deck clips at the wall
+    sheathing, the foam at the wall furring, and the metal runs proud — the golden eave
+    detail's band ordering. Empty setbacks keep the uniform footprint behavior.
+    """
     triangles = _roof_plane_triangles(roof)
     offset_at = _roof_offsetter(triangles)
     perimeter = _roof_boundary_edges(triangles)
     assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
     layers = _above_structure_layers(assembly)
+    setbacks = {entry["layer"]: entry for entry in (roof.layer_edge_setbacks or ())}
 
     def gltf(v: _RoofVertex) -> Vec3:
         return _to_gltf(v[0], v[1], v[2])
@@ -857,18 +923,25 @@ def _add_roof(mb: _MeshBuilder, roof: ResolvedRoof, model: ResolvedModel) -> Non
         else:
             thickness = layer.thickness.meters
             color = _material_finish_color(layer.material_ref, layer.function.value)
+        entry = setbacks.get(layer.name) if layer is not None else None
+        if entry is not None:
+            layer_triangles = _roof_plane_triangles(roof, _layer_inset_rect(roof, entry, base))
+            layer_offset_at = _roof_offsetter(layer_triangles)
+            layer_perimeter = _roof_boundary_edges(layer_triangles)
+        else:
+            layer_triangles, layer_offset_at, layer_perimeter = triangles, offset_at, perimeter
         top = base + thickness
         tris: list[tuple[Vec3, Vec3, Vec3]] = []
-        for tri in triangles:  # top skin (up) + bottom skin (reversed, down)
-            tris.append((gltf(offset_at(tri[0], top)), gltf(offset_at(tri[1], top)),
-                         gltf(offset_at(tri[2], top))))
-            tris.append((gltf(offset_at(tri[0], base)), gltf(offset_at(tri[2], base)),
-                         gltf(offset_at(tri[1], base))))
-        for a, b in perimeter:  # close the eave/rake so the layer reads as real thickness
-            tris.append((gltf(offset_at(a, base)), gltf(offset_at(b, base)),
-                         gltf(offset_at(b, top))))
-            tris.append((gltf(offset_at(a, base)), gltf(offset_at(b, top)),
-                         gltf(offset_at(a, top))))
+        for tri in layer_triangles:  # top skin (up) + bottom skin (reversed, down)
+            tris.append((gltf(layer_offset_at(tri[0], top)), gltf(layer_offset_at(tri[1], top)),
+                         gltf(layer_offset_at(tri[2], top))))
+            tris.append((gltf(layer_offset_at(tri[0], base)), gltf(layer_offset_at(tri[2], base)),
+                         gltf(layer_offset_at(tri[1], base))))
+        for a, b in layer_perimeter:  # close the eave/rake so the layer reads as real thickness
+            tris.append((gltf(layer_offset_at(a, base)), gltf(layer_offset_at(b, base)),
+                         gltf(layer_offset_at(b, top))))
+            tris.append((gltf(layer_offset_at(a, base)), gltf(layer_offset_at(b, top)),
+                         gltf(layer_offset_at(a, top))))
         mb.add_triangles(tris, color)
         base = top
     for member in roof.members:

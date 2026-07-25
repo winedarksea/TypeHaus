@@ -534,6 +534,9 @@ def _emit_roof(f: Any, body: Any, roof: Any, storeys: dict[str, Any], project_uu
     # IFC consumers still receive a stable roof object at core LOD.  The glTF path preserves
     # the pitched surface for interactive viewing; M3 can replace this core envelope with
     # faceted IFC roof-plane geometry without changing identity.
+    # TODO(roof-eave-integration): this flat plate ignores roof.layer_edge_setbacks (the
+    # per-layer clip faces the glTF/three.js paths honor); port the setback-aware shell
+    # here when the IFC roof gains faceted plane geometry.
     _assign_representation(f, element, ll.add_prism_from_profile(
         f, body, roof.footprint, 0.0254, roof.eave_z_m
     ))

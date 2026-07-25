@@ -121,8 +121,10 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     glue line:
 
     * **rafter bearing on a wall top plate** — a real rafter is birdsmouthed so it seats
-      *over* the plate; the box IR sinks the full rafter depth into it. The plate is the
-      only horizontal member under a rafter's plan span, so this never masks a stud bug.
+      *over* the plate; the box IR sinks the birdsmouth depth (~1.17", now that eave_z_m
+      is the deck plane and the rafter rises above the plate) into it, plus the raked
+      gable plates/studs the inset end rafters run against. The plate is the only
+      horizontal member under a rafter's plan span, so this never masks a stud bug.
     * **eave web stiffener bonded to its own rafter** — the ``bearing_stiffener`` is glued
       to the I-joist rafter's web (same ``parent_uid``); shared volume is the point.
     * **top/bottom plates lapping at a corner or tee** — plates of *different* walls lap
