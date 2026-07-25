@@ -10,6 +10,7 @@ from typehaus.model.floors import FinishZone
 from typehaus.model.refs import FollowRoof
 from typehaus.model.placeables import Location, Mount
 from typehaus.model.registry import register_constructor, register_element
+from typehaus.model.trim import EaveTrim
 from typehaus.quantities import Length, Pitch, Point2D
 
 
@@ -72,6 +73,9 @@ class Roof(Element):
     overhang: Length | None = None
     edge_overhangs: tuple[tuple[str, Length], ...] = ()  # per-edge overrides
     ridge_direction: str = "x"
+    # Edge closure (fascia boards + soffit). Derived along every eave and rake from the
+    # resolved roof plane, so it tracks a raised-heel lift instead of drifting from it.
+    eave_trim: EaveTrim | None = None
 
 
 @register_element

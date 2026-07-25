@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from typehaus.emit.draw.door_symbols import DOOR_SYMBOL_NAMES, door_symbol_geometry
 from typehaus.emit.draw.scene import (
     ArchDimension,
     Hatch,
@@ -22,6 +23,8 @@ from typehaus.emit.draw.scene import (
 )
 
 _XDATA_APPID = "TYPEHAUS"
+# Loaded by ``ezdxf.new(setup=True)``; used for symbol geometry above the plan cut plane.
+_DASHED_LINETYPE = "DASHED"
 
 _DEVICE_SYMBOLS = frozenset({
     "register-supply", "register-return", "receptacle", "gfci", "receptacle_240",
@@ -177,45 +180,22 @@ def _add_symbol(msp: object, node: Symbol) -> None:
     import math
 
     w = node.params.get("width_in", node.scale) or node.scale
-    if node.name == "door-swing":
-        # Leaf + 90° swing arc, oriented along the wall.
-        a = math.radians(node.rotation)
-        swing_sign = float(node.params.get("swing_sign", 1))
-        hinge = node.insert
-        leaf_end = (hinge[0] + swing_sign * w * math.cos(a + math.pi / 2),
-                    hinge[1] + swing_sign * w * math.sin(a + math.pi / 2))
-        msp.add_line(hinge, leaf_end, dxfattribs={"layer": node.layer})  # type: ignore[attr-defined]
-        msp.add_arc(  # type: ignore[attr-defined]
-            center=hinge, radius=w,
-            start_angle=node.rotation if swing_sign > 0 else node.rotation - 90,
-            end_angle=node.rotation + 90 if swing_sign > 0 else node.rotation,
-            dxfattribs={"layer": node.layer},
-        )
-    elif node.name == "door-swing-double":
-        # Two half-width leaves hinged at the jambs, meeting at a centre mullion.
-        # Each leaf is drawn like a single door-swing leaf; the second leaf reuses the
-        # same math with its rotation flipped 180° and swing sign negated so both
-        # leaves open to the same physical side.
-        a = math.radians(node.rotation)
-        swing_sign = float(node.params.get("swing_sign", 1))
-        half = w / 2
-        along = (math.cos(a), math.sin(a))
-        cx, cy = node.insert
-
-        def _leaf(hinge: tuple[float, float], rotation: float, sign: float) -> None:
-            ar = math.radians(rotation)
-            leaf_end = (hinge[0] + sign * half * math.cos(ar + math.pi / 2),
-                        hinge[1] + sign * half * math.sin(ar + math.pi / 2))
-            msp.add_line(hinge, leaf_end, dxfattribs={"layer": node.layer})  # type: ignore[attr-defined]
+    if node.name in DOOR_SYMBOL_NAMES:
+        # Every door glyph resolves through the shared geometry module, so the DXF and the
+        # PDF of the same plan cannot drift apart when a new operation is added.
+        geometry = door_symbol_geometry(node)
+        for stroke in geometry.strokes:
+            msp.add_lwpolyline(  # type: ignore[attr-defined]
+                list(stroke.points),
+                dxfattribs={"layer": node.layer,
+                            "linetype": _DASHED_LINETYPE if stroke.dashed else "CONTINUOUS"},
+            )
+        for arc in geometry.arcs:
             msp.add_arc(  # type: ignore[attr-defined]
-                center=hinge, radius=half,
-                start_angle=rotation if sign > 0 else rotation - 90,
-                end_angle=rotation + 90 if sign > 0 else rotation,
+                center=arc.center, radius=arc.radius,
+                start_angle=arc.start_angle_deg, end_angle=arc.end_angle_deg,
                 dxfattribs={"layer": node.layer},
             )
-
-        _leaf((cx - half * along[0], cy - half * along[1]), node.rotation, swing_sign)
-        _leaf((cx + half * along[0], cy + half * along[1]), node.rotation + 180, -swing_sign)
     elif node.name == "post":
         half = max(w * 0.1, 2.0)
         x, y = node.insert

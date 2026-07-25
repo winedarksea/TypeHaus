@@ -10,7 +10,7 @@ model, IFC, and take-off instead of living only in a note.
 
 from __future__ import annotations
 
-from typehaus.model.base import Element
+from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import TrimKind
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D
@@ -36,6 +36,22 @@ class Fascia(_EdgeRun):
 
 
 @register_element
+class EaveSoffit(_EdgeRun):
+    """The panel closing the underside of an eave/rake overhang.
+
+    Named for the eave to keep it distinct from :class:`typehaus.model.floors.Soffit`, the
+    interior dropped-ceiling element — different feature, same English word.
+
+    Unlike the other edge runs the soffit lies flat: ``thickness`` is the horizontal width
+    it spans (wall face out to the fascia) and ``depth`` is the panel's own thickness, so
+    the shared ``_EdgeRun`` extrusion produces a horizontal board rather than a vertical one.
+    """
+
+    kind: TrimKind = TrimKind.SOFFIT
+    vented: bool = False  # continuous intake venting into the roof's eave-to-ridge channel
+
+
+@register_element
 class Gutter(_EdgeRun):
     """A hung gutter channel at the low edge; ``depth`` is the channel height."""
 
@@ -51,9 +67,34 @@ class Flashing(_EdgeRun):
     kind: TrimKind = TrimKind.DRIP_FLASHING
 
 
+class FasciaBoard(HausModel):
+    """One layer of a built-up fascia, innermost first (a wood nailer, then a PVC cover)."""
+
+    material: str
+    thickness: Length  # horizontal, out from the roof edge
+    depth: Length      # vertical face height
+
+
+class EaveTrim(HausModel):
+    """A roof's edge closure, declared once and derived along every eave and rake.
+
+    The fascia/soffit elevations follow the roof plane — including a truss roof's raised-heel
+    lift — so they are *derived* from this declaration rather than authored as absolute
+    elevations that would silently drift from the roof they trim.
+    """
+
+    fascia: tuple[FasciaBoard, ...] = ()
+    soffit_material: str = ""
+    soffit_thickness: Length | None = None
+    soffit_vented: bool = False
+
+
 for _name, _obj in (
     ("Fascia", Fascia),
+    ("EaveSoffit", EaveSoffit),
     ("Gutter", Gutter),
     ("Flashing", Flashing),
+    ("FasciaBoard", FasciaBoard),
+    ("EaveTrim", EaveTrim),
 ):
     register_constructor(_name, _obj)

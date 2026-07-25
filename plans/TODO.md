@@ -2,8 +2,7 @@
 Reminder: all items should design around clean export to Revit/Sketchup/IFC (follow industry standards where practical), and also be coded in accessible, "vibe code friendly" configs.
 
 ## Remaining Work
-Still missing for full M2: variants/compare, full takeoff/BOM
-The 3D UI builds geometry directly from model.json and renders furniture as boxes; it does not yet consume the planned glTF artifact ([Panel3D.tsx (line 7)](/Users/colincatlin/Documents-NoCloud/TypeHaus/ui/src/components/Panel3D.tsx:7)).
+Still missing for full M2: variants/compare
 M3 details are incomplete: Catlin has transitions, but no authored detail Slices. The permit composer emits placeholder/generic sheets; S-100/S-101 are reused floor/energy views rather than complete foundation/framing sheets ([sheets.py (line 30)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/emit/draw/sheets.py:30)).
 M3 site work is incomplete: no parcel/contour GeoJSON basemap support.
 M3 equivalence is only hardcoded contract testing, not an actual old-IFC semantic comparison.
@@ -11,8 +10,6 @@ Catlin’s full checks still report two failures and 13 building-science UNKNOWN
 M5 is not acceptance-complete: condensation analysis lacks material permeance inputs, producing UNKNOWN results ([plans/50-m5-science.md (line 61)](/Users/colincatlin/Documents-NoCloud/TypeHaus/plans/50-m5-science.md:61)).
 Emplace furniture (3d files from library or imported models) and able to move furniture. Ideally double click on an view/modify details as appropriate.
 Need to be able to cleanly turn parts on/off in the 2d and 3d views, either by trade (ie plumbing on/off) or by role (ie hide the floors in the 3d model so we can see clearly stairway continuity across levels). Another toggle (defaults to on), is for the to 2d viewer of the house plan (ie catlin house) to clearly show the name of each room/area (or perhaps unique id if name is missing), such that a user can easily vibe code a change to that area with the text/id as a reference.
-
-IFC openings (WP7 follow-ups): glTF core-LOD opening cutouts (windows/doors currently emit voids + fillings only in IFC, not the glTF core mesh); shared IfcWindowType/IfcDoorType so repeated openings reference one type rather than per-instance property sets.
 
 French/double-swing doors now render in the 2D plan (PNG + UI), the 3D Panel3D view, and
 are editable via a click-to-open door settings popover (type, hinge/swing, position, sill
@@ -22,8 +19,6 @@ split at a center mullion when the door's type is `double_swing` — see
 `Panel3D.tsx:buildOpening`. Still missing: the static glTF export
 (`emit/gltf/emitter.py:_add_wall`) is untouched and still cuts plain void rectangles with
 no frame/panel/leaf geometry at all.
-
-Site grading should reflect code, "IRC says, within 10 feet of building's foundation, grades away from foundations is to be at a 5% slope. Impervious surfaces at 2%"
 
 ## Catlin detail parity — remaining
 
@@ -62,18 +57,6 @@ Each item names the reference drawing it comes from.
 - **Birdsmouth seat-cut** so the eave rafter reads as a notched member (currently a straight
   raked bar), and **I-joist flange dashes** in section.
 
-### Sheet composition (Phase 3d, not started)
-
-- **Dimension strings.** `ArchDimension` nodes for what the reference dimensions — total CI,
-  XPS layer count × thickness, footing width/depth, stud depth — derived from resolved layer
-  thicknesses. Today a detail carries only the per-layer callout ladder.
-- **Legend.** One swatch per distinct material in the scene with its resolved thickness,
-  in a reserved band. Now that hatches carry `material`, the data is there.
-- **Notes column.** `Transition.notes` points at `houses/catlin/notes/*.md` and only the
-  *filename* reaches the drawing. Load, wrap and lay out in a right-hand column — port
-  `load_markdown_notes`/`_wrap_notes` semantics from the reference `detail_utils.py`.
-- **Title / attribution block** from `model.plan.project`.
-
 ### Model questions surfaced by the details
 
 - **Per-layer corner junctions — Phase 1 complete.** Same-assembly L/T/X nodes and ordinary
@@ -111,31 +94,22 @@ authored:
   documentation and must not mutate construction geometry.
 - Add `Node.junction_override` only if the Catlin audit proves an assembly/interface rule
   cannot express a real condition.
-- Re-import the completed Catlin IFC/DXF in Revit and SketchUp and verify scale, storeys,
-  wall categorization, openings, layer returns, and the absence of gaps or overlapping faces.
 
 ### Editor
 
 - Anchor-relative annotation drag → PatchOp editor; the v1 detail viewer is read-only.
 - 3D model naviagation (pan, zoom) is functional but awkward. Also the "default zoom" for reset is poorly calculated.
-- Toast popups of done tasks don't have a 'clear' option
-- The "air", "water", and "thermal" views are great ideas but don't seem to be hooked up to any real backend yet
-- 3d model doesn't seem to show the gravel footing beds anywhere
+- The "air", "water", and "thermal" views are great ideas but don't seem to show much on the actual 2d ui for catlin house.
 - Door opening drawings in 2d view aren't very accurate. The swing lines aren't always accurately concave and the double doors often look a bit weird (one convex, one concave for the swing lines)
-- improve the appearance of brick and masonry in the 3d viewer to be more accurate.
-- the "site earth" plane interests interior spaces where it should be excluded
-- clean import/export (so ship to another computer running this app)
+- the "site earth" plane interests interior spaces where it should be excluded. It excludes house already, but should also exclude sunken garden and garage.
 
 ### Framing follow-ups found while working on the above
 
 - Most corners don't show proper 3-stud framing (it's defined in code but not present in
   most corners).
 - ~~Stairs aren't framed properly (no support for landings, note the basement stair is special in that it anchors off hangers from the concrete walls). Landings don't have a size input in the stair designer and aren't rendered correctly. The partition wall between the up and down sides of a U of stairs is also not present and not framed correctly. It actually looks like there are partition walls but they extend below the house's foundation.~~ DONE (stair-framing pass): stringers are raked (the "walls below the foundation" were un-raked floor-to-floor stringer prisms), U-stair landings are two real half-width platforms (deck + deduplicated 2x8 joists + rims) one riser apart in the landing zone, the well partition is generated 2x4 plate/stud framing clipped to the subfloor, basement hanger bands track the raked stringer top (lower flight bears at the landing) with landing rims/edge joists ledgered into matched concrete walls and 4x4 posts under free corners, and the stair designer has a landing-depth input (`landing_depth_m` through model.json/types.ts, R311.7.6 rule row). Remaining stair follow-ups are listed under "Stair framing follow-ups" below.
-- Garage needs trusses for the roof instead (raised heel trusses)
 - Roof-eave-wall still needs works. The 3d model still shows the roof exposed at the edges, not integrated into the wall cleanly (fully designed in reference packages/engine/tests/fixtures/catlin_reference/scripts/roof_wall_eave_detail_ifc.py, just not implemented here yet fully)
-- The framing of "floors" seems to be incomplete. The double top plates, rim joist, floor joists, subfloor, sole plate, and sheathing all need to follow proper platform framing conventions (and be counted by length buckets in the BOM). Sills and sill anchor positions should be improved as well.
 - Windows smaller (by 1.5" I believe) than the stud spacing (here 14" probably should fit between 16" oc studs) don't need a header. Furthermore, we probably want windows to have some more clear guidance on when they are breaking the stud line with their position awkwardly, and how many studs they break with their given width (relative to the configured OC framing spacing)
-- Support for adding blocking in stud line
 
 ### Stair framing follow-ups (noted out of scope in the stair-framing pass)
 
@@ -150,11 +124,9 @@ authored:
 - Treads rendering as 1.5"-wide strips (cosmetic).
 
 ### Other Catlin House
-Sump with radon vent. This radon vent runs up the same mechanical space that the plumbing vent does. The radon and plumbing vent both exit near the attic ceiling, making a 90 degree (ish) turn outside, then 90 degrees straight back up where they are attached to the siding using standing seam clamps (S-5! or similar) and terminate 12" above the roof. Also running out here (mounted on the siding also with an S-5! clamp) is an outdoor-rated (NEMA 3R weatherproof) junction box on the exterior wall sealed with a gasketed, weatherproof blank cover plate.
+Sump with radon vent. This radon vent runs up the same mechanical space that the plumbing vent does. The radon and plumbing vent both exit near the attic ceiling, making a 90 degree (ish) turn outside, then 90 degrees straight back up where they are attached to the siding using standing seam clamps (S-5! or similar) and terminate 12" above the roof. Also running out here (mounted on the siding also with an S-5! clamp) is an outdoor-rated (NEMA 3R weatherproof) junction box on the exterior wall sealed with a gasketed, weatherproof blank cover plate. This appears to be partly drawn in but should probably be grouped under plumbing.
 
-## PWA
-* bypass libcst entirely for the mutation path for fully offline PWA (high risk, deferred), pure python (needs to be efficient)
-* isolate IFC export as a future extension. It should be feasible using the experimental ifcopenshell wasm build and possibly replacing pyproj if needed
+## Landing Page
 * build landing page and app deployment for type-house.com and type-house.com/app. Likely include an install script link like /Users/colincatlin/Documents-NoCloud/MinimapPR/landing/install.sh alongside the fully web-backed PWA.
 * catlin house should be loaded up by default for new users of the PWA
 
@@ -166,17 +138,12 @@ sonotube column + two PT 2x12 back beams into the side-wall hangers; a brick/air
 CMU/stucco masonry railing; six 6x6 pillars carrying three double-2x10 beams, 2x8 joists, and
 aluminum decking; composite decking on the porch). Posts→IfcColumn, standalone Beams→IfcBeam,
 and floor joists now resolve and render in glTF; deck slabs carry composite/aluminum
-assemblies (material in glTF + IFC). Still deferred:
+assemblies (material in glTF + IFC). Still outstanding:
 
-- **Arched opening voids.** DONE in resolve, glTF, the browser viewer, and IFC. `ResolvedOpening`
-  carries `arch_rise_m`; glTF and the viewer emit continuous curved concrete heads, while IFC
-  emits a vertical `IfcArbitraryClosedProfileDef` with a true circular curve swept through the wall.
-- **Metal fascia-mounted balcony guardrail** as a first-class `Railing` element (model + resolve
-  + emit + UI). The masonry railing is modeled (as a parapet wall); the metal guardrail is not.
 - **PVC fascia, front gutter, front-edge flashing into the gutter, rear flashing into the house
-  WRB** (detail layer; ties into the box-gutter/flashing items above).
+  WRB** (detail layer; ties into the box-gutter/flashing items above). Perhaps drawn, but not yet visible in viewer.
 - **Connector hardware** — joist hangers, hurricane ties, kneebraces (APVKB), standoff post
-  bases — are text/notes only, not modeled geometry.
+  bases are still not visible.
 - **Fiberglass rebar dowels + 40 psi XPS foam thermal-break block** between the shared
   house/garden footings: recorded via `FootingBedding.cast_foam_in_aggregate` + a note; no dowel
   primitive in the schema yet. (The porch/balcony floor joists render in the 2D framing plan +
@@ -201,11 +168,10 @@ deck fix; work them down here (or suppress `structural.member_interference` per-
 `preferences.toml` until then).
 
 ## Follow Up after First Subagent Pass
-- CMU look like bricks. They should look like full CMU
-- We want white (with gray mortar) bricks as a color option for bricks
+- We want white (with gray mortar) bricks as a color option for bricks. It's apparently tagged but not shown as such (still shows red brick).
 - Arches are 'striped' and should be smoother, mathematical half circles properly (for sure in 3d viewer, in IFC exports too if possible)
 - More items need to be selectable (ie footing beds, posts, etc). Ideally most distinct elements are selectable in 3d view.
-- Garage door needs a dedicated 2d door look, and likely a dedicated pattern to match its framing needs, as it's not a swing door like shown in 2D.
+- Garage door needs a dedicated 2d door look, and likely a dedicated pattern to match its framing needs, as it's not a swing door like shown in 2D. Bifold doors need a similar, smaller fix, as they also show as swing doors.
 
 - gable ends of garage are not handled (truss is exposed)
 - need a fascia board on the truss ends of the garage (two layers, one wood, one pvc cellular). The side wall needs to extend up the raised heel (the Zip R at least), and there needs to be a soffit
@@ -215,7 +181,38 @@ deck fix; work them down here (or suppress `structural.member_interference` per-
 - one of the masonry porch railings as the exterior side flipped around. Brick should face exterior on wall three sides of that.
 - ceiling lights appear to be defined but sitting on the floor.
 - there is a glowing red dot on the basement. Some sort of warning, however you can't click on it to tell what it is, so it isn't very helpful in this form.
+- gutters and flashings not shown in 3d views
+- floors (framed rim and joists), modeled in the house and also the sunken garden deck, appear to always show up as about 6 inches too low, for some reason.
+
+# Second Follow Up Set
+- Truss in garage shoudl visualize as wood (not gray)
+- Raised garden: a 36" high garden that utilizes on the inside the top of the sunken garden retaining wall, and on the outside concrete retaining wall blocks
 
 ## General Polishing Tasks
 - Make sure all warnings are cleared up
 - Make sure the BOM shows all members listed out, grouped usually by size and type
+- **Radon Vent horizontal jog** is four stacked square bands, not a swept round section. The two
+  risers are true 12-gons; only the jog still reads faceted.
+
+### New items surfaced while doing the work
+- CMU still looks like brick; it should read as full CMU units.
+- Sliding and pocket doors still fall through to the swing glyph. They now have enum values,
+  framing dispatch and IFC mapping, but no dedicated 2D symbol.
+- Fascia/soffit runs overlap at the four rake corners instead of mitering.
+- Wall framing members are not individually pickable (wall bodies are). Per-stud selection
+  needs `InstancedMesh` instanceId picking plus a member-uid scheme the engine doesn't emit.
+- Roof members still export to IFC as bare `IfcMember` aggregation with no geometry — the
+  pre-existing behaviour for all roof framing, now inherited by the new closure/trim members.
+- `emit/draw/floorplan.py` emits `Symbol(name="alarm")`, but `"alarm"` is missing from
+  `_MARKER_STYLE` in `pdf_writer.py` and from `_add_symbol` in `dxf_writer.py`, so every
+  smoke/CO alarm draws as a blue window-glass bar on the plan.
+- `storey_outward_sign` is one scalar per storey derived from the largest closed loop, so the
+  house basement and the sunken garden — two independent structures sharing a storey key —
+  cannot have independent windings. A per-connected-component sign removes the bug class that
+  `advisory.cladding_side_mismatch` currently only detects.
+- The garage gable is closed by carrying wall skin to the roof underside rather than by real
+  `top=ToRoof` gable walls: a raked wall top is a straight line, so a gable wall must split at
+  the ridge, and `W-G-E`'s ridge is exactly where the 16' overhead door is centred. Accepted
+  for now; a second pass on the roof/wall eave detail should revisit it.
+- `Panel3D.tsx` (~1350 lines), `store.ts` (~650) and `emit/gltf/emitter.py` (~1190) are all
+  well over the 500-line guideline and were left unsplit only to avoid cross-worktree conflicts.

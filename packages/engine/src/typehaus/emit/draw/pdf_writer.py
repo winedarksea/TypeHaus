@@ -11,6 +11,7 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
+from typehaus.emit.draw.door_symbols import DOOR_SYMBOL_NAMES, door_symbol_geometry
 from typehaus.emit.draw.palette import detail_fill
 from typehaus.emit.draw.scene import (
     ArchDimension,
@@ -251,42 +252,25 @@ def _draw_dimension(ax: object, node: ArchDimension) -> None:
                 family="monospace", color="#204070")
 
 
+# Door glyph stroke weights: the closed panel/leaf reads heavier than its swept path.
+_DOOR_COLOR = "#a05a20"
+_DOOR_LEAF_LW, _DOOR_SWEEP_LW = 0.9, 0.6
+
+
 def _draw_symbol(ax: object, node: Symbol, Arc: object) -> None:
     w = node.params.get("width_in", node.scale) or node.scale
-    if node.name == "door-swing":
-        a = math.radians(node.rotation)
-        swing_sign = float(node.params.get("swing_sign", 1))
-        end = (node.insert[0] + swing_sign * w * math.cos(a + math.pi / 2),
-               node.insert[1] + swing_sign * w * math.sin(a + math.pi / 2))
-        ax.plot([node.insert[0], end[0]], [node.insert[1], end[1]], color="#a05a20", lw=0.9)
-        theta_start = node.rotation if swing_sign > 0 else node.rotation - 90
-        theta_end = node.rotation + 90 if swing_sign > 0 else node.rotation
-        ax.add_patch(Arc(node.insert, 2 * w, 2 * w, angle=0,
-                         theta1=theta_start, theta2=theta_end,
-                         edgecolor="#a05a20", linewidth=0.6))
-    elif node.name == "door-swing-double":
-        # Two half-width leaves hinged at the jambs, meeting at a centre mullion.
-        # The second leaf reuses the same per-leaf math with its rotation flipped
-        # 180° and swing sign negated so both leaves open to the same physical side.
-        a = math.radians(node.rotation)
-        swing_sign = float(node.params.get("swing_sign", 1))
-        half = w / 2
-        along = (math.cos(a), math.sin(a))
-        cx, cy = node.insert
-
-        def _leaf(hinge: tuple[float, float], rotation: float, sign: float) -> None:
-            ar = math.radians(rotation)
-            end = (hinge[0] + sign * half * math.cos(ar + math.pi / 2),
-                   hinge[1] + sign * half * math.sin(ar + math.pi / 2))
-            ax.plot([hinge[0], end[0]], [hinge[1], end[1]], color="#a05a20", lw=0.9)
-            theta1 = rotation if sign > 0 else rotation - 90
-            theta2 = rotation + 90 if sign > 0 else rotation
-            ax.add_patch(Arc(hinge, 2 * half, 2 * half, angle=0,
-                             theta1=theta1, theta2=theta2,
-                             edgecolor="#a05a20", linewidth=0.6))
-
-        _leaf((cx - half * along[0], cy - half * along[1]), node.rotation, swing_sign)
-        _leaf((cx + half * along[0], cy + half * along[1]), node.rotation + 180, -swing_sign)
+    if node.name in DOOR_SYMBOL_NAMES:
+        geometry = door_symbol_geometry(node)
+        for stroke in geometry.strokes:
+            ax.plot([p[0] for p in stroke.points], [p[1] for p in stroke.points],
+                    color=_DOOR_COLOR,
+                    lw=_DOOR_SWEEP_LW if stroke.dashed else _DOOR_LEAF_LW,
+                    linestyle="--" if stroke.dashed else "-")
+        for arc in geometry.arcs:
+            # matplotlib takes the full width/height of the ellipse, not the radius.
+            ax.add_patch(Arc(arc.center, 2 * arc.radius, 2 * arc.radius, angle=0,
+                             theta1=arc.start_angle_deg, theta2=arc.end_angle_deg,
+                             edgecolor=_DOOR_COLOR, linewidth=_DOOR_SWEEP_LW))
     elif node.name == "post":
         ax.plot(node.insert[0], node.insert[1], marker="s", markersize=5,
                 color="#8a5a20", markerfacecolor="none")

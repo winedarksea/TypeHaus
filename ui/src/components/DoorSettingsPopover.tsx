@@ -1,6 +1,16 @@
 import { useState } from "react";
 import type { PatchOp } from "../engine/EngineClient";
-import type { DoorTypeSpec, Opening, Vec2 } from "../model/types";
+import type { DoorOperation, DoorTypeSpec, Opening, Vec2 } from "../model/types";
+
+// Trade names for the operation vocabulary; the raw enum values read as jargon in a picker.
+const DOOR_OPERATION_LABELS: Record<DoorOperation, string> = {
+  swing: "swing",
+  double_swing: "French (double)",
+  slide: "sliding",
+  pocket: "pocket",
+  bifold: "bifold",
+  overhead: "overhead (sectional)",
+};
 
 // Settings popover for a double-clicked door (→ TODO "click doors and modify their
 // settings"). Type/handing edits apply immediately as a single-field PatchOp, matching
@@ -52,7 +62,7 @@ export function DoorSettingsPopover({
           )}
           {doorTypes.map((dt) => (
             <option key={dt.tag} value={dt.tag}>
-              {dt.tag} · {dt.operation === "double_swing" ? "French (double)" : dt.operation}
+              {dt.tag} · {DOOR_OPERATION_LABELS[dt.operation]}
             </option>
           ))}
         </select>

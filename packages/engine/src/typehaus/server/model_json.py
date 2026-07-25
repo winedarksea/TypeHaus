@@ -107,9 +107,16 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
             for dt in lib.door_types
         ],
         "occupancies": [o.value for o in Occupancy],
+        # ``color``/``finish`` are the authored *appearance* of a material. Without them the
+        # viewer can only guess a material's look from substrings in its tag (nordic/palette
+        # familyOf), which cannot distinguish white brick from red — so they ship with the
+        # catalog and take precedence there. ``hatch`` deliberately stays out: it is the 2D
+        # cut-pattern key and already disagrees with the 3D family (face brick hatches as
+        # "concrete"), so feeding it to the viewer would mis-classify masonry.
         "materials": [
             {"tag": mat.tag, "name": mat.name, "r_per_inch": mat.r_per_inch,
-             "perm_rating": mat.perm_rating, "density": mat.density}
+             "perm_rating": mat.perm_rating, "density": mat.density,
+             "color": mat.color, "finish": mat.finish}
             for mat in lib.materials
         ],
         "assemblies": assemblies,

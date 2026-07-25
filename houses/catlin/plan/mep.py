@@ -29,6 +29,8 @@ from typehaus import (
     Equipment,
     EquipmentKind,
     EquipmentType,
+    Mount,
+    MountKind,
     PipeRun,
     PipeSystem,
     Register,
@@ -148,7 +150,8 @@ EQUIPMENT = [
 # --- Electrical: symbols-only (decision 1 — panel/circuit schedule deferred) -------
 PANEL = [
     ElectricalDevice(uid="CEP901AAAA", tag="ED-B-PANEL", kind=DeviceKind.PANEL,
-                     position=pt(ft(2), ft(29)), mount_height=ft(5), type_ref="ED-T-PANEL"),
+                     position=pt(ft(2), ft(29)), type_ref="ED-T-PANEL",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
 ]
 
 # One light + switch per habitable room, one code-minimum receptacle per bedroom (bare
@@ -158,61 +161,87 @@ PANEL = [
 # the file is `# haus: editable` and UI edits round-trip.
 MAIN_DEVICES = [
     ElectricalDevice(uid="CED001K1AA", tag="ED-M-LIVING-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27), ft(12)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+                     position=pt(ft(27), ft(12)), type_ref="ED-T-LIGHT",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="CED001K2AA", tag="ED-M-LIVING-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(26), ft(12)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+                     position=pt(ft(26), ft(12)), type_ref="ED-T-SWITCH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED002K1AA", tag="ED-M-BED-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(9), ft(6)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+                     position=pt(ft(9), ft(6)), type_ref="ED-T-LIGHT",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="CED002K2AA", tag="ED-M-BED-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8), ft(6)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+                     position=pt(ft(8), ft(6)), type_ref="ED-T-SWITCH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED002K3AA", tag="ED-M-BED-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(10), ft(6)), mount_height=inch(16), type_ref="ED-T-RECEPTACLE"),
+                     position=pt(ft(10), ft(6)), type_ref="ED-T-RECEPTACLE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED003K1AA", tag="ED-M-STUDY-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(15.667), ft(20)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+                     position=pt(ft(15.667), ft(20)), type_ref="ED-T-LIGHT",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="CED003K2AA", tag="ED-M-STUDY-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(14.667), ft(20)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+                     position=pt(ft(14.667), ft(20)), type_ref="ED-T-SWITCH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 ]
 
 SECOND_DEVICES = [
     ElectricalDevice(uid="CED004K1AA", tag="ED-S-PLANT-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(9), ft(4)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+                     position=pt(ft(9), ft(4)), type_ref="ED-T-LIGHT",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="CED004K2AA", tag="ED-S-PLANT-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8), ft(4)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+                     position=pt(ft(8), ft(4)), type_ref="ED-T-SWITCH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED005K1AA", tag="ED-S-STUDY2-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(27), ft(4)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+                     position=pt(ft(27), ft(4)), type_ref="ED-T-LIGHT",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="CED005K2AA", tag="ED-S-STUDY2-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(26), ft(4)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+                     position=pt(ft(26), ft(4)), type_ref="ED-T-SWITCH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED006K1AA", tag="ED-S-BED1-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(29), ft(16)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+                     position=pt(ft(29), ft(16)), type_ref="ED-T-LIGHT",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="CED006K2AA", tag="ED-S-BED1-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(28), ft(16)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+                     position=pt(ft(28), ft(16)), type_ref="ED-T-SWITCH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED006K3AA", tag="ED-S-BED1-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(30), ft(16)), mount_height=inch(16), type_ref="ED-T-RECEPTACLE"),
+                     position=pt(ft(30), ft(16)), type_ref="ED-T-RECEPTACLE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED007K1AA", tag="ED-S-BED2-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(29), ft(24)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+                     position=pt(ft(29), ft(24)), type_ref="ED-T-LIGHT",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="CED007K2AA", tag="ED-S-BED2-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(28), ft(24)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+                     position=pt(ft(28), ft(24)), type_ref="ED-T-SWITCH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED007K3AA", tag="ED-S-BED2-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(30), ft(24)), mount_height=inch(16), type_ref="ED-T-RECEPTACLE"),
+                     position=pt(ft(30), ft(24)), type_ref="ED-T-RECEPTACLE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED008K1AA", tag="ED-S-BED3-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(29), ft(32)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+                     position=pt(ft(29), ft(32)), type_ref="ED-T-LIGHT",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="CED008K2AA", tag="ED-S-BED3-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(28), ft(32)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+                     position=pt(ft(28), ft(32)), type_ref="ED-T-SWITCH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED008K3AA", tag="ED-S-BED3-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(30), ft(32)), mount_height=inch(16), type_ref="ED-T-RECEPTACLE"),
+                     position=pt(ft(30), ft(32)), type_ref="ED-T-RECEPTACLE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED009K1AA", tag="ED-S-SUITE-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(9), ft(20)), mount_height=ft(8), type_ref="ED-T-LIGHT"),
+                     position=pt(ft(9), ft(20)), type_ref="ED-T-LIGHT",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="CED009K2AA", tag="ED-S-SUITE-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8), ft(20)), mount_height=inch(48), type_ref="ED-T-SWITCH"),
+                     position=pt(ft(8), ft(20)), type_ref="ED-T-SWITCH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED009K3AA", tag="ED-S-SUITE-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(10), ft(20)), mount_height=inch(16), type_ref="ED-T-RECEPTACLE"),
+                     position=pt(ft(10), ft(20)), type_ref="ED-T-RECEPTACLE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
 ]
 
 # --- Radon sump + shared radon/plumbing vent riser ---------------------------------
 # A sealed radon sump in the NW basement furnace room. Its passive radon vent and the
-# plumbing vent share one mechanical chase up to near the attic ceiling (29'), turn 90°
-# out through the north gable siding, then 90° back up — clamped to the standing seam with
-# S-5!-style clamps — terminating 12" above the roof (33'). Elevations are project-frame.
+# plumbing vent share one mechanical chase up to 24'-6" — under the 4:12 rake, which is at
+# 26'-1.7" over the chase's x=3' — turn 90° out through the north gable siding, then 90°
+# back up, clamped to the standing seam with S-5!-style clamps. The termination is derived
+# (12" above the roof plane at the riser, ~27'-1.7"), not authored: an authored absolute
+# cannot follow a rake, which is how it drifted to 33', 2' above its own ridge.
+# Elevations are project-frame.
 RADON_SUMP = [
     Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(ft(3), ft(33)),
          diameter=inch(18), depth=inch(24), host_ref="SL-B-FLOOR",
@@ -223,29 +252,32 @@ VENT_RISERS = [
     VentRun(uid="CMVR01AAAA", tag="VR-M-RADON-VENT",
             systems=(PipeSystem.RADON, PipeSystem.VENT), diameter=inch(3),
             chase_position=pt(ft(3), ft(33)), start_elevation=ft(-8.5),
-            exit_elevation=ft(29), exit_offset=pt(ft(0), ft(4)),
-            roof_termination_elevation=ft(33), wall_ref="W-A-N1",
-            attachment="standing_seam_clamp"),
+            exit_elevation=ft(24, 6), exit_offset=pt(ft(0), ft(4)),
+            wall_ref="W-A-N2", attachment="standing_seam_clamp"),
 ]
 
-# S-5! standing-seam clamps fixing the exterior riser to the north gable siding.
+# S-5! standing-seam clamps fixing the exterior riser to the north gable siding. The riser
+# spans 24'-6" to ~27'-1.7", and the gable siding at x=3' stops at the 26'-1.7" rake, so
+# all three clamps sit on the pipe *and* on cladding they can actually grip. The riser
+# rides W-A-N2, the west half of the north gable wall (x=0..18); W-A-N1 is the east half.
 VENT_CLAMPS = [
     Connector(uid="CMVC01AAAA", tag="CN-M-VENT-CLAMP1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(3), ft(37)), elevation=ft(30), size="S-5!",
-              connects=("VR-M-RADON-VENT", "W-A-N1")),
+              position=pt(ft(3), ft(37)), elevation=ft(25), size="S-5!",
+              connects=("VR-M-RADON-VENT", "W-A-N2")),
     Connector(uid="CMVC02AAAA", tag="CN-M-VENT-CLAMP2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(3), ft(37)), elevation=ft(31, 6), size="S-5!",
-              connects=("VR-M-RADON-VENT", "W-A-N1")),
+              position=pt(ft(3), ft(37)), elevation=ft(25, 6), size="S-5!",
+              connects=("VR-M-RADON-VENT", "W-A-N2")),
     Connector(uid="CMVC03AAAA", tag="CN-M-VENT-CLAMP3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(3), ft(37)), elevation=ft(33), size="S-5!",
-              connects=("VR-M-RADON-VENT", "W-A-N1")),
+              position=pt(ft(3), ft(37)), elevation=ft(26), size="S-5!",
+              connects=("VR-M-RADON-VENT", "W-A-N2")),
 ]
 
 # --- Outdoor NEMA 3R weatherproof junction box on the north siding ------------------
 # Gasketed blank cover plate; mounted to the standing seam with an S-5!-style clamp.
 NEMA_BOX = [
     ElectricalDevice(uid="CEJ901AAAA", tag="ED-M-NEMA-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(6), ft(37)), mount_height=ft(6), type_ref="ED-T-JBOX"),
+                     position=pt(ft(6), ft(37)), type_ref="ED-T-JBOX",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
 ]
 NEMA_CLAMP = [
     Connector(uid="CMNC01AAAA", tag="CN-M-NEMA-CLAMP", kind=ConnectorKind.STANDING_SEAM_CLAMP,

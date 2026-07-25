@@ -13,7 +13,7 @@ Vertical stack (project-north frame; +X east, +Y north, +Z up):
   concrete wall. That north edge is carried by a 12" sonotube column at midspan plus two
   PT 2x12 back beams hung into the side walls. PT 2x8 joists span N-S from the front-wall
   sill to the back beams; composite decking is the walking surface. Porch floor = main (0').
-- A masonry "railing" (brick / air gap / grouted CMU / stucco) rides the front + side
+- A masonry "railing" (white brick / air gap / grouted CMU / stucco) rides the front + side
   walls as the porch guard; its grouted CMU cores receive the balcony post bases.
 - The *balcony* one storey up (second, ~9-10') rides six 6x6 pillars (10' o.c. E-W, 8'
   o.c. N-S; rear row 2" taller for drainage slope) carrying three N-S double-2x10 beams,
@@ -127,9 +127,13 @@ _y_in_s = _y_in_n - SPEC.clear_length_ft
 _y_ax_s = _y_in_s - _half
 
 _wall_bottom = ft(-(SPEC.basement_depth_ft + 0.75))
-_porch_top = ft(SPEC.porch_top_ft)
+_porch_top = ft(SPEC.porch_top_ft)  # storey datum = top of joist; the masonry bears here
 _ret_top = ft(SPEC.retaining_top_ft)
-_railing_top = ft(SPEC.porch_top_ft + SPEC.railing_height_ft)
+# The guard's 42" is measured from the surface underfoot — the composite boards over the
+# porch joists — while the masonry itself still bears on the structure below them. Topping
+# out at porch_top + 42" would leave only 41" of guard above the deck.
+_railing_top = (ft(SPEC.porch_top_ft + SPEC.railing_height_ft)
+                + inch(SPEC.porch_deck_thickness_in))
 _balcony = ft(SPEC.balcony_level_ft)
 
 # ============================================================================
@@ -155,15 +159,20 @@ WALLS = [
     FoundationWall(uid="SGW103AAAA", tag="W-SG-W1", start_node="N-SG-NW",
                    end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom),
-    FoundationWall(uid="SGW104AAAA", tag="W-SG-E1", start_node="N-SG-NE",
-                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
+    # East runs south→north (and the west runs north→south) so both side walls wind the same
+    # way around the garden: with the basement storey's outward sign of -1, a wall's exterior
+    # is the *right*-hand normal of its authored direction, so the east wall must be authored
+    # ME→NE for its outer face to land east. (Latent here — SUNKEN_GARDEN_WALL is one layer of
+    # concrete — but the same winding drives the layered railing above, so keep them in step.)
+    FoundationWall(uid="SGW104AAAA", tag="W-SG-E1", start_node="N-SG-ME",
+                   end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom),
     # Garden retaining run (to just above grade), the U south of the porch.
     FoundationWall(uid="SGW105AAAA", tag="W-SG-W2", start_node="N-SG-MW",
                    end_node="N-SG-SW", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom),
-    FoundationWall(uid="SGW106AAAA", tag="W-SG-E2", start_node="N-SG-ME",
-                   end_node="N-SG-SE", assembly="SUNKEN_GARDEN_WALL",
+    FoundationWall(uid="SGW106AAAA", tag="W-SG-E2", start_node="N-SG-SE",
+                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom),
     FoundationWall(uid="SGW107AAAA", tag="W-SG-S", start_node="N-SG-SW",
                    end_node="N-SG-SE", assembly="SUNKEN_GARDEN_WALL",
@@ -254,8 +263,10 @@ RAILING_WALLS = [
     FoundationWall(uid="SGRW02AAAA", tag="W-SG-RAIL-W", start_node="N-SG-NW",
                    end_node="N-SG-MW", assembly="PORCH_RAILING_MASONRY",
                    top_elevation=_railing_top, bottom_elevation=_porch_top),
-    FoundationWall(uid="SGRW03AAAA", tag="W-SG-RAIL-E", start_node="N-SG-NE",
-                   end_node="N-SG-ME", assembly="PORCH_RAILING_MASONRY",
+    # ME→NE (not NE→ME): the layered railing stack lays out along the wall's right-hand
+    # normal on this storey, so the mirrored winding put the brick wythe on the porch side.
+    FoundationWall(uid="SGRW03AAAA", tag="W-SG-RAIL-E", start_node="N-SG-ME",
+                   end_node="N-SG-NE", assembly="PORCH_RAILING_MASONRY",
                    top_elevation=_railing_top, bottom_elevation=_porch_top),
 ]
 
@@ -285,6 +296,7 @@ PORCH_FLOOR = Slab(
              pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n))),
     thickness=inch(SPEC.porch_deck_thickness_in),
     assembly="PORCH_DECK_COMPOSITE",
+    datum="walking_surface",  # boards laid over FS-SG-PORCH, not the structure itself
 )
 
 # ============================================================================
@@ -293,11 +305,14 @@ PORCH_FLOOR = Slab(
 # Six pillars: front (south) row on the arch railing, rear (north) row — outer two on the
 # side-wall railings, center on the porch decking. All bear on the porch deck (their bases
 # embed in the CMU grout fill of the railing they pass through) so they are anchored at the
-# porch floor (0') and stand UP to the balcony-beam soffit — not hung from the deck above.
+# porch floor and stand UP to the balcony-beam soffit — not hung from the deck above.
 # The rear (north, house-side) row is 2" taller so the deck crowns at the rear and drains
 # south, away from the house.  Beam soffit = balcony level less the 2x10 beam depth (9.25").
+# `supported_by` puts the base on SL-SG-PORCH's *top*, i.e. the composite walking surface
+# laid over the porch joists, so the authored height is the exposed pillar above the boards.
 _balcony_beam_depth_ft = 9.25 / 12.0
-_front_h = ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft)
+_front_h = (ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft)
+            - inch(SPEC.porch_deck_thickness_in))
 _rear_h = _front_h + inch(SPEC.rear_pillar_rise_in)
 _PILLAR_X = (_x_ax_w, _cx, _x_ax_e)
 PILLARS = []
@@ -342,6 +357,7 @@ DECK_FLOOR = Slab(
              pt(ft(_deck_x_e), ft(_y_in_n)), pt(ft(_deck_x_w), ft(_y_in_n))),
     thickness=inch(SPEC.balcony_deck_thickness_in),
     assembly="BALCONY_DECK_ALUMINUM",
+    datum="walking_surface",  # boards laid over FS-SG-DECK, not the structure itself
 )
 
 # --- joist framing under the two decks (rendered members beneath the surface slabs) ---
@@ -423,13 +439,18 @@ _BASE_CONNECTORS = [c for c in CONNECTORS if c.kind is not ConnectorKind.KNEEBRA
 # draining deck via a front-edge drip flashing; the rear (house) edge gets a counter-
 # flashing tucked up into the house WRB. Deck drains SOUTH (rear pillars 2" taller).
 # ============================================================================
-_deck_top = ft(SPEC.balcony_level_ft)  # 10'
+_deck_top = ft(SPEC.balcony_level_ft)  # 10' — storey datum = top of joist
+# Guard height is measured from the surface a person stands on, which is the top of the
+# aluminum boards, not the joists they sit on. Basing the guard on _deck_top instead would
+# make the authored 42" measure 40.5" in the field and fail the guard-height rule.
+_deck_walking_surface = _deck_top + inch(SPEC.balcony_deck_thickness_in)
 # Guard the three open edges (west, front/south, east); the north edge abuts the house.
 _GUARD_PATH = (pt(ft(_deck_x_w), ft(_y_in_n)), pt(ft(_deck_x_w), ft(_y_ax_arch)),
                pt(ft(_deck_x_e), ft(_y_ax_arch)), pt(ft(_deck_x_e), ft(_y_in_n)))
 BALCONY_GUARD = Railing(
     uid="SGRA01AAAA", tag="RL-SG-BALCONY", path=_GUARD_PATH,
-    kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5), base_elevation=_deck_top,
+    kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
+    base_elevation=_deck_walking_surface,
     post_spacing=inch(60), post_size="2x2", rail_count=2, mount="fascia",
     assembly="POST_WHITE_PAINT")
 

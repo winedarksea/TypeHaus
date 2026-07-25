@@ -4,6 +4,8 @@
 # elevation is the top of the stem. Overhead door faces east (driveway side).
 from typehaus import (
     Door,
+    EaveTrim,
+    FasciaBoard,
     Node,
     Occupancy,
     Pitch,
@@ -16,6 +18,7 @@ from typehaus import (
     face,
     from_node,
     ft,
+    inch,
     pt,
 )
 
@@ -61,11 +64,29 @@ ROOMS = [
          floor_finish="sealed-concrete"),
 ]
 
-# Gable roof, ridge E-W (rotated 90° vs the house), 16" overhangs.
+# Gable roof, ridge E-W (rotated 90° vs the house), 16" overhangs. The gable ends are the
+# E/W walls; they stay flat 8' walls rather than `top=ToRoof` because a raked wall top is a
+# straight line between its two endpoints, so a gable wall must be split at the ridge — and
+# the 16' overhead door is centered exactly on the ridge, so W-G-E cannot be split. Both
+# gable triangles (and the raised-heel band on the eave walls) are instead closed by the
+# wall→roof closure in resolve/roof_edge.py, which carries each wall's zip-r/rainscreen/
+# cladding skin up to the roof underside and splits at the ridge itself.
+# Eave + rake trim is two-layer: a 2x6 wood sub-fascia nailed to the truss tails and barge
+# rafters (the structural nailer), lapped by a 5/4 cellular-PVC fascia (the weather face,
+# which never rots at a drip edge). A vented PVC soffit closes the overhang underside and
+# feeds the eave-to-ridge vent channel. Elevations are derived from the resolved roof plane,
+# so the raised-heel lift carries the trim with it.
+_GARAGE_EAVE_TRIM = EaveTrim(
+    fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),
+            FasciaBoard(material="pvc-cellular", thickness=inch(1), depth=inch(6))),
+    soffit_material="pvc-cellular", soffit_thickness=inch(0.5), soffit_vented=True,
+)
+
 ROOFS = [
     Roof(uid="CGRF01AAAA", tag="RF-GARAGE", form=RoofForm.GABLE,
          pitch=Pitch(4, 12), bearing_refs=("W-G-S", "W-G-N"),
-         assembly="GARAGE_ROOF", overhang=ft(1, 4), ridge_direction="x"),
+         assembly="GARAGE_ROOF", overhang=ft(1, 4), ridge_direction="x",
+         eave_trim=_GARAGE_EAVE_TRIM),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS]

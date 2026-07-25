@@ -184,7 +184,7 @@ SUNKEN_GARDEN_ARCH_16 = Assembly(
 
 # Masonry "railing" / parapet on top of the porch front + side walls. The balcony 6x6
 # pillars land in the grout-filled CMU cores. Layer order interior (porch/deck side) ->
-# exterior (garden side): stucco on the CMU back, grout-filled CMU, air gap, face brick.
+# exterior (garden side): stucco on the CMU back, grout-filled CMU, air gap, white face brick.
 PORCH_RAILING_MASONRY = Assembly(
     tag="PORCH_RAILING_MASONRY",
     layers=(
@@ -196,11 +196,11 @@ PORCH_RAILING_MASONRY = Assembly(
                                   rebar_spacing=inch(48))),
         Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.0),
               function=LayerFunction.AIRGAP),
-        Layer(name="brick", material_ref="brick", thickness=inch(3.625),
+        Layer(name="brick", material_ref="white-brick", thickness=inch(3.625),
               function=LayerFunction.CLADDING),
     ),
     interfaces=(_CMU_BEARING,),
-    source="catlin-house porch railing — brick / air gap / grouted CMU / stucco",
+    source="catlin-house porch railing — white brick / air gap / grouted CMU / stucco",
 )
 
 # Deck walking surfaces (single-layer). The joists/beams under them are separate framing
@@ -376,10 +376,17 @@ MATERIALS = [
              source="foil facer is the sauna's vapour retarder as well as its CI"),
     # --- porch / balcony masonry + decking -------------------------------------
     Material(tag="brick", name="Face brick", r_per_inch=0.20, density=1920.0,
-             perm_rating=1.0, hatch="concrete", color="#9c5a4a",
-             source="porch railing outer wythe"),
+             perm_rating=1.0, hatch="concrete", color="#9c5a4a", finish="brick",
+             source="red face brick — the catalog default wythe"),
+    # White (whitewashed / white-fired) face brick laid with a grey mortar joint. Same clay
+    # unit and R-value as the red brick; only the finish differs, and `finish` names the
+    # recipe explicitly so no renderer has to infer "white" from the tag spelling.
+    Material(tag="white-brick", name="White face brick (grey mortar)", r_per_inch=0.20,
+             density=1920.0, perm_rating=1.0, hatch="concrete", color="#e9e6df",
+             finish="white-brick",
+             source="porch railing outer wythe — white brick, grey mortar (brief.md)"),
     Material(tag="cmu", name="Grouted CMU (8\")", r_per_inch=0.11, density=2000.0,
-             perm_rating=2.5, hatch="concrete", color="#b8b3ab",
+             perm_rating=2.5, hatch="concrete", color="#b8b3ab", finish="cmu",
              source="porch railing inner wythe (grouted cores); concrete masonry ~2-3 perm-in"),
     Material(tag="grout", name="Masonry grout", r_per_inch=0.08, density=2240.0,
              perm_rating=2.5, hatch="concrete", color="#9a958c",

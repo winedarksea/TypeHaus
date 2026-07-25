@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import FloorOpeningPurpose, RadiantSystem
 from typehaus.model.refs import Embed
@@ -67,6 +69,15 @@ class Slab(Element):
     thickness: Length
     assembly: str | None = None
     openings: tuple[str, ...] = ()  # FloorOpening tags
+    # Which side of the storey datum (= top of floor structure) this slab occupies.
+    # "structure" — the slab *is* the floor structure, so it hangs its thickness below the
+    # datum. This is the default and covers every slab-on-grade and structural concrete deck.
+    # "walking_surface" — decking laid over a FloorSystem whose joists already top out at the
+    # datum, so it rides on top instead, exactly like that FloorSystem's own subfloor sheet.
+    # Authoring this explicitly rather than inferring it from a shared footprint keeps two
+    # coincidentally-congruent elements (a patio slab under a deck, say) from silently
+    # swapping conventions.
+    datum: Literal["structure", "walking_surface"] = "structure"
 
 
 @register_element

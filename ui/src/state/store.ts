@@ -22,7 +22,7 @@ import { loadBundledHouse, pickHouseDirectory } from "../engine/openHouse";
 // Catlin house in the in-browser pyodide engine by default. `haus serve` builds leave this unset
 // and keep the HttpEngineClient default.
 const PWA_STANDALONE = import.meta.env.VITE_PWA_STANDALONE === "1";
-import type { Finding, Model } from "../model/types";
+import type { Finding, Model, Provenance, Vec2 } from "../model/types";
 
 export type Tool = "select" | "wall" | "opening" | "placeable" | "room" | "stair" | "dimension";
 // Task-rail groups (Phase 2): high-level buckets whose flyout palettes expand to the
@@ -48,8 +48,22 @@ export const ALL_TRADES: Trade[] = [
   "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth",
 ];
 
+// Every kind of model record the UI can hold selected. The first five are authored elements a
+// patch can edit or delete; the last four are *derived* geometry the resolver computes (a post
+// or beam solid, a footing's gravel bed, a roof, a framed floor) — selectable and inspectable in
+// 3D, but only editable through the element they came from. The same vocabulary is written into
+// glTF node extras (emit/gltf/emitter.py::_SELECTION_KINDS) and emitted by the 3D pick handler
+// (components/Panel3D.tsx), so all three surfaces agree on what a click resolves to.
+export type SelectionKind =
+  | "wall" | "opening" | "room" | "stair" | "canvas_object"
+  | "solid" | "footing_bedding" | "floor" | "roof";
+export const ALL_SELECTION_KINDS: SelectionKind[] = [
+  "wall", "opening", "room", "stair", "canvas_object", "solid", "footing_bedding", "floor", "roof",
+];
+export const DERIVED_SELECTION_KINDS: SelectionKind[] = ["solid", "footing_bedding", "floor", "roof"];
+
 export interface Selection {
-  kind: "wall" | "opening" | "room" | "stair" | "canvas_object" | null;
+  kind: SelectionKind | null;
   uid: string | null;
 }
 
@@ -337,11 +351,13 @@ export const useStore = create<StoreState>((set, get) => ({
   selectByTag: (kind, tag) => {
     const model = get().model;
     if (!model) return;
+    // Tags only address the authored elements a tool can mint; derived geometry (solids,
+    // beddings, floors, roofs) is reached by uid from a 3D pick, never by tag.
     const pool =
       kind === "wall" ? model.walls : kind === "opening" ? model.openings
         : kind === "room" ? model.rooms : kind === "canvas_object" ? model.canvas_objects ?? []
-          : model.stairs ?? [];
-    const hit = pool.find((e) => e.tag === tag);
+          : kind === "stair" ? model.stairs ?? [] : null;
+    const hit = pool?.find((e) => e.tag === tag);
     if (hit) set({ selection: { kind, uid: hit.uid } });
   },
   setHover: (hoverUid) => set({ hoverUid }),
@@ -350,48 +366,16 @@ export const useStore = create<StoreState>((set, get) => ({
   zoomToUid: (uid) => {
     const { model, view, viewMode } = get();
     if (!model) return;
-    // Resolve the element, its kind, storey, and a plan-space centroid.
-    let kind: Selection["kind"] = null;
-    let storey: string | null = null;
-    let centroid: [number, number] | null = null;
-    const wall = model.walls.find((w) => w.uid === uid);
-    if (wall) {
-      kind = "wall"; storey = wall.storey;
-      centroid = [(wall.axis[0][0] + wall.axis[1][0]) / 2, (wall.axis[0][1] + wall.axis[1][1]) / 2];
-    }
-    const opening = !wall ? model.openings.find((o) => o.uid === uid) : undefined;
-    if (opening) {
-      const host = model.walls.find((w) => w.tag === opening.host);
-      kind = "opening"; storey = host?.storey ?? null;
-      if (host) centroid = [(host.axis[0][0] + host.axis[1][0]) / 2, (host.axis[0][1] + host.axis[1][1]) / 2];
-    }
-    const room = !wall && !opening ? model.rooms.find((r) => r.uid === uid) : undefined;
-    if (room) {
-      kind = "room"; storey = room.storey;
-      const pts = room.clear_face;
-      if (pts.length) centroid = [
-        pts.reduce((a, p) => a + p[0], 0) / pts.length,
-        pts.reduce((a, p) => a + p[1], 0) / pts.length,
-      ];
-    }
-    const stair = !wall && !opening && !room ? (model.stairs ?? []).find((x) => x.uid === uid) : undefined;
-    if (stair) {
-      kind = "stair"; storey = stair.storey;
-      const pts = stair.outline;
-      if (pts.length) centroid = [
-        pts.reduce((a, p) => a + p[0], 0) / pts.length,
-        pts.reduce((a, p) => a + p[1], 0) / pts.length,
-      ];
-    }
-    if (!kind) return;
+    const located = locateUid(model, uid);
+    if (!located) return;
     if (viewMode === "3d") set({ viewMode: "split" }); // make sure the 2D plan is visible
-    if (storey) set({ activeStorey: storey });
-    set({ selection: { kind, uid }, hoverUid: uid });
+    if (located.storey) set({ activeStorey: located.storey });
+    set({ selection: { kind: located.kind, uid }, hoverUid: uid });
     // Pan so the centroid lands at the viewport center (project: sx = tx + x·scale, sy = ty − y·scale).
-    if (centroid) {
+    if (located.centroid) {
       const w = typeof window !== "undefined" ? window.innerWidth : 1200;
       const h = typeof window !== "undefined" ? window.innerHeight : 800;
-      set({ view: { ...view, tx: w / 2 - centroid[0] * view.scale, ty: h / 2 + centroid[1] * view.scale } });
+      set({ view: { ...view, tx: w / 2 - located.centroid[0] * view.scale, ty: h / 2 + located.centroid[1] * view.scale } });
     }
   },
   dismissConflict: () => set({ conflict: null }),
@@ -463,6 +447,18 @@ export const useStore = create<StoreState>((set, get) => ({
   deleteSelection: async () => {
     const { model, selection, applyOps, select } = get();
     if (!model || !selection.uid) return;
+    // Derived geometry has no authored record to address: a "column" solid may come from a
+    // Post, a "railing" solid from one Railing's many balusters, and a construction return
+    // from a library rule that owns no element at all. Rather than guess an element type from
+    // its category (a wrong guess silently deletes the wrong thing) or no-op in silence, say
+    // where the geometry comes from so the user can edit that source instead.
+    if (selection.kind !== null && DERIVED_SELECTION_KINDS.includes(selection.kind)) {
+      const derived = locateUid(model, selection.uid);
+      get().toast(derived
+        ? `${derived.tag} is derived geometry — edit its source (${derived.source ?? "plan code"}) instead`
+        : "That element is derived geometry and cannot be deleted directly");
+      return;
+    }
     let type: string | null = null;
     let tag: string | null = null;
     if (selection.kind === "wall") {
@@ -564,6 +560,78 @@ function handleEvent(
       break;
   }
   set({});
+}
+
+// uid resolution ------------------------------------------------------------
+
+export interface LocatedElement {
+  kind: SelectionKind;
+  tag: string;
+  storey: string | null;
+  centroid: [number, number] | null; // plan-space centre, for the 2D pan-to-element
+  source: string | null; // "file:line" of the authoring statement, when the loader captured one
+}
+
+function ringCentroid(points: readonly Vec2[]): [number, number] | null {
+  if (!points.length) return null;
+  return [
+    points.reduce((sum, p) => sum + p[0], 0) / points.length,
+    points.reduce((sum, p) => sum + p[1], 0) / points.length,
+  ];
+}
+
+function sourceOf(provenance: Provenance | null | undefined): string | null {
+  return provenance ? `${provenance.file}:${provenance.line}` : null;
+}
+
+// Resolve a uid against every selectable record — authored elements first, then the derived
+// geometry a 3D pick can land on. One lookup shared by zoomToUid, deleteSelection, and the
+// Inspector, so all three agree on what a uid *is*.
+export function locateUid(model: Model, uid: string): LocatedElement | null {
+  const wall = model.walls.find((w) => w.uid === uid);
+  if (wall) return { kind: "wall", tag: wall.tag, storey: wall.storey, source: sourceOf(wall.provenance),
+    centroid: [(wall.axis[0][0] + wall.axis[1][0]) / 2, (wall.axis[0][1] + wall.axis[1][1]) / 2] };
+
+  const opening = model.openings.find((o) => o.uid === uid);
+  if (opening) {
+    const host = model.walls.find((w) => w.tag === opening.host);
+    return { kind: "opening", tag: opening.tag, storey: host?.storey ?? null,
+      source: sourceOf(opening.provenance),
+      centroid: host ? [(host.axis[0][0] + host.axis[1][0]) / 2, (host.axis[0][1] + host.axis[1][1]) / 2] : null };
+  }
+
+  const room = model.rooms.find((r) => r.uid === uid);
+  if (room) return { kind: "room", tag: room.tag, storey: room.storey,
+    source: sourceOf(room.provenance), centroid: ringCentroid(room.clear_face) };
+
+  const stair = (model.stairs ?? []).find((x) => x.uid === uid);
+  if (stair) return { kind: "stair", tag: stair.tag, storey: stair.storey,
+    source: sourceOf(stair.provenance), centroid: ringCentroid(stair.outline) };
+
+  // Placeables carry no provenance in model.json — they are addressed by tag, not file:line.
+  const item = (model.canvas_objects ?? []).find((x) => x.uid === uid);
+  if (item) return { kind: "canvas_object", tag: item.tag, storey: item.storey,
+    source: null, centroid: item.position_m ?? null };
+
+  const solid = (model.solids ?? []).find((x) => x.uid === uid);
+  if (solid) return { kind: "solid", tag: solid.tag, storey: solid.storey,
+    source: sourceOf(solid.provenance), centroid: ringCentroid(solid.outline) };
+
+  const bedding = (model.footing_beddings ?? []).find((x) => x.uid === uid);
+  if (bedding) return { kind: "footing_bedding", tag: bedding.tag, storey: bedding.storey,
+    source: sourceOf(bedding.provenance), centroid: ringCentroid(bedding.outline) };
+
+  const roof = (model.roofs ?? []).find((x) => x.uid === uid);
+  if (roof) return { kind: "roof", tag: roof.tag, storey: roof.storey,
+    source: sourceOf(roof.provenance), centroid: ringCentroid(roof.footprint) };
+
+  const floor = (model.floors ?? []).find((x) => x.uid === uid);
+  if (floor) return { kind: "floor", tag: floor.tag, storey: floor.storey,
+    source: sourceOf(floor.provenance),
+    // A framed floor carries no outline of its own; its joist endpoints bound the deck.
+    centroid: ringCentroid(floor.members.flatMap((member) => [member.p0, member.p1])) };
+
+  return null;
 }
 
 // Selector helpers ----------------------------------------------------------

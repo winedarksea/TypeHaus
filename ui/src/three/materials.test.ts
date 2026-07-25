@@ -7,6 +7,7 @@ import {
   masonryTileSizeM,
   MASONRY_TILE_SIZE_M,
 } from "./materials";
+import { authoredAppearance, materialColor, RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -52,4 +53,32 @@ export function runMaterialGeometryTests() {
   const cmuTile = masonryTileSizeM(cmu);
   assert(cmuTile[0] > brickTile[0] && cmuTile[1] > brickTile[1],
     "The CMU repeat tile is larger in both directions than the brick tile");
+
+  // An authored finish is definitive: a material tagged plainly "brick" still renders as white
+  // brick when the catalog says so. This is the case substring inference cannot express, and
+  // the reason the engine ships Material.finish (server/model_json.py catalog.materials).
+  assert(masonryStyleFor("brick", "white-brick").key === "white-brick",
+    "An authored finish outranks the tag — a plain 'brick' ref can be white brick");
+  assert(masonryStyleFor("white-brick", "cmu").key === "cmu",
+    "An authored finish outranks the tag in the other direction too");
+  assert(masonryStyleFor("brick", null).key === "brick"
+    && masonryStyleFor("brick", "no-such-finish").key === "brick",
+    "No (or unknown) authored finish falls back to inferring from the ref");
+
+  // The authored colour reaches the fill: white brick must not read as the masonry family red.
+  const catalog = [
+    { tag: "white-brick", color: "#e9e6df", finish: "white-brick" },
+    { tag: "brick", color: "#9c5a4a", finish: "brick" },
+    { tag: "spf-stud" },
+  ];
+  const light = RESOLVED_NORDIC_PALETTE.light;
+  assert(materialColor("white-brick", light, catalog) === "#e9e6df",
+    "Authored material colour wins over the inferred masonry family colour");
+  assert(materialColor("white-brick", light) === light.material.masonry,
+    "Without a catalog the same ref still falls back to the masonry family colour");
+  assert(materialColor("spf-stud", light, catalog) === light.material.lumber,
+    "A catalog material with no authored colour falls back to its inferred family");
+  assert(authoredAppearance("white-brick", catalog)?.finish === "white-brick"
+    && authoredAppearance("missing", catalog) === undefined,
+    "authoredAppearance finds a catalog entry by tag and reports absence as undefined");
 }
