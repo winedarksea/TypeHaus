@@ -6,6 +6,13 @@ declare module "*.py?raw" {
   export default src;
 }
 
+// Build-script source imported as a string so a test can assert that two lists which must
+// agree (the bundled-house and folder-pick plan-source filters) actually do.
+declare module "*.mjs?raw" {
+  const src: string;
+  export default src;
+}
+
 interface ImportMetaEnv {
   // "1" in the standalone PWA build (type-house.com/app): boot the bundled Catlin house in the
   // offline pyodide engine by default. Unset for local `haus serve` builds.

@@ -35,8 +35,10 @@ export type ThreeMode = "nordic" | "schematic";
 export type Workspace = "design" | "analyze" | "document"; // tool/drawer emphasis
 export type Representation = "conceptual" | "schematic" | "detailed" | "fabrication"; // detail level
 // Building-science lenses (Phase 9): a lens semantically re-frames the model to answer one
-// question. Shipping air · water · thermal first.
-export type Lens = "none" | "air" | "water" | "thermal";
+// question. Air · water · thermal shipped first; vapour joined them once materials carried a
+// sourced permeance (Material.vapor_permeance_at), which is what lets that lens report the
+// actual perms per layer rather than only "this layer is tagged vapour".
+export type Lens = "none" | "air" | "water" | "thermal" | "vapor";
 
 // 3D trade visibility (→ 21 §3D panel WP7): one THREE.Group per trade so toggling never
 // rebuilds the scene, just flips group.visible. "walls" is layer polygons (sheathing,

@@ -1834,3 +1834,32 @@ textarea:focus-visible,
 .control-tag.control-air { color: var(--control-air); }
 .control-tag.control-water { color: var(--control-water); }
 .control-tag.control-thermal { color: var(--control-thermal); }
+
+/* Vapour lens readings: resolved permeance + IRC R702.7 retarder class, tightest first. */
+.lens-vapor-readings {
+  margin: 6px 0 0;
+  padding-left: 0;
+  list-style: none;
+  max-height: 180px;
+  overflow-y: auto;
+}
+.lens-vapor-readings li {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 8px;
+  align-items: baseline;
+  padding: 3px 0;
+  border-top: 1px solid var(--panel-line);
+  font-size: 11px;
+}
+.lens-vapor-readings li:first-child { border-top: none; }
+.lens-vapor-readings .vapor-perms {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--control-vapor);
+  white-space: nowrap;
+}
+.lens-vapor-readings .vapor-class { white-space: nowrap; }
+/* An unauthored permeance is a question, not a measurement — it must not read as a number. */
+.lens-vapor-readings li.vapor-unknown .vapor-perms { color: var(--warn); }
+.control-tag.control-vapor { color: var(--control-vapor); }

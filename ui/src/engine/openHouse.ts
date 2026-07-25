@@ -10,9 +10,17 @@ export function fsAccessSupported(): boolean {
 }
 
 // Text files the engine's plan loader consumes. Binary (out/*.glb, images) is skipped.
-const TEXT_EXT = /\.(py|toml|md|json|txt|cfg|ini)$/i;
-// Never descend into build output / caches / vcs.
-const SKIP_DIR = new Set(["out", "__pycache__", ".git", "node_modules", ".venv", "dist"]);
+//
+// `geojson`/`csv` are load-bearing, not decoration: houses/catlin/plan/manifest.py calls
+// load_basemap_geojson(plan/basemap.geojson) while the module is being *imported*, so dropping
+// it makes the import raise, the model resolve to None, and the picked house report "Cannot
+// reach engine". This is the folder-pick twin of the bundled-asset bug — keep this list in step
+// with PLAN_TEXT_EXTENSIONS in ui/scripts/build-house-asset.mjs, and add any extension a plan
+// module opens by path to both.
+export const TEXT_EXT = /\.(py|toml|md|json|geojson|csv|txt|cfg|ini)$/i;
+// Never descend into build output / caches / vcs. `.claude` matches the bundler's skip list:
+// agent scratch is never plan source.
+const SKIP_DIR = new Set(["out", "__pycache__", ".git", "node_modules", ".venv", "dist", ".claude"]);
 
 interface DirHandle {
   name: string;

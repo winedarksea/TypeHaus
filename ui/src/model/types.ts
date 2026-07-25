@@ -381,8 +381,18 @@ export interface MaterialSpec {
   tag: string;
   name: string;
   r_per_inch: number | null;
+  // Water-vapour *permeability* — US perm-inch, so it scales with layer depth. For bulk
+  // materials (foam, mineral wool, lumber, concrete).
   perm_rating: number | null;
+  // Water-vapour *permeance* of the finished product — US perms, thickness-independent, from
+  // its ASTM E96 rating (housewrap, metal cladding, foil facers, composite sheathing). Takes
+  // precedence over `perm_rating`; `0` is a real vapour barrier, distinct from `null`
+  // ("not authored" → report UNKNOWN, never substitute). Resolve the two through
+  // `vaporPermeanceAt` (model/vapor.ts), which mirrors Material.vapor_permeance_at.
+  vapor_permeance_perms?: number | null;
   density: number | null;
+  // Freeform provenance for the numbers above — a URL, a standard, or "generic assumption".
+  source?: string | null;
   // Authored appearance (server/model_json.py). `color` is the material's own hex; `finish`
   // names its 3D recipe ("brick" | "white-brick" | "cmu" | ...). Both are optional: a material
   // that authors neither falls back to the family inferred from its tag (nordic/palette.ts).
@@ -570,6 +580,10 @@ export interface Model {
     true_north_deg: number;
     grade_m?: number | null;
     parcel?: Vec2[];
+    // Plan rings the site earth sheet is cut by — one disjoint outer boundary per excavated
+    // structure, resolved from every slab finishing at or below grade
+    // (resolve/site_earth.py). Absent on older model.json, which leaves the sheet uncut.
+    earth_voids?: Vec2[][];
     spot_elevations?: { position: Vec2; elevation_m: number }[];
   };
   underlays?: Underlay[];
