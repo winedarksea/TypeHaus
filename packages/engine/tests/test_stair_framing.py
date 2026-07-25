@@ -287,16 +287,34 @@ def test_framed_wall_bearing_picks_the_longest_host(main_stair):
         assert members[key].connection == "framed-wall-ledger:W-M-STRW", key
 
 
-def test_no_ledger_members_are_emitted(catlin_model):
-    """Annotate, don't fabricate: a wall axis is a *centreline*, so a band drawn on a
-    framed wall's axis would be geometry invented inside the stud cavity. Only concrete
-    gets a real hanger band."""
+def test_framed_hosts_emit_ledger_boards_flush_with_the_wall_face(catlin_model,
+                                                                  main_stair):
+    """A framed host now carries its stringer/rim on a real ledger board, not an
+    annotation alone — but never one drawn on the wall's *centreline* (that would be
+    geometry invented inside the stud cavity, the old reason nothing was emitted).
+    The board sits flush against the host's face on the member's side: half the wall
+    plus half the ledger's own 1.5" thickness off the axis."""
+    walls = {wall.tag: wall for wall in catlin_model.walls}
     for stair in catlin_model.stairs:
         for member in stair.members:
             if member.category != "hanger":
                 continue
             assert member.connection is not None
-            assert member.connection.startswith("concrete-wall-hanger:"), member.child_key
+            if member.child_key.startswith("hanger-"):
+                assert member.connection.startswith("concrete-wall-hanger:"), member.child_key
+            else:
+                assert member.child_key.startswith("ledger-"), member.child_key
+                assert member.connection.startswith("framed-wall-ledger:"), member.child_key
+                host = walls[member.connection.split(":", 1)[1]]
+                (ax, ay), (bx, by) = host.axis
+                offset = (abs(member.p0[0] - ax) if abs(bx - ax) < 1e-6
+                          else abs(member.p0[1] - ay))
+                assert offset == pytest.approx(
+                    host.thickness_m / 2 + inch(0.75).meters), member.child_key
+    # ST-M2S's known framed hosts each carry at least one real ledger board.
+    ledger_hosts = {m.connection.split(":", 1)[1] for m in main_stair.members
+                    if m.child_key.startswith("ledger-")}
+    assert {"W-M-C5", "W-M-STRW"} <= ledger_hosts
 
 
 def test_no_stair_member_is_degenerate(catlin_model):

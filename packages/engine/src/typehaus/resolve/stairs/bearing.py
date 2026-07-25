@@ -7,8 +7,12 @@ from dataclasses import replace
 
 from typehaus.model.enums import StructuralRole
 from typehaus.model.spatial import Stair
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedModel
 from typehaus.resolve.stairs.common import _MIN_SHARED_RUN_M, _TREAD_THICKNESS_M
+
+# The 2x board a framer lags to a framed host wall's face for a stringer/rim to bear on.
+_LEDGER_PROFILE = "2x10"
 
 
 def _clip_stair_to_subfloor(members: tuple[FramedMember, ...],
@@ -105,6 +109,52 @@ def _authored_is_bearing(model: ResolvedModel, tag: str) -> bool:
     return getattr(authored, "structural_role", None) is StructuralRole.BEARING
 
 
+def _framed_ledger(stair: Stair, host, member: FramedMember,
+                   interval: tuple[float, float], subfloor: float,
+                   connection: str) -> FramedMember:
+    """The ledger board a framed host wall carries ``member`` on.
+
+    Three deliberate differences from the concrete hanger band:
+
+    - **Plan position** — flush against the host's face on the member's side (axis +
+      half the wall + half the ledger board), never on the member's own line and never
+      inside the stud cavity. That keeps it clear of the host's studs/plates in plan,
+      which is also what keeps the interference check quiet about it.
+    - **Span** — exactly the run interval the host shares with the member
+      (``_best_host_wall``'s third gate measured it); a board spanning the member's full
+      run would float past the end of the wall that carries it.
+    - **Top** — tracks the member top *interpolated at the interval ends*, so a ledger
+      under a partially-carried raked stringer bears where that stretch of stringer
+      actually is, clamped at the subfloor like every stair member.
+    """
+    section = cross_section(_LEDGER_PROFILE)
+    lo, hi = interval
+    # 0 → the member runs in x (cross coordinate is y); 1 → it runs in y (cross is x).
+    run_axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0
+    cross_axis = 1 - run_axis
+    wall_cross = host.axis[0][cross_axis]
+    side = 1.0 if member.p0[cross_axis] >= wall_cross else -1.0
+    face = wall_cross + side * (host.thickness_m / 2.0 + section.width_m / 2.0)
+    a = (face, lo) if run_axis == 1 else (lo, face)
+    b = (face, hi) if run_axis == 1 else (hi, face)
+    # The member's top along its run: z1_m at p0, z1_end_m (raked) or z1_m at p1.
+    s0, s1 = member.p0[run_axis], member.p1[run_axis]
+    top0 = member.z1_m
+    top1 = member.z1_m if member.z1_end_m is None else member.z1_end_m
+
+    def top_at(s: float) -> float:
+        if abs(s1 - s0) < 1e-9:
+            return max(top0, top1)
+        return top0 + (top1 - top0) * (s - s0) / (s1 - s0)
+
+    top_lo, top_hi = top_at(lo), top_at(hi)
+    return FramedMember(
+        stair.uid, f"ledger-{host.tag}-{member.child_key}", "hanger", _LEDGER_PROFILE,
+        a, b, max(subfloor, top_lo - section.depth_m), top_lo, hi - lo,
+        z0_end_m=max(subfloor, top_hi - section.depth_m), z1_end_m=top_hi,
+        connection=connection)
+
+
 def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
                          members: tuple[FramedMember, ...],
                          subfloor: float) -> tuple[FramedMember, ...]:
@@ -120,10 +170,15 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
       the bearing reads structurally. The band tracks the raked stringer top
       (``z1_m``/``z1_end_m``), so a lower-flight hanger bears at the landing and an
       upper-flight hanger at the arrival deck — never at ``max(z0, z1)`` of a full prism.
-    - **Framed wall** — annotated ``framed-wall-ledger:{tag}`` and nothing else. A wall
-      ``axis`` is its *centreline*, so a band drawn on it would be geometry invented
-      inside the stud cavity; the ledger the framer actually installs waits on insetting
-      stair members to the host's finished face (see plans/TODO.md D3).
+    - **Framed wall** — annotated ``framed-wall-ledger:{tag}`` *and* given a real ledger
+      board (``_LEDGER_PROFILE``) as connector geometry. A wall ``axis`` is its
+      *centreline*, so the board is NOT drawn there (that would be geometry invented
+      inside the stud cavity — plans/TODO.md D3); it sits flush against the host's face
+      on the member's side, spans exactly the run the host shares with the member, and
+      its top tracks the (possibly raked) member top the way the concrete hanger band
+      does. Category ``hanger`` on purpose: the interference rules and the hardware
+      takeoff already treat that category as a stair-carriage connector, and the
+      ``ledger-`` child-key prefix keeps the two kinds tellable apart.
 
     Any landing corner no host wall reaches gets a vertical 4x4 post to the subfloor.
     """
@@ -157,7 +212,9 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
         if bearable and member.p0 != member.p1:
             host, interval = _best_host_wall(model, stair, member.p0, member.p1)
             if host is not None and not host.is_foundation:
-                out.append(replace(member, connection=f"framed-wall-ledger:{host.tag}"))
+                tag = f"framed-wall-ledger:{host.tag}"
+                out.append(replace(member, connection=tag))
+                out.append(_framed_ledger(stair, host, member, interval, subfloor, tag))
                 if member.category == "landing":
                     # Only the endpoints the wall actually runs past are carried; a host
                     # that overlaps half a rim leaves the far corner needing a post.
