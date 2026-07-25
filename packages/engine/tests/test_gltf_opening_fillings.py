@@ -17,14 +17,14 @@ from typing import NamedTuple
 import pytest
 
 from typehaus.emit.gltf import emit_gltf_dict
-from typehaus.emit.gltf.emitter import (
+from typehaus.emit.gltf.mesh import _MeshBuilder
+from typehaus.emit.gltf.openings import (
     _DOOR_LEAF_THICKNESS_M,
     _DOUBLE_SWING_MULLION_CLEAR_WIDTH_DIVISOR,
     _OPENING_FRAME_DEPTH_M,
     _OPENING_FRAME_FACE_WIDTH_M,
     _OPENING_FRAME_SPAN_DIVISOR,
     _WINDOW_GLAZING_THICKNESS_M,
-    _MeshBuilder,
     _add_opening_filling,
 )
 from typehaus.resolve import resolve
