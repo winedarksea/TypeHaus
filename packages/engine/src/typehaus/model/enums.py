@@ -173,6 +173,7 @@ class EquipmentKind(Enum):
     AIR_HANDLER = "air_handler"
     WATER_HEATER = "water_heater"
     ERV = "erv"
+    HEAT_PUMP = "heat_pump"  # minisplit outdoor condenser
 
 
 class DeviceKind(Enum):

@@ -25,7 +25,8 @@ from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_FI
                      STARTER_FURNITURE_TYPES)
 
 from params import breezeway, foundations, raised_garden, roof_trim, sunken_garden
-from plan import assemblies, fixture_types, fixtures, mep, placeables, site, transitions, views
+from plan import (assemblies, electrical, fixture_types, fixtures, mep, placeables, site,
+                  transitions, views)
 from plan.storeys import attic, basement, garage, main, second
 
 format_version = 1
@@ -45,8 +46,8 @@ _library = Library(
     fixture_types=(*fixture_types.FIXTURE_TYPES, *STARTER_FIXTURE_TYPES),
     appliance_types=(*fixture_types.APPLIANCE_TYPES, *STARTER_APPLIANCE_TYPES),
     register_types=mep.REGISTER_TYPES,
-    equipment_types=mep.EQUIPMENT_TYPES,
-    electrical_device_types=mep.ELECTRICAL_DEVICE_TYPES,
+    equipment_types=(*mep.EQUIPMENT_TYPES, *electrical.EQUIPMENT_TYPES),
+    electrical_device_types=(*mep.ELECTRICAL_DEVICE_TYPES, *electrical.DEVICE_TYPES),
     transitions=transitions.TRANSITIONS,
     construction_rules=tuple(assemblies.CONSTRUCTION_RULES),
 )
@@ -86,17 +87,20 @@ PLAN = (
         "basement",
         [*basement.ELEMENTS, *sunken_garden.BASEMENT_ELEMENTS,
          *raised_garden.BASEMENT_ELEMENTS, *foundations.BASEMENT_ELEMENTS,
-         *mep.BASEMENT_ELEMENTS, *placeables.BASEMENT_PLACEABLES],
+         *mep.BASEMENT_ELEMENTS, *electrical.BASEMENT_ELEMENTS,
+         *placeables.BASEMENT_PLACEABLES],
     )
     .with_elements(
         "main",
         [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *sunken_garden.MAIN_ELEMENTS,
          *foundations.MAIN_ELEMENTS, *breezeway.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
-         *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES],
+         *electrical.MAIN_ELEMENTS, *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES],
     )
-    .with_elements("garage", [*garage.ELEMENTS, *placeables.GARAGE_PLACEABLES])
+    .with_elements("garage", [*garage.ELEMENTS, *electrical.GARAGE_ELEMENTS,
+                              *placeables.GARAGE_PLACEABLES])
     .with_elements("second", [*second.ELEMENTS, *fixtures.SECOND_FIXTURES,
                                 *sunken_garden.SECOND_ELEMENTS, *mep.SECOND_ELEMENTS, *placeables.SECOND_PLACEABLES])
     .with_elements("attic", [*attic.ELEMENTS, *roof_trim.ATTIC_ELEMENTS,
-                             *mep.ATTIC_ELEMENTS, *placeables.ATTIC_PLACEABLES])
+                             *mep.ATTIC_ELEMENTS, *electrical.ATTIC_ELEMENTS,
+                             *placeables.ATTIC_PLACEABLES])
 )

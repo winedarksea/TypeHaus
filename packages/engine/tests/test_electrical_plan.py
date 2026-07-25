@@ -84,6 +84,49 @@ def test_the_previously_dark_habitable_rooms_are_covered(catlin_model):
         assert f"ED-{room_suffix}-SW" in tags
 
 
+def test_service_upgrade_devices_are_present(catlin_model):
+    """The electrical_notes.md program (WS2): meter, backup enclosure, EV receptacles,
+    hot tub disconnect in the sunken garden, minisplit disconnects, PV junction box."""
+    devices = {element.tag: element for storey in catlin_model.plan.storeys
+               for element in catlin_model.plan.storey_elements(storey.tag)
+               if element.element_kind == "ElectricalDevice"}
+    assert devices["ED-M-METER"].kind.value == "meter"
+    assert devices["ED-B-BACKUP-ENCL"].kind.value == "panel"
+    assert devices["ED-G-EV-620"].type_ref == "ED-T-EV-620"
+    assert devices["ED-G-EV-1450"].type_ref == "ED-T-EV-1450"
+    assert devices["ED-B-SPA-DISC"].kind.value == "disconnect"
+    assert devices["ED-M-MINI1-DISC"].kind.value == "disconnect"
+    assert devices["ED-M-MINI2-DISC"].kind.value == "disconnect"
+    assert devices["ED-A-PV-JB"].kind.value == "junction_box"
+    # Typed NEMA data replaces name parsing (WS1 schema).
+    types = {t.tag: t for t in catlin_model.plan.library.electrical_device_types}
+    assert types["ED-T-EV-1450"].nema == "14-50R"
+    assert types["ED-T-EV-1450"].load_va == 9600
+
+
+def test_garage_now_has_an_electrical_sheet(catlin_model):
+    assert has_electrical_content(catlin_model, "garage")
+    scene = build_electrical_plan(catlin_model, "garage")
+    symbols = {n.name for n in scene.nodes if isinstance(n, Symbol)}
+    assert "receptacle_240" in symbols
+
+
+def test_meter_and_disconnect_render_with_dedicated_symbols(catlin_model):
+    scene = build_electrical_plan(catlin_model, "main")
+    symbols = {n.name for n in scene.nodes if isinstance(n, Symbol)}
+    assert {"meter", "disconnect"} <= symbols
+
+
+def test_both_water_heaters_are_modeled(catlin_model):
+    equipment = {element.tag: element for storey in catlin_model.plan.storeys
+                 for element in catlin_model.plan.storey_elements(storey.tag)
+                 if element.element_kind == "Equipment"}
+    assert equipment["EQ-B-WH"].type_ref == "EQ-T-WATER-HEATER"  # 120V Rheem HPWH
+    assert equipment["EQ-B-WH2"].type_ref == "EQ-T-WATER-HEATER-240"
+    assert equipment["EQ-M-MINI1"].kind.value == "heat_pump"
+    assert equipment["EQ-M-MINI2"].kind.value == "heat_pump"
+
+
 def test_electrical_plan_dxf_round_trips(catlin_model, tmp_path: Path):
     import ezdxf
 

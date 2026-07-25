@@ -64,15 +64,18 @@ EQUIPMENT_TYPES = (
                          ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
                          ServicePort(tag="supply", service=Service.SUPPLY_AIR, position=(ft(0), ft(0), ft(4))),
                          ServicePort(tag="return", service=Service.RETURN_AIR, position=(ft(0), ft(0), ft(4))))),
-    EquipmentType(tag="EQ-T-WATER-HEATER", name="Water heater", footprint=(inch(24), inch(24)), height=ft(5),
+    # The 120V Rheem heat-pump water heater (plans/electrical_notes.md lines 25-26): stays
+    # on the backup subsystem, so no gas and no 240V boost — the 240V tank is EQ-B-WH2
+    # (plan/electrical.py). Compressor ~500W; the type is electric-only.
+    EquipmentType(tag="EQ-T-WATER-HEATER", name="Heat pump water heater, Rheem 120V", footprint=(inch(24), inch(24)), height=ft(5),
                   plan_symbol="water-heater",
                   ports=(ServicePort(tag="cold", service=Service.WATER_COLD, position=(ft(0), ft(0), ft(4))),
                          ServicePort(tag="hot", service=Service.WATER_HOT, position=(ft(0), ft(0), ft(4))),
-                         ServicePort(tag="gas", service=Service.GAS, position=(ft(0), ft(0), ft(0))))),
+                         ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))))),
 )
 
 ELECTRICAL_DEVICE_TYPES = (
-    ElectricalDeviceType(tag="ED-T-PANEL", name="Electrical panel", footprint=(inch(20), inch(4)), height=ft(3),
+    ElectricalDeviceType(tag="ED-T-PANEL", name="225A electrical panel (200A service)", footprint=(inch(20), inch(4)), height=ft(3),
                           plan_symbol="panel",
                           ports=(ServicePort(tag="service", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
