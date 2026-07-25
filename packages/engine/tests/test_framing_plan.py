@@ -49,7 +49,10 @@ def test_framing_plan_ghosts_bearing_storey_and_marks_bearing_walls(catlin_model
     layers = scene.by_layer()
     assert "S-WALL" in layers and "S-WALL-BELW" in layers
     bearing_tags = {n.tag for n in layers["S-WALL"] if isinstance(n, Polyline)}
-    assert bearing_tags == {"W-M-W2", "W-M-C2", "W-M-E1"}
+    # The deck's declared bearing refs plus every wall below authored StructuralRole.BEARING
+    # are drawn heavy; the S-101 schedule keeps the two apart.
+    assert {"W-M-W2", "W-M-C2", "W-M-E1"} <= bearing_tags
+    assert all(catlin_model.wall(tag).storey == "main" for tag in bearing_tags)
     # every non-bearing wall of the same (main) storey is ghosted, not omitted
     ghosted_tags = {n.tag for n in layers["S-WALL-BELW"] if isinstance(n, Polyline)}
     assert ghosted_tags and not (ghosted_tags & bearing_tags)
