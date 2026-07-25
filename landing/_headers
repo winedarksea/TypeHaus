@@ -1,3 +1,14 @@
+# Static-host header rules (Cloudflare Pages / Netlify syntax). Shipped to the site root by
+# landing/build-site.mjs; see landing/DEPLOY.md.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), interest-cohort=()
+# No CSP: the in-browser engine loads Pyodide + WebAssembly from the jsdelivr CDN and needs
+# eval, so a policy tight enough to be worth having would break /app. Revisit if the runtime is
+# ever self-hosted.
+
 # The install scripts must be served as plain text so `curl ... | sh` gets the raw bytes.
 /install.sh
   Content-Type: text/x-shellscript; charset=utf-8
@@ -6,8 +17,32 @@
   Content-Type: text/plain; charset=utf-8
   Cache-Control: no-cache
 
-# The engine tarball + bundled house are large, immutable build artifacts — cache hard.
+# Landing screenshots: stable filenames that get replaced when the UI changes, so cache for a
+# day rather than forever — a refreshed screenshot should not need a cache-busting rename.
+/assets/*
+  Cache-Control: public, max-age=86400
+
+# Vite content-hashes these filenames, so the bytes behind a URL never change — cache hard.
+/app/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The engine tarball and the bundled house are large but NOT content-hashed: a new deploy reuses
+# the same URLs. `immutable` here would pin returning visitors to a stale engine for a year, so
+# revalidate instead — the ETag makes the steady-state cost a 304, and the service worker serves
+# the cached copy immediately while the revalidation runs (stale-while-revalidate in sw.js).
 /app/typehaus-engine.tar
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=0, must-revalidate
+/app/typehaus-ifc-ext.tar
+  Cache-Control: public, max-age=0, must-revalidate
 /app/catlin-house.json
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=0, must-revalidate
+
+# The app shell and the service worker itself must never be served stale, or a deploy can never
+# reach a client that already installed the PWA.
+/app/index.html
+  Cache-Control: no-cache
+/app/sw.js
+  Cache-Control: no-cache
+  Service-Worker-Allowed: /app/
+/app/manifest.webmanifest
+  Cache-Control: no-cache
