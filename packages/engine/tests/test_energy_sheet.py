@@ -51,9 +51,9 @@ def test_unconditioned_garage_excluded(catlin_model):
 
 def test_block_load_and_wwr_appear_on_sheet(catlin_model, tmp_path: Path):
     from typehaus.checks.building_science.wwr import wwr_summary
+    from typehaus.checks.registry import Preferences
     from typehaus.emit.draw import write_permit_set
     from typehaus.energy import estimate_block_load
-    from typehaus.checks.registry import Preferences
 
     load = estimate_block_load(catlin_model, Preferences())
     assert load.heating_load_btu_per_hour != 0.0 or load.unknown_inputs
@@ -93,3 +93,44 @@ def test_under_code_slab_assembly_fails_not_silent_pass():
     result = assembly_r_value(bare_slab, library)
     assert result.value is not None
     assert result.value.r_us < MN_ZONE_6.slab_r
+
+
+def test_block_load_counts_only_the_envelope(catlin_model):
+    """A block load sums the thermal boundary. Interior partitions and the closet doors
+    hosted in them separate two rooms at the same setpoint: counting them against the
+    outdoor design temperature inflates the load and fills ``unknown_inputs`` with doors
+    that never see outdoor air."""
+    from typehaus.checks.building_science.wwr import _wall_length
+    from typehaus.checks.registry import Preferences
+    from typehaus.energy import _is_envelope_wall, estimate_block_load
+
+    load = estimate_block_load(catlin_model, Preferences())
+    walls = next(component for component in load.components if component.kind == "walls")
+    clad_wall_area_ft2 = sum(
+        _wall_length(wall) * (wall.z1_m - wall.z0_m) * 10.7639104167
+        for wall in catlin_model.walls
+        if not wall.is_foundation
+        and any(layer.function == "cladding" for layer in wall.layers)
+    )
+    # Gross clad area less its openings; never the whole (partition-inclusive) wall stock.
+    assert 0 < walls.area_ft2 <= clad_wall_area_ft2
+
+    envelope_wall_tags = {wall.tag for wall in catlin_model.walls if _is_envelope_wall(wall)}
+    interior_door_tags = {opening.tag for opening in catlin_model.openings
+                          if opening.is_door and opening.host_wall not in envelope_wall_tags}
+    assert interior_door_tags  # catlin has interior doors, so this is a real exclusion
+    assert not any(tag in item for tag in interior_door_tags for item in load.unknown_inputs)
+
+
+def test_wall_comparison_pairs_the_authored_wall_variants(catlin_model):
+    """The M5 acceptance is a *wall* 2x4 -> 2x6 swap. The library also holds 2x4-framed
+    roofs, and a variant assembly stores no layers of its own, so both the scoping and the
+    variant resolution have to be right for this pair to appear."""
+    from typehaus.checks.registry import Preferences
+    from typehaus.energy import estimate_block_load
+
+    comparison = estimate_block_load(catlin_model, Preferences()).wall_comparison
+    assert comparison is not None
+    assert comparison["baseline_assembly"] == "CATLIN_EXT_2X4"
+    assert comparison["upgrade_assembly"] == "CATLIN_EXT_2X6"
+    assert comparison["heating_savings_btu_per_hour"] > 0
