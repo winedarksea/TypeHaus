@@ -220,10 +220,12 @@ deck fix; work them down here (or suppress `structural.member_interference` per-
 - `emit/draw/floorplan.py` emits `Symbol(name="alarm")`, but `"alarm"` is missing from
   `_MARKER_STYLE` in `pdf_writer.py` and from `_add_symbol` in `dxf_writer.py`, so every
   smoke/CO alarm draws as a blue window-glass bar on the plan.
-- `storey_outward_sign` is one scalar per storey derived from the largest closed loop, so the
-  house basement and the sunken garden — two independent structures sharing a storey key —
-  cannot have independent windings. A per-connected-component sign removes the bug class that
-  `advisory.cladding_side_mismatch` currently only detects.
+- `integrity.placeable_*_clearance_conflict` and `integrity.door_swing_conflict` compare
+  footprints in plan only, with no vertical band: a ceiling light at 8' AFF and a 2"-tall wall
+  switch both "encroach" on the floor clearance beside a bed. `Mount` gives each object a base
+  elevation and the product type gives its height, so the comparison could be a real interval
+  overlap — but the band a zone protects (floor to standing height? floor to door-leaf height?)
+  has to be decided per zone purpose before that is more than a guess.
 - The garage gable is closed by carrying wall skin to the roof underside rather than by real
   `top=ToRoof` gable walls: a raked wall top is a straight line, so a gable wall must split at
   the ridge, and `W-G-E`'s ridge is exactly where the 16' overhead door is centred. Accepted
