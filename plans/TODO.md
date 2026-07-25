@@ -147,16 +147,6 @@ below are construction-rule authoring — they need your intent:
   cannot express a real condition.
 
 ## Editor
-
-- **Anchor-relative annotation drag → PatchOp editor.** The v1 detail viewer is still
-  read-only.
-- **Per-stud selection.** Wall bodies are pickable; individual framing members are not. Needs
-  `InstancedMesh` instanceId picking plus a stable member-uid the engine emits. Note
-  `FramedMember.trade` now exists for the "a fascia is envelope trim by category but the
-  carpenter frames it" case.
-- **Floor joists are not drawn in 2D**, so the "hide floors to read stair continuity" idea
-  works in 3D only. Trades with no plan geometry (roof surfaces, floor joists, concrete
-  solids, site) are badged **3D** in the Views panel rather than silently inert.
 - **Console noise:** `THREE.Color: Unknown color model var(--material-siding)` from
   `nordic/palette`.
 

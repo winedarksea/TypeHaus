@@ -117,6 +117,19 @@ def test_stair_support_framing_reports_no_interference():
     assert not stair_findings, [f.message for f in stair_findings]
 
 
+def test_balcony_knee_braces_are_not_a_clash():
+    """The braces leave the post *face* and stop at the soffit, so nothing overlaps.
+
+    Both ends are where a clash would come from: an end buried in the 6x6 shares more plan
+    area than the tolerance allows (and sits too far inside the column for the butt-joint
+    exemption), and a brace run past the soffit would share volume with the member it braces.
+    """
+    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+    brace_findings = [f for f in member_interference(ctx)
+                      if any("KB-SG" in tag or "GIRT" in tag for tag in f.element_tags)]
+    assert not brace_findings, [f.message for f in brace_findings]
+
+
 def test_catlin_framing_interference_stays_near_zero():
     """Guards the ~2662 -> 0 cleanup (correct stud orientation, slope-aware z, intended
     corner/tee/bearing/stair joints). A small ceiling keeps it robust to model tweaks."""
