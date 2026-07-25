@@ -218,7 +218,10 @@ export interface CanvasObjectType {
   footprint_shape_m?: Vec2[] | null;
   height_m: number | null;
   clearances?: { footprint_m: Vec2[]; purpose: string; policy: "required" | "recommended"; source: string | null; code_profile?: string | null }[];
-  mount?: { kind: "floor" | "wall" | "ceiling"; elevation_m: number | null; drop_m: number | null } | null;
+  // `recessed_into_host_surface` = the body is let into its host surface rather than standing
+  // on it (a floor register dropping into its boot), so its solid runs *below* the mount
+  // plane and it projects nothing into the room. Clear-floor obstruction reads this.
+  mount?: { kind: "floor" | "wall" | "ceiling"; elevation_m: number | null; drop_m: number | null; recessed_into_host_surface?: boolean } | null;
   ports: { tag: string; service: string }[];
   plan_svg?: string | null;
   model_glb?: string | null;
