@@ -410,7 +410,12 @@ def _resolve_ridge_beam(
 
 
 def _trim_rafter_to_beam(rafter: FramedMember, roof: ResolvedRoof, beam_width_m: float) -> FramedMember:
-    """Pull the rafter's ridge end back by half the beam width, staying on the roof plane."""
+    """Pull the rafter's ridge end back by half the beam width, staying on the roof plane.
+
+    Interpolates along the member's own endpoint elevations (both already on the roof
+    plane) rather than off ``roof.eave_z_m`` — the plumb-cut tail starts inboard of the
+    footprint edge, where the plane is already above the eave elevation.
+    """
     ex, ey = rafter.p0
     rx, ry = rafter.p1
     dx, dy = rx - ex, ry - ey
@@ -420,10 +425,11 @@ def _trim_rafter_to_beam(rafter: FramedMember, roof: ResolvedRoof, beam_width_m:
         return rafter
     fraction = (horiz_run - trim) / horiz_run
     new_p1 = (ex + dx * fraction, ey + dy * fraction)
-    new_top = roof.eave_z_m + (roof.ridge_z_m - roof.eave_z_m) * fraction
+    ridge_top = rafter.z1_end_m if rafter.z1_end_m is not None else roof.ridge_z_m
+    new_top = rafter.z1_m + (ridge_top - rafter.z1_m) * fraction
     depth = rafter.z1_m - rafter.z0_m
     new_bottom = new_top - depth
-    new_length = math.hypot(new_p1[0] - ex, new_p1[1] - ey, new_top - roof.eave_z_m)
+    new_length = math.hypot(new_p1[0] - ex, new_p1[1] - ey, new_top - rafter.z1_m)
     return replace(rafter, p1=new_p1, length_m=new_length, z0_end_m=new_bottom, z1_end_m=new_top)
 
 

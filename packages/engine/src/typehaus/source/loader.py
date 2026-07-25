@@ -11,10 +11,13 @@ import hashlib
 import importlib.util
 import sys
 import time
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Iterator
 
 from typehaus.findings import Finding, Severity, SourceLoc
+from typehaus.model.base import Element, set_construction_observer
 from typehaus.model.plan import PlanModel
 from typehaus.source.dialect import (
     is_editable,
@@ -119,6 +122,59 @@ def _scan_file(rel: str, src: str) -> tuple[list[Finding], list[tuple[str, Sourc
     return findings, file_prov.items()
 
 
+@contextmanager
+def _capture_authorship(house_dir: Path) -> Iterator[dict[str, SourceLoc]]:
+    """Runtime authorship capture: while active, every :class:`Element` constructed
+    records the innermost house-local stack frame — exact ``file:line`` even for tags
+    built from f-strings/variables in loops, which no static scan can see. The captures
+    become *read-only* provenance (``Provenance.add_generated``): shown in the UI as
+    "defined in params/… — edit in code", never a writeback destination (the coordinator
+    routes exclusively through ``editable_files()``).
+
+    Uses the module-global observer in ``typehaus.model.base`` — the same class of
+    process-wide global as this module's ``sys.path`` mutation; rebuilds are serialized,
+    so a single active capture is the operating assumption.
+    """
+    captured: dict[str, SourceLoc] = {}
+    # co_filename → house-relative posix path (or None if outside); resolved once per file.
+    rel_cache: dict[str, "str | None"] = {}
+
+    def _rel(co_filename: str) -> "str | None":
+        if co_filename not in rel_cache:
+            p = Path(co_filename)
+            if not p.is_absolute():
+                rel_cache[co_filename] = None
+            else:
+                if not p.is_relative_to(house_dir):
+                    p = p.resolve()
+                rel_cache[co_filename] = (
+                    p.relative_to(house_dir).as_posix()
+                    if p.is_relative_to(house_dir) else None
+                )
+        return rel_cache[co_filename]
+
+    def observer(el: Element) -> None:
+        if not el.tag:
+            return
+        depth = 1
+        while True:
+            try:
+                frame = sys._getframe(depth)
+            except ValueError:
+                return
+            rel = _rel(frame.f_code.co_filename)
+            if rel is not None:
+                captured[el.tag] = SourceLoc(file=rel, line=frame.f_lineno)
+                return
+            depth += 1
+
+    set_construction_observer(observer)
+    try:
+        yield captured
+    finally:
+        set_construction_observer(None)
+
+
 def load_plan(house_dir: Path) -> LoadResult:
     """Full load: dialect lint (all editable files) → import manifest → PlanModel.
 
@@ -156,7 +212,12 @@ def load_plan(house_dir: Path) -> LoadResult:
         return LoadResult(plan=None, findings=findings, provenance=prov, timings=timings)
 
     t0 = time.perf_counter()
-    plan = _import_manifest(house_dir, findings)
+    # Capture covers only the manifest import — furniture/placeable loaders below build
+    # engine-side wrappers whose authorship is the JSON/GLB asset, not a stack frame.
+    with _capture_authorship(house_dir) as captured:
+        plan = _import_manifest(house_dir, findings)
+    for tag, loc in captured.items():
+        prov.add_generated(tag, loc)
     if plan is not None:
         from typehaus.source.imported_furniture import load_imported_furniture
         from typehaus.source.placeables import load_project_placeables
@@ -205,7 +266,11 @@ def _import_manifest(house_dir: Path, findings: list[Finding]) -> PlanModel | No
     if lib_added:
         sys.path.insert(0, str(lib_root))
     try:
-        for mod in [m for m in sys.modules if m == "plan" or m.startswith("plan.")]:
+        # Drop both house-local module trees: a cached ``params`` module would not only go
+        # stale across edits, its module-level elements would never be re-constructed on a
+        # rebuild — silently starving the runtime authorship capture above.
+        for mod in [m for m in sys.modules
+                    if m in ("plan", "params") or m.startswith(("plan.", "params."))]:
             del sys.modules[mod]
         spec = importlib.util.spec_from_file_location("plan.manifest", manifest)
         assert spec and spec.loader
@@ -288,31 +353,39 @@ def _consistency_check(
     plan: PlanModel, prov: Provenance, findings: list[Finding], house_dir: Path
 ) -> None:
     """Assert the import view and the libcst view agree on the authored tag set."""
-    kinds = {el.tag: el.element_kind for el in plan.all_elements()}
-    import_tags = set(kinds)
+    elements = {el.tag: el for el in plan.all_elements()}
     # Provenance may legitimately hold library/storey tags too; only flag plan
-    # elements the libcst path never saw (params/-generated ones are exempt).
-    prov_tags = prov.tags()
-    missing = import_tags - prov_tags
-    generated = _params_generated_tags(plan)
-    for tag in sorted(missing - generated):
+    # elements the libcst path never saw. Runtime capture (add_generated) supplies a
+    # read-only location for params-generated ones — those are fine, not findings.
+    missing = set(elements) - prov.editable_tags()
+    for tag in sorted(missing):
+        el = elements[tag]
+        # MRO walk: a FoundationWall(Wall) is as UI-movable as its base kind.
+        movable = any(c.__name__ in _UI_EDITABLE_KINDS for c in type(el).__mro__)
+        gen_loc = prov.location(tag)
+        under_plan = gen_loc is not None and gen_loc.file.startswith("plan/")
         # A UI-movable element authored in a non-editable plan module is a hard error:
         # its drag/edit POSTs a writeback op the coordinator can't apply, so the move
-        # silently fails to persist. Params-generated geometry has no constructor to
-        # write back to and stays a benign provenance warning.
-        if kinds.get(tag) in _UI_EDITABLE_KINDS and _noneditable_authored(house_dir, kinds[tag], tag):
+        # silently fails to persist. Gate the rglob walk on the capture pointing under
+        # plan/ (or being absent — e.g. a model_copy that bypassed capture).
+        if (movable and (under_plan or gen_loc is None)
+                and _noneditable_authored(house_dir, el.element_kind, tag)):
             findings.append(
                 Finding(
                     severity=Severity.ERROR,
                     check_id="loader.uneditable_movable_element",
                     message=(
-                        f"{kinds[tag]} {tag} is UI-movable but authored in a non-editable "
+                        f"{el.element_kind} {tag} is UI-movable but authored in a non-editable "
                         f"source file; add the '# haus: editable' header to its module (or "
                         f"move the declaration into one) so edits can be written back"
                     ),
                     element_tags=(tag,),
                 )
             )
+        elif gen_loc is not None:
+            # Captured authorship (params/ math, plan/views.py …): read-only provenance,
+            # surfaced in the UI as "defined in <file> — edit in code". No finding.
+            continue
         else:
             findings.append(
                 Finding(
@@ -322,9 +395,3 @@ def _consistency_check(
                     element_tags=(tag,),
                 )
             )
-
-
-def _params_generated_tags(plan: PlanModel) -> set[str]:
-    # Elements with forked_from or produced by params carry no editable location;
-    # M1 treats any element not found in provenance as generated (warn only).
-    return set()

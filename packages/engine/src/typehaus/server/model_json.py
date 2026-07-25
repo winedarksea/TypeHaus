@@ -26,7 +26,11 @@ def _provenance(prov: Provenance | None, tag: str) -> dict[str, Any] | None:
     if prov is None:
         return None
     loc = prov.location(tag)
-    return {"file": loc.file, "line": loc.line} if loc is not None else None
+    if loc is None:
+        return None
+    # editable=False marks runtime-captured (params-generated) authorship: the badge is
+    # a read-only "defined here" pointer, never a writeback destination.
+    return {"file": loc.file, "line": loc.line, "editable": prov.is_editable(tag)}
 
 
 def _member_json(m: FramedMember) -> dict[str, Any]:
@@ -97,7 +101,7 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
         prov = _provenance(provenance, asm.tag)
         assemblies.append({
             "tag": asm.tag,
-            "editable": prov is not None,
+            "editable": bool(prov and prov["editable"]),
             "provenance": prov,
             "stc": resolved.stc,
             "variant_of": asm.variant_of,

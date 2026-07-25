@@ -260,7 +260,9 @@ def _render_nodes(ax: object, scene: Scene) -> None:
             ax.plot([node.to[0]], [node.to[1]], marker=".", markersize=2, color="#555")
             scaled_text.append((
                 ax.text(node.at[0], node.at[1], node.text, family="monospace",
-                        ha=_leader_align(node), va="center", color="#222"),
+                        ha=_leader_align(node), va="center", color="#222",
+                        bbox=dict(facecolor="white", edgecolor="none", alpha=0.75,
+                                  pad=0.5)),
                 _LEADER_TEXT_H,
             ))
     _ = (PathPatch, MplPath)  # imported for parity with richer node kinds

@@ -115,8 +115,10 @@ def test_no_detail_component_is_ever_a_symbol(catlin_model):
 
 
 @pytest.mark.parametrize("key_prefix,name", [
-    ("wall_roof:CATLIN_EXT_2X4", "box-gutter"),
-    ("wall_roof:CATLIN_EXT_2X4", "drip-edge"),
+    # The house eave defers to its authored gutter/drip (params/roof_trim.py), so the
+    # schematic pair is exercised on the garage eave, which has no authored trim yet.
+    ("wall_roof:GARAGE_ROOF", "box-gutter"),
+    ("wall_roof:GARAGE_ROOF", "drip-edge"),
     ("wall_roof:CATLIN_EXT_2X4", "apron-flashing"),
     ("wall_roof:CATLIN_EXT_2X4", "insect-screen"),
     ("wall_foundation:CATLIN_BASEMENT_12", "z-flashing"),

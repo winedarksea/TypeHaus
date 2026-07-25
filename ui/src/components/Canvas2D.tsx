@@ -381,8 +381,10 @@ export function Canvas2D() {
   }, [storeyNodes]);
 
   const storeyHintFile = useCallback(
-    () => storeyNodes.find((n) => n.provenance)?.provenance?.file
-      ?? wallsOnStorey.find((w) => w.provenance)?.provenance?.file,
+    // Only *editable* provenance may route adds — a params-generated node's file would
+    // send the coordinator to a file writeback can't touch.
+    () => storeyNodes.find((n) => n.provenance?.editable)?.provenance?.file
+      ?? wallsOnStorey.find((w) => w.provenance?.editable)?.provenance?.file,
     [storeyNodes, wallsOnStorey],
   );
 
@@ -602,7 +604,7 @@ export function Canvas2D() {
           .sort((a, b) => a.elevation_m - b.elevation_m)[0]
       : undefined;
     if (!above) { toast("No storey above this level for a stair", "error"); return; }
-    const upperFile = model.walls.find((w) => w.storey === above.tag && w.provenance)?.provenance?.file;
+    const upperFile = model.walls.find((w) => w.storey === above.tag && w.provenance?.editable)?.provenance?.file;
     const res = await runMacro({
       macro: "place_stair", storey: activeStorey, to_storey: above.tag,
       seed: [fmt(seed[0]), fmt(seed[1])], hint_file: upperFile ?? undefined,

@@ -8,22 +8,41 @@ from typehaus.findings import SourceLoc
 
 
 class Provenance:
-    """Maps a plan element's ``tag`` to where its constructor call lives in source."""
+    """Maps a plan element's ``tag`` to where its constructor call lives in source.
+
+    Two tiers: *editable* locations come from the libcst scan of ``# haus: editable``
+    files and are the only ones writeback may target; *generated* locations come from
+    runtime authorship capture (params/ math modules, ``plan/views.py`` …) and are
+    read-only badges — never a writeback destination.
+    """
 
     def __init__(self) -> None:
         self._by_tag: dict[str, SourceLoc] = {}
+        self._generated: dict[str, SourceLoc] = {}
 
     def add(self, tag: str, loc: SourceLoc) -> None:
         self._by_tag[tag] = loc
 
+    def add_generated(self, tag: str, loc: SourceLoc) -> None:
+        """Record a read-only (runtime-captured) location; editable always wins."""
+        if tag not in self._by_tag:
+            self._generated[tag] = loc
+
     def location(self, tag: str) -> SourceLoc | None:
-        return self._by_tag.get(tag)
+        loc = self._by_tag.get(tag)
+        return loc if loc is not None else self._generated.get(tag)
+
+    def is_editable(self, tag: str) -> bool:
+        return tag in self._by_tag
+
+    def editable_tags(self) -> frozenset[str]:
+        return frozenset(self._by_tag)
 
     def tags(self) -> frozenset[str]:
         return frozenset(self._by_tag)
 
     def items(self) -> list[tuple[str, SourceLoc]]:
-        """(tag, location) pairs — used to cache/replay a single file's provenance."""
+        """Editable (tag, location) pairs — used to cache/replay a single file's provenance."""
         return list(self._by_tag.items())
 
     def __len__(self) -> int:

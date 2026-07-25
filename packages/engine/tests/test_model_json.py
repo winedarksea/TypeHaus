@@ -25,6 +25,13 @@ def catlin_payload():
     return model_to_dict(model)
 
 
+@pytest.fixture(scope="module")
+def catlin_provenance_payload():
+    result = load_plan(CATLIN_DIR)
+    model, _findings = resolve(result.plan)
+    return model_to_dict(model, provenance=result.provenance)
+
+
 def _all_members(payload):
     for wall in payload["walls"]:
         yield from wall["members"]
@@ -229,6 +236,29 @@ def test_catalog_materials_carry_both_vapour_fields_and_their_source(catlin_payl
     assert sheet_rated, "sheet goods author a whole-sheet permeance"
     # 0.0 is a sourced vapour barrier, not missing data — it must survive as a float.
     assert all(isinstance(value, float) for value in sheet_rated.values())
+
+
+def test_provenance_carries_the_editable_flag(catlin_provenance_payload):
+    """model.json contract: every provenance record says whether writeback can target it.
+    Editable-scanned elements ship editable=True; runtime-captured (params-generated)
+    ones ship editable=False with the generating file — the UI's read-only badge."""
+    walls = {w["tag"]: w for w in catlin_provenance_payload["walls"]}
+    authored = walls["W-B-S1"]["provenance"]  # plan/storeys/basement.py, editable
+    assert authored is not None and authored["editable"] is True
+    generated = walls["W-SG-S"]["provenance"]  # params/sunken_garden.py, captured
+    assert generated is not None
+    assert generated["editable"] is False
+    assert generated["file"] == "params/sunken_garden.py"
+    assert generated["line"] > 0
+
+
+def test_catalog_assembly_editability_requires_editable_provenance(catlin_provenance_payload):
+    assemblies = catlin_provenance_payload["catalog"]["assemblies"]
+    assert assemblies
+    for assembly in assemblies:
+        prov = assembly["provenance"]
+        assert assembly["editable"] == bool(prov and prov["editable"])
+    assert any(a["editable"] for a in assemblies)
 
 
 def test_stairs_payload_carries_landing_depth(catlin_payload):

@@ -30,12 +30,21 @@ def _tags(scene):
     return {n.tag for n in scene.nodes if isinstance(n, Polyline) and n.tag}
 
 
-def test_eave_overlay_emits_box_gutter_and_drip(catlin_model):
+def test_eave_overlay_defers_to_the_authored_gutter(catlin_model):
+    """The house eave carries an authored Gutter + drip (params/roof_trim.py) riding the
+    roofing plane, so the overlay must NOT add its schematic pair a storey of roof stack
+    lower — one eave, one gutter. The apron and vent screen have no authored counterpart
+    and still come from the overlay."""
     scene, findings = build_detail(catlin_model, _eave(catlin_model))
     assert not findings
     tags = _tags(scene)
-    assert "detail-component:box-gutter" in tags, "zero-overhang-eave needs a box gutter"
-    assert "detail-component:drip-edge" in tags
+    assert any(t.startswith("TR-RF-GUTTER") for t in tags), \
+        "the authored box gutter should be cut into the eave detail"
+    assert any(t.startswith("TR-RF-DRIP") for t in tags)
+    assert "detail-component:box-gutter" not in tags, \
+        "overlay must defer to the authored gutter, not double it"
+    assert "detail-component:drip-edge" not in tags
+    assert "detail-component:apron-flashing" in tags
     # Flashings are polyline+hatch geometry, never a bare Symbol.
     assert not any(getattr(n, "node", None) == "symbol" for n in scene.nodes)
 

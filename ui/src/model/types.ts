@@ -17,6 +17,9 @@ export type DoorOperation =
 export interface Provenance {
   file: string;
   line: number;
+  // false → runtime-captured (params-generated) authorship: a read-only "defined here"
+  // pointer, never a writeback destination.
+  editable: boolean;
 }
 
 export interface Layer {

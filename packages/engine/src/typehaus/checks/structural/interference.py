@@ -195,6 +195,12 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     # eave web stiffener bonded to its own rafter.
     if "bearing_stiffener" in kinds and "rafter" in kinds and same_parent:
         return True
+    # The same stiffener standing on the wall top its rafter seats on (APA D710 beveled
+    # bearing stiffener): with the tails plumb-cut at the stud face, the end rafters'
+    # stiffeners stand against the raked gable plates they run beside — the same bearing
+    # joint the rafter clause above clears, transferred through the web.
+    if "bearing_stiffener" in kinds and kinds & wall_top_kinds:
+        return True
     # cross-wall plate lap at an L corner or T junction.
     if a.kind in _PLATE_KINDS and b.kind in _PLATE_KINDS and not same_parent:
         return True

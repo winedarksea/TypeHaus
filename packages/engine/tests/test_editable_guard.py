@@ -10,6 +10,7 @@ from pathlib import Path
 from typehaus.source import load_plan
 
 CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+STARTER = Path(__file__).resolve().parents[3] / "houses" / "starter"
 
 
 def _errors(result, check_id: str) -> list:
@@ -36,6 +37,21 @@ def test_movable_element_in_noneditable_file_is_a_hard_error(tmp_path: Path) -> 
     errs = _errors(result, "loader.uneditable_movable_element")
     flagged = {t for f in errs for t in f.element_tags}
     assert "EQ-B-WH" in flagged, flagged  # the water heater the user reported
+
+
+def test_catlin_has_zero_provenance_gaps() -> None:
+    """Acceptance criterion: runtime authorship capture locates every element the libcst
+    scan can't see (params/ math, plan/views.py Slices), so a clean reference house
+    builds with no loader.provenance_gap warnings at all."""
+    result = load_plan(CATLIN)
+    gaps = [f for f in result.findings if f.check_id == "loader.provenance_gap"]
+    assert not gaps, sorted(t for f in gaps for t in f.element_tags)
+
+
+def test_starter_has_zero_provenance_gaps() -> None:
+    result = load_plan(STARTER)
+    gaps = [f for f in result.findings if f.check_id == "loader.provenance_gap"]
+    assert not gaps, sorted(t for f in gaps for t in f.element_tags)
 
 
 def test_params_generated_geometry_is_not_flagged() -> None:

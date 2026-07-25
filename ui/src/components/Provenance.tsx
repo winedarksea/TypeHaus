@@ -5,6 +5,15 @@ import type { Provenance as ProvenanceRecord } from "../model/types";
 
 export function Provenance({ p }: { p: ProvenanceRecord | null }) {
   if (!p) return <span className="badge">edit in code</span>;
+  if (p.editable === false) {
+    // Runtime-captured (params-generated) authorship: show where it's defined, but the
+    // only way to change it is still the generating code.
+    return (
+      <span className="prov">
+        {p.file}:{p.line} <span className="badge">edit in code</span>
+      </span>
+    );
+  }
   return (
     <span className="prov">
       {p.file}:{p.line}

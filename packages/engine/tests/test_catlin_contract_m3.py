@@ -230,8 +230,11 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
     for seat in seats:
         assert seat.z1_m == pytest.approx(plate_top)
         assert seat.z0_m == pytest.approx(plate_top - birdsmouth)
-        # Anchored at a bearing line, not out in the cladding lap at the footprint edge.
-        assert min(abs(seat.p0[0] - x) for x in bearing_x) < 1e-6
+        # Anchored at the rafter's plumb-cut tail — the bearing wall's stud exterior
+        # face, one sheathing thickness inboard of the sheathing-ext axis (the reference
+        # seat spans exactly the stud depth from there) — not out in the cladding lap.
+        assert min(abs(seat.p0[0] - x) for x in bearing_x) == pytest.approx(
+            inch(0.5).meters, abs=1e-6)
 
     setbacks = {entry["layer"]: entry for entry in roof.layer_edge_setbacks}
     assert set(setbacks) == {"deck", "membrane", "polyiso", "eps", "roof-membrane",
