@@ -333,6 +333,9 @@ class ResolvedPipeRun:
     z_start_m: float | None
     z_end_m: float | None
     length_m: float
+    # Fixture tags this run carries. Authored on ``PipeRun.serves``; carried into the IR so
+    # a check can ask "which run vents/drains this fixture" without re-reading plan source.
+    serves: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

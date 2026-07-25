@@ -141,6 +141,22 @@ CATLIN_SLAB_FLOOR = Assembly(
     source="catlin-house basement slab: 3\" below-slab XPS, R-15 @ 40 psi compressive",
 )
 
+# Main-floor structural deck: 9" of cast concrete spanning the basement. Nothing separates
+# it from anything cold — the basement below it is conditioned and the main floor above it
+# is conditioned — so it is an interior floor, not an envelope slab, and it carries no
+# insulation. The "INT" token in the tag is this codebase's existing signal for exactly that
+# (CATLIN_CONC_12_INT, INT_2X6_PLUMBING, ...), and it is what tells the prescriptive-energy
+# table to leave this deck alone instead of holding it to the R-10 slab-on-grade minimum.
+CATLIN_DECK_9_INT = Assembly(
+    tag="CATLIN_DECK_9_INT",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(9.0),
+              function=LayerFunction.STRUCTURE),
+    ),
+    interfaces=(_CONCRETE_BEARING,),
+    source="catlin-house main-floor deck — 9\" cast structural slab over the basement",
+)
+
 CATLIN_CONC_12_INT = Assembly(
     tag="CATLIN_CONC_12_INT",
     layers=(
@@ -285,6 +301,19 @@ GARAGE_WALL_2X6 = Assembly(
     ),
     default_lining=_GWB_LINING,
     source="catlin-house ifcplot/assemblies.py GARAGE_WALL",
+)
+
+# Garage slab-on-grade. Deliberately *not* CATLIN_SLAB_FLOOR: the basement slab sits inside
+# the thermal envelope and gets 3" of below-slab XPS, while this one floors an unheated,
+# detached structure and gets none. Same nominal thickness, different assembly — that is the
+# distinction the geometry alone cannot carry, since both resolve to a flat 3.5" solid.
+GARAGE_SLAB_ON_GRADE = Assembly(
+    tag="GARAGE_SLAB_ON_GRADE",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house detached garage floor — uninsulated slab on compacted base",
 )
 
 GARAGE_ROOF = Assembly(
@@ -472,6 +501,7 @@ ASSEMBLIES = [
     CATLIN_ROOF,
     CATLIN_BASEMENT_12,
     CATLIN_SLAB_FLOOR,
+    CATLIN_DECK_9_INT,
     CATLIN_CONC_12_INT,
     CATLIN_CONC_8_INT,
     SUNKEN_GARDEN_WALL,
@@ -483,6 +513,7 @@ ASSEMBLIES = [
     POST_WHITE_PAINT,
     GARAGE_ICF_8,
     GARAGE_WALL_2X6,
+    GARAGE_SLAB_ON_GRADE,
     GARAGE_ROOF,
     CATLIN_INT_2X6_BRG,
     INT_2X6_PLUMBING,

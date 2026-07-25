@@ -51,7 +51,7 @@ def _resolve_pipe_run(model: ResolvedModel, run: PipeRun, storey) -> list[Findin
         path=path, diameter_m=run.diameter.meters,
         z_start_m=datum + run.start_elevation.meters if run.start_elevation is not None else None,
         z_end_m=datum + run.end_elevation.meters if run.end_elevation is not None else None,
-        length_m=seg_len,
+        length_m=seg_len, serves=tuple(run.serves),
     ))
     return []
 
