@@ -111,7 +111,12 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
         intervals = layer_intervals(framed, direction, station)
         junction_z = framed.z0_m * M_TO_IN
         top = (framed.top_z1_m if framed.top_z1_m is not None else framed.z1_m) * M_TO_IN
-        z_here = junction_z + 6.0 if concrete is not None else top - 6.0
+        # At a wall→roof junction the band just under the plate is roofed over — the
+        # sloped assembly stack crosses the wall there, and a dimension string 6" below
+        # the plate prints its text straight into the rafter hatch. Drop the pair low
+        # enough that both strings sit in clear wall.
+        drop = 16.0 if derived.condition.kind.value == "wall_roof" else 6.0
+        z_here = junction_z + 6.0 if concrete is not None else top - drop
         ci = _continuous_insulation(intervals)
         if ci is not None and outboard_is_high(framed, direction, station) is not None:
             lo, hi, total = ci

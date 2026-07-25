@@ -353,7 +353,10 @@ def _chrome(model: ResolvedModel, derived: DerivedDetail, scene: Scene) -> list:
     out: list = []
     out.extend(_title_block(model, derived, min_u, max_z + margin))
     out.extend(material_legend(model, derived, min_u, min_z - margin))
-    out.extend(_notes_column(model, derived, max_u + margin, notes_top))
+    # The scene's right edge is usually the tail of a callout string, whose width is only
+    # estimated (char-count × aspect) — a snug margin there reads as a collision whenever
+    # the estimate runs a character or two short. Give the notes column real air.
+    out.extend(_notes_column(model, derived, max_u + max(margin, 10.0), notes_top))
     return out
 
 

@@ -132,7 +132,8 @@ def _scene_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
                 continue
             width = max(len(line) for line in content.split("\n")) * height * _CHAR_ASPECT
             lines = content.count("\n") + 1
-            align = getattr(node, "align", "left")
+            align = (_leader_align(node) if isinstance(node, Leader)
+                     else getattr(node, "align", "left"))
             u0 = {"left": anchor[0], "center": anchor[0] - width / 2,
                   "right": anchor[0] - width}[align]
             us.extend((u0, u0 + width))
@@ -144,6 +145,19 @@ def _scene_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
 
 # Monospace advance width as a fraction of cap height — used only to reserve room.
 _CHAR_ASPECT = 0.62
+
+
+def _leader_align(node: Leader) -> str:
+    """Which way a leader's note text runs: away from the thing it points at.
+
+    A note left of its target must grow leftward (right-aligned) or the lettering runs
+    back across the leader line into the drawing — the layer-label ladder's strikethrough
+    smear. ``at``/``to`` are plain points, so the side decides.
+    """
+    to = node.to if isinstance(node.to, tuple) else None
+    if to is not None and node.at[0] < to[0]:
+        return "right"
+    return "left"
 _MAX_FIG = (14.0, 11.0)
 _MIN_FIG = (5.0, 4.0)
 
@@ -246,7 +260,7 @@ def _render_nodes(ax: object, scene: Scene) -> None:
             ax.plot([node.to[0]], [node.to[1]], marker=".", markersize=2, color="#555")
             scaled_text.append((
                 ax.text(node.at[0], node.at[1], node.text, family="monospace",
-                        va="center", color="#222"),
+                        ha=_leader_align(node), va="center", color="#222"),
                 _LEADER_TEXT_H,
             ))
     _ = (PathPatch, MplPath)  # imported for parity with richer node kinds
@@ -257,18 +271,21 @@ def _draw_dimension(ax: object, node: ArchDimension) -> None:
     dx, dy = node.p1[0] - node.p0[0], node.p1[1] - node.p0[1]
     dist_in = math.hypot(dx, dy)
     label = node.text or _feet_inches(dist_in)
+    # Dimensions land on the geometry they measure, which in a detail is solid hatch —
+    # a translucent backing keeps the figure legible without masking the linework.
+    backing = dict(facecolor="white", edgecolor="none", alpha=0.75, pad=0.6)
     if abs(dx) < abs(dy):  # vertical dimension (→ elevation vertical dim string)
         x = node.p0[0] + node.offset
         ax.annotate("", xy=(x, node.p1[1]), xytext=(x, node.p0[1]),
                     arrowprops=dict(arrowstyle="<->", color="#204070", lw=0.6))
         ax.text(x + 2, (node.p0[1] + node.p1[1]) / 2, label, fontsize=6.5, va="center",
-                family="monospace", color="#204070", rotation=90)
+                family="monospace", color="#204070", rotation=90, bbox=backing)
     else:
         y = node.p0[1] + node.offset
         ax.annotate("", xy=(node.p1[0], y), xytext=(node.p0[0], y),
                     arrowprops=dict(arrowstyle="<->", color="#204070", lw=0.6))
         ax.text((node.p0[0] + node.p1[0]) / 2, y + 2, label, fontsize=6.5, ha="center",
-                family="monospace", color="#204070")
+                family="monospace", color="#204070", bbox=backing)
 
 
 # Door glyph stroke weights: the closed panel/leaf reads heavier than its swept path.

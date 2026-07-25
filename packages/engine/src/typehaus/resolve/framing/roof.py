@@ -120,14 +120,63 @@ def _roof_rafters(model: ResolvedModel, roof: ResolvedRoof) -> tuple[FramedMembe
         halves = halves[:len(positions)]
     members: list[FramedMember] = []
     rise = roof.ridge_z_m - roof.eave_z_m
+    span_ax = 1 if roof.ridge_direction == "x" else 0
+    cut_lo, cut_hi = _eave_plumb_cuts(model, roof)
     for index, (eave, ridge_point) in enumerate(halves):
-        length = math.hypot(ridge_point[0] - eave[0], ridge_point[1] - eave[1], rise)
+        # Zero-overhang eave: plumb-cut the tail at the bearing wall's stud face (the
+        # reference's ``eave_x = x_stud1``) instead of running it to the footprint edge,
+        # which laps the wall foam/cladding — a tail cut square there pokes out of the
+        # side of the house. The box IR's end faces are vertical, so pulling the eave
+        # end in along the roof plane *is* the plumb cut.
+        cut = cut_lo if eave[span_ax] < ridge_point[span_ax] else cut_hi
+        run_half = abs(ridge_point[span_ax] - eave[span_ax])
+        z_eave_top = roof.eave_z_m
+        if cut is not None and run_half > 1e-9:
+            inset = abs(cut - eave[span_ax])
+            if 0.0 < inset < run_half / 2.0:
+                fraction = inset / run_half
+                eave = (cut, eave[1]) if span_ax == 0 else (eave[0], cut)
+                z_eave_top = roof.eave_z_m + rise * fraction
+        length = math.hypot(ridge_point[0] - eave[0], ridge_point[1] - eave[1],
+                            roof.ridge_z_m - z_eave_top)
         members.append(FramedMember(
             roof.uid, f"rafter-{index:03d}", "rafter", profile, eave, ridge_point,
-            roof.eave_z_m - depth, roof.eave_z_m, length,
+            z_eave_top - depth, z_eave_top, length,
             z0_end_m=roof.ridge_z_m - depth, z1_end_m=roof.ridge_z_m,
         ))
     return tuple(members)
+
+
+def _eave_plumb_cuts(model: ResolvedModel, roof: ResolvedRoof) -> tuple[float | None, float | None]:
+    """Plumb-cut plane per eave side (low, high): the bearing wall's stud exterior face.
+
+    Only a zero-overhang eave is cut — an authored overhang means the tails carry it, and
+    cutting them at the wall would amputate the eave. ``None`` = leave that side's tails
+    at the footprint edge.
+    """
+    element = _roof_element(model, roof)
+    if element is None:
+        return (None, None)
+    span_ax = 1 if roof.ridge_direction == "x" else 0
+    eave_edges = ("south", "north") if roof.ridge_direction == "x" else ("west", "east")
+    overhangs = {edge.lower(): value.meters for edge, value in element.edge_overhangs}
+    default = element.overhang.meters if element.overhang is not None else 0.0
+    walls = [wall for tag in element.bearing_refs
+             if (wall := model.wall(tag)) is not None]
+    if not walls:
+        return (None, None)
+    coords = [point[span_ax] for point in roof.footprint]
+    cuts: list[float | None] = []
+    for edge_name, bound, outer in ((eave_edges[0], min(coords), min),
+                                    (eave_edges[1], max(coords), max)):
+        if overhangs.get(edge_name, default) > 0.01:
+            cuts.append(None)
+            continue
+        wall = min(walls, key=lambda w: abs(w.axis[0][span_ax] - bound))
+        studs = [layer for layer in wall.depth_layers() if layer.function == "structure"]
+        faces = [point[span_ax] for layer in studs for point in layer.polygon]
+        cuts.append(outer(faces) if faces else None)
+    return (cuts[0], cuts[1])
 
 
 def _bearing_along_extent(model: ResolvedModel, roof: ResolvedRoof) -> tuple[float, float]:

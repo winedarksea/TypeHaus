@@ -50,16 +50,39 @@ def zero_overhang_eave(model, wall, crop, direction, station) -> list[IRNode]:
         [(out_sign * cfg.apron_run_in, 0.0), (0.0, -cfg.apron_drop_in)])
     nodes += flashing_nodes(apron, tag="apron-flashing")
 
-    # Drip edge: turns down off the roof deck edge onto the fascia, so run-off leaves the
-    # deck clear of the wall instead of tracking back under the roofing.
-    drip = path_from_steps(
-        (clad_out - out_sign * cfg.drip_edge_back_in, junction_z + 1.0),
-        [(out_sign * cfg.drip_edge_run_in, 0.0), (0.0, -cfg.drip_edge_drop_in)])
-    nodes += flashing_nodes(drip, tag="drip-edge")
+    # Authored eave-water trim (a Gutter element with its drip, e.g. the Catlin house's
+    # params/roof_trim.py pair riding the roofing plane) is already cut into the drawing.
+    # The overlay's schematic gutter + drip hang off the *plate top*, a storey of roof
+    # stack lower, so drawing both puts two gutters on one eave at different heights.
+    if not _authored_gutter_at(model, clad_out, direction):
+        # Drip edge: turns down off the roof deck edge onto the fascia, so run-off leaves
+        # the deck clear of the wall instead of tracking back under the roofing.
+        drip = path_from_steps(
+            (clad_out - out_sign * cfg.drip_edge_back_in, junction_z + 1.0),
+            [(out_sign * cfg.drip_edge_run_in, 0.0), (0.0, -cfg.drip_edge_drop_in)])
+        nodes += flashing_nodes(drip, tag="drip-edge")
+        nodes += box_gutter(clad_out, junction_z, out_sign)
 
-    nodes += box_gutter(clad_out, junction_z, out_sign)
     nodes += eave_vent_screen(clad_out, junction_z, out_sign, cz0 * M_TO_IN)
     return nodes
+
+
+def _authored_gutter_at(model, clad_out_in: float, direction: str) -> bool:
+    """Whether an authored Gutter element runs along this eave (within a foot of it).
+
+    The gutter's path rides a constant plan coordinate just outboard of the cladding
+    face; matching on that coordinate keeps the garage eave (no authored gutter yet)
+    drawing the schematic one while the house eaves defer to theirs.
+    """
+    for element in model.plan.elements_of_kind("Gutter"):
+        path = getattr(element, "path", None)
+        if not path:
+            continue
+        xy = path[0].xy_m
+        coord_in = (xy[0] if direction == "x" else xy[1]) * M_TO_IN
+        if abs(coord_in - clad_out_in) <= 12.0:
+            return True
+    return False
 
 
 def box_gutter(clad_out: float, junction_z: float, out_sign: float) -> list[IRNode]:

@@ -155,9 +155,16 @@ def outboard_is_high(wall, direction: str, station: float) -> bool | None:
 
 
 def layer_intervals(wall, direction: str, station: float) -> dict:
-    """``{layer.name: (u_lo_in, u_hi_in, function)}`` for every layer the cut crosses."""
+    """``{layer.name: (u_lo_in, u_hi_in, function)}`` for every layer the cut crosses.
+
+    Cavity fills are skipped: they share their host STRUCTURE layer's polygon, so
+    including them double-reports that band — most visibly as bay batts counted into
+    the "continuous insulation" total.
+    """
     out: dict = {}
     for layer in wall.layers:
+        if getattr(layer, "is_cavity", False):
+            continue
         ivs = _cut_intervals(layer.polygon, direction, station)
         if ivs:
             lo = min(min(iv) for iv in ivs)

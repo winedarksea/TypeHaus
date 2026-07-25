@@ -230,3 +230,7 @@ future.
 - **The BOM is complete.** S-103 lists every member grouped by size and type with per-stock
   -length buckets; S-104 tables the derived connection hardware with a keyed basis-of-quantity
   note per row, plus structural solids by volume. `haus takeoff` prints the same sections.
+
+## Third Pass Follow Up
+- Gutter TR-SG-GUTTER-1 needs to be moved up to align wih flashing TR-SG-DRIP-1 and the gutter needs to look like a gutter
+- Slab SL-SG-PORCH should be replaced by decking like SL-SG-DECK, but be composite material instead of aluminum, and be shown in the viewer like wood
