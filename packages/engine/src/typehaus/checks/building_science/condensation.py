@@ -1,174 +1,50 @@
-"""Steady-state Glaser condensation analysis for an assembly (M5 WP5.1).
+"""Condensation-risk check: scope the Glaser walk to the envelope and report it (M5 WP5.1).
 
-The calculation is deliberately a screening tool: it applies fixed design-day boundary
-conditions, walks the authored interior-to-exterior layer order, and reports its missing
-inputs instead of inventing material properties. It is not a hygrothermal simulation.
+The profile maths live in :mod:`typehaus.checks.building_science.glaser`; this module
+decides *which* assemblies the screening applies to and turns each result into a
+`Finding`. A safe assembly still reports — its margin is the answer the M5 acceptance
+asks for — so the tier is never silent about an envelope it did evaluate.
 """
 
 from __future__ import annotations
 
-import math
-from dataclasses import dataclass
-
-from typehaus.checks.registry import CheckContext, Preferences, Tier, check
+from typehaus.checks.building_science.glaser import (  # re-exported: card/CLI/server import here
+    CondensationAnalysis,
+    CondensationPoint,
+    analyze_assembly,
+    analyze_layers,
+    glaser_layers,
+)
+from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.assembly import Assembly, Layer
-from typehaus.model.enums import LayerFunction, Occupancy
-from typehaus.model.plan import Library
+from typehaus.model.assembly import Assembly
+from typehaus.model.enums import ControlLayer, LayerFunction, Occupancy
 
-# Layers whose vapor role is "moisture source/store", interior of any rainscreen cavity.
-_WETTABLE = {
-    LayerFunction.STRUCTURE, LayerFunction.SHEATHING, LayerFunction.INSULATION,
-}
-_VENTED = {LayerFunction.AIRGAP, LayerFunction.FURRING}
+__all__ = [
+    "CondensationAnalysis", "CondensationPoint", "analyze_assembly", "analyze_layers",
+    "glaser_layers", "conditioned_envelope_assemblies", "condensation_risk",
+]
 
-
-def _glaser_layers(layers: list[Layer]) -> list[Layer]:
-    """Truncate the stack at an exterior ventilated rainscreen cavity.
-
-    A furring/airgap layer that sits outboard of the structure/sheathing/insulation is a
-    drained-and-back-vented cavity open to outdoor air: everything from that plane outward
-    (the vent and its cladding) is pressure-equalised with the exterior, so it carries no
-    part of the interior-to-exterior vapor drive. Standard Glaser practice terminates the
-    analysis there rather than modeling the cladding as a cold-side vapor trap. Assemblies
-    with no such cavity (concrete, direct-applied finishes) walk their full depth.
-    """
-    for index, layer in enumerate(layers):
-        if layer.function in _VENTED and any(
-            inner.function in _WETTABLE for inner in layers[:index]
-        ):
-            return layers[:index]
-    return layers
-
-
-@dataclass(frozen=True)
-class CondensationPoint:
-    """One point in the graph, measured from the interior face of the stack."""
-
-    position: float
-    temperature_c: float
-    vapor_pressure_pa: float
-    saturation_pressure_pa: float
-
-
-@dataclass(frozen=True)
-class CondensationAnalysis:
-    assembly_tag: str
-    points: tuple[CondensationPoint, ...]
-    crossing_layer: str | None = None
-    crossing_fraction: float | None = None
-    unknown_materials: tuple[str, ...] = ()
-
-    @property
-    def known(self) -> bool:
-        return not self.unknown_materials
-
-    @property
-    def has_risk(self) -> bool:
-        return self.crossing_layer is not None
-
-    def as_dict(self) -> dict[str, object]:
-        return {
-            "assembly": self.assembly_tag,
-            "status": "unknown" if not self.known else "risk" if self.has_risk else "safe",
-            "crossing_layer": self.crossing_layer,
-            "crossing_fraction": self.crossing_fraction,
-            "unknown_materials": list(self.unknown_materials),
-            "points": [
-                {"position": p.position, "temperature_c": p.temperature_c,
-                 "vapor_pressure_pa": p.vapor_pressure_pa,
-                 "saturation_pressure_pa": p.saturation_pressure_pa}
-                for p in self.points
-            ],
-        }
-
-
-def _saturation_pressure_pa(temperature_c: float) -> float:
-    """Magnus saturation curve, accurate enough for a design-day screening plot."""
-    return 610.94 * math.exp(17.625 * temperature_c / (temperature_c + 243.04))
-
-
-def _f_to_c(temperature_f: float) -> float:
-    return (temperature_f - 32.0) * 5.0 / 9.0
-
-
-def analyze_assembly(
-    assembly: Assembly, library: Library, *, heating_design_temp_f: float | None,
-    preferences: Preferences,
-) -> CondensationAnalysis:
-    """Return the Glaser profile for ``assembly`` or a named UNKNOWN result.
-
-    ``perm_rating`` is treated as permeability in US perm-in units, so a layer's vapor
-    resistance is thickness-inches / perm. This is the dimensional relationship the
-    authored material scalar was introduced to support.
-    """
-    layers = _glaser_layers(list(assembly.default_lining) + list(assembly.layers))
-    missing: list[str] = []
-    thermal_resistances: list[float] = []
-    vapor_resistances: list[float] = []
-    for layer in layers:
-        material = library.material(layer.material_ref)
-        if material is None or material.perm_rating is None or material.perm_rating <= 0:
-            name = material.name if material else layer.material_ref
-            missing.append(name)
-        if material is None or material.r_per_inch is None or material.r_per_inch < 0:
-            name = material.name if material else layer.material_ref
-            missing.append(name)
-            thermal_resistances.append(0.0)
-        else:
-            thermal_resistances.append(material.r_per_inch * layer.thickness.inches)
-        vapor_resistances.append(
-            layer.thickness.inches / material.perm_rating
-            if material is not None and material.perm_rating and material.perm_rating > 0 else 0.0
-        )
-    if heating_design_temp_f is None:
-        missing.append("Site.design_temp_heating")
-    if missing:
-        return CondensationAnalysis(
-            assembly.tag, (), unknown_materials=tuple(dict.fromkeys(missing))
-        )
-
-    total_r = sum(thermal_resistances)
-    total_vapor_r = sum(vapor_resistances)
-    if total_r <= 0 or total_vapor_r <= 0:
-        return CondensationAnalysis(assembly.tag, (), unknown_materials=("zero-resistance stack",))
-
-    interior_c = _f_to_c(preferences.interior_setpoint_f)
-    exterior_c = _f_to_c(heating_design_temp_f)
-    interior_pressure = _saturation_pressure_pa(interior_c) * preferences.interior_relative_humidity
-    exterior_pressure = _saturation_pressure_pa(exterior_c) * preferences.exterior_relative_humidity
-    points: list[CondensationPoint] = [CondensationPoint(
-        0.0, interior_c, interior_pressure, _saturation_pressure_pa(interior_c)
-    )]
-    r_used = vapor_used = 0.0
-    for r_value, vapor_r in zip(thermal_resistances, vapor_resistances):
-        r_used += r_value
-        vapor_used += vapor_r
-        fraction = r_used / total_r
-        temperature = interior_c + (exterior_c - interior_c) * fraction
-        vapor_fraction = vapor_used / total_vapor_r
-        pressure = interior_pressure + (exterior_pressure - interior_pressure) * vapor_fraction
-        points.append(CondensationPoint(
-            vapor_fraction, temperature, pressure, _saturation_pressure_pa(temperature)
-        ))
-
-    for index, layer in enumerate(layers):
-        start, end = points[index], points[index + 1]
-        start_delta = start.vapor_pressure_pa - start.saturation_pressure_pa
-        end_delta = end.vapor_pressure_pa - end.saturation_pressure_pa
-        if start_delta <= 0 < end_delta:
-            denominator = end_delta - start_delta
-            fraction = -start_delta / denominator if denominator else 0.0
-            return CondensationAnalysis(
-                assembly.tag, tuple(points), crossing_layer=layer.name,
-                crossing_fraction=fraction,
-            )
-    return CondensationAnalysis(assembly.tag, tuple(points))
-
+CHECK_ID = "building_science.condensation"
 
 # Occupancies that are not part of the conditioned (heated/humidified) building volume, so
 # the fixed interior design conditions this screening tool assumes do not apply to them.
 _UNCONDITIONED = {Occupancy.GARAGE, Occupancy.UNCONDITIONED}
+
+
+def _carries_thermal_control(assembly: Assembly) -> bool:
+    """Does this assembly insulate — i.e. can it plausibly bound conditioned space?
+
+    An exterior wall with no insulation layer and no THERMAL control layer is not part of
+    the thermal envelope in a climate-zone-6 house: it is a guard, a screen wall, or a
+    site structure that happens to carry cladding. Running an indoor-to-outdoor vapour
+    drive across one reports a margin for a gradient that does not exist there.
+    """
+    layers = list(assembly.default_lining) + list(assembly.layers)
+    return any(layer.function == LayerFunction.INSULATION
+               or ControlLayer.THERMAL in layer.control
+               or layer.cavity is not None  # a filled stud/joist bay is the insulation
+               for layer in layers)
 
 
 def conditioned_envelope_assemblies(ctx: CheckContext) -> list[str]:
@@ -182,7 +58,9 @@ def conditioned_envelope_assemblies(ctx: CheckContext) -> list[str]:
     * an unconditioned detached garage and freestanding site structures — the interior side
       is not conditioned, so the fixed interior conditions do not apply;
     * below-grade foundation walls — these are ground-coupled (soil near +10 C, not the
-      -15 F design air), so an outdoor-air Glaser walk would invent a risk that does not run.
+      -15 F design air), so an outdoor-air Glaser walk would invent a risk that does not run;
+    * clad-but-uninsulated walls (masonry guards, screen walls) — see
+      :func:`_carries_thermal_control`.
 
     An above-grade exterior wall is identified by its outermost cladding layer; the analysis
     is scoped to those walls and to roofs, on storeys that hold conditioned rooms.
@@ -199,9 +77,13 @@ def conditioned_envelope_assemblies(ctx: CheckContext) -> list[str]:
     seen: set[str] = set()
 
     def _add(tag: str | None) -> None:
-        if tag and tag not in seen:
-            seen.add(tag)
-            tags.append(tag)
+        if tag is None or tag in seen:
+            return
+        assembly = ctx.plan.library.resolve_assembly(tag)
+        if assembly is None or not _carries_thermal_control(assembly):
+            return
+        seen.add(tag)
+        tags.append(tag)
 
     for wall in ctx.model.walls:
         if wall.storey not in conditioned:
@@ -214,31 +96,53 @@ def conditioned_envelope_assemblies(ctx: CheckContext) -> list[str]:
     return tags
 
 
-@check(Tier.BUILDING_SCIENCE, "building_science.condensation")
+def _finding(analysis: CondensationAnalysis, boundary: str) -> Finding:
+    if not analysis.known:
+        return Finding(
+            severity=Severity.WARN, check_id=CHECK_ID,
+            message="UNKNOWN — missing Glaser inputs: " + ", ".join(analysis.unknown_materials),
+            element_tags=(analysis.assembly_tag,), result=Result.UNKNOWN,
+            fix_hint="author perm_rating (perm-in) or vapor_permeance_perms (perms) with "
+                     "its ASTM E96 / manufacturer source on the named material",
+        )
+    if analysis.has_risk:
+        return Finding(
+            severity=Severity.WARN, check_id=CHECK_ID,
+            message=(f"dew point reached at {analysis.crossing_layer} "
+                     f"({analysis.crossing_fraction:.0%} through layer) at {boundary}"),
+            element_tags=(analysis.assembly_tag,), result=Result.FAIL,
+            fix_hint="screening only: this is the 99% design hour, not a seasonal mean — "
+                     "a crossing here means the plane runs wet during a cold snap and must "
+                     "be able to dry, not that the wall fails code",
+        )
+    tightest = analysis.tightest_plane
+    assert tightest is not None  # a known analysis always carries its profile
+    return Finding(
+        severity=Severity.WARN, check_id=CHECK_ID,
+        message=(f"no dew-point crossing at {boundary} — tightest plane "
+                 f"{analysis.tightest_plane_name} at "
+                 f"{tightest.local_relative_humidity:.0%} RH, "
+                 f"{tightest.margin_pa:.0f} Pa below saturation"),
+        element_tags=(analysis.assembly_tag,), result=Result.PASS,
+    )
+
+
+@check(Tier.BUILDING_SCIENCE, CHECK_ID)
 def condensation_risk(ctx: CheckContext) -> list[Finding]:
     heating = ctx.plan.project.site.design_temp_heating
     temperature_f = heating.fahrenheit if heating is not None else None
+    # Every finding states its boundary condition: a Glaser crossing is only meaningful
+    # against the design temperature and interior humidity that produced it.
+    boundary = (f"{temperature_f:.0f} F design / "
+                f"{ctx.preferences.interior_relative_humidity:.0%} interior RH"
+                if temperature_f is not None else "the design heating temperature")
     findings: list[Finding] = []
     for tag in conditioned_envelope_assemblies(ctx):
         assembly = ctx.plan.library.resolve_assembly(tag)
         if assembly is None:
             continue
-        analysis = analyze_assembly(
+        findings.append(_finding(analyze_assembly(
             assembly, ctx.plan.library, heating_design_temp_f=temperature_f,
             preferences=ctx.preferences,
-        )
-        if not analysis.known:
-            findings.append(Finding(
-                severity=Severity.WARN, check_id="building_science.condensation",
-                message=("UNKNOWN — missing Glaser inputs: "
-                         + ", ".join(analysis.unknown_materials)),
-                element_tags=(assembly.tag,), result=Result.UNKNOWN,
-            ))
-        elif analysis.has_risk:
-            findings.append(Finding(
-                severity=Severity.WARN, check_id="building_science.condensation",
-                message=(f"dew point reached at {analysis.crossing_layer} "
-                         f"({analysis.crossing_fraction:.0%} through layer)"),
-                element_tags=(assembly.tag,), result=Result.FAIL,
-            ))
+        ), boundary))
     return findings

@@ -14,7 +14,18 @@ class Material(HausModel):
     name: str
     # r_per_inch: US R-value per inch of thickness (drives R-value rollup).
     r_per_inch: float | None = None
-    perm_rating: float | None = None  # US perms (Glaser input, → 50)
+    # Water-vapour *permeability* — US perm-inch, i.e. perms for one inch of thickness
+    # (grain/(ft²·h·inHg·in)). The Glaser walk (→ 50) divides it by the layer thickness.
+    # Author this for bulk materials whose vapour resistance scales with depth (foam,
+    # mineral wool, lumber, concrete). Sheet goods use ``vapor_permeance_perms`` instead.
+    perm_rating: float | None = None
+    # Water-vapour *permeance* of the product as installed — US perms, thickness-independent.
+    # Author this where the published ASTM E96 rating belongs to the finished sheet rather
+    # than to a depth of substance (housewrap, metal cladding, foil facers, composite
+    # sheathing panels): dividing such a rating by a nominal thickness would invent a number
+    # the test never measured. Takes precedence over ``perm_rating`` when both are present.
+    # ``0.0`` is meaningful and distinct from ``None``: a true vapour barrier, not missing data.
+    vapor_permeance_perms: float | None = None
     density: float | None = None  # kg/m³ (thermal mass / dead load headroom)
     specific_heat: float | None = None  # J/kg·K (dynamic-sim headroom, unused)
     # Presentation: hatch/color key into the Nordic palette (→ 21 §Nordic preset).
@@ -28,6 +39,19 @@ class Material(HausModel):
     finish: str | None = None
     # Optional freeform provenance (URL, standard, or "generic assumption") (#46).
     source: str | None = None
+
+    def vapor_permeance_at(self, thickness_inches: float) -> float | None:
+        """Permeance in US perms for ``thickness_inches`` of this material, or None.
+
+        None means "not authored" — the caller must report UNKNOWN naming this material
+        rather than substitute a default (#32). A returned ``0.0`` is a sourced vapour
+        barrier: no vapour crosses it.
+        """
+        if self.vapor_permeance_perms is not None:
+            return self.vapor_permeance_perms
+        if self.perm_rating is None or self.perm_rating <= 0.0 or thickness_inches <= 0.0:
+            return None
+        return self.perm_rating / thickness_inches
 
 
 register_constructor("Material", Material)

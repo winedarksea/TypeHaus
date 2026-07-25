@@ -8,10 +8,22 @@ from typehaus.analysis import assembly_r_value
 from typehaus.checks.building_science.wwr import _facade_for_wall, _wall_length
 from typehaus.checks.registry import Preferences
 from typehaus.resolve.geometry import polygon_area
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 _M2_TO_FT2 = 10.7639104167
 _WALL_UA_KINDS = ("walls", "windows", "doors")
+
+
+def _is_envelope_wall(wall: ResolvedWall) -> bool:
+    """Is this wall on the thermal boundary — clad above grade, or below grade?
+
+    Interior partitions separate two rooms at the same setpoint, so they carry no UA
+    against the outdoor design temperature; summing them (and the doors hosted in them)
+    inflates the block load by the entire interior wall area and fills ``unknown_inputs``
+    with closet doors that have no business in an envelope report. Cladding is the same
+    above-grade marker the condensation check scopes itself with.
+    """
+    return wall.is_foundation or any(layer.function == "cladding" for layer in wall.layers)
 
 
 @dataclass(frozen=True)
@@ -57,19 +69,22 @@ def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> Energ
         return EnergyReport(0.0, 0.0, 0.0, (), unknown_inputs=("Site design temperatures",))
     heating_delta = preferences.interior_setpoint_f - site.design_temp_heating.fahrenheit
     cooling_delta = site.design_temp_cooling.fahrenheit - preferences.interior_setpoint_f
-    wall_by_tag = {wall.tag: wall for wall in model.walls}
+    envelope_walls = [wall for wall in model.walls if _is_envelope_wall(wall)]
+    wall_by_tag = {wall.tag: wall for wall in envelope_walls}
     wall_gross_ft2 = {wall.tag: _wall_length(wall) * (wall.z1_m - wall.z0_m) * _M2_TO_FT2
-                      for wall in model.walls}
+                      for wall in envelope_walls}
+    envelope_openings = [opening for opening in model.openings
+                         if opening.host_wall in wall_by_tag]
     opening_area_ft2: dict[str, float] = {tag: 0.0 for tag in wall_gross_ft2}
     components: list[LoadComponent] = []
     unknown: list[str] = []
 
-    for opening in model.openings:
+    for opening in envelope_openings:
         opening_area_ft2[opening.host_wall] = opening_area_ft2.get(opening.host_wall, 0.0) + (
             opening.width_m * opening.height_m * _M2_TO_FT2
         )
     walls_area = walls_ua = foundation_area = foundation_ua = 0.0
-    for wall in model.walls:
+    for wall in envelope_walls:
         area = max(0.0, wall_gross_ft2[wall.tag] - opening_area_ft2.get(wall.tag, 0.0))
         assembly = model.plan.library.resolve_assembly(wall.assembly)
         if assembly is None:
@@ -123,7 +138,7 @@ def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> Energ
 
     window_area = window_ua = window_solar = door_area = door_ua = 0.0
     solar_orientation = {"N": 0.25, "E": 0.70, "S": 1.0, "W": 0.85}
-    for opening in model.openings:
+    for opening in envelope_openings:
         area = opening.width_m * opening.height_m * _M2_TO_FT2
         if opening.is_door:
             kind, product = "doors", next((d for d in model.plan.library.door_types
@@ -179,9 +194,20 @@ def _assembly_r_value(model: ResolvedModel, tag: str, unknown: list[str]) -> flo
 def _two_by_four_vs_six(
     model: ResolvedModel, heating_delta_f: float,
 ) -> dict[str, float | str] | None:
-    """Compare the authored 2x4/2x6 assemblies on an equal 100-sf wall area."""
+    """Compare the authored 2x4/2x6 *wall* assemblies on an equal 100-sf wall area.
+
+    Scoped to assemblies a resolved above-grade wall actually uses, and resolved through
+    ``resolve_assembly`` so a variant (#35) — which stores no layers of its own — is seen
+    at its full depth. Scanning the raw library instead pairs whatever 2x4-framed item
+    comes first (a garage roof, a partition) against an exterior wall, which answers a
+    question nobody asked: the M5 acceptance is a *wall* assembly swap on the same run.
+    """
+    wall_tags = sorted({wall.assembly for wall in model.walls if not wall.is_foundation})
     candidates: dict[str, tuple[str, float]] = {}
-    for assembly in model.plan.library.assemblies:
+    for tag in wall_tags:
+        assembly = model.plan.library.resolve_assembly(tag)
+        if assembly is None:
+            continue
         member = next((
             layer.framing.member for layer in assembly.layers
             if layer.framing is not None and layer.framing.member in ("2x4", "2x6")

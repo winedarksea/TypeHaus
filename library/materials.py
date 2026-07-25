@@ -1,58 +1,107 @@
-"""Starter materials ported/adapted from ifcplot/assemblies.py (→ 02 migration table)."""
+"""Starter materials ported/adapted from ifcplot/assemblies.py (→ 02 migration table).
+
+Water-vapour ratings follow the two-field split on ``Material``: ``perm_rating`` is
+permeability in US perm-inch for bulk substances, ``vapor_permeance_perms`` is the
+thickness-independent ASTM E96 permeance of a finished sheet. Every value below cites the
+published test or manufacturer datasheet it came from, per CONTRIBUTING §3. Where the
+source publishes a *range* rather than a point value, the midpoint of that published range
+is used and the range is quoted in ``source`` so the reader can see the spread; nothing
+here is estimated from first principles. A material with no locatable source leaves the
+field unset so the Glaser walk reports UNKNOWN naming it (#32) instead of guessing.
+"""
 
 from __future__ import annotations
 
 from typehaus.model import Material
 
+# Recurring citations, spelled once so the per-material `source` strings stay readable.
+_UAF = ("UAF Cooperative Extension EEM-00259 Table 3 (Carlson compilation, "
+        "ASTM E96/C355), 'Water Vapor Permeance of Construction Materials'")
+_APA = "APA/Performance Panels published ASTM E96 dry-cup panel permeance data"
+
 STARTER_MATERIALS: tuple[Material, ...] = (
     Material(tag="spf", name="SPF framing lumber", r_per_inch=1.25, density=460.0,
-             perm_rating=3.0, hatch="lumber", color="#d8c9a6",
-             source="ASHRAE Fundamentals softwood lumber vapor permeability (~1-5 perm-in)"),
+             perm_rating=2.9, hatch="lumber", color="#d8c9a6",
+             source=f"{_UAF}: 'Wood, sugar pine' permeability 0.4-5.4 perm-in "
+                    "(the table's softwood entry); midpoint of the published range"),
+    # No published permeance/permeability located for laminated strand lumber; the field is
+    # deliberately unset so an assembly that puts LSL in the vapour path reports UNKNOWN.
     Material(tag="lsl", name="Laminated strand lumber", r_per_inch=1.25, density=650.0,
-             perm_rating=1.0, hatch="lumber", color="#cbb98e",
-             source="engineered lumber ~1 perm-in (denser than sawn softwood)"),
+             hatch="lumber", color="#cbb98e",
+             source="R-value per ifcplot port; no published ASTM E96 rating located, so "
+                    "the vapour fields stay unset (Glaser reports UNKNOWN, never a guess)"),
     Material(tag="osb", name="OSB sheathing", r_per_inch=1.25, density=650.0,
-             perm_rating=0.7, hatch="osb", color="#c9a86a",
-             source="ASHRAE dry-cup OSB permeability (~0.5-2 perm; ~2 perm at 7/16\")"),
+             perm_rating=0.4, hatch="osb", color="#c9a86a",
+             source=f"{_APA}: OSB 7/16\" 0.91, 15/32-1/2\" 0.70, 19/32-5/8\" 0.72, "
+                    "23/32-3/4\" 0.49 perm — 0.35-0.45 perm-in across those four thicknesses"),
     Material(tag="struct-1-plywood", name="Structural 1 plywood", r_per_inch=1.25,
-             density=600.0, perm_rating=0.5, hatch="osb", color="#c9a86a",
-             source="ASHRAE dry-cup exterior plywood permeability (~0.5 perm-in)"),
+             density=600.0, perm_rating=0.30, hatch="osb", color="#c9a86a",
+             source=f"{_APA}: 0.8 perm for 3/8\" Exterior-type plywood (species-weighted "
+                    "from a 0.45-1.43 perm dry-cup series) = 0.30 perm-in"),
+    # ZIP-R is a bonded WRB/OSB/polyiso/facer sandwich, not a depth of one substance, so its
+    # rating is authored as a panel permeance.
     Material(tag="zip-r", name="ZIP System R-sheathing", r_per_inch=4.0,
-             perm_rating=2.0, hatch="osb", color="#3f6d3a",
-             source="Huber ZIP System R-sheathing published values"),
-    Material(tag="polyiso", name="Polyisocyanurate CI", r_per_inch=5.6, perm_rating=1.5,
-             hatch="rigid", color="#e8d64f"),
-    Material(tag="fiberglass", name="Fiberglass batt", r_per_inch=3.7, perm_rating=30.0,
-             hatch="batt", color="#f3c6d0"),
+             vapor_permeance_perms=0.95, hatch="osb", color="#3f6d3a",
+             source="Huber ZIP System R-sheathing published ASTM E96 Procedure B (wet cup) "
+                    "assembly permeance 0.8-1.1 perm; midpoint of the published range"),
+    Material(tag="polyiso", name="Polyisocyanurate CI", r_per_inch=5.6, perm_rating=1.0,
+             hatch="rigid", color="#e8d64f",
+             source=f"{_UAF}: 'Expanded polyurethane, R-11, board stock' 0.4-1.6 perm-in; "
+                    "midpoint of the published range"),
+    Material(tag="fiberglass", name="Fiberglass batt", r_per_inch=3.7, perm_rating=116.0,
+             hatch="batt", color="#f3c6d0",
+             source="AHFC Alaska Building Manual Appendix 2: 100 mm (4 in.) glass fibre "
+                    "wool 28.97 perm = 116 perm-in"),
     Material(tag="mineral-wool", name="Mineral wool batt", r_per_inch=4.2,
-             perm_rating=30.0, hatch="batt", color="#c7c2bd"),
-    Material(tag="gwb", name="5/8\" gypsum board", r_per_inch=0.9, perm_rating=50.0,
-             hatch="gypsum", color="#efeae2"),
+             perm_rating=116.0, hatch="batt", color="#c7c2bd",
+             source=f"{_UAF}: 'Mineral wool, unprotected' 116 perm-in; AHFC Appendix 2 "
+                    "gives 28.97 perm at 100 mm (4 in.), the same 116 perm-in"),
+    Material(tag="gwb", name="5/8\" gypsum board", r_per_inch=0.9, perm_rating=18.8,
+             hatch="gypsum", color="#efeae2",
+             source=f"{_UAF}: 'Gypsum wall board, plain' 50 perm at 0.375\" = 18.8 perm-in "
+                    "(≈30 perm at 5/8\", consistent with USG's 34.2 perm at 1/2\")"),
+    # A hat channel is a spaced 25 ga. section, not a continuous metal skin: vapour crosses
+    # the still-air space between channels, so the layer is rated as that air space.
     Material(tag="resilient-channel", name="1/2\" resilient channel", r_per_inch=0.0,
-             density=7850.0, perm_rating=50.0, hatch="metal", color="#91979d",
-             source="25 ga. resilient channel; spaced hat channel — vapor-open air layer, "
-                    "not a continuous metal skin"),
+             density=7850.0, perm_rating=120.0, hatch="metal", color="#91979d",
+             source=f"{_UAF}: 'Air, still' 120 perm-in — the vapour path through a spaced "
+                    "hat channel is the air between the channels, not the steel"),
     Material(tag="air-barrier", name="Air/weather-resistive barrier", r_per_inch=0.0,
-             perm_rating=10.0, hatch="membrane", color="#4a4a4a"),
+             vapor_permeance_perms=54.0, hatch="membrane", color="#4a4a4a",
+             source="DuPont Tyvek HomeWrap physical-properties data sheet: 54 perm by "
+                    "ASTM E96-05 Method B (56 perm Method A) — a sheet rating, not perm-in"),
+    # No published ASTM E96 rating located for modern fibre-cement lap siding; the closest
+    # published entry is asbestos-cement board, a different binder/fibre system, so the
+    # field is left unset rather than substituted.
     Material(tag="fiber-cement", name="Fiber-cement lap siding", r_per_inch=0.15,
-             density=1700.0, perm_rating=3.0, hatch="siding", color="#b8bcc0",
-             source="fiber-cement siding permeability ~1-5 perm-in (vapor-open cladding)"),
+             density=1700.0, hatch="siding", color="#b8bcc0",
+             source="no published ASTM E96 rating located for fibre-cement lap siding; "
+                    "vapour fields unset so the Glaser walk reports UNKNOWN"),
     Material(tag="standing-seam", name="Standing-seam steel", r_per_inch=0.0,
-             density=7800.0, perm_rating=0.05, hatch="metal", color="#6b7076",
-             source="sheet steel is effectively vapor-impermeable; installed over a vented "
-                    "rainscreen so it is excluded from the Glaser vapor walk"),
+             density=7800.0, vapor_permeance_perms=0.0, hatch="metal", color="#6b7076",
+             source=f"{_UAF}: metal foil at 0.001\" reads 0 perm; continuous sheet steel is "
+                    "vapour-impermeable. Normally installed over a vented rainscreen, which "
+                    "truncates the Glaser walk before it"),
     Material(tag="concrete", name="Cast-in-place concrete", r_per_inch=0.08,
-             density=2400.0, perm_rating=3.0, hatch="concrete", color="#a9a9a9",
-             source="ASHRAE cast concrete vapor permeability (~2-3 perm-in)"),
-    Material(tag="icf-eps", name="ICF EPS form", r_per_inch=4.0, perm_rating=2.0,
-             hatch="rigid", color="#f0f0e6"),
+             density=2400.0, perm_rating=3.2, hatch="concrete", color="#a9a9a9",
+             source=f"{_UAF}: 'Concrete, 1:2:4 mix' 3.2 perm-in (1.25 perm at 4\")"),
+    Material(tag="icf-eps", name="ICF EPS form", r_per_inch=4.0, perm_rating=3.9,
+             hatch="rigid", color="#f0f0e6",
+             source=f"{_UAF}: 'Expanded polystyrene, bead' 2.0-5.8 perm-in; midpoint of "
+                    "the published range"),
     Material(tag="plywood-subfloor", name="3/4\" plywood subfloor", r_per_inch=1.25,
-             density=600.0, perm_rating=0.5, hatch="osb", color="#c9a86a",
-             source="ASHRAE dry-cup plywood permeability (~0.5 perm-in)"),
-    Material(tag="eps", name="EPS rigid insulation", r_per_inch=4.0, perm_rating=3.0,
-             hatch="rigid", color="#eef0f2"),
-    Material(tag="xps", name="XPS rigid insulation", r_per_inch=5.0, perm_rating=1.0,
-             hatch="rigid", color="#f2b8c6"),
-    Material(tag="cedar-tg", name="Cedar T&G paneling", r_per_inch=1.0, perm_rating=20.0,
-             hatch="lumber", color="#c98d5f"),
+             density=600.0, perm_rating=0.30, hatch="osb", color="#c9a86a",
+             source=f"{_APA}: 0.8 perm for 3/8\" Exterior-type plywood = 0.30 perm-in"),
+    Material(tag="eps", name="EPS rigid insulation", r_per_inch=4.0, perm_rating=3.9,
+             hatch="rigid", color="#eef0f2",
+             source=f"{_UAF}: 'Expanded polystyrene, bead' 2.0-5.8 perm-in (midpoint); "
+                    "Type II datasheets publish 5.0 perm at 1\", inside that band"),
+    Material(tag="xps", name="XPS rigid insulation", r_per_inch=5.0, perm_rating=1.2,
+             hatch="rigid", color="#f2b8c6",
+             source=f"{_UAF}: 'Expanded polystyrene, extruded' 1.2 perm-in; Owens Corning "
+                    "FOAMULAR publishes 1.1 perm max at 1\" by ASTM E96"),
+    Material(tag="cedar-tg", name="Cedar T&G paneling", r_per_inch=1.0, perm_rating=2.9,
+             hatch="lumber", color="#c98d5f",
+             source=f"{_UAF}: 'Wood, sugar pine' permeability 0.4-5.4 perm-in (the table's "
+                    "softwood entry); midpoint of the published range"),
 )
