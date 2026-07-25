@@ -72,6 +72,46 @@ def test_panels_stay_clear_of_ridge_and_eaves(catlin_model):
             assert abs(x - 18 * 0.3048) >= 0.55 * 0.3048
 
 
+def test_x_ridge_roof_branch(catlin_model):
+    """The resolver's ridge_direction="x" arm, exercised on the garage roof (the house
+    array only covers the "y" arm): width runs along x, the slope runs in y, and the
+    corners ride the garage plane with the same standoff contract."""
+    from typehaus.model import SolarPanel, ft, inch, pt
+
+    plan = catlin_model.plan.with_elements("garage", (
+        *catlin_model.plan.storey_elements("garage"),
+        SolarPanel(uid="TESTSPX001", tag="SP-G-TEST", roof_ref="RF-GARAGE",
+                   origin=pt(ft(4), ft(52)), width=inch(69.4), length=inch(44.6),
+                   thickness=inch(1.2), watts=440.0),
+    ))
+    model, findings = resolve(plan)
+    assert not [f for f in findings if f.severity.value == "error"]
+    panel = next(p for p in model.solar_panels if p.tag == "SP-G-TEST")
+    roof = next(r for r in model.roofs if r.tag == "RF-GARAGE")
+    xs = [c[0] for c in panel.corners_bottom]
+    ys = [c[1] for c in panel.corners_bottom]
+    # Landscape edge along the x ridge; the slope edge foreshortens in plan y.
+    assert abs((max(xs) - min(xs)) - 69.4 * 0.0254) < 1e-6
+    assert (max(ys) - min(ys)) < 44.6 * 0.0254
+    for (x, y, z) in panel.corners_bottom:
+        standoff = z - roof_height_at(roof, (x, y))
+        assert 0.05 < standoff < 0.36, standoff
+
+
+def test_missing_roof_ref_is_an_error(catlin_model):
+    from typehaus.model import SolarPanel, ft, inch, pt
+
+    plan = catlin_model.plan.with_elements("garage", (
+        *catlin_model.plan.storey_elements("garage"),
+        SolarPanel(uid="TESTSPX002", tag="SP-G-BAD", roof_ref="RF-NOPE",
+                   origin=pt(ft(4), ft(52)), width=inch(69.4), length=inch(44.6),
+                   thickness=inch(1.2)),
+    ))
+    _model, findings = resolve(plan)
+    errors = [f for f in findings if f.check_id == "integrity.solar_roof_ref"]
+    assert errors and errors[0].severity.value == "error"
+
+
 def test_ifc_solar_devices(catlin_model, tmp_path: Path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
     from typehaus.emit.ifc.emitter import emit_ifc

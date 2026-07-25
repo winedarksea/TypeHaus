@@ -857,7 +857,9 @@ def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dic
                                                "rotation_degrees": _rotation_metadata(equipment, resolved)})
     ll.ensure_pset(f, element, "TypeHaus_Identity", {"uid": equipment.uid, "tag": equipment.tag,
                                                         "source_type": equipment.type_ref or ""})
-    ll.ensure_pset(f, element, "TypeHaus_Equipment", {"kind": equipment.kind.value})
+    ll.ensure_pset(f, element, "TypeHaus_Equipment", {
+        "kind": equipment.kind.value, "circuit": equipment.circuit or "",
+    })
     if product_type is not None:
         _emit_service_ports(f, element, product_type.ports, project_uuid, equipment.uid)
     if type_object is not None:

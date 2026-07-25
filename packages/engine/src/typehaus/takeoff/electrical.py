@@ -18,6 +18,10 @@ _M2_TO_FT2 = 10.7639104167
 # One Shelly Pro 4PM switches four circuits; the DIN rail carries one 24V PSU and one UPS
 # regardless of relay count (electrical_notes.md lines 10-15).
 BACKUP_CIRCUITS_PER_RELAY = 4
+# A Pro 4PM channel is rated 16A at 120V — a backup circuit breakered above that, or any
+# 2-pole one, switches through a relay-driven DIN contactor instead (notes line 10:
+# "Smart Relays (Shelly Pro 4PM) and contactors").
+RELAY_CHANNEL_AMPS = 16
 
 # NEC 220.82 (optional method) constants for the service-load summary.
 GENERAL_LIGHTING_VA_PER_FT2 = 3.0
@@ -192,10 +196,21 @@ def backup_component_rows(model: ResolvedModel) -> list[dict[str, object]]:
     relays = math.ceil(len(backup) / BACKUP_CIRCUITS_PER_RELAY)
     basis = (f"{len(backup)} backup circuits ({', '.join(c.tag for c in backup)}) at "
              f"{BACKUP_CIRCUITS_PER_RELAY} channels per relay")
-    return [
+    contactor_circuits = [c for c in backup
+                          if c.breaker_amps > RELAY_CHANNEL_AMPS or c.poles == 2]
+    rows: list[dict[str, object]] = [
         {"component": "Shelly Pro 4PM 4-channel DIN relay", "count": relays, "basis": basis},
+    ]
+    if contactor_circuits:
+        rows.append({
+            "component": "DIN contactor (relay-driven)", "count": len(contactor_circuits),
+            "basis": (f"backup circuits over the {RELAY_CHANNEL_AMPS}A relay channel or "
+                      f"2-pole ({', '.join(c.tag for c in contactor_circuits)})"),
+        })
+    rows.extend([
         {"component": "24V DIN-rail power supply", "count": 1,
          "basis": "one 24V bus for LED backup lighting + PoE (notes lines 13-15)"},
         {"component": "DIN-rail 24V UPS module", "count": 1,
          "basis": "backup light/network ride-through (notes line 14)"},
-    ]
+    ])
+    return rows

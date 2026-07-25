@@ -4,7 +4,7 @@
 // B7, so each needs a panel that answers "what is this, what is it made of, how big is it, and
 // where did it come from?" — none of them is editable in place; the edit lives on the element
 // or rule that produced it, which `Provenance` points at.
-import type { FootingBedding, Floor, Model, Roof, Solid, Vec2 } from "../model/types";
+import type { FootingBedding, Floor, Model, Roof, Solid, SolarPanel, Vec2 } from "../model/types";
 import { formatFtIn } from "../model/geometry";
 import type { LocatedMember } from "../model/memberIdentity";
 import { useStore } from "../state/store";
@@ -50,6 +50,24 @@ export function SolidInspector({ solid }: { solid: Solid }) {
     </div>
     <Provenance p={solid.provenance} />
     <DerivedNote source="its authored element or construction rule" />
+  </div>;
+}
+
+export function SolarPanelInspector({ panel }: { panel: SolarPanel }) {
+  const zs = panel.corners_bottom.map((corner) => corner[2]);
+  return <div>
+    <h3>Solar panel · {panel.tag}</h3>
+    <div className="kv">
+      <span className="k">Product</span><span>{panel.product || "—"}</span>
+      <span className="k">Rating</span><span>{panel.watts.toFixed(0)} W</span>
+      <span className="k">On roof</span><span>{panel.roof_ref}</span>
+      <span className="k">Plan extent</span><PlanExtent points={panel.corners_bottom.map((c) => [c[0], c[1]])} />
+      <span className="k">Elevation</span><span>{formatFtIn(Math.min(...zs))} → {formatFtIn(Math.max(...zs))}</span>
+      <span className="k">Storey</span><span>{panel.storey}</span>
+      <span className="k">uid</span><span className="prov">{panel.uid}</span>
+    </div>
+    <Provenance p={panel.provenance} />
+    <DerivedNote source="its SolarPanel element and the roof plane it rides" />
   </div>;
 }
 

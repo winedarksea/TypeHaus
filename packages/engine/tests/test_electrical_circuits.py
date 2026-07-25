@@ -214,9 +214,12 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     backup = {tag for tag, row in rows.items() if row["backup"]}
     assert backup == {"CKT-WH-HP", "CKT-SUMP", "CKT-FRIDGE", "CKT-HA",
                       "CKT-LT-BACKUP", "CKT-MINI-2"}
-    # ceil(6 backup circuits / 4 channels) = 2 relays, one PSU, one UPS.
+    # ceil(6 backup circuits / 4 channels) = 2 relays, one PSU, one UPS, and a contactor
+    # for each backup circuit a 16A relay channel can't switch directly (sump 20A,
+    # fridge 20A, the 2-pole minisplit).
     components = {row["component"]: row["count"] for row in backup_component_rows(catlin_model)}
     assert components["Shelly Pro 4PM 4-channel DIN relay"] == 2
+    assert components["DIN contactor (relay-driven)"] == 3
     load = service_load_summary(catlin_model)
     assert load["floor_area_ft2"] > 4000
     assert load["demand_amps"] > 100  # a real number, not a stub

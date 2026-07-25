@@ -6,7 +6,7 @@ import { SectionCard } from "./SectionCard";
 import { DetailViewer } from "./DetailViewer";
 import { StairDesigner } from "./StairDesigner";
 import { Provenance } from "./Provenance";
-import { FloorInspector, FootingBeddingInspector, MemberInspector, RoofInspector, SolidInspector } from "./DerivedInspectors";
+import { FloorInspector, FootingBeddingInspector, MemberInspector, RoofInspector, SolarPanelInspector, SolidInspector } from "./DerivedInspectors";
 import { locateMember } from "../model/memberIdentity";
 
 // Strict contextual inspector (Phase 3): answers only "what can I change about the selected
@@ -142,7 +142,11 @@ function SelectionInspector({
   // Derived geometry, selectable in 3D since B7 (→ components/DerivedInspectors.tsx).
   if (kind === "solid") {
     const solid = (model.solids ?? []).find((item) => item.uid === uid);
-    return solid ? <SolidInspector solid={solid} /> : null;
+    if (solid) return <SolidInspector solid={solid} />;
+    // Solar panels register their picks as "solid" derived geometry but live in their
+    // own model.json family.
+    const panel = (model.solar_panels ?? []).find((item) => item.uid === uid);
+    return panel ? <SolarPanelInspector panel={panel} /> : null;
   }
   if (kind === "footing_bedding") {
     const bedding = (model.footing_beddings ?? []).find((item) => item.uid === uid);
