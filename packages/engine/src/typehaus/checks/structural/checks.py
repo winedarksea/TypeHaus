@@ -46,10 +46,27 @@ def header_within_prescriptive(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     for op in ctx.model.openings:
         if op.width_m > m(8.0 * 0.3048).meters:  # > 8'
-            out.append(_advisory("structural.header_prescriptive",
-                                 f"opening {op.tag} width {op.width_m*3.281:.1f}' exceeds "
-                                 "prescriptive header table — requires engineered beam",
-                                 (op.tag,), Result.FAIL))
+            # An authored Door/DoorType.header_spec IS the engineered beam: the framing
+            # solver emits it verbatim, so the opening no longer rides the table at all.
+            spec = None
+            source = ctx.plan.by_tag(op.tag) if ctx.plan is not None else None
+            spec = getattr(source, "header_spec", None)
+            if spec is None and source is not None:
+                type_ref = getattr(source, "type_ref", None)
+                door_type = ctx.plan.by_tag(type_ref) if type_ref else None
+                spec = getattr(door_type, "header_spec", None)
+            if spec:
+                out.append(_advisory(
+                    "structural.header_prescriptive",
+                    f"opening {op.tag} width {op.width_m*3.281:.1f}' exceeds the "
+                    f"prescriptive header table; engineered header authored: {spec}",
+                    (op.tag,), Result.PASS))
+            else:
+                out.append(_advisory(
+                    "structural.header_prescriptive",
+                    f"opening {op.tag} width {op.width_m*3.281:.1f}' exceeds "
+                    "prescriptive header table — requires engineered beam",
+                    (op.tag,), Result.FAIL))
     return out
 
 
