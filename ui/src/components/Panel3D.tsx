@@ -17,8 +17,8 @@ import {
 import {
   wholeHouseGlbAssignment, WHOLE_HOUSE_GLB_PRIMARY, type GlbNodeAssignment,
 } from "../three/wholeHouseGlb";
-import { isRenderedInScene } from "../three/build/registry";
-import { planCenterOf, populateScene, type SceneRegistry } from "../three/build/scene";
+import { isRenderedInScene } from "../three/builders/registry";
+import { planCenterOf, populateScene, type SceneRegistry } from "../three/builders/scene";
 import {
   geographicBearingToSceneDirection,
   geographicSoutheastSceneAzimuthRadians,
