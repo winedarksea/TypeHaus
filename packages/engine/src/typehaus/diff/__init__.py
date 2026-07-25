@@ -9,17 +9,31 @@ testable without ifcopenshell; the IFC adapter is the thin, optional edge.
 
 from __future__ import annotations
 
-from typehaus.diff.compare import (CompareReport, QuantityDelta, VariantSelection,
-                                   apply_assembly_swaps, compare_models, compare_variants,
-                                   quantity_deltas, resolve_variant)
+from typehaus.diff.assembly_compare import (AssemblyComparison, MetricDelta,
+                                            compare_assemblies)
+from typehaus.diff.compare import (CheckDelta, CompareReport, EnvelopeDelta, QuantityDelta,
+                                   VariantSelection, apply_assembly_swaps, check_deltas,
+                                   compare_models, compare_variants, envelope_deltas,
+                                   quantity_deltas, resolve_variant, variant_plan)
+from typehaus.diff.equivalence import (EquivalenceReport, EntityEquivalence,
+                                       compare_semantic_models)
 from typehaus.diff.matcher import Match, match_elements
 from typehaus.diff.model import DiffElem
 from typehaus.diff.report import ChangeKind, DiffReport, build_report
+from typehaus.diff.semantic import (SemanticEntity, SemanticModel, SemanticStorey,
+                                    semantic_model_from_ifc)
+from typehaus.diff.variants import (LayerThicknessOverride, VariantSpec, apply_layer_thickness,
+                                    find_variant, load_variants)
 
 __all__ = [
     "DiffElem", "Match", "match_elements",
     "ChangeKind", "DiffReport", "build_report",
-    "CompareReport", "QuantityDelta", "VariantSelection",
-    "apply_assembly_swaps", "compare_models", "compare_variants",
-    "quantity_deltas", "resolve_variant",
+    "CheckDelta", "CompareReport", "EnvelopeDelta", "QuantityDelta", "VariantSelection",
+    "apply_assembly_swaps", "check_deltas", "compare_models", "compare_variants",
+    "envelope_deltas", "quantity_deltas", "resolve_variant", "variant_plan",
+    "AssemblyComparison", "MetricDelta", "compare_assemblies",
+    "LayerThicknessOverride", "VariantSpec", "apply_layer_thickness", "find_variant",
+    "load_variants",
+    "SemanticEntity", "SemanticModel", "SemanticStorey", "semantic_model_from_ifc",
+    "EquivalenceReport", "EntityEquivalence", "compare_semantic_models",
 ]

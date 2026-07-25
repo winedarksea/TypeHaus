@@ -212,6 +212,14 @@ haus migrate           [--dry-run] apply the format_version source migration (#3
 haus compare <a> <b>   resolve two members of a variant set for the side-by-side compare
                        view (→ 11b §Fork); given assembly names, renders the assembly delta
                        compare card instead (#53, → 21b)
+haus variants list     the house's declared variants (variants.toml: assembly swaps + layer
+                       thickness overrides on one base plan, → 21b §Variant compare)
+haus variants compare <a> <b>
+                       build two declared variants → element, framing-takeoff, R-value and
+                       check deltas → out/compare.json
+haus variants assemblies <asm-a> <asm-b> [<asm-c>]
+                       the assembly delta compare row (#53): R / thickness / layers /
+                       framing / STC, no build required
 haus import furniture <file.glb|.gltf|.dae>
                        trimesh-based mesh import → FurnitureType with derived footprint +
                        height (#49, M3, → 30 WP3.10)

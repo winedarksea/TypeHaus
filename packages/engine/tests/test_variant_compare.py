@@ -28,12 +28,15 @@ def test_report_structure_is_stable_and_serializable(starter_dir: Path):
     report = compare_variants(VariantSelection(house=starter_dir),
                               VariantSelection(house=starter_dir, swaps={_OLD: _NEW}))
     payload = report.as_dict()
-    assert set(payload) == {"variants", "element_counts", "element_changes", "quantity_deltas"}
+    assert set(payload) == {"variants", "element_counts", "element_changes", "quantity_deltas",
+                            "envelope_deltas", "check_deltas"}
     assert set(payload["variants"]) == {"a", "b"}
     for change in payload["element_changes"]:
         assert {"kind", "tag", "ifc_class", "delta"} <= set(change)
     for qty in payload["quantity_deltas"]:
         assert {"profile", "metric", "baseline", "variant", "delta"} <= set(qty)
+    for envelope in payload["envelope_deltas"]:
+        assert {"assembly", "metric", "baseline", "variant", "delta", "note"} <= set(envelope)
     assert report.to_json() == report.to_json()  # deterministic
 
 

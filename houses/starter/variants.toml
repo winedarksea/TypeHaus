@@ -1,0 +1,25 @@
+# Named variants of this house (WP2.14, → 21b §Variant compare).
+#
+#   haus variants list .
+#   haus variants compare as-authored 2x4-ci --house .
+#
+# Each entry is the *difference* from the plan as authored — never a copy of it. Overrides
+# are applied before resolve, so every variant is built from this same source.
+
+[[variant]]
+name = "as-authored"
+description = "the plan exactly as written — the baseline every other variant is read against"
+
+[[variant]]
+name = "2x4-ci"
+description = "2x4 studs with continuous exterior insulation instead of the 2x6 ZIP-R wall"
+assembly_swaps = { HOUSE_WALL_2X6_WITH_ZIPR = "HOUSE_WALL_2X4_WITH_CI" }
+
+[[variant]]
+name = "thicker-zip-r"
+description = "the same wall with 2 1/2in ZIP-R instead of 1 1/2in — more R, a thicker wall"
+
+  [[variant.layer_thickness]]
+  assembly = "HOUSE_WALL_2X6_WITH_ZIPR"
+  layer = "zip-r"
+  thickness_in = 2.5

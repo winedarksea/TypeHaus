@@ -33,8 +33,16 @@ def _pair_cost(a: DiffElem, b: DiffElem) -> float:
     return cost
 
 
-def match_elements(baseline: list[DiffElem], external: list[DiffElem]) -> list[Match]:
-    """Match two element sets. Order: GlobalId keys, then Hungarian over the leftovers."""
+def match_elements(baseline: list[DiffElem], external: list[DiffElem],
+                   threshold: float = _MATCH_THRESHOLD) -> list[Match]:
+    """Match two element sets. Order: GlobalId keys, then Hungarian over the leftovers.
+
+    ``threshold`` is the cost above which a pair is not credible. The default suits a diff
+    against our own export, where a matched element is nearly identical; a cross-tool
+    equivalence comparison (→ :mod:`typehaus.diff.equivalence`) raises it, because there the
+    useful answer is "this is the wall that corresponds, and here is how far it has moved"
+    rather than two unrelated add/delete rows.
+    """
     matches: list[Match] = []
     by_gid = {e.global_id: e for e in external if e.global_id}
     baseline_guid_counts = Counter(e.global_id for e in baseline if e.global_id)
@@ -62,7 +70,7 @@ def match_elements(baseline: list[DiffElem], external: list[DiffElem]) -> list[M
     paired_b, paired_e = _hungarian(unkeyed_base, leftover_ext)
     for bi, ei in zip(paired_b, paired_e):
         b, e = unkeyed_base[bi], leftover_ext[ei]
-        if _pair_cost(b, e) <= _MATCH_THRESHOLD:
+        if _pair_cost(b, e) <= threshold:
             matches.append(Match(b, e, keyed=False, cost=_pair_cost(b, e)))
         else:  # below confidence → honest delete + add
             matches.append(Match(b, None, keyed=False))

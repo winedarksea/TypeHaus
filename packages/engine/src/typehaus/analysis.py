@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from typehaus.model.assembly import Assembly
+from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import Library
 from typehaus.quantities import RValue, rsi
 
@@ -81,3 +82,68 @@ def assembly_r_value(asm: Assembly, library: Library, include_lining: bool = Tru
     if unknown:
         return RValueResult(value=None, unknown_materials=tuple(unknown))
     return RValueResult(value=rsi(total_rsi), unknown_materials=())
+
+
+# The framing solver's o.c. default when a STRUCTURE layer's FramingSpec leaves it open;
+# reported so the delta compare never shows a blank spacing for an authored-by-omission wall.
+DEFAULT_FRAMING_SPACING_IN = 16.0
+
+
+@dataclass(frozen=True)
+class AssemblyMetrics:
+    """The comparable facts of one assembly — the delta-compare row's data (#53, → 21b).
+
+    Model-free like the section card itself: everything here reads off the authored
+    ``Assembly``, so two candidate assemblies can be weighed against each other before
+    either is placed on a wall. ``stc`` stays None unless the assembly carries a lab test
+    (#50) — an acoustic number is never computed.
+    """
+
+    tag: str
+    r_value: RValueResult
+    thickness_in: float
+    layer_count: int
+    structure_member: str | None       # nominal lumber size of the STRUCTURE layer, e.g. "2x6"
+    framing_spacing_in: float | None   # o.c. of that layer's framing
+    stc: int | None
+    variant_of: str | None
+
+    def as_dict(self) -> dict:
+        return {
+            "tag": self.tag,
+            "r_value": (round(self.r_value.value.r_us, 3)
+                        if self.r_value.value is not None else None),
+            "r_value_unknown_materials": list(self.r_value.unknown_materials),
+            "thickness_in": round(self.thickness_in, 4),
+            "layer_count": self.layer_count,
+            "structure_member": self.structure_member,
+            "framing_spacing_in": self.framing_spacing_in,
+            "stc": self.stc,
+            "variant_of": self.variant_of,
+        }
+
+
+def assembly_metrics(asm: Assembly, library: Library) -> AssemblyMetrics:
+    """Roll one assembly up to the numbers a designer compares alternatives on.
+
+    Thickness sums the whole built stack (default lining + core) because that is what the
+    hallway loses; cavity fill is deliberately excluded — it lives *inside* its host layer's
+    depth (→ :class:`CavityFill`) and adding it would double-count the wall.
+    """
+    stack = list(asm.default_lining) + list(asm.layers)
+    structure = next((ly for ly in stack if ly.function is LayerFunction.STRUCTURE), None)
+    spec = structure.framing if structure is not None else None
+    spacing_in = None
+    if spec is not None:
+        spacing_in = (spec.spacing.inches if spec.spacing is not None
+                      else DEFAULT_FRAMING_SPACING_IN)
+    return AssemblyMetrics(
+        tag=asm.tag,
+        r_value=assembly_r_value(asm, library),
+        thickness_in=sum(layer.thickness.inches for layer in stack),
+        layer_count=len(stack),
+        structure_member=spec.member if spec is not None else None,
+        framing_spacing_in=spacing_in,
+        stc=asm.stc,
+        variant_of=asm.variant_of,
+    )
