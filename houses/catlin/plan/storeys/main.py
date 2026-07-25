@@ -221,10 +221,13 @@ OPENINGS = [
          position=from_node("N-M-D1", ft(0, 4))),
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-HS4", type_ref="DT-INT30",
          position=from_node("N-M-E3", ft(1))),
-    Door(uid="CMD209AAAA", tag="D-M-HALL", host="W-M-C4", type_ref="DT-INT32",
-         position=from_node("N-M-C2", ft(0, 6))),
     Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT32",
          position=from_node("N-M-D3", ft(5))),
+    # Cased pass-through into the hall — door-sized (DT-INT32's 2'-8" x 6'-8") but
+    # never leafed, so it carries no swing symbol and no IfcDoor.
+    RoughOpening(uid="CMD209AAAA", tag="O-M-HALL", host="W-M-C4",
+                 position=from_node("N-M-C2", ft(0, 6)), width=ft(2, 8),
+                 height=ft(6, 8)),
     # Cased pass-through: living room → dressing corridor (per floorplan).
     RoughOpening(uid="CMD211AAAA", tag="O-M-DRESS", host="W-M-C2",
                  position=from_node("N-M-C1", ft(0, 6)), width=ft(3),
