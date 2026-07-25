@@ -12,6 +12,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.structure import SolarPanel
 from typehaus.resolve.model import ResolvedModel, ResolvedSolarPanel
 from typehaus.resolve.roof_geometry import roof_height_at
+from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
 
 def resolve_solar(model: ResolvedModel) -> list[Finding]:
@@ -74,7 +75,13 @@ def _resolve_panel(model: ResolvedModel, panel: SolarPanel, storey_tag: str) -> 
              roof_height_at(roof, (x, y)) + normal[2] * distance)
             for x, y in points)
 
-    standoff = panel.standoff.meters
+    # ``roof_height_at`` is the structural deck plane; the clamps grip the standing seam
+    # on top of the full above-structure layer stack (8.5" of insulation + roofing on
+    # CATLIN_ROOF), so the module rides skin + standoff off the deck, perpendicular.
+    assembly = model.plan.library.resolve_assembly(roof.assembly)
+    skin = (sum(layer.thickness.meters for layer in above_structure_layers(assembly))
+            if assembly is not None else 0.0)
+    standoff = skin + panel.standoff.meters
     model.solar_panels.append(ResolvedSolarPanel(
         uid=panel.uid, tag=panel.tag, storey=storey_tag, roof_ref=panel.roof_ref,
         corners_bottom=offset(plan, standoff),

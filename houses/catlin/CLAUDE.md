@@ -11,6 +11,11 @@ proposing any design change.
 - `plan/assemblies.py`, `plan/site.py`, `plan/placeables.py` — editable assemblies/site/placeables.
 - `plan/mep.py`, `plan/fixtures.py` — `# haus: editable` MEP + plumbing-fixture *instances*
   (so UI drags round-trip). Only explicit constructors here — no functions/generators.
+- `plan/electrical.py` — `# haus: editable` electrical service upgrade: meter, backup
+  enclosure, 240V/EV/spa devices, conduit trunks, NEC 210.52 fill receptacles.
+- `plan/circuits.py` — the panel schedule (NOT editable: Circuits are schedule data, not
+  geometry). Devices point at circuits via `circuit=`; `electrical.circuit_refs` reconciles.
+- `params/solar.py` — rooftop PV array (12 × 440 W on the gable ridge, computed max fit).
 - `plan/fixture_types.py` — the FixtureType/ApplianceType *catalog* (NOT editable: uses
   `frozenset(...)`, which the dialect forbids). Type libraries stay non-editable; movable
   instances that reference them live in the editable modules above.
