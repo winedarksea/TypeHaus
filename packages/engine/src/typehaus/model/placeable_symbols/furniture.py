@@ -14,6 +14,10 @@ from typehaus.model.placeable_symbols._families import (Builder, bed, case, coun
 
 __all__ = ["FURNITURE_SYMBOLS", "sectional_points"]
 
+# The painted-casework pair, named once so a change of kitchen colour is a one-line edit.
+CABINET = "cabinet-cream"
+CABINET_SHADE = "cabinet-cream-dark"
+
 FURNITURE_SYMBOLS: dict[str, Builder] = {
     # Seating. Seat count is what separates a sofa from a loveseat from an armchair.
     "sofa": seating(arms=True, seats=3),
@@ -42,7 +46,16 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     # family that draws its top rather than its doors; wall and tall units are cases whose
     # cell grid says how the front divides — two doors side by side, or one full-height
     # pull-out. The same three symbols cover every catalog width.
-    "base-cabinet": counter_case(),
-    "wall-cabinet": case(rows=1, cols=2, pulls=True),
-    "tall-cabinet": case(rows=1, cols=1, pulls=True),
+    #
+    # Painted cream rather than the stained ``wood`` the casegoods wear: fitted millwork is
+    # finished on site as one run, and the light cream is what puts the grey counter slab and
+    # the stainless appliances in relief instead of losing them against a brown box.
+    "base-cabinet": counter_case(body=CABINET, kick_color=CABINET_SHADE),
+    # The one base that is drawn hollow: its counter is cut and its carcass is a shell, so the
+    # sink dropped into it is visible rather than entombed. The hole is deliberately smaller
+    # than the sink — a drop-in's flange laps *over* the counter — which is what leaves real
+    # bearing all round instead of a hairline the two edges fight over.
+    "sink-base": counter_case(body=CABINET, kick_color=CABINET_SHADE, cutout=(0.83, 0.78)),
+    "wall-cabinet": case(rows=1, cols=2, pulls=True, color=CABINET, face_color=CABINET_SHADE),
+    "tall-cabinet": case(rows=1, cols=1, pulls=True, color=CABINET, face_color=CABINET_SHADE),
 }

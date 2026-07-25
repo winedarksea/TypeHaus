@@ -44,11 +44,13 @@ SHOWER = FixtureType(
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
 )
 # A drop-in sink's bowls hang below its deck, so the mount elevation puts that deck at the
-# standard 36" counter height rather than leaving the fixture sitting on the floor.
+# standard 36" counter height rather than leaving the fixture sitting on the floor. The
+# ``kitchen-sink`` symbol puts its deck at half the type's height — 9" of bowl below, 9" of
+# gooseneck above — so 36" - 9" = 27" is the mount that lands the rim on the countertop.
 KITCHEN_SINK = FixtureType(
     tag="FX-KITCHEN-SINK-33", name="Double-bowl kitchen sink", footprint=(ft(2, 9), ft(1, 10)),
     height=ft(1, 6), plan_symbol="kitchen-sink", source=REFERENCE,
-    mount=Mount(kind=MountKind.WALL, elevation=inch(21)),
+    mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
 )
 

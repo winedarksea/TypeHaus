@@ -28,12 +28,13 @@ MAIN_FIXTURES = (
     # east wall. W-M-E2 is the wet wall — a 2x6 exterior wall, deep enough for the stack,
     # and one that W-S-E3/E4/E5 stack on, so the vent rises inside it without an offset.
     # `drain_position` sets the trap 6 5/8" back from the bowl centre, over SP-M-KITCH.
-    # The 21" mount is what drops the bowls into the counter instead of standing them on the
+    # The 27" mount is what drops the bowls into the counter instead of standing them on the
     # floor: the resolver reads the *instance* Mount, so the type's own recommendation has to
-    # be restated here to take effect (deck lands at ~36", the base cabinet's top).
+    # be restated here to take effect. The symbol's deck sits at half its 18" height, so 27"
+    # lands the rim exactly on the 36" counter, 9" of bowl hanging into the base below it.
     Fixture(uid="WZRCBGNDFW", tag="FX-M-KITCH-SINK", type_ref="FX-KITCHEN-SINK-33", room="RM-M-LIVING",
             position=pt(ft(34, 5.375), ft(32, 8)), rotation=deg(-90), wall_ref="W-M-E2",
-            mount=Mount(kind=MountKind.WALL, elevation=inch(21)),
+            mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
             drain_position=pt(ft(35), ft(32, 8))),
 )
 

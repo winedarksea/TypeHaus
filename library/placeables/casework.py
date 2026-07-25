@@ -48,10 +48,29 @@ BASE_15 = _base("CASE-B15", inch(15))
 BASE_24 = _base("CASE-B24", ft(2))
 BASE_30 = _base("CASE-B30", inch(30))
 BASE_36 = _base("CASE-B36", ft(3))
+# A sink base is a different cabinet, not a base with a hole in it: no drawer box (the bowls
+# take the space), doors instead of fronts, and a counter that is cut. The ``sink-base`` symbol
+# models it as the shell it is, which is also the only way the sink dropped into it is visible.
+SINK_BASE_36 = FurnitureType(
+    tag="CASE-SINK-BASE-36", name='36" sink base', footprint=(ft(3), _BASE_DEPTH),
+    height=_BASE_HEIGHT, plan_symbol="sink-base", storage=True, source=REFERENCE,
+)
 
 WALL_18 = _wall("CASE-W18", inch(18))
 WALL_24 = _wall("CASE-W24", ft(2))
 WALL_30 = _wall("CASE-W30", inch(30))
+# Past ~36" a single box stops being buildable, but a *run* of uppers behind one continuous
+# face frame is ordinary shop work — a 66" upper is two ganged boxes (30" + 36") that read and
+# install as one cabinet. Modelling it as one element is the honest description of the result.
+WALL_66 = _wall("CASE-W66", inch(66))
+
+# Over-appliance uppers: the dead 24" between a 72" cold box and the 96" top of the tall run.
+# Full base depth rather than the 13" of a counter upper, so their faces line up with the tall
+# cabinets beside them instead of floating a shallow box over a deep appliance.
+OVER_APPLIANCE_36 = FurnitureType(
+    tag="CASE-OVER-36", name='36" over-appliance cabinet', footprint=(ft(3), _BASE_DEPTH),
+    height=ft(2), plan_symbol="wall-cabinet", storage=True, source=REFERENCE,
+)
 
 # Tall pull-outs: one full-height door hiding a slide-out larder, which is why they read as a
 # single cell rather than a drawer stack. 12" and 18" are the two widths that fit the leftover
@@ -88,8 +107,8 @@ BAR_STOOL = FurnitureType(
 )
 
 STARTER_CASEWORK_TYPES = (
-    BASE_15, BASE_24, BASE_30, BASE_36,
-    WALL_18, WALL_24, WALL_30,
+    BASE_15, BASE_24, BASE_30, BASE_36, SINK_BASE_36,
+    WALL_18, WALL_24, WALL_30, WALL_66, OVER_APPLIANCE_36,
     TALL_PANTRY_12, TALL_PANTRY_18, PANTRY_CLOSET_24,
     ISLAND_60, BAR_STOOL,
 )

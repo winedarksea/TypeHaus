@@ -47,7 +47,7 @@ SYMBOL_NAMES = frozenset({
     "dresser", "chest", "nightstand", "media-console", "bookcase",
     "bed", "tv",
     # kitchen/bath casework — the fitted millwork a room is built around
-    "base-cabinet", "wall-cabinet", "tall-cabinet",
+    "base-cabinet", "sink-base", "wall-cabinet", "tall-cabinet",
     # appliances + mechanical/electrical equipment
     "refrigerator", "range", "dishwasher", "washer", "dryer", "microwave", "hood",
     "furnace", "water-heater", "panel", "register",

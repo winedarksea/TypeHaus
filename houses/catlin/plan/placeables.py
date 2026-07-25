@@ -62,12 +62,23 @@ MAIN_PLACEABLES = [
               position=pt(ft(19, 8.375), ft(28, 5.375)), rotation=deg(90)),
     Furniture(uid="XTD1N9A693", tag="FURN-M-KIT-PANTRYC", type_ref="CASE-PANTRY-CLOSET-24", room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(25, 11.375)), rotation=deg(90)),
+    # Over the two cold boxes: the 24" between their 72" tops and the 96" top of the tall run
+    # is the cheapest storage in the kitchen, and leaving it open would break the one line the
+    # west run reads by. 24" deep like the talls, so all four fronts land on one plane at
+    # x=20'-3 3/8" and the appliances stand 10" proud of them — which is what lets the fridge
+    # and freezer doors swing clear of the cabinet above.
+    Furniture(uid="8T3D1P2QRV", tag="FURN-M-KIT-OVER-FRIDGE", type_ref="CASE-OVER-36", room="RM-M-LIVING",
+              position=pt(ft(19, 3.375), ft(31, 5.375)), rotation=deg(90),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
+    Furniture(uid="Y4KJ6WB0ZC", tag="FURN-M-KIT-OVER-FREEZER", type_ref="CASE-OVER-36", room="RM-M-LIVING",
+              position=pt(ft(19, 3.375), ft(28, 5.375)), rotation=deg(90),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
 
     # North run — the cooking wall. Bases are 24" deep, so their centre is y=34'-5 3/8"; the
     # range is 30" deep and so centres 3" further out at 34'-2 3/8", which is the number the
     # island aisle is measured from. The run starts where the west run's talls end
     # (x=20'-3 3/8") and stops at the east run (x=33'-4", leaving a 1 3/8" corner filler).
-    # KIT-N2 is the cabinet under WIN-M-KITCH-N2, the smoke window.
+    # KIT-N2 is the cabinet under WIN-M-KITCH-N, the smoke window.
     Furniture(uid="KA0ETVK8F8", tag="FURN-M-KIT-N1", type_ref="CASE-B36", room="RM-M-LIVING",
               position=pt(ft(21, 9.375), ft(34, 5.375))),
     Furniture(uid="BZ9SVQVTVP", tag="FURN-M-KIT-N2", type_ref="CASE-B24", room="RM-M-LIVING",
@@ -80,8 +91,8 @@ MAIN_PLACEABLES = [
               position=pt(ft(32, 1), ft(34, 5.375))),
 
     # North wall cabinets, 13" deep at a 54" mount (18" of backsplash over the counter, top
-    # at 96" to match the talls). They are laid out around the two window roughs — the smoke
-    # window at x 24'-1"..25'-3" and WIN-M-KITCH-N at 29'-5"..31'-11" — and around the hood.
+    # at 96" to match the talls). They are laid out around the one window rough — the smoke
+    # window at x 24'-1"..25'-3" — and around the hood.
     Furniture(uid="2BF9VM3SFA", tag="FURN-M-KIT-WN1", type_ref="CASE-W24", room="RM-M-LIVING",
               position=pt(ft(21, 3.375), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
@@ -92,11 +103,12 @@ MAIN_PLACEABLES = [
     Appliance(uid="Q0W3FYXJGX", tag="APPL-M-HOOD", type_ref="APPL-HOOD-RECIRC", room="RM-M-LIVING",
               position=pt(ft(26, 7), ft(34, 7.375)),
               mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
-    Furniture(uid="DVWYR4A5J3", tag="FURN-M-KIT-WN3", type_ref="CASE-W18", room="RM-M-LIVING",
-              position=pt(ft(28, 7), ft(34, 10.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-    Furniture(uid="MBGZAQ1G0Y", tag="FURN-M-KIT-WN4", type_ref="CASE-W18", room="RM-M-LIVING",
-              position=pt(ft(32, 8), ft(34, 10.875)),
+    # East of the hood the wall is now unbroken, so the two 18" uppers that used to flank
+    # WIN-M-KITCH-N are one 5'-6" run instead: 27'-10" (the hood's east edge) to 33'-4" (where
+    # the base run below it stops). Shop-built as two ganged boxes behind a continuous face —
+    # see CASE-W66 — it is the whole east half of the cooking wall in one gesture.
+    Furniture(uid="DVWYR4A5J3", tag="FURN-M-KIT-WN3", type_ref="CASE-W66", room="RM-M-LIVING",
+              position=pt(ft(30, 7), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
 
     # East run — the sink wall, opening west. The 36" sink base centres on WIN-M-KITCH
@@ -107,7 +119,7 @@ MAIN_PLACEABLES = [
               position=pt(ft(34, 5.375), ft(27, 11)), rotation=deg(-90)),
     Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-DISHWASHER", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(30, 2)), rotation=deg(-90)),
-    Furniture(uid="F8A30SK31X", tag="FURN-M-KIT-SINKBASE", type_ref="CASE-B36", room="RM-M-LIVING",
+    Furniture(uid="F8A30SK31X", tag="FURN-M-KIT-SINKBASE", type_ref="CASE-SINK-BASE-36", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(32, 8)), rotation=deg(-90)),
     Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="CASE-B15", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(34, 9.5)), rotation=deg(-90)),

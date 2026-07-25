@@ -206,22 +206,13 @@ below are construction-rule authoring — they need your intent:
 - **Winders keep the `tapered tread` 1.5" band.** A trapezoid is not expressible as axis +
   band width in this IR, and a going-wide band would make the fan self-overlap.
 
-## Breezeway to Garage Design
-Designed around 4x8 polycarbonate panels for a 4' long breezeway that is 8' tall.
-Framing is 6x6 posts. Lumber is ground contact rated KDAT at the bottom (rafters don't need to be ground contact) A beam runs between the posts near the house. Composite decking (same as added to porch below) then runs in the door to door direction between the beams (breather tape between beam and decking).
-Top of posts runs the cross beams, KBS1Z holding these down (can be used as braces, not just knee braces). Joists are likely "flat" wide side on beam here. Roof joists run side to side (opposite rotation of floor which runs house to garage orientation).
-Polycarbonate 'roof' has two wedges in the middle (facing to each side) on top of every rafter to slope for water drainage.
-Polycarbonate has an extra UV window film, perhaps SOLYX BSF-DB35 Solar Bird Safety Film
-This breezeway is "snug" to the cladding of the garage and house but does not integrate into the flashing directly (the door's standard top u bar trim directs water away already that is coming down the siding)
-Slope Toward Garage 1" lower on garage side.
-Stainless steel fasteners with gaskets to hold down the polycarbonate
-Channels for Polycarbonate
-  U-channels at bottom, need weep holes
-    One-sided h channels (lower case h) would provide a drip edge at bottom if on edge overhang of concrete
-  Aluminum Glazing Bars (concealed fastener) or H-channels for side by side panels
-    Looks like an f-channel or some such can be used to make a glazing bar into an end cap
-  Corner caps are trickier. Sometimes called corner caps, there are also some r-channels and some h-channels designed to bend (with a single middle wall, but most not) but given these are hard to find an f-channel looks like a more common solution for the roof to wall connection
-Likely we should have one detail view that captures the full cross section of this breezeway
+## Electrical
+Distribute outlets and switches around the house in their recommended locations. Make sure they are editable in the UI (so we can move them around to refine the placement).
+
+Generally, GFCI at the breaker level rather than outlet level.
+Surge protector on panel.
+We will have a low voltage system set too. POE for access points and cameras. We might have 24V power system for the many LED strips (it's that or in wall box per strip area)
+
 
 ## Current Orientation
 
@@ -256,6 +247,7 @@ future.
 - House roof really won't have fascia like RAKE-HI-1-FASCIA-1 nor RAKE-HI-1-EDGE-CLADDING. In reality, the furring strips of the siding will continue up to meet the furring strips of the roof very nearly, and it will be full continous standing seam siding and roofing (with a trim piece over the corner). It may be hard to show this, but in the real world standing seam panels will be pretty much constant from grade level, up to roof level, and across the house and down the other side.
 - Switch all exterior walls to 2x6s, and remove the 2x4 exterior wall type (for simplicity). Note main floor is LSL, others are standard dimensional 2x6 (this can be a note, rather than a different assembly). This will require careful updates to make sure assembly details still match.
 - At the corners where exterior wall meets exterior wall, use a 4 stud corner instead for framing (since we use outsulation, the extra strength here is worth it). That should just be the main four corners.
+- Ridge of house and garage do not yet show a ridge vent that will be present (runs entire length of ridge as 'cap').
 - ~~Build out the kitchen with appliances and counters, make sure pantry is present~~ DONE.
   The engine gained a casework vocabulary (`base-cabinet` / `wall-cabinet` / `tall-cabinet`,
   the first call sites for `counter_case()`, plus a `hood` glyph), `library/placeables/
@@ -275,6 +267,3 @@ future.
     It is 42" to the cabinet fronts either side of the range; the range's 30" body is what
     eats the extra 6". A 48"-wide island or a 3" nudge south buys the 42".
 
-## Deferred for now
-- Solar Panels
-- Electrical circuits

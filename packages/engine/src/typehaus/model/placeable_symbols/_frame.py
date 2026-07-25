@@ -61,6 +61,12 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "appliance-steel": (0.76, 0.78, 0.80, 1.0),
     "porcelain": (0.97, 0.97, 0.96, 1.0),
     "counter": (0.52, 0.50, 0.48, 1.0),
+    # Painted casework. Fitted kitchen millwork is finished, not stained: a warm off-white
+    # against the grey counter and the stainless goods. The ``-dark`` shade is the same paint
+    # in shadow — door faces and toe kicks — so a run reads as one colour with relief, the way
+    # ``wood``/``wood-dark`` do for the stained casegoods.
+    "cabinet-cream": (0.93, 0.90, 0.82, 1.0),
+    "cabinet-cream-dark": (0.84, 0.80, 0.71, 1.0),
 }
 
 # Drawn-line weights. Plan symbols read as a hierarchy: the object outline is the heaviest

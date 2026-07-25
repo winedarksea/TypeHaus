@@ -16,7 +16,7 @@ a drawn handle stops at the front face rather than protruding through it.
 from __future__ import annotations
 
 import math
-from typing import Callable, Tuple
+from typing import Callable, Optional, Tuple
 
 from typehaus.model.placeable_symbols._frame import (DETAIL_WEIGHT, Part, Point, Stroke, arc,
                                                      box, circle, clamp, line, polygon, rect)
@@ -212,11 +212,16 @@ def round_slab(*, pedestal: bool = True) -> Builder:
     return build
 
 
-def case(*, rows: int = 3, cols: int = 1, pulls: bool = True, color: str = "wood") -> Builder:
-    """Casegoods — dressers, chests, nightstands, media consoles.
+def case(*, rows: int = 3, cols: int = 1, pulls: bool = True, color: str = "wood",
+         face_color: str = "wood-dark") -> Builder:
+    """Casegoods — dressers, chests, nightstands, media consoles, fitted wall/tall cabinets.
 
     Plan view of a case piece is its top; the drawer grid is drawn as the front-face band so
     the reader can tell which way the piece opens, which is the whole point of the symbol.
+
+    ``face_color`` is the carcass colour in shadow, not a second material: doors and drawer
+    fronts are the same stock as the box, and giving them their own role is what lets painted
+    casework read as one colour without flattening into a single untextured slab.
     """
 
     def build(width: float, depth: float, height: float) -> Geometry:
@@ -225,7 +230,7 @@ def case(*, rows: int = 3, cols: int = 1, pulls: bool = True, color: str = "wood
         face_cy = front + HANDLE_DEPTH_M + face_d / 2
         strokes = [rect(0, 0, width, depth, fill=color),
                    rect(0, front + (HANDLE_DEPTH_M + face_d) / 2, width,
-                        HANDLE_DEPTH_M + face_d, fill="wood-dark", weight=DETAIL_WEIGHT)]
+                        HANDLE_DEPTH_M + face_d, fill=face_color, weight=DETAIL_WEIGHT)]
         carcass_d = depth - HANDLE_DEPTH_M - face_d
         top_t = min(0.02, height * 0.06)
         parts = [box(0, front + HANDLE_DEPTH_M + face_d + carcass_d / 2, 0.0, height - top_t,
@@ -240,7 +245,7 @@ def case(*, rows: int = 3, cols: int = 1, pulls: bool = True, color: str = "wood
             for row in range(max(1, rows)):
                 cz = height * 0.03 + cell_h * (row + 0.5)
                 parts.append(box(cx, face_cy, cz - cell_h * 0.46, cz + cell_h * 0.46,
-                                 cell_w * 0.96, face_d, "wood-dark"))
+                                 cell_w * 0.96, face_d, face_color))
                 if not pulls:
                     continue
                 pull_h = min(0.012, cell_h * 0.2)
@@ -400,8 +405,16 @@ def appliance_case(*, doors: int = 1, split: str = "vertical", handle: bool = Tr
 
 
 def counter_case(*, top_color: str = "counter", body: str = "wood",
-                 toe_kick: bool = True) -> Builder:
-    """A cabinet under a counter slab — the carcass a vanity or a sink base is built on."""
+                 kick_color: str = "wood-dark", toe_kick: bool = True,
+                 cutout: Optional[Tuple[float, float]] = None) -> Builder:
+    """A cabinet under a counter slab — the carcass a vanity or a sink base is built on.
+
+    ``cutout`` turns it into a *sink* base: a fraction of the top's width and depth is left
+    open and the carcass below becomes a shell rather than a solid. Without it, the counter
+    slab and the carcass are opaque boxes that swallow whatever fixture drops into them — the
+    sink is modelled, placed and then invisible. A base cabinet is the one piece of casework
+    whose interior a viewer is entitled to see, and only because something hangs through it.
+    """
 
     def build(width: float, depth: float, height: float) -> Geometry:
         top_t = min(TOP_THICKNESS_M, height * 0.08)
@@ -411,10 +424,33 @@ def counter_case(*, top_color: str = "counter", body: str = "wood",
         front = -depth / 2 + min(0.02, depth * 0.2)
         strokes = [rect(0, 0, width, depth, fill=top_color),
                    line((-width / 2, front), (width / 2, front), weight=DETAIL_WEIGHT)]
-        parts = [box(0, 0, height - top_t, height, width, depth, top_color),
-                 box(0, 0.01, kick, height - top_t, width, depth - 0.02, body)]
+        parts: list[Part] = []
+        if cutout is None:
+            parts.append(box(0, 0, height - top_t, height, width, depth, top_color))
+            parts.append(box(0, 0.01, kick, height - top_t, width, depth - 0.02, body))
+        else:
+            open_w = width * clamp(cutout[0], 0.1, 0.94)
+            open_d = depth * clamp(cutout[1], 0.1, 0.94)
+            band_d = (depth - open_d) / 2
+            band_w = (width - open_w) / 2
+            for sign in (-1, 1):  # the counter, as four bands around the hole
+                parts.append(box(0, sign * (depth / 2 - band_d / 2), height - top_t, height,
+                                 width, band_d, top_color))
+                parts.append(box(sign * (width / 2 - band_w / 2), 0, height - top_t, height,
+                                 band_w, open_d, top_color))
+            # The shell: back, two ends, floor, and a door face closing the front. Everything
+            # a sink base actually is, and nothing in the middle where the bowls hang.
+            panel = clamp(min(width, depth) * 0.04, 0.012, 0.03)
+            carcass_top = height - top_t
+            parts.append(box(0, depth / 2 - panel / 2, kick, carcass_top, width, panel, body))
+            parts.append(box(0, -depth / 2 + panel / 2, kick, carcass_top, width, panel, body))
+            for sign in (-1, 1):
+                parts.append(box(sign * (width / 2 - panel / 2), 0, kick, carcass_top, panel,
+                                 depth - 2 * panel, body))
+            parts.append(box(0, 0, kick, kick + panel, width - 2 * panel, depth - 2 * panel,
+                             body))
         if toe_kick:
-            parts.append(box(0, 0.03, 0.0, kick, width * 0.98, depth - 0.06, "wood-dark"))
+            parts.append(box(0, 0.03, 0.0, kick, width * 0.98, depth - 0.06, kick_color))
         return tuple(strokes), tuple(parts)
 
     return build

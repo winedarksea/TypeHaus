@@ -161,7 +161,15 @@ def shower() -> Builder:
 
 
 def kitchen_sink(*, bowls: int = 2) -> Builder:
-    """A drop-in kitchen sink: counter cut-out, one or two bowls, faucet at the wall."""
+    """A drop-in kitchen sink: a stainless rim deck, one or two bowls, a gooseneck faucet.
+
+    Unlike a lavatory, a kitchen sink's overall height is not "a basin plus a spout tucked
+    under the rim" — it is a ~9" bowl below the counter and a gooseneck of about the same
+    reach above it. So this family splits the type's height in half rather than using
+    ``_deck_height``, and ``height / 2`` is the *countertop plane*: the bowls hang below it
+    into the sink base, and the rim flange rests on top of it the way a drop-in sink does.
+    A type mounted at ``counter - height / 2`` therefore lands correctly with no fudge.
+    """
 
     def build(width: float, depth: float, height: float) -> Geometry:
         rim = clamp(min(width, depth) * 0.05, 0.02, 0.05)
@@ -170,24 +178,56 @@ def kitchen_sink(*, bowls: int = 2) -> Builder:
         bowl_cy = -depth / 2 + rim + bowl_d / 2
         count = max(1, bowls)
         bowl_w = (width - rim * (count + 1)) / count
-        # The bowls hang *below* the deck, so the type's mount elevation places the deck at
-        # counter height and the sink reads correctly against the cabinets around it.
-        deck_z, faucet = _deck_height(height)
+        counter_z = height / 2.0            # the plane the flange sits on
+        flange = min(0.02, counter_z * 0.2)
+        deck_z = counter_z + flange         # top of the rim
+        bowl_z0 = counter_z - min(0.23, counter_z * 0.95)
+        faucet = height - deck_z
+        faucet_cy = depth / 2 - deck_d * 0.5
+
         strokes = [rect(0, 0, width, depth, fill="counter"),
-                   circle(0, depth / 2 - deck_d / 2, min(width, depth) * 0.05,
-                          weight=DETAIL_WEIGHT)]
-        deck_t = min(0.02, deck_z * 0.3)
-        parts: list[Part] = [box(0, depth / 2 - deck_d / 2, deck_z - deck_t, deck_z, width,
-                                 deck_d, "counter"),
-                             box(0, depth / 2 - deck_d * 0.4, deck_z, deck_z + faucet,
-                                 width * 0.05, deck_d * 0.3, "metal")]
+                   circle(0, faucet_cy, min(width, depth) * 0.05, weight=DETAIL_WEIGHT)]
+        # The rim: a back deck carrying the faucet, the strip in front of it, a front lip,
+        # ends, and a divider between bowls. Bands rather than one slab — a solid top would
+        # bury the bowls it is supposed to frame — and between them they close the footprint,
+        # so nothing of the cabinet below shows through the counter's cut.
+        parts: list[Part] = [
+            box(0, depth / 2 - deck_d / 2, counter_z, deck_z, width, deck_d,
+                "appliance-steel"),
+            box(0, depth / 2 - deck_d - rim / 2, counter_z, deck_z, width, rim,
+                "appliance-steel"),
+            box(0, -depth / 2 + rim / 2, counter_z, deck_z, width, rim, "appliance-steel"),
+        ]
+        for sign in (-1, 1):
+            parts.append(box(sign * (width / 2 - rim / 2), 0, counter_z, deck_z, rim, depth,
+                             "appliance-steel"))
         for index in range(count):
             cx = -width / 2 + rim + bowl_w * (index + 0.5) + rim * index
             strokes.append(rect(cx, bowl_cy, bowl_w, bowl_d, weight=DETAIL_WEIGHT))
             strokes.append(circle(cx, bowl_cy, min(bowl_w, bowl_d) * 0.06,
                                   weight=DETAIL_WEIGHT))
-            parts.extend(_basin(cx, bowl_cy, bowl_w, bowl_d, 0.0, deck_z, 0.015,
+            parts.extend(_basin(cx, bowl_cy, bowl_w, bowl_d, bowl_z0, counter_z, 0.015,
                                 "appliance-steel"))
+            if index:  # the rim band the two bowls share
+                parts.append(box(cx - bowl_w / 2 - rim / 2, bowl_cy, counter_z, deck_z, rim,
+                                 bowl_d, "appliance-steel"))
+        # Gooseneck: a column at the deck's back, an arm reaching forward over the bowls and a
+        # short downturn at its end — the three moves that make a faucet read as a faucet from
+        # any viewing angle instead of as a peg.
+        shaft = min(0.032, width * 0.05, faucet * 0.3)
+        spout_cy = bowl_cy + bowl_d * 0.18
+        arm_z = height - shaft
+        parts.extend([
+            box(0, faucet_cy, deck_z, arm_z, shaft, shaft, "metal"),
+            box(0, (faucet_cy + spout_cy) / 2, arm_z, height, shaft * 0.8,
+                abs(faucet_cy - spout_cy) + shaft, "metal"),
+            box(0, spout_cy, arm_z - faucet * 0.22, arm_z, shaft * 0.7, shaft * 0.7, "metal"),
+        ])
+        for sign in (-1, 1):  # the two lever handles, either side of the column
+            handle_cx = sign * shaft * 2.2
+            parts.append(box(handle_cx, faucet_cy, deck_z, deck_z + faucet * 0.28,
+                             shaft * 0.6, shaft * 0.6, "metal"))
+            strokes.append(circle(handle_cx, faucet_cy, shaft * 0.5, weight=DETAIL_WEIGHT))
         return tuple(strokes), tuple(parts)
 
     return build

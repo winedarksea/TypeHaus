@@ -272,14 +272,15 @@ OPENINGS = [
     Window(uid="CMX313AAAA", tag="WIN-M-KITCH", host="W-M-E2",
            type_ref="WT-2760", position=from_node("N-M-NE", ft(2, 2.5)),
            sill_height=ft(3, 6)),
-    Window(uid="CMX314AAAA", tag="WIN-M-KITCH-N", host="W-M-N1",
-           type_ref="WT-3060", position=from_node("N-M-NE", ft(4, 1)),
-           sill_height=ft(3, 6)),
-    # The cooking window. A recirculating hood moves no air outdoors, so the only way to
-    # clear a scorched pan is to open something next to the stove: a 14" awning, immediately
-    # west of the range and reachable across the counter. Centre x = 24'-8" is a bay centre on
-    # the 16" module, so it breaks no stud; sill 42" clears the 36" counter by 6".
-    Window(uid="82WVR597PA", tag="WIN-M-KITCH-N2", host="W-M-N1", type_ref="WT-1448",
+    # The cooking window, and the north wall's only one. A recirculating hood moves no air
+    # outdoors, so the only way to clear a scorched pan is to open something next to the
+    # stove: a 14" awning, immediately west of the range and reachable across the counter.
+    # Centre x = 24'-8" is a bay centre on the 16" module, so it breaks no stud; sill 42"
+    # clears the 36" counter by 6". The 30x60 that used to sit east of the range at
+    # 29'-5"..31'-11" is gone: that stretch of wall is now one 5'-6" run of uppers, which is
+    # the trade this kitchen wants — a north window on a north wall buys little light, and the
+    # east wall's WIN-M-KITCH already lights the sink.
+    Window(uid="82WVR597PA", tag="WIN-M-KITCH-N", host="W-M-N1", type_ref="WT-1448",
            position=from_node("N-M-NE", ft(10, 9)), sill_height=ft(3, 6)),
 ]
 
