@@ -44,6 +44,9 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   without a beam under it dumps ~1.5 klf of thrust into knee walls that can take ~0.1.
 - Window rules: 14" RO fits a stud bay; 30" RO max non-bearing (one stud broken);
   27" RO max bearing (jacks added). Resize windows to fit the grid, not vice versa.
+  One type per width family — WT-1424, WT-2736, WT-3036, WT-3660 (basement concrete
+  only) — each family sharing the one height that fits its most constrained wall
+  (attic knee wall for 14", the garage's 8' wall for 27", the attic gables for 30").
 
 ## The loop: edit → build → check → *look* → fix
 ```
