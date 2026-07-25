@@ -35,3 +35,32 @@ jobs:
           cp houses/starter/out/model.json /tmp/a.json
           uv run haus build houses/starter --only json
           diff /tmp/a.json houses/starter/out/model.json
+
+  # The UI had no CI job at all, which is how a Panel3D split shipped importing five modules
+  # that were never committed: .gitignore's unanchored `build/` (a Python-packaging pattern
+  # applied to a TypeScript tree) silently swallowed ui/src/three/build/, and every local
+  # check passed against files that existed only in the author's working tree. A clean
+  # `git status` cannot catch that; building from a fresh checkout can, and this job is that
+  # backstop for the whole class — not just for `build/`. `lib/`, `dist/`, `parts/`, `var/`,
+  # `target/`, `instance/` and `cover/` are all equally unanchored and equally hungry.
+  ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - name: Install
+        run: npm ci
+        working-directory: ui
+      - name: Typecheck
+        run: npm run typecheck
+        working-directory: ui
+      - name: Geometry tests
+        run: npm test
+        working-directory: ui
+      - name: Build (proves every imported module is actually committed)
+        run: npm run build
+        working-directory: ui
