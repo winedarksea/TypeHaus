@@ -7,17 +7,22 @@
 from typehaus import Appliance, Fixture, Mount, MountKind, deg, ft, inch, pt
 
 # RM-M-BATH1's clear face is 3'-2" x 4'-3-1/4" (x 0'-6-5/8"..3'-8-5/8", y 21'-10-3/8"..
-# 26'-1-5/8"). A 2'-6" water closet plus a 1'-9"-deep lavatory is 4'-3" of that 4'-3-1/4",
-# so the two fixtures pack wall-to-wall down the room with ~1/8" at each end and nothing
-# between them: the WC takes the south end, the lavatory the north-east corner hard against
-# its W-M-BAE wet wall. This is the only arrangement that keeps both footprints inside the
-# room, out of D-M-BATH1's swing, and off each other — the room is genuinely too small for
-# both fixtures at these sizes, and the design fix is a bigger bath, not a better packing.
+# 26'-1-5/8") — too small to pack the shared FX-TOILET + FX-LAV pair without running them
+# wall-to-wall, so this room takes the BATH1-only compact types (fixture_types.py).
+# The WC is a wall-hung compact (15" x 19.3") whose back sits 1/8" off W-M-BAE's west
+# finish face at the room's south end; rotation 90 turns its back (-y local) east onto
+# that wall. Its steel in-wall carrier lives in the INT_2X6_PLUMBING stud bay — which is
+# what that wet wall is *for* — so drain_position is the carrier outlet on the wall's
+# centerline (x=4'), where SP-M-WC1 is authored, not a point under the bowl. The compact
+# lavatory (18" x 14") backs against the north wall's face beside the same wet wall; its
+# trap arm reaches W-M-BAE through the corner. Both footprints clear D-M-BATH1's opening
+# band (y 23'-4"..25'-4") and each other by over 1'-9".
 MAIN_FIXTURES = (
-    Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOILET", room="RM-M-BATH1",
-            position=pt(ft(2), ft(23, 1.5)), wall_ref="W-M-BAE"),
-    Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-LAV", room="RM-M-BATH1",
-            position=pt(ft(2, 8.5), ft(25, 3)), wall_ref="W-M-BAE"),
+    Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOILET-WH", room="RM-M-BATH1",
+            position=pt(ft(2, 10.85), ft(22, 7)), rotation=deg(90), wall_ref="W-M-BAE",
+            drain_position=pt(ft(4), ft(22, 7))),
+    Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-LAV-COMPACT", room="RM-M-BATH1",
+            position=pt(ft(2, 11.5), ft(25, 6.5)), wall_ref="W-M-BAE"),
     Fixture(uid="CMQ803AAAA", tag="FX-M-BATH2-WC", type_ref="FX-TOILET", room="RM-M-BATH2",
             position=pt(ft(3), ft(18)), wall_ref="W-M-BA2E"),
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-WASHER", room="RM-M-LAUNDRY",

@@ -25,9 +25,22 @@ def catlin_model():
     return model
 
 
-def test_wc_expected_drain_point_is_fixture_position(catlin_model):
+def test_wc_expected_drain_point_is_authored_carrier_outlet(catlin_model):
+    """BATH1's WC is wall-hung: its waste drops through the in-wall carrier, so the
+    fixture authors ``drain_position`` on the wet-wall centerline and that override —
+    not the bowl's own footprint center — is what the sleeve must sit under."""
     sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-M-WC1")
     fixture = catlin_model.plan.by_tag("FX-M-BATH1-WC")
+    assert fixture.drain_position is not None
+    assert sleeve.expected_center == fixture.drain_position.xy_m
+    assert sleeve.expected_center != fixture.position.xy_m
+
+
+def test_floor_wc_expected_drain_point_is_fixture_position(catlin_model):
+    """A floor-standing WC (no drain_position) still expects the drain at its own
+    footprint: BATH2's is the control for the wall-hung override above."""
+    sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-M-WC2")
+    fixture = catlin_model.plan.by_tag("FX-M-BATH2-WC")
     assert sleeve.expected_center == fixture.position.xy_m
 
 

@@ -112,16 +112,20 @@ ELECTRICAL_DEVICE_TYPES = (
 )
 
 SLEEVES = [
+    # BATH1's WC is wall-hung on an in-wall carrier (FX-TOILET-WH): the bowl bolts to a
+    # steel carrier frame inside W-M-BAE's 2x6 stud bay and the 3" waste drops *inside the
+    # wall*, so the pre-pour sleeve sits on the wall centerline (x=4') at the fixture's
+    # authored drain_position — under the carrier, not under the bowl.
     SleevePenetration(uid="CMP901AAAA", tag="SP-M-WC1", host_ref="SL-M-DECK",
-                      position=pt(ft(2), ft(23, 1.5)), pipe_diameter=inch(3),
+                      position=pt(ft(4), ft(22, 7)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-M-BATH1-WC"),
     SleevePenetration(uid="CMP902AAAA", tag="SP-M-WC2", host_ref="SL-M-DECK",
                       position=pt(ft(3), ft(18)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-M-BATH2-WC"),
-    # Projection of FX-M-BATH1-LAV (2'-8.5", 25'-3") onto the W-M-BAE structure-layer
+    # Projection of FX-M-BATH1-LAV (2'-11.5", 25'-6.5") onto the W-M-BAE structure-layer
     # centerline (x=4, from storeys/main.py node coordinates N-M-BA1/N-M-BA2).
     SleevePenetration(uid="CMP903AAAA", tag="SP-M-LAV1", host_ref="SL-M-DECK",
-                      position=pt(ft(4), ft(25, 3)), pipe_diameter=inch(1.5),
+                      position=pt(ft(4), ft(25, 6.5)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), serves_fixture="FX-M-BATH1-LAV"),
     # Projection of FX-M-LAUNDRY (10'-6", 20') onto the W-M-BA2E2 centerline (x=8).
     SleevePenetration(uid="CMP904AAAA", tag="SP-M-WASH", host_ref="SL-M-DECK",
@@ -145,19 +149,21 @@ SLAB_STUBS = [
 ]
 
 # Basement-ceiling collector: picks up both WC sleeves, heads to the south-wall sewer
-# exit. Axis-aligned so the authored length is exact (5'-1.5" + 1' + 18' = 24'-1.5");
-# inverts give a comfortable 8"/24'-1.5" ≈ 0.33"/ft slope, well above the 1/4"/ft minimum
-# for a 3" line.
+# exit. Starts at SP-M-WC1's new carrier-outlet point on the x=4' wall line (the wall-hung
+# WC drops its waste inside W-M-BAE, → SLEEVES). Axis-aligned so the authored length is
+# exact (4'-7" + 1' + 18' = 23'-7"); inverts give a comfortable 8"/23'-7" ≈ 0.34"/ft
+# slope, well above the 1/4"/ft minimum for a 3" line, and SP-M-WC2 still ties in at the
+# (3', 18') corner fitting.
 DRAINS = [
     PipeRun(uid="CMP905AAAA", tag="PR-B-MAIN-DRAIN", system=PipeSystem.DRAIN,
-           path=(pt(ft(2), ft(23, 1.5)), pt(ft(2), ft(18)), pt(ft(3), ft(18)),
+           path=(pt(ft(4), ft(22, 7)), pt(ft(4), ft(18)), pt(ft(3), ft(18)),
                  pt(ft(3), ft(0))),
            diameter=inch(3), start_elevation=ft(8), end_elevation=ft(7, 4),
            serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-M-KITCH-SINK")),
     # Kitchen branch: down SP-M-KITCH, then the long haul across the basement ceiling to the
     # main drain's own corner fitting at (3', 18'). 46'-8" of 2" pipe needs 11 3/4" of fall
     # to hold 1/4"/ft, so it starts tight under the deck at 8'-10" and lands at 7'-10" — a
-    # hair above the main's interpolated 7.83' invert there, which is the direction a wye
+    # hair above the main's interpolated 7.84' invert there, which is the direction a wye
     # has to be tied. Tying in anywhere further downstream only makes the run longer and
     # the start higher, so this corner is the best point on the line.
     PipeRun(uid="S0Y00EZNNG", tag="PR-B-KITCH-DRAIN", system=PipeSystem.DRAIN,
