@@ -233,7 +233,7 @@ deck fix; work them down here (or suppress `structural.member_interference` per-
   - count of joist hangers where they are needed (ie they hang on beam) which I believe is only the top ridge beam here (Simpson LSSR)
   - properly show 4 knee braces (the main corners) using 2x each APVKB45-6
   - Mudsill anchors (MASA, looks like about every 4 feet) and Embedded Strap holdowns for all sill plates on concrete
-  - Stud-to-Plate Ties, Coil strapping across floors at corners
+  - Stud-to-Plate Ties, Coil strapping across floors at corners, hurricane ties (H2.5A and H1.81Z as appropriate)
 
   ## General Polishing Tasks
 - Make sure all warnings are cleared up
