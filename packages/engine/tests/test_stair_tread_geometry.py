@@ -123,7 +123,7 @@ def test_winder_narrow_ends_no_longer_converge_on_the_newel_centreline(catlin_mo
     assert len(winders) == winder.winder_count
     narrow_ends = {member.p0 for member in winders}
     assert len(narrow_ends) == len(winders), "narrow ends still share one point"
-    half_face = cross_section("4x4").width_m / 2.0
+    half_face = cross_section(newel.profile).width_m / 2.0
     for member in winders:
         reach = math.hypot(member.p0[0] - newel.p0[0], member.p0[1] - newel.p0[1])
         # On the square post's face: half a face out at worst, half a diagonal at best.
