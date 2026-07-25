@@ -126,6 +126,12 @@ DETAIL_FILL: dict[str, str] = {
     "rubber": "#3a3a3a",
     "glass": "#bee3f8",
     "gutter": "#8b8b8b",
+    # Breezeway materials. Without these three the section falls through to the cladding
+    # default and paints the whole enclosure near-black — the one drawing whose job is to
+    # tell the sheet, its extrusion and the decking apart.
+    "polycarbonate-multiwall": "#cfe3e8",
+    "aluminum-extrusion": "#b6bac0",
+    "composite-deck": "#8a7f70",
 }
 
 # Material tag → hatch family (the writers map families to their own pattern syntax).
@@ -153,6 +159,11 @@ DETAIL_HATCH: dict[str, str] = {
     "river-rock": "gravel",
     "soil": "soil",
     "spray-foam": "foam",
+    # Glazing draws as a plain tinted fill: a hatch pattern over a translucent sheet reads
+    # as a solid, which is the one thing the material is not.
+    "polycarbonate-multiwall": "glass",
+    "aluminum-extrusion": "metal",
+    "composite-deck": "lumber",
 }
 
 _FALLBACK_FILL = "#e8e4da"

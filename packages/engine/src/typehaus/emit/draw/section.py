@@ -215,13 +215,13 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
         _emit_wall_cut(b, model, wall, direction, station, crop, is_detail, min_draw, joints)
 
     for solid in model.solids:
+        material = _solid_material(model, solid)
         for (u0, u1) in _ring_cut_intervals(solid.outline, direction, station):
             rect = _clip_rect(u0, u1, solid.z0_m, solid.z1_m, crop)
             if rect is None:
                 continue
             b.extend(_rect_nodes(*rect, "S-FNDN" if solid.category != "slab" else "A-SLAB",
-                                 "concrete", solid.uid, solid.tag,
-                                 material="concrete"))
+                                 material, solid.uid, solid.tag, material=material))
 
     for roof in model.roofs:
         _emit_roof_cut(b, model, roof, direction, station, crop, joints)
@@ -229,8 +229,14 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
     for floor in model.floors:
         _emit_floor_cut(b, floor, direction, station, crop)
 
-    if joints is not None:
+    # Framing members are the whole content of some details — every post, beam, rafter and
+    # joist of a freestanding structure. Gating them on a JointPlan meant an *authored*
+    # detail (which is built with no joints) came out with the framing missing, drawing an
+    # empty box where the frame should be. Joints add per-layer terminations and treatment
+    # fills on top; they are not what makes a member visible.
+    if joints is not None or is_detail:
         _emit_member_cuts(b, model, direction, station, crop)
+    if joints is not None:
         b.extend(list(joints.treatments))
 
     if crop is not None:
@@ -238,6 +244,35 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
         b.add(Text(anchor=((cu0 * M_TO_IN), (cz1 * M_TO_IN) + 6.0),
                    content=view.tag, height=4.0, align="left"))
     return b.build()
+
+
+def _solid_material(model: ResolvedModel, solid) -> str:
+    """A cut solid's material tag, from its authored assembly's structure layer.
+
+    Every solid used to hatch as concrete, which is right for a footing and wrong for a
+    composite deck, an aluminium extrusion or a polycarbonate sheet — all of which a detail
+    exists to tell apart. This is the same assembly -> structure layer -> material_ref walk
+    ``emit/gltf/palette.py::_solid_color`` already does, so the drawn detail and the 3D model
+    name the same material for the same solid.
+
+    Without an assembly the fallback reads the member's own *section*, because that is what
+    actually says what it is made of: a "6x6" or a "2-2x8" is dressed lumber, a "12 round" is
+    a sonotube-cast concrete pier. Slabs, footings and pads stay concrete — the case the old
+    blanket rule was right about.
+    """
+    if solid.assembly:
+        assembly = model.plan.library.resolve_assembly(solid.assembly)
+        if assembly is not None and assembly.layers:
+            idx = assembly.structure_index()
+            layer = assembly.layers[idx if idx is not None else 0]
+            if layer.material_ref:
+                return layer.material_ref
+    if solid.category in ("beam", "column"):
+        element = model.plan.by_tag(solid.tag)
+        size = getattr(element, "size", "") or ""
+        if not size.strip().endswith("round"):
+            return "spf"
+    return "concrete"
 
 
 def build_center_section(model: ResolvedModel) -> Scene:

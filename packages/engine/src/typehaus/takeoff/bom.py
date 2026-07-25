@@ -15,6 +15,7 @@ from typehaus.takeoff.framing import (
     sheet_goods_takeoff,
     structural_solids_takeoff,
 )
+from typehaus.takeoff.glazing import glazing_panel_takeoff, glazing_trim_takeoff
 from typehaus.takeoff.hardware import hardware_takeoff
 from typehaus.takeoff.hardware_config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
@@ -32,6 +33,8 @@ def bill_of_materials(
     ``model.all_members()``); ``framing_by_size`` rolls it up; ``structural_solids`` covers
     the concrete and standalone structure the member list cannot represent;
     ``construction_returns``, ``sheet_goods`` and ``hardware`` complete the order.
+    ``glazing`` covers what none of those could: sheet goods bought as panels rather than as
+    sheathing, and the aluminium extrusions that cap them, bought by the lineal foot.
     """
     return {
         "framing": framing_takeoff(model),
@@ -39,5 +42,7 @@ def bill_of_materials(
         "structural_solids": structural_solids_takeoff(model),
         "construction_returns": construction_returns_takeoff(model),
         "sheet_goods": sheet_goods_takeoff(model),
+        "glazing_panels": glazing_panel_takeoff(model),
+        "glazing_trim": glazing_trim_takeoff(model),
         "hardware": hardware_takeoff(model, hardware_config),
     }

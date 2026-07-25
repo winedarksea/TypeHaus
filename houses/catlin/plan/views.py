@@ -8,6 +8,8 @@ lines, wall segment boundaries, ridge elevation) — see the module docstring no
 
 from typehaus import ExaggerationSpec, Slice, SliceKind, ft, inch, pt
 
+from params.breezeway import DETAIL_CUT_Y_FT
+
 DETAIL_SLICES = [
     # West basement wall + footing + slab edge (cut at y=18', the mid-height bearing
     # tie-in) — crop isolates the west perimeter, away from the sunken garden.
@@ -44,5 +46,17 @@ DETAIL_SLICES = [
          title="Sauna room section",
          cut_origin=pt(ft(14), ft(6)), cut_direction="x",
          crop=(pt(ft(9), inch(-116)), pt(ft(19, 6), inch(6))),
+         exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
+    # Breezeway cross section — the one detail that captures the whole enclosure. Cut
+    # transversely (direction="x", so the plane is x-z) on the breezeway's *south frame
+    # line*, which is the only station that crosses the entire stack at once: pad, pier,
+    # 6x6 post, both floor beams, a joist, the decking, both standing polycarbonate sheets,
+    # both roof beams, a rafter, and the roof sheets with their crown. The crop runs from
+    # below the frost-depth pads (-4') to above the crown (+10'), and 6" past the roof
+    # envelope on each side so the eave channels and their drip are inside the frame.
+    Slice(uid="BWD901AAAA", tag="SL-D-BREEZEWAY", kind=SliceKind.DETAIL,
+         title="Breezeway cross section",
+         cut_origin=pt(ft(0), ft(DETAIL_CUT_Y_FT)), cut_direction="x",
+         crop=(pt(ft(0), ft(-4)), pt(ft(9), ft(10))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
 ]

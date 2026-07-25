@@ -112,6 +112,13 @@ _GLAZING_X1 = _POST_X1 + _POST_HALF_FT  # east post outer face
 _POST_XY = [(_POST_X0, _POST_Y0), (_POST_X1, _POST_Y0),
             (_POST_X0, _POST_Y1), (_POST_X1, _POST_Y1)]
 
+# Where SL-D-BREEZEWAY cuts (plan/views.py). Published rather than re-typed there because
+# the whole point of the station is that it lands on the *south frame line*: pad, pier, post,
+# both floor beams, the first joist, both roof beams, the first rafter, the deck, both
+# standing sheets and the roof sheets are all crossed by one plane at this y. Any other
+# station misses the foundation or misses the frame.
+DETAIL_CUT_Y_FT = _POST_Y0
+
 # ============================================================================
 # Vertical stack (project-frame absolute; +Z up, 0'-0" is the main-floor datum).
 # ============================================================================
@@ -276,13 +283,13 @@ ROOF_GLAZING = [
         outline=(pt(ft(_ROOF_X0), ft(_GLAZING_Y0)), pt(ft(4.5), ft(_GLAZING_Y0)),
                  pt(ft(4.5), ft(_GLAZING_Y1)), pt(ft(_ROOF_X0), ft(_GLAZING_Y1))),
         thickness=inch(_GLAZING_THICKNESS_IN), top_elevation=ft(_ROOF_GLAZING_TOP),
-        plane="horizontal", assembly="BREEZEWAY_ROOF_POLY"),
+        plane="horizontal", assembly="BREEZEWAY_ROOF_GLAZING"),
     GlazingPanel(
         uid="BWGP02AAAA", tag="GL-BW-ROOF-E",
         outline=(pt(ft(4.5), ft(_GLAZING_Y0)), pt(ft(_ROOF_X1), ft(_GLAZING_Y0)),
                  pt(ft(_ROOF_X1), ft(_GLAZING_Y1)), pt(ft(4.5), ft(_GLAZING_Y1))),
         thickness=inch(_GLAZING_THICKNESS_IN), top_elevation=ft(_ROOF_GLAZING_TOP),
-        plane="horizontal", assembly="BREEZEWAY_ROOF_POLY"),
+        plane="horizontal", assembly="BREEZEWAY_ROOF_GLAZING"),
 ]
 
 # The two side walls. Vertical glazing is where a bird strike happens, so both carry the

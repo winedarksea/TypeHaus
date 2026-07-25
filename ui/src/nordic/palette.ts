@@ -124,9 +124,31 @@ export function materialColor(
   materials?: readonly MaterialAppearance[],
 ): string {
   const authored = authoredAppearance(materialRef, materials)?.color;
-  if (authored) return authored;
+  // An authored colour may carry an alpha byte (`#RRGGBBAA`) to declare that the material is
+  // see-through. THREE.Color cannot parse eight digits, so the alpha is stripped here and
+  // read separately by `materialOpacity` — the two stay in step because both parse the same
+  // authored string. The GLB exporter does the same split in emit/gltf/palette.py::_hex_rgba.
+  if (authored) return authored.length === 9 ? authored.slice(0, 7) : authored;
   const fam = familyOf(materialRef);
   if (palette) return palette.material[fam ?? "fallback"] ?? palette.material.fallback;
   if (fam && HATCH_FAMILY_COLOR[fam]) return HATCH_FAMILY_COLOR[fam];
   return FALLBACK;
+}
+
+/**
+ * Opacity for a material ref: the alpha byte of an authored `#RRGGBBAA` colour, or 1.
+ *
+ * Alpha is honoured end to end in the `.glb` (`alphaMode: BLEND` + double-sided below 1.0);
+ * this is the browser's half of the same contract, so the exported model and the live viewer
+ * agree about which surfaces you can see through. A material that authors no alpha is opaque,
+ * which is every material in the library except the glazing.
+ */
+export function materialOpacity(
+  materialRef: string | null | undefined,
+  materials?: readonly MaterialAppearance[],
+): number {
+  const authored = authoredAppearance(materialRef, materials)?.color;
+  if (!authored || authored.length !== 9) return 1;
+  const alpha = Number.parseInt(authored.slice(7, 9), 16);
+  return Number.isNaN(alpha) ? 1 : alpha / 255;
 }

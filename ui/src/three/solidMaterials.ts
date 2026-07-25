@@ -10,7 +10,7 @@
 // RGB values are the source of truth for the export. Change one, change the other.
 import * as THREE from "three";
 import type { Catalog, Solid } from "../model/types";
-import { materialColor, type ResolvedNordicPalette } from "../nordic/palette";
+import { materialColor, materialOpacity, type ResolvedNordicPalette } from "../nordic/palette";
 
 // solid category → sRGB hex, mirroring emit/gltf/emitter.py `_PALETTE` (the same keys, its
 // linear triples rounded to 8-bit). Categories with no entry fall back to the theme's concrete
@@ -81,6 +81,23 @@ export function solidColor(
   return SOLID_CATEGORY_COLOR[solid.category] ?? palette.member.concrete;
 }
 
+// The opacity of one resolved solid, from its assembly's visible layer. A material declares
+// that it is see-through by authoring an alpha byte on its colour (`#RRGGBBAA`); nothing is
+// inferred from the category or the tag, so a new translucent material needs no code here.
+// Mirrors emit/gltf/palette.py::_hex_rgba + emit/gltf/scene.py's BLEND/doubleSided switch —
+// change one, change the other, or the `.glb` and the live viewer disagree.
+export function solidOpacity(
+  solid: Pick<Solid, "assembly">,
+  catalog: Catalog | undefined,
+): number {
+  const assembly = solid.assembly
+    ? catalog?.assemblies.find((candidate) => candidate.tag === solid.assembly)
+    : undefined;
+  const layers = assembly?.layers ?? [];
+  const layer = layers.find((candidate) => candidate.function === "structure") ?? layers[0];
+  return layer ? materialOpacity(layer.material, catalog?.materials) : 1;
+}
+
 export function createSolidMaterial(
   solid: Pick<Solid, "category" | "assembly">,
   catalog: Catalog | undefined,
@@ -88,10 +105,17 @@ export function createSolidMaterial(
   palette: ResolvedNordicPalette,
 ): THREE.MeshStandardMaterial {
   const metallic = METALLIC_SOLID_CATEGORIES.has(solid.category);
+  const opacity = solidOpacity(solid, catalog);
+  const translucent = opacity < 1;
   return new THREE.MeshStandardMaterial({
     color: solidColor(solid, catalog, palette),
-    roughness: metallic ? 0.35 : mode === "nordic" ? 0.9 : 1,
+    roughness: metallic ? 0.35 : translucent ? 0.15 : mode === "nordic" ? 0.9 : 1,
     metalness: metallic ? 0.8 : 0,
     flatShading: mode === "schematic",
+    transparent: translucent,
+    opacity,
+    // A pane is a thin prism: without both faces it disappears from one side.
+    side: translucent ? THREE.DoubleSide : THREE.FrontSide,
+    depthWrite: !translucent,
   });
 }

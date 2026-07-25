@@ -122,9 +122,12 @@ def test_basement_exterior_xps_resolves_outboard_of_concrete(catlin_model):
 def test_framing_matches_the_reference(catlin_model):
     params = _params("houseframing")
     joist_depth = float(params["floor_joists"]["depth_in"])
-    # The freestanding sunken-garden porch/balcony decks frame with their own PT 2x8
-    # joists, not the house's I-joists — check only the house floors against the reference.
-    floors = [f for f in catlin_model.floors if f.members and not f.tag.startswith("FS-SG-")]
+    # The freestanding structures frame with their own PT 2x8 deck joists, not the house's
+    # I-joists: the sunken-garden porch/balcony decks and the breezeway between the house and
+    # the garage. Check only the house floors against the reference.
+    freestanding = ("FS-SG-", "FS-BW-")
+    floors = [f for f in catlin_model.floors
+              if f.members and not f.tag.startswith(freestanding)]
     assert floors, "catlin should resolve framed floors"
     for floor in floors:
         joists = [m for m in floor.members if m.category == "joist"]

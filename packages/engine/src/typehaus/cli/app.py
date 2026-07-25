@@ -186,7 +186,7 @@ def takeoff(
     house: Optional[Path] = typer.Argument(None),
     as_json: bool = typer.Option(False, "--json"),
 ) -> None:
-    """Report the resolved bill of materials: framing, solids, sheet goods, and hardware."""
+    """Report the resolved bill of materials: framing, solids, sheet goods, glazing, hardware."""
     from collections import Counter
     import json
 
@@ -215,6 +215,8 @@ def takeoff(
                "structural_solids": bom["structural_solids"],
                "floor_heat": radiant, "sheet_goods": bom["sheet_goods"],
                "construction_returns": bom["construction_returns"],
+               "glazing_panels": bom["glazing_panels"],
+               "glazing_trim": bom["glazing_trim"],
                "hardware": bom["hardware"]}
     if as_json:
         console.print_json(json.dumps(payload))
@@ -252,6 +254,17 @@ def takeoff(
         for item in payload["construction_returns"]:
             console.print(f"  {item['category']} ({item['material']}): "
                           f"{item['count']} × / {item['length_ft']} LF")
+    if payload["glazing_panels"]:
+        console.print("[bold]Glazing panels (4x8 sheets)[/bold]")
+        for item in payload["glazing_panels"]:
+            console.print(f"  {item['assembly']}: {item['sheets_4x8']} sheets / "
+                          f"{item['panels']} panel(s) ({item['net_area_sqft']} sf net)")
+    if payload["glazing_trim"]:
+        console.print("[bold]Glazing trim (aluminium extrusion)[/bold]")
+        for item in payload["glazing_trim"]:
+            weep = " · weep holes" if item["weep_holes"] else ""
+            console.print(f"  {item['profile']}-channel ({item['material']}): "
+                          f"{item['count']} × / {item['length_ft']} LF{weep}")
     if payload["hardware"]:
         console.print("[bold]Hardware[/bold]  (count · part: basis)")
         for item in payload["hardware"]:

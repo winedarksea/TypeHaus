@@ -18,6 +18,8 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_KNEE_BRACE,
     ROLE_MUDSILL_ANCHOR,
     ROLE_POST_BASE,
+    ROLE_BEAM_HOLD_DOWN,
+    ROLE_GLAZING_PANEL_FASTENER,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_STANDING_SEAM_CLAMP,
     ROLE_STUD_PLATE_TIE,
@@ -191,6 +193,31 @@ S5_SEAM_CLAMP = StructuralHardware(
            "a standing-seam panel rib without piercing the panel",
 )
 
+KBS_BEAM_HOLD_DOWN = StructuralHardware(
+    tag="simpson-kbs1z-strap",
+    name="KBS1Z knee-brace / beam strap (ZMAX)",
+    role=ROLE_BEAM_HOLD_DOWN,
+    manufacturer=_SIMPSON,
+    model="KBS1Z",
+    source="Simpson Strong-Tie KBS1Z strap (strongtie.com/kbs) — ZMAX galvanized strap "
+           "tying a beam to the post it bears on; published for knee braces and for "
+           "beam-to-post uplift, which is the joint it is used for here",
+)
+
+# Multiwall polycarbonate is fastened through oversize holes so the sheet can move: the
+# washer seals, the screw does not clamp. Stainless because the fastener sits in the wet
+# zone of an exterior roof for the life of the sheet.
+POLY_PANEL_FASTENER = StructuralHardware(
+    tag="stainless-gasketed-panel-screw",
+    name="#12 stainless gasketed panel screw with EPDM-bonded washer",
+    role=ROLE_GLAZING_PANEL_FASTENER,
+    manufacturer="generic",
+    model="SS-GASKET-12",
+    source="generic 304 stainless #12 hex-head panel screw with a bonded EPDM sealing "
+           "washer, the standard multiwall-polycarbonate fixing; no single manufacturer "
+           "system is specified, so this record is deliberately generic",
+)
+
 STRUCTURAL_HARDWARE: tuple = (
     SDWS_TIMBER_SCREW,
     SDWH_TIMBER_HEX_SCREW,
@@ -207,4 +234,6 @@ STRUCTURAL_HARDWARE: tuple = (
     ABU_POST_BASE,
     H25A_HURRICANE_TIE,
     S5_SEAM_CLAMP,
+    KBS_BEAM_HOLD_DOWN,
+    POLY_PANEL_FASTENER,
 )

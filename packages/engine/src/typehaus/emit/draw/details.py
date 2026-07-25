@@ -271,21 +271,26 @@ def build_detail(model: ResolvedModel, derived: DerivedDetail) -> tuple[Scene, l
 
 
 def build_authored_detail_scene(model: ResolvedModel, view: Slice) -> Scene:
-    """Authored DETAIL Slice → scene, with sauna detail vocabulary layered over the cut.
+    """Authored DETAIL Slice → scene, with the authored-slice detail vocabulary over the cut.
 
     Authored Slices go straight through ``build_section``, which bypasses the derived
     detail-component machinery. A hand-authored sauna floor section still wants the liner
-    base, thermal break and room-scale vocabulary the derived path dispatches, so this wraps
-    ``build_section`` and appends those components. It self-gates on sauna walls being in the
-    cut (via ``sauna_overlay_for_slice``), so a non-sauna authored detail is byte-identical to
-    the plain ``build_section`` output and nothing here mutates construction geometry.
+    base, thermal break and room-scale vocabulary the derived path dispatches; a breezeway
+    cross section wants its drainage wedges, weeping channels and gasketed fixings. Each
+    overlay self-gates on its own subject being in the cut, so a detail that is neither is
+    byte-identical to the plain ``build_section`` output and nothing here mutates
+    construction geometry.
     """
-    from typehaus.emit.draw.detail_components import sauna_overlay_for_slice
+    from typehaus.emit.draw.detail_components import (
+        breezeway_overlay_for_slice,
+        sauna_overlay_for_slice,
+    )
 
     scene = build_section(model, view)
-    overlay = sauna_overlay_for_slice(model, view)
-    if overlay:
-        scene = scene.model_copy(update={"nodes": scene.nodes + tuple(overlay)})
+    for recipe in (sauna_overlay_for_slice, breezeway_overlay_for_slice):
+        overlay = recipe(model, view)
+        if overlay:
+            scene = scene.model_copy(update={"nodes": scene.nodes + tuple(overlay)})
     return scene
 
 

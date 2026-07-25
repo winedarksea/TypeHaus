@@ -25,6 +25,13 @@ ROLE_COIL_STRAP = "coil_strap"
 ROLE_POST_BASE = "post_base"
 ROLE_HURRICANE_TIE = "hurricane_tie"
 ROLE_STANDING_SEAM_CLAMP = "standing_seam_clamp"
+# A beam strapped down to the post it seats on. Its own role, not ROLE_KNEE_BRACE: a role
+# holds exactly one catalogued item (``hardware_for_role`` raises otherwise), and the KBS
+# strap and the APVKB knee brace are different products for different joints even though
+# the KBS family is marketed for both.
+ROLE_BEAM_HOLD_DOWN = "beam_hold_down"
+# The gasketed stainless screw that holds a multiwall glazing sheet down to its framing.
+ROLE_GLAZING_PANEL_FASTENER = "glazing_panel_fastener"
 
 
 @dataclass(frozen=True)

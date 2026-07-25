@@ -158,12 +158,20 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
                if row["role"] == ROLE_SLOPED_JOIST_HANGER)
     assert row["part_number"] == "LSSR" and row["count"] == len(ridge_rafters)
 
-    # Catlin's floor joists all *bear* — on a plate, or on top of the porch/balcony beams —
-    # so none of them may be billed a hanger.
-    floor_member_keys = {f"{member.parent_uid}:{member.child_key}"
-                         for floor in catlin_model.floors for member in floor.members}
-    assert floor_member_keys
-    assert not (floor_member_keys & {item.member_key for item in connections})
+    # Every catlin floor joist *bears* — on a plate, or on top of the porch/balcony beams —
+    # except the breezeway deck's, which hang flush in their beams so the deck can be 7 1/4"
+    # deep instead of 14 1/2" at a walking surface that has to meet the house threshold.
+    # Those four must be billed a hanger each; nothing else may be.
+    breezeway = next(f for f in catlin_model.floors if f.tag == "FS-BW-FLOOR")
+    hung_keys = {item.member_key for item in connections}
+    breezeway_joists = {f"{m.parent_uid}:{m.child_key}" for m in breezeway.members
+                        if m.category == "joist"}
+    assert breezeway_joists <= hung_keys, "flush-framed deck joists must be billed hangers"
+    bearing_keys = {f"{member.parent_uid}:{member.child_key}"
+                    for floor in catlin_model.floors for member in floor.members
+                    if floor.tag != "FS-BW-FLOOR"}
+    assert bearing_keys
+    assert not (bearing_keys & hung_keys)
 
 
 # --- sill anchorage ------------------------------------------------------------------

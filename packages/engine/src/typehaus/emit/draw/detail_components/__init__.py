@@ -22,6 +22,8 @@ Module map — one junction (or one concern) per file:
 * ``wall_base``   — flashings, sill gasket, slab thermal break, foam protection.
 * ``stack``       — rim-band air seal, stepped-wall shelf flashing.
 * ``sauna``       — liner base plus the room-scale fit-out.
+* ``breezeway``   — the glazing enclosure: drainage wedges, weeping channels, glazing
+                    bar, gasketed fastener, breather tape.
 * ``chrome``      — material legend and derived dimension strings.
 
 Section coordinates throughout: ``u`` is the in-section axis, ``z`` is world z, both in model
@@ -37,9 +39,19 @@ from typehaus.emit.draw.detail_components.below_grade import (
     grade_line,
     soil_body,
 )
+from typehaus.emit.draw.detail_components.breezeway import (
+    breather_tape,
+    breezeway_components,
+    breezeway_overlay_for_slice,
+    crown_glazing_bar,
+    drainage_wedges,
+    gasketed_fastener,
+    weeping_u_channel,
+)
 from typehaus.emit.draw.detail_components.chrome import dimension_strings, material_legend
 from typehaus.emit.draw.detail_components.config import (
     BASEMENT_TO_FRAMED_WALL,
+    BREEZEWAY_GLAZING,
     FOUNDATION_FACE,
     LAYER,
     M_TO_IN,
@@ -95,6 +107,7 @@ from typehaus.emit.draw.detail_components.wall_base import (
 
 __all__ = [
     "BASEMENT_TO_FRAMED_WALL",
+    "BREEZEWAY_GLAZING",
     "FOUNDATION_FACE",
     "LAYER",
     "M_TO_IN",
@@ -116,6 +129,13 @@ __all__ = [
     "UNDRAWN_RECIPES",
     "basement_framed_wall",
     "box_gutter",
+    "breather_tape",
+    "breezeway_components",
+    "breezeway_overlay_for_slice",
+    "crown_glazing_bar",
+    "drainage_wedges",
+    "gasketed_fastener",
+    "weeping_u_channel",
     "build_below_grade_components",
     "build_overlay_components",
     "build_sauna_room_components",

@@ -48,6 +48,13 @@ $$\text{Minimum Code Box} = 30\text{ in} \times 40.3\text{ in} = \mathbf{8.4\tex
 - **`advisory.window_size_variety`** — 10 unique window sizes. Fewer eases ordering; whether
   to consolidate is a design call. ANSWER: for now, consolidate down to one size per width
   Note: most common window widths here are sized to fit with a given number of stud breaks in the 16" OC framing spacing here.
+- **The breezeway deck and the garage service door differ by 22".** `D-G-SERVICE` sits on
+  `W-G-S`, which is on the `garage` storey — the ICF stem top, 1'-10" — while `SL-G-FLOOR` is
+  filed on `main` with `datum="structure"`, so the garage floor, the house entry and the new
+  breezeway deck are all at 0'-0". The breezeway is built flat at 0'-0" to meet the house
+  threshold, which leaves a 1'-10" step up at the garage door. Reconciling it is a design
+  call: drop the garage storey to the slab, step the breezeway up at its north end, or accept
+  the step and add a landing. Deliberately not resolved while building the breezeway.
 - **`install.sh` installs a package that does not exist.** `landing/install.sh` runs
   `pipx install "typehaus[server]"`, but `typehaus` is not on PyPI. Either publish it or drop
   the install link; `/app` (the PWA) does not depend on it.
@@ -223,7 +230,42 @@ future.
 `detail_components.py` and `takeoff.py` are likewise now packages.)
 
 ## General polishing
-- Make sure new items get added to BOM
+- ~~Make sure new items get added to BOM~~ DONE for the glazing family. The BOM had no
+  section a polycarbonate panel or an aluminium extrusion could land in: `sheet_goods_takeoff`
+  only ever looked at SHEATHING layers and there was no lineal-foot section at all. `takeoff/
+  glazing.py` adds both (`glazing_panels` bills face area and whole 4x8 sheets;
+  `glazing_trim` bills U/H/F channels and glazing bars by the lineal foot, billing a vertical
+  jamb along its depth rather than its 5/8" path), plus the gasketed stainless fixing at 24"
+  o.c. around every panel perimeter. Still worth a sweep for anything else recently added.
+
+## Breezeway to Garage — BUILT
+The enclosed 4'x8' polycarbonate breezeway between the house entry and the garage service
+door is modeled: `houses/catlin/params/breezeway.py` (pads → 12" piers → 6x6 KDAT posts →
+flush-framed 2x8 deck on two 2-2x8 beams → composite decking → 2-2x8 roof beams → 2x6 rafters
+→ three 4'x8' sheets of 16mm multiwall polycarbonate), with its aluminium channels and
+glazing bar, ABU66SS bases and KBS1Z straps. The garage moved 7'-0" south to make the slot
+4'-0 1/2" clear. `SL-D-BREEZEWAY` in `plan/views.py` is the cross-section detail.
+
+The engine grew what it needed rather than asserting the sizing in a comment:
+`checks/structural/deck.py` + `deck_tables.py` encode IRC R507 / AWC DCA6 (joist span, beam
+span, post size, footing area, guard) and all five PASS here; `FloorSystem.service`,
+`JurisdictionProfile.soil_bearing_psf` and `Site.ground_snow_load_psf` are the model fields
+they read (the last of which also makes the roof framing sheet print a real snow load case).
+
+What genuinely remains:
+- **The 1" fall toward the garage is drawn, not framed.** It lives in the drainage wedges
+  along with the E-W crown, because a `Beam` is a prism and a sloped N-S roof beam cannot be
+  expressed. If the wedge ever becomes a real element, the fall should move into it.
+- **The bird-safety film is recorded, not modeled** (`GlazingPanel.film`, SOLYX BSF-DB35 on
+  both standing sheets). It is 2 mil of surface treatment with no thermal or dimensional
+  consequence; it should appear on the glazing schedule when there is one.
+- **Polycarbonate has no authored vapour permeance.** Deliberately unset — the published
+  ASTM E96 figures are for solid sheet, not a five-wall extrusion — so Glaser reports UNKNOWN
+  for it. Needs a real sourced figure, not a guess.
+- **The sunken-garden porch and balcony decks are still `service="floor"`.** They are exterior
+  decks on posts and beams and should be graded against R507/DCA6 like the breezeway is;
+  left alone here to keep the garage move and the breezeway from dragging a second structure
+  into scope.
 
 ## Third Pass Follow Up
 - Gutter TR-SG-GUTTER-1 needs to be moved up to align wih flashing TR-SG-DRIP-1 and the gutter needs to look like a gutter

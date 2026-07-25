@@ -239,3 +239,50 @@ TEXT_HEIGHT_IN = 1.5
 #: Material legend swatch size and the vertical pitch between rows.
 LEGEND_SWATCH_IN = 2.6
 LEGEND_ROW_PITCH_IN = 3.6
+
+
+# --- Breezeway glazing --------------------------------------------------------
+# The enclosed breezeway's cross section (``params/breezeway.py``). Everything here is
+# either a fabrication instruction the model has no field for (weep-hole pitch, breather
+# tape) or a drawing convention (how thick a 0.05" extrusion is drawn at detail scale).
+
+
+@dataclass(frozen=True)
+class BreezewayGlazingConfig:
+    """The multiwall-polycarbonate enclosure's drawn vocabulary.
+
+    Building facts the model does not carry a field for:
+
+    * ``wedge_rise_in`` / ``wedge_run_in`` — the tapered sleeper on every rafter that crowns
+      the roof to each eave. A ``Beam`` is a prism, so the wedge cannot be a member; it is
+      the reason the roof drains at all, so it has to be *drawn*.
+    * ``weep_pitch_in`` — how far apart the bottom U-channel is drilled. Multiwall flutes
+      hold water at their low end unless the channel is vented; the spacing is a shop
+      instruction, invisible in any geometry.
+    * ``breather_tape_in`` — the vented tape between each joist top and the decking, so the
+      two never trap water against each other.
+
+    Drawing conventions:
+
+    * ``extrusion_draw_in`` — an aluminium glazing section is ~0.05" of metal, which vanishes
+      at detail scale; the profiles draw at a schematic thickness so their legs read.
+    * ``fastener_*`` — the gasketed stainless screw drawn as head + shank + washer.
+    """
+
+    #: Building fact: drainage wedge, 3 1/2" rise over a 4'-0" half-span (~1:12).
+    wedge_rise_in: float = 3.5
+    wedge_run_in: float = 48.0
+    #: Building fact: weep holes at 24" o.c. through the low U-channel.
+    weep_pitch_in: float = 24.0
+    weep_diameter_in: float = 0.25
+    #: Building fact: vented breather tape over each joist top, full joist width.
+    breather_tape_in: float = 1.5
+    #: Drawing convention: schematic thickness for an aluminium extrusion.
+    extrusion_draw_in: float = 0.25
+    #: Drawing convention: the gasketed panel fastener's drawn head/washer/shank.
+    fastener_head_in: float = 0.5
+    fastener_washer_in: float = 0.9
+    fastener_shank_in: float = 1.75
+
+
+BREEZEWAY_GLAZING = BreezewayGlazingConfig()

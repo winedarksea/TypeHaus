@@ -81,7 +81,7 @@ _LAYER_STYLE = {
 _HATCH_MPL = {
     "batt": "....", "osb": "//", "lumber": "\\\\", "concrete": "..", "SOLID": None,
     "rigid": "xx", "gypsum": None, "membrane": None, "metal": None,
-    "gravel": "oo", "soil": "..", "foam": "**",
+    "gravel": "oo", "soil": "..", "foam": "**", "glass": None,
 }
 
 # name -> (marker, color) for the simple device/register/equipment symbol vocabulary.

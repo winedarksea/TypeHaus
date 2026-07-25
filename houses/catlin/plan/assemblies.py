@@ -254,20 +254,20 @@ PORCH_DECK_COMPOSITE = Assembly(
 # one job (shed water and cut wind) and adding a thermal layer would put it inside an
 # energy check it has no business being in.
 #
-# The roof is patterned on GARAGE_ROOF minus the deck and the membrane: a multiwall sheet
-# *is* the deck and the weather surface, screwed straight to the rafters through gasketed
-# stainless fasteners. The 2x6 rafter layer is what makes it read as a framed roof in plans
-# and take-offs rather than as a bare sheet floating on nothing.
-BREEZEWAY_ROOF_POLY = Assembly(
-    tag="BREEZEWAY_ROOF_POLY",
+# Both are single-layer sheet assemblies, and deliberately so: the sheet *is* the whole
+# construction. The 2x6 rafters under the roof are authored as real Beams (params/breezeway.py)
+# rather than as a framing layer here, because they sit on drainage wedges at their own
+# absolute elevations and a layered roof assembly cannot express that. Carrying a rafter layer
+# in the assembly anyway would frame nothing and would make every consumer that reads an
+# assembly's *structure* layer — the GLB colour, the viewer, the cut detail — call a sheet of
+# polycarbonate "spf" and paint it wood.
+BREEZEWAY_ROOF_GLAZING = Assembly(
+    tag="BREEZEWAY_ROOF_GLAZING",
     layers=(
-        Layer(name="rafter", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x6", roof_frame="rafter")),
         Layer(name="glazing", material_ref="polycarbonate-multiwall", thickness=inch(0.63),
-              function=LayerFunction.CLADDING),
+              function=LayerFunction.STRUCTURE),
     ),
-    source="breezeway roof — 16mm 5-wall polycarbonate on 2x6 rafters, drainage wedges over",
+    source="breezeway roof — two 4'x4' pieces of one 16mm 5-wall sheet on drainage wedges over 2x6 rafters",
 )
 
 # The east and west walls: one 4'x8' sheet each, standing in a U-channel at the deck and an
@@ -567,7 +567,7 @@ ASSEMBLIES = [
     PORCH_RAILING_MASONRY,
     RETAINING_BLOCK_12,
     PORCH_DECK_COMPOSITE,
-    BREEZEWAY_ROOF_POLY,
+    BREEZEWAY_ROOF_GLAZING,
     BREEZEWAY_GLAZED_WALL,
     BALCONY_DECK_ALUMINUM,
     POST_WHITE_PAINT,

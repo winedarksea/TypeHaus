@@ -104,9 +104,16 @@ def _color(key: str) -> tuple[float, float, float, float]:
 def _hex_rgba(hex_str: str) -> tuple[float, float, float, float]:
     # Fed straight into baseColorFactor like the existing _solid_color path; no sRGB→linear
     # conversion, matching the emitter's other palette values which are authored directly.
+    #
+    # ``#RRGGBBAA`` is how a material declares that it is see-through. The whole alpha path
+    # was already built — ``emit/gltf/scene.py`` switches a material below 1.0 to
+    # ``alphaMode: BLEND`` and makes it double-sided, and ``air_gap``/``glass`` use it — but
+    # it was unreachable from an authored ``Material``, because this pinned alpha to 1.0. A
+    # sheet of polycarbonate that renders opaque is not a glazed breezeway, it is a shed.
     h = hex_str.lstrip("#")
-    if len(h) == 6:
-        return (int(h[0:2], 16) / 255, int(h[2:4], 16) / 255, int(h[4:6], 16) / 255, 1.0)
+    if len(h) in (6, 8):
+        alpha = int(h[6:8], 16) / 255 if len(h) == 8 else 1.0
+        return (int(h[0:2], 16) / 255, int(h[2:4], 16) / 255, int(h[4:6], 16) / 255, alpha)
     return _FALLBACK
 
 
