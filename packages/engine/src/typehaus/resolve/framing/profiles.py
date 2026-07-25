@@ -39,6 +39,9 @@ _RE_SINGLE_LVL = re.compile(
     r"^(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?)\s+LVL$"
 )
 _RE_RIM = re.compile(r"^(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?)\s+rim$")
+# Stair-landing deck surface, e.g. "deck 42x1.5": a platform-wide walking board whose
+# ``width_m`` is the platform width (so it renders full-width, not as a 1.5" strip).
+_RE_DECK = re.compile(r"^deck\s+(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?)$")
 _RE_IJOIST = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+I-joist$")
 _RE_MULTI_NOMINAL = re.compile(r"^(?P<plies>\d+)-(?P<nominal>\d+x\d+)$")
 _RE_NOMINAL = re.compile(r"^\d+x\d+$")
@@ -88,6 +91,9 @@ def cross_section(profile: str) -> CrossSection:
     if match := _RE_RIM.match(text):
         return _rect(float(match["width"]), float(match["depth"]))
 
+    if match := _RE_DECK.match(text):
+        return _rect(float(match["width"]), float(match["depth"]))
+
     if match := _RE_IJOIST.match(text):
         depth_in = float(match["depth"])
         flange_width_in = 3.5 if depth_in >= 14.0 else 2.5
@@ -112,5 +118,13 @@ def cross_section(profile: str) -> CrossSection:
 
     if text == "engineered-LVL":
         return _rect(*_ENGINEERED_LVL_ACTUAL_IN)
+
+    # Stair hardware/carriage profiles (→ resolve/envelope.py stair members): parsed
+    # explicitly so they never hit the silent 1.5x5.5 fallback.
+    if text == "hanger":
+        return _rect(1.5, 8.0)
+
+    if text == "tapered tread":
+        return _rect(1.5, 11.25)
 
     return _rect(*_FALLBACK_ACTUAL_IN)
