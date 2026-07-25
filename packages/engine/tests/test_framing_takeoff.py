@@ -5,8 +5,10 @@ from __future__ import annotations
 from typehaus.takeoff import (
     _board_feet_per_ft,
     _order_length_ft,
+    bill_of_materials,
     framing_bom_by_size,
     framing_takeoff,
+    structural_solids_takeoff,
 )
 
 
@@ -59,3 +61,23 @@ def test_framing_by_size_rolls_up_types(catlin_model) -> None:
     # 2x4 is used by several member types in the catlin frame.
     two_by_four = next(row for row in by_size if row["profile"] == "2x4")
     assert len(set(two_by_four["types"])) > 1
+
+
+def test_structural_solids_account_for_every_resolved_solid(catlin_model) -> None:
+    """The member cut list cannot see concrete or standalone structure; this row set can."""
+    rows = structural_solids_takeoff(catlin_model)
+    assert sum(int(row["count"]) for row in rows) == len(catlin_model.solids)
+    assert {tag for row in rows for tag in row["tags"]} == {
+        solid.tag for solid in catlin_model.solids}
+    # Concrete is ordered by the yard, so the volume rollup has to be real.
+    footings = next(row for row in rows if row["category"] == "footing")
+    assert footings["volume_cubic_yards"] > 0
+
+
+def test_bill_of_materials_carries_every_section(catlin_model) -> None:
+    bom = bill_of_materials(catlin_model)
+    assert set(bom) == {"framing", "framing_by_size", "structural_solids",
+                        "construction_returns", "sheet_goods", "hardware"}
+    assert all(section for section in bom.values()), "no BOM section may come back empty"
+    # The framing section still reconciles 1:1 with the resolved members.
+    assert sum(int(row["pieces"]) for row in bom["framing"]) == len(catlin_model.all_members())

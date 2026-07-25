@@ -183,14 +183,13 @@ def takeoff(
     house: Optional[Path] = typer.Argument(None),
     as_json: bool = typer.Option(False, "--json"),
 ) -> None:
-    """Report resolved framing counts and radiant-wire lengths (M3)."""
+    """Report the resolved bill of materials: framing, solids, sheet goods, and hardware."""
     from collections import Counter
     import json
 
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
-    from typehaus.takeoff import (construction_returns_takeoff, framing_bom_by_size,
-                                  framing_takeoff, sheet_goods_takeoff)
+    from typehaus.takeoff import bill_of_materials
 
     d = _resolve_house(house)
     loaded = load_plan(d)
@@ -202,15 +201,18 @@ def takeoff(
         _print_findings(findings)
         raise typer.Exit(1)
     framing = Counter(f"{member.category}:{member.profile}" for member in model.all_members())
-    framing_bom = framing_takeoff(model)
-    framing_by_size = framing_bom_by_size(model)
+    bom = bill_of_materials(model)
+    framing_bom = bom["framing"]
+    framing_by_size = bom["framing_by_size"]
     radiant = [{"tag": zone.tag, "storey": zone.storey, "system": zone.system,
                 "wire_length_ft": round(zone.wire_length_m / 0.3048, 1)}
                for zone in model.floor_heat]
     payload = {"framing": dict(sorted(framing.items())),
                "framing_bom": framing_bom, "framing_by_size": framing_by_size,
-               "floor_heat": radiant, "sheet_goods": sheet_goods_takeoff(model),
-               "construction_returns": construction_returns_takeoff(model)}
+               "structural_solids": bom["structural_solids"],
+               "floor_heat": radiant, "sheet_goods": bom["sheet_goods"],
+               "construction_returns": bom["construction_returns"],
+               "hardware": bom["hardware"]}
     if as_json:
         console.print_json(json.dumps(payload))
         return
@@ -236,11 +238,24 @@ def takeoff(
             console.print(f"  {item['scope']}: {item['sheets_4x8']} sheets of "
                           f"{item['thickness_in']}\" {item['material']} "
                           f"({item['net_area_sqft']} sf net)")
+    if payload["structural_solids"]:
+        console.print("[bold]Structural solids (concrete + standalone structure)[/bold]")
+        for item in payload["structural_solids"]:
+            assembly = f" · {item['assembly']}" if item["assembly"] else ""
+            console.print(f"  {item['category']}{assembly}: {item['count']} × / "
+                          f"{item['volume_cubic_yards']} cy")
     if payload["construction_returns"]:
         console.print("[bold]Construction returns (#45 pre-framing laps)[/bold]")
         for item in payload["construction_returns"]:
             console.print(f"  {item['category']} ({item['material']}): "
                           f"{item['count']} × / {item['length_ft']} LF")
+    if payload["hardware"]:
+        console.print("[bold]Hardware[/bold]  (count · part: basis)")
+        for item in payload["hardware"]:
+            size = f" {item['size']}" if item["size"] else ""
+            console.print(f"  {item['count']:>5} {item['unit']:<5} "
+                          f"{item['part_number']}{size} — {item['description']}")
+            console.print(f"        [dim]{item['basis']}[/dim]")
 
 
 @app.command(name="import")
