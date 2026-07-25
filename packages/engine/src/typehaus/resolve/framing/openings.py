@@ -12,11 +12,13 @@ from dataclasses import dataclass
 
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import m as _m
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.stud_module import OpeningStudModule, opening_stud_module
 from typehaus.resolve.framing.tables import (
     DEFAULT_SPACING,
     OVERHEAD_TRACK_MEMBER,
     header_depth,
+    header_profile_from_spec,
     header_size,
     jamb_pack_counts,
     member_actual,
@@ -35,6 +37,10 @@ class WallOpening:
 
     ``operation`` is the authored :class:`DoorOperation` for a door and ``None`` for a
     window or bare rough opening — the two cases the framing pattern table distinguishes.
+
+    ``header_spec`` is the authored engineered-header override (``Door.header_spec``,
+    falling back to ``DoorType.header_spec``), e.g. ``'2-ply 14" LVL'``; ``None`` lets
+    the prescriptive table size the header.
     """
 
     center_m: float
@@ -43,6 +49,7 @@ class WallOpening:
     sill_m: float
     is_door: bool
     operation: DoorOperation | None = None
+    header_spec: str | None = None
 
 
 def opening_stud_break(opening: WallOpening, spacing_m: float,
@@ -133,8 +140,18 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     header_half = half + jacks * thickness
     header_left = add(wall_start, scale(direction, center - header_half))
     header_right = add(wall_start, scale(direction, center + header_half))
-    size = header_size(_m(opening.width_m), bearing=pattern.header_is_structural)
-    depth = header_depth(size, _m(opening.width_m)).meters
+    # An authored engineered header (e.g. '2-ply 14" LVL') replaces the table-sized
+    # member: the profile carries the ply count/width/depth structurally, and the depth
+    # comes from the profile itself. An unparseable spec falls back to the table rather
+    # than silently sizing a header off a typo.
+    engineered = (header_profile_from_spec(opening.header_spec)
+                  if opening.header_spec is not None else None)
+    if engineered is not None:
+        size = engineered
+        depth = cross_section(engineered).depth_m
+    else:
+        size = header_size(_m(opening.width_m), bearing=pattern.header_is_structural)
+        depth = header_depth(size, _m(opening.width_m)).meters
     out.append(FramedMember(rw.uid, f"header-{opening_index}", "header", size,
                             header_left, header_right, header_bottom,
                             header_bottom + depth, 2 * header_half))

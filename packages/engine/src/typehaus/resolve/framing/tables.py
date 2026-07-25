@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass
 
 from typehaus.model.enums import DoorOperation
@@ -63,6 +64,33 @@ ENGINEERED_LVL = "engineered-LVL"
 LVL_STOCK_DEPTHS_IN = (9.25, 11.875, 14.0, 16.0, 18.0)
 # Residential garage/gable header rule of thumb: depth ≈ span / 20, rounded up to stock.
 LVL_DEPTH_SPAN_RATIO = 20.0
+
+# Standard LVL billet thickness: one ply is 1.75" whatever its depth.
+LVL_PLY_WIDTH_IN = 1.75
+
+# An authored engineered-header spec (Door.header_spec / DoorType.header_spec), e.g.
+# '2-ply 14" LVL'. Depth is inches; the unit mark is optional ('"', 'in', 'inch(es)').
+_RE_HEADER_SPEC = re.compile(
+    r'^\s*(?P<plies>\d+)\s*-\s*ply\s+(?P<depth>\d+(?:\.\d+)?)\s*'
+    r'(?:"|in\.?|inch(?:es)?)?\s+LVL\s*$',
+    re.IGNORECASE,
+)
+
+
+def header_profile_from_spec(spec: str) -> str | None:
+    """The canonical multi-ply LVL profile an authored header spec names, or ``None``.
+
+    ``'2-ply 14" LVL'`` → ``"2-1.75x14 LVL"`` — a profile string
+    :func:`typehaus.resolve.framing.profiles.cross_section` already parses (same shape as
+    ``RIDGE_BEAM_DEFAULT``), so the member's plies, width and depth all read structurally.
+    A spec this function cannot parse yields ``None`` and the caller falls back to the
+    prescriptive table: a typo must never silently size a header.
+    """
+    match = _RE_HEADER_SPEC.match(spec)
+    if match is None:
+        return None
+    return (f"{int(match['plies'])}-{LVL_PLY_WIDTH_IN:g}"
+            f"x{float(match['depth']):g} LVL")
 
 
 def header_depth(size: str, opening_width: Length) -> Length:

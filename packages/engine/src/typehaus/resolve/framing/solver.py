@@ -9,7 +9,7 @@ from __future__ import annotations
 from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.elements import Wall
+from typehaus.model.elements import Door, Wall
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.framing.backing import append_blocking_rows, append_tee_backing
@@ -299,12 +299,22 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # opening, so it is looked up once here rather than per wall.
     door_operations = {door_type.tag: door_type.operation
                        for door_type in plan.library.door_types}
+    # Engineered-header overrides: the Door instance's header_spec wins, then its
+    # DoorType's. Neither survives onto ResolvedOpening, so both are read off the plan.
+    type_header_specs = {door_type.tag: door_type.header_spec
+                         for door_type in plan.library.door_types}
+    door_header_specs = {element.tag: element.header_spec
+                         for element in plan.all_elements()
+                         if isinstance(element, Door)}
     by_host: dict[str, list[WallOpening]] = {}
     for op in model.openings:
         by_host.setdefault(op.host_wall, []).append(WallOpening(
             center_m=op.center_along_m, width_m=op.width_m, height_m=op.height_m,
             sill_m=op.sill_m, is_door=op.is_door,
             operation=door_operations.get(op.type_ref) if op.is_door else None,
+            header_spec=(door_header_specs.get(op.tag)
+                         or type_header_specs.get(op.type_ref))
+            if op.is_door else None,
         ))
     corner_endpoints: dict[str, set[str]] = {}
     butting_endpoints: dict[str, set[str]] = {}
