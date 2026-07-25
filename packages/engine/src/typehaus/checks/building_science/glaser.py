@@ -16,10 +16,14 @@ from typing import TYPE_CHECKING
 from typehaus.model.assembly import Assembly, Layer
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import Library
+from typehaus.model.site import MonthlyNormal
 from typehaus.quantities import rsi
 
 if TYPE_CHECKING:  # only for the annotation; the physics needs no check-registry import
     from typehaus.checks.registry import Preferences
+
+MONTH_NAMES = ("January", "February", "March", "April", "May", "June", "July",
+               "August", "September", "October", "November", "December")
 
 # Layers whose vapor role is "moisture source/store", interior of any rainscreen cavity.
 _WETTABLE = {
@@ -328,4 +332,72 @@ def analyze_assembly(
         interior_setpoint_f=preferences.interior_setpoint_f,
         interior_relative_humidity=preferences.interior_relative_humidity,
         exterior_relative_humidity=preferences.exterior_relative_humidity,
+    )
+
+
+@dataclass(frozen=True)
+class MonthlyAssessment:
+    """The worst month of twelve steady-state walks — the ISO 13788-style gate result.
+
+    ``analysis`` is the full :class:`CondensationAnalysis` for ``month`` (the month whose
+    tightest plane runs closest to — or past — saturation). The design-hour walk stays a
+    cold-snap *screen*; this monthly reduction over published climate normals is the
+    pass/fail *gate*, because a seasonal mean is the condition an assembly actually has to
+    dry against, not a 99%-percentile snap.
+    """
+
+    month: str
+    normal: MonthlyNormal
+    analysis: CondensationAnalysis
+
+    @property
+    def boundary(self) -> str:
+        """The exterior boundary condition the worst-month profile was run against."""
+        return f"{self.normal.temp_f:.1f} F / {self.normal.rh:.0f}% RH ({self.month} normals)"
+
+
+def analyze_layers_monthly(
+    assembly_tag: str, layers: list[Layer], library: Library, *,
+    monthly_normals: tuple[MonthlyNormal, ...], interior_setpoint_f: float,
+    interior_relative_humidity: float,
+) -> MonthlyAssessment | None:
+    """Run :func:`analyze_layers` once per month and keep the worst month.
+
+    Pure reducer over the pure profile walk: each month's normals (mean outdoor dry-bulb +
+    mean RH, January..December) are one steady-state boundary condition; the worst month is
+    the one whose tightest plane carries the highest local relative humidity, which ranks a
+    crossing (local RH >= 1) above every safe month automatically. Returns ``None`` when
+    ``monthly_normals`` does not hold twelve months — the gate is then not evaluable and
+    the caller reports the missing input by name rather than gating on partial data.
+    """
+    if len(monthly_normals) != 12:
+        return None
+    worst: MonthlyAssessment | None = None
+    worst_rh = -1.0
+    for month_name, normal in zip(MONTH_NAMES, monthly_normals):
+        analysis = analyze_layers(
+            assembly_tag, layers, library, heating_design_temp_f=normal.temp_f,
+            interior_setpoint_f=interior_setpoint_f,
+            interior_relative_humidity=interior_relative_humidity,
+            exterior_relative_humidity=normal.rh / 100.0,
+        )
+        if not analysis.known:  # same layers every month — missing inputs are identical
+            return MonthlyAssessment(month_name, normal, analysis)
+        tightest = analysis.tightest_plane
+        local_rh = tightest.local_relative_humidity if tightest is not None else 0.0
+        if local_rh > worst_rh:
+            worst, worst_rh = MonthlyAssessment(month_name, normal, analysis), local_rh
+    return worst
+
+
+def analyze_assembly_monthly(
+    assembly: Assembly, library: Library, *,
+    monthly_normals: tuple[MonthlyNormal, ...], preferences: Preferences,
+) -> MonthlyAssessment | None:
+    """Worst-month Glaser assessment for ``assembly`` (the monthly condensation gate)."""
+    layers = glaser_layers(list(assembly.default_lining) + list(assembly.layers))
+    return analyze_layers_monthly(
+        assembly.tag, layers, library, monthly_normals=monthly_normals,
+        interior_setpoint_f=preferences.interior_setpoint_f,
+        interior_relative_humidity=preferences.monthly_interior_relative_humidity,
     )
