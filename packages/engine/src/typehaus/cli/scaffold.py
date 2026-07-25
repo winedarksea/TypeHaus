@@ -127,6 +127,7 @@ window_u = 0.25
 ach50 = 1.0
 interior_setpoint_f = 70
 interior_relative_humidity = 0.35
+monthly_interior_relative_humidity = 0.35
 exterior_relative_humidity = 0.80
 south_wwr_threshold = 0.40
 adequate_overhang_ft = 2.0
