@@ -232,6 +232,83 @@ SAUNA_MIN_ROOM_WIDTH_IN = 12.0
 SAUNA_HANGER_FRACTIONS = (0.2, 0.5, 0.8)
 
 
+# --- Opening perimeter --------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class OpeningDetailConfig:
+    """The opening-perimeter vocabulary: head flashing, sill pan, concrete bucks.
+
+    All drawing convention except the buck: flashing legs are drawn at schematic
+    proportions so their directions read, while the 2x (1.5") buck is the treated lumber
+    a frame actually fastens to in a concrete opening.
+    """
+
+    #: Head flashing: how far it laps up the WRB face, past the cladding, and drips down.
+    head_flashing_rise_in: float = 3.0
+    head_flashing_lip_in: float = 0.5
+    head_flashing_drop_in: float = 1.6
+    #: Sill pan: up-turned back dam inboard, projected lip + drip outboard.
+    sill_pan_back_dam_in: float = 1.5
+    sill_pan_lip_in: float = 0.75
+    sill_pan_drop_in: float = 1.2
+    #: Sealant bead at the cladding-to-frame joint under the head flashing.
+    sealant_bead_in: float = 0.6
+    #: Building fact: 2x treated buck lining a concrete opening (what the frame screws to).
+    buck_in: float = 1.5
+
+
+OPENING_DETAIL = OpeningDetailConfig()
+
+
+@dataclass(frozen=True)
+class RidgeHangerConfig:
+    """The LVL-ridge face-mount hanger (``lvl-ridge-hanger``), drawn schematically.
+
+    A hanger stamping is ~14 ga steel, invisible at detail scale; the side plate and seat
+    draw at sheet-metal convention thickness so the load path (plate on the beam face,
+    seat under the rafter) reads.
+    """
+
+    #: How far below the beam top the side plate starts (clear of the rafter's top edge).
+    top_offset_in: float = 1.0
+    #: Side-plate drop down the beam face.
+    plate_drop_in: float = 8.0
+    #: Seat leg projecting out under the carried rafter.
+    seat_in: float = 3.5
+
+
+RIDGE_HANGER = RidgeHangerConfig()
+
+
+# --- Shower -------------------------------------------------------------------
+# Building facts from ``saunashowerdetail.json`` ``shower``. Flat module constants, like
+# the sauna's, because the room-scale functions take them one at a time and the parity
+# tests name them.
+
+SHOWER_TILE_IN = 0.75        # shower/tile_in
+SHOWER_BACKER_IN = 1.0       # shower/wall_backer_in
+SHOWER_GLASS_IN = 0.5        # shower/glass_in
+SHOWER_GLASS_GAP_IN = 1.0    # shower/glass_gap_in
+SHOWER_RECESS_IN = 4.0       # shower/recess_in
+#: The exhaust takeoff the reference fixes at the shower (shower/hrv_duct_in). The *drawn*
+#: duct takes its size from the resolved run in ``model.ducts``; this is the parity pin.
+SHOWER_HRV_DUCT_IN = 3.0
+
+#: Drawing conventions: enclosure height when the fixture type carries none, the clearance
+#: the drawn takeoff keeps above the enclosure, the drain grate, and how far past the
+#: shower footprint a crossing duct still counts as serving it.
+SHOWER_ENCLOSURE_H_IN = 84.0
+SHOWER_HRV_CLEAR_IN = 2.0
+SHOWER_DRAIN_WIDTH_IN = 3.0
+SHOWER_DRAIN_DEPTH_IN = 1.0
+SHOWER_DUCT_REACH_M = 0.6
+
+#: How far (metres) beyond a shower footprint edge a wall face may sit and still count as
+#: the walled side of the enclosure (backer + tile land there; the open side gets glass).
+SHOWER_WALL_ABUT_TOLERANCE_M = 0.35
+
+
 # --- Chrome -------------------------------------------------------------------
 
 #: Annotation text height in model inches; the writers convert at the drawn scale.

@@ -120,6 +120,32 @@ def flashing_nodes(centerline, thickness: float | None = None, *,
 
 # --- resolvers over the live cut ----------------------------------------------
 
+def condition_opening(model, cond):
+    """The ``ResolvedOpening`` a condition is about, or None.
+
+    ``opening_perimeter`` conditions carry the *opening's* tag in ``element_tags`` — not a
+    wall tag — so every consumer that wants "the walls of this condition" has to go through
+    the opening's ``host_wall`` to find one.
+    """
+    for tag in cond.element_tags:
+        opening = next((o for o in model.openings if o.tag == tag), None)
+        if opening is not None:
+            return opening
+    return None
+
+
+def condition_walls(model, cond) -> list:
+    """Every resolved wall a condition names — directly, or via its opening's host."""
+    walls = [w for w in (model.wall(tag) for tag in cond.element_tags) if w is not None]
+    if not walls:
+        opening = condition_opening(model, cond)
+        if opening is not None:
+            host = model.wall(opening.host_wall)
+            if host is not None:
+                walls = [host]
+    return walls
+
+
 def _cut_intervals(ring, direction: str, station: float):
     from typehaus.emit.draw.section import _ring_cut_intervals
 

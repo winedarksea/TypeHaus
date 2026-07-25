@@ -11,6 +11,7 @@ anchor degrades to a ``detail.anchor_unresolved`` finding + error marker, never 
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 
 from typehaus.emit.draw.joints import build_joint_plan
@@ -46,11 +47,22 @@ def _matched_transition(model: ResolvedModel, cond: BoundaryCondition):
 
 
 def _host_wall(model: ResolvedModel, cond: BoundaryCondition):
-    for tag in cond.element_tags:
-        w = model.wall(tag)
-        if w is not None:
-            return w
-    return None
+    """The wall the condition is about — named directly, or via its opening's host.
+
+    ``opening_perimeter`` conditions carry the *opening's* tag, so the wall has to be
+    reached through ``ResolvedOpening.host_wall``; without that hop every opening
+    condition silently derived no detail at all.
+    """
+    from typehaus.emit.draw.detail_components.geometry import condition_walls
+
+    walls = condition_walls(model, cond)
+    return walls[0] if walls else None
+
+
+def _condition_opening(model: ResolvedModel, cond: BoundaryCondition):
+    from typehaus.emit.draw.detail_components.geometry import condition_opening
+
+    return condition_opening(model, cond)
 
 
 def derive_detail_slices(model: ResolvedModel) -> list[DerivedDetail]:
@@ -73,6 +85,13 @@ def derive_detail_slices(model: ResolvedModel) -> list[DerivedDetail]:
             continue  # unbound conditions are the coverage check's concern, not a detail
         wall = _host_wall(model, cond)
         if wall is None:
+            # roof_ridge conditions carry a roof and a beam, never a wall — the cut frame
+            # comes from the ridge member instead.
+            if cond.kind.value == "roof_ridge":
+                derived = _build_ridge_derived(model, cond, tr)
+                if derived is not None:
+                    seen.add(cond.key)
+                    out.append(derived)
             continue
         seen.add(cond.key)
         derived = _build_derived(model, cond, tr, wall)
@@ -97,7 +116,12 @@ _CROP_WINDOWS = {
     "storey_stack":      (0.55,   0.55,   0.25,    0.25),
     "stack_width_change": (0.50,  0.50,   0.25,    0.25),
     "assembly_change":   (0.50,   0.50,   0.30,    0.30),
+    # opening_perimeter measures below from the *sill* and above from the *head* (the crop
+    # holds the whole opening); the u margins clear the frame's interior/exterior returns.
     "opening_perimeter": (0.45,   0.45,   0.25,    0.25),
+    # roof_ridge has no wall faces: the u margins measure symmetrically off the ridge line,
+    # wide enough to hold the beam, its hangers and the first stretch of rafter each side.
+    "roof_ridge":        (0.90,   0.45,   0.75,    0.75),
 }
 _DEFAULT_WINDOW = (0.50, 0.50, 0.25, 0.25)
 
@@ -123,9 +147,19 @@ def _junction_z(model, cond, wall) -> float:
     For the stacked kinds that is the *shared* plane between the two elements, i.e. the top
     of the lower one. Using the host wall's own base instead put the foundation detail a
     storey below its own junction, showing the footing and nothing of the wall it carries.
+    An opening's plane is its own mid-height (the crop then reaches past sill and head);
+    a ridge's is the ridge elevation itself, wall or no wall.
     """
-    top = wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
     kind = cond.kind.value
+    if kind == "roof_ridge":
+        roof = next((r for r in model.roofs if r.tag in cond.element_tags), None)
+        if roof is not None:
+            return roof.ridge_z_m
+    if kind == "opening_perimeter" and wall is not None:
+        opening = _condition_opening(model, cond)
+        if opening is not None:
+            return wall.z0_m + opening.sill_m + opening.height_m / 2.0
+    top = wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
     if kind == "wall_roof":
         return top
     if kind in ("wall_foundation", "storey_stack", "stack_width_change", "assembly_change"):
@@ -141,7 +175,16 @@ def _junction_z(model, cond, wall) -> float:
 
 def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
     (x0, y0), (x1, y1) = wall.axis
-    mx, my = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+    opening = (_condition_opening(model, cond)
+               if cond.kind.value == "opening_perimeter" else None)
+    if opening is not None:
+        # Cut through the opening, not the wall midpoint: the head and sill this detail is
+        # about only exist in the plane that actually crosses the opening.
+        length = math.hypot(x1 - x0, y1 - y0)
+        t = opening.center_along_m / length if length > 1e-9 else 0.5
+        mx, my = x0 + (x1 - x0) * t, y0 + (y1 - y0) * t
+    else:
+        mx, my = (x0 + x1) / 2.0, (y0 + y1) / 2.0
     dx, dy = abs(x1 - x0), abs(y1 - y0)
     if dx >= dy:
         # wall runs along x → cut perpendicular is a plane at x=const (u = world y).
@@ -150,8 +193,14 @@ def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
         direction, station, center_u = "x", my, mx
 
     below, above, inboard, outboard = _CROP_WINDOWS.get(cond.kind.value, _DEFAULT_WINDOW)
-    junction_z = _junction_z(model, cond, wall)
-    z0, z1 = junction_z - below, junction_z + above
+    if opening is not None:
+        # The z-window holds the whole opening: below measures off the sill, above off the
+        # head, so a full-height door and a high awning window both crop to their subject.
+        sill_z = wall.z0_m + opening.sill_m
+        z0, z1 = sill_z - below, sill_z + opening.height_m + above
+    else:
+        junction_z = _junction_z(model, cond, wall)
+        z0, z1 = junction_z - below, junction_z + above
 
     # Measure the margins off the wall's real faces, not its axis: a wall aligned on its
     # sheathing plane is nowhere near centred on its axis, so an axis-centred window leaves
@@ -164,6 +213,51 @@ def _build_derived(model, cond, tr, wall) -> DerivedDetail | None:
                       m(center_u if direction == "y" else station)),
         cut_direction=direction,
         crop=(pt(m(u_lo - inboard), m(z0)), pt(m(u_hi + outboard), m(z1))),
+    )
+    return DerivedDetail(key=cond.key, condition=cond, transition=tr, view=view,
+                         direction=direction, station=station)
+
+
+def _build_ridge_derived(model, cond, tr) -> DerivedDetail | None:
+    """A ridge detail cut perpendicular to the ridge member at its midpoint.
+
+    The frame comes from the resolved ridge-beam member (falling back to the roof's own
+    ridge line), and the crop is a symmetric window about the ridge line at the ridge
+    elevation — there are no wall faces to measure margins from.
+    """
+    from typehaus.emit.draw.detail_components.ridge import ridge_beam_member
+
+    roof = next((r for r in model.roofs if r.tag in cond.element_tags), None)
+    if roof is None:
+        return None
+    member = ridge_beam_member(roof)
+    if member is not None:
+        (x0, y0), (x1, y1) = member.p0, member.p1
+    else:
+        xs = [p[0] for p in roof.footprint]
+        ys = [p[1] for p in roof.footprint]
+        if roof.ridge_direction == "x":
+            (x0, y0), (x1, y1) = ((min(xs), (min(ys) + max(ys)) / 2.0),
+                                  (max(xs), (min(ys) + max(ys)) / 2.0))
+        else:
+            (x0, y0), (x1, y1) = (((min(xs) + max(xs)) / 2.0, min(ys)),
+                                  ((min(xs) + max(xs)) / 2.0, max(ys)))
+    mx, my = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+    dx, dy = abs(x1 - x0), abs(y1 - y0)
+    if dx >= dy:
+        direction, station, center_u = "y", mx, my
+    else:
+        direction, station, center_u = "x", my, mx
+    below, above, inboard, outboard = _CROP_WINDOWS.get("roof_ridge", _DEFAULT_WINDOW)
+    ridge_z = roof.ridge_z_m
+    view = Slice(
+        uid="", tag=f"D-{_key_slug(cond.key)}", kind=SliceKind.DETAIL,
+        title=(tr.tag if tr is not None else cond.key),
+        cut_origin=pt(m(station if direction == "y" else center_u),
+                      m(center_u if direction == "y" else station)),
+        cut_direction=direction,
+        crop=(pt(m(center_u - inboard), m(ridge_z - below)),
+              pt(m(center_u + outboard), m(ridge_z + above))),
     )
     return DerivedDetail(key=cond.key, condition=cond, transition=tr, view=view,
                          direction=direction, station=station)
@@ -283,11 +377,14 @@ def build_authored_detail_scene(model: ResolvedModel, view: Slice) -> Scene:
     """
     from typehaus.emit.draw.detail_components import (
         breezeway_overlay_for_slice,
+        ridge_overlay_for_slice,
         sauna_overlay_for_slice,
+        shower_overlay_for_slice,
     )
 
     scene = build_section(model, view)
-    for recipe in (sauna_overlay_for_slice, breezeway_overlay_for_slice):
+    for recipe in (sauna_overlay_for_slice, breezeway_overlay_for_slice,
+                   shower_overlay_for_slice, ridge_overlay_for_slice):
         overlay = recipe(model, view)
         if overlay:
             scene = scene.model_copy(update={"nodes": scene.nodes + tuple(overlay)})
@@ -297,15 +394,15 @@ def build_authored_detail_scene(model: ResolvedModel, view: Slice) -> Scene:
 def _detail_components(model: ResolvedModel, derived: DerivedDetail) -> list:
     """Derived 2D detail components for this junction, or nothing if it has none."""
     from typehaus.emit.draw.detail_components import build_below_grade_components
+    from typehaus.emit.draw.detail_components.geometry import condition_walls
 
     crop = derived.view.crop
     if crop is None:
         return []
     window = (crop[0].xy_m, crop[1].xy_m)
     out: list = []
-    for tag in derived.condition.element_tags:
-        wall = model.wall(tag)
-        if wall is None or not wall.is_foundation:
+    for wall in condition_walls(model, derived.condition):
+        if not wall.is_foundation:
             continue
         out.extend(build_below_grade_components(model, wall, window,
                                                 derived.direction, derived.station))
@@ -547,9 +644,12 @@ def _seed_nodes(model: ResolvedModel, derived: DerivedDetail) -> list:
     # pin the elevation there and only take the layer's position across the wall depth.
     junction_z = _junction_z(model, derived.condition, wall) * M_TO_IN if wall else None
     # Either side of a junction may own the layer being claimed — at a foundation detail the
-    # sheathing and WRB belong to the framed wall above, not the concrete below.
+    # sheathing and WRB belong to the framed wall above, not the concrete below. An opening
+    # condition names no wall at all, so its host carries every claim.
     candidates = [w for w in (model.wall(t) for t in derived.condition.element_tags)
                   if w is not None]
+    if not candidates and wall is not None:
+        candidates = [wall]
 
     def _anchor(face_name):
         for candidate in candidates:
