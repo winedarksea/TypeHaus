@@ -118,6 +118,8 @@ def resolved_canvas_objects(model: Any) -> list[dict[str, Any]]:
                                 for polygon in item.required_clearances],
         "recommended_clearances": [[list(point) for point in polygon]
                                    for polygon in item.recommended_clearances],
+        # Tag of the furniture set this object belongs to (a table and its chairs), or null.
+        "placement_group": item.placement_group,
         "ports": type_metadata.get(item.type_ref, {}).get("ports", []),
         "plan_svg": type_metadata.get(item.type_ref, {}).get("plan_svg"),
         "model_glb": type_metadata.get(item.type_ref, {}).get("model_glb"),

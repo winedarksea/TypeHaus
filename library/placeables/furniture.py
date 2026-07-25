@@ -112,32 +112,42 @@ NIGHTSTAND = FurnitureType(
 
 # --- Dining -----------------------------------------------------------------------------
 
+# The chair-use zone exists to be stood in by these — naming them makes a table and the chairs
+# tucked at it one furniture group, so the correct arrangement stops reporting as a conflict
+# while a sofa parked in the same zone still does (→ resolve/placeable_groups).
+DINING_CHAIR_TAG = "FURN-DINING-CHAIR"
+
 SIX_SEAT_DINING_TABLE = FurnitureType(
     tag="FURN-DINING-6", name="Six-seat dining table", footprint=(ft(6), ft(3)), height=ft(2, 6),
     plan_symbol="dining-table", source=REFERENCE,
-    clearances=(surround_zone(ft(6), ft(3), ft(3), "chair-use zone"),),
+    clearances=(surround_zone(ft(6), ft(3), ft(3), "chair-use zone",
+                              occupant_types=(DINING_CHAIR_TAG,)),),
 )
 ROUND_DINING_TABLE = FurnitureType(
     tag="FURN-DINING-ROUND-48", name="Round four-seat dining table", footprint=(ft(4), ft(4)),
     height=ft(2, 6), plan_symbol="round-table", source=REFERENCE,
-    clearances=(surround_zone(ft(4), ft(4), ft(3), "chair-use zone"),),
+    clearances=(surround_zone(ft(4), ft(4), ft(3), "chair-use zone",
+                              occupant_types=(DINING_CHAIR_TAG,)),),
 )
 # No pull-out zone of its own: a dining chair lives inside the table's chair-use zone by
 # definition, and giving it a second one only reports the set conflicting with itself.
 DINING_CHAIR = FurnitureType(
-    tag="FURN-DINING-CHAIR", name="Dining chair", footprint=(ft(1, 8), ft(1, 10)),
+    tag=DINING_CHAIR_TAG, name="Dining chair", footprint=(ft(1, 8), ft(1, 10)),
     height=ft(3, 2), plan_symbol="dining-chair", source=REFERENCE,
 )
 
 # --- Home office ------------------------------------------------------------------------
 
+OFFICE_CHAIR_TAG = "FURN-OFFICE-CHAIR"
+
 WRITING_DESK = FurnitureType(
     tag="FURN-DESK-48", name="Writing desk", footprint=(ft(4), ft(2)), height=ft(2, 6),
     plan_symbol="desk", source=REFERENCE,
-    clearances=(front_zone(ft(4), ft(2), ft(3), "desk chair pull-out"),),
+    clearances=(front_zone(ft(4), ft(2), ft(3), "desk chair pull-out",
+                           occupant_types=(OFFICE_CHAIR_TAG,)),),
 )
 OFFICE_CHAIR = FurnitureType(
-    tag="FURN-OFFICE-CHAIR", name="Office chair", footprint=(ft(2, 2), ft(2, 2)),
+    tag=OFFICE_CHAIR_TAG, name="Office chair", footprint=(ft(2, 2), ft(2, 2)),
     height=ft(3, 2), plan_symbol="office-chair", source=REFERENCE,
 )
 BOOKCASE = FurnitureType(

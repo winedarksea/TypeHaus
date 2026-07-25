@@ -42,6 +42,13 @@ class ClearanceZone(HausModel):
     policy: ClearancePolicy = ClearancePolicy.RECOMMENDED
     source: str | None = None
     code_profile: str | None = None
+    # Product types this zone exists to accommodate: a dining chair standing in its table's
+    # chair-use zone is the arrangement working, not an encroachment. Naming them here lets
+    # the resolver recover the furniture *group* (table + its chairs) that no source file has
+    # to spell out, while a sofa parked in the same zone still reports a conflict. Only
+    # meaningful on a RECOMMENDED zone — a code-required clearance is never "for" whatever
+    # happens to be standing in it.
+    occupant_types: tuple[str, ...] = ()
 
 
 class ServicePort(HausModel):
