@@ -4,6 +4,7 @@
 # elevation is the top of the stem. Overhead door faces east (driveway side).
 from typehaus import (
     Door,
+    EaveGutter,
     EaveTrim,
     FasciaBoard,
     Node,
@@ -76,10 +77,20 @@ ROOMS = [
 # which never rots at a drip edge). A vented PVC soffit closes the overhang underside and
 # feeds the eave-to-ridge vent channel. Elevations are derived from the resolved roof plane,
 # so the raised-heel lift carries the trim with it.
+# The SOUTH eave gets a 5" aluminum gutter: that slope faces the 12' breezeway gap and the
+# house wall across it, so its run-off is the only one that lands on somewhere people walk.
+# The north eave sheds onto open ground and stays free-draining. The channel is declared
+# here rather than authored in params/ for the same reason the fascia is — the raised-heel
+# truss lifts the deck plane in the envelope stage, and an absolute elevation would drift off
+# the eave it drains. Its top sits 1/2" below the plane so its back closes the fascia face
+# and its bottom lands on the sub-fascia's underside.
 _GARAGE_EAVE_TRIM = EaveTrim(
     fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),
             FasciaBoard(material="pvc-cellular", thickness=inch(1), depth=inch(6))),
     soffit_material="pvc-cellular", soffit_thickness=inch(0.5), soffit_vented=True,
+    gutter=EaveGutter(material="aluminum", depth=inch(5), thickness=inch(5),
+                      top_drop=inch(0.5), edges=("south",),
+                      slope="1/16 in/ft to the east downspout"),
 )
 
 ROOFS = [
