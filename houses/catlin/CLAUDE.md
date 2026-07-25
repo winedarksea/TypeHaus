@@ -15,7 +15,8 @@ proposing any design change.
   `frozenset(...)`, which the dialect forbids). Type libraries stay non-editable; movable
   instances that reference them live in the editable modules above.
 - `params/sunken_garden.py` — the freestanding arched porch/garden structure (math OK here).
-- `params/foundations.py` — footings, garage ICF stem, breezeway posts.
+- `params/foundations.py` — house footings, garage ICF stem + slab.
+- `params/breezeway.py` — the enclosed breezeway: pads, piers, posts, deck, roof, glazing.
 - `notes/*.md` — construction detail notes migrated from the original repo.
 
 **Editability rule (enforced):** any UI-movable element (Furniture/Fixture/Appliance/
@@ -25,8 +26,9 @@ Equipment/Register/ElectricalDevice/Door/Window/Wall/Room/Node/Stair) must be au
 module. Params-generated geometry (no constructor to write back to) is exempt.
 
 ## House facts that must stay true
-- Four structures: house, freestanding garage (12' north), freestanding sunken-garden/
-  porch/balcony concrete structure (5" south gap), breezeway on freestanding 6x6 posts.
+- Four structures: house, freestanding garage (4' north), freestanding sunken-garden/
+  porch/balcony concrete structure (5" south gap), enclosed breezeway on freestanding 6x6
+  posts spanning that 4' gap door-to-door (`params/breezeway.py`).
 - 36'x36' at sheathing; everything on the 16" o.c. module; exterior walls carry
   `alignment=face("sheathing-ext")` so the sheathing plane is the vertical datum (#43).
 - The side-wall stack is 2x6 (main) → 2x4 (second) → 2x4 (attic) — sheathing plane

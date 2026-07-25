@@ -123,6 +123,17 @@ SIX_SEAT_DINING_TABLE = FurnitureType(
     clearances=(surround_zone(ft(6), ft(3), ft(3), "chair-use zone",
                               occupant_types=(DINING_CHAIR_TAG,)),),
 )
+# The next size up, and the one a room with circulation on all four sides can carry: 8' gives
+# three 30" settings a side, 42" of depth gives a serving spine down the middle. It is an
+# eight-*place* table — the two ends are settings too — but a plan is free to leave the end
+# chairs out, and an open-plan dining zone usually should: an end chair pulled out is what
+# blocks the aisle past the table.
+EIGHT_SEAT_DINING_TABLE = FurnitureType(
+    tag="FURN-DINING-8", name="Eight-seat dining table", footprint=(ft(8), ft(3, 6)),
+    height=ft(2, 6), plan_symbol="dining-table", source=REFERENCE,
+    clearances=(surround_zone(ft(8), ft(3, 6), ft(3), "chair-use zone",
+                              occupant_types=(DINING_CHAIR_TAG,)),),
+)
 ROUND_DINING_TABLE = FurnitureType(
     tag="FURN-DINING-ROUND-48", name="Round four-seat dining table", footprint=(ft(4), ft(4)),
     height=ft(2, 6), plan_symbol="round-table", source=REFERENCE,
@@ -159,6 +170,6 @@ STARTER_FURNITURE_TYPES = (
     STANDARD_SOFA, LOVESEAT, SECTIONAL, ARMCHAIR, COFFEE_TABLE, END_TABLE, MEDIA_CONSOLE,
     TV_65, TV_98,
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, CHEST, NIGHTSTAND,
-    SIX_SEAT_DINING_TABLE, ROUND_DINING_TABLE, DINING_CHAIR,
+    SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE, DINING_CHAIR,
     WRITING_DESK, OFFICE_CHAIR, BOOKCASE,
 )

@@ -12,6 +12,7 @@ work.
   around a 4x4 cannot reach it. The fix is a layout choice — more risers in the turn, or a
   wider newel/well the winders wrap — not a number the generator can invent.
   `structural.winder_narrow_tread_depth` measures and reports the shortfall meanwhile.
+  ANSWER: stairs go into RM-S-STUDY-2 via opening. There should be a wider post as a solution if that works.
 - ~~**D3 — the catlin stair does not fit its own well.**~~ RESOLVED, both halves of the fix.
   `W-B-STR`/`W-M-STRW` moved from x=11' to **x=10'** and the basement wall went 8" → **12"
   concrete**, which puts the basement well at **7'-0" clear** (and the furnace room at
@@ -36,26 +37,17 @@ work.
   because a design-day walk flags code-compliant CI walls; at Minneapolis' winter mean these
   same walls are comfortably safe. Whether this check is a pass/fail gate or a cold-snap
   screening signal is a plan decision — the implementation follows the plan as written.
-- ~~**Knee brace count.**~~ RESOLVED — the balcony is now braced at its **4 corner pillars in
-  both plan directions**: 8 braces, 8 `APVKB45-6`, matching the original "4 corners × 2" note.
-  The old 12 was never buildable (every pillar is a beam *end*, so only one brace fits in the
-  beam's plane; the "matched pair per joint" rule assumed a beam continuing past its post).
-  The real gap was that all six connectors were `axis="y"` — the freestanding deck had **no
-  E-W lateral system at all**, and no E-W member to brace against. Two `2-2x8` girts
-  (`BM-SG-GIRT-R/F`) now run the pillar rows under the N-S beams to give the E-W braces a
-  soffit. Braces are 2x6 wood diagonals with a 3' leg, through-bolted, APVKB at the joint;
-  the centre pillars stay unbraced leaning columns so thrust never lands on `PT-SG-BR2`,
-  which bears on the porch decking rather than on grouted masonry.
 - **`RM-M-BATH1` is too small.** Clear face is 3'-2" × 4'-3¼". A 2'-6" WC plus a 1'-9" lav is
   4'-3" of that 4'-3¼". The fixtures now pack wall-to-wall with ~⅛" at each end and nothing
   between them. The design fix is a bigger bath or no lav. ANSWER: wall hung toilet and small sink.
+  RP Compact from TOTO something like:
+  $$\text{Physical Area} = 15\text{ in} \times 19.3\text{ in} = \mathbf{2.01\text{ sq ft}}\quad (0.186\text{ m}^2)$$
+$$\text{Minimum Code Box} = 30\text{ in} \times 40.3\text{ in} = \mathbf{8.4\text{ sq ft}}$$
 - **`D-G-OVERHEAD` needs an engineered header.** The 16' garage door exceeds the prescriptive
   table. A genuine engineering input, not a modelling gap. ANSWER: Double-Ply 14" LVL
 - **`advisory.window_size_variety`** — 10 unique window sizes. Fewer eases ordering; whether
   to consolidate is a design call. ANSWER: for now, consolidate down to one size per width
   Note: most common window widths here are sized to fit with a given number of stud breaks in the 16" OC framing spacing here.
-- **Phase 2 junctions** (own section below) — every item there is construction-rule authoring
-  that needs your intent, not mechanical work.
 - **`install.sh` installs a package that does not exist.** `landing/install.sh` runs
   `pipx install "typehaus[server]"`, but `typehaus` is not on PyPI. Either publish it or drop
   the install link; `/app` (the PWA) does not depend on it.
@@ -243,7 +235,11 @@ future.
 - Garage gable end walls (like W-G-E-CLOSURE-0-CLADDING) still have studs visible. Perhaps the framing just needs to push the gable end framing inward a tiny bit, or the cladding outward a tiny bit.
 - Garage fascia boards should probably count as part of the framing
 - Garage roof sheathing is visible around the fascia, likely the fascia needs to go up a tiny bit higher
-- The garage should be much closer to the house.
+- ~~The garage should be much closer to the house.~~ DONE — moved **7'-6" south** to
+  `GARAGE_Y_SOUTH = ft(40.5)` (published from `plan/storeys/garage.py`, imported by
+  `params/foundations.py` and `params/breezeway.py` so the three can never drift apart).
+  Clear gap between finished faces is now **4'-0 1/8"**, sized around one 4'-0"
+  polycarbonate panel. The north-side grade stations moved east of the garage with it.
 - House roof really won't have fascia like RAKE-HI-1-FASCIA-1 nor RAKE-HI-1-EDGE-CLADDING. In reality, the furring strips of the siding will continue up to meet the furring strips of the roof very nearly, and it will be full continous standing seam siding and roofing (with a trim piece over the corner). It may be hard to show this, but in the real world standing seam panels will be pretty much constant from grade level, up to roof level, and across the house and down the other side.
 - Switch all exterior walls to 2x6s, and remove the 2x4 exterior wall type (for simplicity). Note main floor is LSL, others are standard dimensional 2x6 (this can be a note, rather than a different assembly). This will require careful updates to make sure assembly details still match.
 - At the corners where exterior wall meets exterior wall, use a 4 stud corner instead for framing (since we use outsulation, the extra strength here is worth it). That should just be the main four corners.

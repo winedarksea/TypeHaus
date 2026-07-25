@@ -58,4 +58,10 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "sink-base": counter_case(body=CABINET, kick_color=CABINET_SHADE, cutout=(0.83, 0.78)),
     "wall-cabinet": case(rows=1, cols=2, pulls=True, color=CABINET, face_color=CABINET_SHADE),
     "tall-cabinet": case(rows=1, cols=1, pulls=True, color=CABINET, face_color=CABINET_SHADE),
+    # Past about 24" a full-height door stops being a door — it racks on its own weight and
+    # needs half its width of swing — so wide tall units carry a pair. Same carcass as
+    # ``tall-cabinet``; the cell grid is the whole difference, which is what this registry
+    # distinguishes symbols by.
+    "tall-cabinet-double": case(rows=1, cols=2, pulls=True, color=CABINET,
+                                face_color=CABINET_SHADE),
 }

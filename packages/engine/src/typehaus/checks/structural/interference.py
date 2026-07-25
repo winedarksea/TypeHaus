@@ -225,6 +225,45 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     return False
 
 
+def _flush_framed_pairs(plan) -> set[tuple[str, str]]:
+    """``(floor uid, beam tag)`` pairs the author declared as flush-framed.
+
+    A joist normally *sits on* its beam and the two share no volume, which is why
+    ``_butt_joint`` refuses to clear a joist against a beam: a beam topped at the joist datum
+    is the elevation bug this check exists to catch. But a low deck cannot afford to stack —
+    a beam under its joists doubles the framing depth, and at grade that puts the beam in a
+    trench. There the joists hang flush in the beam, in hangers, exactly as they hang in a
+    floor-opening header (which this check already clears by kind).
+
+    The distinction is authored, never guessed: the resolver only ever produces a flush beam
+    from an explicit ``Beam.top_elevation``. So the pair is cleared only where the deck names
+    the beam as bearing *and* the beam's top is pinned by hand. A beam left to the derived
+    datum arithmetic is still policed exactly as before.
+    """
+    from typehaus.model.floors import FloorSystem
+    from typehaus.model.structure import Beam
+
+    if plan is None:  # geometry-only fixtures pass a bare model, with no authored plan
+        return set()
+    pinned = {el.tag for el in plan.all_elements()
+              if isinstance(el, Beam) and el.top_elevation is not None}
+    return {
+        (el.uid, ref)
+        for el in plan.all_elements() if isinstance(el, FloorSystem)
+        for ref in el.joists.bearing_refs if ref in pinned
+    }
+
+
+def _flush_framed_into_beam(a: _Candidate, b: _Candidate,
+                            flush_pairs: set[tuple[str, str]]) -> bool:
+    """True for a joist of a deck hung flush into one of that deck's own pinned beams."""
+    for joist, beam in ((a, b), (b, a)):
+        if joist.kind == "joist" and beam.kind == "beam" \
+                and (joist.parent, beam.label) in flush_pairs:
+            return True
+    return False
+
+
 def _butt_joint(a: _Candidate, b: _Candidate, tol: float) -> bool:
     """Intended joinery: an endpoint of one member lands on the other's axis.
 
@@ -262,6 +301,7 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
     # a genuine wall-overlap bug, which this proximity gate deliberately still reports.
     junction_pts = [j.point for j in getattr(ctx.model, "junctions", ())]
     junction_tol = inch(10.0).meters
+    flush_pairs = _flush_framed_pairs(getattr(ctx, "plan", None))
 
     candidates: list[_Candidate] = []
     for member in ctx.model.all_members():
@@ -328,6 +368,10 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
             # Correct-by-design bearings/laps the box IR cannot express as clean geometry
             # (birdsmouth rafter seat, bonded web stiffener, cross-wall plate lap).
             if _intended_framing_joint(a, b):
+                continue
+            # A joist hung *flush* into a beam it is authored to bear on — the same joint
+            # the floor-opening-header clause above clears, just against a beam.
+            if _flush_framed_into_beam(a, b, flush_pairs):
                 continue
             # Cross-wall framing butting together at an L corner or T junction: perpendicular
             # walls' studs/plates lap, and a gable's rake plate/rafters/ridge meet there. A

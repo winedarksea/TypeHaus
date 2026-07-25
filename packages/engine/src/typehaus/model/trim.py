@@ -92,6 +92,32 @@ class EaveGutter(HausModel):
     slope: str = ""    # optional drainage note, e.g. "1/16 in/ft to the east downspout"
 
 
+@register_element
+class GlazingTrim(_EdgeRun):
+    """An aluminium extrusion capping a multiwall-glazing panel edge.
+
+    Multiwall polycarbonate is only weathertight once every cut edge is closed: the top
+    (high) flute ends get sealed tape under a solid cap, the bottom (low) ends get a vented
+    channel with weep holes so the flutes drain, and an edge that butts a wall gets an
+    F-channel receiver. They are billed by the lineal foot, not the piece, which is why they
+    are edge runs like the fascia/gutter family rather than framing members.
+
+    ``profile`` names the extrusion section in the letter the industry uses ("U", "H", "F",
+    "bar"); ``weep_holes`` records the drainage the low channel must be drilled for, which is
+    a fabrication instruction and not visible in any geometry.
+    """
+
+    kind: TrimKind = TrimKind.GLAZING_CHANNEL
+    profile: str = "U"  # "U" | "H" | "F" | "bar"
+    # A jamb channel runs up the panel's edge rather than along it, so its ``path`` spans
+    # only the sheet thickness and its ``depth`` is the run. The extrusion is billed along
+    # its long axis either way; this is what tells the take-off which axis that is.
+    vertical: bool = False
+    weep_holes: bool = False
+    sealed_tape: bool = False  # solid (not vented) tape over a high flute end
+    glazing_ref: str | None = None  # the GlazingPanel tag this edge belongs to
+
+
 class EaveTrim(HausModel):
     """A roof's edge closure, declared once and derived along every eave and rake.
 
@@ -112,6 +138,7 @@ for _name, _obj in (
     ("EaveSoffit", EaveSoffit),
     ("Gutter", Gutter),
     ("Flashing", Flashing),
+    ("GlazingTrim", GlazingTrim),
     ("FasciaBoard", FasciaBoard),
     ("EaveGutter", EaveGutter),
     ("EaveTrim", EaveTrim),

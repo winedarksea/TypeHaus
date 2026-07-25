@@ -1,12 +1,13 @@
-"""Generated foundation support: house footings, garage ICF stem, breezeway posts.
+"""Generated foundation support: house footings, garage ICF stem + slab.
 
 - House: strip footings (20" x 8") under every basement concrete wall.
 - Garage: freestanding ICF stem (8" core) from frost depth to 22" above grade,
   wood walls bear on top (the ``garage`` storey elevation), footing under.
-- Breezeway: the porch roof between house and garage rides on freestanding 6x6
-  posts on isolated pads — never attached to either structure.
 - House footings additionally get a bedding-prep record (undercut, geotextile, drain
   tile, compacted washed-stone bed, perimeter foam) — see ``HOUSE_FOOTING_BEDDING``.
+
+The breezeway's pads/piers/posts used to live here as a roofless stub; they now belong to
+the whole structure in ``params/breezeway.py``.
 """
 
 from __future__ import annotations
@@ -16,13 +17,16 @@ from typehaus import (
     FootingBedding,
     FoundationWall,
     Node,
-    Pad,
-    Post,
     Slab,
     ft,
     inch,
     pt,
 )
+
+# One source of truth for where the garage stands: the wall lines the wood walls above are
+# authored on. The stem must sit under them and the slab inside them, so both derive from
+# there rather than repeating the literal.
+from plan.storeys.garage import GARAGE_Y_NORTH, GARAGE_Y_SOUTH
 
 # --- house strip footings --------------------------------------------------------
 _HOUSE_WALL_TAGS = [
@@ -54,10 +58,10 @@ _FROST = 42.0 / 12.0  # frost depth below grade
 _STEM_TOP = 22.0 / 12.0  # exposed above grade
 
 GARAGE_STEM_NODES = [
-    Node(uid="CGF001AAAA", tag="N-GF-SW", position=pt(ft(0), ft(48))),
-    Node(uid="CGF002AAAA", tag="N-GF-SE", position=pt(ft(24), ft(48))),
-    Node(uid="CGF003AAAA", tag="N-GF-NE", position=pt(ft(24), ft(72))),
-    Node(uid="CGF004AAAA", tag="N-GF-NW", position=pt(ft(0), ft(72))),
+    Node(uid="CGF001AAAA", tag="N-GF-SW", position=pt(ft(0), GARAGE_Y_SOUTH)),
+    Node(uid="CGF002AAAA", tag="N-GF-SE", position=pt(ft(24), GARAGE_Y_SOUTH)),
+    Node(uid="CGF003AAAA", tag="N-GF-NE", position=pt(ft(24), GARAGE_Y_NORTH)),
+    Node(uid="CGF004AAAA", tag="N-GF-NW", position=pt(ft(0), GARAGE_Y_NORTH)),
 ]
 
 _STEM = dict(assembly="GARAGE_ICF_8", top_elevation=ft(_STEM_TOP),
@@ -80,32 +84,19 @@ GARAGE_FOOTINGS = [
     for i, w in enumerate(GARAGE_STEM_WALLS, start=1)
 ]
 
-# --- breezeway posts (freestanding; roof is future work) --------------------------
-_POST_XY = [(5.0, 44.0), (9.0, 44.0), (5.0, 47.5), (9.0, 47.5)]
-
-BREEZEWAY_PADS = [
-    Pad(uid=f"CP{i}00AAAAA", tag=f"PD-BW-{i}",
-        outline=(pt(ft(x - 1), ft(y - 1)), pt(ft(x + 1), ft(y - 1)),
-                 pt(ft(x + 1), ft(y + 1)), pt(ft(x - 1), ft(y + 1))),
-        thickness=ft(1), bottom_elevation=ft(-_FROST))
-    for i, (x, y) in enumerate(_POST_XY, start=1)
-]
-
-BREEZEWAY_POSTS = [
-    Post(uid=f"CP{i}50AAAAA", tag=f"PT-BW-{i}", position=pt(ft(x), ft(y)),
-         size="6x6", height=ft(8), supported_by=f"PD-BW-{i}")
-    for i, (x, y) in enumerate(_POST_XY, start=1)
-]
-
 # Filed on the house's "main" storey key rather than the "garage" storey because the garage
-# storey datum is the ICF stem top (1'-10"), while this slab is poured at grade.
+# storey datum is the ICF stem top (1'-10"), while this slab is poured at grade. The 6"
+# inset from the wall lines keeps the pour inside the ICF stem.
+_SLAB_INSET = ft(0.5)
+_slab_y_s = GARAGE_Y_SOUTH + _SLAB_INSET
+_slab_y_n = GARAGE_Y_NORTH - _SLAB_INSET
 GARAGE_SLAB = Slab(
     uid="CGS501AAAA", tag="SL-G-FLOOR",
-    outline=(pt(ft(0.5), ft(48.5)), pt(ft(23.5), ft(48.5)),
-             pt(ft(23.5), ft(71.5)), pt(ft(0.5), ft(71.5))),
+    outline=(pt(ft(0.5), _slab_y_s), pt(ft(23.5), _slab_y_s),
+             pt(ft(23.5), _slab_y_n), pt(ft(0.5), _slab_y_n)),
     thickness=inch(3.5), assembly="GARAGE_SLAB_ON_GRADE",
 )
 
 BASEMENT_ELEMENTS = [*HOUSE_FOOTINGS, *HOUSE_FOOTING_BEDDING, *GARAGE_STEM_NODES,
                      *GARAGE_STEM_WALLS, *GARAGE_FOOTINGS]
-MAIN_ELEMENTS = [*BREEZEWAY_PADS, *BREEZEWAY_POSTS, GARAGE_SLAB]
+MAIN_ELEMENTS = [GARAGE_SLAB]

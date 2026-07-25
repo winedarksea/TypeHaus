@@ -83,6 +83,10 @@ _FREESTANDING_SLAB_PREFIXES = (
     # is filed on "main"; the same structure's GARAGE_ROOF/GARAGE_WALL_2X6 are already
     # excluded here by RM-GARAGE's ``conditioned=False``, and its floor is no different.
     "SL-G-",
+    # The breezeway's composite decking. It is an unheated exterior walking surface on
+    # joists over open air between two structures, filed on "main" because that is the datum
+    # its joists top out at — no more a thermal-envelope slab than the porch deck above.
+    "SL-BW-",
 )
 
 

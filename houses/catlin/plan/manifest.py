@@ -2,12 +2,13 @@
 
 Structures (all in the shared project-north frame, house sheathing SW corner at 0,0):
 - House: 36'x36' at sheathing; basement / main / second / attic storeys.
-- Garage: freestanding 24'x24' ICF stem + 2x6 walls, 12' north of the house
+- Garage: freestanding 24'x24' ICF stem + 2x6 walls, 4' north of the house
   (its own ``garage`` storey at the stem top elevation).
 - Sunken garden / porch / balcony: one freestanding arched concrete structure,
   5" south of the house (params/sunken_garden.py).
-- Breezeway: roof on freestanding 6x6 posts between house and garage
-  (params/foundations.py; posts + pads now, roof with WP3.11).
+- Breezeway: enclosed 4'x8' polycarbonate shelter on freestanding 6x6 posts, spanning
+  the 4'-0 1/8" gap between the house entry and the garage service door
+  (params/breezeway.py — deck, posts, beams, rafters, glazing).
 
 This file is NOT ``# haus: editable``: it is the plain-Python assembler. The engine
 reads ``format_version``/``requires_engine`` via the dialect path (AST, no import).
@@ -23,7 +24,7 @@ from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_bas
 from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES,
                      STARTER_FURNITURE_TYPES)
 
-from params import foundations, raised_garden, roof_trim, sunken_garden
+from params import breezeway, foundations, raised_garden, roof_trim, sunken_garden
 from plan import assemblies, fixture_types, fixtures, mep, placeables, site, transitions, views
 from plan.storeys import attic, basement, garage, main, second
 
@@ -90,7 +91,8 @@ PLAN = (
     .with_elements(
         "main",
         [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *sunken_garden.MAIN_ELEMENTS,
-         *foundations.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS, *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES],
+         *foundations.MAIN_ELEMENTS, *breezeway.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
+         *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES],
     )
     .with_elements("garage", [*garage.ELEMENTS, *placeables.GARAGE_PLACEABLES])
     .with_elements("second", [*second.ELEMENTS, *fixtures.SECOND_FIXTURES,

@@ -50,6 +50,13 @@ class FloorSystem(Element):
     subfloor: DeckLayer | None = None
     ceiling_below: DeckLayer | None = None
     openings: tuple[str, ...] = ()  # FloorOpening tags
+    # What this deck *is*, structurally. "floor" is an interior floor: the 40 psf live +
+    # dead residential floor tables in ``checks/structural/checks.py`` grade it. "deck" is an
+    # exterior walking surface on posts and beams, which IRC R507 / AWC DCA6 govern instead —
+    # different span tables, plus post, footing and guard rules that an interior floor has no
+    # equivalent of. Nothing derives this from geometry: a freestanding deck and an interior
+    # floor both resolve to joists on bearings, so the distinction has to be authored.
+    service: Literal["floor", "deck"] = "floor"
     # Optional explicit footprint. When given, the joist field is scoped to this outline's
     # perpendicular extent instead of the storey's whole wall bbox — needed for a deck that
     # frames a freestanding sub-structure sharing a storey with the main building.

@@ -170,18 +170,48 @@ def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof) -> list[str]:
     if roof.bearing_z_m is not None:
         notes.append(f"ROOF SEATS ON PLATES AT {roof.bearing_z_m:.2f} m; "
                      f"DECK AREA {roof.surface_area_m2:,.0f} m2.")
+    snow = _snow_load_note(model)
+    if snow:
+        notes.append(snow)
     notes.append("MEMBER SIZES ARE THE AUTHORED / SOLVER-GENERATED FRAMING AND ARE NOT AN "
                  "ENGINEERED DESIGN; TRUSSES ARE BY THE SUPPLIER'S SEALED DRAWINGS.")
     return notes
 
 
+# Flat-roof snow load p_f = 0.7 * Ce * Ct * Is * p_g (ASCE 7 eq. 7.3-1). The sheet states
+# the load case at the fully-exposed, heated, Risk Category II defaults — Ce = Ct = Is = 1.0
+# — which is what makes p_f a printable number rather than a design decision. Anything else
+# (drift, sliding snow off the taller house roof onto a lower one, unbalanced load) is the
+# engineer's, and the note says so alongside.
+_SNOW_FLAT_ROOF_FACTOR = 0.7
+
+
+def _snow_load_note(model: ResolvedModel) -> str | None:
+    """The ground/flat-roof snow load case, when the site carries one."""
+    ground = model.plan.project.site.ground_snow_load_psf
+    if ground is None:
+        return None
+    flat = _SNOW_FLAT_ROOF_FACTOR * ground
+    return (f"GROUND SNOW LOAD Pg = {ground:.0f} PSF; FLAT-ROOF Pf = {flat:.0f} PSF AT "
+            f"Ce = Ct = Is = 1.0. DRIFT, SLIDING AND UNBALANCED CASES ARE NOT COMPUTED HERE.")
+
+
 def roof_framing_findings(model: ResolvedModel, roof: ResolvedRoof) -> list[Finding]:
     """Roof-framing datums a permit sheet needs that the model does not carry."""
-    findings = [Finding(
-        severity=Severity.WARN, check_id="sheet.roof_framing.design_loads",
-        message="design snow/wind loads are not carried by the model, so this sheet states "
-                "no load case", element_tags=(roof.tag,), result=Result.UNKNOWN,
-        fix_hint="add design loads to the project/site record so the sheet can print them")]
+    if model.plan.project.site.ground_snow_load_psf is None:
+        findings = [Finding(
+            severity=Severity.WARN, check_id="sheet.roof_framing.design_loads",
+            message="design snow/wind loads are not carried by the model, so this sheet states "
+                    "no load case", element_tags=(roof.tag,), result=Result.UNKNOWN,
+            fix_hint="add design loads to the project/site record so the sheet can print them")]
+    else:
+        # The snow case now prints; wind still has no field to read, so the sheet is
+        # partially, not fully, sourced.
+        findings = [Finding(
+            severity=Severity.WARN, check_id="sheet.roof_framing.design_loads",
+            message="design wind load is not carried by the model, so this sheet states the "
+                    "snow load case only", element_tags=(roof.tag,), result=Result.UNKNOWN,
+            fix_hint="add a design wind speed to the site record")]
     if not _has_uplift_connector(model, roof):
         findings.append(Finding(
             severity=Severity.WARN, check_id="sheet.roof_framing.uplift_restraint",

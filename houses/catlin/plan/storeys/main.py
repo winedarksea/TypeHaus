@@ -263,11 +263,23 @@ OPENINGS = [
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
            type_ref="WT-2760", position=from_node("N-M-SE", ft(10, 10.5)),
            sill_height=ft(2, 6)),
-    Window(uid="CMX311AAAA", tag="WIN-M-DIN-E1", host="W-M-E2",
-           type_ref="WT-2760", position=from_node("N-M-E1", ft(2, 10.5)),
+    # The dining pair, pushed south of where it started (centres were 22' and 26'). The 48"
+    # pantry closet now takes the east wall from 22'-8" to 26'-8" and a tall cabinet over a
+    # window is not a window, so the glass moved rather than the casework: centres 16'-0" and
+    # 20'-8", the northern one clearing the pantry's south end by 8 1/2" of framing.
+    #
+    # The pair no longer reads at the 4' spacing the living windows below it use, and cannot:
+    # E1 crosses onto the south wall segment, and each segment lays its studs out from its own
+    # start, so W-M-E1's grid (16" from y=0) and W-M-E2's (16" from y=18') are 8" out of phase
+    # with each other. A 27" RO in a bearing wall has to break exactly one stud, which pins
+    # each centre to its own host's grid — 16'-0" is 12 bays up W-M-E1, 20'-8" is 2 bays up
+    # W-M-E2 — and 4'-8" apart is where that lands them. The node at y=18' is a collinear
+    # split rather than a corner, so the wall itself runs through unbroken.
+    Window(uid="CMX311AAAA", tag="WIN-M-DIN-E1", host="W-M-E1",
+           type_ref="WT-2760", position=from_node("N-M-SE", ft(14, 10.5)),
            sill_height=ft(2, 6)),
     Window(uid="CMX312AAAA", tag="WIN-M-DIN-E2", host="W-M-E2",
-           type_ref="WT-2760", position=from_node("N-M-E1", ft(6, 10.5)),
+           type_ref="WT-2760", position=from_node("N-M-E1", ft(1, 6.5)),
            sill_height=ft(2, 6)),
     Window(uid="CMX313AAAA", tag="WIN-M-KITCH", host="W-M-E2",
            type_ref="WT-2760", position=from_node("N-M-NE", ft(2, 2.5)),

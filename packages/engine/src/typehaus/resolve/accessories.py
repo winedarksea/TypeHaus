@@ -14,7 +14,7 @@ import math
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.mep import Sump, VentRun
 from typehaus.model.structure import Connector, Dowel, KneeBrace, Railing
-from typehaus.model.trim import EaveSoffit, Fascia, Flashing, Gutter
+from typehaus.model.trim import EaveSoffit, Fascia, Flashing, GlazingTrim, Gutter
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import circle_outline, length, rect_between, sub
@@ -45,6 +45,10 @@ _TRIM_CATEGORY = {
     "gutter": "gutter",
     "drip_flashing": "flashing",
     "wrb_counterflashing": "flashing",
+    # The glazing extrusions share the edge-run shape but not the flashing category: they
+    # are an aluminium order billed by the lineal foot, and the take-off groups on this.
+    "glazing_channel": "glazing_trim",
+    "glazing_bar": "glazing_trim",
 }
 
 
@@ -66,7 +70,7 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
                 _resolve_sump(model, el, storey)
             elif isinstance(el, VentRun):
                 findings.extend(_resolve_vent(model, el, storey.tag))
-            elif isinstance(el, (EaveSoffit, Fascia, Gutter, Flashing)):
+            elif isinstance(el, (EaveSoffit, Fascia, Gutter, Flashing, GlazingTrim)):
                 _resolve_edge_run(model, el, storey.tag)
     return findings
 

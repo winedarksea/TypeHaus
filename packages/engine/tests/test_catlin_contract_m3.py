@@ -2,7 +2,8 @@
 
 These are *declared* facts, not a comparison: 36' house at sheathing, 16" o.c., 18' grid,
 4:12 hot roof with knee 5' / ridge 11' over the attic floor, 12" basement walls + 2x2" XPS,
-24' ICF garage 12' north, the freestanding arched sunken-garden structure — plus the views,
+24' ICF garage 5' north (4'-0 1/2" of clear slot once both skins are on),
+the freestanding arched sunken-garden structure — plus the views,
 checks and emitters those numbers feed. They are inlined here because the old repo is being
 archived, and they guard the design against silent drift.
 
@@ -34,7 +35,10 @@ KNEE_FT = 5.0
 RIDGE_OVER_ATTIC_FT = 11.0
 ATTIC_ELEV_FT = 20.0
 GARAGE_SIZE_FT = 24.0
-GARAGE_GAP_FT = 12.0
+# Sheathing-plane to wall-line gap. The finished gap is much tighter: the house's
+# 5" of outsulation and the garage's 13" ICF stem leave 4'-0 1/2" of clear slot,
+# which is what the breezeway's 4'-0" polycarbonate panels are sized to.
+GARAGE_GAP_FT = 5.0
 GARAGE_OVERHANG_IN = 16.0
 # eave_z_m is the rafter-top (deck) plane: the 11.875" I-joist rises above the knee-wall
 # plate by its depth less the birdsmouth (3.5" stud depth x 4:12 pitch = 1.1667"), per the
@@ -584,7 +588,7 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
         assert concrete.thickness_m == pytest.approx(inch(12.0).meters)
 
 
-def test_garage_is_freestanding_12ft_north_with_icf_stem(catlin_model):
+def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     stem = [w for w in catlin_model.walls if w.tag.startswith("W-GF-")]
     assert len(stem) == 4
     ys = [p[1] for w in stem for p in w.axis]

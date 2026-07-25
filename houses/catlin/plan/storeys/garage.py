@@ -1,5 +1,5 @@
 # haus: editable
-# Garage — freestanding 24'x24' ICF stem + 2x6 wood walls, 12' north of the house
+# Garage — freestanding 24'x24' ICF stem + 2x6 wood walls, 4' north of the house
 # (west walls aligned). Wood walls sit on the ICF stem 22" above grade; the storey
 # elevation is the top of the stem. Overhead door faces east (driveway side).
 from typehaus import (
@@ -23,11 +23,23 @@ from typehaus import (
     pt,
 )
 
+# The garage's two N-S wall lines, published so the ICF stem under them
+# (params/foundations.py), the slab inside them, and the breezeway that spans to the house
+# (params/breezeway.py) all derive from one number instead of four copies of it.
+#
+# 41.0' is set by the breezeway, and by the *stem* rather than the wall above it: the 13"
+# ICF section is wider than the 7 7/8" wood wall, so its exterior face stands 5 5/8" proud
+# of the cladding, at y = 40'-5 1/2". That face — not the cladding — is what the breezeway
+# deck and its glazing actually butt against. It sits 4'-0 1/2" north of the house's own
+# cladding face (y = 36'-5.02"), which is one 4'-0" polycarbonate panel with a 1/2" reveal.
+GARAGE_Y_SOUTH = ft(41)
+GARAGE_Y_NORTH = ft(65)
+
 NODES = [
-    Node(uid="CGN001AAAA", tag="N-G-SW", position=pt(ft(0), ft(48))),
-    Node(uid="CGN002AAAA", tag="N-G-SE", position=pt(ft(24), ft(48))),
-    Node(uid="CGN003AAAA", tag="N-G-NE", position=pt(ft(24), ft(72))),
-    Node(uid="CGN004AAAA", tag="N-G-NW", position=pt(ft(0), ft(72))),
+    Node(uid="CGN001AAAA", tag="N-G-SW", position=pt(ft(0), GARAGE_Y_SOUTH)),
+    Node(uid="CGN002AAAA", tag="N-G-SE", position=pt(ft(24), GARAGE_Y_SOUTH)),
+    Node(uid="CGN003AAAA", tag="N-G-NE", position=pt(ft(24), GARAGE_Y_NORTH)),
+    Node(uid="CGN004AAAA", tag="N-G-NW", position=pt(ft(0), GARAGE_Y_NORTH)),
 ]
 
 WALLS = [
@@ -77,8 +89,9 @@ ROOMS = [
 # which never rots at a drip edge). A vented PVC soffit closes the overhang underside and
 # feeds the eave-to-ridge vent channel. Elevations are derived from the resolved roof plane,
 # so the raised-heel lift carries the trim with it.
-# The SOUTH eave gets a 5" aluminum gutter: that slope faces the 12' breezeway gap and the
-# house wall across it, so its run-off is the only one that lands on somewhere people walk.
+# The SOUTH eave gets a 5" aluminum gutter: that slope faces the 4' breezeway gap and the
+# house wall across it, so its run-off is the only one that lands on somewhere people walk
+# — and it now also catches what sheds off the breezeway roof tucked under this eave.
 # The north eave sheds onto open ground and stays free-draining. The channel is declared
 # here rather than authored in params/ for the same reason the fascia is — the raised-heel
 # truss lifts the deck plane in the envelope stage, and an absolute elevation would drift off

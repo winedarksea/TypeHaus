@@ -89,6 +89,10 @@ class JurisdictionProfile:
     irc_base: str
     coverage_statement: str
     frost_depth_in: float | None = None
+    # Presumptive load-bearing value of the soil (IRC Table R401.4.1). Footing *sizing* is
+    # meaningless without it — required area is tributary load divided by this — so the
+    # footing check reports UNKNOWN rather than a silent pass when a profile omits it.
+    soil_bearing_psf: float | None = None
 
 
 @dataclass

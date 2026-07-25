@@ -64,7 +64,7 @@ from typehaus.model.mep import (
     VentRun,
 )
 from typehaus.model.trim import (
-    EaveGutter, EaveSoffit, EaveTrim, Fascia, FasciaBoard, Flashing, Gutter,
+    EaveGutter, EaveSoffit, EaveTrim, Fascia, FasciaBoard, Flashing, GlazingTrim, Gutter,
 )
 from typehaus.model.plan import Library, PlanModel
 from typehaus.model.project import Building, Project, Site, Storey
@@ -106,6 +106,7 @@ from typehaus.model.structure import (
     Footing,
     FootingBedding,
     FoundationWall,
+    GlazingPanel,
     KneeBrace,
     Pad,
     Post,
@@ -195,7 +196,7 @@ __all__ = [
     "Node", "Wall", "Door", "Window", "RoughOpening",
     "FoundationWall", "Footing", "Pad", "FootingBedding", "Post", "Beam",
     "Dowel", "Connector", "KneeBrace", "Railing", "Fascia", "Gutter", "Flashing",
-    "EaveSoffit", "FasciaBoard", "EaveGutter", "EaveTrim",
+    "EaveSoffit", "FasciaBoard", "EaveGutter", "EaveTrim", "GlazingPanel", "GlazingTrim",
     "Assembly", "Layer", "CavityFill", "FramingSpec", "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material",
     "DoorType", "WindowType", "FurnitureType", "FixtureType", "ApplianceType", "EquipmentType",

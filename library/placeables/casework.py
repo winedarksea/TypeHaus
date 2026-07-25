@@ -90,6 +90,14 @@ PANTRY_CLOSET_24 = FurnitureType(
     tag="CASE-PANTRY-CLOSET-24", name='24" pantry closet', footprint=(ft(2), _BASE_DEPTH),
     height=_TALL_HEIGHT, plan_symbol="tall-cabinet", storage=True, source=REFERENCE,
 )
+# The double-width closet pantry: two 24" doors on one 48" carcass. Twice the shelf run of the
+# 24" for the same 24" of depth, and the width at which a pantry stops being a leftover-end
+# filler and becomes the room's larder — which is why it wants a wall of its own rather than a
+# gap in a counter run.
+PANTRY_CLOSET_48 = FurnitureType(
+    tag="CASE-PANTRY-CLOSET-48", name='48" pantry closet', footprint=(ft(4), _BASE_DEPTH),
+    height=_TALL_HEIGHT, plan_symbol="tall-cabinet-double", storage=True, source=REFERENCE,
+)
 
 # An island is a base run turned loose in the room: 36" deep is 24" of carcass plus the 12"
 # overhang the stools tuck under, which is why the seating side reads as counter with nothing
@@ -109,6 +117,6 @@ BAR_STOOL = FurnitureType(
 STARTER_CASEWORK_TYPES = (
     BASE_15, BASE_24, BASE_30, BASE_36, SINK_BASE_36,
     WALL_18, WALL_24, WALL_30, WALL_66, OVER_APPLIANCE_36,
-    TALL_PANTRY_12, TALL_PANTRY_18, PANTRY_CLOSET_24,
+    TALL_PANTRY_12, TALL_PANTRY_18, PANTRY_CLOSET_24, PANTRY_CLOSET_48,
     ISLAND_60, BAR_STOOL,
 )

@@ -64,6 +64,8 @@ DROPPED_REFERENCE_STOREYS = ("breezeway-placeholder",)
 # Reference occurrences with no counterpart in the current model, each with the decision that
 # removed it. A reference element that stops matching without being listed here is a
 # regression: something the old house had and the new one silently lost.
+_GARAGE_MOVED = "the garage moved 7'-0\" south to close the breezeway gap to 4'-0 1/2\""
+
 DECLARED_DIVERGENCES = {
     "Basement Shower Recess (placeholder)": (
         "the old model reserved a slab recess placeholder; the sauna/shower is now a real "
@@ -103,6 +105,16 @@ DECLARED_DIVERGENCES = {
         "the two-tier arch stack became a single 16\" arched front wall with two 8' arches"
     ),
     "Sunken Garden North Wall Footing": "the garden's north wall was removed in the redesign",
+    # The garage moved 7'-0" south, from a 12' sheathing-plane gap to 5', so the breezeway
+    # between it and the house is a 4'-0 1/2" slot sized to one polycarbonate panel. 7' is
+    # far past MAX_PAIRED_PLACEMENT_DELTA_M — deliberately: an element that travelled that
+    # far is not the same element in the same place, and the matcher is right to say so.
+    # The garage itself is unchanged in size, section and framing; only its y is different.
+    "Garage Floor Slab": _GARAGE_MOVED,
+    "Garage ICF Concrete Core 3": _GARAGE_MOVED,
+    "Garage Stud Wall 1": _GARAGE_MOVED,
+    "Garage Stud Wall 2": _GARAGE_MOVED,
+    "Garage Stud Wall 4": _GARAGE_MOVED,
 }
 
 # Bounds on how far a *paired* occurrence may have travelled and still be the same element of
@@ -204,7 +216,10 @@ def test_every_reference_element_has_a_counterpart_or_a_declared_reason(equivale
 def test_paired_walls_stay_on_their_reference_wall_lines(equivalence):
     """Every reference wall line that still exists is within a construction-scale move."""
     pairs = _paired(equivalence, "wall")
-    assert len(pairs) >= 25, equivalence.status_counts()
+    # 22, not 25: the garage's 7'-0" move deliberately unpairs three of its stud-wall runs
+    # (recorded in DECLARED_DIVERGENCES). Every wall that still pairs must still be within a
+    # construction-scale move of its reference line, which is what the loop below asserts.
+    assert len(pairs) >= 22, equivalence.status_counts()
     for item in pairs:
         assert item.placement_delta_m <= MAX_PAIRED_PLACEMENT_DELTA_M, item.as_dict()
         plan_delta = max(abs(item.size_delta_m[0]), abs(item.size_delta_m[1]))

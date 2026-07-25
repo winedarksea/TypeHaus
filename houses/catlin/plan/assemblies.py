@@ -248,6 +248,42 @@ PORCH_DECK_COMPOSITE = Assembly(
     source="catlin-house porch floor — composite decking on PT 2x8 joists",
 )
 
+# --- breezeway enclosure -------------------------------------------------------
+# Two glazing assemblies, both deliberately without insulation, membrane or deck layers:
+# the breezeway is an unheated shelter between two heated buildings, so its envelope has
+# one job (shed water and cut wind) and adding a thermal layer would put it inside an
+# energy check it has no business being in.
+#
+# The roof is patterned on GARAGE_ROOF minus the deck and the membrane: a multiwall sheet
+# *is* the deck and the weather surface, screwed straight to the rafters through gasketed
+# stainless fasteners. The 2x6 rafter layer is what makes it read as a framed roof in plans
+# and take-offs rather than as a bare sheet floating on nothing.
+BREEZEWAY_ROOF_POLY = Assembly(
+    tag="BREEZEWAY_ROOF_POLY",
+    layers=(
+        Layer(name="rafter", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", roof_frame="rafter")),
+        Layer(name="glazing", material_ref="polycarbonate-multiwall", thickness=inch(0.63),
+              function=LayerFunction.CLADDING),
+    ),
+    source="breezeway roof — 16mm 5-wall polycarbonate on 2x6 rafters, drainage wedges over",
+)
+
+# The east and west walls: one 4'x8' sheet each, standing in a U-channel at the deck and an
+# F-channel at the beam, with no framing of its own — the 6x6 posts either end are the frame.
+# The sheet is STRUCTURE here, not CLADDING: it is the whole wall and it spans the 4'-0"
+# between those posts unaided, exactly as PORCH_DECK_COMPOSITE's single plank layer is the
+# spanning walking surface. On the roof, where 2x6 rafters do the spanning, it is cladding.
+BREEZEWAY_GLAZED_WALL = Assembly(
+    tag="BREEZEWAY_GLAZED_WALL",
+    layers=(
+        Layer(name="glazing", material_ref="polycarbonate-multiwall", thickness=inch(0.63),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="breezeway side walls — one 4'x8' 16mm multiwall sheet per side, bird-safety film",
+)
+
 BALCONY_DECK_ALUMINUM = Assembly(
     tag="BALCONY_DECK_ALUMINUM",
     layers=(
@@ -455,6 +491,28 @@ MATERIALS = [
              r_per_inch=0.08, density=2200.0, perm_rating=2.5, hatch="concrete",
              color="#a8a49c", finish="cmu",
              source="raised garden outer face — dry-stacked SRW units, no mortar"),
+    # --- breezeway glazing -----------------------------------------------------
+    # 16mm five-wall polycarbonate. `color` is authored, not inferred, and deliberately:
+    # the palette's family inference is substring-ordered and ("poly", "rigid") matches
+    # first, so an unauthored "polycarbonate-multiwall" renders as bright-yellow rigid foam
+    # in both the GLB and the viewer. The alpha byte is what makes it read as glazing rather
+    # than a solid panel (emit/gltf/scene.py switches to alphaMode BLEND below 1.0).
+    # `perm_rating` is deliberately UNSET: solid polycarbonate is very nearly a vapour
+    # barrier, but the published ASTM E96 figures are for solid sheet at a stated thickness,
+    # not for a five-wall extrusion with sealed flutes, and inventing one would put a made-up
+    # number into the Glaser profile. Leaving it unset makes that report UNKNOWN, which is
+    # the true answer — the same call `lsl` and `fiber-cement` make in library/materials.py.
+    Material(tag="polycarbonate-multiwall", name="Multiwall polycarbonate glazing (16mm)",
+             r_per_inch=1.54, density=1200.0, hatch="glass", color="#cfe3e8b0",
+             finish="polycarbonate",
+             source="breezeway enclosure — 16mm 5-wall sheet, R-2.5/sheet (manufacturer)"),
+    # Mill-finish extruded aluminium: the U/H/F channels, the glazing bars, and the panel
+    # fasteners' washers. "alum" matches no needle in the family inference at all, so this
+    # colour is authored for the same reason the polycarbonate's is.
+    Material(tag="aluminum-extrusion", name="Extruded aluminium glazing bar / channel",
+             r_per_inch=0.0007, density=2700.0, perm_rating=0.0, hatch="metal",
+             color="#b6bac0",
+             source="breezeway glazing trim — mill-finish 6063-T5 extrusion"),
 ]
 
 # --- construction rules: pre-resolve returns at mixed-assembly junctions (#45) ----------
@@ -509,6 +567,8 @@ ASSEMBLIES = [
     PORCH_RAILING_MASONRY,
     RETAINING_BLOCK_12,
     PORCH_DECK_COMPOSITE,
+    BREEZEWAY_ROOF_POLY,
+    BREEZEWAY_GLAZED_WALL,
     BALCONY_DECK_ALUMINUM,
     POST_WHITE_PAINT,
     GARAGE_ICF_8,

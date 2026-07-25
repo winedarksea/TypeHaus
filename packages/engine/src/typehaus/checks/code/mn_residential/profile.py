@@ -22,6 +22,9 @@ MN_2024 = JurisdictionProfile(
         "This profile covers a declared subset of the code; results are never 'code compliant'."
     ),
     frost_depth_in=42.0,
+    # IRC Table R401.4.1 presumptive value for sandy/silty clay, the conservative default
+    # where no soils report exists. A real geotechnical report supersedes it.
+    soil_bearing_psf=1500.0,
 )
 
 PROFILES: dict[str, JurisdictionProfile] = {"mn-2024": MN_2024}

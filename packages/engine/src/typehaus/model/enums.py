@@ -194,6 +194,7 @@ class ConnectorKind(Enum):
     HURRICANE_TIE = "hurricane_tie"        # e.g. Simpson H2.5A rafter/joist-to-plate tie
     KNEEBRACE = "kneebrace"                # e.g. Simpson APVKB angled knee brace
     POST_BASE = "post_base"                # standoff post base (e.g. Simpson ABU/CBSQ)
+    HOLD_DOWN = "hold_down"                # beam-to-post uplift strap (e.g. Simpson KBS/LSTA)
     STANDING_SEAM_CLAMP = "standing_seam_clamp"  # S-5!-style seam clamp on the siding
 
 
@@ -213,6 +214,10 @@ class TrimKind(Enum):
     GUTTER = "gutter"                    # hung gutter channel
     DRIP_FLASHING = "drip_flashing"      # front-edge drip flashing into the gutter
     WRB_COUNTERFLASHING = "wrb_counterflashing"  # rear flashing tucked into the house WRB
+    # Multiwall-glazing extrusions. A panel edge is never left open: an open flute end wicks
+    # water and grows algae, so every edge is capped by one of these.
+    GLAZING_CHANNEL = "glazing_channel"  # U / H / F extrusion capping a panel edge
+    GLAZING_BAR = "glazing_bar"          # capped bar joining or closing panel edges
 
 
 class UtilityKind(Enum):

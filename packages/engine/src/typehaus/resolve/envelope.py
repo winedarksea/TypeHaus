@@ -10,7 +10,7 @@ from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Roof, Stair
 from typehaus.model.refs import ToRoof
 from typehaus.model.enums import ConditionKind
-from typehaus.model.structure import Beam, Footing, FootingBedding, Pad, Post
+from typehaus.model.structure import Beam, Footing, FootingBedding, GlazingPanel, Pad, Post
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import circle_outline, polygon_area, rect_between
 from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
@@ -57,12 +57,26 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                                            f"pad {element.tag} needs a closed outline",
                                            element.tag))
                     continue
-                bottom = (element.bottom_elevation.meters if element.bottom_elevation is not None
-                          else elevation - element.thickness.meters)
+                # ``thickness`` is the pour, always. An authored ``bottom_elevation`` sets
+                # where the pad *bears* — at frost depth, typically — and the pad is that
+                # thick above it; without one the pad hangs its thickness below the storey
+                # datum. Reading the bottom as authored but the top as the storey datum
+                # (which is what this did) turns a 12" pad on a 42" frost base into a 42"
+                # block of concrete, and buries whatever bears on its top.
+                if element.bottom_elevation is not None:
+                    bottom = element.bottom_elevation.meters
+                    top = bottom + element.thickness.meters
+                else:
+                    top = elevation
+                    bottom = top - element.thickness.meters
                 model.solids.append(ResolvedSolid(
-                    element.uid, element.tag, storey.tag, "pad", outline,
-                    bottom, elevation,
+                    element.uid, element.tag, storey.tag, "pad", outline, bottom, top,
                 ))
+            elif isinstance(element, GlazingPanel):
+                solid, panel_findings = _resolve_glazing_panel(element, storey.tag)
+                findings.extend(panel_findings)
+                if solid is not None:
+                    model.solids.append(solid)
             elif isinstance(element, Footing):
                 solid = _resolve_footing(model, element, storey.tag)
                 if solid is None:
@@ -92,6 +106,45 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                 if bedding is not None:
                     model.footing_beddings.append(bedding)
     return findings
+
+
+def _resolve_glazing_panel(
+    panel: GlazingPanel, storey: str
+) -> tuple[ResolvedSolid | None, list[Finding]]:
+    """A glazing sheet as a thin solid at its own absolute elevation.
+
+    Both planes are authored the way the sheet is actually described on site: a canopy panel
+    by the footprint it covers, a wall panel by the line it stands on. Neither is derived
+    from a storey datum — a panel sits where its frame puts it.
+    """
+    thickness = panel.thickness.meters
+    top = panel.top_elevation.meters
+    points = [point.xy_m for point in panel.outline]
+    if panel.plane == "vertical":
+        if len(points) < 2:
+            return None, [element_error(
+                "integrity.glazing_panel_run",
+                f"vertical glazing panel {panel.tag} needs at least 2 plan points to stand on",
+                panel.tag)]
+        if panel.base_elevation is None:
+            return None, [element_error(
+                "integrity.glazing_panel_base",
+                f"vertical glazing panel {panel.tag} needs a base_elevation", panel.tag)]
+        base = panel.base_elevation.meters
+        if top <= base:
+            return None, [element_error(
+                "integrity.glazing_panel_height",
+                f"glazing panel {panel.tag} tops out at or below its base", panel.tag)]
+        half = thickness / 2.0
+        outline = rect_between(points[0], points[-1], -half, half)
+        return ResolvedSolid(panel.uid, panel.tag, storey, "glazing", tuple(outline),
+                             base, top, panel.assembly), []
+    if len(points) < 3:
+        return None, [element_error(
+            "integrity.glazing_panel_outline",
+            f"horizontal glazing panel {panel.tag} needs a closed outline", panel.tag)]
+    return ResolvedSolid(panel.uid, panel.tag, storey, "glazing", tuple(points),
+                         top - thickness, top, panel.assembly), []
 
 
 def _slab_elevations(slab: Slab, elevation: float) -> tuple[float, float]:
@@ -280,6 +333,13 @@ def _bearing_stack_drops(model: ResolvedModel) -> tuple[dict[str, float], dict[s
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):
             if isinstance(element, Beam):
+                # An authored ``top_elevation`` pins the beam absolutely, so there is no
+                # derived datum arithmetic for a post to follow — and propagating one would
+                # actively break the case it exists for. A breezeway post runs *past* its
+                # floor beam (which is bolted to the post face) all the way to the roof;
+                # shortening it by that beam's joist depth would take the roof with it.
+                if element.top_elevation is not None:
+                    continue
                 drop = joist_drop.get(element.tag, 0.0)
                 for ref in element.bearing_refs:
                     post_drop[ref] = max(post_drop.get(ref, 0.0), drop)
@@ -302,8 +362,15 @@ def resolve_columns_and_beams(model: ResolvedModel) -> list[Finding]:
                  if e.element_kind == "Node"}
         for element in model.plan.storey_elements(storey.tag):
             if isinstance(element, Post):
-                model.solids.append(_resolve_post(element, storey.tag, elevation, solid_top,
-                                                   storey, post_drop))
+                solid = _resolve_post(element, storey.tag, elevation, solid_top,
+                                      storey, post_drop)
+                model.solids.append(solid)
+                # A post can bear on another post — a 6x6 standing on the concrete pier that
+                # lifts it clear of the ground. Publishing each resolved top as we go is what
+                # makes that chain work; ``solid_top`` was snapshotted before this loop, so a
+                # support resolved in the same pass was invisible and its post silently fell
+                # back to hanging below the storey datum.
+                solid_top[solid.tag] = solid.z1_m
             elif isinstance(element, Beam) and element.uid not in ridge_uids:
                 solid = _resolve_beam(element, storey.tag, elevation, nodes, joist_drop)
                 if solid is None:

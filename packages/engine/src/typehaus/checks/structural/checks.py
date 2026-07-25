@@ -22,6 +22,10 @@ _IJOIST_SPAN_FT: dict[str, float] = {
     "2x12": 19.1,
 }
 
+# The o.c. spacing ``_IJOIST_SPAN_FT`` is published at. A floor framed at anything else has
+# no row here and reports UNKNOWN rather than borrowing this one.
+_IJOIST_TABLE_SPACING_IN = 16.0
+
 # Widest span ``resolve.framing.tables.header_size`` still answers prescriptively (R602.7);
 # anything longer is an engineered beam in that table and here.
 _PRESCRIPTIVE_HEADER_SPAN_FT = 8.0
@@ -83,9 +87,18 @@ def floor_opening_header_within_prescriptive(ctx: CheckContext) -> list[Finding]
 
 @check(Tier.STRUCTURAL, "structural.ijoist_span")
 def ijoist_span(ctx: CheckContext) -> list[Finding]:
-    """Compare resolved I-joist spans against the declared 16-inch-o.c. table."""
+    """Compare resolved interior-floor joist spans against the declared span table.
+
+    Exterior decks are excluded by ``FloorSystem.service``: they carry a different load case
+    and are graded against IRC R507 / AWC DCA6 in ``checks/structural/deck.py`` instead.
+    """
+    from typehaus.model.floors import FloorSystem
+
     out: list[Finding] = []
-    floors = ctx.model.floors
+    authored = {el.tag: el for el in ctx.plan.all_elements()
+                if isinstance(el, FloorSystem)}
+    decks = {tag for tag, el in authored.items() if el.service == "deck"}
+    floors = [floor for floor in ctx.model.floors if floor.tag not in decks]
     if not floors:
         out.append(Finding(severity=Severity.WARN, check_id="structural.ijoist_span",
                            message="UNKNOWN — no resolved FloorSystem span to check",
@@ -105,18 +118,34 @@ def ijoist_span(ctx: CheckContext) -> list[Finding]:
                                message=f"UNKNOWN — no span-table row for {profile}",
                                element_tags=(floor.tag,), result=Result.UNKNOWN))
             continue
+        # The table above is published at one spacing. Reading the floor's actual o.c. and
+        # reporting UNKNOWN off it beats printing 16" over a deck framed at something else:
+        # the answer would be wrong in the unconservative direction at a wider spacing.
+        spec = authored.get(floor.tag)
+        spacing = spec.joists.spacing if spec is not None else None
+        spacing_in = spacing.inches if spacing is not None else _IJOIST_TABLE_SPACING_IN
+        if abs(spacing_in - _IJOIST_TABLE_SPACING_IN) > 1e-6:
+            out.append(Finding(
+                severity=Severity.WARN, check_id="structural.ijoist_span",
+                message=(f"UNKNOWN — floor {floor.tag} is framed at {spacing_in:.0f}\" o.c. "
+                         f"and this table is published only at "
+                         f"{_IJOIST_TABLE_SPACING_IN:.0f}\" o.c."),
+                element_tags=(floor.tag,), result=Result.UNKNOWN))
+            continue
         span_ft = max(member.length_m for member in joists) / 0.3048
         if span_ft > allowable + 1e-6:
             out.append(_advisory(
                 "structural.ijoist_span",
                 f"floor {floor.tag} {profile} span {span_ft:.1f}' exceeds the "
-                f"{allowable:.1f}' table limit at 16\" o.c.", (floor.tag,), Result.FAIL,
+                f"{allowable:.1f}' table limit at {spacing_in:.0f}\" o.c.",
+                (floor.tag,), Result.FAIL,
             ))
         else:
             out.append(_advisory(
                 "structural.ijoist_span",
                 f"floor {floor.tag} {profile} span {span_ft:.1f}' is within the "
-                f"{allowable:.1f}' table limit at 16\" o.c.", (floor.tag,), Result.PASS,
+                f"{allowable:.1f}' table limit at {spacing_in:.0f}\" o.c.",
+                (floor.tag,), Result.PASS,
             ))
     return out
 

@@ -29,6 +29,10 @@ class Site(HausModel):
     parcel_refs: tuple[str, ...] = ()
     design_temp_heating: Temperature | None = None  # 99% heating design temp
     design_temp_cooling: Temperature | None = None  # 1% cooling design temp
+    # Ground snow load p_g (ASCE 7 / IRC Table R301.2(1) — a jurisdictional figure, not a
+    # derived one). Minneapolis is 50 psf. The roof framing sheet prints the load case from
+    # this; without it that sheet states no load case at all.
+    ground_snow_load_psf: float | None = None
     parcel: tuple[Point2D, ...] = ()  # closed CCW ring, plan frame
     setbacks: tuple[SetbackSpec, ...] = ()
     spot_elevations: tuple[SpotElevation, ...] = ()

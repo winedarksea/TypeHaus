@@ -25,16 +25,30 @@ MAIN_PLACEABLES = [
               position=pt(m(7.87848), m(2.69813))),
     Furniture(uid="EKN22YPA9J", tag="FURN-M-MEDIA", type_ref="FURN-MEDIA-60", room="RM-M-LIVING",
               position=pt(ft(26, 11), ft(1, 10)), rotation=deg(180)),
-    Furniture(uid="QWCMN48QST", tag="FURN-M-DINING", type_ref="FURN-DINING-6", room="RM-M-LIVING",
-              position=pt(ft(26, 11), ft(21, 4))),
-    Furniture(uid="60XVKZHFAS", tag="FURN-M-CHAIR-SW", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(25, 4), ft(18, 9)), rotation=deg(180)),
-    Furniture(uid="XCW1QKV701", tag="FURN-M-CHAIR-SE", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(28, 6), ft(18, 9)), rotation=deg(180)),
-    Furniture(uid="VHHDZ62B5F", tag="FURN-M-CHAIR-NW", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(25, 4), ft(23, 11))),
-    Furniture(uid="17F6ZBR67K", tag="FURN-M-CHAIR-NE", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
-              position=pt(ft(28, 6), ft(23, 11))),
+    # Dining, at 17'-4" — 4' south of where it sat, which is what the north end of the room
+    # asked for once the island moved down and the 48" pantry took the east wall to 22'-8".
+    # The chair-use zone now runs y=12'-7"..22'-1": clear of the sofa's back at 10'-5", clear
+    # of the pantry by 7", and leaving a 4'-4" circulation band between the table and the
+    # island's seating edge instead of the 7" the old position left.
+    #
+    # An 8' x 3'-6" table is an eight-*place* table, but only the six side chairs are drawn.
+    # The ends are where the room's long axis runs — an end chair pulled out is exactly what
+    # would block the walk from the hall pass-through to the east windows — so they stay
+    # unset places, brought in from elsewhere when the table is actually filled.
+    Furniture(uid="QWCMN48QST", tag="FURN-M-DINING", type_ref="FURN-DINING-8", room="RM-M-LIVING",
+              position=pt(ft(26, 11), ft(17, 4))),
+    Furniture(uid="60XVKZHFAS", tag="FURN-M-CHAIR-S1", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
+              position=pt(ft(24, 5), ft(14, 6)), rotation=deg(180)),
+    Furniture(uid="XCW1QKV701", tag="FURN-M-CHAIR-S2", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
+              position=pt(ft(26, 11), ft(14, 6)), rotation=deg(180)),
+    Furniture(uid="REJA4QPWC3", tag="FURN-M-CHAIR-S3", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
+              position=pt(ft(29, 5), ft(14, 6)), rotation=deg(180)),
+    Furniture(uid="VHHDZ62B5F", tag="FURN-M-CHAIR-N1", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
+              position=pt(ft(24, 5), ft(20, 2))),
+    Furniture(uid="R3XJVT80XY", tag="FURN-M-CHAIR-N2", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
+              position=pt(ft(26, 11), ft(20, 2))),
+    Furniture(uid="17F6ZBR67K", tag="FURN-M-CHAIR-N3", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
+              position=pt(ft(29, 5), ft(20, 2))),
     # --- kitchen: the NE corner of the open living face (no Room of its own) -------------
     #
     # Two datums set every number below, and both are finish faces read off the resolved
@@ -123,6 +137,14 @@ MAIN_PLACEABLES = [
               position=pt(ft(34, 5.375), ft(32, 8)), rotation=deg(-90)),
     Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="CASE-B15", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(34, 9.5)), rotation=deg(-90)),
+    # The larder, south of where the counter run stops (KIT-E1's south end, y=26'-8") and
+    # running 4' down the wall to 22'-8". Twice the width of the west run's closet pantry and
+    # the only bulk storage on this side of the kitchen, which is the trade for the two
+    # dining windows moving 6' south to clear it — see WIN-M-DIN-E1/E2 in storeys/main.py.
+    # Two 24" doors rather than one 48" (→ CASE-PANTRY-CLOSET-48), and 8' tall to close the
+    # east wall out at the same line as the west run's talls.
+    Furniture(uid="Z0H6MVXC71", tag="FURN-M-KIT-PANTRY-E", type_ref="CASE-PANTRY-CLOSET-48", room="RM-M-LIVING",
+              position=pt(ft(34, 5.375), ft(24, 8)), rotation=deg(-90)),
     Furniture(uid="AQTQJBTXRR", tag="FURN-M-KIT-WE1", type_ref="CASE-W30", room="RM-M-LIVING",
               position=pt(ft(34, 10.875), ft(27, 11)), rotation=deg(-90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
@@ -131,18 +153,20 @@ MAIN_PLACEABLES = [
               mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
 
     # Island — 5' x 3', the mid-landing of a work triangle the architect's fridge-west /
-    # sink-east program stretches to ~30' of perimeter. Its north face is 36" off the range
-    # front (the NKBA minimum for a one-cook aisle; 42" to the cabinet fronts either side of
-    # it) and its south face clears the dining table's chair-use zone, which ends at y=25'-10".
+    # sink-east program stretches to ~30' of perimeter. Dropped 6" south of where it started
+    # so the work aisle is 42" rather than 36": the range front is at y=32'-11 3/8" and the
+    # island's north face is now 29'-5 3/8". 36" is the bare code-side minimum a body fits
+    # through; 42" is the NKBA one-cook recommendation, and it is the number that lets the
+    # oven door (a 30" range's drops ~24") open with someone still standing behind it.
     # 36" deep = 24" of carcass plus the 12" overhang the stools tuck under.
     Furniture(uid="PD9W4Q86MD", tag="FURN-M-KIT-ISLAND", type_ref="CASE-ISLAND-60", room="RM-M-LIVING",
-              position=pt(ft(27, 6), ft(28, 5.375))),
+              position=pt(ft(27, 6), ft(27, 11.375))),
     Furniture(uid="MZNJ9TAN56", tag="FURN-M-KIT-STOOL1", type_ref="FURN-BAR-STOOL", room="RM-M-LIVING",
-              position=pt(ft(26), ft(26, 7)), rotation=deg(180)),
+              position=pt(ft(26), ft(26, 1)), rotation=deg(180)),
     Furniture(uid="TMR4RNV2E3", tag="FURN-M-KIT-STOOL2", type_ref="FURN-BAR-STOOL", room="RM-M-LIVING",
-              position=pt(ft(27, 6), ft(26, 7)), rotation=deg(180)),
+              position=pt(ft(27, 6), ft(26, 1)), rotation=deg(180)),
     Furniture(uid="1RME2HHSQT", tag="FURN-M-KIT-STOOL3", type_ref="FURN-BAR-STOOL", room="RM-M-LIVING",
-              position=pt(ft(29), ft(26, 7)), rotation=deg(180)),
+              position=pt(ft(29), ft(26, 1)), rotation=deg(180)),
 ]
 GARAGE_PLACEABLES = []
 # Head against the east wall: rotation -90 turns the bed's back (+y) toward +x.

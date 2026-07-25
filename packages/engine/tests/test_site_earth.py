@@ -24,8 +24,9 @@ FT = 0.3048
 HOUSE_BASEMENT_POINT_FT = (18.0, 18.0)
 GARAGE_POINT_FT = (12.0, 60.0)
 SUNKEN_GARDEN_POINT_FT = (18.0, -15.0)
-# Open yard between the house and the garage — earth must still be there.
-OPEN_YARD_POINT_FT = (18.0, 42.0)
+# Open yard — earth must still be there. East of the garage (which reaches x=24', y=41'-65'
+# now that it stands 4' off the house) and clear of the breezeway in the slot between them.
+OPEN_YARD_POINT_FT = (30.0, 48.0)
 
 
 @pytest.fixture(scope="module")

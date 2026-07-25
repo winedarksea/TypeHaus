@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from typehaus.model.base import Element
 from typehaus.model.elements import Wall
 from typehaus.model.enums import ConnectorKind, RailingKind
@@ -182,9 +184,43 @@ class Railing(Element):
     assembly: str | None = None  # optional finish assembly for render/IFC material
 
 
+@register_element
+class GlazingPanel(Element):
+    """A flat translucent sheet spanning a frame — multiwall polycarbonate, glass, acrylic.
+
+    Not a :class:`~typehaus.model.elements.Window`: a window is an *opening* cut in a host
+    wall and framed by it. This is the sheet itself, standing free in a post-and-beam frame
+    with no wall to host it — the enclosure of a breezeway, a canopy, a lean-to. It is also
+    not a ``Slab`` with a glazing assembly, because a Slab is pinned to its storey datum and
+    a canopy panel sits at whatever absolute elevation its rafters put it.
+
+    ``plane`` picks the extrusion:
+
+    * ``"horizontal"`` — ``outline`` is the panel's footprint, lying flat with its top at
+      ``top_elevation`` and its underside a ``thickness`` below.
+    * ``"vertical"`` — ``outline`` is the panel's *run* in plan (two or more points), stood
+      up from ``base_elevation`` to ``top_elevation`` and given ``thickness`` across the run.
+
+    Sheet economy is a real design constraint for these (they come in 4'x8' stock and cutting
+    them is waste), so the take-off bills them by area *and* by whole sheets.
+    """
+
+    outline: tuple[Point2D, ...]
+    thickness: Length
+    top_elevation: Length
+    plane: Literal["horizontal", "vertical"] = "horizontal"
+    base_elevation: Length | None = None  # vertical panels; required when plane="vertical"
+    assembly: str | None = None
+    # Applied film — UV, solar-control, or bird-safety patterning. Recorded rather than
+    # modeled: it is 2 mil of surface treatment, not a layer with a thermal or dimensional
+    # consequence, but it is a line on the order and a note on the drawing.
+    film: str | None = None
+
+
 for _name, _obj in (
     ("FoundationWall", FoundationWall),
     ("Footing", Footing),
+    ("GlazingPanel", GlazingPanel),
     ("Pad", Pad),
     ("FootingBedding", FootingBedding),
     ("Post", Post),
