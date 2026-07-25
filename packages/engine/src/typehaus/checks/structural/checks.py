@@ -30,15 +30,6 @@ def _advisory(cid: str, msg: str, tags: tuple[str, ...], result: Result,
                    result=result, fix_hint=fix_hint)
 
 
-def _studs_broken(center_m: float, half_m: float, spacing_m: float) -> int:
-    """How many on-module stud lines an opening interrupts (0 => it fits inside a bay)."""
-    import math
-
-    lo = math.ceil((center_m - half_m) / spacing_m - 1e-9)
-    hi = math.floor((center_m + half_m) / spacing_m + 1e-9)
-    return max(0, hi - lo + 1)
-
-
 @check(Tier.STRUCTURAL, "structural.header_prescriptive")
 def header_within_prescriptive(ctx: CheckContext) -> list[Finding]:
     """Flag openings whose header exceeds prescriptive width (needs engineering)."""
@@ -131,8 +122,15 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.STRUCTURAL, "structural.window_framing_module")
 def window_framing_module(ctx: CheckContext) -> list[Finding]:
-    """Keep Catlin's small openings and one-stud breaks on the 16" framing module."""
+    """Keep Catlin's small openings and one-stud breaks on the 16" framing module.
+
+    The interruption arithmetic is the solver's own (``resolve.framing.stud_module``): the
+    check and the framing it checks must never disagree about how many studs an opening
+    costs.
+    """
     from typehaus.model.enums import LayerFunction
+    from typehaus.resolve.framing.stud_module import opening_stud_module
+    from typehaus.resolve.framing.tables import member_actual
 
     rules = ctx.preferences.framing
     spacing = rules.module_in * 0.0254
@@ -156,12 +154,11 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
             continue  # concrete / masonry openings do not consume stud bays
         role = authored.structural_role
         width_in = opening.width_m / 0.0254
-        broken = _studs_broken(opening.center_along_m, opening.width_m / 2, spacing)
-        # How many studs the opening *ought* to break: none if it fits inside a bay,
-        # otherwise one (a symmetric window centered on a single stud line).
-        expected_break = 0 if width_in <= rules.max_window_ro_unbroken_in else 1
-        break_note = (f"breaks {broken} stud line{'s' if broken != 1 else ''} at "
-                      f"{rules.module_in:.0f}\" o.c.")
+        # The stud *body*, not just its centreline, decides whether the RO clears the bay,
+        # so the analysis needs the wall's own member thickness.
+        module = opening_stud_module(opening.center_along_m, opening.width_m, spacing,
+                                     member_actual(framing.member)[0] * 0.0254)
+        break_note = module.describe()
         maximum = (rules.max_window_ro_bearing_in if role is StructuralRole.BEARING
                    else rules.max_window_ro_nonbearing_in)
         if width_in > maximum + 1e-6:
@@ -173,24 +170,21 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
                           f"RO <= {maximum:.0f}\" to stay on the prescriptive module"),
             ))
             continue
-        # A <=14" window stays centered in an unbroken bay.  The 27"/30" choices are
-        # deliberately centered on one stud line so the king/jack framing is symmetric.
-        target = spacing / 2 if width_in <= rules.max_window_ro_unbroken_in else 0.0
-        distance_to_target = abs(((opening.center_along_m - target + spacing / 2) % spacing)
-                                 - spacing / 2)
-        if distance_to_target > tolerance:
-            target_label = "bay center" if target else "stud line"
-            # Flag the awkward case explicitly: a window breaking more stud lines than it
-            # should (an off-center 30" RO clipping two studs instead of one) doubles the
-            # jack/header work and wastes a stud bay.
-            awkward = (f"; it {break_note} instead of {expected_break}"
-                       if broken > expected_break else "")
+        # The ideal position is the one that costs the fewest studs: a bay centre for an
+        # even count (a <=14" RO that needs no header at all), a stud line for an odd one,
+        # which is what keeps the king/jack framing symmetric.
+        header_free_hint = (
+            " — at or under the declared header-free width, so on its bay centre it would "
+            "need no header at all"
+            if width_in <= rules.max_window_ro_unbroken_in else "")
+        if module.straddles_awkwardly or module.offset_from_ideal_m > tolerance:
             out.append(_advisory(
                 "structural.window_framing_module",
-                f"window {opening.tag} is {distance_to_target / 0.0254:.1f}\" off its "
-                f"{target_label}{awkward}; resize/reposition to the {rules.module_in:.0f}\" "
-                f"module", (opening.tag,), Result.FAIL,
-                fix_hint=(f"shift the RO center onto its {target_label} so it breaks "
-                          f"{expected_break} stud line{'s' if expected_break != 1 else ''}"),
+                f"window {opening.tag} is {module.offset_from_ideal_m / 0.0254:.1f}\" off "
+                f"its {module.ideal_label} and {break_note}; resize/reposition to the "
+                f"{rules.module_in:.0f}\" module", (opening.tag,), Result.FAIL,
+                fix_hint=(f"shift the RO centre onto its {module.ideal_label} so it "
+                          f"interrupts {module.minimum_interrupted} stud(s)"
+                          f"{header_free_hint}"),
             ))
     return out
