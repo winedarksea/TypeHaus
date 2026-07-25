@@ -89,6 +89,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "connector": (0.35, 0.36, 0.38, 1.0),  # galvanized hardware
     "sump": (0.30, 0.32, 0.34, 1.0),       # pit
     "vent": (0.88, 0.88, 0.86, 1.0),       # painted vent pipe
+    "solar": (0.10, 0.14, 0.28, 1.0),      # PV module glass, deep blue
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
     "soffit": (0.88, 0.88, 0.85, 1.0),     # vented soffit panel under the overhang
     "gutter": (0.85, 0.86, 0.87, 1.0),     # metal gutter

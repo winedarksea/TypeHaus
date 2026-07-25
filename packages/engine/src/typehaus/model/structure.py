@@ -9,7 +9,7 @@ from typehaus.model.elements import Wall
 from typehaus.model.enums import ConnectorKind, RailingKind
 from typehaus.model.refs import FaceRef
 from typehaus.model.registry import register_constructor, register_element
-from typehaus.quantities import Length, Point2D
+from typehaus.quantities import Length, Point2D, inch
 
 
 @register_element
@@ -231,11 +231,38 @@ class GlazingPanel(Element):
     film: str | None = None
 
 
+@register_element
+class SolarPanel(Element):
+    """One PV module lying on a roof plane, mounted on standing-seam clamps.
+
+    Not a :class:`GlazingPanel`: that element is axis-flat (horizontal or vertical) while
+    a module lies *in the roof plane* — the resolver computes its four tilted corners from
+    the referenced roof's pitch, standing it ``standoff`` off the plane (clamp + rail
+    height) with ``thickness`` across it. ``origin`` is the module's ridge-side corner
+    with the smallest along-ridge coordinate; the module runs ``width`` along the ridge
+    and ``length`` down the slope (both measured in the panel plane, so the plan
+    projection of ``length`` is foreshortened by the pitch).
+
+    The clamps are separate ``Connector(STANDING_SEAM_CLAMP)`` elements so the hardware
+    take-off counts them like every other modeled connector.
+    """
+
+    roof_ref: str  # ResolvedRoof tag, e.g. "RF-HOUSE"
+    origin: Point2D  # ridge-side, min-along-ridge corner (plan frame)
+    width: Length  # along-ridge module edge (69.4" landscape)
+    length: Length  # down-slope module edge, in the panel plane (44.6")
+    thickness: Length  # module depth (1.2")
+    standoff: Length = inch(3)  # clamp + rail height off the roof plane
+    watts: float = 0.0  # nameplate DC watts — summed by the solar take-off
+    product: str = ""
+
+
 for _name, _obj in (
     ("DrainTile", DrainTile),
     ("FoundationWall", FoundationWall),
     ("Footing", Footing),
     ("GlazingPanel", GlazingPanel),
+    ("SolarPanel", SolarPanel),
     ("Pad", Pad),
     ("FootingBedding", FootingBedding),
     ("Post", Post),

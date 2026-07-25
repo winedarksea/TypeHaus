@@ -116,6 +116,7 @@ from typehaus.model.structure import (
     Pad,
     Post,
     Railing,
+    SolarPanel,
 )
 from typehaus.model.spatial import (
     Annotation,
@@ -202,6 +203,7 @@ __all__ = [
     "FoundationWall", "Footing", "Pad", "FootingBedding", "DrainTile", "Post", "Beam",
     "Dowel", "Connector", "KneeBrace", "Railing", "Fascia", "Gutter", "Flashing",
     "EaveSoffit", "FasciaBoard", "EaveGutter", "EaveTrim", "GlazingPanel", "GlazingTrim",
+    "SolarPanel",
     "Assembly", "Layer", "CavityFill", "FramingSpec", "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material",
     "DoorType", "WindowType", "FurnitureType", "FixtureType", "ApplianceType", "EquipmentType",

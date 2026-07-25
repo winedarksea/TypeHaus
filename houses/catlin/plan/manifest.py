@@ -24,7 +24,7 @@ from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_bas
 from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES,
                      STARTER_FURNITURE_TYPES)
 
-from params import breezeway, foundations, raised_garden, roof_trim, sunken_garden
+from params import breezeway, foundations, raised_garden, roof_trim, solar, sunken_garden
 from plan import (assemblies, circuits, electrical, fixture_types, fixtures, mep, placeables,
                   site, transitions, views)
 from plan.storeys import attic, basement, garage, main, second
@@ -104,5 +104,5 @@ PLAN = (
                                 *electrical.SECOND_ELEMENTS, *placeables.SECOND_PLACEABLES])
     .with_elements("attic", [*attic.ELEMENTS, *roof_trim.ATTIC_ELEMENTS,
                              *mep.ATTIC_ELEMENTS, *electrical.ATTIC_ELEMENTS,
-                             *placeables.ATTIC_PLACEABLES])
+                             *solar.ATTIC_ELEMENTS, *placeables.ATTIC_PLACEABLES])
 )

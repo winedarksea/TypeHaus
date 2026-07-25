@@ -361,6 +361,25 @@ class ResolvedPipeRun:
 
 
 @dataclass(frozen=True)
+class ResolvedSolarPanel:
+    """One PV module as a tilted box on its roof plane.
+
+    ``corners_bottom``/``corners_top`` are matching counter-clockwise (in plan) rings of
+    four 3D points in metres — the module underside (standoff off the roof plane) and its
+    face. Every emitter (IFC faceted shell, glTF triangles, viewer geometry) reads these
+    same corners, so the tilt math lives in resolve/solar.py alone."""
+
+    uid: str
+    tag: str
+    storey: str
+    roof_ref: str
+    corners_bottom: tuple[tuple[float, float, float], ...]
+    corners_top: tuple[tuple[float, float, float], ...]
+    watts: float
+    product: str = ""
+
+
+@dataclass(frozen=True)
 class ResolvedConduitRun:
     """One raceway trunk: plan polyline + absolute end elevations, developed length.
 
@@ -489,6 +508,7 @@ class ResolvedModel:
     sleeves: list[ResolvedSleeve] = field(default_factory=list)
     ducts: list[ResolvedDuct] = field(default_factory=list)
     conduits: list[ResolvedConduitRun] = field(default_factory=list)
+    solar_panels: list[ResolvedSolarPanel] = field(default_factory=list)
     footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)
     canvas_objects: list[ResolvedCanvasObject] = field(default_factory=list)
     # Per-stage resolve timings in milliseconds (Phase 0 instrumentation). Not serialized

@@ -6,7 +6,7 @@
 // resolved outline or lay out a member list, and none carries an editing path.
 import * as THREE from "three";
 import type {
-  Brace, Catalog, FootingBedding, Floor, Member, Roof, Solid, Stair,
+  Brace, Catalog, FootingBedding, Floor, Member, Roof, Solid, SolarPanel, Stair,
 } from "../../model/types";
 import { layerVisibilityGroupOf, type LayerVisibilityGroup } from "../../model/visibility";
 import { materialColor, type ResolvedNordicPalette } from "../../nordic/palette";
@@ -40,6 +40,44 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
   mesh.receiveShadow = true;
   parent.add(mesh);
   registerSelectable(parent, firstChildIndex, solid.uid, "solid", picks, byUid);
+}
+
+// PV module glass — mirrors "solar" in emit/gltf/palette.py `_PALETTE`.
+export const SOLAR_PANEL_COLOR = 0x1a2447;
+
+// A rooftop PV module: the resolver's tilted box (two matching corner rings in metres),
+// turned into 12 triangles directly — no plan-prism helper can express a sloped plate.
+export function buildSolarPanel(parent: THREE.Group, panel: SolarPanel, center: PlanCenter,
+  mode: "nordic" | "schematic", picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  if (panel.corners_bottom.length !== 4 || panel.corners_top.length !== 4) return;
+  const scene = (point: number[]) =>
+    [point[0] - center[0], point[2], -(point[1] - center[1])] as const;
+  const bottom = panel.corners_bottom.map(scene);
+  const top = panel.corners_top.map(scene);
+  const positions: number[] = [];
+  const push = (...points: (readonly [number, number, number])[]) => {
+    for (const point of points) positions.push(point[0], point[1], point[2]);
+  };
+  push(bottom[2], bottom[1], bottom[0], bottom[3], bottom[2], bottom[0]);
+  push(top[0], top[1], top[2], top[0], top[2], top[3]);
+  for (let index = 0; index < 4; index++) {
+    const next = (index + 1) % 4;
+    push(bottom[index], bottom[next], top[next], bottom[index], top[next], top[index]);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geo.computeVertexNormals();
+  const firstChildIndex = parent.children.length;
+  const mat = new THREE.MeshStandardMaterial({
+    color: SOLAR_PANEL_COLOR,
+    roughness: mode === "nordic" ? 0.25 : 0.6, // glassy face under the nordic sun
+    metalness: mode === "nordic" ? 0.4 : 0.1,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  parent.add(mesh);
+  registerSelectable(parent, firstChildIndex, panel.uid, "solid", picks, byUid);
 }
 
 // Compacted washed-stone footing bed: a below-grade gravel prism under a strip footing.

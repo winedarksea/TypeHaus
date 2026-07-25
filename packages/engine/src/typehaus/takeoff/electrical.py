@@ -137,6 +137,33 @@ def conduit_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     ]
 
 
+def solar_takeoff(model: ResolvedModel) -> dict[str, object]:
+    """The array as installed: module count, total DC watts, and per-product rollup.
+
+    Watts are summed from the resolved panels (the authored ``SolarPanel.watts`` carried
+    through resolve), never a hand-typed total; the mounting kits are billed by the
+    hardware take-off like every other modeled connector.
+    """
+    by_product: dict[str, dict[str, object]] = {}
+    for panel in model.solar_panels:
+        row = by_product.setdefault(panel.product or "(unspecified module)", {
+            "product": panel.product, "panels": 0, "watts": 0.0, "tags": []})
+        row["panels"] = int(row["panels"]) + 1
+        row["watts"] = float(row["watts"]) + panel.watts
+        tags = row["tags"]
+        assert isinstance(tags, list)
+        tags.append(panel.tag)
+    return {
+        "panels": len(model.solar_panels),
+        "total_watts": round(sum(panel.watts for panel in model.solar_panels), 0),
+        "by_product": [
+            {"product": row["product"], "panels": int(row["panels"]),
+             "watts": round(float(row["watts"]), 0), "tags": sorted(row["tags"])}
+            for row in (by_product[key] for key in sorted(by_product))
+        ],
+    }
+
+
 def backup_component_rows(model: ResolvedModel) -> list[dict[str, object]]:
     """DIN-rail components derived from the backup-flagged circuits: ceil(n/4) Shelly Pro
     4PM relays, one 24V PSU, one DIN UPS. Empty when nothing is flagged for backup."""

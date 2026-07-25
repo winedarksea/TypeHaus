@@ -397,6 +397,17 @@ def model_to_dict(
              "provenance": _provenance(provenance, roof.tag)}
             for roof in sorted(model.roofs, key=lambda item: item.uid)
         ],
+        # Rooftop PV modules: the resolver's tilted corner rings (metres), drawn by the
+        # viewer as two-ring boxes under the electrical trade toggle.
+        "solar_panels": [
+            {"uid": panel.uid, "tag": panel.tag, "storey": panel.storey,
+             "roof_ref": panel.roof_ref,
+             "corners_bottom": [list(point) for point in panel.corners_bottom],
+             "corners_top": [list(point) for point in panel.corners_top],
+             "watts": panel.watts, "product": panel.product,
+             "provenance": _provenance(provenance, panel.tag)}
+            for panel in sorted(model.solar_panels, key=lambda item: item.uid)
+        ],
         "stairs": [
             {"uid": stair.uid, "tag": stair.tag, "storey": stair.storey,
              "to_storey": stair.to_storey, "outline": [list(point) for point in stair.outline],

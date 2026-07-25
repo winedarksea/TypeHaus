@@ -25,6 +25,9 @@ ROLE_COIL_STRAP = "coil_strap"
 ROLE_POST_BASE = "post_base"
 ROLE_HURRICANE_TIE = "hurricane_tie"
 ROLE_STANDING_SEAM_CLAMP = "standing_seam_clamp"
+# The PV mounting kit is its own role: hardware_for_role demands one product per role,
+# and the plain S-5! clamp (vent riser, exterior boxes) must keep serving its own.
+ROLE_PV_SEAM_CLAMP = "pv_seam_clamp"
 # A beam strapped down to the post it seats on. Its own role, not ROLE_KNEE_BRACE: a role
 # holds exactly one catalogued item (``hardware_for_role`` raises otherwise), and the KBS
 # strap and the APVKB knee brace are different products for different joints even though

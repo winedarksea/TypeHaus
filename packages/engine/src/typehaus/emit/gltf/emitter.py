@@ -34,6 +34,7 @@ from typehaus.resolve.model import ResolvedModel
 from typehaus.emit.gltf.buffers import _deindex_with_normals  # noqa: F401
 from typehaus.emit.gltf.geometry import (  # noqa: F401
     _ARCH_SOFFIT_CHORD_TOLERANCE_M,
+    _to_gltf,
     _ARCH_SOFFIT_MAX_SEGMENTS,
     _ARCH_SOFFIT_MIN_SEGMENTS,
     _arch_soffit_sample,
@@ -134,6 +135,11 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                 _add_member(framing, member)
         scene.add_object(framing, trade="framing", kind="roof", uid=roof.uid)
 
+    for panel in sorted(model.solar_panels, key=lambda item: item.uid):
+        mb = _MeshBuilder()
+        _add_solar_panel(mb, panel)
+        scene.add_object(mb, trade="electrical", kind="solid", uid=panel.uid)
+
     for floor in sorted(model.floors, key=lambda item: item.uid):
         mb = _MeshBuilder()
         for member in floor.members:
@@ -166,6 +172,23 @@ def _room_z(model: ResolvedModel, storey_tag: str) -> float:
         if w.storey == storey_tag:
             return w.z0_m
     return 0.0
+
+
+def _add_solar_panel(mb: _MeshBuilder, panel) -> None:
+    """The resolver's tilted box as triangles — bottom, top, and four side quads."""
+    bottom = [_to_gltf(*point) for point in panel.corners_bottom]
+    top = [_to_gltf(*point) for point in panel.corners_top]
+    color = _color("solar")
+    triangles = [
+        (bottom[2], bottom[1], bottom[0]), (bottom[3], bottom[2], bottom[0]),
+        (top[0], top[1], top[2]), (top[0], top[2], top[3]),
+    ]
+    for index in range(len(bottom)):
+        following = (index + 1) % len(bottom)
+        quad = (bottom[index], bottom[following], top[following], top[index])
+        triangles.append((quad[0], quad[1], quad[2]))
+        triangles.append((quad[0], quad[2], quad[3]))
+    mb.add_triangles(triangles, color)
 
 
 def emit_glb(model: ResolvedModel, out_path: Path, lod: str = "core") -> Path:

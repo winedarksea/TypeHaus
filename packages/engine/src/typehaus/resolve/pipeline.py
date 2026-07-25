@@ -23,6 +23,7 @@ from typehaus.resolve.framing.roof import frame_roofs
 from typehaus.resolve.framing.solver import frame_model
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.mep import resolve_mep
+from typehaus.resolve.solar import resolve_solar
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedOpening
 from typehaus.resolve.placeables import resolve_placeables
 from typehaus.resolve.platform import extend_walls_to_platform
@@ -85,6 +86,9 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_floors(model))
     with _stage("mep"):
         findings.extend(resolve_mep(model))
+    with _stage("solar"):
+        # After framing: panels ride the resolved roof planes.
+        findings.extend(resolve_solar(model))
     with _stage("accessories"):
         # Dowels/connectors/railings/sumps/vents/edge-trim → solids. After floors+mep so
         # slabs a sump hosts into already exist in model.solids.

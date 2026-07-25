@@ -517,6 +517,19 @@ export interface ConstructionReturn {
 
 // Compacted washed-stone bed dug beneath a strip footing (→ resolve/model.py
 // ResolvedFootingBedding). Drawn in 3D as a gravel prism between z0_m and z1_m.
+// Rooftop PV module: the resolver's tilted box as two matching corner rings (metres).
+export interface SolarPanel {
+  uid: string;
+  tag: string;
+  storey: string;
+  roof_ref: string;
+  corners_bottom: number[][];
+  corners_top: number[][];
+  watts: number;
+  product: string;
+  provenance: Provenance | null;
+}
+
 export interface FootingBedding {
   uid: string;
   tag: string;
@@ -626,6 +639,7 @@ export interface Model {
   solids?: Solid[];
   construction_returns?: ConstructionReturn[];
   footing_beddings?: FootingBedding[];
+  solar_panels?: SolarPanel[];
   floors?: Floor[];
   stairs?: Stair[];
   braces?: Brace[];

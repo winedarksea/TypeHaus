@@ -14,7 +14,7 @@ from typing import Any
 
 from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
-from typehaus.model.ids import derive_child_guid
+from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.model import ResolvedModel
 
@@ -26,6 +26,30 @@ def emit_conduits(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, An
                   project_uuid: Any, assign_representation) -> None:
     for run in model.conduits:
         _emit_conduit_run(f, body, run, storeys, project_uuid, assign_representation)
+
+
+def emit_solar_panels(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, Any],
+                      project_uuid: Any, assign_representation) -> None:
+    """One ``IfcSolarDevice`` (SOLARPANEL) per module, as the resolver's tilted box.
+
+    The faceted shell reuses the resolved corner rings directly — bottom reversed so
+    every face winds outward, the same closed-box contract as emit/ifc/roof.py."""
+    for panel in model.solar_panels:
+        bottom = [tuple(point) for point in panel.corners_bottom]
+        top = [tuple(point) for point in panel.corners_top]
+        faces: list[list[tuple[float, ...]]] = [list(reversed(bottom)), list(top)]
+        for index in range(len(bottom)):
+            following = (index + 1) % len(bottom)
+            faces.append([bottom[index], bottom[following], top[following], top[index]])
+        element = ll.create_entity(f, "IfcSolarDevice", name=panel.tag)
+        element.PredefinedType = "SOLARPANEL"
+        element.GlobalId = derive_guid(project_uuid, panel.uid)
+        assign_representation(f, element, ll.add_faceted_solids(f, body, [faces]))
+        ll.ensure_pset(f, element, PSET_SOURCE, {"uid": panel.uid, "tag": panel.tag})
+        ll.ensure_pset(f, element, "TypeHaus_Solar", {
+            "watts": panel.watts, "product": panel.product, "roof_ref": panel.roof_ref,
+        })
+        ll.assign_container(f, element, storeys[panel.storey])
 
 
 def _emit_conduit_run(f: Any, body: Any, run: Any, storeys: dict[str, Any],

@@ -20,6 +20,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_POST_BASE,
     ROLE_BEAM_HOLD_DOWN,
     ROLE_GLAZING_PANEL_FASTENER,
+    ROLE_PV_SEAM_CLAMP,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_STANDING_SEAM_CLAMP,
     ROLE_STUD_PLATE_TIE,
@@ -218,6 +219,19 @@ POLY_PANEL_FASTENER = StructuralHardware(
            "system is specified, so this record is deliberately generic",
 )
 
+# PV module mounting on the standing seam: the S-5! PVKIT clamp+bracket assembly grips a
+# panel rib without penetration and takes the module frame directly (no rails). Distinct
+# model string so ``Connector(size="S-5-PVKIT")`` bills this kit, not the plain clamp.
+S5_PV_KIT = StructuralHardware(
+    tag="s5-pvkit-clamp",
+    name="S-5! PVKIT standing-seam PV mounting kit",
+    role=ROLE_PV_SEAM_CLAMP,
+    manufacturer="S-5!",
+    model="S-5-PVKIT",
+    source="S-5! PVKIT 2.0 (s-5.com/pvkit) — non-penetrating standing-seam clamp with "
+           "integrated module clamp; one kit per module corner support point",
+)
+
 STRUCTURAL_HARDWARE: tuple = (
     SDWS_TIMBER_SCREW,
     SDWH_TIMBER_HEX_SCREW,
@@ -234,6 +248,7 @@ STRUCTURAL_HARDWARE: tuple = (
     ABU_POST_BASE,
     H25A_HURRICANE_TIE,
     S5_SEAM_CLAMP,
+    S5_PV_KIT,
     KBS_BEAM_HOLD_DOWN,
     POLY_PANEL_FASTENER,
 )
