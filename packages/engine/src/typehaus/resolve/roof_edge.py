@@ -35,6 +35,7 @@ from typehaus.resolve.roof_edge_geometry import (
     METERS_PER_INCH,
     MatingFaces,
     bbox,
+    continuous_skin_cladding,
     mating_faces,
     roof_slope,
     skin_layers,
@@ -138,6 +139,11 @@ def _closure_members(
     mating = (mating_faces(layers)
               if layers and (overhang is None or overhang.meters <= CLOSURE_TOLERANCE_M)
               else None)
+    # One continuous cladding skin wall→roof (the wrapped standing-seam edge): the wall's
+    # metal keeps climbing past the foam underside to the roofing's own underside, because
+    # there is no drip-edge band left for it to die under (roof_trim emits a corner trim
+    # piece over the joint instead).
+    continuous = mating is not None and continuous_skin_cladding(model, roof, walls)
     slope_factor = math.hypot(1.0, roof_slope(roof))
     members: list[FramedMember] = []
     for wall in walls:
@@ -145,14 +151,14 @@ def _closure_members(
         spans = ((0.0, 1.0),) if crossing is None else ((0.0, crossing), (crossing, 1.0))
         for index, (t0, t1) in enumerate(spans):
             members.extend(_closure_segment(roof, wall, t0, t1, index, structure_depth,
-                                            mating, slope_factor))
+                                            mating, slope_factor, continuous))
     return tuple(members)
 
 
 def _closure_segment(
     roof: ResolvedRoof, wall: ResolvedWall, t0: float, t1: float,
     segment: int, structure_depth: float,
-    mating: MatingFaces | None, slope_factor: float,
+    mating: MatingFaces | None, slope_factor: float, continuous: bool = False,
 ) -> tuple[FramedMember, ...]:
     tops = (_wall_top_at(wall, t0), _wall_top_at(wall, t1))
     members: list[FramedMember] = []
@@ -169,7 +175,7 @@ def _closure_segment(
             # Flush edge: each layer rises to its own face in the roof stack, measured at that
             # layer's own plan position — the layers are parallel to the slope, so a layer
             # further out mates a little lower.
-            perpendicular = mating.for_layer(layer.function)
+            perpendicular = mating.for_layer(layer.function, continuous_cladding=continuous)
             targets = tuple(roof_height_at(roof, point) + perpendicular * slope_factor
                             for point in (p0, p1))
         if max(targets[0] - tops[0], targets[1] - tops[1]) < CLOSURE_TOLERANCE_M:

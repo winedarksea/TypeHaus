@@ -126,16 +126,21 @@ _JUNCTION_FRAMING = (_STUD_KINDS | _PLATE_KINDS
 # is the fabricated joint, never an elevation bug. The seat-cut solid is the birdsmouth seat
 # a rafter/chord bears on the plate with — bonded to its member, seated on the wall top.
 _TRUSS_KINDS = frozenset({"top_chord", "bottom_chord", "truss_web", "truss_heel"})
-# Non-structural envelope skin and trim emitted at the roof edge (resolve/roof_edge.py):
-# the sheathing/rainscreen/cladding band carrying a wall past its plate to the roof
-# underside, and the fascia/soffit hung off the roof edge. These are sheet goods and trim
-# boards *fastened over* framing — shared volume with the member they nail to, or with each
-# other where an eave and a rake miter, is the fastening. None of them carries load, so
-# none of them can be the elevation-arithmetic bug this check exists to catch.
+# Non-structural envelope skin and trim emitted at the roof edge (resolve/roof_edge.py +
+# resolve/roof_trim.py): the sheathing/rainscreen/cladding band carrying a wall past its
+# plate to the roof underside, and the fascia/soffit/gutter/ridge-cap/corner-trim hung off
+# the roof edge. These are sheet goods and trim boards *fastened over* framing — shared
+# volume with the member they nail to, or with each other where an eave and a rake miter,
+# is the fastening. None of them carries load, so none of them can be the
+# elevation-arithmetic bug this check exists to catch.
 # "insulation"/"membrane" appear only as closure-band layers (a wall stack like the catlin
 # siding carries CI foam + WRB outboard of its sheathing), never as framing members.
+# "ridge_cap" is the vented ridge cap riding the roofing at the peak; "corner_trim" is the
+# formed angle capping a wrapped standing-seam edge; "gutter" is the three-band hung
+# channel outboard of the fascia — all pure trim.
 _ENVELOPE_SKIN_KINDS = frozenset({"sheathing", "furring", "cladding", "fascia", "soffit",
-                                  "insulation", "membrane"})
+                                  "insulation", "membrane", "gutter", "ridge_cap",
+                                  "corner_trim"})
 # Rake framing (resolve/framing/roof_gable.py): outlookers run *over* the dropped gable
 # truss and land on the barge rafter. Interpenetration there is the joint the drop creates.
 _RAKE_KINDS = frozenset({"outlooker", "barge_rafter"})
