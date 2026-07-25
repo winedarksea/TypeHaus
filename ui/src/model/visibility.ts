@@ -6,7 +6,7 @@
 // trade hidden in the model are answering the same question, and both are unit-testable
 // without a DOM.
 
-import type { Trade } from "../state/vocabulary";
+import type { Trade } from "../state/store";
 import type { CanvasObject, Layer, Member } from "./types";
 
 // Layer *function* buckets, i.e. the engine's `Layer.function` vocabulary (model_json.py

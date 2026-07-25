@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { useStore } from "./state/store";
-import { visibleFindings } from "./state/locate";
+import { useStore, visibleFindings } from "./state/store";
 import { subscribePwa, promptInstall, type PwaState } from "./pwa/register";
 import { fsAccessSupported } from "./engine/openHouse";
 import { Toolbar } from "./components/Toolbar";

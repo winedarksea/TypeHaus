@@ -35,18 +35,11 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
     The UI never parses ``profile`` strings — this is the only place that calls
     :func:`cross_section`, so every consumer gets ``shape``/``width_m``/``depth_m``
     (and i-joist flange/web dims) pre-resolved.
-
-    ``key`` is the member's identity: unique within its parent (wall/roof/floor/stair), so
-    ``<parent uid>/<key>`` names one member stably across rebuilds. The 3D panel's per-member
-    picking addresses studs that way rather than by draw-call index, which would shift the
-    moment the framer re-lays a wall. ``length_m`` is the resolver's own run length — a raked
-    rafter's true sloped length, which p0/p1 alone cannot give the client.
     """
     section = cross_section(m.profile)
     return {
         "key": m.child_key, "category": m.category, "profile": m.profile,
         "p0": list(m.p0), "p1": list(m.p1), "z0_m": m.z0_m, "z1_m": m.z1_m,
-        "length_m": m.length_m,
         "z0_end_m": m.z0_end_m, "z1_end_m": m.z1_end_m,
         "shape": section.shape, "width_m": section.width_m, "depth_m": section.depth_m,
         "flange_width_m": section.flange_width_m,

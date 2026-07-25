@@ -1,9 +1,14 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
-import type { Selection } from "../state/vocabulary";
+import type { Selection } from "../state/store";
 import type { PreviewGeometry } from "../engine/EngineClient";
-import type { CanvasObject, Opening, Vec2, Wall } from "../model/types";
-import { canvasObjectTrade } from "../model/visibility";
+import type { CanvasObject, CanvasObjectType, DoorOperation, Layer, Model, Opening, PlanNode, Stair, Vec2, Wall } from "../model/types";
+import { doorStrokeGlyph, hostWallThicknessM } from "../model/doorSymbols";
+import {
+  canvasObjectTrade,
+  isLayerVisible,
+  type LayerVisibilityGroup,
+} from "../model/visibility";
 import {
   junctionDiagnosticMarkers,
   openEndMarker,
@@ -11,6 +16,8 @@ import {
 } from "../model/planWarnings";
 import { projectedExtentPx, spaceLabel, spaceLabelLineBudget } from "../model/spaceLabels";
 import { PlanWarningPopover } from "./PlanWarningPopover";
+import { layerCarriesControl, lensStrokeSpec } from "./LensBar";
+import type { Lens } from "../state/store";
 import {
   deriveNodes,
   formatFtIn,
@@ -21,23 +28,17 @@ import {
   openingStartFromCenter,
   type Node as GeoNode,
   orthoLock,
+  pointAlong,
   snapWorld,
   wallLength,
 } from "../model/geometry";
-import { NORDIC_ACCENT, NORDIC_INK, NORDIC_LINE } from "../nordic/palette";
+import { swingArcSweepFlag } from "../three/planGeometry";
+import { materialColor, NORDIC_ACCENT, NORDIC_INK, NORDIC_LINE } from "../nordic/palette";
 import { DoorSettingsPopover } from "./DoorSettingsPopover";
 import { WindowSettingsPopover } from "./WindowSettingsPopover";
 import { FtInKeypad } from "./FtInKeypad";
 import { SunIndicator } from "./SunIndicator";
 import { PlacementPopover } from "./PlacementPopover";
-import {
-  BackgroundGrid, clampScale, collinearAt, nodeTagMatches, openEndKeys, StoreyTabs, ToolHint,
-} from "./plan/PlanChrome";
-import { CanvasObjectFootprint, ClearanceOverlays, NodeHandle } from "./plan/ObjectShapes";
-import { WallAssemblyPopupCard, WallDimension, WallShape } from "./plan/WallShapes";
-import {
-  hostStorey, nearestOpeningHost, OpeningShape, pointInPolygon, StairShape,
-} from "./plan/OpeningShapes";
 
 // The SVG floorplan editor (→ 21 §Stack: SVG editor). Renders model.json faithfully and
 // hosts the full authoring loop: draw walls (rubber-band, node/grid snap, ortho, polyline
@@ -1156,3 +1157,656 @@ export function Canvas2D() {
   );
 }
 
+function ToolHint({ tool, draft, assembly, assemblies, onAssembly, onSplit }: {
+  tool: string;
+  draft: boolean;
+  assembly: string | null;
+  assemblies: string[];
+  onAssembly: (tag: string) => void;
+  onSplit: (() => void) | null;
+}) {
+  const hints: Record<string, string> = {
+    wall: draft ? "Tap the next corner · Shift = ortho · type a length for exact · Esc ends" : "Tap to start a wall (snaps to nodes / grid)",
+    opening: "Tap a wall to place a window or door",
+    room: "Tap inside an enclosed area to claim a room",
+    stair: "Tap on a floor to add a stair up to the next level",
+    dimension: "Tap a wall to drive its length",
+  };
+  return (
+    <div>
+      <div style={{ fontWeight: 600, textTransform: "capitalize", marginBottom: 4 }}>{tool} tool</div>
+      <div className="muted">{hints[tool]}</div>
+      {tool === "wall" && assembly != null && (
+        <label style={{ display: "block", marginTop: 6, fontSize: 12 }}>Assembly{" "}
+          <select value={assembly} onChange={(e) => onAssembly(e.target.value)}>
+            {assemblies.map((a) => <option key={a} value={a}>{a}</option>)}
+          </select>
+        </label>
+      )}
+      {tool === "dimension" && onSplit && (
+        <button className="btn" style={{ marginTop: 6 }} onClick={onSplit}>Split at midpoint</button>
+      )}
+    </div>
+  );
+}
+
+// A draggable wall endpoint. Captures the pointer so the drag survives leaving the circle.
+function NodeHandle({ world, project, onStart, onMove, onEnd }: {
+  world: Vec2;
+  project: (p: Vec2) => Vec2;
+  onStart: () => void;
+  onMove: (clientX: number, clientY: number) => void;
+  onEnd: () => void;
+}) {
+  const dragging = useRef(false);
+  const raf = useRef<number | null>(null);
+  const [x, y] = project(world);
+  // A generous transparent halo (r=13 → 26px) carries the pointer gesture so the endpoint is
+  // easy to grab on touch and at a glance, while the visible dot stays small and uncluttered.
+  return (
+    <g style={{ cursor: "grab" }}
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        (e.currentTarget as Element).setPointerCapture(e.pointerId);
+        dragging.current = true;
+        onStart();
+      }}
+      onPointerMove={(e) => {
+        if (!dragging.current) return;
+        e.stopPropagation();
+        const { clientX, clientY } = e;
+        if (raf.current == null) {
+          raf.current = requestAnimationFrame(() => { raf.current = null; onMove(clientX, clientY); });
+        }
+      }}
+      onPointerUp={(e) => {
+        if (!dragging.current) return;
+        e.stopPropagation();
+        dragging.current = false;
+        if (raf.current != null) { cancelAnimationFrame(raf.current); raf.current = null; }
+        onEnd();
+      }}
+    >
+      <circle cx={x} cy={y} r={13} fill="transparent" />
+      <circle cx={x} cy={y} r={7} fill="var(--canvas-white)" stroke={NORDIC_ACCENT} strokeWidth={2.5}
+        pointerEvents="none" />
+    </g>
+  );
+}
+
+function CanvasObjectFootprint({ item, type, project, scale, walls, selected, onSelect, toWorld, onMove, onRotate }: {
+  item: CanvasObject;
+  type?: CanvasObjectType;
+  project: (point: Vec2) => Vec2;
+  scale: number;
+  walls: Wall[];
+  selected: boolean;
+  onSelect: (kind: Selection["kind"], uid: string) => void;
+  toWorld: (clientX: number, clientY: number) => Vec2;
+  onMove: (item: CanvasObject, position: Vec2) => void;
+  onRotate: (item: CanvasObject, degrees: number, freeRotation: boolean) => void;
+}) {
+  const [draggedPosition, setDraggedPosition] = useState<Vec2 | null>(null);
+  const [draggedRotation, setDraggedRotation] = useState<number | null>(null);
+  const [alignmentPoint, setAlignmentPoint] = useState<Vec2 | null>(null);
+  if (!item.position_m) return null;
+  const position = draggedPosition ?? item.position_m;
+  const [x, y] = project(position);
+  const [widthM, depthM] = type?.footprint_m ?? [0.45, 0.45];
+  const width = widthM * scale;
+  const depth = depthM * scale;
+  const rotation = draggedRotation ?? item.rotation ?? 0;
+  const colors: Record<string, [string, string]> = {
+    furniture: ["var(--canvas-wood-soft)", "var(--canvas-wood)"],
+    plumbing: ["var(--canvas-selection)", "var(--accent)"],
+    electrical: ["#fff2bd", "#a66f00"],
+    mechanical: ["#dceafb", "#37658d"],
+    appliance: ["#e5e7eb", "#4b5563"],
+  };
+  const [fill, stroke] = colors[item.domain] ?? ["#e5e7eb", "#4b5563"];
+  // Precedence: an imported plan SVG wins, then the engine-generated glyph, then the plain
+  // footprint rect. The first generated stroke is the object outline and carries selection.
+  const strokes = type?.plan_svg ? [] : type?.plan_strokes ?? [];
+  return <g opacity={0.92} style={{ cursor: "grab" }}
+    onPointerDown={(event) => { event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId); onSelect("canvas_object", item.uid); }}
+    // Double-click opens the object's details (Inspector), matching the door/window affordance
+    // and guaranteeing the panel opens even if a stray drag swallowed the pointer-up select.
+    onDoubleClick={(event) => { event.stopPropagation(); onSelect("canvas_object", item.uid); }}
+    onPointerMove={(event) => {
+      if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+      const next = toWorld(event.clientX, event.clientY);
+      setDraggedPosition(next);
+      const hit = nearestWallHit(walls, next);
+      setAlignmentPoint(hit && hit.dist_m <= .35 ? hit.point : null);
+    }}
+    onPointerUp={(event) => {
+      if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+      event.currentTarget.releasePointerCapture(event.pointerId);
+      const next = toWorld(event.clientX, event.clientY);
+      setDraggedPosition(null);
+      setAlignmentPoint(null);
+      if (Math.hypot(next[0] - item.position_m![0], next[1] - item.position_m![1]) > 0.001) onMove(item, next);
+    }}
+    onPointerCancel={() => { setDraggedPosition(null); setAlignmentPoint(null); }}>
+    {type?.plan_svg ? <image href={type.plan_svg} x={x - width / 2} y={y - depth / 2} width={width} height={depth}
+      transform={`rotate(${-rotation} ${x} ${y})`} />
+      : strokes.length ? <g transform={`rotate(${-rotation} ${x} ${y})`}>
+        {strokes.map((symbolStroke, index) => {
+          // The engine owns the geometry; the UI only projects it. Screen y is inverted from
+          // plan y, the same handedness doorSymbolPoint uses.
+          const points = symbolStroke.points
+            .map(([sx, sy]) => `${x + sx * scale},${y - sy * scale}`).join(" ");
+          const outline = index === 0;
+          return symbolStroke.closed
+            ? <polygon key={index} points={points} fill={symbolStroke.fill ?? "none"}
+              stroke={selected && outline ? "var(--ink)" : stroke}
+              strokeWidth={(selected && outline ? 2.4 : 1.2) * symbolStroke.weight / 0.25} />
+            : <polyline key={index} points={points} fill="none" stroke={stroke}
+              strokeWidth={1.2 * symbolStroke.weight / 0.25} />;
+        })}
+      </g>
+        : <rect x={x - width / 2} y={y - depth / 2} width={width} height={depth}
+          fill={fill} stroke={selected ? "var(--ink)" : stroke} strokeWidth={selected ? 2.4 : 1.2}
+          transform={`rotate(${-rotation} ${x} ${y})`} />}
+    {/* A centred label sits on top of the glyph and hides it, so a drawn symbol pushes its
+        name below the footprint instead. */}
+    <text x={x} y={strokes.length ? y + depth / 2 + 11 : y + 3} textAnchor="middle" fontSize={9}
+      fill="var(--ink)" pointerEvents="none">
+      {(type?.name ?? item.type ?? item.kind).replace(/^[A-Z]+-/, "")}
+    </text>
+    {selected && <g>
+      <line x1={x} y1={y - depth / 2} x2={x} y2={y - depth / 2 - 18}
+        stroke="var(--ink)" strokeWidth={1.2} pointerEvents="none" />
+      <circle cx={x} cy={y - depth / 2 - 23} r={5} fill="var(--canvas-selection)" stroke="var(--ink)"
+        strokeWidth={1.2} style={{ cursor: "crosshair" }}
+        onPointerDown={(event) => {
+          event.stopPropagation();
+          event.currentTarget.setPointerCapture(event.pointerId);
+        }}
+        onPointerMove={(event) => {
+          if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+          const [worldX, worldY] = toWorld(event.clientX, event.clientY);
+          const raw = Math.atan2(worldY - position[1], worldX - position[0]) * 180 / Math.PI;
+          setDraggedRotation(event.shiftKey ? raw : Math.round(raw / 15) * 15);
+        }}
+        onPointerUp={(event) => {
+          if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+          event.currentTarget.releasePointerCapture(event.pointerId);
+          const [worldX, worldY] = toWorld(event.clientX, event.clientY);
+          const raw = Math.atan2(worldY - position[1], worldX - position[0]) * 180 / Math.PI;
+          const next = event.shiftKey ? raw : Math.round(raw / 15) * 15;
+          setDraggedRotation(null);
+          if (Math.abs(next - (item.rotation ?? 0)) > 0.01) onRotate(item, next, event.shiftKey);
+        }} />
+    </g>}
+    {alignmentPoint && draggedPosition && (() => {
+      const [ax, ay] = project(alignmentPoint);
+      return <line x1={x} y1={y} x2={ax} y2={ay} stroke={NORDIC_ACCENT}
+        strokeWidth={1.5} strokeDasharray="4 3" pointerEvents="none" />;
+    })()}
+  </g>;
+}
+
+function ClearanceOverlays({ model, storey, project, scale }: {
+  model: Model;
+  storey: string | null;
+  project: (point: Vec2) => Vec2;
+  scale: number;
+}) {
+  const legacyItems = [
+    ...(model.fixtures ?? []).map((item) => ({ ...item, kind: "fixture" as const })),
+    ...(model.furniture ?? []).map((item) => ({ ...item, kind: "furniture" as const })),
+  ].filter((item) => (!storey || item.storey === storey) && item.clearance_m);
+  const resolvedItems = (model.canvas_objects ?? []).filter((item) =>
+    (!storey || item.storey === storey) && ((item.required_clearances?.length ?? 0) > 0 || (item.recommended_clearances?.length ?? 0) > 0));
+  const openingOverlays = model.openings.filter((opening) => {
+    const host = openingHostWall(model.walls, opening);
+    return (!storey || host?.storey === storey) && ((opening.swing_clearance?.length ?? 0) > 0 ||
+      (opening.framing_bumper?.length ?? 0) > 0);
+  });
+  return <g pointerEvents="none">{resolvedItems.flatMap((item) => [
+    ...(item.required_clearances ?? []).map((polygon, index) => ({ item, polygon, required: true, index })),
+    ...(item.recommended_clearances ?? []).map((polygon, index) => ({ item, polygon, required: false, index })),
+  ]).map(({ item, polygon, required, index }) => <polygon key={`resolved-clearance-${item.uid}-${index}`}
+    points={polygon.map((point) => project(point).join(",")).join(" ")}
+    fill={required ? "var(--canvas-selection)" : "var(--canvas-wood-soft)"}
+    fillOpacity={0.22} stroke={required ? "var(--error)" : "var(--canvas-wood)"}
+    strokeDasharray="4 3" strokeWidth={required ? 1.4 : 1} />)}
+  {openingOverlays.map((opening) => <g key={`opening-overlay-${opening.uid}`}>
+    {opening.swing_clearance && <polygon points={opening.swing_clearance.map((point) => project(point).join(",")).join(" ")}
+      fill="var(--canvas-wood-soft)" fillOpacity={.22} stroke="var(--canvas-wood)" strokeDasharray="4 3" strokeWidth={1} />}
+    {opening.framing_bumper && <polygon points={opening.framing_bumper.map((point) => project(point).join(",")).join(" ")}
+      fill="none" stroke={NORDIC_ACCENT} strokeDasharray="2 2" strokeWidth={1} />}
+  </g>)}
+  {legacyItems.map((item) => {
+    const [front, back, left, right] = item.clearance_m!;
+    const [x, y] = project(item.position);
+    const width = (item.footprint_m[0] + left + right) * scale;
+    const depth = (item.footprint_m[1] + front + back) * scale;
+    return <rect key={`clearance-${item.uid}`} x={x - width / 2} y={y - depth / 2}
+      width={width} height={depth} fill="var(--canvas-wood-soft)" stroke="var(--error)"
+      strokeDasharray="4 3" strokeWidth={1} />;
+  })}</g>;
+}
+
+function clampScale(s: number): number {
+  return Math.min(2000, Math.max(8, s));
+}
+
+function BackgroundGrid({ view }: { view: { scale: number; tx: number; ty: number } }) {
+  const ftPx = view.scale * 0.3048;
+  if (ftPx < 6) return <rect width="100%" height="100%" fill="none" />;
+  const size = ftPx;
+  const id = "grid";
+  return (
+    <>
+      <defs>
+        <pattern id={id} width={size} height={size} patternUnits="userSpaceOnUse"
+          patternTransform={`translate(${view.tx % size},${view.ty % size})`}>
+          <path d={`M ${size} 0 L 0 0 0 ${size}`} fill="none" stroke="var(--canvas-grid)" strokeWidth={1} />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill={`url(#${id})`} />
+    </>
+  );
+}
+
+const WallShape = memo(function WallShape({ w, openings, project, selected, hovered, showFraming,
+  showLayers, visibleLayerGroups, activeLens, onSelect, onHover }: {
+  w: Wall;
+  openings: Opening[];
+  project: (p: Vec2) => Vec2;
+  selected: boolean;
+  hovered: boolean;
+  showFraming: boolean;
+  showLayers: boolean; // Walls discipline — off leaves the framing and the axis alone
+  visibleLayerGroups: Record<LayerVisibilityGroup, boolean>;
+  activeLens: Lens; // draws the control-layer overlay the lens is about
+  onSelect: (wall: Wall, event: React.MouseEvent<SVGGElement>) => void;
+  onHover: (uid: string | null) => void;
+}) {
+  const poly = (pts: Vec2[]) => pts.map(project).map((p) => p.join(",")).join(" ");
+  const stroke = selected ? NORDIC_ACCENT : hovered ? NORDIC_INK : NORDIC_LINE;
+  const [axisStart, axisEnd] = w.axis;
+  const axisLength = Math.hypot(axisEnd[0] - axisStart[0], axisEnd[1] - axisStart[1]) || 1;
+  const wallNormal: Vec2 = [
+    -(axisEnd[1] - axisStart[1]) / axisLength,
+    (axisEnd[0] - axisStart[0]) / axisLength,
+  ];
+  const pixelsPerMeter = Math.abs(project([1, 0])[0] - project([0, 0])[0]);
+  // Resolved wall layers are continuous polygons.  Punch openings out of the complete wall
+  // stack before drawing their plan symbols so a thick rendered wall cannot cover a door.
+  const wallThicknessPx = Math.max(8, ...w.layers.flatMap((layer) => layer.polygon.map((point) =>
+    Math.abs((point[0] - axisStart[0]) * wallNormal[0] + (point[1] - axisStart[1]) * wallNormal[1])
+      * pixelsPerMeter,
+  )));
+  const [startX, startY] = project(axisStart);
+  const [endX, endY] = project(axisEnd);
+  const screenAngleDeg = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+  const openingMaskId = `wall-opening-mask-${w.uid}`;
+  return (
+    <g onClick={(event) => onSelect(w, event)}
+      onPointerEnter={() => onHover(w.uid)} onPointerLeave={() => onHover(null)}
+      style={{ cursor: "pointer" }}>
+      <mask id={openingMaskId} maskUnits="userSpaceOnUse">
+        <rect x={-100000} y={-100000} width={200000} height={200000} fill="white" />
+        {openings.map((opening) => {
+          const [x, y] = project(pointAlong(w, opening.center_along_m));
+          const openingWidthPx = opening.width_m * pixelsPerMeter;
+          return <rect key={opening.uid} x={x - openingWidthPx / 2 - 1}
+            y={y - wallThicknessPx - 1} width={openingWidthPx + 2}
+            height={2 * wallThicknessPx + 2} fill="black"
+            transform={`rotate(${screenAngleDeg} ${x} ${y})`} />;
+        })}
+      </mask>
+      <g className="wall-fills" mask={`url(#${openingMaskId})`}>
+        {/* Layer fills answer to the Walls discipline *and* to the per-layer control, so the
+            weather skin can be dropped while the cavity fill behind it stays drawn. */}
+        {showLayers && w.layers.map((ly: Layer, i: number) =>
+          ly.polygon.length >= 3 && isLayerVisible(ly, visibleLayerGroups) ? (
+            <polygon key={i} points={poly(ly.polygon)} fill={materialColor(ly.material)}
+              stroke="var(--panel-line)" strokeWidth={0.5} />
+          ) : null,
+        )}
+        {showFraming && w.members.map((m) => {
+          const [x0, y0] = project(m.p0);
+          const [x1, y1] = project(m.p1);
+          return <line key={m.key} x1={x0} y1={y0} x2={x1} y2={y1} stroke="var(--canvas-wood)"
+            strokeWidth={1.5} opacity={0.85} />;
+        })}
+        {showLayers && <line x1={startX} y1={startY} x2={endX} y2={endY} stroke={stroke}
+          strokeWidth={selected ? 2.5 : 1.5} strokeDasharray={w.layers.length === 0 ? "4 4" : undefined} />}
+      </g>
+      {/* Building-science lens overlay. The engine already tags every resolved layer with the
+          controls it carries (`Layer.control`); until now the plan drew none of it, which is
+          why the air/water/thermal lenses "didn't seem to show much". Drawn outside the opening
+          mask and outside the dimmed fills, because a continuity lens is about the path. */}
+      {(() => {
+        const strokeSpec = lensStrokeSpec(activeLens);
+        if (!strokeSpec) return null;
+        return w.layers.map((ly: Layer, i: number) =>
+          ly.polygon.length >= 3 && layerCarriesControl(ly.control, activeLens) ? (
+            <polygon key={`lens-${i}`} points={poly(ly.polygon)} fill="none" pointerEvents="none"
+              stroke={`var(${strokeSpec.colorVar})`} strokeWidth={2} strokeDasharray={strokeSpec.pattern} />
+          ) : null,
+        );
+      })()}
+    </g>
+  );
+});
+
+function hostStorey(model: Model, opening: Opening): string {
+  return openingHostWall(model.walls, opening)?.storey ?? "";
+}
+
+// Even-odd ray cast — used to resolve a select-tool tap that lands inside a filled shape
+// (e.g. a stair footprint) since the viewport's pointer capture swallows child <g> clicks.
+function pointInPolygon(point: Vec2, polygon: Vec2[]): boolean {
+  const [x, y] = point;
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const [xi, yi] = polygon[i];
+    const [xj, yj] = polygon[j];
+    if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+function nearestOpeningHost(walls: Wall[], storey: string, point: Vec2):
+  { wall: Wall; along_m: number; distance_m: number } | null {
+  let best: { wall: Wall; along_m: number; distance_m: number } | null = null;
+  for (const wall of walls) {
+    if (wall.storey !== storey) continue;
+    const [a, b] = wall.axis;
+    const dx = b[0] - a[0];
+    const dy = b[1] - a[1];
+    const length = Math.hypot(dx, dy);
+    if (length < 1e-9) continue;
+    const raw = ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / (length * length);
+    const t = Math.max(0, Math.min(1, raw));
+    const projected: Vec2 = [a[0] + t * dx, a[1] + t * dy];
+    const distance_m = Math.hypot(point[0] - projected[0], point[1] - projected[1]);
+    if (best === null || distance_m < best.distance_m) best = { wall, along_m: t * length, distance_m };
+  }
+  return best;
+}
+
+function WallAssemblyPopupCard({ wall, screen, viewport, onClose }: {
+  wall: Wall;
+  screen: Vec2;
+  viewport: DOMRect | null;
+  onClose: () => void;
+}) {
+  const totalThickness = wall.layers.reduce((sum, layer) => sum + layer.thickness_m, 0);
+  // Keep the card in the pane even when the click is close to an edge. The CSS height cap
+  // makes this conservative vertical allowance work for long assemblies on small screens.
+  const left = Math.max(12, Math.min(screen[0] + 12, Math.max(12, (viewport?.width ?? 0) - 292)));
+  const top = Math.max(12, Math.min(screen[1] + 12, Math.max(12, (viewport?.height ?? 0) - 372)));
+
+  return (
+    <aside className="wall-assembly-popup" style={{ left, top }} aria-label={`${wall.tag} wall assembly`}>
+      <div className="wall-assembly-popup-header">
+        <div>
+          <div className="wall-assembly-popup-title">Wall · {wall.tag}</div>
+          <div className="wall-assembly-popup-assembly">{wall.assembly || "UNCONFIGURED"}</div>
+        </div>
+        <button className="wall-assembly-popup-close" onClick={onClose} aria-label="Close wall assembly popup">×</button>
+      </div>
+      <div className="wall-assembly-popup-dimensions">
+        <span><b>Length</b>{formatFtIn(wallLength(wall))}</span>
+        <span><b>Height</b>{formatFtIn(wall.z1_m - wall.z0_m)}</span>
+        <span><b>Thickness</b>{formatFtIn(totalThickness)}</span>
+      </div>
+      <div className="wall-assembly-popup-layers">
+        <div className="wall-assembly-popup-layer-heading">Resolved layers</div>
+        {wall.layers.length > 0 ? wall.layers.map((layer, index) => (
+          <div className="layer-row" key={`${layer.name}-${index}`}>
+            <span className="swatch" style={{ background: materialColor(layer.material) }} />
+            <span className="wall-assembly-popup-layer-name">{layer.name}</span>
+            <span>{formatFtIn(layer.thickness_m)}</span>
+            <span className="wall-assembly-popup-layer-material">{layer.material}</span>
+          </div>
+        )) : <div className="muted">No resolved layers.</div>}
+      </div>
+    </aside>
+  );
+}
+
+const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selected, operation, onSelect, onEdit,
+  toWorld, onMove, onPreview, onPreviewEnd, preview }: {
+  o: Opening;
+  host: Wall;
+  project: (p: Vec2) => Vec2;
+  scale: number;
+  selected: boolean;
+  operation?: DoorOperation;
+  onSelect: (kind: Selection["kind"], uid: string) => void;
+  onEdit: (o: Opening, screen: Vec2) => void;
+  toWorld: (clientX: number, clientY: number) => Vec2;
+  onMove: (opening: Opening, host: Wall, position: Vec2) => void;
+  onPreview?: (opening: Opening, host: Wall, position: Vec2) => void;
+  onPreviewEnd?: () => void;
+  preview?: "valid" | "invalid";
+}) {
+  const center = pointAlong(host, o.center_along_m);
+  const [cx, cy] = project(center);
+  const halfPx = (o.width_m / 2) * scale;
+  const [a, b] = host.axis;
+  const ang = Math.atan2(-(b[1] - a[1]), b[0] - a[0]);
+  const dx = Math.cos(ang) * halfPx;
+  const dy = Math.sin(ang) * halfPx;
+  const hingeDirection = o.flip_hinge ? -1 : 1;
+  const hingeX = cx + hingeDirection * dx;
+  const hingeY = cy + hingeDirection * dy;
+  const swingSign = o.flip_swing ? -1 : 1;
+  // SVG's y axis is inverted from plan coordinates, so the screen-space +90° normal is
+  // [sin(angle), -cos(angle)].  It matches the shared drawing IR's handed plan symbol.
+  const leafX = hingeX + swingSign * Math.sin(ang) * o.width_m * scale;
+  const leafY = hingeY - swingSign * Math.cos(ang) * o.width_m * scale;
+  const wallArcX = hingeX - hingeDirection * 2 * dx;
+  const wallArcY = hingeY - hingeDirection * 2 * dy;
+  const windowTick = Math.min(6, Math.max(3, scale * 0.08));
+  // Null for the hinged operations, which draw a leaf plus a swing arc instead.
+  const strokeGlyph = o.is_door ? doorStrokeGlyph({
+    operation, center: [cx, cy], angleRadians: ang, operatingSign: swingSign,
+    parkJambSign: hingeDirection, widthM: o.width_m, heightM: o.height_m,
+    hostWallThicknessM: hostWallThicknessM(host.layers), pixelsPerMeter: scale,
+  }) : null;
+  // Press → drag vs. click discrimination (mirrors CanvasObjectFootprint): the ghost
+  // preview only follows once the pointer has been captured AND moved past a small px
+  // threshold, so a bare hover never drifts the symbol. A press that never crosses the
+  // threshold is a click → select + open settings; one that does → commit the move.
+  const downRef = useRef<Vec2 | null>(null);
+  const movedRef = useRef(false);
+  const DRAG_THRESHOLD_PX = 4;
+  return (
+    <g onDoubleClick={() => !preview && onEdit(o, [cx, cy])}
+      onPointerDown={(event) => {
+        if (preview) return;
+        event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId);
+        downRef.current = [event.clientX, event.clientY];
+        movedRef.current = false;
+      }}
+      onPointerMove={(event) => {
+        if (preview) return;
+        if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+        if (!movedRef.current && downRef.current &&
+          Math.hypot(event.clientX - downRef.current[0], event.clientY - downRef.current[1]) < DRAG_THRESHOLD_PX) return;
+        movedRef.current = true;
+        onPreview?.(o, host, toWorld(event.clientX, event.clientY));
+      }}
+      onPointerUp={(event) => {
+        if (preview) return;
+        if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+        event.currentTarget.releasePointerCapture(event.pointerId);
+        downRef.current = null;
+        onPreviewEnd?.();
+        if (movedRef.current) {
+          const next = toWorld(event.clientX, event.clientY);
+          if (Math.hypot(next[0] - center[0], next[1] - center[1]) > 0.001) onMove(o, host, next);
+        } else {
+          onSelect("opening", o.uid);
+          onEdit(o, [cx, cy]);
+        }
+        movedRef.current = false;
+      }}
+      onPointerCancel={() => { if (!preview) { downRef.current = null; movedRef.current = false; onPreviewEnd?.(); } }}
+      pointerEvents={preview ? "none" : undefined}
+      opacity={preview ? .65 : 1}
+      style={{ cursor: preview ? undefined : "pointer" }}>
+      <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
+        stroke={selected ? NORDIC_ACCENT : "var(--canvas-white)"} strokeWidth={selected ? 6 : 5} />
+      <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
+      stroke={o.is_door ? "var(--canvas-wood)" : NORDIC_ACCENT} strokeWidth={2}
+        strokeDasharray={o.is_door ? undefined : "3 2"} />
+      {o.is_door ? (strokeGlyph ? <>
+        {/* The non-swinging operations — overhead, bifold, slider, pocket — are pure
+            stroke glyphs resolved by the shared symbol module, arc-free by construction. */}
+        {strokeGlyph.map((stroke, index) => (
+          <polyline key={index} points={stroke.points.map((point) => point.join(",")).join(" ")}
+            fill="none" stroke="var(--canvas-wood)" strokeWidth={stroke.dashed ? 1 : 1.5}
+            strokeDasharray={stroke.dashed ? "4 3" : undefined} />
+        ))}
+      </> : operation === "double_swing" ? <>
+        {/* French/double door — two half-width leaves hinged at the jambs, meeting at
+            a centre mullion. Both leaves swing to the same side. */}
+        {([-1, 1] as const).map((side) => {
+          const jx = cx + side * dx;
+          const jy = cy + side * dy;
+          const lx = jx + swingSign * Math.sin(ang) * halfPx;
+          const ly = jy - swingSign * Math.cos(ang) * halfPx;
+          return (
+            <g key={side}>
+              <line x1={jx} y1={jy} x2={lx} y2={ly}
+                stroke="var(--canvas-wood)" strokeWidth={1.5} />
+              {/* Arc pivots on the jamb (jx,jy); its two leaves mirror across the mullion,
+                  so each resolves to the sweep flag that keeps that jamb as the centre. */}
+              <path d={`M ${cx} ${cy} A ${halfPx} ${halfPx} 0 0 ${swingArcSweepFlag([jx, jy], [cx, cy], [lx, ly])} ${lx} ${ly}`}
+                fill="none" stroke="var(--canvas-wood)" strokeWidth={1} />
+            </g>
+          );
+        })}
+      </> : <>
+        <line x1={hingeX} y1={hingeY} x2={leafX} y2={leafY}
+          stroke="var(--canvas-wood)" strokeWidth={1.5} />
+        {/* Swing arc pivots on the hinge; the closed leaf lies along the wall at the far
+            jamb (wallArc) and opens to leaf. The flag must keep the hinge as the arc
+            centre so the arc bows concave toward the hinge, not convex away from it. */}
+        <path d={`M ${wallArcX} ${wallArcY} A ${o.width_m * scale} ${o.width_m * scale} 0 0 ${swingArcSweepFlag([hingeX, hingeY], [wallArcX, wallArcY], [leafX, leafY])} ${leafX} ${leafY}`}
+          fill="none" stroke="var(--canvas-wood)" strokeWidth={1} />
+      </>) : <>
+        <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
+          stroke={NORDIC_ACCENT} strokeWidth={3} />
+        <line x1={cx - Math.sin(ang) * windowTick} y1={cy + Math.cos(ang) * windowTick}
+          x2={cx + Math.sin(ang) * windowTick} y2={cy - Math.cos(ang) * windowTick}
+          stroke="var(--canvas-white)" strokeWidth={1.2} />
+        <text x={cx - Math.sin(ang) * 14} y={cy + Math.cos(ang) * 14} textAnchor="middle"
+          fill={NORDIC_ACCENT} fontSize={9} fontWeight={700}
+          style={{ paintOrder: "stroke", stroke: "var(--canvas-white)", strokeWidth: 3 }}>{o.tag}</text>
+      </>}
+      {selected && <circle cx={cx} cy={cy} r={5} fill={NORDIC_ACCENT} />}
+      {preview && <circle cx={cx} cy={cy} r={Math.max(6, scale * .08)} fill="none"
+        stroke={preview === "valid" ? "var(--success)" : "var(--error)"} strokeWidth={2} />}
+    </g>
+  );
+});
+
+const StairShape = memo(function StairShape({ stair, project, selected, hovered, onSelect, onHover }: {
+  stair: Stair;
+  project: (p: Vec2) => Vec2;
+  selected: boolean;
+  hovered: boolean;
+  onSelect: (kind: Selection["kind"], uid: string) => void;
+  onHover: (uid: string | null) => void;
+}) {
+  if (stair.outline.length < 3) return null;
+  const outline = stair.outline.map(project).map((point) => point.join(",")).join(" ");
+  const xs = stair.outline.map((point) => point[0]);
+  const ys = stair.outline.map((point) => point[1]);
+  const minX = Math.min(...xs); const maxX = Math.max(...xs);
+  const minY = Math.min(...ys); const maxY = Math.max(...ys);
+  const start: Vec2 = stair.run_direction === "x"
+    ? [minX, (minY + maxY) / 2] : [(minX + maxX) / 2, minY];
+  const end: Vec2 = stair.run_direction === "x"
+    ? [maxX, (minY + maxY) / 2] : [(minX + maxX) / 2, maxY];
+  const [directionStart, directionEnd] = stair.run_reversed ? [end, start] : [start, end];
+  const [labelX, labelY] = project([(minX + maxX) / 2, (minY + maxY) / 2]);
+  const stroke = selected ? NORDIC_ACCENT : hovered ? NORDIC_INK : "var(--canvas-wood)";
+  const [arrowStartX, arrowStartY] = project(directionStart);
+  const [arrowEndX, arrowEndY] = project(directionEnd);
+  return <g onClick={() => onSelect("stair", stair.uid)}
+    onPointerEnter={() => onHover(stair.uid)} onPointerLeave={() => onHover(null)}
+    style={{ cursor: "pointer" }}>
+    <polygon points={outline} fill="var(--canvas-wood-soft)" stroke={stroke}
+      strokeWidth={selected ? 2.5 : 1.25} />
+    {stair.members.filter((member) => (member.category === "tread" || member.category === "winder" || member.category === "landing")
+      // A vertical member (landing post / newel) is a point in plan, not a line.
+      && (member.p0[0] !== member.p1[0] || member.p0[1] !== member.p1[1])).map((member) => {
+      const [x0, y0] = project(member.p0); const [x1, y1] = project(member.p1);
+      return <line key={member.key} x1={x0} y1={y0} x2={x1} y2={y1} stroke={stroke} strokeWidth={1} />;
+    })}
+    <line x1={arrowStartX} y1={arrowStartY} x2={arrowEndX} y2={arrowEndY} stroke={stroke}
+      strokeWidth={1.5} markerEnd="url(#stair-arrow)" />
+    <text x={labelX} y={labelY - 5} textAnchor="middle" fontSize={10} fill={stroke}
+      style={{ paintOrder: "stroke" }} stroke="var(--canvas-white)" strokeWidth={3}>UP {stair.riser_count} R</text>
+  </g>;
+});
+
+function WallDimension({ w, project }: { w: Wall; project: (p: Vec2) => Vec2 }) {
+  const [a, b] = w.axis;
+  const mid: Vec2 = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  const [mx, my] = project(mid);
+  return (
+    <text x={mx} y={my - 8} fill={NORDIC_INK} fontSize={12} textAnchor="middle">
+      {formatFtIn(wallLength(w))}
+    </text>
+  );
+}
+
+function StoreyTabs({ model }: { model: Model }) {
+  const activeStorey = useStore((s) => s.activeStorey);
+  const setActiveStorey = useStore((s) => s.setActiveStorey);
+  if (model.storeys.length <= 1) return null;
+  return (
+    <div className="hud" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+      {model.storeys.map((s) => (
+        <button key={s.tag} className={`seg-btn${activeStorey === s.tag ? " active" : ""}`}
+          onClick={() => setActiveStorey(s.tag)}>
+          {s.tag}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function openEndKeys(walls: Wall[]): Set<string> {
+  const nodes = deriveNodes(walls);
+  const open = new Set<string>();
+  for (const n of nodes.values()) if (n.walls.length < 2) open.add(n.id);
+  return open;
+}
+
+// Whether the two walls meeting at a derived node are (near-)collinear — a healable joint.
+function collinearAt(n: GeoNode, model: Model): boolean {
+  if (n.walls.length !== 2) return false;
+  const dirs: Vec2[] = [];
+  for (const uid of n.walls) {
+    const w = model.walls.find((x) => x.uid === uid);
+    if (!w) return false;
+    const [a, b] = w.axis;
+    const far: Vec2 = Math.hypot(a[0] - n.p[0], a[1] - n.p[1]) < 1e-4 ? b : a;
+    const dx = far[0] - n.p[0];
+    const dy = far[1] - n.p[1];
+    const len = Math.hypot(dx, dy) || 1;
+    dirs.push([dx / len, dy / len]);
+  }
+  const cross = dirs[0][0] * dirs[1][1] - dirs[0][1] * dirs[1][0];
+  return Math.abs(cross) < 0.02;
+}
+
+function nodeTagMatches(tag: string, world: Vec2, nodes: PlanNode[]): boolean {
+  const n = nodes.find((x) => x.tag === tag);
+  return n ? Math.hypot(n.x_m - world[0], n.y_m - world[1]) < 1e-4 : false;
+}

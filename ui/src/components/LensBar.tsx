@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import { useStore } from "../state/store";
-import { type Lens } from "../state/vocabulary";
+import { useStore, type Lens } from "../state/store";
 import type { Model } from "../model/types";
 import { formatPerms, VAPOR_CLASS_LABEL, vaporReadings, type VaporLayerReading } from "../model/vapor";
 
