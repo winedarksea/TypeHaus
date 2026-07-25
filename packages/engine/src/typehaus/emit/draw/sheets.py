@@ -34,6 +34,7 @@ from typehaus.emit.draw.details import (
 from typehaus.emit.draw.section import build_center_section, build_section
 from typehaus.emit.draw.siteplan import build_site_plan
 from typehaus.resolve.model import ResolvedModel
+from typehaus.takeoff import hardware_takeoff
 
 
 def _derived_detail_scene(model: ResolvedModel, derived: "DerivedDetail") -> Scene:
@@ -87,6 +88,13 @@ def build_sheet_index(model: ResolvedModel,
     if model.all_members():
         sheets.append(SheetSpec("S-103", "Framing schedule / bill of materials",
                                 page=_write_framing_bom))
+
+    # Hardware gets its own sheet rather than a second page under S-103: a PageFn that
+    # emits two pages would put the cover's printed index one page out of step with the
+    # emitted set, which ``build_sheet_index`` exists to prevent.
+    if hardware_takeoff(model):
+        sheets.append(SheetSpec("S-104", "Connection hardware schedule",
+                                page=_write_hardware_schedule))
 
     storeys = sorted(model.plan.storeys, key=lambda s: s.elevation.meters)
     floor_pages = [(f"A-{101 + i:03d}", storey.tag) for i, storey in enumerate(storeys)
@@ -269,6 +277,57 @@ def _write_framing_bom(pdf, model: ResolvedModel, number: str, name: str) -> Non
     _add_table(fig, bom_rows,
                ("Size", "Type", "Pieces", "Cut LF", "Stock lengths"),
                bbox=(0.04, 0.03, 0.92, 0.57))
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
+def _write_hardware_schedule(pdf, model: ResolvedModel, number: str, name: str) -> None:
+    """Connection hardware and structural solids — the parts of the take-off the lumber cut
+    list cannot represent (a screw has no cut length; concrete is billed by volume).
+
+    Every row carries the rule it was derived from, because a hardware count is only
+    checkable if the reader can see the spacing it came from (→ takeoff.hardware_takeoff).
+    """
+    import matplotlib.pyplot as plt
+
+    from typehaus.takeoff import hardware_takeoff, structural_solids_takeoff
+
+    fig = plt.figure(figsize=(11, 17))
+    fig.text(0.04, 0.97, f"{number} · {name}", fontsize=16, family="monospace")
+
+    hardware = hardware_takeoff(model)
+    fig.text(0.04, 0.94, "CONNECTION HARDWARE", fontsize=10, family="monospace",
+             weight="bold")
+    # The derivation rules are printed as keyed notes rather than a table column: they run
+    # to a full sentence each, and matplotlib scales a table's lettering to fit its widest
+    # cell, so carrying them inline shrinks every other column past legibility.
+    hardware_rows = [
+        (f"{index}", row["scope"], row["part_number"] or "—", row["size"] or "—",
+         f"{row['count']:,}" if row["count"] is not None else "—", row["unit"],
+         row["manufacturer"] or "—")
+        for index, row in enumerate(hardware, start=1)
+    ]
+    _add_table(fig, hardware_rows,
+               ("#", "Scope", "Part", "Size", "Qty", "Unit", "Manufacturer"),
+               bbox=(0.04, 0.66, 0.92, 0.26))
+
+    fig.text(0.04, 0.62, "BASIS OF QUANTITY", fontsize=10, family="monospace",
+             weight="bold")
+    for index, row in enumerate(hardware, start=1):
+        fig.text(0.04, 0.60 - (index - 1) * 0.014, f"{index}. {row['basis']}",
+                 fontsize=5.5, family="monospace")
+
+    solids = structural_solids_takeoff(model)
+    fig.text(0.04, 0.38, "STRUCTURAL SOLIDS — BY CATEGORY", fontsize=10,
+             family="monospace", weight="bold")
+    solid_rows = [
+        (row["category"], row["assembly"] or "—", f"{row['count']:,}",
+         f"{row['plan_area_sqft']:,.1f}", f"{row['volume_cubic_yards']:,.2f}")
+        for row in solids
+    ]
+    _add_table(fig, solid_rows,
+               ("Category", "Assembly", "Count", "Plan sf", "Cu yd"),
+               bbox=(0.04, 0.03, 0.7, 0.33))
     pdf.savefig(fig)
     plt.close(fig)
 

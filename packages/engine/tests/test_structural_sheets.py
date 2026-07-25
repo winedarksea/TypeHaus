@@ -258,3 +258,39 @@ def test_structural_sheets_round_trip_to_dxf(catlin_model, tmp_path: Path):
         document = ezdxf.readfile(write_dxf(scene, tmp_path / f"{name}.dxf"))
         assert document.units == 1
         assert "A-ANNO-TABL" in {layer.dxf.name for layer in document.layers}
+
+
+def test_hardware_schedule_is_its_own_sheet(catlin_model):
+    """S-104 must appear in the index, or the derived hardware counts reach no reader.
+
+    ``hardware_takeoff`` produced screw, anchor and connector quantities that the lumber
+    cut list on S-103 structurally cannot carry (a screw has no cut length), and they were
+    reaching the CLI only.
+    """
+    from typehaus.emit.draw.sheets import build_sheet_index
+
+    sheets = {spec.number: spec for spec in build_sheet_index(catlin_model)}
+    assert "S-104" in sheets
+    assert sheets["S-104"].title == "Connection hardware schedule"
+    # A schedule page composes tables directly rather than building a Scene.
+    assert sheets["S-104"].page is not None and sheets["S-104"].scene is None
+
+
+def test_hardware_schedule_renders_every_derived_row(catlin_model, tmp_path: Path):
+    import matplotlib
+    matplotlib.use("Agg")
+    from matplotlib.backends.backend_pdf import PdfPages
+
+    from typehaus.emit.draw.sheets import _write_hardware_schedule
+    from typehaus.takeoff import hardware_takeoff
+
+    hardware = hardware_takeoff(catlin_model)
+    assert hardware, "catlin must derive hardware for this sheet to mean anything"
+    # Every row needs the rule behind it — a hardware count nobody can check is not a
+    # schedule, and the sheet prints these as keyed notes under the table.
+    assert all(row["basis"] for row in hardware)
+
+    out = tmp_path / "s104.pdf"
+    with PdfPages(out) as pdf:
+        _write_hardware_schedule(pdf, catlin_model, "S-104", "Connection hardware schedule")
+    assert out.stat().st_size > 0
