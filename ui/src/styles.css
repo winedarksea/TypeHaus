@@ -1187,9 +1187,16 @@ textarea:focus-visible,
   cursor: default;
   opacity: 0.7;
 }
-/* When a lens is active, ordinary geometry is muted so the lens reads as dominant. */
+/* When a lens is active, ordinary geometry is muted so the lens reads as dominant. The plan's
+   wall fills carry most of that mute, because the control-layer overlay they sit behind is
+   drawn as a sibling and must stay at full contrast; the stage keeps a light tint so the 3D
+   panel still signals that a lens is on. */
 :root:not([data-lens="none"]) .stage {
-  opacity: 0.62;
+  opacity: 0.88;
+  transition: opacity var(--dur-med) var(--ease);
+}
+:root:not([data-lens="none"]) .wall-fills {
+  opacity: 0.34;
   transition: opacity var(--dur-med) var(--ease);
 }
 
@@ -1703,3 +1710,127 @@ textarea:focus-visible,
 }
 .project-drawer .kv > *:nth-last-child(-n + 2) { border-bottom: none; }
 .project-drawer .kv > span:not(.k) { color: var(--ink); }
+
+/* ---------------------------------------------------------------------------
+   Phase 11 — shared visibility model, plan diagnostics, and the two readers
+   that replaced the DESIGN/ANALYZE topbar buttons.
+   --------------------------------------------------------------------------- */
+
+/* A discipline the 2D plan has no geometry for is badged rather than left inert. */
+.trade-surface {
+  margin-left: auto;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  border: 1px solid var(--panel-line);
+  border-radius: 3px;
+  padding: 0 3px;
+}
+.views-hint { font-size: 11px; margin: 4px 0 0; }
+
+/* The room/area id line sits under its human name and is what a plan edit references. */
+.space-label-id { letter-spacing: 0.04em; }
+
+/* Clickable plan diagnostic markers (open wall ends, junction fallbacks). */
+.plan-warning-popover {
+  position: absolute;
+  z-index: 30;
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-3);
+  padding: 10px 12px;
+  max-height: 320px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+.plan-warning-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.plan-warning-head > div { flex: 1; }
+.plan-warning-title { font-weight: 700; }
+.plan-warning-message { margin: 0 0 8px; line-height: 1.45; }
+.plan-warning-subhead {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.plan-warning-findings { margin: 4px 0 0; padding-left: 0; list-style: none; }
+.plan-warning-findings li { display: flex; gap: 6px; align-items: baseline; padding: 3px 0; }
+
+/* Full-width readers (assembly details, bill of materials) reuse the workbench shell. */
+.reader-subtitle { font-size: 12px; }
+.reader-section { margin-bottom: 22px; }
+.reader-section-title { margin: 0 0 2px; font-size: 14px; }
+.reader-section-note { margin: 0 0 10px; font-size: 12px; line-height: 1.45; }
+.reader-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; }
+.reader-table-scroll { overflow-x: auto; }
+.reader-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.reader-table th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--panel-line);
+  padding: 5px 8px 5px 0;
+  white-space: nowrap;
+}
+.reader-table td { padding: 5px 8px 5px 0; border-bottom: 1px solid var(--panel-line); }
+.reader-table .num-col { text-align: right; font-variant-numeric: tabular-nums; }
+.reader-card {
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-overlay);
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+.reader-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.reader-card-title { font-weight: 700; font-size: 12.5px; }
+.reader-chip {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 3px;
+  padding: 0 4px;
+}
+.reader-list { margin: 2px 0; padding-left: 0; list-style: none; font-size: 12px; }
+.reader-list li { padding: 2px 0; }
+.reader-expand { margin-top: 6px; font-size: 11px; }
+.reader-tag-cloud { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.reader-tag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  border: 1px solid var(--panel-line);
+  background: var(--panel);
+  color: var(--ink);
+  border-radius: 3px;
+  padding: 1px 5px;
+  cursor: pointer;
+}
+.reader-tag:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.reader-tag:disabled { opacity: 0.5; cursor: default; }
+.control-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 6px;
+}
+.control-tag.control-air { color: var(--control-air); }
+.control-tag.control-water { color: var(--control-water); }
+.control-tag.control-thermal { color: var(--control-thermal); }

@@ -2,8 +2,22 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { useStore } from "../state/store";
 import type { Selection } from "../state/store";
 import type { PreviewGeometry } from "../engine/EngineClient";
-import type { CanvasObject, CanvasObjectType, DoorOperation, Model, Opening, PlanNode, Stair, Vec2, Wall } from "../model/types";
+import type { CanvasObject, CanvasObjectType, DoorOperation, Layer, Model, Opening, PlanNode, Stair, Vec2, Wall } from "../model/types";
 import { bifoldDoorStrokes, overheadDoorStrokes } from "../model/doorSymbols";
+import {
+  canvasObjectTrade,
+  isLayerVisible,
+  type LayerVisibilityGroup,
+} from "../model/visibility";
+import {
+  junctionDiagnosticMarkers,
+  openEndMarker,
+  type PlanWarningMarker,
+} from "../model/planWarnings";
+import { projectedExtentPx, spaceLabel, spaceLabelLineBudget } from "../model/spaceLabels";
+import { PlanWarningPopover } from "./PlanWarningPopover";
+import { layerCarriesControl, lensStrokeSpec } from "./LensBar";
+import type { Lens } from "../state/store";
 import {
   deriveNodes,
   formatFtIn,
@@ -79,6 +93,7 @@ interface DoorPopup {
 
 const TAP_PX = 6; // pointer travel under this on up = a tap, not a pan
 const HIT_PX = 16; // wall pick tolerance in screen px
+const WARNING_MARKER_HIT_PX = 12; // diagnostic-marker pick tolerance (the dot is r=6.5)
 
 export function Canvas2D() {
   const model = useStore((s) => s.model)!;
@@ -90,6 +105,11 @@ export function Canvas2D() {
   const hoverUid = useStore((s) => s.hoverUid);
   const showFraming = useStore((s) => s.showFraming);
   const showSpaceLabels = useStore((s) => s.showSpaceLabels);
+  // The plan reads the same visibility model the 3D panel does (→ model/visibility.ts), so a
+  // discipline or an assembly layer hidden in one view is hidden in the other.
+  const visibleTrades = useStore((s) => s.visibleTrades);
+  const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
+  const activeLens = useStore((s) => s.activeLens);
   const activeStorey = useStore((s) => s.activeStorey);
   const workspace = useStore((s) => s.activeWorkspace);
   const tool = useStore((s) => s.tool);
@@ -126,6 +146,7 @@ export function Canvas2D() {
   const [openingDragPreview, setOpeningDragPreview] = useState<OpeningDragPreview | null>(null);
   const [placement, setPlacement] = useState<Placement | null>(null);
   const [wallAssemblyPopup, setWallAssemblyPopup] = useState<WallAssemblyPopup | null>(null);
+  const [warningPopup, setWarningPopup] = useState<{ marker: PlanWarningMarker; screen: Vec2 } | null>(null);
   const [doorPopup, setDoorPopup] = useState<DoorPopup | null>(null);
   const [windowPopup, setWindowPopup] = useState<DoorPopup | null>(null);
   const [dimWall, setDimWall] = useState<Wall | null>(null);
@@ -276,6 +297,7 @@ export function Canvas2D() {
     [model.walls, wallAssemblyPopup],
   );
 
+
   // A popup is meaningful only while its wall remains selected. This also covers selection
   // changes initiated by the sidebar rather than by the SVG itself.
   useEffect(() => {
@@ -327,6 +349,27 @@ export function Canvas2D() {
   const tolM = 12 / view.scale;
   const gridM = view.scale * M_PER_FT >= 14 ? M_PER_FT : null;
   const fmt = (m: number) => formatFtIn(m);
+
+  // Every plan marker that carries a diagnostic: unjoined wall ends (derived from the drawn
+  // wall graph, so the marker set matches exactly what the canvas paints) plus any junction the
+  // resolver annotated. `tolM` is the same node tolerance the snap/heal affordances use.
+  const warningMarkers = useMemo(() => {
+    const wallByUid = new Map(wallsOnStorey.map((wall) => [wall.uid, wall]));
+    return [
+      ...[...nodes.values()].filter((node) => openEnds.has(node.id)).map((node) =>
+        openEndMarker(model, activeStorey, node.p,
+          node.walls.map((uid) => wallByUid.get(uid)).filter((wall): wall is Wall => wall != null),
+          tolM)),
+      ...junctionDiagnosticMarkers(model, activeStorey),
+    ];
+  }, [model, activeStorey, nodes, openEnds, wallsOnStorey, tolM]);
+
+  // A popover outlives neither its marker nor the storey it belongs to.
+  useEffect(() => {
+    if (warningPopup && !warningMarkers.some((marker) => marker.key === warningPopup.marker.key)) {
+      setWarningPopup(null);
+    }
+  }, [warningMarkers, warningPopup]);
 
   const nearestNodeTag = useCallback((p: Vec2): string | null => {
     let best: string | null = null;
@@ -434,6 +477,19 @@ export function Canvas2D() {
     if (offline && tool !== "select") { toast("Editing needs the server (offline)", "error"); return; }
     switch (tool) {
       case "select": {
+        // Diagnostic markers win the tap. They sit on top of the walls they annotate, and the
+        // whole point of them is to be answerable — resolving them here (rather than trusting
+        // the per-<g> click) is what actually makes them clickable under pointer capture.
+        const markerHit = warningMarkers.find((marker) => {
+          const [mx, my] = project(marker.position);
+          return Math.hypot(mx - screen[0], my - screen[1]) <= WARNING_MARKER_HIT_PX;
+        });
+        if (markerHit) {
+          setWarningPopup({ marker: markerHit, screen });
+          setWallAssemblyPopup(null);
+          break;
+        }
+        setWarningPopup(null);
         // Resolve wall taps here instead of relying solely on SVG click bubbling. Pointer
         // capture keeps pan/touch gestures reliable, but can make child click delivery vary
         // across browsers and installed-PWA shells.
@@ -608,7 +664,7 @@ export function Canvas2D() {
       if (target && (target.tagName === "INPUT" || target.tagName === "SELECT" || target.tagName === "TEXTAREA")) return;
       if (e.key === "Escape") {
         setDraft(null); setPlacement(null); setWallAssemblyPopup(null); setDimWall(null); setNodeDrag(null); setPending(null); setDoorPopup(null); setWindowPopup(null);
-        setPreviewGeom(null); setLengthEntry(null);
+        setPreviewGeom(null); setLengthEntry(null); setWarningPopup(null);
       } else if ((e.key === "Enter" || /^[0-9]$/.test(e.key)) && draftRef.current && !lengthEntryOpen.current) {
         // Precise segment: type a length to place the next corner at an exact distance along the
         // current rubber-band direction (falls back to +x when the pointer sits on the start).
@@ -704,18 +760,29 @@ export function Canvas2D() {
                 <polygon points={clearFace.map(project).map((p) => p.join(",")).join(" ")}
                   fill="var(--canvas-selection)" stroke="none" />
                 {showSpaceLabels && clearFace.length > 0 && (() => {
+                  // Name (occupancy) on top, then the id a plan edit references, then area —
+                  // dropped from the bottom up as the space runs out of room on screen.
+                  const label = spaceLabel(r);
+                  const [widthPx, heightPx] = projectedExtentPx(clearFace, project);
+                  const lines = spaceLabelLineBudget(widthPx, heightPx);
+                  if (lines === 0) return null;
                   const centroid: Vec2 = [
                     clearFace.reduce((sum, point) => sum + point[0], 0) / clearFace.length,
                     clearFace.reduce((sum, point) => sum + point[1], 0) / clearFace.length,
                   ];
                   const [x, y] = project(centroid);
-                  return <text x={x} y={y - 5} textAnchor="middle" pointerEvents="none"
+                  return <text x={x} y={y - (lines - 1) * 7} textAnchor="middle" pointerEvents="none"
                     fill="var(--canvas-ink)" fontSize={12} fontWeight={700}
                     style={{ paintOrder: "stroke", stroke: "var(--canvas-white)", strokeWidth: 3 }}>
-                    <tspan x={x}>{r.tag}</tspan>
-                    <tspan x={x} dy={14} fontSize={10} fontWeight={500}>
-                      {Math.round(r.area_m2 * 10.7639)} SF
-                    </tspan>
+                    <tspan x={x}>{lines >= 2 ? label.name : label.id}</tspan>
+                    {lines >= 2 && (
+                      <tspan x={x} dy={14} fontSize={10} fontWeight={600} className="space-label-id">
+                        {label.id}
+                      </tspan>
+                    )}
+                    {lines >= 3 && (
+                      <tspan x={x} dy={13} fontSize={10} fontWeight={500}>{label.area}</tspan>
+                    )}
                   </text>;
                 })()}
               </g>
@@ -723,7 +790,7 @@ export function Canvas2D() {
           })}
         {/* walls — likewise shown at their previewed axis (tag-matched) while a node drag is
             in flight, so connected walls visibly stretch/shrink before the commit lands */}
-        {wallsOnStorey.map((w) => {
+        {(visibleTrades.walls || visibleTrades.framing) && wallsOnStorey.map((w) => {
           const previewAxis = previewGeom?.walls.find((x) => x.tag === w.tag)?.axis;
           const displayWall = previewAxis ? { ...w, axis: previewAxis as [Vec2, Vec2] } : w;
           const displayedOpenings = model.openings
@@ -737,14 +804,17 @@ export function Canvas2D() {
               project={project}
               selected={selection.uid === w.uid}
               hovered={hoverUid === w.uid}
-              showFraming={showFraming}
+              showFraming={showFraming && visibleTrades.framing}
+              showLayers={visibleTrades.walls}
+              visibleLayerGroups={visibleLayerGroups}
+              activeLens={activeLens}
               onSelect={selectWallWithPopup}
               onHover={hoverEl}
             />
           );
         })}
         {/* openings */}
-        {model.openings.map((o) => {
+        {visibleTrades.openings && model.openings.map((o) => {
           const host = openingHostWall(model.walls, o);
           if (!host || (activeStorey && host.storey !== activeStorey)) return null;
           const operation = o.is_door
@@ -781,7 +851,7 @@ export function Canvas2D() {
           toWorld={unproject}
           onMove={moveOpeningFromDrag}
         />}
-        {stairsOnStorey
+        {visibleTrades.stairs && stairsOnStorey
           .map((stair) => <StairShape key={stair.uid} stair={stair} project={project}
             selected={selection.uid === stair.uid} hovered={hoverUid === stair.uid}
             onSelect={selectEl} onHover={hoverEl} />)}
@@ -789,6 +859,7 @@ export function Canvas2D() {
           // Doors/windows remain topology-aware SVG shapes below; their normalized records
           // serve inspection/interchange consumers and must not render a second footprint.
           .filter((item) => item.domain !== "opening" && item.position_m &&
+            visibleTrades[canvasObjectTrade(item)] &&
             (!activeStorey || item.storey === activeStorey))
           .map((item) => <CanvasObjectFootprint key={item.uid} item={item}
             type={item.type ? canvasTypes.get(item.type) : undefined} project={project} scale={view.scale}
@@ -797,24 +868,46 @@ export function Canvas2D() {
             onMove={movePlaceableFromDrag} onRotate={rotatePlaceableFromHandle} />)}
         {showClearances && <ClearanceOverlays model={model} storey={activeStorey} project={project}
           scale={view.scale} />}
-        {/* nodes + open-end markers; heal affordance on collinear 2-wall joints (select tool) */}
-        {[...nodes.values()].map((n) => {
+        {/* plain nodes; heal affordance on collinear 2-wall joints (select tool) */}
+        {[...nodes.values()].filter((n) => !openEnds.has(n.id)).map((n) => {
           const [x, y] = project(n.p);
-          const open = openEnds.has(n.id);
           const tag = tool === "select" ? nearestNodeTag(n.p) : null;
           const healable = tool === "select" && n.walls.length === 2 && collinearAt(n, model);
           return (
             <g key={n.id}>
               <circle
-                cx={x} cy={y} r={open ? 7 : healable ? 6 : 3.5}
-                fill={open ? "var(--error)" : healable ? NORDIC_ACCENT : NORDIC_LINE}
-                opacity={open ? 0.9 : healable ? 0.85 : 0.5}
+                cx={x} cy={y} r={healable ? 6 : 3.5}
+                fill={healable ? NORDIC_ACCENT : NORDIC_LINE}
+                opacity={healable ? 0.85 : 0.5}
                 style={{ cursor: healable ? "pointer" : "default" }}
                 onClick={healable && tag ? () => void healNode(tag) : undefined}
-              >
-                {open && <animate attributeName="r" values="6;9;6" dur="1.2s" repeatCount="indefinite" />}
-              </circle>
+              />
               {healable && <title>Heal joint</title>}
+            </g>
+          );
+        })}
+        {/* Diagnostic markers. These used to be an unexplained glowing red dot; now each one
+            names itself on click, and a *declared* open end reads as advisory rather than as
+            an error (→ model/planWarnings.ts). */}
+        {warningMarkers.map((marker) => {
+          const [x, y] = project(marker.position);
+          const active = warningPopup?.marker.key === marker.key;
+          const color = marker.tier === "error" ? "var(--error)"
+            : marker.tier === "warn" ? "var(--warn, var(--error))" : NORDIC_ACCENT;
+          return (
+            <g key={marker.key} style={{ cursor: "pointer" }}
+              onClick={(event) => {
+                const rect = svgRef.current?.getBoundingClientRect();
+                if (!rect) return;
+                setWarningPopup({ marker, screen: [event.clientX - rect.left, event.clientY - rect.top] });
+              }}>
+              <circle cx={x} cy={y} r={9} fill="transparent" />
+              <circle cx={x} cy={y} r={active ? 8 : 6.5} fill={color}
+                opacity={marker.tier === "info" ? 0.65 : 0.9}
+                stroke="var(--canvas-white)" strokeWidth={1.5} />
+              <text x={x} y={y + 3} fontSize={9} fontWeight={800} textAnchor="middle"
+                fill="var(--canvas-white)" pointerEvents="none">?</text>
+              <title>{marker.title} · {marker.id} — click for details</title>
             </g>
           );
         })}
@@ -1004,6 +1097,14 @@ export function Canvas2D() {
           screen={wallAssemblyPopup.screen}
           viewport={svgRef.current?.getBoundingClientRect() ?? null}
           onClose={() => setWallAssemblyPopup(null)}
+        />
+      )}
+      {warningPopup && (
+        <PlanWarningPopover
+          marker={warningPopup.marker}
+          screen={warningPopup.screen}
+          viewport={svgRef.current?.getBoundingClientRect() ?? null}
+          onClose={() => setWarningPopup(null)}
         />
       )}
       <SunIndicator model={model} />
@@ -1310,13 +1411,17 @@ function BackgroundGrid({ view }: { view: { scale: number; tx: number; ty: numbe
   );
 }
 
-const WallShape = memo(function WallShape({ w, openings, project, selected, hovered, showFraming, onSelect, onHover }: {
+const WallShape = memo(function WallShape({ w, openings, project, selected, hovered, showFraming,
+  showLayers, visibleLayerGroups, activeLens, onSelect, onHover }: {
   w: Wall;
   openings: Opening[];
   project: (p: Vec2) => Vec2;
   selected: boolean;
   hovered: boolean;
   showFraming: boolean;
+  showLayers: boolean; // Walls discipline — off leaves the framing and the axis alone
+  visibleLayerGroups: Record<LayerVisibilityGroup, boolean>;
+  activeLens: Lens; // draws the control-layer overlay the lens is about
   onSelect: (wall: Wall, event: React.MouseEvent<SVGGElement>) => void;
   onHover: (uid: string | null) => void;
 }) {
@@ -1354,9 +1459,11 @@ const WallShape = memo(function WallShape({ w, openings, project, selected, hove
             transform={`rotate(${screenAngleDeg} ${x} ${y})`} />;
         })}
       </mask>
-      <g mask={`url(#${openingMaskId})`}>
-        {w.layers.map((ly, i) =>
-          ly.polygon.length >= 3 ? (
+      <g className="wall-fills" mask={`url(#${openingMaskId})`}>
+        {/* Layer fills answer to the Walls discipline *and* to the per-layer control, so the
+            weather skin can be dropped while the cavity fill behind it stays drawn. */}
+        {showLayers && w.layers.map((ly: Layer, i: number) =>
+          ly.polygon.length >= 3 && isLayerVisible(ly, visibleLayerGroups) ? (
             <polygon key={i} points={poly(ly.polygon)} fill={materialColor(ly.material)}
               stroke="var(--panel-line)" strokeWidth={0.5} />
           ) : null,
@@ -1367,9 +1474,23 @@ const WallShape = memo(function WallShape({ w, openings, project, selected, hove
           return <line key={m.key} x1={x0} y1={y0} x2={x1} y2={y1} stroke="var(--canvas-wood)"
             strokeWidth={1.5} opacity={0.85} />;
         })}
-        <line x1={startX} y1={startY} x2={endX} y2={endY} stroke={stroke}
-          strokeWidth={selected ? 2.5 : 1.5} strokeDasharray={w.layers.length === 0 ? "4 4" : undefined} />
+        {showLayers && <line x1={startX} y1={startY} x2={endX} y2={endY} stroke={stroke}
+          strokeWidth={selected ? 2.5 : 1.5} strokeDasharray={w.layers.length === 0 ? "4 4" : undefined} />}
       </g>
+      {/* Building-science lens overlay. The engine already tags every resolved layer with the
+          controls it carries (`Layer.control`); until now the plan drew none of it, which is
+          why the air/water/thermal lenses "didn't seem to show much". Drawn outside the opening
+          mask and outside the dimmed fills, because a continuity lens is about the path. */}
+      {(() => {
+        const strokeSpec = lensStrokeSpec(activeLens);
+        if (!strokeSpec) return null;
+        return w.layers.map((ly: Layer, i: number) =>
+          ly.polygon.length >= 3 && layerCarriesControl(ly.control, activeLens) ? (
+            <polygon key={`lens-${i}`} points={poly(ly.polygon)} fill="none" pointerEvents="none"
+              stroke={`var(${strokeSpec.colorVar})`} strokeWidth={2} strokeDasharray={strokeSpec.pattern} />
+          ) : null,
+        );
+      })()}
     </g>
   );
 });

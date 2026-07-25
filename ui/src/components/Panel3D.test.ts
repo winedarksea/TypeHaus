@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import type { CanvasObject, Catalog, Floor, FootingBedding, Member, ModelPart, Opening, Roof, Solid, Stair, Vec2, Wall, Model } from "../model/types";
-import { archSoffitSegmentCount, buildCanvasObjectParts, buildFloor, buildFootingBedding, buildOpening, buildRoof, buildSolid, buildStair, canvasObjectFallbackGeometry, compassBearingScreenDirection, createSmoothArchedWallLayerGeometry, earthElevation, earthOutline, earthVoids, EARTH_FALLBACK_HALF_SIZE_M, FOOTING_BEDDING_COLOR, wallLayerPieces, wholeHouseGlbAssignment, withoutCollinearVertices } from "./Panel3D";
+import { archSoffitSegmentCount, frameRadiusForBounds, isRenderedInScene, normalizedWheelDeltaPx, VIEW_FIT_MIN_RADIUS_M, VIEW_FIT_POLAR_ANGLE, WHEEL_MAX_STEP_PX, buildCanvasObjectParts, buildFloor, buildFootingBedding, buildOpening, buildRoof, buildSolid, buildStair, canvasObjectFallbackGeometry, compassBearingScreenDirection, createSmoothArchedWallLayerGeometry, earthElevation, earthOutline, earthVoids, EARTH_FALLBACK_HALF_SIZE_M, FOOTING_BEDDING_COLOR, wallLayerPieces, wholeHouseGlbAssignment, withoutCollinearVertices } from "./Panel3D";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { SOLID_CATEGORY_COLOR, createSolidMaterial, solidColor } from "../three/solidMaterials";
 
@@ -425,4 +425,67 @@ export function runWholeHouseGlbTests() {
   const bogus = wholeHouseGlbAssignment(undefined, { trade: "concrete", uid: "X-1", kind: "gutter" });
   assert(bogus !== null && bogus.kind === null,
     "A kind outside the shared vocabulary is dropped rather than trusted");
+}
+
+// Default / reset framing (→ TODO: "the 'default zoom' for reset is poorly calculated").
+export function runViewFramingTests() {
+  const verticalFov = THREE.MathUtils.degToRad(50);
+  const aspect = 16 / 9;
+  // A house-shaped box: long in plan, comparatively low. The old bounding-sphere fit dollied
+  // back far enough to contain the plan diagonal, which is why the model landed small.
+  const house = new THREE.Box3(new THREE.Vector3(-10, 0, -6), new THREE.Vector3(10, 8, 6));
+  const target = house.getCenter(new THREE.Vector3());
+  const theta = Math.PI * 0.25;
+  const phi = VIEW_FIT_POLAR_ANGLE;
+  const radius = frameRadiusForBounds(house, target, theta, phi, verticalFov, aspect);
+
+  const sphereRadius = house.getBoundingSphere(new THREE.Sphere()).radius;
+  const limitingHalfFov = Math.min(verticalFov / 2, Math.atan(Math.tan(verticalFov / 2) * aspect));
+  const oldFit = sphereRadius / Math.sin(limitingHalfFov) * 1.15;
+  assert(radius < oldFit, "The exact corner fit must frame a house tighter than a bounding-sphere fit");
+
+  // Every corner has to land inside the frustum, or "frame the whole model" does not.
+  const camera = new THREE.PerspectiveCamera(50, aspect, 0.05, 5000);
+  camera.position.set(
+    target.x + radius * Math.sin(phi) * Math.cos(theta),
+    target.y + radius * Math.cos(phi),
+    target.z + radius * Math.sin(phi) * Math.sin(theta));
+  camera.lookAt(target);
+  camera.updateMatrixWorld(true);
+  for (const x of [house.min.x, house.max.x]) {
+    for (const y of [house.min.y, house.max.y]) {
+      for (const z of [house.min.z, house.max.z]) {
+        const ndc = new THREE.Vector3(x, y, z).project(camera);
+        assert(Math.abs(ndc.x) <= 1 && Math.abs(ndc.y) <= 1,
+          `Corner (${x}, ${y}, ${z}) must sit inside the framed view`);
+      }
+    }
+  }
+
+  // A narrow split pane needs to pull further back than a wide one for the same building —
+  // which is why reset recomputes the fit instead of replaying a stored snapshot.
+  const narrow = frameRadiusForBounds(house, target, theta, phi, verticalFov, 0.6);
+  assert(narrow > radius, "A narrower pane must dolly further out");
+
+  assert(frameRadiusForBounds(new THREE.Box3(new THREE.Vector3(), new THREE.Vector3()),
+    new THREE.Vector3(), theta, phi, verticalFov, aspect) === VIEW_FIT_MIN_RADIUS_M,
+    "A degenerate box still yields a usable dolly distance");
+
+  // Wheel normalization: a line-mode notch and a pixel-mode flick must land in the same range.
+  assert(normalizedWheelDeltaPx(3, 1) === 48, "Line-mode deltas are converted to pixels");
+  assert(normalizedWheelDeltaPx(4000, 0) === WHEEL_MAX_STEP_PX,
+    "A trackpad flick is clamped so one gesture cannot cross the whole zoom range");
+  assert(normalizedWheelDeltaPx(-4000, 0) === -WHEEL_MAX_STEP_PX, "Clamping is symmetric");
+
+  // Picking has to honour the same visibility the renderer does, or a hidden trade keeps
+  // intercepting clicks aimed at whatever it was hiding.
+  const tradeGroup = new THREE.Group();
+  const layerMesh = new THREE.Mesh();
+  tradeGroup.add(layerMesh);
+  assert(isRenderedInScene(layerMesh), "A visible mesh under a visible group is pickable");
+  tradeGroup.visible = false;
+  assert(!isRenderedInScene(layerMesh), "Hiding the trade group takes its meshes out of the raycast");
+  tradeGroup.visible = true;
+  layerMesh.visible = false;
+  assert(!isRenderedInScene(layerMesh), "Hiding one assembly layer takes just that mesh out");
 }
