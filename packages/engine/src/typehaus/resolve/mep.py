@@ -11,11 +11,12 @@ from __future__ import annotations
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import DuctRouting, Service
-from typehaus.model.mep import DuctRun, PipeRun, SleevePenetration
+from typehaus.model.mep import ConduitRun, DuctRun, PipeRun, SleevePenetration
 from typehaus.model.spatial import Appliance, Fixture
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import length, sub
-from typehaus.resolve.model import ResolvedDuct, ResolvedModel, ResolvedPipeRun, ResolvedSleeve
+from typehaus.resolve.model import (ResolvedConduitRun, ResolvedDuct, ResolvedModel,
+                                    ResolvedPipeRun, ResolvedSleeve)
 
 _JOIST_BREADTH_M = inch(1.5).meters
 _DEFAULT_SPACING_M = inch(16).meters
@@ -31,7 +32,31 @@ def resolve_mep(model: ResolvedModel) -> list[Finding]:
                 findings.extend(_resolve_sleeve(model, element, storey.tag))
             elif isinstance(element, DuctRun):
                 findings.extend(_resolve_duct_run(model, element, storey.tag))
+            elif isinstance(element, ConduitRun):
+                findings.extend(_resolve_conduit_run(model, element, storey.tag))
     return findings
+
+
+def _resolve_conduit_run(model: ResolvedModel, run: ConduitRun, storey_tag: str) -> list[Finding]:
+    path = [p.xy_m for p in run.path]
+    if len(path) < 2:
+        return [Finding(
+            severity=Severity.ERROR, check_id="integrity.conduit_run_path",
+            message=f"conduit run {run.tag} needs >= 2 path points", element_tags=(run.tag,),
+            result=Result.FAIL,
+        )]
+    plan_len = sum(length(sub(path[i], path[i + 1])) for i in range(len(path) - 1))
+    # Elevations are authored project-frame absolute (trunks cross storeys, unlike pipe
+    # inverts); the developed pull length includes the vertical rise at the run's end.
+    z0 = run.start_elevation.meters if run.start_elevation is not None else None
+    z1 = run.end_elevation.meters if run.end_elevation is not None else None
+    rise = abs(z1 - z0) if z0 is not None and z1 is not None else 0.0
+    model.conduits.append(ResolvedConduitRun(
+        uid=run.uid, tag=run.tag, storey=storey_tag, path=path,
+        trade_size_m=run.trade_size.meters, z_start_m=z0, z_end_m=z1,
+        length_m=plan_len + rise, from_ref=run.from_ref, to_ref=run.to_ref,
+    ))
+    return []
 
 
 def _resolve_pipe_run(model: ResolvedModel, run: PipeRun, storey) -> list[Finding]:

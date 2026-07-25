@@ -248,6 +248,54 @@ def test_panel_schedule_sheet_is_in_the_permit_set(catlin_model):
     assert {"E-101", "E-102", "E-103", "E-104", "E-105"} <= numbers  # all five storeys
 
 
+def test_conduit_run_developed_length(project):
+    """Length = plan polyline + the vertical rise between the absolute end elevations."""
+    from typehaus.model import ConduitRun, ft, inch
+
+    plan = _plan(devices=()).with_elements("main", (
+        ConduitRun(uid="TESTCD0001", tag="CD-1", trade_size=inch(1),
+                   path=(pt(ft(0), ft(0)), pt(ft(10), ft(0))),
+                   start_elevation=ft(0), end_elevation=ft(10)),))
+    model, findings = resolve(plan)
+    assert not [f for f in findings if f.severity.value == "error"]
+    run = model.conduits[0]
+    assert abs(run.length_m - 20 * 0.3048) < 1e-6
+    from typehaus.takeoff import conduit_takeoff
+    rows = conduit_takeoff(model)
+    assert rows == [{"trade_size_in": 1.0, "runs": 1, "length_ft": 20.0, "tags": ["CD-1"]}]
+
+
+def test_conduit_emits_cable_carrier_segments(project, tmp_path: Path):
+    ifcopenshell = pytest.importorskip("ifcopenshell")
+    from typehaus.emit.ifc.emitter import emit_ifc
+    from typehaus.model import ConduitRun, ft, inch
+
+    plan = _plan(devices=()).with_elements("main", (
+        ConduitRun(uid="TESTCD0002", tag="CD-2", trade_size=inch(1),
+                   path=(pt(ft(0), ft(0)), pt(ft(10), ft(0)), pt(ft(10), ft(8))),
+                   start_elevation=ft(0), end_elevation=ft(9)),))
+    model, findings = resolve(plan)
+    assert not [f for f in findings if f.severity.value == "error"]
+    f = ifcopenshell.open(str(emit_ifc(model, tmp_path / "conduit.ifc")))
+    segments = f.by_type("IfcCableCarrierSegment")
+    # Two plan legs + one riser (9' rise), each a CONDUITSEGMENT with a stable guid.
+    assert len(segments) == 3
+    assert all(s.PredefinedType == "CONDUITSEGMENT" and s.GlobalId for s in segments)
+
+
+def test_catlin_conduit_trunks(catlin_model):
+    from typehaus.takeoff import conduit_takeoff
+
+    assert len(catlin_model.conduits) == 4
+    assert all(run.from_ref == "ED-B-PANEL" for run in catlin_model.conduits)
+    rows = conduit_takeoff(catlin_model)
+    assert {row["trade_size_in"] for row in rows} == {0.75, 1.0, 1.25, 1.5}
+    assert all(20 < row["length_ft"] < 60 for row in rows)
+    # The PV riser reaches the attic junction box.
+    riser = next(run for run in catlin_model.conduits if run.tag == "CD-B-ATTIC-RISER")
+    assert riser.to_ref == "ED-A-PV-JB" and riser.z_end_m > 7.0
+
+
 def test_circuit_is_schedule_data_not_geometry():
     """A Circuit never enters storey element lists; it lives in Library.circuits."""
     circuit = Circuit(tag="CKT-01", panel_ref="ED-B-PANEL", breaker_amps=20, backup=True)

@@ -23,6 +23,7 @@
 #   (attic Mount 5'-6" over the 20' datum) has cladding to grip.
 
 from typehaus import (
+    ConduitRun,
     Connector,
     ConnectorKind,
     DeviceKind,
@@ -214,6 +215,35 @@ PV_JBOX_CLAMP = [
     Connector(uid="CEE019AAAA", tag="CN-A-PV-CLAMP", kind=ConnectorKind.STANDING_SEAM_CLAMP,
               position=pt(ft(9), ft(37)), elevation=ft(25, 6), size="S-5!",
               connects=("ED-A-PV-JB", "W-A-N2")),
+]
+
+# --- Conduit trunks (electrical_notes.md line 3: make it easy to run new lines) -------
+# Four EMT trunks from ED-B-PANEL, elevations project-frame absolute (they cross
+# storeys). Each run travels its plan polyline flat at start_elevation and rises
+# vertically at its last point to end_elevation; the takeoff bills the developed length.
+CONDUIT_TRUNKS = [
+    # Up the (3', 33') mechanical chase beside the radon vent to the PV junction box.
+    ConduitRun(uid="CDT001AAAA", tag="CD-B-ATTIC-RISER", trade_size=inch(1.5),
+               path=(pt(ft(2), ft(29)), pt(ft(3), ft(33))),
+               start_elevation=ft(-4), end_elevation=ft(25, 6),
+               from_ref="ED-B-PANEL", to_ref="ED-A-PV-JB"),
+    # North under the 4'-ish house/garage gap to the EV receptacles on W-G-S.
+    ConduitRun(uid="CDT002AAAA", tag="CD-B-GARAGE", trade_size=inch(1.25),
+               path=(pt(ft(2), ft(29)), pt(ft(2), ft(36)), pt(ft(16), ft(36)),
+                     pt(ft(16), ft(41, 6))),
+               start_elevation=ft(-4), end_elevation=ft(5, 10),
+               from_ref="ED-B-PANEL", to_ref="ED-G-EV-1450"),
+    # Across the basement ceiling to the kitchen's east counter wall.
+    ConduitRun(uid="CDT003AAAA", tag="CD-B-KITCHEN", trade_size=inch(0.75),
+               path=(pt(ft(2), ft(29)), pt(ft(35), ft(29)), pt(ft(35), ft(32))),
+               start_elevation=ft(-1), end_elevation=ft(3, 6),
+               from_ref="ED-B-PANEL", to_ref="ED-M-LIVING-KGF3"),
+    # South out of the basement to the hot tub disconnect under the porch.
+    ConduitRun(uid="CDT004AAAA", tag="CD-B-SPA", trade_size=inch(1),
+               path=(pt(ft(2), ft(29)), pt(ft(2), ft(0)), pt(ft(8, 6), ft(0)),
+                     pt(ft(8, 6), ft(-7.833))),
+               start_elevation=ft(-4), end_elevation=ft(-4),
+               from_ref="ED-B-PANEL", to_ref="ED-B-SPA-DISC"),
 ]
 
 # --- NEC 210.52 fill (generated positions, hand-authored constructors) ---------------
@@ -474,7 +504,7 @@ NEC_FILL_ATTIC = [
 ]
 
 BASEMENT_ELEMENTS = [*BACKUP_ENCLOSURE, *BASEMENT_DEVICES, *BASEMENT_EQUIPMENT,
-                     *NEC_FILL_BASEMENT]
+                     *CONDUIT_TRUNKS, *NEC_FILL_BASEMENT]
 MAIN_ELEMENTS = [*SERVICE_DEVICES, *MAIN_DEVICES, *MAIN_EQUIPMENT, *NEC_FILL_MAIN]
 GARAGE_ELEMENTS = [*GARAGE_DEVICES]
 SECOND_ELEMENTS = [*NEC_FILL_SECOND]

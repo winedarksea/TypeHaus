@@ -58,6 +58,7 @@ _LAYER_STYLE = {
     "M-HVAC-RDFF": ("#4a8a6a", 0.6),
     "M-HVAC-EQPM": ("#2a6a4a", 0.8),
     "E-POWR-DEVC": ("#8a2a2a", 0.5),
+    "E-POWR-CNDT": ("#b05050", 0.4),
     "E-LITE": ("#c08a00", 0.5),
     "C-PROP": ("#333333", 0.6),
     "C-PROP-SETB": ("#204070", 0.4),

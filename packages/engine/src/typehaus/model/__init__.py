@@ -56,6 +56,7 @@ from typehaus.model.floors import (
 from typehaus.model.electrical import Circuit
 from typehaus.model.materials import Material
 from typehaus.model.mep import (
+    ConduitRun,
     DuctRun,
     ElectricalDevice,
     Equipment,
@@ -217,7 +218,7 @@ __all__ = [
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",
     "PipeRun", "SleevePenetration", "DuctRun", "Register", "Equipment", "ElectricalDevice",
-    "Circuit",
+    "Circuit", "ConduitRun",
     "Sump", "VentRun",
     "MonthlyNormal", "SetbackSpec", "SpotElevation", "ImperviousSurface", "UtilityLine",
     "Contour", "Basemap",

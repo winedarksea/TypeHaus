@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typehaus.emit.draw._shared import emit_wall
 from typehaus.emit.draw._shared import to_in as _in
-from typehaus.emit.draw.scene import Scene, SceneBuilder, Symbol, Text
+from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.resolve.model import ResolvedModel
 
 _DEVICE_LAYER = {
@@ -43,6 +43,17 @@ def build_electrical_plan(model: ResolvedModel, storey: str) -> Scene:
         b.add(Symbol(name=element.kind.value, insert=_in(element.position.xy_m), layer=layer))
         b.add(Text(anchor=_in((element.position.xy_m[0] + 0.1, element.position.xy_m[1] + 0.1)),
                    content=element.tag.removeprefix("ED-"), height=1.5, layer="A-ANNO-TEXT"))
+
+    # Conduit trunks: dashed homerun polylines on their own raceway layer, labeled with
+    # tag + trade size at the first vertex.
+    for run in model.conduits:
+        if run.storey != storey:
+            continue
+        b.add(Polyline(points=tuple(_in(p) for p in run.path), layer="E-POWR-CNDT",
+                       linetype="DASHED", uid=run.uid, tag=run.tag))
+        b.add(Text(anchor=_in((run.path[0][0] + 0.1, run.path[0][1] + 0.25)),
+                   content=f"{run.tag.removeprefix('CD-')} {run.trade_size_m * 39.3701:.2g}\"",
+                   height=1.5, layer="A-ANNO-TEXT"))
 
     _emit_legend(b, model, storey)
     return b.build()

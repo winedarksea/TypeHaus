@@ -117,6 +117,26 @@ def service_load_summary(model: ResolvedModel) -> dict[str, object]:
     }
 
 
+def conduit_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
+    """Lineal feet of raceway by EMT trade size — developed length (plan + riser)."""
+    groups: dict[float, dict[str, object]] = {}
+    for run in model.conduits:
+        row = groups.setdefault(run.trade_size_m, {
+            "trade_size_in": round(run.trade_size_m * 39.37007874015748, 2),
+            "runs": 0, "length_m": 0.0, "tags": []})
+        row["runs"] = int(row["runs"]) + 1
+        row["length_m"] = float(row["length_m"]) + run.length_m
+        tags = row["tags"]
+        assert isinstance(tags, list)
+        tags.append(run.tag)
+    return [
+        {"trade_size_in": row["trade_size_in"], "runs": int(row["runs"]),
+         "length_ft": round(float(row["length_m"]) * 3.280839895013123, 1),
+         "tags": sorted(row["tags"])}
+        for row in (groups[key] for key in sorted(groups))
+    ]
+
+
 def backup_component_rows(model: ResolvedModel) -> list[dict[str, object]]:
     """DIN-rail components derived from the backup-flagged circuits: ceil(n/4) Shelly Pro
     4PM relays, one 24V PSU, one DIN UPS. Empty when nothing is flagged for backup."""

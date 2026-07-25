@@ -134,6 +134,25 @@ class VentRun(Element):
 
 
 @register_element
+class ConduitRun(Element):
+    """One authored raceway trunk — plan polyline plus project-frame end elevations.
+
+    Not a ``PipeRun``: pipe systems feed plumbing checks (slope, vent reachability) that
+    must never see a power raceway. Elevations are project-frame absolute because trunks
+    cross storeys (panel → attic riser); where they differ the run rises vertically at
+    its last point, and the developed length is plan length plus that rise. The point of
+    conduit (electrical_notes.md line 3) is making future pulls easy, so only main
+    trunks are modeled — branch wiring stays undrawn."""
+
+    path: tuple[Point2D, ...]  # plan-frame polyline, >= 2 points
+    trade_size: Length  # EMT trade size, e.g. inch(1)
+    start_elevation: Length | None = None  # project-frame absolute
+    end_elevation: Length | None = None
+    from_ref: str | None = None  # feeding device, e.g. "ED-B-PANEL"
+    to_ref: str | None = None  # served device/area, e.g. "ED-A-PV-JB"
+
+
+@register_element
 class ElectricalDevice(Element):
     """A device symbol; ``circuit`` names the ``Circuit`` feeding it (panel schedule).
 
@@ -159,6 +178,7 @@ for _name, _obj in (
     ("Register", Register),
     ("Equipment", Equipment),
     ("ElectricalDevice", ElectricalDevice),
+    ("ConduitRun", ConduitRun),
     ("Sump", Sump),
     ("VentRun", VentRun),
 ):

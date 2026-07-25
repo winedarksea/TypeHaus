@@ -361,6 +361,25 @@ class ResolvedPipeRun:
 
 
 @dataclass(frozen=True)
+class ResolvedConduitRun:
+    """One raceway trunk: plan polyline + absolute end elevations, developed length.
+
+    ``length_m`` is the pull length — plan length plus the vertical rise between the two
+    end elevations (the run rises at its last point; → model/mep.py ConduitRun)."""
+
+    uid: str
+    tag: str
+    storey: str
+    path: Ring
+    trade_size_m: float
+    z_start_m: float | None
+    z_end_m: float | None
+    length_m: float
+    from_ref: str | None = None
+    to_ref: str | None = None
+
+
+@dataclass(frozen=True)
 class ResolvedSleeve:
     """A cast-in-place sleeve, plus how far it sits from the fixture's expected drain point."""
 
@@ -469,6 +488,7 @@ class ResolvedModel:
     pipe_runs: list[ResolvedPipeRun] = field(default_factory=list)
     sleeves: list[ResolvedSleeve] = field(default_factory=list)
     ducts: list[ResolvedDuct] = field(default_factory=list)
+    conduits: list[ResolvedConduitRun] = field(default_factory=list)
     footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)
     canvas_objects: list[ResolvedCanvasObject] = field(default_factory=list)
     # Per-stage resolve timings in milliseconds (Phase 0 instrumentation). Not serialized

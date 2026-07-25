@@ -16,6 +16,7 @@ from __future__ import annotations
 from typehaus.takeoff.bom import bill_of_materials
 from typehaus.takeoff.electrical import (
     backup_component_rows,
+    conduit_takeoff,
     panel_schedule,
     service_load_summary,
 )
@@ -42,7 +43,7 @@ from typehaus.takeoff.placeables import floor_heat_takeoff, placeables_takeoff
 
 __all__ = [
     "glazing_panel_takeoff", "glazing_trim_takeoff", "glazing_fastener_rows",
-    "backup_component_rows", "panel_schedule", "service_load_summary",
+    "backup_component_rows", "conduit_takeoff", "panel_schedule", "service_load_summary",
     "bill_of_materials",
     "construction_returns_takeoff",
     "floor_heat_takeoff",
