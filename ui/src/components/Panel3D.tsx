@@ -3,7 +3,12 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { ALL_SELECTION_KINDS, ALL_TRADES, useStore, type SelectionKind, type Trade } from "../state/store";
-import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, MaterialSpec, Model, ModelPart, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
+import {
+  ALL_LAYER_VISIBILITY_GROUPS,
+  layerVisibilityGroupOf,
+  type LayerVisibilityGroup,
+} from "../model/visibility";
+import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, MaterialSpec, Member, Model, ModelPart, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { authoredAppearance, materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup, isRoofFramingMember } from "../three/members";
 import { createSolidMaterial } from "../three/solidMaterials";
@@ -69,6 +74,72 @@ export const WHOLE_HOUSE_GLB_PRIMARY = false;
 
 type PanDirection = "left" | "right" | "up" | "down";
 
+// Default / reset framing (→ TODO: "the 'default zoom' for reset is poorly calculated").
+// The old fit dollied back far enough to contain the building's bounding *sphere*, which for a
+// house — long, wide, and comparatively low — is a ball roughly the plan diagonal across, so
+// the model landed small and the operator had to pan and dolly their way back in. These frame
+// the eight box corners against the real frustum instead, which is exact for any proportions.
+export const VIEW_FIT_MARGIN = 1.06; // breathing room around the tightest exact fit
+export const VIEW_FIT_MIN_RADIUS_M = 2;
+// Polar angle from +Y. ~0.34π puts the eye about 29° above the horizon: high enough to read
+// the roof planes and the storey stack, low enough that elevations stay legible.
+export const VIEW_FIT_POLAR_ANGLE = Math.PI * 0.34;
+// Arrow-key / on-screen pan step as a fraction of the current dolly distance, so one tap moves
+// the same *apparent* amount whether you are framing the whole house or one corner of it.
+export const VIEW_PAN_STEP_FRACTION = 0.22;
+// Wheel deltas are wildly inconsistent (a line-mode mouse notch vs. a pixel-mode trackpad
+// flick), so they are normalized to pixels and then clamped before they reach the dolly. This
+// is what stops one trackpad gesture from crossing the whole zoom range.
+export const WHEEL_LINE_HEIGHT_PX = 16;
+export const WHEEL_MAX_STEP_PX = 90;
+export const WHEEL_DOLLY_SENSITIVITY = 0.0016;
+export const MIN_DOLLY_RADIUS_M = 0.8;
+export const MAX_DOLLY_RADIUS_M = 400;
+
+/** Normalize one wheel event to a clamped pixel delta (see WHEEL_* constants). */
+export function normalizedWheelDeltaPx(deltaY: number, deltaMode: number): number {
+  const pixels = deltaMode === 1 ? deltaY * WHEEL_LINE_HEIGHT_PX : deltaY;
+  return Math.max(-WHEEL_MAX_STEP_PX, Math.min(WHEEL_MAX_STEP_PX, pixels));
+}
+
+/**
+ * The dolly distance at which every corner of `box` sits inside the frustum, looking at
+ * `target` from the orbit angles given. Exact rather than sphere-conservative: each corner is
+ * projected onto the camera basis and required to fall within the horizontal and vertical
+ * half-angles at its own depth.
+ */
+export function frameRadiusForBounds(
+  box: THREE.Box3,
+  target: THREE.Vector3,
+  theta: number,
+  phi: number,
+  verticalFovRadians: number,
+  aspect: number,
+  margin: number = VIEW_FIT_MARGIN,
+): number {
+  const eyeDirection = new THREE.Vector3(
+    Math.sin(phi) * Math.cos(theta), Math.cos(phi), Math.sin(phi) * Math.sin(theta));
+  const forward = eyeDirection.clone().negate();
+  const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+  const up = new THREE.Vector3().crossVectors(right, forward).normalize();
+  const tanVertical = Math.tan(verticalFovRadians / 2);
+  const tanHorizontal = tanVertical * Math.max(1e-3, aspect);
+  let radius = 0;
+  const offset = new THREE.Vector3();
+  for (const x of [box.min.x, box.max.x]) {
+    for (const y of [box.min.y, box.max.y]) {
+      for (const z of [box.min.z, box.max.z]) {
+        offset.set(x, y, z).sub(target);
+        const depth = offset.dot(forward); // positive = further from the eye than the target
+        radius = Math.max(radius,
+          Math.abs(offset.dot(right)) / tanHorizontal - depth,
+          Math.abs(offset.dot(up)) / tanVertical - depth);
+      }
+    }
+  }
+  return Math.max(VIEW_FIT_MIN_RADIUS_M, radius * margin);
+}
+
 // How a whole-house glb node maps back to an interactive element. A node earns an assignment
 // via glTF `extras` (GLTFLoader copies these onto object.userData) or, as a fallback, a
 // "<trade>|<kind>|<uid>" node name. `kind`/`uid` are optional: untagged envelope geometry only
@@ -123,12 +194,21 @@ function registerSelectable(
   if (materials.size) byUid.set(uid, [...materials]);
 }
 
+/** Whether an object and every ancestor above it is visible — three's own render-time test. */
+export function isRenderedInScene(object: THREE.Object3D): boolean {
+  for (let node: THREE.Object3D | null = object; node; node = node.parent) {
+    if (!node.visible) return false;
+  }
+  return true;
+}
+
 export function Panel3D() {
   const model = useStore((s) => s.model);
   const threeMode = useStore((s) => s.threeMode);
   const select = useStore((s) => s.select);
   const selection = useStore((s) => s.selection);
   const visibleTrades = useStore((s) => s.visibleTrades);
+  const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
   const client = useStore((s) => s.client);
   const { theme } = useTheme();
   const mountRef = useRef<HTMLDivElement>(null);
@@ -176,6 +256,12 @@ export function Panel3D() {
     for (const trade of ALL_TRADES) api.current?.setVisibility(trade, visibleTrades[trade]);
   }, [visibleTrades]);
 
+  useEffect(() => {
+    for (const group of ALL_LAYER_VISIBILITY_GROUPS) {
+      api.current?.setLayerGroupVisibility(group, visibleLayerGroups[group]);
+    }
+  }, [visibleLayerGroups]);
+
   return (
     <div style={{ position: "absolute", inset: 0 }}>
       <div ref={mountRef} style={{ position: "absolute", inset: 0 }} />
@@ -207,7 +293,9 @@ export function Panel3D() {
         <button className="seg-btn" aria-label="Pan view up" title="Pan up" onClick={() => api.current?.pan("up")}>↑</button>
         <span />
         <button className="seg-btn" aria-label="Pan view left" title="Pan left" onClick={() => api.current?.pan("left")}>←</button>
-        <button className="seg-btn" aria-label="Reset 3D view" title="Reset view" onClick={() => api.current?.resetView()}>⌾</button>
+        <button className="seg-btn" aria-label="Reset 3D view"
+          title="Frame the whole model (three-quarter view)"
+          onClick={() => api.current?.resetView()}>⌾</button>
         <button className="seg-btn" aria-label="Pan view right" title="Pan right" onClick={() => api.current?.pan("right")}>→</button>
         <span />
         <button className="seg-btn" aria-label="Pan view down" title="Pan down" onClick={() => api.current?.pan("down")}>↓</button>
@@ -227,7 +315,18 @@ interface SceneApi {
   resetView: () => void;
   highlight: (uid: string | null) => void;
   setVisibility: (trade: Trade, visible: boolean) => void;
+  setLayerGroupVisibility: (group: LayerVisibilityGroup, visible: boolean) => void;
   dispose: () => void;
+}
+
+// Stamp every object a builder just added to `parent` with the assembly layer group it belongs
+// to, so per-layer visibility can flip it without rebuilding the scene. Snapshot
+// parent.children.length before building and pass it here afterwards — the same contract
+// registerSelectable uses.
+function tagLayerGroup(parent: THREE.Object3D, firstChildIndex: number, group: LayerVisibilityGroup) {
+  for (let index = firstChildIndex; index < parent.children.length; index++) {
+    parent.children[index].userData.layerGroup = group;
+  }
 }
 
 export function compassBearingScreenDirection(
@@ -276,6 +375,10 @@ function createScene(
   const byUid = new Map<string, THREE.Material[]>();
   let highlighted: string | null = null;
   let activePalette = RESOLVED_NORDIC_PALETTE.light;
+  // Layer-group visibility lives on the meshes, which setModel rebuilds — unlike the trade
+  // groups, which persist. Remembering the hidden set here is what lets a rebuild land with
+  // the user's per-layer filter still applied.
+  const hiddenLayerGroups = new Set<LayerVisibilityGroup>();
 
   // Lighting: soft neutral environment (Nordic). Hemisphere + a key light.
   const hemi = new THREE.HemisphereLight(0xffffff, 0xbcb6a8, 0.9);
@@ -298,11 +401,9 @@ function createScene(
   let radius = 12;
   let target = new THREE.Vector3(0, 1, 0);
   let trueNorthDegrees = 0;
-  let fittedTheta = theta;
-  let fittedPhi = phi;
-  let fittedRadius = radius;
-  let fittedTarget = target.clone();
-  let panStep = 1;
+  // Set once the operator orbits/dollies/pans. A resize re-frames only while this is false, so
+  // dragging the split divider never yanks a view someone has just composed.
+  let viewAdjustedByUser = false;
   let dragging = false;
   let panning = false; // orbit vs. screen-pan for the active pointer drag
   let last = [0, 0];
@@ -413,6 +514,7 @@ function createScene(
       phi = Math.min(Math.PI / 2 - 0.05, Math.max(0.1, phi - dy * 0.008));
     }
     last = [e.clientX, e.clientY];
+    viewAdjustedByUser = true;
     requestRender();
   });
   el.addEventListener("pointerup", (e) => {
@@ -425,7 +527,10 @@ function createScene(
         -((e.clientY - r.top) / r.height) * 2 + 1,
       );
       raycaster.setFromCamera(ndc, camera);
-      const hit = raycaster.intersectObjects(picks, false)[0];
+      // Only pick what is actually on screen. `intersectObjects(picks, false)` tests the meshes
+      // directly, bypassing three's own visibility walk, so a hidden trade or a hidden assembly
+      // layer would otherwise still intercept a click aimed at what it was hiding.
+      const hit = raycaster.intersectObjects(picks.filter(isRenderedInScene), false)[0];
       const uid = hit?.object.userData.uid as string | undefined;
       const kind = hit?.object.userData.selectionKind as SelectionKind | undefined;
       if (uid && kind) onPick(kind, uid);
@@ -434,16 +539,20 @@ function createScene(
   el.addEventListener("wheel", (e) => {
     e.preventDefault();
     stopTween();
-    // Gentler, exponent-based dolly with a firm clamp; zoom homes on the point under the
-    // cursor (the old wheel kept the target fixed, so zooming in drifted off whatever you
-    // were inspecting).
+    // Exponent-based dolly over a *normalized, clamped* delta: a line-mode mouse notch and a
+    // pixel-mode trackpad flick otherwise differ by more than an order of magnitude, which is
+    // most of why zoom felt uncontrollable. Zoom homes on the point under the cursor, so
+    // zooming in no longer drifts off whatever you were inspecting.
     const anchor = pointerGroundPoint(e.clientX, e.clientY);
-    const nextRadius = Math.min(120, Math.max(1.5, radius * Math.exp(e.deltaY * 0.0012)));
+    const step = normalizedWheelDeltaPx(e.deltaY, e.deltaMode);
+    const nextRadius = THREE.MathUtils.clamp(
+      radius * Math.exp(step * WHEEL_DOLLY_SENSITIVITY), MIN_DOLLY_RADIUS_M, MAX_DOLLY_RADIUS_M);
     if (anchor) {
       const zoomInFraction = THREE.MathUtils.clamp(1 - nextRadius / radius, 0, 0.6);
       target.lerp(anchor, zoomInFraction);
     }
     radius = nextRadius;
+    viewAdjustedByUser = true;
     requestRender();
   });
 
@@ -453,11 +562,12 @@ function createScene(
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    // A pane that changes shape (2D → split → 3D, or the window itself) changes what "framed"
+    // means. Re-fit while the view is still the computed one; leave a composed view alone.
+    if (!viewAdjustedByUser) applyFraming(false);
     requestRender();
   };
   const ro = new ResizeObserver(resize);
-  ro.observe(mount);
-  resize();
 
   // Dispose every mesh's geometry/material before dropping it — the previous version left
   // these leaking on every setModel() (content.clear() only detaches Object3Ds, it never
@@ -473,10 +583,6 @@ function createScene(
     highlighted = null;
   };
 
-  const resetView = () => {
-    animateTo(fittedTheta, fittedPhi, fittedRadius, fittedTarget);
-  };
-
   // The framing bounds must exclude the translucent site sheet: the earth spans the whole
   // parcel (or a 50 m fallback), so folding it into the fit shrank the building to a speck
   // and left the default/reset zoom far too wide.
@@ -489,11 +595,47 @@ function createScene(
     return box;
   };
 
+  // Compute the framing that shows the whole building from a three-quarter viewpoint, at the
+  // pane's *current* aspect. Reset recomputes rather than replaying a snapshot, so a view fitted
+  // in the narrow split pane still frames correctly once the panel goes full width.
+  const buildingFraming = (): { theta: number; phi: number; radius: number; target: THREE.Vector3 } | null => {
+    const box = buildingBox();
+    if (box.isEmpty()) return null;
+    const fitTheta = geographicSoutheastSceneAzimuthRadians(trueNorthDegrees);
+    const fitTarget = box.getCenter(new THREE.Vector3());
+    const fitRadius = frameRadiusForBounds(
+      box, fitTarget, fitTheta, VIEW_FIT_POLAR_ANGLE,
+      THREE.MathUtils.degToRad(camera.fov), camera.aspect,
+    );
+    return { theta: fitTheta, phi: VIEW_FIT_POLAR_ANGLE, radius: fitRadius, target: fitTarget };
+  };
+
+  const applyFraming = (animate: boolean) => {
+    const framing = buildingFraming();
+    if (!framing) return;
+    viewAdjustedByUser = false;
+    if (animate) {
+      animateTo(framing.theta, framing.phi, framing.radius, framing.target);
+      return;
+    }
+    theta = framing.theta;
+    phi = framing.phi;
+    radius = framing.radius;
+    target.copy(framing.target);
+  };
+
+  const resetView = () => applyFraming(true);
+
+  // Observe only now that `resize` can safely call back into the framing helpers above.
+  ro.observe(mount);
+  resize();
+
   const pan = (direction: PanDirection) => {
     // Translate the target in the camera's screen plane. place() refreshes its orientation
     // first so pan remains intuitive after orbiting, while the spherical camera offset stays
     // unchanged and therefore cannot alter the current rotation or zoom.
     place();
+    const panStep = radius * VIEW_PAN_STEP_FRACTION;
     const screenRight = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
     const screenUp = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
     const offset = direction === "left" ? screenRight.multiplyScalar(-panStep)
@@ -501,6 +643,7 @@ function createScene(
         : direction === "up" ? screenUp.multiplyScalar(panStep)
           : screenUp.multiplyScalar(-panStep);
     target.add(offset);
+    viewAdjustedByUser = true;
     requestRender();
   };
 
@@ -508,12 +651,7 @@ function createScene(
     clear();
     activePalette = palette;
     scene.background = new THREE.Color(palette.bg);
-    const nextTrueNorthDegrees = m.site?.true_north_deg ?? 0;
-    const trueNorthChanged = nextTrueNorthDegrees !== trueNorthDegrees;
-    trueNorthDegrees = nextTrueNorthDegrees;
-    if (trueNorthChanged) {
-      fittedTheta = geographicSoutheastSceneAzimuthRadians(trueNorthDegrees);
-    }
+    trueNorthDegrees = m.site?.true_north_deg ?? 0;
     // Center on the plan's structural bounds.
     let cx = 0;
     let cz = 0;
@@ -615,21 +753,8 @@ function createScene(
       );
       key.target.updateMatrixWorld();
     }
-    if (!box.isEmpty() && !preserveView) {
-      const sphere = box.getBoundingSphere(new THREE.Sphere());
-      const verticalHalfFov = THREE.MathUtils.degToRad(camera.fov) / 2;
-      const horizontalHalfFov = Math.atan(Math.tan(verticalHalfFov) * camera.aspect);
-      const limitingHalfFov = Math.min(verticalHalfFov, horizontalHalfFov);
-      theta = geographicSoutheastSceneAzimuthRadians(trueNorthDegrees);
-      phi = Math.PI * 0.32;
-      radius = Math.max(2, sphere.radius / Math.sin(limitingHalfFov) * 1.15);
-      target.copy(sphere.center);
-      panStep = Math.max(0.2, sphere.radius * 0.3);
-      fittedTheta = theta;
-      fittedPhi = phi;
-      fittedRadius = radius;
-      fittedTarget.copy(target);
-    }
+    if (!preserveView) applyFraming(false);
+    applyLayerVisibility(); // the rebuild dropped the meshes the filter was applied to
     requestRender();
   };
 
@@ -730,6 +855,22 @@ function createScene(
     requestRender();
   };
 
+  // Apply the remembered per-layer filter to whatever is in the scene right now. Cheap enough
+  // to run on every rebuild: one traversal, one bool per tagged object, no geometry work.
+  const applyLayerVisibility = () => {
+    content.traverse((object) => {
+      const group = object.userData.layerGroup as LayerVisibilityGroup | undefined;
+      if (group) object.visible = !hiddenLayerGroups.has(group);
+    });
+  };
+
+  const setLayerGroupVisibility = (group: LayerVisibilityGroup, visible: boolean) => {
+    if (visible) hiddenLayerGroups.delete(group);
+    else hiddenLayerGroups.add(group);
+    applyLayerVisibility();
+    requestRender();
+  };
+
   return {
     setModel,
     setWholeHouseGlb,
@@ -738,6 +879,7 @@ function createScene(
     resetView,
     highlight,
     setVisibility,
+    setLayerGroupVisibility,
     dispose: () => {
       cancelAnimationFrame(raf);
       stopTween();
@@ -936,6 +1078,8 @@ function buildWall(
 ) {
   const mats: THREE.Material[] = [];
   for (const ly of w.layers) {
+    const layerGroup = layerVisibilityGroupOf(ly.function);
+    const layerFirstChildIndex = tradeGroups.walls.children.length;
     if (ly.polygon.length < 3) continue;
     // Cavity fill shares its host structure layer's polygon — extruding it would only
     // z-fight with the studs it lives between.
@@ -991,9 +1135,32 @@ function buildWall(
         ));
       }
     }
+    tagLayerGroup(tradeGroups.walls, layerFirstChildIndex, layerGroup);
   }
-  buildMembers(tradeGroups.framing, w.members, center, mode);
+  buildWallSkinMembers(tradeGroups.framing, w.members, center, mode);
   byUid.set(w.uid, mats);
+}
+
+// Wall members split two ways for visibility: plain lumber answers to the Framing trade, while
+// a member that names a material is a derived skin band (a gable closure, a trim run) and must
+// answer to the assembly-layer control that governs the layer it continues. Merged member
+// meshes carry no per-member identity, so the split has to happen before the merge.
+function buildWallSkinMembers(
+  parent: THREE.Group, members: Member[], center: PlanCenter, mode: "nordic" | "schematic",
+) {
+  const lumber = members.filter((member) => !member.material);
+  buildMembers(parent, lumber, center, mode);
+  const skinByGroup = new Map<LayerVisibilityGroup, Member[]>();
+  for (const member of members) {
+    if (!member.material) continue;
+    const group = layerVisibilityGroupOf(member.category);
+    skinByGroup.set(group, [...(skinByGroup.get(group) ?? []), member]);
+  }
+  for (const [group, skin] of skinByGroup) {
+    const firstChildIndex = parent.children.length;
+    buildMembers(parent, skin, center, mode);
+    tagLayerGroup(parent, firstChildIndex, group);
+  }
 }
 
 export interface WallLayerPiece {
@@ -1446,15 +1613,26 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
     const mesh = new THREE.Mesh(geo, mat);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
+    mesh.userData.layerGroup = layerVisibilityGroupOf(layer.function);
     parent.add(mesh);
     base = top;
   }
   // Skin (closure bands, fascia/soffit, the roof-edge cladding) finishes the shell and stays
   // with it; the sticks go to the framing group so rafters, trusses and gable studs sit under
   // the framing toggle with the rest of the building's framing. Both still select as the roof.
+  // The skin is merged per layer group so the assembly-layer toggles reach it too.
   const skin = roof.members.filter((m) => !isRoofFramingMember(m));
   const framing = roof.members.filter(isRoofFramingMember);
-  buildMembers(parent, skin, center, mode);
+  const skinByGroup = new Map<LayerVisibilityGroup, Member[]>();
+  for (const member of skin) {
+    const group = layerVisibilityGroupOf(member.category);
+    skinByGroup.set(group, [...(skinByGroup.get(group) ?? []), member]);
+  }
+  for (const [group, members] of skinByGroup) {
+    const skinFirstIndex = parent.children.length;
+    buildMembers(parent, members, center, mode);
+    tagLayerGroup(parent, skinFirstIndex, group);
+  }
   registerSelectable(parent, firstChildIndex, roof.uid, "roof", picks, byUid);
   if (framingGroup && framing.length) {
     const framingFirstIndex = framingGroup.children.length;

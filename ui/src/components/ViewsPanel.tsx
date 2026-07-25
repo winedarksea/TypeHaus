@@ -7,7 +7,14 @@ import {
   type ViewMode,
   type ThreeMode,
   type ViewTransform,
+  type Workspace,
 } from "../state/store";
+import {
+  ALL_LAYER_VISIBILITY_GROUPS,
+  LAYER_VISIBILITY_GROUP_LABEL,
+  TRADE_SURFACES,
+  type LayerVisibilityGroup,
+} from "../model/visibility";
 
 // Views (Phase 6): untangles workspace / visibility / representation, and adds saved view
 // recipes. Consolidates the loose 3D trade toggles + nordic/schematic switch (relocated out
@@ -34,6 +41,13 @@ function roleMatches(role: keyof typeof ROLE_TRADES, visible: Record<Trade, bool
   return ALL_TRADES.every((trade) => visible[trade] === wanted.has(trade));
 }
 
+const WORKSPACES: Workspace[] = ["design", "analyze", "document"];
+const WORKSPACE_HINT: Record<Workspace, string> = {
+  design: "Authoring tools; detail markers hidden.",
+  analyze: "Same canvas, emphasis on checks and dashboards.",
+  document: "Adds D-tag detail markers at documented junctions.",
+};
+
 interface SavedView {
   name: string;
   activeStorey: string | null;
@@ -42,6 +56,10 @@ interface SavedView {
   representation: Representation;
   visibleTrades: Record<Trade, boolean>;
   showSpaceLabels?: boolean; // optional: older saved recipes predate the overlay toggle
+  // Optional for the same reason: recipes saved before per-layer visibility existed simply
+  // restore every layer group on, which is what they were captured with.
+  visibleLayerGroups?: Record<LayerVisibilityGroup, boolean>;
+  workspace?: Workspace;
   view: ViewTransform;
 }
 const SAVED_VIEWS_KEY = "typehaus.saved-views";
@@ -68,11 +86,13 @@ export function ViewChips() {
   const activeStorey = useStore((s) => s.activeStorey);
   const representation = useStore((s) => s.representation);
   const visibleTrades = useStore((s) => s.visibleTrades);
+  const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
   const open = useStore((s) => s.viewsPanelOpen);
   const setOpen = useStore((s) => s.setViewsPanelOpen);
   if (!model) return null;
   const shown = ALL_TRADES.filter((t) => visibleTrades[t]).length;
   const allOn = shown === ALL_TRADES.length;
+  const hiddenLayers = ALL_LAYER_VISIBILITY_GROUPS.filter((g) => !visibleLayerGroups[g]);
   return (
     <div className="view-chips">
       <button className="view-chip" onClick={() => setOpen(!open)} title="Level">
@@ -81,6 +101,12 @@ export function ViewChips() {
       <button className="view-chip" onClick={() => setOpen(!open)} title="Disciplines shown">
         {allOn ? "All disciplines" : `${shown} disciplines`}
       </button>
+      {hiddenLayers.length > 0 && (
+        <button className="view-chip" onClick={() => setOpen(!open)}
+          title={`Hidden assembly layers: ${hiddenLayers.map((g) => LAYER_VISIBILITY_GROUP_LABEL[g]).join(", ")}`}>
+          {hiddenLayers.length} layer{hiddenLayers.length === 1 ? "" : "s"} hidden
+        </button>
+      )}
       <button className="view-chip" onClick={() => setOpen(!open)} title="Representation">
         {representation[0].toUpperCase() + representation.slice(1)}
       </button>
@@ -106,6 +132,12 @@ export function ViewsPanel() {
   const setTradeVisible = useStore((s) => s.setTradeVisible);
   const showSpaceLabels = useStore((s) => s.showSpaceLabels);
   const setShowSpaceLabels = useStore((s) => s.setShowSpaceLabels);
+  const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
+  const setLayerGroupVisible = useStore((s) => s.setLayerGroupVisible);
+  const showEverything = useStore((s) => s.showEverything);
+  const workspace = useStore((s) => s.activeWorkspace);
+  const setWorkspace = useStore((s) => s.setActiveWorkspace);
+  const viewMode = useStore((s) => s.viewMode);
 
   const [views, setViews] = useState<SavedView[]>(loadViews);
   const [newName, setNewName] = useState("");
@@ -122,7 +154,9 @@ export function ViewsPanel() {
       threeMode: s.threeMode,
       representation: s.representation,
       visibleTrades: { ...s.visibleTrades },
+      visibleLayerGroups: { ...s.visibleLayerGroups },
       showSpaceLabels: s.showSpaceLabels,
+      workspace: s.activeWorkspace,
       view: { ...s.view },
     };
     const next = [...views.filter((v) => v.name !== name), recipe];
@@ -138,7 +172,11 @@ export function ViewsPanel() {
     s.setThreeMode(v.threeMode);
     s.setRepresentation(v.representation);
     for (const trade of ALL_TRADES) s.setTradeVisible(trade, v.visibleTrades[trade] ?? true);
+    for (const group of ALL_LAYER_VISIBILITY_GROUPS) {
+      s.setLayerGroupVisible(group, v.visibleLayerGroups?.[group] ?? true);
+    }
     s.setShowSpaceLabels(v.showSpaceLabels ?? true);
+    s.setActiveWorkspace(v.workspace ?? "design");
     s.setView(v.view);
   };
 
@@ -161,6 +199,20 @@ export function ViewsPanel() {
           <option key={s.tag} value={s.tag}>{s.tag}</option>
         ))}
       </select>
+
+      {/* Relocated from the topbar (Phase 11): the workspace only re-emphasizes panels, which
+          is a view-recipe concern, not a top-level mode. Its old buttons now open the assembly
+          and BOM readers. */}
+      <h3>Workspace</h3>
+      <div className="seg-row">
+        {WORKSPACES.map((w) => (
+          <button key={w} className={`seg-btn${workspace === w ? " active" : ""}`}
+            onClick={() => setWorkspace(w)} title={WORKSPACE_HINT[w]}>
+            {w[0].toUpperCase() + w.slice(1)}
+          </button>
+        ))}
+      </div>
+      <div className="muted views-hint">{WORKSPACE_HINT[workspace]}</div>
 
       <h3>Representation</h3>
       <div className="seg-row">
@@ -195,21 +247,49 @@ export function ViewsPanel() {
             {role}
           </button>
         ))}
-        <button className="seg-btn" onClick={() => { for (const trade of ALL_TRADES) setTradeVisible(trade, true); }}>
+        <button className="seg-btn" onClick={showEverything}>
           All
         </button>
       </div>
 
       <h3>Disciplines</h3>
+      {/* Both viewers read this same set. A trade the 2D plan has no geometry for (roof
+          surfaces, the site sheet, below-grade solids) is marked rather than left to look
+          broken when its checkbox does nothing on the plan side. */}
       <div className="trade-grid">
-        {ALL_TRADES.map((trade) => (
-          <label key={trade} className={`trade-chip${visibleTrades[trade] ? " on" : ""}`}>
+        {ALL_TRADES.map((trade) => {
+          const planOnly3D = !TRADE_SURFACES[trade].plan;
+          return (
+            <label key={trade} className={`trade-chip${visibleTrades[trade] ? " on" : ""}`}
+              title={planOnly3D ? `${TRADE_LABEL[trade]} — drawn in 3D only` : TRADE_LABEL[trade]}>
+              <input
+                type="checkbox"
+                checked={visibleTrades[trade]}
+                onChange={(e) => setTradeVisible(trade, e.target.checked)}
+              />
+              {TRADE_LABEL[trade]}
+              {planOnly3D && <span className="trade-surface" aria-label="3D only">3D</span>}
+            </label>
+          );
+        })}
+      </div>
+      {viewMode === "2d" && (
+        <div className="muted views-hint">Trades marked 3D have no plan geometry to hide.</div>
+      )}
+
+      <h3>Assembly layers</h3>
+      {/* Per-layer visibility (→ TODO "a per-layer visibility control would settle it"): drop
+          the weather skin and the cavity fill independently, in the plan and the model alike,
+          so a closure band can be told apart from the insulation behind it. */}
+      <div className="trade-grid">
+        {ALL_LAYER_VISIBILITY_GROUPS.map((group) => (
+          <label key={group} className={`trade-chip${visibleLayerGroups[group] ? " on" : ""}`}>
             <input
               type="checkbox"
-              checked={visibleTrades[trade]}
-              onChange={(e) => setTradeVisible(trade, e.target.checked)}
+              checked={visibleLayerGroups[group]}
+              onChange={(e) => setLayerGroupVisible(group, e.target.checked)}
             />
-            {TRADE_LABEL[trade]}
+            {LAYER_VISIBILITY_GROUP_LABEL[group]}
           </label>
         ))}
       </div>

@@ -41,6 +41,20 @@ interface LensSpec {
   legend: string;
 }
 
+// The plan's control-layer overlay reads its stroke from the same specs the legend does, so
+// the swatch in the legend and the line on the drawing can never drift apart. Encoding stays
+// colour + dash (never colour alone) on the canvas for the same reason it does in the legend.
+export function lensStrokeSpec(lens: Lens): { colorVar: string; pattern: string } | null {
+  const spec = LENSES.find((entry) => entry.id === lens);
+  return spec && spec.id !== "none" ? { colorVar: spec.colorVar, pattern: spec.pattern } : null;
+}
+
+/** Whether a resolved layer carries the control this lens is about. */
+export function layerCarriesControl(control: readonly string[] | undefined, lens: Lens): boolean {
+  if (lens === "none") return false;
+  return (control ?? []).some((entry) => entry.toLowerCase().includes(lens));
+}
+
 const LENSES: LensSpec[] = [
   { id: "none", label: "Normal", icon: "◻", colorVar: "--ink", pattern: "0", legend: "All disciplines shown normally." },
   { id: "air", label: "Air", icon: "≋", colorVar: "--control-air", pattern: "2 3", legend: "Air-barrier continuity — discontinuities numbered." },

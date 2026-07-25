@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useStore, visibleFindings, type Workspace } from "./state/store";
+import { useStore, visibleFindings } from "./state/store";
 import { subscribePwa, promptInstall, type PwaState } from "./pwa/register";
 import { fsAccessSupported } from "./engine/openHouse";
 import { Toolbar } from "./components/Toolbar";
@@ -8,6 +8,8 @@ import { CommandPalette } from "./components/CommandPalette";
 import { IssuesDrawer } from "./components/IssuesDrawer";
 import { ViewsPanel, ViewChips } from "./components/ViewsPanel";
 import { Workbench } from "./components/Workbench";
+import { AssemblyDetailsView } from "./components/AssemblyDetailsView";
+import { BomView } from "./components/BomView";
 import { LensBar } from "./components/LensBar";
 import { Preview3D } from "./components/Preview3D";
 import { Canvas2D } from "./components/Canvas2D";
@@ -64,8 +66,8 @@ export function App() {
   const setCommandPaletteOpen = useStore((s) => s.setCommandPaletteOpen);
   const issuesDrawerOpen = useStore((s) => s.issuesDrawerOpen);
   const setIssuesDrawerOpen = useStore((s) => s.setIssuesDrawerOpen);
-  const workspace = useStore((s) => s.activeWorkspace);
-  const setWorkspace = useStore((s) => s.setActiveWorkspace);
+  const detailView = useStore((s) => s.detailView);
+  const setDetailView = useStore((s) => s.setDetailView);
   const activeLens = useStore((s) => s.activeLens);
 
   const [pwa, setPwa] = useState<PwaState>({
@@ -93,9 +95,12 @@ export function App() {
         if (e.shiftKey) void redo();
         else void undo();
       } else if (e.key === "Escape" && !typing) {
-        // Predictable Esc hierarchy (Phase 2): cancel sub-op → exit tool → clear selection.
-        // Canvas2D independently clears its in-flight draft; here we advance the outer state.
-        if (subOperation) {
+        // Predictable Esc hierarchy (Phase 2): close reader → cancel sub-op → exit tool →
+        // clear selection. Canvas2D independently clears its in-flight draft; here we advance
+        // the outer state.
+        if (useStore.getState().detailView !== "none") {
+          setDetailView("none");
+        } else if (subOperation) {
           setSubOperation(false);
         } else if (tool !== "select") {
           setTool("select");
@@ -106,7 +111,8 @@ export function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [undo, redo, subOperation, tool, selection.uid, setSubOperation, setTool, select, setCommandPaletteOpen]);
+  }, [undo, redo, subOperation, tool, selection.uid, setSubOperation, setTool, select,
+    setCommandPaletteOpen, setDetailView]);
 
   const findings = model ? visibleFindings(model.findings) : [];
   const errCount = findings.filter((f) => f.severity === "error").length;
@@ -180,17 +186,26 @@ export function App() {
           </span>
         )}
 
-        <div className="workspace-seg" role="group" aria-label="Workspace">
-          {(["design", "analyze", "document"] as Workspace[]).map((w) => (
-            <button
-              key={w}
-              className={`seg-btn${workspace === w ? " active" : ""}`}
-              onClick={() => setWorkspace(w)}
-              aria-pressed={workspace === w}
-            >
-              {w.toUpperCase()}
-            </button>
-          ))}
+        {/* These two slots used to hold DESIGN / ANALYZE / DOCUMENT, which only re-emphasized
+            panels. Workspace now lives in the Views panel with the rest of the view recipe;
+            the topbar spends its space on the two readers that answer real questions. */}
+        <div className="workspace-seg" role="group" aria-label="Model readers">
+          <button
+            className={`seg-btn${detailView === "assembly" ? " active" : ""}`}
+            onClick={() => setDetailView(detailView === "assembly" ? "none" : "assembly")}
+            aria-pressed={detailView === "assembly"}
+            title="Assembly details — transitions, resolved conditions, layer stacks"
+          >
+            ASSEMBLY
+          </button>
+          <button
+            className={`seg-btn${detailView === "bom" ? " active" : ""}`}
+            onClick={() => setDetailView(detailView === "bom" ? "none" : "bom")}
+            aria-pressed={detailView === "bom"}
+            title="Bill of materials — every part in the model"
+          >
+            BOM
+          </button>
         </div>
 
         <div className="spacer" />
@@ -282,6 +297,8 @@ export function App() {
       </div>
 
       <IssuesDrawer />
+      {detailView === "assembly" && <AssemblyDetailsView />}
+      {detailView === "bom" && <BomView />}
       <Workbench />
       <CommandPalette />
       <Toasts />

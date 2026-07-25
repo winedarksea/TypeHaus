@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ALL_TRADES, useStore } from "../state/store";
+import { ALL_LAYER_VISIBILITY_GROUPS, LAYER_VISIBILITY_GROUP_LABEL } from "../model/visibility";
 
 // Command palette (Phase 4): fuzzy-searchable actions + recent commands. The registry is
 // built here from live store actions so commands always stay wired to real behaviour.
@@ -49,6 +50,10 @@ export function CommandPalette() {
   const setRepresentation = useStore((s) => s.setRepresentation);
   const setActiveWorkspace = useStore((s) => s.setActiveWorkspace);
   const setActiveLens = useStore((s) => s.setActiveLens);
+  const setLayerGroupVisible = useStore((s) => s.setLayerGroupVisible);
+  const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
+  const showEverything = useStore((s) => s.showEverything);
+  const setDetailView = useStore((s) => s.setDetailView);
   const reload = useStore((s) => s.reload);
   const offline = useStore((s) => s.offline);
 
@@ -84,6 +89,9 @@ export function CommandPalette() {
       { id: "lens-water", title: "Lens: Water", group: "Lens", run: () => setActiveLens("water") },
       { id: "lens-thermal", title: "Lens: Thermal", group: "Lens", run: () => setActiveLens("thermal") },
       { id: "run-checks", title: "Run checks (reload model)", group: "Model", run: () => void reload() },
+      { id: "reader-assembly", title: "Assembly details (transitions)", group: "Model", run: () => setDetailView("assembly") },
+      { id: "reader-bom", title: "Bill of materials", group: "Model", run: () => setDetailView("bom") },
+      { id: "show-everything", title: "Show everything (clear visibility filters)", group: "Isolate", run: showEverything },
     ];
     for (const trade of ALL_TRADES) {
       list.push({
@@ -93,11 +101,20 @@ export function CommandPalette() {
         run: () => setTradeVisible(trade, !visibleTrades[trade]),
       });
     }
+    for (const group of ALL_LAYER_VISIBILITY_GROUPS) {
+      list.push({
+        id: `layer-${group}`,
+        title: `Toggle ${LAYER_VISIBILITY_GROUP_LABEL[group].toLowerCase()} layers`,
+        group: "Isolate",
+        run: () => setLayerGroupVisible(group, !visibleLayerGroups[group]),
+      });
+    }
     // Keep an unused reference so a shading toggle reads intent; threeMode drives the label.
     void threeMode;
     return list;
   }, [undo, redo, setTool, setViewMode, setThreeMode, threeMode, setTradeVisible, visibleTrades,
-    setProjectDrawerOpen, setViewsPanelOpen, setRepresentation, setActiveWorkspace, setActiveLens, reload, offline]);
+    setProjectDrawerOpen, setViewsPanelOpen, setRepresentation, setActiveWorkspace, setActiveLens,
+    setLayerGroupVisible, visibleLayerGroups, showEverything, setDetailView, reload, offline]);
 
   const results = useMemo(() => {
     if (!query) {

@@ -282,6 +282,32 @@ export interface Condition {
   elements: string[];
 }
 
+// A library Transition: post-resolve *documentation* of how one condition pattern is detailed
+// (control-layer continuity from face to face, plus per-layer joins). Never construction
+// geometry — the assembly-details reader is its first UI consumer (→ model_json.py
+// "transitions").
+export interface TransitionContinuity {
+  control: string;
+  from_face: string;
+  to_face: string;
+}
+
+export interface TransitionJoin {
+  layer: string;
+  side: string;
+  termination_m: number;
+  treatment: string;
+}
+
+export interface Transition {
+  tag: string;
+  pattern: string; // condition pattern this transition details, e.g. "wall_roof:*"
+  overlay: string | null; // detail-overlay recipe id
+  notes: string | null; // repo-relative notes path
+  continuity: TransitionContinuity[];
+  joins: TransitionJoin[];
+}
+
 export interface StackEdge {
   lower: string;
   upper: string;
@@ -565,6 +591,7 @@ export interface Model {
   space_summary?: SpaceSummary;
   building_height_summary?: BuildingHeightSummary;
   conditions: Condition[];
+  transitions?: Transition[]; // library transition documentation; absent on older model.json
   stack_edges: StackEdge[];
   building_science?: BuildingScience | null;
   catalog?: Catalog; // authoring palette (→ _catalog); absent on older model.json

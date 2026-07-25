@@ -23,6 +23,7 @@ import { loadBundledHouse, pickHouseDirectory } from "../engine/openHouse";
 // and keep the HttpEngineClient default.
 const PWA_STANDALONE = import.meta.env.VITE_PWA_STANDALONE === "1";
 import type { Finding, Model, Provenance, Vec2 } from "../model/types";
+import { ALL_LAYER_VISIBILITY_GROUPS, type LayerVisibilityGroup } from "../model/visibility";
 
 export type Tool = "select" | "wall" | "opening" | "placeable" | "room" | "stair" | "dimension";
 // Task-rail groups (Phase 2): high-level buckets whose flyout palettes expand to the
@@ -47,6 +48,11 @@ export type Trade = "walls" | "openings" | "framing" | "floors" | "concrete" | "
 export const ALL_TRADES: Trade[] = [
   "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth",
 ];
+
+// The two work surfaces that replaced the old DESIGN/ANALYZE topbar buttons: the assembly /
+// transition reader and the whole-model bill of parts. Only one is up at a time — both are
+// full-width readers, not inspectors, so stacking them would just hide the model.
+export type DetailView = "none" | "assembly" | "bom";
 
 // Every kind of model record the UI can hold selected. The first five are authored elements a
 // patch can edit or delete; the last four are *derived* geometry the resolver computes (a post
@@ -116,7 +122,11 @@ interface StoreState {
   view: ViewTransform;
   showFraming: boolean; // framed floorplan vs. schematic wall fills
   showSpaceLabels: boolean; // room/area name (or id) label overlay in the 2D plan (default on)
+  // One visibility model, read by both Canvas2D and Panel3D (→ model/visibility.ts): trades
+  // answer "which discipline", layer groups answer "which band of the assembly".
   visibleTrades: Record<Trade, boolean>;
+  visibleLayerGroups: Record<LayerVisibilityGroup, boolean>;
+  detailView: DetailView; // assembly-details / BOM reader over the canvas
   conflict: Conflict | null;
   toasts: Toast[];
 
@@ -147,6 +157,9 @@ interface StoreState {
   setShowFraming: (v: boolean) => void;
   setShowSpaceLabels: (v: boolean) => void;
   setTradeVisible: (trade: Trade, visible: boolean) => void;
+  setLayerGroupVisible: (group: LayerVisibilityGroup, visible: boolean) => void;
+  showEverything: () => void; // one-tap escape from an over-filtered view
+  setDetailView: (v: DetailView) => void;
   select: (kind: Selection["kind"], uid: string | null) => void;
   selectByTag: (kind: Selection["kind"], tag: string) => void;
   setHover: (uid: string | null) => void;
@@ -225,6 +238,10 @@ export const useStore = create<StoreState>((set, get) => ({
     walls: true, openings: true, framing: true, floors: true, concrete: true, roof: true,
     stairs: true, furniture: true, plumbing: true, electrical: true, mechanical: true, earth: true,
   },
+  visibleLayerGroups: Object.fromEntries(
+    ALL_LAYER_VISIBILITY_GROUPS.map((group) => [group, true]),
+  ) as Record<LayerVisibilityGroup, boolean>,
+  detailView: "none",
   conflict: null,
   toasts: [],
 
@@ -345,6 +362,16 @@ export const useStore = create<StoreState>((set, get) => ({
   setShowSpaceLabels: (showSpaceLabels) => set({ showSpaceLabels }),
   setTradeVisible: (trade, visible) =>
     set((s) => ({ visibleTrades: { ...s.visibleTrades, [trade]: visible } })),
+  setLayerGroupVisible: (group, visible) =>
+    set((s) => ({ visibleLayerGroups: { ...s.visibleLayerGroups, [group]: visible } })),
+  showEverything: () =>
+    set({
+      visibleTrades: Object.fromEntries(ALL_TRADES.map((trade) => [trade, true])) as Record<Trade, boolean>,
+      visibleLayerGroups: Object.fromEntries(
+        ALL_LAYER_VISIBILITY_GROUPS.map((group) => [group, true]),
+      ) as Record<LayerVisibilityGroup, boolean>,
+    }),
+  setDetailView: (detailView) => set({ detailView }),
   select: (kind, uid) => set({ selection: { kind, uid } }),
   // Select an element by its authored tag (uids are minted server-side, so a freshly drawn
   // wall / placed opening is only addressable by tag until the next reload lands).
