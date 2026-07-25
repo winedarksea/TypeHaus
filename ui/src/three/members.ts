@@ -32,6 +32,11 @@ const CATEGORY_COLOR: Record<string, number> = {
   cripple: 0xb3854f,
   sill: 0xa87a4c,
   winder: 0xb3854f,
+  // Stair landing platforms + the U-stair well partition read as framing lumber; the
+  // concrete-wall hanger/ledger band is galvanized grey like the engine's "connector".
+  landing: 0xb88c5c,
+  partition: 0xb3854f,
+  hanger: 0x595c61,
   bearing_stiffener: 0x996b41,
 };
 const CATEGORY_FALLBACK = 0xb0b0b0;
