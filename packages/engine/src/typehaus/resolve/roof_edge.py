@@ -29,6 +29,7 @@ from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import panel_profile
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoof, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_height_at, roof_structure_depth_m
+from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
 # Under this the wall already meets the roof — a sliver band is a rounding artifact, not
 # construction. Also the tolerance for "this wall sits under this roof".
@@ -42,7 +43,9 @@ def resolve_roof_edges(model: ResolvedModel) -> None:
     resolved: list[ResolvedRoof] = []
     for roof in model.roofs:
         walls = _walls_under_roof(model, roof)
-        extra = _closure_members(model, roof, walls) + _eave_trim_members(model, roof, walls)
+        extra = (_closure_members(model, roof, walls)
+                 + _eave_trim_members(model, roof, walls)
+                 + _edge_cladding_members(model, roof))
         resolved.append(replace(roof, members=roof.members + extra) if extra else roof)
     model.roofs = resolved
 
@@ -169,6 +172,7 @@ def _closure_segment(
             length_m=math.hypot(p1[0] - p0[0], p1[1] - p0[1]),
             z0_end_m=tops[1], z1_end_m=max(tops[1], undersides[1]),
             connection="roof:wall-top-closure",
+            material=layer.material_ref,
         ))
     return tuple(members)
 
@@ -246,6 +250,7 @@ def _edge_trim(
             length_m=math.hypot(b[0] - a[0], b[1] - a[1]),
             z0_end_m=z1 - depth, z1_end_m=z1,
             connection=f"eave-trim:{board.material}",
+            material=board.material,
         ))
         inner = outer
     soffit = _soffit_member(roof, trim, key, run, walls)
@@ -278,7 +283,81 @@ def _soffit_member(
         z0_end_m=z1 - drop, z1_end_m=z1 - drop + thickness,
         connection=("eave-trim:vented-soffit" if trim.soffit_vented
                     else f"eave-trim:{trim.soffit_material}"),
+        material=trim.soffit_material,
     )
+
+
+# --- roof edge cladding band -------------------------------------------------------------
+
+def _edge_cladding_members(
+    model: ResolvedModel, roof: ResolvedRoof
+) -> tuple[FramedMember, ...]:
+    """Wrap the above-deck layer stack's exposed edge in the roof's own cladding.
+
+    ``eave_z_m``/``ridge_z_m`` is the deck plane, and the whole above-structure stack sits
+    *on top* of it — 8.5" of foam and batten on the catlin house. The derived fascia hangs
+    **down** from the deck plane, and a gable wall rakes **up** to it, so neither closes that
+    band: from outside you saw a stepped ribbon of foam and batten edges between the wall's
+    standing seam and the roof's. This carries the roofing metal down over it, so the two
+    runs of standing seam meet.
+
+    The band stops at the cladding layer's underside and sits flush with its outer edge, the
+    way a real standing-seam panel laps over its eave/rake trim — no coplanar faces to fight.
+    """
+    assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
+    layers = above_structure_layers(assembly)
+    if not layers:
+        return ()
+    cladding = next((layer for layer in reversed(layers)
+                     if layer.function is LayerFunction.CLADDING), None)
+    if cladding is None:
+        return ()
+    # Everything below the cladding is what needs covering; the cladding laps over the band.
+    # Layer thicknesses are perpendicular to the slope but the band is measured vertically,
+    # so a perpendicular `d` needs `d / cosθ` of vertical band to reach the same face.
+    height = ((sum(layer.thickness.meters for layer in layers) - cladding.thickness.meters)
+              * math.hypot(1.0, _roof_slope(roof)))
+    if height <= _CLOSURE_TOLERANCE_M:
+        return ()  # a bare deck-and-metal roof has no stack edge worth trimming
+    setbacks = {entry["layer"]: entry for entry in (roof.layer_edge_setbacks or ())}
+    thickness = cladding.thickness.meters
+    members: list[FramedMember] = []
+    for key, run in _roof_edge_runs(roof):
+        (p0, z0), (p1, z1), normal = run
+        # Positive setbacks are inward, so the cladding's outer edge sits `-setback` outward
+        # of the footprint edge; hang the band's outer face there.
+        entry = setbacks.get(cladding.name)
+        outer = -entry[_EDGE_NAMES[normal]] if entry else 0.0
+        center = outer - thickness / 2.0
+        a = (p0[0] + normal[0] * center, p0[1] + normal[1] * center)
+        b = (p1[0] + normal[0] * center, p1[1] + normal[1] * center)
+        members.append(FramedMember(
+            parent_uid=roof.uid, child_key=f"{key}-edge-cladding", category="cladding",
+            profile=panel_profile(thickness / _METERS_PER_INCH, height / _METERS_PER_INCH),
+            p0=a, p1=b, z0_m=z0, z1_m=z0 + height,
+            length_m=math.hypot(b[0] - a[0], b[1] - a[1]),
+            z0_end_m=z1, z1_end_m=z1 + height,
+            connection="roof:edge-cladding", material=cladding.material_ref,
+        ))
+    return tuple(members)
+
+
+# Which `layer_edge_setbacks` key an edge run's outward normal names.
+_EDGE_NAMES = {(-1.0, 0.0): "west", (1.0, 0.0): "east",
+               (0.0, -1.0): "south", (0.0, 1.0): "north"}
+
+
+def _roof_slope(roof: ResolvedRoof) -> float:
+    """Rise over run of the roof plane, derived from the resolved envelope.
+
+    ``ResolvedRoof`` carries no pitch — the plane it was solved into is the authority, and a
+    gable's run is half its span.
+    """
+    xs = [point[0] for point in roof.footprint]
+    ys = [point[1] for point in roof.footprint]
+    span = (max(ys) - min(ys)) if roof.ridge_direction == "x" else (max(xs) - min(xs))
+    run = span if roof.form == "shed" else span / 2.0
+    return 0.0 if run <= 1e-9 else (roof.ridge_z_m - roof.eave_z_m) / run
 
 
 def _wall_face_inset(

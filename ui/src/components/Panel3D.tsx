@@ -5,7 +5,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { ALL_SELECTION_KINDS, ALL_TRADES, useStore, type SelectionKind, type Trade } from "../state/store";
 import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, MaterialSpec, Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { authoredAppearance, materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
-import { buildMembers, disposeGroup } from "../three/members";
+import { buildMembers, disposeGroup, isRoofFramingMember } from "../three/members";
 import { createSolidMaterial } from "../three/solidMaterials";
 import { applyDeckBoardUv, applyMasonryWallUv, applyStandingSeamWallUv, createDeckBoardMaterial, createMasonryMaterial, createStandingSeamMaterial, isAluminumDeckBoard, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM } from "../three/materials";
 import { aboveStructureLayers, boundaryEdges, layerInsetRect, roofOffsetter, roofPlaneTriangles } from "../three/roofGeometry";
@@ -546,7 +546,7 @@ function createScene(
     for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, center, mode, palette, m.catalog, picks, byUid);
     for (const bedding of m.footing_beddings ?? []) buildFootingBedding(tradeGroups.concrete, bedding, center, mode, picks, byUid);
     for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, center, mode, palette, picks, byUid);
-    for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette, m.catalog, picks, byUid);
+    for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette, m.catalog, picks, byUid, tradeGroups.framing);
     for (const stair of m.stairs ?? []) buildStair(tradeGroups.stairs, stair, center, mode, picks, byUid);
     const types = new Map((m.catalog?.canvas_object_types ?? []).map((type) => [type.tag, type]));
     for (const item of m.canvas_objects ?? []) {
@@ -1341,7 +1341,7 @@ export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter
 // roof's own members (rafters, ridge beam).
 export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, framingGroup?: THREE.Group) {
   const firstChildIndex = parent.children.length;
   const triangles = roofPlaneTriangles(roof);
   const offsetAt = roofOffsetter(triangles);
@@ -1391,8 +1391,18 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
     parent.add(mesh);
     base = top;
   }
-  buildMembers(parent, roof.members, center, mode);
+  // Skin (closure bands, fascia/soffit, the roof-edge cladding) finishes the shell and stays
+  // with it; the sticks go to the framing group so rafters, trusses and gable studs sit under
+  // the framing toggle with the rest of the building's framing. Both still select as the roof.
+  const skin = roof.members.filter((m) => !isRoofFramingMember(m));
+  const framing = roof.members.filter(isRoofFramingMember);
+  buildMembers(parent, skin, center, mode);
   registerSelectable(parent, firstChildIndex, roof.uid, "roof", picks, byUid);
+  if (framingGroup && framing.length) {
+    const framingFirstIndex = framingGroup.children.length;
+    buildMembers(framingGroup, framing, center, mode);
+    registerSelectable(framingGroup, framingFirstIndex, roof.uid, "roof", picks, byUid);
+  }
 }
 
 // A stair is nothing but its generated members (stringers, treads, risers), so its whole

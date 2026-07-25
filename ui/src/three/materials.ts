@@ -18,7 +18,7 @@ export const SEAM_PAN_WIDTH_M = 0.4064; // 16"
 const NORMAL_MAP_PX = 256;
 /** How many pan modules the shared normal map covers, so `repeat` stays in whole pans. */
 const PANS_PER_TILE = 4;
-const SEAM_TILE_SIZE_M = SEAM_PAN_WIDTH_M * PANS_PER_TILE;
+export const SEAM_TILE_SIZE_M = SEAM_PAN_WIDTH_M * PANS_PER_TILE;
 
 let sharedNormalMap: THREE.Texture | null = null;
 

@@ -275,12 +275,17 @@ def test_emit_gltf_dict_tags_every_node_with_a_kind_and_uid(plan):
     assert expected <= kinds, f"missing kinds: {expected - kinds}"
     assert {"wall", "opening", "room", "floor"} <= kinds, "fixture regression: plan lost content"
 
-    # A wall's framing node inherits the wall's identity: individual studs are merged into one
-    # draw call in the viewer, so a stud selects the wall that owns it.
+    # A framing node inherits its owner's identity: individual sticks are merged into one draw
+    # call in the viewer, so a stud selects the wall that owns it and a rafter selects its roof.
+    # Roofs contribute framing too — their sticks belong under the framing toggle with every
+    # other stick, not hidden behind the roof toggle.
     framing = [n for n in gltf["nodes"] if n["extras"]["trade"] == "framing"]
     assert framing, "expected at least one framing node"
-    wall_uids = {w.uid for w in model.walls}
-    assert all(n["extras"]["kind"] == "wall" and n["extras"]["uid"] in wall_uids for n in framing)
+    owners = {"wall": {w.uid for w in model.walls}, "roof": {r.uid for r in model.roofs}}
+    for node in framing:
+        kind = node["extras"]["kind"]
+        assert kind in owners, f"framing node has unexpected owner kind {kind}"
+        assert node["extras"]["uid"] in owners[kind]
 
 
 def test_add_object_rejects_an_unknown_selection_kind(plan):
@@ -379,6 +384,26 @@ def test_thin_rect_edges_survive_collinear_ring_padding():
     # A real mitre vertex is a corner, not padding, and survives the reduction.
     assert len(_without_collinear_vertices(
         [(0.0, 0.0), (0.25, -0.25), (4.0, -0.25), (4.0, 0.25), (0.0, 0.25)])) == 5
+
+
+def test_roof_sticks_export_to_framing_and_skin_stays_with_the_shell(catlin_model):
+    """Every roof reaches the glb as two nodes: the shell + its skin, and its framing.
+
+    Rafters, trusses and gable studs used to ride the roof node, so turning the roof off was
+    the only way to see them and the framing toggle never reached them.
+    """
+    from typehaus.emit.gltf import emit_gltf_dict
+
+    gltf, _blob = emit_gltf_dict(catlin_model)
+    by_uid = {}
+    for node in gltf["nodes"]:
+        extras = node.get("extras", {})
+        if extras.get("kind") == "roof":
+            by_uid.setdefault(extras["uid"], set()).add(extras["trade"])
+    assert by_uid, "fixture regression: catlin lost its roofs"
+    for roof in catlin_model.roofs:
+        # Both roofs are framed (rafters on the house, trusses on the garage).
+        assert by_uid[roof.uid] == {"roof", "framing"}, roof.tag
 
 
 def test_arched_wall_layer_exports_its_authored_thickness(catlin_model):

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import type { Member, Vec2 } from "../model/types";
-import { buildMembers, categoryColor, disposeGroup } from "./members";
+import { buildMembers, categoryColor, disposeGroup, isRoofFramingMember, memberColor } from "./members";
 import {
   createPlanPrismGeometry,
   createProjectedSurfaceGeometry,
@@ -38,7 +38,7 @@ function member(overrides: Partial<Member>): Member {
     key: "test", category: "stud", profile: "2x4", p0: [12, 23], p1: [12, 23],
     z0_m: 1, z1_m: 4, z0_end_m: null, z1_end_m: null, shape: "rect",
     width_m: 0.1, depth_m: 0.2, flange_width_m: null, flange_thickness_m: null,
-    web_thickness_m: null, plies: 1, orient: [1, 0], connection: null,
+    web_thickness_m: null, plies: 1, orient: [1, 0], connection: null, material: null,
     ...overrides,
   };
 }
@@ -197,6 +197,47 @@ function checkMemberVerticalExtents() {
     closeTo(plies[index].max.y, high, `I-joist ${label} ends at its section offset`);
   });
   disposeGroup(ijoist);
+
+  // Roof members split two ways: sticks under the framing toggle, skin with the shell.
+  // Mirrors ROOF_SKIN_CATEGORIES in emit/gltf/emitter.py.
+  for (const category of ["rafter", "top_chord", "truss_web", "stud", "outlooker"]) {
+    if (!isRoofFramingMember(member({ category }))) {
+      throw new Error(`${category} is a stick and belongs in the framing trade`);
+    }
+  }
+  for (const category of ["sheathing", "cladding", "insulation", "fascia", "soffit"]) {
+    if (isRoofFramingMember(member({ category }))) {
+      throw new Error(`${category} is envelope skin and belongs with the roof shell`);
+    }
+  }
+
+  // A member that names a material is skin, and is coloured by that material — a
+  // standing-seam closure band read as the grey category fallback before, which is what made
+  // the garage gable look like unwanted fill instead of white metal.
+  const seamBand = member({
+    key: "rake-lo-0-edge-cladding", category: "cladding", material: "standing-seam",
+    p0: [0, 0], p1: [4, 0], z0_m: 3, z1_m: 3.2, z0_end_m: 4, z1_end_m: 4.2,
+    width_m: 0.0127, depth_m: 0.0127, orient: null,
+  });
+  if (memberColor(seamBand) === categoryColor("cladding")) {
+    throw new Error("A standing-seam band must take its material's colour, not the category's");
+  }
+  if (memberColor(member({ category: "stud" })) !== categoryColor("stud")) {
+    throw new Error("Lumber keeps its category colour");
+  }
+
+  // The seam band renders raked (its far end is 1 m higher) and carries UVs, without which
+  // the shared seam normal map has no coordinate frame and the pans collapse.
+  const seam = new THREE.Group();
+  buildMembers(seam, [seamBand], center, "schematic");
+  const seamBounds = boundsForObject(seam);
+  closeTo(seamBounds.min.y, 3, "Seam band starts on the roof plane at its low end");
+  closeTo(seamBounds.max.y, 4.2, "Seam band climbs the rake with the roof plane");
+  const seamMesh = seam.children[0] as THREE.Mesh;
+  if (!seamMesh?.geometry?.getAttribute("uv")) {
+    throw new Error("Seam band needs UVs for the standing-seam normal map");
+  }
+  disposeGroup(seam);
 }
 
 function checkAsymmetricPlanIsNotReflected() {

@@ -12,6 +12,8 @@
 //      would render level rather than raked — square-cut, plumb ends not modeled.
 import * as THREE from "three";
 import type { Member } from "../model/types";
+import { materialColor } from "../nordic/palette";
+import { createStandingSeamMaterial, isStandingSeam, SEAM_TILE_SIZE_M } from "./materials";
 import { projectPlanDirectionToScene, projectPointToScene, type PlanCenter } from "./planGeometry";
 
 // Mirrors emit/gltf/emitter.py's _PALETTE (member-category keys only; layer-function
@@ -48,6 +50,33 @@ export function categoryColor(category: string): number {
   return CATEGORY_COLOR[category] ?? CATEGORY_FALLBACK;
 }
 
+// A roof carries two kinds of member: sticks (rafters, truss chords/webs, gable studs,
+// outlookers, barge rafters) and skin (the wall->roof closure bands, derived fascia/soffit,
+// the roof-edge cladding). The sticks belong under the framing toggle with every other stick
+// in the building; the skin belongs with the roof shell it finishes. Mirrors
+// ROOF_SKIN_CATEGORIES in emit/gltf/emitter.py — keep the two in step.
+const ROOF_SKIN_CATEGORIES = new Set([
+  "sheathing", "membrane", "insulation", "furring", "cladding", "airgap", "air_gap",
+  "lining", "finish", "fascia", "soffit",
+]);
+
+export function isRoofFramingMember(m: Member): boolean {
+  return !ROOF_SKIN_CATEGORIES.has(m.category.toLowerCase());
+}
+
+// A member that names a material is envelope skin, not lumber: colour it the way the wall and
+// roof layer stacks colour that same material, or a standing-seam closure band reads as the
+// generic grey fallback rather than as the white metal it continues.
+export function memberColor(m: Member): THREE.ColorRepresentation {
+  return m.material ? materialColor(m.material) : categoryColor(m.category);
+}
+
+// Standing-seam skin members get the real finish (procedural seam/oil-canning normal map),
+// not a flat fill, so a gable closure band matches the wall and roof panels it meets.
+function isSeamMember(m: Member): boolean {
+  return m.category === "cladding" && isStandingSeam(m.material);
+}
+
 const UP = new THREE.Vector3(0, 1, 0);
 const _m = new THREE.Matrix4();
 const _scale = new THREE.Vector3();
@@ -80,13 +109,13 @@ function crossWidth(m: Member): number {
 // Every axis behaves identically — see UNIT_BOX for why that symmetry is load-bearing.
 function setCenteredBoxInstance(mesh: THREE.InstancedMesh, index: number, boxCenter: THREE.Vector3,
   xAxis: THREE.Vector3, xExtent: number, yAxis: THREE.Vector3, yExtent: number,
-  zAxis: THREE.Vector3, zExtent: number, color: number) {
+  zAxis: THREE.Vector3, zExtent: number, color: THREE.ColorRepresentation) {
   _m.makeBasis(xAxis, yAxis, zAxis);
   _m.scale(_scale.set(Math.max(xExtent, MIN_EXTENT_M), Math.max(yExtent, MIN_EXTENT_M),
     Math.max(zExtent, MIN_EXTENT_M)));
   _m.setPosition(boxCenter);
   mesh.setMatrixAt(index, _m);
-  mesh.setColorAt(index, _color.setHex(color));
+  mesh.setColorAt(index, _color.set(color));
 }
 
 // Vertical member (p0 == p1): the free axis is world-up (its height). `orient` supplies
@@ -99,7 +128,7 @@ function setVerticalInstance(mesh: THREE.InstancedMesh, index: number, m: Member
   const perp = new THREE.Vector3(-orient.z, 0, orient.x);
   const boxCenter = projectPointToScene(m.p0, (m.z0_m + m.z1_m) / 2, center);
   setCenteredBoxInstance(mesh, index, boxCenter, orient, m.width_m, UP, m.z1_m - m.z0_m,
-    perp, m.depth_m, categoryColor(m.category));
+    perp, m.depth_m, memberColor(m));
 }
 
 // Horizontal member (p0 != p1): the free axis is its own p0->p1 direction (length_m).
@@ -118,13 +147,14 @@ function setHorizontalInstance(mesh: THREE.InstancedMesh, index: number, m: Memb
   const boxCenter = projectPointToScene(
     [(m.p0[0] + m.p1[0]) / 2, (m.p0[1] + m.p1[1]) / 2], (m.z0_m + m.z1_m) / 2, center);
   setCenteredBoxInstance(mesh, index, boxCenter, across, crossWidth(m), run, runLen,
-    UP, m.z1_m - m.z0_m, categoryColor(m.category));
+    UP, m.z1_m - m.z0_m, memberColor(m));
 }
 
 interface Buckets {
   rect: Member[];
   raked: Member[];
   ijoist: Member[];
+  seam: Member[];
 }
 
 function isVertical(m: Member): boolean {
@@ -132,13 +162,80 @@ function isVertical(m: Member): boolean {
 }
 
 function bucket(members: Member[]): Buckets {
-  const out: Buckets = { rect: [], raked: [], ijoist: [] };
+  const out: Buckets = { rect: [], raked: [], ijoist: [], seam: [] };
   for (const m of members) {
-    if (m.shape === "i_joist") out.ijoist.push(m);
+    // Seam first: a standing-seam band needs its own textured material, so it can't share
+    // the vertex-coloured merge with the lumber around it.
+    if (isSeamMember(m) && !isVertical(m)) out.seam.push(m);
+    else if (m.shape === "i_joist") out.ijoist.push(m);
     else if (m.z0_end_m != null || m.z1_end_m != null) out.raked.push(m);
     else out.rect.push(m);
   }
   return out;
+}
+
+// The 8 corners of a member's box, in scene space: vertical ends, sloped top/bottom. Shared
+// by the vertex-coloured merge and the standing-seam merge so the two agree exactly.
+function rakedBoxVertices(m: Member, center: PlanCenter): [number, number, number][] | null {
+  const a = projectPointToScene(m.p0, 0, center);
+  const b = projectPointToScene(m.p1, 0, center);
+  const ax = a.x, ay = a.z, bx = b.x, by = b.z;
+  const az0 = m.z0_m, az1 = m.z1_m;
+  const bz0 = m.z0_end_m ?? m.z0_m, bz1 = m.z1_end_m ?? m.z1_m;
+  const dx = bx - ax, dy = by - ay;
+  const run = Math.hypot(dx, dy);
+  if (run < 1e-9) return null;
+  const half = crossWidth(m) / 2;
+  const nx = (-dy / run) * half, ny = (dx / run) * half;
+  return [
+    [ax + nx, az0, ay + ny], [bx + nx, bz0, by + ny], [bx - nx, bz0, by - ny], [ax - nx, az0, ay - ny],
+    [ax + nx, az1, ay + ny], [bx + nx, bz1, by + ny], [bx - nx, bz1, by - ny], [ax - nx, az1, ay - ny],
+  ];
+}
+
+// These quads were authored for the old reflected project frame. Reverse their winding now
+// that project-to-scene preserves handedness.
+const BOX_FACES = [[0, 1, 2, 3], [4, 7, 6, 5], [0, 4, 5, 1], [1, 5, 6, 2], [2, 6, 7, 3], [3, 7, 4, 0]];
+
+function pushBoxIndices(indices: number[], base: number) {
+  for (const [a, b, c, d] of BOX_FACES) {
+    indices.push(base + a, base + c, base + b, base + a, base + d, base + c);
+  }
+}
+
+// Standing-seam skin bands (gable closure cladding, roof-edge cladding) merged into one mesh
+// carrying the shared seam finish. Each band gets world-scaled UVs off its own run, matching
+// applyStandingSeamWallUv, so the 16" pan module stays at true scale and the seams line up
+// with the wall and roof panels the band meets.
+function buildSeamMesh(group: THREE.Group, members: Member[], center: PlanCenter,
+  mode: "nordic" | "schematic") {
+  if (!members.length) return;
+  const positions: number[] = [];
+  const indices: number[] = [];
+  const uvs: number[] = [];
+  for (const m of members) {
+    const verts = rakedBoxVertices(m, center);
+    if (!verts) continue;
+    const base = positions.length / 3;
+    for (const v of verts) positions.push(v[0], v[1], v[2]);
+    pushBoxIndices(indices, base);
+    // Per-member UVs, not one shared axis: eave bands run one way and rake bands the other,
+    // so a single frame would smear the pans on half of them. u runs along the band (its two
+    // end faces are the only distinct values), v is elevation — the same world-scaled frame
+    // applyStandingSeamWallUv gives a wall, so bands and walls share one seam rhythm.
+    const length = Math.hypot(m.p1[0] - m.p0[0], m.p1[1] - m.p0[1]);
+    for (let index = 0; index < verts.length; index++) {
+      const atEnd = index === 1 || index === 2 || index === 5 || index === 6;
+      uvs.push((atEnd ? length : 0) / SEAM_TILE_SIZE_M, verts[index][1] / SEAM_TILE_SIZE_M);
+    }
+  }
+  if (!positions.length) return;
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+  group.add(new THREE.Mesh(geo, createStandingSeamMaterial(mode, [1, 1], 0xE8E8E2, true)));
 }
 
 function buildRectInstances(group: THREE.Group, members: Member[], center: PlanCenter,
@@ -165,32 +262,16 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
   const positions: number[] = [];
   const indices: number[] = [];
   const colors: number[] = [];
-  const faces = [[0, 1, 2, 3], [4, 7, 6, 5], [0, 4, 5, 1], [1, 5, 6, 2], [2, 6, 7, 3], [3, 7, 4, 0]];
   for (const m of members) {
-    const a = projectPointToScene(m.p0, 0, center);
-    const b = projectPointToScene(m.p1, 0, center);
-    const ax = a.x, ay = a.z;
-    const bx = b.x, by = b.z;
-    const az0 = m.z0_m, az1 = m.z1_m;
-    const bz0 = m.z0_end_m ?? m.z0_m, bz1 = m.z1_end_m ?? m.z1_m;
-    const dx = bx - ax, dy = by - ay;
-    const run = Math.hypot(dx, dy);
-    if (run < 1e-9) continue;
-    const half = crossWidth(m) / 2;
-    const nx = (-dy / run) * half, ny = (dx / run) * half;
-    const verts: [number, number, number][] = [
-      [ax + nx, az0, ay + ny], [bx + nx, bz0, by + ny], [bx - nx, bz0, by - ny], [ax - nx, az0, ay - ny],
-      [ax + nx, az1, ay + ny], [bx + nx, bz1, by + ny], [bx - nx, bz1, by - ny], [ax - nx, az1, ay - ny],
-    ];
+    const verts = rakedBoxVertices(m, center);
+    if (!verts) continue;
     const base = positions.length / 3;
-    const col = new THREE.Color(categoryColor(m.category));
+    const col = new THREE.Color(memberColor(m));
     for (const v of verts) {
       positions.push(v[0], v[1], v[2]);
       colors.push(col.r, col.g, col.b);
     }
-    // These quads were authored for the old reflected project frame. Reverse their
-    // winding now that project-to-scene preserves handedness.
-    for (const [a, b, c, d] of faces) indices.push(base + a, base + c, base + b, base + a, base + d, base + c);
+    pushBoxIndices(indices, base);
   }
   if (!positions.length) return;
   const geo = new THREE.BufferGeometry();
@@ -231,7 +312,7 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
     const flangeT = m.flange_thickness_m ?? depth * 0.1;
     const flangeW = m.flange_width_m ?? m.width_m;
     const webT = m.web_thickness_m ?? Math.min(flangeW, 0.01);
-    const color = categoryColor(m.category);
+    const color = memberColor(m);
     const webDepth = Math.max(depth - 2 * flangeT, MIN_EXTENT_M);
     const slopedLength = Math.hypot(runLen, rise);
     // p0/z0 is the joist soffit at the near end; the three plies share that run centre and
@@ -262,6 +343,7 @@ export function buildMembers(group: THREE.Group, members: Member[], center: Plan
   buildRectInstances(group, buckets.rect, center, mode);
   buildRakedMesh(group, buckets.raked, center, mode);
   buildIJoists(group, buckets.ijoist, center, mode);
+  buildSeamMesh(group, buckets.seam, center, mode);
 }
 
 export function disposeGroup(root: THREE.Object3D) {

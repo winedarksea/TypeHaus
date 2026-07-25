@@ -46,6 +46,7 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
         "web_thickness_m": section.web_thickness_m, "plies": section.plies,
         "orient": list(m.orient) if m.orient is not None else None,
         "connection": m.connection,
+        "material": m.material,
     }
 
 

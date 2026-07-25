@@ -92,6 +92,12 @@ class FramedMember:
     # Free-form connection annotation (e.g. "ridge:adjustable-slope-hanger") for the
     # 2D detail pipeline to bind later. Geometry stays a plain box; no seat cuts here.
     connection: str | None = None
+    # Catalog material ref, for members that are a *skin* rather than lumber: the wall→roof
+    # closure bands carry their source layer's material, the derived trim its board material.
+    # Without it both emitters fall back to the category palette, which paints a standing-seam
+    # cladding band the same generic grey as a plywood one. ``None`` for ordinary framing,
+    # which is coloured by category as before.
+    material: str | None = None
 
 
 @dataclass(frozen=True)

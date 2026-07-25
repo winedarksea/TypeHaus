@@ -9,6 +9,7 @@ One synthetic 20'x14' truss-roofed building exercises the whole roof edge:
 
 from __future__ import annotations
 
+import math
 import uuid
 
 import pytest
@@ -21,6 +22,7 @@ from typehaus.model import (
 from typehaus.quantities import Pitch
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.emit.gltf.emitter import is_roof_framing_member
 from typehaus.resolve.roof_geometry import roof_height_at
 
 HEEL = inch(9.25)
@@ -38,7 +40,8 @@ _EAVE_TRIM = EaveTrim(
 )
 
 
-def _plan(*, gable_top=None, eave_trim=_EAVE_TRIM, extra_elements=()) -> PlanModel:
+def _plan(*, gable_top=None, eave_trim=_EAVE_TRIM, extra_elements=(),
+          roof_layers=()) -> PlanModel:
     """A 20'x14' box with a raised-heel truss roof.
 
     The east gable is split at the ridge into two ``ToRoof`` segments; the west gable stays
@@ -57,6 +60,7 @@ def _plan(*, gable_top=None, eave_trim=_EAVE_TRIM, extra_elements=()) -> PlanMod
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member=CHORD, roof_frame="truss", heel_height=HEEL,
                                   chord_member=CHORD, web_member=CHORD)),
+        *roof_layers,
     ))
     project = Project(
         name="Gable", project_uuid=uuid.UUID("00000000-0000-4000-8000-0000000000b2"),
@@ -269,3 +273,86 @@ def test_authored_eave_soffit_and_fascia_resolve_to_trim_solids():
     assert by_tag["TR-SOFFIT-1"].category == "soffit"
     assert by_tag["TR-FASCIA-1"].category == "fascia"
     assert by_tag["TR-SOFFIT-1"].z1_m == pytest.approx(ft(9.5).meters)
+
+
+# --- 6. the above-deck stack edge, and the framing/skin split ------------------------------
+
+# A roof whose assembly carries real layers above the structure — foam thick enough that its
+# exposed edge is a band you can see from the ground, like the catlin house's 8" over-deck
+# stack. The base fixture's roof is structure-only, so nothing above the deck to wrap.
+_STACK_LAYERS = (
+    Layer(name="deck", material_ref="wood", thickness=inch(0.75),
+          function=LayerFunction.SHEATHING),
+    Layer(name="foam", material_ref="polyiso", thickness=inch(6),
+          function=LayerFunction.INSULATION),
+    Layer(name="roofing", material_ref="standing-seam", thickness=inch(0.5),
+          function=LayerFunction.CLADDING),
+)
+
+
+@pytest.fixture(scope="module")
+def stacked():
+    model, _findings = resolve(_plan(roof_layers=_STACK_LAYERS))
+    return model
+
+
+def _edge_cladding(model):
+    return [m for m in _roof(model).members if m.child_key.endswith("-edge-cladding")]
+
+
+def test_no_edge_cladding_without_layers_above_the_deck(resolved):
+    """The base fixture's roof is bare structure — a band there would be inventing material."""
+    assert _edge_cladding(resolved) == []
+
+
+def test_edge_cladding_wraps_every_roof_edge_in_the_roofing_material(stacked):
+    band = _edge_cladding(stacked)
+    # Two level eaves + two rakes split at the ridge = six runs, same as the fascia.
+    assert len(band) == 6
+    assert {m.category for m in band} == {"cladding"}
+    assert {m.material for m in band} == {"standing-seam"}
+
+
+def test_edge_cladding_spans_deck_plane_to_the_roofing_underside(stacked):
+    """The gap the user saw: wall skin stops at the deck plane, roofing sits a stack above it.
+
+    The band is measured vertically but the layers are stacked perpendicular to the slope, so
+    it has to be the *slope-corrected* height or it lands short of the metal it meets.
+    """
+    roof = _roof(stacked)
+    perpendicular = sum(layer.thickness.meters for layer in _STACK_LAYERS[:-1])
+    span = max(p[1] for p in roof.footprint) - min(p[1] for p in roof.footprint)
+    slope = (roof.ridge_z_m - roof.eave_z_m) / (span / 2.0)
+    expected = perpendicular * math.hypot(1.0, slope)
+    assert expected > perpendicular  # the correction is real, not a no-op
+    for member in _edge_cladding(stacked):
+        assert member.z1_m - member.z0_m == pytest.approx(expected, abs=1e-9)
+        assert member.z1_end_m - member.z0_end_m == pytest.approx(expected, abs=1e-9)
+    # Every band starts on the roof plane, and the rakes climb to the ridge with it.
+    eaves = [m for m in _edge_cladding(stacked) if m.z0_m == pytest.approx(m.z0_end_m)]
+    assert len(eaves) == 2
+    assert {round(m.z0_m, 9) for m in eaves} == {round(roof.eave_z_m, 9)}
+    peak = max(max(m.z0_m, m.z0_end_m) for m in _edge_cladding(stacked))
+    assert peak == pytest.approx(roof.ridge_z_m, abs=1e-9)
+
+
+def test_closure_bands_carry_their_source_layer_material(resolved):
+    """Without it both emitters paint a standing-seam band the category-grey of plywood."""
+    closures = _closures(resolved, "W-S")
+    assert closures
+    assert {m.material for m in closures} == {"wood"}
+
+
+def test_derived_trim_carries_its_board_material(resolved):
+    assert {m.material for m in _members(resolved, "fascia")} == {"spf", "pvc-cellular"}
+    assert {m.material for m in _members(resolved, "soffit")} == {"pvc-cellular"}
+
+
+def test_roof_members_split_into_framing_sticks_and_envelope_skin(stacked):
+    """Trusses belong under the framing toggle; the skin belongs with the shell it finishes."""
+    roof = _roof(stacked)
+    framing = {m.category for m in roof.members if is_roof_framing_member(m)}
+    skin = {m.category for m in roof.members if not is_roof_framing_member(m)}
+    assert {"top_chord", "bottom_chord", "truss_web", "stud"} <= framing
+    assert skin == {"sheathing", "cladding", "fascia", "soffit"}
+    assert not framing & skin

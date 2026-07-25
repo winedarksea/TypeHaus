@@ -63,6 +63,11 @@ export interface Member {
   // Free-form connection annotation (e.g. "ridge:adjustable-slope-hanger") for the 2D
   // detail pipeline; not structured, not geometry.
   connection: string | null;
+  // Catalog material ref for members that are envelope *skin* rather than lumber — the
+  // wall->roof closure bands, derived eave/rake trim, the roof-edge cladding. Coloured (and
+  // finished, for standing seam) like the wall and roof layer stacks instead of by category.
+  // Null for ordinary framing.
+  material: string | null;
 }
 
 export interface Wall {

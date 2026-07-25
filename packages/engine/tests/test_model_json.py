@@ -45,6 +45,26 @@ def test_every_member_carries_shape_width_depth(catlin_payload):
         assert member["depth_m"] > 0
 
 
+def test_skin_members_carry_a_material_and_lumber_does_not(catlin_payload):
+    """The viewer colours a member by material when it has one, by category otherwise.
+
+    Without the material the wall->roof closure and the roof-edge band fall through to the
+    grey category fallback, which is what made the garage gable read as unwanted fill and
+    left the house's standing seam stopping short of the roof's.
+    """
+    members = list(_all_members(catlin_payload))
+    assert all("material" in member for member in members)
+    house = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-HOUSE")
+    band = [m for m in house["members"] if m["key"].endswith("-edge-cladding")]
+    assert band and all(m["material"] == "standing-seam" for m in band)
+    garage = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-GARAGE")
+    gable = [m for m in garage["members"]
+             if "W-G-E-closure-" in m["key"] and m["category"] == "cladding"]
+    assert gable and all(m["material"] == "standing-seam" for m in gable)
+    studs = [m for m in house["members"] if m["category"] == "rafter"]
+    assert studs and all(m["material"] is None for m in studs)
+
+
 def test_second_floor_joists_are_i_joists(catlin_payload):
     floor = next(f for f in catlin_payload["floors"] if f["tag"] == "FS-SECOND")
     joists = [m for m in floor["members"] if m["category"] == "joist"]

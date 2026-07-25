@@ -98,7 +98,7 @@ authored:
 ### Editor
 
 - Anchor-relative annotation drag → PatchOp editor; the v1 detail viewer is read-only.
-- 3D model naviagation (pan, zoom) is functional but awkward. Also the "default zoom" for reset is poorly calculated.
+- 3D model naviagation (pan, zoom) is functional but awkward. Also the "default zoom" for reset is poorly calculated (I always find myself clicking the right arrow and the down arrow a bunch to get to a better starting view)
 - The "air", "water", and "thermal" views are great ideas but don't seem to show much on the actual 2d ui for catlin house.
 - Door opening drawings in 2d view aren't very accurate. The swing lines aren't always accurately concave and the double doors often look a bit weird (one convex, one concave for the swing lines)
 - the "site earth" plane interests interior spaces where it should be excluded. It excludes house already, but should also exclude sunken garden and garage.
@@ -107,8 +107,6 @@ authored:
 
 - Most corners don't show proper 3-stud framing (it's defined in code but not present in
   most corners).
-- ~~Stairs aren't framed properly (no support for landings, note the basement stair is special in that it anchors off hangers from the concrete walls). Landings don't have a size input in the stair designer and aren't rendered correctly. The partition wall between the up and down sides of a U of stairs is also not present and not framed correctly. It actually looks like there are partition walls but they extend below the house's foundation.~~ DONE (stair-framing pass): stringers are raked (the "walls below the foundation" were un-raked floor-to-floor stringer prisms), U-stair landings are two real half-width platforms (deck + deduplicated 2x8 joists + rims) one riser apart in the landing zone, the well partition is generated 2x4 plate/stud framing clipped to the subfloor, basement hanger bands track the raked stringer top (lower flight bears at the landing) with landing rims/edge joists ledgered into matched concrete walls and 4x4 posts under free corners, and the stair designer has a landing-depth input (`landing_depth_m` through model.json/types.ts, R311.7.6 rule row). Remaining stair follow-ups are listed under "Stair framing follow-ups" below.
-- ~~Roof-eave-wall still needs works. The 3d model still shows the roof exposed at the edges, not integrated into the wall cleanly (fully designed in reference packages/engine/tests/fixtures/catlin_reference/scripts/roof_wall_eave_detail_ifc.py, just not implemented here yet fully)~~ DONE (roof-eave pass): `eave_z_m` is now the rafter-top **deck plane** rather than the plate top — only the 1.17" birdsmouth sinks below the bearing, so the whole plane (and every `ToRoof` gable, `FollowRoof` ceiling and elevation) rides 0.271992 m higher, with `ResolvedRoof.bearing_z_m` carrying the plate top and the seat-cut solid notching the rafter *at* the bearing line instead of floating above the deck; rafter stations now span the bearing walls' extent (not the cladding-lapped footprint) with end stations inset half a member width, so no rafter hangs half-outside a gable (58 → 56 on catlin); and each above-structure roof layer clips at its own wall-stack face via engine-computed `layer_edge_setbacks` (deck at the wall sheathing, foam at the furring inner face, batten at its outer face, metal 0.6" proud), consumed identically by `emit/gltf/emitter.py` and `ui/src/three/roofGeometry.ts`. RF-HOUSE eave closure is a derived `Roof.eave_trim` fascia plus an authored 6" box gutter + drip edge (`houses/catlin/params/roof_trim.py`). Remaining roof-eave follow-ups are listed under "Roof-eave follow-ups" below.
 - Windows smaller (by 1.5" I believe) than the stud spacing (here 14" probably should fit between 16" oc studs) don't need a header. Furthermore, we probably want windows to have some more clear guidance on when they are breaking the stud line with their position awkwardly, and how many studs they break with their given width (relative to the configured OC framing spacing)
 
 ### Roof-eave follow-ups (noted out of scope in the roof-eave pass)
@@ -131,6 +129,20 @@ authored:
 - **All wall layers rake to one plane.** The reference's flat-topped wall foam plus
   closed-cell spray-foam wedge at the roof/wall foam interface is approximated by the fascia
   band; a true wedge would need a per-layer wall top.
+- **The roof-edge cladding band is a flat panel, not a formed edge.** It wraps the above-deck
+  stack from the deck plane up to the roofing underside so the wall's standing seam and the
+  roof's meet, but a real standing-seam eave/rake is a formed cleat + hemmed drip, and the
+  band's corners simply lap (the four runs overlap by their own thickness). Fine at model
+  scale; a detail drawing would want the profile.
+- **The band's top is ~1 mm below the roofing underside** on the catlin house: its height is
+  the slope-corrected stack depth measured at the footprint edge, while the band itself sits a
+  few millimetres inboard of that edge, where the plane is fractionally higher. The metal laps
+  *over* the band, which is the correct way round, so the residue is invisible.
+- **Gable-end skin still reads as insulation from inside.** The wall→roof closure carries the
+  full weather skin (zip-r sheathing, rainscreen, cladding) up the garage gable, which is
+  right — but with the roof trade hidden the zip-r band is the outermost thing left and looks
+  like cavity fill in a garage that is only insulated at the ceiling. Only a rendering
+  ambiguity, not geometry; a per-layer visibility control would settle it.
 
 ### Stair framing follow-ups (noted out of scope in the stair-framing pass)
 
