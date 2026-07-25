@@ -709,9 +709,12 @@ def test_stairs_resolve_with_code_risers(catlin_model):
     for tag in ("ST-B2M", "ST-M2S"):
         stair = stairs[tag]
         assert stair.layout == "u_split_landing"
-        assert {member.child_key for member in stair.members} >= {
-            "landing-lower", "step-between-landings", "landing-upper",
-        }
+        keys = {member.child_key for member in stair.members}
+        # Split-landing semantics: the riser between the two half-width landing
+        # platforms IS the step, so there is no separate step-between-landings member
+        # (it used to be a byte-identical duplicate of landing-upper).
+        assert keys >= {"landing-lower", "landing-upper"}
+        assert "step-between-landings" not in keys
 
 
 def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):

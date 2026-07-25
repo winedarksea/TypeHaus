@@ -24,6 +24,7 @@ export function StairDesigner({ model, focus }: { model: Model; focus?: Stair })
   const [layout, setLayout] = useState<Stair["layout"]>("straight");
   const [turnDirection, setTurnDirection] = useState<"left" | "right">("left");
   const [winderCount, setWinderCount] = useState(0);
+  const [landingDepth, setLandingDepth] = useState("");
 
   useEffect(() => {
     if (!stair) return;
@@ -34,10 +35,11 @@ export function StairDesigner({ model, focus }: { model: Model; focus?: Stair })
     setLayout(stair.layout ?? "straight");
     setTurnDirection(stair.turn_direction ?? "left");
     setWinderCount(stair.winder_count);
-  }, [stair?.uid, stair?.width_m, stair?.run_direction, stair?.run_reversed, stair?.layout, stair?.turn_direction, stair?.winder_count]);
+    setLandingDepth(formatFtIn(stair.landing_depth_m ?? stair.width_m));
+  }, [stair?.uid, stair?.width_m, stair?.run_direction, stair?.run_reversed, stair?.layout, stair?.turn_direction, stair?.winder_count, stair?.landing_depth_m]);
 
-  const solved = useMemo(() => stair ? previewStair(model, stair, width, runDirection, runReversed, layout, winderCount) : null,
-    [model, stair, width, runDirection, runReversed, layout, winderCount]);
+  const solved = useMemo(() => stair ? previewStair(model, stair, width, runDirection, runReversed, layout, winderCount, landingDepth) : null,
+    [model, stair, width, runDirection, runReversed, layout, winderCount, landingDepth]);
   if (!stair || !solved) return null;
 
   const save = async () => {
@@ -46,7 +48,8 @@ export function StairDesigner({ model, focus }: { model: Model; focus?: Stair })
       op: "update", type: "Stair", tag: stair.tag,
       fields: { width, run_direction: runDirection, run_reversed: runReversed, layout,
         turn_direction: layout === "right_angle_winder" ? turnDirection : null,
-        winder_count: layout === "right_angle_winder" ? winderCount : 0 },
+        winder_count: layout === "right_angle_winder" ? winderCount : 0,
+        landing_depth: layout === "u_split_landing" ? landingDepth : null },
     }]);
     if (ok) select("stair", stair.uid);
   };
@@ -80,6 +83,8 @@ export function StairDesigner({ model, focus }: { model: Model; focus?: Stair })
       <option value="straight">straight</option><option value="u_split_landing">U · two landings + one step</option>
       <option value="right_angle_winder">right angle · winders</option>
     </select></label>
+    {layout === "u_split_landing" && <label style={{ display: "block", marginTop: 5 }}>Landing depth <input value={landingDepth}
+      onChange={(event) => setLandingDepth(event.target.value)} /></label>}
     {layout === "right_angle_winder" && <><label style={{ display: "block", marginTop: 5 }}>Turn <select value={turnDirection}
       onChange={(event) => setTurnDirection(event.target.value as "left" | "right")}><option value="left">left</option><option value="right">right</option>
     </select></label><label style={{ display: "block", marginTop: 5 }}>Winders <select value={winderCount}
@@ -90,6 +95,8 @@ export function StairDesigner({ model, focus }: { model: Model; focus?: Stair })
     <StairRule pass={solved.tread >= MIN_TREAD_M} label={`R311.7.5 · tread ≥ 10" (${formatFtIn(solved.tread)})`} />
     <StairRule pass={solved.widthFits} label={`Clear width fits the ${formatFtIn(solved.openingWidth)} opening`} />
     <StairRule pass={solved.flightFits} label={`Opening clears the full flight · headroom target ≥ ${formatFtIn(MIN_HEADROOM_M)}`} />
+    {layout === "u_split_landing" && <StairRule pass={solved.landingFits}
+      label={`R311.7.6 · landing ≥ stair width (${formatFtIn(solved.landing)} effective)`} />}
     <button className="btn" disabled={offline || !solved.ok} style={{ marginTop: 7 }}
       title={offline ? "Editing needs haus serve" : solved.ok ? "Write the valid Stair inputs" : "Fix the red stair constraints first"}
       onClick={() => void save()}>{offline ? "Server required" : "Apply valid stair"}</button>
@@ -115,13 +122,16 @@ interface StairPreview {
   riserCount: number;
   riser: number;
   tread: number;
+  landing: number;
   widthFits: boolean;
   flightFits: boolean;
+  landingFits: boolean;
   ok: boolean;
 }
 
 function previewStair(model: Model, stair: Stair, widthText: string, direction: "x" | "y",
-                      reversed: boolean, layout: Stair["layout"], winderCount: number): StairPreview {
+                      reversed: boolean, layout: Stair["layout"], winderCount: number,
+                      landingText: string): StairPreview {
   const from = model.storeys.find((storey) => storey.tag === stair.storey);
   const to = model.storeys.find((storey) => storey.tag === stair.to_storey);
   const rise = Math.max(0, (to?.elevation_m ?? 0) - (from?.elevation_m ?? 0));
@@ -134,21 +144,35 @@ function previewStair(model: Model, stair: Stair, widthText: string, direction: 
   const riserCount = Math.ceil(rise / MAX_RISER_M);
   const riser = riserCount ? rise / riserCount : Infinity;
   const requestedWidth = parseLength(widthText);
-  const straightTreads = layout === "u_split_landing" ? Math.floor((riserCount - 2) / 2) : riserCount - 1 - winderCount;
-  const tread = straightTreads > 0 ? (run - (layout === "straight" ? 0 : requestedWidth ?? Infinity)) / straightTreads : 0;
+  const requestedLanding = parseLength(landingText);
+  // Mirrors resolve/envelope.py: an unset landing reserves one stair width; an authored
+  // value is floored at the width (IRC R311.7.6).
+  const effLanding = Math.max(requestedLanding ?? requestedWidth ?? Infinity, requestedWidth ?? Infinity);
+  // U flights share riserCount - 3 treads (the two landings and the arrival deck consume
+  // the other three risers); the lower flight takes the odd extra tread and bounds the run.
+  const maxFlightTreads = layout === "u_split_landing"
+    ? Math.floor((Math.max(0, riserCount - 3) + 1) / 2)
+    : riserCount - 1 - winderCount;
+  const reserved = layout === "straight" ? 0 : layout === "u_split_landing" ? effLanding : requestedWidth ?? Infinity;
+  const tread = maxFlightTreads > 0 ? (run - reserved) / maxFlightTreads : 0;
   const widthFits = requestedWidth !== null && requestedWidth <= openingWidth + 1e-9;
   const [startX, startY] = stair.start ?? defaultStart(direction, reversed, [minX, minY], [maxX, maxY]);
   const signedRun = (reversed ? -1 : 1) * run;
   const flightFits = layout === "u_split_landing"
-    ? (direction === "x" ? 2 * (requestedWidth ?? Infinity) <= openingWidth + 1e-9 : 2 * (requestedWidth ?? Infinity) <= openingWidth + 1e-9)
+    ? 2 * (requestedWidth ?? Infinity) <= openingWidth + 1e-9
+      && effLanding + tread * maxFlightTreads <= run + 1e-9
     : direction === "x"
     ? Math.min(startX, startX + signedRun) >= minX - 1e-9 && Math.max(startX, startX + signedRun) <= maxX + 1e-9
       && startY >= minY - 1e-9 && startY + (requestedWidth ?? Infinity) <= maxY + 1e-9
     : Math.min(startY, startY + signedRun) >= minY - 1e-9 && Math.max(startY, startY + signedRun) <= maxY + 1e-9
       && startX >= minX - 1e-9 && startX + (requestedWidth ?? Infinity) <= maxX + 1e-9;
+  const landingFits = layout !== "u_split_landing"
+    || (requestedLanding !== null && requestedWidth !== null
+        && requestedLanding + 1e-9 >= requestedWidth);
   const validWinders = layout !== "right_angle_winder" || winderCount >= 3;
   const ok = rise > 0 && riser <= MAX_RISER_M && tread >= MIN_TREAD_M && widthFits && flightFits && validWinders;
-  return { rise, run, openingWidth, riserCount, riser, tread, widthFits, flightFits, ok };
+  return { rise, run, openingWidth, riserCount, riser, tread, landing: Number.isFinite(effLanding) ? effLanding : 0,
+    widthFits, flightFits, landingFits, ok };
 }
 
 function defaultStart(direction: "x" | "y", reversed: boolean, min: Vec2, max: Vec2): Vec2 {

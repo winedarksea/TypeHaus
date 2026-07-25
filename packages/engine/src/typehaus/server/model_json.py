@@ -338,6 +338,8 @@ def model_to_dict(
              "layout": authored.layout,
              "turn_direction": authored.turn_direction,
              "winder_count": authored.winder_count,
+             "landing_depth_m": (authored.landing_depth.meters
+                                 if authored.landing_depth is not None else None),
              "start": list(authored.start.xy_m) if authored.start is not None else None,
              "riser_count": stair.riser_count, "riser_height_m": stair.riser_height_m,
              "tread_depth_m": stair.tread_depth_m,

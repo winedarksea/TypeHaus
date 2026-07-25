@@ -452,6 +452,10 @@ export interface Stair {
   layout: "straight" | "u_split_landing" | "right_angle_winder";
   turn_direction: "left" | "right" | null;
   winder_count: number;
+  // Authored turn-landing depth (u_split_landing only); null reproduces the historical
+  // "reserve one stair width" behaviour. The resolver floors it at the stair width
+  // (IRC R311.7.6).
+  landing_depth_m: number | null;
   start: Vec2 | null;
   riser_count: number;
   riser_height_m: number;
