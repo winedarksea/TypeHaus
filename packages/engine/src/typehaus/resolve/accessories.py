@@ -24,10 +24,12 @@ from typehaus.resolve.vent_termination import (
 )
 
 # Pipe risers are round sections faceted into the prism-only solid IR. A horizontal run
-# cannot be a vertical prism at all, so it is stacked out of bands whose plan width tracks
-# the circle; four bands is where the silhouette stops reading as a square post.
+# cannot be a vertical prism at all, so it is swept as bands stacked in Z whose plan width
+# tracks the circle. The band boundaries land on the *same* regular-polygon vertex
+# elevations the vertical risers are faceted at, so the jog reads as the identical n-gon
+# section rather than as a few square bands: an n-gon spans n/2 bands top to bottom.
 _PIPE_FACETS = 12
-_PIPE_SWEEP_BANDS = 4
+_PIPE_SWEEP_BANDS = _PIPE_FACETS // 2
 _PIPE_BUNDLE_SPACING = 1.6  # centre-to-centre spacing of bundled risers, in diameters
 
 # Trim ``TrimKind`` values collapse onto a small render/IFC category set.
@@ -92,17 +94,20 @@ def _resolve_dowel(model: ResolvedModel, el: Dowel, storey: str) -> None:
     spacing = el.spacing.meters if el.spacing is not None else 0.0
     perp = "x" if el.axis == "y" else "y"  # bars are spaced perpendicular to their run
     row_span = spacing * max(el.count - 1, 0)
-    # Foam thermal-break block the dowels pass through.
+    # Foam thermal-break block the dowels pass through. The block *is* the joint: its thin
+    # dimension is the dowel axis (the direction the bars cross it) and its long dimension
+    # runs along the joint line, spanning the row of bars. Swapping those two turns the block
+    # 90° and it stops separating the two structures it is breaking the bridge between.
     if el.foam_thickness is not None:
         ft_m = el.foam_thickness.meters
         fh = (el.foam_height.meters if el.foam_height is not None else inch(12).meters)
-        block_perp = max(row_span + 8 * dia, inch(12).meters)
-        half_along, half_perp = (ft_m / 2.0, block_perp / 2.0) if el.axis == "y" else \
-            (block_perp / 2.0, ft_m / 2.0)
+        block_along_joint = max(row_span + 8 * dia, inch(12).meters)
+        half_x, half_y = (block_along_joint / 2.0, ft_m / 2.0) if el.axis == "y" else \
+            (ft_m / 2.0, block_along_joint / 2.0)
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-foam", tag=f"{el.tag}-FOAM", storey=storey,
             category="thermal_break",
-            outline=_square(cx, cy, half_along, half_perp),
+            outline=_square(cx, cy, half_x, half_y),
             z0_m=z - fh / 2.0, z1_m=z + fh / 2.0,
         ))
     # Individual dowel bars, spaced across the joint.
@@ -190,12 +195,14 @@ def _resolve_sump(model: ResolvedModel, el: Sump, storey) -> None:
 
 def _round_run_bands(start: tuple[float, float], end: tuple[float, float], radius: float,
                      center_z: float) -> list[tuple[list[tuple[float, float]], float, float]]:
-    """Approximate a horizontal pipe as ``(outline, z0, z1)`` bands stacked in Z.
+    """Sweep a horizontal pipe as ``(outline, z0, z1)`` bands stacked in Z.
 
     ``ResolvedSolid`` only extrudes a plan outline vertically, so a horizontal run has no
     round cross-section available to it. Each band spans an equal arc of the circle and is
     as wide as the chord at that arc's midpoint, so the stack neither inscribes nor
-    circumscribes the pipe and its silhouette stays centred on the true diameter.
+    circumscribes the pipe and its silhouette stays centred on the true diameter. With
+    ``_PIPE_SWEEP_BANDS`` bands the boundaries fall on the riser polygon's own vertex
+    elevations, so the jog's section is that same polygon turned on its side.
     """
     bands = []
     for index in range(_PIPE_SWEEP_BANDS):

@@ -16,6 +16,7 @@ from typehaus.findings import Finding
 from typehaus.model.canvas import canvas_object_types, resolved_canvas_objects
 from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.spatial import Stair
+from typehaus.resolve import site_earth
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedModel
 from typehaus.source.provenance import Provenance
@@ -173,6 +174,13 @@ def model_to_dict(
             "grade_m": (model.plan.project.site.grade.meters
                         if model.plan.project.site.grade is not None else None),
             "parcel": [list(point.xy_m) for point in model.plan.project.site.parcel],
+            # Holes the site earth sheet must carry: one merged ring per excavated
+            # footprint (house, garage, sunken garden). Derived once in
+            # resolve/site_earth.py so the viewer, the IFC lot slab, and any future earth
+            # emitter cut the same rings instead of each re-deriving them from rooms —
+            # room-derived cuts can only ever see one storey of one structure.
+            "earth_voids": [[list(point) for point in ring]
+                            for ring in site_earth.earth_plane_void_rings(model)],
             # Spot elevations are currently consumed by 2D site/elevation emitters. Keep
             # them in the shared UI contract so a future earth surface can triangulate the
             # same authored grade data without inventing a second source of truth.

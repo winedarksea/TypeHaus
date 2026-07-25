@@ -22,6 +22,7 @@ from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import polygon_area, rect_between
+from typehaus.resolve import site_earth
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.placeables import resolved_mount_elevation
 
@@ -102,13 +103,20 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
 
 
 def _emit_site_representation(f: Any, body: Any, ifc_site: Any, model: ResolvedModel) -> None:
-    """A 5cm pad prism of the parcel ring at grade — imports as a lot slab (Phase 4)."""
+    """A 5cm pad prism of the parcel ring at grade — imports as a lot slab (Phase 4).
+
+    The pad is cut by every excavated footprint (house, garage, sunken garden — see
+    ``resolve/site_earth.py``); without those voids the lot slab runs straight through the
+    interior spaces that were dug out of it.
+    """
     site = model.plan.project.site
     parcel = [p.xy_m for p in site.parcel]
     if len(parcel) < 3:
         return
-    grade_z = site.grade.meters if site.grade is not None else 0.0
-    _assign_representation(f, ifc_site, ll.add_prism_from_profile(f, body, parcel, 0.05, grade_z))
+    grade_z = site_earth.site_grade_elevation_m(model)
+    voids = tuple(tuple(ring) for ring in site_earth.earth_plane_void_rings(model))
+    _assign_representation(f, ifc_site,
+                           ll.add_prism_from_profile(f, body, parcel, 0.05, grade_z, voids))
     props = {"parcel_area_m2": abs(polygon_area(parcel))}
     for spec in site.setbacks:
         key = f"setback_edge{spec.edge}_{spec.label or 'UNLABELED'}_ft"

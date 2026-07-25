@@ -288,7 +288,11 @@ def _bearing_stack_drops(model: ResolvedModel) -> tuple[dict[str, float], dict[s
 
 def resolve_columns_and_beams(model: ResolvedModel) -> list[Finding]:
     findings: list[Finding] = []
-    solid_top = {s.tag: s.z1_m for s in model.solids}
+    # A post bears on a wall top as readily as on a pad: the balcony pillars stand on the
+    # masonry porch railing, whose CMU cores are grouted to receive their bases. Walls are
+    # not solids, so merge their tops in first and let a same-tag solid win.
+    solid_top = {w.tag: w.z1_m for w in model.walls}
+    solid_top.update({s.tag: s.z1_m for s in model.solids})
     ridge_uids = {m.parent_uid for roof in model.roofs for m in roof.members
                   if m.category == "ridge_beam"}
     joist_drop, post_drop = _bearing_stack_drops(model)

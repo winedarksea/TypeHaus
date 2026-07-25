@@ -179,6 +179,17 @@ WALLS = [
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom),
 ]
 
+# --- public geometry for structures that build on this one ------------------------------
+# The raised garden bears on the south retaining wall's top, so it needs that wall's axis,
+# span and section. Publish them rather than let a second module re-derive the same
+# arithmetic off SPEC — two derivations silently diverge the next time a dimension moves.
+SOUTH_RETAINING_WALL_TAG = "W-SG-S"
+SOUTH_RETAINING_WALL_AXIS_Y_FT = _y_ax_s
+SOUTH_RETAINING_WALL_NODES = ("N-SG-SW", "N-SG-SE")
+RETAINING_WALL_SPAN_X_FT = (_x_ax_w, _x_ax_e)
+RETAINING_WALL_TOP_FT = SPEC.retaining_top_ft
+RETAINING_WALL_THICKNESS_IN = SPEC.wall_thickness_in
+
 # Sonotube column (12" round) at the porch's north edge midspan, carrying the two back
 # beams. Its top lands on the 2x12 back-beam soffit (one beam depth below the 0' porch
 # deck), so the beams seat directly on the column and it reads "slightly shorter than the
@@ -303,28 +314,37 @@ PORCH_FLOOR = Slab(
 # Second (balcony, ~10'): 6x6 pillars, three 2x10 beams, aluminum deck.
 # ============================================================================
 # Six pillars: front (south) row on the arch railing, rear (north) row — outer two on the
-# side-wall railings, center on the porch decking. All bear on the porch deck (their bases
-# embed in the CMU grout fill of the railing they pass through) so they are anchored at the
-# porch floor and stand UP to the balcony-beam soffit — not hung from the deck above.
+# side-wall railings, center on the porch decking. The five that land on masonry are
+# *embedded in the CMU*: an ABU66SS standoff base is anchored into the grouted cores, so the
+# exposed 6x6 starts at the top of the railing wall, not 42" lower at the porch deck. Their
+# authored height is therefore measured from the railing top. The rear-center pillar is the
+# one exception — the north edge is open (no railing wall), so it still stands off the
+# composite decking (SL-SG-PORCH's top), and is that much taller.
 # The rear (north, house-side) row is 2" taller so the deck crowns at the rear and drains
 # south, away from the house.  Beam soffit = balcony level less the 2x10 beam depth (9.25").
-# `supported_by` puts the base on SL-SG-PORCH's *top*, i.e. the composite walking surface
-# laid over the porch joists, so the authored height is the exposed pillar above the boards.
 _balcony_beam_depth_ft = 9.25 / 12.0
-_front_h = (ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft)
-            - inch(SPEC.porch_deck_thickness_in))
-_rear_h = _front_h + inch(SPEC.rear_pillar_rise_in)
+_beam_soffit = ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft)
+_porch_walking_surface = inch(SPEC.porch_deck_thickness_in)  # top of SL-SG-PORCH
 _PILLAR_X = (_x_ax_w, _cx, _x_ax_e)
+# (row, x index) -> the railing wall whose grouted cores hold that pillar's base.
+_RAILING_UNDER_PILLAR = {
+    ("R", 1): "W-SG-RAIL-W", ("R", 3): "W-SG-RAIL-E",
+    ("F", 1): "W-SG-RAIL-F", ("F", 2): "W-SG-RAIL-F", ("F", 3): "W-SG-RAIL-F",
+}
+_PILLAR_ROWS = (("R", _y_in_n, inch(SPEC.rear_pillar_rise_in)), ("F", _y_ax_arch, ft(0)))
 PILLARS = []
+PILLAR_BEARINGS = {}  # pillar tag -> (bearing tag, base elevation) — reused by the bases
 for _i, _x in enumerate(_PILLAR_X, start=1):
-    PILLARS.append(Post(uid=f"SGPB{_i}0AAAA", tag=f"PT-SG-BR{_i}",
-                        position=pt(ft(_x), ft(_y_in_n)), size=SPEC.pillar_size,
-                        height=_rear_h, supported_by="SL-SG-PORCH",
-                        assembly="POST_WHITE_PAINT"))  # rear (north) row
-    PILLARS.append(Post(uid=f"SGPB{_i}1AAAA", tag=f"PT-SG-BF{_i}",
-                        position=pt(ft(_x), ft(_y_ax_arch)), size=SPEC.pillar_size,
-                        height=_front_h, supported_by="SL-SG-PORCH",
-                        assembly="POST_WHITE_PAINT"))  # front (south) row
+    for _row_index, (_row, _y, _rise) in enumerate(_PILLAR_ROWS):
+        _railing = _RAILING_UNDER_PILLAR.get((_row, _i))
+        _base = _railing_top if _railing is not None else _porch_walking_surface
+        _tag = f"PT-SG-B{_row}{_i}"
+        PILLAR_BEARINGS[_tag] = (_railing or "SL-SG-PORCH", _base)
+        PILLARS.append(Post(uid=f"SGPB{_i}{_row_index}AAAA", tag=_tag,
+                            position=pt(ft(_x), ft(_y)), size=SPEC.pillar_size,
+                            height=_beam_soffit - _base + _rise,
+                            supported_by=_railing or "SL-SG-PORCH",
+                            assembly="POST_WHITE_PAINT"))
 
 SECOND_NODES = [
     Node(uid="SGNB01AAAA", tag="N-SGB-NW", position=pt(ft(_x_ax_w), ft(_y_in_n))),
@@ -407,11 +427,15 @@ DOWELS = [
 _kb_z = ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft - 0.25)  # just under the beam soffit
 CONNECTORS = []
 for _i, _x in enumerate(_PILLAR_X, start=1):
-    for _row, _y in (("R", _y_in_n), ("F", _y_ax_arch)):
+    for _row, _y, _rise in _PILLAR_ROWS:
+        # ABU66SS: the stainless ABU66 standoff base, set into the grouted CMU core of the
+        # railing the pillar is embedded in. It rides at that pillar's own bearing top, so
+        # the base draws where the post actually starts rather than down at the deck.
+        _bearing_tag, _bearing_top = PILLAR_BEARINGS[f"PT-SG-B{_row}{_i}"]
         CONNECTORS.append(Connector(
             uid=f"SGCB{_i}{_row}AAAA", tag=f"CN-SG-BASE-{_row}{_i}",
-            kind=ConnectorKind.POST_BASE, position=pt(ft(_x), ft(_y)), elevation=_porch_top,
-            size="ABU66", connects=(f"PT-SG-B{_row}{_i}", "SL-SG-PORCH")))
+            kind=ConnectorKind.POST_BASE, position=pt(ft(_x), ft(_y)), elevation=_bearing_top,
+            size="ABU66SS", connects=(f"PT-SG-B{_row}{_i}", _bearing_tag)))
         CONNECTORS.append(Connector(
             uid=f"SGCK{_i}{_row}AAAA", tag=f"CN-SG-KB-{_row}{_i}",
             kind=ConnectorKind.KNEEBRACE, position=pt(ft(_x), ft(_y)), elevation=_kb_z,

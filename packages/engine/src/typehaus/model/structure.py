@@ -65,7 +65,10 @@ class Post(Element):
     position: Point2D
     size: str = "6x6"
     height: Length | None = None
-    supported_by: str | None = None  # pad/footing tag
+    # Tag of what the post bears on — a pad/footing/slab, or a wall the post stands on top
+    # of (the balcony pillars bear on the masonry porch railing). Unset hangs the post's
+    # top at its storey datum instead.
+    supported_by: str | None = None
     assembly: str | None = None  # optional finish assembly (e.g. paint) for render/IFC material
 
 
