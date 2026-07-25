@@ -94,15 +94,15 @@ ELECTRICAL_DEVICE_TYPES = (
 
 SLEEVES = [
     SleevePenetration(uid="CMP901AAAA", tag="SP-M-WC1", host_ref="SL-M-DECK",
-                      position=pt(ft(2), ft(24)), pipe_diameter=inch(3),
+                      position=pt(ft(2), ft(23, 1.5)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-M-BATH1-WC"),
     SleevePenetration(uid="CMP902AAAA", tag="SP-M-WC2", host_ref="SL-M-DECK",
                       position=pt(ft(3), ft(18)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-M-BATH2-WC"),
-    # Projection of FX-M-BATH1-LAV (3'-6", 24') onto the W-M-BAE structure-layer
+    # Projection of FX-M-BATH1-LAV (2'-8.5", 25'-3") onto the W-M-BAE structure-layer
     # centerline (x=4, from storeys/main.py node coordinates N-M-BA1/N-M-BA2).
     SleevePenetration(uid="CMP903AAAA", tag="SP-M-LAV1", host_ref="SL-M-DECK",
-                      position=pt(ft(4), ft(24)), pipe_diameter=inch(1.5),
+                      position=pt(ft(4), ft(25, 3)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), serves_fixture="FX-M-BATH1-LAV"),
     # Projection of FX-M-LAUNDRY (10'-6", 20') onto the W-M-BA2E2 centerline (x=8).
     SleevePenetration(uid="CMP904AAAA", tag="SP-M-WASH", host_ref="SL-M-DECK",
@@ -110,14 +110,58 @@ SLEEVES = [
                       sleeve_diameter=inch(3), serves_fixture="FX-M-LAUNDRY"),
 ]
 
+# Slab-on-grade stub-ups. A fixture standing on grade has no wall drain stack — its trap
+# arm runs *under* the slab — so the penetration is set before the pour exactly like the
+# deck sleeves above. FX-1 (the furnace-room utility sink, plan/placeables.py) authors this
+# same point as its `drain_position`, which is what makes the alignment check exact.
+SLAB_STUBS = [
+    SleevePenetration(uid="CBP901AAAA", tag="SP-B-UTILITY", host_ref="SL-B-FLOOR",
+                      position=pt(ft(14), ft(19)), pipe_diameter=inch(1.5),
+                      sleeve_diameter=inch(2), serves_fixture="FX-1"),
+]
+
 # Basement-ceiling collector: picks up both WC sleeves, heads to the south-wall sewer
-# exit. Axis-aligned so the authored length is exact (6' + 1' + 18' = 25'); inverts give
-# a comfortable 8"/25' ≈ 0.32"/ft slope, well above the 1/4"/ft minimum for a 3" line.
+# exit. Axis-aligned so the authored length is exact (5'-1.5" + 1' + 18' = 24'-1.5");
+# inverts give a comfortable 8"/24'-1.5" ≈ 0.33"/ft slope, well above the 1/4"/ft minimum
+# for a 3" line.
 DRAINS = [
     PipeRun(uid="CMP905AAAA", tag="PR-B-MAIN-DRAIN", system=PipeSystem.DRAIN,
-           path=(pt(ft(2), ft(24)), pt(ft(2), ft(18)), pt(ft(3), ft(18)), pt(ft(3), ft(0))),
+           path=(pt(ft(2), ft(23, 1.5)), pt(ft(2), ft(18)), pt(ft(3), ft(18)),
+                 pt(ft(3), ft(0))),
            diameter=inch(3), start_elevation=ft(8), end_elevation=ft(7, 4),
            serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC")),
+]
+
+# --- Vent branches: wet wall -> shared chase ----------------------------------------
+# None of the water-closet wet walls continues to the storey above (W-M-BAE and W-M-BA2E
+# die at the main-floor top plate; W-S-BD-N dies under the cathedral attic), so no vent can
+# simply rise inside them. They don't have to: VR-M-RADON-VENT below is already a shared
+# radon/plumbing chase running the full height of the house at (3', 33'), and a vent may run
+# horizontally once it is above every served fixture's flood-level rim. These are the runs
+# that get it there — authored, because the engine never routes pipe on its own, and
+# validated by `mep.vent_reachability` (must touch the wet wall, must land on the chase).
+#
+# Both runs sit inside the floor system over their storey's 9' top plate, drilled through
+# the I-joist webs, and fall ~1/8"/ft back toward the fixtures so condensate returns to the
+# drainage system rather than pooling in the horizontal leg.
+VENT_BRANCHES_MAIN = [
+    # Bath2 takeoff on W-M-BA2E (x=8') -> across the hall -> bath1 takeoff on W-M-BAE
+    # (x=4') -> north through the storage-room ceiling -> chase. 20' developed length,
+    # 2" for two water closets.
+    PipeRun(uid="CMP906AAAA", tag="PR-M-WC-VENT", system=PipeSystem.VENT,
+            path=(pt(ft(8), ft(18)), pt(ft(8), ft(24)), pt(ft(4), ft(24)),
+                  pt(ft(4), ft(33)), pt(ft(3), ft(33))),
+            diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5.5),
+            serves=("FX-M-BATH2-WC", "FX-M-BATH1-WC")),
+]
+
+VENT_BRANCHES_SECOND = [
+    # Ensuite takeoff on W-S-BD-N (y=26'-4") -> west to the chase line -> north to the
+    # chase. The chase passes straight through this room, so the run is only 8'-8".
+    PipeRun(uid="CSP901AAAA", tag="PR-S-ENSUITE-VENT", system=PipeSystem.VENT,
+            path=(pt(ft(5), ft(26, 4)), pt(ft(3), ft(26, 4)), pt(ft(3), ft(33))),
+            diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 4),
+            serves=("FX-S-ENSUITE-WC",)),
 ]
 
 # --- HVAC: second-floor supply/return trunks in the FS-SECOND joist bays ------------
@@ -160,10 +204,25 @@ PANEL = [
 ]
 
 # One light + switch per habitable room, one code-minimum receptacle per bedroom (bare
-# minimum, not NEC 210.52 spacing). Switch sits 1' toward -x of the light; receptacle 1'
-# toward +x. Uids avoid the letters I/L/O/U (Crockford base32, → model/ids.py). These were
-# formerly generated from a `_HABITABLE_ROOMS` table; expanded to explicit constructors so
-# the file is `# haus: editable` and UI edits round-trip.
+# minimum, not NEC 210.52 spacing). Switch sits 1' toward -x of the light, except where the
+# room's door is known, in which case the switch sits beside the door on the latch side —
+# which is where a switch actually goes. Receptacle 1' toward +x. Uids avoid the letters
+# I/L/O/U (Crockford base32, → model/ids.py). These were formerly generated from a
+# `_HABITABLE_ROOMS` table; expanded to explicit constructors so the file is
+# `# haus: editable` and UI edits round-trip.
+#
+# `electrical.room_lighting` matches devices to rooms by tag suffix, so a device serving
+# RM-<x> must be tagged ED-<x>-*.
+BASEMENT_DEVICES = [
+    # RM-B-GYM (x 18'-36', y 0-18'): switch just inside D-B-PLAY, the door at (24', 18').
+    ElectricalDevice(uid="CED010K1AA", tag="ED-B-GYM-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(27), ft(9)), type_ref="ED-T-LIGHT",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    ElectricalDevice(uid="CED010K2AA", tag="ED-B-GYM-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(25), ft(17)), type_ref="ED-T-SWITCH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+]
+
 MAIN_DEVICES = [
     ElectricalDevice(uid="CED001K1AA", tag="ED-M-LIVING-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(27), ft(12)), type_ref="ED-T-LIGHT",
@@ -239,6 +298,26 @@ SECOND_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
 ]
 
+# Attic habitable rooms, both east of the ridge. The cathedral ceiling follows the 4:12 roof
+# off a 5' knee wall, so at x=27' the roof plane is 5' + 9'/3 = 8' — the same 8' the rest of
+# the house's ceiling boxes sit at, which is why these lights need no special elevation.
+ATTIC_DEVICES = [
+    # RM-A-EAST (x 18'-36', y 8'-8"-36'): switch inside D-A-HALVES, the door at (18', 32').
+    ElectricalDevice(uid="CED011K1AA", tag="ED-A-EAST-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(27), ft(20)), type_ref="ED-T-LIGHT",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    ElectricalDevice(uid="CED011K2AA", tag="ED-A-EAST-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(19), ft(31)), type_ref="ED-T-SWITCH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+    # RM-A-STUDY (x 18'-36', y 0-8'-8"): switch inside D-A-STUDY, the door at (19', 8'-8").
+    ElectricalDevice(uid="CED012K1AA", tag="ED-A-STUDY-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(27), ft(4)), type_ref="ED-T-LIGHT",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    ElectricalDevice(uid="CED012K2AA", tag="ED-A-STUDY-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(20), ft(8)), type_ref="ED-T-SWITCH",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+]
+
 # --- Radon sump + shared radon/plumbing vent riser ---------------------------------
 # A sealed radon sump in the NW basement furnace room. Its passive radon vent and the
 # plumbing vent share one mechanical chase up to 24'-6" — under the 4:12 rake, which is at
@@ -297,7 +376,8 @@ NEMA_CLAMP = [
               connects=("ED-A-NEMA-JB", "W-A-N2")),
 ]
 
-MAIN_ELEMENTS = [*SLEEVES, *MAIN_DEVICES]
-BASEMENT_ELEMENTS = [*DRAINS, *EQUIPMENT, *PANEL, *RADON_SUMP, *VENT_RISERS, *VENT_CLAMPS]
-SECOND_ELEMENTS = [*DUCTS, *REGISTERS, *SECOND_DEVICES]
-ATTIC_ELEMENTS = [*NEMA_BOX, *NEMA_CLAMP]
+MAIN_ELEMENTS = [*SLEEVES, *VENT_BRANCHES_MAIN, *MAIN_DEVICES]
+BASEMENT_ELEMENTS = [*DRAINS, *SLAB_STUBS, *EQUIPMENT, *PANEL, *BASEMENT_DEVICES,
+                     *RADON_SUMP, *VENT_RISERS, *VENT_CLAMPS]
+SECOND_ELEMENTS = [*DUCTS, *REGISTERS, *VENT_BRANCHES_SECOND, *SECOND_DEVICES]
+ATTIC_ELEMENTS = [*NEMA_BOX, *NEMA_CLAMP, *ATTIC_DEVICES]

@@ -307,7 +307,7 @@ SLABS = [
     Slab(uid="CMS501AAAA", tag="SL-M-DECK",
          outline=(pt(ft(0), ft(0)), pt(ft(36), ft(0)), pt(ft(36), ft(36)),
                   pt(ft(0), ft(36))),
-         thickness=inch(9), openings=("FO-M-STAIR",)),
+         thickness=inch(9), openings=("FO-M-STAIR",), assembly="CATLIN_DECK_9_INT"),
 ]
 
 FLOOR_OPENINGS = [

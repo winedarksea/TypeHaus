@@ -36,26 +36,35 @@ def test_starter_has_no_plumbing_content(starter_model):
     assert not any(has_plumbing_content(starter_model, s.tag) for s in starter_model.plan.storeys)
 
 
+def _sleeve_count(scene) -> int:
+    return len([n for n in scene.nodes if isinstance(n, Symbol) and n.name == "sleeve"])
+
+
+def _pipe_tags(scene) -> set:
+    return {n.tag for n in scene.nodes
+            if isinstance(n, Polyline) and n.layer == "P-SANR-PIPE"}
+
+
 def test_basement_plan_shows_drain_run_and_sleeves_from_below(catlin_model):
+    """The basement sheet carries its own slab stub-ups *and* the deck sleeves above it,
+    because the rough-in crew sets both before the main-floor pour."""
     scene = build_plumbing_plan(catlin_model, "basement")
-    layers = scene.by_layer()
-    assert "P-SANR-PIPE" in layers
-    pipe_tags = {n.tag for n in layers["P-SANR-PIPE"] if isinstance(n, Polyline)}
-    assert "PR-B-MAIN-DRAIN" in pipe_tags
-    sleeve_symbols = [n for n in scene.nodes if isinstance(n, Symbol) and n.name == "sleeve"]
-    assert len(sleeve_symbols) == 4
+    assert "P-SANR-PIPE" in scene.by_layer()
+    assert "PR-B-MAIN-DRAIN" in _pipe_tags(scene)
+    own = [s for s in catlin_model.sleeves if s.storey == "basement"]
+    above = [s for s in catlin_model.sleeves if s.storey == "main"]
+    assert own and above  # both halves of the "from below" rule are exercised
+    assert _sleeve_count(scene) == len(own) + len(above)
 
 
 def test_main_plan_shows_sleeves_in_true_position_and_fixtures(catlin_model):
     scene = build_plumbing_plan(catlin_model, "main")
-    layers = scene.by_layer()
-    assert "A-FIXT" in layers
-    sleeve_symbols = [n for n in scene.nodes if isinstance(n, Symbol) and n.name == "sleeve"]
-    assert len(sleeve_symbols) == 4
-    # No drain pipe polyline on the main plan — the collector run is a basement-storey run.
-    pipe_polylines = [n for n in scene.nodes
-                     if isinstance(n, Polyline) and n.layer == "P-SANR-PIPE"]
-    assert pipe_polylines == []
+    assert "A-FIXT" in scene.by_layer()
+    assert _sleeve_count(scene) == len([s for s in catlin_model.sleeves if s.storey == "main"])
+    # The collector drain run is a basement-storey run, so it must not appear here; the
+    # main-storey vent branch to the chase must.
+    assert "PR-B-MAIN-DRAIN" not in _pipe_tags(scene)
+    assert "PR-M-WC-VENT" in _pipe_tags(scene)
 
 
 def test_drain_run_has_slope_leader(catlin_model):

@@ -3,8 +3,10 @@
 ``evaluate_envelope`` is the pure analysis both the check and the EN-1 sheet consume (the
 same "one function, two consumers" shape as ``analyze_wwr``/``estimate_block_load``).
 Per-assembly rows are tri-state: an assembly with ``unknown_materials`` (missing
-``r_per_inch``) surfaces UNKNOWN, never a silent PASS — the honest-EN-1 point of this
-phase (catlin's 9" concrete ``SL-M-DECK`` currently has no R-value input at all).
+``r_per_inch``) surfaces UNKNOWN, never a silent PASS — the honest-EN-1 point of this phase.
+A component only earns a row when the prescriptive table actually binds it: interior
+partitions/floors between two conditioned spaces and freestanding unconditioned structures
+are scoped out rather than reported as failures they are not.
 """
 
 from __future__ import annotations
@@ -69,13 +71,25 @@ def _is_freestanding_exterior_wall(wall) -> bool:
     return wall.tag.startswith(_FREESTANDING_EXTERIOR_WALL_PREFIXES)
 
 
+# Tag prefixes of slabs belonging to a freestanding structure that is not part of the
+# conditioned envelope, but which are filed on one of the house's own storey keys because
+# they share the plan frame (→ Phase 2's sleeve check hit the same "one storey key, several
+# physical structures" seam). ``_storey_is_conditioned`` therefore cannot see past them.
+_FREESTANDING_SLAB_PREFIXES = (
+    # The sunken-garden structure's decks: the porch composite deck and the balcony aluminum
+    # deck are exterior walking surfaces over open air, not thermal-envelope floors.
+    "SL-SG-",
+    # The detached garage's slab-on-grade. Its storey datum is the ICF stem top, so the slab
+    # is filed on "main"; the same structure's GARAGE_ROOF/GARAGE_WALL_2X6 are already
+    # excluded here by RM-GARAGE's ``conditioned=False``, and its floor is no different.
+    "SL-G-",
+)
+
+
 def _is_freestanding_exterior_slab(tag: str) -> bool:
-    """The freestanding sunken-garden structure's decks (``SL-SG-`` — the porch composite
-    deck and the balcony aluminum deck) are exterior walking surfaces over open air, filed
-    on the house's conditioned storeys only because they share the plan frame. They are not
-    thermal-envelope floors, so the R-10 slab minimum does not bind them — mirrors
-    ``_is_freestanding_exterior_wall``."""
-    return tag.startswith("SL-SG-")
+    """Whether a slab floors a freestanding structure outside the conditioned envelope, so
+    the R-10 slab minimum does not bind it — mirrors ``_is_freestanding_exterior_wall``."""
+    return tag.startswith(_FREESTANDING_SLAB_PREFIXES)
 
 
 def _is_interior_assembly(tag: str) -> bool:
@@ -127,10 +141,15 @@ def evaluate_envelope(model: ResolvedModel, plan: PlanModel,
         if slab.assembly is None:
             rows.append(PrescriptiveRow(slab.tag, "slab", f"R-{envelope.slab_r:.0f}",
                                         "UNKNOWN (no assembly authored)", "unknown"))
-        else:
-            row = _row_for_assembly(plan, slab.assembly, "slab", envelope.slab_r)
-            rows.append(PrescriptiveRow(slab.tag, row.role, row.required, row.provided,
-                                        row.verdict))
+            continue
+        # A slab between two conditioned storeys is an interior floor, not an envelope
+        # element — catlin's 9" main-floor deck has conditioned basement below and
+        # conditioned living space above. Same "INT" naming signal the wall loops use.
+        if _is_interior_assembly(slab.assembly):
+            continue
+        row = _row_for_assembly(plan, slab.assembly, "slab", envelope.slab_r)
+        rows.append(PrescriptiveRow(slab.tag, row.role, row.required, row.provided,
+                                    row.verdict))
 
     for window_type in plan.library.window_types:
         if window_type.u_factor is None:

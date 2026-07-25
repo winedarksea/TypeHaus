@@ -97,11 +97,13 @@ BREEZEWAY_POSTS = [
     for i, (x, y) in enumerate(_POST_XY, start=1)
 ]
 
+# Filed on the house's "main" storey key rather than the "garage" storey because the garage
+# storey datum is the ICF stem top (1'-10"), while this slab is poured at grade.
 GARAGE_SLAB = Slab(
     uid="CGS501AAAA", tag="SL-G-FLOOR",
     outline=(pt(ft(0.5), ft(48.5)), pt(ft(23.5), ft(48.5)),
              pt(ft(23.5), ft(71.5)), pt(ft(0.5), ft(71.5))),
-    thickness=inch(3.5),
+    thickness=inch(3.5), assembly="GARAGE_SLAB_ON_GRADE",
 )
 
 BASEMENT_ELEMENTS = [*HOUSE_FOOTINGS, *HOUSE_FOOTING_BEDDING, *GARAGE_STEM_NODES,
