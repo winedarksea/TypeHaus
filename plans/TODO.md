@@ -210,10 +210,16 @@ future.
 
 ## General polishing
 
-- **Warnings.** `haus check houses/catlin` is at **127 pass / 7 fail / 3 not evaluable of 137
+- **Warnings.** `haus check houses/catlin` is at **127 pass / 7 fail / 0 not evaluable of 134
   rules, 0 ERRORs**. Every one of the 7 failures is listed under "Needs your decision" above —
-  they are building facts, not defects. The 3 not-evaluable are
-  `integrity.placeable_recommended_clearance_conflict` against `FURN-S-BED1`.
+  they are building facts, not defects. Nothing is unevaluable any more.
+- **Emitters still place a recessed body at the floor plane.** `resolved_mount_elevation` does
+  not read `Mount.recessed_into_host_surface`, so IFC/glTF draw catlin's registers sitting on
+  the floor rather than let into their boots. Cosmetic; no check depends on it.
+- **Wall-object protrusion is measured on the footprint's local-y extent**, relying on the
+  library convention that local `-y` faces the room. Correct for every authored placeable
+  today, but a wall-attached object rotated off that convention would be measured on the
+  wrong axis. Revisit if wall attachments grow arbitrary rotation offsets.
 - **The BOM is complete.** S-103 lists every member grouped by size and type with per-stock
   -length buckets; S-104 tables the derived connection hardware with a keyed basis-of-quantity
   note per row, plus structural solids by volume. `haus takeoff` prints the same sections.
