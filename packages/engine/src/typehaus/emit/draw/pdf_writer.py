@@ -75,14 +75,23 @@ _HATCH_MPL = {
 }
 
 # name -> (marker, color) for the simple device/register/equipment symbol vocabulary.
+# Each colour matches the symbol's own AIA layer, so a marker never reads as a device from
+# another discipline. A smoke/CO alarm is an annotation symbol (A-ANNO-SYMB) drawn as a
+# hexagonal head — distinct from the round receptacle, and captioned SD/CO by the builder.
 _MARKER_STYLE = {
     "register-supply": ("^", "#2a6a4a"), "register-return": ("v", "#4a8a6a"),
     "receptacle": ("o", "#8a2a2a"), "gfci": ("D", "#8a2a2a"),
     "receptacle_240": ("s", "#8a2a2a"), "switch": ("$S$", "#c08a00"),
     "light": ("*", "#c08a00"), "panel": ("P", "#8a2a2a"),
     "spot-elev": ("+", "#5a8a5a"), "utility-entry": ("x", "#333333"),
-    "level-marker": ("<", "#204070"),
+    "level-marker": ("<", "#204070"), "alarm": ("h", "#555555"),
 }
+# Symbols drawn by a branch of their own. Anything else falls through to the window-glass
+# bar, so an unlisted name is not a missing glyph but a *wrong* one — how every smoke alarm
+# came to be drawn as glazing. Tests assert the plan builders emit nothing outside this set.
+SYMBOL_NAMES_WITH_DEDICATED_GLYPH = (
+    DOOR_SYMBOL_NAMES | frozenset(_MARKER_STYLE) | frozenset({"post", "span-arrow", "sleeve"})
+)
 
 
 # Leader notes have no authored height; this is their model-space size in inches.

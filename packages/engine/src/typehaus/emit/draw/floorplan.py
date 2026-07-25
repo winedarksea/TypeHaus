@@ -64,7 +64,8 @@ def _emit_openings(b: SceneBuilder, model: ResolvedModel, wall_tags: set[str]) -
         cx, cy = sx + (ex - sx) * t, sy + (ey - sy) * t
         angle = _angle(sx, sy, ex, ey)
         if op.is_door:
-            _emit_door_symbol(b, model, op, (cx, cy), (ex - sx, ey - sy), length, angle)
+            _emit_door_symbol(b, model, op, (cx, cy), (ex - sx, ey - sy), length, angle,
+                              wall.thickness_m * M_TO_IN)
             continue
         b.add(Symbol(
             name="window-mark", insert=_in((cx, cy)), rotation=angle,
@@ -78,27 +79,30 @@ def _emit_openings(b: SceneBuilder, model: ResolvedModel, wall_tags: set[str]) -
 
 
 def _emit_door_symbol(b: SceneBuilder, model: ResolvedModel, op, center: tuple[float, float],
-                      axis_delta: tuple[float, float], length: float, angle: float) -> None:
+                      axis_delta: tuple[float, float], length: float, angle: float,
+                      host_wall_thickness_in: float) -> None:
     """Emit the plan glyph matching the door's authored operation.
 
     A hinged leaf is anchored at its *hinge* so the drawn leaf and arc describe the
     authored handing; every other glyph is symmetric about the opening and anchors at the
-    centre. Which of the two applies is the symbol's property, not the caller's.
+    centre. Which of the two applies is the symbol's property, not the caller's — but the
+    handed jamb reaches the params either way, because a sliding or pocket panel parks
+    toward the same jamb a hinged leaf would hang from.
     """
     authored = model.plan.by_tag(op.tag)
     name = symbol_name_for_operation(_door_operation(model, op.type_ref))
     width_in = op.width_m * M_TO_IN
-    if symbol_is_centre_anchored(name):
-        insert = center
-    else:
-        hinge_direction = -1.0 if getattr(authored, "flip_hinge", False) else 1.0
-        insert = (center[0] + hinge_direction * axis_delta[0] / length * op.width_m / 2,
-                  center[1] + hinge_direction * axis_delta[1] / length * op.width_m / 2)
+    hinge_jamb_sign = -1.0 if getattr(authored, "flip_hinge", False) else 1.0
+    insert = center if symbol_is_centre_anchored(name) else (
+        center[0] + hinge_jamb_sign * axis_delta[0] / length * op.width_m / 2,
+        center[1] + hinge_jamb_sign * axis_delta[1] / length * op.width_m / 2)
     b.add(Symbol(
         name=name, insert=_in(insert), rotation=angle, scale=width_in, layer="A-DOOR",
         uid=op.uid,
         params=door_symbol_params(name, width_in, op.height_m * M_TO_IN,
-                                  -1.0 if getattr(authored, "flip_swing", False) else 1.0),
+                                  -1.0 if getattr(authored, "flip_swing", False) else 1.0,
+                                  hinge_jamb_sign=hinge_jamb_sign,
+                                  host_wall_thickness_in=host_wall_thickness_in),
     ))
 
 

@@ -6,7 +6,7 @@
 // everywhere in the UI, nothing here re-measures the design — it only lays out a symbol
 // around an opening the engine already placed.
 
-import type { Vec2 } from "./types";
+import type { DoorOperation, Vec2 } from "./types";
 
 // A sectional door parks its panels on horizontal track running back into the garage by
 // roughly the door height; drawing that band dashed says the swept volume is ceiling
@@ -17,6 +17,11 @@ export const OVERHEAD_TRACK_DEPTH_PER_DOOR_HEIGHT = 1;
 // line. Fixing the leading edge at this fraction of the half-opening makes the folded
 // knuckle offset exact rather than an eyeballed chevron depth.
 export const BIFOLD_LEADING_EDGE_FRACTION = 0.6;
+
+// A surface-mounted slider hangs clear of the wall face on rollers instead of filling the
+// opening, so its panel draws *outside* the wall depth — half the host thickness plus this
+// hardware clearance (2", mirroring `SLIDING_PANEL_CLEARANCE_IN` on the engine side).
+export const SLIDING_PANEL_CLEARANCE_M = 0.0508;
 
 export interface DoorSymbolStroke {
   points: Vec2[];
@@ -95,4 +100,108 @@ export function bifoldDoorStrokes(
     ],
     dashed: false,
   }));
+}
+
+/**
+ * Bypass slider: the panel offset off the wall face, parking one leaf width past the jamb
+ * it slides to. The parked panel is dashed — it lies behind the wall it slides over — and
+ * the two short ticks close the travel so the standoff reads as track, not a second wall.
+ * `parkJambSign` is the handed jamb (+1 along the wall), the same handing a hinge uses.
+ */
+export function slidingDoorStrokes(
+  center: Vec2,
+  angleRadians: number,
+  operatingSign: number,
+  parkJambSign: number,
+  widthPx: number,
+  panelStandoffPx: number,
+): DoorSymbolStroke[] {
+  const at = (along: number, across: number) =>
+    doorSymbolPoint(center, angleRadians, operatingSign, along, across);
+  const half = widthPx / 2;
+  // The panel is its own travel: it parks one leaf width past the jamb it slides to.
+  const parkedEnd = parkJambSign * (half + widthPx);
+  return [
+    { points: [at(-half, panelStandoffPx), at(half, panelStandoffPx)], dashed: false },
+    { points: [at(parkJambSign * half, panelStandoffPx), at(parkedEnd, panelStandoffPx)], dashed: true },
+    { points: [at(-parkJambSign * half, 0), at(-parkJambSign * half, panelStandoffPx)], dashed: true },
+    { points: [at(parkedEnd, 0), at(parkedEnd, panelStandoffPx)], dashed: true },
+  ];
+}
+
+/**
+ * Pocket door: the panel receding along the wall axis into its cavity, dashed because it
+ * is concealed inside the wall, stopped by the dashed stud at the back of the pocket.
+ * Nothing stands off the wall — that is what distinguishes it from the surface slider.
+ */
+export function pocketDoorStrokes(
+  center: Vec2,
+  angleRadians: number,
+  operatingSign: number,
+  parkJambSign: number,
+  widthPx: number,
+  stopHalfLengthPx: number,
+): DoorSymbolStroke[] {
+  const at = (along: number, across: number) =>
+    doorSymbolPoint(center, angleRadians, operatingSign, along, across);
+  const half = widthPx / 2;
+  const pocketEnd = parkJambSign * (half + widthPx);
+  return [
+    { points: [at(-half, 0), at(half, 0)], dashed: false },
+    { points: [at(parkJambSign * half, 0), at(pocketEnd, 0)], dashed: true },
+    { points: [at(pocketEnd, -stopHalfLengthPx), at(pocketEnd, stopHalfLengthPx)], dashed: true },
+  ];
+}
+
+export interface DoorGlyphInput {
+  operation: DoorOperation | undefined;
+  /** Opening centre, in screen pixels. */
+  center: Vec2;
+  angleRadians: number;
+  /** Handed operating side: which face of the wall the door works toward. */
+  operatingSign: number;
+  /** Handed jamb: the hinge, or the jamb a sliding/pocket panel parks against. */
+  parkJambSign: number;
+  widthM: number;
+  heightM: number;
+  hostWallThicknessM: number;
+  pixelsPerMeter: number;
+}
+
+/**
+ * Total depth of the wall a door sits in, mirroring `ResolvedWall.thickness_m`: cavity
+ * layers share their host's slice and add nothing. A slider stands off this, and a pocket
+ * panel hides inside it, so the glyph cannot be placed from the opening alone.
+ */
+export function hostWallThicknessM(layers: readonly { thickness_m: number; is_cavity?: boolean }[]): number {
+  return layers.reduce((sum, layer) => sum + (layer.is_cavity ? 0 : layer.thickness_m), 0);
+}
+
+/**
+ * The stroke-only glyph for an operation that does not swing, or null for the hinged
+ * operations the canvas draws as a leaf plus an arc (see `swingArcSweepFlag`, which owns
+ * the arc handedness the engine's `_quarter_swing_arc` mirrors).
+ *
+ * Dimensions arrive in model metres and are scaled here, so a caller never converts: the
+ * sliding standoff and the pocket stop come from the wall, not from the opening width.
+ */
+export function doorStrokeGlyph(input: DoorGlyphInput): DoorSymbolStroke[] | null {
+  const { operation, center, angleRadians, operatingSign, parkJambSign } = input;
+  const widthPx = input.widthM * input.pixelsPerMeter;
+  const halfWallPx = (input.hostWallThicknessM / 2) * input.pixelsPerMeter;
+  switch (operation) {
+    case "overhead":
+      return overheadDoorStrokes(center, angleRadians, operatingSign, widthPx,
+        input.heightM * OVERHEAD_TRACK_DEPTH_PER_DOOR_HEIGHT * input.pixelsPerMeter);
+    case "bifold":
+      return bifoldDoorStrokes(center, angleRadians, operatingSign, widthPx);
+    case "slide":
+      return slidingDoorStrokes(center, angleRadians, operatingSign, parkJambSign, widthPx,
+        halfWallPx + SLIDING_PANEL_CLEARANCE_M * input.pixelsPerMeter);
+    case "pocket":
+      return pocketDoorStrokes(center, angleRadians, operatingSign, parkJambSign, widthPx,
+        halfWallPx);
+    default:
+      return null;
+  }
 }

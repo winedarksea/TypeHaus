@@ -26,10 +26,20 @@ _XDATA_APPID = "TYPEHAUS"
 # Loaded by ``ezdxf.new(setup=True)``; used for symbol geometry above the plan cut plane.
 _DASHED_LINETYPE = "DASHED"
 
+# Point devices, drawn as a small circle on their own discipline layer — DXF has no marker
+# glyphs, so the layer, not the shape, carries the kind. A smoke/CO alarm belongs here too:
+# left out, it fell through to the window-glass branch and drew as glazing.
 _DEVICE_SYMBOLS = frozenset({
     "register-supply", "register-return", "receptacle", "gfci", "receptacle_240",
-    "switch", "light", "panel", "spot-elev", "utility-entry", "level-marker",
+    "switch", "light", "panel", "spot-elev", "utility-entry", "level-marker", "alarm",
 })
+
+# Symbols drawn by a branch of their own; anything else falls through to the window mark,
+# so an unlisted name is a wrong glyph rather than a missing one. Tests assert the plan
+# builders emit nothing outside this set (in both writers, which must stay in step).
+SYMBOL_NAMES_WITH_DEDICATED_GLYPH = (
+    DOOR_SYMBOL_NAMES | _DEVICE_SYMBOLS | frozenset({"post", "span-arrow", "sleeve"})
+)
 
 # AIA layer → (ACI color, lineweight in 1/100 mm). A small default palette.
 _LAYER_STYLE = {
