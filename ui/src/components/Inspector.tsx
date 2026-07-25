@@ -6,7 +6,8 @@ import { SectionCard } from "./SectionCard";
 import { DetailViewer } from "./DetailViewer";
 import { StairDesigner } from "./StairDesigner";
 import { Provenance } from "./Provenance";
-import { FloorInspector, FootingBeddingInspector, RoofInspector, SolidInspector } from "./DerivedInspectors";
+import { FloorInspector, FootingBeddingInspector, MemberInspector, RoofInspector, SolidInspector } from "./DerivedInspectors";
+import { locateMember } from "../model/memberIdentity";
 
 // Strict contextual inspector (Phase 3): answers only "what can I change about the selected
 // thing?" — hidden when nothing is selected. Extracted from the retired Sidebar; the
@@ -154,6 +155,10 @@ function SelectionInspector({
   if (kind === "floor") {
     const floor = (model.floors ?? []).find((item) => item.uid === uid);
     return floor ? <FloorInspector floor={floor} /> : null;
+  }
+  if (kind === "member") {
+    const located = locateMember(model, uid);
+    return located ? <MemberInspector located={located} /> : null;
   }
   return null;
 }

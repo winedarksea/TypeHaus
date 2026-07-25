@@ -2,15 +2,29 @@ import { useEffect, useMemo, useState } from "react";
 import { useStore } from "../state/store";
 import type { DetailIndexEntry, DetailPayload } from "../engine/EngineClient";
 import { DetailCanvas } from "./DetailCanvas";
+import {
+  detailAnnotationAnchor, newDetailAnnotationSpec, type DetailAnnotationAnchor,
+} from "../model/detailAnnotations";
 
 // The transition-details browser (→ 11b). A modal (AssemblyEditor pattern): a condition list
 // grouped by junction kind with unbound/seed/authored badges, the DetailCanvas with pan/zoom,
-// and a notes panel. v1 is read-only; the editor later re-uses the same scene contract —
-// hit a node → its DetailAnnotation uid → a plain patchPlan update of offset/text.
+// and a notes panel.
+//
+// Editing is a two-step contract, both steps riding the one journaled write path:
+//   1. `seed_detail_annotations` mints an authored DetailAnnotation (the "Add note" field
+//      below) — a detail's own seed callouts are drawn with `uid: null` and cannot be
+//      addressed, so without this the editor has nothing to edit.
+//   2. every later edit is a plain PatchOp on that element — the anchor-relative drag commits
+//      as `update DetailAnnotation { offset }`, which the source writer serializes as a
+//      canonical `pt(m(...))`.
+// Both need the house to carry an editable `plan/details.py` holding a `DETAIL_NOTES` list;
+// without one the coordinator has nowhere to write and the toast says so.
 
 export function DetailViewer({ onClose }: { onClose: () => void }) {
   const client = useStore((s) => s.client);
   const applyOps = useStore((s) => s.applyOps);
+  const runMacro = useStore((s) => s.runMacro);
+  const model = useStore((s) => s.model);
   const toast = useStore((s) => s.toast);
   // Refetch the drawing after any patch: a committed annotation drag bumps the revision, and
   // the fresh payload carries the persisted (anchor-relative) offset.
@@ -63,6 +77,22 @@ export function DetailViewer({ onClose }: { onClose: () => void }) {
     return ok;
   };
 
+  const selectedEntry = index.find((row) => row.key === selectedKey) ?? null;
+  // Only offerable once the model is loaded and the detail cuts a wall we can anchor to.
+  const anchor = model && selectedEntry
+    ? detailAnnotationAnchor(model, selectedEntry.elements) : null;
+
+  const addAnnotation = async (text: string): Promise<boolean> => {
+    if (!selectedKey || !anchor) return false;
+    const result = await runMacro({
+      macro: "seed_detail_annotations",
+      condition_key: selectedKey,
+      annotations: [newDetailAnnotationSpec(anchor, text)],
+    });
+    if (result) toast("Note added — drag it to place it");
+    return result !== null;
+  };
+
   const grouped = useMemo(() => {
     const byKind = new Map<string, DetailIndexEntry[]>();
     for (const row of index) {
@@ -108,9 +138,51 @@ export function DetailViewer({ onClose }: { onClose: () => void }) {
             {loading && !payload && <div className="muted">Rendering…</div>}
             {payload && <DetailCanvas payload={payload} onMoveAnnotation={moveAnnotation} />}
           </div>
+          {payload && <AddAnnotationBar anchor={anchor} onAdd={addAnnotation} />}
           {payload && <NotesPanel payload={payload} />}
         </div>
       </div>
+    </div>
+  );
+}
+
+// The one authoring control the detail editor needs. A detail's own callouts are seeds with no
+// uid, so this is how a drawing gets its first addressable — and therefore draggable —
+// annotation. Disabled (with the reason shown) rather than hidden when the detail cuts nothing
+// the anchor vocabulary can name.
+function AddAnnotationBar({
+  anchor,
+  onAdd,
+}: {
+  anchor: DetailAnnotationAnchor | null;
+  onAdd: (text: string) => Promise<boolean>;
+}) {
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const submit = async () => {
+    const trimmed = text.trim();
+    if (!trimmed || !anchor || busy) return;
+    setBusy(true);
+    const ok = await onAdd(trimmed);
+    setBusy(false);
+    if (ok) setText(""); // a failed write keeps the text so the user can retry
+  };
+
+  return (
+    <div style={{ display: "flex", gap: 6, alignItems: "center", paddingTop: 6 }}>
+      <input
+        style={{ flex: 1 }}
+        placeholder={anchor ? "Add a note to this detail…" : "This detail cuts no anchorable wall"}
+        value={text}
+        disabled={!anchor || busy}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter") void submit(); }}
+        aria-label="New detail annotation"
+      />
+      <button className="btn" disabled={!anchor || busy || !text.trim()} onClick={() => void submit()}>
+        {busy ? "Adding…" : "Add note"}
+      </button>
     </div>
   );
 }

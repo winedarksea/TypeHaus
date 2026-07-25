@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ALL_TRADES, useStore } from "../state/store";
+import { useStore } from "../state/store";
+import { ALL_TRADES } from "../state/vocabulary";
 import { ALL_LAYER_VISIBILITY_GROUPS, LAYER_VISIBILITY_GROUP_LABEL } from "../model/visibility";
 
 // Command palette (Phase 4): fuzzy-searchable actions + recent commands. The registry is

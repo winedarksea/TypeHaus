@@ -10,9 +10,9 @@ const FEET_PER_METER = 1 / 0.3048;
 function member(overrides: Partial<Member>): Member {
   return {
     key: "m", category: "stud", profile: "2x6", p0: [0, 0], p1: [0, 0], z0_m: 0, z1_m: 3,
-    z0_end_m: null, z1_end_m: null, shape: "rect", width_m: 0.038, depth_m: 0.14,
+    length_m: 3, z0_end_m: null, z1_end_m: null, shape: "rect", width_m: 0.038, depth_m: 0.14,
     flange_width_m: null, flange_thickness_m: null, web_thickness_m: null, plies: 1,
-    orient: null, connection: null, material: null, ...overrides,
+    orient: null, connection: null, material: null, trade: null, ...overrides,
   };
 }
 

@@ -1,4 +1,5 @@
-import { type Tool, type ToolGroup, useStore } from "../state/store";
+import { useStore } from "../state/store";
+import { type Tool, type ToolGroup } from "../state/vocabulary";
 
 // Task rail (Phase 2): high-level groups. A group with a single tool activates it directly;
 // a multi-tool group opens a small flyout palette. Tools map onto the existing Tool union so
