@@ -1,4 +1,4 @@
-import { M_TO_IN, draggedOffsetMeters } from "./DetailCanvas";
+import { M_TO_IN, draggedOffsetMeters, leaderTextAlign } from "./DetailCanvas";
 import type { Model } from "../model/types";
 import {
   DEFAULT_ANNOTATION_ANCHOR_FACE, detailAnnotationAnchor, newDetailAnnotationSpec,
@@ -33,6 +33,19 @@ export function runDetailAnnotationTests() {
   const still = draggedOffsetMeters(base, 0, 0);
   if (!approx(still[0], base[0]) || !approx(still[1], base[1])) {
     throw new Error(`zero drag must preserve the offset, got ${still}`);
+  }
+
+  // Leader note text grows away from its target (mirror of pdf_writer._leader_align): a
+  // layer-ladder label left of the wall must be end-anchored or its lettering runs back
+  // across the leader line into the drawing.
+  if (leaderTextAlign([10, 0], [50, 0]) !== "end") {
+    throw new Error("a note left of its target must be end-anchored");
+  }
+  if (leaderTextAlign([50, 0], [10, 0]) !== "start") {
+    throw new Error("a note right of its target must be start-anchored");
+  }
+  if (leaderTextAlign([10, 0], [10, 0]) !== "start") {
+    throw new Error("a note atop its target keeps the start-anchored default");
   }
 
   checkNewAnnotationAnchoring();

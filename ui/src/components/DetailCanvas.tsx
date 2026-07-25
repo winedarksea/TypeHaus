@@ -38,6 +38,23 @@ function feetInches(totalIn: number): string {
   return `${Math.trunc(total / 12)}'-${Math.abs(total % 12)}"`;
 }
 
+// Which way a leader's note text runs: away from the thing it points at (mirror of
+// pdf_writer._leader_align). A note left of its target must grow leftward or the lettering
+// runs back across the leader line into the drawing — the layer-label ladder smear.
+export function leaderTextAlign(at: Pt, to: Pt): "start" | "end" {
+  return at[0] < to[0] ? "end" : "start";
+}
+
+// Halo behind annotation lettering so it stays legible over hatch fills — the SVG analogue
+// of the raster writer's translucent white bbox. Paint-order strokes the page colour behind
+// the glyphs, so it tracks the light/dark theme for free.
+const TEXT_HALO = {
+  stroke: "var(--bg)",
+  strokeWidth: 1.1,
+  strokeLinejoin: "round" as const,
+  paintOrder: "stroke" as const,
+};
+
 // Hatch fills as inline SVG patterns (batt/rigid/concrete/lumber/osb/spray-foam/SOLID).
 const HATCH_DEFS: Record<string, JSX.Element> = {
   batt: (
@@ -403,7 +420,14 @@ function SceneNode({
           style={canDrag ? { cursor: "move" } : pick ? { cursor: "pointer" } : undefined} {...dataUid}>
           <line x1={axS} y1={ayS} x2={txS} y2={tyS} stroke="var(--detail-line)" strokeWidth={0.3} />
           <circle cx={txS} cy={tyS} r={0.8} fill="var(--detail-line)" />
-          <text x={axS + 1} y={ayS} fontSize={3} fill="var(--detail-ink)">
+          <text
+            x={axS + (leaderTextAlign(node.at as Pt, node.to as Pt) === "end" ? -1 : 1)}
+            y={ayS}
+            fontSize={3}
+            textAnchor={leaderTextAlign(node.at as Pt, node.to as Pt)}
+            fill="var(--detail-ink)"
+            {...TEXT_HALO}
+          >
             {node.text as string}
           </text>
         </g>
@@ -418,7 +442,7 @@ function SceneNode({
       return (
         <g {...dataUid}>
           <line x1={x0} y1={fy(y0, bounds)} x2={x1} y2={fy(y1, bounds)} stroke="var(--detail-muted)" strokeWidth={0.3} />
-          <text x={mx} y={my - 1} fontSize={3} textAnchor="middle" fill="var(--detail-ink)">
+          <text x={mx} y={my - 1} fontSize={3} textAnchor="middle" fill="var(--detail-ink)" {...TEXT_HALO}>
             {label}
           </text>
         </g>

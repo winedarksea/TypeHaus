@@ -234,3 +234,8 @@ future.
 ## Third Pass Follow Up
 - Gutter TR-SG-GUTTER-1 needs to be moved up to align wih flashing TR-SG-DRIP-1 and the gutter needs to look like a gutter
 - Slab SL-SG-PORCH should be replaced by decking like SL-SG-DECK, but be composite material instead of aluminum, and be shown in the viewer like wood
+- The porch floor which is currently SL-SG-PORCH should show up in the 2d viewer on the "main" floor, and the deck floor which is currently "SL-SG-DECK" should show up in the second floor 2d floorplan. It might be awkward to do but inspectors will likely expect that as they align with those floor's doors.
+- Switch all exterior walls to 2x6s, and remove the 2x4 exterior wall type (for simplicity)
+- At the corners where exterior wall meets exterior wall, use a 4 stud corner instead for framing (since we use outsulation, the extra strength here is worth it). That should just be the main four corners.
+
+- Align details and floorplans better
