@@ -7,11 +7,39 @@ from dataclasses import dataclass
 from typehaus.analysis import assembly_r_value
 from typehaus.checks.building_science.wwr import _facade_for_wall, _wall_length
 from typehaus.checks.registry import Preferences
+from typehaus.model.plan import PlanModel
 from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 _M2_TO_FT2 = 10.7639104167
 _WALL_UA_KINDS = ("walls", "windows", "doors")
+
+# Component kinds whose exterior boundary is the ground, not the outdoor design air.
+_GROUND_COUPLED_KINDS = ("foundation_walls", "slab")
+
+# Tag prefixes of freestanding, unoccupied structures (sunken-garden porch/retaining walls,
+# raised-garden planter, the detached garage's slab, breezeway decking) that are filed on
+# one of the house's own storey keys because they share the plan frame, so
+# ``_storey_is_conditioned`` cannot see past them. Minimal duplicate of the same scoping in
+# ``checks.code.mn_energy`` (read-only to this module) — the block load and the
+# prescriptive table must agree about what the conditioned envelope is.
+_FREESTANDING_WALL_PREFIXES = ("W-SG-", "W-RG-")
+_FREESTANDING_SLAB_PREFIXES = ("SL-SG-", "SL-G-", "SL-BW-")
+
+
+def _storey_is_conditioned(plan: PlanModel, storey_tag: str) -> bool:
+    """Does this storey hold any conditioned room?
+
+    The block load sums UA against the *interior setpoint*, so a storey whose rooms are all
+    unconditioned (catlin's detached garage, ``conditioned=False``) carries no such UA and
+    must not be summed. This mirrors ``checks.code.mn_energy._storey_is_conditioned``
+    (read-only to this module) — a storey with no rooms at all stays in scope, because an
+    empty storey is a modelling gap, not a declared unconditioned space.
+    """
+    rooms = [el for el in plan.storey_elements(storey_tag) if el.element_kind == "Room"]
+    if not rooms:
+        return True
+    return any(room.conditioned for room in rooms)
 
 
 def _is_envelope_wall(wall: ResolvedWall) -> bool:
@@ -32,11 +60,15 @@ class LoadComponent:
     area_ft2: float
     ua_btu_per_hour_f: float
     solar_gain_btu_per_hour: float = 0.0
+    # The heating ΔT this component's UA was multiplied by: below-grade components
+    # (foundation walls, slabs) see the soil temperature, not the 99% design air.
+    heating_delta_f: float | None = None
 
-    def as_dict(self) -> dict[str, float | str]:
+    def as_dict(self) -> dict[str, float | str | None]:
         return {"kind": self.kind, "area_ft2": self.area_ft2,
                 "ua_btu_per_hour_f": self.ua_btu_per_hour_f,
-                "solar_gain_btu_per_hour": self.solar_gain_btu_per_hour}
+                "solar_gain_btu_per_hour": self.solar_gain_btu_per_hour,
+                "heating_delta_f": self.heating_delta_f}
 
 
 @dataclass(frozen=True)
@@ -69,7 +101,26 @@ def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> Energ
         return EnergyReport(0.0, 0.0, 0.0, (), unknown_inputs=("Site design temperatures",))
     heating_delta = preferences.interior_setpoint_f - site.design_temp_heating.fahrenheit
     cooling_delta = site.design_temp_cooling.fahrenheit - preferences.interior_setpoint_f
-    envelope_walls = [wall for wall in model.walls if _is_envelope_wall(wall)]
+    # Below-grade components are ground-coupled: their exterior boundary is the soil (near
+    # its annual-mean temperature), not the 99% design air. With no authored soil
+    # temperature the air ΔT stands in and the gap is named in ``unknown_inputs``.
+    soil_temp_f = site.soil_temp_f
+    if soil_temp_f is not None:
+        ground_heating_delta = preferences.interior_setpoint_f - soil_temp_f
+        ground_cooling_delta = max(0.0, soil_temp_f - preferences.interior_setpoint_f)
+    else:
+        ground_heating_delta, ground_cooling_delta = heating_delta, cooling_delta
+
+    def _deltas_for(kind: str) -> tuple[float, float]:
+        if kind in _GROUND_COUPLED_KINDS:
+            return ground_heating_delta, ground_cooling_delta
+        return heating_delta, cooling_delta
+
+    conditioned_storeys = {storey.tag for storey in model.plan.storeys
+                           if _storey_is_conditioned(model.plan, storey.tag)}
+    envelope_walls = [wall for wall in model.walls
+                      if wall.storey in conditioned_storeys and _is_envelope_wall(wall)
+                      and not wall.tag.startswith(_FREESTANDING_WALL_PREFIXES)]
     wall_by_tag = {wall.tag: wall for wall in envelope_walls}
     wall_gross_ft2 = {wall.tag: _wall_length(wall) * (wall.z1_m - wall.z0_m) * _M2_TO_FT2
                       for wall in envelope_walls}
@@ -100,28 +151,35 @@ def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> Energ
         else:
             walls_area += area
             walls_ua += area / r_value.value.r_us
-    components.append(LoadComponent("walls", walls_area, walls_ua))
+    def _component(kind: str, area: float, ua: float,
+                   solar: float = 0.0) -> LoadComponent:
+        return LoadComponent(kind, area, ua, solar, heating_delta_f=_deltas_for(kind)[0])
+
+    components.append(_component("walls", walls_area, walls_ua))
     if foundation_area:
-        components.append(LoadComponent("foundation_walls", foundation_area, foundation_ua))
+        components.append(_component("foundation_walls", foundation_area, foundation_ua))
 
     roof_area = roof_ua = slab_area = slab_ua = 0.0
-    has_roofs = bool(model.roofs)
-    has_slabs = any(solid.category == "slab" for solid in model.solids)
+    roofs = [roof for roof in model.roofs if roof.storey in conditioned_storeys]
+    slabs = [solid for solid in model.solids
+             if solid.category == "slab" and solid.storey in conditioned_storeys
+             and not solid.tag.startswith(_FREESTANDING_SLAB_PREFIXES)]
+    has_roofs = bool(roofs)
+    has_slabs = bool(slabs)
     if not has_roofs and not has_slabs:
         # Keep the original combined diagnostic stable for existing consumers while
         # still reporting the missing side precisely when only one is absent.
         unknown.append("roof/slab resolved geometry")
     elif not has_roofs:
         unknown.append("roof resolved geometry")
-    for roof in model.roofs:
+    for roof in roofs:
         r_value = _assembly_r_value(model, roof.assembly, unknown)
         if r_value is not None:
             area = roof.surface_area_m2 * _M2_TO_FT2
             roof_area += area
             roof_ua += area / r_value
     if roof_area:
-        components.append(LoadComponent("roof", roof_area, roof_ua))
-    slabs = [solid for solid in model.solids if solid.category == "slab"]
+        components.append(_component("roof", roof_area, roof_ua))
     if not slabs and has_roofs:
         unknown.append("slab resolved geometry")
     for slab in slabs:
@@ -134,7 +192,9 @@ def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> Energ
             slab_area += area
             slab_ua += area / r_value
     if slab_area:
-        components.append(LoadComponent("slab", slab_area, slab_ua))
+        components.append(_component("slab", slab_area, slab_ua))
+    if soil_temp_f is None and (foundation_area or slab_area):
+        unknown.append("Site.soil_temp_f (below-grade components use outdoor design air ΔT)")
 
     window_area = window_ua = window_solar = door_area = door_ua = 0.0
     solar_orientation = {"N": 0.25, "E": 0.70, "S": 1.0, "W": 0.85}
@@ -169,11 +229,14 @@ def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> Energ
                     area * product.shgc * solar_orientation[_facade_for_wall(wall, model)]
                     * preferences.cooling_solar_gain_btu_per_hour_ft2
                 )
-    components.extend((LoadComponent("windows", window_area, window_ua, window_solar),
-                       LoadComponent("doors", door_area, door_ua)))
-    total_ua = sum(component.ua_btu_per_hour_f for component in components)
-    heating = total_ua * heating_delta
-    cooling = total_ua * cooling_delta + window_solar
+    components.extend((_component("windows", window_area, window_ua, window_solar),
+                       _component("doors", door_area, door_ua)))
+    heating = sum(component.ua_btu_per_hour_f * _deltas_for(component.kind)[0]
+                  for component in components)
+    cooling = window_solar + sum(
+        component.ua_btu_per_hour_f * _deltas_for(component.kind)[1]
+        for component in components
+    )
     return EnergyReport(heating, cooling, cooling / 12000.0, tuple(components),
                         wall_comparison=_two_by_four_vs_six(model, heating_delta),
                         unknown_inputs=tuple(dict.fromkeys(unknown)))
