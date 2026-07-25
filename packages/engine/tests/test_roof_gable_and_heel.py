@@ -374,8 +374,8 @@ def test_roof_members_split_into_framing_sticks_and_envelope_skin(stacked):
     roof = _roof(stacked)
     framing = {m.category for m in roof.members if is_roof_framing_member(m)}
     skin = {m.category for m in roof.members if not is_roof_framing_member(m)}
-    assert {"top_chord", "bottom_chord", "truss_web", "stud"} <= framing
-    assert skin == {"sheathing", "cladding", "fascia", "soffit"}
+    assert {"top_chord", "bottom_chord", "truss_web", "stud", "fascia"} <= framing
+    assert skin == {"sheathing", "cladding", "soffit"}
     assert not framing & skin
 
 
