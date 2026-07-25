@@ -17,6 +17,19 @@ from typehaus.model.registry import register_constructor
 from typehaus.quantities import Length, Point2D, ft, m, pt
 
 
+class MonthlyNormal(HausModel):
+    """One month's climate normals — mean outdoor dry-bulb + mean RH.
+
+    Twelve of these (January..December) on ``Site.monthly_normals`` feed the seasonal-mean
+    (ISO 13788-style) condensation gate; the 99% design-hour walk keeps using
+    ``Site.design_temp_heating`` as a cold-snap screen. Plain unit-suffixed floats, like
+    ``Site.ground_snow_load_psf`` — these are published normals, not authored quantities.
+    """
+
+    temp_f: float  # monthly mean outdoor dry-bulb, °F
+    rh: float  # monthly mean outdoor relative humidity, percent (0-100)
+
+
 class SetbackSpec(HausModel):
     """A required setback from one parcel edge (``parcel[edge] -> parcel[(edge+1) % n]``)."""
 
@@ -126,6 +139,7 @@ def _ring_to_points(ring: list, to_length) -> tuple[Point2D, ...]:
 
 
 for _name, _obj in (
+    ("MonthlyNormal", MonthlyNormal),
     ("SetbackSpec", SetbackSpec),
     ("SpotElevation", SpotElevation),
     ("ImperviousSurface", ImperviousSurface),

@@ -10,6 +10,7 @@ from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.site import (
     Contour,
     ImperviousSurface,
+    MonthlyNormal,
     SetbackSpec,
     SpotElevation,
     UtilityLine,
@@ -33,6 +34,13 @@ class Site(HausModel):
     # derived one). Minneapolis is 50 psf. The roof framing sheet prints the load case from
     # this; without it that sheet states no load case at all.
     ground_snow_load_psf: float | None = None
+    # Monthly climate normals, January..December, for the seasonal-mean (ISO 13788-style)
+    # condensation gate. Empty means the gate is not evaluable; the design-hour screen
+    # still runs off design_temp_heating.
+    monthly_normals: tuple[MonthlyNormal, ...] = ()
+    # Below-grade boundary temperature, °F (≈ annual mean deep-ground temperature).
+    # Below-grade envelope ΔT uses this instead of treating soil as 99% design-hour air.
+    soil_temp_f: float | None = None
     parcel: tuple[Point2D, ...] = ()  # closed CCW ring, plan frame
     setbacks: tuple[SetbackSpec, ...] = ()
     spot_elevations: tuple[SpotElevation, ...] = ()
