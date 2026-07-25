@@ -261,6 +261,39 @@ def test_catalog_assembly_editability_requires_editable_provenance(catlin_proven
     assert any(a["editable"] for a in assemblies)
 
 
+def test_variant_catalog_defaults_to_an_empty_list(catlin_payload):
+    """Absent-catalog story: a house with no variants.toml still serializes ``variants``
+    (as []), so the UI's variant picker reads one stable key instead of probing for it."""
+    assert catlin_payload["variants"] == []
+
+
+def test_variant_catalog_threads_declared_variants_into_the_payload(catlin_model, starter_dir):
+    import json
+
+    from typehaus.server.model_json import load_variant_catalog
+
+    specs = load_variant_catalog(starter_dir)
+    assert specs, "the starter house declares variants"
+    payload = model_to_dict(catlin_model, variants=specs)
+    names = [entry["name"] for entry in payload["variants"]]
+    assert names == ["as-authored", "2x4-ci", "thicker-zip-r"]
+    swap = next(entry for entry in payload["variants"] if entry["name"] == "2x4-ci")
+    assert swap["assembly_swaps"] == {"HOUSE_WALL_2X6_WITH_ZIPR": "HOUSE_WALL_2X4_WITH_CI"}
+    # The payload must stay JSON-serializable end to end (specs are dataclasses upstream).
+    json.dumps(payload["variants"])
+
+
+def test_load_variant_catalog_degrades_gracefully(tmp_path):
+    """Neither an absent nor a malformed variants.toml may break model.json emission —
+    ``haus variants list`` is where a broken catalog reports loudly."""
+    from typehaus.server.model_json import load_variant_catalog
+
+    assert load_variant_catalog(None) == ()
+    assert load_variant_catalog(tmp_path) == ()  # no variants.toml
+    (tmp_path / "variants.toml").write_text("[[variant]]\n# no name -> loader error\n")
+    assert load_variant_catalog(tmp_path) == ()
+
+
 def test_stairs_payload_carries_landing_depth(catlin_payload):
     stairs = {stair["tag"]: stair for stair in catlin_payload["stairs"]}
     assert "landing_depth_m" in stairs["ST-B2M"]

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any, Sequence
 from urllib.parse import quote
 
 from typehaus.checks.registry import Preferences
@@ -20,6 +20,27 @@ from typehaus.resolve import site_earth
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedModel
 from typehaus.source.provenance import Provenance
+
+if TYPE_CHECKING:
+    from typehaus.diff.variants import VariantSpec
+
+
+def load_variant_catalog(house_dir: Path | str | None) -> tuple["VariantSpec", ...]:
+    """The declared variant specs for ``house_dir`` — the graceful model.json entry point.
+
+    A house without a ``variants.toml`` simply declares no variants, and a *malformed*
+    catalog must degrade the same way here rather than take down model.json emission (the
+    server's GET /model and the offline PWA both ride through this): ``haus variants list``
+    is the surface that reports catalog errors loudly.
+    """
+    if house_dir is None:
+        return ()
+    from typehaus.diff.variants import load_variants
+
+    try:
+        return load_variants(Path(house_dir))
+    except Exception:  # noqa: BLE001 — degrade to "no catalog", never break the payload
+        return ()
 
 
 def _provenance(prov: Provenance | None, tag: str) -> dict[str, Any] | None:
@@ -155,6 +176,7 @@ def model_to_dict(
     provenance: Provenance | None = None,
     findings: list[Finding] | None = None,
     preferences: Preferences | None = None,
+    variants: Sequence["VariantSpec"] | None = None,
 ) -> dict[str, Any]:
     from typehaus.server.building_height_summary import build_building_height_summary
     from typehaus.server.space_summary import build_space_summary
@@ -454,6 +476,10 @@ def model_to_dict(
             for e in model.stack_edges
         ],
         "building_science": building_science,
+        # The declared variant catalog (variants.toml, → 21b §Variant compare): what named
+        # alternatives this house can build, so the UI's variant picker never shells out.
+        # Always present — an empty list *is* the absent-catalog story.
+        "variants": [spec.as_dict() for spec in (variants or ())],
         "catalog": {**_catalog(model, provenance), "canvas_object_types": canvas_object_types(model.plan)},
     }
 
@@ -490,11 +516,12 @@ def write_model_json(
     provenance: Provenance | None = None,
     findings: list[Finding] | None = None,
     preferences: Preferences | None = None,
+    variants: Sequence["VariantSpec"] | None = None,
 ) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = model_to_dict(
         model, revision=revision, provenance=provenance, findings=findings,
-        preferences=preferences,
+        preferences=preferences, variants=variants,
     )
     # sort_keys for byte-determinism (→ 02 §Determinism).
     path.write_text(json.dumps(payload, indent=2, sort_keys=True))
