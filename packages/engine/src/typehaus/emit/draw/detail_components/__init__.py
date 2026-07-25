@@ -21,7 +21,10 @@ Module map — one junction (or one concern) per file:
 * ``eave``        — box gutter, drip edge, apron, screened vent path.
 * ``wall_base``   — flashings, sill gasket, slab thermal break, foam protection.
 * ``stack``       — rim-band air seal, stepped-wall shelf flashing.
+* ``opening``     — head flashing, sill pan, concrete bucks, sauna liner returns.
+* ``ridge``       — the LVL ridge's face-mount hanger vocabulary.
 * ``sauna``       — liner base plus the room-scale fit-out.
+* ``shower``      — recess, tile over backer, glass panel, HRV takeoff.
 * ``breezeway``   — the glazing enclosure: drainage wedges, weeping channels, glazing
                     bar, gasketed fastener, breather tape.
 * ``chrome``      — material legend and derived dimension strings.
@@ -55,7 +58,9 @@ from typehaus.emit.draw.detail_components.config import (
     FOUNDATION_FACE,
     LAYER,
     M_TO_IN,
+    OPENING_DETAIL,
     PERIMETER_DRAIN,
+    RIDGE_HANGER,
     RIM_BAND,
     SAUNA_BASEBOARD_IN,
     SAUNA_BENCH_DEPTH_IN,
@@ -67,6 +72,12 @@ from typehaus.emit.draw.detail_components.config import (
     SAUNA_HEATER_W_IN,
     SAUNA_MEMBRANE_IN,
     SHEET_METAL,
+    SHOWER_BACKER_IN,
+    SHOWER_GLASS_GAP_IN,
+    SHOWER_GLASS_IN,
+    SHOWER_HRV_DUCT_IN,
+    SHOWER_RECESS_IN,
+    SHOWER_TILE_IN,
     SLAB_EDGE,
     STACK_WIDTH_SHELF,
 )
@@ -81,9 +92,20 @@ from typehaus.emit.draw.detail_components.eave import (
     zero_overhang_eave,
 )
 from typehaus.emit.draw.detail_components.geometry import (
+    condition_opening,
+    condition_walls,
     flashing_nodes,
     path_from_steps,
     thicken_polyline,
+)
+from typehaus.emit.draw.detail_components.opening import (
+    concrete_opening_bucks,
+    sauna_liner_opening_return,
+    window_head_jamb_sill,
+)
+from typehaus.emit.draw.detail_components.ridge import (
+    lvl_ridge_hanger,
+    ridge_overlay_for_slice,
 )
 from typehaus.emit.draw.detail_components.sauna import (
     build_sauna_room_components,
@@ -94,6 +116,14 @@ from typehaus.emit.draw.detail_components.sauna import (
     sauna_heater_clearance,
     sauna_liner_base,
     sauna_overlay_for_slice,
+)
+from typehaus.emit.draw.detail_components.shower import (
+    shower_components,
+    shower_glass,
+    shower_hrv_duct,
+    shower_overlay_for_slice,
+    shower_recess,
+    shower_wall_lining,
 )
 from typehaus.emit.draw.detail_components.stack import (
     rim_band_air_seal,
@@ -111,8 +141,10 @@ __all__ = [
     "FOUNDATION_FACE",
     "LAYER",
     "M_TO_IN",
+    "OPENING_DETAIL",
     "OVERLAY_RECIPES",
     "PERIMETER_DRAIN",
+    "RIDGE_HANGER",
     "RIM_BAND",
     "SAUNA_BASEBOARD_IN",
     "SAUNA_BENCH_DEPTH_IN",
@@ -124,6 +156,12 @@ __all__ = [
     "SAUNA_HEATER_W_IN",
     "SAUNA_MEMBRANE_IN",
     "SHEET_METAL",
+    "SHOWER_BACKER_IN",
+    "SHOWER_GLASS_GAP_IN",
+    "SHOWER_GLASS_IN",
+    "SHOWER_HRV_DUCT_IN",
+    "SHOWER_RECESS_IN",
+    "SHOWER_TILE_IN",
     "SLAB_EDGE",
     "STACK_WIDTH_SHELF",
     "UNDRAWN_RECIPES",
@@ -139,6 +177,9 @@ __all__ = [
     "build_below_grade_components",
     "build_overlay_components",
     "build_sauna_room_components",
+    "concrete_opening_bucks",
+    "condition_opening",
+    "condition_walls",
     "dimension_strings",
     "eave_vent_screen",
     "faces_soil",
@@ -146,8 +187,10 @@ __all__ = [
     "foam_protection_board",
     "french_drain",
     "grade_line",
+    "lvl_ridge_hanger",
     "material_legend",
     "path_from_steps",
+    "ridge_overlay_for_slice",
     "rim_band_air_seal",
     "sauna_benches",
     "sauna_components",
@@ -155,10 +198,18 @@ __all__ = [
     "sauna_floor_slope",
     "sauna_heater_clearance",
     "sauna_liner_base",
+    "sauna_liner_opening_return",
     "sauna_overlay_for_slice",
+    "shower_components",
+    "shower_glass",
+    "shower_hrv_duct",
+    "shower_overlay_for_slice",
+    "shower_recess",
+    "shower_wall_lining",
     "slab_thermal_break",
     "soil_body",
     "stack_width_shelf",
     "thicken_polyline",
+    "window_head_jamb_sill",
     "zero_overhang_eave",
 ]

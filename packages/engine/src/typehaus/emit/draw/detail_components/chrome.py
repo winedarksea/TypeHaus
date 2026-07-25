@@ -26,11 +26,10 @@ from typehaus.emit.draw.scene import ArchDimension, Hatch, IRNode, NamedPoint, P
 
 def _participating_layers(model, derived):
     """``(material_ref, thickness_in, function)`` for every cut layer in this detail."""
+    from typehaus.emit.draw.detail_components.geometry import condition_walls
+
     out: list[tuple[str, float, str]] = []
-    for tag in derived.condition.element_tags:
-        wall = model.wall(tag)
-        if wall is None:
-            continue
+    for wall in condition_walls(model, derived.condition):
         for layer in wall.layers:
             if layer.is_cavity:
                 continue
@@ -94,11 +93,15 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
     Total continuous insulation and stud depth on the framed wall; XPS layer count ×
     thickness on the foundation side; footing width and depth when the footing is in frame.
     """
+    from typehaus.emit.draw.detail_components.geometry import (
+        condition_opening,
+        condition_walls,
+        wall_cut_bounds_m,
+    )
     from typehaus.emit.draw.section import _ring_cut_intervals
 
     nodes: list[IRNode] = []
-    walls = [w for w in (model.wall(t) for t in derived.condition.element_tags)
-             if w is not None]
+    walls = condition_walls(model, derived.condition)
     framed = next((w for w in walls if not w.is_foundation), None)
     concrete = next((w for w in walls if w.is_foundation), None)
 
@@ -106,6 +109,24 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
         nodes.append(ArchDimension(
             kind="linear", ends=(NamedPoint(xy=p0), NamedPoint(xy=p1)),
             p0=p0, p1=p1, offset=offset, text=text))
+
+    # An opening detail's crop holds the opening, not a junction — the storey-band CI /
+    # stud / footing strings would all land outside it. The one dimension the detail is
+    # for is the rough opening height, hung just clear of the wall's cut band.
+    if derived.condition.kind.value == "opening_perimeter":
+        opening = condition_opening(model, derived.condition)
+        host = walls[0] if walls else None
+        if opening is None or host is None:
+            return []
+        sill_z = (host.z0_m + opening.sill_m) * M_TO_IN
+        head_z = sill_z + opening.height_m * M_TO_IN
+        _lo, hi = wall_cut_bounds_m(host, direction, station)
+        if hi is None:
+            return []
+        u = hi * M_TO_IN + 3.0
+        _dim((u, sill_z), (u, head_z), 3.0,
+             f'{opening.height_m * M_TO_IN:.4g}" R.O.')
+        return nodes
 
     if framed is not None:
         intervals = layer_intervals(framed, direction, station)

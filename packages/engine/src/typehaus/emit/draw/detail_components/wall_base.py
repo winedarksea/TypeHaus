@@ -48,13 +48,16 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
     nodes += _l_flashing_and_bead(intervals, is_outboard_high, out_sign, junction_z)
     nodes += _z_flashing_and_screen(intervals, is_outboard_high, out_sign, junction_z)
 
-    # Sill gasket (1/4") under the treated mudsill, sealing the stud line to the concrete.
+    # Sill gasket under the treated mudsill, sealing the stud line to the concrete — the
+    # authored ``FramingSpec.sill_gasket`` thickness when the assembly carries one, else
+    # the pinned reference 1/4".
     stud = outermost_with_function(intervals, "structure")
     if stud is not None:
         # Filled with the no-overlay ``metal`` pattern rather than a hatch family: at 1/4"
         # any hatch collapses into a smear, but the fill is what carries the material colour
         # to the writers, and an outline alone reads as an empty gap in the drawing.
-        nodes += rect_region(stud[0], junction_z, stud[1], junction_z + cfg.sill_gasket_in,
+        gasket_in = sill_gasket_in(model, framed)
+        nodes += rect_region(stud[0], junction_z, stud[1], junction_z + gasket_in,
                              "sill-gasket", "rubber", "metal", lineweight=0.35)
 
     if concrete is not None:
@@ -121,12 +124,36 @@ def _z_flashing_and_screen(intervals, is_outboard_high, out_sign,
     return nodes
 
 
-def slab_thermal_break(model, wall, crop, direction, station) -> list[IRNode]:
-    """Discrete 1" XPS thermal break + polyurethane sealant cap at the slab→wall edge.
+def sill_gasket_in(model, wall) -> float:
+    """The drawn sill-gasket thickness (inches) for this wall.
 
-    Its own labelled component, distinct from the roof→wall spray-foam wedge: the reference
-    fixes the perimeter slab break at 1" XPS capped with 1/2" sealant. Derived from the
-    resolved slab and wall face, drawn only when a slab edge is genuinely in frame.
+    Prefers the authored ``FramingSpec.sill_gasket`` on the wall assembly's structure
+    layer — the model field that owns the fact — and falls back to the pinned reference
+    1/4" when no layer carries one.
+    """
+    assembly = model.plan.library.resolve_assembly(wall.assembly)
+    if assembly is not None:
+        for layer in assembly.layers:
+            spec = getattr(layer, "framing", None)
+            if spec is not None and getattr(spec, "sill_gasket", None) is not None:
+                return spec.sill_gasket.meters * M_TO_IN
+    return BASEMENT_TO_FRAMED_WALL.sill_gasket_in
+
+
+def thermal_break_spec(model, slab_solid):
+    """The authored ``SlabThermalBreak`` on the cut slab's plan source, or None."""
+    source = model.plan.by_tag(slab_solid.tag)
+    return getattr(source, "perimeter_thermal_break", None)
+
+
+def slab_thermal_break(model, wall, crop, direction, station) -> list[IRNode]:
+    """Discrete rigid thermal break + polyurethane sealant cap at the slab→wall edge.
+
+    Its own labelled component, distinct from the roof→wall spray-foam wedge. Derived from
+    the resolved slab and wall face, drawn only when a slab edge is genuinely in frame.
+    The break's thickness and how far it runs down the slab edge prefer the authored
+    ``Slab.perimeter_thermal_break`` when the slab carries one; the pinned reference
+    (1" XPS, full slab depth, 1/2" sealant cap) is the fallback.
     """
     is_outboard_high = outboard_is_high(wall, direction, station)
     if is_outboard_high is None:
@@ -141,7 +168,12 @@ def slab_thermal_break(model, wall, crop, direction, station) -> list[IRNode]:
         return []
     face = inboard_face_m * M_TO_IN
     slab_top, slab_bottom = slab.z1_m * M_TO_IN, slab.z0_m * M_TO_IN
-    inner_edge = face + in_sign * SLAB_EDGE.thermal_break_in
+    spec = thermal_break_spec(model, slab)
+    thickness_in = (spec.thickness.meters * M_TO_IN if spec is not None
+                    else SLAB_EDGE.thermal_break_in)
+    if spec is not None and spec.depth is not None:
+        slab_bottom = max(slab_bottom, slab_top - spec.depth.meters * M_TO_IN)
+    inner_edge = face + in_sign * thickness_in
     nodes = rect_region(face, slab_bottom, inner_edge, slab_top,
                         "thermal-break", "xps", "rigid", lineweight=0.35)
     nodes += rect_region(face, slab_top, inner_edge, slab_top + SLAB_EDGE.sealant_cap_in,
