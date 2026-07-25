@@ -234,9 +234,10 @@ export function runSolidMaterialTests() {
     assert(color !== PALETTE.member.concrete, `${category} no longer renders as concrete grey`);
   }
 
-  // Construction returns ("return:pt-sill-plate") have no palette entry in either renderer;
-  // both fall back to neutral rather than inventing a colour from the rule name.
-  assert(solidColor(solid("return:pt-sill-plate"), undefined, PALETTE) === PALETTE.member.concrete,
+  // An unmapped category falls back to the theme's neutral rather than inventing a colour.
+  // (Construction returns used to arrive here as "return:*" solids; the engine emits none
+  // now — they are records on Model.construction_returns, drawn by nothing.)
+  assert(solidColor(solid("no-such-category"), undefined, PALETTE) === PALETTE.member.concrete,
     "An unmapped category falls back to the theme's neutral, matching the emitter's _FALLBACK");
 
   const metal = createSolidMaterial(solid("gutter"), undefined, "nordic", PALETTE);

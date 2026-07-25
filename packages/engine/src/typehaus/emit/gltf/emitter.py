@@ -51,6 +51,14 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "stringer": (0.60, 0.42, 0.26, 1.0),
     "tread": (0.70, 0.52, 0.33, 1.0),
     "winder": (0.70, 0.52, 0.33, 1.0),
+    # Opening framing. These existed in ui/src/three/members.ts CATEGORY_COLOR only, so a
+    # header's king/jack/cripple studs read as lumber in the browser and as the grey fallback
+    # in the GLB. Same tones as their whole-stud/plate/header siblings, as the viewer has.
+    "king": (0.70, 0.52, 0.33, 1.0),
+    "jack": (0.70, 0.52, 0.33, 1.0),
+    "cripple": (0.70, 0.52, 0.33, 1.0),
+    "sill": (0.66, 0.48, 0.30, 1.0),
+    "bearing_stiffener": (0.60, 0.42, 0.26, 1.0),
     # stair landing platforms + the U-stair well partition read as framing lumber; the
     # concrete-wall hanger/ledger band is galvanized grey like "connector". Mirrored in
     # ui/src/three/members.ts CATEGORY_COLOR (GLB/three.js parity convention).
@@ -61,6 +69,14 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "joist": (0.72, 0.55, 0.36, 1.0),
     "rim": (0.66, 0.48, 0.30, 1.0),
     "ridge_beam": (0.55, 0.38, 0.22, 1.0),
+    # Stick-framed roof lumber + the blocking that fills between it. These had no entry at
+    # all, so ~260 members rendered as the neutral gray fallback in *both* renderers (the
+    # "garage truss should visualize as wood" report). Values chosen to round-trip exactly
+    # to the hex literals in ui/src/three/members.ts CATEGORY_COLOR.
+    "rafter": (0.678, 0.498, 0.310, 1.0),        # 0xad7f4f
+    "blocking": (0.639, 0.463, 0.247, 1.0),      # 0xa3763f
+    "outlooker": (0.722, 0.549, 0.361, 1.0),     # 0xb88c5c
+    "barge_rafter": (0.549, 0.384, 0.220, 1.0),  # 0x8c6238
     # roof truss members + the birdsmouth seat cut
     "top_chord": (0.70, 0.52, 0.33, 1.0),
     "bottom_chord": (0.66, 0.48, 0.30, 1.0),

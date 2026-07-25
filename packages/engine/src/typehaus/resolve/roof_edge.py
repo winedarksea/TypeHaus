@@ -4,13 +4,22 @@ Two closures the roof plane and the wall prisms leave open between them:
 
 * **wall → roof closure.** A wall prism stops at its top plate. Over a raised-heel truss the
   deck plane sits a heel above that plate, and at a gable end the plane climbs to the ridge,
-  so the sheathing/rainscreen/cladding band between the wall top and the roof underside is
-  simply missing — daylight at the heel and an exposed truss at the gable. Every exterior
-  wall under a roof gets that band carried up to the roof underside here. A wall that already
-  rakes to the roof (``ToRoof``) has no gap and produces nothing.
+  so the sheathing/rainscreen/cladding band between the wall top and the roof is simply
+  missing — daylight at the heel and an exposed truss at the gable. Every exterior wall under
+  a roof gets that band carried up here, and *where* it stops depends on the eave type:
+
+  - **overhung** (the garage's 16" eave): the roof runs past the wall and its soffit closes
+    the underside, so the skin dies at the structure's underside as one band per layer.
+  - **flush** (the golden detail's condition, and RF-HOUSE's): there is no soffit, so each
+    wall layer runs up to *its own* counterpart face in the roof stack — see
+    :class:`_MatingFaces`. A ``ToRoof`` wall already rakes to the deck plane, so only the
+    layers with somewhere left to go (foam, furring, cladding) produce anything.
 * **eave / rake trim.** The fascia boards and soffit panel declared by ``Roof.eave_trim``,
   derived along all four roof edges. Deriving rather than authoring keeps the trim on the
   roof plane through a raised-heel lift instead of drifting below it.
+* **roof edge cladding.** The strip of stack edge between the wall cladding's top and the
+  roofing — the reference's drip edge and behind-the-gutter flashing, and the rake trim at a
+  gable, where the reference draws nothing.
 
 Both are emitted as ``FramedMember`` records on the roof: unlike ``ResolvedSolid`` (a plan
 prism), a member carries different elevations at each end, which is what a raked gable
@@ -21,6 +30,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import replace
+from typing import NamedTuple
 
 from typehaus.model.enums import LayerFunction
 from typehaus.model.spatial import Roof
@@ -132,45 +142,115 @@ def _ridge_crossing_fraction(roof: ResolvedRoof, wall: ResolvedWall) -> float | 
 
 # --- wall → roof closure -----------------------------------------------------------------
 
+class _MatingFaces(NamedTuple):
+    """Perpendicular offsets above the roof plane of the faces a wall's skin dies into.
+
+    Straight off the golden eave detail
+    (``tests/fixtures/catlin_reference/scripts/roof_wall_eave_detail_ifc.py``): the roof is
+    not one face a wall stops under, it is a stack, and each wall layer runs up to *its own*
+    counterpart in that stack —
+
+    * wall sheathing + its membrane → the roof plane itself, which the roof deck then laps
+      ("roof sheathing extends to overlap wall sheathing/membrane for continuity");
+    * wall foam → the underside of the roof foam;
+    * wall furring → the underside of the roof furring, which is what makes the vent channel
+      continuous wall → eave → ridge;
+    * wall cladding → the roof foam underside, with the gutter and drip edge closing the band
+      above it.
+    """
+
+    foam_under: float
+    furring_under: float
+    cladding_under: float
+
+    def for_layer(self, function: str) -> float:
+        if function in (LayerFunction.SHEATHING.value, LayerFunction.MEMBRANE.value):
+            return 0.0
+        if function == LayerFunction.FURRING.value:
+            return self.furring_under
+        return self.foam_under  # insulation and cladding
+
+
+def _mating_faces(layers) -> _MatingFaces:
+    total = 0.0
+    foam_under = furring_under = None
+    cladding_under = 0.0
+    for layer in layers:
+        if layer.function is LayerFunction.INSULATION and foam_under is None:
+            foam_under = total
+        elif (layer.function in (LayerFunction.AIRGAP, LayerFunction.FURRING)
+              and furring_under is None):
+            furring_under = total
+        elif layer.function is LayerFunction.CLADDING:
+            cladding_under = total
+        total += layer.thickness.meters
+    # A roof with no foam and no vent cavity — the garage's deck-and-metal — presents only its
+    # cladding underside, so everything below dies there.
+    return _MatingFaces(foam_under if foam_under is not None else cladding_under,
+                        furring_under if furring_under is not None else cladding_under,
+                        cladding_under)
+
+
 def _closure_members(
     model: ResolvedModel, roof: ResolvedRoof, walls: tuple[ResolvedWall, ...]
 ) -> tuple[FramedMember, ...]:
-    """Carry each exterior wall's weather skin from its top up to the roof underside."""
+    """Carry each exterior wall's weather skin up to the roof faces it mates with."""
     structure_depth = roof_structure_depth_m(model, roof)
+    assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
+    element = model.plan.by_tag(roof.tag)
+    overhang = getattr(element, "overhang", None)
+    # Where the roof runs past the wall, its soffit closes the gap and the skin stops at the
+    # structure's underside. Where it is flush — the golden detail's condition, and RF-HOUSE's
+    # — there is no soffit and the skin continues up into the layer stack itself.
+    layers = above_structure_layers(assembly)
+    mating = (_mating_faces(layers)
+              if layers and (overhang is None or overhang.meters <= _CLOSURE_TOLERANCE_M)
+              else None)
+    slope_factor = math.hypot(1.0, _roof_slope(roof))
     members: list[FramedMember] = []
     for wall in walls:
         crossing = _ridge_crossing_fraction(roof, wall)
         spans = ((0.0, 1.0),) if crossing is None else ((0.0, crossing), (crossing, 1.0))
         for index, (t0, t1) in enumerate(spans):
-            members.extend(_closure_segment(roof, wall, t0, t1, index, structure_depth))
+            members.extend(_closure_segment(roof, wall, t0, t1, index, structure_depth,
+                                            mating, slope_factor))
     return tuple(members)
 
 
 def _closure_segment(
     roof: ResolvedRoof, wall: ResolvedWall, t0: float, t1: float,
     segment: int, structure_depth: float,
+    mating: _MatingFaces | None, slope_factor: float,
 ) -> tuple[FramedMember, ...]:
     tops = (_wall_top_at(wall, t0), _wall_top_at(wall, t1))
-    undersides = tuple(
-        roof_height_at(roof, _offset_point(wall, fraction, 0.0)) - structure_depth
-        for fraction in (t0, t1)
-    )
-    if max(undersides[0] - tops[0], undersides[1] - tops[1]) < _CLOSURE_TOLERANCE_M:
-        return ()  # the wall already reaches the roof here (a ToRoof rake, or a flush eave)
     members: list[FramedMember] = []
     for layer in _skin_layers(wall):
         offset = _layer_offset_m(wall, layer)
         p0 = _offset_point(wall, t0, offset)
         p1 = _offset_point(wall, t1, offset)
+        if mating is None:
+            # Overhung edge: one band per layer, up to the structure's underside, measured on
+            # the wall's own axis (the soffit closes everything outboard of that).
+            targets = tuple(roof_height_at(roof, _offset_point(wall, fraction, 0.0))
+                            - structure_depth for fraction in (t0, t1))
+        else:
+            # Flush edge: each layer rises to its own face in the roof stack, measured at that
+            # layer's own plan position — the layers are parallel to the slope, so a layer
+            # further out mates a little lower.
+            perpendicular = mating.for_layer(layer.function)
+            targets = tuple(roof_height_at(roof, point) + perpendicular * slope_factor
+                            for point in (p0, p1))
+        if max(targets[0] - tops[0], targets[1] - tops[1]) < _CLOSURE_TOLERANCE_M:
+            continue  # this layer already reaches its face (a ToRoof rake, or a flush eave)
         thickness_in = layer.thickness_m / _METERS_PER_INCH
         members.append(FramedMember(
             parent_uid=wall.uid,
             child_key=f"{wall.tag}-closure-{segment}-{layer.name}",
             category=layer.function, profile=panel_profile(thickness_in, thickness_in),
             p0=p0, p1=p1,
-            z0_m=tops[0], z1_m=max(tops[0], undersides[0]),
+            z0_m=tops[0], z1_m=max(tops[0], targets[0]),
             length_m=math.hypot(p1[0] - p0[0], p1[1] - p0[1]),
-            z0_end_m=tops[1], z1_end_m=max(tops[1], undersides[1]),
+            z0_end_m=tops[1], z1_end_m=max(tops[1], targets[1]),
             connection="roof:wall-top-closure",
             material=layer.material_ref,
         ))
@@ -292,17 +372,17 @@ def _soffit_member(
 def _edge_cladding_members(
     model: ResolvedModel, roof: ResolvedRoof
 ) -> tuple[FramedMember, ...]:
-    """Wrap the above-deck layer stack's exposed edge in the roof's own cladding.
+    """Close the strip of stack edge left between the wall cladding and the roofing.
 
-    ``eave_z_m``/``ridge_z_m`` is the deck plane, and the whole above-structure stack sits
-    *on top* of it — 8.5" of foam and batten on the catlin house. The derived fascia hangs
-    **down** from the deck plane, and a gable wall rakes **up** to it, so neither closes that
-    band: from outside you saw a stepped ribbon of foam and batten edges between the wall's
-    standing seam and the roof's. This carries the roofing metal down over it, so the two
-    runs of standing seam meet.
+    The reference's own answer to this band is the drip edge and the flashing behind the box
+    gutter ("stainless steel flashing behind gutter over wall furring and under drip edge"):
+    the wall cladding dies at the roof foam's underside, the roofing turns down over the
+    furring, and metal bridges what is left. This is that piece — at a gable rake, where the
+    reference draws nothing, it is the rake trim doing the same job.
 
-    The band stops at the cladding layer's underside and sits flush with its outer edge, the
-    way a real standing-seam panel laps over its eave/rake trim — no coplanar faces to fight.
+    It therefore starts exactly where :class:`_MatingFaces` puts the wall cladding's top and
+    stops under the roofing, so the two runs of standing seam are continuous. It sits flush
+    with the roofing's outer edge, which laps over it — no coplanar faces to fight.
     """
     assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
     layers = above_structure_layers(assembly)
@@ -312,18 +392,20 @@ def _edge_cladding_members(
                      if layer.function is LayerFunction.CLADDING), None)
     if cladding is None:
         return ()
-    # Everything below the cladding is what needs covering; the cladding laps over the band.
-    # Layer thicknesses are perpendicular to the slope but the band is measured vertically,
-    # so a perpendicular `d` needs `d / cosθ` of vertical band to reach the same face.
-    height = ((sum(layer.thickness.meters for layer in layers) - cladding.thickness.meters)
-              * math.hypot(1.0, _roof_slope(roof)))
+    # Layer offsets are perpendicular to the slope but the band is measured vertically, so a
+    # perpendicular `d` needs `d / cosθ` of vertical band to reach the same face.
+    mating = _mating_faces(layers)
+    slope_factor = math.hypot(1.0, _roof_slope(roof))
+    base = mating.foam_under * slope_factor          # where the wall cladding stops
+    height = mating.cladding_under * slope_factor - base
     if height <= _CLOSURE_TOLERANCE_M:
-        return ()  # a bare deck-and-metal roof has no stack edge worth trimming
+        return ()  # deck-and-metal: the wall cladding already reaches the roofing
     setbacks = {entry["layer"]: entry for entry in (roof.layer_edge_setbacks or ())}
     thickness = cladding.thickness.meters
     members: list[FramedMember] = []
     for key, run in _roof_edge_runs(roof):
         (p0, z0), (p1, z1), normal = run
+        z0, z1 = z0 + base, z1 + base
         # Positive setbacks are inward, so the cladding's outer edge sits `-setback` outward
         # of the footprint edge; hang the band's outer face there.
         entry = setbacks.get(cladding.name)

@@ -41,7 +41,7 @@ _EAVE_TRIM = EaveTrim(
 
 
 def _plan(*, gable_top=None, eave_trim=_EAVE_TRIM, extra_elements=(),
-          roof_layers=()) -> PlanModel:
+          roof_layers=(), overhang=OVERHANG) -> PlanModel:
     """A 20'x14' box with a raised-heel truss roof.
 
     The east gable is split at the ridge into two ``ToRoof`` segments; the west gable stays
@@ -90,7 +90,7 @@ def _plan(*, gable_top=None, eave_trim=_EAVE_TRIM, extra_elements=(),
              assembly="EXT", top=ft(PLATE_TOP_FT)),
     )
     roof = Roof(uid="RF00000001", tag="RF", form=RoofForm.GABLE, pitch=Pitch(4, 12),
-                bearing_refs=("W-S", "W-N"), assembly="TRUSS_ROOF", overhang=OVERHANG,
+                bearing_refs=("W-S", "W-N"), assembly="TRUSS_ROOF", overhang=overhang,
                 ridge_direction=RIDGE_DIRECTION, eave_trim=eave_trim)
     library = Library(
         materials=(Material(tag="wood", name="Wood", r_per_inch=1.2),),
@@ -313,27 +313,41 @@ def test_edge_cladding_wraps_every_roof_edge_in_the_roofing_material(stacked):
     assert {m.material for m in band} == {"standing-seam"}
 
 
-def test_edge_cladding_spans_deck_plane_to_the_roofing_underside(stacked):
-    """The gap the user saw: wall skin stops at the deck plane, roofing sits a stack above it.
+def test_edge_cladding_bridges_the_wall_cladding_top_to_the_roofing(stacked):
+    """It closes exactly what the reference leaves to the drip edge and gutter flashing.
 
-    The band is measured vertically but the layers are stacked perpendicular to the slope, so
-    it has to be the *slope-corrected* height or it lands short of the metal it meets.
+    Its bottom is the wall cladding's mating face (the roof foam underside) and its top is
+    the roofing underside, so the wall's run of metal and the roof's are continuous. Both are
+    perpendicular offsets, so the vertical band is slope-corrected or it lands short.
     """
     roof = _roof(stacked)
-    perpendicular = sum(layer.thickness.meters for layer in _STACK_LAYERS[:-1])
+    deck, foam, roofing = _STACK_LAYERS
     span = max(p[1] for p in roof.footprint) - min(p[1] for p in roof.footprint)
     slope = (roof.ridge_z_m - roof.eave_z_m) / (span / 2.0)
-    expected = perpendicular * math.hypot(1.0, slope)
-    assert expected > perpendicular  # the correction is real, not a no-op
+    factor = math.hypot(1.0, slope)
+    assert factor > 1.0  # the correction is real, not a no-op
+    # Wall cladding dies under the foam; the band picks up there and runs to the roofing.
+    base = deck.thickness.meters * factor
+    expected = foam.thickness.meters * factor
     for member in _edge_cladding(stacked):
         assert member.z1_m - member.z0_m == pytest.approx(expected, abs=1e-9)
         assert member.z1_end_m - member.z0_end_m == pytest.approx(expected, abs=1e-9)
-    # Every band starts on the roof plane, and the rakes climb to the ridge with it.
+    # Every band starts a deck above the roof plane, and the rakes climb to the ridge with it.
     eaves = [m for m in _edge_cladding(stacked) if m.z0_m == pytest.approx(m.z0_end_m)]
     assert len(eaves) == 2
-    assert {round(m.z0_m, 9) for m in eaves} == {round(roof.eave_z_m, 9)}
+    assert {round(m.z0_m, 9) for m in eaves} == {round(roof.eave_z_m + base, 9)}
     peak = max(max(m.z0_m, m.z0_end_m) for m in _edge_cladding(stacked))
-    assert peak == pytest.approx(roof.ridge_z_m, abs=1e-9)
+    assert peak == pytest.approx(roof.ridge_z_m + base, abs=1e-9)
+
+
+def test_a_deck_and_metal_roof_needs_no_edge_band(resolved):
+    """Nothing between the deck and the metal means the wall cladding already reaches it."""
+    thin = (Layer(name="deck", material_ref="wood", thickness=inch(0.75),
+                  function=LayerFunction.SHEATHING),
+            Layer(name="roofing", material_ref="standing-seam", thickness=inch(0.5),
+                  function=LayerFunction.CLADDING))
+    model, _ = resolve(_plan(roof_layers=thin))
+    assert _edge_cladding(model) == []
 
 
 def test_closure_bands_carry_their_source_layer_material(resolved):
@@ -356,3 +370,64 @@ def test_roof_members_split_into_framing_sticks_and_envelope_skin(stacked):
     assert {"top_chord", "bottom_chord", "truss_web", "stud"} <= framing
     assert skin == {"sheathing", "cladding", "fascia", "soffit"}
     assert not framing & skin
+
+
+# --- 7. the golden detail's per-layer mating (flush eave) ----------------------------------
+
+# The reference eave (tests/fixtures/catlin_reference/scripts/roof_wall_eave_detail_ifc.py)
+# is a *flush* eave closed by a box gutter, not an overhang closed by a soffit: the roof
+# layers stop at the wall stack's faces and the wall layers run up into the roof stack. This
+# fixture is that condition — the same layered roof, zero overhang.
+@pytest.fixture(scope="module")
+def flush():
+    model, _findings = resolve(_plan(roof_layers=_STACK_LAYERS, overhang=inch(0)))
+    return model
+
+
+def _closure(model, wall_tag, layer_name):
+    return next(m for m in _roof(model).members
+                if m.child_key == f"{wall_tag}-closure-0-{layer_name}")
+
+
+def test_flush_eave_runs_each_wall_layer_to_its_own_face_in_the_roof_stack(flush):
+    """Not one band to one underside: sheathing to the deck, foam and cladding under the
+    roof foam, furring up to the roof furring so the vent channel stays continuous."""
+    roof = _roof(flush)
+    deck, foam, _roofing = _STACK_LAYERS
+    span = max(p[1] for p in roof.footprint) - min(p[1] for p in roof.footprint)
+    factor = math.hypot(1.0, (roof.ridge_z_m - roof.eave_z_m) / (span / 2.0))
+    for name, perpendicular in (("sheathing", 0.0),
+                                ("cladding", deck.thickness.meters)):
+        member = _closure(flush, "W-S", name)
+        plane = roof_height_at(roof, member.p0)
+        assert member.z1_m == pytest.approx(plane + perpendicular * factor, abs=1e-9)
+    # Each layer mates a little lower than the one inboard of it, because the roof slopes
+    # down as it runs out over the stack.
+    assert _closure(flush, "W-S", "cladding").z1_m > _closure(flush, "W-S", "sheathing").z1_m
+
+
+def test_an_overhung_eave_still_stops_at_the_structure_underside(stacked):
+    """With an overhang the soffit closes the gap, so the skin must not climb into the stack —
+    the two eave types are genuinely different details."""
+    roof = _roof(stacked)
+    chord_depth = cross_section(CHORD).depth_m
+    for name in ("sheathing", "cladding"):
+        member = _closure(stacked, "W-S", name)
+        underside = roof_height_at(roof, (member.p0[0], 0.0)) - chord_depth
+        assert member.z1_m == pytest.approx(underside, abs=1e-6)
+
+
+def test_flush_gable_rake_carries_the_skin_above_the_deck_plane(flush):
+    """A ToRoof gable rakes to the deck plane, so its foam, furring and cladding are the
+    layers with somewhere left to go — and the sheathing, already there, emits nothing."""
+    keys = {m.child_key for m in _roof(flush).members}
+    # W-E1/W-E2 are the ToRoof gable segments; W-W is a flat 9' wall.
+    assert "W-E1-closure-0-sheathing" not in keys
+    member = _closure(flush, "W-E1", "cladding")
+    wall = next(w for w in flush.walls if w.tag == "W-E1")
+    # It springs from the raked wall top (the deck plane) and climbs above it.
+    assert member.z0_m == pytest.approx(wall.top_z0_m, abs=1e-9)
+    assert member.z1_m > member.z0_m
+    # A wall that already reaches its face produces nothing at all — this one still does,
+    # because the deck plane is not where its cladding dies.
+    assert _closures(flush, "W-E1")

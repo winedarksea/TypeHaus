@@ -43,8 +43,33 @@ const CATEGORY_COLOR: Record<string, number> = {
   trimmer: 0xa87a4c,
   landing: 0xb88c5c,
   hanger: 0x595c61,
+  // Roof sticks. `rafter`/`blocking`/`outlooker`/`barge_rafter` had no entry in either
+  // table; the truss keys existed engine-side only. Together that was ~470 members reading
+  // as the neutral gray fallback (the "garage truss should visualize as wood" report).
+  rafter: 0xad7f4f,
+  blocking: 0xa3763f,
+  outlooker: 0xb88c5c,
+  barge_rafter: 0x8c6238,
+  top_chord: 0xb3854f, // = stud, as engine-side
+  bottom_chord: 0xa87a4c, // = plate
+  truss_web: 0xbd9161,
+  truss_heel: 0x996b41, // = header
+  seat_cut: 0x94663d,
+  // Layer-function keys. A skin member normally colours by its *material*
+  // (`memberColor`), but a derived band that names none must not drop to the fallback —
+  // these mirror the same keys in the engine's _PALETTE.
+  structure: 0x9e7347,
+  sheathing: 0xb8b8b3,
+  insulation: 0xedbd5c,
+  cladding: 0x8c9499,
+  membrane: 0x4d738c,
+  furring: 0xad8557,
+  lining: 0xe6e3db,
+  finish: 0xe6e3db,
+  fascia: 0xebebe6,
+  soffit: 0xe0e0d9,
 };
-const CATEGORY_FALLBACK = 0xb0b0b0;
+export const CATEGORY_FALLBACK = 0xb0b0b0;
 
 export function categoryColor(category: string): number {
   return CATEGORY_COLOR[category] ?? CATEGORY_FALLBACK;

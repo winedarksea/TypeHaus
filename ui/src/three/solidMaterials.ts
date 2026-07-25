@@ -72,8 +72,11 @@ export function solidColor(
   const layers = assembly?.layers ?? [];
   const layer = layers.find((candidate) => candidate.function === "structure") ?? layers[0];
   if (layer) {
+    // Pass the catalog's materials through: without them `materialColor` never sees an
+    // authored `Material.color`, so every assembly-backed solid fell to its family tone
+    // (the porch composite deck's authored #8a7f70 among them).
     return paintedFinishColor(layer.material)
-      ?? new THREE.Color(materialColor(layer.material, palette)).getHex();
+      ?? new THREE.Color(materialColor(layer.material, palette, catalog?.materials)).getHex();
   }
   return SOLID_CATEGORY_COLOR[solid.category] ?? palette.member.concrete;
 }

@@ -10,10 +10,15 @@ corner for thermal continuity, the masonry guard's corner return). They are *aut
 This pass runs once, after the envelope is resolved and **before final framing** (so the
 returns are construction geometry, not documentation), and for each rule:
 
-* emits the return's geometry into ``model.solids`` (renders in section/3D/IFC/model.json);
-* records a :class:`ResolvedConstructionReturn` carrying the take-off quantity + the overlay
-  metadata (element tags, lap / sealant / flashing / thermal-continuity) a detail recipe
-  binds to.
+* records a :class:`ResolvedConstructionReturn` carrying the return's geometry (outline, z
+  range, thickness, length), the take-off quantity and the overlay metadata (element tags,
+  lap / sealant / flashing / thermal-continuity) a detail recipe binds to.
+
+The record is documentation + take-off, **not** render geometry: a correctly-placed return
+duplicates the mitred ``ResolvedLayer.polygon`` the host wall already draws, so no
+``ResolvedSolid`` is emitted (that only ever produced z-fighting prisms in 3D and phantom
+concrete rectangles in the sections). ``model.construction_returns`` is serialized to
+``model.json`` and emitted as an ``IfcCovering`` directly.
 
 It is declarative: a ``ConstructionRule.applies_to`` predicate selects *where* the return
 lands via the finders registered in ``_FINDERS``. It never mutates a resolved wall polygon
@@ -33,7 +38,6 @@ from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.model import (
     ResolvedConstructionReturn,
     ResolvedModel,
-    ResolvedSolid,
     ResolvedWall,
 )
 
@@ -372,9 +376,9 @@ _FINDERS = {
 def apply_construction_rules(model: ResolvedModel) -> list[Finding]:
     """Apply ``PlanModel.construction_rules`` to the resolved model, pre-framing.
 
-    Appends each matched return's geometry to ``model.solids`` and its record to
-    ``model.construction_returns``. Geometry only — never fails a build, never mutates a
-    resolved wall or framing member.
+    Appends each matched return's record to ``model.construction_returns``. Records only —
+    never fails a build, never mutates a resolved wall or framing member, and never emits a
+    ``ResolvedSolid`` (see the module docstring).
     """
     plan: PlanModel = model.plan
     for rule in plan.library.construction_rules:
@@ -383,10 +387,4 @@ def apply_construction_rules(model: ResolvedModel) -> list[Finding]:
             continue
         for ret in finder(model, rule):
             model.construction_returns.append(ret)
-            category = f"return:{ret.takeoff_category or ret.kind}"
-            model.solids.append(ResolvedSolid(
-                uid=ret.uid, tag=ret.tag, storey=ret.storey, category=category,
-                outline=ret.outline, z0_m=ret.z0_m, z1_m=ret.z1_m,
-                assembly=None,
-            ))
     return []

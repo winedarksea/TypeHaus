@@ -8,11 +8,10 @@ import type { FootingBedding, Floor, Model, Roof, Solid, Vec2 } from "../model/t
 import { formatFtIn } from "../model/geometry";
 import { Provenance } from "./Provenance";
 
-// A construction return ("return:pt-sill-plate") is geometry a library rule added, not an
-// element; strip the prefix so the panel reads as the rule's take-off category.
-function solidCategoryLabel(category: string): string {
-  return category.startsWith("return:") ? `${category.slice("return:".length)} (construction return)` : category;
-}
+// NB: construction returns (ConstructionRule laps) used to arrive here as solids with a
+// "return:" category prefix. They no longer produce solids at all — the resolver records them
+// on `Model.construction_returns`, and nothing in 3D draws them, so there is no selection to
+// inspect. Nothing left to strip from a solid's category.
 
 function ringSpan(points: readonly Vec2[]): [number, number] | null {
   if (points.length < 2) return null;
@@ -36,7 +35,7 @@ function DerivedNote({ source }: { source: string }) {
 
 export function SolidInspector({ solid }: { solid: Solid }) {
   return <div>
-    <h3>{solidCategoryLabel(solid.category)} · {solid.tag}</h3>
+    <h3>{solid.category} · {solid.tag}</h3>
     <div className="kv">
       <span className="k">Category</span><span>{solid.category}</span>
       <span className="k">Assembly</span><span>{solid.assembly ?? "—"}</span>

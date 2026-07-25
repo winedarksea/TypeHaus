@@ -96,6 +96,7 @@ WALLS = [
     FoundationWall(uid="CBW111AAAA", tag="W-B-CS", start_node="N-B-C1",
                    end_node="N-B-S2", assembly="SAUNA_LINER_ON_CONCRETE",
                    alignment=face("concrete-ext", offset=inch(-6)),
+                   interior_room="RM-B-SAUNA",
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     FoundationWall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
                    end_node="N-B-C", assembly="CATLIN_CONC_12_INT",
@@ -117,10 +118,14 @@ WALLS = [
     # foil-faced polyiso) as part of the wall type, so the vapour control layer is a
     # property of the assembly rather than a room finish override. East wall is the
     # center concrete wall, which takes the liner via SAUNA_LINER_ON_CONCRETE.
+    # Both are interior partitions, so the storey's outer loop says nothing about which
+    # way they face; interior_room names the side the liner must land on.
     Wall(uid="CBW117AAAA", tag="W-B-SA-W", start_node="N-B-S1",
-         end_node="N-B-SA1", assembly="SAUNA_2X4", top=ft(7, 6)),
+         end_node="N-B-SA1", assembly="SAUNA_2X4", top=ft(7, 6),
+         interior_room="RM-B-SAUNA"),
     Wall(uid="CBW118AAAA", tag="W-B-SA-N", start_node="N-B-SA1",
-         end_node="N-B-C1", assembly="SAUNA_2X4", top=ft(7, 6)),
+         end_node="N-B-C1", assembly="SAUNA_2X4", top=ft(7, 6),
+         interior_room="RM-B-SAUNA"),
 ]
 
 OPENINGS = [

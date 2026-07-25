@@ -126,18 +126,18 @@ authored:
   them: the mitered offsetter is what gives each layer its true thickness. The serialized
   setbacks are drift-corrected (`d·sinθ` at the eaves) so the edges land at the right *plan*
   positions, but the cut face itself is still raked.
-- **All wall layers rake to one plane.** The reference's flat-topped wall foam plus
-  closed-cell spray-foam wedge at the roof/wall foam interface is approximated by the fascia
-  band; a true wedge would need a per-layer wall top.
-- **The roof-edge cladding band is a flat panel, not a formed edge.** It wraps the above-deck
-  stack from the deck plane up to the roofing underside so the wall's standing seam and the
-  roof's meet, but a real standing-seam eave/rake is a formed cleat + hemmed drip, and the
-  band's corners simply lap (the four runs overlap by their own thickness). Fine at model
-  scale; a detail drawing would want the profile.
-- **The band's top is ~1 mm below the roofing underside** on the catlin house: its height is
-  the slope-corrected stack depth measured at the footprint edge, while the band itself sits a
-  few millimetres inboard of that edge, where the plane is fractionally higher. The metal laps
-  *over* the band, which is the correct way round, so the residue is invisible.
+- **No closed-cell spray-foam wedge at the roof/wall foam interface.** The reference cuts the
+  wall foam flat at one elevation and fills the resulting angled mismatch against the sloped
+  roof foam with spray foam. Each closure band here instead follows the slope at its own
+  layer's plan position, so the mismatch never forms — the idealised version of the same
+  detail. Modelling the wedge means modelling the flat cut first.
+- **The roof-edge cladding band is a flat panel, not a formed edge.** It closes what the
+  reference leaves to the drip edge and the flashing behind the box gutter, but a real
+  standing-seam edge is a formed cleat + hemmed drip, and the band's four runs simply lap at
+  the corners. Fine at model scale; a detail drawing would want the profile.
+- **The rake is still extrapolated.** The reference draws the eave only, and its answer there
+  is the gutter. At a gable the same band stands in as rake trim, which is real construction
+  but not something the reference confirms.
 - **Gable-end skin still reads as insulation from inside.** The wall→roof closure carries the
   full weather skin (zip-r sheathing, rainscreen, cladding) up the garage gable, which is
   right — but with the roof trade hidden the zip-r band is the outermost thing left and looks
