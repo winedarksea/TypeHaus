@@ -258,7 +258,7 @@ EQUIPMENT = [
     Equipment(uid="CME901AAAA", tag="EQ-B-FURNACE", kind=EquipmentKind.FURNACE,
              position=pt(ft(4), ft(29)), footprint=(inch(24), inch(28)), room="RM-B-FURNACE", type_ref="EQ-T-FURNACE"),
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(m(1.81187), m(10.0473)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER"),
+             position=pt(m(1.81187), m(10.0473)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-HP"),
 ]
 
 # --- Electrical: symbols-only (decision 1 — panel/circuit schedule deferred) -------
@@ -316,29 +316,29 @@ MAIN_DEVICES = [
     # under the 54" wall cabinets. The refrigerator's future battery-backup circuit is not
     # modeled; KRF1 is an ordinary duplex until that circuit is designed.
     ElectricalDevice(uid="N9317V3K8Y", tag="ED-M-LIVING-KGF1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(22, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(22, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
     ElectricalDevice(uid="J34E2ZM4GG", tag="ED-M-LIVING-KGF2", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(28, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(28, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
     ElectricalDevice(uid="EJYZJRDFG0", tag="ED-M-LIVING-KGF3", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(35, 4), ft(30, 6)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(35, 4), ft(30, 6)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
     ElectricalDevice(uid="VDGMBY3YW7", tag="ED-M-LIVING-KET1", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(21, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-620",
+                     position=pt(ft(21, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-620", circuit="CKT-KETTLE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
     # Behind the range at 6": the whip drops to the floor box, not to a counter height.
     ElectricalDevice(uid="S8DH5FRQQA", tag="ED-M-LIVING-KRG1", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(26, 7), ft(35, 4)), type_ref="ED-T-RECEPTACLE-240",
+                     position=pt(ft(26, 7), ft(35, 4)), type_ref="ED-T-RECEPTACLE-240", circuit="CKT-RANGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(6))),
     # On the centre bearing wall's east face, behind APPL-M-FRIDGE, at 48" — above the
     # coil deck, so the plug is reachable without pulling the whole cabinet out.
     ElectricalDevice(uid="D9EBW2FJTX", tag="ED-M-LIVING-KRF1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18, 4), ft(31, 5.375)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(18, 4), ft(31, 5.375)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     # Inside the sink base, 18" up: the dishwasher's cord and the disposer share the box.
     ElectricalDevice(uid="WK41TSMA97", tag="ED-M-LIVING-KDW1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35, 4), ft(32)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35, 4), ft(32)), type_ref="ED-T-RECEPTACLE", circuit="CKT-DISHWASHER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
 ]
 

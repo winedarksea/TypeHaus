@@ -25,8 +25,8 @@ from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_FI
                      STARTER_FURNITURE_TYPES)
 
 from params import breezeway, foundations, raised_garden, roof_trim, sunken_garden
-from plan import (assemblies, electrical, fixture_types, fixtures, mep, placeables, site,
-                  transitions, views)
+from plan import (assemblies, circuits, electrical, fixture_types, fixtures, mep, placeables,
+                  site, transitions, views)
 from plan.storeys import attic, basement, garage, main, second
 
 format_version = 1
@@ -48,6 +48,7 @@ _library = Library(
     register_types=mep.REGISTER_TYPES,
     equipment_types=(*mep.EQUIPMENT_TYPES, *electrical.EQUIPMENT_TYPES),
     electrical_device_types=(*mep.ELECTRICAL_DEVICE_TYPES, *electrical.DEVICE_TYPES),
+    circuits=circuits.CIRCUITS,
     transitions=transitions.TRANSITIONS,
     construction_rules=tuple(assemblies.CONSTRUCTION_RULES),
 )
@@ -99,7 +100,8 @@ PLAN = (
     .with_elements("garage", [*garage.ELEMENTS, *electrical.GARAGE_ELEMENTS,
                               *placeables.GARAGE_PLACEABLES])
     .with_elements("second", [*second.ELEMENTS, *fixtures.SECOND_FIXTURES,
-                                *sunken_garden.SECOND_ELEMENTS, *mep.SECOND_ELEMENTS, *placeables.SECOND_PLACEABLES])
+                                *sunken_garden.SECOND_ELEMENTS, *mep.SECOND_ELEMENTS,
+                                *electrical.SECOND_ELEMENTS, *placeables.SECOND_PLACEABLES])
     .with_elements("attic", [*attic.ELEMENTS, *roof_trim.ATTIC_ELEMENTS,
                              *mep.ATTIC_ELEMENTS, *electrical.ATTIC_ELEMENTS,
                              *placeables.ATTIC_PLACEABLES])

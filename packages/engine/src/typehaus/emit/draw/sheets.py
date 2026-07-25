@@ -143,6 +143,10 @@ def build_sheet_index(model: ResolvedModel,
         sheets.append(SheetSpec(f"E-{100 + index}", f"Electrical plan — {storey_tag}",
                                 scene=partial(build_electrical_plan, storey=storey_tag)))
 
+    if model.plan.library.circuits:
+        sheets.append(SheetSpec("E-601", "Panel schedule / service load",
+                                page=_write_panel_schedule))
+
     sheets.append(SheetSpec("EN-1", "Energy compliance summary",
                             page=partial(_write_energy_sheet, preferences=preferences)))
     return sheets
@@ -328,6 +332,59 @@ def _write_hardware_schedule(pdf, model: ResolvedModel, number: str, name: str) 
     _add_table(fig, solid_rows,
                ("Category", "Assembly", "Count", "Plan sf", "Cu yd"),
                bbox=(0.04, 0.03, 0.7, 0.33))
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
+def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> None:
+    """The panel schedule + NEC 220.82-style load summary + backup component list, all
+    derived from Library.circuits (→ takeoff.electrical — nothing here is hand-summed)."""
+    import matplotlib.pyplot as plt
+
+    from typehaus.takeoff import backup_component_rows, panel_schedule, service_load_summary
+
+    fig = plt.figure(figsize=(11, 17))
+    fig.text(0.04, 0.97, f"{number} · {name}", fontsize=16, family="monospace")
+
+    schedule = panel_schedule(model)
+    fig.text(0.04, 0.94, "PANEL SCHEDULE — ED-B-PANEL (225A, 200A SERVICE)",
+             fontsize=10, family="monospace", weight="bold")
+    schedule_rows = [
+        (row["circuit"], row["description"], f"{row['breaker_amps']}A/{row['poles']}p",
+         f"{row['volts']}V", row["nema"] or "—",
+         ("GFCI" if row["gfci"] else "") + ("+BKUP" if row["backup"] and row["gfci"] else
+                                            "BKUP" if row["backup"] else "") or "—",
+         f"{row['connected_va']:,.0f}")
+        for row in schedule
+    ]
+    _add_table(fig, schedule_rows,
+               ("Circuit", "Description", "Breaker", "Volts", "NEMA", "Prot.", "VA"),
+               bbox=(0.04, 0.42, 0.92, 0.51))
+
+    load = service_load_summary(model)
+    fig.text(0.04, 0.38, "SERVICE LOAD — " + str(load["method"]).upper(), fontsize=10,
+             family="monospace", weight="bold")
+    load_rows = [
+        ("Conditioned floor area", f"{load['floor_area_ft2']:,.0f} ft2"),
+        ("General lighting + small appliance/laundry", f"{load['general_lighting_va']:,.0f} VA"),
+        ("Fixed appliances", f"{load['fixed_appliance_va']:,.0f} VA"),
+        ("Heating/cooling at 100%", f"{load['hvac_va']:,.0f} VA"),
+        ("EV charging (continuous)", f"{load['ev_va']:,.0f} VA"),
+        ("DEMAND", f"{load['demand_va']:,.0f} VA = {load['demand_amps']:.1f} A"),
+        ("Service / panel rating", f"{load['service_amps']}A service, "
+                                   f"{load['panel_rating_amps']}A panel — "
+                                   + ("OK" if load["within_service"] else "OVER")),
+    ]
+    _add_table(fig, load_rows, ("Line", "Value"), bbox=(0.04, 0.18, 0.6, 0.18))
+
+    backup = backup_component_rows(model)
+    if backup:
+        fig.text(0.04, 0.145, "BACKUP SUBSYSTEM COMPONENTS (ED-B-BACKUP-ENCL)", fontsize=10,
+                 family="monospace", weight="bold")
+        backup_rows = [(row["component"], f"{row['count']}", row["basis"])
+                       for row in backup]
+        _add_table(fig, backup_rows, ("Component", "Qty", "Basis"),
+                   bbox=(0.04, 0.03, 0.92, 0.10))
     pdf.savefig(fig)
     plt.close(fig)
 

@@ -68,6 +68,159 @@ def _devices_in_room(ctx: CheckContext, storey_tag: str, room) -> list:
     ]
 
 
+_RECEPTACLE_KINDS = {"receptacle", "gfci"}  # the 125V 15/20A devices 210.52 counts
+_MAX_TO_RECEPTACLE_M = 6 * 0.3048  # no point along the wall line > 6' from a receptacle
+_MIN_WALL_SPACE_M = 2 * 0.3048  # wall spaces under 2' are exempt
+_NEAR_WALL_M = 0.5  # how close to the room boundary a device must sit to serve it
+
+
+def _perimeter_position(ring: list, point: tuple) -> tuple[float, float]:
+    """(arc-length coordinate of the nearest boundary point, distance to the boundary)."""
+    best_s, best_d = 0.0, float("inf")
+    s = 0.0
+    for index in range(len(ring)):
+        (x0, y0), (x1, y1) = ring[index], ring[(index + 1) % len(ring)]
+        ex, ey = x1 - x0, y1 - y0
+        length = (ex * ex + ey * ey) ** 0.5
+        if length < 1e-9:
+            continue
+        t = max(0.0, min(1.0, ((point[0] - x0) * ex + (point[1] - y0) * ey) / (length * length)))
+        px, py = x0 + ex * t, y0 + ey * t
+        d = ((point[0] - px) ** 2 + (point[1] - py) ** 2) ** 0.5
+        if d < best_d:
+            best_s, best_d = s + t * length, d
+        s += length
+    return best_s, best_d
+
+
+def _point_at(ring: list, s: float) -> tuple[float, float]:
+    total = 0.0
+    for index in range(len(ring)):
+        (x0, y0), (x1, y1) = ring[index], ring[(index + 1) % len(ring)]
+        length = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+        if total + length >= s or index == len(ring) - 1:
+            t = 0.0 if length < 1e-9 else (s - total) / length
+            return (x0 + (x1 - x0) * t, y0 + (y1 - y0) * t)
+        total += length
+    return ring[0]
+
+
+def _door_intervals(ctx: CheckContext, ring: list, storey_tag: str) -> list[tuple[float, float]]:
+    """Perimeter intervals occupied by door openings on walls bounding this room."""
+    walls = {w.tag: w for w in ctx.model.walls if w.storey == storey_tag}
+    intervals = []
+    for opening in ctx.model.openings:
+        if not opening.is_door:
+            continue
+        host = walls.get(opening.host_wall)
+        if host is None:
+            continue
+        (sx, sy), (ex, ey) = host.axis
+        length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5 or 1.0
+        t = opening.center_along_m / length
+        center = (sx + (ex - sx) * t, sy + (ey - sy) * t)
+        s, d = _perimeter_position(ring, center)
+        if d <= _NEAR_WALL_M:
+            half = opening.width_m / 2.0
+            intervals.append((s - half, s + half))
+    return intervals
+
+
+def _coverage_gaps(space: tuple[float, float], positions: list[float]) -> list[float]:
+    """Perimeter coordinates of points in a linear wall space > 6' from any receptacle."""
+    a, b = space
+    inside = sorted(p for p in positions if a - 0.05 <= p <= b + 0.05)
+    if not inside:
+        # A qualifying wall space with no receptacle at all always fails: 210.52(A)(1)
+        # counts only receptacles within the space (doorways break the measurement).
+        return [(a + b) / 2.0]
+    gaps = []
+    if inside[0] - a > _MAX_TO_RECEPTACLE_M:
+        gaps.append(a)
+    for left, right in zip(inside, inside[1:]):
+        if right - left > 2 * _MAX_TO_RECEPTACLE_M:
+            gaps.append((left + right) / 2.0)
+    if b - inside[-1] > _MAX_TO_RECEPTACLE_M:
+        gaps.append(b)
+    return gaps
+
+
+@check(Tier.ADVISORY, "electrical.receptacle_spacing")
+def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
+    """NEC 210.52(A)-style 6' rule along every habitable room's wall line (advisory).
+
+    Geometry-based, unlike ``room_lighting``'s tag matching: the room's resolved
+    ``clear_face`` ring is unrolled into an arc-length coordinate (so corners measure
+    correctly), door openings break it into wall spaces, spaces under 2' are exempt, and
+    every remaining point must be within 6' of a receptacle projected onto the boundary.
+    The kitchen-counter rule (210.52(C)) is not evaluated — counters are casework, not
+    resolved geometry — and reports UNKNOWN so the gap stays visible.
+    """
+    cid = "electrical.receptacle_spacing"
+    devices_by_storey: dict[str, list] = {}
+    for storey in ctx.plan.storeys:
+        devices_by_storey[storey.tag] = [
+            element for element in ctx.plan.storey_elements(storey.tag)
+            if element.element_kind == "ElectricalDevice"]
+    if not any(devices_by_storey.values()):
+        return [_unknown(cid, "electrical not modeled")]
+
+    habitable = {occupancy.value for occupancy in _HABITABLE}
+    out: list[Finding] = []
+    for room in ctx.model.rooms:
+        if room.occupancy not in habitable:
+            continue
+        ring = [tuple(point) for point in room.clear_face]
+        if len(ring) < 3:
+            continue
+        perimeter = sum(
+            ((ring[(i + 1) % len(ring)][0] - ring[i][0]) ** 2
+             + (ring[(i + 1) % len(ring)][1] - ring[i][1]) ** 2) ** 0.5
+            for i in range(len(ring)))
+        positions = []
+        for device in devices_by_storey.get(room.storey, []):
+            if device.kind.value not in _RECEPTACLE_KINDS:
+                continue
+            s, d = _perimeter_position(ring, device.position.xy_m)
+            if d <= _NEAR_WALL_M:
+                positions.append(s)
+        doors = sorted((max(0.0, a), min(perimeter, b))
+                       for a, b in _door_intervals(ctx, ring, room.storey))
+        # Wall spaces: the perimeter minus door spans. Door-free rooms are one circular
+        # space, where coverage means the largest receptacle-to-receptacle arc.
+        gaps: list[float] = []
+        if not doors:
+            if not positions:
+                gaps.append(0.0)
+            else:
+                ordered = sorted(positions)
+                for left, right in zip(ordered, ordered[1:] + [ordered[0] + perimeter]):
+                    if right - left > 2 * _MAX_TO_RECEPTACLE_M:
+                        gaps.append(((left + right) / 2.0) % perimeter)
+        else:
+            spaces = []
+            for index, (a, b) in enumerate(doors):
+                next_a = doors[index + 1][0] if index + 1 < len(doors) else doors[0][0] + perimeter
+                if next_a - b >= _MIN_WALL_SPACE_M:
+                    spaces.append((b, next_a))
+            for space in spaces:
+                wrapped = [p + perimeter if p < space[0] - 0.05 else p for p in positions]
+                gaps.extend(g % perimeter for g in _coverage_gaps(space, wrapped))
+        if gaps:
+            worst = _point_at(ring, gaps[0])
+            out.append(_warn_fail(
+                cid, f"room {room.tag}: wall space > 6' from a receptacle near "
+                     f"({worst[0] / 0.3048:.1f}', {worst[1] / 0.3048:.1f}') "
+                     f"[{len(gaps)} gap(s)]", (room.tag,)))
+        else:
+            out.append(_pass(cid, f"room {room.tag} meets the 6' receptacle rule",
+                             (room.tag,)))
+    out.append(_unknown(cid, "kitchen counter rule (210.52(C)) not evaluated — counter "
+                             "casework is not resolved geometry; counter receptacles are "
+                             "authored at 42\" in plan/mep.py"))
+    return out
+
+
 @check(Tier.ADVISORY, "electrical.circuit_refs")
 def circuit_refs(ctx: CheckContext) -> list[Finding]:
     """Every ``circuit`` reference resolves, every panel_ref is a panel, poles match ports."""
