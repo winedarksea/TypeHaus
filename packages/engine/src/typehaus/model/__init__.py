@@ -53,6 +53,7 @@ from typehaus.model.floors import (
     SlabThermalBreak,
     Soffit,
 )
+from typehaus.model.electrical import Circuit
 from typehaus.model.materials import Material
 from typehaus.model.mep import (
     DuctRun,
@@ -216,6 +217,7 @@ __all__ = [
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",
     "PipeRun", "SleevePenetration", "DuctRun", "Register", "Equipment", "ElectricalDevice",
+    "Circuit",
     "Sump", "VentRun",
     "MonthlyNormal", "SetbackSpec", "SpotElevation", "ImperviousSurface", "UtilityLine",
     "Contour", "Basemap",

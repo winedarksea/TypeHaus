@@ -69,6 +69,7 @@ class Register(Element):
     rotation: object | None = None
     location: Location | None = None
     mount: Mount = Mount()
+    circuit: str | None = None  # Circuit tag (panel schedule), mirrors ElectricalDevice
 
 
 @register_element
@@ -83,6 +84,9 @@ class Equipment(Element):
     rotation: object | None = None
     location: Location | None = None
     mount: Mount = Mount()
+    # Circuit tag (panel schedule) — hard-wired equipment has no receptacle device,
+    # so the circuit hook lives on the equipment itself, mirroring ElectricalDevice.
+    circuit: str | None = None
 
 
 @register_element
@@ -131,7 +135,7 @@ class VentRun(Element):
 
 @register_element
 class ElectricalDevice(Element):
-    """A device symbol — schema keeps a ``circuit`` hook for a future panel schedule.
+    """A device symbol; ``circuit`` names the ``Circuit`` feeding it (panel schedule).
 
     Height comes from ``mount`` like every other placeable; the former ``mount_height``
     scalar was a second, device-only source of truth that the placeable resolver never
@@ -140,7 +144,7 @@ class ElectricalDevice(Element):
     kind: DeviceKind
     position: Point2D
     wall_ref: str | None = None
-    circuit: str | None = None  # future panel-schedule hook; no consumer yet
+    circuit: str | None = None  # Circuit tag in Library.circuits (panel schedule)
     type_ref: str | None = None
     room: str | None = None
     rotation: object | None = None

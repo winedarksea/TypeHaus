@@ -95,6 +95,8 @@ _MARKER_STYLE = {
     "light": ("*", "#c08a00"), "panel": ("P", "#8a2a2a"),
     "spot-elev": ("+", "#5a8a5a"), "utility-entry": ("x", "#333333"),
     "level-marker": ("<", "#204070"), "alarm": ("h", "#555555"),
+    "junction_box": ("$J$", "#8a2a2a"), "meter": ("$M$", "#8a2a2a"),
+    "disconnect": ("$D$", "#8a2a2a"),
 }
 # Symbols drawn by a branch of their own. Anything else falls through to the window-glass
 # bar, so an unlisted name is not a missing glyph but a *wrong* one — how every smoke alarm

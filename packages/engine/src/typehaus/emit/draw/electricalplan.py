@@ -14,11 +14,13 @@ from typehaus.resolve.model import ResolvedModel
 _DEVICE_LAYER = {
     "receptacle": "E-POWR-DEVC", "gfci": "E-POWR-DEVC", "receptacle_240": "E-POWR-DEVC",
     "switch": "E-LITE", "light": "E-LITE", "panel": "E-POWR-DEVC",
+    "junction_box": "E-POWR-DEVC", "meter": "E-POWR-DEVC", "disconnect": "E-POWR-DEVC",
 }
 _LEGEND = (
     ("receptacle", "DUPLEX RECEPTACLE"), ("gfci", "GFCI RECEPTACLE"),
     ("receptacle_240", "240V RECEPTACLE"), ("switch", "SWITCH"), ("light", "LIGHT"),
-    ("panel", "ELECTRICAL PANEL"),
+    ("panel", "ELECTRICAL PANEL"), ("junction_box", "JUNCTION BOX"),
+    ("meter", "UTILITY METER"), ("disconnect", "DISCONNECT"),
 )
 
 

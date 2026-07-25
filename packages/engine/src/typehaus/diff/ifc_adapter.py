@@ -80,6 +80,8 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         "receptacle": "IfcOutlet", "gfci": "IfcOutlet", "receptacle_240": "IfcOutlet",
         "switch": "IfcSwitchingDevice", "light": "IfcLightFixture",
         "panel": "IfcElectricDistributionBoard",
+        "junction_box": "IfcJunctionBox", "meter": "IfcFlowMeter",
+        "disconnect": "IfcSwitchingDevice",
     }
     for item in model.canvas_objects:
         source = model.plan.by_tag(item.tag)
@@ -114,7 +116,8 @@ def external_elems(ifc_path: Path) -> list[DiffElem]:
     elems: list[DiffElem] = []
     for cls in ("IfcWall", "IfcOpeningElement", "IfcWindow", "IfcDoor", "IfcFurniture",
                 "IfcSanitaryTerminal", "IfcBuildingElementProxy", "IfcOutlet", "IfcAirTerminal",
-                "IfcSwitchingDevice", "IfcLightFixture", "IfcElectricDistributionBoard"):
+                "IfcSwitchingDevice", "IfcLightFixture", "IfcElectricDistributionBoard",
+                "IfcJunctionBox", "IfcFlowMeter"):
         for prod in model.by_type(cls):
             # A door/window's void is implementation detail of its filling relationship.
             # Unfilled rough openings remain independently reconcilable occurrences.

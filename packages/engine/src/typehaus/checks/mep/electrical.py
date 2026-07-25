@@ -66,3 +66,48 @@ def _devices_in_room(ctx: CheckContext, storey_tag: str, room) -> list:
         element for element in ctx.plan.storey_elements(storey_tag)
         if element.element_kind == "ElectricalDevice" and element.tag.startswith(f"ED-{suffix}-")
     ]
+
+
+@check(Tier.ADVISORY, "electrical.circuit_refs")
+def circuit_refs(ctx: CheckContext) -> list[Finding]:
+    """Every ``circuit`` reference resolves, every panel_ref is a panel, poles match ports."""
+    cid = "electrical.circuit_refs"
+    circuits = {c.tag: c for c in ctx.plan.library.circuits}
+    if not circuits:
+        return [_unknown(cid, "no circuits authored")]
+
+    consumers = [element for element in ctx.plan.all_elements()
+                 if element.element_kind in ("ElectricalDevice", "Equipment", "Register")]
+    panels = {element.tag for element in consumers
+              if element.element_kind == "ElectricalDevice" and element.kind.value == "panel"}
+    types = {t.tag: t for t in ctx.plan.library.electrical_device_types}
+
+    out: list[Finding] = []
+    for circuit in circuits.values():
+        if circuit.panel_ref not in panels:
+            out.append(_warn_fail(cid, f"circuit {circuit.tag} names missing panel "
+                                       f"{circuit.panel_ref}", (circuit.tag,)))
+    _required = {1: "power_120", 2: "power_240"}
+    for element in consumers:
+        ref = element.circuit
+        if not ref:
+            continue
+        circuit = circuits.get(ref)
+        if circuit is None:
+            out.append(_warn_fail(cid, f"{element.tag} references unknown circuit {ref}",
+                                  (element.tag,)))
+            continue
+        # A 2-pole circuit's device must offer a POWER_240 port (and 1-pole a POWER_120);
+        # multi-port types (e.g. a two-gang 5-20R/6-20R) satisfy either.
+        product_type = types.get(getattr(element, "type_ref", None))
+        required = _required.get(circuit.poles)
+        if (element.element_kind == "ElectricalDevice" and product_type is not None
+                and product_type.ports and required is not None
+                and required not in {port.service.value for port in product_type.ports}):
+            out.append(_warn_fail(
+                cid, f"{element.tag} on {circuit.poles}-pole circuit {ref} has no "
+                     f"{required} port", (element.tag, ref),
+            ))
+    if not out:
+        out.append(_pass(cid, f"{len(circuits)} circuits reconcile with their devices"))
+    return out

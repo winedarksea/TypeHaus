@@ -903,12 +903,17 @@ def _placeable_ifc_type(f: Any, cache: dict[tuple[str, str], Any], product_type:
 
 
 def _device_ifc_classes(kind: str) -> tuple[str, str]:
+    # Mirrored by diff/ifc_adapter.py (electrical_classes + the external read list) —
+    # change both together or the round-trip diff reads an edit as a deletion.
     return {
         "receptacle": ("IfcOutlet", "IfcOutletType"), "gfci": ("IfcOutlet", "IfcOutletType"),
         "receptacle_240": ("IfcOutlet", "IfcOutletType"),
         "switch": ("IfcSwitchingDevice", "IfcSwitchingDeviceType"),
         "light": ("IfcLightFixture", "IfcLightFixtureType"),
         "panel": ("IfcElectricDistributionBoard", "IfcElectricDistributionBoardType"),
+        "junction_box": ("IfcJunctionBox", "IfcJunctionBoxType"),
+        "meter": ("IfcFlowMeter", "IfcFlowMeterType"),
+        "disconnect": ("IfcSwitchingDevice", "IfcSwitchingDeviceType"),
     }.get(kind, ("IfcBuildingElementProxy", "IfcBuildingElementProxyType"))
 
 

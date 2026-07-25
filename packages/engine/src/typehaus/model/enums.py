@@ -176,7 +176,11 @@ class EquipmentKind(Enum):
 
 
 class DeviceKind(Enum):
-    """Electrical symbols-only vocabulary (panel/circuit schedule deferred, decision 1)."""
+    """Electrical device vocabulary — symbols plus the service-entrance kinds.
+
+    EV chargers are ``RECEPTACLE_240`` distinguished by their device *type* (NEMA
+    configuration lives on ``ElectricalDeviceType.nema``), not a kind of their own.
+    """
 
     RECEPTACLE = "receptacle"
     RECEPTACLE_GFCI = "gfci"
@@ -185,6 +189,8 @@ class DeviceKind(Enum):
     LIGHT = "light"
     PANEL = "panel"
     JUNCTION_BOX = "junction_box"  # NEMA 3R weatherproof exterior box (blank/gasketed)
+    METER = "meter"  # utility meter, separate from the panel (200A service)
+    DISCONNECT = "disconnect"  # equipment disconnect (minisplit, hot tub, WH)
 
 
 class ConnectorKind(Enum):
