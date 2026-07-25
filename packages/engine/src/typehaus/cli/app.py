@@ -187,10 +187,17 @@ def takeoff(
     house: Optional[Path] = typer.Argument(None),
     as_json: bool = typer.Option(False, "--json"),
 ) -> None:
-    """Report the resolved bill of materials: framing, solids, sheet goods, glazing, hardware."""
+    """Report the resolved bill of materials: framing, solids, sheet goods, glazing,
+    hardware, placeables, and radiant floor heat.
+
+    If the house supplies a ``prices.toml`` (user-authored — Type:Haus ships none; see
+    :mod:`typehaus.cli.prices` for the format), the report adds a $ / $-range cost
+    estimate that is explicit about which rows it could not price.
+    """
     from collections import Counter
     import json
 
+    from typehaus.cli.prices import estimate_costs, load_prices
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
     from typehaus.takeoff import bill_of_materials
@@ -200,6 +207,11 @@ def takeoff(
     if loaded.plan is None:
         _print_findings(loaded.findings)
         raise typer.Exit(1)
+    try:
+        prices = load_prices(d)
+    except ValueError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(2) from exc
     model, findings = resolve(loaded.plan)
     if any(finding.severity is Severity.ERROR for finding in findings):
         _print_findings(findings)
@@ -208,9 +220,7 @@ def takeoff(
     bom = bill_of_materials(model)
     framing_bom = bom["framing"]
     framing_by_size = bom["framing_by_size"]
-    radiant = [{"tag": zone.tag, "storey": zone.storey, "system": zone.system,
-                "wire_length_ft": round(zone.wire_length_m / 0.3048, 1)}
-               for zone in model.floor_heat]
+    radiant = bom["floor_heat"]
     payload = {"framing": dict(sorted(framing.items())),
                "framing_bom": framing_bom, "framing_by_size": framing_by_size,
                "structural_solids": bom["structural_solids"],
@@ -218,7 +228,10 @@ def takeoff(
                "construction_returns": bom["construction_returns"],
                "glazing_panels": bom["glazing_panels"],
                "glazing_trim": bom["glazing_trim"],
-               "hardware": bom["hardware"]}
+               "hardware": bom["hardware"],
+               "placeables": bom["placeables"]}
+    if prices is not None:
+        payload["cost_estimate"] = estimate_costs(bom, prices)
     if as_json:
         console.print_json(json.dumps(payload))
         return
@@ -273,6 +286,25 @@ def takeoff(
             console.print(f"  {item['count']:>5} {item['unit']:<5} "
                           f"{item['part_number']}{size} — {item['description']}")
             console.print(f"        [dim]{item['basis']}[/dim]")
+    if payload["placeables"]:
+        console.print("[bold]Fixtures, appliances & furniture[/bold]  (count · type: domain · storey)")
+        for item in payload["placeables"]:
+            console.print(f"  {item['count']:>5} ea    {item['type']} — "
+                          f"{item['domain']} · {item['storey']}")
+    if prices is not None:
+        estimate = payload["cost_estimate"]
+        console.print(f"[bold]Cost estimate[/bold]  (from {prices.path.name}; "
+                      "user-supplied prices, no defaults shipped)")
+        for name, section in estimate["sections"].items():
+            console.print(f"  {name}: {section['subtotal_fmt']}")
+            for row in section["rows"]:
+                console.print(f"    {row['quantity']:>9,.1f} {row['unit']:<6} "
+                              f"{row['key']}: {row['cost_fmt']}")
+        console.print(f"  [bold]total: {estimate['total_fmt']}[/bold]")
+        if estimate["unpriced"]:
+            missing = ", ".join(f"{row['section']}:{row['key']}"
+                                for row in estimate["unpriced"])
+            console.print(f"  [yellow]not priced (add to prices.toml): {missing}[/yellow]")
 
 
 @app.command(name="import")
