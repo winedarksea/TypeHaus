@@ -40,6 +40,7 @@ from typehaus import (
     inch,
     pt,
 )
+from typehaus.model import m
 
 DEVICE_TYPES = (
     ElectricalDeviceType(tag="ED-T-METER", name="200A meter socket (meter separate from panel)",
@@ -125,8 +126,8 @@ SERVICE_DEVICES = [
 
 BACKUP_ENCLOSURE = [
     ElectricalDevice(uid="CEE002AAAA", tag="ED-B-BACKUP-ENCL", kind=DeviceKind.PANEL,
-                     position=pt(ft(2), ft(31)), type_ref="ED-T-BACKUP-ENCL", circuit="CKT-BACKUP-FEED",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+                     position=pt(m(0.571135), m(9.43475)), type_ref="ED-T-BACKUP-ENCL", circuit="CKT-BACKUP-FEED",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room="RM-B-FURNACE"),
 ]
 
 # --- Basement: backup outlets, sauna, spa (sunken garden files on this storey) --------
@@ -156,10 +157,10 @@ BASEMENT_DEVICES = [
 BASEMENT_EQUIPMENT = [
     # 240V tank beside the HPWH (EQ-B-WH at ~(5'-11", 33')) in the furnace room.
     Equipment(uid="CEE015AAAA", tag="EQ-B-WH2", kind=EquipmentKind.WATER_HEATER,
-              position=pt(ft(8), ft(33)), footprint=(inch(24), inch(24)),
+              position=pt(m(2.54347), m(9.89175)), footprint=(inch(24), inch(24)),
               room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER-240", circuit="CKT-WH-240"),
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
-              position=pt(ft(7), ft(29)), footprint=(inch(24), inch(24)),
+              position=pt(m(2.09754), m(8.88149)), footprint=(inch(24), inch(24)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV", circuit="CKT-ERV"),
 ]
 
