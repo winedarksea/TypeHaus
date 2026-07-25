@@ -11,6 +11,10 @@ import {
 import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, MaterialSpec, Member, Model, ModelPart, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { authoredAppearance, materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup, isRoofFramingMember } from "../three/members";
+import { locateMember } from "../model/memberIdentity";
+import {
+  buildMemberHighlight, carriesMemberIdentity, resolveMemberPickUid,
+} from "../three/memberPicking";
 import { createSolidMaterial } from "../three/solidMaterials";
 import { applyDeckBoardUv, applyMasonryWallUv, applyStandingSeamWallUv, createDeckBoardMaterial, createMasonryMaterial, createStandingSeamMaterial, isAluminumDeckBoard, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM } from "../three/materials";
 import { aboveStructureLayers, boundaryEdges, layerInsetRect, roofOffsetter, roofPlaneTriangles } from "../three/roofGeometry";
@@ -167,10 +171,15 @@ export function wholeHouseGlbAssignment(
 }
 
 // Make every mesh a builder just added to `parent` resolve to one model element: snapshot
-// parent.children.length before building, pass it here afterwards. Framing members are merged
-// into shared instanced/merged draw calls (→ three/members.ts) and carry no identity of their
-// own, so a click on a joist, a tread or a rafter deliberately selects the floor / stair / roof
-// that owns it. Nordic edge overlays are LineSegments, so they stay out of the raycast set.
+// parent.children.length before building, pass it here afterwards. Nordic edge overlays are
+// LineSegments, so they stay out of the raycast set.
+//
+// Framing-member buckets are the one exception to the "one mesh, one element" rule: they draw
+// hundreds of sticks per draw call and carry their own per-instance / per-box identity
+// (→ three/memberPicking.ts), so a click on a joist, a tread or a rafter resolves to *that
+// member*, not to the floor / stair / roof around it. They still join `picks` (they must stay
+// clickable) and still contribute their material to the owner's highlight set, so selecting the
+// owner keeps lighting up its framing the way it always did.
 function registerSelectable(
   parent: THREE.Object3D,
   firstChildIndex: number,
@@ -185,13 +194,25 @@ function registerSelectable(
   for (let index = firstChildIndex; index < parent.children.length; index++) {
     const child = parent.children[index];
     if (!(child instanceof THREE.Mesh)) continue;
-    child.userData.uid = uid;
-    child.userData.selectionKind = kind;
+    if (!carriesMemberIdentity(child)) {
+      child.userData.uid = uid;
+      child.userData.selectionKind = kind;
+    }
     picks.push(child);
     const material = child.material;
     for (const one of Array.isArray(material) ? material : [material]) materials.add(one);
   }
   if (materials.size) byUid.set(uid, [...materials]);
+}
+
+/** Add the member buckets a builder just appended to `parent` to the raycast set. Used where
+ *  there is no registerSelectable pass to sweep them up — wall framing, which selects as its
+ *  individual members and never as a single "wall framing" element. */
+function registerMemberPicks(parent: THREE.Object3D, firstChildIndex: number, picks: THREE.Mesh[]) {
+  for (let index = firstChildIndex; index < parent.children.length; index++) {
+    const child = parent.children[index];
+    if (child instanceof THREE.Mesh && carriesMemberIdentity(child)) picks.push(child);
+  }
 }
 
 /** Whether an object and every ancestor above it is visible — three's own render-time test. */
@@ -370,10 +391,26 @@ function createScene(
   ) as Record<Trade, THREE.Group>;
   for (const trade of ALL_TRADES) content.add(tradeGroups[trade]);
 
+  // A picked framing member cannot be highlighted through `byUid`: its material is shared with
+  // every other stick in the same draw call. It gets a throwaway outline in this group instead,
+  // which sits outside the trade groups so the view-fit bounds never see it.
+  const memberHighlightGroup = new THREE.Group();
+  content.add(memberHighlightGroup);
+  // Drop the current member outline, if any. Cheap and idempotent — called on every highlight
+  // change and on every scene clear.
+  const clearMemberHighlight = () => {
+    disposeGroup(memberHighlightGroup);
+    memberHighlightGroup.clear();
+  };
+
   let picks: THREE.Mesh[] = [];
   let sceneGeneration = 0;
   const byUid = new Map<string, THREE.Material[]>();
   let highlighted: string | null = null;
+  // What `highlight` needs to rebuild a member outline: the model the scene was built from and
+  // the plan centre it was projected around.
+  let highlightSourceModel: Model | null = null;
+  let highlightPlanCenter: PlanCenter = [0, 0];
   let activePalette = RESOLVED_NORDIC_PALETTE.light;
   // Layer-group visibility lives on the meshes, which setModel rebuilds — unlike the trade
   // groups, which persist. Remembering the hidden set here is what lets a rebuild land with
@@ -531,8 +568,16 @@ function createScene(
       // directly, bypassing three's own visibility walk, so a hidden trade or a hidden assembly
       // layer would otherwise still intercept a click aimed at what it was hiding.
       const hit = raycaster.intersectObjects(picks.filter(isRenderedInScene), false)[0];
-      const uid = hit?.object.userData.uid as string | undefined;
-      const kind = hit?.object.userData.selectionKind as SelectionKind | undefined;
+      if (!hit) return;
+      // A framing bucket resolves the hit's instanceId / faceIndex back to the one member it
+      // drew there; anything else carries its element identity on the mesh itself.
+      const memberPick = resolveMemberPickUid(hit.object, hit.instanceId, hit.faceIndex);
+      if (memberPick) {
+        onPick("member", memberPick);
+        return;
+      }
+      const uid = hit.object.userData.uid as string | undefined;
+      const kind = hit.object.userData.selectionKind as SelectionKind | undefined;
       if (uid && kind) onPick(kind, uid);
     }
   });
@@ -578,6 +623,7 @@ function createScene(
       disposeGroup(tradeGroups[trade]);
       tradeGroups[trade].clear();
     }
+    clearMemberHighlight();
     picks = [];
     byUid.clear();
     highlighted = null;
@@ -669,6 +715,8 @@ function createScene(
     if (!preserveView) target = new THREE.Vector3(0, 1.2, 0);
 
     const center: PlanCenter = [cx, cz];
+    highlightSourceModel = m;
+    highlightPlanCenter = center;
     for (const w of m.walls) {
       const wallOpenings = m.openings.filter((opening) => opening.host === w.tag);
       buildWall(tradeGroups, w, wallOpenings, center, mode, palette, picks, byUid,
@@ -843,10 +891,18 @@ function createScene(
     if (highlighted && byUid.has(highlighted))
       for (const mat of byUid.get(highlighted)!)
         (mat as THREE.MeshStandardMaterial).emissive?.setHex(0x000000);
+    clearMemberHighlight();
     highlighted = uid;
     if (uid && byUid.has(uid))
       for (const mat of byUid.get(uid)!)
         (mat as THREE.MeshStandardMaterial).emissive?.set(activePalette.highlight);
+    // A member uid names one stick inside a shared bucket; outline it rather than tinting the
+    // bucket's material, which would light every stud in the wall.
+    const located = uid && highlightSourceModel ? locateMember(highlightSourceModel, uid) : null;
+    if (located) {
+      const outline = buildMemberHighlight(located.member, highlightPlanCenter, activePalette.highlight);
+      if (outline) memberHighlightGroup.add(outline);
+    }
     requestRender();
   };
 
@@ -1138,19 +1194,24 @@ function buildWall(
     }
     tagLayerGroup(tradeGroups.walls, layerFirstChildIndex, layerGroup);
   }
-  buildWallSkinMembers(tradeGroups.framing, w.members, center, mode);
+  const framingFirstIndex = tradeGroups.framing.children.length;
+  buildWallSkinMembers(tradeGroups.framing, w.uid, w.members, center, mode);
+  // A wall's studs are pickable as themselves; the wall body remains pickable through its
+  // layer meshes above, so both "this wall" and "this stud" stay one click away.
+  registerMemberPicks(tradeGroups.framing, framingFirstIndex, picks);
   byUid.set(w.uid, mats);
 }
 
 // Wall members split two ways for visibility: plain lumber answers to the Framing trade, while
 // a member that names a material is a derived skin band (a gable closure, a trim run) and must
-// answer to the assembly-layer control that governs the layer it continues. Merged member
-// meshes carry no per-member identity, so the split has to happen before the merge.
+// answer to the assembly-layer control that governs the layer it continues. The split has to
+// happen before the merge, since a merged mesh has one visibility flag for all of it.
 function buildWallSkinMembers(
-  parent: THREE.Group, members: Member[], center: PlanCenter, mode: "nordic" | "schematic",
+  parent: THREE.Group, wallUid: string, members: Member[], center: PlanCenter,
+  mode: "nordic" | "schematic",
 ) {
   const lumber = members.filter((member) => !member.material);
-  buildMembers(parent, lumber, center, mode);
+  buildMembers(parent, lumber, center, mode, wallUid);
   const skinByGroup = new Map<LayerVisibilityGroup, Member[]>();
   for (const member of members) {
     if (!member.material) continue;
@@ -1159,7 +1220,7 @@ function buildWallSkinMembers(
   }
   for (const [group, skin] of skinByGroup) {
     const firstChildIndex = parent.children.length;
-    buildMembers(parent, skin, center, mode);
+    buildMembers(parent, skin, center, mode, wallUid);
     tagLayerGroup(parent, firstChildIndex, group);
   }
 }
@@ -1558,7 +1619,7 @@ export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter
       flatShading: mode === "schematic",
     })));
   }
-  buildMembers(parent, floor.members, center, mode);
+  buildMembers(parent, floor.members, center, mode, floor.uid);
   registerSelectable(parent, firstChildIndex, floor.uid, "floor", picks, byUid);
 }
 
@@ -1631,13 +1692,13 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
   }
   for (const [group, members] of skinByGroup) {
     const skinFirstIndex = parent.children.length;
-    buildMembers(parent, members, center, mode);
+    buildMembers(parent, members, center, mode, roof.uid);
     tagLayerGroup(parent, skinFirstIndex, group);
   }
   registerSelectable(parent, firstChildIndex, roof.uid, "roof", picks, byUid);
   if (framingGroup && framing.length) {
     const framingFirstIndex = framingGroup.children.length;
-    buildMembers(framingGroup, framing, center, mode);
+    buildMembers(framingGroup, framing, center, mode, roof.uid);
     registerSelectable(framingGroup, framingFirstIndex, roof.uid, "roof", picks, byUid);
   }
 }
@@ -1647,6 +1708,6 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
 export function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter,
   mode: "nordic" | "schematic", picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
   const firstChildIndex = parent.children.length;
-  buildMembers(parent, stair.members, center, mode);
+  buildMembers(parent, stair.members, center, mode, stair.uid);
   registerSelectable(parent, firstChildIndex, stair.uid, "stair", picks, byUid);
 }

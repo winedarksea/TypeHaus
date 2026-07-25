@@ -3,6 +3,7 @@ import type { CanvasObject, Catalog, Floor, FootingBedding, Member, ModelPart, O
 import { archSoffitSegmentCount, frameRadiusForBounds, isRenderedInScene, normalizedWheelDeltaPx, VIEW_FIT_MIN_RADIUS_M, VIEW_FIT_POLAR_ANGLE, WHEEL_MAX_STEP_PX, buildCanvasObjectParts, buildFloor, buildFootingBedding, buildOpening, buildRoof, buildSolid, buildStair, canvasObjectFallbackGeometry, compassBearingScreenDirection, createSmoothArchedWallLayerGeometry, earthElevation, earthOutline, earthVoids, EARTH_FALLBACK_HALF_SIZE_M, FOOTING_BEDDING_COLOR, wallLayerPieces, wholeHouseGlbAssignment, withoutCollinearVertices } from "./Panel3D";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { SOLID_CATEGORY_COLOR, createSolidMaterial, solidColor } from "../three/solidMaterials";
+import { carriesMemberIdentity, resolveMemberPickUid } from "../three/memberPicking";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -265,7 +266,7 @@ export function runSolidMaterialTests() {
 function member(key: string): Member {
   return {
     key, category: "joist", profile: "2x10", p0: [0, 0], p1: [3, 0], z0_m: 2.4, z1_m: 2.65,
-    z0_end_m: null, z1_end_m: null, shape: "rect", width_m: 0.038, depth_m: 0.235,
+    length_m: 3, z0_end_m: null, z1_end_m: null, shape: "rect", width_m: 0.038, depth_m: 0.235,
     flange_width_m: null, flange_thickness_m: null, web_thickness_m: null, plies: 1,
     orient: null,
   } as Member;
@@ -297,8 +298,8 @@ export function runSelectionRegistrationTests() {
   } as FootingBedding, [0, 0], "schematic", beddings.picks, beddings.byUid);
   registered(beddingGroup, "FB-9", "footing_bedding", beddings.picks, beddings.byUid, "buildFootingBedding");
 
-  // A floor's joists are merged into shared draw calls; the whole bucket must resolve to the
-  // floor, since three/members.ts deliberately gives individual members no identity.
+  // A floor's joists are merged into shared draw calls, but each bucket carries its own
+  // per-member identity — so the deck selects as the floor while a joist selects as a joist.
   const floorGroup = new THREE.Group();
   const floors = registry();
   buildFloor(floorGroup, {
@@ -306,7 +307,13 @@ export function runSelectionRegistrationTests() {
     subfloor: { material: "osb", thickness_m: 0.019 }, members: [member("J-1"), member("J-2")],
   } as Floor, [0, 0], "schematic", PALETTE, floors.picks, floors.byUid);
   registered(floorGroup, "FL-1", "floor", floors.picks, floors.byUid, "buildFloor");
-  assert(floors.picks.length > 1, "Both the subfloor deck and the joist bucket select as the floor");
+  assert(floors.picks.length > 1, "The subfloor deck and the joist bucket are both raycast targets");
+  const joistBucket = floors.picks.find(carriesMemberIdentity);
+  assert(joistBucket !== undefined, "buildFloor makes its joist bucket pickable");
+  assert(resolveMemberPickUid(joistBucket!, 1, null) === "FL-1::J-2",
+    "Instance 1 of the floor's joist bucket resolves to the second joist, not to the floor");
+  assert((floors.byUid.get("FL-1") ?? []).includes(joistBucket!.material as THREE.Material),
+    "Selecting the floor still lights its joists — the bucket stays in the owner's highlight set");
 
   const roofGroup = new THREE.Group();
   const roofs = registry();
@@ -317,11 +324,20 @@ export function runSelectionRegistrationTests() {
   } as Roof, [0, 0], "schematic", PALETTE, undefined, roofs.picks, roofs.byUid);
   registered(roofGroup, "R-1", "roof", roofs.picks, roofs.byUid, "buildRoof");
 
+  // A stair is nothing *but* members, so every one of its picks now resolves to a tread or a
+  // stringer rather than to the stair. The stair is still reachable — from the 2D plan, and
+  // from the member inspector's parent link — and still highlights, because its member bucket
+  // stays in byUid.
   const stairGroup = new THREE.Group();
   const stairs = registry();
   buildStair(stairGroup, { uid: "ST-1", members: [member("T-1"), member("T-2")] } as Stair,
     [0, 0], "schematic", stairs.picks, stairs.byUid);
-  registered(stairGroup, "ST-1", "stair", stairs.picks, stairs.byUid, "buildStair");
+  assert(stairs.picks.length > 0 && stairs.picks.every(carriesMemberIdentity),
+    "buildStair's picks are all member buckets");
+  assert(resolveMemberPickUid(stairs.picks[0], 0, null) === "ST-1::T-1",
+    "Clicking the first tread selects that tread");
+  assert((stairs.byUid.get("ST-1") ?? []).length > 0,
+    "buildStair still indexes its materials so selecting the stair highlights it");
 
   const openingGroup = new THREE.Group();
   const openings = registry();

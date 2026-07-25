@@ -23,6 +23,7 @@ import { loadBundledHouse, pickHouseDirectory } from "../engine/openHouse";
 // and keep the HttpEngineClient default.
 const PWA_STANDALONE = import.meta.env.VITE_PWA_STANDALONE === "1";
 import type { Finding, Model, Provenance, Vec2 } from "../model/types";
+import { locateMember, memberCentroid } from "../model/memberIdentity";
 import { ALL_LAYER_VISIBILITY_GROUPS, type LayerVisibilityGroup } from "../model/visibility";
 
 export type Tool = "select" | "wall" | "opening" | "placeable" | "room" | "stair" | "dimension";
@@ -57,18 +58,23 @@ export const ALL_TRADES: Trade[] = [
 export type DetailView = "none" | "assembly" | "bom";
 
 // Every kind of model record the UI can hold selected. The first five are authored elements a
-// patch can edit or delete; the last four are *derived* geometry the resolver computes (a post
-// or beam solid, a footing's gravel bed, a roof, a framed floor) — selectable and inspectable in
-// 3D, but only editable through the element they came from. The same vocabulary is written into
-// glTF node extras (emit/gltf/emitter.py::_SELECTION_KINDS) and emitted by the 3D pick handler
-// (components/Panel3D.tsx), so all three surfaces agree on what a click resolves to.
+// patch can edit or delete; the rest are *derived* geometry the resolver computes (a post
+// or beam solid, a footing's gravel bed, a roof, a framed floor, one framing member) —
+// selectable and inspectable in 3D, but only editable through the element they came from. The
+// same vocabulary is written into glTF node extras (emit/gltf/emitter.py::_SELECTION_KINDS) and
+// emitted by the 3D pick handler (components/Panel3D.tsx), so all three surfaces agree on what
+// a click resolves to. "member" is UI-only for now: the glb emitter merges framing into shared
+// nodes, so only the model.json render path can resolve a click to a single stick.
 export type SelectionKind =
   | "wall" | "opening" | "room" | "stair" | "canvas_object"
-  | "solid" | "footing_bedding" | "floor" | "roof";
+  | "solid" | "footing_bedding" | "floor" | "roof" | "member";
 export const ALL_SELECTION_KINDS: SelectionKind[] = [
   "wall", "opening", "room", "stair", "canvas_object", "solid", "footing_bedding", "floor", "roof",
+  "member",
 ];
-export const DERIVED_SELECTION_KINDS: SelectionKind[] = ["solid", "footing_bedding", "floor", "roof"];
+export const DERIVED_SELECTION_KINDS: SelectionKind[] = [
+  "solid", "footing_bedding", "floor", "roof", "member",
+];
 
 export interface Selection {
   kind: SelectionKind | null;
@@ -659,6 +665,12 @@ export function locateUid(model: Model, uid: string): LocatedElement | null {
     source: sourceOf(floor.provenance),
     // A framed floor carries no outline of its own; its joist endpoints bound the deck.
     centroid: ringCentroid(floor.members.flatMap((member) => [member.p0, member.p1])) };
+
+  // Framing members last: their uid is a composite (`<owner uid>::<child key>`) that can never
+  // collide with a minted uid above, and resolving one costs a scan of every framed parent.
+  const framed = locateMember(model, uid);
+  if (framed) return { kind: "member", tag: `${framed.ownerTag} · ${framed.member.key}`,
+    storey: framed.storey, source: null, centroid: memberCentroid(framed.member) };
 
   return null;
 }

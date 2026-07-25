@@ -40,6 +40,9 @@ export interface Layer {
 export type MemberShape = "rect" | "i_joist";
 
 export interface Member {
+  // Semantic, resolver-minted, unique within the parent wall/roof/floor/stair ("stud-007",
+  // "plate-bottom"). Joined to the parent uid it is the member's stable identity — see
+  // model/memberIdentity.ts, which is what per-member 3D picking selects with.
   key: string;
   category: string; // stud | plate | header | joist | rim | ridge_beam | ...
   profile: string; // never parsed client-side — shape/width_m/depth_m are pre-resolved below
@@ -47,6 +50,9 @@ export interface Member {
   p1: Vec2;
   z0_m: number;
   z1_m: number;
+  // The resolver's own run length. Not derivable from p0/p1 client-side: a vertical stud has
+  // no plan run at all, and a raked rafter's plan run is shorter than the stick it cuts.
+  length_m: number;
   // A raked member has different lower/upper elevations at its second endpoint.
   z0_end_m: number | null;
   z1_end_m: number | null;
