@@ -1,0 +1,9 @@
+# The app is a client-side SPA with no crawlable content of its own, and the install scripts
+# are meant to be fetched by curl, not indexed. Everything else is fair game.
+User-agent: *
+Allow: /
+Disallow: /app
+Disallow: /install.sh
+Disallow: /install.ps1
+
+Sitemap: https://type-house.com/sitemap.xml

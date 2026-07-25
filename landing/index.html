@@ -3,216 +3,436 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Type:Haus — infrastructure-as-code for houses</title>
+    <title>Type:Haus — infrastructure as code, but the infrastructure is a house</title>
     <meta
       name="description"
-      content="Type:Haus is a building-science-aligned design engine for residential houses: edit plan source, export clean IFC/Revit/SketchUp, and run it entirely in your browser."
+      content="Author a residential house as typed, declarative Python. Type:Haus resolves real framing, runs code and structural checks, and compiles the same source to IFC4, DXF and a permit-ready PDF set. Edit it in your browser — the whole engine runs client-side."
     />
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <style>
-      :root {
-        --bg: #0f1115;
-        --panel: #171a21;
-        --ink: #e8ebf0;
-        --muted: #9aa4b2;
-        --line: #262b34;
-        --accent: #5b9dff;
-        --accent-ink: #0b1220;
-        --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-        --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      }
-      @media (prefers-color-scheme: light) {
-        :root {
-          --bg: #f7f8fa;
-          --panel: #ffffff;
-          --ink: #1a1e26;
-          --muted: #5a6472;
-          --line: #e3e7ee;
-          --accent: #2f6fe0;
-          --accent-ink: #ffffff;
-        }
-      }
-      * { box-sizing: border-box; }
-      html { scroll-behavior: smooth; }
-      body {
-        margin: 0;
-        font-family: var(--sans);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.55;
-        -webkit-font-smoothing: antialiased;
-      }
-      a { color: var(--accent); }
-      .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
-      header {
-        border-bottom: 1px solid var(--line);
-        position: sticky;
-        top: 0;
-        background: color-mix(in srgb, var(--bg) 85%, transparent);
-        backdrop-filter: blur(8px);
-        z-index: 5;
-      }
-      .nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 14px 24px;
-        max-width: 960px;
-        margin: 0 auto;
-      }
-      .brand { font-weight: 700; letter-spacing: -0.02em; font-size: 18px; }
-      .brand span { color: var(--accent); }
-      .nav a { color: var(--muted); text-decoration: none; margin-left: 20px; font-size: 14px; }
-      .nav a:hover { color: var(--ink); }
-      .hero { padding: 88px 0 56px; text-align: center; }
-      .hero h1 {
-        font-size: clamp(34px, 6vw, 56px);
-        line-height: 1.05;
-        letter-spacing: -0.03em;
-        margin: 0 0 18px;
-      }
-      .hero p.lede { font-size: clamp(17px, 2.4vw, 21px); color: var(--muted); max-width: 640px; margin: 0 auto 32px; }
-      .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 12px 22px;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 15px;
-        text-decoration: none;
-        border: 1px solid var(--line);
-      }
-      .btn-primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-      .btn-ghost { background: var(--panel); color: var(--ink); }
-      .btn:hover { filter: brightness(1.06); }
-      .install {
-        margin: 40px auto 0;
-        max-width: 620px;
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 18px 20px;
-        text-align: left;
-      }
-      .install .label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
-      .install code {
-        display: block;
-        font-family: var(--mono);
-        font-size: 14px;
-        background: var(--bg);
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 12px 14px;
-        overflow-x: auto;
-        white-space: pre;
-      }
-      .install .note { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
-      section { padding: 56px 0; border-top: 1px solid var(--line); }
-      section h2 { font-size: 26px; letter-spacing: -0.02em; margin: 0 0 8px; }
-      section .sub { color: var(--muted); margin: 0 0 28px; }
-      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
-      .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
-      .card h3 { margin: 0 0 6px; font-size: 16px; }
-      .card p { margin: 0; color: var(--muted); font-size: 14px; }
-      .steps { counter-reset: step; display: grid; gap: 14px; }
-      .step { display: flex; gap: 14px; align-items: flex-start; }
-      .step .n {
-        flex: 0 0 auto;
-        width: 28px; height: 28px; border-radius: 50%;
-        background: var(--accent); color: var(--accent-ink);
-        display: grid; place-items: center; font-weight: 700; font-size: 14px;
-      }
-      .step code { font-family: var(--mono); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
-      footer { border-top: 1px solid var(--line); padding: 32px 0 56px; color: var(--muted); font-size: 13px; text-align: center; }
-      .pill { display: inline-block; font-size: 12px; color: var(--accent); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; margin-bottom: 18px; }
-    </style>
+    <link rel="canonical" href="https://type-house.com/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f1115" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f8fa" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://type-house.com/" />
+    <meta property="og:title" content="Type:Haus — infrastructure as code for houses" />
+    <meta
+      property="og:description"
+      content="Design a real, buildable house as readable source. Real studs and headers, building-science assemblies, code checks, and clean IFC/DXF/PDF exports. Runs in your browser."
+    />
+    <meta property="og:image" content="https://type-house.com/assets/editor-split.png" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <header>
       <nav class="nav">
-        <div class="brand">Type<span>:</span>Haus</div>
-        <div>
+        <a class="brand" href="/">Type<span>:</span>Haus</a>
+        <div class="nav-links">
+          <a href="#what">What it is</a>
           <a href="#features">Features</a>
+          <a href="#permit">Permit set</a>
           <a href="#install">Install</a>
-          <a href="/app">Open the app</a>
+          <a href="https://github.com/winedarksea/TypeHaus">GitHub</a>
+          <a class="strong" href="/app/">Open the app →</a>
         </div>
       </nav>
     </header>
 
     <main>
       <div class="hero wrap">
-        <div class="pill">Pre-alpha · building-science-aligned</div>
-        <h1>Infrastructure-as-code<br />for houses.</h1>
+        <div class="pill">Pre-alpha · open source · MIT</div>
+        <h1>Infrastructure as code,<br />but the infrastructure is a house.</h1>
         <p class="lede">
-          Design a real, buildable house as readable source. Edit in a 2D/3D browser editor or a
-          vibe-code-friendly config, then export clean IFC, Revit, and SketchUp. No account, no
-          upload — the whole engine runs in your browser.
+          Describe walls, rooms, openings, assemblies and foundations as typed, declarative
+          Python. Type:Haus resolves the topology, frames every wall with real studs, plates and
+          headers, runs integrity, code and structural checks, and compiles the same source to an
+          IFC4 model, DXF drawings and a permit-ready PDF set.
         </p>
         <div class="cta">
-          <a class="btn btn-primary" href="/app">Try it in your browser →</a>
+          <a class="btn btn-primary" href="/app/">Open the editor in your browser</a>
           <a class="btn btn-ghost" href="#install">Install the CLI</a>
         </div>
 
-        <div class="install" id="install">
-          <div class="label">Install the local engine</div>
-          <code>curl -LsSf https://type-house.com/install.sh | sh</code>
+        <div class="install">
+          <div class="label">No install required — but if you want the full engine</div>
+          <div class="cmd">
+            <code id="install-cmd">curl -LsSf https://type-house.com/install.sh | sh</code>
+            <button class="copy" type="button" data-copy="#install-cmd">Copy</button>
+          </div>
           <p class="note">
-            Installs the <code>haus</code> command (build · check · render · serve) with pipx.
-            No uv required. Windows:
-            <code>irm https://type-house.com/install.ps1 | iex</code>
+            Installs the <code>haus</code> CLI with pipx (Python 3.11+, no uv required). Windows
+            PowerShell: <code>irm https://type-house.com/install.ps1 | iex</code>. Read the
+            scripts first if you'd rather —
+            <a href="/install.sh">install.sh</a> · <a href="/install.ps1">install.ps1</a>.
           </p>
         </div>
       </div>
 
-      <section id="features" class="wrap">
-        <h2>What it does</h2>
-        <p class="sub">One source of truth, from sketch to permit set.</p>
+      <section class="wrap" id="shot" style="border-top: none; padding-top: 8px">
+        <figure>
+          <div class="shot">
+            <img
+              src="/assets/editor-split.png"
+              width="1600"
+              height="879"
+              alt="The Type:Haus editor: a dimensioned 2D floor plan with resolved stud framing, rooms and furniture on the left, and a shaded 3D model of the same house on its site on the right."
+            />
+          </div>
+          <figcaption>
+            The browser editor, running the engine client-side on the bundled Catlin reference
+            house — five storeys, real framing, live checks, no server.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="wrap" id="what">
+        <h2>One source of truth, from sketch to permit set</h2>
+        <p class="sub">
+          Floor-plan apps stop at rectangles. CAD makes you draw every stud yourself. Type:Haus
+          keeps a single typed model: you author intent, the engine resolves the consequences —
+          gap-free mitered corners, walls stacked across storeys, every wall framed, rooms and
+          takeoffs derived, checks re-run — and every output is a view of that same model.
+        </p>
         <div class="grid">
           <div class="card">
             <h3>Plan source you can read</h3>
-            <p>Nodes, walls, openings, rooms and assemblies are plain keyword-arg declarations — diffable, mergeable, and safe to hand-edit or vibe-code.</p>
+            <p>
+              Nodes, walls, openings, rooms and assemblies are frozen typed objects declared with
+              plain keyword arguments. Diffable, mergeable, reviewable — and safe to hand-edit or
+              hand to a coding agent.
+            </p>
           </div>
           <div class="card">
-            <h3>Runs fully offline</h3>
-            <p>The engine compiles to WebAssembly and edits plan source in a pure-Python writeback path — no server round-trip, works on a plane.</p>
+            <h3>The actual framing, everywhere</h3>
+            <p>
+              Plan cuts and 3D show real studs, plates, headers and insulation hatch — never a
+              generic gray box. That's what makes design-exact material takeoffs possible.
+            </p>
           </div>
           <div class="card">
-            <h3>Clean exports</h3>
-            <p>Deterministic IFC with stable GlobalIds, plus DXF/PDF sheets — round-trip an architect's IFC changes back into source.</p>
+            <h3>Assemblies are first-class</h3>
+            <p>
+              Layer stacks carry materials, control layers and R-values — for exterior envelope
+              <em>and</em> interior partitions. One wall line can change assembly on every storey
+              and the transitions still resolve.
+            </p>
           </div>
           <div class="card">
-            <h3>Building science built in</h3>
-            <p>Assemblies carry control layers and R-values; checks flag code, structural, and envelope issues as you edit.</p>
+            <h3>Checks, not vibes</h3>
+            <p>
+              Integrity, code, structural and advisory checks run over the resolved model and come
+              back as findings with severities. The same registry runs under
+              <code>haus check</code>, in pytest, and live in the editor.
+            </p>
           </div>
           <div class="card">
             <h3>Stable identity</h3>
-            <p>Every element keeps an immutable uid, so retagging or moving between storeys never breaks its downstream references.</p>
+            <p>
+              Every element keeps an immutable uid, so retagging, moving between storeys, or
+              round-tripping through IFC never breaks downstream references.
+            </p>
           </div>
           <div class="card">
-            <h3>Look, don't guess</h3>
-            <p>Render plan and 3D snapshots after every edit — spatial judgment joins the text findings.</p>
+            <h3>Git is the collaboration layer</h3>
+            <p>
+              No accounts, no cloud project store, no lock-in. Your house is a folder of source
+              files you own, version and branch like any other repository.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="wrap" id="features">
+        <h2>Two exit ramps, both first-class</h2>
+        <p class="sub">
+          A design is only useful if it leaves the tool. Type:Haus is built so you can either
+          carry it all the way yourself, or hand a professional something they can genuinely build
+          on instead of redraw.
+        </p>
+        <div class="grid">
+          <div class="card">
+            <h3>1 · Refine in place</h3>
+            <p>
+              Keep iterating against the checks until the set is permit-ready.
+              <code>haus print</code> composes the sheets; <code>haus permit-check</code> gates the
+              declared submittal subset and refuses to print on unknowns or failures.
+            </p>
+          </div>
+          <div class="card">
+            <h3>2 · Hand off, preserving the work</h3>
+            <p>
+              <code>haus print --handoff</code> emits the "give this to your architect" bundle:
+              core-LOD IFC, every DXF, the permit PDF, your brief, and the diff baseline. Their
+              revised IFC comes back through <code>haus diff</code> as a semantic, reviewable
+              change list.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Deterministic exports</h3>
+            <p>
+              IFC4 with typed layered walls, real spaces, openings with schedules, georeferencing
+              and standard psets, carrying stable GlobalIds. Builds are deterministic — CI diffs
+              two consecutive builds of an unchanged plan on every run. DXFs follow the AIA CAD
+              layer guidelines.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Building science, quantified</h3>
+            <p>
+              Assembly R-values, per-façade window-to-wall ratio, Glaser-method condensation risk
+              plotted on the section card, and a transparent design-day block heating and cooling
+              load via <code>haus energy</code>.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Runs in your browser</h3>
+            <p>
+              The engine is pure Python compiled onto Pyodide and shipped as an installable PWA.
+              Resolve, check, edit, and 3D all happen client-side. Nothing is uploaded; after the
+              first load it works offline.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Built for agentic editing</h3>
+            <p>
+              Edit the plan in your editor on one screen while the UI redraws on the other. The
+              <code># haus: editable</code> subset is a constrained declarative dialect with no
+              executable surface, and a linter proves it.
+            </p>
           </div>
         </div>
       </section>
 
       <section class="wrap">
-        <h2>Two ways in</h2>
-        <p class="sub">Start in the browser; drop to the CLI when you want full IFC export and macros.</p>
-        <div class="steps">
-          <div class="step"><div class="n">1</div><div><strong>Open the app.</strong> <a href="/app">type-house.com/app</a> loads the Catlin reference house by default — pan, edit a wall, undo, all offline.</div></div>
-          <div class="step"><div class="n">2</div><div><strong>Install locally.</strong> <code>curl -LsSf https://type-house.com/install.sh | sh</code> for the full engine.</div></div>
-          <div class="step"><div class="n">3</div><div><strong>Serve your own house.</strong> <code>haus new my-house</code> then <code>haus serve</code> — same editor, plus IFC export and parametric macros.</div></div>
+        <h2>Look at it, don't guess</h2>
+        <p class="sub">
+          Every edit ends in a picture. Plan, section, site and 3D snapshots render headlessly, so
+          spatial judgment — yours or an agent's — joins the text findings.
+        </p>
+        <div class="shot-row">
+          <figure>
+            <div class="shot">
+              <img
+                loading="lazy"
+                src="/assets/editor-plan-basement.png"
+                width="1600"
+                height="879"
+                alt="Basement floor plan in the Type:Haus editor showing labelled rooms with square footages, a stair run, plumbing and mechanical fixtures, and the sunken garden retaining walls."
+              />
+            </div>
+            <figcaption>Derived rooms, areas, fixtures and life-safety symbols per storey.</figcaption>
+          </figure>
+          <figure>
+            <div class="shot">
+              <img
+                loading="lazy"
+                src="/assets/editor-3d.png"
+                width="1600"
+                height="879"
+                alt="Shaded 3D view of the same house sitting on its site, with the walkout basement, porch railing and roof planes visible."
+              />
+            </div>
+            <figcaption>
+              The same model in 3D, on its real parcel. Deliberately not photoreal — that's a job
+              for a render pass, not the source of truth.
+            </figcaption>
+          </figure>
         </div>
+      </section>
+
+      <section class="wrap" id="permit">
+        <h2>What a permit set looks like</h2>
+        <p class="sub">
+          <code class="inline-code">haus print</code> builds the model, renders every sheet, and
+          writes one <code class="inline-code">permit_set.pdf</code> plus per-sheet DXF at 11×17 —
+          the size many Minnesota cities accept for a residential review set. The whole set is
+          composed from the resolved model, so nothing is drawn twice and nothing drifts.
+        </p>
+        <div class="scroll-x">
+          <table class="sheets">
+            <thead>
+              <tr><th>Sheet</th><th>Content</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>A-000</td><td>Cover, sheet index, code summary from the checks output</td></tr>
+              <tr><td>C-101</td><td>Site plan — parcel basemap, setbacks, project north</td></tr>
+              <tr><td>S-100</td><td>Foundation plan — foundation walls, footings, pads, posts</td></tr>
+              <tr><td>S-101…</td><td>Framing plan per storey, plus a framing schedule and bill of materials</td></tr>
+              <tr><td>A-101…</td><td>Dimensioned floor plan per storey, then the roof plan</td></tr>
+              <tr><td>A-201…204</td><td>North, south, east and west exterior elevations</td></tr>
+              <tr><td>A-301</td><td>Building section</td></tr>
+              <tr><td>A-401…</td><td>Wall sections and details — authored slices, then every derived transition</td></tr>
+              <tr><td>A-601</td><td>Door and window schedule</td></tr>
+              <tr><td>P/M/E-1xx</td><td>Plumbing, HVAC and electrical plans, per storey that has content</td></tr>
+              <tr><td>EN-1</td><td>Energy compliance summary — assembly R-values against code and preferences</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">
+          Code coverage is a <em>declared</em> subset (Minnesota residential first), and unknowns
+          report as unknowns rather than guesses. Type:Haus does not replace the architect or
+          engineer of record.
+        </p>
+      </section>
+
+      <section class="wrap" id="start">
+        <h2>Two ways in</h2>
+        <p class="sub">
+          Start in the browser with a real house already loaded. Drop to the CLI when you want IFC
+          export, permit printing, and generative macros.
+        </p>
+        <div class="steps">
+          <div class="step">
+            <div class="n">1</div>
+            <div>
+              <strong>Open the app.</strong>
+              <a href="/app/">type-house.com/app</a> boots the Catlin reference house in the
+              in-browser engine — five storeys, framing, rooms and live checks — with no account,
+              no upload and no folder pick. Install it from the browser menu and it works offline.
+            </div>
+          </div>
+          <div class="step">
+            <div class="n">2</div>
+            <div>
+              <strong>Bring your own house.</strong> "Open house folder" points the same in-browser
+              engine at a plan directory on your disk. Nothing leaves the machine.
+            </div>
+          </div>
+          <div class="step">
+            <div class="n">3</div>
+            <div>
+              <strong>Install the engine.</strong>
+              <code>curl -LsSf https://type-house.com/install.sh | sh</code>, then
+              <code>haus new my-house</code> and <code>haus serve my-house</code> for the same
+              editor backed by the full local engine.
+            </div>
+          </div>
+        </div>
+
+        <p class="sub" style="margin: 28px 0 12px">The CLI, in full:</p>
+        <pre class="block"><span class="c"># scaffold, build, inspect</span>
+haus new my-house
+haus build my-house              <span class="c"># -&gt; out/model.json (+ IFC)</span>
+haus check my-house              <span class="c"># integrity / code / structural / advisory findings</span>
+haus ls my-house --summary       <span class="c"># compact plan digest</span>
+haus serve my-house              <span class="c"># 2D/3D editor at http://127.0.0.1:8000</span>
+
+<span class="c"># analyze</span>
+haus energy my-house             <span class="c"># design-day block heating/cooling load</span>
+haus takeoff my-house            <span class="c"># framing counts, radiant-wire lengths</span>
+haus explain HOUSE_WALL_2X6_WITH_ZIPR my-house --card
+
+<span class="c"># ship</span>
+haus permit-check my-house       <span class="c"># gate the declared permit subset</span>
+haus print my-house --handoff    <span class="c"># permit PDF + DXFs + architect bundle</span>
+haus diff architect.ifc my-house <span class="c"># semantic diff of their revisions</span></pre>
+      </section>
+
+      <section class="wrap" id="honest">
+        <h2>What this is not</h2>
+        <p class="sub">
+          Type:Haus is pre-alpha and openly scoped. Knowing the edges up front is more useful than
+          finding them later.
+        </p>
+        <ul class="plain">
+          <li>
+            <strong>Not a commercial-building tool.</strong> Residential, up to duplex scale. No
+            multi-family, no commercial code paths.
+          </li>
+          <li>
+            <strong>Not general-purpose CAD.</strong> It compiles a house model; it will not draw
+            you an arbitrary shape.
+          </li>
+          <li>
+            <strong>Not a cloud service.</strong> There is no account and no server-side project
+            store. Git is the collaboration layer.
+          </li>
+          <li>
+            <strong>Not visually stunning by design.</strong> The 3D view is an honest,
+            quality-surfaced model, not a marketing render. Pass an elevation to an image model if
+            you want the glamour shot.
+          </li>
+          <li>
+            <strong>Not a substitute for a professional.</strong> Checks are advisory. A licensed
+            architect or engineer still owns what gets stamped and built.
+          </li>
+        </ul>
+      </section>
+
+      <section class="wrap" id="faq">
+        <h2>Questions</h2>
+        <details class="faq">
+          <summary>Does the browser app really run the whole engine client-side?</summary>
+          <p>
+            Yes. The Python engine is bundled as source, unpacked into a Pyodide web worker, and
+            run there. Resolve, checks, model JSON, 3D and plan editing all happen on your machine.
+            Two things still need the local install: generative macros, and IFC export (its
+            geometry kernel has no browser build yet) — both report that plainly instead of failing
+            silently.
+          </p>
+        </details>
+        <details class="faq">
+          <summary>Is my house design uploaded anywhere?</summary>
+          <p>
+            No. The app is static files plus a client-side engine; there is no backend to upload
+            to. The bundled demo house ships with the app, and a folder you open stays on disk.
+          </p>
+        </details>
+        <details class="faq">
+          <summary>What does the install script actually do?</summary>
+          <p>
+            It finds a Python 3.11+ interpreter, makes sure pipx is available, and runs
+            <code>pipx install "typehaus[server]"</code> — an isolated install, no changes to your
+            global site-packages. It then offers to scaffold a starter house and open the editor.
+            The source is right there at <a href="/install.sh">/install.sh</a>; piping an unread
+            script into a shell is always your call.
+          </p>
+        </details>
+        <details class="faq">
+          <summary>Building a downloaded house runs its Python — is that safe?</summary>
+          <p>
+            <code>haus build</code> imports the plan package, which is the same trust decision as
+            <code>pip install</code>. The <code># haus: editable</code> files are a constrained
+            declarative subset with no executable surface, and <code>haus build --inspect</code>
+            previews a plan without importing <code>params/</code>.
+          </p>
+        </details>
+        <details class="faq">
+          <summary>Which building code does it check against?</summary>
+          <p>
+            A declared subset, Minnesota residential first. Coverage is explicit: a rule that is
+            not implemented reports as unknown rather than passing quietly, and
+            <code>haus permit-check</code> refuses to print a set with unknowns or failures in the
+            declared subset.
+          </p>
+        </details>
       </section>
     </main>
 
     <footer>
       <div class="wrap">
-        Type:Haus · MIT-licensed · <a href="/app">Open the app</a> ·
-        <a href="https://github.com/">Source</a>
+        Type:Haus — MIT licensed, © Colin Catlin ·
+        <a href="/app/">Open the app</a> ·
+        <a href="https://github.com/winedarksea/TypeHaus">Source on GitHub</a> ·
+        <a href="/install.sh">install.sh</a>
       </div>
     </footer>
+
+    <script>
+      // Progressive enhancement only: without JS the command is still selectable text.
+      for (const button of document.querySelectorAll("[data-copy]")) {
+        button.addEventListener("click", async () => {
+          const source = document.querySelector(button.dataset.copy);
+          try {
+            await navigator.clipboard.writeText(source.textContent.trim());
+            button.textContent = "Copied";
+          } catch {
+            button.textContent = "Press ⌘C";
+          }
+          setTimeout(() => (button.textContent = "Copy"), 2000);
+        });
+      }
+    </script>
   </body>
 </html>

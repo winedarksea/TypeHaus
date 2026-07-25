@@ -2,16 +2,24 @@
  *
  * Strategy:
  *  - navigations            → network-first, fall back to cached index.html (offline boot)
- *  - same-origin static     → cache-first (Vite content-hashes filenames, so they're immutable)
- *  - pyodide/CDN cross-origin→ cache-first (stale-while-revalidate); makes the in-browser
- *                              engine work fully offline after the first successful load
+ *  - hashed build assets    → cache-first (Vite content-hashes /assets/*, so a URL's bytes
+ *                              never change; a new deploy simply asks for new URLs)
+ *  - other same-origin      → stale-while-revalidate. The engine tarball, the bundled house,
+ *                              the manifest and the icons keep STABLE urls across deploys, so
+ *                              cache-first would pin a returning visitor to whatever engine
+ *                              they first loaded. Serve the cached copy instantly, then
+ *                              refresh it in the background for the next boot.
+ *  - pyodide/CDN cross-origin→ cache-first; the URLs are version-pinned, and this is what makes
+ *                              the in-browser engine work offline after the first load
  *  - engine API paths       → network-only, never cached (the local `haus serve` path stays
  *                              authoritative; a stale model.json must never be served)
  *
- * CACHE_VERSION is bumped by the build (see scripts/build-pwa-assets.mjs) so a new deploy
- * evicts the old shell on activate.
+ * Note that CACHE_VERSION is NOT bumped per deploy: the browser only reinstalls this worker when
+ * sw.js itself changes, so a version constant nobody edits cannot be the freshness mechanism.
+ * Correctness comes from the per-request strategies above; bump it by hand only to force-evict
+ * every cache after a breaking change.
  */
-const CACHE_VERSION = "typehaus-v2";
+const CACHE_VERSION = "typehaus-v3";
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -70,6 +78,27 @@ async function cacheFirst(request, cacheName) {
   return response;
 }
 
+// Serve the cached copy at once, refresh it in the background. Used for same-origin assets whose
+// URL is stable across deploys (engine tarballs, the bundled house, manifest, icons) — offline
+// still works, and the *next* boot picks up whatever the last deploy published.
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+  const networked = fetch(request)
+    .then((response) => {
+      if (response && response.ok) cache.put(request, response.clone());
+      return response;
+    })
+    // Offline (or the host is down) is the expected case here, not an error: fall back to cache.
+    .catch(() => cached);
+  return cached ?? networked;
+}
+
+// Vite writes content-hashed filenames into this directory, so these URLs are immutable.
+function isImmutableBuildAsset(url) {
+  return url.pathname.includes("/assets/");
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
@@ -90,9 +119,12 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Same-origin hashed static assets: cache-first.
   if (url.origin === self.location.origin) {
-    event.respondWith(cacheFirst(request, SHELL_CACHE));
+    event.respondWith(
+      isImmutableBuildAsset(url)
+        ? cacheFirst(request, SHELL_CACHE)
+        : staleWhileRevalidate(request, SHELL_CACHE),
+    );
     return;
   }
 

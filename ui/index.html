@@ -4,11 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Type:Haus</title>
+    <meta
+      name="description"
+      content="Type:Haus editor — 2D plan and 3D model of a house, resolved in your browser."
+    />
     <link rel="manifest" href="./manifest.webmanifest" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4f2ed" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#2E3440" />
     <link rel="icon" type="image/svg+xml" href="./icons/icon.svg" />
     <link rel="apple-touch-icon" href="./icons/icon.svg" />
+    <!-- The unprefixed name is the standard one; Safari still reads the apple- variant, and
+         Chrome logs a deprecation warning if only the apple- one is present. Ship both. -->
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Type:Haus" />
   </head>

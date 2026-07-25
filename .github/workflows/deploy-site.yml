@@ -1,0 +1,80 @@
+# Builds and deploys the type-house.com static site (landing page + /app PWA).
+# Setup, secrets, and the DNS steps that cannot be automated: landing/DEPLOY.md.
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      # The PWA bakes the engine sources and the Catlin house into its bundle, so a change to
+      # either has to redeploy even though nothing under landing/ or ui/ was touched.
+      - "landing/**"
+      - "ui/**"
+      - "packages/engine/src/**"
+      - "library/**"
+      - "houses/catlin/**"
+      - ".github/workflows/deploy-site.yml"
+  pull_request:
+    paths:
+      - "landing/**"
+      - "ui/**"
+      - ".github/workflows/deploy-site.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+
+      - name: Install UI dependencies
+        run: npm ci
+        working-directory: ui
+
+      - name: Typecheck
+        run: npm run typecheck
+        working-directory: ui
+
+      - name: Geometry tests
+        run: npm test
+        working-directory: ui
+
+      # Builds the standalone PWA and assembles ./site. Fails if the bundled engine or house is
+      # missing, so a broken /app can never reach the CDN.
+      - name: Build site
+        run: node landing/build-site.mjs
+
+      # A fork or an unconfigured repo should still get a green build; only the upload is gated.
+      - name: Check deploy credentials
+        id: creds
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::CLOUDFLARE_API_TOKEN is not set — built the site but skipped the deploy (see landing/DEPLOY.md)."
+          fi
+
+      - name: Deploy to Cloudflare Pages
+        if: steps.creds.outputs.configured == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Pushes to main publish; every other ref lands on a preview URL.
+          command: pages deploy site --project-name=type-house --branch=${{ github.head_ref || github.ref_name }}
