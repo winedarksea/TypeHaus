@@ -54,19 +54,18 @@ def _category_color_keys() -> set[str]:
 # REMOVE this set when applying it. Both member kinds carry a `material` (standing-seam /
 # aluminum), so the material colour path covers them in the meantime — only the category
 # fallback colour is missing.
-_PENDING_PALETTE_ESCAPES = {"ridge_cap", "corner_trim"}
 
 
 def test_every_emitted_member_category_has_an_engine_color(catlin_member_categories) -> None:
     missing = sorted(c for c in catlin_member_categories
-                     if c not in _PALETTE and c not in _PENDING_PALETTE_ESCAPES)
+                     if c not in _PALETTE)
     assert not missing, f"_PALETTE (emit/gltf/emitter.py) has no entry for: {missing}"
 
 
 def test_every_emitted_member_category_has_a_viewer_color(catlin_member_categories) -> None:
     missing = sorted(c for c in catlin_member_categories
                      if c not in _category_color_keys()
-                     and c not in _PENDING_PALETTE_ESCAPES)
+                    )
     assert not missing, f"CATEGORY_COLOR (ui/src/three/members.ts) has no entry for: {missing}"
 
 

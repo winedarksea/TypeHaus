@@ -135,7 +135,9 @@ def test_members_land_in_the_ifc_class_their_trade_calls_for(ifc_file):
     children = _children(ifc_file, _roof_product(ifc_file))
     rafter = children["rafter-000"]
     assert (rafter.is_a(), rafter.PredefinedType) == ("IfcMember", "RAFTER")
-    fascia = children["eave-lo-fascia-0"]
+    # The house eave has no fascia (continuous standing-seam skin + corner trim), so the
+    # garage roof carries the derived fascia boards now.
+    fascia = _children(ifc_file, _roof_product(ifc_file, "RF-GARAGE"))["eave-lo-fascia-0"]
     assert (fascia.is_a(), fascia.PredefinedType) == ("IfcCovering", "MOLDING")
 
 

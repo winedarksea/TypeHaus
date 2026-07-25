@@ -375,7 +375,7 @@ def test_roof_members_split_into_framing_sticks_and_envelope_skin(stacked):
     framing = {m.category for m in roof.members if is_roof_framing_member(m)}
     skin = {m.category for m in roof.members if not is_roof_framing_member(m)}
     assert {"top_chord", "bottom_chord", "truss_web", "stud", "fascia"} <= framing
-    assert skin == {"sheathing", "cladding", "soffit"}
+    assert skin == {"sheathing", "cladding", "soffit", "ridge_cap"}
     assert not framing & skin
 
 
@@ -744,13 +744,6 @@ def test_a_mixed_material_flush_edge_keeps_the_band(flush):
 
 # --- 14. gable studs must stay inside the end-truss plane ----------------------------------
 
-@pytest.mark.xfail(
-    reason="gable studs are oriented through the wall (3.5in) instead of lying flat in the "
-           "1.5in drop-truss plane, so they poke ~1in past the gable sheathing plane and "
-           "show through the closure cladding. Fix belongs to resolve/framing/roof_gable.py "
-           "(_gable_studs: orient=layout.truss_orient) — outside the roof-eave stream's "
-           "ownership; recorded as a coordinator escape.",
-    strict=False)
 def test_gable_studs_lie_flat_in_the_drop_truss_plane(resolved):
     """A drop truss is a planar 1.5in assembly: its stud infill lies in the chord plane."""
     from typehaus.resolve.framing.footprint import member_footprint

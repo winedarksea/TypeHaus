@@ -207,7 +207,7 @@ def _gable_studs(
         point = layout.plan_pt(pos, span)
         studs.append(FramedMember(
             layout.roof_uid, f"{key}-gable-stud-{step:03d}", "stud", GABLE_STUD_PROFILE,
-            point, point, base, top, top - base, orient=layout.gable_orient,
+            point, point, base, top, top - base, orient=layout.truss_orient,
         ))
     return tuple(studs)
 

@@ -30,6 +30,8 @@ import { projectPlanDirectionToScene, projectPointToScene, type PlanCenter } fro
 // Mirrors emit/gltf/emitter.py's _PALETTE (member-category keys only; layer-function
 // colors live in nordic/palette.ts for wall fills).
 const CATEGORY_COLOR: Record<string, number> = {
+  ridge_cap: 0xd9dbde,
+  corner_trim: 0xd9dbde,
   stud: 0xb3854f,
   plate: 0xa87a4c,
   header: 0x996b41,
@@ -98,7 +100,7 @@ export function categoryColor(category: string): number {
 // the two in step.
 const ROOF_SKIN_CATEGORIES = new Set([
   "sheathing", "membrane", "insulation", "furring", "cladding", "airgap", "air_gap",
-  "lining", "finish", "soffit", "gutter",
+  "lining", "finish", "soffit", "gutter", "ridge_cap", "corner_trim",
 ]);
 
 export function isRoofFramingMember(m: Member): boolean {

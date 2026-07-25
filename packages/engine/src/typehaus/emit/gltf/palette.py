@@ -92,6 +92,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
     "soffit": (0.88, 0.88, 0.85, 1.0),     # vented soffit panel under the overhang
     "gutter": (0.85, 0.86, 0.87, 1.0),     # metal gutter
+    "ridge_cap": (0.85, 0.86, 0.87, 1.0),  # vented standing-seam ridge cap
+    "corner_trim": (0.85, 0.86, 0.87, 1.0),  # eave corner trim (continuous skin)
     "flashing": (0.75, 0.77, 0.80, 1.0),   # metal flashing
 }
 _FALLBACK = (0.70, 0.70, 0.70, 1.0)

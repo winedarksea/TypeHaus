@@ -300,20 +300,14 @@ def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
     gutter/drip stay deferred with the truss roof."""
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     eave, plate = roof.eave_z_m, roof.bearing_z_m
-    # Derived fascia members: two boards per edge run (spf sub-fascia + aluminum face),
-    # topping out on the roof plane at the eaves and closing down past the plate.
-    fascia = [m for m in roof.members if m.category == "fascia"]
-    runs = {m.child_key.rsplit("-fascia-", 1)[0] for m in fascia}
-    assert {"eave-lo", "eave-hi", "rake-lo-0", "rake-lo-1", "rake-hi-0", "rake-hi-1"} <= runs
-    # The outboard face board rides up over the deck + membrane edge (1" perpendicular,
-    # slope-corrected) to the foam underside; the sub-fascia nailer under the deck still
-    # tops out on the plane. Both close down past the plate.
-    rise = inch(1.0).meters * math.hypot(1.0, 4.0 / 12.0)
-    for member in fascia:
-        if member.child_key.startswith("eave"):
-            top = eave if member.child_key.endswith("-0") else eave + rise
-            assert member.z1_m == pytest.approx(top)
-            assert member.z0_m <= plate - inch(1.5).meters
+    # The house eave has no fascia: siding and roofing are one continuous standing-seam
+    # skin over the flush edge, so the resolver emits corner trim at the joint instead of
+    # fascia boards and an edge-cladding band.
+    assert not [m for m in roof.members if m.category == "fascia"]
+    corner_trim = [m for m in roof.members if m.category == "corner_trim"]
+    assert len(corner_trim) == 6
+    for member in corner_trim:
+        assert member.z1_m > eave
     # No hand-authored fascia solids — that would double the derived band.
     assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-FASCIA")]
     for side in ("W", "E"):
