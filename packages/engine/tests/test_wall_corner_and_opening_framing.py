@@ -10,11 +10,16 @@
 from __future__ import annotations
 
 import math
+import uuid
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
+from typehaus.model import (
+    Assembly, Building, Library, Material, Node, PlanModel, Project, Site, Storey, Wall,
+    degF, ft, pt,
+)
 from typehaus.model.assembly import FramingSpec, Layer
 from typehaus.model.enums import LayerFunction
 from typehaus.quantities import inch
@@ -179,6 +184,52 @@ def test_stud_module_describes_the_awkward_case_with_its_offset():
     assert "interrupts 2 studs at 16\" o.c." in text
     assert "instead of 1" in text
     assert module.ideal_label == "stud line"
+
+
+# --------------------------------------------------- per-end corner-style integration
+def _box_plan(**wall_fields) -> PlanModel:
+    """A bare 20x14 box of framed walls — four L corners, ``wall_fields`` on every wall."""
+    ext = Assembly(tag="EXT", layers=(
+        Layer(name="stud", material_ref="wood", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
+    ))
+    project = Project(
+        name="Corners", project_uuid=uuid.UUID("00000000-0000-4000-8000-0000000000c4"),
+        site=Site(lat=44.9, lon=-93.2, elevation=ft(830), design_temp_heating=degF(-15),
+                  design_temp_cooling=degF(90)), building=Building(name="Corners"))
+    main = Storey(uid="STMAIN00C4", tag="main", elevation=ft(0),
+                  default_ceiling_height=ft(9))
+    nodes = tuple(
+        Node(uid=f"NC4{i:07d}", tag=f"N-{i}", position=position)
+        for i, position in enumerate((
+            pt(ft(0), ft(0)), pt(ft(20), ft(0)), pt(ft(20), ft(14)), pt(ft(0), ft(14)),
+        ), 1))
+    walls = tuple(
+        Wall(uid=f"WC4{i:07d}", tag=f"W-{i}", start_node=f"N-{start}",
+             end_node=f"N-{end}", assembly="EXT", top=ft(9), **wall_fields)
+        for i, (start, end) in enumerate(((1, 2), (2, 3), (3, 4), (4, 1)), 1))
+    plan = PlanModel(project=project, library=Library(
+        materials=(Material(tag="wood", name="Wood", r_per_inch=1.25),),
+        assemblies=(ext,)), storeys=(main,))
+    return plan.with_elements("main", (*nodes, *walls))
+
+
+def test_authored_per_end_corner_style_reaches_the_framing_solver():
+    """The 4-stud override authored on ``Wall.corner_style_start/end`` doubles every
+    supplemental corner stud the box's owned ends emit, end for end."""
+    def corner_keys(model):
+        return sorted((wall.tag, member.child_key) for wall in model.walls
+                      for member in wall.members if member.category == "corner")
+
+    base, _ = resolve(_box_plan())
+    boxed, _ = resolve(_box_plan(corner_style_start="4-stud", corner_style_end="4-stud"))
+    base_keys = corner_keys(base)
+    boxed_keys = corner_keys(boxed)
+    assert base_keys, "the box must own some L corners"
+    assert not [key for _tag, key in base_keys if key.endswith("-2")]
+    # Same owned ends, one extra stud at each of them, nothing else moved.
+    assert [key for key in boxed_keys if not key[1].endswith("-2")] == base_keys
+    assert len(boxed_keys) == 2 * len(base_keys)
 
 
 # ------------------------------------------------------------------- catlin integration

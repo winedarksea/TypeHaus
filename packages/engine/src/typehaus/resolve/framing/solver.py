@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity
+from typehaus.model.elements import Wall
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.framing.backing import append_blocking_rows, append_tee_backing
@@ -43,13 +44,21 @@ def _structure_layer(plan: PlanModel, assembly_tag: str):
 def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                corner_start: bool = False, corner_end: bool = False,
                butting_start: bool = False, butting_end: bool = False,
-               tee_stations: tuple[tuple[float, str], ...] = ()) \
+               tee_stations: tuple[tuple[float, str], ...] = (),
+               corner_style_start: str | None = None,
+               corner_style_end: str | None = None) \
         -> tuple[FramedMember, ...]:
     """Generate studs, plates, and opening framing for one resolved wall.
 
     ``corner_*`` marks an end where this wall *owns* the L corner (its framing runs through
     the shared corner square); ``butting_*`` marks an end where the neighbour owns it and
     this wall's framing stops at the neighbour's near face. See ``framing/corners.py``.
+
+    ``corner_style_start``/``corner_style_end`` are the authored per-end overrides
+    (``Wall.corner_style_start``/``corner_style_end``): ``"3-stud"``/``"4-stud"`` at the
+    end that hosts the supplemental studs, ``None`` to follow the assembly's
+    ``FramingSpec.corner_style``. Per-end because a corner belongs to two walls and the
+    override lives on the owning end, so two walls never fight over one corner's style.
     """
     layer = _structure_layer(plan, rw.assembly)
     if layer is None or layer.masonry is not None:
@@ -106,10 +115,12 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # far side of the corner square, this is the third stud of the 3-stud pack. Placed
     # before the module studs because the pack it forms is what they have to clear.
     corner_stations = {
-        endpoint: (corner_stud_stations(end, at_start, thickness, spec.corner_style,
-                                        axis_len)
+        endpoint: (corner_stud_stations(end, at_start, thickness,
+                                        style or spec.corner_style, axis_len)
                    if (corner_start if at_start else corner_end) else ())
-        for endpoint, at_start, end in (("start", True, start_end), ("end", False, far_end))
+        for endpoint, at_start, end, style in (
+            ("start", True, start_end, corner_style_start),
+            ("end", False, far_end, corner_style_end))
     }
     for endpoint, stations in corner_stations.items():
         for index, station in enumerate(stations):
@@ -343,6 +354,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 ))
 
     framed: list[ResolvedWall] = []
+    authored_walls = {element.tag: element for element in plan.all_elements()
+                      if isinstance(element, Wall)}
     for rw in model.walls:
         framing_start, framing_end = _framing_axis(rw)
         framing_direction = unit(sub(framing_end, framing_start))
@@ -356,12 +369,18 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
         )
         endpoints = corner_endpoints.get(rw.tag, set())
         butting = butting_endpoints.get(rw.tag, set())
+        # The authored per-end corner-style overrides (Wall.corner_style_start/end).
+        # ``ResolvedWall`` does not carry them, so read them off the authored element.
+        authored = authored_walls.get(rw.tag)
         members = frame_wall(plan, rw, by_host.get(rw.tag, []),
                              corner_start="start" in endpoints,
                              corner_end="end" in endpoints,
                              butting_start="start" in butting,
                              butting_end="end" in butting,
-                             tee_stations=tee_stations)
+                             tee_stations=tee_stations,
+                             corner_style_start=getattr(authored, "corner_style_start",
+                                                        None),
+                             corner_style_end=getattr(authored, "corner_style_end", None))
         # ``replace`` rather than a field-by-field rebuild: this pass only adds members,
         # and respelling the constructor here silently drops any field added later.
         framed.append(replace(rw, members=members))
