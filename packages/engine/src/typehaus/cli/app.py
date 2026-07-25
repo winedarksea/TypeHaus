@@ -20,6 +20,21 @@ console = Console()
 app.add_typer(variants_app, name="variants")
 
 
+def _version_flag(value: bool) -> None:
+    if value:
+        console.print(f"{PROJECT_NAME} engine {engine_version()}")
+        raise typer.Exit(0)
+
+
+@app.callback()
+def _main(
+    version: bool = typer.Option(
+        False, "--version", callback=_version_flag, is_eager=True,
+        help="Print the engine version and exit."),
+) -> None:
+    """`haus --version` — the packaging smoke every fresh install runs first."""
+
+
 def _resolve_house(house: Optional[Path]) -> Path:
     return (house or Path.cwd()).resolve()
 
