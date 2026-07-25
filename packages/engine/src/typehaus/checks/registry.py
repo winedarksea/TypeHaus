@@ -70,6 +70,11 @@ class Preferences:
     interior_setpoint_f: float = 70.0
     interior_relative_humidity: float = 0.35
     exterior_relative_humidity: float = 0.80
+    # Interior winter design RH for the monthly (ISO 13788-style) condensation gate.
+    # Kept separate from ``interior_relative_humidity`` (the 99% design-hour cold-snap
+    # screen) so a humidified house can raise the seasonal gate without moving the screen;
+    # the default matches the screen's winter design RH rather than inventing a new figure.
+    monthly_interior_relative_humidity: float = 0.35
     south_wwr_threshold: float = 0.40
     adequate_overhang_ft: float = 2.0
     cooling_solar_gain_btu_per_hour_ft2: float = 164.0

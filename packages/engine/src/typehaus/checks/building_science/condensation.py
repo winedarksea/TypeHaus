@@ -11,8 +11,11 @@ from __future__ import annotations
 from typehaus.checks.building_science.glaser import (  # re-exported: card/CLI/server import here
     CondensationAnalysis,
     CondensationPoint,
+    MonthlyAssessment,
     analyze_assembly,
+    analyze_assembly_monthly,
     analyze_layers,
+    analyze_layers_monthly,
     glaser_layers,
 )
 from typehaus.checks.registry import CheckContext, Tier, check
@@ -21,11 +24,15 @@ from typehaus.model.assembly import Assembly
 from typehaus.model.enums import ControlLayer, LayerFunction, Occupancy
 
 __all__ = [
-    "CondensationAnalysis", "CondensationPoint", "analyze_assembly", "analyze_layers",
+    "CondensationAnalysis", "CondensationPoint", "MonthlyAssessment", "analyze_assembly",
+    "analyze_assembly_monthly", "analyze_layers", "analyze_layers_monthly",
     "glaser_layers", "conditioned_envelope_assemblies", "condensation_risk",
 ]
 
+# The monthly (ISO 13788-style) worst-month reduction is the pass/fail GATE; the
+# 99%-design-hour walk stays as a cold-snap SCREEN under its own finding id.
 CHECK_ID = "building_science.condensation"
+SCREEN_CHECK_ID = "building_science.condensation.cold_snap"
 
 # Occupancies that are not part of the conditioned (heated/humidified) building volume, so
 # the fixed interior design conditions this screening tool assumes do not apply to them.
@@ -96,30 +103,74 @@ def conditioned_envelope_assemblies(ctx: CheckContext) -> list[str]:
     return tags
 
 
-def _finding(analysis: CondensationAnalysis, boundary: str) -> Finding:
-    if not analysis.known:
+def _unknown_finding(analysis: CondensationAnalysis, label: str, check_id: str) -> Finding:
+    return Finding(
+        severity=Severity.WARN, check_id=check_id,
+        message=(f"{label}: UNKNOWN — missing Glaser inputs: "
+                 + ", ".join(analysis.unknown_materials)),
+        element_tags=(analysis.assembly_tag,), result=Result.UNKNOWN,
+        fix_hint="author perm_rating (perm-in) or vapor_permeance_perms (perms) with "
+                 "its ASTM E96 / manufacturer source on the named material",
+    )
+
+
+def _gate_finding(assessment: MonthlyAssessment | None, assembly_tag: str) -> Finding:
+    """The monthly (ISO 13788-style) gate finding — the pass/fail verdict."""
+    if assessment is None:
         return Finding(
             severity=Severity.WARN, check_id=CHECK_ID,
-            message="UNKNOWN — missing Glaser inputs: " + ", ".join(analysis.unknown_materials),
-            element_tags=(analysis.assembly_tag,), result=Result.UNKNOWN,
-            fix_hint="author perm_rating (perm-in) or vapor_permeance_perms (perms) with "
-                     "its ASTM E96 / manufacturer source on the named material",
+            message="monthly gate (ISO 13788-style): UNKNOWN — Site.monthly_normals is "
+                    "not authored (needs 12 MonthlyNormal entries, January..December)",
+            element_tags=(assembly_tag,), result=Result.UNKNOWN,
+            fix_hint="author Site.monthly_normals from published station normals (e.g. "
+                     "NOAA NCEI 1991-2020) so the seasonal gate can run; until then only "
+                     "the cold-snap screen is evaluated",
         )
+    analysis = assessment.analysis
+    if not analysis.known:
+        return _unknown_finding(analysis, "monthly gate (ISO 13788-style)", CHECK_ID)
     if analysis.has_risk:
         return Finding(
             severity=Severity.WARN, check_id=CHECK_ID,
-            message=(f"dew point reached at {analysis.crossing_layer} "
-                     f"({analysis.crossing_fraction:.0%} through layer) at {boundary}"),
+            message=(f"monthly gate (ISO 13788-style): dew point reached at "
+                     f"{analysis.crossing_layer} ({analysis.crossing_fraction:.0%} through "
+                     f"layer) at {assessment.boundary}"),
             element_tags=(analysis.assembly_tag,), result=Result.FAIL,
-            fix_hint="screening only: this is the 99% design hour, not a seasonal mean — "
-                     "a crossing here means the plane runs wet during a cold snap and must "
-                     "be able to dry, not that the wall fails code",
+            fix_hint="this is the gate: a crossing against a monthly *mean* means the "
+                     "plane runs wet for weeks, not hours — add exterior insulation, a "
+                     "warm-side vapour retarder, or a vented cavity so the plane can dry",
         )
     tightest = analysis.tightest_plane
     assert tightest is not None  # a known analysis always carries its profile
     return Finding(
         severity=Severity.WARN, check_id=CHECK_ID,
-        message=(f"no dew-point crossing at {boundary} — tightest plane "
+        message=(f"monthly gate (ISO 13788-style): no dew-point crossing in any month — "
+                 f"worst month {assessment.month} at {assessment.boundary}, tightest plane "
+                 f"{analysis.tightest_plane_name} at "
+                 f"{tightest.local_relative_humidity:.0%} RH, "
+                 f"{tightest.margin_pa:.0f} Pa below saturation"),
+        element_tags=(analysis.assembly_tag,), result=Result.PASS,
+    )
+
+
+def _screen_finding(analysis: CondensationAnalysis, boundary: str) -> Finding:
+    """The 99%-design-hour walk, relabeled as the cold-snap screen (not the gate)."""
+    if analysis.has_risk:
+        return Finding(
+            severity=Severity.WARN, check_id=SCREEN_CHECK_ID,
+            message=(f"cold-snap screen: dew point reached at {analysis.crossing_layer} "
+                     f"({analysis.crossing_fraction:.0%} through layer) at {boundary}"),
+            element_tags=(analysis.assembly_tag,), result=Result.FAIL,
+            fix_hint="screen only — the monthly (ISO 13788-style) gate is the pass/fail "
+                     "verdict; this is the 99% design hour, not a seasonal mean, so a "
+                     "crossing here means the plane runs wet during a cold snap and must "
+                     "be able to dry, not that the wall fails the gate",
+        )
+    tightest = analysis.tightest_plane
+    assert tightest is not None  # a known analysis always carries its profile
+    return Finding(
+        severity=Severity.WARN, check_id=SCREEN_CHECK_ID,
+        message=(f"cold-snap screen: no dew-point crossing at {boundary} — tightest plane "
                  f"{analysis.tightest_plane_name} at "
                  f"{tightest.local_relative_humidity:.0%} RH, "
                  f"{tightest.margin_pa:.0f} Pa below saturation"),
@@ -129,7 +180,16 @@ def _finding(analysis: CondensationAnalysis, boundary: str) -> Finding:
 
 @check(Tier.BUILDING_SCIENCE, CHECK_ID)
 def condensation_risk(ctx: CheckContext) -> list[Finding]:
-    heating = ctx.plan.project.site.design_temp_heating
+    """Per envelope assembly: the monthly gate (pass/fail) plus the cold-snap screen.
+
+    The gate runs :func:`analyze_layers` twelve times over ``Site.monthly_normals`` and
+    keeps the worst month — a seasonal mean is what an assembly actually has to dry
+    against. The 99%-design-hour walk stays, relabeled as a screen: informative about a
+    cold snap, never the verdict. When the Glaser inputs themselves are missing, one
+    UNKNOWN finding (the gate's) names them instead of repeating itself per surface.
+    """
+    site = ctx.plan.project.site
+    heating = site.design_temp_heating
     temperature_f = heating.fahrenheit if heating is not None else None
     # Every finding states its boundary condition: a Glaser crossing is only meaningful
     # against the design temperature and interior humidity that produced it.
@@ -141,8 +201,21 @@ def condensation_risk(ctx: CheckContext) -> list[Finding]:
         assembly = ctx.plan.library.resolve_assembly(tag)
         if assembly is None:
             continue
-        findings.append(_finding(analyze_assembly(
+        assessment = analyze_assembly_monthly(
+            assembly, ctx.plan.library, monthly_normals=site.monthly_normals,
+            preferences=ctx.preferences,
+        )
+        findings.append(_gate_finding(assessment, assembly.tag))
+        screen = analyze_assembly(
             assembly, ctx.plan.library, heating_design_temp_f=temperature_f,
             preferences=ctx.preferences,
-        ), boundary))
+        )
+        if not screen.known:
+            # The gate already named these inputs unless it ran on complete data (or was
+            # itself missing its normals while the screen misses the design temperature).
+            if assessment is None or assessment.analysis.known:
+                findings.append(_unknown_finding(screen, "cold-snap screen",
+                                                 SCREEN_CHECK_ID))
+            continue
+        findings.append(_screen_finding(screen, boundary))
     return findings
