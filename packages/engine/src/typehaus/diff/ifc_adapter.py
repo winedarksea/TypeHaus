@@ -249,6 +249,35 @@ def _external_ports(product: object) -> str:
         return ""
 
 
+def product_world_bounds(product: object):
+    """(low, high) world-coordinate corners in metres, or None without usable geometry.
+
+    ifcopenshell converts to metres whatever the file's length unit is, which is what makes a
+    millimetre-authored foreign IFC comparable with our metre-authored export. A product with
+    no representation at all (a pure aggregation container) returns None rather than a
+    degenerate box at the origin — the caller decides what an extent-less element means.
+    """
+    try:
+        import ifcopenshell.geom
+    except ImportError as exc:  # pragma: no cover - exercised only in slim installs
+        raise RuntimeError("reading IFC geometry requires ifcopenshell") from exc
+
+    if getattr(product, "Representation", None) is None:
+        return None
+    try:
+        settings = ifcopenshell.geom.settings()
+        settings.set("use-world-coords", True)
+        shape = ifcopenshell.geom.create_shape(settings, product)
+        vertices = shape.geometry.verts
+        if not vertices:
+            return None
+        points = [vertices[index:index + 3] for index in range(0, len(vertices), 3)]
+        return (tuple(min(point[axis] for point in points) for axis in range(3)),
+                tuple(max(point[axis] for point in points) for axis in range(3)))
+    except Exception:  # noqa: BLE001 - a foreign malformed representation is simply unusable
+        return None
+
+
 def _ifc_geometry_bounds(prod: object, geom: object) -> tuple[tuple[float, float, float],
                                                                tuple[float, float, float]]:
     try:

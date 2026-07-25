@@ -10,11 +10,14 @@ from rich.console import Console
 from rich.table import Table
 
 from typehaus._meta import CLI_NAME, PROJECT_NAME, engine_version
+from typehaus.cli.variants import variants_app
 from typehaus.findings import Result, Severity
 
 app = typer.Typer(name=CLI_NAME, help=f"{PROJECT_NAME} — infrastructure as code for houses.",
                   no_args_is_help=True, add_completion=False)
 console = Console()
+
+app.add_typer(variants_app, name="variants")
 
 
 def _resolve_house(house: Optional[Path]) -> Path:
