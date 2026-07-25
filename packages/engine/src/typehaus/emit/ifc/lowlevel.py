@@ -209,6 +209,20 @@ def add_axis_representation(f: Any, body_ctx: Any,
     )
 
 
+def set_storey_elevation(f: Any, storey: Any, elevation_m: float) -> None:
+    """State a storey's datum both ways an importer may read it.
+
+    The placement is what elements are measured from and what the semantic extractor
+    trusts; the ``Elevation`` attribute is the label scheduling tools read without
+    resolving placements. Element geometry stays authored in the world frame (identity
+    placements with no ``PlacementRelTo``), so a storey placement re-bases nothing.
+    """
+    storey.Elevation = float(elevation_m)
+    origin = f.createIfcCartesianPoint((0.0, 0.0, float(elevation_m)))
+    axis = f.createIfcAxis2Placement3D(origin, None, None)
+    storey.ObjectPlacement = f.createIfcLocalPlacement(None, axis)
+
+
 def ensure_local_placement(f: Any, element: Any) -> None:
     """Give a represented product an explicit identity placement in the project frame."""
     if getattr(element, "ObjectPlacement", None) is not None:

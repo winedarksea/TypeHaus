@@ -36,12 +36,22 @@ _FALLBACK_SKIN_M = 0.05
 # A degenerate member (a zero-height annotation record) still needs a sweepable section.
 _MINIMUM_EXTENT_M = 1e-4
 
-# Roof framing categories → IfcMemberTypeEnum (IFC4). Anything unmapped stays MEMBER rather
-# than guessing: a wrong PredefinedType is worse than none for structural schedules.
+# Framing categories → IfcMemberTypeEnum (IFC4), shared by the roof, wall and stair member
+# emitters (``member_class`` below). Anything unmapped stays MEMBER rather than guessing: a
+# wrong PredefinedType is worse than none for structural schedules — that is deliberately
+# where "header", "tread", "blocking" and "landing" land, since IFC4's enum has no closer
+# term for any of them.
 _MEMBER_PREDEFINED_TYPE = {
     "rafter": "RAFTER", "barge_rafter": "RAFTER", "outlooker": "PURLIN",
     "top_chord": "CHORD", "bottom_chord": "CHORD", "truss_web": "STRUT",
     "stud": "STUD", "plate": "PLATE", "post": "POST",
+    # Wall framing: the opening pack's verticals are studs by trade and by function; the
+    # sill and the raked plate are plates laid on or under them.
+    "king": "STUD", "jack": "STUD", "cripple": "STUD",
+    "sill": "PLATE", "raked_plate": "PLATE",
+    # Stair carriage: STRINGER is the enum's own word; a newel is a post that happens to
+    # carry winders.
+    "stringer": "STRINGER", "newel": "POST",
 }
 # Envelope skin and trim are finishes fastened over the framing, not members: IfcCovering is
 # the class Revit/ArchiCAD file them under. The gutter is neither — it is a drainage
@@ -51,7 +61,9 @@ _COVERING_PREDEFINED_TYPE = {
     "sheathing": "CLADDING", "furring": "CLADDING", "airgap": "CLADDING",
     "membrane": "MEMBRANE", "insulation": "INSULATION",
 }
-_PROXY_CATEGORIES = frozenset({"gutter", "flashing"})
+# A ridge vent, like the gutter, is a drainage/ventilation accessory rather than a member
+# or a finish covering.
+_PROXY_CATEGORIES = frozenset({"gutter", "flashing", "ridge_vent", "ridge-vent"})
 
 
 def emit_roof(f: Any, body: Any, roof: ResolvedRoof, storeys: dict[str, Any],
@@ -202,7 +214,7 @@ def _closed_box(bottom: list[tuple[float, float, float]],
 def _emit_member(f: Any, body: Any, roof: ResolvedRoof, member: FramedMember,
                  project_uuid: Any) -> Any:
     """One roof member as a real product: right IFC class, swept solid on its own axis."""
-    ifc_class, predefined = _member_class(member.category)
+    ifc_class, predefined = member_class(member.category)
     child = ll.create_entity(f, ifc_class, name=f"{roof.tag}/{member.child_key}")
     child.GlobalId = derive_child_guid(project_uuid, roof.uid, member.child_key)
     if predefined is not None:
@@ -218,7 +230,12 @@ def _emit_member(f: Any, body: Any, roof: ResolvedRoof, member: FramedMember,
     return child
 
 
-def _member_class(category: str) -> tuple[str, str | None]:
+def member_class(category: str) -> tuple[str, str | None]:
+    """(IFC class, PredefinedType) for a generated framing member's category.
+
+    Shared by every member emitter (roof, wall, stair) so a stud files identically
+    whichever parent generated it.
+    """
     key = category.lower()
     if key in _PROXY_CATEGORIES:
         return "IfcBuildingElementProxy", None
