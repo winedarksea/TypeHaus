@@ -13,8 +13,6 @@ from typehaus.resolve.stairs.common import (
     _tread_board_profile,
 )
 
-_NEWEL_PROFILE = "4x4"
-
 
 def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                           risers: int, riser: float, tread: float) -> tuple[FramedMember, ...]:
@@ -67,7 +65,10 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                                 spring_top - stringer_depth, spring_top,
                                 math.hypot(tread * straight_treads, riser * risers),
                                 z0_end_m=arrival - stringer_depth, z1_end_m=arrival))
-    newel_half_face = cross_section(_NEWEL_PROFILE).width_m / 2.0
+    # The authored newel profile (Stair.newel_profile, default "4x4"): a wider newel is
+    # the sanctioned lever on ``structural.winder_narrow_tread_depth`` — its faces push
+    # every winder's narrow end outward, spreading consecutive nosings apart.
+    newel_half_face = cross_section(stair.newel_profile).width_m / 2.0
     for index in range(stair.winder_count):
         # ``winder_count + 1`` because ``fraction == 1`` — the departing edge of the turn
         # square — belongs to the straight flight's first tread. Dividing by the winder
@@ -125,9 +126,9 @@ def _winder_turn_framing(stair: Stair, z0: float, riser: float, width: float,
 
     header_top = spring_top - stringer_depth
     out = [
-        FramedMember(stair.uid, "newel-000", "newel", _NEWEL_PROFILE, inside, inside,
+        FramedMember(stair.uid, "newel-000", "newel", stair.newel_profile, inside, inside,
                      z0, spring_top, spring_top - z0, orient=orient),
-        FramedMember(stair.uid, "newel-001", "newel", _NEWEL_PROFILE, turn, turn,
+        FramedMember(stair.uid, "newel-001", "newel", stair.newel_profile, turn, turn,
                      z0, header_top, header_top - z0, orient=orient),
     ]
     for index, (a, b, f0, f1) in enumerate(((foot, outer_corner, 0.0, 0.5),
