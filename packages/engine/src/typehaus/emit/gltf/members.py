@@ -16,7 +16,7 @@ from typehaus.resolve.model import FramedMember
 # ``ROOF_SKIN_CATEGORIES`` in ui/src/three/members.ts — keep the two in step.
 ROOF_SKIN_CATEGORIES = frozenset({
     "sheathing", "membrane", "insulation", "furring", "cladding", "airgap", "air_gap",
-    "lining", "finish", "fascia", "soffit",
+    "lining", "finish", "fascia", "soffit", "gutter",
 })
 
 
