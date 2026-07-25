@@ -85,15 +85,15 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset():
 
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     checklist = evaluate_permit_checklist(report, "mn-2024")
-    # code.energy_prescriptive (→ Permit-ready plan set Phase 7) honestly reports UNKNOWN
-    # for SL-B-FLOOR/SL-M-DECK — neither concrete slab has an authored assembly with an
-    # R-value yet. That is the intended behavior (never a silent pass on missing thermal
-    # data, not a regression) — every other declared item still passes.
-    energy_label = "Energy prescriptive envelope"
-    non_energy_items = [item for item in checklist.items if item.label != energy_label]
-    assert all(item.result is Result.PASS for item in non_energy_items)
-    energy_item = next(item for item in checklist.items if item.label == energy_label)
-    assert energy_item.result is Result.UNKNOWN
+    # code.energy_prescriptive used to report UNKNOWN here because SL-B-FLOOR/SL-M-DECK had
+    # no authored assembly. Every slab now either carries one or is scoped out of the
+    # prescriptive table for a stated reason (the main-floor deck has conditioned space on
+    # both faces; the garage slab floors an unheated detached structure), so the gate is
+    # fully evaluated. It must stay that way: an UNKNOWN reappearing means a component lost
+    # its thermal input again, which is exactly what this item exists to catch.
+    assert all(item.result is Result.PASS for item in checklist.items), \
+        [(item.label, item.result, item.detail) for item in checklist.items
+         if item.result is not Result.PASS]
 
 
 def test_site_plan_keeps_freestanding_roofs_and_foundation_supports_visible(catlin_model):

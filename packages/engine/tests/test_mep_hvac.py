@@ -74,11 +74,18 @@ def test_perpendicular_run_requires_soffit_or_chase(second_floor):
 
 
 def test_bearing_crossing_reported_with_fire_blocking_note(catlin_model):
+    """A duct crossing a bearing line is legal, not a defect — the resolver lays identical
+    perpendicular positions on both sides of the line. What the builder still owes is the
+    R302.11 draftstop, so the crossing rides along as a *note on a PASS* rather than as a
+    failure that would have to be waived on every through-duct in the house."""
     report = run_from_model(catlin_model, [], tier=Tier.STRUCTURAL)
     matched = [f for f in report.findings if f.check_id == "mep.duct_joist_bay"]
     assert matched
-    assert any("fire blocking" in f.message.lower() for f in matched)
     assert all(f.result.value == "pass" for f in matched)
+    assert all(f.severity.value == "warn" for f in matched)  # never a permit-gate blocker
+    noted = [f for f in matched if "crosses bearing wall" in f.message]
+    assert noted
+    assert all("R302.11" in f.message and "fire blocking" in f.message for f in noted)
 
 
 def test_depth_exceeding_joist_depth_fails(second_floor):

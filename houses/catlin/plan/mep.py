@@ -94,15 +94,15 @@ ELECTRICAL_DEVICE_TYPES = (
 
 SLEEVES = [
     SleevePenetration(uid="CMP901AAAA", tag="SP-M-WC1", host_ref="SL-M-DECK",
-                      position=pt(ft(2), ft(24)), pipe_diameter=inch(3),
+                      position=pt(ft(2), ft(23, 1.5)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-M-BATH1-WC"),
     SleevePenetration(uid="CMP902AAAA", tag="SP-M-WC2", host_ref="SL-M-DECK",
                       position=pt(ft(3), ft(18)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-M-BATH2-WC"),
-    # Projection of FX-M-BATH1-LAV (3'-6", 24') onto the W-M-BAE structure-layer
+    # Projection of FX-M-BATH1-LAV (2'-8.5", 25'-3") onto the W-M-BAE structure-layer
     # centerline (x=4, from storeys/main.py node coordinates N-M-BA1/N-M-BA2).
     SleevePenetration(uid="CMP903AAAA", tag="SP-M-LAV1", host_ref="SL-M-DECK",
-                      position=pt(ft(4), ft(24)), pipe_diameter=inch(1.5),
+                      position=pt(ft(4), ft(25, 3)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), serves_fixture="FX-M-BATH1-LAV"),
     # Projection of FX-M-LAUNDRY (10'-6", 20') onto the W-M-BA2E2 centerline (x=8).
     SleevePenetration(uid="CMP904AAAA", tag="SP-M-WASH", host_ref="SL-M-DECK",
@@ -121,11 +121,13 @@ SLAB_STUBS = [
 ]
 
 # Basement-ceiling collector: picks up both WC sleeves, heads to the south-wall sewer
-# exit. Axis-aligned so the authored length is exact (6' + 1' + 18' = 25'); inverts give
-# a comfortable 8"/25' ≈ 0.32"/ft slope, well above the 1/4"/ft minimum for a 3" line.
+# exit. Axis-aligned so the authored length is exact (5'-1.5" + 1' + 18' = 24'-1.5");
+# inverts give a comfortable 8"/24'-1.5" ≈ 0.33"/ft slope, well above the 1/4"/ft minimum
+# for a 3" line.
 DRAINS = [
     PipeRun(uid="CMP905AAAA", tag="PR-B-MAIN-DRAIN", system=PipeSystem.DRAIN,
-           path=(pt(ft(2), ft(24)), pt(ft(2), ft(18)), pt(ft(3), ft(18)), pt(ft(3), ft(0))),
+           path=(pt(ft(2), ft(23, 1.5)), pt(ft(2), ft(18)), pt(ft(3), ft(18)),
+                 pt(ft(3), ft(0))),
            diameter=inch(3), start_elevation=ft(8), end_elevation=ft(7, 4),
            serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC")),
 ]

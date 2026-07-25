@@ -58,6 +58,32 @@ def test_legend_reflects_present_device_kinds(catlin_model):
     assert "LIGHT" in texts and "SWITCH" in texts
 
 
+def test_every_habitable_room_has_a_light_and_a_switch(catlin_model):
+    """``electrical.room_lighting`` matches devices to rooms by tag suffix, so a room that
+    gains a light also needs its tag to line up — the two ways this regresses (no device at
+    all, device tagged for the wrong room) both surface as the same FAIL."""
+    from typehaus.checks import run_from_model
+    from typehaus.checks.registry import Tier
+
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    findings = [f for f in report.findings if f.check_id == "electrical.room_lighting"]
+    assert findings
+    assert all(f.result.value == "pass" for f in findings), \
+        [f.message for f in findings if f.result.value != "pass"]
+
+
+def test_the_previously_dark_habitable_rooms_are_covered(catlin_model):
+    """The three rooms that had no lighting at all: the basement gym and both habitable
+    attic rooms. Named explicitly so deleting a device from one of them fails here instead
+    of quietly shrinking the census in the test above."""
+    tags = {element.tag for storey in catlin_model.plan.storeys
+            for element in catlin_model.plan.storey_elements(storey.tag)
+            if element.element_kind == "ElectricalDevice"}
+    for room_suffix in ("B-GYM", "A-EAST", "A-STUDY"):
+        assert f"ED-{room_suffix}-LT" in tags
+        assert f"ED-{room_suffix}-SW" in tags
+
+
 def test_electrical_plan_dxf_round_trips(catlin_model, tmp_path: Path):
     import ezdxf
 

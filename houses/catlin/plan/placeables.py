@@ -8,6 +8,7 @@ from typehaus.model import deg, ft, m, pt
 # The main-floor set is a furnished living/dining zone against the shared starter catalog:
 # rotation 0 puts an object's back at +y (project north), so the sofa faces the media
 # console across the room and the chairs face the table from both sides.
+
 # FX-1 is the furnace-room utility sink. It stands against the north face of the 12"
 # concrete cross wall W-B-CW (centerline y=18', so the face is y=18'-6"), and — like every
 # fixture on a slab-on-grade — its waste drops straight down rather than into a wall stack,
