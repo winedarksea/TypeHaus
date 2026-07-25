@@ -163,20 +163,28 @@ def test_catlin_sump_sits_below_the_basement_slab(catlin_model) -> None:
 
 
 def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
-    """Tier 2 roof-eave closure: fascia + 6" box gutter + drip edge along both house
-    eave edges (west/east — the ridge runs N-S), at elevations tied to the deck plane
-    per the golden eave detail. Garage trim stays deferred with the truss roof."""
+    """Tier 2 roof-eave closure on RF-HOUSE: fascia is *derived* from Roof.eave_trim
+    (resolve/roof_edge.py, so it rides the deck-plane datum on every edge); the 6" box
+    gutter + drip edge are authored runs along both eave edges (west/east — the ridge
+    runs N-S), at elevations tied to the deck plane per the golden eave detail. Garage
+    gutter/drip stay deferred with the truss roof."""
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     eave, plate = roof.eave_z_m, roof.bearing_z_m
+    # Derived fascia members: two boards per edge run (spf sub-fascia + aluminum face),
+    # topping out on the roof plane at the eaves and closing down past the plate.
+    fascia = [m for m in roof.members if m.category == "fascia"]
+    runs = {m.child_key.rsplit("-fascia-", 1)[0] for m in fascia}
+    assert {"eave-lo", "eave-hi", "rake-lo-0", "rake-lo-1", "rake-hi-0", "rake-hi-1"} <= runs
+    for member in fascia:
+        if member.child_key.startswith("eave"):
+            assert member.z1_m == pytest.approx(eave)
+            assert member.z0_m <= plate - inch(1.5).meters
+    # No hand-authored fascia solids — that would double the derived band.
+    assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-FASCIA")]
     for side in ("W", "E"):
-        fascia = next(s for s in catlin_model.solids if s.tag == f"TR-RF-FASCIA-{side}-1")
         gutter = next(s for s in catlin_model.solids if s.tag == f"TR-RF-GUTTER-{side}-1")
         drip = next(s for s in catlin_model.solids if s.tag == f"TR-RF-DRIP-{side}-1")
-        assert (fascia.category, gutter.category, drip.category) == (
-            "fascia", "gutter", "flashing")
-        # Fascia closes the band: top of deck+membrane down past the plate.
-        assert fascia.z1_m == pytest.approx(eave + inch(1.0).meters)
-        assert fascia.z0_m == pytest.approx(plate - inch(2.0).meters)
+        assert (gutter.category, drip.category) == ("gutter", "flashing")
         # Box gutter hangs with its top 1.2" below the roof-furring underside (7.25"
         # perpendicular above the deck), 5" channel height.
         assert gutter.z1_m == pytest.approx(eave + inch(7.25 - 1.2).meters)
