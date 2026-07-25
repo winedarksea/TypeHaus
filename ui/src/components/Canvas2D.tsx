@@ -3,7 +3,7 @@ import { useStore } from "../state/store";
 import type { Selection } from "../state/store";
 import type { PreviewGeometry } from "../engine/EngineClient";
 import type { CanvasObject, CanvasObjectType, DoorOperation, Model, Opening, PlanNode, Stair, Vec2, Wall } from "../model/types";
-import { bifoldDoorStrokes, overheadDoorStrokes } from "../model/doorSymbols";
+import { doorStrokeGlyph, hostWallThicknessM } from "../model/doorSymbols";
 import {
   deriveNodes,
   formatFtIn,
@@ -1487,6 +1487,12 @@ const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selec
   const wallArcX = hingeX - hingeDirection * 2 * dx;
   const wallArcY = hingeY - hingeDirection * 2 * dy;
   const windowTick = Math.min(6, Math.max(3, scale * 0.08));
+  // Null for the hinged operations, which draw a leaf plus a swing arc instead.
+  const strokeGlyph = o.is_door ? doorStrokeGlyph({
+    operation, center: [cx, cy], angleRadians: ang, operatingSign: swingSign,
+    parkJambSign: hingeDirection, widthM: o.width_m, heightM: o.height_m,
+    hostWallThicknessM: hostWallThicknessM(host.layers), pixelsPerMeter: scale,
+  }) : null;
   // Press → drag vs. click discrimination (mirrors CanvasObjectFootprint): the ghost
   // preview only follows once the pointer has been captured AND moved past a small px
   // threshold, so a bare hover never drifts the symbol. A press that never crosses the
@@ -1534,13 +1540,10 @@ const OpeningShape = memo(function OpeningShape({ o, host, project, scale, selec
       <line x1={cx - dx} y1={cy - dy} x2={cx + dx} y2={cy + dy}
       stroke={o.is_door ? "var(--canvas-wood)" : NORDIC_ACCENT} strokeWidth={2}
         strokeDasharray={o.is_door ? undefined : "3 2"} />
-      {o.is_door ? (operation === "overhead" || operation === "bifold" ? <>
-        {/* Neither operation swings: an overhead sectional rides ceiling track and a
-            bifold folds against its jambs, so both are pure stroke glyphs. */}
-        {(operation === "overhead"
-          ? overheadDoorStrokes([cx, cy], ang, swingSign, o.width_m * scale, o.height_m * scale)
-          : bifoldDoorStrokes([cx, cy], ang, swingSign, o.width_m * scale)
-        ).map((stroke, index) => (
+      {o.is_door ? (strokeGlyph ? <>
+        {/* The non-swinging operations — overhead, bifold, slider, pocket — are pure
+            stroke glyphs resolved by the shared symbol module, arc-free by construction. */}
+        {strokeGlyph.map((stroke, index) => (
           <polyline key={index} points={stroke.points.map((point) => point.join(",")).join(" ")}
             fill="none" stroke="var(--canvas-wood)" strokeWidth={stroke.dashed ? 1 : 1.5}
             strokeDasharray={stroke.dashed ? "4 3" : undefined} />
