@@ -18,16 +18,10 @@ import {
   wholeHouseGlbAssignment, WHOLE_HOUSE_GLB_PRIMARY, type GlbNodeAssignment,
 } from "../three/wholeHouseGlb";
 import { isRenderedInScene } from "../three/build/registry";
-import { buildCanvasObject, buildEarth } from "../three/build/site";
-import { buildOpening, buildWall } from "../three/build/walls";
-import {
-  buildFloor, buildFootingBedding, buildRoof, buildSolid, buildStair,
-} from "../three/build/structure";
+import { planCenterOf, populateScene, type SceneRegistry } from "../three/build/scene";
 import {
   geographicBearingToSceneDirection,
   geographicSoutheastSceneAzimuthRadians,
-  projectPlanRotationToSceneRadians,
-  projectPointToScene,
   type PlanCenter,
 } from "../three/planGeometry";
 import { useTheme } from "../theme/theme";
@@ -206,7 +200,7 @@ function createScene(
   ) as Record<Trade, THREE.Group>;
   for (const trade of ALL_TRADES) content.add(tradeGroups[trade]);
 
-  // A picked framing member cannot be highlighted through `byUid`: its material is shared with
+  // A picked framing member cannot be highlighted through the uid index: its material is shared with
   // every other stick in the same draw call. It gets a throwaway outline in this group instead,
   // which sits outside the trade groups so the view-fit bounds never see it.
   const memberHighlightGroup = new THREE.Group();
@@ -218,9 +212,10 @@ function createScene(
     memberHighlightGroup.clear();
   };
 
-  let picks: THREE.Mesh[] = [];
+  // The raycast set and the uid -> materials index, together: the async furniture loader
+  // in populateScene *replaces* the pick list, so it has to be reachable by reference.
+  const registry: SceneRegistry = { picks: [], byUid: new Map() };
   let sceneGeneration = 0;
-  const byUid = new Map<string, THREE.Material[]>();
   let highlighted: string | null = null;
   // What `highlight` needs to rebuild a member outline: the model the scene was built from and
   // the plan centre it was projected around.
@@ -379,10 +374,10 @@ function createScene(
         -((e.clientY - r.top) / r.height) * 2 + 1,
       );
       raycaster.setFromCamera(ndc, camera);
-      // Only pick what is actually on screen. `intersectObjects(picks, false)` tests the meshes
+      // Only pick what is actually on screen. `intersectObjects(..., false)` tests the meshes
       // directly, bypassing three's own visibility walk, so a hidden trade or a hidden assembly
       // layer would otherwise still intercept a click aimed at what it was hiding.
-      const hit = raycaster.intersectObjects(picks.filter(isRenderedInScene), false)[0];
+      const hit = raycaster.intersectObjects(registry.picks.filter(isRenderedInScene), false)[0];
       if (!hit) return;
       // A framing bucket resolves the hit's instanceId / faceIndex back to the one member it
       // drew there; anything else carries its element identity on the mesh itself.
@@ -439,8 +434,8 @@ function createScene(
       tradeGroups[trade].clear();
     }
     clearMemberHighlight();
-    picks = [];
-    byUid.clear();
+    registry.picks = [];
+    registry.byUid.clear();
     highlighted = null;
   };
 
@@ -513,89 +508,15 @@ function createScene(
     activePalette = palette;
     scene.background = new THREE.Color(palette.bg);
     trueNorthDegrees = m.site?.true_north_deg ?? 0;
-    // Center on the plan's structural bounds.
-    let cx = 0;
-    let cz = 0;
-    let n = 0;
-    for (const w of m.walls)
-      for (const p of w.axis) {
-        cx += p[0];
-        cz += p[1];
-        n++;
-      }
-    if (n) {
-      cx /= n;
-      cz /= n;
-    }
     if (!preserveView) target = new THREE.Vector3(0, 1.2, 0);
 
-    const center: PlanCenter = [cx, cz];
+    const center = planCenterOf(m);
     highlightSourceModel = m;
     highlightPlanCenter = center;
-    for (const w of m.walls) {
-      const wallOpenings = m.openings.filter((opening) => opening.host === w.tag);
-      buildWall(tradeGroups, w, wallOpenings, center, mode, palette, picks, byUid,
-        m.catalog?.materials);
-      for (const opening of wallOpenings) {
-        const isDoubleSwing = m.catalog?.door_types.find((dt) => dt.tag === opening.type_ref)?.operation === "double_swing";
-        buildOpening(tradeGroups.openings, opening, w, center, mode, palette, isDoubleSwing, picks, byUid);
-      }
-    }
-    // The site sheet is context, not an element: it has no uid in model.json, so it stays out
-    // of the raycast set and a click through it falls to whatever building geometry is behind.
-    buildEarth(tradeGroups.earth, m, center, mode);
-    for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, center, mode, palette, m.catalog, picks, byUid);
-    for (const bedding of m.footing_beddings ?? []) buildFootingBedding(tradeGroups.concrete, bedding, center, mode, picks, byUid);
-    for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, center, mode, palette, picks, byUid);
-    for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette, m.catalog, picks, byUid, tradeGroups.framing);
-    for (const stair of m.stairs ?? []) buildStair(tradeGroups.stairs, stair, center, mode, picks, byUid);
-    const types = new Map((m.catalog?.canvas_object_types ?? []).map((type) => [type.tag, type]));
-    for (const item of m.canvas_objects ?? []) {
-      // Hosted openings retain their dedicated cut/fill meshes above. The normalized
-      // record is for shared inspection and interchange, not a second 3D proxy.
-      if (item.domain === "opening") continue;
-      if (!item.position_m) continue;
-      const group = item.domain === "plumbing" ? tradeGroups.plumbing
-        : item.domain === "electrical" ? tradeGroups.electrical
-          : item.domain === "mechanical" ? tradeGroups.mechanical : tradeGroups.furniture;
-      const type = types.get(item.type ?? "");
-      const fallback = buildCanvasObject(group, item, type, center, mode, palette,
-        item.z_m ?? m.storeys.find((storey) => storey.tag === item.storey)?.elevation_m ?? 0, picks, byUid);
-      if (type?.model_glb && fallback) {
-        const generation = sceneGeneration;
-        new GLTFLoader().load(type.model_glb, (gltf) => {
-          if (generation !== sceneGeneration || !item.position_m) {
-            disposeGroup(gltf.scene);
-            return;
-          }
-          // The fallback may be a whole group of massing parts now, not one mesh, so drop
-          // every pick it owns and dispose it as a subtree.
-          group.remove(fallback);
-          const replaced = new Set<THREE.Object3D>();
-          fallback.traverse((node) => replaced.add(node));
-          disposeGroup(fallback);
-          picks = picks.filter((mesh) => !replaced.has(mesh));
-          const visual = gltf.scene;
-          visual.position.copy(projectPointToScene(item.position_m,
-            item.z_m ?? m.storeys.find((storey) => storey.tag === item.storey)?.elevation_m ?? 0, center));
-          visual.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
-          const materials: THREE.Material[] = [];
-          visual.traverse((node) => {
-            if (!(node instanceof THREE.Mesh)) return;
-            node.castShadow = true;
-            node.receiveShadow = true;
-            node.userData.uid = item.uid;
-            node.userData.selectionKind = "canvas_object";
-            picks.push(node);
-            const material = node.material;
-            materials.push(...(Array.isArray(material) ? material : [material]));
-          });
-          byUid.set(item.uid, materials);
-          group.add(visual);
-          requestRender();
-        });
-      }
-    }
+    populateScene({
+      tradeGroups, model: m, center, mode, palette, registry,
+      generation: sceneGeneration, currentGeneration: () => sceneGeneration, requestRender,
+    });
 
     // Frame the building bounds (earth excluded, or the site sheet dominates), including its
     // vertical origin. The old target only considered height, leaving models whose base was
@@ -671,8 +592,8 @@ function createScene(
       disposeGroup(tradeGroups[trade]);
       tradeGroups[trade].clear();
     }
-    picks = [];
-    byUid.clear();
+    registry.picks = [];
+    registry.byUid.clear();
     highlighted = null;
     root.updateMatrixWorld(true);
     for (const { mesh, assignment } of tagged) {
@@ -684,11 +605,11 @@ function createScene(
       mesh.receiveShadow = true;
       if (assignment.uid) {
         const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-        byUid.set(assignment.uid, [...(byUid.get(assignment.uid) ?? []), ...materials]);
+        registry.byUid.set(assignment.uid, [...(registry.byUid.get(assignment.uid) ?? []), ...materials]);
         if (assignment.kind) {
           mesh.userData.uid = assignment.uid;
           mesh.userData.selectionKind = assignment.kind;
-          picks.push(mesh);
+          registry.picks.push(mesh);
         }
       }
     }
@@ -703,13 +624,13 @@ function createScene(
   };
 
   const highlight = (uid: string | null) => {
-    if (highlighted && byUid.has(highlighted))
-      for (const mat of byUid.get(highlighted)!)
+    if (highlighted && registry.byUid.has(highlighted))
+      for (const mat of registry.byUid.get(highlighted)!)
         (mat as THREE.MeshStandardMaterial).emissive?.setHex(0x000000);
     clearMemberHighlight();
     highlighted = uid;
-    if (uid && byUid.has(uid))
-      for (const mat of byUid.get(uid)!)
+    if (uid && registry.byUid.has(uid))
+      for (const mat of registry.byUid.get(uid)!)
         (mat as THREE.MeshStandardMaterial).emissive?.set(activePalette.highlight);
     // A member uid names one stick inside a shared bucket; outline it rather than tinting the
     // bucket's material, which would light every stud in the wall.
