@@ -166,10 +166,12 @@ def test_well_partition_is_framed_between_subfloor_and_arrival(catlin_model,
 # --------------------------------------------------------------- 5. landing platforms
 def test_landing_platforms_have_unique_joists_edge_joists_deck_and_rims(basement_stair):
     stair = basement_stair
-    depth = ft(4).meters
     for name in ("lower", "upper"):
         deck = next(m for m in stair.members if m.child_key == f"landing-{name}")
         assert deck.profile.startswith("deck ")
+        # The platform's own depth: R311.7.6 floors the authored landing_depth at the
+        # flight width, so read it off the deck rather than restating the authored number.
+        depth = deck.length_m
         joists = [m for m in stair.members
                   if m.child_key.startswith(f"landing-joist-{name}-")]
         positions = sorted(round(joist.p0[1], 6) for joist in joists)

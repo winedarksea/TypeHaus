@@ -80,7 +80,7 @@ NODES = [
     Node(uid="CMN004AAAA", tag="N-M-E1", position=pt(ft(36), ft(18))),
     Node(uid="CMN005AAAA", tag="N-M-NE", position=pt(ft(36), ft(36))),
     Node(uid="CMN006AAAA", tag="N-M-N1", position=pt(ft(18), ft(36))),
-    Node(uid="CMN007AAAA", tag="N-M-N2", position=pt(ft(11), ft(36))),
+    Node(uid="CMN007AAAA", tag="N-M-N2", position=pt(ft(10), ft(36))),
     Node(uid="CMN008AAAA", tag="N-M-NW", position=pt(ft(0), ft(36))),
     Node(uid="CMN009AAAA", tag="N-M-W1", position=pt(ft(0), ft(26, 4))),
     Node(uid="CMN010AAAA", tag="N-M-W2", position=pt(ft(0), ft(21, 8))),
@@ -90,8 +90,8 @@ NODES = [
     Node(uid="CMN013AAAA", tag="N-M-C2", position=pt(ft(18), ft(21, 8))),
     Node(uid="CMN014AAAA", tag="N-M-C3", position=pt(ft(18), ft(26, 4))),
     # Interior tees
-    Node(uid="CMN015AAAA", tag="N-M-STR1", position=pt(ft(11), ft(25))),
-    Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(11), ft(26, 4))),
+    Node(uid="CMN015AAAA", tag="N-M-STR1", position=pt(ft(10), ft(25))),
+    Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 4))),
     Node(uid="CMN025AAAA", tag="N-M-C3B", position=pt(ft(18), ft(25))),
     Node(uid="CMN016AAAA", tag="N-M-BA1", position=pt(ft(4), ft(26, 4))),
     Node(uid="CMN017AAAA", tag="N-M-BA2", position=pt(ft(4), ft(21, 8))),
@@ -310,18 +310,28 @@ SLABS = [
          thickness=inch(9), openings=("FO-M-STAIR",), assembly="CATLIN_DECK_9_INT"),
 ]
 
+# The opening is drawn to the *finished* well, not to the wall centrelines: it is the
+# shaft a stair actually climbs, and the u-split resolver anchors its flights to the
+# opening's near corner. West/east are W-B-STR's and W-B-CN's basement concrete faces —
+# 12" concrete is thicker than the 2x6 walls stacked on it, so the basement is the
+# narrowest point of the shaft and the one that sizes the flights. South is W-M-STRS's
+# stair-side face (the door at the top of the stairs), north the exterior wall's.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CMF601AAAA", tag="FO-M-STAIR",
-                 outline=(pt(ft(11), ft(25)), pt(ft(18), ft(25)),
-                          pt(ft(18), ft(36)), pt(ft(11), ft(36))),
+                 outline=(pt(ft(10, 6), ft(25, 2.375)), pt(ft(17, 6), ft(25, 2.375)),
+                          pt(ft(17, 6), ft(35)), pt(ft(10, 6), ft(35))),
                  bearing_refs=("W-M-STRW", "W-M-STRW2")),
 ]
 
+# 7'-0" well = 3'-3 3/4" + 4 1/2" well partition + 3'-3 3/4". Each flight clears the
+# IRC R311.7.1 36" minimum above the handrail with room for the rail to project; the
+# landing is the R311.7.6 36" minimum, which the resolver floors at the flight width to
+# keep the U-turn walkable.
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
-          from_storey="basement", to_storey="main", width=ft(3, 6),
-          layout="u_split_landing", run_direction="y", start=pt(ft(11), ft(25)),
-          landing_depth=ft(4)),
+          from_storey="basement", to_storey="main", width=ft(3, 3.75),
+          layout="u_split_landing", run_direction="y",
+          start=pt(ft(10, 6), ft(25, 2.375)), landing_depth=ft(3)),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SLABS, *FLOOR_OPENINGS, *STAIRS]

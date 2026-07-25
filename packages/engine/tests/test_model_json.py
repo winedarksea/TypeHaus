@@ -264,6 +264,8 @@ def test_catalog_assembly_editability_requires_editable_provenance(catlin_proven
 def test_stairs_payload_carries_landing_depth(catlin_payload):
     stairs = {stair["tag"]: stair for stair in catlin_payload["stairs"]}
     assert "landing_depth_m" in stairs["ST-B2M"]
-    # ST-B2M authors landing_depth=ft(4); the winder stair authors none.
-    assert stairs["ST-B2M"]["landing_depth_m"] == pytest.approx(1.2192)
+    # ST-B2M authors the IRC R311.7.6 minimum landing_depth=ft(3) — the payload carries
+    # the *authored* value, which the resolver then floors at the flight width. The winder
+    # stair authors none.
+    assert stairs["ST-B2M"]["landing_depth_m"] == pytest.approx(0.9144)  # 3'-0"
     assert stairs["ST-S2A"]["landing_depth_m"] is None

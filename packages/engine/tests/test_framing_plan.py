@@ -74,15 +74,24 @@ def test_framing_plan_draws_stair_opening(catlin_model):
 
 def test_stair_opening_clips_joists_and_uses_declared_west_bearing(catlin_model):
     floor = next(floor for floor in catlin_model.floors if floor.tag == "FS-SECOND")
+    opening = catlin_model.plan.by_tag("FO-S-STAIR")
+    ys = [point.xy_m[1] for point in opening.outline]
+    west_face = min(point.xy_m[0] for point in opening.outline)
     crossing_joists = [member for member in floor.members if member.category == "joist"
-                       and 25 <= member.p0[1] / 0.3048 <= 36]
+                       and min(ys) - 1e-9 <= member.p0[1] <= max(ys) + 1e-9]
     assert crossing_joists
-    assert all(member.p1[0] <= 11 * 0.3048 + 1e-9 or member.p0[0] >= 18 * 0.3048 - 1e-9
+    # The opening is drawn to the finished well, so the clip is W-M-STRW's stair-side face
+    # (x=10'-3 3/8"); joists resume at the centre bearing line. Nothing is emitted for the
+    # 3 3/8" of deck between the well's east edge and that line — that is bearing seat.
+    assert west_face / 0.3048 == pytest.approx(10 + 3.375 / 12)
+    assert all(member.p1[0] <= west_face + 1e-9 or member.p0[0] >= 18 * 0.3048 - 1e-9
                for member in crossing_joists)
     headers = [member for member in floor.members if member.category == "header"
                and "FO-S-STAIR" in member.child_key]
-    # The west edge bears on W-M-STRW/W-M-STRW2, so only the unsupported east edge needs a header.
-    assert len(headers) == 1
+    # Both long edges bear on wall — W-M-STRW/STRW2 west, W-M-C5/C4B east — so the opening
+    # needs no header at all. The bearing test is on the walls' footprints, not their
+    # centrelines, which is what lets a well drawn to the finished face be recognised.
+    assert headers == []
 
 
 def test_framing_plan_scene_snapshot_is_deterministic(catlin_model):

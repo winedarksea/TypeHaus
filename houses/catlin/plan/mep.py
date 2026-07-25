@@ -116,7 +116,7 @@ SLEEVES = [
 # same point as its `drain_position`, which is what makes the alignment check exact.
 SLAB_STUBS = [
     SleevePenetration(uid="CBP901AAAA", tag="SP-B-UTILITY", host_ref="SL-B-FLOOR",
-                      position=pt(ft(14), ft(19)), pipe_diameter=inch(1.5),
+                      position=pt(ft(7), ft(19)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), serves_fixture="FX-1"),
 ]
 

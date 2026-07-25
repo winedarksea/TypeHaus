@@ -99,14 +99,45 @@ def test_header_ply_count_tracks_the_span(catlin_model):
     assert short.depth_m == pytest.approx(band) and long.depth_m == pytest.approx(band)
 
 
-def test_beyond_prescriptive_header_is_reported(catlin_model):
-    """An 11'-0" floor-opening header is an engineered beam; the drawing set has to say
+def _plan_without_stair_bearing_refs():
+    """Catlin with FO-S-STAIR's ``bearing_refs`` stripped.
+
+    Both of that opening's long edges are carried by bearing wall, so the resolver draws
+    no header for it at all — which leaves the advisory nothing to report. Dropping the
+    declared bearing restores exactly the condition the rule guards: a 10'-3" opening edge
+    with nothing under it, closed by a header past the prescriptive table.
+    """
+    plan = load_plan(CATLIN_DIR).plan
+    elements = {
+        storey: [element.model_copy(update={"bearing_refs": ()})
+                 if getattr(element, "tag", None) == "FO-S-STAIR" else element
+                 for element in storey_elements]
+        for storey, storey_elements in plan.elements.items()
+    }
+    return plan.model_copy(update={"elements": elements})
+
+
+def test_no_header_is_drawn_where_bearing_wall_carries_the_edge(catlin_model):
+    """FO-S-STAIR is drawn to the finished well, so no edge coincides with a wall axis.
+
+    The bearing test reads each declared wall's plan *footprint*, so both long edges are
+    still recognised as wall-borne — a centreline-equality test claimed neither was and
+    put a 10'-3" engineered header under both (plans/TODO.md D3).
+    """
+    headers = [member for member in _members(catlin_model, "header")
+               if "FO-S-STAIR" in member.child_key]
+    assert headers == []
+
+
+def test_beyond_prescriptive_header_is_reported():
+    """A 10'-3" floor-opening header is an engineered beam; the drawing set has to say
     so, which ``structural.header_prescriptive`` only ever did for *wall* openings."""
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+    plan = _plan_without_stair_bearing_refs()
+    ctx, _ = build_context(plan, CATLIN_DIR)
     findings = floor_opening_header_within_prescriptive(ctx)
     failures = [finding for finding in findings if finding.result is Result.FAIL]
-    assert failures, "catlin's FO-S-STAIR header spans 11'"
+    assert failures, "an unsupported FO-S-STAIR edge needs a header spanning 10'-3\""
     assert all(finding.severity.value == "warn" for finding in findings)
-    for header in _members(catlin_model, "header"):
+    for header in _members(ctx.model, "header"):
         if header.length_m / inch(12).meters <= 8.0 + 1e-9:
             assert not any(header.child_key in finding.message for finding in failures)

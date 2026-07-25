@@ -26,8 +26,20 @@ _TREAD_THICKNESS_M = inch(_TREAD_THICKNESS_IN).meters
 _LANDING_JOIST_PROFILE = "2x8"
 _NEWEL_PROFILE = "4x4"
 _FRAMING_SPACING_M = 0.4064  # 16" o.c.
+# Two members closer than one 2x ply's thickness are one member, not two — see
+# ``_grid_positions``. Below this they would interpenetrate rather than sit side by side.
+_MIN_MEMBER_PITCH_M = inch(1.5).meters
 # Below this a stair member only clips a wall's end; it does not bear on it.
 _MIN_SHARED_RUN_M = 0.10
+# A U-stair's well partition is real construction between the two flights — 2x4 studs
+# finished both faces — so it consumes cross-run space. Budgeting nothing for it (the
+# lanes used to butt at ``lane0 + width``) put the partition studs straight through both
+# inner stringers and made "the well is N wide" mean two different things depending on
+# whether you measured the flights or the finished faces.
+_WELL_PARTITION_STUD_IN = 3.5
+_WELL_PARTITION_FINISH_IN = 0.5  # gwb, each face
+_WELL_PARTITION_THICKNESS_M = inch(
+    _WELL_PARTITION_STUD_IN + 2 * _WELL_PARTITION_FINISH_IN).meters
 
 
 def _tread_board_profile(going_m: float) -> str:
@@ -228,6 +240,10 @@ def _grid_positions(span: float, spacing: float) -> list[float]:
 
     Replaces the old ``ceil``/``range``/``min``-clamp pattern whose last two positions
     were coincident whenever ``span`` was an exact multiple of ``spacing``.
+
+    Members are deduplicated at ``_MIN_MEMBER_PITCH_M``, not at floating-point equality:
+    a closing edge landing an inch short of the last on-center position is the *same*
+    member, and emitting both drew two 2x plies interpenetrating in plan.
     """
     if span <= 1e-9:
         return [0.0]
@@ -235,7 +251,9 @@ def _grid_positions(span: float, spacing: float) -> list[float]:
     positions.append(span)
     out: list[float] = []
     for position in positions:
-        if not out or position - out[-1] > 1e-9:
+        if out and position - out[-1] < _MIN_MEMBER_PITCH_M:
+            out[-1] = position  # the edge wins: it is what the member has to close on
+        else:
             out.append(position)
     return out
 
@@ -249,6 +267,9 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     upper landing one riser above it (that riser IS the "step" between the landings),
     ``upper`` treads, then the arrival deck — ``lower + upper + 3 == risers``. Both
     landings sit in the landing zone beyond the flight ends, ``landing_depth_m`` deep.
+
+    Cross-run the well is ``width + partition + width``: the two flight lanes are held
+    apart by the well partition rather than butting against each other.
     """
     width = stair.width.meters
     flight_treads = max(0, risers - 3)
@@ -258,7 +279,8 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     along_x = stair.run_direction == "x"
     start = minx if along_x else miny
     lane0 = miny if along_x else minx
-    lane1 = lane0 + width
+    partition_centre = lane0 + width + _WELL_PARTITION_THICKNESS_M / 2.0
+    lane1 = lane0 + width + _WELL_PARTITION_THICKNESS_M
 
     def at(s: float, cross: float) -> tuple[float, float]:
         """Plan point ``s`` metres along the run (signed from the start edge) at the
@@ -307,29 +329,33 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
         out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", tread_profile,
                                 at(s, lane1), at(s, lane1 + width),
                                 z, z + _TREAD_THICKNESS_M, width))
-    # Two real half-width landing platforms in the landing zone beyond the flight ends.
+    # Two landing platforms in the landing zone beyond the flight ends. The partition
+    # stops short of them, so each landing runs from its own flight lane to the partition
+    # *centreline* — that is the bearing a framer frames into, and it leaves no
+    # unsupported strip of well between the two half-landings.
     out.extend(_landing_platform(stair, "lower", at, flight_len, landing_depth_m,
-                                 lane0, width, lower_landing_z))
+                                 lane0, partition_centre - lane0, lower_landing_z))
     out.extend(_landing_platform(stair, "upper", at, flight_len, landing_depth_m,
-                                 lane1, width, upper_landing_z))
+                                 partition_centre, lane1 + width - partition_centre,
+                                 upper_landing_z))
     # Well partition between the up and down flights: generated stud framing (not an
-    # authored Wall) on the lane boundary, bearing on the subfloor the stair springs
-    # from and rising to the arrival deck — never past the subfloor into the foundation
-    # (the flight-clip guard is the backstop). Both flights' inner stringers bear on it.
-    # It stops at the flight end; the landing platforms take over beyond. The 0.20 m
-    # inset holds its ends off the opening perimeter framing.
+    # authored Wall) centred in the gap the two lanes leave, bearing on the subfloor the
+    # stair springs from and rising to the arrival deck — never past the subfloor into the
+    # foundation (the flight-clip guard is the backstop). Both flights' inner stringers
+    # bear on it. It stops at the flight end; the landing platforms take over beyond. The
+    # 0.20 m inset holds its ends off the opening perimeter framing.
     inset = 0.20
     lo_s, hi_s = inset, flight_len - inset
     if hi_s > lo_s:
         plate = 0.0381  # a 2x4 plate laid flat
-        pa, pb = at(lo_s, lane1), at(hi_s, lane1)
+        pa, pb = at(lo_s, partition_centre), at(hi_s, partition_centre)
         out.append(FramedMember(stair.uid, "well-partition-plate-bottom", "partition",
                                 "2x4", pa, pb, z0, z0 + plate, hi_s - lo_s))
         out.append(FramedMember(stair.uid, "well-partition-plate-top", "partition",
                                 "2x4", pa, pb, arrival - plate, arrival, hi_s - lo_s))
         orient = (float(sign), 0.0) if along_x else (0.0, float(sign))
         for index, offset in enumerate(_grid_positions(hi_s - lo_s, _FRAMING_SPACING_M)):
-            point = at(lo_s + offset, lane1)
+            point = at(lo_s + offset, partition_centre)
             out.append(FramedMember(stair.uid, f"well-partition-stud-{index:03d}",
                                     "partition", "2x4", point, point,
                                     z0 + plate, arrival - plate,
@@ -700,13 +726,15 @@ def _stair_fits_opening(stair: Stair, minx: float, maxx: float, miny: float, max
     start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
     if stair.layout == "u_split_landing":
         # Mirrors _u_split_landing_members: flights share risers - 3 treads, and the
-        # (longer) lower flight takes the odd extra one.
+        # (longer) lower flight takes the odd extra one, and the two lanes are held apart
+        # by the well partition — so the cross-run budget is 2 flights *plus* partition.
         lower_treads = (max(0, risers - 3) + 1) // 2
         required_run = landing_depth_m + tread * lower_treads
+        required_cross = 2 * stair.width.meters + _WELL_PARTITION_THICKNESS_M
         if stair.run_direction == "x":
-            return (2 * stair.width.meters <= maxy - miny + 1e-9
+            return (required_cross <= maxy - miny + 1e-9
                     and required_run <= maxx - minx + 1e-9)
-        return (2 * stair.width.meters <= maxx - minx + 1e-9
+        return (required_cross <= maxx - minx + 1e-9
                 and required_run <= maxy - miny + 1e-9)
     if stair.layout == "right_angle_winder":
         straight_treads = risers - 1 - stair.winder_count

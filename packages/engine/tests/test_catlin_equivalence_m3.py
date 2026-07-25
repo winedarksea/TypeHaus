@@ -73,6 +73,12 @@ DECLARED_DIVERGENCES = {
         "the old center wall ran the full 36' as one solid; the basement's N-S centerline is "
         "now split into segments at door and stair openings, so no single run spans it"
     ),
+    "House Basement Stair Side Wall (8\")": (
+        "the stair shaft's west wall is 12\" concrete on x=10' now, not 8\" on x=11', and it "
+        "runs the full north-row depth instead of dying at the stair foot: 12\" on that line "
+        "is what gives the shaft its code-minimum 7'-0\" clear well and the furnace room its "
+        "8'-6\", both measured off the same wall (reference basement plan)"
+    ),
     "House Attic Floor Subfloor": "floor finishes are IfcCovering now, not IfcSlab",
     "House Second Floor Subfloor": "floor finishes are IfcCovering now, not IfcSlab",
     "House Main Floor Ceiling Drywall": "ceiling finishes are IfcCovering now, not IfcSlab",

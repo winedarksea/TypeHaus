@@ -69,7 +69,9 @@ def test_floor_joist_counts_match_old_model(catlin_model):
         spans = {round(m.length_m / ft(1).meters, 3) for m in joists}
         assert GRID_FT in spans
         if tag == "FS-SECOND":
-            assert 11.0 in spans
+            # FO-S-STAIR is drawn to the finished well, so the clip lands on W-M-STRW's
+            # stair-side face at x=10'-3 3/8" rather than on its centreline.
+            assert 10.281 in spans
 
 
 def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables():
@@ -739,11 +741,14 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
 
     stairs = {item["tag"]: item for item in model_to_dict(catlin_model)["stairs"]}
     assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A"}
-    assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 6).meters, abs=1e-9)
+    # 3'-3 3/4" is the flight the basement's 7'-0" well leaves either side of the 4 1/2"
+    # well partition.
+    assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 3.75).meters, abs=1e-9)
     assert stairs["ST-B2M"]["floor_opening"] == "FO-M-STAIR"
     assert stairs["ST-B2M"]["run_direction"] == "y"
     assert stairs["ST-B2M"]["layout"] == "u_split_landing"
-    assert stairs["ST-B2M"]["start"] == pytest.approx([ft(11).meters, ft(25).meters])
+    assert stairs["ST-B2M"]["start"] == pytest.approx(
+        [ft(10, 6).meters, ft(25, 2.375).meters])
     assert stairs["ST-M2S"]["layout"] == "u_split_landing"
     assert stairs["ST-S2A"]["layout"] == "right_angle_winder"
     assert stairs["ST-S2A"]["turn_direction"] == "left"

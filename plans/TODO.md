@@ -12,13 +12,22 @@ work.
   around a 4x4 cannot reach it. The fix is a layout choice — more risers in the turn, or a
   wider newel/well the winders wrap — not a number the generator can invent.
   `structural.winder_narrow_tread_depth` measures and reports the shortfall meanwhile.
-- **D3 — the catlin stair does not fit its own well.** `FO-S-STAIR` offers 84", but the
-  finished well between `W-M-STRW`'s and `W-M-C5`'s stair-side gwb faces is **77.25"** — the
-  two 3'-6" flights are **6.75" too wide**. Either the flights narrow or the opening is
-  re-drawn to the finished face. This blocks two other items: the framed-wall ledger below,
-  and narrowing `checks/structural/interference.py`'s `_STAIR_SUPPORT` (its ~80 whitelisted
-  catlin contacts are stair members physically inside stud cavities — an annotation does not
-  move geometry).
+- ~~**D3 — the catlin stair does not fit its own well.**~~ RESOLVED, both halves of the fix.
+  `W-B-STR`/`W-M-STRW` moved from x=11' to **x=10'** and the basement wall went 8" → **12"
+  concrete**, which puts the basement well at **7'-0" clear** (and the furnace room at
+  8'-6" — both reference numbers off one wall). Every stair opening is now drawn to the
+  **finished well** rather than to the wall centrelines, so the flights are laid out on the
+  faces they actually run between: `FO-M-STAIR` on the basement concrete faces (7'-0"),
+  `FO-S-STAIR` on the main floor's framed faces (7'-5¼"), each flight sized to fill its own
+  storey's well so both outer stringers land on wall. Flights are **3'-3¾"** (basement) and
+  **3'-6⅜"** (main), either side of the well partition, which now **occupies its real 4½"**
+  instead of being budgeted at zero — that is what "7'-0" including the 2x4 partition" means
+  geometrically. Landings are the R311.7.6 36" minimum, floored at the flight width.
+  Knock-ons: `structural.member_interference` contacts that only the `_STAIR_SUPPORT`
+  whitelist forgives went **315 → 226**, and the wall-cavity part of that is largely gone
+  (`W-M-STRW` 24 → 9, `W-M-C5` 15 → 7, `W-M-N2` 16 → 5); the 226 that remain are mostly
+  real intra-stair joinery (treads housed in stringers), so the set narrows but cannot be
+  deleted. `structural.floor_opening_header` no longer fires on `FO-S-STAIR` at all.
 - **Condensation boundary condition.** `building_science.condensation` now emits real results
   and reports 3 FAILs (`CATLIN_EXT_2X6`, `CATLIN_EXT_2X4`, `CATLIN_ROOF` — dew point at the
   sheathing at −15 °F / 35% RH). The walls are vapour-open mineral wool with no interior
@@ -125,7 +134,7 @@ scaffolding gap noted above.
   reference fixes 4"; the values are pinned in `detail_components/config.py` with docstrings
   naming the field that should replace them.
 - **Sill gasket** wants a `FramingSpec.sill_gasket` thickness (reference: 1/4").
-- **Slab thermal break** wants a perimeter-edge layer on the slab assembly (reference: 1").
+- **Slab thermal break** wants a perimeter-edge layer on the slab assembly (reference: 1"). Sauna wall also has a thermal break.
 
 ## Phase 2 — Complete Catlin junctions
 
@@ -190,8 +199,10 @@ below are construction-rule authoring — they need your intent:
 
 - **Framed-wall ledger emission.** `_bear_stair_on_walls` annotates a stringer/rim borne by a
   framed wall with `framed-wall-ledger:{tag}` but emits no member, so the take-off is missing
-  the 2x ledger a framer installs. A wall's `axis` is its *centreline*, so any band drawn on it
-  would be invented geometry inside the stud cavity — **blocked on D3**.
+  the 2x ledger a framer installs. **No longer blocked** — D3 is resolved, so `ST-M2S`'s outer
+  stringers now sit exactly on `W-M-STRW`'s and `W-M-C5`'s finished faces, and a ledger band
+  drawn there is real geometry rather than something invented inside a stud cavity. Port the
+  hanger-band emission the concrete case already uses (`concrete-wall-hanger`).
 - **Winders keep the `tapered tread` 1.5" band.** A trapezoid is not expressible as axis +
   band width in this IR, and a going-wide band would make the fan self-overlap.
 
@@ -213,26 +224,40 @@ future.
 `detail_components.py` and `takeoff.py` are likewise now packages.)
 
 ## General polishing
-
-- **Warnings.** `haus check houses/catlin` is at **127 pass / 7 fail / 0 not evaluable of 134
-  rules, 0 ERRORs**. Every one of the 7 failures is listed under "Needs your decision" above —
-  they are building facts, not defects. Nothing is unevaluable any more.
-- **Emitters still place a recessed body at the floor plane.** `resolved_mount_elevation` does
-  not read `Mount.recessed_into_host_surface`, so IFC/glTF draw catlin's registers sitting on
-  the floor rather than let into their boots. Cosmetic; no check depends on it.
-- **Wall-object protrusion is measured on the footprint's local-y extent**, relying on the
-  library convention that local `-y` faces the room. Correct for every authored placeable
-  today, but a wall-attached object rotated off that convention would be measured on the
-  wrong axis. Revisit if wall attachments grow arbitrary rotation offsets.
-- **The BOM is complete.** S-103 lists every member grouped by size and type with per-stock
-  -length buckets; S-104 tables the derived connection hardware with a keyed basis-of-quantity
-  note per row, plus structural solids by volume. `haus takeoff` prints the same sections.
+- Make sure new items get added to BOM
 
 ## Third Pass Follow Up
 - Gutter TR-SG-GUTTER-1 needs to be moved up to align wih flashing TR-SG-DRIP-1 and the gutter needs to look like a gutter
 - Slab SL-SG-PORCH should be replaced by decking like SL-SG-DECK, but be composite material instead of aluminum, and be shown in the viewer like wood
 - The porch floor which is currently SL-SG-PORCH should show up in the 2d viewer on the "main" floor, and the deck floor which is currently "SL-SG-DECK" should show up in the second floor 2d floorplan. It might be awkward to do but inspectors will likely expect that as they align with those floor's doors.
-- Switch all exterior walls to 2x6s, and remove the 2x4 exterior wall type (for simplicity)
+- Porch knee braces should be painted white, and have a more accurate knee brace connector (a band between the beams, APVKB45-6, one at top and one at the bottom)
+- Front beam (that runs E-W and is part of the front knee braces) needs to go properly on top of the 6x6 pillars, meeting the N-S beams cleanly (and likely sized down to 2x10 to match, it's for lateral stability, not holding up the joists above).
+- It looks like the concrete sonotube (sunken garden up to porch near house) needs to be move slightly south so it doesn't overlap the house wall.
+- Garage gable end walls (like W-G-E-CLOSURE-0-CLADDING) still have studs visible. Perhaps the framing just needs to push the gable end framing inward a tiny bit, or the cladding outward a tiny bit.
+- Garage fascia boards should probably count as part of the framing
+- Garage roof sheathing is visible around the fascia, likely the fascia needs to go up a tiny bit higher
+- The garage should be much closer to the house.
+- House roof really won't have fascia like RAKE-HI-1-FASCIA-1 nor RAKE-HI-1-EDGE-CLADDING. In reality, the furring strips of the siding will continue up to meet the furring strips of the roof very nearly, and it will be full continous standing seam siding and roofing (with a trim piece over the corner). It may be hard to show this, but in the real world standing seam panels will be pretty much constant from grade level, up to roof level, and across the house and down the other side.
+- Switch all exterior walls to 2x6s, and remove the 2x4 exterior wall type (for simplicity). Note main floor is LSL, others are standard dimensional 2x6 (this can be a note, rather than a different assembly). This will require careful updates to make sure assembly details still match.
 - At the corners where exterior wall meets exterior wall, use a 4 stud corner instead for framing (since we use outsulation, the extra strength here is worth it). That should just be the main four corners.
+- Build out the kitchen with appliances and counters, make sure pantry is present (may need design layout help here)
 
 - Align details and floorplans better
+  - **Basement is done** against `catlin_floorplan/Colin House_Basement_Level 1.png`. Every
+    clear dimension now matches the reference to within ¾" except the sauna's depth, and the
+    stair shaft is enclosed the way the reference draws it (`W-B-STR` runs the full north-row
+    depth, `RM-B-STAIR` claims the shaft, `D-B-STAIR` lets out into the workshop instead of
+    through the mechanical room). Measured, reference → model:
+    furnace 8'6" → **8'6"**; stair shaft 7'0" → **7'0"**; both playrooms 16'6" → **16'6"**;
+    workshop west leg 7'6" → **7'6³⁄₁₆"**; sauna 8'0" → **8'0¹¹⁄₁₆"**.
+  - **Sauna depth is the one deliberate shortfall**: reference 13'2½", model **12'6³⁄₁₆"**.
+    Its north wall is held back so the aisle it leaves against the center wall stays
+    **3'4³⁄₁₆"** — the `D-B-GYM` doorway lives in that aisle, and the reference gets its extra
+    8" only because its walls are drawn 10" where these are 12" concrete + a 7⅝" liner stack.
+    Going deeper means either giving up the workshop→gym door or accepting an aisle under 3'.
+  - **Room areas on the plan sheets are gross, not net.** `Room.clear_face` is built on the
+    wall *alignment* lines, so `RM-B-STAIR` reads 144 SF where its clear face is 115.5 SF
+    (the reference says 115.67). The layout matches; the labels are measuring a different
+    thing, and the name `clear_face` claims otherwise. Worth reconciling before the areas go
+    on a permit sheet.
+  - Main/second/attic have not been compared against their reference pages yet.

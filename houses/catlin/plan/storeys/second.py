@@ -36,7 +36,7 @@ NODES = [
     Node(uid="CSN007AAAA", tag="N-S-E4", position=pt(ft(36), ft(28))),
     Node(uid="CSN008AAAA", tag="N-S-NE", position=pt(ft(36), ft(36))),
     Node(uid="CSN009AAAA", tag="N-S-N1", position=pt(ft(18), ft(36))),
-    Node(uid="CSN010AAAA", tag="N-S-N2", position=pt(ft(11), ft(36))),
+    Node(uid="CSN010AAAA", tag="N-S-N2", position=pt(ft(10), ft(36))),
     Node(uid="CSN011AAAA", tag="N-S-NW", position=pt(ft(0), ft(36))),
     Node(uid="CSN012AAAA", tag="N-S-W1", position=pt(ft(0), ft(26, 4))),
     Node(uid="CSN013AAAA", tag="N-S-W2", position=pt(ft(0), ft(13, 4))),
@@ -54,8 +54,8 @@ NODES = [
     # West block
     Node(uid="CSN023AAAA", tag="N-S-D1", position=pt(ft(8), ft(8, 8))),
     Node(uid="CSN024AAAA", tag="N-S-D2", position=pt(ft(8), ft(13, 4))),
-    Node(uid="CSN025AAAA", tag="N-S-BA1", position=pt(ft(11), ft(26, 4))),
-    Node(uid="CSN026AAAA", tag="N-S-STR2", position=pt(ft(11), ft(25))),
+    Node(uid="CSN025AAAA", tag="N-S-BA1", position=pt(ft(10), ft(26, 4))),
+    Node(uid="CSN026AAAA", tag="N-S-STR2", position=pt(ft(10), ft(25))),
     Node(uid="CSN027AAAA", tag="N-S-C3B", position=pt(ft(18), ft(25))),
 ]
 
@@ -214,8 +214,10 @@ OPENINGS = [
     Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3060",
            position=from_node("N-S-SE", ft(8, 9)), sill_height=ft(2, 6)),
     # Baths + north
+    # W-S-N3 shortened by 1' when N-S-N2 moved to the stair shaft's new line, which moved
+    # every 16" bay centre on it by 4"; the RO follows so it still fits one clear bay.
     Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1448",
-           position=from_node("N-S-NW", ft(4, 5)), sill_height=ft(4)),
+           position=from_node("N-S-NW", ft(4, 9)), sill_height=ft(4)),
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1448",
            position=from_node("N-S-NW", ft(4, 1)), sill_height=ft(4)),
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3060",
@@ -263,11 +265,24 @@ SOFFITS = [
            drop=inch(14)),
 ]
 
+# Drawn to the main floor's *finished* well, the way FO-M-STAIR is drawn to the basement's:
+# W-M-STRW's and W-M-C5's stair-side gwb faces, W-M-STRS's north face, and the exterior
+# wall's inside face. That is both the shaft the flight climbs and the line the outer
+# stringers bear on — an opening on the wall centrelines instead put the stringers inside
+# the stud cavities and left the flight to be posted down (plans/TODO.md D3).
+#
+# This well is 7'-5 1/4" where the basement's is 7'-0", because the 2x6 walls here are
+# thinner than the 12" concrete they stack on. Each flight is sized to its own storey's
+# well rather than forcing one width on both, so both outer stringers land on a wall.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CSF602AAAA", tag="FO-S-STAIR",
-                 outline=(pt(ft(11), ft(25)), pt(ft(18), ft(25)),
-                          pt(ft(18), ft(36)), pt(ft(11), ft(36))),
-                 bearing_refs=("W-M-STRW", "W-M-STRW2")),
+                 outline=(pt(ft(10, 3.375), ft(25, 2.375)),
+                          pt(ft(17, 8.625), ft(25, 2.375)),
+                          pt(ft(17, 8.625), ft(35, 5.375)),
+                          pt(ft(10, 3.375), ft(35, 5.375))),
+                 # Both long edges are carried by bearing wall, so neither needs a header:
+                 # W-M-STRW/STRW2 west, W-M-C5/C4B (the center bearing line) east.
+                 bearing_refs=("W-M-STRW", "W-M-STRW2", "W-M-C5", "W-M-C4B")),
 ]
 
 # Structural deck: 11-7/8" I-joists spanning E-W on the three bearing lines.
@@ -281,10 +296,12 @@ FLOOR = [
 ]
 
 STAIRS = [
+    # 7'-5 1/4" well = 3'-6 3/8" + 4 1/2" well partition + 3'-6 3/8". Landing is the
+    # R311.7.6 36" minimum, floored at the flight width to keep the U-turn walkable.
     Stair(uid="CST702AAAA", tag="ST-M2S", floor_opening="FO-S-STAIR",
-          from_storey="main", to_storey="second", width=ft(3, 6),
-          layout="u_split_landing", run_direction="y", start=pt(ft(11), ft(25)),
-          landing_depth=ft(4)),
+          from_storey="main", to_storey="second", width=ft(3, 6.375),
+          layout="u_split_landing", run_direction="y",
+          start=pt(ft(10, 3.375), ft(25, 2.375)), landing_depth=ft(3)),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SOFFITS, *FLOOR_OPENINGS, *FLOOR,

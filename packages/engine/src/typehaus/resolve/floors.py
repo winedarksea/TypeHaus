@@ -134,6 +134,11 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         positions.append(perp1)
 
     cant_m = spec.cantilever.meters if spec.cantilever else 0.0
+    # Anything shorter than the joist's own depth is bearing seat, not span. An opening
+    # drawn to a bearing wall's *near face* stops short of the bearing line the span is cut
+    # at, and the remainder — 3 3/8" of deck over the top plate, where the trimmer actually
+    # sits — is not a joist. Emitting it put stub members in the frame and the take-off.
+    min_segment_m = _member_depth_m(spec.member)
     for index, perp in enumerate(positions):
         for span_index in range(len(boundaries) - 1):
             a, b = boundaries[span_index], boundaries[span_index + 1]
@@ -150,7 +155,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
                 if opening_perp0 - 1e-9 <= perp <= opening_perp1 + 1e-9:
                     segments = _subtract_interval(segments, opening_axis0, opening_axis1)
             for segment_index, (segment_a, segment_b) in enumerate(segments):
-                if segment_b - segment_a <= 1e-9:
+                if segment_b - segment_a <= min_segment_m:
                     continue
                 if along_x:
                     p0, p1 = (segment_a, perp), (segment_b, perp)
@@ -257,22 +262,43 @@ def _subtract_interval(intervals: list[tuple[float, float]], cut0: float, cut1: 
     return out
 
 
+def _wall_footprint_span(wall, across: int) -> tuple[float, float] | None:
+    """The wall's plan extent along axis ``across`` (0=x, 1=y), from its layer polygons.
+
+    Read off the resolved polygons rather than ``axis`` +/- half ``thickness_m`` because an
+    ``alignment=face(...)`` wall's axis is not its centreline.
+    """
+    values = [point[across] for layer in wall.layers for point in layer.polygon]
+    return (min(values), max(values)) if values else None
+
+
 def _opening_edge_has_declared_bearing(model: ResolvedModel, opening: FloorOpening,
                                        p0: tuple[float, float], p1: tuple[float, float]) -> bool:
+    """Does a declared bearing wall carry this whole opening edge?
+
+    The edge is tested against each wall's plan *footprint*, not against its centreline.
+    An opening drawn to the finished well — which is what a stair climbs, and what keeps
+    its stringers out of the stud cavities — never coincides with a wall axis, so a
+    centreline-equality test claimed "no bearing" for every edge a wall plainly carries
+    and put a 10' header under it (plans/TODO.md D3).
+    """
     covered: list[tuple[float, float]] = []
     vertical = abs(p0[0] - p1[0]) < 1e-9
+    across, along = (0, 1) if vertical else (1, 0)
     for tag in opening.bearing_refs:
         wall = model.wall(tag)
         if wall is None:
             continue
         a0, a1 = wall.axis
-        if vertical and abs(a0[0] - p0[0]) < 1e-9 and abs(a1[0] - p0[0]) < 1e-9:
-            covered.append((min(a0[1], a1[1]), max(a0[1], a1[1])))
-        if not vertical and abs(a0[1] - p0[1]) < 1e-9 and abs(a1[1] - p0[1]) < 1e-9:
-            covered.append((min(a0[0], a1[0]), max(a0[0], a1[0])))
+        if abs(a0[across] - a1[across]) > 1e-9:
+            continue  # runs across the edge, not along it — it cannot carry its length
+        footprint = _wall_footprint_span(wall, across)
+        if footprint is None or not (footprint[0] - 1e-9 <= p0[across] <= footprint[1] + 1e-9):
+            continue
+        covered.append((min(a0[along], a1[along]), max(a0[along], a1[along])))
     if not covered:
         return False
-    target0, target1 = (min(p0[1], p1[1]), max(p0[1], p1[1])) if vertical else (min(p0[0], p1[0]), max(p0[0], p1[0]))
+    target0, target1 = min(p0[along], p1[along]), max(p0[along], p1[along])
     cursor = target0
     for start, end in sorted(covered):
         if start > cursor + 1e-9:

@@ -27,24 +27,34 @@ from typehaus import (
     pt,
 )
 
+# Plan datums this storey is dimensioned to (reference: catlin_floorplan/
+# "Colin House_Basement_Level 1.png"). Every one of them is a *clear* face dimension,
+# so the node line each wall sits on is back-calculated from the finished faces:
+#   furnace room 8'-6" | stair shaft 7'-0" | playroom 16'-6"   across the north row
+#   workshop leg 7'-6" | sauna 8'-0"       | playroom 16'-6"   across the south row
+# The stair shaft's 7'-0" is the code-minimum well: two 3'-3 3/4" flights either side of
+# a 4 1/2" 2x4 well partition. Putting W-B-STR on x=10' as 12" concrete lands the shaft
+# and the furnace room on both reference numbers at once, because the 18' bearing grid
+# fixes the shaft's east face at 17'-6".
 NODES = [
     # Perimeter (split at grid lines + partition tees)
     Node(uid="CBN001AAAA", tag="N-B-SW", position=pt(ft(0), ft(0))),
-    Node(uid="CBN002AAAA", tag="N-B-S1", position=pt(ft(10), ft(0))),
+    Node(uid="CBN002AAAA", tag="N-B-S1", position=pt(ft(8, 10), ft(0))),
     Node(uid="CBN003AAAA", tag="N-B-S2", position=pt(ft(18), ft(0))),
     Node(uid="CBN004AAAA", tag="N-B-SE", position=pt(ft(36), ft(0))),
     Node(uid="CBN005AAAA", tag="N-B-E1", position=pt(ft(36), ft(18))),
     Node(uid="CBN006AAAA", tag="N-B-NE", position=pt(ft(36), ft(36))),
     Node(uid="CBN007AAAA", tag="N-B-N1", position=pt(ft(18), ft(36))),
-    Node(uid="CBN008AAAA", tag="N-B-N2", position=pt(ft(11), ft(36))),
+    Node(uid="CBN008AAAA", tag="N-B-N2", position=pt(ft(10), ft(36))),
     Node(uid="CBN009AAAA", tag="N-B-NW", position=pt(ft(0), ft(36))),
     Node(uid="CBN010AAAA", tag="N-B-W1", position=pt(ft(0), ft(18))),
     # Interior grid + stair + sauna
     Node(uid="CBN011AAAA", tag="N-B-C", position=pt(ft(18), ft(18))),
-    Node(uid="CBN012AAAA", tag="N-B-C1", position=pt(ft(18), ft(13, 4))),
-    Node(uid="CBN013AAAA", tag="N-B-STR", position=pt(ft(11), ft(25)),
-         open_end=True),
-    Node(uid="CBN014AAAA", tag="N-B-SA1", position=pt(ft(10), ft(13, 4))),
+    Node(uid="CBN012AAAA", tag="N-B-C1", position=pt(ft(18), ft(13, 10))),
+    # The stair shaft runs the full north-row depth and lands on the center wall, so its
+    # west wall tees into it rather than dying in the middle of the furnace room.
+    Node(uid="CBN013AAAA", tag="N-B-STR", position=pt(ft(10), ft(18))),
+    Node(uid="CBN014AAAA", tag="N-B-SA1", position=pt(ft(8, 10), ft(13, 10))),
 ]
 
 WALLS = [
@@ -104,15 +114,22 @@ WALLS = [
     FoundationWall(uid="CBW113AAAA", tag="W-B-CN", start_node="N-B-C",
                    end_node="N-B-N1", assembly="CATLIN_CONC_12_INT",
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
+    # Split at the stair shaft's west wall so the shaft is a real tee, not a wall end.
     FoundationWall(uid="CBW114AAAA", tag="W-B-CW", start_node="N-B-W1",
+                   end_node="N-B-STR", assembly="CATLIN_CONC_12_INT",
+                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+    FoundationWall(uid="CBW119AAAA", tag="W-B-CW2", start_node="N-B-STR",
                    end_node="N-B-C", assembly="CATLIN_CONC_12_INT",
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     FoundationWall(uid="CBW115AAAA", tag="W-B-CE", start_node="N-B-C",
                    end_node="N-B-E1", assembly="CATLIN_CONC_12_INT",
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
-    # Stair side wall — 8" concrete, immediately west of the stair opening.
+    # Stair shaft's west wall — 12" concrete on x=10', running the full north-row depth
+    # so the shaft encloses (reference: "Stairway 7' x 16' 6 1/2""). 12" rather than 8"
+    # because that is what puts the shaft's west face on 9'-6": the furnace room then
+    # reads its reference 8'-6" clear and the shaft its 7'-0" off the same wall.
     FoundationWall(uid="CBW116AAAA", tag="W-B-STR", start_node="N-B-N2",
-                   end_node="N-B-STR", assembly="CATLIN_CONC_8_INT",
+                   end_node="N-B-STR", assembly="CATLIN_CONC_12_INT",
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     # Sauna partitions — SAUNA_2X4 carries the hot-side liner (T&G over furring over
     # foil-faced polyiso) as part of the wall type, so the vapour control layer is a
@@ -134,10 +151,19 @@ OPENINGS = [
          position=from_node("N-B-W1", ft(3))),
     Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT56",
          position=from_node("N-B-C", ft(6))),
+    # Centred in the 3'-4" aisle the sauna's north wall leaves against the center wall.
+    # ``from_node`` offsets the opening's near *edge*, so 8" leaves ~4" of concrete jamb
+    # at each end of the 4'-2" W-B-CS2 segment.
     Door(uid="CBD203AAAA", tag="D-B-GYM", host="W-B-CS2", type_ref="DT-INT32",
-         position=from_node("N-B-C1", ft(1)), flip_swing=False, flip_hinge=False),
+         position=from_node("N-B-C1", inch(8)), flip_swing=False, flip_hinge=False),
     Door(uid="CBD204AAAA", tag="D-B-NE", host="W-B-CN", type_ref="DT-INT32",
          position=from_node("N-B-C", ft(4))),
+    # Way out of the enclosed stair shaft, into the workshop rather than through the
+    # mechanical room (reference draws this door in the center wall too). Set in the
+    # descending flight's lane rather than centred, so it is not head-on to the well
+    # partition at x=14'.
+    Door(uid="CBD207AAAA", tag="D-B-STAIR", host="W-B-CW2", type_ref="DT-INT32",
+         position=from_node("N-B-STR", inch(10))),
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-SA-W", type_ref="DT-INT24",
          position=from_node("N-B-S1", ft(10, 10.4375))),
     # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.
@@ -151,6 +177,10 @@ OPENINGS = [
 ROOMS = [
     Room(uid="CBR401AAAA", tag="RM-B-FURNACE", seed=pt(ft(5), ft(30)),
          occupancy=Occupancy.MECHANICAL, floor_finish="sealed-concrete"),
+    # W-B-STR now separates this from the furnace room, so the stair bottom is its own
+    # space instead of dumping arrivals into the mechanical room.
+    Room(uid="CBR406AAAA", tag="RM-B-STAIR", seed=pt(ft(14), ft(30)),
+         occupancy=Occupancy.STAIR, floor_finish="sealed-concrete"),
     Room(uid="CBR402AAAA", tag="RM-B-WORKSHOP", seed=pt(ft(5), ft(8)),
          occupancy=Occupancy.UTILITY, floor_finish="sealed-concrete"),
     # No wall_lining override: the liner is part of SAUNA_2X4 / SAUNA_LINER_ON_CONCRETE.
@@ -169,7 +199,7 @@ ALARMS = [
 FLOOR_HEAT = [
     FloorHeat(uid="CBH801AAAA", tag="FH-B-SAUNA", room_ref="RM-B-SAUNA",
               system=RadiantSystem.ELECTRIC, spacing=inch(6), embed=in_slab(inch(1.5)),
-              stat=pt(ft(12), ft(14))),
+              stat=pt(ft(12), ft(12))),
 ]
 
 SLABS = [

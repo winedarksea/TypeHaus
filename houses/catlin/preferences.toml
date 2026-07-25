@@ -26,7 +26,7 @@ system = "imperial"
 # These pages intentionally remain dim and are never permit/model geometry; the new 36'
 # structural module and 16 in. grid remain authoritative where the old page disagrees.
 [[underlay]]
-path = "../../catlin_floorplan/Colin House - Basement • Level 1.png"
+path = "../../catlin_floorplan/Colin House_Basement_Level 1.png"
 storey = "basement"
 origin_x_m = -2.55
 origin_y_m = -2.70
@@ -35,7 +35,7 @@ height_m = 22.50
 opacity = 0.16
 
 [[underlay]]
-path = "../../catlin_floorplan/Colin House - 1st Floor.png"
+path = "../../catlin_floorplan/Colin House_1st_Floor.png"
 storey = "main"
 origin_x_m = -2.55
 origin_y_m = -2.70
@@ -44,7 +44,7 @@ height_m = 22.50
 opacity = 0.16
 
 [[underlay]]
-path = "../../catlin_floorplan/Colin House - 2nd Floor.png"
+path = "../../catlin_floorplan/Colin House_2nd_Floor.png"
 storey = "second"
 origin_x_m = -2.55
 origin_y_m = -2.70
@@ -53,7 +53,7 @@ height_m = 22.50
 opacity = 0.16
 
 [[underlay]]
-path = "../../catlin_floorplan/Colin House - 3rd Floor.png"
+path = "../../catlin_floorplan/Colin House_3rd_Floor.png"
 storey = "attic"
 origin_x_m = -2.55
 origin_y_m = -2.70

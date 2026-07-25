@@ -16,8 +16,8 @@ from typehaus.model import deg, ft, m, pt
 # SP-B-UTILITY (plan/mep.py) is the pre-pour stub-up through SL-B-FLOOR that serves it.
 BASEMENT_PLACEABLES = [
     Fixture(uid="5BBZTZNBWN", tag="FX-1", type_ref="FX-LAV", room="RM-B-FURNACE",
-            position=pt(ft(14), ft(19, 4.5)), wall_ref="W-B-CW",
-            drain_position=pt(ft(14), ft(19))),
+            position=pt(ft(7), ft(19, 4.5)), wall_ref="W-B-CW",
+            drain_position=pt(ft(7), ft(19))),
 ]
 MAIN_PLACEABLES = [
     Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FURN-SOFA-84", room="RM-M-LIVING",
