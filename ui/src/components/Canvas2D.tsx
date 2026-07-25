@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
-import type { Selection } from "../state/store";
+import type { Selection } from "../state/vocabulary";
 import type { PreviewGeometry } from "../engine/EngineClient";
 import type { CanvasObject, CanvasObjectType, DoorOperation, Layer, Model, Opening, PlanNode, Stair, Vec2, Wall } from "../model/types";
 import { doorStrokeGlyph, hostWallThicknessM } from "../model/doorSymbols";
@@ -17,7 +17,7 @@ import {
 import { projectedExtentPx, spaceLabel, spaceLabelLineBudget } from "../model/spaceLabels";
 import { PlanWarningPopover } from "./PlanWarningPopover";
 import { layerCarriesControl, lensStrokeSpec } from "./LensBar";
-import type { Lens } from "../state/store";
+import type { Lens } from "../state/vocabulary";
 import {
   deriveNodes,
   formatFtIn,

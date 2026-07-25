@@ -2,7 +2,8 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { ALL_SELECTION_KINDS, ALL_TRADES, useStore, type SelectionKind, type Trade } from "../state/store";
+import { useStore } from "../state/store";
+import { ALL_SELECTION_KINDS, ALL_TRADES, type SelectionKind, type Trade } from "../state/vocabulary";
 import {
   ALL_LAYER_VISIBILITY_GROUPS,
   layerVisibilityGroupOf,

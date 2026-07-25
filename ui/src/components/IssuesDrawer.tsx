@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useStore, visibleFindings } from "../state/store";
+import { useStore } from "../state/store";
+import { visibleFindings } from "../state/locate";
 import type { Finding, Severity } from "../model/types";
 
 // Issue states are UI metadata layered over the engine's Finding (which has no such notion).
