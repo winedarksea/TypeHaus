@@ -6,18 +6,18 @@ import {
   WHEEL_MAX_STEP_PX,
 } from "../three/cameraFraming";
 import { wholeHouseGlbAssignment } from "../three/wholeHouseGlb";
-import { isRenderedInScene } from "../three/build/registry";
+import { isRenderedInScene } from "../three/builders/registry";
 import {
   buildCanvasObjectParts, canvasObjectFallbackGeometry, earthElevation, earthOutline, earthVoids,
   EARTH_FALLBACK_HALF_SIZE_M,
-} from "../three/build/site";
+} from "../three/builders/site";
 import {
   archSoffitSegmentCount, buildOpening, createSmoothArchedWallLayerGeometry, wallLayerPieces,
   withoutCollinearVertices,
-} from "../three/build/walls";
+} from "../three/builders/walls";
 import {
   buildFloor, buildFootingBedding, buildRoof, buildSolid, buildStair, FOOTING_BEDDING_COLOR,
-} from "../three/build/structure";
+} from "../three/builders/structure";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { SOLID_CATEGORY_COLOR, createSolidMaterial, solidColor } from "../three/solidMaterials";
 import { carriesMemberIdentity, resolveMemberPickUid } from "../three/memberPicking";
