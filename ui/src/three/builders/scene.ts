@@ -19,7 +19,9 @@ import {
 import type { Trade } from "../../state/vocabulary";
 import { buildCanvasObject, buildEarth } from "./site";
 import { buildOpening, buildWall } from "./walls";
-import { buildFloor, buildFootingBedding, buildRoof, buildSolid, buildStair } from "./structure";
+import {
+  buildBrace, buildFloor, buildFootingBedding, buildRoof, buildSolid, buildStair,
+} from "./structure";
 
 /** What a click can land on, and which materials the highlight pass drives per uid. */
 export interface SceneRegistry {
@@ -108,6 +110,9 @@ export function populateScene(options: PopulateSceneOptions) {
   }
   for (const stair of model.stairs ?? []) {
     buildStair(tradeGroups.stairs, stair, center, mode, registry.picks, registry.byUid);
+  }
+  for (const brace of model.braces ?? []) {
+    buildBrace(tradeGroups.framing, brace, center, mode, registry.picks, registry.byUid);
   }
 
   const types = new Map((model.catalog?.canvas_object_types ?? []).map((type) => [type.tag, type]));

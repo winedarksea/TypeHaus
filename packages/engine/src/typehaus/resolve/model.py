@@ -291,6 +291,22 @@ class ResolvedFloor:
 
 
 @dataclass(frozen=True)
+class ResolvedBrace:
+    """A resolved diagonal brace: its raked wood member(s), hosted for identity.
+
+    Framing members are always carried by a host record — a wall, floor, roof or stair —
+    because every consumer needs a storey to file them under and one owning uid to make
+    them pickable. A brace belongs to none of those, so it hosts itself rather than
+    borrowing a floor whose ``members`` bounding box other consumers read as deck extent.
+    """
+
+    uid: str
+    tag: str
+    storey: str
+    members: tuple[FramedMember, ...]
+
+
+@dataclass(frozen=True)
 class ResolvedFloorHeat:
     """A resolved radiant zone with its plan footprint and transparent wire estimate."""
 
@@ -445,6 +461,7 @@ class ResolvedModel:
     roofs: list[ResolvedRoof] = field(default_factory=list)
     stairs: list[ResolvedStair] = field(default_factory=list)
     floors: list[ResolvedFloor] = field(default_factory=list)
+    braces: list[ResolvedBrace] = field(default_factory=list)
     floor_heat: list[ResolvedFloorHeat] = field(default_factory=list)
     rooms: list[ResolvedRoom] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
@@ -471,4 +488,6 @@ class ResolvedModel:
             out.extend(floor.members)
         for roof in self.roofs:
             out.extend(roof.members)
+        for brace in self.braces:
+            out.extend(brace.members)
         return out

@@ -18,7 +18,7 @@ from shapely.ops import unary_union
 
 from typehaus._meta import IFC_APP_NAME, PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
-from typehaus.emit.ifc.roof import emit_roof
+from typehaus.emit.ifc.roof import emit_roof, member_representation
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section
@@ -77,6 +77,9 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
 
     for stair in sorted(model.stairs, key=lambda item: item.uid):
         _emit_stair(f, stair, storeys, project_uuid, lod)
+
+    for brace in sorted(model.braces, key=lambda item: item.uid):
+        _emit_brace(f, body, brace, storeys, project_uuid)
 
     for room in sorted(model.rooms, key=lambda r: r.uid):
         _emit_space(f, body, room, storeys, project_uuid)
@@ -619,6 +622,32 @@ def _emit_floor(f: Any, body: Any, floor: Any, storeys: dict[str, Any],
             "category": member.category, "profile": member.profile,
         })
         ll.assign_container(f, beam, container)
+
+
+def _emit_brace(f: Any, body: Any, brace: Any, storeys: dict[str, Any],
+                project_uuid: Any) -> None:
+    """Each diagonal brace member as an ``IfcMember``/BRACE swept along its true 3D axis.
+
+    A brace is raked by construction, and ``_emit_floor``'s vertical prism would flatten it
+    to a box between its two end elevations. ``member_representation`` already sweeps a
+    section along the real axis for raked roof sticks, so reuse it rather than growing a
+    second rake path here."""
+    container = storeys.get(brace.storey)
+    if container is None:
+        return
+    for member in sorted(brace.members, key=lambda item: item.child_key):
+        child = ll.create_entity(f, "IfcMember", name=f"{brace.tag}/{member.child_key}")
+        child.GlobalId = derive_child_guid(project_uuid, brace.uid, member.child_key)
+        child.PredefinedType = "BRACE"
+        representation = member_representation(f, body, member)
+        if representation is not None:
+            _assign_representation(f, child, representation)
+        ll.ensure_pset(f, child, PSET_SOURCE, {
+            "uid": brace.uid, "tag": f"{brace.tag}/{member.child_key}",
+            "category": member.category, "profile": member.profile,
+            "connection": member.connection or "",
+        })
+        ll.assign_container(f, child, container)
 
 
 def _emit_stair(f: Any, stair: Any, storeys: dict[str, Any], project_uuid: Any, lod: str) -> None:

@@ -40,6 +40,7 @@ const CATEGORY_COLOR: Record<string, number> = {
   joist: 0xb88c5c,
   rim: 0xa87a4c,
   ridge_beam: 0x8c6238,
+  brace: 0xa3763f, // = blocking, as engine-side: the diagonal knee brace is framing lumber
   king: 0xb3854f,
   jack: 0xb3854f,
   cripple: 0xb3854f,

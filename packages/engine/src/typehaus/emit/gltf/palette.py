@@ -53,6 +53,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "joist": (0.72, 0.55, 0.36, 1.0),
     "rim": (0.66, 0.48, 0.30, 1.0),
     "ridge_beam": (0.55, 0.38, 0.22, 1.0),
+    "brace": (0.639, 0.463, 0.247, 1.0),         # 0xa3763f — as blocking
     # Stick-framed roof lumber + the blocking that fills between it. These had no entry at
     # all, so ~260 members rendered as the neutral gray fallback in *both* renderers (the
     # "garage truss should visualize as wood" report). Values chosen to round-trip exactly

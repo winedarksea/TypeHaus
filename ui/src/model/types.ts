@@ -542,6 +542,16 @@ export interface Floor {
   members: Member[];
 }
 
+// A diagonal brace hosts its own member the way a floor or roof hosts its sticks: it belongs
+// to no deck or wall, so it carries the storey and the uid that picking and highlighting key on.
+export interface Brace {
+  uid: string;
+  tag: string;
+  storey: string;
+  provenance: Provenance | null;
+  members: Member[];
+}
+
 // A stair's scalar inputs are authored, while its risers, treads, and framing members are
 // resolver output. Keeping both in this contract lets the designer preview its next valid
 // solve without treating client-side arithmetic as the source of truth.
@@ -618,6 +628,7 @@ export interface Model {
   footing_beddings?: FootingBedding[];
   floors?: Floor[];
   stairs?: Stair[];
+  braces?: Brace[];
   fixtures?: Fixture[];
   furniture?: Furniture[];
   canvas_objects?: CanvasObject[];

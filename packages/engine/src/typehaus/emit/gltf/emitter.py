@@ -146,6 +146,12 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             _add_member(mb, member)
         scene.add_object(mb, trade="stairs", kind="stair", uid=stair.uid)
 
+    for brace in sorted(model.braces, key=lambda item: item.uid):
+        mb = _MeshBuilder()
+        for member in brace.members:
+            _add_member(mb, member)
+        scene.add_object(mb, trade="framing", kind="brace", uid=brace.uid)
+
     _add_canvas_objects(scene, model)
 
     if scene.is_empty():  # keep the container valid even for an empty model

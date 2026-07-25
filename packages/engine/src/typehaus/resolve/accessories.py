@@ -13,11 +13,17 @@ import math
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.mep import Sump, VentRun
-from typehaus.model.structure import Connector, Dowel, Railing
+from typehaus.model.structure import Connector, Dowel, KneeBrace, Railing
 from typehaus.model.trim import EaveSoffit, Fascia, Flashing, Gutter
 from typehaus.quantities import inch
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import circle_outline, length, rect_between, sub
-from typehaus.resolve.model import ResolvedModel, ResolvedSolid
+from typehaus.resolve.model import (
+    FramedMember,
+    ResolvedBrace,
+    ResolvedModel,
+    ResolvedSolid,
+)
 from typehaus.resolve.vent_termination import (
     derived_termination_elevation,
     exterior_riser_point,
@@ -52,6 +58,8 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
                 _resolve_dowel(model, el, storey.tag)
             elif isinstance(el, Connector):
                 _resolve_connector(model, el, storey.tag)
+            elif isinstance(el, KneeBrace):
+                _resolve_knee_brace(model, el, storey.tag)
             elif isinstance(el, Railing):
                 _resolve_railing(model, el, storey.tag)
             elif isinstance(el, Sump):
@@ -126,16 +134,54 @@ def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None
     cx, cy = el.position.xy_m
     z = el.elevation.meters if el.elevation is not None else \
         next((s.elevation.meters for s in model.plan.storeys if s.tag == storey), 0.0)
-    # A compact marker box; knee braces read as a short angled bar along their axis.
+    # A compact marker box at the connection point. Hardware is billed from the element, not
+    # measured off this solid, so the marker only has to read at the right place.
     half = inch(2.5).meters
-    if el.kind.value == "kneebrace" and el.axis in ("x", "y"):
-        outline = _bar(cx, cy, el.axis, inch(18).meters, inch(3).meters)
-    else:
-        outline = _square(cx, cy, half, half)
     model.solids.append(ResolvedSolid(
         uid=el.uid or f"{el.tag}-conn", tag=el.tag, storey=storey,
-        category="connector", outline=outline,
+        category="connector", outline=_square(cx, cy, half, half),
         z0_m=z - inch(3).meters, z1_m=z + inch(3).meters,
+    ))
+
+
+def _resolve_knee_brace(model: ResolvedModel, el: KneeBrace, storey: str) -> None:
+    """A 45-degree brace: one raked wood member plus a marker for its hardware.
+
+    The diagonal is a :class:`FramedMember` rather than a swept solid so it bills as the
+    stick of lumber it is. ``ResolvedSolid`` only extrudes a plan outline vertically, so a
+    diagonal would otherwise have to be faked as a stack of bands — and the solids take-off
+    would then count each band as its own piece of structure.
+    """
+    cx, cy = el.position.xy_m
+    ux, uy = (el.direction, 0.0) if el.axis == "x" else (0.0, el.direction)
+    # Start at the post *face*: a brace end buried in the column overlaps it in plan by more
+    # than the interference check's tolerance, and the butt-joint exemption does not reach an
+    # endpoint that far inside the column's centroid.
+    offset = _nominal_actual_m(el.post_size) / 2.0
+    p0 = (cx + ux * offset, cy + uy * offset)
+    leg = el.leg.meters
+    p1 = (p0[0] + ux * leg, p0[1] + uy * leg)
+    # At 45 degrees the member's own depth, measured square to its axis, opens up to
+    # ``depth / cos(45)`` when read vertically — the cut a carpenter sees on the end grain.
+    thickness_z = cross_section(el.member).depth_m * math.sqrt(2.0)
+    soffit = el.soffit_elevation.meters
+    model.braces.append(ResolvedBrace(
+        uid=el.uid or f"{el.tag}-brace", tag=el.tag, storey=storey,
+        members=(FramedMember(
+            parent_uid=el.uid or el.tag, child_key="brace", category="brace",
+            profile=el.member, p0=p0, p1=p1,
+            z0_m=soffit - leg - thickness_z, z1_m=soffit - leg,
+            length_m=leg * math.sqrt(2.0),
+            z0_end_m=soffit - thickness_z, z1_end_m=soffit,
+            connection=f"kneebrace:{el.connector}",
+        ),),
+    ))
+    # The hardware itself, at the upper (member) end of the diagonal.
+    half = inch(2.5).meters
+    model.solids.append(ResolvedSolid(
+        uid=f"{el.uid}-conn" if el.uid else f"{el.tag}-conn", tag=f"{el.tag}-CONN",
+        storey=storey, category="connector", outline=_square(p1[0], p1[1], half, half),
+        z0_m=soffit - inch(6).meters, z1_m=soffit,
     ))
 
 

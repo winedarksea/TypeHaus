@@ -81,6 +81,13 @@ class Beam(Element):
     size: str = "3.5x11.875 LVL"
     bearing_refs: tuple[str, ...] = ()
     datum: FaceRef | None = None
+    # Project-frame absolute top of the beam, overriding the derived bearing-stack drop.
+    # The resolver normally hangs a beam a joist depth below its storey datum, which it
+    # infers from the FloorSystem that bears on it. A beam that carries no joists but must
+    # still sit low — the balcony E-W girts bolt to the pillar faces *under* beams whose own
+    # tops are already dropped — has no such inference available, and authoring it into a
+    # FloorSystem's bearing_refs to borrow the drop would claim joists it does not carry.
+    top_elevation: Length | None = None
     # Optional finish assembly (paint/stain), same contract as Post.assembly: the resolver
     # forwards it to the beam's solid so render/IFC read the finish instead of the bare
     # per-category palette colour. Unset leaves the beam its structural wood colour.
@@ -128,6 +135,35 @@ class Connector(Element):
 
 
 @register_element
+class KneeBrace(Element):
+    """A 45-degree diagonal brace stiffening a post/beam joint (→ IfcMember/BRACE).
+
+    The structural element is the wood diagonal; ``connector`` names the hardware that
+    fastens it (a Simpson Outdoor Accents APVKB, say), which resolves as a small marker at
+    the upper end. One element per *physical* brace — a post braced in both plan directions
+    carries two of them — so the take-off counts braces rather than multiplying a per-joint
+    rule that only holds where a beam continues past its post.
+
+    Geometry is the 45-degree triangle a carpenter cuts: the brace leaves the post *face*
+    (never its centre — an embedded end reads as a member clash) and runs ``leg`` out along
+    ``axis``/``direction`` while rising the same ``leg`` to ``soffit_elevation``. That soffit
+    is authored rather than derived because the members a post is braced to need not share
+    an elevation: the balcony's N-S braces land on the beam soffit and its E-W braces a girt
+    depth lower.
+    """
+
+    position: Point2D  # braced post's plan centre
+    soffit_elevation: Length  # underside of the member braced to, project-frame absolute
+    leg: Length  # horizontal run; equal to the rise at 45 degrees
+    axis: str = "y"  # "x" | "y": the plan direction the brace runs from the post
+    direction: int = 1  # +1 / -1 sense along ``axis``
+    member: str = "2x6"  # the diagonal's own nominal profile
+    post_size: str = "6x6"  # braced post's section, so the brace starts at its face
+    connector: str = "APVKB45-6"  # hardware model at the joint
+    connects: tuple[str, ...] = ()  # post + beam/girt tags the brace joins
+
+
+@register_element
 class Railing(Element):
     """A first-class guard rail framed from posts + rails along a plan path (→ IfcRailing).
 
@@ -155,6 +191,7 @@ for _name, _obj in (
     ("Beam", Beam),
     ("Dowel", Dowel),
     ("Connector", Connector),
+    ("KneeBrace", KneeBrace),
     ("Railing", Railing),
 ):
     register_constructor(_name, _obj)

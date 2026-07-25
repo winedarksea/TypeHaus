@@ -48,13 +48,13 @@ export type DetailView = "none" | "assembly" | "bom";
 // nodes, so only the model.json render path can resolve a click to a single stick.
 export type SelectionKind =
   | "wall" | "opening" | "room" | "stair" | "canvas_object"
-  | "solid" | "footing_bedding" | "floor" | "roof" | "member";
+  | "solid" | "footing_bedding" | "floor" | "roof" | "brace" | "member";
 export const ALL_SELECTION_KINDS: SelectionKind[] = [
   "wall", "opening", "room", "stair", "canvas_object", "solid", "footing_bedding", "floor", "roof",
-  "member",
+  "brace", "member",
 ];
 export const DERIVED_SELECTION_KINDS: SelectionKind[] = [
-  "solid", "footing_bedding", "floor", "roof", "member",
+  "solid", "footing_bedding", "floor", "roof", "brace", "member",
 ];
 
 export interface Selection {

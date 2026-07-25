@@ -207,7 +207,7 @@ def _emit_member(f: Any, body: Any, roof: ResolvedRoof, member: FramedMember,
     child.GlobalId = derive_child_guid(project_uuid, roof.uid, member.child_key)
     if predefined is not None:
         child.PredefinedType = predefined
-    representation = _member_representation(f, body, member)
+    representation = member_representation(f, body, member)
     if representation is not None:
         _assign(f, child, representation)
     ll.ensure_pset(f, child, PSET_SOURCE, {
@@ -227,7 +227,7 @@ def _member_class(category: str) -> tuple[str, str | None]:
     return "IfcMember", _MEMBER_PREDEFINED_TYPE.get(key, "MEMBER")
 
 
-def _member_representation(f: Any, body: Any, member: FramedMember) -> Any | None:
+def member_representation(f: Any, body: Any, member: FramedMember) -> Any | None:
     """Sweep the member's rectangular section along its true 3D axis.
 
     The section rides the axis through its own centroid, so the solid's top and bottom faces

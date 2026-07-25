@@ -6,7 +6,7 @@
 // resolved outline or lay out a member list, and none carries an editing path.
 import * as THREE from "three";
 import type {
-  Catalog, FootingBedding, Floor, Member, Roof, Solid, Stair,
+  Brace, Catalog, FootingBedding, Floor, Member, Roof, Solid, Stair,
 } from "../../model/types";
 import { layerVisibilityGroupOf, type LayerVisibilityGroup } from "../../model/visibility";
 import { materialColor, type ResolvedNordicPalette } from "../../nordic/palette";
@@ -186,4 +186,12 @@ export function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter
   const firstChildIndex = parent.children.length;
   buildMembers(parent, stair.members, center, mode, stair.uid);
   registerSelectable(parent, firstChildIndex, stair.uid, "stair", picks, byUid);
+}
+
+// Same shape as a stair: a brace is only its diagonal, so the member bucket is the click target.
+export function buildBrace(parent: THREE.Group, brace: Brace, center: PlanCenter,
+  mode: "nordic" | "schematic", picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  const firstChildIndex = parent.children.length;
+  buildMembers(parent, brace.members, center, mode, brace.uid);
+  registerSelectable(parent, firstChildIndex, brace.uid, "brace", picks, byUid);
 }

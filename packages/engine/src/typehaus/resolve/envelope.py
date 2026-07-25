@@ -366,8 +366,12 @@ def _resolve_beam(beam: Beam, storey_tag: str, elevation: float,
                (p1[0] - nx, p1[1] - ny), (p0[0] - nx, p0[1] - ny)]
     # The beam carries the joists that top out at the storey datum, so its own top sits
     # a joist depth below that datum; hang the beam's depth below that. Walls in
-    # ``bearing_refs`` are untouched — the lowered beam seats into their hanger.
-    z1 = elevation - joist_drop.get(beam.tag, 0.0)
+    # ``bearing_refs`` are untouched — the lowered beam seats into their hanger. An
+    # authored ``top_elevation`` wins outright: a beam carrying no joists has no drop to
+    # derive, and the girts that hang under an already-dropped beam land below anything
+    # this datum arithmetic can reach.
+    z1 = (beam.top_elevation.meters if beam.top_elevation is not None
+          else elevation - joist_drop.get(beam.tag, 0.0))
     z0 = z1 - cs.depth_m
     # An unset assembly leaves the solid on the "beam" palette entry (wood) rather than the
     # neutral fallback, so an unfinished beam still reads as lumber in every renderer.

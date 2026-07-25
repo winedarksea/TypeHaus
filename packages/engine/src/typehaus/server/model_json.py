@@ -413,6 +413,12 @@ def model_to_dict(
              "members": [_member_json(member) for member in floor.members]}
             for floor in sorted(model.floors, key=lambda item: item.uid)
         ],
+        "braces": [
+            {"uid": brace.uid, "tag": brace.tag, "storey": brace.storey,
+             "provenance": _provenance(provenance, brace.tag),
+             "members": [_member_json(member) for member in brace.members]}
+            for brace in sorted(model.braces, key=lambda item: item.uid)
+        ],
         "floor_heat": [
             {"uid": zone.uid, "tag": zone.tag, "storey": zone.storey, "system": zone.system,
              "zone": [list(point) for point in zone.zone], "spacing_m": zone.spacing_m,

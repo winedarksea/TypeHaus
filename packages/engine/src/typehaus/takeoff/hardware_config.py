@@ -95,10 +95,19 @@ class HangerDetectionRules:
 
 @dataclass(frozen=True)
 class KneeBraceRules:
-    """Knee braces are authored as connectors; each location takes a matched pair."""
+    """Knee braces are authored one element per *physical* brace, and billed the same way.
 
-    # One brace each side of the post at a braced post/beam joint.
-    braces_per_location: int = 2
+    This was a matched pair per joint, on the reasoning that a braced post takes one brace
+    each side. That only holds where the beam continues past its post: at a beam *end* — every
+    pillar of the balcony, and the common case for a deck — a single brace is all that fits in
+    the beam's plane, and a post braced in two directions is two braces against two different
+    members. Both are geometry the model already carries, so the take-off counts records
+    rather than inferring a multiplier the plan cannot see.
+    """
+
+    # One connector per modeled brace. Raise it only for a hardware family that takes more
+    # than one piece per brace.
+    braces_per_location: int = 1
 
 
 @dataclass(frozen=True)
