@@ -158,8 +158,12 @@ authored:
 
 ### Stair framing follow-ups (noted out of scope in the stair-framing pass)
 
-- Coincident trimmer plies and unsized single-ply I-joist opening headers in
-  `resolve/floors.py:134-153`.
+- ~~Coincident trimmer plies and unsized single-ply I-joist opening headers in
+  `resolve/floors.py:134-153`.~~ **Done (W15).** Ply 1 now steps one thickness outboard of
+  ply 0 instead of sitting on it, and an opening header is a multi-ply LVL sized off the
+  prescriptive table at the deck's own depth. New `structural.floor_opening_header` reports
+  the beyond-prescriptive case (catlin's 11'-0" `FO-S-STAIR` header) that the ply count
+  cannot honestly answer.
 - **Framed-wall ledger emission.** `resolve/stairs.py` `_bear_stair_on_walls` now annotates a
   stringer/rim borne by a framed wall with `framed-wall-ledger:{tag}` but emits no member, so
   the take-off is missing the 2x ledger a framer actually installs. A wall's `axis` is its
@@ -173,15 +177,25 @@ authored:
   the real prerequisite for narrowing `checks/structural/interference.py`'s `_STAIR_SUPPORT`**:
   the ~80 whitelisted catlin contacts are stair members physically inside stud cavities, and an
   annotation does not move geometry. Once the inset lands, drop the stud kinds and plates.
-- **D2 — winder narrow ends converge on a point**, so narrow-end tread depth is 0. IRC
-  R311.7.5.2.1 wants 6" there; the newel now carries them structurally, but the tread outlines
-  still meet at the newel centreline.
-- **`sill` is absent from `_STAIR_SUPPORT`.** No catlin exposure today (none of the
-  stair-adjacent walls hosts an opening), so a stair running past a rough opening would report.
-- **Load path of a landing post is unverified.** `landing-post-*` lands on whatever deck is
-  below it; nothing checks that deck is bearing. Belongs in the STRUCTURAL tier as a WARN
-  advisory, not in `resolve_envelope_geometry` (whose contract is bad-ref findings only).
-- Treads rendering as 1.5"-wide strips (cosmetic).
+- **D2 — winder narrow ends converge on a point.** *Geometry fixed (W15), code minimum still
+  unmet.* Each winder now starts where its own ray leaves the newel post's **face**, so the
+  narrow ends are distinct and the outlines no longer meet at the centreline. That buys
+  0.9", not the 6" IRC R311.7.5.2.1 wants — three winders around a 4x4 cannot reach it, and
+  the fix is a layout decision (more risers in the turn, or a wider newel/well the winders
+  wrap), not a number the generator can invent. New `structural.winder_narrow_tread_depth`
+  measures and reports the shortfall instead of hiding it. **This is the remaining owner
+  decision on D2.**
+- ~~**`sill` is absent from `_STAIR_SUPPORT`.**~~ **Done (W15).** Added, with a synthetic
+  regression (`test_member_interference.py::test_stair_past_a_rough_opening_sill_is_not_a_clash`)
+  because catlin still has no stair-adjacent wall hosting an opening to expose it.
+- ~~**Load path of a landing post is unverified.**~~ **Done (W15)** as
+  `structural.landing_post_bearing`, a STRUCTURAL WARN advisory (not a resolve finding — that
+  contract stays bad-refs-only). It traces each `landing-post-*` to a slab, beam/column or
+  bearing wall at its base; all three catlin posts land on concrete and PASS.
+- ~~Treads rendering as 1.5"-wide strips (cosmetic).~~ **Done (W15).** A tread now carries a
+  `deck {going}x1.5` profile and its axis is the board centreline (half a going past its
+  riser), so the boards tile the flight edge to edge and the top one reaches the arrival
+  deck. Winders keep `tapered tread`: a trapezoid is not expressible as axis + band width.
 
 ## Landing Page
 * build landing page and app deployment for type-house.com and type-house.com/app. Likely include an install script link like /Users/colincatlin/Documents-NoCloud/MinimapPR/landing/install.sh alongside the fully web-backed PWA.

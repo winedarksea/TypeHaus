@@ -125,6 +125,46 @@ def test_catlin_framing_interference_stays_near_zero():
     assert len(findings) <= 5, [f.message for f in findings]
 
 
+def _stair_beside_wall_member(kind: str):
+    """A stringer running along a wall member of ``kind``, sharing its volume.
+
+    The overlap is the D3 offset every stair member on catlin has against the wall beside
+    it: stair framing is laid out to the host wall's *axis*, so it sits inside the stud
+    cavity. ``_STAIR_SUPPORT`` clears that for studs, plates and headers; ``sill`` — the
+    bottom of a rough opening, the same wall framing on the same centreline — was missing
+    from the set, so a flight running past a window would have reported. No catlin wall
+    beside a stair hosts an opening, which is exactly why the gap was invisible here.
+    """
+    from types import SimpleNamespace
+
+    stringer = FramedMember("ST-1", "stringer-0", "stringer", "2x12", (0.0, 0.0), (3.0, 0.0),
+                            z0_m=0.9, z1_m=1.2, length_m=3.0)
+    wall_member = FramedMember("W-1", kind, kind, "2x6", (0.02, 0.0), (2.0, 0.0),
+                               z0_m=1.0, z1_m=1.14, length_m=2.0)
+    model = SimpleNamespace(all_members=lambda: [stringer, wall_member], solids=(),
+                            junctions=())
+    prefs = SimpleNamespace(framing=SimpleNamespace(interference_tolerance_in=0.25))
+    return SimpleNamespace(model=model, preferences=prefs)
+
+
+def test_stair_past_a_rough_opening_sill_is_not_a_clash():
+    """Regression for the missing ``sill`` entry in ``_STAIR_SUPPORT``."""
+    from typehaus.checks.structural.interference import _STAIR_SUPPORT
+
+    assert "sill" in _STAIR_SUPPORT
+    assert not member_interference(_stair_beside_wall_member("sill"))
+    # Same geometry, same wall: the neighbouring stud and header were always cleared, so
+    # the sill was the odd one out rather than the fixture being too permissive.
+    for cleared in ("stud", "header", "king"):
+        assert not member_interference(_stair_beside_wall_member(cleared)), cleared
+
+
+def test_a_stringer_buried_in_a_beam_is_still_a_clash():
+    """The ``sill`` clearance must not neuter the rule: a stringer sharing volume with a
+    beam is a genuine elevation bug and still reports."""
+    assert member_interference(_stair_beside_wall_member("beam"))
+
+
 def test_check_still_flags_a_genuine_overlap():
     """The many intended-joint clears must not neuter the check: two beams sharing the
     same volume, away from any wall junction, is a real clash and must still report."""
