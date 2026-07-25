@@ -224,12 +224,22 @@ class ResolvedRoof:
     storey: str
     form: str
     footprint: Ring
+    # The rafter-top (deck) plane at the footprint edge — NOT the plate top. A
+    # rafter-framed roof rises ``deck_rise_m`` above its bearing (only the birdsmouth
+    # sinks below the plate); a truss roof's eave is lifted by its raised heel.
     eave_z_m: float
     ridge_z_m: float
     ridge_direction: str
     assembly: str
     surface_area_m2: float
     members: tuple[FramedMember, ...] = ()
+    # Top of the bearing-wall plates the roof seats on (None when bearing is unknown).
+    bearing_z_m: float | None = None
+    # Per-layer plan setbacks from the footprint edge, one dict per above-structure
+    # layer: {"layer": name, "west": m, "east": m, "south": m, "north": m}. Computed by
+    # resolve/roof_edges.py from the golden eave detail's clip rules; consumed by BOTH
+    # the glTF emitter and the three.js viewer (ui/src/three/roofGeometry.ts).
+    layer_edge_setbacks: tuple = ()
 
 
 @dataclass(frozen=True)

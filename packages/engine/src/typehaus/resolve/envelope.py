@@ -13,6 +13,7 @@ from typehaus.model.enums import ConditionKind
 from typehaus.model.structure import Beam, Footing, FootingBedding, Pad, Post
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import polygon_area, rect_between
+from typehaus.resolve.roof_edges import deck_rise_m, layer_edge_setbacks
 from typehaus.resolve.model import (
     BoundaryCondition,
     FramedMember,
@@ -215,13 +216,26 @@ def _resolve_roof(
     run = (maxy - miny) if roof.ridge_direction == "x" else (maxx - minx)
     if run <= 1e-6:
         return None, [_error("integrity.roof_footprint", f"roof {roof.tag} has zero run", roof.tag)]
-    eave = max(wall.z1_m for wall in walls if wall is not None)
+    plate_top = max(wall.z1_m for wall in walls if wall is not None)
+    # ``eave_z_m`` is the rafter-top (deck) plane: a rafter-framed roof rises
+    # ``deck_rise_m`` above the plate (only the birdsmouth sinks below it, per the
+    # golden eave detail). Truss roofs keep eave == plate top here — ``_frame_trusses``
+    # self-corrects via its raised-heel delta.
+    roof_assembly = model.plan.library.resolve_assembly(roof.assembly)
+    bearing_assembly = model.plan.library.resolve_assembly(walls[0].assembly)
+    rise_to_deck = deck_rise_m(roof_assembly, bearing_assembly, roof.pitch)
+    eave = plate_top + (rise_to_deck or 0.0)
     rise = roof.pitch.rise / roof.pitch.run * (run / 2 if roof.form.value == "gable" else run)
     slope = math.sqrt(1 + (roof.pitch.rise / roof.pitch.run) ** 2)
-    return ResolvedRoof(
+    resolved = ResolvedRoof(
         roof.uid, roof.tag, storey, roof.form.value, footprint, eave, eave + rise,
         roof.ridge_direction, roof.assembly, abs(polygon_area(footprint)) * slope,
-    ), []
+        bearing_z_m=plate_top,
+    )
+    if rise_to_deck is not None:
+        # Only rafter-framed roofs get the reference clip setbacks (garage/truss deferred).
+        resolved = replace(resolved, layer_edge_setbacks=layer_edge_setbacks(model, resolved))
+    return resolved, []
 
 
 def _resolve_stair(

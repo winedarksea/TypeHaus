@@ -60,12 +60,8 @@ def frame_roofs(model: ResolvedModel) -> list[Finding]:
         rafters = tuple(replace(r, connection=_RAFTER_CONNECTION) for r in rafters)
         members = (rafters + _bearing_stiffeners(rafters) + seat_cuts
                    + ((beam_member,) if beam_member is not None else ()))
-        framed.append(ResolvedRoof(
-            uid=roof.uid, tag=roof.tag, storey=roof.storey, form=roof.form,
-            footprint=roof.footprint, eave_z_m=roof.eave_z_m, ridge_z_m=roof.ridge_z_m,
-            ridge_direction=roof.ridge_direction, assembly=roof.assembly,
-            surface_area_m2=roof.surface_area_m2, members=members,
-        ))
+        # ``replace`` (not reconstruction) so bearing_z_m / layer_edge_setbacks survive.
+        framed.append(replace(roof, members=members))
     model.roofs = framed
     return findings
 
@@ -99,12 +95,21 @@ def _roof_rafters(model: ResolvedModel, roof: ResolvedRoof) -> tuple[FramedMembe
     profile = structure.framing.member
     xs, ys = [point[0] for point in roof.footprint], [point[1] for point in roof.footprint]
     minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
-    along_low, along_high = ((minx, maxx) if roof.ridge_direction == "x" else (miny, maxy))
+    # Stations repeat along the ridge over the *bearing walls'* extent — not the roof
+    # footprint, whose rake edges lap the wall cladding — so no rafter is centred out on
+    # the rake with half the member outside the building.
+    along_low, along_high = _bearing_along_extent(model, roof)
     # Rafters repeat along the ridge and span perpendicular to it.
     count = int(round((along_high - along_low) / spacing))
     positions = [min(along_high, along_low + index * spacing) for index in range(count + 1)]
     if positions[-1] < along_high - 1e-9:
         positions.append(along_high)
+    # End rafters sit fully inside the gable wall plane: inset the end stations by half
+    # the member width off the bearing extent.
+    half_width = cross_section(profile).width_m / 2.0
+    if len(positions) >= 2 and along_high - along_low > 2.0 * half_width:
+        positions[0] = along_low + half_width
+        positions[-1] = along_high - half_width
     if roof.ridge_direction == "x":
         ridge = (miny + maxy) / 2
         halves = [half for value in positions for half in (
@@ -129,6 +134,33 @@ def _roof_rafters(model: ResolvedModel, roof: ResolvedRoof) -> tuple[FramedMembe
     return tuple(members)
 
 
+def _bearing_along_extent(model: ResolvedModel, roof: ResolvedRoof) -> tuple[float, float]:
+    """The bearing walls' extent along the ridge axis (footprint extremes fallback).
+
+    The same technique ``_frame_trusses`` uses: rafter stations come from the walls that
+    carry them, not from a footprint that laps the cladding at the rakes.
+    """
+    xs = [point[0] for point in roof.footprint]
+    ys = [point[1] for point in roof.footprint]
+    fallback = ((min(xs), max(xs)) if roof.ridge_direction == "x" else (min(ys), max(ys)))
+    element = _roof_element(model, roof)
+    if element is None:
+        return fallback
+    ridge_ax = 0 if roof.ridge_direction == "x" else 1
+    lo = hi = None
+    for tag in element.bearing_refs:
+        wall = model.wall(tag)
+        if wall is None:
+            continue
+        r0, r1 = wall.axis[0][ridge_ax], wall.axis[1][ridge_ax]
+        low, high = min(r0, r1), max(r0, r1)
+        lo = low if lo is None else min(lo, low)
+        hi = high if hi is None else max(hi, high)
+    if lo is None or hi is None or hi - lo <= 1e-9:
+        return fallback
+    return lo, hi
+
+
 def _bearing_stiffeners(rafters: tuple[FramedMember, ...]) -> tuple[FramedMember, ...]:
     """Model the I-joist eave web stiffener as a distinct bearing member.
 
@@ -150,16 +182,27 @@ def _bearing_stiffeners(rafters: tuple[FramedMember, ...]) -> tuple[FramedMember
 def _eave_seat_cuts(
     model: ResolvedModel, roof: ResolvedRoof, rafters: tuple[FramedMember, ...]
 ) -> tuple[FramedMember, ...]:
-    """A real birdsmouth SEAT-CUT solid seated on the top plate at every rafter eave.
+    """A real birdsmouth SEAT-CUT solid at every rafter's bearing.
 
     The lightweight member IR cannot subtract a notch from the raked rafter box, so the
-    seat cut is emitted as a distinct clipped member — a short block bearing on the plate
-    top over the seat length, so the rafter reads as a notched member seated on the wall
-    rather than an exposed raked bar. Upgrades the former ``connection`` annotation.
+    seat cut is emitted as a distinct clipped member — a short block spanning the
+    birdsmouth depth *below* the plate top over the seat length, anchored at the bearing
+    line, so the rafter reads as a notched member seated on the wall rather than an
+    exposed raked bar. Upgrades the former ``connection`` annotation.
     """
     plate_top = _bearing_plate_top(model, roof)
     if plate_top is None or not rafters:
         return ()
+    # Bearing-wall span coordinates: the seat starts where the rafter crosses its bearing
+    # line, not at ``rafter.p0`` (which sits out at the footprint edge in the cladding lap).
+    span_ax = 1 if roof.ridge_direction == "x" else 0
+    element = _roof_element(model, roof)
+    bearing_coords: list[float] = []
+    if element is not None:
+        for tag in element.bearing_refs:
+            wall = model.wall(tag)
+            if wall is not None:
+                bearing_coords.append(wall.axis[0][span_ax])
     seats: list[FramedMember] = []
     for rafter in rafters:
         (ex, ey), (rx, ry) = rafter.p0, rafter.p1
@@ -167,18 +210,34 @@ def _eave_seat_cuts(
         run = math.hypot(dx, dy)
         if run < 1e-9:
             continue
+        start = rafter.p0
+        if bearing_coords:
+            bearing = min(bearing_coords, key=lambda value: abs(value - rafter.p0[span_ax]))
+            denominator = dx if span_ax == 0 else dy
+            if abs(denominator) > 1e-9:
+                fraction = (bearing - rafter.p0[span_ax]) / denominator
+                fraction = min(max(fraction, 0.0), 0.9)
+                start = (ex + dx * fraction, ey + dy * fraction)
         seat = min(_SEAT_LEN_M, run * 0.5)
-        inboard = (ex + dx / run * seat, ey + dy / run * seat)
+        inboard = (start[0] + dx / run * seat, start[1] + dy / run * seat)
+        # The seat notches the rafter *at* the bearing: it spans down from the plate top
+        # by the birdsmouth depth (the only part of the rafter below the plate).
         seats.append(FramedMember(
             rafter.parent_uid, f"{rafter.child_key}-seat", "seat_cut", rafter.profile,
-            rafter.p0, inboard, plate_top, plate_top + _BIRDSMOUTH_DEPTH_M, seat,
+            start, inboard, plate_top - _BIRDSMOUTH_DEPTH_M, plate_top, seat,
             connection="eave:birdsmouth-seat",
         ))
     return tuple(seats)
 
 
 def _bearing_plate_top(model: ResolvedModel, roof: ResolvedRoof) -> float | None:
-    """Top-plate elevation the roof bears on (max bearing-wall top; None if unknown)."""
+    """Top-plate elevation the roof bears on.
+
+    ``ResolvedRoof.bearing_z_m`` carries it since eave_z_m became the deck plane; the
+    bearing-wall scan remains as a fallback for directly-constructed roofs in tests.
+    """
+    if roof.bearing_z_m is not None:
+        return roof.bearing_z_m
     element = _roof_element(model, roof)
     if element is None:
         return roof.eave_z_m
