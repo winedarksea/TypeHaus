@@ -8,11 +8,11 @@ business knowing which is which. Every dimension used here comes from
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import m as _m
+from typehaus.resolve.framing.stud_module import OpeningStudModule, opening_stud_module
 from typehaus.resolve.framing.tables import (
     DEFAULT_SPACING,
     OVERHEAD_TRACK_MEMBER,
@@ -45,15 +45,40 @@ class WallOpening:
     operation: DoorOperation | None = None
 
 
-def opening_exclusions(openings: list[WallOpening],
-                       stud_thickness_m: float) -> list[tuple[float, float]]:
+def opening_stud_break(opening: WallOpening, spacing_m: float,
+                       stud_thickness_m: float) -> OpeningStudModule:
+    """This opening's verdict against the stud module at ``spacing_m``."""
+    return opening_stud_module(opening.center_m, opening.width_m, spacing_m,
+                               stud_thickness_m)
+
+
+def needs_jamb_pack(opening: WallOpening, spacing_m: float,
+                    stud_thickness_m: float) -> bool:
+    """Whether the opening gets the king/jack/header pack at all.
+
+    A door always reaches the floor and breaks the run. A window narrow enough to land
+    wholly inside one bay interrupts no stud, so the load path over it is uninterrupted:
+    no header, no trimmers, and — critically — the bay's own two bounding studs stay in
+    place to carry the rough sill and head nailer.
+    """
+    return (opening.is_door
+            or not opening_stud_break(opening, spacing_m,
+                                      stud_thickness_m).fits_between_studs)
+
+
+def opening_exclusions(openings: list[WallOpening], stud_thickness_m: float,
+                       spacing_m: float) -> list[tuple[float, float]]:
     """(center, half-width) bands to keep regular module studs clear of each opening.
 
     The band covers the rough opening *and* the full trimmer+king pack on each side, so a
     module stud never lands inside the pack (redundant load path, guaranteed clash).
+    A header-free opening contributes no band at all: it adds no pack, and excluding one
+    here is exactly what deleted the two module studs flanking every small window.
     """
     zones: list[tuple[float, float]] = []
     for opening in openings:
+        if not needs_jamb_pack(opening, spacing_m, stud_thickness_m):
+            continue
         kings, jacks = jamb_pack_counts(_m(opening.width_m),
                                         opening_framing_pattern(opening.operation))
         zones.append((opening.center_m,
@@ -66,8 +91,8 @@ def in_exclusion(station_m: float, zones: list[tuple[float, float]]) -> bool:
 
 
 def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
-                  z0: float, top_at, opening_index: int,
-                  spacing: float) -> list[FramedMember]:
+                  z0: float, top_at, opening_index: int, spacing: float,
+                  stud_stations: tuple[float, ...] = ()) -> list[FramedMember]:
     """King/jack/header/cripple pack for one opening, plus its operation's extras."""
     out: list[FramedMember] = []
     pattern = opening_framing_pattern(opening.operation)
@@ -77,22 +102,10 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     header_bottom = (z0 + opening.height_m if opening.is_door
                      else z0 + opening.sill_m + opening.height_m)
 
-    # A window narrower than the stud module that lands wholly inside one bay breaks no
-    # stud line: the load path over it is uninterrupted, so it needs no structural header
-    # (and no king/jack trimmers). It gets a flat rough sill + rough head nailer between
-    # the intact bounding studs. Doors always reach the floor and break the run, so they
-    # always frame fully.
-    if not opening.is_door and _studs_broken(center, half, spacing) == 0:
-        left = add(wall_start, scale(direction, center - half))
-        right = add(wall_start, scale(direction, center + half))
-        sill_z0 = z0 + opening.sill_m
-        out.append(FramedMember(rw.uid, f"sill-{opening_index}", "sill", member,
-                                left, right, sill_z0, sill_z0 + _PLATE_THICKNESS_M,
-                                opening.width_m))
-        out.append(FramedMember(rw.uid, f"roughhead-{opening_index}", "blocking", member,
-                                left, right, header_bottom,
-                                header_bottom + _PLATE_THICKNESS_M, opening.width_m))
-        return out
+    if not needs_jamb_pack(opening, spacing, thickness):
+        return _frame_inside_one_bay(rw, direction, wall_start, opening, member, z0,
+                                     top_at, opening_index, thickness, stud_stations,
+                                     header_bottom)
 
     # Trimmers (jacks) and kings pack face-to-face outward from each rough-opening edge:
     # the innermost jack's inner face sits on the RO edge (centreline at half a thickness
@@ -175,11 +188,55 @@ def _append_track_backing(out: list[FramedMember], rw, header_left, header_right
                             header_top + backing_thickness, span_m))
 
 
-def _studs_broken(center: float, half: float, spacing: float) -> int:
-    """How many on-module stud lines an opening interrupts (0 => it fits inside a bay)."""
-    lo = math.ceil((center - half) / spacing - 1e-9)
-    hi = math.floor((center + half) / spacing + 1e-9)
-    return max(0, hi - lo + 1)
+def _frame_inside_one_bay(rw, direction, wall_start, opening: WallOpening, member: str,
+                          z0: float, top_at, opening_index: int, thickness: float,
+                          stud_stations: tuple[float, ...],
+                          header_bottom: float) -> list[FramedMember]:
+    """Rough sill + head nailer for an opening that fits wholly inside one stud bay.
+
+    No header and no jamb pack — but the bay's two bounding studs are load-bearing here:
+    the sill and the head nailer bear on them, and they are what keeps the stud line
+    continuous past the opening. If the module left no stud on one side (the opening sits
+    in a wall's end bay, or a neighbouring opening's pack took it), a flanking stud is
+    added at the rough-opening edge so the pair is always there.
+    """
+    out: list[FramedMember] = []
+    center, half = opening.center_m, opening.width_m / 2
+    # A flanking stud's centreline sits half a thickness outboard of the RO edge, which is
+    # also the closest a module stud can be without the opening interrupting it.
+    half_stud = thickness / 2
+    left_station = max((s for s in stud_stations if s <= center - half - half_stud + 1e-9),
+                       default=None)
+    right_station = min((s for s in stud_stations if s >= center + half + half_stud - 1e-9),
+                        default=None)
+    for side, station, edge in (("l", left_station, center - half - half_stud),
+                                ("r", right_station, center + half + half_stud)):
+        if station is not None:
+            continue
+        point = add(wall_start, scale(direction, edge))
+        stud_top = top_at(edge)
+        out.append(FramedMember(rw.uid, f"flank-{opening_index}-{side}", "stud", member,
+                                point, point, z0, stud_top, stud_top - z0,
+                                orient=direction))
+        if side == "l":
+            left_station = edge
+        else:
+            right_station = edge
+
+    # Sill and head nailer span between the flanking studs' inner faces: they butt the studs
+    # they bear on instead of floating across the rough opening with unsupported ends.
+    bearing_start = left_station + thickness / 2
+    bearing_end = right_station - thickness / 2
+    left = add(wall_start, scale(direction, bearing_start))
+    right = add(wall_start, scale(direction, bearing_end))
+    span = bearing_end - bearing_start
+    sill_z0 = z0 + opening.sill_m
+    out.append(FramedMember(rw.uid, f"sill-{opening_index}", "sill", member,
+                            left, right, sill_z0, sill_z0 + _PLATE_THICKNESS_M, span))
+    out.append(FramedMember(rw.uid, f"roughhead-{opening_index}", "blocking", member,
+                            left, right, header_bottom,
+                            header_bottom + _PLATE_THICKNESS_M, span))
+    return out
 
 
 def _append_opening_cripples(out: list[FramedMember], parent_uid: str, opening_index: int,
