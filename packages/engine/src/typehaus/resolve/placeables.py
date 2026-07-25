@@ -9,6 +9,9 @@ from shapely.geometry import Point, Polygon
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel, Ring
+from typehaus.resolve.placeable_clear_floor_obstruction import (
+    CLEAR_FLOOR_SPACE_OBSTRUCTION_THRESHOLDS, ClearFloorSpaceObstruction,
+    PlaceableBodyProfile, clear_floor_space_obstruction)
 from typehaus.resolve.placeable_groups import (PlacementGroupAnchorZone,
                                                assign_placement_groups)
 
@@ -32,6 +35,9 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # on the peers standing in its zone, so no object's record is final until all are placed.
     resolved_objects: list[ResolvedCanvasObject] = []
     anchor_zones: list[PlacementGroupAnchorZone] = []
+    # Whether each body actually stands in a clear floor space, keyed by uid. Built here
+    # because it needs the product type, which the resolved record deliberately does not carry.
+    obstruction_by_uid: dict[str, ClearFloorSpaceObstruction] = {}
     for storey in plan.storeys:
         rooms = [room for room in model.rooms if room.storey == storey.tag]
         for item in plan.storey_elements(storey.tag):
@@ -48,7 +54,11 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             center, rotation, attachment, attachment_face = _resolve_location(item, product_type, model, findings)
             if center is None:
                 continue
-            footprint = _transformed_polygon(_local_footprint(product_type, item), center, rotation)
+            local_footprint = _local_footprint(product_type, item)
+            footprint = _transformed_polygon(local_footprint, center, rotation)
+            mount_elevation = resolved_mount_elevation(storey, item)
+            obstruction_by_uid[item.uid] = clear_floor_space_obstruction(
+                _body_profile(product_type, item, storey, mount_elevation, local_footprint))
             resolved_room = next((room.tag for room in rooms if Polygon(room.clear_face).covers(Point(center))), None)
             explicit_room = getattr(item, "room", None)
             if explicit_room is not None and explicit_room != resolved_room:
@@ -61,7 +71,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             resolved_objects.append(ResolvedCanvasObject(
                 uid=item.uid, tag=item.tag, storey=storey.tag, domain=domain, kind=item.element_kind, type_ref=type_ref,
                 room=explicit_room or resolved_room, position=center, rotation_degrees=rotation,
-                z_m=resolved_mount_elevation(storey, item),
+                z_m=mount_elevation,
                 footprint=footprint,
                 required_clearances=tuple(ring for zone, ring in zones if _is_required(zone)),
                 recommended_clearances=tuple(ring for zone, ring in zones if not _is_required(zone)),
@@ -73,7 +83,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                                          occupant_types=frozenset(zone.occupant_types))
                 for zone, ring in zones if zone.occupant_types and not _is_required(zone))
     model.canvas_objects.extend(assign_placement_groups(resolved_objects, anchor_zones))
-    findings.extend(_clearance_conflicts(model))
+    findings.extend(_clearance_conflicts(model, obstruction_by_uid))
     findings.extend(_door_swing_conflicts(model))
     return findings
 
@@ -96,6 +106,40 @@ def resolved_mount_elevation(storey: object, item: object) -> float:
         drop = mount.drop.meters if mount.drop is not None else 0.0
         return floor + storey.default_ceiling_height.meters - drop
     return floor
+
+
+def _body_profile(product_type: object | None, item: object, storey: object,
+                  mount_elevation_m: float,
+                  local_footprint: list[tuple[float, float]]) -> PlaceableBodyProfile:
+    """Measure the placeable's solid against the floor of the storey it stands on.
+
+    ``resolved_mount_elevation`` gives the *base* of the body, so the band is
+    ``[base, base + height]`` — except for a recessed floor mount, whose body drops into the
+    floor cavity and whose face lands flush, making the band ``[base - height, base]``. A
+    recessed wall mount reaches nothing into the room for the same reason.
+    """
+    mount = getattr(item, "mount", None)
+    mount_kind = mount.kind.value if mount is not None else "floor"
+    recessed = bool(getattr(mount, "recessed_into_host_surface", False))
+    height = getattr(product_type, "height", None)
+    body_height_m = height.meters if height is not None else None
+    base_above_floor_m = mount_elevation_m - storey.elevation.meters
+    if recessed and mount_kind == "floor" and body_height_m is not None:
+        base_above_floor_m -= body_height_m
+    projection_m = None
+    if mount_kind == "wall":
+        # Local ``-y`` is the room-facing front of every authored placeable footprint
+        # (→ library/placeables/_zones), so the local y extent is how far a wall-mounted body
+        # reaches off its wall — the dimension A117.1 §307.2 caps.
+        projection_m = 0.0 if recessed else _local_depth_extent(local_footprint)
+    return PlaceableBodyProfile(base_above_storey_floor_m=base_above_floor_m,
+                                body_height_m=body_height_m,
+                                horizontal_projection_from_wall_m=projection_m)
+
+
+def _local_depth_extent(local_footprint: list[tuple[float, float]]) -> float:
+    depths = [y for _, y in local_footprint]
+    return max(depths) - min(depths) if depths else 0.0
 
 
 def _resolve_location(item: object, product_type: object | None, model: ResolvedModel,
@@ -177,12 +221,17 @@ def _resolved_clearance_zones(product_type: object | None, center: tuple[float, 
     ]
 
 
-def _clearance_conflicts(model: ResolvedModel) -> list[Finding]:
+def _clearance_conflicts(model: ResolvedModel,
+                         obstruction_by_uid: dict[str, ClearFloorSpaceObstruction]) -> list[Finding]:
     """Report use-space encroachments without rejecting the drag that created one.
 
     A clearance is an occupied planning zone, so compare it against other physical
     footprints rather than their own clearance zones.  That avoids false conflicts
     between two deliberately overlapping advisory envelopes.
+
+    Plan overlap is necessary but not sufficient: the peer's *body* has to stand in the zone's
+    clear floor space (→ resolve/placeable_clear_floor_obstruction). That vertical test is
+    physics and so applies to required and recommended zones alike.
 
     Members of one furniture group (→ resolve/placeable_groups) are exempt from each other's
     *recommended* zones: the chairs tucked under a dining table are what its chair-use zone is
@@ -195,7 +244,8 @@ def _clearance_conflicts(model: ResolvedModel) -> list[Finding]:
         # exhausted by the first one — every zone after an object's first was silently never
         # compared against anything (a bed's second side-access zone, a fridge's swing).
         peers = [peer for peer in model.canvas_objects
-                 if peer.storey == item.storey and peer.uid != item.uid]
+                 if peer.storey == item.storey and peer.uid != item.uid
+                 and obstruction_by_uid[peer.uid].obstructs]
         for zones, severity, policy_name in (
             (item.required_clearances, Severity.ERROR, "required"),
             (item.recommended_clearances, Severity.WARN, "recommended"),
@@ -215,8 +265,10 @@ def _clearance_conflicts(model: ResolvedModel) -> list[Finding]:
                         severity=severity,
                         check_id=f"integrity.placeable_{policy_name}_clearance_conflict",
                         message=(f"{policy_name} clearance for {item.tag} conflicts with "
-                                 f"physical footprint of {peer.tag}"),
+                                 f"physical footprint of {peer.tag}: "
+                                 f"{obstruction_by_uid[peer.uid].reason}"),
                         element_tags=(item.tag, peer.tag),
+                        code_ref=CLEAR_FLOOR_SPACE_OBSTRUCTION_THRESHOLDS.source,
                         result=Result.FAIL if severity is Severity.ERROR else Result.UNKNOWN,
                     ))
     return findings
