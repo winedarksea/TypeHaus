@@ -148,7 +148,8 @@ def _mount(mount: Any) -> dict[str, Any] | None:
         return None
     return {"kind": mount.kind.value,
             "elevation_m": mount.elevation.meters if mount.elevation is not None else None,
-            "drop_m": mount.drop.meters if mount.drop is not None else None}
+            "drop_m": mount.drop.meters if mount.drop is not None else None,
+            "recessed_into_host_surface": mount.recessed_into_host_surface}
 
 
 def _resolved_openings(model: Any, type_metadata: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:

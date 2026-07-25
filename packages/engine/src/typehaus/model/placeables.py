@@ -89,3 +89,10 @@ class Mount(HausModel):
     kind: MountKind = MountKind.FLOOR
     elevation: Length | None = None
     drop: Length | None = None
+    # ``True`` when the body is set *into* its host surface rather than standing on it — a
+    # floor register dropped into its boot, a can light buried in the ceiling, a medicine
+    # cabinet let into the wall. The type's ``height`` then measures the cavity behind the
+    # finish plane, not a protrusion in front of it, which is what decides whether the object
+    # obstructs a neighbour's clear floor space (→ resolve/placeable_clear_floor_obstruction).
+    # Default ``False`` so an unstated mount is read as surface-mounted and still obstructs.
+    recessed_into_host_surface: bool = False

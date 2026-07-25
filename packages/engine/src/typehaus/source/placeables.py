@@ -148,7 +148,8 @@ def _mount(value: object) -> Mount:
         raise ValueError("mount must be an object")
     return Mount(kind=MountKind(value.get("kind", "floor")),
                  elevation=(m(float(value["elevation_m"])) if value.get("elevation_m") is not None else None),
-                 drop=m(float(value["drop_m"])) if value.get("drop_m") is not None else None)
+                 drop=m(float(value["drop_m"])) if value.get("drop_m") is not None else None,
+                 recessed_into_host_surface=bool(value.get("recessed_into_host_surface", False)))
 
 
 def _provenance(value: object) -> dict[str, object] | None:

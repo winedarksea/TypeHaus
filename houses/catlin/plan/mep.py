@@ -174,19 +174,29 @@ DUCTS = [
            routing=DuctRouting.JOIST_BAY, floor_ref="FS-SECOND"),
 ]
 
+# Every register here drops into a boot in the FS-SECOND joist bay, so the grille face lands
+# flush with the finished floor and the type's 1" height is the frame below it, not a kerb
+# standing on it. Saying so keeps a register out of a neighbour's clear floor space without
+# exempting registers as a class — a surface-mounted one would still report.
 REGISTERS = [
     Register(uid="CMR901AAAA", tag="REG-S-SUP1", kind=DuctSystem.SUPPLY,
-            position=pt(ft(9), ft(4)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY"),
+            position=pt(ft(9), ft(4)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR902AAAA", tag="REG-S-SUP2", kind=DuctSystem.SUPPLY,
-            position=pt(ft(27), ft(4)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY"),
+            position=pt(ft(27), ft(4)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR903AAAA", tag="REG-S-SUP3", kind=DuctSystem.SUPPLY,
-            position=pt(ft(29), ft(16)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY"),
+            position=pt(ft(29), ft(16)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR904AAAA", tag="REG-S-SUP4", kind=DuctSystem.SUPPLY,
-            position=pt(ft(29), ft(32)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY"),
+            position=pt(ft(29), ft(32)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR905AAAA", tag="REG-S-RET1", kind=DuctSystem.RETURN,
-            position=pt(ft(20), ft(20)), duct_ref="DU-M-RET-TRUNK", type_ref="REG-T-RETURN"),
+            position=pt(ft(20), ft(20)), duct_ref="DU-M-RET-TRUNK", type_ref="REG-T-RETURN",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR906AAAA", tag="REG-S-RET2", kind=DuctSystem.RETURN,
-            position=pt(ft(9), ft(20)), duct_ref="DU-M-RET-TRUNK", type_ref="REG-T-RETURN"),
+            position=pt(ft(9), ft(20)), duct_ref="DU-M-RET-TRUNK", type_ref="REG-T-RETURN",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]
 
 EQUIPMENT = [
