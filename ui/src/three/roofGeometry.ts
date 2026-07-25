@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { AssemblySpec, Roof } from "../model/types";
+import type { AssemblySpec, Roof, RoofLayerSetback } from "../model/types";
 import type { ProjectVertex } from "./planGeometry";
 
 // The roof surface as geometry: the sloped planes from footprint/eave_z/ridge_z (mirroring
@@ -8,36 +8,90 @@ import type { ProjectVertex } from "./planGeometry";
 
 export type RoofVertex = [x: number, y: number, z: number];
 
-export function roofPlaneTriangles(roof: Roof): RoofVertex[][] {
+/**
+ * Base roof-plane elevation at a plan point (emitter.py `_roof_plane_z`): unclamped, so a
+ * slightly-outset layer edge (negative setback) lands just below the eave plane.
+ */
+export function roofPlaneZ(roof: Roof, x: number, y: number): number {
+  const xs = roof.footprint.map((p) => p[0]);
+  const ys = roof.footprint.map((p) => p[1]);
+  const coordinate = roof.ridge_direction === "x" ? y : x;
+  const low = roof.ridge_direction === "x" ? Math.min(...ys) : Math.min(...xs);
+  const high = roof.ridge_direction === "x" ? Math.max(...ys) : Math.max(...xs);
+  const span = high - low;
+  if (span <= 1e-9) return roof.eave_z_m;
+  if (roof.form === "shed") {
+    return roof.eave_z_m + ((coordinate - low) / span) * (roof.ridge_z_m - roof.eave_z_m);
+  }
+  const midpoint = (low + high) / 2;
+  const ratio = 1 - Math.abs(coordinate - midpoint) / (span / 2);
+  return roof.eave_z_m + ratio * (roof.ridge_z_m - roof.eave_z_m);
+}
+
+export type RoofRect = [minx: number, maxx: number, miny: number, maxy: number];
+
+/**
+ * Per-layer inset rectangle from serialized edge setbacks + eave drift compensation
+ * (emitter.py `_layer_inset_rect`). Serialized setbacks are final *plan* positions;
+ * offsetting a layer perpendicular to the slope drifts its eave edge down-slope (outward)
+ * by `baseOffset * sin(theta)`, so that drift is added to the eave-edge insets here.
+ * Rake edges run parallel to the fall line and have no drift.
+ */
+export function layerInsetRect(roof: Roof, entry: RoofLayerSetback, baseOffset: number): RoofRect {
   const xs = roof.footprint.map((p) => p[0]);
   const ys = roof.footprint.map((p) => p[1]);
   const minx = Math.min(...xs), maxx = Math.max(...xs);
   const miny = Math.min(...ys), maxy = Math.max(...ys);
-  const eave = roof.eave_z_m;
-  const ridge = roof.ridge_z_m;
-  const v = (x: number, y: number, z: number): RoofVertex => [x, y, z];
+  let west = entry.west ?? 0, east = entry.east ?? 0;
+  let south = entry.south ?? 0, north = entry.north ?? 0;
+  const span = roof.ridge_direction === "x" ? maxy - miny : maxx - minx;
+  const run = roof.form === "shed" ? span : span / 2;
+  const rise = roof.ridge_z_m - roof.eave_z_m;
+  if (run > 1e-9 && rise > 1e-9 && baseOffset !== 0) {
+    const pitch = rise / run;
+    const drift = (baseOffset * pitch) / Math.sqrt(1 + pitch * pitch);
+    if (roof.form === "shed") {
+      // One plane: the low (eave) edge drifts outward, the high edge inward.
+      if (roof.ridge_direction === "x") { south += drift; north -= drift; }
+      else { west += drift; east -= drift; }
+    } else if (roof.ridge_direction === "x") { south += drift; north += drift; }
+    else { west += drift; east += drift; }
+  }
+  return [minx + west, maxx - east, miny + south, maxy - north];
+}
+
+/**
+ * The sloped gable/shed planes as plan-space triangles. `rect` builds them over a
+ * per-layer inset rectangle instead of the footprint; vertex z is always evaluated from
+ * the *base* plane (`roofPlaneZ`), so inset edges land at the right height and the ridge
+ * line stays at the footprint's midline.
+ */
+export function roofPlaneTriangles(roof: Roof, rect?: RoofRect): RoofVertex[][] {
+  const xs = roof.footprint.map((p) => p[0]);
+  const ys = roof.footprint.map((p) => p[1]);
+  const fminx = Math.min(...xs), fmaxx = Math.max(...xs);
+  const fminy = Math.min(...ys), fmaxy = Math.max(...ys);
+  const [minx, maxx, miny, maxy] = rect ?? [fminx, fmaxx, fminy, fmaxy];
+  const v = (x: number, y: number): RoofVertex => [x, y, roofPlaneZ(roof, x, y)];
   const flat: RoofVertex[] = roof.form === "shed"
-    ? (roof.ridge_direction === "x"
-      ? [v(minx, miny, eave), v(maxx, miny, eave), v(maxx, maxy, ridge),
-         v(minx, miny, eave), v(maxx, maxy, ridge), v(minx, maxy, ridge)]
-      : [v(minx, miny, eave), v(maxx, miny, ridge), v(maxx, maxy, ridge),
-         v(minx, miny, eave), v(maxx, maxy, ridge), v(minx, maxy, eave)])
+    ? [v(minx, miny), v(maxx, miny), v(maxx, maxy),
+       v(minx, miny), v(maxx, maxy), v(minx, maxy)]
     : roof.ridge_direction === "x"
       ? (() => {
-        const mid = (miny + maxy) / 2;
-        const ra = v(minx, mid, ridge), rb = v(maxx, mid, ridge);
-        return [v(minx, miny, eave), v(maxx, miny, eave), rb,
-          v(minx, miny, eave), rb, ra,
-          ra, rb, v(maxx, maxy, eave),
-          ra, v(maxx, maxy, eave), v(minx, maxy, eave)];
+        const mid = (fminy + fmaxy) / 2;
+        const ra = v(minx, mid), rb = v(maxx, mid);
+        return [v(minx, miny), v(maxx, miny), rb,
+          v(minx, miny), rb, ra,
+          ra, rb, v(maxx, maxy),
+          ra, v(maxx, maxy), v(minx, maxy)];
       })()
       : (() => {
-        const mid = (minx + maxx) / 2;
-        const ra = v(mid, miny, ridge), rb = v(mid, maxy, ridge);
-        return [v(minx, miny, eave), ra, rb,
-          v(minx, miny, eave), rb, v(minx, maxy, eave),
-          ra, v(maxx, miny, eave), v(maxx, maxy, eave),
-          ra, v(maxx, maxy, eave), rb];
+        const mid = (fminx + fmaxx) / 2;
+        const ra = v(mid, miny), rb = v(mid, maxy);
+        return [v(minx, miny), ra, rb,
+          v(minx, miny), rb, v(minx, maxy),
+          ra, v(maxx, miny), v(maxx, maxy),
+          ra, v(maxx, maxy), rb];
       })();
   const triangles: RoofVertex[][] = [];
   for (let i = 0; i < flat.length; i += 3) triangles.push([flat[i], flat[i + 1], flat[i + 2]]);

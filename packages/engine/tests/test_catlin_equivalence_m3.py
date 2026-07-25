@@ -33,6 +33,10 @@ ATTIC_ELEV_FT = 20.0
 GARAGE_SIZE_FT = 24.0
 GARAGE_GAP_FT = 12.0
 GARAGE_OVERHANG_IN = 16.0
+# eave_z_m is the rafter-top (deck) plane: the 11.875" I-joist rises above the knee-wall
+# plate by its depth less the birdsmouth (3.5" stud depth x 4:12 pitch = 1.1667"), per the
+# golden eave detail (roof_wall_eave_detail_ifc.py).
+DECK_RISE_FT = (11.875 - 3.5 / 3.0) / 12.0
 
 CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
@@ -152,14 +156,16 @@ def test_roof_matches_old_pitch_knee_and_ridge(catlin_model):
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     eave_ft = roof.eave_z_m / ft(1).meters
     ridge_ft = roof.ridge_z_m / ft(1).meters
-    assert eave_ft == pytest.approx(ATTIC_ELEV_FT + KNEE_FT)
+    # eave_z_m is the deck plane: knee-wall plate top + the I-joist's rise above it.
+    assert eave_ft == pytest.approx(ATTIC_ELEV_FT + KNEE_FT + DECK_RISE_FT)
     # The old builder set the roof out from the bearing-wall axes, giving an 11' ridge over
     # a 36' run. A zero-overhang roof that stops at the axis leaves the cladding standing
     # proud of its own edge, so the footprint now laps the outermost wall layer — the run,
-    # and with it the ridge, grows by that lap on each side. The 4:12 pitch is unchanged.
+    # and with it the ridge, grows by that lap on each side. The whole plane also rides
+    # DECK_RISE_FT higher now that the eave is the deck. The 4:12 pitch is unchanged.
     lap = _cladding_lap(catlin_model)
-    assert ATTIC_ELEV_FT + RIDGE_OVER_ATTIC_FT < ridge_ft <= \
-        ATTIC_ELEV_FT + RIDGE_OVER_ATTIC_FT + (lap / 3.0) / ft(1).meters + 1e-6
+    assert ATTIC_ELEV_FT + RIDGE_OVER_ATTIC_FT + DECK_RISE_FT < ridge_ft <= \
+        ATTIC_ELEV_FT + RIDGE_OVER_ATTIC_FT + DECK_RISE_FT + (lap / 3.0) / ft(1).meters + 1e-6
     assert roof.ridge_direction == "y"
     xs = [p[0] for p in roof.footprint]
     ys = [p[1] for p in roof.footprint]
@@ -168,9 +174,18 @@ def test_roof_matches_old_pitch_knee_and_ridge(catlin_model):
     rise_over_run = (roof.ridge_z_m - roof.eave_z_m) / ((max(xs) - min(xs)) / 2)
     assert rise_over_run == pytest.approx(4.0 / 12.0)
     rafters = [member for member in roof.members if member.category == "rafter"]
-    # 29 lines at 16" o.c. over two gable planes — one line more than the old builder's
-    # 28, because the footprint now laps the cladding at each rake.
-    assert len(rafters) == 58
+    # 28 station lines at 16" o.c. over two gable planes: stations span the bearing walls'
+    # 36' extent (not the cladding-lapped footprint), with the end stations inset half a
+    # member width so end rafters sit fully inside the gable wall planes.
+    assert len(rafters) == 56
+    flange_half = cross_section("11.875 I-joist").width_m / 2.0
+    stations = sorted({round(member.p0[1], 6) for member in rafters})
+    assert stations[0] == pytest.approx(flange_half, abs=1e-6)
+    assert stations[-1] == pytest.approx(ft(HOUSE_SIZE_FT).meters - flange_half, abs=1e-6)
+    # The rafter sinks only the birdsmouth below the plate top — never its full depth.
+    plate_top = ft(ATTIC_ELEV_FT + KNEE_FT).meters
+    birdsmouth = inch(3.5 / 3.0).meters
+    assert all(member.z0_m >= plate_top - birdsmouth - 1e-6 for member in rafters)
     # WP4: rafter ridge ends are trimmed back to bear on the ridge beam rather than
     # crossing to the exact ridge centerline — z1_end drops by half the beam width
     # times the roof slope, staying on the roof plane.
@@ -193,6 +208,46 @@ def test_ridge_beam_member_and_condition(catlin_model):
     assert any(c.kind.value == "roof_ridge" for c in catlin_model.conditions)
 
 
+def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
+    """Step 1/3 acceptance (golden eave detail): bearing_z_m is the plate top, seat cuts
+    notch the rafter at the bearing (not above the deck), and every above-structure roof
+    layer carries a per-edge setback stepping deck >= foam >= batten >= metal."""
+    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
+    authored = catlin_model.plan.by_tag("RF-HOUSE")
+    plate_top = max(catlin_model.wall(tag).z1_m for tag in authored.bearing_refs)
+    assert roof.bearing_z_m == pytest.approx(plate_top)
+    # eave rides the deck plane, ~10.71" (0.2719 m) above the plate.
+    assert roof.eave_z_m - roof.bearing_z_m == pytest.approx(ft(DECK_RISE_FT).meters)
+
+    birdsmouth = inch(1.17).meters
+    seats = [m for m in roof.members if m.category == "seat_cut"]
+    rafters = [m for m in roof.members if m.category == "rafter"]
+    assert len(seats) == len(rafters)
+    bearing_x = sorted({catlin_model.wall(tag).axis[0][0] for tag in authored.bearing_refs})
+    for seat in seats:
+        assert seat.z1_m == pytest.approx(plate_top)
+        assert seat.z0_m == pytest.approx(plate_top - birdsmouth)
+        # Anchored at a bearing line, not out in the cladding lap at the footprint edge.
+        assert min(abs(seat.p0[0] - x) for x in bearing_x) < 1e-6
+
+    setbacks = {entry["layer"]: entry for entry in roof.layer_edge_setbacks}
+    assert set(setbacks) == {"deck", "membrane", "polyiso", "eps", "roof-membrane",
+                             "batten-gap", "roofing"}
+    for edge in ("west", "east", "south", "north"):
+        deck, foam = setbacks["deck"][edge], setbacks["polyiso"][edge]
+        batten, metal = setbacks["batten-gap"][edge], setbacks["roofing"][edge]
+        assert deck >= foam >= batten >= metal
+        # Wall stack per the reference: deck clips at the wall-sheathing face (wrb +
+        # polyiso + eps + furring + cladding), metal runs 0.6" proud of the furring.
+        assert deck == pytest.approx(inch(0.02 + 2 + 2 + 0.5 + 0.5).meters)
+        assert foam == pytest.approx(inch(1.0).meters)
+        assert batten == pytest.approx(inch(0.5).meters)
+        assert metal == pytest.approx(inch(-0.1).meters)
+    # The garage/truss roof is deferred: no setbacks, geometry unchanged.
+    garage = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
+    assert garage.layer_edge_setbacks == ()
+
+
 def test_garage_gable_roof_frames_raised_heel_trusses(catlin_model):
     """The garage roof is framed as raised-heel trusses: top + bottom chords, web members,
     and a raised heel at each eave bearing. A truss carries its own ridge, so it needs no
@@ -213,9 +268,9 @@ def test_garage_gable_roof_frames_raised_heel_trusses(catlin_model):
 def test_attic_to_roof_walls_frame_with_raked_studs_and_plates(catlin_model):
     """The gable ends are true raked walls, not 11' rectangular placeholders."""
     gable = next(w for w in catlin_model.walls if w.tag == "W-A-S1")
-    # Knee height above the attic floor, plus the roof plane's cladding lap (see
-    # test_roof_matches_old_pitch_knee_and_ridge).
-    knee = ft(5).meters + ft(ATTIC_ELEV_FT).meters
+    # Knee height above the attic floor plus the deck rise (eave_z_m is the deck plane),
+    # plus the roof plane's cladding lap (see test_roof_matches_old_pitch_knee_and_ridge).
+    knee = ft(5 + DECK_RISE_FT).meters + ft(ATTIC_ELEV_FT).meters
     assert knee < gable.top_z0_m <= knee + _cladding_lap(catlin_model) / 3.0 + 1e-6
     assert gable.top_z1_m > gable.top_z0_m
     studs = [member for member in gable.members if member.category == "stud"]

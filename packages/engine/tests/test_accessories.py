@@ -106,7 +106,9 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     # 33' that was authored — that sat 2' above the ridge of this 4:12 gable.
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
     expected = roof_height_at(roof, (ft(3).meters, ft(37).meters)) + inch(12).meters
-    assert expected < 28 * FT
+    # ~28.05': eave_z_m is the deck plane, ~10.7" above the knee-wall plate (golden eave
+    # detail), so the derived termination rides that much higher than the bare-plate datum.
+    assert expected < 29 * FT
     for t in terms:
         assert abs(t.z0_m - exit_z) < 0.05
         assert abs(t.z1_m - expected) < 1e-6
@@ -158,6 +160,40 @@ def test_catlin_sump_sits_below_the_basement_slab(catlin_model) -> None:
     sumps = _solids(catlin_model, "sump")
     assert len(sumps) == 1
     assert sumps[0].z0_m < sumps[0].z1_m <= 0.0
+
+
+def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
+    """Tier 2 roof-eave closure on RF-HOUSE: fascia is *derived* from Roof.eave_trim
+    (resolve/roof_edge.py, so it rides the deck-plane datum on every edge); the 6" box
+    gutter + drip edge are authored runs along both eave edges (west/east — the ridge
+    runs N-S), at elevations tied to the deck plane per the golden eave detail. Garage
+    gutter/drip stay deferred with the truss roof."""
+    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
+    eave, plate = roof.eave_z_m, roof.bearing_z_m
+    # Derived fascia members: two boards per edge run (spf sub-fascia + aluminum face),
+    # topping out on the roof plane at the eaves and closing down past the plate.
+    fascia = [m for m in roof.members if m.category == "fascia"]
+    runs = {m.child_key.rsplit("-fascia-", 1)[0] for m in fascia}
+    assert {"eave-lo", "eave-hi", "rake-lo-0", "rake-lo-1", "rake-hi-0", "rake-hi-1"} <= runs
+    for member in fascia:
+        if member.child_key.startswith("eave"):
+            assert member.z1_m == pytest.approx(eave)
+            assert member.z0_m <= plate - inch(1.5).meters
+    # No hand-authored fascia solids — that would double the derived band.
+    assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-FASCIA")]
+    for side in ("W", "E"):
+        gutter = next(s for s in catlin_model.solids if s.tag == f"TR-RF-GUTTER-{side}-1")
+        drip = next(s for s in catlin_model.solids if s.tag == f"TR-RF-DRIP-{side}-1")
+        assert (gutter.category, drip.category) == ("gutter", "flashing")
+        # Box gutter hangs with its top 1.2" below the roof-furring underside (7.25"
+        # perpendicular above the deck), 5" channel height.
+        assert gutter.z1_m == pytest.approx(eave + inch(7.25 - 1.2).meters)
+        assert gutter.z1_m - gutter.z0_m == pytest.approx(inch(5.0).meters)
+        # Drip edge turns down over the fascia into the gutter from the metal eave.
+        assert drip.z1_m == pytest.approx(eave + inch(9.0).meters)
+        assert drip.z0_m < gutter.z1_m + inch(1.0).meters
+    assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-")
+                and "GARAGE" in s.tag]
 
 
 def test_gltf_emits_with_accessories(catlin_model) -> None:

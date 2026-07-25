@@ -316,6 +316,10 @@ def model_to_dict(
             {"uid": roof.uid, "tag": roof.tag, "storey": roof.storey, "form": roof.form,
              "footprint": [list(point) for point in roof.footprint],
              "eave_z_m": roof.eave_z_m, "ridge_z_m": roof.ridge_z_m,
+             # Plate top the roof bears on (eave_z_m is the deck plane above it) and the
+             # per-layer edge setbacks (golden eave detail clips) the 3D viewer consumes.
+             "bearing_z_m": roof.bearing_z_m,
+             "layer_edge_setbacks": [dict(entry) for entry in roof.layer_edge_setbacks],
              "ridge_direction": roof.ridge_direction, "assembly": roof.assembly,
              "surface_area_m2": roof.surface_area_m2,
              "members": [_member_json(member) for member in roof.members],

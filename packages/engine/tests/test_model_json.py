@@ -60,6 +60,27 @@ def test_stud_carries_orient(catlin_payload):
     assert all(m["orient"] is not None and len(m["orient"]) == 2 for m in studs)
 
 
+def test_roofs_carry_bearing_datum_and_layer_edge_setbacks(catlin_payload):
+    """model.json contract: every roof serializes ``bearing_z_m`` and
+    ``layer_edge_setbacks``; the rafter-framed house roof's deck plane rides ~0.2719 m
+    above the plate and its setbacks step monotonically deck >= foam >= batten >= metal."""
+    from typehaus.quantities import inch
+
+    for roof in catlin_payload["roofs"]:
+        assert "bearing_z_m" in roof
+        assert "layer_edge_setbacks" in roof
+    house = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-HOUSE")
+    assert house["eave_z_m"] - house["bearing_z_m"] == pytest.approx(
+        inch(11.875 - 3.5 / 3.0).meters)
+    entries = {entry["layer"]: entry for entry in house["layer_edge_setbacks"]}
+    assert entries
+    for edge in ("west", "east", "south", "north"):
+        assert (entries["deck"][edge] >= entries["polyiso"][edge]
+                >= entries["batten-gap"][edge] >= entries["roofing"][edge])
+    garage = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-GARAGE")
+    assert garage["layer_edge_setbacks"] == []  # truss roof deferred
+
+
 def test_ridge_beam_member_carries_multi_ply_width(catlin_payload):
     roof = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-HOUSE")
     beams = [m for m in roof["members"] if m["category"] == "ridge_beam"]

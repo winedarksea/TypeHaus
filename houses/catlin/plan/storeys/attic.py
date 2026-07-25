@@ -8,6 +8,8 @@ from typehaus import (
     Beam,
     Door,
     DeckLayer,
+    EaveTrim,
+    FasciaBoard,
     FloorOpening,
     FloorSystem,
     FollowRoof,
@@ -138,10 +140,22 @@ ALARMS = [
 ]
 
 # The hot roof itself: gable, 4:12, ridge N-S, zero overhang (first-class #29).
+# Eave/rake fascia is derived from the resolved roof plane (resolve/roof_edge.py): a 2x
+# spf sub-fascia nailed over the rafter tails/deck edge, lapped by an aluminum face. Its
+# depth closes the band the golden eave detail closes with extended wall sheathing —
+# from the deck plane (~10.7" above the knee-wall plate, eave_z_m datum) down ~2" past
+# the plate. Zero overhang -> no soffit (derivation skips a flush edge). The box gutter
+# and drip edge ride in params/roof_trim.py (authored runs, not derivable from a plane).
+_HOUSE_EAVE_TRIM = EaveTrim(
+    fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(12.75)),
+            FasciaBoard(material="aluminum", thickness=inch(0.75), depth=inch(13.25))),
+)
+
 ROOFS = [
     Roof(uid="CARF01AAAA", tag="RF-HOUSE", form=RoofForm.GABLE,
          pitch=Pitch(4, 12), bearing_refs=("W-A-E1", "W-A-E2", "W-A-W1"),
-         assembly="CATLIN_ROOF", overhang=ft(0), ridge_direction="y"),
+         assembly="CATLIN_ROOF", overhang=ft(0), ridge_direction="y",
+         eave_trim=_HOUSE_EAVE_TRIM),
 ]
 
 BEAMS = [

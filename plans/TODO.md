@@ -108,8 +108,29 @@ authored:
 - Most corners don't show proper 3-stud framing (it's defined in code but not present in
   most corners).
 - ~~Stairs aren't framed properly (no support for landings, note the basement stair is special in that it anchors off hangers from the concrete walls). Landings don't have a size input in the stair designer and aren't rendered correctly. The partition wall between the up and down sides of a U of stairs is also not present and not framed correctly. It actually looks like there are partition walls but they extend below the house's foundation.~~ DONE (stair-framing pass): stringers are raked (the "walls below the foundation" were un-raked floor-to-floor stringer prisms), U-stair landings are two real half-width platforms (deck + deduplicated 2x8 joists + rims) one riser apart in the landing zone, the well partition is generated 2x4 plate/stud framing clipped to the subfloor, basement hanger bands track the raked stringer top (lower flight bears at the landing) with landing rims/edge joists ledgered into matched concrete walls and 4x4 posts under free corners, and the stair designer has a landing-depth input (`landing_depth_m` through model.json/types.ts, R311.7.6 rule row). Remaining stair follow-ups are listed under "Stair framing follow-ups" below.
-- Roof-eave-wall still needs works. The 3d model still shows the roof exposed at the edges, not integrated into the wall cleanly (fully designed in reference packages/engine/tests/fixtures/catlin_reference/scripts/roof_wall_eave_detail_ifc.py, just not implemented here yet fully)
+- ~~Roof-eave-wall still needs works. The 3d model still shows the roof exposed at the edges, not integrated into the wall cleanly (fully designed in reference packages/engine/tests/fixtures/catlin_reference/scripts/roof_wall_eave_detail_ifc.py, just not implemented here yet fully)~~ DONE (roof-eave pass): `eave_z_m` is now the rafter-top **deck plane** rather than the plate top — only the 1.17" birdsmouth sinks below the bearing, so the whole plane (and every `ToRoof` gable, `FollowRoof` ceiling and elevation) rides 0.271992 m higher, with `ResolvedRoof.bearing_z_m` carrying the plate top and the seat-cut solid notching the rafter *at* the bearing line instead of floating above the deck; rafter stations now span the bearing walls' extent (not the cladding-lapped footprint) with end stations inset half a member width, so no rafter hangs half-outside a gable (58 → 56 on catlin); and each above-structure roof layer clips at its own wall-stack face via engine-computed `layer_edge_setbacks` (deck at the wall sheathing, foam at the furring inner face, batten at its outer face, metal 0.6" proud), consumed identically by `emit/gltf/emitter.py` and `ui/src/three/roofGeometry.ts`. RF-HOUSE eave closure is a derived `Roof.eave_trim` fascia plus an authored 6" box gutter + drip edge (`houses/catlin/params/roof_trim.py`). Remaining roof-eave follow-ups are listed under "Roof-eave follow-ups" below.
 - Windows smaller (by 1.5" I believe) than the stud spacing (here 14" probably should fit between 16" oc studs) don't need a header. Furthermore, we probably want windows to have some more clear guidance on when they are breaking the stud line with their position awkwardly, and how many studs they break with their given width (relative to the configured OC framing spacing)
+
+### Roof-eave follow-ups (noted out of scope in the roof-eave pass)
+
+- **IFC roof stays a flat plate.** `emit/ifc/emitter.py::_emit_roof` extrudes the footprint at
+  `eave_z_m` and ignores `layer_edge_setbacks` entirely (TODO comment in place). Port the
+  setback-aware shell when the IFC roof gains faceted plane geometry.
+- **Garage/truss roof deferred.** `deck_rise_m` returns `None` for truss-framed assemblies, so
+  RF-GARAGE keeps `eave_z_m == plate top` (its raised-heel lift is the correction) and gets no
+  layer setbacks — its edges are still closed by the wall-skin band, per the note under
+  "Framing interference" about `W-G-E`'s un-splittable gable. Garage gutter/drip trim is
+  likewise unauthored.
+- **Rake clip rules are extrapolated.** The golden reference draws the *eave* only, so the
+  west/east-vs-south/north setbacks for a rake come from applying the same wall-stack clip
+  faces there. A rake detail drawing would confirm (or correct) them.
+- **Layer end faces stay perpendicular to the slope**, not vertical as the 2D detail draws
+  them: the mitered offsetter is what gives each layer its true thickness. The serialized
+  setbacks are drift-corrected (`d·sinθ` at the eaves) so the edges land at the right *plan*
+  positions, but the cut face itself is still raked.
+- **All wall layers rake to one plane.** The reference's flat-topped wall foam plus
+  closed-cell spray-foam wedge at the roof/wall foam interface is approximated by the fascia
+  band; a true wedge would need a per-layer wall top.
 
 ### Stair framing follow-ups (noted out of scope in the stair-framing pass)
 

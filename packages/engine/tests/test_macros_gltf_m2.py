@@ -552,6 +552,50 @@ def test_roof_emits_real_thickness():
     assert min(ys) <= 3.0 + 1e-9
 
 
+def test_roof_layer_setbacks_step_each_layer_at_its_own_edge():
+    """With authored ``layer_edge_setbacks`` each above-structure layer gets its own
+    inset rectangle: the deck's plan extent is inboard of the metal layer's, which may
+    run proud of the footprint (negative setback) — the golden eave detail's banding."""
+    import types
+
+    from typehaus.emit.gltf.emitter import _MeshBuilder, _add_roof
+    from typehaus.model.enums import LayerFunction
+    from typehaus.quantities import inch
+    from typehaus.resolve.model import ResolvedRoof
+
+    def layer(name, function, thickness_in, material):
+        return types.SimpleNamespace(name=name, function=function,
+                                     thickness=inch(thickness_in), material_ref=material)
+
+    assembly = types.SimpleNamespace(layers=(
+        layer("rafter", LayerFunction.STRUCTURE, 11.875, "spf"),
+        layer("deck", LayerFunction.SHEATHING, 0.75, "struct-1-plywood"),
+        layer("roofing", LayerFunction.CLADDING, 0.5, "standing-seam"),
+    ))
+    model = types.SimpleNamespace(plan=types.SimpleNamespace(
+        library=types.SimpleNamespace(resolve_assembly=lambda _t: assembly)))
+    # Ridge runs "x": west/east are the (drift-free) rakes — assert plan-x extents there.
+    setbacks = (
+        {"layer": "deck", "west": 0.12, "east": 0.12, "south": 0.12, "north": 0.12},
+        {"layer": "roofing", "west": -0.01, "east": -0.01, "south": -0.01, "north": -0.01},
+    )
+    roof = ResolvedRoof(uid="r1", tag="R1", storey="L1", form="gable",
+                        footprint=[(0, 0), (8, 0), (8, 6), (0, 6)], eave_z_m=3.0,
+                        ridge_z_m=5.0, ridge_direction="x", assembly="ROOF",
+                        surface_area_m2=50.0, layer_edge_setbacks=setbacks)
+    mb = _MeshBuilder()
+    _add_roof(mb, roof, model)
+    buckets = list(mb.buckets())
+    assert len(buckets) == 2, "one bucket per layer material"
+    deck_xs = [p[0] for p in buckets[0][1]]
+    metal_xs = [p[0] for p in buckets[1][1]]
+    assert max(deck_xs) == pytest.approx(8.0 - 0.12, abs=1e-6)
+    assert min(deck_xs) == pytest.approx(0.12, abs=1e-6)
+    assert max(metal_xs) > 8.0  # metal runs proud of the footprint edge
+    assert min(metal_xs) < 0.0
+    assert max(deck_xs) < min(8.0, max(metal_xs))
+
+
 # --- assembly editor write flows (WP2.4d/e) ----------------------------------
 
 def test_duplicate_assembly_resolves_and_undoes_byte_identical(client):
