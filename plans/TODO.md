@@ -59,6 +59,13 @@ work.
   `Elevation` nor a placement, so the M3 semantic equivalence cannot compare storey
   elevations at all. `test_catlin_equivalence_m3.py` asserts the current state explicitly, so
   it will fail loudly and demand a real comparison once elevations are emitted.
+- **Most IFC framing members still have no geometry.** Measured on the current export:
+  **383 of 2005 `IfcMember`s carry a representation — and all 383 are roof members.** The
+  roof case was fixed; **1515 wall members and 107 stair members are still bare
+  aggregation**. Same class of gap, and it directly undermines the "clean export to
+  Revit/SketchUp/IFC" reminder at the top of this file: a consultant opening the IFC sees an
+  empty stud wall. Port the swept-solid emission the roof members now use
+  (`emit/ifc/roof.py`) to wall and stair framing.
 - **Opening details are never scaffolded.** 70 `opening_perimeter` conditions exist and 9
   overlay ids target them, but `derive_detail_slices` produces no slice for any (it requires a
   host wall + junction elevation). Same for the single `roof_ridge` condition. This is the
@@ -210,10 +217,16 @@ future.
 
 ## General polishing
 
-- **Warnings.** `haus check houses/catlin` is at **127 pass / 7 fail / 3 not evaluable of 137
+- **Warnings.** `haus check houses/catlin` is at **127 pass / 7 fail / 0 not evaluable of 134
   rules, 0 ERRORs**. Every one of the 7 failures is listed under "Needs your decision" above —
-  they are building facts, not defects. The 3 not-evaluable are
-  `integrity.placeable_recommended_clearance_conflict` against `FURN-S-BED1`.
+  they are building facts, not defects. Nothing is unevaluable any more.
+- **Emitters still place a recessed body at the floor plane.** `resolved_mount_elevation` does
+  not read `Mount.recessed_into_host_surface`, so IFC/glTF draw catlin's registers sitting on
+  the floor rather than let into their boots. Cosmetic; no check depends on it.
+- **Wall-object protrusion is measured on the footprint's local-y extent**, relying on the
+  library convention that local `-y` faces the room. Correct for every authored placeable
+  today, but a wall-attached object rotated off that convention would be measured on the
+  wrong axis. Revisit if wall attachments grow arbitrary rotation offsets.
 - **The BOM is complete.** S-103 lists every member grouped by size and type with per-stock
   -length buckets; S-104 tables the derived connection hardware with a keyed basis-of-quantity
   note per row, plus structural solids by volume. `haus takeoff` prints the same sections.

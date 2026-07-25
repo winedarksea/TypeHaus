@@ -73,7 +73,8 @@ def test_canvas_catalog_and_objects_use_one_normalized_contract() -> None:
     assert catalog["F-SOFA"]["placement"] == PlacementStrategy.FREE_PLACED.value
     assert catalog["F-SOFA"]["model_primitive"] == "cylinder"
     assert catalog["A-RANGE"]["ports"] == [{"tag": "power", "service": "power_240"}]
-    assert catalog["A-RANGE"]["mount"] == {"kind": "floor", "elevation_m": None, "drop_m": None}
+    assert catalog["A-RANGE"]["mount"] == {"kind": "floor", "elevation_m": None, "drop_m": None,
+                                           "recessed_into_host_surface": False}
     objects = {item["tag"]: item for item in canvas_objects(plan)}
     assert objects["F-1"]["domain"] == "furniture"
     assert objects["A-1"]["domain"] == "appliance"
