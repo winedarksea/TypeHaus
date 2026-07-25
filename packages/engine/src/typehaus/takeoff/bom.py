@@ -21,6 +21,7 @@ from typehaus.takeoff.hardware_config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
     HardwareTakeoffConfig,
 )
+from typehaus.takeoff.placeables import floor_heat_takeoff, placeables_takeoff
 
 
 def bill_of_materials(
@@ -35,6 +36,9 @@ def bill_of_materials(
     ``construction_returns``, ``sheet_goods`` and ``hardware`` complete the order.
     ``glazing`` covers what none of those could: sheet goods bought as panels rather than as
     sheathing, and the aluminium extrusions that cap them, bought by the lineal foot.
+    ``placeables`` counts the free-placed and wall-attached products (casework, appliances,
+    fixtures — the UI BOM's placeablesSection twin) and ``floor_heat`` bills each radiant
+    zone's element length, so no billable record lives only in a CLI patch or the browser.
     """
     return {
         "framing": framing_takeoff(model),
@@ -45,4 +49,6 @@ def bill_of_materials(
         "glazing_panels": glazing_panel_takeoff(model),
         "glazing_trim": glazing_trim_takeoff(model),
         "hardware": hardware_takeoff(model, hardware_config),
+        "placeables": placeables_takeoff(model),
+        "floor_heat": floor_heat_takeoff(model),
     }
