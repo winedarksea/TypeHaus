@@ -1,3 +1,6 @@
-node_modules/
+# No trailing slash: a bare `node_modules/` pattern matches only real directories, so a
+# symlink of that name (what a scratch worktree makes to borrow an install) slipped past it
+# and got committed once.
+node_modules
 dist/
 *.tsbuildinfo
