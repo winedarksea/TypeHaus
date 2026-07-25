@@ -149,7 +149,7 @@ def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None
 
 
 def _resolve_knee_brace(model: ResolvedModel, el: KneeBrace, storey: str) -> None:
-    """A 45-degree brace: one raked wood member plus a marker for its hardware.
+    """A 45-degree brace: one raked wood member plus a wrap band for each end's hardware.
 
     The diagonal is a :class:`FramedMember` rather than a swept solid so it bills as the
     stick of lumber it is. ``ResolvedSolid`` only extrudes a plan outline vertically, so a
@@ -180,13 +180,25 @@ def _resolve_knee_brace(model: ResolvedModel, el: KneeBrace, storey: str) -> Non
             connection=f"kneebrace:{el.connector}",
         ),),
     ))
-    # The hardware itself, at the upper (member) end of the diagonal.
-    half = inch(2.5).meters
-    model.solids.append(ResolvedSolid(
-        uid=f"{el.uid}-conn" if el.uid else f"{el.tag}-conn", tag=f"{el.tag}-CONN",
-        storey=storey, category="connector", outline=_square(p1[0], p1[1], half, half),
-        z0_m=soffit - inch(6).meters, z1_m=soffit,
-    ))
+    # The hardware as what it is: an APVKB-style knee-brace kit is a pair of wrap-around
+    # straps — one band at each end of the diagonal. The top band ties the brace to the
+    # beam/girt soffit it rises to; the bottom band ties it to the post face it leaves
+    # from. Each band hugs the member's own plan run and the z-band the wood occupies at
+    # that end, so the hardware reads at both joints instead of as one floating marker box
+    # at the top. Billing still comes from the element (takeoff/anchors.py::
+    # knee_brace_rows), never off these solids.
+    band_run = inch(3).meters  # strap width, measured along the brace's plan run
+    band_half = cross_section(el.member).width_m / 2.0 + inch(0.25).meters  # wrap clearance
+    uid_base = el.uid or el.tag
+    for end, (near, far), band_top in (
+            ("BOT", (p0, (p0[0] + ux * band_run, p0[1] + uy * band_run)), soffit - leg),
+            ("TOP", ((p1[0] - ux * band_run, p1[1] - uy * band_run), p1), soffit)):
+        model.solids.append(ResolvedSolid(
+            uid=f"{uid_base}-band-{end.lower()}", tag=f"{el.tag}-{el.connector}-{end}",
+            storey=storey, category="connector",
+            outline=rect_between(near, far, -band_half, band_half),
+            z0_m=band_top - thickness_z, z1_m=band_top,
+        ))
 
 
 def _resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> None:
