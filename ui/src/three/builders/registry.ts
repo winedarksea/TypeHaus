@@ -22,7 +22,9 @@ export function isRenderedInScene(object: THREE.Object3D): boolean {
 // to, so per-layer visibility can flip it without rebuilding the scene. Snapshot
 // parent.children.length before building and pass it here afterwards — the same contract
 // registerSelectable uses.
-export function tagLayerGroup(parent: THREE.Object3D, firstChildIndex: number, group: LayerVisibilityGroup) {
+export function tagLayerGroup(
+  parent: THREE.Object3D, firstChildIndex: number, group: LayerVisibilityGroup,
+) {
   for (let index = firstChildIndex; index < parent.children.length; index++) {
     parent.children[index].userData.layerGroup = group;
   }
