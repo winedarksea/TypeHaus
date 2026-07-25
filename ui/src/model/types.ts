@@ -350,12 +350,23 @@ export interface Catalog {
   canvas_object_types?: CanvasObjectType[];
 }
 
+// Per-layer plan setback (m, positive inward) from the roof footprint edge — the golden
+// eave detail's clip faces, computed by the engine (resolve/roof_edges.py).
+export interface RoofLayerSetback {
+  layer: string;
+  west: number;
+  east: number;
+  south: number;
+  north: number;
+}
+
 export interface Roof {
   uid: string;
   tag: string;
   storey: string;
   form: string;
   footprint: Vec2[];
+  // eave_z_m is the rafter-top (deck) plane; bearing_z_m is the plate top below it.
   eave_z_m: number;
   ridge_z_m: number;
   ridge_direction: "x" | "y";
@@ -363,6 +374,8 @@ export interface Roof {
   surface_area_m2: number;
   members: Member[];
   provenance: Provenance | null;
+  bearing_z_m?: number | null;
+  layer_edge_setbacks?: RoofLayerSetback[];
 }
 
 // Slabs, pads, and footings — a resolved horizontal or below-grade solid with a plan

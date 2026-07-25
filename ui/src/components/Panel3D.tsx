@@ -7,7 +7,7 @@ import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, Model, Op
 import { materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup } from "../three/members";
 import { applyMasonryWallUv, applyStandingSeamWallUv, createMasonryMaterial, createStandingSeamMaterial, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM } from "../three/materials";
-import { aboveStructureLayers, boundaryEdges, roofOffsetter, roofPlaneTriangles } from "../three/roofGeometry";
+import { aboveStructureLayers, boundaryEdges, layerInsetRect, roofOffsetter, roofPlaneTriangles } from "../three/roofGeometry";
 import {
   createPlanPrismGeometry,
   createProjectedSurfaceGeometry,
@@ -1174,23 +1174,33 @@ function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
   const offsetAt = roofOffsetter(triangles);
   const perimeter = boundaryEdges(triangles);
   const assembly = catalog?.assemblies.find((a) => a.tag === roof.assembly);
-  // eave_z_m/ridge_z_m is the rafter *top*, so the stack starts at zero and grows up.
+  // eave_z_m/ridge_z_m is the rafter *top* (deck plane), so the stack starts at zero and
+  // grows up. Engine-computed per-layer edge setbacks (golden eave detail clips) give
+  // each layer its own inset rectangle; layers without an entry keep the footprint.
   const layers = aboveStructureLayers(assembly);
+  const setbacks = new Map((roof.layer_edge_setbacks ?? []).map((e) => [e.layer, e]));
   const stack = layers.length ? layers
     : [{ name: "roofing", function: "cladding", material: "standing-seam", thickness_m: 0.05 }];
 
   let base = 0;
   for (const layer of stack) {
     const top = base + layer.thickness_m;
+    const entry = setbacks.get(layer.name);
+    let layerTriangles = triangles, layerOffsetAt = offsetAt, layerPerimeter = perimeter;
+    if (entry) {
+      layerTriangles = roofPlaneTriangles(roof, layerInsetRect(roof, entry, base));
+      layerOffsetAt = roofOffsetter(layerTriangles);
+      layerPerimeter = boundaryEdges(layerTriangles);
+    }
     const faces: ProjectVertex[][] = [];
-    for (const tri of triangles) {
-      faces.push([offsetAt(tri[0], top), offsetAt(tri[1], top), offsetAt(tri[2], top)]);
-      faces.push([offsetAt(tri[0], base), offsetAt(tri[2], base), offsetAt(tri[1], base)]);
+    for (const tri of layerTriangles) {
+      faces.push([layerOffsetAt(tri[0], top), layerOffsetAt(tri[1], top), layerOffsetAt(tri[2], top)]);
+      faces.push([layerOffsetAt(tri[0], base), layerOffsetAt(tri[2], base), layerOffsetAt(tri[1], base)]);
     }
     // Close the eave and rake so the layer stack reads as real thickness from outside.
-    for (const [a, b] of perimeter) {
-      faces.push([offsetAt(a, base), offsetAt(b, base), offsetAt(b, top)]);
-      faces.push([offsetAt(a, base), offsetAt(b, top), offsetAt(a, top)]);
+    for (const [a, b] of layerPerimeter) {
+      faces.push([layerOffsetAt(a, base), layerOffsetAt(b, base), layerOffsetAt(b, top)]);
+      faces.push([layerOffsetAt(a, base), layerOffsetAt(b, top), layerOffsetAt(a, top)]);
     }
     const geo = createProjectedSurfaceGeometry(faces, center);
     const seam = layer.function === "cladding" && isStandingSeam(layer.material);
