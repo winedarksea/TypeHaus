@@ -13,15 +13,17 @@ import math
 import uuid
 
 import pytest
+from shapely.geometry import Point, Polygon
 
 from typehaus.model import (
-    Assembly, Building, EaveSoffit, EaveTrim, Fascia, FasciaBoard, FramingSpec, Layer,
-    LayerFunction, Library, Material, Node, PlanModel, Project, Roof, RoofForm, Site,
+    Assembly, Building, EaveGutter, EaveSoffit, EaveTrim, Fascia, FasciaBoard, FramingSpec,
+    Layer, LayerFunction, Library, Material, Node, PlanModel, Project, Roof, RoofForm, Site,
     Storey, ToRoof, TrimKind, Wall, degF, ft, inch, pt,
 )
 from typehaus.quantities import Pitch
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.geometry import rect_between
 from typehaus.emit.gltf.emitter import is_roof_framing_member
 from typehaus.resolve.roof_geometry import roof_height_at
 
@@ -238,7 +240,12 @@ def test_fascia_tops_sit_on_the_roof_plane_and_the_rake_slopes(resolved):
     for member in level:
         assert member.z1_m == pytest.approx(roof.eave_z_m, abs=1e-9)
     assert max(max(m.z1_m, m.z1_end_m) for m in rakes) == pytest.approx(roof.ridge_z_m)
-    assert min(min(m.z1_m, m.z1_end_m) for m in rakes) == pytest.approx(roof.eave_z_m)
+    # The rake nailer starts one board thickness up-slope of the eave, not on it: that is the
+    # mitred corner, where the rake dies into the eave nailer's inner face.
+    span = max(p[1] for p in roof.footprint) - min(p[1] for p in roof.footprint)
+    pitch = (roof.ridge_z_m - roof.eave_z_m) / (span / 2.0)
+    foot = min(min(m.z1_m, m.z1_end_m) for m in rakes)
+    assert foot == pytest.approx(roof.eave_z_m + inch(1.5).meters * pitch, abs=1e-9)
 
 
 def test_soffit_spans_the_overhang_from_the_wall_face_to_the_fascia(resolved):
@@ -431,3 +438,95 @@ def test_flush_gable_rake_carries_the_skin_above_the_deck_plane(flush):
     # A wall that already reaches its face produces nothing at all — this one still does,
     # because the deck plane is not where its cladding dies.
     assert _closures(flush, "W-E1")
+
+
+# --- 8. mitred rake corners ----------------------------------------------------------------
+
+def _plan_polygon(member):
+    """A trim member's plan footprint, the way every emitter builds it."""
+    half = cross_section(member.profile).width_m / 2.0
+    return Polygon(rect_between(member.p0, member.p1, -half, half))
+
+
+def _overlapping_pairs(members):
+    polygons = [(m.child_key, _plan_polygon(m)) for m in members]
+    return [(a[0], b[0]) for index, a in enumerate(polygons) for b in polygons[index + 1:]
+            if a[1].intersection(b[1]).area > 1e-9]
+
+
+@pytest.mark.parametrize("band", ["below", "above"])
+def test_eave_and_rake_trim_tile_the_rake_corners_instead_of_overlapping(stacked, band):
+    """The eave run and the rake run of the same piece used to both claim the corner square.
+
+    A box member cannot carry a 45° end cut, so the corner is lapped rather than truly
+    mitred — but the material must be there exactly once, which is what a miter guarantees
+    and what doubling did not. Checked per elevation band: the fascia and soffit hang under
+    the roof plane, the edge cladding stands on top of it, so the two never share space.
+    """
+    hanging = [m for m in _roof(stacked).members if m.category in ("fascia", "soffit")]
+    standing = [m for m in _roof(stacked).members if m.child_key.endswith("-edge-cladding")]
+    members = hanging if band == "below" else standing
+    assert len(members) >= 6  # at least one piece on each of the six runs
+    assert _overlapping_pairs(members) == []
+
+
+def test_the_eave_run_owns_the_corner_square_so_nothing_is_left_open(stacked):
+    """The lap must not open a notch where the doubled material used to be: the eave piece is
+    cut back to its own outer face, which is exactly where the rake piece stops."""
+    roof = _roof(stacked)
+    minx = min(point[0] for point in roof.footprint)
+    miny = min(point[1] for point in roof.footprint)
+    nailer = inch(1.5).meters  # the innermost fascia board's thickness
+    corner = Point(minx + nailer / 2.0, miny + nailer / 2.0)
+    covering = [m for m in _members(stacked, "fascia")
+                if m.child_key.endswith("-fascia-0") and _plan_polygon(m).covers(corner)]
+    assert [m.child_key for m in covering] == ["eave-lo-fascia-0"]
+
+
+def test_fascia_carries_the_framing_trade_so_a_framing_toggle_shows_it(stacked):
+    """A fascia board is trim by category but a nailer on the rafter tails by trade."""
+    assert {m.trade for m in _members(stacked, "fascia")} == {"framing"}
+    # The panels it trims are not framing, and neither is ordinary lumber (its category
+    # already files it there).
+    assert {m.trade for m in _members(stacked, "soffit")} == {None}
+    assert {m.trade for m in _members(stacked, "top_chord")} == {None}
+
+
+# --- 9. the derived gutter -----------------------------------------------------------------
+
+_GUTTER = EaveGutter(material="aluminum", depth=inch(5), thickness=inch(6),
+                     top_drop=inch(1.2), edges=("south",), slope="1/16 in/ft")
+
+
+@pytest.fixture(scope="module")
+def guttered():
+    trim = _EAVE_TRIM.model_copy(update={"gutter": _GUTTER})
+    model, _findings = resolve(_plan(roof_layers=_STACK_LAYERS, eave_trim=trim))
+    return model
+
+
+def test_the_gutter_hangs_on_the_authored_eave_only(guttered):
+    """The ridge runs along x, so the eaves are the south and north edges; a rake sheds into
+    the eave below it and gets no channel at all."""
+    gutters = _members(guttered, "gutter")
+    assert [m.child_key for m in gutters] == ["eave-lo-gutter"]
+    assert gutters[0].material == "aluminum"
+    assert gutters[0].connection == "eave-trim:gutter:1/16 in/ft"
+
+
+def test_the_gutter_rides_the_roof_plane_through_the_raised_heel(guttered):
+    """Authored at an absolute elevation it would sit a heel below the eave it drains."""
+    roof = _roof(guttered)
+    gutter = _members(guttered, "gutter")[0]
+    assert gutter.z1_m == pytest.approx(roof.eave_z_m - inch(1.2).meters, abs=1e-9)
+    assert gutter.z1_m - gutter.z0_m == pytest.approx(inch(5).meters, abs=1e-9)
+    # Hung outboard of the fascia stack's outer face (the pvc board laps 1" past the roof
+    # edge; the spf nailer sits inboard of it), not overlapping it.
+    face = inch(1).meters
+    outward = min(abs(point[1] - min(p[1] for p in roof.footprint))
+                  for point in (gutter.p0, gutter.p1))
+    assert outward == pytest.approx(face + inch(6).meters / 2.0, abs=1e-9)
+
+
+def test_no_gutter_without_one_on_the_declaration(stacked):
+    assert _members(stacked, "gutter") == []

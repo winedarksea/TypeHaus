@@ -147,6 +147,60 @@ def add_prisms_from_profiles(f: Any, body_ctx: Any,
     return f.createIfcShapeRepresentation(body_ctx, "Body", "SweptSolid", solids)
 
 
+Vec3 = tuple[float, float, float]
+
+
+def add_faceted_solids(f: Any, body_ctx: Any, shells_m: list[list[list[Vec3]]]) -> Any:
+    """One Body representation holding closed polyhedra (``IfcFacetedBrep``).
+
+    Each shell is a list of planar faces, each face an outer loop of 3D points in the shared
+    project frame, wound counter-clockwise seen from outside. This is the representation for
+    a form that is genuinely faceted rather than a sweep — a pitched roof layer, whose top and
+    bottom are parallel sloped planes and whose sides are vertical, is exactly that: an
+    extrusion would have to be oblique, which importers read inconsistently.
+    """
+    cache: dict[tuple[float, float, float], Any] = {}
+
+    def point(value: Vec3) -> Any:
+        key = (round(value[0], 9), round(value[1], 9), round(value[2], 9))
+        if key not in cache:
+            cache[key] = f.createIfcCartesianPoint(key)
+        return cache[key]
+
+    solids = []
+    for shell in shells_m:
+        faces = []
+        for loop_points in shell:
+            if len(loop_points) < 3:
+                continue
+            loop = f.createIfcPolyLoop([point(value) for value in loop_points])
+            faces.append(f.createIfcFace([f.createIfcFaceOuterBound(loop, True)]))
+        if faces:
+            solids.append(f.createIfcFacetedBrep(f.createIfcClosedShell(faces)))
+    return f.createIfcShapeRepresentation(body_ctx, "Body", "Brep", solids)
+
+
+def add_swept_member(f: Any, body_ctx: Any, *, origin_m: Vec3, axis: Vec3,
+                     ref_direction: Vec3, length_m: float,
+                     width_m: float, depth_m: float) -> Any:
+    """A rectangular member swept along its own 3D axis (``IfcExtrudedAreaSolid``).
+
+    ``origin_m`` is the centroid of the start section, ``axis`` the unit vector the member
+    runs along, and ``ref_direction`` the section's local X. This is how a beam, rafter or
+    truss chord is represented in every structural BIM tool, so a sloped member arrives as a
+    real profile on a real axis rather than a bounding prism.
+    """
+    profile = f.createIfcRectangleProfileDef("AREA", None, None, width_m, depth_m)
+    placement = f.createIfcAxis2Placement3D(
+        f.createIfcCartesianPoint(origin_m),
+        f.createIfcDirection(axis), f.createIfcDirection(ref_direction),
+    )
+    solid = f.createIfcExtrudedAreaSolid(
+        profile, placement, f.createIfcDirection((0.0, 0.0, 1.0)), length_m,
+    )
+    return f.createIfcShapeRepresentation(body_ctx, "Body", "SweptSolid", [solid])
+
+
 def add_axis_representation(f: Any, body_ctx: Any,
                             points_m: tuple[tuple[float, float], tuple[float, float]]) -> Any:
     points = [f.createIfcCartesianPoint(point) for point in points_m]

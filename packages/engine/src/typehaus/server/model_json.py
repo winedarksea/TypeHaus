@@ -47,6 +47,9 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
         "orient": list(m.orient) if m.orient is not None else None,
         "connection": m.connection,
         "material": m.material,
+        # Explicit visibility trade override (fascia is trim *and* framing); ``None`` leaves
+        # the consumer on its category-derived default.
+        "trade": m.trade,
     }
 
 
