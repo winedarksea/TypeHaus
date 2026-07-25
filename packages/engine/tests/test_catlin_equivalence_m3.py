@@ -145,8 +145,8 @@ def reference_model(tmp_path_factory):
 
 
 @pytest.fixture(scope="module")
-def current_model(tmp_path_factory):
-    """The engine's own catlin IFC at framed LOD, read back through the same extractor."""
+def current_ifc_path(tmp_path_factory):
+    """The engine's own catlin IFC at framed LOD."""
     pytest.importorskip("ifcopenshell")
     from typehaus.emit.ifc import emit_ifc
     from typehaus.resolve import resolve
@@ -157,8 +157,13 @@ def current_model(tmp_path_factory):
     model, findings = resolve(result.plan)
     errors = [f for f in findings if f.severity.value == "error"]
     assert not errors, [f.message for f in errors]
-    path = emit_ifc(model, tmp_path_factory.mktemp("current") / "catlin.ifc", lod="framed")
-    return semantic_model_from_ifc(path, "typehaus catlin")
+    return emit_ifc(model, tmp_path_factory.mktemp("current") / "catlin.ifc", lod="framed")
+
+
+@pytest.fixture(scope="module")
+def current_model(current_ifc_path):
+    """The emitted catlin IFC, read back through the same semantic extractor."""
+    return semantic_model_from_ifc(current_ifc_path, "typehaus catlin")
 
 
 @pytest.fixture(scope="module")
@@ -179,26 +184,57 @@ def test_spatial_hierarchy_carries_every_reference_storey(equivalence):
         "basement", "main", "second", "attic", "garage"}
 
 
+# The reference states most keys' datum more than once: the porch/garden building repeats
+# the basement/main/second keys at its own slab elevations (e.g. the Sunken Garden Floor at
+# -2.6543 aliases onto "basement" beside the House Basement's -2.7432). The house's own
+# storey — the garage building's for the garage key — is the authoritative datum per key.
+REFERENCE_DATUM_BUILDINGS = ("House", "Garage")
+
+# Storey datums that deliberately moved since the reference: key → (expected current
+# elevation in metres, the decision that moved it). Same discipline as
+# DECLARED_DIVERGENCES: an undeclared move fails, and a declared one is pinned to its
+# expected value so a further silent move still fails.
+DECLARED_STOREY_ELEVATION_MOVES = {
+    "second": (3.048, "the main storey grew from 9' to 10' floor-to-floor"),
+    "attic": (6.096, "rides the taller stack: 10' + 10' instead of 9' + 9'"),
+    "garage": (0.5588, "the garage storey sits at its ICF stem top, 1'-10\" above main"),
+}
+
+
 def test_storey_elevations_agree_where_both_models_state_one(reference_model, equivalence):
     """The reference stacks 9' floor to floor — read off its placements, not its labels.
 
     The reference writes ``IfcBuildingStorey.Elevation`` in metres inside a millimetre file,
     so only the placement is trustworthy; the extractor prefers it deliberately.
 
-    The TypeHaus export states *no* storey elevation at all (no ``Elevation``, no storey
-    placement — all geometry is authored in world coordinates), so there is nothing to
-    compare on that side yet. That is recorded here rather than silently skipped: when the
-    emitter starts placing storeys, this becomes a live comparison instead of passing either
-    way. Any storey where both sides do state one must agree.
+    The TypeHaus export now places every storey at its authored elevation (and states the
+    ``Elevation`` attribute to match), so this is the live comparison the tripwire it
+    replaced promised: every storey both sides state must agree with the reference datum
+    within ±0.05 m, or carry its move in ``DECLARED_STOREY_ELEVATION_MOVES``.
     """
     elevations = {round(item.elevation_m, 4) for item in reference_model.storeys
                   if item.elevation_m is not None}
     assert {0.0, -2.7432, 2.7432, 5.4864} <= elevations, sorted(elevations)
-    assert all(item.current_elevation_m is None for item in equivalence.storeys), (
-        "the IFC export now states storey elevations — compare them here")
+    unstated = [item.key for item in equivalence.storeys
+                if item.current_elevation_m is None]
+    assert not unstated, f"the export stopped stating storey elevations for: {unstated}"
+    reference = {item.key: item.elevation_m for item in reference_model.storeys
+                 if item.building in REFERENCE_DATUM_BUILDINGS
+                 and item.elevation_m is not None}
     for item in equivalence.storeys:
-        if item.reference_elevation_m is not None and item.current_elevation_m is not None:
-            assert abs(item.elevation_delta_m) <= 0.05, item.as_dict()
+        if item.current_elevation_m is None or item.key not in reference:
+            continue
+        declared = DECLARED_STOREY_ELEVATION_MOVES.get(item.key)
+        if declared is not None:
+            expected, _reason = declared
+            assert abs(item.current_elevation_m - expected) <= 0.05, item.as_dict()
+        else:
+            assert abs(item.current_elevation_m - reference[item.key]) <= 0.05, (
+                item.as_dict())
+    stale = [key for key, (expected, _reason) in DECLARED_STOREY_ELEVATION_MOVES.items()
+             if key in reference and abs(expected - reference[key]) <= 0.05]
+    assert not stale, ("DECLARED_STOREY_ELEVATION_MOVES lists storeys that no longer "
+                       f"move — delete them: {stale}")
 
 
 def test_every_reference_element_has_a_counterpart_or_a_declared_reason(equivalence):
@@ -276,6 +312,38 @@ def test_framing_survives_as_aggregated_members_and_only_grows(reference_model,
     assert framed_pairs
     for item in framed_pairs:
         assert item.current_framing_count >= item.reference_framing_count, item.as_dict()
+
+
+def test_every_sweepable_framed_member_carries_real_geometry(current_ifc_path):
+    """Framed-LOD members are real solids, not the bare identities they used to be.
+
+    Member totals move whenever the framing solvers evolve, so nothing here pins a count.
+    What must hold is *coverage*: every aggregated ``IfcMember`` whose profile a constant
+    cross-section can honestly represent carries a Body representation. The only members
+    allowed to stay bare are the plan-tapered boards no swept section can describe — the
+    winder treads ("tapered tread") — and they must stay a sliver of the population.
+    """
+    ifcopenshell = pytest.importorskip("ifcopenshell")
+    import ifcopenshell.util.element
+
+    from typehaus._meta import PSET_SOURCE
+
+    f = ifcopenshell.open(str(current_ifc_path))
+    members = f.by_type("IfcMember")
+    assert members, "framed LOD should aggregate framing members"
+    bare = [item for item in members if item.Representation is None]
+    unexplained = []
+    for item in bare:
+        psets = ifcopenshell.util.element.get_psets(item, psets_only=True)
+        profile = str(psets.get(PSET_SOURCE, {}).get("profile", ""))
+        if profile != "tapered tread":
+            unexplained.append((item.Name, profile))
+    assert not unexplained, (
+        f"members with a resolvable cross-section but no geometry: {unexplained[:10]}")
+    coverage = (len(members) - len(bare)) / len(members)
+    assert coverage >= 0.99, (
+        f"member representation coverage regressed: {len(members) - len(bare)}"
+        f"/{len(members)} = {coverage:.4f}")
 
 
 def test_the_categories_the_reference_modelled_are_all_still_modelled(equivalence):

@@ -18,7 +18,7 @@ from shapely.ops import unary_union
 
 from typehaus._meta import IFC_APP_NAME, PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
-from typehaus.emit.ifc.roof import emit_roof, member_representation
+from typehaus.emit.ifc.roof import emit_roof, member_class, member_representation
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section
@@ -46,6 +46,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     storeys: dict[str, Any] = {}
     for storey in sorted(model.plan.storeys, key=lambda s: s.elevation.meters):
         ifc_storey = ll.create_entity(f, "IfcBuildingStorey", name=storey.tag)
+        ll.set_storey_elevation(f, ifc_storey, storey.elevation.meters)
         ll.ensure_pset(f, ifc_storey, PSET_SOURCE,
                        {"uid": storey.uid, "tag": storey.tag})
         storeys[storey.tag] = ifc_storey
@@ -76,7 +77,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
         _emit_floor(f, body, floor, storeys, project_uuid)
 
     for stair in sorted(model.stairs, key=lambda item: item.uid):
-        _emit_stair(f, stair, storeys, project_uuid, lod)
+        _emit_stair(f, body, stair, storeys, project_uuid, lod)
 
     for brace in sorted(model.braces, key=lambda item: item.uid):
         _emit_brace(f, body, brace, storeys, project_uuid)
@@ -202,11 +203,54 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
     if lod == "framed" and rw.members:
         members = []
         for m in sorted(rw.members, key=lambda x: x.child_key):
-            member = ll.create_entity(f, "IfcMember", name=f"{rw.tag}/{m.child_key}")
-            member.GlobalId = derive_child_guid(project_uuid, rw.uid, m.child_key)
+            member = _emit_framed_member(f, body, rw.tag, rw.uid, m, project_uuid)
             members.append(member)
         ll.aggregate(f, wall, members)
     return wall
+
+
+# Profiles that describe a board tapered *in plan* (the winder tread runs from a newel-face
+# sliver to a full nosing): no constant cross-section swept along the axis can represent
+# one, so its member keeps the bare pre-representation form instead of a wrong box.
+_UNSWEEPABLE_PROFILES = frozenset({"tapered tread"})
+
+
+def _member_body(f: Any, body: Any, member: Any) -> Any | None:
+    """``member_representation`` with the graceful degradation the generated packs need.
+
+    Wall and stair packs run through thousands of generated members; one profile the
+    section catalog cannot honestly sweep must degrade to the old bare (representation-
+    free) member, never abort the whole export.
+    """
+    if member.profile in _UNSWEEPABLE_PROFILES:
+        return None
+    try:
+        return member_representation(f, body, member)
+    except Exception:  # noqa: BLE001 - a bare member beats a failed export
+        return None
+
+
+def _emit_framed_member(f: Any, body: Any, parent_tag: str, parent_uid: str,
+                        member: Any, project_uuid: Any) -> Any:
+    """One generated wall/stair member as a real product (roof-member precedent).
+
+    Same class map and swept-solid path the roof and brace members use, so a stud files
+    as ``IfcMember``/STUD with true geometry rather than the bare identity placeholder
+    these packs used to emit.
+    """
+    ifc_class, predefined = member_class(member.category)
+    child = ll.create_entity(f, ifc_class, name=f"{parent_tag}/{member.child_key}")
+    child.GlobalId = derive_child_guid(project_uuid, parent_uid, member.child_key)
+    if predefined is not None:
+        child.PredefinedType = predefined
+    representation = _member_body(f, body, member)
+    if representation is not None:
+        _assign_representation(f, child, representation)
+    ll.ensure_pset(f, child, PSET_SOURCE, {
+        "uid": parent_uid, "tag": f"{parent_tag}/{member.child_key}",
+        "category": member.category, "profile": member.profile,
+    })
+    return child
 
 
 def _assign_wall_material(f: Any, wall: Any, rw: ResolvedWall,
@@ -650,18 +694,16 @@ def _emit_brace(f: Any, body: Any, brace: Any, storeys: dict[str, Any],
         ll.assign_container(f, child, container)
 
 
-def _emit_stair(f: Any, stair: Any, storeys: dict[str, Any], project_uuid: Any, lod: str) -> None:
+def _emit_stair(f: Any, body: Any, stair: Any, storeys: dict[str, Any], project_uuid: Any,
+                lod: str) -> None:
     element = ll.create_entity(f, "IfcStair", name=stair.tag)
     element.GlobalId = derive_guid(project_uuid, stair.uid)
     ll.ensure_pset(f, element, PSET_SOURCE, {"uid": stair.uid, "tag": stair.tag})
     ll.assign_container(f, element, storeys[stair.storey])
     if lod != "framed":
         return
-    members = []
-    for member in sorted(stair.members, key=lambda item: item.child_key):
-        child = ll.create_entity(f, "IfcMember", name=f"{stair.tag}/{member.child_key}")
-        child.GlobalId = derive_child_guid(project_uuid, stair.uid, member.child_key)
-        members.append(child)
+    members = [_emit_framed_member(f, body, stair.tag, stair.uid, member, project_uuid)
+               for member in sorted(stair.members, key=lambda item: item.child_key)]
     if members:
         ll.aggregate(f, element, members)
 
