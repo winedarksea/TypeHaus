@@ -13,11 +13,13 @@ the whole structure in ``params/breezeway.py``.
 from __future__ import annotations
 
 from typehaus import (
+    DrainTile,
     Footing,
     FootingBedding,
     FoundationWall,
     Node,
     Slab,
+    SlabThermalBreak,
     ft,
     inch,
     pt,
@@ -49,7 +51,9 @@ HOUSE_FOOTINGS = [
 # down over the footing sides.
 HOUSE_FOOTING_BEDDING = [
     FootingBedding(uid=f"CFB{i:03d}AAAA", tag=f"FB-{f.tag[3:]}", host_ref=f.tag,
-                   undercut=inch(7), perimeter_insulation=inch(4))
+                   undercut=inch(7), perimeter_insulation=inch(4),
+                   drain_tile_spec=DrainTile(diameter=inch(4), sock=True,
+                                             discharge="daylight"))
     for i, f in enumerate(HOUSE_FOOTINGS, start=1)
 ]
 
@@ -95,6 +99,7 @@ GARAGE_SLAB = Slab(
     outline=(pt(ft(0.5), _slab_y_s), pt(ft(23.5), _slab_y_s),
              pt(ft(23.5), _slab_y_n), pt(ft(0.5), _slab_y_n)),
     thickness=inch(3.5), assembly="GARAGE_SLAB_ON_GRADE",
+    perimeter_thermal_break=SlabThermalBreak(material_ref="xps", thickness=inch(1)),
 )
 
 BASEMENT_ELEMENTS = [*HOUSE_FOOTINGS, *HOUSE_FOOTING_BEDDING, *GARAGE_STEM_NODES,

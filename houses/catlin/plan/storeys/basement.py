@@ -17,6 +17,8 @@ from typehaus import (
     RadiantSystem,
     Room,
     Slab,
+    SlabThermalBreak,
+    SlabThermalBreak,
     Wall,
     Window,
     face,
@@ -206,7 +208,8 @@ SLABS = [
     Slab(uid="CBS501AAAA", tag="SL-B-FLOOR",
          outline=(pt(ft(0), ft(0)), pt(ft(36), ft(0)), pt(ft(36), ft(36)),
                   pt(ft(0), ft(36))),
-         thickness=inch(3.5), assembly="CATLIN_SLAB_FLOOR"),
+         thickness=inch(3.5), assembly="CATLIN_SLAB_FLOOR",
+         perimeter_thermal_break=SlabThermalBreak(material_ref="xps", thickness=inch(1))),
 ]
 
 FLOOR_OPENINGS = [

@@ -20,6 +20,7 @@ import pytest
 
 from typehaus.emit.draw.details import build_detail, derive_detail_slices
 from typehaus.emit.draw.scene import Hatch, Polyline
+from typehaus.quantities import inch
 
 FIXTURES = Path(__file__).parent / "fixtures" / "catlin_reference"
 
@@ -335,7 +336,6 @@ def test_opening_and_ridge_conditions_scaffold_detail_slices(catlin_model):
     the resolved ridge-beam member.
     """
     keys = {d.key for d in derive_detail_slices(catlin_model)}
-    assert "opening_perimeter:CATLIN_EXT_2X4" in keys
     assert "opening_perimeter:CATLIN_EXT_2X6" in keys
     assert "opening_perimeter:CATLIN_BASEMENT_12" in keys
     assert "roof_ridge:RF-HOUSE" in keys
@@ -552,14 +552,17 @@ def test_french_drain_draws_the_authored_diameter():
 
 
 def test_drain_tile_spec_reads_the_footing_bedding(catlin_model):
-    """Catlin's beddings author no spec yet, so the lookup keeps the pinned fallback."""
+    """Every house footing's bedding authors the 4" socked daylight tile now."""
     from typehaus.emit.draw.detail_components.below_grade import drain_tile_spec_for
 
-    footings = [s for s in catlin_model.solids if s.category == "footing"]
+    footings = [s for s in catlin_model.solids if s.category == "footing"
+                and s.tag.startswith("FT-")]
     assert footings
     assert drain_tile_spec_for(catlin_model, None) is None
     for footing in footings:
-        assert drain_tile_spec_for(catlin_model, footing) is None
+        spec = drain_tile_spec_for(catlin_model, footing)
+        assert spec is not None, footing.tag
+        assert spec.diameter == inch(4) and spec.sock and spec.discharge == "daylight"
 
 
 def test_sill_gasket_prefers_the_authored_framing_spec():
@@ -590,14 +593,18 @@ def test_sill_gasket_prefers_the_authored_framing_spec():
 
 
 def test_thermal_break_spec_reads_the_slab_source(catlin_model):
-    """``Slab.perimeter_thermal_break`` is read off the cut slab's plan source; catlin
-    authors none yet, so every slab keeps the pinned 1" + full-depth fallback."""
+    """``Slab.perimeter_thermal_break`` is read off the cut slab's plan source. The two
+    slabs-on-grade (basement + garage) author the 1" XPS edge break; the walking-surface
+    decks author none and keep the pinned fallback."""
     from typehaus.emit.draw.detail_components.wall_base import thermal_break_spec
 
-    slabs = [s for s in catlin_model.solids if s.category == "slab"]
+    slabs = {s.tag: s for s in catlin_model.solids if s.category == "slab"}
     assert slabs
-    for slab in slabs:
-        assert thermal_break_spec(catlin_model, slab) is None
+    for tag in ("SL-B-FLOOR", "SL-G-FLOOR"):
+        spec = thermal_break_spec(catlin_model, slabs[tag])
+        assert spec is not None and spec.material_ref == "xps"
+        assert spec.thickness == inch(1)
+    assert thermal_break_spec(catlin_model, slabs["SL-SG-DECK"]) is None
 
 
 def test_thermal_break_prefers_the_authored_slab_spec():

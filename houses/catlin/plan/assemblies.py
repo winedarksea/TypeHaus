@@ -42,7 +42,8 @@ CATLIN_EXT_2X6 = Assembly(
     tag="CATLIN_EXT_2X6",
     layers=(
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6"),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", sill_gasket=inch(0.25)),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
               function=LayerFunction.SHEATHING),
@@ -310,7 +311,8 @@ GARAGE_WALL_2X6 = Assembly(
     tag="GARAGE_WALL_2X6",
     layers=(
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
-              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6"),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x6", sill_gasket=inch(0.25)),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="zip-r", material_ref="zip-r", thickness=inch(1.5),
               function=LayerFunction.SHEATHING,
