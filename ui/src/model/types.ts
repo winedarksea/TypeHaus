@@ -194,6 +194,10 @@ export interface CanvasObject {
   rotation: number | null;
   host: string | null;
   attachment: { wall: string; face: string } | null;
+  // Set on an object the engine recovered as an occupant of another object's clearance zone
+  // (a chair at its table) — the group's uid. Members do not conflict with each other's
+  // recommended clearance, and dragging the group's owner should carry them along.
+  placement_group?: string | null;
   footprint?: Vec2[];
   required_clearances?: Vec2[][];
   recommended_clearances?: Vec2[][];
