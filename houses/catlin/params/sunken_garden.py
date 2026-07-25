@@ -570,12 +570,12 @@ for _row, _i, _ns, _ew in _BRACED_CORNERS:
     KNEE_BRACES.append(KneeBrace(
         uid=_NS_BRACE_UID[(_row, _i)], tag=f"KB-SG-{_row}{_i}-NS", position=_at,
         soffit_elevation=_balcony_beam_soffit, leg=_BRACE_LEG, axis="y", direction=_ns,
-        member="2x6", post_size=SPEC.pillar_size,
+        member="2x6", post_size=SPEC.pillar_size, assembly="POST_WHITE_PAINT",
         connects=(_post, _NS_BEAM[_i])))
     KNEE_BRACES.append(KneeBrace(
         uid=_EW_BRACE_UID[(_row, _i)], tag=f"KB-SG-{_row}{_i}-EW", position=_at,
         soffit_elevation=_girt_soffit, leg=_BRACE_LEG, axis="x", direction=_ew,
-        member="2x6", post_size=SPEC.pillar_size,
+        member="2x6", post_size=SPEC.pillar_size, assembly="POST_WHITE_PAINT",
         connects=(_post, _EW_GIRT[(_row, _i)])))
 
 # ============================================================================

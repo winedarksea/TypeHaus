@@ -175,6 +175,7 @@ class KneeBrace(Element):
     member: str = "2x6"  # the diagonal's own nominal profile
     post_size: str = "6x6"  # braced post's section, so the brace starts at its face
     connector: str = "APVKB45-6"  # hardware model at the joint
+    assembly: str | None = None  # optional finish assembly (paint), same contract as Post.assembly
     connects: tuple[str, ...] = ()  # post + beam/girt tags the brace joins
 
 
