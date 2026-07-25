@@ -63,8 +63,8 @@ OPENINGS = [
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT36",
          position=from_node("N-G-SW", ft(5))),
     # Bearing gable wall: use the 27" RO/jack-stud module, centered on stud lines.
-    # WT-2736, not WT-2760: the garage wall is only 8' (vs. the house's 10'), so the
-    # 60"-tall type would push the header above the top plate at this sill height.
+    # This 8' wall (vs. the house's 10') is why the whole 27" family is 36" tall: a
+    # 60" height at this 42" sill would push the header above the top plate.
     Window(uid="CGX301AAAA", tag="WIN-G-N1", host="W-G-N", type_ref="WT-2736",
            position=from_node("N-G-NW", ft(6, 10.5)), sill_height=ft(3, 6)),
     Window(uid="CGX302AAAA", tag="WIN-G-N2", host="W-G-N", type_ref="WT-2736",

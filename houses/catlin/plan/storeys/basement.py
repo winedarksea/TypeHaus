@@ -170,7 +170,7 @@ OPENINGS = [
     Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3", type_ref="DT-PATIO60",
          position=from_node("N-B-S2", ft(1, 4)), sill_height=inch(7)),
     Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2",
-           type_ref="WT-3050", position=from_node("N-B-S1", ft(2, 6)),
+           type_ref="WT-3660", position=from_node("N-B-S1", ft(2, 6)),
            sill_height=ft(3)),
 ]
 

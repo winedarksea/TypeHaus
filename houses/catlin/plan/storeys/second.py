@@ -188,39 +188,39 @@ OPENINGS = [
          position=from_node("N-S-S1", ft(2))),
     Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-FRENCH36",
          position=from_node("N-S-S1", ft(2))),
-    # Windows — east bedrooms (bearing wall: WT-2760, egress-capable)
-    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E3", type_ref="WT-2760",
+    # Windows — east bedrooms (bearing wall: WT-2736, egress-capable)
+    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E3", type_ref="WT-2736",
            position=from_node("N-S-E2", ft(2, 10.5)), sill_height=ft(3)),
-    Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E4", type_ref="WT-2760",
+    Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E4", type_ref="WT-2736",
            position=from_node("N-S-E3", ft(2, 10.5)), sill_height=ft(3)),
-    Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E5", type_ref="WT-2760",
+    Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E5", type_ref="WT-2736",
            position=from_node("N-S-E4", ft(2, 10.5)), sill_height=ft(3)),
     # West suite (bearing wall)
-    Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W2", type_ref="WT-2760",
+    Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W2", type_ref="WT-2736",
            position=from_node("N-S-W1", ft(4, 2.5)), sill_height=ft(3)),
-    Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W2", type_ref="WT-2760",
+    Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W2", type_ref="WT-2736",
            position=from_node("N-S-W1", ft(8, 2.5)), sill_height=ft(3)),
-    # Plant room — south glazing (non-bearing: WT-3060 row)
-    Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-3060",
+    # Plant room — south glazing (non-bearing: WT-3036 row)
+    Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-3036",
            position=from_node("N-S-SW", ft(2, 9)), sill_height=ft(2)),
-    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3060",
+    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3036",
            position=from_node("N-S-SW", ft(6, 9)), sill_height=ft(2)),
     # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
     # type and not the 30" south-glazing one — "resize windows to fit the grid" (CLAUDE.md).
-    Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2760",
+    Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736",
            position=from_node("N-S-W3", ft(4, 2.5)), sill_height=ft(2)),
-    Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3060",
+    Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3036",
            position=from_node("N-S-SE", ft(4, 9)), sill_height=ft(2, 6)),
-    Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3060",
+    Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3036",
            position=from_node("N-S-SE", ft(8, 9)), sill_height=ft(2, 6)),
     # Baths + north
     # W-S-N3 shortened by 1' when N-S-N2 moved to the stair shaft's new line, which moved
     # every 16" bay centre on it by 4"; the RO follows so it still fits one clear bay.
-    Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1448",
+    Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1424",
            position=from_node("N-S-NW", ft(4, 9)), sill_height=ft(4)),
-    Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1448",
+    Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424",
            position=from_node("N-S-NW", ft(4, 1)), sill_height=ft(4)),
-    Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3060",
+    Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3036",
            position=from_node("N-S-NE", ft(6, 9)), sill_height=ft(3)),
 ]
 
