@@ -119,6 +119,32 @@ def test_catlin_sump_sits_below_the_basement_slab(catlin_model) -> None:
     assert sumps[0].z0_m < sumps[0].z1_m <= 0.0
 
 
+def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
+    """Tier 2 roof-eave closure: fascia + 6" box gutter + drip edge along both house
+    eave edges (west/east — the ridge runs N-S), at elevations tied to the deck plane
+    per the golden eave detail. Garage trim stays deferred with the truss roof."""
+    roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
+    eave, plate = roof.eave_z_m, roof.bearing_z_m
+    for side in ("W", "E"):
+        fascia = next(s for s in catlin_model.solids if s.tag == f"TR-RF-FASCIA-{side}-1")
+        gutter = next(s for s in catlin_model.solids if s.tag == f"TR-RF-GUTTER-{side}-1")
+        drip = next(s for s in catlin_model.solids if s.tag == f"TR-RF-DRIP-{side}-1")
+        assert (fascia.category, gutter.category, drip.category) == (
+            "fascia", "gutter", "flashing")
+        # Fascia closes the band: top of deck+membrane down past the plate.
+        assert fascia.z1_m == pytest.approx(eave + inch(1.0).meters)
+        assert fascia.z0_m == pytest.approx(plate - inch(2.0).meters)
+        # Box gutter hangs with its top 1.2" below the roof-furring underside (7.25"
+        # perpendicular above the deck), 5" channel height.
+        assert gutter.z1_m == pytest.approx(eave + inch(7.25 - 1.2).meters)
+        assert gutter.z1_m - gutter.z0_m == pytest.approx(inch(5.0).meters)
+        # Drip edge turns down over the fascia into the gutter from the metal eave.
+        assert drip.z1_m == pytest.approx(eave + inch(9.0).meters)
+        assert drip.z0_m < gutter.z1_m + inch(1.0).meters
+    assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-")
+                and "GARAGE" in s.tag]
+
+
 def test_gltf_emits_with_accessories(catlin_model) -> None:
     from typehaus.emit.gltf.emitter import emit_gltf_dict
 

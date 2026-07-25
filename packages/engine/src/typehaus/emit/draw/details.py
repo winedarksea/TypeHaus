@@ -89,7 +89,9 @@ def derive_detail_slices(model: ResolvedModel) -> list[DerivedDetail]:
 # floating in white space.
 _CROP_WINDOWS = {
     #                     below,  above,  inboard, outboard
-    "wall_roof":         (0.75,   0.45,   0.30,    0.35),
+    # wall_roof reaches further above the junction (the plate top) since eave_z_m became
+    # the deck plane: the rafter rises ~0.27 m above the plate before the roof stack starts.
+    "wall_roof":         (0.75,   0.75,   0.30,    0.35),
     "wall_foundation":   (1.30,   0.90,   0.55,    0.90),
     "wall_slab":         (1.00,   0.70,   0.55,    0.70),
     "storey_stack":      (0.55,   0.55,   0.25,    0.25),

@@ -20,7 +20,7 @@ from pathlib import Path
 
 from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_basemap_geojson
 
-from params import foundations, sunken_garden
+from params import foundations, roof_trim, sunken_garden
 from plan import assemblies, fixture_types, fixtures, mep, placeables, site, transitions, views
 from plan.storeys import attic, basement, garage, main, second
 
@@ -88,5 +88,6 @@ PLAN = (
     .with_elements("garage", [*garage.ELEMENTS, *placeables.GARAGE_PLACEABLES])
     .with_elements("second", [*second.ELEMENTS, *fixtures.SECOND_FIXTURES,
                                 *sunken_garden.SECOND_ELEMENTS, *mep.SECOND_ELEMENTS, *placeables.SECOND_PLACEABLES])
-    .with_elements("attic", [*attic.ELEMENTS, *placeables.ATTIC_PLACEABLES])
+    .with_elements("attic", [*attic.ELEMENTS, *roof_trim.ATTIC_ELEMENTS,
+                             *placeables.ATTIC_PLACEABLES])
 )
