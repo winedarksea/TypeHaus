@@ -101,15 +101,34 @@ def test_knee_brace_resolves_to_a_raked_wood_member(catlin_model) -> None:
     assert abs(member.p0[1] - post_centre_y) == pytest.approx(2.75 * 0.0254)
 
 
-def test_balcony_braces_reach_two_different_soffits(catlin_model) -> None:
-    """The E-W girt hangs under the N-S beam, so the two braces at a corner are not level.
+def test_knee_brace_hardware_resolves_as_a_band_at_each_end(catlin_model) -> None:
+    """The APVKB kit is a pair of wrap-around straps, so the hardware reads at both
+    joints — a band hugging the member's z-band at the beam/girt end and another at the
+    post end — instead of the single floating marker box the old spelling drew."""
+    member = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-NS").members[0]
+    solids = {s.tag: s for s in catlin_model.solids}
+    top = solids["KB-SG-R1-NS-APVKB45-6-TOP"]
+    bottom = solids["KB-SG-R1-NS-APVKB45-6-BOT"]
+    assert top.category == bottom.category == "connector"
+    soffit = 8.625 * FT
+    assert top.z1_m == pytest.approx(soffit)
+    assert bottom.z1_m == pytest.approx(soffit - 3 * FT)  # down the 3' leg, at the post
+    # Each band spans exactly the end-grain z-band of the wood it wraps.
+    assert top.z1_m - top.z0_m == pytest.approx(member.z1_m - member.z0_m)
+    assert bottom.z1_m - bottom.z0_m == pytest.approx(member.z1_m - member.z0_m)
+    # And no marker boxes remain anywhere.
+    assert not any(tag.endswith("-CONN") for tag in solids)
 
-    This is why the brace carries its own soffit instead of deriving one from its storey.
-    """
+
+def test_balcony_braces_reach_the_shared_pillar_top_soffit(catlin_model) -> None:
+    """The girt segments ride the pillar tops beside the N-S beams now, so the two braces
+    at a corner are level at the resolved pillar-top plane. The brace still carries its own
+    soffit rather than deriving one from its storey — the members a post is braced to need
+    not share an elevation in general; since the girt third pass these two happen to."""
     ns = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-NS").members[0]
     ew = next(b for b in catlin_model.braces if b.tag == "KB-SG-R1-EW").members[0]
     assert ns.z1_end_m == pytest.approx(8.625 * FT)  # N-S beam soffit
-    assert ew.z1_end_m == pytest.approx(8.0208333 * FT)  # a 2x8 girt depth lower
+    assert ew.z1_end_m == pytest.approx(8.625 * FT)  # girt soffit — the same plane now
     # Both feet stay well above the pillar base at the railing top (3.583').
     assert min(ns.z0_m, ew.z0_m) > 4.0 * FT
     # Every brace is in the framing cut list, so a framer orders the lumber.
@@ -117,17 +136,18 @@ def test_balcony_braces_reach_two_different_soffits(catlin_model) -> None:
     assert len(braced) == 8
 
 
-def test_balcony_girts_hang_at_the_true_beam_soffit(catlin_model) -> None:
+def test_balcony_girts_sit_flush_with_the_beams(catlin_model) -> None:
     """``Beam.top_elevation`` places the girts, and perturbs nothing that derives its own.
 
-    The N-S beams get their drop from the deck joists that bear on them; the girts carry no
-    joists, so without an authored top they would hang from the storey datum and collide
-    with the deck.
+    The N-S beams get their drop from the deck joists that bear on them; the girt segments
+    carry no joists, so without an authored top they would hang from the storey datum and
+    collide with the deck. Since the third pass they sit ON the pillar tops in the beams'
+    own band: 2x10, soffit at the resolved pillar-top plane, tops flush with the beams.
     """
     solids = {s.tag: s for s in catlin_model.solids}
-    for tag in ("BM-SG-GIRT-R", "BM-SG-GIRT-F"):
-        assert solids[tag].z1_m == pytest.approx(8.625 * FT)
-        assert solids[tag].z0_m == pytest.approx(8.0208333 * FT)  # 2-2x8
+    for tag in ("BM-SG-GIRT-RW", "BM-SG-GIRT-RE", "BM-SG-GIRT-FW", "BM-SG-GIRT-FE"):
+        assert solids[tag].z1_m == pytest.approx(9.3958333 * FT)
+        assert solids[tag].z0_m == pytest.approx(8.625 * FT)  # 2x10 on the pillar tops
     for tag in ("BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"):
         assert solids[tag].z0_m == pytest.approx(8.625 * FT)
         assert solids[tag].z1_m == pytest.approx(9.3958333 * FT)
