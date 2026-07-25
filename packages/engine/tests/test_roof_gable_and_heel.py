@@ -509,24 +509,259 @@ def test_the_gutter_hangs_on_the_authored_eave_only(guttered):
     """The ridge runs along x, so the eaves are the south and north edges; a rake sheds into
     the eave below it and gets no channel at all."""
     gutters = _members(guttered, "gutter")
-    assert [m.child_key for m in gutters] == ["eave-lo-gutter"]
-    assert gutters[0].material == "aluminum"
-    assert gutters[0].connection == "eave-trim:gutter:1/16 in/ft"
+    assert [m.child_key for m in gutters] == [
+        "eave-lo-gutter-back", "eave-lo-gutter-bottom", "eave-lo-gutter-front"]
+    assert {m.material for m in gutters} == {"aluminum"}
+    assert {m.connection for m in gutters} == {"eave-trim:gutter:1/16 in/ft"}
 
 
 def test_the_gutter_rides_the_roof_plane_through_the_raised_heel(guttered):
     """Authored at an absolute elevation it would sit a heel below the eave it drains."""
     roof = _roof(guttered)
-    gutter = _members(guttered, "gutter")[0]
-    assert gutter.z1_m == pytest.approx(roof.eave_z_m - inch(1.2).meters, abs=1e-9)
-    assert gutter.z1_m - gutter.z0_m == pytest.approx(inch(5).meters, abs=1e-9)
+    top = roof.eave_z_m - inch(1.2).meters
+    by_key = {m.child_key.rsplit("-", 1)[1]: m for m in _members(guttered, "gutter")}
+    for side in ("back", "front"):
+        assert by_key[side].z1_m == pytest.approx(top, abs=1e-9)
+        assert by_key[side].z1_m - by_key[side].z0_m == pytest.approx(inch(5).meters,
+                                                                      abs=1e-9)
     # Hung outboard of the fascia stack's outer face (the pvc board laps 1" past the roof
-    # edge; the spf nailer sits inboard of it), not overlapping it.
+    # edge; the spf nailer sits inboard of it), not overlapping it: the back sheet's centre
+    # is half a shell out from that face, the front face's is half a shell in from the
+    # channel's outer face.
     face = inch(1).meters
-    outward = min(abs(point[1] - min(p[1] for p in roof.footprint))
-                  for point in (gutter.p0, gutter.p1))
-    assert outward == pytest.approx(face + inch(6).meters / 2.0, abs=1e-9)
+    edge = min(p[1] for p in roof.footprint)
+    shell = inch(0.5).meters
+
+    def outward(member):
+        return min(abs(point[1] - edge) for point in (member.p0, member.p1))
+
+    assert outward(by_key["back"]) == pytest.approx(face + shell / 2.0, abs=1e-9)
+    assert outward(by_key["front"]) == pytest.approx(face + inch(6).meters - shell / 2.0,
+                                                     abs=1e-9)
+
+
+def test_the_gutter_is_an_open_channel_not_a_solid_bar(guttered):
+    """Three thin bands — back, bottom, front — leave an open trough rain can land in."""
+    by_key = {m.child_key.rsplit("-", 1)[1]: m for m in _members(guttered, "gutter")}
+    assert set(by_key) == {"back", "bottom", "front"}
+    shell = inch(0.5).meters
+    from typehaus.resolve.framing.profiles import cross_section as cs
+    # The two walls are shell-thin; the bottom spans the width left between them.
+    assert cs(by_key["back"].profile).width_m == pytest.approx(shell, abs=1e-9)
+    assert cs(by_key["front"].profile).width_m == pytest.approx(shell, abs=1e-9)
+    assert cs(by_key["bottom"].profile).width_m == pytest.approx(
+        inch(6).meters - 2 * shell, abs=1e-9)
+    # The bottom band closes only the underside; everything above it is open trough.
+    assert by_key["bottom"].z0_m == pytest.approx(by_key["back"].z0_m, abs=1e-9)
+    assert by_key["bottom"].z1_m == pytest.approx(by_key["back"].z0_m + shell, abs=1e-9)
+    assert by_key["back"].z1_m - by_key["bottom"].z1_m > inch(3).meters
 
 
 def test_no_gutter_without_one_on_the_declaration(stacked):
     assert _members(stacked, "gutter") == []
+
+
+# --- 10. the vented ridge cap --------------------------------------------------------------
+
+def test_a_vented_attic_gets_a_ridge_cap_on_the_plane_itself(resolved):
+    """The base fixture's soffits are vented, so the truss space must exhaust at the ridge.
+    A truss roof has no ridge beam — the cap keys off ``ridge_z_m``, the plane's own peak."""
+    caps = _members(resolved, "ridge_cap")
+    assert [m.child_key for m in caps] == ["ridge-vent-cap"]
+    cap = caps[0]
+    roof = _roof(resolved)
+    # Bare structure above the plane: the cap sits straight on the ridge elevation and runs
+    # the footprint's whole ridge-axis extent, rake overhangs included.
+    assert cap.z0_m == pytest.approx(roof.ridge_z_m, abs=1e-9)
+    assert cap.z1_m - cap.z0_m == pytest.approx(inch(2).meters, abs=1e-9)
+    mid_y = (min(p[1] for p in roof.footprint) + max(p[1] for p in roof.footprint)) / 2.0
+    assert cap.p0[1] == pytest.approx(mid_y) and cap.p1[1] == pytest.approx(mid_y)
+    assert {cap.p0[0], cap.p1[0]} == {min(p[0] for p in roof.footprint),
+                                      max(p[0] for p in roof.footprint)}
+
+
+def test_the_ridge_cap_rides_on_top_of_the_layer_stack(stacked):
+    """With deck + foam + roofing over the structure the cap sits on the roofing surface,
+    slope-corrected, and reads in the roofing's own material."""
+    roof = _roof(stacked)
+    cap = _members(stacked, "ridge_cap")[0]
+    span = max(p[1] for p in roof.footprint) - min(p[1] for p in roof.footprint)
+    factor = math.hypot(1.0, (roof.ridge_z_m - roof.eave_z_m) / (span / 2.0))
+    stack = sum(layer.thickness.meters for layer in _STACK_LAYERS)
+    assert cap.z0_m == pytest.approx(roof.ridge_z_m + stack * factor, abs=1e-9)
+    assert cap.material == "standing-seam"
+
+
+def test_an_unvented_roof_gets_no_ridge_cap():
+    """No vented soffit and no over-deck vent channel means no slot to cap."""
+    unvented = EaveTrim(
+        fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),))
+    model, _ = resolve(_plan(eave_trim=unvented, roof_layers=_STACK_LAYERS))
+    assert _members(model, "ridge_cap") == []
+
+
+def test_an_over_deck_vent_channel_calls_for_a_ridge_cap_without_any_eave_trim():
+    """The hot-roof path (the catlin house): the batten gap between the foam and the
+    standing seam runs eave to ridge, so the ridge must exhaust it even with no authored
+    eave trim at all."""
+    vented_layers = (
+        Layer(name="deck", material_ref="wood", thickness=inch(0.75),
+              function=LayerFunction.SHEATHING),
+        Layer(name="foam", material_ref="polyiso", thickness=inch(6),
+              function=LayerFunction.INSULATION),
+        Layer(name="batten-gap", material_ref="wood", thickness=inch(0.75),
+              function=LayerFunction.AIRGAP),
+        Layer(name="roofing", material_ref="standing-seam", thickness=inch(0.5),
+              function=LayerFunction.CLADDING),
+    )
+    model, _ = resolve(_plan(eave_trim=None, roof_layers=vented_layers))
+    caps = _members(model, "ridge_cap")
+    assert [m.child_key for m in caps] == ["ridge-vent-cap"]
+    assert caps[0].material == "standing-seam"
+
+
+# --- 11. soffit and gutter no longer require a fascia stack --------------------------------
+
+def test_soffit_and_gutter_derive_without_any_fascia_boards():
+    """An eave trim with an empty fascia stack is soffit/gutter-only: the reference detail
+    for a wrapped standing-seam roof keeps the vented soffit but hangs no fascia boards."""
+    trim = EaveTrim(fascia=(), soffit_material="pvc-cellular",
+                    soffit_thickness=inch(0.5), soffit_vented=True, gutter=_GUTTER)
+    model, _ = resolve(_plan(eave_trim=trim))
+    assert _members(model, "fascia") == []
+    soffits = _members(model, "soffit")
+    assert len(soffits) == 6
+    roof = _roof(model)
+    # With no fascia to hang from, the panel tucks its own thickness under the roof edge.
+    level = [m for m in soffits if m.z1_m == pytest.approx(m.z1_end_m)]
+    assert len(level) == 2
+    for member in level:
+        assert member.z1_m == pytest.approx(roof.eave_z_m, abs=1e-9)
+    for member in soffits:
+        assert member.z1_m - member.z0_m == pytest.approx(inch(0.5).meters, abs=1e-9)
+    gutters = _members(model, "gutter")
+    assert {m.child_key for m in gutters} == {
+        "eave-lo-gutter-back", "eave-lo-gutter-bottom", "eave-lo-gutter-front"}
+    # The channel registers against the roof edge itself (fascia outer face = 0).
+    edge = min(p[1] for p in roof.footprint)
+    back = next(m for m in gutters if m.child_key.endswith("back"))
+    assert min(abs(p[1] - edge) for p in (back.p0, back.p1)) == pytest.approx(
+        inch(0.25).meters, abs=1e-9)
+
+
+# --- 12. the fascia rides up over the deck edge --------------------------------------------
+
+def test_outboard_fascia_rides_up_over_the_deck_edge(stacked):
+    """The board hung clear of the roof edge climbs to the foam underside so the deck's
+    exposed edge (the visible-sheathing defect) is covered; the nailer directly under the
+    deck keeps topping out at the plane."""
+    roof = _roof(stacked)
+    deck = _STACK_LAYERS[0]
+    span = max(p[1] for p in roof.footprint) - min(p[1] for p in roof.footprint)
+    factor = math.hypot(1.0, (roof.ridge_z_m - roof.eave_z_m) / (span / 2.0))
+    rise = deck.thickness.meters * factor
+    nailers = [m for m in _members(stacked, "fascia") if m.connection.endswith("spf")]
+    faces = [m for m in _members(stacked, "fascia")
+             if m.connection.endswith("pvc-cellular")]
+    level_nailer = next(m for m in nailers if m.z1_m == pytest.approx(m.z1_end_m))
+    level_face = next(m for m in faces if m.z1_m == pytest.approx(m.z1_end_m))
+    assert level_nailer.z1_m == pytest.approx(roof.eave_z_m, abs=1e-9)
+    assert level_face.z1_m == pytest.approx(roof.eave_z_m + rise, abs=1e-9)
+    # The bottom is still set by the authored depth, so the gutter/soffit registration the
+    # declaration was sized around does not move.
+    assert level_face.z0_m == pytest.approx(roof.eave_z_m - inch(6).meters, abs=1e-9)
+
+
+# --- 13. the wrapped (continuous standing-seam) edge ---------------------------------------
+
+# Wall cladding and roofing in the same material over a flush edge: the catlin house's
+# standing-seam wrap. The wall fixture's cladding is "wood", so the roofing here is too.
+_WRAPPED_LAYERS = (
+    Layer(name="deck", material_ref="wood", thickness=inch(0.75),
+          function=LayerFunction.SHEATHING),
+    Layer(name="foam", material_ref="polyiso", thickness=inch(6),
+          function=LayerFunction.INSULATION),
+    Layer(name="roofing", material_ref="wood", thickness=inch(0.5),
+          function=LayerFunction.CLADDING),
+)
+
+
+@pytest.fixture(scope="module")
+def wrapped():
+    model, _findings = resolve(
+        _plan(roof_layers=_WRAPPED_LAYERS, overhang=inch(0), eave_trim=None))
+    return model
+
+
+def test_a_wrapped_edge_swaps_the_band_for_a_corner_trim_piece(wrapped):
+    """Same-material skin over a flush edge: no drip-edge band, a corner trim on each run."""
+    assert _edge_cladding(wrapped) == []
+    trims = [m for m in _roof(wrapped).members if m.category == "corner_trim"]
+    assert len(trims) == 6
+    assert {m.material for m in trims} == {"wood"}
+    assert {m.connection for m in trims} == {"roof:corner-trim"}
+
+
+def test_the_corner_trim_caps_the_roofing_edge(wrapped):
+    """Top flush with the roofing's top surface, leg lapping down over the wall panels."""
+    roof = _roof(wrapped)
+    deck, foam, roofing = _WRAPPED_LAYERS
+    span = max(p[1] for p in roof.footprint) - min(p[1] for p in roof.footprint)
+    factor = math.hypot(1.0, (roof.ridge_z_m - roof.eave_z_m) / (span / 2.0))
+    under = (deck.thickness.meters + foam.thickness.meters) * factor
+    top = under + roofing.thickness.meters * factor
+    eaves = [m for m in _roof(wrapped).members
+             if m.category == "corner_trim" and m.z0_m == pytest.approx(m.z0_end_m)]
+    assert len(eaves) == 2
+    for member in eaves:
+        assert member.z1_m == pytest.approx(roof.eave_z_m + top, abs=1e-9)
+        assert member.z0_m == pytest.approx(roof.eave_z_m + under - inch(2).meters,
+                                            abs=1e-9)
+
+
+def test_a_wrapped_edge_runs_the_wall_cladding_to_the_roofing_underside(wrapped):
+    """The wall's metal keeps climbing past the foam underside — there is no band left for
+    it to die under, which is what makes the skin read as one continuous surface."""
+    roof = _roof(wrapped)
+    deck, foam, _roofing = _WRAPPED_LAYERS
+    span = max(p[1] for p in roof.footprint) - min(p[1] for p in roof.footprint)
+    factor = math.hypot(1.0, (roof.ridge_z_m - roof.eave_z_m) / (span / 2.0))
+    member = _closure(wrapped, "W-S", "cladding")
+    plane = roof_height_at(roof, member.p0)
+    under = (deck.thickness.meters + foam.thickness.meters) * factor
+    assert member.z1_m == pytest.approx(plane + under, abs=1e-9)
+    # The sheathing still stops at the deck plane — only the cladding wraps.
+    sheathing = _closure(wrapped, "W-S", "sheathing")
+    assert sheathing.z1_m == pytest.approx(roof_height_at(roof, sheathing.p0), abs=1e-9)
+
+
+def test_a_mixed_material_flush_edge_keeps_the_band(flush):
+    """The flush fixture's wall cladding is wood and its roofing standing-seam: not one
+    skin, so the conventional edge-cladding band remains."""
+    assert len(_edge_cladding(flush)) == 6
+    assert not [m for m in _roof(flush).members if m.category == "corner_trim"]
+
+
+# --- 14. gable studs must stay inside the end-truss plane ----------------------------------
+
+@pytest.mark.xfail(
+    reason="gable studs are oriented through the wall (3.5in) instead of lying flat in the "
+           "1.5in drop-truss plane, so they poke ~1in past the gable sheathing plane and "
+           "show through the closure cladding. Fix belongs to resolve/framing/roof_gable.py "
+           "(_gable_studs: orient=layout.truss_orient) — outside the roof-eave stream's "
+           "ownership; recorded as a coordinator escape.",
+    strict=False)
+def test_gable_studs_lie_flat_in_the_drop_truss_plane(resolved):
+    """A drop truss is a planar 1.5in assembly: its stud infill lies in the chord plane."""
+    from typehaus.resolve.framing.footprint import member_footprint
+
+    members = _roof(resolved).members
+    chord = next(m for m in members if m.child_key == "truss-000-bc")
+    ring, _, _ = member_footprint(chord)
+    lo, hi = min(x for x, _ in ring), max(x for x, _ in ring)
+    studs = [m for m in members if m.child_key.startswith("truss-000-gable-stud-")]
+    assert studs
+    for stud in studs:
+        stud_ring, _, _ = member_footprint(stud)
+        assert min(x for x, _ in stud_ring) >= lo - 1e-9
+        assert max(x for x, _ in stud_ring) <= hi + 1e-9

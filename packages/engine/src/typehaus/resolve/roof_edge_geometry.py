@@ -14,8 +14,9 @@ from typing import NamedTuple
 
 from typehaus.model.enums import LayerFunction
 from typehaus.quantities import inch
-from typehaus.resolve.model import ResolvedRoof, ResolvedWall
+from typehaus.resolve.model import ResolvedModel, ResolvedRoof, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_height_at
+from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
 # Under this the wall already meets the roof — a sliver band is a rounding artifact, not
 # construction. Also the tolerance for "this wall sits under this roof".
@@ -91,11 +92,16 @@ class MatingFaces(NamedTuple):
     furring_under: float
     cladding_under: float
 
-    def for_layer(self, function: str) -> float:
+    def for_layer(self, function: str, continuous_cladding: bool = False) -> float:
         if function in (LayerFunction.SHEATHING.value, LayerFunction.MEMBRANE.value):
             return 0.0
         if function == LayerFunction.FURRING.value:
             return self.furring_under
+        # A wrapped edge (see :func:`continuous_skin_cladding`) has no drip-edge band for the
+        # wall cladding to die under: the wall's run of metal continues up the stack edge to
+        # the roofing's own underside, so the two skins read as one surface.
+        if continuous_cladding and function == LayerFunction.CLADDING.value:
+            return self.cladding_under
         return self.foam_under  # insulation and cladding
 
 
@@ -172,6 +178,68 @@ def roof_edge_runs(roof: ResolvedRoof) -> tuple[EdgeRun, ...]:
                                 is_eave=False, corner_at_p0=(half == 0),
                                 corner_at_p1=(half == 1)))
     return tuple(runs)
+
+
+class RidgeRun(NamedTuple):
+    """The level ridge line of a gable roof, in plan, at the ridge elevation.
+
+    Distinct from the four :class:`EdgeRun` records: a ridge is interior to the footprint,
+    has no outward normal and no corner bookkeeping — it is simply the line the two roof
+    planes meet on, which is what a ridge cap or a ridge vent registers against.
+    """
+
+    p0: tuple[float, float]
+    p1: tuple[float, float]
+    z_m: float
+
+
+def roof_ridge_run(roof: ResolvedRoof) -> RidgeRun | None:
+    """The ridge line spanning the footprint's full ridge-axis extent, or ``None``.
+
+    Only a gable has a ridge both planes drain toward; a shed's high edge is an eave/rake
+    condition and is already covered by :func:`roof_edge_runs`. The run spans the whole
+    footprint — rake overhangs included — because a cap stopping at the gable wall would
+    leave the overhung ridge open.
+    """
+    if roof.form != "gable":
+        return None
+    minx, miny, maxx, maxy = bbox(roof.footprint)
+    if roof.ridge_direction == "x":
+        mid = (miny + maxy) / 2.0
+        return RidgeRun((minx, mid), (maxx, mid), roof.ridge_z_m)
+    mid = (minx + maxx) / 2.0
+    return RidgeRun((mid, miny), (mid, maxy), roof.ridge_z_m)
+
+
+def continuous_skin_cladding(
+    model: ResolvedModel, roof: ResolvedRoof, walls: tuple[ResolvedWall, ...]
+) -> bool:
+    """Whether the walls' cladding and the roofing are one continuous skin over a flush edge.
+
+    The catlin house is the motivating case: standing-seam siding, zero overhang, and
+    standing-seam roofing — in the real build the panels run essentially unbroken from grade
+    up the wall, over the edge, and across the roof, with only a corner trim piece over the
+    joint. That reading holds when *every* wall under the roof finishes in the roofing's own
+    cladding material and the roof has no overhang for a fascia/soffit assembly to occupy.
+    A mixed-material or overhung edge keeps the conventional fascia + edge-band detail.
+    """
+    element = model.plan.by_tag(roof.tag)
+    overhang = getattr(element, "overhang", None)
+    if overhang is not None and overhang.meters > CLOSURE_TOLERANCE_M:
+        return False
+    assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
+    layers = above_structure_layers(assembly)
+    roofing = next((layer for layer in reversed(layers)
+                    if layer.function is LayerFunction.CLADDING), None)
+    if roofing is None:
+        return False
+    materials = set()
+    for wall in walls:
+        cladding = next((layer for layer in reversed(skin_layers(wall))
+                         if layer.function == LayerFunction.CLADDING.value), None)
+        if cladding is not None:
+            materials.add(cladding.material_ref)
+    return bool(materials) and materials == {roofing.material_ref}
 
 
 class MitredSpan(NamedTuple):

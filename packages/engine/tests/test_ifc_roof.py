@@ -142,19 +142,25 @@ def test_members_land_in_the_ifc_class_their_trade_calls_for(ifc_file):
 # --- the garage gutter ---------------------------------------------------------------------
 
 def test_the_garage_south_eave_carries_a_derived_gutter(catlin_model):
-    """Deferred with the truss roof; derived now, so the raised-heel lift carries it."""
+    """Deferred with the truss roof; derived now, so the raised-heel lift carries it.
+
+    The channel is an open-top U of three thin bands (back/bottom/front), not a solid bar.
+    """
     roof = next(item for item in catlin_model.roofs if item.tag == "RF-GARAGE")
     gutters = [member for member in roof.members if member.category == "gutter"]
-    assert [member.child_key for member in gutters] == ["eave-lo-gutter"]
-    gutter = gutters[0]
-    # The ridge runs E-W, so "eave-lo" is the south edge — the one facing the breezeway.
-    assert min(gutter.p0[1], gutter.p1[1]) < min(point[1] for point in roof.footprint) + 0.2
-    # Hung off the plane, so it stays under the eave the heel lift raised.
-    assert gutter.z1_m < roof.eave_z_m
-    assert gutter.z1_m > roof.eave_z_m - 0.2
+    assert [member.child_key for member in gutters] == [
+        "eave-lo-gutter-back", "eave-lo-gutter-bottom", "eave-lo-gutter-front"]
+    for gutter in gutters:
+        # The ridge runs E-W, so "eave-lo" is the south edge — facing the breezeway.
+        assert min(gutter.p0[1], gutter.p1[1]) < min(point[1] for point in roof.footprint) + 0.2
+        # Hung off the plane, so it stays under the eave the heel lift raised.
+        assert gutter.z1_m < roof.eave_z_m
+        assert gutter.z1_m > roof.eave_z_m - 0.2
 
 
 def test_the_garage_gutter_reaches_the_ifc_export(catlin_model, ifc_file):
-    gutter = _children(ifc_file, _roof_product(ifc_file, "RF-GARAGE"))["eave-lo-gutter"]
-    assert gutter.is_a("IfcBuildingElementProxy")
-    assert gutter.Representation is not None
+    children = _children(ifc_file, _roof_product(ifc_file, "RF-GARAGE"))
+    for band in ("back", "bottom", "front"):
+        gutter = children[f"eave-lo-gutter-{band}"]
+        assert gutter.is_a("IfcBuildingElementProxy")
+        assert gutter.Representation is not None
