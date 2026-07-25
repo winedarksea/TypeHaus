@@ -556,7 +556,7 @@ def test_drain_tile_spec_reads_the_footing_bedding(catlin_model):
     from typehaus.emit.draw.detail_components.below_grade import drain_tile_spec_for
 
     footings = [s for s in catlin_model.solids if s.category == "footing"
-                and s.tag.startswith("FT-")]
+                and s.tag.startswith("FT-B-")]  # house footings — the ones with beddings
     assert footings
     assert drain_tile_spec_for(catlin_model, None) is None
     for footing in footings:
