@@ -81,9 +81,11 @@ export function canvasObjectTrade(item: Pick<CanvasObject, "domain">): Trade {
 }
 
 // Which viewer can actually draw a trade. The 2D plan is a horizontal cut: it has no roof
-// surface, no site sheet, and no below-grade solids to hide, so those toggles are honestly
-// 3D-only rather than silently inert. Surfacing this in the Views panel is what keeps one
-// shared visibility model from reading as half-broken in the plan.
+// surface and no site sheet, so those toggles are honestly 3D-only rather than silently
+// inert. Concrete *is* drawn in the plan — the per-storey slab outline pass
+// (components/plan/PlanMarkers.tsx::SlabOutlines) — so its toggle works in both viewers.
+// Surfacing this in the Views panel is what keeps one shared visibility model from reading
+// as half-broken in the plan.
 export interface TradeSurfaces {
   plan: boolean;
   model: boolean;
@@ -94,7 +96,7 @@ export const TRADE_SURFACES: Record<Trade, TradeSurfaces> = {
   openings: { plan: true, model: true },
   framing: { plan: true, model: true },
   floors: { plan: false, model: true },
-  concrete: { plan: false, model: true },
+  concrete: { plan: true, model: true },
   roof: { plan: false, model: true },
   stairs: { plan: true, model: true },
   furniture: { plan: true, model: true },

@@ -1,106 +1,48 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
-import type { Selection } from "../state/vocabulary";
 import type { PreviewGeometry } from "../engine/EngineClient";
-import type { CanvasObject, Opening, Vec2, Wall } from "../model/types";
+import type { Vec2, Wall } from "../model/types";
 import { canvasObjectTrade } from "../model/visibility";
+import type { PlanWarningMarker } from "../model/planWarnings";
 import {
-  junctionDiagnosticMarkers,
-  openEndMarker,
-  type PlanWarningMarker,
-} from "../model/planWarnings";
-import { projectedExtentPx, spaceLabel, spaceLabelLineBudget } from "../model/spaceLabels";
-import { PlanWarningPopover } from "./PlanWarningPopover";
-import {
-  deriveNodes,
-  formatFtIn,
-  M_PER_FT,
-  nearestWallHit,
-  openingHostWall,
-  openingFitsWall,
-  openingStartFromCenter,
-  type Node as GeoNode,
-  orthoLock,
-  snapWorld,
-  wallLength,
+  formatFtIn, M_PER_FT, openingHostWall, snapWorld, orthoLock, wallLength,
 } from "../model/geometry";
-import { NORDIC_ACCENT, NORDIC_INK, NORDIC_LINE } from "../nordic/palette";
-import { DoorSettingsPopover } from "./DoorSettingsPopover";
-import { WindowSettingsPopover } from "./WindowSettingsPopover";
-import { FtInKeypad } from "./FtInKeypad";
 import { SunIndicator } from "./SunIndicator";
-import { PlacementPopover } from "./PlacementPopover";
-import {
-  BackgroundGrid, clampScale, collinearAt, nodeTagMatches, openEndKeys, StoreyTabs, ToolHint,
-} from "./plan/PlanChrome";
+import { BackgroundGrid, nodeTagMatches } from "./plan/PlanChrome";
+import { CanvasHud } from "./plan/CanvasHud";
 import { CanvasObjectFootprint, ClearanceOverlays, NodeHandle } from "./plan/ObjectShapes";
-import { WallAssemblyPopupCard, WallDimension, WallShape } from "./plan/WallShapes";
+import { WallDimension, WallShape } from "./plan/WallShapes";
+import { OpeningShape, StairShape } from "./plan/OpeningShapes";
 import {
-  hostStorey, nearestOpeningHost, OpeningShape, pointInPolygon, StairShape,
-} from "./plan/OpeningShapes";
+  DetailMarkerLayer, PlanNodesLayer, RoomLayer, SlabOutlines, WallDraftLayer, WarningMarkerLayer,
+} from "./plan/PlanMarkers";
+import { CanvasOverlays } from "./plan/CanvasOverlays";
+import { useCanvasInteractions } from "./plan/useCanvasInteractions";
+import { useStoreySlice } from "./plan/useStoreySlice";
+import { usePanZoom } from "./plan/usePanZoom";
+import { dispatchTap } from "./plan/toolDispatch";
+import type {
+  DoorPopup, LengthEntry, NodeDrag, OpeningDragPreview, Pending, Placement,
+  WallAssemblyPopup, WallDraft,
+} from "./plan/canvasTypes";
 
 // The SVG floorplan editor (→ 21 §Stack: SVG editor). Renders model.json faithfully and
 // hosts the full authoring loop: draw walls (rubber-band, node/grid snap, ortho, polyline
 // chaining), stretch nodes, drive a wall's length, place openings + claim rooms, split/heal,
 // and delete — every edit lands as a journaled macro/patch that round-trips through rebuild.
 // Points are projected in JS (crisp strokes, upright text) rather than via an SVG transform.
-
-interface Pending {
-  opening: Opening;
-  field: "position" | "sill_height";
-  initial: string;
-}
-
-// A two-click wall stroke in progress; `start` is already snapped.
-interface WallDraft {
-  start: Vec2;
-  startNode: string | null;
-}
-
-// A node being dragged (stretch). `tag` is the authored node tag the macro moves.
-interface NodeDrag {
-  tag: string;
-  from: Vec2;
-  to: Vec2;
-}
-
-interface OpeningDragPreview {
-  opening: Opening;
-  host: Wall;
-  valid: boolean;
-}
-
-// A placement popover request (opening on a wall, or a room seed) anchored at screen px.
-type Placement =
-  | { kind: "opening"; screen: Vec2; wall: Wall; along_m: number }
-  | { kind: "placeable"; screen: Vec2; position: Vec2 }
-  | { kind: "room"; screen: Vec2; seed: Vec2 };
-
-// A read-only wall summary kept local to the canvas. The inspector remains the source for
-// edits; this card only makes the essential assembly information available at the click.
-interface WallAssemblyPopup {
-  wallUid: string;
-  screen: Vec2;
-}
-
-// An opening settings popover request (door: type/handing; window: type), anchored at the
-// opening's screen point.
-interface DoorPopup {
-  opening: Opening;
-  screen: Vec2;
-}
-
-const TAP_PX = 6; // pointer travel under this on up = a tap, not a pan
-const HIT_PX = 16; // wall pick tolerance in screen px
-const WARNING_MARKER_HIT_PX = 12; // diagnostic-marker pick tolerance (the dot is r=6.5)
+//
+// Split along its documented seams (→ plan/): the local vocabulary in canvasTypes.ts, the
+// stable element handlers in useCanvasInteractions.ts, the per-storey memos in
+// useStoreySlice.ts, gesture bookkeeping in usePanZoom.ts, the tap routing in toolDispatch.ts,
+// the non-element SVG layers in PlanMarkers.tsx and the popover stack in CanvasOverlays.tsx.
+// This file keeps the gesture state, the commits, and the element render passes.
 
 export function Canvas2D() {
   const model = useStore((s) => s.model)!;
   const view = useStore((s) => s.view);
-  const setView = useStore((s) => s.setView);
   const selection = useStore((s) => s.selection);
   const select = useStore((s) => s.select);
-  const selectByTag = useStore((s) => s.selectByTag);
   const hoverUid = useStore((s) => s.hoverUid);
   const showFraming = useStore((s) => s.showFraming);
   const showSpaceLabels = useStore((s) => s.showSpaceLabels);
@@ -112,7 +54,6 @@ export function Canvas2D() {
   const activeStorey = useStore((s) => s.activeStorey);
   const workspace = useStore((s) => s.activeWorkspace);
   const tool = useStore((s) => s.tool);
-  const applyOps = useStore((s) => s.applyOps);
   const runMacro = useStore((s) => s.runMacro);
   const previewMacro = useStore((s) => s.previewMacro);
   const deleteSelection = useStore((s) => s.deleteSelection);
@@ -121,12 +62,6 @@ export function Canvas2D() {
   const toast = useStore((s) => s.toast);
 
   const svgRef = useRef<SVGSVGElement>(null);
-  const pointers = useRef<Map<number, Vec2>>(new Map());
-  const pinch = useRef<{ dist: number; scale: number } | null>(null);
-  const panLast = useRef<Vec2 | null>(null);
-  const gesture = useRef<{ x: number; y: number; moved: boolean } | null>(null);
-  const suppressPostPanClick = useRef(false);
-  const fittedStorey = useRef<string | null>(null);
   const shift = useRef(false);
   // Latest draft + rubber-band, mirrored into refs so the global keydown handler can open the
   // exact-length keypad without re-subscribing on every pointer move.
@@ -149,10 +84,7 @@ export function Canvas2D() {
   const [doorPopup, setDoorPopup] = useState<DoorPopup | null>(null);
   const [windowPopup, setWindowPopup] = useState<DoorPopup | null>(null);
   const [dimWall, setDimWall] = useState<Wall | null>(null);
-  // Exact-length entry for the wall being drawn (CAD precision): type a length and the next
-  // segment lands at that distance along the current rubber-band direction. `dir` is a unit
-  // vector captured when the keypad opens; committing draws start → start + dir·length.
-  const [lengthEntry, setLengthEntry] = useState<{ start: Vec2; dir: Vec2; initial: string } | null>(null);
+  const [lengthEntry, setLengthEntry] = useState<LengthEntry | null>(null);
   // Desktop-first right-click context menu (Phase 10), anchored in pane coordinates.
   const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(null);
   const drawAssembly = useStore((s) => s.drawAssembly) ?? "";
@@ -160,134 +92,23 @@ export function Canvas2D() {
   const [activeService, setActiveService] = useState<string>("");
   const [showClearances, setShowClearances] = useState(false);
 
-  // World meters → screen px. SVG y grows downward, so flip.
-  const project = useCallback(
-    (p: Vec2): Vec2 => [view.tx + p[0] * view.scale, view.ty - p[1] * view.scale],
-    [view],
-  );
-  const unproject = useCallback(
-    (clientX: number, clientY: number): Vec2 => {
-      const rect = svgRef.current!.getBoundingClientRect();
-      return [
-        (clientX - rect.left - view.tx) / view.scale,
-        (view.ty - (clientY - rect.top)) / view.scale,
-      ];
-    },
-    [view],
-  );
+  const {
+    project, unproject, selectEl, hoverEl, editOpeningStable, movePlaceableFromDrag,
+    rotatePlaceableFromHandle, moveOpeningFromDrag, previewOpeningFromDrag, selectWallWithPopup,
+  } = useCanvasInteractions({
+    svgRef, setDoorPopup, setWindowPopup, setOpeningDragPreview, setWallAssemblyPopup,
+  });
 
-  // Stable per-element handlers so the memoized shapes below don't re-render the whole
-  // subtree on every hover/selection change (Phase 1b): identity never changes across
-  // renders, and tool state is read live from the store at call time.
-  const selectEl = useCallback(
-    (kind: Selection["kind"], uid: string) => {
-      const s = useStore.getState();
-      if (s.tool === "select") s.select(kind, uid);
-    },
-    [],
-  );
-  const hoverEl = useCallback((uid: string | null) => {
-    useStore.getState().setHover(uid);
-  }, []);
-  const editOpeningStable = useCallback((o: Opening, screen: Vec2) => {
-    if (useStore.getState().tool !== "select") return;
-    if (o.is_door) {
-      setDoorPopup({ opening: o, screen });
-    } else {
-      setWindowPopup({ opening: o, screen });
-    }
-  }, []);
-  const movePlaceableFromDrag = useCallback((item: CanvasObject, position: Vec2) => {
-    if (useStore.getState().tool !== "select") return;
-    void runMacro({ macro: "move_placeable", storey: item.storey, tag: item.tag,
-      position });
-  }, [runMacro]);
-  const rotatePlaceableFromHandle = useCallback((item: CanvasObject, degrees: number, freeRotation: boolean) => {
-    if (useStore.getState().tool !== "select") return;
-    void runMacro({ macro: "rotate_placeable", storey: item.storey, tag: item.tag, degrees,
-      free_rotation: freeRotation });
-  }, [runMacro]);
-  const moveOpeningFromDrag = useCallback((opening: Opening, host: Wall, position: Vec2) => {
-    if (useStore.getState().tool !== "select") return;
-    const target = nearestOpeningHost(model.walls, host.storey, position);
-    setOpeningDragPreview(null);
-    if (!target || target.distance_m > 0.6) return;
-    const along = formatFtIn(openingStartFromCenter(target.along_m, opening.width_m));
-    if (target.wall.tag === host.tag) {
-      void runMacro({ macro: "move_opening", storey: host.storey, tag: opening.tag, along });
-    } else {
-      void runMacro({ macro: "rehost_opening", storey: host.storey, tag: opening.tag,
-        host: target.wall.tag, along });
-    }
-  }, [model.walls, runMacro]);
-  const previewOpeningFromDrag = useCallback((opening: Opening, host: Wall, position: Vec2) => {
-    const target = nearestOpeningHost(model.walls, host.storey, position);
-    if (!target || target.distance_m > 0.6) {
-      setOpeningDragPreview(null);
-      return;
-    }
-    setOpeningDragPreview({
-      opening: { ...opening, center_along_m: target.along_m }, host: target.wall,
-      valid: openingFitsWall(target.wall, target.along_m, opening.width_m),
-    });
-  }, [model.walls]);
-  const selectWallWithPopup = useCallback((wall: Wall, event: React.MouseEvent<SVGGElement>) => {
-    const s = useStore.getState();
-    if (s.tool !== "select") return;
-    const rect = svgRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    s.select("wall", wall.uid);
-    setWallAssemblyPopup({
-      wallUid: wall.uid,
-      screen: [event.clientX - rect.left, event.clientY - rect.top],
-    });
-  }, []);
+  const tolM = 12 / view.scale;
+  const gridM = view.scale * M_PER_FT >= 14 ? M_PER_FT : null;
+  const fmt = (m: number) => formatFtIn(m);
 
-  const wallsOnStorey = useMemo(
-    () => model.walls.filter((w) => !activeStorey || w.storey === activeStorey),
-    [model.walls, activeStorey],
-  );
-  // Node markers are view-local: deriving them from every storey makes unrelated
-  // endpoints appear on the active floorplan when storeys share coordinates.
-  const nodes = useMemo(() => deriveNodes(wallsOnStorey), [wallsOnStorey]);
-  const openEnds = useMemo(() => openEndKeys(wallsOnStorey), [wallsOnStorey]);
-  // Authored nodes on the active storey → the snap/heal/stretch vocabulary (addressed by tag).
-  const storeyNodes = useMemo(
-    () => (model.nodes ?? []).filter((n) => !activeStorey || n.storey === activeStorey),
-    [model.nodes, activeStorey],
-  );
-  const stairsOnStorey = useMemo(() => {
-    const candidates = (model.stairs ?? [])
-      .filter((stair) => !activeStorey || stair.storey === activeStorey || stair.to_storey === activeStorey)
-      .sort((a, b) => Number(a.storey !== activeStorey) - Number(b.storey !== activeStorey) || a.uid.localeCompare(b.uid));
-    const seenOutlines = new Set<string>();
-    return candidates.filter((stair) => {
-      const outlineKey = stair.outline.map(([x, y]) => `${x.toFixed(6)},${y.toFixed(6)}`).sort().join(";");
-      if (seenOutlines.has(outlineKey)) return false;
-      seenOutlines.add(outlineKey);
-      return true;
-    });
-  }, [model.stairs, activeStorey]);
-  const snapNodes = useMemo(() => {
-    const m = new Map<string, GeoNode>();
-    for (const n of storeyNodes) m.set(n.tag, { id: n.tag, p: [n.x_m, n.y_m], walls: [] });
-    return m;
-  }, [storeyNodes]);
-
-  const defaultAssembly = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const w of wallsOnStorey) if (w.assembly) counts.set(w.assembly, (counts.get(w.assembly) ?? 0) + 1);
-    let best = "";
-    let n = -1;
-    for (const [a, c] of counts) if (c > n) [best, n] = [a, c];
-    return best || model.catalog?.assemblies[0]?.tag || "";
-  }, [wallsOnStorey, model.catalog]);
+  const {
+    wallsOnStorey, nodes, openEnds, storeyNodes, stairsOnStorey, slabsOnStorey, snapNodes,
+    defaultAssembly, serviceOptions, canvasTypes, warningMarkers, nearestNodeTag, storeyHintFile,
+  } = useStoreySlice(model, activeStorey, tolM);
   const wallAssembly = drawAssembly || defaultAssembly;
 
-  const serviceOptions = useMemo(() => [...new Set((model.catalog?.canvas_object_types ?? [])
-    .flatMap((type) => type.ports.map((port) => port.service)))].sort(), [model.catalog?.canvas_object_types]);
-  const canvasTypes = useMemo(() => new Map((model.catalog?.canvas_object_types ?? [])
-    .map((item) => [item.tag, item])), [model.catalog?.canvas_object_types]);
   const visibleServiceObjects = (model.canvas_objects ?? []).filter((item) =>
     item.position_m && (!activeStorey || item.storey === activeStorey) &&
     (!activeService || (item.type ? canvasTypes.get(item.type)?.ports.some((port) => port.service === activeService) : false)));
@@ -295,7 +116,6 @@ export function Canvas2D() {
     () => wallAssemblyPopup ? model.walls.find((wall) => wall.uid === wallAssemblyPopup.wallUid) ?? null : null,
     [model.walls, wallAssemblyPopup],
   );
-
 
   // A popup is meaningful only while its wall remains selected. This also covers selection
   // changes initiated by the sidebar rather than by the SVG itself.
@@ -306,262 +126,12 @@ export function Canvas2D() {
     }
   }, [popupWall, selection, wallAssemblyPopup]);
 
-  // The authored model is in metres, while screen dimensions are only known after the
-  // SVG enters its pane.  Fit once per storey so a fresh single-pane view starts with
-  // the whole floor visible rather than an arbitrary 120 px/m slice near the origin.
-  useLayoutEffect(() => {
-    if (!activeStorey || fittedStorey.current === activeStorey) return;
-    const svg = svgRef.current;
-    if (!svg) return;
-
-    const points: Vec2[] = [
-      ...wallsOnStorey.flatMap((wall) => [wall.axis[0], wall.axis[1],
-        ...wall.layers.flatMap((layer) => layer.polygon)]),
-      ...model.rooms.filter((room) => room.storey === activeStorey)
-        .flatMap((room) => room.clear_face),
-    ];
-    if (!points.length) return;
-
-    const fit = () => {
-      const { width, height } = svg.getBoundingClientRect();
-      if (width <= 0 || height <= 0) return;
-      const xs = points.map(([x]) => x);
-      const ys = points.map(([, y]) => y);
-      const spanX = Math.max(0.1, Math.max(...xs) - Math.min(...xs));
-      const spanY = Math.max(0.1, Math.max(...ys) - Math.min(...ys));
-      const padding = 64;
-      const scale = clampScale(Math.min((width - padding * 2) / spanX, (height - padding * 2) / spanY));
-      setView({
-        scale,
-        tx: width / 2 - ((Math.min(...xs) + Math.max(...xs)) / 2) * scale,
-        ty: height / 2 + ((Math.min(...ys) + Math.max(...ys)) / 2) * scale,
-      });
-      fittedStorey.current = activeStorey;
-    };
-
-    const observer = new ResizeObserver(fit);
-    observer.observe(svg);
-    fit();
-    return () => observer.disconnect();
-  }, [activeStorey, model.rooms, setView, wallsOnStorey]);
-
-  const tolM = 12 / view.scale;
-  const gridM = view.scale * M_PER_FT >= 14 ? M_PER_FT : null;
-  const fmt = (m: number) => formatFtIn(m);
-
-  // Every plan marker that carries a diagnostic: unjoined wall ends (derived from the drawn
-  // wall graph, so the marker set matches exactly what the canvas paints) plus any junction the
-  // resolver annotated. `tolM` is the same node tolerance the snap/heal affordances use.
-  const warningMarkers = useMemo(() => {
-    const wallByUid = new Map(wallsOnStorey.map((wall) => [wall.uid, wall]));
-    return [
-      ...[...nodes.values()].filter((node) => openEnds.has(node.id)).map((node) =>
-        openEndMarker(model, activeStorey, node.p,
-          node.walls.map((uid) => wallByUid.get(uid)).filter((wall): wall is Wall => wall != null),
-          tolM)),
-      ...junctionDiagnosticMarkers(model, activeStorey),
-    ];
-  }, [model, activeStorey, nodes, openEnds, wallsOnStorey, tolM]);
-
   // A popover outlives neither its marker nor the storey it belongs to.
   useEffect(() => {
     if (warningPopup && !warningMarkers.some((marker) => marker.key === warningPopup.marker.key)) {
       setWarningPopup(null);
     }
   }, [warningMarkers, warningPopup]);
-
-  const nearestNodeTag = useCallback((p: Vec2): string | null => {
-    let best: string | null = null;
-    let bestD = Infinity;
-    for (const n of storeyNodes) {
-      const d = Math.hypot(p[0] - n.x_m, p[1] - n.y_m);
-      if (d < bestD) [best, bestD] = [n.tag, d];
-    }
-    return best;
-  }, [storeyNodes]);
-
-  const storeyHintFile = useCallback(
-    // Only *editable* provenance may route adds — a params-generated node's file would
-    // send the coordinator to a file writeback can't touch.
-    () => storeyNodes.find((n) => n.provenance?.editable)?.provenance?.file
-      ?? wallsOnStorey.find((w) => w.provenance?.editable)?.provenance?.file,
-    [storeyNodes, wallsOnStorey],
-  );
-
-  // ---- pan / zoom -----------------------------------------------------------
-  const onWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const rect = svgRef.current!.getBoundingClientRect();
-    const cx = e.clientX - rect.left;
-    const cy = e.clientY - rect.top;
-    const factor = Math.exp(-e.deltaY * 0.0015);
-    const scale = clampScale(view.scale * factor);
-    const wx = (cx - view.tx) / view.scale;
-    const wy = (view.ty - cy) / view.scale;
-    setView({ scale, tx: cx - wx * scale, ty: cy + wy * scale });
-  };
-
-  const onPointerDown = (e: React.PointerEvent) => {
-    if (e.pointerType === "mouse" && e.button !== 0) return;
-    // Capturing on the viewport (instead of the pressed wall/image child) keeps the
-    // gesture alive after the pointer leaves that child or the SVG bounds.
-    e.currentTarget.setPointerCapture(e.pointerId);
-    pointers.current.set(e.pointerId, [e.clientX, e.clientY]);
-    if (pointers.current.size === 2) {
-      const [a, b] = [...pointers.current.values()];
-      pinch.current = { dist: Math.hypot(a[0] - b[0], a[1] - b[1]), scale: view.scale };
-      gesture.current = null;
-    } else {
-      panLast.current = [e.clientX, e.clientY];
-      gesture.current = { x: e.clientX, y: e.clientY, moved: false };
-    }
-  };
-
-  const onPointerMove = (e: React.PointerEvent) => {
-    shift.current = e.shiftKey;
-    // Rubber-band / snap preview follows the bare pointer for the wall tool (desktop hover).
-    if (tool === "wall") setCursor(unproject(e.clientX, e.clientY));
-    if (!pointers.current.has(e.pointerId)) return;
-    pointers.current.set(e.pointerId, [e.clientX, e.clientY]);
-    if (pointers.current.size === 2 && pinch.current) {
-      const [a, b] = [...pointers.current.values()];
-      const dist = Math.hypot(a[0] - b[0], a[1] - b[1]);
-      setView({ scale: clampScale((pinch.current.scale * dist) / pinch.current.dist) });
-      return;
-    }
-    if (gesture.current) {
-      const moved = Math.hypot(e.clientX - gesture.current.x, e.clientY - gesture.current.y);
-      if (moved > TAP_PX) gesture.current.moved = true;
-    }
-    if (panLast.current && (!gesture.current || gesture.current.moved)) {
-      const dx = e.clientX - panLast.current[0];
-      const dy = e.clientY - panLast.current[1];
-      panLast.current = [e.clientX, e.clientY];
-      const currentView = useStore.getState().view;
-      setView({ tx: currentView.tx + dx, ty: currentView.ty + dy });
-    }
-  };
-
-  const onPointerUp = (e: React.PointerEvent) => {
-    const wasTap = gesture.current && !gesture.current.moved;
-    const wasPan = gesture.current?.moved ?? false;
-    pointers.current.delete(e.pointerId);
-    if (pointers.current.size < 2) pinch.current = null;
-    if (pointers.current.size === 0) panLast.current = null;
-    if (wasTap && pointers.current.size === 0) {
-      handleTap(unproject(e.clientX, e.clientY), [
-        e.clientX - e.currentTarget.getBoundingClientRect().left,
-        e.clientY - e.currentTarget.getBoundingClientRect().top,
-      ]);
-    }
-    if (wasPan) {
-      // Native click follows pointerup.  Let the event finish, then clear the guard
-      // so a drag across geometry never becomes an accidental selection.
-      suppressPostPanClick.current = true;
-      window.setTimeout(() => { suppressPostPanClick.current = false; }, 0);
-    }
-    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    }
-    gesture.current = null;
-  };
-
-  const onClickCapture = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (!suppressPostPanClick.current) return;
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  // ---- tool tap dispatch ----------------------------------------------------
-  const handleTap = (world: Vec2, screen: Vec2) => {
-    if (placement) { setPlacement(null); return; }
-    if (offline && tool !== "select") { toast("Editing needs the server (offline)", "error"); return; }
-    switch (tool) {
-      case "select": {
-        // Diagnostic markers win the tap. They sit on top of the walls they annotate, and the
-        // whole point of them is to be answerable — resolving them here (rather than trusting
-        // the per-<g> click) is what actually makes them clickable under pointer capture.
-        const markerHit = warningMarkers.find((marker) => {
-          const [mx, my] = project(marker.position);
-          return Math.hypot(mx - screen[0], my - screen[1]) <= WARNING_MARKER_HIT_PX;
-        });
-        if (markerHit) {
-          setWarningPopup({ marker: markerHit, screen });
-          setWallAssemblyPopup(null);
-          break;
-        }
-        setWarningPopup(null);
-        // Resolve wall taps here instead of relying solely on SVG click bubbling. Pointer
-        // capture keeps pan/touch gestures reliable, but can make child click delivery vary
-        // across browsers and installed-PWA shells.
-        const hit = nearestWallHit(wallsOnStorey, world);
-        if (hit && hit.dist_m * view.scale < HIT_PX) {
-          select("wall", hit.wall.uid);
-          setWallAssemblyPopup({ wallUid: hit.wall.uid, screen });
-        } else {
-          // Pointer capture on the viewport keeps pan/touch reliable but swallows the
-          // per-<g> click on filled shapes, so stairs (unlike rooms/placeables, which run
-          // their own onPointerDown) must be resolved here by containment.
-          const stairHit = stairsOnStorey.find((stair) => pointInPolygon(world, stair.outline));
-          if (stairHit) {
-            select("stair", stairHit.uid);
-            setWallAssemblyPopup(null);
-            setDoorPopup(null);
-            setWindowPopup(null);
-          } else {
-            select(null, null);
-            setWallAssemblyPopup(null);
-            setDoorPopup(null);
-            setWindowPopup(null);
-          }
-        }
-        break;
-      }
-      case "wall": {
-        const snap = snapWorld(world, snapNodes, tolM, gridM);
-        if (!draft) {
-          setDraft({ start: snap.point, startNode: snap.nodeId });
-        } else {
-          const end = shift.current ? orthoLock(draft.start, snap.point) : snap.point;
-          void commitWall(draft.start, end);
-        }
-        break;
-      }
-      case "opening": {
-        const hit = nearestWallHit(wallsOnStorey, world);
-        if (hit && hit.dist_m * view.scale < HIT_PX) {
-          const [sx, sy] = project(hit.point);
-          setPlacement({ kind: "opening", screen: [sx, sy], wall: hit.wall, along_m: hit.along_m });
-        } else {
-          toast("Tap on a wall to place an opening", "error");
-        }
-        break;
-      }
-      case "placeable": {
-        const [sx, sy] = project(world);
-        setPlacement({ kind: "placeable", screen: [sx, sy], position: world });
-        break;
-      }
-      case "room": {
-        const [sx, sy] = project(world);
-        setPlacement({ kind: "room", screen: [sx, sy], seed: world });
-        break;
-      }
-      case "stair": {
-        if (!activeStorey) { toast("Pick a storey first", "error"); return; }
-        void commitStair(world);
-        break;
-      }
-      case "dimension": {
-        const hit = nearestWallHit(wallsOnStorey, world);
-        if (hit && hit.dist_m * view.scale < HIT_PX) {
-          select("wall", hit.wall.uid);
-          setDimWall(hit.wall);
-        }
-        break;
-      }
-    }
-  };
 
   // ---- commits --------------------------------------------------------------
   const commitWall = async (start: Vec2, end: Vec2) => {
@@ -658,6 +228,19 @@ export function Canvas2D() {
     if (res) toast("Joint healed");
   };
 
+  // ---- tool tap dispatch (→ plan/toolDispatch.ts) ----------------------------
+  const handleTap = (world: Vec2, screen: Vec2) => dispatchTap({
+    tool, offline, scale: view.scale, placement, draft, shiftRef: shift, wallsOnStorey,
+    stairsOnStorey, warningMarkers, snapNodes, tolM, gridM, activeStorey, project, select,
+    toast, setPlacement, setDraft, setDimWall, setWallAssemblyPopup, setWarningPopup,
+    setDoorPopup, setWindowPopup, commitWall, commitStair,
+  }, world, screen);
+
+  const { onWheel, onPointerDown, onPointerMove, onPointerUp, onClickCapture } = usePanZoom({
+    svgRef, model, activeStorey, wallsOnStorey, unproject, onTap: handleTap,
+    shiftRef: shift, setCursor,
+  });
+
   // ---- keyboard: Esc cancels the in-flight gesture, Delete removes selection --
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -696,21 +279,6 @@ export function Canvas2D() {
   const setSubOperation = useStore((s) => s.setSubOperation);
   useEffect(() => { setSubOperation(draft != null); }, [draft, setSubOperation]);
 
-  // ---- opening driven-dimension edit (double-click an opening) ---------------
-  const commitPending = async (meters: number) => {
-    if (!pending) return;
-    const o = pending.opening;
-    const ok = pending.field === "position"
-      ? Boolean(await runMacro({ macro: "move_opening", storey: hostStorey(model, o), tag: o.tag,
-        along: formatFtIn(meters) }))
-      : await applyOps([{
-        op: "update", type: o.is_door ? "Door" : "Window", tag: o.tag,
-        fields: { sill_height: formatFtIn(meters) },
-      }]);
-    if (ok) toast(`${o.tag} ${pending.field} updated`);
-    setPending(null);
-  };
-
   // Live rubber-band endpoint (snapped, ortho-locked under shift).
   const rubber = useMemo(() => {
     if (tool !== "wall" || !draft || !cursor) return null;
@@ -748,47 +316,12 @@ export function Canvas2D() {
           </marker>
         </defs>
         <BackgroundGrid view={view} />
-        {/* rooms first (tinted fills, behind walls) — a live drag's preview cascades into
-            neighboring rooms' clear-face polygons, matched by tag against the last preview */}
-        {model.rooms
-          .filter((r) => !activeStorey || r.storey === activeStorey)
-          .map((r) => {
-            const clearFace = previewGeom?.rooms.find((x) => x.tag === r.tag)?.clear_face
-              ?? r.clear_face;
-            return (
-              <g key={r.uid} onClick={() => tool === "select" && select("room", r.uid)}
-                style={{ cursor: tool === "select" ? "pointer" : undefined }}>
-                <polygon points={clearFace.map(project).map((p) => p.join(",")).join(" ")}
-                  fill="var(--canvas-selection)" stroke="none" />
-                {showSpaceLabels && clearFace.length > 0 && (() => {
-                  // Name (occupancy) on top, then the id a plan edit references, then area —
-                  // dropped from the bottom up as the space runs out of room on screen.
-                  const label = spaceLabel(r);
-                  const [widthPx, heightPx] = projectedExtentPx(clearFace, project);
-                  const lines = spaceLabelLineBudget(widthPx, heightPx);
-                  if (lines === 0) return null;
-                  const centroid: Vec2 = [
-                    clearFace.reduce((sum, point) => sum + point[0], 0) / clearFace.length,
-                    clearFace.reduce((sum, point) => sum + point[1], 0) / clearFace.length,
-                  ];
-                  const [x, y] = project(centroid);
-                  return <text x={x} y={y - (lines - 1) * 7} textAnchor="middle" pointerEvents="none"
-                    fill="var(--canvas-ink)" fontSize={12} fontWeight={700}
-                    style={{ paintOrder: "stroke", stroke: "var(--canvas-white)", strokeWidth: 3 }}>
-                    <tspan x={x}>{lines >= 2 ? label.name : label.id}</tspan>
-                    {lines >= 2 && (
-                      <tspan x={x} dy={14} fontSize={10} fontWeight={600} className="space-label-id">
-                        {label.id}
-                      </tspan>
-                    )}
-                    {lines >= 3 && (
-                      <tspan x={x} dy={13} fontSize={10} fontWeight={500}>{label.area}</tspan>
-                    )}
-                  </text>;
-                })()}
-              </g>
-            );
-          })}
+        {/* resolved slabs first: the concrete plate everything on this storey stands on */}
+        {visibleTrades.concrete && <SlabOutlines slabs={slabsOnStorey} project={project} />}
+        {/* rooms next (tinted fills, behind walls; → plan/PlanMarkers.tsx::RoomLayer) */}
+        <RoomLayer rooms={model.rooms.filter((r) => !activeStorey || r.storey === activeStorey)}
+          previewGeom={previewGeom} tool={tool} showSpaceLabels={showSpaceLabels}
+          project={project} onSelect={(r) => select("room", r.uid)} />
         {/* walls — likewise shown at their previewed axis (tag-matched) while a node drag is
             in flight, so connected walls visibly stretch/shrink before the commit lands */}
         {(visibleTrades.walls || visibleTrades.framing) && wallsOnStorey.map((w) => {
@@ -869,49 +402,14 @@ export function Canvas2D() {
             onMove={movePlaceableFromDrag} onRotate={rotatePlaceableFromHandle} />)}
         {showClearances && <ClearanceOverlays model={model} storey={activeStorey} project={project}
           scale={view.scale} />}
-        {/* plain nodes; heal affordance on collinear 2-wall joints (select tool) */}
-        {[...nodes.values()].filter((n) => !openEnds.has(n.id)).map((n) => {
-          const [x, y] = project(n.p);
-          const tag = tool === "select" ? nearestNodeTag(n.p) : null;
-          const healable = tool === "select" && n.walls.length === 2 && collinearAt(n, model);
-          return (
-            <g key={n.id}>
-              <circle
-                cx={x} cy={y} r={healable ? 6 : 3.5}
-                fill={healable ? NORDIC_ACCENT : NORDIC_LINE}
-                opacity={healable ? 0.85 : 0.5}
-                style={{ cursor: healable ? "pointer" : "default" }}
-                onClick={healable && tag ? () => void healNode(tag) : undefined}
-              />
-              {healable && <title>Heal joint</title>}
-            </g>
-          );
-        })}
-        {/* Diagnostic markers. These used to be an unexplained glowing red dot; now each one
-            names itself on click, and a *declared* open end reads as advisory rather than as
-            an error (→ model/planWarnings.ts). */}
-        {warningMarkers.map((marker) => {
-          const [x, y] = project(marker.position);
-          const active = warningPopup?.marker.key === marker.key;
-          const color = marker.tier === "error" ? "var(--error)"
-            : marker.tier === "warn" ? "var(--warn, var(--error))" : NORDIC_ACCENT;
-          return (
-            <g key={marker.key} style={{ cursor: "pointer" }}
-              onClick={(event) => {
-                const rect = svgRef.current?.getBoundingClientRect();
-                if (!rect) return;
-                setWarningPopup({ marker, screen: [event.clientX - rect.left, event.clientY - rect.top] });
-              }}>
-              <circle cx={x} cy={y} r={9} fill="transparent" />
-              <circle cx={x} cy={y} r={active ? 8 : 6.5} fill={color}
-                opacity={marker.tier === "info" ? 0.65 : 0.9}
-                stroke="var(--canvas-white)" strokeWidth={1.5} />
-              <text x={x} y={y + 3} fontSize={9} fontWeight={800} textAnchor="middle"
-                fill="var(--canvas-white)" pointerEvents="none">?</text>
-              <title>{marker.title} · {marker.id} — click for details</title>
-            </g>
-          );
-        })}
+        <PlanNodesLayer nodes={nodes} openEnds={openEnds} model={model} tool={tool}
+          project={project} nearestNodeTag={nearestNodeTag} onHeal={(tag) => void healNode(tag)} />
+        <WarningMarkerLayer markers={warningMarkers} activeKey={warningPopup?.marker.key ?? null}
+          project={project} onOpen={(marker, event) => {
+            const rect = svgRef.current?.getBoundingClientRect();
+            if (!rect) return;
+            setWarningPopup({ marker, screen: [event.clientX - rect.left, event.clientY - rect.top] });
+          }} />
         {/* draggable endpoint handles on the selected wall (stretch → move_nodes) */}
         {tool === "select" && selection.kind === "wall" && (() => {
           const w = wallsOnStorey.find((x) => x.uid === selection.uid);
@@ -943,51 +441,10 @@ export function Canvas2D() {
             />
           ));
         })()}
-        {/* wall draft: start marker + rubber band + live length */}
-        {tool === "wall" && draft && (() => {
-          const [sx, sy] = project(draft.start);
-          const end = rubber?.end ?? draft.start;
-          const [ex, ey] = project(end);
-          const [mx, my] = [(sx + ex) / 2, (sy + ey) / 2];
-          return (
-            <g pointerEvents="none">
-              <line x1={sx} y1={sy} x2={ex} y2={ey} stroke={NORDIC_ACCENT} strokeWidth={2}
-                strokeDasharray="6 4" />
-              <circle cx={sx} cy={sy} r={5} fill={NORDIC_ACCENT} />
-              <circle cx={ex} cy={ey} r={5} fill="var(--canvas-white)" stroke={NORDIC_ACCENT} strokeWidth={2} />
-              {rubber && rubber.len > 0.01 && (
-                <text x={mx} y={my - 8} fill={NORDIC_INK} fontSize={12} textAnchor="middle"
-                  style={{ paintOrder: "stroke" }} stroke="var(--canvas-white)" strokeWidth={3}>
-                  {formatFtIn(rubber.len)}
-                </text>
-              )}
-            </g>
-          );
-        })()}
-        {/* snap indicator for the wall tool's next click */}
-        {tool === "wall" && cursor && (() => {
-          const snap = snapWorld(cursor, snapNodes, tolM, gridM);
-          if (!snap.nodeId && !gridM) return null;
-          const [x, y] = project(snap.point);
-          return <circle cx={x} cy={y} r={snap.nodeId ? 7 : 4} fill="none"
-            stroke={snap.nodeId ? "var(--error)" : NORDIC_ACCENT} strokeWidth={1.5} pointerEvents="none" />;
-        })()}
-        {/* detail markers (Phase 8): D-tags at junctions, shown in the DOCUMENT workspace */}
-        {workspace === "document" && (model.conditions ?? []).map((c, i) => {
-          const wall = model.walls.find((w) => c.elements.includes(w.tag) && w.storey === activeStorey);
-          if (!wall) return null;
-          const mid: Vec2 = [(wall.axis[0][0] + wall.axis[1][0]) / 2, (wall.axis[0][1] + wall.axis[1][1]) / 2];
-          const [x, y] = project(mid);
-          return (
-            <g key={`detail-${c.key}`} pointerEvents="auto" style={{ cursor: "pointer" }}
-              onClick={() => select("wall", wall.uid)}>
-              <circle cx={x} cy={y} r={9} fill="var(--canvas-white)" stroke={NORDIC_ACCENT} strokeWidth={1.5} />
-              <text x={x} y={y + 3} fill={NORDIC_ACCENT} fontSize={9} textAnchor="middle" fontWeight={700}>
-                D{i + 1}
-              </text>
-            </g>
-          );
-        })}
+        {tool === "wall" && <WallDraftLayer draft={draft} rubber={rubber} cursor={cursor}
+          snapNodes={snapNodes} tolM={tolM} gridM={gridM} project={project} />}
+        {workspace === "document" && <DetailMarkerLayer model={model} activeStorey={activeStorey}
+          project={project} onSelectWall={(wall) => select("wall", wall.uid)} />}
         {/* dimension line for selected wall */}
         {selection.kind === "wall" && (() => {
           const w = wallsOnStorey.find((x) => x.uid === selection.uid);
@@ -1003,158 +460,30 @@ export function Canvas2D() {
             onMove={movePlaceableFromDrag} onRotate={rotatePlaceableFromHandle} />)}
         </>}
       </svg>
-      {pending && (
-        <FtInKeypad
-          label={`${pending.opening.tag} · ${pending.field === "position" ? "start-jamb station along wall" : "sill height"}`}
-          initial={pending.initial}
-          onCommit={(m) => void commitPending(m)}
-          onCancel={() => setPending(null)}
-        />
-      )}
-      {doorPopup && (
-        <DoorSettingsPopover
-          opening={doorPopup.opening}
-          screen={doorPopup.screen}
-          doorTypes={model.catalog?.door_types ?? []}
-          applyOps={applyOps}
-          toast={toast}
-          onEditPosition={() => {
-            setPending({ opening: doorPopup.opening, field: "position",
-              initial: formatFtIn(openingStartFromCenter(
-                doorPopup.opening.center_along_m, doorPopup.opening.width_m,
-              )) });
-            setDoorPopup(null);
-          }}
-          onEditSillHeight={() => {
-            setPending({ opening: doorPopup.opening, field: "sill_height",
-              initial: formatFtIn(doorPopup.opening.sill_m) });
-            setDoorPopup(null);
-          }}
-          onClose={() => setDoorPopup(null)}
-        />
-      )}
-      {windowPopup && (
-        <WindowSettingsPopover
-          opening={windowPopup.opening}
-          screen={windowPopup.screen}
-          windowTypes={model.catalog?.window_types ?? []}
-          applyOps={applyOps}
-          toast={toast}
-          onEditPosition={() => {
-            setPending({ opening: windowPopup.opening, field: "position",
-              initial: formatFtIn(openingStartFromCenter(
-                windowPopup.opening.center_along_m, windowPopup.opening.width_m,
-              )) });
-            setWindowPopup(null);
-          }}
-          onEditSillHeight={() => {
-            setPending({ opening: windowPopup.opening, field: "sill_height",
-              initial: formatFtIn(windowPopup.opening.sill_m) });
-            setWindowPopup(null);
-          }}
-          onDelete={() => {
-            useStore.getState().select("opening", windowPopup.opening.uid);
-            void useStore.getState().deleteSelection();
-            setWindowPopup(null);
-          }}
-          onClose={() => setWindowPopup(null)}
-        />
-      )}
-      {dimWall && (
-        <FtInKeypad
-          label={`${dimWall.tag} · length (stretches the end node)`}
-          initial={formatFtIn(wallLength(dimWall))}
-          onCommit={(m) => void commitDim(m)}
-          onCancel={() => setDimWall(null)}
-        />
-      )}
-      {lengthEntry && (
-        <FtInKeypad
-          label="Segment length · exact distance along the current direction"
-          initial={lengthEntry.initial}
-          onCommit={(m) => {
-            const { start, dir } = lengthEntry;
-            setLengthEntry(null);
-            void commitWall(start, [start[0] + dir[0] * m, start[1] + dir[1] * m]);
-          }}
-          onCancel={() => setLengthEntry(null)}
-        />
-      )}
-      {placement && (
-        <PlacementPopover
-          placement={placement}
-          catalog={model.catalog}
-          hintFile={storeyHintFile()}
-          storey={activeStorey}
-          runMacro={runMacro}
-          selectByTag={selectByTag}
-          toast={toast}
-          onClose={() => setPlacement(null)}
-        />
-      )}
-      {wallAssemblyPopup && popupWall && (
-        <WallAssemblyPopupCard
-          wall={popupWall}
-          screen={wallAssemblyPopup.screen}
-          viewport={svgRef.current?.getBoundingClientRect() ?? null}
-          onClose={() => setWallAssemblyPopup(null)}
-        />
-      )}
-      {warningPopup && (
-        <PlanWarningPopover
-          marker={warningPopup.marker}
-          screen={warningPopup.screen}
-          viewport={svgRef.current?.getBoundingClientRect() ?? null}
-          onClose={() => setWarningPopup(null)}
-        />
-      )}
+      <CanvasOverlays
+        svgRef={svgRef}
+        pending={pending} setPending={setPending}
+        doorPopup={doorPopup} setDoorPopup={setDoorPopup}
+        windowPopup={windowPopup} setWindowPopup={setWindowPopup}
+        dimWall={dimWall} setDimWall={setDimWall} onCommitDim={(m) => void commitDim(m)}
+        lengthEntry={lengthEntry} setLengthEntry={setLengthEntry}
+        onCommitWall={(start, end) => void commitWall(start, end)}
+        placement={placement} setPlacement={setPlacement} hintFile={storeyHintFile()}
+        wallAssemblyPopup={wallAssemblyPopup} setWallAssemblyPopup={setWallAssemblyPopup}
+        popupWall={popupWall}
+        warningPopup={warningPopup} setWarningPopup={setWarningPopup}
+        ctxMenu={ctxMenu} setCtxMenu={setCtxMenu}
+      />
       <SunIndicator model={model} />
-      <div className="canvas-context-controls">
-        <StoreyTabs model={model} />
-      <div className="hud" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-        <label style={{ fontSize: 12 }}>Services <select value={activeService}
-          onChange={(event) => setActiveService(event.target.value)}>
-          <option value="">all</option>
-          {serviceOptions.map((service) => <option key={service} value={service}>{service}</option>)}
-        </select></label>
-        <button className="btn" onClick={() => setShowClearances(!showClearances)}>
-          {showClearances ? "Hide clearances" : "Clearances"}
-        </button>
-      </div>
-      </div>
-      {tool !== "select" && (
-        <div className="hud" style={{ left: 12, right: "auto", bottom: "auto", top: "calc(44px + 84px)", maxWidth: 260 }}>
-          <ToolHint tool={tool} draft={Boolean(draft)}
-            assembly={tool === "wall" ? wallAssembly : null}
-            assemblies={model.catalog?.assemblies.map((a) => a.tag) ?? []}
-            onAssembly={setDrawAssembly}
-            onSplit={selection.kind === "wall" ? () => {
-              const w = wallsOnStorey.find((x) => x.uid === selection.uid);
-              if (w) void splitWall(w);
-            } : null} />
-        </div>
-      )}
-      {ctxMenu && (
-        <>
-          <div className="ctx-overlay" onPointerDown={() => setCtxMenu(null)} onContextMenu={(e) => { e.preventDefault(); setCtxMenu(null); }} />
-          <div className="ctx-menu" style={{ left: ctxMenu.x, top: ctxMenu.y }} role="menu">
-            {selection.uid ? (
-              <>
-                <button role="menuitem" onClick={() => { select(null, null); setCtxMenu(null); }}>Deselect</button>
-                {!offline && (selection.kind === "opening" || selection.kind === "canvas_object") && (
-                  <button role="menuitem" onClick={() => { void duplicateSelection(); setCtxMenu(null); }}>Duplicate</button>
-                )}
-                {!offline && (
-                  <button role="menuitem" className="ctx-danger" onClick={() => { void deleteSelection(); setCtxMenu(null); }}>Delete</button>
-                )}
-              </>
-            ) : (
-              <button role="menuitem" disabled>Nothing selected</button>
-            )}
-          </div>
-        </>
-      )}
+      <CanvasHud model={model} serviceOptions={serviceOptions}
+        activeService={activeService} setActiveService={setActiveService}
+        showClearances={showClearances} setShowClearances={setShowClearances}
+        tool={tool} draft={Boolean(draft)} wallAssembly={wallAssembly}
+        onAssembly={setDrawAssembly}
+        onSplit={selection.kind === "wall" ? () => {
+          const w = wallsOnStorey.find((x) => x.uid === selection.uid);
+          if (w) void splitWall(w);
+        } : null} />
     </>
   );
 }
-
