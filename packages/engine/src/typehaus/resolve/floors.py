@@ -11,15 +11,48 @@ from __future__ import annotations
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.structure import Beam
-from typehaus.quantities import inch
+from typehaus.quantities import inch, m
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.tables import ENGINEERED_LVL, header_size
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel
 
 _DEFAULT_SPACING_M = inch(16).meters
+# One LVL ply. A floor-opening header hangs *inside* the joist band (the cut joists come
+# back to it in hangers), so the deck fixes its depth and the ply count is the only free
+# variable — which is exactly what the prescriptive header table names.
+_HEADER_PLY_WIDTH_IN = 1.75
+# Ply count carried past the prescriptive table's 8 ft ceiling. The table's widest entry
+# is two plies; a longer opening is a designed beam, and ``structural.floor_opening_header``
+# says so rather than letting the drawn member imply a prescriptive answer.
+_ENGINEERED_HEADER_PLIES = 3
+# The two trimmer plies of an opening edge. Doubled trimmer joists are the standard
+# prescriptive answer (IRC R502.10) for the edge that carries a header end.
+_TRIMMER_PLIES = 2
 
 
 def _member_depth_m(member: str) -> float:
     return cross_section(member).depth_m
+
+
+def opening_header_profile(span_m: float, band_depth_m: float) -> str:
+    """Multi-ply LVL header profile for a floor opening of ``span_m``.
+
+    Emitting the deck's own ``JoistSpec.member`` here left every opening header a single
+    *unsized* joist ply — a 3'-4" attic header and an 11'-0" stair header drawn identically,
+    and neither of them a header. The prescriptive table sizes the ply count; the deck's
+    joist depth sizes the member, so the header sits flush in the band.
+    """
+    prescriptive = header_size(m(span_m))
+    plies = (_ENGINEERED_HEADER_PLIES if prescriptive == ENGINEERED_LVL
+             else int(prescriptive.split("-", 1)[0]))
+    return f"{plies}-{_HEADER_PLY_WIDTH_IN:g}x{band_depth_m / inch(1).meters:g} LVL"
+
+
+def _shift(p0: tuple[float, float], p1: tuple[float, float],
+           normal: tuple[float, float], distance: float):
+    """``p0``/``p1`` translated ``distance`` along the unit ``normal``."""
+    return ((p0[0] + normal[0] * distance, p0[1] + normal[1] * distance),
+            (p1[0] + normal[0] * distance, p1[1] + normal[1] * distance))
 
 
 def resolve_floors(model: ResolvedModel) -> list[Finding]:
@@ -131,25 +164,36 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     # Opening edge framing is generated once per opening, after clipping.  A declared
     # bearing wall directly under a long edge is the explicit support path; otherwise a
     # header closes that edge and receives the cut joists.
+    # Headers stay *on* the authored opening line: the cut joists are clipped to that line
+    # and land on the header, and the trimmer pair's first ply retains its ends there.
+    # Only the second trimmer ply moves, and it moves outboard — away from the hole.
+    trimmer_ply_width = cross_section(spec.member).width_m
     for opening, minx, maxx, miny, maxy in opening_boxes:
         edge_specs = (((minx, miny), (minx, maxy)), ((maxx, miny), (maxx, maxy))) if along_x else (
             ((minx, miny), (maxx, miny)), ((minx, maxy), (maxx, maxy)))
         for edge_index, (p0, p1) in enumerate(edge_specs):
             if _opening_edge_has_declared_bearing(model, opening, p0, p1):
                 continue
+            span = abs((p1[1] - p0[1]) if along_x else (p1[0] - p0[0]))
             members.append(FramedMember(
-                system.uid, f"header-{opening.tag}-{edge_index}", "header", spec.member,
-                p0, p1, z0, z1, abs((p1[1] - p0[1]) if along_x else (p1[0] - p0[0])),
+                system.uid, f"header-{opening.tag}-{edge_index}", "header",
+                opening_header_profile(span, depth), p0, p1, z0, z1, span,
             ))
         # Parallel opening edges retain the header ends and prevent the adjacent joist
-        # line from rolling.  They are doubled to model the usual trimmer pair.
-        trim_specs = (((minx, miny), (maxx, miny)), ((minx, maxy), (maxx, maxy))) if along_x else (
-            ((minx, miny), (minx, maxy)), ((maxx, miny), (maxx, maxy)))
-        for edge_index, (p0, p1) in enumerate(trim_specs):
-            for ply in range(2):
+        # line from rolling.  They are doubled to model the usual trimmer pair — plies laid
+        # face to face, not stacked on one another (which drew two byte-identical members,
+        # so the pair rendered and measured as a single joist in every section and take-off).
+        trim_specs = ((((minx, miny), (maxx, miny)), (0.0, -1.0)),
+                      (((minx, maxy), (maxx, maxy)), (0.0, 1.0))) if along_x else (
+            (((minx, miny), (minx, maxy)), (-1.0, 0.0)),
+            (((maxx, miny), (maxx, maxy)), (1.0, 0.0)))
+        for edge_index, ((p0, p1), outboard) in enumerate(trim_specs):
+            span = abs((p1[0] - p0[0]) if along_x else (p1[1] - p0[1]))
+            for ply in range(_TRIMMER_PLIES):
+                t0, t1 = _shift(p0, p1, outboard, ply * trimmer_ply_width)
                 members.append(FramedMember(
-                    system.uid, f"trimmer-{opening.tag}-{edge_index}-{ply}", "trimmer", spec.member,
-                    p0, p1, z0, z1, abs((p1[0] - p0[0]) if along_x else (p1[1] - p0[1])),
+                    system.uid, f"trimmer-{opening.tag}-{edge_index}-{ply}", "trimmer",
+                    spec.member, t0, t1, z0, z1, span,
                 ))
 
     # Rim (band) boards cap the joist ends — perpendicular to the joists, not a duplicate

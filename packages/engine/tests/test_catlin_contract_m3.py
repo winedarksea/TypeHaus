@@ -85,15 +85,15 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset():
 
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     checklist = evaluate_permit_checklist(report, "mn-2024")
-    # code.energy_prescriptive (→ Permit-ready plan set Phase 7) honestly reports UNKNOWN
-    # for SL-B-FLOOR/SL-M-DECK — neither concrete slab has an authored assembly with an
-    # R-value yet. That is the intended behavior (never a silent pass on missing thermal
-    # data, not a regression) — every other declared item still passes.
-    energy_label = "Energy prescriptive envelope"
-    non_energy_items = [item for item in checklist.items if item.label != energy_label]
-    assert all(item.result is Result.PASS for item in non_energy_items)
-    energy_item = next(item for item in checklist.items if item.label == energy_label)
-    assert energy_item.result is Result.UNKNOWN
+    # code.energy_prescriptive used to report UNKNOWN here because SL-B-FLOOR/SL-M-DECK had
+    # no authored assembly. Every slab now either carries one or is scoped out of the
+    # prescriptive table for a stated reason (the main-floor deck has conditioned space on
+    # both faces; the garage slab floors an unheated detached structure), so the gate is
+    # fully evaluated. It must stay that way: an UNKNOWN reappearing means a component lost
+    # its thermal input again, which is exactly what this item exists to catch.
+    assert all(item.result is Result.PASS for item in checklist.items), \
+        [(item.label, item.result, item.detail) for item in checklist.items
+         if item.result is not Result.PASS]
 
 
 def test_site_plan_keeps_freestanding_roofs_and_foundation_supports_visible(catlin_model):
@@ -707,8 +707,15 @@ def test_stairs_resolve_with_code_risers(catlin_model):
     assert attic.run_reversed is True
     winders = [member for member in attic.members if member.category == "winder"]
     assert len(winders) == 3
-    # All three radial tread edges share the inside turn, never opposed diagonals.
-    assert len({member.p0 for member in winders}) == 1
+    # All three radial tread edges leave the same inside turn, never opposed diagonals —
+    # but each takes its own point on the newel post's face rather than the post's
+    # centreline, so the narrow ends have a real width instead of converging (D2).
+    newel = next(member for member in attic.members if member.child_key == "newel-000")
+    half_diagonal = cross_section("4x4").width_m * math.sqrt(2.0) / 2.0
+    assert len({member.p0 for member in winders}) == len(winders)
+    for member in winders:
+        reach = math.hypot(member.p0[0] - newel.p0[0], member.p0[1] - newel.p0[1])
+        assert reach <= half_diagonal + 1e-9, member.child_key
     for tag in ("ST-B2M", "ST-M2S"):
         stair = stairs[tag]
         assert stair.layout == "u_split_landing"

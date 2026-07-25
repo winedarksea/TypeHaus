@@ -8,7 +8,17 @@ from typehaus.model import deg, ft, m, pt
 # The main-floor set is a furnished living/dining zone against the shared starter catalog:
 # rotation 0 puts an object's back at +y (project north), so the sofa faces the media
 # console across the room and the chairs face the table from both sides.
-BASEMENT_PLACEABLES = [Fixture(uid="5BBZTZNBWN", tag="FX-1", type_ref="FX-LAV", room="RM-B-FURNACE", position=pt(ft(13, 9.375), ft(19, 10.25)))]
+
+# FX-1 is the furnace-room utility sink. It stands against the north face of the 12"
+# concrete cross wall W-B-CW (centerline y=18', so the face is y=18'-6"), and — like every
+# fixture on a slab-on-grade — its waste drops straight down rather than into a wall stack,
+# so `drain_position` puts the trap 6" out from the wall on the basin centerline and
+# SP-B-UTILITY (plan/mep.py) is the pre-pour stub-up through SL-B-FLOOR that serves it.
+BASEMENT_PLACEABLES = [
+    Fixture(uid="5BBZTZNBWN", tag="FX-1", type_ref="FX-LAV", room="RM-B-FURNACE",
+            position=pt(ft(14), ft(19, 4.5)), wall_ref="W-B-CW",
+            drain_position=pt(ft(14), ft(19))),
+]
 MAIN_PLACEABLES = [
     Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FURN-SOFA-84", room="RM-M-LIVING",
               position=pt(m(7.87848), m(2.69813))),

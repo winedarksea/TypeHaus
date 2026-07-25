@@ -80,6 +80,7 @@ const CATEGORY_COLOR: Record<string, number> = {
   finish: 0xe6e3db,
   fascia: 0xebebe6,
   soffit: 0xe0e0d9,
+  gutter: 0xd9dbde,
 };
 export const CATEGORY_FALLBACK = 0xb0b0b0;
 
@@ -94,7 +95,7 @@ export function categoryColor(category: string): number {
 // ROOF_SKIN_CATEGORIES in emit/gltf/emitter.py — keep the two in step.
 const ROOF_SKIN_CATEGORIES = new Set([
   "sheathing", "membrane", "insulation", "furring", "cladding", "airgap", "air_gap",
-  "lining", "finish", "fascia", "soffit",
+  "lining", "finish", "fascia", "soffit", "gutter",
 ]);
 
 export function isRoofFramingMember(m: Member): boolean {

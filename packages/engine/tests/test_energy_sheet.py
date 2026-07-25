@@ -28,11 +28,24 @@ def test_prescriptive_rows_cover_every_envelope_role(catlin_model):
     assert {"roof", "above-grade wall", "foundation wall", "window"} <= roles
 
 
-def test_deck_slab_reports_unknown_not_pass(catlin_model):
+def test_interior_deck_and_detached_garage_slabs_are_scoped_out(catlin_model):
+    """Not every slab is an envelope slab. SL-M-DECK has conditioned space on both faces
+    (basement below, main floor above) and SL-G-FLOOR floors the detached, unheated garage,
+    so neither earns a prescriptive row — reporting them would assert a requirement the
+    code does not make. The slabs that *are* in the envelope must still show up."""
     rows = evaluate_envelope(catlin_model, catlin_model.plan)
-    deck_rows = [row for row in rows if row.component == "SL-M-DECK"]
-    assert deck_rows
-    assert all(row.verdict == "unknown" for row in deck_rows)
+    components = {row.component for row in rows}
+    assert "SL-M-DECK" not in components
+    assert "SL-G-FLOOR" not in components
+    assert "SL-B-FLOOR" in components
+
+
+def test_no_envelope_component_is_left_unknown(catlin_model):
+    """The tri-state contract still forbids a silent pass — this asserts the *other* half:
+    every component the table does claim to evaluate has a real number behind it."""
+    rows = evaluate_envelope(catlin_model, catlin_model.plan)
+    unknown = [row for row in rows if row.verdict == "unknown"]
+    assert not unknown, [(row.component, row.provided) for row in unknown]
 
 
 def test_catlin_window_types_pass_u_factor(catlin_model):

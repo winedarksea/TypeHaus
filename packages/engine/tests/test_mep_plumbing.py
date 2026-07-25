@@ -231,6 +231,168 @@ def test_catlin_vent_termination_height_passes(catlin_model):
     assert matched and all(f.result.value == "pass" for f in matched)
 
 
+def test_catlin_sleeve_alignment_is_clean(catlin_model):
+    """The whole check, not just the offsets: ``mep.sleeve_alignment`` also fails a drain
+    fixture standing over a structural slab with nothing serving it, which is how the
+    basement utility sink surfaced."""
+    report = run_from_model(catlin_model, [], tier=Tier.CODE)
+    matched = [f for f in report.findings if f.check_id == "mep.sleeve_alignment"]
+    assert matched
+    assert all(f.result.value == "pass" for f in matched), \
+        [f.message for f in matched if f.result.value != "pass"]
+
+
+def test_basement_utility_sink_drains_through_its_own_slab_stub_up(catlin_model):
+    """A fixture on a slab-on-grade has no wall drain stack — its trap arm runs under the
+    slab — so the penetration is authored where the trap actually drops, not projected onto
+    a wall centerline the way a wall-drained lavatory is."""
+    sleeve = next(s for s in catlin_model.sleeves if s.serves_fixture == "FX-1")
+    fixture = catlin_model.plan.by_tag("FX-1")
+    assert sleeve.host_slab == "SL-B-FLOOR"
+    assert fixture.drain_position is not None
+    assert sleeve.expected_center == fixture.drain_position.xy_m
+    assert sleeve.offset_m == pytest.approx(0.0, abs=1e-9)
+
+
+def test_catlin_wet_wall_depth_has_no_findings(catlin_model):
+    """``advisory.wet_wall_depth`` reports only problems, so silence is the pass. It fires
+    on a drain fixture with no ``wall_ref`` at all, which is what FX-1 used to be."""
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    matched = [f for f in report.findings if f.check_id == "advisory.wet_wall_depth"]
+    assert not matched, [f.message for f in matched]
+
+
+def test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other(catlin_model):
+    """RM-M-BATH1 is packed wall-to-wall, so both footprints have to be inside the room's
+    clear face and disjoint from each other. The lavatory used to protrude through W-M-BAE
+    into the hall, which is what D-M-BATH1's swing was colliding with."""
+    from shapely.geometry import Polygon
+
+    room = Polygon(next(r for r in catlin_model.rooms if r.tag == "RM-M-BATH1").clear_face)
+    footprints = {obj.tag: Polygon(obj.footprint) for obj in catlin_model.canvas_objects
+                  if obj.room == "RM-M-BATH1"}
+    assert {"FX-M-BATH1-WC", "FX-M-BATH1-LAV"} <= set(footprints)
+    for tag, footprint in footprints.items():
+        assert room.covers(footprint), f"{tag} escapes RM-M-BATH1"
+    overlap = footprints["FX-M-BATH1-WC"].intersection(footprints["FX-M-BATH1-LAV"])
+    assert overlap.area <= 1e-9, f"{overlap.area * 10.7639:.2f} ft2 of fixture overlap"
+
+
+def test_catlin_door_swings_are_clear_of_fixtures(catlin_model):
+    report = run_from_model(catlin_model, [], tier=Tier.INTEGRITY)
+    matched = [f for f in report.findings if f.check_id == "integrity.door_swing_conflict"]
+    assert not matched, [f.message for f in matched]
+
+
+def test_catlin_water_closets_all_reach_a_vent_chase(catlin_model):
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    matched = [f for f in report.findings if f.check_id == "mep.vent_reachability"]
+    assert matched
+    assert all(f.result.value == "pass" for f in matched), \
+        [f.message for f in matched if f.result.value != "pass"]
+    # The three whose wet wall stops at its own ceiling must say so, not silently pass.
+    offset_vented = [f for f in matched if "chase" in f.message]
+    assert {"FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-S-ENSUITE-WC"} <= {
+        tag for f in offset_vented for tag in f.element_tags
+    }
+
+
+def test_authored_vent_branches_carry_their_fixtures_into_the_ir(catlin_model):
+    """``PipeRun.serves`` is what links a vent branch to the fixture it vents; dropping it
+    in the resolver would make every offset vent invisible to the check."""
+    runs = {run.tag: run for run in catlin_model.pipe_runs if run.system == "vent"}
+    assert "FX-M-BATH1-WC" in runs["PR-M-WC-VENT"].serves
+    assert "FX-M-BATH2-WC" in runs["PR-M-WC-VENT"].serves
+    assert runs["PR-S-ENSUITE-VENT"].serves == ("FX-S-ENSUITE-WC",)
+
+
+def _vent_path_model(run_path, wall_axis, chase_xy, systems=None):
+    """One fixture, one wet wall, one riser chase, one authored vent run."""
+    from typehaus.model.enums import PipeSystem
+    from typehaus.model.mep import VentRun
+    from typehaus.quantities import inch, m, pt
+    from typehaus.resolve.model import ResolvedModel, ResolvedPipeRun, ResolvedWall
+
+    vent = VentRun(uid="V1", tag="VR-TEST",
+                   systems=systems if systems is not None else (PipeSystem.VENT,),
+                   diameter=inch(3), chase_position=pt(m(chase_xy[0]), m(chase_xy[1])),
+                   start_elevation=m(0), exit_elevation=m(3), exit_offset=pt(m(0), m(1)))
+
+    class _FakePlan:
+        def all_elements(self):
+            return [vent]
+
+    model = ResolvedModel(plan=_FakePlan())
+    model.pipe_runs.append(ResolvedPipeRun(
+        uid="P1", tag="PR-TEST", storey="main", system="vent", path=list(run_path),
+        diameter_m=inch(2).meters, z_start_m=None, z_end_m=None, length_m=1.0,
+        serves=("FX-TEST-WC",),
+    ))
+    wall = ResolvedWall(uid="W1", tag="W-TEST", storey="main", assembly="A", axis=wall_axis,
+                        layers=(), z0_m=0.0, z1_m=2.7)
+    return model, wall
+
+
+def test_vent_path_accepts_a_run_from_the_wet_wall_to_the_chase():
+    from typehaus.checks.mep.vent_path import evaluate_vent_path
+
+    model, wall = _vent_path_model(
+        run_path=[(0.0, 0.0), (0.0, 4.0), (2.0, 4.0)],
+        wall_axis=((0.0, -1.0), (0.0, 1.0)), chase_xy=(2.0, 4.0),
+    )
+    path = evaluate_vent_path(model, "FX-TEST-WC", wall)
+    assert path.is_connected and path.chase_tag == "VR-TEST"
+
+
+def test_vent_path_rejects_a_run_that_never_reaches_a_chase():
+    from typehaus.checks.mep.vent_path import evaluate_vent_path
+
+    model, wall = _vent_path_model(
+        run_path=[(0.0, 0.0), (0.0, 4.0)],
+        wall_axis=((0.0, -1.0), (0.0, 1.0)), chase_xy=(9.0, 9.0),
+    )
+    path = evaluate_vent_path(model, "FX-TEST-WC", wall)
+    assert not path.is_connected and path.chase_tag is None
+
+
+def test_vent_path_rejects_a_run_that_never_touches_the_wet_wall():
+    from typehaus.checks.mep.vent_path import evaluate_vent_path
+
+    model, wall = _vent_path_model(
+        run_path=[(5.0, 0.0), (5.0, 4.0), (2.0, 4.0)],
+        wall_axis=((0.0, -1.0), (0.0, 1.0)), chase_xy=(2.0, 4.0),
+    )
+    path = evaluate_vent_path(model, "FX-TEST-WC", wall)
+    assert not path.is_connected and not path.touches_wet_wall
+
+
+def test_vent_path_rejects_a_radon_only_riser():
+    """A passive soil-gas stack is not a plumbing vent; tying a trap arm into one would
+    push sewer gas at the radon fan, so only a riser carrying VENT counts."""
+    from typehaus.checks.mep.vent_path import evaluate_vent_path
+    from typehaus.model.enums import PipeSystem
+
+    model, wall = _vent_path_model(
+        run_path=[(0.0, 0.0), (0.0, 4.0), (2.0, 4.0)],
+        wall_axis=((0.0, -1.0), (0.0, 1.0)), chase_xy=(2.0, 4.0),
+        systems=(PipeSystem.RADON,),
+    )
+    assert evaluate_vent_path(model, "FX-TEST-WC", wall).chase_tag is None
+
+
+def test_vent_reachability_fails_a_water_closet_with_no_vent_path(catlin_model):
+    """Deleting the authored branch has to bring the failure back — the check must not be
+    passing these fixtures on the wet wall alone."""
+    import copy
+
+    model = copy.copy(catlin_model)
+    model.pipe_runs = [run for run in catlin_model.pipe_runs if run.tag != "PR-M-WC-VENT"]
+    report = run_from_model(model, [], tier=Tier.ADVISORY)
+    failed = {tag for f in report.findings if f.check_id == "mep.vent_reachability"
+              and f.result.value == "fail" for tag in f.element_tags}
+    assert {"FX-M-BATH1-WC", "FX-M-BATH2-WC"} <= failed
+
+
 def test_missing_sleeve_over_slab_fails():
     from typehaus.checks.mep.plumbing import _missing_sleeve_findings
     from typehaus.checks.registry import CheckContext, JurisdictionProfile, Preferences

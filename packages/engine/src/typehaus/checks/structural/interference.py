@@ -104,8 +104,13 @@ _STAIR_HOUSED = frozenset({"tread", "winder"})
 # catlin are stair members physically inside stud cavities, because stair members are laid
 # out to the host wall's *axis* (its centreline) instead of its finished face. That inset
 # is defect D3 in plans/TODO.md and is the real prerequisite for narrowing this set.
+# ``sill`` belongs with the stud kinds it sits between for exactly that reason: a rough
+# opening's sill is wall framing on the same centreline, so a flight running past a window
+# in a stair-adjacent wall reads as a clash for the same D3 offset that clears every stud
+# and plate here. Catlin has no such wall today, so the gap was invisible — see
+# tests/test_member_interference.py::test_stair_past_a_rough_opening_sill_is_not_a_clash.
 _STAIR_SUPPORT = frozenset({"stringer", "landing", "plate", "raked_plate", "joist",
-                            "blocking", "trimmer", "header", "partition", "newel",
+                            "blocking", "trimmer", "header", "sill", "partition", "newel",
                             "hanger"}) | _STUD_KINDS
 # The stair members that are *carried* rather than carrying. Kept as its own set (instead
 # of a literal beside the rule) so ``{"newel", "header"}`` — the newel/header lap at the

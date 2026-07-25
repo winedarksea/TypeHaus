@@ -205,6 +205,10 @@ OPENINGS = [
            position=from_node("N-S-SW", ft(2, 9)), sill_height=ft(2)),
     Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3060",
            position=from_node("N-S-SW", ft(6, 9)), sill_height=ft(2)),
+    # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
+    # type and not the 30" south-glazing one — "resize windows to fit the grid" (CLAUDE.md).
+    Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2760",
+           position=from_node("N-S-W3", ft(4, 2.5)), sill_height=ft(2)),
     Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3060",
            position=from_node("N-S-SE", ft(4, 9)), sill_height=ft(2, 6)),
     Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3060",
@@ -216,8 +220,6 @@ OPENINGS = [
            position=from_node("N-S-NW", ft(4, 1)), sill_height=ft(4)),
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3060",
            position=from_node("N-S-NE", ft(6, 9)), sill_height=ft(3)),
-    # Bedroom doors from the hallway
-    Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-3060", position=from_node("N-S-W3", ft(3, 7.9375)), sill_height=ft(2)),
 ]
 
 ROOMS = [

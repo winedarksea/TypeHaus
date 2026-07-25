@@ -75,6 +75,23 @@ class FasciaBoard(HausModel):
     depth: Length      # vertical face height
 
 
+class EaveGutter(HausModel):
+    """A hung gutter derived along a roof's *level* eave edges.
+
+    The authored :class:`Gutter` run is the right element for a deck or a porch edge, whose
+    elevation is a fixed fact. A roof's is not: a raised-heel truss lifts the whole deck plane
+    during the envelope stage, so an authored elevation drifts off the roof it hangs from.
+    Declaring the channel here instead keeps it on the plane, exactly like the fascia.
+    """
+
+    material: str
+    depth: Length      # channel height
+    thickness: Length  # channel width, out from the fascia's outer face
+    top_drop: Length   # top of the channel below the roof plane at the eave edge
+    edges: tuple[str, ...] = ()  # footprint edges ("south"/"north"/...); empty = every eave
+    slope: str = ""    # optional drainage note, e.g. "1/16 in/ft to the east downspout"
+
+
 class EaveTrim(HausModel):
     """A roof's edge closure, declared once and derived along every eave and rake.
 
@@ -87,6 +104,7 @@ class EaveTrim(HausModel):
     soffit_material: str = ""
     soffit_thickness: Length | None = None
     soffit_vented: bool = False
+    gutter: EaveGutter | None = None
 
 
 for _name, _obj in (
@@ -95,6 +113,7 @@ for _name, _obj in (
     ("Gutter", Gutter),
     ("Flashing", Flashing),
     ("FasciaBoard", FasciaBoard),
+    ("EaveGutter", EaveGutter),
     ("EaveTrim", EaveTrim),
 ):
     register_constructor(_name, _obj)

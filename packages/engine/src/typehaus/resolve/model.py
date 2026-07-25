@@ -98,6 +98,12 @@ class FramedMember:
     # cladding band the same generic grey as a plywood one. ``None`` for ordinary framing,
     # which is coloured by category as before.
     material: str | None = None
+    # Visibility trade this member belongs to when its *category* alone would file it
+    # elsewhere. A fascia is the case this exists for: it is envelope trim by category, but
+    # it is also a board nailed to the rafter tails that the carpenter frames — so it has to
+    # appear under a framing view toggle as well as with the roof skin it finishes.
+    # ``None`` = the consumer's category-derived default.
+    trade: str | None = None
 
 
 @dataclass(frozen=True)
@@ -333,6 +339,9 @@ class ResolvedPipeRun:
     z_start_m: float | None
     z_end_m: float | None
     length_m: float
+    # Fixture tags this run carries. Authored on ``PipeRun.serves``; carried into the IR so
+    # a check can ask "which run vents/drains this fixture" without re-reading plan source.
+    serves: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

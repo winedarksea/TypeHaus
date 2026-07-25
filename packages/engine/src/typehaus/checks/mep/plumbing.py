@@ -7,6 +7,7 @@ it is a CODE-tier FAIL, not an advisory suggestion.
 
 from __future__ import annotations
 
+from typehaus.checks.mep.vent_path import evaluate_vent_path
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import Service
@@ -197,7 +198,14 @@ def vent_termination_height(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.ADVISORY, "mep.vent_reachability")
 def vent_reachability(ctx: CheckContext) -> list[Finding]:
-    """Each VENT-needing fixture's wet wall must continue up to the storey above."""
+    """Every VENT-needing fixture must have a vent path that reaches the roof.
+
+    Two legal paths, in the order a plumber would prefer them: rise inside the fixture's own
+    wet wall where that wall continues to the storey above, or — where it stops at its own
+    top plate — take the vent above the flood-level rim and run it to a ``VentRun`` chase
+    that does reach the roof.  The second path is authored, never inferred
+    (``checks/mep/vent_path.py``), so an unvented water closet still fails loudly.
+    """
     out: list[Finding] = []
     types = {t.tag: t for t in ctx.plan.library.fixture_types}
     stacked_lower = {edge.lower_wall for edge in ctx.model.stack_edges}
@@ -213,16 +221,52 @@ def vent_reachability(ctx: CheckContext) -> list[Finding]:
                     "mep.vent_reachability", f"fixture {fixture.tag} has no wall_ref to vent",
                     (fixture.tag,),
                 ))
-            elif fixture.wall_ref not in stacked_lower:
-                out.append(_advisory_fail(
-                    "mep.vent_reachability",
-                    f"fixture {fixture.tag}'s wall {fixture.wall_ref} does not continue "
-                    "up to the storey above — vent cannot rise", (fixture.tag, fixture.wall_ref),
-                ))
-            else:
+                continue
+            if fixture.wall_ref in stacked_lower:
                 out.append(_pass(
                     "mep.vent_reachability",
                     f"fixture {fixture.tag}'s wall {fixture.wall_ref} continues up for the vent",
                     (fixture.tag,),
                 ))
+                continue
+            wall = ctx.model.wall(fixture.wall_ref)
+            if wall is None:
+                out.append(_unknown(
+                    "mep.vent_reachability",
+                    f"fixture {fixture.tag} references missing wall {fixture.wall_ref}",
+                    (fixture.tag, fixture.wall_ref),
+                ))
+                continue
+            out.append(_vent_path_finding(ctx, fixture, wall))
     return out
+
+
+def _vent_path_finding(ctx: CheckContext, fixture, wall) -> Finding:
+    """Grade the authored offset-vent path for a fixture whose wet wall stops short."""
+    path = evaluate_vent_path(ctx.model, fixture.tag, wall)
+    tags = (fixture.tag, fixture.wall_ref)
+    if path.run_tag is None:
+        return _advisory_fail(
+            "mep.vent_reachability",
+            f"fixture {fixture.tag}'s wall {fixture.wall_ref} does not continue up to the "
+            "storey above and no vent run carries it onward — author a VENT PipeRun from "
+            "that wet wall to a VentRun chase", tags,
+        )
+    if path.chase_tag is None:
+        return _advisory_fail(
+            "mep.vent_reachability",
+            f"fixture {fixture.tag}'s vent run {path.run_tag} ends at no VentRun chase — "
+            "the vent has no way through the roof", (fixture.tag, path.run_tag),
+        )
+    if not path.touches_wet_wall:
+        return _advisory_fail(
+            "mep.vent_reachability",
+            f"fixture {fixture.tag}'s vent run {path.run_tag} never reaches its wet wall "
+            f"{fixture.wall_ref} — the vent cannot leave the fixture",
+            (fixture.tag, path.run_tag, fixture.wall_ref),
+        )
+    return _pass(
+        "mep.vent_reachability",
+        f"fixture {fixture.tag} vents through {path.run_tag} to the {path.chase_tag} chase "
+        f"({fixture.wall_ref} stops at its own ceiling)", (fixture.tag, path.run_tag),
+    )

@@ -18,6 +18,7 @@ from shapely.ops import unary_union
 
 from typehaus._meta import IFC_APP_NAME, PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
+from typehaus.emit.ifc.roof import emit_roof
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section
@@ -69,7 +70,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
         _emit_construction_return(f, body, ret, storeys, project_uuid)
 
     for roof in sorted(model.roofs, key=lambda item: item.uid):
-        _emit_roof(f, body, roof, storeys, project_uuid, lod)
+        emit_roof(f, body, roof, storeys, project_uuid, lod, model)
 
     for floor in sorted(model.floors, key=lambda item: item.uid):
         _emit_floor(f, body, floor, storeys, project_uuid)
@@ -586,31 +587,6 @@ def _assign_solid_material(f: Any, element: Any, solid: Any, model: Any) -> None
          for ly in assembly.layers],
         name=solid.assembly,
     )
-
-
-def _emit_roof(f: Any, body: Any, roof: Any, storeys: dict[str, Any], project_uuid: Any,
-               lod: str) -> None:
-    element = ll.create_entity(f, "IfcRoof", name=roof.tag)
-    element.GlobalId = derive_guid(project_uuid, roof.uid)
-    # IFC consumers still receive a stable roof object at core LOD.  The glTF path preserves
-    # the pitched surface for interactive viewing; M3 can replace this core envelope with
-    # faceted IFC roof-plane geometry without changing identity.
-    # TODO(roof-eave-integration): this flat plate ignores roof.layer_edge_setbacks (the
-    # per-layer clip faces the glTF/three.js paths honor); port the setback-aware shell
-    # here when the IFC roof gains faceted plane geometry.
-    _assign_representation(f, element, ll.add_prism_from_profile(
-        f, body, roof.footprint, 0.0254, roof.eave_z_m
-    ))
-    ll.ensure_pset(f, element, PSET_SOURCE, {"uid": roof.uid, "tag": roof.tag,
-                                               "assembly": roof.assembly})
-    ll.assign_container(f, element, storeys[roof.storey])
-    if lod == "framed" and roof.members:
-        members = []
-        for member in sorted(roof.members, key=lambda item: item.child_key):
-            child = ll.create_entity(f, "IfcMember", name=f"{roof.tag}/{member.child_key}")
-            child.GlobalId = derive_child_guid(project_uuid, roof.uid, member.child_key)
-            members.append(child)
-        ll.aggregate(f, element, members)
 
 
 _BEAM_PREDEFINED_TYPE = {"joist": "JOIST", "rim": "BEAM", "blocking": "BEAM"}
