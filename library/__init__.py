@@ -19,7 +19,8 @@ from library.assemblies import (
     STARTER_FLOOR,
 )
 from library.materials import STARTER_MATERIALS
-from library.placeables import STARTER_APPLIANCE_TYPES, STARTER_FURNITURE_TYPES
+from library.placeables import (STARTER_APPLIANCE_TYPES, STARTER_FIXTURE_TYPES,
+                                STARTER_FURNITURE_TYPES)
 
 __all__ = [
     "STARTER_MATERIALS",
@@ -35,4 +36,5 @@ __all__ = [
     "STARTER_FLOOR",
     "STARTER_FURNITURE_TYPES",
     "STARTER_APPLIANCE_TYPES",
+    "STARTER_FIXTURE_TYPES",
 ]

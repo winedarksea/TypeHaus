@@ -91,7 +91,8 @@ def test_export_bundles_house_local_placeable_and_furniture_assets(tmp_path: Pat
     (house / "assets" / "placeables" / "abc.glb").write_bytes(b"GLB")
     (house / "assets" / "placeables.json").write_text(json.dumps({
         "revision": 1,
-        "types": [{"tag": "F-CHAIR", "model": "assets/placeables/abc.glb", "plan_svg": None}],
+        "types": [{"tag": "F-CHAIR", "model": "assets/placeables/abc.glb", "plan_svg": None,
+                   "plan_symbol": "dining-chair"}],
     }))
     (house / "furniture" / "meshes").mkdir(parents=True)
     (house / "furniture" / "meshes" / "SOFA.glb").write_bytes(b"MESH")
@@ -106,6 +107,10 @@ def test_export_bundles_house_local_placeable_and_furniture_assets(tmp_path: Pat
     assert result.ok
     assert (dest / "assets" / "placeables" / "abc.glb").read_bytes() == b"GLB"
     assert (dest / "furniture" / "meshes" / "SOFA.glb").read_bytes() == b"MESH"
+    # A generated-symbol opt-in is data, not an asset path: the bundle rewrites paths on
+    # export/import and must leave the symbol name exactly as authored.
+    catalog = json.loads((dest / "assets" / "placeables.json").read_text())
+    assert catalog["types"][0]["plan_symbol"] == "dining-chair"
 
 
 def test_import_reports_missing_asset_reference(tmp_path: Path) -> None:

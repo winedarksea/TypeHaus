@@ -88,3 +88,25 @@ def test_render_views_per_storey(model, tmp_path: Path):
 
     paths = render_views(model, tmp_path / "r", view="plan")
     assert paths and all(p.suffix == ".png" and p.exists() for p in paths)
+
+
+def test_emit_fixtures_draws_the_generated_glyph_as_plain_polylines() -> None:
+    """The whole point of generating geometry in the engine: PDF and DXF need no new ``Symbol``
+    branch, because a sofa arrives as more polylines on the layer the outline already used."""
+    from typehaus.emit.draw import build_floorplan
+
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    model, _ = resolve(load_plan(house).plan)
+    furniture = [node for node in build_floorplan(model, "main").by_layer()["A-FURN"]
+                 if isinstance(node, Polyline)]
+
+    sofa = next(item for item in model.canvas_objects if item.type_ref == "FURN-SOFA-84")
+    drawn = [node for node in furniture if node.uid == sofa.uid]
+    assert len(drawn) > 1, "the resolved outline plus every generated stroke"
+    assert drawn[0].closed and drawn[0].lineweight == 0.25, "the footprint stays the heavy outline"
+    assert all(node.tag == sofa.tag for node in drawn), "every stroke keeps element provenance"
+    # Glyph geometry is placed, not local: it has to land on top of the object it belongs to.
+    inches = [point for node in drawn[1:] for point in node.points]
+    center = [part * 39.37007874015748 for part in sofa.position]
+    assert max(abs(x - center[0]) for x, _ in inches) < 60
+    assert max(abs(y - center[1]) for _, y in inches) < 60

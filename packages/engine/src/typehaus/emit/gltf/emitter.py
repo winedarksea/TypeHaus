@@ -20,6 +20,7 @@ from pathlib import Path
 
 from typehaus.emit.draw.palette import family_of, material_color, material_family_color
 from typehaus.model.canvas import canvas_object_types
+from typehaus.model.placeable_symbols import PART_COLORS, model_parts, place_local
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 from typehaus.resolve.model import (
@@ -1177,25 +1178,34 @@ def _canvas_trade(domain: str) -> str:
     return _CANVAS_TRADES.get(domain, "furniture")
 
 
+_PLACEABLE_TYPE_COLLECTIONS = ("furniture_types", "fixture_types", "appliance_types",
+                               "equipment_types", "register_types", "electrical_device_types")
+
+
 def _add_canvas_objects(scene: _SceneBuilder, model: ResolvedModel) -> None:
     """Emit one node per ResolvedCanvasObject (furniture, fixtures, MEP devices).
 
-    Imported GLB furniture keeps its sidecar mesh; everything else extrudes its resolved
-    (already rotation-baked) footprint to the type's height, matching Panel3D's canvas-object
-    fallback box. ``domain=="opening"`` objects are skipped — they are already drawn as wall
-    cuts + fillings — so they never produce an unclassifiable node.
+    Precedence, highest first: an imported GLB sidecar keeps its mesh; a type naming a
+    ``plan_symbol`` emits its generated multi-part massing (``_MeshBuilder`` already buckets
+    triangles by colour, so several materials fall out of one node for free); everything else
+    extrudes its resolved footprint to the type's height, matching Panel3D's fallback box.
+    ``domain=="opening"`` objects are skipped — they are already drawn as wall cuts +
+    fillings — so they never produce an unclassifiable node.
     """
-    furniture_types = {item.tag: item for item in model.plan.library.furniture_types}
+    types = {item.tag: item for name in _PLACEABLE_TYPE_COLLECTIONS
+             for item in getattr(model.plan.library, name)}
     heights = {t["tag"]: t.get("height_m") for t in canvas_object_types(model.plan)}
     root = Path(model.plan.source_root or ".")
     for item in sorted(model.canvas_objects, key=lambda co: co.uid):
         if item.domain == "opening":
             continue
         mb = _MeshBuilder()
-        furniture_type = furniture_types.get(item.type_ref)
+        product_type = types.get(item.type_ref)
         drawn = False
-        if furniture_type is not None and getattr(furniture_type, "mesh", None) is not None:
-            drawn = _add_mesh_sidecar(mb, root / furniture_type.mesh.path, item.position, item.z_m)
+        if product_type is not None and getattr(product_type, "mesh", None) is not None:
+            drawn = _add_mesh_sidecar(mb, root / product_type.mesh.path, item.position, item.z_m)
+        if not drawn:
+            drawn = _add_canvas_parts(mb, item, product_type)
         if not drawn:
             _add_canvas_box(mb, item, heights.get(item.type_ref))
         scene.add_object(mb, trade=_canvas_trade(item.domain),
@@ -1225,6 +1235,33 @@ def _add_mesh_sidecar(mb: _MeshBuilder, path: Path, position: tuple[float, float
         return True
     except (ImportError, OSError, ValueError, AttributeError):
         return False
+
+
+def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
+                      product_type: object | None) -> bool:
+    """Extrude a type's generated massing parts, one prism each. False when it has no symbol.
+
+    The parts are in the symbol's **local** frame: the resolver bakes rotation into
+    ``footprint`` but not into symbol geometry, so each box ring goes through the same
+    ``place_local`` the canvas and the sheet writers use. Colours come from ``PART_COLORS``
+    directly — the viewer reads the hex the serializer derives from those same numbers, so
+    the two cannot disagree.
+    """
+    symbol = getattr(product_type, "plan_symbol", None)
+    footprint = getattr(product_type, "footprint", None)
+    height = getattr(product_type, "height", None)
+    if symbol is None or footprint is None or height is None:
+        return False
+    width_m, depth_m = (part.meters for part in footprint)
+    parts = model_parts(symbol, width_m, depth_m, height.meters)
+    for part in parts:
+        (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
+        ring = [(cx - sx / 2, cy - sy / 2), (cx + sx / 2, cy - sy / 2),
+                (cx + sx / 2, cy + sy / 2), (cx - sx / 2, cy + sy / 2)]
+        mb.add_prism(place_local(ring, item.position, item.rotation_degrees),
+                     item.z_m + cz - sz / 2, item.z_m + cz + sz / 2,
+                     PART_COLORS[part["color"]])
+    return bool(parts)
 
 
 def _add_canvas_box(mb: _MeshBuilder, item: ResolvedCanvasObject, height_m: float | None) -> None:

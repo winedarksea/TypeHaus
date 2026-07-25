@@ -13,7 +13,7 @@ from typehaus import (ApplianceType, ClearancePolicy, ClearanceZone, FixtureType
 
 FIXTURE_TYPES = (
     FixtureType(tag="FX-TOILET", name="Water closet", footprint=(ft(2, 6), ft(2, 6)),
-                height=ft(2, 6), needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
+                height=ft(2, 6), plan_symbol="toilet", needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
                 clearances=(ClearanceZone(
                     footprint=Footprint2D(points=(pt(ft(-1, 3), ft(-1, 3)), pt(ft(1, 3), ft(-1, 3)),
                                                   pt(ft(1, 3), ft(3)), pt(ft(-1, 3), ft(3)))),
@@ -23,16 +23,16 @@ FIXTURE_TYPES = (
                 ),),
                 source="Residential planning allowance; final fixture selection by owner."),
     FixtureType(tag="FX-LAV", name="Lavatory", footprint=(ft(2), ft(1, 9)), height=ft(3),
-                needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN}),
+                plan_symbol="lavatory", needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN}),
                 source="Residential planning allowance; final fixture selection by owner."),
     FixtureType(tag="FX-SHOWER", name="Shower", footprint=(ft(3), ft(3)), height=ft(7),
-                needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN}),
+                plan_symbol="shower", needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN}),
                 source="Residential planning allowance; final fixture selection by owner."),
 )
 
 APPLIANCE_TYPES = (
     ApplianceType(tag="APPL-WASHER", name="Clothes washer", footprint=(ft(2, 3), ft(2, 6)),
-                  height=ft(3), needs=frozenset({Service.WATER_HOT, Service.WATER_COLD,
+                  height=ft(3), plan_symbol="washer", needs=frozenset({Service.WATER_HOT, Service.WATER_COLD,
                                                   Service.DRAIN, Service.POWER_240}),
                   source="Residential planning allowance; final appliance selection by owner."),
 )

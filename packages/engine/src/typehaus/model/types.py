@@ -62,6 +62,9 @@ class FurnitureType(HausModel):
     plan_representation: PlanRepresentation | None = None
     model_representation: ModelRepresentation | None = None
     mount: Mount = Mount()
+    # Names a generated glyph + massing from ``model/placeable_symbols`` (see SYMBOL_NAMES).
+    # An imported ``plan_representation``/``model_representation`` still wins over it.
+    plan_symbol: str | None = None
 
 
 class FixtureType(HausModel):
@@ -82,6 +85,7 @@ class FixtureType(HausModel):
     plan_representation: PlanRepresentation | None = None
     model_representation: ModelRepresentation | None = None
     mount: Mount = Mount()
+    plan_symbol: str | None = None
 
 
 class ApplianceType(FurnitureType):

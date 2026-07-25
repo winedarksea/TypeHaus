@@ -113,7 +113,7 @@ def test_project_catalog_round_trips_placeable_geometry_and_services(tmp_path: P
                    "connection_size_m": 0.02, "notes": "rear"}],
         "needs": ["power_240"], "mount": {"kind": "wall", "elevation_m": 0.1},
         "model": "assets/placeables/model.glb", "model_primitive": "cylinder",
-        "plan_svg": "assets/placeables/symbol.svg"
+        "plan_svg": "assets/placeables/symbol.svg", "plan_symbol": "range"
       }]
     }''')
     plan = load_project_placeables(
@@ -131,6 +131,9 @@ def test_project_catalog_round_trips_placeable_geometry_and_services(tmp_path: P
     assert item.mount.kind.value == "wall"
     assert item.model_representation and item.model_representation.glb.endswith("model.glb")
     assert item.model_representation.primitive == "cylinder"
+    # A project-local type may opt into a generated glyph too; the imported SVG still wins at
+    # draw time, but the opt-in has to survive the catalog round-trip to be worth authoring.
+    assert item.plan_symbol == "range"
 
 
 def test_glb_commit_applies_declared_units_axis_and_floor_origin(tmp_path: Path) -> None:
@@ -181,3 +184,21 @@ def test_single_ifc_occurrence_is_analyzed_and_extracted_as_a_catalog_asset(tmp_
     assert record["model"] and (tmp_path / "house" / record["model"]).exists()
     assert record["provenance"]["ifc_global_id"] == candidate.global_id
     assert record["ports"] == list(candidate.ports)
+
+
+def test_an_unknown_plan_symbol_is_reported_rather_than_silently_drawing_nothing(tmp_path: Path) -> None:
+    house = tmp_path / "house"
+    (house / "assets").mkdir(parents=True)
+    (house / "assets" / "placeables.json").write_text(
+        '{"revision": 1, "types": [{"domain": "furniture", "tag": "F-TYPO", "name": "Typo",'
+        ' "footprint_m": [0.6, 0.6], "height_m": 0.9, "plan_symbol": "couch"}]}')
+    findings: list = []
+    plan = load_project_placeables(
+        house,
+        PlanModel(project=Project(name="test", project_uuid="00000000-0000-0000-0000-000000000001",
+                                  building=Building(name="test"),
+                                  site=Site(lat=0, lon=0, elevation=m(0))), library=Library()),
+        findings,
+    )
+    assert not plan.library.furniture_types
+    assert any("unknown plan_symbol" in finding.message for finding in findings)

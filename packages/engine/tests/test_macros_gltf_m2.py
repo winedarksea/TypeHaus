@@ -691,3 +691,22 @@ def test_sync_model_imports_is_idempotent_and_reversible():
     assert sync_model_imports(synced) == synced  # idempotent
     # Removing the declaration and re-syncing drops the now-unused import.
     assert sync_model_imports(base) == base
+
+
+def test_a_generated_furniture_massing_is_one_node_of_several_materials() -> None:
+    """A symbol's parts must not fragment the export's per-object identity: the emitter buckets
+    triangles by colour inside one ``_MeshBuilder``, so a sofa is several materials on a single
+    ``furniture|canvas_object|<uid>`` node — the same thing the viewer builds as one group."""
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    result = load_plan(house)
+    assert result.plan is not None
+    model, _ = resolve(result.plan)
+    sofa = next(item for item in model.canvas_objects if item.type_ref == "FURN-SOFA-84")
+    gltf, _blob = emit_gltf_dict(model)
+
+    nodes = [node for node in gltf["nodes"] if node["extras"].get("uid") == sofa.uid]
+    assert len(nodes) == 1, "one canvas object is still exactly one node"
+    assert nodes[0]["name"] == f"furniture|canvas_object|{sofa.uid}"
+    primitives = gltf["meshes"][nodes[0]["mesh"]]["primitives"]
+    assert len(primitives) > 1, "a multi-colour massing needs one primitive per colour"
+    assert len({primitive["material"] for primitive in primitives}) == len(primitives)

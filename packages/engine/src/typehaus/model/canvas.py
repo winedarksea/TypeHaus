@@ -7,6 +7,7 @@ from math import atan2, degrees
 
 from typehaus.model.plan import PlanModel
 from typehaus.model.placeables import PlacementStrategy
+from typehaus.model.placeable_symbols import model_parts, part_hex, plan_symbol_strokes
 
 
 _TYPE_COLLECTIONS = (
@@ -46,8 +47,34 @@ def canvas_object_types(plan: PlanModel) -> list[dict[str, Any]]:
                               f"/asset/{item.mesh.path}" if getattr(item, "mesh", None) is not None else None),
                 "model_primitive": (item.model_representation.primitive
                                     if getattr(item, "model_representation", None) is not None else None),
+                **_symbol_geometry(item, footprint),
             })
     return result
+
+
+def _symbol_geometry(item: Any, footprint: Any) -> dict[str, Any]:
+    """Project a type's generated plan glyph and 3D massing into the wire contract.
+
+    Colours resolve to hex *here*, so the UI needs no palette table of its own — the viewer
+    and the glTF export read the same numbers instead of hand-mirrored constants. Geometry is
+    in the symbol's local frame (origin at the footprint centre); every consumer already owns
+    the rotate-and-translate, and ``placeable_symbols.place_local`` is that one transform.
+    """
+    symbol = getattr(item, "plan_symbol", None)
+    height = getattr(item, "height", None)
+    if symbol is None or footprint is None:
+        return {"plan_strokes": [], "model_parts": []}
+    width_m, depth_m = (part.meters for part in footprint)
+    height_m = height.meters if height is not None else 0.0
+    return {
+        "plan_strokes": [{"points": [list(point) for point in stroke["points"]],
+                          "closed": stroke["closed"], "weight": stroke["weight"],
+                          "fill": part_hex(stroke["fill"]) if stroke["fill"] else None}
+                         for stroke in plan_symbol_strokes(symbol, width_m, depth_m)],
+        "model_parts": [{"center": list(part["center"]), "size": list(part["size"]),
+                         "color": part_hex(part["color"])}
+                        for part in model_parts(symbol, width_m, depth_m, height_m)],
+    }
 
 
 def canvas_objects(plan: PlanModel) -> list[dict[str, Any]]:

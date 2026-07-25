@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import type { Catalog, Floor, FootingBedding, Member, Opening, Roof, Solid, Stair, Wall, Model } from "../model/types";
-import { archSoffitSegmentCount, buildFloor, buildFootingBedding, buildOpening, buildRoof, buildSolid, buildStair, canvasObjectFallbackGeometry, compassBearingScreenDirection, createSmoothArchedWallLayerGeometry, earthElevation, earthOutline, earthVoids, EARTH_FALLBACK_HALF_SIZE_M, FOOTING_BEDDING_COLOR, wallLayerPieces, wholeHouseGlbAssignment, withoutCollinearVertices } from "./Panel3D";
+import type { CanvasObject, Catalog, Floor, FootingBedding, Member, ModelPart, Opening, Roof, Solid, Stair, Vec2, Wall, Model } from "../model/types";
+import { archSoffitSegmentCount, buildCanvasObjectParts, buildFloor, buildFootingBedding, buildOpening, buildRoof, buildSolid, buildStair, canvasObjectFallbackGeometry, compassBearingScreenDirection, createSmoothArchedWallLayerGeometry, earthElevation, earthOutline, earthVoids, EARTH_FALLBACK_HALF_SIZE_M, FOOTING_BEDDING_COLOR, wallLayerPieces, wholeHouseGlbAssignment, withoutCollinearVertices } from "./Panel3D";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { SOLID_CATEGORY_COLOR, createSolidMaterial, solidColor } from "../three/solidMaterials";
 
@@ -350,6 +350,44 @@ export function runCanvasObjectGeometryTests() {
     northFromSoutheast[0] - rotatedTrueNorth[0],
     northFromSoutheast[1] - rotatedTrueNorth[1],
   ) > 0.5, "Compass north responds to site true-north rotation");
+}
+
+// A generated massing is one group of boxes, not one mesh — but it is still one *object*:
+// every part has to answer to the same uid, or clicking an arm would select an arm.
+export function runCanvasObjectPartsTests() {
+  const group = new THREE.Group();
+  const { picks, byUid } = registry();
+  const item = {
+    uid: "CO-1", tag: "F-1", storey: "L1", kind: "Furniture", type: "FURN-SOFA-84",
+    domain: "furniture", room: null, position_m: [2, 3] as Vec2, rotation: 90,
+    host: null, attachment: null,
+  } as CanvasObject;
+  const parts: ModelPart[] = [
+    { center: [0, 0.3, 0.4], size: [2, 0.2, 0.8], color: "#8c8f95" },
+    { center: [-0.8, 0, 0.3], size: [0.14, 0.9, 0.6], color: "#8c8f95" },
+    { center: [0, -0.1, 0.45], size: [1.6, 0.6, 0.12], color: "#adb0b3" },
+  ];
+  const built = buildCanvasObjectParts(group, item, parts, [0, 0], "schematic", 1.5, picks, byUid);
+
+  assert(built instanceof THREE.Group, "A multi-part massing builds a group, not a single mesh");
+  assert(built.children.length === parts.length, "Every part becomes its own box mesh");
+  registered(group, "CO-1", "canvas_object", picks, byUid, "buildCanvasObjectParts");
+  assert(picks.filter((mesh) => mesh.userData.uid === "CO-1").length === parts.length,
+    "Clicking any part selects the whole object: all of them are raycast targets for one uid");
+  // Two roles, three parts — the highlight pass must reach both materials and no duplicates.
+  assert((byUid.get("CO-1") ?? []).length === 2,
+    "One material per distinct colour, shared across the parts that use it");
+
+  // Placement lives on the group; a part only carries its local offset, mapped plan → scene
+  // as (x, z, -y). Nothing may be baked into the meshes themselves.
+  assert(Math.abs(built.position.y - 1.5) < 1e-9, "The group sits at the object's base elevation");
+  assert(Math.abs(built.position.x - 2) < 1e-9 && Math.abs(built.position.z + 3) < 1e-9,
+    "The group carries the plan position");
+  assert(Math.abs(built.rotation.y - Math.PI / 2) < 1e-9, "The group carries the plan rotation");
+  const back = built.children[0] as THREE.Mesh;
+  assert(Math.abs(back.position.x) < 1e-9 && Math.abs(back.position.y - 0.4) < 1e-9
+    && Math.abs(back.position.z + 0.3) < 1e-9, "A part offset maps (x, y, z) -> (x, z, -y)");
+  assert(back.rotation.y === 0, "Rotation is the group's job, never the part's");
 }
 
 // The whole-house glb only becomes the primary scene when its nodes map back to trades (and,

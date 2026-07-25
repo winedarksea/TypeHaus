@@ -16,9 +16,13 @@ from typehaus.emit.draw.scene import (
     SceneBuilder,
     Text,
 )
+from typehaus.model.canvas import canvas_object_types
+from typehaus.model.placeable_symbols import place_local
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 M_TO_IN = 39.37007874015748
+# How far below a symbol's footprint its tag sits, so the label never covers the glyph.
+_LABEL_GAP_M = 0.08
 
 # AIA CAD Layer Guidelines mapping per assembly-layer function (→ 20 §DXF conventions).
 FUNCTION_LAYER = {
@@ -91,19 +95,37 @@ def emit_fixtures(b: SceneBuilder, model: ResolvedModel, storey: str,
     The drawing IR deliberately stays vector-primitive-only.  Using resolver geometry keeps
     rotation, wall attachment, custom footprint shapes, and imported products consistent
     with canvas/IFC without attempting to embed arbitrary third-party SVG into PDF or DXF.
+
+    A type that names a ``plan_symbol`` also contributes its generated glyph, transformed by
+    the same ``place_local`` every other consumer uses: the resolved footprint stays the heavy
+    outline and the glyph is drawn lighter inside it.  Fills are ignored here — that is the
+    one thing the technical output does not take from the symbol — and the label moves below
+    the object now that the glyph, not the text, carries the meaning.  Everything arrives as
+    plain polylines, so the PDF and DXF writers need no new branch.
     """
     layers = {"furniture": "A-FURN", "plumbing": "A-FIXT", "appliance": "A-FIXT",
               "mechanical": "M-EQPT", "electrical": "E-POWR"}
+    symbols = {item["tag"]: item.get("plan_strokes", ())
+               for item in canvas_object_types(model.plan)}
     for item in model.canvas_objects:
         if item.storey != storey or (domains is not None and item.domain not in domains):
             continue
         if len(item.footprint) < 3:
             continue
+        layer = layers.get(item.domain, "A-FIXT")
         b.add(Polyline(points=tuple(to_in(point) for point in item.footprint),
-                       layer=layers.get(item.domain, "A-FIXT"), closed=True, lineweight=0.25,
+                       layer=layer, closed=True, lineweight=0.25,
                        uid=item.uid, tag=item.tag))
-        b.add(Text(anchor=to_in(item.position), content=item.type_ref or item.tag,
-                   height=2.0, layer="A-ANNO-TEXT", align="center"))
+        strokes = symbols.get(item.type_ref or "", ())
+        for stroke in strokes:
+            placed = place_local(stroke["points"], item.position, item.rotation_degrees)
+            b.add(Polyline(points=tuple(to_in(point) for point in placed), layer=layer,
+                           closed=stroke["closed"], lineweight=stroke["weight"],
+                           uid=item.uid, tag=item.tag))
+        label_y = min(point[1] for point in item.footprint) - _LABEL_GAP_M
+        b.add(Text(anchor=to_in((item.position[0], label_y)) if strokes else to_in(item.position),
+                   content=item.type_ref or item.tag,
+                   height=1.5 if strokes else 2.0, layer="A-ANNO-TEXT", align="center"))
 
 
 def emit_bbox_dimension_chain(b: SceneBuilder, walls: list[ResolvedWall],

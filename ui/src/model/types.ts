@@ -219,6 +219,24 @@ export interface CanvasObjectType {
   plan_svg?: string | null;
   model_glb?: string | null;
   model_primitive?: string | null;
+  // Generated plan glyph + boxy massing for types with no imported asset. Both are in the
+  // type's local frame (origin at the footprint centre, +y toward the object's back, z=0 at
+  // its base); the engine owns the geometry, the UI only places and draws it.
+  plan_strokes?: PlanStroke[];
+  model_parts?: ModelPart[];
+}
+
+export interface PlanStroke {
+  points: Vec2[];
+  closed: boolean;
+  fill: string | null;
+  weight: number;
+}
+
+export interface ModelPart {
+  center: [number, number, number];
+  size: [number, number, number];
+  color: string;
 }
 
 export interface SpaceSummaryRow {

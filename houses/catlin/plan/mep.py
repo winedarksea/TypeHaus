@@ -48,20 +48,24 @@ from typehaus.model import m
 
 REGISTER_TYPES = (
     RegisterType(tag="REG-T-SUPPLY", name="Supply register", footprint=(inch(12), inch(6)), height=inch(1),
+                 plan_symbol="register",
                  ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
     RegisterType(tag="REG-T-RETURN", name="Return grille", footprint=(inch(14), inch(8)), height=inch(1),
+                 plan_symbol="register",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
 )
 
 EQUIPMENT_TYPES = (
     EquipmentType(tag="EQ-T-FURNACE", name="Gas furnace", footprint=(inch(24), inch(28)), height=ft(5),
+                  plan_symbol="furnace",
                   ports=(ServicePort(tag="gas", service=Service.GAS, position=(ft(0), ft(0), ft(0))),
                          ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
                          ServicePort(tag="supply", service=Service.SUPPLY_AIR, position=(ft(0), ft(0), ft(4))),
                          ServicePort(tag="return", service=Service.RETURN_AIR, position=(ft(0), ft(0), ft(4))))),
     EquipmentType(tag="EQ-T-WATER-HEATER", name="Water heater", footprint=(inch(24), inch(24)), height=ft(5),
+                  plan_symbol="water-heater",
                   ports=(ServicePort(tag="cold", service=Service.WATER_COLD, position=(ft(0), ft(0), ft(4))),
                          ServicePort(tag="hot", service=Service.WATER_HOT, position=(ft(0), ft(0), ft(4))),
                          ServicePort(tag="gas", service=Service.GAS, position=(ft(0), ft(0), ft(0))))),
@@ -69,6 +73,7 @@ EQUIPMENT_TYPES = (
 
 ELECTRICAL_DEVICE_TYPES = (
     ElectricalDeviceType(tag="ED-T-PANEL", name="Electrical panel", footprint=(inch(20), inch(4)), height=ft(3),
+                          plan_symbol="panel",
                           ports=(ServicePort(tag="service", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
     ElectricalDeviceType(tag="ED-T-LIGHT", name="Ceiling light", footprint=(inch(8), inch(8)), height=inch(2),

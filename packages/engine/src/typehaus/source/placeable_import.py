@@ -141,8 +141,11 @@ def commit_placeable_asset(analysis: AssetAnalysis, house_dir: Path, *, domain: 
     if matching is None:
         types.append(record)
     else:
-        # Re-import keeps the pre-existing tag (and therefore all placed instance refs).
+        # Re-import keeps the pre-existing tag (and therefore all placed instance refs) and
+        # any hand-authored generated-symbol opt-in, which the asset analysis cannot know.
         record["tag"] = types[matching]["tag"]
+        if types[matching].get("plan_symbol"):
+            record["plan_symbol"] = types[matching]["plan_symbol"]
         types[matching] = record
     try:
         _atomic_json(catalog_path, document)

@@ -373,3 +373,47 @@ def test_only_rooms_with_complete_moved_boundary_translate_with_contents() -> No
     moved_room_tags = {item.tag for item in result.ops if item.type == "Room"}
     assert translated and translated < all_rooms
     assert moved_room_tags == translated
+
+
+def test_generated_symbol_geometry_rides_the_canvas_type_contract() -> None:
+    """The wire contract is the seam: Canvas2D, the sheet writers, Panel3D and the glTF
+    emitter all render what the engine sends, so both keys have to be present and typed the
+    same whether or not the type actually names a symbol."""
+    with_symbol = FurnitureType(tag="F-SOFA", name="Sofa", footprint=(ft(7), ft(3)),
+                                height=ft(2, 10), plan_symbol="sofa")
+    without = FurnitureType(tag="F-BLANK", name="Blank", footprint=(ft(1), ft(1)), height=ft(1))
+    plan = PlanModel(
+        project=Project(name="test", project_uuid="00000000-0000-0000-0000-000000000001",
+                        building=Building(name="test"), site=Site(lat=0, lon=0, elevation=m(0))),
+        storeys=(Storey(tag="main", elevation=ft(0), default_ceiling_height=ft(8)),),
+        library=Library(furniture_types=(with_symbol, without)),
+    )
+    catalog = {item["tag"]: item for item in canvas_object_types(plan)}
+    assert catalog["F-BLANK"]["plan_strokes"] == [] and catalog["F-BLANK"]["model_parts"] == []
+
+    strokes, parts = catalog["F-SOFA"]["plan_strokes"], catalog["F-SOFA"]["model_parts"]
+    assert len(strokes) > 1 and len(parts) > 1
+    # Colours resolve to hex in the serializer so the UI needs no palette table of its own.
+    assert all(part["color"].startswith("#") for part in parts)
+    assert all(stroke["fill"] is None or stroke["fill"].startswith("#") for stroke in strokes)
+    # Plain JSON lists, not tuples — this crosses an HTTP boundary.
+    assert all(isinstance(point, list) and len(point) == 2
+               for stroke in strokes for point in stroke["points"])
+    assert all(len(part["center"]) == 3 and len(part["size"]) == 3 for part in parts)
+    # Geometry is local: the type knows nothing about where an instance was placed.
+    assert max(abs(point[0]) for stroke in strokes for point in stroke["points"]) \
+        <= ft(7).meters / 2 + 1e-9
+
+
+def test_catlin_furnished_rooms_resolve_against_the_shared_starter_catalog() -> None:
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    plan = load_plan(house).plan
+    assert plan is not None
+    model, findings = resolve(plan)
+    assert not [item for item in findings if item.severity.value == "error"
+                and "placeable" in item.check_id]
+    sofa = next(item for item in model.canvas_objects if item.type_ref == "FURN-SOFA-84")
+    assert sofa.room == "RM-M-LIVING" and len(sofa.footprint) == 4
+    symbols = {item["tag"]: item["plan_strokes"] for item in canvas_object_types(plan)}
+    # The house-local fixtures opted in too, so the very first render shows a real glyph.
+    assert symbols["FX-LAV"] and symbols["EQ-T-FURNACE"] and symbols["ED-T-PANEL"]

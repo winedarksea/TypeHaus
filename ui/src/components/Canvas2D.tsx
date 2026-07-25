@@ -1163,6 +1163,9 @@ function CanvasObjectFootprint({ item, type, project, scale, walls, selected, on
     appliance: ["#e5e7eb", "#4b5563"],
   };
   const [fill, stroke] = colors[item.domain] ?? ["#e5e7eb", "#4b5563"];
+  // Precedence: an imported plan SVG wins, then the engine-generated glyph, then the plain
+  // footprint rect. The first generated stroke is the object outline and carries selection.
+  const strokes = type?.plan_svg ? [] : type?.plan_strokes ?? [];
   return <g opacity={0.92} style={{ cursor: "grab" }}
     onPointerDown={(event) => { event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId); onSelect("canvas_object", item.uid); }}
     // Double-click opens the object's details (Inspector), matching the door/window affordance
@@ -1186,10 +1189,28 @@ function CanvasObjectFootprint({ item, type, project, scale, walls, selected, on
     onPointerCancel={() => { setDraggedPosition(null); setAlignmentPoint(null); }}>
     {type?.plan_svg ? <image href={type.plan_svg} x={x - width / 2} y={y - depth / 2} width={width} height={depth}
       transform={`rotate(${-rotation} ${x} ${y})`} />
-      : <rect x={x - width / 2} y={y - depth / 2} width={width} height={depth}
-        fill={fill} stroke={selected ? "var(--ink)" : stroke} strokeWidth={selected ? 2.4 : 1.2}
-        transform={`rotate(${-rotation} ${x} ${y})`} />}
-    <text x={x} y={y + 3} textAnchor="middle" fontSize={9} fill="var(--ink)" pointerEvents="none">
+      : strokes.length ? <g transform={`rotate(${-rotation} ${x} ${y})`}>
+        {strokes.map((symbolStroke, index) => {
+          // The engine owns the geometry; the UI only projects it. Screen y is inverted from
+          // plan y, the same handedness doorSymbolPoint uses.
+          const points = symbolStroke.points
+            .map(([sx, sy]) => `${x + sx * scale},${y - sy * scale}`).join(" ");
+          const outline = index === 0;
+          return symbolStroke.closed
+            ? <polygon key={index} points={points} fill={symbolStroke.fill ?? "none"}
+              stroke={selected && outline ? "var(--ink)" : stroke}
+              strokeWidth={(selected && outline ? 2.4 : 1.2) * symbolStroke.weight / 0.25} />
+            : <polyline key={index} points={points} fill="none" stroke={stroke}
+              strokeWidth={1.2 * symbolStroke.weight / 0.25} />;
+        })}
+      </g>
+        : <rect x={x - width / 2} y={y - depth / 2} width={width} height={depth}
+          fill={fill} stroke={selected ? "var(--ink)" : stroke} strokeWidth={selected ? 2.4 : 1.2}
+          transform={`rotate(${-rotation} ${x} ${y})`} />}
+    {/* A centred label sits on top of the glyph and hides it, so a drawn symbol pushes its
+        name below the footprint instead. */}
+    <text x={x} y={strokes.length ? y + depth / 2 + 11 : y + 3} textAnchor="middle" fontSize={9}
+      fill="var(--ink)" pointerEvents="none">
       {(type?.name ?? item.type ?? item.kind).replace(/^[A-Z]+-/, "")}
     </text>
     {selected && <g>

@@ -8,7 +8,7 @@ const server = await createServer({
 
 try {
   const { runPlanGeometryTests } = await server.ssrLoadModule("/src/three/planGeometry.test.ts");
-  const { runArchGeometryTests, runCanvasObjectGeometryTests, runOpeningGeometryTests, runEarthGeometryTests, runFootingBeddingGeometryTests, runWholeHouseGlbTests, runSolidMaterialTests, runSelectionRegistrationTests } = await server.ssrLoadModule("/src/components/Panel3D.test.ts");
+  const { runArchGeometryTests, runCanvasObjectGeometryTests, runCanvasObjectPartsTests, runOpeningGeometryTests, runEarthGeometryTests, runFootingBeddingGeometryTests, runWholeHouseGlbTests, runSolidMaterialTests, runSelectionRegistrationTests } = await server.ssrLoadModule("/src/components/Panel3D.test.ts");
   const { runModelGeometryTests } = await server.ssrLoadModule("/src/model/geometry.test.ts");
   const { runDoorSymbolTests } = await server.ssrLoadModule("/src/model/doorSymbols.test.ts");
   const { runRoofGeometryTests } = await server.ssrLoadModule("/src/three/roofGeometry.test.ts");
@@ -20,6 +20,7 @@ try {
   runEarthGeometryTests();
   runFootingBeddingGeometryTests();
   runCanvasObjectGeometryTests();
+  runCanvasObjectPartsTests();
   runWholeHouseGlbTests();
   runSolidMaterialTests();
   runSelectionRegistrationTests();

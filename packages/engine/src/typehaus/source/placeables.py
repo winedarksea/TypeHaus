@@ -10,6 +10,7 @@ from typehaus.model import (ApplianceType, ClearancePolicy, ClearanceZone, Elect
                             EquipmentType, FixtureType, Footprint2D, FurnitureType, ModelRepresentation,
                             Mount, MountKind, PlacementStrategy, PlanRepresentation, RegisterType, Service,
                             ServicePort, m, pt)
+from typehaus.model.placeable_symbols import SYMBOL_NAMES
 from typehaus.model.plan import PlanModel
 
 _PATH = Path("assets/placeables.json")
@@ -59,7 +60,8 @@ def load_project_placeables(house_dir: Path, plan: PlanModel,
                           footprint_shape=_footprint(record.get("footprint_shape_m")),
                           clearances=_clearances(record.get("clearances", [])),
                           ports=_ports(record.get("ports", [])),
-                          mount=_mount(record.get("mount")))
+                          mount=_mount(record.get("mount")),
+                          plan_symbol=_plan_symbol(record.get("plan_symbol")))
             if record.get("model"):
                 common["model_representation"] = ModelRepresentation(
                     glb=str(record["model"]), primitive=record.get("model_primitive"),
@@ -85,6 +87,15 @@ def load_project_placeables(house_dir: Path, plan: PlanModel,
 def _error(message: str) -> Finding:
     return Finding(severity=Severity.ERROR, check_id="placeables.catalog", message=message,
                    result=Result.FAIL)
+
+
+def _plan_symbol(value: object) -> str | None:
+    """Unknown symbol names fail loudly: silently drawing nothing hides the typo forever."""
+    if value is None:
+        return None
+    if value not in SYMBOL_NAMES:
+        raise ValueError(f"unknown plan_symbol {value!r}")
+    return str(value)
 
 
 def _footprint(value: object) -> Footprint2D | None:

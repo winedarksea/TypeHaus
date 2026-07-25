@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { ALL_SELECTION_KINDS, ALL_TRADES, useStore, type SelectionKind, type Trade } from "../state/store";
-import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, MaterialSpec, Model, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
+import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, MaterialSpec, Model, ModelPart, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
 import { authoredAppearance, materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { buildMembers, disposeGroup, isRoofFramingMember } from "../three/members";
 import { createSolidMaterial } from "../three/solidMaterials";
@@ -567,10 +567,13 @@ function createScene(
             disposeGroup(gltf.scene);
             return;
           }
+          // The fallback may be a whole group of massing parts now, not one mesh, so drop
+          // every pick it owns and dispose it as a subtree.
           group.remove(fallback);
-          fallback.geometry.dispose();
-          (fallback.material as THREE.Material).dispose();
-          picks = picks.filter((mesh) => mesh !== fallback);
+          const replaced = new Set<THREE.Object3D>();
+          fallback.traverse((node) => replaced.add(node));
+          disposeGroup(fallback);
+          picks = picks.filter((mesh) => !replaced.has(mesh));
           const visual = gltf.scene;
           visual.position.copy(projectPointToScene(item.position_m,
             item.z_m ?? m.storeys.find((storey) => storey.tag === item.storey)?.elevation_m ?? 0, center));
@@ -806,10 +809,14 @@ function buildCanvasObject(
   elevation: number,
   picks: THREE.Mesh[],
   byUid: Map<string, THREE.Material[]>,
-): THREE.Mesh | null {
+): THREE.Object3D | null {
   if (!item.position_m) return null;
   const [width, depth] = type?.footprint_m ?? [0.45, 0.45];
   const height = type?.height_m ?? 0.25;
+  const parts = type?.model_parts ?? [];
+  if (parts.length) {
+    return buildCanvasObjectParts(parent, item, parts, center, mode, elevation, picks, byUid);
+  }
   const color = item.domain === "electrical" ? 0xd69e2e
     : item.domain === "plumbing" ? 0x4299e1 : item.domain === "mechanical" ? 0x718096 : palette.member.wood;
   const material = new THREE.MeshStandardMaterial({ color, roughness: mode === "nordic" ? 0.82 : 1,
@@ -826,6 +833,57 @@ function buildCanvasObject(
   picks.push(mesh);
   byUid.set(item.uid, [material]);
   return mesh;
+}
+
+/**
+ * A generated multi-part massing: one BoxGeometry mesh per part, one material per distinct
+ * colour, all under a single group. Every mesh carries the object's uid and lands in `picks`
+ * and `byUid`, so clicking any part selects the whole object and highlights all of it — the
+ * same contract the GLB-loaded branch honours.
+ *
+ * Parts arrive in the type's local frame (origin at the footprint centre, z=0 at the base);
+ * the group carries the placement, exactly as the single-box fallback does.
+ */
+export function buildCanvasObjectParts(
+  parent: THREE.Group,
+  item: CanvasObject,
+  parts: ModelPart[],
+  center: PlanCenter,
+  mode: "nordic" | "schematic",
+  elevation: number,
+  picks: THREE.Mesh[],
+  byUid: Map<string, THREE.Material[]>,
+): THREE.Object3D {
+  const group = new THREE.Group();
+  const materials = new Map<string, THREE.MeshStandardMaterial>();
+  for (const part of parts) {
+    let material = materials.get(part.color);
+    if (!material) {
+      material = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(part.color),
+        roughness: mode === "nordic" ? 0.82 : 1,
+        flatShading: mode === "schematic",
+      });
+      materials.set(part.color, material);
+    }
+    const [sx, sy, sz] = part.size;
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(sx, sz, sy), material);
+    // Scene axes are (plan x, height, -plan y); projectPointToScene owns that mapping for the
+    // object's origin, so a part only needs its own local offset expressed the same way.
+    const [cx, cy, cz] = part.center;
+    mesh.position.set(cx, cz, -cy);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.userData.uid = item.uid;
+    mesh.userData.selectionKind = "canvas_object";
+    group.add(mesh);
+    picks.push(mesh);
+  }
+  group.position.copy(projectPointToScene(item.position_m!, elevation, center));
+  group.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
+  parent.add(group);
+  byUid.set(item.uid, [...materials.values()]);
+  return group;
 }
 
 export function canvasObjectFallbackGeometry(
