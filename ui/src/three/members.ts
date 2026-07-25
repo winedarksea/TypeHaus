@@ -35,9 +35,12 @@ const CATEGORY_COLOR: Record<string, number> = {
   bearing_stiffener: 0x996b41,
   // Stair carriage framing (→ resolve/envelope.py _stair_members). Without these the
   // U-stair well partition fell through to the grey fallback and read as a wall.
+  // Landing platforms + the well partition read as framing lumber; the concrete-wall
+  // hanger/ledger band is galvanized grey like the engine's "connector".
   partition: 0xb3854f,
   trimmer: 0xa87a4c,
   landing: 0xb88c5c,
+  hanger: 0x595c61,
 };
 const CATEGORY_FALLBACK = 0xb0b0b0;
 

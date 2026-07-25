@@ -112,3 +112,11 @@ def test_model_json_serializes_finished_height_above_average_grade(catlin_payloa
 
 def test_project_serializes_the_active_clearance_code_profile(catlin_payload):
     assert "active_code_profile" in catlin_payload["project"]
+
+
+def test_stairs_payload_carries_landing_depth(catlin_payload):
+    stairs = {stair["tag"]: stair for stair in catlin_payload["stairs"]}
+    assert "landing_depth_m" in stairs["ST-B2M"]
+    # ST-B2M authors landing_depth=ft(4); the winder stair authors none.
+    assert stairs["ST-B2M"]["landing_depth_m"] == pytest.approx(1.2192)
+    assert stairs["ST-S2A"]["landing_depth_m"] is None

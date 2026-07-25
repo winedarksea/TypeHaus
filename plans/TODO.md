@@ -107,9 +107,21 @@ authored:
 
 - Most corners don't show proper 3-stud framing (it's defined in code but not present in
   most corners).
-- Stairs aren't framed properly (no support for landings, note the basement stair is special in that it anchors off hangers from the concrete walls). Landings don't have a size input in the stair designer and aren't rendered correctly. The partition wall between the up and down sides of a U of stairs is also not present and not framed correctly. It actually looks like there are partition walls but they extend below the house's foundation.
+- ~~Stairs aren't framed properly (no support for landings, note the basement stair is special in that it anchors off hangers from the concrete walls). Landings don't have a size input in the stair designer and aren't rendered correctly. The partition wall between the up and down sides of a U of stairs is also not present and not framed correctly. It actually looks like there are partition walls but they extend below the house's foundation.~~ DONE (stair-framing pass): stringers are raked (the "walls below the foundation" were un-raked floor-to-floor stringer prisms), U-stair landings are two real half-width platforms (deck + deduplicated 2x8 joists + rims) one riser apart in the landing zone, the well partition is generated 2x4 plate/stud framing clipped to the subfloor, basement hanger bands track the raked stringer top (lower flight bears at the landing) with landing rims/edge joists ledgered into matched concrete walls and 4x4 posts under free corners, and the stair designer has a landing-depth input (`landing_depth_m` through model.json/types.ts, R311.7.6 rule row). Remaining stair follow-ups are listed under "Stair framing follow-ups" below.
 - Roof-eave-wall still needs works. The 3d model still shows the roof exposed at the edges, not integrated into the wall cleanly (fully designed in reference packages/engine/tests/fixtures/catlin_reference/scripts/roof_wall_eave_detail_ifc.py, just not implemented here yet fully)
 - Windows smaller (by 1.5" I believe) than the stud spacing (here 14" probably should fit between 16" oc studs) don't need a header. Furthermore, we probably want windows to have some more clear guidance on when they are breaking the stud line with their position awkwardly, and how many studs they break with their given width (relative to the configured OC framing spacing)
+
+### Stair framing follow-ups (noted out of scope in the stair-framing pass)
+
+- Coincident trimmer plies and unsized single-ply I-joist opening headers in
+  `resolve/floors.py:134-153`.
+- ST-M2S stringers bearing on stud walls (W-M-STRW) with no annotation — the framed-wall
+  analogue of the concrete anchor pass. This is also what still blocks narrowing the
+  `checks/structural/interference.py` `_STAIR_SUPPORT` whitelist: with stringers raked, the
+  remaining ~80 whitelisted catlin contacts are ST-M2S/ST-S2A members riding the stud-wall
+  axis (stringer/tread/landing x stud/plate). Once the framed-wall bearing pass annotates
+  them, drop the stud kinds and plates from `_STAIR_SUPPORT`.
+- Treads rendering as 1.5"-wide strips (cosmetic).
 
 ### Other Catlin House
 Sump with radon vent. This radon vent runs up the same mechanical space that the plumbing vent does. The radon and plumbing vent both exit near the attic ceiling, making a 90 degree (ish) turn outside, then 90 degrees straight back up where they are attached to the siding using standing seam clamps (S-5! or similar) and terminate 12" above the roof. Also running out here (mounted on the siding also with an S-5! clamp) is an outdoor-rated (NEMA 3R weatherproof) junction box on the exterior wall sealed with a gasketed, weatherproof blank cover plate. This appears to be partly drawn in but should probably be grouped under plumbing.

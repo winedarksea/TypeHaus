@@ -302,11 +302,15 @@ def _resolve_stair(
     # A winder turn consumes a square whose side is the stair width. The remaining treads
     # must still meet the 10 in. minimum on their straight walking line.
     if stair.layout == "u_split_landing":
-        # The parallel flights each use the opening length less the landing depth;
-        # the one intervening step consumes the remaining tread in the riser count.
-        flight_treads = (treads - 1) // 2
+        # Split-landing riser budget: lower treads, the lower landing, the upper landing
+        # one riser above (that riser IS the "step" between the half-width landings),
+        # upper treads, then the arrival deck — so the flights share ``risers - 3``
+        # treads, with an odd extra tread going to the lower flight. The parallel
+        # flights use the opening length less the landing depth.
+        flight_treads = max(0, risers - 3)
+        lower_treads = (flight_treads + 1) // 2
         straight_run = run - landing_depth_m
-        tread = straight_run / flight_treads if flight_treads else 0.0
+        tread = straight_run / lower_treads if lower_treads else 0.0
     else:
         straight_run = run - stair.width.meters if stair.layout == "right_angle_winder" else run
         tread = straight_run / straight_treads if straight_treads else 0.0
@@ -360,9 +364,14 @@ def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: in
         end_x, end_y = start_x, start_y + sign * tread * (risers - 1)
         strings = (((start_x, start_y), (end_x, end_y)),
                    ((start_x + width, start_y), (end_x + width, end_y)))
+    stringer_depth = cross_section("2x12").depth_m
+    spring_top = z0 + riser + 0.0381  # top of the first tread at the springing end
+    arrival = z0 + riser * risers
     out = [
-        FramedMember(stair.uid, f"stringer-{index}", "stringer", "2x12", a, b, z0,
-                     z0 + riser * risers, math.hypot(tread * (risers - 1), riser * risers))
+        FramedMember(stair.uid, f"stringer-{index}", "stringer", "2x12", a, b,
+                     spring_top - stringer_depth, spring_top,
+                     math.hypot(tread * (risers - 1), riser * risers),
+                     z0_end_m=arrival - stringer_depth, z1_end_m=arrival)
         for index, (a, b) in enumerate(strings)
     ]
     for index in range(risers - 1):
@@ -378,108 +387,146 @@ def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: in
     return tuple(out)
 
 
+_TREAD_THICKNESS_M = 0.0381  # 1.5" tread/deck board
+_LANDING_JOIST_PROFILE = "2x8"
+_FRAMING_SPACING_M = 0.4064  # 16" o.c.
+
+
+def _grid_positions(span: float, spacing: float) -> list[float]:
+    """Deduplicated on-center positions ``{0, s, 2s, …, span}`` including both edges.
+
+    Replaces the old ``ceil``/``range``/``min``-clamp pattern whose last two positions
+    were coincident whenever ``span`` was an exact multiple of ``spacing``.
+    """
+    if span <= 1e-9:
+        return [0.0]
+    positions = [spacing * index for index in range(math.ceil(span / spacing - 1e-9))]
+    positions.append(span)
+    out: list[float] = []
+    for position in positions:
+        if not out or position - out[-1] > 1e-9:
+            out.append(position)
+    return out
+
+
 def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
                              risers: int, riser: float, tread: float,
                              landing_depth_m: float) -> tuple[FramedMember, ...]:
-    """Generate two parallel flights with distinct landings and one connecting step."""
+    """Generate two parallel flights joined by two half-width landings one riser apart.
+
+    Riser budget (split-landing semantics): ``lower`` treads, the lower landing, the
+    upper landing one riser above it (that riser IS the "step" between the landings),
+    ``upper`` treads, then the arrival deck — ``lower + upper + 3 == risers``. Both
+    landings sit in the landing zone beyond the flight ends, ``landing_depth_m`` deep.
+    """
     width = stair.width.meters
-    # One tread is the step between landings; distribute every remaining tread across the
-    # two flights, putting an odd extra tread in the lower flight.
-    lower_treads = (risers - 2 + 1) // 2
-    upper_treads = risers - 2 - lower_treads
+    flight_treads = max(0, risers - 3)
+    lower_treads = (flight_treads + 1) // 2  # odd extra tread goes to the lower flight
+    upper_treads = flight_treads - lower_treads
     sign = -1 if stair.run_reversed else 1
     along_x = stair.run_direction == "x"
-    if along_x:
-        lane0, lane1 = miny, miny + width
-        lower_start, upper_start = minx, minx + sign * (tread * upper_treads)
-        lower_strings = (((lower_start, lane0), (lower_start + sign * tread * lower_treads, lane0)),
-                         ((lower_start, lane0 + width), (lower_start + sign * tread * lower_treads, lane0 + width)))
-        upper_strings = (((upper_start, lane1), (upper_start - sign * tread * upper_treads, lane1)),
-                         ((upper_start, lane1 + width), (upper_start - sign * tread * upper_treads, lane1 + width)))
-    else:
-        lane0, lane1 = minx, minx + width
-        lower_start, upper_start = miny, miny + sign * (tread * upper_treads)
-        lower_strings = (((lane0, lower_start), (lane0, lower_start + sign * tread * lower_treads)),
-                         ((lane0 + width, lower_start), (lane0 + width, lower_start + sign * tread * lower_treads)))
-        upper_strings = (((lane1, upper_start), (lane1, upper_start - sign * tread * upper_treads)),
-                         ((lane1 + width, upper_start), (lane1 + width, upper_start - sign * tread * upper_treads)))
-    out: list[FramedMember] = []
-    for prefix, strings, count in (("lower", lower_strings, lower_treads), ("upper", upper_strings, upper_treads)):
-        for index, (a, b) in enumerate(strings):
-            out.append(FramedMember(stair.uid, f"stringer-{prefix}-{index}", "stringer", "2x12", a, b,
-                                    z0, z0 + riser * risers,
-                                    math.hypot(tread * count, riser * (count + 1))))
-    for index in range(lower_treads):
-        z = z0 + riser * (index + 1)
-        if along_x:
-            x = lower_start + sign * tread * index
-            a, b = (x, lane0), (x, lane0 + width)
-        else:
-            y = lower_start + sign * tread * index
-            a, b = (lane0, y), (lane0 + width, y)
-        out.append(FramedMember(stair.uid, f"tread-lower-{index:03d}", "tread", "2x12", a, b, z, z + 0.0381, width))
+    start = minx if along_x else miny
+    lane0 = miny if along_x else minx
+    lane1 = lane0 + width
+
+    def at(s: float, cross: float) -> tuple[float, float]:
+        """Plan point ``s`` metres along the run (signed from the start edge) at the
+        absolute cross-run coordinate ``cross``."""
+        return (start + sign * s, cross) if along_x else (cross, start + sign * s)
+
+    stringer_depth = cross_section("2x12").depth_m
+    flight_len = tread * lower_treads  # the longer (lower) flight bounds the flight zone
     lower_landing_z = z0 + riser * (lower_treads + 1)
     upper_landing_z = lower_landing_z + riser
-    if along_x:
-        lower_end = lower_start + sign * tread * lower_treads
-        upper_end = upper_start - sign * tread * upper_treads
-        lower_edge, upper_edge = ((lower_end, lane0), (lower_end, lane0 + width)), ((upper_end, lane1), (upper_end, lane1 + width))
-    else:
-        lower_end = lower_start + sign * tread * lower_treads
-        upper_end = upper_start - sign * tread * upper_treads
-        lower_edge, upper_edge = ((lane0, lower_end), (lane0 + width, lower_end)), ((lane1, upper_end), (lane1 + width, upper_end))
-    out.append(FramedMember(stair.uid, "landing-lower", "landing", "2x12", *lower_edge,
-                            lower_landing_z, lower_landing_z + 0.0381, width))
-    out.append(FramedMember(stair.uid, "step-between-landings", "tread", "2x12", *upper_edge,
-                            upper_landing_z, upper_landing_z + 0.0381, width))
-    out.append(FramedMember(stair.uid, "landing-upper", "landing", "2x12", *upper_edge,
-                            upper_landing_z, upper_landing_z + 0.0381, width))
+    arrival = z0 + riser * risers
+    out: list[FramedMember] = []
+    # Stringers, raked: at the springing end the top meets the first tread's top; at the
+    # far end it meets the flight's bearing (lower flight → the lower landing, upper
+    # flight → the arrival deck). The subfloor clip clamps the springing dip.
+    for prefix, lane_lo, s_lo, s_hi, spring_z, bear_z, count in (
+        ("lower", lane0, 0.0, flight_len, z0, lower_landing_z, lower_treads),
+        ("upper", lane1, flight_len, flight_len - tread * upper_treads,
+         upper_landing_z, arrival, upper_treads),
+    ):
+        if not count:
+            continue
+        spring_top = spring_z + riser + _TREAD_THICKNESS_M
+        for index, cross in enumerate((lane_lo, lane_lo + width)):
+            out.append(FramedMember(
+                stair.uid, f"stringer-{prefix}-{index}", "stringer", "2x12",
+                at(s_lo, cross), at(s_hi, cross),
+                spring_top - stringer_depth, spring_top,
+                math.hypot(tread * count, bear_z - spring_z),
+                z0_end_m=bear_z - stringer_depth, z1_end_m=bear_z))
+    for index in range(lower_treads):
+        z = z0 + riser * (index + 1)
+        out.append(FramedMember(stair.uid, f"tread-lower-{index:03d}", "tread", "2x12",
+                                at(tread * index, lane0), at(tread * index, lane0 + width),
+                                z, z + _TREAD_THICKNESS_M, width))
+    # Upper flight climbs back toward the start edge; its first tread leaves the upper
+    # landing, and its top tread ends one riser below the arrival deck.
     for index in range(upper_treads):
-        z = upper_landing_z + riser * (index + 1)
-        if along_x:
-            x = upper_start - sign * tread * index
-            a, b = (x, lane1), (x, lane1 + width)
-        else:
-            y = upper_start - sign * tread * index
-            a, b = (lane1, y), (lane1 + width, y)
-        out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", "2x12", a, b, z, z + 0.0381, width))
-    # The 180° turn platform: a real walk-off deck spanning both flights (2× width) and
-    # ``landing_depth`` deep, filling the reserved zone beyond the flight tops. Framed as
-    # joists across the well so a deeper authored landing renders as a deeper platform.
-    well = 2.0 * width
-    joist_spacing = 0.4064  # 16" o.c.
-    joists = max(1, math.ceil(abs(landing_depth_m) / joist_spacing))
-    for index in range(joists + 1):
-        offset = sign * min(landing_depth_m, joist_spacing * index)
-        if along_x:
-            x = lower_end + offset
-            a, b = (x, lane0), (x, lane0 + well)
-        else:
-            y = lower_end + offset
-            a, b = (lane0, y), (lane0 + well, y)
-        out.append(FramedMember(stair.uid, f"landing-joist-{index:03d}", "landing", "2x12",
-                                a, b, lower_landing_z, lower_landing_z + 0.0381, well))
-    # Well partition between the up and down flights. It bears on the subfloor the stair
-    # springs from and rises to the arrival deck — it must NOT run past the subfloor into
-    # the foundation below, so its base is clamped there (the flight-clip guard is the
-    # backstop). Authored as generated framing (no constructor), exempt from the editable
-    # rule like the rest of the stair carriage.
-    partition_top = z0 + riser * risers
-    lane_boundary = lane0 + width  # the plane dividing the up run from the down run
-    # Hold the partition off the opening perimeter so its ends do not foul the surrounding
-    # trimmed-deck framing / stair-block walls where the flights meet the arrival deck.
+        z = z0 + riser * (lower_treads + 3 + index)
+        s = flight_len - tread * (index + 1)
+        out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", "2x12",
+                                at(s, lane1), at(s, lane1 + width),
+                                z, z + _TREAD_THICKNESS_M, width))
+    # Two real half-width landing platforms in the landing zone beyond the flight ends.
+    out.extend(_landing_platform(stair, "lower", at, flight_len, landing_depth_m,
+                                 lane0, width, lower_landing_z))
+    out.extend(_landing_platform(stair, "upper", at, flight_len, landing_depth_m,
+                                 lane1, width, upper_landing_z))
+    # Well partition between the up and down flights: generated stud framing (not an
+    # authored Wall) on the lane boundary, bearing on the subfloor the stair springs
+    # from and rising to the arrival deck — never past the subfloor into the foundation
+    # (the flight-clip guard is the backstop). Both flights' inner stringers bear on it.
+    # It stops at the flight end; the landing platforms take over beyond. The 0.20 m
+    # inset holds its ends off the opening perimeter framing.
     inset = 0.20
-    run_start, run_end = (minx, lower_end) if along_x else (miny, lower_end)
-    lo, hi = sorted((run_start, run_end))
-    lo, hi = lo + inset, hi - inset
-    if hi > lo:
-        if along_x:
-            pa, pb = (lo, lane_boundary), (hi, lane_boundary)
-        else:
-            pa, pb = (lane_boundary, lo), (lane_boundary, hi)
-        out.append(FramedMember(stair.uid, "well-partition", "partition", "2x4", pa, pb,
-                                z0, partition_top, hi - lo))
+    lo_s, hi_s = inset, flight_len - inset
+    if hi_s > lo_s:
+        plate = 0.0381  # a 2x4 plate laid flat
+        pa, pb = at(lo_s, lane1), at(hi_s, lane1)
+        out.append(FramedMember(stair.uid, "well-partition-plate-bottom", "partition",
+                                "2x4", pa, pb, z0, z0 + plate, hi_s - lo_s))
+        out.append(FramedMember(stair.uid, "well-partition-plate-top", "partition",
+                                "2x4", pa, pb, arrival - plate, arrival, hi_s - lo_s))
+        orient = (float(sign), 0.0) if along_x else (0.0, float(sign))
+        for index, offset in enumerate(_grid_positions(hi_s - lo_s, _FRAMING_SPACING_M)):
+            point = at(lo_s + offset, lane1)
+            out.append(FramedMember(stair.uid, f"well-partition-stud-{index:03d}",
+                                    "partition", "2x4", point, point,
+                                    z0 + plate, arrival - plate,
+                                    arrival - z0 - 2 * plate, orient=orient))
     return tuple(out)
+
+
+def _landing_platform(stair: Stair, name: str, at, s0: float, depth: float,
+                      lane_lo: float, width: float,
+                      landing_z: float) -> list[FramedMember]:
+    """One half-width landing platform: full-width deck + joists + perimeter rims.
+
+    The deck is a single ``deck WxT`` member (a parseable profile, so it renders at the
+    platform's true width instead of a 1.5" strip). Joists run across the lane on the
+    deduplicated 16" grid — edge joists land exactly at 0 and ``depth`` — and the two
+    rims cap the joist ends along the run direction.
+    """
+    joist_depth = cross_section(_LANDING_JOIST_PROFILE).depth_m
+    z_top, z_bot = landing_z, landing_z - joist_depth
+    mid = lane_lo + width / 2.0
+    out = [FramedMember(stair.uid, f"landing-{name}", "landing",
+                        f"deck {width / 0.0254:g}x1.5",
+                        at(s0, mid), at(s0 + depth, mid),
+                        landing_z, landing_z + _TREAD_THICKNESS_M, depth)]
+    for index, offset in enumerate(_grid_positions(depth, _FRAMING_SPACING_M)):
+        out.append(FramedMember(stair.uid, f"landing-joist-{name}-{index:03d}", "landing",
+                                _LANDING_JOIST_PROFILE, at(s0 + offset, lane_lo),
+                                at(s0 + offset, lane_lo + width), z_bot, z_top, width))
+    for index, cross in enumerate((lane_lo, lane_lo + width)):
+        out.append(FramedMember(stair.uid, f"landing-rim-{name}-{index}", "landing",
+                                _LANDING_JOIST_PROFILE, at(s0, cross),
+                                at(s0 + depth, cross), z_bot, z_top, depth))
+    return out
 
 
 def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
@@ -497,6 +544,11 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     step_z = lambda index: z0 + riser * (index + 1)
     out: list[FramedMember] = []
     turn_sign = 1 if stair.turn_direction != "right" else -1
+    # The straight flight springs off the top of the winder turn; its raked stringers run
+    # from one riser above that springing up to the arrival deck.
+    stringer_depth = cross_section("2x12").depth_m
+    spring_top = z0 + riser * stair.winder_count + riser + 0.0381
+    arrival = z0 + riser * risers
     if stair.run_direction == "x":
         sign = -1 if stair.run_reversed else 1
         turn_x = start_x + sign * stair.width.meters
@@ -506,8 +558,9 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                     (end_x, start_y + turn_sign * stair.width.meters)))
         for index, (a, b) in enumerate(strings):
             out.append(FramedMember(stair.uid, f"stringer-{index}", "stringer", "2x12", a, b,
-                                    z0, z0 + riser * risers,
-                                    math.hypot(tread * straight_treads, riser * risers)))
+                                    spring_top - stringer_depth, spring_top,
+                                    math.hypot(tread * straight_treads, riser * risers),
+                                    z0_end_m=arrival - stringer_depth, z1_end_m=arrival))
         inside = (turn_x, start_y)
         for index in range(stair.winder_count):
             fraction = (index + 1) / stair.winder_count
@@ -537,8 +590,9 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                     (start_x + turn_sign * stair.width.meters, end_y)))
         for index, (a, b) in enumerate(strings):
             out.append(FramedMember(stair.uid, f"stringer-{index}", "stringer", "2x12", a, b,
-                                    z0, z0 + riser * risers,
-                                    math.hypot(tread * straight_treads, riser * risers)))
+                                    spring_top - stringer_depth, spring_top,
+                                    math.hypot(tread * straight_treads, riser * risers),
+                                    z0_end_m=arrival - stringer_depth, z1_end_m=arrival))
         inside = (start_x, turn_y)
         for index in range(stair.winder_count):
             fraction = (index + 1) / stair.winder_count
@@ -609,28 +663,82 @@ def _anchor_stair_on_concrete(model: ResolvedModel, stair: Stair,
     poured foundation walls and are carried on wall-mounted (joist-hanger-style) ledgers
     let into the concrete. Annotate every stringer that lands on such a wall with the
     connection the 2D detail pipeline binds, and emit a ledger/hanger band as connector
-    geometry so the bearing reads structurally. Stairs that spring off a framed deck (no
-    foundation walls on the storey they rise from) are left untouched.
+    geometry so the bearing reads structurally. The hanger band tracks the raked stringer
+    top (`z1_m`/`z1_end_m`), so a lower-flight hanger bears at the landing and an
+    upper-flight hanger at the arrival deck — never at ``max(z0, z1)`` of a full prism.
+
+    Landing platforms get the same treatment: a perimeter rim or edge joist running
+    against a foundation wall gets a ledger band at the platform elevation, and any
+    platform corner left without a ledgered edge gets a vertical 4x4 post dropped to the
+    subfloor. Stairs that spring off a framed deck (no foundation walls on the storey
+    they rise from) are left untouched.
     """
     conc_walls = [w for w in model.walls
                   if w.storey == stair.from_storey and getattr(w, "is_foundation", False)]
     if not conc_walls:
         return members
+    hanger_depth = 0.2032  # 8" ledger band
+
+    def corner_key(point: tuple[float, float]) -> tuple[float, float]:
+        return (round(point[0], 4), round(point[1], 4))
+
     out: list[FramedMember] = []
+    rims_by_platform: dict[str, list[FramedMember]] = {}
+    supported_corners: set[tuple[float, float]] = set()
     for member in members:
+        if member.category == "landing" and member.child_key.startswith("landing-rim-"):
+            rims_by_platform.setdefault(member.child_key.rsplit("-", 1)[0],
+                                        []).append(member)
         if member.category == "stringer":
             host = next((w for w in conc_walls
                          if _wall_carries_run(w, member.p0, member.p1)), None)
             if host is not None:
                 tag = f"concrete-wall-hanger:{host.tag}"
                 out.append(replace(member, connection=tag))
-                top = max(member.z0_m, member.z1_m)
+                top_p0 = member.z1_m
+                top_p1 = member.z1_m if member.z1_end_m is None else member.z1_end_m
                 out.append(FramedMember(
                     stair.uid, f"hanger-{host.tag}-{member.child_key}", "hanger", "hanger",
-                    member.p0, member.p1, max(subfloor, top - 0.2032), top,
-                    member.length_m, connection=tag))
+                    member.p0, member.p1, max(subfloor, top_p0 - hanger_depth), top_p0,
+                    member.length_m, z0_end_m=max(subfloor, top_p1 - hanger_depth),
+                    z1_end_m=top_p1, connection=tag))
+                continue
+        elif (member.category == "landing"
+              and (member.child_key.startswith("landing-rim-")
+                   or member.child_key.startswith("landing-joist-"))):
+            # Only a perimeter member can run against a wall — interior joists sit a
+            # full 16" bay away, beyond _wall_carries_run's 0.20 m tolerance.
+            host = next((w for w in conc_walls
+                         if _wall_carries_run(w, member.p0, member.p1)), None)
+            if host is not None:
+                tag = f"concrete-wall-hanger:{host.tag}"
+                out.append(replace(member, connection=tag))
+                out.append(FramedMember(
+                    stair.uid, f"hanger-{host.tag}-{member.child_key}", "hanger", "hanger",
+                    member.p0, member.p1, max(subfloor, member.z1_m - hanger_depth),
+                    member.z1_m, member.length_m, connection=tag))
+                supported_corners.update(corner_key(p) for p in (member.p0, member.p1))
                 continue
         out.append(member)
+    # Any platform corner not on a ledgered edge bears on a 4x4 post to the subfloor.
+    # The two rims' endpoints are exactly the platform's four corners; the corner shared
+    # by both half-width platforms gets one post, sized to the higher platform.
+    posts: dict[tuple[float, float], float] = {}
+    for rims in rims_by_platform.values():
+        z_top = min(rim.z0_m for rim in rims)  # underside of the platform framing
+        for rim in rims:
+            for point in (rim.p0, rim.p1):
+                key = corner_key(point)
+                if key in supported_corners:
+                    continue
+                posts[key] = max(posts.get(key, z_top), z_top)
+    orient = (1.0, 0.0) if stair.run_direction == "x" else (0.0, 1.0)
+    for index, (key, z_top) in enumerate(sorted(posts.items())):
+        if z_top <= subfloor + 1e-9:
+            continue
+        out.append(FramedMember(stair.uid, f"landing-post-{index:03d}", "landing", "4x4",
+                                key, key, subfloor, z_top, z_top - subfloor,
+                                orient=orient))
     return tuple(out)
 
 
@@ -644,8 +752,10 @@ def _stair_fits_opening(stair: Stair, minx: float, maxx: float, miny: float, max
     """
     start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
     if stair.layout == "u_split_landing":
-        flight_treads = max((risers - 2 + 1) // 2, risers - 2 - ((risers - 2 + 1) // 2))
-        required_run = landing_depth_m + tread * flight_treads
+        # Mirrors _u_split_landing_members: flights share risers - 3 treads, and the
+        # (longer) lower flight takes the odd extra one.
+        lower_treads = (max(0, risers - 3) + 1) // 2
+        required_run = landing_depth_m + tread * lower_treads
         if stair.run_direction == "x":
             return (2 * stair.width.meters <= maxy - miny + 1e-9
                     and required_run <= maxx - minx + 1e-9)

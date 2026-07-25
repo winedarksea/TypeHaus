@@ -98,6 +98,12 @@ _STAIR_HOUSED = frozenset({"tread", "winder"})
 # ``partition`` (the U-stair well wall between the up/down runs) and ``hanger`` (the
 # ledger let into a concrete foundation wall that carries a basement stringer) are stair
 # carriage members: they share volume with the treads/stringers/landing by design.
+# Stud kinds and wall plates remain cleared for now — NOT because stringers are
+# full-height prisms any more (they are raked), but because a stair enclosed by stud
+# walls (catlin ST-M2S against W-M-STRW/W-M-STRW2) runs its stringers/treads/landings on
+# the wall *axis* with no framed-wall bearing annotation yet. Until the framed-wall
+# analogue of the concrete anchor pass exists (see plans/TODO.md), removing these kinds
+# reports ~80 intended stair-on-wall bearings on the catlin model.
 _STAIR_SUPPORT = frozenset({"stringer", "landing", "plate", "raked_plate", "joist",
                             "blocking", "trimmer", "header", "partition",
                             "hanger"}) | _STUD_KINDS
@@ -187,6 +193,10 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     if kinds & _STAIR_HOUSED and (kinds - _STAIR_HOUSED) <= _STAIR_SUPPORT:
         return True
     if kinds & {"stringer", "landing"} and (kinds - {"stringer", "landing"}) <= _STAIR_SUPPORT:
+        return True
+    # Two ledger/hanger bands of the same stair lapping at a landing-platform corner
+    # (e.g. a rim ledger meeting an edge-joist ledger on perpendicular concrete walls).
+    if kinds == {"hanger"} and same_parent:
         return True
     # Cut joists / trimmers bearing on a floor-opening header (the header carries them).
     if "header" in kinds and (kinds - {"header"}) <= {"joist", "trimmer", "plate", "raked_plate"}:

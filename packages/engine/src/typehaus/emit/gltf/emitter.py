@@ -21,6 +21,7 @@ from pathlib import Path
 from typehaus.emit.draw.palette import family_of, material_color, material_family_color
 from typehaus.model.canvas import canvas_object_types
 from typehaus.model.enums import LayerFunction
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import (
     FramedMember,
     ResolvedCanvasObject,
@@ -49,6 +50,14 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "corner": (0.64, 0.46, 0.29, 1.0),
     "stringer": (0.60, 0.42, 0.26, 1.0),
     "tread": (0.70, 0.52, 0.33, 1.0),
+    "winder": (0.70, 0.52, 0.33, 1.0),
+    # stair landing platforms + the U-stair well partition read as framing lumber; the
+    # concrete-wall hanger/ledger band is galvanized grey like "connector". Mirrored in
+    # ui/src/three/members.ts CATEGORY_COLOR (GLB/three.js parity convention).
+    "landing": (0.72, 0.55, 0.36, 1.0),
+    "partition": (0.70, 0.52, 0.33, 1.0),
+    "trimmer": (0.66, 0.48, 0.30, 1.0),
+    "hanger": (0.35, 0.36, 0.38, 1.0),
     "joist": (0.72, 0.55, 0.36, 1.0),
     "rim": (0.66, 0.48, 0.30, 1.0),
     "ridge_beam": (0.55, 0.38, 0.22, 1.0),
@@ -1116,13 +1125,10 @@ def _add_canvas_box(mb: _MeshBuilder, item: ResolvedCanvasObject, height_m: floa
 
 
 def _member_half_width(profile: str) -> float:
-    # "2x6" → nominal 1.5" actual thickness; half of that in meters.
-    try:
-        nominal = float(profile.lower().split("x")[0])
-    except (ValueError, IndexError):
-        nominal = 2.0
-    actual_in = max(nominal - 0.5, 0.75)
-    return actual_in * 0.0254 / 2.0
+    # Half the parsed cross-section width, so glTF box widths agree with the UI (which
+    # consumes model_json's cross_section-derived width_m) for every profile — including
+    # "hanger", "tapered tread", "deck WxT", and multi-ply LVLs.
+    return cross_section(profile).width_m / 2.0
 
 
 def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes]:
