@@ -906,19 +906,20 @@ export function earthElevation(model: Model): number {
   return model.site?.grade_m ?? 0;
 }
 
-// Holes punched in the site sheet so the translucent earth stops at the building footprint
-// instead of bleeding up through interior floors. One cut per plan footprint is enough, so
-// only the ground storey's rooms contribute — stacked upper storeys would otherwise pile
-// overlapping holes onto the same plan area (rooms on one storey partition it, never overlap).
+// Holes punched in the site sheet so the translucent earth stops where the ground was dug
+// away. The rings are resolved server-side (resolve/site_earth.py → `site.earth_voids`) from
+// every slab finishing at or below grade, unioned into disjoint outer boundaries — three for
+// Catlin: house, garage, sunken garden.
+//
+// This used to be derived here from `model.rooms` on the lowest storey, which is structurally
+// incapable of seeing more than one storey of one structure: a detached garage and an open-air
+// sunken garden share no storey, no room set and no wall loop with the house, so the sheet
+// kept cutting through them. Deriving it once engine-side also means the viewer, the IFC lot
+// slab, and any future earth emitter cut exactly the same rings.
 export function earthVoids(model: Model): [number, number][][] {
-  const rooms = model.rooms ?? [];
-  if (!rooms.length) return [];
-  const storeys = model.storeys ?? [];
-  const elevationOf = (tag: string) => storeys.find((s) => s.tag === tag)?.elevation_m ?? 0;
-  const groundElevation = Math.min(...rooms.map((room) => elevationOf(room.storey)));
-  return rooms
-    .filter((room) => elevationOf(room.storey) === groundElevation && room.clear_face.length >= 3)
-    .map((room) => room.clear_face.map(([x, y]) => [x, y] as [number, number]));
+  return (model.site?.earth_voids ?? [])
+    .filter((ring) => ring.length >= 3)
+    .map((ring) => ring.map(([x, y]) => [x, y] as [number, number]));
 }
 
 function buildEarth(parent: THREE.Group, model: Model, center: PlanCenter, mode: "nordic" | "schematic") {

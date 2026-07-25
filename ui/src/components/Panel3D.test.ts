@@ -140,26 +140,38 @@ export function runEarthGeometryTests() {
     "Earth uses the serialized site grade");
   assert(earthElevation({} as Model) === 0, "Earth defaults to the main-floor datum");
 
-  // Interior spaces punch holes in the site sheet so earth no longer bleeds up through floors.
-  const withRooms = {
-    storeys: [
-      { tag: "L1", elevation_m: 0 },
-      { tag: "L2", elevation_m: 3 },
-    ],
-    rooms: [
-      { storey: "L1", clear_face: [[0, 0], [4, 0], [4, 3], [0, 3]] },
-      { storey: "L1", clear_face: [[4, 0], [7, 0], [7, 3], [4, 3]] },
-      // Upper storey stacks on the same footprint — must NOT contribute a second hole.
-      { storey: "L2", clear_face: [[0, 0], [7, 0], [7, 3], [0, 3]] },
-      // Degenerate ring is skipped.
-      { storey: "L1", clear_face: [[1, 1], [1, 1]] },
-    ],
+  // Excavations punch holes in the site sheet so the earth no longer bleeds up through the
+  // spaces that were dug for it. The rings are resolved server-side from slabs at or below
+  // grade (resolve/site_earth.py) and arrive already unioned into disjoint outer boundaries —
+  // one per structure, which is why the viewer must not re-derive them. The old room-derived
+  // version could only ever see one storey of one structure, so a detached garage and an
+  // open-air sunken garden (no shared storey, room set or wall loop) stayed uncut.
+  const withVoids = {
+    site: {
+      lat: 0, lon: 0, true_north_deg: 0,
+      earth_voids: [
+        [[0, 0], [7, 0], [7, 3], [0, 3]], // house
+        [[10, 0], [16, 0], [16, 6], [10, 6]], // detached garage — its own structure
+        [[0, 8], [4, 8], [4, 12], [0, 12]], // open-air sunken garden — no rooms at all
+        [[1, 1], [1, 1]], // degenerate ring is skipped
+      ],
+    },
+    // Rooms are deliberately present and disagree with the voids: nothing here may fall back
+    // to them, or the multi-structure fix silently regresses.
+    storeys: [{ tag: "L1", elevation_m: 0 }],
+    rooms: [{ storey: "L1", clear_face: [[0, 0], [4, 0], [4, 3], [0, 3]] }],
   } as unknown as Model;
-  const voids = earthVoids(withRooms);
-  assert(voids.length === 2, "Only ground-storey interior spaces cut the earth sheet");
-  assert(voids.every((ring) => ring.length === 4), "Each cut is the room's clear-face ring");
+  const voids = earthVoids(withVoids);
+  assert(voids.length === 3, "Every excavated structure cuts the sheet, not just the house");
+  assert(voids.every((ring) => ring.length === 4), "Each cut is the resolved outer ring");
+  assert(voids.some(([first]) => first[0] === 10) && voids.some(([first]) => first[1] === 8),
+    "The detached garage and the sunken garden both cut, though neither shares a storey with the house");
 
-  assert(earthVoids({} as Model).length === 0, "No rooms → no earth cuts (solid sheet)");
+  assert(earthVoids({} as Model).length === 0,
+    "No serialized voids → a solid sheet (older model.json), never a room-derived guess");
+  assert(earthVoids({ rooms: [{ storey: "L1", clear_face: [[0, 0], [4, 0], [4, 3]] }],
+    storeys: [{ tag: "L1", elevation_m: 0 }] } as unknown as Model).length === 0,
+    "Rooms alone never cut the sheet — the engine owns this derivation now");
 }
 
 export function runFootingBeddingGeometryTests() {
