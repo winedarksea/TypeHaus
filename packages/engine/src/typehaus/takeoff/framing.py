@@ -49,8 +49,8 @@ def framing_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     One row per (profile, category) — e.g. ``2x6`` / ``stud`` — carrying the piece count,
     the summed cut length, the stock length that count is ordered in, and the per-stock
     length buckets a framer or estimator actually buys against. Nothing is silently dropped:
-    ``model.all_members()`` is the complete resolved member set (walls, floors, roof,
-    stairs), so the pieces here reconcile 1:1 with what the 3D model frames.
+    ``model.all_members()`` is the complete resolved member set (walls, floors, roofs,
+    stairs, braces), so the pieces here reconcile 1:1 with what the 3D model frames.
     """
     Group = dict[str, object]
     groups: dict[tuple[str, str], Group] = {}

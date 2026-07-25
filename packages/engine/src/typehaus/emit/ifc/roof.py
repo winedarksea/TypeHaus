@@ -60,6 +60,7 @@ _COVERING_PREDEFINED_TYPE = {
     "fascia": "MOLDING", "soffit": "CEILING", "cladding": "CLADDING",
     "sheathing": "CLADDING", "furring": "CLADDING", "airgap": "CLADDING",
     "membrane": "MEMBRANE", "insulation": "INSULATION",
+    "ridge_cap": "MOLDING", "corner_trim": "MOLDING",
 }
 # A ridge vent, like the gutter, is a drainage/ventilation accessory rather than a member
 # or a finish covering.

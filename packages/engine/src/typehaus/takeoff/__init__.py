@@ -33,14 +33,17 @@ from typehaus.takeoff.hardware_config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
     HardwareTakeoffConfig,
 )
+from typehaus.takeoff.placeables import floor_heat_takeoff, placeables_takeoff
 
 __all__ = [
     "glazing_panel_takeoff", "glazing_trim_takeoff", "glazing_fastener_rows",
     "bill_of_materials",
     "construction_returns_takeoff",
+    "floor_heat_takeoff",
     "framing_bom_by_size",
     "framing_takeoff",
     "hardware_takeoff",
+    "placeables_takeoff",
     "sheet_goods_takeoff",
     "structural_solids_takeoff",
     "DEFAULT_HARDWARE_TAKEOFF_CONFIG",
