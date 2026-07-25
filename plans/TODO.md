@@ -102,6 +102,7 @@ authored:
 - The "air", "water", and "thermal" views are great ideas but don't seem to show much on the actual 2d ui for catlin house.
 - Door opening drawings in 2d view aren't very accurate. The swing lines aren't always accurately concave and the double doors often look a bit weird (one convex, one concave for the swing lines)
 - the "site earth" plane interests interior spaces where it should be excluded. It excludes house already, but should also exclude sunken garden and garage.
+- Have UI buttons to show assembly details (ie transitions) and the BOM of all parts. Perhaps replacing the rather useless "analyze" and "design" buttons which functions they have can be broken into Views toggle options
 
 ### Framing follow-ups found while working on the above
 
@@ -148,41 +149,32 @@ authored:
 
 - Coincident trimmer plies and unsized single-ply I-joist opening headers in
   `resolve/floors.py:134-153`.
-- ST-M2S stringers bearing on stud walls (W-M-STRW) with no annotation — the framed-wall
-  analogue of the concrete anchor pass. This is also what still blocks narrowing the
-  `checks/structural/interference.py` `_STAIR_SUPPORT` whitelist: with stringers raked, the
-  remaining ~80 whitelisted catlin contacts are ST-M2S/ST-S2A members riding the stud-wall
-  axis (stringer/tread/landing x stud/plate). Once the framed-wall bearing pass annotates
-  them, drop the stud kinds and plates from `_STAIR_SUPPORT`.
+- **Framed-wall ledger emission.** `resolve/stairs.py` `_bear_stair_on_walls` now annotates a
+  stringer/rim borne by a framed wall with `framed-wall-ledger:{tag}` but emits no member, so
+  the take-off is missing the 2x ledger a framer actually installs. A wall's `axis` is its
+  *centreline*, so any band drawn on it would be invented geometry inside the stud cavity —
+  blocked on D3 below.
+- **D3 — stair members are not inset to the host wall's finished face.** `_stair_fits_opening`
+  validates the flight against the `FloorOpening` bbox, and catlin's openings are drawn to wall
+  axes / outer faces rather than to the finished well. Measured: `FO-S-STAIR` offers 84", but
+  the finished well between `W-M-STRW`'s and `W-M-C5`'s stair-side gwb faces is **77.25"** — the
+  two 3'-6" flights are 6.75" too wide for their own well. **This, not missing annotation, is
+  the real prerequisite for narrowing `checks/structural/interference.py`'s `_STAIR_SUPPORT`**:
+  the ~80 whitelisted catlin contacts are stair members physically inside stud cavities, and an
+  annotation does not move geometry. Once the inset lands, drop the stud kinds and plates.
+- **D2 — winder narrow ends converge on a point**, so narrow-end tread depth is 0. IRC
+  R311.7.5.2.1 wants 6" there; the newel now carries them structurally, but the tread outlines
+  still meet at the newel centreline.
+- **`sill` is absent from `_STAIR_SUPPORT`.** No catlin exposure today (none of the
+  stair-adjacent walls hosts an opening), so a stair running past a rough opening would report.
+- **Load path of a landing post is unverified.** `landing-post-*` lands on whatever deck is
+  below it; nothing checks that deck is bearing. Belongs in the STRUCTURAL tier as a WARN
+  advisory, not in `resolve_envelope_geometry` (whose contract is bad-ref findings only).
 - Treads rendering as 1.5"-wide strips (cosmetic).
-
-### Other Catlin House
-Sump with radon vent. This radon vent runs up the same mechanical space that the plumbing vent does. The radon and plumbing vent both exit near the attic ceiling, making a 90 degree (ish) turn outside, then 90 degrees straight back up where they are attached to the siding using standing seam clamps (S-5! or similar) and terminate 12" above the roof. Also running out here (mounted on the siding also with an S-5! clamp) is an outdoor-rated (NEMA 3R weatherproof) junction box on the exterior wall sealed with a gasketed, weatherproof blank cover plate. This appears to be partly drawn in but should probably be grouped under plumbing.
 
 ## Landing Page
 * build landing page and app deployment for type-house.com and type-house.com/app. Likely include an install script link like /Users/colincatlin/Documents-NoCloud/MinimapPR/landing/install.sh alongside the fully web-backed PWA.
 * catlin house should be loaded up by default for new users of the PWA
-
-## Sunken garden / porch / balcony — follow-ups
-
-The freestanding porch/balcony was redesigned in `params/sunken_garden.py` (16" arched
-front wall with two arches + three piers; no north wall — the deck's north edge rides a 12"
-sonotube column + two PT 2x12 back beams into the side-wall hangers; a brick/air-gap/grouted-
-CMU/stucco masonry railing; six 6x6 pillars carrying three double-2x10 beams, 2x8 joists, and
-aluminum decking; composite decking on the porch). Posts→IfcColumn, standalone Beams→IfcBeam,
-and floor joists now resolve and render in glTF; deck slabs carry composite/aluminum
-assemblies (material in glTF + IFC). Still outstanding:
-
-- **PVC fascia, front gutter, front-edge flashing into the gutter, rear flashing into the house
-  WRB** (detail layer; ties into the box-gutter/flashing items above). Perhaps drawn, but not yet visible in viewer.
-- **Connector hardware** — joist hangers, hurricane ties, kneebraces (APVKB), standoff post
-  bases are still not visible.
-- **Fiberglass rebar dowels + 40 psi XPS foam thermal-break block** between the shared
-  house/garden footings: recorded via `FootingBedding.cast_foam_in_aggregate` + a note; no dowel
-  primitive in the schema yet. (The porch/balcony floor joists render in the 2D framing plan +
-  glTF but are still not emitted as IFC members — same gap as the house floors.)
-
-Very small windows that don't break the stud line don't need a header added.
 
 ## Current Orientation:
 +X: east
@@ -200,37 +192,15 @@ rafter-on-plate bearings, and stair stringer/tread joints. These are tracked to-
 deck fix; work them down here (or suppress `structural.member_interference` per-check in
 `preferences.toml` until then).
 
-## Follow Up after First Subagent Pass
-- We want white (with gray mortar) bricks as a color option for bricks. It's apparently tagged but not shown as such (still shows red brick).
-- Arches are 'striped' and should be smoother, mathematical half circles properly (for sure in 3d viewer, in IFC exports too if possible)
-- More items need to be selectable (ie footing beds, posts, etc). Ideally most distinct elements are selectable in 3d view.
-- Garage door needs a dedicated 2d door look, and likely a dedicated pattern to match its framing needs, as it's not a swing door like shown in 2D. Bifold doors need a similar, smaller fix, as they also show as swing doors.
-
-- gable ends of garage are not handled (truss is exposed)
-- need a fascia board on the truss ends of the garage (two layers, one wood, one pvc cellular). The side wall needs to extend up the raised heel (the Zip R at least), and there needs to be a soffit
-- the sewer ventilation pipe and radon vent are coming out a bit too high. Also the pipes could look a little more pipe like.
-- 6x6 posts and beams above them are not rendered as wood (beams as wood, 6x6 posts as painted white)
-- still some weird walls extending beneath the foundation somehow related to the stairs
-- one of the masonry porch railings as the exterior side flipped around. Brick should face exterior on wall three sides of that.
-- ceiling lights appear to be defined but sitting on the floor.
-- there is a glowing red dot on the basement. Some sort of warning, however you can't click on it to tell what it is, so it isn't very helpful in this form.
-- gutters and flashings not shown in 3d views
-- floors (framed rim and joists), modeled in the house and also the sunken garden deck, appear to always show up as about 6 inches too low, for some reason.
-
 # Second Follow Up Set
-- Truss in garage shoudl visualize as wood (not gray)
 - Raised garden: a 36" high garden that utilizes on the inside the top of the sunken garden retaining wall, and on the outside concrete retaining wall blocks
 
-## General Polishing Tasks
-- Make sure all warnings are cleared up
-- Make sure the BOM shows all members listed out, grouped usually by size and type
-- **Radon Vent horizontal jog** is four stacked square bands, not a swept round section. The two
-  risers are true 12-gons; only the jog still reads faceted.
 
 ### New items surfaced while doing the work
-- CMU still looks like brick; it should read as full CMU units.
+- the 6x6 posts of the porch should be embedded in the CMU wall (using ABU66SS) and thus are a bit shorter (from the top of the railing wall)
 - Sliding and pocket doors still fall through to the swing glyph. They now have enum values,
   framing dispatch and IFC mapping, but no dedicated 2D symbol.
+- Foam thermal breaks between the sunken garden and the house are rotated the wrong way, need a 90 degree rotation (to be long side between house and garden) 
 - Fascia/soffit runs overlap at the four rake corners instead of mitering.
 - Wall framing members are not individually pickable (wall bodies are). Per-stud selection
   needs `InstancedMesh` instanceId picking plus a member-uid scheme the engine doesn't emit.
@@ -249,3 +219,22 @@ deck fix; work them down here (or suppress `structural.member_interference` per-
   for now; a second pass on the roof/wall eave detail should revisit it.
 - `Panel3D.tsx` (~1350 lines), `store.ts` (~650) and `emit/gltf/emitter.py` (~1190) are all
   well over the 500-line guideline and were left unsplit only to avoid cross-worktree conflicts.
+  - **Radon Vent horizontal jog** is four stacked square bands, not a swept round section. The two
+  risers are true 12-gons; only the jog still reads faceted.
+  - there is a glowing red dot on the basement in 2d view, near the corner of ST-B2M and southern end of the wall W-B-STR. Some sort of warning, however you can't click on it to tell what it is, so it isn't very helpful in this form.
+  - Very small windows that don't break the stud line don't need a header added. We added support for this, however the two studs to either side of these small windows (14" or so) are now missing, so another error here
+  - The (NEMA 3R weatherproof) junction box on the exterior wall should be higher up (closer to CN-M-VENT-CLAMP)
+  - Fascia are also part of the framing, and should be under that view toggle
+  - Garage also needs its gutter on the south wall
+
+  ## Hardware
+  We want to better show the count of some critical hardware pieces in the BOM
+  - How many structural wood screws we need to hold the furring strips (over the exterior insulation), currently mainly in wall type CATLIN_EXT_2X6. We expect these to be every 24" vertically and every 16" horizontal (16" oc matching the OC of the furring strips, which matches the stud spacing). This should be calculated accurately across floors. The roof needs the same thing done separately (it's the same OC spacing but longer screws).
+  - count of joist hangers where they are needed (ie they hang on beam) which I believe is only the top ridge beam here (Simpson LSSR)
+  - properly show 4 knee braces (the main corners) using 2x each APVKB45-6
+  - Mudsill anchors (MASA, looks like about every 4 feet) and holdowns for all sill plates on concrete
+
+
+  ## General Polishing Tasks
+- Make sure all warnings are cleared up
+- Make sure the BOM shows all members listed out, grouped usually by size and type

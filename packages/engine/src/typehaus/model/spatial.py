@@ -54,6 +54,11 @@ class Stair(Element):
     turn_direction: str | None = None
     winder_count: int = 0
     start: Point2D | None = None
+    # Walls the flight is permitted to bear on, beyond the ones the resolver picks by
+    # geometry + structural role. This grants permission, never restricts it: a tag here
+    # promotes an otherwise non-bearing wall to a valid host, and a tag that names no wall
+    # on ``from_storey`` is an ``integrity.stair_bearing`` error.
+    bearing_refs: tuple[str, ...] = ()
     # Depth of the turn landing (in the run direction) for a ``u_split_landing``.
     # ``None`` keeps the historical behaviour of reserving one stair width for the
     # 180° turn; authoring a value renders a deeper walk-off platform and shortens the

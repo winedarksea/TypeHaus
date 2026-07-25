@@ -1617,7 +1617,9 @@ const StairShape = memo(function StairShape({ stair, project, selected, hovered,
     style={{ cursor: "pointer" }}>
     <polygon points={outline} fill="var(--canvas-wood-soft)" stroke={stroke}
       strokeWidth={selected ? 2.5 : 1.25} />
-    {stair.members.filter((member) => member.category === "tread" || member.category === "winder" || member.category === "landing").map((member) => {
+    {stair.members.filter((member) => (member.category === "tread" || member.category === "winder" || member.category === "landing")
+      // A vertical member (landing post / newel) is a point in plan, not a line.
+      && (member.p0[0] !== member.p1[0] || member.p0[1] !== member.p1[1])).map((member) => {
       const [x0, y0] = project(member.p0); const [x1, y1] = project(member.p1);
       return <line key={member.key} x1={x0} y1={y0} x2={x1} y2={y1} stroke={stroke} strokeWidth={1} />;
     })}

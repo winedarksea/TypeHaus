@@ -1,20 +1,34 @@
 """Stair framing regression coverage (raked stringers, split-landing platforms, well
-partition, concrete-wall hangers — plan: "stairs aren't framed properly").
+partition, wall bearing, winder turn framing — plans: "stairs aren't framed properly" and
+"stair landing & winder support framing").
 
 Guards the U-stair rebuild: no coincident members, split-landing riser budget
 (lower treads · landing · landing+riser · upper treads · arrival), raked stringers that
 never read as floor-to-floor prisms, a framed well partition, deduplicated landing-platform
 joists, and hanger bands that bear at the landing rather than the arrival deck.
+
+Then the support pass: every landing corner is either ledgered onto a host wall or posted
+down to the subfloor (this used to be reachable only on concrete), the host is the wall
+that actually carries the run rather than whichever was declared first, and the winder turn
+is a real frame — newel, two raked carriages, and the header the straight flight springs on.
 """
 
 from __future__ import annotations
 
 import math
+import uuid
 from pathlib import Path
 
 import pytest
 
-from typehaus.quantities import ft, inch
+from typehaus.emit.draw import build_floorplan
+from typehaus.emit.draw.scene import Polyline
+from typehaus.model import (
+    Assembly, Building, FloorOpening, FloorSystem, FramingSpec, JoistSpec, Layer,
+    LayerFunction, Library, Material, Node, PlanModel, Project, Site, Stair, Storey, Wall,
+    degF, ft, inch, pt,
+)
+from typehaus.model.enums import StructuralRole
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.source import load_plan
@@ -35,6 +49,17 @@ def catlin_model():
 @pytest.fixture(scope="module")
 def basement_stair(catlin_model):
     return next(stair for stair in catlin_model.stairs if stair.tag == "ST-B2M")
+
+
+@pytest.fixture(scope="module")
+def main_stair(catlin_model):
+    """ST-M2S: a u_split_landing springing off a *framed* deck, not concrete."""
+    return next(stair for stair in catlin_model.stairs if stair.tag == "ST-M2S")
+
+
+@pytest.fixture(scope="module")
+def winder_stair(catlin_model):
+    return next(stair for stair in catlin_model.stairs if stair.tag == "ST-S2A")
 
 
 def _subfloor(catlin_model, stair) -> float:
@@ -171,6 +196,8 @@ def test_basement_lower_hanger_bears_at_the_landing(catlin_model, basement_stair
     for hanger in lower_hangers:
         assert hanger.connection is not None
         assert hanger.connection.startswith("concrete-wall-hanger:")
+        # A framed-wall bearing is annotation-only; a hanger band is concrete-only.
+        assert not hanger.connection.startswith("framed-wall-ledger:")
         assert hanger.z1_end_m == pytest.approx(-1.372, abs=0.01)
     # The annotated stringer carries the same connection tag.
     tagged = [m for m in stair.members if m.category == "stringer"
@@ -209,3 +236,261 @@ def test_riser_walk_is_continuous_one_riser_steps(catlin_model, basement_stair):
         assert elevation - previous == pytest.approx(stair.riser_height_m, abs=1e-6)
         previous = elevation
     assert math.isclose(previous, arrival, abs_tol=1e-9)
+
+
+# ------------------------------------------------------- 8. landing corner load path
+def _connection_endpoints(stair) -> set[tuple[float, float]]:
+    """Plan points carried by a wall — either concrete ledger or framed-wall ledger."""
+    out: set[tuple[float, float]] = set()
+    for member in stair.members:
+        if member.connection is None:
+            continue
+        if member.connection.startswith(("concrete-wall-hanger:", "framed-wall-ledger:")):
+            out.update((round(p[0], 4), round(p[1], 4)) for p in (member.p0, member.p1))
+    return out
+
+
+def test_every_landing_platform_corner_is_supported(catlin_model):
+    """The one test that would have caught the bug: ST-M2S's landing platforms had real
+    framing (deck + joists + rims) resting on nothing, because the whole support pass sat
+    inside a foundation-walls-only branch."""
+    for stair in catlin_model.stairs:
+        rims = [m for m in stair.members if m.child_key.startswith("landing-rim-")]
+        if not rims:
+            continue
+        subfloor = _subfloor(catlin_model, stair)
+        carried = _connection_endpoints(stair)
+        posts = [m for m in stair.members if m.p0 == m.p1 and m.orient is not None]
+        for rim in rims:
+            underside = rim.z0_m
+            for point in (rim.p0, rim.p1):
+                key = (round(point[0], 4), round(point[1], 4))
+                if key in carried:
+                    continue
+                beneath = [p for p in posts
+                           if (round(p.p0[0], 4), round(p.p0[1], 4)) == key
+                           and p.z0_m == pytest.approx(subfloor, abs=1e-6)
+                           and p.z1_m >= underside - 1e-6]
+                assert beneath, (
+                    f"{stair.tag}: {rim.child_key} corner {key} bears on nothing")
+
+
+def test_framed_wall_bearing_picks_the_longest_host(main_stair):
+    """W-M-C4B overlaps stringer-upper-1 by 4" and is declared first; W-M-C5 carries
+    5'-8" of it. First-match-wins picked the 4" clip."""
+    members = {m.child_key: m for m in main_stair.members}
+    for key in ("stringer-upper-1", "landing-rim-upper-1"):
+        assert members[key].connection == "framed-wall-ledger:W-M-C5", key
+    for key in ("stringer-lower-0", "landing-rim-lower-0"):
+        assert members[key].connection == "framed-wall-ledger:W-M-STRW", key
+
+
+def test_no_ledger_members_are_emitted(catlin_model):
+    """Annotate, don't fabricate: a wall axis is a *centreline*, so a band drawn on a
+    framed wall's axis would be geometry invented inside the stud cavity. Only concrete
+    gets a real hanger band."""
+    for stair in catlin_model.stairs:
+        for member in stair.members:
+            if member.category != "hanger":
+                continue
+            assert member.connection is not None
+            assert member.connection.startswith("concrete-wall-hanger:"), member.child_key
+
+
+def test_no_stair_member_is_degenerate(catlin_model):
+    """A member is a line in plan or a vertical with a real height — never a point with
+    no z-extent (the shape a collapsed/clipped carriage would take)."""
+    for stair in catlin_model.stairs:
+        for member in stair.members:
+            if member.p0 != member.p1:
+                continue
+            assert member.orient is not None, f"{stair.tag}:{member.child_key}"
+            assert member.z1_m - member.z0_m > 1e-6, f"{stair.tag}:{member.child_key}"
+
+
+def test_plan_symbols_skip_zero_length_stair_members(catlin_model):
+    """A vertical post/newel is a point in plan; drawing it as a polyline emits a
+    zero-length A-STAIR entity that reads as a stray tick."""
+    for storey in catlin_model.plan.storeys:
+        for node in build_floorplan(catlin_model, storey.tag).nodes:
+            if not isinstance(node, Polyline) or node.layer != "A-STAIR":
+                continue
+            (x0, y0), (x1, y1) = node.points[0], node.points[-1]
+            assert math.hypot(x1 - x0, y1 - y0) > 1e-9, node.tag
+
+
+# --------------------------------------------------------------- 9. the winder turn
+def _winder_reference(catlin_model, winder_stair):
+    subfloor = _subfloor(catlin_model, winder_stair)
+    riser = winder_stair.riser_height_m
+    return subfloor, riser, winder_stair.winder_count
+
+
+def test_winder_newel_carries_every_winder_narrow_end(catlin_model, winder_stair):
+    subfloor, riser, count = _winder_reference(catlin_model, winder_stair)
+    newels = [m for m in winder_stair.members if m.category == "newel"]
+    newel = next(m for m in newels if m.child_key == "newel-000")
+    assert newel.p0 == newel.p1 and newel.orient is not None
+    assert newel.z0_m == pytest.approx(subfloor)
+    # It tops at the springing, above the header: the highest winder's narrow end is
+    # higher than the header top, and one member has to carry all of them.
+    assert newel.z1_m == pytest.approx(subfloor + riser * (count + 1) + inch(1.5).meters)
+    winders = [m for m in winder_stair.members if m.category == "winder"]
+    assert len(winders) == count
+    for winder in winders:
+        assert winder.p0 == newel.p0, winder.child_key
+        assert winder.z1_m <= newel.z1_m + 1e-9
+
+
+def test_winder_outer_legs_are_carried_by_raked_carriages(catlin_model, winder_stair):
+    subfloor, riser, count = _winder_reference(catlin_model, winder_stair)
+    carriages = {m.child_key: m for m in winder_stair.members
+                 if m.child_key.startswith("winder-carriage-")}
+    assert set(carriages) == {"winder-carriage-0", "winder-carriage-1"}
+    first, second = carriages["winder-carriage-0"], carriages["winder-carriage-1"]
+    assert first.category == second.category == "stringer"
+    # foot -> O -> T: the two legs of the turn square, meeting at the outer corner, and
+    # the second ending exactly where the outer straight stringer begins.
+    assert first.p1 == second.p0
+    stringer_1 = next(m for m in winder_stair.members if m.child_key == "stringer-1")
+    assert second.p1 == stringer_1.p0
+    # Each leg is one stair width long in plan — the turn square's side.
+    width = next(m for m in winder_stair.members if m.category == "tread").length_m
+    for carriage in (first, second):
+        assert math.hypot(carriage.p1[0] - carriage.p0[0],
+                          carriage.p1[1] - carriage.p0[1]) == pytest.approx(width)
+
+    def top(fraction):
+        return subfloor + riser * (count + 1) * fraction + inch(1.5).meters
+    for carriage, (f0, f1) in ((first, (0.0, 0.5)), (second, (0.5, 1.0))):
+        assert carriage.z0_end_m is not None and carriage.z1_end_m is not None, "not raked"
+        assert carriage.z1_m == pytest.approx(top(f0))
+        assert carriage.z1_end_m == pytest.approx(top(f1))
+        assert min(carriage.z0_m, carriage.z0_end_m) >= subfloor - 1e-9
+    # The departing carriage tops out exactly on the springing, so it runs continuously
+    # into the straight flight rather than lapping it.
+    assert second.z1_end_m == pytest.approx(stringer_1.z1_m)
+
+
+def test_straight_flight_springs_on_the_turn_header(catlin_model, winder_stair):
+    header = next(m for m in winder_stair.members if m.child_key == "winder-header")
+    assert header.category == "header"
+    stringers = [m for m in winder_stair.members if m.child_key.startswith("stringer-")]
+    assert stringers
+    for stringer in stringers:
+        # The header top IS the springing's underside — zero-overlap bearing.
+        assert header.z1_m == pytest.approx(stringer.z0_m)
+    assert header.z1_m - header.z0_m == pytest.approx(cross_section("2-2x12").depth_m)
+    newels = [m for m in winder_stair.members if m.category == "newel"]
+    for point in (header.p0, header.p1):
+        assert any(n.p0 == point and n.z1_m >= header.z1_m - 1e-9 for n in newels), point
+    # The header spans the inside corner to the turn corner: one stair width, which a
+    # straight tread also spans.
+    width = next(m for m in winder_stair.members if m.category == "tread").length_m
+    assert math.hypot(header.p1[0] - header.p0[0],
+                      header.p1[1] - header.p0[1]) == pytest.approx(width)
+
+
+def test_winder_nosings_are_never_plan_coincident_with_a_straight_tread(winder_stair):
+    """The fan used to divide by ``winder_count``, putting the last nosing on the
+    departing edge of the turn square — exactly where ``tread-000`` already is, one riser
+    up. That is a riser with zero going: unclimbable."""
+    treads = [m for m in winder_stair.members if m.category == "tread"]
+    for winder in (m for m in winder_stair.members if m.category == "winder"):
+        for tread in treads:
+            assert {winder.p0, winder.p1} != {tread.p0, tread.p1}, (
+                f"{winder.child_key} is plan-coincident with {tread.child_key}")
+
+
+# ------------------------------------------------------------ 10. synthetic bearing
+def _stair_plan(*, near_wall_offset=None, near_wall_role=StructuralRole.BEARING,
+                **stair_fields) -> PlanModel:
+    """A minimal main→second straight stair inside a 20x14 box of framed walls.
+
+    No concrete anywhere, so it exercises exactly the path catlin's ST-M2S takes.
+    ``near_wall_offset`` adds a 4.75" partition parallel to (and that far off) the
+    y=0 stringer.
+    """
+    ext = Assembly(tag="EXT", layers=(
+        Layer(name="stud", material_ref="wood", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
+    ))
+    part = Assembly(tag="PART", layers=(
+        Layer(name="stud", material_ref="wood", thickness=inch(4.75),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x4")),
+    ))
+    project = Project(
+        name="Stair", project_uuid=uuid.UUID("00000000-0000-4000-8000-0000000000a1"),
+        site=Site(lat=44.9, lon=-93.2, elevation=ft(830), design_temp_heating=degF(-15),
+                  design_temp_cooling=degF(90)), building=Building(name="Stair"))
+    main = Storey(uid="STMAIN0001", tag="main", elevation=ft(0), default_ceiling_height=ft(9))
+    second = Storey(uid="STSEC00001", tag="second", elevation=ft(9),
+                    default_ceiling_height=ft(9))
+    nodes = tuple(
+        Node(uid=f"N{i:09d}", tag=f"N-{i}", position=position)
+        for i, position in enumerate((
+            pt(ft(0), ft(0)), pt(ft(20), ft(0)), pt(ft(20), ft(14)), pt(ft(0), ft(14)),
+        ), 1))
+    walls = tuple(
+        Wall(uid=f"W{i:09d}", tag=f"W-{i}", start_node=f"N-{start}", end_node=f"N-{end}",
+             assembly="EXT", top=ft(9))
+        for i, (start, end) in enumerate(((1, 2), (2, 3), (3, 4), (4, 1)), 1))
+    extra: tuple = ()
+    if near_wall_offset is not None:
+        extra = (
+            Node(uid="N000000101", tag="N-101", position=pt(ft(0), -near_wall_offset)),
+            Node(uid="N000000102", tag="N-102", position=pt(ft(20), -near_wall_offset)),
+            Wall(uid="W000000101", tag="W-NEAR", start_node="N-101", end_node="N-102",
+                 assembly="PART", top=ft(9), structural_role=near_wall_role),
+        )
+    stair = Stair(uid="SR00000001", tag="S-1", floor_opening="FO-1", from_storey="main",
+                  to_storey="second", width=ft(3), run_direction="x",
+                  start=pt(ft(0), ft(0)), **stair_fields)
+    plan = PlanModel(project=project, library=Library(
+        materials=(Material(tag="wood", name="Wood", r_per_inch=1.25),),
+        assemblies=(ext, part)), storeys=(main, second))
+    second_elements = (
+        FloorOpening(uid="FO00000001", tag="FO-1", outline=(
+            pt(ft(0), ft(0)), pt(ft(14), ft(0)), pt(ft(14), ft(3)), pt(ft(0), ft(3)))),
+        FloorSystem(uid="FS00000001", tag="FS-1", joists=JoistSpec(), openings=("FO-1",)),
+    )
+    return (plan.with_elements("main", (*nodes, *walls, *extra, stair))
+                .with_elements("second", second_elements))
+
+
+def _resolved_stair(plan):
+    model, findings = resolve(plan)
+    stair = next((s for s in model.stairs if s.tag == "S-1"), None)
+    return stair, findings
+
+
+def test_authored_stair_bearing_refs_promote_a_nonbearing_wall():
+    """``bearing_refs`` grants permission it never restricts: W-1 carries the y=0
+    stringer geometrically, but its authored role is UNKNOWN until the stair vouches."""
+    stair, _ = _resolved_stair(_stair_plan())
+    stringer = next(m for m in stair.members if m.child_key == "stringer-0")
+    assert stringer.connection is None
+
+    stair, findings = _resolved_stair(_stair_plan(bearing_refs=("W-1",)))
+    assert not [f for f in findings if f.check_id == "integrity.stair_bearing"]
+    stringer = next(m for m in stair.members if m.child_key == "stringer-0")
+    assert stringer.connection == "framed-wall-ledger:W-1"
+
+
+def test_missing_stair_bearing_ref_is_an_error():
+    stair, findings = _resolved_stair(_stair_plan(bearing_refs=("W-NOPE",)))
+    assert stair is None
+    errors = [f for f in findings if f.check_id == "integrity.stair_bearing"]
+    assert len(errors) == 1 and "W-NOPE" in errors[0].message
+
+
+def test_a_wall_four_inches_off_the_stringer_is_not_a_host():
+    """Locks the tolerance to the wall's own depth instead of a flat 0.20 m: a 4.75"
+    partition reaches 2.375" + a tread board, so it cannot carry a stringer 4" away."""
+    stair, _ = _resolved_stair(_stair_plan(near_wall_offset=inch(4)))
+    stringer = next(m for m in stair.members if m.child_key == "stringer-0")
+    assert stringer.connection is None
+    # Two inches away it is within reach, so the rejection is the tolerance, not the wall.
+    stair, _ = _resolved_stair(_stair_plan(near_wall_offset=inch(2)))
+    stringer = next(m for m in stair.members if m.child_key == "stringer-0")
+    assert stringer.connection == "framed-wall-ledger:W-NEAR"

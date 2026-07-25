@@ -105,6 +105,18 @@ def test_deck_bearing_stack_has_no_interference():
     assert not deck_findings, [f.message for f in deck_findings]
 
 
+def test_stair_support_framing_reports_no_interference():
+    """The landing posts, winder newel/carriages and turn header must be *joints*, not
+    clashes. Sharper than the global ceiling below: it cannot be satisfied by the check
+    happening to stay under five findings elsewhere."""
+    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+    # A member's label is "{parent_uid}:{child_key}", so match the stair's uid.
+    stair_uids = {stair.uid for stair in ctx.model.stairs}
+    stair_findings = [f for f in member_interference(ctx)
+                      if any(t.split(":")[0] in stair_uids for t in f.element_tags)]
+    assert not stair_findings, [f.message for f in stair_findings]
+
+
 def test_catlin_framing_interference_stays_near_zero():
     """Guards the ~2662 -> 0 cleanup (correct stud orientation, slope-aware z, intended
     corner/tee/bearing/stair joints). A small ceiling keeps it robust to model tweaks."""

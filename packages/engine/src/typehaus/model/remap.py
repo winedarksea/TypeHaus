@@ -102,7 +102,7 @@ def remap_ops_for(element: Element, remap: ReferenceRemap) -> list[PatchOp]:
 
 def _register_builtins() -> None:
     from typehaus.model.elements import Door, RoughOpening, Wall, Window
-    from typehaus.model.spatial import Room
+    from typehaus.model.spatial import Room, Stair
 
     @remap_handler(Wall, ref_fields=("start_node", "end_node", "stacks_on", "bearing_refs"))
     def _wall(el: Element, remap: ReferenceRemap) -> list[PatchOp]:
@@ -138,6 +138,14 @@ def _register_builtins() -> None:
 
     for _cls in (Door, Window, RoughOpening):
         remap_handler(_cls, ref_fields=("host",))(_opening_handler(_cls.__name__))
+
+    @remap_handler(Stair, ref_fields=("bearing_refs",))
+    def _stair(el: Element, remap: ReferenceRemap) -> list[PatchOp]:
+        refs = getattr(el, "bearing_refs", ()) or ()
+        new_refs = tuple(s for s in (remap.resolve(r) for r in refs) if s is not None)
+        if new_refs == tuple(refs):
+            return []
+        return [PatchOp("update", "Stair", el.tag, {"bearing_refs": list(new_refs)})]
 
     @remap_handler(Room, ref_fields=("wall_lining_exceptions",))
     def _room(el: Element, remap: ReferenceRemap) -> list[PatchOp]:

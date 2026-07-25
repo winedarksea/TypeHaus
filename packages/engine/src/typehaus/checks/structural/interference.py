@@ -95,18 +95,23 @@ _PLATE_KINDS = frozenset({"plate", "raked_plate"})
 _STUD_KINDS = frozenset({"stud", "corner", "king", "jack", "cripple"})
 # Stair carriage/infill categories, and the members a stair frame bears on or butts.
 _STAIR_HOUSED = frozenset({"tread", "winder"})
-# ``partition`` (the U-stair well wall between the up/down runs) and ``hanger`` (the
-# ledger let into a concrete foundation wall that carries a basement stringer) are stair
-# carriage members: they share volume with the treads/stringers/landing by design.
-# Stud kinds and wall plates remain cleared for now — NOT because stringers are
-# full-height prisms any more (they are raked), but because a stair enclosed by stud
-# walls (catlin ST-M2S against W-M-STRW/W-M-STRW2) runs its stringers/treads/landings on
-# the wall *axis* with no framed-wall bearing annotation yet. Until the framed-wall
-# analogue of the concrete anchor pass exists (see plans/TODO.md), removing these kinds
-# reports ~80 intended stair-on-wall bearings on the catlin model.
+# ``partition`` (the U-stair well wall between the up/down runs), ``newel`` (the winder
+# newel every winder's narrow end converges on) and ``hanger`` (the ledger let into a
+# concrete foundation wall that carries a basement stringer) are stair carriage members:
+# they share volume with the treads/stringers/landing by design.
+# Stud kinds and wall plates remain cleared for now, and annotating the framed-wall
+# bearing did NOT change that — an annotation does not move geometry. The ~80 contacts on
+# catlin are stair members physically inside stud cavities, because stair members are laid
+# out to the host wall's *axis* (its centreline) instead of its finished face. That inset
+# is defect D3 in plans/TODO.md and is the real prerequisite for narrowing this set.
 _STAIR_SUPPORT = frozenset({"stringer", "landing", "plate", "raked_plate", "joist",
-                            "blocking", "trimmer", "header", "partition",
+                            "blocking", "trimmer", "header", "partition", "newel",
                             "hanger"}) | _STUD_KINDS
+# The stair members that are *carried* rather than carrying. Kept as its own set (instead
+# of a literal beside the rule) so ``{"newel", "header"}`` — the newel/header lap at the
+# turn corners, which overlap in z by design — resolves here rather than falling through
+# to the floor-opening header rule below and firing.
+_STAIR_BORNE = frozenset({"stringer", "landing", "newel"})
 # Wall/roof framing that legitimately interpenetrates where two walls meet at a junction
 # (studs, plates, headers, T-backing blocking, and the rafters/ridge landing on a gable).
 _JUNCTION_FRAMING = (_STUD_KINDS | _PLATE_KINDS
@@ -197,7 +202,7 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     # intended notch/bearing joints, not clashes.
     if kinds & _STAIR_HOUSED and (kinds - _STAIR_HOUSED) <= _STAIR_SUPPORT:
         return True
-    if kinds & {"stringer", "landing"} and (kinds - {"stringer", "landing"}) <= _STAIR_SUPPORT:
+    if kinds & _STAIR_BORNE and (kinds - _STAIR_BORNE) <= _STAIR_SUPPORT:
         return True
     # Two ledger/hanger bands of the same stair lapping at a landing-platform corner
     # (e.g. a rim ledger meeting an edge-joist ledger on perpendicular concrete walls).

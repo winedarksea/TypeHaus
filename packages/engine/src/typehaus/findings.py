@@ -55,3 +55,13 @@ class Finding(BaseModel):
         sev = self.severity.value.upper()
         hint = f"\n    hint: {self.fix_hint}" if self.fix_hint else ""
         return f"{sev} {self.check_id}: {self.message}{tags}{loc}{hint}"
+
+
+def element_error(check_id: str, message: str, tag: str) -> Finding:
+    """The resolver's single-element hard failure: ERROR severity, FAIL result.
+
+    Lives here rather than in one resolver module so sibling modules (envelope, stairs)
+    share it without importing each other.
+    """
+    return Finding(severity=Severity.ERROR, check_id=check_id, message=message,
+                   element_tags=(tag,), result=Result.FAIL)

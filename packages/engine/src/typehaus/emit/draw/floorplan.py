@@ -133,6 +133,8 @@ def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         for member in stair.members:
             if member.category not in {"tread", "winder", "landing"}:
                 continue
+            if member.p0 == member.p1:
+                continue  # a vertical member (post/newel) is a point in plan, not a line
             b.add(Polyline(points=(_in(member.p0), _in(member.p1)), layer="A-STAIR",
                            lineweight=0.25, uid=stair.uid, tag=member.child_key))
         start = (minx, (miny + maxy) / 2) if along_x else ((minx + maxx) / 2, miny)

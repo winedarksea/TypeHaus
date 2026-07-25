@@ -42,6 +42,7 @@ const CATEGORY_COLOR: Record<string, number> = {
   partition: 0xb3854f,
   trimmer: 0xa87a4c,
   landing: 0xb88c5c,
+  newel: 0x996b41, // = header, as engine-side: the winder newel is a post, not tread lumber
   hanger: 0x595c61,
   // Roof sticks. `rafter`/`blocking`/`outlooker`/`barge_rafter` had no entry in either
   // table; the truss keys existed engine-side only. Together that was ~470 members reading

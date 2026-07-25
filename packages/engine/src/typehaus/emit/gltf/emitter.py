@@ -64,6 +64,9 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # concrete-wall hanger/ledger band is galvanized grey like "connector". Mirrored in
     # ui/src/three/members.ts CATEGORY_COLOR (GLB/three.js parity convention).
     "landing": (0.72, 0.55, 0.36, 1.0),
+    # The winder newel carries every winder's narrow end — a post-sized member, so it takes
+    # the header/stringer tone rather than the lighter tread lumber.
+    "newel": (0.60, 0.42, 0.26, 1.0),
     "partition": (0.70, 0.52, 0.33, 1.0),
     "trimmer": (0.66, 0.48, 0.30, 1.0),
     "hanger": (0.35, 0.36, 0.38, 1.0),
