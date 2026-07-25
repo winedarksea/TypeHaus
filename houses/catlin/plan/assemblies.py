@@ -203,6 +203,21 @@ PORCH_RAILING_MASONRY = Assembly(
     source="catlin-house porch railing — white brick / air gap / grouted CMU / stucco",
 )
 
+# Raised-garden outer face: dry-stacked segmental retaining-wall block, one unit deep. No
+# core fill and no rebar — an SRW wall of this height is held by unit weight, batter and
+# the granular backfill behind it, which is exactly why it is the *outer* face here while
+# the sunken-garden retaining wall (cast concrete) takes the inner one.
+RETAINING_BLOCK_12 = Assembly(
+    tag="RETAINING_BLOCK_12",
+    layers=(
+        Layer(name="srw-block", material_ref="retaining-block", thickness=inch(12.0),
+              function=LayerFunction.STRUCTURE,
+              masonry=MasonrySpec(unit_size="12x6x18 SRW block", coursing=inch(6.0),
+                                  core_fill=False)),
+    ),
+    source="raised garden (brief.md follow-up) — outer face, dry-stacked SRW units",
+)
+
 # Deck walking surfaces (single-layer). The joists/beams under them are separate framing
 # members; these are just the finished plank surface so the slab reads with the right
 # material in plans/IFC.
@@ -403,6 +418,14 @@ MATERIALS = [
     Material(tag="post-paint-white", name="White-painted PT lumber", r_per_inch=1.24,
              density=500.0, perm_rating=1.0, hatch="lumber", color="#f4f2ee",
              source="balcony 6x6 pillars, exterior white paint; painted softwood ~1 perm-in"),
+    # --- raised garden ---------------------------------------------------------
+    # Dry-stacked segmental retaining-wall (SRW) block. A precast concrete masonry unit, so
+    # it renders on the existing "cmu" finish recipe rather than inventing a new one; the
+    # split-face grey is a shade darker than the porch railing's grouted CMU.
+    Material(tag="retaining-block", name="Segmental concrete retaining-wall block",
+             r_per_inch=0.08, density=2200.0, perm_rating=2.5, hatch="concrete",
+             color="#a8a49c", finish="cmu",
+             source="raised garden outer face — dry-stacked SRW units, no mortar"),
 ]
 
 # --- construction rules: pre-resolve returns at mixed-assembly junctions (#45) ----------
@@ -454,6 +477,7 @@ ASSEMBLIES = [
     SUNKEN_GARDEN_WALL,
     SUNKEN_GARDEN_ARCH_16,
     PORCH_RAILING_MASONRY,
+    RETAINING_BLOCK_12,
     PORCH_DECK_COMPOSITE,
     BALCONY_DECK_ALUMINUM,
     POST_WHITE_PAINT,

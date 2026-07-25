@@ -277,19 +277,27 @@ VENT_CLAMPS = [
               connects=("VR-M-RADON-VENT", "W-A-N2")),
 ]
 
-# --- Outdoor NEMA 3R weatherproof junction box on the north siding ------------------
-# Gasketed blank cover plate; mounted to the standing seam with an S-5!-style clamp.
+# --- Outdoor NEMA 3R weatherproof junction box on the north gable siding -------------
+# Gasketed blank cover plate; mounted to the standing seam with an S-5!-style clamp. It
+# serves the exterior vent riser's work zone, so it belongs beside the CN-M-VENT-CLAMP
+# cluster (25' / 25'-6" / 26' at x=3') — not 19' below it at eye level on the main storey.
+# Filed on the attic storey with the gable wall it now rides: at x=6' the 4:12 rake carries
+# the siding to ~27'-1.7", so a box at 25'-6" has cladding to grip. It stands 3' east of the
+# riser bundle to stay clear of the pipes and their clamps.
+# Both heights below are the same 25'-6": a Mount elevation is storey-relative (attic datum
+# 20') while a Connector elevation is project-frame absolute.
 NEMA_BOX = [
-    ElectricalDevice(uid="CEJ901AAAA", tag="ED-M-NEMA-JB", kind=DeviceKind.JUNCTION_BOX,
+    ElectricalDevice(uid="CEJ901AAAA", tag="ED-A-NEMA-JB", kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(6), ft(37)), type_ref="ED-T-JBOX",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
 NEMA_CLAMP = [
-    Connector(uid="CMNC01AAAA", tag="CN-M-NEMA-CLAMP", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(6), ft(37)), elevation=ft(6), size="S-5!",
-              connects=("ED-M-NEMA-JB", "W-M-N")),
+    Connector(uid="CMNC01AAAA", tag="CN-A-NEMA-CLAMP", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(ft(6), ft(37)), elevation=ft(25, 6), size="S-5!",
+              connects=("ED-A-NEMA-JB", "W-A-N2")),
 ]
 
-MAIN_ELEMENTS = [*SLEEVES, *MAIN_DEVICES, *NEMA_BOX, *NEMA_CLAMP]
+MAIN_ELEMENTS = [*SLEEVES, *MAIN_DEVICES]
 BASEMENT_ELEMENTS = [*DRAINS, *EQUIPMENT, *PANEL, *RADON_SUMP, *VENT_RISERS, *VENT_CLAMPS]
 SECOND_ELEMENTS = [*DUCTS, *REGISTERS, *SECOND_DEVICES]
+ATTIC_ELEMENTS = [*NEMA_BOX, *NEMA_CLAMP]

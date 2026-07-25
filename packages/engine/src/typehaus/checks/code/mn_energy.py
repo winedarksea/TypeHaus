@@ -53,13 +53,20 @@ def _storey_is_conditioned(plan: PlanModel, storey_tag: str) -> bool:
     return any(room.conditioned for room in rooms)
 
 
+# Tag prefixes of freestanding, unoccupied structures filed on a house storey key.
+_FREESTANDING_EXTERIOR_WALL_PREFIXES = (
+    "W-SG-",  # sunken-garden porch / retaining walls
+    "W-RG-",  # raised-garden planter cheeks (landscape retaining, not envelope)
+)
+
+
 def _is_freestanding_exterior_wall(wall) -> bool:
     """Freestanding, unoccupied structures (catlin's sunken-garden porch/retaining walls,
-    tag prefix ``W-SG-``) have no Room and no ``conditioned`` flag to key off of — they
-    are filed under the house's own "basement" storey key (→ Phase 2's sleeve check hit
-    the same "one storey key, several physical structures" seam) but aren't part of the
-    conditioned envelope this code binds."""
-    return wall.tag.startswith("W-SG-")
+    its raised-garden planter) have no Room and no ``conditioned`` flag to key off of —
+    they are filed under the house's own "basement" storey key (→ Phase 2's sleeve check
+    hit the same "one storey key, several physical structures" seam) but aren't part of
+    the conditioned envelope this code binds."""
+    return wall.tag.startswith(_FREESTANDING_EXTERIOR_WALL_PREFIXES)
 
 
 def _is_freestanding_exterior_slab(tag: str) -> bool:
