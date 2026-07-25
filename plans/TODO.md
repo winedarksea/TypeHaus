@@ -232,8 +232,8 @@ deck fix; work them down here (or suppress `structural.member_interference` per-
   - How many structural wood screws we need to hold the furring strips (over the exterior insulation), currently mainly in wall type CATLIN_EXT_2X6. We expect these to be every 24" vertically and every 16" horizontal (16" oc matching the OC of the furring strips, which matches the stud spacing). This should be calculated accurately across floors. The roof needs the same thing done separately (it's the same OC spacing but longer screws).
   - count of joist hangers where they are needed (ie they hang on beam) which I believe is only the top ridge beam here (Simpson LSSR)
   - properly show 4 knee braces (the main corners) using 2x each APVKB45-6
-  - Mudsill anchors (MASA, looks like about every 4 feet) and holdowns for all sill plates on concrete
-
+  - Mudsill anchors (MASA, looks like about every 4 feet) and Embedded Strap holdowns for all sill plates on concrete
+  - Stud-to-Plate Ties, Coil strapping across floors at corners
 
   ## General Polishing Tasks
 - Make sure all warnings are cleared up
