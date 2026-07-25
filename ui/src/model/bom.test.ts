@@ -86,6 +86,6 @@ export function runBomTests() {
 
   // Empty sections are kept so the reader can say a house has none of something.
   assert(sections.map((section) => section.id).join() ===
-    "framing,envelope,concrete,openings,placeables,returns",
+    "framing,envelope,concrete,openings,placeables,solar,returns",
     "Every BOM section is emitted, in order, even when empty");
 }

@@ -15,6 +15,14 @@ from typehaus.takeoff.framing import (
     sheet_goods_takeoff,
     structural_solids_takeoff,
 )
+from typehaus.takeoff.electrical import (
+    backup_component_rows,
+    conduit_takeoff,
+    electrical_device_takeoff,
+    panel_schedule,
+    service_load_summary,
+    solar_takeoff,
+)
 from typehaus.takeoff.glazing import glazing_panel_takeoff, glazing_trim_takeoff
 from typehaus.takeoff.hardware import hardware_takeoff
 from typehaus.takeoff.hardware_config import (
@@ -51,4 +59,13 @@ def bill_of_materials(
         "hardware": hardware_takeoff(model, hardware_config),
         "placeables": placeables_takeoff(model),
         "floor_heat": floor_heat_takeoff(model),
+        # The electrical program (→ takeoff/electrical.py): devices by type, the panel
+        # schedule + NEC 220.82-style service load, raceway LF, the PV array's installed
+        # wattage, and the backup subsystem's derived DIN component list.
+        "electrical_devices": electrical_device_takeoff(model),
+        "panel_schedule": panel_schedule(model),
+        "service_load": service_load_summary(model),
+        "conduit": conduit_takeoff(model),
+        "solar": solar_takeoff(model),
+        "backup_components": backup_component_rows(model),
     }

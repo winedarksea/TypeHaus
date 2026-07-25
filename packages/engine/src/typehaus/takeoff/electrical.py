@@ -137,6 +137,25 @@ def conduit_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     ]
 
 
+def electrical_device_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
+    """Devices counted by kind + product type — what the electrician's order reads."""
+    types = {t.tag: t for t in model.plan.library.electrical_device_types}
+    groups: dict[tuple[str, str], dict[str, object]] = {}
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            if element.element_kind != "ElectricalDevice":
+                continue
+            product = types.get(element.type_ref or "")
+            key = (element.kind.value, element.type_ref or "(untyped)")
+            row = groups.setdefault(key, {
+                "kind": element.kind.value, "type": element.type_ref or "(untyped)",
+                "name": product.name if product is not None else "",
+                "nema": (product.nema or "") if product is not None else "",
+                "count": 0})
+            row["count"] = int(row["count"]) + 1
+    return [groups[key] for key in sorted(groups)]
+
+
 def solar_takeoff(model: ResolvedModel) -> dict[str, object]:
     """The array as installed: module count, total DC watts, and per-product rollup.
 

@@ -296,6 +296,29 @@ def test_catlin_conduit_trunks(catlin_model):
     assert riser.to_ref == "ED-A-PV-JB" and riser.z_end_m > 7.0
 
 
+def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
+    """The BOM is one payload, nothing dropped — the WS6 sections ride along and every
+    number is the same derived value the standalone takeoffs report."""
+    from typehaus.takeoff import bill_of_materials, panel_schedule
+
+    bom = bill_of_materials(catlin_model)
+    for section in ("electrical_devices", "panel_schedule", "service_load", "conduit",
+                    "solar", "backup_components"):
+        assert section in bom, section
+    assert bom["panel_schedule"] == panel_schedule(catlin_model)
+    assert bom["solar"]["total_watts"] == 5280
+    assert bom["solar"]["panels"] == 12
+    devices = {(row["kind"], row["type"]): row["count"] for row in bom["electrical_devices"]}
+    assert devices[("meter", "ED-T-METER")] == 1
+    assert devices[("receptacle_240", "ED-T-EV-1450")] == 1
+    assert sum(row["count"] for row in bom["electrical_devices"]) == sum(
+        1 for storey in catlin_model.plan.storeys
+        for element in catlin_model.plan.storey_elements(storey.tag)
+        if element.element_kind == "ElectricalDevice")
+    assert len(bom["conduit"]) == 4
+    assert bom["backup_components"][0]["count"] == 2  # ceil(6/4) relays
+
+
 def test_circuit_is_schedule_data_not_geometry():
     """A Circuit never enters storey element lists; it lives in Library.circuits."""
     circuit = Circuit(tag="CKT-01", panel_ref="ED-B-PANEL", breaker_amps=20, backup=True)

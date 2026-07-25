@@ -244,7 +244,13 @@ def takeoff(
                "glazing_panels": bom["glazing_panels"],
                "glazing_trim": bom["glazing_trim"],
                "hardware": bom["hardware"],
-               "placeables": bom["placeables"]}
+               "placeables": bom["placeables"],
+               "electrical_devices": bom["electrical_devices"],
+               "panel_schedule": bom["panel_schedule"],
+               "service_load": bom["service_load"],
+               "conduit": bom["conduit"],
+               "solar": bom["solar"],
+               "backup_components": bom["backup_components"]}
     if prices is not None:
         payload["cost_estimate"] = estimate_costs(bom, prices)
     if as_json:
@@ -306,6 +312,38 @@ def takeoff(
         for item in payload["placeables"]:
             console.print(f"  {item['count']:>5} ea    {item['type']} — "
                           f"{item['domain']} · {item['storey']}")
+    if payload["electrical_devices"]:
+        console.print("[bold]Electrical devices[/bold]  (count · kind: type)")
+        for item in payload["electrical_devices"]:
+            label = item["name"] or item["type"]
+            nema = f" NEMA {item['nema']}" if item["nema"] and item["nema"] not in label else ""
+            console.print(f"  {item['count']:>5} ea    {item['kind']}: {label}{nema}")
+    if payload["panel_schedule"]:
+        load = payload["service_load"]
+        console.print(f"[bold]Panel schedule[/bold]  ({len(payload['panel_schedule'])} circuits; "
+                      f"demand {load['demand_amps']}A of {load['service_amps']}A service, "
+                      f"{load['panel_rating_amps']}A panel"
+                      + ("" if load["within_service"] else " — [red]OVER[/red]") + ")")
+        for row in payload["panel_schedule"]:
+            flags = "".join((" GFCI" if row["gfci"] else "",
+                             " BKUP" if row["backup"] else ""))
+            console.print(f"  {row['circuit']:<16} {row['breaker_amps']:>3}A/{row['poles']}p "
+                          f"{row['connected_va']:>7,.0f} VA{flags} — {row['description']}")
+    if payload["conduit"]:
+        console.print("[bold]Conduit (EMT trunks)[/bold]")
+        for item in payload["conduit"]:
+            console.print(f"  {item['trade_size_in']}\": {item['runs']} run(s) / "
+                          f"{item['length_ft']} LF — {', '.join(item['tags'])}")
+    if payload["solar"]["panels"]:
+        solar = payload["solar"]
+        kw = solar["total_watts"] / 1000.0
+        console.print(f"[bold]Solar[/bold]  {solar['panels']} × "
+                      f"{solar['by_product'][0]['product']} = {kw:.2f} kW installed")
+    if payload["backup_components"]:
+        console.print("[bold]Backup subsystem (DIN components)[/bold]")
+        for item in payload["backup_components"]:
+            console.print(f"  {item['count']:>5} ea    {item['component']}")
+            console.print(f"        [dim]{item['basis']}[/dim]")
     if prices is not None:
         estimate = payload["cost_estimate"]
         console.print(f"[bold]Cost estimate[/bold]  (from {prices.path.name}; "
