@@ -27,17 +27,24 @@ work.
   because a design-day walk flags code-compliant CI walls; at Minneapolis' winter mean these
   same walls are comfortably safe. Whether this check is a pass/fail gate or a cold-snap
   screening signal is a plan decision — the implementation follows the plan as written.
-- **Knee brace count.** The hardware note asks for 4 knee braces (main corners) × 2
-  `APVKB45-6`. `houses/catlin/params/sunken_garden.py` authors a `KNEEBRACE` connector at
-  **all six** pillars, so the take-off bills **12**. It counts what the model contains rather
-  than hardcoding 4; if the design is corner-only, delete the two non-corner connectors.
+- ~~**Knee brace count.**~~ RESOLVED — the balcony is now braced at its **4 corner pillars in
+  both plan directions**: 8 braces, 8 `APVKB45-6`, matching the original "4 corners × 2" note.
+  The old 12 was never buildable (every pillar is a beam *end*, so only one brace fits in the
+  beam's plane; the "matched pair per joint" rule assumed a beam continuing past its post).
+  The real gap was that all six connectors were `axis="y"` — the freestanding deck had **no
+  E-W lateral system at all**, and no E-W member to brace against. Two `2-2x8` girts
+  (`BM-SG-GIRT-R/F`) now run the pillar rows under the N-S beams to give the E-W braces a
+  soffit. Braces are 2x6 wood diagonals with a 3' leg, through-bolted, APVKB at the joint;
+  the centre pillars stay unbraced leaning columns so thrust never lands on `PT-SG-BR2`,
+  which bears on the porch decking rather than on grouted masonry.
 - **`RM-M-BATH1` is too small.** Clear face is 3'-2" × 4'-3¼". A 2'-6" WC plus a 1'-9" lav is
   4'-3" of that 4'-3¼". The fixtures now pack wall-to-wall with ~⅛" at each end and nothing
   between them. The design fix is a bigger bath or no lav.
 - **`D-G-OVERHEAD` needs an engineered header.** The 16' garage door exceeds the prescriptive
-  table. A genuine engineering input, not a modelling gap.
+  table. A genuine engineering input, not a modelling gap. ANSWER: Double-Ply 14" LVL
 - **`advisory.window_size_variety`** — 10 unique window sizes. Fewer eases ordering; whether
-  to consolidate is a design call.
+  to consolidate is a design call. ANSWER: for now, consolidate down to one size per width
+  Note: most common window widths here are sized to fit with a given number of stud breaks in the 16" OC framing spacing here.
 - **Phase 2 junctions** (own section below) — every item there is construction-rule authoring
   that needs your intent, not mechanical work.
 - **`install.sh` installs a package that does not exist.** `landing/install.sh` runs

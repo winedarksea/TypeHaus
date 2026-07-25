@@ -661,7 +661,10 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     beams = {el.tag for el in elements if el.element_kind == "Beam" and el.tag.startswith("BM-SG-")}
     assert "PT-SG-COL" in posts  # sonotube column
     assert len([t for t in posts if t.startswith("PT-SG-B")]) == 6  # 6x6 pillars
-    assert len(beams) == 5  # 2 PT 2x12 back beams + 3 double-2x10 balcony beams
+    # 2 PT 2x12 back beams + 3 double-2x10 N-S balcony beams + 2 E-W girts (the girts give
+    # the freestanding balcony a member to brace against in its second principal direction).
+    assert len(beams) == 7
+    assert {"BM-SG-GIRT-R", "BM-SG-GIRT-F"} <= beams
 
     # Both exterior decks carry a decking assembly.
     porch = next(s for s in catlin_model.solids if s.tag == "SL-SG-PORCH")

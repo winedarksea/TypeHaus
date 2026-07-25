@@ -77,13 +77,17 @@ WALLS = [
     Wall(uid="CAW108AAAA", tag="W-A-W1", start_node="N-A-NW", end_node="N-A-SW",
          assembly="CATLIN_EXT_2X4", alignment=face("sheathing-ext"), top=ft(5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-W1"),
-    # Center partition under the ridge, full length, frames to the roof.
+    # Center bearing wall under the ridge, full length, frames to the roof. This is
+    # NOT a partition: RB-HOUSE bears on it continuously, so it is the reason the roof
+    # is a structural-ridge system (rafters simply span ridge->knee wall, no thrust on
+    # the 5' knee walls). Opening this line up without a beam would dump ~1.5 klf of
+    # thrust into the knee walls. 2x6 to match the bearing stack below (W-S-C1/C3).
     Wall(uid="CAW109AAAA", tag="W-A-C1", start_node="N-A-S2", end_node="N-A-C1",
-         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE"),
-         stacks_on="W-S-C1"),
+         assembly="CATLIN_INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
+         structural_role=StructuralRole.BEARING, stacks_on="W-S-C1"),
     Wall(uid="CAW110AAAA", tag="W-A-C2", start_node="N-A-C1", end_node="N-A-N1",
-         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE"),
-         stacks_on="W-S-C3"),
+         assembly="CATLIN_INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
+         structural_role=StructuralRole.BEARING, stacks_on="W-S-C3"),
     # South rooms: den (west of center) + study (east of center). Framed to the roof
     # deck like the other attic partitions; the den's ft(7,6) dropped ceiling (see its
     # Room.ceiling below) is a finish elevation for headroom checks, not a wall height.
@@ -160,9 +164,12 @@ ROOFS = [
 
 BEAMS = [
     # Ridge beam over the center wall line: 3 plies of 1.75x11.875 LVL (5.25x11.875).
+    # Continuously supported by the W-A-C1/C2 bearing wall directly beneath it — not a
+    # 36' clear span between the gables (no LVL spans that at ~500 plf). bearing_refs
+    # names the wall it seats on, which is what the framing schedule prints.
     Beam(uid="CABM01AAAA", tag="RB-HOUSE", start_node="N-A-S2",
          end_node="N-A-N1", size="3-1.75x11.875 LVL",
-         bearing_refs=("W-A-S2", "W-A-N1")),
+         bearing_refs=("W-A-C1", "W-A-C2")),
 ]
 
 FLOOR_OPENINGS = [

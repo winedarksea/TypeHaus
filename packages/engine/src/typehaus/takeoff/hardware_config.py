@@ -108,6 +108,9 @@ class KneeBraceRules:
     # One connector per modeled brace. Raise it only for a hardware family that takes more
     # than one piece per brace.
     braces_per_location: int = 1
+    # A 2x diagonal is through-bolted at each end — one 1/2" bolt per end. A second bolt per
+    # end would split the 2x rather than strengthen the joint, so this is 2, not 4.
+    bolts_per_brace: int = 2
 
 
 @dataclass(frozen=True)

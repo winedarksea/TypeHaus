@@ -34,6 +34,10 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
 - Bearing lines: west wall, center N-S wall (x=18'), east wall; 18' I-joist spans E-W.
 - Attic is a habitable hot-roofed cathedral space: 5' knee walls E/W, gables N/S,
   ridge N-S, 4:12, **zero overhang**.
+- **Structural ridge, not a rafter-tie roof.** `RB-HOUSE` bears continuously on the
+  `W-A-C1/C2` bearing wall, which stacks unbroken to the footings. That is what makes the
+  rafters simple spans and keeps thrust off the 5' knee walls. Opening that center line up
+  without a beam under it dumps ~1.5 klf of thrust into knee walls that can take ~0.1.
 - Window rules: 14" RO fits a stud bay; 30" RO max non-bearing (one stud broken);
   27" RO max bearing (jacks added). Resize windows to fit the grid, not vice versa.
 

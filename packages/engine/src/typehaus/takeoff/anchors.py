@@ -11,9 +11,10 @@ import math
 from collections import Counter
 
 from typehaus.model.enums import ConnectorKind
-from typehaus.model.structure import Connector
+from typehaus.model.structure import Connector, KneeBrace
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_catalog import (
+    ROLE_BRACE_THROUGH_BOLT,
     ROLE_COIL_STRAP,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
     ROLE_KNEE_BRACE,
@@ -169,23 +170,56 @@ def _authored_connectors(model: ResolvedModel) -> list:
             if isinstance(element, Connector)]
 
 
+def _authored_knee_braces(model: ResolvedModel) -> list:
+    """Every modeled knee brace, however it is authored.
+
+    A brace is a :class:`KneeBrace` — the wood diagonal plus the hardware that fastens it.
+    A plan that carries only the older hardware-side record (a ``Connector`` of kind
+    ``KNEEBRACE``, with no member) still bills, so the two spellings never split the count.
+    """
+    return [(storey.tag, element)
+            for storey in model.plan.storeys
+            for element in model.plan.storey_elements(storey.tag)
+            if isinstance(element, KneeBrace)
+            or (isinstance(element, Connector) and element.kind is ConnectorKind.KNEEBRACE)]
+
+
 def knee_brace_rows(model: ResolvedModel, rules: KneeBraceRules) -> list:
-    """Knee braces come in matched pairs at each braced post/beam joint the plan models."""
-    locations = [(storey, element) for storey, element in _authored_connectors(model)
-                 if element.kind is ConnectorKind.KNEEBRACE]
-    if not locations:
+    """One connector per knee brace the plan models."""
+    braces = _authored_knee_braces(model)
+    if not braces:
         return []
     by_storey: Counter = Counter()
-    for storey, _ in locations:
+    for storey, _ in braces:
         by_storey[storey] += rules.braces_per_location
     item = hardware_for_role(ROLE_KNEE_BRACE)
     return [hardware_row(
         item, scope="braced post/beam joint",
-        count=len(locations) * rules.braces_per_location,
+        count=len(braces) * rules.braces_per_location,
         by_storey=dict(sorted(by_storey.items())),
-        basis=(f"{rules.braces_per_location} per braced joint x {len(locations)} "
-               f"modeled knee-brace locations "
-               f"({', '.join(element.tag for _, element in locations)})"))]
+        basis=(f"{rules.braces_per_location} per brace x {len(braces)} modeled knee braces "
+               f"({', '.join(element.tag for _, element in braces)})"))]
+
+
+def brace_bolt_rows(model: ResolvedModel, rules: KneeBraceRules) -> list:
+    """Through-bolts for the wood diagonals — only the braces that model a member take them.
+
+    A brace authored as bare hardware has no 2x to bolt, so it contributes no bolts: the
+    quantity follows the member the model actually carries.
+    """
+    braces = [(storey, element) for storey, element in _authored_knee_braces(model)
+              if isinstance(element, KneeBrace)]
+    if not braces:
+        return []
+    by_storey: Counter = Counter()
+    for storey, _ in braces:
+        by_storey[storey] += rules.bolts_per_brace
+    item = hardware_for_role(ROLE_BRACE_THROUGH_BOLT)
+    return [hardware_row(
+        item, scope="knee-brace end", count=len(braces) * rules.bolts_per_brace,
+        by_storey=dict(sorted(by_storey.items())),
+        basis=(f"{rules.bolts_per_brace} per brace (one each end) x {len(braces)} "
+               f"modeled {braces[0][1].member} knee braces"))]
 
 
 def authored_connector_rows(model: ResolvedModel) -> list:
@@ -219,5 +253,6 @@ def anchorage_rows(model: ResolvedModel, config: HardwareTakeoffConfig) -> list:
         *stud_plate_tie_rows(model, config.wall_ties),
         *coil_strap_rows(model, config.wall_ties),
         *knee_brace_rows(model, config.knee_braces),
+        *brace_bolt_rows(model, config.knee_braces),
         *authored_connector_rows(model),
     ]

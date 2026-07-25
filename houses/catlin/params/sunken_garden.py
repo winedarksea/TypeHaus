@@ -43,6 +43,7 @@ from typehaus import (
     FoundationWall,
     Gutter,
     JoistSpec,
+    KneeBrace,
     Node,
     Post,
     Railing,
@@ -323,7 +324,17 @@ PORCH_FLOOR = Slab(
 # The rear (north, house-side) row is 2" taller so the deck crowns at the rear and drains
 # south, away from the house.  Beam soffit = balcony level less the 2x10 beam depth (9.25").
 _balcony_beam_depth_ft = 9.25 / 12.0
+_balcony_joist_depth_ft = 7.25 / 12.0  # 2x8 deck joist
+# Pillar-height *input* only. The resolver drops both the beam and the post carrying it by
+# the deck joist depth (resolve/envelope.py::_bearing_stack_drops), so the wood does not
+# land here — see _balcony_beam_soffit below for where it actually ends up. Subtracting the
+# joist depth here as well would double-count it and shorten every pillar by 7.25".
 _beam_soffit = ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft)
+# The *resolved* soffit: what the E-W girts hang from and the N-S braces land on.
+_balcony_beam_soffit = ft(SPEC.balcony_level_ft - _balcony_joist_depth_ft
+                          - _balcony_beam_depth_ft)  # 8.625'
+_girt_depth_ft = 7.25 / 12.0  # 2-2x8
+_girt_soffit = _balcony_beam_soffit - ft(_girt_depth_ft)  # 8.021'
 _porch_walking_surface = inch(SPEC.porch_deck_thickness_in)  # top of SL-SG-PORCH
 _PILLAR_X = (_x_ax_w, _cx, _x_ax_e)
 # (row, x index) -> the railing wall whose grouted cores hold that pillar's base.
@@ -363,6 +374,22 @@ BALCONY_BEAMS = [
          size=SPEC.balcony_beam, bearing_refs=("PT-SG-BR2", "PT-SG-BF2")),
     Beam(uid="SGBB03AAAA", tag="BM-SG-BLE", start_node="N-SGB-NE", end_node="N-SGB-SE",
          size=SPEC.balcony_beam, bearing_refs=("PT-SG-BR3", "PT-SG-BF3")),
+]
+
+# Two E-W girts, one per pillar row, through-bolted to the 6x6 faces just under the N-S
+# beams. They carry no joists — the deck spans E-W onto the beams above them — and exist so
+# the balcony has a load path in its second principal direction at all. Without an E-W member
+# at the pillar tops there is nothing for an E-W knee brace to reach, and a freestanding deck
+# on standoff post bases (pinned top and bottom) has no other lateral resistance that way.
+# Each runs the full 20' across all three pillars in its row; the un-braced centre pillar butts
+# into it as a leaning column.
+BALCONY_GIRTS = [
+    Beam(uid="SGBG01AAAA", tag="BM-SG-GIRT-R", start_node="N-SGB-NW", end_node="N-SGB-NE",
+         size="2-2x8", top_elevation=_balcony_beam_soffit,
+         bearing_refs=("PT-SG-BR1", "PT-SG-BR2", "PT-SG-BR3")),
+    Beam(uid="SGBG02AAAA", tag="BM-SG-GIRT-F", start_node="N-SGB-SW", end_node="N-SGB-SE",
+         size="2-2x8", top_elevation=_balcony_beam_soffit,
+         bearing_refs=("PT-SG-BF1", "PT-SG-BF2", "PT-SG-BF3")),
 ]
 
 # Aluminum decking walking surface (framing = 2x8 joists, E-W @ 16" o.c., on the 3 beams).
@@ -421,10 +448,9 @@ DOWELS = [
 
 # ============================================================================
 # Connector hardware as modeled geometry (was text/notes only). Standoff post bases under
-# the six 6x6 balcony pillars, APVKB knee braces at the pillar tops, plus joist hangers /
-# hurricane ties at the porch back-beam pockets.
+# the six 6x6 balcony pillars, plus joist hangers / hurricane ties at the porch back-beam
+# pockets. The knee braces are their own elements — see KNEE_BRACES below.
 # ============================================================================
-_kb_z = ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft - 0.25)  # just under the beam soffit
 CONNECTORS = []
 for _i, _x in enumerate(_PILLAR_X, start=1):
     for _row, _y, _rise in _PILLAR_ROWS:
@@ -436,10 +462,6 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
             uid=f"SGCB{_i}{_row}AAAA", tag=f"CN-SG-BASE-{_row}{_i}",
             kind=ConnectorKind.POST_BASE, position=pt(ft(_x), ft(_y)), elevation=_bearing_top,
             size="ABU66SS", connects=(f"PT-SG-B{_row}{_i}", _bearing_tag)))
-        CONNECTORS.append(Connector(
-            uid=f"SGCK{_i}{_row}AAAA", tag=f"CN-SG-KB-{_row}{_i}",
-            kind=ConnectorKind.KNEEBRACE, position=pt(ft(_x), ft(_y)), elevation=_kb_z,
-            size="APVKB", axis="y", connects=(f"PT-SG-B{_row}{_i}",)))
 # Porch back-beam pockets: joist hanger into the side wall + hurricane tie over the column.
 CONNECTORS += [
     Connector(uid="SGCH01AAAA", tag="CN-SG-HGR-W", kind=ConnectorKind.JOIST_HANGER,
@@ -452,10 +474,53 @@ CONNECTORS += [
               position=pt(ft(_cx), ft(_y_in_n)), elevation=_porch_top, size="H2.5A",
               connects=("BM-SG-BKW", "BM-SG-BKE", "PT-SG-COL")),
 ]
-# Split by storey the hardware sits at: knee braces ride at the balcony beam soffit
-# (second), everything else at the porch deck (main).
-_TOP_CONNECTORS = [c for c in CONNECTORS if c.kind is ConnectorKind.KNEEBRACE]
-_BASE_CONNECTORS = [c for c in CONNECTORS if c.kind is not ConnectorKind.KNEEBRACE]
+
+# ============================================================================
+# Knee braces at the balcony pillar tops: 2x6 wood diagonals with a 3' leg, through-bolted,
+# with a Simpson Outdoor Accents APVKB45-6 at each joint.
+#
+# The four *corner* pillars are braced in both plan directions; the two centre pillars
+# (PT-SG-BR2 / PT-SG-BF2) are deliberately left as leaning columns. Reasoning:
+# - This is a freestanding deck with no ledger into the house, on ABU66SS standoff bases.
+#   Both the base and the beam bearing are pins, so every bit of lateral resistance the
+#   balcony has comes from these braces. It needs them in *both* principal directions, which
+#   is why the E-W girts exist for the "x" braces to reach.
+# - Bracing both ends of the outer bays in each direction is enough with the deck acting as
+#   a diaphragm; the centre pillars then just carry gravity. Bracing them too would push
+#   thrust into PT-SG-BR2, which is the one pillar bearing on the porch decking rather than
+#   on grouted masonry — the worst place in the frame to load laterally.
+# - One brace per element. Each pillar is a beam *end*, so only one brace fits in the beam's
+#   own plane; the second brace at a corner is the E-W one, against the girt a girt-depth
+#   lower. The old "matched pair per joint" rule billed 12 braces that could not be built.
+# ============================================================================
+# (row, pillar index, N-S lean, E-W lean). Rear posts brace south toward the beam's midspan
+# and front posts brace north; the west pillar of each row braces east, the east one west.
+_BRACED_CORNERS = (("R", 1, -1, +1), ("R", 3, -1, -1),
+                   ("F", 1, +1, +1), ("F", 3, +1, -1))
+_BRACE_LEG = ft(3.0)
+# The N-S brace uid is the one the retired Connector carried at this same pillar, so the
+# brace keeps its IFC GlobalId across this change.
+_NS_BRACE_UID = {("R", 1): "SGCK1RAAAA", ("R", 3): "SGCK3RAAAA",
+                 ("F", 1): "SGCK1FAAAA", ("F", 3): "SGCK3FAAAA"}
+_EW_BRACE_UID = {("R", 1): "SGKX1RAAAA", ("R", 3): "SGKX3RAAAA",
+                 ("F", 1): "SGKX1FAAAA", ("F", 3): "SGKX3FAAAA"}
+_ROW_Y = {"R": _y_in_n, "F": _y_ax_arch}
+_NS_BEAM = {1: "BM-SG-BLW", 3: "BM-SG-BLE"}
+_EW_GIRT = {"R": "BM-SG-GIRT-R", "F": "BM-SG-GIRT-F"}
+KNEE_BRACES = []
+for _row, _i, _ns, _ew in _BRACED_CORNERS:
+    _post = f"PT-SG-B{_row}{_i}"
+    _at = pt(ft(_PILLAR_X[_i - 1]), ft(_ROW_Y[_row]))
+    KNEE_BRACES.append(KneeBrace(
+        uid=_NS_BRACE_UID[(_row, _i)], tag=f"KB-SG-{_row}{_i}-NS", position=_at,
+        soffit_elevation=_balcony_beam_soffit, leg=_BRACE_LEG, axis="y", direction=_ns,
+        member="2x6", post_size=SPEC.pillar_size,
+        connects=(_post, _NS_BEAM[_i])))
+    KNEE_BRACES.append(KneeBrace(
+        uid=_EW_BRACE_UID[(_row, _i)], tag=f"KB-SG-{_row}{_i}-EW", position=_at,
+        soffit_elevation=_girt_soffit, leg=_BRACE_LEG, axis="x", direction=_ew,
+        member="2x6", post_size=SPEC.pillar_size,
+        connects=(_post, _EW_GIRT[_row])))
 
 # ============================================================================
 # Balcony guard + edge trim. The metal fascia-mounted guardrail is a first-class Railing
@@ -504,7 +569,9 @@ BALCONY_REAR_FLASH = Flashing(
 # ============================================================================
 BASEMENT_ELEMENTS = [*NODES, *WALLS, *RAILING_WALLS, COLUMN, *FOOTINGS,
                      *FOOTING_BEDDING, *ARCH_OPENINGS, GARDEN_SLAB, *DOWELS]
-MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, PORCH_FLOOR, PORCH_JOISTS, *_BASE_CONNECTORS]
-SECOND_ELEMENTS = [*SECOND_NODES, *BALCONY_BEAMS, *PILLARS, DECK_FLOOR, BALCONY_JOISTS,
-                   *_TOP_CONNECTORS, BALCONY_GUARD, BALCONY_FASCIA, BALCONY_GUTTER,
-                   BALCONY_DRIP, BALCONY_REAR_FLASH]
+# Every remaining connector is porch hardware at the deck (post bases, hangers, the column
+# tie), so main takes them whole; the knee braces are the only second-storey hardware.
+MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, PORCH_FLOOR, PORCH_JOISTS, *CONNECTORS]
+SECOND_ELEMENTS = [*SECOND_NODES, *BALCONY_BEAMS, *BALCONY_GIRTS, *PILLARS, DECK_FLOOR,
+                   BALCONY_JOISTS, *KNEE_BRACES, BALCONY_GUARD, BALCONY_FASCIA,
+                   BALCONY_GUTTER, BALCONY_DRIP, BALCONY_REAR_FLASH]

@@ -13,6 +13,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_EMBEDDED_STRAP_HOLDOWN,
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_FACE_MOUNT_JOIST_HANGER,
+    ROLE_BRACE_THROUGH_BOLT,
     ROLE_HURRICANE_TIE,
     ROLE_KNEE_BRACE,
     ROLE_MUDSILL_ANCHOR,
@@ -94,6 +95,16 @@ APVKB_KNEE_BRACE = StructuralHardware(
     model="APVKB45-6",
     source="Simpson Strong-Tie Outdoor Accents Avant Collection APVKB knee brace "
            "(strongtie.com/apvkb) — 45-degree brace at a post/beam joint",
+)
+
+APVB_BRACE_BOLT = StructuralHardware(
+    tag="simpson-outdoor-accents-hex-bolt-1-2",
+    name='Outdoor Accents 1/2 in hex-head through bolt with washer, 6 in',
+    role=ROLE_BRACE_THROUGH_BOLT,
+    manufacturer=_SIMPSON,
+    model="APVB12-6",
+    source="Simpson Strong-Tie Outdoor Accents hex-head structural bolt + washer "
+           "(strongtie.com/outdooraccents) — through-bolts a 2x knee brace at each end",
 )
 
 MASA_MUDSILL_ANCHOR = StructuralHardware(
@@ -187,6 +198,7 @@ STRUCTURAL_HARDWARE: tuple = (
     LUS_FACE_MOUNT_HANGER,
     HUCQ_CONCRETE_HANGER,
     APVKB_KNEE_BRACE,
+    APVB_BRACE_BOLT,
     MASA_MUDSILL_ANCHOR,
     STHD_STRAP_HOLDOWN,
     SP4_STUD_PLATE_TIE,

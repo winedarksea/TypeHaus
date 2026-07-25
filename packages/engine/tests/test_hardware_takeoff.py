@@ -210,19 +210,45 @@ def test_catlin_anchors_every_sill_plate_on_concrete(catlin_model) -> None:
 # --- knee braces, ties, straps, catalog ----------------------------------------------
 
 
-def test_knee_braces_come_in_pairs_per_modeled_location(catlin_model) -> None:
-    from typehaus.model.enums import ConnectorKind
-    from typehaus.model.structure import Connector
+def test_each_modeled_knee_brace_takes_one_connector(catlin_model) -> None:
+    """One APVKB per brace the plan models — no per-joint multiplier the plan cannot see.
 
-    locations = [element for storey in catlin_model.plan.storeys
-                 for element in catlin_model.plan.storey_elements(storey.tag)
-                 if isinstance(element, Connector)
-                 and element.kind is ConnectorKind.KNEEBRACE]
+    The rule used to bill a matched pair per braced *joint*, which only holds where a beam
+    runs past its post. Every balcony pillar is a beam end, so the pair rule billed twice
+    the braces that fit."""
+    from typehaus.model.structure import KneeBrace
+
+    braces = [element for storey in catlin_model.plan.storeys
+              for element in catlin_model.plan.storey_elements(storey.tag)
+              if isinstance(element, KneeBrace)]
     row = knee_brace_rows(catlin_model, CONFIG.knee_braces)[0]
     assert row["part_number"] == "APVKB45-6"
-    assert CONFIG.knee_braces.braces_per_location == 2
-    assert row["count"] == 2 * len(locations)
+    assert CONFIG.knee_braces.braces_per_location == 1
+    assert row["count"] == len(braces)
     assert row["role"] == ROLE_KNEE_BRACE
+
+
+def test_the_balcony_is_braced_at_its_four_corners_in_both_directions(catlin_model) -> None:
+    """The freestanding balcony's whole lateral system, and the take-off that follows it.
+
+    Four corner pillars x two directions = eight braces. The two centre pillars are
+    deliberately unbraced leaning columns — bracing them would push thrust into PT-SG-BR2,
+    the one pillar bearing on the porch decking rather than on grouted masonry."""
+    from typehaus.model.structure import KneeBrace
+
+    braces = {element.tag: element for storey in catlin_model.plan.storeys
+              for element in catlin_model.plan.storey_elements(storey.tag)
+              if isinstance(element, KneeBrace)}
+    assert set(braces) == {
+        "KB-SG-R1-NS", "KB-SG-R1-EW", "KB-SG-R3-NS", "KB-SG-R3-EW",
+        "KB-SG-F1-NS", "KB-SG-F1-EW", "KB-SG-F3-NS", "KB-SG-F3-EW",
+    }
+    assert {b.axis for b in braces.values() if b.tag.endswith("-NS")} == {"y"}
+    assert {b.axis for b in braces.values() if b.tag.endswith("-EW")} == {"x"}
+    # Every brace names the post it stiffens *and* the member it reaches, so the connector
+    # schedule can key the joint. The old records named only the post.
+    assert all(len(b.connects) == 2 for b in braces.values())
+    assert knee_brace_rows(catlin_model, CONFIG.knee_braces)[0]["count"] == 8
 
 
 def test_stud_plate_ties_are_sized_to_the_stud_they_tie(catlin_model) -> None:
