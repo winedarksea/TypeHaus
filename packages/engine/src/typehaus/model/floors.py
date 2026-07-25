@@ -65,6 +65,18 @@ class FloorSystem(Element):
     source: str | None = None
 
 
+class SlabThermalBreak(HausModel):
+    """Vertical rigid-insulation break between a slab edge and whatever abuts it
+    (stem wall, foundation wall) — the thermal cut that stops the slab conducting
+    straight into the frost-depth concrete. Minimal by design: a material, its
+    horizontal ``thickness`` in the joint, and how far ``depth`` runs down the slab
+    edge (None = the slab's full thickness)."""
+
+    material_ref: str
+    thickness: Length  # horizontal insulation thickness in the edge joint
+    depth: Length | None = None  # vertical extent down the slab edge; None = full slab
+
+
 @register_element
 class Slab(Element):
     """Slab-on-grade or structural concrete deck (instead of a FloorSystem).
@@ -85,6 +97,9 @@ class Slab(Element):
     # coincidentally-congruent elements (a patio slab under a deck, say) from silently
     # swapping conventions.
     datum: Literal["structure", "walking_surface"] = "structure"
+    # Slab-on-grade only: rigid-insulation edge break against the abutting stem/foundation
+    # wall. None = slab edge pours directly against the concrete it meets.
+    perimeter_thermal_break: SlabThermalBreak | None = None
 
 
 @register_element
@@ -123,6 +138,7 @@ for _name, _obj in (
     ("FloorOpening", FloorOpening),
     ("FloorSystem", FloorSystem),
     ("Slab", Slab),
+    ("SlabThermalBreak", SlabThermalBreak),
     ("Soffit", Soffit),
     ("FloorHeat", FloorHeat),
     ("FinishZone", FinishZone),

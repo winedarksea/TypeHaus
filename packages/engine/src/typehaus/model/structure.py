@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from typehaus.model.base import Element
+from typehaus.model.base import Element, HausModel
 from typehaus.model.elements import Wall
 from typehaus.model.enums import ConnectorKind, RailingKind
 from typehaus.model.refs import FaceRef
@@ -40,6 +40,17 @@ class Pad(Element):
     bottom_elevation: Length | None = None
 
 
+class DrainTile(HausModel):
+    """Drain-tile product spec for a FootingBedding — what the bare ``drain_tile: bool``
+    cannot say: pipe size/material, sock, and where the run discharges. A detail slice
+    and the take-off read this; the bool keeps meaning merely "one exists"."""
+
+    diameter: Length
+    material: str = "perforated corrugated HDPE"
+    sock: bool = True  # filter-fabric sock over the perforations
+    discharge: str | None = None  # "daylight" | "sump" | free-text run note
+
+
 @register_element
 class FootingBedding(Element):
     """Sub-footing excavation/bedding prep beneath a strip Footing.
@@ -56,6 +67,8 @@ class FootingBedding(Element):
     aggregate: str = "ASTM C33 #57 washed crushed stone"
     geotextile: bool = True
     drain_tile: bool = True
+    # Optional product spec for the tile above; None keeps the bool's bare annotation.
+    drain_tile_spec: DrainTile | None = None
     perimeter_insulation: Length | None = None
     cast_foam_in_aggregate: bool = False
 
@@ -218,6 +231,7 @@ class GlazingPanel(Element):
 
 
 for _name, _obj in (
+    ("DrainTile", DrainTile),
     ("FoundationWall", FoundationWall),
     ("Footing", Footing),
     ("GlazingPanel", GlazingPanel),

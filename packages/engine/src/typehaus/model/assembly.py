@@ -47,6 +47,9 @@ class FramingSpec(HausModel):
     # plate. Each height adds one horizontal row of blocking fitted between the studs in
     # every bay. Empty (the default) emits no blocking, so existing walls are unchanged.
     blocking_heights: tuple[Length, ...] = ()
+    # Compressible sill-seal gasket under the sole/sill plate (capillary + air break at
+    # the plate-to-concrete joint), stated as its uncompressed thickness. None = no gasket.
+    sill_gasket: Length | None = None
 
 
 class MasonrySpec(HausModel):

@@ -19,6 +19,10 @@ class DoorType(HausModel):
     u_factor: UFactor | None = None
     operation: DoorOperation = DoorOperation.SWING
     exterior: bool = False
+    # Type-level engineered-header default (e.g. '2-ply 14" LVL') for openings wide enough
+    # that the solver's dimensional-lumber header tables don't apply; a Door instance's
+    # own header_spec wins over this.
+    header_spec: str | None = None
     source: str | None = None
 
 

@@ -39,6 +39,12 @@ class Wall(Element):
     vertical_datum: FaceRef | None = None  # None => storey default
     stacks_on: str | None = None  # tiebreaker: tag of the wall below
     bearing_refs: tuple[str, ...] = ()
+    # Per-end corner-framing override ("3-stud" | "4-stud") consumed by the corner
+    # solver; None follows the assembly's FramingSpec.corner_style. Authored per wall end
+    # because a corner belongs to two walls — the override lives on the end that hosts
+    # the extra stud, so two walls never fight over one corner's style.
+    corner_style_start: str | None = None
+    corner_style_end: str | None = None
     # Fork/variant provenance (#38).
     forked_from: str | None = None
 
@@ -54,6 +60,9 @@ class Door(Element):
     arch: Arch | None = None
     flip_hinge: bool = False
     flip_swing: bool = False
+    # Per-opening engineered-header override (e.g. '2-ply 14" LVL'); None lets the framing
+    # solver size the header. Falls back to the DoorType's header_spec when unset there too.
+    header_spec: str | None = None
 
 
 @register_element

@@ -65,6 +65,10 @@ class Stair(Element):
     # flights to suit. IRC R311.7.6 wants a landing at least the stair width deep, so a
     # sub-width value is treated as the width floor by the resolver.
     landing_depth: Length | None = None
+    # Nominal newel-post profile at the winder turn (e.g. "4x4", "6x6"). A wider newel
+    # widens the well the winders wrap, moving their narrow ends apart — the sanctioned
+    # lever on ``structural.winder_narrow_tread_depth`` short of adding risers.
+    newel_profile: str = "4x4"
 
 
 @register_element
