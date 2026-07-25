@@ -51,6 +51,14 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "stringer": (0.60, 0.42, 0.26, 1.0),
     "tread": (0.70, 0.52, 0.33, 1.0),
     "winder": (0.70, 0.52, 0.33, 1.0),
+    # Opening framing. These existed in ui/src/three/members.ts CATEGORY_COLOR only, so a
+    # header's king/jack/cripple studs read as lumber in the browser and as the grey fallback
+    # in the GLB. Same tones as their whole-stud/plate/header siblings, as the viewer has.
+    "king": (0.70, 0.52, 0.33, 1.0),
+    "jack": (0.70, 0.52, 0.33, 1.0),
+    "cripple": (0.70, 0.52, 0.33, 1.0),
+    "sill": (0.66, 0.48, 0.30, 1.0),
+    "bearing_stiffener": (0.60, 0.42, 0.26, 1.0),
     # stair landing platforms + the U-stair well partition read as framing lumber; the
     # concrete-wall hanger/ledger band is galvanized grey like "connector". Mirrored in
     # ui/src/three/members.ts CATEGORY_COLOR (GLB/three.js parity convention).

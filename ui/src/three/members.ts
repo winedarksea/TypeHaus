@@ -69,7 +69,7 @@ const CATEGORY_COLOR: Record<string, number> = {
   fascia: 0xebebe6,
   soffit: 0xe0e0d9,
 };
-const CATEGORY_FALLBACK = 0xb0b0b0;
+export const CATEGORY_FALLBACK = 0xb0b0b0;
 
 export function categoryColor(category: string): number {
   return CATEGORY_COLOR[category] ?? CATEGORY_FALLBACK;

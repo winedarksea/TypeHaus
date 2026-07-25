@@ -7,7 +7,9 @@ import {
   masonryTileSizeM,
   MASONRY_TILE_SIZE_M,
 } from "./materials";
-import { authoredAppearance, materialColor, RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
+import { authoredAppearance, familyOf, materialColor, RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
+import { CATEGORY_FALLBACK, categoryColor, memberColor } from "./members";
+import type { Member } from "../model/types";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -81,4 +83,56 @@ export function runMaterialGeometryTests() {
   assert(authoredAppearance("white-brick", catalog)?.finish === "white-brick"
     && authoredAppearance("missing", catalog) === undefined,
     "authoredAppearance finds a catalog entry by tag and reports absence as undefined");
+}
+
+// --- member colour: no category the engine emits may reach the grey fallback --------------
+// `memberColor` routes a member by material when it names one and by category otherwise, and
+// both routes leaked: ~470 framing members (rafters, blocking, outlookers, barge rafters, the
+// whole truss vocabulary) had no CATEGORY_COLOR entry, and the derived PVC trim had no
+// material family. The key-level parity between this table and the engine's _PALETTE is
+// asserted engine-side (packages/engine/tests/test_palette_parity.py, which reads this file);
+// here we pin the behaviour those keys exist for.
+function member(category: string, material: string | null = null): Member {
+  return { category, material } as Member;
+}
+
+export function runMemberColorTests() {
+  // Roof sticks + truss vocabulary: lumber, not the neutral fallback.
+  for (const category of [
+    "rafter", "blocking", "outlooker", "barge_rafter",
+    "top_chord", "bottom_chord", "truss_web", "truss_heel", "seat_cut",
+    "king", "jack", "cripple", "sill", "bearing_stiffener",
+  ]) {
+    assert(categoryColor(category) !== CATEGORY_FALLBACK,
+      `${category} has its own colour rather than the grey fallback`);
+    assert(memberColor(member(category)) === categoryColor(category),
+      `${category} with no material colours by category`);
+  }
+
+  // Layer-function categories, for a derived skin band that names no material.
+  for (const category of ["cladding", "sheathing", "insulation", "membrane", "furring",
+    "lining", "finish", "structure", "fascia", "soffit"]) {
+    assert(categoryColor(category) !== CATEGORY_FALLBACK,
+      `layer-function category ${category} has a colour of its own`);
+  }
+
+  // An unknown category still falls back rather than throwing — the fallback stays reachable.
+  assert(categoryColor("no-such-category") === CATEGORY_FALLBACK,
+    "An unmapped category returns the neutral fallback");
+
+  // Material route: cellular-PVC trim reads as painted siding, not as the neutral fallback.
+  assert(familyOf("pvc-cellular") === "siding",
+    "Cellular PVC trim resolves to the siding family");
+  assert(familyOf("air-barrier") === "membrane",
+    "An air barrier resolves to the membrane family");
+  const light = RESOLVED_NORDIC_PALETTE.light;
+  assert(materialColor("pvc-cellular", light) === light.material.siding,
+    "A pvc-cellular fascia/soffit member takes the siding tone, not the fallback");
+  assert(materialColor("air-barrier", light) === light.material.membrane,
+    "An air-barrier membrane member takes the membrane tone, not the fallback");
+  for (const [category, material] of [["fascia", "pvc-cellular"], ["soffit", "pvc-cellular"],
+    ["membrane", "air-barrier"]] as const) {
+    assert(materialColor(material, light) !== light.material.fallback,
+      `${category} (${material}) no longer renders as the #cfc9bd fallback`);
+  }
 }

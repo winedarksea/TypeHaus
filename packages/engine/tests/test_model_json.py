@@ -65,6 +65,27 @@ def test_skin_members_carry_a_material_and_lumber_does_not(catlin_payload):
     assert studs and all(m["material"] is None for m in studs)
 
 
+def test_construction_returns_serialize_with_their_overlay_metadata(catlin_payload):
+    """ConstructionRule returns reach the browser as their own records, not as solids.
+
+    The solid mirror used to be the only path to model.json, and it carried none of the
+    lap / sealant / flashing / returning-layer data the Inspector wants. Dropping it (the
+    prisms were mis-placed gray fins in 3D) means these records have to be serialized.
+    """
+    returns = catlin_payload["construction_returns"]
+    assert returns
+    assert not [s for s in catlin_payload["solids"] if s["category"].startswith("return:")]
+    uids = [r["uid"] for r in returns]
+    assert uids == sorted(uids)
+    for record in returns:
+        assert record["material_ref"]
+        assert record["tag"].startswith("CR-")
+        assert len(record["outline"]) >= 3
+        assert record["z1_m"] > record["z0_m"]
+        assert record["length_m"] > 0.0
+        assert record["element_tags"]
+
+
 def test_second_floor_joists_are_i_joists(catlin_payload):
     floor = next(f for f in catlin_payload["floors"] if f["tag"] == "FS-SECOND")
     joists = [m for m in floor["members"] if m["category"] == "joist"]
