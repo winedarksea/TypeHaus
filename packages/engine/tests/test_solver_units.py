@@ -47,6 +47,29 @@ def test_four_stud_corner_style_emits_two_supplemental_studs():
     assert keys == {"corner-start", "corner-start-2"}
 
 
+def test_per_end_corner_style_override_beats_the_assembly_style():
+    """``Wall.corner_style_start/end`` wins over ``FramingSpec.corner_style`` at its own
+    end only — the override belongs to the end that hosts the supplemental studs."""
+    plan, rw = _wall_and_plan("3-stud")
+    members = frame_wall(plan, rw, openings=[], corner_start=True,
+                         corner_style_start="4-stud")
+    keys = {m.child_key for m in members if m.category == "corner"}
+    assert keys == {"corner-start", "corner-start-2"}
+
+    # The override at one end never leaks to the other: the far corner stays 3-stud.
+    members = frame_wall(plan, rw, openings=[], corner_start=True, corner_end=True,
+                         corner_style_end="4-stud")
+    keys = {m.child_key for m in members if m.category == "corner"}
+    assert keys == {"corner-start", "corner-end", "corner-end-2"}
+
+
+def test_per_end_corner_style_can_relax_a_four_stud_assembly_to_three():
+    plan, rw = _wall_and_plan("4-stud")
+    members = frame_wall(plan, rw, openings=[], corner_start=True,
+                         corner_style_start="3-stud")
+    assert len([m for m in members if m.category == "corner"]) == 1
+
+
 def test_no_corner_studs_when_wall_does_not_own_a_corner():
     plan, rw = _wall_and_plan("4-stud")
     members = frame_wall(plan, rw, openings=[], corner_start=False)

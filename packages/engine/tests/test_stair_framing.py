@@ -287,16 +287,34 @@ def test_framed_wall_bearing_picks_the_longest_host(main_stair):
         assert members[key].connection == "framed-wall-ledger:W-M-STRW", key
 
 
-def test_no_ledger_members_are_emitted(catlin_model):
-    """Annotate, don't fabricate: a wall axis is a *centreline*, so a band drawn on a
-    framed wall's axis would be geometry invented inside the stud cavity. Only concrete
-    gets a real hanger band."""
+def test_framed_hosts_emit_ledger_boards_flush_with_the_wall_face(catlin_model,
+                                                                  main_stair):
+    """A framed host now carries its stringer/rim on a real ledger board, not an
+    annotation alone — but never one drawn on the wall's *centreline* (that would be
+    geometry invented inside the stud cavity, the old reason nothing was emitted).
+    The board sits flush against the host's face on the member's side: half the wall
+    plus half the ledger's own 1.5" thickness off the axis."""
+    walls = {wall.tag: wall for wall in catlin_model.walls}
     for stair in catlin_model.stairs:
         for member in stair.members:
             if member.category != "hanger":
                 continue
             assert member.connection is not None
-            assert member.connection.startswith("concrete-wall-hanger:"), member.child_key
+            if member.child_key.startswith("hanger-"):
+                assert member.connection.startswith("concrete-wall-hanger:"), member.child_key
+            else:
+                assert member.child_key.startswith("ledger-"), member.child_key
+                assert member.connection.startswith("framed-wall-ledger:"), member.child_key
+                host = walls[member.connection.split(":", 1)[1]]
+                (ax, ay), (bx, by) = host.axis
+                offset = (abs(member.p0[0] - ax) if abs(bx - ax) < 1e-6
+                          else abs(member.p0[1] - ay))
+                assert offset == pytest.approx(
+                    host.thickness_m / 2 + inch(0.75).meters), member.child_key
+    # ST-M2S's known framed hosts each carry at least one real ledger board.
+    ledger_hosts = {m.connection.split(":", 1)[1] for m in main_stair.members
+                    if m.child_key.startswith("ledger-")}
+    assert {"W-M-C5", "W-M-STRW"} <= ledger_hosts
 
 
 def test_no_stair_member_is_degenerate(catlin_model):
@@ -488,6 +506,44 @@ def test_missing_stair_bearing_ref_is_an_error():
     assert stair is None
     errors = [f for f in findings if f.check_id == "integrity.stair_bearing"]
     assert len(errors) == 1 and "W-NOPE" in errors[0].message
+
+
+def test_six_by_six_newel_winder_lands_every_narrow_end_on_the_wider_face():
+    """``Stair.newel_profile`` is consumed, not the old module constant: a 6x6 newel's
+    faces sit 2.75" off its centreline, and every winder narrow end must land on them.
+
+    The measured narrow-end tread depth is locked too — a quarter turn in three winders
+    around a 6x6 delivers half the newel's half-face (1.375"), still 4.625" short of the
+    6" IRC R311.7.5.2.1 minimum. That shortfall is a layout fact this generator refuses
+    to paper over with invented risers, so the test asserts the honest number.
+    """
+    stair, findings = _resolved_stair(_stair_plan(
+        layout="right_angle_winder", turn_direction="left", winder_count=3,
+        newel_profile="6x6"))
+    assert stair is not None, [f.message for f in findings]
+    newels = [m for m in stair.members if m.category == "newel"]
+    assert newels and all(m.profile == "6x6" for m in newels)
+    newel = next(m for m in newels if m.child_key == "newel-000")
+    half_face = cross_section("6x6").width_m / 2.0
+    winders = sorted((m for m in stair.members if m.category == "winder"),
+                     key=lambda m: m.z0_m)
+    assert len(winders) == 3
+    for winder in winders:
+        reach = math.hypot(winder.p0[0] - newel.p0[0], winder.p0[1] - newel.p0[1])
+        assert half_face - 1e-9 <= reach <= half_face * math.sqrt(2.0) + 1e-9, (
+            winder.child_key)
+    gaps = [math.hypot(b.p0[0] - a.p0[0], b.p0[1] - a.p0[1])
+            for a, b in zip(winders, winders[1:])]
+    assert min(gaps) == pytest.approx(half_face / 2.0)  # 1.375" — measured, not invented
+    assert min(gaps) == pytest.approx(inch(1.375).meters)
+    # A 4x4 (the default) delivers proportionally less: half of ITS half-face, 0.875".
+    default_stair, _ = _resolved_stair(_stair_plan(
+        layout="right_angle_winder", turn_direction="left", winder_count=3))
+    default_winders = sorted((m for m in default_stair.members
+                              if m.category == "winder"), key=lambda m: m.z0_m)
+    default_gaps = [math.hypot(b.p0[0] - a.p0[0], b.p0[1] - a.p0[1])
+                    for a, b in zip(default_winders, default_winders[1:])]
+    assert min(default_gaps) == pytest.approx(inch(0.875).meters)
 
 
 def test_a_wall_four_inches_off_the_stringer_is_not_a_host():
