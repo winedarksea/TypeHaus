@@ -15,16 +15,51 @@ from typehaus.findings import Finding, element_error as _error
 from typehaus.model.enums import StructuralRole
 from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Stair
+from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedStair
 
 _MAX_RISER_M = 7.75 * 0.0254  # IRC R311.7
 _MIN_TREAD_M = 10.0 * 0.0254
-_TREAD_THICKNESS_M = 0.0381  # 1.5" tread/deck board
+_TREAD_THICKNESS_IN = 1.5  # a 1.5" tread/deck board
+_TREAD_THICKNESS_M = inch(_TREAD_THICKNESS_IN).meters
 _LANDING_JOIST_PROFILE = "2x8"
+_NEWEL_PROFILE = "4x4"
 _FRAMING_SPACING_M = 0.4064  # 16" o.c.
 # Below this a stair member only clips a wall's end; it does not bear on it.
 _MIN_SHARED_RUN_M = 0.10
+
+
+def _tread_board_profile(going_m: float) -> str:
+    """Profile string for a tread board of ``going_m`` depth.
+
+    A ``deck WxT`` profile renders at its true plan width (see framing/profiles.py), so the
+    board reads as the full-depth tread a framer nails down. Spelling a tread ``"2x12"``
+    instead drew every one of them as a 1.5"-wide strip — the *thickness* face of the stock,
+    which is what a member's plan footprint is built from, not its depth.
+    """
+    return f"deck {going_m / inch(1).meters:g}x{_TREAD_THICKNESS_IN:g}"
+
+
+def _newel_face_point(newel: tuple[float, float], toward: tuple[float, float],
+                      half_face_m: float) -> tuple[float, float]:
+    """Where the ray ``newel`` -> ``toward`` leaves the square newel post's face.
+
+    Every winder narrow end used to sit on the newel *centreline*, so all of them converged
+    on one bare point and the narrow-end tread depth was exactly 0 (defect D2 in
+    plans/TODO.md). A winder actually starts at the face the newel presents to it, which is
+    what this returns. It does not by itself buy the 6" IRC R311.7.5.2.1 wants at the narrow
+    end — a quarter turn taken in this few risers cannot — so
+    ``structural.winder_narrow_tread_depth`` measures what the layout does deliver.
+    """
+    dx, dy = toward[0] - newel[0], toward[1] - newel[1]
+    run = math.hypot(dx, dy)
+    if run < 1e-9:
+        return newel
+    ux, uy = dx / run, dy / run
+    # A square footprint: the ray exits through whichever face its dominant axis points at.
+    reach = half_face_m / max(abs(ux), abs(uy))
+    return (newel[0] + ux * reach, newel[1] + uy * reach)
 
 
 def _resolve_stair(
@@ -161,7 +196,7 @@ def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: in
         strings = (((start_x, start_y), (end_x, end_y)),
                    ((start_x + width, start_y), (end_x + width, end_y)))
     stringer_depth = cross_section("2x12").depth_m
-    spring_top = z0 + riser + 0.0381  # top of the first tread at the springing end
+    spring_top = z0 + riser + _TREAD_THICKNESS_M  # top of the first tread at the springing
     arrival = z0 + riser * risers
     out = [
         FramedMember(stair.uid, f"stringer-{index}", "stringer", "2x12", a, b,
@@ -170,16 +205,21 @@ def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: in
                      z0_end_m=arrival - stringer_depth, z1_end_m=arrival)
         for index, (a, b) in enumerate(strings)
     ]
+    tread_profile = _tread_board_profile(tread)
     for index in range(risers - 1):
+        # The axis is the board's *centreline*, half a going past the riser it sits on: a
+        # ``deck`` footprint is centred on the axis, so anchoring it on the riser line would
+        # leave the flight half a going short of the arrival deck.
+        centre = tread * index + tread / 2.0
         if along_x:
-            a = (start_x + sign * tread * index, start_y)
-            b = (start_x + sign * tread * index, start_y + width)
+            a = (start_x + sign * centre, start_y)
+            b = (start_x + sign * centre, start_y + width)
         else:
-            a = (start_x, start_y + sign * tread * index)
-            b = (start_x + width, start_y + sign * tread * index)
+            a = (start_x, start_y + sign * centre)
+            b = (start_x + width, start_y + sign * centre)
         z = z0 + riser * (index + 1)
-        out.append(FramedMember(stair.uid, f"tread-{index:03d}", "tread", "2x12", a, b,
-                                 z, z + 0.0381, stair.width.meters))
+        out.append(FramedMember(stair.uid, f"tread-{index:03d}", "tread", tread_profile,
+                                a, b, z, z + _TREAD_THICKNESS_M, stair.width.meters))
     return tuple(out)
 
 
@@ -249,17 +289,22 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
                 spring_top - stringer_depth, spring_top,
                 math.hypot(tread * count, bear_z - spring_z),
                 z0_end_m=bear_z - stringer_depth, z1_end_m=bear_z))
+    # Both flights' boards run from their riser toward +s (the lower flight ascends that
+    # way, the upper descends it), so both centrelines sit half a going past the riser —
+    # see ``_tread_board_profile`` for why the axis is the board centre and not the riser.
+    tread_profile = _tread_board_profile(tread)
     for index in range(lower_treads):
         z = z0 + riser * (index + 1)
-        out.append(FramedMember(stair.uid, f"tread-lower-{index:03d}", "tread", "2x12",
-                                at(tread * index, lane0), at(tread * index, lane0 + width),
+        s = tread * index + tread / 2.0
+        out.append(FramedMember(stair.uid, f"tread-lower-{index:03d}", "tread", tread_profile,
+                                at(s, lane0), at(s, lane0 + width),
                                 z, z + _TREAD_THICKNESS_M, width))
     # Upper flight climbs back toward the start edge; its first tread leaves the upper
     # landing, and its top tread ends one riser below the arrival deck.
     for index in range(upper_treads):
         z = z0 + riser * (lower_treads + 3 + index)
-        s = flight_len - tread * (index + 1)
-        out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", "2x12",
+        s = flight_len - tread * (index + 1) + tread / 2.0
+        out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", tread_profile,
                                 at(s, lane1), at(s, lane1 + width),
                                 z, z + _TREAD_THICKNESS_M, width))
     # Two real half-width landing platforms in the landing zone beyond the flight ends.
@@ -358,7 +403,7 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     # The straight flight springs off the top of the winder turn; its raked stringers run
     # from one riser above that springing up to the arrival deck.
     stringer_depth = cross_section("2x12").depth_m
-    spring_top = z0 + riser * stair.winder_count + riser + 0.0381
+    spring_top = z0 + riser * stair.winder_count + riser + _TREAD_THICKNESS_M
     arrival = z0 + riser * risers
     foot = P(0.0, 0.0)  # the entering outer corner of the turn square (== ``start``)
     inside = P(width, 0.0)  # the turn's inside corner: where the straight flight springs
@@ -371,6 +416,7 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                                 spring_top - stringer_depth, spring_top,
                                 math.hypot(tread * straight_treads, riser * risers),
                                 z0_end_m=arrival - stringer_depth, z1_end_m=arrival))
+    newel_half_face = cross_section(_NEWEL_PROFILE).width_m / 2.0
     for index in range(stair.winder_count):
         # ``winder_count + 1`` because ``fraction == 1`` — the departing edge of the turn
         # square — belongs to the straight flight's first tread. Dividing by the winder
@@ -380,16 +426,18 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
         # First half follows the entering outside edge, second half the departing edge.
         nosing = (P(0.0, width * fraction * 2) if fraction <= 0.5
                   else P(width * (fraction * 2 - 1), width))
-        a, b = inside, nosing
+        a, b = _newel_face_point(inside, nosing, newel_half_face), nosing
         out.append(FramedMember(stair.uid, f"winder-{index:03d}", "winder", "tapered tread",
-                                a, b, step_z(index), step_z(index) + 0.0381,
+                                a, b, step_z(index), step_z(index) + _TREAD_THICKNESS_M,
                                 math.hypot(b[0] - a[0], b[1] - a[1])))
+    tread_profile = _tread_board_profile(tread)
     for index in range(straight_treads):
-        out.append(FramedMember(stair.uid, f"tread-{index:03d}", "tread", "2x12",
-                                offset(inside, tread * index, 0.0),
-                                offset(inside, tread * index, width),
+        centre = tread * index + tread / 2.0
+        out.append(FramedMember(stair.uid, f"tread-{index:03d}", "tread", tread_profile,
+                                offset(inside, centre, 0.0),
+                                offset(inside, centre, width),
                                 step_z(index + stair.winder_count),
-                                step_z(index + stair.winder_count) + 0.0381,
+                                step_z(index + stair.winder_count) + _TREAD_THICKNESS_M,
                                 width))
     out.extend(_winder_turn_framing(stair, z0, riser, width, spring_top, stringer_depth,
                                     foot, inside, outer_corner, turn,
@@ -426,9 +474,9 @@ def _winder_turn_framing(stair: Stair, z0: float, riser: float, width: float,
 
     header_top = spring_top - stringer_depth
     out = [
-        FramedMember(stair.uid, "newel-000", "newel", "4x4", inside, inside,
+        FramedMember(stair.uid, "newel-000", "newel", _NEWEL_PROFILE, inside, inside,
                      z0, spring_top, spring_top - z0, orient=orient),
-        FramedMember(stair.uid, "newel-001", "newel", "4x4", turn, turn,
+        FramedMember(stair.uid, "newel-001", "newel", _NEWEL_PROFILE, turn, turn,
                      z0, header_top, header_top - z0, orient=orient),
     ]
     for index, (a, b, f0, f1) in enumerate(((foot, outer_corner, 0.0, 0.5),

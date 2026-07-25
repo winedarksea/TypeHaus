@@ -707,8 +707,15 @@ def test_stairs_resolve_with_code_risers(catlin_model):
     assert attic.run_reversed is True
     winders = [member for member in attic.members if member.category == "winder"]
     assert len(winders) == 3
-    # All three radial tread edges share the inside turn, never opposed diagonals.
-    assert len({member.p0 for member in winders}) == 1
+    # All three radial tread edges leave the same inside turn, never opposed diagonals —
+    # but each takes its own point on the newel post's face rather than the post's
+    # centreline, so the narrow ends have a real width instead of converging (D2).
+    newel = next(member for member in attic.members if member.child_key == "newel-000")
+    half_diagonal = cross_section("4x4").width_m * math.sqrt(2.0) / 2.0
+    assert len({member.p0 for member in winders}) == len(winders)
+    for member in winders:
+        reach = math.hypot(member.p0[0] - newel.p0[0], member.p0[1] - newel.p0[1])
+        assert reach <= half_diagonal + 1e-9, member.child_key
     for tag in ("ST-B2M", "ST-M2S"):
         stair = stairs[tag]
         assert stair.layout == "u_split_landing"

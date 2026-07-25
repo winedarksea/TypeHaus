@@ -22,6 +22,10 @@ _IJOIST_SPAN_FT: dict[str, float] = {
     "2x12": 19.1,
 }
 
+# Widest span ``resolve.framing.tables.header_size`` still answers prescriptively (R602.7);
+# anything longer is an engineered beam in that table and here.
+_PRESCRIPTIVE_HEADER_SPAN_FT = 8.0
+
 
 def _advisory(cid: str, msg: str, tags: tuple[str, ...], result: Result,
               fix_hint: str | None = None) -> Finding:
@@ -42,6 +46,38 @@ def header_within_prescriptive(ctx: CheckContext) -> list[Finding]:
                                  f"opening {op.tag} width {op.width_m*3.281:.1f}' exceeds "
                                  "prescriptive header table — requires engineered beam",
                                  (op.tag,), Result.FAIL))
+    return out
+
+
+@check(Tier.STRUCTURAL, "structural.floor_opening_header")
+def floor_opening_header_within_prescriptive(ctx: CheckContext) -> list[Finding]:
+    """Flag floor-opening headers whose span is past the prescriptive header table.
+
+    ``resolve/floors.py`` sizes an opening header's ply count off that same table and, past
+    it, carries the widest multi-ply the catalog stocks so the member is at least drawn at a
+    believable size. That is a placeholder for a designed beam, not a substitute for one —
+    this is where the drawing set says so. Wall openings are covered by
+    ``structural.header_prescriptive``; floor openings had no equivalent.
+    """
+    from typehaus.quantities import ft, m
+
+    limit = ft(_PRESCRIPTIVE_HEADER_SPAN_FT)
+    out: list[Finding] = []
+    for floor in ctx.model.floors:
+        for member in floor.members:
+            if member.category != "header":
+                continue
+            if m(member.length_m).feet > limit.feet + 1e-9:
+                out.append(_advisory(
+                    "structural.floor_opening_header",
+                    f"floor {floor.tag} opening header {member.child_key} spans "
+                    f"{member.length_m / 0.3048:.1f}', past the "
+                    f"{_PRESCRIPTIVE_HEADER_SPAN_FT:.0f}' prescriptive table — the emitted "
+                    f"{member.profile} is a placeholder for an engineered beam",
+                    (floor.tag,), Result.FAIL,
+                    fix_hint=("declare a bearing wall or beam under this opening edge, or "
+                              "have the header designed"),
+                ))
     return out
 
 
