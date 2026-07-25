@@ -36,12 +36,14 @@ def soil_body(u0: float, u1: float, grade_z: float, z_bottom: float) -> list[IRN
                          "soil", "soil", "soil", lineweight=0.0)
 
 
-def french_drain(center_u: float, invert_z: float) -> list[IRNode]:
+def french_drain(center_u: float, invert_z: float,
+                 diameter_in: float | None = None) -> list[IRNode]:
     """Perforated drain tile in a washed-rock surround, sitting on the footing bedding.
 
     Drawn as its rock envelope plus the pipe bore — the reference's own construction. The
     pipe is a square-cut octagon rather than a circle because the IR has no arc primitive
-    that both writers render.
+    that both writers render. ``diameter_in`` is the authored ``DrainTile.diameter`` when
+    the bedding carries a spec; None falls back to the pinned reference 4".
     """
     cfg = PERIMETER_DRAIN
     half_rock = cfg.rock_width_in / 2.0
@@ -50,7 +52,7 @@ def french_drain(center_u: float, invert_z: float) -> list[IRNode]:
                     center_u + half_rock, invert_z + cfg.rock_depth_in),
         "river-rock", "river-rock", "gravel",
     )
-    radius = cfg.drain_diameter_in / 2.0
+    radius = (diameter_in if diameter_in is not None else cfg.drain_diameter_in) / 2.0
     center_z = invert_z + radius + cfg.pipe_bedding_in
     flat = radius * cfg.octagon_half_flat_ratio
     nodes.extend(closed_region(
@@ -88,6 +90,21 @@ def footing_under(model, wall):
     suffix = wall.tag[2:] if wall.tag.startswith("W-") else wall.tag
     return next((s for s in model.solids
                  if s.category == "footing" and s.tag == f"FT-{suffix}"), None)
+
+
+def drain_tile_spec_for(model, footing):
+    """The authored ``DrainTile`` spec on this footing's bedding, or None.
+
+    ``FootingBedding.drain_tile_spec`` is the model field that says what the bare
+    ``drain_tile: bool`` cannot — pipe size, sock, discharge. Read from plan source
+    (``host_ref`` names the footing) because the resolved bedding record does not carry
+    the spec; None keeps the pinned reference dimensions.
+    """
+    if footing is None:
+        return None
+    return next((element.drain_tile_spec
+                 for element in model.plan.elements_of_kind("FootingBedding")
+                 if element.host_ref == footing.tag), None)
 
 
 def build_below_grade_components(model, wall, crop, direction: str,
@@ -138,5 +155,8 @@ def build_below_grade_components(model, wall, crop, direction: str,
         offset = (PERIMETER_DRAIN.rock_width_in / 2.0
                   + PERIMETER_DRAIN.rock_offset_from_wall_in)
         sign = 1.0 if is_outboard_high else -1.0
-        nodes += french_drain(face_in + sign * offset, footing.z0_m * M_TO_IN)
+        spec = drain_tile_spec_for(model, footing)
+        diameter_in = spec.diameter.meters * M_TO_IN if spec is not None else None
+        nodes += french_drain(face_in + sign * offset, footing.z0_m * M_TO_IN,
+                              diameter_in=diameter_in)
     return nodes
