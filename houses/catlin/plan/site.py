@@ -9,6 +9,7 @@
 # raised-garden block wall at the far south.
 from typehaus import (
     ImperviousSurface,
+    MonthlyNormal,
     Site,
     SetbackSpec,
     SpotElevation,
@@ -20,6 +21,27 @@ from typehaus import (
     pt,
 )
 
+# Minneapolis-St. Paul Intl AP (NOAA NCEI station USW00014922), U.S. Climate Normals
+# 1991-2020. temp_f is the published MLY-TAVG-NORMAL; rh is the monthly mean relative
+# humidity computed from the same station's published hourly 1991-2020 normals
+# (HLY-TEMP-NORMAL / HLY-DEWP-NORMAL, Magnus conversion, averaged per month) because NCEI
+# publishes no monthly RH normal for this station. January..December, feeding the monthly
+# (ISO 13788-style) condensation gate.
+_MSP_1991_2020_NORMALS = (
+    MonthlyNormal(temp_f=16.2, rh=73.7),  # January
+    MonthlyNormal(temp_f=20.6, rh=70.2),  # February
+    MonthlyNormal(temp_f=33.3, rh=64.5),  # March
+    MonthlyNormal(temp_f=47.1, rh=55.6),  # April
+    MonthlyNormal(temp_f=59.5, rh=57.2),  # May
+    MonthlyNormal(temp_f=69.7, rh=62.4),  # June
+    MonthlyNormal(temp_f=74.3, rh=64.4),  # July
+    MonthlyNormal(temp_f=71.8, rh=67.5),  # August
+    MonthlyNormal(temp_f=63.5, rh=67.0),  # September
+    MonthlyNormal(temp_f=49.5, rh=65.1),  # October
+    MonthlyNormal(temp_f=34.8, rh=69.4),  # November
+    MonthlyNormal(temp_f=22.0, rh=75.0),  # December
+)
+
 SITE = Site(
     lat=44.9778,
     lon=-93.2650,
@@ -29,6 +51,12 @@ SITE = Site(
     grade=ft(0),
     design_temp_heating=degF(-15),
     design_temp_cooling=degF(90),
+    monthly_normals=_MSP_1991_2020_NORMALS,
+    # Deep-ground boundary temperature for below-grade envelope ΔT: the standard proxy is
+    # the station's annual mean air temperature — 46.9 F over the twelve MSP 1991-2020
+    # monthly TAVG normals above, rounded to 47. Below-grade walls and slabs see this, not
+    # the -15 F design air.
+    soil_temp_f=47.0,
     # Hennepin County / Minneapolis ground snow load, IRC Table R301.2(1). Flat-roof
     # Pf = 0.7 x 50 = 35 psf at the fully-exposed heated defaults; the roof framing sheet
     # prints that load case from this number.
