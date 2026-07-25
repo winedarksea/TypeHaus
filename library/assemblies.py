@@ -35,9 +35,15 @@ HOUSE_WALL_2X4_WITH_CI = Assembly(
               control={ControlLayer.AIR, ControlLayer.WATER}),
         Layer(name="ci", material_ref="polyiso", thickness=inch(1.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="cladding", material_ref="fiber-cement", thickness=inch(0.3125),
-              function=LayerFunction.CLADDING,
+        # Furring + cladding as separate layers (the catlin-house siding-stack pattern):
+        # the furring is a drained-and-back-vented rainscreen cavity open to outdoor air,
+        # so the Glaser walk truncates there and the fiber-cement (no published ASTM E96
+        # rating) never blocks a permeance verdict for the wall behind it.
+        Layer(name="furring", material_ref="spf", thickness=inch(0.5),
+              function=LayerFunction.FURRING,
               framing=FramingSpec(member="1x4", direction="vertical")),
+        Layer(name="cladding", material_ref="fiber-cement", thickness=inch(0.3125),
+              function=LayerFunction.CLADDING),
     ),
     default_lining=_GWB_LINING,
     source="Adapted from catlin-house ifcplot/assemblies.py",
@@ -54,9 +60,12 @@ HOUSE_WALL_2X6_WITH_ZIPR = Assembly(
         Layer(name="zip-r", material_ref="zip-r", thickness=inch(1.5),
               function=LayerFunction.SHEATHING,
               control={ControlLayer.AIR, ControlLayer.WATER, ControlLayer.THERMAL}),
-        Layer(name="cladding", material_ref="fiber-cement", thickness=inch(0.3125),
-              function=LayerFunction.CLADDING,
+        # Furring + cladding split, same rationale as HOUSE_WALL_2X4_WITH_CI above.
+        Layer(name="furring", material_ref="spf", thickness=inch(0.5),
+              function=LayerFunction.FURRING,
               framing=FramingSpec(member="1x4", direction="vertical")),
+        Layer(name="cladding", material_ref="fiber-cement", thickness=inch(0.3125),
+              function=LayerFunction.CLADDING),
     ),
     default_lining=_GWB_LINING,
     source="Adapted from catlin-house ifcplot/assemblies.py",
