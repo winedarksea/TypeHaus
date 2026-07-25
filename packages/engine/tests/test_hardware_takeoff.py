@@ -262,8 +262,10 @@ def test_the_balcony_is_braced_at_its_four_corners_in_both_directions(catlin_mod
 def test_stud_plate_ties_are_sized_to_the_stud_they_tie(catlin_model) -> None:
     rows = [row for row in hardware_takeoff(catlin_model)
             if row["role"] == "stud_plate_tie"]
-    assert {row["part_number"] for row in rows} == {"SP4", "SP6"}
-    assert {row["size"] for row in rows} == {"2x4", "2x6"}
+    # Every exterior storey frames 2x6 now (CATLIN_EXT_2X4 is deleted), so the tie
+    # schedule collapses to the one part sized for the stud it actually ties.
+    assert {row["part_number"] for row in rows} == {"SP6"}
+    assert {row["size"] for row in rows} == {"2x6"}
     assert all(row["count"] > 0 for row in rows)
 
 

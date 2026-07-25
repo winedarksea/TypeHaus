@@ -219,7 +219,7 @@ def test_interior_foundation_walls_get_no_soil(catlin_model):
 
 def test_detail_components_stay_inside_their_crop(catlin_model):
     """A component that escapes the crop drags the sheet bounds and strands the drawing."""
-    for prefix in ("wall_foundation:CATLIN_BASEMENT_12", "wall_roof:CATLIN_EXT_2X4"):
+    for prefix in ("wall_foundation:CATLIN_BASEMENT_12", "wall_roof:CATLIN_EXT_2X6"):
         derived, scene = _detail(catlin_model, prefix)
         (cu0, cz0), (cu1, cz1) = derived.view.crop[0].xy_m, derived.view.crop[1].xy_m
         to_in = 39.37007874015748

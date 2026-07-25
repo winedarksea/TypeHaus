@@ -119,8 +119,8 @@ def test_no_detail_component_is_ever_a_symbol(catlin_model):
     # schematic pair is exercised on the garage eave, which has no authored trim yet.
     ("wall_roof:GARAGE_ROOF", "box-gutter"),
     ("wall_roof:GARAGE_ROOF", "drip-edge"),
-    ("wall_roof:CATLIN_EXT_2X4", "apron-flashing"),
-    ("wall_roof:CATLIN_EXT_2X4", "insect-screen"),
+    ("wall_roof:CATLIN_EXT_2X6", "apron-flashing"),
+    ("wall_roof:CATLIN_EXT_2X6", "insect-screen"),
     ("wall_foundation:CATLIN_BASEMENT_12", "z-flashing"),
     ("wall_foundation:CATLIN_BASEMENT_12", "l-flashing"),
     ("wall_foundation:CATLIN_BASEMENT_12", "sealant-bead"),
@@ -148,14 +148,14 @@ def test_rim_band_air_seal_draws_the_air_control_vocabulary(catlin_model):
     Reference: the basement→framed notes' "prioritize air sealing at sill plate (sealant +
     spray foam)", applied at every floor line rather than only the first.
     """
-    _derived, scene = _detail_scene(catlin_model, "storey_stack:rim:CATLIN_EXT_2X4|")
+    _derived, scene = _detail_scene(catlin_model, "storey_stack:rim:CATLIN_EXT_2X6")
     tags = _component_tags(scene)
     assert {"rim-air-barrier", "rim-cavity-foam", "rim-sealant-bead"} <= tags
 
 
 def test_rim_band_seals_at_both_plate_lines(catlin_model):
     """Two beads, not one: the plate below and the plate above are separate joints."""
-    _derived, scene = _detail_scene(catlin_model, "storey_stack:rim:CATLIN_EXT_2X4|")
+    _derived, scene = _detail_scene(catlin_model, "storey_stack:rim:CATLIN_EXT_2X6")
     beads = _component_nodes(scene, "rim-sealant-bead")
     elevations = sorted({round(min(z for _u, z in bead.points), 3) for bead in beads})
     assert len(elevations) == 2, f"expected a bead at each plate line, got {elevations}"

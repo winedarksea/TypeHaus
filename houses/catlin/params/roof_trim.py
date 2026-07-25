@@ -24,7 +24,7 @@ Geometry facts this module derives from (see plan/storeys/attic.py + plan/assemb
   wrb 0.02" + polyiso 2" + eps 2" + furring 0.5" + cladding 0.5" = 5.02" (cladding face
   == roof footprint edge, where eave_z_m is defined);
 - knee-wall plate top at 25'; deck plane (eave_z_m) rides the I-joist rise above it:
-  11.875" - 3.5" x 4/12 birdsmouth = 10.7083";
+  11.875" - 5.5" x 4/12 seat drop (2x6 knee walls) = 10.0417";
 - roof stack above the deck (perpendicular): deck 0.75" + membrane 0.25" -> foam 6" ->
   roof membrane 0.25" (furring underside at 7.25") -> batten 0.75" -> metal 0.5";
 - derived fascia face: spf 1.5" inboard of the roof edge + aluminum 0.75" outboard.
@@ -42,7 +42,7 @@ _EAVE_X_W = ft(0) - inch(_WALL_OUTBOARD_IN)
 _EAVE_X_E = ft(_HOUSE_FT) + inch(_WALL_OUTBOARD_IN)
 
 _PLATE_TOP = ft(25)  # attic elevation 20' + 5' knee walls
-_DECK_RISE_IN = 11.875 - 3.5 * (4.0 / 12.0)  # I-joist depth - birdsmouth = 10.7083"
+_DECK_RISE_IN = 11.875 - 5.5 * (4.0 / 12.0)  # I-joist depth - 2x6 seat drop = 10.0417"
 _EAVE_DECK = _PLATE_TOP + inch(_DECK_RISE_IN)  # deck plane at the eave edge (eave_z_m)
 _FURRING_UNDERSIDE_IN = 1.0 + 2.0 + 4.0 + 0.25  # 7.25" perpendicular above the deck
 

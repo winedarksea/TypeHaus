@@ -143,8 +143,8 @@ def test_stud_carries_orient(catlin_payload):
 
 def test_roofs_carry_bearing_datum_and_layer_edge_setbacks(catlin_payload):
     """model.json contract: every roof serializes ``bearing_z_m`` and
-    ``layer_edge_setbacks``; the rafter-framed house roof's deck plane rides ~0.2719 m
-    above the plate and its setbacks step monotonically deck >= foam >= batten >= metal."""
+    ``layer_edge_setbacks``; the rafter-framed house roof's deck plane rides ~0.2551 m
+    above the plate (11.875" I-joist less the 5.5" 2x6 seat drop at 4:12) and its setbacks step monotonically deck >= foam >= batten >= metal."""
     from typehaus.quantities import inch
 
     for roof in catlin_payload["roofs"]:
@@ -152,7 +152,7 @@ def test_roofs_carry_bearing_datum_and_layer_edge_setbacks(catlin_payload):
         assert "layer_edge_setbacks" in roof
     house = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-HOUSE")
     assert house["eave_z_m"] - house["bearing_z_m"] == pytest.approx(
-        inch(11.875 - 3.5 / 3.0).meters)
+        inch(11.875 - 5.5 / 3.0).meters)
     entries = {entry["layer"]: entry for entry in house["layer_edge_setbacks"]}
     assert entries
     for edge in ("west", "east", "south", "north"):
