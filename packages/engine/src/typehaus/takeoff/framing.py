@@ -14,6 +14,8 @@ from typehaus.resolve.model import ResolvedModel
 _M2_TO_FT2 = 10.7639104167
 _SHEET_AREA_FT2 = 32.0
 _M_TO_FT = 3.280839895013123
+_M3_TO_FT3 = 35.3146667215
+_FT3_PER_CUBIC_YARD = 27.0
 
 # Stock lengths a dimensional-lumber order is placed in; a member is charged to the shortest
 # stock it can be cut from, and anything past the longest stock rounds up to the next 2 ft.
@@ -108,6 +110,46 @@ def framing_bom_by_size(model: ResolvedModel) -> list[dict[str, object]]:
         if not size["board_feet"]:
             size["board_feet"] = None
     return [by_size[profile] for profile in sorted(by_size)]
+
+
+def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
+    """Bill the resolved solids the framing take-off cannot see — slabs, footings, pads,
+    posts/columns, standalone beams, and the modeled accessories.
+
+    ``framing_takeoff`` reconciles 1:1 with ``model.all_members()``, but a member is a stick
+    of lumber; the concrete and the standalone structure are ``ResolvedSolid`` records. Both
+    are needed for the BOM to account for everything the model emits. Volume is the plan
+    outline (less its voids) extruded through the solid's elevation range, so concrete rows
+    can be ordered in cubic yards.
+    """
+    Row = dict[str, object]
+    groups: dict[tuple[str, str], Row] = {}
+    for solid in model.solids:
+        net_area_m2 = abs(polygon_area(list(solid.outline))) - sum(
+            abs(polygon_area(list(void))) for void in solid.voids)
+        volume_m3 = max(0.0, net_area_m2) * max(0.0, solid.z1_m - solid.z0_m)
+        key = (solid.category, solid.assembly or "")
+        row = groups.get(key)
+        if row is None:
+            row = groups[key] = {"category": solid.category, "assembly": solid.assembly,
+                                 "count": 0, "plan_area_sqft": 0.0, "volume_cuft": 0.0,
+                                 "tags": []}
+        row["count"] = int(row["count"]) + 1
+        row["plan_area_sqft"] = float(row["plan_area_sqft"]) + max(0.0, net_area_m2) * _M2_TO_FT2
+        row["volume_cuft"] = float(row["volume_cuft"]) + volume_m3 * _M3_TO_FT3
+        tags = row["tags"]
+        assert isinstance(tags, list)
+        tags.append(solid.tag)
+
+    rows: list[dict[str, object]] = []
+    for key in sorted(groups):
+        row = groups[key]
+        volume_cuft = round(float(row["volume_cuft"]), 1)
+        rows.append({**row, "plan_area_sqft": round(float(row["plan_area_sqft"]), 1),
+                     "volume_cuft": volume_cuft,
+                     "volume_cubic_yards": round(volume_cuft / _FT3_PER_CUBIC_YARD, 2),
+                     "tags": sorted(row["tags"])})
+    return rows
 
 
 def construction_returns_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

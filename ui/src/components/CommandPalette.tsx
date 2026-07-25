@@ -88,6 +88,7 @@ export function CommandPalette() {
       { id: "lens-air", title: "Lens: Air", group: "Lens", run: () => setActiveLens("air") },
       { id: "lens-water", title: "Lens: Water", group: "Lens", run: () => setActiveLens("water") },
       { id: "lens-thermal", title: "Lens: Thermal", group: "Lens", run: () => setActiveLens("thermal") },
+      { id: "lens-vapor", title: "Lens: Vapour (permeance)", group: "Lens", run: () => setActiveLens("vapor") },
       { id: "run-checks", title: "Run checks (reload model)", group: "Model", run: () => void reload() },
       { id: "reader-assembly", title: "Assembly details (transitions)", group: "Model", run: () => setDetailView("assembly") },
       { id: "reader-bom", title: "Bill of materials", group: "Model", run: () => setDetailView("bom") },

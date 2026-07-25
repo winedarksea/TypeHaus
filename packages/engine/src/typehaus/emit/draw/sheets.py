@@ -22,6 +22,7 @@ from typehaus.emit.draw.framingplan import build_framing_plan
 from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
 from typehaus.emit.draw.pdf_writer import _fig
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
+from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
 from typehaus.emit.draw.roofplan import build_roof_plan
 from typehaus.emit.draw.scene import Scene
 from typehaus.emit.draw.details import (
@@ -67,11 +68,24 @@ def build_sheet_index(model: ResolvedModel,
     floors = sorted(model.floors, key=lambda f: _storey_elevation(model, f.storey))
     for index, floor in enumerate(floors, start=1):
         number = "S-101" if len(floors) == 1 else f"S-101.{index}"
-        sheets.append(SheetSpec(number, f"Framing plan — {floor.storey}",
+        # Name the deck, not just its storey: a storey may carry more than one framed deck
+        # (catlin's second floor plus its balcony), and the cover index must stay unambiguous.
+        title = (f"Framing plan — {floor.storey}" if len(floors) == 1
+                 else f"Framing plan — {floor.storey} · {floor.tag}")
+        sheets.append(SheetSpec(number, title,
                                 scene=partial(build_framing_plan, floor_tag=floor.tag)))
 
+    # Roof framing gets its own S-102 series rather than joining the S-101 floor series: a
+    # roof is a framed level too, but numbering it S-101.n would make the floor-deck sheet
+    # count depend on how many roofs a house happens to have.
+    roofs = sorted(model.roofs, key=lambda r: (_storey_elevation(model, r.storey), r.tag))
+    for index, roof in enumerate(roofs, start=1):
+        number = "S-102" if len(roofs) == 1 else f"S-102.{index}"
+        sheets.append(SheetSpec(number, f"Roof framing plan — {roof.tag}",
+                                scene=partial(build_roof_framing_plan, roof_tag=roof.tag)))
+
     if model.all_members():
-        sheets.append(SheetSpec("S-102", "Framing schedule / bill of materials",
+        sheets.append(SheetSpec("S-103", "Framing schedule / bill of materials",
                                 page=_write_framing_bom))
 
     storeys = sorted(model.plan.storeys, key=lambda s: s.elevation.meters)

@@ -66,7 +66,17 @@ _LAYER_STYLE = {
     "C-UTIL-GAS": ("#c08a00", 0.4),
     "C-UTIL-POWER": ("#8a2a2a", 0.4),
     "C-TOPO-ARRW": ("#5a8a5a", 0.4),
+    "C-TOPO-GRAD": ("#5a8a5a", 0.5),
+    "C-TOPO-MINR": ("#8aab8a", 0.25),
+    "C-TOPO-IMPV": ("#9a8a70", 0.5),
     "L-SITE-GRAD": ("#5a8a5a", 0.7),
+    "A-STAIR": ("#3a4a55", 0.7),
+    "A-FURN": ("#8a7550", 0.45),
+    "E-POWR": ("#8a2a2a", 0.5),
+    "M-EQPT": ("#2a6a4a", 0.7),
+    "A-ANNO-TABL": ("#333333", 0.5),
+    "A-DETL-CMPT": ("#444444", 0.5),
+    "A-DETL-TRMT": ("#7a5a3a", 0.5),
 }
 _HATCH_MPL = {
     "batt": "....", "osb": "//", "lumber": "\\\\", "concrete": "..", "SOLID": None,

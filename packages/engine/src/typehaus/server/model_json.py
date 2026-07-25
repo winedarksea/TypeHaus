@@ -115,9 +115,18 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
         # catalog and take precedence there. ``hatch`` deliberately stays out: it is the 2D
         # cut-pattern key and already disagrees with the 3D family (face brick hatches as
         # "concrete"), so feeding it to the viewer would mis-classify masonry.
+        # Both vapour fields cross the boundary, and they are not interchangeable:
+        # ``perm_rating`` is perm-*inch* (permeability, scales with depth) while
+        # ``vapor_permeance_perms`` is the finished product's ASTM E96 permeance and takes
+        # precedence. A consumer that saw only the first would divide a whole-sheet rating by a
+        # thickness and invent a number nobody measured — so the resolution rule travels with
+        # them (Material.vapor_permeance_at, mirrored in ui/src/model/vapor.ts). ``source`` rides
+        # along because an unsourced permeance and a sourced one are not equally actionable.
         "materials": [
             {"tag": mat.tag, "name": mat.name, "r_per_inch": mat.r_per_inch,
-             "perm_rating": mat.perm_rating, "density": mat.density,
+             "perm_rating": mat.perm_rating,
+             "vapor_permeance_perms": mat.vapor_permeance_perms,
+             "density": mat.density, "source": mat.source,
              "color": mat.color, "finish": mat.finish}
             for mat in lib.materials
         ],

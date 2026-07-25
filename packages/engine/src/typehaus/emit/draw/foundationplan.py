@@ -1,15 +1,28 @@
-"""Foundation plan → drawing IR (→ 20 §Drawing IR, Permit-ready plan set Phase 1).
+"""S-100 foundation sheet → drawing IR (→ 20 §Drawing IR, → 30 §Sheets).
 
-Draws the storey holding the foundation walls/footings/pads/slab (the deck-below storey,
-e.g. catlin's ``basement``) — never a re-render of the storey above it. Every geometric
-input (wall layers, footing/pad/slab outlines, post positions) already exists in the
-``ResolvedModel``; this builder only projects it into 2D IR (→ 20 "the UI never re-measures").
+A complete foundation sheet, not a re-render of a storey: footing/pad plan with sizes and
+bearing elevations, foundation-wall runs and thicknesses, slab-on-grade extents, bedding /
+drainage callouts, step-footing callouts, and the keyed foundation schedules. Every
+geometric input already exists in the ``ResolvedModel``; this builder only projects it into
+2D IR (→ 20 "the UI never re-measures"). What the model cannot supply is *named* by
+``foundation_sheet_findings`` and listed on the sheet, never invented.
 """
 
 from __future__ import annotations
 
 from typehaus.emit.draw._shared import emit_bbox_dimension_chain, emit_wall
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.foundation_schedule import (
+    FoundationMarks,
+    bearing_solids,
+    build_foundation_schedules,
+    footing_steps,
+    foundation_general_notes,
+    foundation_marks,
+    foundation_sheet_findings,
+    foundation_walls,
+    slabs_on_grade,
+)
 from typehaus.emit.draw.plumbingplan import storey_above
 from typehaus.emit.draw.scene import (
     ArchDimension,
@@ -22,7 +35,31 @@ from typehaus.emit.draw.scene import (
     Symbol,
     Text,
 )
+from typehaus.emit.draw.schedule_block import (
+    BlockMetrics,
+    block_origin_right_of,
+    emit_mark,
+    emit_note_block,
+    emit_schedule_table,
+    metrics_for,
+    wrap_leader_text,
+)
+from typehaus.emit.draw.structural_common import (
+    elevation_feet,
+    feet_inches,
+    inches,
+    inches_text,
+    outline_center,
+    wall_center,
+)
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
+
+# Leader drops in metres, so a callout clears the geometry it points at.
+_LEADER_DROP_M = 1.0
+_BEDDING_LEADER_DROP_M = 2.0
+# Nominal post half-width used for the plan square when the Post carries only a size string.
+_POST_HALF_WIDTH_M = 0.0254
+_SLAB_LABEL_HEIGHT_IN = 3.0
 
 
 def has_foundation_content(model: ResolvedModel) -> bool:
@@ -42,22 +79,141 @@ def _foundation_storey(model: ResolvedModel) -> str | None:
 
 
 def build_foundation_plan(model: ResolvedModel) -> Scene:
-    """Build the foundation-plan IR scene: the lowest storey carrying foundation content."""
+    """Build the S-100 IR scene: foundation plan plus its keyed schedules and notes."""
     b = SceneBuilder(name="foundation-plan", units="in")
+    if not has_foundation_content(model):
+        return b.build()
+
+    marks = foundation_marks(model)
+    walls = foundation_walls(model)
     storey = _foundation_storey(model)
-    walls = [w for w in model.walls if w.is_foundation and w.storey == storey] if storey else []
+    plan_points = _drawn_plan_points(model, walls)
+    metrics = metrics_for(plan_points)
 
     for wall in walls:
         emit_wall(b, wall, layer_override="S-FNDN")
-    _emit_footings_and_pads(b, model, storey)
-    _emit_slabs(b, model, storey)
-    _emit_posts(b, model, storey)
-    _emit_elevation_notes(b, walls)
-    _emit_footing_bedding_note(b, model, storey)
+    _emit_wall_marks(b, walls, marks, metrics)
+    _emit_footings_and_pads(b, model, marks, metrics)
+    _emit_slabs(b, model, marks)
+    _emit_posts_and_beams(b, model, storey)
+    _emit_step_callouts(b, model)
+    _emit_footing_bedding_note(b, model)
     _emit_sleeve_pour_dimensions(b, model, walls, storey)
     if walls:
         emit_bbox_dimension_chain(b, walls)
+    _emit_schedule_column(b, model, plan_points, metrics)
     return b.build()
+
+
+def _drawn_plan_points(model: ResolvedModel,
+                       walls: list[ResolvedWall]) -> list[tuple[float, float]]:
+    """Every point the plan half of the sheet occupies, in inches — the schedule sits clear
+    of it rather than overlapping the drawing at some assumed sheet size."""
+    points = [_in(point) for wall in walls for point in wall.axis]
+    for solid in (*bearing_solids(model), *slabs_on_grade(model)):
+        points.extend(_in(point) for point in solid.outline)
+    return points
+
+
+def _emit_wall_marks(b: SceneBuilder, walls: list[ResolvedWall], marks: FoundationMarks,
+                     metrics: BlockMetrics) -> None:
+    """Key each foundation-wall run to its schedule row.
+
+    The mark alone: thickness and top/bottom-of-wall elevations belong in the schedule, and
+    repeating them on every run buries the plan under its own annotation.
+    """
+    for wall in walls:
+        cx, cy = wall_center(wall)
+        emit_mark(b, _in((cx, cy)), marks.wall[wall.tag], metrics)
+
+
+def _emit_footings_and_pads(b: SceneBuilder, model: ResolvedModel, marks: FoundationMarks,
+                            metrics: BlockMetrics) -> None:
+    """Footing/pad outlines with their schedule mark, plus one sized leader per mark."""
+    leadered: set[str] = set()
+    for solid in bearing_solids(model):
+        b.add(Polyline(
+            points=tuple(_in(p) for p in solid.outline), layer="S-FNDN-FTNG",
+            closed=True, lineweight=0.25, linetype="HIDDEN2",
+            uid=solid.uid, tag=solid.tag,
+        ))
+        mark = marks.footing.get(solid.tag) or marks.pad.get(solid.tag, "")
+        cx, cy = outline_center(solid.outline)
+        emit_mark(b, _in((cx, cy)), mark, metrics, layer="S-FNDN-FTNG")
+        authored = model.plan.by_tag(solid.tag)
+        if authored is None or mark in leadered:
+            continue  # one callout per scheduled type; the rest read from the mark
+        leadered.add(mark)
+        b.add(Leader(
+            anchor=NamedPoint(xy=_in((cx, cy)), name=solid.tag),
+            at=_in((cx, cy)), to=_in((cx, cy - _LEADER_DROP_M)),
+            text=f"{mark} — {_bearing_size(solid, authored)} @ BEARING EL. "
+                 f"{elevation_feet(solid.z0_m)}",
+            layer="S-FNDN-FTNG",
+        ))
+
+
+def _bearing_size(solid, authored) -> str:
+    if solid.category == "footing":
+        return (f"{inches_text(authored.width.inches)} × "
+                f"{inches_text(authored.depth.inches)} CONT. FTG.")
+    return f"{inches_text(authored.thickness.inches)} THK PAD"
+
+
+def _emit_slabs(b: SceneBuilder, model: ResolvedModel, marks: FoundationMarks) -> None:
+    for solid in slabs_on_grade(model):
+        b.add(Polyline(
+            points=tuple(_in(p) for p in solid.outline), layer="A-SLAB",
+            closed=True, lineweight=0.3, uid=solid.uid, tag=solid.tag,
+        ))
+        cx, cy = outline_center(solid.outline)
+        b.add(Text(anchor=_in((cx, cy)),
+                   content=f"{marks.slab[solid.tag]} · {solid.tag}\n"
+                           f"{inches(solid.z1_m - solid.z0_m)} CONC. SLAB ON GRADE\n"
+                           f"T.O.S. EL. {elevation_feet(solid.z1_m)}",
+                   height=_SLAB_LABEL_HEIGHT_IN, layer="A-SLAB", align="center"))
+
+
+def _emit_posts_and_beams(b: SceneBuilder, model: ResolvedModel, storey: str | None) -> None:
+    """Posts standing on a scheduled footing/pad, and the beams of the foundation storey."""
+    supports = {solid.tag for solid in bearing_solids(model)}
+    for element in model.plan.all_elements():
+        if element.element_kind == "Post" and element.supported_by in supports:
+            x, y = element.position.xy_m
+            outline = ((x - _POST_HALF_WIDTH_M, y - _POST_HALF_WIDTH_M),
+                       (x + _POST_HALF_WIDTH_M, y - _POST_HALF_WIDTH_M),
+                       (x + _POST_HALF_WIDTH_M, y + _POST_HALF_WIDTH_M),
+                       (x - _POST_HALF_WIDTH_M, y + _POST_HALF_WIDTH_M))
+            b.add(Polyline(points=tuple(_in(p) for p in outline), layer="S-COLS",
+                           closed=True, lineweight=0.4, uid=element.uid, tag=element.tag))
+            b.add(Symbol(name="post", insert=_in((x, y)), layer="S-COLS"))
+            b.add(Leader(
+                anchor=NamedPoint(xy=_in((x, y)), name=element.tag),
+                at=_in((x, y)), to=_in((x, y - _LEADER_DROP_M)),
+                text=f"{element.tag} {element.size} POST ON {element.supported_by}",
+                layer="S-COLS",
+            ))
+    nodes = {n.tag: n for n in model.plan.storey_elements(storey)} if storey else {}
+    for element in model.plan.storey_elements(storey) if storey else ():
+        if element.element_kind != "Beam":
+            continue
+        start, end = nodes.get(element.start_node), nodes.get(element.end_node)
+        if start is None or end is None:
+            continue
+        b.add(Polyline(points=(_in(start.position.xy_m), _in(end.position.xy_m)),
+                       layer="S-BEAM", lineweight=0.5, uid=element.uid, tag=element.tag))
+
+
+def _emit_step_callouts(b: SceneBuilder, model: ResolvedModel) -> None:
+    """Call each measured step between two touching footing runs at its own location."""
+    for lower, upper, at in footing_steps(model):
+        b.add(Leader(
+            anchor=NamedPoint(xy=_in(at), name=upper.tag),
+            at=_in(at), to=_in((at[0], at[1] - _LEADER_DROP_M)),
+            text=f"STEP FTG. {feet_inches(upper.z0_m - lower.z0_m)}: "
+                 f"{elevation_feet(lower.z0_m)} → {elevation_feet(upper.z0_m)}",
+            layer="S-FNDN-FTNG",
+        ))
 
 
 def _emit_sleeve_pour_dimensions(b: SceneBuilder, model: ResolvedModel,
@@ -107,111 +263,50 @@ def _axis_x(wall: ResolvedWall) -> float:
     return (wall.axis[0][0] + wall.axis[1][0]) / 2.0
 
 
-def _emit_footings_and_pads(b: SceneBuilder, model: ResolvedModel, storey: str | None) -> None:
-    footings = {el.tag: el for el in (model.plan.storey_elements(storey) if storey else ())
-                if el.element_kind == "Footing"}
-    seen_sizes: set[tuple[float, float]] = set()
-    for solid in model.solids:
-        if solid.category not in {"footing", "pad"} or solid.storey != storey:
-            continue
-        b.add(Polyline(
-            points=tuple(_in(p) for p in solid.outline), layer="S-FNDN-FTNG",
-            closed=True, lineweight=0.25, linetype="HIDDEN2",
-            uid=solid.uid, tag=solid.tag,
-        ))
-        footing = footings.get(solid.tag)
-        if footing is None:
-            continue  # isolated pads: outline alone is the pour layout
-        size = (footing.width.inches, footing.depth.inches)
-        key = (round(size[0], 1), round(size[1], 1))
-        if key in seen_sizes:
-            continue
-        seen_sizes.add(key)
-        cx, cy = _outline_center(solid.outline)
-        b.add(Leader(
-            anchor=NamedPoint(xy=_in((cx, cy)), name=solid.tag),
-            at=_in((cx, cy)), to=_in((cx, cy - 1.0)),
-            text=f"{size[0]:.0f}\" × {size[1]:.0f}\" CONT. FTG.", layer="S-FNDN-FTNG",
-        ))
-
-
-def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str | None) -> None:
-    for solid in model.solids:
-        if solid.category != "slab" or solid.storey != storey:
-            continue
-        b.add(Polyline(
-            points=tuple(_in(p) for p in solid.outline), layer="A-SLAB",
-            closed=True, lineweight=0.3, uid=solid.uid, tag=solid.tag,
-        ))
-        cx, cy = _outline_center(solid.outline)
-        thickness_in = (solid.z1_m - solid.z0_m) * 39.37007874015748
-        b.add(Text(anchor=_in((cx, cy)), content=f"{solid.tag} — {thickness_in:.1f}\" CONC. SLAB",
-                   height=3.0, layer="A-SLAB", align="center"))
-
-
-def _emit_posts(b: SceneBuilder, model: ResolvedModel, storey: str | None) -> None:
-    for element in model.plan.storey_elements(storey) if storey else ():
-        if element.element_kind == "Post":
-            x, y = element.position.xy_m
-            half = 0.5 * 0.0254  # nominal ~6x6 post half-width placeholder in meters
-            outline = ((x - half, y - half), (x + half, y - half),
-                       (x + half, y + half), (x - half, y + half))
-            b.add(Polyline(points=tuple(_in(p) for p in outline), layer="S-COLS",
-                           closed=True, lineweight=0.4, uid=element.uid, tag=element.tag))
-            b.add(Symbol(name="post", insert=_in((x, y)), layer="S-COLS"))
-        elif element.element_kind == "Beam":
-            wall_nodes = {n.tag: n for n in model.plan.storey_elements(storey)
-                         if n.element_kind == "Node"}
-            start, end = wall_nodes.get(element.start_node), wall_nodes.get(element.end_node)
-            if start is None or end is None:
-                continue
-            b.add(Polyline(points=(_in(start.position.xy_m), _in(end.position.xy_m)),
-                           layer="S-BEAM", lineweight=0.5, uid=element.uid, tag=element.tag))
-
-
-def _emit_elevation_notes(b: SceneBuilder, walls: list) -> None:
-    for wall in walls:
-        top_ft = wall.z1_m * 3.280839895
-        cx, cy = _outline_center([wall.axis[0], wall.axis[1]])
-        b.add(Text(anchor=_in((cx, cy + 0.15)), content=f"T.O. WALL EL. {top_ft:.2f}'",
-                   height=2.0, layer="A-ANNO-TEXT", align="center"))
-    if walls:
-        b.add(Text(anchor=_in((walls[0].axis[0][0], walls[0].axis[0][1] - 0.6)),
-                   content="FROST DEPTH: 42\" MIN BELOW GRADE (MN 2024 RES CODE)",
-                   height=2.5, layer="A-ANNO-TEXT"))
-
-
-def _emit_footing_bedding_note(b: SceneBuilder, model: ResolvedModel, storey: str | None) -> None:
+def _emit_footing_bedding_note(b: SceneBuilder, model: ResolvedModel) -> None:
     """One leader per unique bedding spec — never a blanket note the plan didn't author."""
-    beddings = [fb for fb in model.footing_beddings if fb.storey == storey]
     seen: set[tuple] = set()
-    for bedding in beddings:
+    for bedding in sorted(model.footing_beddings, key=lambda item: item.tag):
         key = (bedding.aggregate, bedding.geotextile, bedding.drain_tile,
-              bedding.perimeter_insulation_m, bedding.cast_foam_in_aggregate,
-              round(bedding.z1_m - bedding.z0_m, 3))
+               bedding.perimeter_insulation_m, bedding.cast_foam_in_aggregate,
+               round(bedding.z1_m - bedding.z0_m, 3))
         if key in seen:
             continue
         seen.add(key)
-        undercut_in = (bedding.z1_m - bedding.z0_m) * 39.37007874015748
-        parts = [f"UNDERCUT {undercut_in:.0f}\" BELOW FTG, COMPACTED {bedding.aggregate.upper()}"]
+        parts = [f"UNDERCUT {inches(bedding.z1_m - bedding.z0_m)} BELOW FTG, "
+                 f"COMPACTED {bedding.aggregate.upper()}"]
         if bedding.geotextile:
             parts.append("NON-WOVEN GEOTEXTILE LINER")
         if bedding.drain_tile:
             parts.append("DRAIN TILE IN BED")
         if bedding.perimeter_insulation_m is not None:
-            perim_in = bedding.perimeter_insulation_m * 39.37007874015748
-            parts.append(f"{perim_in:.0f}\" RIGID FOAM PERIMETER INSULATION")
+            parts.append(f"{inches(bedding.perimeter_insulation_m)} RIGID FOAM PERIMETER "
+                         "INSULATION")
         if bedding.cast_foam_in_aggregate:
             parts.append("CAST-IN-PLACE FOAM IN AGGREGATE")
-        cx, cy = _outline_center(bedding.outline)
+        cx, cy = outline_center(bedding.outline)
         b.add(Leader(
             anchor=NamedPoint(xy=_in((cx, cy)), name=bedding.tag),
-            at=_in((cx, cy)), to=_in((cx, cy - 2.0)),
-            text=" — ".join(parts), layer="S-FNDN-FTNG",
+            at=_in((cx, cy)), to=_in((cx, cy - _BEDDING_LEADER_DROP_M)),
+            text=wrap_leader_text(" — ".join(parts)), layer="S-FNDN-FTNG",
         ))
 
 
-def _outline_center(outline) -> tuple[float, float]:
-    xs = [p[0] for p in outline]
-    ys = [p[1] for p in outline]
-    return sum(xs) / len(xs), sum(ys) / len(ys)
+def _emit_schedule_column(b: SceneBuilder, model: ResolvedModel,
+                          plan_points: list[tuple[float, float]],
+                          metrics: BlockMetrics) -> None:
+    """Stack the keyed schedules, the general notes, and the missing-input list beside
+    the plan — the half of a permit foundation sheet that is not geometry."""
+    cursor = block_origin_right_of(plan_points, metrics)
+    for table in build_foundation_schedules(model):
+        bottom = emit_schedule_table(b, table, cursor, metrics)
+        cursor = (cursor[0], bottom - metrics.block_gap)
+    bottom = emit_note_block(b, "FOUNDATION NOTES", foundation_general_notes(model), cursor,
+                             metrics)
+    cursor = (cursor[0], bottom - metrics.block_gap)
+    missing = [f"{finding.check_id}: {finding.message}"
+               for finding in foundation_sheet_findings(model)]
+    emit_note_block(b, "NOT SHOWN — MISSING MODEL INPUTS", missing, cursor, metrics)
+
+
+__all__ = ["build_foundation_plan", "has_foundation_content"]

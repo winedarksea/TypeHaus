@@ -18,12 +18,14 @@ from library.assemblies import (
     INT_2X4_STAGGERED_DOUBLE_GWB,
     STARTER_FLOOR,
 )
+from library.hardware import STRUCTURAL_HARDWARE
 from library.materials import STARTER_MATERIALS
 from library.placeables import (STARTER_APPLIANCE_TYPES, STARTER_FIXTURE_TYPES,
                                 STARTER_FURNITURE_TYPES)
 
 __all__ = [
     "STARTER_MATERIALS",
+    "STRUCTURAL_HARDWARE",
     "HOUSE_WALL_2X4_WITH_CI",
     "HOUSE_WALL_2X6_WITH_ZIPR",
     "GARAGE_ICF",

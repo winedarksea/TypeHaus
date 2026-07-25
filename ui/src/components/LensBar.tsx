@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useStore, type Lens } from "../state/store";
 import type { Model } from "../model/types";
+import { formatPerms, VAPOR_CLASS_LABEL, vaporReadings, type VaporLayerReading } from "../model/vapor";
 
 // Continuity of a tagged control layer across storey-stack / assembly-change transitions is
 // checked server-side (advisory.control_continuity, → checks/advisory). The lens surfaces
@@ -11,22 +12,32 @@ const CONTINUITY_CODE = "advisory.control_continuity";
 export interface LensData {
   controlLayerCount: number; // wall layers carrying this control across the model
   discontinuities: { message: string; element: string | null }[];
+  // Vapour lens only: the resolved permeance of each distinct vapour-control layer. A control
+  // *flag* says a layer is meant to manage vapour; only the permeance says whether it can.
+  vaporReadings: VaporLayerReading[];
 }
 
-// `domain` is the control keyword ("air" | "water" | "thermal"); substring match tolerates
-// either the bare enum value or a "ControlLayer.AIR"-style serialization.
+// `domain` is the control keyword ("air" | "water" | "thermal" | "vapor"); substring match
+// tolerates either the bare enum value or a "ControlLayer.AIR"-style serialization.
 export function lensData(model: Model | null, domain: string): LensData {
-  if (!model) return { controlLayerCount: 0, discontinuities: [] };
+  if (!model) return { controlLayerCount: 0, discontinuities: [], vaporReadings: [] };
   let controlLayerCount = 0;
+  const controlLayers = [];
   for (const wall of model.walls) {
     for (const layer of wall.layers) {
-      if ((layer.control ?? []).some((c) => c.toLowerCase().includes(domain))) controlLayerCount++;
+      if (!(layer.control ?? []).some((c) => c.toLowerCase().includes(domain))) continue;
+      controlLayerCount++;
+      controlLayers.push(layer);
     }
   }
   const discontinuities = (model.findings ?? [])
     .filter((f) => f.code === CONTINUITY_CODE)
     .map((f) => ({ message: f.message, element: f.element ?? f.elements?.[0] ?? null }));
-  return { controlLayerCount, discontinuities };
+  return {
+    controlLayerCount,
+    discontinuities,
+    vaporReadings: domain === "vapor" ? vaporReadings(controlLayers, model.catalog?.materials) : [],
+  };
 }
 
 // Building-science lenses (Phase 9). A lens mutes ordinary geometry and makes one control
@@ -60,6 +71,7 @@ const LENSES: LensSpec[] = [
   { id: "air", label: "Air", icon: "≋", colorVar: "--control-air", pattern: "2 3", legend: "Air-barrier continuity — discontinuities numbered." },
   { id: "water", label: "Water", icon: "☂", colorVar: "--control-water", pattern: "6 3", legend: "Water-control layer + drainage path continuity." },
   { id: "thermal", label: "Thermal", icon: "☀", colorVar: "--control-thermal", pattern: "1 4", legend: "Thermal-control layer — bridges highlighted." },
+  { id: "vapor", label: "Vapour", icon: "☁", colorVar: "--control-vapor", pattern: "5 2 1 2", legend: "Vapour-control layer — permeance and retarder class per layer." },
 ];
 
 export function LensBar() {
@@ -112,6 +124,23 @@ export function LensBar() {
               ? `${data.controlLayerCount} wall layer${data.controlLayerCount === 1 ? "" : "s"} carry the ${active.label.toLowerCase()}-control layer`
               : "Model not loaded"}
           </div>
+          {/* The vapour lens reports what each control layer actually *does*: its resolved
+              permeance and IRC R702.7 retarder class. A layer whose material authors neither
+              perm-inch nor whole-sheet perms says so — the engine refuses to substitute a
+              default here (→ 32), and so does the lens. */}
+          {data.vaporReadings.length > 0 && (
+            <ul className="lens-vapor-readings">
+              {data.vaporReadings.map((reading) => (
+                <li key={`${reading.material}-${reading.layerName}`}
+                  className={reading.perms == null ? "vapor-unknown" : undefined}
+                  title={reading.source ?? "no source authored"}>
+                  <span className="vapor-perms">{formatPerms(reading.perms)}</span>
+                  <span className="vapor-class">{VAPOR_CLASS_LABEL[reading.retarderClass]}</span>
+                  <span className="muted">{reading.layerName} · {reading.material}</span>
+                </li>
+              ))}
+            </ul>
+          )}
           {data.discontinuities.length > 0 ? (
             <ul className="lens-legend-issues">
               {data.discontinuities.map((issue, index) => (

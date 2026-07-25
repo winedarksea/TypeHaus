@@ -14,6 +14,8 @@ try {
   const { runBomTests } = await server.ssrLoadModule("/src/model/bom.test.ts");
   const { runPlanWarningTests, runSpaceLabelTests } = await server.ssrLoadModule("/src/model/planWarnings.test.ts");
   const { runTransitionTests } = await server.ssrLoadModule("/src/model/transitions.test.ts");
+  const { runVaporTests } = await server.ssrLoadModule("/src/model/vapor.test.ts");
+  const { runOpenHouseTests } = await server.ssrLoadModule("/src/engine/openHouse.test.ts");
   const { runDoorSymbolTests } = await server.ssrLoadModule("/src/model/doorSymbols.test.ts");
   const { runRoofGeometryTests } = await server.ssrLoadModule("/src/three/roofGeometry.test.ts");
   const { runMaterialGeometryTests, runMemberColorTests } = await server.ssrLoadModule("/src/three/materials.test.ts");
@@ -34,6 +36,8 @@ try {
   runPlanWarningTests();
   runSpaceLabelTests();
   runTransitionTests();
+  runVaporTests();
+  runOpenHouseTests();
   runModelGeometryTests();
   runDoorSymbolTests();
   runRoofGeometryTests();

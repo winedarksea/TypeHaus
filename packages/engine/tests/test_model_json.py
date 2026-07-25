@@ -176,6 +176,28 @@ def test_project_serializes_the_active_clearance_code_profile(catlin_payload):
     assert "active_code_profile" in catlin_payload["project"]
 
 
+def test_catalog_materials_carry_both_vapour_fields_and_their_source(catlin_payload):
+    """Both permeance fields must cross the UI boundary, and they are not interchangeable.
+
+    ``perm_rating`` is perm-*inch* (scales with depth); ``vapor_permeance_perms`` is the
+    finished product's ASTM E96 permeance and wins outright. A consumer given only the first
+    would divide a whole-sheet rating by a thickness and invent a number nobody measured —
+    which is precisely what ``Material.vapor_permeance_at`` refuses to do. Catlin authors
+    whole-sheet perms for zip-r, the air barrier, and standing seam, so a regression that
+    drops the field is visible here rather than as a silently wrong lens reading.
+    """
+    materials = {m["tag"]: m for m in catlin_payload["catalog"]["materials"]}
+    assert materials, "the catalog must publish its materials"
+    for material in materials.values():
+        assert {"perm_rating", "vapor_permeance_perms", "source"} <= material.keys()
+
+    sheet_rated = {tag: m["vapor_permeance_perms"] for tag, m in materials.items()
+                   if m["vapor_permeance_perms"] is not None}
+    assert sheet_rated, "sheet goods author a whole-sheet permeance"
+    # 0.0 is a sourced vapour barrier, not missing data — it must survive as a float.
+    assert all(isinstance(value, float) for value in sheet_rated.values())
+
+
 def test_stairs_payload_carries_landing_depth(catlin_payload):
     stairs = {stair["tag"]: stair for stair in catlin_payload["stairs"]}
     assert "landing_depth_m" in stairs["ST-B2M"]

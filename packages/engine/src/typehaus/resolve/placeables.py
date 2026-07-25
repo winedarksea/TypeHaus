@@ -8,7 +8,9 @@ from shapely.geometry import Point, Polygon
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
-from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
+from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel, Ring
+from typehaus.resolve.placeable_groups import (PlacementGroupAnchorZone,
+                                               assign_placement_groups)
 
 _TYPE_COLLECTIONS = (
     ("furniture_types", "Furniture", "furniture"),
@@ -26,6 +28,10 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     types = {item.tag: (item, domain) for collection, _, domain in _TYPE_COLLECTIONS
              for item in getattr(plan.library, collection)}
     kind_domains = {kind: domain for _, kind, domain in _TYPE_COLLECTIONS}
+    # Objects are collected before they are published: a placeable's furniture group depends
+    # on the peers standing in its zone, so no object's record is final until all are placed.
+    resolved_objects: list[ResolvedCanvasObject] = []
+    anchor_zones: list[PlacementGroupAnchorZone] = []
     for storey in plan.storeys:
         rooms = [room for room in model.rooms if room.storey == storey.tag]
         for item in plan.storey_elements(storey.tag):
@@ -49,16 +55,24 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 findings.append(_finding("integrity.placeable_room_mismatch", item.tag,
                     f"placeable {item.tag} is assigned to {explicit_room} but its footprint center is outside that room",
                     Severity.WARN))
-            required, recommended = _clearance_polygons(
+            zones = _resolved_clearance_zones(
                 product_type, center, rotation, plan.project.active_code_profile,
             )
-            model.canvas_objects.append(ResolvedCanvasObject(
+            resolved_objects.append(ResolvedCanvasObject(
                 uid=item.uid, tag=item.tag, storey=storey.tag, domain=domain, kind=item.element_kind, type_ref=type_ref,
                 room=explicit_room or resolved_room, position=center, rotation_degrees=rotation,
                 z_m=resolved_mount_elevation(storey, item),
-                footprint=footprint, required_clearances=required, recommended_clearances=recommended,
+                footprint=footprint,
+                required_clearances=tuple(ring for zone, ring in zones if _is_required(zone)),
+                recommended_clearances=tuple(ring for zone, ring in zones if not _is_required(zone)),
                 attachment_wall=attachment, attachment_face=attachment_face,
             ))
+            anchor_zones.extend(
+                PlacementGroupAnchorZone(anchor_uid=item.uid, anchor_tag=item.tag,
+                                         storey=storey.tag, zone_polygon=ring,
+                                         occupant_types=frozenset(zone.occupant_types))
+                for zone, ring in zones if zone.occupant_types and not _is_required(zone))
+    model.canvas_objects.extend(assign_placement_groups(resolved_objects, anchor_zones))
     findings.extend(_clearance_conflicts(model))
     findings.extend(_door_swing_conflicts(model))
     return findings
@@ -141,18 +155,26 @@ def _local_footprint(product_type: object | None, item: object) -> list[tuple[fl
     return [(-width / 2, -depth / 2), (width / 2, -depth / 2), (width / 2, depth / 2), (-width / 2, depth / 2)]
 
 
-def _clearance_polygons(product_type: object | None, center: tuple[float, float], rotation: float,
-                        active_code_profile: str | None) -> tuple[tuple[list[tuple[float, float]], ...], tuple[list[tuple[float, float]], ...]]:
+def _is_required(zone: object) -> bool:
+    return zone.policy.value == "required"
+
+
+def _resolved_clearance_zones(product_type: object | None, center: tuple[float, float],
+                              rotation: float,
+                              active_code_profile: str | None) -> list[tuple[object, Ring]]:
+    """Each clearance zone that applies to the active code profile, with its project ring.
+
+    The zone object is kept alongside its geometry so callers can read ``policy`` and
+    ``occupant_types`` without re-walking the product type.
+    """
     if product_type is None:
-        return (), ()
-    required: list[list[tuple[float, float]]] = []
-    recommended: list[list[tuple[float, float]]] = []
-    for zone in getattr(product_type, "clearances", ()):
-        if zone.code_profile is not None and zone.code_profile != active_code_profile:
-            continue
-        polygon = _transformed_polygon([point.xy_m for point in zone.footprint.points], center, rotation)
-        (required if zone.policy.value == "required" else recommended).append(polygon)
-    return tuple(required), tuple(recommended)
+        return []
+    return [
+        (zone, _transformed_polygon([point.xy_m for point in zone.footprint.points],
+                                    center, rotation))
+        for zone in getattr(product_type, "clearances", ())
+        if zone.code_profile is None or zone.code_profile == active_code_profile
+    ]
 
 
 def _clearance_conflicts(model: ResolvedModel) -> list[Finding]:
@@ -161,20 +183,31 @@ def _clearance_conflicts(model: ResolvedModel) -> list[Finding]:
     A clearance is an occupied planning zone, so compare it against other physical
     footprints rather than their own clearance zones.  That avoids false conflicts
     between two deliberately overlapping advisory envelopes.
+
+    Members of one furniture group (→ resolve/placeable_groups) are exempt from each other's
+    *recommended* zones: the chairs tucked under a dining table are what its chair-use zone is
+    for. A required zone is a code minimum and is never exempted — grouping describes intent,
+    not permission.
     """
     findings: list[Finding] = []
     for item in model.canvas_objects:
-        peers = (peer for peer in model.canvas_objects
-                 if peer.storey == item.storey and peer.uid != item.uid)
+        # A list, not a generator: this is re-walked once per zone, and a generator was
+        # exhausted by the first one — every zone after an object's first was silently never
+        # compared against anything (a bed's second side-access zone, a fridge's swing).
+        peers = [peer for peer in model.canvas_objects
+                 if peer.storey == item.storey and peer.uid != item.uid]
         for zones, severity, policy_name in (
             (item.required_clearances, Severity.ERROR, "required"),
             (item.recommended_clearances, Severity.WARN, "recommended"),
         ):
+            group_exempt = severity is Severity.WARN and item.placement_group is not None
             for zone in zones:
                 zone_shape = Polygon(zone)
                 if zone_shape.is_empty or not zone_shape.is_valid:
                     continue
                 for peer in peers:
+                    if group_exempt and peer.placement_group == item.placement_group:
+                        continue
                     overlap = zone_shape.intersection(Polygon(peer.footprint))
                     if overlap.area <= 1e-8:
                         continue

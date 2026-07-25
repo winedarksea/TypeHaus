@@ -2,10 +2,21 @@
 Reminder: all items should design around clean export to Revit/Sketchup/IFC (follow industry standards where practical), and also be coded in accessible, "vibe code friendly" configs.
 
 ## Remaining Work
-Still missing for full M2: variants/compare
+M2 variants/compare: the engine + CLI side is in (`variants.toml` declares named variants —
+assembly swaps and layer-thickness overrides; `haus variants list|compare|assemblies` builds
+them and reports element, takeoff, R-value/thickness and check deltas; `#53` assembly delta
+compare included). Still missing: in-plan forks (`variant_of`/`active`/`forked_from` on
+storeys, one-active integrity check, promote-with-uid-remap) and the UI's side-by-side
+compare canvases (→ 21b §Variant compare).
 M3 details are incomplete: Catlin has transitions, but no authored detail Slices. The permit composer emits placeholder/generic sheets; S-100/S-101 are reused floor/energy views rather than complete foundation/framing sheets ([sheets.py (line 30)](/Users/colincatlin/Documents-NoCloud/TypeHaus/packages/engine/src/typehaus/emit/draw/sheets.py:30)).
 M3 site work is incomplete: no parcel/contour GeoJSON basemap support.
-M3 equivalence is only hardcoded contract testing, not an actual old-IFC semantic comparison.
+M3 equivalence now *is* an old-IFC semantic comparison: the archived builder's export is
+committed at `packages/engine/tests/fixtures/catlin_reference/catlin_house_reference.ifc.gz`
+and `test_catlin_equivalence_m3.py` diffs both models entity by entity through
+`typehaus.diff.semantic` / `.equivalence`. The declared design constants moved to
+`test_catlin_contract_m3.py`. Open follow-up surfaced by it: the IFC export gives
+`IfcBuildingStorey` neither an `Elevation` nor a placement, so storey elevations cannot be
+compared at all.
 Catlin’s full checks still report two failures and 13 building-science UNKNOWNs. The declared permit-check passes only because it intentionally covers a narrow subset.
 M5 is not acceptance-complete: condensation analysis lacks material permeance inputs, producing UNKNOWN results ([plans/50-m5-science.md (line 61)](/Users/colincatlin/Documents-NoCloud/TypeHaus/plans/50-m5-science.md:61)).
 Emplace furniture (3d files from library or imported models) and able to move furniture. Ideally double click on an view/modify details as appropriate.
@@ -209,10 +220,12 @@ deck fix; work them down here (or suppress `structural.member_interference` per-
 - `emit/draw/floorplan.py` emits `Symbol(name="alarm")`, but `"alarm"` is missing from
   `_MARKER_STYLE` in `pdf_writer.py` and from `_add_symbol` in `dxf_writer.py`, so every
   smoke/CO alarm draws as a blue window-glass bar on the plan.
-- `storey_outward_sign` is one scalar per storey derived from the largest closed loop, so the
-  house basement and the sunken garden — two independent structures sharing a storey key —
-  cannot have independent windings. A per-connected-component sign removes the bug class that
-  `advisory.cladding_side_mismatch` currently only detects.
+- `integrity.placeable_*_clearance_conflict` and `integrity.door_swing_conflict` compare
+  footprints in plan only, with no vertical band: a ceiling light at 8' AFF and a 2"-tall wall
+  switch both "encroach" on the floor clearance beside a bed. `Mount` gives each object a base
+  elevation and the product type gives its height, so the comparison could be a real interval
+  overlap — but the band a zone protects (floor to standing height? floor to door-leaf height?)
+  has to be decided per zone purpose before that is more than a guess.
 - The garage gable is closed by carrying wall skin to the roof underside rather than by real
   `top=ToRoof` gable walls: a raked wall top is a straight line, so a gable wall must split at
   the ridge, and `W-G-E`'s ridge is exactly where the 16' overhead door is centred. Accepted
