@@ -87,6 +87,42 @@ def test_catlin_dowels_and_foam_bridge_the_footing_joint(catlin_model) -> None:
         assert bar.z0_m < -2.5 < bar.z1_m or abs((bar.z1_m + bar.z0_m) / 2 + 9.25 * FT) < 0.2
 
 
+def test_foam_thermal_break_lies_in_the_joint_it_breaks(catlin_model) -> None:
+    """The block's thin dimension is the dowel axis; its long one runs along the joint.
+
+    Catlin's dowels run N-S (``axis="y"``) between the house and the sunken-garden footings,
+    so each 2" block must be 2" deep in Y and span the bar row in X. Rotated 90° it stops
+    separating the two structures at all.
+    """
+    for block in _solids(catlin_model, "thermal_break"):
+        xs = [x for x, _ in block.outline]
+        ys = [y for _, y in block.outline]
+        depth_across_joint = max(ys) - min(ys)
+        run_along_joint = max(xs) - min(xs)
+        assert abs(depth_across_joint - inch(2).meters) < 1e-9
+        assert run_along_joint > depth_across_joint
+
+
+def test_foam_thermal_break_follows_an_east_west_dowel(catlin_model) -> None:
+    """The same rule with the axis flipped — guards against hard-coding Catlin's Y run."""
+    from typehaus.resolve.accessories import _resolve_dowel
+
+    model = catlin_model
+    before = len(model.solids)
+    east_west = Dowel(uid="AAAAAAAAAC", tag="DW-EW", position=pt(ft(0), ft(0)), axis="x",
+                      length=inch(24), diameter=inch(0.625), elevation=ft(0), count=3,
+                      spacing=inch(8), foam_thickness=inch(2))
+    try:
+        _resolve_dowel(model, east_west, "basement")
+        block = next(s for s in model.solids if s.tag == "DW-EW-FOAM")
+        xs = [x for x, _ in block.outline]
+        ys = [y for _, y in block.outline]
+        assert abs(max(xs) - min(xs) - inch(2).meters) < 1e-9  # thin along the bar axis
+        assert max(ys) - min(ys) > max(xs) - min(xs)  # long along the joint
+    finally:
+        del model.solids[before:]
+
+
 def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     from typehaus.resolve.roof_geometry import roof_height_at
 
@@ -94,8 +130,10 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     chases = [s for s in vent if s.tag.endswith("CHASE")]
     terms = [s for s in vent if s.tag.endswith("TERM")]
     outs = [s for s in vent if "-OUT" in s.tag]
+    from typehaus.resolve.accessories import _PIPE_SWEEP_BANDS
+
     assert len(chases) == len(terms) == 2  # radon + plumbing vent
-    assert len(outs) == 8  # each horizontal jog is stacked out of 4 round bands
+    assert len(outs) == 2 * _PIPE_SWEEP_BANDS  # each horizontal jog is one swept stack
     exit_z = ft(24, 6).meters
     # Chase rises from below grade to the turn-out, which stays *under* the rake.
     for c in chases:
@@ -127,6 +165,38 @@ def test_catlin_vent_pipes_are_round_sections(catlin_model) -> None:
         cy = sum(y for _, y in solid.outline) / _PIPE_FACETS
         for x, y in solid.outline:
             assert abs(math.hypot(x - cx, y - cy) - radius) < 1e-9
+
+
+def test_vent_horizontal_jog_sweeps_the_same_polygon_as_the_risers(catlin_model) -> None:
+    """The jog used to be four stacked square bands next to two true 12-gon risers.
+
+    A horizontal run cannot be a vertical prism, so it is swept as bands in Z. Matching the
+    risers means the band boundaries land on the riser polygon's own vertex elevations —
+    ``_PIPE_FACETS // 2`` bands, i.e. ``_PIPE_FACETS // 2 + 1`` distinct heights, with each
+    band as wide as the circle is at that height.
+    """
+    from typehaus.resolve.accessories import _PIPE_FACETS, _PIPE_SWEEP_BANDS
+
+    radius = inch(3).meters / 2.0
+    jogs = [s for s in _solids(catlin_model, "vent") if "-OUT" in s.tag]
+    per_riser = {}
+    for band in jogs:
+        per_riser.setdefault(band.tag.rsplit("-OUT", 1)[0], []).append(band)
+
+    for riser_tag, bands in per_riser.items():
+        assert len(bands) == _PIPE_SWEEP_BANDS, riser_tag
+        heights = sorted({round(z, 9) for band in bands for z in (band.z0_m, band.z1_m)})
+        assert len(heights) == _PIPE_FACETS // 2 + 1  # the 12-gon section, on its side
+        # Section spans the true diameter, and no band is wider than the pipe.
+        assert abs((heights[-1] - heights[0]) - 2 * radius) < 1e-9
+        section_area = 0.0
+        for band in bands:
+            width = max(x for x, _ in band.outline) - min(x for x, _ in band.outline)
+            assert width <= 2 * radius + 1e-9
+            section_area += width * (band.z1_m - band.z0_m)
+        # Roundness: the swept section's area tracks the circle's. Four bands were 2.6% shy
+        # of it (visibly square); the riser's 12-gon resolution closes that to ~1.1%.
+        assert abs(section_area - math.pi * radius**2) / (math.pi * radius**2) < 0.015
 
 
 def test_vent_termination_derives_from_the_wall_the_riser_rides(catlin_model) -> None:
