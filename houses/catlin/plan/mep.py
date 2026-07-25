@@ -90,6 +90,25 @@ ELECTRICAL_DEVICE_TYPES = (
                           footprint=(inch(6), inch(6)), height=inch(4),
                           ports=(ServicePort(tag="power", service=Service.POWER_120,
                                              position=(ft(0), ft(0), ft(0))),)),
+    # Kitchen outlets. ED-T-RECEPTACLE above stays a plain 120V duplex — its port list is
+    # pinned by a contract test — so the counter devices name their own types instead.
+    ElectricalDeviceType(tag="ED-T-RECEPTACLE-GFCI", name="GFCI receptacle",
+                          footprint=(inch(4), inch(2)), height=inch(2),
+                          ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                             position=(ft(0), ft(0), ft(0))),)),
+    ElectricalDeviceType(tag="ED-T-RECEPTACLE-240", name="240V appliance receptacle, NEMA 14-50",
+                          footprint=(inch(4), inch(4)), height=inch(4),
+                          ports=(ServicePort(tag="power", service=Service.POWER_240,
+                                             position=(ft(0), ft(0), ft(0))),)),
+    # The kettle outlet the brief asks for: a 5-20R and a 6-20R in one two-gang box, so a
+    # 120V and a 240V appliance can share the spot. Two ports, one device.
+    ElectricalDeviceType(tag="ED-T-RECEPTACLE-620",
+                          name="NEMA 5-20R/6-20R duplex kettle outlet",
+                          footprint=(inch(4), inch(4)), height=inch(4),
+                          ports=(ServicePort(tag="power-120", service=Service.POWER_120,
+                                             position=(ft(0), ft(0), ft(0))),
+                                 ServicePort(tag="power-240", service=Service.POWER_240,
+                                             position=(ft(0), ft(0), ft(0))))),
 )
 
 SLEEVES = [
@@ -108,6 +127,11 @@ SLEEVES = [
     SleevePenetration(uid="CMP904AAAA", tag="SP-M-WASH", host_ref="SL-M-DECK",
                       position=pt(ft(8), ft(20)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-LAUNDRY"),
+    # The kitchen sink's waste through the 9" deck. Authored at exactly FX-M-KITCH-SINK's
+    # `drain_position`, which is what makes `mep.sleeve_alignment` read 0.00".
+    SleevePenetration(uid="BFQH6F04VQ", tag="SP-M-KITCH", host_ref="SL-M-DECK",
+                      position=pt(ft(35), ft(32, 8)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), serves_fixture="FX-M-KITCH-SINK"),
 ]
 
 # Slab-on-grade stub-ups. A fixture standing on grade has no wall drain stack — its trap
@@ -129,7 +153,17 @@ DRAINS = [
            path=(pt(ft(2), ft(23, 1.5)), pt(ft(2), ft(18)), pt(ft(3), ft(18)),
                  pt(ft(3), ft(0))),
            diameter=inch(3), start_elevation=ft(8), end_elevation=ft(7, 4),
-           serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC")),
+           serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-M-KITCH-SINK")),
+    # Kitchen branch: down SP-M-KITCH, then the long haul across the basement ceiling to the
+    # main drain's own corner fitting at (3', 18'). 46'-8" of 2" pipe needs 11 3/4" of fall
+    # to hold 1/4"/ft, so it starts tight under the deck at 8'-10" and lands at 7'-10" — a
+    # hair above the main's interpolated 7.83' invert there, which is the direction a wye
+    # has to be tied. Tying in anywhere further downstream only makes the run longer and
+    # the start higher, so this corner is the best point on the line.
+    PipeRun(uid="S0Y00EZNNG", tag="PR-B-KITCH-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(35), ft(32, 8)), pt(ft(35), ft(18)), pt(ft(3), ft(18))),
+            diameter=inch(2), start_elevation=ft(8, 10), end_elevation=ft(7, 10),
+            serves=("FX-M-KITCH-SINK",)),
 ]
 
 # --- Vent branches: wet wall -> shared chase ----------------------------------------
@@ -153,6 +187,18 @@ VENT_BRANCHES_MAIN = [
                   pt(ft(4), ft(33)), pt(ft(3), ft(33))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5.5),
             serves=("FX-M-BATH2-WC", "FX-M-BATH1-WC")),
+    # Kitchen sink. W-M-E2 *does* continue to the storey above (W-S-E3/E4/E5 stack on it), so
+    # `mep.vent_reachability` is already satisfied by the wet-wall path — this run is the
+    # drawn route, not a check-driven workaround. It rises in the E2 stud bay at x=35'-9",
+    # turns west in the FS-SECOND joist bay whose centre is y=24'-8" (bays are 8"+n*16"; this
+    # one passes south of FO-S-STAIR, which starts at y=25'-2 3/8", and north of both trunk
+    # ducts at 20'-8" and 23'-4"), then north to the shared radon/vent chase at (3', 33').
+    # It rises 6" over its length so condensate drains back to the fixture.
+    PipeRun(uid="ZTQRPPRATP", tag="PR-M-KITCH-VENT", system=PipeSystem.VENT,
+            path=(pt(ft(35, 9), ft(32, 8)), pt(ft(35, 9), ft(24, 8)),
+                  pt(ft(3), ft(24, 8)), pt(ft(3), ft(33))),
+            diameter=inch(1.5), start_elevation=ft(9, 3), end_elevation=ft(9, 9),
+            serves=("FX-M-KITCH-SINK",)),
 ]
 
 VENT_BRANCHES_SECOND = [
@@ -255,6 +301,36 @@ MAIN_DEVICES = [
     ElectricalDevice(uid="CED003K2AA", tag="ED-M-STUDY-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(14.667), ft(20)), type_ref="ED-T-SWITCH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+    # --- kitchen outlets (RM-M-LIVING is open plan, so these keep the LIVING suffix) ---
+    # Circuits are still deferred (decision 1): these are symbols and mounting heights, not
+    # a panel schedule. Counter outlets sit at 42" — 6" of backsplash over the 36" counter,
+    # under the 54" wall cabinets. The refrigerator's future battery-backup circuit is not
+    # modeled; KRF1 is an ordinary duplex until that circuit is designed.
+    ElectricalDevice(uid="N9317V3K8Y", tag="ED-M-LIVING-KGF1", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(22, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
+    ElectricalDevice(uid="J34E2ZM4GG", tag="ED-M-LIVING-KGF2", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(28, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
+    ElectricalDevice(uid="EJYZJRDFG0", tag="ED-M-LIVING-KGF3", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(35, 4), ft(30, 6)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
+    ElectricalDevice(uid="VDGMBY3YW7", tag="ED-M-LIVING-KET1", kind=DeviceKind.RECEPTACLE_240,
+                     position=pt(ft(21, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-620",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
+    # Behind the range at 6": the whip drops to the floor box, not to a counter height.
+    ElectricalDevice(uid="S8DH5FRQQA", tag="ED-M-LIVING-KRG1", kind=DeviceKind.RECEPTACLE_240,
+                     position=pt(ft(26, 7), ft(35, 4)), type_ref="ED-T-RECEPTACLE-240",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(6))),
+    # On the centre bearing wall's east face, behind APPL-M-FRIDGE, at 48" — above the
+    # coil deck, so the plug is reachable without pulling the whole cabinet out.
+    ElectricalDevice(uid="D9EBW2FJTX", tag="ED-M-LIVING-KRF1", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(18, 4), ft(31, 5.375)), type_ref="ED-T-RECEPTACLE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+    # Inside the sink base, 18" up: the dishwasher's cord and the disposer share the box.
+    ElectricalDevice(uid="WK41TSMA97", tag="ED-M-LIVING-KDW1", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(35, 4), ft(32)), type_ref="ED-T-RECEPTACLE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
 ]
 
 SECOND_DEVICES = [

@@ -7,9 +7,14 @@ sites keep working unchanged.
 
 from __future__ import annotations
 
-from library.placeables.appliances import (DISHWASHER, DRYER, ELECTRIC_RANGE, GAS_RANGE,
+from library.placeables.appliances import (DISHWASHER, DRYER, ELECTRIC_RANGE,
+                                           FREEZER_UPRIGHT, GAS_RANGE, HOOD_RECIRC,
                                            MICROWAVE_OTR, REFRIGERATOR,
                                            STARTER_APPLIANCE_TYPES)
+from library.placeables.casework import (BAR_STOOL, BASE_15, BASE_24, BASE_30, BASE_36,
+                                         ISLAND_60, PANTRY_CLOSET_24, STARTER_CASEWORK_TYPES,
+                                         TALL_PANTRY_12, TALL_PANTRY_18, WALL_18, WALL_24,
+                                         WALL_30)
 from library.placeables.fixtures import (KITCHEN_SINK, LAVATORY, SHOWER,
                                          STARTER_FIXTURE_TYPES, TOILET, TUB, VANITY)
 from library.placeables.furniture import (ARMCHAIR, BOOKCASE, CHEST, COFFEE_TABLE,
@@ -22,13 +27,18 @@ from library.placeables.furniture import (ARMCHAIR, BOOKCASE, CHEST, COFFEE_TABL
 
 __all__ = [
     "STARTER_FURNITURE_TYPES", "STARTER_APPLIANCE_TYPES", "STARTER_FIXTURE_TYPES",
+    "STARTER_CASEWORK_TYPES",
     # furniture
     "STANDARD_SOFA", "LOVESEAT", "SECTIONAL", "ARMCHAIR", "COFFEE_TABLE", "END_TABLE",
     "MEDIA_CONSOLE", "TV_65", "TV_98", "QUEEN_BED", "KING_BED", "FULL_BED", "TWIN_BED",
     "DRESSER", "CHEST", "NIGHTSTAND", "SIX_SEAT_DINING_TABLE", "ROUND_DINING_TABLE",
     "DINING_CHAIR", "WRITING_DESK", "OFFICE_CHAIR", "BOOKCASE",
+    # casework
+    "BASE_15", "BASE_24", "BASE_30", "BASE_36", "WALL_18", "WALL_24", "WALL_30",
+    "TALL_PANTRY_12", "TALL_PANTRY_18", "PANTRY_CLOSET_24", "ISLAND_60", "BAR_STOOL",
     # appliances
     "REFRIGERATOR", "GAS_RANGE", "ELECTRIC_RANGE", "DISHWASHER", "DRYER", "MICROWAVE_OTR",
+    "FREEZER_UPRIGHT", "HOOD_RECIRC",
     # plumbing fixtures
     "TOILET", "LAVATORY", "VANITY", "TUB", "SHOWER", "KITCHEN_SINK",
 ]

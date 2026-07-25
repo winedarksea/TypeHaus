@@ -57,5 +57,24 @@ MICROWAVE_OTR = ApplianceType(
     ports=(ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),),
 )
 
+# A second cold box beside the refrigerator, for a household that buys and freezes in bulk.
+# Same 3' door zone as the fridge: an upright freezer's door is the full face of the cabinet.
+FREEZER_UPRIGHT = ApplianceType(
+    tag="APPL-FREEZER-UPRIGHT", name="Upright freezer", footprint=(ft(3), ft(2, 10)),
+    height=ft(6), plan_symbol="refrigerator", source=REFERENCE,
+    needs=frozenset({Service.POWER_120}),
+    ports=(ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(2))),),
+    clearances=(front_zone(ft(3), ft(2, 10), ft(3), "freezer door swing"),),
+)
+# Recirculating by design, not by omission: a fully electric house with an induction cooktop
+# has no combustion products to exhaust, and a ducted hood would punch the airtight envelope
+# for a load the ERV already carries. Hence no duct service — only its circuit is declared.
+HOOD_RECIRC = ApplianceType(
+    tag="APPL-HOOD-RECIRC", name="Recirculating canopy hood", footprint=(inch(30), inch(20)),
+    height=inch(18), plan_symbol="hood", source=REFERENCE,
+    needs=frozenset({Service.POWER_120}),
+    ports=(ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),),
+)
+
 STARTER_APPLIANCE_TYPES = (REFRIGERATOR, GAS_RANGE, ELECTRIC_RANGE, DISHWASHER, DRYER,
-                           MICROWAVE_OTR)
+                           MICROWAVE_OTR, FREEZER_UPRIGHT, HOOD_RECIRC)

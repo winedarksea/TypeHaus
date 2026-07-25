@@ -48,7 +48,7 @@ work.
   which bears on the porch decking rather than on grouted masonry.
 - **`RM-M-BATH1` is too small.** Clear face is 3'-2" × 4'-3¼". A 2'-6" WC plus a 1'-9" lav is
   4'-3" of that 4'-3¼". The fixtures now pack wall-to-wall with ~⅛" at each end and nothing
-  between them. The design fix is a bigger bath or no lav.
+  between them. The design fix is a bigger bath or no lav. ANSWER: wall hung toilet and small sink.
 - **`D-G-OVERHEAD` needs an engineered header.** The 16' garage door exceeds the prescriptive
   table. A genuine engineering input, not a modelling gap. ANSWER: Double-Ply 14" LVL
 - **`advisory.window_size_variety`** — 10 unique window sizes. Fewer eases ordering; whether
@@ -206,6 +206,23 @@ below are construction-rule authoring — they need your intent:
 - **Winders keep the `tapered tread` 1.5" band.** A trapezoid is not expressible as axis +
   band width in this IR, and a going-wide band would make the fan self-overlap.
 
+## Breezeway to Garage Design
+Designed around 4x8 polycarbonate panels for a 4' long breezeway that is 8' tall.
+Framing is 6x6 posts. Lumber is ground contact rated KDAT at the bottom (rafters don't need to be ground contact) A beam runs between the posts near the house. Composite decking (same as added to porch below) then runs in the door to door direction between the beams (breather tape between beam and decking).
+Top of posts runs the cross beams, KBS1Z holding these down (can be used as braces, not just knee braces). Joists are likely "flat" wide side on beam here. Roof joists run side to side (opposite rotation of floor which runs house to garage orientation).
+Polycarbonate 'roof' has two wedges in the middle (facing to each side) on top of every rafter to slope for water drainage.
+Polycarbonate has an extra UV window film, perhaps SOLYX BSF-DB35 Solar Bird Safety Film
+This breezeway is "snug" to the cladding of the garage and house but does not integrate into the flashing directly (the door's standard top u bar trim directs water away already that is coming down the siding)
+Slope Toward Garage 1" lower on garage side.
+Stainless steel fasteners with gaskets to hold down the polycarbonate
+Channels for Polycarbonate
+  U-channels at bottom, need weep holes
+    One-sided h channels (lower case h) would provide a drip edge at bottom if on edge overhang of concrete
+  Aluminum Glazing Bars (concealed fastener) or H-channels for side by side panels
+    Looks like an f-channel or some such can be used to make a glazing bar into an end cap
+  Corner caps are trickier. Sometimes called corner caps, there are also some r-channels and some h-channels designed to bend (with a single middle wall, but most not) but given these are hard to find an f-channel looks like a more common solution for the roof to wall connection
+Likely we should have one detail view that captures the full cross section of this breezeway
+
 ## Current Orientation
 
 +X: east, +Y: north, +Z: vertical/up. Will need to support rotating the house off axis in the
@@ -218,7 +235,6 @@ future.
 - `ui/src/state/store.ts` — **680**
 - `packages/engine/src/typehaus/resolve/stairs.py` — **736** (a clean three-way split —
   straight / u-split-landing / winder — exists but is a large diff)
-- `houses/catlin/plan/assemblies.py` — **523**
 
 (`emit/gltf/emitter.py` is done: 1425 → 182 across 10 modules, GLB byte-identical.
 `detail_components.py` and `takeoff.py` are likewise now packages.)
@@ -240,24 +256,25 @@ future.
 - House roof really won't have fascia like RAKE-HI-1-FASCIA-1 nor RAKE-HI-1-EDGE-CLADDING. In reality, the furring strips of the siding will continue up to meet the furring strips of the roof very nearly, and it will be full continous standing seam siding and roofing (with a trim piece over the corner). It may be hard to show this, but in the real world standing seam panels will be pretty much constant from grade level, up to roof level, and across the house and down the other side.
 - Switch all exterior walls to 2x6s, and remove the 2x4 exterior wall type (for simplicity). Note main floor is LSL, others are standard dimensional 2x6 (this can be a note, rather than a different assembly). This will require careful updates to make sure assembly details still match.
 - At the corners where exterior wall meets exterior wall, use a 4 stud corner instead for framing (since we use outsulation, the extra strength here is worth it). That should just be the main four corners.
-- Build out the kitchen with appliances and counters, make sure pantry is present (may need design layout help here)
+- ~~Build out the kitchen with appliances and counters, make sure pantry is present~~ DONE.
+  The engine gained a casework vocabulary (`base-cabinet` / `wall-cabinet` / `tall-cabinet`,
+  the first call sites for `counter_case()`, plus a `hood` glyph), `library/placeables/
+  casework.py` carries the 3"-module cabinet catalog, and the NE corner of `RM-M-LIVING` is
+  now a real kitchen: pantry-closet + tall pull-outs + fridge + upright freezer on the centre
+  bearing wall, induction range with a recirculating hood and a 14" awning beside it on the
+  north wall, sink under `WIN-M-KITCH` with dishwasher on the east wall, and a 5' island with
+  three stools. Full MEP: `SP-M-KITCH` (0.00" alignment), `PR-B-KITCH-DRAIN` (0.257"/ft),
+  `PR-M-KITCH-VENT` in the y=24'-8" joist bay, GFCI/240V/kettle outlets. Countertops are
+  *not* separate elements — the `base-cabinet` symbol draws its own slab.
+  Two things the layout is honest about rather than hiding:
+  - **Work triangle is ~30' of perimeter** (ideal is 13'–26'), dominated by the 14.8'
+    sink→fridge leg. That is inherent to the architect's fridge-west / sink-east program on a
+    17'-wide face; the island is the mid-landing. Moving the fridge to the east run's south
+    end is the lever if you want it tighter.
+  - **Island↔range aisle is 36"** — the NKBA one-cook minimum, 42" being the recommendation.
+    It is 42" to the cabinet fronts either side of the range; the range's 30" body is what
+    eats the extra 6". A 48"-wide island or a 3" nudge south buys the 42".
 
-- Align details and floorplans better
-  - **Basement is done** against `catlin_floorplan/Colin House_Basement_Level 1.png`. Every
-    clear dimension now matches the reference to within ¾" except the sauna's depth, and the
-    stair shaft is enclosed the way the reference draws it (`W-B-STR` runs the full north-row
-    depth, `RM-B-STAIR` claims the shaft, `D-B-STAIR` lets out into the workshop instead of
-    through the mechanical room). Measured, reference → model:
-    furnace 8'6" → **8'6"**; stair shaft 7'0" → **7'0"**; both playrooms 16'6" → **16'6"**;
-    workshop west leg 7'6" → **7'6³⁄₁₆"**; sauna 8'0" → **8'0¹¹⁄₁₆"**.
-  - **Sauna depth is the one deliberate shortfall**: reference 13'2½", model **12'6³⁄₁₆"**.
-    Its north wall is held back so the aisle it leaves against the center wall stays
-    **3'4³⁄₁₆"** — the `D-B-GYM` doorway lives in that aisle, and the reference gets its extra
-    8" only because its walls are drawn 10" where these are 12" concrete + a 7⅝" liner stack.
-    Going deeper means either giving up the workshop→gym door or accepting an aisle under 3'.
-  - **Room areas on the plan sheets are gross, not net.** `Room.clear_face` is built on the
-    wall *alignment* lines, so `RM-B-STAIR` reads 144 SF where its clear face is 115.5 SF
-    (the reference says 115.67). The layout matches; the labels are measuring a different
-    thing, and the name `clear_face` claims otherwise. Worth reconciling before the areas go
-    on a permit sheet.
-  - Main/second/attic have not been compared against their reference pages yet.
+## Deferred for now
+- Solar Panels
+- Electrical circuits

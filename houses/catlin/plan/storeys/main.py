@@ -272,6 +272,12 @@ OPENINGS = [
     Window(uid="CMX314AAAA", tag="WIN-M-KITCH-N", host="W-M-N1",
            type_ref="WT-3060", position=from_node("N-M-NE", ft(4, 1)),
            sill_height=ft(3, 6)),
+    # The cooking window. A recirculating hood moves no air outdoors, so the only way to
+    # clear a scorched pan is to open something next to the stove: a 14" awning, immediately
+    # west of the range and reachable across the counter. Centre x = 24'-8" is a bay centre on
+    # the 16" module, so it breaks no stud; sill 42" clears the 36" counter by 6".
+    Window(uid="82WVR597PA", tag="WIN-M-KITCH-N2", host="W-M-N1", type_ref="WT-1448",
+           position=from_node("N-M-NE", ft(10, 9)), sill_height=ft(3, 6)),
 ]
 
 ROOMS = [

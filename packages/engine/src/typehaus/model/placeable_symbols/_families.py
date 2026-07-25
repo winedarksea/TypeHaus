@@ -406,7 +406,11 @@ def counter_case(*, top_color: str = "counter", body: str = "wood",
     def build(width: float, depth: float, height: float) -> Geometry:
         top_t = min(TOP_THICKNESS_M, height * 0.08)
         kick = min(0.09, height * 0.12) if toe_kick else 0.0
-        strokes = [rect(0, 0, width, depth, fill=top_color)]
+        # The front-edge line is what makes a run of identical counter rectangles readable:
+        # it declares which side opens into the room, exactly as ``vanity()`` draws it.
+        front = -depth / 2 + min(0.02, depth * 0.2)
+        strokes = [rect(0, 0, width, depth, fill=top_color),
+                   line((-width / 2, front), (width / 2, front), weight=DETAIL_WEIGHT)]
         parts = [box(0, 0, height - top_t, height, width, depth, top_color),
                  box(0, 0.01, kick, height - top_t, width, depth - 0.02, body)]
         if toe_kick:

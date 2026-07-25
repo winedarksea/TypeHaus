@@ -50,6 +50,31 @@ def cooktop(*, burners: int = 4, oven: bool = True) -> Builder:
     return build
 
 
+def canopy_hood() -> Builder:
+    """A range hood, drawn as it is seen in plan — from below.
+
+    The reader is looking up at the underside, so the glyph is the canopy outline, the grease
+    filter panel inside it, and the blower. Massing is the canopy box plus the chimney that
+    carries it to the wall; a recirculating hood has no duct, so nothing leaves that chimney.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        fan_r = min(width, depth) * 0.18
+        strokes = [rect(0, 0, width, depth, fill="appliance-steel"),
+                   rect(0, 0, width * 0.5, depth * 0.5, weight=DETAIL_WEIGHT),
+                   circle(0, 0, fan_r, weight=DETAIL_WEIGHT)]
+        canopy_h = height * 0.45
+        filter_t = min(0.02, canopy_h * 0.3)
+        parts = [box(0, 0, filter_t, canopy_h, width, depth, "appliance-steel"),
+                 box(0, 0, 0.0, filter_t, width * 0.5, depth * 0.5, "metal"),
+                 # Chimney flush to the object's back (+y), where the wall is.
+                 box(0, depth * 0.3, canopy_h, height, width * 0.4, depth * 0.4,
+                     "appliance-steel")]
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def tank(*, insulated: bool = True) -> Builder:
     """A water heater: a round tank in plan, massed as a box (massing here stays boxy)."""
 
@@ -121,6 +146,7 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "washer": appliance_case(doors=1, porthole=True, controls=True),
     "dryer": appliance_case(doors=1, porthole=True, controls=True),
     "microwave": appliance_case(doors=1, body="appliance-steel"),
+    "hood": canopy_hood(),
     "furnace": air_handler(),
     "water-heater": tank(),
     "panel": panel_board(),

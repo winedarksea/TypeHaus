@@ -7,10 +7,10 @@ needs no entry here at all: the same symbol renders at whatever W×D×H the type
 
 from __future__ import annotations
 
-from typehaus.model.placeable_symbols._families import (Builder, bed, case, pedestal_seat,
-                                                        round_slab, screen, seating,
-                                                        sectional, sectional_points, shelving,
-                                                        slab)
+from typehaus.model.placeable_symbols._families import (Builder, bed, case, counter_case,
+                                                        pedestal_seat, round_slab, screen,
+                                                        seating, sectional, sectional_points,
+                                                        shelving, slab)
 
 __all__ = ["FURNITURE_SYMBOLS", "sectional_points"]
 
@@ -38,4 +38,11 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "bookcase": shelving(shelves=5),
     "bed": bed(pillows=2, headboard=True),
     "tv": screen(stand=True),
+    # Fitted casework. A base cabinet is a carcass under a counter slab, so it is the one
+    # family that draws its top rather than its doors; wall and tall units are cases whose
+    # cell grid says how the front divides — two doors side by side, or one full-height
+    # pull-out. The same three symbols cover every catalog width.
+    "base-cabinet": counter_case(),
+    "wall-cabinet": case(rows=1, cols=2, pulls=True),
+    "tall-cabinet": case(rows=1, cols=1, pulls=True),
 }

@@ -20,8 +20,8 @@ from library.assemblies import (
 )
 from library.hardware import STRUCTURAL_HARDWARE
 from library.materials import STARTER_MATERIALS
-from library.placeables import (STARTER_APPLIANCE_TYPES, STARTER_FIXTURE_TYPES,
-                                STARTER_FURNITURE_TYPES)
+from library.placeables import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES,
+                                STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES)
 
 __all__ = [
     "STARTER_MATERIALS",
@@ -37,6 +37,7 @@ __all__ = [
     "INT_2X4_DOUBLE_STUD_MINERAL_WOOL",
     "STARTER_FLOOR",
     "STARTER_FURNITURE_TYPES",
+    "STARTER_CASEWORK_TYPES",
     "STARTER_APPLIANCE_TYPES",
     "STARTER_FIXTURE_TYPES",
 ]

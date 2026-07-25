@@ -230,7 +230,7 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     walls = {wall.tag: wall for wall in catlin_resolved.walls}
     small = [o for o in catlin_resolved.openings
              if not o.is_door and o.width_m <= inch(14).meters + 1e-9]
-    assert len(small) == 4, [o.tag for o in small]
+    assert len(small) == 5, [o.tag for o in small]
     for opening in small:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)

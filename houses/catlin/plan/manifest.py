@@ -20,7 +20,8 @@ from pathlib import Path
 
 from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_basemap_geojson
 
-from library import STARTER_APPLIANCE_TYPES, STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES
+from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES,
+                     STARTER_FURNITURE_TYPES)
 
 from params import foundations, raised_garden, roof_trim, sunken_garden
 from plan import assemblies, fixture_types, fixtures, mep, placeables, site, transitions, views
@@ -39,7 +40,7 @@ _library = Library(
     window_types=tuple(main.WINDOW_TYPES),
     # House-local catalogs first, then the shared starter set; the tags are disjoint by
     # design (the shared plumbing fixtures use -STD/-24/-36 suffixes so nothing collides).
-    furniture_types=STARTER_FURNITURE_TYPES,
+    furniture_types=(*STARTER_FURNITURE_TYPES, *STARTER_CASEWORK_TYPES),
     fixture_types=(*fixture_types.FIXTURE_TYPES, *STARTER_FIXTURE_TYPES),
     appliance_types=(*fixture_types.APPLIANCE_TYPES, *STARTER_APPLIANCE_TYPES),
     register_types=mep.REGISTER_TYPES,
