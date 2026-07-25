@@ -359,7 +359,7 @@ def test_winder_newel_carries_every_winder_narrow_end(catlin_model, winder_stair
     assert len(winders) == count
     # Each narrow end lands on the newel's own face — between half a face and half a
     # diagonal out from its centreline, whichever face the winder's ray exits through.
-    half_face = cross_section("4x4").width_m / 2.0
+    half_face = cross_section(newel.profile).width_m / 2.0
     for winder in winders:
         reach = math.hypot(winder.p0[0] - newel.p0[0], winder.p0[1] - newel.p0[1])
         assert half_face - 1e-9 <= reach <= half_face * math.sqrt(2.0) + 1e-9, winder.child_key
