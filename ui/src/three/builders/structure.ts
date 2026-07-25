@@ -95,7 +95,7 @@ export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter
       flatShading: mode === "schematic",
     })));
   }
-  buildMembers(parent, floor.members, center, mode, floor.uid);
+  buildMembers(parent, floor.members, center, mode, palette, floor.uid);
   registerSelectable(parent, firstChildIndex, floor.uid, "floor", picks, byUid);
 }
 
@@ -168,13 +168,13 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
   }
   for (const [group, members] of skinByGroup) {
     const skinFirstIndex = parent.children.length;
-    buildMembers(parent, members, center, mode, roof.uid);
+    buildMembers(parent, members, center, mode, palette, roof.uid);
     tagLayerGroup(parent, skinFirstIndex, group);
   }
   registerSelectable(parent, firstChildIndex, roof.uid, "roof", picks, byUid);
   if (framingGroup && framing.length) {
     const framingFirstIndex = framingGroup.children.length;
-    buildMembers(framingGroup, framing, center, mode, roof.uid);
+    buildMembers(framingGroup, framing, center, mode, palette, roof.uid);
     registerSelectable(framingGroup, framingFirstIndex, roof.uid, "roof", picks, byUid);
   }
 }
@@ -182,16 +182,18 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
 // A stair is nothing but its generated members (stringers, treads, risers), so its whole
 // framing bucket is what a click has to land on.
 export function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter,
-  mode: "nordic" | "schematic", picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
   const firstChildIndex = parent.children.length;
-  buildMembers(parent, stair.members, center, mode, stair.uid);
+  buildMembers(parent, stair.members, center, mode, palette, stair.uid);
   registerSelectable(parent, firstChildIndex, stair.uid, "stair", picks, byUid);
 }
 
 // Same shape as a stair: a brace is only its diagonal, so the member bucket is the click target.
 export function buildBrace(parent: THREE.Group, brace: Brace, center: PlanCenter,
-  mode: "nordic" | "schematic", picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
   const firstChildIndex = parent.children.length;
-  buildMembers(parent, brace.members, center, mode, brace.uid);
+  buildMembers(parent, brace.members, center, mode, palette, brace.uid);
   registerSelectable(parent, firstChildIndex, brace.uid, "brace", picks, byUid);
 }

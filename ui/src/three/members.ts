@@ -16,7 +16,7 @@
 // member (→ three/memberPicking.ts) instead of to the wall/floor/roof that owns it.
 import * as THREE from "three";
 import type { Member } from "../model/types";
-import { materialColor } from "../nordic/palette";
+import { materialColor, type ResolvedNordicPalette } from "../nordic/palette";
 import { createStandingSeamMaterial, isStandingSeam, SEAM_TILE_SIZE_M } from "./materials";
 import {
   composeCenteredBoxMatrix, composeMemberBoxMatrix, isRakedMember, isVerticalMember,
@@ -90,13 +90,15 @@ export function categoryColor(category: string): number {
 }
 
 // A roof carries two kinds of member: sticks (rafters, truss chords/webs, gable studs,
-// outlookers, barge rafters) and skin (the wall->roof closure bands, derived fascia/soffit,
-// the roof-edge cladding). The sticks belong under the framing toggle with every other stick
-// in the building; the skin belongs with the roof shell it finishes. Mirrors
-// ROOF_SKIN_CATEGORIES in emit/gltf/emitter.py — keep the two in step.
+// outlookers, barge rafters, the fascia nailed to the rafter tails) and skin (the wall->roof
+// closure bands, the derived soffit, the roof-edge cladding). The sticks belong under the
+// framing toggle with every other stick in the building; the skin belongs with the roof shell
+// it finishes. Fascia is trim by category but framing by trade (a nailer on the rafter tails),
+// so it counts as framing here. Mirrors ROOF_SKIN_CATEGORIES in emit/gltf/members.py — keep
+// the two in step.
 const ROOF_SKIN_CATEGORIES = new Set([
   "sheathing", "membrane", "insulation", "furring", "cladding", "airgap", "air_gap",
-  "lining", "finish", "fascia", "soffit", "gutter",
+  "lining", "finish", "soffit", "gutter",
 ]);
 
 export function isRoofFramingMember(m: Member): boolean {
@@ -105,9 +107,11 @@ export function isRoofFramingMember(m: Member): boolean {
 
 // A member that names a material is envelope skin, not lumber: colour it the way the wall and
 // roof layer stacks colour that same material, or a standing-seam closure band reads as the
-// generic grey fallback rather than as the white metal it continues.
-export function memberColor(m: Member): THREE.ColorRepresentation {
-  return m.material ? materialColor(m.material) : categoryColor(m.category);
+// generic grey fallback rather than as the white metal it continues. The resolved palette is
+// required: without it materialColor falls back to CSS var() strings, which THREE.Color
+// cannot parse (it logs "unknown color" for every skin member on every rebuild).
+export function memberColor(m: Member, palette: ResolvedNordicPalette): THREE.ColorRepresentation {
+  return m.material ? materialColor(m.material, palette) : categoryColor(m.category);
 }
 
 // Standing-seam skin members get the real finish (procedural seam/oil-canning normal map),
@@ -188,7 +192,7 @@ function buildSeamMesh(group: THREE.Group, members: Member[], center: PlanCenter
 }
 
 function buildRectInstances(group: THREE.Group, members: Member[], center: PlanCenter,
-  mode: "nordic" | "schematic", ownerUid: string) {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string) {
   if (!members.length) return;
   const material = new THREE.MeshStandardMaterial({
     roughness: mode === "nordic" ? 0.85 : 1, flatShading: mode === "schematic",
@@ -196,7 +200,7 @@ function buildRectInstances(group: THREE.Group, members: Member[], center: PlanC
   const mesh = new THREE.InstancedMesh(UNIT_BOX, material, members.length);
   members.forEach((m, i) => {
     mesh.setMatrixAt(i, composeMemberBoxMatrix(_m, m, center));
-    mesh.setColorAt(i, _color.set(memberColor(m)));
+    mesh.setColorAt(i, _color.set(memberColor(m, palette)));
   });
   mesh.instanceMatrix.needsUpdate = true;
   if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
@@ -207,7 +211,7 @@ function buildRectInstances(group: THREE.Group, members: Member[], center: PlanC
 // Exact 8-vertex raked box: vertical ends, sloped top/bottom — mirrors
 // emit/gltf/emitter.py's add_member_box. One merged geometry (vertex colors) per trade.
 function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCenter,
-  mode: "nordic" | "schematic", ownerUid: string) {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string) {
   if (!members.length) return;
   const positions: number[] = [];
   const indices: number[] = [];
@@ -217,7 +221,7 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
     const verts = rakedBoxVertices(m, center);
     if (!verts) continue;
     const base = positions.length / 3;
-    const col = new THREE.Color(memberColor(m));
+    const col = new THREE.Color(memberColor(m, palette));
     for (const v of verts) {
       positions.push(v[0], v[1], v[2]);
       colors.push(col.r, col.g, col.b);
@@ -243,7 +247,7 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
 // The run axis includes its resolved rise, so roof I-joists follow the roof plane instead
 // of appearing flat in the model.
 function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
-  mode: "nordic" | "schematic", ownerUid: string) {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string) {
   if (!members.length) return;
   const mkMesh = () => new THREE.InstancedMesh(
     UNIT_BOX,
@@ -266,7 +270,7 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
     const flangeT = m.flange_thickness_m ?? depth * 0.1;
     const flangeW = m.flange_width_m ?? m.width_m;
     const webT = m.web_thickness_m ?? Math.min(flangeW, 0.01);
-    const color = memberColor(m);
+    const color = memberColor(m, palette);
     const webDepth = Math.max(depth - 2 * flangeT, MIN_EXTENT_M);
     const slopedLength = Math.hypot(runLen, rise);
     // p0/z0 is the joist soffit at the near end; the three plies share that run centre and
@@ -299,12 +303,12 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
  * the reason every bucket can hand a picked index back as a stable member uid.
  */
 export function buildMembers(group: THREE.Group, members: Member[], center: PlanCenter,
-  mode: "nordic" | "schematic", ownerUid: string) {
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string) {
   if (!members.length) return;
   const buckets = bucket(members);
-  buildRectInstances(group, buckets.rect, center, mode, ownerUid);
-  buildRakedMesh(group, buckets.raked, center, mode, ownerUid);
-  buildIJoists(group, buckets.ijoist, center, mode, ownerUid);
+  buildRectInstances(group, buckets.rect, center, mode, palette, ownerUid);
+  buildRakedMesh(group, buckets.raked, center, mode, palette, ownerUid);
+  buildIJoists(group, buckets.ijoist, center, mode, palette, ownerUid);
   buildSeamMesh(group, buckets.seam, center, mode, ownerUid);
 }
 
