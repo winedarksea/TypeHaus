@@ -65,4 +65,6 @@ export function runVisibilityTests() {
     "The plan has no roof surface or site sheet to hide");
   assert(TRADE_SURFACES.walls.plan && TRADE_SURFACES.framing.plan && TRADE_SURFACES.stairs.plan,
     "Walls, framing and stairs are drawn in the plan and must be hideable there");
+  assert(TRADE_SURFACES.concrete.plan,
+    "The plan draws slab outlines (Canvas2D slab pass), so the concrete toggle works there");
 }

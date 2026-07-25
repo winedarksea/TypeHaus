@@ -9,14 +9,16 @@ from typehaus.resolve.model import FramedMember
 
 
 # A roof carries two different kinds of member: sticks (rafters, truss chords and webs, gable
-# studs, outlookers, barge rafters — framing, and they belong under the framing toggle with
-# every other stick) and skin (the wall→roof closure bands, the derived fascia/soffit, the
-# roof-edge cladding — envelope, and they belong with the roof shell they finish). These are
-# the skin categories: layer functions plus the derived trim. Mirrored by
-# ``ROOF_SKIN_CATEGORIES`` in ui/src/three/members.ts — keep the two in step.
+# studs, outlookers, barge rafters, the fascia nailed to the rafter tails — framing, and they
+# belong under the framing toggle with every other stick) and skin (the wall→roof closure
+# bands, the derived soffit, the roof-edge cladding — envelope, and they belong with the roof
+# shell they finish). These are the skin categories: layer functions plus the derived trim.
+# Fascia is trim by category but framing by trade (its members carry trade="framing"), so it
+# counts as framing here. Mirrored by ``ROOF_SKIN_CATEGORIES`` in ui/src/three/members.ts —
+# keep the two in step.
 ROOF_SKIN_CATEGORIES = frozenset({
     "sheathing", "membrane", "insulation", "furring", "cladding", "airgap", "air_gap",
-    "lining", "finish", "fascia", "soffit", "gutter",
+    "lining", "finish", "soffit", "gutter",
 })
 
 

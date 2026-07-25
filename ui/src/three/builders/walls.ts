@@ -130,7 +130,7 @@ export function buildWall(
     tagLayerGroup(tradeGroups.walls, layerFirstChildIndex, layerGroup);
   }
   const framingFirstIndex = tradeGroups.framing.children.length;
-  buildWallSkinMembers(tradeGroups.framing, w.uid, w.members, center, mode);
+  buildWallSkinMembers(tradeGroups.framing, w.uid, w.members, center, mode, palette);
   // A wall's studs are pickable as themselves; the wall body remains pickable through its
   // layer meshes above, so both "this wall" and "this stud" stay one click away.
   registerMemberPicks(tradeGroups.framing, framingFirstIndex, picks);
@@ -143,10 +143,10 @@ export function buildWall(
 // happen before the merge, since a merged mesh has one visibility flag for all of it.
 function buildWallSkinMembers(
   parent: THREE.Group, wallUid: string, members: Member[], center: PlanCenter,
-  mode: "nordic" | "schematic",
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
 ) {
   const lumber = members.filter((member) => !member.material);
-  buildMembers(parent, lumber, center, mode, wallUid);
+  buildMembers(parent, lumber, center, mode, palette, wallUid);
   const skinByGroup = new Map<LayerVisibilityGroup, Member[]>();
   for (const member of members) {
     if (!member.material) continue;
@@ -155,7 +155,7 @@ function buildWallSkinMembers(
   }
   for (const [group, skin] of skinByGroup) {
     const firstChildIndex = parent.children.length;
-    buildMembers(parent, skin, center, mode, wallUid);
+    buildMembers(parent, skin, center, mode, palette, wallUid);
     tagLayerGroup(parent, firstChildIndex, group);
   }
 }

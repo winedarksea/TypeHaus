@@ -109,10 +109,10 @@ export function populateScene(options: PopulateSceneOptions) {
       registry.byUid, tradeGroups.framing);
   }
   for (const stair of model.stairs ?? []) {
-    buildStair(tradeGroups.stairs, stair, center, mode, registry.picks, registry.byUid);
+    buildStair(tradeGroups.stairs, stair, center, mode, palette, registry.picks, registry.byUid);
   }
   for (const brace of model.braces ?? []) {
-    buildBrace(tradeGroups.framing, brace, center, mode, registry.picks, registry.byUid);
+    buildBrace(tradeGroups.framing, brace, center, mode, palette, registry.picks, registry.byUid);
   }
 
   const types = new Map((model.catalog?.canvas_object_types ?? []).map((type) => [type.tag, type]));

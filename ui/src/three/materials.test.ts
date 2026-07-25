@@ -97,6 +97,7 @@ function member(category: string, material: string | null = null): Member {
 }
 
 export function runMemberColorTests() {
+  const palette = RESOLVED_NORDIC_PALETTE.light;
   // Roof sticks + truss vocabulary: lumber, not the neutral fallback.
   for (const category of [
     "rafter", "blocking", "outlooker", "barge_rafter",
@@ -105,7 +106,7 @@ export function runMemberColorTests() {
   ]) {
     assert(categoryColor(category) !== CATEGORY_FALLBACK,
       `${category} has its own colour rather than the grey fallback`);
-    assert(memberColor(member(category)) === categoryColor(category),
+    assert(memberColor(member(category), palette) === categoryColor(category),
       `${category} with no material colours by category`);
   }
 
@@ -134,5 +135,27 @@ export function runMemberColorTests() {
     ["membrane", "air-barrier"]] as const) {
     assert(materialColor(material, light) !== light.material.fallback,
       `${category} (${material}) no longer renders as the #cfc9bd fallback`);
+  }
+
+  // The palette path: memberColor always resolves against a ResolvedNordicPalette, so a skin
+  // member's colour is a concrete hex value that THREE.Color can parse. Before the palette was
+  // threaded through, memberColor called materialColor without one, and the CSS custom-property
+  // fallback ("var(--material-…)") reached THREE.Color, which logged an "unknown color" warning
+  // for every skin member on every scene rebuild.
+  for (const [materialRef, expected] of [
+    ["pvc-cellular", light.material.siding],
+    ["standing-seam", light.material.metal],
+    ["air-barrier", light.material.membrane],
+    ["no-such-material", light.material.fallback],
+  ] as const) {
+    const resolved = memberColor(member("cladding", materialRef), light);
+    assert(resolved === expected,
+      `A ${materialRef} skin member resolves through the palette to ${expected}`);
+    assert(typeof resolved === "string" && !resolved.includes("var("),
+      `memberColor(${materialRef}) never hands THREE.Color a CSS var() string`);
+  }
+  for (const [theme, themed] of Object.entries(RESOLVED_NORDIC_PALETTE)) {
+    assert(memberColor(member("cladding", "standing-seam"), themed) === themed.material.metal,
+      `The ${theme} palette's metal tone reaches a standing-seam member`);
   }
 }

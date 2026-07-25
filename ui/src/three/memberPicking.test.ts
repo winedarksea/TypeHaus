@@ -2,6 +2,7 @@ import * as THREE from "three";
 import type { Member, Model } from "../model/types";
 import { isMemberUid, locateMember, memberUid, parseMemberUid } from "../model/memberIdentity";
 import { buildMembers } from "./members";
+import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { TRIANGLES_PER_MEMBER_BOX } from "./memberBox";
 import { buildMemberHighlight, carriesMemberIdentity, resolveMemberPickUid } from "./memberPicking";
 
@@ -41,7 +42,7 @@ function checkInstancedBucketResolvesPerStud() {
   const group = new THREE.Group();
   const studs = [member({ key: "stud-000" }), member({ key: "stud-001", p0: [0.4, 0], p1: [0.4, 0] }),
     member({ key: "plate-bottom", category: "plate", p0: [0, 0], p1: [3, 0], z0_m: 0, z1_m: 0.038 })];
-  buildMembers(group, studs, CENTER, "schematic", "W1");
+  buildMembers(group, studs, CENTER, "schematic", RESOLVED_NORDIC_PALETTE.light, "W1");
   const bucket = group.children.find((child) => child instanceof THREE.InstancedMesh);
   assert(bucket instanceof THREE.InstancedMesh, "Prismatic members share one InstancedMesh");
   assert(carriesMemberIdentity(bucket), "The bucket declares that it owns per-member identity");
@@ -64,7 +65,7 @@ function checkMergedBucketResolvesPerBox() {
     member({ key: "rafter-001", category: "rafter", p0: [0, 0.6], p1: [4, 0.6], z0_m: 3, z1_m: 3.24,
       z0_end_m: 5, z1_end_m: 5.24, orient: null }),
   ];
-  buildMembers(group, rafters, CENTER, "schematic", "RF1");
+  buildMembers(group, rafters, CENTER, "schematic", RESOLVED_NORDIC_PALETTE.light, "RF1");
   const merged = group.children.find(
     (child) => child instanceof THREE.Mesh && carriesMemberIdentity(child)) as THREE.Mesh;
   assert(merged, "Raked members merge into one identity-carrying mesh");
@@ -90,7 +91,7 @@ function checkIJoistPliesShareOneIdentity() {
       z0_m: 2.4, z1_m: 2.7, flange_width_m: 0.06, flange_thickness_m: 0.03,
       web_thickness_m: 0.01, orient: null }),
   ];
-  buildMembers(group, joists, CENTER, "schematic", "FL1");
+  buildMembers(group, joists, CENTER, "schematic", RESOLVED_NORDIC_PALETTE.light, "FL1");
   const plies = group.children.filter((child) => child instanceof THREE.InstancedMesh);
   assert(plies.length === 3, "An i-joist bucket is three plies (top flange, bottom flange, web)");
   for (const ply of plies) {
@@ -107,7 +108,7 @@ function checkSkippedMemberDoesNotShiftIdentities() {
     z0_m: 3, z1_m: 3.24, z0_end_m: 5, z1_end_m: 5.24, orient: null });
   const good = member({ key: "rafter-good", category: "rafter", p0: [0, 0], p1: [4, 0],
     z0_m: 3, z1_m: 3.24, z0_end_m: 5, z1_end_m: 5.24, orient: null });
-  buildMembers(group, [degenerate, good], CENTER, "schematic", "RF1");
+  buildMembers(group, [degenerate, good], CENTER, "schematic", RESOLVED_NORDIC_PALETTE.light, "RF1");
   const merged = group.children.find(
     (child) => child instanceof THREE.Mesh && carriesMemberIdentity(child)) as THREE.Mesh;
   assert(merged, "The drawable rafter still produces a merged mesh");

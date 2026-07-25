@@ -348,7 +348,7 @@ export function runSelectionRegistrationTests() {
   const stairGroup = new THREE.Group();
   const stairs = registry();
   buildStair(stairGroup, { uid: "ST-1", members: [member("T-1"), member("T-2")] } as Stair,
-    [0, 0], "schematic", stairs.picks, stairs.byUid);
+    [0, 0], "schematic", PALETTE, stairs.picks, stairs.byUid);
   assert(stairs.picks.length > 0 && stairs.picks.every(carriesMemberIdentity),
     "buildStair's picks are all member buckets");
   assert(resolveMemberPickUid(stairs.picks[0], 0, null) === "ST-1::T-1",
