@@ -36,9 +36,9 @@ function boundsForObject(object: THREE.Object3D): THREE.Box3 {
 function member(overrides: Partial<Member>): Member {
   return {
     key: "test", category: "stud", profile: "2x4", p0: [12, 23], p1: [12, 23],
-    z0_m: 1, z1_m: 4, z0_end_m: null, z1_end_m: null, shape: "rect",
+    z0_m: 1, z1_m: 4, length_m: 3, z0_end_m: null, z1_end_m: null, shape: "rect",
     width_m: 0.1, depth_m: 0.2, flange_width_m: null, flange_thickness_m: null,
-    web_thickness_m: null, plies: 1, orient: [1, 0], connection: null, material: null,
+    web_thickness_m: null, plies: 1, orient: [1, 0], connection: null, material: null, trade: null,
     ...overrides,
   };
 }
@@ -110,7 +110,7 @@ export function runPlanGeometryTests() {
   buildMembers(framing, [member({}), member({
     category: "raked_plate", p0: [13, 27], p1: [18, 27], z0_m: 3,
     z1_m: 3.2, z0_end_m: 5, z1_end_m: 5.2, orient: null,
-  })], center, "schematic");
+  })], center, "schematic", "TESTOWNER");
   const framingBounds = boundsForObject(framing);
   closeTo(framingBounds.min.z, -7.1, "Framing uses the same centered north axis");
   closeTo(framingBounds.max.z, -2.9, "Framing remains aligned with schematic north");
@@ -143,7 +143,7 @@ function checkMemberVerticalExtents() {
   buildMembers(rim, [member({
     key: "rim", category: "rim", profile: "1.25x11.875 rim", p0: [13, 27], p1: [18, 27],
     z0_m: datum - bandDepth, z1_m: datum, width_m: bandWidth, depth_m: 0.038, orient: null,
-  })], center, "schematic");
+  })], center, "schematic", "TESTOWNER");
   const rimBounds = boundsForObject(rim);
   closeTo(rimBounds.min.y, datum - bandDepth, "Rim band hangs its full depth below the datum");
   closeTo(rimBounds.max.y, datum, "Rim band tops out flush at the datum, not half a depth low");
@@ -160,7 +160,7 @@ function checkMemberVerticalExtents() {
   buildMembers(partition, [member({
     key: "well-partition", category: "partition", profile: "2x4", p0: [13, 27], p1: [16, 27],
     z0_m: stairBase, z1_m: 0, width_m: 0.0381, depth_m: 0.0889, orient: null,
-  })], center, "schematic");
+  })], center, "schematic", "TESTOWNER");
   const partitionBounds = boundsForObject(partition);
   closeTo(partitionBounds.min.y, stairBase, "Stair well partition bears on the storey it springs from");
   closeTo(partitionBounds.max.y, 0, "Stair well partition rises to the arrival deck");
@@ -179,7 +179,7 @@ function checkMemberVerticalExtents() {
     p0: [13, 27], p1: [18, 27], z0_m: datum - bandDepth, z1_m: datum,
     width_m: 0.0635, depth_m: bandDepth, flange_width_m: 0.0635,
     flange_thickness_m: flangeThickness, web_thickness_m: 0.0095, orient: null,
-  })], center, "schematic");
+  })], center, "schematic", "TESTOWNER");
   const soffit = datum - bandDepth;
   const expectedPlies: [number, number, string][] = [
     [soffit, soffit + flangeThickness, "bottom flange"],
@@ -229,7 +229,7 @@ function checkMemberVerticalExtents() {
   // The seam band renders raked (its far end is 1 m higher) and carries UVs, without which
   // the shared seam normal map has no coordinate frame and the pans collapse.
   const seam = new THREE.Group();
-  buildMembers(seam, [seamBand], center, "schematic");
+  buildMembers(seam, [seamBand], center, "schematic", "TESTOWNER");
   const seamBounds = boundsForObject(seam);
   closeTo(seamBounds.min.y, 3, "Seam band starts on the roof plane at its low end");
   closeTo(seamBounds.max.y, 4.2, "Seam band climbs the rake with the roof plane");

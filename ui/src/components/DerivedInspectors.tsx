@@ -6,6 +6,8 @@
 // or rule that produced it, which `Provenance` points at.
 import type { FootingBedding, Floor, Model, Roof, Solid, Vec2 } from "../model/types";
 import { formatFtIn } from "../model/geometry";
+import type { LocatedMember } from "../model/memberIdentity";
+import { useStore } from "../state/store";
 import { Provenance } from "./Provenance";
 
 // NB: construction returns (ConstructionRule laps) used to arrive here as solids with a
@@ -90,6 +92,51 @@ export function RoofInspector({ model, roof }: { model: Model; roof: Roof }) {
     </div>
     <Provenance p={roof.provenance} />
     <DerivedNote source="its Roof element and bearing walls" />
+  </div>;
+}
+
+// The i-joist section the engine pre-resolved, or the plain nominal one. Never re-parses
+// `profile` — server/model_json.py already did that once for every consumer.
+function sectionSummary(located: LocatedMember): string {
+  const { member } = located;
+  if (member.shape === "i_joist" && member.flange_width_m != null) {
+    return `I-joist ${formatFtIn(member.flange_width_m)} flange × ${formatFtIn(member.z1_m - member.z0_m)}`;
+  }
+  const plies = member.plies > 1 ? ` (${member.plies} ply)` : "";
+  return `${formatFtIn(member.width_m)} × ${formatFtIn(member.depth_m)}${plies}`;
+}
+
+// One framing member, picked out of a shared instanced/merged draw call in 3D (→
+// three/memberPicking.ts). It is the most derived thing the UI can select: the resolver frames
+// it from the wall/roof/floor/stair's assembly, so there is nothing here to edit — the answer
+// to "make this stud different" is always the parent's assembly or spacing rule.
+export function MemberInspector({ located }: { located: LocatedMember }) {
+  const select = useStore((s) => s.select);
+  const { member, ownerKind, ownerTag, ownerUid } = located;
+  const raked = member.z0_end_m != null || member.z1_end_m != null;
+  return <div>
+    <h3>{member.category} · {member.key}</h3>
+    <div className="kv">
+      <span className="k">Category</span><span>{member.category}</span>
+      <span className="k">Profile</span><span>{member.profile}</span>
+      <span className="k">Section</span><span>{sectionSummary(located)}</span>
+      <span className="k">Length</span><span>{formatFtIn(member.length_m)}</span>
+      <span className="k">Elevation</span>
+      <span>{formatFtIn(member.z0_m)} → {formatFtIn(member.z1_m)}{raked ? " (raked)" : ""}</span>
+      <span className="k">Material</span><span>{member.material ?? "lumber"}</span>
+      {/* Only shown when the resolver actually overrode the category default — otherwise the
+          trade is whatever the category implies and repeating it here is noise. */}
+      {member.trade && <><span className="k">Trade</span><span>{member.trade}</span></>}
+      {member.connection && <><span className="k">Connection</span><span>{member.connection}</span></>}
+      <span className="k">Framed for</span><span>{ownerKind} {ownerTag}</span>
+      <span className="k">Storey</span><span>{located.storey ?? "—"}</span>
+    </div>
+    {/* A stair (and a roof's framing) is nothing but members, so a click in 3D can only land
+        on a stick. This is how you get back up to the thing that is actually editable. */}
+    <button className="btn" style={{ marginTop: 8 }} onClick={() => select(ownerKind, ownerUid)}>
+      Select the {ownerKind} ({ownerTag})
+    </button>
+    <DerivedNote source={`the ${ownerKind} ${ownerTag} it frames`} />
   </div>;
 }
 

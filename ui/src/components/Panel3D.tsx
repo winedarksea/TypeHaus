@@ -2,28 +2,27 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { ALL_SELECTION_KINDS, ALL_TRADES, useStore, type SelectionKind, type Trade } from "../state/store";
+import { useStore } from "../state/store";
+import { ALL_TRADES, type SelectionKind, type Trade } from "../state/vocabulary";
+import { ALL_LAYER_VISIBILITY_GROUPS, type LayerVisibilityGroup } from "../model/visibility";
+import type { Model } from "../model/types";
+import { RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
+import { disposeGroup } from "../three/members";
+import { locateMember } from "../model/memberIdentity";
+import { buildMemberHighlight, resolveMemberPickUid } from "../three/memberPicking";
 import {
-  ALL_LAYER_VISIBILITY_GROUPS,
-  layerVisibilityGroupOf,
-  type LayerVisibilityGroup,
-} from "../model/visibility";
-import type { CanvasObject, CanvasObjectType, Catalog, FootingBedding, MaterialSpec, Member, Model, ModelPart, Opening, Roof, Solid, Floor, Stair, Wall } from "../model/types";
-import { authoredAppearance, materialColor, RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
-import { buildMembers, disposeGroup, isRoofFramingMember } from "../three/members";
-import { createSolidMaterial } from "../three/solidMaterials";
-import { applyDeckBoardUv, applyMasonryWallUv, applyStandingSeamWallUv, createDeckBoardMaterial, createMasonryMaterial, createStandingSeamMaterial, isAluminumDeckBoard, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM } from "../three/materials";
-import { aboveStructureLayers, boundaryEdges, layerInsetRect, roofOffsetter, roofPlaneTriangles } from "../three/roofGeometry";
+  frameRadiusForBounds, MAX_DOLLY_RADIUS_M, MIN_DOLLY_RADIUS_M, normalizedWheelDeltaPx,
+  VIEW_FIT_POLAR_ANGLE, VIEW_PAN_STEP_FRACTION, WHEEL_DOLLY_SENSITIVITY, type PanDirection,
+} from "../three/cameraFraming";
 import {
-  createPlanPrismGeometry,
-  createProjectedSurfaceGeometry,
-  createRakedPlanPrismGeometry,
+  wholeHouseGlbAssignment, WHOLE_HOUSE_GLB_PRIMARY, type GlbNodeAssignment,
+} from "../three/wholeHouseGlb";
+import { isRenderedInScene } from "../three/build/registry";
+import { planCenterOf, populateScene, type SceneRegistry } from "../three/build/scene";
+import {
   geographicBearingToSceneDirection,
   geographicSoutheastSceneAzimuthRadians,
-  projectPlanRotationToSceneRadians,
-  projectPointToScene,
   type PlanCenter,
-  type ProjectVertex,
 } from "../three/planGeometry";
 import { useTheme } from "../theme/theme";
 
@@ -42,165 +41,6 @@ import { useTheme } from "../theme/theme";
 // the glb is discarded and the model.json baseline stands, unchanged. The Nordic passes (soft lighting
 // + edge linework) attach to the three.js scene, so they survive either route. Clicking a wall
 // cross-highlights the 2D plan and surfaces its file:line provenance.
-
-export const EARTH_PLANE_OPACITY = 0.28;
-export const EARTH_PLANE_THICKNESS_M = 0.01;
-export const EARTH_FALLBACK_HALF_SIZE_M = 50;
-// Arch tessellation for one continuous viewer mesh; no internal wall-piece seams are emitted.
-// The segment count is derived per arch from its radius (archSoffitSegmentCount) so that a
-// soffit facet never strays further than this from the true circle, whatever the arch's size.
-export const ARCH_SOFFIT_CHORD_TOLERANCE_M = 0.0005;
-export const ARCH_SOFFIT_MIN_SEGMENT_COUNT = 24;
-export const ARCH_SOFFIT_MAX_SEGMENT_COUNT = 192;
-// A vertex counts as being on the soffit circle within this distance of it. The samples are
-// computed from the circle, so the only slack needed is ExtrudeGeometry's float32 storage
-// (~3e-7 m at house coordinates); anything beyond was clipped away by the wall top.
-const ARCH_SOFFIT_RING_TOLERANCE_M = 1e-5;
-// ExtrudeGeometry gives its front/back caps normals along the sweep axis and its swept side
-// walls normals in the shape plane; only the latter can belong to an arch soffit.
-const ARCH_SOFFIT_SWEPT_FACE_MAX_AXIAL_NORMAL = 0.5;
-// Junction resolution splits a layer ring's straight edges at every crossing wall. A vertex
-// this far off the chord between its neighbours is a real corner; anything closer is padding.
-export const COLLINEAR_VERTEX_TOLERANCE_M = 1e-6;
-
-// Whether a fully-tagged whole-house glb may take over from the model.json baseline scene.
-// Held OFF until the glTF emitter reaches visual parity with the model.json render path: it
-// still (a) extrudes walls flat between z0..z1 rather than raking gable/ToRoof tops to the roof
-// slope, and (b) ships flat palette colors instead of the procedural standing-seam / CMU wall
-// finishes. Promoting it before then silently downgrades those envelope details, so the glb —
-// though now correctly per-object tagged (its identity metadata is still emitted and consumed
-// for anything that reads it) — stays a secondary artifact until the emitter closes those gaps.
-export const WHOLE_HOUSE_GLB_PRIMARY = false;
-
-type PanDirection = "left" | "right" | "up" | "down";
-
-// Default / reset framing (→ TODO: "the 'default zoom' for reset is poorly calculated").
-// The old fit dollied back far enough to contain the building's bounding *sphere*, which for a
-// house — long, wide, and comparatively low — is a ball roughly the plan diagonal across, so
-// the model landed small and the operator had to pan and dolly their way back in. These frame
-// the eight box corners against the real frustum instead, which is exact for any proportions.
-export const VIEW_FIT_MARGIN = 1.06; // breathing room around the tightest exact fit
-export const VIEW_FIT_MIN_RADIUS_M = 2;
-// Polar angle from +Y. ~0.34π puts the eye about 29° above the horizon: high enough to read
-// the roof planes and the storey stack, low enough that elevations stay legible.
-export const VIEW_FIT_POLAR_ANGLE = Math.PI * 0.34;
-// Arrow-key / on-screen pan step as a fraction of the current dolly distance, so one tap moves
-// the same *apparent* amount whether you are framing the whole house or one corner of it.
-export const VIEW_PAN_STEP_FRACTION = 0.22;
-// Wheel deltas are wildly inconsistent (a line-mode mouse notch vs. a pixel-mode trackpad
-// flick), so they are normalized to pixels and then clamped before they reach the dolly. This
-// is what stops one trackpad gesture from crossing the whole zoom range.
-export const WHEEL_LINE_HEIGHT_PX = 16;
-export const WHEEL_MAX_STEP_PX = 90;
-export const WHEEL_DOLLY_SENSITIVITY = 0.0016;
-export const MIN_DOLLY_RADIUS_M = 0.8;
-export const MAX_DOLLY_RADIUS_M = 400;
-
-/** Normalize one wheel event to a clamped pixel delta (see WHEEL_* constants). */
-export function normalizedWheelDeltaPx(deltaY: number, deltaMode: number): number {
-  const pixels = deltaMode === 1 ? deltaY * WHEEL_LINE_HEIGHT_PX : deltaY;
-  return Math.max(-WHEEL_MAX_STEP_PX, Math.min(WHEEL_MAX_STEP_PX, pixels));
-}
-
-/**
- * The dolly distance at which every corner of `box` sits inside the frustum, looking at
- * `target` from the orbit angles given. Exact rather than sphere-conservative: each corner is
- * projected onto the camera basis and required to fall within the horizontal and vertical
- * half-angles at its own depth.
- */
-export function frameRadiusForBounds(
-  box: THREE.Box3,
-  target: THREE.Vector3,
-  theta: number,
-  phi: number,
-  verticalFovRadians: number,
-  aspect: number,
-  margin: number = VIEW_FIT_MARGIN,
-): number {
-  const eyeDirection = new THREE.Vector3(
-    Math.sin(phi) * Math.cos(theta), Math.cos(phi), Math.sin(phi) * Math.sin(theta));
-  const forward = eyeDirection.clone().negate();
-  const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
-  const up = new THREE.Vector3().crossVectors(right, forward).normalize();
-  const tanVertical = Math.tan(verticalFovRadians / 2);
-  const tanHorizontal = tanVertical * Math.max(1e-3, aspect);
-  let radius = 0;
-  const offset = new THREE.Vector3();
-  for (const x of [box.min.x, box.max.x]) {
-    for (const y of [box.min.y, box.max.y]) {
-      for (const z of [box.min.z, box.max.z]) {
-        offset.set(x, y, z).sub(target);
-        const depth = offset.dot(forward); // positive = further from the eye than the target
-        radius = Math.max(radius,
-          Math.abs(offset.dot(right)) / tanHorizontal - depth,
-          Math.abs(offset.dot(up)) / tanVertical - depth);
-      }
-    }
-  }
-  return Math.max(VIEW_FIT_MIN_RADIUS_M, radius * margin);
-}
-
-// How a whole-house glb node maps back to an interactive element. A node earns an assignment
-// via glTF `extras` (GLTFLoader copies these onto object.userData) or, as a fallback, a
-// "<trade>|<kind>|<uid>" node name. `kind`/`uid` are optional: untagged envelope geometry only
-// needs a trade (to land in the right visibility group), while a selectable node also carries
-// its model uid so picking and highlight resolve to the same record model.json uses. The `kind`
-// vocabulary is the shared SelectionKind (→ state/store.ts, emit/gltf/emitter.py).
-export interface GlbNodeAssignment {
-  trade: Trade;
-  uid: string | null;
-  kind: SelectionKind | null;
-}
-
-export function wholeHouseGlbAssignment(
-  name: string | undefined,
-  userData: Record<string, unknown> | undefined,
-): GlbNodeAssignment | null {
-  const parts = (name ?? "").split("|");
-  const tradeRaw = typeof userData?.trade === "string" ? userData.trade : parts[0];
-  if (!tradeRaw || !(ALL_TRADES as readonly string[]).includes(tradeRaw)) return null;
-  const kindRaw = typeof userData?.kind === "string" ? userData.kind : parts[1];
-  const kind = (ALL_SELECTION_KINDS as readonly string[]).includes(kindRaw)
-    ? kindRaw as SelectionKind : null;
-  const uidRaw = typeof userData?.uid === "string" ? userData.uid : parts[2];
-  return { trade: tradeRaw as Trade, uid: uidRaw || null, kind };
-}
-
-// Make every mesh a builder just added to `parent` resolve to one model element: snapshot
-// parent.children.length before building, pass it here afterwards. Framing members are merged
-// into shared instanced/merged draw calls (→ three/members.ts) and carry no identity of their
-// own, so a click on a joist, a tread or a rafter deliberately selects the floor / stair / roof
-// that owns it. Nordic edge overlays are LineSegments, so they stay out of the raycast set.
-function registerSelectable(
-  parent: THREE.Object3D,
-  firstChildIndex: number,
-  uid: string,
-  kind: SelectionKind,
-  picks: THREE.Mesh[],
-  byUid: Map<string, THREE.Material[]>,
-) {
-  // Deduped: an opening's frame material is shared by half a dozen boxes, and the highlight
-  // pass would otherwise set the same emissive over and over.
-  const materials = new Set(byUid.get(uid) ?? []);
-  for (let index = firstChildIndex; index < parent.children.length; index++) {
-    const child = parent.children[index];
-    if (!(child instanceof THREE.Mesh)) continue;
-    child.userData.uid = uid;
-    child.userData.selectionKind = kind;
-    picks.push(child);
-    const material = child.material;
-    for (const one of Array.isArray(material) ? material : [material]) materials.add(one);
-  }
-  if (materials.size) byUid.set(uid, [...materials]);
-}
-
-/** Whether an object and every ancestor above it is visible — three's own render-time test. */
-export function isRenderedInScene(object: THREE.Object3D): boolean {
-  for (let node: THREE.Object3D | null = object; node; node = node.parent) {
-    if (!node.visible) return false;
-  }
-  return true;
-}
 
 export function Panel3D() {
   const model = useStore((s) => s.model);
@@ -319,16 +159,6 @@ interface SceneApi {
   dispose: () => void;
 }
 
-// Stamp every object a builder just added to `parent` with the assembly layer group it belongs
-// to, so per-layer visibility can flip it without rebuilding the scene. Snapshot
-// parent.children.length before building and pass it here afterwards — the same contract
-// registerSelectable uses.
-function tagLayerGroup(parent: THREE.Object3D, firstChildIndex: number, group: LayerVisibilityGroup) {
-  for (let index = firstChildIndex; index < parent.children.length; index++) {
-    parent.children[index].userData.layerGroup = group;
-  }
-}
-
 export function compassBearingScreenDirection(
   camera: THREE.Camera,
   target: THREE.Vector3,
@@ -370,10 +200,27 @@ function createScene(
   ) as Record<Trade, THREE.Group>;
   for (const trade of ALL_TRADES) content.add(tradeGroups[trade]);
 
-  let picks: THREE.Mesh[] = [];
+  // A picked framing member cannot be highlighted through the uid index: its material is shared with
+  // every other stick in the same draw call. It gets a throwaway outline in this group instead,
+  // which sits outside the trade groups so the view-fit bounds never see it.
+  const memberHighlightGroup = new THREE.Group();
+  content.add(memberHighlightGroup);
+  // Drop the current member outline, if any. Cheap and idempotent — called on every highlight
+  // change and on every scene clear.
+  const clearMemberHighlight = () => {
+    disposeGroup(memberHighlightGroup);
+    memberHighlightGroup.clear();
+  };
+
+  // The raycast set and the uid -> materials index, together: the async furniture loader
+  // in populateScene *replaces* the pick list, so it has to be reachable by reference.
+  const registry: SceneRegistry = { picks: [], byUid: new Map() };
   let sceneGeneration = 0;
-  const byUid = new Map<string, THREE.Material[]>();
   let highlighted: string | null = null;
+  // What `highlight` needs to rebuild a member outline: the model the scene was built from and
+  // the plan centre it was projected around.
+  let highlightSourceModel: Model | null = null;
+  let highlightPlanCenter: PlanCenter = [0, 0];
   let activePalette = RESOLVED_NORDIC_PALETTE.light;
   // Layer-group visibility lives on the meshes, which setModel rebuilds — unlike the trade
   // groups, which persist. Remembering the hidden set here is what lets a rebuild land with
@@ -527,12 +374,20 @@ function createScene(
         -((e.clientY - r.top) / r.height) * 2 + 1,
       );
       raycaster.setFromCamera(ndc, camera);
-      // Only pick what is actually on screen. `intersectObjects(picks, false)` tests the meshes
+      // Only pick what is actually on screen. `intersectObjects(..., false)` tests the meshes
       // directly, bypassing three's own visibility walk, so a hidden trade or a hidden assembly
       // layer would otherwise still intercept a click aimed at what it was hiding.
-      const hit = raycaster.intersectObjects(picks.filter(isRenderedInScene), false)[0];
-      const uid = hit?.object.userData.uid as string | undefined;
-      const kind = hit?.object.userData.selectionKind as SelectionKind | undefined;
+      const hit = raycaster.intersectObjects(registry.picks.filter(isRenderedInScene), false)[0];
+      if (!hit) return;
+      // A framing bucket resolves the hit's instanceId / faceIndex back to the one member it
+      // drew there; anything else carries its element identity on the mesh itself.
+      const memberPick = resolveMemberPickUid(hit.object, hit.instanceId, hit.faceIndex);
+      if (memberPick) {
+        onPick("member", memberPick);
+        return;
+      }
+      const uid = hit.object.userData.uid as string | undefined;
+      const kind = hit.object.userData.selectionKind as SelectionKind | undefined;
       if (uid && kind) onPick(kind, uid);
     }
   });
@@ -578,8 +433,9 @@ function createScene(
       disposeGroup(tradeGroups[trade]);
       tradeGroups[trade].clear();
     }
-    picks = [];
-    byUid.clear();
+    clearMemberHighlight();
+    registry.picks = [];
+    registry.byUid.clear();
     highlighted = null;
   };
 
@@ -652,87 +508,15 @@ function createScene(
     activePalette = palette;
     scene.background = new THREE.Color(palette.bg);
     trueNorthDegrees = m.site?.true_north_deg ?? 0;
-    // Center on the plan's structural bounds.
-    let cx = 0;
-    let cz = 0;
-    let n = 0;
-    for (const w of m.walls)
-      for (const p of w.axis) {
-        cx += p[0];
-        cz += p[1];
-        n++;
-      }
-    if (n) {
-      cx /= n;
-      cz /= n;
-    }
     if (!preserveView) target = new THREE.Vector3(0, 1.2, 0);
 
-    const center: PlanCenter = [cx, cz];
-    for (const w of m.walls) {
-      const wallOpenings = m.openings.filter((opening) => opening.host === w.tag);
-      buildWall(tradeGroups, w, wallOpenings, center, mode, palette, picks, byUid,
-        m.catalog?.materials);
-      for (const opening of wallOpenings) {
-        const isDoubleSwing = m.catalog?.door_types.find((dt) => dt.tag === opening.type_ref)?.operation === "double_swing";
-        buildOpening(tradeGroups.openings, opening, w, center, mode, palette, isDoubleSwing, picks, byUid);
-      }
-    }
-    // The site sheet is context, not an element: it has no uid in model.json, so it stays out
-    // of the raycast set and a click through it falls to whatever building geometry is behind.
-    buildEarth(tradeGroups.earth, m, center, mode);
-    for (const solid of m.solids ?? []) buildSolid(tradeGroups.concrete, solid, center, mode, palette, m.catalog, picks, byUid);
-    for (const bedding of m.footing_beddings ?? []) buildFootingBedding(tradeGroups.concrete, bedding, center, mode, picks, byUid);
-    for (const floor of m.floors ?? []) buildFloor(tradeGroups.floors, floor, center, mode, palette, picks, byUid);
-    for (const roof of m.roofs ?? []) buildRoof(tradeGroups.roof, roof, center, mode, palette, m.catalog, picks, byUid, tradeGroups.framing);
-    for (const stair of m.stairs ?? []) buildStair(tradeGroups.stairs, stair, center, mode, picks, byUid);
-    const types = new Map((m.catalog?.canvas_object_types ?? []).map((type) => [type.tag, type]));
-    for (const item of m.canvas_objects ?? []) {
-      // Hosted openings retain their dedicated cut/fill meshes above. The normalized
-      // record is for shared inspection and interchange, not a second 3D proxy.
-      if (item.domain === "opening") continue;
-      if (!item.position_m) continue;
-      const group = item.domain === "plumbing" ? tradeGroups.plumbing
-        : item.domain === "electrical" ? tradeGroups.electrical
-          : item.domain === "mechanical" ? tradeGroups.mechanical : tradeGroups.furniture;
-      const type = types.get(item.type ?? "");
-      const fallback = buildCanvasObject(group, item, type, center, mode, palette,
-        item.z_m ?? m.storeys.find((storey) => storey.tag === item.storey)?.elevation_m ?? 0, picks, byUid);
-      if (type?.model_glb && fallback) {
-        const generation = sceneGeneration;
-        new GLTFLoader().load(type.model_glb, (gltf) => {
-          if (generation !== sceneGeneration || !item.position_m) {
-            disposeGroup(gltf.scene);
-            return;
-          }
-          // The fallback may be a whole group of massing parts now, not one mesh, so drop
-          // every pick it owns and dispose it as a subtree.
-          group.remove(fallback);
-          const replaced = new Set<THREE.Object3D>();
-          fallback.traverse((node) => replaced.add(node));
-          disposeGroup(fallback);
-          picks = picks.filter((mesh) => !replaced.has(mesh));
-          const visual = gltf.scene;
-          visual.position.copy(projectPointToScene(item.position_m,
-            item.z_m ?? m.storeys.find((storey) => storey.tag === item.storey)?.elevation_m ?? 0, center));
-          visual.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
-          const materials: THREE.Material[] = [];
-          visual.traverse((node) => {
-            if (!(node instanceof THREE.Mesh)) return;
-            node.castShadow = true;
-            node.receiveShadow = true;
-            node.userData.uid = item.uid;
-            node.userData.selectionKind = "canvas_object";
-            picks.push(node);
-            const material = node.material;
-            materials.push(...(Array.isArray(material) ? material : [material]));
-          });
-          byUid.set(item.uid, materials);
-          group.add(visual);
-          requestRender();
-        });
-      }
-    }
+    const center = planCenterOf(m);
+    highlightSourceModel = m;
+    highlightPlanCenter = center;
+    populateScene({
+      tradeGroups, model: m, center, mode, palette, registry,
+      generation: sceneGeneration, currentGeneration: () => sceneGeneration, requestRender,
+    });
 
     // Frame the building bounds (earth excluded, or the site sheet dominates), including its
     // vertical origin. The old target only considered height, leaving models whose base was
@@ -808,8 +592,8 @@ function createScene(
       disposeGroup(tradeGroups[trade]);
       tradeGroups[trade].clear();
     }
-    picks = [];
-    byUid.clear();
+    registry.picks = [];
+    registry.byUid.clear();
     highlighted = null;
     root.updateMatrixWorld(true);
     for (const { mesh, assignment } of tagged) {
@@ -821,11 +605,11 @@ function createScene(
       mesh.receiveShadow = true;
       if (assignment.uid) {
         const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-        byUid.set(assignment.uid, [...(byUid.get(assignment.uid) ?? []), ...materials]);
+        registry.byUid.set(assignment.uid, [...(registry.byUid.get(assignment.uid) ?? []), ...materials]);
         if (assignment.kind) {
           mesh.userData.uid = assignment.uid;
           mesh.userData.selectionKind = assignment.kind;
-          picks.push(mesh);
+          registry.picks.push(mesh);
         }
       }
     }
@@ -840,13 +624,21 @@ function createScene(
   };
 
   const highlight = (uid: string | null) => {
-    if (highlighted && byUid.has(highlighted))
-      for (const mat of byUid.get(highlighted)!)
+    if (highlighted && registry.byUid.has(highlighted))
+      for (const mat of registry.byUid.get(highlighted)!)
         (mat as THREE.MeshStandardMaterial).emissive?.setHex(0x000000);
+    clearMemberHighlight();
     highlighted = uid;
-    if (uid && byUid.has(uid))
-      for (const mat of byUid.get(uid)!)
+    if (uid && registry.byUid.has(uid))
+      for (const mat of registry.byUid.get(uid)!)
         (mat as THREE.MeshStandardMaterial).emissive?.set(activePalette.highlight);
+    // A member uid names one stick inside a shared bucket; outline it rather than tinting the
+    // bucket's material, which would light every stud in the wall.
+    const located = uid && highlightSourceModel ? locateMember(highlightSourceModel, uid) : null;
+    if (located) {
+      const outline = buildMemberHighlight(located.member, highlightPlanCenter, activePalette.highlight);
+      if (outline) memberHighlightGroup.add(outline);
+    }
     requestRender();
   };
 
@@ -893,760 +685,3 @@ function createScene(
   };
 }
 
-export function earthOutline(model: Model, center: PlanCenter): [number, number][] {
-  const parcel = model.site?.parcel;
-  if (parcel && parcel.length >= 3) return parcel.map(([x, y]) => [x, y]);
-  const [cx, cz] = center;
-  const half = EARTH_FALLBACK_HALF_SIZE_M;
-  return [[cx - half, cz - half], [cx + half, cz - half],
-    [cx + half, cz + half], [cx - half, cz + half]];
-}
-
-export function earthElevation(model: Model): number {
-  return model.site?.grade_m ?? 0;
-}
-
-// Holes punched in the site sheet so the translucent earth stops where the ground was dug
-// away. The rings are resolved server-side (resolve/site_earth.py → `site.earth_voids`) from
-// every slab finishing at or below grade, unioned into disjoint outer boundaries — three for
-// Catlin: house, garage, sunken garden.
-//
-// This used to be derived here from `model.rooms` on the lowest storey, which is structurally
-// incapable of seeing more than one storey of one structure: a detached garage and an open-air
-// sunken garden share no storey, no room set and no wall loop with the house, so the sheet
-// kept cutting through them. Deriving it once engine-side also means the viewer, the IFC lot
-// slab, and any future earth emitter cut exactly the same rings.
-export function earthVoids(model: Model): [number, number][][] {
-  return (model.site?.earth_voids ?? [])
-    .filter((ring) => ring.length >= 3)
-    .map((ring) => ring.map(([x, y]) => [x, y] as [number, number]));
-}
-
-function buildEarth(parent: THREE.Group, model: Model, center: PlanCenter, mode: "nordic" | "schematic") {
-  const outline = earthOutline(model, center);
-  const grade = earthElevation(model);
-  const geometry = createPlanPrismGeometry(
-    outline, grade - EARTH_PLANE_THICKNESS_M, grade,
-    earthVoids(model), center,
-  );
-  if (!geometry) return;
-  const material = new THREE.MeshStandardMaterial({
-    color: 0x806040,
-    transparent: true,
-    opacity: EARTH_PLANE_OPACITY,
-    depthWrite: false,
-    side: THREE.DoubleSide,
-    roughness: mode === "nordic" ? 0.95 : 1,
-    flatShading: mode === "schematic",
-  });
-  parent.add(new THREE.Mesh(geometry, material));
-}
-
-function buildCanvasObject(
-  parent: THREE.Group,
-  item: CanvasObject,
-  type: CanvasObjectType | undefined,
-  center: PlanCenter,
-  mode: "nordic" | "schematic",
-  palette: ResolvedNordicPalette,
-  elevation: number,
-  picks: THREE.Mesh[],
-  byUid: Map<string, THREE.Material[]>,
-): THREE.Object3D | null {
-  if (!item.position_m) return null;
-  const [width, depth] = type?.footprint_m ?? [0.45, 0.45];
-  const height = type?.height_m ?? 0.25;
-  const parts = type?.model_parts ?? [];
-  if (parts.length) {
-    return buildCanvasObjectParts(parent, item, parts, center, mode, elevation, picks, byUid);
-  }
-  const color = item.domain === "electrical" ? 0xd69e2e
-    : item.domain === "plumbing" ? 0x4299e1 : item.domain === "mechanical" ? 0x718096 : palette.member.wood;
-  const material = new THREE.MeshStandardMaterial({ color, roughness: mode === "nordic" ? 0.82 : 1,
-    flatShading: mode === "schematic" });
-  // Keep a configured primitive visible while a potentially large GLB loads.
-  const mesh = new THREE.Mesh(canvasObjectFallbackGeometry(
-    item.model_primitive ?? type?.model_primitive, width, height, depth,
-  ), material);
-  mesh.position.copy(projectPointToScene(item.position_m, elevation + height / 2, center));
-  mesh.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
-  mesh.userData.uid = item.uid;
-  mesh.userData.selectionKind = "canvas_object";
-  parent.add(mesh);
-  picks.push(mesh);
-  byUid.set(item.uid, [material]);
-  return mesh;
-}
-
-/**
- * A generated multi-part massing: one BoxGeometry mesh per part, one material per distinct
- * colour, all under a single group. Every mesh carries the object's uid and lands in `picks`
- * and `byUid`, so clicking any part selects the whole object and highlights all of it — the
- * same contract the GLB-loaded branch honours.
- *
- * Parts arrive in the type's local frame (origin at the footprint centre, z=0 at the base);
- * the group carries the placement, exactly as the single-box fallback does.
- */
-export function buildCanvasObjectParts(
-  parent: THREE.Group,
-  item: CanvasObject,
-  parts: ModelPart[],
-  center: PlanCenter,
-  mode: "nordic" | "schematic",
-  elevation: number,
-  picks: THREE.Mesh[],
-  byUid: Map<string, THREE.Material[]>,
-): THREE.Object3D {
-  const group = new THREE.Group();
-  const materials = new Map<string, THREE.MeshStandardMaterial>();
-  for (const part of parts) {
-    let material = materials.get(part.color);
-    if (!material) {
-      material = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(part.color),
-        roughness: mode === "nordic" ? 0.82 : 1,
-        flatShading: mode === "schematic",
-      });
-      materials.set(part.color, material);
-    }
-    const [sx, sy, sz] = part.size;
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(sx, sz, sy), material);
-    // Scene axes are (plan x, height, -plan y); projectPointToScene owns that mapping for the
-    // object's origin, so a part only needs its own local offset expressed the same way.
-    const [cx, cy, cz] = part.center;
-    mesh.position.set(cx, cz, -cy);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    mesh.userData.uid = item.uid;
-    mesh.userData.selectionKind = "canvas_object";
-    group.add(mesh);
-    picks.push(mesh);
-  }
-  group.position.copy(projectPointToScene(item.position_m!, elevation, center));
-  group.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
-  parent.add(group);
-  byUid.set(item.uid, [...materials.values()]);
-  return group;
-}
-
-export function canvasObjectFallbackGeometry(
-  primitive: string | null | undefined,
-  width: number,
-  height: number,
-  depth: number,
-): THREE.BufferGeometry {
-  switch (primitive?.toLowerCase()) {
-    case "cylinder":
-      return new THREE.CylinderGeometry(Math.max(width, depth) / 2, Math.max(width, depth) / 2, height, 24);
-    case "sphere":
-      return new THREE.SphereGeometry(Math.max(width, height, depth) / 2, 24, 16);
-    default:
-      return new THREE.BoxGeometry(width, height, depth);
-  }
-}
-
-// A ToRoof wall's raked top elevation at a plan point, interpolated along the wall axis
-// (mirrors emit/draw/section.py::_wall_top_at_cut). Falls back to the flat z1_m top for
-// ordinary rectangular walls (top_z0_m/top_z1_m both null).
-function rakedTopAt(w: Wall, x: number, y: number): number {
-  if (w.top_z0_m == null && w.top_z1_m == null) return w.z1_m;
-  const start = w.top_z0_m ?? w.z1_m;
-  const end = w.top_z1_m ?? w.z1_m;
-  const [[x0, y0], [x1, y1]] = w.axis;
-  const dx = x1 - x0, dy = y1 - y0;
-  const len2 = dx * dx + dy * dy;
-  const t = len2 < 1e-9 ? 0 : Math.min(1, Math.max(0, ((x - x0) * dx + (y - y0) * dy) / len2));
-  return start + (end - start) * t;
-}
-
-// Extrude a layer polygon between z0 and a per-vertex raked top (rather than a flat height) —
-// a wall under a sloped roof (gable end, ToRoof) must stop at its actual rake, or its full
-// bounding-height rectangle engulfs the roof geometry and hides it from outside (#WP-roof-hide).
-// Build one wall: an extruded prism per layer polygon (→ "walls" trade) + its solid framing
-// members (→ "framing" trade, WP8). World plan (x,y) maps to three (x, z); height runs
-// along +Y. Centered on (cx,cz). Raked (ToRoof) walls extrude to their actual sloped top,
-// not the flat bounding height, so the roof they carry stays visible from outside.
-function buildWall(
-  tradeGroups: Record<Trade, THREE.Group>,
-  w: Wall,
-  openings: Opening[],
-  center: PlanCenter,
-  mode: "nordic" | "schematic",
-  palette: ResolvedNordicPalette,
-  picks: THREE.Mesh[],
-  byUid: Map<string, THREE.Material[]>,
-  materials?: MaterialSpec[],
-) {
-  const mats: THREE.Material[] = [];
-  for (const ly of w.layers) {
-    const layerGroup = layerVisibilityGroupOf(ly.function);
-    const layerFirstChildIndex = tradeGroups.walls.children.length;
-    if (ly.polygon.length < 3) continue;
-    // Cavity fill shares its host structure layer's polygon — extruding it would only
-    // z-fight with the studs it lives between.
-    if (ly.is_cavity) continue;
-    const seam = ly.function === "cladding" && isStandingSeam(ly.material);
-    // Masonry (brick/CMU/stone) gets coursing + recessed mortar, not a flat fill — a brick
-    // veneer or CMU wythe otherwise read like painted drywall. The style (module + mortar +
-    // jitter) comes from the material's authored `finish`, so CMU reads as 16"×8" grey block
-    // and white brick as whitewash over grey mortar; only a material that declares nothing
-    // falls back to guessing from its tag.
-    const appearance = authoredAppearance(ly.material, materials);
-    const masonryStyle = !seam && isMasonry(ly.material)
-      ? masonryStyleFor(ly.material, appearance?.finish) : null;
-    const mat = seam
-      ? createStandingSeamMaterial(mode, [
-        Math.hypot(w.axis[1][0] - w.axis[0][0], w.axis[1][1] - w.axis[0][1]),
-        Math.max(0.1, w.z1_m - w.z0_m),
-      ], 0xE8E8E2, true)
-      : masonryStyle
-        ? createMasonryMaterial(mode, masonryStyle,
-          materialColor(ly.material, palette, materials), appearance?.color)
-        : new THREE.MeshStandardMaterial({
-          color: new THREE.Color(materialColor(ly.material, palette, materials)),
-          roughness: mode === "nordic" ? 0.85 : 1,
-          metalness: 0,
-          flatShading: mode === "schematic",
-        });
-    mats.push(mat);
-    const smoothArchGeometry = createSmoothArchedWallLayerGeometry(w, ly.polygon, openings, center);
-    const geometries: (THREE.BufferGeometry | null)[] = smoothArchGeometry
-      ? [smoothArchGeometry]
-      : wallLayerPieces(w, ly.polygon, openings).map((piece) => piece.topIsRaked
-        ? createRakedPlanPrismGeometry(piece.polygon, piece.z0_m,
-          (point) => rakedTopAt(w, point[0], point[1]), center)
-        : createPlanPrismGeometry(piece.polygon, piece.z0_m, piece.z1_m, [], center));
-    for (const geo of geometries) {
-      if (!geo) continue;
-      if (seam) applyStandingSeamWallUv(geo, w.axis, center);
-      else if (masonryStyle) applyMasonryWallUv(geo, w.axis, center, masonryTileSizeM(masonryStyle));
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      mesh.userData.uid = w.uid;
-      mesh.userData.selectionKind = "wall";
-      mesh.userData.tag = w.tag;
-      tradeGroups.walls.add(mesh);
-      picks.push(mesh);
-
-      if (mode === "nordic") {
-        tradeGroups.walls.add(new THREE.LineSegments(
-          new THREE.EdgesGeometry(geo, 25),
-          new THREE.LineBasicMaterial({ color: palette.edge, transparent: true, opacity: 0.35 }),
-        ));
-      }
-    }
-    tagLayerGroup(tradeGroups.walls, layerFirstChildIndex, layerGroup);
-  }
-  buildWallSkinMembers(tradeGroups.framing, w.members, center, mode);
-  byUid.set(w.uid, mats);
-}
-
-// Wall members split two ways for visibility: plain lumber answers to the Framing trade, while
-// a member that names a material is a derived skin band (a gable closure, a trim run) and must
-// answer to the assembly-layer control that governs the layer it continues. Merged member
-// meshes carry no per-member identity, so the split has to happen before the merge.
-function buildWallSkinMembers(
-  parent: THREE.Group, members: Member[], center: PlanCenter, mode: "nordic" | "schematic",
-) {
-  const lumber = members.filter((member) => !member.material);
-  buildMembers(parent, lumber, center, mode);
-  const skinByGroup = new Map<LayerVisibilityGroup, Member[]>();
-  for (const member of members) {
-    if (!member.material) continue;
-    const group = layerVisibilityGroupOf(member.category);
-    skinByGroup.set(group, [...(skinByGroup.get(group) ?? []), member]);
-  }
-  for (const [group, skin] of skinByGroup) {
-    const firstChildIndex = parent.children.length;
-    buildMembers(parent, skin, center, mode);
-    tagLayerGroup(parent, firstChildIndex, group);
-  }
-}
-
-export interface WallLayerPiece {
-  polygon: [number, number][];
-  z0_m: number;
-  z1_m: number;
-  topIsRaked: boolean;
-}
-
-// Drop vertices that sit on the straight line between their neighbours. Junction resolution
-// splits a wall layer's long edges at every crossing wall, so an authored rectangle serializes
-// as five, six or eight points (the 16" sunken-garden arch wall arrives as six). Anything that
-// needs to *recognise* a rectangle has to reduce first. Mirrors `_without_collinear_vertices`
-// in packages/engine/src/typehaus/emit/gltf/emitter.py — keep the two in step.
-export function withoutCollinearVertices(
-  polygon: readonly (readonly [number, number])[],
-  toleranceM: number = COLLINEAR_VERTEX_TOLERANCE_M,
-): [number, number][] {
-  const ring: [number, number][] = [];
-  for (const [x, y] of polygon) {
-    const last = ring[ring.length - 1];
-    if (!last || Math.hypot(x - last[0], y - last[1]) > toleranceM) ring.push([x, y]);
-  }
-  while (ring.length > 1 && Math.hypot(ring[0][0] - ring[ring.length - 1][0],
-    ring[0][1] - ring[ring.length - 1][1]) <= toleranceM) ring.pop();
-  if (ring.length < 3) return ring;
-  const corners: [number, number][] = [];
-  for (let index = 0; index < ring.length; index++) {
-    const [px, py] = ring[(index - 1 + ring.length) % ring.length];
-    const [cx, cy] = ring[index];
-    const [nextX, nextY] = ring[(index + 1) % ring.length];
-    const spanX = nextX - px, spanY = nextY - py;
-    const span = Math.hypot(spanX, spanY);
-    // Perpendicular distance, in metres, of this vertex from the chord between its neighbours.
-    const offset = span < toleranceM
-      ? Math.hypot(cx - px, cy - py)
-      : Math.abs((cx - px) * spanY - (cy - py) * spanX) / span;
-    if (offset > toleranceM) corners.push([cx, cy]);
-  }
-  return corners;
-}
-
-// Segments for a half-circle soffit sampled at even angular steps. One step's mid-chord sagitta
-// is r·(1 − cos(π/2n)), so inverting it ties tessellation to the arch's actual size instead of a
-// flat guess: an 8'-wide garden arch and a small niche head come out equally smooth. Mirrors
-// `_arch_soffit_segment_count` in the glTF emitter.
-export function archSoffitSegmentCount(radiusM: number): number {
-  if (!(radiusM > ARCH_SOFFIT_CHORD_TOLERANCE_M)) return ARCH_SOFFIT_MIN_SEGMENT_COUNT;
-  const halfStep = Math.acos(Math.max(-1, 1 - ARCH_SOFFIT_CHORD_TOLERANCE_M / radiusM));
-  return Math.min(ARCH_SOFFIT_MAX_SEGMENT_COUNT,
-    Math.max(ARCH_SOFFIT_MIN_SEGMENT_COUNT, Math.ceil(Math.PI / (2 * halfStep))));
-}
-
-// One soffit sample as (offset from the arch centreline, height above the springline). The arc
-// is walked by *angle*: stepping evenly in x collapses near the springlines, where a semicircle
-// turns vertical, so the last step alone dropped ~40 cm on the catlin arches — the striping.
-// Mirrors `_arch_soffit_sample` in the glTF emitter.
-export function archSoffitSample(
-  segment: number, segmentCount: number, radiusM: number,
-): { offsetM: number; heightM: number } {
-  const angle = Math.PI * segment / segmentCount;
-  return { offsetM: -radiusM * Math.cos(angle), heightM: radiusM * Math.sin(angle) };
-}
-
-interface ArchSoffitCylinder { centerAlongM: number; springlineM: number; radiusM: number }
-
-// ExtrudeGeometry sweeps every hole edge as its own detached quad, so the soffit ships per-facet
-// normals and shades as N flat strips however finely it is tessellated. Overwrite just the swept
-// soffit ring with the analytic cylinder normal; jambs, wall ends and the front/back caps keep
-// their extruded normals, so the prism's corners stay crisp. Runs in ExtrudeGeometry's local
-// frame (shape in XY, sweep along Z), before the layer is placed into the scene.
-function applySmoothArchSoffitNormals(
-  geometry: THREE.BufferGeometry, soffits: readonly ArchSoffitCylinder[],
-): void {
-  if (soffits.length === 0) return;
-  const position = geometry.getAttribute("position");
-  const normal = geometry.getAttribute("normal");
-  if (!position || !normal) return;
-  for (let index = 0; index < position.count; index++) {
-    if (Math.abs(normal.getZ(index)) > ARCH_SOFFIT_SWEPT_FACE_MAX_AXIAL_NORMAL) continue;
-    const along = position.getX(index), elevation = position.getY(index);
-    for (const { centerAlongM, springlineM, radiusM } of soffits) {
-      const dx = along - centerAlongM, dy = elevation - springlineM;
-      const distance = Math.hypot(dx, dy);
-      if (dy < -ARCH_SOFFIT_RING_TOLERANCE_M ||
-        Math.abs(distance - radiusM) > ARCH_SOFFIT_RING_TOLERANCE_M) continue;
-      // Replace the facet's direction only — its outward sense stays whatever the sweep
-      // established, so the void keeps facing into the opening.
-      const sign = normal.getX(index) * dx + normal.getY(index) * dy < 0 ? -1 : 1;
-      normal.setXYZ(index, sign * dx / distance, sign * dy / distance, 0);
-      break;
-    }
-  }
-  normal.needsUpdate = true;
-}
-
-// A concrete arch should read as one continuous cast surface. Extruding a Shape with opening
-// holes gives the soffit a single smooth mesh; the strip fallback below is retained for raked
-// and junction-mitered wall layers whose non-rectangular plan footprint cannot be swept safely.
-export function createSmoothArchedWallLayerGeometry(
-  wall: Wall, polygon: readonly [number, number][], openings: Opening[], center: PlanCenter,
-): THREE.BufferGeometry | null {
-  if (!openings.some((opening) => (opening.arch_rise_m ?? 0) > 1e-9) ||
-      wall.top_z0_m != null || wall.top_z1_m != null) return null;
-  const [[sx, sy], [ex, ey]] = wall.axis;
-  const length = Math.hypot(ex - sx, ey - sy);
-  if (length < 1e-9) return null;
-  const ux = (ex - sx) / length, uy = (ey - sy) / length;
-  const nx = -uy, ny = ux;
-  // A padded ring is still a rectangle; only its *corners* decide whether it can be swept.
-  const footprint = withoutCollinearVertices(polygon);
-  if (footprint.length !== 4) return null;
-  const local = footprint.map(([x, y]) => [
-    (x - sx) * ux + (y - sy) * uy,
-    (x - sx) * nx + (y - sy) * ny,
-  ] as const);
-  const alongs = local.map(([along]) => along), acrosses = local.map(([, across]) => across);
-  const minAlong = Math.min(...alongs), maxAlong = Math.max(...alongs);
-  const minAcross = Math.min(...acrosses), maxAcross = Math.max(...acrosses);
-  const corners = new Set(local.map(([along, across]) => `${along.toFixed(8)},${across.toFixed(8)}`));
-  if (corners.size !== 4 || ![
-    [minAlong, minAcross], [minAlong, maxAcross], [maxAlong, minAcross], [maxAlong, maxAcross],
-  ].every(([along, across]) => corners.has(`${along.toFixed(8)},${across.toFixed(8)}`))) return null;
-
-  const shape = new THREE.Shape();
-  shape.moveTo(minAlong, wall.z0_m);
-  shape.lineTo(maxAlong, wall.z0_m);
-  shape.lineTo(maxAlong, wall.z1_m);
-  shape.lineTo(minAlong, wall.z1_m);
-  shape.closePath();
-  const soffits: ArchSoffitCylinder[] = [];
-  for (const opening of openings) {
-    const start = Math.max(minAlong, opening.center_along_m - opening.width_m / 2);
-    const end = Math.min(maxAlong, opening.center_along_m + opening.width_m / 2);
-    const bottom = Math.max(wall.z0_m, wall.z0_m + opening.sill_m);
-    if (end - start <= 1e-9 || bottom >= wall.z1_m - 1e-9) continue;
-    const hole = new THREE.Path();
-    const archRise = opening.arch_rise_m ?? 0;
-    if (archRise <= 1e-9) {
-      const top = Math.min(wall.z1_m, bottom + opening.height_m);
-      hole.moveTo(start, bottom); hole.lineTo(start, top); hole.lineTo(end, top); hole.lineTo(end, bottom);
-    } else {
-      const radiusM = opening.width_m / 2;
-      const springlineM = bottom + Math.max(0, opening.height_m - archRise);
-      const segmentCount = archSoffitSegmentCount(radiusM);
-      hole.moveTo(start, bottom);
-      hole.lineTo(start, Math.min(wall.z1_m, springlineM));
-      for (let segment = 0; segment <= segmentCount; segment++) {
-        const { offsetM, heightM } = archSoffitSample(segment, segmentCount, radiusM);
-        hole.lineTo(opening.center_along_m + offsetM, Math.min(wall.z1_m, springlineM + heightM));
-      }
-      hole.lineTo(end, bottom);
-      soffits.push({ centerAlongM: opening.center_along_m, springlineM, radiusM });
-    }
-    hole.closePath();
-    shape.holes.push(hole);
-  }
-  const geometry = new THREE.ExtrudeGeometry(shape, {
-    depth: maxAcross - minAcross, bevelEnabled: false, curveSegments: 1,
-  });
-  applySmoothArchSoffitNormals(geometry, soffits);
-  // Extrude from the maximum-across face toward the minimum-across face. This keeps
-  // the local-to-scene matrix right-handed while mapping project north to scene -Z.
-  geometry.applyMatrix4(new THREE.Matrix4().set(
-    ux, 0, -nx, sx + nx * maxAcross - center[0],
-    0, 1, 0, 0,
-    -uy, 0, ny, center[1] - sy - ny * maxAcross,
-    0, 0, 0, 1,
-  ));
-  return geometry;
-}
-
-// Split an arbitrary junction-solved layer polygon at opening jamb stations. Clipping the
-// actual ring (instead of rebuilding its local bounds) preserves mitered and butted ends.
-export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][], openings: Opening[]): WallLayerPiece[] {
-  const [[x0, y0], [x1, y1]] = wall.axis;
-  const length = Math.hypot(x1 - x0, y1 - y0);
-  if (length < 1e-9 || polygon.length < 3) return [];
-  const direction: [number, number] = [(x1 - x0) / length, (y1 - y0) / length];
-  const normal: [number, number] = [-direction[1], direction[0]];
-  const local = polygon.map(([x, y]) => {
-    const px = x - x0, py = y - y0;
-    return [px * direction[0] + py * direction[1], px * normal[0] + py * normal[1]] as const;
-  });
-  const minAlong = Math.min(...local.map(([along]) => along));
-  const maxAlong = Math.max(...local.map(([along]) => along));
-  const relevant = openings.map((opening) => ({
-    opening,
-    start: Math.max(minAlong, opening.center_along_m - opening.width_m / 2),
-    end: Math.min(maxAlong, opening.center_along_m + opening.width_m / 2),
-  })).filter(({ start, end }) => end - start > 1e-9);
-  const boundaries = Array.from(new Set([minAlong, maxAlong, ...relevant.flatMap(({ start, end }) => [start, end])]))
-    .sort((a, b) => a - b);
-  const point = (along: number, across: number): [number, number] => [
-    x0 + direction[0] * along + normal[0] * across,
-    y0 + direction[1] * along + normal[1] * across,
-  ];
-  const clip = (
-    ring: readonly (readonly [number, number])[],
-    boundary: number,
-    keepGreater: boolean,
-  ): [number, number][] => {
-    const output: [number, number][] = [];
-    const inside = ([along]: readonly [number, number]) =>
-      keepGreater ? along >= boundary - 1e-9 : along <= boundary + 1e-9;
-    for (let index = 0; index < ring.length; index++) {
-      const current = ring[index], next = ring[(index + 1) % ring.length];
-      const currentInside = inside(current), nextInside = inside(next);
-      if (currentInside) output.push([current[0], current[1]]);
-      if (currentInside !== nextInside) {
-        const denominator = next[0] - current[0];
-        if (Math.abs(denominator) > 1e-12) {
-          const fraction = (boundary - current[0]) / denominator;
-          output.push([boundary, current[1] + (next[1] - current[1]) * fraction]);
-        }
-      }
-    }
-    return output;
-  };
-  const ring = (start: number, end: number): [number, number][] =>
-    clip(clip(local, start, true), end, false).map(([along, across]) => point(along, across));
-  const raked = wall.top_z0_m != null || wall.top_z1_m != null;
-  const pieces: WallLayerPiece[] = [];
-  for (let index = 0; index < boundaries.length - 1; index++) {
-    const start = boundaries[index], end = boundaries[index + 1];
-    const active = relevant.find(({ start: openingStart, end: openingEnd }) =>
-      (start + end) / 2 >= openingStart && (start + end) / 2 <= openingEnd)?.opening;
-    const strip = ring(start, end);
-    if (strip.length < 3) continue;
-    if (!active) {
-      pieces.push({ polygon: strip, z0_m: wall.z0_m, z1_m: wall.z1_m, topIsRaked: raked });
-      continue;
-    }
-    const openingBottom = wall.z0_m + active.sill_m;
-    const openingTop = openingBottom + active.height_m;
-    if (openingBottom > wall.z0_m + 1e-9)
-      pieces.push({ polygon: strip, z0_m: wall.z0_m, z1_m: openingBottom, topIsRaked: false });
-    const archRise = active.arch_rise_m ?? 0;
-    if (archRise > 1e-9) {
-      const springline = openingBottom + Math.max(0, active.height_m - archRise);
-      const radius = active.width_m / 2;
-      // Angular steps here too: even-x strips leave a ~40 cm riser at each springline.
-      const segmentCount = archSoffitSegmentCount(radius);
-      for (let segment = 0; segment < segmentCount; segment++) {
-        const segmentStart = active.center_along_m + archSoffitSample(segment, segmentCount, radius).offsetM;
-        const segmentEnd = active.center_along_m + archSoffitSample(segment + 1, segmentCount, radius).offsetM;
-        const clippedStart = Math.max(start, segmentStart);
-        const clippedEnd = Math.min(end, segmentEnd);
-        if (clippedEnd - clippedStart <= 1e-9) continue;
-        const midpoint = (clippedStart + clippedEnd) / 2;
-        const offset = midpoint - active.center_along_m;
-        const curve = radius * radius - offset * offset;
-        const soffit = springline + Math.sqrt(Math.max(0, curve));
-        if (wall.z1_m > soffit + 1e-9)
-          pieces.push({ polygon: ring(clippedStart, clippedEnd), z0_m: soffit,
-            z1_m: wall.z1_m, topIsRaked: raked });
-      }
-      continue;
-    }
-    const minTop = Math.min(...strip.map(([x, y]) => rakedTopAt(wall, x, y)));
-    if (minTop > openingTop + 1e-9)
-      pieces.push({ polygon: strip, z0_m: openingTop, z1_m: wall.z1_m, topIsRaked: raked });
-  }
-  return pieces;
-}
-
-export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, isDoubleSwing: boolean,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
-  if (opening.kind === "rough_opening") return;
-  const firstChildIndex = parent.children.length;
-  const [[x0, y0], [x1, y1]] = wall.axis;
-  const length = Math.hypot(x1 - x0, y1 - y0);
-  if (length < 1e-9) return;
-  const direction: [number, number] = [(x1 - x0) / length, (y1 - y0) / length];
-  const position: [number, number] = [x0 + direction[0] * opening.center_along_m, y0 + direction[1] * opening.center_along_m];
-  const availableHeight = Math.max(0, Math.min(opening.height_m,
-    rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m - opening.width_m / 2), y0 + direction[1] * (opening.center_along_m - opening.width_m / 2)) - wall.z0_m - opening.sill_m,
-    rakedTopAt(wall, x0 + direction[0] * (opening.center_along_m + opening.width_m / 2), y0 + direction[1] * (opening.center_along_m + opening.width_m / 2)) - wall.z0_m - opening.sill_m));
-  if (availableHeight <= 1e-9) return;
-  const rotation = Math.atan2(direction[1], direction[0]);
-  const frameWidth = Math.min(0.075, opening.width_m / 4, availableHeight / 4);
-  const depth = 0.08;
-  const frameMaterial = new THREE.MeshStandardMaterial({ color: palette.member.wood, roughness: mode === "nordic" ? 0.85 : 1, flatShading: mode === "schematic" });
-  const addBox = (width: number, height: number, thickness: number, along: number, elevation: number, material: THREE.Material) => {
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, thickness), material);
-    mesh.position.copy(projectPointToScene([position[0] + direction[0] * along, position[1] + direction[1] * along], elevation, center));
-    mesh.rotation.y = rotation;
-    parent.add(mesh);
-  };
-  const midElevation = wall.z0_m + opening.sill_m + availableHeight / 2;
-  addBox(frameWidth, availableHeight, depth, -opening.width_m / 2 + frameWidth / 2, midElevation, frameMaterial);
-  addBox(frameWidth, availableHeight, depth, opening.width_m / 2 - frameWidth / 2, midElevation, frameMaterial);
-  addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial);
-  addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + frameWidth / 2, frameMaterial);
-  const panelHeight = Math.max(0.01, availableHeight - 2 * frameWidth);
-  if (opening.kind === "door" && isDoubleSwing) {
-    // Two leaves meeting at a center mullion, matching the 2D French-door symbol.
-    const mullionWidth = Math.min(frameWidth, (opening.width_m - 2 * frameWidth) / 6);
-    const leafWidth = Math.max(0.01, (opening.width_m - 2 * frameWidth - mullionWidth) / 2);
-    const panelElevation = wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2;
-    addBox(mullionWidth, availableHeight, depth, 0, midElevation, frameMaterial);
-    addBox(leafWidth, panelHeight, 0.045, -mullionWidth / 2 - leafWidth / 2, panelElevation, frameMaterial);
-    addBox(leafWidth, panelHeight, 0.045, mullionWidth / 2 + leafWidth / 2, panelElevation, frameMaterial);
-  } else if (opening.kind === "door") {
-    addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, 0.045, 0,
-      wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, frameMaterial);
-  } else {
-    const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x8fb7c9, transparent: true, opacity: 0.48,
-      roughness: 0.2, metalness: 0.05, flatShading: mode === "schematic", depthWrite: false });
-    addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, 0.015, 0,
-      wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, glassMaterial);
-  }
-  // Frame, leaf/mullion and glazing are one door or window: clicking any of them selects the
-  // opening record, which the Inspector already knows how to edit.
-  registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
-}
-
-// Every resolved prism that is not a wall, floor or roof: slabs, footings and pads, but also
-// 6x6 posts, beams, guard rails, dowels, thermal breaks, connectors, sump pits, vent risers,
-// fascia, gutters and flashings. Same outline-extrusion recipe as wall layers; the finish comes
-// from the solid's authored assembly when it has one, else its category (→ three/solidMaterials.ts).
-//
-// Plank decking is the one case the category palette cannot express: an aluminium deck slab
-// needs a UV-framed procedural board finish, not a flat colour, so it is resolved first.
-export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
-  if (solid.outline.length < 3) return;
-  const geo = createPlanPrismGeometry(solid.outline, solid.z0_m, Math.max(solid.z1_m, solid.z0_m + 0.01), solid.voids ?? [], center);
-  if (!geo) return;
-  const deckBoards = catalog?.assemblies.find((a) => a.tag === solid.assembly)?.layers
-    .some((layer) => isAluminumDeckBoard(layer.material));
-  if (deckBoards) applyDeckBoardUv(geo, center);
-  const firstChildIndex = parent.children.length;
-  const mesh = new THREE.Mesh(geo,
-    deckBoards ? createDeckBoardMaterial(mode) : createSolidMaterial(solid, catalog, mode, palette));
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  parent.add(mesh);
-  registerSelectable(parent, firstChildIndex, solid.uid, "solid", picks, byUid);
-}
-
-// Compacted washed-stone footing bed: a below-grade gravel prism under a strip footing.
-// Rendered granular (flat-shaded, high roughness) so it reads as aggregate, not concrete.
-export const FOOTING_BEDDING_COLOR = 0x8b8478;
-
-export function buildFootingBedding(parent: THREE.Group, bedding: FootingBedding, center: PlanCenter,
-  mode: "nordic" | "schematic", picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
-  if (bedding.outline.length < 3 || bedding.z1_m <= bedding.z0_m) return;
-  const geo = createPlanPrismGeometry(bedding.outline, bedding.z0_m, bedding.z1_m, [], center);
-  if (!geo) return;
-  const firstChildIndex = parent.children.length;
-  const mat = new THREE.MeshStandardMaterial({
-    color: FOOTING_BEDDING_COLOR,
-    roughness: 1,
-    metalness: 0,
-    flatShading: true, // faceted normals read as loose aggregate in both shading modes
-  });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  parent.add(mesh);
-  if (mode === "nordic") {
-    parent.add(new THREE.LineSegments(
-      new THREE.EdgesGeometry(geo, 20),
-      new THREE.LineBasicMaterial({ color: 0x5c574d, transparent: true, opacity: 0.4 }),
-    ));
-  }
-  registerSelectable(parent, firstChildIndex, bedding.uid, "footing_bedding", picks, byUid);
-}
-
-export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
-  const firstChildIndex = parent.children.length;
-  if (floor.subfloor && floor.members.length) {
-    const points = floor.members.flatMap((member) => [member.p0, member.p1]);
-    const minX = Math.min(...points.map((point) => point[0]));
-    const maxX = Math.max(...points.map((point) => point[0]));
-    const minY = Math.min(...points.map((point) => point[1]));
-    const maxY = Math.max(...points.map((point) => point[1]));
-    const z = Math.max(...floor.members.map((member) => member.z1_m));
-    const geometry = createPlanPrismGeometry(
-      [[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY]],
-      z,
-      z + floor.subfloor.thickness_m,
-      floor.openings,
-      center,
-    );
-    if (!geometry) return;
-    parent.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
-      color: new THREE.Color(materialColor(floor.subfloor.material, palette)), roughness: mode === "nordic" ? 0.85 : 1,
-      flatShading: mode === "schematic",
-    })));
-  }
-  buildMembers(parent, floor.members, center, mode);
-  registerSelectable(parent, firstChildIndex, floor.uid, "floor", picks, byUid);
-}
-
-// Sloped quads from footprint/eave_z/ridge_z/ridge_direction — mirrors
-// emit/gltf/emitter.py's _add_roof — thickened into the authored assembly, plus the
-// roof's own members (rafters, ridge beam).
-export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, catalog: Catalog | undefined,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, framingGroup?: THREE.Group) {
-  const firstChildIndex = parent.children.length;
-  const triangles = roofPlaneTriangles(roof);
-  const offsetAt = roofOffsetter(triangles);
-  const perimeter = boundaryEdges(triangles);
-  const assembly = catalog?.assemblies.find((a) => a.tag === roof.assembly);
-  // eave_z_m/ridge_z_m is the rafter *top* (deck plane), so the stack starts at zero and
-  // grows up. Engine-computed per-layer edge setbacks (golden eave detail clips) give
-  // each layer its own inset rectangle; layers without an entry keep the footprint.
-  const layers = aboveStructureLayers(assembly);
-  const setbacks = new Map((roof.layer_edge_setbacks ?? []).map((e) => [e.layer, e]));
-  const stack = layers.length ? layers
-    : [{ name: "roofing", function: "cladding", material: "standing-seam", thickness_m: 0.05 }];
-
-  let base = 0;
-  for (const layer of stack) {
-    const top = base + layer.thickness_m;
-    const entry = setbacks.get(layer.name);
-    let layerTriangles = triangles, layerOffsetAt = offsetAt, layerPerimeter = perimeter;
-    if (entry) {
-      layerTriangles = roofPlaneTriangles(roof, layerInsetRect(roof, entry, base));
-      layerOffsetAt = roofOffsetter(layerTriangles);
-      layerPerimeter = boundaryEdges(layerTriangles);
-    }
-    const faces: ProjectVertex[][] = [];
-    for (const tri of layerTriangles) {
-      faces.push([layerOffsetAt(tri[0], top), layerOffsetAt(tri[1], top), layerOffsetAt(tri[2], top)]);
-      faces.push([layerOffsetAt(tri[0], base), layerOffsetAt(tri[2], base), layerOffsetAt(tri[1], base)]);
-    }
-    // Close the eave and rake so the layer stack reads as real thickness from outside.
-    for (const [a, b] of layerPerimeter) {
-      faces.push([layerOffsetAt(a, base), layerOffsetAt(b, base), layerOffsetAt(b, top)]);
-      faces.push([layerOffsetAt(a, base), layerOffsetAt(b, top), layerOffsetAt(a, top)]);
-    }
-    const geo = createProjectedSurfaceGeometry(faces, center);
-    const seam = layer.function === "cladding" && isStandingSeam(layer.material);
-    const mat = seam
-      ? createStandingSeamMaterial(mode, [Math.sqrt(roof.surface_area_m2), Math.sqrt(roof.surface_area_m2)])
-      : new THREE.MeshStandardMaterial({
-        color: new THREE.Color(materialColor(layer.material, palette)),
-        roughness: mode === "nordic" ? 0.9 : 1,
-        flatShading: mode === "schematic",
-        side: THREE.DoubleSide,
-      });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    mesh.userData.layerGroup = layerVisibilityGroupOf(layer.function);
-    parent.add(mesh);
-    base = top;
-  }
-  // Skin (closure bands, fascia/soffit, the roof-edge cladding) finishes the shell and stays
-  // with it; the sticks go to the framing group so rafters, trusses and gable studs sit under
-  // the framing toggle with the rest of the building's framing. Both still select as the roof.
-  // The skin is merged per layer group so the assembly-layer toggles reach it too.
-  const skin = roof.members.filter((m) => !isRoofFramingMember(m));
-  const framing = roof.members.filter(isRoofFramingMember);
-  const skinByGroup = new Map<LayerVisibilityGroup, Member[]>();
-  for (const member of skin) {
-    const group = layerVisibilityGroupOf(member.category);
-    skinByGroup.set(group, [...(skinByGroup.get(group) ?? []), member]);
-  }
-  for (const [group, members] of skinByGroup) {
-    const skinFirstIndex = parent.children.length;
-    buildMembers(parent, members, center, mode);
-    tagLayerGroup(parent, skinFirstIndex, group);
-  }
-  registerSelectable(parent, firstChildIndex, roof.uid, "roof", picks, byUid);
-  if (framingGroup && framing.length) {
-    const framingFirstIndex = framingGroup.children.length;
-    buildMembers(framingGroup, framing, center, mode);
-    registerSelectable(framingGroup, framingFirstIndex, roof.uid, "roof", picks, byUid);
-  }
-}
-
-// A stair is nothing but its generated members (stringers, treads, risers), so its whole
-// framing bucket is what a click has to land on.
-export function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter,
-  mode: "nordic" | "schematic", picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
-  const firstChildIndex = parent.children.length;
-  buildMembers(parent, stair.members, center, mode);
-  registerSelectable(parent, firstChildIndex, stair.uid, "stair", picks, byUid);
-}

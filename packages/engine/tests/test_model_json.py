@@ -45,6 +45,39 @@ def test_every_member_carries_shape_width_depth(catlin_payload):
         assert member["depth_m"] > 0
 
 
+def test_member_key_is_unique_within_its_parent(catlin_payload):
+    """``<parent uid>/<member key>`` is the per-member identity the 3D panel picks with.
+
+    Per-stud selection resolves an InstancedMesh instanceId back to a member; the id it
+    stores must survive a rebuild, so it has to be the engine's own semantic child key
+    (``stud-007``, ``plate-bottom``) and not a draw-call index. That only works if the key
+    is unique inside its parent — assert it for every framed parent in the house.
+    """
+    parents = [
+        *((w["uid"], w["members"]) for w in catlin_payload["walls"]),
+        *((r["uid"], r["members"]) for r in catlin_payload["roofs"]),
+        *((f["uid"], f["members"]) for f in catlin_payload["floors"]),
+        *((s["uid"], s["members"]) for s in catlin_payload["stairs"]),
+    ]
+    assert parents
+    seen = set()
+    for uid, members in parents:
+        keys = [m["key"] for m in members]
+        assert all(keys), f"{uid} has a member with an empty key"
+        assert len(set(keys)) == len(keys), f"{uid} repeats a member key"
+        seen.update(f"{uid}/{key}" for key in keys)
+    assert len(seen) == sum(len(members) for _, members in parents)
+
+
+def test_every_member_carries_its_resolved_length(catlin_payload):
+    """The inspector reports a picked stud's length from ``length_m``, not from p0/p1: a
+    raked rafter's plan run is shorter than the stick, and a vertical stud has no run at all.
+    """
+    members = list(_all_members(catlin_payload))
+    assert members
+    assert all(member["length_m"] > 0 for member in members)
+
+
 def test_skin_members_carry_a_material_and_lumber_does_not(catlin_payload):
     """The viewer colours a member by material when it has one, by category otherwise.
 
