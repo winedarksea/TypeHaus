@@ -74,7 +74,7 @@ SITE = Site(
     # dropped 6" (5%+ per IRC R401.3, "6 inches within the first 10 feet"). Each side reads
     # slightly below datum right at the wall and keeps falling. Distinct y-stations also feed
     # every elevation's 10'-deep grade-capture band. The four southern garden points hold the
-    # sunken-garden condition (decision 2): garden floor at -9', raised planter block at +3'-6".
+    # sunken-garden condition (decision 2): garden floor at -9', retaining-wall top at +0'-6".
     spot_elevations=(
         # south side (house wall at y=0), draining down toward the sunken garden
         SpotElevation(position=pt(ft(12), ft(-2)), elevation=ft(0, -2)),
@@ -92,11 +92,17 @@ SITE = Site(
         # west side (house wall at x=0)
         SpotElevation(position=pt(ft(-3), ft(14)), elevation=ft(0, -2)),
         SpotElevation(position=pt(ft(-9), ft(28)), elevation=ft(0, -6)),
-        # sunken garden floor and the raised-garden block wall at the far south
+        # sunken garden floor, and the retaining wall's top at the far south. The last two
+        # read +0'-6" rather than the +3'-6" they carried until 2026-07-25: they record the
+        # top of W-SG-S, which used to be the base of a 36" planter bed standing on it. The
+        # bed is gone — params/raised_garden.py now builds a retaining apron that tops out
+        # level with that wall instead of 3' above it — so the plane these two stations sit
+        # on is the wall top itself. Both are inside the apron's U (x 4'..32', y -33.33'..
+        # -9.5') and stay there.
         SpotElevation(position=pt(ft(8), ft(-20)), elevation=ft(-9)),
         SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9)),
-        SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(3, 6)),
-        SpotElevation(position=pt(ft(26), ft(-29)), elevation=ft(3, 6)),
+        SpotElevation(position=pt(ft(10), ft(-29)), elevation=ft(0, 6)),
+        SpotElevation(position=pt(ft(26), ft(-29)), elevation=ft(0, 6)),
     ),
     # Impervious hardscapes abutting the main house (footprint x[0,36'] y[0,36']). R401.3 needs
     # each to fall >= 2% away from the foundation within 10'; code.R401_3_impervious asserts it.

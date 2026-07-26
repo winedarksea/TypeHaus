@@ -197,6 +197,10 @@ SOUTH_RETAINING_WALL_NODES = ("N-SG-SW", "N-SG-SE")
 RETAINING_WALL_SPAN_X_FT = (_x_ax_w, _x_ax_e)
 RETAINING_WALL_TOP_FT = SPEC.retaining_top_ft
 RETAINING_WALL_THICKNESS_IN = SPEC.wall_thickness_in
+# The arched front wall's axis — the plane W-SG-RAIL-F and RL-SG-BALCONY both sit on, and
+# the north limit anything wrapping this structure runs up to. Published for the raised
+# garden's legs, which stop here rather than continuing past the balcony.
+ARCH_WALL_AXIS_Y_FT = _y_ax_arch
 
 # Sonotube column (12" round) at midspan, a SPEC south-offset inside the porch rather than
 # on the deck's north-edge line (see ``column_south_offset_in`` — on the line, the tube and
