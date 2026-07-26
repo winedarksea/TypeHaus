@@ -19,8 +19,19 @@ from typehaus.quantities import inch
 from typehaus.resolve.model import FramedMember, ResolvedStair
 
 # IRC R311.7.5.2.1: a winder tread must be at least 6" deep at every point within the
-# stairway's clear width, which includes its narrow end against the newel.
+# stairway's clear width, which includes its narrow end against the newel — and at least
+# 10" deep on the walk line, measured 12" in from the narrow side.
 MIN_WINDER_NARROW_TREAD_IN = 6.0
+MIN_WINDER_WALK_LINE_TREAD_IN = 10.0
+WALK_LINE_OFFSET_IN = 12.0
+
+# IRC R311.7.5.1: the greatest riser height in a flight may exceed the smallest by 3/8".
+MAX_RISER_VARIATION_IN = 0.375
+# Categories whose top face is a surface a foot lands on, in the order a climber meets
+# them. A winder box's deck is its ``winder`` tread; a U-stair's platforms are ``landing``
+# decks (``landing-joist``/``-rim``/``-post`` members are framing under them, not surfaces).
+_WALKING_SURFACE_CATEGORIES = frozenset({"tread", "winder"})
+_LANDING_FRAMING_PREFIXES = ("landing-joist-", "landing-rim-", "landing-post-")
 
 # How close a supporting element's top has to be to a post's base to be carrying it.
 _BEARING_TOLERANCE_M = inch(1.0).meters
@@ -124,6 +135,144 @@ def landing_post_bearing(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+def _walking_surfaces(stair: ResolvedStair) -> list[float]:
+    """Every finished face a climber lands on between the two floors, ascending.
+
+    Treads, winder box decks and landing platforms — but not the framing under them: a
+    landing joist/rim/post tops out at the deck's *underside*, so counting one would read
+    as a step where there is none.
+    """
+    tops = [member.z1_m for member in stair.members
+            if member.category in _WALKING_SURFACE_CATEGORIES
+            or (member.category == "landing"
+                and not member.child_key.startswith(_LANDING_FRAMING_PREFIXES))]
+    return sorted(tops)
+
+
+@check(Tier.STRUCTURAL, "structural.stair_riser_uniformity")
+def stair_riser_uniformity(ctx: CheckContext) -> list[Finding]:
+    """Measure every riser in each flight against IRC R311.7.5.1's 3/8" spread.
+
+    The rise from the springing floor to the first tread, tread to tread, tread to
+    landing, and the last tread to the arrival deck are all risers a foot has to take, and
+    the code allows 3/8" between the largest and the smallest. Nothing measured them here
+    before, which is how the tread boards came to sit *on* each step's theoretical
+    elevation rather than being dropped to it (``resolve/stairs/common.py::_notch_z``) —
+    a 9" first riser and a 6" last one against a 7.5" design riser, invisible because
+    ``riser_height_m`` is the design number and only the generated members carry the
+    built one.
+    """
+    if not ctx.model.stairs:
+        return [Finding(severity=Severity.WARN, check_id="structural.stair_riser_uniformity",
+                        message="UNKNOWN — no stairs to measure", result=Result.UNKNOWN)]
+    allowed_m = inch(MAX_RISER_VARIATION_IN).meters
+    out: list[Finding] = []
+    for stair in ctx.model.stairs:
+        surfaces = _walking_surfaces(stair)
+        if not surfaces:
+            continue
+        # The flight springs from the lowest framing it was clipped to (its own subfloor)
+        # and lands on the arrival deck a full design rise above it.
+        springing = min(member.z0_m for member in stair.members)
+        arrival = springing + stair.riser_height_m * stair.riser_count
+        ladder = [springing, *surfaces, arrival]
+        risers = [upper - lower for lower, upper in zip(ladder, ladder[1:])]
+        spread = max(risers) - min(risers)
+        label = (f"{min(risers) / 0.0254:.2f}\"–{max(risers) / 0.0254:.2f}\" over "
+                 f"{len(risers)} risers")
+        if spread > allowed_m + 1e-9:
+            out.append(_advisory(
+                "structural.stair_riser_uniformity",
+                f"stair {stair.tag} risers vary by {spread / 0.0254:.2f}\" ({label}), over "
+                f"the {MAX_RISER_VARIATION_IN:.3f}\" IRC R311.7.5.1 maximum",
+                (stair.tag,), Result.FAIL,
+                fix_hint=("drop every tread/landing board to its step elevation instead of "
+                          "stacking it on top — the first and last risers are the ones a "
+                          "board thickness lands on"),
+            ))
+        else:
+            out.append(_advisory(
+                "structural.stair_riser_uniformity",
+                f"stair {stair.tag} risers vary by {spread / 0.0254:.2f}\" ({label})",
+                (stair.tag,), Result.PASS))
+    return out
+
+
+def _winder_stairs(ctx: CheckContext) -> list[ResolvedStair]:
+    return [stair for stair in ctx.model.stairs
+            if any(member.category == "winder" for member in stair.members)]
+
+
+def _winder_gaps(stair: ResolvedStair, offset_m: float) -> list[float]:
+    """Going between consecutive winder nosings, ``offset_m`` out from the narrow end.
+
+    A winder member runs narrow end (``p0``, on the newel's face) to nosing (``p1``), so
+    walking ``offset_m`` along it lands on the line the code measures: 0 is the narrow end
+    itself, 12" the walk line. Consecutive risers are what the code measures between, so
+    the winders are taken in ascending order.
+    """
+    winders = sorted((member for member in stair.members if member.category == "winder"),
+                     key=lambda member: member.z0_m)
+
+    def point_at(member: FramedMember) -> tuple[float, float]:
+        dx, dy = member.p1[0] - member.p0[0], member.p1[1] - member.p0[1]
+        run = math.hypot(dx, dy)
+        if run < 1e-9:
+            return member.p0
+        reach = min(offset_m, run) / run
+        return (member.p0[0] + dx * reach, member.p0[1] + dy * reach)
+
+    points = [point_at(member) for member in winders]
+    return [math.hypot(upper[0] - lower[0], upper[1] - lower[1])
+            for lower, upper in zip(points, points[1:])]
+
+
+@check(Tier.STRUCTURAL, "structural.winder_walk_line_depth")
+def winder_walk_line_depth(ctx: CheckContext) -> list[Finding]:
+    """Measure winder going on the walk line against IRC R311.7.5.2.1's 10".
+
+    The walk line is 12" in from the narrow side of the treads, and that is where a winder
+    has to deliver the same 10" going a straight tread does. It is the *other* half of the
+    winder rule — ``winder_narrow_tread_depth`` measures the 6" floor at the newel — and
+    the one that decides whether a turn is walkable rather than merely legal at its pinch
+    point. A 90° turn taken in three winders sweeps 22.5° per tread, so the walk line has
+    to sit ~2'-2" out from the pivot before consecutive nosings are 10" apart: it is a
+    function of the *well*, which is why neither a bigger newel nor better framing moves
+    it.
+    """
+    winder_stairs = _winder_stairs(ctx)
+    if not winder_stairs:
+        return [Finding(severity=Severity.WARN,
+                        check_id="structural.winder_walk_line_depth",
+                        message="UNKNOWN — no winder treads to measure",
+                        result=Result.UNKNOWN)]
+    minimum_m = inch(MIN_WINDER_WALK_LINE_TREAD_IN).meters
+    out: list[Finding] = []
+    for stair in winder_stairs:
+        gaps = _winder_gaps(stair, inch(WALK_LINE_OFFSET_IN).meters)
+        if not gaps:
+            continue
+        narrowest = min(gaps)
+        detail = (f"stair {stair.tag} winder going on the walk line "
+                  f"({WALK_LINE_OFFSET_IN:.0f}\" from the narrow end) is "
+                  f"{narrowest / 0.0254:.1f}\"")
+        if narrowest + 1e-9 < minimum_m:
+            out.append(_advisory(
+                "structural.winder_walk_line_depth",
+                f"{detail}, under the {MIN_WINDER_WALK_LINE_TREAD_IN:.0f}\" IRC "
+                "R311.7.5.2.1 minimum", (stair.tag,), Result.FAIL,
+                fix_hint=("widen the well so the turn sweeps a longer arc, or spread the "
+                          "turn over more risers — the walk line is set by the well, not "
+                          "by the newel or the turn framing"),
+            ))
+        else:
+            out.append(_advisory(
+                "structural.winder_walk_line_depth",
+                f"{detail} (>= {MIN_WINDER_WALK_LINE_TREAD_IN:.0f}\")",
+                (stair.tag,), Result.PASS))
+    return out
+
+
 @check(Tier.STRUCTURAL, "structural.winder_narrow_tread_depth")
 def winder_narrow_tread_depth(ctx: CheckContext) -> list[Finding]:
     """Measure winder tread depth at the narrow end against IRC R311.7.5.2.1's 6".
@@ -135,8 +284,7 @@ def winder_narrow_tread_depth(ctx: CheckContext) -> list[Finding]:
     not — the honest fix is a layout decision (more risers in the turn, or a larger newel
     the winders wrap), not a number this generator can invent.
     """
-    winder_stairs = [stair for stair in ctx.model.stairs
-                     if any(member.category == "winder" for member in stair.members)]
+    winder_stairs = _winder_stairs(ctx)
     if not winder_stairs:
         return [Finding(severity=Severity.WARN,
                         check_id="structural.winder_narrow_tread_depth",
@@ -145,11 +293,7 @@ def winder_narrow_tread_depth(ctx: CheckContext) -> list[Finding]:
     minimum_m = inch(MIN_WINDER_NARROW_TREAD_IN).meters
     out: list[Finding] = []
     for stair in winder_stairs:
-        # Ascending order: consecutive risers are what the code measures between.
-        winders = sorted((member for member in stair.members if member.category == "winder"),
-                         key=lambda member: member.z0_m)
-        gaps = [math.hypot(upper.p0[0] - lower.p0[0], upper.p0[1] - lower.p0[1])
-                for lower, upper in zip(winders, winders[1:])]
+        gaps = _winder_gaps(stair, 0.0)
         if not gaps:
             continue
         narrowest = min(gaps)

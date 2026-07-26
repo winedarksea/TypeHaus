@@ -10,9 +10,9 @@ from typehaus.resolve.model import FramedMember
 from typehaus.resolve.stairs.common import (
     _FRAMING_SPACING_M,
     _LANDING_JOIST_PROFILE,
-    _TREAD_THICKNESS_M,
     _WELL_PARTITION_THICKNESS_M,
     _grid_positions,
+    _notch_z,
     _tread_board_profile,
 )
 
@@ -62,32 +62,35 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     ):
         if not count:
             continue
-        spring_top = spring_z + riser + _TREAD_THICKNESS_M
+        # Notch lines at both ends: the first tread board sits on one, the landing/arrival
+        # deck it bears into on the other (see ``_notch_z``).
+        spring_notch = _notch_z(spring_z + riser)
+        bear_notch = _notch_z(bear_z)
         for index, cross in enumerate((lane_lo, lane_lo + width)):
             out.append(FramedMember(
                 stair.uid, f"stringer-{prefix}-{index}", "stringer", "2x12",
                 at(s_lo, cross), at(s_hi, cross),
-                spring_top - stringer_depth, spring_top,
+                spring_notch - stringer_depth, spring_notch,
                 math.hypot(tread * count, bear_z - spring_z),
-                z0_end_m=bear_z - stringer_depth, z1_end_m=bear_z))
+                z0_end_m=bear_notch - stringer_depth, z1_end_m=bear_notch))
     # Both flights' boards run from their riser toward +s (the lower flight ascends that
     # way, the upper descends it), so both centrelines sit half a going past the riser —
     # see ``_tread_board_profile`` for why the axis is the board centre and not the riser.
     tread_profile = _tread_board_profile(tread)
     for index in range(lower_treads):
-        z = z0 + riser * (index + 1)
+        top = z0 + riser * (index + 1)
         s = tread * index + tread / 2.0
         out.append(FramedMember(stair.uid, f"tread-lower-{index:03d}", "tread", tread_profile,
                                 at(s, lane0), at(s, lane0 + width),
-                                z, z + _TREAD_THICKNESS_M, width))
+                                _notch_z(top), top, width))
     # Upper flight climbs back toward the start edge; its first tread leaves the upper
     # landing, and its top tread ends one riser below the arrival deck.
     for index in range(upper_treads):
-        z = z0 + riser * (lower_treads + 3 + index)
+        top = z0 + riser * (lower_treads + 3 + index)
         s = flight_len - tread * (index + 1) + tread / 2.0
         out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", tread_profile,
                                 at(s, lane1), at(s, lane1 + width),
-                                z, z + _TREAD_THICKNESS_M, width))
+                                _notch_z(top), top, width))
     # Two landing platforms in the landing zone beyond the flight ends. The partition
     # stops short of them, so each landing runs from its own flight lane to the partition
     # *centreline* — that is the bearing a framer frames into, and it leaves no
@@ -133,12 +136,15 @@ def _landing_platform(stair: Stair, name: str, at, s0: float, depth: float,
     rims cap the joist ends along the run direction.
     """
     joist_depth = cross_section(_LANDING_JOIST_PROFILE).depth_m
-    z_top, z_bot = landing_z, landing_z - joist_depth
+    # ``landing_z`` is the platform's *finished* walking face; its deck is dropped below it
+    # and the joists hang under that, so the risers onto and off the landing are equal.
+    deck_bottom = _notch_z(landing_z)
+    z_top, z_bot = deck_bottom, deck_bottom - joist_depth
     mid = lane_lo + width / 2.0
     out = [FramedMember(stair.uid, f"landing-{name}", "landing",
                         f"deck {width / 0.0254:g}x1.5",
                         at(s0, mid), at(s0 + depth, mid),
-                        landing_z, landing_z + _TREAD_THICKNESS_M, depth)]
+                        deck_bottom, landing_z, depth)]
     for index, offset in enumerate(_grid_positions(depth, _FRAMING_SPACING_M)):
         out.append(FramedMember(stair.uid, f"landing-joist-{name}-{index:03d}", "landing",
                                 _LANDING_JOIST_PROFILE, at(s0 + offset, lane_lo),

@@ -28,6 +28,25 @@ _WELL_PARTITION_THICKNESS_M = inch(
     _WELL_PARTITION_STUD_IN + 2 * _WELL_PARTITION_FINISH_IN).meters
 
 
+def _notch_z(surface_m: float) -> float:
+    """The framing elevation directly under a finished walking surface at ``surface_m``.
+
+    Every board a foot lands on — a tread, a landing deck, a winder box's deck — is
+    *dropped*: its finished face lands exactly on the step's theoretical elevation and the
+    stock hangs below it. This is the "dropping the stringer" rule (Larry Haun, *The Very
+    Efficient Carpenter*): the bottom of a stringer's notching is cut down by the tread
+    thickness so every finished riser stays identical.
+
+    Sitting the board *on* that elevation instead — the convention this replaces —
+    stretched a stair's first riser by the board thickness and shortened its last by the
+    same amount, because the springing floor and the arrival deck are finished surfaces
+    already. On catlin's 7.5" design riser that was a 9" step onto the flight and a 6"
+    step off it: a 3" spread against the 3/8" IRC R311.7.5.1 allows, now measured by
+    ``structural.stair_riser_uniformity``.
+    """
+    return surface_m - _TREAD_THICKNESS_M
+
+
 def _tread_board_profile(going_m: float) -> str:
     """Profile string for a tread board of ``going_m`` depth.
 

@@ -1,17 +1,43 @@
-"""The right-angle winder: fanned winder treads, the straight flight, and the turn frame."""
+"""The right-angle winder: a tiered corner box, its winder treads, and the straight flight."""
 
 from __future__ import annotations
 
 import math
+from typing import NamedTuple
 
 from typehaus.model.spatial import Stair
+from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
 from typehaus.resolve.stairs.common import (
     _TREAD_THICKNESS_M,
     _newel_face_point,
+    _notch_z,
     _tread_board_profile,
 )
+
+# A box side is ripped from 2x stock to the box's own height (one riser less the deck it
+# carries), so consecutive tiers stack dead flush. ``_SPRING_RIM_PLIES`` doubles the top
+# box's departing rim: that one carries the whole straight flight.
+_BOX_RIM_PLY_IN = 1.5
+_SPRING_RIM_PLIES = 2
+# The diagonal block that splits each box into two bearing triangles.
+_BOX_BLOCK_PROFILE = "2x6"
+
+
+class _FanLine(NamedTuple):
+    """One winder's tread line: the newel face it starts at, its nosing on the turn
+    square's outside, and whether the box behind it still wraps the outer corner."""
+
+    narrow: tuple[float, float]
+    nosing: tuple[float, float]
+    wraps_outer_corner: bool
+
+
+def _box_rim_profile(frame_depth_m: float, plies: int = 1) -> str:
+    """A box side ripped to ``frame_depth_m``, in ``plies`` plies of 2x stock."""
+    return (f"{_BOX_RIM_PLY_IN * plies:g}x"
+            f"{frame_depth_m / inch(1).meters:g} rim")
 
 
 def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
@@ -23,11 +49,15 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     conventional east/north direction. Each tread edge shares the inside corner and fans
     across the outside of the turn, preventing the opposed-diagonal geometry two winders
     produced.
+
+    The turn is framed as a tiered corner box (see :func:`_winder_box_framing`), so a
+    winder tread here is the *leading edge* of one box's deck: the fan line its riser
+    board nails to, with the pie-shaped deck panel behind it.
     """
     start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
     width = stair.width.meters
     straight_treads = risers - 1 - stair.winder_count
-    step_z = lambda index: z0 + riser * (index + 1)
+    surface = lambda index: z0 + riser * (index + 1)  # noqa: E731 — finished walking face
     out: list[FramedMember] = []
     sign = -1 if stair.run_reversed else 1
     turn_sign = 1 if stair.turn_direction != "right" else -1
@@ -49,96 +79,140 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
         """Plan point ``a`` metres along the run, ``b`` metres across it, from ``start``."""
         return offset((start_x, start_y), a, b)
 
-    # The straight flight springs off the top of the winder turn; its raked stringers run
-    # from one riser above that springing up to the arrival deck.
+    # The straight flight springs off the top box of the turn; its raked stringers run from
+    # one riser above that box's deck up to the arrival deck. Both ends are *notch* lines —
+    # the tread boards and the arrival subfloor sit on them (see ``_notch_z``), which is
+    # what keeps the rake straight and every finished riser equal.
     stringer_depth = cross_section("2x12").depth_m
-    spring_top = z0 + riser * stair.winder_count + riser + _TREAD_THICKNESS_M
-    arrival = z0 + riser * risers
+    spring_notch = _notch_z(surface(stair.winder_count))
+    arrival_notch = _notch_z(z0 + riser * risers)
     foot = P(0.0, 0.0)  # the entering outer corner of the turn square (== ``start``)
     inside = P(width, 0.0)  # the turn's inside corner: where the straight flight springs
     outer_corner = P(0.0, width)  # the outer corner the turn sweeps around
-    turn = P(width, width)  # the departing corner, where the outer stringer takes over
+    turn = P(width, width)  # the departing corner, where the box's outer rim takes over
     for index, cross in enumerate((0.0, width)):
         out.append(FramedMember(stair.uid, f"stringer-{index}", "stringer", "2x12",
                                 offset(inside, 0.0, cross),
                                 offset(inside, tread * straight_treads, cross),
-                                spring_top - stringer_depth, spring_top,
-                                math.hypot(tread * straight_treads, riser * risers),
-                                z0_end_m=arrival - stringer_depth, z1_end_m=arrival))
+                                spring_notch - stringer_depth, spring_notch,
+                                math.hypot(tread, riser) * straight_treads,
+                                z0_end_m=arrival_notch - stringer_depth,
+                                z1_end_m=arrival_notch))
     # The authored newel profile (Stair.newel_profile, default "4x4"): a wider newel is
     # the sanctioned lever on ``structural.winder_narrow_tread_depth`` — its faces push
     # every winder's narrow end outward, spreading consecutive nosings apart.
     newel_half_face = cross_section(stair.newel_profile).width_m / 2.0
+    fan: list[_FanLine] = []
     for index in range(stair.winder_count):
         # ``winder_count + 1`` because ``fraction == 1`` — the departing edge of the turn
         # square — belongs to the straight flight's first tread. Dividing by the winder
         # count alone put the top winder exactly on top of ``tread-000``: a riser with
-        # zero going. It also makes the carriage rake close exactly on the springing.
+        # zero going. It also makes the box tiers close exactly on the springing.
         fraction = (index + 1) / (stair.winder_count + 1)
         # First half follows the entering outside edge, second half the departing edge.
         nosing = (P(0.0, width * fraction * 2) if fraction <= 0.5
                   else P(width * (fraction * 2 - 1), width))
-        a, b = _newel_face_point(inside, nosing, newel_half_face), nosing
+        fan.append(_FanLine(_newel_face_point(inside, nosing, newel_half_face), nosing,
+                            wraps_outer_corner=fraction < 0.5))
+    for index, (narrow, nosing, _) in enumerate(fan):
+        top = surface(index)
         out.append(FramedMember(stair.uid, f"winder-{index:03d}", "winder", "tapered tread",
-                                a, b, step_z(index), step_z(index) + _TREAD_THICKNESS_M,
-                                math.hypot(b[0] - a[0], b[1] - a[1])))
+                                narrow, nosing, _notch_z(top), top,
+                                math.hypot(nosing[0] - narrow[0], nosing[1] - narrow[1])))
     tread_profile = _tread_board_profile(tread)
     for index in range(straight_treads):
         centre = tread * index + tread / 2.0
+        top = surface(index + stair.winder_count)
         out.append(FramedMember(stair.uid, f"tread-{index:03d}", "tread", tread_profile,
                                 offset(inside, centre, 0.0),
                                 offset(inside, centre, width),
-                                step_z(index + stair.winder_count),
-                                step_z(index + stair.winder_count) + _TREAD_THICKNESS_M,
-                                width))
-    out.extend(_winder_turn_framing(stair, z0, riser, width, spring_top, stringer_depth,
-                                    foot, inside, outer_corner, turn,
-                                    (float(run_u[0]), float(run_u[1]))))
+                                _notch_z(top), top, width))
+    out.extend(_winder_box_framing(stair, z0, riser, fan, inside, outer_corner, turn,
+                                   (float(run_u[0]), float(run_u[1]))))
     return tuple(out)
 
 
-def _winder_turn_framing(stair: Stair, z0: float, riser: float, width: float,
-                         spring_top: float, stringer_depth: float,
-                         foot: tuple[float, float], inside: tuple[float, float],
-                         outer_corner: tuple[float, float], turn: tuple[float, float],
-                         orient: tuple[float, float]) -> list[FramedMember]:
-    """Frame the quarter-turn itself: newel, two raked carriages, and the turn header.
+def _box_perimeter(line: _FanLine, outer_corner: tuple[float, float],
+                   turn: tuple[float, float]) -> list[tuple[tuple[float, float],
+                                                            tuple[float, float]]]:
+    """The outside edges of the box behind ``line``: its nosing around the square to ``turn``.
 
-    Without this the turn is a mathematical fiction — every winder's narrow end converges
-    on a bare point and the straight flight springs off nothing.
-
-    - **The newel** carries every winder narrow end, so it must reach the *highest*
-      winder's nosing, which is above the header; it therefore runs past the header up to
-      the springing and picks up ``stringer-0`` too. That is how a winder newel works.
-    - **The carriages** are the outer stringer carried around the turn: one straight rake
-      through every winder nosing, ``top(f) = z0 + riser*(winder_count+1)*f + tread``.
-      ``top(1) == spring_top``, so the departing carriage runs continuously into
-      ``stringer-1`` and must end precisely at ``turn`` — an overshoot would read as a
-      real interference against it. They are category ``stringer``, so the bearing pass
-      picks them up against a flanking wall for free.
-    - **The header** tops out at the springing's underside — exactly the stringers'
-      ``z0_m`` at ``p0`` — so the flight seats on it with zero overlap. Its ends are
-      carried by the newel at ``inside`` and by a second newel at ``turn``.
+    A box whose fan line still leaves the entering outside edge wraps the outer corner, so
+    it takes two segments; one past the halfway sweep runs a single segment along the
+    departing edge.
     """
+    if line.wraps_outer_corner:
+        return [(line.nosing, outer_corner), (outer_corner, turn)]
+    return [(line.nosing, turn)]
 
-    def carriage_top(fraction: float) -> float:
-        return z0 + riser * (stair.winder_count + 1) * fraction + _TREAD_THICKNESS_M
 
-    header_top = spring_top - stringer_depth
-    out = [
-        FramedMember(stair.uid, "newel-000", "newel", stair.newel_profile, inside, inside,
-                     z0, spring_top, spring_top - z0, orient=orient),
-        FramedMember(stair.uid, "newel-001", "newel", stair.newel_profile, turn, turn,
-                     z0, header_top, header_top - z0, orient=orient),
-    ]
-    for index, (a, b, f0, f1) in enumerate(((foot, outer_corner, 0.0, 0.5),
-                                            (outer_corner, turn, 0.5, 1.0))):
-        top_a, top_b = carriage_top(f0), carriage_top(f1)
+def _polyline_midpoint(segments: list[tuple[tuple[float, float], tuple[float, float]]]
+                       ) -> tuple[float, float]:
+    """The point halfway along a run of segments, by arc length."""
+    lengths = [math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in segments]
+    remaining = sum(lengths) / 2.0
+    for (a, b), length in zip(segments, lengths):
+        if length >= remaining or length == lengths[-1]:
+            t = remaining / length if length > 1e-9 else 0.0
+            return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+        remaining -= length
+    return segments[-1][1]
+
+
+def _winder_box_framing(stair: Stair, z0: float, riser: float, fan: list[_FanLine],
+                        inside: tuple[float, float], outer_corner: tuple[float, float],
+                        turn: tuple[float, float],
+                        orient: tuple[float, float]) -> list[FramedMember]:
+    """Frame the quarter-turn as a tiered corner box — Larry Haun's winder assembly.
+
+    Rather than cut a continuous compound-angle carriage through the turn (which the
+    previous two raked "winder carriages" and their header stood in for, and which no
+    framer builds), each winder step is its own platform box, stacked one riser above the
+    last:
+
+    - **A box per step.** Sides ripped from 2x stock to exactly one riser less the deck
+      they carry, so box ``k`` lands dead flush on box ``k-1``'s deck and box 0 lands on
+      the subfloor. Perimeter: the fan line the riser board nails to, the outside edges of
+      the turn square, and the departing edge — the box's deck *is* the winder tread, and
+      the pie-shaped panel on top is the walking surface.
+    - **A diagonal block** across each box, newel to the mid-point of its outside run,
+      splitting the wedge into two bearing triangles under the pie panel.
+    - **Ledgers and posts come for free.** The sides are category ``landing`` with
+      ``landing-rim-`` keys, so ``bearing._bear_stair_on_walls`` ledgers whichever ones
+      run against a flanking wall and posts every corner none reaches down to the
+      subfloor — one post per plan point, carrying all the tiers stacked over it.
+    - **The newel** is the assembly's inside corner post: every box's fan-line rim and
+      departing rim dies into it, and the inner stringer's foot lands on it. It tops out
+      at the top box's deck.
+    - **The straight flight lands on the top box**, not on a header slung under it: its
+      stringers' notch line springs one riser above that deck, and the departing rim
+      under them is doubled (``_SPRING_RIM_PLIES``) because it carries the flight.
+    """
+    frame_depth = riser - _TREAD_THICKNESS_M
+    rim_profile = _box_rim_profile(frame_depth)
+    spring_profile = _box_rim_profile(frame_depth, _SPRING_RIM_PLIES)
+    block_depth = cross_section(_BOX_BLOCK_PROFILE).depth_m
+    newel_top = z0 + riser * stair.winder_count
+    out = [FramedMember(stair.uid, "newel-000", "newel", stair.newel_profile, inside,
+                        inside, z0, newel_top, newel_top - z0, orient=orient)]
+    for index, line in enumerate(fan):
+        deck = _notch_z(z0 + riser * (index + 1))  # the box's sides top out under its deck
+        base = z0 + riser * index  # ... and land on the tier below (the subfloor at k=0)
+        outside = _box_perimeter(line, outer_corner, turn)
+        top_tier = index == len(fan) - 1
+        rims = [(line.narrow, line.nosing), *outside, (turn, inside)]
+        for edge, (a, b) in enumerate(rims):
+            length = math.hypot(b[0] - a[0], b[1] - a[1])
+            if length < 1e-9:  # a fan line landing exactly on the outer corner
+                continue
+            departing = edge == len(rims) - 1
+            out.append(FramedMember(
+                stair.uid, f"landing-rim-winder{index}-{edge}", "landing",
+                spring_profile if departing and top_tier else rim_profile,
+                a, b, base, deck, length))
+        block_end = _polyline_midpoint(outside)
         out.append(FramedMember(
-            stair.uid, f"winder-carriage-{index}", "stringer", "2x12", a, b,
-            top_a - stringer_depth, top_a, math.hypot(width, top_b - top_a),
-            z0_end_m=top_b - stringer_depth, z1_end_m=top_b))
-    out.append(FramedMember(stair.uid, "winder-header", "header", "2-2x12", inside, turn,
-                            header_top - cross_section("2-2x12").depth_m, header_top,
-                            width))
+            stair.uid, f"landing-joist-winder{index}-0", "landing", _BOX_BLOCK_PROFILE,
+            inside, block_end, deck - block_depth, deck,
+            math.hypot(block_end[0] - inside[0], block_end[1] - inside[1])))
     return out
