@@ -6,18 +6,36 @@ centred on x = 5'-0"). It touches neither building: four 6x6 ground-contact post
 isolated piers and frost-depth pads carry the whole thing, and the glazing is *snug* to the
 house and garage cladding without lapping into either one's flashing.
 
-Sheet economy is the design. Three 4'x8' sheets of 16mm multiwall polycarbonate:
+**Sheet economy used to be the design, and is not any more (2026-07-25).** It was: three
+4'x8' sheets of 16mm multiwall polycarbonate — two standing whole and uncut as the east and
+west walls, the third halved at the crown to make the roof — with every other dimension
+derived from that. It bought an uncut bill of materials, and it cost two holes:
 
-* two stand vertically as the east and west walls — 4'-0" long (door to door) x 8'-0" tall,
-  one whole sheet each, no cut;
-* the third is halved into two 4'x4' pieces that make the 4'x8' roof, split at the crown.
+* **8 1/4" of framing stood bare below each standing sheet.** The sheet started at the deck
+  surface (+1") while the structure it enclosed goes down to the floor-beam soffit (-7 1/4"),
+  so the beam band and the deck edge showed under the glazing all the way round.
+* **14 1/2" of each E/W elevation was simply open.** The wall sheet's head stopped at the
+  post top (+8'-1") and the roof sheet's underside is at +9'-3 1/2"; nothing spanned between
+  them. In plan the roof's eave U-channel sat at x = 0'-6"/8'-6" and the wall's F-head at
+  x = 0'-9 1/4"/8'-2 3/4" — 3 1/4" apart, and 13.4" apart vertically. Two unrelated
+  extrusions where one shared channel belongs.
 
-Everything else follows from that. The roof envelope is 8'-0" E-W (x = 0'-6" to 8'-6",
-centred on x = 4'-6", between the two doors) and 4'-0" N-S. The posts stand 7'-0" apart
-E-W, so the roof projects 3 1/4" past the glazing on each side as a drip edge. The 8'-0"
-clear is measured from the *walking surface* — the top of the decking, not the joist datum
-under it — because that is what a person stands on and what the sheet has to cover; the
-sunken garden's guard height is derived the same way, and for the same reason.
+So each standing sheet now runs the whole way: from the floor-beam soffit to the roof
+sheet's underside, **9'-10 3/4"**, cut from 10' stock rather than standing 8' stock uncut.
+The two sheets meet, so one ``profile="H"`` channel per side receives both — the wall sheet
+in its lower slot, the roof sheet in its upper — replacing the eave U and the wall F-head.
+
+**What that costs, stated rather than left implicit:** the roof used to oversail the glazing
+line by 3 1/4" on each side as a drip edge; it does not any more, because the roof sheet has
+to die *in* the shared channel. The sill U-channel's weep holes are now the assembly's only
+drainage path. And the standing sheets are cut, so the "three sheets, no cuts" claim is
+gone — the bill is two 10' sheets plus one 8' sheet halved for the roof.
+
+The roof envelope is therefore 7'-5 1/2" E-W (glazing line to glazing line) x 4'-0" N-S,
+split at the crown on x = 4'-6", centred between the two doors. The 8'-0" clear under the
+roof beams is still measured from the *walking surface* — the top of the decking, not the
+joist datum under it — because that is what a person stands on; the sunken garden's guard
+height is derived the same way, and for the same reason.
 
 Framing directions (the brief's "opposite rotation"):
 
@@ -94,7 +112,9 @@ _PANEL_FT = 4.0  # one 4'x8' sheet, uncut
 
 # E-W: the roof/panel envelope is centred between the two doors (house entry x=4',
 # garage service door x=5'), 8'-0" wide.
-_ROOF_X0, _ROOF_X1 = 0.5, 8.5
+# The roof sheet now dies in the shared H channel on the wall glazing line rather than
+# oversailing it: these are set from _GLAZING_X0/_GLAZING_X1 below, once those exist.
+# (Assigned after the post geometry so there is one derivation, not two literals.)
 _POST_X0, _POST_X1 = 1.0, 8.0  # 7'-0" apart; roof oversails 6" past each post centre
 
 # N-S: post outer faces snug to the house cladding and the garage stem.
@@ -108,6 +128,11 @@ _GLAZING_Y0 = _HOUSE_CLADDING_Y
 _GLAZING_Y1 = _HOUSE_CLADDING_Y + _PANEL_FT
 _GLAZING_X0 = _POST_X0 - _POST_HALF_FT  # west post outer face
 _GLAZING_X1 = _POST_X1 + _POST_HALF_FT  # east post outer face
+# The roof glazing runs to the same E/W lines as the standing sheets, so the two meet in one
+# channel. It used to oversail them by 3 1/4" as a drip edge; retiring that is the cost of
+# the shared channel (see the module docstring), and the sill U-channel's weep holes are now
+# the only drainage path.
+_ROOF_X0, _ROOF_X1 = _GLAZING_X0, _GLAZING_X1
 
 _POST_XY = [(_POST_X0, _POST_Y0), (_POST_X1, _POST_Y0),
             (_POST_X0, _POST_Y1), (_POST_X1, _POST_Y1)]
@@ -149,6 +174,9 @@ _RAFTER_TOP = _ROOF_BEAM_TOP + _RAFTER_DEPTH_FT  # 9.1458' = +9'-1 3/4"
 _WEDGE_RISE_IN = 3.5
 _GLAZING_THICKNESS_IN = 0.63
 _ROOF_GLAZING_TOP = (_RAFTER_TOP + (_WEDGE_RISE_IN / 2.0 + _GLAZING_THICKNESS_IN) / 12.0)
+# The roof sheet's own underside — +9'-3 1/2". The standing sheets stop here, which is what
+# lets one channel capture both.
+_ROOF_GLAZING_UNDER = _ROOF_GLAZING_TOP - _GLAZING_THICKNESS_IN / 12.0
 # Verified against the resolved model, not estimated: the garage's south eave hangs its PVC
 # fascia underside at +9'-11.4" and its gutter at +9'-11.9", both over this footprint. The
 # breezeway crown tops out at +9'-4.1", so the roof tucks under with ~7 1/4" to spare.
@@ -301,13 +329,13 @@ WALL_GLAZING = [
         uid="BWGP03AAAA", tag="GL-BW-WALL-W",
         outline=(pt(ft(_GLAZING_X0), ft(_GLAZING_Y0)), pt(ft(_GLAZING_X0), ft(_GLAZING_Y1))),
         thickness=inch(_GLAZING_THICKNESS_IN), plane="vertical",
-        base_elevation=ft(_DECK_SURFACE), top_elevation=ft(_POST_TOP),
+        base_elevation=ft(_PIER_TOP), top_elevation=ft(_ROOF_GLAZING_UNDER),
         assembly="BREEZEWAY_GLAZED_WALL", film=_BIRD_FILM),
     GlazingPanel(
         uid="BWGP04AAAA", tag="GL-BW-WALL-E",
         outline=(pt(ft(_GLAZING_X1), ft(_GLAZING_Y0)), pt(ft(_GLAZING_X1), ft(_GLAZING_Y1))),
         thickness=inch(_GLAZING_THICKNESS_IN), plane="vertical",
-        base_elevation=ft(_DECK_SURFACE), top_elevation=ft(_POST_TOP),
+        base_elevation=ft(_PIER_TOP), top_elevation=ft(_ROOF_GLAZING_UNDER),
         assembly="BREEZEWAY_GLAZED_WALL", film=_BIRD_FILM),
 ]
 
@@ -323,19 +351,30 @@ _ROOF_CROWN_TOP = (_RAFTER_TOP + (_WEDGE_RISE_IN + _GLAZING_THICKNESS_IN) / 12.0
 # midline of that reach rather than on the panel edge.
 _FCH_N_Y = (_GLAZING_Y1 + _GARAGE_CLADDING_Y) / 2.0
 
+# The shared H channel — the piece the roof eave U and the wall head used to be. An H
+# receives a sheet in each of its two slots, which is exactly the joint here now that the
+# standing sheet's head and the roof sheet's edge land on the same line: the wall sheet
+# enters from below, the roof sheet from the side, and the web between them is the only
+# thing crossing the joint. Before, those were two unrelated extrusions 3 1/4" apart in plan
+# and 13.4" apart vertically, with 14 1/2" of open elevation between the sheets they held.
+#
+# "H" is already in GlazingTrim's documented profile vocabulary and was unused; this is the
+# joint it is the word for.
+_H_LAP = inch(1.5)   # how far each slot grips the sheet in it
+_H_WEB = inch(0.5)   # the web between the two slots
+_H_DEPTH = _H_LAP + _H_WEB + _H_LAP
+
 ROOF_TRIM = [
-    # Low (open) flute ends at both eaves: a vented U-channel drilled with weep holes, or
-    # the flutes hold the water they are meant to shed and grow algae in it.
-    GlazingTrim(uid="BWGT01AAAA", tag="TR-BW-UCH-W", kind=TrimKind.GLAZING_CHANNEL,
-                profile="U", weep_holes=True, glazing_ref="GL-BW-ROOF-W",
+    GlazingTrim(uid="BWGT01AAAA", tag="TR-BW-HCH-W", kind=TrimKind.GLAZING_CHANNEL,
+                profile="H", weep_holes=False, glazing_ref="GL-BW-ROOF-W",
                 path=(pt(ft(_ROOF_X0), ft(_GLAZING_Y0)), pt(ft(_ROOF_X0), ft(_GLAZING_Y1))),
-                top_elevation=ft(_ROOF_EAVE_TOP), depth=_CHANNEL_DEPTH,
-                thickness=_CHANNEL_THICK, material="aluminum-extrusion"),
-    GlazingTrim(uid="BWGT02AAAA", tag="TR-BW-UCH-E", kind=TrimKind.GLAZING_CHANNEL,
-                profile="U", weep_holes=True, glazing_ref="GL-BW-ROOF-E",
+                top_elevation=ft(_ROOF_GLAZING_UNDER) + _H_LAP + _H_WEB,
+                depth=_H_DEPTH, thickness=inch(2.0), material="aluminum-extrusion"),
+    GlazingTrim(uid="BWGT02AAAA", tag="TR-BW-HCH-E", kind=TrimKind.GLAZING_CHANNEL,
+                profile="H", weep_holes=False, glazing_ref="GL-BW-ROOF-E",
                 path=(pt(ft(_ROOF_X1), ft(_GLAZING_Y0)), pt(ft(_ROOF_X1), ft(_GLAZING_Y1))),
-                top_elevation=ft(_ROOF_EAVE_TOP), depth=_CHANNEL_DEPTH,
-                thickness=_CHANNEL_THICK, material="aluminum-extrusion"),
+                top_elevation=ft(_ROOF_GLAZING_UNDER) + _H_LAP + _H_WEB,
+                depth=_H_DEPTH, thickness=inch(2.0), material="aluminum-extrusion"),
     # The crown: both sheets' high flute ends meet here over the wedge apexes, sealed with
     # solid (not vented) tape under a concealed-fastener aluminium glazing bar.
     GlazingTrim(uid="BWGT03AAAA", tag="TR-BW-BAR-CROWN", kind=TrimKind.GLAZING_BAR,
@@ -361,21 +400,23 @@ ROOF_TRIM = [
 # Each standing sheet is captured on all four edges: a weeping U-channel sill on the deck,
 # an F-channel head under the roof beam, and an F-channel jamb against each building's
 # cladding. The jambs run vertically, so their length is their ``depth``.
-_WALL_PANEL_HEIGHT = ft(_POST_TOP - _DECK_SURFACE)
+_WALL_PANEL_HEIGHT = ft(_ROOF_GLAZING_UNDER - _PIER_TOP)
 WALL_TRIM = []
 for _i, (_tag, _x, _ref) in enumerate(
         (("W", _GLAZING_X0, "GL-BW-WALL-W"), ("E", _GLAZING_X1, "GL-BW-WALL-E")), start=1):
     _run = (pt(ft(_x), ft(_GLAZING_Y0)), pt(ft(_x), ft(_GLAZING_Y1)))
     WALL_TRIM += [
+        # The sill is at the deck surface, which the sheet now passes rather than starts
+        # at — it runs 8 1/4" further down to the floor-beam soffit, covering the beam band
+        # and the deck edge that used to show below it.
         GlazingTrim(uid=f"BWGT1{_i}AAAA", tag=f"TR-BW-SILL-{_tag}",
                     kind=TrimKind.GLAZING_CHANNEL, profile="U", weep_holes=True,
                     glazing_ref=_ref, path=_run,
                     top_elevation=ft(_DECK_SURFACE) + _CHANNEL_DEPTH, depth=_CHANNEL_DEPTH,
                     thickness=_CHANNEL_THICK, material="aluminum-extrusion"),
-        GlazingTrim(uid=f"BWGT2{_i}AAAA", tag=f"TR-BW-HEAD-{_tag}",
-                    kind=TrimKind.GLAZING_CHANNEL, profile="F", glazing_ref=_ref,
-                    path=_run, top_elevation=ft(_POST_TOP), depth=_CHANNEL_DEPTH,
-                    thickness=_CHANNEL_THICK, material="aluminum-extrusion"),
+        # No TR-BW-HEAD-*: the shared H channel above is this sheet's head. The sill's
+        # weep holes are now the whole drainage path for the assembly, since the roof's
+        # eave U went with the head.
     ]
     for _side, _y in (("S", _GLAZING_Y0), ("N", _GLAZING_Y1)):
         _half = _GLAZING_THICKNESS_IN / 24.0
@@ -384,7 +425,10 @@ for _i, (_tag, _x, _ref) in enumerate(
             kind=TrimKind.GLAZING_CHANNEL, profile="F", glazing_ref=_ref,
             vertical=True,
             path=(pt(ft(_x - _half), ft(_y)), pt(ft(_x + _half), ft(_y))),
-            top_elevation=ft(_POST_TOP), depth=_WALL_PANEL_HEIGHT,
+            # A jamb runs the sheet's full height, so its top moved up with the sheet's:
+            # leaving it at _POST_TOP while _WALL_PANEL_HEIGHT grew pushed its foot 1'-9 3/4"
+            # below the sheet, into the pier.
+            top_elevation=ft(_ROOF_GLAZING_UNDER), depth=_WALL_PANEL_HEIGHT,
             thickness=_CHANNEL_THICK, material="aluminum-extrusion"))
 
 # ============================================================================

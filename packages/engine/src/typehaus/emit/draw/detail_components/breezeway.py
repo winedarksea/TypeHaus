@@ -111,6 +111,48 @@ def weeping_u_channel(u_center: float, z_top: float, crop_in) -> list[IRNode]:
     return nodes
 
 
+def shared_h_channel(u_center: float, z_joint: float, roof_sign: float,
+                     crop_in) -> list[IRNode]:
+    """The H channel where a standing sheet's head meets the roof sheet's edge.
+
+    This is the piece the eave U-channel and the wall F-head used to be. It matters that it
+    draws as a *joint*: ``_resolve_edge_run`` renders every glazing-trim profile as the same
+    solid box, so in 3D an H is indistinguishable from a U, and the section here is the only
+    place a reader can see that one extrusion now receives two sheets — the wall sheet
+    rising into the lower slot, the roof sheet entering the upper one from the side.
+
+    ``roof_sign`` is which way the roof sheet runs from the channel (+1 at the west edge,
+    -1 at the east), so the corner turns the right way at both ends of the cut.
+    """
+    if not _in_frame(u_center, z_joint, crop_in):
+        return []
+    t = CFG.extrusion_draw_in
+    half, lap, web = CFG.h_slot_in / 2.0, CFG.h_lap_in, CFG.h_web_in
+    outer, inner = u_center - roof_sign * (half + t), u_center + roof_sign * half
+    web_top = z_joint + web / 2.0
+    web_bottom = z_joint - web / 2.0
+    nodes: list[IRNode] = []
+    # Outboard leg: the long one. It grips the wall sheet below and turns the corner over
+    # the roof sheet's outer edge, which is what makes the sheet's end weathertight now that
+    # nothing oversails it.
+    nodes += rect_region(min(outer, outer + roof_sign * t), web_bottom - lap,
+                         max(outer, outer + roof_sign * t), web_top + half + t,
+                         "breezeway-h-channel-outer-leg", _ALUMINUM, None)
+    # Inboard leg: shorter, stopping under the web — the roof sheet passes over it.
+    nodes += rect_region(min(inner, inner + roof_sign * t), web_bottom - lap,
+                         max(inner, inner + roof_sign * t), web_bottom,
+                         "breezeway-h-channel-inner-leg", _ALUMINUM, None)
+    # The web between the two slots.
+    nodes += rect_region(min(outer, inner), web_bottom, max(outer, inner), web_top,
+                         "breezeway-h-channel-web", _ALUMINUM, None)
+    # The upper flange, lapping in over the roof sheet.
+    flange_far = u_center + roof_sign * lap
+    nodes += rect_region(min(u_center, flange_far), web_top + half,
+                         max(u_center, flange_far), web_top + half + t,
+                         "breezeway-h-channel-flange", _ALUMINUM, None)
+    return nodes
+
+
 def crown_glazing_bar(u_center: float, z_top: float, crop_in) -> list[IRNode]:
     """The concealed-fastener aluminium bar capping both sheets' high flute ends.
 
@@ -187,10 +229,21 @@ def breezeway_components(model, direction, station, crop) -> list[IRNode]:
     if len(spans) >= 2:
         crown = (spans[0][1] + spans[1][0]) / 2.0
         nodes += crown_glazing_bar(crown, panel_top + CFG.wedge_rise_in, crop_in)
-    for u_edge in (spans[0][0], spans[-1][1]):
-        nodes += weeping_u_channel(u_edge, panel_top, crop_in)
-        nodes += gasketed_fastener(u_edge + 2.0 if u_edge == spans[0][0] else u_edge - 2.0,
-                                   panel_top, crop_in)
+    # The two roof edges now land on the standing sheets' own line, in a shared H channel
+    # rather than an eave U with 14 1/2" of open elevation under it.
+    for u_edge, roof_sign in ((spans[0][0], 1.0), (spans[-1][1], -1.0)):
+        nodes += shared_h_channel(u_edge, panel_underside, roof_sign, crop_in)
+        nodes += gasketed_fastener(u_edge + roof_sign * 2.0, panel_top, crop_in)
+
+    # The sill U-channel is the assembly's only drainage path now that the eave U is gone,
+    # so the detail draws it wherever the cut crosses one. Read off the resolved trim solid
+    # rather than offset from the sheet: the sill sits at the deck surface, which the sheet
+    # now *passes* on its way down to the floor-beam soffit, so there is no fixed distance
+    # between the two to hard-code.
+    for solid, u0, u1, _z0, z1 in _cut_solids(model, "glazing_trim", direction, station, crop):
+        if "-SILL-" not in solid.tag:
+            continue
+        nodes += weeping_u_channel((u0 + u1) / 2.0, z1, crop_in)
 
     joists = []
     for floor in model.floors:

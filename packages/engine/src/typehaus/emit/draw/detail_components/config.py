@@ -356,6 +356,15 @@ class BreezewayGlazingConfig:
     breather_tape_in: float = 1.5
     #: Drawing convention: schematic thickness for an aluminium extrusion.
     extrusion_draw_in: float = 0.25
+    #: Building facts for the shared H channel where the standing sheet's head meets the
+    #: roof sheet's edge. ``_resolve_edge_run`` draws every profile as the same box, so the
+    #: only place this joint reads as a *joint* is the 2D detail — and the joint is the whole
+    #: reason the two sheets now meet on one line instead of 3 1/4" and 14 1/2" apart.
+    #: ``h_slot_in`` is the slot each sheet enters (16mm sheet plus fitting clearance);
+    #: ``h_lap_in`` is how far the legs grip it; ``h_web_in`` is the plate between them.
+    h_slot_in: float = 0.75
+    h_lap_in: float = 1.5
+    h_web_in: float = 0.5
     #: Drawing convention: the gasketed panel fastener's drawn head/washer/shank.
     fastener_head_in: float = 0.5
     fastener_washer_in: float = 0.9
