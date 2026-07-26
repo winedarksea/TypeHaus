@@ -205,7 +205,11 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     from typehaus.takeoff import backup_component_rows, panel_schedule, service_load_summary
 
     rows = {row["circuit"]: row for row in panel_schedule(catlin_model)}
-    assert len(rows) == 30
+    assert len(rows) == 31
+    # The radiant floor is a heating circuit in an all-electric house, so it is on the
+    # schedule with breaker-level GFCI (NEC 424.44(G) — heating cable in a bathroom floor).
+    assert rows["CKT-FH-SAUNA"]["gfci"] and rows["CKT-FH-SAUNA"]["volts"] == 120
+    assert rows["CKT-FH-SAUNA"]["devices"] == ["ED-B-SAUNA-FH-STAT"]
     # Derived from the device type's load_va, not authored on the circuit.
     assert rows["CKT-EV-1450"]["connected_va"] == 9600
     assert rows["CKT-EV-1450"]["devices"] == ["ED-G-EV-1450"]
@@ -350,7 +354,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     assert payload["conduit"] == conduit_takeoff(catlin_model)
     assert payload["devices"] == electrical_device_takeoff(catlin_model)
     assert payload["solar"] == solar_takeoff(catlin_model)
-    assert len(payload["panel_schedule"]) == 30
+    assert len(payload["panel_schedule"]) == 31
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):

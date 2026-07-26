@@ -9,6 +9,7 @@ Neither writer computes geometry; placement math already happened IR-side.
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 from pathlib import Path
 
 from typehaus.emit.draw.door_symbols import DOOR_SYMBOL_NAMES, door_symbol_geometry
@@ -164,8 +165,48 @@ def _leader_align(node: Leader) -> str:
 _MAX_FIG = (14.0, 11.0)
 _MIN_FIG = (5.0, 4.0)
 
+_M_TO_IN = 1000.0 / 25.4
 
-def _fig(scene: Scene, title: str | None):
+
+@dataclass(frozen=True)
+class Underlay:
+    """A reference raster drawn *under* a scene, placed in metres in the model frame.
+
+    The pipeline's own ``ReferenceUnderlay`` (``checks/registry.py``) is preferences data —
+    a house-relative path plus a storey tag. This is the resolved, drawable form: an
+    absolute image and a rectangle. Keeping them separate is what lets the drawing layer
+    stay independent of the checks package.
+
+    ``origin_*`` is the image's SW corner; the image's top row is north, so it is drawn
+    with matplotlib's default ``origin="upper"`` over the extent.
+    """
+
+    image_path: Path
+    origin_x_m: float
+    origin_y_m: float
+    width_m: float
+    height_m: float
+    opacity: float = 0.30
+    storey: str | None = None
+
+
+def _draw_underlays(ax: object, underlays) -> None:
+    """Place each reference raster behind the drawing. Scene space is inches."""
+    import matplotlib.image as mpimg
+
+    for item in underlays:
+        path = Path(item.image_path)
+        if not path.is_file():  # a missing reference must not break the snapshot
+            continue
+        x0 = item.origin_x_m * _M_TO_IN
+        y0 = item.origin_y_m * _M_TO_IN
+        ax.imshow(mpimg.imread(str(path)),
+                  extent=(x0, x0 + item.width_m * _M_TO_IN,
+                          y0, y0 + item.height_m * _M_TO_IN),
+                  alpha=item.opacity, zorder=-10, interpolation="bilinear")
+
+
+def _fig(scene: Scene, title: str | None, underlays=()):
     import matplotlib
 
     matplotlib.use("Agg")
@@ -184,6 +225,8 @@ def _fig(scene: Scene, title: str | None):
     fig, ax = plt.subplots(figsize=figsize)
     ax.set_aspect("equal")
     ax.axis("off")
+    if underlays:
+        _draw_underlays(ax, underlays)
     scaled_text = _render_nodes(ax, scene)
     if title:
         ax.set_title(title, fontsize=9, family="monospace", loc="left")
@@ -351,9 +394,15 @@ def write_pdf(scene: Scene, path: Path, title: str | None = None) -> Path:
     return path
 
 
-def write_raster(scene: Scene, path: Path, title: str | None = None, dpi: int = 110) -> Path:
-    """Render the scene to PNG or SVG (by suffix) — the ``haus render`` backend."""
-    fig = _fig(scene, title or scene.name)
+def write_raster(scene: Scene, path: Path, title: str | None = None, dpi: int = 110,
+                 underlays=()) -> Path:
+    """Render the scene to PNG or SVG (by suffix) — the ``haus render`` backend.
+
+    ``underlays`` are ``Underlay`` rectangles drawn behind the linework. Only the agent-eyes
+    snapshot takes them; ``write_pdf`` (the permit set) deliberately does not, because a
+    survey drawing is reference material and must never print on a permit sheet.
+    """
+    fig = _fig(scene, title or scene.name, underlays)
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=dpi)
     _close(fig)

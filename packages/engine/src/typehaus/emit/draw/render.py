@@ -10,19 +10,41 @@ from __future__ import annotations
 from pathlib import Path
 
 from typehaus.emit.draw.floorplan import build_floorplan
-from typehaus.emit.draw.pdf_writer import write_raster
+from typehaus.emit.draw.pdf_writer import Underlay, write_raster
 from typehaus.resolve.model import ResolvedModel
 
 
-def render_plan(model: ResolvedModel, storey: str, path: Path, dpi: int = 110) -> Path:
+def resolve_underlays(house_dir: Path, reference_underlays) -> list[Underlay]:
+    """Turn preferences ``ReferenceUnderlay`` records into drawable ``Underlay`` rectangles.
+
+    ``path`` is house-relative (the same convention the server's sandboxed ``/underlay``
+    route uses), so this is where it becomes an absolute image on disk.
+    """
+    return [Underlay(image_path=(house_dir / item.path).resolve(),
+                     origin_x_m=item.origin_x_m, origin_y_m=item.origin_y_m,
+                     width_m=item.width_m, height_m=item.height_m,
+                     opacity=item.opacity, storey=item.storey)
+            for item in reference_underlays]
+
+
+def render_plan(model: ResolvedModel, storey: str, path: Path, dpi: int = 110,
+                underlays=()) -> Path:
     scene = build_floorplan(model, storey)
-    return write_raster(scene, path, title=f"plan · {storey}", dpi=dpi)
+    return write_raster(scene, path, title=f"plan · {storey}", dpi=dpi,
+                        underlays=underlays)
 
 
 def render_views(
-    model: ResolvedModel, out_dir: Path, view: str = "plan", fmt: str = "png"
+    model: ResolvedModel, out_dir: Path, view: str = "plan", fmt: str = "png",
+    underlays=(),
 ) -> list[Path]:
-    """Render one view for every storey; returns the written snapshot paths."""
+    """Render one view for every storey; returns the written snapshot paths.
+
+    ``underlays`` (drawable ``Underlay`` records, → ``resolve_underlays``) are matched to
+    plans by their ``storey`` tag. This is the "*look*" half of edit → build → check → look:
+    with the survey drawing behind the linework the agent can see a partition sitting a foot
+    off its source, which no numeric check reports.
+    """
     out_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
     storeys = [s.tag for s in sorted(model.plan.storeys, key=lambda x: x.elevation.meters)]
@@ -30,7 +52,9 @@ def render_views(
         for storey in storeys:
             if not any(w.storey == storey for w in model.walls):
                 continue
-            written.append(render_plan(model, storey, out_dir / f"plan_{storey}.{fmt}"))
+            written.append(render_plan(
+                model, storey, out_dir / f"plan_{storey}.{fmt}",
+                underlays=[u for u in underlays if u.storey == storey]))
     elif view == "3d":
         # 3D is the offscreen glTF artifact (#51): emit a self-contained .glb the UI panel
         # and a glTF viewer both read. A raster snapshot needs an offscreen GL context (M3);

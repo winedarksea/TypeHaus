@@ -1,6 +1,31 @@
 # haus: editable
 # Second floor — CATLIN_EXT_2X6 on the same sheathing plane (2x6 on every framed
 # storey), three east bedrooms, west suite, plant room + study south, duct soffit (WP3.1).
+#
+# Every interior partition on this storey is set to the Sensopia survey drawing
+# `catlin_floorplan/Colin House - 2nd Floor.svg`, read off `path` #0 (the wall-fill
+# polygon) at that drawing's 74.7029 px/m and rounded to the nearest inch. The fidelity
+# policy is: interior partitions move to the source; the exterior envelope, the x=18'
+# bearing line and the 16" framing module do not. `preferences.toml`'s `[[underlay]]` for
+# this storey is calibrated to the same polygon, so `haus render --view plan` draws the
+# survey under this plan and the two can be compared by eye.
+#
+# Known, deliberate divergences from the source:
+# - The source opens the centre line up between y=22'-7" and y=31'-1 1/2" and again at the
+#   suite and plant-room doors. `W-S-C1..C4B` stays a continuous bearing stack (house fact,
+#   CLAUDE.md), so those three breaks are modelled as *openings in* the wall — D-S-PLANT,
+#   D-S-SUITE and O-S-HALLW — the way `main.py` already does with O-M-HALL / O-M-DRESS.
+#   The source's single 181.02 sf "Hallway" therefore reads here as RM-S-HALL (east of the
+#   bearing line) + RM-S-LANDING + RM-S-STAIR (west of it).
+# - The source's south-wall openings are four 6'/5'-3" runs and its bearing-wall windows are
+#   2'-8"; `preferences.toml` caps a bearing RO at 27" and a non-bearing one at 30". The
+#   existing window *types* are kept and only their positions move onto the source openings.
+# - `WIN-S-BATH-W` and `WIN-S-BATH-N` have no counterpart — the source draws no opening in
+#   the west wall north of y=25'-8" and none in the north wall west of x=21'-10". Both are
+#   kept for bathroom daylight.
+# - `RM-S-ENSUITE` is really the hall bath (the source's 80.73 sf "Bathroom"), not an
+#   ensuite; the suite's own bath is RM-S-SUITEBATH. The tag stays because retagging would
+#   ripple through fixtures.py, mep.py, views.py and electrical.py for no geometric gain.
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -30,33 +55,46 @@ NODES = [
     Node(uid="CSN001AAAA", tag="N-S-SW", position=pt(ft(0), ft(0))),
     Node(uid="CSN002AAAA", tag="N-S-S1", position=pt(ft(18), ft(0))),
     Node(uid="CSN003AAAA", tag="N-S-SE", position=pt(ft(36), ft(0))),
-    Node(uid="CSN004AAAA", tag="N-S-E1", position=pt(ft(36), ft(8, 8))),
-    Node(uid="CSN005AAAA", tag="N-S-E2", position=pt(ft(36), ft(12))),
-    Node(uid="CSN006AAAA", tag="N-S-E3", position=pt(ft(36), ft(20))),
-    Node(uid="CSN007AAAA", tag="N-S-E4", position=pt(ft(36), ft(28))),
+    # The three east bedrooms are equal 9'-0" bays (source 9.035 / 17.991 / 26.947),
+    # replacing the 8'-0" bays the port started with.
+    Node(uid="CSN004AAAA", tag="N-S-E1", position=pt(ft(36), ft(9))),
+    Node(uid="CSN005AAAA", tag="N-S-E2", position=pt(ft(36), ft(18))),
+    Node(uid="CSN006AAAA", tag="N-S-E3", position=pt(ft(36), ft(27))),
     Node(uid="CSN008AAAA", tag="N-S-NE", position=pt(ft(36), ft(36))),
     Node(uid="CSN009AAAA", tag="N-S-N1", position=pt(ft(18), ft(36))),
     Node(uid="CSN010AAAA", tag="N-S-N2", position=pt(ft(10), ft(36))),
     Node(uid="CSN011AAAA", tag="N-S-NW", position=pt(ft(0), ft(36))),
     Node(uid="CSN012AAAA", tag="N-S-W1", position=pt(ft(0), ft(26, 4))),
-    Node(uid="CSN013AAAA", tag="N-S-W2", position=pt(ft(0), ft(13, 4))),
-    Node(uid="CSN014AAAA", tag="N-S-W3", position=pt(ft(0), ft(8, 8))),
+    Node(uid="CSN013AAAA", tag="N-S-W2", position=pt(ft(0), ft(22, 4))),
+    Node(uid="CSN014AAAA", tag="N-S-W3", position=pt(ft(0), ft(9))),
     # Center line ties
-    Node(uid="CSN015AAAA", tag="N-S-C1", position=pt(ft(18), ft(8, 8))),
-    Node(uid="CSN016AAAA", tag="N-S-C2", position=pt(ft(18), ft(13, 4))),
+    Node(uid="CSN015AAAA", tag="N-S-C1", position=pt(ft(18), ft(9))),
+    Node(uid="CSN016AAAA", tag="N-S-C2", position=pt(ft(18), ft(12, 5))),
+    Node(uid="CSN028AAAA", tag="N-S-C2B", position=pt(ft(18), ft(15, 11))),
+    Node(uid="CSN029AAAA", tag="N-S-C2C", position=pt(ft(18), ft(22, 4))),
+    Node(uid="CSN027AAAA", tag="N-S-C3B", position=pt(ft(18), ft(25))),
     Node(uid="CSN017AAAA", tag="N-S-C3", position=pt(ft(18), ft(26, 4))),
-    # East bedroom block
-    Node(uid="CSN018AAAA", tag="N-S-B1", position=pt(ft(22, 8), ft(8, 8))),
-    Node(uid="CSN019AAAA", tag="N-S-B2", position=pt(ft(22, 8), ft(12))),
-    Node(uid="CSN020AAAA", tag="N-S-B3", position=pt(ft(22, 8), ft(20))),
-    Node(uid="CSN021AAAA", tag="N-S-B4", position=pt(ft(22, 8), ft(28))),
-    Node(uid="CSN022AAAA", tag="N-S-B5", position=pt(ft(22, 8), ft(36))),
-    # West block
-    Node(uid="CSN023AAAA", tag="N-S-D1", position=pt(ft(8), ft(8, 8))),
-    Node(uid="CSN024AAAA", tag="N-S-D2", position=pt(ft(8), ft(13, 4))),
+    Node(uid="CSN030AAAA", tag="N-S-C3D", position=pt(ft(18), ft(30, 10))),
+    # East bedroom block — the hall/bedroom partition is x=21'-11" (source 21.894/21.898)
+    Node(uid="CSN018AAAA", tag="N-S-B1", position=pt(ft(21, 11), ft(9))),
+    Node(uid="CSN019AAAA", tag="N-S-B2", position=pt(ft(21, 11), ft(18))),
+    Node(uid="CSN020AAAA", tag="N-S-B3", position=pt(ft(21, 11), ft(27))),
+    Node(uid="CSN021AAAA", tag="N-S-B4", position=pt(ft(21, 11), ft(30, 10))),
+    Node(uid="CSN022AAAA", tag="N-S-B5", position=pt(ft(21, 11), ft(36))),
+    # West block: suite / walk-in / suite bath partition at x=9'-7 1/2" (source 9.616)
+    Node(uid="CSN023AAAA", tag="N-S-D1", position=pt(ft(9, 7.5), ft(9))),
+    Node(uid="CSN024AAAA", tag="N-S-D2", position=pt(ft(9, 7.5), ft(12, 5))),
+    Node(uid="CSN031AAAA", tag="N-S-D3", position=pt(ft(9, 7.5), ft(15, 11))),
+    Node(uid="CSN032AAAA", tag="N-S-D4", position=pt(ft(9, 7.5), ft(22, 4))),
+    # Vanity alcove (source 5.873 / 26.374)
+    Node(uid="CSN033AAAA", tag="N-S-V1", position=pt(ft(5, 10.5), ft(22, 4))),
+    Node(uid="CSN034AAAA", tag="N-S-V2", position=pt(ft(5, 10.5), ft(26, 4))),
+    # Stair shaft west line + the 2'x2' mechanical chase in the hall bath's NE corner
     Node(uid="CSN025AAAA", tag="N-S-BA1", position=pt(ft(10), ft(26, 4))),
     Node(uid="CSN026AAAA", tag="N-S-STR2", position=pt(ft(10), ft(25))),
-    Node(uid="CSN027AAAA", tag="N-S-C3B", position=pt(ft(18), ft(25))),
+    Node(uid="CSN035AAAA", tag="N-S-CH1", position=pt(ft(7, 8), ft(33, 4))),
+    Node(uid="CSN036AAAA", tag="N-S-CH2", position=pt(ft(7, 8), ft(36))),
+    Node(uid="CSN037AAAA", tag="N-S-CH3", position=pt(ft(10), ft(33, 4))),
 ]
 
 WALLS = [
@@ -76,10 +114,7 @@ WALLS = [
     Wall(uid="CSW104AAAA", tag="W-S-E3", start_node="N-S-E2", end_node="N-S-E3",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-E2"),
-    Wall(uid="CSW105AAAA", tag="W-S-E4", start_node="N-S-E3", end_node="N-S-E4",
-         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
-         structural_role=StructuralRole.BEARING, stacks_on="W-M-E2"),
-    Wall(uid="CSW106AAAA", tag="W-S-E5", start_node="N-S-E4", end_node="N-S-NE",
+    Wall(uid="CSW105AAAA", tag="W-S-E4", start_node="N-S-E3", end_node="N-S-NE",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-E2"),
     Wall(uid="CSW107AAAA", tag="W-S-N1", start_node="N-S-NE", end_node="N-S-B5",
@@ -91,7 +126,11 @@ WALLS = [
     Wall(uid="CSW108AAAA", tag="W-S-N2", start_node="N-S-N1", end_node="N-S-N2",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N2"),
-    Wall(uid="CSW109AAAA", tag="W-S-N3", start_node="N-S-N2", end_node="N-S-NW",
+    # Split at N-S-CH2, where the mechanical chase's west wall tees into the north wall.
+    Wall(uid="CSW109AAAA", tag="W-S-N3", start_node="N-S-N2", end_node="N-S-CH2",
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N3"),
+    Wall(uid="CSW153AAAA", tag="W-S-N3B", start_node="N-S-CH2", end_node="N-S-NW",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N3"),
     Wall(uid="CSW110AAAA", tag="W-S-W1", start_node="N-S-NW", end_node="N-S-W1",
@@ -99,30 +138,41 @@ WALLS = [
          structural_role=StructuralRole.BEARING, stacks_on="W-M-W1"),
     Wall(uid="CSW111AAAA", tag="W-S-W2", start_node="N-S-W1", end_node="N-S-W2",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
-         structural_role=StructuralRole.BEARING, stacks_on="W-M-W3"),
+         structural_role=StructuralRole.BEARING, stacks_on="W-M-W2"),
     Wall(uid="CSW112AAAA", tag="W-S-W3", start_node="N-S-W2", end_node="N-S-W3",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
-         structural_role=StructuralRole.BEARING, stacks_on="W-M-W4"),
+         structural_role=StructuralRole.BEARING, stacks_on="W-M-W3"),
     Wall(uid="CSW113AAAA", tag="W-S-W4", start_node="N-S-W3", end_node="N-S-SW",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-W4"),
     # --- center bearing wall (2x6 carries the attic floor) ---------------------
+    # Continuous from gable to gable — the attic's structural ridge bears on the stack this
+    # line belongs to. The three source breaks are doors/cased openings, not gaps.
     Wall(uid="CSW114AAAA", tag="W-S-C1", start_node="N-S-S1", end_node="N-S-C1",
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C1"),
     Wall(uid="CSW115AAAA", tag="W-S-C2", start_node="N-S-C1", end_node="N-S-C2",
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         structural_role=StructuralRole.BEARING, stacks_on="W-M-C1"),
+    Wall(uid="CSW138AAAA", tag="W-S-C2B", start_node="N-S-C2", end_node="N-S-C2B",
+         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C2"),
-    Wall(uid="CSW116AAAA", tag="W-S-C3", start_node="N-S-C2", end_node="N-S-C3B",
+    Wall(uid="CSW139AAAA", tag="W-S-C2C", start_node="N-S-C2B", end_node="N-S-C2C",
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C3"),
+    Wall(uid="CSW116AAAA", tag="W-S-C3", start_node="N-S-C2C", end_node="N-S-C3B",
+         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         structural_role=StructuralRole.BEARING, stacks_on="W-M-C4"),
     Wall(uid="CSW136AAAA", tag="W-S-C3C", start_node="N-S-C3B", end_node="N-S-C3",
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C4B"),
-    Wall(uid="CSW117AAAA", tag="W-S-C4", start_node="N-S-C3", end_node="N-S-N1",
+    Wall(uid="CSW117AAAA", tag="W-S-C4", start_node="N-S-C3", end_node="N-S-C3D",
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C5"),
-    # --- south band: plant room | study2 ---------------------------------------
+    Wall(uid="CSW140AAAA", tag="W-S-C4B", start_node="N-S-C3D", end_node="N-S-N1",
+         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         structural_role=StructuralRole.BEARING, stacks_on="W-M-C5"),
+    # --- south band north wall, y=9'-0" (source 9.035): plant room | study2 ------
     Wall(uid="CSW118AAAA", tag="W-S-PS1", start_node="N-S-W3", end_node="N-S-D1",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW119AAAA", tag="W-S-PS2", start_node="N-S-D1", end_node="N-S-C1",
@@ -144,84 +194,137 @@ WALLS = [
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW127AAAA", tag="W-S-BD2", start_node="N-S-B3", end_node="N-S-E3",
          assembly="INT_2X4_PARTITION", top=ft(9)),
-    Wall(uid="CSW128AAAA", tag="W-S-BD3", start_node="N-S-B4", end_node="N-S-E4",
+    # North-centre closet (source 30.853 / 21.898), off the hall's north end.
+    Wall(uid="CSW141AAAA", tag="W-S-CLN-S", start_node="N-S-C3D", end_node="N-S-B4",
          assembly="INT_2X4_PARTITION", top=ft(9)),
-    # --- west block: dressing corridor, suite, ensuite --------------------------
+    # --- west block: walk-in, suite, suite bath, vanity alcove ------------------
     Wall(uid="CSW129AAAA", tag="W-S-DC1", start_node="N-S-D1", end_node="N-S-D2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
-    Wall(uid="CSW130AAAA", tag="W-S-BD-S", start_node="N-S-W2", end_node="N-S-D2",
+    # RM-S-SUITEBATH's west + south walls carry its drain stack, so both are the 2x6
+    # plumbing assembly: `advisory.wet_wall_depth` reads preferences.toml's
+    # `drain_stack_required_structure_in = 5.5`, which a 2x4 partition cannot hold.
+    Wall(uid="CSW142AAAA", tag="W-S-DC2", start_node="N-S-D3", end_node="N-S-D4",
+         assembly="INT_2X6_PLUMBING", top=ft(9)),
+    Wall(uid="CSW143AAAA", tag="W-S-CLN", start_node="N-S-D2", end_node="N-S-C2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
-    Wall(uid="CSW131AAAA", tag="W-S-BD-S2", start_node="N-S-D2", end_node="N-S-C2",
+    Wall(uid="CSW144AAAA", tag="W-S-SBS", start_node="N-S-D3", end_node="N-S-C2B",
+         assembly="INT_2X6_PLUMBING", top=ft(9)),
+    Wall(uid="CSW145AAAA", tag="W-S-SN1", start_node="N-S-W2", end_node="N-S-V1",
          assembly="INT_2X4_PARTITION", top=ft(9)),
-    Wall(uid="CSW132AAAA", tag="W-S-BD-N", start_node="N-S-W1", end_node="N-S-BA1",
+    Wall(uid="CSW146AAAA", tag="W-S-SN2", start_node="N-S-V1", end_node="N-S-D4",
+         assembly="INT_2X4_PARTITION", top=ft(9)),
+    Wall(uid="CSW147AAAA", tag="W-S-SN3", start_node="N-S-D4", end_node="N-S-C2C",
+         assembly="INT_2X4_PARTITION", top=ft(9)),
+    Wall(uid="CSW148AAAA", tag="W-S-VE", start_node="N-S-V1", end_node="N-S-V2",
+         assembly="INT_2X4_PARTITION", top=ft(9)),
+    Wall(uid="CSW132AAAA", tag="W-S-BD-N", start_node="N-S-W1", end_node="N-S-V2",
+         assembly="INT_2X6_PLUMBING", top=ft(9)),
+    Wall(uid="CSW149AAAA", tag="W-S-BD-N1B", start_node="N-S-V2", end_node="N-S-BA1",
          assembly="INT_2X6_PLUMBING", top=ft(9)),
     Wall(uid="CSW133AAAA", tag="W-S-BD-N2", start_node="N-S-STR2", end_node="N-S-C3B",
          assembly="INT_2X4_PARTITION", top=ft(9)),
-    Wall(uid="CSW134AAAA", tag="W-S-BA-E", start_node="N-S-N2", end_node="N-S-BA1",
+    Wall(uid="CSW134AAAA", tag="W-S-BA-E", start_node="N-S-N2", end_node="N-S-CH3",
+         assembly="INT_2X6_PLUMBING", top=ft(9)),
+    Wall(uid="CSW150AAAA", tag="W-S-BA-E1B", start_node="N-S-CH3", end_node="N-S-BA1",
          assembly="INT_2X6_PLUMBING", top=ft(9)),
     Wall(uid="CSW137AAAA", tag="W-S-BA-E2", start_node="N-S-BA1", end_node="N-S-STR2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
+    # 2'x2' mechanical chase in the hall bath's NE corner (source void x 8'-2 3/4"..
+    # 10'-2 3/4", y 33'-6"..35'-6"), which is what makes RM-S-ENSUITE the source's
+    # L-shaped 80.73 sf bathroom. Its east side is the stair-shaft wall above.
+    Wall(uid="CSW151AAAA", tag="W-S-CH-W", start_node="N-S-CH1", end_node="N-S-CH2",
+         assembly="INT_2X4_PARTITION", top=ft(9)),
+    Wall(uid="CSW152AAAA", tag="W-S-CH-S", start_node="N-S-CH1", end_node="N-S-CH3",
+         assembly="INT_2X4_PARTITION", top=ft(9)),
 ]
 
+# Openings are placed on the gaps measured in the source wall polygon. `from_node` offsets
+# are to the opening's near *edge* (resolve/pipeline.py:195), not its centre, so each
+# comment below records the resulting centre.
 OPENINGS = [
-    # Bedroom doors from the hallway
+    # Bedroom doors — on the hall/bedroom partition, not on the cross walls. The source
+    # puts three 2'-7 1/2" gaps at y 15'-2", 24'-1", 28'-11"; hosting them on the cross
+    # walls (as the port did) put D-S-BED1's centre at (22.67, 10.42), inside the attic
+    # stair band rather than inside RM-S-BED1.
     Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT30",
-         position=from_node("N-S-B2", ft(0, 4)), flip_swing=True),
-    Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW3", type_ref="DT-INT30",
-         position=from_node("N-S-B3", ft(0, 6))),
-    Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW4", type_ref="DT-INT30",
-         position=from_node("N-S-B4", ft(0, 6))),
+         position=from_node("N-S-B1", ft(4, 11)), flip_swing=True),      # y 15'-2"
+    Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT30",
+         position=from_node("N-S-B2", ft(4, 10))),                       # y 24'-1"
+    Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT30",
+         position=from_node("N-S-B3", ft(0, 8))),                        # y 28'-11"
     Door(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1", type_ref="DT-INT30",
-         position=from_node("N-S-C1", ft(1))),
-    Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-BD-S2", type_ref="DT-INT32",
-         position=from_node("N-S-D2", ft(1))),
-    Door(uid="CSD207AAAA", tag="D-S-CLOS", host="W-S-DC1", type_ref="DT-INT30",
-         position=from_node("N-S-D1", ft(1))),
-    Door(uid="CSD208AAAA", tag="D-S-ENSUITE", host="W-S-BD-N", type_ref="DT-INT30",
-         position=from_node("N-S-W1", ft(5))),
-    # Open stair head onto the hallway (cased, no door).
+         position=from_node("N-S-C1", ft(1, 0.625))),                    # x 20'-3 5/8"
+    # Three doors through the centre bearing line, on the source's own gaps. Each takes a
+    # header exactly like O-M-HALL / O-M-DRESS one storey down; the wall itself is unbroken.
+    Door(uid="CSD212AAAA", tag="D-S-PLANT", host="W-S-C1", type_ref="DT-INT30",
+         position=from_node("N-S-S1", ft(3, 2.5))),                      # y 4'-5 1/2"
+    Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-C2B", type_ref="DT-INT32",
+         position=from_node("N-S-C2", ft(0, 4.875))),                    # y 14'-1 7/8"
+    RoughOpening(uid="CSD216AAAA", tag="O-S-HALLW", host="W-S-C4",
+                 position=from_node("N-S-C3", ft(0, 9)), width=ft(3),
+                 height=ft(6, 8)),                                       # y 28'-7"
+    # West block
+    RoughOpening(uid="CSD213AAAA", tag="O-S-CLOSET", host="W-S-CLN",
+                 position=from_node("N-S-D2", ft(1, 10)), width=ft(4, 7),
+                 height=ft(6, 8)),                                       # x 13'-9"
+    Door(uid="CSD214AAAA", tag="D-S-SUITEBATH", host="W-S-SBS", type_ref="DT-INT30",
+         position=from_node("N-S-D3", ft(0, 3.5))),                      # x 11'-2"
+    RoughOpening(uid="CSD215AAAA", tag="O-S-VANITY", host="W-S-VE",
+                 position=from_node("N-S-V1", ft(0, 3.25)), width=ft(2, 7.5),
+                 height=ft(6, 8)),                                       # y 23'-11"
+    Door(uid="CSD208AAAA", tag="D-S-ENSUITE", host="W-S-BD-N1B", type_ref="DT-INT30",
+         position=from_node("N-S-V2", ft(1, 4.5))),                      # x 8'-6"
+    Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT30",
+         position=from_node("N-S-C3D", ft(0, 8.5))),                     # x 19'-11 1/2"
+    # Open stair head onto the landing (cased, no door).
     RoughOpening(uid="CSD209AAAA", tag="O-S-STAIRTOP", host="W-S-BD-N2",
                  position=from_node("N-S-STR2", ft(0, 6)), width=ft(6),
                  height=ft(6, 8)),
-    # Deck doors (south wall, flanking the center line) — French (double-swing) leaves.
-    Door(uid="CSD210AAAA", tag="D-S-DECK-W", host="W-S-S1", type_ref="DT-FRENCH36",
-         position=from_node("N-S-S1", ft(2))),
+    # Balcony door — one opening in the source (x 18'-8"..23'-11"), east of the centre
+    # line, not the two the port had flanking it. The French pair is 6'-0" of leaf against
+    # the source's 5'-3", so it is centred on the source opening and overhangs 4 1/2" a side.
+    Door(uid="CSD210AAAA", tag="D-S-DECK-W", host="W-S-S2", type_ref="DT-FRENCH36",
+         position=from_node("N-S-S1", ft(0, 3.5))),                      # x 19'-9 1/2"
     Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-FRENCH36",
-         position=from_node("N-S-S1", ft(2))),
-    # Windows — east bedrooms (bearing wall: WT-2736, egress-capable)
-    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E3", type_ref="WT-2736",
-           position=from_node("N-S-E2", ft(2, 10.5)), sill_height=ft(3)),
-    Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E4", type_ref="WT-2736",
-           position=from_node("N-S-E3", ft(2, 10.5)), sill_height=ft(3)),
-    Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E5", type_ref="WT-2736",
-           position=from_node("N-S-E4", ft(2, 10.5)), sill_height=ft(3)),
-    # West suite (bearing wall)
-    Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W2", type_ref="WT-2736",
-           position=from_node("N-S-W1", ft(4, 2.5)), sill_height=ft(3)),
-    Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W2", type_ref="WT-2736",
-           position=from_node("N-S-W1", ft(8, 2.5)), sill_height=ft(3)),
-    # Plant room — south glazing (non-bearing: WT-3036 row)
+         position=from_node("N-S-S1", ft(3, 3.5))),                      # x 22'-9 1/2"
+    # Windows — east wall, on the source's four 2'-8" openings (we build 27", the bearing cap)
+    Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2736",
+           position=from_node("N-S-SE", ft(2, 8.5)), sill_height=ft(2, 6)),   # y 3'-10"
+    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E2", type_ref="WT-2736",
+           position=from_node("N-S-E1", ft(3, 7.5)), sill_height=ft(3)),      # y 13'-9"
+    Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E3", type_ref="WT-2736",
+           position=from_node("N-S-E2", ft(3, 7.5)), sill_height=ft(3)),      # y 22'-9"
+    Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-2736",
+           position=from_node("N-S-E3", ft(3, 6.5)), sill_height=ft(3)),      # y 31'-8"
+    # West suite (bearing wall) — source openings at y 12'-7" and 19'-4"
+    Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W3", type_ref="WT-2736",
+           position=from_node("N-S-W2", ft(8, 7.5)), sill_height=ft(3)),      # y 12'-7"
+    Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W3", type_ref="WT-2736",
+           position=from_node("N-S-W2", ft(1, 10.5)), sill_height=ft(3)),     # y 19'-4"
+    # Plant room — south glazing (non-bearing: WT-3036 row), centred in the source's two
+    # 6'-0" openings (x 2'-3"..8'-3" and 10'-1"..16'-1").
     Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-3036",
-           position=from_node("N-S-SW", ft(2, 9)), sill_height=ft(2)),
+           position=from_node("N-S-SW", ft(4)), sill_height=ft(2)),           # x 5'-3"
     Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3036",
-           position=from_node("N-S-SW", ft(6, 9)), sill_height=ft(2)),
+           position=from_node("N-S-SW", ft(11, 10)), sill_height=ft(2)),      # x 13'-1"
     # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
     # type and not the 30" south-glazing one — "resize windows to fit the grid" (CLAUDE.md).
     Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736",
-           position=from_node("N-S-W3", ft(4, 2.5)), sill_height=ft(2)),
+           position=from_node("N-S-W3", ft(3, 2.5)), sill_height=ft(2)),      # y 4'-8"
+    # Study 2's south pair, both inside the source's single 6'-0" opening at 28'-10"..34'-10".
     Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3036",
-           position=from_node("N-S-SE", ft(4, 9)), sill_height=ft(2, 6)),
+           position=from_node("N-S-S1", ft(10, 9)), sill_height=ft(2, 6)),    # x 30'-0"
     Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3036",
-           position=from_node("N-S-SE", ft(8, 9)), sill_height=ft(2, 6)),
-    # Baths + north
-    # W-S-N3 shortened by 1' when N-S-N2 moved to the stair shaft's new line, which moved
-    # every 16" bay centre on it by 4"; the RO follows so it still fits one clear bay.
-    Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1424",
-           position=from_node("N-S-NW", ft(4, 9)), sill_height=ft(4)),
+           position=from_node("N-S-S1", ft(13, 5)), sill_height=ft(2, 6)),    # x 32'-8"
+    # Baths + north. The source draws no opening in the north wall west of x=21'-10" and
+    # none in the west wall north of y=25'-8"; WIN-S-BATH-N/W are kept anyway so the hall
+    # bath has daylight, and are the storey's only two openings with no source counterpart.
+    Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3B", type_ref="WT-1424",
+           position=from_node("N-S-NW", ft(1, 9)), sill_height=ft(4)),        # x 5'-4"
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424",
            position=from_node("N-S-NW", ft(4, 1)), sill_height=ft(4)),
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3036",
-           position=from_node("N-S-NE", ft(6, 9)), sill_height=ft(3)),
+           position=from_node("N-S-NE", ft(5, 9.5)), sill_height=ft(3)),      # x 28'-11 1/2"
 ]
 
 ROOMS = [
@@ -229,22 +332,32 @@ ROOMS = [
          occupancy=Occupancy.LIVING, floor_finish="tile"),
     Room(uid="CSR402AAAA", tag="RM-S-STUDY2", seed=pt(ft(27), ft(4)),
          occupancy=Occupancy.OFFICE, floor_finish="oak"),
-    Room(uid="CSR403AAAA", tag="RM-S-BED1", seed=pt(ft(29), ft(16)),
+    Room(uid="CSR403AAAA", tag="RM-S-BED1", seed=pt(ft(29), ft(13, 6)),
          occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
-    Room(uid="CSR404AAAA", tag="RM-S-BED2", seed=pt(ft(29), ft(24)),
+    Room(uid="CSR404AAAA", tag="RM-S-BED2", seed=pt(ft(29), ft(22, 6)),
          occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
-    Room(uid="CSR405AAAA", tag="RM-S-BED3", seed=pt(ft(29), ft(32)),
+    Room(uid="CSR405AAAA", tag="RM-S-BED3", seed=pt(ft(29), ft(31, 6)),
          occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
-    Room(uid="CSR406AAAA", tag="RM-S-SUITE", seed=pt(ft(9), ft(20)),
+    # The suite is the source's L: the full west strip plus the arm that reaches the centre
+    # line between the walk-in and the suite bath.
+    Room(uid="CSR406AAAA", tag="RM-S-SUITE", seed=pt(ft(5), ft(16)),
          occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
-    Room(uid="CSR407AAAA", tag="RM-S-CLOSET", seed=pt(ft(4), ft(11)),
+    Room(uid="CSR407AAAA", tag="RM-S-CLOSET", seed=pt(ft(14), ft(10, 8)),
          occupancy=Occupancy.STORAGE, floor_finish="carpet"),
-    Room(uid="CSR411AAAA", tag="RM-S-DRESS", seed=pt(ft(13), ft(11)),
-         occupancy=Occupancy.HALLWAY, floor_finish="carpet"),
+    Room(uid="CSR412AAAA", tag="RM-S-SUITEBATH", seed=pt(ft(14), ft(19)),
+         occupancy=Occupancy.BATHROOM, floor_finish="tile"),
+    Room(uid="CSR413AAAA", tag="RM-S-VANITY", seed=pt(ft(3), ft(24, 4)),
+         occupancy=Occupancy.BATHROOM, floor_finish="tile"),
+    # The west half of the source's one big "Hallway": the landing outside the suite that
+    # links the stair head, the vanity alcove and the hall bath.
+    Room(uid="CSR414AAAA", tag="RM-S-LANDING", seed=pt(ft(13), ft(23, 6)),
+         occupancy=Occupancy.HALLWAY, floor_finish="oak"),
     Room(uid="CSR408AAAA", tag="RM-S-ENSUITE", seed=pt(ft(5), ft(31)),
          occupancy=Occupancy.BATHROOM, floor_finish="tile"),
     Room(uid="CSR409AAAA", tag="RM-S-HALL", seed=pt(ft(20), ft(20)),
          occupancy=Occupancy.HALLWAY, floor_finish="oak"),
+    Room(uid="CSR415AAAA", tag="RM-S-NCLOSET", seed=pt(ft(20), ft(33)),
+         occupancy=Occupancy.STORAGE, floor_finish="oak"),
     Room(uid="CSR410AAAA", tag="RM-S-STAIR", seed=pt(ft(14, 6), ft(31)),
          occupancy=Occupancy.STAIR, floor_finish="oak"),
 ]
@@ -257,10 +370,12 @@ ALARMS = [
     Alarm(uid="CSA705AAAA", tag="AL-S-HALL", kind=AlarmKind.COMBO, room="RM-S-HALL"),
 ]
 
-# The hallway duct soffit (HRV + heat mains) — dashed on plan, framed in 3D.
+# The hallway duct soffit (HRV + heat mains) — dashed on plan, framed in 3D. Its south end
+# follows the band wall from 8'-8" to 9'-0"; the x-range is left alone (source 20.0->20.6,
+# ours 19'-4"->20'-8", inside the 2" fidelity band).
 SOFFITS = [
     Soffit(uid="CSF601AAAA", tag="SF-S-DUCT",
-           outline=(pt(ft(19, 4), ft(8, 8)), pt(ft(20, 8), ft(8, 8)),
+           outline=(pt(ft(19, 4), ft(9)), pt(ft(20, 8), ft(9)),
                     pt(ft(20, 8), ft(36)), pt(ft(19, 4), ft(36))),
            drop=inch(14)),
 ]
@@ -274,6 +389,8 @@ SOFFITS = [
 # This well is 7'-5 1/4" where the basement's is 7'-0", because the 2x6 walls here are
 # thinner than the 12" concrete they stack on. Each flight is sized to its own storey's
 # well rather than forcing one width on both, so both outer stringers land on a wall.
+# Deliberately NOT moved onto the source: it is drawn to the *main* storey's finished
+# faces, so moving it means moving main.py.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CSF602AAAA", tag="FO-S-STAIR",
                  outline=(pt(ft(10, 3.375), ft(25, 2.375)),

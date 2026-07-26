@@ -612,7 +612,8 @@ def render(
     fmt: str = typer.Option("png", help="png | svg"),
 ) -> None:
     """Emit headless plan/section snapshots for the edit→build→check→look loop (#52)."""
-    from typehaus.emit.draw import render_views
+    from typehaus.checks import load_preferences
+    from typehaus.emit.draw import render_views, resolve_underlays
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
 
@@ -622,7 +623,11 @@ def render(
         _print_findings(result.findings)
         raise typer.Exit(1)
     model, _ = resolve(result.plan)
-    paths = render_views(model, d / "out" / "render", view=view, fmt=fmt)
+    # The plans go out over the reference underlays configured in preferences.toml, so
+    # "look at it" can mean look at it *against the survey* rather than at linework alone.
+    underlays = resolve_underlays(d, load_preferences(d).underlays)
+    paths = render_views(model, d / "out" / "render", view=view, fmt=fmt,
+                         underlays=underlays)
     for p in paths:
         console.print(f"wrote {p}")
 

@@ -34,13 +34,21 @@ NODES = [
     Node(uid="CAN001AAAA", tag="N-A-SW", position=pt(ft(0), ft(0))),
     Node(uid="CAN002AAAA", tag="N-A-S1", position=pt(ft(10), ft(0))),
     Node(uid="CAN003AAAA", tag="N-A-S2", position=pt(ft(18), ft(0))),
+    Node(uid="CAN011AAAA", tag="N-A-V1", position=pt(ft(22, 4), ft(0))),
     Node(uid="CAN004AAAA", tag="N-A-SE", position=pt(ft(36), ft(0))),
-    Node(uid="CAN005AAAA", tag="N-A-E1", position=pt(ft(36), ft(8, 8))),
+    Node(uid="CAN005AAAA", tag="N-A-E1", position=pt(ft(36), ft(9, 1.25))),
     Node(uid="CAN006AAAA", tag="N-A-NE", position=pt(ft(36), ft(36))),
     Node(uid="CAN007AAAA", tag="N-A-N1", position=pt(ft(18), ft(36))),
     Node(uid="CAN008AAAA", tag="N-A-NW", position=pt(ft(0), ft(36))),
-    Node(uid="CAN009AAAA", tag="N-A-C1", position=pt(ft(18), ft(8, 8))),
-    Node(uid="CAN010AAAA", tag="N-A-D1", position=pt(ft(10), ft(8, 8))),
+    # Den north wall, y=5'-7" (source 5.611); band wall, y=9'-1 1/4" (source 9.228).
+    Node(uid="CAN009AAAA", tag="N-A-C1", position=pt(ft(18), ft(5, 7))),
+    Node(uid="CAN012AAAA", tag="N-A-C2", position=pt(ft(18), ft(9, 1.25))),
+    Node(uid="CAN010AAAA", tag="N-A-D1", position=pt(ft(10), ft(5, 7))),
+    Node(uid="CAN013AAAA", tag="N-A-V2", position=pt(ft(22, 4), ft(5, 7))),
+    # A legitimate wing-wall terminus: the vestibule's north screen stops at the stair
+    # well's west edge, exactly as the source's Den north wall does.
+    Node(uid="CAN014AAAA", tag="N-A-V3", position=pt(ft(21, 2), ft(5, 7)),
+         open_end=True),
 ]
 
 WALLS = [
@@ -53,7 +61,11 @@ WALLS = [
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S1"),
-    Wall(uid="CAW103AAAA", tag="W-A-S3", start_node="N-A-S2", end_node="N-A-SE",
+    Wall(uid="CAW103AAAA", tag="W-A-S3", start_node="N-A-S2", end_node="N-A-V1",
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
+         top=ToRoof(roof_ref="RF-HOUSE"),
+         structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S2"),
+    Wall(uid="CAW114AAAA", tag="W-A-S4", start_node="N-A-V1", end_node="N-A-SE",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"),
          top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-S-S2"),
@@ -71,7 +83,7 @@ WALLS = [
          structural_role=StructuralRole.BEARING, stacks_on="W-S-E1"),
     Wall(uid="CAW107AAAA", tag="W-A-E2", start_node="N-A-E1", end_node="N-A-NE",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
-         structural_role=StructuralRole.BEARING, stacks_on="W-S-E3"),
+         structural_role=StructuralRole.BEARING, stacks_on="W-S-E2"),
     Wall(uid="CAW108AAAA", tag="W-A-W1", start_node="N-A-NW", end_node="N-A-SW",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(5),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-W1"),
@@ -83,17 +95,38 @@ WALLS = [
     Wall(uid="CAW109AAAA", tag="W-A-C1", start_node="N-A-S2", end_node="N-A-C1",
          assembly="CATLIN_INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-C1"),
-    Wall(uid="CAW110AAAA", tag="W-A-C2", start_node="N-A-C1", end_node="N-A-N1",
+    Wall(uid="CAW115AAAA", tag="W-A-C1B", start_node="N-A-C1", end_node="N-A-C2",
+         assembly="CATLIN_INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
+         structural_role=StructuralRole.BEARING, stacks_on="W-S-C2"),
+    Wall(uid="CAW110AAAA", tag="W-A-C2", start_node="N-A-C2", end_node="N-A-N1",
          assembly="CATLIN_INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-C3"),
     # South rooms: den (west of center) + study (east of center). Framed to the roof
     # deck like the other attic partitions; the den's ft(7,6) dropped ceiling (see its
     # Room.ceiling below) is a finish elevation for headroom checks, not a wall height.
+    #
+    # WHY THE DEN MOVED WEST INSTEAD OF ONTO ITS SOURCE FOOTPRINT (see the structural-ridge
+    # note above): the source draws the Den at x 13'-9"..22'-4", straddling the bearing line,
+    # and its own centre wall is dashed and stops short of the south gable. RB-HOUSE bears
+    # continuously on W-A-C1/C1B/C2, so that line cannot open up. Shifting the Den to
+    # x 10'-0"..18'-0", y 0..5'-7" keeps *both* source dimensions (8'-0" x 4'-10 1/2" clear)
+    # and lets RM-A-WEST run full depth to the south gable for x 0..10', which is what the
+    # source's "588.12 sq ft, 17'-3 3/4" x 35'-4"" west loft actually is. The cost is
+    # ~21 sf: our Den takes 8' of the west loft's south end where the source's takes 4'-3".
     Wall(uid="CAW111AAAA", tag="W-A-DN", start_node="N-A-D1", end_node="N-A-C1",
          assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
     Wall(uid="CAW112AAAA", tag="W-A-DW", start_node="N-A-S1", end_node="N-A-D1",
          assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
-    Wall(uid="CAW113AAAA", tag="W-A-SN", start_node="N-A-C1", end_node="N-A-E1",
+    Wall(uid="CAW113AAAA", tag="W-A-SN", start_node="N-A-C2", end_node="N-A-E1",
+         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
+    # Stair vestibule screen: the source's Den east + north walls, kept where the source
+    # draws them (x 22.31, y 5.611) even though the Den itself moved west. They wrap the
+    # head of ST-S2A so the arrival is enclosed on the Study side. Being a dangling pair
+    # they close no polygonized face, so RM-A-STUDY still reads as one room around them —
+    # which is also how the source's 123.39 sf "Study" reads.
+    Wall(uid="CAW116AAAA", tag="W-A-VE", start_node="N-A-V1", end_node="N-A-V2",
+         assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
+    Wall(uid="CAW117AAAA", tag="W-A-VN", start_node="N-A-V3", end_node="N-A-V2",
          assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
 ]
 
@@ -102,19 +135,31 @@ OPENINGS = [
          position=from_node("N-A-N1", ft(4))),
     Door(uid="CAD202AAAA", tag="D-A-DEN", host="W-A-DN", type_ref="DT-INT30",
          position=from_node("N-A-D1", ft(1))),
+    # The band wall's opening onto the stair head — the source's 2'-7 1/2" gap at
+    # x 18'-6"..21'-1 3/4", the only way between the east loft and the stair vestibule.
     Door(uid="CAD203AAAA", tag="D-A-STUDY", host="W-A-SN", type_ref="DT-INT30",
-         position=from_node("N-A-C1", ft(1))),
+         position=from_node("N-A-C2", ft(0, 8.875))),                 # x 19'-11 7/8"
+    Door(uid="CAD204AAAA", tag="D-A-VEST", host="W-A-VE", type_ref="DT-INT30",
+         position=from_node("N-A-V1", ft(0, 11.25))),                 # y 2'-2 1/4"
     # The gables take the shared 30"x36" type (its 36" height was chosen for exactly
     # these walls — heads below the cathedral-roof framing); every opening starts 24"
     # above the finished attic floor per the brief.
-    Window(uid="CAX301AAAA", tag="WIN-A-DEN-S", host="W-A-S2", type_ref="WT-3036",
-           position=from_node("N-A-S1", ft(2, 9)), sill_height=ft(2)),
-    Window(uid="CAX302AAAA", tag="WIN-A-STUDY-S1", host="W-A-S3",
-           type_ref="WT-3036", position=from_node("N-A-S2", ft(6, 9)),
-           sill_height=ft(2)),
-    Window(uid="CAX303AAAA", tag="WIN-A-STUDY-S2", host="W-A-S3",
-           type_ref="WT-3036", position=from_node("N-A-S2", ft(12, 1)),
-           sill_height=ft(2)),
+    #
+    # The source's three south-gable openings are 2'-7 1/2" at x 7'-5", 4'-0" at
+    # x 17'-11 3/4" and 2'-7 1/2" at x 28'-11". The middle one is centred on the bearing
+    # wall and cannot be built, so WIN-A-DEN-S takes the westernmost (now in the west
+    # loft, since the Den moved off the gable's centre) and WIN-A-STUDY-S2 the eastern;
+    # WIN-A-STUDY-S1 stays in a clear bay with no source counterpart.
+    Window(uid="CAX301AAAA", tag="WIN-A-DEN-S", host="W-A-S1", type_ref="WT-3036",
+           position=from_node("N-A-SW", ft(6, 2)), sill_height=ft(2)),   # x 7'-5"
+    Window(uid="CAX302AAAA", tag="WIN-A-STUDY-S1", host="W-A-S4",
+           type_ref="WT-3036", position=from_node("N-A-V1", ft(1, 2)),
+           sill_height=ft(2)),                                          # x 24'-9"
+    Window(uid="CAX303AAAA", tag="WIN-A-STUDY-S2", host="W-A-S4",
+           type_ref="WT-3036", position=from_node("N-A-V1", ft(5, 4)),
+           sill_height=ft(2)),                                          # x 28'-11"
+    # The source attic has no north, east or west opening at all; these three are kept for
+    # daylight and cross-ventilation and are this storey's only openings with no counterpart.
     Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3036",
            position=from_node("N-A-NW", ft(6, 1)), sill_height=ft(2)),
     Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-3036",
@@ -165,17 +210,22 @@ BEAMS = [
          bearing_refs=("W-A-C1", "W-A-C2")),
 ]
 
+# The well is the source's: x 21'-1 3/4"..35'-9", y 5'-10 3/4"..8'-11 3/8", rounded to the
+# inch. It lands in RM-S-STUDY2 below, which is where the source draws the flight; the port
+# had it in RM-S-BED1. W-A-SN's centreline is set 2 1/4" north of the well's north edge so
+# the partition's south face lands exactly on it, the way the source's does — that is why
+# the band wall reads 9'-1 1/4" rather than the 9'-0" a bare rounding of 9.228 would give.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CAF601AAAA", tag="FO-A-STAIR",
-                 outline=(pt(ft(22, 8), ft(8, 8)), pt(ft(36), ft(8, 8)),
-                          pt(ft(36), ft(12)), pt(ft(22, 8), ft(12)))),
+                 outline=(pt(ft(21, 2), ft(5, 11)), pt(ft(35, 9), ft(5, 11)),
+                          pt(ft(35, 9), ft(8, 11)), pt(ft(21, 2), ft(8, 11)))),
 ]
 
 FLOOR = [
     FloorSystem(uid="CAF602AAAA", tag="FS-ATTIC",
                 joists=JoistSpec(member="11.875 I-joist", spacing=inch(16),
                                  direction="x",
-                                 bearing_refs=("W-S-W2", "W-S-C3", "W-S-E4")),
+                                 bearing_refs=("W-S-W3", "W-S-C1", "W-S-E2")),
                 subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=inch(0.75)),
                 openings=("FO-A-STAIR",)),
 ]
@@ -184,9 +234,11 @@ STAIRS = [
     Stair(uid="CST703AAAA", tag="ST-S2A", floor_opening="FO-A-STAIR",
           from_storey="second", to_storey="attic", width=ft(3), newel_profile="6x6",
           # Enter north at the east edge, then three lower winders turn the climb west.
+          # `start` is the origin the run walks from (resolve/stairs/dispatch.py), and with
+          # run_reversed on x that is the well's SE corner.
           layout="right_angle_winder", turn_direction="left",
           run_direction="x", run_reversed=True, winder_count=3,
-          start=pt(ft(36), ft(8, 8))),
+          start=pt(ft(35, 9), ft(5, 11))),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *ROOFS, *BEAMS, *FLOOR_OPENINGS,

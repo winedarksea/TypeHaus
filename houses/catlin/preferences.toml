@@ -22,41 +22,55 @@ drain_stack_required_structure_in = 5.5
 [units]
 system = "imperial"
 
-# Reference only: calibrated from the legacy drawing's labelled 24' garage width.
-# These pages intentionally remain dim and are never permit/model geometry; the new 36'
-# structural module and 16 in. grid remain authoritative where the old page disagrees.
+# Reference only. These pages are never permit/model geometry; the 36' structural module
+# and the 16 in. grid remain authoritative where the old page disagrees. What the underlay
+# *is* good for is checking interior partitions against the survey, so it has to land on
+# the model within an inch or two — the old calibration (from the legacy drawing's labelled
+# 24' garage width) was ~5% off in scale and ~5 m off in origin, which is useless as a ruler.
+#
+# Recalibrated from the vector twins in the same folder. Each `.svg` is a metric drawing at
+# 74.7029 px/m — confirmed per page from its own `transform="matrix(74.7029 0 0 74.7029 …)"`
+# — and its `path` #0 is the wall-fill polygon. All four PNGs are 1280x1920 on that grid, so
+#     width_m  = 1280 / 74.7029 = 17.1345
+#     height_m = 1920 / 74.7029 = 25.7018
+# on every page, and only the origin differs. With (x0, y0) the SW corner of the wall
+# polygon in page pixels (min x, max y — SVG y runs down),
+#     origin_x_m = -x0 / 74.7029        origin_y_m = -(1920 - y0) / 74.7029
+# which puts the drawing's outer SW building corner on the model origin, i.e. the SW
+# sheathing corner. On the 1st-floor page the polygon also contains the detached garage;
+# the corner below is the *house* block's (subpaths south of the 4' gap), not the garage's.
 [[underlay]]
 path = "../../catlin_floorplan/Colin House_Basement_Level 1.png"
 storey = "basement"
-origin_x_m = -2.55
-origin_y_m = -2.70
-width_m = 16.30
-height_m = 22.50
-opacity = 0.16
+origin_x_m = -3.1807
+origin_y_m = -12.3580
+width_m = 17.1345
+height_m = 25.7018
+opacity = 0.30
 
 [[underlay]]
 path = "../../catlin_floorplan/Colin House_1st_Floor.png"
 storey = "main"
-origin_x_m = -2.55
-origin_y_m = -2.70
-width_m = 16.30
-height_m = 22.50
-opacity = 0.16
+origin_x_m = -2.9769
+origin_y_m = -4.7410
+width_m = 17.1345
+height_m = 25.7018
+opacity = 0.30
 
 [[underlay]]
 path = "../../catlin_floorplan/Colin House_2nd_Floor.png"
 storey = "second"
-origin_x_m = -2.55
-origin_y_m = -2.70
-width_m = 16.30
-height_m = 22.50
-opacity = 0.16
+origin_x_m = -3.0595
+origin_y_m = -9.0316
+width_m = 17.1345
+height_m = 25.7018
+opacity = 0.30
 
 [[underlay]]
 path = "../../catlin_floorplan/Colin House_3rd_Floor.png"
 storey = "attic"
-origin_x_m = -2.55
-origin_y_m = -2.70
-width_m = 16.30
-height_m = 22.50
-opacity = 0.16
+origin_x_m = -3.0382
+origin_y_m = -8.0507
+width_m = 17.1345
+height_m = 25.7018
+opacity = 0.30

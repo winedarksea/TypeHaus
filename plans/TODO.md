@@ -35,7 +35,21 @@ what genuinely remains, with fresh measurements.*
   takeoff from `model.ducts`, but no real catlin duct can trigger it: `DuctRun` can only be
   SUPPLY or RETURN. Grow the enum, author the ensuite HRV run, and the SL-D-SHOWER slice
   (authored, cut x=5') picks it up. (`ResolvedDuct` also carries no z — the drawn takeoff
-  elevation is a documented drawing convention.)
+  elevation is a documented drawing convention.) Sharper now that the gas furnace is gone:
+  `DU-M-ERV-SUP`/`DU-M-ERV-RET` *are* the ERV's balanced pair, modeled as SUPPLY/RETURN
+  because the enum has nothing better to call them.
+- **The ERV reaches the second storey only.** With no forced-air heat, those trunks are the
+  whole fresh-air distribution — the main storey, basement and attic have no ERV terminals
+  authored, and even upstairs RM-S-BED2 and RM-S-SUITE get no supply register. Needs a
+  distribution pass (supply to sleeping/living rooms, return from baths + kitchen).
+- **Only one radiant floor zone exists.** `FH-B-SAUNA` is it. If electric radiant is meant
+  to be half the heating system rather than a comfort floor in one room, the other zones
+  (basement slab, bathrooms, entry) need authoring — each with its own GFCI circuit.
+- **The service load estimate now exceeds the service.** `service_load_summary` reads ~226A
+  (NEC 220.82 optional method) against a 200A service / 225A panel. Driven mostly by the two
+  EV circuits at 13.4 kVA continuous plus sauna + water heaters. Needs load management (an
+  EV EMS per 625.42, or interlocking the sauna) or a service upgrade — it is a decision,
+  not a rounding artifact.
 - **Authored gutter runs are still solid bars.** The *derived* eave gutters are open-top
   3-band channels now; `TR-SG-GUTTER`/`TR-RF-GUTTER` (authored `Gutter` runs in
   `resolve/accessories.py::_resolve_edge_run`) should get the same treatment. Exact recipe
@@ -115,16 +129,16 @@ the future.
 ## Items after Phase 4
 - Ridge vent cap needs a proper shape (and white painted metal look)
 - Polycarbonate on breezeway doesn't line up (it should cover the lower beam, and top plate should meet the side place in a shared channel).
+- 
 
 - Flooring
 
 - Frost Free Hydrant in garage
-		Frost free hydrant and "hose down" area
-			72" below ground, gravel sump, interior shutoff
-			Sleeved through slab
+		Frost free hydrant and "hose down" area, in a code compliant way
+			72" below ground, gravel sump, interior shutoff where it enters inside, Sleeved through slab
 			Sealant on concrete
 			Y34SS hydrant + extra coating + hose bib vacuum breaker (small screw on thing)
-				Raise pedestal for this, so the sleeve entrance is not the salt water floor
+				Raise pedestal for this, so the sleeve entrance is not the salt water floor (ie melting snow and salt slush in winter)
 			NO drain - Most places don't like. Have a gravel pit outside for a wash area and drainage
 - Heat rise detector in garage, smoke alarm in each room
 - Cameras: one in garage, one on porch, one 

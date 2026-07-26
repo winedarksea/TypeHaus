@@ -80,3 +80,21 @@ Mirror lights (all bathrooms)
 		Will require hardwiring or outlet behind the mirror
 Railing Lights or Baseboard level lights
 	Along basement stairs
+
+## Heating / Ventilation (decided 2026-07-25)
+All-electric. No gas service, no furnace — the gas furnace EQ-B-FURNACE is deleted from
+plan/mep.py and there was never a GAS UtilityLine in plan/site.py to feed it.
+	Heat + cool: the two minisplits (CKT-MINI-1 large upstairs, CKT-MINI-2 small deep-cold
+		basement, the one on backup)
+	Heat, supplemental: electric radiant floor. Only FH-B-SAUNA is authored so far
+		(RM-B-SAUNA, 127 sf, ~1,520 W) on CKT-FH-SAUNA — 20A/120V with GFCI at the breaker,
+		which NEC 424.44(G) requires for heating cable in a bathroom floor. More zones
+		(basement slab, bathrooms, entry) still need authoring if the floor is meant to
+		carry real heating load rather than comfort.
+	There is no "supply" *heat*. The DU-M-ERV-SUP / DU-M-ERV-RET trunks and their registers
+		are the ERV's fresh-air supply and stale-air return, sized for ~197 cfm (ASHRAE
+		62.2: 0.03 x 5,078 sf + 7.5 x (5 bedrooms + 1)), not a furnace CFM. Distribution is
+		second storey only today — main storey, basement and attic have no ERV terminals.
+	Watch the service: the NEC 220.82 estimate is now ~226A against a 200A service (it was
+		~224A before the floor-heat circuit). Load management or a service bump is a real
+		decision, not a rounding issue.

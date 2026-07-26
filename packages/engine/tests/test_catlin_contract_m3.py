@@ -118,7 +118,30 @@ def test_catlin_legacy_floorplans_are_dim_view_only_underlays():
     underlays = load_preferences(CATLIN_DIR).underlays
     assert {item.storey for item in underlays} == {"basement", "main", "second", "attic"}
     assert all(item.path.startswith("../../catlin_floorplan/") for item in underlays)
-    assert all(0.0 < item.opacity <= 0.25 for item in underlays)
+    # Dim enough to stay obviously reference-only, dark enough to read at 110 dpi. 0.16 was
+    # invisible in a `haus render` snapshot, which is the one place the underlay has a job.
+    assert all(0.0 < item.opacity <= 0.35 for item in underlays)
+
+
+def test_catlin_underlays_are_calibrated_to_the_source_svg_grid():
+    """All four pages are 1280x1920 on the vector twins' own 74.7029 px/m grid.
+
+    The extent is therefore identical on every page and only the origin differs; a table
+    that disagrees is a mis-calibration, which makes the underlay useless as a ruler.
+    """
+    from typehaus.checks import load_preferences
+
+    px_per_m = 74.7029
+    for item in load_preferences(CATLIN_DIR).underlays:
+        assert item.width_m == pytest.approx(1280 / px_per_m, abs=0.001)
+        assert item.height_m == pytest.approx(1920 / px_per_m, abs=0.001)
+        assert item.rotation_deg == 0.0
+    by_storey = {item.storey: item for item in load_preferences(CATLIN_DIR).underlays}
+    # SW corner of each page's wall-fill polygon, measured off the .svg (see preferences.toml).
+    for storey, origin in (("basement", (-3.1807, -12.3580)), ("main", (-2.9769, -4.7410)),
+                           ("second", (-3.0595, -9.0316)), ("attic", (-3.0382, -8.0507))):
+        assert (by_storey[storey].origin_x_m,
+                by_storey[storey].origin_y_m) == pytest.approx(origin, abs=0.001)
 
 
 def test_configured_reference_underlay_is_served_through_the_sandboxed_route():
@@ -585,6 +608,26 @@ def test_catlin_sauna_floor_heat_has_a_plan_zone_and_wire_takeoff(catlin_model):
     assert zone.system == "electric"
     assert zone.wire_length_m > 0
     assert len(zone.zone) >= 3
+
+
+def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
+    """No furnace, no gas: heat is the minisplits plus the radiant floor zones.
+
+    The air side that survives is ventilation only — EQ-B-ERV's fresh-air supply — so a
+    SUPPLY_AIR port here must trace back to the ERV and not to a reintroduced air handler.
+    """
+    plan = catlin_model.plan
+    equipment = [element for storey in plan.storeys
+                 for element in plan.storey_elements(storey.tag)
+                 if element.element_kind == "Equipment"]
+    assert not [item for item in equipment
+                if item.kind.value in {"furnace", "air_handler"}]
+    assert not [line for line in plan.project.site.utilities if line.kind.value == "gas"]
+    for product in plan.library.equipment_types:
+        assert "gas" not in {port.service.value for port in product.ports}, product.tag
+    air = {product.tag for product in plan.library.equipment_types
+           if "supply_air" in {port.service.value for port in product.ports}}
+    assert air == {"EQ-T-ERV"}
 
 
 def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
