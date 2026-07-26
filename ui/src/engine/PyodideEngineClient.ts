@@ -128,6 +128,11 @@ export class PyodideEngineClient implements EngineClient {
     return payload;
   }
 
+  async appendDetailNote(): Promise<string> {
+    // The offline house is a read-only snapshot — there is no notes/*.md to write back to.
+    throw new OfflineUnsupported("Adding construction notes");
+  }
+
   async build(): Promise<BuildResult> {
     await this.initialized;
     // A no-op re-resolve happened on load; report the current revision.

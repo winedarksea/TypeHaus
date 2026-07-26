@@ -358,6 +358,91 @@ export interface BackupComponentRow {
   basis: string;
 }
 
+// The lighting take-off, mirroring takeoff/lighting.py field for field. Every optional here
+// is optional in the Python too: a fixture whose type states no lumens reports null rather
+// than a plausible number, and the reader has to render that as "—" instead of "0".
+export interface LuminaireScheduleRow {
+  mark: string;
+  type: string;
+  description: string;
+  form: string;
+  lamp: string | null;
+  watts: number | null;
+  watts_per_ft: number | null;
+  lumens: number | null;
+  cct_k: number | null;
+  cri: number | null;
+  volts: number;
+  mount: string;
+  dimming: string;
+  rating: string; // "dry" | "damp" | "wet"
+  count: number;
+  length_ft: number | null; // linear types are billed by the foot, not counted
+  rooms: string[];
+  source: string | null;
+}
+
+export interface LightingControlRow {
+  tag: string;
+  kind: string; // "fixture" | "run"
+  mark: string;
+  room: string | null;
+  circuit: string | null;
+  psu: string | null;
+  switches: string[];
+  controls: string[]; // "toggle" | "dimmer" | "timer" | "smart" | "(missing)"
+  ways: number;
+  integral_switch: boolean;
+  cross_circuit: string[];
+}
+
+export interface LightRunRow {
+  tag: string;
+  type: string;
+  mark: string;
+  storey: string;
+  room: string | null;
+  length_ft: number;
+  watts: number;
+  volts: number;
+  psu: string | null;
+  circuit: string | null;
+}
+
+export interface LightRunSupplyRow {
+  psu: string;
+  type: string | null;
+  runs: string[];
+  length_ft: number;
+  connected_watts: number;
+  required_watts: number;
+  rated_watts: number | null;
+  adequate: boolean | null; // null when the supply type states no rating
+}
+
+export interface LightRunTakeoff {
+  runs: LightRunRow[];
+  by_type: { type: string; mark: string; runs: number; length_ft: number; watts: number }[];
+  supplies: LightRunSupplyRow[];
+  total_length_ft: number;
+}
+
+export interface LightingLoad {
+  per_circuit: { circuit: string; fixtures: number; connected_va: number }[];
+  total_connected_va: number;
+  conditioned_area_ft2: number;
+  allowance_va_per_ft2: number;
+  allowance_va: number;
+  basis: string;
+}
+
+export interface Lighting {
+  schedule: LuminaireScheduleRow[];
+  controls: LightingControlRow[];
+  runs: LightRunTakeoff;
+  connected_va: LightingLoad;
+}
+
 export interface Electrical {
   panel_schedule: PanelScheduleRow[];
   // null for a house that authors no circuits — the summary would be an estimate over nothing.
@@ -366,6 +451,7 @@ export interface Electrical {
   devices: DeviceCountRow[];
   solar: SolarTakeoff;
   backup_components: BackupComponentRow[];
+  lighting?: Lighting | null; // absent on a model.json built before the lighting plan
 }
 
 export interface Condition {

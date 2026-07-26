@@ -96,6 +96,43 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
             return JSONResponse({"error": f"no detail {key!r}"}, status_code=404)
         return JSONResponse(payload)
 
+    @app.post("/detail/notes")
+    def append_detail_note(body: dict[str, Any]) -> Any:
+        """Append a construction note to the detail's ``Transition.notes`` markdown.
+
+        Markdown notes are house-authored prose, not plan elements, so the ``# haus:
+        editable`` dialect guard does not apply. The write is gated instead by
+        provenance: the target is the file the detail's own Transition references —
+        never a client-supplied path — and must still resolve under the house's
+        ``notes/`` directory (same sandbox philosophy as ``/underlay``).
+        """
+        from typehaus.emit.draw.details import derive_detail_slices
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        key = body.get("key")
+        # Collapse all whitespace (incl. newlines) so a note cannot smuggle in extra
+        # markdown structure — one note, one bullet.
+        text = " ".join(str(body.get("text", "")).split())
+        if not key or not text:
+            return JSONResponse({"error": "key and text are required"}, status_code=400)
+        derived = next((d for d in derive_detail_slices(state.model) if d.key == key), None)
+        tr = derived.transition if derived is not None else None
+        rel = getattr(tr, "notes", None) if tr is not None else None
+        if not rel:
+            return JSONResponse({"error": f"detail {key!r} has no notes file"},
+                                status_code=404)
+        notes_root = (state.house_dir / "notes").resolve()
+        target = (state.house_dir / rel).resolve()
+        if notes_root not in target.parents or target.suffix != ".md":
+            return JSONResponse({"error": "notes path escapes the house notes directory"},
+                                status_code=403)
+        existing = target.read_text(encoding="utf-8") if target.exists() else ""
+        sep = "" if not existing or existing.endswith("\n") else "\n"
+        target.write_text(f"{existing}{sep}- {text}\n", encoding="utf-8")
+        return JSONResponse({"ok": True,
+                             "notes_markdown": target.read_text(encoding="utf-8")})
+
     @app.get("/model.ifc")
     def get_ifc() -> Any:
         out = state.house_dir / "out" / "model.ifc"

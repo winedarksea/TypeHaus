@@ -68,6 +68,17 @@ export class HttpEngineClient implements EngineClient {
     return (await res.json()) as DetailPayload;
   }
 
+  async appendDetailNote(key: string, text: string): Promise<string> {
+    const res = await fetch(this.url("/detail/notes"), {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ key, text }),
+    });
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    const body = (await res.json()) as { notes_markdown: string };
+    return body.notes_markdown;
+  }
+
   async patchPlan(ops: PatchOp[], revision: string): Promise<PatchResult> {
     const res = await fetch(this.url("/plan"), {
       method: "PATCH",

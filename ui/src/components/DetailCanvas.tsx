@@ -45,6 +45,14 @@ export function leaderTextAlign(at: Pt, to: Pt): "start" | "end" {
   return at[0] < to[0] ? "end" : "start";
 }
 
+// Mirrors of pdf_writer's text-metric conventions, so both renderers reserve the same room
+// and letter at the same model-space size. CHAR_ASPECT is the monospace advance width as a
+// fraction of cap height; LEADER_TEXT_H matches scene.py Leader.height's default.
+export const CHAR_ASPECT = 0.62;
+export const LEADER_TEXT_H = 1.6;
+// Dimension lettering carries no IR height; one shared model-space size here.
+export const DIM_TEXT_H = 2.0;
+
 // Halo behind annotation lettering so it stays legible over hatch fills — the SVG analogue
 // of the raster writer's translucent white bbox. Paint-order strokes the page colour behind
 // the glyphs, so it tracks the light/dark theme for free.
@@ -137,14 +145,44 @@ function scenePoints(node: Node): Pt[] {
   return pts;
 }
 
+// Estimated bbox of a text/leader node's lettering (port of pdf_writer._scene_bounds' text
+// branch). Text is placed by its anchor, so bounds over anchors alone crop the lettering off
+// the panel — a detail's callout column would clip at the right edge every time.
+export function textExtents(node: Node): { xs: [number, number]; ys: [number, number] } | null {
+  const isText = node.node === "text";
+  const isLeader = node.node === "leader";
+  if (!isText && !isLeader) return null;
+  const content = (isText ? node.content : node.text) as string | undefined;
+  const anchor = (isText ? node.anchor : node.at) as Pt | undefined;
+  if (!content || !Array.isArray(anchor)) return null;
+  const height = (node.height as number) ?? (isText ? 3 : LEADER_TEXT_H);
+  const lines = content.split("\n");
+  const width = Math.max(...lines.map((l) => l.length)) * height * CHAR_ASPECT;
+  const align = isLeader
+    ? (leaderTextAlign(node.at as Pt, node.to as Pt) === "end" ? "right" : "left")
+    : ((node.align as string) ?? "left");
+  const x0 = align === "right" ? anchor[0] - width
+    : align === "center" ? anchor[0] - width / 2 : anchor[0];
+  return {
+    xs: [x0, x0 + width],
+    ys: [anchor[1] - height * lines.length, anchor[1] + height * lines.length],
+  };
+}
+
 function computeBounds(nodes: Node[]): Bounds {
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  const grow = (x: number, y: number) => {
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  };
   for (const n of nodes) {
-    for (const [x, y] of scenePoints(n)) {
-      if (x < minX) minX = x;
-      if (x > maxX) maxX = x;
-      if (y < minY) minY = y;
-      if (y > maxY) maxY = y;
+    for (const [x, y] of scenePoints(n)) grow(x, y);
+    const ext = textExtents(n);
+    if (ext) {
+      grow(ext.xs[0], ext.ys[0]);
+      grow(ext.xs[1], ext.ys[1]);
     }
   }
   if (!isFinite(minX)) return { minX: 0, minY: 0, maxX: 100, maxY: 100 };
@@ -307,7 +345,23 @@ export function DetailCanvas({
       onMouseUp={onUp}
       onMouseLeave={onLeave}
     >
-      <defs>{Object.values(HATCH_DEFS)}</defs>
+      <defs>
+        {Object.values(HATCH_DEFS)}
+        {/* Sized in scene units (model inches) so the head stays proportionate to the
+            drawing at any zoom, like every other stroke in the scene. */}
+        <marker
+          id="leader-arrow"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth={3}
+          markerHeight={3}
+          orient="auto"
+          markerUnits="userSpaceOnUse"
+        >
+          <path d="M0 0 L10 5 L0 10 z" fill="var(--detail-ink)" />
+        </marker>
+      </defs>
       <g ref={gRef} transform={`translate(${pan[0]} ${pan[1]}) scale(${zoom})`}>
         {nodes.map((n, i) => {
           const uid = n.uid as string | undefined;
@@ -327,6 +381,22 @@ export function DetailCanvas({
         })}
       </g>
     </svg>
+  );
+}
+
+// Render possibly-multi-line content inside an <text>: SVG has no automatic line breaking,
+// so each "\n"-separated line becomes a <tspan> re-anchored at x and stepped down one line.
+function TextLines({ content, x, lineHeight }: { content: string; x: number; lineHeight: number }) {
+  const lines = content.split("\n");
+  if (lines.length === 1) return <>{content}</>;
+  return (
+    <>
+      {lines.map((line, i) => (
+        <tspan key={i} x={x} dy={i === 0 ? 0 : lineHeight}>
+          {line}
+        </tspan>
+      ))}
+    </>
   );
 }
 
@@ -389,20 +459,23 @@ function SceneNode({
       const xS = x + dx;
       const yS = fy(y, bounds) + dy;
       const anchor = node.align === "center" ? "middle" : node.align === "right" ? "end" : "start";
+      const h = (node.height as number) ?? 3;
       return (
         <text
           x={xS}
           y={yS}
-          fontSize={(node.height as number) ?? 3}
+          fontSize={h}
           textAnchor={anchor}
+          dominantBaseline="middle"
           transform={node.rotation ? `rotate(${-node.rotation} ${xS} ${yS})` : undefined}
           fill="var(--detail-ink)"
           onMouseDown={down}
           onClick={pick}
           style={canDrag ? { cursor: "move" } : pick ? { cursor: "pointer" } : undefined}
+          {...TEXT_HALO}
           {...dataUid}
         >
-          {node.content as string}
+          <TextLines content={node.content as string} x={xS} lineHeight={h * 1.2} />
         </text>
       );
     }
@@ -415,20 +488,23 @@ function SceneNode({
       const ayS = fy(ay, bounds) + dy;
       const txS = tx;
       const tyS = fy(ty, bounds);
+      const lh = (node.height as number) ?? LEADER_TEXT_H;
+      const tx0 = axS + (leaderTextAlign(node.at as Pt, node.to as Pt) === "end" ? -1 : 1);
       return (
         <g onMouseDown={down} onClick={pick}
           style={canDrag ? { cursor: "move" } : pick ? { cursor: "pointer" } : undefined} {...dataUid}>
-          <line x1={axS} y1={ayS} x2={txS} y2={tyS} stroke="var(--detail-line)" strokeWidth={0.3} />
-          <circle cx={txS} cy={tyS} r={0.8} fill="var(--detail-line)" />
+          <line x1={axS} y1={ayS} x2={txS} y2={tyS} stroke="var(--detail-ink)"
+            strokeWidth={0.5} markerEnd="url(#leader-arrow)" />
           <text
-            x={axS + (leaderTextAlign(node.at as Pt, node.to as Pt) === "end" ? -1 : 1)}
+            x={tx0}
             y={ayS}
-            fontSize={3}
+            fontSize={lh}
             textAnchor={leaderTextAlign(node.at as Pt, node.to as Pt)}
+            dominantBaseline="middle"
             fill="var(--detail-ink)"
             {...TEXT_HALO}
           >
-            {node.text as string}
+            <TextLines content={node.text as string} x={tx0} lineHeight={lh * 1.2} />
           </text>
         </g>
       );
@@ -442,7 +518,7 @@ function SceneNode({
       return (
         <g {...dataUid}>
           <line x1={x0} y1={fy(y0, bounds)} x2={x1} y2={fy(y1, bounds)} stroke="var(--detail-muted)" strokeWidth={0.3} />
-          <text x={mx} y={my - 1} fontSize={3} textAnchor="middle" fill="var(--detail-ink)" {...TEXT_HALO}>
+          <text x={mx} y={my - 1} fontSize={DIM_TEXT_H} textAnchor="middle" fill="var(--detail-ink)" {...TEXT_HALO}>
             {label}
           </text>
         </g>

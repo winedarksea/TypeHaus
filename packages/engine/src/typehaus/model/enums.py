@@ -230,14 +230,6 @@ class LuminaireForm(Enum):
     CEILING_FAN_LIGHT = "ceiling_fan_light"
 
 
-# Forms drawn as a linear extent rather than a point glyph — the sheets label them with a
-# length and the take-off prices them per lineal foot.
-LINEAR_LUMINAIRE_FORMS = frozenset(
-    {LuminaireForm.STRIP, LuminaireForm.LINEAR_TUBE, LuminaireForm.WALL_LAMP,
-     LuminaireForm.MIRROR_LIGHT}
-)
-
-
 class ConnectorKind(Enum):
     """Modeled connection hardware (→ IfcMechanicalFastener / IfcDiscreteAccessory)."""
 

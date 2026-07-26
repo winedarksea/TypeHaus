@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.enums import LuminaireForm, Occupancy
+from typehaus.model.enums import Occupancy
 
 # The sizing factor a 24V LED supply is picked by: continuous load at 125%, the same
 # NEC 210.19(A)(1) basis a continuous branch-circuit load uses. A driver run at its
@@ -246,8 +246,3 @@ def light_run_psu(ctx: CheckContext) -> list[Finding]:
         out.append(_pass(cid, str(len(runs)) + " light runs resolve to a supply sized for "
                               "125% of the tape they drive"))
     return out
-
-
-# Forms with no point instance — a STRIP is a ``LightRun``, never a placed device. Exported
-# so a caller that wants "the placeable luminaire forms" does not re-derive the exclusion.
-NON_PLACEABLE_FORMS = frozenset({LuminaireForm.STRIP})

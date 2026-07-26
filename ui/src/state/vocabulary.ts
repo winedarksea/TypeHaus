@@ -33,10 +33,13 @@ export const ALL_TRADES: Trade[] = [
   "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth",
 ];
 
-// The two work surfaces that replaced the old DESIGN/ANALYZE topbar buttons: the assembly /
-// transition reader and the whole-model bill of parts. Only one is up at a time — both are
-// full-width readers, not inspectors, so stacking them would just hide the model.
-export type DetailView = "none" | "assembly" | "bom" | "circuits";
+// The work surfaces that replaced the old DESIGN/ANALYZE topbar buttons: the assembly /
+// transition reader, the whole-model bill of parts, the panel schedule, and the luminaire
+// schedule. Only one is up at a time — they are full-width readers, not inspectors, so
+// stacking them would just hide the model. "circuits" and "lighting" are deliberately two
+// readers over one `electrical` payload: an electrician sizing a breaker and a designer
+// choosing a colour temperature are not looking for the same page.
+export type DetailView = "none" | "assembly" | "bom" | "circuits" | "lighting";
 
 // Every kind of model record the UI can hold selected. The first five are authored elements a
 // patch can edit or delete; the rest are *derived* geometry the resolver computes (a post

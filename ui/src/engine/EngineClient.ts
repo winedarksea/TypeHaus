@@ -138,9 +138,14 @@ export interface DetailAnnotationSpec {
 export interface DetailPayload {
   key: string;
   // The drawing IR scene (emit/draw/scene.py Scene.model_dump) — DetailCanvas renders it.
-  scene: { name: string; units: "in" | "mm"; nodes: Record<string, unknown>[] };
+  // scene.notes carries pre-wrapped note lines that live OUTSIDE the drawing's coordinate
+  // space; the UI shows the richer notes_markdown in its panel instead and never draws them.
+  scene: { name: string; units: "in" | "mm"; nodes: Record<string, unknown>[]; notes?: string[] };
   annotations: DetailAnnotationSpec[];
+  // House-relative path of the Transition.notes markdown file (identity, not content)…
   notes: string | null;
+  // …and its raw content, rendered by the NotesPanel. null when the detail has no notes file.
+  notes_markdown: string | null;
   findings: { check_id: string; message: string }[];
 }
 
@@ -162,6 +167,9 @@ export interface EngineClient {
   // Transition details — read-only scene JSON, rendered client-side (→ 11b).
   getDetailIndex(): Promise<DetailIndexEntry[]>;
   getDetail(key: string): Promise<DetailPayload>;
+  // Append one construction note to the detail's Transition.notes markdown file.
+  // Resolves to the updated file content; rejects OfflineUnsupported without a server.
+  appendDetailNote(key: string, text: string): Promise<string>;
   patchPlan(ops: PatchOp[], revision: string): Promise<PatchResult>;
   runMacro(request: MacroRequest, revision: string): Promise<MacroResult>;
   // Read-only, no revision precondition — never journaled, safe to call at drag-move

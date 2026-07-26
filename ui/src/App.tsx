@@ -12,6 +12,7 @@ import { Workbench } from "./components/Workbench";
 import { AssemblyDetailsView } from "./components/AssemblyDetailsView";
 import { BomView } from "./components/BomView";
 import { CircuitsView } from "./components/CircuitsView";
+import { LightingView } from "./components/LightingView";
 import { LensBar } from "./components/LensBar";
 import { Preview3D } from "./components/Preview3D";
 import { Canvas2D } from "./components/Canvas2D";
@@ -216,6 +217,14 @@ export function App() {
           >
             CIRCUITS
           </button>
+          <button
+            className={`seg-btn${detailView === "lighting" ? " active" : ""}`}
+            onClick={() => setDetailView(detailView === "lighting" ? "none" : "lighting")}
+            aria-pressed={detailView === "lighting"}
+            title="Lighting — luminaire schedule, controls, LED runs, connected load"
+          >
+            LIGHTING
+          </button>
         </div>
 
         <div className="spacer" />
@@ -310,6 +319,7 @@ export function App() {
       {detailView === "assembly" && <AssemblyDetailsView />}
       {detailView === "bom" && <BomView />}
       {detailView === "circuits" && <CircuitsView />}
+      {detailView === "lighting" && <LightingView />}
       <Workbench />
       <CommandPalette />
       <Toasts />

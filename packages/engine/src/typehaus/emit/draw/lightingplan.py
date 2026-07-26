@@ -98,7 +98,9 @@ def build_lighting_plan(model: ResolvedModel, storey: str) -> Scene:
         forms_present.add(product.form.value)
         centre = element.position.xy_m
         positions[element.tag] = centre
-        _emit_glyph(b, product, centre, _rotation_degrees(element), element.uid, element.tag)
+        _emit_glyph(b, product.plan_symbol, product.footprint[0].meters,
+                    product.footprint[1].meters, centre, _rotation_degrees(element),
+                    element.uid, element.tag)
         b.add(Text(anchor=_in((centre[0] + _label_offset(product), centre[1])),
                    content=product.type_mark or product.tag,
                    height=2.0, layer="E-LITE"))
@@ -136,11 +138,11 @@ def _label_offset(product: object) -> float:
     return product.footprint[0].meters / 2.0 + 0.08
 
 
-def _emit_glyph(b: SceneBuilder, product: object, centre: tuple[float, float],
-                rotation_degrees: float, uid: str, tag: str) -> None:
+def _emit_glyph(b: SceneBuilder, symbol: "str | None", width_m: float, depth_m: float,
+                centre: tuple[float, float], rotation_degrees: float,
+                uid: str = "", tag: str = "") -> None:
     """The fixture's own drawn geometry, placed and rotated like the canvas places it."""
-    width_m, depth_m = product.footprint[0].meters, product.footprint[1].meters
-    for stroke in plan_symbol_strokes(product.plan_symbol, width_m, depth_m):
+    for stroke in plan_symbol_strokes(symbol, width_m, depth_m):
         placed = place_local(stroke["points"], centre, rotation_degrees)
         b.add(Polyline(points=tuple(_in(point) for point in placed),
                        layer="E-LITE", lineweight=stroke["weight"] * 2,
@@ -189,7 +191,12 @@ def _emit_legend(b: SceneBuilder, model: ResolvedModel, storey: str, types: dict
             b.add(Polyline(points=(_in((origin[0] - 0.25, y)), _in((origin[0] + 0.25, y))),
                            layer="E-LITE-COVE", lineweight=0.6))
         elif product is not None:
-            _emit_glyph(b, _legend_sized(product), (origin[0], y), 0.0, "", "")
+            # Normalised to one size, aspect ratio kept: a 60" fan and a 3" can drawn at
+            # their true sizes make a legend that is mostly fan.
+            width_m, depth_m = product.footprint[0].meters, product.footprint[1].meters
+            scale = _LEGEND_GLYPH_M / max(width_m, depth_m, 1e-9)
+            _emit_glyph(b, product.plan_symbol, width_m * scale, depth_m * scale,
+                        (origin[0], y), 0.0)
         marks = sorted({p.type_mark for p in types.values()
                         if p.form.value == form and p.type_mark})
         label = _FORM_LABEL.get(form, form.upper())
@@ -200,27 +207,5 @@ def _emit_legend(b: SceneBuilder, model: ResolvedModel, storey: str, types: dict
         row += 1
 
 
-_LEGEND_GLYPH_M = 0.45  # legend glyphs are drawn at one size so the column reads as a column
-
-
-def _legend_sized(product: object) -> object:
-    """The product with its footprint normalised to legend size, aspect ratio kept.
-
-    A 60" fan and a 3" can drawn at their true sizes make a legend that is mostly fan.
-    """
-    width_m, depth_m = product.footprint[0].meters, product.footprint[1].meters
-    scale = _LEGEND_GLYPH_M / max(width_m, depth_m, 1e-9)
-    return _LegendProduct(product.plan_symbol, width_m * scale, depth_m * scale)
-
-
-class _LegendProduct:
-    """A duck-typed stand-in exposing just what ``_emit_glyph`` reads off a type."""
-
-    def __init__(self, plan_symbol: str | None, width_m: float, depth_m: float) -> None:
-        self.plan_symbol = plan_symbol
-        self.footprint = (_Meters(width_m), _Meters(depth_m))
-
-
-class _Meters:
-    def __init__(self, meters: float) -> None:
-        self.meters = meters
+# Legend glyphs are drawn at one size so the column reads as a column.
+_LEGEND_GLYPH_M = 0.45

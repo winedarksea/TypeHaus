@@ -154,3 +154,5 @@ the future.
   bill through `bill_of_materials`). Looks like some connectors/hangers/screw counts are made but not included there.
 
 - the 2D drawing of the u-shaped stairs got messed up at some point. It's got weird splits on landings and uneven stair marks
+
+- We need to change the raised garden. W-RG-BLOCK should form a U around the sunken garden up to the N-S plane of the balcony railing on the arched concrete. It's 3' wider than the sunken garden wall. For now we should also model it so it starts at the same height as the top of the sunken garden wall, and goes down 3' from there (that puts it mostly below grade, which is fine for now), with this change meaning W-RG-INNER can likely be deleted (W-SG-* replace it effectively).

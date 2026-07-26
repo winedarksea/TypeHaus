@@ -212,6 +212,11 @@ function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullabl
     const ok = await applyOps([{ op: "update", type: item.kind, tag: item.tag, fields: { type_ref: typeRef } }]);
     if (!ok) toast("Could not change object type", "error");
   };
+  const lightingControls = model.electrical?.lighting?.controls ?? [];
+  const controlledBy = lightingControls.find((row) => row.tag === item.tag)?.switches ?? [];
+  const controls = lightingControls
+    .filter((row) => row.switches.includes(item.tag))
+    .map((row) => row.tag);
   return <div>
     <h3>{type?.name ?? item.kind} · {item.tag}</h3>
     <div className="kv">
@@ -223,6 +228,31 @@ function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullabl
         <span>
           <button className="badge" style={{ cursor: "pointer" }} title="Open the panel schedule"
             onClick={() => setDetailView("circuits")}>{item.circuit}</button>
+        </span>
+      </>}
+      {/* The control edge, read from the same lighting take-off the E-602 sheet prints:
+          a luminaire shows what switches it, a switch shows what it drives. Both directions
+          come off one derivation, so the inspector cannot disagree with the schedule. */}
+      {controlledBy.length > 0 && <>
+        <span className="k">Controlled by</span>
+        <span>
+          {controlledBy.map((tag) => (
+            <button key={tag} className="badge" style={{ cursor: "pointer" }}
+              title="Open the lighting schedule" onClick={() => setDetailView("lighting")}>
+              {tag}
+            </button>
+          ))}
+        </span>
+      </>}
+      {controls.length > 0 && <>
+        <span className="k">Controls</span>
+        <span>
+          {controls.map((tag) => (
+            <button key={tag} className="badge" style={{ cursor: "pointer" }}
+              title="Open the lighting schedule" onClick={() => setDetailView("lighting")}>
+              {tag}
+            </button>
+          ))}
         </span>
       </>}
       <span className="k">Mount</span><span>{item.attachment ? `attached to ${item.attachment.wall} (${item.attachment.face})` : "free"}</span>
