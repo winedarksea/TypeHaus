@@ -88,8 +88,10 @@ export function populateScene(options: PopulateSceneOptions) {
     for (const opening of wallOpenings) {
       const isDoubleSwing = model.catalog?.door_types
         .find((type) => type.tag === opening.type_ref)?.operation === "double_swing";
+      const isGlazed = model.catalog?.door_types
+        .find((type) => type.tag === opening.type_ref)?.glazed ?? false;
       buildOpening(tradeGroups.openings, opening, wall, center, mode, palette, isDoubleSwing,
-        registry.picks, registry.byUid);
+        registry.picks, registry.byUid, isGlazed);
     }
   }
   // The site sheet is context, not an element: it has no uid in model.json, so it stays out

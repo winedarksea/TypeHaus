@@ -91,15 +91,18 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                 _add_member(framing, member)
             scene.add_object(framing, trade="framing", kind="wall", uid=wall.uid)
 
-    door_operations = {dt.tag: dt.operation for dt in model.plan.library.door_types}
+    door_types = {dt.tag: dt for dt in model.plan.library.door_types}
     walls_by_tag = {wall.tag: wall for wall in model.walls}
     for op in sorted(model.openings, key=lambda item: item.uid):
         host = walls_by_tag.get(op.host_wall)
         if host is None:
             continue
         mb = _MeshBuilder()
-        is_double_swing = op.is_door and door_operations.get(op.type_ref) == "double_swing"
-        _add_opening_filling(mb, host, op, is_double_swing)
+        door_type = door_types.get(op.type_ref)
+        is_double_swing = (op.is_door and door_type is not None
+                           and door_type.operation == "double_swing")
+        _add_opening_filling(mb, host, op, is_double_swing,
+                             is_glazed=op.is_door and door_type is not None and door_type.glazed)
         scene.add_object(mb, trade="openings", kind="opening", uid=op.uid)
 
     for room in sorted(model.rooms, key=lambda r: r.uid):
