@@ -357,7 +357,7 @@ def build_detail(model: ResolvedModel, derived: DerivedDetail) -> tuple[Scene, l
     if overlay:
         scene = scene.model_copy(update={"nodes": scene.nodes + tuple(overlay)})
 
-    nodes, findings = _annotation_nodes(model, derived)
+    nodes, findings = _annotation_nodes(model, derived, scene)
     if nodes:
         scene = scene.model_copy(update={"nodes": scene.nodes + tuple(nodes)})
 
@@ -560,8 +560,12 @@ def _frame(derived: DerivedDetail):
     return to_uz
 
 
-def _annotation_nodes(model: ResolvedModel, derived: DerivedDetail):
-    """Authored DetailAnnotations for this key, else seed nodes from overlay + notes."""
+def _annotation_nodes(model: ResolvedModel, derived: DerivedDetail, scene: Scene = None):
+    """Authored DetailAnnotations for this key, else seed nodes from overlay + notes.
+
+    ``scene`` is the cut so far — seed callouts dodge against the labels already in it
+    (the layer-label ladders) so the two stacks never overprint each other.
+    """
     authored = [a for a in model.plan.elements_of_kind("DetailAnnotation")
                 if getattr(a, "condition_key", None) == derived.key]
     findings: list[Finding] = []
@@ -585,7 +589,7 @@ def _annotation_nodes(model: ResolvedModel, derived: DerivedDetail):
                 nodes.append(Text(anchor=at, content="⚠ anchor?", height=1.5,
                                   layer="A-ANNO-TEXT", uid=ann.uid or None))
     else:
-        nodes.extend(_seed_nodes(model, derived))
+        nodes.extend(_seed_nodes(model, derived, scene))
     return nodes, findings
 
 
@@ -611,13 +615,26 @@ def _face_role(face: str) -> str:
     return f"layer:{face}:out"
 
 
-def _seed_nodes(model: ResolvedModel, derived: DerivedDetail) -> list:
+def _seed_nodes(model: ResolvedModel, derived: DerivedDetail,
+                scene: Scene = None) -> list:
     """Read-only seed annotations (uid=None) leadered to the layers they describe.
 
     A continuity claim is *about* a named face, so the seed points at that face rather than
     stacking raw text beside the drawing. The markdown behind ``Transition.notes`` belongs in
     the notes column, not in a callout — only its title is worth a leader.
+
+    Layout goes through :mod:`~typehaus.emit.draw.annotate`: long single-line claims wrap
+    at ``LEADER_WRAP_COLUMNS``, the column placer grows rows to fit the wrapped text, and
+    the whole stack dodges the layer-label ladders already in ``scene``.
     """
+    from typehaus.emit.draw.annotate import (
+        LabelSpec,
+        dodge,
+        leader_box,
+        place_column,
+        wrap_label,
+    )
+
     tr = derived.transition
     if tr is None:
         return []
@@ -657,19 +674,24 @@ def _seed_nodes(model: ResolvedModel, derived: DerivedDetail) -> list:
                 return (point[0], junction_z if junction_z is not None else point[1])
         return None
 
-    nodes: list = []
-    row = 0
+    entries: list = []
     for cont in getattr(tr, "continuity", ()):
-        target = _anchor(cont.from_face)
-        at = (text_x, top_y - row * step)
-        content = f"{cont.control} continuity — {cont.from_face} → {cont.to_face}"
-        if target is None:
-            nodes.append(Text(anchor=at, content=content, height=ANNOTATION_TEXT_H,
-                              layer="A-ANNO-TEXT", uid=None))
+        content = wrap_label(
+            f"{cont.control} continuity — {cont.from_face} → {cont.to_face}")
+        entries.append(LabelSpec(text=content, target=_anchor(cont.from_face)))
+    placed = place_column(entries, x=text_x, z_top=top_y, step=step,
+                          height=ANNOTATION_TEXT_H, align="left")
+    fixed = tuple(leader_box(n) for n in (scene.nodes if scene is not None else ())
+                  if isinstance(n, Leader))
+    nodes: list = []
+    for label in dodge(placed, fixed=fixed):
+        if label.spec.target is None:
+            nodes.append(Text(anchor=label.at, content=label.spec.text,
+                              height=label.height, layer="A-ANNO-TEXT", uid=None))
         else:
-            nodes.append(Leader(anchor=_point_anchor(target), at=at, to=target,
-                                text=content, uid=None))
-        row += 1
+            nodes.append(Leader(anchor=_point_anchor(label.spec.target), at=label.at,
+                                to=label.spec.target, text=label.spec.text,
+                                height=label.height, uid=None))
     if getattr(tr, "overlay", None):
         nodes.append(Text(anchor=(cu0 * M_TO_IN, cz0 * M_TO_IN - 4.0),
                           content=f"{tr.tag}  ·  {tr.overlay}", height=ANNOTATION_TEXT_H,
