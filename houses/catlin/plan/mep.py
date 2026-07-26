@@ -80,7 +80,7 @@ EQUIPMENT_TYPES = (
 
 ELECTRICAL_DEVICE_TYPES = (
     ElectricalDeviceType(tag="ED-T-PANEL", name="225A electrical panel (200A service)", footprint=(inch(20), inch(4)), height=ft(3),
-                          plan_symbol="panel",
+                          plan_symbol="panel", spaces=42,
                           ports=(ServicePort(tag="service", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
     # ED-T-LIGHT is gone. It was a generic "Ceiling light" with no lamp, no lumens and no

@@ -116,6 +116,9 @@ class ElectricalDeviceType(FurnitureType):
     nema: str | None = None
     # Connected load in volt-amps; summed per circuit by the panel-schedule takeoff.
     load_va: float | None = None
+    # Breaker spaces in the enclosure (panel kinds only) — what electrical.panel_spaces
+    # reconciles the circuit slots against.
+    spaces: int | None = None
     # How a SWITCH device controls what it feeds: "dimmer" | "timer" | "smart" | None
     # (a plain toggle). Read by the lighting-controls check and printed in the E-602
     # control schedule; a product attribute, not a kind, for the same reason NEMA is.

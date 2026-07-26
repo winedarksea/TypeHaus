@@ -12,6 +12,12 @@ Conventions:
 - ``load_va`` is authored where the devices carry no typed load (equipment, lighting
   allowances); circuits whose receptacle types carry ``load_va`` leave it None and the
   panel-schedule takeoff sums the device types.
+- ``slot`` is the physical breaker position: odd numbers run down the left column, even
+  down the right, and a 2-pole breaker takes ``slot`` and ``slot + 2`` (same column).
+  PV backfeeds at the bottom of the bus (40/42), opposite the main (120% rule).
+  HONEST STATE: 13 two-pole + 22 one-pole = 48 spaces against ED-T-PANEL's 42, so the
+  last six 120V circuits sit in slots 43-48 past the enclosure and
+  ``electrical.panel_spaces`` FAILS until the panel is swapped for a 54-space unit.
 """
 
 from __future__ import annotations
@@ -22,37 +28,37 @@ _PANEL = "ED-B-PANEL"
 
 CIRCUITS = (
     # --- 240V dedicated loads (electrical_notes.md line 4) ---------------------------
-    Circuit(uid="CKT001AAAA", tag="CKT-RANGE", panel_ref=_PANEL, breaker_amps=50, poles=2,
+    Circuit(uid="CKT001AAAA", tag="CKT-RANGE", slot=1, panel_ref=_PANEL, breaker_amps=50, poles=2,
             nema="14-50R", load_va=12000, description="Kitchen range"),
-    Circuit(uid="CKT002AAAA", tag="CKT-DRYER", panel_ref=_PANEL, breaker_amps=30, poles=2,
+    Circuit(uid="CKT002AAAA", tag="CKT-DRYER", slot=5, panel_ref=_PANEL, breaker_amps=30, poles=2,
             nema="14-30R", description="Dryer"),
-    Circuit(uid="CKT003AAAA", tag="CKT-EV-1450", panel_ref=_PANEL, breaker_amps=50, poles=2,
+    Circuit(uid="CKT003AAAA", tag="CKT-EV-1450", slot=9, panel_ref=_PANEL, breaker_amps=50, poles=2,
             nema="14-50R", description="EV charging, NEMA 14-50 (garage)"),
-    Circuit(uid="CKT004AAAA", tag="CKT-EV-620", panel_ref=_PANEL, breaker_amps=20, poles=2,
+    Circuit(uid="CKT004AAAA", tag="CKT-EV-620", slot=13, panel_ref=_PANEL, breaker_amps=20, poles=2,
             nema="6-20R", description="EV charging, NEMA 6-20 (garage)"),
-    Circuit(uid="CKT005AAAA", tag="CKT-SPA", panel_ref=_PANEL, breaker_amps=50, poles=2,
+    Circuit(uid="CKT005AAAA", tag="CKT-SPA", slot=17, panel_ref=_PANEL, breaker_amps=50, poles=2,
             gfci=True, load_va=11500, description="Hot tub (sunken garden)"),
     # 50A/2p GFCI per notes/sauna_shower_basement_detail.md ("240V, 50A GFCI breaker and
     # wiring to sauna heater (max 10.5 kW)"). Was 30A, which only carries ~5.5 kW continuous
     # — half what RM-B-SAUNA's 513 cf heated volume needs. EQ-B-SAUNA-HTR is 9 kW = 37.5A,
     # 46.9A at the 125% continuous factor, so 50A is the breaker and 10.5 kW the headroom.
-    Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", panel_ref=_PANEL, breaker_amps=50, poles=2,
+    Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", slot=21, panel_ref=_PANEL, breaker_amps=50, poles=2,
             gfci=True, load_va=9000, description="Sauna heater (EQ-B-SAUNA-HTR)"),
-    Circuit(uid="CKT007AAAA", tag="CKT-WH-240", panel_ref=_PANEL, breaker_amps=30, poles=2,
+    Circuit(uid="CKT007AAAA", tag="CKT-WH-240", slot=25, panel_ref=_PANEL, breaker_amps=30, poles=2,
             load_va=4500, description="Water heater, 240V tank (EQ-B-WH2)"),
-    Circuit(uid="CKT008AAAA", tag="CKT-ERV", panel_ref=_PANEL, breaker_amps=15, poles=2,
+    Circuit(uid="CKT008AAAA", tag="CKT-ERV", slot=2, panel_ref=_PANEL, breaker_amps=15, poles=2,
             load_va=200, description="ERV"),
-    Circuit(uid="CKT009AAAA", tag="CKT-MINI-1", panel_ref=_PANEL, breaker_amps=25, poles=2,
+    Circuit(uid="CKT009AAAA", tag="CKT-MINI-1", slot=6, panel_ref=_PANEL, breaker_amps=25, poles=2,
             load_va=4800, description="Minisplit, large (upstairs zone)"),
-    Circuit(uid="CKT010AAAA", tag="CKT-MINI-2", panel_ref=_PANEL, breaker_amps=15, poles=2,
+    Circuit(uid="CKT010AAAA", tag="CKT-MINI-2", slot=10, panel_ref=_PANEL, breaker_amps=15, poles=2,
             backup=True, load_va=1500, description="Minisplit, small deep-cold (basement)"),
-    Circuit(uid="CKT011AAAA", tag="CKT-KETTLE", panel_ref=_PANEL, breaker_amps=20, poles=2,
+    Circuit(uid="CKT011AAAA", tag="CKT-KETTLE", slot=14, panel_ref=_PANEL, breaker_amps=20, poles=2,
             nema="6-20R", load_va=3840, description="Kitchen kettle outlet (6-20R half)"),
     # PV backfeed lands at the opposite end of the bus from the main (120% rule headroom
     # is why the panel is 225A on a 200A service). Source, not load: load_va stays 0.
-    Circuit(uid="CKT012AAAA", tag="CKT-PV", panel_ref=_PANEL, breaker_amps=30, poles=2,
+    Circuit(uid="CKT012AAAA", tag="CKT-PV", slot=40, panel_ref=_PANEL, breaker_amps=30, poles=2,
             load_va=0, description="PV backfeed, rooftop array via ED-A-PV-JB"),
-    Circuit(uid="CKT013AAAA", tag="CKT-SPARE-240", panel_ref=_PANEL, breaker_amps=30, poles=2,
+    Circuit(uid="CKT013AAAA", tag="CKT-SPARE-240", slot=18, panel_ref=_PANEL, breaker_amps=30, poles=2,
             load_va=0, description="Spare 2-pole (conduit stubbed for future 240V)"),
 
     # --- electric space heating (2026-07-25) -----------------------------------------
@@ -75,13 +81,13 @@ CIRCUITS = (
     #
     # Was CKT-FH-SAUNA until 2026-07-25 — RM-B-SAUNA has no floor heat (see the note in
     # storeys/basement.py), so that zone, its circuit and its stat are all gone.
-    Circuit(uid="CKT031AAAA", tag="CKT-FH-BATH2", panel_ref=_PANEL, breaker_amps=15, poles=1,
+    Circuit(uid="CKT031AAAA", tag="CKT-FH-BATH2", slot=29, panel_ref=_PANEL, breaker_amps=15, poles=1,
             gfci=True, load_va=498,
             description="Radiant floor heat — main bath (FH-M-BATH2, 41.5 ft2)"),
-    Circuit(uid="CKT032AAAA", tag="CKT-FH-DINING", panel_ref=_PANEL, breaker_amps=15, poles=1,
+    Circuit(uid="CKT032AAAA", tag="CKT-FH-DINING", slot=31, panel_ref=_PANEL, breaker_amps=15, poles=1,
             gfci=True, load_va=696,
             description="Radiant floor heat — under the dining table (FH-M-DINING, 58.0 ft2)"),
-    Circuit(uid="CKT033AAAA", tag="CKT-FH-ENSUITE", panel_ref=_PANEL, breaker_amps=15, poles=1,
+    Circuit(uid="CKT033AAAA", tag="CKT-FH-ENSUITE", slot=33, panel_ref=_PANEL, breaker_amps=15, poles=1,
             gfci=True, load_va=509,
             description="Radiant floor heat — NW bathroom (FH-S-ENSUITE, 42.4 ft2)"),
     # 1,500 W at 120V = 12.5A, and both of these run long enough to be continuous loads:
@@ -92,55 +98,55 @@ CIRCUITS = (
     # *receptacles* — the garage rule in (A)(2) included. Cord-and-plug versions of either
     # would need it, which is the reason both are modeled as Equipment with the circuit on
     # the placeable rather than as a receptacle with something plugged into it.
-    Circuit(uid="CKT034AAAA", tag="CKT-FIREPLACE", panel_ref=_PANEL, breaker_amps=20, poles=1,
+    Circuit(uid="CKT034AAAA", tag="CKT-FIREPLACE", slot=35, panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=1500,
             description="Electric fireplace, living room SE corner (EQ-M-FIREPLACE)"),
-    Circuit(uid="CKT035AAAA", tag="CKT-GAR-HEAT", panel_ref=_PANEL, breaker_amps=20, poles=1,
+    Circuit(uid="CKT035AAAA", tag="CKT-GAR-HEAT", slot=37, panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=1500,
             description="Garage bench heater, 1.5 kW fan-forced (EQ-G-HEATER)"),
 
     # --- 120V backup subsystem (electrical_notes.md lines 9-29) ----------------------
-    Circuit(uid="CKT014AAAA", tag="CKT-WH-HP", panel_ref=_PANEL, breaker_amps=15, poles=1,
+    Circuit(uid="CKT014AAAA", tag="CKT-WH-HP", slot=39, panel_ref=_PANEL, breaker_amps=15, poles=1,
             backup=True, load_va=500,
             description="Heat pump water heater, Rheem 120V (EQ-B-WH, compressor only)"),
-    Circuit(uid="CKT015AAAA", tag="CKT-SUMP", panel_ref=_PANEL, breaker_amps=20, poles=1,
+    Circuit(uid="CKT015AAAA", tag="CKT-SUMP", slot=41, panel_ref=_PANEL, breaker_amps=20, poles=1,
             backup=True, load_va=1000, description="Sump pump"),
-    Circuit(uid="CKT016AAAA", tag="CKT-FRIDGE", panel_ref=_PANEL, breaker_amps=20, poles=1,
+    Circuit(uid="CKT016AAAA", tag="CKT-FRIDGE", slot=22, panel_ref=_PANEL, breaker_amps=20, poles=1,
             backup=True, load_va=800,
             description="Kitchen outlet 1: fridge + freezer + PoE WiFi"),
-    Circuit(uid="CKT017AAAA", tag="CKT-HA", panel_ref=_PANEL, breaker_amps=15, poles=1,
+    Circuit(uid="CKT017AAAA", tag="CKT-HA", slot=24, panel_ref=_PANEL, breaker_amps=15, poles=1,
             backup=True, load_va=300, description="Basement outlet 1: HA server + router"),
     # load_va is None on all three lighting circuits since the lighting plan went in: the
     # luminaires carry real typed loads now, so the panel-schedule takeoff sums the
     # fixtures actually on each circuit instead of repeating a placeholder allowance.
-    Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", panel_ref=_PANEL, breaker_amps=15, poles=1,
+    Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", slot=26, panel_ref=_PANEL, breaker_amps=15, poles=1,
             backup=True,
             description="Basement + kitchen lighting (LED, backup light)"),
-    Circuit(uid="CKT019AAAA", tag="CKT-BACKUP-FEED", panel_ref=_PANEL, breaker_amps=20, poles=1,
+    Circuit(uid="CKT019AAAA", tag="CKT-BACKUP-FEED", slot=28, panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=200, description="Backup enclosure feed (DIN relays, 24V PSU, UPS)"),
 
     # --- general-use 120V ------------------------------------------------------------
-    Circuit(uid="CKT020AAAA", tag="CKT-KITCH-SA1", panel_ref=_PANEL, breaker_amps=20, poles=1,
+    Circuit(uid="CKT020AAAA", tag="CKT-KITCH-SA1", slot=30, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, load_va=1500, description="Kitchen small-appliance 1 (counter west)"),
-    Circuit(uid="CKT021AAAA", tag="CKT-KITCH-SA2", panel_ref=_PANEL, breaker_amps=20, poles=1,
+    Circuit(uid="CKT021AAAA", tag="CKT-KITCH-SA2", slot=32, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, load_va=1500, description="Kitchen small-appliance 2 (counter east)"),
-    Circuit(uid="CKT022AAAA", tag="CKT-DISHWASHER", panel_ref=_PANEL, breaker_amps=20, poles=1,
+    Circuit(uid="CKT022AAAA", tag="CKT-DISHWASHER", slot=34, panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=1200, description="Dishwasher + disposer (sink base)"),
-    Circuit(uid="CKT023AAAA", tag="CKT-LAUNDRY", panel_ref=_PANEL, breaker_amps=20, poles=1,
+    Circuit(uid="CKT023AAAA", tag="CKT-LAUNDRY", slot=36, panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=1500, description="Laundry receptacle (washer)"),
-    Circuit(uid="CKT024AAAA", tag="CKT-LT-MAIN", panel_ref=_PANEL, breaker_amps=15, poles=1,
+    Circuit(uid="CKT024AAAA", tag="CKT-LT-MAIN", slot=38, panel_ref=_PANEL, breaker_amps=15, poles=1,
             description="General lighting — main storey, porch and garage"),
-    Circuit(uid="CKT025AAAA", tag="CKT-LT-UPPER", panel_ref=_PANEL, breaker_amps=15, poles=1,
+    Circuit(uid="CKT025AAAA", tag="CKT-LT-UPPER", slot=43, panel_ref=_PANEL, breaker_amps=15, poles=1,
             description="General lighting — second + attic"),
-    Circuit(uid="CKT026AAAA", tag="CKT-RC-MAIN", panel_ref=_PANEL, breaker_amps=20, poles=1,
+    Circuit(uid="CKT026AAAA", tag="CKT-RC-MAIN", slot=44, panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=1500, description="General receptacles — main storey"),
-    Circuit(uid="CKT027AAAA", tag="CKT-RC-SECOND", panel_ref=_PANEL, breaker_amps=20, poles=1,
+    Circuit(uid="CKT027AAAA", tag="CKT-RC-SECOND", slot=45, panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=1500, description="General receptacles — second storey"),
-    Circuit(uid="CKT028AAAA", tag="CKT-RC-BSMT", panel_ref=_PANEL, breaker_amps=20, poles=1,
+    Circuit(uid="CKT028AAAA", tag="CKT-RC-BSMT", slot=46, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, load_va=1500,
             description="General receptacles — basement + spa convenience"),
-    Circuit(uid="CKT029AAAA", tag="CKT-RC-ATTIC", panel_ref=_PANEL, breaker_amps=15, poles=1,
+    Circuit(uid="CKT029AAAA", tag="CKT-RC-ATTIC", slot=47, panel_ref=_PANEL, breaker_amps=15, poles=1,
             load_va=1000, description="General receptacles — attic rooms"),
-    Circuit(uid="CKT030AAAA", tag="CKT-RC-GARAGE", panel_ref=_PANEL, breaker_amps=20, poles=1,
+    Circuit(uid="CKT030AAAA", tag="CKT-RC-GARAGE", slot=48, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, load_va=1500, description="Garage general receptacles"),
 )

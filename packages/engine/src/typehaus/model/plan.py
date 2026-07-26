@@ -8,7 +8,7 @@ from pydantic import Field
 
 from typehaus.model.assembly import Assembly, ConstructionRule
 from typehaus.model.base import Element, HausModel
-from typehaus.model.electrical import Circuit
+from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.materials import Material
 from typehaus.model.project import Project, Storey
 from typehaus.model.types import (ApplianceType, DoorType, ElectricalDeviceType, EquipmentType,
@@ -30,6 +30,7 @@ class Library(HausModel):
     register_types: tuple[RegisterType, ...] = ()
     electrical_device_types: tuple[ElectricalDeviceType, ...] = ()
     circuits: tuple[Circuit, ...] = ()
+    load_managements: tuple[LoadManagement, ...] = ()
     transitions: tuple[Transition, ...] = ()
     construction_rules: tuple[ConstructionRule, ...] = ()
 

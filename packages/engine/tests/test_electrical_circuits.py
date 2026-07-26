@@ -344,6 +344,142 @@ def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
     assert bom["backup_components"][0]["count"] == 2  # ceil(6/4) relays
 
 
+# --- panel spaces + slot map ----------------------------------------------------------
+
+def _panel_with_spaces(spaces):
+    """A synthetic panel whose type declares the enclosure size."""
+    panel_type = ElectricalDeviceType(tag="ED-T-PNL", name="Panel", footprint=(m(.5), m(.1)),
+                                      height=m(1), spaces=spaces, ports=(_PORT_240,))
+    panel = ElectricalDevice(tag="ED-M-PANEL", kind=DeviceKind.PANEL,
+                             position=pt(m(0), m(0)), type_ref="ED-T-PNL")
+    return panel_type, panel
+
+
+def _spaces_findings(spaces, circuits):
+    panel_type, panel = _panel_with_spaces(spaces)
+    plan = _plan(circuits=circuits, devices=(panel,), types=(panel_type,))
+    return _findings(plan, "electrical.panel_spaces")
+
+
+def test_panel_spaces_pass_and_fail_on_capacity():
+    circuits = tuple(
+        Circuit(tag=f"CKT-{i}", panel_ref="ED-M-PANEL", breaker_amps=20, poles=2,
+                slot=1 + 4 * i)
+        for i in range(3))  # 6 spaces at slots 1/3, 5/7, 9/11
+    results = [f.result.value for f in _spaces_findings(12, circuits)]
+    assert results == ["pass"]
+    results = [f.result.value for f in _spaces_findings(4, circuits)]
+    assert "fail" in results  # 6 required > 4, and slots run past the enclosure
+
+
+def test_panel_spaces_flags_overlapping_slots():
+    circuits = (
+        Circuit(tag="CKT-A", panel_ref="ED-M-PANEL", breaker_amps=30, poles=2, slot=1),
+        Circuit(tag="CKT-B", panel_ref="ED-M-PANEL", breaker_amps=20, poles=1, slot=3),
+    )  # 2-pole at 1 occupies 1 and 3; CKT-B collides at 3
+    findings = _spaces_findings(12, circuits)
+    fails = [f for f in findings if f.result.value == "fail"]
+    assert fails and "slot 3" in fails[0].message
+
+
+def test_panel_spaces_unknown_without_declared_spaces():
+    circuits = (Circuit(tag="CKT-A", panel_ref="ED-M-PANEL", breaker_amps=20),)
+    findings = _spaces_findings(None, circuits)
+    assert [f.result.value for f in findings] == ["unknown"]
+
+
+def test_catlin_slot_map_is_complete_and_unique(catlin_model):
+    """Every authored circuit holds a slot; positions never collide; columns are honest
+    (2-pole pairs share a column because slot and slot+2 have the same parity)."""
+    circuits = catlin_model.plan.library.circuits
+    assert all(circuit.slot is not None for circuit in circuits)
+    occupied = {}
+    for circuit in circuits:
+        positions = (circuit.slot,) if circuit.poles == 1 else (circuit.slot,
+                                                                circuit.slot + 2)
+        for position in positions:
+            assert position not in occupied, (position, circuit.tag, occupied[position])
+            occupied[position] = circuit.tag
+    assert len(occupied) == sum(circuit.poles for circuit in circuits)
+
+
+def test_catlin_panel_spaces_fails_at_42_and_would_pass_at_54(catlin_model):
+    """The honest state: spaces required exceed ED-T-PANEL's 42, so the check FAILS
+    until the panel is swapped for a bigger enclosure (54 clears it, measured)."""
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    findings = [f for f in report.findings if f.check_id == "electrical.panel_spaces"]
+    assert findings and any(f.result.value == "fail" for f in findings)
+    circuits = catlin_model.plan.library.circuits
+    required = sum(circuit.poles for circuit in circuits)
+    declared = next(t.spaces for t in catlin_model.plan.library.electrical_device_types
+                    if t.tag == "ED-T-PANEL")
+    assert required > declared  # 48 > 42 as of authoring — measured, not pinned
+    # Synthetic 54-space panel carrying the same schedule passes.
+    panel_type, panel = _panel_with_spaces(54)
+    retagged = tuple(c.model_copy(update={"panel_ref": "ED-M-PANEL"}) for c in circuits)
+    findings = _spaces_findings(54, retagged)
+    assert required <= 54
+    assert all(f.result.value == "pass" for f in findings), [f.message for f in findings]
+
+
+# --- service load + load management ---------------------------------------------------
+
+def test_catlin_service_load_finding_is_the_honest_fail(catlin_model):
+    """No LoadManagement is authored, so the advisory reports demand over the service
+    and names the levers. The amps come off the takeoff, never pinned here."""
+    from typehaus.takeoff import service_load_summary
+
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    findings = [f for f in report.findings if f.check_id == "electrical.service_load"]
+    summary = service_load_summary(catlin_model)
+    assert findings
+    if summary["demand_amps"] > summary["service_amps"]:
+        fails = [f for f in findings if f.result.value == "fail"]
+        assert fails, [f.message for f in findings]
+        assert "625.42" in fails[0].message and "interlock" in fails[0].message
+        assert "service upgrade" in fails[0].message
+        assert f"{summary['service_amps']:.0f}A" in fails[0].message
+    else:  # if the house ever slims under the service, the check must agree
+        assert all(f.result.value == "pass" for f in findings)
+
+
+def test_load_management_credits_the_managed_excess():
+    """A synthetic EMS over a big managed group flips service_load from fail to pass."""
+    from typehaus.model import LoadManagement
+
+    big = Circuit(tag="CKT-KILN", panel_ref="ED-M-PANEL", breaker_amps=100, poles=2,
+                  load_va=150000, description="Kiln bank")
+    base = _plan(circuits=(big,), devices=(_PANEL,))
+
+    def _run(library):
+        model, findings = resolve(base.model_copy(update={"library": library}))
+        assert not [f for f in findings if f.severity.value == "error"]
+        report = run_from_model(model, [], tier=Tier.ADVISORY)
+        return [f for f in report.findings if f.check_id == "electrical.service_load"]
+
+    unmanaged = _run(Library(circuits=(big,)))
+    assert any(f.result.value == "fail" for f in unmanaged)
+
+    ems = LoadManagement(tag="LM-KILN", managed_circuits=("CKT-KILN",),
+                         max_simultaneous_va=10000, strategy="ems",
+                         source="synthetic test EMS")
+    managed = _run(Library(circuits=(big,), load_managements=(ems,)))
+    assert managed and all(f.result.value == "pass" for f in managed), [
+        f.message for f in managed]
+
+
+def test_load_management_flags_unknown_circuits():
+    from typehaus.model import LoadManagement
+
+    lm = LoadManagement(tag="LM-X", managed_circuits=("CKT-NOPE",),
+                        max_simultaneous_va=1000, strategy="interlock")
+    circuit = Circuit(tag="CKT-01", panel_ref="ED-M-PANEL", breaker_amps=20)
+    plan = _plan(circuits=(circuit,), devices=(_PANEL,)).model_copy(
+        update={"library": Library(circuits=(circuit,), load_managements=(lm,))})
+    findings = _findings(plan, "electrical.service_load")
+    assert any(f.result.value == "fail" and "CKT-NOPE" in f.message for f in findings)
+
+
 def test_circuit_is_schedule_data_not_geometry():
     """A Circuit never enters storey element lists; it lives in Library.circuits."""
     circuit = Circuit(tag="CKT-01", panel_ref="ED-B-PANEL", breaker_amps=20, backup=True)

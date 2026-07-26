@@ -267,3 +267,120 @@ def circuit_refs(ctx: CheckContext) -> list[Finding]:
     if not out:
         out.append(_pass(cid, f"{len(circuits)} circuits reconcile with their devices"))
     return out
+
+
+@check(Tier.ADVISORY, "electrical.panel_spaces")
+def panel_spaces(ctx: CheckContext) -> list[Finding]:
+    """Breaker spaces required per panel vs. the enclosure, plus slot-map integrity.
+
+    Spaces required = Σ poles over the panel's circuits. Where circuits author ``slot``
+    positions, the physical map is checked too: a 2-pole breaker occupies ``slot`` and
+    ``slot + 2`` (same column — odd left, even right), no two breakers may share a
+    position, and no position may sit past the enclosure's ``spaces``.
+    """
+    cid = "electrical.panel_spaces"
+    circuits = list(ctx.plan.library.circuits)
+    if not circuits:
+        return [_unknown(cid, "no circuits authored")]
+
+    types = {t.tag: t for t in ctx.plan.library.electrical_device_types}
+    panels = {element.tag: element for element in ctx.plan.all_elements()
+              if element.element_kind == "ElectricalDevice" and element.kind.value == "panel"}
+
+    by_panel: dict[str, list] = {}
+    for circuit in circuits:
+        by_panel.setdefault(circuit.panel_ref, []).append(circuit)
+
+    out: list[Finding] = []
+    for panel_ref, group in sorted(by_panel.items()):
+        required = sum(circuit.poles for circuit in group)
+        panel = panels.get(panel_ref)
+        product_type = types.get(getattr(panel, "type_ref", None)) if panel else None
+        spaces = getattr(product_type, "spaces", None)
+        if spaces is None:
+            out.append(_unknown(
+                cid, f"panel {panel_ref} needs {required} spaces but its type declares "
+                     f"no ``spaces``", (panel_ref,)))
+        elif required > spaces:
+            out.append(_warn_fail(
+                cid, f"panel {panel_ref} needs {required} breaker spaces but the "
+                     f"enclosure has {spaces} — swap to a larger panel or shed circuits",
+                (panel_ref,)))
+        else:
+            out.append(_pass(
+                cid, f"panel {panel_ref}: {required} spaces required fits the "
+                     f"{spaces}-space enclosure", (panel_ref,)))
+        # Slot-map integrity — only over circuits that author a slot.
+        occupied: dict[int, str] = {}
+        for circuit in group:
+            if circuit.slot is None:
+                continue
+            positions = (circuit.slot,) if circuit.poles == 1 else (circuit.slot,
+                                                                    circuit.slot + 2)
+            for position in positions:
+                if position in occupied:
+                    out.append(_warn_fail(
+                        cid, f"panel {panel_ref}: slot {position} assigned to both "
+                             f"{occupied[position]} and {circuit.tag}",
+                        (occupied[position], circuit.tag)))
+                else:
+                    occupied[position] = circuit.tag
+            if spaces is not None and positions[-1] > spaces:
+                out.append(_warn_fail(
+                    cid, f"panel {panel_ref}: {circuit.tag} occupies slot "
+                         f"{positions[-1]}, past the {spaces}-space enclosure",
+                    (circuit.tag,)))
+    return out
+
+
+@check(Tier.ADVISORY, "electrical.service_load")
+def service_load(ctx: CheckContext) -> list[Finding]:
+    """The 220.82 demand estimate vs. the service, with load management credited.
+
+    A ``LoadManagement`` (EMS per NEC 625.42, interlock, ...) caps what its managed
+    circuits can draw together, so the group's connected excess over
+    ``max_simultaneous_va`` comes off the demand before comparing to the service. With
+    none authored this reports the honest state — the levers are an EMS, an interlock,
+    or a service upgrade — and the decision stays open.
+    """
+    from typehaus.takeoff.electrical import service_load_summary
+
+    cid = "electrical.service_load"
+    if not ctx.plan.library.circuits:
+        return [_unknown(cid, "no circuits authored")]
+
+    summary = service_load_summary(ctx.model)
+    demand_va = float(summary["demand_va"])  # type: ignore[arg-type]
+    service_amps = float(summary["service_amps"])  # type: ignore[arg-type]
+
+    circuits = {c.tag: c for c in ctx.plan.library.circuits}
+    out: list[Finding] = []
+    credit_va = 0.0
+    for management in ctx.plan.library.load_managements:
+        missing = [tag for tag in management.managed_circuits if tag not in circuits]
+        if missing:
+            out.append(_warn_fail(
+                cid, f"{management.tag} manages unknown circuits: {', '.join(missing)}",
+                (management.tag,)))
+            continue
+        group_va = sum(circuits[tag].load_va or 0.0 for tag in management.managed_circuits)
+        excess = max(0.0, group_va - management.max_simultaneous_va)
+        if excess > 0:
+            credit_va += excess
+            out.append(_pass(
+                cid, f"{management.tag} ({management.strategy}) caps "
+                     f"{', '.join(management.managed_circuits)} at "
+                     f"{management.max_simultaneous_va:.0f} VA — {excess:.0f} VA credited",
+                (management.tag,)))
+
+    managed_amps = (demand_va - credit_va) / 240.0
+    if managed_amps <= service_amps:
+        out.append(_pass(
+            cid, f"demand {managed_amps:.1f}A (after {credit_va:.0f} VA load-management "
+                 f"credit) fits the {service_amps:.0f}A service"))
+    else:
+        out.append(_warn_fail(
+            cid, f"estimated demand {managed_amps:.1f}A exceeds the {service_amps:.0f}A "
+                 f"service — options: an EMS per NEC 625.42 on the EV circuits, an "
+                 f"interlock between competing loads, or a service upgrade", ()))
+    return out
