@@ -83,6 +83,9 @@ def derive_detail_slices(model: ResolvedModel) -> list[DerivedDetail]:
         tr = _matched_transition(model, cond)
         if tr is None:
             continue  # unbound conditions are the coverage check's concern, not a detail
+        if getattr(tr, "suppress", False):
+            seen.add(cond.key)
+            continue  # bound-but-suppressed: covered for integrity, no sheet derives
         wall = _host_wall(model, cond)
         if wall is None:
             # roof_ridge conditions carry a roof and a beam, never a wall — the cut frame
