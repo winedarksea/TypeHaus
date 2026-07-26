@@ -366,7 +366,8 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
 
     payload = model_to_dict(catlin_model)["electrical"]
     assert set(payload) == {"panel_schedule", "service_load", "conduit", "devices", "solar",
-                            "backup_components"}
+                            "backup_components", "lighting"}
+    assert set(payload["lighting"]) == {"schedule", "controls", "runs", "connected_va"}
     assert payload["panel_schedule"] == panel_schedule(catlin_model)
     assert payload["service_load"] == service_load_summary(catlin_model)
     assert payload["conduit"] == conduit_takeoff(catlin_model)

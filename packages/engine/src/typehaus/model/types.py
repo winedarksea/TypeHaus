@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from typehaus.model.base import HausModel
-from typehaus.model.enums import DoorOperation, Service
+from typehaus.model.enums import DoorOperation, LuminaireForm, Service
 from typehaus.model.placeables import (ClearanceZone, Footprint2D, ModelRepresentation,
                                        Mount, PlacementStrategy, PlanRepresentation, ServicePort)
 from typehaus.model.registry import register_constructor
@@ -113,6 +113,41 @@ class ElectricalDeviceType(FurnitureType):
     nema: str | None = None
     # Connected load in volt-amps; summed per circuit by the panel-schedule takeoff.
     load_va: float | None = None
+    # How a SWITCH device controls what it feeds: "dimmer" | "timer" | "smart" | None
+    # (a plain toggle). Read by the lighting-controls check and printed in the E-602
+    # control schedule; a product attribute, not a kind, for the same reason NEMA is.
+    control: str | None = None
+
+
+class LuminaireType(ElectricalDeviceType):
+    """A light-fixture product type: form, photometrics, and the ratings a schedule prints.
+
+    Lives in ``Library.electrical_device_types`` alongside its parent — the same pattern
+    ``ApplianceType``/``EquipmentType`` use against ``FurnitureType``. Pydantic keeps an
+    already-constructed subclass instance intact in a parent-typed tuple field, so the
+    extra fields survive the round trip; ``tests/test_lighting_schema.py`` pins that.
+
+    Photometrics are optional throughout: a fixture whose lumens are unknown should say
+    so on the schedule rather than carry an invented number.
+    """
+
+    form: LuminaireForm
+    type_mark: str | None = None  # schedule letter — "A", "B", … unique per house
+    lamp: str | None = None  # "LED integrated" | "T8 LED" | "E26" — what gets replaced
+    watts: float | None = None
+    lumens: float | None = None
+    cct_k: int | None = None  # correlated colour temperature, kelvin
+    cri: int | None = None  # colour rendering index
+    voltage: int = 120  # 120 line voltage, or 24 for a driver-fed LED strip
+    dimmable: bool = False
+    damp_rated: bool = False  # UL damp: covered porch, bath outside the shower zone
+    wet_rated: bool = False  # UL wet: shower/tub zone, open exterior
+    # A fixture switched at the fixture itself (a pull chain, a sconce paddle). Exempt
+    # from the controls check — there is no wall switch to name.
+    integral_switch: bool = False
+    # Linear forms only: the load per lineal foot a ``LightRun`` multiplies by its length
+    # to get connected VA and to size its 24V supply.
+    watts_per_ft: float | None = None
 
 
 for _name, _obj in (
@@ -124,6 +159,7 @@ for _name, _obj in (
     ("EquipmentType", EquipmentType),
     ("RegisterType", RegisterType),
     ("ElectricalDeviceType", ElectricalDeviceType),
+    ("LuminaireType", LuminaireType),
     ("MeshRef", MeshRef),
 ):
     register_constructor(_name, _obj)

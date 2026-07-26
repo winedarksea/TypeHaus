@@ -27,6 +27,7 @@ from typing import Callable, Optional, Sequence, Tuple
 from typehaus.model.placeable_symbols._frame import PART_COLORS, Part, Point, Stroke, part_hex
 from typehaus.model.placeable_symbols.appliances import APPLIANCE_SYMBOLS
 from typehaus.model.placeable_symbols.furniture import FURNITURE_SYMBOLS
+from typehaus.model.placeable_symbols.lighting import LIGHTING_SYMBOLS
 from typehaus.model.placeable_symbols.plumbing import PLUMBING_SYMBOLS
 
 __all__ = ["SYMBOL_NAMES", "PART_COLORS", "Part", "Stroke", "model_parts", "part_hex",
@@ -36,7 +37,8 @@ __all__ = ["SYMBOL_NAMES", "PART_COLORS", "Part", "Stroke", "model_parts", "part
 # sofa's drawn arms and its 3D arm boxes cannot drift apart.
 Builder = Callable[[float, float, float], Tuple[Tuple[Stroke, ...], Tuple[Part, ...]]]
 
-_REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLUMBING_SYMBOLS}
+_REGISTRY: dict[str, Builder] = {**FURNITURE_SYMBOLS, **APPLIANCE_SYMBOLS, **PLUMBING_SYMBOLS,
+                                 **LIGHTING_SYMBOLS}
 
 # The frozen vocabulary. A catalog entry may only name a symbol listed here; the contract test
 # holds the registry to it in both directions.
@@ -55,6 +57,12 @@ SYMBOL_NAMES = frozenset({
     "furnace", "erv", "water-heater", "sauna-heater", "panel", "register",
     # plumbing fixtures
     "toilet", "lavatory", "vanity", "tub", "shower", "kitchen-sink",
+    # luminaires — one name per LuminaireForm that has a point instance. STRIP has none:
+    # a cove strip is a LightRun polyline, drawn by the lighting plan, not a placeable.
+    # "linear-light" covers LINEAR_TUBE, WALL_LAMP and MIRROR_LIGHT, which differ by
+    # mounting and schedule row rather than by glyph.
+    "recessed-can", "panel-light", "sconce", "sconce-updown", "sconce-spot",
+    "pendant", "chandelier", "ceiling-fan-light", "linear-light",
 })
 
 # Names in the vocabulary with no builder yet. Kept explicit so "not implemented" is a

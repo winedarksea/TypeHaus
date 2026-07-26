@@ -18,7 +18,8 @@ from shapely.ops import unary_union
 
 from typehaus._meta import IFC_APP_NAME, PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
-from typehaus.emit.ifc.electrical import emit_conduits, emit_solar_panels
+from typehaus.emit.ifc.electrical import (emit_conduits, emit_light_runs,
+                                          emit_solar_panels)
 from typehaus.emit.ifc.roof import emit_roof, member_class, member_representation
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
@@ -99,6 +100,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
         _emit_duct_run(f, body, model, duct, storeys, project_uuid)
 
     emit_conduits(f, body, model, storeys, project_uuid, _assign_representation)
+    emit_light_runs(f, body, model, storeys, project_uuid, _assign_representation)
     emit_solar_panels(f, body, model, storeys, project_uuid, _assign_representation)
 
     _emit_registers_equipment_devices(f, body, model, storeys, project_uuid)

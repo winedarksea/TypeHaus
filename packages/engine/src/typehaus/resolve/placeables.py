@@ -276,7 +276,13 @@ def _clearance_conflicts(model: ResolvedModel,
 
 
 def _door_swing_conflicts(model: ResolvedModel) -> list[Finding]:
-    """Door leaf sweeps are advisory overlays: flag encroachments without blocking edits."""
+    """Door leaf sweeps are advisory overlays: flag encroachments without blocking edits.
+
+    The sweep is a plan polygon but a leaf is not infinitely tall: it stops at the head.
+    A body whose base sits at or above that head is not in the leaf's way — a recessed can
+    at the 9' ceiling plane cannot obstruct a 6'-8" door, and reporting that it does trains
+    the reader to skip the whole check.
+    """
     findings: list[Finding] = []
     wall_by_tag = {wall.tag: wall for wall in model.walls}
     for opening in model.openings:
@@ -285,9 +291,12 @@ def _door_swing_conflicts(model: ResolvedModel) -> list[Finding]:
         wall = wall_by_tag.get(opening.host_wall)
         if wall is None:
             continue
+        leaf_head_m = wall.z0_m + opening.sill_m + opening.height_m
         swing = Polygon(opening.swing_clearance)
         for item in model.canvas_objects:
-            if item.storey != wall.storey or swing.intersection(Polygon(item.footprint)).area <= 1e-8:
+            if item.storey != wall.storey or item.z_m >= leaf_head_m - 1e-6:
+                continue
+            if swing.intersection(Polygon(item.footprint)).area <= 1e-8:
                 continue
             findings.append(Finding(
                 severity=Severity.WARN, check_id="integrity.door_swing_conflict",

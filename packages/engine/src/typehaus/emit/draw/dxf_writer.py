@@ -72,6 +72,12 @@ _LAYER_STYLE = {
     "E-POWR-DEVC": (10, 25),
     "E-POWR-CNDT": (12, 18),
     "E-LITE": (50, 25),
+    # Cove/tape runs read as a continuous source, not a device: a heavier line than the
+    # fixtures so a 21' run is legible against the can grid it shares a room with.
+    "E-LITE-COVE": (40, 40),
+    # Switch legs. Thin and dashed — a leg is a control relationship the reader traces,
+    # not a raceway anyone pulls.
+    "E-LITE-CIRC": (52, 13),
     "C-PROP": (7, 30),
     "C-PROP-SETB": (1, 15),
     "C-UTIL-WATER": (5, 15),

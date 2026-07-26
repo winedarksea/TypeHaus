@@ -14,6 +14,7 @@ from pathlib import Path
 from typehaus._meta import PSET_SOURCE
 from typehaus.diff.model import DiffElem
 from typehaus.model.ids import derive_child_guid
+from typehaus.resolve.geometry import LIGHT_STRIP_HEIGHT_M, light_run_segment_profiles
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 
@@ -100,6 +101,23 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
             ifc_class=ifc_class, storey=item.storey,
             centroid=centroid, bbox=bbox, axis_dir=(0.0, 0.0),
             attrs=attrs,
+        ))
+    # LED strip runs. Route geometry normally stays out of the diff (pipes, ducts and
+    # conduit all do), but a light run has no choice: it exports as ``IfcLightFixture``,
+    # which ``external_elems`` reads back, so a run missing here would surface as a
+    # phantom addition on every round trip against our own IFC.
+    for run in model.light_runs:
+        # Project the *swept* profile, not the bare polyline: the emitted solid is the
+        # channel's width around each leg, so a straight run's plan bbox is 1/2" deep and
+        # not zero. Reading the bare path would report every run as resized.
+        swept = [point for profile in light_run_segment_profiles(list(run.path))
+                 for point in profile]
+        centroid, bbox = _bounds(swept or [tuple(point) for point in run.path],
+                                 run.z_m - LIGHT_STRIP_HEIGHT_M, run.z_m)
+        elems.append(DiffElem(
+            global_id=_guid(puid, run.uid), tag=run.tag, ifc_class="IfcLightFixture",
+            storey=run.storey, centroid=centroid, bbox=bbox, axis_dir=(0.0, 0.0),
+            attrs={"type": run.type_ref},
         ))
     return elems
 

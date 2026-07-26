@@ -15,6 +15,14 @@ proposing any design change.
   enclosure, 240V/EV/spa devices, conduit trunks, NEC 210.52 fill receptacles.
 - `plan/circuits.py` — the panel schedule (NOT editable: Circuits are schedule data, not
   geometry). Devices point at circuits via `circuit=`; `electrical.circuit_refs` reconciles.
+- `plan/lighting.py` — `# haus: editable` luminaire/LED-run/control *instances*, room by
+  room. Every light names its switch(es) in `controlled_by`; 24V runs name a `psu_ref`
+  instead of a circuit. The `ED-*-LT` fixtures still live in `plan/mep.py` — they were
+  re-typed in place from the old generic `ED-T-LIGHT` so their uids (and IFC GlobalIds)
+  survived — and each is one corner of a grid completed here.
+- `plan/lighting_types.py` — the `LuminaireType` catalog, schedule marks A–P (NOT
+  editable: `frozenset` again). Marks must stay unique; the E-602 schedule is keyed on
+  them. Also holds the two 24V supply types and the dimmer/timer switch types.
 - `params/solar.py` — rooftop PV array (12 × 440 W on the gable ridge, computed max fit).
 - `plan/fixture_types.py` — the FixtureType/ApplianceType *catalog* (NOT editable: uses
   `frozenset(...)`, which the dialect forbids). Type libraries stay non-editable; movable

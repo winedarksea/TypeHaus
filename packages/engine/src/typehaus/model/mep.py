@@ -169,6 +169,37 @@ class ElectricalDevice(Element):
     rotation: object | None = None
     location: Location | None = None
     mount: Mount = Mount()
+    # SWITCH tags that control this device. N tags means N-way switching (two tags = a
+    # 3-way pair). Named on the *load*, not the switch, because a switch commonly drives
+    # several fixtures and a fixture is the thing a plan reader looks up. Empty on a
+    # switch itself, on an always-on device, and on a fixture whose type carries
+    # ``integral_switch``.
+    controlled_by: tuple[str, ...] = ()
+
+
+@register_element
+class LightRun(Element):
+    """One continuous run of linear luminaire — a cove/shadow-gap LED strip.
+
+    A ``ConduitRun`` sibling, not an ``ElectricalDevice``: a strip has a *length*, not a
+    position, so it is priced per foot and drawn as a polyline. It stays out of the
+    placeable pipeline entirely (no ``_TYPE_COLLECTIONS`` entry, no ``model/canvas.py``
+    allowlist entry) for the same reason conduit does — there is no footprint to place,
+    rotate or clear.
+
+    ``mount`` carries the run's height the way every placeable does: ``Mount(CEILING)``
+    for a shadow gap, ``Mount(WALL, elevation=inch(34))`` for a stair railing light.
+    ``psu_ref`` names the AC/DC supply feeding it when ``type_ref`` is a 24V type — a
+    24V strip has no branch circuit of its own, its PSU does.
+    """
+
+    path: tuple[Point2D, ...]  # plan-frame polyline, >= 2 points
+    type_ref: str  # a LuminaireType with form=STRIP
+    mount: Mount = Mount()
+    circuit: str | None = None  # line-voltage runs only; 24V runs feed from psu_ref
+    controlled_by: tuple[str, ...] = ()
+    psu_ref: str | None = None  # ElectricalDevice tag of the AC/DC supply (24V runs)
+    room: str | None = None
 
 
 for _name, _obj in (
@@ -179,6 +210,7 @@ for _name, _obj in (
     ("Equipment", Equipment),
     ("ElectricalDevice", ElectricalDevice),
     ("ConduitRun", ConduitRun),
+    ("LightRun", LightRun),
     ("Sump", Sump),
     ("VentRun", VentRun),
 ):

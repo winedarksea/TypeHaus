@@ -205,6 +205,39 @@ class DeviceKind(Enum):
     DISCONNECT = "disconnect"  # equipment disconnect (minisplit, hot tub, WH)
 
 
+class LuminaireForm(Enum):
+    """The physical form of a light fixture — drives its plan glyph and its schedule row.
+
+    Deliberately *not* ten new ``DeviceKind`` members. E-sheet markers key off
+    ``DeviceKind.value`` and three mirrored IFC/diff maps do the same, so ten more kinds
+    would ripple through all of them for no IFC gain: every form below exports as one
+    ``IfcLightFixture``. This is the EV-charger precedent (``DeviceKind`` docstring) —
+    the kind stays flat, the product *type* differentiates.
+
+    ``STRIP`` is the one form with no point instance: it is authored as a ``LightRun``
+    polyline and priced per lineal foot off ``LuminaireType.watts_per_ft``.
+    """
+
+    RECESSED_CAN = "recessed_can"
+    PANEL = "panel"
+    STRIP = "strip"
+    SCONCE = "sconce"
+    PENDANT = "pendant"
+    CHANDELIER = "chandelier"
+    LINEAR_TUBE = "linear_tube"
+    WALL_LAMP = "wall_lamp"
+    MIRROR_LIGHT = "mirror_light"
+    CEILING_FAN_LIGHT = "ceiling_fan_light"
+
+
+# Forms drawn as a linear extent rather than a point glyph — the sheets label them with a
+# length and the take-off prices them per lineal foot.
+LINEAR_LUMINAIRE_FORMS = frozenset(
+    {LuminaireForm.STRIP, LuminaireForm.LINEAR_TUBE, LuminaireForm.WALL_LAMP,
+     LuminaireForm.MIRROR_LIGHT}
+)
+
+
 class ConnectorKind(Enum):
     """Modeled connection hardware (→ IfcMechanicalFastener / IfcDiscreteAccessory)."""
 

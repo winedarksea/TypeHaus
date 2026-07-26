@@ -10,13 +10,14 @@ guarantee), and checks a duct run against its floor's joist bays/bearing lines.
 from __future__ import annotations
 
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.enums import DuctRouting, Service
-from typehaus.model.mep import ConduitRun, DuctRun, PipeRun, SleevePenetration
+from typehaus.model.enums import DuctRouting, LuminaireForm, Service
+from typehaus.model.mep import ConduitRun, DuctRun, LightRun, PipeRun, SleevePenetration
 from typehaus.model.spatial import Appliance, Fixture
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import length, sub
-from typehaus.resolve.model import (ResolvedConduitRun, ResolvedDuct, ResolvedModel,
-                                    ResolvedPipeRun, ResolvedSleeve)
+from typehaus.resolve.model import (ResolvedConduitRun, ResolvedDuct, ResolvedLightRun,
+                                    ResolvedModel, ResolvedPipeRun, ResolvedSleeve)
+from typehaus.resolve.placeables import resolved_mount_elevation
 
 _JOIST_BREADTH_M = inch(1.5).meters
 _DEFAULT_SPACING_M = inch(16).meters
@@ -34,7 +35,50 @@ def resolve_mep(model: ResolvedModel) -> list[Finding]:
                 findings.extend(_resolve_duct_run(model, element, storey.tag))
             elif isinstance(element, ConduitRun):
                 findings.extend(_resolve_conduit_run(model, element, storey.tag))
+            elif isinstance(element, LightRun):
+                findings.extend(_resolve_light_run(model, element, storey))
     return findings
+
+
+def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Finding]:
+    """Validate a linear-luminaire run and record its plan length at its mounted height.
+
+    Two integrity gates, both hard: a polyline needs two points to have a length, and the
+    named type must be a ``LuminaireType`` of a linear form — a run pointing at a can
+    light would otherwise silently price per-foot off a per-fixture wattage.
+    """
+    path = [p.xy_m for p in run.path]
+    if len(path) < 2:
+        return [Finding(
+            severity=Severity.ERROR, check_id="integrity.light_run_path",
+            message=f"light run {run.tag} needs >= 2 path points", element_tags=(run.tag,),
+            result=Result.FAIL,
+        )]
+    product = next((t for t in model.plan.library.electrical_device_types
+                    if t.tag == run.type_ref), None)
+    form = getattr(product, "form", None)
+    if product is None or form is None:
+        return [Finding(
+            severity=Severity.ERROR, check_id="integrity.light_run_type",
+            message=f"light run {run.tag} references {run.type_ref}, which is not a "
+                    f"LuminaireType in Library.electrical_device_types",
+            element_tags=(run.tag,), result=Result.FAIL,
+        )]
+    if form is not LuminaireForm.STRIP:
+        return [Finding(
+            severity=Severity.ERROR, check_id="integrity.light_run_type",
+            message=f"light run {run.tag} references {run.type_ref} of form "
+                    f"{form.value} — a run needs a STRIP-form luminaire type",
+            element_tags=(run.tag,), result=Result.FAIL,
+        )]
+    plan_len = sum(length(sub(path[i], path[i + 1])) for i in range(len(path) - 1))
+    model.light_runs.append(ResolvedLightRun(
+        uid=run.uid, tag=run.tag, storey=storey.tag, path=path,
+        z_m=resolved_mount_elevation(storey, run), length_m=plan_len,
+        type_ref=run.type_ref, circuit=run.circuit, psu_ref=run.psu_ref,
+        controlled_by=tuple(run.controlled_by), room=run.room,
+    ))
+    return []
 
 
 def _resolve_conduit_run(model: ResolvedModel, run: ConduitRun, storey_tag: str) -> list[Finding]:

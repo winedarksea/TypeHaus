@@ -25,6 +25,8 @@ from typehaus.takeoff.electrical import (
 )
 from typehaus.takeoff.glazing import glazing_panel_takeoff, glazing_trim_takeoff
 from typehaus.takeoff.hardware import hardware_takeoff
+from typehaus.takeoff.lighting import (connected_lighting_va, light_run_takeoff,
+                                       lighting_controls, luminaire_schedule)
 from typehaus.takeoff.hardware_config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
     HardwareTakeoffConfig,
@@ -44,6 +46,8 @@ def bill_of_materials(
     ``construction_returns``, ``sheet_goods`` and ``hardware`` complete the order.
     ``glazing`` covers what none of those could: sheet goods bought as panels rather than as
     sheathing, and the aluminium extrusions that cap them, bought by the lineal foot.
+    The ``luminaire_*``/``light_runs``/``lighting_load`` sections are the lighting order:
+    fixtures by schedule mark, tape by the lineal foot, and one supply per cove area.
     ``placeables`` counts the free-placed and wall-attached products (casework, appliances,
     fixtures — the UI BOM's placeablesSection twin) and ``floor_heat`` bills each radiant
     zone's element length, so no billable record lives only in a CLI patch or the browser.
@@ -68,4 +72,11 @@ def bill_of_materials(
         "conduit": conduit_takeoff(model),
         "solar": solar_takeoff(model),
         "backup_components": backup_component_rows(model),
+        # The lighting program (→ takeoff/lighting.py): the E-602 schedule by mark, the
+        # switch legs, the LED runs with their supplies sized against them, and the real
+        # connected load beside the 3 VA/ft2 allowance the service calculation uses.
+        "luminaire_schedule": luminaire_schedule(model),
+        "lighting_controls": lighting_controls(model),
+        "light_runs": light_run_takeoff(model),
+        "lighting_load": connected_lighting_va(model),
     }

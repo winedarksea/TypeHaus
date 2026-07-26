@@ -250,7 +250,10 @@ def takeoff(
                "service_load": bom["service_load"],
                "conduit": bom["conduit"],
                "solar": bom["solar"],
-               "backup_components": bom["backup_components"]}
+               "backup_components": bom["backup_components"],
+               "luminaire_schedule": bom["luminaire_schedule"],
+               "light_runs": bom["light_runs"],
+               "lighting_load": bom["lighting_load"]}
     if prices is not None:
         payload["cost_estimate"] = estimate_costs(bom, prices)
     if as_json:
@@ -344,6 +347,36 @@ def takeoff(
         for item in payload["backup_components"]:
             console.print(f"  {item['count']:>5} ea    {item['component']}")
             console.print(f"        [dim]{item['basis']}[/dim]")
+    if payload["luminaire_schedule"]:
+        console.print("[bold]Luminaire schedule[/bold]  (mark · qty: description)")
+        for row in payload["luminaire_schedule"]:
+            qty = (f"{row['count']:>5} ea" if row["count"]
+                   else f"{row['length_ft'] or 0:>5.0f} LF")
+            photometry = " · ".join(part for part in (
+                f"{row['watts']:.0f} W" if row["watts"] else
+                (f"{row['watts_per_ft']:.1f} W/ft" if row["watts_per_ft"] else ""),
+                f"{row['lumens']:,.0f} lm" if row["lumens"] else "",
+                f"{row['cct_k']}K" if row["cct_k"] else "",
+                f"CRI {row['cri']}" if row["cri"] else "",
+                row["rating"],
+            ) if part)
+            console.print(f"  {row['mark']:>3}  {qty}    {row['description']}")
+            console.print(f"        [dim]{photometry} · {', '.join(row['rooms'])}[/dim]")
+        runs = payload["light_runs"]
+        if runs["runs"]:
+            console.print(f"[bold]LED runs[/bold]  {runs['total_length_ft']} LF total")
+            for supply in runs["supplies"]:
+                verdict = ("[red]UNDERSIZED[/red]" if supply["adequate"] is False
+                           else ("?" if supply["adequate"] is None else "ok"))
+                console.print(f"  {supply['psu']}: {supply['length_ft']} LF / "
+                              f"{supply['connected_watts']:.0f} W connected, needs "
+                              f"{supply['required_watts']:.0f} W at 125% — rated "
+                              f"{supply['rated_watts']} W {verdict}")
+        load = payload["lighting_load"]
+        console.print(f"[bold]Connected lighting load[/bold]  "
+                      f"{load['total_connected_va']:,.0f} VA against the "
+                      f"{load['allowance_va']:,.0f} VA NEC 220.82 allowance for "
+                      f"{load['conditioned_area_ft2']:,.0f} ft2")
     if prices is not None:
         estimate = payload["cost_estimate"]
         console.print(f"[bold]Cost estimate[/bold]  (from {prices.path.name}; "

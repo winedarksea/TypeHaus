@@ -21,9 +21,6 @@ what genuinely remains, with fresh measurements.*
   boundary-condition artifact: the hot roof's interior-side vapour openness vs. its exterior
   foam ratio needs a design pass (more exterior R, an interior retarder class change, or a
   sourced argument the check is missing).
-- **The breezeway deck and the garage service door differ by 22".** Unchanged: drop the
-  garage storey to the slab, step the breezeway up at its north end, or accept the step and
-  add a landing. Deliberately not resolved while building the breezeway.
 
 ## Remaining Work
 
@@ -89,8 +86,6 @@ what genuinely remains, with fresh measurements.*
 - **`interior_slab_drip_flashing` detail gate** still needs "is there enclosed space
   beneath" (storey elevations on resolved rooms) to distinguish `SL-M-DECK` from
   `SL-G-FLOOR`.
-- Sweep the BOM for anything newly added beyond placeables/floor-heat/glazing (all three now
-  bill through `bill_of_materials`).
 
 ## Phase 2 — Complete Catlin junctions (needs your intent — construction-rule authoring)
 
@@ -126,8 +121,6 @@ what genuinely remains, with fresh measurements.*
 
 - **The 1" fall toward the garage is drawn, not framed** (lives in the drainage wedges; a
   `Beam` is a prism). If the wedge becomes a real element the fall moves into it.
-- **The bird-safety film is recorded, not modeled** (`GlazingPanel.film`); belongs on a
-  glazing schedule when there is one.
 
 ## Stair framing follow-ups
 
@@ -142,10 +135,10 @@ the future.
 
 ## Items after Phase 4
 - Ridge vent cap needs a proper shape (and white painted metal look)
-- Polycarbonate on breezeway doesn't line up (it should cover the lower beam, and top plate should meet the side place in a shared channel).
-- 
 
-- Flooring
+- Polycarbonate on breezeway doesn't line up (it should cover the lower beam, and top plate should meet the side place in a shared channel).
+
+- Flooring - let's make second floor bedrooms be carpet, hallways and bathrooms be LVP (luxury vinyl plank, really not so different from hardwood), and RMA-A-STUDY hardwood (oak).
 
 - Frost Free Hydrant in garage
 		Frost free hydrant and "hose down" area, in a code compliant way
@@ -154,5 +147,10 @@ the future.
 			Y34SS hydrant + extra coating + hose bib vacuum breaker (small screw on thing)
 				Raise pedestal for this, so the sleeve entrance is not the salt water floor (ie melting snow and salt slush in winter)
 			NO drain - Most places don't like. Have a gravel pit outside for a wash area and drainage
-- Heat rise detector in garage, smoke alarm in each room
-- Cameras: one in garage, one on porch, one 
+
+- Heat rise detector in garage, smoke alarm in each bedroom
+
+- Sweep the BOM for anything newly added beyond placeables/floor-heat/glazing (all three now
+  bill through `bill_of_materials`). Looks like some connectors/hangers/screw counts are made but not included there.
+
+- the 2D drawing of the u-shaped stairs got messed up at some point. It's got weird splits on landings and uneven stair marks

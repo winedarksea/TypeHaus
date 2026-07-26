@@ -82,3 +82,29 @@ def polygon_area(ring: list[Vec]) -> float:
         x1, y1 = ring[(i + 1) % n]
         s += x0 * y1 - x1 * y0
     return s / 2.0
+
+
+# --- linear luminaire (LightRun) cross-section ---------------------------------
+# An LED tape in its aluminium channel. Half an inch square is the common extrusion, and
+# it is the only cross-section a strip has — the run's *length* is the authored fact.
+# Shared rather than duplicated: the IFC emitter sweeps this profile and the diff adapter
+# projects the same swept extent, so a round trip against our own export matches instead of
+# reporting every run as resized by the channel's own width (→ diff/ifc_adapter).
+LIGHT_STRIP_WIDTH_M = 0.0127
+LIGHT_STRIP_HEIGHT_M = 0.0127
+
+
+def light_run_segment_profiles(path: list[Vec]) -> list[list[Vec]]:
+    """The swept rectangle of every non-degenerate leg of a linear-luminaire run.
+
+    A coincident authored pair is a typo, not a zero-width solid an IFC importer has to
+    cope with, so those legs are skipped rather than emitted degenerate.
+    """
+    half = LIGHT_STRIP_WIDTH_M / 2.0
+    profiles: list[list[Vec]] = []
+    for index in range(len(path) - 1):
+        p0, p1 = path[index], path[index + 1]
+        if length(sub(p1, p0)) < 1e-6:
+            continue
+        profiles.append(rect_between(p0, p1, -half, half))
+    return profiles

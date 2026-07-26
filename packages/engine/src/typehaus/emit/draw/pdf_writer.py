@@ -24,6 +24,11 @@ from typehaus.emit.draw.scene import (
     Text,
 )
 
+# Drawing-IR linetype → matplotlib linestyle. Anything unlisted draws solid, which is what
+# an unrecognised CAD linetype should do rather than vanish.
+_LINETYPE_MPL = {"CONTINUOUS": "-", "DASHED": "--", "HIDDEN": (0, (4, 2)),
+                 "CENTER": (0, (8, 2, 2, 2)), "PHANTOM": (0, (10, 2, 2, 2, 2, 2))}
+
 # AIA layer → matplotlib stroke color + width (points at final scale, roughly).
 _LAYER_STYLE = {
     "A-WALL": ("#1a1a1a", 1.4),
@@ -61,6 +66,8 @@ _LAYER_STYLE = {
     "E-POWR-DEVC": ("#8a2a2a", 0.5),
     "E-POWR-CNDT": ("#b05050", 0.4),
     "E-LITE": ("#c08a00", 0.5),
+    "E-LITE-COVE": ("#d06000", 0.8),
+    "E-LITE-CIRC": ("#c8a040", 0.3),
     "C-PROP": ("#333333", 0.6),
     "C-PROP-SETB": ("#204070", 0.4),
     "C-UTIL-WATER": ("#3a6a8a", 0.4),
@@ -271,11 +278,16 @@ def _render_nodes(ax: object, scene: Scene) -> None:
             color, lw = _LAYER_STYLE.get(node.layer, ("#333", 0.6))
             xs = [p[0] for p in node.points]
             ys = [p[1] for p in node.points]
+            # The DXF writer has always honoured ``linetype``; this one did not, so a dashed
+            # conduit trunk and a dashed switch leg both printed as solid lines
+            # indistinguishable from a raceway. Same IR, same drawing — read it here too.
+            style = _LINETYPE_MPL.get(node.linetype, "-")
             if node.closed and len(node.points) >= 3:
                 ax.add_patch(Polygon(list(node.points), closed=True, fill=False,
-                                     edgecolor=color, linewidth=lw))
+                                     edgecolor=color, linewidth=lw, linestyle=style))
             else:
-                ax.plot(xs, ys, color=color, linewidth=lw, solid_capstyle="round")
+                ax.plot(xs, ys, color=color, linewidth=lw, solid_capstyle="round",
+                        linestyle=style)
         elif isinstance(node, Hatch):
             # Fill by material, then overlay the hatch — an unfilled hatch alone makes
             # concrete, XPS, EPS and polyiso read as the same grey stipple.

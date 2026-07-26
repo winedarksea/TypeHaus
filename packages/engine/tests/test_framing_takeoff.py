@@ -80,7 +80,9 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "construction_returns", "sheet_goods", "glazing_panels",
                         "glazing_trim", "hardware", "placeables", "floor_heat",
                         "electrical_devices", "panel_schedule", "service_load",
-                        "conduit", "solar", "backup_components"}
+                        "conduit", "solar", "backup_components",
+                        "luminaire_schedule", "lighting_controls", "light_runs",
+                        "lighting_load"}
     assert all(section for section in bom.values()), "no BOM section may come back empty"
     # The framing section still reconciles 1:1 with the resolved members.
     assert sum(int(row["pieces"]) for row in bom["framing"]) == len(catlin_model.all_members())

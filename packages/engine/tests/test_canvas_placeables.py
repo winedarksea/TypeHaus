@@ -301,15 +301,38 @@ def test_mount_resolution_uses_floor_wall_and_ceiling_reference_frames() -> None
 
 
 def test_catlin_ceiling_lights_resolve_to_their_authored_mount_height() -> None:
-    """Lights used to resolve to the floor: ``mount_height`` was a second, unread field."""
+    """Lights used to resolve to the floor: ``mount_height`` was a second, unread field.
+
+    The generic ``ED-T-LIGHT`` this once read is retired — every fixture is a real
+    ``LuminaireType`` now — so the three mounting rules a luminaire can be authored under
+    are pinned instead: a recessed can sits on the ceiling plane, a hanging fixture sits
+    its stated drop below it, and a stated elevation wins outright (the attic's cathedral).
+    """
     house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
     plan = load_plan(house).plan
     model, _ = resolve(plan)
     storey_elevation = {storey.tag: storey.elevation.meters for storey in plan.storeys}
-    lights = [item for item in model.canvas_objects if item.type_ref == "ED-T-LIGHT"]
-    assert lights
-    for light in lights:
-        assert light.z_m - storey_elevation[light.storey] == pytest.approx(ft(8).meters)
+    ceiling = {storey.tag: storey.default_ceiling_height.meters for storey in plan.storeys}
+    by_tag = {item.tag: item for item in model.canvas_objects}
+
+    def above_floor(tag: str) -> float:
+        item = by_tag[tag]
+        return item.z_m - storey_elevation[item.storey]
+
+    # No fixture resolves to the floor, which is the regression this test exists for.
+    luminaires = {product.tag for product in plan.library.electrical_device_types
+                  if getattr(product, "form", None) is not None}
+    placed = [item for item in model.canvas_objects if item.type_ref in luminaires]
+    assert len(placed) > 50
+    assert all(item.z_m - storey_elevation[item.storey] > 0.5 for item in placed)
+
+    # A recessed can hangs off the ceiling plane; its housing goes up into the bay.
+    assert above_floor("ED-M-BED-CAN2") == pytest.approx(ceiling["main"])
+    # A hanging fixture sits its whole assembly below the ceiling.
+    assert above_floor("ED-M-DINING-PEND") == pytest.approx(ceiling["main"] - ft(3, 6).meters)
+    # A stated elevation wins: the attic ceiling is a 4:12 rake, not the storey default.
+    assert above_floor("ED-A-EAST-CAN3") == pytest.approx(ft(8).meters)
+
     switch = next(item for item in model.canvas_objects if item.tag == "ED-M-LIVING-SW")
     assert switch.z_m == pytest.approx(inch(48).meters)
 

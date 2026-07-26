@@ -8,6 +8,8 @@ Public surface only — the derivations live in focused sibling modules:
   lineal foot, and the gasketed fixings that hold them.
 - :mod:`typehaus.takeoff.hardware` — the critical connection hardware, with its rules in
   :mod:`typehaus.takeoff.hardware_config` and its parts in ``library/hardware.py``.
+- :mod:`typehaus.takeoff.lighting` — the luminaire schedule, its controls, the LED runs
+  and their supplies, and the real connected lighting load.
 - :mod:`typehaus.takeoff.bom` — every section at once.
 """
 
@@ -37,6 +39,12 @@ from typehaus.takeoff.glazing import (
     glazing_trim_takeoff,
 )
 from typehaus.takeoff.hardware import hardware_takeoff
+from typehaus.takeoff.lighting import (
+    connected_lighting_va,
+    light_run_takeoff,
+    lighting_controls,
+    luminaire_schedule,
+)
 from typehaus.takeoff.hardware_config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
     HardwareTakeoffConfig,
@@ -53,6 +61,7 @@ __all__ = [
     "framing_bom_by_size",
     "framing_takeoff",
     "hardware_takeoff",
+    "luminaire_schedule", "lighting_controls", "light_run_takeoff", "connected_lighting_va",
     "placeables_takeoff",
     "sheet_goods_takeoff",
     "structural_solids_takeoff",

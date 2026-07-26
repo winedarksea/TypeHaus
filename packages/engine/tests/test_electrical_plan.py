@@ -138,3 +138,42 @@ def test_electrical_plan_dxf_round_trips(catlin_model, tmp_path: Path):
     assert doc.units == 1
     names = {layer.dxf.name for layer in doc.layers}
     assert {"E-POWR-DEVC", "E-LITE"} <= names
+
+
+def test_the_three_lighting_checks_pass_on_the_catlin_house(catlin_model):
+    """``lighting_controls`` / ``wet_location`` / ``light_run_psu`` (→ checks/mep/lighting).
+
+    All three are advisory and all three pass, so any regression here is a real one: a
+    fixture nobody can switch, one not listed for a bathroom, or a 24V run whose driver
+    cannot carry it.
+    """
+    from typehaus.checks import run_from_model
+    from typehaus.checks.registry import Tier
+
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    for check_id in ("electrical.lighting_controls", "electrical.wet_location",
+                     "electrical.light_run_psu"):
+        findings = [f for f in report.findings if f.check_id == check_id]
+        assert findings, check_id
+        assert all(f.result.value == "pass" for f in findings), \
+            [f.message for f in findings if f.result.value != "pass"]
+
+
+def test_a_fixture_with_no_switch_is_reported(catlin_model):
+    """The check has to actually fire — one that only ever passes proves nothing."""
+    from typehaus.checks.mep.lighting import lighting_controls
+    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.registry import CheckContext, Preferences
+
+    def context(plan):
+        return CheckContext(plan=plan, model=catlin_model, preferences=Preferences(),
+                            profile=MN_2024)
+
+    # Point one fixture at a switch that does not exist: it fails, naming that fixture.
+    device = catlin_model.plan.by_tag("ED-M-BED-CAN2")
+    broken = device.model_copy(update={"controlled_by": ("ED-NOT-A-SWITCH",)})
+    patched = catlin_model.plan.with_elements(
+        "main", [broken if element.tag == device.tag else element
+                 for element in catlin_model.plan.storey_elements("main")])
+    failures = [f for f in lighting_controls(context(patched)) if f.result.value == "fail"]
+    assert [f.element_tags for f in failures] == [("ED-M-BED-CAN2",)]

@@ -110,8 +110,11 @@ CIRCUITS = (
             description="Kitchen outlet 1: fridge + freezer + PoE WiFi"),
     Circuit(uid="CKT017AAAA", tag="CKT-HA", panel_ref=_PANEL, breaker_amps=15, poles=1,
             backup=True, load_va=300, description="Basement outlet 1: HA server + router"),
+    # load_va is None on all three lighting circuits since the lighting plan went in: the
+    # luminaires carry real typed loads now, so the panel-schedule takeoff sums the
+    # fixtures actually on each circuit instead of repeating a placeholder allowance.
     Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", panel_ref=_PANEL, breaker_amps=15, poles=1,
-            backup=True, load_va=100,
+            backup=True,
             description="Basement + kitchen lighting (LED, backup light)"),
     Circuit(uid="CKT019AAAA", tag="CKT-BACKUP-FEED", panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=200, description="Backup enclosure feed (DIN relays, 24V PSU, UPS)"),
@@ -126,9 +129,9 @@ CIRCUITS = (
     Circuit(uid="CKT023AAAA", tag="CKT-LAUNDRY", panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=1500, description="Laundry receptacle (washer)"),
     Circuit(uid="CKT024AAAA", tag="CKT-LT-MAIN", panel_ref=_PANEL, breaker_amps=15, poles=1,
-            load_va=600, description="General lighting — main storey"),
+            description="General lighting — main storey, porch and garage"),
     Circuit(uid="CKT025AAAA", tag="CKT-LT-UPPER", panel_ref=_PANEL, breaker_amps=15, poles=1,
-            load_va=600, description="General lighting — second + attic"),
+            description="General lighting — second + attic"),
     Circuit(uid="CKT026AAAA", tag="CKT-RC-MAIN", panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=1500, description="General receptacles — main storey"),
     Circuit(uid="CKT027AAAA", tag="CKT-RC-SECOND", panel_ref=_PANEL, breaker_amps=20, poles=1,

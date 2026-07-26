@@ -28,6 +28,12 @@ from typehaus.takeoff.electrical import (
     service_load_summary,
     solar_takeoff,
 )
+from typehaus.takeoff.lighting import (
+    connected_lighting_va,
+    light_run_takeoff,
+    lighting_controls,
+    luminaire_schedule,
+)
 
 if TYPE_CHECKING:
     from typehaus.diff.variants import VariantSpec
@@ -422,6 +428,18 @@ def model_to_dict(
         # browser recomputed could disagree with the sheet stamped for permit.
         # `service_load` is None for a house that authors no circuits (the summary would be
         # an estimate over nothing); every other section degrades to an empty list.
+        # Linear luminaires: plan polyline + the height it is mounted at, so the viewer can
+        # draw a cove where the ceiling actually is. Beside `solar_panels` because both are
+        # resolver-owned geometry that is not a placeable.
+        "light_runs": [
+            {"uid": run.uid, "tag": run.tag, "storey": run.storey,
+             "path": [list(point) for point in run.path], "z_m": run.z_m,
+             "length_m": run.length_m, "type": run.type_ref, "room": run.room,
+             "circuit": run.circuit, "psu_ref": run.psu_ref,
+             "controlled_by": list(run.controlled_by),
+             "provenance": _provenance(provenance, run.tag)}
+            for run in sorted(model.light_runs, key=lambda item: item.uid)
+        ],
         "electrical": {
             "panel_schedule": panel_schedule(model),
             "service_load": (service_load_summary(model)
@@ -430,6 +448,16 @@ def model_to_dict(
             "devices": electrical_device_takeoff(model),
             "solar": solar_takeoff(model),
             "backup_components": backup_component_rows(model),
+            # The lighting reader's whole payload, verbatim from takeoff/lighting.py — the
+            # same four derivations the E-602 sheet prints, for the same reason the panel
+            # schedule is shared: a schedule the browser recomputed could disagree with the
+            # one stamped for permit.
+            "lighting": {
+                "schedule": luminaire_schedule(model),
+                "controls": lighting_controls(model),
+                "runs": light_run_takeoff(model),
+                "connected_va": connected_lighting_va(model),
+            },
         },
         "stairs": [
             {"uid": stair.uid, "tag": stair.tag, "storey": stair.storey,

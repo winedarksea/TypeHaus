@@ -399,6 +399,28 @@ class ResolvedConduitRun:
 
 
 @dataclass(frozen=True)
+class ResolvedLightRun:
+    """One linear luminaire run: plan polyline, mounted height, developed length.
+
+    A ``ResolvedConduitRun`` sibling. ``z_m`` is the project-frame absolute height the
+    strip sits at (resolved from the authored ``Mount`` against its storey), and
+    ``length_m`` is plan length — a strip does not rise at its end the way a conduit
+    trunk does, so there is nothing to add (→ model/mep.py LightRun)."""
+
+    uid: str
+    tag: str
+    storey: str
+    path: Ring
+    z_m: float
+    length_m: float
+    type_ref: str
+    circuit: str | None = None
+    psu_ref: str | None = None
+    controlled_by: tuple[str, ...] = ()
+    room: str | None = None
+
+
+@dataclass(frozen=True)
 class ResolvedSleeve:
     """A cast-in-place sleeve, plus how far it sits from the fixture's expected drain point."""
 
@@ -513,6 +535,7 @@ class ResolvedModel:
     sleeves: list[ResolvedSleeve] = field(default_factory=list)
     ducts: list[ResolvedDuct] = field(default_factory=list)
     conduits: list[ResolvedConduitRun] = field(default_factory=list)
+    light_runs: list[ResolvedLightRun] = field(default_factory=list)
     solar_panels: list[ResolvedSolarPanel] = field(default_factory=list)
     footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)
     canvas_objects: list[ResolvedCanvasObject] = field(default_factory=list)

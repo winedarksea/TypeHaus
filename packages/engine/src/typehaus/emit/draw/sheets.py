@@ -20,6 +20,7 @@ from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.foundationplan import build_foundation_plan, has_foundation_content
 from typehaus.emit.draw.framingplan import build_framing_plan
 from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
+from typehaus.emit.draw.lightingplan import build_lighting_plan, has_lighting_content
 from typehaus.emit.draw.pdf_writer import _fig
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
 from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
@@ -143,9 +144,22 @@ def build_sheet_index(model: ResolvedModel,
         sheets.append(SheetSpec(f"E-{100 + index}", f"Electrical plan — {storey_tag}",
                                 scene=partial(build_electrical_plan, storey=storey_tag)))
 
+    # E-2xx: the lighting plans, one per storey that has luminaires. A separate series
+    # from the E-10x power sheets on purpose — an electrician wiring devices and a reader
+    # checking what hangs over the dining table want two different drawings, and merging
+    # them produces a sheet too dense to be either.
+    lighting_storeys = [s.tag for s in storeys if has_lighting_content(model, s.tag)]
+    for index, storey_tag in enumerate(lighting_storeys, start=1):
+        sheets.append(SheetSpec(f"E-{200 + index}", f"Lighting plan — {storey_tag}",
+                                scene=partial(build_lighting_plan, storey=storey_tag)))
+
     if model.plan.library.circuits:
         sheets.append(SheetSpec("E-601", "Panel schedule / service load",
                                 page=_write_panel_schedule))
+
+    if lighting_storeys:
+        sheets.append(SheetSpec("E-602", "Luminaire schedule / lighting controls",
+                                page=_write_luminaire_schedule))
 
     sheets.append(SheetSpec("EN-1", "Energy compliance summary",
                             page=partial(_write_energy_sheet, preferences=preferences)))
@@ -387,6 +401,102 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
                    bbox=(0.04, 0.03, 0.92, 0.10))
     pdf.savefig(fig)
     plt.close(fig)
+
+
+def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str) -> None:
+    """Three tables that between them make the E-2xx plans readable.
+
+    The plans carry marks, not specifications — that is the whole point of a mark — so this
+    sheet is where a mark becomes a product: what lamp, how many lumens, at what colour
+    temperature, listed for how wet a place, dimmable or not, how many, and where. Then the
+    control schedule, which is the authoritative statement of the switch legs the plans can
+    only draw as dashed lines. Then the runs, with each supply sized against the tape it
+    actually drives (→ takeoff/lighting.py — nothing here is hand-summed).
+    """
+    import matplotlib.pyplot as plt
+
+    from typehaus.takeoff import (connected_lighting_va, light_run_takeoff,
+                                  lighting_controls, luminaire_schedule)
+
+    fig = plt.figure(figsize=(11, 17))
+    fig.text(0.04, 0.97, f"{number} · {name}", fontsize=16, family="monospace")
+
+    schedule = luminaire_schedule(model)
+    fig.text(0.04, 0.945, "LUMINAIRE SCHEDULE", fontsize=10, family="monospace",
+             weight="bold")
+    schedule_rows = [
+        (row["mark"], row["description"], row["lamp"] or "—",
+         _number(row["watts"], "{:.0f} W") or _number(row["watts_per_ft"], "{:.1f} W/ft"),
+         _number(row["lumens"], "{:,.0f}"), _number(row["cct_k"], "{:.0f}K"),
+         f"{row['volts']}V", row["mount"], row["dimming"], row["rating"],
+         str(row["count"]) if row["count"] else f"{row['length_ft'] or 0:.0f} LF",
+         ", ".join(row["rooms"])[:44])
+        for row in schedule
+    ]
+    _add_table(fig, schedule_rows,
+               ("Mark", "Description", "Lamp", "Watts", "Lumens", "CCT", "V", "Mount",
+                "Dim", "Listing", "Qty", "Locations"),
+               bbox=(0.03, 0.66, 0.94, 0.27))
+
+    controls = lighting_controls(model)
+    fig.text(0.04, 0.635, "LIGHTING CONTROL SCHEDULE", fontsize=10, family="monospace",
+             weight="bold")
+    control_rows = [
+        (row["tag"], row["mark"] or "—", row["room"] or "—",
+         row["circuit"] or (f"via {row['psu']}" if row["psu"] else "—"),
+         ", ".join(row["switches"]) or ("switch on fixture" if row["integral_switch"]
+                                        else "—"),
+         ", ".join(sorted(set(row["controls"]))) or "—",
+         "3-way+" if row["ways"] > 1 else "",
+         "CROSS-CIRCUIT" if row["cross_circuit"] else "")
+        for row in controls
+    ]
+    _add_table(fig, control_rows,
+               ("Load", "Mark", "Room", "Circuit", "Switched by", "Control", "Ways", "Note"),
+               bbox=(0.03, 0.24, 0.94, 0.37))
+
+    runs = light_run_takeoff(model)
+    fig.text(0.04, 0.215, "LED RUNS AND 24V SUPPLIES", fontsize=10, family="monospace",
+             weight="bold")
+    run_rows = [
+        (row["tag"], row["mark"], row["room"] or "—", f"{row['length_ft']:.1f}",
+         f"{row['watts']:.0f}", f"{row['volts']}V", row["psu"] or "—")
+        for row in runs["runs"]
+    ]
+    run_rows.append(("TOTAL", "", "", f"{runs['total_length_ft']:.1f}", "", "", ""))
+    _add_table(fig, run_rows,
+               ("Run", "Mark", "Room", "LF", "Watts", "Volts", "Supply"),
+               bbox=(0.03, 0.115, 0.52, 0.09))
+    supply_rows = [
+        (row["psu"], row["type"] or "—", f"{row['connected_watts']:.0f}",
+         f"{row['required_watts']:.0f}",
+         "—" if row["rated_watts"] is None else f"{row['rated_watts']:.0f}",
+         "OK" if row["adequate"] else ("?" if row["adequate"] is None else "UNDERSIZED"))
+        for row in runs["supplies"]
+    ]
+    _add_table(fig, supply_rows,
+               ("Supply", "Type", "Connected W", "Req. W (125%)", "Rated W", ""),
+               bbox=(0.57, 0.115, 0.40, 0.09))
+
+    load = connected_lighting_va(model)
+    fig.text(0.04, 0.09, "CONNECTED LIGHTING LOAD", fontsize=10, family="monospace",
+             weight="bold")
+    load_rows = [(row["circuit"], str(row["fixtures"]), f"{row['connected_va']:,.0f}")
+                 for row in load["per_circuit"]]
+    load_rows.append(("TOTAL CONNECTED", "", f"{load['total_connected_va']:,.0f} VA"))
+    load_rows.append(("NEC 220.82 allowance", f"{load['conditioned_area_ft2']:,.0f} ft2",
+                      f"{load['allowance_va']:,.0f} VA at "
+                      f"{load['allowance_va_per_ft2']:.0f} VA/ft2"))
+    _add_table(fig, load_rows, ("Circuit", "Fixtures", "Connected VA"),
+               bbox=(0.03, 0.02, 0.52, 0.06))
+    fig.text(0.57, 0.06, str(load["basis"]), fontsize=6, family="sans-serif", wrap=True)
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
+def _number(value: object, fmt: str) -> str:
+    """A stated number in ``fmt``, or an em dash — never a plausible-looking zero."""
+    return fmt.format(value) if isinstance(value, (int, float)) else ""
 
 
 def _write_energy_sheet(pdf, model: ResolvedModel, number: str, name: str,
