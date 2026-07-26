@@ -25,12 +25,30 @@ import pytest
 
 from typehaus.checks.structural.stairs import stair_riser_uniformity
 from typehaus.emit.draw import build_floorplan
-from typehaus.findings import Result
 from typehaus.emit.draw.scene import Polyline
+from typehaus.findings import Result
 from typehaus.model import (
-    Assembly, Building, FloorOpening, FloorSystem, FramingSpec, JoistSpec, Layer,
-    LayerFunction, Library, Material, Node, PlanModel, Project, Site, Stair, Storey, Wall,
-    degF, ft, inch, pt,
+    Assembly,
+    Building,
+    FloorOpening,
+    FloorSystem,
+    FramingSpec,
+    JoistSpec,
+    Layer,
+    LayerFunction,
+    Library,
+    Material,
+    Node,
+    PlanModel,
+    Project,
+    Site,
+    Stair,
+    Storey,
+    Wall,
+    degF,
+    ft,
+    inch,
+    pt,
 )
 from typehaus.model.enums import StructuralRole
 from typehaus.resolve import resolve

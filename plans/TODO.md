@@ -8,12 +8,18 @@ what genuinely remains, with fresh measurements.*
 
 ## Needs your decision
 
-- **D2 — winder narrow-end tread depth: the 6x6 newel is not enough.** Tried per your answer
-  (ST-S2A authors `newel_profile="6x6"`, the engine consumes it): narrow-end depth went
-  0.875" → **1.375"** (exactly half the newel's half-face). IRC R311.7.5.2.1 wants **6"** —
-  shortfall **4.625"**. A post alone cannot close that; the remaining levers are more risers
-  in the turn (a layout change to the RM-S-STUDY-2 opening) or a much wider well.
-  `structural.winder_narrow_tread_depth` keeps measuring and reporting it.
+- **D2 — the winder turn does not fit in a 3'-0" well, and framing cannot fix that.** The
+  turn is now a Haun tiered corner box (real boxes, ledgers, diagonal blocks — see "Stair
+  framing follow-ups"), which fixed the *framing* fiction but moves neither code number,
+  because both are set by the well:
+  - narrow end **1.375"** against IRC R311.7.5.2.1's **6"** (`structural.winder_narrow_tread_depth`)
+  - walk-line going **5.0"** against the same rule's **10"** (`structural.winder_walk_line_depth`, new)
+
+  Three winders sweep 22.5° each, so the walk line would have to sit ~2'-2" out from the
+  pivot to open to 10" — the levers are a wider well or a turn spread over more risers (a
+  layout change to the RM-S-STUDY-2 opening), and there is 2.5" of tread slack in the
+  straight run to pay for it (11.28" against the 10" minimum). Both checks stay advisory
+  WARN and keep printing the measured numbers.
 - **NEW — `CATLIN_ROOF` fails the monthly condensation gate.** The ISO 13788-style monthly
   gate (now the pass/fail verdict; the −15 °F walk is a labeled cold-snap screen) shows a
   dew-point crossing at the rafter (93% through the layer) even at January *monthly means*
@@ -126,7 +132,20 @@ what genuinely remains, with fresh measurements.*
 
 - **Winders keep the `tapered tread` 1.5" band** — a trapezoid is not expressible as
   axis + band width in this IR. (These are also the only 3 of 2099 members without a real
-  IFC representation, by design.)
+  IFC representation, by design.) Sharper now that the turn is boxed: the band is the pie
+  panel's *leading edge*, and the box tier under it carries the panel's real footprint.
+- **The turn is framed Haun-style** (2026-07-25): one platform box per winder step, sides
+  ripped to a riser less the deck (`1.5x6 rim`) so tiers stack dead flush, a diagonal block
+  per box, rims ledgered to W-S-E1/W-S-SS2 (`bearing_refs`, newly authored) and dying into
+  the newel at the inside corner, and the straight flight landing on the top box's doubled
+  departing rim. The two raked "winder carriages" and the slung header are gone — no framer
+  cuts a compound-angle carriage through a turn.
+- **Every tread/landing board is now dropped to its step elevation** (`stairs/common.py::
+  _notch_z`), house-wide rather than winder-only. Boards used to sit *on* the theoretical
+  step, which stretched each flight's first riser by 1.5" and shortened its last by the
+  same — 9" and 6" against a 7.5" design riser. `structural.stair_riser_uniformity` (new,
+  IRC R311.7.5.1) measures the built risers off the members; all three catlin stairs now
+  read 0.00" variation.
 
 ## Current Orientation
 

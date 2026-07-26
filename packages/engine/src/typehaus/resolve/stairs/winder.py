@@ -86,7 +86,7 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     stringer_depth = cross_section("2x12").depth_m
     spring_notch = _notch_z(surface(stair.winder_count))
     arrival_notch = _notch_z(z0 + riser * risers)
-    foot = P(0.0, 0.0)  # the entering outer corner of the turn square (== ``start``)
+    # P(0, 0) — ``start`` itself — is the entering outer corner the fan sweeps away from.
     inside = P(width, 0.0)  # the turn's inside corner: where the straight flight springs
     outer_corner = P(0.0, width)  # the outer corner the turn sweeps around
     turn = P(width, width)  # the departing corner, where the box's outer rim takes over
@@ -149,10 +149,13 @@ def _box_perimeter(line: _FanLine, outer_corner: tuple[float, float],
 def _polyline_midpoint(segments: list[tuple[tuple[float, float], tuple[float, float]]]
                        ) -> tuple[float, float]:
     """The point halfway along a run of segments, by arc length."""
+    # NB plain ``zip``: the engine still runs on 3.9 here, where ``strict=`` does not exist
+    # (which is what the repo's standing B905 findings are).
     lengths = [math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in segments]
     remaining = sum(lengths) / 2.0
-    for (a, b), length in zip(segments, lengths):
-        if length >= remaining or length == lengths[-1]:
+    last = len(segments) - 1
+    for index, ((a, b), length) in enumerate(zip(segments, lengths)):
+        if remaining <= length or index == last:
             t = remaining / length if length > 1e-9 else 0.0
             return (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
         remaining -= length
