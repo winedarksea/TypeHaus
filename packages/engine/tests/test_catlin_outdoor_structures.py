@@ -2,7 +2,7 @@
 
 Three fixes that all live outside the conditioned envelope and share the ``catlin_model``
 fixture: the balcony 6x6s embedded in the masonry railing, the NEMA 3R box moved up beside
-the vent clamps, and the new 36" raised garden on the sunken-garden retaining wall.
+the vent clamps, and the raised garden's SRW apron around the sunken garden.
 """
 
 from __future__ import annotations
@@ -91,33 +91,79 @@ def test_nema_box_and_its_clamp_ride_the_same_gable_wall_at_the_same_height(catl
 
 
 # --- raised garden ------------------------------------------------------------
-def test_raised_garden_is_36_inches_high_off_the_retaining_wall_it_uses(catlin_model) -> None:
+#
+# Rewritten 2026-07-25 with the structure itself. Until then the raised garden was a 36"
+# planter bed: two parallel cheeks (a cast W-RG-INNER continuing W-SG-S upward, and the SRW
+# W-RG-BLOCK south of it) holding soil between them, standing 3'-6" proud of grade. It is now
+# a retaining apron wrapping the sunken garden on three sides, level with the retaining wall
+# top and running 3' down. W-RG-INNER is deleted — W-SG-W2/E2/S are the apron's inner face.
+_APRON_TAGS = ("W-RG-BLOCK", "W-RG-WEST", "W-RG-EAST")
+
+
+def test_the_raised_garden_wraps_the_sunken_garden_as_a_u(catlin_model) -> None:
+    """Three legs, open to the north where the arch wall and its balcony railing are."""
+    assert not [w for w in catlin_model.walls if w.tag == "W-RG-INNER"], (
+        "W-RG-INNER's job was to be the bed's inner cheek; the SG walls are that face now")
+    walls = {tag: _wall(catlin_model, tag) for tag in _APRON_TAGS}
+    assert {w.assembly for w in walls.values()} == {"RETAINING_BLOCK_12"}
+
+    south, west, east = (walls[t] for t in _APRON_TAGS)
+    # The south leg runs corner to corner — 28', not the 20' it spanned as a bed cheek.
+    assert abs(south.axis[1][0] - south.axis[0][0]) == pytest.approx(28 * FT, abs=1e-9)
+    assert {round(y / FT, 4) for _, y in south.axis} == {-33.3333}
+    # The legs run north from those corners to the arch wall's own axis plane.
+    for leg in (west, east):
+        assert {round(y / FT, 4) for _, y in leg.axis} == {-9.5, -33.3333}
+    assert {round(x / FT, 4) for _, x in ((0, west.axis[0][0]), (0, west.axis[1][0]))} == {4.0}
+    assert {round(x / FT, 4) for _, x in ((0, east.axis[0][0]), (0, east.axis[1][0]))} == {32.0}
+
+
+def test_the_apron_north_limit_is_the_arch_walls_own_plane(catlin_model) -> None:
+    """Consumed from sunken_garden.py's exported contract, not re-derived — W-SG-RAIL-F and
+    RL-SG-BALCONY sit on the same plane, and the legs stop there."""
+    rail = _wall(catlin_model, "W-SG-RAIL-F")
+    rail_y = sum(y for _, y in rail.axis) / 2.0
+    for leg in ("W-RG-WEST", "W-RG-EAST"):
+        assert max(y for _, y in _wall(catlin_model, leg).axis) == pytest.approx(rail_y)
+
+
+def test_the_apron_tops_out_level_with_the_wall_it_wraps_and_runs_three_feet_down(
+        catlin_model) -> None:
     retaining = _wall(catlin_model, "W-SG-S")
-    inner = _wall(catlin_model, "W-RG-INNER")
-    assert abs(inner.z0_m - retaining.z1_m) < 1e-9, "inner cheek must bear on the wall's top"
-    assert abs((inner.z1_m - inner.z0_m) - 36 * INCH) < 1e-9
+    for tag in _APRON_TAGS:
+        leg = _wall(catlin_model, tag)
+        assert abs(leg.z1_m - retaining.z1_m) < 1e-9, f"{tag} must cap level with W-SG-S"
+        assert abs((leg.z1_m - leg.z0_m) - 3 * FT) < 1e-9, tag
+        # Whole courses: a dry-stacked wall cannot end mid-unit. (Kept from the bed's own
+        # test — it holds for the apron for exactly the same reason.)
+        assert abs((leg.z1_m - leg.z0_m) % (6 * INCH)) < 1e-9, tag
+        # Mostly below grade, which the user accepted explicitly. (Also kept.)
+        assert leg.z0_m < 0.0, tag
 
 
-def test_raised_garden_outer_face_is_retaining_block_topping_out_with_the_bed(catlin_model) -> None:
-    inner = _wall(catlin_model, "W-RG-INNER")
-    block = _wall(catlin_model, "W-RG-BLOCK")
-    assert block.assembly == "RETAINING_BLOCK_12"
-    assert abs(block.z1_m - inner.z1_m) < 1e-9  # both cheeks cap the bed at one elevation
-    assert block.z0_m < 0.0, "the SRW base course is buried below grade"
-    # Whole courses: a dry-stacked wall cannot end mid-unit.
-    assert abs((block.z1_m - block.z0_m) % (6 * INCH)) < 1e-9
+def test_the_apron_clears_the_sunken_gardens_strip_footings(catlin_model) -> None:
+    """"3' wider" reads from the SG walls' *outer faces*, not their axes. Measuring from the
+    axis would put the legs inside FT-SG-W2/FT-SG-E2, which span x = [4.5, 11.5] and
+    [24.5, 31.5] — the legs' inner faces land tangent to those, at 4.5 and 31.5."""
+    for footing, leg, sign in (("FT-SG-W2", "W-RG-WEST", -1), ("FT-SG-E2", "W-RG-EAST", 1)):
+        pad = _solid(catlin_model, footing)
+        xs = [x for x, _ in pad.outline]
+        wall = _wall(catlin_model, leg)
+        axis_x = wall.axis[0][0]
+        inner_face = axis_x - sign * 6 * INCH   # half the 12" SRW unit, toward the garden
+        edge = min(xs) if sign < 0 else max(xs)
+        assert inner_face == pytest.approx(edge, abs=1e-9), leg
+        # Tangent, not overlapping: no part of the leg sits over the footing.
+        assert (axis_x < min(xs)) if sign < 0 else (axis_x > max(xs)), leg
 
 
-def test_raised_garden_bed_sits_outside_the_sunken_garden(catlin_model) -> None:
-    """Inner cheek on the retaining wall's axis, block wall south of it, soil in between."""
-    retaining = _wall(catlin_model, "W-SG-S")
-    inner = _wall(catlin_model, "W-RG-INNER")
-    block = _wall(catlin_model, "W-RG-BLOCK")
-    inner_y = [y for _, y in inner.axis]
-    retaining_y = [y for _, y in retaining.axis]
-    block_y = [y for _, y in block.axis]
-    assert inner_y == pytest.approx(retaining_y)  # shares the wall it builds on
-    assert max(block_y) < min(inner_y), "block wall must be south (-Y) of the inner cheek"
+def test_the_south_leg_keeps_w_rg_blocks_identity_across_the_rewrite(catlin_model) -> None:
+    """The IFC GlobalId is uuid5 over the uid, so preserving the uid is what keeps the wall
+    the *same* wall to a downstream consumer rather than a delete plus an add."""
+    block = catlin_model.plan.by_tag("W-RG-BLOCK")
+    assert block.uid == "RGW102AAAA"
+    # ...and the tag prefix the energy and grading exemptions match on is intact on all three.
+    assert all(tag.startswith("W-RG-") for tag in _APRON_TAGS)
 
 
 def test_raised_garden_is_not_part_of_the_thermal_envelope(catlin_model) -> None:
@@ -126,8 +172,8 @@ def test_raised_garden_is_not_part_of_the_thermal_envelope(catlin_model) -> None
 
     components = {row.component for row in evaluate_envelope(catlin_model, catlin_model.plan)}
     assert "RETAINING_BLOCK_12" not in components
-    # The inner cheek reuses the sunken garden's cast section; it must not drag that
-    # already-exempt assembly back into the table either.
+    # The sunken garden's own cast section stays out too — it always did, and deleting
+    # W-RG-INNER must not have been the only thing keeping it out.
     assert "SUNKEN_GARDEN_WALL" not in components
 
 
