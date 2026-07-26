@@ -53,3 +53,47 @@ def test_details_endpoint_lists_and_serves_a_scene(client):
     assert "|" in key and ":" in key
     missing = client.get("/detail", params={"key": "nope"})
     assert missing.status_code == 404
+
+
+def _noted_key(client) -> str:
+    """A detail key whose payload carries a notes file (Transition.notes set)."""
+    index = client.get("/details").json()["details"]
+    for row in index:
+        payload = client.get("/detail", params={"key": row["key"]}).json()
+        if payload.get("notes"):
+            return row["key"]
+    raise AssertionError("no detail with a notes file in the catlin fixture")
+
+
+def test_append_detail_note_appends_one_bullet(client, catlin_house):
+    key = _noted_key(client)
+    before = client.get("/detail", params={"key": key}).json()
+    assert before["notes_markdown"], "payload should carry the notes file content"
+
+    res = client.post("/detail/notes", json={"key": key, "text": "verify gutter slope"})
+    assert res.status_code == 200
+    updated = res.json()["notes_markdown"]
+    assert updated.endswith("- verify gutter slope\n")
+    # persisted to the house's notes file, not just echoed
+    rel = before["notes"]
+    assert (catlin_house / rel).read_text(encoding="utf-8") == updated
+    # and the next payload fetch reflects it
+    after = client.get("/detail", params={"key": key}).json()
+    assert after["notes_markdown"] == updated
+
+
+def test_append_detail_note_flattens_markdown_structure(client):
+    key = _noted_key(client)
+    res = client.post("/detail/notes",
+                      json={"key": key, "text": "line one\n# heading\n- sneaky bullet"})
+    assert res.status_code == 200
+    # whitespace (incl. newlines) collapses: one note, one bullet
+    assert res.json()["notes_markdown"].endswith("- line one # heading - sneaky bullet\n")
+
+
+def test_append_detail_note_rejects_bad_requests(client):
+    key = _noted_key(client)
+    assert client.post("/detail/notes", json={"key": key, "text": "   "}).status_code == 400
+    assert client.post("/detail/notes", json={"text": "no key"}).status_code == 400
+    assert client.post("/detail/notes",
+                       json={"key": "no_such_key", "text": "x"}).status_code == 404

@@ -1,4 +1,6 @@
-import { M_TO_IN, draggedOffsetMeters, leaderTextAlign } from "./DetailCanvas";
+import {
+  CHAR_ASPECT, LEADER_TEXT_H, M_TO_IN, draggedOffsetMeters, leaderTextAlign, textExtents,
+} from "./DetailCanvas";
 import type { Model } from "../model/types";
 import {
   DEFAULT_ANNOTATION_ANCHOR_FACE, detailAnnotationAnchor, newDetailAnnotationSpec,
@@ -49,6 +51,47 @@ export function runDetailAnnotationTests() {
   }
 
   checkNewAnnotationAnchoring();
+  checkTextExtents();
+}
+
+// The viewBox must reserve the room lettering occupies (port of pdf_writer._scene_bounds'
+// text branch) — bounds over anchors alone crop the callout column off the panel's right
+// edge, which is exactly how the notes/labels clipped in the v1 viewer.
+function checkTextExtents() {
+  const approx = (a: number, b: number) => Math.abs(a - b) < 1e-9;
+
+  // Left-aligned text grows rightward from its anchor by chars × height × aspect.
+  const t = textExtents({ node: "text", anchor: [10, 5], content: "abcde", height: 2 });
+  if (!t || !approx(t.xs[0], 10) || !approx(t.xs[1], 10 + 5 * 2 * CHAR_ASPECT)) {
+    throw new Error(`left text must grow right by len*h*aspect, got ${JSON.stringify(t)}`);
+  }
+  if (!approx(t.ys[0], 5 - 2) || !approx(t.ys[1], 5 + 2)) {
+    throw new Error(`single-line text reserves ±height vertically, got ${JSON.stringify(t)}`);
+  }
+
+  // Right-aligned text grows leftward.
+  const r = textExtents({ node: "text", anchor: [10, 5], content: "abcde", height: 2, align: "right" });
+  if (!r || !approx(r.xs[0], 10 - 5 * 2 * CHAR_ASPECT) || !approx(r.xs[1], 10)) {
+    throw new Error(`right text must grow left, got ${JSON.stringify(r)}`);
+  }
+
+  // Multi-line: width from the longest line, height stacked per line.
+  const m = textExtents({ node: "text", anchor: [0, 0], content: "abc\nabcdef", height: 1 });
+  if (!m || !approx(m.xs[1], 6 * CHAR_ASPECT) || !approx(m.ys[0], -2) || !approx(m.ys[1], 2)) {
+    throw new Error(`multi-line extents use max line + line count, got ${JSON.stringify(m)}`);
+  }
+
+  // A leader left of its target is end-anchored, so its text grows leftward from `at`;
+  // without an explicit height it letters at the shared LEADER_TEXT_H default.
+  const l = textExtents({ node: "leader", at: [10, 0], to: [50, 0], text: "abcde" });
+  if (!l || !approx(l.xs[1], 10) || !approx(l.xs[0], 10 - 5 * LEADER_TEXT_H * CHAR_ASPECT)) {
+    throw new Error(`end-anchored leader text must grow left of at, got ${JSON.stringify(l)}`);
+  }
+
+  // Non-text nodes contribute no lettering extents.
+  if (textExtents({ node: "polyline", points: [[0, 0], [1, 1]] }) !== null) {
+    throw new Error("non-text nodes must yield no text extents");
+  }
 }
 
 // A detail's own callouts are seeds with `uid: null` — unaddressable, so undraggable. The

@@ -117,6 +117,22 @@ export function DetailViewer({ initialKey, onClose }: { initialKey?: string | nu
     return result !== null;
   };
 
+  // Construction notes append straight to the Transition's notes/*.md file — prose on the
+  // printed sheet, not a drawn callout — so no rebuild/refetch of the scene is needed; the
+  // server returns the updated markdown and we patch it into the current payload.
+  const appendNote = async (text: string): Promise<boolean> => {
+    if (!selectedKey) return false;
+    try {
+      const md = await client.appendDetailNote(selectedKey, text);
+      setPayload((p) => (p ? { ...p, notes_markdown: md } : p));
+      toast("Construction note added");
+      return true;
+    } catch (e) {
+      toast(e instanceof Error ? e.message : "Could not add note");
+      return false;
+    }
+  };
+
   const grouped = useMemo(() => {
     const byKind = new Map<string, DetailIndexEntry[]>();
     for (const row of index) {
@@ -172,14 +188,16 @@ export function DetailViewer({ initialKey, onClose }: { initialKey?: string | nu
           ))}
         </div>
 
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingLeft: 8 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingLeft: 8, minWidth: 0 }}>
           <div style={{ flex: 1, minHeight: 0 }}>
             {loading && !payload && <div className="muted">Rendering…</div>}
             {payload && <DetailCanvas payload={payload} onMoveAnnotation={moveAnnotation} />}
           </div>
           {payload && <AddAnnotationBar anchor={anchor} onAdd={addAnnotation} />}
-          {payload && <NotesPanel payload={payload} />}
+          {payload && <AnnotationsPanel payload={payload} />}
         </div>
+
+        {payload && <NotesPanel payload={payload} onAppend={appendNote} />}
       </div>
     </div>,
     document.body,
@@ -227,10 +245,11 @@ function AddAnnotationBar({
   );
 }
 
-function NotesPanel({ payload }: { payload: DetailPayload }) {
+// Drawn-annotation + finding summary under the canvas (the on-drawing vocabulary);
+// construction-note prose lives in the NotesPanel column instead.
+function AnnotationsPanel({ payload }: { payload: DetailPayload }) {
   return (
-    <div style={{ maxHeight: 160, overflowY: "auto", borderTop: "1px solid var(--panel-line)", paddingTop: 6 }}>
-      {payload.notes && <div className="muted" style={{ fontSize: 12 }}>Notes: {payload.notes}</div>}
+    <div style={{ maxHeight: 120, overflowY: "auto", borderTop: "1px solid var(--panel-line)", paddingTop: 6 }}>
       {payload.annotations.length > 0 ? (
         payload.annotations.map((a, i) => (
           <div key={i} className="finding info" style={{ fontSize: 12 }}>
@@ -245,6 +264,103 @@ function NotesPanel({ payload }: { payload: DetailPayload }) {
         payload.findings.map((f, i) => (
           <div key={`f${i}`} className="finding error" style={{ fontSize: 12 }}>{f.check_id}: {f.message}</div>
         ))}
+    </div>
+  );
+}
+
+// One parsed line of the notes markdown, for display. Mirrors the semantics of the
+// engine's _load_markdown_notes (front matter stripped, bullets kept) but keeps headings
+// as headings — the panel has room the drawing column never did.
+interface NoteLine {
+  kind: "heading" | "bullet" | "text";
+  text: string;
+}
+
+export function parseNotesMarkdown(md: string): NoteLine[] {
+  const lines = md.split("\n");
+  let i = 0;
+  if (lines[0]?.trim() === "---") {
+    i = 1;
+    while (i < lines.length && lines[i].trim() !== "---") i++;
+    i = Math.min(i + 1, lines.length);
+  }
+  const out: NoteLine[] = [];
+  for (; i < lines.length; i++) {
+    const s = lines[i].trim();
+    if (!s) continue;
+    if (s.startsWith("#")) out.push({ kind: "heading", text: s.replace(/^#+\s*/, "") });
+    else if (s.startsWith("- ") || s.startsWith("* ")) out.push({ kind: "bullet", text: s.slice(2).trim() });
+    else out.push({ kind: "text", text: s });
+  }
+  return out;
+}
+
+// The construction-notes column: the Transition's notes/*.md rendered as readable prose,
+// with an append field that writes back to the file (server-backed sessions only). These
+// notes print on the permit sheet's notes panel — they are sheet prose, not drawn callouts,
+// which is why they get a panel of their own instead of space inside the drawing.
+function NotesPanel({
+  payload,
+  onAppend,
+}: {
+  payload: DetailPayload;
+  onAppend: (text: string) => Promise<boolean>;
+}) {
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const parsed = payload.notes_markdown ? parseNotesMarkdown(payload.notes_markdown) : [];
+
+  const submit = async () => {
+    const trimmed = text.trim();
+    if (!trimmed || busy) return;
+    setBusy(true);
+    const ok = await onAppend(trimmed);
+    setBusy(false);
+    if (ok) setText(""); // a failed write keeps the text so the user can retry
+  };
+
+  return (
+    <div
+      style={{
+        width: 300, display: "flex", flexDirection: "column", gap: 6,
+        borderLeft: "1px solid var(--panel-line)", paddingLeft: 10, marginLeft: 8,
+      }}
+    >
+      <h4 style={{ margin: 0 }}>Construction notes</h4>
+      {payload.notes && (
+        <div className="muted reader-mono" style={{ fontSize: 11 }}>{payload.notes}</div>
+      )}
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", fontSize: 12, lineHeight: 1.45 }}>
+        {parsed.length === 0 && (
+          <div className="muted">No notes file for this detail.</div>
+        )}
+        {parsed.map((line, i) =>
+          line.kind === "heading" ? (
+            <div key={i} style={{ fontWeight: 600, marginTop: i === 0 ? 0 : 8 }}>{line.text}</div>
+          ) : line.kind === "bullet" ? (
+            <div key={i} style={{ display: "flex", gap: 6, marginTop: 4 }}>
+              <span aria-hidden>•</span>
+              <span>{line.text}</span>
+            </div>
+          ) : (
+            <div key={i} style={{ marginTop: 4 }}>{line.text}</div>
+          ),
+        )}
+      </div>
+      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+        <input
+          style={{ flex: 1 }}
+          placeholder={payload.notes ? "Add construction note…" : "This detail has no notes file"}
+          value={text}
+          disabled={!payload.notes || busy}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") void submit(); }}
+          aria-label="New construction note"
+        />
+        <button className="btn" disabled={!payload.notes || busy || !text.trim()} onClick={() => void submit()}>
+          {busy ? "Adding…" : "Add"}
+        </button>
+      </div>
     </div>
   );
 }
