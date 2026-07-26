@@ -8,7 +8,7 @@ import {
   MASONRY_TILE_SIZE_M,
 } from "./materials";
 import { authoredAppearance, familyOf, materialColor, RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
-import { CATEGORY_FALLBACK, categoryColor, memberColor } from "./members";
+import { CATEGORY_FALLBACK, categoryColor, isSeamMember, memberColor } from "./members";
 import type { Member } from "../model/types";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -158,4 +158,20 @@ export function runMemberColorTests() {
     assert(memberColor(member("cladding", "standing-seam"), themed) === themed.material.metal,
       `The ${theme} palette's metal tone reaches a standing-seam member`);
   }
+
+  // Formed metal trim — the vented ridge cap, the corner trim capping a wrapped edge, the
+  // hung gutter — is the same painted stock as the panels it caps and is derived carrying
+  // the roofing's own material_ref. It has to reach the seam finish (Regal White) rather
+  // than the flat metal fill, or the cap reads dark grey against the white roof under it.
+  for (const category of ["cladding", "ridge_cap", "corner_trim", "gutter"]) {
+    assert(isSeamMember(member(category, "standing-seam")),
+      `A standing-seam ${category} member takes the painted-metal seam finish`);
+  }
+  // Category alone is not enough: an aluminum gutter is not standing seam, and lumber
+  // never is regardless of category.
+  assert(!isSeamMember(member("gutter", "aluminum")),
+    "An aluminum gutter keeps the flat fill — the seam finish is material-gated");
+  assert(!isSeamMember(member("stud", "spf")), "Lumber never takes the seam finish");
+  assert(!isSeamMember(member("fascia", "standing-seam")),
+    "Only the metal-trim categories opt in — a fascia nailer is framing by trade");
 }

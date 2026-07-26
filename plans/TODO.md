@@ -175,3 +175,7 @@ the future.
 - the 2D drawing of the u-shaped stairs got messed up at some point. It's got weird splits on landings and uneven stair marks
 
 - We need to change the raised garden. W-RG-BLOCK should form a U around the sunken garden up to the N-S plane of the balcony railing on the arched concrete. It's 3' wider than the sunken garden wall. For now we should also model it so it starts at the same height as the top of the sunken garden wall, and goes down 3' from there (that puts it mostly below grade, which is fine for now), with this change meaning W-RG-INNER can likely be deleted (W-SG-* replace it effectively).
+
+## Items after Phase 5
+- D-S-PLANT door should be marked as glass door (ie transparent, lets light through)
+- There needs to be a door between RM-M-BED and RM-M-LIVING. This is a special "frameless" (or 'trimless') door jamb system so it looks flush with drywall

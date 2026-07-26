@@ -43,7 +43,7 @@ _EAVE_TRIM = EaveTrim(
 
 
 def _plan(*, gable_top=None, eave_trim=_EAVE_TRIM, extra_elements=(),
-          roof_layers=(), overhang=OVERHANG) -> PlanModel:
+          roof_layers=(), overhang=OVERHANG, pitch=Pitch(4, 12)) -> PlanModel:
     """A 20'x14' box with a raised-heel truss roof.
 
     The east gable is split at the ridge into two ``ToRoof`` segments; the west gable stays
@@ -91,7 +91,7 @@ def _plan(*, gable_top=None, eave_trim=_EAVE_TRIM, extra_elements=(),
         Wall(uid="W000000005", tag="W-W", start_node="N-NW", end_node="N-SW",
              assembly="EXT", top=ft(PLATE_TOP_FT)),
     )
-    roof = Roof(uid="RF00000001", tag="RF", form=RoofForm.GABLE, pitch=Pitch(4, 12),
+    roof = Roof(uid="RF00000001", tag="RF", form=RoofForm.GABLE, pitch=pitch,
                 bearing_refs=("W-S", "W-N"), assembly="TRUSS_ROOF", overhang=overhang,
                 ridge_direction=RIDGE_DIRECTION, eave_trim=eave_trim)
     library = Library(
@@ -563,33 +563,105 @@ def test_no_gutter_without_one_on_the_declaration(stacked):
 
 # --- 10. the vented ridge cap --------------------------------------------------------------
 
+def _riser(members):
+    """The one band of a composed ridge cap that straddles the peak."""
+    return next(m for m in members if m.child_key.endswith("-riser"))
+
+
 def test_a_vented_attic_gets_a_ridge_cap_on_the_plane_itself(resolved):
     """The base fixture's soffits are vented, so the truss space must exhaust at the ridge.
     A truss roof has no ridge beam — the cap keys off ``ridge_z_m``, the plane's own peak."""
     caps = _members(resolved, "ridge_cap")
-    assert [m.child_key for m in caps] == ["ridge-vent-cap"]
-    cap = caps[0]
+    # One riser over the slot, plus a mirrored shoulder and skirt on each plane.
+    assert [m.child_key for m in caps] == [
+        "ridge-vent-cap-riser",
+        "ridge-vent-cap-shoulder-a", "ridge-vent-cap-shoulder-b",
+        "ridge-vent-cap-skirt-a", "ridge-vent-cap-skirt-b",
+    ]
+    cap = _riser(caps)
     roof = _roof(resolved)
-    # Bare structure above the plane: the cap sits straight on the ridge elevation and runs
+    # Bare structure above the plane: the riser tops out 3" over the ridge elevation and runs
     # the footprint's whole ridge-axis extent, rake overhangs included.
-    assert cap.z0_m == pytest.approx(roof.ridge_z_m, abs=1e-9)
-    assert cap.z1_m - cap.z0_m == pytest.approx(inch(2).meters, abs=1e-9)
+    assert cap.z1_m == pytest.approx(roof.ridge_z_m + inch(3).meters, abs=1e-9)
     mid_y = (min(p[1] for p in roof.footprint) + max(p[1] for p in roof.footprint)) / 2.0
     assert cap.p0[1] == pytest.approx(mid_y) and cap.p1[1] == pytest.approx(mid_y)
     assert {cap.p0[0], cap.p1[0]} == {min(p[0] for p in roof.footprint),
                                       max(p[0] for p in roof.footprint)}
 
 
+def _cap_half_section(model):
+    """Per band on one side of the ridge, outward: ((inner, outer) across-ridge, (z0, z1))."""
+    roof = _roof(model)
+    caps = {m.child_key: m for m in _members(model, "ridge_cap")}
+    mid = (min(p[1] for p in roof.footprint) + max(p[1] for p in roof.footprint)) / 2.0
+    out = []
+    for key in ("riser", "shoulder-a", "skirt-a"):
+        m = caps[f"ridge-vent-cap-{key}"]
+        centre, half = abs(m.p0[1] - mid), cross_section(m.profile).width_m / 2.0
+        inner = 0.0 if key == "riser" else centre - half
+        out.append(((inner, centre + half), (m.z0_m, m.z1_m)))
+    return out
+
+
+def test_the_ridge_cap_is_a_formed_cleat_not_a_bar(resolved):
+    """The bands read as a cap: a narrow throat over the slot, then a stepped-down shoulder
+    and skirt out to the full 12" width, each one offset across the ridge and following the
+    plane down rather than all floating at the peak elevation."""
+    roof = _roof(resolved)
+    caps = {m.child_key: m for m in _members(resolved, "ridge_cap")}
+    riser, shoulder, skirt = (caps["ridge-vent-cap-riser"],
+                              caps["ridge-vent-cap-shoulder-a"],
+                              caps["ridge-vent-cap-skirt-a"])
+    # Silhouette steps down monotonically from the peak out to the roofing.
+    assert riser.z1_m > shoulder.z1_m > skirt.z1_m
+    assert riser.z0_m > shoulder.z0_m > skirt.z0_m
+    # The riser is the narrow one, standing 3" over the ridge on a 4" throat.
+    assert cross_section(riser.profile).width_m == pytest.approx(inch(4).meters, abs=1e-9)
+    assert riser.z1_m == pytest.approx(roof.ridge_z_m + inch(3).meters, abs=1e-9)
+    # Each band steps out across the ridge on its own centreline.
+    assert abs(shoulder.p0[1] - riser.p0[1]) == pytest.approx(inch(3.25).meters, abs=1e-9)
+    assert abs(skirt.p0[1] - riser.p0[1]) == pytest.approx(inch(5.25).meters, abs=1e-9)
+    # Mirrored bands land on opposite planes at the same elevation.
+    other = caps["ridge-vent-cap-skirt-b"]
+    assert other.z0_m == pytest.approx(skirt.z0_m, abs=1e-9)
+    assert other.p0[1] - riser.p0[1] == pytest.approx(-(skirt.p0[1] - riser.p0[1]), abs=1e-9)
+    # Every band stays one cap as far as the rest of the system is concerned.
+    assert {m.category for m in caps.values()} == {"ridge_cap"}
+    assert {m.connection for m in caps.values()} == {"ridge:vented-cap"}
+
+
+@pytest.mark.parametrize("pitch", [Pitch(2, 12), Pitch(4, 12), Pitch(9, 12), Pitch(16, 12)])
+def test_the_cap_bands_stay_lapped_at_any_pitch(pitch):
+    """A band spans from the plane under its outer edge up to at least the plane under its
+    inner edge, so consecutive bands always overlap. Seating each band on its own centreline
+    alone opens a crack at every step once the plane falls further across a band than the
+    step height above it — somewhere past about 8:12."""
+    model, _ = resolve(_plan(roof_layers=_STACK_LAYERS, pitch=pitch))
+    section = _cap_half_section(model)
+    across = [band for band, _z in section]
+    elevations = [z for _band, z in section]
+    # Contiguous edge to edge in plan, out to the cap's full 12" half-width of 6".
+    for (_, outer), (inner, _) in zip(across, across[1:]):
+        assert inner == pytest.approx(outer, abs=1e-9)
+    assert across[-1][1] == pytest.approx(inch(6).meters, abs=1e-9)
+    # ...and overlapping in elevation, so the cap has no crack in it.
+    for (_, top), (bottom, _) in zip(elevations, elevations[1:]):
+        assert bottom < top
+
+
 def test_the_ridge_cap_rides_on_top_of_the_layer_stack(stacked):
     """With deck + foam + roofing over the structure the cap sits on the roofing surface,
     slope-corrected, and reads in the roofing's own material."""
     roof = _roof(stacked)
-    cap = _members(stacked, "ridge_cap")[0]
+    caps = _members(stacked, "ridge_cap")
+    cap = _riser(caps)
     span = max(p[1] for p in roof.footprint) - min(p[1] for p in roof.footprint)
     factor = math.hypot(1.0, (roof.ridge_z_m - roof.eave_z_m) / (span / 2.0))
     stack = sum(layer.thickness.meters for layer in _STACK_LAYERS)
-    assert cap.z0_m == pytest.approx(roof.ridge_z_m + stack * factor, abs=1e-9)
-    assert cap.material == "standing-seam"
+    # The roofing surface at the peak is what the riser stands its 3" throat on.
+    assert cap.z1_m == pytest.approx(
+        roof.ridge_z_m + stack * factor + inch(3).meters, abs=1e-9)
+    assert {m.material for m in caps} == {"standing-seam"}
 
 
 def test_an_unvented_roof_gets_no_ridge_cap():
@@ -616,8 +688,8 @@ def test_an_over_deck_vent_channel_calls_for_a_ridge_cap_without_any_eave_trim()
     )
     model, _ = resolve(_plan(eave_trim=None, roof_layers=vented_layers))
     caps = _members(model, "ridge_cap")
-    assert [m.child_key for m in caps] == ["ridge-vent-cap"]
-    assert caps[0].material == "standing-seam"
+    assert [m.child_key for m in caps][:1] == ["ridge-vent-cap-riser"]
+    assert {m.material for m in caps} == {"standing-seam"}
 
 
 # --- 11. soffit and gutter no longer require a fascia stack --------------------------------

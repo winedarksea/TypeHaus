@@ -62,9 +62,10 @@ _COVERING_PREDEFINED_TYPE = {
     "membrane": "MEMBRANE", "insulation": "INSULATION",
     "ridge_cap": "MOLDING", "corner_trim": "MOLDING",
 }
-# A ridge vent, like the gutter, is a drainage/ventilation accessory rather than a member
-# or a finish covering.
-_PROXY_CATEGORIES = frozenset({"gutter", "flashing", "ridge_vent", "ridge-vent"})
+# The gutter is a drainage accessory rather than a member or a finish covering. The vented
+# ridge cap is *not* here: it is formed trim over the roofing and files as an IfcCovering
+# MOLDING above, same as the corner trim it meets.
+_PROXY_CATEGORIES = frozenset({"gutter", "flashing"})
 
 
 def emit_roof(f: Any, body: Any, roof: ResolvedRoof, storeys: dict[str, Any],
