@@ -103,6 +103,11 @@ class ApplianceType(FurnitureType):
 
 class EquipmentType(FurnitureType):
     needs: frozenset[Service] = frozenset()
+    # Rated heating output (Btu/h at the AHRI 47 °F point), for heat-producing equipment.
+    heating_capacity_btuh: float | None = None
+    # Heating output at the *site* heating design temperature. The authored number IS the
+    # derate — no performance-curve modeling; leave None when the datasheet doesn't say.
+    heating_capacity_at_design_btuh: float | None = None
 
 
 class RegisterType(FurnitureType):

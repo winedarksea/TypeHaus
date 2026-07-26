@@ -147,10 +147,14 @@ EQUIPMENT_TYPES = (
     # smaller deep-cold unit serves the basement (and is the one on backup).
     EquipmentType(tag="EQ-T-MINISPLIT-LG", name="Minisplit condenser (large, upstairs zone)",
                   footprint=(inch(38), inch(16)), height=inch(32),
+                  heating_capacity_btuh=30000, heating_capacity_at_design_btuh=21000,
+                  source="REPRESENTATIVE PLACEHOLDER — typical 2.5-ton hyper-heat class (~30,000 Btu/h rated at 47F, ~21,000 Btu/h at -13F). Overwrite with the selected model's datasheet numbers.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     EquipmentType(tag="EQ-T-MINISPLIT-SM", name="Minisplit condenser (small, deep-cold, basement zone)",
                   footprint=(inch(30), inch(12)), height=inch(22),
+                  heating_capacity_btuh=12000, heating_capacity_at_design_btuh=8700,
+                  source="REPRESENTATIVE PLACEHOLDER — typical 1-ton deep-cold hyper-heat class (~12,000 Btu/h rated at 47F, ~8,700 Btu/h at -13F). Overwrite with the selected model's datasheet numbers.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # Wall-mount linear electric fireplace, 1,500 W max on 120V — 12.5A, which is why the

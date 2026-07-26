@@ -90,11 +90,19 @@ class EnergyReport:
                 "scope": "resolved walls, foundations, roof, slabs, windows, and doors"}
 
 
-def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> EnergyReport:
+def estimate_block_load(
+    model: ResolvedModel, preferences: Preferences,
+    storeys: frozenset[str] | None = None,
+) -> EnergyReport:
     """Sum exposed resolved wall/opening UA plus orientation-weighted window solar gain.
 
     Every area comes from the resolved IR.  Missing geometry or thermal data remains named
     UNKNOWN rather than being replaced by a rule-of-thumb area or U-factor.
+
+    ``storeys`` restricts the sum to a subset of the conditioned storeys (a heating zone,
+    per ``checks.mep.hvac.heating_capacity``); ``None`` keeps the whole-house behavior.
+    Zone loads ignore floors between zones at the same setpoint, so per-zone results sum
+    (up to the shared ``wall_comparison``) to the whole-house block load.
     """
     site = model.plan.project.site
     if site.design_temp_heating is None or site.design_temp_cooling is None:
@@ -118,6 +126,8 @@ def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> Energ
 
     conditioned_storeys = {storey.tag for storey in model.plan.storeys
                            if _storey_is_conditioned(model.plan, storey.tag)}
+    if storeys is not None:
+        conditioned_storeys &= storeys
     envelope_walls = [wall for wall in model.walls
                       if wall.storey in conditioned_storeys and _is_envelope_wall(wall)
                       and not wall.tag.startswith(_FREESTANDING_WALL_PREFIXES)]
@@ -166,12 +176,16 @@ def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> Energ
              and not solid.tag.startswith(_FREESTANDING_SLAB_PREFIXES)]
     has_roofs = bool(roofs)
     has_slabs = bool(slabs)
-    if not has_roofs and not has_slabs:
-        # Keep the original combined diagnostic stable for existing consumers while
-        # still reporting the missing side precisely when only one is absent.
-        unknown.append("roof/slab resolved geometry")
-    elif not has_roofs:
-        unknown.append("roof resolved geometry")
+    # A *zone* legitimately lacks a roof or a slab when that boundary is an interior floor
+    # against another conditioned zone at the same setpoint, so the missing-geometry
+    # diagnostics only apply to the whole-house sum.
+    if storeys is None:
+        if not has_roofs and not has_slabs:
+            # Keep the original combined diagnostic stable for existing consumers while
+            # still reporting the missing side precisely when only one is absent.
+            unknown.append("roof/slab resolved geometry")
+        elif not has_roofs:
+            unknown.append("roof resolved geometry")
     for roof in roofs:
         r_value = _assembly_r_value(model, roof.assembly, unknown)
         if r_value is not None:
@@ -180,7 +194,7 @@ def estimate_block_load(model: ResolvedModel, preferences: Preferences) -> Energ
             roof_ua += area / r_value
     if roof_area:
         components.append(_component("roof", roof_area, roof_ua))
-    if not slabs and has_roofs:
+    if not slabs and has_roofs and storeys is None:
         unknown.append("slab resolved geometry")
     for slab in slabs:
         if slab.assembly is None:
