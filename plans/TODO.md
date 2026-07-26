@@ -136,26 +136,68 @@ what genuinely remains, with fresh measurements.*
 +X: east, +Y: north, +Z: vertical/up. Will need to support rotating the house off axis in
 the future.
 
-## Items after Phase 4
-- Ridge vent cap needs a proper shape (and white painted metal look)
+## Items after Phase 4 — done (2026-07-25/26)
 
-- Polycarbonate on breezeway doesn't line up (it should cover the lower beam, and top plate should meet the side place in a shared channel).
+All eight shipped, merged in order S1 → S3 → S5 → S7 → S4 → S8 → S2 → S6. Four findings
+outlived the items themselves and are recorded below rather than deleted with them.
 
-- Flooring - let's make second floor bedrooms be carpet, hallways and bathrooms be LVP (luxury vinyl plank, really not so different from hardwood), and RMA-A-STUDY hardwood (oak).
+- **Ridge vent cap** — composed from a riser, shoulders and skirts instead of one flat box
+  (the member IR is boxes only; `_gutter_members` already worked around that the same way),
+  each band seated on the plane under its own centreline and lapped so no pitch opens a
+  crack. White in the viewer: `isSeamMember()` gated the painted-metal finish on
+  `category == "cladding"`, so `ridge_cap` fell through to the generic metal grey.
+- **Breezeway polycarbonate** — each standing sheet now runs beam soffit to roof-sheet
+  underside (9'-10 3/4"), and the two meet in one `profile="H"` channel per side. See the
+  retired-premise note below.
+- **Flooring** — most of this item was already true: second-storey bedrooms were carpet and
+  `RM-A-STUDY` was already oak. What was missing is that *nothing rendered* `floor_finish`.
+  Now: a viewer room-floor builder, real `Material`s behind every finish string, GLB parity,
+  and the finishes reach the BOM by area with waste and companion layers. Second-storey
+  circulation and all three baths run one continuous LVP floor; both walk-ins are carpet.
+  Along the way: `Room.finish_zones` was authored-only — `ResolvedRoom` had no field for it,
+  so a `FinishZone` in plan source was silently dropped at resolve. It carries through now.
+- **Frost-free hydrant** — the project's first `PipeSystem.WATER_COLD` run, plus the
+  pedestal, the slab sleeve, the gravel pit, a `hydrant` plan symbol and
+  `mep.hydrant_freeze_depth`. The rationale for having no floor drain, and what that trade
+  costs, is in `houses/catlin/notes/garage_hydrant.md`.
+- **Garage heat detector** — half this item was already satisfied (every bedroom carries a
+  COMBO alarm, enforced by `code.R314_R315_alarms`). Added `AlarmKind.HEAT`, `AL-G-HEAT`,
+  an `Alarm.circuit` field pointing every alarm at the unswitched `CKT-LT-BACKUP`, and
+  `code.R315_garage_alarms` for the garage detector plus CO coverage beside it.
+- **BOM sweep** — see the stale-premise note below.
+- **U-stair 2D drawing** — root-caused to `782a607`, which turned a landing from one member
+  into ~7 and left them all categorised `"landing"`, so the Jul-20 drawer filter started
+  painting stair framing as plan linework (~12 stray polylines per landing zone, 13 per
+  winder box). Split the semantics (`landing_framing`); a landing now draws as its outline
+  rather than its axis. Secondary fix: `u_split.py` never read `stair.start` while the
+  validator did, so generation and validation ran on two different origins.
+- **Raised garden** — `W-RG-BLOCK` is a U wrapping the sunken garden; `W-RG-INNER` deleted.
+  It is no longer a 36" planter but a mostly-buried retaining apron, and
+  `params/raised_garden.py` now says so instead of describing the planter.
 
-- Frost Free Hydrant in garage
-		Frost free hydrant and "hose down" area, in a code compliant way
-			72" below ground, gravel sump, interior shutoff where it enters inside, Sleeved through slab
-			Sealant on concrete
-			Y34SS hydrant + extra coating + hose bib vacuum breaker (small screw on thing)
-				Raise pedestal for this, so the sleeve entrance is not the salt water floor (ie melting snow and salt slush in winter)
-			NO drain - Most places don't like. Have a gravel pit outside for a wash area and drainage
+### Findings worth keeping
 
-- Heat rise detector in garage, smoke alarm in each bedroom
-
-- Sweep the BOM for anything newly added beyond placeables/floor-heat/glazing (all three now
-  bill through `bill_of_materials`). Looks like some connectors/hangers/screw counts are made but not included there.
-
-- the 2D drawing of the u-shaped stairs got messed up at some point. It's got weird splits on landings and uneven stair marks
-
-- We need to change the raised garden. W-RG-BLOCK should form a U around the sunken garden up to the N-S plane of the balcony railing on the arched concrete. It's 3' wider than the sunken garden wall. For now we should also model it so it starts at the same height as the top of the sunken garden wall, and goes down 3' from there (that puts it mostly below grade, which is fine for now), with this change meaning W-RG-INNER can likely be deleted (W-SG-* replace it effectively).
+1. **The BOM item's premise was stale.** Hangers, connectors, sill anchors and screws had
+   been billing all along — `hardware_takeoff` aggregates all four families and 15 tests pin
+   them. The real gaps were elsewhere and none of them announced itself: plumbing, ducts,
+   sleeves, footing beddings, openings, non-sheathing envelope layers, floor finishes,
+   stair treads, conductors and `FloorSystem.ceiling_below` were all resolved and reaching
+   no order. All bill now, and
+   `test_framing_takeoff.py::test_every_resolved_collection_is_billed_or_waived` is the gate
+   that keeps the list honest: every `ResolvedModel` collection must be billed or waived
+   with a reason. `haus takeoff` was also silently dropping `lighting_controls`, which a
+   second test now prevents.
+2. **The engine BOM and the browser BOM are two implementations with different coverage.**
+   `ui/src/model/bom.ts` was billing footing beddings when the engine was not. Reconciling
+   them was deliberately out of scope for this pass; they still diverge, and nothing tests
+   that they agree. That is the next thing to do here.
+3. **The breezeway's "three 4x8 sheets, uncut" sheet economy is retired.** It was the stated
+   organising idea of `params/breezeway.py`, and it cost 8 1/4" of bare framing below each
+   sheet and 14 1/2" of open elevation at the head. The shared H channel costs a 10' sheet
+   and the roof's 3 1/4" drip oversail; the sill U-channel's weep holes are now the only
+   drainage path. The module docstring owns this rather than describing the old scheme.
+4. **The U-stair drawing regression shipped because the 2D stair symbol had essentially no
+   test coverage.** The only 2D stair test asserted that no A-STAIR polyline had zero
+   length — which every one of those ~12 strays passed. There are now tests for the polyline
+   set (surfaces only, framing named explicitly), the landing rectangle, and even tread
+   spacing along a flight.
