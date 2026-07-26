@@ -185,11 +185,45 @@ MAIN_PLACEABLES = [
               position=pt(ft(27, 6), ft(26, 1)), rotation=deg(180)),
     Furniture(uid="1RME2HHSQT", tag="FURN-M-KIT-STOOL3", type_ref="FURN-BAR-STOOL", room="RM-M-LIVING",
               position=pt(ft(29), ft(26, 1)), rotation=deg(180)),
+
+    # The main-floor bedroom's queen, head north (rotation 0) against the interior wall, so
+    # the two window walls — west (WIN-M-BED-W1/W2) and south (WIN-M-BED-S1/S2) — stay free.
+    # x=5' is what keeps the west side zone off ED-M-BED-RC7 on the west wall and the east
+    # one off ED-M-BED-RC1; y=9'-3" holds the foot zone clear of that same pair. This is the
+    # one bedroom where the queen keeps all three zones whole with room left over.
+    Furniture(uid="CMB701AAAA", tag="FURN-M-BED", type_ref="FURN-BED-KING", room="RM-M-BED",
+              position=pt(m(2.5945), m(2.89975))),
 ]
 GARAGE_PLACEABLES = []
-# Head against the east wall: rotation -90 turns the bed's back (+y) toward +x.
+# The three east bedrooms are the same 13'-11 3/4" x 8'-10 3/4" clear box, so they get the
+# same bed layout: a queen with its head north (rotation 0 puts the back at +y) and its 2'
+# side-access zones running the *long* way, where there is room for them.
+#
+# Head against the east wall — under the window, where FURN-S-BED1 started — cannot work
+# here. That orientation lays the 5'-4" width across the 8'-10 3/4" dimension, which needs
+# 9'-4" once both 2' side zones are counted; the 5 1/4" shortfall pushed each zone through a
+# long wall and onto the NEC 210.52 fill receptacles at 16" (integrity.placeable_recommended_
+# clearance_conflict, four of them off the one bed). Turning the beds resolves it: the side
+# zones now land in the 14' direction with feet to spare, and only the 2'-6" foot zone is
+# short, which it borrows from the room beyond the wall rather than from a receptacle.
+#
+# The x centreline and the y positions are picked, not rounded: x=30' is the one band whose
+# side zones clear the RC1 (north wall, x~25'-10") and RC2 (east wall) outlets, and the beds
+# sit 9'-7" apart rather than on the rooms' 9'-0" pitch so each foot zone stops short of the
+# headboard of the bed in the room below it. Heads therefore float 5"-6" off the north wall.
 SECOND_PLACEABLES = [
     Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-QUEEN-BED", room="RM-S-BED1",
-              position=pt(ft(32, 5), ft(13, 6)), rotation=deg(-90)),
+              position=pt(ft(30), ft(12, 9))),
+    Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
+              position=pt(ft(30), ft(22, 4))),
+    Furniture(uid="CSB702AAAA", tag="FURN-S-BED3", type_ref="FURN-QUEEN-BED", room="RM-S-BED3",
+              position=pt(ft(30), ft(31, 11))),
+    # The master takes the king, head against the closet/bath wall that closes the suite's
+    # west strip at x=9'-6 7/8" (rotation -90 turns its back to +x), so the bed faces west
+    # into WIN-S-SUITE1/2 and the 2'-6" foot zone runs out to the window wall instead of into
+    # a partition. It is the one bedroom wide enough to hold a 6'-8" bed with both 2' side
+    # zones intact, and it does: nothing here is short.
+    Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-BED-KING",
+              room="RM-S-SUITE", position=pt(ft(6), ft(17, 6)), rotation=deg(-90)),
 ]
 ATTIC_PLACEABLES = []
