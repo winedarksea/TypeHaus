@@ -109,17 +109,46 @@ def _authored_is_bearing(model: ResolvedModel, tag: str) -> bool:
     return getattr(authored, "structural_role", None) is StructuralRole.BEARING
 
 
+def _face_line(host, member: FramedMember, board_width: float, lo: float,
+               hi: float) -> tuple[tuple[float, float], tuple[float, float]]:
+    """``(a, b)`` for a board flush against ``host``'s near face, spanning ``lo``→``hi``.
+
+    Where the wall's depth actually sits is read off the resolved layer polygons rather
+    than from ``axis``: an ``alignment=face(...)`` wall's authored line is one of its
+    *faces*, not its centre, so ``axis ± thickness/2`` lands mid-wall and the board bites
+    into the studs on one side (and floats outside the building on the other).
+
+    Both host kinds go through here. A framed wall gets a lagged ledger board; concrete
+    gets the hanger band let into the pour — but neither is fastened along the *stringer's*
+    own centreline, which for a flight clipped to its subfloor made the band a byte-for-byte
+    duplicate of the member it carries.
+    """
+    # 0 → the member runs in x (cross coordinate is y); 1 → it runs in y (cross is x).
+    run_axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0
+    cross_axis = 1 - run_axis
+    cross = [point[cross_axis] for layer in host.depth_layers() for point in layer.polygon]
+    if cross:
+        near, far = min(cross), max(cross)
+        face = (far + board_width / 2.0
+                if member.p0[cross_axis] >= (near + far) / 2.0
+                else near - board_width / 2.0)
+    else:  # no resolved depth (a bare axis): fall back to the authored line
+        wall_cross = host.axis[0][cross_axis]
+        side = 1.0 if member.p0[cross_axis] >= wall_cross else -1.0
+        face = wall_cross + side * (host.thickness_m / 2.0 + board_width / 2.0)
+    if run_axis == 1:
+        return (face, lo), (face, hi)
+    return (lo, face), (hi, face)
+
+
 def _framed_ledger(stair: Stair, host, member: FramedMember,
                    interval: tuple[float, float], subfloor: float,
                    connection: str) -> FramedMember:
     """The ledger board a framed host wall carries ``member`` on.
 
-    Three deliberate differences from the concrete hanger band:
+    Two deliberate differences from the concrete hanger band (both share ``_face_line``'s
+    plan position, flush against the host's face on the member's side):
 
-    - **Plan position** — flush against the host's face on the member's side (axis +
-      half the wall + half the ledger board), never on the member's own line and never
-      inside the stud cavity. That keeps it clear of the host's studs/plates in plan,
-      which is also what keeps the interference check quiet about it.
     - **Span** — exactly the run interval the host shares with the member
       (``_best_host_wall``'s third gate measured it); a board spanning the member's full
       run would float past the end of the wall that carries it.
@@ -129,25 +158,8 @@ def _framed_ledger(stair: Stair, host, member: FramedMember,
     """
     section = cross_section(_LEDGER_PROFILE)
     lo, hi = interval
-    # 0 → the member runs in x (cross coordinate is y); 1 → it runs in y (cross is x).
     run_axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0
-    cross_axis = 1 - run_axis
-    # Where the wall's depth actually sits, read off the resolved layer polygons rather
-    # than from ``axis``: an ``alignment=face(...)`` wall's authored line is one of its
-    # *faces*, not its centre, so ``axis ± thickness/2`` lands mid-wall and the ledger
-    # bites into the studs on one side (and floats outside the building on the other).
-    cross = [point[cross_axis] for layer in host.depth_layers() for point in layer.polygon]
-    if cross:
-        near, far = min(cross), max(cross)
-        face = (far + section.width_m / 2.0
-                if member.p0[cross_axis] >= (near + far) / 2.0
-                else near - section.width_m / 2.0)
-    else:  # no resolved depth (a bare axis): fall back to the authored line
-        wall_cross = host.axis[0][cross_axis]
-        side = 1.0 if member.p0[cross_axis] >= wall_cross else -1.0
-        face = wall_cross + side * (host.thickness_m / 2.0 + section.width_m / 2.0)
-    a = (face, lo) if run_axis == 1 else (lo, face)
-    b = (face, hi) if run_axis == 1 else (hi, face)
+    a, b = _face_line(host, member, section.width_m, lo, hi)
     # The member's top along its run: z1_m at p0, z1_end_m (raked) or z1_m at p1.
     s0, s1 = member.p0[run_axis], member.p1[run_axis]
     top0 = member.z1_m
@@ -235,19 +247,23 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
             if host is not None:
                 tag = f"concrete-wall-hanger:{host.tag}"
                 out.append(replace(member, connection=tag))
+                run_axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0
+                band_a, band_b = _face_line(
+                    host, member, cross_section("hanger").width_m,
+                    member.p0[run_axis], member.p1[run_axis])
                 if member.category == "stringer":
                     top_p0 = member.z1_m
                     top_p1 = member.z1_m if member.z1_end_m is None else member.z1_end_m
                     out.append(FramedMember(
                         stair.uid, f"hanger-{host.tag}-{member.child_key}", "hanger",
-                        "hanger", member.p0, member.p1,
+                        "hanger", band_a, band_b,
                         max(subfloor, top_p0 - hanger_depth), top_p0, member.length_m,
                         z0_end_m=max(subfloor, top_p1 - hanger_depth), z1_end_m=top_p1,
                         connection=tag))
                 else:
                     out.append(FramedMember(
                         stair.uid, f"hanger-{host.tag}-{member.child_key}", "hanger",
-                        "hanger", member.p0, member.p1,
+                        "hanger", band_a, band_b,
                         max(subfloor, member.z1_m - hanger_depth), member.z1_m,
                         member.length_m, connection=tag))
                     supported_corners.update(

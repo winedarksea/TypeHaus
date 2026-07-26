@@ -200,7 +200,11 @@ def _winder_box_framing(stair: Stair, z0: float, riser: float, fan: list[_FanLin
         base = z0 + riser * index  # ... and land on the tier below (the subfloor at k=0)
         outside = _box_perimeter(line, outer_corner, turn)
         top_tier = index == len(fan) - 1
-        rims = [(line.narrow, line.nosing), *outside, (turn, inside)]
+        # Rims run to the newel's *centreline*, not the face its tread starts at: the post
+        # is what carries their inside ends, and the bearing pass looks for a load path at
+        # the endpoint itself. The tread above still starts at the face it can be walked
+        # from — that difference is the narrow-end depth the winder rule measures.
+        rims = [(inside, line.nosing), *outside, (turn, inside)]
         for edge, (a, b) in enumerate(rims):
             length = math.hypot(b[0] - a[0], b[1] - a[1])
             if length < 1e-9:  # a fan line landing exactly on the outer corner
