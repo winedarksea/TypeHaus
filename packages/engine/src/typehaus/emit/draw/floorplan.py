@@ -191,7 +191,9 @@ def _emit_alarms(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         room = rooms.get(alarm.room)
         if room is None:
             continue
-        label = {"smoke": "SD", "co": "CO", "combo": "SD/CO"}[alarm.kind.value]
+        # Every AlarmKind must appear here — this is a hard index, so a new member without a
+        # label KeyErrors the whole plan sheet rather than drawing an unlabelled symbol.
+        label = {"smoke": "SD", "co": "CO", "combo": "SD/CO", "heat": "HD"}[alarm.kind.value]
         b.add(Symbol(name="alarm", insert=_in(room.seed.xy_m), layer="A-ANNO-SYMB"))
         b.add(Text(anchor=_in((room.seed.xy_m[0] + 0.08, room.seed.xy_m[1] + 0.08)),
                    content=label, height=2.0, layer="A-ANNO-TEXT"))

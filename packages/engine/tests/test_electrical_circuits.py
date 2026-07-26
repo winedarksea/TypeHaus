@@ -386,10 +386,22 @@ def test_model_json_canvas_objects_carry_their_circuit(catlin_model):
     # omitting the key, so the UI can tell "no circuit" from "old model.json".
     assert objects["EQ-B-WH"]["circuit"] == "CKT-WH-HP"
     assert all("circuit" in item for item in objects.values() if item["domain"] != "opening")
-    # Every tag the schedule names is addressable in the canvas-object index — this is the
-    # edge the reader's device tags zoom through.
-    for row in model_to_dict(catlin_model)["electrical"]["panel_schedule"]:
+    # Every tag the schedule names has to be addressable — this is the edge the reader's
+    # device tags zoom through, and a row naming something the UI cannot reach is a dead end.
+    #
+    # Most consumers are canvas objects, which carry their own position. Alarms are the
+    # exception and deliberately so: they are life-safety symbols keyed to a room, not
+    # movable placeables (an Alarm has no position at all — it draws at the room seed), so
+    # they are never canvas objects. They are still consumers — R314.4 puts them on a branch
+    # circuit and the schedule has to say which — so they zoom through their room instead.
+    payload = model_to_dict(catlin_model)
+    alarms = {item["tag"]: item for item in payload["alarms"]}
+    rooms = {item["tag"] for item in payload["rooms"]}
+    for row in payload["electrical"]["panel_schedule"]:
         for tag in row["devices"]:
+            if tag in alarms:
+                assert alarms[tag]["room"] in rooms, tag
+                continue
             assert tag in objects, tag
 
 

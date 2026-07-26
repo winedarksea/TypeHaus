@@ -192,7 +192,8 @@ ROOMS = [
 ]
 
 ALARMS = [
-    Alarm(uid="CBA701AAAA", tag="AL-B-COMBO", kind=AlarmKind.COMBO, room="RM-B-PLAY-N"),
+    Alarm(uid="CBA701AAAA", tag="AL-B-COMBO", kind=AlarmKind.COMBO, room="RM-B-PLAY-N",
+          circuit="CKT-LT-BACKUP"),
 ]
 
 # No radiant floor in the basement. RM-B-SAUNA had FH-B-SAUNA until 2026-07-25: a heated

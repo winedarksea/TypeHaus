@@ -322,8 +322,10 @@ ROOMS = [
 ]
 
 ALARMS = [
-    Alarm(uid="CMA701AAAA", tag="AL-M-BED", kind=AlarmKind.COMBO, room="RM-M-BED"),
-    Alarm(uid="CMA702AAAA", tag="AL-M-HALL", kind=AlarmKind.COMBO, room="RM-M-HALL"),
+    Alarm(uid="CMA701AAAA", tag="AL-M-BED", kind=AlarmKind.COMBO, room="RM-M-BED",
+          circuit="CKT-LT-BACKUP"),
+    Alarm(uid="CMA702AAAA", tag="AL-M-HALL", kind=AlarmKind.COMBO, room="RM-M-HALL",
+          circuit="CKT-LT-BACKUP"),
 ]
 
 # Electric radiant floor — the two main-storey comfort zones (2026-07-25). Neither is a
