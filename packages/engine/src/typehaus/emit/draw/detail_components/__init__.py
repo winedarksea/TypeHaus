@@ -49,6 +49,7 @@ from typehaus.emit.draw.detail_components.breezeway import (
     crown_glazing_bar,
     drainage_wedges,
     gasketed_fastener,
+    shared_h_channel,
     weeping_u_channel,
 )
 from typehaus.emit.draw.detail_components.chrome import dimension_strings, material_legend
@@ -173,6 +174,7 @@ __all__ = [
     "crown_glazing_bar",
     "drainage_wedges",
     "gasketed_fastener",
+    "shared_h_channel",
     "weeping_u_channel",
     "build_below_grade_components",
     "build_overlay_components",
