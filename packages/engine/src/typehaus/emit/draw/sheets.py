@@ -20,8 +20,8 @@ from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.foundationplan import build_foundation_plan, has_foundation_content
 from typehaus.emit.draw.framingplan import build_framing_plan
 from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
-from typehaus.emit.draw.pdf_writer import _fig
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
+from typehaus.emit.draw.sheet_writer import LEDGER, compose_sheet, sheet_chrome
 from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
 from typehaus.emit.draw.roofplan import build_roof_plan
 from typehaus.emit.draw.scene import Scene
@@ -52,19 +52,24 @@ PageFn = Callable[["object", ResolvedModel, str, str], None]  # pdf: PdfPages
 class SheetSpec:
     number: str                # "S-100"
     title: str                 # "Foundation plan"
-    scale_note: str = "1/4\" = 1'-0\""
+    scale_note: str = "1/4\" = 1'-0\""  # hint only — compose_sheet prints the TRUE scale
     scene: SceneFn | None = None       # IR-backed sheets
     page: PageFn | None = None         # table/cover pages
+    size: tuple[float, float] = LEDGER  # paper preset (width, height) in inches
+    north_arrow: bool = False          # stamp a north arrow in the viewport (plan sheets)
 
 
 def build_sheet_index(model: ResolvedModel,
                       preferences: "Preferences | None" = None) -> list[SheetSpec]:
     """Assemble the ordered permit-set sheet list — the one place sheet order/content lives."""
     sheets: list[SheetSpec] = [SheetSpec("A-000", "Cover / code summary")]
-    sheets.append(SheetSpec("C-101", "Site plan", "project north", scene=build_site_plan))
+    sheets.append(SheetSpec("G-002", "General notes", page=_write_general_notes))
+    sheets.append(SheetSpec("C-101", "Site plan", "project north", scene=build_site_plan,
+                            north_arrow=True))
 
     if has_foundation_content(model):
-        sheets.append(SheetSpec("S-100", "Foundation plan", scene=build_foundation_plan))
+        sheets.append(SheetSpec("S-100", "Foundation plan", scene=build_foundation_plan,
+                                north_arrow=True))
 
     floors = sorted(model.floors, key=lambda f: _storey_elevation(model, f.storey))
     for index, floor in enumerate(floors, start=1):
@@ -74,7 +79,8 @@ def build_sheet_index(model: ResolvedModel,
         title = (f"Framing plan — {floor.storey}" if len(floors) == 1
                  else f"Framing plan — {floor.storey} · {floor.tag}")
         sheets.append(SheetSpec(number, title,
-                                scene=partial(build_framing_plan, floor_tag=floor.tag)))
+                                scene=partial(build_framing_plan, floor_tag=floor.tag),
+                                north_arrow=True))
 
     # Roof framing gets its own S-102 series rather than joining the S-101 floor series: a
     # roof is a framed level too, but numbering it S-101.n would make the floor-deck sheet
@@ -83,7 +89,8 @@ def build_sheet_index(model: ResolvedModel,
     for index, roof in enumerate(roofs, start=1):
         number = "S-102" if len(roofs) == 1 else f"S-102.{index}"
         sheets.append(SheetSpec(number, f"Roof framing plan — {roof.tag}",
-                                scene=partial(build_roof_framing_plan, roof_tag=roof.tag)))
+                                scene=partial(build_roof_framing_plan, roof_tag=roof.tag),
+                                north_arrow=True))
 
     if model.all_members():
         sheets.append(SheetSpec("S-103", "Framing schedule / bill of materials",
@@ -101,11 +108,19 @@ def build_sheet_index(model: ResolvedModel,
                    if any(wall.storey == storey.tag for wall in model.walls)]
     for number, storey in floor_pages:
         sheets.append(SheetSpec(number, f"{storey.title()} floor plan",
-                                scene=partial(build_floorplan, storey=storey)))
+                                scene=partial(build_floorplan, storey=storey),
+                                north_arrow=True))
 
     sheets.append(SheetSpec(f"A-{101 + len(floor_pages):03d}", "Roof plan",
-                            scene=build_roof_plan))
+                            scene=build_roof_plan, north_arrow=True))
     sheets.append(SheetSpec("A-301", "Building section", scene=build_center_section))
+    # Authored SECTION slices join the A-301 series right after the auto centre section —
+    # one sheet per authored cut, in authoring order (→ Permit-ready plan set Phase 6).
+    sections = [item for item in model.plan.elements_of_kind("Slice")
+                if item.kind.value == "section"]
+    for index, view in enumerate(sections, start=1):
+        sheets.append(SheetSpec(f"A-301.{index}", view.title or view.tag,
+                                scene=partial(build_section, view=view)))
     for number, facing in (("A-201", "north"), ("A-202", "south"),
                            ("A-203", "east"), ("A-204", "west")):
         sheets.append(SheetSpec(number, f"{facing.title()} exterior elevation",
@@ -162,9 +177,9 @@ def write_permit_set(model: ResolvedModel, output: Path,
     """Compose the permit-set baseline into one multi-page PDF.
 
     The source plan remains authoritative: plans are drawing-IR scenes and schedules are
-    derived from the same resolved openings. The intentionally modest title-block format
-    lets jurisdictions accept an 11x17 residential review set while retaining the exact
-    sheets needed for a professional handoff.
+    derived from the same resolved openings. Every page is a real sheet — a fixed 11x17
+    ledger with border and title block (→ sheet_writer); scene sheets print at TRUE
+    architectural scale with a graphic scale bar, table pages get the same chrome.
     """
     from matplotlib.backends.backend_pdf import PdfPages
 
@@ -178,8 +193,7 @@ def write_permit_set(model: ResolvedModel, output: Path,
             elif sheet.page is not None:
                 sheet.page(pdf, model, sheet.number, sheet.title)
             elif sheet.scene is not None:
-                title = f"{sheet.number} · {sheet.title} · {sheet.scale_note}"
-                fig = _fig(sheet.scene(model), title)
+                fig = compose_sheet(sheet.scene(model), sheet, model, size=sheet.size)
                 pdf.savefig(fig)
                 _close(fig)
     return output, {"index": index}
@@ -202,23 +216,87 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]]) -> Non
     import matplotlib.pyplot as plt
     from typehaus.checks import evaluate_permit_checklist, run_from_model
 
-    fig, axis = plt.subplots(figsize=(11, 8.5))
-    axis.axis("off")
+    fig = plt.figure(figsize=LEDGER)
     site = model.plan.project.site
     checklist = evaluate_permit_checklist(run_from_model(model, []), "mn-2024")
-    axis.text(0.08, 0.86, model.plan.project.name, fontsize=28, family="monospace")
-    axis.text(0.08, 0.79, "MINNESOTA RESIDENTIAL PERMIT SET", fontsize=13, family="monospace")
-    axis.text(0.08, 0.70, f"Site: {site.lat:.5f}, {site.lon:.5f}\n"
-              f"Climate zone 6 · framed model derived from Type:Haus", fontsize=10,
-              family="monospace", va="top")
-    axis.text(0.08, 0.54, "SHEET INDEX", fontsize=12, family="monospace", weight="bold")
+    fig.text(0.05, 0.88, model.plan.project.name, fontsize=28, family="monospace")
+    fig.text(0.05, 0.82, "MINNESOTA RESIDENTIAL PERMIT SET", fontsize=13, family="monospace")
+    fig.text(0.05, 0.77, f"Site: {site.lat:.5f}, {site.lon:.5f}\n"
+             f"Climate zone 6 · framed model derived from Type:Haus", fontsize=10,
+             family="monospace", va="top")
+    fig.text(0.05, 0.66, "SHEET INDEX", fontsize=12, family="monospace", weight="bold")
+    # Two columns: an 11x17 cover holds ~24 rows per column above the title block.
+    per_column = 24
     for row, (number, name) in enumerate(index):
-        axis.text(0.10, 0.50 - row * 0.027, f"{number:6}  {name}", fontsize=8,
-                  family="monospace")
-    axis.text(0.08, 0.08,
-              "Declared MN checklist: " + ("PASS" if checklist.ok else "NOT READY") + ". "
-              "This set encodes a declared subset only; verify local amendments, engineering, "
-              "MEP, and energy before construction.", fontsize=8, family="sans-serif", wrap=True)
+        column, line = divmod(row, per_column)
+        fig.text(0.06 + column * 0.33, 0.62 - line * 0.021, f"{number:8}  {name}",
+                 fontsize=8, family="monospace")
+    fig.text(0.05, 0.115,
+             "Declared MN checklist: " + ("PASS" if checklist.ok else "NOT READY") + ". "
+             "This set encodes a declared subset only; verify local amendments, engineering, "
+             "MEP, and energy before construction.", fontsize=8, family="sans-serif", wrap=True)
+    sheet_chrome(fig, model, "A-000", "Cover / code summary")
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
+def _write_general_notes(pdf, model: ResolvedModel, number: str, name: str) -> None:
+    """G-002 — standard notes plus the markdown note files the transitions reference.
+
+    ``Transition.notes`` point at house-relative markdown (→ details._notes_column); this
+    sheet collects every distinct file once, so the assembly-junction guidance is readable
+    without hunting each A-4xx detail. Wrapped-text columns, fixed lettering.
+    """
+    import matplotlib.pyplot as plt
+
+    from typehaus.emit.draw.details import _load_markdown_notes
+
+    fig = plt.figure(figsize=LEDGER)
+    fig.text(0.03, 0.945, f"{number} · {name}", fontsize=16, family="monospace")
+
+    blocks: list[tuple[str, list[str]]] = [("GENERAL", [
+        "• Code: 2024 Minnesota Residential Code (declared checklist mn-2024);",
+        "  verify local amendments with the authority having jurisdiction.",
+        "• Written dimensions govern; report discrepancies before proceeding.",
+        "• This set encodes a declared subset only — engineering, MEP and",
+        "  energy compliance must be verified before construction.",
+        "• Climate zone 6. See EN-1 for the envelope summary.",
+    ])]
+    root = model.plan.source_root
+    seen: set = set()
+    for transition in model.plan.library.transitions:
+        rel = transition.notes
+        if not rel or rel in seen or not root:
+            continue
+        seen.add(rel)
+        path = Path(root) / rel
+        if not path.exists():
+            continue
+        title = Path(rel).stem.replace("_", " ").upper()
+        blocks.append((title, _load_markdown_notes(path)[1:]))  # [0] is "NOTES:"
+
+    columns_x = (0.03, 0.275, 0.52, 0.765)
+    top, bottom, step = 0.90, 0.115, 0.011
+    column, y = 0, top
+    for title, lines in blocks:
+        needed = (len(lines) + 2) * step
+        if y - needed < bottom and y < top:  # start the block in the next column
+            column, y = column + 1, top
+        if column >= len(columns_x):
+            break
+        x = columns_x[column]
+        fig.text(x, y, title, fontsize=7, family="monospace", weight="bold", va="top")
+        y -= step * 1.6
+        for line in lines:
+            if y < bottom:
+                column, y = column + 1, top
+                if column >= len(columns_x):
+                    break
+                x = columns_x[column]
+            fig.text(x, y, line, fontsize=6, family="monospace", va="top")
+            y -= step
+        y -= step  # blank line between blocks
+    sheet_chrome(fig, model, number, name)
     pdf.savefig(fig)
     plt.close(fig)
 
@@ -226,9 +304,8 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]]) -> Non
 def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str) -> None:
     import matplotlib.pyplot as plt
 
-    fig, axis = plt.subplots(figsize=(11, 8.5))
-    axis.axis("off")
-    axis.text(0.06, 0.94, f"{number} · {name}", fontsize=16, family="monospace")
+    fig = plt.figure(figsize=LEDGER)
+    fig.text(0.04, 0.945, f"{number} · {name}", fontsize=16, family="monospace")
     rows = [(opening.tag, "Door" if opening.is_door else "Window", opening.type_ref or "RO",
              f"{opening.width_m / 0.0254:.0f}\" × {opening.height_m / 0.0254:.0f}\"")
             for opening in sorted(model.openings, key=lambda item: item.tag)]
@@ -242,8 +319,9 @@ def _write_opening_schedule(pdf, model: ResolvedModel, number: str, name: str) -
         for fixture in model.plan.storey_elements(storey.tag)
         if fixture.element_kind in {"Fixture", "Appliance"} and fixture.type_ref in types
     )
-    axis.table(cellText=rows, colLabels=("Tag", "Kind", "Type", "Nominal footprint"),
-               loc="center", cellLoc="left", colLoc="left", fontsize=6)
+    _add_table(fig, rows, ("Tag", "Kind", "Type", "Nominal footprint"),
+               bbox=(0.04, 0.11, 0.92, 0.80))
+    sheet_chrome(fig, model, number, name)
     pdf.savefig(fig)
     plt.close(fig)
 
@@ -256,11 +334,11 @@ def _write_framing_bom(pdf, model: ResolvedModel, number: str, name: str) -> Non
 
     from typehaus.takeoff import framing_bom_by_size, framing_takeoff
 
-    fig = plt.figure(figsize=(11, 17))
-    fig.text(0.04, 0.97, f"{number} · {name}", fontsize=16, family="monospace")
+    fig = plt.figure(figsize=LEDGER)
+    fig.text(0.04, 0.945, f"{number} · {name}", fontsize=16, family="monospace")
 
     by_size = framing_bom_by_size(model)
-    fig.text(0.04, 0.94, "SUMMARY BY LUMBER SIZE", fontsize=10, family="monospace",
+    fig.text(0.04, 0.90, "SUMMARY BY LUMBER SIZE", fontsize=10, family="monospace",
              weight="bold")
     size_rows = [(row["profile"], f"{row['pieces']:,}", f"{row['order_length_ft']:,}",
                   f"{row['board_feet']:,.0f}" if row["board_feet"] else "—")
@@ -268,9 +346,9 @@ def _write_framing_bom(pdf, model: ResolvedModel, number: str, name: str) -> Non
     size_rows.append(("TOTAL", f"{sum(int(r['pieces']) for r in by_size):,}",
                       f"{sum(int(r['order_length_ft']) for r in by_size):,}", ""))
     _add_table(fig, size_rows, ("Size", "Pieces", "Ordered LF", "Board ft"),
-               bbox=(0.04, 0.66, 0.5, 0.26))
+               bbox=(0.04, 0.62, 0.5, 0.26))
 
-    fig.text(0.04, 0.62, "CUT LIST — BY SIZE AND MEMBER TYPE", fontsize=10,
+    fig.text(0.04, 0.575, "CUT LIST — BY SIZE AND MEMBER TYPE", fontsize=10,
              family="monospace", weight="bold")
     bom_rows = [
         (row["profile"], row["category"], f"{row['pieces']:,}",
@@ -280,7 +358,8 @@ def _write_framing_bom(pdf, model: ResolvedModel, number: str, name: str) -> Non
     ]
     _add_table(fig, bom_rows,
                ("Size", "Type", "Pieces", "Cut LF", "Stock lengths"),
-               bbox=(0.04, 0.03, 0.92, 0.57))
+               bbox=(0.04, 0.11, 0.92, 0.44))
+    sheet_chrome(fig, model, number, name)
     pdf.savefig(fig)
     plt.close(fig)
 
@@ -296,11 +375,11 @@ def _write_hardware_schedule(pdf, model: ResolvedModel, number: str, name: str) 
 
     from typehaus.takeoff import hardware_takeoff, structural_solids_takeoff
 
-    fig = plt.figure(figsize=(11, 17))
-    fig.text(0.04, 0.97, f"{number} · {name}", fontsize=16, family="monospace")
+    fig = plt.figure(figsize=LEDGER)
+    fig.text(0.04, 0.945, f"{number} · {name}", fontsize=16, family="monospace")
 
     hardware = hardware_takeoff(model)
-    fig.text(0.04, 0.94, "CONNECTION HARDWARE", fontsize=10, family="monospace",
+    fig.text(0.04, 0.90, "CONNECTION HARDWARE", fontsize=10, family="monospace",
              weight="bold")
     # The derivation rules are printed as keyed notes rather than a table column: they run
     # to a full sentence each, and matplotlib scales a table's lettering to fit its widest
@@ -313,12 +392,15 @@ def _write_hardware_schedule(pdf, model: ResolvedModel, number: str, name: str) 
     ]
     _add_table(fig, hardware_rows,
                ("#", "Scope", "Part", "Size", "Qty", "Unit", "Manufacturer"),
-               bbox=(0.04, 0.66, 0.92, 0.26))
+               bbox=(0.04, 0.62, 0.92, 0.26))
 
-    fig.text(0.04, 0.62, "BASIS OF QUANTITY", fontsize=10, family="monospace",
+    fig.text(0.04, 0.575, "BASIS OF QUANTITY", fontsize=10, family="monospace",
              weight="bold")
+    # Two columns: a ledger page holds ~12 basis notes per column above the solids block.
+    per_column = (len(hardware) + 1) // 2 if len(hardware) > 12 else len(hardware)
     for index, row in enumerate(hardware, start=1):
-        fig.text(0.04, 0.60 - (index - 1) * 0.014, f"{index}. {row['basis']}",
+        column, line = divmod(index - 1, per_column)
+        fig.text(0.04 + column * 0.48, 0.555 - line * 0.014, f"{index}. {row['basis']}",
                  fontsize=5.5, family="monospace")
 
     solids = structural_solids_takeoff(model)
@@ -331,7 +413,8 @@ def _write_hardware_schedule(pdf, model: ResolvedModel, number: str, name: str) 
     ]
     _add_table(fig, solid_rows,
                ("Category", "Assembly", "Count", "Plan sf", "Cu yd"),
-               bbox=(0.04, 0.03, 0.7, 0.33))
+               bbox=(0.04, 0.11, 0.7, 0.25))
+    sheet_chrome(fig, model, number, name)
     pdf.savefig(fig)
     plt.close(fig)
 
@@ -343,11 +426,11 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
 
     from typehaus.takeoff import backup_component_rows, panel_schedule, service_load_summary
 
-    fig = plt.figure(figsize=(11, 17))
-    fig.text(0.04, 0.97, f"{number} · {name}", fontsize=16, family="monospace")
+    fig = plt.figure(figsize=LEDGER)
+    fig.text(0.04, 0.945, f"{number} · {name}", fontsize=16, family="monospace")
 
     schedule = panel_schedule(model)
-    fig.text(0.04, 0.94, "PANEL SCHEDULE — ED-B-PANEL (225A, 200A SERVICE)",
+    fig.text(0.04, 0.90, "PANEL SCHEDULE — ED-B-PANEL (225A, 200A SERVICE)",
              fontsize=10, family="monospace", weight="bold")
     schedule_rows = [
         (row["circuit"], row["description"], f"{row['breaker_amps']}A/{row['poles']}p",
@@ -359,7 +442,7 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
     ]
     _add_table(fig, schedule_rows,
                ("Circuit", "Description", "Breaker", "Volts", "NEMA", "Prot.", "VA"),
-               bbox=(0.04, 0.42, 0.92, 0.51))
+               bbox=(0.04, 0.42, 0.92, 0.46))
 
     load = service_load_summary(model)
     fig.text(0.04, 0.38, "SERVICE LOAD — " + str(load["method"]).upper(), fontsize=10,
@@ -379,12 +462,13 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
 
     backup = backup_component_rows(model)
     if backup:
-        fig.text(0.04, 0.145, "BACKUP SUBSYSTEM COMPONENTS (ED-B-BACKUP-ENCL)", fontsize=10,
+        fig.text(0.04, 0.165, "BACKUP SUBSYSTEM COMPONENTS (ED-B-BACKUP-ENCL)", fontsize=10,
                  family="monospace", weight="bold")
         backup_rows = [(row["component"], f"{row['count']}", row["basis"])
                        for row in backup]
         _add_table(fig, backup_rows, ("Component", "Qty", "Basis"),
-                   bbox=(0.04, 0.03, 0.92, 0.10))
+                   bbox=(0.04, 0.105, 0.92, 0.05))
+    sheet_chrome(fig, model, number, name)
     pdf.savefig(fig)
     plt.close(fig)
 
@@ -402,28 +486,28 @@ def _write_energy_sheet(pdf, model: ResolvedModel, number: str, name: str,
 
     prefs = preferences if preferences is not None else Preferences()
 
-    fig, axis = plt.subplots(figsize=(11, 14))
-    axis.axis("off")
-    axis.text(0.04, 0.985, f"{number} · {name}", fontsize=16, family="monospace")
+    fig = plt.figure(figsize=LEDGER)
+    fig.text(0.04, 0.945, f"{number} · {name}", fontsize=16, family="monospace")
 
-    axis.text(0.04, 0.95, "PRESCRIPTIVE ENVELOPE — MN 2024, CLIMATE ZONE 6", fontsize=10,
-              family="monospace", weight="bold")
+    fig.text(0.04, 0.90, "PRESCRIPTIVE ENVELOPE — MN 2024, CLIMATE ZONE 6", fontsize=10,
+             family="monospace", weight="bold")
     prescriptive_rows = [
         (row.component, row.role, row.required, row.provided, row.verdict.upper())
         for row in evaluate_envelope(model, model.plan)
     ]
     _add_table(fig, prescriptive_rows,
               ("Component", "Use", "Required", "Provided", "Verdict"),
-              bbox=(0.04, 0.66, 0.92, 0.27))
+              bbox=(0.04, 0.62, 0.92, 0.26))
 
-    axis.text(0.04, 0.615, "WINDOW-TO-WALL RATIO", fontsize=10, family="monospace", weight="bold")
+    fig.text(0.04, 0.575, "WINDOW-TO-WALL RATIO", fontsize=10, family="monospace",
+             weight="bold")
     wwr = wwr_summary(model)
     wwr_rows = [("OVERALL", f"{wwr['overall']:.1%}")]
     wwr_rows.extend((item.facade, f"{item.ratio:.1%}") for item in wwr["per_facade"])
-    _add_table(fig, wwr_rows, ("Facade", "Glazing / gross wall"), bbox=(0.04, 0.44, 0.4, 0.15))
+    _add_table(fig, wwr_rows, ("Facade", "Glazing / gross wall"), bbox=(0.04, 0.40, 0.4, 0.16))
 
-    axis.text(0.04, 0.37, "BLOCK LOAD — NOT A MANUAL J", fontsize=10, family="monospace",
-              weight="bold")
+    fig.text(0.04, 0.36, "BLOCK LOAD — NOT A MANUAL J", fontsize=10, family="monospace",
+             weight="bold")
     load = estimate_block_load(model, prefs)
     load_rows = [(component.kind, f"{component.area_ft2:,.0f}",
                  f"{component.ua_btu_per_hour_f:,.1f}") for component in load.components]
@@ -431,13 +515,14 @@ def _write_energy_sheet(pdf, model: ResolvedModel, number: str, name: str,
     load_rows.append(("TOTAL COOLING", "", f"{load.cooling_load_btu_per_hour:,.0f} BTU/h "
                                             f"({load.cooling_tons:.1f} tons)"))
     _add_table(fig, load_rows, ("Component", "Area (ft2)", "UA / total"),
-              bbox=(0.04, 0.14, 0.5, 0.19))
+              bbox=(0.04, 0.15, 0.5, 0.20))
     if load.unknown_inputs:
-        axis.text(0.04, 0.10, "NOT A MANUAL J — unknown inputs: "
-                  + ", ".join(load.unknown_inputs), fontsize=7, family="sans-serif", wrap=True)
+        fig.text(0.04, 0.115, "NOT A MANUAL J — unknown inputs: "
+                 + ", ".join(load.unknown_inputs), fontsize=7, family="sans-serif", wrap=True)
     else:
-        axis.text(0.04, 0.10, "NOT A MANUAL J — a transparent block-load estimate only.",
-                  fontsize=7, family="sans-serif")
+        fig.text(0.04, 0.115, "NOT A MANUAL J — a transparent block-load estimate only.",
+                 fontsize=7, family="sans-serif")
+    sheet_chrome(fig, model, number, name)
     pdf.savefig(fig)
     plt.close(fig)
 
@@ -479,12 +564,32 @@ def write_compare_sheet(report: "object", output: Path) -> Path:
 
 def _add_table(fig, rows: list[tuple], col_labels: tuple[str, ...],
                bbox: tuple[float, float, float, float]) -> None:
+    """Contained tables: matplotlib's default rows are font-height-sized and spill past a
+    short axes (the ledger page is 11" tall where the old portrait pages had 14-17").
+    An explicit table bbox compresses rows to fit; a list too long for the box at legible
+    lettering is split into two side-by-side runs, and the font tracks the row height."""
     if not rows:
         return
-    ax = fig.add_axes(bbox)
-    ax.axis("off")
-    ax.table(cellText=rows, colLabels=col_labels, loc="upper left", cellLoc="left",
-             colLoc="left", fontsize=6)
+    height_pt = bbox[3] * fig.get_size_inches()[1] * 72.0
+    capacity = max(4, int(height_pt / 7.5) - 1)  # rows that stay legible at ~6pt
+    chunks = [rows]
+    if len(rows) > capacity and len(rows) >= 8:
+        half = (len(rows) + 1) // 2
+        chunks = [rows[:half], rows[half:]]
+    gap = 0.02
+    width = (bbox[2] - gap * (len(chunks) - 1)) / len(chunks)
+    for column, chunk in enumerate(chunks):
+        ax = fig.add_axes((bbox[0] + column * (width + gap), bbox[1], width, bbox[3]))
+        ax.axis("off")
+        n = len(chunk) + 1  # + header row
+        frac = min(1.0, n * 11.0 / height_pt)  # 11pt rows until the box is full
+        row_pt = height_pt * frac / n
+        table = ax.table(cellText=chunk, colLabels=col_labels, cellLoc="left",
+                         colLoc="left", bbox=(0.0, 1.0 - frac, 1.0, frac))
+        # ``fontsize=`` via ax.table does not stop the per-cell auto-shrink, which
+        # crushes any run containing one wide cell; pin the size explicitly.
+        table.auto_set_font_size(False)
+        table.set_fontsize(max(3.2, min(6.0, row_pt * 0.72)))
 
 
 def _close(fig: object) -> None:
