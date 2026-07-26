@@ -75,3 +75,20 @@ SECOND_FIXTURES = (
     Fixture(uid="CSQ808AAAA", tag="FX-S-VANITY-LAV2", type_ref="FX-LAV", room="RM-S-VANITY",
             position=pt(ft(4), ft(25, 2)), wall_ref="W-S-BD-N"),
 )
+
+
+# The garage wash-down hydrant. On the west wall near the NW corner: that wall carries only
+# EQ-G-HEATER (at y=48', mounted 6'-0"), and the corner is clear of both north windows and
+# of both EV receptacles at y=41.5'. Standing 1'-6" off the wall line puts it on its
+# pedestal (PAD-G-HYDRANT) rather than in the salt slush the floor runs all winter, and
+# leaves room to swing a hose onto it.
+#
+# The handle at 2'-6" is the type's height; everything below the slab — the 6' barrel, the
+# buried shutoff, the supply run and the sleeve — is authored in params/foundations.py and
+# plan/mep.py, none of which is UI-movable. This instance is, which is why it is here:
+# the loader raises loader.uneditable_movable_element for a Fixture in a non-editable
+# module, and fixture_types.py is not editable (it uses frozenset).
+GARAGE_FIXTURES = (
+    Fixture(uid="CGQ801AAAA", tag="FX-G-HYDRANT", type_ref="FX-HYDRANT-Y34SS",
+            room="RM-GARAGE", position=pt(ft(1, 6), ft(62)), wall_ref="W-G-W"),
+)

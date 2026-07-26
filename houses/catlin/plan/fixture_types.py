@@ -52,6 +52,25 @@ FIXTURE_TYPES = (
                 height=ft(2, 10), plan_symbol="lavatory",
                 needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN}),
                 source="Compact powder-room lavatory, 18\" x 14\"; BATH1 only, final fixture selection by owner."),
+    # Frost-free wall hydrant for the garage wash-down area. The whole point of the type is
+    # what is *not* in `needs`: only WATER_COLD. A hydrant drains through its own weep at the
+    # buried shutoff, not into the sanitary system — and because `needs` carries no
+    # Service.DRAIN, `_missing_sleeve_findings` (checks/mep/plumbing.py) correctly declines
+    # to fire a "no sleeve serving it" FAIL against a fixture that has no drain to sleeve.
+    # The slab penetration it *does* need is the supply sleeve, SP-G-HYDRANT.
+    #
+    # Footprint is the escutcheon, not the buried barrel: what a plan can draw is the head at
+    # the wall. Height is the handle height above the garage slab.
+    FixtureType(tag="FX-HYDRANT-Y34SS", name="Frost-free wall hydrant, 3/4\" stainless",
+                footprint=(inch(6), inch(6)), height=ft(2, 6), plan_symbol="hydrant",
+                needs=frozenset({Service.WATER_COLD}),
+                source="Y34SS-class frost-free wall hydrant, 3/4\" stainless, 6' bury. "
+                       "Specified with the manufacturer's supplemental epoxy coating over "
+                       "the buried barrel (the garage floor runs salt slush all winter and "
+                       "the standard finish is not rated for chloride immersion), and a "
+                       "screw-on hose-bib vacuum breaker on the outlet — required backflow "
+                       "protection for a hose connection. NO floor drain: see "
+                       "notes/garage_hydrant.md."),
 )
 
 APPLIANCE_TYPES = (
