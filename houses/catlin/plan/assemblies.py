@@ -73,15 +73,17 @@ CATLIN_ROOF = Assembly(
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="11.875 I-joist"),
               # I-joist webs are thin, so the framing fraction is far below a stud wall's.
-              cavity=CavityFill(material_ref="mineral-wool", framing_factor=0.07)),
+              # Detailing caveat: a 9.5" batt in an 11.875" I-joist bay leaves 2.4"
+              # unfilled against the deck — install the batt tight to the ceiling side;
+              # the gap is deliberate (warm-side bias helps the dew-point margin).
+              cavity=CavityFill(material_ref="mineral-wool", thickness=inch(9.5),
+                                framing_factor=0.07)),
         Layer(name="deck", material_ref="struct-1-plywood", thickness=inch(0.75),
               function=LayerFunction.SHEATHING),
         Layer(name="membrane", material_ref="air-barrier", thickness=inch(0.25),
               function=LayerFunction.MEMBRANE,
               control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="polyiso", material_ref="polyiso", thickness=inch(2.0),
-              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="eps", material_ref="eps", thickness=inch(4.0),
+        Layer(name="polyiso", material_ref="polyiso", thickness=inch(6.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         Layer(name="roof-membrane", material_ref="air-barrier", thickness=inch(0.25),
               function=LayerFunction.MEMBRANE, control={ControlLayer.WATER}),

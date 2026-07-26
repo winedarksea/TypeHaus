@@ -267,7 +267,7 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
             inch(0.5).meters, abs=1e-6)
 
     setbacks = {entry["layer"]: entry for entry in roof.layer_edge_setbacks}
-    assert set(setbacks) == {"deck", "membrane", "polyiso", "eps", "roof-membrane",
+    assert set(setbacks) == {"deck", "membrane", "polyiso", "roof-membrane",
                              "batten-gap", "roofing"}
     for edge in ("west", "east", "south", "north"):
         deck, foam = setbacks["deck"][edge], setbacks["polyiso"][edge]
@@ -282,6 +282,25 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
     # The garage/truss roof is deferred: no setbacks, geometry unchanged.
     garage = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
     assert garage.layer_edge_setbacks == ()
+
+
+def test_catlin_roof_passes_the_monthly_condensation_gate_with_margin():
+    """The hot roof must clear the monthly (ISO 13788-style) condensation gate — the
+    pass/fail verdict, not just the cold-snap screen — and carry a whole-assembly
+    R >= 50, both read off the resolved model rather than pinned to authored numbers."""
+    from typehaus.analysis import assembly_r_value
+    from typehaus.checks.building_science.condensation import CHECK_ID
+
+    plan = load_plan(CATLIN_DIR).plan
+    report = run(plan, CATLIN_DIR, tier=None)
+    gate = [f for f in report.findings
+            if f.check_id == CHECK_ID and "CATLIN_ROOF" in f.element_tags]
+    assert gate, "the condensation gate never evaluated CATLIN_ROOF"
+    assert all(f.result is Result.PASS for f in gate), [f.message for f in gate]
+
+    r = assembly_r_value(plan.library.resolve_assembly("CATLIN_ROOF"), plan.library)
+    assert r.value is not None and not r.unknown_materials
+    assert r.value.r_us >= 50.0
 
 
 def test_garage_gable_roof_frames_raised_heel_trusses(catlin_model):
