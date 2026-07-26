@@ -241,23 +241,45 @@ def _door_swing_clearance(wall, center_along_m: float, width_m: float, door) -> 
     return points
 
 
+# An assembly change is an in-plan face jog *along a wall run*. Three gates keep the
+# derivation from firing on junctions that are not that:
+_MIN_Z_OVERLAP_M = 0.025  # walls meeting only at a bearing plane are stacked, not jogged
+_COLLINEAR_DOT = -0.9  # directions away from the node ~opposite → the run continues
+
+
 def _assembly_change_conditions(model: ResolvedModel) -> None:
-    """Nodes where two walls of different assemblies meet become assembly-change
-    conditions (#35, → 11b). Face jogs quantified downstream by the coverage check."""
-    seen: set[str] = set()
-    by_node: dict[str, list] = {}
+    """Nodes where a wall *run continues* in a different assembly become assembly-change
+    conditions (#35, → 11b). Face jogs quantified downstream by the coverage check.
+
+    Sharing a node is not enough — three gates keep junction noise out of the set:
+
+    * **collinearity** — the two walls must run through the node roughly end-to-end.
+      A partition tee-ing into an exterior wall or two walls cornering is a *junction*
+      (solved and documented elsewhere); the detail this condition scaffolds cuts
+      perpendicular to a run and cannot show a corner or tee at all.
+    * **z-overlap** — the walls must share more than ``_MIN_Z_OVERLAP_M`` of height.
+      A masonry railing standing *on* the concrete wall below reuses its nodes but
+      never coexists with it in any plan cut.
+    * **layer equivalence** — assemblies whose layer sequences are the same materials
+      (thickness aside) present no documentable junction; see ``_layers_equivalent``.
+    """
     plan = model.plan
+    seen: set[str] = set()
     for storey in plan.storeys:
-        nodes = {e.tag for e in plan.storey_elements(storey.tag)
-                 if e.element_kind == "Node"}
+        node_xy = {e.tag: (e.position.x.meters, e.position.y.meters)
+                   for e in plan.storey_elements(storey.tag)
+                   if e.element_kind == "Node"}
+        by_node: dict[str, list] = {}
         for w in plan.storey_elements(storey.tag):
             if w.element_kind in ("Wall", "FoundationWall"):
                 for nt in (w.start_node, w.end_node):
-                    if nt in nodes:
-                        by_node.setdefault(f"{storey.tag}/{nt}", []).append(w)
-    for key, walls in by_node.items():
-        asms = sorted({w.assembly for w in walls})
-        if len(asms) > 1:
+                    if nt in node_xy:
+                        by_node.setdefault(nt, []).append(w)
+        for node_tag, walls in by_node.items():
+            changed = _assembly_change_walls(model, storey, node_tag, walls, node_xy)
+            if not changed:
+                continue
+            asms = sorted({w.assembly for w in changed})
             k = f"assembly_change:{'|'.join(asms)}"
             if k in seen:
                 continue
@@ -265,6 +287,93 @@ def _assembly_change_conditions(model: ResolvedModel) -> None:
             model.conditions.append(
                 BoundaryCondition(
                     kind=ConditionKind.ASSEMBLY_CHANGE, assemblies=tuple(asms),
-                    detail="node", element_tags=tuple(w.tag for w in walls), key=k,
+                    detail="node", element_tags=tuple(w.tag for w in changed), key=k,
                 )
             )
+
+
+def _assembly_change_walls(model: ResolvedModel, storey, node_tag: str, walls: list,
+                           node_xy: dict) -> list:
+    """The walls at this node that actually participate in an assembly change."""
+    picked: list = []
+    picked_tags: set[str] = set()
+    for i, a in enumerate(walls):
+        for b in walls[i + 1:]:
+            if a.assembly == b.assembly:
+                continue
+            if _layers_equivalent(model.plan, a.assembly, b.assembly):
+                continue
+            if not _runs_through(a, b, node_tag, node_xy):
+                continue
+            if _z_overlap(model, storey, a, b) <= _MIN_Z_OVERLAP_M:
+                continue
+            for w in (a, b):
+                if w.tag not in picked_tags:
+                    picked_tags.add(w.tag)
+                    picked.append(w)
+    return picked
+
+
+def _runs_through(a, b, node_tag: str, node_xy: dict) -> bool:
+    """True when the two walls continue one run through the node (roughly end-to-end)."""
+    da = _direction_away(a, node_tag, node_xy)
+    db = _direction_away(b, node_tag, node_xy)
+    if da is None or db is None:
+        return False
+    return da[0] * db[0] + da[1] * db[1] <= _COLLINEAR_DOT
+
+
+def _direction_away(w, node_tag: str, node_xy: dict):
+    """Unit vector from the shared node toward the wall's other end, if resolvable."""
+    other = w.end_node if w.start_node == node_tag else w.start_node
+    p, q = node_xy.get(node_tag), node_xy.get(other)
+    if p is None or q is None:
+        return None
+    dx, dy = q[0] - p[0], q[1] - p[1]
+    n = math.hypot(dx, dy)
+    if n < 1e-9:
+        return None
+    return dx / n, dy / n
+
+
+def _z_overlap(model: ResolvedModel, storey, a, b) -> float:
+    """Shared wall height in metres (<= 0 when the walls never coexist vertically)."""
+    a0, a1 = _wall_z_range(model, storey, a)
+    b0, b1 = _wall_z_range(model, storey, b)
+    return min(a1, b1) - max(a0, b0)
+
+
+def _wall_z_range(model: ResolvedModel, storey, w) -> tuple[float, float]:
+    """The wall's vertical extent — resolved when available, authored/storey defaults else."""
+    rw = model.wall(w.tag)
+    if rw is not None:
+        return rw.z0_m, rw.z1_m
+    z0 = storey.elevation.meters
+    z1 = z0 + storey.default_ceiling_height.meters
+    bottom = getattr(w, "bottom_elevation", None)
+    top = getattr(w, "top_elevation", None)
+    if bottom is not None:
+        z0 = bottom.meters
+    if top is not None:
+        z1 = top.meters
+    return z0, z1
+
+
+def _layers_equivalent(plan: PlanModel, asm_tag_a: str, asm_tag_b: str) -> bool:
+    """Assemblies whose layer sequences are the same materials in the same roles.
+
+    A 12" and a 16" wall of one concrete layer differ only in thickness — there is no
+    junction of dissimilar construction to document, so the pair does not constitute an
+    assembly change. Same philosophy as ``diff/equivalence.py`` (semantic identity over
+    literal identity), but deliberately not imported from there: that module compares
+    emitted IFC, which is the wrong altitude for a resolve-time derivation gate.
+    """
+    a = plan.library.resolve_assembly(asm_tag_a)
+    b = plan.library.resolve_assembly(asm_tag_b)
+    if a is None or b is None:
+        return False
+
+    def signature(asm) -> tuple:
+        return tuple((layer.material_ref, layer.function) for layer in asm.layers)
+
+    return signature(a) == signature(b)

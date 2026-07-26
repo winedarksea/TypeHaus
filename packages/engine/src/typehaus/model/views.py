@@ -78,6 +78,12 @@ class Transition(Element):
     documents_rules: tuple[str, ...] = ()  # ConstructionRule tags
     overlay: str | None = None  # default-annotation seed-set id (→ 11b transition details)
     joins: tuple[LayerJoin, ...] = ()  # per-layer terminations (Revit extension distances)
+    # A suppressing transition is a decision on the record that a condition needs *no*
+    # detail sheet: it still counts as coverage for ``integrity.condition_coverage`` (the
+    # condition is bound, deliberately), but ``derive_detail_slices`` scaffolds nothing
+    # for it. ``suppress_reason`` says why, so the gap never reads as an oversight.
+    suppress: bool = False
+    suppress_reason: str = ""
 
 
 @register_element

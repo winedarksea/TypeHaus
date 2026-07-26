@@ -112,12 +112,9 @@ OVERLAY_RECIPES = {
 
 #: Authored overlay ids that deliberately draw nothing, and why. Recorded rather than
 #: omitted so the gap is a decision on the record instead of an apparent oversight.
+#: (Conditions that warrant no detail *sheet at all* — not just no applied vocabulary —
+#: are handled upstream by ``Transition.suppress`` instead of an entry here.)
 UNDRAWN_RECIPES = {
-    "assembly-change-jog": (
-        "the jog happens *along* the wall run, while the derived detail cuts perpendicular "
-        "to the wall at its midpoint — the change of assembly is simply not in this cut "
-        "plane, so any linework here would describe a junction the drawing does not show"
-    ),
     "interior-opening": (
         "an interior door sheds no weather and controls no vapour, so there is no applied "
         "vocabulary (no flashing, no pan, no sealant) at its perimeter; the head and jamb "
@@ -127,11 +124,6 @@ UNDRAWN_RECIPES = {
         "the header carrying the bearing line over the opening is real framing the cut "
         "already draws; an interior bearing opening takes nothing applied beyond it, so "
         "any extra linework would describe a building that does not exist"
-    ),
-    "concrete-arch": (
-        "the sunken-garden arch is an open-air rough opening in exposed concrete — no "
-        "buck, no frame, no flashing is applied at its perimeter; the arch geometry the "
-        "cut draws is the whole story"
     ),
 }
 

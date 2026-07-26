@@ -34,9 +34,15 @@ TRANSITIONS = (
     Transition(uid="CATR007AAAA", tag="TR-CATLIN-BASEMENT-OPENING",
                condition_pattern="opening_perimeter:CATLIN_BASEMENT_12",
                notes="notes/basement_to_framed_wall_detail.md", overlay="foundation-window"),
+    # Bound but deliberately sheetless: the arch already reads on plans and sections.
     Transition(uid="CATR008AAAA", tag="TR-CATLIN-GARDEN-ARCH",
                condition_pattern="opening_perimeter:SUNKEN_GARDEN_*",
-               notes="notes/basement_to_framed_wall_detail.md", overlay="concrete-arch"),
+               suppress=True,
+               suppress_reason=(
+                   "the sunken-garden arch is an open-air rough opening in exposed "
+                   "concrete — no buck, no frame, no flashing is applied at its "
+                   "perimeter; the arch geometry the plans and sections draw is the "
+                   "whole story, so a perimeter detail sheet would add nothing")),
     Transition(uid="CATR009AAAA", tag="TR-CATLIN-GARAGE-OPENING",
                condition_pattern="opening_perimeter:GARAGE_WALL_2X6",
                notes="notes/garage_wall_detail_side.md", overlay="garage-opening"),
@@ -45,11 +51,22 @@ TRANSITIONS = (
     Transition(uid="CATR011AAAA", tag="TR-CATLIN-CENTER-OPENING",
                condition_pattern="opening_perimeter:CATLIN_INT_2X6_BRG",
                overlay="bearing-partition-opening"),
+    # Two legitimate in-plan assembly changes survive the resolver's derivation gates
+    # (the sauna liner starting along the interior concrete run, and the masonry railing
+    # meeting the retaining wall's 6" upstand). They are bound — covered, continuity
+    # declared, construction rules documented — but deliberately sheetless.
     Transition(uid="CATR012AAAA", tag="TR-CATLIN-ASSEMBLY-JOG",
-               condition_pattern="assembly_change:*", overlay="assembly-change-jog",
+               condition_pattern="assembly_change:*",
                continuity=AIR_WATER_THERMAL,
                documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-SAUNA-LINER-RETURN",
-                                "CR-PORCH-MASONRY-RETURN")),
+                                "CR-PORCH-MASONRY-RETURN"),
+               suppress=True,
+               suppress_reason=(
+                   "the jog happens *along* the wall run, while a derived detail cuts "
+                   "perpendicular to the wall — the change of assembly is simply not in "
+                   "that cut plane, so any sheet here would describe a junction the "
+                   "drawing does not show; the returns themselves are documented by the "
+                   "construction rules this transition records")),
     # The sauna door breaks the hot side's vapour control layer — the foil-faced polyiso
     # has to be returned into the jamb and sealed, not just butted.
     Transition(uid="CATR014AAAA", tag="TR-CATLIN-SAUNA-OPENING",

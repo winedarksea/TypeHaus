@@ -90,10 +90,18 @@ def test_recipes_and_reasons_do_not_overlap():
     assert all(reason.strip() for reason in UNDRAWN_RECIPES.values())
 
 
-def test_a_detail_with_no_overlay_recipe_still_builds(catlin_model):
-    """``assembly-change-jog`` deliberately draws nothing; the sheet must still compose."""
-    _derived, scene = _detail_scene(catlin_model, "assembly_change:")
-    assert scene.nodes, "the cut itself still draws even when the recipe adds nothing"
+def test_suppressed_transitions_scaffold_no_detail_sheets(catlin_model):
+    """A ``suppress=True`` binding is coverage without a sheet.
+
+    ``TR-CATLIN-ASSEMBLY-JOG`` and ``TR-CATLIN-GARDEN-ARCH`` bind their conditions (so
+    ``integrity.condition_coverage`` stays clean) but record that the derived cut cannot
+    show the junction — so nothing derives, rather than a sheet that lies by omission.
+    """
+    keys = {d.key for d in derive_detail_slices(catlin_model)}
+    assert not {k for k in keys if k.startswith("assembly_change:")}
+    assert "opening_perimeter:SUNKEN_GARDEN_ARCH_16" not in keys
+    suppressed = [t for t in catlin_model.plan.library.transitions if t.suppress]
+    assert suppressed and all(t.suppress_reason.strip() for t in suppressed)
 
 
 # --- the polyline/hatch invariant --------------------------------------------
