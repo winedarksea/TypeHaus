@@ -204,6 +204,20 @@ def test_a_single_operation_door_ships_one_full_width_panel(starter_model):
     assert all(gltf["materials"][s.material_index]["alphaMode"] == "OPAQUE" for s in solids)
 
 
+def test_catlin_plant_room_door_ships_translucent_glazing(catlin_model):
+    opening = next(op for op in catlin_model.openings if op.tag == "D-S-PLANT")
+    door_type = next(dt for dt in catlin_model.plan.library.door_types
+                     if dt.tag == opening.type_ref)
+    assert door_type.glazed
+    gltf, blob = emit_gltf_dict(catlin_model)
+    solids = _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid))
+
+    panes = [solid for solid in solids if solid.has_thickness(_WINDOW_GLAZING_THICKNESS_M)]
+    assert len(panes) == 1
+    assert gltf["materials"][panes[0].material_index]["pbrMetallicRoughness"][
+        "baseColorFactor"][3] == pytest.approx(0.48)
+
+
 # --- French / double-swing door ----------------------------------------------------------
 
 def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_model):

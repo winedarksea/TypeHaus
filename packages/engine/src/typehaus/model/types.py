@@ -11,7 +11,7 @@ from typehaus.quantities import Length, UFactor
 
 
 class DoorType(HausModel):
-    """A door product type. Drives schedules and energy checks."""
+    """A door product type. Drives schedules, energy checks, and opening appearance."""
 
     tag: str
     width: Length
@@ -19,6 +19,9 @@ class DoorType(HausModel):
     u_factor: UFactor | None = None
     operation: DoorOperation = DoorOperation.SWING
     exterior: bool = False
+    # A glazed leaf is transparent in 3D exports and the live viewer. Kept separate from
+    # operation because a swinging, sliding, or French door can each be glazed.
+    glazed: bool = False
     # Type-level engineered-header default (e.g. '2-ply 14" LVL') for openings wide enough
     # that the solver's dimensional-lumber header tables don't apply; a Door instance's
     # own header_spec wins over this.

@@ -426,7 +426,7 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
 
 export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, isDoubleSwing: boolean,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, isGlazed = false) {
   if (opening.kind === "rough_opening") return;
   const firstChildIndex = parent.children.length;
   const [[x0, y0], [x1, y1]] = wall.axis;
@@ -454,20 +454,22 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial);
   addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + frameWidth / 2, frameMaterial);
   const panelHeight = Math.max(0.01, availableHeight - 2 * frameWidth);
+  const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x8fb7c9, transparent: true, opacity: 0.48,
+    roughness: 0.2, metalness: 0.05, flatShading: mode === "schematic", depthWrite: false });
   if (opening.kind === "door" && isDoubleSwing) {
     // Two leaves meeting at a center mullion, matching the 2D French-door symbol.
     const mullionWidth = Math.min(frameWidth, (opening.width_m - 2 * frameWidth) / 6);
     const leafWidth = Math.max(0.01, (opening.width_m - 2 * frameWidth - mullionWidth) / 2);
     const panelElevation = wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2;
     addBox(mullionWidth, availableHeight, depth, 0, midElevation, frameMaterial);
-    addBox(leafWidth, panelHeight, 0.045, -mullionWidth / 2 - leafWidth / 2, panelElevation, frameMaterial);
-    addBox(leafWidth, panelHeight, 0.045, mullionWidth / 2 + leafWidth / 2, panelElevation, frameMaterial);
+    const leafMaterial = isGlazed ? glassMaterial : frameMaterial;
+    const leafThickness = isGlazed ? 0.015 : 0.045;
+    addBox(leafWidth, panelHeight, leafThickness, -mullionWidth / 2 - leafWidth / 2, panelElevation, leafMaterial);
+    addBox(leafWidth, panelHeight, leafThickness, mullionWidth / 2 + leafWidth / 2, panelElevation, leafMaterial);
   } else if (opening.kind === "door") {
-    addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, 0.045, 0,
-      wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, frameMaterial);
+    addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, isGlazed ? 0.015 : 0.045, 0,
+      wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, isGlazed ? glassMaterial : frameMaterial);
   } else {
-    const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x8fb7c9, transparent: true, opacity: 0.48,
-      roughness: 0.2, metalness: 0.05, flatShading: mode === "schematic", depthWrite: false });
     addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, 0.015, 0,
       wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, glassMaterial);
   }

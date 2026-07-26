@@ -146,6 +146,62 @@ def floor_heat_fixture_keepout(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+# Floor finishes that constrain a radiant zone under them, and why. Tile and sealed concrete
+# are what radiant wants — dense, thin, thermally transparent — so they are deliberately not
+# here. Everything else either caps the surface temperature the loop may run at or throttles
+# how much of its output reaches the room.
+_RADIANT_LIMITED_FINISHES: dict[str, str] = {
+    "lvp": "vinyl plank is surface-temperature limited (manufacturers cap the floor around "
+           "80-85 F); set the thermostat's floor-sensor limit accordingly or the plank can "
+           "cup and the seams can open",
+    "vinyl": "sheet vinyl is surface-temperature limited (manufacturers cap the floor around "
+             "80-85 F); set the thermostat's floor-sensor limit accordingly",
+    "oak": "solid wood over radiant is both temperature and moisture limited — it wants a "
+           "capped surface temperature and a controlled shrinkage regime, or the strips gap "
+           "in the heating season",
+    "carpet": "carpet and pad insulate the loop from the room; the zone has to be sized for "
+              "the covering's R-value or it will not deliver its rated output",
+}
+
+
+@check(Tier.ADVISORY, "advisory.floor_finish_over_radiant")
+def floor_finish_over_radiant(ctx: CheckContext) -> list[Finding]:
+    """Radiant zones under a temperature- or output-limited floor finish.
+
+    Not a defect — every combination here is a legal one people build — but each carries a
+    commissioning constraint that has to be decided before the floor goes down, which is
+    exactly what an advisory is for.
+
+    Matched by polygon rather than by ``FloorHeat.room_ref``: the ref is optional and
+    ``ResolvedFloorHeat`` does not carry it at all, so a free-standing zone (the catlin
+    house's FH-M-DINING, a loop in the middle of the living room with no room ref on it)
+    would silently escape a ref lookup. One zone can also cross a doorway into a second
+    finish, and the polygon test reports both.
+    """
+    from shapely.geometry import Polygon
+
+    out: list[Finding] = []
+    rooms = [(room, Polygon(room.clear_face))
+             for room in ctx.model.rooms if len(room.clear_face) >= 3]
+    for zone in ctx.model.floor_heat:
+        if len(zone.zone) < 3:
+            continue
+        zone_polygon = Polygon(zone.zone)
+        for room, face in rooms:
+            if room.storey != zone.storey or not zone_polygon.intersects(face):
+                continue
+            reason = _RADIANT_LIMITED_FINISHES.get(room.floor_finish or "")
+            if reason is None:
+                continue
+            out.append(_warn(
+                "advisory.floor_finish_over_radiant",
+                f"floor-heat zone {zone.tag} runs under {room.tag}'s "
+                f"{room.floor_finish} floor: {reason}",
+                (zone.tag, room.tag),
+            ))
+    return out
+
+
 @check(Tier.ADVISORY, "advisory.clearance_overlap")
 def clearance_overlap(ctx: CheckContext) -> list[Finding]:
     """Surface authored fixture/furniture use-zone conflicts in both CLI and canvas.

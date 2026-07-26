@@ -553,6 +553,7 @@ export interface DoorTypeSpec {
   // symbol, the framing pattern and the IFC operation type.
   operation: DoorOperation;
   exterior: boolean;
+  glazed: boolean;
 }
 
 export interface MaterialSpec {

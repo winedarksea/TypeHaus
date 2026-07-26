@@ -30,13 +30,13 @@ _DOUBLE_SWING_LEAF_COUNT = 2
 
 
 def _add_opening_filling(mb: _MeshBuilder, wall: ResolvedWall, opening,
-                         is_double_swing: bool) -> None:
+                         is_double_swing: bool, is_glazed: bool = False) -> None:
     """Draw the door/window product itself — frame + panel/leaf/glass — as boxes.
 
     A straight port of ui/src/components/Panel3D.tsx ``buildOpening`` into the plan frame:
     a four-piece frame, then either a single door panel, two leaves split at a center
-    mullion (``double_swing``), or a translucent glass pane (window). Rough openings are a
-    bare void with no product, so they draw nothing. Emitted regardless of LOD so the leaf
+    mullion (``double_swing``), or a translucent glass pane (a window or glazed door). Rough
+    openings are a bare void with no product, so they draw nothing. Emitted regardless of LOD so the leaf
     geometry shows for both the core wall prism and the framed stud model.
     """
     if opening.kind == "rough_opening":
@@ -93,12 +93,12 @@ def _add_opening_filling(mb: _MeshBuilder, wall: ResolvedWall, opening,
         leaf_width = max(_OPENING_MIN_PANEL_DIMENSION_M,
                          (clear_width - mullion_width) / _DOUBLE_SWING_LEAF_COUNT)
         leaf_offset = mullion_width / 2.0 + leaf_width / 2.0
+        leaf_color = _color("glass") if is_glazed else frame_color
+        leaf_thickness = _WINDOW_GLAZING_THICKNESS_M if is_glazed else _DOOR_LEAF_THICKNESS_M
         add_box(mullion_width, available_height, depth, 0.0, mid_elev, frame_color)
-        add_box(leaf_width, panel_height, _DOOR_LEAF_THICKNESS_M, -leaf_offset, panel_elev,
-                frame_color)
-        add_box(leaf_width, panel_height, _DOOR_LEAF_THICKNESS_M, leaf_offset, panel_elev,
-                frame_color)
-    elif opening.kind == "door":
+        add_box(leaf_width, panel_height, leaf_thickness, -leaf_offset, panel_elev, leaf_color)
+        add_box(leaf_width, panel_height, leaf_thickness, leaf_offset, panel_elev, leaf_color)
+    elif opening.kind == "door" and not is_glazed:
         add_box(max(_OPENING_MIN_PANEL_DIMENSION_M, clear_width), panel_height,
                 _DOOR_LEAF_THICKNESS_M, 0.0, panel_elev, frame_color)
     else:

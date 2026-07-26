@@ -41,6 +41,7 @@ DOOR_TYPES = [
              operation="slide", u_factor=u_us(0.25)),
     DoorType(tag="DT-INT32", width=ft(2, 8), height=ft(6, 8)),
     DoorType(tag="DT-INT30", width=ft(2, 6), height=ft(6, 8)),
+    DoorType(tag="DT-INT30-GLASS", width=ft(2, 6), height=ft(6, 8), glazed=True),
     DoorType(tag="DT-INT24", width=ft(2), height=ft(6, 8)),
     DoorType(tag="DT-INT60", width=ft(5), height=ft(6, 8), operation="bifold"),
     DoorType(tag="DT-INT56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),

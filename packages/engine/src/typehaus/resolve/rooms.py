@@ -8,7 +8,7 @@ from shapely.ops import polygonize, unary_union
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
-from typehaus.resolve.model import ResolvedModel, ResolvedRoom
+from typehaus.resolve.model import ResolvedFinishZone, ResolvedModel, ResolvedRoom
 
 
 def _storey_faces(plan: PlanModel, storey_tag: str) -> list[Polygon]:
@@ -59,9 +59,34 @@ def resolve_rooms(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                     uid=room.uid, tag=room.tag, storey=storey.tag,
                     occupancy=room.occupancy.value, conditioned=room.conditioned,
                     clear_face=ring, area_m2=clear.area, floor_finish=room.floor_finish,
+                    finish_zones=_finish_zones(room, clear),
                 )
             )
     return findings
+
+
+def _finish_zones(room, clear: Polygon) -> tuple[ResolvedFinishZone, ...]:
+    """Authored in-room finish overrides, clipped to the room's clear face.
+
+    ``Room.finish_zones`` used to stop here: ``ResolvedRoom`` had no field for it, so a
+    ``FinishZone`` written in plan source was accepted by the loader and then silently
+    dropped, reaching no viewer, emitter or takeoff. Clipping is what makes the areas
+    subtractable — a hearth pad drawn a little proud of the wall must not bill more tile
+    than the room has floor.
+    """
+    zones: list[ResolvedFinishZone] = []
+    for zone in room.finish_zones:
+        outline = Polygon([point.xy_m for point in zone.outline])
+        if not outline.is_valid:
+            outline = outline.buffer(0)
+        clipped = outline.intersection(clear)
+        if clipped.is_empty or clipped.area <= 0.0:
+            continue
+        zones.append(ResolvedFinishZone(
+            outline=[(x, y) for x, y in outline.exterior.coords[:-1]],
+            material_ref=zone.material_ref, area_m2=clipped.area,
+        ))
+    return tuple(zones)
 
 
 def _lining_inset(plan: PlanModel, room) -> float:

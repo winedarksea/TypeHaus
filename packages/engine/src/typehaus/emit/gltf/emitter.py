@@ -58,6 +58,7 @@ from typehaus.emit.gltf.palette import (  # noqa: F401
     _SEAM_BASE,
     _hex_rgba,
     _material_finish_color,
+    _room_floor_color,
 )
 from typehaus.emit.gltf.walls import _wall_top_at  # noqa: F401
 
@@ -90,22 +91,33 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                 _add_member(framing, member)
             scene.add_object(framing, trade="framing", kind="wall", uid=wall.uid)
 
-    door_operations = {dt.tag: dt.operation for dt in model.plan.library.door_types}
+    door_types = {dt.tag: dt for dt in model.plan.library.door_types}
     walls_by_tag = {wall.tag: wall for wall in model.walls}
     for op in sorted(model.openings, key=lambda item: item.uid):
         host = walls_by_tag.get(op.host_wall)
         if host is None:
             continue
         mb = _MeshBuilder()
-        is_double_swing = op.is_door and door_operations.get(op.type_ref) == "double_swing"
-        _add_opening_filling(mb, host, op, is_double_swing)
+        door_type = door_types.get(op.type_ref)
+        is_double_swing = (op.is_door and door_type is not None
+                           and door_type.operation == "double_swing")
+        _add_opening_filling(mb, host, op, is_double_swing,
+                             is_glazed=op.is_door and door_type is not None and door_type.glazed)
         scene.add_object(mb, trade="openings", kind="opening", uid=op.uid)
 
     for room in sorted(model.rooms, key=lambda r: r.uid):
         if room.clear_face:
             storey_z = _room_z(model, room.storey)
             mb = _MeshBuilder()
-            mb.add_prism(room.clear_face, storey_z, storey_z + 0.02, _color("floor"))
+            mb.add_prism(room.clear_face, storey_z, storey_z + 0.02,
+                         _room_floor_color(model, room.floor_finish))
+            # An authored in-room override (tile inlay, hearth pad) sits a hair proud of the
+            # field finish so it wins the depth test instead of z-fighting with it.
+            for zone in room.finish_zones:
+                zb = _MeshBuilder()
+                zb.add_prism(zone.outline, storey_z, storey_z + 0.021,
+                             _room_floor_color(model, zone.material_ref))
+                scene.add_object(zb, trade="floors", kind="room", uid=room.uid)
             scene.add_object(mb, trade="floors", kind="room", uid=room.uid)
 
     for solid in sorted(model.solids, key=lambda item: item.uid):
