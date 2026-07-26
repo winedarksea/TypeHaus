@@ -61,7 +61,10 @@ def test_detail_has_legend_dims_and_notes(catlin_model):
     scene, _ = build_detail(catlin_model, _foundation(catlin_model))
     texts = [n.content for n in scene.nodes if isinstance(n, Text)]
     assert "MATERIALS" in texts, "a material legend band is expected"
-    assert any(t.startswith("NOTES") for t in texts), "notes column loaded from Transition.notes"
+    assert scene.notes and scene.notes[0] == "NOTES:", \
+        "notes loaded from Transition.notes ride Scene.notes, outside the drawing space"
+    assert not any(t.startswith("NOTES") for t in texts), \
+        "notes must not be Text nodes — they would couple the drawing scale to prose length"
     assert catlin_model.plan.project.name in texts, "title block carries the project name"
     dims = [n for n in scene.nodes if isinstance(n, ArchDimension)]
     assert dims, "derived dimension strings expected from resolved layer thicknesses"

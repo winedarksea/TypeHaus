@@ -97,6 +97,7 @@ class Leader(_IRBase):
     at: Pt
     to: Pt
     text: str
+    height: float = 1.6  # inches (model space), like Text.height — both writers honor it
     layer: str = "A-ANNO-TEXT"
     uid: str | None = None  # DetailAnnotation uid for hit-testing (→ detail editor)
 
@@ -129,6 +130,11 @@ class Scene(_IRBase):
     name: str
     units: Literal["in", "mm"] = "in"
     nodes: tuple[IRNode, ...] = ()
+    # Pre-wrapped construction-note lines that accompany the drawing but live *outside*
+    # its coordinate space: bounds functions must ignore them, and each writer lays them
+    # out in its own margin/panel. Putting them in ``nodes`` couples the drawing's scale
+    # to the length of its prose — a 60-line note column dwarfs a 40" junction cut.
+    notes: tuple[str, ...] = ()
 
     def to_json(self) -> str:
         """Deterministic JSON snapshot for golden tests (→ 20 §Drawing IR pure-data)."""

@@ -11,6 +11,7 @@ anchor degrades to a ``detail.anchor_unresolved`` finding + error marker, never 
 
 from __future__ import annotations
 
+import hashlib
 import math
 from dataclasses import dataclass, field
 
@@ -264,7 +265,13 @@ def _build_ridge_derived(model, cond, tr) -> DerivedDetail | None:
 
 
 def _key_slug(key: str) -> str:
-    return key.replace(":", "-").replace("|", "-").replace("*", "x")[:40]
+    slug = key.replace(":", "-").replace("|", "-").replace("*", "x")
+    if len(slug) <= 40:
+        return slug
+    # Two long keys can share their first 40 characters (the PORCH_RAILING pair did),
+    # and a shared slug means one render filename silently overwriting the other.
+    digest = hashlib.sha1(key.encode("utf-8")).hexdigest()[:6]
+    return f"{slug[:33]}-{digest}"
 
 
 def detail_index(model: ResolvedModel) -> list[dict]:
@@ -295,11 +302,14 @@ def detail_payload(model: ResolvedModel, key: str) -> dict | None:
         return None
     scene, findings = build_detail(model, derived)
     tr = derived.transition
+    notes_path = _notes_path(model, derived)
     return {
         "key": key,
         "scene": scene.model_dump(mode="json"),
         "annotations": _annotation_specs(model, derived),
         "notes": getattr(tr, "notes", None) if tr is not None else None,
+        "notes_markdown": (notes_path.read_text(encoding="utf-8")
+                          if notes_path is not None else None),
         "findings": [{"check_id": f.check_id, "message": f.message} for f in findings],
     }
 
@@ -356,11 +366,15 @@ def build_detail(model: ResolvedModel, derived: DerivedDetail) -> tuple[Scene, l
     if dims:
         scene = scene.model_copy(update={"nodes": scene.nodes + tuple(dims)})
 
-    # Legend / notes / title block sit *around* the drawing — each placed on a clear
-    # side of the current scene bounds so nothing overprints the cut or its callouts.
+    # Legend / title block sit *around* the drawing — each placed on a clear side of
+    # the current scene bounds so nothing overprints the cut or its callouts.
     chrome = _chrome(model, derived, scene)
     if chrome:
         scene = scene.model_copy(update={"nodes": scene.nodes + tuple(chrome)})
+
+    notes = _notes_lines(model, derived)
+    if notes:
+        scene = scene.model_copy(update={"notes": tuple(notes)})
     return scene, findings
 
 
@@ -447,18 +461,9 @@ def _chrome(model: ResolvedModel, derived: DerivedDetail, scene: Scene) -> list:
     span = max(max_u - min_u, max_z - min_z)
     margin = max(4.0, span * 0.03)
 
-    # Notes start at the crop's top edge, not the scene's — that keeps them below the
-    # oversized sheet tag the section emits above the crop.
-    (_cu0, _cz0), (_cu1, cz1) = (crop[0].xy_m, crop[1].xy_m)
-    notes_top = min(max_z, cz1 * M_TO_IN)
-
     out: list = []
     out.extend(_title_block(model, derived, min_u, max_z + margin))
     out.extend(material_legend(model, derived, min_u, min_z - margin))
-    # The scene's right edge is usually the tail of a callout string, whose width is only
-    # estimated (char-count × aspect) — a snug margin there reads as a collision whenever
-    # the estimate runs a character or two short. Give the notes column real air.
-    out.extend(_notes_column(model, derived, max_u + max(margin, 10.0), notes_top))
     return out
 
 
@@ -487,31 +492,25 @@ def _title_block(model: ResolvedModel, derived: DerivedDetail, u: float,
 _NOTES_WRAP = 42
 
 
-def _notes_column(model: ResolvedModel, derived: DerivedDetail, u: float,
-                  z_top: float) -> list:
-    """Load ``Transition.notes`` markdown, wrap it, lay it out in a right-hand column."""
+def _notes_path(model: ResolvedModel, derived: DerivedDetail):
+    """Absolute path of the detail's ``Transition.notes`` markdown, or None."""
     tr = derived.transition
     rel = getattr(tr, "notes", None) if tr is not None else None
     if not rel:
-        return []
+        return None
     root = getattr(model.plan, "source_root", None)
     if not root:
-        return []
+        return None
     from pathlib import Path
 
     path = Path(root) / rel
-    if not path.exists():
-        return []
-    lines = _load_markdown_notes(path)
-    out: list = []
-    height = 1.5
-    step = height * 2.0
-    y = z_top
-    for line in lines:
-        out.append(Text(anchor=(u, y), content=line, height=height,
-                        layer="A-ANNO-TEXT"))
-        y -= step
-    return out
+    return path if path.exists() else None
+
+
+def _notes_lines(model: ResolvedModel, derived: DerivedDetail) -> list[str]:
+    """Wrapped note lines for ``Scene.notes`` — outside the drawing's coordinate space."""
+    path = _notes_path(model, derived)
+    return _load_markdown_notes(path) if path is not None else []
 
 
 def _load_markdown_notes(path) -> list[str]:

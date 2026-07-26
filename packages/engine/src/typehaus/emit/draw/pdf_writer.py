@@ -245,6 +245,16 @@ def _fig(scene: Scene, title: str | None, underlays=()):
     else:
         ax.autoscale_view()
     fig.tight_layout()
+    if scene.notes:
+        # Notes live outside the scene's coordinate space (→ scene.py Scene.notes):
+        # render them at a fixed point size in figure space, in a reserved right-hand
+        # strip, so their length cannot change the drawing's scale.
+        strip_in = 3.6
+        fig.set_figwidth(fig.get_figwidth() + strip_in)
+        right = 1.0 - strip_in / fig.get_figwidth()
+        fig.subplots_adjust(right=right)
+        fig.text(right + 0.01, 0.96, "\n".join(scene.notes),
+                 fontsize=7.0, family="monospace", va="top", color="#222")
     _apply_text_scale(fig, ax, scaled_text)
     return fig
 
