@@ -55,16 +55,49 @@ CIRCUITS = (
     Circuit(uid="CKT013AAAA", tag="CKT-SPARE-240", panel_ref=_PANEL, breaker_amps=30, poles=2,
             load_va=0, description="Spare 2-pole (conduit stubbed for future 240V)"),
 
-    # Electric radiant floor, RM-B-SAUNA (FH-B-SAUNA, storeys/basement.py). With the gas
-    # furnace gone this and the minisplits are the whole heating system, so the zone needs a
-    # branch circuit of its own — it had none. The resolved zone is 9'-2" x 13'-10" = 127
-    # ft2; electric mat at the usual 12 W/ft2 is ~1,520 W = 12.7A at 120V, inside the 16A a
-    # 20A breaker allows for a continuous load. GFCI is not optional here: NEC 424.44(G)
-    # requires GFCI protection for heating cable in the floor of a bathroom, and RM-B-SAUNA
-    # is occupancy BATHROOM with a shower in its north 4' (notes/sauna_shower_basement_detail.md).
-    Circuit(uid="CKT031AAAA", tag="CKT-FH-SAUNA", panel_ref=_PANEL, breaker_amps=20, poles=1,
-            gfci=True, load_va=1520,
-            description="Radiant floor heat — sauna/shower (FH-B-SAUNA)"),
+    # --- electric space heating (2026-07-25) -----------------------------------------
+    #
+    # Supplemental only: the minisplits do the heating work and these five take the chill
+    # off specific surfaces. None of them is sized to carry a room.
+    #
+    # The three floor zones are 120V mat at 12 W/ft2 over the polygons authored in
+    # storeys/main.py and storeys/second.py, so each circuit's VA is that zone's area x 12.
+    # 15A rather than 20A because these are 4-6A loads: 12/2 to a 5A mat is wire nobody
+    # needs, and a 15A GFCI breaker is the same part. Each zone keeps its own circuit — a
+    # shared one would put two rooms' floors behind one 5 mA trip, and the two main-storey
+    # stats are 23' apart across the centre bearing wall anyway.
+    #
+    # GFCI on all three: NEC 424.44(G) requires it for heating cable in the floor of a
+    # bathroom or kitchen, which covers CKT-FH-BATH2 and CKT-FH-ENSUITE outright. The
+    # dining zone is in RM-M-LIVING and outside the letter of that rule, but mat
+    # manufacturers require Class A protection on every mat regardless, and it would be a
+    # strange schedule that protected two identical mats and not the third.
+    #
+    # Was CKT-FH-SAUNA until 2026-07-25 — RM-B-SAUNA has no floor heat (see the note in
+    # storeys/basement.py), so that zone, its circuit and its stat are all gone.
+    Circuit(uid="CKT031AAAA", tag="CKT-FH-BATH2", panel_ref=_PANEL, breaker_amps=15, poles=1,
+            gfci=True, load_va=498,
+            description="Radiant floor heat — main bath (FH-M-BATH2, 41.5 ft2)"),
+    Circuit(uid="CKT032AAAA", tag="CKT-FH-DINING", panel_ref=_PANEL, breaker_amps=15, poles=1,
+            gfci=True, load_va=696,
+            description="Radiant floor heat — under the dining table (FH-M-DINING, 58.0 ft2)"),
+    Circuit(uid="CKT033AAAA", tag="CKT-FH-ENSUITE", panel_ref=_PANEL, breaker_amps=15, poles=1,
+            gfci=True, load_va=509,
+            description="Radiant floor heat — NW bathroom (FH-S-ENSUITE, 42.4 ft2)"),
+    # 1,500 W at 120V = 12.5A, and both of these run long enough to be continuous loads:
+    # 12.5 x 1.25 = 15.6A, which fits the 16A a 20A breaker allows and does *not* fit a
+    # 15A one (12A). That is why these two are 20A where the mats are 15A.
+    #
+    # Neither is GFCI. Both are hard-wired equipment, and NEC 210.8(A) protects
+    # *receptacles* — the garage rule in (A)(2) included. Cord-and-plug versions of either
+    # would need it, which is the reason both are modeled as Equipment with the circuit on
+    # the placeable rather than as a receptacle with something plugged into it.
+    Circuit(uid="CKT034AAAA", tag="CKT-FIREPLACE", panel_ref=_PANEL, breaker_amps=20, poles=1,
+            load_va=1500,
+            description="Electric fireplace, living room SE corner (EQ-M-FIREPLACE)"),
+    Circuit(uid="CKT035AAAA", tag="CKT-GAR-HEAT", panel_ref=_PANEL, breaker_amps=20, poles=1,
+            load_va=1500,
+            description="Garage bench heater, 1.5 kW fan-forced (EQ-G-HEATER)"),
 
     # --- 120V backup subsystem (electrical_notes.md lines 9-29) ----------------------
     Circuit(uid="CKT014AAAA", tag="CKT-WH-HP", panel_ref=_PANEL, breaker_amps=15, poles=1,

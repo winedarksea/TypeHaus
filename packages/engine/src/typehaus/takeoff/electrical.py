@@ -28,6 +28,11 @@ GENERAL_LIGHTING_VA_PER_FT2 = 3.0
 SMALL_APPLIANCE_AND_LAUNDRY_VA = 4500.0  # 2 x 1500 small-appliance + 1500 laundry
 FIRST_10KVA = 10000.0
 REMAINDER_DEMAND_FACTOR = 0.4
+# 220.82(C)(4)/(5): electric space heating is taken at 65% of nameplate when there are
+# fewer than four separately controlled units, 40% at four or more.
+SEPARATELY_CONTROLLED_UNIT_THRESHOLD = 4
+RESISTANCE_HEAT_FACTOR_FEW = 0.65
+RESISTANCE_HEAT_FACTOR_MANY = 0.40
 
 
 def _circuit_consumers(model: ResolvedModel) -> dict[str, list]:
@@ -49,6 +54,21 @@ def _connected_va(model: ResolvedModel, circuit, consumers: list) -> float:
         for element in consumers
         if element.element_kind == "ElectricalDevice" and element.type_ref in types
     )
+
+
+def _is_resistance_heat(circuit, consumers: list) -> bool:
+    """Fixed electric space heating — the loads NEC 220.82(C) governs, not (B)(3).
+
+    Typed first: an ``Equipment`` of kind ``space_heater`` on the circuit is the modeled
+    answer. Radiant floor has no placeable to read (a ``FloorHeat`` zone carries no
+    ``circuit``; its thermostat is a SWITCH like any other), so those fall back to the
+    description, which is the same shape the ``minisplit`` branch already relies on.
+    """
+    for element in consumers:
+        kind = getattr(element, "kind", None)
+        if element.element_kind == "Equipment" and getattr(kind, "value", None) == "space_heater":
+            return True
+    return "radiant floor heat" in circuit.description.lower()
 
 
 def panel_schedule(model: ResolvedModel) -> list[dict[str, object]]:
@@ -78,19 +98,30 @@ def service_load_summary(model: ResolvedModel) -> dict[str, object]:
     Labeled an estimate on the sheet: general lighting from resolved conditioned floor
     area, fixed appliances from the authored circuits, EV already at its continuous
     rating (the device types carry 80% of breaker), PV excluded (a source, not a load).
+
+    The heating/cooling term is 220.82(C)'s *selection*, not a sum: heat pumps at 100%
+    (C)(2) against electric resistance space heating at 65%/40% (C)(4)/(5), largest wins.
+    Adding them would be double-counting a house that cannot run both flat out — and
+    would also mean a 1.5 kW bench heater in an unconditioned garage landing in the
+    fixed-appliance bucket (B)(3), which (B) explicitly excludes heating loads from.
     """
     floor_area_ft2 = sum(room.area_m2 for room in model.rooms if room.conditioned) * _M2_TO_FT2
     general_va = GENERAL_LIGHTING_VA_PER_FT2 * floor_area_ft2 + SMALL_APPLIANCE_AND_LAUNDRY_VA
 
     consumers = _circuit_consumers(model)
-    hvac_va = 0.0
+    heat_pump_va = 0.0
+    resistance_heat_va = 0.0
+    resistance_heat_units = 0
     ev_va = 0.0
     appliance_va = 0.0
     for circuit in model.plan.library.circuits:
         va = _connected_va(model, circuit, consumers.get(circuit.tag, []))
         description = circuit.description.lower()
         if "minisplit" in description:
-            hvac_va += va  # heating/cooling at 100% (220.82(C))
+            heat_pump_va += va  # 220.82(C)(2)
+        elif _is_resistance_heat(circuit, consumers.get(circuit.tag, [])):
+            resistance_heat_va += va
+            resistance_heat_units += 1
         elif "ev charging" in description:
             ev_va += va  # already continuous (125% of plug load = 80% of breaker basis)
         elif "pv " in description or description.startswith("pv") or "backfeed" in description:
@@ -100,6 +131,11 @@ def service_load_summary(model: ResolvedModel) -> dict[str, object]:
             continue  # covered by the 3 VA/ft2 + 4500 VA general allowance above
         else:
             appliance_va += va
+
+    resistance_factor = (RESISTANCE_HEAT_FACTOR_MANY
+                         if resistance_heat_units >= SEPARATELY_CONTROLLED_UNIT_THRESHOLD
+                         else RESISTANCE_HEAT_FACTOR_FEW)
+    hvac_va = max(heat_pump_va, resistance_heat_va * resistance_factor)
 
     base = general_va + appliance_va
     demand_va = (min(base, FIRST_10KVA)
@@ -111,6 +147,10 @@ def service_load_summary(model: ResolvedModel) -> dict[str, object]:
         "floor_area_ft2": round(floor_area_ft2, 0),
         "general_lighting_va": round(general_va, 0),
         "fixed_appliance_va": round(appliance_va, 0),
+        "heat_pump_va": round(heat_pump_va, 0),
+        "resistance_heat_va": round(resistance_heat_va, 0),
+        "resistance_heat_units": resistance_heat_units,
+        "resistance_heat_factor": resistance_factor,
         "hvac_va": round(hvac_va, 0),
         "ev_va": round(ev_va, 0),
         "demand_va": round(demand_va, 0),

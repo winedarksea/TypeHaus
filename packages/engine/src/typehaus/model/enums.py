@@ -178,6 +178,13 @@ class EquipmentKind(Enum):
     # receptacle — the circuit lands in a junction box at the heater — and ``Equipment`` is
     # the placeable that carries a ``circuit`` reference for exactly that case.
     SAUNA_HEATER = "sauna_heater"
+    # Fixed electric resistance space heating that is not a floor zone: a wall-mount
+    # fireplace, a garage unit heater, a baseboard run. One member rather than several
+    # because the product is named by the ``type_ref`` (the same rule ``DeviceKind`` uses
+    # for EV receptacles), and because every ``Equipment`` kind emits as an
+    # IfcBuildingElementProxy regardless. The service-load takeoff reads this kind to put
+    # the load under NEC 220.82(C) instead of the fixed-appliance bucket in (B)(3).
+    SPACE_HEATER = "space_heater"
 
 
 class DeviceKind(Enum):

@@ -292,8 +292,15 @@ def test_framed_hosts_emit_ledger_boards_flush_with_the_wall_face(catlin_model,
     """A framed host now carries its stringer/rim on a real ledger board, not an
     annotation alone — but never one drawn on the wall's *centreline* (that would be
     geometry invented inside the stud cavity, the old reason nothing was emitted).
-    The board sits flush against the host's face on the member's side: half the wall
-    plus half the ledger's own 1.5" thickness off the axis."""
+    The board sits flush against the host's face on the member's side: half its own 1.5"
+    thickness off that face.
+
+    The face is read from the resolved layer polygons, not from ``axis ± thickness/2``.
+    On a wall whose ``alignment`` names a *face* — every exterior wall in this house —
+    the axis is not the centre, so the arithmetic version lands mid-wall on one side and
+    outside the building on the other. ST-S2A's winder carriage is ledgered on W-S-E1,
+    which is exactly such a wall.
+    """
     walls = {wall.tag: wall for wall in catlin_model.walls}
     for stair in catlin_model.stairs:
         for member in stair.members:
@@ -307,10 +314,15 @@ def test_framed_hosts_emit_ledger_boards_flush_with_the_wall_face(catlin_model,
                 assert member.connection.startswith("framed-wall-ledger:"), member.child_key
                 host = walls[member.connection.split(":", 1)[1]]
                 (ax, ay), (bx, by) = host.axis
-                offset = (abs(member.p0[0] - ax) if abs(bx - ax) < 1e-6
-                          else abs(member.p0[1] - ay))
-                assert offset == pytest.approx(
-                    host.thickness_m / 2 + inch(0.75).meters), member.child_key
+                cross = 0 if abs(bx - ax) < 1e-6 else 1
+                depth = [point[cross] for layer in host.depth_layers()
+                         for point in layer.polygon]
+                near, far = min(depth), max(depth)
+                face = far if member.p0[cross] >= (near + far) / 2.0 else near
+                assert abs(member.p0[cross] - face) == pytest.approx(
+                    inch(0.75).meters), member.child_key
+                # And never inside the wall: the board hangs off the face, not in the bays.
+                assert not near < member.p0[cross] < far, member.child_key
     # ST-M2S's known framed hosts each carry at least one real ledger board.
     ledger_hosts = {m.connection.split(":", 1)[1] for m in main_stair.members
                     if m.child_key.startswith("ledger-")}

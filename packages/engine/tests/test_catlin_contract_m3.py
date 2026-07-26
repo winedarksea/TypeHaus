@@ -347,7 +347,9 @@ def test_raked_gable_king_studs_match_roof_plane_at_own_station(catlin_model):
     """WP0: king-stud tops on a raked wall follow the roof line at their own plan
     position. A prior bug reused the last regular stud's leftover top for every
     king on the wall, regardless of the opening's actual station."""
-    wall = next(w for w in catlin_model.walls if w.tag == "W-A-S3")  # two windows
+    # W-A-S4 is the south gable east of the stair-vestibule screen; it carries
+    # WIN-A-STUDY-S1/S2. (W-A-S3, west of the screen, is a blank 4'-4" stub.)
+    wall = next(w for w in catlin_model.walls if w.tag == "W-A-S4")  # two windows
     assert wall.top_z0_m is not None and wall.top_z1_m is not None
     (x0, y0), (x1, y1) = wall.axis
     axis_len = math.hypot(x1 - x0, y1 - y0)
@@ -526,7 +528,7 @@ def test_catlin_drain_fixtures_use_six_inch_wet_walls():
     assert not findings, [finding.message for finding in findings]
 
 
-def test_catlin_sauna_floor_heat_has_no_fixture_keepout_conflict():
+def test_catlin_floor_heat_has_no_fixture_keepout_conflict():
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     findings = [finding for finding in report.findings
                 if finding.check_id == "advisory.floor_heat_fixture_keepout"]
@@ -603,11 +605,20 @@ def test_catlin_bearing_view_has_continuous_house_load_path(catlin_model):
     assert {"W-M-C1", "W-S-C1"} <= stacked
 
 
-def test_catlin_sauna_floor_heat_has_a_plan_zone_and_wire_takeoff(catlin_model):
-    zone = next(item for item in catlin_model.floor_heat if item.tag == "FH-B-SAUNA")
-    assert zone.system == "electric"
-    assert zone.wire_length_m > 0
-    assert len(zone.zone) >= 3
+def test_catlin_floor_heat_zones_are_the_three_supplemental_ones(catlin_model):
+    """Radiant floor is a comfort layer, not the heating system, and RM-B-SAUNA has none.
+
+    The sauna floor was deleted 2026-07-25 (a heated floor in a 190 F room has nowhere to
+    put its heat); what is left is the main bath, the patch under the dining table and the
+    NW bathroom upstairs. All three are electric mat with a resolvable zone and wire run.
+    """
+    zones = {item.tag: item for item in catlin_model.floor_heat}
+    assert set(zones) == {"FH-M-BATH2", "FH-M-DINING", "FH-S-ENSUITE"}
+    for zone in zones.values():
+        assert zone.system == "electric"
+        assert zone.wire_length_m > 0
+        assert len(zone.zone) >= 3
+    assert {zone.storey for zone in zones.values()} == {"main", "second"}
 
 
 def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):

@@ -190,6 +190,6 @@ GARAGE_PLACEABLES = []
 # Head against the east wall: rotation -90 turns the bed's back (+y) toward +x.
 SECOND_PLACEABLES = [
     Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-QUEEN-BED", room="RM-S-BED1",
-              position=pt(ft(32, 5), ft(16)), rotation=deg(-90)),
+              position=pt(ft(32, 5), ft(13, 6)), rotation=deg(-90)),
 ]
 ATTIC_PLACEABLES = []

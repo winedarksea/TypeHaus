@@ -31,11 +31,13 @@ from typehaus import (
     AlarmKind,
     Door,
     DeckLayer,
+    FloorHeat,
     FloorOpening,
     FloorSystem,
     JoistSpec,
     Node,
     Occupancy,
+    RadiantSystem,
     Room,
     RoughOpening,
     Soffit,
@@ -46,6 +48,7 @@ from typehaus import (
     face,
     from_node,
     ft,
+    in_slab,
     inch,
     pt,
 )
@@ -264,13 +267,22 @@ OPENINGS = [
                  position=from_node("N-S-C3", ft(0, 9)), width=ft(3),
                  height=ft(6, 8)),                                       # y 28'-7"
     # West block
+    # The walk-in's 4'-7 1/8" source opening, cased. Not a DT-INT56 bifold, which is the
+    # obvious stock door for a closet this wide and would keep `advisory.window_size_variety`
+    # at its historical 8 (that check counts every RoughOpening as a glazing size): the
+    # resolver draws a bifold's clearance as a full 4'-8" quarter-disc swing, which reaches
+    # across the whole suite arm and reads as four spurious `integrity.door_swing_conflict`
+    # findings. An opening with no leaf is both the truer model and the quieter one.
     RoughOpening(uid="CSD213AAAA", tag="O-S-CLOSET", host="W-S-CLN",
                  position=from_node("N-S-D2", ft(1, 10)), width=ft(4, 7),
                  height=ft(6, 8)),                                       # x 13'-9"
+    # The source's gap starts hard against the corner at x=9'-10 11/16"; ours starts 3"
+    # further east so the leaf's king stud clears W-S-DC2's corner pack instead of
+    # pinwheeling through it (test_wall_corner_and_opening_framing).
     Door(uid="CSD214AAAA", tag="D-S-SUITEBATH", host="W-S-SBS", type_ref="DT-INT30",
-         position=from_node("N-S-D3", ft(0, 3.5))),                      # x 11'-2"
+         position=from_node("N-S-D3", ft(0, 6.5))),                      # x 11'-5"
     RoughOpening(uid="CSD215AAAA", tag="O-S-VANITY", host="W-S-VE",
-                 position=from_node("N-S-V1", ft(0, 3.25)), width=ft(2, 7.5),
+                 position=from_node("N-S-V1", ft(0, 3)), width=ft(2, 8),
                  height=ft(6, 8)),                                       # y 23'-11"
     Door(uid="CSD208AAAA", tag="D-S-ENSUITE", host="W-S-BD-N1B", type_ref="DT-INT30",
          position=from_node("N-S-V2", ft(1, 4.5))),                      # x 8'-6"
@@ -280,51 +292,53 @@ OPENINGS = [
     RoughOpening(uid="CSD209AAAA", tag="O-S-STAIRTOP", host="W-S-BD-N2",
                  position=from_node("N-S-STR2", ft(0, 6)), width=ft(6),
                  height=ft(6, 8)),
-    # Balcony door — one opening in the source (x 18'-8"..23'-11"), east of the centre
-    # line, not the two the port had flanking it. The French pair is 6'-0" of leaf against
-    # the source's 5'-3", so it is centred on the source opening and overhangs 4 1/2" a side.
-    Door(uid="CSD210AAAA", tag="D-S-DECK-W", host="W-S-S2", type_ref="DT-FRENCH36",
-         position=from_node("N-S-S1", ft(0, 3.5))),                      # x 19'-9 1/2"
+    # Balcony door — ONE opening in the source (x 18'-8"..23'-11", 5'-3", drawn with two
+    # leaves), east of the centre line, not the pair of them the port had flanking it.
+    # DT-FRENCH36 is itself a double-swing: one Door, two leaves, a centre mullion. So the
+    # count and the kind match the source and only the width falls short — 3'-0" against
+    # 5'-3", because the catalog carries one type per width family (CLAUDE.md) and has no
+    # wider double-swing leaf. Two of them side by side would be 6'-0" of RO whose king and
+    # jack studs interpenetrate, which is what the port's pair became once both moved here.
     Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-FRENCH36",
-         position=from_node("N-S-S1", ft(3, 3.5))),                      # x 22'-9 1/2"
+         position=from_node("N-S-S1", ft(1, 10))),                       # x 21'-4"
     # Windows — east wall, on the source's four 2'-8" openings (we build 27", the bearing cap)
     Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2736",
-           position=from_node("N-S-SE", ft(2, 8.5)), sill_height=ft(2, 6)),   # y 3'-10"
+           position=from_node("N-S-SE", ft(2, 10.5)), sill_height=ft(2, 6)),  # y 4'-0"
     Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E2", type_ref="WT-2736",
-           position=from_node("N-S-E1", ft(3, 7.5)), sill_height=ft(3)),      # y 13'-9"
+           position=from_node("N-S-E1", ft(4, 2.5)), sill_height=ft(3)),      # y 14'-4"
     Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E3", type_ref="WT-2736",
-           position=from_node("N-S-E2", ft(3, 7.5)), sill_height=ft(3)),      # y 22'-9"
+           position=from_node("N-S-E2", ft(4, 2.5)), sill_height=ft(3)),      # y 23'-4"
     Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-2736",
-           position=from_node("N-S-E3", ft(3, 6.5)), sill_height=ft(3)),      # y 31'-8"
+           position=from_node("N-S-E3", ft(4, 2.5)), sill_height=ft(3)),      # y 32'-4"
     # West suite (bearing wall) — source openings at y 12'-7" and 19'-4"
     Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W3", type_ref="WT-2736",
-           position=from_node("N-S-W2", ft(8, 7.5)), sill_height=ft(3)),      # y 12'-7"
+           position=from_node("N-S-W2", ft(8, 2.5)), sill_height=ft(3)),      # y 13'-0"
     Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W3", type_ref="WT-2736",
-           position=from_node("N-S-W2", ft(1, 10.5)), sill_height=ft(3)),     # y 19'-4"
+           position=from_node("N-S-W2", ft(1, 6.5)), sill_height=ft(3)),      # y 19'-8"
     # Plant room — south glazing (non-bearing: WT-3036 row), centred in the source's two
     # 6'-0" openings (x 2'-3"..8'-3" and 10'-1"..16'-1").
     Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-3036",
-           position=from_node("N-S-SW", ft(4)), sill_height=ft(2)),           # x 5'-3"
+           position=from_node("N-S-SW", ft(4, 1)), sill_height=ft(2)),        # x 5'-4"
     Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3036",
-           position=from_node("N-S-SW", ft(11, 10)), sill_height=ft(2)),      # x 13'-1"
+           position=from_node("N-S-SW", ft(12, 1)), sill_height=ft(2)),       # x 13'-4"
     # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
     # type and not the 30" south-glazing one — "resize windows to fit the grid" (CLAUDE.md).
     Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736",
-           position=from_node("N-S-W3", ft(3, 2.5)), sill_height=ft(2)),      # y 4'-8"
+           position=from_node("N-S-W3", ft(2, 10.5)), sill_height=ft(2)),     # y 5'-0"
     # Study 2's south pair, both inside the source's single 6'-0" opening at 28'-10"..34'-10".
     Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3036",
            position=from_node("N-S-S1", ft(10, 9)), sill_height=ft(2, 6)),    # x 30'-0"
     Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3036",
-           position=from_node("N-S-S1", ft(13, 5)), sill_height=ft(2, 6)),    # x 32'-8"
+           position=from_node("N-S-S1", ft(14, 9)), sill_height=ft(2, 6)),    # x 34'-0"
     # Baths + north. The source draws no opening in the north wall west of x=21'-10" and
     # none in the west wall north of y=25'-8"; WIN-S-BATH-N/W are kept anyway so the hall
     # bath has daylight, and are the storey's only two openings with no source counterpart.
     Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3B", type_ref="WT-1424",
-           position=from_node("N-S-NW", ft(1, 9)), sill_height=ft(4)),        # x 5'-4"
+           position=from_node("N-S-CH2", ft(4, 1)), sill_height=ft(4)),       # x 3'-0"
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424",
            position=from_node("N-S-NW", ft(4, 1)), sill_height=ft(4)),
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3036",
-           position=from_node("N-S-NE", ft(5, 9.5)), sill_height=ft(3)),      # x 28'-11 1/2"
+           position=from_node("N-S-NE", ft(5, 5)), sill_height=ft(3)),        # x 29'-4"
 ]
 
 ROOMS = [
@@ -368,6 +382,36 @@ ALARMS = [
     Alarm(uid="CSA703AAAA", tag="AL-S-BED3", kind=AlarmKind.COMBO, room="RM-S-BED3"),
     Alarm(uid="CSA704AAAA", tag="AL-S-SUITE", kind=AlarmKind.COMBO, room="RM-S-SUITE"),
     Alarm(uid="CSA705AAAA", tag="AL-S-HALL", kind=AlarmKind.COMBO, room="RM-S-HALL"),
+]
+
+# Electric radiant floor in the NW bathroom (2026-07-25). RM-S-ENSUITE is the hall bath —
+# see the tag note in this file's header — and it is the one bathroom on this storey that
+# gets a warm floor. Same recipe as the two main-storey zones (main.py): 12 W/ft2 of 120V
+# mat at a 3" serpentine, buried in the tile setting bed. `in_slab` is the mode name the
+# enum has, not a claim about structure: this floor is FS-SECOND's I-joists and 3/4"
+# plywood, and the mat lies in the thinset *above* the subfloor, which is neither of the
+# two modes `Embed` can spell. CKT-FH-ENSUITE and ED-S-ENSUITE-FH-STAT carry it.
+#
+# The zone is an L, not the room. The clear face runs x 0'-0 5/8"..9'-11 3/8",
+# y 26'-4 11/16"..35'-11 3/8" (itself an L — the NE corner past x=7'-7 3/8" stops at
+# y=33'-3 3/8"), and the mat stops 4" off every wall. What actually shapes it is the
+# fixture wall: FX-S-ENSUITE-WC (x 3'-9"..6'-3", y 29'-9"..32'-3"), -LAV (x 5'-0"..7'-0",
+# y 30'-1 1/2"..31'-10 1/2") and -SH's pan (x 3'-6"..6'-6", y 31'-6"..34'-6") together
+# occupy x 3'-6"..7'-0" from y=29'-9" north, and cable runs under none of them. That
+# leaves a 25.2 ft2 band across the south of the room and a 17.2 ft2 leg up the west wall,
+# each holding 3" off the fixtures: 42.4 ft2.
+#
+# The three fixtures overlap *each other* at these authored positions — the WC and the lav
+# share 1.9 ft2, the WC and the shower pan 1.6 ft2 — so this room's fixture layout wants a
+# pass of its own. The zone is drawn to clear their union, which stays correct whichever
+# way that pass resolves them, as long as they stay in that corner.
+FLOOR_HEAT = [
+    FloorHeat(uid="CSH801AAAA", tag="FH-S-ENSUITE", room_ref="RM-S-ENSUITE",
+              zone=(pt(ft(0, 5), ft(26, 9)), pt(ft(9, 7), ft(26, 9)),
+                    pt(ft(9, 7), ft(29, 6)), pt(ft(3, 3), ft(29, 6)),
+                    pt(ft(3, 3), ft(35, 7)), pt(ft(0, 5), ft(35, 7))),
+              system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
+              stat=pt(ft(1, 6), ft(32))),
 ]
 
 # The hallway duct soffit (HRV + heat mains) — dashed on plan, framed in 3D. Its south end
@@ -421,5 +465,5 @@ STAIRS = [
           start=pt(ft(10, 3.375), ft(25, 2.375)), landing_depth=ft(3)),
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SOFFITS, *FLOOR_OPENINGS, *FLOOR,
-            *STAIRS]
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SOFFITS,
+            *FLOOR_OPENINGS, *FLOOR, *STAIRS]

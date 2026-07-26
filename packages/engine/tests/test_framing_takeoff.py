@@ -108,7 +108,7 @@ def test_floor_heat_rides_in_the_bom(catlin_model) -> None:
     bom = bill_of_materials(catlin_model)
     rows = {row["tag"]: row for row in bom["floor_heat"]}
     assert set(rows) == {zone.tag for zone in catlin_model.floor_heat}
-    sauna = rows["FH-B-SAUNA"]
-    zone = next(z for z in catlin_model.floor_heat if z.tag == "FH-B-SAUNA")
-    assert sauna["wire_length_ft"] == round(zone.wire_length_m / 0.3048, 1)
-    assert sauna["system"] == zone.system and sauna["storey"] == zone.storey
+    bath = rows["FH-M-BATH2"]
+    zone = next(z for z in catlin_model.floor_heat if z.tag == "FH-M-BATH2")
+    assert bath["wire_length_ft"] == round(zone.wire_length_m / 0.3048, 1)
+    assert bath["system"] == zone.system and bath["storey"] == zone.storey

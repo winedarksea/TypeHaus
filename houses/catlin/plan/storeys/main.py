@@ -9,9 +9,11 @@ from typehaus import (
     AlarmKind,
     Door,
     DoorType,
+    FloorHeat,
     FloorOpening,
     Node,
     Occupancy,
+    RadiantSystem,
     Room,
     RoughOpening,
     Slab,
@@ -23,6 +25,7 @@ from typehaus import (
     face,
     from_node,
     ft,
+    in_slab,
     inch,
     pt,
     u_us,
@@ -322,6 +325,47 @@ ALARMS = [
     Alarm(uid="CMA702AAAA", tag="AL-M-HALL", kind=AlarmKind.COMBO, room="RM-M-HALL"),
 ]
 
+# Electric radiant floor — the two main-storey comfort zones (2026-07-25). Neither is a
+# heating system: the minisplits carry the house and these warm the two floors people stand
+# on barefoot, both of which sit just south of the 18' midline.
+#
+# Sizing is one number applied twice: mat at 12 W/ft2, which is what a 120V floor cable
+# delivers at the `spacing=3"` serpentine authored here (12 W/ft2 over 4 lineal feet of
+# cable per square foot = 3 W/ft, the working range for floor cable). The circuits in
+# plan/circuits.py carry the resulting VA. `in_slab(1/2")` is the setting bed, not the
+# structure: SL-M-DECK is 9" of concrete and nothing is cast into it — the mat is laid on
+# the cured deck and buried in the thinset/self-leveller under the finish.
+#
+# Zones are drawn 4" in from every clear face, because mat cannot run to a wall. `stat` is
+# the *slab sensor* point; the line-voltage thermostats are ED-M-BATH2-FH-STAT and
+# ED-M-DINING-FH-STAT in plan/electrical.py.
+FLOOR_HEAT = [
+    # RM-M-BATH2's floor. The clear face is x 0'-0 5/8"..7'-11 3/8", y 13'-4 11/16"..
+    # 21'-7 5/16", which sets back to a 7'-2" x 7'-6" = 53.8 ft2 rectangle — but
+    # FX-M-BATH2-WC stands at x 1'-9"..4'-3", y 16'-9"..19'-3", clear of every wall, and
+    # `advisory.floor_heat_fixture_keepout` is right that cable does not run under a closet
+    # flange. So the west edge is notched x 0'-5"..4'-6", y 16'-6"..19'-6": 3" of clearance
+    # on all three exposed sides of the WC, and the 1'-4" strip left between it and the west
+    # wall goes with it rather than becoming a cable island. 53.8 - 12.3 = 41.5 ft2.
+    FloorHeat(uid="CMH801AAAA", tag="FH-M-BATH2", room_ref="RM-M-BATH2",
+              zone=(pt(ft(0, 5), ft(13, 9)), pt(ft(7, 7), ft(13, 9)),
+                    pt(ft(7, 7), ft(21, 3)), pt(ft(0, 5), ft(21, 3)),
+                    pt(ft(0, 5), ft(19, 6)), pt(ft(4, 6), ft(19, 6)),
+                    pt(ft(4, 6), ft(16, 6)), pt(ft(0, 5), ft(16, 6))),
+              system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
+              stat=pt(ft(6), ft(17, 6))),
+    # Under the dining table. FURN-M-DINING covers x 22'-11"..30'-11", y 15'-7"..19'-1"; the
+    # zone takes the table's exact width and runs y 13'-9"..21'-0" so it reaches under both
+    # chair rows (FURN-M-CHAIR-S* at y=14'-6", -N* at y=20'-2") — feet, not the table legs,
+    # are what this is for. 8'-0" x 7'-3" = 58.0 ft2, free-standing in RM-M-LIVING with no
+    # room_ref, since the living room is 642 ft2 and only this patch of it is heated.
+    FloorHeat(uid="CMH802AAAA", tag="FH-M-DINING",
+              zone=(pt(ft(22, 11), ft(13, 9)), pt(ft(30, 11), ft(13, 9)),
+                    pt(ft(30, 11), ft(21)), pt(ft(22, 11), ft(21))),
+              system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
+              stat=pt(ft(26, 11), ft(17, 4))),
+]
+
 # Structural deck of the main floor: 9" concrete over the basement.
 SLABS = [
     Slab(uid="CMS501AAAA", tag="SL-M-DECK",
@@ -354,4 +398,5 @@ STAIRS = [
           start=pt(ft(10, 6), ft(25, 2.375)), landing_depth=ft(3)),
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SLABS, *FLOOR_OPENINGS, *STAIRS]
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SLABS,
+            *FLOOR_OPENINGS, *STAIRS]

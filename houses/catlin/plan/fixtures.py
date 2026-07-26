@@ -44,6 +44,8 @@ MAIN_FIXTURES = (
 )
 
 
+# RM-S-ENSUITE is the *hall* bath (the source's 80.73 sf "Bathroom" in the NW corner); the
+# tag predates the suite's own bath and is kept — see storeys/second.py's header.
 SECOND_FIXTURES = (
     Fixture(uid="CSQ801AAAA", tag="FX-S-ENSUITE-WC", type_ref="FX-TOILET", room="RM-S-ENSUITE",
             position=pt(ft(5), ft(31)), wall_ref="W-S-BD-N"),
@@ -51,4 +53,25 @@ SECOND_FIXTURES = (
             position=pt(ft(6), ft(31)), wall_ref="W-S-BD-N"),
     Fixture(uid="CSQ803AAAA", tag="FX-S-ENSUITE-SH", type_ref="FX-SHOWER", room="RM-S-ENSUITE",
             position=pt(ft(5), ft(33)), wall_ref="W-S-BD-N"),
+    # The suite's own bath (source: 46.01 sf). Both walls it drains into are
+    # INT_2X6_PLUMBING — W-S-DC2 west, W-S-SBS south — which is what `advisory.wet_wall_depth`
+    # measures against preferences.toml's 5.5" drain-stack requirement.
+    # D-S-SUITEBATH's 2'-6" leaf is hinged at the room's SW jamb and sweeps a quarter disc
+    # to (12'-8", 18'-5"), so nothing sits in the room's SW quadrant: the WC goes north of
+    # the swing on the west wet wall, the lav east of it on the south one, the shower in the
+    # NE corner. Every wall_ref here is a 5 1/2" wall — INT_2X6_PLUMBING west and south,
+    # CATLIN_INT_2X6_BRG east — because `advisory.wet_wall_depth` holds a drain stack to
+    # preferences.toml's 5.5", which a 2x4 partition cannot give it.
+    Fixture(uid="CSQ804AAAA", tag="FX-S-SUITEBATH-WC", type_ref="FX-TOILET",
+            room="RM-S-SUITEBATH", position=pt(ft(11), ft(20, 9)), wall_ref="W-S-DC2"),
+    Fixture(uid="CSQ805AAAA", tag="FX-S-SUITEBATH-LAV", type_ref="FX-LAV",
+            room="RM-S-SUITEBATH", position=pt(ft(14), ft(17, 1)), wall_ref="W-S-SBS"),
+    Fixture(uid="CSQ806AAAA", tag="FX-S-SUITEBATH-SH", type_ref="FX-SHOWER",
+            room="RM-S-SUITEBATH", position=pt(ft(16, 2), ft(20, 6)), wall_ref="W-S-C2C"),
+    # The double-vanity alcove off the landing (source: 18.23 sf, two lavatories), backed
+    # onto W-S-BD-N — the same 2x6 wet wall the hall bath drains into.
+    Fixture(uid="CSQ807AAAA", tag="FX-S-VANITY-LAV1", type_ref="FX-LAV", room="RM-S-VANITY",
+            position=pt(ft(1, 9), ft(25, 2)), wall_ref="W-S-BD-N"),
+    Fixture(uid="CSQ808AAAA", tag="FX-S-VANITY-LAV2", type_ref="FX-LAV", room="RM-S-VANITY",
+            position=pt(ft(4), ft(25, 2)), wall_ref="W-S-BD-N"),
 )

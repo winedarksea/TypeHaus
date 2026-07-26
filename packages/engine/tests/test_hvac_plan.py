@@ -34,7 +34,9 @@ def test_hvac_plan_symbol_census(catlin_model):
     assert "M-HVAC-SDFF" in layers and "M-HVAC-RDFF" in layers
     registers = [n for n in scene.nodes if isinstance(n, Symbol)
                  and n.name.startswith("register-")]
-    assert len(registers) == 6
+    # 5 supply + 2 return. The fifth supply is RM-S-BED2's: the east bedrooms are equal
+    # 9'-0" bays now, and the middle one had no terminal at all before the re-spacing.
+    assert len(registers) == 7
     duct_polys = [n for n in scene.nodes if isinstance(n, Polyline)
                  and n.layer in ("M-HVAC-SDFF", "M-HVAC-RDFF")]
     assert duct_polys

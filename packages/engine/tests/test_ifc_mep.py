@@ -57,7 +57,7 @@ def test_ifc_has_duct_segments_and_air_terminals(catlin_model, tmp_path: Path):
     assert all(d.GlobalId for d in ducts)
 
     terminals = f.by_type("IfcAirTerminal")
-    assert len(terminals) == 6  # REGISTERS in houses/catlin/plan/mep.py
+    assert len(terminals) == 7  # REGISTERS in houses/catlin/plan/mep.py
 
 
 def test_ifc_has_footing_bedding_proxies(catlin_model, tmp_path: Path):

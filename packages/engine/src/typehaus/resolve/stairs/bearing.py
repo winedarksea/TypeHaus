@@ -132,9 +132,20 @@ def _framed_ledger(stair: Stair, host, member: FramedMember,
     # 0 → the member runs in x (cross coordinate is y); 1 → it runs in y (cross is x).
     run_axis = 1 if abs(member.p1[0] - member.p0[0]) < 1e-6 else 0
     cross_axis = 1 - run_axis
-    wall_cross = host.axis[0][cross_axis]
-    side = 1.0 if member.p0[cross_axis] >= wall_cross else -1.0
-    face = wall_cross + side * (host.thickness_m / 2.0 + section.width_m / 2.0)
+    # Where the wall's depth actually sits, read off the resolved layer polygons rather
+    # than from ``axis``: an ``alignment=face(...)`` wall's authored line is one of its
+    # *faces*, not its centre, so ``axis ± thickness/2`` lands mid-wall and the ledger
+    # bites into the studs on one side (and floats outside the building on the other).
+    cross = [point[cross_axis] for layer in host.depth_layers() for point in layer.polygon]
+    if cross:
+        near, far = min(cross), max(cross)
+        face = (far + section.width_m / 2.0
+                if member.p0[cross_axis] >= (near + far) / 2.0
+                else near - section.width_m / 2.0)
+    else:  # no resolved depth (a bare axis): fall back to the authored line
+        wall_cross = host.axis[0][cross_axis]
+        side = 1.0 if member.p0[cross_axis] >= wall_cross else -1.0
+        face = wall_cross + side * (host.thickness_m / 2.0 + section.width_m / 2.0)
     a = (face, lo) if run_axis == 1 else (lo, face)
     b = (face, hi) if run_axis == 1 else (hi, face)
     # The member's top along its run: z1_m at p0, z1_end_m (raked) or z1_m at p1.

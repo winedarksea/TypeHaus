@@ -7,14 +7,12 @@ from typehaus import (
     Alarm,
     AlarmKind,
     Door,
-    FloorHeat,
     FloorOpening,
     FoundationWall,
     Layer,
     LayerFunction,
     Node,
     Occupancy,
-    RadiantSystem,
     Room,
     Slab,
     SlabThermalBreak,
@@ -24,7 +22,6 @@ from typehaus import (
     face,
     from_node,
     ft,
-    in_slab,
     inch,
     pt,
 )
@@ -198,11 +195,10 @@ ALARMS = [
     Alarm(uid="CBA701AAAA", tag="AL-B-COMBO", kind=AlarmKind.COMBO, room="RM-B-PLAY-N"),
 ]
 
-FLOOR_HEAT = [
-    FloorHeat(uid="CBH801AAAA", tag="FH-B-SAUNA", room_ref="RM-B-SAUNA",
-              system=RadiantSystem.ELECTRIC, spacing=inch(6), embed=in_slab(inch(1.5)),
-              stat=pt(ft(12), ft(12))),
-]
+# No radiant floor in the basement. RM-B-SAUNA had FH-B-SAUNA until 2026-07-25: a heated
+# floor under a room that already runs at 190 °F is heat with nowhere to go, and its stat
+# had no honest place to read from (see the note that used to sit on ED-B-SAUNA-FH-STAT).
+# The electric radiant zones are all on the storeys above — main.py and second.py.
 
 SLABS = [
     Slab(uid="CBS501AAAA", tag="SL-B-FLOOR",
@@ -216,4 +212,4 @@ FLOOR_OPENINGS = [
     # Shower recess is a finish-zone concern; the stair arrives via the slab above.
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SLABS, *FLOOR_OPENINGS]
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *SLABS, *FLOOR_OPENINGS]

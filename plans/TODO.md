@@ -40,16 +40,30 @@ what genuinely remains, with fresh measurements.*
   because the enum has nothing better to call them.
 - **The ERV reaches the second storey only.** With no forced-air heat, those trunks are the
   whole fresh-air distribution — the main storey, basement and attic have no ERV terminals
-  authored, and even upstairs RM-S-BED2 and RM-S-SUITE get no supply register. Needs a
-  distribution pass (supply to sleeping/living rooms, return from baths + kitchen).
-- **Only one radiant floor zone exists.** `FH-B-SAUNA` is it. If electric radiant is meant
-  to be half the heating system rather than a comfort floor in one room, the other zones
-  (basement slab, bathrooms, entry) need authoring — each with its own GFCI circuit.
-- **The service load estimate now exceeds the service.** `service_load_summary` reads ~226A
-  (NEC 220.82 optional method) against a 200A service / 225A panel. Driven mostly by the two
-  EV circuits at 13.4 kVA continuous plus sauna + water heaters. Needs load management (an
-  EV EMS per 625.42, or interlocking the sauna) or a service upgrade — it is a decision,
-  not a rounding artifact.
+  authored, and upstairs RM-S-SUITE still gets a return but no supply. Needs a distribution
+  pass (supply to sleeping/living rooms, return from baths + kitchen). RM-S-BED2 is done:
+  the survey re-spacing put the east bedrooms on equal 9'-0" bays and `REG-S-SUP5` landed
+  in the middle one (2026-07-25); the four new rooms on that storey — RM-S-SUITEBATH,
+  RM-S-VANITY, RM-S-LANDING, RM-S-NCLOSET — have no terminals either.
+- **Minisplit sizing is unmodeled.** `CKT-MINI-1`/`-2` carry authored 4,800 / 1,500 VA and
+  the equipment types are a large and a small condenser — no block load, no room-by-room
+  capacity, no cold-climate derate at the design temperature. The three radiant zones, the
+  fireplace and the garage heater (2026-07-25) are explicitly *not* sized to make up any
+  shortfall, so this is the pass that decides whether the house is actually heated.
+- **The second-storey fixture layout in `RM-S-ENSUITE` overlaps itself.** `FX-S-ENSUITE-WC`
+  / `-LAV` / `-SH` are authored at (5,31), (6,31) and (5,33) with default footprints, so the
+  WC shares 1.9 ft2 with the lav and 1.6 ft2 with the shower pan. `FH-S-ENSUITE`'s zone is
+  drawn to clear their union, which survives any resolution that keeps them in that corner —
+  but the room still wants a fixture pass. (`RM-M-BATH2`'s WC floats mid-room too.)
+- **The service load estimate exceeds the service.** `service_load_summary` reads ~224A
+  (NEC 220.82 optional method) against a 200A service / 225A panel. Driven by the two
+  EV circuits at 13.4 kVA continuous plus sauna + water heaters — *not* by the electric
+  space heating, which 220.82(C) selects against the minisplits rather than adding.
+  Needs load management (an EV EMS per 625.42, or interlocking the sauna) or a service
+  upgrade — it is a decision, not a rounding artifact.
+- **The panel is out of spaces on paper.** 35 circuits, 13 of them 2-pole = 48 spaces
+  against a 42-space enclosure. `Circuit` carries no slot assignment and nothing checks it,
+  so this is a note rather than a finding: the 225A panel needs to be a 54-circuit one.
 - **Authored gutter runs are still solid bars.** The *derived* eave gutters are open-top
   3-band channels now; `TR-SG-GUTTER`/`TR-RF-GUTTER` (authored `Gutter` runs in
   `resolve/accessories.py::_resolve_edge_run`) should get the same treatment. Exact recipe

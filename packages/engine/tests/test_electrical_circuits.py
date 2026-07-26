@@ -205,11 +205,23 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     from typehaus.takeoff import backup_component_rows, panel_schedule, service_load_summary
 
     rows = {row["circuit"]: row for row in panel_schedule(catlin_model)}
-    assert len(rows) == 31
-    # The radiant floor is a heating circuit in an all-electric house, so it is on the
-    # schedule with breaker-level GFCI (NEC 424.44(G) — heating cable in a bathroom floor).
-    assert rows["CKT-FH-SAUNA"]["gfci"] and rows["CKT-FH-SAUNA"]["volts"] == 120
-    assert rows["CKT-FH-SAUNA"]["devices"] == ["ED-B-SAUNA-FH-STAT"]
+    assert len(rows) == 35
+    # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
+    # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor; the
+    # dining zone takes the same protection because every mat maker asks for it).
+    for circuit, stat in (("CKT-FH-BATH2", "ED-M-BATH2-FH-STAT"),
+                          ("CKT-FH-DINING", "ED-M-DINING-FH-STAT"),
+                          ("CKT-FH-ENSUITE", "ED-S-ENSUITE-FH-STAT")):
+        assert rows[circuit]["gfci"] and rows[circuit]["volts"] == 120
+        assert rows[circuit]["breaker_amps"] == 15
+        assert rows[circuit]["devices"] == [stat]
+    # The two 1.5 kW resistance heaters: 20A because 12.5A x 1.25 continuous needs 16A, and
+    # no GFCI because both are hard-wired equipment rather than receptacles (210.8(A)).
+    for circuit, equipment in (("CKT-FIREPLACE", "EQ-M-FIREPLACE"),
+                               ("CKT-GAR-HEAT", "EQ-G-HEATER")):
+        assert rows[circuit]["connected_va"] == 1500
+        assert rows[circuit]["breaker_amps"] == 20 and not rows[circuit]["gfci"]
+        assert rows[circuit]["devices"] == [equipment]
     # Derived from the device type's load_va, not authored on the circuit.
     assert rows["CKT-EV-1450"]["connected_va"] == 9600
     assert rows["CKT-EV-1450"]["devices"] == ["ED-G-EV-1450"]
@@ -228,6 +240,12 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     assert load["floor_area_ft2"] > 4000
     assert load["demand_amps"] > 100  # a real number, not a stub
     assert load["panel_rating_amps"] == 225 and load["service_amps"] == 200
+    # 220.82(C) selects, it does not sum: five separately controlled resistance heaters
+    # (three mats, the fireplace, the garage heater) are taken at 40% and lose to the two
+    # minisplits at 100%, so the heating term is the heat pumps' and the resistance heat
+    # costs the service nothing.
+    assert load["resistance_heat_units"] == 5 and load["resistance_heat_factor"] == 0.40
+    assert load["hvac_va"] == load["heat_pump_va"] > load["resistance_heat_va"] * 0.40
 
 
 def test_catlin_receptacle_spacing_passes_after_fill(catlin_model):
@@ -354,7 +372,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     assert payload["conduit"] == conduit_takeoff(catlin_model)
     assert payload["devices"] == electrical_device_takeoff(catlin_model)
     assert payload["solar"] == solar_takeoff(catlin_model)
-    assert len(payload["panel_schedule"]) == 31
+    assert len(payload["panel_schedule"]) == 35
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):

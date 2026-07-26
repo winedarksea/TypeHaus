@@ -36,13 +36,13 @@ NODES = [
     Node(uid="CAN003AAAA", tag="N-A-S2", position=pt(ft(18), ft(0))),
     Node(uid="CAN011AAAA", tag="N-A-V1", position=pt(ft(22, 4), ft(0))),
     Node(uid="CAN004AAAA", tag="N-A-SE", position=pt(ft(36), ft(0))),
-    Node(uid="CAN005AAAA", tag="N-A-E1", position=pt(ft(36), ft(9, 1.25))),
+    Node(uid="CAN005AAAA", tag="N-A-E1", position=pt(ft(36), ft(9))),
     Node(uid="CAN006AAAA", tag="N-A-NE", position=pt(ft(36), ft(36))),
     Node(uid="CAN007AAAA", tag="N-A-N1", position=pt(ft(18), ft(36))),
     Node(uid="CAN008AAAA", tag="N-A-NW", position=pt(ft(0), ft(36))),
-    # Den north wall, y=5'-7" (source 5.611); band wall, y=9'-1 1/4" (source 9.228).
+    # Den north wall, y=5'-7" (source 5.611); band wall, y=9'-0" (source 9.228).
     Node(uid="CAN009AAAA", tag="N-A-C1", position=pt(ft(18), ft(5, 7))),
-    Node(uid="CAN012AAAA", tag="N-A-C2", position=pt(ft(18), ft(9, 1.25))),
+    Node(uid="CAN012AAAA", tag="N-A-C2", position=pt(ft(18), ft(9))),
     Node(uid="CAN010AAAA", tag="N-A-D1", position=pt(ft(10), ft(5, 7))),
     Node(uid="CAN013AAAA", tag="N-A-V2", position=pt(ft(22, 4), ft(5, 7))),
     # A legitimate wing-wall terminus: the vestibule's north screen stops at the stair
@@ -151,13 +151,13 @@ OPENINGS = [
     # loft, since the Den moved off the gable's centre) and WIN-A-STUDY-S2 the eastern;
     # WIN-A-STUDY-S1 stays in a clear bay with no source counterpart.
     Window(uid="CAX301AAAA", tag="WIN-A-DEN-S", host="W-A-S1", type_ref="WT-3036",
-           position=from_node("N-A-SW", ft(6, 2)), sill_height=ft(2)),   # x 7'-5"
+           position=from_node("N-A-SW", ft(6, 9)), sill_height=ft(2)),   # x 8'-0"
     Window(uid="CAX302AAAA", tag="WIN-A-STUDY-S1", host="W-A-S4",
-           type_ref="WT-3036", position=from_node("N-A-V1", ft(1, 2)),
-           sill_height=ft(2)),                                          # x 24'-9"
+           type_ref="WT-3036", position=from_node("N-A-V1", ft(1, 5)),
+           sill_height=ft(2)),                                          # x 25'-0"
     Window(uid="CAX303AAAA", tag="WIN-A-STUDY-S2", host="W-A-S4",
-           type_ref="WT-3036", position=from_node("N-A-V1", ft(5, 4)),
-           sill_height=ft(2)),                                          # x 28'-11"
+           type_ref="WT-3036", position=from_node("N-A-V1", ft(5, 5)),
+           sill_height=ft(2)),                                          # x 29'-0"
     # The source attic has no north, east or west opening at all; these three are kept for
     # daylight and cross-ventilation and are this storey's only openings with no counterpart.
     Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3036",
@@ -210,15 +210,22 @@ BEAMS = [
          bearing_refs=("W-A-C1", "W-A-C2")),
 ]
 
-# The well is the source's: x 21'-1 3/4"..35'-9", y 5'-10 3/4"..8'-11 3/8", rounded to the
-# inch. It lands in RM-S-STUDY2 below, which is where the source draws the flight; the port
-# had it in RM-S-BED1. W-A-SN's centreline is set 2 1/4" north of the well's north edge so
-# the partition's south face lands exactly on it, the way the source's does — that is why
-# the band wall reads 9'-1 1/4" rather than the 9'-0" a bare rounding of 9.228 would give.
+# The well is the source's (x 21'-1 3/4"..35'-9", y 5'-10 3/4"..8'-11 3/8"), snapped to the
+# *finished* faces around it the way FO-S-STAIR is: east is the east wall's inside gwb face
+# (36' less 6 5/8" of sheathing + stud + board), north is W-S-SS2's south gwb face (9'-0"
+# less 2 3/8"), and the south edge is then a clean 3'-0" back so ST-S2A's 3'-0" width fits
+# the well exactly. That is what puts the outer winder carriage on a wall it can bear on;
+# the port had this edge on the x=36' sheathing plane, where the carriage's wall ledger
+# resolved *outside* the building.
+#
+# The well lands in RM-S-STUDY2 below, which is where the source draws the flight; the port
+# had it in RM-S-BED1, which is also why D-S-BED1 used to open into the stair band.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CAF601AAAA", tag="FO-A-STAIR",
-                 outline=(pt(ft(21, 2), ft(5, 11)), pt(ft(35, 9), ft(5, 11)),
-                          pt(ft(35, 9), ft(8, 11)), pt(ft(21, 2), ft(8, 11)))),
+                 outline=(pt(ft(21, 2), ft(5, 9.625)),
+                          pt(ft(35, 5.375), ft(5, 9.625)),
+                          pt(ft(35, 5.375), ft(8, 9.625)),
+                          pt(ft(21, 2), ft(8, 9.625)))),
 ]
 
 FLOOR = [
@@ -238,7 +245,7 @@ STAIRS = [
           # run_reversed on x that is the well's SE corner.
           layout="right_angle_winder", turn_direction="left",
           run_direction="x", run_reversed=True, winder_count=3,
-          start=pt(ft(35, 9), ft(5, 11))),
+          start=pt(ft(35, 5.375), ft(5, 9.625))),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *ROOFS, *BEAMS, *FLOOR_OPENINGS,

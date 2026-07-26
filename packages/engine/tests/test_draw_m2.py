@@ -90,6 +90,37 @@ def test_render_views_per_storey(model, tmp_path: Path):
     assert paths and all(p.suffix == ".png" and p.exists() for p in paths)
 
 
+def test_render_plan_draws_the_storey_reference_underlay(model, tmp_path: Path):
+    """``haus render`` is the only place an underlay has a job, so it has to reach the page.
+
+    The check is that the *pixels change*: the plan renders identically without the
+    underlay, and once one is passed for that storey the raster differs. A storey with no
+    matching underlay must be untouched, or the survey would bleed onto every sheet.
+    """
+    import matplotlib.image as mpimg
+    import numpy as np
+
+    from typehaus.emit.draw import Underlay, render_plan, render_views
+
+    storey = next(s.tag for s in model.plan.storeys
+                  if any(w.storey == s.tag for w in model.walls))
+    source = tmp_path / "ref.png"
+    mpimg.imsave(source, np.tile(np.linspace(0.0, 1.0, 64), (64, 1)), cmap="gray")
+
+    plain = render_plan(model, storey, tmp_path / "plain.png")
+    over = render_plan(model, storey, tmp_path / "over.png", underlays=[
+        Underlay(image_path=source, origin_x_m=0.0, origin_y_m=0.0,
+                 width_m=11.0, height_m=11.0, opacity=0.3, storey=storey)])
+    assert plain.read_bytes() != over.read_bytes()
+
+    # Storey matching: an underlay tagged for another storey never reaches this page.
+    written = render_views(model, tmp_path / "r2", view="plan", underlays=[
+        Underlay(image_path=source, origin_x_m=0.0, origin_y_m=0.0,
+                 width_m=11.0, height_m=11.0, opacity=0.3, storey="not-a-storey")])
+    same = next(p for p in written if p.stem == f"plan_{storey}")
+    assert same.read_bytes() == plain.read_bytes()
+
+
 def test_emit_fixtures_draws_the_generated_glyph_as_plain_polylines() -> None:
     """The whole point of generating geometry in the engine: PDF and DXF need no new ``Symbol``
     branch, because a sofa arrives as more polylines on the layer the outline already used."""

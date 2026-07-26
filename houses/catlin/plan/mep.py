@@ -215,12 +215,25 @@ VENT_BRANCHES_MAIN = [
 ]
 
 VENT_BRANCHES_SECOND = [
-    # Ensuite takeoff on W-S-BD-N (y=26'-4") -> west to the chase line -> north to the
+    # Hall-bath takeoff on W-S-BD-N (y=26'-4") -> west to the chase line -> north to the
     # chase. The chase passes straight through this room, so the run is only 8'-8".
     PipeRun(uid="CSP901AAAA", tag="PR-S-ENSUITE-VENT", system=PipeSystem.VENT,
             path=(pt(ft(5), ft(26, 4)), pt(ft(3), ft(26, 4)), pt(ft(3), ft(33))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 4),
             serves=("FX-S-ENSUITE-WC",)),
+    # The suite bath's own vent: takeoff on its west wet wall W-S-DC2 (x=9'-7 1/2"), north
+    # through the landing and the hall bath, then west along y=33' to the shared
+    # radon/plumbing chase. It runs up the x=9'-7 1/2" line rather than joining the hall
+    # bath's run at x=3' so the two branches never share a leg. 19'-7" developed.
+    #
+    # NOTE the chase here is VR-M-RADON-VENT's, at (3', 33') — *not* the 2'x2' mechanical
+    # chase the source draws in the hall bath's NE corner (W-S-CH-W/CH-S, x 7'-8"..10',
+    # y 33'-4"..36'). They are different shafts: moving the riser into the source's chase
+    # would drag SM-B-RADON, PR-M-WC-VENT, PR-M-KITCH-VENT and the gable clamps with it.
+    PipeRun(uid="CSP902AAAA", tag="PR-S-SUITEBATH-VENT", system=PipeSystem.VENT,
+            path=(pt(ft(9, 7.5), ft(20)), pt(ft(9, 7.5), ft(33)), pt(ft(3), ft(33))),
+            diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5),
+            serves=("FX-S-SUITEBATH-WC",)),
 ]
 
 # --- Ventilation: ERV fresh-air / stale-air trunks in the FS-SECOND joist bays -------
@@ -253,11 +266,17 @@ REGISTERS = [
     Register(uid="CMR902AAAA", tag="REG-S-SUP2", kind=DuctSystem.SUPPLY,
             position=pt(ft(27), ft(4)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    # One per bedroom now that the east bedrooms are equal 9'-0" bays: SUP3 y 9'-18',
+    # SUP5 y 18'-27', SUP4 y 27'-36'. RM-S-BED2 had no terminal at all before the
+    # re-spacing (plans/TODO.md).
     Register(uid="CMR903AAAA", tag="REG-S-SUP3", kind=DuctSystem.SUPPLY,
-            position=pt(ft(29), ft(16)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
+            position=pt(ft(29), ft(13, 6)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    Register(uid="CMR907AAAA", tag="REG-S-SUP5", kind=DuctSystem.SUPPLY,
+            position=pt(ft(29), ft(22, 6)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR904AAAA", tag="REG-S-SUP4", kind=DuctSystem.SUPPLY,
-            position=pt(ft(29), ft(32)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
+            position=pt(ft(29), ft(31, 6)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR905AAAA", tag="REG-S-RET1", kind=DuctSystem.RETURN,
             position=pt(ft(20), ft(20)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-RETURN",
@@ -353,55 +372,91 @@ MAIN_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
 ]
 
+# Re-snapped to the survey-aligned partitions (storeys/second.py): each light sits in its
+# room's new centre, each switch beside that room's door on the room side, and each -RC1 on
+# the first of the wall positions `electrical.receptacle_spacing` measures (the rest of the
+# 210.52 fill is in plan/electrical.py). None of these carry `room=`, so a device left on a
+# stale coordinate is matched to its room by tag suffix and still reports PASS — which is
+# exactly how they came to be stranded inside partitions.
 SECOND_DEVICES = [
     ElectricalDevice(uid="CED004K1AA", tag="ED-S-PLANT-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(9), ft(4)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    # Beside D-S-PLANT, the door through the centre bearing wall at y=4'-5 1/2".
     ElectricalDevice(uid="CED004K2AA", tag="ED-S-PLANT-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8), ft(4)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(17, 3), ft(6, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED005K1AA", tag="ED-S-STUDY2-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(27), ft(4)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="CED005K2AA", tag="ED-S-STUDY2-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(26), ft(4)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(19), ft(8, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED006K1AA", tag="ED-S-BED1-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(29), ft(16)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
+                     position=pt(ft(29), ft(13, 6)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="CED006K2AA", tag="ED-S-BED1-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(28), ft(16)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(22, 6), ft(13, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED006K3AA", tag="ED-S-BED1-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(30), ft(16)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
+                     position=pt(ft(25.92), ft(17.85)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED007K1AA", tag="ED-S-BED2-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(29), ft(24)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
+                     position=pt(ft(29), ft(22, 6)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="CED007K2AA", tag="ED-S-BED2-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(28), ft(24)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(22, 6), ft(22, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED007K3AA", tag="ED-S-BED2-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(30), ft(24)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
+                     position=pt(ft(25.83), ft(26.85)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED008K1AA", tag="ED-S-BED3-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(29), ft(32)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
+                     position=pt(ft(29), ft(31, 6)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="CED008K2AA", tag="ED-S-BED3-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(28), ft(32)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(22, 6), ft(30, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED008K3AA", tag="ED-S-BED3-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(30), ft(32)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
+                     position=pt(ft(22.08), ft(35.51)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED009K1AA", tag="ED-S-SUITE-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(9), ft(20)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
+                     position=pt(ft(5), ft(16)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    # In the suite's east arm, beside D-S-SUITE (the hall door through the bearing wall).
     ElectricalDevice(uid="CED009K2AA", tag="ED-S-SUITE-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8), ft(20)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(15), ft(13)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED009K3AA", tag="ED-S-SUITE-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(10), ft(20)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
+                     position=pt(ft(15.25), ft(15.83)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # --- rooms the survey added: suite bath, vanity alcove, landing, north closet -------
+    # None is a habitable occupancy, so `electrical.room_lighting` does not require these;
+    # they are here because a windowless bath, an interior alcove, the stair arrival and a
+    # closet all need a switched light to be usable.
+    ElectricalDevice(uid="CED013K1AA", tag="ED-S-SUITEBATH-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(13, 8), ft(19, 6)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    ElectricalDevice(uid="CED013K2AA", tag="ED-S-SUITEBATH-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(12, 9), ft(16, 8)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+    ElectricalDevice(uid="CED014K1AA", tag="ED-S-VANITY-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(2, 10), ft(24, 4)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    ElectricalDevice(uid="CED014K2AA", tag="ED-S-VANITY-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(5), ft(25, 8)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+    ElectricalDevice(uid="CED015K1AA", tag="ED-S-LANDING-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(12), ft(23, 8)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    ElectricalDevice(uid="CED015K2AA", tag="ED-S-LANDING-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(16, 6), ft(24, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+    ElectricalDevice(uid="CED016K1AA", tag="ED-S-NCLOSET-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(20), ft(34)), type_ref="ED-T-LIGHT", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    ElectricalDevice(uid="CED016K2AA", tag="ED-S-NCLOSET-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(21), ft(30, 4)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 ]
 
 # Attic habitable rooms, both east of the ridge. The cathedral ceiling follows the 4:12 roof
