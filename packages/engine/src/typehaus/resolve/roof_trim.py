@@ -65,6 +65,11 @@ _GUTTER_SHELL_M = inch(0.5).meters
 # plane under its own centreline, which is what lands the skirts *on* the roofing instead of
 # leaving the whole cap floating at the ridge elevation.
 #
+# A band spans from the plane under its *outer* edge up to whichever is higher: its own
+# stepped top, or the plane under its *inner* edge. That second term is what keeps the bands
+# lapping on a steep roof, where the plane falls further across one band than the step height
+# above it — without it the cap opens a crack at every step somewhere past about 8:12.
+#
 #   (key, inner edge, outer edge, height above the band's own seat) — inches from the ridge
 _RIDGE_CAP_BANDS = (
     ("riser", 0.0, 2.0, 3.0),
@@ -393,21 +398,23 @@ def _ridge_vent_members(model: ResolvedModel, roof: ResolvedRoof) -> tuple[Frame
     material = cladding.material_ref if cladding is not None else "aluminum"
     members: list[FramedMember] = []
     for key, inner_in, outer_in, height_in in _RIDGE_CAP_BANDS:
-        height = inch(height_in).meters
         # A band starting at the ridge itself is one member straddling the peak; every band
         # outboard of it is mirrored onto the two roof planes.
         sides = ((0.0, ""),) if inner_in <= 0.0 else ((1.0, "-a"), (-1.0, "-b"))
         width_in = 2.0 * outer_in if inner_in <= 0.0 else outer_in - inner_in
         centre = inch(0.0 if inner_in <= 0.0 else (inner_in + outer_in) / 2.0).meters
         # The plane falls away from the peak, so a band sitting further out sits lower.
-        seat = z0 - centre * slope
+        bottom = z0 - inch(outer_in).meters * slope
+        top = max(z0 - centre * slope + inch(height_in).meters,
+                  z0 - inch(inner_in).meters * slope)
         for sign, suffix in sides:
             a = _offset(ridge.p0, across, sign * centre)
             b = _offset(ridge.p1, across, sign * centre)
             members.append(FramedMember(
                 parent_uid=roof.uid, child_key=f"ridge-vent-cap-{key}{suffix}",
-                category="ridge_cap", profile=panel_profile(width_in, height_in),
-                p0=a, p1=b, z0_m=seat, z1_m=seat + height, length_m=length,
+                category="ridge_cap",
+                profile=panel_profile(width_in, (top - bottom) / METERS_PER_INCH),
+                p0=a, p1=b, z0_m=bottom, z1_m=top, length_m=length,
                 connection="ridge:vented-cap", material=material,
             ))
     return tuple(members)
