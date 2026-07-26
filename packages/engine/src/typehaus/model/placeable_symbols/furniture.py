@@ -8,9 +8,10 @@ needs no entry here at all: the same symbol renders at whatever W×D×H the type
 from __future__ import annotations
 
 from typehaus.model.placeable_symbols._families import (Builder, bed, case, counter_case,
-                                                        pedestal_seat, round_slab, screen,
-                                                        seating, sectional, sectional_points,
-                                                        shelving, slab)
+                                                        pedestal_seat, round_slab,
+                                                        sauna_bench, screen, seating,
+                                                        sectional, sectional_points, shelving,
+                                                        slab)
 
 __all__ = ["FURNITURE_SYMBOLS", "sectional_points"]
 
@@ -64,4 +65,9 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     # distinguishes symbols by.
     "tall-cabinet-double": case(rows=1, cols=2, pulls=True, color=CABINET,
                                 face_color=CABINET_SHADE),
+    # Sauna joinery. Not casegoods and not tables: a bench is a platform on end supports, and
+    # the two-tier version is the one piece of furniture whose *height* is a code-of-practice
+    # number rather than an ergonomic average — see ``sauna_bench``.
+    "sauna-bench": sauna_bench(tiers=1),
+    "sauna-bench-tiered": sauna_bench(tiers=2),
 }

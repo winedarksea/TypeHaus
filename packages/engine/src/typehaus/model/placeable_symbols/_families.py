@@ -18,8 +18,9 @@ from __future__ import annotations
 import math
 from typing import Callable, Optional, Tuple
 
-from typehaus.model.placeable_symbols._frame import (DETAIL_WEIGHT, Part, Point, Stroke, arc,
-                                                     box, circle, clamp, line, polygon, rect)
+from typehaus.model.placeable_symbols._frame import (DETAIL_WEIGHT, OUTLINE_WEIGHT, Part,
+                                                     Point, Stroke, arc, box, circle, clamp,
+                                                     line, polygon, rect)
 
 Geometry = Tuple[Tuple[Stroke, ...], Tuple[Part, ...]]
 Builder = Callable[[float, float, float], Geometry]
@@ -277,6 +278,54 @@ def shelving(*, shelves: int = 5) -> Builder:
             parts.append(box(0, 0, cz - panel / 2, cz + panel / 2, width - 2 * panel, depth,
                              "wood"))
         strokes.append(line((-width / 2 + panel, 0), (width / 2 - panel, 0)))
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
+def sauna_bench(*, tiers: int = 1, upper_depth_fraction: float = 0.57) -> Builder:
+    """A sauna bench: one seat platform per tier, stepping up toward the wall at ``+y``.
+
+    The Law of Löyly is the whole of this family. The upper bench sits at the declared
+    height and the lower one at half of it, so a 36" two-tier bench puts its foot bench at
+    18" without either number being authored twice — and a bench that is resized stays
+    proportioned rather than needing a second catalog dimension. A single-tier bench is the
+    same platform with the whole depth to itself: the foot bench that returns along the next
+    wall, or a lone bench in a small room.
+
+    Boards run the length of the bench, so the drawn seams are lines parallel to the run —
+    which is also what tells a reader in plan which way a bench faces.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        slab_t = min(TOP_THICKNESS_M, height * 0.18)
+        leg = min(clamp(min(width, depth) * 0.09, 0.03, 0.08), width * 0.4)
+        back = depth / 2
+        # (far edge, near edge, top z) per tier, deepest-and-highest first: the upper bench
+        # takes its share off the wall side, the lower bench whatever is left in front of it.
+        if tiers >= 2:
+            split = back - depth * clamp(upper_depth_fraction, 0.35, 0.75)
+            bands = [(back, split, height), (split, -back, height / 2.0)]
+        else:
+            bands = [(back, -back, height)]
+        # An 8'-6" run on two end panels is a diving board, not a bench: real sauna benches
+        # carry an intermediate support roughly every 4'. Count scales with the run, so a
+        # short foot bench still gets exactly its two ends.
+        supports = max(2, int(width / 1.2) + 1)
+        reach = width / 2 - leg / 2
+        strokes = [rect(0, 0, width, depth, fill="sauna-wood")]
+        parts: list[Part] = []
+        for far, near, top in bands:
+            band = far - near
+            cy = (far + near) / 2.0
+            parts.append(box(0, cy, top - slab_t, top, width, band, "sauna-wood"))
+            for index in range(supports):
+                cx = -reach + 2 * reach * index / (supports - 1)
+                parts.append(box(cx, cy, 0.0, top - slab_t, leg, band, "sauna-wood-dark"))
+            strokes.append(line((-width / 2, cy), (width / 2, cy)))
+        if tiers >= 2:  # the step between the tiers, the one line a two-tier bench is read by
+            strokes.append(line((-width / 2, bands[0][1]), (width / 2, bands[0][1]),
+                                weight=OUTLINE_WEIGHT))
         return tuple(strokes), tuple(parts)
 
     return build

@@ -166,10 +166,37 @@ BOOKCASE = FurnitureType(
     plan_symbol="bookcase", storage=True, source=REFERENCE,
 )
 
+# --- Sauna --------------------------------------------------------------------------------
+#
+# Not "furniture" the way a sofa is — sauna benches are site-built joinery, scribed to the
+# room and made from the same low-conductivity stock as the wall liner (basswood/aspen, see
+# the ``sauna-tg`` material). They are catalogued here anyway because they are placed,
+# counted and dragged like every other free-standing object, and because the two dimensions
+# that matter are the same two a catalog carries: the run and the depth.
+#
+# Heights are the Law of Löyly, not an ergonomic average: the upper bench at 36" is the one
+# that has to sit level with the top of the heater stones, and the foot bench at 18" is the
+# step to it. The ``sauna-bench-tiered`` symbol derives the lower tier at half the declared
+# height, so those two numbers stay locked together at any size.
+#
+# No ``clearances``: a walk-path zone in front of a bench is meaningless in a room this
+# small, where the opposite bench and the heater are *supposed* to be within arm's reach.
+SAUNA_BENCH_TIERED_102 = FurnitureType(
+    tag="FURN-SAUNA-BENCH-2T-102", name="Two-tier sauna bench, 8'-6\"",
+    footprint=(ft(8, 6), ft(3, 6)), height=ft(3), plan_symbol="sauna-bench-tiered",
+    source="Law of Löyly two-tier bench: upper 36\", lower 18\" (notes/sauna_shower_basement_detail.md)",
+)
+SAUNA_BENCH_54 = FurnitureType(
+    tag="FURN-SAUNA-BENCH-54", name='Sauna foot bench, 4\'-6"',
+    footprint=(ft(4, 6), ft(1, 8)), height=ft(1, 6), plan_symbol="sauna-bench",
+    source="Law of Löyly lower bench, 18\" (notes/sauna_shower_basement_detail.md)",
+)
+
 STARTER_FURNITURE_TYPES = (
     STANDARD_SOFA, LOVESEAT, SECTIONAL, ARMCHAIR, COFFEE_TABLE, END_TABLE, MEDIA_CONSOLE,
     TV_65, TV_98,
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, CHEST, NIGHTSTAND,
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE, DINING_CHAIR,
     WRITING_DESK, OFFICE_CHAIR, BOOKCASE,
+    SAUNA_BENCH_TIERED_102, SAUNA_BENCH_54,
 )

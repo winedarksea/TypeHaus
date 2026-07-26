@@ -15,10 +15,28 @@ from typehaus.model import deg, ft, inch, m, pt
 # fixture on a slab-on-grade — its waste drops straight down rather than into a wall stack,
 # so `drain_position` puts the trap 6" out from the wall on the basin centerline and
 # SP-B-UTILITY (plan/mep.py) is the pre-pour stub-up through SL-B-FLOOR that serves it.
+#
+# The sauna benches are dimensioned to *liner faces*, not to the node lines the walls are
+# authored on, because that is the surface the joiner scribes to. Read off the resolved
+# wall layers: west liner x=9'-1 13/16", east liner (the liner-on-concrete centre wall)
+# x=17'-2 1/2", south concrete face y=1'-0", north liner y=13'-6 1/8" — an 8'-0 11/16" x
+# 12'-6 1/8" clear box. notes/sauna_shower_basement_detail.md reserves the north 4' for the
+# shower, so everything below stops at y=9'-6" and the benches never cross into it.
 BASEMENT_PLACEABLES = [
     Fixture(uid="5BBZTZNBWN", tag="FX-1", type_ref="FX-LAV", room="RM-B-FURNACE",
             position=pt(ft(7), ft(19, 4.5)), wall_ref="W-B-CW",
             drain_position=pt(ft(7), ft(19))),
+    # The long two-tier run takes the east wall: it is the only unbroken face in the room —
+    # the west wall has D-B-SAUNA, the south wall WIN-B-SAUNA — so the bench lands as one
+    # 8'-6" carcass with no scribes around an opening. rotation -90 puts its back (+y local)
+    # against that face, giving x 13'-8 1/2"..17'-2 1/2" and y 1'-0"..9'-6".
+    Furniture(uid="CBF601AAAA", tag="FURN-B-SAUNA-BENCH-E", type_ref="FURN-SAUNA-BENCH-2T-102",
+              room="RM-B-SAUNA", position=pt(ft(15, 5.5), ft(5, 3)), rotation=deg(-90)),
+    # The foot bench returns along the south wall, butted into the two-tier run's west face
+    # at 13'-8 1/2" with an 11/16" scribe left at the west liner. rotation 180 puts its back
+    # to the south. Its top is 18", well clear of WIN-B-SAUNA's 3'-0" sill above it.
+    Furniture(uid="CBF602AAAA", tag="FURN-B-SAUNA-BENCH-S", type_ref="FURN-SAUNA-BENCH-54",
+              room="RM-B-SAUNA", position=pt(ft(11, 5.5), ft(1, 10)), rotation=deg(180)),
 ]
 MAIN_PLACEABLES = [
     Furniture(uid="XV5MXV43QJ", tag="FURN-M-SOFA", type_ref="FURN-SOFA-84", room="RM-M-LIVING",

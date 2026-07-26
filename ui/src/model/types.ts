@@ -211,6 +211,10 @@ export interface CanvasObject {
   // (a chair at its table) — the group's uid. Members do not conflict with each other's
   // recommended clearance, and dragging the group's owner should carry them along.
   placement_group?: string | null;
+  // The circuit that feeds this object, for the placeables that consume power; null for a
+  // sofa, absent on older model.json. Pairs with model.electrical.panel_schedule[].devices —
+  // the same edge read from the device end.
+  circuit?: string | null;
   footprint?: Vec2[];
   required_clearances?: Vec2[][];
   recommended_clearances?: Vec2[][];
@@ -294,6 +298,74 @@ export interface Underlay {
   rotation_deg: number;
   opacity: number;
   url: string;
+}
+
+// The electrical take-off, carried verbatim from takeoff/electrical.py (→ model_json.py
+// "electrical"). Field names match the Python dicts exactly and the arithmetic is already
+// done: the circuits reader renders these, it never recomputes them, because the same six
+// derivations print the E-601 panel-schedule sheet that goes out for permit.
+export interface PanelScheduleRow {
+  circuit: string;
+  description: string;
+  breaker_amps: number;
+  poles: number;
+  volts: number;
+  nema: string;
+  gfci: boolean;
+  backup: boolean;
+  connected_va: number;
+  devices: string[];
+}
+
+export interface ServiceLoad {
+  method: string;
+  floor_area_ft2: number;
+  general_lighting_va: number;
+  fixed_appliance_va: number;
+  hvac_va: number;
+  ev_va: number;
+  demand_va: number;
+  demand_amps: number;
+  service_amps: number;
+  panel_rating_amps: number;
+  within_service: boolean;
+}
+
+export interface ConduitRow {
+  trade_size_in: number;
+  runs: number;
+  length_ft: number;
+  tags: string[];
+}
+
+export interface DeviceCountRow {
+  kind: string;
+  type: string;
+  name: string;
+  nema: string;
+  count: number;
+}
+
+export interface SolarTakeoff {
+  panels: number;
+  total_watts: number;
+  by_product: { product: string; panels: number; watts: number; tags: string[] }[];
+}
+
+export interface BackupComponentRow {
+  component: string;
+  count: number;
+  basis: string;
+}
+
+export interface Electrical {
+  panel_schedule: PanelScheduleRow[];
+  // null for a house that authors no circuits — the summary would be an estimate over nothing.
+  service_load: ServiceLoad | null;
+  conduit: ConduitRow[];
+  devices: DeviceCountRow[];
+  solar: SolarTakeoff;
+  backup_components: BackupComponentRow[];
 }
 
 export interface Condition {
@@ -651,6 +723,7 @@ export interface Model {
   building_height_summary?: BuildingHeightSummary;
   conditions: Condition[];
   transitions?: Transition[]; // library transition documentation; absent on older model.json
+  electrical?: Electrical | null; // the electrical take-off; absent on older model.json
   stack_edges: StackEdge[];
   building_science?: BuildingScience | null;
   catalog?: Catalog; // authoring palette (→ _catalog); absent on older model.json

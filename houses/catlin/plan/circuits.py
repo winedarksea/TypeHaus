@@ -32,8 +32,12 @@ CIRCUITS = (
             nema="6-20R", description="EV charging, NEMA 6-20 (garage)"),
     Circuit(uid="CKT005AAAA", tag="CKT-SPA", panel_ref=_PANEL, breaker_amps=50, poles=2,
             gfci=True, load_va=11500, description="Hot tub (sunken garden)"),
-    Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", panel_ref=_PANEL, breaker_amps=30, poles=2,
-            description="Sauna heater"),
+    # 50A/2p GFCI per notes/sauna_shower_basement_detail.md ("240V, 50A GFCI breaker and
+    # wiring to sauna heater (max 10.5 kW)"). Was 30A, which only carries ~5.5 kW continuous
+    # — half what RM-B-SAUNA's 513 cf heated volume needs. EQ-B-SAUNA-HTR is 9 kW = 37.5A,
+    # 46.9A at the 125% continuous factor, so 50A is the breaker and 10.5 kW the headroom.
+    Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", panel_ref=_PANEL, breaker_amps=50, poles=2,
+            gfci=True, load_va=9000, description="Sauna heater (EQ-B-SAUNA-HTR)"),
     Circuit(uid="CKT007AAAA", tag="CKT-WH-240", panel_ref=_PANEL, breaker_amps=30, poles=2,
             load_va=4500, description="Water heater, 240V tank (EQ-B-WH2)"),
     Circuit(uid="CKT008AAAA", tag="CKT-ERV", panel_ref=_PANEL, breaker_amps=15, poles=2,

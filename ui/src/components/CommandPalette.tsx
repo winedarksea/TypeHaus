@@ -93,6 +93,7 @@ export function CommandPalette() {
       { id: "run-checks", title: "Run checks (reload model)", group: "Model", run: () => void reload() },
       { id: "reader-assembly", title: "Assembly details (transitions)", group: "Model", run: () => setDetailView("assembly") },
       { id: "reader-bom", title: "Bill of materials", group: "Model", run: () => setDetailView("bom") },
+      { id: "reader-circuits", title: "Circuits (panel schedule)", group: "Model", run: () => setDetailView("circuits") },
       { id: "show-everything", title: "Show everything (clear visibility filters)", group: "Isolate", run: showEverything },
     ];
     for (const trade of ALL_TRADES) {

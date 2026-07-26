@@ -22,7 +22,8 @@ from library.placeables.furniture import (ARMCHAIR, BOOKCASE, CHEST, COFFEE_TABL
                                           DINING_CHAIR, DRESSER, EIGHT_SEAT_DINING_TABLE,
                                           END_TABLE, FULL_BED, KING_BED, LOVESEAT,
                                           MEDIA_CONSOLE, NIGHTSTAND, OFFICE_CHAIR, QUEEN_BED,
-                                          ROUND_DINING_TABLE, SECTIONAL,
+                                          ROUND_DINING_TABLE, SAUNA_BENCH_54,
+                                          SAUNA_BENCH_TIERED_102, SECTIONAL,
                                           SIX_SEAT_DINING_TABLE, STANDARD_SOFA,
                                           STARTER_FURNITURE_TYPES, TV_65, TV_98, TWIN_BED,
                                           WRITING_DESK)
@@ -35,6 +36,7 @@ __all__ = [
     "MEDIA_CONSOLE", "TV_65", "TV_98", "QUEEN_BED", "KING_BED", "FULL_BED", "TWIN_BED",
     "DRESSER", "CHEST", "NIGHTSTAND", "SIX_SEAT_DINING_TABLE", "EIGHT_SEAT_DINING_TABLE",
     "ROUND_DINING_TABLE", "DINING_CHAIR", "WRITING_DESK", "OFFICE_CHAIR", "BOOKCASE",
+    "SAUNA_BENCH_TIERED_102", "SAUNA_BENCH_54",
     # casework
     "BASE_15", "BASE_24", "BASE_30", "BASE_36", "SINK_BASE_36",
     "WALL_18", "WALL_24", "WALL_30", "WALL_66",

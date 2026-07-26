@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useStore } from "../state/store";
 import type { DetailIndexEntry, DetailPayload } from "../engine/EngineClient";
 import { DetailCanvas } from "./DetailCanvas";
@@ -20,7 +21,11 @@ import {
 // Both need the house to carry an editable `plan/details.py` holding a `DETAIL_NOTES` list;
 // without one the coordinator has nowhere to write and the toast says so.
 
-export function DetailViewer({ onClose }: { onClose: () => void }) {
+// `initialKey` is the condition key the caller wants on screen — a wall's own junction, the
+// condition a transition details. Without it every entry point landed on `rows[0]`, so
+// "view the detail for *this*" answered with somebody else's drawing. null/undefined keeps
+// the old first-row behaviour for the callers that genuinely mean "open the library".
+export function DetailViewer({ initialKey, onClose }: { initialKey?: string | null; onClose: () => void }) {
   const client = useStore((s) => s.client);
   const applyOps = useStore((s) => s.applyOps);
   const runMacro = useStore((s) => s.runMacro);
@@ -34,6 +39,10 @@ export function DetailViewer({ onClose }: { onClose: () => void }) {
   const [payload, setPayload] = useState<DetailPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  // Set when the caller asked for a key the index does not carry — an unbound condition
+  // derives no detail at all (details.py skips conditions no transition matches), so the
+  // viewer says which drawing it fell back to instead of silently showing the wrong one.
+  const [missingKey, setMissingKey] = useState<string | null>(null);
 
   useEffect(() => {
     let live = true;
@@ -42,13 +51,28 @@ export function DetailViewer({ onClose }: { onClose: () => void }) {
       .then((rows) => {
         if (!live) return;
         setIndex(rows);
-        if (rows.length > 0) setSelectedKey(rows[0].key);
+        if (rows.length === 0) return;
+        const wanted = initialKey ? rows.find((row) => row.key === initialKey) : undefined;
+        setSelectedKey((wanted ?? rows[0]).key);
+        if (initialKey && !wanted) setMissingKey(initialKey);
       })
       .catch((e: Error) => live && setError(e.message));
     return () => {
       live = false;
     };
-  }, [client]);
+  }, [client, initialKey]);
+
+  // The modal owns Escape while it is open: the App-level chain closes the reader *underneath*
+  // it (App.tsx Esc hierarchy), which would leave the drawing floating over a bare canvas.
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.stopPropagation();
+      onClose();
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [onClose]);
 
   // Drop the old drawing when the user picks a different detail (but not on a same-key refetch).
   useEffect(() => { setPayload(null); }, [selectedKey]);
@@ -103,7 +127,11 @@ export function DetailViewer({ onClose }: { onClose: () => void }) {
     return [...byKind.entries()];
   }, [index]);
 
-  return (
+  // Portalled to <body>: opened from the assembly reader the modal would otherwise sit inside
+  // `.workbench-backdrop`, whose `backdrop-filter` makes it the containing block for
+  // position:fixed descendants — the drawing would be clipped into the reader's padding box
+  // instead of covering the viewport.
+  return createPortal(
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" style={{ width: "90vw", height: "85vh", display: "flex" }} onClick={(e) => e.stopPropagation()}>
         <div style={{ width: 260, overflowY: "auto", borderRight: "1px solid var(--panel-line)", paddingRight: 8 }}>
@@ -112,6 +140,12 @@ export function DetailViewer({ onClose }: { onClose: () => void }) {
             <button className="btn" onClick={onClose}>Close</button>
           </div>
           {error && <div className="finding error">{error}</div>}
+          {missingKey && (
+            <div className="muted" style={{ fontSize: 11, marginTop: 6 }}>
+              No derived detail for <span className="reader-mono">{missingKey}</span> — no
+              transition binds it. Showing the first detail instead.
+            </div>
+          )}
           {grouped.map(([kind, rows]) => (
             <div key={kind} style={{ marginTop: 10 }}>
               <div className="muted" style={{ textTransform: "uppercase", fontSize: 11 }}>{kind}</div>
@@ -119,6 +153,11 @@ export function DetailViewer({ onClose }: { onClose: () => void }) {
                 <div
                   key={row.key}
                   className="finding info"
+                  // Opened at a key, the selected entry is usually far down a 43-row list;
+                  // without this the drawing is right but the list looks untouched.
+                  ref={row.key === selectedKey
+                    ? (node) => node?.scrollIntoView({ block: "nearest" })
+                    : undefined}
                   onClick={() => setSelectedKey(row.key)}
                   style={{ outline: row.key === selectedKey ? "2px solid var(--accent)" : "none", cursor: "pointer" }}
                 >
@@ -142,7 +181,8 @@ export function DetailViewer({ onClose }: { onClose: () => void }) {
           {payload && <NotesPanel payload={payload} />}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

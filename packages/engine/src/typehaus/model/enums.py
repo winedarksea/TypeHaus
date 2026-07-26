@@ -174,6 +174,10 @@ class EquipmentKind(Enum):
     WATER_HEATER = "water_heater"
     ERV = "erv"
     HEAT_PUMP = "heat_pump"  # minisplit outdoor condenser
+    # Hard-wired electric sauna heater. Equipment rather than Appliance because it takes no
+    # receptacle — the circuit lands in a junction box at the heater — and ``Equipment`` is
+    # the placeable that carries a ``circuit`` reference for exactly that case.
+    SAUNA_HEATER = "sauna_heater"
 
 
 class DeviceKind(Enum):

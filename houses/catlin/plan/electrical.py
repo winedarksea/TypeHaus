@@ -36,6 +36,7 @@ from typehaus import (
     MountKind,
     Service,
     ServicePort,
+    deg,
     ft,
     inch,
     pt,
@@ -84,9 +85,9 @@ DEVICE_TYPES = (
                           ports=(ServicePort(tag="power", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
     # Sauna heaters are hard-wired: a 240V junction box at the heater corner, not a
-    # receptacle. 30A/2p circuit -> 7200 VA connected.
+    # receptacle. 50A/2p circuit feeding the 9 kW EQ-B-SAUNA-HTR -> 9000 VA connected.
     ElectricalDeviceType(tag="ED-T-SAUNA-JB", name="Sauna heater junction box, 240V",
-                          load_va=7200,
+                          load_va=9000,
                           footprint=(inch(6), inch(6)), height=inch(4),
                           ports=(ServicePort(tag="power", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
@@ -101,6 +102,15 @@ EQUIPMENT_TYPES = (
                   ports=(ServicePort(tag="cold", service=Service.WATER_COLD, position=(ft(0), ft(0), ft(4))),
                          ServicePort(tag="hot", service=Service.WATER_HOT, position=(ft(0), ft(0), ft(4))),
                          ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))))),
+    # Electric sauna heater. RM-B-SAUNA's heated zone is 8'-0 11/16" x 8'-6" x 7'-6" ~= 513
+    # cubic feet, and the trade rule is ~1 kW per 45-50 cf, so this room wants 9-10.5 kW —
+    # which is the "240V, 50A GFCI breaker ... max 10.5 kW" the detail notes call for.
+    # Floor-standing, 18" x 16" x 30", stones on top (see the ``sauna-heater`` symbol).
+    EquipmentType(tag="EQ-T-SAUNA-HEATER", name="Electric sauna heater, 9 kW",
+                  footprint=(inch(18), inch(16)), height=inch(30),
+                  plan_symbol="sauna-heater",
+                  ports=(ServicePort(tag="power", service=Service.POWER_240,
+                                     position=(ft(0), ft(0), ft(0))),)),
     EquipmentType(tag="EQ-T-ERV", name="ERV, 240V", footprint=(inch(24), inch(24)), height=inch(30),
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
@@ -140,9 +150,12 @@ BASEMENT_DEVICES = [
     ElectricalDevice(uid="CEE004AAAA", tag="ED-B-SUMP-RC", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(4, 6), ft(33)), type_ref="ED-T-RECEPTACLE", circuit="CKT-SUMP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
-    # Sauna heater connection, NE corner of RM-B-SAUNA, low like the heater terminals.
+    # Sauna heater connection: on the sauna's west liner wall immediately south of
+    # EQ-B-SAUNA-HTR (its footprint is y 8'-0"..9'-6"), low like the heater terminals. It
+    # used to sit at (15', 7'), which was neither on a wall nor in the "NE corner" its
+    # comment claimed — and is now inside FURN-B-SAUNA-BENCH-E.
     ElectricalDevice(uid="CEE005AAAA", tag="ED-B-SAUNA-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(15), ft(7)), type_ref="ED-T-SAUNA-JB", circuit="CKT-SAUNA",
+                     position=pt(ft(9, 3), ft(7, 9)), type_ref="ED-T-SAUNA-JB", circuit="CKT-SAUNA",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
     # Hot tub in the sunken garden: disconnect on the west porch wall, 7' from its north
     # end, under the porch deck (see header). NEC 680.22 convenience receptacle beside it.
@@ -162,6 +175,15 @@ BASEMENT_EQUIPMENT = [
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
               position=pt(m(2.09754), m(8.88149)), footprint=(inch(24), inch(24)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV", circuit="CKT-ERV"),
+    # Sauna heater, NW corner of the sauna's *heated* zone — the south 8'-6" of RM-B-SAUNA,
+    # since notes/sauna_shower_basement_detail.md reserves the north 4' for the shower. Back
+    # to the west liner face (x=9'-1 13/16", so rotation 90 = back west), north face on the
+    # 9'-6" partition line: it is the first thing past the door and diagonally opposite the
+    # bench, which is what keeps 3'-2 11/16" of clear floor between hot metal and bare shins.
+    Equipment(uid="CEE020AAAA", tag="EQ-B-SAUNA-HTR", kind=EquipmentKind.SAUNA_HEATER,
+              position=pt(ft(9, 9.8125), ft(8, 9)), footprint=(inch(18), inch(16)),
+              room="RM-B-SAUNA", type_ref="EQ-T-SAUNA-HEATER", rotation=deg(90),
+              circuit="CKT-SAUNA"),
 ]
 
 # --- Main storey: dryer, freezer, minisplit condensers + disconnects ------------------

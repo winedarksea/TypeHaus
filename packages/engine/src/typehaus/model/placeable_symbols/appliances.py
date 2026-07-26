@@ -108,6 +108,45 @@ def air_handler() -> Builder:
     return build
 
 
+def sauna_heater(*, stone_columns: int = 3, stone_rows: int = 3) -> Builder:
+    """An electric sauna heater: a steel casing carrying an open bed of stones.
+
+    The stones are the symbol. A heater drawn as a plain box is indistinguishable from the
+    water heater standing three rooms away, and the stones are also the thing the room is
+    planned around — they are what the upper bench has to sit level with and what the guard
+    clearance is measured from. Drawn as a fixed grid rather than a scatter, because the
+    glyph has to be byte-identical on every build.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        casing_w, casing_d = width * 0.94, depth * 0.94
+        bed_w, bed_d = casing_w * 0.82, casing_d * 0.82
+        columns, rows = max(1, stone_columns), max(1, stone_rows)
+        stone_r = min(bed_w / columns, bed_d / rows) * 0.34
+        strokes = [rect(0, 0, width, depth, fill="appliance-steel"),
+                   rect(0, 0, bed_w, bed_d, fill="stone", weight=DETAIL_WEIGHT)]
+        for column in range(columns):
+            for row in range(rows):
+                cx = -bed_w / 2 + bed_w * (column + 0.5) / columns
+                cy = -bed_d / 2 + bed_d * (row + 0.5) / rows
+                strokes.append(circle(cx, cy, stone_r, segments=10, weight=DETAIL_WEIGHT))
+        # The stones sit *in* the top of the casing, not on a shelf above it. The collar
+        # around them is four rails rather than one box: a box would enclose the stone bed
+        # and hide the only part of this object anyone recognises it by.
+        bed_z0 = height * 0.82
+        rail_w, rail_d = (casing_w - bed_w) / 2, (casing_d - bed_d) / 2
+        parts = [box(0, 0, 0.0, bed_z0, width, depth, "appliance-steel"),
+                 box(0, 0, bed_z0, height, bed_w, bed_d, "stone")]
+        for sign in (-1, 1):
+            parts.append(box(sign * (bed_w + rail_w) / 2, 0, bed_z0, height, rail_w, casing_d,
+                             "appliance-steel"))
+            parts.append(box(0, sign * (bed_d + rail_d) / 2, bed_z0, height, bed_w, rail_d,
+                             "appliance-steel"))
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def panel_board() -> Builder:
     """A load centre: the enclosure outline plus its breaker columns."""
 
@@ -149,6 +188,7 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "hood": canopy_hood(),
     "furnace": air_handler(),
     "water-heater": tank(),
+    "sauna-heater": sauna_heater(),
     "panel": panel_board(),
     "register": grille(louvers=5),
 }

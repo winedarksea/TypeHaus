@@ -11,6 +11,7 @@ import { ViewsPanel, ViewChips } from "./components/ViewsPanel";
 import { Workbench } from "./components/Workbench";
 import { AssemblyDetailsView } from "./components/AssemblyDetailsView";
 import { BomView } from "./components/BomView";
+import { CircuitsView } from "./components/CircuitsView";
 import { LensBar } from "./components/LensBar";
 import { Preview3D } from "./components/Preview3D";
 import { Canvas2D } from "./components/Canvas2D";
@@ -187,9 +188,9 @@ export function App() {
           </span>
         )}
 
-        {/* These two slots used to hold DESIGN / ANALYZE / DOCUMENT, which only re-emphasized
+        {/* These slots used to hold DESIGN / ANALYZE / DOCUMENT, which only re-emphasized
             panels. Workspace now lives in the Views panel with the rest of the view recipe;
-            the topbar spends its space on the two readers that answer real questions. */}
+            the topbar spends its space on the readers that answer real questions. */}
         <div className="workspace-seg" role="group" aria-label="Model readers">
           <button
             className={`seg-btn${detailView === "assembly" ? " active" : ""}`}
@@ -206,6 +207,14 @@ export function App() {
             title="Bill of materials — every part in the model"
           >
             BOM
+          </button>
+          <button
+            className={`seg-btn${detailView === "circuits" ? " active" : ""}`}
+            onClick={() => setDetailView(detailView === "circuits" ? "none" : "circuits")}
+            aria-pressed={detailView === "circuits"}
+            title="Circuits — panel schedule, service load, conduit, PV"
+          >
+            CIRCUITS
           </button>
         </div>
 
@@ -300,6 +309,7 @@ export function App() {
       <IssuesDrawer />
       {detailView === "assembly" && <AssemblyDetailsView />}
       {detailView === "bom" && <BomView />}
+      {detailView === "circuits" && <CircuitsView />}
       <Workbench />
       <CommandPalette />
       <Toasts />

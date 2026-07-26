@@ -133,8 +133,25 @@ We will have a low voltage system set too. POE for access points and cameras. We
 +X: east, +Y: north, +Z: vertical/up. Will need to support rotating the house off axis in
 the future.
 
-## File-size debt (AGENTS.md wants < 500 lines) — measured 2026-07-25
+## Items after Phase 4
+- Ridge vent cap needs a proper shape (and white painted metal look)
+- Polycarbonate on breezeway doesn't line up (it should cover the lower beam, and top plate should meet the side place in a shared channel).
 
-- `ui/src/components/Panel3D.tsx` — **687** (the last offender; Canvas2D is 489 + eight
-  extracted files all <500, store.ts is 360, `resolve/stairs/` is a package of 6 files
-  ≤265, `emit/gltf`, `detail_components` and `takeoff` are packages).
+- Flooring
+- Lighting
+- ~~Sauna furniture~~ — done: two-tier bench + foot bench return + 9 kW electric heater in
+  RM-B-SAUNA (`sauna-bench` / `sauna-bench-tiered` / `sauna-heater` symbols). Still open in
+  that room: the shower end, its glass partition, and the HRV intake/exhaust registers from
+  notes/sauna_shower_basement_detail.md. Note `emit/draw/section.py` cuts walls, solids,
+  floors, roofs and members only — placeables do not appear in SL-D-SAUNA.
+
+- Frost Free Hydrant in garage
+		Frost free hydrant and "hose down" area
+			72" below ground, gravel sump, interior shutoff
+			Sleeved through slab
+			Sealant on concrete
+			Y34SS hydrant + extra coating + hose bib vacuum breaker (small screw on thing)
+				Raise pedestal for this, so the sleeve entrance is not the salt water floor
+			NO drain - Most places don't like. Have a gravel pit outside for a wash area and drainage
+- Heat rise detector in garage, smoke alarm in each room
+- Cameras: one in garage, one on porch, one 

@@ -76,6 +76,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 required_clearances=tuple(ring for zone, ring in zones if _is_required(zone)),
                 recommended_clearances=tuple(ring for zone, ring in zones if not _is_required(zone)),
                 attachment_wall=attachment, attachment_face=attachment_face,
+                circuit=getattr(item, "circuit", None),
             ))
             anchor_zones.extend(
                 PlacementGroupAnchorZone(anchor_uid=item.uid, anchor_tag=item.tag,

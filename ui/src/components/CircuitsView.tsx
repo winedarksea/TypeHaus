@@ -1,0 +1,303 @@
+import { Fragment, useMemo, useState } from "react";
+import { useStore } from "../state/store";
+import { uidByTag } from "../model/tagIndex";
+import type { PanelScheduleRow, ServiceLoad } from "../model/types";
+import { ReaderSection, ReaderShell } from "./ReaderShell";
+
+// "Circuits" — the third reader, and the on-screen twin of the E-601 permit sheet. Every
+// number here is carried whole from model.json's `electrical` block, which is
+// takeoff/electrical.py verbatim: the same six derivations that print the panel schedule
+// stamped for permit and that `haus takeoff` reports. This file is presentation only, on
+// purpose — a schedule the browser recomputed could disagree with the drawing, and the
+// drawing is the one that gets built.
+
+const VA_PER_KW = 1000;
+
+function formatVa(va: number): string {
+  return va >= VA_PER_KW ? `${(va / VA_PER_KW).toFixed(1)} kVA` : `${Math.round(va)} VA`;
+}
+
+// The service-load block reads as a verdict, not a table: the last two lines are the whole
+// question ("does this house fit its service?"), so they carry the badge.
+function ServiceLoadCard({ load }: { load: ServiceLoad }) {
+  return (
+    <div className="reader-card">
+      <div className="reader-card-head">
+        <span className="reader-card-title">Demand {load.demand_amps} A</span>
+        <span className={`badge ${load.within_service ? "" : "confirm"}`}>
+          {load.within_service ? "within service" : "over service"}
+        </span>
+        <span className="muted">{load.method}</span>
+      </div>
+      <div className="kv">
+        <span className="k">Conditioned area</span>
+        <span>{Math.round(load.floor_area_ft2).toLocaleString()} sf</span>
+        <span className="k">General lighting + small appliance</span>
+        <span>{formatVa(load.general_lighting_va)}</span>
+        <span className="k">Fixed appliances</span>
+        <span>{formatVa(load.fixed_appliance_va)}</span>
+        <span className="k">Heating / cooling</span>
+        <span>{formatVa(load.hvac_va)}</span>
+        <span className="k">EV charging</span>
+        <span>{formatVa(load.ev_va)}</span>
+        <span className="k">Calculated demand</span>
+        <span>{formatVa(load.demand_va)} · {load.demand_amps} A</span>
+        <span className="k">Service / panel</span>
+        <span>{load.service_amps} A service · {load.panel_rating_amps} A panel</span>
+      </div>
+    </div>
+  );
+}
+
+function PanelSchedule({ rows, expanded, onExpand, index, onZoom }: {
+  rows: PanelScheduleRow[];
+  expanded: string | null;
+  onExpand: (circuit: string | null) => void;
+  index: Map<string, string>;
+  onZoom: (tag: string) => void;
+}) {
+  return (
+    <div className="reader-table-scroll">
+      <table className="reader-table">
+        <thead>
+          <tr>
+            <th>Circuit</th>
+            <th>Description</th>
+            <th className="num-col">Breaker</th>
+            <th className="num-col">Volts</th>
+            <th>NEMA</th>
+            <th>Protection</th>
+            <th className="num-col">Connected</th>
+            <th className="num-col">Devices</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => {
+            const open = expanded === row.circuit;
+            return (
+              <Fragment key={row.circuit}>
+                <tr>
+                  {/* A circuit with nothing on it yet (a spare) is still a real circuit — it
+                      gets a plain label rather than a disabled control, which would read as
+                      "this circuit is disabled". */}
+                  <td>
+                    {row.devices.length > 0 ? (
+                      <button className="reader-tag" title={open ? "Hide devices" : "Show the devices on this circuit"}
+                        onClick={() => onExpand(open ? null : row.circuit)}>
+                        {open ? "▾ " : "▸ "}<span className="reader-mono">{row.circuit}</span>
+                      </button>
+                    ) : (
+                      <span className="reader-mono" style={{ paddingLeft: 12 }}>{row.circuit}</span>
+                    )}
+                  </td>
+                  <td>{row.description}</td>
+                  <td className="num-col">{row.breaker_amps} A / {row.poles}P</td>
+                  <td className="num-col">{row.volts}</td>
+                  <td className="reader-mono">{row.nema || "—"}</td>
+                  <td>
+                    {row.gfci && <span className="reader-chip">GFCI</span>}
+                    {row.backup && <span className="reader-chip">backup</span>}
+                    {!row.gfci && !row.backup && <span className="muted">—</span>}
+                  </td>
+                  {/* A circuit with neither an authored load nor typed consumers reports 0 —
+                      the engine's honest state, shown as such rather than as an estimate. */}
+                  <td className="num-col">
+                    {row.connected_va > 0 ? formatVa(row.connected_va) : <span className="muted">—</span>}
+                  </td>
+                  <td className="num-col">{row.devices.length || "—"}</td>
+                </tr>
+                {open && (
+                  <tr>
+                    <td colSpan={8}>
+                      <div className="reader-tag-cloud">
+                        {row.devices.map((tag) => (
+                          <button key={tag} className="reader-tag" onClick={() => onZoom(tag)}
+                            disabled={!index.has(tag)} title="Zoom to device">
+                            {tag}
+                          </button>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function CircuitsView() {
+  const model = useStore((s) => s.model);
+  const setDetailView = useStore((s) => s.setDetailView);
+  const zoomToUid = useStore((s) => s.zoomToUid);
+  const [filter, setFilter] = useState("");
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  const index = useMemo(() => (model ? uidByTag(model) : new Map<string, string>()), [model]);
+  const electrical = model?.electrical ?? null;
+
+  const needle = filter.trim().toLowerCase();
+  const schedule = useMemo(() => {
+    const rows = electrical?.panel_schedule ?? [];
+    return needle
+      ? rows.filter((row) => `${row.circuit} ${row.description} ${row.nema}`.toLowerCase().includes(needle))
+      : rows;
+  }, [electrical, needle]);
+
+  if (!model) return null;
+
+  // Same jump contract as the assembly reader: zoom the plan, then get out of its way.
+  const jump = (tag: string) => {
+    const uid = index.get(tag);
+    if (uid) {
+      zoomToUid(uid);
+      setDetailView("none");
+    }
+  };
+
+  if (!electrical) {
+    return (
+      <ReaderShell title="Circuits" subtitle="no electrical data" onClose={() => setDetailView("none")}>
+        <div className="muted">
+          This model carries no electrical take-off — rebuild with a current engine.
+        </div>
+      </ReaderShell>
+    );
+  }
+
+  const { service_load: load, conduit, devices, solar, backup_components: backup } = electrical;
+  const kw = (solar.total_watts / VA_PER_KW).toFixed(2);
+
+  return (
+    <ReaderShell
+      title="Circuits"
+      subtitle={`${electrical.panel_schedule.length} circuits${load ? ` · ${load.demand_amps} A demand on a ${load.service_amps} A service` : ""}`}
+      onClose={() => setDetailView("none")}
+      toolbar={
+        <input
+          value={filter}
+          placeholder="Filter circuits…"
+          onChange={(event) => setFilter(event.target.value)}
+          aria-label="Filter circuits"
+          style={{ padding: "5px 7px", minWidth: 180 }}
+        />
+      }
+    >
+      <ReaderSection
+        title="Service load"
+        note="NEC 220.82 optional-method estimate against the service: general lighting from resolved conditioned floor area, appliances from the authored circuits, PV excluded as a source rather than a load."
+        count={load ? 1 : 0}
+      >
+        {load && <ServiceLoadCard load={load} />}
+      </ReaderSection>
+
+      <ReaderSection
+        title="Panel schedule"
+        note="Every authored circuit in panel order. Connected VA prefers the circuit's own authored load and otherwise sums its devices' typed loads. Expand a circuit to zoom to what it feeds."
+        count={schedule.length}
+      >
+        <PanelSchedule rows={schedule} expanded={expanded} onExpand={setExpanded}
+          index={index} onZoom={jump} />
+      </ReaderSection>
+
+      <ReaderSection
+        title="Backup subsystem"
+        note="DIN-rail components derived from the backup-flagged circuits — never a hand-typed parts list."
+        count={backup.length}
+      >
+        <div className="reader-table-scroll">
+          <table className="reader-table">
+            <thead><tr><th>Component</th><th className="num-col">Count</th><th>Basis</th></tr></thead>
+            <tbody>
+              {backup.map((row) => (
+                <tr key={row.component}>
+                  <td>{row.component}</td>
+                  <td className="num-col">{row.count}</td>
+                  <td className="muted">{row.basis}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </ReaderSection>
+
+      <ReaderSection
+        title="Conduit"
+        note="EMT trunks by trade size, in developed length — plan run plus riser, the way it is ordered."
+        count={conduit.length}
+      >
+        <div className="reader-table-scroll">
+          <table className="reader-table">
+            <thead>
+              <tr><th className="num-col">Trade size</th><th className="num-col">Runs</th>
+                <th className="num-col">Length</th><th>Tags</th></tr>
+            </thead>
+            <tbody>
+              {conduit.map((row) => (
+                <tr key={row.trade_size_in}>
+                  <td className="num-col">{row.trade_size_in}"</td>
+                  <td className="num-col">{row.runs}</td>
+                  <td className="num-col">{row.length_ft} lf</td>
+                  <td className="reader-mono muted">{row.tags.join(" · ")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </ReaderSection>
+
+      <ReaderSection
+        title="Devices"
+        note="What the electrician's order reads: every modeled device counted by kind and product type."
+        count={devices.length}
+      >
+        <div className="reader-table-scroll">
+          <table className="reader-table">
+            <thead>
+              <tr><th>Kind</th><th>Type</th><th>Product</th><th>NEMA</th><th className="num-col">Count</th></tr>
+            </thead>
+            <tbody>
+              {devices.map((row) => (
+                <tr key={`${row.kind}·${row.type}`}>
+                  <td className="reader-mono">{row.kind}</td>
+                  <td className="reader-mono">{row.type}</td>
+                  <td>{row.name || <span className="muted">—</span>}</td>
+                  <td className="reader-mono">{row.nema || "—"}</td>
+                  <td className="num-col">{row.count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </ReaderSection>
+
+      <ReaderSection
+        title="PV array"
+        note={`${solar.panels} modules · ${kw} kW installed DC. Watts are summed from the resolved modules, never a hand-typed total.`}
+        count={solar.by_product.length}
+      >
+        {solar.by_product.map((row) => (
+          <div key={row.product} className="reader-card">
+            <div className="reader-card-head">
+              <span className="reader-card-title">{row.product}</span>
+              <span className="muted">
+                {row.panels} × {Math.round(row.watts / row.panels)} W = {(row.watts / VA_PER_KW).toFixed(2)} kW
+              </span>
+            </div>
+            <div className="reader-tag-cloud">
+              {row.tags.map((tag) => (
+                <button key={tag} className="reader-tag" onClick={() => jump(tag)}
+                  disabled={!index.has(tag)} title="Zoom to module">
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </ReaderSection>
+    </ReaderShell>
+  );
+}

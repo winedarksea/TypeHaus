@@ -20,6 +20,14 @@ from typehaus.resolve import site_earth
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedModel
 from typehaus.source.provenance import Provenance
+from typehaus.takeoff.electrical import (
+    backup_component_rows,
+    conduit_takeoff,
+    electrical_device_takeoff,
+    panel_schedule,
+    service_load_summary,
+    solar_takeoff,
+)
 
 if TYPE_CHECKING:
     from typehaus.diff.variants import VariantSpec
@@ -408,6 +416,21 @@ def model_to_dict(
              "provenance": _provenance(provenance, panel.tag)}
             for panel in sorted(model.solar_panels, key=lambda item: item.uid)
         ],
+        # The electrical take-off, verbatim from takeoff/electrical.py — the same six
+        # derivations the E-601 panel-schedule sheet and `haus takeoff` print. The circuits
+        # reader is a third surface over one arithmetic, never a second one: a schedule the
+        # browser recomputed could disagree with the sheet stamped for permit.
+        # `service_load` is None for a house that authors no circuits (the summary would be
+        # an estimate over nothing); every other section degrades to an empty list.
+        "electrical": {
+            "panel_schedule": panel_schedule(model),
+            "service_load": (service_load_summary(model)
+                             if model.plan.library.circuits else None),
+            "conduit": conduit_takeoff(model),
+            "devices": electrical_device_takeoff(model),
+            "solar": solar_takeoff(model),
+            "backup_components": backup_component_rows(model),
+        },
         "stairs": [
             {"uid": stair.uid, "tag": stair.tag, "storey": stair.storey,
              "to_storey": stair.to_storey, "outline": [list(point) for point in stair.outline],

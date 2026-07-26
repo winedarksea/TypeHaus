@@ -29,7 +29,9 @@ export function Inspector() {
   const model = useStore((s) => s.model);
   const selection = useStore((s) => s.selection);
   const setHover = useStore((s) => s.setHover);
-  const [showDetails, setShowDetails] = useState(false);
+  // The condition key the detail viewer should open at — the junction of the *selected* wall,
+  // not whatever sorts first in the index. `null` = closed.
+  const [detailKey, setDetailKey] = useState<string | null>(null);
   const [width, setWidth] = useState(savedWidth);
   const [dragging, setDragging] = useState(false);
   const widthRef = useRef(width);
@@ -80,9 +82,9 @@ export function Inspector() {
         model={model}
         kind={selection.kind}
         uid={selection.uid}
-        onShowDetails={() => setShowDetails(true)}
+        onShowDetails={setDetailKey}
       />
-      {showDetails && <DetailViewer onClose={() => setShowDetails(false)} />}
+      {detailKey !== null && <DetailViewer initialKey={detailKey} onClose={() => setDetailKey(null)} />}
     </aside>
   );
 }
@@ -96,7 +98,7 @@ function SelectionInspector({
   model: Model;
   kind: string | null;
   uid: string;
-  onShowDetails: () => void;
+  onShowDetails: (conditionKey: string) => void;
 }) {
   if (kind === "wall") {
     const w = model.walls.find((x) => x.uid === uid);
@@ -171,6 +173,7 @@ function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullabl
   const applyOps = useStore((state) => state.applyOps);
   const runMacro = useStore((state) => state.runMacro);
   const toast = useStore((state) => state.toast);
+  const setDetailView = useStore((state) => state.setDetailView);
   const type = model.catalog?.canvas_object_types?.find((candidate) => candidate.tag === item.type);
   const compatibleTypes = (model.catalog?.canvas_object_types ?? []).filter((candidate) => candidate.kind === item.kind);
   const [rotation, setRotation] = useState(String(item.rotation ?? 0));
@@ -215,6 +218,13 @@ function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullabl
       <span className="k">Category</span><span>{item.domain}</span>
       <span className="k">Type</span><span>{item.type ?? "—"}</span>
       <span className="k">Room</span><span>{item.room ?? "unassigned"}</span>
+      {item.circuit && <>
+        <span className="k">Circuit</span>
+        <span>
+          <button className="badge" style={{ cursor: "pointer" }} title="Open the panel schedule"
+            onClick={() => setDetailView("circuits")}>{item.circuit}</button>
+        </span>
+      </>}
       <span className="k">Mount</span><span>{item.attachment ? `attached to ${item.attachment.wall} (${item.attachment.face})` : "free"}</span>
       <span className="k">Ports</span><span>{type?.ports.map((port) => port.service).join(", ") || "—"}</span>
     </div>
@@ -334,11 +344,16 @@ function StairInspector({ model, stair }: { model: Model; stair: Stair }) {
   </div>;
 }
 
-function WallInspector({ model, w, onShowDetails }: { model: Model; w: Wall; onShowDetails: () => void }) {
+function WallInspector({ model, w, onShowDetails }: { model: Model; w: Wall; onShowDetails: (key: string) => void }) {
   const select = useStore((s) => s.select);
   const setHover = useStore((s) => s.setHover);
-  // Does this wall participate in any derived boundary condition? (→ 11b transition details)
-  const inCondition = (model.conditions ?? []).some((c) => c.elements.includes(w.tag));
+  // Which derived boundary conditions this wall participates in (→ 11b transition details).
+  // Deduped by key, because that is the granularity the engine draws at: a wall meeting the
+  // same roof at two openings is one detail, not two. Each key gets its own button so the
+  // viewer opens on *that* junction rather than the first one in the index.
+  const conditions = [...new Map((model.conditions ?? [])
+    .filter((c) => c.elements.includes(w.tag))
+    .map((c) => [c.key, c] as const)).values()];
   const applyOps = useStore((s) => s.applyOps);
   const toast = useStore((s) => s.toast);
   const setWorkbench = useStore((s) => s.setWorkbench);
@@ -378,9 +393,13 @@ function WallInspector({ model, w, onShowDetails }: { model: Model; w: Wall; onS
       <div style={{ marginTop: 6 }}>
         <button className="btn" onClick={() => setWorkbench("assembly")}>Edit assembly…</button>
       </div>
-      {inCondition && (
-        <div style={{ marginTop: 6 }}>
-          <button className="btn" onClick={onShowDetails}>View junction detail…</button>
+      {conditions.length > 0 && (
+        <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 4 }}>
+          {conditions.map((c) => (
+            <button key={c.key} className="btn" onClick={() => onShowDetails(c.key)} title={c.key}>
+              {conditions.length === 1 ? "View junction detail…" : `Detail · ${c.kind}`}
+            </button>
+          ))}
         </div>
       )}
       <div style={{ marginTop: 8 }}>

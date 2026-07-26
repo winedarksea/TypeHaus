@@ -1,31 +1,21 @@
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { useStore } from "../state/store";
 import { formatFtIn } from "../model/geometry";
-import type { Condition, Model, Transition } from "../model/types";
+import type { Condition, Transition } from "../model/types";
 import { transitionCoverage } from "../model/transitions";
+import { uidByTag } from "../model/tagIndex";
+import { DetailViewer } from "./DetailViewer";
 import { ReaderSection, ReaderShell } from "./ReaderShell";
 
 // "Assembly details (ie transitions)" (→ TODO Editor). The library's authored Transitions are
 // printed by the engine and carried in model.json, but nothing surfaced them: this reader pairs
 // each transition with the resolved conditions whose pattern it details, so "what happens where
 // this wall meets that roof" is answerable without opening the plan source.
-
-// Tag → uid for every record a condition or transition can name. Conditions carry authored
-// *tags*; selection and zoom are keyed by *uid*, so the reader resolves once per model.
-function uidByTag(model: Model): Map<string, string> {
-  const index = new Map<string, string>();
-  const add = (records: readonly { tag: string; uid: string }[]) => {
-    for (const record of records) if (!index.has(record.tag)) index.set(record.tag, record.uid);
-  };
-  add(model.walls);
-  add(model.openings);
-  add(model.rooms);
-  add(model.roofs ?? []);
-  add(model.solids ?? []);
-  add(model.stairs ?? []);
-  add(model.floors ?? []);
-  return index;
-}
+//
+// It is also the way *into* the drawings. The engine derives one junction detail per bound
+// condition key, but every entry point used to open the viewer on whichever detail sorted
+// first — so this reader hands the viewer the key the user actually clicked, from the
+// transition that details it or from the condition itself.
 
 function ContinuityRows({ transition }: { transition: Transition }) {
   if (transition.continuity.length === 0) return <div className="muted">No control-layer continuity declared.</div>;
@@ -59,16 +49,78 @@ function JoinRows({ transition }: { transition: Transition }) {
   );
 }
 
+// Conditions grouped the way the engine draws them: one row per *distinct* key, because
+// details.py derives exactly one detail per bound key however many places that junction
+// recurs (twenty identical window heads share one drawing). Each row carries the union of
+// the elements those conditions touch, so a tag click still zooms to a real place in the plan.
+//
+// The Detail button is disabled for an unbound key — no transition matches it, so the engine
+// derived nothing — which beats opening somebody else's drawing and calling it this one.
+function ConditionRows({ conditions, index, uncovered, onZoom, onDetail }: {
+  conditions: Condition[];
+  index: Map<string, string>;
+  uncovered: Set<string>;
+  onZoom: (tag: string) => void;
+  onDetail: (key: string) => void;
+}) {
+  const groups = new Map<string, { count: number; tags: Set<string> }>();
+  for (const condition of conditions) {
+    const group = groups.get(condition.key) ?? { count: 0, tags: new Set<string>() };
+    group.count += 1;
+    for (const tag of condition.elements) group.tags.add(tag);
+    groups.set(condition.key, group);
+  }
+  return (
+    <ul className="reader-list">
+      {[...groups.entries()].map(([key, group]) => (
+        <li key={key}>
+          <button
+            className="btn reader-expand"
+            onClick={() => onDetail(key)}
+            disabled={uncovered.has(key)}
+            title={uncovered.has(key)
+              ? "No transition binds this condition — no detail is derived."
+              : "Open the junction detail for this condition"}
+          >
+            Detail
+          </button>
+          <span className="reader-mono"> {key}</span>
+          {group.count > 1 && <span className="muted"> · {group.count} places</span>}
+          <span className="reader-tag-cloud">
+            {[...group.tags].map((tag) => (
+              <button key={tag} className="reader-tag" onClick={() => onZoom(tag)}
+                disabled={!index.has(tag)} title="Zoom to element">
+                {tag}
+              </button>
+            ))}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function AssemblyDetailsView() {
   const model = useStore((s) => s.model);
   const setDetailView = useStore((s) => s.setDetailView);
   const zoomToUid = useStore((s) => s.zoomToUid);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [expandedKind, setExpandedKind] = useState<string | null>(null);
+  // The detail viewer's open state *and* the key it should land on: `undefined` closed,
+  // `null` open at the library's first drawing, a string open at that condition.
+  const [detailKey, setDetailKey] = useState<string | null | undefined>(undefined);
 
   const index = useMemo(() => (model ? uidByTag(model) : new Map<string, string>()), [model]);
   const coverage = useMemo(
     () => transitionCoverage(model?.transitions ?? [], model?.conditions ?? []),
     [model],
+  );
+  // Conditions no transition matches derive no detail (emit/draw/details.py skips them), which
+  // is exactly what `uncovered` already reports — so the reader knows which Detail buttons are
+  // live without a second round trip to /details.
+  const uncoveredKeys = useMemo(
+    () => new Set(coverage.uncovered.map((condition) => condition.key)),
+    [coverage],
   );
   const conditionsByKind = useMemo(() => {
     const groups = new Map<string, Condition[]>();
@@ -96,6 +148,12 @@ export function AssemblyDetailsView() {
       title="Assembly details"
       subtitle={`${transitions.length} transitions · ${model.conditions.length} resolved conditions`}
       onClose={() => setDetailView("none")}
+      toolbar={
+        <button className="btn" onClick={() => setDetailKey(null)}
+          title="Browse every derived junction drawing">
+          Junction details…
+        </button>
+      }
     >
       <ReaderSection
         title="Transitions"
@@ -124,14 +182,8 @@ export function AssemblyDetailsView() {
                     {expanded === transition.tag ? "Hide" : "Show"} matching conditions
                   </button>
                   {expanded === transition.tag && (
-                    <div className="reader-tag-cloud">
-                      {[...new Set(matches.flatMap((condition) => condition.elements))].map((tag) => (
-                        <button key={tag} className="reader-tag" onClick={() => jump(tag)}
-                          disabled={!index.has(tag)} title="Zoom to element">
-                          {tag}
-                        </button>
-                      ))}
-                    </div>
+                    <ConditionRows conditions={matches} index={index} uncovered={uncoveredKeys}
+                      onZoom={jump} onDetail={setDetailKey} />
                   )}
                 </>
               )}
@@ -154,17 +206,33 @@ export function AssemblyDetailsView() {
                   (coverage.matchesByTransition.get(transition.tag) ?? [])
                     .some((condition) => condition.kind === kind));
                 const undetailed = coverage.uncovered.filter((condition) => condition.kind === kind).length;
+                const open = expandedKind === kind;
                 return (
-                  <tr key={kind}>
-                    <td className="reader-mono">{kind}</td>
-                    <td className="num-col">{items.length}</td>
-                    <td className="num-col">{undetailed || "—"}</td>
-                    <td>
-                      {detailing.length === 0
-                        ? <span className="muted">— undetailed</span>
-                        : detailing.map((transition) => transition.tag).join(", ")}
-                    </td>
-                  </tr>
+                  <Fragment key={kind}>
+                    <tr>
+                      <td>
+                        <button className="reader-tag" onClick={() => setExpandedKind(open ? null : kind)}
+                          title={open ? "Hide these conditions" : "List these conditions"}>
+                          {open ? "▾" : "▸"} <span className="reader-mono">{kind}</span>
+                        </button>
+                      </td>
+                      <td className="num-col">{items.length}</td>
+                      <td className="num-col">{undetailed || "—"}</td>
+                      <td>
+                        {detailing.length === 0
+                          ? <span className="muted">— undetailed</span>
+                          : detailing.map((transition) => transition.tag).join(", ")}
+                      </td>
+                    </tr>
+                    {open && (
+                      <tr>
+                        <td colSpan={4}>
+                          <ConditionRows conditions={items} index={index} uncovered={uncoveredKeys}
+                            onZoom={jump} onDetail={setDetailKey} />
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 );
               })}
             </tbody>
@@ -201,6 +269,10 @@ export function AssemblyDetailsView() {
           </div>
         ))}
       </ReaderSection>
+
+      {detailKey !== undefined && (
+        <DetailViewer initialKey={detailKey} onClose={() => setDetailKey(undefined)} />
+      )}
     </ReaderShell>
   );
 }

@@ -328,3 +328,53 @@ def test_circuit_is_schedule_data_not_geometry():
     assert circuit.poles == 1 and circuit.backup and not circuit.gfci
     library = Library(circuits=(circuit,))
     assert library.circuits[0].tag == "CKT-01"
+
+
+# --- model.json: the circuits reader's contract ---------------------------------------
+
+def test_model_json_carries_the_electrical_takeoff(catlin_model):
+    """The browser reads the *same* derivation the E-601 sheet prints, never its own.
+
+    A UI that re-summed the schedule could disagree with the drawing stamped for permit,
+    so model.json carries takeoff/electrical.py's output verbatim.
+    """
+    from typehaus.server.model_json import model_to_dict
+    from typehaus.takeoff import (conduit_takeoff, electrical_device_takeoff, panel_schedule,
+                                  service_load_summary, solar_takeoff)
+
+    payload = model_to_dict(catlin_model)["electrical"]
+    assert set(payload) == {"panel_schedule", "service_load", "conduit", "devices", "solar",
+                            "backup_components"}
+    assert payload["panel_schedule"] == panel_schedule(catlin_model)
+    assert payload["service_load"] == service_load_summary(catlin_model)
+    assert payload["conduit"] == conduit_takeoff(catlin_model)
+    assert payload["devices"] == electrical_device_takeoff(catlin_model)
+    assert payload["solar"] == solar_takeoff(catlin_model)
+    assert len(payload["panel_schedule"]) == 30
+
+
+def test_model_json_canvas_objects_carry_their_circuit(catlin_model):
+    """The device end of the circuit edge — what the inspector reads off a selection."""
+    from typehaus.server.model_json import model_to_dict
+
+    objects = {item["tag"]: item for item in model_to_dict(catlin_model)["canvas_objects"]}
+    assert objects["ED-G-EV-1450"]["circuit"] == "CKT-EV-1450"
+    # Equipment consumes power too; a placeable that doesn't reports None rather than
+    # omitting the key, so the UI can tell "no circuit" from "old model.json".
+    assert objects["EQ-B-WH"]["circuit"] == "CKT-WH-HP"
+    assert all("circuit" in item for item in objects.values() if item["domain"] != "opening")
+    # Every tag the schedule names is addressable in the canvas-object index — this is the
+    # edge the reader's device tags zoom through.
+    for row in model_to_dict(catlin_model)["electrical"]["panel_schedule"]:
+        for tag in row["devices"]:
+            assert tag in objects, tag
+
+
+def test_service_load_is_null_without_circuits():
+    """A house that authors no circuits gets no estimate — the summary would be over nothing."""
+    from typehaus.server.model_json import model_to_dict
+
+    model, _findings = resolve(_plan())
+    payload = model_to_dict(model)["electrical"]
+    assert payload["service_load"] is None
+    assert payload["panel_schedule"] == [] and payload["conduit"] == []

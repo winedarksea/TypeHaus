@@ -486,6 +486,11 @@ class ResolvedCanvasObject:
     # object stands alone. Group members do not encroach on each other's recommended
     # clearance, and a UI that drags a table can drag its chairs with it.
     placement_group: str | None = None
+    # The circuit that feeds this object, for the placeables that consume power
+    # (ElectricalDevice, Equipment, Register); ``None`` for a sofa. Carried so the UI can
+    # answer "which circuit is this outlet on?" from the selection, without re-deriving the
+    # panel schedule in the browser.
+    circuit: str | None = None
 
 
 @dataclass

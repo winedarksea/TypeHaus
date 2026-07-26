@@ -36,7 +36,7 @@ export const ALL_TRADES: Trade[] = [
 // The two work surfaces that replaced the old DESIGN/ANALYZE topbar buttons: the assembly /
 // transition reader and the whole-model bill of parts. Only one is up at a time — both are
 // full-width readers, not inspectors, so stacking them would just hide the model.
-export type DetailView = "none" | "assembly" | "bom";
+export type DetailView = "none" | "assembly" | "bom" | "circuits";
 
 // Every kind of model record the UI can hold selected. The first five are authored elements a
 // patch can edit or delete; the rest are *derived* geometry the resolver computes (a post
