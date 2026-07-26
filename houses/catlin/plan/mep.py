@@ -562,7 +562,36 @@ NEMA_CLAMP = [
               connects=("ED-A-NEMA-JB", "W-A-N2")),
 ]
 
-MAIN_ELEMENTS = [*SLEEVES, *VENT_BRANCHES_MAIN, *MAIN_DEVICES]
+# --- Water supply: the house entry out to the garage hydrant ------------------------
+#
+# The project's first PipeSystem.WATER_COLD run — everything authored before this is DRAIN
+# or VENT. It starts at the house's water entry (5', 0'), where site.py's WATER UtilityLine
+# terminates, and runs north under the basement slab and then out under grade to the garage,
+# surfacing through SP-G-HYDRANT (params/foundations.py) at the hydrant.
+#
+# Elevations are the burial depth, not a ceiling height: the run leaves the entry at the
+# service's own 6' depth and stays there. That is what keeps the hydrant's shutoff — which
+# sits at the *end* of this run — at the 72" bury the code wants, well below the 42" frost
+# depth the footings are set to. It is deliberately NOT routed up into the garage and back
+# down: a supply line that rises above frost anywhere along its length freezes there.
+#
+# Filed on ``main`` rather than ``basement`` even though it runs under both: PipeRun
+# elevations resolve as ``storey datum + authored``, and main's datum is 0'-0" = grade. On
+# the basement's -9' datum the same authored -6' would resolve to -15' absolute, and the
+# authored number would stop meaning "six feet down".
+#
+# The interior shutoff is ED/EQ-free by design: it is the hydrant's own valve at the
+# buried end plus the isolation valve immediately downstream of the slab penetration, both
+# of which mep.hydrant_freeze_depth asserts against this run's geometry.
+WATER_SUPPLY = [
+    PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(5), ft(0)), pt(ft(5), ft(38)), pt(ft(1, 6), ft(38)),
+                  pt(ft(1, 6), ft(62))),
+            diameter=inch(0.75), start_elevation=ft(-6), end_elevation=ft(-6),
+            serves=("FX-G-HYDRANT",)),
+]
+
+MAIN_ELEMENTS = [*SLEEVES, *VENT_BRANCHES_MAIN, *MAIN_DEVICES, *WATER_SUPPLY]
 BASEMENT_ELEMENTS = [*DRAINS, *SLAB_STUBS, *EQUIPMENT, *PANEL, *BASEMENT_DEVICES,
                      *RADON_SUMP, *VENT_RISERS, *VENT_CLAMPS]
 SECOND_ELEMENTS = [*DUCTS, *REGISTERS, *VENT_BRANCHES_SECOND, *SECOND_DEVICES]

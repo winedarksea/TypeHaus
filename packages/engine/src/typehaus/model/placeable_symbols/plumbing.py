@@ -233,7 +233,57 @@ def kitchen_sink(*, bowls: int = 2) -> Builder:
     return build
 
 
+def hydrant() -> Builder:
+    """A wall hydrant: standpipe in plan, with its handle and the hose outlet off one side.
+
+    Not a basin and not a faucet on a deck — the whole fixture is a vertical pipe whose only
+    plan presence is its own diameter, so the glyph is a filled circle for the riser with the
+    operating handle drawn as a bar across it and the outlet nipple projecting into the room
+    (``-y``, the side away from the wall). That reads as a hydrant on a plan rather than as
+    the anonymous rectangle a symbol-less type falls back to.
+
+    In 3D it is the standpipe itself: the catalog height is the head height above the floor,
+    and the massing stands the full height rather than sitting on a deck plane, because there
+    is no deck.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        riser_r = clamp(min(width, depth) * 0.22, 0.02, min(width, depth) * 0.3)
+        handle_len = clamp(width * 0.9, riser_r * 2, width)
+        # Strokes are height-independent by contract, so nothing the plan glyph uses may
+        # depend on `height` — only the 3D parts below clamp against it.
+        handle_t = clamp(riser_r * 0.5, 0.008, riser_r)
+        outlet_t = clamp(riser_r * 0.8, 0.012, riser_r * 1.2)
+        # The outlet reaches from the riser into the room and the vacuum breaker screws onto
+        # its tip, so the *breaker* is what has to land on the footprint edge — everything is
+        # measured back from there. A non-square type (the escutcheon is square, but the
+        # symbol has to hold for any size) would otherwise push the nipple out of the box.
+        breaker_r = clamp(outlet_t * 0.8, 0.006, min(outlet_t, depth * 0.12))
+        outlet_far = depth / 2.0 - breaker_r
+        outlet_near = riser_r * 0.4
+        outlet_len = max(outlet_far - outlet_near, 0.0)
+        outlet_cy = -(outlet_near + outlet_len / 2.0)
+        strokes = [circle(0, 0, riser_r, fill="metal"),
+                   rect(0, 0, handle_len, handle_t, fill="metal")]
+        if outlet_len > 0:
+            strokes.append(rect(0, outlet_cy, outlet_t, outlet_len, fill="metal"))
+            strokes.append(circle(0, -outlet_far, breaker_r, weight=DETAIL_WEIGHT))
+        handle_h = min(handle_t, height * 0.12)
+        handle_z = min(height * 0.86, height - handle_h)
+        parts = [
+            box(0, 0, 0.0, height, riser_r * 2, riser_r * 2, "metal"),
+            box(0, 0, handle_z, handle_z + handle_h, handle_len, handle_t, "metal"),
+        ]
+        if outlet_len > 0:
+            parts.append(box(0, outlet_cy, max(height * 0.5 - outlet_t, 0.0),
+                             min(height * 0.5, height), outlet_t, outlet_len, "metal"))
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 PLUMBING_SYMBOLS: dict[str, Builder] = {
+    "hydrant": hydrant(),
     "toilet": toilet(),
     "lavatory": lavatory(pedestal=True),
     "vanity": vanity(),

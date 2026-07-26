@@ -101,6 +101,7 @@ PLAN = (
          *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES],
     )
     .with_elements("garage", [*garage.ELEMENTS, *electrical.GARAGE_ELEMENTS,
+                              *fixtures.GARAGE_FIXTURES,
                               *lighting.GARAGE_LIGHTING,
                               *placeables.GARAGE_PLACEABLES])
     .with_elements("second", [*second.ELEMENTS, *fixtures.SECOND_FIXTURES,

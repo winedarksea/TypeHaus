@@ -10,7 +10,7 @@ from __future__ import annotations
 from typehaus.checks.mep.vent_path import evaluate_vent_path
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.enums import Service
+from typehaus.model.enums import PipeSystem, Service
 from typehaus.model.mep import VentRun
 from typehaus.resolve.vent_termination import (
     VENT_TERMINATION_CLEARANCE_M,
@@ -113,6 +113,104 @@ def _missing_sleeve_findings(ctx: CheckContext) -> list[Finding]:
                     f"drain fixture {fixture.tag} sits above structural slab {host.tag} "
                     "with no sleeve serving it", (fixture.tag, host.tag),
                 ))
+    return out
+
+
+# A frost-free hydrant's shutoff has to sit below the frost line, not merely below grade:
+# the whole point of the fixture is that the valve is deep enough never to freeze and the
+# barrel drains back to it. 72" is the bury this project specifies; MN frost design is 42",
+# so the margin is deliberate and the check holds the authored number rather than the code
+# minimum — a hydrant ordered with a 6' bury and installed at 4' is the defect.
+_HYDRANT_BURY_M = 1.8288  # 72"
+
+
+@check(Tier.CODE, "mep.hydrant_freeze_depth")
+def hydrant_freeze_depth(ctx: CheckContext) -> list[Finding]:
+    """A frost-free hydrant's supply must stay below frost for its whole buried length.
+
+    Three things make a hydrant frost-free, and this check reports honestly on all three
+    rather than passing silently on the two it cannot see:
+
+    1. **Bury depth at the shutoff** — geometric, and a hard FAIL. The valve is at the deep
+       end of the supply run; if that end is shallower than the specified bury, the fixture
+       is not frost-free no matter what was ordered.
+    2. **No high point along the run** — also geometric, also a FAIL. This is the failure
+       people actually get: a supply routed up into the building and back down freezes at
+       the high point even though both ends are deep. A run whose shallowest point is above
+       frost has a freeze there.
+    3. **The interior shutoff and the outlet's vacuum breaker** — UNKNOWN. The model has no
+       valve or backflow-preventer element, so there is nothing to evaluate; both are
+       recorded on the ``FixtureType.source`` and belong on the plumbing schedule. Reporting
+       UNKNOWN names the modelling gap; reporting PASS would claim a review that did not
+       happen (#32).
+    """
+    cid = "mep.hydrant_freeze_depth"
+    types = {t.tag: t for t in ctx.plan.library.fixture_types}
+    hydrants = [
+        element for storey in ctx.plan.storeys
+        for element in ctx.plan.storey_elements(storey.tag)
+        if element.element_kind == "Fixture"
+        and (types.get(element.type_ref) is not None
+             and Service.WATER_COLD in types[element.type_ref].needs
+             and (types[element.type_ref].plan_symbol == "hydrant"))
+    ]
+    if not hydrants:
+        return []
+
+    grade = ctx.plan.project.site.grade.meters
+    supply = [run for run in ctx.model.pipe_runs if run.system == PipeSystem.WATER_COLD.value]
+    out: list[Finding] = []
+    for hydrant in hydrants:
+        feeds = [run for run in supply if hydrant.tag in run.serves]
+        if not feeds:
+            out.append(_fail(cid, f"hydrant {hydrant.tag} has no WATER_COLD supply run "
+                                  "serving it — nothing carries water to it, and nothing "
+                                  "records how deep its shutoff sits",
+                             (hydrant.tag,)))
+            continue
+        for run in feeds:
+            elevations = [z for z in (run.z_start_m, run.z_end_m) if z is not None]
+            if not elevations:
+                out.append(_unknown(cid, f"supply run {run.tag} authors no elevations, so "
+                                         "its bury depth cannot be evaluated",
+                                    (hydrant.tag, run.tag)))
+                continue
+            deepest = grade - min(elevations)
+            shallowest = grade - max(elevations)
+            if deepest + 1e-9 < _HYDRANT_BURY_M:
+                out.append(_fail(
+                    cid, f"hydrant {hydrant.tag}'s shutoff is buried "
+                         f"{deepest * _M_TO_IN:.0f}\" on {run.tag}, under the "
+                         f"{_HYDRANT_BURY_M * _M_TO_IN:.0f}\" this fixture is specified for",
+                    (hydrant.tag, run.tag)))
+            elif shallowest + 1e-9 < _HYDRANT_BURY_M:
+                out.append(_fail(
+                    cid, f"supply run {run.tag} rises to {shallowest * _M_TO_IN:.0f}\" "
+                         f"below grade — above the {_HYDRANT_BURY_M * _M_TO_IN:.0f}\" bury "
+                         f"{hydrant.tag} needs. A supply line freezes at its high point, "
+                         "not at its ends",
+                    (hydrant.tag, run.tag)))
+            else:
+                out.append(_pass(
+                    cid, f"{hydrant.tag} is fed by {run.tag} at "
+                         f"{deepest * _M_TO_IN:.0f}\" below grade over its whole length",
+                    (hydrant.tag, run.tag)))
+        # The penetration the supply comes up through: a hydrant whose sleeve is missing or
+        # filed as a drain will be cored after the pour.
+        sleeves = [s for s in ctx.model.sleeves if s.serves_fixture == hydrant.tag]
+        if not sleeves:
+            out.append(_fail(cid, f"hydrant {hydrant.tag} has no sleeve serving it — its "
+                                  "supply has no pre-poured way through the slab",
+                             (hydrant.tag,)))
+        else:
+            out.append(_pass(cid, f"{hydrant.tag} rises through {sleeves[0].tag}",
+                             (hydrant.tag, sleeves[0].tag)))
+        out.append(_unknown(
+            cid, f"{hydrant.tag}'s interior shutoff and its outlet's hose-bib vacuum "
+                 "breaker are recorded on the fixture type's `source` and belong on the "
+                 "plumbing schedule; the model has no valve or backflow-preventer element, "
+                 "so neither can be evaluated here",
+            (hydrant.tag,)))
     return out
 
 
