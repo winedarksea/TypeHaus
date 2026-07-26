@@ -115,11 +115,11 @@ SYMBOL_NAMES_WITH_DEDICATED_GLYPH = (
 )
 
 
-# Leader notes have no authored height; this is their model-space size in inches.
+# Fallback model-space size (inches) for leader notes whose ``Leader.height`` is unset/zero.
 _LEADER_TEXT_H = 1.6
 # Clamps in points, so a sheet-scale plan's labels stay readable and a tight detail's
-# lettering cannot swallow the drawing.
-_MIN_PT, _MAX_PT = 3.0, 14.0
+# lettering cannot swallow the drawing. 4 pt is the legibility floor at 300 dpi output.
+_MIN_PT, _MAX_PT = 4.0, 14.0
 
 
 def _scene_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
@@ -137,7 +137,7 @@ def _scene_bounds(scene: Scene) -> tuple[float, float, float, float] | None:
             zs.extend(p[1] for p in points)
         elif isinstance(node, (Text, Leader)):
             content = node.content if isinstance(node, Text) else node.text
-            height = node.height if isinstance(node, Text) else _LEADER_TEXT_H
+            height = node.height or _LEADER_TEXT_H
             anchor = node.anchor if isinstance(node, Text) else node.at
             if not isinstance(anchor, tuple):
                 continue
@@ -213,6 +213,41 @@ def _draw_underlays(ax: object, underlays) -> None:
                   alpha=item.opacity, zorder=-10, interpolation="bilinear")
 
 
+# Notes panel proportions, from the reference detail scripts (roof_wall_eave_detail_ifc.py:
+# gridspec width_ratios=[2.9, 1.1]). The panel never drops below the width _NOTES_WRAP
+# monospace characters need at _NOTES_PT points, so a small detail still prints legible notes.
+_NOTES_RATIO = 1.1 / 2.9
+_NOTES_PT = 9.0
+_NOTES_WRAP = 58
+_NOTES_MIN_W = _NOTES_WRAP * _NOTES_PT * _CHAR_ASPECT / 72.0 + 0.6  # inches
+
+
+def _rewrap_notes(lines) -> list[str]:
+    """Re-wrap IR note lines (42-char column) to the wider print column.
+
+    ``Scene.notes`` arrives pre-wrapped for a narrow column: bullets start with "• " and
+    their continuation lines with two spaces (→ details._load_markdown_notes). Joining each
+    bullet back together and re-wrapping preserves that structure while filling the panel.
+    Standalone lines (the "NOTES:" header, plain paragraphs) already fit and pass through.
+    """
+    import textwrap
+
+    out: list[str] = []
+    for line in lines:
+        if line.startswith("  ") and out and out[-1].startswith(("• ", "  ")):
+            out[-1] += " " + line.strip()
+        else:
+            out.append(line)
+    wrapped: list[str] = []
+    for line in out:
+        if line.startswith("• "):
+            wrapped.extend(textwrap.wrap(line, width=_NOTES_WRAP,
+                                         subsequent_indent="  ") or [line])
+        else:
+            wrapped.append(line)
+    return wrapped
+
+
 def _fig(scene: Scene, title: str | None, underlays=()):
     import matplotlib
 
@@ -229,7 +264,22 @@ def _fig(scene: Scene, title: str | None, underlays=()):
         scale = min(_MAX_FIG[0] / span_u, _MAX_FIG[1] / span_z)
         figsize = (max(_MIN_FIG[0], span_u * scale), max(_MIN_FIG[1], span_z * scale))
 
-    fig, ax = plt.subplots(figsize=figsize)
+    if scene.notes:
+        # Notes live outside the scene's coordinate space (→ scene.py Scene.notes): they
+        # get their own axes at a FIXED point size, and the figure widens by the panel so
+        # the drawing region keeps its computed size — note length cannot change the
+        # drawing's scale, and drawing size cannot shrink the lettering.
+        notes_w = max(figsize[0] * _NOTES_RATIO, _NOTES_MIN_W)
+        fig = plt.figure(figsize=(figsize[0] + notes_w, figsize[1]))
+        gs = fig.add_gridspec(1, 2, width_ratios=[figsize[0], notes_w], wspace=0.06)
+        ax = fig.add_subplot(gs[0, 0])
+        ax_notes = fig.add_subplot(gs[0, 1])
+        ax_notes.axis("off")
+        ax_notes.text(0.0, 1.0, "\n".join(_rewrap_notes(scene.notes)),
+                      transform=ax_notes.transAxes, fontsize=_NOTES_PT,
+                      family="monospace", va="top", ha="left", color="#222")
+    else:
+        fig, ax = plt.subplots(figsize=figsize)
     ax.set_aspect("equal")
     ax.axis("off")
     if underlays:
@@ -245,16 +295,6 @@ def _fig(scene: Scene, title: str | None, underlays=()):
     else:
         ax.autoscale_view()
     fig.tight_layout()
-    if scene.notes:
-        # Notes live outside the scene's coordinate space (→ scene.py Scene.notes):
-        # render them at a fixed point size in figure space, in a reserved right-hand
-        # strip, so their length cannot change the drawing's scale.
-        strip_in = 3.6
-        fig.set_figwidth(fig.get_figwidth() + strip_in)
-        right = 1.0 - strip_in / fig.get_figwidth()
-        fig.subplots_adjust(right=right)
-        fig.text(right + 0.01, 0.96, "\n".join(scene.notes),
-                 fontsize=7.0, family="monospace", va="top", color="#222")
     _apply_text_scale(fig, ax, scaled_text)
     return fig
 
@@ -323,15 +363,18 @@ def _render_nodes(ax: object, scene: Scene) -> None:
             _draw_symbol(ax, node, Arc)
         elif isinstance(node, Leader):
             # Leader geometry is anchor→shoulder; the note sits at the free end (``at``).
-            ax.plot([node.to[0], node.at[0]], [node.to[1], node.at[1]],
-                    color="#555", linewidth=0.5)
-            ax.plot([node.to[0]], [node.to[1]], marker=".", markersize=2, color="#555")
+            # annotate draws the line with a small arrowhead at ``to``, so the leader
+            # visibly points at something instead of ending in a dot lost in the linework.
+            ax.annotate("", xy=(node.to[0], node.to[1]),
+                        xytext=(node.at[0], node.at[1]),
+                        arrowprops=dict(arrowstyle="-|>", color="#333", lw=0.8,
+                                        mutation_scale=7, shrinkA=0.0, shrinkB=0.0))
             scaled_text.append((
                 ax.text(node.at[0], node.at[1], node.text, family="monospace",
                         ha=_leader_align(node), va="center", color="#222",
                         bbox=dict(facecolor="white", edgecolor="none", alpha=0.75,
                                   pad=0.5)),
-                _LEADER_TEXT_H,
+                node.height or _LEADER_TEXT_H,
             ))
     _ = (PathPatch, MplPath)  # imported for parity with richer node kinds
     return scaled_text
@@ -426,7 +469,7 @@ def write_raster(scene: Scene, path: Path, title: str | None = None, dpi: int = 
     """
     fig = _fig(scene, title or scene.name, underlays)
     path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(path, dpi=dpi)
+    fig.savefig(path, dpi=dpi, bbox_inches="tight", pad_inches=0.1)
     _close(fig)
     return path
 
