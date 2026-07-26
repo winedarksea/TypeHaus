@@ -218,6 +218,30 @@ def test_catlin_plant_room_door_ships_translucent_glazing(catlin_model):
         "baseColorFactor"][3] == pytest.approx(0.48)
 
 
+# --- trimless door -----------------------------------------------------------------------
+
+def test_catlin_trimless_bedroom_door_ships_a_leaf_and_no_frame(catlin_model):
+    """DT-INT30-TRIMLESS (drywall return jamb) is the one door the four-frame-piece rule
+    deliberately does not apply to: the export ships only the leaf."""
+    opening = next(op for op in catlin_model.openings if op.tag == "D-M-BED2")
+    door_type = next(dt for dt in catlin_model.plan.library.door_types
+                     if dt.tag == opening.type_ref)
+    assert door_type.trimless
+    wall = _host_wall(catlin_model, opening)
+    gltf, blob = emit_gltf_dict(catlin_model)
+    solids = _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid))
+
+    assert len(solids) == 1, "a trimless door is a bare leaf — no jambs, head, or sill"
+    leaf = solids[0]
+    assert leaf.has_thickness(_DOOR_LEAF_THICKNESS_M)
+    # The leaf keeps its framed size so the drywall reveal reads the same as a cased door.
+    available_height = min(opening.height_m, wall.z1_m - wall.z0_m - opening.sill_m)
+    frame_width = _frame_width_m(opening, available_height)
+    assert leaf.plan_dimensions_m[1] == pytest.approx(
+        opening.width_m - 2 * frame_width, abs=_DIMENSION_TOLERANCE_M)
+    assert gltf["materials"][leaf.material_index]["alphaMode"] == "OPAQUE"
+
+
 # --- French / double-swing door ----------------------------------------------------------
 
 def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_model):

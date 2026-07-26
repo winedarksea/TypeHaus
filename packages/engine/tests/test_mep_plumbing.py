@@ -36,12 +36,16 @@ def test_wc_expected_drain_point_is_authored_carrier_outlet(catlin_model):
     assert sleeve.expected_center != fixture.position.xy_m
 
 
-def test_floor_wc_expected_drain_point_is_fixture_position(catlin_model):
-    """A floor-standing WC (no drain_position) still expects the drain at its own
-    footprint: BATH2's is the control for the wall-hung override above."""
+def test_floor_wc_expected_drain_point_follows_its_authored_drain_position(catlin_model):
+    """BATH2's WC moved onto its W-M-BA2E wet wall but keeps ``drain_position`` on
+    SP-M-WC2's cast-in sleeve at the (3', 18') main-drain corner fitting, so the pre-pour
+    sleeve contract still reads 0.00" — the authored override wins over the
+    footprint-position fallback."""
     sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-M-WC2")
     fixture = catlin_model.plan.by_tag("FX-M-BATH2-WC")
-    assert sleeve.expected_center == fixture.position.xy_m
+    assert fixture.drain_position is not None
+    assert sleeve.expected_center == fixture.drain_position.xy_m
+    assert sleeve.offset_m == pytest.approx(0.0, abs=1e-9)
 
 
 def test_lav_expected_drain_point_projects_onto_wet_wall(catlin_model):
@@ -303,9 +307,11 @@ def test_catlin_water_closets_all_reach_a_vent_chase(catlin_model):
     assert matched
     assert all(f.result.value == "pass" for f in matched), \
         [f.message for f in matched if f.result.value != "pass"]
-    # The three whose wet wall stops at its own ceiling must say so, not silently pass.
+    # The two whose wet wall stops at its own ceiling must say so, not silently pass.
+    # (FX-S-ENSUITE-WC used to be the third: since the ensuite de-overlap pass it backs
+    # onto the exterior W-S-W1, which continues up, so it vents in-wall.)
     offset_vented = [f for f in matched if "chase" in f.message]
-    assert {"FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-S-ENSUITE-WC"} <= {
+    assert {"FX-M-BATH1-WC", "FX-M-BATH2-WC"} <= {
         tag for f in offset_vented for tag in f.element_tags
     }
 

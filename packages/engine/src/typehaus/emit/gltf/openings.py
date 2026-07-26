@@ -30,14 +30,18 @@ _DOUBLE_SWING_LEAF_COUNT = 2
 
 
 def _add_opening_filling(mb: _MeshBuilder, wall: ResolvedWall, opening,
-                         is_double_swing: bool, is_glazed: bool = False) -> None:
+                         is_double_swing: bool, is_glazed: bool = False,
+                         is_trimless: bool = False) -> None:
     """Draw the door/window product itself — frame + panel/leaf/glass — as boxes.
 
     A straight port of ui/src/components/Panel3D.tsx ``buildOpening`` into the plan frame:
     a four-piece frame, then either a single door panel, two leaves split at a center
-    mullion (``double_swing``), or a translucent glass pane (a window or glazed door). Rough
-    openings are a bare void with no product, so they draw nothing. Emitted regardless of LOD so the leaf
-    geometry shows for both the core wall prism and the framed stud model.
+    mullion (``double_swing``), or a translucent glass pane (a window or glazed door).
+    Rough openings are a bare void with no product, so they draw nothing. A ``trimless``
+    door (drywall return jamb, no applied casing) suppresses the four frame boxes and ships
+    only its leaf, sized as if the frame were there so the reveal reads the same. Emitted
+    regardless of LOD so the leaf geometry shows for both the core wall prism and the
+    framed stud model.
     """
     if opening.kind == "rough_opening":
         return
@@ -79,10 +83,11 @@ def _add_opening_filling(mb: _MeshBuilder, wall: ResolvedWall, opening,
         mb.add_prism(ring, elevation - box_h / 2.0, elevation + box_h / 2.0, color)
 
     mid_elev = z0 + sill + available_height / 2.0
-    add_box(frame_width, available_height, depth, -width / 2.0 + frame_width / 2.0, mid_elev, frame_color)
-    add_box(frame_width, available_height, depth, width / 2.0 - frame_width / 2.0, mid_elev, frame_color)
-    add_box(width, frame_width, depth, 0.0, z0 + sill + available_height - frame_width / 2.0, frame_color)
-    add_box(width, frame_width, depth, 0.0, z0 + sill + frame_width / 2.0, frame_color)
+    if not is_trimless:
+        add_box(frame_width, available_height, depth, -width / 2.0 + frame_width / 2.0, mid_elev, frame_color)
+        add_box(frame_width, available_height, depth, width / 2.0 - frame_width / 2.0, mid_elev, frame_color)
+        add_box(width, frame_width, depth, 0.0, z0 + sill + available_height - frame_width / 2.0, frame_color)
+        add_box(width, frame_width, depth, 0.0, z0 + sill + frame_width / 2.0, frame_color)
     panel_height = max(_OPENING_MIN_PANEL_DIMENSION_M, available_height - 2.0 * frame_width)
     panel_elev = z0 + sill + frame_width + panel_height / 2.0
     clear_width = width - 2.0 * frame_width  # between the two jamb faces

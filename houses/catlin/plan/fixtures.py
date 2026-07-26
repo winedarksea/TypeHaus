@@ -23,8 +23,19 @@ MAIN_FIXTURES = (
             drain_position=pt(ft(4), ft(22, 7))),
     Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-LAV-COMPACT", room="RM-M-BATH1",
             position=pt(ft(2, 11.5), ft(25, 6.5)), wall_ref="W-M-BAE"),
+    # Backs east onto W-M-BA2E — the INT_2X6_PLUMBING wet wall it has always drained into,
+    # now actually sitting against it instead of floating 4' away mid-room. rotation 90
+    # turns its back (-y local) east onto the wall; the centre at x=6'-8 3/8" puts the
+    # tank edge on the room's 7'-11 3/8" east clear face. Footprint x 5'-5 3/8"..7'-11 3/8",
+    # y 17'-3"..19'-9"; its 30"/21" REQUIRED clearance zone (x 3'-8 3/8"..7'-11 3/8",
+    # same y band) holds nothing else — the room's only other object is the door swing.
+    # `drain_position` stays on SP-M-WC2's (3', 18') cast-in sleeve — the corner fitting
+    # where PR-B-MAIN-DRAIN turns (plan/mep.py) — so the pre-pour sleeve contract holds
+    # while the WC itself moves; re-pointing the sleeve+drain at the new flange is mep.py's
+    # own pass.
     Fixture(uid="CMQ803AAAA", tag="FX-M-BATH2-WC", type_ref="FX-TOILET", room="RM-M-BATH2",
-            position=pt(ft(3), ft(18)), wall_ref="W-M-BA2E"),
+            position=pt(ft(6, 8.375), ft(18, 6)), rotation=deg(90), wall_ref="W-M-BA2E",
+            drain_position=pt(ft(3), ft(18))),
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-WASHER", room="RM-M-LAUNDRY",
               position=pt(ft(10, 6), ft(20)), wall_ref="W-M-BA2E2"),
     # Kitchen sink: dropped into the 36" base FURN-M-KIT-SINKBASE and centred on
@@ -46,11 +57,22 @@ MAIN_FIXTURES = (
 
 # RM-S-ENSUITE is the *hall* bath (the source's 80.73 sf "Bathroom" in the NW corner); the
 # tag predates the suite's own bath and is kept — see storeys/second.py's header.
+#
+# Layout (the de-overlap pass storeys/second.py's FLOOR_HEAT comment used to ask for):
+# the shower pan stays in the room's centre-north (its SL-D-SHOWER detail slice cuts the
+# recess at x=5', so the pan must keep crossing that plane); the WC backs onto the west
+# exterior 2x6 (rotation -90 turns its back west onto W-S-W1 — an exterior wet wall by the
+# same reasoning as FX-M-KITCH-SINK's W-M-E2), sitting low enough that its 30"-wide /
+# 21"-front REQUIRED clearance zone (x 0'-3"..4'-6", y 28'-9"..31'-3") stops 3" south of
+# the pan; the lav backs east onto W-S-BA-E1B (INT_2X6_PLUMBING, rotation 90), its back at
+# the room's 9'-11 3/8" east face, south of the chase's y=33'-3 3/8" cut line. Footprints —
+# WC x 0'-3"..2'-9" y 28'-9"..31'-3", pan x 3'-6"..6'-6" y 31'-6"..34'-6", lav
+# x 8'-2"..9'-11" y 30'-0"..32'-0" — are pairwise disjoint with 9"+ between any two.
 SECOND_FIXTURES = (
     Fixture(uid="CSQ801AAAA", tag="FX-S-ENSUITE-WC", type_ref="FX-TOILET", room="RM-S-ENSUITE",
-            position=pt(ft(5), ft(31)), wall_ref="W-S-BD-N"),
+            position=pt(ft(1, 6), ft(30)), rotation=deg(-90), wall_ref="W-S-W1"),
     Fixture(uid="CSQ802AAAA", tag="FX-S-ENSUITE-LAV", type_ref="FX-LAV", room="RM-S-ENSUITE",
-            position=pt(ft(6), ft(31)), wall_ref="W-S-BD-N"),
+            position=pt(ft(9, 0.5), ft(31)), rotation=deg(90), wall_ref="W-S-BA-E1B"),
     Fixture(uid="CSQ803AAAA", tag="FX-S-ENSUITE-SH", type_ref="FX-SHOWER", room="RM-S-ENSUITE",
             position=pt(ft(5), ft(33)), wall_ref="W-S-BD-N"),
     # The suite's own bath (source: 46.01 sf). Both walls it drains into are

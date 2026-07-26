@@ -405,24 +405,23 @@ ALARMS = [
 # plywood, and the mat lies in the thinset *above* the subfloor, which is neither of the
 # two modes `Embed` can spell. CKT-FH-ENSUITE and ED-S-ENSUITE-FH-STAT carry it.
 #
-# The zone is an L, not the room. The clear face runs x 0'-0 5/8"..9'-11 3/8",
-# y 26'-4 11/16"..35'-11 3/8" (itself an L — the NE corner past x=7'-7 3/8" stops at
-# y=33'-3 3/8"), and the mat stops 4" off every wall. What actually shapes it is the
-# fixture wall: FX-S-ENSUITE-WC (x 3'-9"..6'-3", y 29'-9"..32'-3"), -LAV (x 5'-0"..7'-0",
-# y 30'-1 1/2"..31'-10 1/2") and -SH's pan (x 3'-6"..6'-6", y 31'-6"..34'-6") together
-# occupy x 3'-6"..7'-0" from y=29'-9" north, and cable runs under none of them. That
-# leaves a 25.2 ft2 band across the south of the room and a 17.2 ft2 leg up the west wall,
-# each holding 3" off the fixtures: 42.4 ft2.
-#
-# The three fixtures overlap *each other* at these authored positions — the WC and the lav
-# share 1.9 ft2, the WC and the shower pan 1.6 ft2 — so this room's fixture layout wants a
-# pass of its own. The zone is drawn to clear their union, which stays correct whichever
-# way that pass resolves them, as long as they stay in that corner.
+# The zone is drawn to the fixtures, not the room. The clear face runs
+# x 0'-0 5/8"..9'-11 3/8", y 26'-4 11/16"..35'-11 3/8" (itself an L — the NE corner past
+# x=7'-7 3/8" stops at y=33'-3 3/8"), and the mat stops 4" off every wall. The de-overlap
+# pass (plan/fixtures.py) put the WC on the west wall (x 0'-3"..2'-9", y 28'-9"..31'-3"),
+# the lav on the east (x 8'-2"..9'-11", y 30'-0"..32'-0") and kept the shower pan at
+# x 3'-6"..6'-6", y 31'-6"..34'-6", so the mat is now a south band (x 0'-5"..9'-7",
+# y 26'-9"..28'-6", 16.0 ft2) with an east step up to the lav (x 7'-11"..9'-7",
+# y 28'-6"..29'-9", 2.1 ft2) and a centre panel between WC and lav reaching up to the
+# pan (x 3'-0"..7'-11", y 28'-6"..31'-3", 13.5 ft2), everything holding 3" off every
+# fixture: 31.6 ft2. The strips north of the WC and west of the pan are left unheated
+# rather than tying them in through a 3"-wide cable corridor.
 FLOOR_HEAT = [
     FloorHeat(uid="CSH801AAAA", tag="FH-S-ENSUITE", room_ref="RM-S-ENSUITE",
               zone=(pt(ft(0, 5), ft(26, 9)), pt(ft(9, 7), ft(26, 9)),
-                    pt(ft(9, 7), ft(29, 6)), pt(ft(3, 3), ft(29, 6)),
-                    pt(ft(3, 3), ft(35, 7)), pt(ft(0, 5), ft(35, 7))),
+                    pt(ft(9, 7), ft(29, 9)), pt(ft(7, 11), ft(29, 9)),
+                    pt(ft(7, 11), ft(31, 3)), pt(ft(3), ft(31, 3)),
+                    pt(ft(3), ft(28, 6)), pt(ft(0, 5), ft(28, 6))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
               stat=pt(ft(1, 6), ft(32))),
 ]

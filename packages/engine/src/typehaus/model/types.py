@@ -22,6 +22,9 @@ class DoorType(HausModel):
     # A glazed leaf is transparent in 3D exports and the live viewer. Kept separate from
     # operation because a swinging, sliding, or French door can each be glazed.
     glazed: bool = False
+    # No applied casing — drywall return jamb: the gwb wraps into the opening and dies
+    # against a concealed jamb, so 3D exports and the live viewer draw no frame boxes.
+    trimless: bool = False
     # Type-level engineered-header default (e.g. '2-ply 14" LVL') for openings wide enough
     # that the solver's dimensional-lumber header tables don't apply; a Door instance's
     # own header_spec wins over this.

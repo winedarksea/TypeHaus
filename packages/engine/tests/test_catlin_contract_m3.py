@@ -87,6 +87,39 @@ def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
     assert all(finding.result is Result.PASS for finding in findings)
 
 
+def test_catlin_sunken_garden_decks_are_graded_and_the_guard_rule_resolves():
+    """Both freestanding sunken-garden walking surfaces carry ``service="deck"`` (IRC R507 /
+    AWC DCA6 scope, like the breezeway's FS-BW-FLOOR) and ``structural.deck_guard`` reaches a
+    real verdict for each: the balcony is guarded by RL-SG-BALCONY at 42" over its 120" drop,
+    and the porch surface sits at the site grade datum, under the 30" R312.1 threshold.
+    (The check measures against site grade — the -9' garden floor beside the porch is a
+    condition it deliberately does not model.)"""
+    from typehaus.model.floors import FloorSystem
+
+    plan = load_plan(CATLIN_DIR).plan
+    decks = {e.tag: e for e in plan.all_elements()
+             if isinstance(e, FloorSystem) and e.service == "deck"}
+    assert {"FS-SG-PORCH", "FS-SG-DECK"} <= set(decks)
+    report = run(plan, CATLIN_DIR, tier=None)
+    guard = {tag: [f for f in report.findings if f.check_id == "structural.deck_guard"
+                   and tag in f.element_tags]
+             for tag in ("FS-SG-PORCH", "FS-SG-DECK")}
+    for tag, findings in guard.items():
+        assert findings, f"{tag} produced no deck_guard finding"
+        assert all(f.result is Result.PASS for f in findings), \
+            [f.message for f in findings if f.result is not Result.PASS]
+    balcony = guard["FS-SG-DECK"][0]
+    assert "RL-SG-BALCONY" in balcony.element_tags
+
+
+def test_catlin_fixtures_do_not_overlap_and_required_clearances_hold():
+    """The ensuite de-overlap pass and the BATH2 wet-wall move leave every room's fixture
+    footprints pairwise disjoint with each WC's REQUIRED clearance zone empty."""
+    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+    findings = [f for f in report.findings if f.check_id == "advisory.fixture_overlap"]
+    assert not findings, [f.message for f in findings]
+
+
 def test_catlin_permit_checklist_passes_declared_minnesota_subset():
     from typehaus.checks import evaluate_permit_checklist
 

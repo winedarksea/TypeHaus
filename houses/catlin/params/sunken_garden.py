@@ -467,6 +467,9 @@ PORCH_JOISTS = FloorSystem(
                      direction="y", cantilever=inch(SPEC.joist_cantilever_in),
                      bearing_refs=("W-SG-ARCH", "BM-SG-BKW", "BM-SG-BKE")),
     outline=PORCH_FLOOR.outline,
+    # ``service="deck"`` is what puts this under IRC R507 / AWC DCA6 instead of the interior
+    # 40-psf floor table — see checks/structural/deck.py.
+    service="deck",
     source="porch floor — PT 2x8 joists, front sill -> back beams",
 )
 
@@ -477,6 +480,9 @@ BALCONY_JOISTS = FloorSystem(
                      direction="x", cantilever=inch(SPEC.joist_cantilever_in),
                      bearing_refs=("BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE")),
     outline=DECK_FLOOR.outline,
+    # ``service="deck"`` is what puts this under IRC R507 / AWC DCA6 instead of the interior
+    # 40-psf floor table — see checks/structural/deck.py.
+    service="deck",
     source="balcony — 2x8 joists on three double-2x10 beams",
 )
 

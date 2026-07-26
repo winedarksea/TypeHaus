@@ -426,7 +426,7 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
 
 export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, isDoubleSwing: boolean,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, isGlazed = false) {
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, isGlazed = false, isTrimless = false) {
   if (opening.kind === "rough_opening") return;
   const firstChildIndex = parent.children.length;
   const [[x0, y0], [x1, y1]] = wall.axis;
@@ -449,10 +449,14 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     parent.add(mesh);
   };
   const midElevation = wall.z0_m + opening.sill_m + availableHeight / 2;
-  addBox(frameWidth, availableHeight, depth, -opening.width_m / 2 + frameWidth / 2, midElevation, frameMaterial);
-  addBox(frameWidth, availableHeight, depth, opening.width_m / 2 - frameWidth / 2, midElevation, frameMaterial);
-  addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial);
-  addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + frameWidth / 2, frameMaterial);
+  if (!isTrimless) {
+    // A trimless door (drywall return jamb, no applied casing) draws no frame boxes; the
+    // leaf keeps its framed size so the reveal reads the same. Mirrors emit/gltf/openings.py.
+    addBox(frameWidth, availableHeight, depth, -opening.width_m / 2 + frameWidth / 2, midElevation, frameMaterial);
+    addBox(frameWidth, availableHeight, depth, opening.width_m / 2 - frameWidth / 2, midElevation, frameMaterial);
+    addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial);
+    addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + frameWidth / 2, frameMaterial);
+  }
   const panelHeight = Math.max(0.01, availableHeight - 2 * frameWidth);
   const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x8fb7c9, transparent: true, opacity: 0.48,
     roughness: 0.2, metalness: 0.05, flatShading: mode === "schematic", depthWrite: false });

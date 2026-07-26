@@ -154,7 +154,8 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
         ],
         "door_types": [
             {"tag": dt.tag, "width_m": dt.width.meters, "height_m": dt.height.meters,
-             "operation": dt.operation, "exterior": dt.exterior, "glazed": dt.glazed}
+             "operation": dt.operation, "exterior": dt.exterior, "glazed": dt.glazed,
+             "trimless": dt.trimless}
             for dt in lib.door_types
         ],
         "occupancies": [o.value for o in Occupancy],

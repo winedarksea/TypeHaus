@@ -86,12 +86,10 @@ export function populateScene(options: PopulateSceneOptions) {
     buildWall(tradeGroups, wall, wallOpenings, center, mode, palette, registry.picks,
       registry.byUid, model.catalog?.materials);
     for (const opening of wallOpenings) {
-      const isDoubleSwing = model.catalog?.door_types
-        .find((type) => type.tag === opening.type_ref)?.operation === "double_swing";
-      const isGlazed = model.catalog?.door_types
-        .find((type) => type.tag === opening.type_ref)?.glazed ?? false;
+      const doorType = model.catalog?.door_types.find((type) => type.tag === opening.type_ref);
+      const isDoubleSwing = doorType?.operation === "double_swing";
       buildOpening(tradeGroups.openings, opening, wall, center, mode, palette, isDoubleSwing,
-        registry.picks, registry.byUid, isGlazed);
+        registry.picks, registry.byUid, doorType?.glazed ?? false, doorType?.trimless ?? false);
     }
   }
   // The site sheet is context, not an element: it has no uid in model.json, so it stays out

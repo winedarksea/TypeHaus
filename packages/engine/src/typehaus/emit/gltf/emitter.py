@@ -102,7 +102,8 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         is_double_swing = (op.is_door and door_type is not None
                            and door_type.operation == "double_swing")
         _add_opening_filling(mb, host, op, is_double_swing,
-                             is_glazed=op.is_door and door_type is not None and door_type.glazed)
+                             is_glazed=op.is_door and door_type is not None and door_type.glazed,
+                             is_trimless=op.is_door and door_type is not None and door_type.trimless)
         scene.add_object(mb, trade="openings", kind="opening", uid=op.uid)
 
     for room in sorted(model.rooms, key=lambda r: r.uid):

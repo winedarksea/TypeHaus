@@ -202,6 +202,48 @@ def floor_finish_over_radiant(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+@check(Tier.ADVISORY, "advisory.fixture_overlap")
+def fixture_overlap(ctx: CheckContext) -> list[Finding]:
+    """Two fixtures in one room must not stand in the same floor space, and a fixture's
+    code-REQUIRED clearance zone must hold no neighbouring fixture.
+
+    Works from ``model.canvas_objects`` rather than re-deriving boxes from type footprints:
+    the resolver has already rotated each footprint into the project frame (FX-M-BATH1-WC
+    is rotated 90°, and a naive axis-aligned box would test the wrong rectangle) and has
+    already transformed each REQUIRED ``ClearanceZone`` ring the same way. Touching edges
+    are fine — only a real shared area (> ~1 in2) is an overlap.
+    """
+    from shapely.geometry import Polygon
+
+    fixtures = [obj for obj in ctx.model.canvas_objects if obj.kind == "Fixture"]
+    out: list[Finding] = []
+    reported: set[tuple[str, ...]] = set()
+    for source in fixtures:
+        source_shape = Polygon(source.footprint)
+        for other in fixtures:
+            if (other.uid == source.uid or other.storey != source.storey
+                    or other.room != source.room or other.room is None):
+                continue
+            key = tuple(sorted((source.tag, other.tag)))
+            other_shape = Polygon(other.footprint)
+            if key not in reported and source_shape.intersection(other_shape).area > 1e-3:
+                reported.add(key)
+                out.append(_warn(
+                    "advisory.fixture_overlap",
+                    f"fixtures {key[0]} and {key[1]} overlap in {source.room}; "
+                    "separate their footprints", key))
+            zone_key = (source.tag, other.tag, "clearance")
+            if any(Polygon(zone).intersection(other_shape).area > 1e-3
+                   for zone in source.required_clearances) and zone_key not in reported:
+                reported.add(zone_key)
+                out.append(_warn(
+                    "advisory.fixture_overlap",
+                    f"required clearance zone of {source.tag} holds fixture {other.tag} "
+                    f"in {source.room}; keep the code clearance clear",
+                    (source.tag, other.tag)))
+    return out
+
+
 @check(Tier.ADVISORY, "advisory.clearance_overlap")
 def clearance_overlap(ctx: CheckContext) -> list[Finding]:
     """Surface authored fixture/furniture use-zone conflicts in both CLI and canvas.

@@ -42,6 +42,8 @@ DOOR_TYPES = [
     DoorType(tag="DT-INT32", width=ft(2, 8), height=ft(6, 8)),
     DoorType(tag="DT-INT30", width=ft(2, 6), height=ft(6, 8)),
     DoorType(tag="DT-INT30-GLASS", width=ft(2, 6), height=ft(6, 8), glazed=True),
+    # Frameless jamb system (no applied casing — drywall return jamb), flush with the gwb.
+    DoorType(tag="DT-INT30-TRIMLESS", width=ft(2, 6), height=ft(6, 8), trimless=True),
     DoorType(tag="DT-INT24", width=ft(2), height=ft(6, 8)),
     DoorType(tag="DT-INT60", width=ft(5), height=ft(6, 8), operation="bifold"),
     DoorType(tag="DT-INT56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),
@@ -225,6 +227,12 @@ OPENINGS = [
          position=from_node("N-M-E3", ft(1))),
     Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT32",
          position=from_node("N-M-D3", ft(5))),
+    # Second bedroom <-> living connection, straight through the centre bearing wall.
+    # Trimless (drywall return jamb, no casing) so it reads as a slot in the wall from
+    # both rooms. W-M-C1 is BEARING, so the solver's framing tables put a structural
+    # header over the 2'-6" opening on their own — nothing extra to author here.
+    Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT30-TRIMLESS",
+         position=from_node("N-M-S1", ft(5))),
     # Cased pass-through into the hall — door-sized (DT-INT32's 2'-8" x 6'-8") but
     # never leafed, so it carries no swing symbol and no IfcDoor.
     RoughOpening(uid="CMD209AAAA", tag="O-M-HALL", host="W-M-C4",
@@ -345,18 +353,19 @@ ALARMS = [
 FLOOR_HEAT = [
     # RM-M-BATH2's floor. The clear face is x 0'-0 5/8"..7'-11 3/8", y 13'-4 11/16"..
     # 21'-7 5/16", which sets back to a 7'-2" x 7'-6" = 53.8 ft2 rectangle — but
-    # FX-M-BATH2-WC stands at x 1'-9"..4'-3", y 16'-9"..19'-3", clear of every wall, and
-    # `advisory.floor_heat_fixture_keepout` is right that cable does not run under a closet
-    # flange. So the west edge is notched x 0'-5"..4'-6", y 16'-6"..19'-6": 3" of clearance
-    # on all three exposed sides of the WC, and the 1'-4" strip left between it and the west
-    # wall goes with it rather than becoming a cable island. 53.8 - 12.3 = 41.5 ft2.
+    # FX-M-BATH2-WC now backs onto W-M-BA2E at x 5'-5 3/8"..7'-11 3/8", y 17'-3"..19'-9"
+    # (plan/fixtures.py), and `advisory.floor_heat_fixture_keepout` is right that cable
+    # does not run under a closet flange. So the *east* edge is notched x 5'-2"..7'-7",
+    # y 17'-0"..20'-0": 3"+ of clearance on the three exposed sides of the WC, and the
+    # sliver between the tank and the wall goes with it rather than becoming a cable
+    # island. 53.8 - 7.3 = 46.5 ft2.
     FloorHeat(uid="CMH801AAAA", tag="FH-M-BATH2", room_ref="RM-M-BATH2",
               zone=(pt(ft(0, 5), ft(13, 9)), pt(ft(7, 7), ft(13, 9)),
-                    pt(ft(7, 7), ft(21, 3)), pt(ft(0, 5), ft(21, 3)),
-                    pt(ft(0, 5), ft(19, 6)), pt(ft(4, 6), ft(19, 6)),
-                    pt(ft(4, 6), ft(16, 6)), pt(ft(0, 5), ft(16, 6))),
+                    pt(ft(7, 7), ft(17)), pt(ft(5, 2), ft(17)),
+                    pt(ft(5, 2), ft(20)), pt(ft(7, 7), ft(20)),
+                    pt(ft(7, 7), ft(21, 3)), pt(ft(0, 5), ft(21, 3))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
-              stat=pt(ft(6), ft(17, 6))),
+              stat=pt(ft(2), ft(17, 6))),
     # Under the dining table. FURN-M-DINING covers x 22'-11"..30'-11", y 15'-7"..19'-1"; the
     # zone takes the table's exact width and runs y 13'-9"..21'-0" so it reaches under both
     # chair rows (FURN-M-CHAIR-S* at y=14'-6", -N* at y=20'-2") — feet, not the table legs,

@@ -554,6 +554,8 @@ export interface DoorTypeSpec {
   operation: DoorOperation;
   exterior: boolean;
   glazed: boolean;
+  // No applied casing — drywall return jamb; the viewer draws no frame boxes for it.
+  trimless: boolean;
 }
 
 export interface MaterialSpec {
