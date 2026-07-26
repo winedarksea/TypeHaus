@@ -85,18 +85,21 @@ def render_views(
 
         # Authored DETAIL Slices (e.g. the sauna floor section) — routed through the
         # detail-component machinery so their overlay vocabulary renders here too.
+        # Details print at 300 dpi: their hatch textures and note lettering are the
+        # finest content in the set, and 110 dpi (fine for a plan glance) smears them.
         for detail in model.plan.elements_of_kind("Slice"):
             if detail.kind.value != "detail":
                 continue
             scene = build_authored_detail_scene(model, detail)
             slug = detail.tag.replace("/", "_")
             written.append(write_raster(scene, out_dir / f"detail_{slug}.{fmt}",
-                                        title=f"detail · {detail.title or detail.tag}"))
+                                        title=f"detail · {detail.title or detail.tag}",
+                                        dpi=300))
         for derived in derive_detail_slices(model):
             scene, _findings = build_detail(model, derived)
             slug = derived.view.tag.replace("/", "_")
             written.append(write_raster(scene, out_dir / f"detail_{slug}.{fmt}",
-                                        title=f"detail · {derived.key}"))
+                                        title=f"detail · {derived.key}", dpi=300))
     else:
         raise ValueError(f"unknown view {view!r} (plan|site|section|3d|details)")
     return written
