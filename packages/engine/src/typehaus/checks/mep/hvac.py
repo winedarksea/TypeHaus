@@ -60,6 +60,99 @@ def duct_joist_bay(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+# ERV/HRV distribution coverage (ASHRAE 62.2-shaped, advisory). Sleeping/living/office
+# rooms breathe fresh air; wet rooms give stale air back. Registers are matched to rooms
+# by their authored `room=` when present, else by point-in-polygon against the resolved
+# room's clear face (the floor_finish_over_radiant precedent).
+_SUPPLY_OCCUPANCIES = frozenset({"bedroom", "living", "office"})
+_STALE_OCCUPANCIES = frozenset({"bathroom", "laundry", "kitchen"})
+_STALE_KINDS = frozenset({"return", "exhaust"})
+
+
+def _registers_by_room(ctx: CheckContext, cid: str) -> tuple[dict, list, list[Finding]]:
+    """Map every authored Register to a room tag. Returns (room->kinds, registers, findings)."""
+    from shapely.geometry import Point, Polygon
+
+    out: list[Finding] = []
+    by_room: dict[str, set] = {}
+    registers = []
+    rooms = ctx.model.rooms
+    for storey in ctx.model.plan.storeys:
+        for element in ctx.model.plan.storey_elements(storey.tag):
+            if element.element_kind != "Register":
+                continue
+            registers.append(element)
+            room_tag = element.room
+            if room_tag is None:
+                point = Point(element.position.xy_m)
+                room_tag = next(
+                    (r.tag for r in rooms
+                     if r.storey == storey.tag and len(r.clear_face) >= 3
+                     and Polygon(r.clear_face).contains(point)), None)
+            if room_tag is None:
+                out.append(_unknown(
+                    cid, f"register {element.tag} carries no room= and its position lands "
+                    "in no room's clear face", (element.tag,),
+                ))
+                continue
+            by_room.setdefault(room_tag, set()).add(element.kind.value)
+    return by_room, registers, out
+
+
+@check(Tier.ADVISORY, "mep.ventilation_distribution")
+def ventilation_distribution(ctx: CheckContext) -> list[Finding]:
+    cid = "mep.ventilation_distribution"
+    rooms = ctx.model.rooms
+    if not rooms:
+        return [_unknown(cid, "no resolved rooms to distribute ventilation to")]
+    by_room, registers, out = _registers_by_room(ctx, cid)
+
+    for room in rooms:
+        kinds = by_room.get(room.tag, set())
+        if room.occupancy in _SUPPLY_OCCUPANCIES and room.conditioned:
+            if "supply" in kinds:
+                out.append(_pass(
+                    cid, f"{room.tag} ({room.occupancy}) has a fresh-air supply register",
+                    (room.tag,),
+                ))
+            else:
+                out.append(_advisory_fail(
+                    cid, f"{room.tag} ({room.occupancy}) is conditioned but has no "
+                    "fresh-air supply register", (room.tag,),
+                ))
+        if room.occupancy in _STALE_OCCUPANCIES:
+            if kinds & _STALE_KINDS:
+                out.append(_pass(
+                    cid, f"{room.tag} ({room.occupancy}) has a return/exhaust terminal",
+                    (room.tag,),
+                ))
+            else:
+                out.append(_advisory_fail(
+                    cid, f"{room.tag} ({room.occupancy}) has no return or exhaust "
+                    "terminal", (room.tag,),
+                ))
+
+    # Count sanity: at least one terminal per room the whole-house rate has to reach —
+    # counts are read off the model, never pinned to an authored constant.
+    supply_count = sum(1 for r in registers if r.kind.value == "supply")
+    stale_count = sum(1 for r in registers if r.kind.value in _STALE_KINDS)
+    need_supply = sum(1 for r in rooms
+                      if r.occupancy in _SUPPLY_OCCUPANCIES and r.conditioned)
+    need_stale = sum(1 for r in rooms if r.occupancy in _STALE_OCCUPANCIES)
+    if supply_count >= need_supply and stale_count >= need_stale:
+        out.append(_pass(
+            cid, f"{supply_count} supply / {stale_count} return+exhaust terminals cover "
+            f"{need_supply} supply-required and {need_stale} stale-required rooms",
+        ))
+    else:
+        out.append(_advisory_fail(
+            cid, f"terminal count short of the room count: {supply_count} supply for "
+            f"{need_supply} rooms, {stale_count} return/exhaust for {need_stale} rooms",
+            (),
+        ))
+    return out
+
+
 @check(Tier.ADVISORY, "mep.duct_direction_hint")
 def duct_direction_hint(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []

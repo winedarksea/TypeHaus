@@ -244,9 +244,11 @@ VENT_BRANCHES_SECOND = [
 # = ~197 cfm, which at 10"x6" (0.42 ft2) is ~475 fpm — quiet enough to run continuously,
 # where the 12"x8"/14"x8" furnace trunks they replace were roughly four times oversized.
 #
-# `DuctSystem` has only SUPPLY/RETURN (plans/TODO.md wants EXHAUST/HRV), so the balanced
-# pair is modeled as the supply and return sides it already has. Distribution is second
-# storey only — the main storey, basement and attic have no ERV terminals authored yet.
+# The balanced pair is modeled as the ERV's SUPPLY and RETURN trunks; dedicated stale
+# pulls (the ensuite shower takeoff) use DuctSystem.EXHAUST. Distribution now reaches all
+# four storeys: trunks ride joist bays where a floor system exists (FS-SECOND under the
+# second storey, FS-SECOND over the main storey's ceiling, FS-ATTIC under the attic) and
+# drop to CHASE routing in the basement, whose ceiling is the SL-M-DECK concrete.
 DUCTS = [
     DuctRun(uid="CMD901AAAA", tag="DU-M-ERV-SUP", system=DuctSystem.SUPPLY,
            path=(pt(ft(4), ft(20, 8)), pt(ft(32), ft(20, 8))), width=inch(10), depth=inch(6),
@@ -254,6 +256,47 @@ DUCTS = [
     DuctRun(uid="CMD902AAAA", tag="DU-M-ERV-RET", system=DuctSystem.RETURN,
            path=(pt(ft(4), ft(23, 4)), pt(ft(32), ft(23, 4))), width=inch(10), depth=inch(6),
            routing=DuctRouting.JOIST_BAY, floor_ref="FS-SECOND"),
+    # Ensuite shower exhaust: a dedicated stale pull in the FS-ATTIC joist bay centred at
+    # y=32'-8" (8" + 24*16"), right over FX-S-ENSUITE-SH at (5', 33'). It crosses the
+    # SL-D-SHOWER cut plane (x=5', plan/views.py) inside the shower's reach, which is what
+    # makes the detail's `shower_hrv_duct` component draw the takeoff.
+    DuctRun(uid="CSDV01AAAA", tag="DU-S-ENSUITE-EXH", system=DuctSystem.EXHAUST,
+           path=(pt(ft(3), ft(32, 8)), pt(ft(17), ft(32, 8))), width=inch(6), depth=inch(4),
+           routing=DuctRouting.JOIST_BAY, floor_ref="FS-ATTIC"),
+]
+
+# Main-storey distribution rides the FS-SECOND joist bays overhead (the main ceiling is
+# that floor's underside) in its own pair of bays — 12'-8" (8"+9*16") and 15'-4"
+# (8"+11*16") — south of both second-storey trunks and clear of FO-S-STAIR.
+DUCTS_MAIN = [
+    DuctRun(uid="CMDV01AAAA", tag="DU-M1-ERV-SUP", system=DuctSystem.SUPPLY,
+           path=(pt(ft(4), ft(12, 8)), pt(ft(32), ft(12, 8))), width=inch(8), depth=inch(6),
+           routing=DuctRouting.JOIST_BAY, floor_ref="FS-SECOND"),
+    DuctRun(uid="CMDV02AAAA", tag="DU-M1-ERV-RET", system=DuctSystem.RETURN,
+           path=(pt(ft(4), ft(15, 4)), pt(ft(32), ft(15, 4))), width=inch(8), depth=inch(6),
+           routing=DuctRouting.JOIST_BAY, floor_ref="FS-SECOND"),
+]
+
+# Basement trunks leave EQ-B-ERV in the furnace room and run exposed-in-chase under the
+# SL-M-DECK concrete — no joist bays to ride, so CHASE routing and no floor_ref.
+DUCTS_BASEMENT = [
+    DuctRun(uid="CBDV01AAAA", tag="DU-B-ERV-SUP", system=DuctSystem.SUPPLY,
+           path=(pt(ft(5), ft(29)), pt(ft(5), ft(18)), pt(ft(27), ft(18)), pt(ft(27), ft(9))),
+           width=inch(8), depth=inch(6), routing=DuctRouting.CHASE),
+    DuctRun(uid="CBDV02AAAA", tag="DU-B-ERV-RET", system=DuctSystem.RETURN,
+           path=(pt(ft(5), ft(29)), pt(ft(5), ft(8)), pt(ft(16), ft(8))),
+           width=inch(8), depth=inch(6), routing=DuctRouting.CHASE),
+]
+
+# Attic distribution rides the FS-ATTIC joist bays: supply at 18'-0" (8"+13*16"), return
+# at 4'-8" (8"+3*16"), both clear of FO-A-STAIR (y 5'-9 5/8"..8'-9 5/8", x 21'-2" east).
+DUCTS_ATTIC = [
+    DuctRun(uid="CADV01AAAA", tag="DU-A-ERV-SUP", system=DuctSystem.SUPPLY,
+           path=(pt(ft(4), ft(18)), pt(ft(32), ft(18))), width=inch(8), depth=inch(6),
+           routing=DuctRouting.JOIST_BAY, floor_ref="FS-ATTIC"),
+    DuctRun(uid="CADV02AAAA", tag="DU-A-ERV-RET", system=DuctSystem.RETURN,
+           path=(pt(ft(4), ft(4, 8)), pt(ft(32), ft(4, 8))), width=inch(8), depth=inch(6),
+           routing=DuctRouting.JOIST_BAY, floor_ref="FS-ATTIC"),
 ]
 
 # Every register here drops into a boot in the FS-SECOND joist bay, so the grille face lands
@@ -261,29 +304,118 @@ DUCTS = [
 # standing on it. Saying so keeps a register out of a neighbour's clear floor space without
 # exempting registers as a class — a surface-mounted one would still report.
 REGISTERS = [
-    Register(uid="CMR901AAAA", tag="REG-S-SUP1", kind=DuctSystem.SUPPLY,
+    Register(uid="CMR901AAAA", tag="REG-S-SUP1", kind=DuctSystem.SUPPLY, room="RM-S-PLANT",
             position=pt(ft(9), ft(4)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CMR902AAAA", tag="REG-S-SUP2", kind=DuctSystem.SUPPLY,
+    Register(uid="CMR902AAAA", tag="REG-S-SUP2", kind=DuctSystem.SUPPLY, room="RM-S-STUDY2",
             position=pt(ft(27), ft(4)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # One per bedroom now that the east bedrooms are equal 9'-0" bays: SUP3 y 9'-18',
     # SUP5 y 18'-27', SUP4 y 27'-36'. RM-S-BED2 had no terminal at all before the
     # re-spacing (plans/TODO.md).
-    Register(uid="CMR903AAAA", tag="REG-S-SUP3", kind=DuctSystem.SUPPLY,
+    Register(uid="CMR903AAAA", tag="REG-S-SUP3", kind=DuctSystem.SUPPLY, room="RM-S-BED1",
             position=pt(ft(29), ft(13, 6)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CMR907AAAA", tag="REG-S-SUP5", kind=DuctSystem.SUPPLY,
+    Register(uid="CMR907AAAA", tag="REG-S-SUP5", kind=DuctSystem.SUPPLY, room="RM-S-BED2",
             position=pt(ft(29), ft(22, 6)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CMR904AAAA", tag="REG-S-SUP4", kind=DuctSystem.SUPPLY,
+    Register(uid="CMR904AAAA", tag="REG-S-SUP4", kind=DuctSystem.SUPPLY, room="RM-S-BED3",
             position=pt(ft(29), ft(31, 6)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CMR905AAAA", tag="REG-S-RET1", kind=DuctSystem.RETURN,
+    Register(uid="CMR905AAAA", tag="REG-S-RET1", kind=DuctSystem.RETURN, room="RM-S-HALL",
             position=pt(ft(20), ft(20)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-RETURN",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CMR906AAAA", tag="REG-S-RET2", kind=DuctSystem.RETURN,
+    Register(uid="CMR906AAAA", tag="REG-S-RET2", kind=DuctSystem.RETURN, room="RM-S-SUITE",
             position=pt(ft(9), ft(20)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-RETURN",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+]
+
+# --- Distribution registers, all four storeys (ASHRAE 62.2 coverage) ----------------
+# Fresh air to every sleeping/living/office room, stale air out of every wet room, all
+# matched to rooms explicitly via room= (mep.ventilation_distribution). RM-S-NCLOSET and
+# the other storage rooms get nothing. Second-storey terminals are floor boots off the
+# FS-SECOND trunks like the seven above; the ensuite's stale terminal is a ceiling grille
+# on the EXHAUST run in the FS-ATTIC bay over the shower.
+REGISTERS_SECOND = [
+    Register(uid="CSRV01AAAA", tag="REG-S-SUP6", kind=DuctSystem.SUPPLY, room="RM-S-SUITE",
+            position=pt(ft(5), ft(18)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    Register(uid="CSRV02AAAA", tag="REG-S-SUP7", kind=DuctSystem.SUPPLY, room="RM-S-LANDING",
+            position=pt(ft(13), ft(23, 6)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    Register(uid="CSRV03AAAA", tag="REG-S-RET3", kind=DuctSystem.RETURN, room="RM-S-SUITEBATH",
+            position=pt(ft(14), ft(19)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-RETURN",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    Register(uid="CSRV04AAAA", tag="REG-S-RET4", kind=DuctSystem.RETURN, room="RM-S-VANITY",
+            position=pt(ft(3), ft(24, 4)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-RETURN",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    Register(uid="CSRV05AAAA", tag="REG-S-EXH1", kind=DuctSystem.EXHAUST, room="RM-S-ENSUITE",
+            position=pt(ft(5), ft(32, 8)), duct_ref="DU-S-ENSUITE-EXH", type_ref="REG-T-RETURN",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+]
+
+# Main-storey terminals are ceiling grilles fed from the DUCTS_MAIN bays overhead. The
+# kitchen is open plan inside RM-M-LIVING (no Occupancy.KITCHEN), so its stale pickup is
+# placed by position — (33', 33'), over the counter run — and still carries the LIVING room=.
+REGISTERS_MAIN = [
+    Register(uid="CMRV01AAAA", tag="REG-M-SUP1", kind=DuctSystem.SUPPLY, room="RM-M-LIVING",
+            position=pt(ft(27), ft(12)), duct_ref="DU-M1-ERV-SUP", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    Register(uid="CMRV02AAAA", tag="REG-M-SUP2", kind=DuctSystem.SUPPLY, room="RM-M-LIVING",
+            position=pt(ft(30), ft(26)), duct_ref="DU-M1-ERV-SUP", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    Register(uid="CMRV03AAAA", tag="REG-M-SUP3", kind=DuctSystem.SUPPLY, room="RM-M-BED",
+            position=pt(ft(9), ft(6)), duct_ref="DU-M1-ERV-SUP", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    Register(uid="CMRV04AAAA", tag="REG-M-SUP4", kind=DuctSystem.SUPPLY, room="RM-M-STUDY",
+            position=pt(ft(15, 8), ft(20)), duct_ref="DU-M1-ERV-SUP", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    Register(uid="CMRV05AAAA", tag="REG-M-RET1", kind=DuctSystem.RETURN, room="RM-M-BATH1",
+            position=pt(ft(2), ft(24, 6)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-RETURN",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    Register(uid="CMRV06AAAA", tag="REG-M-RET2", kind=DuctSystem.RETURN, room="RM-M-BATH2",
+            position=pt(ft(4), ft(18)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-RETURN",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    Register(uid="CMRV07AAAA", tag="REG-M-RET3", kind=DuctSystem.RETURN, room="RM-M-LAUNDRY",
+            position=pt(ft(10, 6), ft(20)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-RETURN",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    Register(uid="CMRV08AAAA", tag="REG-M-RET5", kind=DuctSystem.RETURN, room="RM-M-LIVING",
+            position=pt(ft(33), ft(33)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-RETURN",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+]
+
+# Basement terminals hang from the SL-M-DECK underside off the CHASE trunks. The sauna's
+# stale pickup sits inside the room low on the trunk side — a sauna needs its exhaust to
+# turn the room over after a session.
+REGISTERS_BASEMENT = [
+    Register(uid="CBRV01AAAA", tag="REG-B-SUP1", kind=DuctSystem.SUPPLY, room="RM-B-GYM",
+            position=pt(ft(27), ft(9)), duct_ref="DU-B-ERV-SUP", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    Register(uid="CBRV02AAAA", tag="REG-B-SUP2", kind=DuctSystem.SUPPLY, room="RM-B-PLAY-N",
+            position=pt(ft(27), ft(27)), duct_ref="DU-B-ERV-SUP", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    Register(uid="CBRV03AAAA", tag="REG-B-RET1", kind=DuctSystem.RETURN, room="RM-B-WORKSHOP",
+            position=pt(ft(5), ft(8)), duct_ref="DU-B-ERV-RET", type_ref="REG-T-RETURN",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    Register(uid="CBRV04AAAA", tag="REG-B-RET2", kind=DuctSystem.RETURN, room="RM-B-SAUNA",
+            position=pt(ft(16), ft(6)), duct_ref="DU-B-ERV-RET", type_ref="REG-T-RETURN",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(7))),
+]
+
+# Attic terminals are floor boots in the FS-ATTIC bays, like the second storey's. The
+# stale pickup serves the den side of the floor.
+REGISTERS_ATTIC = [
+    Register(uid="CARV01AAAA", tag="REG-A-SUP1", kind=DuctSystem.SUPPLY, room="RM-A-WEST",
+            position=pt(ft(9), ft(20)), duct_ref="DU-A-ERV-SUP", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    Register(uid="CARV02AAAA", tag="REG-A-SUP2", kind=DuctSystem.SUPPLY, room="RM-A-EAST",
+            position=pt(ft(27), ft(20)), duct_ref="DU-A-ERV-SUP", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    Register(uid="CARV03AAAA", tag="REG-A-SUP3", kind=DuctSystem.SUPPLY, room="RM-A-STUDY",
+            position=pt(ft(27), ft(4)), duct_ref="DU-A-ERV-SUP", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    Register(uid="CARV04AAAA", tag="REG-A-RET1", kind=DuctSystem.RETURN, room="RM-A-DEN",
+            position=pt(ft(14), ft(4)), duct_ref="DU-A-ERV-RET", type_ref="REG-T-RETURN",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]
 
@@ -591,8 +723,11 @@ WATER_SUPPLY = [
             serves=("FX-G-HYDRANT",)),
 ]
 
-MAIN_ELEMENTS = [*SLEEVES, *VENT_BRANCHES_MAIN, *MAIN_DEVICES, *WATER_SUPPLY]
+MAIN_ELEMENTS = [*SLEEVES, *VENT_BRANCHES_MAIN, *MAIN_DEVICES, *WATER_SUPPLY,
+                 *DUCTS_MAIN, *REGISTERS_MAIN]
 BASEMENT_ELEMENTS = [*DRAINS, *SLAB_STUBS, *EQUIPMENT, *PANEL, *BASEMENT_DEVICES,
-                     *RADON_SUMP, *VENT_RISERS, *VENT_CLAMPS]
-SECOND_ELEMENTS = [*DUCTS, *REGISTERS, *VENT_BRANCHES_SECOND, *SECOND_DEVICES]
-ATTIC_ELEMENTS = [*NEMA_BOX, *NEMA_CLAMP, *ATTIC_DEVICES]
+                     *RADON_SUMP, *VENT_RISERS, *VENT_CLAMPS, *DUCTS_BASEMENT,
+                     *REGISTERS_BASEMENT]
+SECOND_ELEMENTS = [*DUCTS, *REGISTERS, *REGISTERS_SECOND, *VENT_BRANCHES_SECOND,
+                   *SECOND_DEVICES]
+ATTIC_ELEMENTS = [*NEMA_BOX, *NEMA_CLAMP, *ATTIC_DEVICES, *DUCTS_ATTIC, *REGISTERS_ATTIC]

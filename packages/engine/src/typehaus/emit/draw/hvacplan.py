@@ -16,6 +16,12 @@ from typehaus.resolve.model import ResolvedModel
 _M_TO_IN = 39.37007874015748
 _SUPPLY_LAYER = "M-HVAC-SDFF"
 _RETURN_LAYER = "M-HVAC-RDFF"
+_EXHAUST_LAYER = "M-HVAC-EXHS"
+_SYSTEM_LAYERS = {"supply": _SUPPLY_LAYER, "return": _RETURN_LAYER, "exhaust": _EXHAUST_LAYER}
+
+
+def _system_layer(system: str) -> str:
+    return _SYSTEM_LAYERS.get(system, _RETURN_LAYER)
 
 
 def has_hvac_content(model: ResolvedModel, storey_tag: str) -> bool:
@@ -40,7 +46,7 @@ def build_hvac_plan(model: ResolvedModel, storey: str) -> Scene:
     for duct in model.ducts:
         if duct.storey != storey:
             continue
-        layer = _SUPPLY_LAYER if duct.system == "supply" else _RETURN_LAYER
+        layer = _system_layer(duct.system)
         for i in range(len(duct.path) - 1):
             outline = rect_between(duct.path[i], duct.path[i + 1],
                                    -duct.width_m / 2, duct.width_m / 2)
@@ -70,7 +76,7 @@ def _emit_registers(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
     for element in model.plan.storey_elements(storey):
         if element.element_kind != "Register":
             continue
-        layer = _SUPPLY_LAYER if element.kind.value == "supply" else _RETURN_LAYER
+        layer = _system_layer(element.kind.value)
         b.add(Symbol(name=f"register-{element.kind.value}", insert=_in(element.position.xy_m),
                      layer=layer))
 

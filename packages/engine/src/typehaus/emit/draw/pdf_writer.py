@@ -62,6 +62,7 @@ _LAYER_STYLE = {
     "P-DOMW-PIPE": ("#3a6a8a", 0.6),
     "M-HVAC-SDFF": ("#2a6a4a", 0.6),
     "M-HVAC-RDFF": ("#4a8a6a", 0.6),
+    "M-HVAC-EXHS": ("#6a8a2a", 0.6),
     "M-HVAC-EQPM": ("#2a6a4a", 0.8),
     "E-POWR-DEVC": ("#8a2a2a", 0.5),
     "E-POWR-CNDT": ("#b05050", 0.4),

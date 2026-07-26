@@ -166,6 +166,10 @@ class DuctSystem(Enum):
 
     SUPPLY = "supply"
     RETURN = "return"
+    # The stale-air side of a balanced HRV/ERV pair (and any dedicated exhaust pull, e.g.
+    # a shower takeoff). No separate HRV member: an HRV/ERV is modeled as its SUPPLY and
+    # EXHAUST sides.
+    EXHAUST = "exhaust"
 
 
 class DuctRouting(Enum):

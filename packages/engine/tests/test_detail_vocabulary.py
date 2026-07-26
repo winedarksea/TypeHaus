@@ -452,8 +452,9 @@ def test_shower_vocabulary_is_gated_on_the_fixture(catlin_model):
 
     scene = build_authored_detail_scene(catlin_model, _shower_slice())
     tags = _component_tags(scene)
+    # shower-hrv-duct rides the authored DU-S-ENSUITE-EXH exhaust run crossing the cut.
     assert {"shower-recess", "shower-tile", "shower-backer", "shower-glass",
-            "shower-drain"} <= tags
+            "shower-drain", "shower-hrv-duct"} <= tags
     for node in scene.nodes:
         if str(getattr(node, "tag", "")).startswith("detail-component:shower"):
             assert isinstance(node, (Polyline, Hatch))
@@ -513,9 +514,15 @@ def test_shower_hrv_duct_draws_from_model_ducts(catlin_model):
     from typehaus.emit.draw.details import build_authored_detail_scene
     from typehaus.resolve.model import ResolvedDuct
 
+    # Catlin now routes DU-S-ENSUITE-EXH over the shower (houses/catlin/plan/mep.py):
+    # the takeoff draws at that run's own resolved width, read off the model.
     scene = build_authored_detail_scene(catlin_model, _shower_slice())
-    assert not _component_nodes(scene, "shower-hrv-duct"), (
-        "catlin routes no duct over the ensuite shower yet — drawing one would lie")
+    drawn = _component_nodes(scene, "shower-hrv-duct")
+    assert drawn, "the authored ensuite EXHAUST run crosses the cut — it must draw"
+    exhaust = next(d for d in catlin_model.ducts if d.system == "exhaust")
+    widths = [max(u for u, _z in n.points) - min(u for u, _z in n.points)
+              for n in drawn]
+    assert any(w == pytest.approx(exhaust.width_m * M_TO_IN, abs=1e-6) for w in widths)
 
     duct = ResolvedDuct(uid="TESTDUCT01", tag="DU-S-HRV-SH", storey="second",
                         system="hrv", path=((1.0, 10.2), (2.0, 10.2)),
@@ -526,10 +533,9 @@ def test_shower_hrv_duct_draws_from_model_ducts(catlin_model):
     try:
         scene = build_authored_detail_scene(catlin_model, _shower_slice())
         drawn = _component_nodes(scene, "shower-hrv-duct")
-        assert drawn
-        width = (max(u for u, _z in drawn[0].points)
-                 - min(u for u, _z in drawn[0].points))
-        assert width == pytest.approx(3.0, abs=1e-6)
+        widths = [max(u for u, _z in n.points) - min(u for u, _z in n.points)
+                  for n in drawn]
+        assert any(w == pytest.approx(3.0, abs=1e-6) for w in widths)
     finally:
         catlin_model.ducts.remove(duct)
 

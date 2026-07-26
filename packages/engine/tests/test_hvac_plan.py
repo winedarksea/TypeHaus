@@ -23,22 +23,27 @@ def catlin_model():
     return model
 
 
-def test_second_floor_has_hvac_content(catlin_model):
-    assert has_hvac_content(catlin_model, "second")
-    assert not has_hvac_content(catlin_model, "attic")
+def test_every_storey_has_hvac_content(catlin_model):
+    # ERV distribution reaches all four storeys now (houses/catlin/plan/mep.py).
+    for storey in ("basement", "main", "second", "attic"):
+        assert has_hvac_content(catlin_model, storey), storey
 
 
 def test_hvac_plan_symbol_census(catlin_model):
     scene = build_hvac_plan(catlin_model, "second")
     layers = scene.by_layer()
     assert "M-HVAC-SDFF" in layers and "M-HVAC-RDFF" in layers
+    # The ensuite shower's dedicated stale pull draws on its own exhaust layer.
+    assert "M-HVAC-EXHS" in layers
     registers = [n for n in scene.nodes if isinstance(n, Symbol)
                  and n.name.startswith("register-")]
-    # 5 supply + 2 return. The fifth supply is RM-S-BED2's: the east bedrooms are equal
-    # 9'-0" bays now, and the middle one had no terminal at all before the re-spacing.
-    assert len(registers) == 7
+    # Count read off the plan source, not pinned: every second-storey Register.
+    expected = sum(1 for e in catlin_model.plan.storey_elements("second")
+                   if e.element_kind == "Register")
+    assert len(registers) == expected
+    assert any(n.name == "register-exhaust" for n in registers)
     duct_polys = [n for n in scene.nodes if isinstance(n, Polyline)
-                 and n.layer in ("M-HVAC-SDFF", "M-HVAC-RDFF")]
+                 and n.layer in ("M-HVAC-SDFF", "M-HVAC-RDFF", "M-HVAC-EXHS")]
     assert duct_polys
 
 
