@@ -19,6 +19,7 @@ from typehaus.model.views import Slice
 from typehaus.model.enums import LayerFunction, SliceKind
 from typehaus.quantities import m, pt
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.emit.draw.annotate import LabelSpec, dodge, place_column
 from typehaus.emit.draw.palette import detail_hatch
 from typehaus.emit.draw.scene import (
     Hatch,
@@ -211,8 +212,13 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
 
     b = SceneBuilder(name=f"{view.kind.value}-{view.tag}", units="in")
 
+    # Layer-label ladders are collected per wall and emitted once, after every wall has
+    # been cut, so ladders from different walls (and later the seed-callout column) can be
+    # dodged against each other instead of overprinting.
+    ladder_labels: list = []
     for wall in model.walls:
-        _emit_wall_cut(b, model, wall, direction, station, crop, is_detail, min_draw, joints)
+        _emit_wall_cut(b, model, wall, direction, station, crop, is_detail, min_draw,
+                       joints, ladder_labels)
 
     for solid in model.solids:
         material = _solid_material(model, solid)
@@ -238,6 +244,18 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
         _emit_member_cuts(b, model, direction, station, crop)
     if joints is not None:
         b.extend(list(joints.treatments))
+
+    # Emit the collected layer-label ladders last so they draw over the cut geometry,
+    # dodged against each other (two walls' ladders share the text column at the crop's
+    # left edge and would otherwise interleave).
+    for placed in dodge(ladder_labels):
+        mid_u = placed.spec.target[0]
+        rung_z = placed.at[1]
+        # Horizontal, leadered back to the layer at the rung's own height — the rung moves
+        # with the label when dodged, so the leader line stays flat and never crosses text.
+        b.add(Leader(anchor=NamedPoint(xy=(mid_u, rung_z)), at=placed.at,
+                     to=(mid_u, rung_z), text=placed.spec.text,
+                     height=placed.height, layer="A-ANNO-TEXT"))
 
     if crop is not None:
         (cu0, cz0), (cu1, cz1) = crop
@@ -287,10 +305,13 @@ def build_center_section(model: ResolvedModel) -> Scene:
 
 
 def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
-                   is_detail, min_draw, joints=None) -> None:
+                   is_detail, min_draw, joints=None, ladder_labels=None) -> None:
     openings = [op for op in model.openings if op.host_wall == wall.tag]
-    label_z = None
-    label_row = [0]  # mutable so the label ladder advances across the layer loop
+    # One ladder entry per (wall, layer name) — a layer cut into several (u0, u1)
+    # intervals used to re-emit its label per interval ("5.5 stud" twice), and each
+    # interval's own crop-clipped top made the rungs interleave between layers. Labels
+    # are collected here and laddered after the layer loop from a single anchor.
+    label_entries: dict[str, tuple[str, float]] = {}
     wall_top = _wall_top_at_cut(wall, direction, station)
     for layer in wall.layers:
         term = joints.termination(wall.uid, layer.name) if joints is not None else None
@@ -309,6 +330,13 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
                 exaggerated = True
             aia = _FUNCTION_LAYER.get(layer.function, "A-WALL")
             pattern = detail_hatch(layer.material_ref, layer.function)
+            if is_detail and not layer.is_cavity and layer.name not in label_entries:
+                # True-dimension label per layer (exaggeration labels true size, #36).
+                thickness_in = true_thickness * M_TO_IN
+                label = f"{layer.name} {thickness_in:.3g}\""
+                if exaggerated:
+                    label += " (NTS)"
+                label_entries[layer.name] = (label, ((ru0 + ru1) / 2) * M_TO_IN)
             sloped = term is not None and abs(layer_top_l - layer_top_r) > 1e-6
             if sloped:
                 # Raked layer termination against the interface plane — single sloped quad,
@@ -342,25 +370,27 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
                                      f"{wall.tag}/{layer.name}",
                                      outline=not layer.is_cavity,
                                      material=layer.material_ref))
-            if is_detail and not layer.is_cavity:
-                # True-dimension label per layer (exaggeration labels true size, #36).
-                # Stacked vertically in a ladder: at detail scale a membrane and its
-                # neighbours are hundredths of an inch apart, so labels sharing one
-                # baseline overprint into an unreadable smear.
-                thickness_in = true_thickness * M_TO_IN
-                label = f"{layer.name} {thickness_in:.3g}\""
-                if exaggerated:
-                    label += " (NTS)"
-                z_lab = label_z if label_z is not None else rz1
-                # Horizontal, laddered off the inboard face and leadered back to the layer.
-                # Rotated labels sharing one baseline overprint into vertical smears at
-                # detail scale, where a membrane and its neighbours are hundredths apart.
-                rung = (z_lab * M_TO_IN) - _LABEL_RUNG_IN * label_row[0] - 1.0
-                label_row[0] += 1
-                mid_u = ((ru0 + ru1) / 2) * M_TO_IN
-                text_u = (crop[0][0] * M_TO_IN) - 1.0 if crop is not None else mid_u - 14.0
-                b.add(Leader(anchor=NamedPoint(xy=(mid_u, rung)), at=(text_u, rung),
-                             to=(mid_u, rung), text=label, layer="A-ANNO-TEXT"))
+    if not label_entries or ladder_labels is None:
+        return
+    # The whole ladder hangs from a single anchor: the wall's top as seen in the crop.
+    # Rungs step down at a uniform _LABEL_RUNG_IN so a sloped/eave cut, where each layer
+    # terminates at its own height, cannot interleave rungs from different layers.
+    # Stacked vertically because at detail scale a membrane and its neighbours are
+    # hundredths of an inch apart — labels sharing one baseline overprint into a smear.
+    if crop is not None:
+        (cu0, cz0), (cu1, cz1) = crop
+        z_top = min(wall_top, max(cz0, cz1))
+        text_u = min(cu0, cu1) * M_TO_IN - 1.0
+    else:
+        z_top = wall_top
+        text_u = min(mid_u for (_lab, mid_u) in label_entries.values()) - 14.0
+    # Sorted by mid_u (innermost layer first): the text column sits left of the cut, so
+    # ascending targets top-to-bottom keep the horizontal leader lines nested, not crossed.
+    entries = [LabelSpec(text=label, target=(mid_u, 0.0), key=(wall.uid, name))
+               for name, (label, mid_u) in
+               sorted(label_entries.items(), key=lambda item: item[1][1])]
+    ladder_labels.extend(place_column(entries, x=text_u, z_top=z_top * M_TO_IN - 1.0,
+                                      step=_LABEL_RUNG_IN, height=1.6, align="right"))
 
 
 def _opening_splits(wall, openings, direction, station, z0, z1):

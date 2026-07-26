@@ -91,6 +91,45 @@ def test_eave_has_per_layer_roof_bands_and_wedge(catlin_model):
     assert wedges, "spray-foam wedge hatch expected at the roof/wall foam interface"
 
 
+def _leaders(scene):
+    from typehaus.emit.draw.scene import Leader
+
+    return [n for n in scene.nodes if isinstance(n, Leader)]
+
+
+@pytest.mark.parametrize("pick", [_eave, _foundation])
+def test_layer_label_ladder_is_deduped_and_non_overlapping(catlin_model, pick):
+    """The ladder bug: per-interval labels duplicated ("5.5 stud" twice) and rungs from
+    different layers interleaved into a smear. Labels are now deduped per (wall, layer)
+    and every label box — ladder rungs and seed callouts alike — is dodged clear."""
+    from typehaus.emit.draw.annotate import leader_box
+
+    scene, _ = build_detail(catlin_model, pick(catlin_model))
+    leaders = _leaders(scene)
+    assert leaders, "detail should carry layer labels"
+    # deduplicated: no two leaders repeat the same note at the same target
+    keys = [(n.text, n.to) for n in leaders]
+    assert len(keys) == len(set(keys)), "duplicate layer labels"
+    # non-overlapping: estimated text boxes are pairwise disjoint
+    boxes = [leader_box(n) for n in leaders]
+    for i, a in enumerate(boxes):
+        for b in boxes[i + 1:]:
+            assert not (a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]), \
+                f"label boxes overlap: {leaders[i].text!r} / {b!r}"
+
+
+def test_seed_callouts_wrap_at_leader_wrap_columns(catlin_model):
+    from typehaus.emit.draw.annotate import LEADER_WRAP_COLUMNS
+
+    scene, _ = build_detail(catlin_model, _eave(catlin_model))
+    continuity = [n for n in _leaders(scene) if "continuity" in n.text]
+    assert continuity, "eave detail should seed continuity callouts"
+    assert any("\n" in n.text for n in continuity), \
+        "the 45+ char air-continuity claim must wrap"
+    for n in continuity:
+        assert all(len(line) <= LEADER_WRAP_COLUMNS for line in n.text.split("\n"))
+
+
 def test_detail_scene_is_deterministic(catlin_model):
     detail = _eave(catlin_model)
     a, _ = build_detail(catlin_model, detail)
