@@ -24,18 +24,6 @@ what genuinely remains, with fresh measurements.*
 - **The breezeway deck and the garage service door differ by 22".** Unchanged: drop the
   garage storey to the slab, step the breezeway up at its north end, or accept the step and
   add a landing. Deliberately not resolved while building the breezeway.
-- **PyPI publish.** Everything is prepared and verified from merged main (`python -m build`
-  + `twine check` PASS; wheel smoke-installed). Publishing is your call + your API token:
-  ```bash
-  cd packages/engine
-  python -m pip install --upgrade build twine   # in a 3.11+ venv
-  rm -rf dist && python -m build
-  python -m twine check dist/*
-  python -m twine upload dist/*                 # user: __token__
-  ```
-  Caveats: re-smoke on a real 3.11+ box first (this machine only has 3.9); the wheel ships
-  without `server/static/` — place a built `ui/dist` there at release time or `haus serve`
-  is API-only. After upload, `landing/install.sh`'s `pipx install "typehaus[server]"` works.
 
 ## Remaining Work
 
@@ -88,15 +76,6 @@ what genuinely remains, with fresh measurements.*
   flashing, thermal-control continuity). `Transition` stays post-resolve documentation.
 - Add `Node.junction_override` only if the audit proves a rule cannot express a condition.
 
-## Electrical (dedicated planning session — deliberately untouched by the sweep)
-Distribute outlets and switches around the house in their recommended locations. Make sure
-they are editable in the UI (so we can move them around to refine the placement).
-
-Generally, GFCI at the breaker level rather than outlet level.
-Surge protector on panel.
-We will have a low voltage system set too. POE for access points and cameras. We might have
-24V power system for the many LED strips (it's that or in wall box per strip area).
-
 ## Roof-eave follow-ups (accepted-for-now / awaiting reference drawings)
 
 - **Rake clip rules are extrapolated** from the eave-only golden reference; a rake detail
@@ -138,12 +117,6 @@ the future.
 - Polycarbonate on breezeway doesn't line up (it should cover the lower beam, and top plate should meet the side place in a shared channel).
 
 - Flooring
-- Lighting
-- ~~Sauna furniture~~ — done: two-tier bench + foot bench return + 9 kW electric heater in
-  RM-B-SAUNA (`sauna-bench` / `sauna-bench-tiered` / `sauna-heater` symbols). Still open in
-  that room: the shower end, its glass partition, and the HRV intake/exhaust registers from
-  notes/sauna_shower_basement_detail.md. Note `emit/draw/section.py` cuts walls, solids,
-  floors, roofs and members only — placeables do not appear in SL-D-SAUNA.
 
 - Frost Free Hydrant in garage
 		Frost free hydrant and "hose down" area

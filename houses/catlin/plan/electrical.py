@@ -4,6 +4,10 @@
 # receptacles in the garage, the smart-relay backup subsystem's DIN enclosure, hot tub +
 # minisplit disconnects, and the PV junction box beside the radon-vent riser.
 #
+# All-electric house: no gas service, no furnace. Heat is the two minisplits below plus the
+# electric radiant floor zones (FloorHeat in plan/storeys/), and EQ-B-ERV is the only thing
+# that moves air — its "supply" is fresh air, not heat.
+#
 # Instances only, explicit constructors (`# haus: editable` — UI drags round-trip).
 # Circuit assignments live in plan/circuits.py (non-editable); the `circuit=` strings
 # here are the join keys. Uids avoid I/L/O/U (Crockford base32, → model/ids.py).
@@ -91,6 +95,17 @@ DEVICE_TYPES = (
                           footprint=(inch(6), inch(6)), height=inch(4),
                           ports=(ServicePort(tag="power", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
+    # Radiant-floor thermostat: the line-voltage control the mat's cold lead lands in, with
+    # its floor sensor run back into the slab. `DeviceKind` has no THERMOSTAT member, and a
+    # new one would fall through the IFC map to IfcBuildingElementProxy; SWITCH is a real
+    # line-voltage control device in a single-gang box and maps to IfcSwitchingDevice, which
+    # is what this is. Carries the zone load so the panel schedule reads the same VA whether
+    # it sums devices or takes the circuit's authored figure.
+    ElectricalDeviceType(tag="ED-T-FLOOR-STAT", name="Radiant floor thermostat, 120V",
+                          load_va=1520,
+                          footprint=(inch(4), inch(2)), height=inch(4),
+                          ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                             position=(ft(0), ft(0), ft(0))),)),
 )
 
 EQUIPMENT_TYPES = (
@@ -111,9 +126,20 @@ EQUIPMENT_TYPES = (
                   plan_symbol="sauna-heater",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
+    # The only air-moving equipment in the house — there is no furnace and no air handler,
+    # so the SUPPLY_AIR/RETURN_AIR ports that used to hang off EQ-T-FURNACE belong here.
+    # "Supply" is fresh air, not heat: the DU-M-ERV-SUP/RET trunks in plan/mep.py connect
+    # to these two ports. (The outdoor-side intake and exhaust are the ERV's other pair of
+    # collars; `Service` has no OUTDOOR_AIR/EXHAUST_AIR member to name them with, so they
+    # stay unmodeled rather than mislabeled as house-side ports.)
     EquipmentType(tag="EQ-T-ERV", name="ERV, 240V", footprint=(inch(24), inch(24)), height=inch(30),
+                  plan_symbol="erv",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
-                                     position=(ft(0), ft(0), ft(0))),)),
+                                     position=(ft(0), ft(0), ft(0))),
+                         ServicePort(tag="supply", service=Service.SUPPLY_AIR,
+                                     position=(ft(0), ft(0), inch(24))),
+                         ServicePort(tag="return", service=Service.RETURN_AIR,
+                                     position=(ft(0), ft(0), inch(24))))),
     # Minisplit outdoor condensers: the larger unit serves the upstairs hallway head, the
     # smaller deep-cold unit serves the basement (and is the one on backup).
     EquipmentType(tag="EQ-T-MINISPLIT-LG", name="Minisplit condenser (large, upstairs zone)",
@@ -157,6 +183,15 @@ BASEMENT_DEVICES = [
     ElectricalDevice(uid="CEE005AAAA", tag="ED-B-SAUNA-JB", kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(9, 3), ft(7, 9)), type_ref="ED-T-SAUNA-JB", circuit="CKT-SAUNA",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
+    # FH-B-SAUNA's thermostat, on the *workshop* face of W-B-SA-W (the sauna's west
+    # partition, axis x=8'-10") rather than inside the room: a floor stat reads room air and
+    # a sauna's is 190 °F, so a control mounted in there would never let the floor run. Set
+    # 1'-4" south of D-B-SAUNA's opening (y 10'-10 7/16" .. 12'-10 7/16") to clear the jamb.
+    # `FloorHeat.stat` at (12', 12') stays the authored slab *sensor* point.
+    ElectricalDevice(uid="CEE021AAAA", tag="ED-B-SAUNA-FH-STAT", kind=DeviceKind.SWITCH,
+                     position=pt(ft(8, 8), ft(9, 6)), type_ref="ED-T-FLOOR-STAT",
+                     circuit="CKT-FH-SAUNA",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     # Hot tub in the sunken garden: disconnect on the west porch wall, 7' from its north
     # end, under the porch deck (see header). NEC 680.22 convenience receptacle beside it.
     ElectricalDevice(uid="CEE010AAAA", tag="ED-B-SPA-DISC", kind=DeviceKind.DISCONNECT,

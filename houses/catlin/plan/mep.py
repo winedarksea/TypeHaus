@@ -1,5 +1,5 @@
 # haus: editable
-# Catlin MEP: plumbing sleeves/drains (Phase 2) + HVAC trunk ducts + electrical (Phase 3).
+# Catlin MEP: plumbing sleeves/drains (Phase 2) + ERV trunk ducts + electrical (Phase 3).
 #
 # Authored routing only — the user places runs/ducts/devices; the resolver validates them
 # against the framing (joist bays, bearing lines, slab hosts) and the sheets draw them.
@@ -12,7 +12,7 @@
 # through the framed floor into the existing INT_2X6_PLUMBING wet wall (W-S-BD-N) with no
 # sleeve needed — only a cast concrete deck needs a pre-positioned penetration.
 #
-# HVAC: the second-floor trunks run in the FS-SECOND joist bays (11.875" I-joist, 16" o.c.,
+# Ventilation: the second-floor ERV trunks run in the FS-SECOND joist bays (11.875" I-joist, 16" o.c.,
 # direction "x"). Bay centers are `8" + n*16"` from the joist-line math in
 # resolve/floors.py; bay 15 (y=20'-8") and bay 17 (y=23'-4") are both clear of the stair
 # FloorOpening (x:11'-18', y:25'-36') and both cross the central bearing wall at x=18'.
@@ -46,24 +46,28 @@ from typehaus import (
 )
 from typehaus.model import m
 
+# The house has no forced-air heat: heating and cooling are the two minisplits
+# (EQ-M-MINI1/2, plan/electrical.py) plus the electric radiant floor zones, so nothing here
+# moves *conditioned* air. These two terminals are the ERV's — fresh air to the rooms, stale
+# air back to EQ-B-ERV — which is why they are sized for ventilation flow, not a heating CFM.
 REGISTER_TYPES = (
-    RegisterType(tag="REG-T-SUPPLY", name="Supply register", footprint=(inch(12), inch(6)), height=inch(1),
+    RegisterType(tag="REG-T-SUPPLY", name="ERV fresh-air supply register",
+                 footprint=(inch(12), inch(6)), height=inch(1),
                  plan_symbol="register",
                  ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
-    RegisterType(tag="REG-T-RETURN", name="Return grille", footprint=(inch(14), inch(8)), height=inch(1),
+    RegisterType(tag="REG-T-RETURN", name="ERV stale-air return grille",
+                 footprint=(inch(14), inch(8)), height=inch(1),
                  plan_symbol="register",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
 )
 
+# No gas appliance in the house: the gas furnace that used to stand at (4', 29'-4") is gone
+# (all-electric — minisplits + radiant floor), and `plan/site.py` never authored a GAS
+# UtilityLine to feed one. The air-side ports that were on it now live on EQ-T-ERV
+# (plan/electrical.py), which is the only thing left that pushes air.
 EQUIPMENT_TYPES = (
-    EquipmentType(tag="EQ-T-FURNACE", name="Gas furnace", footprint=(inch(24), inch(28)), height=ft(5),
-                  plan_symbol="furnace",
-                  ports=(ServicePort(tag="gas", service=Service.GAS, position=(ft(0), ft(0), ft(0))),
-                         ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
-                         ServicePort(tag="supply", service=Service.SUPPLY_AIR, position=(ft(0), ft(0), ft(4))),
-                         ServicePort(tag="return", service=Service.RETURN_AIR, position=(ft(0), ft(0), ft(4))))),
     # The 120V Rheem heat-pump water heater (plans/electrical_notes.md lines 25-26): stays
     # on the backup subsystem, so no gas and no 240V boost — the 240V tank is EQ-B-WH2
     # (plan/electrical.py). Compressor ~500W; the type is electric-only.
@@ -219,13 +223,22 @@ VENT_BRANCHES_SECOND = [
             serves=("FX-S-ENSUITE-WC",)),
 ]
 
-# --- HVAC: second-floor supply/return trunks in the FS-SECOND joist bays ------------
+# --- Ventilation: ERV fresh-air / stale-air trunks in the FS-SECOND joist bays -------
+# These are ventilation trunks, not heating ducts — EQ-B-ERV (plan/electrical.py) is what
+# they connect to, and nothing on the air side carries heat. Sized for the ASHRAE 62.2 whole-
+# house rate rather than a furnace CFM: 0.03 x 5,078 ft2 conditioned + 7.5 x (5 bedrooms + 1)
+# = ~197 cfm, which at 10"x6" (0.42 ft2) is ~475 fpm — quiet enough to run continuously,
+# where the 12"x8"/14"x8" furnace trunks they replace were roughly four times oversized.
+#
+# `DuctSystem` has only SUPPLY/RETURN (plans/TODO.md wants EXHAUST/HRV), so the balanced
+# pair is modeled as the supply and return sides it already has. Distribution is second
+# storey only — the main storey, basement and attic have no ERV terminals authored yet.
 DUCTS = [
-    DuctRun(uid="CMD901AAAA", tag="DU-M-SUP-TRUNK", system=DuctSystem.SUPPLY,
-           path=(pt(ft(4), ft(20, 8)), pt(ft(32), ft(20, 8))), width=inch(12), depth=inch(8),
+    DuctRun(uid="CMD901AAAA", tag="DU-M-ERV-SUP", system=DuctSystem.SUPPLY,
+           path=(pt(ft(4), ft(20, 8)), pt(ft(32), ft(20, 8))), width=inch(10), depth=inch(6),
            routing=DuctRouting.JOIST_BAY, floor_ref="FS-SECOND"),
-    DuctRun(uid="CMD902AAAA", tag="DU-M-RET-TRUNK", system=DuctSystem.RETURN,
-           path=(pt(ft(4), ft(23, 4)), pt(ft(32), ft(23, 4))), width=inch(14), depth=inch(8),
+    DuctRun(uid="CMD902AAAA", tag="DU-M-ERV-RET", system=DuctSystem.RETURN,
+           path=(pt(ft(4), ft(23, 4)), pt(ft(32), ft(23, 4))), width=inch(10), depth=inch(6),
            routing=DuctRouting.JOIST_BAY, floor_ref="FS-SECOND"),
 ]
 
@@ -235,28 +248,26 @@ DUCTS = [
 # exempting registers as a class — a surface-mounted one would still report.
 REGISTERS = [
     Register(uid="CMR901AAAA", tag="REG-S-SUP1", kind=DuctSystem.SUPPLY,
-            position=pt(ft(9), ft(4)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY",
+            position=pt(ft(9), ft(4)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR902AAAA", tag="REG-S-SUP2", kind=DuctSystem.SUPPLY,
-            position=pt(ft(27), ft(4)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY",
+            position=pt(ft(27), ft(4)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR903AAAA", tag="REG-S-SUP3", kind=DuctSystem.SUPPLY,
-            position=pt(ft(29), ft(16)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY",
+            position=pt(ft(29), ft(16)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR904AAAA", tag="REG-S-SUP4", kind=DuctSystem.SUPPLY,
-            position=pt(ft(29), ft(32)), duct_ref="DU-M-SUP-TRUNK", type_ref="REG-T-SUPPLY",
+            position=pt(ft(29), ft(32)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR905AAAA", tag="REG-S-RET1", kind=DuctSystem.RETURN,
-            position=pt(ft(20), ft(20)), duct_ref="DU-M-RET-TRUNK", type_ref="REG-T-RETURN",
+            position=pt(ft(20), ft(20)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-RETURN",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CMR906AAAA", tag="REG-S-RET2", kind=DuctSystem.RETURN,
-            position=pt(ft(9), ft(20)), duct_ref="DU-M-RET-TRUNK", type_ref="REG-T-RETURN",
+            position=pt(ft(9), ft(20)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-RETURN",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]
 
 EQUIPMENT = [
-    Equipment(uid="CME901AAAA", tag="EQ-B-FURNACE", kind=EquipmentKind.FURNACE,
-             position=pt(m(1.22262), m(8.9432)), footprint=(inch(24), inch(28)), room="RM-B-FURNACE", type_ref="EQ-T-FURNACE"),
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
              position=pt(m(1.88684), m(10.0015)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-HP"),
 ]

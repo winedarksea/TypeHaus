@@ -187,6 +187,10 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "microwave": appliance_case(doors=1, body="appliance-steel"),
     "hood": canopy_hood(),
     "furnace": air_handler(),
+    # An ERV/HRV core is the same read at plan scale as any other air-side cabinet — a box
+    # with a filter slot and a plenum collar on top — so it shares the builder rather than
+    # inventing a glyph that differs only in the label beside it.
+    "erv": air_handler(),
     "water-heater": tank(),
     "sauna-heater": sauna_heater(),
     "panel": panel_board(),

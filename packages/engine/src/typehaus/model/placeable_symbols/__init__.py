@@ -52,7 +52,7 @@ SYMBOL_NAMES = frozenset({
     "base-cabinet", "sink-base", "wall-cabinet", "tall-cabinet", "tall-cabinet-double",
     # appliances + mechanical/electrical equipment
     "refrigerator", "range", "dishwasher", "washer", "dryer", "microwave", "hood",
-    "furnace", "water-heater", "sauna-heater", "panel", "register",
+    "furnace", "erv", "water-heater", "sauna-heater", "panel", "register",
     # plumbing fixtures
     "toilet", "lavatory", "vanity", "tub", "shower", "kitchen-sink",
 })

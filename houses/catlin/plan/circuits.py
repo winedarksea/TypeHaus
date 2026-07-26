@@ -55,6 +55,17 @@ CIRCUITS = (
     Circuit(uid="CKT013AAAA", tag="CKT-SPARE-240", panel_ref=_PANEL, breaker_amps=30, poles=2,
             load_va=0, description="Spare 2-pole (conduit stubbed for future 240V)"),
 
+    # Electric radiant floor, RM-B-SAUNA (FH-B-SAUNA, storeys/basement.py). With the gas
+    # furnace gone this and the minisplits are the whole heating system, so the zone needs a
+    # branch circuit of its own — it had none. The resolved zone is 9'-2" x 13'-10" = 127
+    # ft2; electric mat at the usual 12 W/ft2 is ~1,520 W = 12.7A at 120V, inside the 16A a
+    # 20A breaker allows for a continuous load. GFCI is not optional here: NEC 424.44(G)
+    # requires GFCI protection for heating cable in the floor of a bathroom, and RM-B-SAUNA
+    # is occupancy BATHROOM with a shower in its north 4' (notes/sauna_shower_basement_detail.md).
+    Circuit(uid="CKT031AAAA", tag="CKT-FH-SAUNA", panel_ref=_PANEL, breaker_amps=20, poles=1,
+            gfci=True, load_va=1520,
+            description="Radiant floor heat — sauna/shower (FH-B-SAUNA)"),
+
     # --- 120V backup subsystem (electrical_notes.md lines 9-29) ----------------------
     Circuit(uid="CKT014AAAA", tag="CKT-WH-HP", panel_ref=_PANEL, breaker_amps=15, poles=1,
             backup=True, load_va=500,
