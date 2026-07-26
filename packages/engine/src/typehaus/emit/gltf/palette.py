@@ -201,6 +201,26 @@ def _layer_color(layer) -> tuple[float, float, float, float]:
     return _material_finish_color(layer.material_ref, layer.function)
 
 
+def _room_floor_color(model: ResolvedModel,
+                      floor_finish: str | None) -> tuple[float, float, float, float]:
+    """The colour a room's floor finish reads in, or the neutral floor tone when unfinished.
+
+    Every room used to export as one flat ``_color("floor")`` grey, so carpet, oak and tile
+    were indistinguishable in the .glb even though the finish was resolved and exported. The
+    lookup is exact — the finish string *is* the material tag — and it resolves through the
+    material's authored ``color``/``hatch``, which is the same path
+    ``ui/src/nordic/palette.ts::materialColor`` takes in the live viewer, so the two agree
+    (→ ``glb-emitter-parity``). An unrecognised finish string falls back rather than raising:
+    a typo shows up as bare deck here and as an UNKNOWN row in the takeoff.
+    """
+    if not floor_finish:
+        return _color("floor")
+    material = next((m for m in model.plan.library.materials if m.tag == floor_finish), None)
+    if material is None:
+        return _color("floor")
+    return _hex_rgba(material_color(material.hatch, material.color))
+
+
 def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, float]:
     """A solid with an authored assembly (e.g. a composite/aluminum deck) reads with its
     material colour; otherwise it falls back to the per-category palette."""

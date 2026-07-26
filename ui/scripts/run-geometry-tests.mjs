@@ -22,6 +22,7 @@ try {
   const { runMaterialGeometryTests, runMemberColorTests } = await server.ssrLoadModule("/src/three/materials.test.ts");
   const { runDetailAnnotationTests } = await server.ssrLoadModule("/src/components/DetailCanvas.test.ts");
   const { runMemberPickingTests } = await server.ssrLoadModule("/src/three/memberPicking.test.ts");
+  const { runRoomFloorTests } = await server.ssrLoadModule("/src/three/builders/roomFloor.test.ts");
   runPlanGeometryTests();
   runOpeningGeometryTests();
   runArchGeometryTests();
@@ -48,6 +49,7 @@ try {
   runMemberColorTests();
   runDetailAnnotationTests();
   runMemberPickingTests();
+  runRoomFloorTests();
   console.log("Plan geometry tests passed.");
 } finally {
   await server.close();

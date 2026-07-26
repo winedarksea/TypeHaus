@@ -22,6 +22,44 @@ export const CONTROL_COLOR: Record<string, string> = {
   air: "var(--control-air)", water: "var(--control-water)", vapor: "var(--control-vapor)", thermal: "var(--control-thermal)",
 };
 
+/**
+ * How a floor finish behaves under light. Colour is *not* here — it comes from the catalog
+ * material whose tag is the finish string (`materialColor`), so the library, the .glb and
+ * the viewer all read one definition. What is here is the surface, which no material field
+ * carries: under a single light source four flat fills of similar value are hard to tell
+ * apart, and the roughness is what actually separates carpet from tile on screen.
+ *
+ * Keyed by the finish strings the plan authors. An unlisted finish gets `DEFAULT_FLOOR_SURFACE`
+ * rather than nothing, so a new finish renders as a plausible matte floor from the day it is
+ * authored instead of disappearing.
+ */
+export interface FloorSurface {
+  readonly roughness: number;
+  readonly metalness: number;
+}
+
+export const DEFAULT_FLOOR_SURFACE: FloorSurface = { roughness: 0.8, metalness: 0 };
+
+export const FLOOR_FINISH_SURFACE: Record<string, FloorSurface> = {
+  // Pile scatters everything; no specular lobe at all.
+  carpet: { roughness: 1, metalness: 0 },
+  // Site-finished oak and a factory wear layer both keep a low sheen — enough to catch a
+  // highlight, not enough to mirror. LVP reads a touch glossier than oak.
+  oak: { roughness: 0.55, metalness: 0 },
+  lvp: { roughness: 0.45, metalness: 0 },
+  // Glazed porcelain is the shiniest thing on any of these floors.
+  tile: { roughness: 0.2, metalness: 0 },
+  // A sealer leaves the slab flat but not dead — matte, slightly above carpet.
+  "sealed-concrete": { roughness: 0.85, metalness: 0 },
+  // Rolled rubber is dead matte and dark.
+  rubber: { roughness: 0.95, metalness: 0 },
+};
+
+/** The lighting response for a floor finish; never undefined. */
+export function floorSurface(finish: string | null | undefined): FloorSurface {
+  return (finish && FLOOR_FINISH_SURFACE[finish]) || DEFAULT_FLOOR_SURFACE;
+}
+
 const FALLBACK = "var(--material-fallback)";
 
 export interface ResolvedNordicPalette {

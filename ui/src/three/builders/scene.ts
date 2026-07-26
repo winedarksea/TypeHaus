@@ -20,8 +20,8 @@ import type { Trade } from "../../state/vocabulary";
 import { buildCanvasObject, buildEarth } from "./site";
 import { buildOpening, buildWall } from "./walls";
 import {
-  buildBrace, buildFloor, buildFootingBedding, buildRoof, buildSolarPanel, buildSolid,
-  buildStair,
+  buildBrace, buildFloor, buildFootingBedding, buildRoof, buildRoomFloor, buildSolarPanel,
+  buildSolid, buildStair, storeyFloorTopM,
 } from "./structure";
 
 /** What a click can land on, and which materials the highlight pass drives per uid. */
@@ -104,6 +104,17 @@ export function populateScene(options: PopulateSceneOptions) {
   }
   for (const floor of model.floors ?? []) {
     buildFloor(tradeGroups.floors, floor, center, mode, palette, registry.picks, registry.byUid);
+  }
+  // Room finishes go over the decks, so they build after every floor is in. Deck openings are
+  // per storey, not per floor system, so they are gathered once and cut out of each finish —
+  // without that a stair well ends up capped by the finish above it.
+  for (const room of model.rooms ?? []) {
+    const floors = model.floors ?? [];
+    const openings = floors.filter((floor) => floor.storey === room.storey)
+      .flatMap((floor) => floor.openings);
+    const top = storeyFloorTopM(floors, room.storey, placeableElevationM(model, room.storey));
+    buildRoomFloor(tradeGroups.floors, room, top, openings, center, mode, palette,
+      model.catalog?.materials, registry.picks, registry.byUid);
   }
   for (const roof of model.roofs ?? []) {
     buildRoof(tradeGroups.roof, roof, center, mode, palette, model.catalog, registry.picks,

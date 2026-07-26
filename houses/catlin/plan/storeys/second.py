@@ -259,7 +259,8 @@ OPENINGS = [
          position=from_node("N-S-C1", ft(1, 0.625))),                    # x 20'-3 5/8"
     # Three doors through the centre bearing line, on the source's own gaps. Each takes a
     # header exactly like O-M-HALL / O-M-DRESS one storey down; the wall itself is unbroken.
-    Door(uid="CSD212AAAA", tag="D-S-PLANT", host="W-S-C1", type_ref="DT-INT30",
+    # Full-lite glass leaf admits daylight from the south-facing plant room into the hall.
+    Door(uid="CSD212AAAA", tag="D-S-PLANT", host="W-S-C1", type_ref="DT-INT30-GLASS",
          position=from_node("N-S-S1", ft(3, 2.5))),                      # y 4'-5 1/2"
     Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-C2B", type_ref="DT-INT32",
          position=from_node("N-S-C2", ft(0, 4.875))),                    # y 14'-1 7/8"
@@ -358,20 +359,27 @@ ROOMS = [
          occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
     Room(uid="CSR407AAAA", tag="RM-S-CLOSET", seed=pt(ft(14), ft(10, 8)),
          occupancy=Occupancy.STORAGE, floor_finish="carpet"),
+    # LVP through the wet rooms and the circulation: one continuous plank floor from the
+    # stair head through both hallways and into all three second-storey baths, so the
+    # traffic route has no thresholds in it and the baths get a waterproof plank instead of
+    # tile. RM-S-ENSUITE puts LVP over the FH-S-ENSUITE electric radiant zone — allowed, but
+    # surface-temperature limited, which advisory.floor_finish_over_radiant flags.
     Room(uid="CSR412AAAA", tag="RM-S-SUITEBATH", seed=pt(ft(14), ft(19)),
-         occupancy=Occupancy.BATHROOM, floor_finish="tile"),
+         occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
     Room(uid="CSR413AAAA", tag="RM-S-VANITY", seed=pt(ft(3), ft(24, 4)),
-         occupancy=Occupancy.BATHROOM, floor_finish="tile"),
+         occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
     # The west half of the source's one big "Hallway": the landing outside the suite that
     # links the stair head, the vanity alcove and the hall bath.
     Room(uid="CSR414AAAA", tag="RM-S-LANDING", seed=pt(ft(13), ft(23, 6)),
-         occupancy=Occupancy.HALLWAY, floor_finish="oak"),
+         occupancy=Occupancy.HALLWAY, floor_finish="lvp"),
     Room(uid="CSR408AAAA", tag="RM-S-ENSUITE", seed=pt(ft(5), ft(31)),
-         occupancy=Occupancy.BATHROOM, floor_finish="tile"),
+         occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
     Room(uid="CSR409AAAA", tag="RM-S-HALL", seed=pt(ft(20), ft(20)),
-         occupancy=Occupancy.HALLWAY, floor_finish="oak"),
+         occupancy=Occupancy.HALLWAY, floor_finish="lvp"),
+    # Both walk-ins are carpet — a closet floor is never walked on in shoes, and carpet
+    # continues out of the bedroom it opens off.
     Room(uid="CSR415AAAA", tag="RM-S-NCLOSET", seed=pt(ft(20), ft(33)),
-         occupancy=Occupancy.STORAGE, floor_finish="oak"),
+         occupancy=Occupancy.STORAGE, floor_finish="carpet"),
     Room(uid="CSR410AAAA", tag="RM-S-STAIR", seed=pt(ft(14, 6), ft(31)),
          occupancy=Occupancy.STAIR, floor_finish="oak"),
 ]

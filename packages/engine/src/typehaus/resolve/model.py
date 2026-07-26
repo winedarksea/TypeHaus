@@ -320,6 +320,15 @@ class ResolvedFloorHeat:
 
 
 @dataclass(frozen=True)
+class ResolvedFinishZone:
+    """An in-room floor-finish override — a tile inlay, a hearth pad (→ model FinishZone)."""
+
+    outline: Ring
+    material_ref: str
+    area_m2: float
+
+
+@dataclass(frozen=True)
 class ResolvedRoom:
     uid: str
     tag: str
@@ -329,6 +338,11 @@ class ResolvedRoom:
     clear_face: Ring  # interior face polygon (core + resolved lining)
     area_m2: float
     floor_finish: str | None
+    # Authored in-room overrides of ``floor_finish``. ``Room.finish_zones`` had no field here
+    # at all, so a FinishZone written in plan source was silently dropped at resolve and
+    # reached no viewer, emitter or takeoff. ``area_m2`` is the zone clipped to the room, so
+    # a takeoff can subtract it from the room's field finish without re-intersecting.
+    finish_zones: tuple[ResolvedFinishZone, ...] = ()
 
 
 @dataclass(frozen=True)

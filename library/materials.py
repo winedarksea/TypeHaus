@@ -104,4 +104,42 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              hatch="lumber", color="#c98d5f",
              source=f"{_UAF}: 'Wood, sugar pine' permeability 0.4-5.4 perm-in (the table's "
                     "softwood entry); midpoint of the published range"),
+
+    # --- floor finishes -------------------------------------------------------------------
+    #
+    # `Room.floor_finish` was a free-form string with nothing behind it: the viewer could not
+    # colour it, the .glb painted every room the same flat grey, and a takeoff had nothing to
+    # bill against. These are the materials those strings name, so all three surfaces key off
+    # one definition — the tag *is* the finish string, which is what makes the lookup exact
+    # rather than substring guesswork.
+    #
+    # A finish is a covering laid on a floor deck, not a layer in a rated assembly: none of
+    # them appears in an `Assembly`, so the Glaser walk and the R-value rollup never see them
+    # and their thermal/vapour fields stay unset rather than being filled with numbers no
+    # published test measured. `color` and `hatch` are what these entries exist to carry.
+    Material(tag="oak", name="3/4\" white-oak strip flooring", hatch="lumber", color="#c69c6d",
+             source="finish covering, not an assembly layer: thermal/vapour fields unset "
+                    "(no published rating located, and nothing consumes them here)"),
+    Material(tag="lvp", name="Luxury vinyl plank, click-lock", hatch="lumber", color="#a08a72",
+             source="finish covering over its own underlayment; thermal/vapour fields unset "
+                    "for the same reason as the other floor finishes"),
+    Material(tag="lvp-underlayment", name="LVP acoustic underlayment", hatch="membrane",
+             color="#d8d3c8",
+             source="companion layer under `lvp` — carried so a takeoff can order it with "
+                    "the plank rather than leaving it off the schedule"),
+    Material(tag="carpet", name="Cut-pile carpet", hatch="batt", color="#9c8f80",
+             source="finish covering, not an assembly layer; thermal/vapour fields unset"),
+    Material(tag="carpet-pad", name="Bonded-urethane carpet pad", hatch="batt",
+             color="#c8b7a0",
+             source="companion layer under `carpet` — carried so a takeoff can order it with "
+                    "the carpet rather than leaving it off the schedule"),
+    Material(tag="tile", name="Porcelain floor tile", hatch="masonry", color="#dfe3e5",
+             source="finish covering, not an assembly layer; thermal/vapour fields unset"),
+    Material(tag="sealed-concrete", name="Sealed concrete slab finish", hatch="concrete",
+             color="#b3b1ad",
+             source="a sealer on the slab rather than a covering over it — it adds no "
+                    "thickness, so it is billed by area and carries no thermal fields"),
+    Material(tag="rubber", name="Rolled rubber athletic flooring", hatch="membrane",
+             color="#54585c",
+             source="finish covering, not an assembly layer; thermal/vapour fields unset"),
 )

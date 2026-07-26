@@ -6,10 +6,12 @@
 // resolved outline or lay out a member list, and none carries an editing path.
 import * as THREE from "three";
 import type {
-  Brace, Catalog, FootingBedding, Floor, Member, Roof, Solid, SolarPanel, Stair,
+  Brace, Catalog, FootingBedding, Floor, Member, Roof, Room, Solid, SolarPanel, Stair, Vec2,
 } from "../../model/types";
 import { layerVisibilityGroupOf, type LayerVisibilityGroup } from "../../model/visibility";
-import { materialColor, type ResolvedNordicPalette } from "../../nordic/palette";
+import {
+  floorSurface, materialColor, type MaterialAppearance, type ResolvedNordicPalette,
+} from "../../nordic/palette";
 import {
   applyDeckBoardUv, createDeckBoardMaterial, createStandingSeamMaterial,
   isAluminumDeckBoard, isStandingSeam,
@@ -135,6 +137,61 @@ export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter
   }
   buildMembers(parent, floor.members, center, mode, palette, floor.uid);
   registerSelectable(parent, firstChildIndex, floor.uid, "floor", picks, byUid);
+}
+
+/** How thick a floor finish draws. Matches the room prism emit/gltf/emitter.py extrudes. */
+export const ROOM_FINISH_THICKNESS_M = 0.02;
+
+/**
+ * The top of the deck a storey's rooms sit on: the subfloor's upper face where the storey has
+ * a framed floor, else the storey elevation (a slab-on-grade storey — basement, garage — has
+ * no `Floor` at all). Returning the storey elevation rather than 0 is what keeps an upper
+ * storey's finishes off the ground plane.
+ */
+export function storeyFloorTopM(floors: readonly Floor[], storeyTag: string,
+  storeyElevationM: number): number {
+  let top = storeyElevationM;
+  for (const floor of floors) {
+    if (floor.storey !== storeyTag || !floor.subfloor || !floor.members.length) continue;
+    const deck = Math.max(...floor.members.map((member) => member.z1_m))
+      + floor.subfloor.thickness_m;
+    top = Math.max(top, deck);
+  }
+  return top;
+}
+
+/**
+ * A room's floor finish — carpet, oak, LVP, tile — as a thin slab over the deck.
+ *
+ * `Room.floor_finish` has been resolved and exported since M1, but nothing ever drew it:
+ * `buildFloor` above renders `floor.subfloor` and stops, so every room read as bare deck no
+ * matter what was authored. Colour comes from the catalog material whose tag *is* the finish
+ * string, so the library is the single definition the viewer, the .glb and the takeoff all
+ * key off; the surface (roughness) comes from `floorSurface`, because four flat fills of
+ * similar value are hard to tell apart under one light and the sheen is what separates them.
+ *
+ * Openings in the storey's deck are cut out of the finish too — otherwise the finish caps
+ * the stair well the subfloor correctly leaves open.
+ */
+export function buildRoomFloor(parent: THREE.Group, room: Room, floorTopM: number,
+  openings: readonly Vec2[][], center: PlanCenter, mode: "nordic" | "schematic",
+  palette: ResolvedNordicPalette, materials: readonly MaterialAppearance[] | undefined,
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  if (!room.floor_finish || room.clear_face.length < 3) return;
+  const geometry = createPlanPrismGeometry(
+    room.clear_face, floorTopM, floorTopM + ROOM_FINISH_THICKNESS_M, openings, center);
+  if (!geometry) return;
+  const firstChildIndex = parent.children.length;
+  const surface = floorSurface(room.floor_finish);
+  const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
+    color: new THREE.Color(materialColor(room.floor_finish, palette, materials)),
+    roughness: mode === "nordic" ? surface.roughness : 1,
+    metalness: mode === "nordic" ? surface.metalness : 0,
+    flatShading: mode === "schematic",
+  }));
+  mesh.receiveShadow = true;
+  parent.add(mesh);
+  registerSelectable(parent, firstChildIndex, room.uid, "room", picks, byUid);
 }
 
 // Sloped quads from footprint/eave_z/ridge_z/ridge_direction — mirrors
