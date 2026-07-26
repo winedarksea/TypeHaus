@@ -223,7 +223,12 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
 
     out: list[FramedMember] = []
     rims_by_platform: dict[str, list[FramedMember]] = {}
-    supported_corners: set[tuple[float, float]] = set()
+    # A post the generator already stood at a platform corner is a load path: the winder
+    # newel carries the inside corner of every box tier stacked on it, so posting that
+    # corner again would stand a 4x4 inside the newel.
+    supported_corners: set[tuple[float, float]] = {
+        (round(member.p0[0], 4), round(member.p0[1], 4))
+        for member in members if member.p0 == member.p1 and member.category == "newel"}
     for member in members:
         if member.category == "landing" and member.child_key.startswith("landing-rim-"):
             rims_by_platform.setdefault(member.child_key.rsplit("-", 1)[0],

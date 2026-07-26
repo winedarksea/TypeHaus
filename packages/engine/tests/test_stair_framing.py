@@ -17,11 +17,15 @@ from __future__ import annotations
 
 import math
 import uuid
+from dataclasses import replace
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
+from typehaus.checks.structural.stairs import stair_riser_uniformity
 from typehaus.emit.draw import build_floorplan
+from typehaus.findings import Result
 from typehaus.emit.draw.scene import Polyline
 from typehaus.model import (
     Assembly, Building, FloorOpening, FloorSystem, FramingSpec, JoistSpec, Layer,
@@ -463,6 +467,42 @@ def test_winder_nosings_are_never_plan_coincident_with_a_straight_tread(winder_s
         for tread in treads:
             assert {winder.p0, winder.p1} != {tread.p0, tread.p1}, (
                 f"{winder.child_key} is plan-coincident with {tread.child_key}")
+
+
+# ------------------------------------------------------- 9b. dropped tread boards
+def test_every_catlin_stair_has_uniform_risers(catlin_model):
+    """The built risers, not the design number: ``riser_height_m`` is rise / count and can
+    never disagree with itself, so only the generated members can show a stair you cannot
+    walk."""
+    ctx = SimpleNamespace(model=catlin_model)
+    findings = stair_riser_uniformity(ctx)
+    assert len(findings) == len(catlin_model.stairs)
+    assert all(finding.result is Result.PASS for finding in findings), (
+        [finding.message for finding in findings])
+
+
+def test_a_tread_stacked_on_its_step_elevation_fails_riser_uniformity(catlin_model):
+    """The defect ``_notch_z`` fixes, reconstructed: put every board back *on* its step
+    elevation instead of dropping it to it, and the first riser grows by the board
+    thickness while the last shrinks by the same — 9" and 6" against a 7.5" design riser.
+
+    Without this the check could be satisfied by a stair with no boards at all.
+    """
+    def is_walking_surface(member) -> bool:
+        if member.category in ("tread", "winder"):
+            return True
+        return member.child_key in ("landing-lower", "landing-upper")
+
+    stair = next(s for s in catlin_model.stairs if s.tag == "ST-M2S")
+    stacked = replace(stair, members=tuple(
+        replace(member, z0_m=member.z1_m, z1_m=member.z1_m + inch(1.5).meters)
+        if is_walking_surface(member) else member
+        for member in stair.members))
+    findings = stair_riser_uniformity(SimpleNamespace(model=SimpleNamespace(
+        stairs=[stacked])))
+    assert [finding.result for finding in findings] == [Result.FAIL]
+    assert "R311.7.5.1" in findings[0].message
+    assert "9.00" in findings[0].message and "6.00" in findings[0].message
 
 
 # ------------------------------------------------------------ 10. synthetic bearing
