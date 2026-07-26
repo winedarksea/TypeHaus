@@ -80,12 +80,106 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "construction_returns", "sheet_goods", "glazing_panels",
                         "glazing_trim", "hardware", "placeables", "floor_heat",
                         "electrical_devices", "panel_schedule", "service_load",
-                        "conduit", "solar", "backup_components",
+                        "conduit", "conductors", "solar", "backup_components",
                         "luminaire_schedule", "lighting_controls", "light_runs",
-                        "lighting_load"}
+                        "lighting_load",
+                        # The 2026-07-25 sweep: resolved-but-unbilled families.
+                        "floor_finishes", "envelope_layers", "openings", "stair_finish",
+                        "footing_bedding", "pipe_runs", "ducts", "sleeves"}
     assert all(section for section in bom.values()), "no BOM section may come back empty"
     # The framing section still reconciles 1:1 with the resolved members.
     assert sum(int(row["pieces"]) for row in bom["framing"]) == len(catlin_model.all_members())
+
+
+# Every collection on ``ResolvedModel`` is either billed by a BOM section or waived here with
+# the reason it is not billable. This is the test that would have caught the drift the
+# 2026-07-25 sweep cleaned up: eight families had been resolved for months and were reaching
+# no order, and nothing said so because the section list only ever asserted its own contents.
+#
+# Adding a collection to ResolvedModel now forces a decision here — bill it, or say why not.
+_BOM_WAIVED_COLLECTIONS: dict[str, str] = {
+    "plan": "the authored source, not a resolved quantity",
+    "junctions": "derived wall-meeting topology; the framing it implies bills as members",
+    "conditions": "boundary-condition keys for transition matching — an index, not material",
+    "stack_edges": "assembly-change edges the detail pipeline keys on; no quantity",
+    "canvas_objects": "the normalized placeable view; billed as `placeables` off the same "
+                      "records, and billing both would double every appliance",
+    "timings": "resolve instrumentation",
+    "braces": "diagonal braces are FramedMembers under `all_members()`, so `framing` "
+              "already carries them piece for piece",
+    "walls": "billed by their parts, not as walls: `framing` for the studs, "
+             "`envelope_layers` for the stack, `sheet_goods` for the sheathing",
+    "roofs": "same split as walls — `framing` for the sticks, `envelope_layers` and "
+             "`sheet_goods` for the skin",
+    "floors": "same split — joists in `framing`, subfloor and ceiling in `sheet_goods`",
+    "stairs": "carriage in `framing`, walking surfaces in `stair_finish`",
+    "light_runs": "billed as `light_runs` by the lineal foot (a dict, not a row list)",
+    "solar_panels": "billed as `solar` (a dict summary of installed wattage)",
+}
+
+# collection name -> the BOM section(s) that bill it.
+_BOM_COVERAGE: dict[str, tuple[str, ...]] = {
+    "openings": ("openings",),
+    "solids": ("structural_solids",),
+    "construction_returns": ("construction_returns",),
+    "floor_heat": ("floor_heat",),
+    "rooms": ("floor_finishes",),
+    "pipe_runs": ("pipe_runs",),
+    "sleeves": ("sleeves",),
+    "ducts": ("ducts",),
+    "conduits": ("conduit", "conductors"),
+    "footing_beddings": ("footing_bedding",),
+}
+
+
+def test_every_resolved_collection_is_billed_or_waived(catlin_model) -> None:
+    """The coverage gate. A new ResolvedModel collection must be billed or explicitly
+    waived — silence is what let plumbing, ducts, sleeves, beddings, openings, envelope
+    layers, floor finishes and stair treads go unordered."""
+    import dataclasses
+
+    from typehaus.resolve.model import ResolvedModel
+
+    collections = {f.name for f in dataclasses.fields(ResolvedModel)}
+    classified = set(_BOM_COVERAGE) | set(_BOM_WAIVED_COLLECTIONS)
+    assert collections <= classified, (
+        f"unclassified ResolvedModel collection(s): {sorted(collections - classified)} — "
+        "bill them in bom.py or waive them in _BOM_WAIVED_COLLECTIONS with a reason")
+    # No stale entries either: a waiver for a collection that no longer exists is a lie the
+    # next reader would believe.
+    assert classified <= collections, (
+        f"stale entr(ies): {sorted(classified - collections)}")
+
+    bom = bill_of_materials(catlin_model)
+    for collection, sections in sorted(_BOM_COVERAGE.items()):
+        if not getattr(catlin_model, collection):
+            continue  # nothing resolved on this fixture; the section is still wired
+        for section in sections:
+            assert bom.get(section), (
+                f"{collection} is resolved on catlin but its BOM section "
+                f"{section!r} is empty")
+
+
+def test_the_cli_payload_forwards_every_bom_section(catlin_model) -> None:
+    """`haus takeoff` builds its own payload from the BOM, and a section it forgets is
+    invisible to the estimate and to `haus variants compare`. lighting_controls was dropped
+    that way for the entire life of the lighting program."""
+    import json
+    from pathlib import Path
+
+    from typer.testing import CliRunner
+
+    from typehaus.cli.app import app
+
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    result = CliRunner().invoke(app, ["takeoff", str(house), "--json"])
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.stdout)
+    # `framing` is forwarded under two keys (the raw counter and `framing_bom`), so it is
+    # the one section whose payload name differs from its BOM name.
+    expected = set(bill_of_materials(catlin_model)) | {"framing_bom"}
+    missing = expected - set(payload)
+    assert not missing, f"`haus takeoff` drops: {sorted(missing)}"
 
 
 def test_placeables_takeoff_reconciles_with_canvas_objects(catlin_model) -> None:

@@ -17,12 +17,15 @@ from typehaus.takeoff.framing import (
 )
 from typehaus.takeoff.electrical import (
     backup_component_rows,
+    conductor_takeoff,
     conduit_takeoff,
     electrical_device_takeoff,
     panel_schedule,
     service_load_summary,
     solar_takeoff,
 )
+from typehaus.takeoff.envelope import envelope_layer_takeoff
+from typehaus.takeoff.finishes import floor_finish_rows
 from typehaus.takeoff.glazing import glazing_panel_takeoff, glazing_trim_takeoff
 from typehaus.takeoff.hardware import hardware_takeoff
 from typehaus.takeoff.lighting import (connected_lighting_va, light_run_takeoff,
@@ -31,7 +34,11 @@ from typehaus.takeoff.hardware_config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
     HardwareTakeoffConfig,
 )
+from typehaus.takeoff.mep import duct_takeoff, pipe_run_takeoff, sleeve_takeoff
+from typehaus.takeoff.openings import opening_takeoff
 from typehaus.takeoff.placeables import floor_heat_takeoff, placeables_takeoff
+from typehaus.takeoff.sitework import footing_bedding_takeoff
+from typehaus.takeoff.stairs import stair_finish_takeoff
 
 
 def bill_of_materials(
@@ -51,6 +58,15 @@ def bill_of_materials(
     ``placeables`` counts the free-placed and wall-attached products (casework, appliances,
     fixtures — the UI BOM's placeablesSection twin) and ``floor_heat`` bills each radiant
     zone's element length, so no billable record lives only in a CLI patch or the browser.
+
+    The 2026-07-25 sweep added the sections that had been resolved but never billed:
+    ``floor_finishes`` (with the pad/underlayment each implies), ``envelope_layers`` (every
+    layer of a stack, where ``sheet_goods`` bills only the sheathing), ``openings``
+    (A-601 drew the schedule and the BOM never saw it), ``pipe_runs``/``ducts``/``sleeves``,
+    ``footing_bedding`` (the browser billed it; the engine did not), ``stair_finish`` and
+    ``conductors``. ``test_framing_takeoff`` holds a coverage meta-test over
+    ``ResolvedModel``'s own collections so the next thing the IR learns to resolve cannot
+    quietly go unbilled.
     """
     return {
         "framing": framing_takeoff(model),
@@ -63,6 +79,15 @@ def bill_of_materials(
         "hardware": hardware_takeoff(model, hardware_config),
         "placeables": placeables_takeoff(model),
         "floor_heat": floor_heat_takeoff(model),
+        # Resolved-but-unbilled until the 2026-07-25 sweep.
+        "floor_finishes": floor_finish_rows(model),
+        "envelope_layers": envelope_layer_takeoff(model),
+        "openings": opening_takeoff(model),
+        "stair_finish": stair_finish_takeoff(model),
+        "footing_bedding": footing_bedding_takeoff(model),
+        "pipe_runs": pipe_run_takeoff(model),
+        "ducts": duct_takeoff(model),
+        "sleeves": sleeve_takeoff(model),
         # The electrical program (→ takeoff/electrical.py): devices by type, the panel
         # schedule + NEC 220.82-style service load, raceway LF, the PV array's installed
         # wattage, and the backup subsystem's derived DIN component list.
@@ -70,6 +95,7 @@ def bill_of_materials(
         "panel_schedule": panel_schedule(model),
         "service_load": service_load_summary(model),
         "conduit": conduit_takeoff(model),
+        "conductors": conductor_takeoff(model),
         "solar": solar_takeoff(model),
         "backup_components": backup_component_rows(model),
         # The lighting program (→ takeoff/lighting.py): the E-602 schedule by mark, the

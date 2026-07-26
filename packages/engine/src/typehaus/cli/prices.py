@@ -48,7 +48,9 @@ except ModuleNotFoundError:  # pragma: no cover - exercised on <3.11 only
 
 PRICES_FILENAME = "prices.toml"
 
-_SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "placeables")
+_SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "placeables",
+             "floor_finishes", "envelope_layers", "openings", "footing_bedding",
+             "pipe_runs", "ducts", "sleeves", "conduit")
 
 
 def _dollars(value: float) -> str:
@@ -97,6 +99,16 @@ class Prices:
     concrete: Mapping[str, PriceRange] = field(default_factory=dict)
     floor_heat: Mapping[str, PriceRange] = field(default_factory=dict)
     placeables: Mapping[str, PriceRange] = field(default_factory=dict)
+    # The 2026-07-25 BOM sweep. An unpriced section is invisible in `haus variants compare`,
+    # so every new billable family gets a table here even where no house supplies prices yet.
+    floor_finishes: Mapping[str, PriceRange] = field(default_factory=dict)
+    envelope_layers: Mapping[str, PriceRange] = field(default_factory=dict)
+    openings: Mapping[str, PriceRange] = field(default_factory=dict)
+    footing_bedding: Mapping[str, PriceRange] = field(default_factory=dict)
+    pipe_runs: Mapping[str, PriceRange] = field(default_factory=dict)
+    ducts: Mapping[str, PriceRange] = field(default_factory=dict)
+    sleeves: Mapping[str, PriceRange] = field(default_factory=dict)
+    conduit: Mapping[str, PriceRange] = field(default_factory=dict)
 
 
 def _price(section: str, key: str, raw: object, path: Path) -> PriceRange:
@@ -162,6 +174,19 @@ def estimate_costs(bom: dict, prices: Prices) -> dict:
          "volume_cubic_yards", "cy"),
         ("floor_heat", "floor_heat", prices.floor_heat, "system", "wire_length_ft", "LF"),
         ("placeables", "placeables", prices.placeables, "type", "count", "ea"),
+        # Priced on the *order* quantity, not the net area: a finish is bought with its
+        # waste, and pricing net area would under-cost every plank and tile room.
+        ("floor_finishes", "floor_finishes", prices.floor_finishes, "finish",
+         "order_area_sqft", "SF"),
+        ("envelope_layers", "envelope_layers", prices.envelope_layers, "material",
+         "net_area_sqft", "SF"),
+        ("openings", "openings", prices.openings, "type", "count", "ea"),
+        ("footing_bedding", "footing_bedding", prices.footing_bedding, "aggregate",
+         "volume_cubic_yards", "cy"),
+        ("pipe_runs", "pipe_runs", prices.pipe_runs, "system", "length_ft", "LF"),
+        ("ducts", "ducts", prices.ducts, "system", "length_ft", "LF"),
+        ("sleeves", "sleeves", prices.sleeves, "sleeve_diameter_in", "count", "ea"),
+        ("conduit", "conduit", prices.conduit, "trade_size_in", "length_ft", "LF"),
     )
     sections: dict[str, dict] = {}
     unpriced: list[dict] = []

@@ -225,6 +225,12 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                            for opening in model.plan.storey_elements(storey.tag)
                            if isinstance(opening, FloorOpening) and opening.tag in system.openings)
             areas[("subfloor", system.subfloor.material_ref, system.subfloor.thickness.meters)] += gross - openings
+            # ``FloorSystem.ceiling_below`` is the same kind of sheet on the underside of
+            # the same deck, and was simply never read here — a whole storey of ceiling
+            # drywall silently absent from the order.
+            if system.ceiling_below is not None:
+                areas[("ceiling", system.ceiling_below.material_ref,
+                       system.ceiling_below.thickness.meters)] += gross - openings
 
     return [
         {"scope": scope, "material": material, "thickness_in": round(thickness / 0.0254, 3),
