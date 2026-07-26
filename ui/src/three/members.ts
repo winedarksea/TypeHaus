@@ -117,9 +117,15 @@ export function memberColor(m: Member, palette: ResolvedNordicPalette): THREE.Co
 }
 
 // Standing-seam skin members get the real finish (procedural seam/oil-canning normal map),
-// not a flat fill, so a gable closure band matches the wall and roof panels it meets.
-function isSeamMember(m: Member): boolean {
-  return m.category === "cladding" && isStandingSeam(m.material);
+// not a flat fill, so a gable closure band matches the wall and roof panels it meets. The
+// formed metal trim runs are the same painted stock as the panels they cap and are derived
+// carrying the roofing's own material_ref, so they belong on the same finish: without this
+// the ridge cap falls through to materialColor("standing-seam") -> family metal -> #6b7076
+// and reads dark grey against the white roof it sits on.
+const SEAM_TRIM_CATEGORIES = new Set(["cladding", "ridge_cap", "corner_trim", "gutter"]);
+
+export function isSeamMember(m: Member): boolean {
+  return SEAM_TRIM_CATEGORIES.has(m.category) && isStandingSeam(m.material);
 }
 
 const _m = new THREE.Matrix4();

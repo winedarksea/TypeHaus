@@ -57,8 +57,22 @@ _GUTTER_SHELL_M = inch(0.5).meters
 # Vented ridge cap defaults (no schema field carries these): a formed metal cap wide enough
 # to cover the vent slot plus a fastening flange each side, standing a couple of inches over
 # the roofing on its vent riser.
-_RIDGE_CAP_WIDTH_M = inch(12).meters
-_RIDGE_CAP_HEIGHT_M = inch(2).meters
+#
+# The cap is *formed*, not a flat bar — but the member IR is boxes only, the same constraint
+# `_gutter_members` works around by composing an open-top U out of three bands. So the cap is
+# composed too: a narrow riser standing over the ridge slot (the vent throat), shoulders
+# stepping down from it, and skirts running out to the full width. Each band seats on the roof
+# plane under its own centreline, which is what lands the skirts *on* the roofing instead of
+# leaving the whole cap floating at the ridge elevation.
+#
+#   (key, inner edge, outer edge, height above the band's own seat) — inches from the ridge
+_RIDGE_CAP_BANDS = (
+    ("riser", 0.0, 2.0, 3.0),
+    ("shoulder", 2.0, 4.5, 1.75),
+    ("skirt", 4.5, 6.0, 0.5),
+)
+_RIDGE_CAP_WIDTH_M = inch(2.0 * _RIDGE_CAP_BANDS[-1][2]).meters   # 12", edge to edge
+_RIDGE_CAP_HEIGHT_M = inch(_RIDGE_CAP_BANDS[0][3]).meters         # the riser's stand
 
 # The corner trim capping a wrapped (continuous standing-seam) roof edge: a formed angle
 # read as a box straddling the wall-cladding/roofing joint. Its plan thickness clears the
@@ -348,6 +362,11 @@ def _ridge_vent_members(model: ResolvedModel, roof: ResolvedRoof) -> tuple[Frame
     formed metal member riding the roofing surface, centred on the ridge line. A truss roof
     has no ridge beam, so everything keys off ``ResolvedRoof.ridge_z_m`` — the plane's own
     peak — never off a framing member.
+
+    "Formed" is composed rather than swept: see ``_RIDGE_CAP_BANDS``. Every band keeps the
+    ``ridge_cap`` category, the ``ridge:vented-cap`` connection and the roofing's own
+    material, so the IFC covering map, the glTF skin routing and the viewer's material
+    lookup all key off the cap exactly as they did when it was one box.
     """
     ridge = roof_ridge_run(roof)
     if ridge is None:
@@ -368,12 +387,38 @@ def _ridge_vent_members(model: ResolvedModel, roof: ResolvedRoof) -> tuple[Frame
     cladding = next((layer for layer in reversed(layers)
                      if layer.function is LayerFunction.CLADDING), None)
     z0 = ridge.z_m + stack
-    return (FramedMember(
-        parent_uid=roof.uid, child_key="ridge-vent-cap", category="ridge_cap",
-        profile=panel_profile(_RIDGE_CAP_WIDTH_M / METERS_PER_INCH,
-                              _RIDGE_CAP_HEIGHT_M / METERS_PER_INCH),
-        p0=ridge.p0, p1=ridge.p1, z0_m=z0, z1_m=z0 + _RIDGE_CAP_HEIGHT_M,
-        length_m=math.hypot(ridge.p1[0] - ridge.p0[0], ridge.p1[1] - ridge.p0[1]),
-        connection="ridge:vented-cap",
-        material=cladding.material_ref if cladding is not None else "aluminum",
-    ),)
+    slope = abs(roof_slope(roof))
+    across = _ridge_normal(ridge)
+    length = math.hypot(ridge.p1[0] - ridge.p0[0], ridge.p1[1] - ridge.p0[1])
+    material = cladding.material_ref if cladding is not None else "aluminum"
+    members: list[FramedMember] = []
+    for key, inner_in, outer_in, height_in in _RIDGE_CAP_BANDS:
+        height = inch(height_in).meters
+        # A band starting at the ridge itself is one member straddling the peak; every band
+        # outboard of it is mirrored onto the two roof planes.
+        sides = ((0.0, ""),) if inner_in <= 0.0 else ((1.0, "-a"), (-1.0, "-b"))
+        width_in = 2.0 * outer_in if inner_in <= 0.0 else outer_in - inner_in
+        centre = inch(0.0 if inner_in <= 0.0 else (inner_in + outer_in) / 2.0).meters
+        # The plane falls away from the peak, so a band sitting further out sits lower.
+        seat = z0 - centre * slope
+        for sign, suffix in sides:
+            a = _offset(ridge.p0, across, sign * centre)
+            b = _offset(ridge.p1, across, sign * centre)
+            members.append(FramedMember(
+                parent_uid=roof.uid, child_key=f"ridge-vent-cap-{key}{suffix}",
+                category="ridge_cap", profile=panel_profile(width_in, height_in),
+                p0=a, p1=b, z0_m=seat, z1_m=seat + height, length_m=length,
+                connection="ridge:vented-cap", material=material,
+            ))
+    return tuple(members)
+
+
+def _ridge_normal(ridge) -> tuple[float, float]:
+    """The plan direction across a ridge — the axis the cap's bands step out along.
+
+    A :class:`RidgeRun` carries no normal (it is interior to the footprint and has no
+    outward side), so it is taken square off the run itself.
+    """
+    dx, dy = ridge.p1[0] - ridge.p0[0], ridge.p1[1] - ridge.p0[1]
+    length = math.hypot(dx, dy)
+    return (0.0, 1.0) if length <= 1e-9 else (-dy / length, dx / length)
