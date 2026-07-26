@@ -149,3 +149,102 @@ def emit_bbox_dimension_chain(b: SceneBuilder, walls: list[ResolvedWall],
               NamedPoint(xy=to_in((min(xs), max(ys))), name="N")),
         p0=to_in((minx, miny)), p1=to_in((minx, max(ys))), offset=offset,
     ))
+
+
+# Perpendicular walls / openings within this distance of a facade line count as *on* it.
+_FACADE_TOL_M = 0.02
+# Stations closer together than this collapse into one (degenerate segments read as noise).
+_MIN_STATION_GAP_IN = 1.0
+
+
+def _facade_stations(walls: list[ResolvedWall], model: ResolvedModel,
+                     along: int, perp: int, coord: float,
+                     lo: float, hi: float) -> list[float]:
+    """Sorted, deduped station list (meters, along-axis) for one facade line.
+
+    Stations: the two facade corners, every wall axis endpoint touching the facade line
+    (a perpendicular exterior wall or a partition dying into the facade), and the
+    centerline of every opening hosted in a wall that *lies on* the facade.
+    """
+    stations = [lo, hi]
+    facade_wall_tags: set[str] = set()
+    for w in walls:
+        on0 = abs(w.axis[0][perp] - coord) <= _FACADE_TOL_M
+        on1 = abs(w.axis[1][perp] - coord) <= _FACADE_TOL_M
+        if on0 and on1:
+            facade_wall_tags.add(w.tag)
+            continue
+        for touching, p in ((on0, w.axis[0]), (on1, w.axis[1])):
+            if touching:
+                stations.append(p[along])
+    for op in model.openings:
+        if op.host_wall not in facade_wall_tags:
+            continue
+        wall = model.wall(op.host_wall)
+        if wall is None:
+            continue
+        (sx, sy), (ex, ey) = wall.axis
+        length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5 or 1.0
+        t = op.center_along_m / length
+        center = (sx + (ex - sx) * t, sy + (ey - sy) * t)
+        stations.append(center[along])
+    stations.sort()
+    min_gap_m = _MIN_STATION_GAP_IN / M_TO_IN
+    deduped: list[float] = []
+    for s in stations:
+        if s < lo - _FACADE_TOL_M or s > hi + _FACADE_TOL_M:
+            continue
+        if deduped and s - deduped[-1] < min_gap_m:
+            continue
+        deduped.append(s)
+    # Snap the last kept station onto the far corner so the chain always closes the
+    # overall extent (a station within the gap of ``hi`` would otherwise swallow it).
+    if deduped:
+        deduped[0] = lo  # a touch-tolerance hit just outside the corner snaps onto it
+        if abs(deduped[-1] - hi) > _FACADE_TOL_M:
+            deduped.append(hi)
+        else:
+            deduped[-1] = hi
+    return deduped
+
+
+def emit_facade_dimension_strings(b: SceneBuilder, model: ResolvedModel,
+                                  walls: list[ResolvedWall],
+                                  offset: float = 14.0) -> None:
+    """Per-facade second-tier dimension strings (auto-dimensioner v2).
+
+    For each of the four facades (outer edges of the wall-axis bbox) emit a cumulative
+    chain of ``ArchDimension`` segments between wall intersections and opening
+    centerlines on that facade. The chain sits ``offset`` inches outside the facade —
+    inside the overall bbox chain, which the caller stacks further out. A facade with
+    no interior stations contributes nothing (the overall chain already covers it).
+    """
+    pts = [p for w in walls for p in (w.axis[0], w.axis[1])]
+    if not pts:
+        return
+    xs = [p[0] for p in pts]
+    ys = [p[1] for p in pts]
+    minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
+    # (name, along-axis index, perp-axis index, facade coordinate, lo, hi, offset sign)
+    facades = (
+        ("S", 0, 1, miny, minx, maxx, -1.0),
+        ("N", 0, 1, maxy, minx, maxx, 1.0),
+        ("W", 1, 0, minx, miny, maxy, -1.0),
+        ("E", 1, 0, maxx, miny, maxy, 1.0),
+    )
+    for name, along, perp, coord, lo, hi, sign in facades:
+        stations = _facade_stations(walls, model, along, perp, coord, lo, hi)
+        if len(stations) <= 2:
+            continue  # only the corners — the overall chain already says this
+        for index in range(len(stations) - 1):
+            s0, s1 = stations[index], stations[index + 1]
+            if along == 0:
+                p0, p1 = (s0, coord), (s1, coord)
+            else:
+                p0, p1 = (coord, s0), (coord, s1)
+            b.add(ArchDimension(
+                kind="linear",
+                ends=(NamedPoint(xy=to_in(p0), name=f"{name}{index}"),
+                      NamedPoint(xy=to_in(p1), name=f"{name}{index + 1}")),
+                p0=to_in(p0), p1=to_in(p1), offset=sign * offset,
+            ))

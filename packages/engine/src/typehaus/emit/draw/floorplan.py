@@ -12,6 +12,7 @@ from __future__ import annotations
 from typehaus.emit.draw._shared import (
     M_TO_IN,
     emit_bbox_dimension_chain,
+    emit_facade_dimension_strings,
     emit_fixtures,
     emit_wall,
     to_in as _in,
@@ -40,7 +41,10 @@ def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
     _emit_floor_heat(b, model, storey)
     _emit_alarms(b, model, storey)
     emit_fixtures(b, model, storey)
-    emit_bbox_dimension_chain(b, walls)
+    # Two dimension tiers: the per-facade strings sit 14" off each facade, the overall
+    # bbox chain stacks outside them at 24" (auto-dimensioner v2).
+    emit_facade_dimension_strings(b, model, walls, offset=14.0)
+    emit_bbox_dimension_chain(b, walls, offset=-24.0)
     return b.build()
 
 
