@@ -28,10 +28,11 @@ WALK_LINE_OFFSET_IN = 12.0
 # IRC R311.7.5.1: the greatest riser height in a flight may exceed the smallest by 3/8".
 MAX_RISER_VARIATION_IN = 0.375
 # Categories whose top face is a surface a foot lands on, in the order a climber meets
-# them. A winder box's deck is its ``winder`` tread; a U-stair's platforms are ``landing``
-# decks (``landing-joist``/``-rim``/``-post`` members are framing under them, not surfaces).
-_WALKING_SURFACE_CATEGORIES = frozenset({"tread", "winder"})
-_LANDING_FRAMING_PREFIXES = ("landing-joist-", "landing-rim-", "landing-post-")
+# them. A winder box's deck is its ``winder`` tread; a U-stair's platform is its ``landing``
+# deck. The joists, rims and posts under a platform are ``landing_framing`` and are excluded
+# by category — this used to need a child-key prefix list, because every member of a landing
+# shared one category.
+_WALKING_SURFACE_CATEGORIES = frozenset({"tread", "winder", "landing"})
 
 # How close a supporting element's top has to be to a post's base to be carrying it.
 _BEARING_TOLERANCE_M = inch(1.0).meters
@@ -143,9 +144,7 @@ def _walking_surfaces(stair: ResolvedStair) -> list[float]:
     as a step where there is none.
     """
     tops = [member.z1_m for member in stair.members
-            if member.category in _WALKING_SURFACE_CATEGORIES
-            or (member.category == "landing"
-                and not member.child_key.startswith(_LANDING_FRAMING_PREFIXES))]
+            if member.category in _WALKING_SURFACE_CATEGORIES]
     return sorted(tops)
 
 

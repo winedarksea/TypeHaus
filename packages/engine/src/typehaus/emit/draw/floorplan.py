@@ -24,6 +24,8 @@ from typehaus.emit.draw.door_symbols import (
 )
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.model.enums import DoorOperation
+from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.model import ResolvedModel
 
 
@@ -149,6 +151,16 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                    align="center"))
 
 
+def _member_footprint(member) -> list[tuple[float, float]]:
+    """A member's plan rectangle: its axis swept by its own cross-section width.
+
+    The same construction every emitter builds a member's footprint from, so a landing
+    drawn here covers exactly the plan area the 3D deck occupies.
+    """
+    half = cross_section(member.profile).width_m / 2.0
+    return rect_between(member.p0, member.p1, -half, half)
+
+
 def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
     """Draw every stair on both connected plans, without duplicate coincident symbols."""
     candidates = [stair for stair in model.stairs
@@ -165,10 +177,22 @@ def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
         along_x = stair.run_direction == "x"
         for member in stair.members:
+            # Walking surfaces only. The framing *under* a landing — joists on a 16" grid,
+            # perimeter rims, posts — is category ``landing_framing`` and belongs on a
+            # framing plan, not here: drawing it put ~14 stray polylines through every
+            # landing zone, which read as uneven tread marks and a split down the middle.
             if member.category not in {"tread", "winder", "landing"}:
                 continue
             if member.p0 == member.p1:
                 continue  # a vertical member (post/newel) is a point in plan, not a line
+            if member.category == "landing":
+                # A landing's symbol is its *outline*, not its axis: the deck member is a
+                # board with a width, and one centreline down the middle of a platform is
+                # the "weird split on the landing".
+                b.add(Polyline(points=tuple(_in(p) for p in _member_footprint(member)),
+                               closed=True, layer="A-STAIR", lineweight=0.25,
+                               uid=stair.uid, tag=member.child_key))
+                continue
             b.add(Polyline(points=(_in(member.p0), _in(member.p1)), layer="A-STAIR",
                            lineweight=0.25, uid=stair.uid, tag=member.child_key))
         start = (minx, (miny + maxy) / 2) if along_x else ((minx + maxx) / 2, miny)

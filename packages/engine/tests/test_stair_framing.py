@@ -24,6 +24,7 @@ from types import SimpleNamespace
 import pytest
 
 from typehaus.checks.structural.stairs import stair_riser_uniformity
+from typehaus.emit.draw._shared import M_TO_IN
 from typehaus.emit.draw import build_floorplan
 from typehaus.emit.draw.scene import Polyline
 from typehaus.findings import Result
@@ -382,6 +383,88 @@ def test_plan_symbols_skip_zero_length_stair_members(catlin_model):
             assert math.hypot(x1 - x0, y1 - y0) > 1e-9, node.tag
 
 
+# ------------------------------------------- 8b. the 2D plan symbol is surfaces only
+#
+# This section exists because the regression it guards shipped. `_emit_stairs` draws one
+# polyline per member whose category is in {tread, winder, landing}, and that filter was
+# correct when a landing was a *single* member. 782a607 turned each half-landing into a deck
+# board + 2x8 joists on a 16" grid + two perimeter rims and left every one of them
+# categorised "landing", so the drawer quietly became a framing plan: ~12 stray A-STAIR
+# polylines per U-stair landing zone, which read as uneven tread marks and a split down the
+# middle of each landing. The only 2D stair test at the time asserted that no A-STAIR
+# polyline had zero length, which every one of those strays passed.
+
+def _stair_polylines(catlin_model, storey: str, stair_uid: str) -> list:
+    return [node for node in build_floorplan(catlin_model, storey).nodes
+            if isinstance(node, Polyline) and node.layer == "A-STAIR"
+            and node.uid == stair_uid and not node.tag.endswith("-direction")]
+
+
+@pytest.mark.parametrize("storey", ["basement", "main"])
+def test_a_u_stair_plan_draws_its_surfaces_and_none_of_its_framing(catlin_model, storey):
+    """One polyline per walking surface — treads and landing decks — and nothing else."""
+    stair = next(s for s in catlin_model.stairs if s.tag == "ST-B2M")
+    surfaces = [m for m in stair.members if m.category in ("tread", "winder", "landing")]
+    framing = [m for m in stair.members
+               if m.category == "landing_framing" and m.p0 != m.p1]
+    assert framing, "the landing is still framed — the fix is in how it is drawn"
+
+    drawn = _stair_polylines(catlin_model, storey, stair.uid)
+    assert len(drawn) == len(surfaces)
+    assert {node.tag for node in drawn} == {m.child_key for m in surfaces}
+    # The framing is what used to leak through; name it explicitly so a future filter
+    # change that re-admits it fails here rather than on someone's permit set.
+    assert not {node.tag for node in drawn} & {m.child_key for m in framing}
+
+
+def test_a_landing_draws_as_its_outline_not_its_axis(catlin_model):
+    """A landing's plan symbol is the platform, not a centreline down the middle of it.
+
+    The deck is a ``deck WxT`` board with an axis and a real width, so a single polyline
+    along its axis bisects the platform — one half of the reported "weird splits on
+    landings". The rectangle is the axis swept by that width.
+    """
+    stair = next(s for s in catlin_model.stairs if s.tag == "ST-B2M")
+    decks = {m.child_key: m for m in stair.members if m.category == "landing"}
+    assert len(decks) == 2  # two half-landings, one riser apart
+
+    drawn = {node.tag: node for node in _stair_polylines(catlin_model, "basement", stair.uid)}
+    # ST-B2M runs in y, so the deck's axis is its depth and its board width is across x.
+    # (They are close but not equal — 39¾" deep by 42" wide — so an axis-agnostic check
+    # would pass on a rectangle drawn the wrong way round.)
+    assert stair.run_direction == "y"
+    for key, deck in decks.items():
+        node = drawn[key]
+        assert node.closed and len(node.points) == 4, key
+        across = max(p[0] for p in node.points) - min(p[0] for p in node.points)
+        along = max(p[1] for p in node.points) - min(p[1] for p in node.points)
+        assert across == pytest.approx(
+            cross_section(deck.profile).width_m * M_TO_IN, rel=1e-6), key
+        assert along == pytest.approx(deck.length_m * M_TO_IN, rel=1e-6), key
+
+
+@pytest.mark.parametrize("tag,storey", [("ST-B2M", "basement"), ("ST-M2S", "main")])
+def test_tread_marks_along_a_flight_are_evenly_spaced(catlin_model, tag, storey):
+    """The complaint was "uneven stair marks". The tread math was never wrong — the
+    landing joists sat on a 16" grid that terminated on the flight width (0, 16", 32",
+    39¾" for ST-B2M), so a 16/16/7¾ pattern butted against ~11" tread marks. With the
+    framing out of the drawing, every gap in a flight is one going.
+    """
+    stair = next(s for s in catlin_model.stairs if s.tag == tag)
+    drawn = {node.tag: node for node in _stair_polylines(catlin_model, storey, stair.uid)}
+    cross = 0 if stair.run_direction == "y" else 1   # the axis a tread mark spans
+    along = 1 - cross
+    for flight in ("lower", "upper"):
+        marks = sorted(node.points[0][along] for tag_, node in drawn.items()
+                       if tag_.startswith(f"tread-{flight}-"))
+        assert len(marks) >= 2, flight
+        gaps = [b - a for a, b in zip(marks, marks[1:])]
+        assert max(gaps) - min(gaps) < 1e-6, (flight, gaps)
+        # ...and that one gap is the resolved going, not some other spacing.
+        assert gaps[0] == pytest.approx(
+            stair.tread_depth_m * M_TO_IN, rel=1e-6)
+
+
 # --------------------------------------------------------------- 9. the winder turn
 def _winder_reference(catlin_model, winder_stair):
     subfloor = _subfloor(catlin_model, winder_stair)
@@ -428,7 +511,9 @@ def test_winder_turn_is_a_stack_of_platform_boxes(catlin_model, winder_stair):
         assert rims, f"box {index} has no sides"
         deck = subfloor + riser * (index + 1)  # the winder tread's finished face
         for rim in rims:
-            assert rim.category == "landing", rim.child_key
+            # A box side is framing under the winder tread it carries, not a walking
+            # surface — the same split the U-stair's landing joists and rims take.
+            assert rim.category == "landing_framing", rim.child_key
             assert rim.z1_m == pytest.approx(deck - tread_thickness), rim.child_key
             assert rim.z0_m == pytest.approx(subfloor + riser * index), rim.child_key
             assert rim.profile.endswith(" rim"), rim.child_key
