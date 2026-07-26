@@ -109,14 +109,14 @@ _STAIR_HOUSED = frozenset({"tread", "winder"})
 # in a stair-adjacent wall reads as a clash for the same D3 offset that clears every stud
 # and plate here. Catlin has no such wall today, so the gap was invisible — see
 # tests/test_member_interference.py::test_stair_past_a_rough_opening_sill_is_not_a_clash.
-_STAIR_SUPPORT = frozenset({"stringer", "landing", "plate", "raked_plate", "joist",
-                            "blocking", "trimmer", "header", "sill", "partition", "newel",
-                            "hanger"}) | _STUD_KINDS
+_STAIR_SUPPORT = frozenset({"stringer", "landing", "landing_framing", "plate",
+                            "raked_plate", "joist", "blocking", "trimmer", "header", "sill",
+                            "partition", "newel", "hanger"}) | _STUD_KINDS
 # The stair members that are *carried* rather than carrying. Kept as its own set (instead
 # of a literal beside the rule) so ``{"newel", "header"}`` — the newel/header lap at the
 # turn corners, which overlap in z by design — resolves here rather than falling through
 # to the floor-opening header rule below and firing.
-_STAIR_BORNE = frozenset({"stringer", "landing", "newel"})
+_STAIR_BORNE = frozenset({"stringer", "landing", "landing_framing", "newel"})
 # Wall/roof framing that legitimately interpenetrates where two walls meet at a junction
 # (studs, plates, headers, T-backing blocking, and the rafters/ridge landing on a gable).
 _JUNCTION_FRAMING = (_STUD_KINDS | _PLATE_KINDS

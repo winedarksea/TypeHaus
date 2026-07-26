@@ -214,12 +214,13 @@ def _winder_box_framing(stair: Stair, z0: float, riser: float, fan: list[_FanLin
                 continue
             departing = edge == len(rims) - 1
             out.append(FramedMember(
-                stair.uid, f"landing-rim-winder{index}-{edge}", "landing",
+                stair.uid, f"landing-rim-winder{index}-{edge}", "landing_framing",
                 spring_profile if departing and top_tier else rim_profile,
                 a, b, base, deck, length))
         block_end = _polyline_midpoint(outside)
         out.append(FramedMember(
-            stair.uid, f"landing-joist-winder{index}-0", "landing", _BOX_BLOCK_PROFILE,
+            stair.uid, f"landing-joist-winder{index}-0", "landing_framing",
+            _BOX_BLOCK_PROFILE,
             inside, block_end, deck - block_depth, deck,
             math.hypot(block_end[0] - inside[0], block_end[1] - inside[1])))
     return out

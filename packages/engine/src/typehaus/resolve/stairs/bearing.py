@@ -229,20 +229,20 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
         (round(member.p0[0], 4), round(member.p0[1], 4))
         for member in members if member.p0 == member.p1 and member.category == "newel"}
     for member in members:
-        if member.category == "landing" and member.child_key.startswith("landing-rim-"):
+        if member.category == "landing_framing" and member.child_key.startswith("landing-rim-"):
             rims_by_platform.setdefault(member.child_key.rsplit("-", 1)[0],
                                         []).append(member)
-        bearable = (member.category == "stringer"
-                    or (member.category == "landing"
-                        and (member.child_key.startswith("landing-rim-")
-                             or member.child_key.startswith("landing-joist-"))))
+        # The deck is carried; the joists and rims under it are what carry. `replace` below
+        # preserves whatever category the generator set, so re-emitting these keeps them
+        # framing.
+        bearable = member.category in ("stringer", "landing_framing")
         if bearable and member.p0 != member.p1:
             host, interval = _best_host_wall(model, stair, member.p0, member.p1)
             if host is not None and not host.is_foundation:
                 tag = f"framed-wall-ledger:{host.tag}"
                 out.append(replace(member, connection=tag))
                 out.append(_framed_ledger(stair, host, member, interval, subfloor, tag))
-                if member.category == "landing":
+                if member.category == "landing_framing":
                     # Only the endpoints the wall actually runs past are carried; a host
                     # that overlaps half a rim leaves the far corner needing a post.
                     supported_corners.update(
@@ -290,7 +290,8 @@ def _bear_stair_on_walls(model: ResolvedModel, stair: Stair,
     for index, (key, z_top) in enumerate(sorted(posts.items())):
         if z_top <= subfloor + 1e-9:
             continue
-        out.append(FramedMember(stair.uid, f"landing-post-{index:03d}", "landing", "4x4",
+        out.append(FramedMember(stair.uid, f"landing-post-{index:03d}", "landing_framing",
+                                "4x4",
                                 key, key, subfloor, z_top, z_top - subfloor,
                                 orient=orient))
     return tuple(out)

@@ -56,6 +56,7 @@ const CATEGORY_COLOR: Record<string, number> = {
   partition: 0xb3854f,
   trimmer: 0xa87a4c,
   landing: 0xb88c5c,
+  landing_framing: 0xa3763f, // joists/rims/posts under a landing deck — as blocking
   newel: 0x996b41, // = header, as engine-side: the winder newel is a post, not tread lumber
   hanger: 0x595c61,
   // Roof sticks. `rafter`/`blocking`/`outlooker`/`barge_rafter` had no entry in either

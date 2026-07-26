@@ -39,8 +39,8 @@ _MINIMUM_EXTENT_M = 1e-4
 # Framing categories → IfcMemberTypeEnum (IFC4), shared by the roof, wall and stair member
 # emitters (``member_class`` below). Anything unmapped stays MEMBER rather than guessing: a
 # wrong PredefinedType is worse than none for structural schedules — that is deliberately
-# where "header", "tread", "blocking" and "landing" land, since IFC4's enum has no closer
-# term for any of them.
+# where "header", "tread", "blocking", "landing" and "landing_framing" land, since IFC4's
+# enum has no closer term for any of them.
 _MEMBER_PREDEFINED_TYPE = {
     "rafter": "RAFTER", "barge_rafter": "RAFTER", "outlooker": "PURLIN",
     "top_chord": "CHORD", "bottom_chord": "CHORD", "truss_web": "STRUT",

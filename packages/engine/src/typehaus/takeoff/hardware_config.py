@@ -85,7 +85,7 @@ class HangerDetectionRules:
     carrier_solid_categories: frozenset = frozenset({"beam"})
     # Members that can hang off a carrier.
     hangable_member_categories: frozenset = frozenset(
-        {"joist", "rafter", "rim", "landing", "stringer", "top_chord"})
+        {"joist", "rafter", "rim", "landing", "landing_framing", "stringer", "top_chord"})
     # A hung member's cut end stops short of the carrier centreline by about half the
     # carrier width; this bounds that gap (a 3-ply LVL is ~2.6" of it).
     end_gap_tolerance_in: float = 6.0

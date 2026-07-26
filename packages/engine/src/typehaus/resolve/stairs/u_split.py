@@ -36,8 +36,14 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     upper_treads = flight_treads - lower_treads
     sign = -1 if stair.run_reversed else 1
     along_x = stair.run_direction == "x"
-    start = minx if along_x else miny
-    lane0 = miny if along_x else minx
+    # The authored origin, exactly as ``straight.py`` and ``winder.py`` read it. This layout
+    # used to take the opening bbox's corner unconditionally and never look at
+    # ``stair.start`` — so an authored origin was silently ignored here while
+    # ``_stair_fits_opening`` validated against it, and generation and validation ran on two
+    # different origins.
+    start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
+    start = start_x if along_x else start_y
+    lane0 = start_y if along_x else start_x
     partition_centre = lane0 + width + _WELL_PARTITION_THICKNESS_M / 2.0
     lane1 = lane0 + width + _WELL_PARTITION_THICKNESS_M
 
@@ -134,6 +140,16 @@ def _landing_platform(stair: Stair, name: str, at, s0: float, depth: float,
     platform's true width instead of a 1.5" strip). Joists run across the lane on the
     deduplicated 16" grid — edge joists land exactly at 0 and ``depth`` — and the two
     rims cap the joist ends along the run direction.
+
+    The deck is category ``landing``; everything under it is ``landing_framing``. That split
+    matters well beyond tidiness: when this function was one member, ``landing`` meant "the
+    surface you stand on", and the 2D plan drawer's ``{tread, winder, landing}`` filter was
+    written against that meaning. Turning a landing into ~7 members while leaving them all
+    ``landing`` silently turned the drawer into a framing plan — about 14 stray A-STAIR
+    polylines per landing zone. Category is the axis interference, the IFC mapping and the
+    glTF routing already discriminate on, so splitting there is what stays correct for the
+    next consumer; narrowing the drawer's filter by child-key prefix would have fixed the
+    picture and left the same trap set.
     """
     joist_depth = cross_section(_LANDING_JOIST_PROFILE).depth_m
     # ``landing_z`` is the platform's *finished* walking face; its deck is dropped below it
@@ -146,11 +162,12 @@ def _landing_platform(stair: Stair, name: str, at, s0: float, depth: float,
                         at(s0, mid), at(s0 + depth, mid),
                         deck_bottom, landing_z, depth)]
     for index, offset in enumerate(_grid_positions(depth, _FRAMING_SPACING_M)):
-        out.append(FramedMember(stair.uid, f"landing-joist-{name}-{index:03d}", "landing",
+        out.append(FramedMember(stair.uid, f"landing-joist-{name}-{index:03d}",
+                                "landing_framing",
                                 _LANDING_JOIST_PROFILE, at(s0 + offset, lane_lo),
                                 at(s0 + offset, lane_lo + width), z_bot, z_top, width))
     for index, cross in enumerate((lane_lo, lane_lo + width)):
-        out.append(FramedMember(stair.uid, f"landing-rim-{name}-{index}", "landing",
+        out.append(FramedMember(stair.uid, f"landing-rim-{name}-{index}", "landing_framing",
                                 _LANDING_JOIST_PROFILE, at(s0, cross),
                                 at(s0 + depth, cross), z_bot, z_top, depth))
     return out
