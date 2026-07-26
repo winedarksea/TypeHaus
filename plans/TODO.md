@@ -20,13 +20,15 @@ what genuinely remains, with fresh measurements.*
   layout change to the RM-S-STUDY-2 opening), and there is 2.5" of tread slack in the
   straight run to pay for it (11.28" against the 10" minimum). Both checks stay advisory
   WARN and keep printing the measured numbers.
-- **NEW — `CATLIN_ROOF` fails the monthly condensation gate.** The ISO 13788-style monthly
-  gate (now the pass/fail verdict; the −15 °F walk is a labeled cold-snap screen) shows a
-  dew-point crossing at the rafter (93% through the layer) even at January *monthly means*
-  (16.2 °F / 74% RH outdoors, 35% RH indoors). This is a real assembly finding, not a
-  boundary-condition artifact: the hot roof's interior-side vapour openness vs. its exterior
-  foam ratio needs a design pass (more exterior R, an interior retarder class change, or a
-  sourced argument the check is missing).
+- **Service load exceeds the service — decision still open (2026-07-26).** The model and
+  checks are done: `electrical.service_load` reads the measured 223.7A (NEC 220.82) against
+  the 200A service and names the three levers — an EV EMS per 625.42, interlocking the
+  sauna, or a service upgrade. A `LoadManagement` element exists (capability only, none
+  authored); authoring one with the chosen strategy flips the check. Pick a lever.
+- **Panel needs to be a 54-space one (2026-07-26).** All 35 circuits now carry slot
+  assignments and `electrical.panel_spaces` measures 48 required against ED-T-PANEL's
+  declared 42 — an honest FAIL until the panel type is swapped to a 54-circuit enclosure
+  (one-line change on the type). That swap is yours.
 
 ## Remaining Work
 
@@ -34,50 +36,32 @@ what genuinely remains, with fresh measurements.*
   `model.json` now carries the variant catalog; `prices.toml` $-ranges work in
   `haus variants compare` and takeoff. Still missing: `variant_of`/`active` forks with
   one-active integrity + promote-with-uid-remap, and the UI side-by-side compare canvases.
-- **`DuctSystem` enum lacks `EXHAUST`/`HRV`.** The shower detail vocabulary draws an HRV
-  takeoff from `model.ducts`, but no real catlin duct can trigger it: `DuctRun` can only be
-  SUPPLY or RETURN. Grow the enum, author the ensuite HRV run, and the SL-D-SHOWER slice
-  (authored, cut x=5') picks it up. (`ResolvedDuct` also carries no z — the drawn takeoff
-  elevation is a documented drawing convention.) Sharper now that the gas furnace is gone:
-  `DU-M-ERV-SUP`/`DU-M-ERV-RET` *are* the ERV's balanced pair, modeled as SUPPLY/RETURN
-  because the enum has nothing better to call them.
-- **The ERV reaches the second storey only.** With no forced-air heat, those trunks are the
-  whole fresh-air distribution — the main storey, basement and attic have no ERV terminals
-  authored, and upstairs RM-S-SUITE still gets a return but no supply. Needs a distribution
-  pass (supply to sleeping/living rooms, return from baths + kitchen). RM-S-BED2 is done:
-  the survey re-spacing put the east bedrooms on equal 9'-0" bays and `REG-S-SUP5` landed
-  in the middle one (2026-07-25); the four new rooms on that storey — RM-S-SUITEBATH,
-  RM-S-VANITY, RM-S-LANDING, RM-S-NCLOSET — have no terminals either.
-- **Minisplit sizing is unmodeled.** `CKT-MINI-1`/`-2` carry authored 4,800 / 1,500 VA and
-  the equipment types are a large and a small condenser — no block load, no room-by-room
-  capacity, no cold-climate derate at the design temperature. The three radiant zones, the
-  fireplace and the garage heater (2026-07-25) are explicitly *not* sized to make up any
-  shortfall, so this is the pass that decides whether the house is actually heated.
-- **The second-storey fixture layout in `RM-S-ENSUITE` overlaps itself.** `FX-S-ENSUITE-WC`
-  / `-LAV` / `-SH` are authored at (5,31), (6,31) and (5,33) with default footprints, so the
-  WC shares 1.9 ft2 with the lav and 1.6 ft2 with the shower pan. `FH-S-ENSUITE`'s zone is
-  drawn to clear their union, which survives any resolution that keeps them in that corner —
-  but the room still wants a fixture pass. (`RM-M-BATH2`'s WC floats mid-room too.)
-- **The service load estimate exceeds the service.** `service_load_summary` reads ~224A
-  (NEC 220.82 optional method) against a 200A service / 225A panel. Driven by the two
-  EV circuits at 13.4 kVA continuous plus sauna + water heaters — *not* by the electric
-  space heating, which 220.82(C) selects against the minisplits rather than adding.
-  Needs load management (an EV EMS per 625.42, or interlocking the sauna) or a service
-  upgrade — it is a decision, not a rounding artifact.
-- **The panel is out of spaces on paper.** 35 circuits, 13 of them 2-pole = 48 spaces
-  against a 42-space enclosure. `Circuit` carries no slot assignment and nothing checks it,
-  so this is a note rather than a finding: the 225A panel needs to be a 54-circuit one.
 - **Authored gutter runs are still solid bars.** The *derived* eave gutters are open-top
   3-band channels now; `TR-SG-GUTTER`/`TR-RF-GUTTER` (authored `Gutter` runs in
   `resolve/accessories.py::_resolve_edge_run`) should get the same treatment. Exact recipe
-  recorded in the roof-eave stream report (E5); purely visual.
+  recorded in the roof-eave stream report (E5); purely visual. (Deferred from the 2026-07-26
+  batch because that file was owned by the then-pending breezeway stream S2; S2 has now
+  landed, so this is unblocked.)
+- **Minisplit ratings are representative placeholders (2026-07-26).** `mep.heating_capacity`
+  now sizes per zone off `estimate_block_load`; EQ-T-MINISPLIT-LG/-SM carry placeholder
+  hyper-heat ratings (30,000/21,000 and 12,000/8,700 Btu/h rated/at-design) to be
+  overwritten with the selected models' datasheet numbers. Current honest findings: upstairs
+  zone −14,330 Btu/h at design (advisory FAIL), basement UNKNOWN (five basement door
+  U-factors missing from the block-load inputs).
+- **Deck post/footing UNKNOWNs (2026-07-26, by design).** Both sunken-garden decks are now
+  `service="deck"`: `deck_post_size` has no R507.4 row for the 12" round column PT-SG-COL,
+  and PT-SG-COL plus the six balcony pillars bear on non-Pad chains (grouted CMU / bell
+  footing) so `deck_footing_size` can't resolve. `deck_beam_span` also surfaces genuine
+  R507.5(1) overspans (porch 2-2x12 @ 10' vs 8.25'; balcony 2-2x10 @ 8.67' vs 5.75').
+- **SP-M-WC2 sleeve holds the old drain position (2026-07-26).** The BATH2 WC moved to the
+  wet wall but the cast-in sleeve's `drain_position` deliberately stays at (3', 18') so
+  `mep.sleeve_alignment` resolves; re-pointing sleeve + PR-B-MAIN-DRAIN at the new flange is
+  a follow-up in `plan/mep.py`.
 - **`lsl` and `fiber-cement` have no sourced permeance** — deliberately UNKNOWN rather than
   invented. (The two library starter walls no longer need it for a verdict: their rainscreen
   is a real FURRING layer now and the Glaser walk truncates at the vented cavity.)
 - **Polycarbonate has no authored vapour permeance** (five-wall extrusion ≠ solid-sheet ASTM
   E96 figures). Needs a sourced figure.
-- **The sunken-garden porch and balcony decks are still `service="floor"`.** Exterior decks
-  on posts/beams; should be graded against R507/DCA6 like the breezeway deck is.
 - **KneeBrace paint is authored but not rendered.** `KneeBrace.assembly="POST_WHITE_PAINT"`
   is in the schema and the catlin plan; the diagonal resolves to a `FramedMember`, which has
   no finish slot — rendering the paint needs an IR + emitter change. (The APVKB bands are
@@ -175,6 +159,3 @@ the future.
 - the 2D drawing of the u-shaped stairs got messed up at some point. It's got weird splits on landings and uneven stair marks
 
 - We need to change the raised garden. W-RG-BLOCK should form a U around the sunken garden up to the N-S plane of the balcony railing on the arched concrete. It's 3' wider than the sunken garden wall. For now we should also model it so it starts at the same height as the top of the sunken garden wall, and goes down 3' from there (that puts it mostly below grade, which is fine for now), with this change meaning W-RG-INNER can likely be deleted (W-SG-* replace it effectively).
-
-## Items after Phase 5
-- There needs to be a door between RM-M-BED and RM-M-LIVING. This is a special "frameless" (or 'trimless') door jamb system so it looks flush with drywall
