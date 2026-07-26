@@ -252,8 +252,23 @@ def takeoff(
                "solar": bom["solar"],
                "backup_components": bom["backup_components"],
                "luminaire_schedule": bom["luminaire_schedule"],
+               # lighting_controls was the one section bill_of_materials produced and this
+               # payload dropped — the switch legs simply never reached `haus takeoff`.
+               "lighting_controls": bom["lighting_controls"],
                "light_runs": bom["light_runs"],
-               "lighting_load": bom["lighting_load"]}
+               "lighting_load": bom["lighting_load"],
+               # The 2026-07-25 sweep's sections. Forwarded here rather than left in
+               # bill_of_materials only: a section the CLI drops is invisible to the
+               # estimate and to `haus variants compare`.
+               "floor_finishes": bom["floor_finishes"],
+               "envelope_layers": bom["envelope_layers"],
+               "openings": bom["openings"],
+               "stair_finish": bom["stair_finish"],
+               "footing_bedding": bom["footing_bedding"],
+               "pipe_runs": bom["pipe_runs"],
+               "ducts": bom["ducts"],
+               "sleeves": bom["sleeves"],
+               "conductors": bom["conductors"]}
     if prices is not None:
         payload["cost_estimate"] = estimate_costs(bom, prices)
     if as_json:

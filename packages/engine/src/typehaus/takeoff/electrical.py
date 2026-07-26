@@ -181,6 +181,49 @@ def conduit_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     ]
 
 
+# Conductors per raceway, by circuit poles. A 1-pole branch pulls two current-carrying
+# conductors plus a ground; a 2-pole pulls three plus a ground. Both are counted as
+# individual conductors because that is how THHN is bought — by the foot, per colour.
+_CONDUCTORS_PER_CIRCUIT = {1: 3, 2: 4}
+# Pull length is the raceway's developed length plus an allowance at each end for making up
+# in the panel and at the device. 10 ft is the conventional residential allowance.
+_MAKEUP_ALLOWANCE_FT = 10.0
+
+
+def conductor_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
+    """Conductor lineal feet — what ``conduit_takeoff`` deliberately does not bill.
+
+    Raceway and wire are two different orders and ``conduit_takeoff`` covers only the first,
+    so an estimate built on it buys the pipe and none of the wire. This is an *estimate* and
+    says so: a conduit run carries no circuit assignment in the model, so it is priced as the
+    total raceway length times the conductors a branch circuit of each pole count needs,
+    rather than pulled circuit by circuit. The panel schedule is what says which circuits
+    exist; the raceway is what says how far they run.
+    """
+    total_ft = sum(run.length_m * 3.280839895013123 for run in model.conduits)
+    if total_ft <= 0.0:
+        return []
+    by_poles: dict[int, int] = {}
+    for circuit in model.plan.library.circuits:
+        by_poles[circuit.poles] = by_poles.get(circuit.poles, 0) + 1
+    rows = []
+    for poles in sorted(by_poles):
+        circuits = by_poles[poles]
+        per = _CONDUCTORS_PER_CIRCUIT.get(poles)
+        if per is None:
+            continue
+        pull_ft = total_ft / max(len(model.conduits), 1) + _MAKEUP_ALLOWANCE_FT
+        rows.append({
+            "poles": poles,
+            "circuits": circuits,
+            "conductors_per_circuit": per,
+            "mean_pull_ft": round(pull_ft, 1),
+            "length_ft": round(pull_ft * per * circuits, 1),
+            "basis": "estimate: mean raceway run + 10 ft make-up, per conductor",
+        })
+    return rows
+
+
 def electrical_device_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Devices counted by kind + product type — what the electrician's order reads."""
     types = {t.tag: t for t in model.plan.library.electrical_device_types}
