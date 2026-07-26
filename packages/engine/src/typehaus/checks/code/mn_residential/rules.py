@@ -230,6 +230,71 @@ def smoke_and_co_alarm_placement(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+# How close a habitable room has to be to a garage before R315.2.2's garage-adjacency CO rule
+# is in play. A garage sharing a wall is the obvious case; this house's is *freestanding*, 4'
+# north, joined door-to-door by an enclosed breezeway — which is the same exposure path a
+# common wall gives you, so the rule has to reach it. Beyond this band the garage is genuinely
+# detached and the rule reports UNKNOWN rather than passing on a technicality.
+_GARAGE_ADJACENCY = ft(12)
+
+
+@check(Tier.CODE, "code.R315_garage_alarms")
+def garage_heat_and_co_alarms(ctx: CheckContext) -> list[Finding]:
+    """A garage wants a heat detector, and the dwelling beside it wants CO coverage.
+
+    Neither half was covered. ``code.R314_R315_alarms`` filters on (SMOKE, COMBO) and only
+    looks at storeys with bedrooms on them, so the garage storey was invisible to it.
+
+    A garage gets a *heat* detector rather than a smoke alarm: exhaust, dust and a space that
+    runs to outdoor temperature would nuisance-trip a smoke head, which is why the code asks
+    for CO coverage on the dwelling side instead of a smoke alarm inside the garage.
+    """
+    from shapely.geometry import Polygon
+
+    cid = "code.R315_garage_alarms"
+    out: list[Finding] = []
+    alarms = [element for element in ctx.plan.all_elements()
+              if element.element_kind == "Alarm"]
+    garages = [room for room in ctx.model.rooms if room.occupancy == Occupancy.GARAGE.value]
+    if not garages:
+        return [_unknown(cid, "no garage modelled", (), "R315.2.2")]
+
+    for garage in garages:
+        detector = next((item for item in alarms
+                         if item.room == garage.tag and item.kind is AlarmKind.HEAT), None)
+        if detector is None:
+            out.append(_fail(cid, f"garage {garage.tag} has no heat detector", (garage.tag,),
+                             "R315.2.2"))
+        else:
+            out.append(_pass(cid, f"{garage.tag} has heat detector {detector.tag}",
+                             "R315.2.2"))
+
+    # CO coverage on the dwelling side. Adjacency is measured between the resolved room
+    # faces, so a breezeway-connected garage counts the same as a shared-wall one.
+    garage_tags = {room.tag for room in garages}
+    band = [Polygon(room.clear_face).buffer(_GARAGE_ADJACENCY.meters)
+            for room in garages if len(room.clear_face) >= 3]
+    neighbours = [room for room in ctx.model.rooms
+                  if room.tag not in garage_tags and len(room.clear_face) >= 3
+                  and any(zone.intersects(Polygon(room.clear_face)) for zone in band)]
+    if not neighbours:
+        out.append(_unknown(cid, "no habitable room within "
+                                 f"{_GARAGE_ADJACENCY.feet:g}' of a garage — detached, so the "
+                                 "garage-adjacency CO rule does not apply",
+                            tuple(sorted(garage_tags)), "R315.2.2"))
+        return out
+    covered = [item for item in alarms
+               if item.kind in (AlarmKind.CO, AlarmKind.COMBO)
+               and item.room in {room.tag for room in neighbours}]
+    if not covered:
+        out.append(_fail(cid, "no CO alarm in any room adjacent to the garage",
+                         tuple(sorted(room.tag for room in neighbours)), "R315.2.2"))
+    else:
+        out.append(_pass(cid, f"{len(covered)} CO alarm(s) cover the rooms adjacent to the "
+                              f"garage ({covered[0].tag})", "R315.2.2"))
+    return out
+
+
 @check(Tier.CODE, "code.R401_3_grading")
 def foundation_grading(ctx: CheckContext) -> list[Finding]:
     """R401.3 lot drainage — grade must fall away from the foundation within 10 feet.

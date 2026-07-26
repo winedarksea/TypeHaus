@@ -3,6 +3,8 @@
 # (west walls aligned). Wood walls sit on the ICF stem 22" above grade; the storey
 # elevation is the top of the stem. Overhead door faces east (driveway side).
 from typehaus import (
+    Alarm,
+    AlarmKind,
     Door,
     EaveGutter,
     EaveTrim,
@@ -116,4 +118,18 @@ ROOFS = [
          eave_trim=_GARAGE_EAVE_TRIM),
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS]
+ALARMS = [
+    # A garage gets a *heat* detector, not a smoke alarm: exhaust, dust and a space that runs
+    # to outdoor temperature would nuisance-trip a smoke head, which is why R315 asks for CO
+    # coverage adjacent to the garage rather than a smoke alarm inside it. This is the
+    # rate-of-rise/fixed-temperature head, at the room seed like every other Alarm (the
+    # element carries no position of its own).
+    #
+    # On CKT-LT-BACKUP because R314.4 wants an unswitched circuit and the Shelly backup
+    # subsystem is the only thing here that survives an outage. CKT-RC-GARAGE is GFCI, which
+    # is wrong for a life-safety device, and there is no spare 1-pole.
+    Alarm(uid="CGA701AAAA", tag="AL-G-HEAT", kind=AlarmKind.HEAT, room="RM-GARAGE",
+          circuit="CKT-LT-BACKUP"),
+]
+
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS, *ALARMS]

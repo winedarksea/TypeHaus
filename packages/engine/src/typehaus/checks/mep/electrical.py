@@ -229,8 +229,11 @@ def circuit_refs(ctx: CheckContext) -> list[Finding]:
     if not circuits:
         return [_unknown(cid, "no circuits authored")]
 
+    # Alarms are consumers too: R314.4 puts them on a branch circuit, so a detector naming a
+    # circuit that does not exist is the same defect as a receptacle doing it.
     consumers = [element for element in ctx.plan.all_elements()
-                 if element.element_kind in ("ElectricalDevice", "Equipment", "Register")]
+                 if element.element_kind in ("ElectricalDevice", "Equipment", "Register",
+                                             "Alarm")]
     panels = {element.tag for element in consumers
               if element.element_kind == "ElectricalDevice" and element.kind.value == "panel"}
     types = {t.tag: t for t in ctx.plan.library.electrical_device_types}

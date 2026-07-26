@@ -107,10 +107,15 @@ class Annotation(Element):
 
 @register_element
 class Alarm(Element):
-    """A smoke/CO life-safety symbol associated with one room (M3)."""
+    """A smoke/CO/heat life-safety symbol associated with one room (M3)."""
 
     kind: AlarmKind
     room: str | None = None
+    # The branch circuit the detector's primary power comes off. R314.4 wants alarms on an
+    # unswitched circuit; naming it here is what lets `electrical.circuit_refs` reconcile the
+    # alarms against the panel schedule the way it already does for every other consumer.
+    # ``None`` = not yet assigned, which is a modelling gap rather than a battery-only alarm.
+    circuit: str | None = None
 
 
 @register_element

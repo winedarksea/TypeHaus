@@ -95,11 +95,20 @@ class DoorOperation(str, Enum):  # noqa: UP042 — StrEnum needs 3.11; the toolc
 
 
 class AlarmKind(Enum):
-    """Residential life-safety alarm types (R314/R315)."""
+    """Residential life-safety alarm types (R314/R315).
+
+    ``HEAT`` is a rate-of-rise/fixed-temperature detector, not a smoke alarm: it is what a
+    garage gets, where exhaust, dust and cold would nuisance-trip a smoke head. It is a kind
+    of ``Alarm`` rather than a ``DeviceKind`` because a detector is life-safety equipment
+    keyed to a room, and ``DeviceKind``'s docstring argues for keeping that enum flat and
+    differentiating by ``type_ref``. R314's bedroom rule filters on (SMOKE, COMBO), so a HEAT
+    detector is correctly invisible to it.
+    """
 
     SMOKE = "smoke"
     CO = "co"
     COMBO = "combo"
+    HEAT = "heat"
 
 
 class StructuralRole(Enum):

@@ -34,7 +34,7 @@ _CODE_ITEMS = (
     ("Ceiling height / habitable attic", ("code.R305_ceiling_height",)),
     ("Sleeping-room emergency escape", ("code.R310_egress",)),
     ("Egress door clear width", ("code.R311_door_width",)),
-    ("Smoke / CO alarm placement", ("code.R314_R315_alarms",)),
+    ("Smoke / CO alarm placement", ("code.R314_R315_alarms", "code.R315_garage_alarms")),
 )
 
 

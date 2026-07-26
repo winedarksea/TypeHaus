@@ -323,8 +323,11 @@ def model_to_dict(
             if node.element_kind == "Node"
         ],
         "alarms": [
+            # ``circuit`` rides along for the same reason every other consumer's does: the
+            # panel schedule names the alarms on a circuit, so the reader needs the reverse
+            # edge to show which circuit a selected detector is on.
             {"uid": alarm.uid, "tag": alarm.tag, "storey": storey.tag,
-             "kind": alarm.kind.value, "room": alarm.room,
+             "kind": alarm.kind.value, "room": alarm.room, "circuit": alarm.circuit,
              "provenance": _provenance(provenance, alarm.tag)}
             for storey in model.plan.storeys
             for alarm in model.plan.storey_elements(storey.tag)

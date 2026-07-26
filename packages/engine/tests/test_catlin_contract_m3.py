@@ -476,10 +476,16 @@ def test_catlin_has_required_smoke_co_alarm_coverage_and_json_symbols(tmp_path):
     plan = load_plan(CATLIN_DIR).plan
     report = run(plan, CATLIN_DIR, tier=None)
     assert not [finding for finding in report.findings
-                if finding.check_id == "code.R314_R315_alarms" and finding.result is Result.FAIL]
+                if finding.check_id in ("code.R314_R315_alarms", "code.R315_garage_alarms")
+                and finding.result is Result.FAIL]
     model, _ = resolve(plan)
     alarms = model_to_dict(model)["alarms"]
-    assert {alarm["tag"] for alarm in alarms} >= {"AL-M-BED", "AL-M-HALL", "AL-S-HALL"}
+    assert {alarm["tag"] for alarm in alarms} >= {"AL-M-BED", "AL-M-HALL", "AL-S-HALL",
+                                                  "AL-G-HEAT"}
+    # The garage detector is a heat head, not a smoke alarm — a smoke head there would
+    # nuisance-trip on exhaust, dust and outdoor temperature.
+    garage = next(alarm for alarm in alarms if alarm["tag"] == "AL-G-HEAT")
+    assert garage["kind"] == "heat"
 
 
 def test_catlin_fixtures_render_as_footprints_and_serialize_services(catlin_model):

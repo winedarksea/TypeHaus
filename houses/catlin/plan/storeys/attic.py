@@ -184,7 +184,8 @@ ROOMS = [
 ]
 
 ALARMS = [
-    Alarm(uid="CAA701AAAA", tag="AL-A-COMBO", kind=AlarmKind.COMBO, room="RM-A-WEST"),
+    Alarm(uid="CAA701AAAA", tag="AL-A-COMBO", kind=AlarmKind.COMBO, room="RM-A-WEST",
+          circuit="CKT-LT-BACKUP"),
 ]
 
 # The hot roof itself: gable, 4:12, ridge N-S, zero overhang (first-class #29).
