@@ -213,17 +213,17 @@ GARAGE_PLACEABLES = []
 # headboard of the bed in the room below it. Heads therefore float 5"-6" off the north wall.
 SECOND_PLACEABLES = [
     Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-QUEEN-BED", room="RM-S-BED1",
-              position=pt(ft(30), ft(12, 9))),
+              position=pt(m(9.71131), m(4.07897)), rotation=deg(270)),
     Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
-              position=pt(ft(30), ft(22, 4))),
+              position=pt(m(9.68788), m(6.90099)), rotation=deg(-90)),
     Furniture(uid="CSB702AAAA", tag="FURN-S-BED3", type_ref="FURN-QUEEN-BED", room="RM-S-BED3",
-              position=pt(ft(30), ft(31, 11))),
+              position=pt(m(9.70988), m(9.5886)), rotation=deg(-90)),
     # The master takes the king, head against the closet/bath wall that closes the suite's
     # west strip at x=9'-6 7/8" (rotation -90 turns its back to +x), so the bed faces west
     # into WIN-S-SUITE1/2 and the 2'-6" foot zone runs out to the window wall instead of into
     # a partition. It is the one bedroom wide enough to hold a 6'-8" bed with both 2' side
     # zones intact, and it does: nothing here is short.
-    Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-BED-KING",
-              room="RM-S-SUITE", position=pt(ft(6), ft(17, 6)), rotation=deg(-90)),
+    Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
+              room="RM-S-SUITE", position=pt(m(1.51666), m(5.64775)), rotation=deg(0)),
 ]
 ATTIC_PLACEABLES = []

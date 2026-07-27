@@ -30,6 +30,7 @@ from typehaus import (
     pt,
     u_us,
 )
+from typehaus.model import m
 
 # --- library-of-the-house types ----------------------------------------------
 DOOR_TYPES = [
@@ -214,7 +215,7 @@ OPENINGS = [
          position=from_node("N-M-S1", ft(1, 4))),
     # Interior
     Door(uid="CMD203AAAA", tag="D-M-STAIR", host="W-M-STRS", type_ref="DT-INT32",
-         position=from_node("N-M-STR1", ft(2))),
+         position=from_node("N-M-STR1", ft(0, 8.0625)), flip_swing=True),
     Door(uid="CMD204AAAA", tag="D-M-STOR", host="W-M-STOS2", type_ref="DT-INT32",
          position=from_node("N-M-BA1", ft(2))),
     Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT24",
@@ -223,8 +224,8 @@ OPENINGS = [
          position=from_node("N-M-W3", ft(1, 6.5))),
     Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-INT56",
          position=from_node("N-M-D1", ft(0, 4))),
-    Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-HS4", type_ref="DT-INT30",
-         position=from_node("N-M-E3", ft(1))),
+    Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT30",
+         position=from_node("N-M-E4", ft(1, 2.6875)), flip_swing=True),
     Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT32",
          position=from_node("N-M-D3", ft(5))),
     # Second bedroom <-> living connection, straight through the centre bearing wall.
@@ -239,10 +240,6 @@ OPENINGS = [
                  position=from_node("N-M-C2", ft(0, 6)), width=ft(2, 8),
                  height=ft(6, 8)),
     # Cased pass-through: living room → dressing corridor (per floorplan).
-    RoughOpening(uid="CMD211AAAA", tag="O-M-DRESS", host="W-M-C2",
-                 position=from_node("N-M-C1", ft(0, 6)), width=ft(3),
-                 height=ft(6, 8)),
-    # Windows — west (bearing: WT-2736), south (non-bearing: WT-3036), east (bearing)
     Window(uid="CMX301AAAA", tag="WIN-M-BED-W1", host="W-M-W4",
            type_ref="WT-2736", position=from_node("N-M-SW", ft(4, 2.5)),
            sill_height=ft(2)),
@@ -304,6 +301,8 @@ OPENINGS = [
     # east wall's WIN-M-KITCH already lights the sink.
     Window(uid="82WVR597PA", tag="WIN-M-KITCH-N", host="W-M-N1", type_ref="WT-1424",
            position=from_node("N-M-NE", ft(10, 9)), sill_height=ft(3, 6)),
+    # Exterior
+    RoughOpening(uid="S4PSJ99JQF", tag="RO-1", host="W-M-STRS", position=from_node("N-M-STR1", ft(4, 4.375)), width=ft(3), height=ft(6, 8), sill_height=m(0)),
 ]
 
 ROOMS = [

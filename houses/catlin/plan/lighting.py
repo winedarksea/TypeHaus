@@ -43,6 +43,7 @@ from typehaus import (
     inch,
     pt,
 )
+from typehaus.model import m
 
 # --- Basement -------------------------------------------------------------------------
 # All of it on CKT-LT-BACKUP: electrical_notes.md line 24 puts basement and kitchen
@@ -562,13 +563,13 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-STUDY2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS000TAAA", tag="ED-S-STUDY2-SPOT1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18, 6), ft(3)), type_ref="ED-T-LT-SCONCE-SPOT",
-                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", rotation=deg(90),
+                     position=pt(m(7.30459), m(0.225468)), type_ref="ED-T-LT-SCONCE-SPOT",
+                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", rotation=deg(180),
                      controlled_by=("ED-S-STUDY2-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
     ElectricalDevice(uid="QTS000VAAA", tag="ED-S-STUDY2-SPOT2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(35, 6), ft(3)), type_ref="ED-T-LT-SCONCE-SPOT",
-                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", rotation=deg(-90),
+                     position=pt(m(9.7904), m(0.228557)), type_ref="ED-T-LT-SCONCE-SPOT",
+                     circuit="CKT-LT-UPPER", room="RM-S-STUDY2", rotation=deg(180),
                      controlled_by=("ED-S-STUDY2-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
     ElectricalDevice(uid="QTS000WAAA", tag="ED-S-STUDY2-STAIR-SC1", kind=DeviceKind.LIGHT,

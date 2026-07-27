@@ -5,6 +5,7 @@
 # (it uses `frozenset(...)`, which the editable dialect forbids).
 
 from typehaus import Appliance, Fixture, Mount, MountKind, deg, ft, inch, pt
+from typehaus.model import m
 
 # RM-M-BATH1's clear face is 3'-2" x 4'-3-1/4" (x 0'-6-5/8"..3'-8-5/8", y 21'-10-3/8"..
 # 26'-1-5/8") — too small to pack the shared FX-TOILET + FX-LAV pair without running them
@@ -19,10 +20,10 @@ from typehaus import Appliance, Fixture, Mount, MountKind, deg, ft, inch, pt
 # band (y 23'-4"..25'-4") and each other by over 1'-9".
 MAIN_FIXTURES = (
     Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOILET-WH", room="RM-M-BATH1",
-            position=pt(ft(2, 10.85), ft(22, 7)), rotation=deg(90), wall_ref="W-M-BAE",
+            position=pt(m(0.687033), m(7.80786)), rotation=deg(0), wall_ref="W-M-BAE",
             drain_position=pt(ft(4), ft(22, 7))),
     Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-LAV-COMPACT", room="RM-M-BATH1",
-            position=pt(ft(2, 11.5), ft(25, 6.5)), wall_ref="W-M-BAE"),
+            position=pt(m(0.705538), m(6.85651)), wall_ref="W-M-BAE", rotation=deg(180)),
     # Backs east onto W-M-BA2E — the INT_2X6_PLUMBING wet wall it has always drained into,
     # now actually sitting against it instead of floating 4' away mid-room. rotation 90
     # turns its back (-y local) east onto the wall; the centre at x=6'-8 3/8" puts the
@@ -34,7 +35,7 @@ MAIN_FIXTURES = (
     # while the WC itself moves; re-pointing the sleeve+drain at the new flange is mep.py's
     # own pass.
     Fixture(uid="CMQ803AAAA", tag="FX-M-BATH2-WC", type_ref="FX-TOILET", room="RM-M-BATH2",
-            position=pt(ft(6, 8.375), ft(18, 6)), rotation=deg(90), wall_ref="W-M-BA2E",
+            position=pt(m(0.686504), m(6.14439)), rotation=deg(0), wall_ref="W-M-BA2E",
             drain_position=pt(ft(3), ft(18))),
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-WASHER", room="RM-M-LAUNDRY",
               position=pt(ft(10, 6), ft(20)), wall_ref="W-M-BA2E2"),
@@ -70,11 +71,11 @@ MAIN_FIXTURES = (
 # x 8'-2"..9'-11" y 30'-0"..32'-0" — are pairwise disjoint with 9"+ between any two.
 SECOND_FIXTURES = (
     Fixture(uid="CSQ801AAAA", tag="FX-S-ENSUITE-WC", type_ref="FX-TOILET", room="RM-S-ENSUITE",
-            position=pt(ft(1, 6), ft(30)), rotation=deg(-90), wall_ref="W-S-W1"),
+            position=pt(m(0.767898), m(9.18323)), rotation=deg(90), wall_ref="W-S-W1"),
     Fixture(uid="CSQ802AAAA", tag="FX-S-ENSUITE-LAV", type_ref="FX-LAV", room="RM-S-ENSUITE",
             position=pt(ft(9, 0.5), ft(31)), rotation=deg(90), wall_ref="W-S-BA-E1B"),
     Fixture(uid="CSQ803AAAA", tag="FX-S-ENSUITE-SH", type_ref="FX-SHOWER", room="RM-S-ENSUITE",
-            position=pt(ft(5), ft(33)), wall_ref="W-S-BD-N"),
+            position=pt(m(1.43279), m(10.1538)), wall_ref="W-S-BD-N"),
     # The suite's own bath (source: 46.01 sf). Both walls it drains into are
     # INT_2X6_PLUMBING — W-S-DC2 west, W-S-SBS south — which is what `advisory.wet_wall_depth`
     # measures against preferences.toml's 5.5" drain-stack requirement.
@@ -85,7 +86,7 @@ SECOND_FIXTURES = (
     # CATLIN_INT_2X6_BRG east — because `advisory.wet_wall_depth` holds a drain stack to
     # preferences.toml's 5.5", which a 2x4 partition cannot give it.
     Fixture(uid="CSQ804AAAA", tag="FX-S-SUITEBATH-WC", type_ref="FX-TOILET",
-            room="RM-S-SUITEBATH", position=pt(ft(11), ft(20, 9)), wall_ref="W-S-DC2"),
+            room="RM-S-SUITEBATH", position=pt(m(3.4741), m(6.34769)), wall_ref="W-S-DC2"),
     Fixture(uid="CSQ805AAAA", tag="FX-S-SUITEBATH-LAV", type_ref="FX-LAV",
             room="RM-S-SUITEBATH", position=pt(ft(14), ft(17, 1)), wall_ref="W-S-SBS"),
     Fixture(uid="CSQ806AAAA", tag="FX-S-SUITEBATH-SH", type_ref="FX-SHOWER",
