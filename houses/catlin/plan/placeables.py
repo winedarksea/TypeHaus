@@ -218,6 +218,21 @@ SECOND_PLACEABLES = [
               position=pt(m(9.68788), m(6.90099)), rotation=deg(-90)),
     Furniture(uid="CSB702AAAA", tag="FURN-S-BED3", type_ref="FURN-QUEEN-BED", room="RM-S-BED3",
               position=pt(m(9.70988), m(9.5886)), rotation=deg(-90)),
+    # Each regular bedroom gets the same compact study pair in the west-side strip. The
+    # desk's back is against the west wall (rotation 90), leaving its pull-out zone toward
+    # the room; the dining chair keeps the lighter dining-room plan and 3D appearance.
+    Furniture(uid="DSK701AAAA", tag="FURN-S-DESK1", type_ref="FURN-DESK-48", room="RM-S-BED1",
+              position=pt(m(7.24324), m(3.53828)), rotation=deg(90)),
+    Furniture(uid="CHR701AAAA", tag="FURN-S-DESK-CHAIR1", type_ref="FURN-DESK-CHAIR", room="RM-S-BED1",
+              position=pt(ft(25, 6), ft(11, 6)), rotation=deg(90)),
+    Furniture(uid="DSK702AAAA", tag="FURN-S-DESK2", type_ref="FURN-DESK-48", room="RM-S-BED2",
+              position=pt(ft(23, 9), ft(20, 6)), rotation=deg(90)),
+    Furniture(uid="CHR702AAAA", tag="FURN-S-DESK-CHAIR2", type_ref="FURN-DESK-CHAIR", room="RM-S-BED2",
+              position=pt(ft(25, 6), ft(20, 6)), rotation=deg(90)),
+    Furniture(uid="DSK703AAAA", tag="FURN-S-DESK3", type_ref="FURN-DESK-48", room="RM-S-BED3",
+              position=pt(ft(23, 9), ft(32, 6)), rotation=deg(90)),
+    Furniture(uid="CHR703AAAA", tag="FURN-S-DESK-CHAIR3", type_ref="FURN-DESK-CHAIR", room="RM-S-BED3",
+              position=pt(ft(25, 6), ft(32, 6)), rotation=deg(90)),
     # The master takes the king, head against the closet/bath wall that closes the suite's
     # west strip at x=9'-6 7/8" (rotation -90 turns its back to +x), so the bed faces west
     # into WIN-S-SUITE1/2 and the 2'-6" foot zone runs out to the window wall instead of into

@@ -73,10 +73,10 @@ _BED_HEIGHT = ft(3, 4)
 
 
 def _bed_clearances(width, depth):
-    """Side access both sides plus foot access — how a bed is actually used."""
-    return (side_zone(width, depth, ft(2), "bed side access", sign=1),
-            side_zone(width, depth, ft(2), "bed side access", sign=-1),
-            front_zone(width, depth, ft(2, 6), "bed foot access"))
+    """Compact side access both sides plus foot access — how a bed is actually used."""
+    return (side_zone(width, depth, ft(1, 6), "bed side access", sign=1),
+            side_zone(width, depth, ft(1, 6), "bed side access", sign=-1),
+            front_zone(width, depth, ft(1, 6), "bed foot access"))
 
 
 QUEEN_BED = FurnitureType(
@@ -155,11 +155,15 @@ WRITING_DESK = FurnitureType(
     tag="FURN-DESK-48", name="Writing desk", footprint=(ft(4), ft(2)), height=ft(2, 6),
     plan_symbol="desk", source=REFERENCE,
     clearances=(front_zone(ft(4), ft(2), ft(3), "desk chair pull-out",
-                           occupant_types=(OFFICE_CHAIR_TAG,)),),
+                           occupant_types=(OFFICE_CHAIR_TAG, "FURN-DESK-CHAIR")),),
 )
 OFFICE_CHAIR = FurnitureType(
     tag=OFFICE_CHAIR_TAG, name="Office chair", footprint=(ft(2, 2), ft(2, 2)),
     height=ft(3, 2), plan_symbol="office-chair", source=REFERENCE,
+)
+DESK_CHAIR = FurnitureType(
+    tag="FURN-DESK-CHAIR", name="Desk chair", footprint=(ft(1, 8), ft(1, 10)),
+    height=ft(3, 2), plan_symbol="dining-chair", source=REFERENCE,
 )
 BOOKCASE = FurnitureType(
     tag="FURN-BOOKCASE-32", name="Bookcase", footprint=(ft(2, 8), ft(1)), height=ft(6),
@@ -197,6 +201,6 @@ STARTER_FURNITURE_TYPES = (
     TV_65, TV_98,
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, CHEST, NIGHTSTAND,
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE, DINING_CHAIR,
-    WRITING_DESK, OFFICE_CHAIR, BOOKCASE,
+    WRITING_DESK, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
     SAUNA_BENCH_TIERED_102, SAUNA_BENCH_54,
 )

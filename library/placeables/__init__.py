@@ -18,7 +18,7 @@ from library.placeables.casework import (BAR_STOOL, BASE_15, BASE_24, BASE_30, B
                                          TALL_PANTRY_18, WALL_18, WALL_24, WALL_30, WALL_66)
 from library.placeables.fixtures import (KITCHEN_SINK, LAVATORY, SHOWER,
                                          STARTER_FIXTURE_TYPES, TOILET, TUB, VANITY)
-from library.placeables.furniture import (ARMCHAIR, BOOKCASE, CHEST, COFFEE_TABLE,
+from library.placeables.furniture import (ARMCHAIR, BOOKCASE, CHEST, COFFEE_TABLE, DESK_CHAIR,
                                           DINING_CHAIR, DRESSER, EIGHT_SEAT_DINING_TABLE,
                                           END_TABLE, FULL_BED, KING_BED, LOVESEAT,
                                           MEDIA_CONSOLE, NIGHTSTAND, OFFICE_CHAIR, QUEEN_BED,
@@ -35,7 +35,7 @@ __all__ = [
     "STANDARD_SOFA", "LOVESEAT", "SECTIONAL", "ARMCHAIR", "COFFEE_TABLE", "END_TABLE",
     "MEDIA_CONSOLE", "TV_65", "TV_98", "QUEEN_BED", "KING_BED", "FULL_BED", "TWIN_BED",
     "DRESSER", "CHEST", "NIGHTSTAND", "SIX_SEAT_DINING_TABLE", "EIGHT_SEAT_DINING_TABLE",
-    "ROUND_DINING_TABLE", "DINING_CHAIR", "WRITING_DESK", "OFFICE_CHAIR", "BOOKCASE",
+    "ROUND_DINING_TABLE", "DINING_CHAIR", "WRITING_DESK", "OFFICE_CHAIR", "DESK_CHAIR",
     "SAUNA_BENCH_TIERED_102", "SAUNA_BENCH_54",
     # casework
     "BASE_15", "BASE_24", "BASE_30", "BASE_36", "SINK_BASE_36",
