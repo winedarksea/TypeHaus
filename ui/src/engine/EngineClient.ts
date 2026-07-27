@@ -149,6 +149,19 @@ export interface DetailPayload {
   findings: { check_id: string; message: string }[];
 }
 
+/**
+ * The engine's bill of materials, verbatim.
+ *
+ * `takeoff/bom.py::bill_of_materials` returns a dict of sections: mostly `list[dict]` row
+ * sets, plus a few scalar/dict summaries (`service_load`, `lighting_load`). It is deliberately
+ * NOT remapped to a browser row type here — the browser's own second BOM implementation is
+ * what this replaces, and re-shaping the payload would just rebuild the drift. The section
+ * keys are the contract; `packages/engine/tests/test_bom_sweep.py` pins them, and
+ * `ui/src/model/engineBom.ts` infers columns from whatever the rows actually carry so a new
+ * engine section cannot silently vanish from the view.
+ */
+export type EngineBom = Record<string, unknown>;
+
 export interface ReferenceRemap {
   renamed: Record<string, string>;
   deleted: string[];
@@ -167,6 +180,8 @@ export interface EngineClient {
   // Transition details — read-only scene JSON, rendered client-side (→ 11b).
   getDetailIndex(): Promise<DetailIndexEntry[]>;
   getDetail(key: string): Promise<DetailPayload>;
+  // The bill of materials — computed by the engine, never in the browser (see EngineBom).
+  getBom(): Promise<EngineBom>;
   // Append one construction note to the detail's Transition.notes markdown file.
   // Resolves to the updated file content; rejects OfflineUnsupported without a server.
   appendDetailNote(key: string, text: string): Promise<string>;

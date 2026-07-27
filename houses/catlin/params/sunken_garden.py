@@ -21,10 +21,11 @@ Vertical stack (project-north frame; +X east, +Y north, +Z up):
   o.c. N-S; rear row 2" taller for drainage slope) carrying three N-S double-2x10 beams,
   2x8 joists @ 16" o.c., and aluminum (Wahoo AridDeck-style) decking.
 
-Everything here is generated — these elements carry no editable-source location. The
-joist framing itself is authored as FloorSystems once the engine can bear joists on beams
-and scope a floor to a sub-structure (Phase 2); until then the walking surfaces are Slabs
-with a decking assembly and the joist intent lives in the deck-assembly source note.
+Everything here is generated — these elements carry no editable-source location. The porch
+floor is a FloorSystem outright (FS-SG-PORCH: joists, and the composite plank as its deck
+sheet) — it used to be a Slab standing in for the framing beside it, which meant two
+elements claiming one floor. The balcony's aluminum boards are still a walking-surface Slab
+over FS-SG-DECK.
 """
 
 from __future__ import annotations
@@ -36,6 +37,7 @@ from typehaus import (
     Beam,
     Connector,
     ConnectorKind,
+    DeckLayer,
     Dowel,
     Fascia,
     Flashing,
@@ -89,13 +91,24 @@ class SunkenGardenSpec:
     column_diameter_in: float = 12.0  # sonotube back-beam support
     # Sonotube centre set south of the deck's north-edge line. Centred *on* that line the
     # 12" tube pokes 6" north — through the 5" insulation gap and into the house cladding —
-    # and its 30" bell footing reaches 15" toward the house footing. 15" tucks the bell's
-    # north face exactly onto the north-edge line, where the doweled thermal-break joint is.
-    column_south_offset_in: float = 15.0
+    # and its 30" bell footing reaches 15" toward the house footing.
+    #
+    # The offset cannot shrink: the *house* footing FT-B-S2 is what the bell runs into, and
+    # its south face already lands on the north-edge line (the 20"-wide strip footing under
+    # the y=0 basement wall reaches y = -10" = -0'-10", which is exactly this structure's
+    # north edge). The bell's north face therefore has to stop 2" short of that line to
+    # leave room for the 40 psi XPS thermal-break block the dowels cross — 15" put the two
+    # footings in hard contact with the foam nowhere to go. 15 + 2 = 17".
+    column_south_offset_in: float = 17.0
     porch_joist: str = "2x8"
     porch_joist_oc_in: float = 16.0
     back_beam: str = "2-2x12"  # PT, two ~9'6" spans column -> side-wall hangers
     porch_deck_thickness_in: float = 1.0  # composite plank
+    # The porch's two joist ends are not alike, so it cannot share the balcony's symmetric
+    # cantilever: the south end bears on the arched front wall's sill (flush — nothing may
+    # oversail 16" of concrete) and the north end runs the column's south-offset out to the
+    # deck edge. This is the *south* value; the north one is that offset (see PORCH_JOISTS).
+    porch_joist_cantilever_in: float = 0.0
     # balcony framing
     pillar_size: str = "6x6"
     rear_pillar_rise_in: float = 2.0  # rear row taller for drainage slope
@@ -130,6 +143,13 @@ _y_out_n = -(SPEC.house_ext_layers_in + SPEC.gap_to_house_in) / 12.0  # -0.833'
 _y_ax_n = _y_out_n  # side-wall north-end nodes (open ends terminate here → face at the gap)
 _y_in_n = _y_out_n  # porch deck north edge (back beams + column sit a SPEC offset south)
 _y_in_arch = _y_in_n - SPEC.porch_clear_depth_ft  # north (inner) face of the 16" front wall
+# The 16" front wall is a 12.5" arch/pier section plus a 3.5" joist-bearing ledge on its
+# north face. A PT 2x4 sill lies flat on that ledge (top at the joist soffit, -7.25"), a PT
+# 2x8 rim stands on the plate's south 1.5" (south face -9.125', north face -9.0'), and the
+# joists butt that rim bearing 2" on the plate. So the porch *floor system* runs to the
+# ledge's south edge and nothing overhangs the wall's north 3.5" — see PORCH_JOISTS.
+_ledge_ft = 3.5 / 12.0
+_y_porch_s = _y_in_arch - _ledge_ft  # -9.125' — floor-system south edge
 _y_ax_arch = _y_in_arch - _arch_half  # front-wall axis (arch nodes + arch railing + front pillars)
 _y_in_s = _y_in_n - SPEC.clear_length_ft
 _y_ax_s = _y_in_s - _half
@@ -321,15 +341,13 @@ BACK_BEAMS = [
          size=SPEC.back_beam, bearing_refs=("PT-SG-COL", "W-SG-E1")),
 ]
 
-# Composite decking walking surface (framing = PT 2x8 joists, N-S, front sill -> back beams).
-PORCH_FLOOR = Slab(
-    uid="SGS502AAAA", tag="SL-SG-PORCH",
-    outline=(pt(ft(_x_in_w), ft(_y_in_arch)), pt(ft(_x_in_e), ft(_y_in_arch)),
-             pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n))),
-    thickness=inch(SPEC.porch_deck_thickness_in),
-    assembly="PORCH_DECK_COMPOSITE",
-    datum="walking_surface",  # boards laid over FS-SG-PORCH, not the structure itself
-)
+# The porch floor's footprint. It used to be authored on a ``SL-SG-PORCH`` Slab that stood
+# in for the framing (a "walking_surface" slab of composite plank) while FS-SG-PORCH drew
+# the joists under it — two elements claiming one floor, and the slab was the one every
+# consumer reached for. The floor system is the floor now; the outline lives here so the
+# joists, the pillar bearings and anything else that wants the porch's extent share one.
+_PORCH_OUTLINE = (pt(ft(_x_in_w), ft(_y_porch_s)), pt(ft(_x_in_e), ft(_y_porch_s)),
+                  pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n)))
 
 # ============================================================================
 # Second (balcony, ~10'): 6x6 pillars, three 2x10 beams, aluminum deck.
@@ -340,7 +358,7 @@ PORCH_FLOOR = Slab(
 # exposed 6x6 starts at the top of the railing wall, not 42" lower at the porch deck. Their
 # authored height is therefore measured from the railing top. The rear-center pillar is the
 # one exception — the north edge is open (no railing wall), so it still stands off the
-# composite decking (SL-SG-PORCH's top), and is that much taller.
+# composite decking over FS-SG-PORCH, and is that much taller.
 # The rear (north, house-side) row is 2" taller so the deck crowns at the rear and drains
 # south, away from the house.  Beam soffit = balcony level less the 2x10 beam depth (9.25").
 _balcony_beam_depth_ft = 9.25 / 12.0
@@ -360,7 +378,10 @@ _girt_depth_ft = 9.25 / 12.0  # 2x10 — same depth as the double-2x10 beams, so
 # at the same soffit the N-S braces do.
 _girt_soffit = _balcony_beam_soffit  # 8.625'
 _girt_top = _balcony_beam_soffit + ft(_girt_depth_ft)  # 9.396' — flush with the beam tops
-_porch_walking_surface = inch(SPEC.porch_deck_thickness_in)  # top of SL-SG-PORCH
+# Top of the composite boards laid over FS-SG-PORCH: the joist tops are the 0' storey
+# datum, and the plank sits on them. (The boards were the deleted SL-SG-PORCH slab; the
+# surface they make is still real and still what a person stands on.)
+_porch_walking_surface = inch(SPEC.porch_deck_thickness_in)
 _PILLAR_X = (_x_ax_w, _cx, _x_ax_e)
 # (row, x index) -> the railing wall whose grouted cores hold that pillar's base.
 _RAILING_UNDER_PILLAR = {
@@ -375,11 +396,11 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
         _railing = _RAILING_UNDER_PILLAR.get((_row, _i))
         _base = _railing_top if _railing is not None else _porch_walking_surface
         _tag = f"PT-SG-B{_row}{_i}"
-        PILLAR_BEARINGS[_tag] = (_railing or "SL-SG-PORCH", _base)
+        PILLAR_BEARINGS[_tag] = (_railing or "FS-SG-PORCH", _base)
         PILLARS.append(Post(uid=f"SGPB{_i}{_row_index}AAAA", tag=_tag,
                             position=pt(ft(_x), ft(_y)), size=SPEC.pillar_size,
                             height=_beam_soffit - _base + _rise,
-                            supported_by=_railing or "SL-SG-PORCH",
+                            supported_by=_railing or "FS-SG-PORCH",
                             assembly="POST_WHITE_PAINT"))
 
 SECOND_NODES = [
@@ -464,9 +485,22 @@ DECK_FLOOR = Slab(
 PORCH_JOISTS = FloorSystem(
     uid="SGFS01AAAA", tag="FS-SG-PORCH",
     joists=JoistSpec(member=SPEC.porch_joist, spacing=inch(SPEC.porch_joist_oc_in),
-                     direction="y", cantilever=inch(SPEC.joist_cantilever_in),
+                     direction="y",
+                     # South (start) end: flush at the front wall — the sill/rim detail on
+                     # the 3.5" ledge is the bearing, and a cantilever here would push
+                     # joist tips out over 16" of concrete. North (end): the joists run the
+                     # column's south-offset past the back-beam line to the deck edge, which
+                     # is the porch's real overhang. One symmetric value cannot say both.
+                     cantilever=inch(SPEC.porch_joist_cantilever_in),
+                     cantilever_end=inch(SPEC.column_south_offset_in),
                      bearing_refs=("W-SG-ARCH", "BM-SG-BKW", "BM-SG-BKE")),
-    outline=PORCH_FLOOR.outline,
+    outline=_PORCH_OUTLINE,
+    # The composite plank *is* this deck's sheet: with SL-SG-PORCH gone the boards are the
+    # floor system's own surface layer, which is both what a person stands on (the balcony
+    # pillar that misses the masonry railing bears here) and what the sheet-goods take-off
+    # bills. This is the deleted slab's one-inch PORCH_DECK_COMPOSITE layer, in place.
+    subfloor=DeckLayer(material_ref="composite-deck",
+                       thickness=inch(SPEC.porch_deck_thickness_in)),
     # ``service="deck"`` is what puts this under IRC R507 / AWC DCA6 instead of the interior
     # 40-psf floor table — see checks/structural/deck.py.
     service="deck",
@@ -495,8 +529,10 @@ BALCONY_JOISTS = FloorSystem(
 _dowel_z = ft(-(SPEC.basement_depth_ft + 0.75) + SPEC.footing_thickness_in / 24.0)  # -9.25'
 # The side-wall dowels sit on the north-edge line; the column's follow the column to its
 # bell footing's *north face* — the plane that actually abuts the house footing now that
-# the column stands a south-offset inside the porch. (At the default 15" offset that face
-# lands back on the north-edge line, so the joint the bars cross is the same plane.)
+# the column stands a south-offset inside the porch. FT-B-S2's south face sits *on* the
+# north-edge line, so at the 17" offset the bell's north face lands 2" south of it and the
+# bars cross exactly the 2" XPS block — which is the joint this detail is about. (At the
+# old 15" the two footings met with nowhere to put the foam.)
 _col_joint_y = _y_col + _col_footing_width_in / 24.0
 _DOWEL_AT = (("W1", _x_ax_w, _y_in_n), ("E1", _x_ax_e, _y_in_n), ("COL", _cx, _col_joint_y))
 DOWELS = [
@@ -642,7 +678,7 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *RAILING_WALLS, COLUMN, *FOOTINGS,
                      *FOOTING_BEDDING, *ARCH_OPENINGS, GARDEN_SLAB, *DOWELS]
 # Every remaining connector is porch hardware at the deck (post bases, hangers, the column
 # tie), so main takes them whole; the knee braces are the only second-storey hardware.
-MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, PORCH_FLOOR, PORCH_JOISTS, *CONNECTORS]
+MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, PORCH_JOISTS, *CONNECTORS]
 SECOND_ELEMENTS = [*SECOND_NODES, *GIRT_NODES, *BALCONY_BEAMS, *BALCONY_GIRTS, *PILLARS, DECK_FLOOR,
                    BALCONY_JOISTS, *KNEE_BRACES, BALCONY_GUARD, BALCONY_FASCIA,
                    BALCONY_GUTTER, BALCONY_DRIP, BALCONY_REAR_FLASH]

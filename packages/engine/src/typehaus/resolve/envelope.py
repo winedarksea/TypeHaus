@@ -352,6 +352,17 @@ def resolve_columns_and_beams(model: ResolvedModel) -> list[Finding]:
     # masonry porch railing, whose CMU cores are grouted to receive their bases. Walls are
     # not solids, so merge their tops in first and let a same-tag solid win.
     solid_top = {w.tag: w.z1_m for w in model.walls}
+    # A joisted deck is a bearing top too. The storey datum is top-of-joist, so its walking
+    # surface is that datum plus whatever sheet is laid on it — which is where a post
+    # standing on the deck starts. (The porch's rear-centre balcony pillar is the case: its
+    # north edge has no masonry railing to be grouted into, so it stands on the decking.)
+    solid_top.update({
+        e.tag: (s.elevation.meters
+                + (e.subfloor.thickness.meters if e.subfloor is not None else 0.0))
+        for s in model.plan.storeys
+        for e in model.plan.storey_elements(s.tag)
+        if isinstance(e, FloorSystem)
+    })
     solid_top.update({s.tag: s.z1_m for s in model.solids})
     ridge_uids = {m.parent_uid for roof in model.roofs for m in roof.members
                   if m.category == "ridge_beam"}

@@ -12,6 +12,7 @@ import PyodideWorker from "./pyodide/worker?worker";
 import {
   type BuildResult,
   type DetailIndexEntry,
+  type EngineBom,
   type DetailPayload,
   EngineError,
   type EngineArtifact,
@@ -119,6 +120,11 @@ export class PyodideEngineClient implements EngineClient {
   async getDetailIndex(): Promise<DetailIndexEntry[]> {
     await this.initialized;
     return this.call<DetailIndexEntry[]>("detailIndex");
+  }
+
+  async getBom(): Promise<EngineBom> {
+    await this.initialized;
+    return this.call<EngineBom>("bom");
   }
 
   async getDetail(key: string): Promise<DetailPayload> {

@@ -63,7 +63,13 @@ DEVICE_TYPES = (
                           footprint=(inch(4), inch(4)), height=inch(4),
                           ports=(ServicePort(tag="power", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
-    ElectricalDeviceType(tag="ED-T-EV-1450", name="EV receptacle, NEMA 14-50R",
+    # The 14-50 is the managed EVSE outlet: an Emporia Vue with dynamic load management
+    # (whole-panel CT sensing) throttles the charger so the EV group never pushes the
+    # service over its ceiling. The EMS arrangement itself is LM-EV in plan/circuits.py
+    # (NEC 625.42); load_va here stays the unmanaged continuous rating so the panel
+    # schedule still shows the connected load the conductors are sized for.
+    ElectricalDeviceType(tag="ED-T-EV-1450",
+                          name="EV receptacle, NEMA 14-50R (Emporia Vue managed EVSE)",
                           nema="14-50R", load_va=9600,
                           footprint=(inch(4), inch(4)), height=inch(4),
                           ports=(ServicePort(tag="power", service=Service.POWER_240,

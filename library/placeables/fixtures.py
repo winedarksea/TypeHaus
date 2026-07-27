@@ -38,6 +38,15 @@ TUB = FixtureType(
     plan_symbol="tub", source=REFERENCE,
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
 )
+# A tub-shower is one fixture, not a tub with a shower placed on top of it: the same 60x30
+# alcove, but the type's height is the surround (7', matching SHOWER) rather than the tub
+# rim, because that is what has to clear a sloped ceiling and what the ``tub-shower`` symbol
+# carries its head and valve on.
+TUB_SHOWER = FixtureType(
+    tag="FX-TUBSHOWER-60", name="Alcove tub-shower", footprint=(ft(5), ft(2, 6)), height=ft(7),
+    plan_symbol="tub-shower", source=REFERENCE,
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
+)
 SHOWER = FixtureType(
     tag="FX-SHOWER-36", name="Shower", footprint=(ft(3), ft(3)), height=ft(7),
     plan_symbol="shower", source=REFERENCE,
@@ -54,4 +63,4 @@ KITCHEN_SINK = FixtureType(
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
 )
 
-STARTER_FIXTURE_TYPES = (TOILET, LAVATORY, VANITY, TUB, SHOWER, KITCHEN_SINK)
+STARTER_FIXTURE_TYPES = (TOILET, LAVATORY, VANITY, TUB, TUB_SHOWER, SHOWER, KITCHEN_SINK)

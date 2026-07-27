@@ -139,6 +139,9 @@ export interface MaterialAppearance {
   readonly tag: string;
   readonly color?: string | null;
   readonly finish?: string | null;
+  // A sealer/stain rather than a covering: it colours what it is applied over and adds no
+  // thickness, so nothing draws a plane for it (see `buildRoomFloor`).
+  readonly coating?: boolean | null;
 }
 
 /** The catalog entry for a material tag, when the model shipped one. */

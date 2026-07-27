@@ -58,12 +58,13 @@ DETAIL_SLICES = [
     # transversely (direction="x", so the plane is x-z) on the breezeway's *south frame
     # line*, which is the only station that crosses the entire stack at once: pad, pier,
     # 6x6 post, both floor beams, a joist, the decking, both standing polycarbonate sheets,
-    # both roof beams, a rafter, and the roof sheets with their crown. The crop runs from
-    # below the frost-depth pads (-4') to above the crown (+10'), and 6" past the roof
-    # envelope on each side so the eave channels and their drip are inside the frame.
+    # both roof beams, a rafter, and the roof sheet with its crown. The crop runs from below
+    # the frost-depth pads (-4') to above the crown (+8'-6"), and 1'-0" past the 4'-0"
+    # glazing envelope (x = 2'-6" to 6'-6") on each side, which also takes in the 2'-square
+    # pads under the posts.
     Slice(uid="BWD901AAAA", tag="SL-D-BREEZEWAY", kind=SliceKind.DETAIL,
          title="Breezeway cross section",
          cut_origin=pt(ft(0), ft(DETAIL_CUT_Y_FT)), cut_direction="x",
-         crop=(pt(ft(0), ft(-4)), pt(ft(9), ft(10))),
+         crop=(pt(ft(1, 6), ft(-4)), pt(ft(7, 6), ft(8, 6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
 ]

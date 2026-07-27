@@ -70,15 +70,21 @@ def _cut_solids(model, category: str, direction: str, station: float, crop):
 def drainage_wedges(panels, rafter_top_in: float) -> list[IRNode]:
     """The tapered sleepers that crown the roof from each eave to the ridge bar.
 
-    One wedge per glazing panel: zero at the panel's eave edge, ``wedge_rise_in`` at the
-    crown it shares with its neighbour. Which end is which is read off the panels themselves
-    — the crown is the edge the two panels have in common — so the wedge follows a geometry
-    edit instead of freezing a hand-picked apex.
+    Zero at each eave, ``wedge_rise_in`` at the crown. Where the roof is two panels the crown
+    is the edge they share; where it is a single bent sheet — which is what the 4'-0" roof is
+    now, half of an 8'x4' — the crown is that sheet's own midpoint and it gets one wedge per
+    half. Either way the apex is read off the panels rather than hand-picked, so the wedge
+    follows a geometry edit.
     """
-    if len(panels) < 2:
+    if not panels:
         return []
     spans = sorted((u0, u1) for _solid, u0, u1, _z0, _z1 in panels)
-    crown = (spans[0][1] + spans[1][0]) / 2.0
+    if len(spans) == 1:
+        u0, u1 = spans[0]
+        crown = (u0 + u1) / 2.0
+        spans = [(u0, crown), (crown, u1)]
+    else:
+        crown = (spans[0][1] + spans[1][0]) / 2.0
     nodes: list[IRNode] = []
     for index, (u0, u1) in enumerate(spans):
         eave = u0 if abs(u0 - crown) > abs(u1 - crown) else u1

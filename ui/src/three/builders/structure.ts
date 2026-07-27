@@ -10,7 +10,8 @@ import type {
 } from "../../model/types";
 import { layerVisibilityGroupOf, type LayerVisibilityGroup } from "../../model/visibility";
 import {
-  floorSurface, materialColor, type MaterialAppearance, type ResolvedNordicPalette,
+  authoredAppearance, floorSurface, materialColor, type MaterialAppearance,
+  type ResolvedNordicPalette,
 } from "../../nordic/palette";
 import {
   applyDeckBoardUv, createDeckBoardMaterial, createStandingSeamMaterial,
@@ -178,6 +179,10 @@ export function buildRoomFloor(parent: THREE.Group, room: Room, floorTopM: numbe
   palette: ResolvedNordicPalette, materials: readonly MaterialAppearance[] | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
   if (!room.floor_finish || room.clear_face.length < 3) return;
+  // A coating (sealed concrete) is a sealer on the deck, not a covering over it: it has no
+  // thickness of its own, so drawing a plane for it would put a second floor a hair above
+  // the slab that already carries the colour. It still bills — takeoff/finishes.py.
+  if (authoredAppearance(room.floor_finish, materials)?.coating) return;
   const geometry = createPlanPrismGeometry(
     room.clear_face, floorTopM, floorTopM + ROOM_FINISH_THICKNESS_M, openings, center);
   if (!geometry) return;

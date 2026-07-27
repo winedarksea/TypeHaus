@@ -16,6 +16,14 @@ export interface WallDraft {
   startNode: string | null;
 }
 
+// A two-tap measurement. `start` is already snapped; `end` is null while the second tap is
+// still pending (the canvas rubber-bands to the cursor), and set once the segment is fixed.
+// A tap on a fixed segment starts the next measurement — nothing is ever written to the model.
+export interface MeasureDraft {
+  start: Vec2;
+  end: Vec2 | null;
+}
+
 // A node being dragged (stretch). `tag` is the authored node tag the macro moves.
 export interface NodeDrag {
   tag: string;

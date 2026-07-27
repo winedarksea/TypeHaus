@@ -1,4 +1,4 @@
-"""Breezeway — the enclosed 4'x8' polycarbonate shelter between house and garage.
+"""Breezeway — the enclosed 8' x 4' x 4' polycarbonate shelter between house and garage.
 
 One freestanding structure spanning the 4'-0 1/2" slot between the house's north entry
 (``D-M-ENTRY``, centred on x = 4'-0") and the garage's service door (``D-G-SERVICE``,
@@ -6,40 +6,49 @@ centred on x = 5'-0"). It touches neither building: four 6x6 ground-contact post
 isolated piers and frost-depth pads carry the whole thing, and the glazing is *snug* to the
 house and garage cladding without lapping into either one's flashing.
 
-**Sheet economy used to be the design, and is not any more (2026-07-25).** It was: three
-4'x8' sheets of 16mm multiwall polycarbonate — two standing whole and uncut as the east and
-west walls, the third halved at the crown to make the roof — with every other dimension
-derived from that. It bought an uncut bill of materials, and it cost two holes:
+**"8 x 4 x 4" is the brief, and this module means it literally (2026-07-27).** The glazed
+enclosure is 8'-0" tall x 4'-0" N-S x 4'-0" E-W. The three dimensions are measured on the
+*enclosure*: the foundations below the floor-beam soffit are excluded (they are ground work,
+not room), and so is the ~1" wedge bulge that crowns the roof for drainage.
 
-* **8 1/4" of framing stood bare below each standing sheet.** The sheet started at the deck
-  surface (+1") while the structure it enclosed goes down to the floor-beam soffit (-7 1/4"),
-  so the beam band and the deck edge showed under the glazing all the way round.
-* **14 1/2" of each E/W elevation was simply open.** The wall sheet's head stopped at the
-  post top (+8'-1") and the roof sheet's underside is at +9'-3 1/2"; nothing spanned between
-  them. In plan the roof's eave U-channel sat at x = 0'-6"/8'-6" and the wall's F-head at
-  x = 0'-9 1/4"/8'-2 3/4" — 3 1/4" apart, and 13.4" apart vertically. Two unrelated
-  extrusions where one shared channel belongs.
+That reading falls straight out of the sheet:
 
-So each standing sheet now runs the whole way: from the floor-beam soffit to the roof
-sheet's underside, **9'-10 3/4"**, cut from 10' stock rather than standing 8' stock uncut.
+* A standing sheet is a 4'x8' sheet stood on end and **uncut**: 4'-0" wide N-S, exactly
+  8'-0" tall, from the floor-beam soffit (-7 1/4") to the roof sheet's underside
+  (+7'-4 3/4"). Nothing of the framing shows below it and nothing of the elevation is open
+  above it.
+* The E-W extent is 4'-0" glazing line to glazing line, centred on x = 4'-6" — midway
+  between the house entry (x = 4'-0") and the garage service door (x = 5'-0") — so the
+  glazing runs x = 2'-6" to 6'-6". It used to be 7'-5 1/2", which was a corridor rather than
+  a vestibule and cost a third more of everything.
+* The roof is **one** 4'-0" x 4'-0" sheet: half of an 8'x4', cut once.
+
+The bill is therefore three sheets again, and only one cut in the lot: two 8'x4' sheets
+standing whole, one 8'x4' halved for the roof. (The "10' stock" era — when the standing
+sheet ran 9'-10 3/4" — is retired; it existed only because the enclosure was 8'-0" clear
+*above the decking* rather than 8'-0" of sheet.)
+
 The two sheets meet, so one ``profile="H"`` channel per side receives both — the wall sheet
-in its lower slot, the roof sheet in its upper — replacing the eave U and the wall F-head.
+in its lower slot, the roof sheet in its upper — replacing the eave U and the wall F-head
+that used to stand 3 1/4" apart in plan with 14 1/2" of open elevation between them.
 
-**What that costs, stated rather than left implicit:** the roof used to oversail the glazing
-line by 3 1/4" on each side as a drip edge; it does not any more, because the roof sheet has
-to die *in* the shared channel. The sill U-channel's weep holes are now the assembly's only
-drainage path. And the standing sheets are cut, so the "three sheets, no cuts" claim is
-gone — the bill is two 10' sheets plus one 8' sheet halved for the roof.
+**What that costs, stated rather than left implicit:**
 
-The roof envelope is therefore 7'-5 1/2" E-W (glazing line to glazing line) x 4'-0" N-S,
-split at the crown on x = 4'-6", centred between the two doors. The 8'-0" clear under the
-roof beams is still measured from the *walking surface* — the top of the decking, not the
-joist datum under it — because that is what a person stands on; the sunken garden's guard
-height is derived the same way, and for the same reason.
+* The roof does not oversail the glazing line as a drip edge; it dies *in* the shared
+  channel, so the sill U-channel's weep holes are the assembly's only drainage path.
+* **Headroom is now honest rather than generous.** Clear under the rafters is ~7'-3 1/4",
+  but the roof beams run N-S at x = 2'-8 3/4" / 6'-3 1/4" and their soffit is at +6'-3 1/2" —
+  *below* a 6'-8" door head. Those two beams sit on the glazing lines at the very edges of
+  the walk-line, which runs door to door (N-S) up the middle of the 4'-0" width, so a person
+  passes between them and not under them. Anyone reaching for the west or east glazing ducks.
+  This is a deliberate consequence of measuring the 8' on the sheet.
+* The garage-eave clearance note is now trivial rather than tight: the garage's south fascia
+  underside is at +9'-11.4" and this roof tops out around +7'-5 1/2", so ~2'-6" of air
+  instead of the old 7 1/4".
 
 Framing directions (the brief's "opposite rotation"):
 
-    FLOOR PLAN (main, z = 0'-0")           ROOF PLAN (z = +8'-8 1/4")
+    FLOOR PLAN (main, z = 0'-0")           ROOF PLAN (z = +6'-10 3/4")
      garage stem                            garage cladding
      |===================|  N-S floor       |===================|  N-S roof beams
      |-------------------|  beams on        |-------------------|  on the post tops
@@ -110,13 +119,6 @@ _GARAGE_CLADDING_Y = GARAGE_Y_SOUTH.feet - (0.375 + 0.5) / 12.0  # 40.9271'
 _CLEAR_GAP_FT = _GARAGE_STEM_Y - _HOUSE_CLADDING_Y  # 4.0400' = 4'-0 1/2"
 _PANEL_FT = 4.0  # one 4'x8' sheet, uncut
 
-# E-W: the roof/panel envelope is centred between the two doors (house entry x=4',
-# garage service door x=5'), 8'-0" wide.
-# The roof sheet now dies in the shared H channel on the wall glazing line rather than
-# oversailing it: these are set from _GLAZING_X0/_GLAZING_X1 below, once those exist.
-# (Assigned after the post geometry so there is one derivation, not two literals.)
-_POST_X0, _POST_X1 = 1.0, 8.0  # 7'-0" apart; roof oversails 6" past each post centre
-
 # N-S: post outer faces snug to the house cladding and the garage stem.
 _POST_HALF_FT = 5.5 / 24.0  # half a dressed 6x6
 _POST_Y0 = _HOUSE_CLADDING_Y + _POST_HALF_FT  # 36.6475'
@@ -126,8 +128,18 @@ _POST_Y1 = _GARAGE_STEM_Y - _POST_HALF_FT  # 40.2292'
 # reveal at the garage stem rather than at the house, where the door is.
 _GLAZING_Y0 = _HOUSE_CLADDING_Y
 _GLAZING_Y1 = _HOUSE_CLADDING_Y + _PANEL_FT
-_GLAZING_X0 = _POST_X0 - _POST_HALF_FT  # west post outer face
-_GLAZING_X1 = _POST_X1 + _POST_HALF_FT  # east post outer face
+
+# E-W: exactly 4'-0", centred on x = 4'-6" — midway between the house entry (x = 4'-0")
+# and the garage service door (x = 5'-0"). This is the enclosure's *third* 4'-0" dimension,
+# and it is what makes the roof one half-sheet rather than a full one.
+_GLAZING_CENTER_X = 4.5
+_GLAZING_X0 = _GLAZING_CENTER_X - _PANEL_FT / 2.0  # 2.5'
+_GLAZING_X1 = _GLAZING_CENTER_X + _PANEL_FT / 2.0  # 6.5'
+# The posts stand *inside* the glazing lines with the sheets on their outer faces, so the
+# 4'-0" is the glazed dimension and not a post-centre dimension. (It used to run the other
+# way — glazing derived from an 8'-0" post spread — which is why the enclosure was 7'-5 1/2".)
+_POST_X0 = _GLAZING_X0 + _POST_HALF_FT  # 2.7292' — west post centre
+_POST_X1 = _GLAZING_X1 - _POST_HALF_FT  # 6.2708' — east post centre
 # The roof glazing runs to the same E/W lines as the standing sheets, so the two meet in one
 # channel. It used to oversail them by 3 1/4" as a drip edge; retiring that is the cost of
 # the shared channel (see the module docstring), and the sill U-channel's weep holes are now
@@ -161,25 +173,28 @@ _FLOOR_BEAM_TOP = 0.0  # the main datum: joist tops and beam top are one plane
 _PIER_TOP = _FLOOR_BEAM_TOP - _JOIST_DEPTH_FT  # -7 1/4", the floor-beam soffit
 _DECK_SURFACE = _DECK_THICKNESS_IN / 12.0  # +1", the walking surface
 
-# 8'-0" of clear headroom above the walking surface puts the roof-beam soffit — and so the
-# post tops the beams seat on — at +8'-1".
-_CLEAR_HEIGHT_FT = 8.0
-_POST_TOP = _DECK_SURFACE + _CLEAR_HEIGHT_FT  # 8.0833' = +8'-1"
-_ROOF_BEAM_TOP = _POST_TOP + _JOIST_DEPTH_FT  # 8.6875' = +8'-8 1/4"
-_RAFTER_TOP = _ROOF_BEAM_TOP + _RAFTER_DEPTH_FT  # 9.1458' = +9'-1 3/4"
-
-# Drainage wedges on every rafter: 0 at each eave rising to the crown at x = 4'-6", ~1:12.
-# The glazing rides on them, so its plane is authored at the *mean* wedge height — a
-# GlazingPanel is a flat sheet and the crown is only 3 1/2" over a 4'-0" half-span.
-_WEDGE_RISE_IN = 3.5
+# The whole stack is derived *top-down from the standing sheet*, which is the one dimension
+# the brief fixes: an uncut 4'x8' sheet stood on end, foot on the floor-beam soffit.
+_WALL_SHEET_FT = 8.0  # _PIER_TOP (-7 1/4") to the roof sheet's underside — uncut
 _GLAZING_THICKNESS_IN = 0.63
-_ROOF_GLAZING_TOP = (_RAFTER_TOP + (_WEDGE_RISE_IN / 2.0 + _GLAZING_THICKNESS_IN) / 12.0)
-# The roof sheet's own underside — +9'-3 1/2". The standing sheets stop here, which is what
+# The roof sheet's own underside — +7'-4 3/4". The standing sheets stop here, which is what
 # lets one channel capture both.
-_ROOF_GLAZING_UNDER = _ROOF_GLAZING_TOP - _GLAZING_THICKNESS_IN / 12.0
-# Verified against the resolved model, not estimated: the garage's south eave hangs its PVC
-# fascia underside at +9'-11.4" and its gutter at +9'-11.9", both over this footprint. The
-# breezeway crown tops out at +9'-4.1", so the roof tucks under with ~7 1/4" to spare.
+_ROOF_GLAZING_UNDER = _PIER_TOP + _WALL_SHEET_FT  # 7.3958' = +7'-4 3/4"
+
+# Drainage wedges on every rafter: 0 at each eave rising to the crown at x = 4'-6". One
+# 1" rise over a 2'-0" half-span (~1:24) — shallow, but the roof is now a single bent sheet
+# rather than two flat ones meeting at a crown bar, and 1" over 2'-0" is well inside 16mm
+# multiwall's cold-bend radius. The glazing plane is authored at the *mean* wedge height,
+# a GlazingPanel being a flat sheet.
+_WEDGE_RISE_IN = 1.0
+_ROOF_GLAZING_TOP = _ROOF_GLAZING_UNDER + _GLAZING_THICKNESS_IN / 12.0
+_RAFTER_TOP = _ROOF_GLAZING_UNDER - (_WEDGE_RISE_IN / 2.0) / 12.0  # 7.3542'
+_ROOF_BEAM_TOP = _RAFTER_TOP - _RAFTER_DEPTH_FT  # 6.8958' = +6'-10 3/4"
+_POST_TOP = _ROOF_BEAM_TOP - _JOIST_DEPTH_FT  # 6.2917' = +6'-3 1/2", the roof-beam soffit
+# Clear under the rafters is ~7'-3 1/4"; under the two N-S roof beams it is +6'-3 1/2", below
+# a 6'-8" door head. They run at x = 2'-8 3/4"/6'-3 1/4", at the walk-line edges — see the
+# module docstring. The garage's south fascia underside is at +9'-11.4", so the old 7 1/4"
+# eave clearance is now ~2'-6" and no longer a constraint worth checking.
 
 # ============================================================================
 # Foundations: pad -> concrete pier -> 6x6 post.
@@ -226,7 +241,8 @@ _ROOF_NODES = [
     ("BWN13AAAAA", "N-BW-RNW", _POST_X0, _POST_Y1),
     ("BWN14AAAAA", "N-BW-RNE", _POST_X1, _POST_Y1),
 ]
-# Rafter ends run out to the roof envelope, 6" past each post line.
+# Rafter ends run out to the roof envelope, which is now the post *outer face* — 2 3/4" past
+# each post centre — so the rafter, the sheet and the H channel all die on one plane.
 _RAFTER_Y = [_POST_Y0, (_POST_Y0 + _POST_Y1) / 2.0, _POST_Y1]
 _RAFTER_NODES = [
     (f"BWN2{i}{side}AAAA", f"N-BW-R{i}{side}", x, y)
@@ -301,21 +317,17 @@ RAFTERS = [
 ]
 
 # ============================================================================
-# Glazing: three 4'x8' sheets, two standing and one halved across the roof.
+# Glazing: three 4'x8' sheets, two standing uncut and one halved across the roof.
 # ============================================================================
-# Flutes run E-W, down-slope from the crown to each eave, so the open (draining) flute ends
-# land at x = 0'-6" and 8'-6" and the sealed high ends meet under the crown bar.
+# One sheet, 4'-0" x 4'-0" — half of an 8'x4', the only cut in the bill. Flutes run E-W,
+# down-slope from the crown at x = 4'-6" to each eave, so the open (draining) flute ends land
+# at x = 2'-6" and 6'-6". The sheet bends over the crown rather than butting a second sheet
+# there, which is what retired the crown glazing bar: no joint, nothing to seal.
 ROOF_GLAZING = [
     GlazingPanel(
-        uid="BWGP01AAAA", tag="GL-BW-ROOF-W",
-        outline=(pt(ft(_ROOF_X0), ft(_GLAZING_Y0)), pt(ft(4.5), ft(_GLAZING_Y0)),
-                 pt(ft(4.5), ft(_GLAZING_Y1)), pt(ft(_ROOF_X0), ft(_GLAZING_Y1))),
-        thickness=inch(_GLAZING_THICKNESS_IN), top_elevation=ft(_ROOF_GLAZING_TOP),
-        plane="horizontal", assembly="BREEZEWAY_ROOF_GLAZING"),
-    GlazingPanel(
-        uid="BWGP02AAAA", tag="GL-BW-ROOF-E",
-        outline=(pt(ft(4.5), ft(_GLAZING_Y0)), pt(ft(_ROOF_X1), ft(_GLAZING_Y0)),
-                 pt(ft(_ROOF_X1), ft(_GLAZING_Y1)), pt(ft(4.5), ft(_GLAZING_Y1))),
+        uid="BWGP01AAAA", tag="GL-BW-ROOF",
+        outline=(pt(ft(_ROOF_X0), ft(_GLAZING_Y0)), pt(ft(_ROOF_X1), ft(_GLAZING_Y0)),
+                 pt(ft(_ROOF_X1), ft(_GLAZING_Y1)), pt(ft(_ROOF_X0), ft(_GLAZING_Y1))),
         thickness=inch(_GLAZING_THICKNESS_IN), top_elevation=ft(_ROOF_GLAZING_TOP),
         plane="horizontal", assembly="BREEZEWAY_ROOF_GLAZING"),
 ]
@@ -345,7 +357,6 @@ WALL_GLAZING = [
 _CHANNEL_DEPTH = inch(1.5)   # how far the extrusion laps the sheet face
 _CHANNEL_THICK = inch(1.0)   # its section across the sheet
 _ROOF_EAVE_TOP = _RAFTER_TOP + _GLAZING_THICKNESS_IN / 12.0  # wedge is 0 at the eave
-_ROOF_CROWN_TOP = (_RAFTER_TOP + (_WEDGE_RISE_IN + _GLAZING_THICKNESS_IN) / 12.0)
 # The north F-channel spans from the roof panel's edge back to the garage cladding 6 1/8"
 # behind it (the stem below is that much proud of the wall above), so its run sits on the
 # midline of that reach rather than on the panel edge.
@@ -366,22 +377,17 @@ _H_DEPTH = _H_LAP + _H_WEB + _H_LAP
 
 ROOF_TRIM = [
     GlazingTrim(uid="BWGT01AAAA", tag="TR-BW-HCH-W", kind=TrimKind.GLAZING_CHANNEL,
-                profile="H", weep_holes=False, glazing_ref="GL-BW-ROOF-W",
+                profile="H", weep_holes=False, glazing_ref="GL-BW-ROOF",
                 path=(pt(ft(_ROOF_X0), ft(_GLAZING_Y0)), pt(ft(_ROOF_X0), ft(_GLAZING_Y1))),
                 top_elevation=ft(_ROOF_GLAZING_UNDER) + _H_LAP + _H_WEB,
                 depth=_H_DEPTH, thickness=inch(2.0), material="aluminum-extrusion"),
     GlazingTrim(uid="BWGT02AAAA", tag="TR-BW-HCH-E", kind=TrimKind.GLAZING_CHANNEL,
-                profile="H", weep_holes=False, glazing_ref="GL-BW-ROOF-E",
+                profile="H", weep_holes=False, glazing_ref="GL-BW-ROOF",
                 path=(pt(ft(_ROOF_X1), ft(_GLAZING_Y0)), pt(ft(_ROOF_X1), ft(_GLAZING_Y1))),
                 top_elevation=ft(_ROOF_GLAZING_UNDER) + _H_LAP + _H_WEB,
                 depth=_H_DEPTH, thickness=inch(2.0), material="aluminum-extrusion"),
-    # The crown: both sheets' high flute ends meet here over the wedge apexes, sealed with
-    # solid (not vented) tape under a concealed-fastener aluminium glazing bar.
-    GlazingTrim(uid="BWGT03AAAA", tag="TR-BW-BAR-CROWN", kind=TrimKind.GLAZING_BAR,
-                profile="bar", sealed_tape=True,
-                path=(pt(ft(4.5), ft(_GLAZING_Y0)), pt(ft(4.5), ft(_GLAZING_Y1))),
-                top_elevation=ft(_ROOF_CROWN_TOP + 0.5 / 12.0), depth=inch(2.0),
-                thickness=inch(2.5), material="aluminum-extrusion"),
+    # No TR-BW-BAR-CROWN: the roof is one sheet bent over the crown, so there is no joint
+    # there to cap. A glazing bar with nothing between its slots is a strip of flashing.
     # North and south roof edges run parallel to the flutes and butt the cladding: an
     # F-channel receiver, with a bent leg covering back to the wall. The north leg is the
     # long one — the garage's wood wall stands 5 5/8" behind its stem.

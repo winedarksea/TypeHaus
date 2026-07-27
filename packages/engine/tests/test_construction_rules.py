@@ -14,15 +14,18 @@ house in 3D and as phantom concrete rectangles in every building section.)
 
 from __future__ import annotations
 
+import pytest
 from shapely.geometry import Polygon
 
 from typehaus.takeoff import construction_returns_takeoff
+
 
 _RULE_TAGS = {
     "CR-CONC-TO-FRAMED-SILL",
     "CR-SAUNA-LINER-RETURN",
     "CR-FOUNDATION-FOAM-RETURN",
     "CR-PORCH-MASONRY-RETURN",
+    "CR-DECK-ON-CONCRETE-SILL",
 }
 
 
@@ -99,3 +102,43 @@ def test_foundation_foam_return_is_thermal(catlin_model) -> None:
     assert foam
     assert all(r.thermal_continuity for r in foam)
     assert all(r.material_ref in ("xps", "icf-eps") for r in foam)
+
+
+# --- floor system landing on a concrete wall ----------------------------------
+# The sill under a *deck* is the same physical return one element down: the porch's PT 2x8
+# joists land on the 16" arched front wall, and a flat-laid PT 2x4 on that wall's 3.5"
+# bearing ledge is what they land on. A flat plate is not something a Beam can express, so
+# it is a construction return like the framed-wall sill above.
+#
+# The rule is authored on the house (houses/catlin/plan/assemblies.py CR-DECK-ON-CONCRETE-SILL),
+# so this reads the real model rather than injecting the rule into a copy of the library.
+_FLOOR_SILL_TAG = "CR-DECK-ON-CONCRETE-SILL"
+
+
+def test_a_deck_bearing_on_concrete_bills_a_flat_sill_plate(catlin_model) -> None:
+    """FS-SG-PORCH names W-SG-ARCH in its ``joists.bearing_refs``, so the rule finds it."""
+    sills = [r for r in catlin_model.construction_returns if r.tag == _FLOOR_SILL_TAG]
+    assert len(sills) == 1
+    sill = sills[0]
+    assert sill.kind == "bearing_plate"
+    assert sill.material_ref == "spf"
+    assert set(sill.element_tags) == {"W-SG-ARCH", "FS-SG-PORCH"}
+    assert sill.condition_key.startswith("floor_foundation:")
+    # Laid flat: the 3.5" face bears, the 1.5" dimension is the build-up.
+    assert sill.thickness_m == pytest.approx(3.5 * 0.0254)
+    assert sill.lap_m == pytest.approx(1.5 * 0.0254)
+    # The bearing run is the wall clipped to the deck it carries — 19' of plate, not the
+    # 20' the wall's axis runs between side-wall axes.
+    assert sill.length_m == pytest.approx(19 * 0.3048)
+    # Top at the joist soffit (one 2x8 depth below the 0' porch datum), not on the wall top.
+    assert sill.z1_m == pytest.approx(-7.25 * 0.0254)
+    assert sill.z0_m == pytest.approx(sill.z1_m - sill.lap_m)
+    # It sits on the wall's north (deck-side) 3.5" ledge, not down the middle of the pier.
+    assert max(y for _, y in sill.outline) == pytest.approx(-8.8333 * 0.3048, abs=1e-3)
+
+
+def test_the_deck_sill_bills_as_pt_sill_plate(catlin_model) -> None:
+    rows = [row for row in construction_returns_takeoff(catlin_model)
+            if row["category"] == "pt-sill-plate"]
+    assert rows
+    assert sum(row["length_ft"] for row in rows) > 19.0  # the wall sills plus the deck's

@@ -5,8 +5,8 @@
 // plan — hinge side, swing side, arc sweep, the sill/head line weights — and memoizing it is
 // what keeps a pan from redrawing every door in the house.
 import { memo, useRef } from "react";
-import type { DoorOperation, Model, Opening, Stair, Vec2, Wall } from "../../model/types";
-import { doorStrokeGlyph, hostWallThicknessM } from "../../model/doorSymbols";
+import type { DoorOperation, Model, Opening, Stair, Vec2, Wall, WindowOperation } from "../../model/types";
+import { doorStrokeGlyph, hostWallThicknessM, windowStrokeGlyph } from "../../model/doorSymbols";
 import { openingHostWall, pointAlong } from "../../model/geometry";
 import { swingArcSweepFlag } from "../../three/planGeometry";
 import { NORDIC_ACCENT, NORDIC_INK } from "../../nordic/palette";
@@ -57,7 +57,10 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
   project: (p: Vec2) => Vec2;
   scale: number;
   selected: boolean;
-  operation?: DoorOperation;
+  // The host type's operation: a `DoorOperation` for a door, a `WindowOperation` for a
+  // window. One prop rather than two because the caller already knows which kind it holds
+  // (`o.is_door`) and the two vocabularies are disjoint.
+  operation?: DoorOperation | WindowOperation;
   onSelect: (kind: Selection["kind"], uid: string) => void;
   onEdit: (o: Opening, screen: Vec2) => void;
   toWorld: (clientX: number, clientY: number) => Vec2;
@@ -86,10 +89,18 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
   const windowTick = Math.min(6, Math.max(3, scale * 0.08));
   // Null for the hinged operations, which draw a leaf plus a swing arc instead.
   const strokeGlyph = o.is_door ? doorStrokeGlyph({
-    operation, center: [cx, cy], angleRadians: ang, operatingSign: swingSign,
+    operation: operation as DoorOperation | undefined,
+    center: [cx, cy], angleRadians: ang, operatingSign: swingSign,
     parkJambSign: hingeDirection, widthM: o.width_m, heightM: o.height_m,
     hostWallThicknessM: hostWallThicknessM(host.layers), pixelsPerMeter: scale,
   }) : null;
+  // Empty for a fixed (picture) unit and for an unknown operation: a sash tick is drawn
+  // only when the catalog actually says the window opens.
+  const sashGlyph = o.is_door ? [] : windowStrokeGlyph({
+    operation: operation as WindowOperation | undefined,
+    center: [cx, cy], angleRadians: ang, operatingSign: swingSign,
+    parkJambSign: hingeDirection, widthM: o.width_m, pixelsPerMeter: scale,
+  });
   // Press → drag vs. click discrimination (mirrors CanvasObjectFootprint): the ghost
   // preview only follows once the pointer has been captured AND moved past a small px
   // threshold, so a bare hover never drifts the symbol. A press that never crosses the
@@ -178,6 +189,14 @@ export const OpeningShape = memo(function OpeningShape({ o, host, project, scale
         <line x1={cx - Math.sin(ang) * windowTick} y1={cy + Math.cos(ang) * windowTick}
           x2={cx + Math.sin(ang) * windowTick} y2={cy - Math.cos(ang) * windowTick}
           stroke="var(--canvas-white)" strokeWidth={1.2} />
+        {/* Sash notation — a casement tick, an awning chevron, a hung check-rail or a
+            slider track. A fixed unit contributes nothing here, which is precisely how a
+            picture window reads as one: the plain sill/head line above and no hardware. */}
+        {sashGlyph.map((stroke, index) => (
+          <polyline key={index} points={stroke.points.map((point) => point.join(",")).join(" ")}
+            fill="none" stroke={NORDIC_ACCENT} strokeWidth={stroke.dashed ? 1 : 1.5}
+            strokeDasharray={stroke.dashed ? "4 3" : undefined} />
+        ))}
         <text x={cx - Math.sin(ang) * 14} y={cy + Math.cos(ang) * 14} textAnchor="middle"
           fill={NORDIC_ACCENT} fontSize={9} fontWeight={700}
           style={{ paintOrder: "stroke", stroke: "var(--canvas-white)", strokeWidth: 3 }}>{o.tag}</text>

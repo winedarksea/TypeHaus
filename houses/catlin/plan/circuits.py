@@ -22,7 +22,7 @@ Conventions:
 
 from __future__ import annotations
 
-from typehaus import Circuit
+from typehaus import Circuit, LoadManagement
 
 _PANEL = "ED-B-PANEL"
 
@@ -32,10 +32,15 @@ CIRCUITS = (
             nema="14-50R", load_va=12000, description="Kitchen range"),
     Circuit(uid="CKT002AAAA", tag="CKT-DRYER", slot=5, panel_ref=_PANEL, breaker_amps=30, poles=2,
             nema="14-30R", description="Dryer"),
+    # The two EV circuits author their load_va explicitly (same figures the receptacle
+    # types carry: 240x40 and 240x16 continuous) because LOAD_MANAGEMENTS below reads the
+    # managed group's connected load off the *circuits*, not the devices.
     Circuit(uid="CKT003AAAA", tag="CKT-EV-1450", slot=9, panel_ref=_PANEL, breaker_amps=50, poles=2,
-            nema="14-50R", description="EV charging, NEMA 14-50 (garage)"),
+            nema="14-50R", load_va=9600,
+            description="EV charging, NEMA 14-50 (garage) — Emporia Vue managed"),
     Circuit(uid="CKT004AAAA", tag="CKT-EV-620", slot=13, panel_ref=_PANEL, breaker_amps=20, poles=2,
-            nema="6-20R", description="EV charging, NEMA 6-20 (garage)"),
+            nema="6-20R", load_va=3840,
+            description="EV charging, NEMA 6-20 (garage) — Emporia Vue managed"),
     Circuit(uid="CKT005AAAA", tag="CKT-SPA", slot=17, panel_ref=_PANEL, breaker_amps=50, poles=2,
             gfci=True, load_va=11500, description="Hot tub (sunken garden)"),
     # 50A/2p GFCI per notes/sauna_shower_basement_detail.md ("240V, 50A GFCI breaker and
@@ -149,4 +154,25 @@ CIRCUITS = (
             load_va=1000, description="General receptacles — attic rooms"),
     Circuit(uid="CKT030AAAA", tag="CKT-RC-GARAGE", slot=48, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, load_va=1500, description="Garage general receptacles"),
+)
+
+# --- Load management (NEC 625.42) ------------------------------------------------------
+#
+# The open decision in plans/TODO.md — "service load exceeds the service" — is settled
+# here with an EMS rather than a service upgrade. Unmanaged, the 220.82 estimate lands at
+# 223.7A against the 200A service; the two EV circuits contribute 13,440 VA (56.0A) of
+# that, so everything else in the house is 167.7A and the headroom left for EV charging is
+# 32.3A (7,752 VA).
+#
+# The Emporia Vue's dynamic load management watches the whole-panel CTs and throttles the
+# 14-50 EVSE, so the pair is capped at 5,760 VA — 24A at 240V, both EV circuits together.
+# That is the largest round setting that stays clearly inside the 32.3A headroom (it lands
+# the estimate near 192A, ~8A of margin for the loads this house has not authored yet) and
+# it is above the 6A/1.4 kW floor an EVSE must never be throttled below, so a car still
+# charges at ~24A whenever nothing else is competing for the service.
+LOAD_MANAGEMENTS = (
+    LoadManagement(uid="EMSEV0AAAA", tag="LM-EV",
+                   managed_circuits=("CKT-EV-1450", "CKT-EV-620"),
+                   max_simultaneous_va=5760, strategy="ems",
+                   source="Emporia Vue dynamic load management (NEC 625.42 EMS)"),
 )

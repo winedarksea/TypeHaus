@@ -6,7 +6,7 @@
 // everywhere in the UI, nothing here re-measures the design — it only lays out a symbol
 // around an opening the engine already placed.
 
-import type { DoorOperation, Vec2 } from "./types";
+import type { DoorOperation, Vec2, WindowOperation } from "./types";
 
 // A sectional door parks its panels on horizontal track running back into the garage by
 // roughly the door height; drawing that band dashed says the swept volume is ceiling
@@ -203,5 +203,78 @@ export function doorStrokeGlyph(input: DoorGlyphInput): DoorSymbolStroke[] | nul
         halfWallPx);
     default:
       return null;
+  }
+}
+
+// --- window sash glyphs ------------------------------------------------------------------
+//
+// The same construction as the door glyphs above (`doorSymbolPoint`, handed by
+// `operatingSign`), at a smaller scale: a sash projection is a *notation* — a hint at which
+// way the unit opens — not the swept volume a door arc has to reserve. Architectural
+// convention draws it on the hinge side of the elevation; in plan we settle for a tick that
+// is unambiguous at 1/4" scale, which is the only scale the canvas is read at.
+
+/**
+ * How far a sash glyph projects off the wall line, as a fraction of the opening width.
+ * Small enough that a bank of windows does not read as a row of doors, large enough that a
+ * casement is distinguishable from a fixed unit without zooming.
+ */
+export const WINDOW_SASH_PROJECTION_FRACTION = 0.35;
+
+/** Offset of the double-hung/slider track line off the wall line, likewise width-relative. */
+export const WINDOW_TRACK_OFFSET_FRACTION = 0.12;
+
+export interface WindowGlyphInput {
+  operation: WindowOperation | undefined;
+  /** Opening centre, in screen pixels. */
+  center: Vec2;
+  angleRadians: number;
+  /** Handed operating side: which face of the wall the sash swings/slides toward. */
+  operatingSign: number;
+  /** Handed jamb: the hinge of a casement, or the jamb a slider's moving leaf parks at. */
+  parkJambSign: number;
+  widthM: number;
+  pixelsPerMeter: number;
+}
+
+/**
+ * The stroke glyph for a window operation, in the opening's local frame.
+ *
+ * A `fixed` unit returns no strokes *by construction*, not as a fallback: a picture window
+ * has no sash, and the bare sill/head line the canvas already draws is its complete symbol.
+ * That is exactly the distinction this whole glyph exists to make visible, so an unknown or
+ * missing operation returns the empty set too rather than inventing hardware.
+ */
+export function windowStrokeGlyph(input: WindowGlyphInput): DoorSymbolStroke[] {
+  const { operation, center, angleRadians, operatingSign, parkJambSign } = input;
+  const at = (along: number, across: number) =>
+    doorSymbolPoint(center, angleRadians, operatingSign, along, across);
+  const widthPx = input.widthM * input.pixelsPerMeter;
+  const half = widthPx / 2;
+  const projection = widthPx * WINDOW_SASH_PROJECTION_FRACTION;
+  const trackOffset = widthPx * WINDOW_TRACK_OFFSET_FRACTION;
+  switch (operation) {
+    case "casement":
+      // Side-hinged: one tick from the hinge jamb out to where the free stile ends up.
+      // Hinged at `parkJambSign`, so it mirrors with the same handing a door hinge uses.
+      return [{ points: [at(parkJambSign * half, 0), at(-parkJambSign * half, projection)],
+        dashed: false }];
+    case "awning":
+      // Top-hinged, projecting out at the bottom: a symmetric chevron apexed at the centre,
+      // which is what separates it from the casement's one-sided tick.
+      return [{ points: [at(-half, 0), at(0, projection), at(half, 0)], dashed: false }];
+    case "double_hung":
+      // Nothing projects — the sashes ride in the frame — so the glyph is the check-rail
+      // line, drawn dashed because it sits above the plan cut like any concealed track.
+      return [{ points: [at(-half, trackOffset), at(half, trackOffset)], dashed: true }];
+    case "slider":
+      // The moving leaf (solid) over the half it occupies, and dashed over the half it
+      // slides across, in the handed direction — the door slider's logic at sash scale.
+      return [
+        { points: [at(-parkJambSign * half, trackOffset), at(0, trackOffset)], dashed: false },
+        { points: [at(0, trackOffset), at(parkJambSign * half, trackOffset)], dashed: true },
+      ];
+    default:
+      return [];
   }
 }

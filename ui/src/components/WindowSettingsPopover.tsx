@@ -1,6 +1,17 @@
 import { useState } from "react";
 import type { PatchOp } from "../engine/EngineClient";
-import type { Opening, Vec2, WindowTypeSpec } from "../model/types";
+import type { Opening, Vec2, WindowOperation, WindowTypeSpec } from "../model/types";
+
+// Trade names for the operation vocabulary (mirrors DOOR_OPERATION_LABELS): the raw enum
+// values read as jargon in a picker, and "fixed" in particular is the one a client must not
+// mis-pick — hence the parenthetical.
+export const WINDOW_OPERATION_LABELS: Record<WindowOperation, string> = {
+  fixed: "fixed (picture)",
+  casement: "casement",
+  double_hung: "double-hung",
+  slider: "slider",
+  awning: "awning",
+};
 
 // Settings popover for a clicked window — mirrors DoorSettingsPopover. Type edits apply
 // immediately as a single-field PatchOp; position/sill-height defer to the FtInKeypad flow
@@ -53,7 +64,7 @@ export function WindowSettingsPopover({
           )}
           {windowTypes.map((wt) => (
             <option key={wt.tag} value={wt.tag}>
-              {wt.tag} · {wt.operation}
+              {wt.tag} · {WINDOW_OPERATION_LABELS[wt.operation] ?? wt.operation}
             </option>
           ))}
         </select>

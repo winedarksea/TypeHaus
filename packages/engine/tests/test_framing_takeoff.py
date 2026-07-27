@@ -85,7 +85,14 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "lighting_load",
                         # The 2026-07-25 sweep: resolved-but-unbilled families.
                         "floor_finishes", "envelope_layers", "openings", "stair_finish",
-                        "footing_bedding", "pipe_runs", "ducts", "sleeves"}
+                        "footing_bedding", "pipe_runs", "ducts", "sleeves",
+                        # Railings got their own takeoff category in 33bac47; this list and
+                        # the `haus takeoff` payload both missed it, so guard rail and cable
+                        # infill were billed nowhere the CLI could see.
+                        "railings",
+                        # The rainscreen's base vent/insect closure — derived off the wall
+                        # stack, so it is billed by the lineal foot rather than authored.
+                        "bug_screens"}
     assert all(section for section in bom.values()), "no BOM section may come back empty"
     # The framing section still reconciles 1:1 with the resolved members.
     assert sum(int(row["pieces"]) for row in bom["framing"]) == len(catlin_model.all_members())

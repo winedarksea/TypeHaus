@@ -89,8 +89,17 @@ SECOND_FIXTURES = (
             room="RM-S-SUITEBATH", position=pt(m(3.4741), m(6.34769)), wall_ref="W-S-DC2"),
     Fixture(uid="CSQ805AAAA", tag="FX-S-SUITEBATH-LAV", type_ref="FX-LAV",
             room="RM-S-SUITEBATH", position=pt(ft(14), ft(17, 1)), wall_ref="W-S-SBS"),
-    Fixture(uid="CSQ806AAAA", tag="FX-S-SUITEBATH-SH", type_ref="FX-SHOWER",
-            room="RM-S-SUITEBATH", position=pt(ft(16, 2), ft(20, 6)), wall_ref="W-S-C2C"),
+    # The suite bath takes a tub-shower rather than the 36" pan it used to: the room's clear
+    # face is 9'-8 1/8" x 22'-3 3/8" .. 15'-11 5/8" (x 9.677'..17.948', y 15.969'..22.281'),
+    # and the east wall has 5'-0 of run to give a 60" x 30" alcove. Rotated -90 the back
+    # (+y local) turns east onto W-S-C2C, so the footprint is x 15'-2"..17'-8",
+    # y 17'-0"..22'-0": the same north and east edges the old pan had, extended south.
+    # It clears the WC's REQUIRED zone (which reaches x 12'-7 3/4"), the lav on the south
+    # wall (x 13'..15', y 16'-2 1/2"..17'-11 3/8"), and D-S-SUITEBATH's swing (out to
+    # x 12'-8"). The plumbing end is north, where the pan's drain already was.
+    Fixture(uid="CSQ809AAAA", tag="FX-S-SUITEBATH-TUBSH", type_ref="FX-TUBSHOWER",
+            room="RM-S-SUITEBATH", position=pt(ft(16, 5), ft(19, 6)), rotation=deg(-90),
+            wall_ref="W-S-C2C"),
     # The double-vanity alcove off the landing (source: 18.23 sf, two lavatories), backed
     # onto W-S-BD-N — the same 2x6 wet wall the hall bath drains into.
     Fixture(uid="CSQ807AAAA", tag="FX-S-VANITY-LAV1", type_ref="FX-LAV", room="RM-S-VANITY",

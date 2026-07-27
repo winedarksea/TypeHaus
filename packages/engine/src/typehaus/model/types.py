@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from typehaus.model.base import HausModel
-from typehaus.model.enums import DoorOperation, LuminaireForm, Service
+from typehaus.model.enums import DoorOperation, LuminaireForm, Service, WindowOperation
 from typehaus.model.placeables import (ClearanceZone, Footprint2D, ModelRepresentation,
                                        Mount, PlacementStrategy, PlanRepresentation, ServicePort)
 from typehaus.model.registry import register_constructor
@@ -41,7 +41,9 @@ class WindowType(HausModel):
     u_factor: UFactor | None = None
     shgc: float | None = None  # solar heat gain coefficient
     vt: float | None = None  # visible transmittance
-    operation: str = "fixed"  # fixed | casement | double_hung | slider | awning
+    # A closed vocabulary, like a door's: the operation picks the plan symbol and is what
+    # separates a picture unit from an operable one of identical size on the schedule.
+    operation: WindowOperation = WindowOperation.FIXED
     source: str | None = None
 
 

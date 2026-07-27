@@ -37,11 +37,21 @@ def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     rows = []
     for (kind, type_ref, width_in, height_in), entry in sorted(groups.items()):
         product = door_types.get(type_ref) or window_types.get(type_ref)
+        # The operation is what is actually ordered: a 36x60 casement and a 36x60 picture
+        # unit are the same hole and different products, and for a door the leaf makeup
+        # (glazed vs solid) moves the price as much as the operation does. Both ride in the
+        # qualifier rather than the key because the type ref already separates the rows.
+        operation = getattr(getattr(product, "operation", None), "value", None)
+        qualifier = operation
+        if product is not None and kind == "door":
+            qualifier = f"{operation} · {'glazed' if product.glazed else 'solid'}"
         rows.append({
             "kind": kind,
             "type": type_ref or None,
             "product": getattr(product, "name", None) or "UNKNOWN",
             "known": product is not None,
+            "operation": operation,
+            "qualifier": qualifier,
             "width_in": width_in,
             "height_in": height_in,
             "arched": entry["arched"],

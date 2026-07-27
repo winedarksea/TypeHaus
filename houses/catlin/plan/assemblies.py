@@ -329,17 +329,20 @@ GARAGE_WALL_2X6 = Assembly(
     source="catlin-house ifcplot/assemblies.py GARAGE_WALL",
 )
 
-# Garage slab-on-grade. Deliberately *not* CATLIN_SLAB_FLOOR: the basement slab sits inside
-# the thermal envelope and gets 3" of below-slab XPS, while this one floors an unheated,
-# detached structure and gets none. Same nominal thickness, different assembly — that is the
-# distinction the geometry alone cannot carry, since both resolve to a flat 3.5" solid.
+# Garage slab-on-grade. It now carries the same 3" of below-slab XPS as CATLIN_SLAB_FLOOR —
+# the owner wants the garage floor insulated even though the structure is detached and
+# unheated, so the choice is authored here rather than inferred from "is it conditioned".
+# Still a separate assembly from the basement slab: this one keeps the 1" perimeter thermal
+# break at the slab edge, and the two are ordered and poured as different scopes.
 GARAGE_SLAB_ON_GRADE = Assembly(
     tag="GARAGE_SLAB_ON_GRADE",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(3.5),
               function=LayerFunction.STRUCTURE),
+        Layer(name="xps-below", material_ref="xps", thickness=inch(3.0),
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     ),
-    source="catlin-house detached garage floor — uninsulated slab on compacted base",
+    source="catlin-house detached garage floor — 3\" below-slab XPS on compacted base",
 )
 
 GARAGE_ROOF = Assembly(
@@ -516,6 +519,17 @@ CONSTRUCTION_RULES = [
     ConstructionRule(
         tag="CR-CONC-TO-FRAMED-SILL",
         applies_to="wall:framed_on_concrete",
+        kind="bearing_plate",
+        dimension=inch(1.5),
+        takeoff_category="pt-sill-plate",
+    ),
+    # The same physical return one element down: a joisted deck bearing on a concrete wall
+    # rather than a framed wall doing so. FS-SG-PORCH lands on the sunken garden's 16" arch
+    # wall, and without this the joists would butt a rim sitting on bare concrete — no PT
+    # plate, no sill seal, no capillary break, and none of the three on the order.
+    ConstructionRule(
+        tag="CR-DECK-ON-CONCRETE-SILL",
+        applies_to="floor:on_concrete_wall",
         kind="bearing_plate",
         dimension=inch(1.5),
         takeoff_category="pt-sill-plate",

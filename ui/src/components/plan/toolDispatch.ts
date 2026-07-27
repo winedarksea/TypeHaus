@@ -1,8 +1,8 @@
 // What a tap means under each tool: the Canvas2D tap dispatcher, split out along its
 // documented seam. Pure dispatch — every commit and every piece of gesture state is handed
 // in through `TapDeps`, so this module owns the routing (marker > wall > stair under the
-// select tool; snap/ortho under the wall tool; placement popovers; the dimension pick) and
-// nothing else.
+// select tool; snap/ortho under the wall and measure tools; placement popovers; the dimension
+// pick) and nothing else.
 import type { MutableRefObject } from "react";
 import type { PlanWarningMarker } from "../../model/planWarnings";
 import type { Stair, Vec2, Wall } from "../../model/types";
@@ -12,7 +12,7 @@ import type { Selection, Tool } from "../../state/vocabulary";
 import { pointInPolygon } from "./OpeningShapes";
 import {
   HIT_PX, WARNING_MARKER_HIT_PX,
-  type DoorPopup, type Placement, type WallAssemblyPopup, type WallDraft,
+  type DoorPopup, type MeasureDraft, type Placement, type WallAssemblyPopup, type WallDraft,
 } from "./canvasTypes";
 
 export interface TapDeps {
@@ -21,6 +21,7 @@ export interface TapDeps {
   scale: number; // view.scale, for screen-px hit tests
   placement: Placement | null;
   draft: WallDraft | null;
+  measure: MeasureDraft | null;
   shiftRef: MutableRefObject<boolean>;
   wallsOnStorey: Wall[];
   stairsOnStorey: Stair[];
@@ -34,6 +35,7 @@ export interface TapDeps {
   toast: (message: string, kind?: "info" | "error") => void;
   setPlacement: (placement: Placement | null) => void;
   setDraft: (draft: WallDraft | null) => void;
+  setMeasure: (measure: MeasureDraft | null) => void;
   setDimWall: (wall: Wall | null) => void;
   setWallAssemblyPopup: (popup: WallAssemblyPopup | null) => void;
   setWarningPopup: (popup: { marker: PlanWarningMarker; screen: Vec2 } | null) => void;
@@ -45,13 +47,14 @@ export interface TapDeps {
 
 export function dispatchTap(deps: TapDeps, world: Vec2, screen: Vec2): void {
   const {
-    tool, offline, scale, placement, draft, shiftRef, wallsOnStorey, stairsOnStorey,
+    tool, offline, scale, placement, draft, measure, shiftRef, wallsOnStorey, stairsOnStorey,
     warningMarkers, snapNodes, tolM, gridM, activeStorey, project, select, toast,
-    setPlacement, setDraft, setDimWall, setWallAssemblyPopup, setWarningPopup,
+    setPlacement, setDraft, setMeasure, setDimWall, setWallAssemblyPopup, setWarningPopup,
     setDoorPopup, setWindowPopup, commitWall, commitStair,
   } = deps;
   if (placement) { setPlacement(null); return; }
-  if (offline && tool !== "select") { toast("Editing needs the server (offline)", "error"); return; }
+  // Measure is read-only (nothing is journaled), so it survives offline alongside select.
+  if (offline && tool !== "select" && tool !== "measure") { toast("Editing needs the server (offline)", "error"); return; }
   switch (tool) {
     case "select": {
       // Diagnostic markers win the tap. They sit on top of the walls they annotate, and the
@@ -133,6 +136,20 @@ export function dispatchTap(deps: TapDeps, world: Vec2, screen: Vec2): void {
       if (hit && hit.dist_m * scale < HIT_PX) {
         select("wall", hit.wall.uid);
         setDimWall(hit.wall);
+      }
+      break;
+    }
+    case "measure": {
+      // Two taps, same snapping as the wall tool: the first sets the anchor, the second fixes
+      // the segment, and a tap on a fixed segment starts the next measurement.
+      const snap = snapWorld(world, snapNodes, tolM, gridM);
+      if (!measure || measure.end) {
+        setMeasure({ start: snap.point, end: null });
+      } else {
+        setMeasure({
+          start: measure.start,
+          end: shiftRef.current ? orthoLock(measure.start, snap.point) : snap.point,
+        });
       }
       break;
     }

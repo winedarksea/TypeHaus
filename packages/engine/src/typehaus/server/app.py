@@ -85,6 +85,21 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
             return JSONResponse({"error": "model does not resolve"}, status_code=409)
         return JSONResponse({"details": detail_index(state.model)})
 
+    @app.get("/bom")
+    def get_bom() -> Any:
+        """The bill of materials, exactly as ``bill_of_materials`` builds it.
+
+        Served raw rather than remapped: the browser used to keep a second, partial BOM
+        implementation of its own (``ui/src/model/bom.ts``) that billed some families the
+        engine did not and missed others, with nothing testing that the two agreed. This
+        endpoint is what retires it — one implementation, one set of numbers.
+        """
+        from typehaus.takeoff.bom import bill_of_materials
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        return JSONResponse(bill_of_materials(state.model))
+
     @app.get("/detail")
     def get_detail(key: str) -> Any:  # key carries '|'/':' — a query param, not a path seg
         from typehaus.emit.draw.details import detail_payload

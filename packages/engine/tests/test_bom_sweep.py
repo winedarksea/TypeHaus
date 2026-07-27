@@ -219,3 +219,72 @@ def test_conductors_bill_beside_the_raceway_they_pull_through(bom):
     assert rows and all(float(row["length_ft"]) > 0 for row in rows)
     assert all("estimate" in str(row["basis"]) for row in rows)
     assert {int(row["poles"]) for row in rows} == {1, 2}
+
+
+# --- rainscreen base closure ---------------------------------------------------------------
+
+def test_bug_screens_bill_the_exterior_perimeter_once_not_once_per_storey(catlin_model, bom):
+    """The screen closes the *bottom* of a rainscreen cavity. The cladding runs past every
+    floor line uninterrupted, so a house with three storeys of the same wall still has one
+    screened base — billing per wall would order three times the strip that is installed.
+
+    Reconciled against the walls themselves: the total is the run of exactly the walls whose
+    cavity starts at their own base, which on catlin is the main-storey perimeter plus the
+    garage's.
+    """
+    from typehaus.resolve.accessories import screens_rainscreen_base
+    from typehaus.resolve.geometry import length, sub
+
+    rows = bom["bug_screens"]
+    assert rows, "a rainscreen house must order its base closure"
+    billed = sum(float(row["length_ft"]) for row in rows)
+    screened = [wall for wall in catlin_model.walls
+                if screens_rainscreen_base(catlin_model, wall)]
+    expected = sum(length(sub(wall.axis[1], wall.axis[0])) for wall in screened) * 3.280839895
+    assert billed == pytest.approx(expected, abs=0.2)
+    # Every screened wall is a ground-tier one; nothing stacked on a rainscreen qualifies.
+    assert {wall.storey for wall in screened} == {"main", "garage"}
+    assert all(row["material"] == "corrugated-vent-strip" for row in rows)
+
+
+def test_bug_screen_rows_are_grouped_by_the_cavity_they_are_cut_to(bom):
+    """The strip is bought in the section that fills the cavity, so a house with two
+    different batten depths is two different orders — catlin's 1/2" house battens and the
+    garage's 3/8" ones."""
+    depths = {float(row["cavity_depth_in"]) for row in bom["bug_screens"]}
+    assert len(depths) == len(bom["bug_screens"]) > 1
+    assert all(depth > 0 for depth in depths)
+
+
+def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
+    """The browser renders this payload directly (``/bom``, ``OfflineEngine.bom_json``, and
+    ``ui/src/model/engineBom.ts``) — it no longer computes a bill of its own. Two things it
+    depends on, neither of which anything else pins:
+
+    * the payload survives ``json.dumps`` unchanged, because that is literally the transport;
+    * the section keys are exactly this set, because ``engineBom.ts``'s SECTION_GROUPS
+      arranges them by name. A renamed section would silently fall into its "Other" bucket
+      and a dropped one would vanish from the view.
+    """
+    import json
+
+    round_tripped = json.loads(json.dumps(bom))
+    assert round_tripped == bom, "the BOM must survive its own transport"
+
+    assert set(bom) == {
+        # Structure
+        "framing", "framing_by_size", "structural_solids", "sheet_goods",
+        "construction_returns", "hardware", "footing_bedding",
+        # Envelope & openings
+        "envelope_layers", "glazing_panels", "glazing_trim", "bug_screens", "openings",
+        "floor_finishes", "stair_finish", "railings",
+        # Mechanical & plumbing
+        "pipe_runs", "ducts", "sleeves", "floor_heat",
+        # Electrical
+        "electrical_devices", "panel_schedule", "service_load", "conduit", "conductors",
+        "solar", "backup_components",
+        # Lighting
+        "luminaire_schedule", "lighting_controls", "light_runs", "lighting_load",
+        # Placeables
+        "placeables",
+    }, "add the new section to ui/src/model/engineBom.ts SECTION_GROUPS in the same change"

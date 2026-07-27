@@ -109,6 +109,18 @@ CHEST = FurnitureType(
     height=ft(4, 2), plan_symbol="chest", storage=True, source=REFERENCE,
     clearances=(front_zone(ft(2, 10), ft(1, 7), ft(1, 10), "drawer swing"),),
 )
+# A free-standing wardrobe — the closet a bedroom without a closet gets. 48" x 24" x 78" is
+# the standard two-door armoire: 24" deep is what a hanger needs front-to-back, and 78" is
+# the tallest a case can be and still pass under an 80" door head on its way into the room.
+#
+# No clearance zone, unlike DRESSER and CHEST: those swing drawers, and this is specified
+# with sliding/bypass doors precisely because the rooms it serves have no 24" of floor to
+# spare in front of it. A hinged-door wardrobe would want ``front_zone(..., ft(2), ...)``
+# and should be a separate type rather than a silent change to this one.
+WARDROBE_48 = FurnitureType(
+    tag="FURN-WARDROBE-48", name="Wardrobe (sliding door)", footprint=(ft(4), ft(2)),
+    height=ft(6, 6), plan_symbol="tall-cabinet-double", storage=True, source=REFERENCE,
+)
 NIGHTSTAND = FurnitureType(
     tag="FURN-NIGHTSTAND-24", name="Nightstand", footprint=(ft(2), ft(1, 4)), height=ft(2, 2),
     plan_symbol="nightstand", storage=True, source=REFERENCE,
@@ -212,7 +224,7 @@ STARTER_FURNITURE_TYPES = (
     STANDARD_SOFA, LOVESEAT, SECTIONAL, ARMCHAIR, ROCKING_CHAIR, COFFEE_TABLE, END_TABLE,
     MEDIA_CONSOLE,
     TV_65, TV_98,
-    QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, CHEST, NIGHTSTAND,
+    QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, CHEST, WARDROBE_48, NIGHTSTAND,
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
     TWO_PERSON_DINING_TABLE, DINING_CHAIR,
     WRITING_DESK, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,

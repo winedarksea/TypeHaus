@@ -134,6 +134,10 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         positions.append(perp1)
 
     cant_m = spec.cantilever.meters if spec.cantilever else 0.0
+    # Per-end overrides (a deck with a flush bearing at one end and an overhang at the
+    # other); each falls back to the symmetric scalar.
+    cant_start_m = spec.cantilever_start.meters if spec.cantilever_start is not None else cant_m
+    cant_end_m = spec.cantilever_end.meters if spec.cantilever_end is not None else cant_m
     # Anything shorter than the joist's own depth is bearing seat, not span. An opening
     # drawn to a bearing wall's *near face* stops short of the bearing line the span is cut
     # at, and the remainder — 3 3/8" of deck over the top plate, where the trimmer actually
@@ -145,9 +149,9 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
             # Cantilever only the two outer joist tips past the outermost bearing lines;
             # interior spans and opening-clipping are unchanged.
             if span_index == 0:
-                a -= cant_m
+                a -= cant_start_m
             if span_index == len(boundaries) - 2:
-                b += cant_m
+                b += cant_end_m
             segments = [(a, b)]
             for _opening, minx, maxx, miny, maxy in opening_boxes:
                 opening_perp0, opening_perp1 = (miny, maxy) if along_x else (minx, maxx)
@@ -206,7 +210,8 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     # out to the joist tips (the fascia line), not the beam axis it oversails.
     depth_in = depth / inch(1).meters
     rim_profile = f"1.25x{depth_in:g} rim"
-    for rim_index, boundary in enumerate((boundaries[0] - cant_m, boundaries[-1] + cant_m)):
+    for rim_index, boundary in enumerate((boundaries[0] - cant_start_m,
+                                          boundaries[-1] + cant_end_m)):
         if along_x:
             r0, r1 = (boundary, perp0), (boundary, perp1)
         else:

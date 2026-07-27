@@ -12,6 +12,7 @@ from __future__ import annotations
 import math
 
 from typehaus.findings import Finding, Result, Severity, element_error
+from typehaus.model.enums import LayerFunction, TrimKind
 from typehaus.model.mep import Sump, VentRun
 from typehaus.model.structure import Connector, Dowel, KneeBrace, Railing
 from typehaus.model.trim import EaveSoffit, Fascia, Flashing, GlazingTrim, Gutter
@@ -51,6 +52,15 @@ _TRIM_CATEGORY = {
     "glazing_bar": "glazing_trim",
 }
 
+# Rainscreen base closure. The strip is a stock corrugated section: 1-1/2" tall, sold by the
+# lineal foot, cut to the cavity's own depth. Only the height is a constant here — the depth
+# is read off the wall's furring layer, so a change to the batten size moves the order with
+# it instead of leaving a strip that no longer fills the cavity.
+BUG_SCREEN_MATERIAL = "corrugated-vent-strip"
+BUG_SCREEN_HEIGHT_IN = 1.5
+_STACK_TOLERANCE_M = 0.05   # a storey's walls land exactly on the one below; this is slop
+_STACK_PLAN_TOL_M = 0.5     # two stacked walls share a plan line within a wall's thickness
+
 
 def resolve_accessories(model: ResolvedModel) -> list[Finding]:
     """Append accessory solids to ``model.solids``. Geometry only, so the findings it can
@@ -78,7 +88,96 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
                 findings.extend(_resolve_vent(model, el, storey.tag))
             elif isinstance(el, (EaveSoffit, Fascia, Gutter, Flashing, GlazingTrim)):
                 _resolve_edge_run(model, el, storey.tag)
+    _resolve_bug_screens(model)
     return findings
+
+
+def rainscreen_cavity_m(layers) -> float | None:
+    """Depth of a wall's rainscreen cavity, or ``None`` if the stack has no rainscreen.
+
+    A rainscreen is not any furring — it is a FURRING layer with CLADDING *outboard* of it,
+    which is what makes the gap a drained and vented cavity rather than a service chase. The
+    predicate is read off the assembly, so every wall built on a rainscreen stack qualifies
+    automatically and an interior partition (no cladding at all) never does.
+
+    ``layers`` are the resolved depth layers, interior→exterior.
+    """
+    depth = None
+    for layer in layers:
+        if layer.function == LayerFunction.FURRING.value:
+            depth = layer.thickness_m
+        elif layer.function == LayerFunction.CLADDING.value and depth is not None:
+            return depth
+    return None
+
+
+def _point_segment_distance(p: tuple[float, float], a: tuple[float, float],
+                            b: tuple[float, float]) -> float:
+    run = sub(b, a)
+    span = run[0] * run[0] + run[1] * run[1]
+    if span <= 0.0:
+        return length(sub(p, a))
+    t = min(1.0, max(0.0, ((p[0] - a[0]) * run[0] + (p[1] - a[1]) * run[1]) / span))
+    return length(sub(p, (a[0] + run[0] * t, a[1] + run[1] * t)))
+
+
+def _continues_cavity_below(model: ResolvedModel, wall) -> bool:
+    """Is this wall's rainscreen cavity fed from a rainscreen wall directly beneath it?
+
+    Platform framing stacks a storey's walls on the one below, and the cladding and its
+    vent cavity run past that joint uninterrupted — there is no cladding start there and so
+    no screen. A wall only gets one where the cavity genuinely begins: at grade, or on top
+    of something that is not itself a rainscreen (a concrete stem wall, a garage curb).
+
+    The test is that some rainscreen wall's top lands on this wall's base *and* shares its
+    plan line; matching elevation alone would suppress the screen on every wall in a storey
+    the moment one of them stacked.
+    """
+    for other in model.walls:
+        if other.tag == wall.tag or abs(other.z1_m - wall.z0_m) > _STACK_TOLERANCE_M:
+            continue
+        if rainscreen_cavity_m(other.depth_layers()) is None:
+            continue
+        mid = ((wall.axis[0][0] + wall.axis[1][0]) / 2.0,
+               (wall.axis[0][1] + wall.axis[1][1]) / 2.0)
+        if _point_segment_distance(mid, other.axis[0], other.axis[1]) <= _STACK_PLAN_TOL_M:
+            return True
+    return False
+
+
+def _resolve_bug_screens(model: ResolvedModel) -> None:
+    """A vented insect closure where a rainscreen cavity opens at the base of the cladding.
+
+    Derived rather than authored: the screen exists because of how the wall is built, not
+    because of anything about a particular wall, so hand-authoring one run per wall would
+    mean the next exterior wall someone draws silently ships an open cavity for wasps. The
+    strip fills the furring layer's own plan band — its depth *is* the cavity depth, by
+    construction — and sits at the bottom of that cavity.
+
+    Only the *bottom* of a cavity is screened: see :func:`_continues_cavity_below`.
+
+    Geometry only: the solid renders and exports, and
+    :func:`typehaus.takeoff.envelope.bug_screen_takeoff` bills the same runs by the lineal
+    foot off the same predicate.
+    """
+    height = inch(BUG_SCREEN_HEIGHT_IN).meters
+    for wall in model.walls:
+        if not screens_rainscreen_base(model, wall):
+            continue
+        furring = next(layer for layer in wall.depth_layers()
+                       if layer.function == LayerFunction.FURRING.value)
+        model.solids.append(ResolvedSolid(
+            uid=f"{wall.uid}-bugscreen", tag=f"{wall.tag}-BUGSCREEN", storey=wall.storey,
+            category=TrimKind.BUG_SCREEN.value, outline=list(furring.polygon),
+            z0_m=wall.z0_m, z1_m=wall.z0_m + height, assembly=wall.assembly,
+        ))
+
+
+def screens_rainscreen_base(model: ResolvedModel, wall) -> bool:
+    """Does this wall carry a bug-screen run? Shared by the resolver and the take-off, so
+    the geometry and the order can never disagree about which walls are screened."""
+    return (rainscreen_cavity_m(wall.depth_layers()) is not None
+            and not _continues_cavity_below(model, wall))
 
 
 # --- helpers ----------------------------------------------------------------

@@ -135,6 +135,49 @@ def tub() -> Builder:
     return build
 
 
+def tub_shower() -> Builder:
+    """A tub-shower combination: the tub glyph under a full-height three-sided surround.
+
+    Drafting convention draws this as the alcove tub it is — the shower is not a second
+    outline but the head, so the glyph adds a small filled dot on the plumbing end's wall
+    where the riser lands, which is what distinguishes it from a plain ``tub`` on a plan.
+
+    The type's height is the surround (about 7'), not the tub rim, so the massing splits
+    the two: a tub basin at the bottom of the box and three tiled walls carried the rest of
+    the way up. The open side is ``-y``, the side facing the room, exactly like ``shower``.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        rim = clamp(min(width, depth) * 0.08, 0.04, 0.09)
+        basin_w = width - 2 * rim
+        basin_d = depth - 2 * rim
+        # Standard alcove tub rim, clamped so a short type still reads as tub-under-walls.
+        tub_h = min(0.51, height * 0.4)
+        drain_cx = -width / 2 + rim + basin_w * 0.12
+        head_r = min(width, depth) * 0.03
+        strokes = [rect(0, 0, width, depth, fill="porcelain"),
+                   ellipse(0, 0, basin_w / 2, basin_d / 2, weight=DETAIL_WEIGHT),
+                   circle(drain_cx, 0, min(width, depth) * 0.035, weight=DETAIL_WEIGHT),
+                   # The shower head, over the plumbing end, drawn against the back wall.
+                   circle(-width / 2 + rim, depth / 2 - rim, head_r, fill="metal")]
+        wall_t = min(0.05, rim, depth * 0.1)
+        parts = list(_basin(0, 0, width, depth, 0.0, tub_h, rim, "porcelain"))
+        parts.append(box(0, depth / 2 - wall_t / 2, tub_h, height, width, wall_t, "porcelain"))
+        for sign in (-1, 1):
+            parts.append(box(sign * (width / 2 - wall_t / 2), 0, tub_h, height, wall_t,
+                             depth - wall_t, "porcelain"))
+        # Riser and head at the plumbing end, on the back wall above the drain.
+        riser_t = min(0.035, width * 0.05)
+        head_z = min(height * 0.85, height - riser_t)
+        parts.append(box(-width / 2 + rim, depth / 2 - wall_t - riser_t / 2, tub_h, head_z,
+                         riser_t, riser_t, "metal"))
+        parts.append(box(-width / 2 + rim, depth / 2 - wall_t - riser_t * 1.5, head_z,
+                         min(head_z + riser_t, height), riser_t * 2, riser_t * 2, "metal"))
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def shower() -> Builder:
     """A shower enclosure: the square-with-diagonals convention, plus a pan, curb and glass."""
 
@@ -288,6 +331,7 @@ PLUMBING_SYMBOLS: dict[str, Builder] = {
     "lavatory": lavatory(pedestal=True),
     "vanity": vanity(),
     "tub": tub(),
+    "tub-shower": tub_shower(),
     "shower": shower(),
     "kitchen-sink": kitchen_sink(bowls=2),
 }

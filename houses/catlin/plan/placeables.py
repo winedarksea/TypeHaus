@@ -255,6 +255,58 @@ SECOND_PLACEABLES = [
     # zones intact, and it does: nothing here is short.
     Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
               room="RM-S-SUITE", position=pt(m(1.51666), m(5.64775)), rotation=deg(0)),
+
+    # Hanging storage for the three east bedrooms, which have no built-in closet: one 48"
+    # sliding-door wardrobe each, backed onto a partition.
+    #
+    # These rooms are full, and the placement is what the geometry allows rather than what
+    # the elevation would prefer. The east wall — the exterior side, the obvious wall for a
+    # case run — cannot take one: each bed's head is against it (footprints x 28'-4 1/3" to
+    # 35'-4 1/3"), leaving 4 3/4" north of the bed's side-access zone and 2" south of it.
+    # The west wall is the hall wall, and D-S-BED1/2/3 with their 2'-6" swings own the only
+    # runs on it long enough. That leaves the north and south partitions, and the choice
+    # between them is per-room because the desk pairs sit in different halves.
+    #
+    # Every candidate 4'-0 x 2'-0 slot against a wall in each room was enumerated on a 1"
+    # grid against the resolved footprints, the resolved recommended-clearance rings and the
+    # doors' swing polygons (clear faces: x 21'-11 5/8"..35'-11 3/8"; BED1 y 9'-0 5/8"..
+    # 17'-11 3/8", BED2 +9', BED3 +18'). The results:
+    #
+    # - BED2 north partition and BED3 south partition each have a slot that conflicts with
+    #   nothing at all, so both take one.
+    # - BED1 has none. Its door lands at y 13'-11" to 16'-5", so the north wall's clear run
+    #   starts at x=23'-4 1/2" where the swing arc leaves the wall, and the bed's 18"
+    #   recommended foot zone starts at x=26'-10 1/3": 3'-5 3/4" of wall for a 4'-0 case.
+    #   The position below is the least-bad of the enumeration — clear of the swing, clipping
+    #   the foot zone by 1 7/32" over 6 5/16" (0.05 sf), which reports as one
+    #   integrity.placeable_recommended_clearance_conflict advisory. Moving the bed 1 7/32"
+    #   south would clear it, but that breaks the 9'-7" bed-to-bed pitch the comment above
+    #   is built on and pushes the bed's south side zone onto the room's south wall.
+    #
+    # BED1's and BED2's wardrobes stand over ED-S-BED1-RC1 / ED-S-BED2-RC1, the north-wall
+    # general receptacles at 16"-18" AFF. That is not a code problem (210.52 spacing counts
+    # the receptacle whether or not a case stands in front of it) but it is worth knowing
+    # before the electrician sets the boxes: neither room has a 4'-0 run of wall without one.
+    Furniture(uid="CSB704AAAA", tag="FURN-S-BED1-WARD", type_ref="FURN-WARDROBE-48",
+              room="RM-S-BED1", position=pt(ft(25, 5), ft(16, 11.375)), rotation=deg(0)),
+    Furniture(uid="CSB705AAAA", tag="FURN-S-BED2-WARD", type_ref="FURN-WARDROBE-48",
+              room="RM-S-BED2", position=pt(ft(24, 4), ft(25, 11.375)), rotation=deg(0)),
+    Furniture(uid="CSB706AAAA", tag="FURN-S-BED3-WARD", type_ref="FURN-WARDROBE-48",
+              room="RM-S-BED3", position=pt(ft(24, 4), ft(28, 0.625)), rotation=deg(180)),
+
+    # Linen/towel storage in the hall bath, on the wall the room has nothing else on. The
+    # kitchen's pantry-closet carcass is the right box for it: 48" x 24" x 96", one plan
+    # symbol, one set of doors. RM-S-ENSUITE's clear face runs x 0'-0 5/8"..9'-11 3/8",
+    # y 26'-4 5/8"..35'-11 3/8", and the SW corner is the only 4'-0 run of wall it has
+    # free — the west wall above it is taken by the WC (x 1'-3 1/4"..3'-9 1/4", y 28'-10 1/2"
+    # ..31'-4 1/2") and by WIN-S-BATH-W, the north wall by the shower pan, the east wall by
+    # the lav and its mirror. Backed onto the south wall (rotation 180 turns the carcass
+    # back to -y) the unit occupies x 0'-0 5/8"..4'-0 5/8", y 26'-4 5/8"..28'-4 5/8": clear
+    # of D-S-ENSUITE's swing, which starts at x=7'-3", of the WC's REQUIRED 30"/21" zone,
+    # and of every device on the walls. 48" fits, so the 24" is not needed.
+    Furniture(uid="CSB707AAAA", tag="FURN-S-ENSUITE-CLOSET", type_ref="CASE-PANTRY-CLOSET-48",
+              room="RM-S-ENSUITE", position=pt(ft(2, 0.625), ft(27, 4.625)),
+              rotation=deg(180)),
 ]
 # The attic study uses the same compact work-and-meeting program as the second-storey
 # study, but the stair opening occupies the north side of the room. Keep the desk in the

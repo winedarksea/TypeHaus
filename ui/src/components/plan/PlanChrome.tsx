@@ -21,6 +21,7 @@ export function ToolHint({ tool, draft, assembly, assemblies, onAssembly, onSpli
     room: "Tap inside an enclosed area to claim a room",
     stair: "Tap on a floor to add a stair up to the next level",
     dimension: "Tap a wall to drive its length",
+    measure: "Tap two points to measure · Shift = ortho · Esc clears",
   };
   return (
     <div>

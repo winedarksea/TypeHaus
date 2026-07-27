@@ -346,9 +346,11 @@ class BreezewayGlazingConfig:
     * ``fastener_*`` — the gasketed stainless screw drawn as head + shank + washer.
     """
 
-    #: Building fact: drainage wedge, 3 1/2" rise over a 4'-0" half-span (~1:12).
-    wedge_rise_in: float = 3.5
-    wedge_run_in: float = 48.0
+    #: Building fact: drainage wedge, 1" rise over the roof's 2'-0" half-span (~1:24). The
+    #: roof is a single 4'x4' sheet bent over the crown, not two flat sheets meeting at a
+    #: bar, so the rise has to stay inside 16mm multiwall's cold-bend range.
+    wedge_rise_in: float = 1.0
+    wedge_run_in: float = 24.0
     #: Building fact: weep holes at 24" o.c. through the low U-channel.
     weep_pitch_in: float = 24.0
     weep_diameter_in: float = 0.25

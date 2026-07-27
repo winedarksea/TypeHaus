@@ -3,7 +3,7 @@ import type { PatchOp } from "../engine/EngineClient";
 import type { DoorOperation, DoorTypeSpec, Opening, Vec2 } from "../model/types";
 
 // Trade names for the operation vocabulary; the raw enum values read as jargon in a picker.
-const DOOR_OPERATION_LABELS: Record<DoorOperation, string> = {
+export const DOOR_OPERATION_LABELS: Record<DoorOperation, string> = {
   swing: "swing",
   double_swing: "French (double)",
   slide: "sliding",
@@ -11,6 +11,17 @@ const DOOR_OPERATION_LABELS: Record<DoorOperation, string> = {
   bifold: "bifold",
   overhead: "overhead (sectional)",
 };
+
+/**
+ * Picker label for a door type: the operation, plus the leaf makeup for interior doors.
+ * Only interior doors get the glazed/solid suffix — an exterior leaf's glazing is implied
+ * by its product (a patio slider is glass; an insulated entry door is not), whereas
+ * inside the house it is the whole difference between two otherwise identical 30" doors.
+ */
+export function doorTypeLabel(dt: Pick<DoorTypeSpec, "operation" | "exterior" | "glazed">): string {
+  const operation = DOOR_OPERATION_LABELS[dt.operation];
+  return dt.exterior ? operation : `${operation} · ${dt.glazed ? "glazed" : "solid"}`;
+}
 
 // Settings popover for a double-clicked door (→ TODO "click doors and modify their
 // settings"). Type/handing edits apply immediately as a single-field PatchOp, matching
@@ -62,7 +73,7 @@ export function DoorSettingsPopover({
           )}
           {doorTypes.map((dt) => (
             <option key={dt.tag} value={dt.tag}>
-              {dt.tag} · {DOOR_OPERATION_LABELS[dt.operation]}
+              {dt.tag} · {doorTypeLabel(dt)}
             </option>
           ))}
         </select>

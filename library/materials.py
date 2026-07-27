@@ -82,6 +82,18 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              source=f"{_UAF}: metal foil at 0.001\" reads 0 perm; continuous sheet steel is "
                     "vapour-impermeable. Normally installed over a vented rainscreen, which "
                     "truncates the Glaser walk before it"),
+    # The vent strip that closes a rainscreen cavity's base: a corrugated polypropylene
+    # section whose flutes run *across* the cavity, so the cavity keeps draining and
+    # venting while nothing insect-sized gets in. It is a spaced section, not a skin — the
+    # vapour path through it is the open air in its flutes, exactly like the resilient
+    # channel above.
+    Material(tag="corrugated-vent-strip", name="Corrugated rainscreen vent/insect strip",
+             r_per_inch=0.0, density=910.0, perm_rating=120.0, hatch="rigid",
+             color="#3c4045",
+             source=f"{_UAF}: 'Air, still' 120 perm-in — the vapour path through a "
+                    "corrugated vent strip is the open flute, not the polypropylene; "
+                    "density is the published bulk density of polypropylene. No ASTM E96 "
+                    "test is published for the strip itself"),
     Material(tag="concrete", name="Cast-in-place concrete", r_per_inch=0.08,
              density=2400.0, perm_rating=3.2, hatch="concrete", color="#a9a9a9",
              source=f"{_UAF}: 'Concrete, 1:2:4 mix' 3.2 perm-in (1.25 perm at 4\")"),
@@ -136,7 +148,7 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     Material(tag="tile", name="Porcelain floor tile", hatch="masonry", color="#dfe3e5",
              source="finish covering, not an assembly layer; thermal/vapour fields unset"),
     Material(tag="sealed-concrete", name="Sealed concrete slab finish", hatch="concrete",
-             color="#b3b1ad",
+             color="#b3b1ad", coating=True,
              source="a sealer on the slab rather than a covering over it — it adds no "
                     "thickness, so it is billed by area and carries no thermal fields"),
     Material(tag="rubber", name="Rolled rubber athletic flooring", hatch="membrane",

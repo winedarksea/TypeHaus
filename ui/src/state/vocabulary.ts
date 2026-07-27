@@ -7,7 +7,7 @@
 // need `Trade` and `SelectionKind`, and neither should have to reach through a module that
 // constructs an EngineClient to get them.
 
-export type Tool = "select" | "wall" | "opening" | "placeable" | "room" | "stair" | "dimension";
+export type Tool = "select" | "wall" | "opening" | "placeable" | "room" | "stair" | "dimension" | "measure";
 // Task-rail groups (Phase 2): high-level buckets whose flyout palettes expand to the
 // concrete Tools above. `null` = no flyout open.
 export type ToolGroup = "select" | "build" | "openings" | "components" | "measure";

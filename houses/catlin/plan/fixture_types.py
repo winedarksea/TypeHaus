@@ -28,6 +28,21 @@ FIXTURE_TYPES = (
     FixtureType(tag="FX-SHOWER", name="Shower", footprint=(ft(3), ft(3)), height=ft(7),
                 plan_symbol="shower", needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN}),
                 source="Residential planning allowance; final fixture selection by owner."),
+    # Standard 60" x 30" alcove tub. Same size as the shared FX-TUB-60, kept here under the
+    # house's own tag convention so a Catlin room can call for a soaking tub without a
+    # surround; the height is the rim, not a surround.
+    FixtureType(tag="FX-TUB", name="Alcove bathtub", footprint=(ft(5), ft(2, 6)),
+                height=ft(1, 8), plan_symbol="tub",
+                needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN}),
+                source="Residential planning allowance; final fixture selection by owner."),
+    # The tub-shower combination in RM-S-SUITEBATH: the same 60" x 30" alcove as FX-TUB with
+    # a full-height wet-wall surround over it, so it is one fixture on one drain rather than
+    # a tub and a shower sharing a footprint. `height` is the surround (7', matching
+    # FX-SHOWER), which is what the plan symbol and the massing are drawn against.
+    FixtureType(tag="FX-TUBSHOWER", name="Alcove tub-shower", footprint=(ft(5), ft(2, 6)),
+                height=ft(7), plan_symbol="tub-shower",
+                needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN}),
+                source="Residential planning allowance; final fixture selection by owner."),
     # --- BATH1-only compacts -----------------------------------------------------------
     # RM-M-BATH1's clear face is 3'-2" x 4'-3 1/4"; the shared FX-TOILET + FX-LAV pair
     # packed it wall-to-wall with ~1/8" to spare, so this room takes purpose-picked compact

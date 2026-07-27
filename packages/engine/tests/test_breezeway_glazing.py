@@ -1,17 +1,20 @@
 """The breezeway's polycarbonate: one continuous skin, and one channel where sheets meet.
 
-The enclosure used to have two holes in it, both of them consequences of the "three 4'x8'
-sheets, uncut" sheet economy the module was organised around:
+The enclosure is 8'-0" x 4'-0" x 4'-0", and every one of those numbers is a *sheet*
+dimension: two 4'x8' sheets stood on end whole and uncut as the E/W walls, and one 8'x4'
+halved to make the 4'x4' roof. The height is measured on the glazing — floor-beam soffit
+(-7 1/4") to roof-sheet underside (+7'-4 3/4") — not on the clear headroom above the
+decking, which is what the retired "10' stock" era measured and why the standing sheets used
+to be cut at 9'-10 3/4".
 
-* 8 1/4" of framing stood bare below each standing sheet — the sheet started at the deck
-  surface (+1") while the structure goes down to the floor-beam soffit (-7 1/4"), so the
-  beam band and the deck edge showed under the glazing;
-* 14 1/2" of each E/W elevation was open — the wall sheet's head stopped at the post top
-  (+8'-1") and the roof sheet's underside is at +9'-3 1/2", with nothing between them, and
-  the two extrusions that should have met were 3 1/4" apart in plan and 13.4" apart in
-  elevation.
+Two holes the enclosure used to have, both fixed and both still asserted here:
 
-The sheets now run the whole way and meet in one H channel. That premise is what these tests
+* 8 1/4" of framing stood bare below each standing sheet, because the sheet started at the
+  deck surface while the structure goes down to the floor-beam soffit;
+* 14 1/2" of each E/W elevation was open between the wall sheet's head and the roof sheet,
+  with two extrusions 3 1/4" apart in plan where one shared H channel belongs.
+
+The sheets run the whole way and meet in one H channel. That premise is what these tests
 hold — deliberately against *derived* elevations rather than the authored constants, so a
 future change to the framing depth or the wedge rise moves the assertions with it.
 """
@@ -55,19 +58,19 @@ def test_a_standing_sheet_reaches_the_floor_beam_soffit(catlin_model, side):
 def test_a_standing_sheet_reaches_the_roof_sheet_it_meets(catlin_model, side):
     """No open band at the head. The roof sheet's underside is the target, derived."""
     sheet = _solid(catlin_model, f"GL-BW-WALL-{side}")
-    roof_under = min(s.z0_m for s in _solids(catlin_model, "GL-BW-ROOF-"))
+    roof_under = min(s.z0_m for s in _solids(catlin_model, "GL-BW-ROOF"))
     assert sheet.z1_m == pytest.approx(roof_under, abs=1e-9), (
         "14 1/2\" of elevation used to be open between the wall sheet and the roof sheet")
 
 
-def test_the_standing_sheet_is_cut_from_ten_foot_stock(catlin_model):
-    """The retired premise, made explicit: these are no longer whole 8' sheets. 9'-10 3/4"
-    is inside 10' stock and outside 8' — if a change ever pushed it past 10', the module's
-    stated bill of materials would be wrong and nothing else would say so."""
+def test_the_standing_sheet_is_a_whole_uncut_eight_foot_sheet(catlin_model):
+    """The premise of the whole module, asserted as a number: a 4'x8' sheet stood on end and
+    not cut. It is also the enclosure's stated height — "8 x 4 x 4" is measured here, on the
+    glazing, from the floor-beam soffit to the roof sheet's underside. Anything other than
+    exactly 8.0 means either a cut sheet or a wrong claim in the docstring."""
     sheet = _solid(catlin_model, "GL-BW-WALL-W")
     height_ft = (sheet.z1_m - sheet.z0_m) * M_TO_FT
-    assert height_ft == pytest.approx(9.895833, abs=1e-5)  # 9'-10 3/4"
-    assert 8.0 < height_ft <= 10.0
+    assert height_ft == pytest.approx(8.0, abs=1e-6)
 
 
 def test_a_jamb_runs_the_sheets_full_height(catlin_model):
@@ -85,11 +88,15 @@ def test_a_jamb_runs_the_sheets_full_height(catlin_model):
 
 def test_the_roof_sheet_dies_on_the_standing_sheets_own_line(catlin_model):
     """The cost of the shared channel, asserted so it stays deliberate: the roof used to
-    oversail the glazing line by 3 1/4" each side as a drip edge. It does not any more."""
+    oversail the glazing line by 3 1/4" each side as a drip edge. It does not any more. The
+    roof is now a single sheet, so both edges are checked against one solid."""
     wall_w, wall_e = (_solid(catlin_model, f"GL-BW-WALL-{s}") for s in "WE")
-    roof_w, roof_e = (_solid(catlin_model, f"GL-BW-ROOF-{s}") for s in "WE")
-    assert min(_span_x(roof_w)) == pytest.approx(sum(_span_x(wall_w)) / 2.0, abs=1e-6)
-    assert max(_span_x(roof_e)) == pytest.approx(sum(_span_x(wall_e)) / 2.0, abs=1e-6)
+    roof = _solid(catlin_model, "GL-BW-ROOF")
+    lo, hi = _span_x(roof)
+    assert lo == pytest.approx(sum(_span_x(wall_w)) / 2.0, abs=1e-6)
+    assert hi == pytest.approx(sum(_span_x(wall_e)) / 2.0, abs=1e-6)
+    # ...and it is exactly 4'-0" wide: half of an 8'x4' sheet, the only cut in the bill.
+    assert hi - lo == pytest.approx(4.0, abs=1e-6)
 
 
 @pytest.mark.parametrize("side", ["W", "E"])
@@ -100,7 +107,7 @@ def test_one_h_channel_receives_both_sheets(catlin_model, side):
     assert trim.profile == "H"
     assert not trim.weep_holes, "the H is a joint, not a drain — the sill weeps now"
     channel = _solid(catlin_model, f"TR-BW-HCH-{side}-1")
-    joint = min(s.z0_m for s in _solids(catlin_model, "GL-BW-ROOF-"))
+    joint = min(s.z0_m for s in _solids(catlin_model, "GL-BW-ROOF"))
     assert channel.z0_m < joint < channel.z1_m
     # ...and it sits on the sheets' shared line in plan.
     sheet = _solid(catlin_model, f"GL-BW-WALL-{side}")
@@ -111,7 +118,10 @@ def test_one_h_channel_receives_both_sheets(catlin_model, side):
 def test_the_eave_u_and_the_wall_head_are_gone(catlin_model):
     """Both were replaced by the H, not merely joined by it."""
     tags = {getattr(e, "tag", None) for e in catlin_model.plan.all_elements()}
-    for retired in ("TR-BW-UCH-W", "TR-BW-UCH-E", "TR-BW-HEAD-W", "TR-BW-HEAD-E"):
+    for retired in ("TR-BW-UCH-W", "TR-BW-UCH-E", "TR-BW-HEAD-W", "TR-BW-HEAD-E",
+                    # ...and the crown bar with them: the roof is one bent sheet now, so the
+                    # two half-panels it capped no longer exist to be capped.
+                    "TR-BW-BAR-CROWN", "GL-BW-ROOF-W", "GL-BW-ROOF-E"):
         assert retired not in tags, retired
 
 

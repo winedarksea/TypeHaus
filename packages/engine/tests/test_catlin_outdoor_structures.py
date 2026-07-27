@@ -29,6 +29,24 @@ def _wall(model, tag):
     return next(w for w in model.walls if w.tag == tag)
 
 
+def _floor(model, tag):
+    return next(f for f in model.floors if f.tag == tag)
+
+
+def _porch_deck_top(model):
+    """Top of the composite boards over FS-SG-PORCH — the porch walking surface.
+
+    There is no SL-SG-PORCH slab standing in for the porch floor any more; the floor system
+    *is* the floor, so the surface underfoot is its joist tops plus the plank on them."""
+    joists = [m for m in _floor(model, "FS-SG-PORCH").members if m.category == "joist"]
+    assert joists, "FS-SG-PORCH must resolve joists to stand on"
+    return max(m.z1_m for m in joists) + 1 * INCH  # SPEC.porch_deck_thickness_in
+
+
+def _porch_outline(model):
+    return [p.xy_m for p in model.plan.by_tag("FS-SG-PORCH").outline]
+
+
 # --- porch 6x6 pillars embedded in the CMU railing ---------------------------
 def test_pillars_start_at_the_top_of_the_railing_they_are_embedded_in(catlin_model) -> None:
     railing_top = _wall(catlin_model, "W-SG-RAIL-F").z1_m
@@ -39,7 +57,7 @@ def test_pillars_start_at_the_top_of_the_railing_they_are_embedded_in(catlin_mod
 
 
 def test_the_open_north_edge_pillar_still_bears_on_the_decking(catlin_model) -> None:
-    porch_deck_top = _solid(catlin_model, "SL-SG-PORCH").z1_m
+    porch_deck_top = _porch_deck_top(catlin_model)
     assert abs(_solid(catlin_model, DECK_BORNE_PILLAR_TAG).z0_m - porch_deck_top) < 1e-9
 
 
@@ -179,21 +197,58 @@ def test_raised_garden_is_not_part_of_the_thermal_envelope(catlin_model) -> None
 
 # --- porch third pass: sonotube south-offset + gutter at the drip edge -------
 def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> None:
-    """PT-SG-COL stands a SPEC south-offset (15") inside the deck's north edge, so the
-    12" tube clears the house cladding and its 30" bell footing's north face lands exactly
-    on the north-edge line — the doweled thermal-break joint plane."""
-    deck_edge_y = max(p[1] for p in _solid(catlin_model, "SL-SG-PORCH").outline)
+    """PT-SG-COL stands a south-offset inside the deck's north edge, so the 12" tube clears
+    the house cladding and its 30" bell footing stops short of the house's own footing.
+
+    How far short is not a free number: FT-B-S2's south face already lands on the deck's
+    north-edge line, and the dowels cross a 40 psi XPS block between the two footings, so
+    the bell's north face has to sit back by exactly that block's thickness. Everything
+    here is read off the model — the offset itself included — so the assertion tracks
+    ``SPEC.column_south_offset_in`` instead of restating it.
+    """
+    deck_edge_y = max(y for _, y in _porch_outline(catlin_model))
     column = _solid(catlin_model, "PT-SG-COL")
     column_y = sum(p[1] for p in column.outline) / len(column.outline)
-    assert column_y == pytest.approx(deck_edge_y - 15 * INCH)
+    # The authored back-beam line is the offset's single source of truth.
+    beam_line_y = catlin_model.plan.by_tag("N-SGM-COL").position.xy_m[1]
+    assert column_y == pytest.approx(beam_line_y)
+    assert column_y < deck_edge_y - 6 * INCH  # a real tuck, not "on the line"
     assert max(p[1] for p in column.outline) < deck_edge_y  # tube fully inside the edge
+
     bell = _solid(catlin_model, "FT-SG-COL")
-    assert max(p[1] for p in bell.outline) == pytest.approx(deck_edge_y)
+    house_footing_s = min(y for _, y in _solid(catlin_model, "FT-B-S2").outline)
+    foam = catlin_model.plan.by_tag("DW-SG-COL").foam_thickness.meters
+    assert max(p[1] for p in bell.outline) == pytest.approx(house_footing_s - foam)
     # The back-beam line (and its midspan node) re-anchors to the same offset, collinear.
     for tag in ("BM-SG-BKW", "BM-SG-BKE"):
         beam = _solid(catlin_model, tag)
         for _, y in beam.outline:
             assert y == pytest.approx(column_y, abs=2 * INCH)  # within the beam half-width
+
+
+def test_porch_joists_reach_the_deck_edge_without_oversailing_the_front_wall(
+        catlin_model) -> None:
+    """The porch's two joist ends are different, which one symmetric cantilever cannot say.
+
+    South: the joists stop at the arched front wall — nothing runs out over 16" of concrete.
+    North: they run the column's south-offset past the back-beam line, all the way to the
+    deck's north edge, which is the overhang the porch actually has.
+    """
+    outline = _porch_outline(catlin_model)
+    north, south = max(y for _, y in outline), min(y for _, y in outline)
+    joists = [m for m in _floor(catlin_model, "FS-SG-PORCH").members if m.category == "joist"]
+    assert joists
+    tips = [max(m.p0[1], m.p1[1]) for m in joists]
+    heels = [min(m.p0[1], m.p1[1]) for m in joists]
+    assert max(tips) == pytest.approx(north)
+    beam_line_y = catlin_model.plan.by_tag("N-SGM-COL").position.xy_m[1]
+    assert max(tips) > beam_line_y  # it is a cantilever, not a flush end
+    arch_axis_y = sum(y for _, y in _wall(catlin_model, "W-SG-ARCH").axis) / 2.0
+    assert min(heels) == pytest.approx(arch_axis_y)  # flush at the bearing, no oversail
+    # The balcony keeps its own symmetric 6" — the per-end split must not have leaked.
+    balcony = catlin_model.plan.by_tag("FS-SG-DECK").joists
+    assert balcony.cantilever.inches == pytest.approx(6.0)
+    assert balcony.cantilever_start is None and balcony.cantilever_end is None
 
 
 def test_balcony_gutter_rim_meets_the_drip_edge(catlin_model) -> None:

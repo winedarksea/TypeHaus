@@ -16,7 +16,6 @@ from typehaus.emit.draw.detail_components.config import (
     BASEMENT_TO_FRAMED_WALL,
     FOUNDATION_FACE,
     M_TO_IN,
-    SHEET_METAL,
     SLAB_EDGE,
 )
 from typehaus.emit.draw.detail_components.geometry import (
@@ -31,6 +30,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     wall_cut_bounds_m,
 )
 from typehaus.emit.draw.scene import IRNode
+from typehaus.resolve.accessories import BUG_SCREEN_HEIGHT_IN, BUG_SCREEN_MATERIAL
 
 
 def basement_framed_wall(model, framed, concrete, crop, direction,
@@ -101,7 +101,14 @@ def _z_flashing_and_screen(intervals, is_outboard_high, out_sign,
     """Z-flashing with a drip at the bottom of the rainscreen, screened above it.
 
     The rainscreen cavity has to drain and vent at its base; the Z-flashing kicks the water
-    out and the screen keeps the open cavity from becoming an insect route.
+    out and the bug screen keeps the open cavity from becoming an insect route.
+
+    The screen band is the same corrugated vent strip the resolver derives as geometry and
+    the take-off bills by the lineal foot, so its height comes from
+    ``BUG_SCREEN_HEIGHT_IN`` rather than from a drawing-only constant: the section shows the
+    product that is actually on the order. It spans the furring cavity — the strip is cut to
+    the cavity depth — and carries the material tag so the writers colour it as the
+    polypropylene section it is instead of leaving it an unfilled outline.
     """
     cfg = BASEMENT_TO_FRAMED_WALL
     furring = outermost_with_function(intervals, "furring")
@@ -118,9 +125,10 @@ def _z_flashing_and_screen(intervals, is_outboard_high, out_sign,
         (out_sign * cfg.z_flashing_kick_in, -cfg.z_flashing_kick_drop_in),
     ])
     nodes = flashing_nodes(path, tag="z-flashing")
-    nodes += rect_region(fur_in, junction_z + cfg.screen_rise_in, clad_out,
-                         junction_z + cfg.screen_rise_in + SHEET_METAL.screen_band_in,
-                         "insect-screen", None, "rigid", lineweight=0.3)
+    fur_out = face_of(furring, is_outboard_high, outer=True)
+    nodes += rect_region(fur_in, junction_z + cfg.screen_rise_in, fur_out,
+                         junction_z + cfg.screen_rise_in + BUG_SCREEN_HEIGHT_IN,
+                         "bug-screen", BUG_SCREEN_MATERIAL, "rigid", lineweight=0.3)
     return nodes
 
 

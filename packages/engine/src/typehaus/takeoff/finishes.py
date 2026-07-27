@@ -92,6 +92,10 @@ def floor_finish_rows(model: ResolvedModel) -> list[dict[str, object]]:
             "finish": finish,
             "material": material.name if material is not None else "UNKNOWN",
             "known": material is not None,
+            # A coating (sealer, stain) bills by coverage area and has no plane of its own —
+            # the renderers skip drawing it, and this flag is what says the row is a coating
+            # rather than a covering laid over the deck.
+            "coating": bool(material is not None and material.coating),
             "net_area_sqft": round(net_ft2, 1),
             "waste_pct": round(waste * 100.0, 1),
             "order_area_sqft": _order_area(net_ft2, waste),
@@ -106,6 +110,7 @@ def floor_finish_rows(model: ResolvedModel) -> list[dict[str, object]]:
             "material": (companion_material.name if companion_material is not None
                          else "UNKNOWN"),
             "known": companion_material is not None,
+            "coating": False,
             "net_area_sqft": round(net_ft2, 1),
             # A pad or underlayment is roll goods laid under the covering: it is cut to the
             # room the same way, so it carries the covering's own waste.
@@ -120,6 +125,7 @@ def floor_finish_rows(model: ResolvedModel) -> list[dict[str, object]]:
             "finish": None,
             "material": "UNKNOWN",
             "known": False,
+            "coating": False,
             "net_area_sqft": round(areas["\0unfinished"] * _M2_TO_FT2, 1),
             "waste_pct": 0.0,
             "order_area_sqft": 0.0,

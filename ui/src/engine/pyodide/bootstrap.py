@@ -210,6 +210,15 @@ class OfflineEngine:
     def findings_json(self) -> list[dict[str, Any]]:
         return [f.model_dump(mode="json") for f in self.findings]
 
+    def bom_json(self) -> dict[str, Any]:
+        """The bill of materials, offline. Mirrors the served ``/bom`` endpoint so the
+        browser reads the same one implementation either way."""
+        from typehaus.takeoff.bom import bill_of_materials
+
+        if self.model is None:
+            return {}
+        return bill_of_materials(self.model)
+
     def detail_index(self) -> list[dict[str, Any]]:
         from typehaus.emit.draw.details import detail_index
 

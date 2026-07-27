@@ -6,6 +6,7 @@ import type { Finding, Model } from "../model/types";
 import {
   type BuildResult,
   type DetailIndexEntry,
+  type EngineBom,
   type DetailPayload,
   EngineError,
   type EngineArtifact,
@@ -66,6 +67,12 @@ export class HttpEngineClient implements EngineClient {
     const res = await fetch(this.url(`/detail?key=${encodeURIComponent(key)}`));
     if (!res.ok) throw new EngineError(await readError(res), res.status);
     return (await res.json()) as DetailPayload;
+  }
+
+  async getBom(): Promise<EngineBom> {
+    const res = await fetch(this.url("/bom"));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as EngineBom;
   }
 
   async appendDetailNote(key: string, text: string): Promise<string> {

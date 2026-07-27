@@ -28,6 +28,7 @@ const GROUPS: GroupSpec[] = [
   ] },
   { id: "measure", glyph: "↔", label: "Measure", tools: [
     { id: "dimension", glyph: "↔", label: "Dimension", hint: "Drive a wall's length" },
+    { id: "measure", glyph: "⟷", label: "Measure", hint: "Tap two points to measure (Shift = ortho)" },
   ] },
 ];
 
@@ -40,6 +41,7 @@ const GROUP_OF_TOOL: Record<Tool, ToolGroup> = {
   opening: "openings",
   placeable: "components",
   dimension: "measure",
+  measure: "measure",
 };
 
 export function Toolbar() {

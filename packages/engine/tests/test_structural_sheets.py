@@ -72,10 +72,11 @@ def test_s100_carries_footings_pads_and_slabs_from_every_storey(catlin_model):
 
 
 def test_s100_excludes_structural_decks_from_the_slab_schedule(catlin_model):
-    # SL-M-DECK spans the basement and SL-SG-PORCH rides a joisted deck: framing, not
-    # foundation. Neither may appear as slab-on-grade.
+    # SL-M-DECK spans the basement: framing, not foundation, so it may not appear as
+    # slab-on-grade. (The porch used to be the second half of this — SL-SG-PORCH riding a
+    # joisted deck — until the slab was deleted and FS-SG-PORCH became the porch floor.)
     on_grade = {slab.tag for slab in slabs_on_grade(catlin_model)}
-    assert "SL-M-DECK" not in on_grade and "SL-SG-PORCH" not in on_grade
+    assert "SL-M-DECK" not in on_grade
 
 
 def test_s100_has_a_keyed_foundation_schedule(catlin_model):

@@ -94,6 +94,26 @@ class DoorOperation(str, Enum):  # noqa: UP042 — StrEnum needs 3.11; the toolc
     OVERHEAD = "overhead"  # sectional garage door, panels running up onto ceiling track
 
 
+class WindowOperation(str, Enum):  # noqa: UP042 — StrEnum needs 3.11; the toolchain is 3.9
+    """How a window sash moves — drives the plan symbol, the schedule and the IFC export.
+
+    The ``str`` mixin is deliberate, for the same reason ``DoorOperation`` carries one: the
+    value crosses the plan/model JSON, the UI catalog and the drawing emitters as a bare
+    string, so widening ``WindowType.operation`` from ``str`` to this enum is backward
+    compatible in both directions.
+
+    ``FIXED`` is a picture window — no sash, no hardware, and no ventilation or egress
+    credit — which is why it must be a distinct type from an operable unit of the same size
+    rather than a trim note on one.
+    """
+
+    FIXED = "fixed"
+    CASEMENT = "casement"
+    DOUBLE_HUNG = "double_hung"
+    SLIDER = "slider"
+    AWNING = "awning"
+
+
 class AlarmKind(Enum):
     """Residential life-safety alarm types (R314/R315).
 
@@ -274,6 +294,11 @@ class TrimKind(Enum):
     # water and grows algae, so every edge is capped by one of these.
     GLAZING_CHANNEL = "glazing_channel"  # U / H / F extrusion capping a panel edge
     GLAZING_BAR = "glazing_bar"          # capped bar joining or closing panel edges
+    # A rainscreen cavity must stay open at its base to drain and to draw ventilation air,
+    # which makes it an insect route straight up behind the cladding unless the opening is
+    # screened. The closure is a lineal run, not a piece of hardware, so it lives here with
+    # the other edge runs rather than in ``ConnectorKind``.
+    BUG_SCREEN = "bug_screen"            # vented insect closure at a rainscreen cavity base
 
 
 class UtilityKind(Enum):

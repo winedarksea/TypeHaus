@@ -8,8 +8,13 @@ import {
   overheadDoorStrokes,
   pocketDoorStrokes,
   slidingDoorStrokes,
+  windowStrokeGlyph,
+  WINDOW_SASH_PROJECTION_FRACTION,
+  WINDOW_TRACK_OFFSET_FRACTION,
 } from "./doorSymbols";
-import type { DoorOperation, Vec2 } from "./types";
+import { WINDOW_OPERATION_LABELS } from "../components/WindowSettingsPopover";
+import { doorTypeLabel } from "../components/DoorSettingsPopover";
+import type { DoorOperation, Vec2, WindowOperation } from "./types";
 
 const CENTER: Vec2 = [100, 50];
 const TOLERANCE = 1e-9;
@@ -175,5 +180,107 @@ function checkHostWallThickness() {
   ];
   if (Math.abs(hostWallThicknessM(layers) - 0.1527) > 1e-9) {
     throw new Error("Cavity layers share their host's slice and must not add wall depth");
+  }
+}
+
+/**
+ * Window sash glyphs and the two picker label maps. Grouped with the door symbols because
+ * they are the same construction and the same claim: the plan symbol and the picker label
+ * must both make a fixed (picture) unit distinguishable from an operable one of equal size,
+ * which is the only thing separating them once they are cut into the same rough opening.
+ */
+export function runWindowSymbolTests() {
+  // Same wall as above: running left→right on screen, sash operating toward the bottom.
+  const input = {
+    center: CENTER, angleRadians: 0, operatingSign: 1, parkJambSign: 1,
+    widthM: 1, pixelsPerMeter: 80,
+  };
+  const widthPx = 80;
+  const glyph = (operation: WindowOperation | undefined) =>
+    windowStrokeGlyph({ ...input, operation });
+
+  if (glyph("fixed").length !== 0) {
+    throw new Error("A fixed picture window has no sash and must draw no hardware");
+  }
+  if (glyph(undefined).length !== 0) {
+    throw new Error("An unknown operation must draw nothing rather than invent hardware");
+  }
+
+  const [casement] = glyph("casement");
+  if (glyph("casement").length !== 1 || casement.dashed) {
+    throw new Error("A casement is one solid tick from its hinge jamb");
+  }
+  const [hinge, freeStile] = casement.points;
+  if (Math.abs(hinge[0] - (CENTER[0] + widthPx / 2)) > TOLERANCE || Math.abs(hinge[1] - CENTER[1]) > TOLERANCE) {
+    throw new Error("The casement tick must start on the wall line at the handed hinge jamb");
+  }
+  if (freeStile[1] >= CENTER[1]) {
+    throw new Error("The casement sash must project to the handed operating side");
+  }
+  const flippedHinge = windowStrokeGlyph({ ...input, operation: "casement", parkJambSign: -1 })[0].points[0];
+  if (Math.abs(flippedHinge[0] - (CENTER[0] - widthPx / 2)) > TOLERANCE) {
+    throw new Error("Flipping the handed jamb must move the casement hinge to the other jamb");
+  }
+  const flippedSide = windowStrokeGlyph({ ...input, operation: "casement", operatingSign: -1 })[0].points[1];
+  if (flippedSide[1] <= CENTER[1]) {
+    throw new Error("Flipping the operating side must swing the casement tick across the wall");
+  }
+
+  const [awning] = glyph("awning");
+  const [left, apex, right] = awning.points;
+  if (Math.abs(left[0] - (CENTER[0] - widthPx / 2)) > TOLERANCE
+    || Math.abs(right[0] - (CENTER[0] + widthPx / 2)) > TOLERANCE) {
+    throw new Error("The awning chevron must span jamb to jamb");
+  }
+  if (Math.abs(apex[0] - CENTER[0]) > TOLERANCE || apex[1] >= CENTER[1]) {
+    throw new Error("A top-hinged awning apexes at the centre, on the operating side");
+  }
+  if (Math.abs(CENTER[1] - apex[1] - widthPx * WINDOW_SASH_PROJECTION_FRACTION) > TOLERANCE) {
+    throw new Error("The sash projection must be the published width fraction");
+  }
+
+  // The two non-projecting operations ride in the frame: their glyph is track, offset off
+  // the wall line by less than a sash projects, so they never read as an opening leaf.
+  const hung = glyph("double_hung");
+  if (hung.length !== 1 || !hung[0].dashed) {
+    throw new Error("A double-hung check rail is concealed track and must be dashed");
+  }
+  const trackOffset = CENTER[1] - hung[0].points[0][1];
+  if (Math.abs(trackOffset - widthPx * WINDOW_TRACK_OFFSET_FRACTION) > TOLERANCE) {
+    throw new Error("The track offset must be the published width fraction");
+  }
+  if (trackOffset >= widthPx * WINDOW_SASH_PROJECTION_FRACTION) {
+    throw new Error("Track must sit closer to the wall than a projecting sash does");
+  }
+  const slider = glyph("slider");
+  if (slider.length !== 2 || slider[0].dashed || !slider[1].dashed) {
+    throw new Error("A slider draws its moving leaf solid and the half it crosses dashed");
+  }
+  if (slider[0].points[0][0] >= slider[1].points[1][0]) {
+    throw new Error("The slider leaf must travel toward the handed park jamb");
+  }
+
+  // Every member of each vocabulary is labelled: a picker that falls through to a raw enum
+  // value is the failure this map exists to prevent.
+  const operations: WindowOperation[] = ["fixed", "casement", "double_hung", "slider", "awning"];
+  for (const operation of operations) {
+    if (!WINDOW_OPERATION_LABELS[operation]) {
+      throw new Error(`Window operation ${operation} has no trade label`);
+    }
+  }
+  if (!WINDOW_OPERATION_LABELS.fixed.includes("picture")) {
+    throw new Error("The fixed label must say 'picture' — it is the one a client mis-picks");
+  }
+
+  // Interior doors carry the leaf makeup; exterior ones do not (their product implies it).
+  const interior = { operation: "swing" as DoorOperation, exterior: false, glazed: false };
+  if (doorTypeLabel(interior) !== "swing · solid") {
+    throw new Error("An interior door label must state its leaf makeup");
+  }
+  if (doorTypeLabel({ ...interior, glazed: true }) !== "swing · glazed") {
+    throw new Error("A glazed interior leaf must be labelled as such");
+  }
+  if (doorTypeLabel({ operation: "slide", exterior: true, glazed: true }) !== "sliding") {
+    throw new Error("An exterior door label carries the operation alone");
   }
 }

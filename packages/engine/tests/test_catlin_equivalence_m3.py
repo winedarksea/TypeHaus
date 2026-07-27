@@ -81,6 +81,11 @@ DECLARED_DIVERGENCES = {
         "is what gives the shaft its code-minimum 7'-0\" clear well and the furnace room its "
         "8'-6\", both measured off the same wall (reference basement plan)"
     ),
+    "Porch Floor Deck (placeholder)": (
+        "the old model drew the porch floor as a slab standing in for framing it did not "
+        "have; the porch is FS-SG-PORCH now — real PT 2x8 joists with the composite plank "
+        "as the deck's own sheet — so the placeholder slab has nothing left to stand in for"
+    ),
     "House Attic Floor Subfloor": "floor finishes are IfcCovering now, not IfcSlab",
     "House Second Floor Subfloor": "floor finishes are IfcCovering now, not IfcSlab",
     "House Main Floor Ceiling Drywall": "ceiling finishes are IfcCovering now, not IfcSlab",

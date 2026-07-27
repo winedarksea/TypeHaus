@@ -17,11 +17,17 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from typehaus.model.enums import LayerFunction
+from typehaus.model.enums import LayerFunction, TrimKind
+from typehaus.resolve.accessories import (
+    BUG_SCREEN_MATERIAL,
+    rainscreen_cavity_m,
+    screens_rainscreen_base,
+)
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import ResolvedModel
 
 _M2_TO_FT2 = 10.7639104
+_M_TO_FT = 3.280839895
 
 # Layer functions that are a purchased covering with an area. AIRGAP and FURRING are not:
 # an air gap is nothing at all, and furring is lineal-foot strapping that the framing cut
@@ -84,4 +90,39 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
          # so a caller summing both sections knows where the overlap is.
          "also_in_sheet_goods": function == LayerFunction.SHEATHING.value}
         for (scope, function, material, thickness), area in sorted(areas.items())
+    ]
+
+
+def bug_screen_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
+    """Lineal feet of rainscreen base vent/insect strip, grouped by cavity depth.
+
+    The strip is stock extrusion cut to the cavity it closes, so the buying decision is
+    "how many feet of the 3/4" section and how many of the 1/2"" — hence the grouping. It is
+    billed off the *walls*, the same predicate the resolver derives the geometry from
+    (:func:`typehaus.resolve.accessories.screens_rainscreen_base`), rather than off the emitted
+    solids: the solid sweep in ``structural_solids_takeoff`` counts it too, but in cubic
+    feet, which is not a unit anyone orders a vent strip in.
+    """
+    runs: dict[float, dict[str, object]] = {}
+    for wall in model.walls:
+        if not screens_rainscreen_base(model, wall):
+            continue
+        key = round(rainscreen_cavity_m(wall.depth_layers()) or 0.0, 4)
+        row = runs.get(key)
+        if row is None:
+            row = runs[key] = {"category": TrimKind.BUG_SCREEN.value,
+                               "material": BUG_SCREEN_MATERIAL,
+                               "cavity_depth_in": round(key / 0.0254, 3),
+                               "count": 0, "length_m": 0.0, "tags": []}
+        row["count"] = int(row["count"]) + 1
+        row["length_m"] = float(row["length_m"]) + length(sub(wall.axis[1], wall.axis[0]))
+        tags = row["tags"]
+        assert isinstance(tags, list)
+        tags.append(wall.tag)
+    return [
+        {"category": row["category"], "material": row["material"],
+         "cavity_depth_in": row["cavity_depth_in"], "count": int(row["count"]),
+         "length_ft": round(float(row["length_m"]) * _M_TO_FT, 1),
+         "tags": sorted(row["tags"])}
+        for row in (runs[key] for key in sorted(runs))
     ]

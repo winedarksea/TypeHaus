@@ -14,6 +14,14 @@ export type DoorOperation =
   | "bifold"
   | "overhead";
 
+/** Mirror of the engine's `WindowOperation` enum (model/enums.py). */
+export type WindowOperation =
+  | "fixed"
+  | "casement"
+  | "double_hung"
+  | "slider"
+  | "awning";
+
 export interface Provenance {
   file: string;
   line: number;
@@ -542,7 +550,9 @@ export interface WindowTypeSpec {
   tag: string;
   width_m: number;
   height_m: number;
-  operation: string;
+  // Closed vocabulary mirroring the engine's `WindowOperation` enum; it selects the plan
+  // symbol and separates a fixed picture unit from an operable sash of the same size.
+  operation: WindowOperation;
 }
 
 export interface DoorTypeSpec {
@@ -579,6 +589,10 @@ export interface MaterialSpec {
   // that authors neither falls back to the family inferred from its tag (nordic/palette.ts).
   color?: string | null;
   finish?: string | null;
+  // A coating — sealer, stain, paint — rather than a covering: it bills by coverage area but
+  // adds no thickness, so `buildRoomFloor` draws no finish plane for it. Without this a
+  // sealed slab renders as two floors: the slab and a finish plane on the same face.
+  coating?: boolean | null;
 }
 
 export interface CatalogLayer {

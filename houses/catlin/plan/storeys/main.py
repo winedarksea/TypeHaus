@@ -71,6 +71,12 @@ WINDOW_TYPES = [
     # 36" RO — concrete basement wall only (no stud module to respect down there).
     WindowType(tag="WT-3660", width=ft(3), height=ft(5), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
+    # Same unit, same glass, no sash: a picture window for the openings that are there for
+    # daylight and view only. It is a separate *type* rather than a note on WT-3660 because
+    # a fixed unit is a different product on the quote and carries no ventilation or egress
+    # credit — the existing tags stay as they are, since they are referenced house-wide.
+    WindowType(tag="WT-3660-FIX", width=ft(3), height=ft(5), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="fixed"),
 ]
 
 NODES = [

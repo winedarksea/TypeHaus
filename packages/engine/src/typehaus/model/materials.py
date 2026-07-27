@@ -37,6 +37,12 @@ class Material(HausModel):
     # from substrings in the tag, which cannot tell white brick from red. Recipes are defined
     # once per surface (ui/src/three/materials.ts MASONRY_STYLES, emit/gltf/emitter.py).
     finish: str | None = None
+    # A *coating* rather than a covering: a sealer, stain or paint that adds no measurable
+    # thickness to what it is applied over. It still bills — by coverage area, with no waste
+    # allowance — but it has no plane of its own, so the renderers must not draw one for it.
+    # Drawing one is how a sealed slab reads as two floors: the slab, plus a finish plane
+    # sitting on the same face (→ TODO "the garage seems to have two floors").
+    coating: bool = False
     # Optional freeform provenance (URL, standard, or "generic assumption") (#46).
     source: str | None = None
 

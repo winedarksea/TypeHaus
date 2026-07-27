@@ -51,6 +51,7 @@ _library = Library(
     electrical_device_types=(*mep.ELECTRICAL_DEVICE_TYPES, *electrical.DEVICE_TYPES,
                              *lighting_types.LIGHTING_TYPES),
     circuits=circuits.CIRCUITS,
+    load_managements=circuits.LOAD_MANAGEMENTS,
     transitions=transitions.TRANSITIONS,
     construction_rules=tuple(assemblies.CONSTRUCTION_RULES),
 )

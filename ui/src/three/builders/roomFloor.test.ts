@@ -28,9 +28,13 @@ const MATERIALS: MaterialAppearance[] = [
   { tag: "lvp", color: "#a08a72" },
   { tag: "carpet", color: "#9c8f80" },
   { tag: "tile", color: "#dfe3e5" },
-  { tag: "sealed-concrete", color: "#b3b1ad" },
+  // Sealed concrete is a *coating*: a sealer on the slab, no thickness of its own.
+  { tag: "sealed-concrete", color: "#b3b1ad", coating: true },
   { tag: "rubber", color: "#54585c" },
 ];
+
+// The coverings — everything the builder is expected to draw a plane for.
+const COVERINGS = MATERIALS.filter((material) => !material.coating);
 
 function room(finish: string | null, storey = "second"): Room {
   return {
@@ -67,10 +71,18 @@ export function runRoomFloorTests() {
   assert(build(room(null)).group.children.length === 0,
     "A room with no authored finish draws bare deck — no slab, not a grey one");
 
+  // A coating is a sealer, not a covering. The slab under it already carries the colour, so
+  // a plane here would read as a second floor — which is exactly what the garage showed.
+  // It still bills: takeoff/finishes.py keeps the sealer row.
+  assert(build(room("sealed-concrete")).group.children.length === 0,
+    "A coating finish draws no plane — the sealed slab is one floor, not two");
+  assert(build(room("sealed-concrete")).reg.picks.length === 0,
+    "…and nothing invisible is left behind for a click to land on");
+
   // --- 2. colour comes off the catalog material, not a second table -----------------------
 
   const colors = new Map<string, string>();
-  for (const { tag, color } of MATERIALS) {
+  for (const { tag, color } of COVERINGS) {
     const built = build(room(tag));
     const material = (built.group.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
     assert("#" + material.color.getHexString() === color,
@@ -81,6 +93,10 @@ export function runRoomFloorTests() {
   }
   assert(new Set(colors.values()).size === colors.size,
     "The finishes are distinct colours — otherwise the viewer separates nothing");
+  // A coating draws nothing here, but it still has to resolve: the .glb's room prism and the
+  // 2D plan both colour by it.
+  assert(materialColor("sealed-concrete", PALETTE, MATERIALS) === "#b3b1ad",
+    "A coating still resolves through the catalog for the surfaces that do colour by it");
 
   // A finish with no catalog entry still renders, in the family fallback, rather than
   // vanishing: a typo has to look wrong, not look like an unfinished room.
@@ -89,13 +105,16 @@ export function runRoomFloorTests() {
 
   // --- 3. surface, because colour alone does not separate them --------------------------
 
+  const coatings = new Set(MATERIALS.filter((m) => m.coating).map((m) => m.tag));
   const roughness = new Set<number>();
   for (const tag of Object.keys(FLOOR_FINISH_SURFACE)) {
+    roughness.add(FLOOR_FINISH_SURFACE[tag].roughness);
+    // A coating builds no mesh of its own; its sheen belongs to the slab that carries it.
+    if (coatings.has(tag)) continue;
     const built = build(room(tag));
     const material = (built.group.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
     assert(material.roughness === FLOOR_FINISH_SURFACE[tag].roughness,
       `A ${tag} floor takes its own roughness`);
-    roughness.add(material.roughness);
   }
   assert(roughness.size >= 5,
     "Carpet, oak, LVP, tile and sealed concrete catch light differently, not just in hue");

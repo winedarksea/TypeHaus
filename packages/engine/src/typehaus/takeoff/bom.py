@@ -24,7 +24,7 @@ from typehaus.takeoff.electrical import (
     service_load_summary,
     solar_takeoff,
 )
-from typehaus.takeoff.envelope import envelope_layer_takeoff
+from typehaus.takeoff.envelope import bug_screen_takeoff, envelope_layer_takeoff
 from typehaus.takeoff.finishes import floor_finish_rows
 from typehaus.takeoff.glazing import glazing_panel_takeoff, glazing_trim_takeoff
 from typehaus.takeoff.hardware import hardware_takeoff
@@ -84,6 +84,9 @@ def bill_of_materials(
         # Resolved-but-unbilled until the 2026-07-25 sweep.
         "floor_finishes": floor_finish_rows(model),
         "envelope_layers": envelope_layer_takeoff(model),
+        # The rainscreen's base closure, by the lineal foot — the solids sweep counts the
+        # strip, but in cubic feet, which is not how it is bought.
+        "bug_screens": bug_screen_takeoff(model),
         "openings": opening_takeoff(model),
         "stair_finish": stair_finish_takeoff(model),
         "footing_bedding": footing_bedding_takeoff(model),

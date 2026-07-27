@@ -222,7 +222,8 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
         assert rows[circuit]["connected_va"] == 1500
         assert rows[circuit]["breaker_amps"] == 20 and not rows[circuit]["gfci"]
         assert rows[circuit]["devices"] == [equipment]
-    # Derived from the device type's load_va, not authored on the circuit.
+    # The EV circuits author load_va so LM-EV can read the managed group off the circuits;
+    # the figure is the same 240x40 the receptacle type carries, so the row is unchanged.
     assert rows["CKT-EV-1450"]["connected_va"] == 9600
     assert rows["CKT-EV-1450"]["devices"] == ["ED-G-EV-1450"]
     assert rows["CKT-DRYER"]["connected_va"] == 5000
@@ -424,23 +425,40 @@ def test_catlin_panel_spaces_fails_at_42_and_would_pass_at_54(catlin_model):
 
 # --- service load + load management ---------------------------------------------------
 
-def test_catlin_service_load_finding_is_the_honest_fail(catlin_model):
-    """No LoadManagement is authored, so the advisory reports demand over the service
-    and names the levers. The amps come off the takeoff, never pinned here."""
+def test_catlin_service_load_finding_reflects_the_ems_decision(catlin_model):
+    """Catlin settled the open service-load decision with an EMS (LM-EV, plan/circuits.py)
+    rather than a service upgrade, so the raw 220.82 demand is still over the 200A service
+    while the *managed* demand fits. The amps come off the takeoff, never pinned here.
+
+    Both branches are live: if the house ever slims under the service on its own, or if
+    the credit ever stops covering the overage, the check has to agree either way."""
     from typehaus.takeoff import service_load_summary
 
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
     findings = [f for f in report.findings if f.check_id == "electrical.service_load"]
     summary = service_load_summary(catlin_model)
     assert findings
-    if summary["demand_amps"] > summary["service_amps"]:
+
+    managements = catlin_model.plan.library.load_managements
+    circuits = {c.tag: c for c in catlin_model.plan.library.circuits}
+    assert managements, "the EMS decision is authored, not open"
+    credit_va = 0.0
+    for management in managements:
+        group_va = sum(circuits[tag].load_va or 0.0 for tag in management.managed_circuits)
+        credit_va += max(0.0, group_va - management.max_simultaneous_va)
+    assert credit_va > 0, "an EMS that credits nothing is not managing anything"
+    managed_amps = float(summary["demand_va"]) / 240.0 - credit_va / 240.0
+
+    if managed_amps > float(summary["service_amps"]):
         fails = [f for f in findings if f.result.value == "fail"]
         assert fails, [f.message for f in findings]
         assert "625.42" in fails[0].message and "interlock" in fails[0].message
         assert "service upgrade" in fails[0].message
         assert f"{summary['service_amps']:.0f}A" in fails[0].message
-    else:  # if the house ever slims under the service, the check must agree
-        assert all(f.result.value == "pass" for f in findings)
+    else:
+        assert all(f.result.value == "pass" for f in findings), [
+            f.message for f in findings]
+        assert any("load-management credit" in f.message for f in findings)
 
 
 def test_load_management_credits_the_managed_excess():

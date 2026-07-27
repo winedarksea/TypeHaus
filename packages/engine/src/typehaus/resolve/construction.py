@@ -2,9 +2,10 @@
 
 ``ConstructionRule`` objects are typed, pre-resolve declarations of the physical *returns*
 the junction solver leaves for framing/take-off — the membrane / foam / liner / masonry lap
-that actually closes a resolved junction (a PT sill where framed walls land on concrete, the
-sauna liner wrapping onto the centre concrete wall, the exterior foundation foam turning a
-corner for thermal continuity, the masonry guard's corner return). They are *authored* on
+that actually closes a resolved junction (a PT sill where framed walls — or a joisted deck —
+land on concrete, the sauna liner wrapping onto the centre concrete wall, the exterior
+foundation foam turning a corner for thermal continuity, the masonry guard's corner
+return). They are *authored* on
 ``PlanModel.construction_rules`` and, until this pass existed, emitted nothing.
 
 This pass runs once, after the envelope is resolved and **before final framing** (so the
@@ -33,7 +34,10 @@ from collections.abc import Iterator
 from typehaus.findings import Finding
 from typehaus.model.assembly import Assembly, ConstructionRule
 from typehaus.model.enums import ControlLayer, LayerFunction
+from typehaus.model.floors import FloorSystem
 from typehaus.model.plan import PlanModel
+from typehaus.model.structure import FoundationWall
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.model import (
     ResolvedConstructionReturn,
@@ -223,6 +227,96 @@ def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
             break  # first storey above with a stack owns this concrete wall
 
 
+# The plate a joisted deck lands on where it bears on concrete. Laid *flat* — its bearing
+# width is the member's depth (3.5") and its build-up is the member's width (1.5") — which
+# is why this cannot be authored as a ``Beam`` and has to be a construction return.
+_SILL_PLATE_MEMBER = "2x4"
+
+
+def _floor_run_on_wall(rw: ResolvedWall, system: FloorSystem) \
+        -> tuple[tuple[float, float], tuple[float, float]] | None:
+    """The stretch of ``rw``'s axis the floor system actually bears over, or None.
+
+    The bearing run is the wall axis clipped to the deck outline's extent along that axis —
+    a 20'-axis cross-wall under a 19'-wide deck bills 19' of plate, not 20'.
+    """
+    a0, a1 = rw.axis
+    direction = unit(sub(a1, a0))
+    if length(direction) < _EPS:
+        return None
+    span = length(sub(a1, a0))
+    ring = [p.xy_m for p in system.outline]
+    if not ring:
+        return None
+
+    def proj(point: tuple[float, float]) -> float:
+        v = sub(point, a0)
+        return v[0] * direction[0] + v[1] * direction[1]
+
+    lo = max(0.0, min(proj(p) for p in ring))
+    hi = min(span, max(proj(p) for p in ring))
+    if hi - lo < _MIN_STACK_OVERLAP_M:
+        return None
+    return add(a0, scale(direction, lo)), add(a0, scale(direction, hi))
+
+
+def _find_floor_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
+        -> Iterator[ResolvedConstructionReturn]:
+    """PT sill plate where a joisted deck bears on a concrete wall.
+
+    The framed-wall case above is a *wall* landing on concrete; this is the same physical
+    return one element down — a ``FloorSystem`` whose ``joists.bearing_refs`` names a
+    ``FoundationWall``. The plate lies flat on the wall's bearing ledge with its top at the
+    joist soffit (one joist depth below the storey datum), sill seal under it and the same
+    capillary break, so the joists butt a rim on it instead of sitting on bare concrete.
+    """
+    plate = cross_section(_SILL_PLATE_MEMBER)
+    width = plate.depth_m          # laid flat: the 3.5" face bears
+    lap = rule.dimension.meters if rule.dimension is not None else plate.width_m  # 1.5"
+    for storey in model.plan.storeys:
+        for system in model.plan.storey_elements(storey.tag):
+            if not isinstance(system, FloorSystem):
+                continue
+            z1 = storey.elevation.meters - cross_section(system.joists.member).depth_m
+            for ref in system.joists.bearing_refs:
+                if not isinstance(model.plan.by_tag(ref), FoundationWall):
+                    continue
+                rw = model.wall(ref)
+                if rw is None:
+                    continue
+                asm = model.plan.library.resolve_assembly(rw.assembly)
+                if asm is None or not _is_concrete(asm):
+                    continue
+                run_segment = _floor_run_on_wall(rw, system)
+                if run_segment is None:
+                    continue
+                p0, p1 = run_segment
+                direction = unit(sub(p1, p0))
+                run = length(sub(p1, p0))
+                # Land the plate on the deck side of the wall — the bearing ledge is the
+                # face the joists come from, not the middle of a 16" pier section.
+                n = normal(direction)
+                ring = [p.xy_m for p in system.outline]
+                centroid = (sum(p[0] for p in ring) / len(ring),
+                            sum(p[1] for p in ring) / len(ring))
+                toward = sub(centroid, p0)
+                side = 1.0 if (toward[0] * n[0] + toward[1] * n[1]) >= 0.0 else -1.0
+                far = side * rw.thickness_m / 2.0
+                near = side * (rw.thickness_m / 2.0 - width)
+                yield ResolvedConstructionReturn(
+                    uid=f"CR-{rw.uid}-{system.uid}-sill",
+                    tag=rule.tag, storey=storey.tag, kind=rule.kind,
+                    applies_to=rule.applies_to, takeoff_category=rule.takeoff_category,
+                    material_ref="spf",
+                    element_tags=(rw.tag, system.tag),
+                    outline=_strip(p0, direction, run, min(near, far), max(near, far)),
+                    z0_m=z1 - lap, z1_m=z1, thickness_m=width, length_m=run,
+                    lap_m=lap, thermal_continuity=False, sealant="sill-gasket",
+                    flashing="capillary-break", returning_layer=_SILL_PLATE_MEMBER,
+                    condition_key=_condition_key("floor_foundation", rw.assembly),
+                )
+
+
 def _corner_incidents(junction) -> Iterator[tuple[object, object]]:
     """Ordered (own, other) incident pairs of a plan junction — every directed corner leg."""
     incidents = junction.incidents
@@ -367,6 +461,7 @@ def _find_sauna_liner_return(model: ResolvedModel, rule: ConstructionRule) \
 # declarative return needs; unknown predicates simply emit nothing (and are flagged once).
 _FINDERS = {
     "wall:framed_on_concrete": _find_framed_on_concrete,
+    "floor:on_concrete_wall": _find_floor_on_concrete,
     "wall:foundation_foam_return": _find_foundation_foam_return,
     "wall:porch_masonry_return": _find_porch_masonry_return,
     "wall:sauna_liner_return": _find_sauna_liner_return,

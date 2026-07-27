@@ -134,6 +134,8 @@ def test_no_detail_component_is_ever_a_symbol(catlin_model):
     ("wall_foundation:CATLIN_BASEMENT_12", "l-flashing"),
     ("wall_foundation:CATLIN_BASEMENT_12", "sealant-bead"),
     ("wall_foundation:CATLIN_BASEMENT_12", "sill-gasket"),
+    # The rainscreen's base vent/insect strip — the same closure the resolver bills.
+    ("wall_foundation:CATLIN_BASEMENT_12", "bug-screen"),
 ])
 def test_component_is_drawn_as_a_closed_outline_with_a_fill(catlin_model, key_prefix, name):
     """Each named component draws a closed outline, and a hatch shares its boundary."""

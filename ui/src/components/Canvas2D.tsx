@@ -22,7 +22,7 @@ import { useStoreySlice } from "./plan/useStoreySlice";
 import { usePanZoom } from "./plan/usePanZoom";
 import { dispatchTap } from "./plan/toolDispatch";
 import type {
-  DoorPopup, LengthEntry, NodeDrag, OpeningDragPreview, Pending, Placement,
+  DoorPopup, LengthEntry, MeasureDraft, NodeDrag, OpeningDragPreview, Pending, Placement,
   WallAssemblyPopup, WallDraft,
 } from "./plan/canvasTypes";
 
@@ -70,6 +70,7 @@ export function Canvas2D() {
   const lengthEntryOpen = useRef(false);
   const [pending, setPending] = useState<Pending | null>(null);
   const [draft, setDraft] = useState<WallDraft | null>(null);
+  const [measure, setMeasure] = useState<MeasureDraft | null>(null); // read-only two-tap tape
   const [cursor, setCursor] = useState<Vec2 | null>(null); // world-space hover/rubber-band
   const [nodeDrag, setNodeDrag] = useState<NodeDrag | null>(null);
   // Live cascading geometry for the wall(s)/room(s) touched by an in-progress node drag
@@ -230,9 +231,9 @@ export function Canvas2D() {
 
   // ---- tool tap dispatch (→ plan/toolDispatch.ts) ----------------------------
   const handleTap = (world: Vec2, screen: Vec2) => dispatchTap({
-    tool, offline, scale: view.scale, placement, draft, shiftRef: shift, wallsOnStorey,
+    tool, offline, scale: view.scale, placement, draft, measure, shiftRef: shift, wallsOnStorey,
     stairsOnStorey, warningMarkers, snapNodes, tolM, gridM, activeStorey, project, select,
-    toast, setPlacement, setDraft, setDimWall, setWallAssemblyPopup, setWarningPopup,
+    toast, setPlacement, setDraft, setMeasure, setDimWall, setWallAssemblyPopup, setWarningPopup,
     setDoorPopup, setWindowPopup, commitWall, commitStair,
   }, world, screen);
 
@@ -247,7 +248,7 @@ export function Canvas2D() {
       const target = e.target as HTMLElement;
       if (target && (target.tagName === "INPUT" || target.tagName === "SELECT" || target.tagName === "TEXTAREA")) return;
       if (e.key === "Escape") {
-        setDraft(null); setPlacement(null); setWallAssemblyPopup(null); setDimWall(null); setNodeDrag(null); setPending(null); setDoorPopup(null); setWindowPopup(null);
+        setDraft(null); setMeasure(null); setPlacement(null); setWallAssemblyPopup(null); setDimWall(null); setNodeDrag(null); setPending(null); setDoorPopup(null); setWindowPopup(null);
         setPreviewGeom(null); setLengthEntry(null); setWarningPopup(null);
       } else if ((e.key === "Enter" || /^[0-9]$/.test(e.key)) && draftRef.current && !lengthEntryOpen.current) {
         // Precise segment: type a length to place the next corner at an exact distance along the
@@ -273,6 +274,8 @@ export function Canvas2D() {
 
   // End a wall run when leaving the wall tool.
   useEffect(() => { if (tool !== "wall") { setDraft(null); setCursor(null); } }, [tool]);
+  // Measurements are scratch, not model state: drop them when the tape is put away.
+  useEffect(() => { if (tool !== "measure") setMeasure(null); }, [tool]);
 
   // Mirror the in-flight draw gesture into the store so the ContextBar / interaction-state
   // label and App's Esc hierarchy (Phase 2) can see it.
@@ -286,6 +289,16 @@ export function Canvas2D() {
     const end = shift.current ? orthoLock(draft.start, snap.point) : snap.point;
     return { end, len: Math.hypot(end[0] - draft.start[0], end[1] - draft.start[1]) };
   }, [tool, draft, cursor, snapNodes, tolM, gridM]);
+  // The measured endpoint: the fixed second tap once there is one, otherwise the live cursor
+  // under the same snap + ortho rules the first tap used.
+  const measureEnd = useMemo(() => {
+    if (tool !== "measure" || !measure) return null;
+    if (measure.end) return measure.end;
+    if (!cursor) return null;
+    const snap = snapWorld(cursor, snapNodes, tolM, gridM);
+    return shift.current ? orthoLock(measure.start, snap.point) : snap.point;
+  }, [tool, measure, cursor, snapNodes, tolM, gridM]);
+
   draftRef.current = draft;
   rubberRef.current = rubber;
   lengthEntryOpen.current = lengthEntry != null;
@@ -351,9 +364,11 @@ export function Canvas2D() {
         {visibleTrades.openings && model.openings.map((o) => {
           const host = openingHostWall(model.walls, o);
           if (!host || (activeStorey && host.storey !== activeStorey)) return null;
+          // Both kinds carry an operation now: it picks the door's swing/track glyph and,
+          // for a window, the sash tick that separates an operable unit from a picture one.
           const operation = o.is_door
             ? model.catalog?.door_types.find((dt) => dt.tag === o.type_ref)?.operation
-            : undefined;
+            : model.catalog?.window_types.find((wt) => wt.tag === o.type_ref)?.operation;
           return (
             <OpeningShape
               key={o.uid}
@@ -445,6 +460,27 @@ export function Canvas2D() {
           snapNodes={snapNodes} tolM={tolM} gridM={gridM} project={project} />}
         {workspace === "document" && <DetailMarkerLayer model={model} activeStorey={activeStorey}
           project={project} onSelectWall={(wall) => select("wall", wall.uid)} />}
+        {/* measure tape: a scratch two-tap segment, dual-unit readout, never written back */}
+        {measure && measureEnd && (() => {
+          const [sx, sy] = project(measure.start);
+          const [ex, ey] = project(measureEnd);
+          const d_m = Math.hypot(measureEnd[0] - measure.start[0], measureEnd[1] - measure.start[1]);
+          return (
+            <g pointerEvents="none">
+              <line x1={sx} y1={sy} x2={ex} y2={ey} stroke="var(--canvas-ink)" strokeWidth={1.5}
+                strokeDasharray={measure.end ? undefined : "5 4"} />
+              <circle cx={sx} cy={sy} r={4} fill="var(--canvas-white)" stroke="var(--canvas-ink)" strokeWidth={1.5} />
+              <circle cx={ex} cy={ey} r={4} fill="var(--canvas-white)" stroke="var(--canvas-ink)" strokeWidth={1.5} />
+              {d_m > 0.001 && (
+                <text x={(sx + ex) / 2} y={(sy + ey) / 2 - 8} fill="var(--canvas-ink)" fontSize={12}
+                  textAnchor="middle" style={{ paintOrder: "stroke" }}
+                  stroke="var(--canvas-white)" strokeWidth={3}>
+                  {`${formatFtIn(d_m)} / ${d_m.toFixed(2)} m`}
+                </text>
+              )}
+            </g>
+          );
+        })()}
         {/* dimension line for selected wall */}
         {selection.kind === "wall" && (() => {
           const w = wallsOnStorey.find((x) => x.uid === selection.uid);

@@ -351,3 +351,64 @@ def test_gltf_emits_with_accessories(catlin_model) -> None:
 
     gltf, blob = emit_gltf_dict(catlin_model)
     assert gltf["materials"] and blob, "glTF should build with accessory solids"
+
+
+# --- rainscreen bug screens (derived, not authored) ----------------------------------------
+
+def test_every_rainscreen_wall_base_is_screened(catlin_model) -> None:
+    """The vent closure is derived from the wall stack, so coverage is automatic.
+
+    An open rainscreen cavity at the base of the standing seam is an insect route straight
+    up behind the cladding. Nothing about it is authored per wall — the rule reads the
+    assembly — so a new exterior wall cannot ship without one, which is the whole point of
+    deriving it rather than hand-placing runs.
+    """
+    from typehaus.resolve.accessories import screens_rainscreen_base
+
+    screens = {s.tag.replace("-BUGSCREEN", ""): s
+               for s in catlin_model.solids if s.category == TrimKind.BUG_SCREEN.value}
+    assert screens, "a standing-seam rainscreen house resolves bug screens"
+    expected = {wall.tag for wall in catlin_model.walls
+                if screens_rainscreen_base(catlin_model, wall)}
+    assert set(screens) == expected
+    # Both rainscreen families are covered: the house wall and the garage wall.
+    assert {"W-M-S1", "W-G-S"} <= expected
+
+
+def test_a_screen_sits_in_the_cavity_it_closes_at_the_cladding_start(catlin_model) -> None:
+    """Depth is the rainscreen cavity's own thickness and elevation is the wall base — both
+    read off the wall, so re-sizing the battens moves the strip with them."""
+    from typehaus.resolve.accessories import (
+        BUG_SCREEN_HEIGHT_IN,
+        rainscreen_cavity_m,
+    )
+
+    wall = next(w for w in catlin_model.walls if w.tag == "W-M-S1")
+    screen = next(s for s in catlin_model.solids
+                  if s.tag == "W-M-S1-BUGSCREEN")
+    assert screen.z0_m == pytest.approx(wall.z0_m)
+    assert screen.z1_m - screen.z0_m == pytest.approx(inch(BUG_SCREEN_HEIGHT_IN).meters)
+    furring = next(ly for ly in wall.depth_layers() if ly.function == "furring")
+    assert list(screen.outline) == list(furring.polygon)
+    assert rainscreen_cavity_m(wall.depth_layers()) == pytest.approx(furring.thickness_m)
+
+
+def test_a_stacked_storey_does_not_get_a_second_screen(catlin_model) -> None:
+    """The cladding and its cavity run past the floor line, so there is no cladding start
+    at the second storey to screen. Screening every wall would triple the order."""
+    stacked = [w for w in catlin_model.walls if w.storey in ("second", "attic")]
+    assert stacked, "the fixture must actually have stacked storeys for this to mean anything"
+    screened = {s.tag for s in catlin_model.solids
+                if s.category == TrimKind.BUG_SCREEN.value}
+    assert not [w for w in stacked if f"{w.tag}-BUGSCREEN" in screened]
+
+
+def test_an_interior_partition_is_never_screened(catlin_model) -> None:
+    """The predicate is a FURRING layer with CLADDING outboard of it — a service chase or a
+    bare partition has no cavity to close, and must not order strip."""
+    from typehaus.resolve.accessories import rainscreen_cavity_m
+
+    interior = [w for w in catlin_model.walls
+                if not any(ly.function == "cladding" for ly in w.depth_layers())]
+    assert interior
+    assert all(rainscreen_cavity_m(w.depth_layers()) is None for w in interior)

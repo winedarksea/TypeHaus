@@ -21,6 +21,13 @@ class JoistSpec(HausModel):
     # Overhang past the two outermost bearing lines (a balcony/porch deck cantilevers its
     # joist tips beyond the beam so the decking covers them). None = flush ends.
     cantilever: Length | None = None
+    # Per-end overrides, for a deck whose two ends are not alike: the porch runs from a
+    # concrete sill (flush) out over its back-beam line to the house gap (a 17" overhang),
+    # and one symmetric scalar cannot say that — it either overshot the concrete wall to
+    # the south or fell short of the deck edge to the north. Each defaults to ``cantilever``.
+    # "start"/"end" are the low/high ends along the joist span direction.
+    cantilever_start: Length | None = None
+    cantilever_end: Length | None = None
 
 
 class DeckLayer(HausModel):

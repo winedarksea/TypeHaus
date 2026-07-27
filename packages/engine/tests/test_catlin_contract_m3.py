@@ -568,12 +568,13 @@ def test_stairs_render_on_both_connected_storey_plans(catlin_model):
 
 
 def test_deck_slabs_render_on_their_storey_plans(catlin_model):
-    """The porch composite deck (main) and balcony aluminum deck (second) enclose no
-    walls, so without slab outlines the plan slice drew them as empty air."""
+    """The balcony aluminum deck (second) encloses no walls, so without a slab outline the
+    plan slice drew it as empty air. (The porch's own SL-SG-PORCH slab is gone — the
+    FS-SG-PORCH floor system is the porch floor now, boards included.)"""
     from typehaus.emit.draw.floorplan import build_floorplan
     from typehaus.emit.draw.scene import Polyline
 
-    for storey, tag in (("main", "SL-SG-PORCH"), ("second", "SL-SG-DECK")):
+    for storey, tag in (("second", "SL-SG-DECK"),):
         outlines = [node for node in build_floorplan(catlin_model, storey).nodes
                     if isinstance(node, Polyline) and getattr(node, "tag", None) == tag]
         assert len(outlines) == 1, (storey, tag)
@@ -800,11 +801,13 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     assert {"BM-SG-GIRT-RW", "BM-SG-GIRT-RE",
             "BM-SG-GIRT-FW", "BM-SG-GIRT-FE"} <= beams
 
-    # Both exterior decks carry a decking assembly.
-    porch = next(s for s in catlin_model.solids if s.tag == "SL-SG-PORCH")
+    # Both exterior decks carry their walking surface. The balcony still does it with a
+    # slab over its joists; the porch's slab is gone and the boards are FS-SG-PORCH's own
+    # deck sheet, so the surface follows the framing instead of floating beside it.
     deck = next(s for s in catlin_model.solids if s.tag == "SL-SG-DECK")
-    assert porch.assembly == "PORCH_DECK_COMPOSITE"
     assert deck.assembly == "BALCONY_DECK_ALUMINUM"
+    porch = catlin_model.plan.by_tag("FS-SG-PORCH")
+    assert porch.subfloor is not None and porch.subfloor.material_ref == "composite-deck"
 
 
 def test_stack_width_change_resolves_on_the_side_wall_line(catlin_model):
