@@ -43,6 +43,10 @@ ARMCHAIR = FurnitureType(
     tag="FURN-ARMCHAIR-35", name="Armchair", footprint=(ft(2, 11), ft(2, 11)),
     height=ft(2, 11), plan_symbol="armchair", source=REFERENCE,
 )
+ROCKING_CHAIR = FurnitureType(
+    tag="FURN-ROCKING-CHAIR-30", name="Rocking chair", footprint=(ft(2, 6), ft(3)),
+    height=ft(3, 2), plan_symbol="armchair", source=REFERENCE,
+)
 COFFEE_TABLE = FurnitureType(
     tag="FURN-COFFEE-48", name="Coffee table", footprint=(ft(4), ft(2)), height=ft(1, 6),
     plan_symbol="coffee-table", source=REFERENCE,
@@ -140,6 +144,14 @@ ROUND_DINING_TABLE = FurnitureType(
     clearances=(surround_zone(ft(4), ft(4), ft(3), "chair-use zone",
                               occupant_types=(DINING_CHAIR_TAG,)),),
 )
+# A compact square table for two: the 3' footprint is large enough for a chess board and
+# everyday work, while keeping the same apron-and-leg 2D/3D family as the dining tables.
+TWO_PERSON_DINING_TABLE = FurnitureType(
+    tag="FURN-DINING-2-36", name="Two-person dining table", footprint=(ft(3), ft(3)),
+    height=ft(2, 6), plan_symbol="dining-table", source=REFERENCE,
+    clearances=(surround_zone(ft(3), ft(3), ft(3), "chair-use zone",
+                              occupant_types=(DINING_CHAIR_TAG,)),),
+)
 # No pull-out zone of its own: a dining chair lives inside the table's chair-use zone by
 # definition, and giving it a second one only reports the set conflicting with itself.
 DINING_CHAIR = FurnitureType(
@@ -197,10 +209,12 @@ SAUNA_BENCH_54 = FurnitureType(
 )
 
 STARTER_FURNITURE_TYPES = (
-    STANDARD_SOFA, LOVESEAT, SECTIONAL, ARMCHAIR, COFFEE_TABLE, END_TABLE, MEDIA_CONSOLE,
+    STANDARD_SOFA, LOVESEAT, SECTIONAL, ARMCHAIR, ROCKING_CHAIR, COFFEE_TABLE, END_TABLE,
+    MEDIA_CONSOLE,
     TV_65, TV_98,
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, CHEST, NIGHTSTAND,
-    SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE, DINING_CHAIR,
+    SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
+    TWO_PERSON_DINING_TABLE, DINING_CHAIR,
     WRITING_DESK, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
     SAUNA_BENCH_TIERED_102, SAUNA_BENCH_54,
 )

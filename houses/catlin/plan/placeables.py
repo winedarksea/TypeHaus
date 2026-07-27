@@ -233,6 +233,21 @@ SECOND_PLACEABLES = [
               position=pt(ft(23, 9), ft(32, 6)), rotation=deg(90)),
     Furniture(uid="CHR703AAAA", tag="FURN-S-DESK-CHAIR3", type_ref="FURN-DESK-CHAIR", room="RM-S-BED3",
               position=pt(ft(25, 6), ft(32, 6)), rotation=deg(90)),
+    # Compact two-person table in Study 2: west of and north of WIN-S-STUDY1, against the
+    # south wall. Its west edge stays 8" clear of D-S-DECK-E's east jamb; the two chairs sit
+    # on the north side, so neither the table nor its usable seating is in the door opening.
+    Furniture(uid="TAB701AAAA", tag="FURN-S-STUDY-TABLE", type_ref="FURN-DINING-2-36",
+              room="RM-S-STUDY2", position=pt(m(8.10913), m(0.646066))),
+    Furniture(uid="CHR704AAAA", tag="FURN-S-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
+              room="RM-S-STUDY2", position=pt(m(8.90614), m(0.530999)), rotation=deg(-90)),
+    Furniture(uid="CHR705AAAA", tag="FURN-S-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
+              room="RM-S-STUDY2", position=pt(m(7.32372), m(0.536064)), rotation=deg(90)),
+    # A compact rocking chair occupies the southeast corner, below WIN-S-STUDY3 and with its
+    # back to the south wall. The armchair symbol is the intentional close-enough 2D/3D
+    # approximation: it keeps the plan readable while the catalog type preserves the use.
+    Furniture(uid="RCK701AAAA", tag="FURN-S-STUDY-ROCKING-CHAIR",
+              type_ref="FURN-ROCKING-CHAIR-30", room="RM-S-STUDY2",
+              position=pt(m(10.1672), m(0.722925)), rotation=deg(225)),
     # The master takes the king, head against the closet/bath wall that closes the suite's
     # west strip at x=9'-6 7/8" (rotation -90 turns its back to +x), so the bed faces west
     # into WIN-S-SUITE1/2 and the 2'-6" foot zone runs out to the window wall instead of into
