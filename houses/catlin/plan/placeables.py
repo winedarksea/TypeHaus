@@ -222,17 +222,17 @@ SECOND_PLACEABLES = [
     # desk's back is against the west wall (rotation 90), leaving its pull-out zone toward
     # the room; the dining chair keeps the lighter dining-room plan and 3D appearance.
     Furniture(uid="DSK701AAAA", tag="FURN-S-DESK1", type_ref="FURN-DESK-48", room="RM-S-BED1",
-              position=pt(m(7.24324), m(3.53828)), rotation=deg(90)),
+              position=pt(m(7.31187), m(3.42504)), rotation=deg(90)),
     Furniture(uid="CHR701AAAA", tag="FURN-S-DESK-CHAIR1", type_ref="FURN-DESK-CHAIR", room="RM-S-BED1",
-              position=pt(ft(25, 6), ft(11, 6)), rotation=deg(90)),
+              position=pt(m(7.61089), m(3.43304)), rotation=deg(-90)),
     Furniture(uid="DSK702AAAA", tag="FURN-S-DESK2", type_ref="FURN-DESK-48", room="RM-S-BED2",
               position=pt(ft(23, 9), ft(20, 6)), rotation=deg(90)),
     Furniture(uid="CHR702AAAA", tag="FURN-S-DESK-CHAIR2", type_ref="FURN-DESK-CHAIR", room="RM-S-BED2",
-              position=pt(ft(25, 6), ft(20, 6)), rotation=deg(90)),
+              position=pt(m(7.79191), m(6.1963)), rotation=deg(-90)),
     Furniture(uid="DSK703AAAA", tag="FURN-S-DESK3", type_ref="FURN-DESK-48", room="RM-S-BED3",
               position=pt(ft(23, 9), ft(32, 6)), rotation=deg(90)),
     Furniture(uid="CHR703AAAA", tag="FURN-S-DESK-CHAIR3", type_ref="FURN-DESK-CHAIR", room="RM-S-BED3",
-              position=pt(ft(25, 6), ft(32, 6)), rotation=deg(90)),
+              position=pt(m(7.74915), m(9.96349)), rotation=deg(-90)),
     # Compact two-person table in Study 2: west of and north of WIN-S-STUDY1, against the
     # south wall. Its west edge stays 8" clear of D-S-DECK-E's east jamb; the two chairs sit
     # on the north side, so neither the table nor its usable seating is in the door opening.
@@ -256,4 +256,20 @@ SECOND_PLACEABLES = [
     Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
               room="RM-S-SUITE", position=pt(m(1.51666), m(5.64775)), rotation=deg(0)),
 ]
-ATTIC_PLACEABLES = []
+# The attic study uses the same compact work-and-meeting program as the second-storey
+# study, but the stair opening occupies the north side of the room. Keep the desk in the
+# west strip and put the two-person table in the southeast bay, clear of the stair head and
+# the study door. The desk's back is against the west side (rotation 90); the table and
+# chairs reuse the Study 2 catalog family and arrangement.
+ATTIC_PLACEABLES = [
+    Furniture(uid="DAK701AAAA", tag="FURN-A-STUDY-DESK", type_ref="FURN-DESK-48",
+              room="RM-A-STUDY", position=pt(m(10.1656), m(0.489306)), rotation=deg(0)),
+    Furniture(uid="CAK701AAAA", tag="FURN-A-STUDY-DESK-CHAIR", type_ref="FURN-DESK-CHAIR",
+              room="RM-A-STUDY", position=pt(m(10.205), m(1.10716)), rotation=deg(0)),
+    Furniture(uid="TAK701AAAA", tag="FURN-A-STUDY-TABLE", type_ref="FURN-DINING-2-36",
+              room="RM-A-STUDY", position=pt(m(8.24139), m(0.65023))),
+    Furniture(uid="CAK702AAAA", tag="FURN-A-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
+              room="RM-A-STUDY", position=pt(m(9.03786), m(0.532453)), rotation=deg(-90)),
+    Furniture(uid="CAK703AAAA", tag="FURN-A-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
+              room="RM-A-STUDY", position=pt(m(7.45287), m(0.57089)), rotation=deg(90)),
+]

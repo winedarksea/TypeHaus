@@ -15,6 +15,8 @@ from typehaus import (
     Node,
     Occupancy,
     Pitch,
+    Railing,
+    RailingKind,
     Roof,
     RoofForm,
     Room,
@@ -238,6 +240,19 @@ FLOOR = [
                 openings=("FO-A-STAIR",)),
 ]
 
+# Guard the open west edge of the attic stair well, where the uppermost tread arrives in
+# RM-A-STUDY. This reuses the balcony guard's 42" metal fascia-mounted railing family and
+# post spacing, but starts at the attic walking surface rather than the exterior deck datum.
+STAIR_GUARD = Railing(
+    uid="CARL01AAAA", tag="RL-A-STAIR", path=(
+        pt(ft(21, 2), ft(5, 9.625)),
+        pt(ft(21, 2), ft(8, 9.625)),
+    ),
+    kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
+    base_elevation=ft(20), post_spacing=inch(60), post_size="2x2", rail_count=2,
+    mount="fascia", assembly="POST_WHITE_PAINT",
+)
+
 STAIRS = [
     Stair(uid="CST703AAAA", tag="ST-S2A", floor_opening="FO-A-STAIR",
           from_storey="second", to_storey="attic", width=ft(3), newel_profile="6x6",
@@ -256,4 +271,4 @@ STAIRS = [
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *ROOFS, *BEAMS, *FLOOR_OPENINGS,
-            *FLOOR, *STAIRS]
+            *FLOOR, STAIR_GUARD, *STAIRS]
