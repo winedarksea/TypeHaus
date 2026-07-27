@@ -299,7 +299,8 @@ def test_catlin_balcony_guard_is_a_42in_railing(catlin_model) -> None:
     on the datum stands only 40.5" above the deck someone actually walks on.
     """
     deck = next(s for s in catlin_model.solids if s.tag == "SL-SG-DECK")
-    posts = [s for s in _solids(catlin_model, "railing") if "POST" in s.tag]
+    posts = [s for s in _solids(catlin_model, "railing")
+             if "RL-SG-BALCONY" in s.tag and "POST" in s.tag]
     assert posts, "railing posts expected"
     for post in posts:
         assert math.isclose(post.z0_m, deck.z1_m, abs_tol=0.02), "guard must start on the boards"

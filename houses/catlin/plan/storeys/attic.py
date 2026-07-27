@@ -240,13 +240,13 @@ FLOOR = [
                 openings=("FO-A-STAIR",)),
 ]
 
-# Guard the open west edge of the attic stair well, where the uppermost tread arrives in
-# RM-A-STUDY. This reuses the balcony guard's 42" metal fascia-mounted railing family and
-# post spacing, but starts at the attic walking surface rather than the exterior deck datum.
+# Guard the open south edge of the attic stair well in RM-A-STUDY. This reuses the balcony
+# guard's 42" metal fascia-mounted railing family and post spacing, but starts at the attic
+# walking surface rather than the exterior deck datum.
 STAIR_GUARD = Railing(
-    uid="CARL01AAAA", tag="RL-A-STAIR", path=(
+    uid="CARL01AAAA", tag="RL-A-STAIR", type_ref="RAILING-INT-STAIR-GUARD", path=(
         pt(ft(21, 2), ft(5, 9.625)),
-        pt(ft(21, 2), ft(8, 9.625)),
+        pt(ft(35, 5.375), ft(5, 9.625)),
     ),
     kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
     base_elevation=ft(20), post_spacing=inch(60), post_size="2x2", rail_count=2,

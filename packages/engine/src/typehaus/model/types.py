@@ -1,4 +1,4 @@
-"""Library types: DoorType, WindowType, FurnitureType, FixtureType (→ 10 §Element model)."""
+"""Library types: openings, placeables, and structural product catalogs."""
 
 from __future__ import annotations
 
@@ -75,6 +75,15 @@ class FurnitureType(HausModel):
     # Names a generated glyph + massing from ``model/placeable_symbols`` (see SYMBOL_NAMES).
     # An imported ``plan_representation``/``model_representation`` still wins over it.
     plan_symbol: str | None = None
+
+
+class RailingType(HausModel):
+    """A railing product identity, separate from its resolved guard geometry."""
+
+    tag: str
+    name: str
+    mesh: MeshRef | None = None
+    source: str | None = None
 
 
 class FixtureType(HausModel):
@@ -168,6 +177,7 @@ for _name, _obj in (
     ("DoorType", DoorType),
     ("WindowType", WindowType),
     ("FurnitureType", FurnitureType),
+    ("RailingType", RailingType),
     ("FixtureType", FixtureType),
     ("ApplianceType", ApplianceType),
     ("EquipmentType", EquipmentType),

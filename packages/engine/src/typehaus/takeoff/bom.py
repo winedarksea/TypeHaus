@@ -37,6 +37,7 @@ from typehaus.takeoff.hardware_config import (
 from typehaus.takeoff.mep import duct_takeoff, pipe_run_takeoff, sleeve_takeoff
 from typehaus.takeoff.openings import opening_takeoff
 from typehaus.takeoff.placeables import floor_heat_takeoff, placeables_takeoff
+from typehaus.takeoff.railings import railing_takeoff
 from typehaus.takeoff.sitework import footing_bedding_takeoff
 from typehaus.takeoff.stairs import stair_finish_takeoff
 
@@ -78,6 +79,7 @@ def bill_of_materials(
         "glazing_trim": glazing_trim_takeoff(model),
         "hardware": hardware_takeoff(model, hardware_config),
         "placeables": placeables_takeoff(model),
+        "railings": railing_takeoff(model),
         "floor_heat": floor_heat_takeoff(model),
         # Resolved-but-unbilled until the 2026-07-25 sweep.
         "floor_finishes": floor_finish_rows(model),

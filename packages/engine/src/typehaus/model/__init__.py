@@ -143,6 +143,7 @@ from typehaus.model.types import (
     MeshRef,
     WindowType,
     RegisterType,
+    RailingType,
 )
 from typehaus.model.placeables import (
     ClearancePolicy, ClearanceZone, Footprint2D, Location, ModelRepresentation, Mount,
@@ -210,7 +211,7 @@ __all__ = [
     "Assembly", "Layer", "CavityFill", "FramingSpec", "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material",
     "DoorType", "WindowType", "FurnitureType", "FixtureType", "ApplianceType", "EquipmentType",
-    "RegisterType", "ElectricalDeviceType", "LuminaireType", "MeshRef",
+    "RegisterType", "RailingType", "ElectricalDeviceType", "LuminaireType", "MeshRef",
     "JoistSpec", "DeckLayer", "FloorSystem", "FloorOpening", "Slab", "SlabThermalBreak",
     "Soffit",
     "FloorHeat", "FinishZone",

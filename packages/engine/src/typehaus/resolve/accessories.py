@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import math
 
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.mep import Sump, VentRun
 from typehaus.model.structure import Connector, Dowel, KneeBrace, Railing
 from typehaus.model.trim import EaveSoffit, Fascia, Flashing, GlazingTrim, Gutter
@@ -65,6 +65,12 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
             elif isinstance(el, KneeBrace):
                 _resolve_knee_brace(model, el, storey.tag)
             elif isinstance(el, Railing):
+                if (el.type_ref is not None
+                        and not any(product.tag == el.type_ref
+                                    for product in model.plan.library.railing_types)):
+                    findings.append(element_error(
+                        "integrity.unknown_railing_type",
+                        f"railing {el.tag} references missing type {el.type_ref!r}", el.tag))
                 _resolve_railing(model, el, storey.tag)
             elif isinstance(el, Sump):
                 _resolve_sump(model, el, storey)

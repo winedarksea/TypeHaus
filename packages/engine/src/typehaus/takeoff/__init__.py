@@ -50,6 +50,7 @@ from typehaus.takeoff.hardware_config import (
     HardwareTakeoffConfig,
 )
 from typehaus.takeoff.placeables import floor_heat_takeoff, placeables_takeoff
+from typehaus.takeoff.railings import railing_takeoff
 
 __all__ = [
     "glazing_panel_takeoff", "glazing_trim_takeoff", "glazing_fastener_rows",
@@ -63,6 +64,7 @@ __all__ = [
     "hardware_takeoff",
     "luminaire_schedule", "lighting_controls", "light_run_takeoff", "connected_lighting_va",
     "placeables_takeoff",
+    "railing_takeoff",
     "sheet_goods_takeoff",
     "structural_solids_takeoff",
     "DEFAULT_HARDWARE_TAKEOFF_CONFIG",

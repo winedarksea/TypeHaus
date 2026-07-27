@@ -603,7 +603,8 @@ _deck_walking_surface = _deck_top + inch(SPEC.balcony_deck_thickness_in)
 _GUARD_PATH = (pt(ft(_deck_x_w), ft(_y_in_n)), pt(ft(_deck_x_w), ft(_y_ax_arch)),
                pt(ft(_deck_x_e), ft(_y_ax_arch)), pt(ft(_deck_x_e), ft(_y_in_n)))
 BALCONY_GUARD = Railing(
-    uid="SGRA01AAAA", tag="RL-SG-BALCONY", path=_GUARD_PATH,
+    uid="SGRA01AAAA", tag="RL-SG-BALCONY", type_ref="RAILING-EXT-ALUMINUM-FASCIA",
+    path=_GUARD_PATH,
     kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
     base_elevation=_deck_walking_surface,
     post_spacing=inch(60), post_size="2x2", rail_count=2, mount="fascia",

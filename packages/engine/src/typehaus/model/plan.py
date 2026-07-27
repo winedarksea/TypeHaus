@@ -12,7 +12,7 @@ from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.materials import Material
 from typehaus.model.project import Project, Storey
 from typehaus.model.types import (ApplianceType, DoorType, ElectricalDeviceType, EquipmentType,
-                                  FixtureType, FurnitureType, RegisterType, WindowType)
+                                  FixtureType, FurnitureType, RailingType, RegisterType, WindowType)
 from typehaus.model.views import Transition
 
 
@@ -24,6 +24,7 @@ class Library(HausModel):
     door_types: tuple[DoorType, ...] = ()
     window_types: tuple[WindowType, ...] = ()
     furniture_types: tuple[FurnitureType, ...] = ()
+    railing_types: tuple[RailingType, ...] = ()
     fixture_types: tuple[FixtureType, ...] = ()
     appliance_types: tuple[ApplianceType, ...] = ()
     equipment_types: tuple[EquipmentType, ...] = ()

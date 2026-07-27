@@ -187,6 +187,7 @@ class Railing(Element):
     parapet wall. The resolver frames posts at ``post_spacing`` o.c. along ``path`` plus
     ``rail_count`` horizontal rails, all riding at ``base_elevation`` (the deck top)."""
 
+    type_ref: str | None = None  # product identity; geometry remains shared by kind/path
     path: tuple[Point2D, ...]  # guard line, >= 2 plan points
     kind: RailingKind = RailingKind.METAL_FASCIA_MOUNT
     height: Length  # guard height above the deck
