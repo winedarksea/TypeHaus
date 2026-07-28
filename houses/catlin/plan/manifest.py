@@ -25,8 +25,9 @@ from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_FI
                      STARTER_FURNITURE_TYPES)
 
 from params import breezeway, foundations, raised_garden, roof_trim, solar, sunken_garden
-from plan import (assemblies, circuits, electrical, fixture_types, fixtures, lighting,
-                  lighting_types, mep, placeables, railing_types, site, transitions, views)
+from plan import (assemblies, circuits, electrical, fixture_types, fixtures, furniture_types,
+                  lighting, lighting_types, mep, placeables, railing_types, site, transitions,
+                  views)
 from plan.storeys import attic, basement, garage, main, second
 
 format_version = 1
@@ -42,7 +43,8 @@ _library = Library(
     window_types=tuple(main.WINDOW_TYPES),
     # House-local catalogs first, then the shared starter set; the tags are disjoint by
     # design (the shared plumbing fixtures use -STD/-24/-36 suffixes so nothing collides).
-    furniture_types=(*STARTER_FURNITURE_TYPES, *STARTER_CASEWORK_TYPES),
+    furniture_types=(*STARTER_FURNITURE_TYPES, *STARTER_CASEWORK_TYPES,
+                     *furniture_types.FURNITURE_TYPES),
     railing_types=railing_types.RAILING_TYPES,
     fixture_types=(*fixture_types.FIXTURE_TYPES, *STARTER_FIXTURE_TYPES),
     appliance_types=(*fixture_types.APPLIANCE_TYPES, *STARTER_APPLIANCE_TYPES),

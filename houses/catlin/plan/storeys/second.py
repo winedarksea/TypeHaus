@@ -101,10 +101,6 @@ NODES = [
     Node(uid="CSN034AAAA", tag="N-S-V2", position=pt(ft(5, 10.5), ft(26, 4))),
     # Stair shaft west line + the 2'x2' mechanical chase in the hall bath's NE corner
     Node(uid="CSN025AAAA", tag="N-S-BA1", position=pt(ft(10), ft(26, 4))),
-    # The stair-shaft wall's south end. Since W-S-BD-N2 came out it is a free end — the
-    # return wall at the west side of the well head, with RL-S-STAIRHEAD taking over from
-    # it eastwards.
-    Node(uid="CSN026AAAA", tag="N-S-STR2", position=pt(ft(10), ft(25)), open_end=True),
     Node(uid="CSN035AAAA", tag="N-S-CH1", position=pt(ft(7, 8), ft(33, 4))),
     Node(uid="CSN036AAAA", tag="N-S-CH2", position=pt(ft(7, 8), ft(36))),
     Node(uid="CSN037AAAA", tag="N-S-CH3", position=pt(ft(10), ft(33, 4))),
@@ -237,8 +233,9 @@ WALLS = [
          assembly="INT_2X6_PLUMBING", top=ft(9)),
     Wall(uid="CSW150AAAA", tag="W-S-BA-E1B", start_node="N-S-CH3", end_node="N-S-BA1",
          assembly="INT_2X6_PLUMBING", top=ft(9)),
-    Wall(uid="CSW137AAAA", tag="W-S-BA-E2", start_node="N-S-BA1", end_node="N-S-STR2",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+    # W-S-BA-E2 (N-S-BA1 to the stair shaft's freed N-S-STR2 corner) came out with this
+    # edit: since W-S-BD-N2 came out it was a stub dead-ending on an open node, poking into
+    # the hallway with nothing on its far end to tie into.
     # 2'x2' mechanical chase in the hall bath's NE corner (source void x 8'-2 3/4"..
     # 10'-2 3/4", y 33'-6"..35'-6"), which is what makes RM-S-BATH1 the source's
     # L-shaped 80.73 sf bathroom. Its east side is the stair-shaft wall above.
@@ -257,9 +254,9 @@ OPENINGS = [
     # walls (as the port did) put D-S-BED1's centre at (22.67, 10.42), inside the attic
     # stair band rather than inside RM-S-BED1.
     Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT30",
-         position=from_node("N-S-B1", ft(4, 11)), flip_swing=True),          # y 15'-2"
+         position=from_node("N-S-B1", ft(4, 4.0625)), flip_swing=True),          # y 15'-2"
     Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT30",
-         position=from_node("N-S-B2", ft(4, 10))),                       # y 24'-1"
+         position=from_node("N-S-B2", ft(3, 9.3125))),                       # y 24'-1"
     Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT30",
          position=from_node("N-S-B3", ft(0, 8))),                        # y 28'-11"
     Door(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1", type_ref="DT-INT30",

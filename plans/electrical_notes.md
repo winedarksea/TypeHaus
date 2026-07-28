@@ -104,7 +104,7 @@ plan/mep.py and there was never a GAS UtilityLine in plan/site.py to feed it.
 			210.8(A) protects receptacles):
 			EQ-M-FIREPLACE  linear electric fireplace, east wall at the living room's SE
 				corner (the south wall has only 2'-1" of clear wall there)   CKT-FIREPLACE
-			EQ-G-HEATER     garage bench heater, west wall at 6'-0"   CKT-GAR-HEAT
+			EQ-G-HEATER     garage infrared heater lamp, west wall at 6'-0"   CKT-GAR-HEAT
 		20A rather than 15A on those two is not a preference: 1,500 W = 12.5A, and a
 			continuous load is figured at 125% = 15.6A, which needs the 16A a 20A breaker
 			allows. The mats are 4-6A and 15A is the honest breaker for them.

@@ -194,7 +194,12 @@ MAIN_PLACEABLES = [
     Furniture(uid="CMB701AAAA", tag="FURN-M-BED", type_ref="FURN-BED-KING", room="RM-M-BED",
               position=pt(m(2.5945), m(2.89975))),
 ]
-GARAGE_PLACEABLES = []
+GARAGE_PLACEABLES = [
+    # The 60"-wide work surface runs along the west wall directly below the infrared
+    # heater lamp. Rotation 90° turns the 30" depth into the wall-to-room dimension.
+    Furniture(uid="CGF601AAAA", tag="FURN-G-WORKBENCH", type_ref="FURN-G-WORKBENCH",
+              room="RM-GARAGE", position=pt(ft(1, 8), ft(48)), rotation=deg(90)),
+]
 # The three east bedrooms are the same 13'-11 3/4" x 8'-10 3/4" clear box, so they get the
 # same bed layout: a queen with its head north (rotation 0 puts the back at +y) and its 2'
 # side-access zones running the *long* way, where there is room for them.
@@ -217,7 +222,7 @@ SECOND_PLACEABLES = [
     Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
               position=pt(m(9.68788), m(6.90099)), rotation=deg(-90)),
     Furniture(uid="CSB702AAAA", tag="FURN-S-BED3", type_ref="FURN-QUEEN-BED", room="RM-S-BED3",
-              position=pt(m(9.70988), m(9.5886)), rotation=deg(-90)),
+              position=pt(m(9.95741), m(9.68733)), rotation=deg(0)),
     # Each regular bedroom gets the same compact study pair in the west-side strip. The
     # desk's back is against the west wall (rotation 90), leaving its pull-out zone toward
     # the room; the dining chair keeps the lighter dining-room plan and 3D appearance.
@@ -226,13 +231,13 @@ SECOND_PLACEABLES = [
     Furniture(uid="CHR701AAAA", tag="FURN-S-DESK-CHAIR1", type_ref="FURN-DESK-CHAIR", room="RM-S-BED1",
               position=pt(m(7.61089), m(3.43304)), rotation=deg(-90)),
     Furniture(uid="DSK702AAAA", tag="FURN-S-DESK2", type_ref="FURN-DESK-48", room="RM-S-BED2",
-              position=pt(ft(23, 9), ft(20, 6)), rotation=deg(90)),
+              position=pt(m(7.36549), m(6.39516)), rotation=deg(0)),
     Furniture(uid="CHR702AAAA", tag="FURN-S-DESK-CHAIR2", type_ref="FURN-DESK-CHAIR", room="RM-S-BED2",
-              position=pt(m(7.79191), m(6.1963)), rotation=deg(-90)),
+              position=pt(m(7.38828), m(6.31867)), rotation=deg(0)),
     Furniture(uid="DSK703AAAA", tag="FURN-S-DESK3", type_ref="FURN-DESK-48", room="RM-S-BED3",
-              position=pt(ft(23, 9), ft(32, 6)), rotation=deg(90)),
+              position=pt(m(8.43311), m(10.4735)), rotation=deg(0)),
     Furniture(uid="CHR703AAAA", tag="FURN-S-DESK-CHAIR3", type_ref="FURN-DESK-CHAIR", room="RM-S-BED3",
-              position=pt(m(7.74915), m(9.96349)), rotation=deg(-90)),
+              position=pt(m(8.41785), m(10.0705)), rotation=deg(180)),
     # Compact two-person table in Study 2: west of and north of WIN-S-STUDY1, against the
     # south wall. Its west edge stays 8" clear of D-S-DECK-E's east jamb; the two chairs sit
     # on the north side, so neither the table nor its usable seating is in the door opening.
@@ -290,9 +295,9 @@ SECOND_PLACEABLES = [
     Furniture(uid="CSB704AAAA", tag="FURN-S-BED1-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED1", position=pt(m(7.36343), m(5.11445)), rotation=deg(0)),
     Furniture(uid="CSB705AAAA", tag="FURN-S-BED2-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED2", position=pt(ft(24, 4), ft(25, 11.375)), rotation=deg(0)),
+              room="RM-S-BED2", position=pt(m(7.36477), m(7.8429)), rotation=deg(0)),
     Furniture(uid="CSB706AAAA", tag="FURN-S-BED3-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED3", position=pt(ft(24, 4), ft(28, 0.625)), rotation=deg(180)),
+              room="RM-S-BED3", position=pt(m(7.04819), m(10.1621)), rotation=deg(90)),
 
     # Linen/towel storage in the hall bath, on the wall the room has nothing else on. The
     # pantry-closet carcass is the right box for it: 72" x 24" x 96", one plan symbol,
@@ -306,7 +311,7 @@ SECOND_PLACEABLES = [
     # x=7'-3", clear of the WC's REQUIRED 30"/21" zone (which starts at y 28'-10 1/2"), and
     # of every device on the walls. The 48" it replaces stopped at x 4'-0 5/8".
     Furniture(uid="CSB707AAAA", tag="FURN-S-BATH1-CLOSET", type_ref="CASE-PANTRY-CLOSET-72",
-              room="RM-S-BATH1", position=pt(ft(3, 0.625), ft(27, 4.625)),
+              room="RM-S-BATH1", position=pt(m(1.09343), m(8.42656)),
               rotation=deg(180)),
     ElectricalDevice(uid="QTS0020AAA", tag="ED-S-PLANT-SPOT", kind=DeviceKind.LIGHT,
                      position=pt(m(1.2726), m(2.63984)), type_ref="ED-T-LT-SCONCE-SPOT",

@@ -171,11 +171,10 @@ EQUIPMENT_TYPES = (
                   footprint=(inch(48), inch(7)), height=inch(21),
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
-    # Garage unit heater — same 1,500 W / 120V / 20A arithmetic as the fireplace. A small
-    # fan-forced box for taking the chill off the bench, not for heating 571 ft2 of
-    # unconditioned garage; RM-GARAGE stays `conditioned=False` and therefore out of the
-    # 3 VA/ft2 general-lighting area, heater or no heater.
-    EquipmentType(tag="EQ-T-GARAGE-HEATER", name="Garage unit heater, 1.5 kW fan-forced, 120V",
+    # Garage infrared heater lamp — same 1,500 W / 120V / 20A arithmetic as the fireplace.
+    # It is hard-wired equipment rather than a fan-forced unit; RM-GARAGE stays
+    # `conditioned=False` and therefore out of the 3 VA/ft2 general-lighting area.
+    EquipmentType(tag="EQ-T-GARAGE-HEATER", name="Garage infrared heater lamp, 1.5 kW, 120V",
                   footprint=(inch(14), inch(9)), height=inch(15),
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),

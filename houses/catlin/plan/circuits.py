@@ -108,7 +108,7 @@ CIRCUITS = (
             description="Electric fireplace, living room SE corner (EQ-M-FIREPLACE)"),
     Circuit(uid="CKT035AAAA", tag="CKT-GAR-HEAT", slot=37, panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=1500,
-            description="Garage bench heater, 1.5 kW fan-forced (EQ-G-HEATER)"),
+            description="Garage infrared heater lamp, 1.5 kW (EQ-G-HEATER)"),
 
     # --- 120V backup subsystem (electrical_notes.md lines 9-29) ----------------------
     Circuit(uid="CKT014AAAA", tag="CKT-WH-HP", slot=39, panel_ref=_PANEL, breaker_amps=15, poles=1,
