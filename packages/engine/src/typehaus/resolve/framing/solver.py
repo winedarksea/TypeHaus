@@ -18,6 +18,7 @@ from typehaus.resolve.framing.corners import (
     CORNER_ROLE_OWNER,
     corner_stud_stations,
     invert_corner_role,
+    neighbour_band_insets,
     wall_end_framing,
 )
 from typehaus.resolve.framing.openings import (
@@ -46,7 +47,9 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                butting_start: bool = False, butting_end: bool = False,
                tee_stations: tuple[tuple[float, str], ...] = (),
                corner_style_start: str | None = None,
-               corner_style_end: str | None = None) \
+               corner_style_end: str | None = None,
+               neighbour_insets_start: tuple[float, float] | None = None,
+               neighbour_insets_end: tuple[float, float] | None = None) \
         -> tuple[FramedMember, ...]:
     """Generate studs, plates, and opening framing for one resolved wall.
 
@@ -82,9 +85,11 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
                 else CORNER_ROLE_BUTTING if butting_end else None)
     structure_polygon = _structure_polygon(rw)
     start_end = wall_end_framing(structure_polygon, p0, d, axis_len, start_role,
-                                 thickness, at_start=True)
+                                 thickness, at_start=True,
+                                 neighbour_insets=neighbour_insets_start)
     far_end = wall_end_framing(structure_polygon, p0, d, axis_len, end_role,
-                               thickness, at_start=False)
+                               thickness, at_start=False,
+                               neighbour_insets=neighbour_insets_end)
 
     members: list[FramedMember] = []
 
@@ -92,7 +97,8 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     top_start, top_end = _wall_top_elevations(rw)
     top_plates = 2 if spec.double_top_plate and not spec.advanced_framing else 1
     _append_plates(members, rw, member, p0, d, axis_len, z0, plate_h, top_plates,
-                   top_start, top_end, structure_polygon, start_role, end_role, thickness)
+                   top_start, top_end, structure_polygon, start_role, end_role, thickness,
+                   neighbour_insets_start, neighbour_insets_end)
 
     # --- studs at spacing, skipping those inside an opening's king/jack pack --
     stud_z0 = z0 + plate_h
@@ -200,7 +206,9 @@ def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p
                    axis_len: float, z0: float, plate_h: float, top_plates: int,
                    top_start: float, top_end: float, structure_polygon,
                    start_role: str | None, end_role: str | None,
-                   thickness: float) -> None:
+                   thickness: float,
+                   neighbour_insets_start: tuple[float, float] | None = None,
+                   neighbour_insets_end: tuple[float, float] | None = None) -> None:
     """Bottom + top plate course(s), each cut to the corner square that course owns.
 
     The cap plate of a double top plate laps the *opposite* way from the courses below it:
@@ -210,9 +218,11 @@ def _append_plates(members: list[FramedMember], rw: ResolvedWall, member: str, p
     """
     def plate_run(course_start_role: str | None, course_end_role: str | None):
         start = wall_end_framing(structure_polygon, p0, d, axis_len, course_start_role,
-                                 thickness, at_start=True).plate_station_m
+                                 thickness, at_start=True,
+                                 neighbour_insets=neighbour_insets_start).plate_station_m
         end = wall_end_framing(structure_polygon, p0, d, axis_len, course_end_role,
-                               thickness, at_start=False).plate_station_m
+                               thickness, at_start=False,
+                               neighbour_insets=neighbour_insets_end).plate_station_m
         return start, end
 
     def point_at(station: float):
@@ -318,6 +328,9 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
         ))
     corner_endpoints: dict[str, set[str]] = {}
     butting_endpoints: dict[str, set[str]] = {}
+    # (wall tag, endpoint) -> the tag of the other wall in that L corner, so the framing
+    # rule can read the neighbour's own band instead of inferring it from the mitre.
+    corner_neighbours: dict[tuple[str, str], str] = {}
     tee_points: dict[str, list[tuple[tuple[float, float], str]]] = {}
     findings: list[Finding] = []
     for junction in model.junctions:
@@ -329,6 +342,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 owned = item.wall_tag == junction.framing_owner
                 target = corner_endpoints if owned else butting_endpoints
                 target.setdefault(item.wall_tag, set()).add(item.endpoint)
+                other = next(o for o in junction.incidents if o is not item)
+                corner_neighbours[(item.wall_tag, item.endpoint)] = other.wall_tag
             corner_styles = {
                 layer.framing.corner_style
                 for item in junction.incidents
@@ -366,9 +381,30 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     framed: list[ResolvedWall] = []
     authored_walls = {element.tag: element for element in plan.all_elements()
                       if isinstance(element, Wall)}
+    resolved_by_tag = {wall.tag: wall for wall in model.walls}
+
+    def _neighbour_insets(rw: ResolvedWall, endpoint: str, p0, direction,
+                          axis_len: float) -> tuple[float, float] | None:
+        """The corner neighbour's band, projected onto ``rw``'s framing axis.
+
+        Only for a square corner: the projection of a whole wall polygon is its band width
+        only while the neighbour runs perpendicular, and a skew L keeps the mitre reading.
+        """
+        neighbour = resolved_by_tag.get(corner_neighbours.get((rw.tag, endpoint), ""))
+        if neighbour is None:
+            return None
+        n0, n1 = _framing_axis(neighbour)
+        n_direction = unit(sub(n1, n0))
+        if abs(n_direction[0] * direction[0] + n_direction[1] * direction[1]) > 1e-3:
+            return None
+        polygon = _structure_polygon(neighbour)
+        return neighbour_band_insets(polygon, p0, direction, axis_len,
+                                     at_start=endpoint == "start")
+
     for rw in model.walls:
         framing_start, framing_end = _framing_axis(rw)
         framing_direction = unit(sub(framing_end, framing_start))
+        framing_len = length(sub(framing_end, framing_start))
         tee_stations = tuple(
             (
                 sub(point, framing_start)[0] * framing_direction[0]
@@ -390,7 +426,13 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                              tee_stations=tee_stations,
                              corner_style_start=getattr(authored, "corner_style_start",
                                                         None),
-                             corner_style_end=getattr(authored, "corner_style_end", None))
+                             corner_style_end=getattr(authored, "corner_style_end", None),
+                             neighbour_insets_start=_neighbour_insets(
+                                 rw, "start", framing_start, framing_direction,
+                                 framing_len),
+                             neighbour_insets_end=_neighbour_insets(
+                                 rw, "end", framing_start, framing_direction,
+                                 framing_len))
         # ``replace`` rather than a field-by-field rebuild: this pass only adds members,
         # and respelling the constructor here silently drops any field added later.
         framed.append(replace(rw, members=members))

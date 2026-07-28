@@ -106,7 +106,9 @@ def test_the_lines_the_survey_does_not_get_to_move(catlin_plan):
     for tag in ("N-S-SE", "N-S-E1", "N-S-E2", "N-S-E3", "N-S-NE"):
         assert _node(catlin_plan, tag)[0] == pytest.approx(ft(36).meters, abs=1e-9)
     centre = ft(18).meters
-    for tag in ("N-S-S1", "N-S-C1", "N-S-C2", "N-S-C2B", "N-S-C2C", "N-S-C3B", "N-S-C3",
+    # N-S-C3 retired with the wall segments BM-S-HALL replaced, and N-S-C3B with
+    # W-S-BD-N2 and O-S-STAIRTOP (both 2026-07-28).
+    for tag in ("N-S-S1", "N-S-C1", "N-S-C2", "N-S-C2B", "N-S-C2C",
                 "N-S-C3D", "N-S-N1"):
         assert _node(catlin_plan, tag)[0] == pytest.approx(centre, abs=1e-9)
     for tag in ("N-A-S2", "N-A-C1", "N-A-C2", "N-A-N1"):
@@ -205,7 +207,9 @@ def test_the_survey_rooms_all_exist(catlin_plan):
 
     model, _ = resolve(catlin_plan)
     tags = {room.tag for room in model.rooms if room.storey == "second"}
-    assert {"RM-S-SUITEBATH", "RM-S-VANITY", "RM-S-NCLOSET", "RM-S-LANDING"} <= tags
+    # RM-S-LANDING is no longer its own claim: the source's single 181.02 sf "Hallway"
+    # reads as one room again now that the centre line is open under BM-S-HALL.
+    assert {"RM-S-SUITEBATH", "RM-S-VANITY", "RM-S-NCLOSET", "RM-S-HALL"} <= tags
     assert "RM-S-DRESS" not in tags  # the source has no dressing corridor
 
     # Source labels, for reference: our clear faces are inset by the gwb only while the

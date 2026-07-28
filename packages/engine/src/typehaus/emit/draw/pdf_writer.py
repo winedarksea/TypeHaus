@@ -81,6 +81,7 @@ _LAYER_STYLE = {
     "C-TOPO-IMPV": ("#9a8a70", 0.5),
     "L-SITE-GRAD": ("#5a8a5a", 0.7),
     "A-STAIR": ("#3a4a55", 0.7),
+    "A-RAIL": ("#4a6a70", 0.6),
     "A-FURN": ("#8a7550", 0.45),
     "E-POWR": ("#8a2a2a", 0.5),
     "M-EQPT": ("#2a6a4a", 0.7),

@@ -335,7 +335,7 @@ GARAGE_EQUIPMENT = [
     # garage, and CKT-GAR-HEAT therefore carries no GFCI. Plugging this into the wall
     # instead would drag it onto CKT-RC-GARAGE's GFCI protection and off its own circuit.
     Equipment(uid="CEE023AAAA", tag="EQ-G-HEATER", kind=EquipmentKind.SPACE_HEATER,
-              position=pt(ft(0, 5), ft(48)), footprint=(inch(14), inch(9)),
+              position=pt(m(0.227899), m(14.595)), footprint=(inch(14), inch(9)),
               room="RM-GARAGE", type_ref="EQ-T-GARAGE-HEATER", rotation=deg(90),
               circuit="CKT-GAR-HEAT",
               mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
@@ -445,6 +445,30 @@ NEC_FILL_MAIN = [
     # between RC2 (y=15.87) and the wall's south end, on the LIVING face.
     ElectricalDevice(uid="NEC064AAAA", tag="ED-M-LIVING-RC7", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(18.05), ft(21.10)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # The old hall band, 2026-07-28. Opening the centre line under BM-M-HALL merged
+    # RM-M-HALL into this room, and a hallway's walls are exempt from 210.52(A) only while
+    # they *are* a hallway — as habitable-room wall space the same 6'/12' rule reaches them,
+    # and the band had no receptacles at all. Positions are the four gaps
+    # `electrical.receptacle_spacing` measured on the merged clear face, each 0.05' off its
+    # wall like the fills above.
+    ElectricalDevice(uid="NEC066AAAA", tag="ED-M-LIVING-RC8", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(5.40), ft(21.77)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    ElectricalDevice(uid="NEC067AAAA", tag="ED-M-LIVING-RC9", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(4.55), ft(26.23)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    ElectricalDevice(uid="NEC068AAAA", tag="ED-M-LIVING-RC10", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(9.50), ft(26.23)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # On the 1'-0" pier of W-M-STRS between D-M-STAIR and RO-1 — the only wall left on that
+    # face, and a useful one to have at the head of the stairs.
+    ElectricalDevice(uid="NEC069AAAA", tag="ED-M-LIVING-RC11", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(13.85), ft(25.73)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC013AAAA", tag="ED-M-BED-RC2", kind=DeviceKind.RECEPTACLE,

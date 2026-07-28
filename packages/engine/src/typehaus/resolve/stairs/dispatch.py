@@ -16,6 +16,7 @@ from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedStair
 from typehaus.resolve.stairs.bearing import _bear_stair_on_walls, _clip_stair_to_subfloor
 from typehaus.resolve.stairs.common import (
     _MAX_RISER_M,
+    _MIN_LANDING_DEPTH_M,
     _MIN_TREAD_M,
     _WELL_PARTITION_THICKNESS_M,
 )
@@ -75,6 +76,10 @@ def _resolve_stair(
     elif stair.winder_count:
         return None, [_error("integrity.stair_winders", f"stair {stair.tag} only accepts "
                              "winders in right_angle_winder layout", stair.tag)]
+    if (stair.layout == "u_split_landing" and stair.turn_direction is not None
+            and stair.turn_direction not in {"left", "right"}):
+        return None, [_error("integrity.stair_turn", f"stair {stair.tag} has unknown turn "
+                             f"direction {stair.turn_direction!r}", stair.tag)]
     # ``bearing_refs`` grants bearing permission, so a tag naming no wall on the storey the
     # flight springs from would silently grant nothing — that is an authoring error.
     missing_bearing = [tag for tag in stair.bearing_refs
@@ -88,9 +93,10 @@ def _resolve_stair(
     treads = max(0, risers - 1)
     straight_treads = treads - stair.winder_count
     # Turn-landing depth (in the run direction) for the U-stair. Unset reproduces the
-    # historical "reserve one stair width" behaviour; an authored value renders a deeper
-    # walk-off platform. IRC R311.7.6 floors the landing at the stair width.
-    landing_depth_m = (max(stair.landing_depth.meters, stair.width.meters)
+    # historical "reserve one stair width" behaviour; an authored value is honoured down to
+    # the IRC R311.7.6 direction-of-travel minimum (see ``_MIN_LANDING_DEPTH_M``), which is
+    # 36" and *not* the stair width.
+    landing_depth_m = (max(stair.landing_depth.meters, _MIN_LANDING_DEPTH_M)
                        if stair.landing_depth is not None else stair.width.meters)
     # A winder turn consumes a square whose side is the stair width. The remaining treads
     # must still meet the 10 in. minimum on their straight walking line.

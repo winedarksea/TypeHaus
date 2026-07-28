@@ -39,6 +39,7 @@ def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
     _emit_slabs(b, model, storey)
     _emit_openings(b, model, {w.tag for w in walls})
     _emit_stairs(b, model, storey)
+    _emit_railings(b, model, storey)
     _emit_rooms(b, model, storey)
     _emit_floor_heat(b, model, storey)
     _emit_alarms(b, model, storey)
@@ -204,6 +205,31 @@ def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         label = f"UP {stair.riser_count} R"
         b.add(Text(anchor=_in(((minx + maxx) / 2, (miny + maxy) / 2)), content=label,
                    height=3.0, layer="A-STAIR", align="center"))
+
+
+def _emit_railings(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
+    """Draw guards and handrails: the rail line, plus every post's true plan section.
+
+    A guard is the one piece of a stair well a plan reader looks for, and the 3D view was
+    the only place it existed — an open well edge and a guarded one drew identically. Each
+    resolved railing solid is drawn as its own extruded outline, exactly as the 3D viewer
+    builds it: a post reads as its true plan section (1 1/2" square for a 2x2 newel) and a
+    rail as the 1 1/2" band it sweeps along the path, which is the line down the guard.
+
+    Guards top out at 42", below the 4' plan cut, so this is *below-cut* linework — hence
+    the light 0.25 lineweight rather than the cut-wall weights ``emit_wall`` uses.
+    """
+    seen: set[tuple[tuple[float, float], ...]] = set()
+    for solid in (s for s in model.solids
+                  if s.category == "railing" and s.storey == storey and len(s.outline) >= 3):
+        # ``rail_count`` rails share one plan footprint — they are stacked in Z, which plan
+        # cannot show — so only the first of each coincident outline is drawn.
+        key = tuple(sorted((round(x, 6), round(y, 6)) for x, y in solid.outline))
+        if key in seen:
+            continue
+        seen.add(key)
+        b.add(Polyline(points=tuple(_in(point) for point in solid.outline), closed=True,
+                       layer="A-RAIL", lineweight=0.25, uid=solid.uid, tag=solid.tag))
 
 
 def _emit_alarms(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:

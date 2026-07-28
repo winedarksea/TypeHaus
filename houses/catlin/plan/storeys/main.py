@@ -7,6 +7,7 @@
 from typehaus import (
     Alarm,
     AlarmKind,
+    Beam,
     Door,
     DoorType,
     FloorHeat,
@@ -95,11 +96,18 @@ NODES = [
     # Center bearing line ties
     Node(uid="CMN012AAAA", tag="N-M-C1", position=pt(ft(18), ft(13, 4))),
     Node(uid="CMN013AAAA", tag="N-M-C2", position=pt(ft(18), ft(21, 8))),
-    Node(uid="CMN014AAAA", tag="N-M-C3", position=pt(ft(18), ft(26, 4))),
+    # N-M-C3 came south from y=26'-4" to the stair wall's line on 2026-07-28. It used to be
+    # the W-M-C4B/W-M-C5 split; with W-M-C4/C4B gone it is BM-M-HALL's north bearing, and it
+    # has to be where W-M-STRS lands or the stair well leaks into the living room through the
+    # gap between them. Nothing runs along y=26'-4" east of x=10', so it was free to move.
+    Node(uid="CMN014AAAA", tag="N-M-C3", position=pt(ft(18), ft(25, 10))),
     # Interior tees
-    Node(uid="CMN015AAAA", tag="N-M-STR1", position=pt(ft(10), ft(25))),
+    # N-M-STR1 and N-M-C3B moved north from y=25'-0" to y=25'-10" with W-M-STRS (2026-07-28),
+    # and N-M-C3B then retired into N-M-C3: with the centre line open between them they were
+    # two names for the same point. 25'-10" is as far north as the stair wall can go — see
+    # FLOOR_OPENINGS.
+    Node(uid="CMN015AAAA", tag="N-M-STR1", position=pt(ft(10), ft(25, 10))),
     Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 4))),
-    Node(uid="CMN025AAAA", tag="N-M-C3B", position=pt(ft(18), ft(25))),
     Node(uid="CMN016AAAA", tag="N-M-BA1", position=pt(ft(4), ft(26, 4))),
     Node(uid="CMN017AAAA", tag="N-M-BA2", position=pt(ft(4), ft(21, 8))),
     Node(uid="CMN018AAAA", tag="N-M-D1", position=pt(ft(8), ft(21, 8))),
@@ -159,26 +167,32 @@ WALLS = [
     Wall(uid="CMW114AAAA", tag="W-M-C3", start_node="N-M-E4", end_node="N-M-C2",
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CS2"),
-    Wall(uid="CMW115AAAA", tag="W-M-C4", start_node="N-M-C2", end_node="N-M-C3B",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
-         structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
-    Wall(uid="CMW133AAAA", tag="W-M-C4B", start_node="N-M-C3B", end_node="N-M-C3",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
-         structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
+    # y 21'-8" .. 25'-10" IS NOT A WALL — it is the BM-M-HALL flitch of LVL, the main-storey
+    # twin of BM-S-HALL directly above it. W-M-C4 / W-M-C4B used to stand here; the whole
+    # 4'-2" is now open so the hall and the living room read as one room (2026-07-28), the
+    # way the second storey already does under its own beam. The bearing stack is unbroken
+    # because the beam is *in* it: see BEAMS below.
     Wall(uid="CMW116AAAA", tag="W-M-C5", start_node="N-M-C3", end_node="N-M-N1",
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
     # --- stair / storage block --------------------------------------------------
     # This wall line carries the cut second-floor joists and stacks directly over the
-    # basement concrete stair wall.  It is split only at the storage-wall tee.
+    # basement concrete stair wall. It is split at the two tees on it: the storage wall at
+    # N-M-STRJ and the stair wall at N-M-STR1, now 6" apart. W-M-STRW2 is that 6" — the jog
+    # of wall between RM-M-STORAGE's south wall and the head of the stairs.
     Wall(uid="CMW117AAAA", tag="W-M-STRW", start_node="N-M-N2",
          end_node="N-M-STRJ", assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
     Wall(uid="CMW134AAAA", tag="W-M-STRW2", start_node="N-M-STRJ",
          end_node="N-M-STR1", assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
+    # The wall at the top of the stairs, pushed north 10" to y=25'-10" (2026-07-28) so it
+    # closes against the wells again after they moved. Its north face at 26'-0 3/8" is both
+    # wells' south edge: D-M-STAIR opens onto ST-B2M's top nosing in the west lane, RO-1 onto
+    # ST-M2S's first tread in the east one. Its east end tees into N-M-C3, which is W-M-C5's
+    # south end and BM-M-HALL's north bearing.
     Wall(uid="CMW118AAAA", tag="W-M-STRS", start_node="N-M-STR1",
-         end_node="N-M-C3B", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-C3", assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CMW119AAAA", tag="W-M-STOS", start_node="N-M-W1",
          end_node="N-M-BA1", assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CMW120AAAA", tag="W-M-STOS2", start_node="N-M-BA1",
@@ -220,6 +234,10 @@ OPENINGS = [
     Door(uid="CMD202AAAA", tag="D-M-BALC", host="W-M-S2", type_ref="DT-PATIO60",
          position=from_node("N-M-S1", ft(1, 4))),
     # Interior
+    # x 10'-8 1/16"..13'-4 1/16": the west lane, which since ST-B2M was mirrored is the one
+    # the basement flight arrives in — so this is now the door onto the basement stairs, and
+    # RO-1 beside it is the cased way onto ST-M2S. The two swapped roles with the mirror;
+    # neither moved.
     Door(uid="CMD203AAAA", tag="D-M-STAIR", host="W-M-STRS", type_ref="DT-INT32",
          position=from_node("N-M-STR1", ft(0, 8.0625)), flip_swing=True),
     Door(uid="CMD204AAAA", tag="D-M-STOR", host="W-M-STOS2", type_ref="DT-INT32",
@@ -240,11 +258,8 @@ OPENINGS = [
     # header over the 2'-6" opening on their own — nothing extra to author here.
     Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT30-TRIMLESS",
          position=from_node("N-M-S1", ft(5))),
-    # Cased pass-through into the hall — door-sized (DT-INT32's 2'-8" x 6'-8") but
-    # never leafed, so it carries no swing symbol and no IfcDoor.
-    RoughOpening(uid="CMD209AAAA", tag="O-M-HALL", host="W-M-C4",
-                 position=from_node("N-M-C2", ft(0, 6)), width=ft(2, 8),
-                 height=ft(6, 8)),
+    # O-M-HALL, the 2'-8" cased pass-through from the living room into the hall, retired
+    # 2026-07-28 with its host wall W-M-C4: the whole 4'-2" it stood in is the opening now.
     # Cased pass-through: living room → dressing corridor (per floorplan).
     Window(uid="CMX301AAAA", tag="WIN-M-BED-W1", host="W-M-W4",
            type_ref="WT-2736", position=from_node("N-M-SW", ft(4, 2.5)),
@@ -312,6 +327,11 @@ OPENINGS = [
 ]
 
 ROOMS = [
+    # RM-M-HALL (CMR408AAAA) was retired into this claim on 2026-07-28, the way the second
+    # storey retired RM-S-LANDING and RM-S-STAIR into RM-S-HALL when *its* centre line
+    # opened. Taking W-M-C4/C4B out under BM-M-HALL leaves one polygonized face spanning the
+    # living room and the old hall band, and two seeds in one face bill the floor twice.
+    # The 706 sf that results is the honest area of the room you can now walk around.
     Room(uid="CMR401AAAA", tag="RM-M-LIVING", seed=pt(ft(27), ft(12)),
          occupancy=Occupancy.LIVING, floor_finish="oak"),
     Room(uid="CMR402AAAA", tag="RM-M-BED", seed=pt(ft(9), ft(6)),
@@ -326,8 +346,6 @@ ROOMS = [
          occupancy=Occupancy.OFFICE, floor_finish="oak"),
     Room(uid="CMR407AAAA", tag="RM-M-CLOSET", seed=pt(ft(13), ft(15, 4)),
          occupancy=Occupancy.STORAGE, floor_finish="oak"),
-    Room(uid="CMR408AAAA", tag="RM-M-HALL", seed=pt(ft(11), ft(23, 4)),
-         occupancy=Occupancy.HALLWAY, floor_finish="oak"),
     Room(uid="CMR409AAAA", tag="RM-M-STORAGE", seed=pt(ft(5), ft(31)),
          occupancy=Occupancy.STORAGE, floor_finish="sealed-concrete"),
     Room(uid="CMR410AAAA", tag="RM-M-STAIR", seed=pt(ft(14, 6), ft(31)),
@@ -337,7 +355,7 @@ ROOMS = [
 ALARMS = [
     Alarm(uid="CMA701AAAA", tag="AL-M-BED", kind=AlarmKind.COMBO, room="RM-M-BED",
           circuit="CKT-LT-BACKUP"),
-    Alarm(uid="CMA702AAAA", tag="AL-M-HALL", kind=AlarmKind.COMBO, room="RM-M-HALL",
+    Alarm(uid="CMA702AAAA", tag="AL-M-HALL", kind=AlarmKind.COMBO, room="RM-M-LIVING",
           circuit="CKT-LT-BACKUP"),
 ]
 
@@ -356,18 +374,15 @@ ALARMS = [
 # the *slab sensor* point; the line-voltage thermostats are ED-M-BATH2-FH-STAT and
 # ED-M-DINING-FH-STAT in plan/electrical.py.
 FLOOR_HEAT = [
-    # RM-M-BATH2's floor. The clear face is x 0'-0 5/8"..7'-11 3/8", y 13'-4 11/16"..
-    # 21'-7 5/16", which sets back to a 7'-2" x 7'-6" = 53.8 ft2 rectangle — but
-    # FX-M-BATH2-WC now backs onto W-M-BA2E at x 1'-0"..3'-6", y 18'-11"..21'-5"
-    # (plan/fixtures.py), and `advisory.floor_heat_fixture_keepout` is right that cable
-    # does not run under a closet flange. So the *south* edge is notched x 0'-11"..3'-7",
-    # y 18'-9"..21'-5" — the zone's own south boundary, so the notch opens onto it rather
-    # than pocketing an island — with a ~1" clearance on the WC's exposed sides.
+    # RM-M-BATH2's floor. The zone is an L around the WC, shower and tub: radiant cable
+    # stays in the open south strip and the narrow centre aisle, with a deliberate 2"+
+    # installation gap at every fixture footprint. Keeping the keepouts in this authored
+    # polygon makes `advisory.floor_heat_fixture_keepout` verify the actual loop geometry.
     FloorHeat(uid="CMH801AAAA", tag="FH-M-BATH2", room_ref="RM-M-BATH2",
               zone=(pt(ft(0, 5), ft(13, 9)), pt(ft(7, 7), ft(13, 9)),
-                    pt(ft(7, 7), ft(21, 5)), pt(ft(3, 7), ft(21, 5)),
-                    pt(ft(3, 7), ft(18, 9)), pt(ft(0, 11), ft(18, 9)),
-                    pt(ft(0, 11), ft(21, 5)), pt(ft(0, 5), ft(21, 5))),
+                    pt(ft(7, 7), ft(15, 8)), pt(ft(4), ft(15, 8)),
+                    pt(ft(4), ft(21, 5)), pt(ft(3, 8), ft(21, 5)),
+                    pt(ft(3, 8), ft(15, 8)), pt(ft(0, 5), ft(15, 8))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
               stat=pt(ft(2), ft(17, 6))),
     # Under the dining table. FURN-M-DINING covers x 22'-11"..30'-11", y 15'-7"..19'-1"; the
@@ -394,25 +409,83 @@ SLABS = [
 # shaft a stair actually climbs, and the u-split resolver anchors its flights to the
 # opening's near corner. West/east are W-B-STR's and W-B-CN's basement concrete faces —
 # 12" concrete is thicker than the 2x6 walls stacked on it, so the basement is the
-# narrowest point of the shaft and the one that sizes the flights. South is W-M-STRS's
-# stair-side face (the door at the top of the stairs), north the exterior wall's.
+# narrowest point of the shaft and the one that sizes the flights.
+#
+# Run, north to south (2026-07-28): the well now *ends* on the wall instead of starting on
+# one. North is W-B-N2's inside concrete face at y=35'-0", which the main deck bears on —
+# the well used to stop 11 7/8" short of it and leave a slab sliver nothing could use.
+#
+# South is W-M-STRS's stair-side face at 26'-0 3/8", which is where the *second* storey's
+# stair puts it and not a free choice. FO-S-STAIR's south edge is ST-M2S's springing point —
+# its first tread starts there — so any wall north of that line would stand on that tread.
+# The two wells therefore share one south edge, the stair wall's north face, and each takes
+# whatever run its own north limit leaves.
+#
+# For this one that is 8'-11 5/8": the IRC R311.7.6 36" landing plus six 11 15/16" treads.
+# Deeper than the 11" the shorter well used to give and deliberately not trimmed back to it
+# — trimming would only reopen the ledge in front of D-M-STAIR. 11 15/16" against a 7 11/16"
+# riser is a slow, comfortable basement flight, well inside R311.7.5.2's 10" minimum.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CMF601AAAA", tag="FO-M-STAIR",
-                 outline=(pt(ft(10, 6), ft(25, 2.375)), pt(ft(17, 6), ft(25, 2.375)),
+                 outline=(pt(ft(10, 6), ft(26, 0.375)), pt(ft(17, 6), ft(26, 0.375)),
                           pt(ft(17, 6), ft(35)), pt(ft(10, 6), ft(35))),
                  bearing_refs=("W-M-STRW", "W-M-STRW2")),
 ]
 
 # 7'-0" well = 3'-3 3/4" + 4 1/2" well partition + 3'-3 3/4". Each flight clears the
 # IRC R311.7.1 36" minimum above the handrail with room for the rail to project; the
-# landing is the R311.7.6 36" minimum, which the resolver floors at the flight width to
-# keep the U-turn walkable.
+# landing is the R311.7.6 36" minimum measured in the direction of travel.
+#
+# `turn_direction="left"` mirrors the pair across the well (2026-07-28): the flight springs
+# from the basement in the *east* lane (x 14'-2 1/4"..17'-6") and arrives on the main floor
+# in the *west* one (x 10'-6"..13'-9 3/4"), which is D-M-STAIR's lane. ST-M2S is mirrored
+# with it, so the east lane is now the flight *up* to the second floor, behind RO-1. Each
+# of the stair wall's two openings therefore faces a lane you can walk into, which is the
+# arrangement it always had — the mirror swapped which opening serves which stair.
+#
+# No guard is authored at the head: W-M-STRS spans the whole south edge, and its two
+# openings each stand over a flight rather than over a drop.
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
           from_storey="basement", to_storey="main", width=ft(3, 3.75),
-          layout="u_split_landing", run_direction="y",
-          start=pt(ft(10, 6), ft(25, 2.375)), landing_depth=ft(3)),
+          layout="u_split_landing", run_direction="y", turn_direction="left",
+          start=pt(ft(10, 6), ft(26, 0.375)), landing_depth=ft(3)),
+]
+
+# The beam that lets the main-storey centre line be open between the hall and the living
+# room (2026-07-28) — the twin of BM-S-HALL one storey up, and authored the same way.
+#
+# CLAUDE.md's house fact is that x=18' is a bearing line from the footings to RB-HOUSE.
+# This does not open it up: the LVL is the bearing line for these 4'-2", and the wall lands
+# back on the stack either side.
+#
+# Load, per foot of beam:
+#   FS-SECOND    18' tributary (half of each 18' I-joist span either side of the centre
+#                line), 40 psf LL + 15 psf DL                              ~ 990 plf
+# plus one point load, not a line: over this stretch the storey above has no centre wall at
+# all — BM-S-HALL replaced it — so everything above (attic floor, RB-HOUSE, the second-storey
+# plate) arrives as that beam's end reactions rather than as a uniform run. Its south
+# reaction, ~8.1 k, lands at y=22'-4", 8" north of this beam's own south bearing.
+#
+# Over the 4'-2" clear span that is M = 5.7 ft-k and V = 8.9 k at the south end, most of the
+# latter being that reaction going almost straight into the jack pack 8" away. Three plies
+# of 1.75x11.875 LVL give Sx = 123 in^3 (26.7 ft-k at Fb = 2,600 psi) and 62 in^2 of shear
+# area (11.8 k), and deflect well inside L/360 = 0.14". Same section and ply count as
+# BM-S-HALL and RB-HOUSE — one LVL depth on the job — and it is the shear, not the moment,
+# that sizes it.
+#
+# It bears on the ends of the wall segments it replaced — W-M-C3 south, W-M-C5 north — each
+# of which needs a jack pack under it, and both stack onto the basement concrete centre wall
+# W-B-CN and down to the footings, so the reaction has somewhere to go.
+# Framed FLUSH, not dropped: `top_elevation` pins its top to the second-storey datum, which
+# is top-of-joist, so FS-SECOND's I-joists hang off it in face-mount hangers and its soffit
+# lands on the 9'-0" plate line of the walls either side. That keeps the 9' ceiling unbroken
+# across the opening — a dropped beam would hang its full 11-7/8" into it.
+BEAMS = [
+    Beam(uid="CMBM01AAAA", tag="BM-M-HALL", start_node="N-M-C2", end_node="N-M-C3",
+         size="3-1.75x11.875 LVL", bearing_refs=("W-M-C3", "W-M-C5"),
+         top_elevation=ft(10)),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SLABS,
-            *FLOOR_OPENINGS, *STAIRS]
+            *FLOOR_OPENINGS, *STAIRS, *BEAMS]

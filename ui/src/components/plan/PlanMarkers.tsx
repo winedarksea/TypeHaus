@@ -94,6 +94,33 @@ export function SlabOutlines({ slabs, project }: {
   );
 }
 
+// Guards and handrails on the active storey. A railing resolves to one solid per post and
+// per rail (resolve/accessories.py::_resolve_railing), and each is drawn as its own plan
+// outline: a post reads at its true section, a rail as the 1 1/2" band it sweeps along the
+// path. That band is the line down the guard, so an open well edge and a guarded one finally
+// read differently — until now the 3D viewer was the only place a railing appeared.
+//
+// `rail_count` rails share one footprint (they are stacked in Z, which plan cannot show), so
+// coincident outlines are drawn once. Graphical only, like SlabOutlines: a railing is derived
+// geometry and is selected in 3D, so the layer never takes the plan's pointer gestures.
+export function RailingOutlines({ railings, project }: {
+  railings: Solid[];
+  project: (p: Vec2) => Vec2;
+}) {
+  const seen = new Set<string>();
+  return (
+    <g pointerEvents="none">
+      {railings.map((railing) => {
+        const points = railing.outline.map(project).map((p) => p.join(",")).join(" ");
+        if (seen.has(points)) return null;
+        seen.add(points);
+        return <polygon key={railing.uid} points={points} fill="var(--material-metal)"
+          fillOpacity={0.35} stroke="var(--material-metal)" strokeWidth={1.25} />;
+      })}
+    </g>
+  );
+}
+
 // Plain nodes; heal affordance on collinear 2-wall joints (select tool).
 export function PlanNodesLayer({ nodes, openEnds, model, tool, project, nearestNodeTag, onHeal }: {
   nodes: Map<string, GeoNode>;

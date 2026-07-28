@@ -8,6 +8,13 @@ from typehaus.quantities import inch
 
 _MAX_RISER_M = 7.75 * 0.0254  # IRC R311.7
 _MIN_TREAD_M = 10.0 * 0.0254
+# IRC R311.7.6: "every landing shall have a minimum dimension of 36 inches measured in the
+# direction of travel". The *width* rule in the same section — a landing is never narrower
+# than the stairway it serves — is about the cross-run dimension, which a U-stair's
+# half-landing satisfies by construction (it is exactly one flight wide). Flooring the
+# authored depth at the stair width instead conflated the two and silently lengthened every
+# well by (width - 36") for no code reason.
+_MIN_LANDING_DEPTH_M = 36.0 * 0.0254
 _TREAD_THICKNESS_IN = 1.5  # a 1.5" tread/deck board
 _TREAD_THICKNESS_M = inch(_TREAD_THICKNESS_IN).meters
 _LANDING_JOIST_PROFILE = "2x8"

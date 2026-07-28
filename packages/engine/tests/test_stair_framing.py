@@ -310,12 +310,16 @@ def test_every_landing_platform_corner_is_supported(catlin_model):
 
 
 def test_framed_wall_bearing_picks_the_longest_host(main_stair):
-    """W-M-C4B overlaps stringer-upper-1 by 4" and is declared first; W-M-C5 carries
-    5'-8" of it. First-match-wins picked the 4" clip."""
+    """W-M-C4B overlaps the east stringer by 3 5/8" and is declared first; W-M-C5 carries
+    6'-9" of it. First-match-wins picked the 3 5/8" clip.
+
+    ST-M2S turns left, so the east lane is the *lower* flight and the west lane the upper
+    one — the two hosts are the same walls either way, since handedness only swaps which
+    flight occupies which lane."""
     members = {m.child_key: m for m in main_stair.members}
-    for key in ("stringer-upper-1", "landing-rim-upper-1"):
+    for key in ("stringer-lower-1", "landing-rim-lower-1"):
         assert members[key].connection == "framed-wall-ledger:W-M-C5", key
-    for key in ("stringer-lower-0", "landing-rim-lower-0"):
+    for key in ("stringer-upper-0", "landing-rim-upper-0"):
         assert members[key].connection == "framed-wall-ledger:W-M-STRW", key
 
 

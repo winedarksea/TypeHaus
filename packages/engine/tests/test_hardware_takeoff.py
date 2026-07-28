@@ -159,19 +159,28 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     assert row["part_number"] == "LSSR" and row["count"] == len(ridge_rafters)
 
     # Every catlin floor joist *bears* — on a plate, or on top of the porch/balcony beams —
-    # except the breezeway deck's, which hang flush in their beams so the deck can be 7 1/4"
-    # deep instead of 14 1/2" at a walking surface that has to meet the house threshold.
-    # Those four must be billed a hanger each; nothing else may be.
+    # with three exceptions, all flush-framed on purpose: the breezeway deck's joists (so the
+    # deck can be 7 1/4" deep instead of 14 1/2" at a walking surface that has to meet the
+    # house threshold), and the joists over each of the two hall LVLs — BM-S-HALL, which
+    # replaced 8'-6" of the second-storey centre wall, and BM-M-HALL, which replaced 4'-2" of
+    # the main-storey one under it. Both beams are flush so their storey keeps its 9'
+    # ceiling, which is exactly what makes the joists hang rather than bear. All must be
+    # billed a hanger each; nothing else may be.
     breezeway = next(f for f in catlin_model.floors if f.tag == "FS-BW-FLOOR")
     hung_keys = {item.member_key for item in connections}
     breezeway_joists = {f"{m.parent_uid}:{m.child_key}" for m in breezeway.members
                         if m.category == "joist"}
     assert breezeway_joists <= hung_keys, "flush-framed deck joists must be billed hangers"
+    hall_beam_keys = {item.member_key for item in connections
+                      if item.carrier_tag in ("BM-S-HALL", "BM-M-HALL")}
+    for beam in ("BM-S-HALL", "BM-M-HALL"):
+        assert any(item.carrier_tag == beam for item in connections), \
+            f"the joists over the open hall hang in {beam}"
     bearing_keys = {f"{member.parent_uid}:{member.child_key}"
                     for floor in catlin_model.floors for member in floor.members
                     if floor.tag != "FS-BW-FLOOR"}
     assert bearing_keys
-    assert not (bearing_keys & hung_keys)
+    assert not (bearing_keys & hung_keys - hall_beam_keys)
 
 
 # --- sill anchorage ------------------------------------------------------------------

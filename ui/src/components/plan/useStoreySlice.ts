@@ -19,6 +19,7 @@ export interface StoreySlice {
   storeyNodes: PlanNode[];
   stairsOnStorey: Stair[];
   slabsOnStorey: Solid[];
+  railingsOnStorey: Solid[];
   snapNodes: Map<string, GeoNode>;
   defaultAssembly: string;
   serviceOptions: string[];
@@ -58,6 +59,15 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
   // plan's mirror of the sheet emitters' slab pass (emit/draw/foundationplan.py::_emit_slabs).
   const slabsOnStorey = useMemo(
     () => (model.solids ?? []).filter((solid) => solid.category === "slab" &&
+      (!activeStorey || solid.storey === activeStorey) && solid.outline.length >= 3),
+    [model.solids, activeStorey],
+  );
+  // Guards and handrails, drawn the way the sheet emitter draws them
+  // (emit/draw/floorplan.py::_emit_railings): every post and rail as its own plan outline.
+  // A guarded well edge and an open one used to look identical here — the 3D viewer was the
+  // only place a railing existed.
+  const railingsOnStorey = useMemo(
+    () => (model.solids ?? []).filter((solid) => solid.category === "railing" &&
       (!activeStorey || solid.storey === activeStorey) && solid.outline.length >= 3),
     [model.solids, activeStorey],
   );
@@ -114,7 +124,8 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
   );
 
   return {
-    wallsOnStorey, nodes, openEnds, storeyNodes, stairsOnStorey, slabsOnStorey, snapNodes,
+    wallsOnStorey, nodes, openEnds, storeyNodes, stairsOnStorey, slabsOnStorey, railingsOnStorey,
+    snapNodes,
     defaultAssembly, serviceOptions, canvasTypes, warningMarkers, nearestNodeTag, storeyHintFile,
   };
 }

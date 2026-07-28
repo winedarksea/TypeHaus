@@ -37,6 +37,16 @@ MAIN_FIXTURES = (
     Fixture(uid="CMQ803AAAA", tag="FX-M-BATH2-WC", type_ref="FX-TOILET", room="RM-M-BATH2",
             position=pt(m(0.686504), m(6.14439)), rotation=deg(0), wall_ref="W-M-BA2E",
             drain_position=pt(ft(3), ft(18))),
+    # BATH2 has separate bathing fixtures: the 36" shower sits north of the door swing,
+    # while the 60" tub runs north/south along the east plumbing wall. They are intentionally
+    # separate instances/types rather than a tub-shower combination, so the permit schedule
+    # and future owner selections can treat them independently.
+    Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER", room="RM-M-BATH2",
+            position=pt(ft(1, 9), ft(17, 3)), wall_ref="W-M-BA2E",
+            drain_position=pt(ft(1, 9), ft(17, 3))),
+    Fixture(uid="CMQ806AAAA", tag="FX-M-BATH2-TUB", type_ref="FX-TUB", room="RM-M-BATH2",
+            position=pt(ft(6, 8.5), ft(18, 10.8)), rotation=deg(90), wall_ref="W-M-BA2E",
+            drain_position=pt(ft(7, 4), ft(18, 10.8))),
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-WASHER", room="RM-M-LAUNDRY",
               position=pt(ft(10, 6), ft(20)), wall_ref="W-M-BA2E2"),
     # Kitchen sink: dropped into the 36" base FURN-M-KIT-SINKBASE and centred on

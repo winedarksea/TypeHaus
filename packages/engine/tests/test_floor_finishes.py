@@ -92,13 +92,17 @@ def test_the_second_storey_circulation_and_baths_run_one_lvp_floor(catlin_model)
     plank floor with no thresholds on the traffic route."""
     finishes = {room.tag: room.floor_finish
                 for room in catlin_model.rooms if room.storey == "second"}
+    # RM-S-LANDING and RM-S-STAIR are gone as separate claims: with the centre line open
+    # under BM-S-HALL between y 22'-4" and 30'-10", the hall, the landing and the stair
+    # well polygonize as one face, and RM-S-HALL is the seed that claims it.
     assert {tag for tag, finish in finishes.items() if finish == "lvp"} == {
-        "RM-S-LANDING", "RM-S-HALL", "RM-S-SUITEBATH", "RM-S-VANITY", "RM-S-BATH1"}
+        "RM-S-HALL", "RM-S-SUITEBATH", "RM-S-VANITY", "RM-S-BATH1"}
+    assert "RM-S-LANDING" not in finishes
+    assert "RM-S-STAIR" not in finishes
     # Both walk-ins are carpet, continuing out of the bedrooms they open off.
     assert finishes["RM-S-CLOSET"] == "carpet"
     assert finishes["RM-S-NCLOSET"] == "carpet"
     # Everything else on the storey is untouched.
-    assert finishes["RM-S-STAIR"] == "oak"
     assert finishes["RM-S-PLANT"] == "tile"
     assert finishes["RM-S-STUDY2"] == "oak"
 

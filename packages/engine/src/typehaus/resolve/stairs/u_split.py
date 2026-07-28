@@ -29,6 +29,13 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
 
     Cross-run the well is ``width + partition + width``: the two flight lanes are held
     apart by the well partition rather than butting against each other.
+
+    ``stair.turn_direction`` picks the hand of the 180° turn. The well itself is symmetric,
+    so handedness is purely *which lane each flight occupies*: ``"right"`` (the default, and
+    the only behaviour before it was authorable) springs from the lane at the ``start``
+    corner and arrives in the far one; ``"left"`` swaps them. Nothing else moves — the
+    partition stays on the well centreline and the landing zone stays at the far end of the
+    run — so mirroring a stair never changes the opening it needs.
     """
     width = stair.width.meters
     flight_treads = max(0, risers - 3)
@@ -46,6 +53,14 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     lane0 = start_y if along_x else start_x
     partition_centre = lane0 + width + _WELL_PARTITION_THICKNESS_M / 2.0
     lane1 = lane0 + width + _WELL_PARTITION_THICKNESS_M
+    # The two half-landings, each running from its own flight lane to the partition
+    # centreline (the bearing a framer frames into, so no unsupported strip of well is left
+    # between them). Which one the *lower* flight walks onto is the stair's handedness.
+    near_half = (lane0, partition_centre - lane0)
+    far_half = (partition_centre, lane1 + width - partition_centre)
+    mirrored = stair.turn_direction == "left"
+    lower_lane, upper_lane = (lane1, lane0) if mirrored else (lane0, lane1)
+    lower_half, upper_half = (far_half, near_half) if mirrored else (near_half, far_half)
 
     def at(s: float, cross: float) -> tuple[float, float]:
         """Plan point ``s`` metres along the run (signed from the start edge) at the
@@ -62,8 +77,8 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # far end it meets the flight's bearing (lower flight → the lower landing, upper
     # flight → the arrival deck). The subfloor clip clamps the springing dip.
     for prefix, lane_lo, s_lo, s_hi, spring_z, bear_z, count in (
-        ("lower", lane0, 0.0, flight_len, z0, lower_landing_z, lower_treads),
-        ("upper", lane1, flight_len, flight_len - tread * upper_treads,
+        ("lower", lower_lane, 0.0, flight_len, z0, lower_landing_z, lower_treads),
+        ("upper", upper_lane, flight_len, flight_len - tread * upper_treads,
          upper_landing_z, arrival, upper_treads),
     ):
         if not count:
@@ -87,7 +102,7 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
         top = z0 + riser * (index + 1)
         s = tread * index + tread / 2.0
         out.append(FramedMember(stair.uid, f"tread-lower-{index:03d}", "tread", tread_profile,
-                                at(s, lane0), at(s, lane0 + width),
+                                at(s, lower_lane), at(s, lower_lane + width),
                                 _notch_z(top), top, width))
     # Upper flight climbs back toward the start edge; its first tread leaves the upper
     # landing, and its top tread ends one riser below the arrival deck.
@@ -95,17 +110,14 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
         top = z0 + riser * (lower_treads + 3 + index)
         s = flight_len - tread * (index + 1) + tread / 2.0
         out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", tread_profile,
-                                at(s, lane1), at(s, lane1 + width),
+                                at(s, upper_lane), at(s, upper_lane + width),
                                 _notch_z(top), top, width))
-    # Two landing platforms in the landing zone beyond the flight ends. The partition
-    # stops short of them, so each landing runs from its own flight lane to the partition
-    # *centreline* — that is the bearing a framer frames into, and it leaves no
-    # unsupported strip of well between the two half-landings.
+    # Two landing platforms in the landing zone beyond the flight ends, each on its own
+    # flight's side of the well partition.
     out.extend(_landing_platform(stair, "lower", at, flight_len, landing_depth_m,
-                                 lane0, partition_centre - lane0, lower_landing_z))
+                                 *lower_half, lower_landing_z))
     out.extend(_landing_platform(stair, "upper", at, flight_len, landing_depth_m,
-                                 partition_centre, lane1 + width - partition_centre,
-                                 upper_landing_z))
+                                 *upper_half, upper_landing_z))
     # Well partition between the up and down flights: generated stud framing (not an
     # authored Wall) centred in the gap the two lanes leave, bearing on the subfloor the
     # stair springs from and rising to the arrival deck — never past the subfloor into the

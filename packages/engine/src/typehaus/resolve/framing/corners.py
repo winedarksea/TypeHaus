@@ -52,21 +52,51 @@ def invert_corner_role(role: str | None) -> str | None:
     return None
 
 
+def neighbour_band_insets(neighbour_polygon: Ring, axis_start, direction,
+                          axis_len_m: float, at_start: bool) -> tuple[float, float] | None:
+    """(far-face, near-face) insets of the *neighbour's* band, read off its own polygon.
+
+    The mitre-edge reading in :func:`_neighbour_band_insets` is only exact when both walls
+    carry the same structure depth: the bisector then crosses each band at its own half
+    depth, which is also the other's. Where the depths differ — a 2x4 partition dying into
+    the end of a 2x6 bearing wall — the bisector leaves the thinner wall's mitre wedge
+    reaching *into* the thicker band, and a rectangular end stud placed on that reading
+    pokes through the owner's corner pack. Projecting the neighbour's band directly gives
+    the two face stations the corner rule actually wants, for any pair of depths and for
+    either wall's ``alignment``. Returns ``None`` when the neighbour has no usable polygon.
+    """
+    if not neighbour_polygon or len(neighbour_polygon) < 3:
+        return None
+    insets = []
+    for point in neighbour_polygon:
+        station = ((point[0] - axis_start[0]) * direction[0]
+                   + (point[1] - axis_start[1]) * direction[1])
+        insets.append(station if at_start else axis_len_m - station)
+    return min(insets), max(insets)
+
+
 def wall_end_framing(structure_polygon: Ring, axis_start, direction, axis_len_m: float,
                      role: str | None, stud_thickness_m: float,
-                     at_start: bool) -> WallEndFraming:
+                     at_start: bool,
+                     neighbour_insets: tuple[float, float] | None = None) -> WallEndFraming:
     """Framing limit + end-stud station for one wall end under its corner ``role``.
 
     ``role`` of ``None`` (an open end, a tee branch, a collinear run) keeps the historical
     behaviour — framing runs to the datum endpoint — because only an L corner has a shared
     square to divide.
+
+    ``neighbour_insets`` is the (far, near) pair from :func:`neighbour_band_insets` when the
+    caller could resolve the neighbouring wall; without it the mitre edge is read instead,
+    which agrees with it wherever the two bands are the same depth.
     """
     if role is None:
         return WallEndFraming(0.0, 0.0) if at_start \
             else WallEndFraming(axis_len_m, axis_len_m)
 
-    outer_inset, inner_inset = _neighbour_band_insets(
-        structure_polygon, axis_start, direction, axis_len_m, at_start
+    outer_inset, inner_inset = neighbour_insets if neighbour_insets is not None else (
+        _neighbour_band_insets(
+            structure_polygon, axis_start, direction, axis_len_m, at_start
+        )
     )
     inset = outer_inset if role == CORNER_ROLE_OWNER else inner_inset
     # A junction the solver could not resolve leaves a square end (outer == inner); both

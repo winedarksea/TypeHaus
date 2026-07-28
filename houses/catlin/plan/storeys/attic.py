@@ -100,9 +100,13 @@ WALLS = [
     Wall(uid="CAW115AAAA", tag="W-A-C1B", start_node="N-A-C1", end_node="N-A-C2",
          assembly="CATLIN_INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-C2"),
+    # y 9'..36'. Between y=22'-4" and 30'-10" the storey below carries no wall — that run
+    # is BM-S-HALL, three plies of 11-7/8" LVL — so this wall (and RB-HOUSE through it)
+    # lands on the beam there. `stacks_on` names W-S-C4B, the centre-wall segment north of
+    # the opening, because the tiebreaker has to name a *wall*.
     Wall(uid="CAW110AAAA", tag="W-A-C2", start_node="N-A-C2", end_node="N-A-N1",
          assembly="CATLIN_INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
-         structural_role=StructuralRole.BEARING, stacks_on="W-S-C3"),
+         structural_role=StructuralRole.BEARING, stacks_on="W-S-C4B"),
     # South rooms: den (west of center) + study (east of center). Framed to the roof
     # deck like the other attic partitions; the den's ft(7,6) dropped ceiling (see its
     # Room.ceiling below) is a finish elevation for headroom checks, not a wall height.
@@ -235,7 +239,10 @@ FLOOR = [
     FloorSystem(uid="CAF602AAAA", tag="FS-ATTIC",
                 joists=JoistSpec(member="11.875 I-joist", spacing=inch(16),
                                  direction="x",
-                                 bearing_refs=("W-S-W3", "W-S-C1", "W-S-E2")),
+                                 # BM-S-HALL is the centre line for its 8'-6"; the joists
+                                 # either side of the hall opening hang off it.
+                                 bearing_refs=("W-S-W3", "W-S-C1", "W-S-E2",
+                                               "BM-S-HALL")),
                 subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=inch(0.75)),
                 openings=("FO-A-STAIR",)),
 ]

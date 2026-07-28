@@ -48,7 +48,9 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
     """S3 moved five second-storey rooms to LVP and one closet to carpet; S6 has to bill
     exactly those. The two halves are only useful together."""
     lvp = next(row for row in bom["floor_finishes"] if row["finish"] == "lvp")
-    assert set(lvp["rooms"]) == {"RM-S-LANDING", "RM-S-HALL", "RM-S-SUITEBATH",
+    # RM-S-LANDING was folded into RM-S-HALL when the centre line opened up under
+    # BM-S-HALL, so the one hall row now bills what used to be two.
+    assert set(lvp["rooms"]) == {"RM-S-HALL", "RM-S-SUITEBATH",
                                  "RM-S-VANITY", "RM-S-BATH1"}
     lvp_area = sum(room.area_m2 for room in catlin_model.rooms
                    if room.floor_finish == "lvp") * _M2_TO_FT2

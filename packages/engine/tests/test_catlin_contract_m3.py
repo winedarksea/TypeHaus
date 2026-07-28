@@ -201,6 +201,25 @@ def test_centerline_bearing_wall_runs_full_length_on_both_framed_storeys(catlin_
             abs(w.axis[1][1] - w.axis[0][1]) + abs(w.axis[1][0] - w.axis[0][0])
             for w in segments
         )
+        # The second storey carries 8'-6" of that line as BM-S-HALL — three plies of
+        # 11-7/8" LVL over the open hall/landing/stair — rather than as studs. The stack
+        # is still continuous gable to gable; part of it is just a beam.
+        for solid in catlin_model.solids:
+            if solid.category != "beam" or solid.storey != storey:
+                continue
+            xs = [x for x, _ in solid.outline]
+            # On the line means straddling it *and* running along it (a beam that merely
+            # crosses x=18' contributes none of its length to this run).
+            if not min(xs) - 1e-6 <= center_x <= max(xs) + 1e-6:
+                continue
+            if max(xs) - min(xs) > ft(1).meters:
+                continue
+            ys = [y for _, y in solid.outline]
+            # ...and inside the house: the sunken garden's balcony beams share this storey
+            # and this x, but they are a separate structure south of the south wall.
+            if min(ys) < -1e-6 or max(ys) > ft(HOUSE_SIZE_FT).meters + 1e-6:
+                continue
+            length += max(ys) - min(ys)
         assert length == pytest.approx(ft(HOUSE_SIZE_FT).meters, abs=1e-6)
         # The centerline is the old 5.5" (2x6) wall on every framed storey.
         for wall in segments:
@@ -853,6 +872,13 @@ def test_stairs_resolve_with_code_risers(catlin_model):
         assert stair.riser_count in {14, 16}
         assert stair.riser_height_m <= inch(7.75).meters + 1e-9
         assert stair.tread_depth_m >= inch(10.0).meters - 1e-9
+    # Both U-stair wells run wall face to wall face — the stair wall's north face at the
+    # south end, their own storey's north wall at the other — and the going is whatever that
+    # shaft leaves after the R311.7.6 36" landing. ST-M2S's works out at a round 11";
+    # ST-B2M's shaft is 5 5/8" longer than six of those, so its treads are 11 15/16".
+    # Pinned, not bounded: a change here means a well moved, which is a design decision.
+    assert stairs["ST-M2S"].tread_depth_m == pytest.approx(inch(11.0).meters, abs=1e-9)
+    assert stairs["ST-B2M"].tread_depth_m == pytest.approx(inch(11.9375).meters, abs=1e-9)
     attic = stairs["ST-S2A"]
     assert attic.winder_count == 3
     assert attic.run_reversed is True
@@ -891,8 +917,12 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     assert stairs["ST-B2M"]["run_direction"] == "y"
     assert stairs["ST-B2M"]["layout"] == "u_split_landing"
     assert stairs["ST-B2M"]["start"] == pytest.approx(
-        [ft(10, 6).meters, ft(25, 2.375).meters])
+        [ft(10, 6).meters, ft(26, 0.375).meters])
     assert stairs["ST-M2S"]["layout"] == "u_split_landing"
+    # Both U-stairs turn left, so each springs from the east lane and arrives in the west
+    # one — the lane D-M-STAIR stands in on main.
+    for tag in ("ST-B2M", "ST-M2S"):
+        assert stairs[tag]["turn_direction"] == "left"
     assert stairs["ST-S2A"]["layout"] == "right_angle_winder"
     assert stairs["ST-S2A"]["turn_direction"] == "left"
     assert stairs["ST-S2A"]["winder_count"] == 3

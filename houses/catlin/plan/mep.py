@@ -130,6 +130,12 @@ SLEEVES = [
     SleevePenetration(uid="CMP902AAAA", tag="SP-M-WC2", host_ref="SL-M-DECK",
                       position=pt(ft(3), ft(18)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-M-BATH2-WC"),
+    SleevePenetration(uid="CMP907AAAA", tag="SP-M-BATH2-SH", host_ref="SL-M-DECK",
+                      position=pt(ft(1, 9), ft(17, 3)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), serves_fixture="FX-M-BATH2-SH"),
+    SleevePenetration(uid="CMP908AAAA", tag="SP-M-BATH2-TUB", host_ref="SL-M-DECK",
+                      position=pt(ft(7, 4), ft(18, 10.8)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), serves_fixture="FX-M-BATH2-TUB"),
     # Projection of FX-M-BATH1-LAV onto the W-M-BAE structure-layer centerline (x=4, from
     # storeys/main.py node coordinates N-M-BA1/N-M-BA2), at the lavatory's own y.
     SleevePenetration(uid="CMP903AAAA", tag="SP-M-LAV1", host_ref="SL-M-DECK",
@@ -340,7 +346,7 @@ REGISTERS_SECOND = [
     Register(uid="CSRV01AAAA", tag="REG-S-SUP6", kind=DuctSystem.SUPPLY, room="RM-S-SUITE",
             position=pt(ft(5), ft(18)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CSRV02AAAA", tag="REG-S-SUP7", kind=DuctSystem.SUPPLY, room="RM-S-LANDING",
+    Register(uid="CSRV02AAAA", tag="REG-S-SUP7", kind=DuctSystem.SUPPLY, room="RM-S-HALL",
             position=pt(ft(13), ft(23, 6)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CSRV03AAAA", tag="REG-S-RET3", kind=DuctSystem.RETURN, room="RM-S-SUITEBATH",
@@ -597,11 +603,13 @@ SECOND_DEVICES = [
                      position=pt(ft(5), ft(25, 8)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED015K1AA", tag="ED-S-LANDING-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(8), ft(24, 4)), type_ref="ED-T-LT-CAN3", circuit="CKT-LT-UPPER",
-                     room="RM-S-LANDING", controlled_by=("ED-S-LANDING-SW",),
+                     position=pt(m(2.44371), m(7.41198)), type_ref="ED-T-LT-CAN3", circuit="CKT-LT-UPPER",
+                     room="RM-S-HALL", controlled_by=("ED-S-LANDING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # On W-S-SN3's north face beside ED-S-STAIR-SW (plan/lighting.py): W-S-BD-N2, which
+    # used to carry this switch, came out with O-S-STAIRTOP on 2026-07-28.
     ElectricalDevice(uid="CED015K2AA", tag="ED-S-LANDING-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(16, 6), ft(24, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(11, 6), ft(22, 7)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED016K1AA", tag="ED-S-NCLOSET-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(20), ft(33)), type_ref="ED-T-LT-CAN3", circuit="CKT-LT-UPPER",

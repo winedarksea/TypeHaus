@@ -50,7 +50,11 @@ class Stair(Element):
     # The explicit vocabulary prevents a non-zero winder count from silently meaning a
     # particular turn shape.
     layout: str = "straight"
-    # Relative to ascent; required for a right-angle winder only.
+    # Relative to ascent. Required for a right-angle winder. Optional for a
+    # ``u_split_landing``, where it names the hand of the 180° turn: ``"right"`` (the
+    # default) puts the springing flight in the lane nearest the ``start`` corner and the
+    # arriving flight beyond the well partition, ``"left"`` mirrors the pair across the
+    # well so the stair springs from the far lane and arrives in the near one.
     turn_direction: str | None = None
     winder_count: int = 0
     start: Point2D | None = None

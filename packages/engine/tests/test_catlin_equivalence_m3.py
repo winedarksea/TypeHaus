@@ -86,6 +86,19 @@ DECLARED_DIVERGENCES = {
         "have; the porch is FS-SG-PORCH now — real PT 2x8 joists with the composite plank "
         "as the deck's own sheet — so the placeholder slab has nothing left to stand in for"
     ),
+    "House Centerline Wall (Second)": (
+        "8'-6\" of that line (y 22'-4\"..30'-10\") is BM-S-HALL now — a flush 3-ply 11-7/8\" "
+        "LVL over the open hall/landing/stair — so no single wall run spans the storey and "
+        "the reference's one-piece centerline no longer pairs; the bearing stack itself is "
+        "unbroken, which the contract test measures wall runs + beam to prove"
+    ),
+    "House Centerline Wall (Main)": (
+        "the same decision one storey down (2026-07-28): 4'-2\" of that line "
+        "(y 21'-8\"..25'-10\") is BM-M-HALL now — a flush 3-ply 11-7/8\" LVL over the open "
+        "hall/living room, carrying FS-SECOND either side and BM-S-HALL's south reaction 8\" "
+        "off its own bearing — so no single wall run spans the storey and the reference's "
+        "one-piece centerline no longer pairs; the bearing stack itself is unbroken"
+    ),
     "House Attic Floor Subfloor": "floor finishes are IfcCovering now, not IfcSlab",
     "House Second Floor Subfloor": "floor finishes are IfcCovering now, not IfcSlab",
     "House Main Floor Ceiling Drywall": "ceiling finishes are IfcCovering now, not IfcSlab",
@@ -257,10 +270,12 @@ def test_every_reference_element_has_a_counterpart_or_a_declared_reason(equivale
 def test_paired_walls_stay_on_their_reference_wall_lines(equivalence):
     """Every reference wall line that still exists is within a construction-scale move."""
     pairs = _paired(equivalence, "wall")
-    # 22, not 25: the garage's 7'-0" move deliberately unpairs three of its stud-wall runs
-    # (recorded in DECLARED_DIVERGENCES). Every wall that still pairs must still be within a
-    # construction-scale move of its reference line, which is what the loop below asserts.
-    assert len(pairs) >= 22, equivalence.status_counts()
+    # 20, not 25: the garage's 7'-0" move deliberately unpairs three of its stud-wall runs,
+    # and *both* centerlines unpair because a stretch of each is an LVL rather than wall —
+    # BM-S-HALL on second, BM-M-HALL on main (all recorded in DECLARED_DIVERGENCES). Every
+    # wall that still pairs must still be within a construction-scale move of its reference
+    # line, which the loop below asserts.
+    assert len(pairs) >= 20, equivalence.status_counts()
     for item in pairs:
         assert item.placement_delta_m <= MAX_PAIRED_PLACEMENT_DELTA_M, item.as_dict()
         plan_delta = max(abs(item.size_delta_m[0]), abs(item.size_delta_m[1]))

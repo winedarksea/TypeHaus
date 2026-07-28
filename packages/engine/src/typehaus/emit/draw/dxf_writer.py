@@ -100,6 +100,7 @@ _LAYER_STYLE = {
     "A-SITE-FOUND": (9, 13),
     "A-SITE-ANNO": (1, 18),
     "A-STAIR": (7, 25),
+    "A-RAIL": (7, 20),
     "A-FURN": (43, 15),
     "E-POWR": (10, 25),
     "M-EQPT": (92, 25),

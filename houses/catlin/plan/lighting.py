@@ -393,26 +393,26 @@ MAIN_LIGHTING = [
     # one end only is the classic thing to get wrong.
     ElectricalDevice(uid="QTM0010AAA", tag="ED-M-HALL-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(6, 6), ft(24)), type_ref="ED-T-LT-CAN3",
-                     circuit="CKT-LT-MAIN", room="RM-M-HALL",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-HALL-SW", "ED-M-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0011AAA", tag="ED-M-HALL-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(11), ft(24)), type_ref="ED-T-LT-CAN3",
-                     circuit="CKT-LT-MAIN", room="RM-M-HALL",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-HALL-SW", "ED-M-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0012AAA", tag="ED-M-HALL-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(ft(15, 6), ft(24)), type_ref="ED-T-LT-CAN3",
-                     circuit="CKT-LT-MAIN", room="RM-M-HALL",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-HALL-SW", "ED-M-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0013AAA", tag="ED-M-HALL-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(4, 5), ft(22, 3)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-HALL", rotation=deg(90),
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     ElectricalDevice(uid="QTM0014AAA", tag="ED-M-HALL-SW2", kind=DeviceKind.SWITCH,
                      position=pt(ft(17, 7), ft(22, 3)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-HALL", rotation=deg(-90),
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
     # RM-M-STAIR: its switch is also one end of the basement railing run's 3-way.
@@ -664,24 +664,33 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-BED3-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
 
-    # RM-S-LANDING + the stairwell chandelier. The chandelier hangs over the ST-M2S
-    # opening, so it is seen from the stair and from the landing at once — which is the
-    # whole reason a stairwell is the one place a house puts a chandelier. Its 4' assembly
-    # off the 9' ceiling leaves the shade bottom 5' above the second floor, well clear of
-    # anything on the landing and reachable from the flight for a lamp change.
+    # The landing end of RM-S-HALL + the stairwell chandelier. The chandelier hangs over
+    # the ST-M2S opening, so it is seen from the stair and from the landing at once —
+    # which is the whole reason a stairwell is the one place a house puts a chandelier.
+    # Its 4' assembly off the 9' ceiling leaves the shade bottom 5' above the second
+    # floor, well clear of anything on the landing and reachable from the flight for a
+    # lamp change. All three now name RM-S-HALL: the landing, the well and the east hall
+    # are one room since the centre line opened up under BM-S-HALL.
     ElectricalDevice(uid="QTS0019AAA", tag="ED-S-LANDING-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(13), ft(24, 4)), type_ref="ED-T-LT-CAN3",
-                     circuit="CKT-LT-UPPER", room="RM-S-LANDING",
+                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      controlled_by=("ED-S-LANDING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS001AAAA", tag="ED-S-STAIR-CHAND", kind=DeviceKind.LIGHT,
                      position=pt(ft(14), ft(30)), type_ref="ED-T-LT-CHANDELIER",
-                     circuit="CKT-LT-UPPER", room="RM-S-STAIR",
+                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      controlled_by=("ED-S-STAIR-SW", "ED-S-LANDING-SW"),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(4))),
+    # Moved off the centre wall's stair-side face (17'-7", 26'-0") when that wall came out,
+    # then off W-S-BD-N2 when *that* came out with O-S-STAIRTOP. Its home is W-S-SN3's
+    # north face at y=22'-6 1/4" — the wall you walk straight at stepping south off the
+    # flight — one two-gang box with ED-S-LANDING-SW (plan/mep.py), which moves with it.
+    # Slid west from x=17' on 2026-07-28: ST-M2S turns left now, so the throat you step out
+    # of is the well's *west* lane (x 10'-3 3/8"..13'-9 3/4") and x=12' is what that lane
+    # walks at. At x=17' the switch was a well's width away from where you arrive.
     ElectricalDevice(uid="QTS001BAAA", tag="ED-S-STAIR-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(17, 7), ft(26)), type_ref="ED-T-SWITCH-DIM",
-                     circuit="CKT-LT-UPPER", room="RM-S-STAIR", rotation=deg(-90),
+                     position=pt(ft(12), ft(22, 7)), type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]
 

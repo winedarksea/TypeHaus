@@ -12,11 +12,13 @@
 #
 # Known, deliberate divergences from the source:
 # - The source opens the centre line up between y=22'-7" and y=31'-1 1/2" and again at the
-#   suite and plant-room doors. `W-S-C1..C4B` stays a continuous bearing stack (house fact,
-#   CLAUDE.md), so those three breaks are modelled as *openings in* the wall — D-S-PLANT,
-#   D-S-SUITE and O-S-HALLW — the way `main.py` already does with O-M-HALL / O-M-DRESS.
-#   The source's single 181.02 sf "Hallway" therefore reads here as RM-S-HALL (east of the
-#   bearing line) + RM-S-LANDING + RM-S-STAIR (west of it).
+#   suite and plant-room doors. The suite and plant-room breaks are modelled as *openings
+#   in* the wall — D-S-SUITE, D-S-PLANT — the way `main.py` does with O-M-HALL/O-M-DRESS.
+#   The big one is real: as of 2026-07-28 the centre line carries no wall at all between
+#   y=22'-4" and y=30'-10" (nearly the source's own break), just BM-S-HALL, three plies of
+#   11-7/8" LVL. The bearing stack is still continuous — the beam *is* the stack there —
+#   and the source's single 181.02 sf "Hallway" now reads as one room, RM-S-HALL, taking
+#   in the old landing and the open stair well; RL-S-STAIR guards the well's east edge.
 # - The source's south-wall openings are four 6'/5'-3" runs and its bearing-wall windows are
 #   2'-8"; `preferences.toml` caps a bearing RO at 27" and a non-bearing one at 30". The
 #   existing window *types* are kept and only their positions move onto the source openings.
@@ -29,6 +31,7 @@
 from typehaus import (
     Alarm,
     AlarmKind,
+    Beam,
     Door,
     DeckLayer,
     FloorHeat,
@@ -38,6 +41,8 @@ from typehaus import (
     Node,
     Occupancy,
     RadiantSystem,
+    Railing,
+    RailingKind,
     Room,
     RoughOpening,
     Soffit,
@@ -75,8 +80,10 @@ NODES = [
     Node(uid="CSN016AAAA", tag="N-S-C2", position=pt(ft(18), ft(12, 5))),
     Node(uid="CSN028AAAA", tag="N-S-C2B", position=pt(ft(18), ft(15, 11))),
     Node(uid="CSN029AAAA", tag="N-S-C2C", position=pt(ft(18), ft(22, 4))),
-    Node(uid="CSN027AAAA", tag="N-S-C3B", position=pt(ft(18), ft(25))),
-    Node(uid="CSN017AAAA", tag="N-S-C3", position=pt(ft(18), ft(26, 4))),
+    # N-S-C3B (18', 25'-0") retired 2026-07-28 with W-S-BD-N2: the stair's south wall is
+    # gone, so nothing ties to it.
+    # N-S-C3 (18', 26'-4") retired 2026-07-28 with W-S-C3C/W-S-C4: it only ever split
+    # the two wall segments the BM-S-HALL opening replaced, and no element ties to it.
     Node(uid="CSN030AAAA", tag="N-S-C3D", position=pt(ft(18), ft(30, 10))),
     # East bedroom block — the hall/bedroom partition is x=21'-11" (source 21.894/21.898)
     Node(uid="CSN018AAAA", tag="N-S-B1", position=pt(ft(21, 11), ft(9))),
@@ -94,7 +101,10 @@ NODES = [
     Node(uid="CSN034AAAA", tag="N-S-V2", position=pt(ft(5, 10.5), ft(26, 4))),
     # Stair shaft west line + the 2'x2' mechanical chase in the hall bath's NE corner
     Node(uid="CSN025AAAA", tag="N-S-BA1", position=pt(ft(10), ft(26, 4))),
-    Node(uid="CSN026AAAA", tag="N-S-STR2", position=pt(ft(10), ft(25))),
+    # The stair-shaft wall's south end. Since W-S-BD-N2 came out it is a free end — the
+    # return wall at the west side of the well head, with RL-S-STAIRHEAD taking over from
+    # it eastwards.
+    Node(uid="CSN026AAAA", tag="N-S-STR2", position=pt(ft(10), ft(25)), open_end=True),
     Node(uid="CSN035AAAA", tag="N-S-CH1", position=pt(ft(7, 8), ft(33, 4))),
     Node(uid="CSN036AAAA", tag="N-S-CH2", position=pt(ft(7, 8), ft(36))),
     Node(uid="CSN037AAAA", tag="N-S-CH3", position=pt(ft(10), ft(33, 4))),
@@ -163,15 +173,10 @@ WALLS = [
     Wall(uid="CSW139AAAA", tag="W-S-C2C", start_node="N-S-C2B", end_node="N-S-C2C",
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C3"),
-    Wall(uid="CSW116AAAA", tag="W-S-C3", start_node="N-S-C2C", end_node="N-S-C3B",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
-         structural_role=StructuralRole.BEARING, stacks_on="W-M-C4"),
-    Wall(uid="CSW136AAAA", tag="W-S-C3C", start_node="N-S-C3B", end_node="N-S-C3",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
-         structural_role=StructuralRole.BEARING, stacks_on="W-M-C4B"),
-    Wall(uid="CSW117AAAA", tag="W-S-C4", start_node="N-S-C3", end_node="N-S-C3D",
-         assembly="CATLIN_INT_2X6_BRG", top=ft(9),
-         structural_role=StructuralRole.BEARING, stacks_on="W-M-C5"),
+    # y 22'-4" .. 30'-10" IS NOT A WALL — it is the BM-S-HALL flitch of LVL below.
+    # W-S-C3 / W-S-C3C / W-S-C4 used to stand here; the whole 8'-6" is now open so the
+    # hall, the landing and the stair well read as one room (2026-07-28). The bearing
+    # stack is unbroken because the beam is *in* it: see BEAMS below.
     Wall(uid="CSW140AAAA", tag="W-S-C4B", start_node="N-S-C3D", end_node="N-S-N1",
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C5"),
@@ -224,8 +229,10 @@ WALLS = [
          assembly="INT_2X6_PLUMBING", top=ft(9)),
     Wall(uid="CSW149AAAA", tag="W-S-BD-N1B", start_node="N-S-V2", end_node="N-S-BA1",
          assembly="INT_2X6_PLUMBING", top=ft(9)),
-    Wall(uid="CSW133AAAA", tag="W-S-BD-N2", start_node="N-S-STR2", end_node="N-S-C3B",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+    # W-S-BD-N2 (the stair's south wall on y=25', with the 6'-0" O-S-STAIRTOP through it)
+    # came out on 2026-07-28 with the centre line: a wall pierced by a 6' hole between two
+    # halves of what is now one room was doing nothing but hiding the stair. The well head
+    # is guarded by RL-S-STAIRHEAD instead, which stops at the flight's own throat.
     Wall(uid="CSW134AAAA", tag="W-S-BA-E", start_node="N-S-N2", end_node="N-S-CH3",
          assembly="INT_2X6_PLUMBING", top=ft(9)),
     Wall(uid="CSW150AAAA", tag="W-S-BA-E1B", start_node="N-S-CH3", end_node="N-S-BA1",
@@ -264,9 +271,8 @@ OPENINGS = [
          position=from_node("N-S-S1", ft(3, 2.5))),                      # y 4'-5 1/2"
     Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-C2B", type_ref="DT-INT32",
          position=from_node("N-S-C2", ft(0, 4.875))),                    # y 14'-1 7/8"
-    RoughOpening(uid="CSD216AAAA", tag="O-S-HALLW", host="W-S-C4",
-                 position=from_node("N-S-C3", ft(0, 9)), width=ft(3),
-                 height=ft(6, 8)),                                       # y 28'-7"
+    # O-S-HALLW (a 3'-0" cased opening at y 28'-7") is gone: the whole 8'-6" between
+    # N-S-C2C and N-S-C3D is open under BM-S-HALL now, so there is no wall left to host it.
     # West block
     # The walk-in's 4'-7 1/8" source opening, cased. Not a DT-INT56 bifold, which is the
     # obvious stock door for a closet this wide and would keep `advisory.window_size_variety`
@@ -289,10 +295,7 @@ OPENINGS = [
          position=from_node("N-S-V2", ft(1, 4.5))),                      # x 8'-6"
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT30",
          position=from_node("N-S-C3D", ft(0, 8.5))),                     # x 19'-11 1/2"
-    # Open stair head onto the landing (cased, no door).
-    RoughOpening(uid="CSD209AAAA", tag="O-S-STAIRTOP", host="W-S-BD-N2",
-                 position=from_node("N-S-STR2", ft(0, 6)), width=ft(6),
-                 height=ft(6, 8)),
+    # O-S-STAIRTOP, the 6'-0" cased stair head, went with its host wall W-S-BD-N2.
     # Balcony door — ONE opening in the source (x 18'-8"..23'-11", 5'-3", drawn with two
     # leaves), east of the centre line, not the pair of them the port had flanking it.
     # DT-FRENCH36 is itself a double-swing: one Door, two leaves, a centre mullion. So the
@@ -372,20 +375,20 @@ ROOMS = [
          occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
     Room(uid="CSR413AAAA", tag="RM-S-VANITY", seed=pt(ft(3), ft(24, 4)),
          occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
-    # The west half of the source's one big "Hallway": the landing outside the suite that
-    # links the stair head, the vanity alcove and the hall bath.
-    Room(uid="CSR414AAAA", tag="RM-S-LANDING", seed=pt(ft(13), ft(23, 6)),
-         occupancy=Occupancy.HALLWAY, floor_finish="lvp"),
     Room(uid="CSR408AAAA", tag="RM-S-BATH1", seed=pt(ft(5), ft(31)),
          occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
+    # RM-S-HALL is now the source's single 181.02 sf "Hallway" again. Taking the centre
+    # line out between y 22'-4" and 30'-10" left one polygonized face spanning the old
+    # hall (east of x=18'), the landing outside the suite, and the open stair well — so
+    # RM-S-LANDING (CSR414AAAA) and RM-S-STAIR (CSR410AAAA) were retired into this claim
+    # rather than left as extra seeds in the same face, which would have billed the floor
+    # three times. The well's east edge is guarded by RL-S-STAIR below.
     Room(uid="CSR409AAAA", tag="RM-S-HALL", seed=pt(ft(20), ft(20)),
          occupancy=Occupancy.HALLWAY, floor_finish="lvp"),
     # Both walk-ins are carpet — a closet floor is never walked on in shoes, and carpet
     # continues out of the bedroom it opens off.
     Room(uid="CSR415AAAA", tag="RM-S-NCLOSET", seed=pt(ft(20), ft(33)),
          occupancy=Occupancy.STORAGE, floor_finish="carpet"),
-    Room(uid="CSR410AAAA", tag="RM-S-STAIR", seed=pt(ft(14, 6), ft(31)),
-         occupancy=Occupancy.STAIR, floor_finish="oak"),
 ]
 
 ALARMS = [
@@ -449,17 +452,105 @@ SOFFITS = [
 # This well is 7'-5 1/4" where the basement's is 7'-0", because the 2x6 walls here are
 # thinner than the 12" concrete they stack on. Each flight is sized to its own storey's
 # well rather than forcing one width on both, so both outer stringers land on a wall.
+#
+# Run, north to south (2026-07-28), the way FO-M-STAIR now is: north is W-M-N2's inside
+# gwb face at y=35'-5 3/8", and the 9'-5" back from there is the IRC R311.7.6 36" landing
+# plus seven 11" treads, so the south edge lands at 26'-0 3/8".
+#
+# This head runs 5 3/8" further north than FO-M-STAIR's, which stops on the basement
+# concrete at 35'-0". That is the point of the 12" wall: only its outer 6" is under
+# anything — the main-storey 2x6 stack lines its sheathing and insulation up with the
+# concrete's outer face, so the studs sit at y 35'-6"..35'-11 1/2" — and this well is cut
+# in the *second* floor deck, so the inner half of the concrete is free plan area to it.
 # Deliberately NOT moved onto the source: it is drawn to the *main* storey's finished
 # faces, so moving it means moving main.py.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CSF602AAAA", tag="FO-S-STAIR",
-                 outline=(pt(ft(10, 3.375), ft(25, 2.375)),
-                          pt(ft(17, 8.625), ft(25, 2.375)),
+                 outline=(pt(ft(10, 3.375), ft(26, 0.375)),
+                          pt(ft(17, 8.625), ft(26, 0.375)),
                           pt(ft(17, 8.625), ft(35, 5.375)),
                           pt(ft(10, 3.375), ft(35, 5.375))),
                  # Both long edges are carried by bearing wall, so neither needs a header:
-                 # W-M-STRW/STRW2 west, W-M-C5/C4B (the center bearing line) east.
-                 bearing_refs=("W-M-STRW", "W-M-STRW2", "W-M-C5", "W-M-C4B")),
+                 # W-M-STRW/STRW2 west, W-M-C5 east (which since 2026-07-28 starts at
+                 # N-M-C3 on the stair wall's line, so it still reaches this edge's south
+                 # end even though W-M-C4B under it is gone).
+                 bearing_refs=("W-M-STRW", "W-M-STRW2", "W-M-C5")),
+]
+
+# The beam that lets the centre line be open (2026-07-28).
+#
+# CLAUDE.md's house fact is that the x=18' line is a bearing line all the way from the
+# footings to RB-HOUSE, and that opening it up *without a beam* dumps ~1.5 klf of ridge
+# thrust into 5' knee walls that can take ~0.1. This does not open it up: the LVL is the
+# bearing line for these 8'-6", and W-A-C2 lands on it.
+#
+# Load, per foot of beam, all of it collected on the x=18' line:
+#   attic floor  FS-ATTIC, 18' tributary (half of each 18' I-joist span), 40 psf LL +
+#                15 psf DL habitable                                        ~ 990 plf
+#   roof         RB-HOUSE bears continuously on W-A-C1/C1B/C2 and takes half of each
+#                18' rafter run either side, 18' tributary at 30 psf snow + 15 psf DL
+#                                                                           ~ 810 plf
+#   walls        W-A-C2 above plus this storey's own plate                  ~  100 plf
+#                                                                    total ~ 1,900 plf
+# Over an 8'-6" clear span that is M = wL^2/8 = 17.2 ft-k and V = 8.1 k. Three plies of
+# 1.75x11.875 LVL give Sx = 123 in^3 (26.7 ft-k at Fb = 2,600 psi) and 62 in^2 of shear
+# area (11.8 k), and deflect 0.15" against the L/360 = 0.28" limit at E = 2.0e6. Same
+# section and same ply count as RB-HOUSE, which keeps one LVL depth on the job.
+#
+# It bears on the ends of the wall segments it replaced — W-S-C2C south, W-S-C4B north —
+# each of which needs a jack pack under it, and both stack onto the main-storey centre
+# wall and down to the footings, so the reaction has somewhere to go.
+# It is framed FLUSH, not dropped: `top_elevation` pins its top to the attic datum, which
+# is top-of-joist, so the attic I-joists hang off it in face-mount hangers and its soffit
+# lands on the 19'-0" plate line of the walls either side. That keeps the 9' ceiling
+# unbroken across the hall — a dropped beam would hang its full 11-7/8" into the opening
+# and leave 8'-0" of headroom under it. The default derivation cannot reach this: it drops
+# a beam a joist depth below *its own* storey datum (ft(10) here), and this beam carries
+# the floor of the storey above, not of its own.
+BEAMS = [
+    Beam(uid="CSBM01AAAA", tag="BM-S-HALL", start_node="N-S-C2C", end_node="N-S-C3D",
+         size="3-1.75x11.875 LVL", bearing_refs=("W-S-C2C", "W-S-C4B"),
+         top_elevation=ft(20)),
+]
+
+# Guards on the two open sides of the stair well. Both use the attic RL-A-STAIR product,
+# post spacing and 42" height, ride the second-storey walking surface at ft(10) and are
+# fascia mounted to the well rim — which on the east side is BM-S-HALL itself.
+#
+# Between them they leave exactly one gap: the flight's own throat. ST-M2S is a u-split
+# turning left, so the *upper* flight arrives southbound on the west half of the well — the
+# resolved treads run x 10'-3 3/8"..13'-9 3/4" — and you step off it onto the floor at the
+# well's south edge. East of that throat the same south edge stands over the head of the
+# lower flight, a ~9'-6" drop, and the east edge stands over that flight all the way to
+# where W-S-C4B (RM-S-NCLOSET's west wall) picks the line back up at y=30'-10".
+#
+# Both moved north and swapped hands on 2026-07-28 with the well itself: the head guard was
+# on the *west* of the throat while the flight arrived on the east, and the mirror put the
+# throat on the west.
+#
+# The well's own coordinates are used, not the retired wall centrelines: these guards are
+# drawn to FO-S-STAIR the way its bearing was.
+STAIR_GUARDS = [
+    Railing(
+        uid="CSRL01AAAA", tag="RL-S-STAIR", type_ref="RAILING-INT-STAIR-GUARD", path=(
+            pt(ft(17, 8.625), ft(26, 0.375)),
+            pt(ft(17, 8.625), ft(30, 10)),
+        ),
+        kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
+        base_elevation=ft(10), post_spacing=inch(60), post_size="2x2", rail_count=2,
+        mount="fascia", assembly="POST_WHITE_PAINT",
+    ),
+    # 3'-6 7/8" from the west jamb of the throat — the well partition's west face — to the
+    # well's east edge, where RL-S-STAIR turns the corner.
+    Railing(
+        uid="CSRL02AAAA", tag="RL-S-STAIRHEAD", type_ref="RAILING-INT-STAIR-GUARD", path=(
+            pt(ft(13, 9.75), ft(26, 0.375)),
+            pt(ft(17, 8.625), ft(26, 0.375)),
+        ),
+        kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
+        base_elevation=ft(10), post_spacing=inch(60), post_size="2x2", rail_count=2,
+        mount="fascia", assembly="POST_WHITE_PAINT",
+    ),
 ]
 
 # Structural deck: 11-7/8" I-joists spanning E-W on the three bearing lines.
@@ -467,19 +558,29 @@ FLOOR = [
     FloorSystem(uid="CSF603AAAA", tag="FS-SECOND",
                 joists=JoistSpec(member="11.875 I-joist", spacing=inch(16),
                                  direction="x",
-                                 bearing_refs=("W-M-W2", "W-M-C2", "W-M-E1")),
+                                 # BM-M-HALL is the centre line for its 4'-2"; the joists
+                                 # either side of the hall opening hang off it, exactly as
+                                 # FS-ATTIC's do off BM-S-HALL one storey up.
+                                 bearing_refs=("W-M-W2", "W-M-C2", "W-M-E1",
+                                               "BM-M-HALL")),
                 subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=inch(0.75)),
                 openings=("FO-S-STAIR",)),
 ]
 
 STAIRS = [
     # 7'-5 1/4" well = 3'-6 3/8" + 4 1/2" well partition + 3'-6 3/8". Landing is the
-    # R311.7.6 36" minimum, floored at the flight width to keep the U-turn walkable.
+    # R311.7.6 36" minimum measured in the direction of travel.
+    #
+    # `turn_direction="left"`, the same hand as ST-B2M below it: the flight springs from the
+    # main floor in the *east* lane (x 14'-2 1/4"..17'-8 5/8") and arrives on the second
+    # floor in the *west* one (x 10'-3 3/8"..13'-9 3/4"). Both storeys' U-turns therefore
+    # read the same way, and the stack alternates sides as one continuous run — east up to
+    # main, west off it, east up to second, west off that.
     Stair(uid="CST702AAAA", tag="ST-M2S", floor_opening="FO-S-STAIR",
           from_storey="main", to_storey="second", width=ft(3, 6.375),
-          layout="u_split_landing", run_direction="y",
-          start=pt(ft(10, 3.375), ft(25, 2.375)), landing_depth=ft(3)),
+          layout="u_split_landing", run_direction="y", turn_direction="left",
+          start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(3)),
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SOFFITS,
-            *FLOOR_OPENINGS, *FLOOR, *STAIRS]
+            *FLOOR_OPENINGS, *BEAMS, *STAIR_GUARDS, *FLOOR, *STAIRS]

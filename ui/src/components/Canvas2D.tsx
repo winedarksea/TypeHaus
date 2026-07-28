@@ -14,7 +14,8 @@ import { CanvasObjectFootprint, ClearanceOverlays, NodeHandle } from "./plan/Obj
 import { WallDimension, WallShape } from "./plan/WallShapes";
 import { OpeningShape, StairShape } from "./plan/OpeningShapes";
 import {
-  DetailMarkerLayer, PlanNodesLayer, RoomLayer, SlabOutlines, WallDraftLayer, WarningMarkerLayer,
+  DetailMarkerLayer, PlanNodesLayer, RailingOutlines, RoomLayer, SlabOutlines, WallDraftLayer,
+  WarningMarkerLayer,
 } from "./plan/PlanMarkers";
 import { CanvasOverlays } from "./plan/CanvasOverlays";
 import { useCanvasInteractions } from "./plan/useCanvasInteractions";
@@ -105,7 +106,8 @@ export function Canvas2D() {
   const fmt = (m: number) => formatFtIn(m);
 
   const {
-    wallsOnStorey, nodes, openEnds, storeyNodes, stairsOnStorey, slabsOnStorey, snapNodes,
+    wallsOnStorey, nodes, openEnds, storeyNodes, stairsOnStorey, slabsOnStorey, railingsOnStorey,
+    snapNodes,
     defaultAssembly, serviceOptions, canvasTypes, warningMarkers, nearestNodeTag, storeyHintFile,
   } = useStoreySlice(model, activeStorey, tolM);
   const wallAssembly = drawAssembly || defaultAssembly;
@@ -404,6 +406,11 @@ export function Canvas2D() {
           .map((stair) => <StairShape key={stair.uid} stair={stair} project={project}
             selected={selection.uid === stair.uid} hovered={hoverUid === stair.uid}
             onSelect={selectEl} onHover={hoverEl} />)}
+        {/* guards over the stair wells and open edges, drawn on top of the flight they
+            protect. Gated on `concrete` because every ResolvedSolid — slab, footing, railing
+            — lands in the 3D viewer's concrete group, so the toggle behaves the same in
+            both viewers rather than the plan inventing its own grouping. */}
+        {visibleTrades.concrete && <RailingOutlines railings={railingsOnStorey} project={project} />}
         {(model.canvas_objects ?? [])
           // Doors/windows remain topology-aware SVG shapes below; their normalized records
           // serve inspection/interchange consumers and must not render a second footprint.
