@@ -441,6 +441,12 @@ NEC_FILL_MAIN = [
                      position=pt(ft(35.95), ft(23.70)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # Fills the >6' gap electrical.receptacle_spacing flags on the centre bearing wall
+    # between RC2 (y=15.87) and the wall's south end, on the LIVING face.
+    ElectricalDevice(uid="NEC064AAAA", tag="ED-M-LIVING-RC7", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(18.05), ft(21.10)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC013AAAA", tag="ED-M-BED-RC2", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(8.52), ft(13.28)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
@@ -471,6 +477,12 @@ NEC_FILL_MAIN = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC020AAAA", tag="ED-M-STUDY-RC2", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(13.39), ft(18.79)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # Fills the >6' gap electrical.receptacle_spacing flags on the centre bearing wall,
+    # on the STUDY face opposite ED-M-LIVING-RC7.
+    ElectricalDevice(uid="NEC065AAAA", tag="ED-M-STUDY-RC3", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(17.95), ft(21.10)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
 ]

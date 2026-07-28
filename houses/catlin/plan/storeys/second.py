@@ -250,7 +250,7 @@ OPENINGS = [
     # walls (as the port did) put D-S-BED1's centre at (22.67, 10.42), inside the attic
     # stair band rather than inside RM-S-BED1.
     Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT30",
-         position=from_node("N-S-B1", ft(4, 3.1875)), flip_swing=True),      # y 15'-2"
+         position=from_node("N-S-B1", ft(4, 11)), flip_swing=True),          # y 15'-2"
     Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT30",
          position=from_node("N-S-B2", ft(4, 10))),                       # y 24'-1"
     Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT30",
@@ -334,8 +334,12 @@ OPENINGS = [
     # Baths + north. The source draws no opening in the north wall west of x=21'-10" and
     # none in the west wall north of y=25'-8"; WIN-S-BATH-N/W are kept anyway so the hall
     # bath has daylight, and are the storey's only two openings with no source counterpart.
+    # The 16" module's bay centre (8" from N-S-CH2) leaves only 1" of edge clearance on
+    # this 7'8" wall — under `integrity.opening_fits`'s 2" minimum — so the RO sits at the
+    # nearest position that clears it instead, ~1" off the ideal bay centre (a residual
+    # `structural.window_framing_module` advisory the short wall leaves no room to clear).
     Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3B", type_ref="WT-1424",
-           position=from_node("N-S-CH2", ft(0, 3.875)), sill_height=ft(4)),       # x 3'-0"
+           position=from_node("N-S-CH2", ft(0, 2)), sill_height=ft(4)),
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424",
            position=from_node("N-S-NW", ft(4, 1)), sill_height=ft(4)),
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3036",
@@ -420,8 +424,8 @@ FLOOR_HEAT = [
     FloorHeat(uid="CSH801AAAA", tag="FH-S-BATH1", room_ref="RM-S-BATH1",
               zone=(pt(ft(0, 5), ft(26, 9)), pt(ft(9, 7), ft(26, 9)),
                     pt(ft(9, 7), ft(29, 9)), pt(ft(7, 11), ft(29, 9)),
-                    pt(ft(7, 11), ft(31, 3)), pt(ft(3), ft(31, 3)),
-                    pt(ft(3), ft(28, 6)), pt(ft(0, 5), ft(28, 6))),
+                    pt(ft(7, 11), ft(31, 3)), pt(ft(3, 3), ft(31, 3)),
+                    pt(ft(3, 3), ft(28, 6)), pt(ft(0, 5), ft(28, 6))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
               stat=pt(ft(1, 6), ft(32))),
 ]

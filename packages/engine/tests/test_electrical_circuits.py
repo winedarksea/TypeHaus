@@ -255,7 +255,7 @@ def test_catlin_receptacle_spacing_passes_after_fill(catlin_model):
     fails = [f for f in findings if f.result.value == "fail"]
     assert not fails, [f.message for f in fails]
     passes = [f for f in findings if f.result.value == "pass"]
-    assert len(passes) == 12  # every habitable room
+    assert len(passes) == 11  # every habitable room (RM-A-EAST is storage, not living)
     # The kitchen-counter rule stays visibly unevaluated.
     assert any(f.result.value == "unknown" for f in findings)
 

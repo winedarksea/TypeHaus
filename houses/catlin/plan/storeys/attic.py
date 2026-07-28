@@ -175,7 +175,7 @@ ROOMS = [
          occupancy=Occupancy.MEDIA, floor_finish="carpet",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
     Room(uid="CAR402AAAA", tag="RM-A-EAST", seed=pt(ft(27), ft(20)),
-         occupancy=Occupancy.LIVING, floor_finish="carpet",
+         occupancy=Occupancy.STORAGE, floor_finish="carpet",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
     Room(uid="CAR403AAAA", tag="RM-A-DEN", seed=pt(ft(14), ft(4)),
          occupancy=Occupancy.STORAGE, floor_finish="carpet",

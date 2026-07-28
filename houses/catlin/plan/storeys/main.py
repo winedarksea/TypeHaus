@@ -358,17 +358,16 @@ ALARMS = [
 FLOOR_HEAT = [
     # RM-M-BATH2's floor. The clear face is x 0'-0 5/8"..7'-11 3/8", y 13'-4 11/16"..
     # 21'-7 5/16", which sets back to a 7'-2" x 7'-6" = 53.8 ft2 rectangle — but
-    # FX-M-BATH2-WC now backs onto W-M-BA2E at x 5'-5 3/8"..7'-11 3/8", y 17'-3"..19'-9"
+    # FX-M-BATH2-WC now backs onto W-M-BA2E at x 1'-0"..3'-6", y 18'-11"..21'-5"
     # (plan/fixtures.py), and `advisory.floor_heat_fixture_keepout` is right that cable
-    # does not run under a closet flange. So the *east* edge is notched x 5'-2"..7'-7",
-    # y 17'-0"..20'-0": 3"+ of clearance on the three exposed sides of the WC, and the
-    # sliver between the tank and the wall goes with it rather than becoming a cable
-    # island. 53.8 - 7.3 = 46.5 ft2.
+    # does not run under a closet flange. So the *south* edge is notched x 0'-11"..3'-7",
+    # y 18'-9"..21'-5" — the zone's own south boundary, so the notch opens onto it rather
+    # than pocketing an island — with a ~1" clearance on the WC's exposed sides.
     FloorHeat(uid="CMH801AAAA", tag="FH-M-BATH2", room_ref="RM-M-BATH2",
               zone=(pt(ft(0, 5), ft(13, 9)), pt(ft(7, 7), ft(13, 9)),
-                    pt(ft(7, 7), ft(17)), pt(ft(5, 2), ft(17)),
-                    pt(ft(5, 2), ft(20)), pt(ft(7, 7), ft(20)),
-                    pt(ft(7, 7), ft(21, 3)), pt(ft(0, 5), ft(21, 3))),
+                    pt(ft(7, 7), ft(21, 5)), pt(ft(3, 7), ft(21, 5)),
+                    pt(ft(3, 7), ft(18, 9)), pt(ft(0, 11), ft(18, 9)),
+                    pt(ft(0, 11), ft(21, 5)), pt(ft(0, 5), ft(21, 5))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
               stat=pt(ft(2), ft(17, 6))),
     # Under the dining table. FURN-M-DINING covers x 22'-11"..30'-11", y 15'-7"..19'-1"; the

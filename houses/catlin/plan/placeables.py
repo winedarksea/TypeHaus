@@ -254,7 +254,7 @@ SECOND_PLACEABLES = [
     # a partition. It is the one bedroom wide enough to hold a 6'-8" bed with both 2' side
     # zones intact, and it does: nothing here is short.
     Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
-              room="RM-S-SUITE", position=pt(m(1.53278), m(6.26791)), rotation=deg(0)),
+              room="RM-S-SUITE", position=pt(m(1.52182), m(5.57379)), rotation=deg(0)),
 
     # Hanging storage for the three east bedrooms, which have no built-in closet: one 48"
     # sliding-door wardrobe each, backed onto a partition.
@@ -308,7 +308,11 @@ SECOND_PLACEABLES = [
     Furniture(uid="CSB707AAAA", tag="FURN-S-BATH1-CLOSET", type_ref="CASE-PANTRY-CLOSET-72",
               room="RM-S-BATH1", position=pt(ft(3, 0.625), ft(27, 4.625)),
               rotation=deg(180)),
-    ElectricalDevice(uid="8EFPYDEK22", tag="ED-1", kind=DeviceKind.RECEPTACLE, position=pt(m(1.2726), m(2.63984)), type_ref="ED-T-LT-SCONCE-SPOT", room="RM-S-PLANT"),
+    ElectricalDevice(uid="QTS0020AAA", tag="ED-S-PLANT-SPOT", kind=DeviceKind.LIGHT,
+                     position=pt(m(1.2726), m(2.63984)), type_ref="ED-T-LT-SCONCE-SPOT",
+                     circuit="CKT-LT-UPPER", room="RM-S-PLANT",
+                     controlled_by=("ED-S-PLANT-SW-TIMER",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
 ]
 # The attic study uses the same compact work-and-meeting program as the second-storey
 # study, but the stair opening occupies the north side of the room. Keep the desk in the

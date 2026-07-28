@@ -449,7 +449,8 @@ def _shower_slice():
 
 def test_shower_vocabulary_is_gated_on_the_fixture(catlin_model):
     """No shower assembly exists — the recognition gate is the resolved fixture whose
-    type publishes ``plan_symbol="shower"``, cut by the section plane."""
+    type publishes ``plan_symbol="shower"`` or ``"tub-shower"``, cut by the section
+    plane."""
     from typehaus.emit.draw.details import build_authored_detail_scene
 
     scene = build_authored_detail_scene(catlin_model, _shower_slice())

@@ -20,7 +20,7 @@ from typehaus.model import m
 # band (y 23'-4"..25'-4") and each other by over 1'-9".
 MAIN_FIXTURES = (
     Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOILET-WH", room="RM-M-BATH1",
-            position=pt(m(0.687033), m(7.80786)), rotation=deg(0), wall_ref="W-M-BAE",
+            position=pt(m(0.687033), m(7.80786)), rotation=deg(90), wall_ref="W-M-BAE",
             drain_position=pt(ft(4), ft(22, 7))),
     Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-LAV-COMPACT", room="RM-M-BATH1",
             position=pt(m(0.705538), m(6.85651)), wall_ref="W-M-BAE", rotation=deg(180)),
@@ -60,15 +60,16 @@ MAIN_FIXTURES = (
 # tag predates the suite's own bath and is kept — see storeys/second.py's header.
 #
 # Layout (the de-overlap pass storeys/second.py's FLOOR_HEAT comment used to ask for):
-# the shower pan stays in the room's centre-north (its SL-D-SHOWER detail slice cuts the
-# recess at x=5', so the pan must keep crossing that plane); the WC backs onto the west
+# the tub-shower stays in the room's centre-north (its SL-D-SHOWER detail slice cuts the
+# unit at x=5', so it must keep crossing that plane); the WC backs onto the west
 # exterior 2x6 (rotation -90 turns its back west onto W-S-W1 — an exterior wet wall by the
 # same reasoning as FX-M-KITCH-SINK's W-M-E2), sitting low enough that its 30"-wide /
 # 21"-front REQUIRED clearance zone (x 0'-3"..4'-6", y 28'-9"..31'-3") stops 3" south of
-# the pan; the lav backs east onto W-S-BA-E1B (INT_2X6_PLUMBING, rotation 90), its back at
-# the room's 9'-11 3/8" east face, south of the chase's y=33'-3 3/8" cut line. Footprints —
-# WC x 0'-3"..2'-9" y 28'-9"..31'-3", pan x 3'-6"..6'-6" y 31'-6"..34'-6", lav
-# x 8'-2"..9'-11" y 30'-0"..32'-0" — are pairwise disjoint with 9"+ between any two.
+# the tub-shower; the lav backs east onto W-S-BA-E1B (INT_2X6_PLUMBING, rotation 90), its
+# back at the room's 9'-11 3/8" east face, south of the chase's y=33'-3 3/8" cut line.
+# Footprints — WC x 0'-3"..2'-9" y 28'-9"..31'-3", tub-shower (FX-TUBSHOWER, 5'x2'-6")
+# x 0'-8"..5'-8" y 32'-9"..35'-3", lav x 8'-2"..9'-11" y 30'-0"..32'-0" — are pairwise
+# disjoint with 9"+ between any two.
 SECOND_FIXTURES = (
     Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOILET", room="RM-S-BATH1",
             position=pt(m(0.560313), m(9.2783)), rotation=deg(90), wall_ref="W-S-W1"),
