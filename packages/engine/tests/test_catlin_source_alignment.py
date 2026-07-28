@@ -117,7 +117,7 @@ def test_hall_bath_chase_is_the_source_two_foot_shaft(catlin_plan):
     """The source draws a 2'x2' hatched shaft in the hall bath's NE corner.
 
     It is given as a void (x 8'-2 3/4"..10'-2 3/4", y 33'-6"..35'-6"), not as centrelines,
-    and it is the thing that makes RM-S-ENSUITE the L-shaped 80.73 sf bathroom the survey
+    and it is the thing that makes RM-S-BATH1 the L-shaped 80.73 sf bathroom the survey
     labels. Ours is 4 1/2" west of it because its east side is the existing stair-shaft wall
     on the x=10' line — an envelope-adjacent line the survey does not get to move — so what
     is asserted is the *size* of the clear shaft, not its absolute position.
@@ -213,6 +213,6 @@ def test_the_survey_rooms_all_exist(catlin_plan):
     area_sf = {room.tag: room.area_m2 / 0.09290304 for room in model.rooms}
     for tag, source in (("RM-S-BED1", 114.2), ("RM-S-BED2", 114.2), ("RM-S-BED3", 114.2),
                         ("RM-S-SUITEBATH", 46.01), ("RM-S-CLOSET", 22.05),
-                        ("RM-S-VANITY", 18.23), ("RM-S-ENSUITE", 80.73),
+                        ("RM-S-VANITY", 18.23), ("RM-S-BATH1", 80.73),
                         ("RM-S-PLANT", 146.40), ("RM-S-STUDY2", 146.42)):
         assert source <= area_sf[tag] <= source * 1.25, (tag, area_sf[tag])

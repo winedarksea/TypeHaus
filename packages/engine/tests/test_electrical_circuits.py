@@ -211,7 +211,7 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # dining zone takes the same protection because every mat maker asks for it).
     for circuit, stat in (("CKT-FH-BATH2", "ED-M-BATH2-FH-STAT"),
                           ("CKT-FH-DINING", "ED-M-DINING-FH-STAT"),
-                          ("CKT-FH-ENSUITE", "ED-S-ENSUITE-FH-STAT")):
+                          ("CKT-FH-BATH1", "ED-S-BATH1-FH-STAT")):
         assert rows[circuit]["gfci"] and rows[circuit]["volts"] == 120
         assert rows[circuit]["breaker_amps"] == 15
         assert rows[circuit]["devices"] == [stat]

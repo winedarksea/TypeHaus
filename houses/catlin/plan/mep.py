@@ -8,7 +8,7 @@
 #
 # Plumbing: sleeve positions are the exact pre-pour centers the concrete crew works from —
 # the resolver validates them against the fixture drain point they serve
-# (`mep.sleeve_alignment`); nothing here is derived. Second-floor ensuite drains drop
+# (`mep.sleeve_alignment`); nothing here is derived. Second-floor hall-bath drains drop
 # through the framed floor into the existing INT_2X6_PLUMBING wet wall (W-S-BD-N) with no
 # sleeve needed — only a cast concrete deck needs a pre-positioned penetration.
 #
@@ -218,10 +218,10 @@ VENT_BRANCHES_MAIN = [
 VENT_BRANCHES_SECOND = [
     # Hall-bath takeoff on W-S-BD-N (y=26'-4") -> west to the chase line -> north to the
     # chase. The chase passes straight through this room, so the run is only 8'-8".
-    PipeRun(uid="CSP901AAAA", tag="PR-S-ENSUITE-VENT", system=PipeSystem.VENT,
+    PipeRun(uid="CSP901AAAA", tag="PR-S-BATH1-VENT", system=PipeSystem.VENT,
             path=(pt(ft(5), ft(26, 4)), pt(ft(3), ft(26, 4)), pt(ft(3), ft(33))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 4),
-            serves=("FX-S-ENSUITE-WC",)),
+            serves=("FX-S-BATH1-WC",)),
     # The suite bath's own vent: takeoff on its west wet wall W-S-DC2 (x=9'-7 1/2"), north
     # through the landing and the hall bath, then west along y=33' to the shared
     # radon/plumbing chase. It runs up the x=9'-7 1/2" line rather than joining the hall
@@ -245,7 +245,7 @@ VENT_BRANCHES_SECOND = [
 # where the 12"x8"/14"x8" furnace trunks they replace were roughly four times oversized.
 #
 # The balanced pair is modeled as the ERV's SUPPLY and RETURN trunks; dedicated stale
-# pulls (the ensuite shower takeoff) use DuctSystem.EXHAUST. Distribution now reaches all
+# pulls (the hall bath's shower takeoff) use DuctSystem.EXHAUST. Distribution now reaches all
 # four storeys: trunks ride joist bays where a floor system exists (FS-SECOND under the
 # second storey, FS-SECOND over the main storey's ceiling, FS-ATTIC under the attic) and
 # drop to CHASE routing in the basement, whose ceiling is the SL-M-DECK concrete.
@@ -256,11 +256,11 @@ DUCTS = [
     DuctRun(uid="CMD902AAAA", tag="DU-M-ERV-RET", system=DuctSystem.RETURN,
            path=(pt(ft(4), ft(23, 4)), pt(ft(32), ft(23, 4))), width=inch(10), depth=inch(6),
            routing=DuctRouting.JOIST_BAY, floor_ref="FS-SECOND"),
-    # Ensuite shower exhaust: a dedicated stale pull in the FS-ATTIC joist bay centred at
-    # y=32'-8" (8" + 24*16"), right over FX-S-ENSUITE-SH at (5', 33'). It crosses the
+    # Hall bath shower exhaust: a dedicated stale pull in the FS-ATTIC joist bay centred at
+    # y=32'-8" (8" + 24*16"), right over FX-S-BATH1-SH at (5', 33'). It crosses the
     # SL-D-SHOWER cut plane (x=5', plan/views.py) inside the shower's reach, which is what
     # makes the detail's `shower_hrv_duct` component draw the takeoff.
-    DuctRun(uid="CSDV01AAAA", tag="DU-S-ENSUITE-EXH", system=DuctSystem.EXHAUST,
+    DuctRun(uid="CSDV01AAAA", tag="DU-S-BATH1-EXH", system=DuctSystem.EXHAUST,
            path=(pt(ft(3), ft(32, 8)), pt(ft(17), ft(32, 8))), width=inch(6), depth=inch(4),
            routing=DuctRouting.JOIST_BAY, floor_ref="FS-ATTIC"),
 ]
@@ -334,7 +334,7 @@ REGISTERS = [
 # Fresh air to every sleeping/living/office room, stale air out of every wet room, all
 # matched to rooms explicitly via room= (mep.ventilation_distribution). RM-S-NCLOSET and
 # the other storage rooms get nothing. Second-storey terminals are floor boots off the
-# FS-SECOND trunks like the seven above; the ensuite's stale terminal is a ceiling grille
+# FS-SECOND trunks like the seven above; the hall bath's stale terminal is a ceiling grille
 # on the EXHAUST run in the FS-ATTIC bay over the shower.
 REGISTERS_SECOND = [
     Register(uid="CSRV01AAAA", tag="REG-S-SUP6", kind=DuctSystem.SUPPLY, room="RM-S-SUITE",
@@ -349,8 +349,8 @@ REGISTERS_SECOND = [
     Register(uid="CSRV04AAAA", tag="REG-S-RET4", kind=DuctSystem.RETURN, room="RM-S-VANITY",
             position=pt(ft(3), ft(24, 4)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-RETURN",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CSRV05AAAA", tag="REG-S-EXH1", kind=DuctSystem.EXHAUST, room="RM-S-ENSUITE",
-            position=pt(ft(5), ft(32, 8)), duct_ref="DU-S-ENSUITE-EXH", type_ref="REG-T-RETURN",
+    Register(uid="CSRV05AAAA", tag="REG-S-EXH1", kind=DuctSystem.EXHAUST, room="RM-S-BATH1",
+            position=pt(ft(5), ft(32, 8)), duct_ref="DU-S-BATH1-EXH", type_ref="REG-T-RETURN",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
 ]
 

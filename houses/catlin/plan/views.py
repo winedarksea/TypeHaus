@@ -48,10 +48,10 @@ DETAIL_SLICES = [
          cut_origin=pt(ft(14), ft(6)), cut_direction="x",
          crop=(pt(ft(9), inch(-116)), pt(ft(19, 6), inch(6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(1))),
-    # Ensuite shower section — cut plane x=5' through FX-S-ENSUITE-SH so the recess,
+    # Hall bath shower section — cut plane x=5' through FX-S-BATH1-SH so the recess,
     # tile-on-backer sides, glass panel, and (once authorable) the HRV takeoff render.
     Slice(uid="CVD906AAAA", tag="SL-D-SHOWER", kind=SliceKind.DETAIL,
-         title="Ensuite shower section",
+         title="Hall bath shower section",
          cut_origin=pt(ft(5), ft(32, 10)), cut_direction="y",
          crop=(pt(m(8.4), m(2.7)), pt(m(11.3), m(5.8)))),
     # Breezeway cross section — the one detail that captures the whole enclosure. Cut

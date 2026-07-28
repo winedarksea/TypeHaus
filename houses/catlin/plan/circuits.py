@@ -79,7 +79,7 @@ CIRCUITS = (
     # stats are 23' apart across the centre bearing wall anyway.
     #
     # GFCI on all three: NEC 424.44(G) requires it for heating cable in the floor of a
-    # bathroom or kitchen, which covers CKT-FH-BATH2 and CKT-FH-ENSUITE outright. The
+    # bathroom or kitchen, which covers CKT-FH-BATH2 and CKT-FH-BATH1 outright. The
     # dining zone is in RM-M-LIVING and outside the letter of that rule, but mat
     # manufacturers require Class A protection on every mat regardless, and it would be a
     # strange schedule that protected two identical mats and not the third.
@@ -92,9 +92,9 @@ CIRCUITS = (
     Circuit(uid="CKT032AAAA", tag="CKT-FH-DINING", slot=31, panel_ref=_PANEL, breaker_amps=15, poles=1,
             gfci=True, load_va=696,
             description="Radiant floor heat — under the dining table (FH-M-DINING, 58.0 ft2)"),
-    Circuit(uid="CKT033AAAA", tag="CKT-FH-ENSUITE", slot=33, panel_ref=_PANEL, breaker_amps=15, poles=1,
+    Circuit(uid="CKT033AAAA", tag="CKT-FH-BATH1", slot=33, panel_ref=_PANEL, breaker_amps=15, poles=1,
             gfci=True, load_va=509,
-            description="Radiant floor heat — NW bathroom (FH-S-ENSUITE, 42.4 ft2)"),
+            description="Radiant floor heat — NW bathroom (FH-S-BATH1, 42.4 ft2)"),
     # 1,500 W at 120V = 12.5A, and both of these run long enough to be continuous loads:
     # 12.5 x 1.25 = 15.6A, which fits the 16A a 20A breaker allows and does *not* fit a
     # 15A one (12A). That is why these two are 20A where the mats are 15A.

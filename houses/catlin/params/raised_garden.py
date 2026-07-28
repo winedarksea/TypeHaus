@@ -22,10 +22,10 @@ Section, at a side leg, west (yard) to east (sunken garden):
     -2'-6"   +----+          |    |   <- apron base, 6 whole 6" SRW courses down
                              |    |
 
-Plan — a U open to the north, where the arched front wall and its balcony railing are:
+Plan — a U whose north corners return three feet to the balcony railing:
 
-    y = -9.5'    +--+ . . . . . . . . . . . . . . . . . . . . +--+   <- open ends
-                 |  |   (no north leg: the arch wall is here)  |  |
+    y = -9.5'    +--+---- . . . . . . . . . . . . . . . ----+--+   <- balcony returns
+                 |  |   (balcony closes the two north corners) |  |
                  |  |    +-------------------------------+     |  |
                  |  |    |        sunken garden          |     |  |
                  |  |    +-------------------------------+     |  |
@@ -42,6 +42,9 @@ Plan — a U open to the north, where the arched front wall and its balcony rail
   ``RL-SG-BALCONY`` both sit on. Consumed from ``params/sunken_garden.py``'s exported
   contract rather than re-derived — two derivations silently diverge the next time a
   dimension moves.
+- **The U's north corners close back to the balcony.** ``W-RG-WEST-BALCONY`` and
+  ``W-RG-EAST-BALCONY`` are 3' SRW runs on that same plane. Their block faces meet the
+  balcony's side railing faces, closing the two open ends.
 - **``W-RG-INNER`` is gone.** Its job was to be the bed's inner cheek; ``W-SG-W2``/``E2``/
   ``S`` are the apron's inner face now, so a second wall on the same axis as ``W-SG-S``
   would be a duplicate. ``W-RG-BLOCK`` keeps uid ``RGW102AAAA`` on the south leg so it
@@ -114,18 +117,23 @@ TOP = ft(RETAINING_WALL_TOP_FT)
 BASE = TOP - inch(SPEC.drop_ft * 12.0)
 
 NODES = [
-    # The two south corners are L junctions now, not free ends: a leg turns at each. A node
-    # with exactly one *non*-open-end wall edge raises integrity.wall_loop_open as a hard
-    # ERROR (resolve/topology.py), which is why the corners are closed and the north ends
-    # — where the U genuinely stops — are open.
+    # The south corners and the two balcony junctions are closed corners. A node with exactly
+    # one *non*-open-end wall edge raises integrity.wall_loop_open as a hard ERROR
+    # (resolve/topology.py), so only the ends at the balcony wall faces remain open.
     Node(uid="RGN001AAAA", tag="N-RG-SW", position=pt(ft(X_WEST), ft(Y_SOUTH)),
          open_end=False),
     Node(uid="RGN002AAAA", tag="N-RG-SE", position=pt(ft(X_EAST), ft(Y_SOUTH)),
          open_end=False),
     Node(uid="RGN003AAAA", tag="N-RG-NW", position=pt(ft(X_WEST), ft(Y_NORTH)),
-         open_end=True),
+         open_end=False),
     Node(uid="RGN004AAAA", tag="N-RG-NE", position=pt(ft(X_EAST), ft(Y_NORTH)),
-         open_end=True),
+         open_end=False),
+    # Short returns close the U against the balcony side railings. Their far ends remain
+    # open because they terminate at the balcony wall face rather than another RG wall axis.
+    Node(uid="RGN005AAAA", tag="N-RG-WEST-BALCONY",
+         position=pt(ft(X_WEST + 3.0), ft(Y_NORTH)), open_end=True),
+    Node(uid="RGN006AAAA", tag="N-RG-EAST-BALCONY",
+         position=pt(ft(X_EAST - 3.0), ft(Y_NORTH)), open_end=True),
 ]
 
 _APRON = dict(assembly="RETAINING_BLOCK_12", top_elevation=TOP, bottom_elevation=BASE)
@@ -141,6 +149,10 @@ WALLS = [
                    start_node="N-RG-NW", end_node="N-RG-SW", **_APRON),
     FoundationWall(uid="RGW104AAAA", tag="W-RG-EAST",
                    start_node="N-RG-SE", end_node="N-RG-NE", **_APRON),
+    FoundationWall(uid="RGW105AAAA", tag="W-RG-WEST-BALCONY",
+                   start_node="N-RG-NW", end_node="N-RG-WEST-BALCONY", **_APRON),
+    FoundationWall(uid="RGW106AAAA", tag="W-RG-EAST-BALCONY",
+                   start_node="N-RG-EAST-BALCONY", end_node="N-RG-NE", **_APRON),
 ]
 
 BASEMENT_ELEMENTS = [*NODES, *WALLS]

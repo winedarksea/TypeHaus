@@ -49,7 +49,7 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
     exactly those. The two halves are only useful together."""
     lvp = next(row for row in bom["floor_finishes"] if row["finish"] == "lvp")
     assert set(lvp["rooms"]) == {"RM-S-LANDING", "RM-S-HALL", "RM-S-SUITEBATH",
-                                 "RM-S-VANITY", "RM-S-ENSUITE"}
+                                 "RM-S-VANITY", "RM-S-BATH1"}
     lvp_area = sum(room.area_m2 for room in catlin_model.rooms
                    if room.floor_finish == "lvp") * _M2_TO_FT2
     # Rows round to a tenth of a square foot, which is the tolerance here.

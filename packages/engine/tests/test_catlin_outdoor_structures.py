@@ -115,17 +115,18 @@ def test_nema_box_and_its_clamp_ride_the_same_gable_wall_at_the_same_height(catl
 # W-RG-BLOCK south of it) holding soil between them, standing 3'-6" proud of grade. It is now
 # a retaining apron wrapping the sunken garden on three sides, level with the retaining wall
 # top and running 3' down. W-RG-INNER is deleted — W-SG-W2/E2/S are the apron's inner face.
-_APRON_TAGS = ("W-RG-BLOCK", "W-RG-WEST", "W-RG-EAST")
+_APRON_TAGS = ("W-RG-BLOCK", "W-RG-WEST", "W-RG-EAST",
+               "W-RG-WEST-BALCONY", "W-RG-EAST-BALCONY")
 
 
 def test_the_raised_garden_wraps_the_sunken_garden_as_a_u(catlin_model) -> None:
-    """Three legs, open to the north where the arch wall and its balcony railing are."""
+    """Three legs, with short returns closing each north end against the balcony."""
     assert not [w for w in catlin_model.walls if w.tag == "W-RG-INNER"], (
         "W-RG-INNER's job was to be the bed's inner cheek; the SG walls are that face now")
     walls = {tag: _wall(catlin_model, tag) for tag in _APRON_TAGS}
     assert {w.assembly for w in walls.values()} == {"RETAINING_BLOCK_12"}
 
-    south, west, east = (walls[t] for t in _APRON_TAGS)
+    south, west, east = (walls[t] for t in _APRON_TAGS[:3])
     # The south leg runs corner to corner — 28', not the 20' it spanned as a bed cheek.
     assert abs(south.axis[1][0] - south.axis[0][0]) == pytest.approx(28 * FT, abs=1e-9)
     assert {round(y / FT, 4) for _, y in south.axis} == {-33.3333}
@@ -134,6 +135,19 @@ def test_the_raised_garden_wraps_the_sunken_garden_as_a_u(catlin_model) -> None:
         assert {round(y / FT, 4) for _, y in leg.axis} == {-9.5, -33.3333}
     assert {round(x / FT, 4) for _, x in ((0, west.axis[0][0]), (0, west.axis[1][0]))} == {4.0}
     assert {round(x / FT, 4) for _, x in ((0, east.axis[0][0]), (0, east.axis[1][0]))} == {32.0}
+
+
+def test_the_raised_garden_returns_three_feet_to_the_balcony(catlin_model) -> None:
+    returns = {tag: _wall(catlin_model, tag) for tag in _APRON_TAGS[3:]}
+    for tag, wall in returns.items():
+        length = ((wall.axis[1][0] - wall.axis[0][0]) ** 2
+                  + (wall.axis[1][1] - wall.axis[0][1]) ** 2) ** 0.5
+        assert length == pytest.approx(3 * FT, abs=1e-9), tag
+        assert {round(y / FT, 4) for _, y in wall.axis} == {-9.5}, tag
+    west = returns["W-RG-WEST-BALCONY"]
+    east = returns["W-RG-EAST-BALCONY"]
+    assert {round(x / FT, 4) for x, _ in west.axis} == {4.0, 7.0}
+    assert {round(x / FT, 4) for x, _ in east.axis} == {29.0, 32.0}
 
 
 def test_the_apron_north_limit_is_the_arch_walls_own_plane(catlin_model) -> None:

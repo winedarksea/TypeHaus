@@ -535,39 +535,39 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-VANITY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
 
-    # RM-S-ENSUITE: two wet cans, one over the shower, and the mirror the brief is most
+    # RM-S-BATH1: two wet cans, one over the shower, and the mirror the brief is most
     # specific about — a 36" front-lit ring on the room's east wall, on the lavatory's
     # centre line (the lav faces east across the room). Front-lit, not edge-lit: an
     # edge-lit ring backlights the face and is useless to shave or do makeup by. The
     # controller has to remember its last setting and its standby LED has to be dim.
-    ElectricalDevice(uid="QTS000HAAA", tag="ED-S-ENSUITE-CAN1", kind=DeviceKind.LIGHT,
+    ElectricalDevice(uid="QTS000HAAA", tag="ED-S-BATH1-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(3), ft(29)), type_ref="ED-T-LT-CAN4-WET",
-                     circuit="CKT-LT-UPPER", room="RM-S-ENSUITE",
-                     controlled_by=("ED-S-ENSUITE-SW",),
+                     circuit="CKT-LT-UPPER", room="RM-S-BATH1",
+                     controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTS000JAAA", tag="ED-S-ENSUITE-CAN2", kind=DeviceKind.LIGHT,
+    ElectricalDevice(uid="QTS000JAAA", tag="ED-S-BATH1-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(5), ft(33)), type_ref="ED-T-LT-CAN4-WET",
-                     circuit="CKT-LT-UPPER", room="RM-S-ENSUITE",
-                     controlled_by=("ED-S-ENSUITE-SW",),
+                     circuit="CKT-LT-UPPER", room="RM-S-BATH1",
+                     controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    ElectricalDevice(uid="QTS000KAAA", tag="ED-S-ENSUITE-MIRROR", kind=DeviceKind.LIGHT,
+    ElectricalDevice(uid="QTS000KAAA", tag="ED-S-BATH1-MIRROR", kind=DeviceKind.LIGHT,
                      position=pt(ft(9, 9), ft(31)), type_ref="ED-T-LT-MIRROR-RING",
-                     circuit="CKT-LT-UPPER", room="RM-S-ENSUITE", rotation=deg(-90),
-                     controlled_by=("ED-S-ENSUITE-SW",),
+                     circuit="CKT-LT-UPPER", room="RM-S-BATH1", rotation=deg(-90),
+                     controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
     # The mirror is hardwired *and* gets an outlet behind it (electrical_notes.md line 80):
     # a lit mirror is the one bathroom fixture people replace on a whim, and a blank wall
     # box behind the next one is the difference between an afternoon and an electrician.
     # 54" puts it inside the 3'-6"..6'-6" band the mirror covers. GFCI at the breaker is
     # not enough here — 210.8(A)(1) wants the *receptacle* protected in a bathroom.
-    ElectricalDevice(uid="QTS000MAAA", tag="ED-S-ENSUITE-RC-MIRROR",
+    ElectricalDevice(uid="QTS000MAAA", tag="ED-S-BATH1-RC-MIRROR",
                      kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(9, 10), ft(31)), type_ref="ED-T-RECEPTACLE-GFCI",
-                     circuit="CKT-RC-SECOND", room="RM-S-ENSUITE", rotation=deg(-90),
+                     circuit="CKT-RC-SECOND", room="RM-S-BATH1", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-    ElectricalDevice(uid="QTS000NAAA", tag="ED-S-ENSUITE-SW", kind=DeviceKind.SWITCH,
+    ElectricalDevice(uid="QTS000NAAA", tag="ED-S-BATH1-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(9, 9), ft(29, 6)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-UPPER", room="RM-S-ENSUITE", rotation=deg(-90),
+                     circuit="CKT-LT-UPPER", room="RM-S-BATH1", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
     # RM-S-PLANT: two suspended tubes over the plants at the south windows, on a timer so

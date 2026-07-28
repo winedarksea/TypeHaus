@@ -435,7 +435,7 @@ def test_ridge_beam_width_parses_multi_ply_lvl():
 # --- shower -------------------------------------------------------------------
 
 def _shower_slice():
-    """A documentation slice through the ensuite shower (FX-S-ENSUITE-SH at x~1.5 m)."""
+    """A documentation slice through the ensuite shower (FX-S-BATH1-SH at x~1.5 m)."""
     from typehaus.model.enums import SliceKind
     from typehaus.model.views import Slice
     from typehaus.quantities import m
@@ -454,7 +454,7 @@ def test_shower_vocabulary_is_gated_on_the_fixture(catlin_model):
 
     scene = build_authored_detail_scene(catlin_model, _shower_slice())
     tags = _component_tags(scene)
-    # shower-hrv-duct rides the authored DU-S-ENSUITE-EXH exhaust run crossing the cut.
+    # shower-hrv-duct rides the authored DU-S-BATH1-EXH exhaust run crossing the cut.
     assert {"shower-recess", "shower-tile", "shower-backer", "shower-glass",
             "shower-drain", "shower-hrv-duct"} <= tags
     for node in scene.nodes:
@@ -516,7 +516,7 @@ def test_shower_hrv_duct_draws_from_model_ducts(catlin_model):
     from typehaus.emit.draw.details import build_authored_detail_scene
     from typehaus.resolve.model import ResolvedDuct
 
-    # Catlin now routes DU-S-ENSUITE-EXH over the shower (houses/catlin/plan/mep.py):
+    # Catlin now routes DU-S-BATH1-EXH over the shower (houses/catlin/plan/mep.py):
     # the takeoff draws at that run's own resolved width, read off the model.
     scene = build_authored_detail_scene(catlin_model, _shower_slice())
     drawn = _component_nodes(scene, "shower-hrv-duct")

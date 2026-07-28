@@ -65,6 +65,11 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     # distinguishes symbols by.
     "tall-cabinet-double": case(rows=1, cols=2, pulls=True, color=CABINET,
                                 face_color=CABINET_SHADE),
+    # Three bays is where a tall unit stops being a cabinet and becomes a wall of storage:
+    # 72" of carcass behind three 24" doors, which is the widest front that still divides on
+    # the 24" module the doubles use.
+    "tall-cabinet-triple": case(rows=1, cols=3, pulls=True, color=CABINET,
+                                face_color=CABINET_SHADE),
     # Sauna joinery. Not casegoods and not tables: a bench is a platform on end supports, and
     # the two-tier version is the one piece of furniture whose *height* is a code-of-practice
     # number rather than an ergonomic average — see ``sauna_bench``.

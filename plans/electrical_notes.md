@@ -93,7 +93,7 @@ plan/mep.py and there was never a GAS UtilityLine in plan/site.py to feed it.
 		own 15A GFCI circuit with its own line-voltage stat:
 			FH-M-BATH2    main bath, 41.5 sf, 498 W   CKT-FH-BATH2
 			FH-M-DINING   under the dining table, 58.0 sf, 696 W   CKT-FH-DINING
-			FH-S-ENSUITE  NW bathroom (the hall bath), 42.4 sf, 509 W   CKT-FH-ENSUITE
+			FH-S-BATH1    NW bathroom (the hall bath), 42.4 sf, 509 W   CKT-FH-BATH1
 		GFCI at the breaker on all three: NEC 424.44(G) requires it for heating cable in
 			a bathroom or kitchen floor, and mat manufacturers require Class A protection
 			on every mat regardless, so the dining zone gets it too.

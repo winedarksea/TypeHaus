@@ -295,17 +295,18 @@ SECOND_PLACEABLES = [
               room="RM-S-BED3", position=pt(ft(24, 4), ft(28, 0.625)), rotation=deg(180)),
 
     # Linen/towel storage in the hall bath, on the wall the room has nothing else on. The
-    # kitchen's pantry-closet carcass is the right box for it: 48" x 24" x 96", one plan
-    # symbol, one set of doors. RM-S-ENSUITE's clear face runs x 0'-0 5/8"..9'-11 3/8",
-    # y 26'-4 5/8"..35'-11 3/8", and the SW corner is the only 4'-0 run of wall it has
-    # free — the west wall above it is taken by the WC (x 1'-3 1/4"..3'-9 1/4", y 28'-10 1/2"
-    # ..31'-4 1/2") and by WIN-S-BATH-W, the north wall by the shower pan, the east wall by
-    # the lav and its mirror. Backed onto the south wall (rotation 180 turns the carcass
-    # back to -y) the unit occupies x 0'-0 5/8"..4'-0 5/8", y 26'-4 5/8"..28'-4 5/8": clear
-    # of D-S-ENSUITE's swing, which starts at x=7'-3", of the WC's REQUIRED 30"/21" zone,
-    # and of every device on the walls. 48" fits, so the 24" is not needed.
-    Furniture(uid="CSB707AAAA", tag="FURN-S-ENSUITE-CLOSET", type_ref="CASE-PANTRY-CLOSET-48",
-              room="RM-S-ENSUITE", position=pt(m(0.800904), m(8.43418)),
+    # pantry-closet carcass is the right box for it: 72" x 24" x 96", one plan symbol,
+    # three 24" doors (CASE-PANTRY-CLOSET-72). RM-S-BATH1's clear face runs
+    # x 0'-0 5/8"..9'-11 3/8", y 26'-4 5/8"..35'-11 3/8", and the south wall is the only run
+    # it has free — the west wall above it is taken by the WC (x 1'-3 1/4"..3'-9 1/4",
+    # y 28'-10 1/2"..31'-4 1/2") and by WIN-S-BATH-W, the north wall by the shower pan, the
+    # east wall by the lav and its mirror. Backed onto the south wall (rotation 180 turns the
+    # carcass back to -y) and run out of the SW corner, the unit occupies
+    # x 0'-0 5/8"..6'-0 5/8", y 26'-4 5/8"..28'-4 5/8": still short of D-S-BATH1's opening at
+    # x=7'-3", clear of the WC's REQUIRED 30"/21" zone (which starts at y 28'-10 1/2"), and
+    # of every device on the walls. The 48" it replaces stopped at x 4'-0 5/8".
+    Furniture(uid="CSB707AAAA", tag="FURN-S-BATH1-CLOSET", type_ref="CASE-PANTRY-CLOSET-72",
+              room="RM-S-BATH1", position=pt(ft(3, 0.625), ft(27, 4.625)),
               rotation=deg(180)),
     ElectricalDevice(uid="8EFPYDEK22", tag="ED-1", kind=DeviceKind.RECEPTACLE, position=pt(m(1.2726), m(2.63984)), type_ref="ED-T-LT-SCONCE-SPOT", room="RM-S-PLANT"),
 ]

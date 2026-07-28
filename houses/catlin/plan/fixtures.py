@@ -56,7 +56,7 @@ MAIN_FIXTURES = (
 )
 
 
-# RM-S-ENSUITE is the *hall* bath (the source's 80.73 sf "Bathroom" in the NW corner); the
+# RM-S-BATH1 is the *hall* bath (the source's 80.73 sf "Bathroom" in the NW corner); the
 # tag predates the suite's own bath and is kept — see storeys/second.py's header.
 #
 # Layout (the de-overlap pass storeys/second.py's FLOOR_HEAT comment used to ask for):
@@ -70,11 +70,11 @@ MAIN_FIXTURES = (
 # WC x 0'-3"..2'-9" y 28'-9"..31'-3", pan x 3'-6"..6'-6" y 31'-6"..34'-6", lav
 # x 8'-2"..9'-11" y 30'-0"..32'-0" — are pairwise disjoint with 9"+ between any two.
 SECOND_FIXTURES = (
-    Fixture(uid="CSQ801AAAA", tag="FX-S-ENSUITE-WC", type_ref="FX-TOILET", room="RM-S-ENSUITE",
+    Fixture(uid="CSQ801AAAA", tag="FX-S-BATH1-WC", type_ref="FX-TOILET", room="RM-S-BATH1",
             position=pt(m(0.560313), m(9.2783)), rotation=deg(90), wall_ref="W-S-W1"),
-    Fixture(uid="CSQ802AAAA", tag="FX-S-ENSUITE-LAV", type_ref="FX-LAV", room="RM-S-ENSUITE",
+    Fixture(uid="CSQ802AAAA", tag="FX-S-BATH1-LAV", type_ref="FX-LAV", room="RM-S-BATH1",
             position=pt(ft(9, 0.5), ft(31)), rotation=deg(90), wall_ref="W-S-BA-E1B"),
-    Fixture(uid="CSQ803AAAA", tag="FX-S-ENSUITE-SH", type_ref="FX-TUBSHOWER", room="RM-S-ENSUITE",
+    Fixture(uid="CSQ803AAAA", tag="FX-S-BATH1-SH", type_ref="FX-TUBSHOWER", room="RM-S-BATH1",
             position=pt(m(0.96572), m(10.3683)), wall_ref="W-S-BD-N"),
     # The suite's own bath (source: 46.01 sf). Both walls it drains into are
     # INT_2X6_PLUMBING — W-S-DC2 west, W-S-SBS south — which is what `advisory.wet_wall_depth`

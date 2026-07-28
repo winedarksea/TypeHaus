@@ -112,7 +112,7 @@ def test_catlin_covers_every_required_room(catlin_model):
     tags = {t for f in findings for t in f.element_tags}
     for required in ("RM-M-BED", "RM-M-LIVING", "RM-M-STUDY", "RM-S-SUITE",
                      "RM-A-EAST", "RM-B-GYM", "RM-M-BATH1", "RM-M-BATH2",
-                     "RM-M-LAUNDRY", "RM-S-ENSUITE", "RM-B-SAUNA"):
+                     "RM-M-LAUNDRY", "RM-S-BATH1", "RM-B-SAUNA"):
         assert required in tags, required
 
 

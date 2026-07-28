@@ -93,7 +93,7 @@ def test_the_second_storey_circulation_and_baths_run_one_lvp_floor(catlin_model)
     finishes = {room.tag: room.floor_finish
                 for room in catlin_model.rooms if room.storey == "second"}
     assert {tag for tag, finish in finishes.items() if finish == "lvp"} == {
-        "RM-S-LANDING", "RM-S-HALL", "RM-S-SUITEBATH", "RM-S-VANITY", "RM-S-ENSUITE"}
+        "RM-S-LANDING", "RM-S-HALL", "RM-S-SUITEBATH", "RM-S-VANITY", "RM-S-BATH1"}
     # Both walk-ins are carpet, continuing out of the bedrooms they open off.
     assert finishes["RM-S-CLOSET"] == "carpet"
     assert finishes["RM-S-NCLOSET"] == "carpet"
@@ -156,7 +156,7 @@ def test_finish_zones_survive_resolve(catlin_model, project):
 # --- 5. the advisory ----------------------------------------------------------------------
 
 def test_radiant_under_a_limited_finish_is_advised(catlin_model):
-    """LVP over FH-S-ENSUITE is legal but surface-temperature limited, and the loop under
+    """LVP over FH-S-BATH1 is legal but surface-temperature limited, and the loop under
     the dining table is under oak. Both are commissioning decisions, so both are advised.
 
     FH-M-DINING is the case the polygon match exists for: it carries no ``room_ref`` at all,
@@ -171,7 +171,7 @@ def test_radiant_under_a_limited_finish_is_advised(catlin_model):
         profile=MN_2024))
     assert {tuple(sorted(f.element_tags)) for f in findings} == {
         ("FH-M-DINING", "RM-M-LIVING"),
-        ("FH-S-ENSUITE", "RM-S-ENSUITE"),
+        ("FH-S-BATH1", "RM-S-BATH1"),
     }
     assert all(f.severity.value == "warn" for f in findings)
     # FH-M-BATH2 is under tile, which is what radiant wants — no advisory for it.

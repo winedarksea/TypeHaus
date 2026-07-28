@@ -23,9 +23,9 @@
 # - `WIN-S-BATH-W` and `WIN-S-BATH-N` have no counterpart — the source draws no opening in
 #   the west wall north of y=25'-8" and none in the north wall west of x=21'-10". Both are
 #   kept for bathroom daylight.
-# - `RM-S-ENSUITE` is really the hall bath (the source's 80.73 sf "Bathroom"), not an
-#   ensuite; the suite's own bath is RM-S-SUITEBATH. The tag stays because retagging would
-#   ripple through fixtures.py, mep.py, views.py and electrical.py for no geometric gain.
+# - `RM-S-BATH1` is the hall bath (the source's 80.73 sf "Bathroom"); the suite's own bath
+#   is RM-S-SUITEBATH. It was tagged `RM-S-ENSUITE` until 2026-07-27, which it never was —
+#   the rename ran through fixtures.py, mep.py, views.py, lighting.py and electrical.py.
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -233,7 +233,7 @@ WALLS = [
     Wall(uid="CSW137AAAA", tag="W-S-BA-E2", start_node="N-S-BA1", end_node="N-S-STR2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     # 2'x2' mechanical chase in the hall bath's NE corner (source void x 8'-2 3/4"..
-    # 10'-2 3/4", y 33'-6"..35'-6"), which is what makes RM-S-ENSUITE the source's
+    # 10'-2 3/4", y 33'-6"..35'-6"), which is what makes RM-S-BATH1 the source's
     # L-shaped 80.73 sf bathroom. Its east side is the stair-shaft wall above.
     Wall(uid="CSW151AAAA", tag="W-S-CH-W", start_node="N-S-CH1", end_node="N-S-CH2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
@@ -285,7 +285,7 @@ OPENINGS = [
     RoughOpening(uid="CSD215AAAA", tag="O-S-VANITY", host="W-S-VE",
                  position=from_node("N-S-V1", ft(0, 3)), width=ft(2, 8),
                  height=ft(6, 8)),                                       # y 23'-11"
-    Door(uid="CSD208AAAA", tag="D-S-ENSUITE", host="W-S-BD-N1B", type_ref="DT-INT30",
+    Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT30",
          position=from_node("N-S-V2", ft(1, 4.5))),                      # x 8'-6"
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT30",
          position=from_node("N-S-C3D", ft(0, 8.5))),                     # x 19'-11 1/2"
@@ -362,7 +362,7 @@ ROOMS = [
     # LVP through the wet rooms and the circulation: one continuous plank floor from the
     # stair head through both hallways and into all three second-storey baths, so the
     # traffic route has no thresholds in it and the baths get a waterproof plank instead of
-    # tile. RM-S-ENSUITE puts LVP over the FH-S-ENSUITE electric radiant zone — allowed, but
+    # tile. RM-S-BATH1 puts LVP over the FH-S-BATH1 electric radiant zone — allowed, but
     # surface-temperature limited, which advisory.floor_finish_over_radiant flags.
     Room(uid="CSR412AAAA", tag="RM-S-SUITEBATH", seed=pt(ft(14), ft(19)),
          occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
@@ -372,7 +372,7 @@ ROOMS = [
     # links the stair head, the vanity alcove and the hall bath.
     Room(uid="CSR414AAAA", tag="RM-S-LANDING", seed=pt(ft(13), ft(23, 6)),
          occupancy=Occupancy.HALLWAY, floor_finish="lvp"),
-    Room(uid="CSR408AAAA", tag="RM-S-ENSUITE", seed=pt(ft(5), ft(31)),
+    Room(uid="CSR408AAAA", tag="RM-S-BATH1", seed=pt(ft(5), ft(31)),
          occupancy=Occupancy.BATHROOM, floor_finish="lvp"),
     Room(uid="CSR409AAAA", tag="RM-S-HALL", seed=pt(ft(20), ft(20)),
          occupancy=Occupancy.HALLWAY, floor_finish="lvp"),
@@ -397,13 +397,13 @@ ALARMS = [
           circuit="CKT-LT-BACKUP"),
 ]
 
-# Electric radiant floor in the NW bathroom (2026-07-25). RM-S-ENSUITE is the hall bath —
+# Electric radiant floor in the NW bathroom (2026-07-25). RM-S-BATH1 is the hall bath —
 # see the tag note in this file's header — and it is the one bathroom on this storey that
 # gets a warm floor. Same recipe as the two main-storey zones (main.py): 12 W/ft2 of 120V
 # mat at a 3" serpentine, buried in the tile setting bed. `in_slab` is the mode name the
 # enum has, not a claim about structure: this floor is FS-SECOND's I-joists and 3/4"
 # plywood, and the mat lies in the thinset *above* the subfloor, which is neither of the
-# two modes `Embed` can spell. CKT-FH-ENSUITE and ED-S-ENSUITE-FH-STAT carry it.
+# two modes `Embed` can spell. CKT-FH-BATH1 and ED-S-BATH1-FH-STAT carry it.
 #
 # The zone is drawn to the fixtures, not the room. The clear face runs
 # x 0'-0 5/8"..9'-11 3/8", y 26'-4 11/16"..35'-11 3/8" (itself an L — the NE corner past
@@ -417,7 +417,7 @@ ALARMS = [
 # fixture: 31.6 ft2. The strips north of the WC and west of the pan are left unheated
 # rather than tying them in through a 3"-wide cable corridor.
 FLOOR_HEAT = [
-    FloorHeat(uid="CSH801AAAA", tag="FH-S-ENSUITE", room_ref="RM-S-ENSUITE",
+    FloorHeat(uid="CSH801AAAA", tag="FH-S-BATH1", room_ref="RM-S-BATH1",
               zone=(pt(ft(0, 5), ft(26, 9)), pt(ft(9, 7), ft(26, 9)),
                     pt(ft(9, 7), ft(29, 9)), pt(ft(7, 11), ft(29, 9)),
                     pt(ft(7, 11), ft(31, 3)), pt(ft(3), ft(31, 3)),

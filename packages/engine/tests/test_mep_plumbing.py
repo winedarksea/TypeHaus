@@ -308,7 +308,7 @@ def test_catlin_water_closets_all_reach_a_vent_chase(catlin_model):
     assert all(f.result.value == "pass" for f in matched), \
         [f.message for f in matched if f.result.value != "pass"]
     # The two whose wet wall stops at its own ceiling must say so, not silently pass.
-    # (FX-S-ENSUITE-WC used to be the third: since the ensuite de-overlap pass it backs
+    # (FX-S-BATH1-WC used to be the third: since the ensuite de-overlap pass it backs
     # onto the exterior W-S-W1, which continues up, so it vents in-wall.)
     offset_vented = [f for f in matched if "chase" in f.message]
     assert {"FX-M-BATH1-WC", "FX-M-BATH2-WC"} <= {
@@ -322,7 +322,7 @@ def test_authored_vent_branches_carry_their_fixtures_into_the_ir(catlin_model):
     runs = {run.tag: run for run in catlin_model.pipe_runs if run.system == "vent"}
     assert "FX-M-BATH1-WC" in runs["PR-M-WC-VENT"].serves
     assert "FX-M-BATH2-WC" in runs["PR-M-WC-VENT"].serves
-    assert runs["PR-S-ENSUITE-VENT"].serves == ("FX-S-ENSUITE-WC",)
+    assert runs["PR-S-BATH1-VENT"].serves == ("FX-S-BATH1-WC",)
 
 
 def _vent_path_model(run_path, wall_axis, chase_xy, systems=None):

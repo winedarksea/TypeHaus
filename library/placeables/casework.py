@@ -98,6 +98,13 @@ PANTRY_CLOSET_48 = FurnitureType(
     tag="CASE-PANTRY-CLOSET-48", name='48" pantry closet', footprint=(ft(4), _BASE_DEPTH),
     height=_TALL_HEIGHT, plan_symbol="tall-cabinet-double", storage=True, source=REFERENCE,
 )
+# The linen/utility closet: three 24" doors on one 72" carcass, half again the shelf run of
+# the 48" for the same depth. Wide enough that it is the storage wall of the room it stands
+# in rather than a unit in a run, which is why it appears in a bathroom and not a kitchen.
+PANTRY_CLOSET_72 = FurnitureType(
+    tag="CASE-PANTRY-CLOSET-72", name='72" pantry closet', footprint=(ft(6), _BASE_DEPTH),
+    height=_TALL_HEIGHT, plan_symbol="tall-cabinet-triple", storage=True, source=REFERENCE,
+)
 
 # An island is a base run turned loose in the room: 36" deep is 24" of carcass plus the 12"
 # overhang the stools tuck under, which is why the seating side reads as counter with nothing
@@ -118,5 +125,6 @@ STARTER_CASEWORK_TYPES = (
     BASE_15, BASE_24, BASE_30, BASE_36, SINK_BASE_36,
     WALL_18, WALL_24, WALL_30, WALL_66, OVER_APPLIANCE_36,
     TALL_PANTRY_12, TALL_PANTRY_18, PANTRY_CLOSET_24, PANTRY_CLOSET_48,
+    PANTRY_CLOSET_72,
     ISLAND_60, BAR_STOOL,
 )

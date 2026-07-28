@@ -304,13 +304,13 @@ MAIN_EQUIPMENT = [
 
 # --- Second storey: the NW bathroom's floor-heat control -------------------------------
 SECOND_DEVICES = [
-    # FH-S-ENSUITE's thermostat, inside the room on its south wall (W-S-BD-N1B, interior
-    # face y=26'-4 11/16"), 9" west of D-S-ENSUITE's opening (x 7'-3"..9'-9"). Same
+    # FH-S-BATH1's thermostat, inside the room on its south wall (W-S-BD-N1B, interior
+    # face y=26'-4 11/16"), 9" west of D-S-BATH1's opening (x 7'-3"..9'-9"). Same
     # reach-as-the-door-shuts position as ED-M-BATH2-FH-STAT, and clear of the fixture
     # cluster, which all sits north of y=29'-9".
-    ElectricalDevice(uid="CEE025AAAA", tag="ED-S-ENSUITE-FH-STAT", kind=DeviceKind.SWITCH,
+    ElectricalDevice(uid="CEE025AAAA", tag="ED-S-BATH1-FH-STAT", kind=DeviceKind.SWITCH,
                      position=pt(ft(6, 6), ft(26, 5)), type_ref="ED-T-FLOOR-STAT",
-                     circuit="CKT-FH-ENSUITE", room="RM-S-ENSUITE",
+                     circuit="CKT-FH-BATH1", room="RM-S-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 ]
 

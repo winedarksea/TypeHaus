@@ -672,7 +672,7 @@ def test_catlin_floor_heat_zones_are_the_three_supplemental_ones(catlin_model):
     NW bathroom upstairs. All three are electric mat with a resolvable zone and wire run.
     """
     zones = {item.tag: item for item in catlin_model.floor_heat}
-    assert set(zones) == {"FH-M-BATH2", "FH-M-DINING", "FH-S-ENSUITE"}
+    assert set(zones) == {"FH-M-BATH2", "FH-M-DINING", "FH-S-BATH1"}
     for zone in zones.values():
         assert zone.system == "electric"
         assert zone.wire_length_m > 0
