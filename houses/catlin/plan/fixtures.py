@@ -71,11 +71,11 @@ MAIN_FIXTURES = (
 # x 8'-2"..9'-11" y 30'-0"..32'-0" — are pairwise disjoint with 9"+ between any two.
 SECOND_FIXTURES = (
     Fixture(uid="CSQ801AAAA", tag="FX-S-ENSUITE-WC", type_ref="FX-TOILET", room="RM-S-ENSUITE",
-            position=pt(m(0.767898), m(9.18323)), rotation=deg(90), wall_ref="W-S-W1"),
+            position=pt(m(0.560313), m(9.2783)), rotation=deg(90), wall_ref="W-S-W1"),
     Fixture(uid="CSQ802AAAA", tag="FX-S-ENSUITE-LAV", type_ref="FX-LAV", room="RM-S-ENSUITE",
             position=pt(ft(9, 0.5), ft(31)), rotation=deg(90), wall_ref="W-S-BA-E1B"),
-    Fixture(uid="CSQ803AAAA", tag="FX-S-ENSUITE-SH", type_ref="FX-SHOWER", room="RM-S-ENSUITE",
-            position=pt(m(1.43279), m(10.1538)), wall_ref="W-S-BD-N"),
+    Fixture(uid="CSQ803AAAA", tag="FX-S-ENSUITE-SH", type_ref="FX-TUBSHOWER", room="RM-S-ENSUITE",
+            position=pt(m(0.96572), m(10.3683)), wall_ref="W-S-BD-N"),
     # The suite's own bath (source: 46.01 sf). Both walls it drains into are
     # INT_2X6_PLUMBING — W-S-DC2 west, W-S-SBS south — which is what `advisory.wet_wall_depth`
     # measures against preferences.toml's 5.5" drain-stack requirement.
@@ -86,9 +86,9 @@ SECOND_FIXTURES = (
     # CATLIN_INT_2X6_BRG east — because `advisory.wet_wall_depth` holds a drain stack to
     # preferences.toml's 5.5", which a 2x4 partition cannot give it.
     Fixture(uid="CSQ804AAAA", tag="FX-S-SUITEBATH-WC", type_ref="FX-TOILET",
-            room="RM-S-SUITEBATH", position=pt(m(3.4741), m(6.34769)), wall_ref="W-S-DC2"),
+            room="RM-S-SUITEBATH", position=pt(m(3.42422), m(6.34259)), wall_ref="W-S-DC2"),
     Fixture(uid="CSQ805AAAA", tag="FX-S-SUITEBATH-LAV", type_ref="FX-LAV",
-            room="RM-S-SUITEBATH", position=pt(ft(14), ft(17, 1)), wall_ref="W-S-SBS"),
+            room="RM-S-SUITEBATH", position=pt(m(4.21659), m(6.46046)), wall_ref="W-S-SBS"),
     # The suite bath takes a tub-shower rather than the 36" pan it used to: the room's clear
     # face is 9'-8 1/8" x 22'-3 3/8" .. 15'-11 5/8" (x 9.677'..17.948', y 15.969'..22.281'),
     # and the east wall has 5'-0 of run to give a 60" x 30" alcove. Rotated -90 the back
@@ -98,7 +98,7 @@ SECOND_FIXTURES = (
     # wall (x 13'..15', y 16'-2 1/2"..17'-11 3/8"), and D-S-SUITEBATH's swing (out to
     # x 12'-8"). The plumbing end is north, where the pan's drain already was.
     Fixture(uid="CSQ809AAAA", tag="FX-S-SUITEBATH-TUBSH", type_ref="FX-TUBSHOWER",
-            room="RM-S-SUITEBATH", position=pt(ft(16, 5), ft(19, 6)), rotation=deg(-90),
+            room="RM-S-SUITEBATH", position=pt(m(4.99282), m(5.96387)), rotation=deg(-90),
             wall_ref="W-S-C2C"),
     # The double-vanity alcove off the landing (source: 18.23 sf, two lavatories), backed
     # onto W-S-BD-N — the same 2x6 wet wall the hall bath drains into.

@@ -24,14 +24,15 @@ from __future__ import annotations
 import math
 from typing import Callable, Optional, Sequence, Tuple
 
-from typehaus.model.placeable_symbols._frame import PART_COLORS, Part, Point, Stroke, part_hex
+from typehaus.model.placeable_symbols._frame import (PART_COLORS, Part, Point, Stroke,
+                                                     lamp_role, part_hex)
 from typehaus.model.placeable_symbols.appliances import APPLIANCE_SYMBOLS
 from typehaus.model.placeable_symbols.furniture import FURNITURE_SYMBOLS
 from typehaus.model.placeable_symbols.lighting import LIGHTING_SYMBOLS
 from typehaus.model.placeable_symbols.plumbing import PLUMBING_SYMBOLS
 
-__all__ = ["SYMBOL_NAMES", "PART_COLORS", "Part", "Stroke", "model_parts", "part_hex",
-           "place_local", "plan_symbol_strokes", "symbol_geometry"]
+__all__ = ["SYMBOL_NAMES", "PART_COLORS", "Part", "Stroke", "lamp_role", "model_parts",
+           "part_hex", "place_local", "plan_symbol_strokes", "symbol_geometry"]
 
 # A builder takes the type's overall size and returns both halves of its glyph at once, so a
 # sofa's drawn arms and its 3D arm boxes cannot drift apart.

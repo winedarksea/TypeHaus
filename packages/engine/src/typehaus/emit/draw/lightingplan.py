@@ -197,14 +197,32 @@ def _emit_legend(b: SceneBuilder, model: ResolvedModel, storey: str, types: dict
             scale = _LEGEND_GLYPH_M / max(width_m, depth_m, 1e-9)
             _emit_glyph(b, product.plan_symbol, width_m * scale, depth_m * scale,
                         (origin[0], y), 0.0)
-        marks = sorted({p.type_mark for p in types.values()
-                        if p.form.value == form and p.type_mark})
-        label = _FORM_LABEL.get(form, form.upper())
-        if marks:
-            label = "(" + ", ".join(marks) + ")  " + label
+        label = _label_for_form(form, [p for p in types.values()
+                                       if p.form.value == form and p.type_mark])
         b.add(Text(anchor=_in((origin[0] + 0.6, y)), content=label, height=2.5,
                    layer="A-ANNO-TEXT"))
         row += 1
+
+
+def _label_for_form(form: str, products: list) -> str:
+    """One legend row's text: the marks of that form, the form's name, and the colour.
+
+    Colour temperature earns a place on the plan when a form is specified in more than one
+    of them — two grids of identical-looking cans in one room are exactly the case where
+    the reader cannot tell from the drawing which is which, and sending them to E-602 for
+    it defeats the point of a legend. Then the CCT rides each mark ("A 3000K, A1 4000K").
+    A form with one colour states it once, after the name, and a form with none (nothing
+    in the catalog captured a CCT) reads as it always did.
+    """
+    label = _FORM_LABEL.get(form, form.upper())
+    marks = sorted(product.type_mark for product in products)
+    ccts = {product.cct_k for product in products if product.cct_k}
+    if len(ccts) > 1:
+        marks = sorted("%s %dK" % (product.type_mark, product.cct_k) if product.cct_k
+                       else product.type_mark for product in products)
+    elif len(ccts) == 1:
+        label = "%s, %dK" % (label, ccts.pop())
+    return "(" + ", ".join(marks) + ")  " + label if marks else label
 
 
 # Legend glyphs are drawn at one size so the column reads as a column.

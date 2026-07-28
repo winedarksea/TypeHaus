@@ -250,7 +250,7 @@ OPENINGS = [
     # walls (as the port did) put D-S-BED1's centre at (22.67, 10.42), inside the attic
     # stair band rather than inside RM-S-BED1.
     Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT30",
-         position=from_node("N-S-B1", ft(4, 11)), flip_swing=True),      # y 15'-2"
+         position=from_node("N-S-B1", ft(4, 3.1875)), flip_swing=True),      # y 15'-2"
     Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT30",
          position=from_node("N-S-B2", ft(4, 10))),                       # y 24'-1"
     Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT30",
@@ -335,7 +335,7 @@ OPENINGS = [
     # none in the west wall north of y=25'-8"; WIN-S-BATH-N/W are kept anyway so the hall
     # bath has daylight, and are the storey's only two openings with no source counterpart.
     Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3B", type_ref="WT-1424",
-           position=from_node("N-S-CH2", ft(4, 1)), sill_height=ft(4)),       # x 3'-0"
+           position=from_node("N-S-CH2", ft(0, 3.875)), sill_height=ft(4)),       # x 3'-0"
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424",
            position=from_node("N-S-NW", ft(4, 1)), sill_height=ft(4)),
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3036",

@@ -64,9 +64,16 @@ def emit_light_runs(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
         ll.ensure_pset(f, element, "TypeHaus_Identity", {
             "uid": run.uid, "tag": run.tag, "source_type": run.type_ref,
         })
+        # ``lumens`` on a tape type is per lineal foot, unlike a point fixture's, so both
+        # the rate and the run total go out — a reader that sums fixture lumens for a room
+        # needs the total, and one substituting a brighter tape needs the rate.
+        lumens_per_ft = getattr(product, "lumens", None) or 0.0
         ll.ensure_pset(f, element, "TypeHaus_Lighting", {
             "type": run.type_ref, "length_ft": length_ft,
             "watts": watts_per_ft * length_ft,
+            "lumens_per_ft": lumens_per_ft, "lumens": lumens_per_ft * length_ft,
+            "cct_k": getattr(product, "cct_k", None) or 0,
+            "cri": getattr(product, "cri", None) or 0,
             "voltage": getattr(product, "voltage", 120) if product is not None else 120,
             "circuit": run.circuit or "", "psu_ref": run.psu_ref or "",
             "controlled_by": ";".join(run.controlled_by),

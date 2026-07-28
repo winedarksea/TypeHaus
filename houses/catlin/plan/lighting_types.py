@@ -43,6 +43,19 @@ LUMINAIRE_TYPES = (
                   lamp="LED module, field replaceable", watts=12.0, lumens=900.0,
                   cct_k=3000, cri=90, dimmable=True, load_va=12.0, ports=_POWER_120,
                   source="ELCO Lighting EL49LDICA, 4\" IC airtight, black baffle"),
+    # A1 is mark A's housing with the field-selectable module set to 4000K instead of 3000K
+    # — same can, same trim, same load, same part number. It is a separate mark and not a
+    # per-can override because colour temperature is a *type* property everywhere it
+    # matters (Revit's Initial Color Temperature, IFC's light source, the E-602 schedule):
+    # two CCTs in one room have to read as two schedule rows or the electrician cannot tell
+    # which module goes in which can. Do not "deduplicate" these two into one entry.
+    LuminaireType(tag="ED-T-LT-CAN4-4000", name='4" recessed can, 4000K, black baffle trim',
+                  form=LuminaireForm.RECESSED_CAN, type_mark="A1",
+                  footprint=(inch(5), inch(5)), height=inch(6), plan_symbol="recessed-can",
+                  lamp="LED module, field replaceable, set to 4000K", watts=12.0,
+                  lumens=950.0, cct_k=4000, cri=90, dimmable=True, load_va=12.0,
+                  ports=_POWER_120,
+                  source="ELCO Lighting EL49LDICA, 4\" IC airtight, black baffle (4000K tap)"),
     # Same housing, wet-listed: a can over a tub or inside a shower enclosure is in a wet
     # location, and every bath can here is specified that way rather than sorting them by
     # which side of the curtain they fall on.

@@ -200,6 +200,40 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # The daylight set: mark A1, the same 4" can with its module set to 4000K, on its own
+    # switch leg so the lounge can be run warm in the evening and cool when it is being
+    # worked in. Interleaved as a diamond inside the warm 2x2 — points at the mid-span of
+    # each side, all symmetric about (27', 7') — so either set alone still lights the room
+    # evenly instead of lighting half of it. Same CKT-LT-MAIN as the warm cans: this is
+    # 48 VA more on a lighting branch, and it is the switch leg, not the circuit, that has
+    # to be separate for the two colours to be usable independently.
+    ElectricalDevice(uid="QTM0019AAA", tag="ED-M-LIVING-CAND1", kind=DeviceKind.LIGHT,
+                     position=pt(ft(27), ft(4)), type_ref="ED-T-LT-CAN4-4000",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     controlled_by=("ED-M-LIVING-SW-DAY",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="QTM001AAAA", tag="ED-M-LIVING-CAND2", kind=DeviceKind.LIGHT,
+                     position=pt(ft(27), ft(10)), type_ref="ED-T-LT-CAN4-4000",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     controlled_by=("ED-M-LIVING-SW-DAY",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="QTM001BAAA", tag="ED-M-LIVING-CAND3", kind=DeviceKind.LIGHT,
+                     position=pt(ft(22), ft(7)), type_ref="ED-T-LT-CAN4-4000",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     controlled_by=("ED-M-LIVING-SW-DAY",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="QTM001CAAA", tag="ED-M-LIVING-CAND4", kind=DeviceKind.LIGHT,
+                     position=pt(ft(32), ft(7)), type_ref="ED-T-LT-CAN4-4000",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     controlled_by=("ED-M-LIVING-SW-DAY",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # Second gang beside ED-M-LIVING-SW (plan/mep.py, at 26'-0"), 4" over on the same wall.
+    # A dimmer rather than the warm set's plain switch: the daylight cans are the ones you
+    # turn down, since they are the set that is on when you do not want the full 4800 lm.
+    ElectricalDevice(uid="QTM001DAAA", tag="ED-M-LIVING-SW-DAY", kind=DeviceKind.SWITCH,
+                     position=pt(ft(26, 4), ft(12)), type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-MAIN", room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 
     # The dining fixture, centred on FURN-M-DINING. A 3'-6" assembly off a 9' ceiling puts
     # the shade bottom at 5'-6" — about 3' over a 30" table, which is the height that lights
@@ -446,8 +480,8 @@ SECOND_LIGHTING = [
     # RM-S-SUITE: the linear wall lamp the notes ask for over the bed, on the long west
     # wall, plus cans down the west strip and one in the arm past the walk-in.
     ElectricalDevice(uid="QTS0007AAA", tag="ED-S-SUITE-LAMP", kind=DeviceKind.LIGHT,
-                     position=pt(ft(0, 5), ft(13)), type_ref="ED-T-LT-WALL-LINEAR",
-                     circuit="CKT-LT-UPPER", room="RM-S-SUITE", rotation=deg(90),
+                     position=pt(m(1.52039), m(6.71945)), type_ref="ED-T-LT-WALL-LINEAR",
+                     circuit="CKT-LT-UPPER", room="RM-S-SUITE", rotation=deg(180),
                      controlled_by=("ED-S-SUITE-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
     ElectricalDevice(uid="QTS0008AAA", tag="ED-S-SUITE-CAN2", kind=DeviceKind.LIGHT,
@@ -484,7 +518,7 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS000EAAA", tag="ED-S-SUITEBATH-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(16, 3)), type_ref="ED-T-LT-MIRROR",
+                     position=pt(m(4.2162), m(6.70351)), type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH", rotation=deg(180),
                      controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),

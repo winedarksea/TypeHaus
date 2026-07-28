@@ -82,7 +82,41 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     # neutral, matching the black baffle trim the house actually specifies.
     "lamp": (0.98, 0.95, 0.86, 1.0),
     "luminaire-housing": (0.22, 0.22, 0.23, 1.0),
+    # The lamp face, binned by correlated colour temperature. Each is the Planckian locus
+    # colour for that nominal CCT, pulled 45% of the way to white and then scaled to the
+    # same 0.98 peak the plain ``lamp`` role uses: a raw 2700K blackbody is orange, and an
+    # orange puck on a ceiling reads as a defect rather than as a warm bulb. What survives
+    # the pull is the blue channel, which is the whole point — the bins are told apart by
+    # how cold they look, and they stay equally bright so the difference never reads as one
+    # fixture being switched off. The pull stops at 45% rather than going further because a
+    # 4" can is a few pixels of ceiling in the viewer: any subtler and the two grids of a
+    # dual-CCT room are the same colour, which is the case these bins exist for.
+    # Bins are the ANSI C78.377 nominals every lamp is sold in; ``lamp_role`` snaps to the
+    # nearest one, so a 3400K product lands on 3500K rather than inventing a shade nobody
+    # specified.
+    "lamp-2700": (0.98, 0.82, 0.67, 1.0),
+    "lamp-3000": (0.98, 0.85, 0.73, 1.0),
+    "lamp-3500": (0.98, 0.88, 0.79, 1.0),
+    "lamp-4000": (0.98, 0.90, 0.83, 1.0),
+    "lamp-5000": (0.98, 0.94, 0.91, 1.0),
 }
+
+# The C78.377 nominal bins, in the order ``lamp_role`` searches them.
+LAMP_CCT_BINS = (2700, 3000, 3500, 4000, 5000)
+
+
+def lamp_role(cct_k: Optional[float]) -> str:
+    """The ``lamp`` colour role for a luminaire of colour temperature ``cct_k``.
+
+    Symbol builders emit the plain ``lamp`` role because they are handed a size and nothing
+    else; the substitution happens where a role is resolved to a colour, which is the only
+    place the product type — and so its ``cct_k`` — is in hand. A type with no CCT (a
+    non-luminaire that borrowed the role, or a product whose datasheet we never captured)
+    keeps the plain role, so this is additive: nothing already drawn changes shade.
+    """
+    if not cct_k:
+        return "lamp"
+    return "lamp-%d" % min(LAMP_CCT_BINS, key=lambda bin_k: abs(bin_k - cct_k))
 
 # Drawn-line weights. Plan symbols read as a hierarchy: the object outline is the heaviest
 # line, interior divisions medium, and detail (seams, grout, burner rings) lightest.

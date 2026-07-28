@@ -10,7 +10,8 @@ from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.palette import _color
 from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.model.canvas import canvas_object_types
-from typehaus.model.placeable_symbols import PART_COLORS, model_parts, place_local
+from typehaus.model.placeable_symbols import (PART_COLORS, lamp_role, model_parts,
+                                              place_local)
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
 
 
@@ -100,13 +101,16 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
         return False
     width_m, depth_m = (part.meters for part in footprint)
     parts = model_parts(symbol, width_m, depth_m, height.meters)
+    # Mirrors model/canvas._lamp: the generic ``lamp`` role becomes the type's CCT bin, so
+    # a 4000K can exports the same shade the viewer draws.
+    lamp = lamp_role(getattr(product_type, "cct_k", None))
     for part in parts:
         (cx, cy, cz), (sx, sy, sz) = part["center"], part["size"]
         ring = [(cx - sx / 2, cy - sy / 2), (cx + sx / 2, cy - sy / 2),
                 (cx + sx / 2, cy + sy / 2), (cx - sx / 2, cy + sy / 2)]
         mb.add_prism(place_local(ring, item.position, item.rotation_degrees),
                      item.z_m + cz - sz / 2, item.z_m + cz + sz / 2,
-                     PART_COLORS[part["color"]])
+                     PART_COLORS[lamp if part["color"] == "lamp" else part["color"]])
     return bool(parts)
 
 

@@ -906,8 +906,41 @@ def _placeable_ifc_type(f: Any, cache: dict[tuple[str, str], Any], product_type:
         entity = ll.create_entity(f, type_class, name=product_type.name)
         entity.GlobalId = derive_child_guid(project_uuid, f"{ifc_class}-types", product_type.tag)
         ll.ensure_pset(f, entity, "TypeHaus_Identity", _type_identity(product_type))
+        photometry = _luminaire_photometry(product_type)
+        if photometry:
+            ll.ensure_pset(f, entity, "TypeHaus_Lighting", photometry)
         cache[key] = entity
     return cache[key]
+
+
+def _luminaire_photometry(product_type: Any) -> dict[str, Any]:
+    """A luminaire type's photometric row, or empty for anything that is not a luminaire.
+
+    Colour temperature is a *type* property in every tool that models it — Revit's Initial
+    Color Temperature, IFC's own light source — which is exactly why it belongs on the
+    ``IfcLightFixtureType`` and not on each placed can. Two marks that differ only in
+    Kelvin are therefore two IFC types, and this pset is what tells them apart downstream.
+    Keys mirror ``emit/ifc/electrical.emit_light_runs`` so the point fixtures and the tape
+    runs read alike; ``0``/``""`` stand in for a missing value because IFC psets are typed
+    and a null would need a different property class.
+    """
+    form = getattr(product_type, "form", None)
+    if form is None or getattr(product_type, "cct_k", "missing") == "missing":
+        return {}
+    return {
+        "form": getattr(form, "value", str(form)),
+        "type_mark": getattr(product_type, "type_mark", None) or "",
+        "lamp": getattr(product_type, "lamp", None) or "",
+        "watts": getattr(product_type, "watts", None) or 0.0,
+        "watts_per_ft": getattr(product_type, "watts_per_ft", None) or 0.0,
+        "lumens": getattr(product_type, "lumens", None) or 0.0,
+        "cct_k": getattr(product_type, "cct_k", None) or 0,
+        "cri": getattr(product_type, "cri", None) or 0,
+        "voltage": getattr(product_type, "voltage", 120),
+        "dimmable": bool(getattr(product_type, "dimmable", False)),
+        "damp_rated": bool(getattr(product_type, "damp_rated", False)),
+        "wet_rated": bool(getattr(product_type, "wet_rated", False)),
+    }
 
 
 def _device_ifc_classes(kind: str) -> tuple[str, str]:

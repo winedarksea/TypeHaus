@@ -1,7 +1,7 @@
 # haus: editable
 from typehaus import (Appliance, ElectricalDevice, Equipment, Fixture, Furniture, Mount,
                       MountKind, Register)
-from typehaus.model import deg, ft, inch, m, pt
+from typehaus.model import DeviceKind, deg, ft, inch, m, pt
 
 # Project-local canvas placement targets.  One list per storey keeps source ownership
 # explicit while allowing every placeable domain to use the same writeback contract.
@@ -54,7 +54,7 @@ MAIN_PLACEABLES = [
     # would block the walk from the hall pass-through to the east windows — so they stay
     # unset places, brought in from elsewhere when the table is actually filled.
     Furniture(uid="QWCMN48QST", tag="FURN-M-DINING", type_ref="FURN-DINING-8", room="RM-M-LIVING",
-              position=pt(ft(26, 11), ft(17, 4))),
+              position=pt(m(8.24278), m(5.2201))),
     Furniture(uid="60XVKZHFAS", tag="FURN-M-CHAIR-S1", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
               position=pt(ft(24, 5), ft(14, 6)), rotation=deg(180)),
     Furniture(uid="XCW1QKV701", tag="FURN-M-CHAIR-S2", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
@@ -222,7 +222,7 @@ SECOND_PLACEABLES = [
     # desk's back is against the west wall (rotation 90), leaving its pull-out zone toward
     # the room; the dining chair keeps the lighter dining-room plan and 3D appearance.
     Furniture(uid="DSK701AAAA", tag="FURN-S-DESK1", type_ref="FURN-DESK-48", room="RM-S-BED1",
-              position=pt(m(7.31187), m(3.42504)), rotation=deg(90)),
+              position=pt(m(7.05463), m(3.4224)), rotation=deg(90)),
     Furniture(uid="CHR701AAAA", tag="FURN-S-DESK-CHAIR1", type_ref="FURN-DESK-CHAIR", room="RM-S-BED1",
               position=pt(m(7.61089), m(3.43304)), rotation=deg(-90)),
     Furniture(uid="DSK702AAAA", tag="FURN-S-DESK2", type_ref="FURN-DESK-48", room="RM-S-BED2",
@@ -254,7 +254,7 @@ SECOND_PLACEABLES = [
     # a partition. It is the one bedroom wide enough to hold a 6'-8" bed with both 2' side
     # zones intact, and it does: nothing here is short.
     Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
-              room="RM-S-SUITE", position=pt(m(1.51666), m(5.64775)), rotation=deg(0)),
+              room="RM-S-SUITE", position=pt(m(1.53278), m(6.26791)), rotation=deg(0)),
 
     # Hanging storage for the three east bedrooms, which have no built-in closet: one 48"
     # sliding-door wardrobe each, backed onto a partition.
@@ -288,7 +288,7 @@ SECOND_PLACEABLES = [
     # the receptacle whether or not a case stands in front of it) but it is worth knowing
     # before the electrician sets the boxes: neither room has a 4'-0 run of wall without one.
     Furniture(uid="CSB704AAAA", tag="FURN-S-BED1-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED1", position=pt(ft(25, 5), ft(16, 11.375)), rotation=deg(0)),
+              room="RM-S-BED1", position=pt(m(7.36343), m(5.11445)), rotation=deg(0)),
     Furniture(uid="CSB705AAAA", tag="FURN-S-BED2-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED2", position=pt(ft(24, 4), ft(25, 11.375)), rotation=deg(0)),
     Furniture(uid="CSB706AAAA", tag="FURN-S-BED3-WARD", type_ref="FURN-WARDROBE-48",
@@ -305,8 +305,9 @@ SECOND_PLACEABLES = [
     # of D-S-ENSUITE's swing, which starts at x=7'-3", of the WC's REQUIRED 30"/21" zone,
     # and of every device on the walls. 48" fits, so the 24" is not needed.
     Furniture(uid="CSB707AAAA", tag="FURN-S-ENSUITE-CLOSET", type_ref="CASE-PANTRY-CLOSET-48",
-              room="RM-S-ENSUITE", position=pt(ft(2, 0.625), ft(27, 4.625)),
+              room="RM-S-ENSUITE", position=pt(m(0.800904), m(8.43418)),
               rotation=deg(180)),
+    ElectricalDevice(uid="8EFPYDEK22", tag="ED-1", kind=DeviceKind.RECEPTACLE, position=pt(m(1.2726), m(2.63984)), type_ref="ED-T-LT-SCONCE-SPOT", room="RM-S-PLANT"),
 ]
 # The attic study uses the same compact work-and-meeting program as the second-storey
 # study, but the stair opening occupies the north side of the room. Keep the desk in the

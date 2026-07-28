@@ -7,7 +7,8 @@ from math import atan2, degrees
 
 from typehaus.model.plan import PlanModel
 from typehaus.model.placeables import PlacementStrategy
-from typehaus.model.placeable_symbols import model_parts, part_hex, plan_symbol_strokes
+from typehaus.model.placeable_symbols import (lamp_role, model_parts, part_hex,
+                                              plan_symbol_strokes)
 
 
 _TYPE_COLLECTIONS = (
@@ -66,15 +67,27 @@ def _symbol_geometry(item: Any, footprint: Any) -> dict[str, Any]:
         return {"plan_strokes": [], "model_parts": []}
     width_m, depth_m = (part.meters for part in footprint)
     height_m = height.meters if height is not None else 0.0
+    lamp = lamp_role(getattr(item, "cct_k", None))
     return {
         "plan_strokes": [{"points": [list(point) for point in stroke["points"]],
                           "closed": stroke["closed"], "weight": stroke["weight"],
-                          "fill": part_hex(stroke["fill"]) if stroke["fill"] else None}
+                          "fill": part_hex(_lamp(stroke["fill"], lamp)) if stroke["fill"] else None}
                          for stroke in plan_symbol_strokes(symbol, width_m, depth_m)],
         "model_parts": [{"center": list(part["center"]), "size": list(part["size"]),
-                         "color": part_hex(part["color"])}
+                         "color": part_hex(_lamp(part["color"], lamp))}
                         for part in model_parts(symbol, width_m, depth_m, height_m)],
     }
+
+
+def _lamp(role: str, lamp: str) -> str:
+    """Swap the generic ``lamp`` role for the type's colour-temperature bin.
+
+    Builders emit ``lamp`` because they only know a size; the CCT lives on the product
+    type, which is only in hand here and in the glTF emitter's ``_add_canvas_parts``. Both
+    apply this same substitution — the two must agree, or the viewer and the export
+    disagree about what a 4000K can looks like.
+    """
+    return lamp if role == "lamp" else role
 
 
 def canvas_objects(plan: PlanModel) -> list[dict[str, Any]]:
