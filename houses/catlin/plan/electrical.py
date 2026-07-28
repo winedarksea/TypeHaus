@@ -316,11 +316,11 @@ SECOND_DEVICES = [
 # --- Garage: both EV receptacles on the south wall, east of the service door ----------
 GARAGE_DEVICES = [
     ElectricalDevice(uid="CEE008AAAA", tag="ED-G-EV-620", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(16), ft(41, 6)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     position=pt(m(0.256331), m(17.0886)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE"),
     ElectricalDevice(uid="CEE009AAAA", tag="ED-G-EV-1450", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(20), ft(41, 6)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     position=pt(m(6.08013), m(12.6631)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE"),
 ]
 
 GARAGE_EQUIPMENT = [

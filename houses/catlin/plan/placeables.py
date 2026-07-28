@@ -193,12 +193,29 @@ MAIN_PLACEABLES = [
     # one bedroom where the queen keeps all three zones whole with room left over.
     Furniture(uid="CMB701AAAA", tag="FURN-M-BED", type_ref="FURN-BED-KING", room="RM-M-BED",
               position=pt(m(2.5945), m(2.89975))),
+
+    # --- mudroom (RM-M-MUDROOM), converted from storage 2026-07-28 --------------------
+    # Closets back onto the north and south walls, running from their doors to the west
+    # wall; the aisle between their room-facing faces is centred on WIN-M-MUD/FURN-M-MUD-
+    # BENCH rather than the room, so the two depths differ (see furniture_types.py). Both
+    # rotations put the closet's back at the wall it stands against: 0 = north, 180 = south.
+    Furniture(uid="CMF801AAAA", tag="FURN-M-MUD-CLOSET-N", type_ref="FURN-M-MUD-CLOSET-N",
+              room="RM-M-MUDROOM", position=pt(ft(3, 6.0625), ft(34, 1.9375)),
+              rotation=deg(0)),
+    Furniture(uid="CMF802AAAA", tag="FURN-M-MUD-CLOSET-S", type_ref="FURN-M-MUD-CLOSET-S",
+              room="RM-M-MUDROOM", position=pt(ft(3, 8.0625), ft(28, 2.1875)),
+              rotation=deg(180)),
+    # Back to the west wall (rotation 90 = back west, opens east), centred on WIN-M-MUD at
+    # y=31'-4" so the aisle between the two closets above lands on the window too.
+    Furniture(uid="CMF803AAAA", tag="FURN-M-MUD-BENCH", type_ref="FURN-M-MUD-BENCH",
+              room="RM-M-MUDROOM", position=pt(ft(1, 3.125), ft(31, 4)),
+              rotation=deg(90)),
 ]
 GARAGE_PLACEABLES = [
     # The 60"-wide work surface runs along the west wall directly below the infrared
     # heater lamp. Rotation 90° turns the 30" depth into the wall-to-room dimension.
     Furniture(uid="CGF601AAAA", tag="FURN-G-WORKBENCH", type_ref="FURN-G-WORKBENCH",
-              room="RM-GARAGE", position=pt(ft(1, 8), ft(48)), rotation=deg(90)),
+              room="RM-GARAGE", position=pt(m(0.596858), m(14.4756)), rotation=deg(90)),
 ]
 # The three east bedrooms are the same 13'-11 3/4" x 8'-10 3/4" clear box, so they get the
 # same bed layout: a queen with its head north (rotation 0 puts the back at +y) and its 2'

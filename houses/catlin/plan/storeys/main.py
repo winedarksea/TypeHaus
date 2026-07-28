@@ -78,6 +78,12 @@ WINDOW_TYPES = [
     # credit — the existing tags stay as they are, since they are referenced house-wide.
     WindowType(tag="WT-3660-FIX", width=ft(3), height=ft(5), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="fixed"),
+    # The mudroom's picture unit: same 14" RO / 24" tall glass as WT-1424 (still the one
+    # size that clears a 16" stud bay unbroken), no sash — it is there for daylight over
+    # the bench, not ventilation. A separate type for the same reason WT-3660-FIX is
+    # separate from WT-3660: fixed vs. operable is a different product on the schedule.
+    WindowType(tag="WT-1424-FIX", width=inch(14), height=ft(2), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="fixed"),
 ]
 
 NODES = [
@@ -179,7 +185,7 @@ WALLS = [
     # This wall line carries the cut second-floor joists and stacks directly over the
     # basement concrete stair wall. It is split at the two tees on it: the storage wall at
     # N-M-STRJ and the stair wall at N-M-STR1, now 6" apart. W-M-STRW2 is that 6" — the jog
-    # of wall between RM-M-STORAGE's south wall and the head of the stairs.
+    # of wall between RM-M-MUDROOM's south wall and the head of the stairs.
     Wall(uid="CMW117AAAA", tag="W-M-STRW", start_node="N-M-N2",
          end_node="N-M-STRJ", assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
@@ -229,8 +235,12 @@ WALLS = [
 
 OPENINGS = [
     # Exterior
+    # Pushed east to N-M-N2 (2026-07-28, mudroom conversion): near jamb 6" off the tee
+    # where W-M-STRW's bearing stack ties into this wall — as tight as the header's jack
+    # studs and the stair wall's own king studs both want — so the closet run west of the
+    # door reaches the west wall almost whole. See RM-M-MUDROOM below.
     Door(uid="CMD201AAAA", tag="D-M-ENTRY", host="W-M-N3", type_ref="DT-EXT36",
-         position=from_node("N-M-NW", ft(4))),
+         position=from_node("N-M-N2", ft(0, 6))),
     Door(uid="CMD202AAAA", tag="D-M-BALC", host="W-M-S2", type_ref="DT-PATIO60",
          position=from_node("N-M-S1", ft(1, 4))),
     # Interior
@@ -240,8 +250,10 @@ OPENINGS = [
     # neither moved.
     Door(uid="CMD203AAAA", tag="D-M-STAIR", host="W-M-STRS", type_ref="DT-INT32",
          position=from_node("N-M-STR1", ft(0, 8.0625)), flip_swing=True),
-    Door(uid="CMD204AAAA", tag="D-M-STOR", host="W-M-STOS2", type_ref="DT-INT32",
-         position=from_node("N-M-BA1", ft(2))),
+    # Pushed east to N-M-STRJ (2026-07-28, mudroom conversion): same 6" tee clearance as
+    # D-M-ENTRY above it, off the bearing stair wall's jack studs. Renamed with the room.
+    Door(uid="CMD204AAAA", tag="D-M-MUD", host="W-M-STOS2", type_ref="DT-INT32",
+         position=from_node("N-M-STRJ", ft(0, 6))),
     Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT24",
          position=from_node("N-M-BA1", ft(1))),
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT30",
@@ -276,8 +288,15 @@ OPENINGS = [
     Window(uid="CMX305AAAA", tag="WIN-M-BATH2", host="W-M-W3",
            type_ref="WT-1424", position=from_node("N-M-W3", ft(4, 5)),
            sill_height=ft(4)),
-    Window(uid="CMX306AAAA", tag="WIN-M-STOR", host="W-M-W1",
-           type_ref="WT-2736", position=from_node("N-M-NW", ft(4, 2.5)),
+    # Picture unit at the wall's stud-grid midpoint: W-M-W1 runs 9'-8" node-to-node, so the
+    # true middle is 4'-10" off N-M-NW, but studs on this wall lay out from N-M-NW's own
+    # corner (8"+16n) and the closest bay centre to that middle is 4'-8" — 2" off true
+    # centre, one 14" RO short of breaking a stud. `from_node` measures to the near edge,
+    # not the centre, so the offset below is the bay centre (4'-8") less half the 14" RO.
+    # Sill at 3'-0" clears FURN-M-MUD-BENCH's 18" seat the same way WIN-B-SAUNA clears its
+    # bench below.
+    Window(uid="CMX306AAAA", tag="WIN-M-MUD", host="W-M-W1",
+           type_ref="WT-1424-FIX", position=from_node("N-M-NW", ft(4, 1)),
            sill_height=ft(3)),
     Window(uid="CMX307AAAA", tag="WIN-M-LIV-S1", host="W-M-S2",
            type_ref="WT-3036", position=from_node("N-M-SE", ft(3, 5)),
@@ -346,7 +365,11 @@ ROOMS = [
          occupancy=Occupancy.OFFICE, floor_finish="oak"),
     Room(uid="CMR407AAAA", tag="RM-M-CLOSET", seed=pt(ft(13), ft(15, 4)),
          occupancy=Occupancy.STORAGE, floor_finish="oak"),
-    Room(uid="CMR409AAAA", tag="RM-M-STORAGE", seed=pt(ft(5), ft(31)),
+    # Retagged from RM-M-STORAGE with the mudroom conversion (2026-07-28): entry vestibule
+    # now, not bulk storage, but still Occupancy.STORAGE — there is no MUDROOM occupancy in
+    # the closed enum and STORAGE is the closer fit of what exists (unheated-adjacent,
+    # hard-finish floor) than LIVING or HALLWAY would be.
+    Room(uid="CMR409AAAA", tag="RM-M-MUDROOM", seed=pt(ft(5), ft(31)),
          occupancy=Occupancy.STORAGE, floor_finish="sealed-concrete"),
     Room(uid="CMR410AAAA", tag="RM-M-STAIR", seed=pt(ft(14, 6), ft(31)),
          occupancy=Occupancy.STAIR, floor_finish="oak"),

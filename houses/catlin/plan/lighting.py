@@ -354,7 +354,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
-    # RM-M-LAUNDRY / RM-M-CLOSET / RM-M-STORAGE: 3" cans. Small rooms want a small
+    # RM-M-LAUNDRY / RM-M-CLOSET / RM-M-MUDROOM: 3" cans. Small rooms want a small
     # aperture — a 4" can in a 22 ft2 laundry is a headlamp.
     ElectricalDevice(uid="QTM000SAAA", tag="ED-M-LAUNDRY-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(10, 8), ft(19, 6)), type_ref="ED-T-LT-CAN3",
@@ -376,17 +376,17 @@ MAIN_LIGHTING = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     ElectricalDevice(uid="QTM000XAAA", tag="ED-M-STORAGE-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(5), ft(29)), type_ref="ED-T-LT-CAN3",
-                     circuit="CKT-LT-MAIN", room="RM-M-STORAGE",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000YAAA", tag="ED-M-STORAGE-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(5), ft(33, 6)), type_ref="ED-T-LT-CAN3",
-                     circuit="CKT-LT-MAIN", room="RM-M-STORAGE",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000ZAAA", tag="ED-M-STORAGE-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(9, 7), ft(27)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-STORAGE", rotation=deg(-90),
+                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
     # RM-M-HALL: three 3" cans down the run, on a 3-way pair — a 14' hall switched from

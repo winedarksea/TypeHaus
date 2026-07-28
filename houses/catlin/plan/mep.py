@@ -388,6 +388,13 @@ REGISTERS_MAIN = [
     Register(uid="CMRV08AAAA", tag="REG-M-RET5", kind=DuctSystem.RETURN, room="RM-M-LIVING",
             position=pt(ft(33), ft(33)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-RETURN",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    # RM-M-MUDROOM gets fresh-air intake only, no stale pickup (plans/TODO.md) — an entry
+    # vestibule wants positive pressure against the door, not a return pulling outdoor air
+    # straight back out before it mixes. Centred in the hallway strip between the two
+    # closets, clear of both, in line with the window/bench.
+    Register(uid="CMRV09AAAA", tag="REG-M-SUP5", kind=DuctSystem.SUPPLY, room="RM-M-MUDROOM",
+            position=pt(ft(4), ft(31, 4)), duct_ref="DU-M1-ERV-SUP", type_ref="REG-T-SUPPLY",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
 ]
 
 # Basement terminals hang from the SL-M-DECK underside off the CHASE trunks. The sauna's

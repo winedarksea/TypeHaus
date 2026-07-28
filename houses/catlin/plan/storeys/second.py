@@ -284,7 +284,7 @@ OPENINGS = [
     # further east so the leaf's king stud clears W-S-DC2's corner pack instead of
     # pinwheeling through it (test_wall_corner_and_opening_framing).
     Door(uid="CSD214AAAA", tag="D-S-SUITEBATH", host="W-S-SBS", type_ref="DT-INT30",
-         position=from_node("N-S-D3", ft(0, 6.5))),                      # x 11'-5"
+         position=from_node("N-S-D3", ft(0, 6.5)), flip_hinge=True),                      # x 11'-5"
     RoughOpening(uid="CSD215AAAA", tag="O-S-VANITY", host="W-S-VE",
                  position=from_node("N-S-V1", ft(0, 3)), width=ft(2, 8),
                  height=ft(6, 8)),                                       # y 23'-11"
