@@ -122,6 +122,9 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
     "stairs": "carriage in `framing`, walking surfaces in `stair_finish`",
     "light_runs": "billed as `light_runs` by the lineal foot (a dict, not a row list)",
     "solar_panels": "billed as `solar` (a dict summary of installed wattage)",
+    "geometry": "the derived-geometry IR: a second view of collections already billed "
+                "above (a stud is one FramedMember and one GPart), so billing it would "
+                "double-count the whole house",
 }
 
 # collection name -> the BOM section(s) that bill it.

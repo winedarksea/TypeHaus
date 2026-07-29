@@ -9,9 +9,13 @@ All coordinates are canonical SI meters. These are plain frozen dataclasses (not
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
+
+if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-only
+    from typehaus.resolve.geometry_ir import GeometryModel
 
 # A polygon ring: list of (x, y) in meters. Layer polygons are simple rings.
 Ring = list[tuple[float, float]]
@@ -553,6 +557,10 @@ class ResolvedModel:
     solar_panels: list[ResolvedSolarPanel] = field(default_factory=list)
     footing_beddings: list[ResolvedFootingBedding] = field(default_factory=list)
     canvas_objects: list[ResolvedCanvasObject] = field(default_factory=list)
+    # Derived geometry: every solid the building contributes, built once by the pipeline's
+    # final stage so the emitters serialize rather than re-derive it. Optional because
+    # ``resolve_preview`` (the drag-overlay path) skips the stage.
+    geometry: "GeometryModel | None" = None
     # Per-stage resolve timings in milliseconds (Phase 0 instrumentation). Not serialized
     # as source; surfaced to the UI via the `perf` payload for measurement, not correctness.
     timings: dict[str, float] = field(default_factory=dict)
