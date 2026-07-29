@@ -7,12 +7,21 @@ import type { SelectionKind, Trade } from "../state/vocabulary";
 import { ALL_SELECTION_KINDS, ALL_TRADES } from "../state/vocabulary";
 
 // Whether a fully-tagged whole-house glb may take over from the model.json baseline scene.
-// Held OFF until the glTF emitter reaches visual parity with the model.json render path: it
-// still (a) extrudes walls flat between z0..z1 rather than raking gable/ToRoof tops to the roof
-// slope, and (b) ships flat palette colors instead of the procedural standing-seam / CMU wall
-// finishes. Promoting it before then silently downgrades those envelope details, so the glb —
-// though now correctly per-object tagged (its identity metadata is still emitted and consumed
-// for anything that reads it) — stays a secondary artifact until the emitter closes those gaps.
+//
+// OFF by decision, not by missing parity. The gaps that used to hold it back are closed: the
+// emitter no longer derives any geometry of its own, it reads the same derived-geometry IR the
+// IFC export reads (engine `resolve/geometry_*.py`), so walls rake to their roof slope, studs
+// carry their true section, and the two exports agree by construction rather than by review.
+//
+// What is left is not a bug, it is a difference in kind. The glb ships one flat portable colour
+// per surface — which is exactly what Revit and SketchUp want — while the viewer maps the same
+// material key to a procedural, themed material (standing seam, CMU, grain). Promoting the glb
+// to the primary scene would trade the live finishes for the export's flat ones and gain
+// nothing the viewer does not already have.
+//
+// So the glb stays the export artifact it is good at (Revit / SketchUp / viewer handoff), and
+// this flag stays false. Do not read it as unfinished work; flip it only if the viewer's render
+// path is deliberately being retired.
 export const WHOLE_HOUSE_GLB_PRIMARY = false;
 
 // How a whole-house glb node maps back to an interactive element. A node earns an assignment

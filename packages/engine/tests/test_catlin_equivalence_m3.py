@@ -81,11 +81,6 @@ DECLARED_DIVERGENCES = {
         "is what gives the shaft its code-minimum 7'-0\" clear well and the furnace room its "
         "8'-6\", both measured off the same wall (reference basement plan)"
     ),
-    "Porch Floor Deck (placeholder)": (
-        "the old model drew the porch floor as a slab standing in for framing it did not "
-        "have; the porch is FS-SG-PORCH now — real PT 2x8 joists with the composite plank "
-        "as the deck's own sheet — so the placeholder slab has nothing left to stand in for"
-    ),
     "House Centerline Wall (Second)": (
         "8'-6\" of that line (y 22'-4\"..30'-10\") is BM-S-HALL now — a flush 3-ply 11-7/8\" "
         "LVL over the open hall/landing/stair — so no single wall run spans the storey and "
@@ -99,8 +94,6 @@ DECLARED_DIVERGENCES = {
         "off its own bearing — so no single wall run spans the storey and the reference's "
         "one-piece centerline no longer pairs; the bearing stack itself is unbroken"
     ),
-    "House Attic Floor Subfloor": "floor finishes are IfcCovering now, not IfcSlab",
-    "House Second Floor Subfloor": "floor finishes are IfcCovering now, not IfcSlab",
     "House Main Floor Ceiling Drywall": "ceiling finishes are IfcCovering now, not IfcSlab",
     "House Second Floor Ceiling Drywall": "ceiling finishes are IfcCovering now, not IfcSlab",
     "Deck Railing East": "railings are IfcRailing now, not wall solids",

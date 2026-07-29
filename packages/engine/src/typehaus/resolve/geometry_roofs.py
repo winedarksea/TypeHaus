@@ -2,9 +2,9 @@
 
 Moved out of ``emit/gltf/roofs.py`` (itself a port of ``ui/src/three/roofGeometry.ts``), which
 was the third copy of this math — and the one that disagreed with IFC, whose ``ifc/roof.py``
-built vertical-sided layer prisms with no eave-drift compensation. The plan blesses *this*
-interpretation as canonical, so IFC's roof layers change shape slightly and the exported
-assembly finally matches what the viewer draws.
+built vertical-sided layer prisms with no eave-drift compensation. The plan blessed *this*
+interpretation as canonical; ``ifc/roof.py`` now reads these bands too, so its roof layers
+changed shape slightly and the exported assembly matches what the viewer draws.
 
 The rules, stated once:
 

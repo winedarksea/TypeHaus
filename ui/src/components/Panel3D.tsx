@@ -35,9 +35,10 @@ import { useTheme } from "../theme/theme";
 // (server /model.glb, or the Pyodide engine's glb artifact). When that glb carries per-object
 // trade metadata, setWholeHouseGlb can promote it to the PRIMARY scene, distributed across the
 // same trade groups so selection, highlight and the trade/role toggles keep working (see the
-// emitter contract on setWholeHouseGlb). The emitter now writes per-object nodes, but promotion
-// stays gated off (WHOLE_HOUSE_GLB_PRIMARY) until it reaches visual parity with this baseline —
-// flat-extruded tops and palette-only wall finishes still lag the model.json render path — so
+// emitter contract on setWholeHouseGlb). The emitter writes per-object nodes and now draws the
+// same geometry this baseline does — both read the engine's derived-geometry IR — but promotion
+// stays gated off (WHOLE_HOUSE_GLB_PRIMARY) *by decision*: the glb carries one flat portable
+// colour per surface for Revit/SketchUp, where this path has the procedural themed finishes. So
 // the glb is discarded and the model.json baseline stands, unchanged. The Nordic passes (soft lighting
 // + edge linework) attach to the three.js scene, so they survive either route. Clicking a wall
 // cross-highlights the 2D plan and surfaces its file:line provenance.
@@ -562,9 +563,9 @@ function createScene(
   };
 
   const applyWholeHouseGlb = (root: THREE.Object3D) => {
-    // Gated off until the emitter reaches parity (see WHOLE_HOUSE_GLB_PRIMARY): promoting the glb
-    // today drops raked wall tops and the procedural standing-seam/CMU finishes. Keep the richer
-    // model.json baseline that setModel built.
+    // Gated off by decision, not by missing geometry parity (see WHOLE_HOUSE_GLB_PRIMARY):
+    // promoting the glb would trade the procedural standing-seam/CMU finishes for the export's
+    // flat portable colours. Keep the richer model.json baseline that setModel built.
     if (!WHOLE_HOUSE_GLB_PRIMARY) { disposeGroup(root); return; }
     // Classify first: only take over when every renderable node maps to a trade. Walk up from
     // each mesh so a tagged parent covers its (often untagged) child primitives.

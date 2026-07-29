@@ -25,7 +25,6 @@ from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import polygon_area, rect_between
-from typehaus.resolve import site_earth
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.placeables import resolved_mount_elevation
 
@@ -76,7 +75,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
         emit_roof(f, body, roof, storeys, project_uuid, lod, model)
 
     for floor in sorted(model.floors, key=lambda item: item.uid):
-        _emit_floor(f, body, floor, storeys, project_uuid)
+        _emit_floor(f, body, floor, storeys, project_uuid, model)
 
     for stair in sorted(model.stairs, key=lambda item: item.uid):
         _emit_stair(f, body, stair, storeys, project_uuid, lod)
@@ -113,21 +112,40 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     return out_path
 
 
-def _emit_site_representation(f: Any, body: Any, ifc_site: Any, model: ResolvedModel) -> None:
-    """A 5cm pad prism of the parcel ring at grade — imports as a lot slab (Phase 4).
+def _earth_sheet(model: ResolvedModel):
+    """The IR's site earth prism, or ``None`` when the model carries no derived geometry.
 
-    The pad is cut by every excavated footprint (house, garage, sunken garden — see
+    ``resolve_preview`` skips the geometry stage deliberately, so every IR read in this
+    emitter is optional rather than assumed.
+    """
+    geometry = getattr(model, "geometry", None)
+    element = geometry.by_uid("site-earth") if geometry is not None else None
+    if element is None or not element.parts:
+        return None
+    return element.parts[0].solids[0]
+
+
+def _emit_site_representation(f: Any, body: Any, ifc_site: Any, model: ResolvedModel) -> None:
+    """The earth sheet of the parcel ring — imports as a lot slab (Phase 4).
+
+    The sheet is cut by every excavated footprint (house, garage, sunken garden — see
     ``resolve/site_earth.py``); without those voids the lot slab runs straight through the
     interior spaces that were dug out of it.
+
+    Geometry comes from the IR, which puts the sheet's *top* face on the grade plane. IFC
+    used to extrude the same ring 5cm **upward** from grade, so the ground the exporter
+    handed Revit stood 5cm above the ground the viewer drew and every slab-on-grade sat that
+    much proud of its own site. Soil is what is under grade; this is the reconciliation the
+    earth's blessed diff called for.
     """
     site = model.plan.project.site
     parcel = [p.xy_m for p in site.parcel]
     if len(parcel) < 3:
         return
-    grade_z = site_earth.site_grade_elevation_m(model)
-    voids = tuple(tuple(ring) for ring in site_earth.earth_plane_void_rings(model))
-    _assign_representation(f, ifc_site,
-                           ll.add_prism_from_profile(f, body, parcel, 0.05, grade_z, voids))
+    sheet = _earth_sheet(model)
+    if sheet is not None:
+        _assign_representation(f, ifc_site, ll.add_prism_from_profile(
+            f, body, list(sheet.ring), sheet.z1_m - sheet.z0_m, sheet.z0_m, sheet.voids))
     props = {"parcel_area_m2": abs(polygon_area(parcel))}
     for spec in site.setbacks:
         key = f"setback_edge{spec.edge}_{spec.label or 'UNLABELED'}_ft"
@@ -646,8 +664,8 @@ _BEAM_PREDEFINED_TYPE = {"joist": "JOIST", "rim": "BEAM", "blocking": "BEAM"}
 
 
 def _emit_floor(f: Any, body: Any, floor: Any, storeys: dict[str, Any],
-                project_uuid: Any) -> None:
-    """Emit each generated floor joist/rim as an ``IfcBeam`` with real geometry.
+                project_uuid: Any, model: ResolvedModel) -> None:
+    """Emit a floor's subfloor deck as an ``IfcSlab``, and each joist/rim as an ``IfcBeam``.
 
     House decks and the porch/balcony deck both resolve to ``FramedMember`` joists that
     previously appeared only in the 2D framing plan and glTF. Emitting them here as IfcBeam
@@ -656,6 +674,7 @@ def _emit_floor(f: Any, body: Any, floor: Any, storeys: dict[str, Any],
     container = storeys.get(floor.storey)
     if container is None:
         return
+    _emit_deck(f, body, floor, container, project_uuid, model)
     for member in sorted(floor.members, key=lambda item: item.child_key):
         if (member.p0[0] - member.p1[0]) ** 2 + (member.p0[1] - member.p1[1]) ** 2 < 1e-12:
             continue  # a zero-length record has no sweepable footprint
@@ -672,6 +691,33 @@ def _emit_floor(f: Any, body: Any, floor: Any, storeys: dict[str, Any],
             "category": member.category, "profile": member.profile,
         })
         ll.assign_container(f, beam, container)
+
+
+def _emit_deck(f: Any, body: Any, floor: Any, container: Any, project_uuid: Any,
+               model: ResolvedModel) -> None:
+    """The subfloor sheet over a floor's joists, as an ``IfcSlab``/FLOOR.
+
+    One of the plan's blessed diffs: *no* emitter drew a deck, so a floor exported as a field
+    of beams with nothing on them — joists hanging in space in Revit exactly as they did in
+    the viewer. The outline, its openings and its elevations come from the IR, so the slab
+    the exporter writes and the sheet the viewer draws are the same sheet.
+    """
+    geometry = getattr(model, "geometry", None)
+    element = geometry.by_uid(floor.uid) if geometry is not None else None
+    part = next((p for p in element.parts if p.key == "deck"), None) if element else None
+    if part is None:
+        return
+    prism = part.solids[0]
+    slab = ll.create_entity(f, "IfcSlab", name=f"{floor.tag}/deck")
+    slab.GlobalId = derive_child_guid(project_uuid, floor.uid, "deck")
+    slab.PredefinedType = "FLOOR"
+    _assign_representation(f, slab, ll.add_prism_from_profile(
+        f, body, list(prism.ring), prism.z1_m - prism.z0_m, prism.z0_m, prism.voids))
+    ll.ensure_pset(f, slab, PSET_SOURCE, {
+        "uid": floor.uid, "tag": f"{floor.tag}/deck",
+        "material": getattr(floor, "deck_material_ref", None) or "",
+    })
+    ll.assign_container(f, slab, container)
 
 
 def _emit_brace(f: Any, body: Any, brace: Any, storeys: dict[str, Any],

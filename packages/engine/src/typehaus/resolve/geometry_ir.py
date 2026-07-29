@@ -7,8 +7,13 @@ roof layers skipped the eave-drift compensation glTF and the viewer both applied
 no earth and no subfloor deck. So what the user saw was not provably what Revit received.
 
 This module is the shared answer. Geometry math happens once, in ``resolve/``, and the
-emitters become serializers: IFC still owns entity classes, psets and containment; glTF still
+emitters became serializers: IFC still owns entity classes, psets and containment; glTF still
 owns buffers and materials; neither owns the shape of a stud.
+
+Both Python emitters read it today. The viewer's three.js builders deliberately still do not:
+that render path is staying (→ ``ui/src/three/wholeHouseGlb.ts`` ``WHOLE_HOUSE_GLB_PRIMARY``),
+so the vocabularies it shares with these — finish keys, layer visibility groups, the opening
+product's constants — are pinned by parity tests rather than by deletion.
 
 Conventions
 -----------

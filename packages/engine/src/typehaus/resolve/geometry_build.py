@@ -4,11 +4,22 @@ This is where geometry stops being re-derived per emitter. Each stage below turn
 of resolved records into :class:`ElementGeometry`, applying the shape math *once*; the IFC,
 glTF, model.json and 2D-section consumers then read the result.
 
-Landing in sequence (→ the vision-alignment plan, D3): members, solids and solar panels
-first, then walls, and now openings, roofs, floor decks and the site earth — each with a
-shadow-parity test proving the IR reproduces what the emitters draw today, except where the
-plan blesses a diff. Two of the four blessed diffs land here: a floor gains a real deck (no
-emitter drew one) and the earth becomes geometry (glTF's ``earth`` trade was empty).
+Landed in sequence (→ the vision-alignment plan, D3–D5): members, solids and solar panels
+first, then walls, then openings, roofs, floor decks and the site earth — each with a
+shadow-parity test proving the IR reproduces what the emitters drew, except where the plan
+blesses a diff. Both Python emitters now read this instead of deriving anything: ``emit/gltf``
+end to end, and ``emit/ifc`` for the roof shell, the site earth sheet and the floor deck (it
+keeps its own swept solids for members and its opening/void idiom for walls, which are proper
+IFC, and which the IR's member solid was ported *from*).
+
+The four blessed diffs, all landed: the glTF member box gains its true section; IFC's roof
+layers gain the perpendicular offset and eave-drift compensation the viewer already had; a
+floor gains a real deck (no emitter drew one); and the earth becomes geometry — the glTF
+``earth`` trade was empty, and IFC's pad stood 5cm *above* grade rather than under it.
+
+The viewer's three.js builders are deliberately *not* on this path: that render path stays
+(→ ``WHOLE_HOUSE_GLB_PRIMARY``), so the vocabularies it shares with the emitters are pinned by
+parity tests instead.
 """
 
 from __future__ import annotations

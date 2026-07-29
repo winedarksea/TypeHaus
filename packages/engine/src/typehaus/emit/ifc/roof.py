@@ -6,11 +6,12 @@ clipped at its own plan setback, carrying members that rake with the plane.
 
 Two things this module is responsible for getting right, both of which used to be missing:
 
-* **the shell.** ``ResolvedRoof.layer_edge_setbacks`` gives every above-structure layer its
-  own plan clip (the deck at the wall sheathing face, the foam at the wall furring, the
-  metal running proud) — the same per-layer inset the glTF export and the three.js viewer
-  build. The IFC roof used to be one flat 1" plate at the eave elevation, so it agreed with
-  no other emitter and no roof detail.
+* **the shell.** Every above-structure layer is its own closed solid, clipped at its own
+  plan setback (the deck at the wall sheathing face, the foam at the wall furring, the metal
+  running proud). The IFC roof used to be one flat 1" plate at the eave elevation, so it
+  agreed with no other emitter and no roof detail. The bands now come from the derived-
+  geometry IR (``resolve/geometry_roofs.py``) rather than from a fourth private copy of the
+  math, so IFC, the GLB and the viewer are the same roof by construction.
 * **the children.** Rafters, truss chords, gable studs, the derived fascia/soffit/gutter and
   the closure bands were emitted as bare ``IfcMember`` identities with no representation at
   all — present in the aggregation, invisible in any viewer. Each now carries a swept solid
@@ -26,13 +27,11 @@ from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.geometry_roofs import roof_parts
 from typehaus.resolve.model import FramedMember, ResolvedRoof
-from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
-# A roof with no authored layers above its structure still has to be a solid: one nominal
-# roofing skin, matching the glTF/viewer fallback so the three paths keep showing the same
-# building rather than diverging on unlayered test fixtures.
-_FALLBACK_SKIN_M = 0.05
+# The no-layers-above-structure fallback skin used to be declared here as well as in the
+# glTF emitter and the viewer; it now lives once, in `resolve/geometry_roofs.py`.
 # A degenerate member (a zero-height annotation record) still needs a sweepable section.
 _MINIMUM_EXTENT_M = 1e-4
 
@@ -75,8 +74,7 @@ def emit_roof(f: Any, body: Any, roof: ResolvedRoof, storeys: dict[str, Any],
     element.GlobalId = derive_guid(project_uuid, roof.uid)
     assembly = (model.plan.library.resolve_assembly(roof.assembly)
                 if roof.assembly else None)
-    layers = above_structure_layers(assembly)
-    shells = _shell_solids(roof, layers)
+    shells = _shell_solids(roof, assembly)
     if shells:
         _assign(f, element, ll.add_faceted_solids(f, body, shells))
     if assembly is not None and assembly.layers:
@@ -100,101 +98,25 @@ def emit_roof(f: Any, body: Any, roof: ResolvedRoof, storeys: dict[str, Any],
 
 # --- the layered pitched shell -----------------------------------------------------------
 
-def _plane_z(roof: ResolvedRoof, x: float, y: float) -> float:
-    """Roof-plane elevation at a plan point, *unclamped*.
+def _shell_solids(roof: ResolvedRoof, assembly: Any) -> list[list[list[tuple[float, ...]]]]:
+    """One closed polyhedron per above-structure layer, straight from the IR.
 
-    Unclamped so a layer that runs proud of the footprint (the metal roofing's drip lap)
-    lands just below the eave plane instead of being flattened onto it.
+    This module used to build its own: quads split at the ridge, offset *vertically* by the
+    running thickness times ``1/cos(theta)``, with vertical sides and the serialized setbacks
+    used as authored. That is a defensible reading of the same inputs, and it was the fourth
+    copy of this math — but it disagreed with the two the user actually looks at (the viewer
+    and the GLB), which offset each layer perpendicular to the slope and compensate the eave
+    drift that introduces. The plan blesses the perpendicular reading as canonical, so the
+    shell IFC exports changes shape slightly here and the exported assembly finally matches
+    what the viewer draws. A band is a triangle soup rather than six planar faces, which is
+    what a mitered ridge costs; it is still a closed brep.
     """
-    xs = [point[0] for point in roof.footprint]
-    ys = [point[1] for point in roof.footprint]
-    coordinate = y if roof.ridge_direction == "x" else x
-    low, high = (min(ys), max(ys)) if roof.ridge_direction == "x" else (min(xs), max(xs))
-    span = high - low
-    if span <= 1e-9:
-        return roof.eave_z_m
-    if roof.form == "shed":
-        return roof.eave_z_m + (coordinate - low) / span * (roof.ridge_z_m - roof.eave_z_m)
-    midpoint = (low + high) / 2.0
-    ratio = 1.0 - abs(coordinate - midpoint) / (span / 2.0)
-    return roof.eave_z_m + ratio * (roof.ridge_z_m - roof.eave_z_m)
-
-
-def _slope_factor(roof: ResolvedRoof) -> float:
-    """``1/cos(theta)``: the vertical rise that a unit perpendicular layer offset costs."""
-    xs = [point[0] for point in roof.footprint]
-    ys = [point[1] for point in roof.footprint]
-    span = ((max(ys) - min(ys)) if roof.ridge_direction == "x"
-            else (max(xs) - min(xs)))
-    run = span if roof.form == "shed" else span / 2.0
-    if run <= 1e-9:
-        return 1.0
-    return math.hypot(1.0, (roof.ridge_z_m - roof.eave_z_m) / run)
-
-
-def _layer_rect(roof: ResolvedRoof, entry: dict | None) -> tuple[float, float, float, float]:
-    """The layer's plan rectangle from its serialized edge setbacks (positive inward).
-
-    No drift compensation, unlike the glTF path: that correction exists because the mesh
-    offsets each layer *perpendicular* to the slope, which walks the eave edge down-slope.
-    The shell here is built between two sloped planes with vertical sides, so a plan setback
-    is already a plan position and the serialized number is used as authored.
-    """
-    xs = [point[0] for point in roof.footprint]
-    ys = [point[1] for point in roof.footprint]
-    minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
-    if entry is None:
-        return minx, maxx, miny, maxy
-    return (minx + float(entry.get("west", 0.0)), maxx - float(entry.get("east", 0.0)),
-            miny + float(entry.get("south", 0.0)), maxy - float(entry.get("north", 0.0)))
-
-
-def _plane_quads(roof: ResolvedRoof,
-                 rect: tuple[float, float, float, float]) -> list[list[tuple[float, float]]]:
-    """One counter-clockwise plan quad per roof plane, split at the footprint's ridge line."""
-    minx, maxx, miny, maxy = rect
-    if maxx - minx <= 1e-9 or maxy - miny <= 1e-9:
-        return []
-    xs = [point[0] for point in roof.footprint]
-    ys = [point[1] for point in roof.footprint]
-    if roof.form == "shed":
-        return [[(minx, miny), (maxx, miny), (maxx, maxy), (minx, maxy)]]
-    if roof.ridge_direction == "x":
-        ridge = min(max((min(ys) + max(ys)) / 2.0, miny), maxy)
-        return [[(minx, miny), (maxx, miny), (maxx, ridge), (minx, ridge)],
-                [(minx, ridge), (maxx, ridge), (maxx, maxy), (minx, maxy)]]
-    ridge = min(max((min(xs) + max(xs)) / 2.0, minx), maxx)
-    return [[(minx, miny), (ridge, miny), (ridge, maxy), (minx, maxy)],
-            [(ridge, miny), (maxx, miny), (maxx, maxy), (ridge, maxy)]]
-
-
-def _shell_solids(roof: ResolvedRoof, layers: list) -> list[list[list[tuple[float, ...]]]]:
-    """A closed polyhedron per (layer x roof plane), stacked up the slope.
-
-    Each is bounded below and above by the roof plane offset perpendicular by the running
-    layer thickness, and by vertical sides. At the ridge the two planes' quads share the
-    ridge line in plan, so their vertical joint *is* the miter plane of a symmetric gable —
-    the layers close on each other with no wedge and no overlap.
-    """
-    setbacks = {entry["layer"]: entry for entry in (roof.layer_edge_setbacks or ())}
-    factor = _slope_factor(roof)
     shells: list[list[list[tuple[float, ...]]]] = []
-    base = 0.0
-    for layer in (layers if layers else [None]):
-        thickness = _FALLBACK_SKIN_M if layer is None else layer.thickness.meters
-        entry = setbacks.get(layer.name) if layer is not None else None
-        low, high = base * factor, (base + thickness) * factor
-        for quad in _plane_quads(roof, _layer_rect(roof, entry)):
-            shells.append(_prism_faces(roof, quad, low, high))
-        base += thickness
+    for part in roof_parts(roof, assembly):
+        for mesh in part.solids:
+            shells.append([[mesh.positions[index] for index in triangle]
+                           for triangle in mesh.triangles])
     return shells
-
-
-def _prism_faces(roof: ResolvedRoof, quad: list[tuple[float, float]],
-                 low_m: float, high_m: float) -> list[list[tuple[float, float, float]]]:
-    """Faces of one plane's layer prism: sloped bottom, sloped top, vertical sides."""
-    return _closed_box([(x, y, _plane_z(roof, x, y) + low_m) for x, y in quad],
-                       [(x, y, _plane_z(roof, x, y) + high_m) for x, y in quad])
 
 
 def _closed_box(bottom: list[tuple[float, float, float]],
@@ -202,7 +124,9 @@ def _closed_box(bottom: list[tuple[float, float, float]],
     """A closed shell over two matching rings — bottom reversed so every face faces out.
 
     Both rings must run counter-clockwise in plan; the bottom is reversed here so its normal
-    points down, and the side quads then wind outward on their own.
+    points down, and the side quads then wind outward on their own. What is left of the old
+    shell builder: a tapered member (a closure band growing from heel to ridge) is faceted
+    rather than swept, and this is the shell it files as.
     """
     faces: list[list[tuple[float, ...]]] = [list(reversed(bottom)), list(top)]
     for index in range(len(bottom)):
