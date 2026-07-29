@@ -260,6 +260,50 @@ def case(*, rows: int = 3, cols: int = 1, pulls: bool = True, color: str = "wood
     return build
 
 
+def besta() -> Builder:
+    """A low BESTA carcass on a 2x4 plinth with a wall-painted baseboard face.
+
+    The type height is the assembled height, so the fixed IKEA body, frame, and top stay
+    dimensionally honest when the unit is rendered in plan, elevation, or the 3D viewer.
+    """
+    frame_height_m = 0.0889  # 2x4 laid flat, 3 1/2"
+    besta_body_height_m = 0.64135  # IKEA BESTA with doors, 25 1/4"
+    countertop_thickness_m = 0.0254  # continuous 1" top
+    baseboard_height_m = 0.1016  # 4" wall baseboard carried across the plinth
+    baseboard_depth_m = 0.01905  # 3/4" proud of the frame, not the cabinet
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        body_top = frame_height_m + besta_body_height_m
+        top_top = min(height, body_top + countertop_thickness_m)
+        front = -depth / 2
+        door_depth = min(0.02, depth * 0.08)
+        door_cy = front + door_depth / 2
+        frame_depth = min(depth, 0.0889)
+        baseboard_top = min(frame_height_m + 0.0127, height)
+        strokes = [rect(0, 0, width, depth, fill="appliance-white"),
+                   rect(0, front + door_depth / 2, width, door_depth,
+                        fill="appliance-white", weight=DETAIL_WEIGHT)]
+        parts = [
+            box(0, 0, frame_height_m, body_top, width, depth, "appliance-white"),
+            box(0, 0, body_top, top_top, width, depth, "porcelain"),
+            box(0, depth / 2 - frame_depth / 2, 0, frame_height_m,
+                width, frame_depth, "appliance-white"),
+            box(0, front + baseboard_depth_m / 2, 0, baseboard_top,
+                width, baseboard_depth_m, "appliance-white"),
+        ]
+        door_width = width / 2
+        for index in range(2):
+            center_x = -width / 2 + door_width * (index + 0.5)
+            parts.append(box(center_x, door_cy, frame_height_m + 0.01, body_top - 0.01,
+                             door_width * 0.96, door_depth, "appliance-white"))
+            if index:
+                strokes.append(line((center_x - door_width / 2, front),
+                                    (center_x - door_width / 2, front + door_depth)))
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def shelving(*, shelves: int = 5) -> Builder:
     """A bookcase: two side panels, a back, and evenly spaced shelves."""
 

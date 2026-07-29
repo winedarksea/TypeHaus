@@ -483,7 +483,9 @@ def test_roof_plan_uses_resolved_plane_footprints_and_ridges(catlin_model):
 
 def test_exterior_corners_include_strength_first_third_stud(catlin_model):
     """A third stud supplements the two intersecting endpoint studs at true corners."""
-    for tag in ("W-M-S1", "W-M-E1", "W-M-N1", "W-M-W1"):
+    # W-M-W1B carries the actual NW corner now (2026-07-28, RM-M-MECH's shaft closet split
+    # W-M-W1 at N-M-MECH1, well south of N-M-NW).
+    for tag in ("W-M-S1", "W-M-E1", "W-M-N1", "W-M-W1B"):
         wall = next(item for item in catlin_model.walls if item.tag == tag)
         assert any(member.category == "corner" for member in wall.members), tag
 

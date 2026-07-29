@@ -427,11 +427,15 @@ NEC_FILL_MAIN = [
     ElectricalDevice(uid="NEC010AAAA", tag="ED-M-LIVING-RC3", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(35.95), ft(16.93)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     # On the east wall's BESTA run; keep the plan position for spacing, but
+                     # raise it into the backsplash zone above the 29 3/4" cabinet line.
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(36))),
     ElectricalDevice(uid="NEC011AAAA", tag="ED-M-LIVING-RC4", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(35.95), ft(5.53)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     # Same east-wall BESTA condition as RC3: 36" puts the box above the
+                     # countertop while preserving the receptacle's wall-space location.
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(36))),
     ElectricalDevice(uid="NEC012AAAA", tag="ED-M-LIVING-RC5", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(30.03), ft(0.05)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
@@ -452,12 +456,16 @@ NEC_FILL_MAIN = [
     # and the band had no receptacles at all. Positions are the four gaps
     # `electrical.receptacle_spacing` measured on the merged clear face, each 0.05' off its
     # wall like the fills above.
+    # y flipped to W-M-HS1's south (living) face (2026-07-28): W-M-BAE's 2' east shift
+    # extended W-M-HS1 to x=6', and the north face at this x is now inside RM-M-BATH1.
     ElectricalDevice(uid="NEC066AAAA", tag="ED-M-LIVING-RC8", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(5.40), ft(21.77)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(5.40), ft(21.56)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # y flipped to W-M-STOS's north (mudroom) face (2026-07-28): W-M-BAE's 2' east shift
+    # extended W-M-STOS's south face — where this device sat — into RM-M-BATH1.
     ElectricalDevice(uid="NEC067AAAA", tag="ED-M-LIVING-RC9", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(4.55), ft(26.23)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(4.55), ft(26.43)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC068AAAA", tag="ED-M-LIVING-RC10", kind=DeviceKind.RECEPTACLE,

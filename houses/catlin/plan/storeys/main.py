@@ -124,6 +124,13 @@ NODES = [
     Node(uid="CMN021AAAA", tag="N-M-E2", position=pt(ft(13, 4), ft(17, 4))),
     Node(uid="CMN022AAAA", tag="N-M-E3", position=pt(ft(13, 4), ft(21, 8))),
     Node(uid="CMN023AAAA", tag="N-M-E4", position=pt(ft(18), ft(17, 4))),
+    # RM-M-MECH: the framed MEP shaft closet in the house's NW corner (2026-07-28),
+    # replacing FURN-M-MUD-CLOSET-N. 6' wide (west wall to 6" shy of D-M-ENTRY's far
+    # jamb at 6'-6") x 2'-8" deep — the radon+plumbing chase rides its SW corner, aligned
+    # with the matching notch moved into RM-S-BATH1's NW corner directly above it.
+    Node(uid="CMN025AAAA", tag="N-M-MECH1", position=pt(ft(0), ft(33, 4))),
+    Node(uid="CMN026AAAA", tag="N-M-MECH2", position=pt(ft(6), ft(33, 4))),
+    Node(uid="CMN027AAAA", tag="N-M-MECH3", position=pt(ft(6), ft(36))),
 ]
 
 WALLS = [
@@ -148,11 +155,23 @@ WALLS = [
     Wall(uid="CMW106AAAA", tag="W-M-N2", start_node="N-M-N1", end_node="N-M-N2",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING),
-    Wall(uid="CMW107AAAA", tag="W-M-N3", start_node="N-M-N2", end_node="N-M-NW",
+    # Split at N-M-MECH3, where RM-M-MECH's east wall tees into the north wall
+    # (2026-07-28, MEP shaft closet). corner_style_end moves to W-M-N3B, which now
+    # carries the actual NW building corner.
+    Wall(uid="CMW107AAAA", tag="W-M-N3", start_node="N-M-N2", end_node="N-M-MECH3",
+         assembly="CATLIN_EXT_2X6",
+         alignment=face("sheathing-ext"), top=ft(9),
+         structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N3"),
+    Wall(uid="CMW135AAAA", tag="W-M-N3B", start_node="N-M-MECH3", end_node="N-M-NW",
          assembly="CATLIN_EXT_2X6", corner_style_end="4-stud",
          alignment=face("sheathing-ext"), top=ft(9),
-         structural_role=StructuralRole.NONBEARING),
-    Wall(uid="CMW108AAAA", tag="W-M-W1", start_node="N-M-NW", end_node="N-M-W1",
+         structural_role=StructuralRole.NONBEARING, stacks_on="W-B-N3"),
+    # Split at N-M-MECH1, where RM-M-MECH's south wall tees into the west wall
+    # (2026-07-28, MEP shaft closet).
+    Wall(uid="CMW136AAAA", tag="W-M-W1B", start_node="N-M-NW", end_node="N-M-MECH1",
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         structural_role=StructuralRole.BEARING, stacks_on="W-B-W1"),
+    Wall(uid="CMW108AAAA", tag="W-M-W1", start_node="N-M-MECH1", end_node="N-M-W1",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W1"),
     Wall(uid="CMW109AAAA", tag="W-M-W2", start_node="N-M-W1", end_node="N-M-W2",
@@ -233,6 +252,11 @@ WALLS = [
          end_node="N-M-D3", assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CMW132AAAA", tag="W-M-BDN2", start_node="N-M-D3",
          end_node="N-M-C1", assembly="INT_2X4_PARTITION", top=ft(9)),
+    # --- RM-M-MECH: framed MEP shaft closet, NW corner (2026-07-28) -------------
+    Wall(uid="CMW137AAAA", tag="W-M-MECH-S", start_node="N-M-MECH1",
+         end_node="N-M-MECH2", assembly="INT_2X4_PARTITION", top=ft(9)),
+    Wall(uid="CMW138AAAA", tag="W-M-MECH-E", start_node="N-M-MECH2",
+         end_node="N-M-MECH3", assembly="INT_2X4_PARTITION", top=ft(9)),
 ]
 
 OPENINGS = [
@@ -258,6 +282,11 @@ OPENINGS = [
          position=from_node("N-M-STRJ", ft(0, 6))),
     Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT24",
          position=from_node("N-M-BA1", ft(1))),
+    # RM-M-MECH's single utility door, on the closet's east (right, as seen from the
+    # mudroom) wall — a hinged door for the mechanical/shaft closet, not the sliding
+    # bypass style of the mudroom's own storage closets (2026-07-28).
+    Door(uid="CMD211AAAA", tag="D-M-MECH", host="W-M-MECH-E", type_ref="DT-INT24",
+         position=from_node("N-M-MECH2", ft(0, 4))),
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT30",
          position=from_node("N-M-W3", ft(1, 6.5))),
     Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-INT56",
@@ -375,6 +404,11 @@ ROOMS = [
          occupancy=Occupancy.STORAGE, floor_finish="sealed-concrete"),
     Room(uid="CMR410AAAA", tag="RM-M-STAIR", seed=pt(ft(14, 6), ft(31)),
          occupancy=Occupancy.STAIR, floor_finish="oak"),
+    # Framed MEP shaft closet, replacing FURN-M-MUD-CLOSET-N (2026-07-28): the
+    # radon+plumbing riser rides its SW corner. STORAGE is the closed enum's closest fit
+    # for a mechanical closet, same reasoning as RM-M-MUDROOM above.
+    Room(uid="CMR411AAAA", tag="RM-M-MECH", seed=pt(ft(3), ft(34, 6)),
+         occupancy=Occupancy.STORAGE, floor_finish="sealed-concrete"),
 ]
 
 ALARMS = [

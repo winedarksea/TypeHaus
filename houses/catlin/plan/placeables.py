@@ -43,6 +43,29 @@ MAIN_PLACEABLES = [
               position=pt(m(7.87848), m(2.69813))),
     Furniture(uid="EKN22YPA9J", tag="FURN-M-MEDIA", type_ref="FURN-MEDIA-60", room="RM-M-LIVING",
               position=pt(ft(26, 11), ft(1, 10)), rotation=deg(180)),
+    # East living-room storage: nine 23 5/8" BESTA units fill the 17'-10" clear span from
+    # the fireplace's north edge at y=4'-10" toward the 48" pantry closet's south edge at
+    # y=22'-8". Their backs sit directly on the east wall's interior face at x=35'-5 3/8";
+    # the 1 3/8" residual at the pantry end is the only non-module tolerance in the run.
+    # Rotation -90 puts each unit's back against the east wall and opens it toward the room.
+    Furniture(uid="CMB801AAAA", tag="FURN-M-LIVING-BESTA-01", type_ref="FURN-BESTA-2358",
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(5, 9.8125)), rotation=deg(-90)),
+    Furniture(uid="CMB802AAAA", tag="FURN-M-LIVING-BESTA-02", type_ref="FURN-BESTA-2358",
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(7, 9.4375)), rotation=deg(-90)),
+    Furniture(uid="CMB803AAAA", tag="FURN-M-LIVING-BESTA-03", type_ref="FURN-BESTA-2358",
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(9, 9.0625)), rotation=deg(-90)),
+    Furniture(uid="CMB804AAAA", tag="FURN-M-LIVING-BESTA-04", type_ref="FURN-BESTA-2358",
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(11, 8.6875)), rotation=deg(-90)),
+    Furniture(uid="CMB805AAAA", tag="FURN-M-LIVING-BESTA-05", type_ref="FURN-BESTA-2358",
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(13, 8.3125)), rotation=deg(-90)),
+    Furniture(uid="CMB806AAAA", tag="FURN-M-LIVING-BESTA-06", type_ref="FURN-BESTA-2358",
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(15, 7.9375)), rotation=deg(-90)),
+    Furniture(uid="CMB807AAAA", tag="FURN-M-LIVING-BESTA-07", type_ref="FURN-BESTA-2358",
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(17, 7.5625)), rotation=deg(-90)),
+    Furniture(uid="CMB808AAAA", tag="FURN-M-LIVING-BESTA-08", type_ref="FURN-BESTA-2358",
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(19, 7.1875)), rotation=deg(-90)),
+    Furniture(uid="CMB809AAAA", tag="FURN-M-LIVING-BESTA-09", type_ref="FURN-BESTA-2358",
+              room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(21, 6.8125)), rotation=deg(-90)),
     # Dining, at 17'-4" — 4' south of where it sat, which is what the north end of the room
     # asked for once the island moved down and the 48" pantry took the east wall to 22'-8".
     # The chair-use zone now runs y=12'-7"..22'-1": clear of the sofa's back at 10'-5", clear
@@ -195,13 +218,10 @@ MAIN_PLACEABLES = [
               position=pt(m(2.5945), m(2.89975))),
 
     # --- mudroom (RM-M-MUDROOM), converted from storage 2026-07-28 --------------------
-    # Closets back onto the north and south walls, running from their doors to the west
-    # wall; the aisle between their room-facing faces is centred on WIN-M-MUD/FURN-M-MUD-
-    # BENCH rather than the room, so the two depths differ (see furniture_types.py). Both
-    # rotations put the closet's back at the wall it stands against: 0 = north, 180 = south.
-    Furniture(uid="CMF801AAAA", tag="FURN-M-MUD-CLOSET-N", type_ref="FURN-M-MUD-CLOSET-N",
-              room="RM-M-MUDROOM", position=pt(ft(3, 6.0625), ft(34, 1.9375)),
-              rotation=deg(0)),
+    # South closet backs onto the south wall, running from its door to the west wall. Its
+    # north-wall counterpart, FURN-M-MUD-CLOSET-N, was reframed as RM-M-MECH (2026-07-28,
+    # storeys/main.py) — the radon+plumbing shaft needed real walls, not furniture, and
+    # that corner was the NW-most one available.
     Furniture(uid="CMF802AAAA", tag="FURN-M-MUD-CLOSET-S", type_ref="FURN-M-MUD-CLOSET-S",
               room="RM-M-MUDROOM", position=pt(ft(3, 8.0625), ft(28, 2.1875)),
               rotation=deg(180)),

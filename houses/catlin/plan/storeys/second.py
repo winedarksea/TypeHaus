@@ -99,11 +99,19 @@ NODES = [
     # Vanity alcove (source 5.873 / 26.374)
     Node(uid="CSN033AAAA", tag="N-S-V1", position=pt(ft(5, 10.5), ft(22, 4))),
     Node(uid="CSN034AAAA", tag="N-S-V2", position=pt(ft(5, 10.5), ft(26, 4))),
-    # Stair shaft west line + the 2'x2' mechanical chase in the hall bath's NE corner
+    # Stair shaft west line
     Node(uid="CSN025AAAA", tag="N-S-BA1", position=pt(ft(10), ft(26, 4))),
-    Node(uid="CSN035AAAA", tag="N-S-CH1", position=pt(ft(7, 8), ft(33, 4))),
-    Node(uid="CSN036AAAA", tag="N-S-CH2", position=pt(ft(7, 8), ft(36))),
-    Node(uid="CSN037AAAA", tag="N-S-CH3", position=pt(ft(10), ft(33, 4))),
+    # Plain flush split on the east wall (2026-07-28): used to be the mechanical chase's SE
+    # corner (N-S-CH3); kept as its own node so W-S-BA-E1B's wall_ref in fixtures.py (the
+    # hall-bath lav) doesn't move now that the chase itself has moved to the NW corner.
+    Node(uid="CSN038AAAA", tag="N-S-BA-SPLIT", position=pt(ft(10), ft(33, 4))),
+    # The mechanical chase moved from the hall bath's NE corner to its NW corner
+    # (2026-07-28): it now stacks on RM-M-MECH below and the attic exit above, riding the
+    # radon+plumbing riser. N-S-CH1 is the chase's inner (SE) corner; N-S-CH2/CH3 are its
+    # tees into the exterior north/west walls.
+    Node(uid="CSN035AAAA", tag="N-S-CH1", position=pt(ft(2, 9), ft(33, 4))),
+    Node(uid="CSN036AAAA", tag="N-S-CH2", position=pt(ft(2, 9), ft(36))),
+    Node(uid="CSN037AAAA", tag="N-S-CH3", position=pt(ft(0), ft(33, 4))),
 ]
 
 WALLS = [
@@ -135,14 +143,20 @@ WALLS = [
     Wall(uid="CSW108AAAA", tag="W-S-N2", start_node="N-S-N1", end_node="N-S-N2",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N2"),
-    # Split at N-S-CH2, where the mechanical chase's west wall tees into the north wall.
+    # Split at N-S-CH2, where the mechanical chase's east wall tees into the north wall
+    # (moved to the NW corner 2026-07-28 — see the node comment above).
     Wall(uid="CSW109AAAA", tag="W-S-N3", start_node="N-S-N2", end_node="N-S-CH2",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N3"),
     Wall(uid="CSW153AAAA", tag="W-S-N3B", start_node="N-S-CH2", end_node="N-S-NW",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
-         structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N3"),
-    Wall(uid="CSW110AAAA", tag="W-S-W1", start_node="N-S-NW", end_node="N-S-W1",
+         structural_role=StructuralRole.NONBEARING, stacks_on="W-M-N3B"),
+    # Split at N-S-CH3, where the chase's south wall tees into the west wall
+    # (2026-07-28).
+    Wall(uid="CSW154AAAA", tag="W-S-W1B", start_node="N-S-NW", end_node="N-S-CH3",
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         structural_role=StructuralRole.BEARING, stacks_on="W-M-W1B"),
+    Wall(uid="CSW110AAAA", tag="W-S-W1", start_node="N-S-CH3", end_node="N-S-W1",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-W1"),
     Wall(uid="CSW111AAAA", tag="W-S-W2", start_node="N-S-W1", end_node="N-S-W2",
@@ -229,16 +243,16 @@ WALLS = [
     # came out on 2026-07-28 with the centre line: a wall pierced by a 6' hole between two
     # halves of what is now one room was doing nothing but hiding the stair. The well head
     # is guarded by RL-S-STAIRHEAD instead, which stops at the flight's own throat.
-    Wall(uid="CSW134AAAA", tag="W-S-BA-E", start_node="N-S-N2", end_node="N-S-CH3",
+    Wall(uid="CSW134AAAA", tag="W-S-BA-E", start_node="N-S-N2", end_node="N-S-BA-SPLIT",
          assembly="INT_2X6_PLUMBING", top=ft(9)),
-    Wall(uid="CSW150AAAA", tag="W-S-BA-E1B", start_node="N-S-CH3", end_node="N-S-BA1",
+    Wall(uid="CSW150AAAA", tag="W-S-BA-E1B", start_node="N-S-BA-SPLIT", end_node="N-S-BA1",
          assembly="INT_2X6_PLUMBING", top=ft(9)),
     # W-S-BA-E2 (N-S-BA1 to the stair shaft's freed N-S-STR2 corner) came out with this
     # edit: since W-S-BD-N2 came out it was a stub dead-ending on an open node, poking into
     # the hallway with nothing on its far end to tie into.
-    # 2'x2' mechanical chase in the hall bath's NE corner (source void x 8'-2 3/4"..
-    # 10'-2 3/4", y 33'-6"..35'-6"), which is what makes RM-S-BATH1 the source's
-    # L-shaped 80.73 sf bathroom. Its east side is the stair-shaft wall above.
+    # 2'x2' mechanical chase, moved to the hall bath's NW corner (2026-07-28, was the NE
+    # corner) so it stacks on RM-M-MECH below and the attic exit above. This is what makes
+    # RM-S-BATH1 the source's L-shaped 80.73 sf bathroom, now notched NW instead of NE.
     Wall(uid="CSW151AAAA", tag="W-S-CH-W", start_node="N-S-CH1", end_node="N-S-CH2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW152AAAA", tag="W-S-CH-S", start_node="N-S-CH1", end_node="N-S-CH3",
@@ -334,14 +348,16 @@ OPENINGS = [
     # Baths + north. The source draws no opening in the north wall west of x=21'-10" and
     # none in the west wall north of y=25'-8"; WIN-S-BATH-N/W are kept anyway so the hall
     # bath has daylight, and are the storey's only two openings with no source counterpart.
-    # The 16" module's bay centre (8" from N-S-CH2) leaves only 1" of edge clearance on
-    # this 7'8" wall — under `integrity.opening_fits`'s 2" minimum — so the RO sits at the
-    # nearest position that clears it instead, ~1" off the ideal bay centre (a residual
-    # `structural.window_framing_module` advisory the short wall leaves no room to clear).
-    Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3B", type_ref="WT-1424",
-           position=from_node("N-S-CH2", ft(0, 2)), sill_height=ft(4)),
+    # Re-hosted off W-S-N3 (2026-07-28): W-S-N3B is now the chase's own short north wall,
+    # not the bathroom's — a window there would light the mechanical closet, not the room.
+    # 1' clear of the N-S-CH2 tee, well past the old 1"-edge-clearance pinch this wall used
+    # to have (that note no longer applies to either segment).
+    Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1424",
+           position=from_node("N-S-CH2", ft(1)), sill_height=ft(4)),
+    # Re-hosted off N-S-CH3 (2026-07-28): W-S-W1 no longer starts at N-S-NW now that the
+    # chase's south wall splits it there. Same physical window position (y=31'-11").
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424",
-           position=from_node("N-S-NW", ft(4, 1)), sill_height=ft(4)),
+           position=from_node("N-S-CH3", ft(1, 5)), sill_height=ft(4)),
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3036",
            position=from_node("N-S-NE", ft(5, 5)), sill_height=ft(3)),        # x 29'-4"
 ]

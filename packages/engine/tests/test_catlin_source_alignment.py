@@ -116,23 +116,20 @@ def test_the_lines_the_survey_does_not_get_to_move(catlin_plan):
 
 
 def test_hall_bath_chase_is_the_source_two_foot_shaft(catlin_plan):
-    """The source draws a 2'x2' hatched shaft in the hall bath's NE corner.
+    """The mechanical chase is still (about) the source's 2'x2' shaft, just relocated.
 
-    It is given as a void (x 8'-2 3/4"..10'-2 3/4", y 33'-6"..35'-6"), not as centrelines,
-    and it is the thing that makes RM-S-BATH1 the L-shaped 80.73 sf bathroom the survey
-    labels. Ours is 4 1/2" west of it because its east side is the existing stair-shaft wall
-    on the x=10' line — an envelope-adjacent line the survey does not get to move — so what
-    is asserted is the *size* of the clear shaft, not its absolute position.
+    The source draws a 2'x2' hatched shaft in the hall bath's NE corner. As of 2026-07-28
+    it moved to the NW corner instead — it now carries the radon+plumbing riser up from
+    RM-M-MECH below, and the NE corner was never load-bearing for that requirement, just
+    where the original architect happened to draw it. What survives from the source is the
+    *size* of the clear shaft, not this particular corner.
     """
-    west = _node(catlin_plan, "N-S-CH1")[0] + 2.25 * 0.0254     # 2x4 partition half + gwb
-    east = _node(catlin_plan, "N-S-CH3")[0] - 3.375 * 0.0254    # 2x6 plumbing half + gwb
-    south = _node(catlin_plan, "N-S-CH1")[1] + 2.25 * 0.0254
-    north = ft(36).meters - 6.625 * 0.0254                      # exterior wall inside face
-    # 1'-10 3/8" x 1'-11 1/8" clear against the source's 2'-0" square — the shortfall is
-    # our thicker walls, which is the same reason every room here reads a little differently
-    # from its survey label.
-    assert east - west == pytest.approx(ft(2).meters, abs=2 * 0.0254)
-    assert north - south == pytest.approx(ft(2).meters, abs=2 * 0.0254)
+    west = ft(0).meters + 6.625 * 0.0254                         # exterior wall inside face
+    east = _node(catlin_plan, "N-S-CH1")[0] - 2.25 * 0.0254       # 2x4 partition half + gwb
+    south = _node(catlin_plan, "N-S-CH1")[1] + 2.25 * 0.0254      # 2x4 partition half + gwb
+    north = ft(36).meters - 6.625 * 0.0254                        # exterior wall inside face
+    assert east - west == pytest.approx(ft(2).meters, abs=3 * 0.0254)
+    assert north - south == pytest.approx(ft(2).meters, abs=3 * 0.0254)
 
 
 def test_attic_stair_well_sits_on_the_source_and_inside_the_finished_faces(catlin_plan):

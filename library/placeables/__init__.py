@@ -14,7 +14,7 @@ from library.placeables.appliances import (DISHWASHER, DRYER, ELECTRIC_RANGE,
 from library.placeables.casework import (BAR_STOOL, BASE_15, BASE_24, BASE_30, BASE_36,
                                          ISLAND_60, OVER_APPLIANCE_36, PANTRY_CLOSET_24,
                                          PANTRY_CLOSET_48, PANTRY_CLOSET_72,
-                                         SINK_BASE_36,
+                                         BESTA_UNIT, SINK_BASE_36,
                                          STARTER_CASEWORK_TYPES, TALL_PANTRY_12,
                                          TALL_PANTRY_18, WALL_18, WALL_24, WALL_30, WALL_66)
 from library.placeables.fixtures import (KITCHEN_SINK, LAVATORY, SHOWER,
@@ -39,7 +39,7 @@ __all__ = [
     "ROUND_DINING_TABLE", "DINING_CHAIR", "WRITING_DESK", "OFFICE_CHAIR", "DESK_CHAIR",
     "SAUNA_BENCH_TIERED_102", "SAUNA_BENCH_54",
     # casework
-    "BASE_15", "BASE_24", "BASE_30", "BASE_36", "SINK_BASE_36",
+    "BESTA_UNIT", "BASE_15", "BASE_24", "BASE_30", "BASE_36", "SINK_BASE_36",
     "WALL_18", "WALL_24", "WALL_30", "WALL_66",
     "OVER_APPLIANCE_36", "TALL_PANTRY_12", "TALL_PANTRY_18", "PANTRY_CLOSET_24",
     "PANTRY_CLOSET_48", "PANTRY_CLOSET_72", "ISLAND_60", "BAR_STOOL",

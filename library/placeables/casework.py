@@ -29,6 +29,17 @@ _WALL_DEPTH = inch(13)
 _WALL_HEIGHT = ft(3, 6)
 _TALL_HEIGHT = ft(8)
 
+BESTA_UNIT = FurnitureType(
+    tag="FURN-BESTA-2358",
+    name='IKEA BESTA with doors, 23 5/8 x 16 1/2 x 25 1/4 in on 2x4 frame',
+    footprint=(inch(23.625), inch(16.5)),
+    height=inch(29.75),
+    plan_symbol="besta",
+    storage=True,
+    source=("IKEA BESTA with doors on a 2x4 frame, wall-matching baseboard, and a "
+            "continuous 1-inch white countertop."),
+)
+
 
 def _base(tag: str, width) -> FurnitureType:
     return FurnitureType(
@@ -122,7 +133,7 @@ BAR_STOOL = FurnitureType(
 )
 
 STARTER_CASEWORK_TYPES = (
-    BASE_15, BASE_24, BASE_30, BASE_36, SINK_BASE_36,
+    BESTA_UNIT, BASE_15, BASE_24, BASE_30, BASE_36, SINK_BASE_36,
     WALL_18, WALL_24, WALL_30, WALL_66, OVER_APPLIANCE_36,
     TALL_PANTRY_12, TALL_PANTRY_18, PANTRY_CLOSET_24, PANTRY_CLOSET_48,
     PANTRY_CLOSET_72,

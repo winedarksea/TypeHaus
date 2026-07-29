@@ -190,21 +190,22 @@ DRAINS = [
 # None of the water-closet wet walls continues to the storey above (W-M-BAE and W-M-BA2E
 # die at the main-floor top plate; W-S-BD-N dies under the cathedral attic), so no vent can
 # simply rise inside them. They don't have to: VR-M-RADON-VENT below is already a shared
-# radon/plumbing chase running the full height of the house at (3', 33'), and a vent may run
-# horizontally once it is above every served fixture's flood-level rim. These are the runs
-# that get it there — authored, because the engine never routes pipe on its own, and
-# validated by `mep.vent_reachability` (must touch the wet wall, must land on the chase).
+# radon/plumbing chase running the full height of the house at (1', 34'-6") — moved to the
+# NW corner 2026-07-28, inside RM-M-MECH's framed closet and RM-S-BATH1's NW notch (was
+# (3', 33'), floating in open mudroom floor space) — and a vent may run horizontally once
+# it is above every served fixture's flood-level rim. These are the runs that get it
+# there — authored, because the engine never routes pipe on its own, and validated by
+# `mep.vent_reachability` (must touch the wet wall, must land on the chase).
 #
 # Both runs sit inside the floor system over their storey's 9' top plate, drilled through
 # the I-joist webs, and fall ~1/8"/ft back toward the fixtures so condensate returns to the
 # drainage system rather than pooling in the horizontal leg.
 VENT_BRANCHES_MAIN = [
     # Bath2 takeoff on W-M-BA2E (x=8') -> across the hall -> bath1 takeoff on W-M-BAE
-    # (x=6') -> north through the storage-room ceiling -> chase. 20' developed length,
-    # 2" for two water closets.
+    # (x=6') -> north through the storage-room ceiling -> chase. 2" for two water closets.
     PipeRun(uid="CMP906AAAA", tag="PR-M-WC-VENT", system=PipeSystem.VENT,
             path=(pt(ft(8), ft(18)), pt(ft(8), ft(24)), pt(ft(6), ft(24)),
-                  pt(ft(6), ft(33)), pt(ft(3), ft(33))),
+                  pt(ft(6), ft(34, 6)), pt(ft(1), ft(34, 6))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5.5),
             serves=("FX-M-BATH2-WC", "FX-M-BATH1-WC")),
     # Kitchen sink. W-M-E2 *does* continue to the storey above (W-S-E3/E4/E5 stack on it), so
@@ -212,33 +213,33 @@ VENT_BRANCHES_MAIN = [
     # drawn route, not a check-driven workaround. It rises in the E2 stud bay at x=35'-9",
     # turns west in the FS-SECOND joist bay whose centre is y=24'-8" (bays are 8"+n*16"; this
     # one passes south of FO-S-STAIR, which starts at y=25'-2 3/8", and north of both trunk
-    # ducts at 20'-8" and 23'-4"), then north to the shared radon/vent chase at (3', 33').
+    # ducts at 20'-8" and 23'-4"), then north to the shared radon/vent chase at (1', 34'-6").
     # It rises 6" over its length so condensate drains back to the fixture.
     PipeRun(uid="ZTQRPPRATP", tag="PR-M-KITCH-VENT", system=PipeSystem.VENT,
             path=(pt(ft(35, 9), ft(32, 8)), pt(ft(35, 9), ft(24, 8)),
-                  pt(ft(3), ft(24, 8)), pt(ft(3), ft(33))),
+                  pt(ft(1), ft(24, 8)), pt(ft(1), ft(34, 6))),
             diameter=inch(1.5), start_elevation=ft(9, 3), end_elevation=ft(9, 9),
             serves=("FX-M-KITCH-SINK",)),
 ]
 
 VENT_BRANCHES_SECOND = [
     # Hall-bath takeoff on W-S-BD-N (y=26'-4") -> west to the chase line -> north to the
-    # chase. The chase passes straight through this room, so the run is only 8'-8".
+    # chase.
     PipeRun(uid="CSP901AAAA", tag="PR-S-BATH1-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(5), ft(26, 4)), pt(ft(3), ft(26, 4)), pt(ft(3), ft(33))),
+            path=(pt(ft(5), ft(26, 4)), pt(ft(1), ft(26, 4)), pt(ft(1), ft(34, 6))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 4),
             serves=("FX-S-BATH1-WC",)),
     # The suite bath's own vent: takeoff on its west wet wall W-S-DC2 (x=9'-7 1/2"), north
-    # through the landing and the hall bath, then west along y=33' to the shared
+    # through the landing and the hall bath, then west along y=34'-6" to the shared
     # radon/plumbing chase. It runs up the x=9'-7 1/2" line rather than joining the hall
-    # bath's run at x=3' so the two branches never share a leg. 19'-7" developed.
+    # bath's run at x=1' so the two branches never share a leg.
     #
-    # NOTE the chase here is VR-M-RADON-VENT's, at (3', 33') — *not* the 2'x2' mechanical
-    # chase the source draws in the hall bath's NE corner (W-S-CH-W/CH-S, x 7'-8"..10',
-    # y 33'-4"..36'). They are different shafts: moving the riser into the source's chase
-    # would drag SM-B-RADON, PR-M-WC-VENT, PR-M-KITCH-VENT and the gable clamps with it.
+    # The chase here is VR-M-RADON-VENT's, at (1', 34'-6") — now the *same* shaft as the
+    # 2'x2' mechanical chase in the hall bath's NW corner (W-S-CH-W/CH-S, moved there
+    # 2026-07-28 from the NE corner specifically so it could carry this riser; storeys/
+    # second.py).
     PipeRun(uid="CSP902AAAA", tag="PR-S-SUITEBATH-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(9, 7.5), ft(20)), pt(ft(9, 7.5), ft(33)), pt(ft(3), ft(33))),
+            path=(pt(ft(9, 7.5), ft(20)), pt(ft(9, 7.5), ft(34, 6)), pt(ft(1), ft(34, 6))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5),
             serves=("FX-S-SUITEBATH-WC",)),
 ]
@@ -393,7 +394,7 @@ REGISTERS_MAIN = [
     # straight back out before it mixes. Centred in the hallway strip between the two
     # closets, clear of both, in line with the window/bench.
     Register(uid="CMRV09AAAA", tag="REG-M-SUP5", kind=DuctSystem.SUPPLY, room="RM-M-MUDROOM",
-            position=pt(ft(4), ft(31, 4)), duct_ref="DU-M1-ERV-SUP", type_ref="REG-T-SUPPLY",
+            position=pt(m(1.23013), m(9.56867)), duct_ref="DU-M1-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
 ]
 
@@ -652,15 +653,18 @@ ATTIC_DEVICES = [
 ]
 
 # --- Radon sump + shared radon/plumbing vent riser ---------------------------------
-# A sealed radon sump in the NW basement furnace room. Its passive radon vent and the
-# plumbing vent share one mechanical chase up to 24'-6" — under the 4:12 rake, which is at
-# 26'-1.7" over the chase's x=3' — turn 90° out through the north gable siding, then 90°
-# back up, clamped to the standing seam with S-5!-style clamps. The termination is derived
-# (12" above the roof plane at the riser, ~27'-1.7"), not authored: an authored absolute
-# cannot follow a rake, which is how it drifted to 33', 2' above its own ridge.
-# Elevations are project-frame.
+# A sealed radon sump in the NW basement furnace room, riding RM-M-MECH's framed shaft
+# closet up through the NW notch moved into RM-S-BATH1 (2026-07-28 — was at (3',33'),
+# floating in open mudroom floor space with no enclosure; storeys/main.py, storeys/
+# second.py). Its passive radon vent and the plumbing vent share one mechanical chase up
+# to 23'-10" — under the 4:12 rake, which is at 25'-5.7" over the chase's x=1' — turn 90°
+# out through the north gable siding, then 90° back up, clamped to the standing seam with
+# S-5!-style clamps. The termination is derived (12" above the true roof surface at the
+# riser — the deck plane plus CATLIN_ROOF's above-structure skin, resolve/
+# vent_termination.py), not authored: an authored absolute cannot follow a rake, which is
+# how it drifted to 33', 2' above its own ridge. Elevations are project-frame.
 RADON_SUMP = [
-    Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(ft(3), ft(33)),
+    Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(ft(1), ft(34, 6)),
          diameter=inch(18), depth=inch(24), host_ref="SL-B-FLOOR",
          sealed_cover=True, radon_vent=True, vent_ref="VR-M-RADON-VENT"),
 ]
@@ -668,44 +672,46 @@ RADON_SUMP = [
 VENT_RISERS = [
     VentRun(uid="CMVR01AAAA", tag="VR-M-RADON-VENT",
             systems=(PipeSystem.RADON, PipeSystem.VENT), diameter=inch(3),
-            chase_position=pt(ft(3), ft(33)), start_elevation=ft(-8.5),
-            exit_elevation=ft(24, 6), exit_offset=pt(ft(0), ft(4)),
+            chase_position=pt(ft(1), ft(34, 6)), start_elevation=ft(-8.5),
+            exit_elevation=ft(23, 10), exit_offset=pt(ft(0), ft(2, 6)),
             wall_ref="W-A-N2", attachment="standing_seam_clamp"),
 ]
 
 # S-5! standing-seam clamps fixing the exterior riser to the north gable siding. The riser
-# spans 24'-6" to ~27'-1.7", and the gable siding at x=3' stops at the 26'-1.7" rake, so
-# all three clamps sit on the pipe *and* on cladding they can actually grip. The riser
-# rides W-A-N2, the west half of the north gable wall (x=0..18); W-A-N1 is the east half.
+# spans 23'-10" to its derived termination, and the gable siding at x=1' stops at the
+# 25'-5.7" rake, so all three clamps sit on the pipe *and* on cladding they can actually
+# grip. The riser rides W-A-N2, the west half of the north gable wall (x=0..18); W-A-N1
+# is the east half.
 VENT_CLAMPS = [
     Connector(uid="CMVC01AAAA", tag="CN-M-VENT-CLAMP1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(3), ft(37)), elevation=ft(25), size="S-5!",
+              position=pt(ft(1), ft(37)), elevation=ft(24, 4), size="S-5!",
               connects=("VR-M-RADON-VENT", "W-A-N2")),
     Connector(uid="CMVC02AAAA", tag="CN-M-VENT-CLAMP2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(3), ft(37)), elevation=ft(25, 6), size="S-5!",
+              position=pt(ft(1), ft(37)), elevation=ft(24, 10), size="S-5!",
               connects=("VR-M-RADON-VENT", "W-A-N2")),
     Connector(uid="CMVC03AAAA", tag="CN-M-VENT-CLAMP3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(3), ft(37)), elevation=ft(26), size="S-5!",
+              position=pt(ft(1), ft(37)), elevation=ft(25, 4), size="S-5!",
               connects=("VR-M-RADON-VENT", "W-A-N2")),
 ]
 
 # --- Outdoor NEMA 3R weatherproof junction box on the north gable siding -------------
 # Gasketed blank cover plate; mounted to the standing seam with an S-5!-style clamp. It
 # serves the exterior vent riser's work zone, so it belongs beside the CN-M-VENT-CLAMP
-# cluster (25' / 25'-6" / 26' at x=3') — not 19' below it at eye level on the main storey.
-# Filed on the attic storey with the gable wall it now rides: at x=6' the 4:12 rake carries
-# the siding to ~27'-1.7", so a box at 25'-6" has cladding to grip. It stands 3' east of the
-# riser bundle to stay clear of the pipes and their clamps.
+# cluster (24'-4" / 24'-10" / 25'-4" at x=1') — not 19' below it at eye level on the main
+# storey. Filed on the attic storey with the gable wall it now rides: at x=4' the 4:12
+# rake carries the siding to ~26'-5.7", so a box at 25'-6" has cladding to grip. It stands
+# 3' east of the riser bundle (2026-07-28: riser moved from x=3' to x=1', box follows to
+# stay 3' clear of the pipes and their clamps).
 # Both heights below are the same 25'-6": a Mount elevation is storey-relative (attic datum
 # 20') while a Connector elevation is project-frame absolute.
 NEMA_BOX = [
     ElectricalDevice(uid="CEJ901AAAA", tag="ED-A-NEMA-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(6), ft(37)), type_ref="ED-T-JBOX",
+                     position=pt(ft(4), ft(37)), type_ref="ED-T-JBOX",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
 NEMA_CLAMP = [
     Connector(uid="CMNC01AAAA", tag="CN-A-NEMA-CLAMP", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(6), ft(37)), elevation=ft(25, 6), size="S-5!",
+              position=pt(ft(4), ft(37)), elevation=ft(25, 6), size="S-5!",
               connects=("ED-A-NEMA-JB", "W-A-N2")),
 ]
 

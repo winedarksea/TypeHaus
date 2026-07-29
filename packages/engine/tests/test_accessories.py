@@ -205,6 +205,7 @@ def test_foam_thermal_break_follows_an_east_west_dowel(catlin_model) -> None:
 
 def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
     from typehaus.resolve.roof_geometry import roof_height_at
+    from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
     vent = _solids(catlin_model, "vent")
     chases = [s for s in vent if s.tag.endswith("CHASE")]
@@ -214,18 +215,22 @@ def test_catlin_vent_routes_up_out_up_to_above_roof(catlin_model) -> None:
 
     assert len(chases) == len(terms) == 2  # radon + plumbing vent
     assert len(outs) == 2 * _PIPE_SWEEP_BANDS  # each horizontal jog is one swept stack
-    exit_z = ft(24, 6).meters
+    exit_z = ft(23, 10).meters
     # Chase rises from below grade to the turn-out, which stays *under* the rake.
     for c in chases:
         assert c.z0_m < -2.0 and abs(c.z1_m - exit_z) < 0.05
     for o in outs:
         assert abs((o.z0_m + o.z1_m) / 2 - exit_z) < inch(2).meters
-    # Termination is derived: 12" above the roof plane at the exterior riser, not the
-    # 33' that was authored — that sat 2' above the ridge of this 4:12 gable.
+    # Termination is derived: 12" above the true roof surface at the exterior riser (moved
+    # to the NW corner, x=1', 2026-07-28), not the 33' that was once authored — that sat 2'
+    # above the ridge of this 4:12 gable.
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-HOUSE")
-    expected = roof_height_at(roof, (ft(3).meters, ft(37).meters)) + inch(12).meters
-    # ~28.05': eave_z_m is the deck plane, ~10.7" above the knee-wall plate (golden eave
-    # detail), so the derived termination rides that much higher than the bare-plate datum.
+    assembly = catlin_model.plan.library.resolve_assembly(roof.assembly)
+    skin = sum(layer.thickness.meters for layer in above_structure_layers(assembly))
+    expected = roof_height_at(roof, (ft(1).meters, ft(37).meters)) + skin + inch(12).meters
+    # ~27.9': eave_z_m is the deck plane, and the CATLIN_ROOF skin (foam+furring+
+    # standing-seam) adds another 8.5" above that deck plane, so the derived termination
+    # rides that much higher than the bare-plate datum.
     assert expected < 29 * FT
     for t in terms:
         assert abs(t.z0_m - exit_z) < 0.05

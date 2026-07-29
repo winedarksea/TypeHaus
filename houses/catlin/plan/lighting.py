@@ -381,9 +381,11 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # room re-pointed to RM-M-MECH (2026-07-28): its ceiling position now lands inside the
+    # framed shaft closet carved out of the mudroom's north end, not the mudroom itself.
     ElectricalDevice(uid="QTM000YAAA", tag="ED-M-STORAGE-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(5), ft(33, 6)), type_ref="ED-T-LT-CAN3",
-                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
+                     position=pt(ft(3), ft(34, 6)), type_ref="ED-T-LT-CAN3",
+                     circuit="CKT-LT-MAIN", room="RM-M-MECH",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000ZAAA", tag="ED-M-STORAGE-SW", kind=DeviceKind.SWITCH,
@@ -679,7 +681,7 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-LANDING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS001AAAA", tag="ED-S-STAIR-CHAND", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(30)), type_ref="ED-T-LT-CHANDELIER",
+                     position=pt(m(4.37256), m(8.77606)), type_ref="ED-T-LT-CHANDELIER",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      controlled_by=("ED-S-STAIR-SW", "ED-S-LANDING-SW"),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(4))),
