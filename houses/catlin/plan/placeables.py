@@ -23,7 +23,7 @@ from typehaus.model import DeviceKind, deg, ft, inch, m, pt
 # 12'-6 1/8" clear box. notes/sauna_shower_basement_detail.md reserves the north 4' for the
 # shower, so everything below stops at y=9'-6" and the benches never cross into it.
 BASEMENT_PLACEABLES = [
-    Fixture(uid="5BBZTZNBWN", tag="FX-1", type_ref="FX-LAV", room="RM-B-FURNACE",
+    Fixture(uid="5BBZTZNBWN", tag="FX-1", type_ref="FX-LAV-24", room="RM-B-FURNACE",
             position=pt(ft(7), ft(19, 4.5)), wall_ref="W-B-CW",
             drain_position=pt(ft(7), ft(19))),
     # The long two-tier run takes the east wall: it is the only unbroken face in the room —

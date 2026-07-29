@@ -220,6 +220,29 @@ SAUNA_BENCH_54 = FurnitureType(
     source="Law of Löyly lower bench, 18\" (notes/sauna_shower_basement_detail.md)",
 )
 
+# A workbench and a shoe-changing bench are generic furniture, not house-specific joinery:
+# both were authored in catlin's own catalog only because nothing shared existed. (The
+# mudroom *closets* stay house-local — their footprints are fitted to specific walls.)
+WORKBENCH_60 = FurnitureType(
+    tag="FURN-G-WORKBENCH",
+    name="Garage workbench, 60 x 30 x 34 in",
+    footprint=(inch(60), inch(30)),
+    height=inch(34),
+    plan_symbol="desk",
+    source="Standard garage workbench, 60 x 30 x 34 in",
+)
+# `sauna-bench` is reused as the plan symbol: a platform against the +y wall is exactly this
+# bench's shape at rotation 90. 18" seat height matches the sauna foot bench.
+MUDROOM_BENCH_36 = FurnitureType(
+    tag="FURN-M-MUD-BENCH",
+    name="Mudroom bench, 36 x 18 in",
+    footprint=(ft(3), ft(1, 6)),
+    height=ft(1, 6),
+    plan_symbol="sauna-bench",
+    storage=False,
+    source="Shoe-changing bench, 36 x 18 in",
+)
+
 STARTER_FURNITURE_TYPES = (
     STANDARD_SOFA, LOVESEAT, SECTIONAL, ARMCHAIR, ROCKING_CHAIR, COFFEE_TABLE, END_TABLE,
     MEDIA_CONSOLE,
@@ -229,4 +252,5 @@ STARTER_FURNITURE_TYPES = (
     TWO_PERSON_DINING_TABLE, DINING_CHAIR,
     WRITING_DESK, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
     SAUNA_BENCH_TIERED_102, SAUNA_BENCH_54,
+    WORKBENCH_60, MUDROOM_BENCH_36,
 )

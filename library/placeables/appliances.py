@@ -1,7 +1,7 @@
 """Starter appliance catalog.
 
-There is deliberately no shared ``APPL-WASHER`` here: ``houses/catlin/plan/fixture_types.py``
-already owns that tag, and the two catalogs merge at load, so adding one would collide.
+``APPL-WASHER`` used to live only in ``houses/catlin/plan/fixture_types.py`` — a shared
+appliance kept house-local, so this catalog shipped a dryer with no washer beside it.
 """
 
 from __future__ import annotations
@@ -76,5 +76,13 @@ HOOD_RECIRC = ApplianceType(
     ports=(ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),),
 )
 
+# The library shipped a dryer but no washer, so every house had to author its own — the
+# one asymmetry in this catalog.
+WASHER = ApplianceType(
+    tag="APPL-WASHER", name="Clothes washer", footprint=(ft(2, 3), ft(2, 6)), height=ft(3),
+    plan_symbol="washer", source=REFERENCE,
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.POWER_240}),
+)
+
 STARTER_APPLIANCE_TYPES = (REFRIGERATOR, GAS_RANGE, ELECTRIC_RANGE, DISHWASHER, DRYER,
-                           MICROWAVE_OTR, FREEZER_UPRIGHT, HOOD_RECIRC)
+                           MICROWAVE_OTR, FREEZER_UPRIGHT, HOOD_RECIRC, WASHER)

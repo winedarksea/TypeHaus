@@ -1,18 +1,15 @@
-"""House-local furniture catalog for items specific to the Catlin plan."""
+"""House-local furniture catalog for items specific to the Catlin plan.
+
+Only the two mudroom closets remain here: their footprints are fitted to specific walls
+(each run is sized to fill from its door to the west wall), which is what makes them
+house-local. The workbench and the shoe bench were generic and moved to
+``library.placeables.furniture`` as FURN-G-WORKBENCH / FURN-M-MUD-BENCH.
+"""
 
 from __future__ import annotations
 
-from typehaus import FurnitureType, ft, inch
+from typehaus import FurnitureType, ft
 
-
-GARAGE_WORKBENCH = FurnitureType(
-    tag="FURN-G-WORKBENCH",
-    name="Garage workbench, 60 x 30 x 34 in",
-    footprint=(inch(60), inch(30)),
-    height=inch(34),
-    plan_symbol="desk",
-    source="Catlin owner requirement: 60 x 30 x 34 in workbench",
-)
 
 # Mudroom closets (RM-M-MUDROOM, houses/catlin/plan/storeys/main.py), each run sized to
 # fill its wall from its door to the west wall, like library's FURN-WARDROBE-48 the
@@ -39,18 +36,4 @@ MUD_CLOSET_SOUTH = FurnitureType(
     storage=True,
     source="Catlin mudroom conversion (2026-07-28): run from D-M-MUD to the west wall",
 )
-# The shoe-changing bench under WIN-M-MUD. Not fitted joinery like the sauna benches
-# (`sauna-bench` reused for its plan symbol — a platform against the +y wall, which is
-# exactly this bench's shape against the west wall at rotation 90), 18" seat height matches
-# FURN-SAUNA-BENCH-54's foot bench.
-MUD_BENCH = FurnitureType(
-    tag="FURN-M-MUD-BENCH",
-    name="Mudroom bench, 36 x 18 in",
-    footprint=(ft(3), ft(1, 6)),
-    height=ft(1, 6),
-    plan_symbol="sauna-bench",
-    storage=False,
-    source="Catlin mudroom conversion (2026-07-28): shoe-changing bench under WIN-M-MUD",
-)
-
-FURNITURE_TYPES = (GARAGE_WORKBENCH, MUD_CLOSET_NORTH, MUD_CLOSET_SOUTH, MUD_BENCH)
+FURNITURE_TYPES = (MUD_CLOSET_NORTH, MUD_CLOSET_SOUTH)

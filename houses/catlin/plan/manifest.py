@@ -22,11 +22,11 @@ from pathlib import Path
 from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_basemap_geojson
 
 from library import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES,
-                     STARTER_FURNITURE_TYPES)
+                     STARTER_FURNITURE_TYPES, STARTER_RAILING_TYPES)
 
 from params import breezeway, foundations, raised_garden, roof_trim, solar, sunken_garden
-from plan import (assemblies, circuits, electrical, fixture_types, fixtures, furniture_types,
-                  lighting, lighting_types, mep, placeables, railing_types, site, transitions,
+from plan import (assemblies, circuits, electrical, fixtures, furniture_types,
+                  lighting, lighting_types, mep, placeables, site, transitions,
                   views)
 from plan.storeys import attic, basement, garage, main, second
 
@@ -41,13 +41,14 @@ _library = Library(
     assemblies=tuple(assemblies.ASSEMBLIES),
     door_types=tuple(main.DOOR_TYPES),
     window_types=tuple(main.WINDOW_TYPES),
-    # House-local catalogs first, then the shared starter set; the tags are disjoint by
-    # design (the shared plumbing fixtures use -STD/-24/-36 suffixes so nothing collides).
+    # The shared catalogs supply every plumbing fixture, appliance, and railing this house
+    # uses; only the wall-fitted mudroom closets stay house-local. Tags are disjoint, and
+    # `integrity.duplicate_catalog_tag` now proves it rather than asserting it.
     furniture_types=(*STARTER_FURNITURE_TYPES, *STARTER_CASEWORK_TYPES,
                      *furniture_types.FURNITURE_TYPES),
-    railing_types=railing_types.RAILING_TYPES,
-    fixture_types=(*fixture_types.FIXTURE_TYPES, *STARTER_FIXTURE_TYPES),
-    appliance_types=(*fixture_types.APPLIANCE_TYPES, *STARTER_APPLIANCE_TYPES),
+    railing_types=STARTER_RAILING_TYPES,
+    fixture_types=STARTER_FIXTURE_TYPES,
+    appliance_types=STARTER_APPLIANCE_TYPES,
     register_types=mep.REGISTER_TYPES,
     equipment_types=(*mep.EQUIPMENT_TYPES, *electrical.EQUIPMENT_TYPES),
     electrical_device_types=(*mep.ELECTRICAL_DEVICE_TYPES, *electrical.DEVICE_TYPES,

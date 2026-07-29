@@ -439,5 +439,5 @@ def test_catlin_furnished_rooms_resolve_against_the_shared_starter_catalog() -> 
     sofa = next(item for item in model.canvas_objects if item.type_ref == "FURN-SOFA-84")
     assert sofa.room == "RM-M-LIVING" and len(sofa.footprint) == 4
     symbols = {item["tag"]: item["plan_strokes"] for item in canvas_object_types(plan)}
-    # The house-local fixtures opted in too, so the very first render shows a real glyph.
-    assert symbols["FX-LAV"] and symbols["EQ-T-ERV"] and symbols["ED-T-PANEL"]
+    # The shared fixtures opted in too, so the very first render shows a real glyph.
+    assert symbols["FX-LAV-24"] and symbols["EQ-T-ERV"] and symbols["ED-T-PANEL"]

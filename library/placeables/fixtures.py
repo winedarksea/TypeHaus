@@ -1,7 +1,7 @@
-"""Starter plumbing-fixture catalog.
+"""Shared plumbing-fixture catalog.
 
-Tags are deliberately distinct from Catlin's house-local ``FX-TOILET`` / ``FX-LAV`` /
-``FX-SHOWER``: both catalogs merge at load, and a duplicate tag is a hard error there.
+Tags are unique across the merged catalogs — ``integrity.duplicate_catalog_tag`` now
+enforces what this docstring used to only assert.
 
 A fixture's ``height`` is its **overall** height including the spout, because the generated
 symbol keeps every part inside the declared box. That is why a lavatory is 40" and not 36" —
@@ -10,7 +10,8 @@ the deck plane lands where the counter is, and the faucet occupies the band abov
 
 from __future__ import annotations
 
-from typehaus.model import FixtureType, Mount, MountKind, Service, ft, inch
+from typehaus.model import (ClearancePolicy, ClearanceZone, FixtureType, Footprint2D,
+                            Mount, MountKind, Service, ft, inch, pt)
 
 from library.placeables._zones import front_zone
 
@@ -63,4 +64,44 @@ KITCHEN_SINK = FixtureType(
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
 )
 
-STARTER_FIXTURE_TYPES = (TOILET, LAVATORY, VANITY, TUB, TUB_SHOWER, SHOWER, KITCHEN_SINK)
+# --- compact bathroom class ---------------------------------------------------------
+# A powder room too small for the standard pair is not a catlin problem: a wall-hung WC on
+# an in-wall carrier plus an 18" lavatory is the standard answer, so both are shared types
+# rather than house-local ones. The carrier frame is why an instance authors its
+# ``drain_position`` on the wall line rather than under the bowl.
+TOILET_WALL_HUNG = FixtureType(
+    tag="FX-TOILET-WH", name="Wall-hung water closet (compact)",
+    footprint=(inch(15), inch(19.3)), height=inch(21),
+    plan_symbol="toilet", needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
+    clearances=(ClearanceZone(
+        footprint=Footprint2D(points=(pt(ft(-1, 3), inch(-9.65)), pt(ft(1, 3), inch(-9.65)),
+                                      pt(ft(1, 3), inch(30.65)), pt(ft(-1, 3), inch(30.65)))),
+        purpose="water-closet clearance", policy=ClearancePolicy.REQUIRED,
+        source="MN/IRC planning profile: 30 in side clearance and 21 in front clearance",
+        code_profile="MN/IRC",
+    ),),
+    source='TOTO RP compact wall-hung class, 15" x 19.3", on an in-wall carrier.',
+)
+LAVATORY_COMPACT = FixtureType(
+    tag="FX-LAV-COMPACT", name="Compact lavatory", footprint=(ft(1, 6), inch(14)),
+    height=ft(2, 10), plan_symbol="lavatory",
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN}),
+    source='Compact powder-room lavatory, 18" x 14"; final fixture selection by owner.',
+)
+# The point of this type is what is *not* in ``needs``: only WATER_COLD. A frost-free
+# hydrant drains through its own weep at the buried shutoff, not into the sanitary system,
+# so the sleeve check correctly declines to demand a drain sleeve for it. Footprint is the
+# escutcheon (what a plan can draw), height the handle above the slab.
+WALL_HYDRANT = FixtureType(
+    tag="FX-HYDRANT-Y34SS", name='Frost-free wall hydrant, 3/4" stainless',
+    footprint=(inch(6), inch(6)), height=ft(2, 6), plan_symbol="hydrant",
+    needs=frozenset({Service.WATER_COLD}),
+    source='Y34SS-class frost-free wall hydrant, 3/4" stainless, 6\' bury. Specify the '
+           "manufacturer's supplemental epoxy coating over the buried barrel where the "
+           "floor runs salt slush (the standard finish is not rated for chloride "
+           "immersion), and a screw-on hose-bib vacuum breaker on the outlet — required "
+           "backflow protection for a hose connection.",
+)
+
+STARTER_FIXTURE_TYPES = (TOILET, LAVATORY, VANITY, TUB, TUB_SHOWER, SHOWER, KITCHEN_SINK,
+                         TOILET_WALL_HUNG, LAVATORY_COMPACT, WALL_HYDRANT)

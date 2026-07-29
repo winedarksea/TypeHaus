@@ -22,6 +22,7 @@ from library.hardware import STRUCTURAL_HARDWARE
 from library.materials import STARTER_MATERIALS
 from library.placeables import (STARTER_APPLIANCE_TYPES, STARTER_CASEWORK_TYPES,
                                 STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES)
+from library.railings import STARTER_RAILING_TYPES
 
 __all__ = [
     "STARTER_MATERIALS",
@@ -40,4 +41,5 @@ __all__ = [
     "STARTER_CASEWORK_TYPES",
     "STARTER_APPLIANCE_TYPES",
     "STARTER_FIXTURE_TYPES",
+    "STARTER_RAILING_TYPES",
 ]
