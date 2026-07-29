@@ -97,11 +97,15 @@ NODES = [
     Node(uid="CMN007AAAA", tag="N-M-N2", position=pt(ft(10), ft(36))),
     Node(uid="CMN008AAAA", tag="N-M-NW", position=pt(ft(0), ft(36))),
     Node(uid="CMN009AAAA", tag="N-M-W1", position=pt(ft(0), ft(26, 4))),
-    Node(uid="CMN010AAAA", tag="N-M-W2", position=pt(ft(0), ft(21, 8))),
+    # W-M-HS1..4 (hall/bath2-laundry-study partition) pushed 6" north to y=22'-2"
+    # (2026-07-29): the hall was a flat 4'-2", more than R311.7's minimum, and BATH2
+    # needed the depth to separate the shower from the tub. Leaves the hall at 3'-8",
+    # still 8" clear of the 3' minimum.
+    Node(uid="CMN010AAAA", tag="N-M-W2", position=pt(ft(0), ft(22, 2))),
     Node(uid="CMN011AAAA", tag="N-M-W3", position=pt(ft(0), ft(13, 4))),
     # Center bearing line ties
     Node(uid="CMN012AAAA", tag="N-M-C1", position=pt(ft(18), ft(13, 4))),
-    Node(uid="CMN013AAAA", tag="N-M-C2", position=pt(ft(18), ft(21, 8))),
+    Node(uid="CMN013AAAA", tag="N-M-C2", position=pt(ft(18), ft(22, 2))),
     # N-M-C3 came south from y=26'-4" to the stair wall's line on 2026-07-28. It used to be
     # the W-M-C4B/W-M-C5 split; with W-M-C4/C4B gone it is BM-M-HALL's north bearing, and it
     # has to be where W-M-STRS lands or the stair well leaks into the living room through the
@@ -117,12 +121,12 @@ NODES = [
     # W-M-BAE shifts 2' east (2026-07-28); the mudroom door remains at its existing
     # 6" tee clearance.
     Node(uid="CMN016AAAA", tag="N-M-BA1", position=pt(ft(6), ft(26, 4))),
-    Node(uid="CMN017AAAA", tag="N-M-BA2", position=pt(ft(6), ft(21, 8))),
-    Node(uid="CMN018AAAA", tag="N-M-D1", position=pt(ft(8), ft(21, 8))),
+    Node(uid="CMN017AAAA", tag="N-M-BA2", position=pt(ft(6), ft(22, 2))),
+    Node(uid="CMN018AAAA", tag="N-M-D1", position=pt(ft(8), ft(22, 2))),
     Node(uid="CMN019AAAA", tag="N-M-D2", position=pt(ft(8), ft(17, 4))),
     Node(uid="CMN020AAAA", tag="N-M-D3", position=pt(ft(8), ft(13, 4))),
     Node(uid="CMN021AAAA", tag="N-M-E2", position=pt(ft(13, 4), ft(17, 4))),
-    Node(uid="CMN022AAAA", tag="N-M-E3", position=pt(ft(13, 4), ft(21, 8))),
+    Node(uid="CMN022AAAA", tag="N-M-E3", position=pt(ft(13, 4), ft(22, 2))),
     Node(uid="CMN023AAAA", tag="N-M-E4", position=pt(ft(18), ft(17, 4))),
     # RM-M-MECH: the framed MEP shaft closet in the house's NW corner (2026-07-28),
     # replacing FURN-M-MUD-CLOSET-N. 6' wide (west wall to 6" shy of D-M-ENTRY's far
@@ -316,8 +320,11 @@ OPENINGS = [
     Window(uid="CMX304AAAA", tag="WIN-M-BED-S2", host="W-M-S1",
            type_ref="WT-3036", position=from_node("N-M-SW", ft(9, 5)),
            sill_height=ft(2)),
+    # Offset bumped 4'-5" -> 4'-11" (2026-07-29) when N-M-W2 pushed 6" north for the
+    # hall/bath2 wall move: W-M-W3's stud grid anchors off N-M-W2, so the window has
+    # to move with it to stay on the same bay it was already sitting in.
     Window(uid="CMX305AAAA", tag="WIN-M-BATH2", host="W-M-W3",
-           type_ref="WT-1424", position=from_node("N-M-W3", ft(4, 5)),
+           type_ref="WT-1424", position=from_node("N-M-W3", ft(4, 11)),
            sill_height=ft(4)),
     # Picture unit at the wall's stud-grid midpoint: W-M-W1 runs 9'-8" node-to-node, so the
     # true middle is 4'-10" off N-M-NW, but studs on this wall lay out from N-M-NW's own
@@ -437,11 +444,18 @@ FLOOR_HEAT = [
     # stays in the open south strip and the narrow centre aisle, with a deliberate 2"+
     # installation gap at every fixture footprint. Keeping the keepouts in this authored
     # polygon makes `advisory.floor_heat_fixture_keepout` verify the actual loop geometry.
+    # South strip's east edge pulled in from 7'-7" to 4'-7.2", its north edge from 15'-8"
+    # to 15'-6", and the centre aisle shifted west from 3'-8"..4'-0" to 3'-6"..3'-10"
+    # (2026-07-29, with the BATH2 wall move): the old polygon actually ran under
+    # FX-M-BATH2-SH's whole footprint, grazed FX-M-BATH2-TUB's, and clipped a sliver of
+    # FX-M-BATH2-SINK's — which is what `advisory.floor_heat_fixture_keepout` was
+    # catching; it just hadn't been checked against the fixtures' real footprints before.
+    # All three keep >=1" clearance now.
     FloorHeat(uid="CMH801AAAA", tag="FH-M-BATH2", room_ref="RM-M-BATH2",
-              zone=(pt(ft(0, 5), ft(13, 9)), pt(ft(7, 7), ft(13, 9)),
-                    pt(ft(7, 7), ft(15, 8)), pt(ft(4), ft(15, 8)),
-                    pt(ft(4), ft(21, 5)), pt(ft(3, 8), ft(21, 5)),
-                    pt(ft(3, 8), ft(15, 8)), pt(ft(0, 5), ft(15, 8))),
+              zone=(pt(ft(0, 5), ft(13, 9)), pt(ft(4, 7.2), ft(13, 9)),
+                    pt(ft(4, 7.2), ft(15, 6)), pt(ft(3, 10), ft(15, 6)),
+                    pt(ft(3, 10), ft(21, 5)), pt(ft(3, 6), ft(21, 5)),
+                    pt(ft(3, 6), ft(15, 6)), pt(ft(0, 5), ft(15, 6))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
               stat=pt(ft(2), ft(17, 6))),
     # Under the dining table. FURN-M-DINING covers x 22'-11"..30'-11", y 15'-7"..19'-1"; the

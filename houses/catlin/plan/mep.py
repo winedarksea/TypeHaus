@@ -134,7 +134,7 @@ SLEEVES = [
                       position=pt(ft(1, 9), ft(17, 3)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-BATH2-SH"),
     SleevePenetration(uid="CMP908AAAA", tag="SP-M-BATH2-TUB", host_ref="SL-M-DECK",
-                      position=pt(ft(7, 4), ft(18, 10.8)), pipe_diameter=inch(2),
+                      position=pt(ft(7, 4), ft(19, 4.8)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-BATH2-TUB"),
     SleevePenetration(uid="CMP909AAAA", tag="SP-M-BATH2-SINK", host_ref="SL-M-DECK",
                       position=pt(ft(1), ft(16, 6)), pipe_diameter=inch(2),

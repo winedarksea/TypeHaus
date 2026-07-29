@@ -178,7 +178,6 @@ Questions:
 - Is the door opening inside the breezeway code compliant
 - No overhang roof 
 - 2nd floor hallway dropped ceiling for HVAC
-- Review the accuracy of the BTU model for the house, then add more minisplits as needed
 - Outdoor hydrants plus more complete internal plumbing 
 - Edits in 2d don't always update all the necessary pieces (like when we switched a shower to showertub)
 - Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?
@@ -186,6 +185,8 @@ Questions:
 - Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model)
 
 ##  HVAC
+Review the accuracy of the BTU model for the house
+
 Gree Slim Concealed Ducted Series with Gree Vireo GEN3 / Ultra outdoor unit running in RM-S-STUDY2 in a dropped HVAC chase that runs north from there along the hallway, with outlets in each of the bedrooms and near the stairs, plus also outlets into RM-A-EAST and RM-A-STUDY directly above it (very short branches, this is a straight run duct meant to operate at low flow)
 
 Gree Multi Ultra 3-port outdoor unit (heats down to -22°F) powering the 3 wall mounts (basement in gym near ceiling, master bedroom on south wall near the center wall, living room on south wall near the center line wall)

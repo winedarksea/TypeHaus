@@ -46,9 +46,12 @@ MAIN_FIXTURES = (
     Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER-36", room="RM-M-BATH2",
             position=pt(m(1.88387), m(4.58801)), wall_ref="W-M-BA2E",
             drain_position=pt(ft(1, 9), ft(17, 3))),
+    # Shifted 6" north (2026-07-29) with the W-M-HS1..4 wall move that gave BATH2 8" more
+    # depth: the old position overlapped FX-M-BATH2-SH by ~1.3" (`advisory.fixture_overlap`);
+    # this clears it with a 4.7" gap and still leaves 4" to the room's new north face.
     Fixture(uid="CMQ806AAAA", tag="FX-M-BATH2-TUB", type_ref="FX-TUB-60", room="RM-M-BATH2",
-            position=pt(m(1.96436), m(5.77311)), rotation=deg(90), wall_ref="W-M-BA2E",
-            drain_position=pt(ft(7, 4), ft(18, 10.8))),
+            position=pt(m(1.96436), m(5.91312)), rotation=deg(90), wall_ref="W-M-BA2E",
+            drain_position=pt(ft(7, 4), ft(19, 4.8))),
     # RM-M-BATH2's double-basin sink uses the shared kitchen-sink catalog type rather than
     # a house-local surrogate. Its 27" mount puts the library sink's deck at the intended
     # lavatory height; rotation +90 turns the back of the symbol toward the west wall.
