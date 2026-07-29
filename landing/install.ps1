@@ -1,5 +1,5 @@
 # Type:Haus bootstrapper for Windows PowerShell.
-# Usage:  irm https://type-house.com/install.ps1 | iex
+# Usage:  irm https://type-haus.com/install.ps1 | iex
 $ErrorActionPreference = "Stop"
 
 function Info($m) { Write-Host "==> $m" -ForegroundColor Cyan }
@@ -31,5 +31,5 @@ Write-Host ""
 Write-Host "Type:Haus is installed."
 Write-Host "  New house:  haus new my-house"
 Write-Host "  Edit:       haus serve my-house   (http://127.0.0.1:8000)"
-Write-Host "  Browser:    https://type-house.com/app"
+Write-Host "  Browser:    https://type-haus.com/app"
 Write-Host "  Uninstall:  pipx uninstall typehaus"

@@ -1,4 +1,4 @@
-/* type-house.com landing styles. Deliberately one small same-origin stylesheet: no CDN, no
+/* type-haus.com landing styles. Deliberately one small same-origin stylesheet: no CDN, no
    webfont, no framework — the page must render on a first paint with two requests. Kept out of
    index.html so both files stay small and single-purpose (AGENTS.md §1.1). */
 

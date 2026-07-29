@@ -1,4 +1,4 @@
-# Builds and deploys the type-house.com static site (landing page + /app PWA).
+# Builds and deploys the type-haus.com static site (landing page + /app PWA).
 # Setup, secrets, and the DNS steps that cannot be automated: landing/DEPLOY.md.
 name: Deploy site
 
@@ -62,12 +62,15 @@ jobs:
         id: creds
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
+          # Both are required: wrangler needs the account ID to pick the Pages project, so a
+          # half-configured repo should skip cleanly rather than fail the deploy step.
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
           else
             echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::CLOUDFLARE_API_TOKEN is not set — built the site but skipped the deploy (see landing/DEPLOY.md)."
+            echo "::warning::CLOUDFLARE_API_TOKEN and/or CLOUDFLARE_ACCOUNT_ID is not set — built the site but skipped the deploy (see landing/DEPLOY.md)."
           fi
 
       - name: Deploy to Cloudflare Pages
@@ -77,4 +80,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           # Pushes to main publish; every other ref lands on a preview URL.
-          command: pages deploy site --project-name=type-house --branch=${{ github.head_ref || github.ref_name }}
+          command: pages deploy site --project-name=type-haus --branch=${{ github.head_ref || github.ref_name }}

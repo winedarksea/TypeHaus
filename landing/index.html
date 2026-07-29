@@ -8,20 +8,20 @@
       name="description"
       content="Author a residential house as typed, declarative Python. Type:Haus resolves real framing, runs code and structural checks, and compiles the same source to IFC4, DXF and a permit-ready PDF set. Edit it in your browser — the whole engine runs client-side."
     />
-    <link rel="canonical" href="https://type-house.com/" />
+    <link rel="canonical" href="https://type-haus.com/" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f1115" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f8fa" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://type-house.com/" />
+    <meta property="og:url" content="https://type-haus.com/" />
     <meta property="og:title" content="Type:Haus — infrastructure as code for houses" />
     <meta
       property="og:description"
       content="Design a real, buildable house as readable source. Real studs and headers, building-science assemblies, code checks, and clean IFC/DXF/PDF exports. Runs in your browser."
     />
-    <meta property="og:image" content="https://type-house.com/assets/editor-split.png" />
+    <meta property="og:image" content="https://type-haus.com/assets/editor-split.png" />
     <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
@@ -34,6 +34,7 @@
           <a href="#permit">Permit set</a>
           <a href="#install">Install</a>
           <a href="https://github.com/winedarksea/TypeHaus">GitHub</a>
+          <a href="https://pypi.org/project/typehaus/">PyPI</a>
           <a class="strong" href="/app/">Open the app →</a>
         </div>
       </nav>
@@ -57,12 +58,12 @@
         <div class="install">
           <div class="label">No install required — but if you want the full engine</div>
           <div class="cmd">
-            <code id="install-cmd">curl -LsSf https://type-house.com/install.sh | sh</code>
+            <code id="install-cmd">curl -LsSf https://type-haus.com/install.sh | sh</code>
             <button class="copy" type="button" data-copy="#install-cmd">Copy</button>
           </div>
           <p class="note">
             Installs the <code>haus</code> CLI with pipx (Python 3.11+, no uv required). Windows
-            PowerShell: <code>irm https://type-house.com/install.ps1 | iex</code>. Read the
+            PowerShell: <code>irm https://type-haus.com/install.ps1 | iex</code>. Read the
             scripts first if you'd rather —
             <a href="/install.sh">install.sh</a> · <a href="/install.ps1">install.ps1</a>.
           </p>
@@ -287,9 +288,11 @@
             <div class="n">1</div>
             <div>
               <strong>Open the app.</strong>
-              <a href="/app/">type-house.com/app</a> boots the Catlin reference house in the
+              <a href="/app/">type-haus.com/app</a> boots the Catlin reference house in the
               in-browser engine — five storeys, framing, rooms and live checks — with no account,
               no upload and no folder pick. Install it from the browser menu and it works offline.
+              <a href="/catlin-house">View the Catlin house →</a> is the stable link to that same
+              read-only, in-browser build of the reference house.
             </div>
           </div>
           <div class="step">
@@ -303,7 +306,7 @@
             <div class="n">3</div>
             <div>
               <strong>Install the engine.</strong>
-              <code>curl -LsSf https://type-house.com/install.sh | sh</code>, then
+              <code>curl -LsSf https://type-haus.com/install.sh | sh</code>, then
               <code>haus new my-house</code> and <code>haus serve my-house</code> for the same
               editor backed by the full local engine.
             </div>
@@ -414,7 +417,9 @@ haus diff architect.ifc my-house <span class="c"># semantic diff of their revisi
       <div class="wrap">
         Type:Haus — MIT licensed, © Colin Catlin ·
         <a href="/app/">Open the app</a> ·
+        <a href="/catlin-house">Catlin house</a> ·
         <a href="https://github.com/winedarksea/TypeHaus">Source on GitHub</a> ·
+        <a href="https://pypi.org/project/typehaus/">PyPI</a> ·
         <a href="/install.sh">install.sh</a>
       </div>
     </footer>
