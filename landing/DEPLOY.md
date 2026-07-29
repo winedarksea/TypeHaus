@@ -1,14 +1,14 @@
-# Deploying type-house.com
+# Deploying type-haus.com
 
 The whole site is static. One build produces one directory; a static host serves it.
 
 ```
 site/
-  index.html  styles.css  404.html  favicon.svg     ->  https://type-house.com/
-  install.sh  install.ps1                           ->  curl -LsSf https://type-house.com/install.sh | sh
+  index.html  styles.css  404.html  favicon.svg     ->  https://type-haus.com/
+  install.sh  install.ps1                           ->  curl -LsSf https://type-haus.com/install.sh | sh
   assets/*.png  robots.txt  sitemap.xml
   _headers  _redirects                              ->  host config, not served
-  app/                                              ->  https://type-house.com/app/
+  app/                                              ->  https://type-haus.com/app/
 ```
 
 ## Build
@@ -39,7 +39,7 @@ either. The CI workflow (`.github/workflows/deploy-site.yml`) is written for **C
 
 One-time, by hand in the dashboard:
 
-1. **Pages → Create a project → Direct Upload**, name it `type-house`. Direct Upload (rather than
+1. **Pages → Create a project → Direct Upload**, name it `type-haus`. Direct Upload (rather than
    the Git integration) is deliberate: the build needs the Python engine sources and the Catlin
    house from this repo, and CI already has them.
 2. **Workers & Pages → account ID** — copy it.
@@ -47,7 +47,7 @@ One-time, by hand in the dashboard:
    token with `Account → Cloudflare Pages → Edit`.
 4. In GitHub: **Settings → Secrets and variables → Actions**, add
    `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
-5. **Pages project → Custom domains → Set up a domain → `type-house.com`** (and `www` if you
+5. **Pages project → Custom domains → Set up a domain → `type-haus.com`** (and `www` if you
    want it). If the domain's nameservers are already on Cloudflare, the DNS records and the TLS
    certificate are created for you; otherwise add the CNAME Cloudflare shows you at your
    registrar and wait for issuance.
@@ -68,7 +68,7 @@ directory `site`. `_headers` and `_redirects` are read from the publish director
 
 ## What you still have to do manually
 
-- **Own the domain.** Register `type-house.com` (or move it) and get its nameservers onto
+- **Own the domain.** Register `type-haus.com` (or move it) and get its nameservers onto
   Cloudflare, or be ready to add the CNAME the host gives you at your current registrar.
 - **Create the host account and project**, and add the two GitHub secrets above. Nothing in the
   repo can do this for you, and CI skips the deploy step with a warning when the secrets are

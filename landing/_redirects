@@ -7,6 +7,12 @@
 # Both hosts also do this by convention for directories; the rule makes it explicit and portable.
 /app    /app/    301
 
+# Stable public link to the Catlin reference house. The app's bundled default house *is* Catlin
+# today, so this is just /app/; repoint these two rules if the default house ever changes (e.g. to
+# a query param or a second bundle) and the published link keeps working.
+/catlin-house     /app/    301
+/catlin-house/    /app/    301
+
 # No SPA splat rewrite: the app has no client-side router, so there are no deep links to catch,
 # and a `/app/* -> /app/index.html 200` rule risks shadowing the hashed asset files it loads.
 # Unknown paths fall through to 404.html. Add the splat here if routing ever lands.

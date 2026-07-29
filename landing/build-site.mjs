@@ -1,4 +1,4 @@
-// Assembles the full static site for type-house.com into ./site:
+// Assembles the full static site for type-haus.com into ./site:
 //   /            -> landing page + install scripts (this directory)
 //   /app         -> the standalone PWA (ui build, VITE_PWA_STANDALONE=1)
 //
@@ -18,7 +18,7 @@ const siteDir = resolve(repoRoot, "site");
 
 // Canonical origin. Only used to stamp the sitemap; every in-page link is host-relative so the
 // same artifact serves correctly from a preview deployment on a different hostname.
-const SITE_ORIGIN = process.env.SITE_ORIGIN ?? "https://type-house.com";
+const SITE_ORIGIN = process.env.SITE_ORIGIN ?? "https://type-haus.com";
 
 // Landing sources that are build machinery or docs, not shipped files.
 const NOT_SHIPPED = new Set(["build-site.mjs", "DEPLOY.md", "node_modules"]);

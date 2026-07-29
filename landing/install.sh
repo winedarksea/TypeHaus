@@ -2,8 +2,8 @@
 # Type:Haus bootstrapper: installs the `haus` CLI (build · check · render · serve).
 # Modeled on the MinimapPR installer, but pipx-based — Type:Haus does not use uv.
 # Usage:
-#   curl -LsSf https://type-house.com/install.sh | sh
-#   curl -LsSf https://type-house.com/install.sh | sh -s -- --base   # skip the server extras
+#   curl -LsSf https://type-haus.com/install.sh | sh
+#   curl -LsSf https://type-haus.com/install.sh | sh -s -- --base   # skip the server extras
 set -eu
 
 EXTRA="server"
@@ -131,7 +131,7 @@ Type:Haus is installed.
   Edit:       haus serve my-house      # 2D/3D editor at http://127.0.0.1:8000
   Build:      haus build my-house      # -> out/model.json (+ IFC)
   Check:      haus check my-house
-  Browser:    https://type-house.com/app   (no install — runs the engine in-browser)
+  Browser:    https://type-haus.com/app   (no install — runs the engine in-browser)
   Uninstall:  pipx uninstall typehaus
 
 EOF
