@@ -10,18 +10,52 @@ the deck plane lands where the counter is, and the faucet occupies the band abov
 
 from __future__ import annotations
 
-from typehaus.model import (ClearancePolicy, ClearanceZone, FixtureType, Footprint2D,
-                            Mount, MountKind, Service, ft, inch, pt)
-
 from library.placeables._zones import front_zone
+from typehaus.model import (
+    ClearancePolicy,
+    ClearanceZone,
+    FixtureType,
+    Footprint2D,
+    Mount,
+    MountKind,
+    Service,
+    ft,
+    inch,
+    m,
+    pt,
+)
 
 REFERENCE = "Residential planning allowance; final fixture selection by owner."
+
+# IRC P2705.1's minimum is measured independently of the bowl: 15" from the
+# water-closet centreline to each side and 21" clear in front.  Keeping this as
+# a separate polygon means a product can use its actual manufactured footprint
+# instead of pretending that the code envelope is the fixture's size.
+WATER_CLOSET_SIDE_CLEARANCE = ft(1, 3)
+WATER_CLOSET_FRONT_CLEARANCE = ft(1, 9)
+WATER_CLOSET_CODE_PROFILE = "MN/IRC"
+
+
+def _water_closet_required_clearance(depth) -> ClearanceZone:
+    """Return the MN/IRC code envelope around a bowl facing local ``-y``."""
+    half_depth = depth.meters / 2
+    half_width = WATER_CLOSET_SIDE_CLEARANCE.meters
+    front = half_depth + WATER_CLOSET_FRONT_CLEARANCE.meters
+    return ClearanceZone(
+        footprint=Footprint2D(points=(
+            pt(m(-half_width), m(-front)), pt(m(half_width), m(-front)),
+            pt(m(half_width), m(half_depth)), pt(m(-half_width), m(half_depth)),
+        )),
+        purpose="water-closet clearance", policy=ClearancePolicy.REQUIRED,
+        source="MN/IRC: 30 in wide clearance and 21 in clear in front of water closet",
+        code_profile=WATER_CLOSET_CODE_PROFILE,
+    )
 
 TOILET = FixtureType(
     tag="FX-TOILET-STD", name="Water closet", footprint=(ft(1, 8), ft(2, 4)), height=ft(2, 6),
     plan_symbol="toilet", source=REFERENCE,
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(front_zone(ft(1, 8), ft(2, 4), ft(1, 9), "water-closet front clearance"),),
+    clearances=(_water_closet_required_clearance(ft(2, 4)),),
 )
 LAVATORY = FixtureType(
     tag="FX-LAV-24", name="Lavatory", footprint=(ft(2), ft(1, 8)), height=ft(3, 4),
@@ -73,13 +107,7 @@ TOILET_WALL_HUNG = FixtureType(
     tag="FX-TOILET-WH", name="Wall-hung water closet (compact)",
     footprint=(inch(15), inch(19.3)), height=inch(21),
     plan_symbol="toilet", needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
-    clearances=(ClearanceZone(
-        footprint=Footprint2D(points=(pt(ft(-1, 3), inch(-9.65)), pt(ft(1, 3), inch(-9.65)),
-                                      pt(ft(1, 3), inch(30.65)), pt(ft(-1, 3), inch(30.65)))),
-        purpose="water-closet clearance", policy=ClearancePolicy.REQUIRED,
-        source="MN/IRC planning profile: 30 in side clearance and 21 in front clearance",
-        code_profile="MN/IRC",
-    ),),
+    clearances=(_water_closet_required_clearance(inch(19.3)),),
     source='TOTO RP compact wall-hung class, 15" x 19.3", on an in-wall carrier.',
 )
 LAVATORY_COMPACT = FixtureType(

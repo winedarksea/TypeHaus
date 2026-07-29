@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 import pytest
+from library.placeables.fixtures import TOILET, TOILET_WALL_HUNG
 
 from typehaus.model import (
     Appliance,
@@ -13,38 +14,70 @@ from typehaus.model import (
     ClearanceZone,
     Door,
     DoorType,
+    Footprint2D,
     Furniture,
     FurnitureType,
-    Footprint2D,
     Library,
     Location,
-    PlanModel,
+    ModelRepresentation,
+    Mount,
+    MountKind,
+    Node,
     PlacementStrategy,
+    PlanModel,
     Project,
     Service,
     ServicePort,
     Site,
     Storey,
-    Mount,
-    MountKind,
-    ModelRepresentation,
-    Node,
     Wall,
     WallAttachment,
     deg,
+    from_node,
     ft,
     inch,
     m,
     pt,
-    from_node,
 )
 from typehaus.model.canvas import canvas_object_types, canvas_objects, resolved_canvas_objects
 from typehaus.resolve import resolve
-from typehaus.source.loader import load_plan
 from typehaus.source.coordinator import ProjectCoordinator
-from typehaus.source.macros import (_rooms_with_moved_boundaries, assign_placeable_room, attach_placeable,
-                                    detach_placeable, duplicate_canvas_object, move_nodes, move_placeable, place_placeable,
-                                    rehost_opening, rotate_placeable)
+from typehaus.source.loader import load_plan
+from typehaus.source.macros import (
+    _rooms_with_moved_boundaries,
+    assign_placeable_room,
+    attach_placeable,
+    detach_placeable,
+    duplicate_canvas_object,
+    move_nodes,
+    move_placeable,
+    place_placeable,
+    rehost_opening,
+    rotate_placeable,
+)
+
+
+@pytest.mark.parametrize(("fixture_type", "expected_depth_inches"), (
+    (TOILET, 28),
+    (TOILET_WALL_HUNG, 19.3),
+))
+def test_water_closet_fixture_size_is_separate_from_required_code_clearance(
+        fixture_type, expected_depth_inches: float) -> None:
+    """A real bowl stays small; its code envelope is a distinct 30" by depth+21" polygon."""
+    assert tuple(dimension.inches for dimension in fixture_type.footprint) == pytest.approx(
+        (20 if fixture_type is TOILET else 15, expected_depth_inches))
+    zone = fixture_type.clearances[0]
+    assert zone.policy is ClearancePolicy.REQUIRED
+    assert zone.code_profile == "MN/IRC"
+    actual_inches = tuple(
+        coordinate.inches for point in zone.footprint.points for coordinate in (point.x, point.y)
+    )
+    assert actual_inches == pytest.approx((
+            -15, -(expected_depth_inches / 2 + 21),
+            15, -(expected_depth_inches / 2 + 21),
+            15, expected_depth_inches / 2,
+            -15, expected_depth_inches / 2,
+        ))
 
 
 def test_canvas_catalog_and_objects_use_one_normalized_contract() -> None:
