@@ -25,7 +25,7 @@ import { locateUid } from "./locate";
 import { createMutationActions, type MutationActions } from "./mutations";
 import {
   ALL_TRADES,
-  type Conflict, type DetailView, type Lens, type Representation, type Selection,
+  type Conflict, type DetailView, type LabelMode, type Lens, type Representation, type Selection,
   type ThreeMode, type Toast, type Tool, type ToolGroup, type Trade,
   type ViewMode, type ViewTransform, type Workspace,
 } from "./vocabulary";
@@ -61,7 +61,7 @@ export interface StoreState extends MutationActions {
   activeStorey: string | null;
   view: ViewTransform;
   showFraming: boolean; // framed floorplan vs. schematic wall fills
-  showSpaceLabels: boolean; // room/area name (or id) label overlay in the 2D plan (default on)
+  labelMode: LabelMode; // how much name text the 2D plan draws (rooms + objects; default all)
   // One visibility model, read by both Canvas2D and Panel3D (→ model/visibility.ts): trades
   // answer "which discipline", layer groups answer "which band of the assembly".
   visibleTrades: Record<Trade, boolean>;
@@ -98,7 +98,7 @@ export interface StoreState extends MutationActions {
   setViewMode: (v: ViewMode) => void;
   setThreeMode: (m: ThreeMode) => void;
   setShowFraming: (v: boolean) => void;
-  setShowSpaceLabels: (v: boolean) => void;
+  setLabelMode: (v: LabelMode) => void;
   setTradeVisible: (trade: Trade, visible: boolean) => void;
   setLayerGroupVisible: (group: LayerVisibilityGroup, visible: boolean) => void;
   showEverything: () => void; // one-tap escape from an over-filtered view
@@ -159,7 +159,7 @@ export const useStore = create<StoreState>((set, get) => ({
   activeStorey: null,
   view: { scale: 120, tx: 80, ty: 80 },
   showFraming: true,
-  showSpaceLabels: true,
+  labelMode: "all",
   visibleTrades: {
     walls: true, openings: true, framing: true, floors: true, concrete: true, roof: true,
     stairs: true, furniture: true, plumbing: true, electrical: true, mechanical: true, earth: true,
@@ -286,7 +286,7 @@ export const useStore = create<StoreState>((set, get) => ({
   setViewMode: (viewMode) => set({ viewMode }),
   setThreeMode: (threeMode) => set({ threeMode }),
   setShowFraming: (showFraming) => set({ showFraming }),
-  setShowSpaceLabels: (showSpaceLabels) => set({ showSpaceLabels }),
+  setLabelMode: (labelMode) => set({ labelMode }),
   setTradeVisible: (trade, visible) =>
     set((s) => ({ visibleTrades: { ...s.visibleTrades, [trade]: visible } })),
   setLayerGroupVisible: (group, visible) =>

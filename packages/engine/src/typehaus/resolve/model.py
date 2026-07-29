@@ -15,6 +15,7 @@ from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 
 if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-only
+    from typehaus.model.placeables import Mount
     from typehaus.resolve.geometry_ir import GeometryModel
 
 # A polygon ring: list of (x, y) in meters. Layer polygons are simple rings.
@@ -550,6 +551,10 @@ class ResolvedCanvasObject:
     # answer "which circuit is this outlet on?" from the selection, without re-deriving the
     # panel schedule in the browser.
     circuit: str | None = None
+    # The *authored* mount, carried alongside the resolved ``z_m`` it produced. An editor needs
+    # both: z_m to draw the object, the mount to show (and write back) the height someone
+    # actually typed — "46 in above this floor" survives a storey datum change, 2.34 m does not.
+    mount: Mount | None = None
 
 
 @dataclass

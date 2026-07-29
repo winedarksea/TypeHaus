@@ -3,6 +3,7 @@
 // and snap indicator, and the DOCUMENT workspace's detail (D-tag) markers. Split from
 // components/Canvas2D.tsx — each layer is a pure projection of model + gesture state handed
 // in as props; no store subscriptions live here.
+import { useState } from "react";
 import type { PreviewGeometry } from "../../engine/EngineClient";
 import type { PlanWarningMarker } from "../../model/planWarnings";
 import { projectedExtentPx, spaceLabel, spaceLabelLineBudget } from "../../model/spaceLabels";
@@ -12,30 +13,37 @@ import {
 } from "../../model/geometry";
 import { NORDIC_ACCENT, NORDIC_INK, NORDIC_LINE } from "../../nordic/palette";
 import { collinearAt } from "./PlanChrome";
+import type { LabelMode } from "../../state/vocabulary";
 import type { RubberBand, WallDraft } from "./canvasTypes";
 
 // Rooms (tinted fills, behind walls) — a live drag's preview cascades into neighboring
 // rooms' clear-face polygons, matched by tag against the last preview. Labels drop from the
 // bottom up (name → id → area) as the space runs out of room on screen.
-export function RoomLayer({ rooms, previewGeom, tool, showSpaceLabels, project, onSelect }: {
+export function RoomLayer({ rooms, previewGeom, tool, labelMode, project, onSelect }: {
   rooms: Room[];
   previewGeom: PreviewGeometry | null;
   tool: string;
-  showSpaceLabels: boolean;
+  labelMode: LabelMode;
   project: (p: Vec2) => Vec2;
   onSelect: (room: Room) => void;
 }) {
+  // Rooms are few (tens, not thousands), so one hovered-uid state for the whole layer is
+  // cheaper than the store round-trip a shared hover would cost.
+  const [hoveredUid, setHoveredUid] = useState<string | null>(null);
   return (
     <>
       {rooms.map((r) => {
         const clearFace = previewGeom?.rooms.find((x) => x.tag === r.tag)?.clear_face
           ?? r.clear_face;
+        const showLabel = labelMode === "all" || (labelMode === "hover" && hoveredUid === r.uid);
         return (
           <g key={r.uid} onClick={() => tool === "select" && onSelect(r)}
+            onPointerEnter={() => labelMode === "hover" && setHoveredUid(r.uid)}
+            onPointerLeave={() => labelMode === "hover" && setHoveredUid((uid) => uid === r.uid ? null : uid)}
             style={{ cursor: tool === "select" ? "pointer" : undefined }}>
             <polygon points={clearFace.map(project).map((p) => p.join(",")).join(" ")}
               fill="var(--canvas-selection)" stroke="none" />
-            {showSpaceLabels && clearFace.length > 0 && (() => {
+            {showLabel && clearFace.length > 0 && (() => {
               // Name (occupancy) on top, then the id a plan edit references, then area —
               // dropped from the bottom up as the space runs out of room on screen.
               const label = spaceLabel(r);

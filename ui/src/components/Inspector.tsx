@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useStore } from "../state/store";
 import type { Model, Opening, Stair, Wall } from "../model/types";
-import { formatFtIn, openingHostWall, openingStartFromCenter, wallLength } from "../model/geometry";
+import { formatFtIn, openingHostWall, openingStartFromCenter, parseFtIn, wallLength } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
 import { DetailViewer } from "./DetailViewer";
 import { StairDesigner } from "./StairDesigner";
@@ -180,9 +180,21 @@ function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullabl
   const [freeRotation, setFreeRotation] = useState(false);
   const [wall, setWall] = useState(item.attachment?.wall ?? "");
   const [face, setFace] = useState<"left" | "right">(item.attachment?.face === "right" ? "right" : "left");
-  const [distance, setDistance] = useState("0");
-  const [x, setX] = useState(String(item.position_m?.[0] ?? 0));
-  const [y, setY] = useState(String(item.position_m?.[1] ?? 0));
+  const [distance, setDistance] = useState("0\"");
+  // Every dimension in this panel is ft-in, like the rest of the app. Edits go back out as
+  // *canonical* ft-in strings (parse to validate, format to normalize), not as metres: the
+  // engine's Length.parse keeps the authored unit, so a plan file written in feet stays in
+  // feet instead of gaining an `m(1.8796)` where an `ft(6, 2)` belongs.
+  const [x, setX] = useState(() => formatFtIn(item.position_m?.[0] ?? 0));
+  const [y, setY] = useState(() => formatFtIn(item.position_m?.[1] ?? 0));
+  const mount = item.mount ?? null;
+  // `z_m` is an *absolute* height (storey datum + mount), and this field speaks above-floor —
+  // a basement fixture would otherwise read as a negative height. Prefill from the authored
+  // elevation when there is one, else from the resolved height rebased onto its own storey
+  // (a pendant authored as a drop below the ceiling has no elevation of its own).
+  const storeyElevationM = model.storeys.find((candidate) => candidate.tag === item.storey)?.elevation_m ?? 0;
+  const [elevation, setElevation] = useState(() =>
+    formatFtIn(mount?.elevation_m ?? ((item.z_m ?? 0) - storeyElevationM)));
   const [room, setRoom] = useState(item.room ?? "");
   const updateRotation = async () => {
     const degrees = Number(rotation);
@@ -191,16 +203,27 @@ function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullabl
     if (!result) toast("Could not rotate object", "error");
   };
   const attach = async () => {
-    const numericDistance = Number(distance);
-    if (!wall || !Number.isFinite(numericDistance)) return toast("Choose a wall and distance in metres", "error");
+    const distanceM = parseFtIn(distance);
+    if (!wall || distanceM === null) return toast("Choose a wall and a distance like 3'-6\"", "error");
     const result = await runMacro({ macro: "attach_placeable", storey: item.storey, tag: item.tag,
-      wall, face, distance: numericDistance });
+      wall, face, distance: formatFtIn(distanceM) });
     if (!result) toast("Could not attach object", "error");
   };
   const move = async () => {
-    if (!Number.isFinite(Number(x)) || !Number.isFinite(Number(y))) return toast("Position must be numeric metres", "error");
-    const result = await runMacro({ macro: "move_placeable", storey: item.storey, tag: item.tag, position: [x, y] });
+    const [xm, ym] = [parseFtIn(x), parseFtIn(y)];
+    if (xm === null || ym === null) return toast("Position must be a length like 12'-6\"", "error");
+    const result = await runMacro({ macro: "move_placeable", storey: item.storey, tag: item.tag,
+      position: [formatFtIn(xm), formatFtIn(ym)] });
     if (!result) toast("Could not move object", "error");
+  };
+  // The one edit that had no path at all before: a wall sconce authored at 46" could only be
+  // raised by hand-editing the plan file.
+  const setMountHeight = async () => {
+    const elevationM = parseFtIn(elevation);
+    if (elevationM === null || elevationM < 0) return toast("Height must be a length like 6'-0\"", "error");
+    const result = await runMacro({ macro: "set_placeable_mount", storey: item.storey, tag: item.tag,
+      elevation: formatFtIn(elevationM) });
+    if (!result) toast("Could not change the mount height", "error");
   };
   const assignRoom = async () => {
     const result = await runMacro({ macro: "assign_placeable_room", storey: item.storey, tag: item.tag,
@@ -259,33 +282,46 @@ function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullabl
       <span className="k">Ports</span><span>{type?.ports.map((port) => port.service).join(", ") || "—"}</span>
       <span className="k">Source</span><span><Provenance p={item.provenance ?? null} /></span>
     </div>
-    <label className="field">Product type
+    <label className="field-label">Product type
       <select value={item.type ?? ""} onChange={(event) => void changeType(event.target.value)}>
         {compatibleTypes.map((candidate) => <option key={candidate.tag} value={candidate.tag}>
           {candidate.tag} · {candidate.name}
         </option>)}
       </select>
     </label>
-    <label className="field">Rotation ° <input value={rotation} inputMode="decimal" onChange={(event) => setRotation(event.target.value)} />
-      <button className="btn" onClick={() => void updateRotation()}>Apply</button></label>
+    <label className="field-label">Rotation °
+      <span><input value={rotation} inputMode="decimal" onChange={(event) => setRotation(event.target.value)} />
+        <button className="btn" onClick={() => void updateRotation()}>Apply</button></span>
+    </label>
     <label className="muted" style={{ display: "block", fontSize: 11 }}><input type="checkbox" checked={freeRotation} onChange={(event) => setFreeRotation(event.target.checked)} /> Free rotation (otherwise snaps to 15°)</label>
-    <div className="field" style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: 4, marginTop: 8 }}>
-      <input aria-label="X position in metres" value={x} inputMode="decimal" onChange={(event) => setX(event.target.value)} />
-      <input aria-label="Y position in metres" value={y} inputMode="decimal" onChange={(event) => setY(event.target.value)} />
-      <button className="btn" onClick={() => void move()}>Move</button>
-    </div>
-    <label className="field" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 4, marginTop: 8 }}>Room
+    {/* Mount height only appears on an object that has an authored mount to edit — a sofa
+        sits on the floor and has no height to state. */}
+    {mount && <label className="field-label">
+      {mount.kind === "ceiling" ? "Height above floor (ceiling-mounted)" : mount.kind === "wall"
+        ? "Mount height above floor" : "Height above floor"}
+      <span><input value={elevation} onChange={(event) => setElevation(event.target.value)} />
+        <button className="btn" onClick={() => void setMountHeight()}>Apply</button></span>
+    </label>}
+    <label className="field-label">Position X
+      <span><input value={x} onChange={(event) => setX(event.target.value)} /></span>
+    </label>
+    <label className="field-label">Position Y
+      <span><input value={y} onChange={(event) => setY(event.target.value)} />
+        <button className="btn" onClick={() => void move()}>Move</button></span>
+    </label>
+    <label className="field-label">Room
       <span><select value={room} onChange={(event) => setRoom(event.target.value)}><option value="">Unassigned</option>
         {model.rooms.filter((candidate) => candidate.storey === item.storey).map((candidate) => <option key={candidate.uid} value={candidate.tag}>{candidate.tag}</option>)}</select>
         <button className="btn" onClick={() => void assignRoom()}>Apply</button></span>
     </label>
-    <div className="field" style={{ display: "grid", gap: 4, marginTop: 8 }}>
+    <div className="field-label">
       <span>Wall attachment</span>
       <select value={wall} onChange={(event) => setWall(event.target.value)}>
         <option value="">Choose wall…</option>{model.walls.filter((candidate) => candidate.storey === item.storey)
           .map((candidate) => <option key={candidate.uid} value={candidate.tag}>{candidate.tag}</option>)}</select>
       <select value={face} onChange={(event) => setFace(event.target.value as "left" | "right")}><option value="left">Left face</option><option value="right">Right face</option></select>
-      <input value={distance} inputMode="decimal" aria-label="Distance from wall start in metres" onChange={(event) => setDistance(event.target.value)} />
+      <input value={distance} aria-label="Distance from wall start" placeholder="3'-6&quot;"
+        onChange={(event) => setDistance(event.target.value)} />
       <button className="btn" onClick={() => void attach()}>Attach</button>
       {item.attachment && <button className="btn" onClick={() => void runMacro({ macro: "detach_placeable", storey: item.storey, tag: item.tag })}>Detach</button>}
     </div>

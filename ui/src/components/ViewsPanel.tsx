@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useStore } from "../state/store";
-import { ALL_TRADES, type Representation, type Trade, type ViewMode, type ThreeMode, type ViewTransform, type Workspace } from "../state/vocabulary";
+import { ALL_TRADES, type LabelMode, type Representation, type Trade, type ViewMode, type ThreeMode, type ViewTransform, type Workspace } from "../state/vocabulary";
 import {
   ALL_LAYER_VISIBILITY_GROUPS,
   LAYER_VISIBILITY_GROUP_LABEL,
@@ -40,6 +40,12 @@ const WORKSPACE_HINT: Record<Workspace, string> = {
   document: "Adds D-tag detail markers at documented junctions.",
 };
 
+const LABEL_MODE_HINT: Record<LabelMode, string> = {
+  all: "Every room and object names itself.",
+  hover: "A label appears only under the pointer; selected elements always show theirs.",
+  off: "No name text on the plan.",
+};
+
 interface SavedView {
   name: string;
   activeStorey: string | null;
@@ -47,7 +53,10 @@ interface SavedView {
   threeMode: ThreeMode;
   representation: Representation;
   visibleTrades: Record<Trade, boolean>;
-  showSpaceLabels?: boolean; // optional: older saved recipes predate the overlay toggle
+  // Both optional: recipes saved before the label control existed carry the boolean, and older
+  // ones carry neither — see applyView for how they map onto labelMode.
+  showSpaceLabels?: boolean;
+  labelMode?: LabelMode;
   // Optional for the same reason: recipes saved before per-layer visibility existed simply
   // restore every layer group on, which is what they were captured with.
   visibleLayerGroups?: Record<LayerVisibilityGroup, boolean>;
@@ -122,8 +131,8 @@ export function ViewsPanel() {
   const setThreeMode = useStore((s) => s.setThreeMode);
   const visibleTrades = useStore((s) => s.visibleTrades);
   const setTradeVisible = useStore((s) => s.setTradeVisible);
-  const showSpaceLabels = useStore((s) => s.showSpaceLabels);
-  const setShowSpaceLabels = useStore((s) => s.setShowSpaceLabels);
+  const labelMode = useStore((s) => s.labelMode);
+  const setLabelMode = useStore((s) => s.setLabelMode);
   const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
   const setLayerGroupVisible = useStore((s) => s.setLayerGroupVisible);
   const showEverything = useStore((s) => s.showEverything);
@@ -147,7 +156,7 @@ export function ViewsPanel() {
       representation: s.representation,
       visibleTrades: { ...s.visibleTrades },
       visibleLayerGroups: { ...s.visibleLayerGroups },
-      showSpaceLabels: s.showSpaceLabels,
+      labelMode: s.labelMode,
       workspace: s.activeWorkspace,
       view: { ...s.view },
     };
@@ -167,7 +176,8 @@ export function ViewsPanel() {
     for (const group of ALL_LAYER_VISIBILITY_GROUPS) {
       s.setLayerGroupVisible(group, v.visibleLayerGroups?.[group] ?? true);
     }
-    s.setShowSpaceLabels(v.showSpaceLabels ?? true);
+    // Backward compat: a pre-labelMode recipe only knew "space labels on/off".
+    s.setLabelMode(v.labelMode ?? (v.showSpaceLabels === false ? "off" : "all"));
     s.setActiveWorkspace(v.workspace ?? "design");
     s.setView(v.view);
   };
@@ -286,15 +296,16 @@ export function ViewsPanel() {
         ))}
       </div>
 
-      <h3>Plan overlays</h3>
-      <label className={`trade-chip${showSpaceLabels ? " on" : ""}`}>
-        <input
-          type="checkbox"
-          checked={showSpaceLabels}
-          onChange={(e) => setShowSpaceLabels(e.target.checked)}
-        />
-        Space labels
-      </label>
+      <h3>Labels</h3>
+      <div className="seg-row">
+        {(["all", "hover", "off"] as LabelMode[]).map((m) => (
+          <button key={m} className={`seg-btn${labelMode === m ? " active" : ""}`}
+            onClick={() => setLabelMode(m)} title={LABEL_MODE_HINT[m]}>
+            {m[0].toUpperCase() + m.slice(1)}
+          </button>
+        ))}
+      </div>
+      <div className="muted views-hint">{LABEL_MODE_HINT[labelMode]}</div>
 
       <h3>Saved views</h3>
       <div style={{ display: "flex", gap: 6 }}>

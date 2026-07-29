@@ -23,6 +23,7 @@ from typehaus.model.remap import MutationResult, ReferenceRemap, remap_ops_for
 from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Appliance, Fixture, Furniture, Room, Stair
 from typehaus.model.mep import ElectricalDevice, Equipment, Register
+from typehaus.model.placeables import Mount
 from typehaus.model.enums import DeviceKind, DuctSystem, EquipmentKind
 from typehaus.quantities import Length, deg
 from typehaus.quantities.length import ft, m
@@ -503,6 +504,32 @@ def attach_placeable(plan: PlanModel, storey: str, *, tag: str, wall: str, face:
                 f'rotation_offset={deg(rotation_offset).to_source()}))')
     return MutationResult(ops=[PatchOp("update", item.element_kind, tag,
                                        {"location": RawExpr(location)})])
+
+
+def set_placeable_mount(plan: PlanModel, storey: str, *, tag: str,
+                        elevation: float | str) -> MutationResult:
+    """Raise or lower a mounted object, rewriting only the mount's elevation.
+
+    The other three mount fields are authored intent that a height edit must not silently
+    discard: ``kind`` says what surface the object hangs on, ``drop`` how far a pendant hangs
+    below its ceiling, and ``recessed_into_host_surface`` whether it obstructs a neighbour's
+    clear floor space. So the whole constructor is rebuilt from the current mount rather than
+    replaced with a bare ``Mount(elevation=…)``.
+    """
+    item = _placeable(plan, storey, tag)
+    if item is None:
+        raise MacroError(f"no placeable {tag!r} on storey {storey!r}")
+    mount = getattr(item, "mount", None) or Mount()
+    height = _as_length(elevation)
+    if height.meters < 0:
+        raise MacroError("mount elevation must be at or above the floor")
+    fields = [f"kind=MountKind.{mount.kind.name}", f"elevation={height.to_source()}"]
+    if mount.drop is not None:
+        fields.append(f"drop={mount.drop.to_source()}")
+    if mount.recessed_into_host_surface:
+        fields.append("recessed_into_host_surface=True")
+    return MutationResult(ops=[PatchOp("update", item.element_kind, tag,
+                                       {"mount": RawExpr(f"Mount({', '.join(fields)})")})])
 
 
 def detach_placeable(plan: PlanModel, storey: str, *, tag: str,

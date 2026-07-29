@@ -103,6 +103,7 @@ export type MacroRequest =
   | { macro: "move_placeable"; storey: string; tag: string; position: [number | string, number | string] }
   | { macro: "rotate_placeable"; storey: string; tag: string; degrees: number; free_rotation?: boolean }
   | { macro: "attach_placeable"; storey: string; tag: string; wall: string; face: "left" | "right"; distance: number | string; gap?: number | string; rotation_offset?: number }
+  | { macro: "set_placeable_mount"; storey: string; tag: string; elevation: number | string }
   | { macro: "detach_placeable"; storey: string; tag: string; position?: [string, string] }
   | { macro: "place_placeable"; storey: string; type_ref: string; position: [string, string]; hint_file?: string; tag?: string }
   | { macro: "assign_placeable_room"; storey: string; tag: string; room?: string | null }

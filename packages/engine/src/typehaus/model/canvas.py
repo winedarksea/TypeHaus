@@ -133,6 +133,9 @@ def resolved_canvas_objects(
         "type": item.type_ref, "domain": item.domain, "room": item.room,
         "position_m": list(item.position), "z_m": item.z_m, "rotation": item.rotation_degrees,
         "host": None,
+        # The authored mount, not just the z_m resolved from it: the inspector edits the height
+        # someone wrote, and needs its units and kind (wall/ceiling) to say so.
+        "mount": _mount(item.mount),
         "attachment": ({"wall": item.attachment_wall, "face": item.attachment_face}
                        if item.attachment_wall is not None else None),
         "footprint": [list(point) for point in item.footprint],

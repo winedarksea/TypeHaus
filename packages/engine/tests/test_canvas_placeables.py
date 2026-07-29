@@ -54,6 +54,7 @@ from typehaus.source.macros import (
     place_placeable,
     rehost_opening,
     rotate_placeable,
+    set_placeable_mount,
 )
 
 
@@ -376,6 +377,57 @@ def test_placeable_drag_updates_the_explicit_containing_room_assignment() -> Non
     assert plan is not None
     op = move_placeable(plan, "main", tag="FX-M-BATH1-WC", position=(0.6096, 7.3152)).ops[0]
     assert op.fields["room"] == "RM-M-BATH1"
+
+
+def test_mount_height_edit_preserves_the_rest_of_the_authored_mount() -> None:
+    """Raising a sconce must not quietly turn it into a floor-standing, non-recessed object.
+
+    ``kind``, ``drop`` and ``recessed_into_host_surface`` are authored intent that a height
+    edit is not allowed to drop — the recessed flag in particular decides whether the object
+    obstructs a neighbour's clear floor space.
+    """
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    plan = load_plan(house).plan
+    assert plan is not None
+
+    sconce = set_placeable_mount(plan, "basement", tag="ED-B-WORKSHOP-SW", elevation="6'").ops[0]
+    assert (sconce.op, sconce.type) == ("update", "ElectricalDevice")
+    assert sconce.fields["mount"].expr == "Mount(kind=MountKind.WALL, elevation=ft(6))"
+
+    can = set_placeable_mount(plan, "basement", tag="ED-B-GYM-CAN1", elevation=2.4).ops[0]
+    assert can.fields["mount"].expr == (
+        "Mount(kind=MountKind.CEILING, elevation=m(2.4), recessed_into_host_surface=True)")
+
+    pendant = set_placeable_mount(plan, "basement", tag="ED-B-WORKSHOP-PANEL1", elevation="8'").ops[0]
+    assert 'drop=' in pendant.fields["mount"].expr
+
+    # An object authored with no mount at all is floor-mounted; raising it states that.
+    with pytest.raises(Exception, match="no placeable"):
+        set_placeable_mount(plan, "basement", tag="ED-NOPE", elevation="3'")
+    with pytest.raises(Exception, match="at or above the floor"):
+        set_placeable_mount(plan, "basement", tag="ED-B-WORKSHOP-SW", elevation=-1)
+
+
+def test_mount_height_edit_writes_source_that_reloads(tmp_path: Path) -> None:
+    house = tmp_path / "catlin"
+    shutil.copytree(Path(__file__).resolve().parents[3] / "houses" / "catlin", house)
+    plan = load_plan(house).plan
+    assert plan is not None
+    ops = set_placeable_mount(plan, "basement", tag="ED-B-WORKSHOP-SW", elevation="6'").ops
+    coordinator = ProjectCoordinator(house)
+    coordinator.apply_patch(ops, coordinator.revision())
+    reloaded = load_plan(house)
+    assert reloaded.plan is not None, [finding.message for finding in reloaded.findings]
+    raised = next(item for item in reloaded.plan.storey_elements("basement")
+                  if item.tag == "ED-B-WORKSHOP-SW")
+    assert raised.mount.elevation.meters == pytest.approx(ft(6).meters)
+    assert raised.mount.kind is MountKind.WALL
+    # And the resolved model republishes the authored mount beside the resolved height, which
+    # is what lets the inspector show a height in the units it was written in.
+    model, _ = resolve(reloaded.plan)
+    record = next(item for item in resolved_canvas_objects(model) if item["tag"] == "ED-B-WORKSHOP-SW")
+    assert record["mount"]["kind"] == "wall"
+    assert record["mount"]["elevation_m"] == pytest.approx(ft(6).meters)
 
 
 def test_fixture_dragged_clear_of_every_room_writes_source_that_still_loads(tmp_path: Path) -> None:

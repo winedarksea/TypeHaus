@@ -216,6 +216,10 @@ export interface CanvasObject {
   rotation: number | null;
   host: string | null;
   attachment: { wall: string; face: string } | null;
+  // The *authored* mount, beside the resolved `z_m` it produced. The inspector edits this one:
+  // "46 in above this floor" is what someone wrote, and it survives a storey datum change in a
+  // way a resolved absolute height does not. Absent on an object authored with no mount.
+  mount?: { kind: "floor" | "wall" | "ceiling"; elevation_m: number | null; drop_m: number | null; recessed_into_host_surface?: boolean } | null;
   // Set on an object the engine recovered as an occupant of another object's clearance zone
   // (a chair at its table) — the group's uid. Members do not conflict with each other's
   // recommended clearance, and dragging the group's owner should carry them along.

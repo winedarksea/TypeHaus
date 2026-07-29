@@ -46,7 +46,7 @@ export function Canvas2D() {
   const select = useStore((s) => s.select);
   const hoverUid = useStore((s) => s.hoverUid);
   const showFraming = useStore((s) => s.showFraming);
-  const showSpaceLabels = useStore((s) => s.showSpaceLabels);
+  const labelMode = useStore((s) => s.labelMode);
   // The plan reads the same visibility model the 3D panel does (→ model/visibility.ts), so a
   // discipline or an assembly layer hidden in one view is hidden in the other.
   const visibleTrades = useStore((s) => s.visibleTrades);
@@ -335,7 +335,7 @@ export function Canvas2D() {
         {visibleTrades.concrete && <SlabOutlines slabs={slabsOnStorey} project={project} />}
         {/* rooms next (tinted fills, behind walls; → plan/PlanMarkers.tsx::RoomLayer) */}
         <RoomLayer rooms={model.rooms.filter((r) => !activeStorey || r.storey === activeStorey)}
-          previewGeom={previewGeom} tool={tool} showSpaceLabels={showSpaceLabels}
+          previewGeom={previewGeom} tool={tool} labelMode={labelMode}
           project={project} onSelect={(r) => select("room", r.uid)} />
         {/* walls — likewise shown at their previewed axis (tag-matched) while a node drag is
             in flight, so connected walls visibly stretch/shrink before the commit lands */}
@@ -420,7 +420,7 @@ export function Canvas2D() {
           .map((item) => <CanvasObjectFootprint key={item.uid} item={item}
             type={item.type ? canvasTypes.get(item.type) : undefined} project={project} scale={view.scale}
             walls={wallsOnStorey}
-            selected={selection.uid === item.uid} onSelect={selectEl} toWorld={unproject}
+            selected={selection.uid === item.uid} labelMode={labelMode} onSelect={selectEl} toWorld={unproject}
             onMove={movePlaceableFromDrag} onRotate={rotatePlaceableFromHandle} />)}
         {showClearances && <ClearanceOverlays model={model} storey={activeStorey} project={project}
           scale={view.scale} />}
@@ -499,7 +499,7 @@ export function Canvas2D() {
           {visibleServiceObjects.map((item) => <CanvasObjectFootprint key={`service-${item.uid}`} item={item}
             type={item.type ? canvasTypes.get(item.type) : undefined} project={project} scale={view.scale}
             walls={wallsOnStorey}
-            selected={selection.uid === item.uid} onSelect={selectEl} toWorld={unproject}
+            selected={selection.uid === item.uid} labelMode={labelMode} onSelect={selectEl} toWorld={unproject}
             onMove={movePlaceableFromDrag} onRotate={rotatePlaceableFromHandle} />)}
         </>}
       </svg>

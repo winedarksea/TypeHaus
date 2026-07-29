@@ -118,6 +118,10 @@ def _attach_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> Mut
                                    gap=body.get("gap", 0), rotation_offset=float(body.get("rotation_offset", 0)))
 
 
+def _set_placeable_mount(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.set_placeable_mount(plan, storey, tag=body["tag"], elevation=body["elevation"])
+
+
 def _detach_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
     return macros.detach_placeable(plan, storey, tag=body["tag"],
                                    position=_xy(body["position"]) if body.get("position") is not None else None)
@@ -187,6 +191,7 @@ _DISPATCH = {
     "move_placeable": _move_placeable,
     "rotate_placeable": _rotate_placeable,
     "attach_placeable": _attach_placeable,
+    "set_placeable_mount": _set_placeable_mount,
     "detach_placeable": _detach_placeable,
     "place_placeable": _place_placeable,
     "assign_placeable_room": _assign_placeable_room,

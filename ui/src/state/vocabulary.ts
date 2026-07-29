@@ -13,6 +13,10 @@ export type Tool = "select" | "wall" | "opening" | "placeable" | "room" | "stair
 export type ToolGroup = "select" | "build" | "openings" | "components" | "measure";
 export type ViewMode = "2d" | "split" | "3d";
 export type ThreeMode = "nordic" | "schematic";
+// How much name text the 2D plan carries. One control for both room labels and object names,
+// because a plan dense enough to want fewer room labels wants fewer object labels too.
+// "hover" shows a label only under the pointer (a selected element always shows its own).
+export type LabelMode = "all" | "hover" | "off";
 // Phase 6 — three previously-conflated concepts pulled apart:
 export type Workspace = "design" | "analyze" | "document"; // tool/drawer emphasis
 export type Representation = "conceptual" | "schematic" | "detailed" | "fabrication"; // detail level

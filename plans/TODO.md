@@ -165,8 +165,13 @@ the future.
 
 ### Items after Phase 6
 - Double check that the default toilet has a realistic size (do we separate the code required toilet clearance with the size of the toilet itself?)
-- Editing furniture and lighting positions is confusing. The styling of the popup editor is erratic, and not all inputs are well labeled. I'm trying to figure out how to move ED-1 adjustable light higher up the wall and have no idea which thing to adjust. Clicking on furniture items seems to just have them move randomly sometimes (perhaps it tracks motion before or after the click and that's brought in somehow accidentally).
-- Might be nice to have a toggle that turns off all the white label text on the 2d image. It can be a bit overwhelming at times. Maybe a label on hover option then.
+- DONE: object inspector relabeled (every row on `.field-label`, positions and distances in
+  ft-in) and given a "Mount height above floor" field on the new `set_placeable_mount` macro,
+  which rewrites only the mount's elevation and keeps kind/drop/recessed. Clicking no longer
+  moves anything: the plan canvas needs 5px of screen travel before a drag starts, and a drag
+  keeps the grab point under the pointer instead of snapping the object's centre to it.
+- DONE: Views ▾ → Labels: All / Hover / Off, covering room labels and object names together
+  (replaces the "Space labels" checkbox). A selected element always shows its own label.
 - RM-M-STORAGE should become the "Mudroom". Doors should go as far east on both walls as is practical with framing. WIN-M-STOR should be replaced by a 14" wide fixed (picture) window on the midpoint of the west wall (midpoint, but such that it fits elegantly between studs). Then on the north and south sides of the mudroom, from door to west wall, there should be full closests added, leaving a hallway width (36") between them, and a 36" width bench under the window there for changing shoes. The mudroom should have an ERV ventilation intake (but not an outlet). Maybe sliding doors on those closets (like shower doors, two panels that can overlap, not the sash kind that go into the wall).
 - Make Wall W-M-STRW a special wall type. It will not have drywall facing the mudroom, so it can have space for hanging coats between the studs. The studs will be Select Grade S4S 2x6 for better visual appearance (likely douglas fir, perhaps slightly rounded (eased) corners). The rear side of the wall (facing the stairs) will have 3/4" cabinet-grade plywood (which can support coat hooks directly). Try to keep electrical and plumbing out of this wall then (it might work carefully but easier to avoid.)
 - Unittests that the stairs align between floors and reach the correct ceiling height while meeting code. The winders for ST-S2A are still messed up (last winder is level with the floor, not a step up), and the regular stair tread can come down to 11".

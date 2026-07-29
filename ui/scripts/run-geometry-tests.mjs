@@ -24,7 +24,7 @@ try {
   const { runMemberPickingTests } = await server.ssrLoadModule("/src/three/memberPicking.test.ts");
   const { runRoomFloorTests } = await server.ssrLoadModule("/src/three/builders/roomFloor.test.ts");
   const { runToolDispatchTests } = await server.ssrLoadModule("/src/components/plan/toolDispatch.test.ts");
-  const { runPlaceableDragTests } = await server.ssrLoadModule("/src/components/plan/objectDrag.test.ts");
+  const { runPlaceableDragTests, runObjectDragMathTests } = await server.ssrLoadModule("/src/components/plan/objectDrag.test.ts");
   const { runStoreEventTests } = await server.ssrLoadModule("/src/state/storeEvents.test.ts");
   runPlanGeometryTests();
   runOpeningGeometryTests();
@@ -56,6 +56,7 @@ try {
   runRoomFloorTests();
   runToolDispatchTests();
   runPlaceableDragTests();
+  runObjectDragMathTests();
   runStoreEventTests();
   console.log("Plan geometry tests passed.");
 } finally {

@@ -8,9 +8,10 @@
 import { useRef, useState } from "react";
 import type { CanvasObject, CanvasObjectType, Model, Vec2, Wall } from "../../model/types";
 import { nearestWallHit, openingHostWall } from "../../model/geometry";
+import { draggedCenter, exceedsDragThreshold, grabOffsetFor } from "./objectDrag";
 import { NORDIC_ACCENT } from "../../nordic/palette";
 import { useStore } from "../../state/store";
-import type { Selection } from "../../state/vocabulary";
+import type { LabelMode, Selection } from "../../state/vocabulary";
 
 // A drag is a writeback: the engine has to find an editable plan file hosting this object's
 // constructor. When it can't, the edit is rejected (422) — so refuse the gesture up front and
@@ -67,13 +68,14 @@ export function NodeHandle({ world, project, onStart, onMove, onEnd }: {
   );
 }
 
-export function CanvasObjectFootprint({ item, type, project, scale, walls, selected, onSelect, toWorld, onMove, onRotate }: {
+export function CanvasObjectFootprint({ item, type, project, scale, walls, selected, labelMode = "all", onSelect, toWorld, onMove, onRotate }: {
   item: CanvasObject;
   type?: CanvasObjectType;
   project: (point: Vec2) => Vec2;
   scale: number;
   walls: Wall[];
   selected: boolean;
+  labelMode?: LabelMode;
   onSelect: (kind: Selection["kind"], uid: string) => void;
   toWorld: (clientX: number, clientY: number) => Vec2;
   onMove: (item: CanvasObject, position: Vec2) => void;
@@ -82,6 +84,13 @@ export function CanvasObjectFootprint({ item, type, project, scale, walls, selec
   const [draggedPosition, setDraggedPosition] = useState<Vec2 | null>(null);
   const [draggedRotation, setDraggedRotation] = useState<number | null>(null);
   const [alignmentPoint, setAlignmentPoint] = useState<Vec2 | null>(null);
+  // Hover lives in the component, not the store: hovering every object in a dense plan through
+  // the store would re-render the whole canvas (see the memoization notes in
+  // useCanvasInteractions.ts).
+  const [hovered, setHovered] = useState(false);
+  // One gesture's worth of state. A ref, not state: the threshold has to be readable inside the
+  // very pointermove that crosses it, before any re-render.
+  const gesture = useRef<{ downScreen: Vec2; grabOffset: Vec2; dragging: boolean } | null>(null);
   if (!item.position_m) return null;
   const position = draggedPosition ?? item.position_m;
   const [x, y] = project(position);
@@ -108,27 +117,44 @@ export function CanvasObjectFootprint({ item, type, project, scale, walls, selec
       // Selection still works on a non-editable object (the inspector shows its provenance);
       // only the pointer capture that starts the drag is withheld.
       if (dragBlocked) { useStore.getState().toast(dragBlocked); return; }
+      gesture.current = {
+        downScreen: [event.clientX, event.clientY],
+        grabOffset: grabOffsetFor(item.position_m!, toWorld(event.clientX, event.clientY)),
+        dragging: false,
+      };
       event.currentTarget.setPointerCapture(event.pointerId);
     }}
+    onPointerEnter={() => setHovered(true)}
+    onPointerLeave={() => setHovered(false)}
     // Double-click opens the object's details (Inspector), matching the door/window affordance
     // and guaranteeing the panel opens even if a stray drag swallowed the pointer-up select.
     onDoubleClick={(event) => { event.stopPropagation(); onSelect("canvas_object", item.uid); }}
     onPointerMove={(event) => {
-      if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
-      const next = toWorld(event.clientX, event.clientY);
+      const active = gesture.current;
+      if (!active || !event.currentTarget.hasPointerCapture(event.pointerId)) return;
+      // Below the threshold this is still a click in progress: leave the object where it is.
+      if (!active.dragging) {
+        if (!exceedsDragThreshold(active.downScreen, [event.clientX, event.clientY])) return;
+        active.dragging = true;
+      }
+      const next = draggedCenter(active.grabOffset, toWorld(event.clientX, event.clientY));
       setDraggedPosition(next);
       const hit = nearestWallHit(walls, next);
       setAlignmentPoint(hit && hit.dist_m <= .35 ? hit.point : null);
     }}
     onPointerUp={(event) => {
-      if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+      const active = gesture.current;
+      if (!active || !event.currentTarget.hasPointerCapture(event.pointerId)) return;
       event.currentTarget.releasePointerCapture(event.pointerId);
-      const next = toWorld(event.clientX, event.clientY);
+      gesture.current = null;
       setDraggedPosition(null);
       setAlignmentPoint(null);
-      if (Math.hypot(next[0] - item.position_m![0], next[1] - item.position_m![1]) > 0.001) onMove(item, next);
+      // Never dragged → a pure select, and crucially no writeback: a click used to commit
+      // whatever sub-millimetre delta the pointer happened to land on.
+      if (!active.dragging) return;
+      onMove(item, draggedCenter(active.grabOffset, toWorld(event.clientX, event.clientY)));
     }}
-    onPointerCancel={() => { setDraggedPosition(null); setAlignmentPoint(null); }}>
+    onPointerCancel={() => { gesture.current = null; setDraggedPosition(null); setAlignmentPoint(null); }}>
     {type?.plan_svg ? <image href={type.plan_svg} x={x - width / 2} y={y - depth / 2} width={width} height={depth}
       transform={`rotate(${-rotation} ${x} ${y})`} />
       : strokes.length ? <g transform={`rotate(${-rotation} ${x} ${y})`}>
@@ -150,11 +176,13 @@ export function CanvasObjectFootprint({ item, type, project, scale, walls, selec
           fill={fill} stroke={selected ? "var(--ink)" : stroke} strokeWidth={selected ? 2.4 : 1.2}
           transform={`rotate(${-rotation} ${x} ${y})`} />}
     {/* A centred label sits on top of the glyph and hides it, so a drawn symbol pushes its
-        name below the footprint instead. */}
-    <text x={x} y={strokes.length ? y + depth / 2 + 11 : y + 3} textAnchor="middle" fontSize={9}
-      fill="var(--ink)" pointerEvents="none">
-      {(type?.name ?? item.type ?? item.kind).replace(/^[A-Z]+-/, "")}
-    </text>
+        name below the footprint instead. A selected object always names itself, whatever the
+        label mode — you asked for that one. */}
+    {(labelMode === "all" || selected || (labelMode === "hover" && hovered)) &&
+      <text x={x} y={strokes.length ? y + depth / 2 + 11 : y + 3} textAnchor="middle" fontSize={9}
+        fill="var(--ink)" pointerEvents="none">
+        {(type?.name ?? item.type ?? item.kind).replace(/^[A-Z]+-/, "")}
+      </text>}
     {/* Rotation is a writeback too, so a non-editable object shows no rotate handle. */}
     {selected && !dragBlocked && <g>
       <line x1={x} y1={y - depth / 2} x2={x} y2={y - depth / 2 - 18}
