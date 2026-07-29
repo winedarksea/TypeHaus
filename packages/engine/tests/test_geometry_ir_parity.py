@@ -247,3 +247,68 @@ def test_a_member_box_is_still_twelve_triangles(model) -> None:
         _add_member(builder, member)
         triangles = sum(len(indices) for _positions, indices in builder._buckets.values()) // 3
         assert triangles == 12, f"{member.child_key} emitted {triangles} triangles"
+
+
+# --- walls ------------------------------------------------------------------------------
+
+def test_every_wall_becomes_one_element_with_a_part_per_depth_layer(model, geometry) -> None:
+    """Cavity fill shares the structure layer's polygon, so a part for it would only
+    z-fight — depth-bearing layers alone earn one."""
+    for wall in model.walls:
+        element = geometry.by_uid(wall.uid)
+        assert element is not None, wall.tag
+        expected = [ly for ly in wall.depth_layers() if ly.polygon]
+        assert len(element.parts) == len(expected), wall.tag
+
+
+def test_a_raked_wall_carries_per_vertex_tops(model, geometry) -> None:
+    """A gable/ToRoof wall stops at its actual rake; a flat bounding-height box would engulf
+    and z-fight the roof it carries."""
+    from typehaus.resolve.geometry_ir import GPrism
+    from typehaus.resolve.geometry_walls import is_raked, wall_top_at
+
+    raked = [w for w in model.walls if is_raked(w)]
+    if not raked:
+        pytest.skip("house has no raked walls")
+    for wall in raked:
+        element = geometry.by_uid(wall.uid)
+        prisms = [s for p in element.parts for s in p.solids if isinstance(s, GPrism)]
+        # The sill band under an opening stays deliberately flat; at least one solid rakes.
+        assert any(s.top is not None for s in prisms), wall.tag
+        for solid in prisms:
+            if solid.top is None:
+                continue
+            for (x, y), top in zip(solid.ring, solid.top):
+                assert top == pytest.approx(wall_top_at(wall, x, y), abs=TOL)
+
+
+def test_openings_split_their_wall_layer(model, geometry) -> None:
+    """A layer hosting an opening becomes piers + sill band + header, so the window reads as
+    a void rather than being drawn over."""
+    hosts = {o.host_wall for o in model.openings}
+    split = [w for w in model.walls if w.tag in hosts and w.depth_layers()]
+    if not split:
+        pytest.skip("house has no walls hosting openings")
+    for wall in split:
+        element = geometry.by_uid(wall.uid)
+        counts = [len(p.solids) for p in element.parts]
+        assert max(counts) > 1, f"{wall.tag} layer was not split around its openings"
+
+
+def test_arched_openings_produce_a_curved_mesh(model, geometry) -> None:
+    """An arch head is one continuous curved soffit carrying the cylinder's analytic normals,
+    not a stack of flat strips."""
+    from typehaus.resolve.geometry_ir import GMesh
+
+    arched = [o for o in model.openings if o.arch_rise_m > 1e-6]
+    if not arched:
+        pytest.skip("house has no arched openings")
+    meshes = [s for e in geometry.of_kind("wall") for p in e.parts for s in p.solids
+              if isinstance(s, GMesh)]
+    assert meshes, "arched opening produced no mesh"
+    for mesh in meshes:
+        assert mesh.normals is not None and len(mesh.normals) == len(mesh.positions)
+        # Only the soffit vertices are on the curve; the flat top's are not, or the emitter
+        # would shade a flat face as curved.
+        assert mesh.curved_vertices
+        assert len(mesh.curved_vertices) < len(mesh.positions)

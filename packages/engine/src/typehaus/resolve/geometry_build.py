@@ -11,7 +11,11 @@ Walls, openings, roofs, floors and earth follow.
 
 from __future__ import annotations
 
-from typehaus.emit.finishes import member_material_key, normalize
+from typehaus.emit.finishes import (
+    layer_visibility_group,
+    member_material_key,
+    normalize,
+)
 from typehaus.resolve.geometry_ir import (
     ElementGeometry,
     GBox,
@@ -20,7 +24,8 @@ from typehaus.resolve.geometry_ir import (
     GPrism,
 )
 from typehaus.resolve.geometry_members import member_box, member_part_key, member_uid
-from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedSolid
+from typehaus.resolve.geometry_walls import layer_solids
+from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedSolid, ResolvedWall
 
 
 def _member_parts(members: tuple[FramedMember, ...] | list[FramedMember],
@@ -34,10 +39,38 @@ def _member_parts(members: tuple[FramedMember, ...] | list[FramedMember],
             key=member_part_key(member),
             solids=(box,),
             material_key=member_material_key(member),
-            layer_group="framing",
+            # Framing is a trade toggle, not a band of an assembly stack — except for
+            # the skin members (closure bands, derived trim), which belong with the
+            # layer they continue.
+            layer_group=(layer_visibility_group(member.category)
+                         if member.material else "structure"),
             member_uid=member_uid(member),
         ))
     return tuple(parts)
+
+
+def _wall_geometry(wall: ResolvedWall, openings) -> ElementGeometry:
+    """A wall's body: one part per depth-bearing layer, jamb-split around its openings.
+
+    Only depth-bearing layers get a part — cavity fill shares the structure layer's polygon,
+    so a second solid there would only z-fight it.
+    """
+    parts: list[GPart] = []
+    for layer in wall.depth_layers():
+        if not layer.polygon:
+            continue
+        solids = layer_solids(wall, layer.polygon, openings)
+        if not solids:
+            continue
+        function = (layer.function.value if hasattr(layer.function, "value")
+                    else str(layer.function))
+        parts.append(GPart(
+            key=f"layer:{layer.name}",
+            solids=solids,
+            material_key=normalize(function),
+            layer_group=layer_visibility_group(function),
+        ))
+    return ElementGeometry(uid=wall.uid, kind="wall", trade="walls", parts=tuple(parts))
 
 
 def _solid_geometry(solid: ResolvedSolid) -> ElementGeometry:
@@ -83,6 +116,12 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
                 elements.append(ElementGeometry(
                     uid=f"{host.uid}::framing", kind="framing", trade="framing", parts=parts,
                 ))
+
+    openings_by_wall: dict[str, list] = {}
+    for opening in model.openings:
+        openings_by_wall.setdefault(opening.host_wall, []).append(opening)
+    for wall in model.walls:
+        elements.append(_wall_geometry(wall, openings_by_wall.get(wall.tag, ())))
 
     for solid in model.solids:
         elements.append(_solid_geometry(solid))

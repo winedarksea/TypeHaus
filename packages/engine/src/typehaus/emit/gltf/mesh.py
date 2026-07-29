@@ -201,6 +201,27 @@ class _MeshBuilder:
             c, d = base + count + nxt, base + count + index
             indices.extend((a, b, c, a, c, d))
 
+    def add_mesh(self, mesh: "GMesh", color: tuple[float, float, float, float]) -> None:
+        """Add pre-tessellated IR geometry, carrying its analytic normals where it has them.
+
+        A curved surface (the arch soffit) reads as one curve only if the normals come from the
+        curve rather than from the facets approximating it, which is why GMesh carries them.
+        """
+        positions, indices = self._bucket(color)
+        base = len(positions)
+        positions.extend(_to_gltf(*point) for point in mesh.positions)
+        for triangle in mesh.triangles:
+            ordinal = len(indices) // 3
+            corners = tuple(base + index for index in triangle)
+            indices.extend(corners)
+            # Only facets lying *on* the curved surface claim analytic shading. A side or
+            # top facet borrows corners from the curve, but is itself flat, and shading it
+            # as curved would bend a flat face.
+            if mesh.normals is not None and all(index in mesh.curved_vertices
+                                                for index in triangle):
+                indices.smooth_face_normals[ordinal] = tuple(
+                    _to_gltf(*mesh.normals[index]) for index in triangle)
+
     def add_triangles(self, triangles: list[tuple[Vec3, Vec3, Vec3]],
                       color: tuple[float, float, float, float]) -> None:
         positions, indices = self._bucket(color)

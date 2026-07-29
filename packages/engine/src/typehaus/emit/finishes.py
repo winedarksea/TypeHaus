@@ -90,3 +90,34 @@ def member_material_key(member: FramedMember) -> str:
         if family is not None:
             return normalize(family)
     return normalize(member.category)
+
+
+# --- layer visibility groups ----------------------------------------------------------
+# The togglable bands of an assembly, mirroring ALL_LAYER_VISIBILITY_GROUPS and
+# LAYER_FUNCTION_ALIASES in ui/src/model/visibility.ts. Per-layer visibility rides plain node
+# visibility in the viewer, so a group name the UI does not know is a band that can never be
+# turned off. `tests/test_layer_group_parity.py` pins the two lists equal.
+LAYER_VISIBILITY_GROUPS = (
+    "structure", "sheathing", "membrane", "insulation", "airgap", "furring", "cladding",
+    "finish", "other",
+)
+
+# Synonyms the engine emits for the same bucket. `lining` is an interior finish stack, and
+# `fascia`/`soffit` are the derived eave trim that continues the cladding plane.
+_LAYER_GROUP_ALIASES = {
+    "air_gap": "airgap",
+    "lining": "finish",
+    "fascia": "cladding",
+    "soffit": "cladding",
+    "roofing": "cladding",
+}
+
+
+def layer_visibility_group(layer_function: str | None) -> str:
+    """Bucket a layer function (or a skin member's category) into a togglable group."""
+    key = (layer_function or "").strip().lower()
+    if not key:
+        return "other"
+    if key in LAYER_VISIBILITY_GROUPS:
+        return key
+    return _LAYER_GROUP_ALIASES.get(key, "other")

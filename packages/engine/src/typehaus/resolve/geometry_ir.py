@@ -92,6 +92,11 @@ class GMesh:
     triangles: tuple[tuple[int, int, int], ...]
     normals: tuple[Vec3, ...] | None = None
     uvs: tuple[tuple[float, float], ...] | None = None
+    # Which vertices actually lie on the curved surface. A triangle claims analytic shading
+    # only when *all* its corners do: the side and top facets of an arch head borrow corners
+    # from the soffit curve but are themselves flat, and shading those as curved bends a flat
+    # face. Empty means "nothing here is curved", so normals are advisory only.
+    curved_vertices: frozenset[int] = frozenset()
 
     def __post_init__(self) -> None:
         count = len(self.positions)
