@@ -99,11 +99,11 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             continue
         mb = _MeshBuilder()
         door_type = door_types.get(op.type_ref)
-        is_double_swing = (op.is_door and door_type is not None
-                           and door_type.operation == "double_swing")
-        _add_opening_filling(mb, host, op, is_double_swing,
+        operation = door_type.operation if op.is_door and door_type is not None else None
+        _add_opening_filling(mb, host, op, operation,
                              is_glazed=op.is_door and door_type is not None and door_type.glazed,
-                             is_trimless=op.is_door and door_type is not None and door_type.trimless)
+                             is_trimless=(op.is_door and door_type is not None
+                                           and door_type.trimless))
         scene.add_object(mb, trade="openings", kind="opening", uid=op.uid)
 
     for room in sorted(model.rooms, key=lambda r: r.uid):

@@ -8,16 +8,17 @@ public names. The TS copy stays — the viewer's own render path is not being re
 ``WHOLE_HOUSE_GLB_PRIMARY``) — so `tests/test_gltf_opening_fillings.py` is what keeps the two
 in step, and a change here still has to be made there.
 
-The product is a stack of boxes laid out in the wall's own frame: a four-piece frame, then
-either one door panel, two leaves split at a centre mullion (``double_swing``), or a glass
-pane. Box order is preserved exactly as the emitter drew it, so the switch-over is a
-byte-for-byte diff rather than a re-blessing.
+The product is a stack of boxes laid out in the wall's own frame: a four-piece frame, then a
+single panel, French leaves, slider panels, bifold leaves, or glazing. Box order is preserved
+exactly as the emitter drew it, so the switch-over is a byte-for-byte diff rather than a
+re-blessing.
 """
 
 from __future__ import annotations
 
 import math
 
+from typehaus.model.enums import DoorOperation
 from typehaus.resolve.geometry_ir import GPart, GPrism
 from typehaus.resolve.geometry_walls import is_raked, wall_top_at
 from typehaus.resolve.model import ResolvedWall
@@ -31,12 +32,15 @@ _WINDOW_GLAZING_THICKNESS_M = 0.015          # glass pane thickness
 _OPENING_MIN_PANEL_DIMENSION_M = 0.01        # a degenerate opening still ships a visible sliver
 _DOUBLE_SWING_MULLION_CLEAR_WIDTH_DIVISOR = 6.0  # center mullion <= 1/6 of the clear width
 _DOUBLE_SWING_LEAF_COUNT = 2
+_BIFOLD_LEAF_COUNT = 4
+_SLIDING_PANEL_COUNT = 2
+_SLIDING_TRACK_HEIGHT_M = 0.02
 
 _FRAME_KEY = "opening_frame"
 _GLASS_KEY = "glass"
 
 
-def opening_parts(wall: ResolvedWall, opening, is_double_swing: bool,
+def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                   is_glazed: bool = False, is_trimless: bool = False) -> tuple[GPart, ...]:
     """Every solid the product inside ``opening`` contributes, grouped into named parts.
 
@@ -95,7 +99,7 @@ def opening_parts(wall: ResolvedWall, opening, is_double_swing: bool,
     panel_height = max(_OPENING_MIN_PANEL_DIMENSION_M, available_height - 2.0 * frame_width)
     panel_elev = z0 + sill + frame_width + panel_height / 2.0
     clear_width = width - 2.0 * frame_width  # between the two jamb faces
-    if opening.kind == "door" and is_double_swing:
+    if opening.kind == "door" and operation is DoorOperation.DOUBLE_SWING:
         # Two leaves meeting at a centre mullion, matching the 2D French-door symbol.
         mullion_width = min(frame_width,
                             clear_width / _DOUBLE_SWING_MULLION_CLEAR_WIDTH_DIVISOR)
@@ -110,6 +114,43 @@ def opening_parts(wall: ResolvedWall, opening, is_double_swing: bool,
             solids=(box(leaf_width, panel_height, leaf_thickness, -leaf_offset, panel_elev),
                     box(leaf_width, panel_height, leaf_thickness, leaf_offset, panel_elev)),
         ))
+    elif opening.kind == "door" and operation is DoorOperation.SLIDE:
+        # A closed slider stays coplanar in the product view: the two glazed panels meet at
+        # a narrow stile and a low track, which distinguishes it from a French pair without
+        # pretending the inactive panel is currently parked over the wall.
+        stile_width = min(frame_width / 2.0, clear_width / 12.0)
+        panel_width = max(_OPENING_MIN_PANEL_DIMENSION_M,
+                          (clear_width - stile_width) / _SLIDING_PANEL_COUNT)
+        panel_offset = stile_width / 2.0 + panel_width / 2.0
+        parts.append(GPart(key="sliding_stile", material_key=_FRAME_KEY,
+                           solids=(box(stile_width, panel_height, depth, 0.0, panel_elev),)))
+        parts.append(GPart(key="sliding_track", material_key=_FRAME_KEY, solids=(
+            box(clear_width, min(_SLIDING_TRACK_HEIGHT_M, panel_height), depth, 0.0,
+                z0 + sill + frame_width + min(_SLIDING_TRACK_HEIGHT_M, panel_height) / 2.0),
+        )))
+        panel_thickness = (_WINDOW_GLAZING_THICKNESS_M if is_glazed
+                           else _DOOR_LEAF_THICKNESS_M)
+        parts.append(GPart(
+            key="sliding_panel", material_key=_GLASS_KEY if is_glazed else _FRAME_KEY,
+            solids=(
+                box(panel_width, panel_height, panel_thickness, -panel_offset, panel_elev),
+                box(panel_width, panel_height, panel_thickness, panel_offset, panel_elev),
+            ),
+        ))
+    elif opening.kind == "door" and operation is DoorOperation.BIFOLD:
+        # Four leaves are the closed, coplanar form of a centre-opening bifold pair. The
+        # narrow reveals preserve each fold joint without posing the leaves open in 3D.
+        fold_gap = min(frame_width / 8.0, clear_width / 40.0)
+        leaf_width = max(
+            _OPENING_MIN_PANEL_DIMENSION_M,
+            (clear_width - fold_gap * (_BIFOLD_LEAF_COUNT - 1)) / _BIFOLD_LEAF_COUNT,
+        )
+        first_leaf_center = -clear_width / 2.0 + leaf_width / 2.0
+        parts.append(GPart(key="bifold_leaf", material_key=_FRAME_KEY, solids=tuple(
+            box(leaf_width, panel_height, _DOOR_LEAF_THICKNESS_M,
+                first_leaf_center + index * (leaf_width + fold_gap), panel_elev)
+            for index in range(_BIFOLD_LEAF_COUNT)
+        )))
     elif opening.kind == "door" and not is_glazed:
         parts.append(GPart(key="leaf", material_key=_FRAME_KEY, solids=(
             box(max(_OPENING_MIN_PANEL_DIMENSION_M, clear_width), panel_height,

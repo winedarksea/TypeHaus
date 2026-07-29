@@ -57,6 +57,30 @@ def test_door_operation_rejects_an_unknown_value():
         DoorType(tag="DT-Z", width=ft(3), height=ft(6, 8), operation="barn")
 
 
+def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
+    types = {door_type.tag: door_type for door_type in catlin_model.plan.library.door_types}
+    expected = {
+        "DT-EXT-SWING36": (36.0, DoorOperation.SWING, True, False),
+        "DT-EXT-FRENCH60": (60.0, DoorOperation.DOUBLE_SWING, True, True),
+        "DT-EXT-SLIDE60": (60.0, DoorOperation.SLIDE, True, True),
+        "DT-INT-SWING32": (32.0, DoorOperation.SWING, False, False),
+        "DT-INT-SWING30": (30.0, DoorOperation.SWING, False, False),
+        "DT-INT-SWING30-GLAZED": (30.0, DoorOperation.SWING, False, True),
+        "DT-INT-SWING30-TRIMLESS": (30.0, DoorOperation.SWING, False, False),
+        "DT-INT-SWING24": (24.0, DoorOperation.SWING, False, False),
+        "DT-INT-BIFOLD60": (60.0, DoorOperation.BIFOLD, False, False),
+        "DT-INT-BIFOLD56": (56.0, DoorOperation.BIFOLD, False, False),
+        "DT-EXT-OVERHEAD192": (192.0, DoorOperation.OVERHEAD, True, False),
+    }
+    assert set(types) == set(expected)
+    for tag, (width_in, operation, exterior, glazed) in expected.items():
+        door_type = types[tag]
+        assert door_type.width.inches == pytest.approx(width_in)
+        assert door_type.operation is operation
+        assert door_type.exterior is exterior
+        assert door_type.glazed is glazed
+
+
 # --- plan symbols -----------------------------------------------------------------
 
 
@@ -282,7 +306,7 @@ def test_catlin_interior_bifolds_emit_the_bifold_symbol(catlin_model):
 
 
 def test_catlin_patio_slider_emits_the_sliding_symbol(catlin_model):
-    """The 5 ft patio slider (DT-PATIO60) used to draw a 5 ft swing arc into the room."""
+    """The 5 ft patio slider (DT-EXT-SLIDE60) must not draw a swing arc into the room."""
     sliders = [node for node in build_floorplan(catlin_model, "main").nodes
                if isinstance(node, Symbol) and node.name == DOOR_SLIDING]
     assert sliders

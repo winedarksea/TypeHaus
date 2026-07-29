@@ -137,15 +137,15 @@ WALLS = [
 ]
 
 OPENINGS = [
-    Door(uid="CAD201AAAA", tag="D-A-HALVES", host="W-A-C2", type_ref="DT-INT32",
+    Door(uid="CAD201AAAA", tag="D-A-HALVES", host="W-A-C2", type_ref="DT-INT-SWING32",
          position=from_node("N-A-N1", ft(4))),
-    Door(uid="CAD202AAAA", tag="D-A-DEN", host="W-A-DN", type_ref="DT-INT30",
+    Door(uid="CAD202AAAA", tag="D-A-DEN", host="W-A-DN", type_ref="DT-INT-SWING30",
          position=from_node("N-A-D1", ft(1))),
     # The band wall's opening onto the stair head — the source's 2'-7 1/2" gap at
     # x 18'-6"..21'-1 3/4", the only way between the east loft and the stair vestibule.
-    Door(uid="CAD203AAAA", tag="D-A-STUDY", host="W-A-SN", type_ref="DT-INT30",
+    Door(uid="CAD203AAAA", tag="D-A-STUDY", host="W-A-SN", type_ref="DT-INT-SWING30",
          position=from_node("N-A-C2", ft(0, 8.875))),                 # x 19'-11 7/8"
-    Door(uid="CAD204AAAA", tag="D-A-VEST", host="W-A-VE", type_ref="DT-INT30",
+    Door(uid="CAD204AAAA", tag="D-A-VEST", host="W-A-VE", type_ref="DT-INT-SWING30",
          position=from_node("N-A-V1", ft(0, 11.25))),                 # y 2'-2 1/4"
     # The gables take the shared 30"x36" type (its 36" height was chosen for exactly
     # these walls — heads below the cathedral-roof framing); every opening starts 24"

@@ -267,25 +267,25 @@ OPENINGS = [
     # puts three 2'-7 1/2" gaps at y 15'-2", 24'-1", 28'-11"; hosting them on the cross
     # walls (as the port did) put D-S-BED1's centre at (22.67, 10.42), inside the attic
     # stair band rather than inside RM-S-BED1.
-    Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT30",
+    Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT-SWING30",
          position=from_node("N-S-B1", ft(4, 4.0625)), flip_swing=True),          # y 15'-2"
-    Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT30",
+    Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT-SWING30",
          position=from_node("N-S-B2", ft(3, 9.3125))),                       # y 24'-1"
-    Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT30",
+    Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT-SWING30",
          position=from_node("N-S-B3", ft(0, 8))),                        # y 28'-11"
-    Door(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1", type_ref="DT-INT30-GLASS",
+    Door(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1", type_ref="DT-INT-SWING30-GLAZED",
          position=from_node("N-S-C1", ft(1, 0.625))),                    # x 20'-3 5/8"
     # Three doors through the centre bearing line, on the source's own gaps. Each takes a
     # header exactly like O-M-HALL / O-M-DRESS one storey down; the wall itself is unbroken.
     # Full-lite glass leaf admits daylight from the south-facing plant room into the hall.
-    Door(uid="CSD212AAAA", tag="D-S-PLANT", host="W-S-C1", type_ref="DT-INT30-GLASS",
+    Door(uid="CSD212AAAA", tag="D-S-PLANT", host="W-S-C1", type_ref="DT-INT-SWING30-GLAZED",
          position=from_node("N-S-S1", ft(3, 2.5))),                      # y 4'-5 1/2"
-    Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-C2B", type_ref="DT-INT32",
+    Door(uid="CSD206AAAA", tag="D-S-SUITE", host="W-S-C2B", type_ref="DT-INT-SWING32",
          position=from_node("N-S-C2", ft(0, 4.875))),                    # y 14'-1 7/8"
     # O-S-HALLW (a 3'-0" cased opening at y 28'-7") is gone: the whole 8'-6" between
     # N-S-C2C and N-S-C3D is open under BM-S-HALL now, so there is no wall left to host it.
     # West block
-    # The walk-in's 4'-7 1/8" source opening, cased. Not a DT-INT56 bifold, which is the
+    # The walk-in's 4'-7 1/8" source opening, cased. Not a DT-INT-BIFOLD56 bifold, which is the
     # obvious stock door for a closet this wide and would keep `advisory.window_size_variety`
     # at its historical 8 (that check counts every RoughOpening as a glazing size): the
     # resolver draws a bifold's clearance as a full 4'-8" quarter-disc swing, which reaches
@@ -297,24 +297,21 @@ OPENINGS = [
     # The source's gap starts hard against the corner at x=9'-10 11/16"; ours starts 3"
     # further east so the leaf's king stud clears W-S-DC2's corner pack instead of
     # pinwheeling through it (test_wall_corner_and_opening_framing).
-    Door(uid="CSD214AAAA", tag="D-S-SUITEBATH", host="W-S-SBS", type_ref="DT-INT30",
+    Door(uid="CSD214AAAA", tag="D-S-SUITEBATH", host="W-S-SBS", type_ref="DT-INT-SWING30",
          position=from_node("N-S-D3", ft(0, 6.5)), flip_hinge=True),                      # x 11'-5"
     RoughOpening(uid="CSD215AAAA", tag="O-S-VANITY", host="W-S-VE",
                  position=from_node("N-S-V1", ft(0, 3)), width=ft(2, 8),
                  height=ft(6, 8)),                                       # y 23'-11"
-    Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT30",
+    Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT-SWING30",
          position=from_node("N-S-V2", ft(1, 4.5))),                      # x 8'-6"
-    Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT30",
+    Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
          position=from_node("N-S-C3D", ft(0, 8.5))),                     # x 19'-11 1/2"
     # O-S-STAIRTOP, the 6'-0" cased stair head, went with its host wall W-S-BD-N2.
     # Balcony door — ONE opening in the source (x 18'-8"..23'-11", 5'-3", drawn with two
     # leaves), east of the centre line, not the pair of them the port had flanking it.
-    # DT-FRENCH36 is itself a double-swing: one Door, two leaves, a centre mullion. So the
-    # count and the kind match the source and only the width falls short — 3'-0" against
-    # 5'-3", because the catalog carries one type per width family (CLAUDE.md) and has no
-    # wider double-swing leaf. Two of them side by side would be 6'-0" of RO whose king and
-    # jack studs interpenetrate, which is what the port's pair became once both moved here.
-    Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-FRENCH36",
+    # The source opening measures 5'-3"; standardize it to the catalog's 5'-0" French pair
+    # instead of distorting it into a narrow 3'-0" double door or two overlapping openings.
+    Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-EXT-FRENCH60",
          position=from_node("N-S-S1", ft(1, 10))),                       # x 21'-4"
     # Windows — east wall, on the source's four 2'-8" openings (we build 27", the bearing cap)
     Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2736",

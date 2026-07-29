@@ -60,12 +60,18 @@ def _member_parts(members: tuple[FramedMember, ...] | list[FramedMember],
                   owner_uid: str) -> tuple[GPart, ...]:
     parts: list[GPart] = []
     for member in members:
-        box = member_box(member)
-        if box is None:  # too degenerate to draw at all
+        if member.plan_outline is not None:
+            # Polygonal stair treads (winders): a GBox can't express a trapezoid, so the
+            # member's own footprint rides straight through as a prism instead of being
+            # silently dropped.
+            solid = GPrism(ring=member.plan_outline, z0_m=member.z0_m, z1_m=member.z1_m)
+        else:
+            solid = member_box(member)
+        if solid is None:  # too degenerate to draw at all
             continue
         parts.append(GPart(
             key=member_part_key(member),
-            solids=(box,),
+            solids=(solid,),
             material_key=member_material_key(member),
             # Framing is a trade toggle, not a band of an assembly stack — except for
             # the skin members (closure bands, derived trim), which belong with the
@@ -123,7 +129,7 @@ def _opening_geometry(wall: ResolvedWall, opening, door_types) -> ElementGeometr
     door_type = door_types.get(opening.type_ref) if opening.is_door else None
     parts = opening_parts(
         wall, opening,
-        is_double_swing=door_type is not None and door_type.operation == "double_swing",
+        operation=door_type.operation if door_type is not None else None,
         is_glazed=door_type is not None and door_type.glazed,
         is_trimless=door_type is not None and door_type.trimless,
     )

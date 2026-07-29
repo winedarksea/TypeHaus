@@ -273,20 +273,30 @@ def besta() -> Builder:
     baseboard_depth_m = 0.01905  # 3/4" proud of the frame, not the cabinet
 
     def build(width: float, depth: float, height: float) -> Geometry:
-        body_top = frame_height_m + besta_body_height_m
-        top_top = min(height, body_top + countertop_thickness_m)
+        # The IKEA numbers are the real assembled height; at that height (or taller) they
+        # stay dimensionally honest, unscaled. A caller asking for something shorter (a
+        # cramped placement, a test fixture) gets the same proportions scaled down rather
+        # than a body that pokes through the top of its own declared box.
+        nominal_total = frame_height_m + besta_body_height_m + countertop_thickness_m
+        scale = min(1.0, height / nominal_total) if nominal_total > 1e-9 else 1.0
+        frame_h = frame_height_m * scale
+        body_h = besta_body_height_m * scale
+        top_h = countertop_thickness_m * scale
+        door_margin = 0.01 * scale
+        body_top = frame_h + body_h
+        top_top = min(height, body_top + top_h)
         front = -depth / 2
         door_depth = min(0.02, depth * 0.08)
         door_cy = front + door_depth / 2
         frame_depth = min(depth, 0.0889)
-        baseboard_top = min(frame_height_m + 0.0127, height)
+        baseboard_top = min(frame_h + 0.0127 * scale, height)
         strokes = [rect(0, 0, width, depth, fill="appliance-white"),
                    rect(0, front + door_depth / 2, width, door_depth,
                         fill="appliance-white", weight=DETAIL_WEIGHT)]
         parts = [
-            box(0, 0, frame_height_m, body_top, width, depth, "appliance-white"),
+            box(0, 0, frame_h, body_top, width, depth, "appliance-white"),
             box(0, 0, body_top, top_top, width, depth, "porcelain"),
-            box(0, depth / 2 - frame_depth / 2, 0, frame_height_m,
+            box(0, depth / 2 - frame_depth / 2, 0, frame_h,
                 width, frame_depth, "appliance-white"),
             box(0, front + baseboard_depth_m / 2, 0, baseboard_top,
                 width, baseboard_depth_m, "appliance-white"),
@@ -294,7 +304,7 @@ def besta() -> Builder:
         door_width = width / 2
         for index in range(2):
             center_x = -width / 2 + door_width * (index + 0.5)
-            parts.append(box(center_x, door_cy, frame_height_m + 0.01, body_top - 0.01,
+            parts.append(box(center_x, door_cy, frame_h + door_margin, body_top - door_margin,
                              door_width * 0.96, door_depth, "appliance-white"))
             if index:
                 strokes.append(line((center_x - door_width / 2, front),

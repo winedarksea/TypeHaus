@@ -146,27 +146,27 @@ WALLS = [
 
 OPENINGS = [
     # Interior circulation
-    Door(uid="CBD201AAAA", tag="D-B-FURN", host="W-B-CW", type_ref="DT-INT32",
+    Door(uid="CBD201AAAA", tag="D-B-FURN", host="W-B-CW", type_ref="DT-INT-SWING32",
          position=from_node("N-B-W1", ft(3))),
-    Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT56",
+    Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT-BIFOLD56",
          position=from_node("N-B-C", ft(6))),
     # Centred in the 3'-4" aisle the sauna's north wall leaves against the center wall.
     # ``from_node`` offsets the opening's near *edge*, so 8" leaves ~4" of concrete jamb
     # at each end of the 4'-2" W-B-CS2 segment.
-    Door(uid="CBD203AAAA", tag="D-B-GYM", host="W-B-CS2", type_ref="DT-INT32",
+    Door(uid="CBD203AAAA", tag="D-B-GYM", host="W-B-CS2", type_ref="DT-INT-SWING32",
          position=from_node("N-B-C1", inch(8)), flip_swing=False, flip_hinge=False),
-    Door(uid="CBD204AAAA", tag="D-B-NE", host="W-B-CN", type_ref="DT-INT32",
+    Door(uid="CBD204AAAA", tag="D-B-NE", host="W-B-CN", type_ref="DT-INT-SWING32",
          position=from_node("N-B-C", ft(4))),
     # Way out of the enclosed stair shaft, into the workshop rather than through the
     # mechanical room (reference draws this door in the center wall too). Set in the
     # descending flight's lane rather than centred, so it is not head-on to the well
     # partition at x=14'.
-    Door(uid="CBD207AAAA", tag="D-B-STAIR", host="W-B-CW2", type_ref="DT-INT32",
+    Door(uid="CBD207AAAA", tag="D-B-STAIR", host="W-B-CW2", type_ref="DT-INT-SWING32",
          position=from_node("N-B-STR", inch(10))),
-    Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-SA-W", type_ref="DT-INT24",
+    Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-SA-W", type_ref="DT-INT-SWING24",
          position=from_node("N-B-S1", ft(10, 10.4375))),
     # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.
-    Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3", type_ref="DT-PATIO60",
+    Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3", type_ref="DT-EXT-SLIDE60",
          position=from_node("N-B-S2", ft(1, 4)), sill_height=inch(7)),
     Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2",
            type_ref="WT-3660", position=from_node("N-B-S1", ft(2, 6)),

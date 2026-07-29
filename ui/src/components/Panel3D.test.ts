@@ -362,16 +362,33 @@ export function runSelectionRegistrationTests() {
   const openingGroup = new THREE.Group();
   const openings = registry();
   buildOpening(openingGroup, opening(2), wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
-    false, openings.picks, openings.byUid);
+    undefined, openings.picks, openings.byUid);
   registered(openingGroup, "opening", "opening", openings.picks, openings.byUid, "buildOpening");
 
   // A rough opening has no filling to click on, so it must register nothing at all.
   const roughGroup = new THREE.Group();
   const rough = registry();
   buildOpening(roughGroup, { ...opening(2), kind: "rough_opening" } as Opening,
-    wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE, false, rough.picks, rough.byUid);
+    wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE, undefined, rough.picks, rough.byUid);
   assert(rough.picks.length === 0 && roughGroup.children.length === 0,
     "An unfilled rough opening builds nothing and registers nothing");
+
+  const door = { ...opening(2, 0, 2, 0, 1.5), kind: "door", is_door: true } as Opening;
+  const bifoldGroup = new THREE.Group();
+  const bifoldRegistry = registry();
+  buildOpening(bifoldGroup, door, wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
+    "bifold", bifoldRegistry.picks, bifoldRegistry.byUid);
+  assert(bifoldGroup.children.length === 8,
+    "A closed bifold renders four frame pieces and four coplanar leaves");
+
+  const sliderGroup = new THREE.Group();
+  const sliderRegistry = registry();
+  buildOpening(sliderGroup, door, wall([[0, 0], [4, 0]]), [0, 0], "schematic", PALETTE,
+    "slide", sliderRegistry.picks, sliderRegistry.byUid, true);
+  assert(sliderGroup.children.length === 8,
+    "A closed slider renders its frame, stile, track, and two panels");
+  assert(new Set(sliderGroup.children.map((child) => child.position.z.toFixed(9))).size === 1,
+    "Closed slider panels remain in the wall plane rather than posing open");
 }
 
 export function runCanvasObjectGeometryTests() {

@@ -35,21 +35,21 @@ from typehaus.model import m
 
 # --- library-of-the-house types ----------------------------------------------
 DOOR_TYPES = [
-    DoorType(tag="DT-EXT36", width=ft(3), height=ft(6, 8), exterior=True,
+    DoorType(tag="DT-EXT-SWING36", width=ft(3), height=ft(6, 8), exterior=True,
              u_factor=u_us(0.20)),
-    DoorType(tag="DT-FRENCH36", width=ft(3), height=ft(6, 8), exterior=True,
-             operation="double_swing", u_factor=u_us(0.20)),
-    DoorType(tag="DT-PATIO60", width=ft(5), height=ft(6, 8), exterior=True,
-             operation="slide", u_factor=u_us(0.25)),
-    DoorType(tag="DT-INT32", width=ft(2, 8), height=ft(6, 8)),
-    DoorType(tag="DT-INT30", width=ft(2, 6), height=ft(6, 8)),
-    DoorType(tag="DT-INT30-GLASS", width=ft(2, 6), height=ft(6, 8), glazed=True),
+    DoorType(tag="DT-EXT-FRENCH60", width=ft(5), height=ft(6, 8), exterior=True,
+             operation="double_swing", glazed=True, u_factor=u_us(0.20)),
+    DoorType(tag="DT-EXT-SLIDE60", width=ft(5), height=ft(6, 8), exterior=True,
+             operation="slide", glazed=True, u_factor=u_us(0.25)),
+    DoorType(tag="DT-INT-SWING32", width=ft(2, 8), height=ft(6, 8)),
+    DoorType(tag="DT-INT-SWING30", width=ft(2, 6), height=ft(6, 8)),
+    DoorType(tag="DT-INT-SWING30-GLAZED", width=ft(2, 6), height=ft(6, 8), glazed=True),
     # Frameless jamb system (no applied casing — drywall return jamb), flush with the gwb.
-    DoorType(tag="DT-INT30-TRIMLESS", width=ft(2, 6), height=ft(6, 8), trimless=True),
-    DoorType(tag="DT-INT24", width=ft(2), height=ft(6, 8)),
-    DoorType(tag="DT-INT60", width=ft(5), height=ft(6, 8), operation="bifold"),
-    DoorType(tag="DT-INT56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),
-    DoorType(tag="DT-GARAGE192", width=ft(16), height=ft(7), exterior=True,
+    DoorType(tag="DT-INT-SWING30-TRIMLESS", width=ft(2, 6), height=ft(6, 8), trimless=True),
+    DoorType(tag="DT-INT-SWING24", width=ft(2), height=ft(6, 8)),
+    DoorType(tag="DT-INT-BIFOLD60", width=ft(5), height=ft(6, 8), operation="bifold"),
+    DoorType(tag="DT-INT-BIFOLD56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),
+    DoorType(tag="DT-EXT-OVERHEAD192", width=ft(16), height=ft(7), exterior=True,
              operation="overhead"),
 ]
 # One size per width family: every placement of a family shares one height, chosen as
@@ -269,41 +269,41 @@ OPENINGS = [
     # where W-M-STRW's bearing stack ties into this wall — as tight as the header's jack
     # studs and the stair wall's own king studs both want — so the closet run west of the
     # door reaches the west wall almost whole. See RM-M-MUDROOM below.
-    Door(uid="CMD201AAAA", tag="D-M-ENTRY", host="W-M-N3", type_ref="DT-EXT36",
+    Door(uid="CMD201AAAA", tag="D-M-ENTRY", host="W-M-N3", type_ref="DT-EXT-SWING36",
          position=from_node("N-M-N2", ft(0, 6))),
-    Door(uid="CMD202AAAA", tag="D-M-BALC", host="W-M-S2", type_ref="DT-PATIO60",
+    Door(uid="CMD202AAAA", tag="D-M-BALC", host="W-M-S2", type_ref="DT-EXT-SLIDE60",
          position=from_node("N-M-S1", ft(1, 4))),
     # Interior
     # x 10'-8 1/16"..13'-4 1/16": the west lane, which since ST-B2M was mirrored is the one
     # the basement flight arrives in — so this is now the door onto the basement stairs, and
     # RO-1 beside it is the cased way onto ST-M2S. The two swapped roles with the mirror;
     # neither moved.
-    Door(uid="CMD203AAAA", tag="D-M-STAIR", host="W-M-STRS", type_ref="DT-INT32",
+    Door(uid="CMD203AAAA", tag="D-M-STAIR", host="W-M-STRS", type_ref="DT-INT-SWING32",
          position=from_node("N-M-STR1", ft(0, 8.0625)), flip_swing=True),
     # Pushed east to N-M-STRJ (2026-07-28, mudroom conversion): same 6" tee clearance as
     # D-M-ENTRY above it, off the bearing stair wall's jack studs. Renamed with the room.
-    Door(uid="CMD204AAAA", tag="D-M-MUD", host="W-M-STOS2", type_ref="DT-INT32",
+    Door(uid="CMD204AAAA", tag="D-M-MUD", host="W-M-STOS2", type_ref="DT-INT-SWING32",
          position=from_node("N-M-STRJ", ft(0, 6))),
-    Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT24",
+    Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING24",
          position=from_node("N-M-BA1", ft(1))),
     # RM-M-MECH's single utility door, on the closet's east (right, as seen from the
     # mudroom) wall — a hinged door for the mechanical/shaft closet, not the sliding
     # bypass style of the mudroom's own storage closets (2026-07-28).
-    Door(uid="CMD211AAAA", tag="D-M-MECH", host="W-M-MECH-S", type_ref="DT-INT30",
+    Door(uid="CMD211AAAA", tag="D-M-MECH", host="W-M-MECH-S", type_ref="DT-INT-SWING30",
          position=from_node("N-M-MECH1", ft(3, 2.9375)), flip_swing=True, flip_hinge=True),
-    Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT30",
+    Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
          position=from_node("N-M-W3", ft(2)), flip_swing=True, flip_hinge=True),
-    Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-INT56",
+    Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-INT-BIFOLD56",
          position=from_node("N-M-D1", ft(0, 4))),
-    Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT30",
+    Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30",
          position=from_node("N-M-E4", ft(1, 2.6875)), flip_swing=True),
-    Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT32",
+    Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT-SWING32",
          position=from_node("N-M-D3", ft(5)), flip_hinge=False, flip_swing=True),
     # Second bedroom <-> living connection, straight through the centre bearing wall.
     # Trimless (drywall return jamb, no casing) so it reads as a slot in the wall from
     # both rooms. W-M-C1 is BEARING, so the solver's framing tables put a structural
     # header over the 2'-6" opening on their own — nothing extra to author here.
-    Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT30-TRIMLESS",
+    Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT-SWING30-TRIMLESS",
          position=from_node("N-M-S1", ft(5))),
     # O-M-HALL, the 2'-8" cased pass-through from the living room into the hall, retired
     # 2026-07-28 with its host wall W-M-C4: the whole 4'-2" it stood in is the opening now.

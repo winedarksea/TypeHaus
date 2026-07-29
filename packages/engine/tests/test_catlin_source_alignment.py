@@ -198,6 +198,19 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
     assert ft(18, 8).meters < x < ft(23, 11).meters
 
 
+def test_balcony_french_door_uses_the_standard_60_inch_type(catlin_plan):
+    from typehaus.resolve import resolve
+
+    model, _ = resolve(catlin_plan)
+    opening = next(opening for opening in model.openings if opening.tag == "D-S-DECK-E")
+    door_type = next(door_type for door_type in model.plan.library.door_types
+                     if door_type.tag == opening.type_ref)
+    assert door_type.tag == "DT-EXT-FRENCH60"
+    assert opening.width_m == pytest.approx(ft(5).meters)
+    assert door_type.operation.value == "double_swing"
+    assert door_type.glazed
+
+
 def test_the_survey_rooms_all_exist(catlin_plan):
     """The rooms the source draws that the port was missing, and the one it does not have."""
     from typehaus.resolve import resolve

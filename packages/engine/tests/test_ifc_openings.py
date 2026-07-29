@@ -120,11 +120,11 @@ def test_door_types_export_their_authored_operation(catlin_model, catlin_ifc):
     f = ifcopenshell.open(str(catlin_ifc))
     operations = {door_type.Name: door_type.OperationType
                   for door_type in f.by_type("IfcDoorType")}
-    assert operations["DT-GARAGE192"] == "ROLLINGUP"  # IFC4 has no OVERHEAD_DOOR term
-    assert operations["DT-INT60"] == "FOLDING_TO_LEFT"
-    assert operations["DT-FRENCH36"] == "DOUBLE_DOOR_SINGLE_SWING"
-    assert operations["DT-PATIO60"] == "SLIDING_TO_LEFT"
-    assert operations["DT-EXT36"] == "SINGLE_SWING_LEFT"
+    assert operations["DT-EXT-OVERHEAD192"] == "ROLLINGUP"  # IFC4 has no OVERHEAD_DOOR term
+    assert operations["DT-INT-BIFOLD60"] == "FOLDING_TO_LEFT"
+    assert operations["DT-EXT-FRENCH60"] == "DOUBLE_DOOR_SINGLE_SWING"
+    assert operations["DT-EXT-SLIDE60"] == "SLIDING_TO_LEFT"
+    assert operations["DT-EXT-SWING36"] == "SINGLE_SWING_LEFT"
     assert all(door_type.PredefinedType == "DOOR"
                for door_type in f.by_type("IfcDoorType"))
     # Every authored operation must be a member of the closed enum the mapping is keyed on,

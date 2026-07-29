@@ -259,11 +259,11 @@ def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_m
     mullion_width = min(frame_width, clear_width / _DOUBLE_SWING_MULLION_CLEAR_WIDTH_DIVISOR)
     leaf_width = (clear_width - mullion_width) / 2
 
-    leaves = [s for s in solids if s.has_thickness(_DOOR_LEAF_THICKNESS_M)]
+    leaves = [s for s in solids if s.has_thickness(_WINDOW_GLAZING_THICKNESS_M)]
     full_height = [s for s in solids
                    if s.height_m == pytest.approx(available_height, abs=_DIMENSION_TOLERANCE_M)]
     assert len(solids) == _FRAME_PIECE_COUNT + 3, "four frame pieces, a mullion and two leaves"
-    assert len(leaves) == 2, "a double_swing door is two leaves"
+    assert len(leaves) == 2, "a double_swing door is two glazed leaves"
     for leaf in leaves:
         assert leaf.plan_dimensions_m[1] == pytest.approx(leaf_width, abs=_DIMENSION_TOLERANCE_M)
         assert leaf.height_m == pytest.approx(available_height - 2 * frame_width,
@@ -284,6 +284,26 @@ def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_m
         assert leaf_midpoint[axis] == pytest.approx(mullion_center[axis],
                                                     abs=_DIMENSION_TOLERANCE_M), (
             "the two leaves must sit symmetrically either side of the mullion")
+
+
+def test_closed_slider_and_bifold_products_ship_their_operation_specific_panels(catlin_model):
+    gltf, blob = emit_gltf_dict(catlin_model)
+    slider = next(op for op in catlin_model.openings if op.tag == "D-M-BALC")
+    bifold = next(op for op in catlin_model.openings if op.tag == "D-M-LAUN")
+
+    slider_solids = _solids_of_node(gltf, blob, _opening_node(gltf, slider.uid))
+    slider_panes = [solid for solid in slider_solids
+                    if solid.has_thickness(_WINDOW_GLAZING_THICKNESS_M)]
+    assert len(slider_solids) == _FRAME_PIECE_COUNT + 4  # stile, track, two panes
+    assert len(slider_panes) == 2, "a closed slider is two glazed panels"
+    assert all(gltf["materials"][pane.material_index]["alphaMode"] == "BLEND"
+               for pane in slider_panes)
+
+    bifold_solids = _solids_of_node(gltf, blob, _opening_node(gltf, bifold.uid))
+    bifold_leaves = [solid for solid in bifold_solids
+                     if solid.has_thickness(_DOOR_LEAF_THICKNESS_M)]
+    assert len(bifold_solids) == _FRAME_PIECE_COUNT + 4
+    assert len(bifold_leaves) == 4, "a closed bifold is four coplanar leaves"
 
 
 # --- rough openings and raked walls --------------------------------------------------------
@@ -311,8 +331,7 @@ def _synthetic_opening(kind: str, height_m: float = 2.0) -> ResolvedOpening:
 def test_a_rough_opening_ships_no_product():
     """A rough opening is an unfilled void: the wall is carved, but no frame or panel is drawn."""
     mb = _MeshBuilder()
-    _add_opening_filling(mb, _synthetic_wall(), _synthetic_opening("rough_opening"),
-                         is_double_swing=False)
+    _add_opening_filling(mb, _synthetic_wall(), _synthetic_opening("rough_opening"), None)
     assert mb.is_empty()
 
 
@@ -325,7 +344,7 @@ def test_a_product_under_a_raked_wall_top_stops_at_the_rake():
     wall = _synthetic_wall(top_z0_m=3.0, top_z1_m=1.5)  # rakes down from start to end
     opening = _synthetic_opening("door", height_m=2.6)
     mb = _MeshBuilder()
-    _add_opening_filling(mb, wall, opening, is_double_swing=False)
+    _add_opening_filling(mb, wall, opening, None)
     top_elevation = max(position[1] for _color, positions, _idx in mb.buckets()
                         for position in positions)
     # The lower jamb (at the +x end of the opening) sets the ceiling for the whole product.

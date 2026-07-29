@@ -33,6 +33,13 @@ def _all_members(model) -> list:
     return members
 
 
+def _boxable_members(model) -> list:
+    """Members `member_box()` can describe. Polygonal stair treads (winders) carry a
+    `plan_outline` instead — a trapezoid isn't a box — and are emitted as a GPrism by the
+    producer rather than approximated here; see `member_box`'s own docstring."""
+    return [m for m in _all_members(model) if m.plan_outline is None]
+
+
 @pytest.fixture(scope="module", params=["starter", "catlin"])
 def model(request):
     result = load_plan(HOUSES / request.param)
@@ -47,7 +54,7 @@ def _extent(corners, axis: int) -> float:
 
 
 def test_every_member_produces_a_box(model) -> None:
-    members = _all_members(model)
+    members = _boxable_members(model)
     assert members, "house resolved no framing at all"
     assert all(member_box(m) is not None for m in members)
 
@@ -64,7 +71,7 @@ def test_upright_members_carry_their_true_section(model) -> None:
     """The blessed glTF fix: an upright member's plan footprint is width x depth laid out
     along `orient`, not width x width. This is the bug that made every exported stud square.
     """
-    uprights = [m for m in _all_members(model) if m.p0 == m.p1]
+    uprights = [m for m in _boxable_members(model) if m.p0 == m.p1]
     assert uprights, "house has no upright members to check"
     for member in uprights:
         box = member_box(member)
@@ -81,7 +88,7 @@ def test_upright_members_carry_their_true_section(model) -> None:
 def test_box_faces_land_on_the_planes_the_member_record_names(model) -> None:
     """Every other consumer (2D section cuts, the IFC sweep, the viewer) reads those same
     elevations, so a box that floats off them puts the trades out of agreement."""
-    for member in _all_members(model):
+    for member in _boxable_members(model):
         box = member_box(member)
         bottom_z = {round(c[2], 9) for c in box.corners_bottom}
         expected_bottom = {round(member.z0_m, 9)}
@@ -91,7 +98,7 @@ def test_box_faces_land_on_the_planes_the_member_record_names(model) -> None:
 
 
 def test_raked_members_keep_both_end_elevations(model) -> None:
-    raked = [m for m in _all_members(model)
+    raked = [m for m in _boxable_members(model)
              if m.z0_end_m is not None or m.z1_end_m is not None]
     if not raked:
         pytest.skip("house has no raked members")
@@ -104,7 +111,7 @@ def test_raked_members_keep_both_end_elevations(model) -> None:
 
 
 def test_level_member_length_matches_the_record(model) -> None:
-    for member in _all_members(model):
+    for member in _boxable_members(model):
         if member.p0 == member.p1:
             continue
         box = member_box(member)
@@ -125,7 +132,7 @@ def test_level_member_length_matches_the_record(model) -> None:
 
 def test_box_width_matches_the_parsed_section_for_level_members(model) -> None:
     """Width is measured across the run — the IFC sweep's `width_m`."""
-    for member in _all_members(model):
+    for member in _boxable_members(model):
         if member.p0 == member.p1:
             continue
         box = member_box(member)
@@ -326,7 +333,7 @@ def _emitter_opening_points(model, wall, opening) -> list[tuple[float, float, fl
     builder = _MeshBuilder()
     _add_opening_filling(
         builder, wall, opening,
-        door_type is not None and door_type.operation == "double_swing",
+        door_type.operation if door_type is not None else None,
         is_glazed=door_type is not None and door_type.glazed,
         is_trimless=door_type is not None and door_type.trimless,
     )
@@ -521,7 +528,7 @@ def test_the_glb_opening_product_is_the_ir_product(model, geometry) -> None:
         builder = _MeshBuilder()
         _add_opening_filling(
             builder, host, opening,
-            is_double_swing=door_type is not None and door_type.operation == "double_swing",
+            operation=door_type.operation if door_type is not None else None,
             is_glazed=door_type is not None and door_type.glazed,
             is_trimless=door_type is not None and door_type.trimless,
         )

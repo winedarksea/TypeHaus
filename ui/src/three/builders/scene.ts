@@ -87,8 +87,7 @@ export function populateScene(options: PopulateSceneOptions) {
       registry.byUid, model.catalog?.materials);
     for (const opening of wallOpenings) {
       const doorType = model.catalog?.door_types.find((type) => type.tag === opening.type_ref);
-      const isDoubleSwing = doorType?.operation === "double_swing";
-      buildOpening(tradeGroups.openings, opening, wall, center, mode, palette, isDoubleSwing,
+      buildOpening(tradeGroups.openings, opening, wall, center, mode, palette, doorType?.operation,
         registry.picks, registry.byUid, doorType?.glazed ?? false, doorType?.trimless ?? false);
     }
   }

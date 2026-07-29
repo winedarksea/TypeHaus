@@ -72,6 +72,12 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
             task.cancel()
             with contextlib.suppress(asyncio.CancelledError):
                 await task
+            # The background checks/writeback workers are daemon threads that outlive the
+            # loop; unhook their notify callbacks so a job finishing after shutdown doesn't
+            # call `loop.call_soon_threadsafe` on an already-closed loop.
+            state._notify_diverged = None
+            state._notify_checks = None
+            state._notify_writeback_failed = None
 
     app = FastAPI(title="Type:Haus serve", lifespan=lifespan)
     app.state.project = state

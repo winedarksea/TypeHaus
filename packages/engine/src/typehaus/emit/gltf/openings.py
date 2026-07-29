@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.palette import _color
-from typehaus.resolve.geometry_openings import opening_parts
+from typehaus.model.enums import DoorOperation
 from typehaus.resolve.geometry_openings import (  # noqa: F401
     _DOOR_LEAF_THICKNESS_M,
     _DOUBLE_SWING_LEAF_COUNT,
@@ -24,19 +24,20 @@ from typehaus.resolve.geometry_openings import (  # noqa: F401
     _OPENING_FRAME_SPAN_DIVISOR,
     _OPENING_MIN_PANEL_DIMENSION_M,
     _WINDOW_GLAZING_THICKNESS_M,
+    opening_parts,
 )
 from typehaus.resolve.model import ResolvedWall
 
 
 def _add_opening_filling(mb: _MeshBuilder, wall: ResolvedWall, opening,
-                         is_double_swing: bool, is_glazed: bool = False,
+                         operation: DoorOperation | None, is_glazed: bool = False,
                          is_trimless: bool = False) -> None:
     """Draw the product standing in ``opening`` — frame + panel/leaf/glass — as boxes.
 
     Emitted regardless of LOD so the leaf geometry shows for both the core wall prism and the
     framed stud model. A rough opening is a bare void and yields no parts at all.
     """
-    for part in opening_parts(wall, opening, is_double_swing, is_glazed=is_glazed,
+    for part in opening_parts(wall, opening, operation, is_glazed=is_glazed,
                               is_trimless=is_trimless):
         color = _color(part.material_key)
         for solid in part.solids:

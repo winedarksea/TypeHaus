@@ -272,7 +272,8 @@ export function runWindowSymbolTests() {
     throw new Error("The fixed label must say 'picture' — it is the one a client mis-picks");
   }
 
-  // Interior doors carry the leaf makeup; exterior ones do not (their product implies it).
+  // Every picker label carries leaf makeup; exterior French pairs and sliders must be
+  // distinguishable without relying on their tags.
   const interior = { operation: "swing" as DoorOperation, exterior: false, glazed: false };
   if (doorTypeLabel(interior) !== "swing · solid") {
     throw new Error("An interior door label must state its leaf makeup");
@@ -280,7 +281,7 @@ export function runWindowSymbolTests() {
   if (doorTypeLabel({ ...interior, glazed: true }) !== "swing · glazed") {
     throw new Error("A glazed interior leaf must be labelled as such");
   }
-  if (doorTypeLabel({ operation: "slide", exterior: true, glazed: true }) !== "sliding") {
-    throw new Error("An exterior door label carries the operation alone");
+  if (doorTypeLabel({ operation: "slide", exterior: true, glazed: true }) !== "sliding · glazed") {
+    throw new Error("An exterior door label must state its glazing");
   }
 }

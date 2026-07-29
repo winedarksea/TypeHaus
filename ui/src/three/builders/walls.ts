@@ -7,7 +7,7 @@
 import * as THREE from "three";
 import type { LayerVisibilityGroup } from "../../model/visibility";
 import { layerVisibilityGroupOf } from "../../model/visibility";
-import type { MaterialSpec, Member, Opening, Wall } from "../../model/types";
+import type { DoorOperation, MaterialSpec, Member, Opening, Wall } from "../../model/types";
 import {
   authoredAppearance, materialColor, type ResolvedNordicPalette,
 } from "../../nordic/palette";
@@ -425,7 +425,7 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
 }
 
 export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
-  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, isDoubleSwing: boolean,
+  mode: "nordic" | "schematic", palette: ResolvedNordicPalette, operation: DoorOperation | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, isGlazed = false, isTrimless = false) {
   if (opening.kind === "rough_opening") return;
   const firstChildIndex = parent.children.length;
@@ -460,7 +460,7 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   const panelHeight = Math.max(0.01, availableHeight - 2 * frameWidth);
   const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x8fb7c9, transparent: true, opacity: 0.48,
     roughness: 0.2, metalness: 0.05, flatShading: mode === "schematic", depthWrite: false });
-  if (opening.kind === "door" && isDoubleSwing) {
+  if (opening.kind === "door" && operation === "double_swing") {
     // Two leaves meeting at a center mullion, matching the 2D French-door symbol.
     const mullionWidth = Math.min(frameWidth, (opening.width_m - 2 * frameWidth) / 6);
     const leafWidth = Math.max(0.01, (opening.width_m - 2 * frameWidth - mullionWidth) / 2);
@@ -470,6 +470,34 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     const leafThickness = isGlazed ? 0.015 : 0.045;
     addBox(leafWidth, panelHeight, leafThickness, -mullionWidth / 2 - leafWidth / 2, panelElevation, leafMaterial);
     addBox(leafWidth, panelHeight, leafThickness, mullionWidth / 2 + leafWidth / 2, panelElevation, leafMaterial);
+  } else if (opening.kind === "door" && operation === "slide") {
+    // The 3D product stays closed and coplanar; a narrow meeting stile plus bottom track
+    // makes the pair read as a slider without staging one panel over the wall.
+    const clearWidth = opening.width_m - 2 * frameWidth;
+    const stileWidth = Math.min(frameWidth / 2, clearWidth / 12);
+    const panelWidth = Math.max(0.01, (clearWidth - stileWidth) / 2);
+    const panelOffset = stileWidth / 2 + panelWidth / 2;
+    const trackHeight = Math.min(0.02, panelHeight);
+    const panelElevation = wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2;
+    const panelMaterial = isGlazed ? glassMaterial : frameMaterial;
+    const panelThickness = isGlazed ? 0.015 : 0.045;
+    addBox(stileWidth, panelHeight, depth, 0, panelElevation, frameMaterial);
+    addBox(clearWidth, trackHeight, depth, 0,
+      wall.z0_m + opening.sill_m + frameWidth + trackHeight / 2, frameMaterial);
+    addBox(panelWidth, panelHeight, panelThickness, -panelOffset, panelElevation, panelMaterial);
+    addBox(panelWidth, panelHeight, panelThickness, panelOffset, panelElevation, panelMaterial);
+  } else if (opening.kind === "door" && operation === "bifold") {
+    // Four leaves are a centre-opening bifold's closed product arrangement. Small reveals
+    // keep the fold joints legible while the leaves remain in the wall plane.
+    const clearWidth = opening.width_m - 2 * frameWidth;
+    const foldGap = Math.min(frameWidth / 8, clearWidth / 40);
+    const leafWidth = Math.max(0.01, (clearWidth - 3 * foldGap) / 4);
+    const firstLeafCenter = -clearWidth / 2 + leafWidth / 2;
+    const panelElevation = wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2;
+    for (let index = 0; index < 4; index++) {
+      addBox(leafWidth, panelHeight, 0.045,
+        firstLeafCenter + index * (leafWidth + foldGap), panelElevation, frameMaterial);
+    }
   } else if (opening.kind === "door") {
     addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, isGlazed ? 0.015 : 0.045, 0,
       wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, isGlazed ? glassMaterial : frameMaterial);

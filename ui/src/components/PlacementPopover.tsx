@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { MacroRequest, MacroResult } from "../engine/EngineClient";
 import type { Catalog, Vec2, Wall } from "../model/types";
 import { formatFtIn, openingStartFromCenter } from "../model/geometry";
+import { doorTypeLabel } from "./DoorSettingsPopover";
 
 // Placement popover for the opening + room tools (→ TODO M2 UI editing loop). A tap on a
 // wall (opening tool) or in open space (room tool) anchors a small screen-pixel popover here
@@ -90,7 +91,7 @@ export function PlacementPopover({ placement, catalog, hintFile, storey, runMacr
               type_ref: dt.tag, along: formatFtIn(openingStartFromCenter(placement.along_m, dt.width_m)), is_door: true,
               hint_file: hintFile,
             }, "opening")}>
-            {busy ? "Adding…" : `Door · ${dt.tag} · ${formatFtIn(dt.width_m)} × ${formatFtIn(dt.height_m)}`}
+            {busy ? "Adding…" : `Door · ${dt.tag} · ${doorTypeLabel(dt)} · ${formatFtIn(dt.width_m)} × ${formatFtIn(dt.height_m)}`}
           </button>
         ))}
         <div className="muted" style={{ fontSize: 11, fontWeight: 700, margin: "8px 0 4px" }}>Construction</div>
