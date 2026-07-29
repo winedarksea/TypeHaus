@@ -59,7 +59,9 @@ def test_s100_and_s101_no_longer_alias_floorplan_builder(catlin_model):
     from typehaus.emit.draw.framingplan import build_framing_plan
 
     sheets = {s.number: s for s in build_sheet_index(catlin_model)}
-    assert sheets["S-100"].scene is build_foundation_plan
+    # S-100 is a partial now: the jurisdiction profile that states the frost depth in
+    # its notes is bound at index time, not re-looked-up inside the builder.
+    assert sheets["S-100"].scene.func is build_foundation_plan
     assert sheets["S-101.1"].scene.func is build_framing_plan
     assert sheets["S-101.1"].scene is not build_floorplan
 

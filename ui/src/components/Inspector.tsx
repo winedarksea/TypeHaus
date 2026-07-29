@@ -257,6 +257,7 @@ function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullabl
       </>}
       <span className="k">Mount</span><span>{item.attachment ? `attached to ${item.attachment.wall} (${item.attachment.face})` : "free"}</span>
       <span className="k">Ports</span><span>{type?.ports.map((port) => port.service).join(", ") || "—"}</span>
+      <span className="k">Source</span><span><Provenance p={item.provenance ?? null} /></span>
     </div>
     <label className="field">Product type
       <select value={item.type ?? ""} onChange={(event) => void changeType(event.target.value)}>

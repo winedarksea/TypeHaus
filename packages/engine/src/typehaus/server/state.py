@@ -61,6 +61,9 @@ class ProjectState:
     plan: PlanModel | None = None
     provenance: Provenance = field(default_factory=Provenance)
     findings: list[Finding] = field(default_factory=list)
+    # Load-time (loader/dialect) findings from the last source load, kept apart so the fast
+    # path — which never reloads source — can carry them forward instead of dropping them.
+    _load_findings: list[Finding] = field(default_factory=list)
     ok: bool = False
     # True between a resolve landing and its (async, Phase 3) check-tier job completing;
     # `findings`/`ok` reflect resolve-time findings only for that window.
@@ -84,6 +87,9 @@ class ProjectState:
     # Optional callback (app-provided) to notify clients when reconciliation adopts source
     # truth after a divergence — scheduled thread-safely onto the server event loop.
     _notify_diverged: Callable[[], None] | None = None
+    # Optional callback (app-provided) reporting a *failed* async source writeback, whose
+    # edit the following reconcile silently reverts. Takes the failure detail.
+    _notify_writeback_failed: Callable[[str], None] | None = None
     # Background checks worker (Phase 3): a single-slot request coalesces to the latest
     # resolve, so an edit landing mid-check supersedes the in-flight check job's result.
     _checks_cv: threading.Condition = field(default_factory=threading.Condition)
@@ -122,6 +128,7 @@ class ProjectState:
             timings.update({f"load_plan.{k}": v for k, v in result.timings.items()})
             self.provenance = result.provenance
             self.findings = list(result.findings)
+            self._load_findings = list(result.findings)
             self.plan = result.plan
             if result.plan is None:
                 self.model = None
@@ -129,13 +136,20 @@ class ProjectState:
                 self.timings = timings
                 self._bump_revision()
                 return
-            self._resolve_and_check(result.plan, timings)
+            self._resolve_and_check(result.plan, timings, list(result.findings))
 
-    def _resolve_and_check(self, plan: PlanModel, timings: dict[str, float]) -> None:
+    def _resolve_and_check(
+        self, plan: PlanModel, timings: dict[str, float], base_findings: list[Finding]
+    ) -> None:
         """Resolve ``plan`` synchronously and queue the (slower, tiered) checks to run on a
         background thread (→ Phase 3): the interactive path never waits on `run_from_model`.
 
-        ``self.ok``/``self.findings`` reflect resolve-time findings alone until the queued
+        ``base_findings`` are the load-time (loader/dialect) findings this resolve sits on
+        top of; they are carried through the whole pipeline so an ERROR like
+        ``loader.uneditable_movable_element`` reaches ``GET /model`` instead of being
+        overwritten here.
+
+        ``self.ok``/``self.findings`` reflect load+resolve-time findings alone until the queued
         check job lands and merges in the check-tier findings — a brief window (a handful of
         ms on this house; the plan's whole point is that some future check tier may not be).
         ``self.checks_pending`` is surfaced in ``model_json()`` so the UI can show it."""
@@ -143,14 +157,16 @@ class ProjectState:
         model, rfindings = resolve(plan)
         timings["resolve"] = (time.perf_counter() - t0) * 1000.0
         timings.update({f"resolve.{k}": v for k, v in model.timings.items()})
+        self._load_findings = list(base_findings)
+        combined = base_findings + list(rfindings)
         self.model = model
         self.plan = plan
-        self.findings = list(rfindings)
-        self.ok = not any(f.severity is Severity.ERROR for f in rfindings)
+        self.findings = combined
+        self.ok = not any(f.severity is Severity.ERROR for f in combined)
         self.timings = timings
         self.checks_pending = True
         self._bump_revision()
-        self._queue_checks(self._revision, plan, model, rfindings)
+        self._queue_checks(self._revision, plan, model, combined)
 
     # --- background checks worker (Phase 3) ---------------------------------
     def _queue_checks(
@@ -212,6 +228,10 @@ class ProjectState:
                 raise RevisionMismatch(
                     f"revision {expected_revision} != {self._revision}; reload and retry"
                 )
+            # Rehearse routing first: an op targeting a non-`# haus: editable` file can be
+            # applied in memory but never written back, so without this the edit would 200,
+            # render, and then silently snap back when the async writeback failed.
+            self.coordinator.can_route(ops)
             if self.plan is not None and can_apply_in_memory(self.plan, ops):
                 try:
                     return self._apply_fast(ops)
@@ -231,9 +251,9 @@ class ProjectState:
             else:
                 pinned.append(op)
         timings: dict[str, float] = {}
-        # Fast path carries no load-time findings (source unchanged view); resolve+checks own.
-        self.findings = []
-        self._resolve_and_check(new_plan, timings)  # bumps _revision
+        # The fast path doesn't reload source, so load-time findings still hold: carry the
+        # prior ones forward rather than zeroing them (they'd reappear on the next rebuild).
+        self._resolve_and_check(new_plan, timings, list(self._load_findings))  # bumps _revision
         self._undo_depth += 1
         self._redo_depth = 0
         self._enqueue_writeback(pinned)
@@ -294,8 +314,13 @@ class ProjectState:
                 return
             try:
                 self.coordinator.apply_patch(ops, None)
-            except Exception:  # noqa: BLE001 - a writeback failure must not kill the worker
+            except Exception as exc:  # noqa: BLE001 - a failure must not kill the worker
                 log.exception("source writeback failed; reconciling from source")
+                # Backstop for anything can_route couldn't foresee (lint failure, external
+                # edit): the reconcile below reverts the in-memory model, so the client must
+                # be told *why* its edit vanished rather than seeing a silent hot-reload.
+                if self._notify_writeback_failed is not None:
+                    self._notify_writeback_failed(str(exc) or exc.__class__.__name__)
             finally:
                 self._write_q.task_done()
             if self._write_q.empty():

@@ -231,6 +231,10 @@ export interface CanvasObject {
   plan_svg?: string | null;
   model_glb?: string | null;
   model_primitive?: string | null;
+  // Where this object was authored. `editable: false` (or a null record) means no editable
+  // plan file hosts it, so dragging it could never be written back — the 2D canvas blocks
+  // the drag rather than letting it apply and snap back.
+  provenance?: Provenance | null;
 }
 
 export interface CanvasObjectType {

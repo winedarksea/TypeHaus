@@ -20,7 +20,8 @@ from typehaus.diff.equivalence import (EquivalenceReport, EntityEquivalence,
 from typehaus.diff.matcher import Match, match_elements
 from typehaus.diff.model import DiffElem
 from typehaus.diff.report import ChangeKind, DiffReport, build_report
-from typehaus.diff.semantic import (SemanticEntity, SemanticModel, SemanticStorey,
+from typehaus.diff.semantic import (AmbiguousStoreyDatum, SemanticEntity, SemanticModel,
+                                    SemanticStorey, pick_datum_storey,
                                     semantic_model_from_ifc)
 from typehaus.diff.variants import (LayerThicknessOverride, VariantSpec, apply_layer_thickness,
                                     find_variant, load_variants)
@@ -34,6 +35,7 @@ __all__ = [
     "AssemblyComparison", "MetricDelta", "compare_assemblies",
     "LayerThicknessOverride", "VariantSpec", "apply_layer_thickness", "find_variant",
     "load_variants",
-    "SemanticEntity", "SemanticModel", "SemanticStorey", "semantic_model_from_ifc",
+    "AmbiguousStoreyDatum", "SemanticEntity", "SemanticModel", "SemanticStorey",
+    "pick_datum_storey", "semantic_model_from_ifc",
     "EquivalenceReport", "EntityEquivalence", "compare_semantic_models",
 ]

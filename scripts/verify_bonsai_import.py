@@ -10,11 +10,14 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import addon_utils
-import bpy
-
 
 def main() -> None:
+    # Imported inside main() so this module stays importable outside Blender (a lint pass,
+    # an editor, `python -c "import verify_bonsai_import"`) — at module scope, `bpy` makes
+    # the file unopenable anywhere but Blender.
+    import addon_utils
+    import bpy
+
     if "--" not in sys.argv:
         raise SystemExit("usage: Blender --background --python verify_bonsai_import.py -- model.ifc")
     path = Path(sys.argv[sys.argv.index("--") + 1]).resolve()
@@ -46,4 +49,14 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    # Blender does not propagate a Python exception to its own exit code: a script that
+    # raises still exits 0, so a CI/manual run "passes" while the import actually failed.
+    # Convert every failure into an explicit non-zero exit ourselves.
+    try:
+        main()
+    except SystemExit:
+        raise
+    except Exception as exc:  # noqa: BLE001 - the exit code is the whole point
+        print(f"Bonsai import verification FAILED: {exc}", file=sys.stderr)
+        sys.exit(1)
+    sys.exit(0)

@@ -116,9 +116,18 @@ def canvas_objects(plan: PlanModel) -> list[dict[str, Any]]:
     return objects
 
 
-def resolved_canvas_objects(model: Any) -> list[dict[str, Any]]:
-    """Serialize resolver-owned object geometry without exposing internal dataclasses."""
+def resolved_canvas_objects(
+    model: Any, provenance_of: Any = None
+) -> list[dict[str, Any]]:
+    """Serialize resolver-owned object geometry without exposing internal dataclasses.
+
+    ``provenance_of`` is an optional ``tag -> provenance dict | None`` callable (the server
+    passes ``model_json._provenance``). Canvas objects are *the* drag-and-move population, so
+    without it the UI cannot tell a movable object from one authored in a file it can never
+    write back to — the drag would appear to work and then revert.
+    """
     type_metadata = {item["tag"]: item for item in canvas_object_types(model.plan)}
+    prov_of = provenance_of if provenance_of is not None else (lambda _tag: None)
     placeables = [{
         "uid": item.uid, "tag": item.tag, "storey": item.storey, "kind": item.kind,
         "type": item.type_ref, "domain": item.domain, "room": item.room,
@@ -139,8 +148,9 @@ def resolved_canvas_objects(model: Any) -> list[dict[str, Any]]:
         "plan_svg": type_metadata.get(item.type_ref, {}).get("plan_svg"),
         "model_glb": type_metadata.get(item.type_ref, {}).get("model_glb"),
         "model_primitive": type_metadata.get(item.type_ref, {}).get("model_primitive"),
+        "provenance": prov_of(item.tag),
     } for item in model.canvas_objects]
-    return [*_resolved_openings(model, type_metadata), *placeables]
+    return [*_resolved_openings(model, type_metadata, prov_of), *placeables]
 
 
 def _rotation_degrees(rotation: object | None) -> float | None:
@@ -167,7 +177,9 @@ def _mount(mount: Any) -> dict[str, Any] | None:
             "recessed_into_host_surface": mount.recessed_into_host_surface}
 
 
-def _resolved_openings(model: Any, type_metadata: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+def _resolved_openings(
+    model: Any, type_metadata: dict[str, dict[str, Any]], prov_of: Any
+) -> list[dict[str, Any]]:
     """Project hosted openings into the same read contract without weakening their topology."""
     wall_by_tag = {wall.tag: wall for wall in model.walls}
     records: list[dict[str, Any]] = []
@@ -203,5 +215,6 @@ def _resolved_openings(model: Any, type_metadata: dict[str, dict[str, Any]]) -> 
             "framing_bumper": [list(point) for point in opening.framing_bumper], "ports": [],
             "plan_svg": metadata.get("plan_svg"), "model_glb": metadata.get("model_glb"),
             "model_primitive": metadata.get("model_primitive"),
+            "provenance": prov_of(opening.tag),
         })
     return records

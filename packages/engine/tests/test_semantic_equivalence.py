@@ -19,6 +19,7 @@ from typehaus.diff.equivalence import (
     compare_semantic_models,
 )
 from typehaus.diff.semantic import (
+    AmbiguousStoreyDatum,
     SemanticEntity,
     SemanticModel,
     SemanticStorey,
@@ -90,13 +91,25 @@ def test_stacked_storeys_never_merge_across_the_storey_line():
     assert len(merge_runs([lower, upper])) == 2
 
 
+def _storey(spec) -> SemanticStorey:
+    """``(key, elevation)`` or the full ``(key, elevation, name, building)``.
+
+    Name and building used to be forced equal to the key, which made it impossible to
+    express what real files do: several buildings stating the same storey key at their own
+    datums.
+    """
+    key, elevation = spec[0], spec[1]
+    name = spec[2] if len(spec) > 2 else key
+    building = spec[3] if len(spec) > 3 else "House"
+    return SemanticStorey(name=name, key=key, elevation_m=elevation, building=building)
+
+
 def _model(label: str, entities, storeys=(("main", 0.0),)) -> SemanticModel:
+    rows = tuple(_storey(spec) for spec in storeys)
     return SemanticModel(
-        label=label, schema="IFC4",
-        storeys=tuple(SemanticStorey(name=key, key=key, elevation_m=elevation,
-                                     building="House") for key, elevation in storeys),
+        label=label, schema="IFC4", storeys=rows,
         entities=tuple(entities), class_census={"IfcWall": len(entities)},
-        buildings=("House",))
+        buildings=tuple(dict.fromkeys(item.building for item in rows)))
 
 
 def test_layerset_and_layer_per_wall_conventions_compare_as_equivalent():
@@ -161,3 +174,41 @@ def test_storeys_and_census_land_in_the_serialized_report():
     assert attic["status"] == STATUS_ONLY_CURRENT
     assert payload["census"] == [{"storey": "main", "category": "wall",
                                   "reference": 1, "current": 1, "delta": 0}]
+
+
+def test_a_storey_key_stated_by_two_buildings_needs_a_declared_datum():
+    """Keys are shared vocabulary, not identity. Two buildings stating "main" at different
+    datums used to resolve by file order (last wins in the report, first wins in
+    ``SemanticModel.storey``) — a silent, order-dependent pick."""
+    duplicated = (("main", 0.0, "House Main", "House"),
+                  ("main", -2.65, "Garden Slab", "Porch"))
+    model = _model("ref", merge_runs(_layer_stack(3)), storeys=duplicated)
+    other = _model("cur", merge_runs(_layer_stack(3)))
+
+    with pytest.raises(AmbiguousStoreyDatum):
+        compare_semantic_models(model, other)
+    with pytest.raises(AmbiguousStoreyDatum):
+        model.storey("main")
+
+    report = compare_semantic_models(model, other, datum_buildings=("House",))
+    row = next(item for item in report.storeys if item.key == "main")
+    assert row.reference_name == "House Main"
+    assert row.reference_elevation_m == pytest.approx(0.0)
+    assert model.storey("main", ("House",)).name == "House Main"
+
+    # The datum list is a priority order, so naming the other building selects the other datum.
+    assert model.storey("main", ("Porch",)).name == "Garden Slab"
+
+
+def test_a_datum_building_stating_one_key_twice_is_still_ambiguous():
+    model = _model("ref", merge_runs(_layer_stack(3)),
+                   storeys=(("main", 0.0, "Main A", "House"),
+                            ("main", 0.3, "Main B", "House")))
+    with pytest.raises(AmbiguousStoreyDatum):
+        model.storey("main", ("House",))
+
+
+def test_a_unique_key_needs_no_datum():
+    model = _model("ref", merge_runs(_layer_stack(3)),
+                   storeys=(("main", 0.0), ("attic", 5.4864, "Attic", "Garage")))
+    assert model.storey("attic").name == "Attic"

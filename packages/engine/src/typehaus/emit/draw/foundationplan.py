@@ -10,6 +10,8 @@ geometric input already exists in the ``ResolvedModel``; this builder only proje
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from typehaus.emit.draw._shared import emit_bbox_dimension_chain, emit_wall
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.foundation_schedule import (
@@ -52,6 +54,9 @@ from typehaus.emit.draw.structural_common import (
     outline_center,
     wall_center,
 )
+if TYPE_CHECKING:
+    from typehaus.checks.jurisdiction import JurisdictionProfile
+
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 # Leader drops in metres, so a callout clears the geometry it points at.
@@ -78,7 +83,8 @@ def _foundation_storey(model: ResolvedModel) -> str | None:
     return min(storeys, key=lambda tag: elevation.get(tag, 0.0))
 
 
-def build_foundation_plan(model: ResolvedModel) -> Scene:
+def build_foundation_plan(model: ResolvedModel,
+                          profile: "JurisdictionProfile | None" = None) -> Scene:
     """Build the S-100 IR scene: foundation plan plus its keyed schedules and notes."""
     b = SceneBuilder(name="foundation-plan", units="in")
     if not has_foundation_content(model):
@@ -101,7 +107,7 @@ def build_foundation_plan(model: ResolvedModel) -> Scene:
     _emit_sleeve_pour_dimensions(b, model, walls, storey)
     if walls:
         emit_bbox_dimension_chain(b, walls)
-    _emit_schedule_column(b, model, plan_points, metrics)
+    _emit_schedule_column(b, model, plan_points, metrics, profile)
     return b.build()
 
 
@@ -294,14 +300,15 @@ def _emit_footing_bedding_note(b: SceneBuilder, model: ResolvedModel) -> None:
 
 def _emit_schedule_column(b: SceneBuilder, model: ResolvedModel,
                           plan_points: list[tuple[float, float]],
-                          metrics: BlockMetrics) -> None:
+                          metrics: BlockMetrics,
+                          profile: "JurisdictionProfile | None" = None) -> None:
     """Stack the keyed schedules, the general notes, and the missing-input list beside
     the plan — the half of a permit foundation sheet that is not geometry."""
     cursor = block_origin_right_of(plan_points, metrics)
     for table in build_foundation_schedules(model):
         bottom = emit_schedule_table(b, table, cursor, metrics)
         cursor = (cursor[0], bottom - metrics.block_gap)
-    bottom = emit_note_block(b, "FOUNDATION NOTES", foundation_general_notes(model), cursor,
+    bottom = emit_note_block(b, "FOUNDATION NOTES", foundation_general_notes(model, profile), cursor,
                              metrics)
     cursor = (cursor[0], bottom - metrics.block_gap)
     missing = [f"{finding.check_id}: {finding.message}"

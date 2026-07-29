@@ -1,10 +1,17 @@
-"""Declared Minnesota residential permit-submittal gate (M3 WP3.8)."""
+"""Declared permit-submittal gate (M3 WP3.8).
+
+The checklist itself is *not* here: it is declared by the jurisdiction profile
+(:mod:`typehaus.checks.jurisdiction`), and this module only turns registry results into it.
+While the list lived here it drifted from the registry — two registered R401.3 checks were
+on no line of it — and a second jurisdiction would have meant an `if profile == ...` here.
+"""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-from typehaus.checks.registry import CheckReport, Tier
+from typehaus.checks.jurisdiction import JurisdictionProfile
+from typehaus.checks.registry import CheckReport
 from typehaus.findings import Finding, Result, Severity
 
 
@@ -30,42 +37,28 @@ class PermitChecklist:
         return all(item.result is Result.PASS for item in self.items)
 
 
-_CODE_ITEMS = (
-    ("Ceiling height / habitable attic", ("code.R305_ceiling_height",)),
-    ("Sleeping-room emergency escape", ("code.R310_egress",)),
-    ("Egress door clear width", ("code.R311_door_width",)),
-    ("Smoke / CO alarm placement", ("code.R314_R315_alarms", "code.R315_garage_alarms")),
-)
-
-
-def evaluate_permit_checklist(report: CheckReport, profile_name: str) -> PermitChecklist:
-    """Turn the registry results into a small gate without hiding unknowns.
+def evaluate_permit_checklist(report: CheckReport,
+                              profile: JurisdictionProfile | str) -> PermitChecklist:
+    """Turn the registry results into the profile's gate without hiding unknowns.
 
     Advisory, building-science, and engineered-header results stay in the full report but
     do not make a false claim that a prescriptive permit review evaluated them.
+
+    ``profile`` accepts a name for callers that still pass one; the profile object is the
+    real input, since it carries the checklist.
+
+    Note that :attr:`PermitChecklist.ok` is strict — an UNKNOWN blocks, because "we could not
+    evaluate this" is not a permit-ready answer. The checks-as-tests plugin deliberately
+    takes the looser view (UNKNOWN passes) for the day-to-day inner loop; see its docstring.
     """
-    items = [_item_from_findings(label, check_ids, report.findings)
-             for label, check_ids in _CODE_ITEMS]
-    items.append(_item_from_findings(
-        "Foundation frost depth", ("structural.frost_depth",), report.findings,
-    ))
-    items.append(_item_from_findings(
-        "I-joist span table", ("structural.ijoist_span",), report.findings,
-    ))
-    items.append(_item_from_findings(
-        "Plumbing sleeve alignment", ("mep.sleeve_alignment",), report.findings,
-    ))
-    items.append(_item_from_findings(
-        "Plumbing drain slope", ("mep.drain_slope",), report.findings,
-    ))
-    items.append(_item_from_findings(
-        "Site setbacks", ("code.site_setback",), report.findings,
-    ))
-    items.append(_item_from_findings(
-        "Energy prescriptive envelope", ("code.energy_prescriptive",), report.findings,
-    ))
+    if isinstance(profile, str):
+        from typehaus.checks.code.mn_residential.profile import get_profile
+
+        profile = get_profile(profile)
+    items = [_item_from_findings(spec.label, spec.check_ids, report.findings)
+             for spec in profile.permit_items]
     items.append(_integrity_item(report.findings))
-    return PermitChecklist(profile_name=profile_name, items=tuple(items))
+    return PermitChecklist(profile_name=profile.name, items=tuple(items))
 
 
 def _item_from_findings(label: str, check_ids: tuple[str, ...], findings: list[Finding]) -> PermitChecklistItem:

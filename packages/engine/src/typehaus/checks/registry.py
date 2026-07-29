@@ -11,6 +11,9 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 
+# JurisdictionProfile lived here before it grew into its own module; it is still imported
+# from this one by existing call sites, so the name stays bound here deliberately.
+from typehaus.checks.jurisdiction import JurisdictionProfile, PermitItemSpec  # noqa: F401
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedModel
@@ -82,22 +85,9 @@ class Preferences:
     plumbing: PlumbingPreferences = field(default_factory=PlumbingPreferences)
     underlays: tuple[ReferenceUnderlay, ...] = ()
     suppressed: frozenset[str] = frozenset()
-
-
-@dataclass
-class JurisdictionProfile:
-    """A versioned code profile (→ 12 §checks/code). M1 ships a minimal MN stub."""
-
-    name: str
-    edition: str
-    effective_date: str
-    irc_base: str
-    coverage_statement: str
-    frost_depth_in: float | None = None
-    # Presumptive load-bearing value of the soil (IRC Table R401.4.1). Footing *sizing* is
-    # meaningless without it — required area is tributary load divided by this — so the
-    # footing check reports UNKNOWN rather than a silent pass when a profile omits it.
-    soil_bearing_psf: float | None = None
+    # `[project].jurisdiction` from preferences.toml: the house's own answer to "whose code
+    # is this?". `None` means the house doesn't say, and the engine default applies.
+    jurisdiction: str | None = None
 
 
 @dataclass
@@ -130,6 +120,10 @@ def registered(tier: Tier | None = None) -> list[tuple[str, CheckFn]]:
 @dataclass
 class CheckReport:
     findings: list[Finding]
+    # The check ids that actually ran. A check emitting zero findings is otherwise
+    # indistinguishable from one that never ran at all, so no coverage claim built on
+    # `findings` alone can be honest (→ checks/jurisdiction.py).
+    ran: tuple[str, ...] = ()
 
     def counts(self) -> tuple[int, int, int]:
         """(pass, fail, unknown) rule-result counts (#32 tri-state)."""
@@ -155,9 +149,11 @@ class CheckReport:
 def run_checks(ctx: CheckContext, tier: Tier | None = None) -> CheckReport:
     """Run every registered check (of the given tier) plus resolve-time findings."""
     findings: list[Finding] = list(ctx.resolve_findings)
+    ran: list[str] = []
     for check_id, fn in registered(tier):
+        ran.append(check_id)
         for finding in fn(ctx):
             if finding.check_id in ctx.preferences.suppressed:
                 continue
             findings.append(finding)
-    return CheckReport(findings=findings)
+    return CheckReport(findings=findings, ran=tuple(ran))

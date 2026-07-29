@@ -55,20 +55,36 @@ def _storey_is_conditioned(plan: PlanModel, storey_tag: str) -> bool:
     return any(room.conditioned for room in rooms)
 
 
-# Tag prefixes of freestanding, unoccupied structures filed on a house storey key.
-_FREESTANDING_EXTERIOR_WALL_PREFIXES = (
-    "W-SG-",  # sunken-garden porch / retaining walls
-    "W-RG-",  # raised-garden planter cheeks (landscape retaining, not envelope)
-)
+def _walls_bounding_conditioned_space(model: ResolvedModel) -> frozenset[str]:
+    """Uids of the walls that actually enclose conditioned space.
+
+    This was a tag-prefix list — ``("W-SG-", "W-RG-")`` — i.e. one house's naming convention
+    compiled into the engine's Minnesota energy check. Any other house's porch walls were
+    checked against R-21 and failed, and renaming catlin's would have silently changed the
+    result. The relation is derivable: a wall is part of the thermal envelope when it runs
+    along the boundary of a conditioned room on its own storey, which is what the freestanding
+    porch, retaining, planter, and detached-garage walls do not do.
+    """
+    from shapely.geometry import LineString, Polygon
+
+    rooms: dict[str, list[Polygon]] = {}
+    for room in model.rooms:
+        if room.conditioned and len(room.clear_face) >= 3:
+            rooms.setdefault(room.storey, []).append(Polygon(room.clear_face))
+    bounding: set[str] = set()
+    for wall in model.walls:
+        axis = LineString(wall.axis)
+        # The room polygon is the *interior face*, so a bounding wall sits about half its
+        # thickness away from it; the tolerance absorbs lining/junction resolution.
+        reach = wall.thickness_m / 2 + _ENVELOPE_ADJACENCY_TOLERANCE_M
+        if any(axis.distance(poly) <= reach for poly in rooms.get(wall.storey, ())):
+            bounding.add(wall.uid)
+    return frozenset(bounding)
 
 
-def _is_freestanding_exterior_wall(wall) -> bool:
-    """Freestanding, unoccupied structures (catlin's sunken-garden porch/retaining walls,
-    its raised-garden planter) have no Room and no ``conditioned`` flag to key off of —
-    they are filed under the house's own "basement" storey key (→ Phase 2's sleeve check
-    hit the same "one storey key, several physical structures" seam) but aren't part of
-    the conditioned envelope this code binds."""
-    return wall.tag.startswith(_FREESTANDING_EXTERIOR_WALL_PREFIXES)
+# How far a wall axis may sit from a conditioned room's interior face and still be that
+# room's enclosure, beyond the wall's own half-thickness.
+_ENVELOPE_ADJACENCY_TOLERANCE_M = 0.05
 
 
 # Tag prefixes of slabs belonging to a freestanding structure that is not part of the
@@ -92,7 +108,10 @@ _FREESTANDING_SLAB_PREFIXES = (
 
 def _is_freestanding_exterior_slab(tag: str) -> bool:
     """Whether a slab floors a freestanding structure outside the conditioned envelope, so
-    the R-10 slab minimum does not bind it — mirrors ``_is_freestanding_exterior_wall``."""
+    the R-10 slab minimum does not bind it.
+
+    Slabs carry no room-adjacency relation to derive this from the way walls do (→
+    ``_walls_bounding_conditioned_space``), so this one is still a naming convention."""
     return tag.startswith(_FREESTANDING_SLAB_PREFIXES)
 
 
@@ -127,15 +146,14 @@ def evaluate_envelope(model: ResolvedModel, plan: PlanModel,
     for tag in sorted({roof.assembly for roof in model.roofs
                        if _storey_is_conditioned(plan, roof.storey)}):
         rows.append(_row_for_assembly(plan, tag, "roof", envelope.ceiling_r))
+    envelope_walls = _walls_bounding_conditioned_space(model)
     for tag in sorted({w.assembly for w in model.walls
-                       if not w.is_foundation and _storey_is_conditioned(plan, w.storey)
-                       and not _is_freestanding_exterior_wall(w)}):
+                       if not w.is_foundation and w.uid in envelope_walls}):
         if _is_interior_assembly(tag):
             continue
         rows.append(_row_for_assembly(plan, tag, "above-grade wall", envelope.wood_wall_r))
     for tag in sorted({w.assembly for w in model.walls
-                       if w.is_foundation and _storey_is_conditioned(plan, w.storey)
-                       and not _is_freestanding_exterior_wall(w)}):
+                       if w.is_foundation and w.uid in envelope_walls}):
         if _is_interior_assembly(tag):
             continue
         rows.append(_row_for_assembly(plan, tag, "foundation wall", envelope.basement_wall_r))
@@ -183,4 +201,17 @@ def _to_finding(row: PrescriptiveRow) -> Finding:
 
 @check(Tier.CODE, "code.energy_prescriptive")
 def energy_prescriptive(ctx: CheckContext) -> list[Finding]:
-    return [_to_finding(row) for row in evaluate_envelope(ctx.model, ctx.plan)]
+    """Check the envelope against *this jurisdiction's* prescriptive table.
+
+    The table is read off the profile rather than assumed: a profile that states no climate
+    zone gets an honest UNKNOWN, not Minnesota's numbers applied to someone else's house.
+    """
+    envelope = ctx.profile.climate
+    if envelope is None:
+        return [Finding(
+            severity=Severity.WARN, check_id="code.energy_prescriptive",
+            message=(f"UNKNOWN — profile {ctx.profile.name} states no prescriptive envelope "
+                     "table, so no component requirement can be evaluated"),
+            result=Result.UNKNOWN,
+        )]
+    return [_to_finding(row) for row in evaluate_envelope(ctx.model, ctx.plan, envelope)]

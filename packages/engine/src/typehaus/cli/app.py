@@ -1,4 +1,10 @@
-"""`haus` CLI (Typer) — build | check | ls | explain | fmt (WP1.9, → 02 §CLI)."""
+"""`haus` CLI (Typer) — the entry point module.
+
+The command surface is split across ``cli/_shared.py`` (the app, console, and shared
+helpers) and per-topic ``cmd_*`` modules that register onto it. This module keeps the
+smaller commands, wires the sub-apps, and re-exports ``app``/``main`` — the packaging entry
+point and every existing import path (``from typehaus.cli.app import app``) are unchanged.
+"""
 
 from __future__ import annotations
 
@@ -6,37 +12,19 @@ from pathlib import Path
 from typing import Optional
 
 import typer
-from rich.console import Console
 from rich.table import Table
 
-from typehaus._meta import CLI_NAME, PROJECT_NAME, engine_version
+from typehaus._meta import PROJECT_NAME, engine_version
+from typehaus.cli._shared import _detail, _print_findings, _resolve_house, app, console
 from typehaus.cli.variants import variants_app
 from typehaus.findings import Result, Severity
 
-app = typer.Typer(name=CLI_NAME, help=f"{PROJECT_NAME} — infrastructure as code for houses.",
-                  no_args_is_help=True, add_completion=False)
-console = Console()
-
 app.add_typer(variants_app, name="variants")
 
-
-def _version_flag(value: bool) -> None:
-    if value:
-        console.print(f"{PROJECT_NAME} engine {engine_version()}")
-        raise typer.Exit(0)
-
-
-@app.callback()
-def _main(
-    version: bool = typer.Option(
-        False, "--version", callback=_version_flag, is_eager=True,
-        help="Print the engine version and exit."),
-) -> None:
-    """`haus --version` — the packaging smoke every fresh install runs first."""
-
-
-def _resolve_house(house: Optional[Path]) -> Path:
-    return (house or Path.cwd()).resolve()
+# Importing these registers their commands on the shared ``app``. They are deliberately
+# imported at module scope (the CLI must know its full command list to render --help) but
+# each command body still imports the engine lazily.
+from typehaus.cli import cmd_explain, cmd_takeoff  # noqa: E402,F401  (registration side effect)
 
 
 @app.command()
@@ -108,6 +96,11 @@ def check(
     if result.plan is None:
         _print_findings(result.findings)
         raise typer.Exit(1)
+    # Loader findings appended *after* a successful import (e.g. a movable element authored
+    # in a non-editable file) are still real errors — print them, don't only print on
+    # import failure.
+    if result.findings:
+        _print_findings(result.findings)
     tier_enum = Tier(tier) if tier else None
     report = run(result.plan, d, profile=profile, tier=tier_enum)
     p, f, u = report.counts()
@@ -124,7 +117,10 @@ def check(
             f"\n[bold]{p} pass, {f} fail, {u} not evaluable[/bold] of "
             f"{p + f + u} encoded rules; this profile covers a declared subset of the code."
         )
-    raise typer.Exit(1 if report.errors else 0)
+    from typehaus.findings import Severity
+
+    load_errors = any(x.severity is Severity.ERROR for x in result.findings)
+    raise typer.Exit(1 if (report.errors or load_errors) else 0)
 
 
 @app.command(name="permit-check")
@@ -196,218 +192,6 @@ def energy(
     if report.unknown_inputs:
         console.print("[yellow]Not included / unknown: " + ", ".join(report.unknown_inputs) + "[/yellow]")
 
-
-@app.command()
-def takeoff(
-    house: Optional[Path] = typer.Argument(None),
-    as_json: bool = typer.Option(False, "--json"),
-) -> None:
-    """Report the resolved bill of materials: framing, solids, sheet goods, glazing,
-    hardware, placeables, and radiant floor heat.
-
-    If the house supplies a ``prices.toml`` (user-authored — Type:Haus ships none; see
-    :mod:`typehaus.cli.prices` for the format), the report adds a $ / $-range cost
-    estimate that is explicit about which rows it could not price.
-    """
-    from collections import Counter
-    import json
-
-    from typehaus.cli.prices import estimate_costs, load_prices
-    from typehaus.resolve import resolve
-    from typehaus.source import load_plan
-    from typehaus.takeoff import bill_of_materials
-
-    d = _resolve_house(house)
-    loaded = load_plan(d)
-    if loaded.plan is None:
-        _print_findings(loaded.findings)
-        raise typer.Exit(1)
-    try:
-        prices = load_prices(d)
-    except ValueError as exc:
-        console.print(f"[red]{exc}[/red]")
-        raise typer.Exit(2) from exc
-    model, findings = resolve(loaded.plan)
-    if any(finding.severity is Severity.ERROR for finding in findings):
-        _print_findings(findings)
-        raise typer.Exit(1)
-    framing = Counter(f"{member.category}:{member.profile}" for member in model.all_members())
-    bom = bill_of_materials(model)
-    framing_bom = bom["framing"]
-    framing_by_size = bom["framing_by_size"]
-    radiant = bom["floor_heat"]
-    payload = {"framing": dict(sorted(framing.items())),
-               "framing_bom": framing_bom, "framing_by_size": framing_by_size,
-               "structural_solids": bom["structural_solids"],
-               "floor_heat": radiant, "sheet_goods": bom["sheet_goods"],
-               "construction_returns": bom["construction_returns"],
-               "glazing_panels": bom["glazing_panels"],
-               "glazing_trim": bom["glazing_trim"],
-               "hardware": bom["hardware"],
-               "placeables": bom["placeables"],
-               "electrical_devices": bom["electrical_devices"],
-               "panel_schedule": bom["panel_schedule"],
-               "service_load": bom["service_load"],
-               "conduit": bom["conduit"],
-               "solar": bom["solar"],
-               "backup_components": bom["backup_components"],
-               "luminaire_schedule": bom["luminaire_schedule"],
-               # lighting_controls was the one section bill_of_materials produced and this
-               # payload dropped — the switch legs simply never reached `haus takeoff`.
-               "lighting_controls": bom["lighting_controls"],
-               "light_runs": bom["light_runs"],
-               "lighting_load": bom["lighting_load"],
-               # The 2026-07-25 sweep's sections. Forwarded here rather than left in
-               # bill_of_materials only: a section the CLI drops is invisible to the
-               # estimate and to `haus variants compare`.
-               "floor_finishes": bom["floor_finishes"],
-               "envelope_layers": bom["envelope_layers"],
-               "openings": bom["openings"],
-               "stair_finish": bom["stair_finish"],
-               "footing_bedding": bom["footing_bedding"],
-               "pipe_runs": bom["pipe_runs"],
-               "ducts": bom["ducts"],
-               "sleeves": bom["sleeves"],
-               "conductors": bom["conductors"],
-               "railings": bom["railings"],
-               "bug_screens": bom["bug_screens"]}
-    if prices is not None:
-        payload["cost_estimate"] = estimate_costs(bom, prices)
-    if as_json:
-        console.print_json(json.dumps(payload))
-        return
-    console.print("[bold]Framing bill of materials[/bold]  (size · type: pieces / lineal ft)")
-    for row in framing_bom:
-        buckets = ", ".join(f"{b['count']}×{b['length_ft']}'" for b in row["stock"])
-        bf = f" · {row['board_feet']} bf" if row["board_feet"] else ""
-        console.print(f"  {row['profile']:>18} {row['category']:<18} "
-                      f"{row['pieces']:>4} pc / {row['cut_length_ft']:>7.1f} LF cut "
-                      f"[{buckets}]{bf}")
-    console.print("[bold]Framing rollup by size[/bold]")
-    for row in framing_by_size:
-        bf = f" · {row['board_feet']} bf" if row["board_feet"] else ""
-        console.print(f"  {row['profile']:>18}: {row['pieces']:>4} pc / "
-                      f"{row['order_length_ft']:>5} LF ordered{bf}")
-    if radiant:
-        console.print("[bold]Radiant floor heat[/bold]")
-        for zone in radiant:
-            console.print(f"  {zone['tag']} ({zone['system']}): {zone['wire_length_ft']:.1f} LF")
-    if payload["sheet_goods"]:
-        console.print("[bold]Sheet goods (4x8 panels)[/bold]")
-        for item in payload["sheet_goods"]:
-            console.print(f"  {item['scope']}: {item['sheets_4x8']} sheets of "
-                          f"{item['thickness_in']}\" {item['material']} "
-                          f"({item['net_area_sqft']} sf net)")
-    if payload["structural_solids"]:
-        console.print("[bold]Structural solids (concrete + standalone structure)[/bold]")
-        for item in payload["structural_solids"]:
-            assembly = f" · {item['assembly']}" if item["assembly"] else ""
-            console.print(f"  {item['category']}{assembly}: {item['count']} × / "
-                          f"{item['volume_cubic_yards']} cy")
-    if payload["construction_returns"]:
-        console.print("[bold]Construction returns (#45 pre-framing laps)[/bold]")
-        for item in payload["construction_returns"]:
-            console.print(f"  {item['category']} ({item['material']}): "
-                          f"{item['count']} × / {item['length_ft']} LF")
-    if payload["glazing_panels"]:
-        console.print("[bold]Glazing panels (4x8 sheets)[/bold]")
-        for item in payload["glazing_panels"]:
-            console.print(f"  {item['assembly']}: {item['sheets_4x8']} sheets / "
-                          f"{item['panels']} panel(s) ({item['net_area_sqft']} sf net)")
-    if payload["glazing_trim"]:
-        console.print("[bold]Glazing trim (aluminium extrusion)[/bold]")
-        for item in payload["glazing_trim"]:
-            weep = " · weep holes" if item["weep_holes"] else ""
-            console.print(f"  {item['profile']}-channel ({item['material']}): "
-                          f"{item['count']} × / {item['length_ft']} LF{weep}")
-    if payload["hardware"]:
-        console.print("[bold]Hardware[/bold]  (count · part: basis)")
-        for item in payload["hardware"]:
-            size = f" {item['size']}" if item["size"] else ""
-            console.print(f"  {item['count']:>5} {item['unit']:<5} "
-                          f"{item['part_number']}{size} — {item['description']}")
-            console.print(f"        [dim]{item['basis']}[/dim]")
-    if payload["placeables"]:
-        console.print("[bold]Fixtures, appliances & furniture[/bold]  (count · type: domain · storey)")
-        for item in payload["placeables"]:
-            console.print(f"  {item['count']:>5} ea    {item['type']} — "
-                          f"{item['domain']} · {item['storey']}")
-    if payload["electrical_devices"]:
-        console.print("[bold]Electrical devices[/bold]  (count · kind: type)")
-        for item in payload["electrical_devices"]:
-            label = item["name"] or item["type"]
-            nema = f" NEMA {item['nema']}" if item["nema"] and item["nema"] not in label else ""
-            console.print(f"  {item['count']:>5} ea    {item['kind']}: {label}{nema}")
-    if payload["panel_schedule"]:
-        load = payload["service_load"]
-        console.print(f"[bold]Panel schedule[/bold]  ({len(payload['panel_schedule'])} circuits; "
-                      f"demand {load['demand_amps']}A of {load['service_amps']}A service, "
-                      f"{load['panel_rating_amps']}A panel"
-                      + ("" if load["within_service"] else " — [red]OVER[/red]") + ")")
-        for row in payload["panel_schedule"]:
-            flags = "".join((" GFCI" if row["gfci"] else "",
-                             " BKUP" if row["backup"] else ""))
-            console.print(f"  {row['circuit']:<16} {row['breaker_amps']:>3}A/{row['poles']}p "
-                          f"{row['connected_va']:>7,.0f} VA{flags} — {row['description']}")
-    if payload["conduit"]:
-        console.print("[bold]Conduit (EMT trunks)[/bold]")
-        for item in payload["conduit"]:
-            console.print(f"  {item['trade_size_in']}\": {item['runs']} run(s) / "
-                          f"{item['length_ft']} LF — {', '.join(item['tags'])}")
-    if payload["solar"]["panels"]:
-        solar = payload["solar"]
-        kw = solar["total_watts"] / 1000.0
-        console.print(f"[bold]Solar[/bold]  {solar['panels']} × "
-                      f"{solar['by_product'][0]['product']} = {kw:.2f} kW installed")
-    if payload["backup_components"]:
-        console.print("[bold]Backup subsystem (DIN components)[/bold]")
-        for item in payload["backup_components"]:
-            console.print(f"  {item['count']:>5} ea    {item['component']}")
-            console.print(f"        [dim]{item['basis']}[/dim]")
-    if payload["luminaire_schedule"]:
-        console.print("[bold]Luminaire schedule[/bold]  (mark · qty: description)")
-        for row in payload["luminaire_schedule"]:
-            qty = (f"{row['count']:>5} ea" if row["count"]
-                   else f"{row['length_ft'] or 0:>5.0f} LF")
-            photometry = " · ".join(part for part in (
-                f"{row['watts']:.0f} W" if row["watts"] else
-                (f"{row['watts_per_ft']:.1f} W/ft" if row["watts_per_ft"] else ""),
-                f"{row['lumens']:,.0f} lm" if row["lumens"] else "",
-                f"{row['cct_k']}K" if row["cct_k"] else "",
-                f"CRI {row['cri']}" if row["cri"] else "",
-                row["rating"],
-            ) if part)
-            console.print(f"  {row['mark']:>3}  {qty}    {row['description']}")
-            console.print(f"        [dim]{photometry} · {', '.join(row['rooms'])}[/dim]")
-        runs = payload["light_runs"]
-        if runs["runs"]:
-            console.print(f"[bold]LED runs[/bold]  {runs['total_length_ft']} LF total")
-            for supply in runs["supplies"]:
-                verdict = ("[red]UNDERSIZED[/red]" if supply["adequate"] is False
-                           else ("?" if supply["adequate"] is None else "ok"))
-                console.print(f"  {supply['psu']}: {supply['length_ft']} LF / "
-                              f"{supply['connected_watts']:.0f} W connected, needs "
-                              f"{supply['required_watts']:.0f} W at 125% — rated "
-                              f"{supply['rated_watts']} W {verdict}")
-        load = payload["lighting_load"]
-        console.print(f"[bold]Connected lighting load[/bold]  "
-                      f"{load['total_connected_va']:,.0f} VA against the "
-                      f"{load['allowance_va']:,.0f} VA NEC 220.82 allowance for "
-                      f"{load['conditioned_area_ft2']:,.0f} ft2")
-    if prices is not None:
-        estimate = payload["cost_estimate"]
-        console.print(f"[bold]Cost estimate[/bold]  (from {prices.path.name}; "
-                      "user-supplied prices, no defaults shipped)")
-        for name, section in estimate["sections"].items():
-            console.print(f"  {name}: {section['subtotal_fmt']}")
-            for row in section["rows"]:
-                console.print(f"    {row['quantity']:>9,.1f} {row['unit']:<6} "
-                              f"{row['key']}: {row['cost_fmt']}")
-        console.print(f"  [bold]total: {estimate['total_fmt']}[/bold]")
-        if estimate["unpriced"]:
-            missing = ", ".join(f"{row['section']}:{row['key']}"
-                                for row in estimate["unpriced"])
-            console.print(f"  [yellow]not priced (add to prices.toml): {missing}[/yellow]")
 
 
 @app.command(name="import")
@@ -526,119 +310,6 @@ def ls(
     console.print(table)
 
 
-@app.command()
-def explain(
-    target: str = typer.Argument(..., help="element tag | assembly tag | 'transitions'"),
-    house: Optional[Path] = typer.Argument(None),
-    card: bool = typer.Option(False, help="render the assembly section card"),
-    detail: bool = typer.Option(False, help="render the transition detail(s) for a TR-* tag"),
-    out: Optional[Path] = typer.Option(None, help="write card SVG to this path"),
-    transitions: bool = typer.Option(False, help="enumerate derived boundary conditions"),
-    bearing: bool = typer.Option(False, help="show authored bearing walls and resolved stack edges"),
-) -> None:
-    """Explain an element, render an assembly card, or list transitions."""
-    from typehaus.source import load_plan
-
-    d = _resolve_house(house)
-    result = load_plan(d)
-    if result.plan is None:
-        _print_findings(result.findings)
-        raise typer.Exit(1)
-    plan = result.plan
-
-    if target == "transitions" or transitions:
-        from typehaus.resolve import resolve
-
-        model, _ = resolve(plan)
-        table = Table("kind", "key", "elements")
-        for cond in model.conditions:
-            table.add_row(cond.kind.value, cond.key, ", ".join(cond.element_tags))
-        console.print(table)
-        return
-
-    if bearing:
-        from typehaus.resolve import resolve
-
-        model, findings = resolve(plan)
-        _print_findings(findings)
-        table = Table("storey", "bearing wall", "assembly", "supports / stack relation")
-        authored = {element.tag: element for element in plan.all_elements()
-                    if element.element_kind in ("Wall", "FoundationWall")}
-        for wall in sorted(model.walls, key=lambda item: (item.storey, item.tag)):
-            source = authored.get(wall.tag)
-            role = getattr(getattr(source, "structural_role", None), "value", "unknown")
-            lower = [edge.lower_wall for edge in model.stack_edges if edge.upper_wall == wall.tag]
-            upper = [edge.upper_wall for edge in model.stack_edges if edge.lower_wall == wall.tag]
-            if role != "bearing" and not lower and not upper:
-                continue
-            relation = ", ".join([*(f"on {tag}" for tag in lower),
-                                  *(f"to {tag}" for tag in upper)]) or "bearing role"
-            table.add_row(wall.storey, wall.tag, wall.assembly, relation)
-        console.print(table)
-        return
-
-    if detail:
-        from typehaus.emit.draw.details import build_detail, derive_detail_slices
-        from typehaus.emit.draw.pdf_writer import write_raster
-        from typehaus.resolve import resolve
-
-        model, _ = resolve(plan)
-        details = [d for d in derive_detail_slices(model)
-                   if d.transition is not None and d.transition.tag == target]
-        if not details:
-            console.print(f"[red]no derived detail bound to transition {target!r}[/red]")
-            raise typer.Exit(1)
-        dest_dir = out or (d / "out" / "render")
-        dest_dir.mkdir(parents=True, exist_ok=True)
-        for derived in details:
-            scene, findings = build_detail(model, derived)
-            _print_findings(findings)
-            slug = derived.view.tag.replace("/", "_")
-            path = write_raster(scene, dest_dir / f"detail_{slug}.png",
-                                title=f"detail · {derived.key}")
-            console.print(f"wrote {path}")
-        return
-
-    asm = plan.library.resolve_assembly(target)
-    if asm is not None:
-        from typehaus.analysis import assembly_r_value
-        from typehaus.checks import load_preferences
-        from typehaus.checks.building_science.condensation import analyze_assembly
-        from typehaus.emit.draw import render_card_svg
-
-        rv = assembly_r_value(asm, plan.library)
-        console.print(f"[bold]{asm.tag}[/bold]  R-value: {rv.fmt()}"
-                      + (f"  STC {asm.stc}" if asm.stc else ""))
-        for layer in list(asm.default_lining) + list(asm.layers):
-            console.print(f"  {layer.function.value:9} {layer.name:12} {layer.thickness.fmt()}")
-            if layer.cavity is not None:
-                fill = layer.cavity
-                thk = fill.thickness if fill.thickness is not None else layer.thickness
-                console.print(f"  {'  ↳ cavity':9} {fill.material_ref:12} {thk.fmt()}"
-                              f"  (ff {fill.framing_factor:.0%}, in bays — adds no depth)")
-        if card or out:
-            heating = plan.project.site.design_temp_heating
-            condensation = analyze_assembly(
-                asm, plan.library,
-                heating_design_temp_f=heating.fahrenheit if heating else None,
-                preferences=load_preferences(d),
-            )
-            svg = render_card_svg(asm, plan.library, condensation)
-            dest = out or (d / "out" / f"card_{asm.tag}.svg")
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            dest.write_text(svg)
-            console.print(f"wrote {dest}")
-        return
-
-    el = plan.by_tag(target)
-    if el is None:
-        console.print(f"[red]no element, assembly, or 'transitions' named {target!r}[/red]")
-        raise typer.Exit(1)
-    console.print(f"[bold]{el.tag}[/bold] ({el.element_kind}) uid={el.uid}")
-    loc = result.provenance.location(el.tag)
-    if loc:
-        console.print(f"  source: {loc}")
-    console.print(f"  {_detail(el)}")
 
 
 @app.command()
@@ -687,9 +358,12 @@ def print_sheets(
     house: Optional[Path] = typer.Argument(None),
     fmt: str = typer.Option("both", help="dxf | pdf | both"),
     handoff: bool = typer.Option(False, help="also write the architect-handoff bundle"),
+    profile: Optional[str] = typer.Option(
+        None, help="jurisdiction profile (default: preferences.toml, else the engine default)"),
 ) -> None:
     """Compose the permit-set PDF, plan DXFs, and optional architect handoff (M3)."""
     from typehaus.checks import evaluate_permit_checklist, load_preferences, run
+    from typehaus.checks.run import resolve_profile
     from typehaus.emit.draw import write_permit_set, write_plan_dxfs
     from typehaus.resolve import resolve
     from typehaus.source import load_plan
@@ -699,7 +373,12 @@ def print_sheets(
     if result.plan is None:
         _print_findings(result.findings)
         raise typer.Exit(1)
-    checklist = evaluate_permit_checklist(run(result.plan, d), "mn-2024")
+    preferences = load_preferences(d)
+    # One jurisdiction decides both the gate and what the sheets say they were composed
+    # against; `--profile` overrides the house's own `[project].jurisdiction`.
+    jurisdiction = resolve_profile(preferences, profile)
+    checklist = evaluate_permit_checklist(run(result.plan, d, profile=jurisdiction.name),
+                                          jurisdiction)
     if not checklist.ok:
         console.print("[red]permit print blocked: declared checklist has failures or unknowns[/red]")
         for item in checklist.items:
@@ -707,19 +386,19 @@ def print_sheets(
                 console.print(f"  {item.label}: {item.detail}")
         raise typer.Exit(1)
     model, _ = resolve(result.plan)
-    preferences = load_preferences(d)
     out = d / "out"
     if fmt in ("dxf", "both"):
         for path in write_plan_dxfs(model, out / "sheets"):
             console.print(f"wrote {path}")
     if fmt in ("pdf", "both"):
-        path, _ = write_permit_set(model, out / "permit_set.pdf", preferences)
+        path, _ = write_permit_set(model, out / "permit_set.pdf", preferences,
+                                   profile=jurisdiction)
         console.print(f"wrote {path}")
     if handoff:
-        _write_handoff_bundle(d, model, preferences)
+        _write_handoff_bundle(d, model, preferences, jurisdiction)
 
 
-def _write_handoff_bundle(house: Path, model, preferences=None) -> None:
+def _write_handoff_bundle(house: Path, model, preferences=None, profile=None) -> None:
     """Copy only generated/project-owned artifacts into the architect handoff."""
     import shutil
 
@@ -728,7 +407,7 @@ def _write_handoff_bundle(house: Path, model, preferences=None) -> None:
 
     handoff = house / "out" / "handoff"
     handoff.mkdir(parents=True, exist_ok=True)
-    write_permit_set(model, handoff / "permit_set.pdf", preferences)
+    write_permit_set(model, handoff / "permit_set.pdf", preferences, profile=profile)
     write_plan_dxfs(model, handoff / "dxfs")
     write_model_json(model, handoff / "model.json")
     for source, destination in ((house / "brief.md", handoff / "brief.md"),
@@ -925,7 +604,7 @@ def serve(
 def new(
     directory: Path = typer.Argument(..., help="new house directory to scaffold"),
     name: str = typer.Option("My House", help="project display name"),
-    template: str = typer.Option("catlin", help="catlin (the real house, #22) | minimal"),
+    template: str = typer.Option("starter", help="starter (small, buildable) | catlin (the real house, #22)"),
 ) -> None:
     """Scaffold a new house: brief.md, preferences.toml, plan/ skeleton (WP2.12, #22)."""
     from typehaus.cli.scaffold import scaffold_house
@@ -934,21 +613,6 @@ def new(
     for p in created:
         console.print(f"created {p}")
     console.print(f"[green]new house ready[/green] — try: haus serve {directory}")
-
-
-def _detail(el: object) -> str:
-    for attr in ("assembly", "host", "occupancy", "type_ref"):
-        v = getattr(el, attr, None)
-        if v is not None:
-            return f"{attr}={getattr(v, 'value', v)}"
-    return ""
-
-
-def _print_findings(findings: list) -> None:
-    for f in findings:
-        color = "red" if f.severity is Severity.ERROR else (
-            "yellow" if f.result is Result.FAIL else "dim")
-        console.print(f"[{color}]{f.render()}[/{color}]")
 
 
 def main() -> None:

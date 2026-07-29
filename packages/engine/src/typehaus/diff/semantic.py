@@ -116,6 +116,39 @@ class SemanticEntity:
         }
 
 
+
+class AmbiguousStoreyDatum(ValueError):
+    """Several buildings state the same storey key and no datum says which one governs."""
+
+
+def pick_datum_storey(key: str, candidates: list["SemanticStorey"],
+                      datum_buildings: tuple[str, ...] | None) -> "SemanticStorey":
+    """Choose the storey that owns ``key``'s datum among same-keyed candidates.
+
+    Storey keys are shared vocabulary ("main", "basement"), not identity: a file may state
+    one key on several buildings, at different elevations. ``datum_buildings`` names which
+    buildings govern, in priority order; with one candidate the question doesn't arise.
+    Anything else is ambiguous, and picking silently would make the comparison depend on
+    file order.
+    """
+    if len(candidates) == 1:
+        return candidates[0]
+    for building in datum_buildings or ():
+        owned = [item for item in candidates if item.building == building]
+        if len(owned) == 1:
+            return owned[0]
+        if owned:
+            raise AmbiguousStoreyDatum(
+                f"building {building!r} states storey key {key!r} "
+                f"{len(owned)} times: {[item.name for item in owned]}"
+            )
+    raise AmbiguousStoreyDatum(
+        f"storey key {key!r} is stated by "
+        f"{sorted({item.building for item in candidates})}; pass datum_buildings to say "
+        "which building owns the datum"
+    )
+
+
 @dataclass
 class SemanticModel:
     """One IFC file lifted into the neutral vocabulary."""
@@ -130,8 +163,17 @@ class SemanticModel:
     def in_category(self, category: str) -> list[SemanticEntity]:
         return [item for item in self.entities if item.category == category]
 
-    def storey(self, key: str) -> SemanticStorey | None:
-        return next((item for item in self.storeys if item.key == key), None)
+    def storey(self, key: str,
+               datum_buildings: tuple[str, ...] | None = None) -> SemanticStorey | None:
+        """The authoritative storey for ``key`` — the same rule the equivalence report uses.
+
+        This was first-wins while the report was last-wins, so the two could disagree about
+        which of several same-keyed storeys a comparison meant.
+        """
+        matches = [item for item in self.storeys if item.key == key]
+        if not matches:
+            return None
+        return pick_datum_storey(key, matches, datum_buildings)
 
     def category_census(self) -> dict[tuple[str, str], int]:
         """(storey key, category) → count, over the compared categories' runs."""

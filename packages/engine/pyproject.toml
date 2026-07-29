@@ -40,7 +40,9 @@ dependencies = [
 # ships no WS implementation and rejects every upgrade with 403.
 server = ["fastapi>=0.110", "uvicorn>=0.29", "websockets>=12", "watchfiles>=0.21"]
 dev = [
-    "pytest>=8.0", "hypothesis>=6.90", "mypy>=1.9", "ruff>=0.4",
+    # ifctester drives the IDS handoff gate (tests/test_ifc_validation_gate.py) — the
+    # conformance floor every exported IFC has to clear.
+    "pytest>=8.0", "hypothesis>=6.90", "mypy>=1.9", "ruff>=0.4", "ifctester>=0.8",
     "fastapi>=0.110", "uvicorn>=0.29", "websockets>=12", "watchfiles>=0.21", "httpx>=0.27",
 ]
 
@@ -54,7 +56,23 @@ haus = "typehaus.cli.app:main"
 typehaus_checks = "typehaus.checks.pytest_plugin"
 
 [tool.hatch.build.targets.wheel]
+# `library` is shipped alongside `typehaus`: every house's plan source does
+# `from library import ...`, so a wheel without it installs an engine that cannot load the
+# house `haus new` just scaffolded. In a source checkout `loader._find_library_root` still
+# finds the repo copy by walking up; installed, it resolves as an ordinary import.
 packages = ["src/typehaus"]
 # The pre-built UI ships inside the wheel so `pip install typehaus && haus serve`
 # works without node (→ 02 §Repo layout).
 artifacts = ["src/typehaus/server/static/**"]
+
+# `library` lives at the repo root, outside this package dir, so it is force-included rather
+# than listed as a package (hatch requires package paths to be project-relative).
+[tool.hatch.build.targets.wheel.force-include]
+"../../library" = "library"
+# The default `haus new` template ships too, so a pip-installed engine can scaffold a house
+# without a checkout to copy one from (`cli/scaffold._find_template`). Only `starter`: the
+# catlin reference house is a checkout-only template.
+"../../houses/starter/plan" = "typehaus/templates/starter/plan"
+"../../houses/starter/brief.md" = "typehaus/templates/starter/brief.md"
+"../../houses/starter/preferences.toml" = "typehaus/templates/starter/preferences.toml"
+"../../houses/starter/CLAUDE.md" = "typehaus/templates/starter/CLAUDE.md"

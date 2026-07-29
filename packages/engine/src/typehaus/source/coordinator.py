@@ -103,6 +103,15 @@ class ProjectCoordinator:
             u, r = self._journal.depth()
             return PatchResult(self.revision(), {}, u, r)
 
+    # --- routing pre-check ---------------------------------------------------
+    def can_route(self, ops: list[PatchOp]) -> None:
+        """Side-effect-free rehearsal of :meth:`_route`: raises the same ``WritebackError``
+        the async writeback would raise, so the fast path can fail *synchronously* (422)
+        instead of applying in memory and silently snapping back later."""
+        with self._lock:
+            files = {f: f.read_text() for f in editable_files(self.house_dir)}
+            self._route(ops, files)
+
     # --- internals -----------------------------------------------------------
     def _commit(self, ops: list[PatchOp], record_inverse: bool = True) -> list[PatchOp]:
         """Stage → validate → atomically write. Returns inverse ops (in undo order)."""

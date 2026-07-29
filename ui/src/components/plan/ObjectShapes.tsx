@@ -9,7 +9,20 @@ import { useRef, useState } from "react";
 import type { CanvasObject, CanvasObjectType, Model, Vec2, Wall } from "../../model/types";
 import { nearestWallHit, openingHostWall } from "../../model/geometry";
 import { NORDIC_ACCENT } from "../../nordic/palette";
+import { useStore } from "../../state/store";
 import type { Selection } from "../../state/vocabulary";
+
+// A drag is a writeback: the engine has to find an editable plan file hosting this object's
+// constructor. When it can't, the edit is rejected (422) — so refuse the gesture up front and
+// say why, the same way deleteSelection refuses derived geometry, instead of letting the
+// object follow the pointer and then snap back.
+export function placeableDragBlockedReason(item: CanvasObject): string | null {
+  const p = item.provenance;
+  if (p === undefined) return null; // older model.json: no provenance published, allow
+  if (p === null) return `${item.tag} has no authored source to write a move back to`;
+  if (p.editable === false) return `${item.tag} is authored in ${p.file} — edit it in code to move it`;
+  return null;
+}
 
 export function NodeHandle({ world, project, onStart, onMove, onEnd }: {
   world: Vec2;
@@ -87,8 +100,16 @@ export function CanvasObjectFootprint({ item, type, project, scale, walls, selec
   // Precedence: an imported plan SVG wins, then the engine-generated glyph, then the plain
   // footprint rect. The first generated stroke is the object outline and carries selection.
   const strokes = type?.plan_svg ? [] : type?.plan_strokes ?? [];
-  return <g opacity={0.92} style={{ cursor: "grab" }}
-    onPointerDown={(event) => { event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId); onSelect("canvas_object", item.uid); }}
+  const dragBlocked = placeableDragBlockedReason(item);
+  return <g opacity={dragBlocked ? 0.55 : 0.92} style={{ cursor: dragBlocked ? "not-allowed" : "grab" }}
+    onPointerDown={(event) => {
+      event.stopPropagation();
+      onSelect("canvas_object", item.uid);
+      // Selection still works on a non-editable object (the inspector shows its provenance);
+      // only the pointer capture that starts the drag is withheld.
+      if (dragBlocked) { useStore.getState().toast(dragBlocked); return; }
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }}
     // Double-click opens the object's details (Inspector), matching the door/window affordance
     // and guaranteeing the panel opens even if a stray drag swallowed the pointer-up select.
     onDoubleClick={(event) => { event.stopPropagation(); onSelect("canvas_object", item.uid); }}
@@ -134,7 +155,8 @@ export function CanvasObjectFootprint({ item, type, project, scale, walls, selec
       fill="var(--ink)" pointerEvents="none">
       {(type?.name ?? item.type ?? item.kind).replace(/^[A-Z]+-/, "")}
     </text>
-    {selected && <g>
+    {/* Rotation is a writeback too, so a non-editable object shows no rotate handle. */}
+    {selected && !dragBlocked && <g>
       <line x1={x} y1={y - depth / 2} x2={x} y2={y - depth / 2 - 18}
         stroke="var(--ink)" strokeWidth={1.2} pointerEvents="none" />
       <circle cx={x} cy={y - depth / 2 - 23} r={5} fill="var(--canvas-selection)" stroke="var(--ink)"

@@ -1,0 +1,108 @@
+<ids xmlns="http://standards.buildingsmart.org/IDS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://standards.buildingsmart.org/IDS http://standards.buildingsmart.org/IDS/1.0/ids.xsd">
+    <info>
+        <title>Type:Haus handoff baseline</title>
+        <version>1.0.0</version>
+        <description>Minimum structure any Type:Haus IFC must satisfy before it is handed to Revit/SketchUp.</description>
+        <author>colin.catlin@gmail.com</author>
+    </info>
+    <specifications>
+        <specification name="ifcproject is named" ifcVersion="IFC4" description="Every IFCPROJECT carries a Name, or the receiving tool shows an unlabelled node.">
+            <applicability minOccurs="0" maxOccurs="unbounded">
+                <entity>
+                    <name>
+                        <simpleValue>IFCPROJECT</simpleValue>
+                    </name>
+                </entity>
+            </applicability>
+            <requirements>
+                <attribute cardinality="required">
+                    <name>
+                        <simpleValue>Name</simpleValue>
+                    </name>
+                </attribute>
+            </requirements>
+        </specification>
+        <specification name="ifcsite is named" ifcVersion="IFC4" description="Every IFCSITE carries a Name, or the receiving tool shows an unlabelled node.">
+            <applicability minOccurs="0" maxOccurs="unbounded">
+                <entity>
+                    <name>
+                        <simpleValue>IFCSITE</simpleValue>
+                    </name>
+                </entity>
+            </applicability>
+            <requirements>
+                <attribute cardinality="required">
+                    <name>
+                        <simpleValue>Name</simpleValue>
+                    </name>
+                </attribute>
+            </requirements>
+        </specification>
+        <specification name="ifcbuilding is named" ifcVersion="IFC4" description="Every IFCBUILDING carries a Name, or the receiving tool shows an unlabelled node.">
+            <applicability minOccurs="0" maxOccurs="unbounded">
+                <entity>
+                    <name>
+                        <simpleValue>IFCBUILDING</simpleValue>
+                    </name>
+                </entity>
+            </applicability>
+            <requirements>
+                <attribute cardinality="required">
+                    <name>
+                        <simpleValue>Name</simpleValue>
+                    </name>
+                </attribute>
+            </requirements>
+        </specification>
+        <specification name="ifcbuildingstorey is named" ifcVersion="IFC4" description="Every IFCBUILDINGSTOREY carries a Name, or the receiving tool shows an unlabelled node.">
+            <applicability minOccurs="0" maxOccurs="unbounded">
+                <entity>
+                    <name>
+                        <simpleValue>IFCBUILDINGSTOREY</simpleValue>
+                    </name>
+                </entity>
+            </applicability>
+            <requirements>
+                <attribute cardinality="required">
+                    <name>
+                        <simpleValue>Name</simpleValue>
+                    </name>
+                </attribute>
+            </requirements>
+        </specification>
+        <specification name="walls are named" ifcVersion="IFC4" description="A wall with no Name is unaddressable in a schedule.">
+            <applicability minOccurs="0" maxOccurs="unbounded">
+                <entity>
+                    <name>
+                        <simpleValue>IFCWALL</simpleValue>
+                    </name>
+                </entity>
+            </applicability>
+            <requirements>
+                <attribute cardinality="required">
+                    <name>
+                        <simpleValue>Name</simpleValue>
+                    </name>
+                </attribute>
+            </requirements>
+        </specification>
+        <specification name="walls sit in a building storey" ifcVersion="IFC4" description="Spatial containment is what makes a wall belong to a level in Revit/SketchUp.">
+            <applicability minOccurs="0" maxOccurs="unbounded">
+                <entity>
+                    <name>
+                        <simpleValue>IFCWALL</simpleValue>
+                    </name>
+                </entity>
+            </applicability>
+            <requirements>
+                <partOf relation="IFCRELCONTAINEDINSPATIALSTRUCTURE" cardinality="required">
+                    <entity>
+                        <name>
+                            <simpleValue>IFCBUILDINGSTOREY</simpleValue>
+                        </name>
+                    </entity>
+                </partOf>
+            </requirements>
+        </specification>
+    </specifications>
+</ids>

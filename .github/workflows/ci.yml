@@ -29,6 +29,28 @@ jobs:
         run: uv run pytest packages/engine/src/typehaus/checks/pytest_plugin.py -q
       - name: Starter-house build smoke test
         run: uv run haus build houses/starter
+      # The reference house was never built in CI, so a break in it was only ever found by
+      # running the suite locally.
+      - name: Catlin build smoke test
+        run: uv run haus build houses/catlin
+      # The permit checklist runs in CI so a crash or an empty checklist fails the build.
+      # It is deliberately not a pass/fail gate yet: the starter house has two real open
+      # items (an I-joist span over table and an unbound opening-perimeter transition), and
+      # strict gating lands with the jurisdiction work that makes coverage authoritative.
+      - name: Permit checklist renders (starter)
+        run: |
+          uv run haus permit-check houses/starter --json > /tmp/permit.json || true
+          uv run python -c "import json,sys; d=json.load(open('/tmp/permit.json')); \
+            sys.exit(0 if d['items'] else 'permit checklist produced no items')"
+      # A wheel that omits `library/` installs an engine that cannot load the house it just
+      # scaffolded — invisible to every test that runs from the source tree.
+      - name: Wheel installs and scaffolds a buildable house
+        run: |
+          uv build --package typehaus --wheel --out-dir /tmp/wheel
+          uv venv /tmp/wheelenv
+          VIRTUAL_ENV=/tmp/wheelenv uv pip install /tmp/wheel/*.whl
+          cd /tmp && /tmp/wheelenv/bin/haus new /tmp/wheelhouse --name "Wheel House"
+          /tmp/wheelenv/bin/haus build /tmp/wheelhouse
       - name: Build determinism (two builds byte-identical)
         run: |
           uv run haus build houses/starter --only json

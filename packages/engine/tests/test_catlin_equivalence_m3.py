@@ -184,9 +184,17 @@ def current_model(current_ifc_path):
     return semantic_model_from_ifc(current_ifc_path, "typehaus catlin")
 
 
+# The reference states most keys' datum more than once: the porch/garden building repeats
+# the basement/main/second keys at its own slab elevations (e.g. the Sunken Garden Floor at
+# -2.6543 aliases onto "basement" beside the House Basement's -2.7432). The house's own
+# storey — the garage building's for the garage key — is the authoritative datum per key.
+REFERENCE_DATUM_BUILDINGS = ("House", "Garage")
+
+
 @pytest.fixture(scope="module")
 def equivalence(reference_model, current_model):
-    return compare_semantic_models(reference_model, current_model, EquivalenceTolerance())
+    return compare_semantic_models(reference_model, current_model, EquivalenceTolerance(),
+                                   datum_buildings=REFERENCE_DATUM_BUILDINGS)
 
 
 def _paired(report, category: str):
@@ -201,12 +209,6 @@ def test_spatial_hierarchy_carries_every_reference_storey(equivalence):
     assert {item.key for item in equivalence.storeys} >= {
         "basement", "main", "second", "attic", "garage"}
 
-
-# The reference states most keys' datum more than once: the porch/garden building repeats
-# the basement/main/second keys at its own slab elevations (e.g. the Sunken Garden Floor at
-# -2.6543 aliases onto "basement" beside the House Basement's -2.7432). The house's own
-# storey — the garage building's for the garage key — is the authoritative datum per key.
-REFERENCE_DATUM_BUILDINGS = ("House", "Garage")
 
 # Storey datums that deliberately moved since the reference: key → (expected current
 # elevation in metres, the decision that moved it). Same discipline as
@@ -236,9 +238,10 @@ def test_storey_elevations_agree_where_both_models_state_one(reference_model, eq
     unstated = [item.key for item in equivalence.storeys
                 if item.current_elevation_m is None]
     assert not unstated, f"the export stopped stating storey elevations for: {unstated}"
-    reference = {item.key: item.elevation_m for item in reference_model.storeys
-                 if item.building in REFERENCE_DATUM_BUILDINGS
-                 and item.elevation_m is not None}
+    # The datum is now resolved by the same rule the report uses, rather than re-derived
+    # here with a test-local building filter that bypassed the last-wins bug.
+    reference = {item.key: item.reference_elevation_m for item in equivalence.storeys
+                 if item.reference_elevation_m is not None}
     for item in equivalence.storeys:
         if item.current_elevation_m is None or item.key not in reference:
             continue

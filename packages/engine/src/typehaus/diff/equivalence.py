@@ -21,7 +21,13 @@ from pathlib import Path
 
 from typehaus.diff.matcher import match_elements
 from typehaus.diff.model import DiffElem
-from typehaus.diff.semantic import COMPARED_CATEGORIES, SemanticEntity, SemanticModel
+from typehaus.diff.semantic import (
+    COMPARED_CATEGORIES,
+    SemanticEntity,
+    SemanticModel,
+    SemanticStorey,
+    pick_datum_storey,
+)
 
 # Status vocabulary shared by storeys and entities.
 STATUS_EQUIVALENT = "equivalent"
@@ -229,15 +235,38 @@ def _unpaired(entity: SemanticEntity, status: str) -> EntityEquivalence:
     )
 
 
+def _datum_storeys(model: SemanticModel,
+                   datum_buildings: tuple[str, ...] | None) -> dict[str, SemanticStorey]:
+    """Collapse a model's storeys to one authoritative datum per key.
+
+    Building ``{item.key: item}`` directly made this last-wins, so which of catlin's nine
+    storeys defined each of its five keys depended on the order the extractor happened to
+    walk the file.
+    """
+    grouped: dict[str, list[SemanticStorey]] = {}
+    for item in model.storeys:
+        grouped.setdefault(item.key, []).append(item)
+    return {key: pick_datum_storey(key, items, datum_buildings)
+            for key, items in grouped.items()}
+
+
 def compare_semantic_models(reference: SemanticModel, current: SemanticModel,
-                            tolerance: EquivalenceTolerance | None = None
+                            tolerance: EquivalenceTolerance | None = None,
+                            datum_buildings: tuple[str, ...] | None = None,
                             ) -> EquivalenceReport:
-    """Diff two semantic models: spatial hierarchy, census, and per-entity equivalence."""
+    """Diff two semantic models: spatial hierarchy, census, and per-entity equivalence.
+
+    Storey keys are deliberately *not* unique: a reference file may state the same key on
+    several buildings at different datums (catlin's porch/garden building repeats
+    ``basement``/``main``/``second`` at its own slab elevations). ``datum_buildings`` names
+    the buildings that own the authoritative datum, in priority order. Without it, a key
+    stated by more than one building is an error rather than a file-order-dependent pick.
+    """
     tolerance = tolerance or EquivalenceTolerance()
     report = EquivalenceReport(reference_label=reference.label, current_label=current.label)
 
-    reference_storeys = {item.key: item for item in reference.storeys}
-    current_storeys = {item.key: item for item in current.storeys}
+    reference_storeys = _datum_storeys(reference, datum_buildings)
+    current_storeys = _datum_storeys(current, datum_buildings)
     for key in sorted(set(reference_storeys) | set(current_storeys)):
         left, right = reference_storeys.get(key), current_storeys.get(key)
         status = (STATUS_ONLY_REFERENCE if right is None else

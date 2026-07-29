@@ -57,6 +57,14 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
             loop.call_soon_threadsafe(lambda: asyncio.create_task(_broadcast()))
 
         state._notify_checks = _notify_checks
+
+        def _notify_writeback_failed(detail: str) -> None:
+            async def _broadcast() -> None:
+                await bus.broadcast({"type": "writeback-failed", "detail": detail,
+                                     "revision": state.revision()})
+            loop.call_soon_threadsafe(lambda: asyncio.create_task(_broadcast()))
+
+        state._notify_writeback_failed = _notify_writeback_failed
         task = asyncio.create_task(_watch(state, bus))
         try:
             yield

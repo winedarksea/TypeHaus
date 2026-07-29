@@ -219,7 +219,9 @@ def model_to_dict(
         # revision is the PATCH /plan precondition (#30); UI echoes it back on every op.
         "revision": revision,
         "units": "imperial",
-        "canvas_objects": resolved_canvas_objects(model),
+        "canvas_objects": resolved_canvas_objects(
+            model, lambda tag: _provenance(provenance, tag)
+        ),
         "projectNorth": model.plan.project.site.true_north.degrees,
         "findings": _findings_json(findings),
         "project": {

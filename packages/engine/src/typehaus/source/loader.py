@@ -10,6 +10,7 @@ import ast
 import hashlib
 import importlib.util
 import sys
+import threading
 import time
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -239,8 +240,21 @@ def load_plan(house_dir: Path) -> LoadResult:
     return result
 
 
+# Importing a house mutates process-global state — ``sys.path`` and the ``plan``/``params``
+# entries of ``sys.modules``, which are purged wholesale below. Two loads running at once
+# (the server's background rebuild alongside a check job, or two ProjectStates in one
+# process) would tear each other's module tree down mid-import, surfacing as a spurious
+# ``loader.import_error`` KeyError on a half-imported submodule. Serialize the whole import.
+_IMPORT_LOCK = threading.RLock()
+
+
 def _import_manifest(house_dir: Path, findings: list[Finding]) -> PlanModel | None:
     """Import ``plan/manifest.py`` and read its module-level ``PLAN: PlanModel``."""
+    with _IMPORT_LOCK:
+        return _import_manifest_locked(house_dir, findings)
+
+
+def _import_manifest_locked(house_dir: Path, findings: list[Finding]) -> PlanModel | None:
     manifest = house_dir / "plan" / "manifest.py"
     if not manifest.exists():
         findings.append(
@@ -269,8 +283,13 @@ def _import_manifest(house_dir: Path, findings: list[Finding]) -> PlanModel | No
         # Drop both house-local module trees: a cached ``params`` module would not only go
         # stale across edits, its module-level elements would never be re-constructed on a
         # rebuild — silently starving the runtime authorship capture above.
+        # ``library`` is purged with them: it is a *house-visible* package too (plans do
+        # `from library import ...`), and a cached copy meant an edit to a shared catalog
+        # was invisible until the process restarted — the same stale-edit hazard the
+        # plan/params purge exists to prevent.
         for mod in [m for m in sys.modules
-                    if m in ("plan", "params") or m.startswith(("plan.", "params."))]:
+                    if m in ("plan", "params", "library")
+                    or m.startswith(("plan.", "params.", "library."))]:
             del sys.modules[mod]
         spec = importlib.util.spec_from_file_location("plan.manifest", manifest)
         assert spec and spec.loader
@@ -315,6 +334,17 @@ def _find_library_root(house_dir: Path) -> Path | None:
     for parent in [house_dir, *house_dir.parents]:
         if (parent / "library" / "__init__.py").is_file():
             return parent
+    # Installed from a wheel there is no checkout to walk: `library` ships beside
+    # `typehaus` in site-packages, so it is already importable and needs no sys.path help.
+    # Confirm it really is, so a broken install fails here rather than inside the house's
+    # own `from library import ...`.
+    try:
+        import importlib.resources
+
+        if importlib.resources.files("library").joinpath("__init__.py").is_file():
+            return None
+    except (ImportError, ModuleNotFoundError, TypeError):
+        pass
     return None
 
 

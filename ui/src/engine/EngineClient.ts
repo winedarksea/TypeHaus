@@ -79,7 +79,10 @@ export type EngineEvent =
   | { type: "build"; revision: string }
   | { type: "undo"; revision: string; undo: number; redo: number }
   | { type: "redo"; revision: string; undo: number; redo: number }
-  | { type: "file-changed"; revision: string; ok: boolean };
+  | { type: "file-changed"; revision: string; ok: boolean }
+  // A queued source writeback failed; the server reverted to source truth, so the edit the
+  // user already saw applied is gone. Detail is the engine's WritebackError message.
+  | { type: "writeback-failed"; revision: string; detail: string };
 
 export type EngineArtifact = "ifc" | "glb";
 

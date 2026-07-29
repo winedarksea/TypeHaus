@@ -43,6 +43,7 @@ def _derived_detail_scene(model: ResolvedModel, derived: "DerivedDetail") -> Sce
     return scene
 
 if TYPE_CHECKING:
+    from typehaus.checks.jurisdiction import JurisdictionProfile
     from typehaus.checks.registry import Preferences
 
 SceneFn = Callable[[ResolvedModel], Scene]
@@ -61,15 +62,18 @@ class SheetSpec:
 
 
 def build_sheet_index(model: ResolvedModel,
-                      preferences: "Preferences | None" = None) -> list[SheetSpec]:
+                      preferences: "Preferences | None" = None,
+                      profile: "JurisdictionProfile | None" = None) -> list[SheetSpec]:
     """Assemble the ordered permit-set sheet list — the one place sheet order/content lives."""
     sheets: list[SheetSpec] = [SheetSpec("A-000", "Cover / code summary")]
-    sheets.append(SheetSpec("G-002", "General notes", page=_write_general_notes))
+    sheets.append(SheetSpec("G-002", "General notes",
+                            page=partial(_write_general_notes, profile=profile)))
     sheets.append(SheetSpec("C-101", "Site plan", "project north", scene=build_site_plan,
                             north_arrow=True))
 
     if has_foundation_content(model):
-        sheets.append(SheetSpec("S-100", "Foundation plan", scene=build_foundation_plan,
+        sheets.append(SheetSpec("S-100", "Foundation plan",
+                                scene=partial(build_foundation_plan, profile=profile),
                                 north_arrow=True))
 
     floors = sorted(model.floors, key=lambda f: _storey_elevation(model, f.storey))
@@ -187,7 +191,9 @@ def _storey_elevation(model: ResolvedModel, storey_tag: str) -> float:
 
 
 def write_permit_set(model: ResolvedModel, output: Path,
-                     preferences: "Preferences | None" = None) -> tuple[Path, dict[str, object]]:
+                     preferences: "Preferences | None" = None,
+                     profile: "JurisdictionProfile | None" = None,
+                     ) -> tuple[Path, dict[str, object]]:
     """Compose the permit-set baseline into one multi-page PDF.
 
     The source plan remains authoritative: plans are drawing-IR scenes and schedules are
@@ -197,13 +203,20 @@ def write_permit_set(model: ResolvedModel, output: Path,
     """
     from matplotlib.backends.backend_pdf import PdfPages
 
+    from typehaus.checks.registry import Preferences
+    from typehaus.checks.run import resolve_profile
+
+    # The set is composed against one jurisdiction, and it has to be the same one the
+    # checklist gate used — not "mn-2024" spelled out again on the cover and in the notes.
+    if profile is None:
+        profile = resolve_profile(preferences or Preferences())
     output.parent.mkdir(parents=True, exist_ok=True)
-    sheets = build_sheet_index(model, preferences)
+    sheets = build_sheet_index(model, preferences, profile)
     index = [(sheet.number, sheet.title) for sheet in sheets]
     with PdfPages(output) as pdf:
         for sheet in sheets:
             if sheet.number == "A-000":
-                _write_cover(pdf, model, index)
+                _write_cover(pdf, model, index, profile)
             elif sheet.page is not None:
                 sheet.page(pdf, model, sheet.number, sheet.title)
             elif sheet.scene is not None:
@@ -226,15 +239,18 @@ def write_plan_dxfs(model: ResolvedModel, output_dir: Path) -> list[Path]:
     return paths
 
 
-def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]]) -> None:
+def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]],
+                 profile: "JurisdictionProfile") -> None:
     import matplotlib.pyplot as plt
     from typehaus.checks import evaluate_permit_checklist, run_from_model
 
     fig = plt.figure(figsize=LEDGER)
     site = model.plan.project.site
-    checklist = evaluate_permit_checklist(run_from_model(model, []), "mn-2024")
+    checklist = evaluate_permit_checklist(
+        run_from_model(model, [], profile=profile.name), profile)
     fig.text(0.05, 0.88, model.plan.project.name, fontsize=28, family="monospace")
-    fig.text(0.05, 0.82, "MINNESOTA RESIDENTIAL PERMIT SET", fontsize=13, family="monospace")
+    fig.text(0.05, 0.82, f"{profile.edition.upper()} PERMIT SET", fontsize=13,
+             family="monospace")
     fig.text(0.05, 0.77, f"Site: {site.lat:.5f}, {site.lon:.5f}\n"
              f"Climate zone 6 · framed model derived from Type:Haus", fontsize=10,
              family="monospace", va="top")
@@ -246,7 +262,8 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]]) -> Non
         fig.text(0.06 + column * 0.33, 0.62 - line * 0.021, f"{number:8}  {name}",
                  fontsize=8, family="monospace")
     fig.text(0.05, 0.115,
-             "Declared MN checklist: " + ("PASS" if checklist.ok else "NOT READY") + ". "
+             f"Declared {profile.name} checklist: "
+             + ("PASS" if checklist.ok else "NOT READY") + ". "
              "This set encodes a declared subset only; verify local amendments, engineering, "
              "MEP, and energy before construction.", fontsize=8, family="sans-serif", wrap=True)
     sheet_chrome(fig, model, "A-000", "Cover / code summary")
@@ -254,7 +271,8 @@ def _write_cover(pdf, model: ResolvedModel, index: list[tuple[str, str]]) -> Non
     plt.close(fig)
 
 
-def _write_general_notes(pdf, model: ResolvedModel, number: str, name: str) -> None:
+def _write_general_notes(pdf, model: ResolvedModel, number: str, name: str,
+                         profile: "JurisdictionProfile | None" = None) -> None:
     """G-002 — standard notes plus the markdown note files the transitions reference.
 
     ``Transition.notes`` point at house-relative markdown (→ details._notes_column); this
@@ -269,7 +287,8 @@ def _write_general_notes(pdf, model: ResolvedModel, number: str, name: str) -> N
     fig.text(0.03, 0.945, f"{number} · {name}", fontsize=16, family="monospace")
 
     blocks: list[tuple[str, list[str]]] = [("GENERAL", [
-        "• Code: 2024 Minnesota Residential Code (declared checklist mn-2024);",
+        f"• Code: {profile.edition if profile else 'see cover'} "
+        f"(declared checklist {profile.name if profile else 'see cover'});",
         "  verify local amendments with the authority having jurisdiction.",
         "• Written dimensions govern; report discrepancies before proceeding.",
         "• This set encodes a declared subset only — engineering, MEP and",

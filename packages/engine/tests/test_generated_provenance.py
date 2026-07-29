@@ -94,3 +94,24 @@ def test_movable_subclass_in_noneditable_file_is_a_hard_error(tmp_path: Path) ->
             and str(f.severity).lower().endswith("error")]
     flagged = {t for f in errs for t in f.element_tags}
     assert "W-B-S1" in flagged, flagged
+
+
+def test_canvas_objects_carry_provenance(params_house: Path) -> None:
+    """Canvas objects are the drag-and-move population, so their provenance (and its
+    ``editable`` flag) has to reach the UI — otherwise the inspector can't show where an
+    object was authored, and a drag on a non-editable one looks like it worked."""
+    from typehaus.resolve import resolve
+    from typehaus.server.model_json import model_to_dict
+
+    result = load_plan(params_house)
+    assert result.plan is not None
+    model, findings = resolve(result.plan)
+    payload = model_to_dict(model, provenance=result.provenance, findings=findings)
+    objects = payload["canvas_objects"]
+    assert objects, "fixture house has no canvas objects to check"
+    assert all("provenance" in obj for obj in objects)
+    located = [obj for obj in objects if obj["provenance"] is not None]
+    assert located, "no canvas object resolved any authorship at all"
+    for obj in located:
+        assert obj["provenance"]["file"].endswith(".py")
+        assert isinstance(obj["provenance"]["editable"], bool)

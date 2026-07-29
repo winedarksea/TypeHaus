@@ -68,6 +68,9 @@ export interface StoreState extends MutationActions {
   visibleLayerGroups: Record<LayerVisibilityGroup, boolean>;
   detailView: DetailView; // assembly-details / BOM reader over the canvas
   conflict: Conflict | null;
+  // Set when the engine reports a queued source writeback failed: the edit the user saw
+  // applied has been reverted to source truth, so this must be shown, not swallowed.
+  writebackFailure: string | null;
   toasts: Toast[];
 
   // actions
@@ -109,6 +112,7 @@ export interface StoreState extends MutationActions {
   // and pan the 2D view so its centroid sits at the viewport center.
   zoomToUid: (uid: string) => void;
   dismissConflict: () => void;
+  dismissWritebackFailure: () => void;
   toast: (message: string, kind?: Toast["kind"]) => void;
   dismissToast: (id: number) => void;
   clearToasts: () => void;
@@ -165,6 +169,7 @@ export const useStore = create<StoreState>((set, get) => ({
   ) as Record<LayerVisibilityGroup, boolean>,
   detailView: "none",
   conflict: null,
+  writebackFailure: null,
   toasts: [],
 
   init: async () => {
@@ -328,6 +333,7 @@ export const useStore = create<StoreState>((set, get) => ({
     }
   },
   dismissConflict: () => set({ conflict: null }),
+  dismissWritebackFailure: () => set({ writebackFailure: null }),
   toast: (message, kind = "info") =>
     set((s) => ({ toasts: [...s.toasts, { id: toastSeq++, message, kind }] })),
   dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
@@ -335,7 +341,8 @@ export const useStore = create<StoreState>((set, get) => ({
   ...createMutationActions(set, get),
 }));
 
-function handleEvent(
+// Exported for the event-handling suite: the writeback-failed path has no other seam.
+export function handleEvent(
   get: () => StoreState,
   set: (partial: Partial<StoreState>) => void,
   e: EngineEvent,
@@ -344,6 +351,13 @@ function handleEvent(
     case "file-changed": {
       // External VSCode/Claude edit. If the user has no pending local edit, hot-reload
       // silently; the conflict banner is reserved for the 409 precondition path (#30).
+      void get().reloadIfStale(e.revision);
+      break;
+    }
+    case "writeback-failed": {
+      // The engine already reverted to source truth; reload so the canvas matches, and say
+      // why the edit disappeared instead of hot-reloading it away silently.
+      set({ writebackFailure: e.detail });
       void get().reloadIfStale(e.revision);
       break;
     }

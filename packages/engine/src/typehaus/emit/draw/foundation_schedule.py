@@ -10,6 +10,8 @@ returns a :class:`Finding` naming the missing input instead of printing a plausi
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from dataclasses import dataclass, field
 
 from typehaus.emit.draw.schedule_block import ScheduleTable
@@ -28,10 +30,11 @@ from typehaus.emit.draw.structural_common import (
 )
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ControlLayer, LayerFunction
+if TYPE_CHECKING:
+    from typehaus.checks.jurisdiction import JurisdictionProfile
+
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, ResolvedWall
 
-# Which jurisdiction profile the permit set is composed against (matches sheets._write_cover).
-PERMIT_PROFILE_NAME = "mn-2024"
 # A deck's top and the slab riding on it are the same plane to within a subfloor sheet;
 # anything further apart is a different level, not decking.
 DECK_COINCIDENCE_TOLERANCE_M = 0.3
@@ -261,11 +264,18 @@ def _mark_order(mark: str) -> tuple[str, int]:
     return prefix, int(mark[len(prefix):] or 0)
 
 
-def foundation_general_notes(model: ResolvedModel) -> list[str]:
-    """Sheet notes derived from the code profile and the resolved bedding/drainage records."""
-    from typehaus.checks.code.mn_residential.profile import get_profile
+def foundation_general_notes(model: ResolvedModel,
+                             profile: "JurisdictionProfile | None" = None) -> list[str]:
+    """Sheet notes derived from the code profile and the resolved bedding/drainage records.
 
-    profile = get_profile(PERMIT_PROFILE_NAME)
+    The profile is passed in by the sheet that prints these notes, so the frost depth on
+    S-100 is stated by the same jurisdiction the cover sheet and the checklist name. This
+    module used to hardcode its own ``PERMIT_PROFILE_NAME = "mn-2024"``.
+    """
+    from typehaus.checks.code.mn_residential.profile import DEFAULT_PROFILE_NAME, get_profile
+
+    if profile is None:
+        profile = get_profile(DEFAULT_PROFILE_NAME)
     notes: list[str] = []
     if profile.frost_depth_in is not None:
         notes.append(f"ALL FOOTINGS TO BEAR {profile.frost_depth_in:.0f}\" MIN BELOW FINISHED "

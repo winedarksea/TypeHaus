@@ -1,3 +1,7 @@
+[project]
+# Whose code this house is checked against (checks/code/mn_residential/profile.py).
+jurisdiction = "mn-2024"
+
 [envelope]
 wall_r = 40
 roof_r = 60
