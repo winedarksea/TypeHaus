@@ -491,3 +491,130 @@ def test_earth_is_cut_by_every_excavated_slab(model, geometry) -> None:
         pytest.skip("house excavates nothing")
     prism = geometry.of_kind("earth")[0].parts[0].solids[0]
     assert len(prism.voids) == len(expected)
+
+
+# --- the rest of the glTF switch-over (D4) ----------------------------------------------
+# `emit/gltf` no longer derives *any* geometry: openings and roof bands are serialized from
+# the IR (byte-for-byte identical GLBs, verified at the switch), and the two solids nothing
+# used to draw — the subfloor deck and the site earth — now reach the export.
+
+def test_the_glb_opening_product_is_the_ir_product(model, geometry) -> None:
+    """The emitter draws exactly the boxes `opening_parts` produced, and no others.
+
+    This was the cross-language mirrored pair: eleven constants maintained by hand in
+    `emit/gltf/openings.py` and in the viewer's `buildOpening`. One copy is gone; a
+    regression here means the emitter grew geometry of its own again.
+    """
+    from typehaus.emit.gltf.mesh import _MeshBuilder
+    from typehaus.emit.gltf.openings import _add_opening_filling
+
+    walls_by_tag = {wall.tag: wall for wall in model.walls}
+    door_types = {dt.tag: dt for dt in model.plan.library.door_types}
+    checked = 0
+    for opening in model.openings:
+        host = walls_by_tag.get(opening.host_wall)
+        if host is None:
+            continue
+        element = geometry.by_uid(opening.uid)
+        assert element is not None, opening.uid
+        door_type = door_types.get(opening.type_ref) if opening.is_door else None
+        builder = _MeshBuilder()
+        _add_opening_filling(
+            builder, host, opening,
+            is_double_swing=door_type is not None and door_type.operation == "double_swing",
+            is_glazed=door_type is not None and door_type.glazed,
+            is_trimless=door_type is not None and door_type.trimless,
+        )
+        want = {
+            tuple(sorted((round(x, 9), round(y, 9), round(z, 9))
+                         for (x, y) in solid.ring for z in (solid.z0_m, solid.z1_m)))
+            for part in element.parts for solid in part.solids
+        }
+        # Corners, back out of the glTF swizzle: every box the emitter drew has to be one of
+        # the IR's, and every one of the IR's has to have been drawn.
+        got = {
+            tuple(sorted(corners))
+            for corners in _emitted_box_corners(builder)
+        }
+        assert got == {tuple(sorted(box)) for box in want}, opening.uid
+        checked += 1
+    assert checked, "house has no hosted openings"
+
+
+def _emitted_box_corners(builder) -> list[list[tuple[float, float, float]]]:
+    """The distinct 8-corner sets the mesh builder accumulated, in the plan frame."""
+    boxes = []
+    for positions, _indices in builder._buckets.values():
+        # add_prism appends one bottom loop then one top loop per box.
+        for start in range(0, len(positions), 8):
+            chunk = positions[start:start + 8]
+            if len(chunk) < 8:
+                continue
+            boxes.append([(round(px, 9), round(-pz, 9), round(py, 9))
+                          for (px, py, pz) in chunk])
+    return boxes
+
+
+def test_the_glb_ships_the_subfloor_deck_and_the_site_earth(model) -> None:
+    """Blessed diffs 3 and 4, at the export boundary: a floor node whose deck is drawn, and
+    an `earth` node that used to be empty in every GLB this project has ever written."""
+    from typehaus.emit.gltf.emitter import emit_gltf_dict
+
+    gltf, _blob = emit_gltf_dict(model, "core")
+    trades = [node.get("extras", {}).get("trade") for node in gltf["nodes"]]
+    assert "earth" in trades, "the export still has no ground under the building"
+    decked = [f for f in model.floors if f.deck_outline]
+    if not decked:
+        pytest.skip("house has no decked floor")
+    floor_nodes = [n for n in gltf["nodes"] if n.get("extras", {}).get("trade") == "floors"
+                   and n.get("extras", {}).get("kind") == "floor"]
+    # One node for the joists, one for the deck over them, per decked floor.
+    assert len(floor_nodes) >= len(model.floors) + len(decked)
+
+
+def test_the_earth_sheet_is_holed_rather_than_drawn_over_the_excavation(model) -> None:
+    """Cutting the slabs out of the sheet is the whole point of the voids: an uncut plane at
+    grade slices straight through the basement it was dug for."""
+    from typehaus.emit.gltf.emitter import _add_earth
+    from typehaus.emit.gltf.mesh import _MeshBuilder
+
+    prism = model.geometry.of_kind("earth")
+    if not prism:
+        pytest.skip("house has no parcel ring")
+    voids = prism[0].parts[0].solids[0].voids
+    if not voids:
+        pytest.skip("house excavates nothing")
+    builder = _MeshBuilder()
+    _add_earth(builder, model)
+    for positions, _indices in builder._buckets.values():
+        for (px, _py, pz) in positions:
+            x, y = px, -pz
+            for ring in voids:
+                xs = [p[0] for p in ring]
+                ys = [p[1] for p in ring]
+                inside = (min(xs) + TOL < x < max(xs) - TOL
+                          and min(ys) + TOL < y < max(ys) - TOL)
+                assert not inside, f"earth vertex ({x}, {y}) sits inside an excavation"
+
+
+def test_one_hole_still_cuts_the_four_bands_it_always_did() -> None:
+    """The generalized subtraction has to reduce to the single-hole slab path exactly, or
+    every slab with a stair well in it changes shape."""
+    from typehaus.emit.gltf.mesh import _subtract_rect
+
+    assert _subtract_rect((0.0, 10.0, 0.0, 10.0), (2.0, 4.0, 3.0, 6.0)) == [
+        (0.0, 10.0, 0.0, 3.0), (0.0, 10.0, 6.0, 10.0),
+        (0.0, 2.0, 3.0, 6.0), (4.0, 10.0, 3.0, 6.0),
+    ]
+
+
+def test_subtracting_holes_that_miss_or_swallow_the_rectangle() -> None:
+    """A hole outside the sheet must not delete it, and one covering it must not leave a
+    sliver behind — the earth sheet meets both cases (a detached slab, a full-footprint one)."""
+    from typehaus.emit.gltf.mesh import _subtract_rect
+
+    whole = (0.0, 4.0, 0.0, 4.0)
+    assert _subtract_rect(whole, (9.0, 10.0, 9.0, 10.0)) == [whole]
+    assert _subtract_rect(whole, (-1.0, 5.0, -1.0, 5.0)) == []
+    # An edge-touching hole takes a bite rather than splitting off a zero-width band.
+    assert _subtract_rect(whole, (0.0, 1.0, 0.0, 4.0)) == [(1.0, 4.0, 0.0, 4.0)]

@@ -158,6 +158,13 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         for member in floor.members:
             _add_member(mb, member)
         scene.add_object(mb, trade="floors", kind="floor", uid=floor.uid)
+        # The subfloor sheet over those joists — its own node, the way a wall's body is
+        # separate from its studs, so the deck can be hidden without hiding the framing.
+        # Neither export drew a deck before the IR produced one; joists hung in space.
+        deck = _MeshBuilder()
+        _add_deck(deck, model, floor)
+        if not deck.is_empty():
+            scene.add_object(deck, trade="floors", kind="floor", uid=floor.uid)
 
     for stair in sorted(model.stairs, key=lambda item: item.uid):
         mb = _MeshBuilder()
@@ -173,6 +180,13 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
 
     _add_canvas_objects(scene, model)
 
+    earth = _MeshBuilder()
+    _add_earth(earth, model)
+    if not earth.is_empty():
+        # No kind/uid: the earth is site *context*, not a selectable element — the same
+        # contract ui/src/three/builders/site.ts states for the sheet it draws.
+        scene.add_object(earth, trade="earth")
+
     if scene.is_empty():  # keep the container valid even for an empty model
         mb = _MeshBuilder()
         mb.add_prism([(0, 0), (0.001, 0), (0.001, 0.001)], 0.0, 0.001, _FALLBACK)
@@ -185,6 +199,51 @@ def _room_z(model: ResolvedModel, storey_tag: str) -> float:
         if w.storey == storey_tag:
             return w.z0_m
     return 0.0
+
+
+def _ir_part(model: ResolvedModel, uid: str, key: str):
+    """One named part of one IR element, or ``None`` if the model carries no geometry.
+
+    ``resolve_preview`` skips the geometry stage on purpose, and a caller can hand this
+    emitter a model built that way, so every IR read here is optional rather than assumed.
+    """
+    geometry = getattr(model, "geometry", None)
+    element = geometry.by_uid(uid) if geometry is not None else None
+    if element is None:
+        return None
+    return next((part for part in element.parts if part.key == key), None)
+
+
+def _add_deck(mb: _MeshBuilder, model: ResolvedModel, floor) -> None:
+    """A floor's subfloor sheet, cut by its stair/chase openings.
+
+    Colour follows the deck's *material* the way a wall layer's does — the IR names it
+    ``sheathing`` and the exporter decides what sheathing reads as.
+    """
+    part = _ir_part(model, floor.uid, "deck")
+    if part is None:
+        return
+    color = _material_finish_color(getattr(floor, "deck_material_ref", None), "sheathing")
+    for prism in part.solids:
+        mb.add_prism_with_rectangular_voids(list(prism.ring), prism.voids,
+                                            prism.z0_m, prism.z1_m, color)
+
+
+def _add_earth(mb: _MeshBuilder, model: ResolvedModel) -> None:
+    """The site earth sheet: the parcel at grade, cut by everything excavated out of it.
+
+    The glTF ``earth`` trade used to be empty, so the exported building floated with no
+    ground under it while the viewer drew a sheet under the same model. The tone is the
+    viewer's soil brown, but opaque: the viewer's translucency is a depth-sorted overlay
+    trick that an importer has no equivalent for, and a see-through ground imports into
+    Revit/SketchUp as a puzzle rather than a site.
+    """
+    part = _ir_part(model, "site-earth", "sheet")
+    if part is None:
+        return
+    for prism in part.solids:
+        mb.add_prism_with_rectangular_voids(list(prism.ring), prism.voids,
+                                            prism.z0_m, prism.z1_m, _color("earth"))
 
 
 def _add_solar_panel(mb: _MeshBuilder, panel) -> None:

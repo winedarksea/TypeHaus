@@ -16,6 +16,34 @@ from typehaus.emit.gltf.geometry import (
 )
 
 
+_Rect = tuple[float, float, float, float]  # (x0, x1, y0, y1), axis-aligned
+
+
+def _subtract_rect(rect: _Rect, hole: _Rect) -> list[_Rect]:
+    """``rect`` minus ``hole`` as up to four axis-aligned pieces.
+
+    The order — bottom band, top band, then the left and right middles — is the order the
+    single-hole slab path emitted its four strips in, so cutting one hole still produces the
+    same geometry it always did. A hole that misses the rectangle leaves it whole; one that
+    covers it leaves nothing.
+    """
+    x0, x1, y0, y1 = rect
+    hx0, hx1, hy0, hy1 = (max(hole[0], x0), min(hole[1], x1),
+                          max(hole[2], y0), min(hole[3], y1))
+    if hx1 <= hx0 or hy1 <= hy0:  # no overlap
+        return [rect]
+    pieces = []
+    if hy0 > y0:
+        pieces.append((x0, x1, y0, hy0))
+    if hy1 < y1:
+        pieces.append((x0, x1, hy1, y1))
+    if hx0 > x0:
+        pieces.append((x0, hx0, hy0, hy1))
+    if hx1 < x1:
+        pieces.append((hx1, x1, hy0, hy1))
+    return pieces
+
+
 class _TriangleIndices(list):
     """A bucket's triangle index list, plus the analytic per-corner normals that a few faces
     want instead of the geometric one.
@@ -115,25 +143,25 @@ class _MeshBuilder:
         this produces a true hole without introducing a second polygon triangulator.
         Irregular solids intentionally retain their outer prism until they gain a general
         mesh path.
+
+        Any number of holes is subtracted, one after another, because the site earth sheet
+        is one outline cut by *every* excavated slab — not the single stair well a floor
+        slab has. One hole reduces to exactly the four bands this used to emit.
         """
         xs, ys = {p[0] for p in ring}, {p[1] for p in ring}
-        if len(xs) != 2 or len(ys) != 2 or len(voids) != 1:
+        if len(xs) != 2 or len(ys) != 2 or not voids:
             self.add_prism(ring, z0, z1, color)
             return
-        hole = voids[0]
-        hx, hy = {p[0] for p in hole}, {p[1] for p in hole}
-        if len(hx) != 2 or len(hy) != 2:
-            self.add_prism(ring, z0, z1, color)
-            return
-        minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
-        hminx, hmaxx, hminy, hmaxy = min(hx), max(hx), min(hy), max(hy)
-        for rect in (
-            [(minx, miny), (maxx, miny), (maxx, hminy), (minx, hminy)],
-            [(minx, hmaxy), (maxx, hmaxy), (maxx, maxy), (minx, maxy)],
-            [(minx, hminy), (hminx, hminy), (hminx, hmaxy), (minx, hmaxy)],
-            [(hmaxx, hminy), (maxx, hminy), (maxx, hmaxy), (hmaxx, hmaxy)],
-        ):
-            self.add_prism(rect, z0, z1, color)
+        rects = [(min(xs), max(xs), min(ys), max(ys))]
+        for hole in voids:
+            hx, hy = {p[0] for p in hole}, {p[1] for p in hole}
+            if len(hx) != 2 or len(hy) != 2:  # not an orthogonal rectangle: no hole path
+                self.add_prism(ring, z0, z1, color)
+                return
+            box = (min(hx), max(hx), min(hy), max(hy))
+            rects = [piece for rect in rects for piece in _subtract_rect(rect, box)]
+        for x0, x1, y0, y1 in rects:
+            self.add_prism([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], z0, z1, color)
 
     def add_box(self, p0: Vec3, p1: Vec3, size: float,
                 color: tuple[float, float, float, float]) -> None:

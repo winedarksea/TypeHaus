@@ -79,6 +79,11 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "column": (0.60, 0.60, 0.62, 1.0),  # concrete/wood posts (sonotube, 6x6 pillars)
     "beam": (0.62, 0.46, 0.28, 1.0),  # PT / built-up wood beams
     "furniture": (0.46, 0.31, 0.20, 1.0),
+    # The site sheet under the building. 0x806040 is the viewer's soil brown
+    # (ui/src/three/builders/site.ts buildEarth); the viewer draws it at 0.28 opacity with
+    # depth writes off, which is an overlay trick with no importer equivalent, so the export
+    # ships the same tone opaque.
+    "earth": (0.502, 0.376, 0.251, 1.0),
     # opening fillings — frame/leaf/panel read as wood; glazing is translucent blue-grey
     # (0x8fb7c9 @ 0.48), matching ui/src/components/Panel3D.tsx buildOpening. The frame tone is
     # the viewer's light-theme member wood (0xb3854f, ui/src/nordic/palette.ts); the .glb has no

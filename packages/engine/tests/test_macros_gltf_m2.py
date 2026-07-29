@@ -238,7 +238,11 @@ def test_emit_gltf_dict_emits_per_object_nodes_with_trade_extras(plan):
         extras = node.get("extras")
         assert extras is not None, f"every node needs extras: {node.get('name')}"
         assert extras["trade"] in _ALL_TRADES, f"trade must be an allowlisted token: {extras}"
-        assert extras.get("kind") in _SELECTION_KINDS, f"kind must be an allowlisted token: {extras}"
+        if extras["trade"] != "earth":
+            # The site sheet is context, not an element: it has no uid to carry, which is the
+            # same contract ui/src/three/builders/site.ts states for the ground it draws (and
+            # wholeHouseGlb.ts already parses kind/uid as optional).
+            assert extras.get("kind") in _SELECTION_KINDS, f"kind must be an allowlisted token: {extras}"
         # The node name mirrors extras as a "<trade>|<kind|>|<uid|>" fallback.
         assert node["name"].split("|")[0] == extras["trade"]
 
@@ -260,13 +264,15 @@ def test_emit_gltf_dict_tags_every_node_with_a_kind_and_uid(plan):
 
     for node in gltf["nodes"]:
         extras = node["extras"]
+        if extras["trade"] == "earth":
+            continue  # site context, deliberately identity-free (see the test above)
         assert extras.get("kind"), f"node {node['name']} needs a selection kind"
         assert extras.get("uid"), f"node {node['name']} needs a model uid"
         assert node["name"].split("|") == [extras["trade"], extras["kind"], extras["uid"]]
 
     # Whatever this plan actually resolves to must appear in the export, tagged — derived from
     # the model rather than hard-coded so a fixture gaining solids or a roof widens the test.
-    kinds = {node["extras"]["kind"] for node in gltf["nodes"]}
+    kinds = {node["extras"].get("kind") for node in gltf["nodes"]}
     expected = {kind for kind, records in (
         ("wall", model.walls), ("opening", model.openings), ("room", model.rooms),
         ("solid", model.solids), ("footing_bedding", model.footing_beddings),

@@ -4,7 +4,9 @@ Moved out of ``emit/gltf/openings.py``, which was one half of a documented cross
 mirrored pair with ``ui/src/three/builders/walls.ts::buildOpening`` — two hand-maintained
 copies of the same eleven constants, which is exactly the drift this IR exists to end. The
 constants live here now; the glTF emitter re-exports them so the pair's Python side keeps its
-public names until the TS side is deleted (plan, phase F).
+public names. The TS copy stays — the viewer's own render path is not being retired (see
+``WHOLE_HOUSE_GLB_PRIMARY``) — so `tests/test_gltf_opening_fillings.py` is what keeps the two
+in step, and a change here still has to be made there.
 
 The product is a stack of boxes laid out in the wall's own frame: a four-piece frame, then
 either one door panel, two leaves split at a centre mullion (``double_swing``), or a glass
