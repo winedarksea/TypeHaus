@@ -268,7 +268,7 @@ SECOND_PLACEABLES = [
     Furniture(uid="CHR701AAAA", tag="FURN-S-DESK-CHAIR1", type_ref="FURN-DESK-CHAIR", room="RM-S-BED1",
               position=pt(m(7.61089), m(3.43304)), rotation=deg(-90)),
     Furniture(uid="DSK702AAAA", tag="FURN-S-DESK2", type_ref="FURN-DESK-48", room="RM-S-BED2",
-              position=pt(m(7.36549), m(6.39516)), rotation=deg(0)),
+              position=pt(m(7.3692), m(5.88414)), rotation=deg(0)),
     Furniture(uid="CHR702AAAA", tag="FURN-S-DESK-CHAIR2", type_ref="FURN-DESK-CHAIR", room="RM-S-BED2",
               position=pt(m(7.38828), m(6.31867)), rotation=deg(0)),
     Furniture(uid="DSK703AAAA", tag="FURN-S-DESK3", type_ref="FURN-DESK-48", room="RM-S-BED3",

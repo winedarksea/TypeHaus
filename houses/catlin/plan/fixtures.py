@@ -49,6 +49,13 @@ MAIN_FIXTURES = (
     Fixture(uid="CMQ806AAAA", tag="FX-M-BATH2-TUB", type_ref="FX-TUB-60", room="RM-M-BATH2",
             position=pt(m(1.96436), m(5.77311)), rotation=deg(90), wall_ref="W-M-BA2E",
             drain_position=pt(ft(7, 4), ft(18, 10.8))),
+    # RM-M-BATH2's double-basin sink uses the shared kitchen-sink catalog type rather than
+    # a house-local surrogate. Its 27" mount puts the library sink's deck at the intended
+    # lavatory height; rotation +90 turns the back of the symbol toward the west wall.
+    Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-KITCHEN-SINK-33",
+            room="RM-M-BATH2", position=pt(ft(1), ft(16, 6)), rotation=deg(90),
+            wall_ref="W-M-W3", mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
+            drain_position=pt(ft(1), ft(16, 6))),
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-WASHER", room="RM-M-LAUNDRY",
               position=pt(ft(10, 6), ft(20)), wall_ref="W-M-BA2E2"),
     # Kitchen sink: dropped into the 36" base FURN-M-KIT-SINKBASE and centred on
@@ -88,7 +95,7 @@ SECOND_FIXTURES = (
     Fixture(uid="CSQ802AAAA", tag="FX-S-BATH1-LAV", type_ref="FX-LAV-24", room="RM-S-BATH1",
             position=pt(ft(9, 0.5), ft(31)), rotation=deg(90), wall_ref="W-S-BA-E1B"),
     Fixture(uid="CSQ803AAAA", tag="FX-S-BATH1-SH", type_ref="FX-TUBSHOWER-60", room="RM-S-BATH1",
-            position=pt(m(0.96572), m(10.3683)), wall_ref="W-S-BD-N"),
+            position=pt(m(1.66988), m(10.4013)), wall_ref="W-S-BD-N"),
     # The suite's own bath (source: 46.01 sf). Both walls it drains into are
     # INT_2X6_PLUMBING — W-S-DC2 west, W-S-SBS south — which is what `advisory.wet_wall_depth`
     # measures against preferences.toml's 5.5" drain-stack requirement.

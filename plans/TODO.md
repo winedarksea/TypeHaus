@@ -172,6 +172,7 @@ the future.
 - Might be nice to have a toggle that turns off all the white label text on the 2d image. It can be a bit overwhelming at times. Maybe a label on hover option then.
 - We want to add a line of cabinets along the east wall of the living room, between the electric fireplace and the pantry closets on that wall. These should be 30" high
 - Make Wall W-M-STRW a special wall type. It will not have drywall facing the mudroom, so it can have space for hanging coats between the studs. The studs will be Select Grade S4S 2x6 for better visual appearance (likely douglas fir, perhaps slightly rounded (eased) corners). The rear side of the wall (facing the stairs) will have 3/4" cabinet-grade plywood (which can support coat hooks directly). Try to keep electrical and plumbing out of this wall then (it might work carefully but easier to avoid.)
+- Unittests that the stairs align between floors and reach the correct ceiling height while meeting code. The winders for ST-S2A are still messed up (last winder is level with the floor, not a step up), and the regular stair tread can come down to 11".
 
 Questions:
 - Do we want floor drains in kitchen/laundry room

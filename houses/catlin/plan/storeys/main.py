@@ -288,13 +288,13 @@ OPENINGS = [
     Door(uid="CMD211AAAA", tag="D-M-MECH", host="W-M-MECH-S", type_ref="DT-INT30",
          position=from_node("N-M-MECH1", ft(3, 2.9375)), flip_swing=True, flip_hinge=True),
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT30",
-         position=from_node("N-M-W3", ft(1, 6.5))),
+         position=from_node("N-M-W3", ft(2)), flip_swing=True, flip_hinge=True),
     Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-INT56",
          position=from_node("N-M-D1", ft(0, 4))),
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT30",
          position=from_node("N-M-E4", ft(1, 2.6875)), flip_swing=True),
     Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT32",
-         position=from_node("N-M-D3", ft(5))),
+         position=from_node("N-M-D3", ft(5)), flip_hinge=False, flip_swing=True),
     # Second bedroom <-> living connection, straight through the centre bearing wall.
     # Trimless (drywall return jamb, no casing) so it reads as a slot in the wall from
     # both rooms. W-M-C1 is BEARING, so the solver's framing tables put a structural

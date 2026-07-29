@@ -273,7 +273,7 @@ OPENINGS = [
          position=from_node("N-S-B2", ft(3, 9.3125))),                       # y 24'-1"
     Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT30",
          position=from_node("N-S-B3", ft(0, 8))),                        # y 28'-11"
-    Door(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1", type_ref="DT-INT30",
+    Door(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1", type_ref="DT-INT30-GLASS",
          position=from_node("N-S-C1", ft(1, 0.625))),                    # x 20'-3 5/8"
     # Three doors through the centre bearing line, on the source's own gaps. Each takes a
     # header exactly like O-M-HALL / O-M-DRESS one storey down; the wall itself is unbroken.

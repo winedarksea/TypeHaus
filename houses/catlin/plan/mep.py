@@ -136,6 +136,9 @@ SLEEVES = [
     SleevePenetration(uid="CMP908AAAA", tag="SP-M-BATH2-TUB", host_ref="SL-M-DECK",
                       position=pt(ft(7, 4), ft(18, 10.8)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-BATH2-TUB"),
+    SleevePenetration(uid="CMP909AAAA", tag="SP-M-BATH2-SINK", host_ref="SL-M-DECK",
+                      position=pt(ft(1), ft(16, 6)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), serves_fixture="FX-M-BATH2-SINK"),
     # Projection of FX-M-BATH1-LAV onto the W-M-BAE structure-layer centerline (x=6, from
     # storeys/main.py node coordinates N-M-BA1/N-M-BA2), at the lavatory's own y.
     SleevePenetration(uid="CMP903AAAA", tag="SP-M-LAV1", host_ref="SL-M-DECK",
