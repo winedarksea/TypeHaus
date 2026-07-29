@@ -20,11 +20,12 @@ what genuinely remains, with fresh measurements.*
   layout change to the RM-S-STUDY-2 opening), and there is 2.5" of tread slack in the
   straight run to pay for it (11.28" against the 10" minimum). Both checks stay advisory
   WARN and keep printing the measured numbers.
-- **Service load exceeds the service — decision still open (2026-07-26).** The model and
-  checks are done: `electrical.service_load` reads the measured 223.7A (NEC 220.82) against
-  the 200A service and names the three levers — an EV EMS per 625.42, interlocking the
-  sauna, or a service upgrade. A `LoadManagement` element exists (capability only, none
-  authored); authoring one with the chosen strategy flips the check. Pick a lever.
+- ~~**Service load exceeds the service**~~ — **decided 2026-07-27: the EV EMS lever.**
+  `LM-EV` (Emporia Vue, `strategy="ems"`) caps `CKT-EV-1450` + `CKT-EV-620` at 5,760 VA
+  (24A @ 240V), credited per NEC 625.42. Demand falls 223.7A → 191.7A and fits the 200A
+  service, so the check passes. 5,760 VA is the largest round setpoint inside the 32.3A of
+  headroom the rest of the house leaves, and stays well above the 6A floor an EVSE may
+  never be throttled below. Authored in `houses/catlin/plan/circuits.py`.
 - **Panel needs to be a 54-space one (2026-07-26).** All 35 circuits now carry slot
   assignments and `electrical.panel_spaces` measures 48 required against ED-T-PANEL's
   declared 42 — an honest FAIL until the panel type is swapped to a 54-circuit enclosure
@@ -32,6 +33,12 @@ what genuinely remains, with fresh measurements.*
 
 ## Remaining Work
 
+- **`Alarm` has no position — it draws at its room's seed.** Fine while every alarm had a
+  room its own size; exposed on 2026-07-28 when RM-M-HALL was retired into RM-M-LIVING under
+  BM-M-HALL and AL-M-HALL's symbol moved with it to (27', 12'), out in the dining end. The
+  code check only asks for *an* alarm on a non-sleeping room, so it still passes, but R314.3
+  wants it "in the immediate vicinity of the bedrooms" and the sheet now draws it elsewhere.
+  Needs an optional `position` on `Alarm` (falling back to the seed), not a room split.
 - **In-plan variant forks + compare UI** (scoped out of the sweep by decision: catalog only).
   `model.json` now carries the variant catalog; `prices.toml` $-ranges work in
   `haus variants compare` and takeoff. Still missing: `variant_of`/`active` forks with
@@ -130,74 +137,47 @@ what genuinely remains, with fresh measurements.*
   same — 9" and 6" against a 7.5" design riser. `structural.stair_riser_uniformity` (new,
   IRC R311.7.5.1) measures the built risers off the members; all three catlin stairs now
   read 0.00" variation.
+- **A u-split's landing depth is floored at 36", not at the stair width** (2026-07-28,
+  `stairs/common.py::_MIN_LANDING_DEPTH_M`). R311.7.6 has two numbers and the resolver was
+  applying the wrong one to the wrong axis: the *width* rule ("not less than the stairway
+  served") is cross-run, which a half-landing meets by construction; only the 36" is
+  measured in the direction of travel. The old floor silently lengthened every U-well by
+  (width - 36").
+- **`turn_direction` now names a u-split's hand too** (2026-07-28), not just a winder's.
+  It swaps which lane each flight occupies and nothing else — the well, the partition and
+  the landing zone are symmetric — so mirroring a stair never changes the opening it needs.
+  `None`/`"right"` is the pre-existing behaviour; catlin's ST-B2M and ST-M2S are `"left"`.
+- **The two wells share one south edge, and it is the stair wall's face** (2026-07-28).
+  Not a free choice either: `FO-S-STAIR`'s south edge is ST-M2S's *springing point* — its
+  first tread starts there — so any wall north of that line stands on that tread, and
+  `FO-M-STAIR` cannot start south of the wall or the wall overhangs the slab opening. Each
+  well then takes whatever run its own north limit leaves, which is why ST-B2M's treads are
+  11 15/16" and ST-M2S's are 11". Worth remembering before moving W-M-STRS again.
+- **Guards draw in 2D** (`emit/draw/floorplan.py::_emit_railings`, layer `A-RAIL`). Every
+  resolved railing solid is drawn as its own plan outline, so a post reads at its true
+  section and a rail as the band it sweeps. Coincident stacked rails are deduped. An open
+  well edge and a guarded one used to draw identically on plan.
 
 ## Current Orientation
 
 +X: east, +Y: north, +Z: vertical/up. Will need to support rotating the house off axis in
 the future.
 
-## Items after Phase 4 — done (2026-07-25/26)
+### Items after Phase 6
+- Double check that the default toilet has a realistic size (do we separate the code required toilet clearance with the size of the toilet itself?)
+- Bifold doors should be listed as a unique feature. We might want to have a 60 bifold door, or a 60 double french door, or a 60 inch sliding door, and the current naming/types don't seem to give that option clearly.
+- Editing furniture and lighting positions is confusing. The styling of the popup editor is erratic, and not all inputs are well labeled. I'm trying to figure out how to move ED-1 adjustable light higher up the wall and have no idea which thing to adjust.
+- RM-M-STORAGE should become the "Mudroom". Doors should go as far east on both walls as is practical with framing. WIN-M-STOR should be replaced by a 14" wide fixed (picture) window on the midpoint of the west wall (midpoint, but such that it fits elegantly between studs). Then on the north and south sides of the mudroom, from door to west wall, there should be full closests added, leaving a hallway width (36") between them, and a 36" width bench under the window there for changing shoes. The mudroom should have an ERV ventilation intake (but not an outlet). Maybe sliding doors on those closets (like shower doors, two panels that can overlap, not the sash kind that go into the wall).
+- Floors toggle should turn off the floors (subloor, viewed floor) but not the joists, which should be part of 'Framing'
+- Might be nice to have a toggle that turns off all the white label text on the 2d image. It can be a bit overwhelming at times. Maybe a label on hover option then.
+- We want to add a line of cabinets along the east wall of the living room, between the electric fireplace and the pantry closets on that wall. These should be 30" high
 
-All eight shipped, merged in order S1 → S3 → S5 → S7 → S4 → S8 → S2 → S6. Four findings
-outlived the items themselves and are recorded below rather than deleted with them.
-
-- **Ridge vent cap** — composed from a riser, shoulders and skirts instead of one flat box
-  (the member IR is boxes only; `_gutter_members` already worked around that the same way),
-  each band seated on the plane under its own centreline and lapped so no pitch opens a
-  crack. White in the viewer: `isSeamMember()` gated the painted-metal finish on
-  `category == "cladding"`, so `ridge_cap` fell through to the generic metal grey.
-- **Breezeway polycarbonate** — each standing sheet now runs beam soffit to roof-sheet
-  underside (9'-10 3/4"), and the two meet in one `profile="H"` channel per side. See the
-  retired-premise note below.
-- **Flooring** — most of this item was already true: second-storey bedrooms were carpet and
-  `RM-A-STUDY` was already oak. What was missing is that *nothing rendered* `floor_finish`.
-  Now: a viewer room-floor builder, real `Material`s behind every finish string, GLB parity,
-  and the finishes reach the BOM by area with waste and companion layers. Second-storey
-  circulation and all three baths run one continuous LVP floor; both walk-ins are carpet.
-  Along the way: `Room.finish_zones` was authored-only — `ResolvedRoom` had no field for it,
-  so a `FinishZone` in plan source was silently dropped at resolve. It carries through now.
-- **Frost-free hydrant** — the project's first `PipeSystem.WATER_COLD` run, plus the
-  pedestal, the slab sleeve, the gravel pit, a `hydrant` plan symbol and
-  `mep.hydrant_freeze_depth`. The rationale for having no floor drain, and what that trade
-  costs, is in `houses/catlin/notes/garage_hydrant.md`.
-- **Garage heat detector** — half this item was already satisfied (every bedroom carries a
-  COMBO alarm, enforced by `code.R314_R315_alarms`). Added `AlarmKind.HEAT`, `AL-G-HEAT`,
-  an `Alarm.circuit` field pointing every alarm at the unswitched `CKT-LT-BACKUP`, and
-  `code.R315_garage_alarms` for the garage detector plus CO coverage beside it.
-- **BOM sweep** — see the stale-premise note below.
-- **U-stair 2D drawing** — root-caused to `782a607`, which turned a landing from one member
-  into ~7 and left them all categorised `"landing"`, so the Jul-20 drawer filter started
-  painting stair framing as plan linework (~12 stray polylines per landing zone, 13 per
-  winder box). Split the semantics (`landing_framing`); a landing now draws as its outline
-  rather than its axis. Secondary fix: `u_split.py` never read `stair.start` while the
-  validator did, so generation and validation ran on two different origins.
-- **Raised garden** — `W-RG-BLOCK` is a U wrapping the sunken garden; `W-RG-INNER` deleted.
-  It is no longer a 36" planter but a mostly-buried retaining apron, and
-  `params/raised_garden.py` now says so instead of describing the planter.
-
-### Findings worth keeping
-
-1. **The BOM item's premise was stale.** Hangers, connectors, sill anchors and screws had
-   been billing all along — `hardware_takeoff` aggregates all four families and 15 tests pin
-   them. The real gaps were elsewhere and none of them announced itself: plumbing, ducts,
-   sleeves, footing beddings, openings, non-sheathing envelope layers, floor finishes,
-   stair treads, conductors and `FloorSystem.ceiling_below` were all resolved and reaching
-   no order. All bill now, and
-   `test_framing_takeoff.py::test_every_resolved_collection_is_billed_or_waived` is the gate
-   that keeps the list honest: every `ResolvedModel` collection must be billed or waived
-   with a reason. `haus takeoff` was also silently dropping `lighting_controls`, which a
-   second test now prevents.
-2. **The engine BOM and the browser BOM are two implementations with different coverage.**
-   `ui/src/model/bom.ts` was billing footing beddings when the engine was not. Reconciling
-   them was deliberately out of scope for this pass; they still diverge, and nothing tests
-   that they agree. That is the next thing to do here.
-3. **The breezeway's "three 4x8 sheets, uncut" sheet economy is retired.** It was the stated
-   organising idea of `params/breezeway.py`, and it cost 8 1/4" of bare framing below each
-   sheet and 14 1/2" of open elevation at the head. The shared H channel costs a 10' sheet
-   and the roof's 3 1/4" drip oversail; the sill U-channel's weep holes are now the only
-   drainage path. The module docstring owns this rather than describing the old scheme.
-4. **The U-stair drawing regression shipped because the 2D stair symbol had essentially no
-   test coverage.** The only 2D stair test asserted that no A-STAIR polyline had zero
-   length — which every one of those ~12 strays passed. There are now tests for the polyline
-   set (surfaces only, framing named explicitly), the landing rectangle, and even tread
-   spacing along a flight.
+Questions:
+- Do we want floor drains in kitchen/laundry room
+- Is the door opening inside the breezeway code compliant
+- No overhang roof 
+- 2nd floor hallway dropped ceiling for HVAC
+- Review the accuracy of the BTU model for the house, then add more minisplits as needed
+- Outdoor hydrants plus more complete internal plumbing 
+- Edits in 2d don't always update all the necessary pieces (like when we switched a shower to showertub)
+- Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?
