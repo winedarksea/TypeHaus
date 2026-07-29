@@ -103,7 +103,8 @@ export function populateScene(options: PopulateSceneOptions) {
     buildFootingBedding(tradeGroups.concrete, bedding, center, mode, registry.picks, registry.byUid);
   }
   for (const floor of model.floors ?? []) {
-    buildFloor(tradeGroups.floors, floor, center, mode, palette, registry.picks, registry.byUid);
+    buildFloor(tradeGroups.floors, floor, center, mode, palette, registry.picks, registry.byUid,
+      tradeGroups.framing);
   }
   // Room finishes go over the decks, so they build after every floor is in. Deck openings are
   // per storey, not per floor system, so they are gathered once and cut out of each finish —

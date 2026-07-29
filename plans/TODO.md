@@ -170,9 +170,9 @@ the future.
 - RM-M-STORAGE should become the "Mudroom". Doors should go as far east on both walls as is practical with framing. WIN-M-STOR should be replaced by a 14" wide fixed (picture) window on the midpoint of the west wall (midpoint, but such that it fits elegantly between studs). Then on the north and south sides of the mudroom, from door to west wall, there should be full closests added, leaving a hallway width (36") between them, and a 36" width bench under the window there for changing shoes. The mudroom should have an ERV ventilation intake (but not an outlet). Maybe sliding doors on those closets (like shower doors, two panels that can overlap, not the sash kind that go into the wall).
 - Floors toggle should turn off the floors (subloor, viewed floor) but not the joists, which should be part of 'Framing'
 - Might be nice to have a toggle that turns off all the white label text on the 2d image. It can be a bit overwhelming at times. Maybe a label on hover option then.
-- We want to add a line of cabinets along the east wall of the living room, between the electric fireplace and the pantry closets on that wall. These should be 30" high
 - Make Wall W-M-STRW a special wall type. It will not have drywall facing the mudroom, so it can have space for hanging coats between the studs. The studs will be Select Grade S4S 2x6 for better visual appearance (likely douglas fir, perhaps slightly rounded (eased) corners). The rear side of the wall (facing the stairs) will have 3/4" cabinet-grade plywood (which can support coat hooks directly). Try to keep electrical and plumbing out of this wall then (it might work carefully but easier to avoid.)
 - Unittests that the stairs align between floors and reach the correct ceiling height while meeting code. The winders for ST-S2A are still messed up (last winder is level with the floor, not a step up), and the regular stair tread can come down to 11".
+- Garage is not conditioned, officially (even though it has a heat lamp, that's more of an occasional boost) so make sure it isn't tracked in the conditioned sq ft. Also make sure the sunken gardens and balcony/decks are not counted there, they are also not conditioned (open to air).
 
 Questions:
 - Do we want floor drains in kitchen/laundry room
@@ -184,6 +184,7 @@ Questions:
 - Edits in 2d don't always update all the necessary pieces (like when we switched a shower to showertub)
 - Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?
 - Should we add paint as a layer over gwb where appropriate (also allowing color choice), and if it is used as a Class III vapor retarder (ie latex paint over drywall)
+- Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model)
 
 ##  HVAC
 Gree Slim Concealed Ducted Series with Gree Vireo GEN3 / Ultra outdoor unit running in RM-S-STUDY2 in a dropped HVAC chase that runs north from there along the hallway, with outlets in each of the bedrooms and near the stairs, plus also outlets into RM-A-EAST and RM-A-STUDY directly above it (very short branches, this is a straight run duct meant to operate at low flow)
@@ -193,3 +194,6 @@ Gree Multi Ultra 3-port outdoor unit (heats down to -22°F) powering the 3 wall 
 Unit three is on the north side of the house. It is mounted on the main floor over the stairs, with a cutout in the wall (W-M-STRW) in which it is partly placed to also reach the mudroom directly. This unit is on backup battery circuit, and is an ultra high efficiency unit (something like Gree Sapphire R32 Series, with a true VFD inverter for softer power start) likely something like 9100 BTUs.
 
 ERV system nears clearer inlets and outlets. They are currently style more like old fashioned grilles, not true ERV inputs/outputs.
+
+### Cleanup
+- Update the screenshots in the landing page and remove the "pre alpha" notes

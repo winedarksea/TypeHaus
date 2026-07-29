@@ -154,10 +154,12 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         scene.add_object(mb, trade="electrical", kind="solid", uid=panel.uid)
 
     for floor in sorted(model.floors, key=lambda item: item.uid):
-        mb = _MeshBuilder()
+        # Joists are framing, and belong in the framing trade with every other stick in the
+        # building — not hidden behind the floors toggle. Same split roof/wall framing use.
+        framing = _MeshBuilder()
         for member in floor.members:
-            _add_member(mb, member)
-        scene.add_object(mb, trade="floors", kind="floor", uid=floor.uid)
+            _add_member(framing, member)
+        scene.add_object(framing, trade="framing", kind="floor", uid=floor.uid)
         # The subfloor sheet over those joists — its own node, the way a wall's body is
         # separate from its studs, so the deck can be hidden without hiding the framing.
         # Neither export drew a deck before the IR produced one; joists hung in space.

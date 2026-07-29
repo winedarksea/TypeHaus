@@ -566,10 +566,13 @@ def test_the_glb_ships_the_subfloor_deck_and_the_site_earth(model) -> None:
     decked = [f for f in model.floors if f.deck_outline]
     if not decked:
         pytest.skip("house has no decked floor")
+    # Joists are framing, not floors — the floors trade only carries the deck sheet now.
     floor_nodes = [n for n in gltf["nodes"] if n.get("extras", {}).get("trade") == "floors"
                    and n.get("extras", {}).get("kind") == "floor"]
-    # One node for the joists, one for the deck over them, per decked floor.
-    assert len(floor_nodes) >= len(model.floors) + len(decked)
+    assert len(floor_nodes) >= len(decked)
+    framing_floor_nodes = [n for n in gltf["nodes"] if n.get("extras", {}).get("trade") == "framing"
+                           and n.get("extras", {}).get("kind") == "floor"]
+    assert len(framing_floor_nodes) >= len(model.floors)
 
 
 def test_the_earth_sheet_is_holed_rather_than_drawn_over_the_excavation(model) -> None:

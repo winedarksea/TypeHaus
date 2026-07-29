@@ -315,15 +315,18 @@ export function runSelectionRegistrationTests() {
   } as FootingBedding, [0, 0], "schematic", beddings.picks, beddings.byUid);
   registered(beddingGroup, "FB-9", "footing_bedding", beddings.picks, beddings.byUid, "buildFootingBedding");
 
-  // A floor's joists are merged into shared draw calls, but each bucket carries its own
-  // per-member identity — so the deck selects as the floor while a joist selects as a joist.
+  // A floor's joists build into the framing group, not the floors group — the floors toggle
+  // hides the deck alone, and the joist bucket still carries its own per-member identity so
+  // the deck selects as the floor while a joist selects as a joist.
   const floorGroup = new THREE.Group();
+  const floorFramingGroup = new THREE.Group();
   const floors = registry();
   buildFloor(floorGroup, {
     uid: "FL-1", tag: "FL-1", storey: "L1", direction: "x", provenance: null, openings: [],
     subfloor: { material: "osb", thickness_m: 0.019 }, members: [member("J-1"), member("J-2")],
-  } as Floor, [0, 0], "schematic", PALETTE, floors.picks, floors.byUid);
+  } as Floor, [0, 0], "schematic", PALETTE, floors.picks, floors.byUid, floorFramingGroup);
   registered(floorGroup, "FL-1", "floor", floors.picks, floors.byUid, "buildFloor");
+  assert(floorFramingGroup.children.length > 0, "buildFloor draws joists into the framing group");
   assert(floors.picks.length > 1, "The subfloor deck and the joist bucket are both raycast targets");
   const joistBucket = floors.picks.find(carriesMemberIdentity);
   assert(joistBucket !== undefined, "buildFloor makes its joist bucket pickable");

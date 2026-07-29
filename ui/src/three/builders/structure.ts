@@ -114,7 +114,7 @@ export function buildFootingBedding(parent: THREE.Group, bedding: FootingBedding
 
 export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
-  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, framingGroup: THREE.Group) {
   const firstChildIndex = parent.children.length;
   if (floor.subfloor && floor.members.length) {
     const points = floor.members.flatMap((member) => [member.p0, member.p1]);
@@ -136,8 +136,12 @@ export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter
       flatShading: mode === "schematic",
     })));
   }
-  buildMembers(parent, floor.members, center, mode, palette, floor.uid);
   registerSelectable(parent, firstChildIndex, floor.uid, "floor", picks, byUid);
+  // Joists are framing, and belong under the framing toggle with every other stick in the
+  // building — not hidden behind the floors toggle. Same split roof/wall framing use.
+  const framingFirstChildIndex = framingGroup.children.length;
+  buildMembers(framingGroup, floor.members, center, mode, palette, floor.uid);
+  registerSelectable(framingGroup, framingFirstChildIndex, floor.uid, "floor", picks, byUid);
 }
 
 /** How thick a floor finish draws. Matches the room prism emit/gltf/emitter.py extrudes. */

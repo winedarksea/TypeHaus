@@ -681,7 +681,7 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-LANDING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS001AAAA", tag="ED-S-STAIR-CHAND", kind=DeviceKind.LIGHT,
-                     position=pt(m(4.37256), m(8.77606)), type_ref="ED-T-LT-CHANDELIER",
+                     position=pt(m(4.26405), m(9.3355)), type_ref="ED-T-LT-CHANDELIER",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      controlled_by=("ED-S-STAIR-SW", "ED-S-LANDING-SW"),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(4))),
