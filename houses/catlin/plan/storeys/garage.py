@@ -67,11 +67,13 @@ OPENINGS = [
          header_spec='2-ply 14" LVL'),
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING36",
          position=from_node("N-G-SW", ft(5))),
-    # Bearing gable wall: use the 27" RO/jack-stud module, centered on stud lines.
     # This 8' wall (vs. the house's 10') is why the whole 27" family is 36" tall: a
     # 60" height at this 42" sill would push the header above the top plate.
+    # Nudged to 1'-5" (2026-07-29): at 1'-4 5/8" the RO missed the 16" module bay's
+    # center by 3/8", enough to break two studs and pull in a header/jacks a 14" RO
+    # should never need (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs).
     Window(uid="CGX301AAAA", tag="WIN-G-N1", host="W-G-W", type_ref="WT-1424",
-           position=from_node("N-G-NW", ft(1, 4.625)), sill_height=ft(3, 6)),
+           position=from_node("N-G-NW", ft(1, 5)), sill_height=ft(3, 6)),
 ]
 
 ROOMS = [

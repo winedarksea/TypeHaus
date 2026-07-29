@@ -478,6 +478,14 @@ NEC_FILL_MAIN = [
                      position=pt(ft(13.85), ft(25.73)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # Fills the >6' gap electrical.receptacle_spacing opened on the hall band between RC7/
+    # STUDY-RC3 and the door into RM-M-STOS (2026-07-29): N-M-W2/N-M-C2 pushed 6" north
+    # for the BATH2 wall move, stretching this door-to-door wall space past the 6' rule.
+    # Positioned centred in that space (the door itself brackets the run at 13'-9" east).
+    ElectricalDevice(uid="NEC070AAAA", tag="ED-M-LIVING-RC12", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(16, 1.2), ft(22, 2.6)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC013AAAA", tag="ED-M-BED-RC2", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(8.52), ft(13.28)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",

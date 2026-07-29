@@ -24,8 +24,11 @@ MAIN_FIXTURES = (
     Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOILET-WH", room="RM-M-BATH1",
             position=pt(m(1.296633), m(7.80786)), rotation=deg(90), wall_ref="W-M-BAE",
             drain_position=pt(ft(6), ft(22, 7))),
+    # y nudged +6" (2026-07-29, with N-M-W2/N-M-C2's north push for the BATH2 wall move):
+    # the room's south face moved with it and the lavatory's old y left it poking through
+    # into the hall (test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other).
     Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-LAV-COMPACT", room="RM-M-BATH1",
-            position=pt(m(1.315138), m(6.85651)), wall_ref="W-M-BAE", rotation=deg(180)),
+            position=pt(m(1.315138), m(7.00891)), wall_ref="W-M-BAE", rotation=deg(180)),
     # Backs east onto W-M-BA2E — the INT_2X6_PLUMBING wet wall it has always drained into,
     # now actually sitting against it instead of floating 4' away mid-room. rotation 90
     # turns its back (-y local) east onto the wall; the centre at x=6'-8 3/8" puts the

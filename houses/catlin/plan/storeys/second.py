@@ -268,9 +268,9 @@ OPENINGS = [
     # walls (as the port did) put D-S-BED1's centre at (22.67, 10.42), inside the attic
     # stair band rather than inside RM-S-BED1.
     Door(uid="CSD201AAAA", tag="D-S-BED1", host="W-S-BW1", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B1", ft(4, 4.0625)), flip_swing=True),          # y 15'-2"
+         position=from_node("N-S-B1", ft(4, 11)), flip_swing=True),          # y 15'-2"
     Door(uid="CSD202AAAA", tag="D-S-BED2", host="W-S-BW2", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-B2", ft(3, 9.3125))),                       # y 24'-1"
+         position=from_node("N-S-B2", ft(4, 10))),                       # y 24'-1"
     Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT-SWING30",
          position=from_node("N-S-B3", ft(0, 8))),                        # y 28'-11"
     Door(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1", type_ref="DT-INT-SWING30-GLAZED",
@@ -302,8 +302,11 @@ OPENINGS = [
     RoughOpening(uid="CSD215AAAA", tag="O-S-VANITY", host="W-S-VE",
                  position=from_node("N-S-V1", ft(0, 3)), width=ft(2, 8),
                  height=ft(6, 8)),                                       # y 23'-11"
+    # Pulled 3" west of its original 1'-4.5" (2026-07-29): at that offset the door's own
+    # king stud landed inside N-S-BA1's corner square and punched into W-S-BA-E1B's end
+    # stud (the same class of overlap as N-M-MECH2 in test_wall_corner_and_opening_framing).
     Door(uid="CSD208AAAA", tag="D-S-BATH1", host="W-S-BD-N1B", type_ref="DT-INT-SWING30",
-         position=from_node("N-S-V2", ft(1, 4.5))),                      # x 8'-6"
+         position=from_node("N-S-V2", ft(1, 1.5))),                      # x 8'-3"
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
          position=from_node("N-S-C3D", ft(0, 8.5))),                     # x 19'-11 1/2"
     # O-S-STAIRTOP, the 6'-0" cased stair head, went with its host wall W-S-BD-N2.
@@ -348,9 +351,12 @@ OPENINGS = [
     # Re-hosted off W-S-N3 (2026-07-28): W-S-N3B is now the chase's own short north wall,
     # not the bathroom's — a window there would light the mechanical closet, not the room.
     # 1' clear of the N-S-CH2 tee, well past the old 1"-edge-clearance pinch this wall used
-    # to have (that note no longer applies to either segment).
+    # to have (that note no longer applies to either segment). Nudged to 8" (2026-07-29):
+    # at 1' the RO straddled the module stud line instead of centering in the bay, breaking
+    # two studs and pulling in a header/jacks a 14" RO should never need
+    # (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs).
     Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1424",
-           position=from_node("N-S-CH2", ft(1)), sill_height=ft(4)),
+           position=from_node("N-S-CH2", ft(0, 8)), sill_height=ft(4)),
     # Re-hosted off N-S-CH3 (2026-07-28): W-S-W1 no longer starts at N-S-NW now that the
     # chase's south wall splits it there. Same physical window position (y=31'-11").
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424",

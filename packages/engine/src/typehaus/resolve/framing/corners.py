@@ -105,7 +105,17 @@ def wall_end_framing(structure_polygon: Ring, axis_start, direction, axis_len_m:
     # A *negative* inset is legitimate and deliberately kept: where the datum axis names a
     # face rather than the band centre, the structure polygon runs past the axis endpoint,
     # and that is exactly where the corner square is.
-    inset = min(inset, axis_len_m * _MIDPOINT_FRACTION - stud_thickness_m)
+    #
+    # ``neighbour_insets`` (when given) is a real measurement of the *other* wall's band,
+    # not a guess — on a short jog wall (e.g. a 6" stub between two junctions) it can
+    # legitimately exceed this wall's own midpoint without inverting, because what fixes
+    # the inset is the neighbour's thickness, not this wall's length. Only the mitre-edge
+    # estimate (no neighbour available) needs the tighter midpoint guard against a skewed
+    # or unresolved corner inverting the pack.
+    if neighbour_insets is not None:
+        inset = min(inset, axis_len_m - stud_thickness_m)
+    else:
+        inset = min(inset, axis_len_m * _MIDPOINT_FRACTION - stud_thickness_m)
     stud_inset = inset + stud_thickness_m / 2.0
     if at_start:
         return WallEndFraming(inset, stud_inset)

@@ -281,7 +281,9 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     walls = {wall.tag: wall for wall in catlin_resolved.walls}
     small = [o for o in catlin_resolved.openings
              if not o.is_door and o.width_m <= inch(14).meters + 1e-9]
-    assert len(small) == 5, [o.tag for o in small]
+    # WIN-G-N1 (garage) and WIN-A-W-SM (attic knee wall) joined the original 5 once those
+    # storeys got their own WT-1424 windows; each still passes the per-window checks below.
+    assert len(small) == 7, [o.tag for o in small]
     for opening in small:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)
