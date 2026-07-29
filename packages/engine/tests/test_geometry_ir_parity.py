@@ -312,3 +312,182 @@ def test_arched_openings_produce_a_curved_mesh(model, geometry) -> None:
         # would shade a flat face as curved.
         assert mesh.curved_vertices
         assert len(mesh.curved_vertices) < len(mesh.positions)
+
+
+# --- openings ---------------------------------------------------------------------------
+
+def _emitter_opening_points(model, wall, opening) -> list[tuple[float, float, float]]:
+    """What `emit/gltf/openings.py` draws for this opening today, back in the plan frame."""
+    from typehaus.emit.gltf.mesh import _MeshBuilder
+    from typehaus.emit.gltf.openings import _add_opening_filling
+
+    door_types = {dt.tag: dt for dt in model.plan.library.door_types}
+    door_type = door_types.get(opening.type_ref) if opening.is_door else None
+    builder = _MeshBuilder()
+    _add_opening_filling(
+        builder, wall, opening,
+        door_type is not None and door_type.operation == "double_swing",
+        is_glazed=door_type is not None and door_type.glazed,
+        is_trimless=door_type is not None and door_type.trimless,
+    )
+    # glTF swizzles (x, y, z) → (x, z, -y); undo it so both sides speak the plan frame.
+    return [(p[0], -p[2], p[1])
+            for positions, _ in builder._buckets.values() for p in positions]
+
+
+def test_opening_products_match_the_emitter_box_for_box(model, geometry) -> None:
+    """Shadow parity, no blessed diff: the door/window product is the one piece of geometry
+    the emitter and the viewer were *already* mirroring by hand, so the IR has to land on the
+    same eleven constants it did."""
+    walls_by_tag = {wall.tag: wall for wall in model.walls}
+    checked = 0
+    for opening in model.openings:
+        host = walls_by_tag.get(opening.host_wall)
+        if host is None:
+            continue
+        element = geometry.by_uid(opening.uid)
+        assert element is not None, opening.uid
+        got = {(round(x, 9), round(y, 9), round(z, 9))
+               for part in element.parts for solid in part.solids
+               for (px, py) in solid.ring for x, y, z in
+               ((px, py, solid.z0_m), (px, py, solid.z1_m))}
+        want = {(round(x, 9), round(y, 9), round(z, 9))
+                for x, y, z in _emitter_opening_points(model, host, opening)}
+        assert got == want, opening.uid
+        checked += 1
+    assert checked, "house has no openings to compare"
+
+
+def test_rough_openings_ship_no_product(model, geometry) -> None:
+    """A rough opening is a hole, not a product — drawing a frame in one would invent a door
+    the take-off never priced."""
+    rough = [o for o in model.openings if o.kind == "rough_opening"]
+    if not rough:
+        pytest.skip("house has no rough openings")
+    for opening in rough:
+        assert geometry.by_uid(opening.uid).parts == ()
+
+
+# --- roofs ------------------------------------------------------------------------------
+
+def test_roof_layer_bands_match_the_emitter(model, geometry) -> None:
+    """The perpendicular-offset, eave-drift-compensated interpretation is canonical (it is
+    what the viewer and the GLB already drew); IFC's vertical-sided prisms are the copy that
+    changes. Compared as a triangle *set*, since the IR indexes what the emitter deindexed."""
+    from typehaus.emit.gltf.mesh import _MeshBuilder
+    from typehaus.emit.gltf.roofs import _add_roof
+    from typehaus.resolve.geometry_ir import GMesh
+
+    if not model.roofs:
+        pytest.skip("house has no roofs")
+    for roof in model.roofs:
+        element = geometry.by_uid(roof.uid)
+        assert element is not None, roof.tag
+        got = set()
+        for part in element.parts:
+            for solid in part.solids:
+                assert isinstance(solid, GMesh)
+                for tri in solid.triangles:
+                    got.add(tuple(sorted(tuple(round(c, 9) for c in solid.positions[i])
+                                         for i in tri)))
+        builder = _MeshBuilder()
+        _add_roof(builder, roof, model)
+        want = set()
+        for positions, indices in builder._buckets.values():
+            for i in range(0, len(indices), 3):
+                # ...and back out of the glTF swizzle into the plan frame.
+                want.add(tuple(sorted(
+                    tuple(round(c, 9) for c in (positions[indices[i + k]][0],
+                                                -positions[indices[i + k]][2],
+                                                positions[indices[i + k]][1]))
+                    for k in range(3))))
+        # The emitter's mesh also carries the roof's skin members (trim, closure bands); the
+        # IR files those under framing, so the layer bands are a subset of what it draws.
+        assert got <= want, roof.tag
+        assert got, roof.tag
+
+
+def test_every_roof_layer_is_a_closed_band(model, geometry) -> None:
+    """A layer whose eave/rake perimeter is left open imports as a zero-thickness plane —
+    which is what a roof looks like in Revit when it is wrong."""
+    from typehaus.resolve.geometry_ir import GMesh
+
+    for roof in model.roofs:
+        for part in geometry.by_uid(roof.uid).parts:
+            mesh = part.solids[0]
+            assert isinstance(mesh, GMesh)
+            edges: dict[tuple, int] = {}
+            for tri in mesh.triangles:
+                for i in range(3):
+                    a = tuple(round(c, 6) for c in mesh.positions[tri[i]])
+                    b = tuple(round(c, 6) for c in mesh.positions[tri[(i + 1) % 3]])
+                    key = tuple(sorted((a, b)))
+                    edges[key] = edges.get(key, 0) + 1
+            assert all(count % 2 == 0 for count in edges.values()), f"{roof.tag}/{part.key}"
+
+
+# --- floor decks and earth (blessed diffs: nothing drew either) --------------------------
+
+def test_a_floor_with_a_subfloor_gains_a_deck(model, geometry) -> None:
+    """Blessed diff 3. Joists used to hang in space in both exports."""
+    from typehaus.model.floors import FloorSystem
+    from typehaus.resolve.geometry_ir import GPrism
+
+    decked = [f for f in model.floors if f.deck_outline]
+    authored = [f for f in model.floors
+                if isinstance(model.plan.by_tag(f.tag), FloorSystem)
+                and model.plan.by_tag(f.tag).subfloor is not None]
+    if not authored:
+        pytest.skip("house has no floor system with a subfloor")
+    assert len(decked) == len(authored), "a subfloor was declared but no deck reached the IR"
+    for floor in decked:
+        deck = next(p for p in geometry.by_uid(floor.uid).parts if p.key == "deck")
+        prism = deck.solids[0]
+        assert isinstance(prism, GPrism)
+        # The deck rides *on* the storey datum — the joists top out there.
+        assert prism.z0_m == pytest.approx(floor.deck_z0_m, abs=TOL)
+        assert prism.z1_m > prism.z0_m
+        joist_tops = {round(m.z1_m, 6) for m in floor.members}
+        assert round(prism.z0_m, 6) in joist_tops
+
+
+def test_a_floor_opening_is_cut_out_of_its_deck(model, geometry) -> None:
+    """A stair well the deck is drawn straight over is a floor you fall through in the
+    viewer and a solid slab in Revit."""
+    decked = [f for f in model.floors if f.deck_outline and f.deck_voids]
+    if not decked:
+        pytest.skip("house has no decked floor with an opening")
+    for floor in decked:
+        prism = next(p for p in geometry.by_uid(floor.uid).parts if p.key == "deck").solids[0]
+        assert len(prism.voids) == len(floor.deck_voids)
+        assert all(len(ring) >= 3 for ring in prism.voids)
+
+
+def test_the_site_earth_becomes_geometry(model, geometry) -> None:
+    """Blessed diff 4: the glTF `earth` trade was empty, so the export had no ground."""
+    from typehaus.resolve.geometry_build import EARTH_SHEET_THICKNESS_M
+    from typehaus.resolve.geometry_ir import GPrism
+    from typehaus.resolve.site_earth import site_grade_elevation_m
+
+    if len(model.plan.project.site.parcel) < 3:
+        pytest.skip("house has no parcel ring")
+    earth = geometry.of_kind("earth")
+    assert len(earth) == 1
+    prism = earth[0].parts[0].solids[0]
+    assert isinstance(prism, GPrism)
+    grade = site_grade_elevation_m(model)
+    # Top face *is* grade: soil is what is under the grade plane, not a slab sitting on it.
+    assert prism.z1_m == pytest.approx(grade, abs=TOL)
+    assert prism.z0_m == pytest.approx(grade - EARTH_SHEET_THICKNESS_M, abs=TOL)
+
+
+def test_earth_is_cut_by_every_excavated_slab(model, geometry) -> None:
+    """The sheet is one plane at grade; without the voids it slices through the basement it
+    was dug out for."""
+    from typehaus.resolve.site_earth import earth_plane_void_rings
+
+    expected = earth_plane_void_rings(model)
+    if not expected:
+        pytest.skip("house excavates nothing")
+    prism = geometry.of_kind("earth")[0].parts[0].solids[0]
+    assert len(prism.voids) == len(expected)

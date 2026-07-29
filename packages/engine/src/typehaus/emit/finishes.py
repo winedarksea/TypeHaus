@@ -77,6 +77,21 @@ def normalize(key: str | None) -> str:
     return folded if folded in MATERIAL_KEYS else FALLBACK_KEY
 
 
+def layer_material_key(material_ref: str | None, function: str | None) -> str:
+    """The finish key for an assembly layer — its *material family* when it names one.
+
+    The same rule the emitters' colour lookup already followed (``_material_finish_color``
+    consults ``family_of`` before falling back to the function palette): a standing-seam
+    roofing layer and a membrane underlayment are both "cladding"/"membrane" by function, but
+    what the eye reads is metal and felt. Layers with no recognisable material ref keep their
+    function, which is what the layer palette was keyed by all along.
+    """
+    family = family_of(material_ref) if material_ref else None
+    if family is not None and family in MATERIAL_KEYS:
+        return family
+    return normalize(function)
+
+
 def member_material_key(member: FramedMember) -> str:
     """The finish key for a framing member.
 

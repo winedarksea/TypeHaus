@@ -292,6 +292,16 @@ class ResolvedFloor:
     storey: str
     direction: str  # joist span direction: "x" | "y"
     members: tuple[FramedMember, ...]
+    # The subfloor sheet riding on top of the joists — the surface people actually stand on,
+    # and until now the one part of a floor no consumer had: glTF drew joists in mid-air and
+    # IFC emitted beams with nothing spanning them. Empty when the FloorSystem declares no
+    # ``subfloor`` layer. ``deck_voids`` are its floor openings (stair wells), which the deck
+    # is cut by and the joists were already clipped to.
+    deck_outline: Ring = ()
+    deck_voids: tuple[Ring, ...] = ()
+    deck_z0_m: float = 0.0   # = the storey datum: joists top out there, decking rides on it
+    deck_z1_m: float = 0.0
+    deck_material_ref: str | None = None
 
 
 @dataclass(frozen=True)

@@ -171,6 +171,7 @@ the future.
 - Floors toggle should turn off the floors (subloor, viewed floor) but not the joists, which should be part of 'Framing'
 - Might be nice to have a toggle that turns off all the white label text on the 2d image. It can be a bit overwhelming at times. Maybe a label on hover option then.
 - We want to add a line of cabinets along the east wall of the living room, between the electric fireplace and the pantry closets on that wall. These should be 30" high
+- Make Wall W-M-STRW a special wall type. It will not have drywall facing the mudroom, so it can have space for hanging coats between the studs. The studs will be Select Grade S4S 2x6 for better visual appearance (likely douglas fir, perhaps slightly rounded (eased) corners). The rear side of the wall (facing the stairs) will have 3/4" cabinet-grade plywood (which can support coat hooks directly). Try to keep electrical and plumbing out of this wall then (it might work carefully but easier to avoid.)
 
 Questions:
 - Do we want floor drains in kitchen/laundry room
@@ -181,3 +182,13 @@ Questions:
 - Outdoor hydrants plus more complete internal plumbing 
 - Edits in 2d don't always update all the necessary pieces (like when we switched a shower to showertub)
 - Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?
+- Should we add paint as a layer over gwb where appropriate (also allowing color choice), and if it is used as a Class III vapor retarder (ie latex paint over drywall)
+
+##  HVAC
+Gree Slim Concealed Ducted Series with Gree Vireo GEN3 / Ultra outdoor unit running in RM-S-STUDY2 in a dropped HVAC chase that runs north from there along the hallway, with outlets in each of the bedrooms and near the stairs, plus also outlets into RM-A-EAST and RM-A-STUDY directly above it (very short branches, this is a straight run duct meant to operate at low flow)
+
+Gree Multi Ultra 3-port outdoor unit (heats down to -22°F) powering the 3 wall mounts (basement in gym near ceiling, master bedroom on south wall near the center wall, living room on south wall near the center line wall)
+
+Unit three is on the north side of the house. It is mounted on the main floor over the stairs, with a cutout in the wall (W-M-STRW) in which it is partly placed to also reach the mudroom directly. This unit is on backup battery circuit, and is an ultra high efficiency unit (something like Gree Sapphire R32 Series, with a true VFD inverter for softer power start) likely something like 9100 BTUs.
+
+ERV system nears clearer inlets and outlets. They are currently style more like old fashioned grilles, not true ERV inputs/outputs.

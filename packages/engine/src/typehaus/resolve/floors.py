@@ -14,7 +14,7 @@ from typehaus.model.structure import Beam
 from typehaus.quantities import inch, m
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.tables import ENGINEERED_LVL, header_size
-from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel
+from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel, Ring
 
 _DEFAULT_SPACING_M = inch(16).meters
 # One LVL ply. A floor-opening header hangs *inside* the joist band (the cut joists come
@@ -221,9 +221,32 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
             perp1 - perp0,
         ))
 
+    # The subfloor sheet over the joist field. Its extent is the framed field itself —
+    # bearing line to bearing line including both cantilevers, by the joists' perpendicular
+    # extent — because that is exactly what the decking is nailed to. Openings are cut out
+    # rather than drawn over: the joists were already clipped to them.
+    deck_outline: Ring = []
+    deck_voids: tuple[Ring, ...] = ()
+    deck_z0_m = deck_z1_m = z1
+    if system.subfloor is not None:
+        axis0, axis1 = boundaries[0] - cant_start_m, boundaries[-1] + cant_end_m
+        if along_x:
+            corners = ((axis0, perp0), (axis1, perp0), (axis1, perp1), (axis0, perp1))
+        else:
+            corners = ((perp0, axis0), (perp0, axis1), (perp1, axis1), (perp1, axis0))
+        deck_outline = list(corners)
+        deck_voids = tuple(
+            [(minx, miny), (maxx, miny), (maxx, maxy), (minx, maxy)]
+            for _opening, minx, maxx, miny, maxy in opening_boxes
+        )
+        deck_z1_m = z1 + system.subfloor.thickness.meters
+
     return ResolvedFloor(
         uid=system.uid, tag=system.tag, storey=storey.tag,
         direction=spec.direction, members=tuple(members),
+        deck_outline=deck_outline, deck_voids=deck_voids,
+        deck_z0_m=deck_z0_m, deck_z1_m=deck_z1_m,
+        deck_material_ref=(system.subfloor.material_ref if system.subfloor else None),
     ), []
 
 

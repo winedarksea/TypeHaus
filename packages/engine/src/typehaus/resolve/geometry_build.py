@@ -5,13 +5,16 @@ of resolved records into :class:`ElementGeometry`, applying the shape math *once
 glTF, model.json and 2D-section consumers then read the result.
 
 Landing in sequence (→ the vision-alignment plan, D3): members, solids and solar panels
-first, with a shadow-parity test proving the IR reproduces what the emitters draw today.
-Walls, openings, roofs, floors and earth follow.
+first, then walls, and now openings, roofs, floor decks and the site earth — each with a
+shadow-parity test proving the IR reproduces what the emitters draw today, except where the
+plan blesses a diff. Two of the four blessed diffs land here: a floor gains a real deck (no
+emitter drew one) and the earth becomes geometry (glTF's ``earth`` trade was empty).
 """
 
 from __future__ import annotations
 
 from typehaus.emit.finishes import (
+    layer_material_key,
     layer_visibility_group,
     member_material_key,
     normalize,
@@ -24,8 +27,22 @@ from typehaus.resolve.geometry_ir import (
     GPrism,
 )
 from typehaus.resolve.geometry_members import member_box, member_part_key, member_uid
+from typehaus.resolve.geometry_openings import opening_parts
+from typehaus.resolve.geometry_roofs import roof_parts
 from typehaus.resolve.geometry_walls import layer_solids
-from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedSolid, ResolvedWall
+from typehaus.resolve.model import (
+    FramedMember,
+    ResolvedFloor,
+    ResolvedModel,
+    ResolvedRoof,
+    ResolvedSolid,
+    ResolvedWall,
+)
+from typehaus.resolve.site_earth import earth_plane_void_rings, site_grade_elevation_m
+
+# The site sheet is a presentation surface, not an excavation model: thick enough to read as
+# ground from any angle, thin enough that no consumer mistakes it for fill.
+EARTH_SHEET_THICKNESS_M = 0.05
 
 
 def _member_parts(members: tuple[FramedMember, ...] | list[FramedMember],
@@ -90,6 +107,64 @@ def _solid_geometry(solid: ResolvedSolid) -> ElementGeometry:
     )
 
 
+def _opening_geometry(wall: ResolvedWall, opening, door_types) -> ElementGeometry:
+    """The door or window product standing in a wall's void — frame, mullion, leaf, glass."""
+    door_type = door_types.get(opening.type_ref) if opening.is_door else None
+    parts = opening_parts(
+        wall, opening,
+        is_double_swing=door_type is not None and door_type.operation == "double_swing",
+        is_glazed=door_type is not None and door_type.glazed,
+        is_trimless=door_type is not None and door_type.trimless,
+    )
+    return ElementGeometry(uid=opening.uid, kind="opening", trade="openings", parts=parts)
+
+
+def _roof_geometry(roof: ResolvedRoof, model: ResolvedModel) -> ElementGeometry:
+    assembly = model.plan.library.resolve_assembly(roof.assembly) if roof.assembly else None
+    return ElementGeometry(uid=roof.uid, kind="roof", trade="roof",
+                           parts=roof_parts(roof, assembly))
+
+
+def _floor_deck_geometry(floor: ResolvedFloor) -> ElementGeometry | None:
+    """The subfloor sheet over a floor's joists.
+
+    One of the plan's four blessed diffs: glTF drew no deck at all (joists hanging in space)
+    and IFC drew none either, so a floor exported as a field of beams with nothing on them.
+    """
+    if len(floor.deck_outline) < 3 or floor.deck_z1_m <= floor.deck_z0_m:
+        return None
+    prism = GPrism(ring=tuple(tuple(p) for p in floor.deck_outline),
+                   z0_m=floor.deck_z0_m, z1_m=floor.deck_z1_m,
+                   voids=tuple(tuple(tuple(p) for p in ring) for ring in floor.deck_voids))
+    return ElementGeometry(
+        uid=floor.uid, kind="floor", trade="floors",
+        parts=(GPart(key="deck", solids=(prism,),
+                     material_key=layer_material_key(floor.deck_material_ref, "sheathing"),
+                     layer_group="sheathing"),),
+    )
+
+
+def _earth_geometry(model: ResolvedModel) -> ElementGeometry | None:
+    """The site earth sheet: the parcel at grade, cut by everything excavated out of it.
+
+    Blessed diff: glTF's ``earth`` trade was empty, so the exported model floated with no
+    ground under it while the viewer drew a sheet. The pad hangs *below* grade — its top face
+    is the grade plane — because that is where soil is; IFC's site pad currently sits the same
+    5cm above grade it always has, and reconciling that is part of the IFC switchover.
+    """
+    parcel = [point.xy_m for point in model.plan.project.site.parcel]
+    if len(parcel) < 3:
+        return None
+    grade_z = site_grade_elevation_m(model)
+    voids = tuple(tuple(tuple(p) for p in ring) for ring in earth_plane_void_rings(model))
+    prism = GPrism(ring=tuple(tuple(p) for p in parcel),
+                   z0_m=grade_z - EARTH_SHEET_THICKNESS_M, z1_m=grade_z, voids=voids)
+    return ElementGeometry(
+        uid="site-earth", kind="earth", trade="earth",
+        parts=(GPart(key="sheet", solids=(prism,), material_key="earth", layer_group="other"),),
+    )
+
+
 def _solar_geometry(panel) -> ElementGeometry:
     """The precedent this IR generalized: a PV module already *was* eight corners."""
     return ElementGeometry(
@@ -120,12 +195,31 @@ def build_geometry(model: ResolvedModel) -> GeometryModel:
     openings_by_wall: dict[str, list] = {}
     for opening in model.openings:
         openings_by_wall.setdefault(opening.host_wall, []).append(opening)
+    walls_by_tag = {wall.tag: wall for wall in model.walls}
     for wall in model.walls:
         elements.append(_wall_geometry(wall, openings_by_wall.get(wall.tag, ())))
+
+    door_types = {dt.tag: dt for dt in model.plan.library.door_types}
+    for opening in model.openings:
+        host = walls_by_tag.get(opening.host_wall)
+        if host is not None:
+            elements.append(_opening_geometry(host, opening, door_types))
+
+    for roof in model.roofs:
+        elements.append(_roof_geometry(roof, model))
+
+    for floor in model.floors:
+        deck = _floor_deck_geometry(floor)
+        if deck is not None:
+            elements.append(deck)
 
     for solid in model.solids:
         elements.append(_solid_geometry(solid))
     for panel in getattr(model, "solar_panels", ()):
         elements.append(_solar_geometry(panel))
+
+    earth = _earth_geometry(model)
+    if earth is not None:
+        elements.append(earth)
 
     return GeometryModel(elements=tuple(elements))
