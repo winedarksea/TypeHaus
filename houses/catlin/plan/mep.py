@@ -122,10 +122,10 @@ ELECTRICAL_DEVICE_TYPES = (
 SLEEVES = [
     # BATH1's WC is wall-hung on an in-wall carrier (FX-TOILET-WH): the bowl bolts to a
     # steel carrier frame inside W-M-BAE's 2x6 stud bay and the 3" waste drops *inside the
-    # wall*, so the pre-pour sleeve sits on the wall centerline (x=4') at the fixture's
+    # wall*, so the pre-pour sleeve sits on the wall centerline (x=6') at the fixture's
     # authored drain_position — under the carrier, not under the bowl.
     SleevePenetration(uid="CMP901AAAA", tag="SP-M-WC1", host_ref="SL-M-DECK",
-                      position=pt(ft(4), ft(22, 7)), pipe_diameter=inch(3),
+                      position=pt(ft(6), ft(22, 7)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-M-BATH1-WC"),
     SleevePenetration(uid="CMP902AAAA", tag="SP-M-WC2", host_ref="SL-M-DECK",
                       position=pt(ft(3), ft(18)), pipe_diameter=inch(3),
@@ -136,10 +136,10 @@ SLEEVES = [
     SleevePenetration(uid="CMP908AAAA", tag="SP-M-BATH2-TUB", host_ref="SL-M-DECK",
                       position=pt(ft(7, 4), ft(18, 10.8)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-BATH2-TUB"),
-    # Projection of FX-M-BATH1-LAV onto the W-M-BAE structure-layer centerline (x=4, from
+    # Projection of FX-M-BATH1-LAV onto the W-M-BAE structure-layer centerline (x=6, from
     # storeys/main.py node coordinates N-M-BA1/N-M-BA2), at the lavatory's own y.
     SleevePenetration(uid="CMP903AAAA", tag="SP-M-LAV1", host_ref="SL-M-DECK",
-                      position=pt(ft(4), m(6.85651)), pipe_diameter=inch(1.5),
+                      position=pt(ft(6), m(6.85651)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), serves_fixture="FX-M-BATH1-LAV"),
     # Projection of FX-M-LAUNDRY (10'-6", 20') onto the W-M-BA2E2 centerline (x=8).
     SleevePenetration(uid="CMP904AAAA", tag="SP-M-WASH", host_ref="SL-M-DECK",
@@ -170,7 +170,7 @@ SLAB_STUBS = [
 # (3', 18') corner fitting.
 DRAINS = [
     PipeRun(uid="CMP905AAAA", tag="PR-B-MAIN-DRAIN", system=PipeSystem.DRAIN,
-           path=(pt(ft(4), ft(22, 7)), pt(ft(4), ft(18)), pt(ft(3), ft(18)),
+           path=(pt(ft(6), ft(22, 7)), pt(ft(6), ft(18)), pt(ft(3), ft(18)),
                  pt(ft(3), ft(0))),
            diameter=inch(3), start_elevation=ft(8), end_elevation=ft(7, 4),
            serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-M-KITCH-SINK")),
@@ -200,11 +200,11 @@ DRAINS = [
 # drainage system rather than pooling in the horizontal leg.
 VENT_BRANCHES_MAIN = [
     # Bath2 takeoff on W-M-BA2E (x=8') -> across the hall -> bath1 takeoff on W-M-BAE
-    # (x=4') -> north through the storage-room ceiling -> chase. 20' developed length,
+    # (x=6') -> north through the storage-room ceiling -> chase. 20' developed length,
     # 2" for two water closets.
     PipeRun(uid="CMP906AAAA", tag="PR-M-WC-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(8), ft(18)), pt(ft(8), ft(24)), pt(ft(4), ft(24)),
-                  pt(ft(4), ft(33)), pt(ft(3), ft(33))),
+            path=(pt(ft(8), ft(18)), pt(ft(8), ft(24)), pt(ft(6), ft(24)),
+                  pt(ft(6), ft(33)), pt(ft(3), ft(33))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5.5),
             serves=("FX-M-BATH2-WC", "FX-M-BATH1-WC")),
     # Kitchen sink. W-M-E2 *does* continue to the storey above (W-S-E3/E4/E5 stack on it), so
@@ -377,7 +377,7 @@ REGISTERS_MAIN = [
             position=pt(ft(15, 8), ft(20)), duct_ref="DU-M1-ERV-SUP", type_ref="REG-T-SUPPLY",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     Register(uid="CMRV05AAAA", tag="REG-M-RET1", kind=DuctSystem.RETURN, room="RM-M-BATH1",
-            position=pt(ft(2), ft(24, 6)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-RETURN",
+            position=pt(m(0.354668), m(7.86145)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-RETURN",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     Register(uid="CMRV06AAAA", tag="REG-M-RET2", kind=DuctSystem.RETURN, room="RM-M-BATH2",
             position=pt(ft(4), ft(18)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-RETURN",

@@ -10,20 +10,16 @@ from typehaus.model import m
 # RM-M-BATH1's clear face is 3'-2" x 4'-3-1/4" (x 0'-6-5/8"..3'-8-5/8", y 21'-10-3/8"..
 # 26'-1-5/8") — too small to pack the shared FX-TOILET + FX-LAV pair without running them
 # wall-to-wall, so this room takes the BATH1-only compact types (fixture_types.py).
-# The WC is a wall-hung compact (15" x 19.3") whose back sits 1/8" off W-M-BAE's west
-# finish face at the room's south end; rotation 90 turns its back (-y local) east onto
-# that wall. Its steel in-wall carrier lives in the INT_2X6_PLUMBING stud bay — which is
-# what that wet wall is *for* — so drain_position is the carrier outlet on the wall's
-# centerline (x=4'), where SP-M-WC1 is authored, not a point under the bowl. The compact
-# lavatory (18" x 14") backs against the north wall's face beside the same wet wall; its
-# trap arm reaches W-M-BAE through the corner. Both footprints clear D-M-BATH1's opening
-# band (y 23'-4"..25'-4") and each other by over 1'-9".
+# Both compact BATH1 fixtures now sit side by side on the room's south wall. The WC's
+# existing drain_position is intentionally left unchanged for the later plumbing pass;
+# this edit is the room-layout move only. Their footprints stay west of D-M-BATH1's
+# opening band and clear one another.
 MAIN_FIXTURES = (
     Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOILET-WH", room="RM-M-BATH1",
-            position=pt(m(0.687033), m(7.80786)), rotation=deg(90), wall_ref="W-M-BAE",
-            drain_position=pt(ft(4), ft(22, 7))),
+            position=pt(m(0.540956), m(6.91573)), rotation=deg(180), wall_ref="W-M-HS1",
+            drain_position=pt(ft(6), ft(22, 7))),
     Fixture(uid="CMQ802AAAA", tag="FX-M-BATH1-LAV", type_ref="FX-LAV-COMPACT", room="RM-M-BATH1",
-            position=pt(m(0.705538), m(6.85651)), wall_ref="W-M-BAE", rotation=deg(180)),
+            position=pt(ft(4, 6), ft(22, 5.375)), wall_ref="W-M-HS1", rotation=deg(0)),
     # Backs east onto W-M-BA2E — the INT_2X6_PLUMBING wet wall it has always drained into,
     # now actually sitting against it instead of floating 4' away mid-room. rotation 90
     # turns its back (-y local) east onto the wall; the centre at x=6'-8 3/8" puts the
@@ -42,10 +38,10 @@ MAIN_FIXTURES = (
     # separate instances/types rather than a tub-shower combination, so the permit schedule
     # and future owner selections can treat them independently.
     Fixture(uid="CMQ805AAAA", tag="FX-M-BATH2-SH", type_ref="FX-SHOWER", room="RM-M-BATH2",
-            position=pt(ft(1, 9), ft(17, 3)), wall_ref="W-M-BA2E",
+            position=pt(m(1.88387), m(4.58801)), wall_ref="W-M-BA2E",
             drain_position=pt(ft(1, 9), ft(17, 3))),
     Fixture(uid="CMQ806AAAA", tag="FX-M-BATH2-TUB", type_ref="FX-TUB", room="RM-M-BATH2",
-            position=pt(ft(6, 8.5), ft(18, 10.8)), rotation=deg(90), wall_ref="W-M-BA2E",
+            position=pt(m(1.96436), m(5.77311)), rotation=deg(90), wall_ref="W-M-BA2E",
             drain_position=pt(ft(7, 4), ft(18, 10.8))),
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-WASHER", room="RM-M-LAUNDRY",
               position=pt(ft(10, 6), ft(20)), wall_ref="W-M-BA2E2"),

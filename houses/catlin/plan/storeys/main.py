@@ -114,8 +114,10 @@ NODES = [
     # FLOOR_OPENINGS.
     Node(uid="CMN015AAAA", tag="N-M-STR1", position=pt(ft(10), ft(25, 10))),
     Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 4))),
-    Node(uid="CMN016AAAA", tag="N-M-BA1", position=pt(ft(4), ft(26, 4))),
-    Node(uid="CMN017AAAA", tag="N-M-BA2", position=pt(ft(4), ft(21, 8))),
+    # W-M-BAE shifts 2' east (2026-07-28); the mudroom door remains at its existing
+    # 6" tee clearance.
+    Node(uid="CMN016AAAA", tag="N-M-BA1", position=pt(ft(6), ft(26, 4))),
+    Node(uid="CMN017AAAA", tag="N-M-BA2", position=pt(ft(6), ft(21, 8))),
     Node(uid="CMN018AAAA", tag="N-M-D1", position=pt(ft(8), ft(21, 8))),
     Node(uid="CMN019AAAA", tag="N-M-D2", position=pt(ft(8), ft(17, 4))),
     Node(uid="CMN020AAAA", tag="N-M-D3", position=pt(ft(8), ft(13, 4))),

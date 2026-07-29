@@ -317,18 +317,20 @@ MAIN_LIGHTING = [
     # RM-M-BATH1: wet-rated can plus a mirror light over the lavatory, which backs onto
     # the room's north wall (FX-M-BATH1-LAV, plan/fixtures.py).
     ElectricalDevice(uid="QTM000JAAA", tag="ED-M-BATH1-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(2), ft(23, 6)), type_ref="ED-T-LT-CAN4-WET",
+                     position=pt(m(0.959081), m(7.35676)), type_ref="ED-T-LT-CAN4-WET",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1",
                      controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000KAAA", tag="ED-M-BATH1-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(ft(2, 11), ft(26, 1)), type_ref="ED-T-LT-MIRROR",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH1", rotation=deg(0),
+                     position=pt(m(1.36284), m(6.68842)), type_ref="ED-T-LT-MIRROR",
+                     circuit="CKT-LT-MAIN", room="RM-M-BATH1", rotation=deg(-180),
                      controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
     ElectricalDevice(uid="QTM000MAAA", tag="ED-M-BATH1-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(0, 5), ft(22, 3)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-MAIN", room="RM-M-BATH1", rotation=deg(90),
+                     # Moved north on the west wall after the toilet/lavatory moved to the
+                     # south wall; the old 22'-3" location landed inside the toilet footprint.
+                     position=pt(m(1.71265), m(7.83151)), type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-M-BATH1", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
     # RM-M-BATH2: two wet cans (one over the future tub/shower end) and a mirror light on

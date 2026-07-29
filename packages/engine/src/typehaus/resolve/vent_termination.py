@@ -18,6 +18,7 @@ from typehaus.model.refs import ToRoof
 from typehaus.quantities import inch
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof
 from typehaus.resolve.roof_geometry import roof_height_at
+from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 
 VENT_TERMINATION_CLEARANCE_M = inch(12).meters
 
@@ -50,13 +51,21 @@ def roof_cleared_by(model: ResolvedModel, vent: VentRun) -> ResolvedRoof | None:
 
 
 def derived_termination_elevation(model: ResolvedModel, vent: VentRun) -> float | None:
-    """Project-frame Z (m) 12" above the roof plane at the exterior riser's plan point.
+    """Project-frame Z (m) 12" above the true roof surface at the exterior riser's point.
 
-    ``roof_height_at`` extrapolates its rake line past the footprint edge, which is exactly
-    what a riser standing proud of a zero-overhang gable needs.  Returns ``None`` when no
-    roof is derivable, leaving the caller to fall back to the authored elevation.
+    ``roof_height_at`` returns the structural deck plane, not the weather surface — the
+    insulation, furring and standing-seam roofing above it (``above_structure_layers``) add
+    real height a riser has to clear, the same "skin" offset ``resolve/solar.py`` rides the
+    PV standoff off of. ``roof_height_at`` extrapolates its rake line past the footprint
+    edge, which is exactly what a riser standing proud of a zero-overhang gable needs.
+    Returns ``None`` when no roof is derivable, leaving the caller to fall back to the
+    authored elevation.
     """
     roof = roof_cleared_by(model, vent)
     if roof is None:
         return None
-    return roof_height_at(roof, exterior_riser_point(vent)) + VENT_TERMINATION_CLEARANCE_M
+    library = getattr(model.plan, "library", None)
+    assembly = library.resolve_assembly(roof.assembly) if library is not None else None
+    skin_m = (sum(layer.thickness.meters for layer in above_structure_layers(assembly))
+              if assembly is not None else 0.0)
+    return roof_height_at(roof, exterior_riser_point(vent)) + skin_m + VENT_TERMINATION_CLEARANCE_M
