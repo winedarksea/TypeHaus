@@ -201,3 +201,49 @@ def test_preview_resolve_skips_the_geometry_stage(model) -> None:
     from typehaus.resolve import resolve_preview
 
     assert resolve_preview(model.plan).geometry is None
+
+
+# --- the first emitter switch ----------------------------------------------------------
+
+def test_the_glb_member_mesh_now_carries_the_true_section(model) -> None:
+    """`emit/gltf/members.py` builds its box from the IR rather than its own math.
+
+    The bug this pins: the old path used `width_m / 2` as *every* half-extent, so an upright
+    2x6 stud exported as a 5.5" square post whose section ignored the wall it stood in — while
+    IFC exported the same stud correctly. That is the divergence that made
+    WHOLE_HOUSE_GLB_PRIMARY unsafe to turn on.
+    """
+    from typehaus.emit.gltf.members import _add_member
+    from typehaus.emit.gltf.mesh import _MeshBuilder
+
+    uprights = [m for m in _all_members(model) if m.p0 == m.p1]
+    assert uprights
+    rectangular = 0
+    for member in uprights:
+        section = cross_section(member.profile)
+        builder = _MeshBuilder()
+        _add_member(builder, member)
+        points = [p for positions, _ in builder._buckets.values() for p in positions]
+        assert points, member.child_key
+        # glTF swizzles (x, y, z) → (x, z, -y), so plan x/y are components 0 and 2.
+        got = sorted((max(p[0] for p in points) - min(p[0] for p in points),
+                      max(p[2] for p in points) - min(p[2] for p in points)))
+        want = sorted((section.width_m, section.depth_m))
+        assert got == pytest.approx(want, abs=TOL), member.child_key
+        if abs(section.width_m - section.depth_m) > TOL:
+            rectangular += 1
+    assert rectangular, "no non-square profile in this house to prove the fix against"
+
+
+def test_a_member_box_is_still_twelve_triangles(model) -> None:
+    """The merged-mesh pick contract (TRIANGLES_PER_MEMBER_BOX in memberBox.ts /
+    memberPicking.ts) resolves a face index by dividing by 12. Changing the primitive's
+    triangle count would silently select the wrong member."""
+    from typehaus.emit.gltf.members import _add_member
+    from typehaus.emit.gltf.mesh import _MeshBuilder
+
+    for member in _all_members(model)[:200]:
+        builder = _MeshBuilder()
+        _add_member(builder, member)
+        triangles = sum(len(indices) for _positions, indices in builder._buckets.values()) // 3
+        assert triangles == 12, f"{member.child_key} emitted {triangles} triangles"

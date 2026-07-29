@@ -178,6 +178,29 @@ class _MeshBuilder:
             a, b, c, d = (base + index for index in face)
             indices.extend((a, b, c, a, c, d))
 
+    def add_gbox(self, box: "GBox", color: tuple[float, float, float, float]) -> None:
+        """Add an IR hexahedron: two corresponding rings, bottom and top.
+
+        This is the generic primitive the geometry IR emits — a member, a solar module and a
+        tapered closure band are all the same eight corners, so the exporter no longer needs
+        one code path per shape (and no longer re-derives any of them).
+        """
+        positions, indices = self._bucket(color)
+        base = len(positions)
+        count = len(box.corners_bottom)
+        positions.extend(_to_gltf(*point) for point in box.corners_bottom)
+        positions.extend(_to_gltf(*point) for point in box.corners_top)
+        # Bottom (reversed so it faces down) and top caps.
+        for index in range(1, count - 1):
+            indices.extend((base, base + index + 1, base + index))
+            indices.extend((base + count, base + count + index, base + count + index + 1))
+        # Sides: one quad per bottom edge, closing the ring.
+        for index in range(count):
+            nxt = (index + 1) % count
+            a, b = base + index, base + nxt
+            c, d = base + count + nxt, base + count + index
+            indices.extend((a, b, c, a, c, d))
+
     def add_triangles(self, triangles: list[tuple[Vec3, Vec3, Vec3]],
                       color: tuple[float, float, float, float]) -> None:
         positions, indices = self._bucket(color)
