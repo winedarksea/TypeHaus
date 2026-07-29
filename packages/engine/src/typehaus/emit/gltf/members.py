@@ -41,6 +41,9 @@ def _add_member(mb: _MeshBuilder, member: FramedMember) -> None:
     # same material, so a standing-seam closure reads as white metal rather than category grey.
     color = (_material_finish_color(member.material, member.category)
              if member.material else _color(member.category))
+    if member.plan_outline is not None:
+        mb.add_prism(member.plan_outline, member.z0_m, member.z1_m, color)
+        return
     box = member_box(member)
     if box is None:  # degenerate; no importer can tessellate a zero-area shell
         return

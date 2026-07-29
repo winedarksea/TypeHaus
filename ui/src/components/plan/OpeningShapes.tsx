@@ -239,6 +239,10 @@ export const StairShape = memo(function StairShape({ stair, project, selected, h
     {stair.members.filter((member) => (member.category === "tread" || member.category === "winder" || member.category === "landing")
       // A vertical member (landing post / newel) is a point in plan, not a line.
       && (member.p0[0] !== member.p1[0] || member.p0[1] !== member.p1[1])).map((member) => {
+      if (member.plan_outline && member.plan_outline.length >= 3) {
+        return <polygon key={member.key} points={member.plan_outline.map(project).map((point) => point.join(",")).join(" ")}
+          fill="none" stroke={stroke} strokeWidth={1} />;
+      }
       const [x0, y0] = project(member.p0); const [x1, y1] = project(member.p1);
       return <line key={member.key} x1={x0} y1={y0} x2={x1} y2={y1} stroke={stroke} strokeWidth={1} />;
     })}

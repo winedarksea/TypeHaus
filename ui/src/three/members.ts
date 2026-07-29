@@ -313,8 +313,9 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
  */
 export function buildMembers(group: THREE.Group, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string) {
-  if (!members.length) return;
-  const buckets = bucket(members);
+  const boxMembers = members.filter((member) => !member.plan_outline?.length);
+  if (!boxMembers.length) return;
+  const buckets = bucket(boxMembers);
   buildRectInstances(group, buckets.rect, center, mode, palette, ownerUid);
   buildRakedMesh(group, buckets.raked, center, mode, palette, ownerUid);
   buildIJoists(group, buckets.ijoist, center, mode, palette, ownerUid);

@@ -19,6 +19,7 @@ from typehaus.resolve.stairs.common import (
 
 def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
                              risers: int, riser: float, tread: float,
+                             tread_depth: float, nosing: float,
                              landing_depth_m: float) -> tuple[FramedMember, ...]:
     """Generate two parallel flights joined by two half-width landings one riser apart.
 
@@ -68,7 +69,7 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
         return (start + sign * s, cross) if along_x else (cross, start + sign * s)
 
     stringer_depth = cross_section("2x12").depth_m
-    flight_len = tread * lower_treads  # the longer (lower) flight bounds the flight zone
+    flight_len = tread * lower_treads  # ``tread`` is the riser-to-riser going here.
     lower_landing_z = z0 + riser * (lower_treads + 1)
     upper_landing_z = lower_landing_z + riser
     arrival = z0 + riser * risers
@@ -97,10 +98,10 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # Both flights' boards run from their riser toward +s (the lower flight ascends that
     # way, the upper descends it), so both centrelines sit half a going past the riser —
     # see ``_tread_board_profile`` for why the axis is the board centre and not the riser.
-    tread_profile = _tread_board_profile(tread)
+    tread_profile = _tread_board_profile(tread_depth)
     for index in range(lower_treads):
         top = z0 + riser * (index + 1)
-        s = tread * index + tread / 2.0
+        s = tread * index + (tread - nosing) / 2.0
         out.append(FramedMember(stair.uid, f"tread-lower-{index:03d}", "tread", tread_profile,
                                 at(s, lower_lane), at(s, lower_lane + width),
                                 _notch_z(top), top, width))
@@ -108,7 +109,7 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # landing, and its top tread ends one riser below the arrival deck.
     for index in range(upper_treads):
         top = z0 + riser * (lower_treads + 3 + index)
-        s = flight_len - tread * (index + 1) + tread / 2.0
+        s = flight_len - tread * (index + 1) + (tread - nosing) / 2.0
         out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", tread_profile,
                                 at(s, upper_lane), at(s, upper_lane + width),
                                 _notch_z(top), top, width))

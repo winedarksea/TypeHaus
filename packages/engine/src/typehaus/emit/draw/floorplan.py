@@ -186,6 +186,11 @@ def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                 continue
             if member.p0 == member.p1:
                 continue  # a vertical member (post/newel) is a point in plan, not a line
+            if member.plan_outline is not None:
+                b.add(Polyline(points=tuple(_in(p) for p in member.plan_outline), closed=True,
+                               layer="A-STAIR", lineweight=0.25, uid=stair.uid,
+                               tag=member.child_key))
+                continue
             if member.category == "landing":
                 # A landing's symbol is its *outline*, not its axis: the deck member is a
                 # board with a width, and one centreline down the middle of a platform is

@@ -11,7 +11,6 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
 from typehaus.resolve.stairs.common import (
     _TREAD_THICKNESS_M,
-    _newel_face_point,
     _notch_z,
     _tread_board_profile,
 )
@@ -41,7 +40,8 @@ def _box_rim_profile(frame_depth_m: float, plies: int = 1) -> str:
 
 
 def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
-                          risers: int, riser: float, tread: float) -> tuple[FramedMember, ...]:
+                          risers: int, riser: float, tread: float,
+                          tread_depth: float, nosing: float) -> tuple[FramedMember, ...]:
     """Generate a lower quarter-turn with consistently fanned winder treads.
 
     ``start`` is the lower outside corner of the winder square.  The straight flight leaves
@@ -98,30 +98,46 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                                 math.hypot(tread, riser) * straight_treads,
                                 z0_end_m=arrival_notch - stringer_depth,
                                 z1_end_m=arrival_notch))
-    # The authored newel profile (Stair.newel_profile, default "4x4"): a wider newel is
-    # the sanctioned lever on ``structural.winder_narrow_tread_depth`` — its faces push
-    # every winder's narrow end outward, spreading consecutive nosings apart.
-    newel_half_face = cross_section(stair.newel_profile).width_m / 2.0
+    # The inside ends deliberately do not converge at the newel.  Three 6" offsets around
+    # the inside corner are the minimum code-sized narrow path; the earlier radial fan put
+    # all three on a 6x6 post face, delivering only ~1.3" between them.
+    narrow_going = inch(6).meters
     fan: list[_FanLine] = []
     for index in range(stair.winder_count):
         # ``winder_count + 1`` because ``fraction == 1`` — the departing edge of the turn
         # square — belongs to the straight flight's first tread. Dividing by the winder
         # count alone put the top winder exactly on top of ``tread-000``: a riser with
         # zero going. It also makes the box tiers close exactly on the springing.
-        fraction = (index + 1) / (stair.winder_count + 1)
+        # Three winders have three raised walking surfaces.  Their final nosing is the
+        # departing edge of the turn; reserving a fourth fractional slice made that bare
+        # floor wedge read as a fourth, level "winder" in 2D and 3D.
+        fraction = (index + 1) / stair.winder_count
         # First half follows the entering outside edge, second half the departing edge.
-        nosing = (P(0.0, width * fraction * 2) if fraction <= 0.5
-                  else P(width * (fraction * 2 - 1), width))
-        fan.append(_FanLine(_newel_face_point(inside, nosing, newel_half_face), nosing,
+        nosing_point = (P(0.0, width * fraction * 2) if fraction <= 0.5
+                        else P(width * (fraction * 2 - 1), width))
+        narrow = (P(width - narrow_going, 0.0) if index == 0
+                  else P(width, narrow_going * index))
+        fan.append(_FanLine(narrow, nosing_point,
                             wraps_outer_corner=fraction < 0.5))
-    for index, (narrow, nosing, _) in enumerate(fan):
+    previous_nosing = P(0.0, 0.0)
+    previous_narrow = P(width, 0.0)
+    for index, (narrow, nosing_point, wraps_outer_corner) in enumerate(fan):
         top = surface(index)
+        # A winder is a tapered deck panel, not the 1.5"-wide line used to annotate its
+        # nosing.  Carry its actual boundary through the shared member model so every view
+        # sees the same three rising surfaces.
+        outline = [previous_narrow, previous_nosing]
+        if wraps_outer_corner or (index and fan[index - 1].wraps_outer_corner):
+            outline.append(outer_corner)
+        outline.extend((nosing_point, narrow))
         out.append(FramedMember(stair.uid, f"winder-{index:03d}", "winder", "tapered tread",
-                                narrow, nosing, _notch_z(top), top,
-                                math.hypot(nosing[0] - narrow[0], nosing[1] - narrow[1])))
-    tread_profile = _tread_board_profile(tread)
+                                narrow, nosing_point, _notch_z(top), top,
+                                math.hypot(nosing_point[0] - narrow[0], nosing_point[1] - narrow[1]),
+                                plan_outline=outline))
+        previous_nosing, previous_narrow = nosing_point, narrow
+    tread_profile = _tread_board_profile(tread_depth)
     for index in range(straight_treads):
-        centre = tread * index + tread / 2.0
+        centre = tread * index + (tread - nosing) / 2.0
         top = surface(index + stair.winder_count)
         out.append(FramedMember(stair.uid, f"tread-{index:03d}", "tread", tread_profile,
                                 offset(inside, centre, 0.0),

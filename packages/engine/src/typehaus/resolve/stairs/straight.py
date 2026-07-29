@@ -12,17 +12,18 @@ from typehaus.resolve.stairs.common import _notch_z, _tread_board_profile
 
 def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
                             risers: int, riser: float,
-                            tread: float) -> tuple[FramedMember, ...]:
+                            going: float, tread_depth: float,
+                            nosing: float) -> tuple[FramedMember, ...]:
     along_x = stair.run_direction == "x"
     start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
     width = stair.width.meters
     sign = -1 if stair.run_reversed else 1
     if along_x:
-        end_x, end_y = start_x + sign * tread * (risers - 1), start_y
+        end_x, end_y = start_x + sign * going * (risers - 1), start_y
         strings = (((start_x, start_y), (end_x, end_y)),
                    ((start_x, start_y + width), (end_x, end_y + width)))
     else:
-        end_x, end_y = start_x, start_y + sign * tread * (risers - 1)
+        end_x, end_y = start_x, start_y + sign * going * (risers - 1)
         strings = (((start_x, start_y), (end_x, end_y)),
                    ((start_x + width, start_y), (end_x + width, end_y)))
     stringer_depth = cross_section("2x12").depth_m
@@ -34,16 +35,18 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     out = [
         FramedMember(stair.uid, f"stringer-{index}", "stringer", "2x12", a, b,
                      spring_notch - stringer_depth, spring_notch,
-                     math.hypot(tread, riser) * (risers - 1),
+                     math.hypot(going, riser) * (risers - 1),
                      z0_end_m=arrival_notch - stringer_depth, z1_end_m=arrival_notch)
         for index, (a, b) in enumerate(strings)
     ]
-    tread_profile = _tread_board_profile(tread)
+    tread_profile = _tread_board_profile(tread_depth)
     for index in range(risers - 1):
         # The axis is the board's *centreline*, half a going past the riser it sits on: a
         # ``deck`` footprint is centred on the axis, so anchoring it on the riser line would
         # leave the flight half a going short of the arrival deck.
-        centre = tread * index + tread / 2.0
+        # The board spans one going plus the nose beyond the lower riser.  Adjacent boards
+        # overlap by the nose in plan but are one riser apart vertically, as built treads are.
+        centre = going * index + (going - nosing) / 2.0
         if along_x:
             a = (start_x + sign * centre, start_y)
             b = (start_x + sign * centre, start_y + width)

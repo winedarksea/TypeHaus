@@ -874,27 +874,25 @@ def test_stairs_resolve_with_code_risers(catlin_model):
         assert stair.riser_count in {14, 16}
         assert stair.riser_height_m <= inch(7.75).meters + 1e-9
         assert stair.tread_depth_m >= inch(10.0).meters - 1e-9
-    # Both U-stair wells run wall face to wall face — the stair wall's north face at the
-    # south end, their own storey's north wall at the other — and the going is whatever that
-    # shaft leaves after the R311.7.6 36" landing. ST-M2S's works out at a round 11";
-    # ST-B2M's shaft is 5 5/8" longer than six of those, so its treads are 11 15/16".
-    # Pinned, not bounded: a change here means a well moved, which is a design decision.
+    # Ordinary stairs stay compact by default: 11" boards with a 1" nose yield the 10"
+    # code-minimum going, leaving any extra shaft length beyond the arrival platform.
     assert stairs["ST-M2S"].tread_depth_m == pytest.approx(inch(11.0).meters, abs=1e-9)
-    assert stairs["ST-B2M"].tread_depth_m == pytest.approx(inch(11.9375).meters, abs=1e-9)
+    assert stairs["ST-B2M"].tread_depth_m == pytest.approx(inch(11.0).meters, abs=1e-9)
+    assert all(stair.going_depth_m == pytest.approx(inch(10).meters, abs=1e-9)
+               for stair in stairs.values())
     attic = stairs["ST-S2A"]
     assert attic.winder_count == 3
     assert attic.run_reversed is True
     winders = [member for member in attic.members if member.category == "winder"]
     assert len(winders) == 3
-    # All three radial tread edges leave the same inside turn, never opposed diagonals —
-    # but each takes its own point on the newel post's face rather than the post's
-    # centreline, so the narrow ends have a real width instead of converging (D2).
-    newel = next(member for member in attic.members if member.child_key == "newel-000")
-    half_diagonal = cross_section(newel.profile).width_m * math.sqrt(2.0) / 2.0
+    # The three raised tapered panels have independent code-sized narrow ends; they no
+    # longer converge on a newel point or leave a fourth floor-level wedge at the turn.
     assert len({member.p0 for member in winders}) == len(winders)
-    for member in winders:
-        reach = math.hypot(member.p0[0] - newel.p0[0], member.p0[1] - newel.p0[1])
-        assert reach <= half_diagonal + 1e-9, member.child_key
+    assert all(member.plan_outline and len(member.plan_outline) >= 4 for member in winders)
+    source = catlin_model.plan.storey(attic.storey)
+    assert source is not None
+    assert [member.z1_m for member in winders] == pytest.approx(
+        [source.elevation.meters + attic.riser_height_m * step for step in (1, 2, 3)])
     for tag in ("ST-B2M", "ST-M2S"):
         stair = stairs[tag]
         assert stair.layout == "u_split_landing"

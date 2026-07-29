@@ -246,6 +246,9 @@ def _member_body(f: Any, body: Any, member: Any) -> Any | None:
     section catalog cannot honestly sweep must degrade to the old bare (representation-
     free) member, never abort the whole export.
     """
+    if member.plan_outline is not None:
+        return ll.add_prisms_from_profiles(f, body, [member.plan_outline],
+                                            member.z1_m - member.z0_m, member.z0_m)
     if member.profile in _UNSWEEPABLE_PROFILES:
         return None
     try:

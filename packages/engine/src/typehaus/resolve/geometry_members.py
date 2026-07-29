@@ -43,6 +43,10 @@ def member_box(member: FramedMember) -> GBox | None:
       bottom rings simply carry different z per corner.
     * **level**: the ordinary case.
     """
+    if member.plan_outline is not None:
+        # GBox is intentionally a quadrilateral-only primitive.  Polygonal stair treads are
+        # emitted by the prism-aware callers rather than quietly approximated as a box.
+        return None
     section = cross_section(member.profile)
     width = max(section.width_m, MINIMUM_EXTENT_M)
     depth = max(section.depth_m, MINIMUM_EXTENT_M)

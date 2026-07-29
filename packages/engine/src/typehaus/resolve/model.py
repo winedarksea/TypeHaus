@@ -108,6 +108,10 @@ class FramedMember:
     # appear under a framing view toggle as well as with the roof skin it finishes.
     # ``None`` = the consumer's category-derived default.
     trade: str | None = None
+    # A walking surface whose plan shape is not a swept board (notably a winder).  The normal
+    # member axis remains for framing/bearing, while every visual/export consumer uses this
+    # explicit footprint when present.
+    plan_outline: Ring | None = None
 
 
 @dataclass(frozen=True)
@@ -278,6 +282,11 @@ class ResolvedStair:
     turn_direction: str | None
     winder_count: int
     members: tuple[FramedMember, ...]
+    # Physical board depth, nosing projection, and riser-to-riser going are distinct.  Older
+    # synthetic tests can omit the two new fields while production resolver output always fills
+    # them.
+    going_depth_m: float = 0.0
+    nosing_depth_m: float = 0.0
 
 
 @dataclass(frozen=True)

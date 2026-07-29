@@ -67,6 +67,7 @@ export interface Member {
   // A raked member has different lower/upper elevations at its second endpoint.
   z0_end_m: number | null;
   z1_end_m: number | null;
+  plan_outline?: Vec2[] | null;
   shape: MemberShape;
   width_m: number;
   depth_m: number;
@@ -764,10 +765,14 @@ export interface Stair {
   // "reserve one stair width" behaviour. The resolver floors it at the stair width
   // (IRC R311.7.6).
   landing_depth_m: number | null;
+  authored_tread_depth_m: number | null;
+  authored_nosing_depth_m: number | null;
   start: Vec2 | null;
   riser_count: number;
   riser_height_m: number;
   tread_depth_m: number;
+  going_depth_m: number;
+  nosing_depth_m: number;
   members: Member[];
   provenance: Provenance | null;
 }

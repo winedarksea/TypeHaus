@@ -466,7 +466,7 @@ def test_tread_marks_along_a_flight_are_evenly_spaced(catlin_model, tag, storey)
         assert max(gaps) - min(gaps) < 1e-6, (flight, gaps)
         # ...and that one gap is the resolved going, not some other spacing.
         assert gaps[0] == pytest.approx(
-            stair.tread_depth_m * M_TO_IN, rel=1e-6)
+                stair.going_depth_m * M_TO_IN, rel=1e-6)
 
 
 # --------------------------------------------------------------- 9. the winder turn
@@ -476,7 +476,7 @@ def _winder_reference(catlin_model, winder_stair):
     return subfloor, riser, winder_stair.winder_count
 
 
-def test_winder_newel_carries_every_winder_narrow_end(catlin_model, winder_stair):
+def test_winder_turn_has_three_code_sized_raised_surfaces(catlin_model, winder_stair):
     subfloor, riser, count = _winder_reference(catlin_model, winder_stair)
     newels = [m for m in winder_stair.members if m.category == "newel"]
     newel = next(m for m in newels if m.child_key == "newel-000")
@@ -487,13 +487,9 @@ def test_winder_newel_carries_every_winder_narrow_end(catlin_model, winder_stair
     assert newel.z1_m == pytest.approx(subfloor + riser * count)
     winders = [m for m in winder_stair.members if m.category == "winder"]
     assert len(winders) == count
-    # Each narrow end lands on the newel's own face — between half a face and half a
-    # diagonal out from its centreline, whichever face the winder's ray exits through.
-    half_face = cross_section(newel.profile).width_m / 2.0
-    for winder in winders:
-        reach = math.hypot(winder.p0[0] - newel.p0[0], winder.p0[1] - newel.p0[1])
-        assert half_face - 1e-9 <= reach <= half_face * math.sqrt(2.0) + 1e-9, winder.child_key
-        assert winder.z1_m <= newel.z1_m + 1e-9
+    assert all(winder.plan_outline and len(winder.plan_outline) >= 4 for winder in winders)
+    assert [winder.z1_m for winder in winders] == pytest.approx(
+        [subfloor + riser * step for step in range(1, count + 1)])
 
 
 def test_winder_turn_is_a_stack_of_platform_boxes(catlin_model, winder_stair):
@@ -586,6 +582,21 @@ def test_every_catlin_stair_has_uniform_risers(catlin_model):
     assert len(findings) == len(catlin_model.stairs)
     assert all(finding.result is Result.PASS for finding in findings), (
         [finding.message for finding in findings])
+
+
+def test_every_stair_walks_from_its_source_floor_to_its_destination_floor(catlin_model):
+    """A generated member, not the design arithmetic, is the floor-to-floor contract."""
+    for stair in catlin_model.stairs:
+        source = catlin_model.plan.storey(stair.storey)
+        target = catlin_model.plan.storey(stair.to_storey)
+        assert source is not None and target is not None
+        surfaces = sorted(member.z1_m for member in stair.members
+                          if member.category in {"tread", "winder", "landing"})
+        expected = [source.elevation.meters + stair.riser_height_m * step
+                    for step in range(1, stair.riser_count)]
+        assert surfaces == pytest.approx(expected, abs=1e-6), stair.tag
+        assert source.elevation.meters + stair.riser_count * stair.riser_height_m == pytest.approx(
+            target.elevation.meters, abs=1e-6)
 
 
 def test_a_tread_stacked_on_its_step_elevation_fails_riser_uniformity(catlin_model):
@@ -694,7 +705,18 @@ def test_missing_stair_bearing_ref_is_an_error():
     assert len(errors) == 1 and "W-NOPE" in errors[0].message
 
 
-def test_six_by_six_newel_winder_lands_every_narrow_end_on_the_wider_face():
+@pytest.mark.parametrize("fields", [
+    {"tread_depth": inch(10), "nosing_depth": inch(0)},
+    {"tread_depth": inch(12), "nosing_depth": inch(0.5)},
+])
+def test_invalid_tread_and_nosing_combinations_are_rejected(fields):
+    stair, findings = _resolved_stair(_stair_plan(**fields))
+    assert stair is None
+    assert any(finding.check_id in {"integrity.stair_geometry", "integrity.stair_nosing"}
+               for finding in findings)
+
+
+def test_six_by_six_newel_winder_preserves_code_sized_inside_goings():
     """``Stair.newel_profile`` is consumed, not the old module constant: a 6x6 newel's
     faces sit 2.75" off its centreline, and every winder narrow end must land on them.
 
@@ -709,27 +731,12 @@ def test_six_by_six_newel_winder_lands_every_narrow_end_on_the_wider_face():
     assert stair is not None, [f.message for f in findings]
     newels = [m for m in stair.members if m.category == "newel"]
     assert newels and all(m.profile == "6x6" for m in newels)
-    newel = next(m for m in newels if m.child_key == "newel-000")
-    half_face = cross_section("6x6").width_m / 2.0
     winders = sorted((m for m in stair.members if m.category == "winder"),
                      key=lambda m: m.z0_m)
     assert len(winders) == 3
-    for winder in winders:
-        reach = math.hypot(winder.p0[0] - newel.p0[0], winder.p0[1] - newel.p0[1])
-        assert half_face - 1e-9 <= reach <= half_face * math.sqrt(2.0) + 1e-9, (
-            winder.child_key)
     gaps = [math.hypot(b.p0[0] - a.p0[0], b.p0[1] - a.p0[1])
             for a, b in zip(winders, winders[1:])]
-    assert min(gaps) == pytest.approx(half_face / 2.0)  # 1.375" — measured, not invented
-    assert min(gaps) == pytest.approx(inch(1.375).meters)
-    # A 4x4 (the default) delivers proportionally less: half of ITS half-face, 0.875".
-    default_stair, _ = _resolved_stair(_stair_plan(
-        layout="right_angle_winder", turn_direction="left", winder_count=3))
-    default_winders = sorted((m for m in default_stair.members
-                              if m.category == "winder"), key=lambda m: m.z0_m)
-    default_gaps = [math.hypot(b.p0[0] - a.p0[0], b.p0[1] - a.p0[1])
-                    for a, b in zip(default_winders, default_winders[1:])]
-    assert min(default_gaps) == pytest.approx(inch(0.875).meters)
+    assert min(gaps) >= inch(6).meters - 1e-9
 
 
 def test_a_wall_four_inches_off_the_stringer_is_not_a_host():

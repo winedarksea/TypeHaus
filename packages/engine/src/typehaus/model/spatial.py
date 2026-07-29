@@ -73,6 +73,12 @@ class Stair(Element):
     # widens the well the winders wrap, moving their narrow ends apart — the sanctioned
     # lever on ``structural.winder_narrow_tread_depth`` short of adding risers.
     newel_profile: str = "4x4"
+    # A tread is deliberately wider than its step-to-step going: the default 1" nose overhangs
+    # the riser below, leaving a 10" code-minimum going on an 11" physical board.
+    # ``None`` is retained for source compatibility with older authored plans and resolves to
+    # the defaults below.
+    tread_depth: Length | None = None
+    nosing_depth: Length | None = None
 
 
 @register_element

@@ -12,10 +12,15 @@ import math
 from typehaus.findings import Finding, element_error as _error
 from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Stair
+from typehaus.quantities import inch
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedStair
 from typehaus.resolve.stairs.bearing import _bear_stair_on_walls, _clip_stair_to_subfloor
 from typehaus.resolve.stairs.common import (
     _MAX_RISER_M,
+    _DEFAULT_NOSING_DEPTH_M,
+    _DEFAULT_TREAD_DEPTH_M,
+    _MAX_NOSING_DEPTH_M,
+    _MIN_NOSING_DEPTH_M,
     _MIN_LANDING_DEPTH_M,
     _MIN_TREAD_M,
     _WELL_PARTITION_THICKNESS_M,
@@ -89,6 +94,21 @@ def _resolve_stair(
         return None, [_error("integrity.stair_bearing", f"stair {stair.tag} references "
                              "missing bearing wall(s) on "
                              f"{stair.from_storey}: {', '.join(missing_bearing)}", stair.tag)]
+    physical_tread_m = (stair.tread_depth.meters if stair.tread_depth is not None
+                        else _DEFAULT_TREAD_DEPTH_M)
+    nosing_m = (stair.nosing_depth.meters if stair.nosing_depth is not None
+                else _DEFAULT_NOSING_DEPTH_M)
+    going_m = physical_tread_m - nosing_m
+    if nosing_m < -1e-9 or (nosing_m > 1e-9 and not
+                            _MIN_NOSING_DEPTH_M - 1e-9 <= nosing_m <= _MAX_NOSING_DEPTH_M + 1e-9):
+        return None, [_error("integrity.stair_nosing", f"stair {stair.tag} nosing must be "
+                             "0 or 3/4\"–1 1/4\"", stair.tag)]
+    if physical_tread_m + 1e-9 < inch(11).meters and nosing_m <= 1e-9:
+        return None, [_error("integrity.stair_nosing", f"stair {stair.tag} needs a nosing "
+                             "when its physical tread is under 11\"", stair.tag)]
+    if going_m + 1e-9 < _MIN_TREAD_M:
+        return None, [_error("integrity.stair_geometry", f"stair {stair.tag} has "
+                             f"{going_m / 0.0254:.1f}\" going; IRC R311.7 requires 10\"", stair.tag)]
     risers = math.ceil(rise / _MAX_RISER_M)
     treads = max(0, risers - 1)
     straight_treads = treads - stair.winder_count
@@ -109,21 +129,21 @@ def _resolve_stair(
         flight_treads = max(0, risers - 3)
         lower_treads = (flight_treads + 1) // 2
         straight_run = run - landing_depth_m
-        tread = straight_run / lower_treads if lower_treads else 0.0
+        available_going = straight_run / lower_treads if lower_treads else 0.0
     else:
         straight_run = run - stair.width.meters if stair.layout == "right_angle_winder" else run
-        tread = straight_run / straight_treads if straight_treads else 0.0
-    if tread + 1e-9 < _MIN_TREAD_M:
+        available_going = straight_run / straight_treads if straight_treads else 0.0
+    if available_going + 1e-9 < going_m:
         return None, [_error("integrity.stair_geometry", f"stair {stair.tag} needs {risers} "
-                             f"risers but its opening only permits {tread / 0.0254:.1f}\" treads "
-                             "(IRC R311.7 requires 10\")", stair.tag)]
+                             f"risers but its opening only permits {available_going / 0.0254:.1f}\" "
+                             f"going (needs {going_m / 0.0254:.1f}\")", stair.tag)]
     riser = rise / risers
-    if not _stair_fits_opening(stair, min(xs), max(xs), min(ys), max(ys), tread, risers,
+    if not _stair_fits_opening(stair, min(xs), max(xs), min(ys), max(ys), going_m, risers,
                                landing_depth_m):
         return None, [_error("integrity.stair_opening", f"stair {stair.tag} extends outside "
                              f"floor opening {opening.tag!r}", stair.tag)]
     members = _stair_members(stair, min(xs), min(ys), source.elevation.meters, risers, riser,
-                             tread, landing_depth_m)
+                             going_m, physical_tread_m, nosing_m, landing_depth_m)
     # Structural guards: the flight never drops below the subfloor it springs from (so a
     # U-stair well partition cannot poke through the foundation), and every flight is
     # borne on the walls beside it — posted down wherever none reaches.
@@ -132,8 +152,9 @@ def _resolve_stair(
     # A stair declaration lives with its destination deck so it can own the opening, but
     # its resolved plan-storey identity is the floor it rises *from*.
     return ResolvedStair(stair.uid, stair.tag, stair.from_storey, stair.to_storey, outline, risers, riser,
-                         tread, stair.run_direction, stair.run_reversed, stair.layout,
-                         stair.turn_direction, stair.winder_count, members), []
+                         physical_tread_m, stair.run_direction, stair.run_reversed, stair.layout,
+                         stair.turn_direction, stair.winder_count, members,
+                         going_depth_m=going_m, nosing_depth_m=nosing_m), []
 
 
 def _element_storey(model: ResolvedModel, tag: str) -> str | None:
@@ -144,14 +165,17 @@ def _element_storey(model: ResolvedModel, tag: str) -> str | None:
 
 
 def _stair_members(stair: Stair, minx: float, miny: float, z0: float, risers: int,
-                   riser: float, tread: float,
+                   riser: float, going: float, tread_depth: float, nosing: float,
                    landing_depth_m: float) -> tuple[FramedMember, ...]:
     if stair.layout == "right_angle_winder":
-        return _winder_stair_members(stair, minx, miny, z0, risers, riser, tread)
+        return _winder_stair_members(stair, minx, miny, z0, risers, riser, going,
+                                     tread_depth, nosing)
     if stair.layout == "u_split_landing":
-        return _u_split_landing_members(stair, minx, miny, z0, risers, riser, tread,
+        return _u_split_landing_members(stair, minx, miny, z0, risers, riser, going,
+                                        tread_depth, nosing,
                                         landing_depth_m)
-    return _straight_stair_members(stair, minx, miny, z0, risers, riser, tread)
+    return _straight_stair_members(stair, minx, miny, z0, risers, riser, going,
+                                  tread_depth, nosing)
 
 
 def _stair_fits_opening(stair: Stair, minx: float, maxx: float, miny: float, maxy: float,

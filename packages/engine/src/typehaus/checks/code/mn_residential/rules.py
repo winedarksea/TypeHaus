@@ -22,6 +22,9 @@ _MIN_EGRESS_HEIGHT = inch(24)
 _MAX_EGRESS_SILL = inch(44)
 _MIN_EGRESS_AREA_SF = 5.7  # grade-floor 5.0; upper 5.7 (R310.2.1)
 _MIN_DOOR_CLEAR = inch(31.75)  # 32" nominal clear (R311.2)
+_MAX_STAIR_RISER = inch(7.75)
+_MIN_STAIR_GOING = inch(10)
+_MIN_STAIR_HEADROOM = ft(6, 8)
 
 # R401.3 lot drainage: grade must fall away from the foundation within the first 10'. Pervious
 # ground needs 5% (6" per 10'), measured from spot elevations (code.R401_3_grading). Impervious
@@ -187,6 +190,50 @@ def _room_storey(ctx: CheckContext, room_tag: str):
         if any(e.tag == room_tag for e in ctx.plan.storey_elements(storey.tag)):
             return storey
     return None
+
+
+@check(Tier.CODE, "code.R311_7_stair_geometry")
+def stair_geometry(ctx: CheckContext) -> list[Finding]:
+    """Verify the built walking sequence reaches the next finished floor with code geometry.
+
+    The resolver owns the exact opening and roof geometry.  This check intentionally measures
+    its output rather than re-solving it from authored inputs, catching a dropped/level tread
+    even when the design rise and riser count still look mathematically consistent.
+    """
+    if not ctx.model.stairs:
+        return [_unknown("code.R311_7_stair_geometry", "no resolved stairs", (), "R311.7")]
+    out: list[Finding] = []
+    for stair in ctx.model.stairs:
+        source = ctx.plan.storey(stair.storey)
+        target = ctx.plan.storey(stair.to_storey)
+        if source is None or target is None:
+            out.append(_unknown("code.R311_7_stair_geometry", "unresolved stair storey",
+                                (stair.tag,), "R311.7"))
+            continue
+        walking = sorted(member.z1_m for member in stair.members
+                         if member.category in {"tread", "winder", "landing"})
+        arrival = target.elevation.meters
+        expected = [source.elevation.meters + stair.riser_height_m * step
+                    for step in range(1, stair.riser_count)]
+        headroom = target.default_ceiling_height.meters
+        valid = (
+            stair.riser_height_m <= _MAX_STAIR_RISER.meters + 1e-9
+            and stair.going_depth_m >= _MIN_STAIR_GOING.meters - 1e-9
+            and len(walking) == len(expected)
+            and all(abs(actual - wanted) <= 1e-6 for actual, wanted in zip(walking, expected))
+            and abs(source.elevation.meters + stair.riser_count * stair.riser_height_m - arrival) <= 1e-6
+            and headroom >= _MIN_STAIR_HEADROOM.meters - 1e-9
+        )
+        if valid:
+            out.append(_pass("code.R311_7_stair_geometry",
+                             f"{stair.tag} reaches {stair.to_storey} with "
+                             f"{stair.going_depth_m / .0254:.1f}\" going and "
+                             f"{headroom / .3048:.2f}' headroom", "R311.7"))
+        else:
+            out.append(_fail("code.R311_7_stair_geometry",
+                             f"{stair.tag} fails built rise, going, or 6'-8\" headroom",
+                             (stair.tag,), "R311.7"))
+    return out
 
 
 @check(Tier.CODE, "code.R314_R315_alarms")

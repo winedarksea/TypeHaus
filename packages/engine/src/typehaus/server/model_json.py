@@ -87,6 +87,7 @@ def _member_json(m: FramedMember) -> dict[str, Any]:
         "p0": list(m.p0), "p1": list(m.p1), "z0_m": m.z0_m, "z1_m": m.z1_m,
         "length_m": m.length_m,
         "z0_end_m": m.z0_end_m, "z1_end_m": m.z1_end_m,
+        "plan_outline": [list(point) for point in m.plan_outline] if m.plan_outline else None,
         "shape": section.shape, "width_m": section.width_m, "depth_m": section.depth_m,
         "flange_width_m": section.flange_width_m,
         "flange_thickness_m": section.flange_thickness_m,
@@ -479,9 +480,15 @@ def model_to_dict(
              "winder_count": authored.winder_count,
              "landing_depth_m": (authored.landing_depth.meters
                                  if authored.landing_depth is not None else None),
+             "authored_tread_depth_m": (authored.tread_depth.meters
+                                         if authored.tread_depth is not None else None),
+             "authored_nosing_depth_m": (authored.nosing_depth.meters
+                                          if authored.nosing_depth is not None else None),
              "start": list(authored.start.xy_m) if authored.start is not None else None,
              "riser_count": stair.riser_count, "riser_height_m": stair.riser_height_m,
              "tread_depth_m": stair.tread_depth_m,
+             "going_depth_m": stair.going_depth_m,
+             "nosing_depth_m": stair.nosing_depth_m,
              "members": [_member_json(member) for member in stair.members],
              "provenance": _provenance(provenance, stair.tag)}
             for stair in sorted(model.stairs, key=lambda item: item.uid)

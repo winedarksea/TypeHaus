@@ -37,6 +37,8 @@ MN_2024 = JurisdictionProfile(
                        ("IRC R305",)),
         PermitItemSpec("Sleeping-room emergency escape", ("code.R310_egress",), ("IRC R310",)),
         PermitItemSpec("Egress door clear width", ("code.R311_door_width",), ("IRC R311.2",)),
+        PermitItemSpec("Stair geometry and headroom", ("code.R311_7_stair_geometry",),
+                       ("IRC R311.7",)),
         PermitItemSpec("Smoke / CO alarm placement",
                        ("code.R314_R315_alarms", "code.R315_garage_alarms"),
                        ("IRC R314", "IRC R315")),

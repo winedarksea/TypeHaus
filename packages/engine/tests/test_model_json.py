@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from typehaus.resolve import resolve
+from typehaus.quantities import inch
 from typehaus.server.model_json import model_to_dict
 from typehaus.source import load_plan
 
@@ -304,3 +305,7 @@ def test_stairs_payload_carries_landing_depth(catlin_payload):
     # stair authors none.
     assert stairs["ST-B2M"]["landing_depth_m"] == pytest.approx(0.9144)  # 3'-0"
     assert stairs["ST-S2A"]["landing_depth_m"] is None
+    for stair in stairs.values():
+        assert stair["tread_depth_m"] == pytest.approx(inch(11).meters)
+        assert stair["going_depth_m"] == pytest.approx(inch(10).meters)
+        assert stair["nosing_depth_m"] == pytest.approx(inch(1).meters)

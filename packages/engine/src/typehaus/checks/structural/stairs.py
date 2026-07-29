@@ -267,7 +267,7 @@ def winder_walk_line_depth(ctx: CheckContext) -> list[Finding]:
         else:
             out.append(_advisory(
                 "structural.winder_walk_line_depth",
-                f"{detail} (>= {MIN_WINDER_WALK_LINE_TREAD_IN:.0f}\")",
+                f"{detail} (>= {MIN_WINDER_WALK_LINE_TREAD_IN:.0f}\" IRC R311.7.5.2.1)",
                 (stair.tag,), Result.PASS))
     return out
 
@@ -311,6 +311,7 @@ def winder_narrow_tread_depth(ctx: CheckContext) -> list[Finding]:
             out.append(_advisory(
                 "structural.winder_narrow_tread_depth",
                 f"stair {stair.tag} winder tread depth at the narrow end is "
-                f"{narrowest / 0.0254:.1f}\" (>= {MIN_WINDER_NARROW_TREAD_IN:.0f}\")",
+                f"{narrowest / 0.0254:.1f}\" (>= {MIN_WINDER_NARROW_TREAD_IN:.0f}\" "
+                "IRC R311.7.5.2.1)",
                 (stair.tag,), Result.PASS))
     return out

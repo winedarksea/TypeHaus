@@ -17,7 +17,7 @@ import {
   applyDeckBoardUv, createDeckBoardMaterial, createStandingSeamMaterial,
   isAluminumDeckBoard, isStandingSeam,
 } from "../materials";
-import { buildMembers, isRoofFramingMember } from "../members";
+import { buildMembers, isRoofFramingMember, memberColor } from "../members";
 import {
   createPlanPrismGeometry, createProjectedSurfaceGeometry, type PlanCenter, type ProjectVertex,
 } from "../planGeometry";
@@ -290,6 +290,17 @@ export function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
   const firstChildIndex = parent.children.length;
   buildMembers(parent, stair.members, center, mode, palette, stair.uid);
+  for (const member of stair.members) {
+    if (!member.plan_outline || member.plan_outline.length < 3) continue;
+    const geo = createPlanPrismGeometry(member.plan_outline, member.z0_m, member.z1_m, [], center);
+    if (!geo) continue;
+    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+      color: memberColor(member, palette), roughness: mode === "nordic" ? 0.85 : 1,
+      flatShading: mode === "schematic",
+    }));
+    mesh.userData.memberKey = member.key;
+    parent.add(mesh);
+  }
   registerSelectable(parent, firstChildIndex, stair.uid, "stair", picks, byUid);
 }
 

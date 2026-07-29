@@ -65,22 +65,29 @@ def _ring_extent(ring):
 # ----------------------------------------------------------------- tread boards
 def test_every_tread_is_a_full_depth_board(catlin_model):
     for stair in catlin_model.stairs:
-        going = stair.tread_depth_m
+        tread_depth = stair.tread_depth_m
         for tread in _treads(stair):
             section = cross_section(tread.profile)
-            assert section.width_m == pytest.approx(going, abs=_PROFILE_ROUND_TRIP_M), (
+            assert section.width_m == pytest.approx(tread_depth, abs=_PROFILE_ROUND_TRIP_M), (
                 tread.child_key)
             assert section.depth_m == pytest.approx(_TREAD_THICKNESS_M), tread.child_key
+
+
+def test_default_treads_are_eleven_inches_with_a_one_inch_nose(catlin_model):
+    for stair in catlin_model.stairs:
+        assert stair.tread_depth_m == pytest.approx(inch(11).meters)
+        assert stair.nosing_depth_m == pytest.approx(inch(1).meters)
+        assert stair.going_depth_m == pytest.approx(inch(10).meters)
 
 
 def test_tread_plan_footprint_is_going_by_stair_width(catlin_model):
     """The regression itself: this used to measure 1.5" on the going axis."""
     for stair in catlin_model.stairs:
-        going = stair.tread_depth_m
+        tread_depth = stair.tread_depth_m
         for tread in _treads(stair):
             long_side, short_side = sorted(_ring_extent(member_footprint(tread)[0]),
                                            reverse=True)
-            assert short_side == pytest.approx(going, abs=_PROFILE_ROUND_TRIP_M), (
+            assert short_side == pytest.approx(tread_depth, abs=_PROFILE_ROUND_TRIP_M), (
                 tread.child_key)
             assert long_side == pytest.approx(tread.length_m, abs=1e-9), tread.child_key
             assert short_side > inch(1.5).meters, tread.child_key
@@ -90,7 +97,7 @@ def test_tread_boards_tile_the_flight_without_overlap_or_gap(catlin_model):
     """Boards are centred half a going past their riser, so consecutive centres are
     exactly one going apart — no double thickness at a riser, no bare stringer between."""
     for stair in catlin_model.stairs:
-        going = stair.tread_depth_m
+        going = stair.going_depth_m
         by_flight: dict[str, list] = {}
         for tread in _treads(stair):
             by_flight.setdefault(tread.child_key.rsplit("-", 1)[0], []).append(tread)
@@ -110,36 +117,31 @@ def test_top_tread_board_reaches_the_arrival_deck(catlin_model):
     # The flight springs off the top winder box's departing rim, at the newel end of it.
     springing = next(member for member in winder.members
                      if member.child_key == "newel-000").p0
-    going = winder.tread_depth_m
-    reaches = [math.hypot(tread.p0[0] - springing[0], tread.p0[1] - springing[1]) + going / 2.0
+    going = winder.going_depth_m
+    reaches = [math.hypot(tread.p0[0] - springing[0], tread.p0[1] - springing[1])
+               + winder.tread_depth_m / 2.0
                for tread in _treads(winder)]
     assert min(reaches) == pytest.approx(going, abs=1e-9)  # first board starts at the springing
     assert max(reaches) == pytest.approx(going * len(reaches), abs=1e-9)
 
 
 # ------------------------------------------------------------- winder narrow ends
-def test_winder_narrow_ends_no_longer_converge_on_the_newel_centreline(catlin_model):
+def test_winder_narrow_ends_are_spaced_at_the_code_minimum(catlin_model):
     winder = next(stair for stair in catlin_model.stairs if stair.winder_count)
-    newel = next(member for member in winder.members if member.child_key == "newel-000")
     winders = [member for member in winder.members if member.category == "winder"]
     assert len(winders) == winder.winder_count
     narrow_ends = {member.p0 for member in winders}
     assert len(narrow_ends) == len(winders), "narrow ends still share one point"
-    half_face = cross_section(newel.profile).width_m / 2.0
-    for member in winders:
-        reach = math.hypot(member.p0[0] - newel.p0[0], member.p0[1] - newel.p0[1])
-        # On the square post's face: half a face out at worst, half a diagonal at best.
-        assert half_face - 1e-9 <= reach <= half_face * math.sqrt(2.0) + 1e-9, member.child_key
+    gaps = [math.dist(upper.p0, lower.p0) for lower, upper in zip(winders, winders[1:])]
+    assert min(gaps) >= inch(6).meters - 1e-9
 
 
 def test_winder_narrow_end_depth_is_measured_and_reported(catlin_model):
-    """Catlin's quarter turn cannot reach 6" in three winders around a 4x4, so the check
-    must FAIL here — and it must be an advisory WARN, never a build-breaking error."""
     ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
     findings = winder_narrow_tread_depth(ctx)
     assert len(findings) == 1
     finding = findings[0]
-    assert finding.result is Result.FAIL
+    assert finding.result is Result.PASS
     assert finding.severity.value == "warn"
     assert "R311.7.5.2.1" in finding.message
 
@@ -173,19 +175,15 @@ def test_winder_check_passes_a_turn_that_does_meet_the_six_inch_minimum():
 
 # ------------------------------------------------------------------ the walk line
 def test_winder_walk_line_is_measured_a_foot_out_from_the_narrow_end(catlin_model):
-    """The other half of R311.7.5.2.1: 10" of going on the walk line, 12" in from the
-    narrow side. Catlin's 3'-0" turn cannot deliver it — three winders sweep 22.5° each,
-    so the walk line would have to sit ~2'-2" out from the pivot — and the check reports
-    the measured number rather than the geometry the framing wishes it had."""
     ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
     findings = winder_walk_line_depth(ctx)
     assert len(findings) == 1
     finding = findings[0]
-    assert finding.result is Result.FAIL
+    assert finding.result is Result.PASS
     assert finding.severity.value == "warn"  # advisory, never build-breaking
     assert "R311.7.5.2.1" in finding.message
     # It is a *different* measurement from the narrow end, taken further out along the
-    # same treads, so it must read wider than the 1.4" at the newel face.
+    # same treads, so it reads wider than the code-minimum narrow end.
     narrow = winder_narrow_tread_depth(ctx)[0]
     assert _reported_inches(finding) > _reported_inches(narrow)
 

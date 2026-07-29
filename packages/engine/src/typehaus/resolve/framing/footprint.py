@@ -33,6 +33,9 @@ def member_footprint(member: FramedMember) -> tuple[Ring, float, float]:
         zs.append(member.z1_end_m)
     z_lo, z_hi = min(zs), max(zs)
 
+    if member.plan_outline is not None:
+        return member.plan_outline, z_lo, z_hi
+
     if run < 1e-9:
         # Vertical member: an oriented width_m × depth_m rectangle centered at p0.
         # Per the profiles.py convention, ``orient`` is the *thickness* (width) axis —
