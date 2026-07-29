@@ -285,8 +285,8 @@ OPENINGS = [
     # RM-M-MECH's single utility door, on the closet's east (right, as seen from the
     # mudroom) wall — a hinged door for the mechanical/shaft closet, not the sliding
     # bypass style of the mudroom's own storage closets (2026-07-28).
-    Door(uid="CMD211AAAA", tag="D-M-MECH", host="W-M-MECH-E", type_ref="DT-INT24",
-         position=from_node("N-M-MECH2", ft(0, 4))),
+    Door(uid="CMD211AAAA", tag="D-M-MECH", host="W-M-MECH-S", type_ref="DT-INT30",
+         position=from_node("N-M-MECH1", ft(3, 2.9375)), flip_swing=True, flip_hinge=True),
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT30",
          position=from_node("N-M-W3", ft(1, 6.5))),
     Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-INT56",
