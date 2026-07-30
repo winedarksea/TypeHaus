@@ -149,9 +149,12 @@ EQUIPMENT_TYPES = (
     # The only air-moving equipment in the house — there is no furnace and no air handler,
     # so the SUPPLY_AIR/RETURN_AIR ports that used to hang off EQ-T-FURNACE belong here.
     # "Supply" is fresh air, not heat: the ERV trunks in plan/mep.py connect to these two
-    # ports — a SUPPLY/RETURN pair per storey (DU-M1-, DU-B-, DU-A-ERV-SUP/RET) plus the
-    # second storey's stale-air trunk DU-M-ERV-RET, whose fresh side comes off the
-    # heat-pump chase (DU-S-HP-SUP / DU-S-HP-SUITE) rather than an ERV supply of its own. (The outdoor-side intake and exhaust are the ERV's other pair of
+    # ports — a SUPPLY/RETURN pair on the main and basement storeys (DU-M1-, DU-B-ERV-
+    # SUP/RET), stale-air-only trunks on the second storey and attic (DU-M-ERV-RET,
+    # DU-A-ERV-RET), whose rooms take fresh air off the heat-pump chase (DU-S-HP-SUP /
+    # DU-S-HP-SUITE) instead, and DU-S-ERV-HP-FEED, the 6" fresh feed that wyes into the
+    # chase's return plenum behind REG-S-HP-RET so System 1 recirculates ERV-fresh air
+    # without the two machines being hard-coupled. (The outdoor-side intake and exhaust are the ERV's other pair of
     # collars; `Service` has no OUTDOOR_AIR/EXHAUST_AIR member to name them with, so they
     # stay unmodeled rather than mislabeled as house-side ports.)
     # ventilation_cfm is the continuous balanced rate the trunks in plan/mep.py are sized
@@ -473,33 +476,41 @@ SECOND_EQUIPMENT = [
     # 3D model that elevation rather than drawing them at grade. Both sit west of the
     # French-door opening, with their 16" deep cabinets aligned east-west across the deck.
     Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(11), ft(-6)), footprint=(inch(38), inch(16)),
-              type_ref="EQ-T-GREE-VIREO-GEN3", circuit="CKT-HP1"),
+              position=pt(m(2.98655), m(-0.527314)), footprint=(inch(38), inch(16)),
+              type_ref="EQ-T-GREE-VIREO-GEN3", circuit="CKT-HP1", room=None),
     Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(15), ft(-6)), footprint=(inch(37), inch(16)),
-              type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2"),
-    # System 1's concealed ducted air handler: above the ceiling in RM-S-STUDY2, at the
-    # north end of the room so its supply collar lands on the hallway chase's south end at
-    # x=19'-6" (plan/mep.py DUCTS_HVAC_SECOND). Ceiling mount with no stated elevation, so
-    # it hangs at the ceiling plane — the unit is in the floor cavity above it, and the
-    # 11" case is what a section has to clear. This is the one indoor unit with its own
-    # branch circuit (CKT-HP1-AH): a ducted unit's blower is fed at the unit, not from the
-    # condenser the way a multi's heads are.
+              position=pt(m(4.19103), m(-0.538707)), footprint=(inch(37), inch(16)),
+              type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2", room=None),
+    # System 1's concealed ducted air handler, INSIDE SF-S-DUCT's dropped box at the south
+    # end of the full hallway trunk (2026-07-30). It cannot go in the floor structure: the
+    # case is 21" wide x 11" deep and an 11 7/8" I-joist bay at 16" o.c. offers ~14 1/2"
+    # clear — and the old spot at (21', 7') with the 43" side running east reached
+    # x=22'-8 1/2", 18" inside FO-A-STAIR's framed opening (x starts 21'-2"), i.e. hanging
+    # in the attic stairwell. The soffit box is the one cavity that actually holds it:
+    # 14" drop x 30 3/4" clear takes the 11" x 21" case with room for the lining. Long
+    # side now runs along the hall (footprint 21" x 43", y 6'-0"..9'-7"), west of the
+    # stair opening by 5 1/2"; discharge faces north into DU-S-HP-SUP at y=9'-7",
+    # bottom-return at the rear through REG-S-HP-RET's plenum stub (plan/mep.py). Ceiling
+    # mount: it hangs at the ceiling plane, the case dropping into the box below it.
+    # This is the one indoor unit with its own branch circuit (CKT-HP1-AH): a ducted
+    # unit's blower is fed at the unit, not from the condenser the way a multi's heads
+    # are.
     #
-    # zone_rooms is the whole conditioned second storey plus the two attic rooms the short
-    # branches reach. RM-A-WEST and RM-A-DEN are deliberately NOT in it — nothing serves
-    # them, and mep.heating_capacity reports them as unclaimed rather than pretending this
-    # unit carries them (plans/TODO.md).
+    # zone_rooms is the whole conditioned second storey plus the three attic rooms served:
+    # RM-A-STUDY and RM-A-EAST off the two short attic branches, RM-A-WEST off the suite
+    # branch's REG-A-HP-WEST floor boot (2026-07-30). RM-A-DEN is deliberately NOT in it —
+    # nothing serves it, and mep.heating_capacity reports it as unclaimed rather than
+    # pretending this unit carries it (plans/TODO.md).
     Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
               kind=EquipmentKind.DUCTED_AIR_HANDLER,
-              position=pt(ft(21), ft(7)), footprint=(inch(43), inch(21)),
+              position=pt(ft(19, 10), ft(7, 9.5)), footprint=(inch(21), inch(43)),
               room="RM-S-STUDY2", type_ref="EQ-T-GREE-SLIM24",
               outdoor_ref="EQ-M-HP1-OD", circuit="CKT-HP1-AH",
               mount=Mount(kind=MountKind.CEILING),
               zone_rooms=("RM-S-STUDY2", "RM-S-PLANT", "RM-S-BED1", "RM-S-BED2",
                           "RM-S-BED3", "RM-S-SUITE", "RM-S-SUITEBATH", "RM-S-VANITY",
                           "RM-S-BATH1", "RM-S-HALL", "RM-S-CLOSET", "RM-S-NCLOSET",
-                          "RM-A-EAST", "RM-A-STUDY")),
+                          "RM-A-EAST", "RM-A-STUDY", "RM-A-WEST")),
 ]
 
 # --- Garage: both EV receptacles on the south wall, east of the service door ----------

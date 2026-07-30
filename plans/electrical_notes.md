@@ -114,11 +114,14 @@ plan/mep.py and there was never a GAS UtilityLine in plan/site.py to feed it.
 	There is no "supply" *heat*. The DU-*-ERV-SUP / DU-*-ERV-RET trunks and their registers
 		are the ERV's fresh-air supply and stale-air return, sized for ~197 cfm (ASHRAE
 		62.2: 0.03 x 5,078 sf + 7.5 x (5 bedrooms + 1)), not a furnace CFM. Distribution
-		reaches all four storeys: a SUPPLY/RETURN pair per storey (DU-M1-, DU-B-, DU-A-)
-		plus DU-M-ERV-RET, the second storey's stale-air trunk. The second storey has no
-		ERV supply trunk of its own — its fresh air comes off the heat-pump chase
-		(DU-S-HP-SUP, DU-S-HP-SUITE), so the old DU-M-ERV-SUP was deleted rather than left
-		as a supply trunk with no terminal on it.
+		reaches all four storeys: a SUPPLY/RETURN pair on main and basement (DU-M1-,
+		DU-B-), stale-air-only trunks on the second storey and attic (DU-M-ERV-RET,
+		DU-A-ERV-RET). Those upper storeys' fresh air comes off the heat-pump chase
+		(DU-S-HP-SUP, DU-S-HP-SUITE incl. the REG-A-HP-WEST attic boot), which itself
+		takes ERV-fresh air through DU-S-ERV-HP-FEED — a 6" feed wyed into the return
+		plenum behind REG-S-HP-RET, mixing rather than hard-coupling so the ERV and the
+		air handler run on independent schedules. The old DU-M-ERV-SUP and DU-A-ERV-SUP
+		were deleted rather than left as supply trunks with no terminal on them.
 	Watch the service: the NEC 220.82 estimate is ~224A against a 200A service. The five
 		space heaters above cost it nothing — 220.82(C) *selects* the heating term rather
 		than summing it, and five separately controlled resistance units at 40% (C)(5) =

@@ -849,31 +849,35 @@ DUCTS_BASEMENT = [
            width=inch(4), depth=inch(4), routing=DuctRouting.CHASE),
 ]
 
-# Attic distribution rides the FS-ATTIC joist bays. Both trunks were 28'-long crossings of
-# the whole floor, feeding three supplies and a return spread over four rooms; the user's
-# 2026-07-29 call cut the attic to ONE supply/return pair and moved it to the shortest run
-# in the house. Both now start at x=2', beside the maintenance shaft at (1', 34'-6") where
-# VR-M-RADON-VENT's radon/plumbing riser comes up through every storey (RADON_SUMP /
-# VENT_RISERS below) — the ERV branches ride that same shaft up from the basement — and run
-# 4'-0" east to their terminals. Supply in the bay centred at 34'-0" (8"+25*16"), return at
-# 31'-4" (8"+23*16"); 32'-8" between them is DU-S-BATH1-EXH's bay and stays free. Nothing
-# here goes near FO-A-STAIR (y 5'-9 5/8"..8'-9 5/8") any more.
+# Attic distribution rides the FS-ATTIC joist bays. The attic went the same way the second
+# storey did, one step further (2026-07-30): DU-A-ERV-SUP is gone entirely. Its one
+# terminal, REG-A-SUP1, was made redundant by REG-A-HP-WEST — a floor boot off System 1's
+# DU-S-HP-SUITE branch directly below (REGISTERS_ATTIC below) — and a fresh trunk with no
+# terminal on it is a duct nobody would build, so it is deleted rather than stubbed, exactly
+# as DU-M-ERV-SUP was. The attic's air pattern is now the storey pattern everywhere:
+# conditioned/fresh air in off System 1, stale air out through the one ERV extract.
 #
-# The attic loses no required coverage: RM-A-STUDY is the only attic room the distribution
-# check asks fresh air of, and it is fed by REG-A-HP-STUDY off System 1's own attic branch.
+# The surviving return starts at x=2', beside the maintenance shaft at (1', 34'-6") where
+# VR-M-RADON-VENT's radon/plumbing riser comes up through every storey (RADON_SUMP /
+# VENT_RISERS below) — the ERV branch rides that same shaft up from the basement — and runs
+# 4'-0" east to its terminal in the bay centred at 31'-4" (8"+23*16"); DU-S-BATH1-EXH's bay
+# at 32'-8" stays free. Nothing here goes near FO-A-STAIR (y 5'-9 5/8"..8'-9 5/8").
+#
+# The attic loses no required coverage: RM-A-STUDY is fed by REG-A-HP-STUDY off System 1's
+# own attic branch, and RM-A-WEST by REG-A-HP-WEST off the suite branch.
 DUCTS_ATTIC = [
-    DuctRun(uid="CADV01AAAA", tag="DU-A-ERV-SUP", system=DuctSystem.SUPPLY,
-           path=(pt(ft(2), ft(34)), pt(ft(6), ft(34))), width=inch(8), depth=inch(6),
-           routing=DuctRouting.JOIST_BAY, floor_ref="FS-ATTIC"),
     DuctRun(uid="CADV02AAAA", tag="DU-A-ERV-RET", system=DuctSystem.RETURN,
            path=(pt(ft(2), ft(31, 4)), pt(ft(6), ft(31, 4))), width=inch(8), depth=inch(6),
            routing=DuctRouting.JOIST_BAY, floor_ref="FS-ATTIC"),
 ]
 
 # --- System 1: the conditioned-air chase (plans/TODO.md §HVAC) -----------------------
-# EQ-S-HP1-AH (plan/electrical.py) sits above the ceiling at the north end of RM-S-STUDY2
-# and feeds ONE straight supply trunk north along the second-floor hallway inside a dropped
-# soffit (SOFFITS in plan/storeys/second.py), with a matching return beside it. CHASE
+# EQ-S-HP1-AH (plan/electrical.py) hangs INSIDE the dropped soffit box at its south end
+# (y 6'..9'-7", over RM-S-STUDY2's north strip — see the placement note there) and feeds
+# ONE straight supply trunk north along the second-floor hallway inside that soffit
+# (SOFFITS in plan/storeys/second.py), with a short return-plenum stub at its rear — the
+# return grille sits right at the unit, with the ERV's fresh feed wyed in behind it
+# (DU-S-ERV-HP-FEED below). CHASE
 # routing and no `floor_ref`: this duct is not in a joist bay, it is in a framed box below
 # the ceiling, so the joist-bay geometry checks correctly do not apply to it — and its two
 # crossings of the centre bearing line at x=18' are legal for the same reason.
@@ -883,28 +887,58 @@ DUCTS_ATTIC = [
 #
 # `design_cfm` is authored intent, not a solved airflow — this is a straight-run duct meant
 # to operate at low flow, which is the whole reason one 24k unit covers the upstairs. The
-# 14x8 trunk at 750 cfm is ~965 fpm, and the return is the same section (both have to fit
-# side by side inside SF-S-DUCT's 2'-8" box, which is what the hall width allows).
+# 14x8 trunk at 750 cfm is ~965 fpm; the return keeps the same section over its short stub
+# (the two coexist side by side only at SF-S-DUCT's south end now).
 DUCTS_HVAC_SECOND = [
+    # Starts at y=9'-7" — EQ-S-HP1-AH's discharge face — since 2026-07-30: the unit lives
+    # INSIDE the soffit box at its south end (y 6'..9'-7", see plan/electrical.py), so the
+    # trunk is everything north of the case.
     DuctRun(uid="CSDH01AAAA", tag="DU-S-HP-SUP", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 4), ft(7)), pt(ft(19, 4), ft(33))),
+            path=(pt(ft(19, 4), ft(9, 7)), pt(ft(19, 4), ft(33))),
             width=inch(14), depth=inch(8), routing=DuctRouting.CHASE, design_cfm=750),
+    # The return is a plenum stub, not a trunk (2026-07-30): REG-S-HP-RET sits right at
+    # EQ-S-HP1-AH's rear corner, and this 6" of duct is the box section carrying grille
+    # air to the unit's bottom-return opening. The rooms do NOT return to the AH: their
+    # only extract is the ERV's stale pickups (REGISTERS below), and the hall — fed back
+    # by every door undercut — is the single place the AH breathes from. That is the
+    # loose coupling the mixing design wants: the ERV's balance is set by its own
+    # terminals, the AH just recirculates the hall plus whatever DU-S-ERV-HP-FEED
+    # injects behind its grille.
     DuctRun(uid="CSDH02AAAA", tag="DU-S-HP-RET", system=DuctSystem.RETURN,
-            path=(pt(ft(20, 8), ft(18)), pt(ft(20, 8), ft(7))),
+            path=(pt(ft(20, 8), ft(9, 8)), pt(ft(20, 8), ft(9, 2))),
             width=inch(14), depth=inch(8), routing=DuctRouting.CHASE, design_cfm=750),
-    # The west branch to RM-S-SUITE (2026-07-29), which closes the gap noted below. It tees
-    # off DU-S-HP-SUP at y=20'-4" and runs straight west to the suite — 10'-10" of 10x8 at
-    # 150 cfm is ~270 fpm, quiet enough to sit over a bedroom.
+    # The west branch to RM-S-SUITE, rerouted 2026-07-30. It tees off DU-S-HP-SUP at the
+    # centreline of D-S-SUITE (y=14'-1 7/8") and goes straight through W-S-C2B *above the
+    # door* — through the cripple zone between the door's header and the top plate, which
+    # an 8"-deep duct riding the 14" soffit drop (z ~7'-10"..8'-6" against a ~7'-4" header
+    # top and a 9'-0" plate) clears — then west down the suite's entry arm (y 12'-5" ..
+    # 15'-11", RM-S-SUITE's own floor area) to the grille. 6'-10" of 10x8 replaces the old
+    # 10'-10" detour at y=20'-4" that crossed RM-S-SUITEBATH; the arm was always the short
+    # straight route, it just took SF-S-SUITE moving over it (plan/storeys/second.py). It
+    # stops about D-S-SUITEBATH — the soffit ends there too, and the grille in the box's
+    # west end face throws the rest of the way down the arm and into the suite.
     #
-    # y=20'-4" is the whole reason the branch works: FO-S-STAIR is x 11'..18', y 25'..36',
-    # so anything crossing west has to do it *south* of y=25', and 20'-4" clears the well by
-    # nearly 5'. DuctRun carries no elevation, so the run is placed by its host instead —
-    # SF-S-SUITE (plan/storeys/second.py), a 14" soffit abutting SF-S-DUCT's west face on
-    # the same drop, which is what puts this duct below the ceiling rather than in the
-    # FS-SECOND joist bays it would otherwise have to cross at right angles.
+    # 250 cfm now, not 150: the run feeds two terminals — REG-S-HP-SUITE at its west end
+    # and REG-A-HP-WEST, a floor boot up through FS-ATTIC into RM-A-WEST directly above
+    # the run. 250 cfm through 10x8 is ~450 fpm, still quiet enough for a bedroom ceiling.
     DuctRun(uid="CSDH03AAAA", tag="DU-S-HP-SUITE", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 4), ft(20, 4)), pt(ft(8, 6), ft(20, 4))),
-            width=inch(10), depth=inch(8), routing=DuctRouting.CHASE, design_cfm=150),
+            path=(pt(ft(19, 4), ft(14, 1.875)), pt(ft(12, 6), ft(14, 1.875))),
+            width=inch(10), depth=inch(8), routing=DuctRouting.CHASE, design_cfm=250),
+    # The ERV -> System 1 fresh-air feed (2026-07-30): the one place fresh air enters the
+    # heat-pump loop. It taps DU-M1-ERV-SUP where that trunk crosses under the hall
+    # (y=12'-8", FS-SECOND joist bay), rises into SF-S-DUCT's box — the lane DU-S-HP-RET
+    # vacated when it became a stub — and runs south at x=20'-8" to inject just behind
+    # REG-S-HP-RET through a 45-degree wye into the return plenum. The wye (a mixing box in
+    # effect) rather than hard-ducting ERV to AH is deliberate: the two machines run on
+    # independent schedules, so each must breathe without the other — the AH pulls hall air
+    # when the ERV is off, and the ERV supplies past a stopped blower without backpressure.
+    # 6" is the biggest round the joist-bay tap takes, and at ~100 cfm (the storey's share
+    # of the whole-house rate) it runs ~510 fpm. The vertical from the FS-SECOND bay up
+    # into the soffit is not drawn (DuctRun carries no elevation) — same status as
+    # EQ-S-HP1-AH's condensate drop, recorded in plans/TODO.md.
+    DuctRun(uid="CSDV02AAAA", tag="DU-S-ERV-HP-FEED", system=DuctSystem.SUPPLY,
+            path=(pt(ft(20, 8), ft(12, 8)), pt(ft(20, 8), ft(10))),
+            width=inch(6), depth=inch(6), routing=DuctRouting.CHASE, design_cfm=100),
 ]
 
 # Terminals off the chase. Each bedroom grille sits just inside the bedroom at the hallway
@@ -913,13 +947,12 @@ DUCTS_HVAC_SECOND = [
 # grille's `duct_ref` names the trunk it comes off. All of them are ceiling grilles in the
 # soffit face at 8'-0" (9'-0" ceiling less the 12" drop).
 #
-# RM-S-SUITE is in EQ-S-HP1-AH's zone_rooms and now has its terminal: REG-S-HP-SUITE, off
-# the DU-S-HP-SUITE branch above. The branch goes west at y=20'-4" because that is the one
-# band where it can — FO-S-STAIR takes x 11'..18' from y=25' north, so a crossing has to
-# happen south of the well, and 20'-4" is far enough south to keep the soffit off the
-# opening's trimmer while still landing inside the suite rather than in RM-S-SUITEBATH
-# (whose seed is (14', 19')). The grille sits at (8'-6", 20'-4"), west of the bathroom's
-# east wall and in the suite's own clear face.
+# RM-S-SUITE is in EQ-S-HP1-AH's zone_rooms and has its terminal: REG-S-HP-SUITE, off the
+# DU-S-HP-SUITE branch above. Since the 2026-07-30 reroute the branch enters over D-S-SUITE
+# and runs down the suite's entry arm to about the bathroom door, and the grille sits at
+# the branch's west terminus (12'-6", 14'-1 7/8") in SF-S-SUITE's west end face, throwing
+# the rest of the way down the arm and into the suite's main volume where the arm opens
+# out at x=9'-7 1/2".
 #
 # The suite's ERV supply (REG-S-SUP6) is gone rather than kept alongside: this branch is
 # what makes it redundant.
@@ -942,29 +975,35 @@ REGISTERS_HVAC_SECOND = [
              position=pt(ft(17, 6), ft(24)), duct_ref="DU-S-HP-SUP",
              type_ref="REG-T-HP-SUP",
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
-    # The suite's supply, in SF-S-SUITE's soffit face at the branch's west terminus. Its
-    # elevation is 7'-10" rather than the 8'-0" the hall grilles sit at because SF-S-SUITE
-    # drops 14" off the 9'-0" ceiling, not 12".
+    # The suite's supply, in SF-S-SUITE's soffit face at the branch's west terminus,
+    # throwing west out of the entry arm. 7'-10" because SF-S-SUITE drops 14" off the
+    # 9'-0" ceiling.
     Register(uid="CSRH06AAAA", tag="REG-S-HP-SUITE", kind=DuctSystem.SUPPLY, room="RM-S-SUITE",
-             position=pt(ft(8, 6), ft(20, 4)), duct_ref="DU-S-HP-SUITE",
+             position=pt(ft(12, 6), ft(14, 1.875)), duct_ref="DU-S-HP-SUITE",
              type_ref="REG-T-HP-SUP",
              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 10))),
-    # The one return, in the hall soffit face at the middle of the run.
+    # The one return, at the hall's south end right AT EQ-S-HP1-AH (2026-07-30): the
+    # unit's rear face is y=9'-7" and the grille centres 1" north of it in the soffit
+    # face, feeding the unit's bottom-return through DU-S-HP-RET's 6" plenum stub. Behind
+    # this grille is where DU-S-ERV-HP-FEED's wye injects the ERV's fresh air (see
+    # DUCTS_HVAC_SECOND): fresh mixes into the return plenum, not into a hard-coupled duct,
+    # so either machine runs alone. 7'-10" — the soffit face, same plane as the hall cans.
     Register(uid="CSRH05AAAA", tag="REG-S-HP-RET", kind=DuctSystem.RETURN, room="RM-S-HALL",
-             position=pt(ft(20, 8), ft(18)), duct_ref="DU-S-HP-RET",
+             position=pt(ft(20, 8), ft(9, 8)), duct_ref="DU-S-HP-RET",
              type_ref="REG-T-HP-RET",
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 10))),
 ]
 
-# The two very short attic branches the brief asks for: the trunk rises through the attic
-# floor at the north-south chase line and runs east a few feet into each room directly
-# above. CHASE routing again — these ride the attic floor/knee space, not a joist bay.
+# One attic branch left (2026-07-30): RM-A-STUDY's, which genuinely needs a horizontal
+# run — the room starts at x=22'-4", east of anything the trunk passes under, so its air
+# has to travel. CHASE routing — it rides the attic floor/knee space, not a joist bay.
+# DU-A-HP-EAST is gone: its grille moved to directly over the hall soffit and became a
+# straight boot off the trunk (REG-A-HP-EAST below), the same pattern as REG-A-HP-WEST —
+# a 6'-8" horizontal run whose only job was reaching a grille that could sit anywhere in
+# a 456 sf open room was length for its own sake.
 DUCTS_HVAC_ATTIC = [
     DuctRun(uid="CADH01AAAA", tag="DU-A-HP-STUDY", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 4), ft(3)), pt(ft(26), ft(3))),
-            width=inch(8), depth=inch(6), routing=DuctRouting.CHASE, design_cfm=100),
-    DuctRun(uid="CADH02AAAA", tag="DU-A-HP-EAST", system=DuctSystem.SUPPLY,
-            path=(pt(ft(19, 4), ft(9, 6)), pt(ft(26), ft(9, 6))),
             width=inch(8), depth=inch(6), routing=DuctRouting.CHASE, design_cfm=100),
 ]
 
@@ -973,9 +1012,24 @@ REGISTERS_HVAC_ATTIC = [
              room="RM-A-STUDY", position=pt(ft(26), ft(3)), duct_ref="DU-A-HP-STUDY",
              type_ref="REG-T-HP-SUP",
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    # Directly above the hall soffit (2026-07-30): the trunk runs at x=19'-4" below, so
+    # the boot rises straight through FS-ATTIC into the floor grille — no attic duct run
+    # at all. y=10' keeps the grille a foot inside RM-A-EAST's south wall (y=9') and
+    # clear of FO-A-STAIR's walkway (the opening ends at y=8'-9 5/8").
     Register(uid="CARH02AAAA", tag="REG-A-HP-EAST", kind=DuctSystem.SUPPLY,
-             room="RM-A-EAST", position=pt(ft(26), ft(9, 6)), duct_ref="DU-A-HP-EAST",
+             room="RM-A-EAST", position=pt(ft(19, 4), ft(10)), duct_ref="DU-S-HP-SUP",
              type_ref="REG-T-HP-SUP",
+             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    # RM-A-WEST's supply (2026-07-30): a floor boot straight up off DU-S-HP-SUITE through
+    # FS-ATTIC — the branch runs at y=14'-1 7/8" directly below, so the boot is one bay's
+    # rise, landing just west of the centre bearing wall roughly over D-S-SUITE. This is
+    # what retired REG-A-SUP1 and its DU-A-ERV-SUP trunk: the west attic room now gets
+    # conditioned air off System 1 like RM-A-STUDY/RM-A-EAST do, and gives stale air back
+    # at REG-A-RET1 (REGISTERS_ATTIC), so the ERV's attic side is extract-only, the same
+    # pattern as the second storey.
+    Register(uid="CARH03AAAA", tag="REG-A-HP-WEST", kind=DuctSystem.SUPPLY,
+             room="RM-A-WEST", position=pt(ft(16, 6), ft(14, 1.875)),
+             duct_ref="DU-S-HP-SUITE", type_ref="REG-T-HP-SUP",
              mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]
 
@@ -1022,14 +1076,15 @@ REGISTERS = [
     Register(uid="CMR904AAAA", tag="REG-S-RET-BED3", kind=DuctSystem.RETURN, room="RM-S-BED3",
             position=pt(ft(29), ft(31, 6)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    # The suite's extract moved south from (9', 20') on 2026-07-29. It had to: REG-S-HP-SUITE
-    # now blows conditioned supply down from a ceiling grille at (8'-6", 20'-4"), 6" away in
-    # plan, and a floor extract directly under a ceiling supply is a short circuit — the ERV
-    # would pull the new branch's air straight back out of the room without it ever reaching
-    # anyone. (9', 12') keeps it on the same east line and the same trunk, 8' south, clear of
-    # FURN-S-SUITE-BED (x 2'-6"..7'-6", y 14'-11 3/8"..21'-7 1/2") and its foot zone.
+    # The suite's extract is back at (9', 20') (2026-07-30, its original spot). It chased
+    # the supply grille twice: when REG-S-HP-SUITE first landed at (8'-6", 20'-4") this
+    # moved south to (9', 12') to break the ceiling-supply-over-floor-extract short
+    # circuit; then the branch reroute put the supply at (12'-6", 14'-1 7/8") and (9', 12')
+    # became the short circuit — ~4' away in plan. (9', 20') is 7'+ from the new supply,
+    # on the same trunk, east of FURN-S-SUITE-BED (x 2'-6"..7'-6") and clear of its foot
+    # zone.
     Register(uid="CMR906AAAA", tag="REG-S-RET2", kind=DuctSystem.RETURN, room="RM-S-SUITE",
-            position=pt(ft(9), ft(12)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-ERV-EXH",
+            position=pt(ft(9), ft(20)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]
 
@@ -1150,23 +1205,16 @@ REGISTERS_BASEMENT = [
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
 ]
 
-# Attic terminals are floor boots in the FS-ATTIC bays, like the second storey's. Four
-# became one balanced pair on 2026-07-29 (user decision): REG-A-SUP2 (RM-A-EAST) and
-# REG-A-SUP3 (RM-A-STUDY) are gone — RM-A-EAST is storage, and RM-A-STUDY's fresh air comes
-# off System 1 at REG-A-HP-STUDY — and the surviving pair moved out of the middle of the
-# floor to the NW corner beside the maintenance shaft at (1', 34'-6"), where the
-# radon/plumbing riser already rises through every storey. That is a 4'-0" branch each
-# instead of a 28' crossing, and it puts both boots where the trunks come up rather than
-# where a room happened to want them.
-#
-# Both sit in RM-A-WEST now (REG-A-RET1 was in RM-A-DEN at the other end of the floor): the
-# attic is one cathedral volume across the knee walls, and a supply and an extract 2'-8"
-# apart still turn it over, because the floor is what the whole-house rate has to reach, not
-# a partitioned room list.
+# One attic ERV terminal now (2026-07-30): the extract. Four became a balanced pair on
+# 2026-07-29 (REG-A-SUP2/SUP3 gone, the pair moved to the NW corner beside the maintenance
+# shaft at (1', 34'-6") where the radon/plumbing riser rises through every storey), and then
+# the supply half went too — REG-A-SUP1 was retired by REG-A-HP-WEST, the floor boot off
+# System 1's DU-S-HP-SUITE branch (REGISTERS_HVAC_ATTIC above), which conditions RM-A-WEST
+# instead of just ventilating it. What is left is the stale pickup on a 4'-0" branch off the
+# shaft: fresh in off System 1, stale out here, the same in-at-the-supply / out-at-the-ERV
+# pattern as every other storey. The attic is one cathedral volume across the knee walls, so
+# one extract still turns the floor over.
 REGISTERS_ATTIC = [
-    Register(uid="CARV01AAAA", tag="REG-A-SUP1", kind=DuctSystem.SUPPLY, room="RM-A-WEST",
-            position=pt(ft(6), ft(34)), duct_ref="DU-A-ERV-SUP", type_ref="REG-T-ERV-SUP",
-            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CARV04AAAA", tag="REG-A-RET1", kind=DuctSystem.RETURN, room="RM-A-WEST",
             position=pt(ft(6), ft(31, 4)), duct_ref="DU-A-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),

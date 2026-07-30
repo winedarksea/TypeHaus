@@ -489,25 +489,31 @@ SOFFITS = [
                     pt(ft(21, 5.5), ft(34)), pt(ft(18, 6.5), ft(34))),
            drop=inch(14),
            framing=FramingSpec(member="2x2", spacing=inch(16))),
-    # The west branch to the suite (2026-07-29), carrying DU-S-HP-SUITE — the conditioned-air
-    # run RM-S-SUITE never had. It abuts SF-S-DUCT's west face at x=18'-6 1/2" and holds the
-    # same 14" drop, so the two read as one continuous box turning west rather than a step.
+    # The west branch to the suite, carrying DU-S-HP-SUITE — rerouted 2026-07-30 onto the
+    # short straight line: over D-S-SUITE and down the suite's own entry arm, instead of the
+    # 2026-07-29 detour at y 19'-4"..21'-4" that crossed RM-S-SUITEBATH and its three
+    # fixtures. The duct passes through W-S-C2B in the cripple zone above the door's header
+    # (the 14" drop puts it at z ~7'-10"..9', over a ~7'-4" header top), which is exactly
+    # where a branch should cross a bearing wall that is already broken by a door below.
     #
-    # y 19'-4" .. 21'-4" is the band that works: FO-S-STAIR is x 11'..18', y 25'..36', so a
-    # crossing to the west half has to happen south of the well, and 21'-4" leaves 3'-8"
-    # between this soffit and the opening's south trimmer.
+    # The soffit is the arm's ceiling — the arm walls' axes are y 12'-5" (W-S-CLN) and
+    # 15'-11" (W-S-SBS), and the box sits at y 12'-8" .. 15'-8", 3" off each axis, the same
+    # shadow-gap inset SF-S-DUCT keeps off the hall walls: an outline ON the wall lines
+    # puts the ladder rails inside the walls' own stud zones (structural.member_interference
+    # lit up with 25 soffit-vs-CSW143/144 pairs when it was drawn that way). x 12'-0"
+    # (about D-S-SUITEBATH's east jamb — the leaf is x 10'-2"..12'-8" — so the box stops at
+    # the bathroom door rather than running the arm's full depth; the grille is in its west
+    # end face) .. 18'-6 1/2" (abutting SF-S-DUCT's west face, same 14" drop, so the two
+    # read as one continuous box turning west). Both door heads under it (D-S-SUITE at
+    # 6'-8", and the box's west face lands beside D-S-SUITEBATH) clear the 7'-10" soffit
+    # face by over a foot.
     #
-    # Same arithmetic as above and much easier: 24" plan − 4 1/4" = 19 3/4" clear against a
-    # single 10"-wide duct.
-    #
-    # It does cross RM-S-SUITEBATH on the way — all three of that room's fixtures (WC at
-    # y=20'-9 3/4", lav at 21'-2 1/2", tub/shower at 19'-6 3/4") sit under it. That is a
-    # deliberate cost, not an oversight: 7'-10" is well over the 6'-8" IRC R305.1 asks above
-    # a shower, and the band south of the bath is the only one that clears FO-S-STAIR. Worth
-    # revisiting only if the suite bath ever gets a rain head that wants the full 9'.
+    # Width arithmetic, same rule as above: 36" plan − 4 1/4" framing/lining = 31 3/4"
+    # clear against a single 10"-wide duct — room to spare, which the boot up to
+    # REG-A-HP-WEST (plan/mep.py) is glad of.
     Soffit(uid="CSF6S1AAAA", tag="SF-S-SUITE",
-           outline=(pt(ft(8), ft(19, 4)), pt(ft(18, 6.5), ft(19, 4)),
-                    pt(ft(18, 6.5), ft(21, 4)), pt(ft(8), ft(21, 4))),
+           outline=(pt(ft(12), ft(12, 8)), pt(ft(18, 6.5), ft(12, 8)),
+                    pt(ft(18, 6.5), ft(15, 8)), pt(ft(12), ft(15, 8))),
            drop=inch(14),
            framing=FramingSpec(member="2x2", spacing=inch(16))),
 ]

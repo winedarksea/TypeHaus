@@ -318,5 +318,7 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
         catlin_model, preferences).heating_load_btu_per_hour
     parts = sum(zone.heating_load_btu_per_hour for zone in zones)
     assert 0 < parts <= whole * 1.05
-    # Catlin's attic media room and den are deliberately served by nothing yet.
-    assert set(unclaimed) == {"RM-A-WEST", "RM-A-DEN"}
+    # Catlin's attic den is deliberately served by nothing yet. RM-A-WEST left this set
+    # on 2026-07-30: REG-A-HP-WEST (a floor boot off DU-S-HP-SUITE) put it in System 1's
+    # zone.
+    assert set(unclaimed) == {"RM-A-DEN"}

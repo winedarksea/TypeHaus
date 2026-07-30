@@ -38,16 +38,17 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `mep.heating_capacity` sizes per *zone of rooms* (`Equipment.zone_rooms` + `outdoor_ref`)
   off `estimate_block_load(rooms=…)`. Current honest findings, whole-house block load
   56,434 Btu/h at design:
-  - System 1 (Vireo GEN3 + ducted air handler, upstairs + 2 attic rooms): 11,415 vs 16,500
-    at-design — PASS.
-  - System 2 (Multi Ultra 3-port, basement + west main + living room): **37,078 vs 22,000
+  - System 1 (Vireo GEN3 + ducted air handler, upstairs + 3 attic rooms): 14,810 vs 16,500
+    at-design — PASS (was 11,415/2 rooms before RM-A-WEST joined the zone on 2026-07-30
+    via REG-A-HP-WEST; the margin is thinner now, +1,690).
+  - System 2 (Multi Ultra 3-port, basement + west main + living room): **37,303 vs 22,000
     at-design — undersized by ~15,000 Btu/h.** Reported UNKNOWN today only because five
     basement door U-factors are missing from the block-load inputs; once those are authored
     it is an advisory FAIL. Either the zone splits (the basement wants its own system) or
     the outdoor unit grows — a real design decision, not a modelling artifact.
   - System 3 (Sapphire R32, stair + mudroom + mech): 4,094 vs 8,000 at-design — PASS.
-  - `RM-A-WEST` and `RM-A-DEN` are in **no** zone: only RM-A-EAST and RM-A-STUDY get attic
-    branches, so the check names the other two unclaimed rather than guessing.
+  - `RM-A-DEN` is in **no** zone; the check names it unclaimed rather than guessing.
+    (RM-A-WEST left this list 2026-07-30.)
 - **Refrigerant linesets are unmodeled** — only the indoor→outdoor pairing is recorded
   (`Equipment.outdoor_ref`). (Heat-pump *condensate* is modeled as of the plumbing pass:
   `PR-M-COND-HEADS` drops the two main-storey wall heads through `SP-M-COND` to
@@ -99,6 +100,12 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 - **Workshop ERV intake is positioned off the light** `ED-B-WORKSHOP-PANEL1` ("over a
   bench") — no workbench placeable exists in RM-B-WORKSHOP yet; move the register when the
   bench is actually placed.
+- **The ERV→System 1 fresh feed's vertical is undrawn.** `DU-S-ERV-HP-FEED` (2026-07-30)
+  taps `DU-M1-ERV-SUP` in its FS-SECOND joist bay under the hall at y=12'-8" and runs in
+  SF-S-DUCT's box to the wye behind `REG-S-HP-RET`, but the rise from the joist bay up
+  into the soffit is not modeled (`DuctRun` carries no elevation) — same status as
+  EQ-S-HP1-AH's condensate drop. Physically it wants the hall/bedroom wall corner furred
+  or the soffit's east cheek; decide when the chase details get drawn.
 - **Per-wall paint colour.** `latex-paint` over gwb is modeled (Class III, IRC R702.7.1) but
   `Layer` has no colour slot; a second colour needs a second paint `Material` plus per-room
   `wall_lining` overrides. Rationale in the comment above `_PAINT_FINISH` in
@@ -191,6 +198,7 @@ the future.
   `library/placeables/fixtures.py`), so this is a one-line footprint question.
 - D-B-PLAY door needs to have a "glazed 60 interior french door" style, not a bifold.
 - Basic UI visual overhaul, perhaps Material Design 3 aligned. Perhaps the most awkward thing now is the way "Views" is opened. It's the most used tab and it's a tiny button.
+- Laundry room needs to fit a sink + closet, 24" W x 21" D x 43" H.
 
 Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
