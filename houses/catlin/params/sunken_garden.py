@@ -659,7 +659,10 @@ _drip_depth_in = 3.0
 BALCONY_GUTTER = Gutter(
     uid="SGGT01AAAA", tag="TR-SG-GUTTER", kind=TrimKind.GUTTER, path=_FRONT_PATH,
     top_elevation=_deck_top - inch(_drip_depth_in), depth=inch(4), thickness=inch(5),
-    material="aluminum", host_ref="TR-SG-FASCIA", slope="1/16 in/ft to SE downspout")
+    material="aluminum", host_ref="TR-SG-FASCIA", slope="1/16 in/ft to SE downspout",
+    # The run goes west→east, so its left-hand normal (resolve/geometry.py::normal) points
+    # north (+y) — the porch/house side. The channel's back sheet rides the fascia there.
+    back_side="left")
 BALCONY_DRIP = Flashing(
     uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,
     top_elevation=_deck_top, depth=inch(_drip_depth_in), thickness=inch(3),

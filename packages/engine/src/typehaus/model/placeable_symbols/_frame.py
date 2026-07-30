@@ -99,6 +99,17 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     "lamp-3500": (0.98, 0.88, 0.79, 1.0),
     "lamp-4000": (0.98, 0.90, 0.83, 1.0),
     "lamp-5000": (0.98, 0.94, 0.91, 1.0),
+    # Houseplants. ``foliage`` is deliberately desaturated: a saturated leaf green is the one
+    # hue the viewer already spends on UI state — selection, hover and the measure overlay all
+    # sit in that band — so a vivid plant reads as "this object is highlighted" rather than as
+    # a plant. Pulling the chroma down to a mid olive-green keeps it unmistakably foliage while
+    # staying inert. It also cannot collide with the glTF export's palette
+    # (``emit/gltf/palette._PALETTE``), which carries no green at all — the site sheet is soil
+    # brown, not lawn — so this is the only green either renderer draws.
+    "foliage": (0.34, 0.45, 0.29, 1.0),
+    # Fired pot clay. Warmer and darker than ``wood`` so a pot beside a casegood is still a
+    # pot, and far enough off ``earth``/``structure`` brown to read as glazed rather than dirt.
+    "terracotta": (0.66, 0.36, 0.24, 1.0),
 }
 
 # The C78.377 nominal bins, in the order ``lamp_role`` searches them.

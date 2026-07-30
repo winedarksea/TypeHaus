@@ -7,6 +7,7 @@ from typehaus.checks.building_science.condensation import analyze_assembly, glas
 from typehaus.checks.building_science.glaser import (
     EXTERIOR_SURFACE_R_US,
     INTERIOR_SURFACE_R_US,
+    vapor_retarder_class,
 )
 from typehaus.checks.building_science.wwr import analyze_wwr
 from typehaus.checks.registry import Preferences
@@ -218,6 +219,116 @@ def test_vented_rainscreen_truncates_the_glaser_walk() -> None:
         layer("sheathing", LayerFunction.SHEATHING),
     ]
     assert len(glaser_layers(interior_service_cavity)) == 4
+
+
+def test_vapor_retarder_class_bands_follow_irc_r702_7_1() -> None:
+    """The IRC R702.7.1 bands, at their boundaries. Anything looser than 10 perm is not a
+    retarder at all — the code does not rate it — and reports None, not a fourth class."""
+    assert vapor_retarder_class(0.05) == "I"
+    assert vapor_retarder_class(0.1) == "I"
+    assert vapor_retarder_class(0.5) == "II"
+    assert vapor_retarder_class(1.0) == "II"
+    assert vapor_retarder_class(5.0) == "III"
+    assert vapor_retarder_class(10.0) == "III"
+    # Bare 5/8" gypsum board: 18.8 perm-in / 0.625" = 30 perm. Not rated.
+    assert vapor_retarder_class(30.0) is None
+    assert vapor_retarder_class(None) is None
+
+
+def test_latex_paint_over_gwb_is_the_warm_side_class_iii_retarder() -> None:
+    """Paint is the point of this: bare gypsum is vapour-open, painted gypsum is Class III.
+
+    The same 5-perm film on the *cold* side must not be credited — a tight layer outboard
+    of the structure is a vapour trap, not a warm-side retarder — so the walk only looks
+    inboard of the first wettable layer.
+    """
+    paint = Material(tag="latex-paint", name="Interior latex paint",
+                     r_per_inch=0.0, vapor_permeance_perms=5.0)
+    library = Library(materials=(*_WALL_MATERIALS, paint))
+    paint_layer = Layer(name="paint", material_ref="latex-paint", thickness=inch(0.01),
+                        function=LayerFunction.FINISH)
+    steel = Layer(name="cladding", material_ref="steel", thickness=inch(0.5),
+                  function=LayerFunction.CLADDING)
+
+    bare = Assembly(tag="BARE", layers=_framed_wall_layers())
+    unpainted = analyze_assembly(bare, library, heating_design_temp_f=_HEATING_DESIGN_F,
+                                 preferences=Preferences())
+    assert unpainted.known, unpainted.unknown_materials
+    assert unpainted.interior_retarder_class is None
+    assert "no rated warm-side vapour retarder" in unpainted.interior_retarder_note
+
+    painted = Assembly(tag="PAINTED",
+                       layers=(paint_layer, *_framed_wall_layers()))
+    with_paint = analyze_assembly(painted, library,
+                                  heating_design_temp_f=_HEATING_DESIGN_F,
+                                  preferences=Preferences())
+    assert with_paint.known, with_paint.unknown_materials
+    assert (with_paint.interior_retarder_layer,
+            with_paint.interior_retarder_class) == ("paint", "III")
+    assert "Class III" in with_paint.interior_retarder_note
+    assert with_paint.as_dict()["interior_retarder_class"] == "III"
+
+    # Same film, cold side of the studs: not a warm-side retarder.
+    cold_side = Assembly(tag="COLD",
+                         layers=(*_framed_wall_layers(), paint_layer, steel))
+    outboard = analyze_assembly(cold_side, library,
+                                heating_design_temp_f=_HEATING_DESIGN_F,
+                                preferences=Preferences())
+    assert outboard.known, outboard.unknown_materials
+    assert outboard.interior_retarder_class is None
+
+
+def test_interior_continuous_insulation_can_be_the_warm_side_retarder() -> None:
+    """The warm-side span ends at the core, not at the first insulation layer.
+
+    Foil-faced polyiso applied to the *room* side of a stud wall — the sauna liner detail —
+    is the textbook Class I retarder, and a rule that stopped at the first insulation layer
+    would never see it. The same board outboard of the studs is exterior CI and must not be
+    credited as a warm-side retarder.
+    """
+    foil = Material(tag="foil-polyiso", name="Foil-faced polyisocyanurate",
+                    r_per_inch=6.0, perm_rating=0.03)
+    library = Library(materials=(*_WALL_MATERIALS, foil))
+    board = Layer(name="foil-polyiso", material_ref="foil-polyiso", thickness=inch(2.0),
+                  function=LayerFunction.INSULATION)
+    steel = Layer(name="cladding", material_ref="steel", thickness=inch(0.5),
+                  function=LayerFunction.CLADDING)
+    kwargs = {"heating_design_temp_f": _HEATING_DESIGN_F, "preferences": Preferences()}
+
+    # 0.03 perm-in over 2" = 0.015 perm — Class I.
+    inboard = Assembly(tag="LINER", layers=(board, *_framed_wall_layers()))
+    liner = analyze_assembly(inboard, library, **kwargs)
+    assert liner.known, liner.unknown_materials
+    assert (liner.interior_retarder_layer, liner.interior_retarder_class) == (
+        "foil-polyiso", "I")
+
+    exterior_ci = Assembly(tag="EXT-CI", layers=(*_framed_wall_layers(), board, steel))
+    outboard = analyze_assembly(exterior_ci, library, **kwargs)
+    assert outboard.known, outboard.unknown_materials
+    assert outboard.interior_retarder_class is None
+
+
+def test_warm_side_paint_raises_the_stud_plane_margin() -> None:
+    """Adding the paint film is not cosmetic: it is vapour resistance on the warm side, so
+    less of the interior vapour pressure reaches the cold stud plane. The margin must move
+    in that direction — and the two walls must otherwise agree, since paint carries no R."""
+    paint = Material(tag="latex-paint", name="Interior latex paint",
+                     r_per_inch=0.0, vapor_permeance_perms=5.0)
+    library = Library(materials=(*_WALL_MATERIALS, paint))
+    paint_layer = Layer(name="paint", material_ref="latex-paint", thickness=inch(0.01),
+                        function=LayerFunction.FINISH)
+    bare = Assembly(tag="BARE", layers=_framed_wall_layers())
+    painted = Assembly(tag="PAINTED", layers=(paint_layer, *_framed_wall_layers()))
+    kwargs = {"heating_design_temp_f": _HEATING_DESIGN_F, "preferences": Preferences()}
+
+    unpainted = analyze_assembly(bare, library, **kwargs)
+    with_paint = analyze_assembly(painted, library, **kwargs)
+    bare_stud = unpainted.points[unpainted.plane_names.index("stud") + 1]
+    painted_stud = with_paint.points[with_paint.plane_names.index("stud") + 1]
+    assert painted_stud.margin_pa > bare_stud.margin_pa
+    assert painted_stud.local_relative_humidity < bare_stud.local_relative_humidity
+    # Paint has no R-value, so the thermal profile at that plane is unchanged.
+    assert abs(painted_stud.temperature_c - bare_stud.temperature_c) < 1e-9
 
 
 def _envelope_plan() -> PlanModel:

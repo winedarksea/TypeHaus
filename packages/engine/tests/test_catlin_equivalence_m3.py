@@ -279,10 +279,12 @@ def test_paired_walls_stay_on_their_reference_wall_lines(equivalence):
 
 
 def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
-    """The reference drew 7 layer-walls per exterior wall; the resolved stack carries 8.
+    """The reference drew 7 layer-walls per exterior wall; the resolved stack carries 9.
 
-    The added layer is the WRB the old model never drew. Comparing layer *counts* per run is
-    what makes the layer-per-wall and layerset-per-wall conventions commensurable.
+    Two layers the old model never drew: the WRB, and the latex-paint film over the interior
+    gypsum, which IRC R702.7 counts as the wall's Class III warm-side vapour retarder (drawing
+    the lining as bare gypsum said the wall had no retarder at all). Comparing layer *counts*
+    per run is what makes the layer-per-wall and layerset-per-wall conventions commensurable.
     """
     house_walls = [item for item in _paired(equivalence, "wall")
                    if item.reference_name.startswith("House ")
@@ -292,8 +294,8 @@ def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
         assert item.current_layer_count >= item.reference_layer_count, item.as_dict()
     exterior = [item for item in house_walls if item.reference_layer_count == 7]
     assert exterior, [item.reference_name for item in house_walls]
-    assert all(item.current_layer_count == 8 for item in exterior), [
-        item.as_dict() for item in exterior if item.current_layer_count != 8]
+    assert all(item.current_layer_count == 9 for item in exterior), [
+        item.as_dict() for item in exterior if item.current_layer_count != 9]
 
 
 def test_house_footprint_still_measures_thirty_six_feet(reference_model, current_model):

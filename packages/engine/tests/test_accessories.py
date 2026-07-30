@@ -337,18 +337,64 @@ def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
     # No hand-authored fascia solids — that would double the derived band.
     assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-FASCIA")]
     for side in ("W", "E"):
-        gutter = next(s for s in catlin_model.solids if s.tag == f"TR-RF-GUTTER-{side}-1")
+        # The channel is an open-top U, so the run resolves as three bands rather than one
+        # solid bar; the envelope they occupy is what the eave detail pins.
+        bands = [s for s in catlin_model.solids
+                 if s.tag.startswith(f"TR-RF-GUTTER-{side}-1-")]
+        assert {s.tag.rsplit("-", 1)[1] for s in bands} == {"BACK", "BOTTOM", "FRONT"}
         drip = next(s for s in catlin_model.solids if s.tag == f"TR-RF-DRIP-{side}-1")
-        assert (gutter.category, drip.category) == ("gutter", "flashing")
+        assert {s.category for s in bands} == {"gutter"} and drip.category == "flashing"
+        gutter_top, gutter_bottom = max(s.z1_m for s in bands), min(s.z0_m for s in bands)
         # Box gutter hangs with its top 1.2" below the roof-furring underside (7.25"
         # perpendicular above the deck), 5" channel height.
-        assert gutter.z1_m == pytest.approx(eave + inch(7.25 - 1.2).meters)
-        assert gutter.z1_m - gutter.z0_m == pytest.approx(inch(5.0).meters)
+        assert gutter_top == pytest.approx(eave + inch(7.25 - 1.2).meters)
+        assert gutter_top - gutter_bottom == pytest.approx(inch(5.0).meters)
         # Drip edge turns down over the fascia into the gutter from the metal eave.
         assert drip.z1_m == pytest.approx(eave + inch(9.0).meters)
-        assert drip.z0_m < gutter.z1_m + inch(1.0).meters
+        assert drip.z0_m < gutter_top + inch(1.0).meters
     assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-")
                 and "GARAGE" in s.tag]
+
+
+def test_authored_gutters_resolve_as_open_top_channels(catlin_model) -> None:
+    """An authored gutter is a trough, not a billet: rain has to be able to fall into it.
+
+    Every authored ``Gutter`` run resolves into three bands per path segment — back, floor,
+    front — and the floor sits a shell's thickness above the bottom of the channel. What
+    makes it *open* is the negative: at the channel's own top elevation nothing spans the
+    full width, so a section cut at the rim is two thin sheets with air between them.
+    """
+    from typehaus.resolve.trim_bands import GUTTER_SHELL_M
+
+    runs = [el for el in catlin_model.plan.all_elements() if isinstance(el, Gutter)]
+    assert runs, "the catlin house authors gutter runs"
+    for run in runs:
+        segments = len(run.path) - 1
+        bands = [s for s in catlin_model.solids if s.tag.startswith(f"{run.tag}-")]
+        assert len(bands) == 3 * segments, f"{run.tag}: 3 bands per segment"
+        depth, thickness = run.depth.meters, run.thickness.meters
+        shell = min(GUTTER_SHELL_M, thickness / 3.0, depth / 3.0)
+        top = run.top_elevation.meters
+        for index in range(1, segments + 1):
+            keys = {s.tag.rsplit("-", 1)[1]: s for s in bands
+                    if s.tag.startswith(f"{run.tag}-{index}-")}
+            assert set(keys) == {"BACK", "BOTTOM", "FRONT"}
+            # The floor of the trough: its top is one shell above the channel's bottom.
+            assert keys["BOTTOM"].z0_m == pytest.approx(top - depth)
+            assert keys["BOTTOM"].z1_m == pytest.approx(top - depth + shell)
+            # Open at the rim: only the two thin sheets reach the top elevation, and
+            # neither is anywhere near the full channel width.
+            at_rim = [s for s in keys.values() if s.z1_m > top - 1e-9]
+            assert {s.tag.rsplit("-", 1)[1] for s in at_rim} == {"BACK", "FRONT"}
+            for sheet in at_rim:
+                width = min(_span(sheet.outline, axis) for axis in (0, 1))
+                assert width < thickness - shell
+
+
+def _span(outline, axis: int) -> float:
+    """Extent of a plan outline along x (0) or y (1) — the band's own thin dimension."""
+    values = [point[axis] for point in outline]
+    return max(values) - min(values)
 
 
 def test_gltf_emits_with_accessories(catlin_model) -> None:

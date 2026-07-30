@@ -43,16 +43,11 @@ from typehaus.resolve.roof_edge_geometry import (
     wall_face_inset,
 )
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
+from typehaus.resolve.trim_bands import open_channel_bands
 
 # A fascia board is envelope trim by category, but it is also the nailer the carpenter hangs
 # off the rafter tails — so it has to show up under a framing view toggle too.
 _FASCIA_TRADE = "framing"
-
-# The gutter channel is modelled as three thin bands (back / bottom / front) so it reads as
-# an open-top U instead of a solid bar of aluminum. Real formed gutter stock is ~0.03" —
-# too thin to survive as display geometry — so the shell is drawn at a nominal half inch,
-# clamped so a narrow authored channel still keeps an open trough.
-_GUTTER_SHELL_M = inch(0.5).meters
 
 # Vented ridge cap defaults (no schema field carries these): a formed metal cap wide enough
 # to cover the vent slot plus a fastening flange each side, standing a couple of inches over
@@ -214,21 +209,13 @@ def _gutter_members(
     span = mitred_span(run, -fascia_outer_m, -fascia_outer_m)
     if span is None:
         return ()
-    thickness = gutter.thickness.meters
-    depth = gutter.depth.meters
-    shell = min(_GUTTER_SHELL_M, thickness / 3.0, depth / 3.0)
     top = span.z0_m - gutter.top_drop.meters
     top_end = span.z1_m - gutter.top_drop.meters
     connection = f"eave-trim:gutter{':' + gutter.slope if gutter.slope else ''}"
-    # (key, offset of the band's inner face from the fascia face, band thickness,
-    #  band bottom / top as drops below the channel top)
-    bands = (
-        ("back", 0.0, shell, depth, 0.0),
-        ("bottom", shell, thickness - 2.0 * shell, depth, depth - shell),
-        ("front", thickness - shell, shell, depth, 0.0),
-    )
+    # Offsets are measured from the back of the channel, which here is the fascia face.
     members: list[FramedMember] = []
-    for key, offset, band_t, bottom_drop, top_drop in bands:
+    for key, offset, band_t, bottom_drop, top_drop in open_channel_bands(
+            gutter.thickness.meters, gutter.depth.meters):
         center = fascia_outer_m + offset + band_t / 2.0
         a, b = _offset(span.p0, run.normal, center), _offset(span.p1, run.normal, center)
         members.append(FramedMember(

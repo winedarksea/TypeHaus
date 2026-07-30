@@ -211,8 +211,35 @@ WALLS = [
     # basement concrete stair wall. It is split at the two tees on it: the storage wall at
     # N-M-STRJ and the stair wall at N-M-STR1, now 6" apart. W-M-STRW2 is that 6" — the jog
     # of wall between RM-M-MUDROOM's south wall and the head of the stairs.
+    # The mudroom coat wall (plans/TODO.md): no drywall on the mudroom face, so the open
+    # 2x6 bays between appearance-grade DF studs are the coat nooks, and the stair face is
+    # 3/4" cabinet plywood that hooks screw straight into. `interior_room` is what points
+    # layer 0 (the exposed studs) at the mudroom — the assembly is asymmetric, and without
+    # it the storey's outward sign would put the plywood on the mudroom side.
+    #
+    # ALIGNMENT: the new stack is 6 1/4" (5.5 + 0.75) where CATLIN_INT_2X6_BRG was 6 3/4"
+    # (5.5 + 2 × 0.625). Left centred, both faces would have crept 1/4" and the stair face
+    # would have landed at 10'-3 1/8". That face is constrained geometry, not a result:
+    # FO-S-STAIR's west edge is authored at 10'-3 3/8" off it (second.py) and both flights'
+    # stringers bear on it. So the axis is pinned 3 3/8" inboard of the plywood's stair face,
+    # holding that face exactly where it was; the whole 1/2" of thickness change is taken out
+    # of the mudroom side, whose face moves east from 9'-8 5/8" to 9'-9 1/8".
+    #
+    # Known finding: `integrity.junction_fallback` at N-M-STRJ. The junction solver calls a
+    # through-pair continuous only when both walls publish the *same* bearing material, and
+    # this wall's studs are df-select-s4s where W-M-STRW2's are spf. Both are dimensional
+    # softwood framing under a lapped double top plate, so the bearing line is continuous in
+    # fact; the fallback changes no geometry here (measured: every layer of W-M-STRW2,
+    # W-M-STOS2 and W-M-STRS resolves exactly where it did before). Left as an honest WARN
+    # rather than papered over by calling the exposed studs SPF.
+    #
+    # MEP: keep wiring and plumbing out of this wall — a bored stud shows. The one deliberate
+    # exception is EQ-M-HP3-STAIR's recess (plan/electrical.py), the stair mini-split, which
+    # is a designed cutout in the plywood face and stays.
     Wall(uid="CMW117AAAA", tag="W-M-STRW", start_node="N-M-N2",
-         end_node="N-M-STRJ", assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         end_node="N-M-STRJ", assembly="CATLIN_MUDROOM_INT_2X6_EXPOSED", top=ft(9),
+         alignment=face("ply-stair-ext", offset=inch(-3.375)),
+         interior_room="RM-M-MUDROOM",
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
     Wall(uid="CMW134AAAA", tag="W-M-STRW2", start_node="N-M-STRJ",
          end_node="N-M-STR1", assembly="CATLIN_INT_2X6_BRG", top=ft(9),
@@ -424,8 +451,15 @@ ROOMS = [
 ALARMS = [
     Alarm(uid="CMA701AAAA", tag="AL-M-BED", kind=AlarmKind.COMBO, room="RM-M-BED",
           circuit="CKT-LT-BACKUP"),
+    # The R314.3 "outside each separate sleeping area, in the immediate vicinity of the
+    # bedrooms" head. It is hosted by RM-M-LIVING because that is the space it is open to,
+    # but the living room's seed is out at (27', 12') in the middle of the dining end, ~13'
+    # from the bedroom door — nowhere near where the detector actually goes. The position
+    # below is the dressing corridor (the RM-M-CLOSET band, x 8'..18' × y 13'-4"..17'-4"),
+    # centred on the corridor and directly outside D-M-BED, whose leaf runs x 13'..15'-8" in
+    # W-M-BDN2. Clear of the closet's sliding doors, which take the corridor's west end.
     Alarm(uid="CMA702AAAA", tag="AL-M-HALL", kind=AlarmKind.COMBO, room="RM-M-LIVING",
-          circuit="CKT-LT-BACKUP"),
+          circuit="CKT-LT-BACKUP", position=pt(ft(14, 4), ft(15, 4))),
 ]
 
 # Electric radiant floor — the two main-storey comfort zones (2026-07-25). Neither is a

@@ -111,10 +111,14 @@ plan/mep.py and there was never a GAS UtilityLine in plan/site.py to feed it.
 		RM-B-SAUNA has no floor heat. FH-B-SAUNA was deleted the same day — a heated
 			floor in a room that runs at 190 F has nowhere to put its heat, and its stat
 			had no honest place to read room air from.
-	There is no "supply" *heat*. The DU-M-ERV-SUP / DU-M-ERV-RET trunks and their registers
+	There is no "supply" *heat*. The DU-*-ERV-SUP / DU-*-ERV-RET trunks and their registers
 		are the ERV's fresh-air supply and stale-air return, sized for ~197 cfm (ASHRAE
-		62.2: 0.03 x 5,078 sf + 7.5 x (5 bedrooms + 1)), not a furnace CFM. Distribution is
-		second storey only today — main storey, basement and attic have no ERV terminals.
+		62.2: 0.03 x 5,078 sf + 7.5 x (5 bedrooms + 1)), not a furnace CFM. Distribution
+		reaches all four storeys: a SUPPLY/RETURN pair per storey (DU-M1-, DU-B-, DU-A-)
+		plus DU-M-ERV-RET, the second storey's stale-air trunk. The second storey has no
+		ERV supply trunk of its own — its fresh air comes off the heat-pump chase
+		(DU-S-HP-SUP, DU-S-HP-SUITE), so the old DU-M-ERV-SUP was deleted rather than left
+		as a supply trunk with no terminal on it.
 	Watch the service: the NEC 220.82 estimate is ~224A against a 200A service. The five
 		space heaters above cost it nothing — 220.82(C) *selects* the heating term rather
 		than summing it, and five separately controlled resistance units at 40% (C)(5) =

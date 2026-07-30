@@ -19,6 +19,7 @@ from typehaus.resolve.model import (
     ResolvedFootingBedding,
     ResolvedModel,
     ResolvedRoof,
+    ResolvedSoffit,
     ResolvedSolid,
 )
 from typehaus.resolve.stairs import _resolve_stair
@@ -104,6 +105,14 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                 model.solids.append(ResolvedSolid(
                     element.uid, element.tag, storey.tag, "soffit", outline,
                     bottom, ceiling,
+                ))
+                # The finished box above is what renders; this record is its framing
+                # host, carrying the authored FramingSpec through to the framing stage
+                # (typehaus.resolve.framing.soffit). A soffit with no spec still gets a
+                # record — it simply frames no members — so the two lists stay 1:1.
+                model.soffits.append(ResolvedSoffit(
+                    element.uid, element.tag, storey.tag, outline, bottom, ceiling,
+                    framing=element.framing,
                 ))
             elif isinstance(element, GlazingPanel):
                 solid, panel_findings = _resolve_glazing_panel(element, storey.tag)

@@ -135,23 +135,73 @@ def test_building_drain_leaves_under_the_footing_not_through_the_wall(catlin_mod
     assert all(b <= a + 1e-9 for a, b in zip(main.z_m, main.z_m[1:]))
 
 
-def test_the_basement_sink_drains_by_gravity(catlin_model):
-    """FX-1 is the fixture the under-slab main exists to make possible: it stands on the
-    slab, so it can only drain if the main is below it. Before the re-route the main hung
-    6'-6" overhead and this run could not be authored at all."""
+def test_the_basement_slab_fixtures_drain_by_gravity(catlin_model):
+    """The basement's slab fixtures are what the under-slab main exists to make possible:
+    they stand *on* the slab, so they can only drain if the main is below them. Before the
+    re-route the main hung 6'-6" overhead and none of these runs could be authored at all.
+
+    Written for FX-1, the mechanical room's utility sink and the only such fixture until
+    2026-07-30; it now covers the two branches that replaced it — the stair-foot bathroom's
+    and the sauna shower end's.
+    """
     slab = next(s for s in catlin_model.solids if s.tag == "SL-B-FLOOR")
-    arm = next(r for r in catlin_model.pipe_runs if r.tag == "PR-B-UTIL-DRAIN")
-    assert "FX-1" in arm.serves
     main = next(r for r in catlin_model.pipe_runs if r.tag == "PR-B-MAIN-DRAIN")
-    # It ties into the main's under-slab leg, and arrives no lower than the main's invert
-    # there — a branch below the main it joins would not flow.
-    assert arm.path[-1] == main.path[-2]
-    assert arm.z_m[-1] >= main.z_m[-2] - 1e-9
-    # Buried, not cast into the slab.
-    assert max(arm.z_m[1:]) + arm.diameter_m / 2.0 <= slab.z0_m
-    # And it is vented, which needed the drain to exist first.
-    vent = next(r for r in catlin_model.pipe_runs if r.tag == "PR-B-UTIL-VENT")
-    assert "FX-1" in vent.serves
+    branches = {
+        # branch tag: (fixtures it carries, the vent branch that serves them)
+        "PR-B-BATH-DRAIN": (("FX-B-BATH-WC", "FX-B-BATH-LAV"), "PR-B-BATH-VENT"),
+        "PR-B-SAUNA-DRAIN": (("FX-B-SAUNA-SH", "FX-B-SAUNA-FD"), "PR-B-SAUNA-VENT"),
+    }
+    for arm_tag, (fixtures, vent_tag) in branches.items():
+        arm = next(r for r in catlin_model.pipe_runs if r.tag == arm_tag)
+        assert set(fixtures) <= set(arm.serves), arm_tag
+        # Each ties onto the main's under-slab leg, and arrives no lower than the main's
+        # invert where it lands — a branch below the main it joins would not flow.
+        assert _on_segment(arm.path[-1], main.path[-2], main.path[-1]), arm_tag
+        assert arm.z_m[-1] >= _invert_at(main, arm.path[-1]) - 1e-9, arm_tag
+        # Buried, not cast into the slab.
+        assert max(arm.z_m[1:]) + arm.diameter_m / 2.0 <= slab.z0_m, arm_tag
+        # And each is vented, which needed the drain to exist first.
+        vent = next(r for r in catlin_model.pipe_runs if r.tag == vent_tag)
+        assert set(fixtures) <= set(vent.serves), vent_tag
+
+
+def _on_segment(point, start, end, tol=1e-6):
+    """True when ``point`` lies on the segment ``start``-``end``.
+
+    The branches no longer all land on the main's own last vertex — one ties in at the head of
+    the under-slab leg and one part way down it — so the relationship to assert is
+    "somewhere on that leg", not "at its end".
+    """
+    (px, py), (ax, ay), (bx, by) = point, start, end
+    cross = (bx - ax) * (py - ay) - (by - ay) * (px - ax)
+    if abs(cross) > tol:
+        return False
+    dot = (px - ax) * (bx - ax) + (py - ay) * (by - ay)
+    length_sq = (bx - ax) ** 2 + (by - ay) ** 2
+    return -tol <= dot <= length_sq + tol
+
+
+def _invert_at(run, point, tol=1e-6):
+    """The run's authored invert where ``point`` sits on it, interpolated along the segment.
+
+    Takes the *deepest* match, not the first. PR-B-MAIN-DRAIN passes through (3', 15'-6")
+    twice — once at the ceiling, where the collector turns, and once 9'-8" lower, where the
+    vertical drop through the slab lands — so one plan point carries two inverts. The under-slab
+    one is the leg a buried branch actually ties into, and it is the lower of the two.
+    """
+    candidates = []
+    for index in range(len(run.path) - 1):
+        start, end = run.path[index], run.path[index + 1]
+        if not _on_segment(point, start, end):
+            continue
+        length = ((end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2) ** 0.5
+        if length <= tol:
+            continue
+        travelled = ((point[0] - start[0]) ** 2 + (point[1] - start[1]) ** 2) ** 0.5
+        fraction = travelled / length
+        candidates.append(run.z_m[index] + (run.z_m[index + 1] - run.z_m[index]) * fraction)
+    assert candidates, f"{point} is not on {run.tag}"
+    return min(candidates)
 
 
 # --- staggered-stud framing -----------------------------------------------------------

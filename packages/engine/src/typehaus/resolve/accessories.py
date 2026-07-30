@@ -25,6 +25,7 @@ from typehaus.resolve.model import (
     ResolvedModel,
     ResolvedSolid,
 )
+from typehaus.resolve.trim_bands import open_channel_bands
 from typehaus.resolve.vent_termination import (
     derived_termination_elevation,
     exterior_riser_point,
@@ -412,8 +413,40 @@ def _resolve_edge_run(model: ResolvedModel, el, storey: str) -> None:
     top = el.top_elevation.meters
     z0 = top - el.depth.meters
     half = el.thickness.meters / 2.0
+    if el.kind is TrimKind.GUTTER:
+        _resolve_gutter_run(model, el, storey, path, category, top, half)
+        return
     for i, (a, b) in enumerate(zip(path[:-1], path[1:])):
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-{i:02d}", tag=f"{el.tag}-{i + 1}", storey=storey,
             category=category, outline=rect_between(a, b, -half, half), z0_m=z0, z1_m=top,
         ))
+
+
+def _resolve_gutter_run(model: ResolvedModel, el, storey: str, path, category: str,
+                        top: float, half: float) -> None:
+    """An authored gutter as an open-top U, exactly like the derived eave gutters.
+
+    The single extruded bar every other edge run gets reads as a solid billet of aluminum
+    hung off the deck — nothing rain could fall *into*. The channel is instead composed
+    from the three bands of :func:`open_channel_bands` (the recipe the roof's derived
+    gutters use), laid across the same ``[-half, +half]`` cross span the bar occupied, so
+    the run stays where it was authored and only becomes hollow.
+    """
+    depth = el.depth.meters
+    bands = open_channel_bands(2.0 * half, depth)
+    # Cross offsets run from one edge of the span; ``rect_between`` measures from the
+    # path's left-hand normal, so a channel whose back faces left is named from the far
+    # end. The section is symmetric about its centre line, so this only moves the names.
+    keys = [band[0] for band in bands]
+    if getattr(el, "back_side", "left") == "left":
+        keys.reverse()
+    for i, (a, b) in enumerate(zip(path[:-1], path[1:])):
+        for key, (_, offset, band_t, bottom_drop, top_drop) in zip(keys, bands):
+            left = -half + offset
+            model.solids.append(ResolvedSolid(
+                uid=f"{el.uid}-{i:02d}-{key}", tag=f"{el.tag}-{i + 1}-{key.upper()}",
+                storey=storey, category=category,
+                outline=rect_between(a, b, left, left + band_t),
+                z0_m=top - bottom_drop, z1_m=top - top_drop,
+            ))

@@ -37,6 +37,7 @@ from typehaus import (
     FloorHeat,
     FloorOpening,
     FloorSystem,
+    FramingSpec,
     JoistSpec,
     Node,
     Occupancy,
@@ -467,14 +468,48 @@ FLOOR_HEAT = [
 # LIGHTING TIE-IN: LR-S-HALL-GAP already runs the hall at x=18'-6" and x=21'-6", i.e. just
 # outside both soffit edges — the shadow-gap strips wash the soffit's flanks, which is the
 # effect the notes ask for and needs no new lighting here.
-# TODO the three hall cans (ED-S-HALL-CAN1/2/3, plan/lighting.py) are at x=20', inside this
-# soffit's plan extent, and are still mounted at the 9'-0" ceiling. They need re-setting
-# into the soffit face at 7'-10" in a lighting pass; that is a lighting edit, not this one.
+#
+# WIDTH ARITHMETIC (2026-07-29). The box was 2'-8" = 32" in plan, which does not fit what
+# it has to enclose once it is framed rather than drawn:
+#   - framing loss, per side: 1 1/2" (the 2x2 ladder below) + 5/8" lining inset = 2 1/8",
+#     so clear = plan width − 4 1/4".
+#   - what has to fit: DU-S-HP-SUP at x=19'-4" and DU-S-HP-RET at x=20'-8", 14" wide each,
+#     so their outer faces are 18'-9" and 21'-3" — 30" across, being 28" of duct plus the
+#     2" gap between them that the hangers and the joint flanges live in.
+#   32" plan − 4 1/4" = 27 3/4" clear, which is short of the 28" of bare duct alone.
+# The box is now 35" — x 18'-6 1/2" .. 21'-5 1/2", still centred on 20'-0" between the two
+# duct centrelines — giving 30 3/4" clear: the 30" it needs plus 3/8" a side to set the
+# ducts in. It stays inside the hall (clear x 18'-2 3/4" .. 21'-8"), and the two
+# LR-S-HALL-GAP strips at 18'-6"/21'-6" now sit 1/2" off each flank, which is a shadow gap
+# rather than a coincident edge — the wash the notes ask for, if anything more literally.
+# The soffit face elevation is unchanged at 7'-10": ED-S-HALL-CAN1/2/3 are set into it.
 SOFFITS = [
     Soffit(uid="CSF601AAAA", tag="SF-S-DUCT",
-           outline=(pt(ft(18, 8), ft(6)), pt(ft(21, 4), ft(6)),
-                    pt(ft(21, 4), ft(34)), pt(ft(18, 8), ft(34))),
-           drop=inch(14)),
+           outline=(pt(ft(18, 6.5), ft(6)), pt(ft(21, 5.5), ft(6)),
+                    pt(ft(21, 5.5), ft(34)), pt(ft(18, 6.5), ft(34))),
+           drop=inch(14),
+           framing=FramingSpec(member="2x2", spacing=inch(16))),
+    # The west branch to the suite (2026-07-29), carrying DU-S-HP-SUITE — the conditioned-air
+    # run RM-S-SUITE never had. It abuts SF-S-DUCT's west face at x=18'-6 1/2" and holds the
+    # same 14" drop, so the two read as one continuous box turning west rather than a step.
+    #
+    # y 19'-4" .. 21'-4" is the band that works: FO-S-STAIR is x 11'..18', y 25'..36', so a
+    # crossing to the west half has to happen south of the well, and 21'-4" leaves 3'-8"
+    # between this soffit and the opening's south trimmer.
+    #
+    # Same arithmetic as above and much easier: 24" plan − 4 1/4" = 19 3/4" clear against a
+    # single 10"-wide duct.
+    #
+    # It does cross RM-S-SUITEBATH on the way — all three of that room's fixtures (WC at
+    # y=20'-9 3/4", lav at 21'-2 1/2", tub/shower at 19'-6 3/4") sit under it. That is a
+    # deliberate cost, not an oversight: 7'-10" is well over the 6'-8" IRC R305.1 asks above
+    # a shower, and the band south of the bath is the only one that clears FO-S-STAIR. Worth
+    # revisiting only if the suite bath ever gets a rain head that wants the full 9'.
+    Soffit(uid="CSF6S1AAAA", tag="SF-S-SUITE",
+           outline=(pt(ft(8), ft(19, 4)), pt(ft(18, 6.5), ft(19, 4)),
+                    pt(ft(18, 6.5), ft(21, 4)), pt(ft(8), ft(21, 4))),
+           drop=inch(14),
+           framing=FramingSpec(member="2x2", spacing=inch(16))),
 ]
 
 # Drawn to the main floor's *finished* well, the way FO-M-STAIR is drawn to the basement's:

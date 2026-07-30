@@ -15,7 +15,16 @@ from typehaus.model import (
     r_us,
 )
 
+# Painted gypsum lining. Layer order is interior → exterior everywhere the lining is
+# consumed (``list(default_lining) + list(layers)``), so the paint is *first*: it is the
+# room-side face, and that position is what makes it the assembly's warm-side vapour
+# retarder in the Glaser walk (IRC R702.7 / R702.7.1 Class III, → checks/building_science).
+_PAINT_FINISH = Layer(name="paint", material_ref="latex-paint", thickness=inch(0.01),
+                      function=LayerFunction.FINISH,
+                      control=frozenset({ControlLayer.VAPOR}))
+
 _GWB_LINING = (
+    _PAINT_FINISH,
     Layer(name="gwb-int", material_ref="gwb", thickness=inch(0.625),
           function=LayerFunction.FINISH),
 )
@@ -103,6 +112,7 @@ HOUSE_ROOF = Assembly(
               function=LayerFunction.CLADDING),
     ),
     default_lining=(
+        _PAINT_FINISH,
         Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
@@ -111,6 +121,13 @@ HOUSE_ROOF = Assembly(
 # STC-rated interior partition presets (#50).  STC is always a published test result,
 # never a value calculated from the layers below.  Preserve each source's framing and
 # lining configuration when selecting one; substitutions require a new tested rating.
+#
+# These deliberately get NO paint layer, and the sentence above is the reason: each is a
+# transcription of one published lab test, and its gypsum lives in ``layers`` (the tested
+# core) rather than in ``default_lining`` (the finish tier a room may override). Adding a
+# layer to a stack whose whole value is that it matches a specific tested build is how the
+# cited STC stops describing what is drawn. These walls are painted in reality; the paint is
+# a finish-schedule fact about the rooms either side, not part of the rated assembly.
 INT_2X4_PARTITION = Assembly(
     tag="INT_2X4_PARTITION",
     layers=(

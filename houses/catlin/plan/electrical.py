@@ -148,8 +148,10 @@ EQUIPMENT_TYPES = (
                                      position=(ft(0), ft(0), ft(0))),)),
     # The only air-moving equipment in the house — there is no furnace and no air handler,
     # so the SUPPLY_AIR/RETURN_AIR ports that used to hang off EQ-T-FURNACE belong here.
-    # "Supply" is fresh air, not heat: the DU-M-ERV-SUP/RET trunks in plan/mep.py connect
-    # to these two ports. (The outdoor-side intake and exhaust are the ERV's other pair of
+    # "Supply" is fresh air, not heat: the ERV trunks in plan/mep.py connect to these two
+    # ports — a SUPPLY/RETURN pair per storey (DU-M1-, DU-B-, DU-A-ERV-SUP/RET) plus the
+    # second storey's stale-air trunk DU-M-ERV-RET, whose fresh side comes off the
+    # heat-pump chase (DU-S-HP-SUP / DU-S-HP-SUITE) rather than an ERV supply of its own. (The outdoor-side intake and exhaust are the ERV's other pair of
     # collars; `Service` has no OUTDOOR_AIR/EXHAUST_AIR member to name them with, so they
     # stay unmodeled rather than mislabeled as house-side ports.)
     # ventilation_cfm is the continuous balanced rate the trunks in plan/mep.py are sized

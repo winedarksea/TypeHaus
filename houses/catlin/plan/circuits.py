@@ -15,10 +15,10 @@ Conventions:
 - ``slot`` is the physical breaker position: odd numbers run down the left column, even
   down the right, and a 2-pole breaker takes ``slot`` and ``slot + 2`` (same column).
   PV backfeeds at the bottom of the bus (40/42), opposite the main (120% rule).
-  HONEST STATE: 15 two-pole + 22 one-pole = 52 spaces against ED-T-PANEL's 42, so the
-  last six 120V circuits sit in slots 43-48 and the two heat-pump circuits added with the
-  three-system HVAC design sit in 49-52, all past the enclosure, and
-  ``electrical.panel_spaces`` FAILS until the panel is swapped for a 54-space unit.
+  HONEST STATE: 15 two-pole + 22 one-pole = 52 spaces used of the 54 ED-T-PANEL now
+  carries (the panel was swapped for a 54-space enclosure), so the six 120V circuits in
+  slots 43-48 and the two heat-pump circuits in 49-52 all land inside the enclosure and
+  ``electrical.panel_spaces`` PASSES, with two spaces left spare.
 """
 
 from __future__ import annotations

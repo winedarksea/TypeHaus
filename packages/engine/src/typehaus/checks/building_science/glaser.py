@@ -30,6 +30,34 @@ _WETTABLE = {
     LayerFunction.STRUCTURE, LayerFunction.SHEATHING, LayerFunction.INSULATION,
 }
 _VENTED = {LayerFunction.AIRGAP, LayerFunction.FURRING}
+# The wall/roof core: the plane a warm-side vapour retarder must sit inboard of.
+_CORE_PLANES = {LayerFunction.STRUCTURE, LayerFunction.SHEATHING}
+
+# IRC R702.7.1 vapour-retarder classes, by ASTM E96 desiccant/dry-cup permeance of the
+# material *as installed*. Upper bound of each class, tightest first; anything looser than
+# Class III is vapour-permeable and is not a retarder at all.
+#   Class I   <= 0.1 perm   (sheet polyethylene, unperforated foil)
+#   Class II  0.1 - 1.0     (kraft-faced batt, "vapour-barrier" latex primer)
+#   Class III 1.0 - 10.0    (latex or enamel paint over gypsum board)
+VAPOR_RETARDER_CLASS_LIMITS_PERMS: tuple[tuple[float, str], ...] = (
+    (0.1, "I"), (1.0, "II"), (10.0, "III"),
+)
+
+
+def vapor_retarder_class(permeance_perms: float | None) -> str | None:
+    """The IRC R702.7.1 class of a layer at ``permeance_perms``, or None.
+
+    None means "not a vapour retarder": either the permeance is unknown, or the layer is
+    looser than 10 perm and the code does not rate it. Bare 5/8" gypsum board runs about
+    30 perm and lands here — which is the point of modelling the paint over it, since
+    R702.7 counts that film as the assembly's warm-side retarder.
+    """
+    if permeance_perms is None or permeance_perms < 0.0:
+        return None
+    for limit, name in VAPOR_RETARDER_CLASS_LIMITS_PERMS:
+        if permeance_perms <= limit:
+            return name
+    return None
 
 # ISO 13788 §6 fixes the surface resistances for an interstitial-condensation assessment:
 # Rsi 0.25, Rse 0.04 m²·K/W. They are deliberately not the ASHRAE winter films the R-value
@@ -110,6 +138,11 @@ class CondensationAnalysis:
     unknown_materials: tuple[str, ...] = ()
     # Layer names matching ``points[1:]``; ``points[0]`` is the interior surface.
     plane_names: tuple[str, ...] = ()
+    # The warm-side vapour retarder (IRC R702.7.1) this stack carries, if any: the layer's
+    # name and its class. ``None`` means the interior face of the assembly is vapour-open —
+    # nothing inboard of the structure is rated at 10 perm or tighter.
+    interior_retarder_layer: str | None = None
+    interior_retarder_class: str | None = None
 
     @property
     def known(self) -> bool:
@@ -140,11 +173,21 @@ class CondensationAnalysis:
             return "interior surface"
         return self.plane_names[index - 1] if index - 1 < len(self.plane_names) else None
 
+    @property
+    def interior_retarder_note(self) -> str:
+        """One clause describing the warm-side retarder, for a finding message."""
+        if self.interior_retarder_class is None:
+            return "no rated warm-side vapour retarder (interior face vapour-open)"
+        return (f"warm-side vapour retarder {self.interior_retarder_layer} is Class "
+                f"{self.interior_retarder_class} (IRC R702.7.1)")
+
     def as_dict(self) -> dict[str, object]:
         tightest = self.tightest_plane
         return {
             "assembly": self.assembly_tag,
             "status": "unknown" if not self.known else "risk" if self.has_risk else "safe",
+            "interior_retarder_layer": self.interior_retarder_layer,
+            "interior_retarder_class": self.interior_retarder_class,
             "crossing_layer": self.crossing_layer,
             "crossing_fraction": self.crossing_fraction,
             "unknown_materials": list(self.unknown_materials),
@@ -221,6 +264,41 @@ def _layer_path(layer: Layer, library: Library) -> tuple[_LayerPath | None, list
 
     resistance = math.inf if permeance <= 0.0 else 1.0 / permeance
     return _LayerPath(r_us, resistance), []
+
+
+def _interior_retarder(layers: list[Layer],
+                       paths: list[_LayerPath]) -> tuple[str | None, str | None]:
+    """The warm-side vapour retarder of an interior→exterior stack: (layer name, class).
+
+    "Warm-side" is the whole qualifier: a tight layer on the *cold* side is a vapour trap,
+    not a retarder, and reporting it as one would read a hazard as a credit. The warm-side
+    span therefore ends at the wall/roof core — the first STRUCTURE or SHEATHING layer —
+    which keeps interior continuous insulation inside the span (foil-faced polyiso applied
+    to the room side of a stud wall is the textbook Class I retarder, e.g. the sauna liner)
+    while leaving exterior sheathing and exterior CI outside it. A stack with no core at all
+    falls back to the first wettable layer, which credits nothing it cannot place.
+
+    Within that span the tightest layer is the retarder, since it is the one the vapour
+    drive actually has to cross. Bare gypsum (~30 perm at 5/8") is not rated by R702.7.1 and
+    yields ``(None, None)`` — the paint over it is what earns the Class III.
+    """
+    warm_side = next((index for index, layer in enumerate(layers)
+                      if layer.function in _CORE_PLANES), None)
+    if warm_side is None:
+        warm_side = next((index for index, layer in enumerate(layers)
+                          if layer.function in _WETTABLE), len(layers))
+
+    best_name: str | None = None
+    best_class: str | None = None
+    best_permeance = math.inf
+    for layer, path in zip(layers[:warm_side], paths[:warm_side]):
+        permeance = 0.0 if math.isinf(path.vapor_resistance_rep) else (
+            1.0 / path.vapor_resistance_rep if path.vapor_resistance_rep > 0.0 else math.inf
+        )
+        rated = vapor_retarder_class(permeance)
+        if rated is not None and permeance < best_permeance:
+            best_name, best_class, best_permeance = layer.name, rated, permeance
+    return best_name, best_class
 
 
 def _vapor_fractions(resistances: list[float]) -> list[float] | None:
@@ -302,9 +380,11 @@ def analyze_layers(
 
     plane_names = tuple(layer.name for layer in layers)
     crossing_layer, crossing_fraction = _first_crossing(points, plane_names)
+    retarder_layer, retarder_class = _interior_retarder(layers, paths)
     return CondensationAnalysis(
         assembly_tag, tuple(points), crossing_layer=crossing_layer,
         crossing_fraction=crossing_fraction, plane_names=plane_names,
+        interior_retarder_layer=retarder_layer, interior_retarder_class=retarder_class,
     )
 
 

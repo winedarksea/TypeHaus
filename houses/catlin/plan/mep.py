@@ -69,6 +69,25 @@ REGISTER_TYPES = (
                  plan_symbol="register", ventilation_terminal=True,
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
+    # The sauna's own pair, small and dampered. A sauna is run in sessions, not
+    # continuously: during a session you want the room sealed and stratified, and after one
+    # you want it turned over hard. Both terminals are 4"x4" with an adjustable, closable
+    # damper at the face (plans/TODO.md §HVAC) so the room can be shut off the trunk and
+    # opened wide, which a fixed 6" round diffuser cannot do.
+    RegisterType(tag="REG-T-ERV-SAUNA-SUP",
+                 name="Sauna fresh-air supply, 4x4, small adjustable/closable damper",
+                 footprint=(inch(4), inch(4)), height=inch(1),
+                 plan_symbol="register", ventilation_terminal=True,
+                 source="plans/TODO.md §HVAC: sauna terminals small, adjustable/closable damper",
+                 ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
+                                    position=(ft(0), ft(0), ft(0))),)),
+    RegisterType(tag="REG-T-ERV-SAUNA-EXH",
+                 name="Sauna stale-air extract, 4x4, small adjustable/closable damper",
+                 footprint=(inch(4), inch(4)), height=inch(1),
+                 plan_symbol="register", ventilation_terminal=True,
+                 source="plans/TODO.md §HVAC: sauna terminals small, adjustable/closable damper",
+                 ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
+                                    position=(ft(0), ft(0), ft(0))),)),
     RegisterType(tag="REG-T-HP-SUP", name="Heat-pump supply register, 12x6",
                  footprint=(inch(12), inch(6)), height=inch(1),
                  plan_symbol="register",
@@ -99,7 +118,7 @@ EQUIPMENT_TYPES = (
 
 ELECTRICAL_DEVICE_TYPES = (
     ElectricalDeviceType(tag="ED-T-PANEL", name="225A electrical panel (200A service)", footprint=(inch(20), inch(4)), height=ft(3),
-                          plan_symbol="panel", spaces=42,
+                          plan_symbol="panel", spaces=54,
                           ports=(ServicePort(tag="service", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
     # ED-T-LIGHT is gone. It was a generic "Ceiling light" with no lamp, no lumens and no
@@ -768,9 +787,15 @@ VENT_BRANCHES_SECOND = [
 # second storey, FS-SECOND over the main storey's ceiling, FS-ATTIC under the attic) and
 # drop to CHASE routing in the basement, whose ceiling is the SL-M-DECK concrete.
 DUCTS = [
-    DuctRun(uid="CMD901AAAA", tag="DU-M-ERV-SUP", system=DuctSystem.SUPPLY,
-           path=(pt(ft(4), ft(20, 8)), pt(ft(32), ft(20, 8))), width=inch(10), depth=inch(6),
-           routing=DuctRouting.JOIST_BAY, floor_ref="FS-SECOND"),
+    # DU-M-ERV-SUP is gone (2026-07-29, with the terminal reduction). Every terminal it fed
+    # was either dropped or flipped to stale pickup: the second storey now takes its fresh
+    # air off System 1's chase — REG-S-HP-BED1/2/3 on DU-S-HP-SUP, the suite on
+    # DU-S-HP-SUITE — and gives stale air back on DU-M-ERV-RET, which is why that trunk
+    # below is untouched and carries seven pickups. A supply trunk with no terminal on it
+    # is not a spare, it is a duct nobody would ever build, so it is deleted rather than
+    # shortened to a stub. (plan/electrical.py and plans/electrical_notes.md were updated
+    # to the per-storey topology on 2026-07-30; the main storey's own pair is
+    # DU-M1-ERV-SUP/RET below.)
     DuctRun(uid="CMD902AAAA", tag="DU-M-ERV-RET", system=DuctSystem.RETURN,
            path=(pt(ft(4), ft(23, 4)), pt(ft(32), ft(23, 4))), width=inch(10), depth=inch(6),
            routing=DuctRouting.JOIST_BAY, floor_ref="FS-SECOND"),
@@ -813,16 +838,35 @@ DUCTS_BASEMENT = [
     DuctRun(uid="CBDV03AAAA", tag="DU-B-ERV-BATH", system=DuctSystem.EXHAUST,
            path=(pt(ft(5), ft(20)), pt(ft(11, 8), ft(20))),
            width=inch(6), depth=inch(4), routing=DuctRouting.CHASE),
+    # The sauna's own fresh-air branch (2026-07-29). 4"x4" — a sauna wants a trickle it can
+    # shut, not a room's worth of air — taken off the supply trunk where it turns east at
+    # (5', 18') and run south down the workshop side of W-B-SA-W to the heater line, then
+    # east into the room above EQ-B-SAUNA-HTR. It ends over the heater on purpose: fresh air
+    # dropped onto the stones is what drives the convection loop down to REG-B-RET2 at the
+    # floor, which is the only way a sealed hot room turns over at all.
+    DuctRun(uid="CBDV04AAAA", tag="DU-B-SAUNA-SUP", system=DuctSystem.SUPPLY,
+           path=(pt(ft(5), ft(18)), pt(ft(5), ft(8, 9)), pt(ft(9, 9.8125), ft(8, 9))),
+           width=inch(4), depth=inch(4), routing=DuctRouting.CHASE),
 ]
 
-# Attic distribution rides the FS-ATTIC joist bays: supply at 18'-0" (8"+13*16"), return
-# at 4'-8" (8"+3*16"), both clear of FO-A-STAIR (y 5'-9 5/8"..8'-9 5/8", x 21'-2" east).
+# Attic distribution rides the FS-ATTIC joist bays. Both trunks were 28'-long crossings of
+# the whole floor, feeding three supplies and a return spread over four rooms; the user's
+# 2026-07-29 call cut the attic to ONE supply/return pair and moved it to the shortest run
+# in the house. Both now start at x=2', beside the maintenance shaft at (1', 34'-6") where
+# VR-M-RADON-VENT's radon/plumbing riser comes up through every storey (RADON_SUMP /
+# VENT_RISERS below) — the ERV branches ride that same shaft up from the basement — and run
+# 4'-0" east to their terminals. Supply in the bay centred at 34'-0" (8"+25*16"), return at
+# 31'-4" (8"+23*16"); 32'-8" between them is DU-S-BATH1-EXH's bay and stays free. Nothing
+# here goes near FO-A-STAIR (y 5'-9 5/8"..8'-9 5/8") any more.
+#
+# The attic loses no required coverage: RM-A-STUDY is the only attic room the distribution
+# check asks fresh air of, and it is fed by REG-A-HP-STUDY off System 1's own attic branch.
 DUCTS_ATTIC = [
     DuctRun(uid="CADV01AAAA", tag="DU-A-ERV-SUP", system=DuctSystem.SUPPLY,
-           path=(pt(ft(4), ft(18)), pt(ft(32), ft(18))), width=inch(8), depth=inch(6),
+           path=(pt(ft(2), ft(34)), pt(ft(6), ft(34))), width=inch(8), depth=inch(6),
            routing=DuctRouting.JOIST_BAY, floor_ref="FS-ATTIC"),
     DuctRun(uid="CADV02AAAA", tag="DU-A-ERV-RET", system=DuctSystem.RETURN,
-           path=(pt(ft(4), ft(4, 8)), pt(ft(32), ft(4, 8))), width=inch(8), depth=inch(6),
+           path=(pt(ft(2), ft(31, 4)), pt(ft(6), ft(31, 4))), width=inch(8), depth=inch(6),
            routing=DuctRouting.JOIST_BAY, floor_ref="FS-ATTIC"),
 ]
 
@@ -848,6 +892,19 @@ DUCTS_HVAC_SECOND = [
     DuctRun(uid="CSDH02AAAA", tag="DU-S-HP-RET", system=DuctSystem.RETURN,
             path=(pt(ft(20, 8), ft(18)), pt(ft(20, 8), ft(7))),
             width=inch(14), depth=inch(8), routing=DuctRouting.CHASE, design_cfm=750),
+    # The west branch to RM-S-SUITE (2026-07-29), which closes the gap noted below. It tees
+    # off DU-S-HP-SUP at y=20'-4" and runs straight west to the suite — 10'-10" of 10x8 at
+    # 150 cfm is ~270 fpm, quiet enough to sit over a bedroom.
+    #
+    # y=20'-4" is the whole reason the branch works: FO-S-STAIR is x 11'..18', y 25'..36',
+    # so anything crossing west has to do it *south* of y=25', and 20'-4" clears the well by
+    # nearly 5'. DuctRun carries no elevation, so the run is placed by its host instead —
+    # SF-S-SUITE (plan/storeys/second.py), a 14" soffit abutting SF-S-DUCT's west face on
+    # the same drop, which is what puts this duct below the ceiling rather than in the
+    # FS-SECOND joist bays it would otherwise have to cross at right angles.
+    DuctRun(uid="CSDH03AAAA", tag="DU-S-HP-SUITE", system=DuctSystem.SUPPLY,
+            path=(pt(ft(19, 4), ft(20, 4)), pt(ft(8, 6), ft(20, 4))),
+            width=inch(10), depth=inch(8), routing=DuctRouting.CHASE, design_cfm=150),
 ]
 
 # Terminals off the chase. Each bedroom grille sits just inside the bedroom at the hallway
@@ -856,9 +913,16 @@ DUCTS_HVAC_SECOND = [
 # grille's `duct_ref` names the trunk it comes off. All of them are ceiling grilles in the
 # soffit face at 8'-0" (9'-0" ceiling less the 12" drop).
 #
-# TODO RM-S-SUITE is in EQ-S-HP1-AH's zone_rooms but has no conditioned-air terminal: the
-# chase runs down the *east* hall and reaching the west suite needs a branch across the
-# stair well that is not yet drawn. Its ERV supply (REG-S-SUP6) is unaffected.
+# RM-S-SUITE is in EQ-S-HP1-AH's zone_rooms and now has its terminal: REG-S-HP-SUITE, off
+# the DU-S-HP-SUITE branch above. The branch goes west at y=20'-4" because that is the one
+# band where it can — FO-S-STAIR takes x 11'..18' from y=25' north, so a crossing has to
+# happen south of the well, and 20'-4" is far enough south to keep the soffit off the
+# opening's trimmer while still landing inside the suite rather than in RM-S-SUITEBATH
+# (whose seed is (14', 19')). The grille sits at (8'-6", 20'-4"), west of the bathroom's
+# east wall and in the suite's own clear face.
+#
+# The suite's ERV supply (REG-S-SUP6) is gone rather than kept alongside: this branch is
+# what makes it redundant.
 REGISTERS_HVAC_SECOND = [
     Register(uid="CSRH01AAAA", tag="REG-S-HP-BED1", kind=DuctSystem.SUPPLY, room="RM-S-BED1",
              position=pt(ft(22, 6), ft(13, 6)), duct_ref="DU-S-HP-SUP",
@@ -878,6 +942,13 @@ REGISTERS_HVAC_SECOND = [
              position=pt(ft(17, 6), ft(24)), duct_ref="DU-S-HP-SUP",
              type_ref="REG-T-HP-SUP",
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    # The suite's supply, in SF-S-SUITE's soffit face at the branch's west terminus. Its
+    # elevation is 7'-10" rather than the 8'-0" the hall grilles sit at because SF-S-SUITE
+    # drops 14" off the 9'-0" ceiling, not 12".
+    Register(uid="CSRH06AAAA", tag="REG-S-HP-SUITE", kind=DuctSystem.SUPPLY, room="RM-S-SUITE",
+             position=pt(ft(8, 6), ft(20, 4)), duct_ref="DU-S-HP-SUITE",
+             type_ref="REG-T-HP-SUP",
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 10))),
     # The one return, in the hall soffit face at the middle of the run.
     Register(uid="CSRH05AAAA", tag="REG-S-HP-RET", kind=DuctSystem.RETURN, room="RM-S-HALL",
              position=pt(ft(20, 8), ft(18)), duct_ref="DU-S-HP-RET",
@@ -919,46 +990,57 @@ REGISTERS_HVAC_ATTIC = [
 # flush with the finished floor and the type's 1" height is the frame below it, not a kerb
 # standing on it. Saying so keeps a register out of a neighbour's clear floor space without
 # exempting registers as a class — a surface-mounted one would still report.
+#
+# The second storey went supply-less on the ERV on 2026-07-29. The three bedrooms' boots
+# are still here and still in the same holes — same uids, so the IFC GlobalIds survive a
+# rename that would otherwise churn every downstream reference — but they are stale-air
+# pickups now, on DU-M-ERV-RET rather than the deleted DU-M-ERV-SUP. The bedrooms' fresh
+# air comes from REG-S-HP-BED1/2/3 off DU-S-HP-SUP (REGISTERS_HVAC_SECOND above), and the
+# suite's from REG-S-HP-SUITE off DU-S-HP-SUITE, so extracting here rather than supplying
+# is what makes the storey's air actually move: in at the hall soffit, out at the far wall
+# of each room.
+#
+# Two terminals were dropped outright rather than converted:
+#   REG-S-SUP1 (RM-S-PLANT) — the plant room is getting its own dedicated mini-HRV, whose
+#     humidity load has nothing to do with the whole-house rate; it is not drawn yet, so
+#     mep.ventilation_distribution honestly reports RM-S-PLANT as unserved until it is.
+#   REG-S-SUP2 (RM-S-STUDY2) — dropped by the user's 2026-07-29 call; the study takes its
+#     air from the hall it opens onto. Also honestly reported.
+# And two more for redundancy: REG-S-SUP6 (RM-S-SUITE, replaced by REG-S-HP-SUITE) and
+# REG-S-SUP7/REG-S-RET1 (the hall, which is the plenum between them, not a served room).
 REGISTERS = [
-    Register(uid="CMR901AAAA", tag="REG-S-SUP1", kind=DuctSystem.SUPPLY, room="RM-S-PLANT",
-            position=pt(ft(9), ft(4)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-ERV-SUP",
+    # One per bedroom now that the east bedrooms are equal 9'-0" bays: BED1 y 9'-18',
+    # BED2 y 18'-27', BED3 y 27'-36'. RM-S-BED2 had no terminal at all before the
+    # re-spacing (plans/TODO.md). All three sit at x=29', against the east wall and
+    # diagonally opposite the hall-side supply grille, so the room crossventilates.
+    Register(uid="CMR903AAAA", tag="REG-S-RET-BED1", kind=DuctSystem.RETURN, room="RM-S-BED1",
+            position=pt(ft(29), ft(13, 6)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CMR902AAAA", tag="REG-S-SUP2", kind=DuctSystem.SUPPLY, room="RM-S-STUDY2",
-            position=pt(ft(27), ft(4)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-ERV-SUP",
+    Register(uid="CMR907AAAA", tag="REG-S-RET-BED2", kind=DuctSystem.RETURN, room="RM-S-BED2",
+            position=pt(ft(29), ft(22, 6)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    # One per bedroom now that the east bedrooms are equal 9'-0" bays: SUP3 y 9'-18',
-    # SUP5 y 18'-27', SUP4 y 27'-36'. RM-S-BED2 had no terminal at all before the
-    # re-spacing (plans/TODO.md).
-    Register(uid="CMR903AAAA", tag="REG-S-SUP3", kind=DuctSystem.SUPPLY, room="RM-S-BED1",
-            position=pt(ft(29), ft(13, 6)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-ERV-SUP",
+    Register(uid="CMR904AAAA", tag="REG-S-RET-BED3", kind=DuctSystem.RETURN, room="RM-S-BED3",
+            position=pt(ft(29), ft(31, 6)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CMR907AAAA", tag="REG-S-SUP5", kind=DuctSystem.SUPPLY, room="RM-S-BED2",
-            position=pt(ft(29), ft(22, 6)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-ERV-SUP",
-            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CMR904AAAA", tag="REG-S-SUP4", kind=DuctSystem.SUPPLY, room="RM-S-BED3",
-            position=pt(ft(29), ft(31, 6)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-ERV-SUP",
-            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CMR905AAAA", tag="REG-S-RET1", kind=DuctSystem.RETURN, room="RM-S-HALL",
-            position=pt(ft(20), ft(20)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-ERV-EXH",
-            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    # The suite's extract moved south from (9', 20') on 2026-07-29. It had to: REG-S-HP-SUITE
+    # now blows conditioned supply down from a ceiling grille at (8'-6", 20'-4"), 6" away in
+    # plan, and a floor extract directly under a ceiling supply is a short circuit — the ERV
+    # would pull the new branch's air straight back out of the room without it ever reaching
+    # anyone. (9', 12') keeps it on the same east line and the same trunk, 8' south, clear of
+    # FURN-S-SUITE-BED (x 2'-6"..7'-6", y 14'-11 3/8"..21'-7 1/2") and its foot zone.
     Register(uid="CMR906AAAA", tag="REG-S-RET2", kind=DuctSystem.RETURN, room="RM-S-SUITE",
-            position=pt(ft(9), ft(20)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-ERV-EXH",
+            position=pt(ft(9), ft(12)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]
 
 # --- Distribution registers, all four storeys (ASHRAE 62.2 coverage) ----------------
-# Fresh air to every sleeping/living/office room, stale air out of every wet room, all
-# matched to rooms explicitly via room= (mep.ventilation_distribution). RM-S-NCLOSET and
-# the other storage rooms get nothing. Second-storey terminals are floor boots off the
-# FS-SECOND trunks like the seven above; the hall bath's stale terminal is a ceiling grille
-# on the EXHAUST run in the FS-ATTIC bay over the shower.
+# Stale air out of every wet room, fresh air into the living/sleeping rooms the ERV still
+# supplies directly, all matched to rooms explicitly via room= (mep.ventilation_distribution).
+# RM-S-NCLOSET and the other storage rooms get nothing. On the second storey the ERV is now
+# extract-only (see REGISTERS above): what is left here is the two wet-room boots off the
+# FS-SECOND return trunk plus the hall bath's ceiling grille on the EXHAUST run in the
+# FS-ATTIC bay over the shower.
 REGISTERS_SECOND = [
-    Register(uid="CSRV01AAAA", tag="REG-S-SUP6", kind=DuctSystem.SUPPLY, room="RM-S-SUITE",
-            position=pt(ft(5), ft(18)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-ERV-SUP",
-            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CSRV02AAAA", tag="REG-S-SUP7", kind=DuctSystem.SUPPLY, room="RM-S-HALL",
-            position=pt(ft(13), ft(23, 6)), duct_ref="DU-M-ERV-SUP", type_ref="REG-T-ERV-SUP",
-            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     Register(uid="CSRV03AAAA", tag="REG-S-RET3", kind=DuctSystem.RETURN, room="RM-S-SUITEBATH",
             position=pt(ft(14), ft(19)), duct_ref="DU-M-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
@@ -977,9 +1059,9 @@ REGISTERS_MAIN = [
     Register(uid="CMRV01AAAA", tag="REG-M-SUP1", kind=DuctSystem.SUPPLY, room="RM-M-LIVING",
             position=pt(ft(27), ft(12)), duct_ref="DU-M1-ERV-SUP", type_ref="REG-T-ERV-SUP",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    Register(uid="CMRV02AAAA", tag="REG-M-SUP2", kind=DuctSystem.SUPPLY, room="RM-M-LIVING",
-            position=pt(ft(30), ft(26)), duct_ref="DU-M1-ERV-SUP", type_ref="REG-T-ERV-SUP",
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    # REG-M-SUP2, the living room's second outlet at (30', 26'), is gone (2026-07-29). One
+    # ERV outlet is what an open-plan room at the whole-house rate wants; the pair was
+    # sized as if this were a heating trunk.
     Register(uid="CMRV03AAAA", tag="REG-M-SUP3", kind=DuctSystem.SUPPLY, room="RM-M-BED",
             position=pt(ft(9), ft(6)), duct_ref="DU-M1-ERV-SUP", type_ref="REG-T-ERV-SUP",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
@@ -998,31 +1080,66 @@ REGISTERS_MAIN = [
     Register(uid="CMRV08AAAA", tag="REG-M-RET5", kind=DuctSystem.RETURN, room="RM-M-LIVING",
             position=pt(ft(33), ft(33)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
-    # RM-M-MUDROOM gets fresh-air intake only, no stale pickup (plans/TODO.md) — an entry
-    # vestibule wants positive pressure against the door, not a return pulling outdoor air
-    # straight back out before it mixes. Centred in the hallway strip between the two
-    # closets, clear of both, in line with the window/bench.
-    Register(uid="CMRV09AAAA", tag="REG-M-SUP5", kind=DuctSystem.SUPPLY, room="RM-M-MUDROOM",
-            position=pt(m(1.23013), m(9.56867)), duct_ref="DU-M1-ERV-SUP", type_ref="REG-T-ERV-SUP",
+    # RM-M-MUDROOM is stale-pickup only, no fresh-air outlet — the user reversed the earlier
+    # call on 2026-07-29, and this comment used to argue the opposite ("fresh-air intake
+    # only... positive pressure against the door"). A mudroom is the room that smells: wet
+    # coats, boots, the dog, and whatever comes in off the drive through the door beside it.
+    # Pressurising it pushes that everywhere else in the house. Extracting from it makes the
+    # mudroom the low-pressure end of the main storey, so the boundary air moves toward the
+    # boots instead of away from them, and the ERV recovers the heat on the way out.
+    #
+    # Same grille, same hole, same uid — only the direction changed. Centred in the hallway
+    # strip between the two closets, clear of both, in line with the window/bench.
+    Register(uid="CMRV09AAAA", tag="REG-M-RET-MUD", kind=DuctSystem.RETURN, room="RM-M-MUDROOM",
+            position=pt(m(1.23013), m(9.56867)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
 ]
 
-# Basement terminals hang from the SL-M-DECK underside off the CHASE trunks. The sauna's
-# stale pickup sits inside the room low on the trunk side — a sauna needs its exhaust to
-# turn the room over after a session.
+# Basement terminals hang from the SL-M-DECK underside off the CHASE trunks — except the
+# sauna's stale pickup, which is the one wall-mounted terminal in the house (see below).
 REGISTERS_BASEMENT = [
     Register(uid="CBRV01AAAA", tag="REG-B-SUP1", kind=DuctSystem.SUPPLY, room="RM-B-GYM",
             position=pt(ft(27), ft(9)), duct_ref="DU-B-ERV-SUP", type_ref="REG-T-ERV-SUP",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
-    Register(uid="CBRV02AAAA", tag="REG-B-SUP2", kind=DuctSystem.SUPPLY, room="RM-B-PLAY-N",
-            position=pt(ft(27), ft(27)), duct_ref="DU-B-ERV-SUP", type_ref="REG-T-ERV-SUP",
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    # REG-B-SUP2 (RM-B-PLAY-N, at (27', 27')) dropped 2026-07-29. The media room is off the
+    # same open basement volume as the gym and takes its air through the opening between
+    # them; MEDIA is not an occupancy the distribution check asks fresh air of.
+    #
+    # REG-B-RET1 moved off the middle of the floor (it was at (5', 8')) and onto the
+    # workbench line at (4'-6", 4'-6") — the pickup is there for light fume handling
+    # (plans/TODO.md: "an ERV intake in the workshop (this one over a bench for light fume
+    # handling)"), which only works if it is over the bench and not over the aisle. Solder,
+    # a can of finish, a bit of glue: this is a bench hood's worth of pull, not a spray
+    # booth's, and it is deliberately on the RETURN trunk rather than a dedicated exhaust.
+    # NOTE the bench itself is not modeled yet — no Furniture in RM-B-WORKSHOP — so the
+    # position is taken from ED-B-WORKSHOP-PANEL1 (plan/lighting.py), the flat panel
+    # authored explicitly as the light "over a bench" in the west bay — offset 18" south of
+    # the panel so the two are not the same ceiling point. When the workbench is placed,
+    # this register moves with it.
     Register(uid="CBRV03AAAA", tag="REG-B-RET1", kind=DuctSystem.RETURN, room="RM-B-WORKSHOP",
-            position=pt(ft(5), ft(8)), duct_ref="DU-B-ERV-RET", type_ref="REG-T-ERV-EXH",
+            position=pt(ft(4, 6), ft(4, 6)), duct_ref="DU-B-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    # The sauna's stale pickup came off the ceiling on 2026-07-29 and went to the wall, 4"
+    # above the finished floor on the south concrete face (y=1'-0") directly below
+    # FURN-B-SAUNA-BENCH-S, whose 18" top clears it completely. This is the whole point of a
+    # sauna's extract: the room stratifies hard, the löyly you want to keep is at bench
+    # height and above, and the air you want gone is the cold, stale, spent layer sitting on
+    # the floor. A ceiling grille at 8' pulls the good air straight out. Paired with
+    # REG-B-SUP3 over the heater, it makes the convection loop the room needs — down the
+    # far wall, across the floor, out under the bench — and both ends are dampered
+    # (REG-T-ERV-SAUNA-*) so the loop can be shut during a session and opened after one.
     Register(uid="CBRV04AAAA", tag="REG-B-RET2", kind=DuctSystem.RETURN, room="RM-B-SAUNA",
-            position=pt(ft(16), ft(6)), duct_ref="DU-B-ERV-RET", type_ref="REG-T-ERV-EXH",
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+            position=pt(ft(11, 5.5), ft(1)), duct_ref="DU-B-ERV-RET",
+            type_ref="REG-T-ERV-SAUNA-EXH",
+            mount=Mount(kind=MountKind.WALL, elevation=inch(4))),
+    # Fresh air in high, over the stones. EQ-B-SAUNA-HTR is at (9'-9 13/16", 8'-9") on the
+    # west liner (plan/electrical.py); this sits directly above it at 7'-0", below the 8'
+    # ceiling so the boot can turn out of DU-B-SAUNA-SUP without fighting the drop ceiling
+    # the condensate line already runs above.
+    Register(uid="CBRV06AAAA", tag="REG-B-SUP3", kind=DuctSystem.SUPPLY, room="RM-B-SAUNA",
+            position=pt(ft(9, 9.8125), ft(8, 9)), duct_ref="DU-B-SAUNA-SUP",
+            type_ref="REG-T-ERV-SAUNA-SUP",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(7))),
     # RM-B-BATH (2026-07-30). Filed as EXHAUST rather than RETURN, like RM-S-BATH1's terminal
     # and unlike the basement's other two stale pickups: a bathroom's air is pulled and not
     # recirculated. It sits over the water closet at the room's west end, the far corner from
@@ -1033,20 +1150,25 @@ REGISTERS_BASEMENT = [
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
 ]
 
-# Attic terminals are floor boots in the FS-ATTIC bays, like the second storey's. The
-# stale pickup serves the den side of the floor.
+# Attic terminals are floor boots in the FS-ATTIC bays, like the second storey's. Four
+# became one balanced pair on 2026-07-29 (user decision): REG-A-SUP2 (RM-A-EAST) and
+# REG-A-SUP3 (RM-A-STUDY) are gone — RM-A-EAST is storage, and RM-A-STUDY's fresh air comes
+# off System 1 at REG-A-HP-STUDY — and the surviving pair moved out of the middle of the
+# floor to the NW corner beside the maintenance shaft at (1', 34'-6"), where the
+# radon/plumbing riser already rises through every storey. That is a 4'-0" branch each
+# instead of a 28' crossing, and it puts both boots where the trunks come up rather than
+# where a room happened to want them.
+#
+# Both sit in RM-A-WEST now (REG-A-RET1 was in RM-A-DEN at the other end of the floor): the
+# attic is one cathedral volume across the knee walls, and a supply and an extract 2'-8"
+# apart still turn it over, because the floor is what the whole-house rate has to reach, not
+# a partitioned room list.
 REGISTERS_ATTIC = [
     Register(uid="CARV01AAAA", tag="REG-A-SUP1", kind=DuctSystem.SUPPLY, room="RM-A-WEST",
-            position=pt(ft(9), ft(20)), duct_ref="DU-A-ERV-SUP", type_ref="REG-T-ERV-SUP",
+            position=pt(ft(6), ft(34)), duct_ref="DU-A-ERV-SUP", type_ref="REG-T-ERV-SUP",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CARV02AAAA", tag="REG-A-SUP2", kind=DuctSystem.SUPPLY, room="RM-A-EAST",
-            position=pt(ft(27), ft(20)), duct_ref="DU-A-ERV-SUP", type_ref="REG-T-ERV-SUP",
-            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CARV03AAAA", tag="REG-A-SUP3", kind=DuctSystem.SUPPLY, room="RM-A-STUDY",
-            position=pt(ft(27), ft(4)), duct_ref="DU-A-ERV-SUP", type_ref="REG-T-ERV-SUP",
-            mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
-    Register(uid="CARV04AAAA", tag="REG-A-RET1", kind=DuctSystem.RETURN, room="RM-A-DEN",
-            position=pt(ft(14), ft(4)), duct_ref="DU-A-ERV-RET", type_ref="REG-T-ERV-EXH",
+    Register(uid="CARV04AAAA", tag="REG-A-RET1", kind=DuctSystem.RETURN, room="RM-A-WEST",
+            position=pt(ft(6), ft(31, 4)), duct_ref="DU-A-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
 ]
 

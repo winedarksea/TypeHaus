@@ -230,10 +230,17 @@ def test_suppressed_bindings_derive_no_detail_sheets(catlin_model):
 
 
 def test_catlin_assembly_change_noise_is_gone(catlin_model):
-    """The 12 node-sharing false positives are down to the two real in-plan changes."""
+    """The 12 node-sharing false positives are down to the real in-plan changes.
+
+    Each entry is a genuine assembly transition authored in the catlin plan, not
+    junction-solver noise. The mudroom entry arrived with the 2026-07-30 batch,
+    which put the stair-face wall W-M-STRW on the new exposed-framing assembly
+    CATLIN_MUDROOM_INT_2X6_EXPOSED where it meets the bearing wall run.
+    """
     keys = sorted({c.key for c in catlin_model.conditions
                    if c.key.startswith("assembly_change:")})
     assert keys == [
         "assembly_change:CATLIN_CONC_12_INT|SAUNA_LINER_ON_CONCRETE",
+        "assembly_change:CATLIN_INT_2X6_BRG|CATLIN_MUDROOM_INT_2X6_EXPOSED",
         "assembly_change:PORCH_RAILING_MASONRY|SUNKEN_GARDEN_WALL",
     ]

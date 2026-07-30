@@ -323,21 +323,35 @@ def test_catlin_sleeve_alignment_is_clean(catlin_model):
         [f.message for f in matched if f.result.value != "pass"]
 
 
-def test_basement_utility_sink_drains_through_its_own_slab_stub_up(catlin_model):
+def test_basement_slab_fixtures_drain_through_their_own_slab_stub_ups(catlin_model):
     """A fixture on a slab-on-grade has no wall drain stack — its trap arm runs under the
     slab — so the penetration is authored where the trap actually drops, not projected onto
-    a wall centerline the way a wall-drained lavatory is."""
-    sleeve = next(s for s in catlin_model.sleeves if s.serves_fixture == "FX-1")
-    fixture = catlin_model.plan.by_tag("FX-1")
-    assert sleeve.host_slab == "SL-B-FLOOR"
-    assert fixture.drain_position is not None
-    assert sleeve.expected_center == fixture.drain_position.xy_m
-    assert sleeve.offset_m == pytest.approx(0.0, abs=1e-9)
+    a wall centerline the way a wall-drained lavatory is.
+
+    Written against FX-1, the mechanical room's utility sink, which was the only such fixture
+    in the house until 2026-07-30. It is gone now: the stair-foot bathroom and the sauna's
+    shower end took the basement from one slab fixture to four, and each of them owns a stub.
+    """
+    slab_fixtures = ("FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-SAUNA-SH", "FX-B-SAUNA-FD")
+    for tag in slab_fixtures:
+        sleeve = next(s for s in catlin_model.sleeves if s.serves_fixture == tag)
+        fixture = catlin_model.plan.by_tag(tag)
+        assert sleeve.host_slab == "SL-B-FLOOR", tag
+        # The convention only needs an authored `drain_position` where the trap is not under
+        # the fixture: a closet flange, a shower pan's outlet and a floor drain's body all are.
+        expected = (fixture.drain_position or fixture.position).xy_m
+        assert sleeve.expected_center == expected, tag
+        assert sleeve.offset_m == pytest.approx(0.0, abs=1e-9), tag
 
 
 def test_catlin_wet_wall_depth_has_no_findings(catlin_model):
     """``advisory.wet_wall_depth`` reports only problems, so silence is the pass. It fires
-    on a drain fixture with no ``wall_ref`` at all, which is what FX-1 used to be."""
+    on a drain fixture with no ``wall_ref`` at all, which is what FX-1 used to be.
+
+    Note what this does *not* assert: that 5 1/2" is a code minimum. It is not — the number is
+    ``preferences.toml``'s own planning allowance and the check is ADVISORY tier, in no item of
+    the mn-2024 permit profile. This test holds the house to its own preference, nothing more.
+    """
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
     matched = [f for f in report.findings if f.check_id == "advisory.wet_wall_depth"]
     assert not matched, [f.message for f in matched]

@@ -114,6 +114,10 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
     "timings": "resolve instrumentation",
     "braces": "diagonal braces are FramedMembers under `all_members()`, so `framing` "
               "already carries them piece for piece",
+    "soffits": "the framing host beside the soffit's own ResolvedSolid: its ladder "
+               "members are FramedMembers under `all_members()` (billed by `framing`) "
+               "and the finished box bills as that solid under `structural_solids`, so "
+               "billing the record too would order the same chase twice",
     "walls": "billed by their parts, not as walls: `framing` for the studs, "
              "`envelope_layers` for the stack, `sheet_goods` for the sheathing",
     "roofs": "same split as walls — `framing` for the sticks, `envelope_layers` and "

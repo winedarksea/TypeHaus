@@ -20,6 +20,7 @@ from typehaus.resolve.envelope import resolve_columns_and_beams, resolve_envelop
 from typehaus.resolve.floor_heat import resolve_floor_heat
 from typehaus.resolve.floors import resolve_floors
 from typehaus.resolve.framing.roof import frame_roofs
+from typehaus.resolve.framing.soffit import frame_soffits
 from typehaus.resolve.framing.solver import frame_model
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.mep import resolve_mep
@@ -76,6 +77,8 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(apply_construction_rules(model))
     with _stage("framing"):
         findings.extend(frame_model(plan, model))
+        # Soffit ladders hang off records the envelope stage already created.
+        findings.extend(frame_soffits(model))
         findings.extend(frame_roofs(model))
         # After roof framing: the wall→roof closure and the eave/rake trim attach to the
         # roof's member list, which frame_roofs rebuilds.

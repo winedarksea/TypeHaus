@@ -160,6 +160,70 @@ def pedestal_seat() -> Builder:
     return build
 
 
+def potted_plant(*, leaves: int = 5, pot_ratio: float = 0.30) -> Builder:
+    """A houseplant: a terracotta pot with a canopy of leaf blades spread over the footprint.
+
+    The glyph is the one case where the plan symbol must *not* be the object's outline. A
+    canopy's true footprint is a circle, and the plain circle is already spoken for —
+    ``round_slab`` owns it — so a filled disc here would put a side table in every corner a
+    plant stands in. What distinguishes the two is the leaves: the pot is drawn small and
+    filled at the centre, and ``leaves`` blades radiate from its rim out to the canopy radius
+    as unfilled outlines, so the symbol never closes into a ring at the footprint edge.
+
+    Each blade is a lens: its angular half-width goes ``sin(pi*t)`` along the blade, which is
+    zero where it meets the pot and zero again at the tip, so a leaf is joined to the plant at
+    one point and comes to a point at the other — the two things that make it read as a leaf
+    rather than as a pie slice.
+
+    ``pot_ratio`` is a share of the *height*, not of the plan: pots are sized by the root ball
+    and the greenery is whatever grew out of it, so a 3'-6" ficus and a 1'-0" succulent in the
+    same 30% pot are both proportioned right without a second catalog dimension. The default
+    lands a 3'-6" plant in a ~12" pot, which is the 14" nursery pot it is actually sold in.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        canopy_r = min(width, depth) / 2.0
+        pot_r = canopy_r * 0.48
+        blades = max(3, leaves)
+        strokes = [circle(0, 0, pot_r, fill="terracotta"),
+                   circle(0, 0, pot_r * 0.76, weight=DETAIL_WEIGHT)]
+        half_angle = math.pi / blades * 0.5
+        for index in range(blades):
+            axis = 2 * math.pi * index / blades + math.pi / 2  # one blade points to the back
+            steps = 10
+            points: list[Point] = []
+            # Out along one edge of the lens and back along the other. The shared endpoints
+            # (the rim joint at t=0, the tip at t=1) are visited once, not twice.
+            for side, walk in ((-1, range(steps + 1)), (1, range(steps - 1, 0, -1))):
+                for step in walk:
+                    t = step / steps
+                    radius = pot_r + (canopy_r - pot_r) * t
+                    theta = axis + side * half_angle * math.sin(math.pi * t) * (1.0 - 0.5 * t)
+                    points.append((radius * math.cos(theta), radius * math.sin(theta)))
+            strokes.append(polygon(points, closed=True, fill=None, weight=DETAIL_WEIGHT))
+            # The midrib. One line down each blade is what separates a leaf from a petal at
+            # 1/4"=1' — five blobs around a circle read as a flower, five ribbed ones do not.
+            strokes.append(line((pot_r * math.cos(axis), pot_r * math.sin(axis)),
+                                (canopy_r * math.cos(axis), canopy_r * math.sin(axis))))
+
+        pot_h = clamp(pot_ratio, 0.15, 0.7) * height
+        # Two stacked boxes for the taper: the lower one inset all round, so the pot narrows
+        # toward its base the way a thrown pot does. Boxes only — the family contract.
+        rim_w = pot_r * 2
+        parts = [box(0, 0, 0.0, pot_h * 0.42, rim_w * 0.72, rim_w * 0.72, "terracotta"),
+                 box(0, 0, pot_h * 0.42, pot_h, rim_w, rim_w, "terracotta")]
+        canopy_h = max(height - pot_h, height * 0.1)
+        tiers = 3
+        for tier in range(tiers):
+            spread = 1.0 - 0.28 * tier  # widest at the pot, tapering to the growing tip
+            parts.append(box(0, 0, pot_h + canopy_h * tier / tiers,
+                             pot_h + canopy_h * (tier + 1) / tiers,
+                             canopy_r * 2 * spread, canopy_r * 2 * spread, "foliage"))
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def slab(*, leg_inset_m: float = 0.06, apron: bool = True,
          modesty_panel: bool = False) -> Builder:
     """Rectangular tables and desks: a top, an optional apron, four corner legs."""

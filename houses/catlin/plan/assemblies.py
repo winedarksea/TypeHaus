@@ -28,7 +28,33 @@ _CONCRETE_BEARING = AssemblyInterface(role="bearing", layer_name="concrete", out
 _STUD_BEARING = AssemblyInterface(role="bearing", layer_name="stud", outboard=False)
 _CMU_BEARING = AssemblyInterface(role="bearing", layer_name="cmu", outboard=False)
 
+# Painted gypsum lining. Layer order is interior -> exterior, so the paint comes FIRST: it
+# is the room-side face, and that position is what makes it the assembly's warm-side vapour
+# retarder in the Glaser walk (IRC R702.7 / R702.7.1 puts latex paint over gypsum in Class
+# III, 1.0-10 perm). Modelling the lining as bare gypsum reads ~30 perm and says the wall has
+# no vapour retarder at all, which is not the wall that gets built.
+#
+# Colour is carried on the `latex-paint` material (a soft off-white), not here: `Layer` has no
+# colour slot, so there is currently no honest way to say "this wall is a different colour"
+# without inventing schema. The one mechanism that exists today is `Room.wall_lining` /
+# `wall_lining_exceptions`, which swaps a whole lining stack — so a second colour would have to
+# be a second `Material` tag plus a per-room lining override, authored in the storey files. That
+# is a deliberate follow-up, not something to fake with a colour field the schema does not have.
+_PAINT_FINISH = Layer(name="paint", material_ref="latex-paint", thickness=inch(0.01),
+                      function=LayerFunction.FINISH,
+                      control={ControlLayer.VAPOR})
+
+# The same film named per face, for partitions that carry their gypsum in `layers` and so
+# have two room faces rather than one lining. `-a`/`-b` match the `gwb-a`/`gwb-b` each sits on.
+_PAINT_FINISH_A = Layer(name="paint-a", material_ref="latex-paint", thickness=inch(0.01),
+                        function=LayerFunction.FINISH,
+                        control={ControlLayer.VAPOR})
+_PAINT_FINISH_B = Layer(name="paint-b", material_ref="latex-paint", thickness=inch(0.01),
+                        function=LayerFunction.FINISH,
+                        control={ControlLayer.VAPOR})
+
 _GWB_LINING = (
+    _PAINT_FINISH,
     Layer(name="gwb-int", material_ref="gwb", thickness=inch(0.625),
           function=LayerFunction.FINISH),
 )
@@ -94,6 +120,7 @@ CATLIN_ROOF = Assembly(
               function=LayerFunction.CLADDING),
     ),
     default_lining=(
+        _PAINT_FINISH,
         Layer(name="gwb-ceil", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
     ),
@@ -368,15 +395,37 @@ GARAGE_ROOF = Assembly(
 )
 
 # --- interior ------------------------------------------------------------------
+# The interior partitions below carry their gypsum in `layers` rather than in a lining, so
+# the paint is authored face by face: `paint-a` / `paint-b`, each outside its own gwb sheet,
+# because both faces of a partition are room faces. These walls separate two conditioned
+# rooms, so no vapour drive crosses them and the Class III retarder earns nothing here — the
+# paint is authored for the finish takeoff and so the model does not claim a bare-gypsum
+# room. Assemblies deliberately left unpainted, and why:
+#   * SAUNA_2X4 / SAUNA_LINER_ON_CONCRETE — the hot face is basswood T&G over foil-faced
+#     polyiso, which is already the Class I vapour/air control layer; a paint film in a
+#     löyly room is not a finish anyone specifies, and the liner is the whole point of the
+#     detail (notes/sauna_basement_wall_detail.md).
+#   * CATLIN_MUDROOM_INT_2X6_EXPOSED — has no gypsum at all. Its two faces are the exposed
+#     Select Structural DF studs and 3/4" cabinet plywood, both already finished with
+#     clear-satin hardwax oil (see their `finish` in MATERIALS below).
+#   * PORCH_RAILING_MASONRY, SUNKEN_GARDEN_*, CATLIN_CONC_*_INT, RETAINING_BLOCK_12,
+#     the deck/glazing assemblies — no gypsum face: stucco, exposed concrete, brick/CMU,
+#     decking and polycarbonate sheet respectively.
+#   * POST_WHITE_PAINT — already a painted assembly, on its own `post-paint-white` material
+#     (exterior paint on PT lumber, not interior latex on gypsum).
+#   * INT_2X4_PARTITION (from library/) — an STC lab-test transcription; see the note in
+#     library/assemblies.py for why a tested stack does not get layers added to it.
 CATLIN_INT_2X6_BRG = Assembly(
     tag="CATLIN_INT_2X6_BRG",
     layers=(
+        _PAINT_FINISH_A,
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
+        _PAINT_FINISH_B,
     ),
     interfaces=(_STUD_BEARING,),
     source="catlin-house centerline bearing wall (2x6)",
@@ -385,12 +434,14 @@ CATLIN_INT_2X6_BRG = Assembly(
 INT_2X6_PLUMBING = Assembly(
     tag="INT_2X6_PLUMBING",
     layers=(
+        _PAINT_FINISH_A,
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
         Layer(name="stud", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
+        _PAINT_FINISH_B,
     ),
     interfaces=(_STUD_BEARING,),
     source="wet wall — depth for 3\" stacks",
@@ -403,6 +454,7 @@ INT_2X6_PLUMBING = Assembly(
 INT_2X6_STAGGERED_PLUMBING = Assembly(
     tag="INT_2X6_STAGGERED_PLUMBING",
     layers=(
+        _PAINT_FINISH_A,
         Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
         Layer(name="staggered-studs", material_ref="spf", thickness=inch(5.5),
@@ -413,6 +465,7 @@ INT_2X6_STAGGERED_PLUMBING = Assembly(
               cavity=CavityFill(material_ref="fiberglass", thickness=inch(3.5))),
         Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
               function=LayerFunction.FINISH),
+        _PAINT_FINISH_B,
     ),
     interfaces=(_STUD_BEARING,),
     source="wet wall, non-bearing — 2x4 staggered on 2x6 plates per USG/GA WP 5530 (16\" o.c. per face, 8\" combined), 3.5\" fiberglass sound batt",
@@ -462,8 +515,50 @@ SAUNA_LINER_ON_CONCRETE = Assembly(
     source="catlin-house sauna_basement_wall_detail.py (liner on the center bearing wall)",
 )
 
+# --- mudroom exposed-stud wall ---------------------------------------------------
+# W-M-STRW only. Asymmetric and, like SAUNA_2X4, carrying NO default_lining: the mudroom
+# face is not "drywall we left off", it is a finished face made of the framing itself, so
+# there is no lining layer to inherit. The open 2x6 bays between the studs are the coat
+# nooks — that is the whole point of the wall — so the structure layer takes no cavity
+# fill either; insulating it would fill the nooks and it separates two conditioned spaces
+# anyway. The stair side closes with 3/4" cabinet plywood, which is both the stair's finish
+# and continuous screw-anywhere backing for hooks on the mudroom side of the studs.
+# The "INT" token in the tag is load-bearing, not decoration: it is this codebase's signal
+# that a wall is a partition rather than envelope (see CATLIN_CONC_12_INT, INT_2X6_PLUMBING,
+# and _is_interior_assembly in checks/code/mn_energy.py). Mudroom and stair are both
+# conditioned, so the prescriptive R-21 wall requirement does not apply here — without the
+# token the uninsulated bays would be read as a failing exterior wall.
+CATLIN_MUDROOM_INT_2X6_EXPOSED = Assembly(
+    tag="CATLIN_MUDROOM_INT_2X6_EXPOSED",
+    layers=(
+        Layer(name="stud", material_ref="df-select-s4s", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
+        Layer(name="ply-stair", material_ref="cabinet-plywood", thickness=inch(0.75),
+              function=LayerFunction.FINISH),
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="plans/TODO.md — mudroom coat wall: exposed Select Structural S4S 2x6 DF studs on the mudroom face (open bays = coat nooks), 3/4\" cabinet-grade plywood on the stair face",
+)
+
 MATERIALS = [
     *STARTER_MATERIALS,
+    # --- mudroom exposed-stud wall ---------------------------------------------
+    # Appearance-grade framing, because in W-M-STRW the studs ARE the finish. Select
+    # Structural S4S with eased corners: the grade buys straightness and a clean face, the
+    # eased arris keeps a hand running along an exposed edge off a sharp corner. Douglas
+    # fir-larch rather than SPF: it is the denser species (~32 pcf vs SPF's ~29), which is
+    # why its R/inch is *lower* than spf's 1.24 — conductivity tracks density in wood.
+    Material(tag="df-select-s4s", name="Douglas fir Select Structural S4S, eased corners",
+             r_per_inch=1.00, density=530.0, perm_rating=2.9, hatch="lumber",
+             color="#d9b077", finish="clear-satin-hardwax-oil",
+             source="plans/TODO.md — exposed mudroom studs; DF-L R ~0.99-1.06/in (vs SPF 1.24-1.25) per the softwood density series, permeability shares the softwood midpoint used for spf"),
+    # The stair face. 3/4" rather than the 1/2" a plain panel finish would take, because
+    # this panel is structural backing: coat hooks and the closet rail screw straight into
+    # it anywhere along the wall, with no blocking behind and no stud to hunt for.
+    Material(tag="cabinet-plywood", name="Cabinet-grade hardwood plywood (3/4\")",
+             r_per_inch=1.25, density=610.0, perm_rating=0.30, hatch="lumber",
+             color="#c8a97a", finish="clear-satin-hardwax-oil",
+             source="plans/TODO.md — mudroom wall's stair face; 3/4\" is structural backing so coat hooks screw directly into it (a 1/2\" panel would need blocking); permeability per the plywood series used for struct-1-plywood"),
     Material(tag="sauna-tg", name="Basswood/aspen T&G sauna liner (5/4)", r_per_inch=1.3,
              perm_rating=20.0, hatch="lumber", color="#e6d4ae",
              source="notes/sauna_basement_wall_detail.md — low-conductivity species (American basswood, Canadian poplar, aspen)"),
@@ -607,4 +702,5 @@ ASSEMBLIES = [
     INT_2X4_PARTITION,
     SAUNA_2X4,
     SAUNA_LINER_ON_CONCRETE,
+    CATLIN_MUDROOM_INT_2X6_EXPOSED,
 ]

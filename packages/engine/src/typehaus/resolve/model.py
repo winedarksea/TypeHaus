@@ -238,6 +238,28 @@ class ResolvedSolid:
     voids: tuple[Ring, ...] = ()
 
 
+@dataclass
+class ResolvedSoffit:
+    """A dropped ceiling box, carried as a record so it can be *framed*.
+
+    The soffit's finished shape is already emitted as a ``ResolvedSolid`` (category
+    "soffit") — the box a renderer draws and a room reads its clear height from. This
+    record is the framing host beside it: the authored ``FramingSpec`` (``framing``,
+    ``None`` when the soffit is drawn but not yet framed) and the members
+    :mod:`typehaus.resolve.framing.soffit` generates from it. Mutable, because the
+    framing stage fills ``members`` after the envelope stage creates the record.
+    """
+
+    uid: str
+    tag: str
+    storey: str
+    outline: Ring
+    z0_m: float  # underside of the finished soffit
+    z1_m: float  # the ceiling plane it hangs from
+    framing: object | None = None  # FramingSpec | None (model/floors.py Soffit.framing)
+    members: list[FramedMember] = field(default_factory=list)
+
+
 @dataclass(frozen=True)
 class ResolvedRoof:
     """A constrained gable/shed roof derived from its bearing-wall envelope."""
@@ -586,6 +608,7 @@ class ResolvedModel:
     roofs: list[ResolvedRoof] = field(default_factory=list)
     stairs: list[ResolvedStair] = field(default_factory=list)
     floors: list[ResolvedFloor] = field(default_factory=list)
+    soffits: list[ResolvedSoffit] = field(default_factory=list)
     braces: list[ResolvedBrace] = field(default_factory=list)
     floor_heat: list[ResolvedFloorHeat] = field(default_factory=list)
     rooms: list[ResolvedRoom] = field(default_factory=list)
@@ -622,4 +645,6 @@ class ResolvedModel:
             out.extend(roof.members)
         for brace in self.braces:
             out.extend(brace.members)
+        for soffit in self.soffits:
+            out.extend(soffit.members)
         return out

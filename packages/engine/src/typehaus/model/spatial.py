@@ -126,6 +126,13 @@ class Alarm(Element):
     # alarms against the panel schedule the way it already does for every other consumer.
     # ``None`` = not yet assigned, which is a modelling gap rather than a battery-only alarm.
     circuit: str | None = None
+    # Where the head actually mounts. ``None`` falls back to the hosted room's seed, which is
+    # the right answer for a compact room. It is the wrong answer for the alarm IRC R314.3
+    # puts "in the immediate vicinity of the bedrooms": that one is hosted by the big open
+    # room the corridor is part of, so the seed would draw it out in the middle of the living
+    # space instead of in the hall lobe outside the bedroom doors. An explicit position says
+    # where the detector is without inventing a room to hang it on.
+    position: Point2D | None = None
 
 
 @register_element

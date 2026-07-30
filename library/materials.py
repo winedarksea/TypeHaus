@@ -117,6 +117,29 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              source=f"{_UAF}: 'Wood, sugar pine' permeability 0.4-5.4 perm-in (the table's "
                     "softwood entry); midpoint of the published range"),
 
+    # --- interior paint ---------------------------------------------------------------------
+    #
+    # Latex paint on gypsum board is not decoration the model can skip: IRC R702.7 counts it as
+    # the assembly's warm-side vapour retarder, and R702.7.1 puts it in Class III. Leaving it
+    # out models every painted wall as bare gypsum (~30 perms at 5/8"), which is a wall with no
+    # vapour retarder at all — a different wall from the one that gets built.
+    #
+    # The rating is authored as a *permeance*, not a permeability, for the same reason housewrap
+    # and foil facers are: what ASTM E96 measures here is a finished two-coat film, not a depth
+    # of substance. Dividing a film rating by the 0.01" the layer carries would report 500 perms
+    # and invent a number no test measured. ``coating=True`` says the rest out loud — this is a
+    # covering with no plane of its own, billed by coverage area, and the renderers must not
+    # draw it as a second wall face.
+    Material(tag="latex-paint", name="Interior latex paint (primer + 2 coats)",
+             r_per_inch=0.0, vapor_permeance_perms=5.0, color="#f0ede6",
+             finish="matte-latex", coating=True,
+             source="IRC R702.7.1 vapour-retarder classes: Class III is 1.0-10 perm by ASTM "
+                    "E96 dry cup, and R702.7 names latex paint over gypsum board as the "
+                    "canonical Class III retarder. Published permeances for a two-coat latex "
+                    "film on gypsum spread over roughly 3-10 perm with coats and sheen; 5.0 "
+                    "is a mid-band value biased to the tight end of that spread, quoted as a "
+                    "band midpoint rather than as a single published test result"),
+
     # --- floor finishes -------------------------------------------------------------------
     #
     # `Room.floor_finish` was a free-form string with nothing behind it: the viewer could not

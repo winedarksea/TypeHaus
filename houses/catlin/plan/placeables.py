@@ -353,6 +353,35 @@ SECOND_PLACEABLES = [
     Furniture(uid="CSB707AAAA", tag="FURN-S-BATH1-CLOSET", type_ref="CASE-PANTRY-CLOSET-72",
               room="RM-S-BATH1", position=pt(m(1.09343), m(8.42656)),
               rotation=deg(180)),
+    # RM-S-PLANT is furnished as what it is: a place to sit among the plants, not a store
+    # room. The room's clear face is the full x 0'-0 5/8"..17'-11 3/8", y 0'-0 5/8"..8'-11 3/8"
+    # bay, and the program divides along y — plants on the glass, seating behind them.
+    #
+    # The two plants stand directly under ED-S-PLANT-TUBE1/2 (plan/lighting.py: x=5'/13',
+    # y=2', suspended 2'-3" below the ceiling), which is the whole reason those tubes are on a
+    # photoperiod timer: the light has to land on the foliage, not beside it. That also puts
+    # both pots in the south glazing — WIN-S-PLANT1 is centred x=5'-4" and WIN-S-PLANT2
+    # x=13'-4", both with 2'-0" sills — so each plant gets daylight and the tube supplements
+    # it. An 18" pot at y=2' occupies y 1'-3"..2'-9", well off the 5/8" wall face.
+    #
+    # The chairs sit north of the plants facing them (rotation 0 puts a chair's back at +y, so
+    # it looks south down the room and out the windows). Neither reaches the plants: the
+    # armchair spans x 5'-6 1/2"..8'-5 1/2", the rocker x 9'-9"..12'-3", and both run
+    # y 4'-0"..7'-0" against the plants' 2'-9" north edge — 1'-3" of walk-through between the
+    # two zones. The 1'-3" gap the chairs leave each other straddles REG-S-SUP1 at (9', 4'),
+    # which is a recessed floor register: nothing stands on it either way.
+    #
+    # East is the constraint that sets the chairs' x, not the west wall: D-S-PLANT swings off
+    # the centre bearing line at y=4'-5 1/2" and its 2'-6" leaf sweeps back to about
+    # x=15'-5". Both chairs stop 3'-2" short of that arc.
+    Furniture(uid="PLT701AAAA", tag="FURN-S-PLANT-POT1", type_ref="FURN-PLANT-18",
+              room="RM-S-PLANT", position=pt(ft(5), ft(2))),
+    Furniture(uid="PLT702AAAA", tag="FURN-S-PLANT-POT2", type_ref="FURN-PLANT-18",
+              room="RM-S-PLANT", position=pt(ft(13), ft(2))),
+    Furniture(uid="CHR706AAAA", tag="FURN-S-PLANT-CHAIR", type_ref="FURN-ARMCHAIR-35",
+              room="RM-S-PLANT", position=pt(ft(7), ft(5, 6))),
+    Furniture(uid="RCK702AAAA", tag="FURN-S-PLANT-ROCKER", type_ref="FURN-ROCKING-CHAIR-30",
+              room="RM-S-PLANT", position=pt(ft(11), ft(5, 6))),
     ElectricalDevice(uid="QTS0020AAA", tag="ED-S-PLANT-SPOT", kind=DeviceKind.LIGHT,
                      position=pt(m(1.2726), m(2.63984)), type_ref="ED-T-LT-SCONCE-SPOT",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",

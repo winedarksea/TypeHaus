@@ -134,7 +134,8 @@ def _gate_finding(assessment: MonthlyAssessment | None, assembly_tag: str) -> Fi
             severity=Severity.WARN, check_id=CHECK_ID,
             message=(f"monthly gate (ISO 13788-style): dew point reached at "
                      f"{analysis.crossing_layer} ({analysis.crossing_fraction:.0%} through "
-                     f"layer) at {assessment.boundary}"),
+                     f"layer) at {assessment.boundary}; "
+                     f"{analysis.interior_retarder_note}"),
             element_tags=(analysis.assembly_tag,), result=Result.FAIL,
             fix_hint="this is the gate: a crossing against a monthly *mean* means the "
                      "plane runs wet for weeks, not hours — add exterior insulation, a "
@@ -148,7 +149,8 @@ def _gate_finding(assessment: MonthlyAssessment | None, assembly_tag: str) -> Fi
                  f"worst month {assessment.month} at {assessment.boundary}, tightest plane "
                  f"{analysis.tightest_plane_name} at "
                  f"{tightest.local_relative_humidity:.0%} RH, "
-                 f"{tightest.margin_pa:.0f} Pa below saturation"),
+                 f"{tightest.margin_pa:.0f} Pa below saturation; "
+                 f"{analysis.interior_retarder_note}"),
         element_tags=(analysis.assembly_tag,), result=Result.PASS,
     )
 

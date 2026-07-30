@@ -11,6 +11,8 @@ from typehaus.quantities import Length, ft, inch
 
 # Nominal → actual dressed lumber dimensions (thickness, depth) in inches.
 LUMBER_ACTUAL: dict[str, tuple[float, float]] = {
+    "2x2": (1.5, 1.5),  # soffit ladder stock — profiles.cross_section reads this table too
+    "2x3": (1.5, 2.5),
     "2x4": (1.5, 3.5),
     "2x6": (1.5, 5.5),
     "2x8": (1.5, 7.25),

@@ -73,7 +73,12 @@ def _eave_water(side: str, index: int, eave_x, outward: float):
         path=_run(gutter_center),
         top_elevation=_EAVE_DECK + inch(_FURRING_UNDERSIDE_IN - 1.2), depth=_GUTTER_DEPTH,
         thickness=inch(_GUTTER_THICK_IN), material="aluminum", host_ref="RF-HOUSE",
-        slope='1/16 in/ft to downspout')
+        slope='1/16 in/ft to downspout',
+        # Both runs go south→north (+y), whose left-hand normal (resolve/geometry.py::
+        # normal, 90 deg CCW) points west (-x). The house is east of the west eave and west
+        # of the east eave, so the channel's back sheet — the one against the fascia — is on
+        # the right of the west run and on the left of the east run.
+        back_side="right" if outward < 0 else "left")
     drip = Flashing(
         uid=f"RTFF0{index}AAAA", tag=f"TR-RF-DRIP-{side}", kind=TrimKind.DRIP_FLASHING,
         path=_run(drip_center),

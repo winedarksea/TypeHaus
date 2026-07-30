@@ -100,11 +100,26 @@ def test_unconditioned_room_needs_no_supply():
 
 # --- catlin coverage ----------------------------------------------------------------
 
-def test_catlin_distribution_all_pass(catlin_model):
+# The 2026-07-29 ERV reduction (plans/TODO.md: "We don't need the 30 some ERV inlets and
+# outlets in the house") left exactly two rooms deliberately unserved, and the check is
+# supposed to keep saying so:
+#   RM-S-PLANT  — the plant room is getting its own dedicated mini-HRV, not yet drawn.
+#   RM-S-STUDY2 — dropped outright by the user; it breathes off the hall it opens onto.
+# Both are named here rather than the assertion being loosened to "mostly pass", so a third
+# room falling out of coverage still fails this test.
+_EXPECTED_UNSERVED = {"RM-S-PLANT", "RM-S-STUDY2"}
+
+
+def test_catlin_distribution_passes_except_the_two_deliberate_gaps(catlin_model):
     findings = _run(catlin_model)
     assert findings
-    assert all(f.result == Result.PASS for f in findings), [
-        f.message for f in findings if f.result != Result.PASS]
+    unexpected = [f for f in findings if f.result != Result.PASS
+                  and not _EXPECTED_UNSERVED.intersection(f.element_tags)]
+    assert not unexpected, [f.message for f in unexpected]
+    # And the two gaps are really there — if either room gets served again, this test says
+    # so rather than silently tolerating a stale exemption.
+    flagged = {t for f in findings if f.result != Result.PASS for t in f.element_tags}
+    assert flagged == _EXPECTED_UNSERVED, flagged
 
 
 def test_catlin_covers_every_required_room(catlin_model):

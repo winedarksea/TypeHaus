@@ -268,6 +268,8 @@ def test_porch_joists_reach_the_deck_edge_without_oversailing_the_front_wall(
 def test_balcony_gutter_rim_meets_the_drip_edge(catlin_model) -> None:
     """Water shedding off the drip flashing lands in the trough: the gutter's top meets
     the drip's lower edge instead of hanging 6" of open air below it."""
-    gutter = _solid(catlin_model, "TR-SG-GUTTER-1")
+    bands = [s for s in catlin_model.solids if s.tag.startswith("TR-SG-GUTTER-1-")]
+    assert {s.tag.rsplit("-", 1)[1] for s in bands} == {"BACK", "BOTTOM", "FRONT"}
     drip = _solid(catlin_model, "TR-SG-DRIP-1")
-    assert gutter.z1_m == pytest.approx(drip.z0_m)
+    # The channel is an open-top U, so its rim is the top of its tallest band.
+    assert max(s.z1_m for s in bands) == pytest.approx(drip.z0_m)

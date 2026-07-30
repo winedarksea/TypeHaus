@@ -10,6 +10,8 @@ model, IFC, and take-off instead of living only in a note.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import TrimKind
 from typehaus.model.registry import register_constructor, register_element
@@ -53,10 +55,19 @@ class EaveSoffit(_EdgeRun):
 
 @register_element
 class Gutter(_EdgeRun):
-    """A hung gutter channel at the low edge; ``depth`` is the channel height."""
+    """A hung gutter channel at the low edge; ``depth`` is the channel height.
+
+    The run resolves as an open-top U — a back sheet, a floor and a front sheet — not as a
+    solid bar, so which side of the run faces the building has a name.
+    """
 
     kind: TrimKind = TrimKind.GUTTER
     slope: str = ""  # optional drainage note, e.g. "1/16 in/ft to SE downspout"
+    # Which side of the p0→p1 path faces the fascia/house ("left" is the path's left-hand
+    # normal, resolve/geometry.py::normal). Naming only: the channel's cross-section is
+    # symmetric about its centre line, so this decides which band is tagged BACK and which
+    # FRONT, never where any of them sits.
+    back_side: Literal["left", "right"] = "left"
 
 
 @register_element

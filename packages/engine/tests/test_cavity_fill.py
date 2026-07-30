@@ -39,7 +39,10 @@ def test_cavity_shares_its_host_polygon_and_adds_no_depth(catlin_model):
     # depth counts every layer once; the cavity rides inside the studs
     depth = sum(ly.thickness_m for ly in wall.depth_layers())
     assert wall.thickness_m == pytest.approx(depth)
-    assert wall.thickness_m * 39.3701 == pytest.approx(11.645, abs=0.01)
+    # 0.01 paint + 0.625 gwb + 5.5 stud + 0.5 sheathing + 0.02 wrb + 2 polyiso + 2 eps
+    # + 0.5 furring + 0.5 standing seam. The paint film is the interior lining's Class III
+    # vapour retarder (IRC R702.7), so it is a layer with a thickness, not a colour note.
+    assert wall.thickness_m * 39.3701 == pytest.approx(11.655, abs=0.01)
 
 
 def test_no_wall_layer_overlaps_another(catlin_model):

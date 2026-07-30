@@ -16,34 +16,28 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   straight run to pay for it (11.28" against the 10" minimum). Both checks stay advisory
   WARN and keep printing the measured numbers.
 
-- **Panel needs to be a 54-space one (2026-07-26).** All 35 circuits now carry slot
-  assignments and `electrical.panel_spaces` measures 48 required against ED-T-PANEL's
-  declared 42 — an honest FAIL until the panel type is swapped to a 54-circuit enclosure
-  (one-line change on the type). That swap is yours.
+- **The building drain is at 3" and the basement's real load is now ~42 DFU (2026-07-30).**
+  The stair-foot bathroom and the sauna shower end added four slab fixtures (WC 3 + lav 1 +
+  shower 2 + floor drain 2 = 8 DFU). They ride their own under-slab branches —
+  `PR-B-BATH-DRAIN` and `PR-B-SAUNA-DRAIN` — and by the convention FX-1 set they are *not*
+  re-listed in `PR-B-MAIN-DRAIN`'s `serves`, so `mep.pipe_sizing` still measures the main at
+  34 of the 35 DFU a 3" horizontal branch carries (Table 703.2) and passes. The pipe is
+  carrying ~42. Sizing the building drain up to 4" is the honest fix and it is not a one-liner:
+  `SP-B-SLAB-MAIN`, `SP-B-SEWER-EXIT` and the under-slab inverts the 2026-07-30 sewer decision
+  set all move with it, and there is only ~10" between the slab underside and that leg to move
+  them in. Yours, because it re-opens that decision.
 
 ## Remaining Work
 
-- **`Alarm` has no position — it draws at its room's seed.** Fine while every alarm had a
-  room its own size; exposed on 2026-07-28 when RM-M-HALL was retired into RM-M-LIVING under
-  BM-M-HALL and AL-M-HALL's symbol moved with it to (27', 12'), out in the dining end. The
-  code check only asks for *an* alarm on a non-sleeping room, so it still passes, but R314.3
-  wants it "in the immediate vicinity of the bedrooms" and the sheet now draws it elsewhere.
-  Needs an optional `position` on `Alarm` (falling back to the seed), not a room split.
 - **In-plan variant forks + compare UI** (scoped out of the sweep by decision: catalog only).
   `model.json` now carries the variant catalog; `prices.toml` $-ranges work in
   `haus variants compare` and takeoff. Still missing: `variant_of`/`active` forks with
   one-active integrity + promote-with-uid-remap, and the UI side-by-side compare canvases.
-- **Authored gutter runs are still solid bars.** The *derived* eave gutters are open-top
-  3-band channels now; `TR-SG-GUTTER`/`TR-RF-GUTTER` (authored `Gutter` runs in
-  `resolve/accessories.py::_resolve_edge_run`) should get the same treatment. Exact recipe
-  recorded in the roof-eave stream report (E5); purely visual. (Deferred from the 2026-07-26
-  batch because that file was owned by the then-pending breezeway stream S2; S2 has now
-  landed, so this is unblocked.)
-- **Gree capacities are representative placeholders (2026-07-29).** The three-system HVAC
-  design below is modeled; every capacity on `EQ-T-GREE-*` and the ERV's SRE carries
-  `# TODO verify datasheet` and a `source` saying so. `mep.heating_capacity` now sizes per
-  *zone of rooms* (`Equipment.zone_rooms` + `outdoor_ref`) off `estimate_block_load(rooms=…)`.
-  Current honest findings, whole-house block load 56,434 Btu/h at design:
+- **Gree capacities are representative placeholders (2026-07-29).** Every capacity on
+  `EQ-T-GREE-*` and the ERV's SRE carries `# TODO verify datasheet` and a `source` saying so.
+  `mep.heating_capacity` sizes per *zone of rooms* (`Equipment.zone_rooms` + `outdoor_ref`)
+  off `estimate_block_load(rooms=…)`. Current honest findings, whole-house block load
+  56,434 Btu/h at design:
   - System 1 (Vireo GEN3 + ducted air handler, upstairs + 2 attic rooms): 11,415 vs 16,500
     at-design — PASS.
   - System 2 (Multi Ultra 3-port, basement + west main + living room): **37,078 vs 22,000
@@ -54,21 +48,12 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   - System 3 (Sapphire R32, stair + mudroom + mech): 4,094 vs 8,000 at-design — PASS.
   - `RM-A-WEST` and `RM-A-DEN` are in **no** zone: only RM-A-EAST and RM-A-STUDY get attic
     branches, so the check names the other two unclaimed rather than guessing.
-- **RM-S-SUITE has no conditioned-air terminal (2026-07-29).** It is in System 1's
-  `zone_rooms`, but the chase runs down the *east* hall; reaching the west suite needs a
-  branch across the stair well that is not drawn. Its ERV supply is unaffected.
-- **Hall cans sit inside the new soffit (2026-07-29).** `ED-S-HALL-CAN1/2/3` are at x=20',
-  inside `SF-S-DUCT`'s widened plan extent, still mounted at the 9'-0" ceiling. They want
-  re-setting into the soffit face at 7'-10" in a lighting pass.
 - **Refrigerant linesets are unmodeled** — only the indoor→outdoor pairing is recorded
   (`Equipment.outdoor_ref`). (Heat-pump *condensate* is modeled as of the plumbing pass:
   `PR-M-COND-HEADS` drops the two main-storey wall heads through `SP-M-COND` to
   `PR-B-COND`, the collected air-gap line falling to terminate over the mechanical-room
   sink — which now has the drain that was the blocker. `EQ-S-HP1-AH`'s line down the
   second-floor chase is still undrawn.)
-- **The panel is now 52 spaces over a 42-space enclosure (2026-07-29).** Two more two-pole
-  circuits (CKT-HP1-AH, CKT-HP2) landed with the three-system design; `electrical.panel_spaces`
-  FAILs until the panel is swapped for a 54-space unit, which was already true at 48.
 - **Deck post/footing UNKNOWNs (2026-07-26, by design).** Both sunken-garden decks are now
   `service="deck"`: `deck_post_size` has no R507.4 row for the 12" round column PT-SG-COL,
   and PT-SG-COL plus the six balcony pillars bear on non-Pad chains (grouted CMU / bell
@@ -93,6 +78,31 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 - **`interior_slab_drip_flashing` detail gate** still needs "is there enclosed space
   beneath" (storey elevations on resolved rooms) to distinguish `SL-M-DECK` from
   `SL-G-FLOOR`.
+
+### Residuals from the 2026-07-30 batch
+
+- **`N-M-STRJ` junction WARN (honest fallback).** W-M-STRW's studs are `df-select-s4s`
+  while W-M-STRW2/W-M-STOS2 carry `spf`, and the junction solver only calls a through-pair
+  continuous on an identical bearing-material string. Physically continuous (both dimensional
+  softwood under a lapped double top plate); fixing it properly wants a species-class notion
+  in `resolve/topology.py` rather than lying about the stud species.
+- **W-M-STRW2 (the 6" jog) kept the standard gwb assembly** — its mudroom face now stands
+  1/2" proud of the exposed-stud wall's face. Small step, mostly hidden by the STOS2 tee.
+  Decide whether the exposed-stud look should wrap the jog (then it takes
+  `CATLIN_MUDROOM_INT_2X6_EXPOSED` too).
+- **`FURN-M-MUD-CLOSET-N` type is unused** — the north mudroom closet became RM-M-MECH
+  (radon + plumbing riser) instead. Delete the type or place it elsewhere.
+- **RM-S-PLANT has no fresh-air terminal, by decision (2026-07-30)** — a dedicated mini-HRV
+  just for the plant room is under consideration. RM-S-STUDY2 likewise has no fresh-air
+  terminal, by decision. `mep.ventilation_distribution` names exactly these two rooms and
+  the test pins that set.
+- **Workshop ERV intake is positioned off the light** `ED-B-WORKSHOP-PANEL1` ("over a
+  bench") — no workbench placeable exists in RM-B-WORKSHOP yet; move the register when the
+  bench is actually placed.
+- **Per-wall paint colour.** `latex-paint` over gwb is modeled (Class III, IRC R702.7.1) but
+  `Layer` has no colour slot; a second colour needs a second paint `Material` plus per-room
+  `wall_lining` overrides. Rationale in the comment above `_PAINT_FINISH` in
+  `houses/catlin/plan/assemblies.py`.
 
 ## Phase 2 — Complete Catlin junctions (needs your intent — construction-rule authoring)
 
@@ -163,6 +173,8 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `FO-M-STAIR` cannot start south of the wall or the wall overhangs the slab opening. Each
   well then takes whatever run its own north limit leaves, which is why ST-B2M's treads are
   11 15/16" and ST-M2S's are 11". Worth remembering before moving W-M-STRS again.
+  (2026-07-30: W-M-STRW is now the exposed-stud coat wall; its stair face is pinned by an
+  explicit `alignment` so the well geometry cannot drift with assembly thickness.)
 - **Guards draw in 2D** (`emit/draw/floorplan.py::_emit_railings`, layer `A-RAIL`). Every
   resolved railing solid is drawn as its own plan outline, so a post reads at its true
   section and a rail as the band it sweeps. Coincident stacked rails are deduped. An open
@@ -174,47 +186,17 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 the future.
 
 ### Items after Phase 6
-- Double check that the default toilet has a realistic size (do we separate the code required toilet clearance with the size of the toilet itself?)
-- DONE: object inspector relabeled (every row on `.field-label`, positions and distances in
-  ft-in) and given a "Mount height above floor" field on the new `set_placeable_mount` macro,
-  which rewrites only the mount's elevation and keeps kind/drop/recessed. Clicking no longer
-  moves anything: the plan canvas needs 5px of screen travel before a drag starts, and a drag
-  keeps the grab point under the pointer instead of snapping the object's centre to it.
-- DONE: Views ▾ → Labels: All / Hover / Off, covering room labels and object names together
-  (replaces the "Space labels" checkbox). A selected element always shows its own label.
-- RM-M-STORAGE should become the "Mudroom". Doors should go as far east on both walls as is practical with framing. WIN-M-STOR should be replaced by a 14" wide fixed (picture) window on the midpoint of the west wall (midpoint, but such that it fits elegantly between studs). Then on the north and south sides of the mudroom, from door to west wall, there should be full closests added, leaving a hallway width (36") between them, and a 36" width bench under the window there for changing shoes. The mudroom should have an ERV ventilation intake (but not an outlet). Maybe sliding doors on those closets (like shower doors, two panels that can overlap, not the sash kind that go into the wall).
-- Make Wall W-M-STRW a special wall type. It will not have drywall facing the mudroom, so it can have space for hanging coats between the studs. The studs will be Select Grade S4S 2x6 for better visual appearance (likely douglas fir, perhaps slightly rounded (eased) corners). The rear side of the wall (facing the stairs) will have 3/4" cabinet-grade plywood (which can support coat hooks directly). Try to keep electrical and plumbing out of this wall then (it might work carefully but easier to avoid.)
-- Make sure the framing of the duct chase down the second floor hallway actually framed that as appropriate
-- RM-S-PLANT needs furniture, showing two armchairs or rocking chairs and two plants (one under each light, just some sort of simple potted plant as a representation of the larger collection of plants that will be there)
-- We don't need the 30 some ERV inlets and outlets in the house. We can reduce down to an intake in each bathroom, on the edge of the kitchen, and in the mudroom. The second floor bedrooms also have intakes (the ducts for the heating provide the matching outlets there). There is an ERV outlet near the ducted intake for the second floor HVAC, in the master bedroom (pairs with the intake in the BATH2 master bedroom). There should be an ERV intake in the workshop (this one over a bench for light fume handling) and an outlet somewhat near the gym. There should be an outlet in RM-M-STUDY too. The sauna like needs an intake and an outlet both (input (outlet) ventilation above heater near ceiling or in ceiling, output (intake) ventilation below foot bench near floor), the sauna ones should be sized small and/or adjustable to close. Here "outlet" means fresh air and "intake" means gathers stale air.
+- Confirm the default toilet's 28" body depth vs an elongated bowl (29–31") — the code
+  clearance is already modeled separately (`_water_closet_required_clearance` in
+  `library/placeables/fixtures.py`), so this is a one-line footprint question.
 - D-B-PLAY door needs to have a "glazed 60 interior french door" style, not a bifold.
 - Basic UI visual overhaul, perhaps Material Design 3 aligned. Perhaps the most awkward thing now is the way "Views" is opened. It's the most used tab and it's a tiny button.
 
 Questions:
-- Do we want floor drains in kitchen/laundry room
+- Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
 - Is the door opening inside the breezeway code compliant
 - No overhang roof 
 - Outdoor hydrants plus more complete internal plumbing 
 - Edits in 2d don't always update all the necessary pieces (like when we switched a shower to showertub)
 - Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?
-- Should we add paint as a layer over gwb where appropriate (also allowing color choice), and if it is used as a Class III vapor retarder (ie latex paint over drywall)
 - Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model)
-
-##  HVAC
-**Modeled 2026-07-29** — all four items below are implemented; the open follow-ups are in
-the honest-state list above (Gree datasheet verification, System 2 undersizing, RM-S-SUITE's
-missing terminal, the hall cans, condensate plumbing). The BTU model now carries blower-door
-infiltration (LBL N-factor off `preferences.toml`'s `ach50`) and ERV ventilation air net of
-sensible recovery, and can be scoped to a zone of rooms — see `energy.py`, whose docstring
-says plainly where that room attribution is approximate.
-
-Gree Slim Concealed Ducted Series with Gree Vireo GEN3 / Ultra outdoor unit running in RM-S-STUDY2 in a dropped HVAC chase that runs north from there along the hallway, with outlets in each of the bedrooms and near the stairs, plus also outlets into RM-A-EAST and RM-A-STUDY directly above it (very short branches, this is a straight run duct meant to operate at low flow)
-
-Gree Multi Ultra 3-port outdoor unit (heats down to -22°F) powering the 3 wall mounts (basement in gym near ceiling, master bedroom on south wall near the center wall, living room on south wall near the center line wall)
-
-Unit three is on the north side of the house. It is mounted on the main floor over the stairs, with a cutout in the wall (W-M-STRW) in which it is partly placed to also reach the mudroom directly. This unit is on backup battery circuit, and is an ultra high efficiency unit (something like Gree Sapphire R32 Series, with a true VFD inverter for softer power start) likely something like 9100 BTUs.
-
-ERV system nears clearer inlets and outlets. They are currently style more like old fashioned grilles, not true ERV inputs/outputs.
-
-### Cleanup
-- Update the screenshots in the landing page and remove the "pre alpha" notes

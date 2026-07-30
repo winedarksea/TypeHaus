@@ -405,23 +405,25 @@ def test_catlin_slot_map_is_complete_and_unique(catlin_model):
     assert len(occupied) == sum(circuit.poles for circuit in circuits)
 
 
-def test_catlin_panel_spaces_fails_at_42_and_would_pass_at_54(catlin_model):
-    """The honest state: spaces required exceed ED-T-PANEL's 42, so the check FAILS
-    until the panel is swapped for a bigger enclosure (54 clears it, measured)."""
+def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
+    """ED-T-PANEL was a 42-space enclosure carrying a 52-space schedule, so this check
+    used to FAIL by design and the last ten circuits sat past the bus. The panel was
+    swapped for a 54-space unit (plan/mep.py), and the check now PASSES with two spaces
+    spare. Both numbers are measured off the model, never pinned."""
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
     findings = [f for f in report.findings if f.check_id == "electrical.panel_spaces"]
-    assert findings and any(f.result.value == "fail" for f in findings)
+    assert findings
+    assert all(f.result.value == "pass" for f in findings), [f.message for f in findings]
     circuits = catlin_model.plan.library.circuits
     required = sum(circuit.poles for circuit in circuits)
     declared = next(t.spaces for t in catlin_model.plan.library.electrical_device_types
                     if t.tag == "ED-T-PANEL")
-    assert required > declared  # 48 > 42 as of authoring — measured, not pinned
-    # Synthetic 54-space panel carrying the same schedule passes.
-    panel_type, panel = _panel_with_spaces(54)
+    assert required <= declared
+    assert (required, declared) == (52, 54)  # the spare capacity is the point
+    # And the enclosure it replaced still would not have held the schedule — which is why
+    # it was replaced, and what keeps this from passing for the wrong reason.
     retagged = tuple(c.model_copy(update={"panel_ref": "ED-M-PANEL"}) for c in circuits)
-    findings = _spaces_findings(54, retagged)
-    assert required <= 54
-    assert all(f.result.value == "pass" for f in findings), [f.message for f in findings]
+    assert any(f.result.value == "fail" for f in _spaces_findings(42, retagged))
 
 
 # --- service load + load management ---------------------------------------------------

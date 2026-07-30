@@ -47,6 +47,13 @@ ROCKING_CHAIR = FurnitureType(
     tag="FURN-ROCKING-CHAIR-30", name="Rocking chair", footprint=(ft(2, 6), ft(3)),
     height=ft(3, 2), plan_symbol="armchair", source=REFERENCE,
 )
+# A floor plant in a nursery 14" pot: 18" across the saucer, 3'-6" to the top of the foliage.
+# No clearance zone — a plant is an object you walk around, not one you use from a side, and
+# giving it a front zone would push a chair out of every room a plant stands in.
+POTTED_PLANT = FurnitureType(
+    tag="FURN-PLANT-18", name="Potted plant", footprint=(ft(1, 6), ft(1, 6)), height=ft(3, 6),
+    plan_symbol="potted-plant", source=REFERENCE,
+)
 COFFEE_TABLE = FurnitureType(
     tag="FURN-COFFEE-48", name="Coffee table", footprint=(ft(4), ft(2)), height=ft(1, 6),
     plan_symbol="coffee-table", source=REFERENCE,
@@ -244,8 +251,8 @@ MUDROOM_BENCH_36 = FurnitureType(
 )
 
 STARTER_FURNITURE_TYPES = (
-    STANDARD_SOFA, LOVESEAT, SECTIONAL, ARMCHAIR, ROCKING_CHAIR, COFFEE_TABLE, END_TABLE,
-    MEDIA_CONSOLE,
+    STANDARD_SOFA, LOVESEAT, SECTIONAL, ARMCHAIR, ROCKING_CHAIR, POTTED_PLANT, COFFEE_TABLE,
+    END_TABLE, MEDIA_CONSOLE,
     TV_65, TV_98,
     QUEEN_BED, KING_BED, FULL_BED, TWIN_BED, DRESSER, CHEST, WARDROBE_48, NIGHTSTAND,
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
