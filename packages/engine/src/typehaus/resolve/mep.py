@@ -237,6 +237,7 @@ def _resolve_duct_run(model: ResolvedModel, duct: DuctRun, storey_tag: str) -> l
         uid=duct.uid, tag=duct.tag, storey=storey_tag, system=duct.system.value,
         path=path, width_m=width_m, depth_m=depth_m, routing=duct.routing.value,
         floor_ref=duct.floor_ref, crossings=crossings, conflicts=conflicts, depth_ok=depth_ok,
+        design_cfm=duct.design_cfm,
     ))
     return []
 

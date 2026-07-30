@@ -207,6 +207,12 @@ class EquipmentKind(Enum):
     WATER_HEATER = "water_heater"
     ERV = "erv"
     HEAT_PUMP = "heat_pump"  # minisplit outdoor condenser
+    # The indoor half of a split system, split in two because they are different products a
+    # plan reader places differently: a wall-mount head hangs high on a wall and blows into
+    # the room it is in, a concealed ducted air handler sits above a ceiling and feeds a
+    # duct system. Both pair back to a HEAT_PUMP condenser via ``Equipment.outdoor_ref``.
+    INDOOR_HEAD = "indoor_head"
+    DUCTED_AIR_HANDLER = "ducted_air_handler"
     # Hard-wired electric sauna heater. Equipment rather than Appliance because it takes no
     # receptacle — the circuit lands in a junction box at the heater — and ``Equipment`` is
     # the placeable that carries a ``circuit`` reference for exactly that case.
@@ -235,7 +241,7 @@ class DeviceKind(Enum):
     PANEL = "panel"
     JUNCTION_BOX = "junction_box"  # NEMA 3R weatherproof exterior box (blank/gasketed)
     METER = "meter"  # utility meter, separate from the panel (200A service)
-    DISCONNECT = "disconnect"  # equipment disconnect (minisplit, hot tub, WH)
+    DISCONNECT = "disconnect"  # equipment disconnect (heat pump, hot tub, WH)
 
 
 class LuminaireForm(Enum):

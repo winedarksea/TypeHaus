@@ -2,11 +2,22 @@
 # Catlin electrical service upgrade (plans/electrical_notes.md): 200A service with a
 # separate meter, 225A panel (type in plan/mep.py), 240V appliance circuits, two EV
 # receptacles in the garage, the smart-relay backup subsystem's DIN enclosure, hot tub +
-# minisplit disconnects, and the PV junction box beside the radon-vent riser.
+# heat-pump disconnects, and the PV junction box beside the radon-vent riser.
 #
-# All-electric house: no gas service, no furnace. Heat is the two minisplits below plus the
-# electric radiant floor zones (FloorHeat in plan/storeys/), and EQ-B-ERV is the only thing
-# that moves air — its "supply" is fresh air, not heat.
+# All-electric house: no gas service, no furnace. Heat is the three Gree heat-pump systems
+# below plus the electric radiant floor zones (FloorHeat in plan/storeys/):
+#   System 1  EQ-M-HP1-OD (Vireo GEN3) -> EQ-S-HP1-AH, the concealed ducted air handler in
+#             RM-S-STUDY2 feeding the dropped hallway chase (plan/mep.py) — upstairs + the
+#             two attic branches.
+#   System 2  EQ-M-HP2-OD (Multi Ultra 3-port, -22F) -> three wall heads: EQ-B-HP2-GYM,
+#             EQ-M-HP2-BED, EQ-M-HP2-LIVING.
+#   System 3  EQ-M-HP3-OD (Sapphire R32, VFD soft start, backup battery circuit) ->
+#             EQ-M-HP3-STAIR, recessed into W-M-STRW to reach the mudroom too.
+# EQ-B-ERV is still the only thing that moves *ventilation* air — its "supply" is fresh
+# air, not heat.
+#
+# Condensate: each head/air handler drains to a collected air-gap drain line into the
+# mechanical-room sink — a planned plumbing item, no geometry yet (see plan/mep.py).
 #
 # Instances only, explicit constructors (`# haus: editable` — UI drags round-trip).
 # Circuit assignments live in plan/circuits.py (non-editable); the `circuit=` strings
@@ -141,26 +152,100 @@ EQUIPMENT_TYPES = (
     # to these two ports. (The outdoor-side intake and exhaust are the ERV's other pair of
     # collars; `Service` has no OUTDOOR_AIR/EXHAUST_AIR member to name them with, so they
     # stay unmodeled rather than mislabeled as house-side ports.)
+    # ventilation_cfm is the continuous balanced rate the trunks in plan/mep.py are sized
+    # for: ASHRAE 62.2 at 0.03 x 5,078 ft2 + 7.5 x (5 bedrooms + 1) = ~197 cfm. The
+    # sensible recovery effectiveness is what the block load's ventilation term turns on —
+    # at 197 cfm and an 85 F design ΔT, every 0.05 of SRE is ~2,000 Btu/h — so it is the
+    # one number here that most needs the datasheet.
     EquipmentType(tag="EQ-T-ERV", name="ERV, 240V", footprint=(inch(24), inch(24)), height=inch(30),
                   plan_symbol="erv",
+                  ventilation_cfm=197,  # TODO verify datasheet
+                  sensible_recovery_effectiveness=0.75,  # TODO verify datasheet
+                  source="Airflow is the computed ASHRAE 62.2 whole-house rate; SRE 0.75 is a REPRESENTATIVE PLACEHOLDER for a good residential ERV core. TODO verify datasheet.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),
                          ServicePort(tag="supply", service=Service.SUPPLY_AIR,
                                      position=(ft(0), ft(0), inch(24))),
                          ServicePort(tag="return", service=Service.RETURN_AIR,
                                      position=(ft(0), ft(0), inch(24))))),
-    # Minisplit outdoor condensers: the larger unit serves the upstairs hallway head, the
-    # smaller deep-cold unit serves the basement (and is the one on backup).
-    EquipmentType(tag="EQ-T-MINISPLIT-LG", name="Minisplit condenser (large, upstairs zone)",
+    # --- The three Gree heat-pump systems (plans/TODO.md §HVAC) ----------------------
+    #
+    # EVERY CAPACITY BELOW IS A REPRESENTATIVE FIGURE FOR ITS PRODUCT CLASS, NOT A
+    # DATASHEET READING. Each carries `# TODO verify datasheet` and its `source` says so.
+    # The at-design column is the *authored derate* at the site's -15 F heating design
+    # temperature (plan/site.py): the model does no performance-curve interpolation, so a
+    # wrong number here is a wrong number in mep.heating_capacity — check them before
+    # anything is ordered.
+    #
+    # System 1 — Gree Slim concealed ducted indoor unit in RM-S-STUDY2, feeding the
+    # dropped hallway chase north to the bedrooms and the two attic branches; Vireo GEN3
+    # outdoor unit. A straight-run duct at low flow, which is why one 24k head covers the
+    # whole upstairs.
+    EquipmentType(tag="EQ-T-GREE-SLIM24",
+                  name="Gree Slim concealed ducted air handler, 24k",
+                  footprint=(inch(43), inch(21)), height=inch(11),
+                  cooling_capacity_btuh=24000,  # TODO verify datasheet
+                  source="REPRESENTATIVE PLACEHOLDER — 2-ton concealed-ducted class. The indoor unit carries no heating rating here on purpose: the outdoor unit is what has to make heat at design temp, and mep.heating_capacity sizes the zone against EQ-T-GREE-VIREO-GEN3. TODO verify datasheet.",
+                  ports=(ServicePort(tag="power", service=Service.POWER_240,
+                                     position=(ft(0), ft(0), ft(0))),
+                         ServicePort(tag="supply", service=Service.SUPPLY_AIR,
+                                     position=(ft(0), ft(0), inch(11))),
+                         ServicePort(tag="return", service=Service.RETURN_AIR,
+                                     position=(ft(0), ft(0), inch(11))))),
+    EquipmentType(tag="EQ-T-GREE-VIREO-GEN3",
+                  name="Gree Vireo GEN3 outdoor unit, 24k",
                   footprint=(inch(38), inch(16)), height=inch(32),
-                  heating_capacity_btuh=30000, heating_capacity_at_design_btuh=21000,
-                  source="REPRESENTATIVE PLACEHOLDER — typical 2.5-ton hyper-heat class (~30,000 Btu/h rated at 47F, ~21,000 Btu/h at -13F). Overwrite with the selected model's datasheet numbers.",
+                  heating_capacity_btuh=27000,  # TODO verify datasheet
+                  heating_capacity_at_design_btuh=16500,  # TODO verify datasheet
+                  cooling_capacity_btuh=24000,  # TODO verify datasheet
+                  min_operating_temp_f=-4.0,  # TODO verify datasheet
+                  source="REPRESENTATIVE PLACEHOLDER — 2-ton cold-climate inverter class (~27,000 Btu/h at 47F, ~16,500 Btu/h at -15F, rated to -4F). The Vireo is NOT the -22F unit; the Multi Ultra below is. TODO verify datasheet.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
-    EquipmentType(tag="EQ-T-MINISPLIT-SM", name="Minisplit condenser (small, deep-cold, basement zone)",
-                  footprint=(inch(30), inch(12)), height=inch(22),
-                  heating_capacity_btuh=12000, heating_capacity_at_design_btuh=8700,
-                  source="REPRESENTATIVE PLACEHOLDER — typical 1-ton deep-cold hyper-heat class (~12,000 Btu/h rated at 47F, ~8,700 Btu/h at -13F). Overwrite with the selected model's datasheet numbers.",
+    # System 2 — Gree Multi Ultra, one 3-port outdoor unit driving three wall-mount heads
+    # (basement gym, main-floor suite bedroom, living room). Rated to -22 F, which is what
+    # makes it the unit carrying the three coldest-exposure rooms.
+    EquipmentType(tag="EQ-T-GREE-MULTI-U30",
+                  name="Gree Multi Ultra 3-port outdoor unit, 30k (-22F)",
+                  footprint=(inch(37), inch(16)), height=inch(34),
+                  heating_capacity_btuh=32000,  # TODO verify datasheet
+                  heating_capacity_at_design_btuh=22000,  # TODO verify datasheet
+                  cooling_capacity_btuh=30000,  # TODO verify datasheet
+                  min_operating_temp_f=-22.0,  # TODO verify datasheet
+                  source="REPRESENTATIVE PLACEHOLDER — 2.5-ton 3-port multi class (~32,000 Btu/h at 47F, ~22,000 Btu/h at -15F, rated to -22F). TODO verify datasheet.",
+                  ports=(ServicePort(tag="power", service=Service.POWER_240,
+                                     position=(ft(0), ft(0), ft(0))),)),
+    # The heads themselves: no heating rating, by design. A multi's three heads share one
+    # compressor, so three head ratings summed would size the zone against a capacity the
+    # outdoor unit cannot deliver simultaneously. Their nominal cooling capacity is kept
+    # because it is what distinguishes the 9k from the 12k on a schedule.
+    EquipmentType(tag="EQ-T-GREE-HEAD-9", name="Gree wall-mount head, 9k",
+                  footprint=(inch(32), inch(8)), height=inch(12),
+                  cooling_capacity_btuh=9000,  # TODO verify datasheet
+                  source="REPRESENTATIVE PLACEHOLDER — 9k wall-mount head on EQ-T-GREE-MULTI-U30. TODO verify datasheet.",
+                  ports=()),
+    EquipmentType(tag="EQ-T-GREE-HEAD-12", name="Gree wall-mount head, 12k",
+                  footprint=(inch(35), inch(9)), height=inch(12),
+                  cooling_capacity_btuh=12000,  # TODO verify datasheet
+                  source="REPRESENTATIVE PLACEHOLDER — 12k wall-mount head on EQ-T-GREE-MULTI-U30. TODO verify datasheet.",
+                  ports=()),
+    # System 3 — Gree Sapphire R32, the high-efficiency unit over the stairs. True VFD
+    # inverter: the soft start is why this is the one system on the backup battery circuit
+    # (a hard-starting compressor is what a battery inverter cannot carry).
+    EquipmentType(tag="EQ-T-GREE-SAPPHIRE-9",
+                  name="Gree Sapphire R32 wall-mount head, 9.1k (VFD soft start)",
+                  footprint=(inch(33), inch(8)), height=inch(12),
+                  cooling_capacity_btuh=9100,  # TODO verify datasheet
+                  source="REPRESENTATIVE PLACEHOLDER — Sapphire-class 9,100 Btu/h head with a true VFD inverter (soft start, hence the backup-battery circuit). Heating is rated on EQ-T-GREE-SAPPHIRE-9-OD. TODO verify datasheet.",
+                  ports=()),
+    EquipmentType(tag="EQ-T-GREE-SAPPHIRE-9-OD",
+                  name="Gree Sapphire R32 outdoor unit, 9.1k (-22F)",
+                  footprint=(inch(31), inch(13)), height=inch(23),
+                  heating_capacity_btuh=12000,  # TODO verify datasheet
+                  heating_capacity_at_design_btuh=8000,  # TODO verify datasheet
+                  cooling_capacity_btuh=9100,  # TODO verify datasheet
+                  min_operating_temp_f=-22.0,  # TODO verify datasheet
+                  source="REPRESENTATIVE PLACEHOLDER — Sapphire-class 9.1k outdoor unit (~12,000 Btu/h at 47F, ~8,000 Btu/h at -15F, rated to -22F). TODO verify datasheet.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # Wall-mount linear electric fireplace, 1,500 W max on 120V — 12.5A, which is why the
@@ -234,13 +319,25 @@ BASEMENT_EQUIPMENT = [
     # to the west liner face (x=9'-1 13/16", so rotation 90 = back west), north face on the
     # 9'-6" partition line: it is the first thing past the door and diagonally opposite the
     # bench, which is what keeps 3'-2 11/16" of clear floor between hot metal and bare shins.
+    # System 2's basement head: high on the east face of the centre bearing wall at x=18',
+    # near the gym ceiling (plans/TODO.md §HVAC), backs west (rotation 90) so it throws east
+    # across the open gym. Its zone is the whole conditioned basement — the sauna's own
+    # EQ-B-SAUNA-HTR is a sauna heater, not space heat, and the basement is one open volume
+    # off the stair.
+    Equipment(uid="CEE031AAAA", tag="EQ-B-HP2-GYM", kind=EquipmentKind.INDOOR_HEAD,
+              position=pt(ft(18, 6), ft(9)), footprint=(inch(32), inch(8)),
+              room="RM-B-GYM", type_ref="EQ-T-GREE-HEAD-9", rotation=deg(90),
+              outdoor_ref="EQ-M-HP2-OD",
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6)),
+              zone_rooms=("RM-B-GYM", "RM-B-PLAY-N", "RM-B-STAIR", "RM-B-WORKSHOP",
+                          "RM-B-SAUNA", "RM-B-FURNACE")),
     Equipment(uid="CEE020AAAA", tag="EQ-B-SAUNA-HTR", kind=EquipmentKind.SAUNA_HEATER,
               position=pt(ft(9, 9.8125), ft(8, 9)), footprint=(inch(18), inch(16)),
               room="RM-B-SAUNA", type_ref="EQ-T-SAUNA-HEATER", rotation=deg(90),
               circuit="CKT-SAUNA"),
 ]
 
-# --- Main storey: dryer, freezer, minisplit condensers + disconnects ------------------
+# --- Main storey: dryer, freezer, heat-pump condensers/heads + disconnects ------------
 MAIN_DEVICES = [
     # Dryer behind the laundry pair (FX-M-LAUNDRY at (10'-6", 20')).
     ElectricalDevice(uid="CEE007AAAA", tag="ED-M-LAUNDRY-DR1", kind=DeviceKind.RECEPTACLE_240,
@@ -251,15 +348,22 @@ MAIN_DEVICES = [
     ElectricalDevice(uid="CEE006AAAA", tag="ED-M-LIVING-KFZ1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(18, 4), ft(29, 10)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
-    # Minisplit 1 (large, upstairs zone): disconnect on the north wall exterior face,
-    # condenser on the ground in the house/garage gap, east of the breezeway.
-    ElectricalDevice(uid="CEE012AAAA", tag="ED-M-MINI1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(26), ft(36.4)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-MINI-1",
+    # One NEC 440.14 disconnect within sight of each of the three outdoor units.
+    # System 1 (Vireo GEN3, upstairs ducted zone): condenser on the ground in the
+    # house/garage gap east of the breezeway, disconnect on the north wall above it.
+    ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
+                     position=pt(ft(26), ft(36.4)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP1",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
-    # Minisplit 2 (small, deep-cold, basement zone; backup): condenser on the porch deck
-    # over the sunken garden, disconnect on the south wall exterior face behind it.
-    ElectricalDevice(uid="CEE013AAAA", tag="ED-M-MINI2-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(24), ft(-0.5)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-MINI-2",
+    # System 2 (Multi Ultra 3-port): condenser on the porch deck over the sunken garden,
+    # disconnect on the south wall exterior face behind it.
+    ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
+                     position=pt(ft(24), ft(-0.5)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP2",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+    # System 3 (Sapphire, backup battery circuit): its outdoor unit stands on the north
+    # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west
+    # of the breezeway — clear of ED-M-HP1-DISC's condenser gap.
+    ElectricalDevice(uid="CEE026AAAA", tag="ED-M-HP3-DISC", kind=DeviceKind.DISCONNECT,
+                     position=pt(ft(4), ft(36.4)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-M-BATH2's thermostat: inside the room on its south wall (W-M-BDN1, interior face
     # y=13'-4 11/16"), 8" east of D-M-BATH2's opening (x 1'-6 1/2"..4'-0 1/2") — the wall
@@ -280,12 +384,53 @@ MAIN_DEVICES = [
 ]
 
 MAIN_EQUIPMENT = [
-    Equipment(uid="CEE017AAAA", tag="EQ-M-MINI1", kind=EquipmentKind.HEAT_PUMP,
+    # --- Outdoor units. `zone_rooms` is empty on all three: a condenser's zone is the
+    # union of its indoor units' rooms, and each head/air handler below names its condenser
+    # with `outdoor_ref`. Refrigerant linesets are deliberately not modeled — the pairing
+    # IS the record (plans/TODO.md), and there is no wall penetration riding on it yet.
+    Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
               position=pt(ft(26), ft(37, 6)), footprint=(inch(38), inch(16)),
-              type_ref="EQ-T-MINISPLIT-LG", circuit="CKT-MINI-1"),
-    Equipment(uid="CEE018AAAA", tag="EQ-M-MINI2", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(24), ft(-4)), footprint=(inch(30), inch(12)),
-              type_ref="EQ-T-MINISPLIT-SM", circuit="CKT-MINI-2"),
+              type_ref="EQ-T-GREE-VIREO-GEN3", circuit="CKT-HP1"),
+    Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
+              position=pt(ft(24), ft(-4)), footprint=(inch(37), inch(16)),
+              type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2"),
+    # System 3's outdoor unit, north side beside the mudroom door and under
+    # ED-M-HP3-DISC — the short lineset run to the head over the stairs is why it is here
+    # and not out with the other two.
+    Equipment(uid="CEE027AAAA", tag="EQ-M-HP3-OD", kind=EquipmentKind.HEAT_PUMP,
+              position=pt(ft(4), ft(38)), footprint=(inch(31), inch(13)),
+              type_ref="EQ-T-GREE-SAPPHIRE-9-OD", circuit="CKT-HP3"),
+    # --- System 2's main-floor heads. Both hang high on the south wall either side of the
+    # centre wall at x=18' (plans/TODO.md §HVAC), backs south (rotation 180), blowing north
+    # into the length of the room. Power comes from the outdoor unit on a multi, so neither
+    # head carries a `circuit` — CKT-HP2 feeds EQ-M-HP2-OD and the interconnects run from
+    # there.
+    Equipment(uid="CEE028AAAA", tag="EQ-M-HP2-BED", kind=EquipmentKind.INDOOR_HEAD,
+              position=pt(ft(16), ft(0, 6)), footprint=(inch(35), inch(9)),
+              room="RM-M-BED", type_ref="EQ-T-GREE-HEAD-12", rotation=deg(180),
+              outdoor_ref="EQ-M-HP2-OD",
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6)),
+              # The west half of the main floor: the suite bedroom and everything off it.
+              zone_rooms=("RM-M-BED", "RM-M-BATH1", "RM-M-BATH2", "RM-M-CLOSET",
+                          "RM-M-LAUNDRY", "RM-M-STUDY")),
+    Equipment(uid="CEE029AAAA", tag="EQ-M-HP2-LIVING", kind=EquipmentKind.INDOOR_HEAD,
+              position=pt(ft(20), ft(0, 6)), footprint=(inch(35), inch(9)),
+              room="RM-M-LIVING", type_ref="EQ-T-GREE-HEAD-12", rotation=deg(180),
+              outdoor_ref="EQ-M-HP2-OD",
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6)),
+              # One 706 sf open room (kitchen/dining/living are all inside this claim).
+              zone_rooms=("RM-M-LIVING",)),
+    # --- System 3's head: over the stair head, partly recessed into W-M-STRW (the bearing
+    # wall at x=10' between the stair and the mudroom) so one unit reaches both spaces —
+    # the cutout in that wall is the whole point of the position. Backs west (rotation 90)
+    # against the wall, high enough to clear the stair opening below it.
+    Equipment(uid="CEE030AAAA", tag="EQ-M-HP3-STAIR", kind=EquipmentKind.INDOOR_HEAD,
+              position=pt(ft(10, 6), ft(30)), footprint=(inch(33), inch(8)),
+              room="RM-M-STAIR", type_ref="EQ-T-GREE-SAPPHIRE-9", rotation=deg(90),
+              outdoor_ref="EQ-M-HP3-OD",
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7),
+                          recessed_into_host_surface=True),
+              zone_rooms=("RM-M-STAIR", "RM-M-MUDROOM", "RM-M-MECH")),
     # Electric fireplace, SE corner of the living room. It hangs on the *east* wall rather
     # than the south one because that is where the corner has wall left: W-M-S2 gives only
     # 2'-1" between WIN-M-LIV-S1's rough opening and the corner, while W-M-E1 runs clear
@@ -311,6 +456,31 @@ SECOND_DEVICES = [
                      position=pt(ft(6, 6), ft(26, 5)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-BATH1", room="RM-S-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+]
+
+SECOND_EQUIPMENT = [
+    # System 1's concealed ducted air handler: above the ceiling in RM-S-STUDY2, at the
+    # north end of the room so its supply collar lands on the hallway chase's south end at
+    # x=19'-6" (plan/mep.py DUCTS_HVAC_SECOND). Ceiling mount with no stated elevation, so
+    # it hangs at the ceiling plane — the unit is in the floor cavity above it, and the
+    # 11" case is what a section has to clear. This is the one indoor unit with its own
+    # branch circuit (CKT-HP1-AH): a ducted unit's blower is fed at the unit, not from the
+    # condenser the way a multi's heads are.
+    #
+    # zone_rooms is the whole conditioned second storey plus the two attic rooms the short
+    # branches reach. RM-A-WEST and RM-A-DEN are deliberately NOT in it — nothing serves
+    # them, and mep.heating_capacity reports them as unclaimed rather than pretending this
+    # unit carries them (plans/TODO.md).
+    Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
+              kind=EquipmentKind.DUCTED_AIR_HANDLER,
+              position=pt(ft(21), ft(7)), footprint=(inch(43), inch(21)),
+              room="RM-S-STUDY2", type_ref="EQ-T-GREE-SLIM24",
+              outdoor_ref="EQ-M-HP1-OD", circuit="CKT-HP1-AH",
+              mount=Mount(kind=MountKind.CEILING),
+              zone_rooms=("RM-S-STUDY2", "RM-S-PLANT", "RM-S-BED1", "RM-S-BED2",
+                          "RM-S-BED3", "RM-S-SUITE", "RM-S-SUITEBATH", "RM-S-VANITY",
+                          "RM-S-BATH1", "RM-S-HALL", "RM-S-CLOSET", "RM-S-NCLOSET",
+                          "RM-A-EAST", "RM-A-STUDY")),
 ]
 
 # --- Garage: both EV receptacles on the south wall, east of the service door ----------
@@ -693,5 +863,5 @@ BASEMENT_ELEMENTS = [*BACKUP_ENCLOSURE, *BASEMENT_DEVICES, *BASEMENT_EQUIPMENT,
                      *CONDUIT_TRUNKS, *NEC_FILL_BASEMENT]
 MAIN_ELEMENTS = [*SERVICE_DEVICES, *MAIN_DEVICES, *MAIN_EQUIPMENT, *NEC_FILL_MAIN]
 GARAGE_ELEMENTS = [*GARAGE_DEVICES, *GARAGE_EQUIPMENT]
-SECOND_ELEMENTS = [*SECOND_DEVICES, *NEC_FILL_SECOND]
+SECOND_ELEMENTS = [*SECOND_DEVICES, *SECOND_EQUIPMENT, *NEC_FILL_SECOND]
 ATTIC_ELEMENTS = [*PV_JBOX, *PV_JBOX_CLAMP, *NEC_FILL_ATTIC]

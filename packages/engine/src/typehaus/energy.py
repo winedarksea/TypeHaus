@@ -54,6 +54,152 @@ def _is_envelope_wall(wall: ResolvedWall) -> bool:
     return wall.is_foundation or any(layer.function == "cladding" for layer in wall.layers)
 
 
+_M3_TO_FT3 = 35.31466672148859
+# Sensible heat of air at sea level: 0.075 lb/ft3 × 0.24 Btu/lb·°F × 60 min/h.
+_AIR_SENSIBLE_BTU_PER_CFM_F = 1.08
+# How far past a room's clear face an envelope wall may sit and still be that room's wall:
+# the clear face is offset inward from the wall centerline by half the wall depth plus the
+# lining, so the buffer is the wall's own depth plus a little slop for the finish.
+_WALL_SCOPE_SLOP_M = 0.05
+
+
+def _conditioned_rooms(
+    model: ResolvedModel, storeys: frozenset[str] | None, rooms: frozenset[str] | None,
+) -> list[object]:
+    return [room for room in model.rooms if room.conditioned
+            and (rooms is None or room.tag in rooms)
+            and (storeys is None or room.storey in storeys)]
+
+
+def _volume_ft3(model: ResolvedModel, rooms: list[object]) -> float:
+    """Conditioned volume as room clear-face area × the storey's default ceiling height.
+
+    Approximate on purpose: rooms with a dropped or vaulted ceiling are not modeled with a
+    per-room ceiling plane, and the air-side terms this feeds are proportional to volume, so
+    the error is a percentage of one term rather than a hidden invented input.
+    """
+    heights = {storey.tag: storey.default_ceiling_height.meters
+               for storey in model.plan.storeys}
+    return sum(room.area_m2 * heights.get(room.storey, 0.0) for room in rooms) * _M3_TO_FT3
+
+
+def _infiltration_cfm(
+    preferences: Preferences, volume_ft3: float, unknown: list[str],
+) -> float:
+    """Natural-condition infiltration airflow from the authored blower-door result.
+
+    ``cfm50`` is the measurement; ``ach50`` is the same fact normalized by volume, so it
+    only becomes a CFM once there is a conditioned volume to multiply. Neither authored
+    means the term is *unknown*, not zero — it is named and dropped, never guessed at from
+    a leakage rule of thumb.
+    """
+    cfm50 = preferences.cfm50
+    if cfm50 is None and preferences.ach50 is not None:
+        if volume_ft3 <= 0:
+            unknown.append("conditioned volume (no resolved conditioned rooms) — "
+                           "ach50 cannot be converted to CFM50")
+            return 0.0
+        cfm50 = preferences.ach50 * volume_ft3 / 60.0
+    if cfm50 is None:
+        unknown.append("Preferences ach50/cfm50 (infiltration term omitted)")
+        return 0.0
+    n_factor = preferences.infiltration_n_factor
+    if not n_factor or n_factor <= 0:
+        unknown.append("Preferences infiltration_n_factor (must be > 0)")
+        return 0.0
+    return cfm50 / n_factor
+
+
+def _ventilation_cfm(model: ResolvedModel, unknown: list[str]) -> float:
+    """Continuous ventilation air that still has to be tempered, net of sensible recovery.
+
+    Summed over the authored ERV/HRV ``Equipment`` — a house with none authored moves no
+    mechanical ventilation air, which is a fact read off the model rather than a missing
+    input, so it stays silent. An ERV that *is* authored but whose type states no airflow or
+    no recovery effectiveness is a real gap and is named.
+    """
+    types = {item.tag: item for item in model.plan.library.equipment_types}
+    net_cfm = 0.0
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            if element.element_kind != "Equipment" or element.kind.value != "erv":
+                continue
+            product = types.get(element.type_ref)
+            cfm = getattr(product, "ventilation_cfm", None)
+            effectiveness = getattr(product, "sensible_recovery_effectiveness", None)
+            if cfm is None or effectiveness is None:
+                unknown.append(f"{element.tag} ventilation_cfm / "
+                               "sensible_recovery_effectiveness")
+                continue
+            net_cfm += cfm * (1.0 - effectiveness)
+    return net_cfm
+
+
+def _room_scope(model: ResolvedModel, rooms: frozenset[str]) -> dict[str, object]:
+    """Per-storey union of the selected rooms' clear faces, for attributing envelope area."""
+    from shapely.geometry import Polygon
+    from shapely.ops import unary_union
+
+    by_storey: dict[str, list[object]] = {}
+    for room in model.rooms:
+        if room.tag in rooms and len(room.clear_face) >= 3:
+            by_storey.setdefault(room.storey, []).append(Polygon(room.clear_face))
+    return {storey: unary_union(polygons) for storey, polygons in by_storey.items()}
+
+
+def _wall_scope_fraction(wall: ResolvedWall, scope: dict[str, object] | None) -> float:
+    """What fraction of this wall's run bounds the scoped rooms (1.0 for whole-house)."""
+    if scope is None:
+        return 1.0
+    footprint = scope.get(wall.storey)
+    if footprint is None:
+        return 0.0
+    from shapely.geometry import LineString
+
+    axis = LineString(wall.axis)
+    if axis.length <= 0:
+        return 0.0
+    reach = footprint.buffer(wall.thickness_m + _WALL_SCOPE_SLOP_M)
+    return min(1.0, axis.intersection(reach).length / axis.length)
+
+
+def _opening_in_scope(wall: ResolvedWall, opening, scope: dict[str, object] | None) -> bool:
+    """Does this opening's own plan point stand against one of the scoped rooms?"""
+    if scope is None:
+        return True
+    footprint = scope.get(wall.storey)
+    if footprint is None:
+        return False
+    from shapely.geometry import Point
+
+    (x0, y0), (x1, y1) = wall.axis
+    run = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+    if run <= 0:
+        return False
+    t = min(1.0, opening.center_along_m / run)
+    point = Point(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t)
+    return footprint.buffer(wall.thickness_m + _WALL_SCOPE_SLOP_M).contains(point)
+
+
+def _polygon_scope_fraction(outline, storey: str,
+                            scope: dict[str, object] | None) -> float:
+    """What fraction of a roof/slab plan outline lies over the scoped rooms."""
+    if scope is None:
+        return 1.0
+    footprint = scope.get(storey)
+    if footprint is None or len(outline) < 3:
+        return 0.0
+    from shapely.geometry import Polygon
+
+    plan = Polygon(outline)
+    if plan.area <= 0:
+        return 0.0
+    # A roof or slab plane over a storey is shared by every room under it; buffering by the
+    # wall depth lets a room claim the plane out to its enclosing walls' centerlines rather
+    # than only over its clear face, so the zone areas sum back to (nearly) the whole plane.
+    return min(1.0, plan.intersection(footprint.buffer(0.15)).area / plan.area)
+
+
 @dataclass(frozen=True)
 class LoadComponent:
     kind: str
@@ -79,30 +225,48 @@ class EnergyReport:
     components: tuple[LoadComponent, ...]
     wall_comparison: dict[str, float | str] | None = None
     unknown_inputs: tuple[str, ...] = ()
+    # The two air-side heating terms, reported separately because they are not UA against an
+    # area and so cannot be carried as ``LoadComponent``s. Both are already included in
+    # ``heating_load_btu_per_hour``.
+    infiltration_btu_per_hour: float = 0.0
+    ventilation_btu_per_hour: float = 0.0
 
     def as_dict(self) -> dict[str, object]:
         return {"heating_load_btu_per_hour": self.heating_load_btu_per_hour,
                 "cooling_load_btu_per_hour": self.cooling_load_btu_per_hour,
                 "cooling_tons": self.cooling_tons,
                 "components": [component.as_dict() for component in self.components],
+                "infiltration_btu_per_hour": self.infiltration_btu_per_hour,
+                "ventilation_btu_per_hour": self.ventilation_btu_per_hour,
                 "wall_comparison": self.wall_comparison,
                 "unknown_inputs": list(self.unknown_inputs),
-                "scope": "resolved walls, foundations, roof, slabs, windows, and doors"}
+                "scope": "resolved walls, foundations, roof, slabs, windows, and doors, "
+                         "plus blower-door infiltration and ERV ventilation air"}
 
 
 def estimate_block_load(
     model: ResolvedModel, preferences: Preferences,
     storeys: frozenset[str] | None = None,
+    rooms: frozenset[str] | None = None,
 ) -> EnergyReport:
-    """Sum exposed resolved wall/opening UA plus orientation-weighted window solar gain.
+    """Sum exposed resolved wall/opening UA plus orientation-weighted window solar gain,
+    then the two air-side terms: blower-door infiltration and ERV ventilation air.
 
     Every area comes from the resolved IR.  Missing geometry or thermal data remains named
     UNKNOWN rather than being replaced by a rule-of-thumb area or U-factor.
 
-    ``storeys`` restricts the sum to a subset of the conditioned storeys (a heating zone,
-    per ``checks.mep.hvac.heating_capacity``); ``None`` keeps the whole-house behavior.
+    ``storeys`` restricts the sum to a subset of the conditioned storeys; ``rooms``
+    restricts it to a set of room tags (an ``Equipment.zone_rooms`` zone, per
+    ``checks.mep.hvac.heating_capacity``); ``None``/``None`` keeps the whole-house behavior.
     Zone loads ignore floors between zones at the same setpoint, so per-zone results sum
     (up to the shared ``wall_comparison``) to the whole-house block load.
+
+    **Room-scoped results are approximate by design.** Envelope planes are attributed by
+    plan overlap — the fraction of a wall's run that bounds the zone's rooms, the fraction
+    of a roof/slab outline over them — and the air-side terms are apportioned by the zone's
+    share of conditioned volume. That is a zone load good enough to size a head against, not
+    a Manual J room-by-room calculation: it carries no room-level internal gains, no duct
+    losses, and no per-room ceiling planes.
     """
     site = model.plan.project.site
     if site.design_temp_heating is None or site.design_temp_cooling is None:
@@ -128,14 +292,28 @@ def estimate_block_load(
                            if _storey_is_conditioned(model.plan, storey.tag)}
     if storeys is not None:
         conditioned_storeys &= storeys
+    # A room zone implies its storeys: a zone spanning two levels is scoped by its rooms,
+    # and no envelope on a storey it does not reach can belong to it.
+    scope = None
+    if rooms is not None:
+        scope = _room_scope(model, rooms)
+        conditioned_storeys &= set(scope)
     envelope_walls = [wall for wall in model.walls
                       if wall.storey in conditioned_storeys and _is_envelope_wall(wall)
                       and not wall.tag.startswith(_FREESTANDING_WALL_PREFIXES)]
+    wall_fraction = {wall.tag: _wall_scope_fraction(wall, scope) for wall in envelope_walls}
+    envelope_walls = [wall for wall in envelope_walls if wall_fraction[wall.tag] > 0.0]
     wall_by_tag = {wall.tag: wall for wall in envelope_walls}
-    wall_gross_ft2 = {wall.tag: _wall_length(wall) * (wall.z1_m - wall.z0_m) * _M2_TO_FT2
-                      for wall in envelope_walls}
+    wall_gross_ft2 = {
+        wall.tag: (_wall_length(wall) * (wall.z1_m - wall.z0_m) * _M2_TO_FT2
+                   * wall_fraction[wall.tag])
+        for wall in envelope_walls
+    }
+    # An opening is discrete: it belongs wholly to the zone its own plan point stands in,
+    # never split by a fraction, so a window is never counted twice across zones.
     envelope_openings = [opening for opening in model.openings
-                         if opening.host_wall in wall_by_tag]
+                         if opening.host_wall in wall_by_tag
+                         and _opening_in_scope(wall_by_tag[opening.host_wall], opening, scope)]
     opening_area_ft2: dict[str, float] = {tag: 0.0 for tag in wall_gross_ft2}
     components: list[LoadComponent] = []
     unknown: list[str] = []
@@ -174,12 +352,19 @@ def estimate_block_load(
     slabs = [solid for solid in model.solids
              if solid.category == "slab" and solid.storey in conditioned_storeys
              and not solid.tag.startswith(_FREESTANDING_SLAB_PREFIXES)]
+    roof_fraction = {roof.tag: _polygon_scope_fraction(roof.footprint, roof.storey, scope)
+                     for roof in roofs}
+    slab_fraction = {slab.tag: _polygon_scope_fraction(slab.outline, slab.storey, scope)
+                     for slab in slabs}
+    roofs = [roof for roof in roofs if roof_fraction[roof.tag] > 0.0]
+    slabs = [slab for slab in slabs if slab_fraction[slab.tag] > 0.0]
     has_roofs = bool(roofs)
     has_slabs = bool(slabs)
     # A *zone* legitimately lacks a roof or a slab when that boundary is an interior floor
     # against another conditioned zone at the same setpoint, so the missing-geometry
     # diagnostics only apply to the whole-house sum.
-    if storeys is None:
+    whole_house = storeys is None and rooms is None
+    if whole_house:
         if not has_roofs and not has_slabs:
             # Keep the original combined diagnostic stable for existing consumers while
             # still reporting the missing side precisely when only one is absent.
@@ -189,12 +374,12 @@ def estimate_block_load(
     for roof in roofs:
         r_value = _assembly_r_value(model, roof.assembly, unknown)
         if r_value is not None:
-            area = roof.surface_area_m2 * _M2_TO_FT2
+            area = roof.surface_area_m2 * _M2_TO_FT2 * roof_fraction[roof.tag]
             roof_area += area
             roof_ua += area / r_value
     if roof_area:
         components.append(_component("roof", roof_area, roof_ua))
-    if not slabs and has_roofs and storeys is None:
+    if not slabs and has_roofs and whole_house:
         unknown.append("slab resolved geometry")
     for slab in slabs:
         if slab.assembly is None:
@@ -202,7 +387,8 @@ def estimate_block_load(
             continue
         r_value = _assembly_r_value(model, slab.assembly, unknown)
         if r_value is not None:
-            area = abs(polygon_area(slab.outline)) * _M2_TO_FT2
+            area = (abs(polygon_area(slab.outline)) * _M2_TO_FT2
+                    * slab_fraction[slab.tag])
             slab_area += area
             slab_ua += area / r_value
     if slab_area:
@@ -245,15 +431,32 @@ def estimate_block_load(
                 )
     components.extend((_component("windows", window_area, window_ua, window_solar),
                        _component("doors", door_area, door_ua)))
+    # Air-side terms. Both the blower-door result and the ERV's airflow are whole-house
+    # facts, so a zone gets its share of each by conditioned volume — the quantity the air
+    # in a zone actually scales with.
+    whole_volume_ft3 = _volume_ft3(model, _conditioned_rooms(model, None, None))
+    zone_volume_ft3 = (whole_volume_ft3 if whole_house else
+                       _volume_ft3(model, _conditioned_rooms(model, storeys, rooms)))
+    share = 1.0 if whole_house else (
+        zone_volume_ft3 / whole_volume_ft3 if whole_volume_ft3 > 0 else 0.0)
+    infiltration_cfm = _infiltration_cfm(preferences, whole_volume_ft3, unknown) * share
+    ventilation_cfm = _ventilation_cfm(model, unknown) * share
+    infiltration_heating = _AIR_SENSIBLE_BTU_PER_CFM_F * infiltration_cfm * heating_delta
+    ventilation_heating = _AIR_SENSIBLE_BTU_PER_CFM_F * ventilation_cfm * heating_delta
+    air_cooling = (_AIR_SENSIBLE_BTU_PER_CFM_F * (infiltration_cfm + ventilation_cfm)
+                   * cooling_delta)
+
     heating = sum(component.ua_btu_per_hour_f * _deltas_for(component.kind)[0]
-                  for component in components)
-    cooling = window_solar + sum(
+                  for component in components) + infiltration_heating + ventilation_heating
+    cooling = window_solar + air_cooling + sum(
         component.ua_btu_per_hour_f * _deltas_for(component.kind)[1]
         for component in components
     )
     return EnergyReport(heating, cooling, cooling / 12000.0, tuple(components),
                         wall_comparison=_two_by_four_vs_six(model, heating_delta),
-                        unknown_inputs=tuple(dict.fromkeys(unknown)))
+                        unknown_inputs=tuple(dict.fromkeys(unknown)),
+                        infiltration_btu_per_hour=infiltration_heating,
+                        ventilation_btu_per_hour=ventilation_heating)
 
 
 def _assembly_r_value(model: ResolvedModel, tag: str, unknown: list[str]) -> float | None:

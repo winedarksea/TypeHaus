@@ -70,6 +70,15 @@ class Preferences:
     roof_r: float | None = None
     window_u: float | None = None
     ach50: float | None = None
+    # Blower-door result in CFM at 50 Pa. An alternative to ``ach50`` for the same fact —
+    # a test report states CFM50 and the ACH50 is derived from it — and it wins when both
+    # are authored, because it needs no volume estimate to be useful.
+    cfm50: float | None = None
+    # LBL infiltration model divisor: CFMnat = CFM50 / N. The default 18 is the LBL
+    # single-family figure for a two-storey house in a sheltered, moderately windy climate
+    # (the published range is roughly 14–24, tighter shelter and more storeys lowering it).
+    # Authored per house because it is a climate/shelter judgement, not a measurement.
+    infiltration_n_factor: float = 18.0
     interior_setpoint_f: float = 70.0
     interior_relative_humidity: float = 0.35
     exterior_relative_humidity: float = 0.80

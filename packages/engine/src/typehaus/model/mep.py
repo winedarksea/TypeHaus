@@ -55,6 +55,10 @@ class DuctRun(Element):
     depth: Length  # vertical
     routing: DuctRouting = DuctRouting.EXPOSED
     floor_ref: str | None = None  # FloorSystem tag whose bays it occupies (JOIST_BAY)
+    # The airflow this run is *intended* to carry, for the duct schedule and the HVAC sheet.
+    # Documentation, not a solved quantity: there is no airflow solver here, and inventing
+    # one from the section would be exactly the kind of guess this model refuses to make.
+    design_cfm: float | None = None
 
 
 @register_element
@@ -87,6 +91,17 @@ class Equipment(Element):
     # Circuit tag (panel schedule) — hard-wired equipment has no receptacle device,
     # so the circuit hook lives on the equipment itself, mirroring ElectricalDevice.
     circuit: str | None = None
+    # The Room tags this unit conditions. A zone is a *grouping of rooms*, not a storey: a
+    # whole-storey zone is authored as that storey's room tags, spelled out (the editable
+    # plan dialect has no helpers to expand one, and a spelled-out list is what a plan
+    # reader checks against the floor plan). Authored, never inferred — the check compares
+    # a condenser's capacity against the load of exactly these rooms and reports any
+    # conditioned room no unit claims, rather than guessing a partition.
+    zone_rooms: tuple[str, ...] = ()
+    # An indoor head/air handler names the outdoor condenser it is paired with (its
+    # ``Equipment`` tag). Refrigerant lineset geometry is deliberately not modeled — this
+    # pairing is what the schedule and the capacity check need.
+    outdoor_ref: str | None = None
 
 
 @register_element

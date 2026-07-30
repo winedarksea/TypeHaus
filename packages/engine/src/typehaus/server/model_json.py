@@ -28,6 +28,7 @@ from typehaus.takeoff.electrical import (
     service_load_summary,
     solar_takeoff,
 )
+from typehaus.takeoff.hvac import hvac_takeoff
 from typehaus.takeoff.lighting import (
     connected_lighting_va,
     light_run_takeoff,
@@ -447,6 +448,11 @@ def model_to_dict(
              "provenance": _provenance(provenance, run.tag)}
             for run in sorted(model.light_runs, key=lambda item: item.uid)
         ],
+        # The HVAC reader's whole payload, verbatim from takeoff/hvac.py — the same zone
+        # arithmetic mep.heating_capacity checks against, for the same reason the panel
+        # schedule is shared. None for a house with no preferences loaded: the zone rows are
+        # block loads, and there is no block load without the envelope preferences.
+        "hvac": (hvac_takeoff(model, preferences) if preferences is not None else None),
         "electrical": {
             "panel_schedule": panel_schedule(model),
             "service_load": (service_load_summary(model)

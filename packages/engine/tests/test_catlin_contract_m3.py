@@ -720,9 +720,12 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
     assert not [line for line in plan.project.site.utilities if line.kind.value == "gas"]
     for product in plan.library.equipment_types:
         assert "gas" not in {port.service.value for port in product.ports}, product.tag
+    # Two air-side products now, and neither burns anything: the ERV (ventilation air) and
+    # System 1's concealed ducted air handler (conditioned air off a heat pump). What the
+    # all-electric contract forbids is a *combustion* appliance, not a duct.
     air = {product.tag for product in plan.library.equipment_types
            if "supply_air" in {port.service.value for port in product.ports}}
-    assert air == {"EQ-T-ERV"}
+    assert air == {"EQ-T-ERV", "EQ-T-GREE-SLIM24"}
 
 
 def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):

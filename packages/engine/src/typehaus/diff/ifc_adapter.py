@@ -77,6 +77,14 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         "appliance": "IfcBuildingElementProxy",
         "Register": "IfcAirTerminal", "Equipment": "IfcBuildingElementProxy",
     }
+    # Mirrors emit/ifc/emitter.py::_equipment_ifc_classes — HVAC equipment emits as a real
+    # IFC class, so it has to be read back as one here or every heat pump reads as a
+    # deletion on a round trip against our own IFC.
+    equipment_classes = {
+        "heat_pump": "IfcUnitaryEquipment", "indoor_head": "IfcUnitaryEquipment",
+        "ducted_air_handler": "IfcUnitaryEquipment",
+        "erv": "IfcAirToAirHeatRecovery",
+    }
     electrical_classes = {
         "receptacle": "IfcOutlet", "gfci": "IfcOutlet", "receptacle_240": "IfcOutlet",
         "switch": "IfcSwitchingDevice", "light": "IfcLightFixture",
@@ -86,9 +94,14 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
     }
     for item in model.canvas_objects:
         source = model.plan.by_tag(item.tag)
-        ifc_class = (electrical_classes.get(getattr(getattr(source, "kind", None), "value", ""), "IfcBuildingElementProxy")
-                     if item.kind == "ElectricalDevice"
-                     else class_for_kind.get(item.kind, class_for_kind.get(item.domain, "IfcBuildingElementProxy")))
+        source_kind = getattr(getattr(source, "kind", None), "value", "")
+        if item.kind == "ElectricalDevice":
+            ifc_class = electrical_classes.get(source_kind, "IfcBuildingElementProxy")
+        elif item.kind == "Equipment":
+            ifc_class = equipment_classes.get(source_kind, "IfcBuildingElementProxy")
+        else:
+            ifc_class = class_for_kind.get(
+                item.kind, class_for_kind.get(item.domain, "IfcBuildingElementProxy"))
         height = _placeable_height(model, item, source)
         centroid, bbox = _bounds(item.footprint, item.z_m, item.z_m + height)
         attrs = {"type": item.type_ref or ""}
@@ -135,7 +148,8 @@ def external_elems(ifc_path: Path) -> list[DiffElem]:
     for cls in ("IfcWall", "IfcOpeningElement", "IfcWindow", "IfcDoor", "IfcFurniture",
                 "IfcSanitaryTerminal", "IfcBuildingElementProxy", "IfcOutlet", "IfcAirTerminal",
                 "IfcSwitchingDevice", "IfcLightFixture", "IfcElectricDistributionBoard",
-                "IfcJunctionBox", "IfcFlowMeter"):
+                "IfcJunctionBox", "IfcFlowMeter", "IfcUnitaryEquipment",
+                "IfcAirToAirHeatRecovery"):
         for prod in model.by_type(cls):
             # A door/window's void is implementation detail of its filling relationship.
             # Unfilled rough openings remain independently reconcilable occurrences.

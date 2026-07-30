@@ -43,7 +43,7 @@ export const ALL_TRADES: Trade[] = [
 // stacking them would just hide the model. "circuits" and "lighting" are deliberately two
 // readers over one `electrical` payload: an electrician sizing a breaker and a designer
 // choosing a colour temperature are not looking for the same page.
-export type DetailView = "none" | "assembly" | "bom" | "circuits" | "lighting";
+export type DetailView = "none" | "assembly" | "bom" | "circuits" | "lighting" | "hvac";
 
 // Every kind of model record the UI can hold selected. The first five are authored elements a
 // patch can edit or delete; the rest are *derived* geometry the resolver computes (a post

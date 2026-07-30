@@ -1,14 +1,17 @@
 """Per-zone heat-load sizing check (mep.heating_capacity) — tri-state + catlin fixture.
 
-The check reuses ``estimate_block_load`` with a storey filter; capacities come from the
-authored ``EquipmentType.heating_capacity_at_design_btuh`` and are never invented.
+A zone is the authored ``Equipment.zone_rooms`` of a rated unit, unioned with the rooms of
+every indoor head naming it through ``outdoor_ref``. The check reuses ``estimate_block_load``
+with a *room* filter; capacities come from the authored
+``EquipmentType.heating_capacity_at_design_btuh`` and are never invented, and a conditioned
+room no unit claims is reported as unclaimed rather than folded into a neighbour.
 """
 
 from __future__ import annotations
 
 import pytest
 
-from typehaus.checks.mep.hvac import heating_capacity
+from typehaus.checks.mep.hvac import cooling_capacity, heating_capacity
 from typehaus.checks.registry import CheckContext, Preferences
 from typehaus.energy import estimate_block_load
 from typehaus.findings import Result
@@ -16,6 +19,8 @@ from typehaus.model import (
     Assembly,
     Building,
     CavityFill,
+    Equipment,
+    EquipmentKind,
     EquipmentType,
     Layer,
     LayerFunction,
@@ -36,6 +41,11 @@ from typehaus.model import (
 )
 from typehaus.resolve import resolve
 
+# Every fixture authors a blower-door result: without one the block load names
+# ach50/cfm50 in `unknown_inputs` and the check is honestly UNKNOWN, which would make every
+# capacity assertion below untestable for the wrong reason.
+_PREFERENCES = Preferences(cfm50=900.0, infiltration_n_factor=18.0)
+
 _MATERIALS = (
     Material(tag="gwb", name="Gypsum board", r_per_inch=0.9, perm_rating=18.8),
     Material(tag="spf", name="SPF framing", r_per_inch=1.25, perm_rating=2.9),
@@ -54,9 +64,13 @@ _ASSEMBLY = Assembly(tag="EXT", layers=(
           function=LayerFunction.CLADDING),
 ))
 
+_LOWER_ROOM = "RM-lower"
+_UPPER_ROOM = "RM-upper"
 
-def _plan(equipment_types: tuple[EquipmentType, ...]) -> PlanModel:
-    """Two conditioned storeys of the same clad shell, side by side."""
+
+def _plan(equipment_types: tuple[EquipmentType, ...],
+          equipment: tuple[Equipment, ...] = ()) -> PlanModel:
+    """Two conditioned storeys of the same clad shell, side by side, one room each."""
     library = Library(materials=_MATERIALS, assemblies=(_ASSEMBLY,),
                       equipment_types=equipment_types)
     project = Project(name="HC", project_uuid="00000000-0000-4000-8000-0000000000c4",
@@ -83,14 +97,17 @@ def _plan(equipment_types: tuple[EquipmentType, ...]) -> PlanModel:
             for i, (start, end) in enumerate(((1, 2), (2, 3), (3, 4), (4, 1)), 1))
         room = Room(uid=f"RM00000h{index:02d}", tag=f"RM-{tag}",
                     seed=pt(ft(origin + 10), ft(7)), occupancy=Occupancy.LIVING)
-        plan = plan.with_elements(tag, (*nodes, *walls, room))
+        # The equipment for a storey is whatever names one of its rooms; the fixtures below
+        # keep it simple by putting every unit on "lower".
+        extra = equipment if tag == "lower" else ()
+        plan = plan.with_elements(tag, (*nodes, *walls, room, *extra))
     return plan
 
 
 def _context(plan: PlanModel) -> CheckContext:
     model, findings = resolve(plan)
     assert not [f for f in findings if f.severity.value == "error"], findings
-    return CheckContext(plan=plan, model=model, preferences=Preferences(), profile=None,
+    return CheckContext(plan=plan, model=model, preferences=_PREFERENCES, profile=None,
                         resolve_findings=list(findings))
 
 
@@ -99,21 +116,41 @@ def _heater(tag: str, name: str, **kwargs) -> EquipmentType:
                          height=inch(22), **kwargs)
 
 
+def _outdoor(tag: str, type_ref: str, uid: str, zone_rooms=(),) -> Equipment:
+    return Equipment(uid=uid, tag=tag, kind=EquipmentKind.HEAT_PUMP,
+                     position=pt(ft(10), ft(7)), footprint=(inch(30), inch(12)),
+                     type_ref=type_ref, zone_rooms=tuple(zone_rooms))
+
+
+def _head(tag: str, type_ref: str, uid: str, outdoor_ref: str, zone_rooms) -> Equipment:
+    return Equipment(uid=uid, tag=tag, kind=EquipmentKind.INDOOR_HEAD,
+                     position=pt(ft(10), ft(7)), footprint=(inch(30), inch(12)),
+                     type_ref=type_ref, outdoor_ref=outdoor_ref,
+                     zone_rooms=tuple(zone_rooms))
+
+
+_BOTH_ROOMS = (_LOWER_ROOM, _UPPER_ROOM)
+
+
 # --- tri-state -----------------------------------------------------------------------
 
 def test_pass_when_capacity_covers_the_zone_load() -> None:
-    ctx = _context(_plan((_heater(
-        "EQ-T-BIG", "Whole-house heat pump", heating_capacity_btuh=60000,
-        heating_capacity_at_design_btuh=48000),)))
+    ctx = _context(_plan(
+        (_heater("EQ-T-BIG", "Whole-house heat pump", heating_capacity_btuh=60000,
+                 heating_capacity_at_design_btuh=48000),),
+        (_outdoor("EQ-BIG", "EQ-T-BIG", "EQ00000h01", _BOTH_ROOMS),)))
     findings = heating_capacity(ctx)
     assert [f.result for f in findings] == [Result.PASS]
     assert "margin +" in findings[0].message
+    # The rooms it claims are named in the message — a zone the reader can check by eye.
+    assert _LOWER_ROOM in findings[0].message and _UPPER_ROOM in findings[0].message
 
 
 def test_fail_when_capacity_falls_short_at_design() -> None:
-    ctx = _context(_plan((_heater(
-        "EQ-T-TINY", "Undersized heat pump", heating_capacity_btuh=6000,
-        heating_capacity_at_design_btuh=1000),)))
+    ctx = _context(_plan(
+        (_heater("EQ-T-TINY", "Undersized heat pump", heating_capacity_btuh=6000,
+                 heating_capacity_at_design_btuh=1000),),
+        (_outdoor("EQ-TINY", "EQ-T-TINY", "EQ00000h02", _BOTH_ROOMS),)))
     findings = heating_capacity(ctx)
     assert [f.result for f in findings] == [Result.FAIL]
     assert "undersized at design temp" in findings[0].message
@@ -121,80 +158,143 @@ def test_fail_when_capacity_falls_short_at_design() -> None:
 
 
 def test_unknown_when_no_equipment_carries_a_rating() -> None:
-    ctx = _context(_plan((_heater("EQ-T-ERV", "ERV, no heating rating"),)))
+    ctx = _context(_plan(
+        (_heater("EQ-T-ERV", "ERV, no heating rating"),),
+        (_outdoor("EQ-ERV", "EQ-T-ERV", "EQ00000h03", _BOTH_ROOMS),)))
     findings = heating_capacity(ctx)
-    assert [f.result for f in findings] == [Result.UNKNOWN]
+    assert [f.result for f in findings] == [Result.UNKNOWN, Result.UNKNOWN]
     assert "heating_capacity" in findings[0].message
+    # An unrated unit claims nothing, so both rooms are reported unclaimed.
+    assert "in no equipment zone_rooms" in findings[1].message
 
 
 def test_unknown_when_only_the_rated_point_is_authored() -> None:
     """A 47F rating without an at-design figure must stay UNKNOWN — the check never
     invents a derate — while still reporting the computed zone load."""
-    ctx = _context(_plan((_heater(
-        "EQ-T-47ONLY", "Heat pump, rated point only", heating_capacity_btuh=36000),)))
+    ctx = _context(_plan(
+        (_heater("EQ-T-47ONLY", "Heat pump, rated point only",
+                 heating_capacity_btuh=36000),),
+        (_outdoor("EQ-47", "EQ-T-47ONLY", "EQ00000h04", _BOTH_ROOMS),)))
     findings = heating_capacity(ctx)
     assert [f.result for f in findings] == [Result.UNKNOWN]
     assert "no heating_capacity_at_design_btuh" in findings[0].message
     assert "Btu/h at design" in findings[0].message  # the load is still reported
 
 
-def test_named_zones_partition_and_sum_to_the_whole_house_load() -> None:
-    ctx = _context(_plan((
-        _heater("EQ-T-LOW", "Heat pump (lower zone)", heating_capacity_at_design_btuh=90000),
-        _heater("EQ-T-UP", "Heat pump, everything else", heating_capacity_at_design_btuh=90000),
-    )))
+def test_zone_rooms_partition_and_nearly_sum_to_the_whole_house_load() -> None:
+    """Two units, one room each. Room-scoped loads are approximate by design (envelope area
+    is attributed by plan overlap), so the two zones sum to the whole-house block load to
+    within a few percent rather than exactly — which is what the docstring promises."""
+    ctx = _context(_plan(
+        (_heater("EQ-T-LOW", "Heat pump (lower)", heating_capacity_at_design_btuh=90000),
+         _heater("EQ-T-UP", "Heat pump (upper)", heating_capacity_at_design_btuh=90000)),
+        (_outdoor("EQ-LOW", "EQ-T-LOW", "EQ00000h05", (_LOWER_ROOM,)),
+         _outdoor("EQ-UP", "EQ-T-UP", "EQ00000h06", (_UPPER_ROOM,)))))
     findings = heating_capacity(ctx)
     assert [f.result for f in findings] == [Result.PASS, Result.PASS]
     by_tag = {f.element_tags[0]: f for f in findings}
-    assert "lower zone" in by_tag["EQ-T-LOW"].message
-    assert "upper zone" in by_tag["EQ-T-UP"].message
+    assert _LOWER_ROOM in by_tag["EQ-LOW"].message
+    assert _UPPER_ROOM in by_tag["EQ-UP"].message
     whole = estimate_block_load(ctx.model, ctx.preferences).heating_load_btu_per_hour
     parts = sum(
-        estimate_block_load(ctx.model, ctx.preferences, storeys=z).heating_load_btu_per_hour
-        for z in (frozenset({"lower"}), frozenset({"upper"})))
-    assert parts == pytest.approx(whole)
+        estimate_block_load(ctx.model, ctx.preferences,
+                            rooms=frozenset({room})).heating_load_btu_per_hour
+        for room in _BOTH_ROOMS)
+    assert parts == pytest.approx(whole, rel=0.05)
 
 
-def test_two_unnamed_heaters_are_ambiguous_not_guessed() -> None:
-    ctx = _context(_plan((
-        _heater("EQ-T-A", "Heat pump A", heating_capacity_at_design_btuh=50000),
-        _heater("EQ-T-B", "Heat pump B", heating_capacity_at_design_btuh=50000),
-    )))
+def test_a_condensers_zone_is_the_union_of_its_heads_rooms() -> None:
+    """One multi-zone condenser, two heads: the capacity is compared against the load of
+    both rooms together, because one compressor has to make it all."""
+    ctx = _context(_plan(
+        (_heater("EQ-T-MULTI", "Multi condenser", heating_capacity_at_design_btuh=90000),
+         _heater("EQ-T-HEAD", "Wall head")),
+        (_outdoor("EQ-MULTI", "EQ-T-MULTI", "EQ00000h07"),
+         _head("EQ-H1", "EQ-T-HEAD", "EQ00000h08", "EQ-MULTI", (_LOWER_ROOM,)),
+         _head("EQ-H2", "EQ-T-HEAD", "EQ00000h09", "EQ-MULTI", (_UPPER_ROOM,)))))
+    findings = heating_capacity(ctx)
+    # One finding: the heads carry no rating of their own and never claim a zone.
+    assert [f.result for f in findings] == [Result.PASS]
+    assert findings[0].element_tags == ("EQ-MULTI",)
+    assert _LOWER_ROOM in findings[0].message and _UPPER_ROOM in findings[0].message
+
+
+def test_an_unclaimed_conditioned_room_is_named_not_absorbed() -> None:
+    ctx = _context(_plan(
+        (_heater("EQ-T-ONE", "Heat pump", heating_capacity_at_design_btuh=90000),),
+        (_outdoor("EQ-ONE", "EQ-T-ONE", "EQ00000h10", (_LOWER_ROOM,)),)))
+    findings = heating_capacity(ctx)
+    unclaimed = [f for f in findings if f.result is Result.UNKNOWN]
+    assert len(unclaimed) == 1
+    assert _UPPER_ROOM in unclaimed[0].message
+    assert _UPPER_ROOM in unclaimed[0].element_tags
+
+
+def test_a_rated_unit_with_no_zone_rooms_is_unknown_not_whole_house() -> None:
+    ctx = _context(_plan(
+        (_heater("EQ-T-ORPHAN", "Heat pump", heating_capacity_at_design_btuh=90000),),
+        (_outdoor("EQ-ORPHAN", "EQ-T-ORPHAN", "EQ00000h11"),)))
     findings = heating_capacity(ctx)
     assert all(f.result is Result.UNKNOWN for f in findings)
-    assert any("ambiguous" in f.message for f in findings)
+    assert any("no zone_rooms authored" in f.message for f in findings)
+
+
+# --- the cooling advisory beside it ----------------------------------------------------
+
+def test_cooling_is_unknown_without_an_authored_cooling_rating() -> None:
+    ctx = _context(_plan(
+        (_heater("EQ-T-HEATONLY", "Heat pump", heating_capacity_at_design_btuh=90000),),
+        (_outdoor("EQ-HEATONLY", "EQ-T-HEATONLY", "EQ00000h12", _BOTH_ROOMS),)))
+    findings = cooling_capacity(ctx)
+    assert [f.result for f in findings] == [Result.UNKNOWN]
+    assert "no cooling_capacity_btuh" in findings[0].message
+
+
+def test_cooling_passes_when_the_rating_covers_the_sensible_load() -> None:
+    ctx = _context(_plan(
+        (_heater("EQ-T-COOL", "Heat pump", heating_capacity_at_design_btuh=90000,
+                 cooling_capacity_btuh=60000),),
+        (_outdoor("EQ-COOL", "EQ-T-COOL", "EQ00000h13", _BOTH_ROOMS),)))
+    findings = cooling_capacity(ctx)
+    assert [f.result for f in findings] == [Result.PASS]
+    assert "no latent or internal gains" in findings[0].message
 
 
 # --- catlin fixture -------------------------------------------------------------------
 
-def test_catlin_zones_partition_the_conditioned_storeys(catlin_model) -> None:
-    ctx = CheckContext(plan=catlin_model.plan, model=catlin_model,
-                       preferences=Preferences(), profile=None)
-    findings = heating_capacity(ctx)
-    assert len(findings) == 2
-    by_tag = {f.element_tags[0]: f for f in findings}
-    assert set(by_tag) == {"EQ-T-MINISPLIT-LG", "EQ-T-MINISPLIT-SM"}
-    # The small deep-cold unit names the basement; the large unit takes the rest of the
-    # conditioned storeys. The unconditioned garage belongs to neither zone.
-    assert "basement zone" in by_tag["EQ-T-MINISPLIT-SM"].message
-    assert "attic+main+second zone" in by_tag["EQ-T-MINISPLIT-LG"].message
-    assert "garage zone" not in by_tag["EQ-T-MINISPLIT-LG"].message
-    assert "garage+" not in by_tag["EQ-T-MINISPLIT-LG"].message
+def test_catlin_zones_follow_the_authored_pairings(catlin_model) -> None:
+    """Three Gree systems: one condenser per system, each zone the union of its indoor
+    units' rooms. The unconditioned garage belongs to no zone."""
+    from typehaus.takeoff.hvac import heating_zones
+
+    zones, unclaimed = heating_zones(catlin_model, Preferences())
+    by_tag = {zone.equipment_tag: zone for zone in zones}
+    assert set(by_tag) == {"EQ-M-HP1-OD", "EQ-M-HP2-OD", "EQ-M-HP3-OD"}
+    assert by_tag["EQ-M-HP1-OD"].indoor_tags == ("EQ-S-HP1-AH",)
+    assert set(by_tag["EQ-M-HP2-OD"].indoor_tags) == {
+        "EQ-B-HP2-GYM", "EQ-M-HP2-BED", "EQ-M-HP2-LIVING"}
+    assert by_tag["EQ-M-HP3-OD"].indoor_tags == ("EQ-M-HP3-STAIR",)
+    assert "RM-GARAGE" not in {room for zone in zones for room in zone.rooms}
+    assert "RM-GARAGE" not in unclaimed
+    # No zone claims a room another zone already claims.
+    claimed = [room for zone in zones for room in zone.rooms]
+    assert len(claimed) == len(set(claimed))
 
 
 def test_catlin_margins_read_off_the_resolved_model(catlin_model) -> None:
+    from typehaus.takeoff.hvac import heating_zones
+
+    preferences = Preferences()
     ctx = CheckContext(plan=catlin_model.plan, model=catlin_model,
-                       preferences=Preferences(), profile=None)
-    findings = {f.element_tags[0]: f for f in heating_capacity(ctx)}
-    types = {eq.tag: eq for eq in catlin_model.plan.library.equipment_types}
-    zones = {"EQ-T-MINISPLIT-SM": frozenset({"basement"}),
-             "EQ-T-MINISPLIT-LG": frozenset({"main", "second", "attic"})}
-    for tag, storeys in zones.items():
-        finding = findings[tag]
-        load = estimate_block_load(
-            catlin_model, Preferences(), storeys=storeys).heating_load_btu_per_hour
-        capacity = types[tag].heating_capacity_at_design_btuh
+                       preferences=preferences, profile=None)
+    findings = {f.element_tags[0]: f for f in heating_capacity(ctx)
+                if f.element_tags and f.element_tags[0].startswith("EQ-")}
+    zones, _ = heating_zones(catlin_model, preferences)
+    for zone in zones:
+        finding = findings[zone.equipment_tag]
+        capacity = zone.heating_capacity_at_design_btuh
         assert capacity is not None  # authored (placeholder) rating is present
+        load = zone.heating_load_btu_per_hour
         # The message reports exactly the resolved load, capacity, and margin.
         assert f"block load {load:,.0f} Btu/h" in finding.message
         assert f"{capacity:,.0f} Btu/h at-design capacity" in finding.message
@@ -204,9 +304,19 @@ def test_catlin_margins_read_off_the_resolved_model(catlin_model) -> None:
             assert finding.result is expected
         else:
             assert "missing" in finding.message  # unknown_inputs are named, not hidden
-    # Per-zone loads sum to the whole-house block load (zones share no components).
-    whole = estimate_block_load(catlin_model, Preferences()).heating_load_btu_per_hour
-    parts = sum(
-        estimate_block_load(catlin_model, Preferences(), storeys=z).heating_load_btu_per_hour
-        for z in zones.values())
-    assert parts == pytest.approx(whole)
+
+
+def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> None:
+    """Room-scoped loads are approximate, but they are a *partition*: no room is in two
+    zones, so their sum cannot exceed the whole-house block load by more than the
+    attribution slop, and it is short by whatever the unclaimed rooms carry."""
+    from typehaus.takeoff.hvac import heating_zones
+
+    preferences = Preferences()
+    zones, unclaimed = heating_zones(catlin_model, preferences)
+    whole = estimate_block_load(
+        catlin_model, preferences).heating_load_btu_per_hour
+    parts = sum(zone.heating_load_btu_per_hour for zone in zones)
+    assert 0 < parts <= whole * 1.05
+    # Catlin's attic media room and den are deliberately served by nothing yet.
+    assert set(unclaimed) == {"RM-A-WEST", "RM-A-DEN"}

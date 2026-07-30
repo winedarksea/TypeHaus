@@ -12,6 +12,7 @@ import { Workbench } from "./components/Workbench";
 import { AssemblyDetailsView } from "./components/AssemblyDetailsView";
 import { BomView } from "./components/BomView";
 import { CircuitsView } from "./components/CircuitsView";
+import { HvacView } from "./components/HvacView";
 import { LightingView } from "./components/LightingView";
 import { LensBar } from "./components/LensBar";
 import { Preview3D } from "./components/Preview3D";
@@ -218,6 +219,14 @@ export function App() {
             CIRCUITS
           </button>
           <button
+            className={`seg-btn${detailView === "hvac" ? " active" : ""}`}
+            onClick={() => setDetailView(detailView === "hvac" ? "none" : "hvac")}
+            aria-pressed={detailView === "hvac"}
+            title="HVAC — heat-pump systems, zone loads, ducts, registers, ERV"
+          >
+            HVAC
+          </button>
+          <button
             className={`seg-btn${detailView === "lighting" ? " active" : ""}`}
             onClick={() => setDetailView(detailView === "lighting" ? "none" : "lighting")}
             aria-pressed={detailView === "lighting"}
@@ -320,6 +329,7 @@ export function App() {
       {detailView === "bom" && <BomView />}
       {detailView === "circuits" && <CircuitsView />}
       {detailView === "lighting" && <LightingView />}
+      {detailView === "hvac" && <HvacView />}
       <Workbench />
       <CommandPalette />
       <Toasts />

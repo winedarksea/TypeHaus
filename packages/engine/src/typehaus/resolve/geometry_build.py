@@ -116,8 +116,12 @@ def _solid_geometry(solid: ResolvedSolid) -> ElementGeometry:
     """
     prism = GPrism(ring=solid.outline, z0_m=solid.z0_m, z1_m=solid.z1_m,
                    voids=tuple(solid.voids))
+    # Almost every solid is a pour. A dropped soffit is the exception: it is framed and
+    # finished like the ceiling it hangs under, so it rides the floors trade instead of
+    # appearing in a concrete take-off it has no business in.
     return ElementGeometry(
-        uid=solid.uid, kind=solid.category, trade="concrete",
+        uid=solid.uid, kind=solid.category,
+        trade="floors" if solid.category == "soffit" else "concrete",
         parts=(GPart(key="body", solids=(prism,),
                      material_key=normalize(solid.category),
                      layer_group="structure"),),

@@ -47,6 +47,8 @@ def load_preferences(house_dir: Path) -> Preferences:
     return Preferences(
         wall_r=env.get("wall_r"), roof_r=env.get("roof_r"),
         window_u=env.get("window_u"), ach50=env.get("ach50"),
+        cfm50=env.get("cfm50"),
+        infiltration_n_factor=env.get("infiltration_n_factor", 18.0),
         interior_setpoint_f=env.get("interior_setpoint_f", 70.0),
         interior_relative_humidity=env.get("interior_relative_humidity", 0.35),
         monthly_interior_relative_humidity=env.get(

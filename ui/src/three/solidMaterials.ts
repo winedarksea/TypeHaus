@@ -30,6 +30,10 @@ export const SOLID_CATEGORY_COLOR: Record<string, number> = {
   fascia: 0xebebe6, // PVC fascia
   gutter: 0xd9dbde, // metal gutter
   flashing: 0xbfc4cc, // metal flashing
+  // A dropped soffit is painted gwb, like the ceiling it hangs under — not concrete, which
+  // is what the fallback would have made the second-floor HVAC chase. Same triple the glTF
+  // palette's "soffit" carries (0.88, 0.88, 0.85), so the viewer and the export agree.
+  soffit: 0xe0e0d9,
 };
 
 // Shop-finished metal accessories read as metal, not matte plastic: a gutter, a drip flashing

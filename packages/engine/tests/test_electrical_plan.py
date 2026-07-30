@@ -95,8 +95,10 @@ def test_service_upgrade_devices_are_present(catlin_model):
     assert devices["ED-G-EV-620"].type_ref == "ED-T-EV-620"
     assert devices["ED-G-EV-1450"].type_ref == "ED-T-EV-1450"
     assert devices["ED-B-SPA-DISC"].kind.value == "disconnect"
-    assert devices["ED-M-MINI1-DISC"].kind.value == "disconnect"
-    assert devices["ED-M-MINI2-DISC"].kind.value == "disconnect"
+    # One 440.14 disconnect per outdoor unit — three systems now, not two minisplits.
+    assert devices["ED-M-HP1-DISC"].kind.value == "disconnect"
+    assert devices["ED-M-HP2-DISC"].kind.value == "disconnect"
+    assert devices["ED-M-HP3-DISC"].kind.value == "disconnect"
     assert devices["ED-A-PV-JB"].kind.value == "junction_box"
     # Typed NEMA data replaces name parsing (WS1 schema).
     types = {t.tag: t for t in catlin_model.plan.library.electrical_device_types}
@@ -123,8 +125,15 @@ def test_both_water_heaters_are_modeled(catlin_model):
                  if element.element_kind == "Equipment"}
     assert equipment["EQ-B-WH"].type_ref == "EQ-T-WATER-HEATER"  # 120V Rheem HPWH
     assert equipment["EQ-B-WH2"].type_ref == "EQ-T-WATER-HEATER-240"
-    assert equipment["EQ-M-MINI1"].kind.value == "heat_pump"
-    assert equipment["EQ-M-MINI2"].kind.value == "heat_pump"
+    # The three Gree outdoor units, and the indoor halves that name them.
+    for tag in ("EQ-M-HP1-OD", "EQ-M-HP2-OD", "EQ-M-HP3-OD"):
+        assert equipment[tag].kind.value == "heat_pump"
+    assert equipment["EQ-S-HP1-AH"].kind.value == "ducted_air_handler"
+    assert equipment["EQ-S-HP1-AH"].outdoor_ref == "EQ-M-HP1-OD"
+    for tag in ("EQ-B-HP2-GYM", "EQ-M-HP2-BED", "EQ-M-HP2-LIVING"):
+        assert equipment[tag].kind.value == "indoor_head"
+        assert equipment[tag].outdoor_ref == "EQ-M-HP2-OD"
+    assert equipment["EQ-M-HP3-STAIR"].outdoor_ref == "EQ-M-HP3-OD"
 
 
 def test_electrical_plan_dxf_round_trips(catlin_model, tmp_path: Path):

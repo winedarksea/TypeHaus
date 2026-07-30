@@ -122,10 +122,27 @@ class EquipmentType(FurnitureType):
     # Heating output at the *site* heating design temperature. The authored number IS the
     # derate — no performance-curve modeling; leave None when the datasheet doesn't say.
     heating_capacity_at_design_btuh: float | None = None
+    # Rated sensible cooling output (Btu/h at the AHRI 95 °F point). Advisory only: the
+    # block load's cooling side is a UA + solar sum, not a Manual J latent split.
+    cooling_capacity_btuh: float | None = None
+    # Ventilation equipment (ERV/HRV) only: the continuous balanced airflow it moves, and
+    # the datasheet sensible recovery effectiveness (0..1) at that flow. Both feed the
+    # ventilation term of the block load — never defaulted, because a guessed SRE moves
+    # the load by thousands of Btu/h.
+    ventilation_cfm: float | None = None
+    sensible_recovery_effectiveness: float | None = None
+    # Lowest outdoor temperature the unit is rated to operate at (cold-climate heat pumps).
+    # Compared against the site heating design temperature by the HVAC schedule.
+    min_operating_temp_f: float | None = None
 
 
 class RegisterType(FurnitureType):
     needs: frozenset[Service] = frozenset({Service.SUPPLY_AIR})
+    # A ventilation terminal (the ERV's fresh-air/stale-air grilles) rather than a
+    # conditioned-air register. Same product family, different sizing basis — a ventilation
+    # terminal is sized for the whole-house rate, a supply register for a heating CFM — and
+    # the plan set/IFC handoff has to tell a reader which one it is looking at.
+    ventilation_terminal: bool = False
 
 
 class ElectricalDeviceType(FurnitureType):

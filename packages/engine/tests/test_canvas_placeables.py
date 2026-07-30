@@ -275,7 +275,7 @@ def test_catlin_mep_starter_instances_use_the_shared_typed_catalog() -> None:
     plan = load_plan(house).plan
     assert plan is not None
     catalog = {item["tag"]: item for item in canvas_object_types(plan)}
-    assert catalog["REG-T-SUPPLY"]["ports"] == [{"tag": "supply", "service": "supply_air"}]
+    assert catalog["REG-T-ERV-SUP"]["ports"] == [{"tag": "supply", "service": "supply_air"}]
     assert catalog["ED-T-RECEPTACLE"]["ports"] == [{"tag": "power", "service": "power_120"}]
     typed = ("Register", "Equipment", "ElectricalDevice")
     assert all(item.type_ref for storey in plan.storeys for item in plan.storey_elements(storey.tag)

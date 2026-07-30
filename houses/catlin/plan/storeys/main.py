@@ -429,7 +429,7 @@ ALARMS = [
 ]
 
 # Electric radiant floor — the two main-storey comfort zones (2026-07-25). Neither is a
-# heating system: the minisplits carry the house and these warm the two floors people stand
+# heating system: the heat pumps carry the house and these warm the two floors people stand
 # on barefoot, both of which sit just south of the 18' midline.
 #
 # Sizing is one number applied twice: mat at 12 W/ft2, which is what a 120V floor cable

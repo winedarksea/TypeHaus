@@ -56,13 +56,32 @@ def _connected_va(model: ResolvedModel, circuit, consumers: list) -> float:
     )
 
 
+_HEAT_PUMP_KINDS = frozenset({"heat_pump", "indoor_head", "ducted_air_handler"})
+
+
+def _is_heat_pump(circuit, consumers: list) -> bool:
+    """A circuit feeding the heat-pump system NEC 220.82(C)(2) takes at 100%.
+
+    Typed, not name-matched: an ``Equipment`` of an HVAC kind on the circuit is the modeled
+    answer. This used to look for "minisplit" in the description, which silently dropped the
+    whole heating term to zero the day the units were renamed — and put them in the
+    fixed-appliance bucket (B)(3), which (B) explicitly excludes heating loads from.
+    """
+    return any(
+        element.element_kind == "Equipment"
+        and getattr(getattr(element, "kind", None), "value", None) in _HEAT_PUMP_KINDS
+        for element in consumers
+    )
+
+
 def _is_resistance_heat(circuit, consumers: list) -> bool:
     """Fixed electric space heating — the loads NEC 220.82(C) governs, not (B)(3).
 
     Typed first: an ``Equipment`` of kind ``space_heater`` on the circuit is the modeled
     answer. Radiant floor has no placeable to read (a ``FloorHeat`` zone carries no
     ``circuit``; its thermostat is a SWITCH like any other), so those fall back to the
-    description, which is the same shape the ``minisplit`` branch already relies on.
+    description — the one name-match left in this function, and the reason the heat-pump
+    branch above no longer has one.
     """
     for element in consumers:
         kind = getattr(element, "kind", None)
@@ -117,7 +136,7 @@ def service_load_summary(model: ResolvedModel) -> dict[str, object]:
     for circuit in model.plan.library.circuits:
         va = _connected_va(model, circuit, consumers.get(circuit.tag, []))
         description = circuit.description.lower()
-        if "minisplit" in description:
+        if _is_heat_pump(circuit, consumers.get(circuit.tag, [])):
             heat_pump_va += va  # 220.82(C)(2)
         elif _is_resistance_heat(circuit, consumers.get(circuit.tag, [])):
             resistance_heat_va += va

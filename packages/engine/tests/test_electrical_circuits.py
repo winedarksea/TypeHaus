@@ -205,7 +205,7 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     from typehaus.takeoff import backup_component_rows, panel_schedule, service_load_summary
 
     rows = {row["circuit"]: row for row in panel_schedule(catlin_model)}
-    assert len(rows) == 35
+    assert len(rows) == 37  # +2 with the three-system HVAC design (CKT-HP1-AH, CKT-HP2)
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
     # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor; the
     # dining zone takes the same protection because every mat maker asks for it).
@@ -230,10 +230,10 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # The notes' backup set is flagged.
     backup = {tag for tag, row in rows.items() if row["backup"]}
     assert backup == {"CKT-WH-HP", "CKT-SUMP", "CKT-FRIDGE", "CKT-HA",
-                      "CKT-LT-BACKUP", "CKT-MINI-2"}
+                      "CKT-LT-BACKUP", "CKT-HP3"}
     # ceil(6 backup circuits / 4 channels) = 2 relays, one PSU, one UPS, and a contactor
     # for each backup circuit a 16A relay channel can't switch directly (sump 20A,
-    # fridge 20A, the 2-pole minisplit).
+    # fridge 20A, the 2-pole heat pump).
     components = {row["component"]: row["count"] for row in backup_component_rows(catlin_model)}
     assert components["Shelly Pro 4PM 4-channel DIN relay"] == 2
     assert components["DIN contactor (relay-driven)"] == 3
@@ -242,9 +242,10 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     assert load["demand_amps"] > 100  # a real number, not a stub
     assert load["panel_rating_amps"] == 225 and load["service_amps"] == 200
     # 220.82(C) selects, it does not sum: five separately controlled resistance heaters
-    # (three mats, the fireplace, the garage heater) are taken at 40% and lose to the two
-    # minisplits at 100%, so the heating term is the heat pumps' and the resistance heat
-    # costs the service nothing.
+    # (three mats, the fireplace, the garage heater) are taken at 40% and lose to the three
+    # heat-pump systems at 100%, so the heating term is the heat pumps' and the resistance
+    # heat costs the service nothing. The heat-pump circuits are identified by the typed
+    # Equipment on them, not by a word in the description (takeoff/electrical._is_heat_pump).
     assert load["resistance_heat_units"] == 5 and load["resistance_heat_factor"] == 0.40
     assert load["hvac_va"] == load["heat_pump_va"] > load["resistance_heat_va"] * 0.40
 
@@ -527,7 +528,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     assert payload["conduit"] == conduit_takeoff(catlin_model)
     assert payload["devices"] == electrical_device_takeoff(catlin_model)
     assert payload["solar"] == solar_takeoff(catlin_model)
-    assert len(payload["panel_schedule"]) == 35
+    assert len(payload["panel_schedule"]) == 37
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):

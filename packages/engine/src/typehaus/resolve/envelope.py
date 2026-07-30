@@ -6,7 +6,7 @@ import math
 from dataclasses import replace
 
 from typehaus.findings import Finding, element_error
-from typehaus.model.floors import FloorOpening, FloorSystem, Slab
+from typehaus.model.floors import FloorOpening, FloorSystem, Slab, Soffit
 from typehaus.model.spatial import Roof, Stair
 from typehaus.model.refs import ToRoof
 from typehaus.model.enums import ConditionKind
@@ -71,6 +71,39 @@ def resolve_envelope_geometry(model: ResolvedModel) -> list[Finding]:
                     bottom = top - element.thickness.meters
                 model.solids.append(ResolvedSolid(
                     element.uid, element.tag, storey.tag, "pad", outline, bottom, top,
+                ))
+            elif isinstance(element, Soffit):
+                # A dropped ceiling is a framed box hanging under the ceiling plane — a
+                # plan polygon between two elevations, which is exactly ``ResolvedSolid``.
+                # Its own ``underside_elevation`` (storey-relative) wins; otherwise ``drop``
+                # measures down from the storey's default ceiling. Both absent is a
+                # modelling gap, not a zero-depth box, so it is named rather than guessed.
+                outline = [point.xy_m for point in element.outline]
+                if len(outline) < 3:
+                    findings.append(element_error("integrity.soffit_outline",
+                                           f"soffit {element.tag} needs a closed outline",
+                                           element.tag))
+                    continue
+                ceiling = elevation + storey.default_ceiling_height.meters
+                if element.underside_elevation is not None:
+                    bottom = elevation + element.underside_elevation.meters
+                elif element.drop is not None:
+                    bottom = ceiling - element.drop.meters
+                else:
+                    findings.append(element_error(
+                        "integrity.soffit_elevation",
+                        f"soffit {element.tag} states neither drop nor "
+                        "underside_elevation", element.tag))
+                    continue
+                if bottom >= ceiling:
+                    findings.append(element_error(
+                        "integrity.soffit_elevation",
+                        f"soffit {element.tag} undersides at or above the ceiling plane "
+                        "it hangs from", element.tag))
+                    continue
+                model.solids.append(ResolvedSolid(
+                    element.uid, element.tag, storey.tag, "soffit", outline,
+                    bottom, ceiling,
                 ))
             elif isinstance(element, GlazingPanel):
                 solid, panel_findings = _resolve_glazing_panel(element, storey.tag)

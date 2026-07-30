@@ -510,6 +510,7 @@ class ResolvedDuct:
     crossings: tuple[tuple[float, float], ...]  # bearing-line crossing points
     conflicts: tuple[str, ...]  # non-empty -> structural FAIL, named per conflict
     depth_ok: bool  # duct depth fits within the joist depth
+    design_cfm: float | None = None  # authored intent, echoed for the duct schedule
 
 
 @dataclass(frozen=True)

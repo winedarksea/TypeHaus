@@ -851,9 +851,11 @@ def _emit_registers_equipment_devices(f: Any, body: Any, model: ResolvedModel,
                                _placeable_ifc_type(f, type_cache, product_type, "IfcAirTerminal",
                                                    "IfcAirTerminalType", project_uuid))
             elif element.element_kind == "Equipment":
+                ifc_class, type_class = _equipment_ifc_classes(element.kind.value)
                 _emit_equipment(f, body, element, storey, storeys, project_uuid, product_type, resolved_item,
-                                _placeable_ifc_type(f, type_cache, product_type, "IfcBuildingElementProxy",
-                                                    "IfcBuildingElementProxyType", project_uuid))
+                                _placeable_ifc_type(f, type_cache, product_type, ifc_class,
+                                                    type_class, project_uuid),
+                                ifc_class)
             elif element.element_kind == "ElectricalDevice":
                 ifc_class, type_class = _device_ifc_classes(element.kind.value)
                 _emit_device(f, body, element, storey, storeys, project_uuid, product_type, resolved_item,
@@ -876,6 +878,16 @@ def _emit_register(f: Any, body: Any, register: Any, storey: Any, storeys: dict[
                                                "rotation_degrees": _rotation_metadata(register, resolved)})
     ll.ensure_pset(f, element, "TypeHaus_Identity", {"uid": register.uid, "tag": register.tag,
                                                         "source_type": register.type_ref or ""})
+    # Which family of terminal this is: a continuous-flow ventilation diffuser on the ERV's
+    # balanced trunks, or a conditioned-air register on a heat-pump duct. Same IfcAirTerminal
+    # class either way — they are sized on different bases, not built differently.
+    ll.ensure_pset(f, element, "TypeHaus_AirTerminal", {
+        "system": register.kind.value,
+        "terminal_style": ("ventilation"
+                           if getattr(product_type, "ventilation_terminal", False)
+                           else "conditioned_air"),
+        "duct_ref": register.duct_ref or "",
+    })
     if product_type is not None:
         _emit_service_ports(f, element, product_type.ports, project_uuid, register.uid)
     if type_object is not None:
@@ -891,15 +903,41 @@ def _rotation_metadata(element: Any, resolved: Any | None) -> str:
     return f"{degrees:.6f}"
 
 
+def _equipment_ifc_classes(kind: str) -> tuple[str, str]:
+    """Map an ``EquipmentKind`` onto a real IFC class where one exists.
+
+    Split systems are ``IfcUnitaryEquipment`` — the IFC4 class for a packaged
+    heating/cooling unit, which is what a condenser, a wall head and a concealed ducted air
+    handler each are — and an ERV is ``IfcAirToAirHeatRecovery``. Everything else (water
+    heaters, sauna heaters, resistance space heaters) has no better fit than the proxy it
+    already emitted as — including FURNACE and AIR_HANDLER, which are arguably unitary
+    equipment too but which nothing models yet; re-classing an element nobody authors would
+    churn the round-trip diff for no reader's benefit.
+
+    GUIDs are unaffected: ``derive_guid`` keys on the element uid, not the class, so a unit
+    that was a proxy in an earlier emit keeps its GlobalId across this change.
+
+    Mirrored by ``diff/ifc_adapter.py`` (``class_for_kind`` plus the external read list) —
+    change both together or the round-trip diff reads the class change as a deletion.
+    """
+    return {
+        "heat_pump": ("IfcUnitaryEquipment", "IfcUnitaryEquipmentType"),
+        "indoor_head": ("IfcUnitaryEquipment", "IfcUnitaryEquipmentType"),
+        "ducted_air_handler": ("IfcUnitaryEquipment", "IfcUnitaryEquipmentType"),
+        "erv": ("IfcAirToAirHeatRecovery", "IfcAirToAirHeatRecoveryType"),
+    }.get(kind, ("IfcBuildingElementProxy", "IfcBuildingElementProxyType"))
+
+
 def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dict[str, Any],
                     project_uuid: Any, product_type: Any | None, resolved: Any | None,
-                    type_object: Any | None) -> None:
+                    type_object: Any | None,
+                    ifc_class: str = "IfcBuildingElementProxy") -> None:
     width, depth = (dim.meters for dim in equipment.footprint)
     x, y = equipment.position.xy_m
     outline = resolved.footprint if resolved is not None else _rectangle(x, y, width, depth)
     height = product_type.height.meters if product_type is not None else 1.5
     z0 = resolved.z_m if resolved is not None else storey.elevation.meters
-    element = ll.create_entity(f, "IfcBuildingElementProxy", name=equipment.tag)
+    element = ll.create_entity(f, ifc_class, name=equipment.tag)
     element.GlobalId = derive_guid(project_uuid, equipment.uid)
     _assign_representation(f, element, ll.add_prism_from_profile(
         f, body, outline, height, z0,
@@ -908,8 +946,26 @@ def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dic
                                                "rotation_degrees": _rotation_metadata(equipment, resolved)})
     ll.ensure_pset(f, element, "TypeHaus_Identity", {"uid": equipment.uid, "tag": equipment.tag,
                                                         "source_type": equipment.type_ref or ""})
+    # The HVAC facts a Revit/SketchUp reader needs to identify the unit and its zone: the
+    # ratings from the type, and the two authored relations (which rooms it serves, which
+    # condenser it pairs with) that no geometry can carry. Empty string / 0.0 where the
+    # datasheet number is not authored — an absent property is indistinguishable from a
+    # property this emitter forgot.
     ll.ensure_pset(f, element, "TypeHaus_Equipment", {
         "kind": equipment.kind.value, "circuit": equipment.circuit or "",
+        "zone_rooms": ",".join(getattr(equipment, "zone_rooms", ()) or ()),
+        "outdoor_ref": getattr(equipment, "outdoor_ref", None) or "",
+        "heating_capacity_btuh": float(
+            getattr(product_type, "heating_capacity_btuh", None) or 0.0),
+        "heating_capacity_at_design_btuh": float(
+            getattr(product_type, "heating_capacity_at_design_btuh", None) or 0.0),
+        "cooling_capacity_btuh": float(
+            getattr(product_type, "cooling_capacity_btuh", None) or 0.0),
+        "min_operating_temp_f": float(
+            getattr(product_type, "min_operating_temp_f", None) or 0.0),
+        "ventilation_cfm": float(getattr(product_type, "ventilation_cfm", None) or 0.0),
+        "sensible_recovery_effectiveness": float(
+            getattr(product_type, "sensible_recovery_effectiveness", None) or 0.0),
     })
     if product_type is not None:
         _emit_service_ports(f, element, product_type.ports, project_uuid, equipment.uid)

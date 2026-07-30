@@ -452,10 +452,27 @@ FLOOR_HEAT = [
 # The hallway duct soffit (HRV + heat mains) — dashed on plan, framed in 3D. Its south end
 # follows the band wall from 8'-8" to 9'-0"; the x-range is left alone (source 20.0->20.6,
 # ours 19'-4"->20'-8", inside the 2" fidelity band).
+# The hallway HVAC chase (plans/TODO.md: "2nd floor hallway dropped ceiling for HVAC").
+# Widened and extended 2026-07-29 for the three-system HVAC design: it now encloses BOTH of
+# System 1's ducts side by side — DU-S-HP-SUP at x=19'-4" and DU-S-HP-RET at x=20'-8", each
+# 14"x8" (plan/mep.py DUCTS_HVAC_SECOND) — instead of the single 16"-wide box it was. The
+# 14" drop clears an 8" duct plus its 2x4 framing and hangers with room for the boots that
+# turn out through the bedroom walls.
+#
+# It runs y 6'-0" .. 34'-0": the south 3' is over RM-S-STUDY2, where EQ-S-HP1-AH sits above
+# the ceiling and the trunk starts, so the box has to reach the unit's collars rather than
+# stopping at the hall wall. A soffit polygon spanning rooms is expected (#40).
+#
+# LIGHTING TIE-IN: LR-S-HALL-GAP already runs the hall at x=18'-6" and x=21'-6", i.e. just
+# outside both soffit edges — the shadow-gap strips wash the soffit's flanks, which is the
+# effect the notes ask for and needs no new lighting here.
+# TODO the three hall cans (ED-S-HALL-CAN1/2/3, plan/lighting.py) are at x=20', inside this
+# soffit's plan extent, and are still mounted at the 9'-0" ceiling. They need re-setting
+# into the soffit face at 7'-10" in a lighting pass; that is a lighting edit, not this one.
 SOFFITS = [
     Soffit(uid="CSF601AAAA", tag="SF-S-DUCT",
-           outline=(pt(ft(19, 4), ft(9)), pt(ft(20, 8), ft(9)),
-                    pt(ft(20, 8), ft(36)), pt(ft(19, 4), ft(36))),
+           outline=(pt(ft(18, 8), ft(6)), pt(ft(21, 4), ft(6)),
+                    pt(ft(21, 4), ft(34)), pt(ft(18, 8), ft(34))),
            drop=inch(14)),
 ]
 

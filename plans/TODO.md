@@ -49,12 +49,34 @@ what genuinely remains, with fresh measurements.*
   recorded in the roof-eave stream report (E5); purely visual. (Deferred from the 2026-07-26
   batch because that file was owned by the then-pending breezeway stream S2; S2 has now
   landed, so this is unblocked.)
-- **Minisplit ratings are representative placeholders (2026-07-26).** `mep.heating_capacity`
-  now sizes per zone off `estimate_block_load`; EQ-T-MINISPLIT-LG/-SM carry placeholder
-  hyper-heat ratings (30,000/21,000 and 12,000/8,700 Btu/h rated/at-design) to be
-  overwritten with the selected models' datasheet numbers. Current honest findings: upstairs
-  zone −14,330 Btu/h at design (advisory FAIL), basement UNKNOWN (five basement door
-  U-factors missing from the block-load inputs).
+- **Gree capacities are representative placeholders (2026-07-29).** The three-system HVAC
+  design below is modeled; every capacity on `EQ-T-GREE-*` and the ERV's SRE carries
+  `# TODO verify datasheet` and a `source` saying so. `mep.heating_capacity` now sizes per
+  *zone of rooms* (`Equipment.zone_rooms` + `outdoor_ref`) off `estimate_block_load(rooms=…)`.
+  Current honest findings, whole-house block load 56,434 Btu/h at design:
+  - System 1 (Vireo GEN3 + ducted air handler, upstairs + 2 attic rooms): 11,415 vs 16,500
+    at-design — PASS.
+  - System 2 (Multi Ultra 3-port, basement + west main + living room): **37,078 vs 22,000
+    at-design — undersized by ~15,000 Btu/h.** Reported UNKNOWN today only because five
+    basement door U-factors are missing from the block-load inputs; once those are authored
+    it is an advisory FAIL. Either the zone splits (the basement wants its own system) or
+    the outdoor unit grows — a real design decision, not a modelling artifact.
+  - System 3 (Sapphire R32, stair + mudroom + mech): 4,094 vs 8,000 at-design — PASS.
+  - `RM-A-WEST` and `RM-A-DEN` are in **no** zone: only RM-A-EAST and RM-A-STUDY get attic
+    branches, so the check names the other two unclaimed rather than guessing.
+- **RM-S-SUITE has no conditioned-air terminal (2026-07-29).** It is in System 1's
+  `zone_rooms`, but the chase runs down the *east* hall; reaching the west suite needs a
+  branch across the stair well that is not drawn. Its ERV supply is unaffected.
+- **Hall cans sit inside the new soffit (2026-07-29).** `ED-S-HALL-CAN1/2/3` are at x=20',
+  inside `SF-S-DUCT`'s widened plan extent, still mounted at the 9'-0" ceiling. They want
+  re-setting into the soffit face at 7'-10" in a lighting pass.
+- **Heat-pump condensate is not modeled (2026-07-29).** Each indoor unit drains to a
+  collected air-gap line terminating over the mechanical-room sink; needs the plumbing pass
+  that gives that sink its own drain. Refrigerant linesets are also unmodeled — only the
+  indoor→outdoor pairing is recorded (`Equipment.outdoor_ref`).
+- **The panel is now 52 spaces over a 42-space enclosure (2026-07-29).** Two more two-pole
+  circuits (CKT-HP1-AH, CKT-HP2) landed with the three-system design; `electrical.panel_spaces`
+  FAILs until the panel is swapped for a 54-space unit, which was already true at 48.
 - **Deck post/footing UNKNOWNs (2026-07-26, by design).** Both sunken-garden decks are now
   `service="deck"`: `deck_post_size` has no R507.4 row for the 12" round column PT-SG-COL,
   and PT-SG-COL plus the six balcony pillars bear on non-Pad chains (grouted CMU / bell
@@ -180,7 +202,7 @@ Questions:
 - Do we want floor drains in kitchen/laundry room
 - Is the door opening inside the breezeway code compliant
 - No overhang roof 
-- 2nd floor hallway dropped ceiling for HVAC
+- ~~2nd floor hallway dropped ceiling for HVAC~~ (done 2026-07-29: `SF-S-DUCT`)
 - Outdoor hydrants plus more complete internal plumbing 
 - Edits in 2d don't always update all the necessary pieces (like when we switched a shower to showertub)
 - Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?
@@ -188,7 +210,12 @@ Questions:
 - Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model)
 
 ##  HVAC
-Review the accuracy of the BTU model for the house
+**Modeled 2026-07-29** — all four items below are implemented; the open follow-ups are in
+the honest-state list above (Gree datasheet verification, System 2 undersizing, RM-S-SUITE's
+missing terminal, the hall cans, condensate plumbing). The BTU model now carries blower-door
+infiltration (LBL N-factor off `preferences.toml`'s `ach50`) and ERV ventilation air net of
+sensible recovery, and can be scoped to a zone of rooms — see `energy.py`, whose docstring
+says plainly where that room attribution is approximate.
 
 Gree Slim Concealed Ducted Series with Gree Vireo GEN3 / Ultra outdoor unit running in RM-S-STUDY2 in a dropped HVAC chase that runs north from there along the hallway, with outlets in each of the bedrooms and near the stairs, plus also outlets into RM-A-EAST and RM-A-STUDY directly above it (very short branches, this is a straight run duct meant to operate at low flow)
 

@@ -471,6 +471,88 @@ export interface Electrical {
   lighting?: Lighting | null; // absent on a model.json built before the lighting plan
 }
 
+// The HVAC take-off, carried verbatim from takeoff/hvac.py (→ model_json.py "hvac"). Field
+// names match the Python dicts exactly; the zone arithmetic is the same call
+// checks/mep/hvac.py::heating_capacity makes, so this reader and the finding can never
+// disagree. Every capacity is optional because a datasheet number that is not authored must
+// read as unknown, never as zero.
+export interface HvacEquipmentRow {
+  tag: string;
+  uid: string;
+  storey: string;
+  kind: string;
+  name: string | null;
+  type_ref: string | null;
+  room: string | null;
+  zone_rooms: string[];
+  outdoor_ref: string | null;
+  circuit: string | null;
+  heating_capacity_btuh: number | null;
+  heating_capacity_at_design_btuh: number | null;
+  cooling_capacity_btuh: number | null;
+  min_operating_temp_f: number | null;
+  ventilation_cfm: number | null;
+  sensible_recovery_effectiveness: number | null;
+}
+
+export interface HvacZoneRow {
+  name: string;
+  equipment_tag: string;
+  type_tag: string | null;
+  rooms: string[];
+  indoor_tags: string[];
+  heating_load_btu_per_hour: number;
+  heating_capacity_at_design_btuh: number | null;
+  heating_margin_btuh: number | null;
+  cooling_load_btu_per_hour: number;
+  cooling_capacity_btuh: number | null;
+  cooling_margin_btuh: number | null;
+  min_operating_temp_f: number | null;
+  unknown_inputs: string[];
+}
+
+export interface HvacDuctRow {
+  tag: string;
+  uid: string;
+  storey: string;
+  system: string;
+  routing: string;
+  length_ft: number;
+  width_in: number;
+  depth_in: number;
+  design_cfm: number | null;
+  floor_ref: string | null;
+}
+
+export interface HvacRegisterRow {
+  tag: string;
+  uid: string;
+  storey: string;
+  kind: string;
+  room: string | null;
+  duct_ref: string | null;
+  type_ref: string | null;
+  type_name: string | null;
+  ventilation_terminal: boolean;
+}
+
+export interface HvacVentilation {
+  units: HvacEquipmentRow[];
+  total_ventilation_cfm: number | null;
+  terminal_count: number;
+  supply_terminals: number;
+  stale_terminals: number;
+}
+
+export interface Hvac {
+  equipment: HvacEquipmentRow[];
+  zones: HvacZoneRow[];
+  unclaimed_conditioned_rooms: string[];
+  ducts: HvacDuctRow[];
+  registers: HvacRegisterRow[];
+  ventilation: HvacVentilation;
+}
+
 export interface Condition {
   kind: string;
   key: string;
@@ -840,6 +922,7 @@ export interface Model {
   conditions: Condition[];
   transitions?: Transition[]; // library transition documentation; absent on older model.json
   electrical?: Electrical | null; // the electrical take-off; absent on older model.json
+  hvac?: Hvac | null; // the HVAC take-off; null without preferences, absent on older model.json
   stack_edges: StackEdge[];
   building_science?: BuildingScience | null;
   catalog?: Catalog; // authoring palette (→ _catalog); absent on older model.json

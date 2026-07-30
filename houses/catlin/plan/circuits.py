@@ -15,8 +15,9 @@ Conventions:
 - ``slot`` is the physical breaker position: odd numbers run down the left column, even
   down the right, and a 2-pole breaker takes ``slot`` and ``slot + 2`` (same column).
   PV backfeeds at the bottom of the bus (40/42), opposite the main (120% rule).
-  HONEST STATE: 13 two-pole + 22 one-pole = 48 spaces against ED-T-PANEL's 42, so the
-  last six 120V circuits sit in slots 43-48 past the enclosure and
+  HONEST STATE: 15 two-pole + 22 one-pole = 52 spaces against ED-T-PANEL's 42, so the
+  last six 120V circuits sit in slots 43-48 and the two heat-pump circuits added with the
+  three-system HVAC design sit in 49-52, all past the enclosure, and
   ``electrical.panel_spaces`` FAILS until the panel is swapped for a 54-space unit.
 """
 
@@ -53,10 +54,22 @@ CIRCUITS = (
             load_va=4500, description="Water heater, 240V tank (EQ-B-WH2)"),
     Circuit(uid="CKT008AAAA", tag="CKT-ERV", slot=2, panel_ref=_PANEL, breaker_amps=15, poles=2,
             load_va=200, description="ERV"),
-    Circuit(uid="CKT009AAAA", tag="CKT-MINI-1", slot=6, panel_ref=_PANEL, breaker_amps=25, poles=2,
-            load_va=4800, description="Minisplit, large (upstairs zone)"),
-    Circuit(uid="CKT010AAAA", tag="CKT-MINI-2", slot=10, panel_ref=_PANEL, breaker_amps=15, poles=2,
-            backup=True, load_va=1500, description="Minisplit, small deep-cold (basement)"),
+    # The three Gree heat-pump systems (plan/electrical.py). A multi's indoor heads are fed
+    # from the outdoor unit, so System 2's three heads add no circuits; System 1's ducted
+    # air handler does get its own, because a ducted blower is fed at the unit.
+    Circuit(uid="CKT009AAAA", tag="CKT-HP1", slot=6, panel_ref=_PANEL, breaker_amps=25, poles=2,
+            load_va=4800, description="Heat pump 1 outdoor, Vireo GEN3 (EQ-M-HP1-OD)"),
+    Circuit(uid="CKT031AAAA", tag="CKT-HP1-AH", slot=50, panel_ref=_PANEL, breaker_amps=15, poles=2,
+            load_va=1000,
+            description="Heat pump 1 indoor, concealed ducted air handler (EQ-S-HP1-AH)"),
+    Circuit(uid="CKT032AAAA", tag="CKT-HP2", slot=49, panel_ref=_PANEL, breaker_amps=30, poles=2,
+            load_va=6000,
+            description="Heat pump 2 outdoor, Multi Ultra 3-port (EQ-M-HP2-OD; feeds its 3 heads)"),
+    # System 3 is the one on the backup subsystem: a true-VFD compressor soft-starts, which
+    # is what makes it carryable by the battery inverter at all.
+    Circuit(uid="CKT010AAAA", tag="CKT-HP3", slot=10, panel_ref=_PANEL, breaker_amps=15, poles=2,
+            backup=True, load_va=1500,
+            description="Heat pump 3 outdoor, Sapphire R32 VFD (EQ-M-HP3-OD; backup battery)"),
     Circuit(uid="CKT011AAAA", tag="CKT-KETTLE", slot=14, panel_ref=_PANEL, breaker_amps=20, poles=2,
             nema="6-20R", load_va=3840, description="Kitchen kettle outlet (6-20R half)"),
     # PV backfeed lands at the opposite end of the bus from the main (120% rule headroom
@@ -68,7 +81,7 @@ CIRCUITS = (
 
     # --- electric space heating (2026-07-25) -----------------------------------------
     #
-    # Supplemental only: the minisplits do the heating work and these five take the chill
+    # Supplemental only: the three heat-pump systems do the heating work and these five take the chill
     # off specific surfaces. None of them is sized to carry a room.
     #
     # The three floor zones are 120V mat at 12 W/ft2 over the polygons authored in
