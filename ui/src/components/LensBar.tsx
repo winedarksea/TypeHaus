@@ -67,7 +67,7 @@ export function layerCarriesControl(control: readonly string[] | undefined, lens
   return (control ?? []).some((entry) => entry.toLowerCase().includes(lens));
 }
 
-const LENSES: LensSpec[] = [
+export const LENSES: LensSpec[] = [
   { id: "none", label: "Normal", icon: "◻", colorVar: "--ink", pattern: "0", legend: "All disciplines shown normally." },
   { id: "air", label: "Air", icon: "≋", colorVar: "--control-air", pattern: "2 3", legend: "Air-barrier continuity — discontinuities numbered." },
   { id: "water", label: "Water", icon: "☂", colorVar: "--control-water", pattern: "6 3", legend: "Water-control layer + drainage path continuity." },
@@ -77,7 +77,6 @@ const LENSES: LensSpec[] = [
 
 export function LensBar() {
   const activeLens = useStore((s) => s.activeLens);
-  const setActiveLens = useStore((s) => s.setActiveLens);
   const model = useStore((s) => s.model);
   const zoomToUid = useStore((s) => s.zoomToUid);
 
@@ -92,20 +91,6 @@ export function LensBar() {
 
   return (
     <>
-      <div className="lens-bar" role="group" aria-label="Building-science lens">
-        {LENSES.map((l) => (
-          <button
-            key={l.id}
-            className={`lens-chip${activeLens === l.id ? " active" : ""}`}
-            onClick={() => setActiveLens(l.id)}
-            title={l.legend}
-            style={activeLens === l.id && l.id !== "none" ? { borderColor: `var(${l.colorVar})`, color: `var(${l.colorVar})` } : undefined}
-          >
-            <span aria-hidden>{l.icon}</span> {l.label}
-          </button>
-        ))}
-      </div>
-
       {activeLens !== "none" && data && (
         <div className="lens-legend" role="note">
           <div className="lens-legend-title">

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useStore } from "./state/store";
-import { visibleFindings } from "./state/locate";
 import { subscribePwa, type PwaState } from "./pwa/register";
 import { fsAccessSupported } from "./engine/openHouse";
-import { Toolbar } from "./components/Toolbar";
 import { TopBar } from "./components/shell/TopBar";
+import { NavigationRail } from "./components/shell/NavigationRail";
+import { StatusRail } from "./components/shell/StatusRail";
 import { ContextBar } from "./components/ContextBar";
 import { CommandPalette } from "./components/CommandPalette";
 import { IssuesDrawer } from "./components/IssuesDrawer";
-import { ViewsPanel, ViewChips } from "./components/ViewsPanel";
+import { ViewsPanel } from "./components/ViewsPanel";
 import { Workbench } from "./components/Workbench";
 import { AssemblyDetailsView } from "./components/AssemblyDetailsView";
 import { BomView } from "./components/BomView";
@@ -53,18 +53,15 @@ export function App() {
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
   const openOfflineHouse = useStore((s) => s.openOfflineHouse);
-  const activeStorey = useStore((s) => s.activeStorey);
   const tool = useStore((s) => s.tool);
   const setTool = useStore((s) => s.setTool);
   const subOperation = useStore((s) => s.subOperation);
   const setSubOperation = useStore((s) => s.setSubOperation);
   const selection = useStore((s) => s.selection);
   const select = useStore((s) => s.select);
-  const setActivePanel = useStore((s) => s.setActivePanel);
   const setCommandPaletteOpen = useStore((s) => s.setCommandPaletteOpen);
   const detailView = useStore((s) => s.detailView);
   const setDetailView = useStore((s) => s.setDetailView);
-  const activeLens = useStore((s) => s.activeLens);
 
   const [pwa, setPwa] = useState<PwaState>({
     online: true,
@@ -110,11 +107,6 @@ export function App() {
   }, [undo, redo, subOperation, tool, selection.uid, setSubOperation, setTool, select,
     setCommandPaletteOpen, setDetailView]);
 
-  const findings = model ? visibleFindings(model.findings) : [];
-  const errCount = findings.filter((f) => f.severity === "error").length;
-  const warnCount = findings.filter((f) => f.severity === "warn").length;
-  const adviseCount = findings.filter((f) => f.severity === "info").length;
-
   return (
     <div className="app">
       <div className="canvas-layer">
@@ -159,37 +151,18 @@ export function App() {
 
       <TopBar pwa={pwa} />
 
-      <Toolbar />
+      <NavigationRail />
       <ContextBar />
       <div className="interaction-state" aria-live="polite">
         {interactionLabel(tool, subOperation)}
       </div>
-      <ViewChips />
       <LensBar />
       <Preview3D />
       <ViewsPanel />
       <ProjectDrawer />
       <Inspector />
 
-      <div className="statusrail">
-        <span>{activeStorey ?? "—"}</span>
-        <span className="sep">·</span>
-        <span>Snap ✓</span>
-        <span className="sep">·</span>
-        <span>Lens: {activeLens === "none" ? "Normal" : activeLens[0].toUpperCase() + activeLens.slice(1)}</span>
-        <span className="spacer" />
-        <button
-          className="health-pill"
-          onClick={() => setActivePanel("issues")}
-          title="Design health — errors · warnings · advisories (open Issues)"
-        >
-          <span className="hp-err">{errCount} err</span>
-          <span className="hp-warn">{warnCount} warn</span>
-          <span>{adviseCount} adv</span>
-        </button>
-        <span className="sep">·</span>
-        <span>{model?.units ?? "ft-in"}</span>
-      </div>
+      <StatusRail />
 
       <IssuesDrawer />
       {detailView === "assembly" && <AssemblyDetailsView />}

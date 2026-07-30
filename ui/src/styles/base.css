@@ -59,7 +59,7 @@ textarea:focus-visible,
     box-shadow var(--dur-fast) var(--ease);
 }
 .sidebar,
-.toolrail {
+.nav-rail {
   transition:
     width var(--dur-med) var(--ease),
     transform var(--dur-med) var(--ease),

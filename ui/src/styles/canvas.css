@@ -25,7 +25,7 @@
 .hud {
   position: absolute;
   bottom: calc(var(--statusrail-h) + var(--gutter));
-  left: 12px;
+  left: calc(var(--rail-w) + var(--gutter) + var(--safe-l));
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -153,40 +153,11 @@
   align-items: center;
 }
 
-/* Building-science lenses (Phase 9). */
-.lens-bar {
-  position: absolute;
-  top: calc(var(--topbar-h) + var(--gutter) + 40px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: var(--z-canvas-overlay);
-  display: flex;
-  gap: 4px;
-  padding: 4px;
-  border-radius: var(--radius-menu);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--panel-line);
-  box-shadow: var(--shadow-1);
-}
-.lens-chip {
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--line);
-  padding: 3px 10px;
-  border-radius: var(--radius-input);
-  font-size: var(--text-xs);
-  cursor: pointer;
-  white-space: nowrap;
-}
-.lens-chip.active {
-  background: var(--raised);
-  color: var(--ink);
-}
+/* Lens legend — the one lens surface that stays on the canvas, because it annotates
+   the drawing rather than choosing what to draw. */
 .lens-legend {
   position: absolute;
-  left: 12px;
+  left: calc(var(--rail-w) + var(--gutter) + var(--safe-l));
   bottom: calc(var(--statusrail-h) + var(--gutter) + 64px);
   z-index: var(--z-canvas-overlay);
   max-width: 260px;
@@ -257,38 +228,6 @@
 :root:not([data-lens="none"]) .wall-fills {
   opacity: 0.34;
   transition: opacity var(--dur-med) var(--ease);
-}
-
-/* Views (Phase 6). */
-.view-chips {
-  position: absolute;
-  top: calc(var(--topbar-h) + var(--gutter));
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: var(--z-canvas-overlay);
-  display: flex;
-  gap: 4px;
-  padding: 4px;
-  border-radius: var(--radius-menu);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--panel-line);
-  box-shadow: var(--shadow-1);
-}
-.view-chip {
-  border: 0;
-  background: transparent;
-  color: var(--ink);
-  padding: 3px 10px;
-  border-radius: var(--radius-input);
-  font-size: var(--text-xs);
-  cursor: pointer;
-  white-space: nowrap;
-}
-.view-chip.chip-more.active {
-  background: var(--accent);
-  color: var(--canvas-white);
 }
 
 .preview3d-toggle {

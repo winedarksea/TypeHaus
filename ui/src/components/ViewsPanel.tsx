@@ -80,44 +80,6 @@ function persistViews(views: SavedView[]): void {
   }
 }
 
-// Compact filter-chip bar (Phase 6): a glanceable summary of the active view recipe that
-// opens the full Views panel. Renders near the top of the canvas.
-export function ViewChips() {
-  const model = useStore((s) => s.model);
-  const activeStorey = useStore((s) => s.activeStorey);
-  const representation = useStore((s) => s.representation);
-  const visibleTrades = useStore((s) => s.visibleTrades);
-  const visibleLayerGroups = useStore((s) => s.visibleLayerGroups);
-  const open = useStore((s) => s.activePanel === "views");
-  const setActivePanel = useStore((s) => s.setActivePanel);
-  if (!model) return null;
-  const shown = ALL_TRADES.filter((t) => visibleTrades[t]).length;
-  const allOn = shown === ALL_TRADES.length;
-  const hiddenLayers = ALL_LAYER_VISIBILITY_GROUPS.filter((g) => !visibleLayerGroups[g]);
-  return (
-    <div className="view-chips">
-      <button className="view-chip" onClick={() => setActivePanel("views")} title="Level">
-        {activeStorey ?? "—"}
-      </button>
-      <button className="view-chip" onClick={() => setActivePanel("views")} title="Disciplines shown">
-        {allOn ? "All disciplines" : `${shown} disciplines`}
-      </button>
-      {hiddenLayers.length > 0 && (
-        <button className="view-chip" onClick={() => setActivePanel("views")}
-          title={`Hidden assembly layers: ${hiddenLayers.map((g) => LAYER_VISIBILITY_GROUP_LABEL[g]).join(", ")}`}>
-          {hiddenLayers.length} layer{hiddenLayers.length === 1 ? "" : "s"} hidden
-        </button>
-      )}
-      <button className="view-chip" onClick={() => setActivePanel("views")} title="Representation">
-        {representation[0].toUpperCase() + representation.slice(1)}
-      </button>
-      <button className={`view-chip chip-more${open ? " active" : ""}`} onClick={() => setActivePanel("views")} title="Views">
-        Views ▾
-      </button>
-    </div>
-  );
-}
-
 export function ViewsPanel() {
   const open = useStore((s) => s.activePanel === "views");
   const setActivePanel = useStore((s) => s.setActivePanel);

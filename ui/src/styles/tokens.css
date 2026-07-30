@@ -185,7 +185,7 @@
      responsive work rewrites all of them per breakpoint from one place. */
   --topbar-h: 44px;
   --statusrail-h: 30px;
-  --rail-w: 72px;        /* left gutter the tool rail occupies, incl. its margin */
+  --rail-w: 72px;        /* navigation rail: MD3's 80dp, trimmed to the app's density */
   --drawer-w: 300px;     /* project drawer / views panel */
   --gutter: var(--space-3);
 

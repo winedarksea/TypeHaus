@@ -120,7 +120,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: var(--statusrail-h);
+  height: calc(var(--statusrail-h) + var(--safe-b));
+  padding-bottom: var(--safe-b);
   z-index: var(--z-ctx-overlay);
   display: flex;
   align-items: center;
@@ -129,9 +130,7 @@
   font-size: var(--text-xs);
   font-variant-numeric: tabular-nums;
   color: var(--line);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  background: var(--md-surface-container);
   border-top: 1px solid var(--panel-line);
 }
 .statusrail .sep {
@@ -139,6 +138,36 @@
 }
 .statusrail .spacer {
   flex: 1;
+}
+
+/* The view-recipe readout: what ViewChips used to say, in the surface that already
+   existed for saying it. Still a button — it opens the same Views panel the rail does,
+   so the summary is also the way back to changing it. */
+.status-view-readout,
+.status-lens-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: calc(var(--statusrail-h) - 8px);
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--md-shape-xs);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.status-view-readout.active,
+.status-lens-trigger.active {
+  background: var(--md-secondary-container);
+  color: var(--md-on-secondary-container);
+}
+/* The lens menu opens upward: it is anchored in the bottom rail, so a downward surface
+   would land off-screen. */
+.statusrail .menu-surface {
+  top: auto;
+  bottom: calc(100% + var(--space-1));
 }
 .health-pill {
   display: inline-flex;
@@ -169,27 +198,126 @@
   background: var(--ok);
 }
 
-.toolrail {
+/* ── Navigation rail ────────────────────────────────────────────────────────
+   Permanent, full-height, and the app's front door. Panel destinations on top,
+   drawing tools below a divider — one rail rather than two competing left gutters,
+   which is what lets side panels position off a token width instead of reacting to
+   each other with :has(). */
+.nav-rail {
   position: absolute;
-  top: calc(var(--topbar-h) + var(--gutter));
-  left: var(--gutter);
-  z-index: var(--z-panel);
-  background: var(--panel);
-  border: 1px solid var(--panel-line);
-  border-radius: var(--radius-overlay);
-  box-shadow: var(--shadow-2);
+  top: calc(var(--topbar-h) + var(--safe-t));
+  /* Stops at the status rail rather than running under it: the rail sits above it in the
+     z ladder, so overlapping would silently clip whichever tool ends up last. */
+  bottom: calc(var(--statusrail-h) + var(--safe-b));
+  left: 0;
+  width: var(--rail-w);
+  padding: var(--space-2) 0;
+  padding-inline-start: var(--safe-l);
+  z-index: var(--z-rail);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 6px;
-  gap: 6px;
+  gap: 2px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--md-surface-container);
+  border-right: 1px solid var(--panel-line);
+  scrollbar-width: none;
+}
+.nav-rail::-webkit-scrollbar { display: none; }
+
+/* MD3 navigation-rail item: icon in a pill-shaped active indicator, label beneath.
+   The whole item is the touch target; the indicator is only the visual, which is why
+   the state layer lives on the indicator rather than on the item. */
+.rail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  padding: 4px 0 5px;
+  border: 0;
+  background: none;
+  color: var(--md-on-surface-variant);
+  cursor: pointer;
+  transition: color var(--dur-med) var(--ease);
+}
+.rail-item:disabled {
+  opacity: var(--md-state-disabled-content);
+  cursor: not-allowed;
+}
+.rail-indicator {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 30px;
+  border-radius: var(--md-shape-full);
+  background: transparent;
+  transition: background var(--dur-med) var(--ease);
+}
+.rail-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rail-item.active {
+  color: var(--md-on-secondary-container);
+}
+.rail-item.active .rail-indicator {
+  background: var(--md-secondary-container);
+}
+
+.rail-badge {
+  position: absolute;
+  top: -2px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-warn);
+  color: #2b2b2b;
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.rail-badge.error {
+  background: var(--md-error);
+  color: var(--md-on-error);
+}
+
+.rail-divider {
+  width: 40px;
+  height: 1px;
+  margin: var(--space-2) 0;
+  background: var(--panel-line);
+  flex: 0 0 auto;
+}
+.rail-spacer {
+  flex: 1 1 auto;
+  min-height: var(--space-2);
+}
+
+/* Tool groups still anchor their flyout, so they keep a positioning context. */
+.nav-rail .tool-group {
+  position: relative;
+  display: flex;
+  width: 100%;
 }
 
 /* Contextual tool bar + interaction-state label (Phase 2). */
 .interaction-state {
   position: absolute;
   top: calc(var(--topbar-h) + var(--gutter));
-  left: var(--rail-w);
+  left: calc(var(--rail-w) + var(--gutter) + var(--safe-l));
   z-index: var(--z-canvas-overlay);
   padding: 3px 9px;
   border-radius: var(--radius-input);
@@ -206,7 +334,7 @@
 .contextbar {
   position: absolute;
   top: calc(var(--topbar-h) + var(--gutter) + 32px);
-  left: var(--rail-w);
+  left: calc(var(--rail-w) + var(--gutter) + var(--safe-l));
   right: calc(var(--inspector-w) + var(--gutter) + var(--gutter));
   z-index: var(--z-context);
   display: flex;
@@ -284,7 +412,7 @@
 .canvas-context-controls {
   position: absolute;
   top: calc(var(--topbar-h) + var(--gutter));
-  left: var(--rail-w);
+  left: calc(var(--rail-w) + var(--gutter) + var(--safe-l));
   z-index: var(--z-canvas-hud);
   display: flex;
   flex-direction: column;

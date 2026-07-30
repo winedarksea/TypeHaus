@@ -24,15 +24,13 @@
 
 .project-drawer,
 .views-panel {
-  left: var(--gutter);
+  left: calc(var(--rail-w) + var(--gutter) + var(--safe-l));
   width: var(--drawer-w);
 }
 
-/* When a left drawer is open the tool rail shifts right of it to stay clickable. */
-.app:has(.project-drawer) .toolrail,
-.app:has(.views-panel) .toolrail {
-  left: calc(var(--drawer-w) + var(--gutter) + var(--gutter));
-}
+/* Left panels open to the right of the rail. This used to be a :has() rule that shoved
+   the free-floating tool rail sideways whenever a drawer appeared; with one rail of known
+   width there is nothing to react to, and the app's :has() usage drops to zero. */
 
 .inspector h3,
 .project-drawer h3,

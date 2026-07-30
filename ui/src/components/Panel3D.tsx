@@ -143,7 +143,7 @@ export function Panel3D() {
         <span />
       </div>
       {/* Nordic/schematic switch + discipline toggles now live in the shared Views panel
-          (Phase 6), reachable from the view-chip bar. */}
+          (Phase 6), reachable from the Views panel. */}
     </div>
   );
 }

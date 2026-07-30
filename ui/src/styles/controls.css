@@ -46,8 +46,6 @@
 .btn,
 .health-pill,
 .flyout-item,
-.view-chip,
-.lens-chip,
 .lens-issue,
 .hierarchy-level,
 .saved-view-apply,
@@ -59,6 +57,9 @@
 .ctx-menu button,
 .wall-assembly-popup-close,
 .menu-item,
+.rail-indicator,
+.status-view-readout,
+.status-lens-trigger,
 .md-state {
   position: relative;
   isolation: isolate;
@@ -70,8 +71,6 @@
 .btn::before,
 .health-pill::before,
 .flyout-item::before,
-.view-chip::before,
-.lens-chip::before,
 .lens-issue::before,
 .hierarchy-level::before,
 .saved-view-apply::before,
@@ -83,6 +82,9 @@
 .ctx-menu button::before,
 .wall-assembly-popup-close::before,
 .menu-item::before,
+.rail-indicator::before,
+.status-view-readout::before,
+.status-lens-trigger::before,
 .md-state::before {
   content: "";
   position: absolute;
@@ -101,8 +103,6 @@
   .btn:hover:not(:disabled)::before,
   .health-pill:hover::before,
   .flyout-item:hover::before,
-  .view-chip:hover::before,
-  .lens-chip:hover::before,
   .lens-issue:hover:not(:disabled)::before,
   .hierarchy-level:hover::before,
   .saved-view-apply:hover::before,
@@ -114,6 +114,9 @@
   .ctx-menu button:hover:not(:disabled)::before,
   .wall-assembly-popup-close:hover::before,
   .menu-item:hover:not(:disabled)::before,
+  .rail-item:hover:not(:disabled) .rail-indicator::before,
+  .status-view-readout:hover::before,
+  .status-lens-trigger:hover::before,
   .md-state:hover:not(:disabled)::before {
     opacity: var(--md-state-hover);
   }
