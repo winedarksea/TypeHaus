@@ -351,17 +351,6 @@ MAIN_DEVICES = [
     ElectricalDevice(uid="CEE006AAAA", tag="ED-M-LIVING-KFZ1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(18, 4), ft(29, 10)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
-    # One NEC 440.14 disconnect within sight of each of the three outdoor units.
-    # System 1 (Vireo GEN3, upstairs ducted zone): condenser on the ground in the
-    # house/garage gap east of the breezeway, disconnect on the north wall above it.
-    ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(26), ft(36.4)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP1",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
-    # System 2 (Multi Ultra 3-port): condenser on the porch deck over the sunken garden,
-    # disconnect on the south wall exterior face behind it.
-    ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(24), ft(-0.5)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP2",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # System 3 (Sapphire, backup battery circuit): its outdoor unit stands on the north
     # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west
     # of the breezeway — clear of ED-M-HP1-DISC's condenser gap.
@@ -391,12 +380,6 @@ MAIN_EQUIPMENT = [
     # union of its indoor units' rooms, and each head/air handler below names its condenser
     # with `outdoor_ref`. Refrigerant linesets are deliberately not modeled — the pairing
     # IS the record (plans/TODO.md), and there is no wall penetration riding on it yet.
-    Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(26), ft(37, 6)), footprint=(inch(38), inch(16)),
-              type_ref="EQ-T-GREE-VIREO-GEN3", circuit="CKT-HP1"),
-    Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(24), ft(-4)), footprint=(inch(37), inch(16)),
-              type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2"),
     # System 3's outdoor unit, north side beside the mudroom door and under
     # ED-M-HP3-DISC — the short lineset run to the head over the stairs is why it is here
     # and not out with the other two.
@@ -451,6 +434,15 @@ MAIN_EQUIPMENT = [
 
 # --- Second storey: the NW bathroom's floor-heat control -------------------------------
 SECOND_DEVICES = [
+    # NEC 440.14 disconnects for the two condensers on the upper balcony. They sit on
+    # the second-storey south wall behind the units, within sight from the balcony door
+    # while staying clear of D-S-DECK-E's 5' French-door opening at x=18'-10"..23'-10".
+    ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
+                     position=pt(ft(11), ft(0, 6)), type_ref="ED-T-DISCONNECT-3R",
+                     circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+    ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
+                     position=pt(ft(15), ft(0, 6)), type_ref="ED-T-DISCONNECT-3R",
+                     circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-S-BATH1's thermostat, inside the room on its south wall (W-S-BD-N1B, interior
     # face y=26'-4 11/16"), 9" west of D-S-BATH1's opening (x 7'-3"..9'-9"). Same
     # reach-as-the-door-shuts position as ED-M-BATH2-FH-STAT, and clear of the fixture
@@ -462,6 +454,17 @@ SECOND_DEVICES = [
 ]
 
 SECOND_EQUIPMENT = [
+    # The Vireo (System 1, the concealed ducted upstairs unit) and the Multi Ultra
+    # (System 2) share the upper balcony, not the main-level porch. The balcony's walking
+    # surface is the second-storey datum (10'); keeping these in SECOND_ELEMENTS gives the
+    # 3D model that elevation rather than drawing them at grade. Both sit west of the
+    # French-door opening, with their 16" deep cabinets aligned east-west across the deck.
+    Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
+              position=pt(ft(11), ft(-6)), footprint=(inch(38), inch(16)),
+              type_ref="EQ-T-GREE-VIREO-GEN3", circuit="CKT-HP1"),
+    Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
+              position=pt(ft(15), ft(-6)), footprint=(inch(37), inch(16)),
+              type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2"),
     # System 1's concealed ducted air handler: above the ceiling in RM-S-STUDY2, at the
     # north end of the room so its supply collar lands on the hallway chase's south end at
     # x=19'-6" (plan/mep.py DUCTS_HVAC_SECOND). Ceiling mount with no stated elevation, so

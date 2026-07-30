@@ -120,14 +120,20 @@ def test_meter_and_disconnect_render_with_dedicated_symbols(catlin_model):
 
 
 def test_both_water_heaters_are_modeled(catlin_model):
-    equipment = {element.tag: element for storey in catlin_model.plan.storeys
-                 for element in catlin_model.plan.storey_elements(storey.tag)
-                 if element.element_kind == "Equipment"}
+    equipment_with_storey = [(storey.tag, element) for storey in catlin_model.plan.storeys
+                             for element in catlin_model.plan.storey_elements(storey.tag)
+                             if element.element_kind == "Equipment"]
+    equipment = {element.tag: element for _, element in equipment_with_storey}
+    equipment_storeys = {element.tag: storey for storey, element in equipment_with_storey}
     assert equipment["EQ-B-WH"].type_ref == "EQ-T-WATER-HEATER"  # 120V Rheem HPWH
     assert equipment["EQ-B-WH2"].type_ref == "EQ-T-WATER-HEATER-240"
     # The three Gree outdoor units, and the indoor halves that name them.
     for tag in ("EQ-M-HP1-OD", "EQ-M-HP2-OD", "EQ-M-HP3-OD"):
         assert equipment[tag].kind.value == "heat_pump"
+    # Systems 1 and 2 are intentionally paired on the upper balcony (second-storey datum),
+    # rather than leaving the ducted system's outdoor half invisible at ground level.
+    assert equipment_storeys["EQ-M-HP1-OD"] == "second"
+    assert equipment_storeys["EQ-M-HP2-OD"] == "second"
     assert equipment["EQ-S-HP1-AH"].kind.value == "ducted_air_handler"
     assert equipment["EQ-S-HP1-AH"].outdoor_ref == "EQ-M-HP1-OD"
     for tag in ("EQ-B-HP2-GYM", "EQ-M-HP2-BED", "EQ-M-HP2-LIVING"):
