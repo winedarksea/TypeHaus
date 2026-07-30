@@ -16,6 +16,10 @@ eggs/
 .eggs/
 lib/
 lib64/
+# …but `lib/` is a Python-packaging artifact pattern and it silently swallowed the UI
+# harness's own source at ui/scripts/lib/. Same class of trap as the `build/` rule above:
+# a clean `git status` is not proof a commit is complete.
+!ui/scripts/lib/
 parts/
 sdist/
 var/
@@ -209,3 +213,6 @@ __pycache__/
 *.py[cod]
 *.tsbuildinfo
 .DS_Store
+
+# Screenshot harness output (scripts/shoot.mjs). shots-baseline/ IS committed.
+.shots/
