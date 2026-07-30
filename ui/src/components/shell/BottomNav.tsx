@@ -60,10 +60,16 @@ export function BottomNav() {
       <Menu
         label={activeToolLabel}
         title="Drawing tools"
-        icon={TOOL_GROUPS.find((g) => g.id === activeGroup)?.icon ?? "cursor"}
         align="end"
-        showLabel={false}
         triggerClassName="rail-item bottom-nav-tools"
+        triggerContent={
+          <>
+            <span className="rail-indicator">
+              <Icon name={TOOL_GROUPS.find((g) => g.id === activeGroup)?.icon ?? "cursor"} size={22} />
+            </span>
+            <span className="rail-label">{activeToolLabel}</span>
+          </>
+        }
         sections={TOOL_GROUPS.map((group) => ({
           id: group.id,
           label: group.label,

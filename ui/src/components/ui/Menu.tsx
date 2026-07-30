@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Icon } from "../../icons/Icon";
 import type { IconName } from "../../icons/names";
 
@@ -34,15 +34,26 @@ const MENU_VIEWPORT_MARGIN_PX = 8;
  * activates), on Escape, and on select. Arrow keys move a roving focus; the trigger keeps
  * aria-expanded/aria-haspopup so the whole thing is operable without a pointer.
  */
-export function Menu({ label, icon, items, sections, align = "end", triggerClassName, showLabel = true, title }: {
+export function Menu({
+  label, icon, items, sections, align = "end", placement = "below",
+  triggerClassName, showLabel = true, triggerContent, title,
+}: {
   label: string;
   icon?: IconName;
   items?: MenuItemSpec[];
   sections?: MenuSection[];
   /** Which edge of the trigger the surface lines up with. */
   align?: "start" | "end";
+  /** "below" for bar triggers; "side" opens alongside, for the vertical rail. */
+  placement?: "below" | "side";
   triggerClassName?: string;
   showLabel?: boolean;
+  /**
+   * Custom trigger content. The navigation rail's items are an icon inside an active
+   * indicator with a label beneath, which the default flat icon + text cannot express —
+   * and a rail item without its label is just an unexplained glyph.
+   */
+  triggerContent?: ReactNode;
   title?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -74,20 +85,60 @@ export function Menu({ label, icon, items, sections, align = "end", triggerClass
     };
   }, [open]);
 
-  // Nudge the surface back inside the viewport. The top bar's trailing controls sit hard
-  // against the right edge, so an end-aligned menu would otherwise hang off-screen —
-  // exactly the failure this component exists to fix.
+  /**
+   * Position the surface in viewport coordinates.
+   *
+   * It is `position: fixed`, not absolute, because a menu must be able to escape its
+   * container: the navigation rail scrolls, and a scroll container clips its children on
+   * BOTH axes — `overflow-x: visible` alongside `overflow-y: auto` is not a thing the CSS
+   * spec allows, it computes to auto. That is what made the Build group's tool palette
+   * render at full size, entirely outside the 72px rail, and be 100% invisible.
+   *
+   * Also keeps the surface inside the viewport: top-bar triggers sit hard against the right
+   * edge, and a bottom-anchored trigger has to open upward.
+   */
+  const place = useCallback(() => {
+    const surface = surfaceRef.current;
+    const trigger = rootRef.current?.querySelector("button");
+    if (!surface || !trigger) return;
+    const t = trigger.getBoundingClientRect();
+    const { width, height } = surface.getBoundingClientRect();
+    const margin = MENU_VIEWPORT_MARGIN_PX;
+
+    if (placement === "side") {
+      // Alongside the trigger, so a vertical rail's own labels stay readable instead of
+      // being covered by the menu that one of its items opened.
+      let left = t.right + 8;
+      if (left + width > window.innerWidth - margin) left = t.left - width - 8;
+      const top = Math.min(Math.max(margin, t.top), window.innerHeight - height - margin);
+      surface.style.left = `${Math.round(Math.max(margin, left))}px`;
+      surface.style.top = `${Math.round(top)}px`;
+      return;
+    }
+
+    let left = align === "end" ? t.right - width : t.left;
+    left = Math.min(Math.max(margin, left), window.innerWidth - width - margin);
+
+    // Prefer below; flip above when there is not room and there is room up there.
+    const belowTop = t.bottom + 4;
+    const flip = belowTop + height > window.innerHeight - margin && t.top - height - 4 > margin;
+    const top = flip ? t.top - height - 4 : Math.min(belowTop, window.innerHeight - height - margin);
+
+    surface.style.left = `${Math.round(left)}px`;
+    surface.style.top = `${Math.round(Math.max(margin, top))}px`;
+  }, [align, placement]);
+
   useLayoutEffect(() => {
     if (!open) return;
-    const surface = surfaceRef.current;
-    if (!surface) return;
-    surface.style.transform = "";
-    const rect = surface.getBoundingClientRect();
-    const overflowRight = rect.right - (window.innerWidth - MENU_VIEWPORT_MARGIN_PX);
-    const overflowLeft = MENU_VIEWPORT_MARGIN_PX - rect.left;
-    if (overflowRight > 0) surface.style.transform = `translateX(${-overflowRight}px)`;
-    else if (overflowLeft > 0) surface.style.transform = `translateX(${overflowLeft}px)`;
-  }, [open]);
+    place();
+    // A scroll anywhere in the ancestor chain moves the trigger out from under the surface.
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("resize", place);
+    return () => {
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("resize", place);
+    };
+  }, [open, place]);
 
   const move = (delta: number) => {
     const enabled = flat.map((item, i) => (item.disabled ? -1 : i)).filter((i) => i >= 0);
@@ -114,9 +165,13 @@ export function Menu({ label, icon, items, sections, align = "end", triggerClass
           if (e.key === "ArrowDown") { e.preventDefault(); setOpen(true); requestAnimationFrame(() => move(1)); }
         }}
       >
-        {icon && <Icon name={icon} />}
-        {showLabel && <span className="menu-trigger-label">{label}</span>}
-        {showLabel && <Icon name="chevron-down" size={16} className="menu-trigger-caret" />}
+        {triggerContent ?? (
+          <>
+            {icon && <Icon name={icon} />}
+            {showLabel && <span className="menu-trigger-label">{label}</span>}
+            {showLabel && <Icon name="chevron-down" size={16} className="menu-trigger-caret" />}
+          </>
+        )}
       </button>
 
       {open && (

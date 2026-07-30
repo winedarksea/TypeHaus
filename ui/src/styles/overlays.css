@@ -335,9 +335,10 @@
 }
 
 .menu-surface {
-  position: absolute;
-  top: calc(100% + var(--space-1));
-  z-index: var(--z-ctx-menu);
+  /* Fixed, and placed by Menu.tsx in viewport coordinates — see the comment there. An
+     absolutely-positioned surface cannot escape the navigation rail's scroll container. */
+  position: fixed;
+  z-index: var(--z-menu);
   min-width: 200px;
   max-height: min(70vh, 520px);
   overflow-y: auto;
@@ -348,8 +349,6 @@
   box-shadow: var(--md-elev-3);
   animation: menu-in var(--md-dur-short-4) var(--md-ease-decel);
 }
-.menu-align-start { left: 0; }
-.menu-align-end { right: 0; }
 
 @keyframes menu-in {
   from { opacity: 0; transform: translateY(-4px); }

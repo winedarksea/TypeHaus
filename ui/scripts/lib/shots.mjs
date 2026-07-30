@@ -36,7 +36,16 @@ export const STATES = [
     // Setting store state is not the same as the layout having happened. Waiting for the
     // split grid to actually exist is what stops this shot from occasionally capturing the
     // single-pane fit and hashing identical to `default`.
-    settled: `return !!document.querySelector(".stage.split") && document.querySelectorAll(".pane").length === 2;`,
+    // Both that the split grid exists AND that the plan pane has actually been laid out at
+    // roughly half width. The DOM condition alone can be true a frame before the resize
+    // reaches the SVG, which is when this shot captured the single-pane fit and hashed
+    // identical to `default`.
+    settled: `
+      const stage = document.querySelector(".stage.split");
+      const svg = document.querySelector(".canvas-svg");
+      if (!stage || !svg || document.querySelectorAll(".pane").length !== 2) return false;
+      return svg.getBoundingClientRect().width < window.innerWidth * 0.7;
+    `,
     skipCompact: true,
   },
   {

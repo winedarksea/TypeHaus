@@ -33,8 +33,10 @@ const SHOTS_DIR = join(UI_ROOT, ".shots");
 // that the repo does not accumulate 42 binaries per stage.
 const BASELINE_DIR = join(UI_ROOT, "shots-baseline");
 const BASELINE_PREFIX = "laptop-light-";
-// Drawing digests, on the other hand, are committed for all 42 shots: they are 16 hex chars
-// each, and they are the guardrail that the chrome work never moves the drawing.
+// Drawing digests, on the other hand, are committed for every shot — they are small, and
+// they are the guardrail that the chrome work never moves the drawing. Each carries the
+// engine's model revision so an unrelated house edit reads as "not comparable" rather than
+// as 34 drawing regressions.
 const FINGERPRINTS_FILE = join(BASELINE_DIR, "fingerprints.json");
 
 const args = process.argv.slice(2);
@@ -82,6 +84,10 @@ async function poseAndProbe(session, shot) {
   if (shot.state.settled) await evaluate(session, awaitSettled(shot.state.settled));
   await evaluate(session, SETTLE);
   await evaluate(session, AWAIT_STABLE_VIEW);
+  // Re-check immediately before probing. Settling can complete and then be undone by a late
+  // effect or a resize that had not reached the SVG yet; measuring a state that has since
+  // stopped holding is how a shot ends up filed under the wrong name.
+  if (shot.state.settled) await evaluate(session, awaitSettled(shot.state.settled));
 
   const probes = {
     overflow: await evaluate(session, PROBE_OVERFLOW),
@@ -188,7 +194,9 @@ async function main() {
       const probes = await poseAndProbe(session, shot);
       await writeFile(join(SHOTS_DIR, `${shot.name}.png`), await captureScreenshot(session));
       results.push(...judge(shot.name, probes, shot.viewport.mobile, baselineFingerprints));
-      if (probes.fingerprintDigest) capturedFingerprints[shot.name] = probes.fingerprintDigest;
+      if (probes.fingerprintDigest) {
+        capturedFingerprints[shot.name] = { digest: probes.fingerprintDigest, revision: probes.modelRevision };
+      }
       process.stdout.write(".");
     }
     console.log(`\n\n${shots.length} shots -> ${SHOTS_DIR}`);

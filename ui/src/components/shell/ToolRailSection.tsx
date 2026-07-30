@@ -1,21 +1,20 @@
 import { useStore } from "../../state/store";
 import { Icon } from "../../icons/Icon";
+import { Menu } from "../ui/Menu";
 import { TOOL_GROUPS, GROUP_OF_TOOL, type ToolGroupSpec } from "./navigationConfig";
 
 /**
  * The drawing tools, as the lower zone of the navigation rail.
  *
- * Lifted out of the old free-floating Toolbar so that tools and panel destinations share one
- * rail instead of competing for the same left gutter — which is what forced the `:has()` hack
- * that shoved the tool rail sideways whenever a drawer opened.
+ * Multi-tool groups open through the shared Menu rather than a bespoke `.tool-flyout`.
+ * That is not only de-duplication: the old flyout was absolutely positioned at
+ * `left: calc(100% + 8px)`, i.e. outside the rail — and the rail scrolls, so it clipped
+ * on both axes and the palette rendered at full size with zero pixels visible. Menu
+ * positions in viewport coordinates and cannot be clipped by an ancestor.
  */
 export function ToolRailSection() {
   const tool = useStore((s) => s.tool);
   const setTool = useStore((s) => s.setTool);
-  const toolGroup = useStore((s) => s.toolGroup);
-  const setToolGroup = useStore((s) => s.setToolGroup);
-  const showFraming = useStore((s) => s.showFraming);
-  const setShowFraming = useStore((s) => s.setShowFraming);
   const offline = useStore((s) => s.offline);
   const selection = useStore((s) => s.selection);
   const deleteSelection = useStore((s) => s.deleteSelection);
@@ -24,50 +23,57 @@ export function ToolRailSection() {
 
   const activeGroup = GROUP_OF_TOOL[tool];
 
-  const onGroup = (group: ToolGroupSpec) => {
-    if (group.tools.length === 1) setTool(group.tools[0].id);   // setTool closes the flyout
-    else setToolGroup(toolGroup === group.id ? null : group.id);
+  const renderGroup = (group: ToolGroupSpec) => {
+    // Authoring is gated offline (→ 40); only Select survives.
+    const disabled = offline && group.id !== "select";
+    const active = activeGroup === group.id;
+    const hint = disabled ? "Editing needs `haus serve` — unavailable offline" : group.label;
+
+    if (group.tools.length === 1) {
+      return (
+        <button
+          key={group.id}
+          className={`rail-item${active ? " active" : ""}`}
+          title={hint}
+          disabled={disabled}
+          aria-pressed={active}
+          onClick={() => setTool(group.tools[0].id)}
+        >
+          <span className="rail-indicator"><Icon name={group.icon} size={22} /></span>
+          <span className="rail-label">{group.label}</span>
+        </button>
+      );
+    }
+
+    return (
+      <Menu
+        key={group.id}
+        label={group.label}
+        title={hint}
+        placement="side"
+        triggerClassName={`rail-item rail-menu-trigger${active ? " active" : ""}`}
+        triggerContent={
+          <>
+            <span className="rail-indicator"><Icon name={group.icon} size={22} /></span>
+            <span className="rail-label">{group.label}</span>
+          </>
+        }
+        items={group.tools.map((t) => ({
+          id: t.id,
+          label: t.label,
+          icon: t.icon,
+          hint: t.hint,
+          selected: tool === t.id,
+          disabled,
+          onSelect: () => setTool(t.id),
+        }))}
+      />
+    );
   };
 
   return (
     <>
-      {TOOL_GROUPS.map((group) => {
-        // Authoring is gated offline (→ 40); only Select survives.
-        const disabled = offline && group.id !== "select";
-        return (
-          <div key={group.id} className="tool-group">
-            <button
-              className={`rail-item${activeGroup === group.id ? " active" : ""}`}
-              title={disabled ? "Editing needs `haus serve` — unavailable offline" : group.label}
-              disabled={disabled}
-              aria-haspopup={group.tools.length > 1 || undefined}
-              aria-expanded={toolGroup === group.id || undefined}
-              aria-pressed={activeGroup === group.id}
-              onClick={() => onGroup(group)}
-            >
-              <span className="rail-indicator"><Icon name={group.icon} size={22} /></span>
-              <span className="rail-label">{group.label}</span>
-            </button>
-
-            {toolGroup === group.id && group.tools.length > 1 && (
-              <div className="tool-flyout" role="menu">
-                {group.tools.map((t) => (
-                  <button
-                    key={t.id}
-                    role="menuitem"
-                    className={`flyout-item${tool === t.id ? " active" : ""}`}
-                    title={t.hint}
-                    onClick={() => setTool(t.id)}
-                  >
-                    <Icon name={t.icon} size={18} className="flyout-glyph" />
-                    <span>{t.label}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
+      {TOOL_GROUPS.map(renderGroup)}
 
       <div className="rail-spacer" />
 
@@ -87,15 +93,6 @@ export function ToolRailSection() {
           <span className="rail-label">Delete</span>
         </button>
       )}
-      <button
-        className={`rail-item${showFraming ? " active" : ""}`}
-        title="Toggle framed floorplan / schematic"
-        aria-pressed={showFraming}
-        onClick={() => setShowFraming(!showFraming)}
-      >
-        <span className="rail-indicator"><Icon name="framing" size={22} /></span>
-        <span className="rail-label">Framing</span>
-      </button>
     </>
   );
 }

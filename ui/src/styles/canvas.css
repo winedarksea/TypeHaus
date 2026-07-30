@@ -12,11 +12,6 @@
   cursor: crosshair;
 }
 
-.tool-btn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
 .popover {
   bottom: auto;
   max-width: 220px;

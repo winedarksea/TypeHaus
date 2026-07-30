@@ -1,7 +1,6 @@
 /* Buttons, segmented groups, tool flyouts and badges — the shared interactive
    atoms, wherever they are used. */
 
-.tool-btn,
 .seg-btn,
 .btn {
   min-width: var(--hit);
@@ -18,7 +17,6 @@
   padding: 0 10px;
 }
 
-.tool-btn.active,
 .seg-btn.active {
   background: var(--accent);
   color: var(--canvas-white);
@@ -41,11 +39,9 @@
 
    Hover is gated behind (hover: hover) so a tap on a touch device does not leave
    the layer stuck on after the finger lifts. */
-.tool-btn,
 .seg-btn,
 .btn,
 .health-pill,
-.flyout-item,
 .lens-issue,
 .hierarchy-level,
 .saved-view-apply,
@@ -67,11 +63,9 @@
   overflow: hidden;
 }
 
-.tool-btn::before,
 .seg-btn::before,
 .btn::before,
 .health-pill::before,
-.flyout-item::before,
 .lens-issue::before,
 .hierarchy-level::before,
 .saved-view-apply::before,
@@ -100,11 +94,9 @@
 }
 
 @media (hover: hover) {
-  .tool-btn:hover:not(:disabled)::before,
   .seg-btn:hover:not(:disabled)::before,
   .btn:hover:not(:disabled)::before,
   .health-pill:hover::before,
-  .flyout-item:hover::before,
   .lens-issue:hover:not(:disabled)::before,
   .hierarchy-level:hover::before,
   .saved-view-apply:hover::before,
@@ -125,17 +117,14 @@
   }
 }
 
-.tool-btn:focus-visible::before,
 .seg-btn:focus-visible::before,
 .btn:focus-visible::before,
 .md-state:focus-visible::before {
   opacity: var(--md-state-focus);
 }
 
-.tool-btn:active:not(:disabled)::before,
 .seg-btn:active::before,
 .btn:active::before,
-.flyout-item:active::before,
 .cmdk-item:active::before,
 .md-state:active::before {
   opacity: var(--md-state-press);
@@ -147,48 +136,6 @@
   opacity: var(--md-state-hover);
 }
 
-/* Task-rail groups + flyout (Phase 2). */
-.tool-group {
-  position: relative;
-  display: flex;
-}
-.tool-flyout {
-  position: absolute;
-  left: calc(100% + 8px);
-  top: 0;
-  z-index: var(--z-appbar);
-  min-width: 160px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 6px;
-  background: var(--panel);
-  border: 1px solid var(--panel-line);
-  border-radius: var(--radius-menu);
-  box-shadow: var(--shadow-3);
-}
-.flyout-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: var(--row-h);
-  padding: 0 10px;
-  border: 0;
-  border-radius: var(--radius-input);
-  background: transparent;
-  color: var(--ink);
-  font-size: var(--text-sm);
-  text-align: left;
-  cursor: pointer;
-}
-.flyout-item.active {
-  background: var(--accent);
-  color: var(--canvas-white);
-}
-.flyout-glyph {
-  width: 18px;
-  text-align: center;
-}
 
 /* ── MD3 segmented button ───────────────────────────────────────────────────
    MD3 renders a segmented button as a single pill subdivided by hairlines, so the

@@ -27,7 +27,7 @@ import { createMutationActions, type MutationActions } from "./mutations";
 import {
   ALL_TRADES,
   type Conflict, type DetailView, type LabelMode, type Lens, type Representation, type Selection,
-  type ThreeMode, type Toast, type Tool, type ToolGroup, type Trade,
+  type ThreeMode, type Toast, type Tool, type Trade,
   type ViewMode, type ViewTransform, type Workspace,
 } from "./vocabulary";
 
@@ -41,7 +41,6 @@ export interface StoreState extends MutationActions {
   error: string | null;
 
   tool: Tool;
-  toolGroup: ToolGroup | null; // which task-rail flyout is open
   subOperation: boolean; // true mid-draw (e.g. wall chain in progress) — drives Esc hierarchy
   drawAssembly: string | null; // ContextBar-selected wall assembly for new walls
   chainDraw: boolean; // keep the wall tool armed after each segment
@@ -61,7 +60,9 @@ export interface StoreState extends MutationActions {
   hoverUid: string | null;
   activeStorey: string | null;
   view: ViewTransform;
-  showFraming: boolean; // framed floorplan vs. schematic wall fills
+  // Derived from `representation`, never set directly: a separate toggle could disagree
+  // with the representation the Views panel was reporting.
+  showFraming: boolean;
   labelMode: LabelMode; // how much name text the 2D plan draws (rooms + objects; default all)
   // One visibility model, read by both Canvas2D and Panel3D (→ model/visibility.ts): trades
   // answer "which discipline", layer groups answer "which band of the assembly".
@@ -82,7 +83,6 @@ export interface StoreState extends MutationActions {
   reloadIfStale: (revision?: string) => Promise<void>;
   openOfflineHouse: () => Promise<void>;
   setTool: (t: Tool) => void;
-  setToolGroup: (g: ToolGroup | null) => void;
   setSubOperation: (v: boolean) => void;
   setDrawAssembly: (tag: string | null) => void;
   setChainDraw: (v: boolean) => void;
@@ -97,7 +97,6 @@ export interface StoreState extends MutationActions {
   setPreview3DOpen: (v: boolean) => void;
   setViewMode: (v: ViewMode) => void;
   setThreeMode: (m: ThreeMode) => void;
-  setShowFraming: (v: boolean) => void;
   setLabelMode: (v: LabelMode) => void;
   setTradeVisible: (trade: Trade, visible: boolean) => void;
   setLayerGroupVisible: (group: LayerVisibilityGroup, visible: boolean) => void;
@@ -138,7 +137,6 @@ export const useStore = create<StoreState>((set, get) => ({
   error: null,
 
   tool: "select",
-  toolGroup: null,
   subOperation: false,
   drawAssembly: null,
   chainDraw: true,
@@ -259,8 +257,7 @@ export const useStore = create<StoreState>((set, get) => ({
     return promise;
   },
 
-  setTool: (tool) => set({ tool, toolGroup: null, subOperation: false }),
-  setToolGroup: (toolGroup) => set({ toolGroup }),
+  setTool: (tool) => set({ tool, subOperation: false }),
   setSubOperation: (subOperation) => set({ subOperation }),
   setDrawAssembly: (drawAssembly) => set({ drawAssembly }),
   setChainDraw: (chainDraw) => set({ chainDraw }),
@@ -279,7 +276,6 @@ export const useStore = create<StoreState>((set, get) => ({
   setPreview3DOpen: (preview3DOpen) => set({ preview3DOpen }),
   setViewMode: (viewMode) => set({ viewMode }),
   setThreeMode: (threeMode) => set({ threeMode }),
-  setShowFraming: (showFraming) => set({ showFraming }),
   setLabelMode: (labelMode) => set({ labelMode }),
   setTradeVisible: (trade, visible) =>
     set((s) => ({ visibleTrades: { ...s.visibleTrades, [trade]: visible } })),

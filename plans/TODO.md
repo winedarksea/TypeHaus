@@ -82,15 +82,18 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ### Residuals from the 2026-07-30 batch
 
-- **`N-M-STRJ` junction WARN (honest fallback).** W-M-STRW's studs are `df-select-s4s`
-  while W-M-STRW2/W-M-STOS2 carry `spf`, and the junction solver only calls a through-pair
-  continuous on an identical bearing-material string. Physically continuous (both dimensional
-  softwood under a lapped double top plate); fixing it properly wants a species-class notion
-  in `resolve/topology.py` rather than lying about the stud species.
-- **W-M-STRW2 (the 6" jog) kept the standard gwb assembly** — its mudroom face now stands
-  1/2" proud of the exposed-stud wall's face. Small step, mostly hidden by the STOS2 tee.
-  Decide whether the exposed-stud look should wrap the jog (then it takes
-  `CATLIN_MUDROOM_INT_2X6_EXPOSED` too).
+- ~~**`N-M-STRJ` junction WARN**~~ and ~~**W-M-STRW2 kept the standard gwb assembly**~~ —
+  both closed 2026-07-30 by giving the 6" jog `CATLIN_MUDROOM_INT_2X6_EXPOSED` and
+  W-M-STRW's alignment. One continuous plane, no 1/2" step, and the through-pair matches
+  on material so the tee resolves. The jog itself has to stay a separate `Wall`:
+  `resolve/topology.py` builds junction incidents from wall endpoints only, so the
+  W-M-STOS2 tee needs a node both walls terminate at.
+- **`N-M-STR1` junction WARN (honest fallback).** The successor to the above: W-M-STRS's
+  2x4 `spf` partition dies into the end of W-M-STRW2's 2x6 `df-select-s4s`, and an L only
+  resolves on an identical assembly or a shared bearing material. Physically a partition
+  butting an end stud. Same underlying gap as before — `resolve/topology.py` wants a
+  species-class notion rather than lying about the stud species — but now on a finish
+  detail rather than on the bearing line.
 - **`FURN-M-MUD-CLOSET-N` type is unused** — the north mudroom closet became RM-M-MECH
   (radon + plumbing riser) instead. Delete the type or place it elsewhere.
 - **RM-S-PLANT has no fresh-air terminal, by decision (2026-07-30)** — a dedicated mini-HRV
@@ -180,8 +183,12 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `FO-M-STAIR` cannot start south of the wall or the wall overhangs the slab opening. Each
   well then takes whatever run its own north limit leaves, which is why ST-B2M's treads are
   11 15/16" and ST-M2S's are 11". Worth remembering before moving W-M-STRS again.
-  (2026-07-30: W-M-STRW is now the exposed-stud coat wall; its stair face is pinned by an
-  explicit `alignment` so the well geometry cannot drift with assembly thickness.)
+  (2026-07-30: W-M-STRW/STRW2 are now the exposed-stud coat wall; the stair face is pinned
+  by an explicit `alignment` so the well geometry cannot drift with assembly thickness.
+  Same day, W-M-STRS was cut back to the well partition at x=14'-2 1/4" — it frames
+  D-M-STAIR and stops — so the up-flight's lane is open to the living room. RO-1 went with
+  the removed length, and RM-M-STAIR retired into RM-M-LIVING, since the well is inside
+  that room's polygonized face now.)
 - **Guards draw in 2D** (`emit/draw/floorplan.py::_emit_railings`, layer `A-RAIL`). Every
   resolved railing solid is drawn as its own plan outline, so a post reads at its true
   section and a rail as the band it sweeps. Coincident stacked rails are deduped. An open
@@ -219,4 +226,11 @@ We want to make some of the south facing windows, and generally make windows mor
 The main consideration here for symmetric are the south facing windows on RM-S-PLANT, RM-S-STUDY2, RM-A-STUDY and RM-A-DEN/WEST. 
 We also might want a bit more symmetric between the main and second floor windows on the east side (RM-S-LIVING versus the bedrooms above).
 
-RM-S-PLANT and RM-S-STUDY2 should have bigger windows, likely 42" wide, breaking two studs in line.
+RM-S-PLANT and RM-S-STUDY2 should have bigger windows, likely 42" wide, breaking two studs in line. Possibly larger windows for the other south facing windows as well.
+
+Have the windows be trimmed with charcoal gray (this is easy to change so we can experiment with the color)
+
+### Other visual ideas
+Dark base to the house
+Dark panel along the panel of the corner most panels
+Standing seam clamps to anchor decorative elements

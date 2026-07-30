@@ -48,17 +48,16 @@ textarea:focus-visible,
 }
 
 /* Motion (Phase 1) — fast, non-elastic; no bounce/overshoot. */
-.tool-btn,
 .seg-btn,
 .btn,
-.health-pill {
+.health-pill,
+.rail-item {
   transition:
     background var(--dur-fast) var(--ease),
     border-color var(--dur-fast) var(--ease),
     color var(--dur-fast) var(--ease),
     box-shadow var(--dur-fast) var(--ease);
 }
-.sidebar,
 .nav-rail {
   transition:
     width var(--dur-med) var(--ease),

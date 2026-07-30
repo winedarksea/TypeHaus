@@ -440,15 +440,17 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
-    # RM-M-STAIR: its switch is also one end of the basement railing run's 3-way.
+    # The stair head. Both kept their tags and positions when RM-M-STAIR retired into
+    # RM-M-LIVING (2026-07-30) — they still light the well, they are just no longer in a
+    # room of their own. The switch is also one end of the basement railing run's 3-way.
     ElectricalDevice(uid="QTM0015AAA", tag="ED-M-STAIR-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(14), ft(27)), type_ref="ED-T-LT-CAN3",
-                     circuit="CKT-LT-BACKUP", room="RM-M-STAIR",
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING",
                      controlled_by=("ED-M-STAIR-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM0016AAA", tag="ED-M-STAIR-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(10, 5), ft(28)), type_ref="ED-T-SWITCH",
-                     circuit="CKT-LT-BACKUP", room="RM-M-STAIR", rotation=deg(90),
+                     circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
     # The porch fan (notes: "Large ceiling fan (60\") on porch ceiling"). Damp rated: it

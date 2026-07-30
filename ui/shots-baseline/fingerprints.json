@@ -1,36 +1,138 @@
 {
-  "laptop-light-default": "d78b0825bc2ee0aa",
-  "laptop-light-views": "d78b0825bc2ee0aa",
-  "laptop-light-project": "d78b0825bc2ee0aa",
-  "laptop-light-inspector": "d78b0825bc2ee0aa",
-  "laptop-light-reader-circuits": "d78b0825bc2ee0aa",
-  "laptop-light-split": "9f822d210d0dec5b",
-  "laptop-dark-default": "1a19db577a0a3cc1",
-  "laptop-dark-views": "1a19db577a0a3cc1",
-  "laptop-dark-project": "1a19db577a0a3cc1",
-  "laptop-dark-inspector": "1a19db577a0a3cc1",
-  "laptop-dark-reader-circuits": "1a19db577a0a3cc1",
-  "laptop-dark-split": "f54f5c06a46f1ad4",
-  "tablet-light-default": "d38993751ef1b29a",
-  "tablet-light-views": "d38993751ef1b29a",
-  "tablet-light-project": "d38993751ef1b29a",
-  "tablet-light-inspector": "d38993751ef1b29a",
-  "tablet-light-reader-circuits": "d38993751ef1b29a",
-  "tablet-light-split": "ac515affd4b490a9",
-  "tablet-dark-default": "619ecb432b561b15",
-  "tablet-dark-views": "619ecb432b561b15",
-  "tablet-dark-project": "619ecb432b561b15",
-  "tablet-dark-inspector": "619ecb432b561b15",
-  "tablet-dark-reader-circuits": "619ecb432b561b15",
-  "tablet-dark-split": "26567c20b7eeb47d",
-  "phone-light-default": "83728f7216156ea1",
-  "phone-light-views": "83728f7216156ea1",
-  "phone-light-project": "83728f7216156ea1",
-  "phone-light-inspector": "83728f7216156ea1",
-  "phone-light-reader-circuits": "83728f7216156ea1",
-  "phone-dark-default": "e1fb52de5c89bac0",
-  "phone-dark-views": "e1fb52de5c89bac0",
-  "phone-dark-project": "e1fb52de5c89bac0",
-  "phone-dark-inspector": "e1fb52de5c89bac0",
-  "phone-dark-reader-circuits": "e1fb52de5c89bac0"
+  "laptop-light-default": {
+    "digest": "b79afb2473e415ef",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "laptop-light-views": {
+    "digest": "b79afb2473e415ef",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "laptop-light-project": {
+    "digest": "b79afb2473e415ef",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "laptop-light-inspector": {
+    "digest": "b79afb2473e415ef",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "laptop-light-reader-circuits": {
+    "digest": "b79afb2473e415ef",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "laptop-light-split": {
+    "digest": "4f4bee0b2c600b55",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "laptop-dark-default": {
+    "digest": "d824b2ee9d4e3347",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "laptop-dark-views": {
+    "digest": "d824b2ee9d4e3347",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "laptop-dark-project": {
+    "digest": "d824b2ee9d4e3347",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "laptop-dark-inspector": {
+    "digest": "d824b2ee9d4e3347",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "laptop-dark-reader-circuits": {
+    "digest": "d824b2ee9d4e3347",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "laptop-dark-split": {
+    "digest": "74024f0cd6f1187a",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "tablet-light-default": {
+    "digest": "3e0f3df98376e094",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "tablet-light-views": {
+    "digest": "3e0f3df98376e094",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "tablet-light-project": {
+    "digest": "3e0f3df98376e094",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "tablet-light-inspector": {
+    "digest": "3e0f3df98376e094",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "tablet-light-reader-circuits": {
+    "digest": "3e0f3df98376e094",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "tablet-light-split": {
+    "digest": "a53bf1817e8cc16e",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "tablet-dark-default": {
+    "digest": "7c4e085e3a935508",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "tablet-dark-views": {
+    "digest": "7c4e085e3a935508",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "tablet-dark-project": {
+    "digest": "7c4e085e3a935508",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "tablet-dark-inspector": {
+    "digest": "7c4e085e3a935508",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "tablet-dark-reader-circuits": {
+    "digest": "7c4e085e3a935508",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "tablet-dark-split": {
+    "digest": "af8e1b9cddf4b0cc",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "phone-light-default": {
+    "digest": "ebe47774fd4d90fe",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "phone-light-views": {
+    "digest": "ebe47774fd4d90fe",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "phone-light-project": {
+    "digest": "ebe47774fd4d90fe",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "phone-light-inspector": {
+    "digest": "ebe47774fd4d90fe",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "phone-light-reader-circuits": {
+    "digest": "ebe47774fd4d90fe",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "phone-dark-default": {
+    "digest": "68aebc11b6c7dcde",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "phone-dark-views": {
+    "digest": "68aebc11b6c7dcde",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "phone-dark-project": {
+    "digest": "68aebc11b6c7dcde",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "phone-dark-inspector": {
+    "digest": "68aebc11b6c7dcde",
+    "revision": "fca6a8fbd2e845ca"
+  },
+  "phone-dark-reader-circuits": {
+    "digest": "68aebc11b6c7dcde",
+    "revision": "fca6a8fbd2e845ca"
+  }
 }

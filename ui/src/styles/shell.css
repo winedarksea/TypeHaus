@@ -67,14 +67,27 @@
   font-size: var(--text-xs);
 }
 
+/* Reports is the top bar's one *destination* trigger — it stands in for six full-screen
+   readers that were previously six always-visible buttons. Collapsing them reclaimed the
+   space, but it also made them easy to miss, so this reads as an MD3 filled-tonal button
+   rather than another outlined icon: filled surface, no outline, and a label that is never
+   hidden even when the neighbouring controls go icon-only. */
 .reports-trigger {
   gap: 6px;
-  padding: 0 12px;
-}
-.reports-trigger.active {
+  padding: 0 14px 0 12px;
   background: var(--md-secondary-container);
   color: var(--md-on-secondary-container);
-  border-color: var(--md-outline);
+  border-color: transparent;
+  font-weight: 600;
+}
+.reports-trigger .menu-trigger-caret {
+  opacity: 0.8;
+}
+/* An open reader escalates to the full primary fill: the bar should say where you are. */
+.reports-trigger.active {
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  border-color: transparent;
 }
 
 .topbar .title {
@@ -151,12 +164,7 @@
   background: var(--md-secondary-container);
   color: var(--md-on-secondary-container);
 }
-/* The lens menu opens upward: it is anchored in the bottom rail, so a downward surface
-   would land off-screen. */
-.statusrail .menu-surface {
-  top: auto;
-  bottom: calc(100% + var(--space-1));
-}
+
 .health-pill {
   display: inline-flex;
   align-items: center;
@@ -294,10 +302,12 @@
   min-height: var(--space-2);
 }
 
-/* Tool groups still anchor their flyout, so they keep a positioning context. */
-.nav-rail .tool-group {
-  position: relative;
-  display: flex;
+/* A tool group that opens a menu must still fill the rail, or its trigger ends up
+   narrower than its plain-button siblings and the menu anchors to the wrong edge. */
+.nav-rail .menu-root {
+  width: 100%;
+}
+.rail-menu-trigger {
   width: 100%;
 }
 
@@ -450,11 +460,7 @@
 .bottom-nav-tools .icon {
   display: block;
 }
-/* The tools menu is anchored in the bottom bar, so its surface must open upward. */
-.bottom-nav .menu-surface {
-  top: auto;
-  bottom: calc(100% + var(--space-1));
-}
+
 
 @media (max-width: 679px) {
   /* Canvas chrome loses the left rail gutter and gains a bottom-bar one. */

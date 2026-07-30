@@ -420,19 +420,27 @@ MAIN_EQUIPMENT = [
               room="RM-M-LIVING", type_ref="EQ-T-GREE-HEAD-12", rotation=deg(180),
               outdoor_ref="EQ-M-HP2-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6)),
-              # One 706 sf open room (kitchen/dining/living are all inside this claim).
+              # One 768 sf open room (kitchen/dining/living/hall, and since 2026-07-30 the
+              # stair well too, are all inside this claim).
               zone_rooms=("RM-M-LIVING",)),
     # --- System 3's head: over the stair head, partly recessed into W-M-STRW (the bearing
     # wall at x=10' between the stair and the mudroom) so one unit reaches both spaces —
     # the cutout in that wall is the whole point of the position. Backs west (rotation 90)
     # against the wall, high enough to clear the stair opening below it.
+    #
+    # `room` followed RM-M-STAIR into RM-M-LIVING on 2026-07-30 — the stair well is part of
+    # that room now (see main.py's ROOMS), and the head still hangs in the same place over
+    # it. `zone_rooms` did not: it is the mudroom and the mech closet. What this head is
+    # *sized* for is the entry side of the wall it is recessed in, and the stair volume it
+    # also blows into belongs to EQ-M-HP2-LIVING's 768 sf claim rather than being counted a
+    # second time here.
     Equipment(uid="CEE030AAAA", tag="EQ-M-HP3-STAIR", kind=EquipmentKind.INDOOR_HEAD,
               position=pt(ft(10, 6), ft(30)), footprint=(inch(33), inch(8)),
-              room="RM-M-STAIR", type_ref="EQ-T-GREE-SAPPHIRE-9", rotation=deg(90),
+              room="RM-M-LIVING", type_ref="EQ-T-GREE-SAPPHIRE-9", rotation=deg(90),
               outdoor_ref="EQ-M-HP3-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7),
                           recessed_into_host_surface=True),
-              zone_rooms=("RM-M-STAIR", "RM-M-MUDROOM", "RM-M-MECH")),
+              zone_rooms=("RM-M-MUDROOM", "RM-M-MECH")),
     # Electric fireplace, SE corner of the living room. It hangs on the *east* wall rather
     # than the south one because that is where the corner has wall left: W-M-S2 gives only
     # 2'-1" between WIN-M-LIV-S1's rough opening and the corner, while W-M-E1 runs clear
@@ -675,8 +683,9 @@ NEC_FILL_MAIN = [
                      position=pt(ft(9.50), ft(26.23)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    # On the 1'-0" pier of W-M-STRS between D-M-STAIR and RO-1 — the only wall left on that
-    # face, and a useful one to have at the head of the stairs.
+    # On the 10 3/16" pier at W-M-STRS's east end, between D-M-STAIR and the well partition
+    # the wall dies into — the only wall left on that face, and a useful one to have at the
+    # head of the stairs.
     ElectricalDevice(uid="NEC069AAAA", tag="ED-M-LIVING-RC11", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(13.85), ft(25.73)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",

@@ -16,7 +16,6 @@ from typehaus import (
     Occupancy,
     RadiantSystem,
     Room,
-    RoughOpening,
     Slab,
     Stair,
     StructuralRole,
@@ -31,7 +30,6 @@ from typehaus import (
     pt,
     u_us,
 )
-from typehaus.model import m
 
 # --- library-of-the-house types ----------------------------------------------
 DOOR_TYPES = [
@@ -109,16 +107,24 @@ NODES = [
     Node(uid="CMN012AAAA", tag="N-M-C1", position=pt(ft(18), ft(13, 4))),
     Node(uid="CMN013AAAA", tag="N-M-C2", position=pt(ft(18), ft(22, 2))),
     # N-M-C3 came south from y=26'-4" to the stair wall's line on 2026-07-28. It used to be
-    # the W-M-C4B/W-M-C5 split; with W-M-C4/C4B gone it is BM-M-HALL's north bearing, and it
-    # has to be where W-M-STRS lands or the stair well leaks into the living room through the
-    # gap between them. Nothing runs along y=26'-4" east of x=10', so it was free to move.
-    Node(uid="CMN014AAAA", tag="N-M-C3", position=pt(ft(18), ft(25, 10))),
+    # the W-M-C4B/W-M-C5 split; with W-M-C4/C4B gone it is BM-M-HALL's north bearing and
+    # W-M-C5's south end. It stays on y=25'-10" now that W-M-STRS no longer reaches it —
+    # the beam and the wall above it are what fix this point, not the stair wall. That does
+    # make it a one-wall node: BM-M-HALL, not another wall, is what carries the centre line
+    # south of here, so `open_end` is the honest description.
+    Node(uid="CMN014AAAA", tag="N-M-C3", position=pt(ft(18), ft(25, 10)), open_end=True),
     # Interior tees
     # N-M-STR1 and N-M-C3B moved north from y=25'-0" to y=25'-10" with W-M-STRS (2026-07-28),
     # and N-M-C3B then retired into N-M-C3: with the centre line open between them they were
     # two names for the same point. 25'-10" is as far north as the stair wall can go — see
     # FLOOR_OPENINGS.
     Node(uid="CMN015AAAA", tag="N-M-STR1", position=pt(ft(10), ft(25, 10))),
+    # W-M-STRS's east end (2026-07-30): the stair well partition's east face, which is also
+    # ST-B2M's and ST-M2S's east-lane west edge. The wall stops here so it frames the
+    # partition and D-M-STAIR and no further.
+    Node(uid="EPWDU4M7Y2", tag="N-M-STR2", position=pt(ft(14, 2.25), ft(25, 10)),
+         open_end=True),
+    # W-M-STOS2's tee into the stair wall line, and therefore the W-M-STRW/W-M-STRW2 split.
     Node(uid="CMN024AAAA", tag="N-M-STRJ", position=pt(ft(10), ft(26, 4))),
     # W-M-BAE shifts 2' east (2026-07-28); the mudroom door remains at its existing
     # 6" tee clearance.
@@ -210,9 +216,24 @@ WALLS = [
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
     # --- stair / storage block --------------------------------------------------
     # This wall line carries the cut second-floor joists and stacks directly over the
-    # basement concrete stair wall. It is split at the two tees on it: the storage wall at
-    # N-M-STRJ and the stair wall at N-M-STR1, now 6" apart. W-M-STRW2 is that 6" — the jog
-    # of wall between RM-M-MUDROOM's south wall and the head of the stairs.
+    # basement concrete stair wall. It is split at the two tees on it: the mudroom's south
+    # wall at N-M-STRJ and the stair wall at N-M-STR1, 6" apart. W-M-STRW2 is that 6" — the
+    # jog between RM-M-MUDROOM's south wall and the head of the stairs. The split is not a
+    # choice: `resolve/topology.py` builds junction incidents from wall *endpoints* only, so
+    # a wall running through a tee node contributes nothing there and the branch gets no
+    # framing. One wall line, one segment per tee.
+    #
+    # Both segments carry the same assembly and the same alignment as of 2026-07-30. The jog
+    # used to be plain CATLIN_INT_2X6_BRG, which left its mudroom face 1/2" proud of the
+    # exposed-stud wall's and split the bearing line's material (spf vs. df-select-s4s,
+    # which is what `integrity.junction_fallback` was reporting at N-M-STRJ). It is one
+    # continuous plane now, and the tee resolves on matching assemblies.
+    #
+    # `integrity.junction_fallback` did not vanish, it moved: N-M-STR1, where W-M-STRS's 2x4
+    # spf partition dies into the end of this 2x6 df-select-s4s wall, is now the mixed-
+    # assembly L. That is the better place for it — an L where a partition butts a bearing
+    # wall's end stud is a finish detail, where the old one was the solver declining to call
+    # the bearing line itself continuous through a tee.
     # The mudroom coat wall (plans/TODO.md): no drywall on the mudroom face, so the open
     # 2x6 bays between appearance-grade DF studs are the coat nooks, and the stair face is
     # 3/4" cabinet plywood that hooks screw straight into. `interior_room` is what points
@@ -227,14 +248,6 @@ WALLS = [
     # holding that face exactly where it was; the whole 1/2" of thickness change is taken out
     # of the mudroom side, whose face moves east from 9'-8 5/8" to 9'-9 1/8".
     #
-    # Known finding: `integrity.junction_fallback` at N-M-STRJ. The junction solver calls a
-    # through-pair continuous only when both walls publish the *same* bearing material, and
-    # this wall's studs are df-select-s4s where W-M-STRW2's are spf. Both are dimensional
-    # softwood framing under a lapped double top plate, so the bearing line is continuous in
-    # fact; the fallback changes no geometry here (measured: every layer of W-M-STRW2,
-    # W-M-STOS2 and W-M-STRS resolves exactly where it did before). Left as an honest WARN
-    # rather than papered over by calling the exposed studs SPF.
-    #
     # MEP: keep wiring and plumbing out of this wall — a bored stud shows. The one deliberate
     # exception is EQ-M-HP3-STAIR's recess (plan/electrical.py), the stair mini-split, which
     # is a designed cutout in the plywood face and stays.
@@ -243,16 +256,31 @@ WALLS = [
          alignment=face("ply-stair-ext", offset=inch(-3.375)),
          interior_room="RM-M-MUDROOM",
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
+    # Only 1 1/4" of this segment's west face is ever seen — between W-M-STOS2's south face
+    # and W-M-STRS's north face — so the exposed studs it now carries read as the corner
+    # return of the mudroom wall rather than as bare framing in the hall. `interior_room`
+    # still names the mudroom: the field only picks which side layer 0 faces, and the
+    # mudroom seed is on the correct (west) side of this segment's midpoint too.
     Wall(uid="CMW134AAAA", tag="W-M-STRW2", start_node="N-M-STRJ",
-         end_node="N-M-STR1", assembly="CATLIN_INT_2X6_BRG", top=ft(9),
+         end_node="N-M-STR1", assembly="CATLIN_MUDROOM_INT_2X6_EXPOSED", top=ft(9),
+         alignment=face("ply-stair-ext", offset=inch(-3.375)),
+         interior_room="RM-M-MUDROOM",
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
     # The wall at the top of the stairs, pushed north 10" to y=25'-10" (2026-07-28) so it
-    # closes against the wells again after they moved. Its north face at 26'-0 3/8" is both
-    # wells' south edge: D-M-STAIR opens onto ST-B2M's top nosing in the west lane, RO-1 onto
-    # ST-M2S's first tread in the east one. Its east end tees into N-M-C3, which is W-M-C5's
-    # south end and BM-M-HALL's north bearing.
+    # closes against the wells again after they moved. Its north face at 26'-0 3/8" is the
+    # wells' south edge, and D-M-STAIR in it opens onto ST-B2M's top nosing in the west lane.
+    #
+    # Shortened 2026-07-30: it used to run the whole 8' to N-M-C3 with RO-1, a 3'-0" cased
+    # opening, standing in front of the east lane. The wall is only structurally and
+    # spatially needed as far as the well partition — it frames D-M-STAIR and dies flush
+    # into the partition's east face at x=14'-2 1/4" — so the east lane is simply open to
+    # the living room now, the full 3'-6 3/8" of ST-M2S's width rather than RO-1's 3'-0".
+    # Nothing bore on the removed length: FO-S-STAIR's south edge runs parallel to FS-SECOND's
+    # E-W joists (a trimmer, not a header) and FO-M-STAIR's is cast concrete in SL-M-DECK.
+    # No guard is needed where the wall went: ST-M2S's first tread is at floor level right
+    # at that edge, so you step onto a flight, not over a drop.
     Wall(uid="CMW118AAAA", tag="W-M-STRS", start_node="N-M-STR1",
-         end_node="N-M-C3", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-STR2", assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CMW119AAAA", tag="W-M-STOS", start_node="N-M-W1",
          end_node="N-M-BA1", assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CMW120AAAA", tag="W-M-STOS2", start_node="N-M-BA1",
@@ -304,9 +332,9 @@ OPENINGS = [
          position=from_node("N-M-S1", ft(1, 4)), flip_swing=True),
     # Interior
     # x 10'-8 1/16"..13'-4 1/16": the west lane, which since ST-B2M was mirrored is the one
-    # the basement flight arrives in — so this is now the door onto the basement stairs, and
-    # RO-1 beside it is the cased way onto ST-M2S. The two swapped roles with the mirror;
-    # neither moved.
+    # the basement flight arrives in — so this is the door onto the basement stairs. The way
+    # onto ST-M2S beside it was RO-1, a cased opening in the same wall, until the wall was
+    # shortened past it (2026-07-30); that lane is open now.
     Door(uid="CMD203AAAA", tag="D-M-STAIR", host="W-M-STRS", type_ref="DT-INT-SWING32",
          position=from_node("N-M-STR1", ft(0, 8.0625)), flip_swing=True),
     # Pushed east to N-M-STRJ (2026-07-28, mudroom conversion): same 6" tee clearance as
@@ -414,8 +442,6 @@ OPENINGS = [
     # (35'-5 3/8") by 10 3/8".
     Window(uid="82WVR597PA", tag="WIN-M-KITCH-N", host="W-M-N1", type_ref="WT-1424",
            position=from_node("N-M-NE", ft(1, 5)), sill_height=ft(3, 6)),
-    # Exterior
-    RoughOpening(uid="S4PSJ99JQF", tag="RO-1", host="W-M-STRS", position=from_node("N-M-STR1", ft(4, 4.375)), width=ft(3), height=ft(6, 8), sill_height=m(0)),
 ]
 
 ROOMS = [
@@ -423,7 +449,12 @@ ROOMS = [
     # storey retired RM-S-LANDING and RM-S-STAIR into RM-S-HALL when *its* centre line
     # opened. Taking W-M-C4/C4B out under BM-M-HALL leaves one polygonized face spanning the
     # living room and the old hall band, and two seeds in one face bill the floor twice.
-    # The 706 sf that results is the honest area of the room you can now walk around.
+    #
+    # RM-M-STAIR (CMR410AAAA) followed it on 2026-07-30, for exactly the same reason: with
+    # W-M-STRS stopped at the well partition, the up-flight's lane is open to this room and
+    # the well is inside the same polygonized face. Two seeds in one face billed the 62 sf of
+    # stair well twice — both claims resolved to the identical 768 sf. The 768 sf is the
+    # honest area of the room you can now walk around; the stair is part of it.
     Room(uid="CMR401AAAA", tag="RM-M-LIVING", seed=pt(ft(27), ft(12)),
          occupancy=Occupancy.LIVING, floor_finish="oak"),
     Room(uid="CMR402AAAA", tag="RM-M-BED", seed=pt(ft(9), ft(6)),
@@ -444,8 +475,6 @@ ROOMS = [
     # hard-finish floor) than LIVING or HALLWAY would be.
     Room(uid="CMR409AAAA", tag="RM-M-MUDROOM", seed=pt(ft(5), ft(31)),
          occupancy=Occupancy.STORAGE, floor_finish="sealed-concrete"),
-    Room(uid="CMR410AAAA", tag="RM-M-STAIR", seed=pt(ft(14, 6), ft(31)),
-         occupancy=Occupancy.STAIR, floor_finish="oak"),
     # Framed MEP shaft closet, replacing FURN-M-MUD-CLOSET-N (2026-07-28): the
     # radon+plumbing riser rides its SW corner. STORAGE is the closed enum's closest fit
     # for a mechanical closet, same reasoning as RM-M-MUDROOM above.
@@ -555,11 +584,14 @@ FLOOR_OPENINGS = [
 # from the basement in the *east* lane (x 14'-2 1/4"..17'-6") and arrives on the main floor
 # in the *west* one (x 10'-6"..13'-9 3/4"), which is D-M-STAIR's lane. ST-M2S is mirrored
 # with it, so the east lane is now the flight *up* to the second floor, behind RO-1. Each
-# of the stair wall's two openings therefore faces a lane you can walk into, which is the
-# arrangement it always had — the mirror swapped which opening serves which stair.
+# arriving flight therefore lands behind D-M-STAIR and the springing one stands in the open
+# lane east of the well partition, which is the arrangement it always had — the mirror
+# swapped which stair each side serves.
 #
-# No guard is authored at the head: W-M-STRS spans the whole south edge, and its two
-# openings each stand over a flight rather than over a drop.
+# No guard is authored at the head. W-M-STRS closes the west lane and D-M-STAIR in it opens
+# onto ST-B2M's top nosing; east of the well partition the edge is open to the living room,
+# but ST-M2S's first tread is at floor level right on that line. Both lanes are a flight to
+# step onto, not a drop to fall down.
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
           from_storey="basement", to_storey="main", width=ft(3, 3.75),

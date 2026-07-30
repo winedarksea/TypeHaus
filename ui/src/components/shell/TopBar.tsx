@@ -17,7 +17,6 @@ import type { ViewMode } from "../../state/vocabulary";
  */
 export function TopBar({ pwa }: { pwa: PwaState }) {
   const model = useStore((s) => s.model);
-  const activeStorey = useStore((s) => s.activeStorey);
   const offline = useStore((s) => s.offline);
   const offlineHouse = useStore((s) => s.offlineHouse);
   const activePanel = useStore((s) => s.activePanel);
@@ -48,14 +47,11 @@ export function TopBar({ pwa }: { pwa: PwaState }) {
           navigational, the app's own name is not. */}
       {!isCompact && <span className="title">Type:Haus</span>}
 
-      <nav className="breadcrumb" aria-label="Project location">
-        <span>{model?.project.name ?? "—"}</span>
-        {activeStorey && (
-          <>
-            <Icon name="chevron-right" size={14} className="crumb-sep" />
-            <span className="crumb-current">{activeStorey}</span>
-          </>
-        )}
+      {/* Project name only. The active storey is already stated three other places — the
+          storey switcher on the canvas, the Views panel's Level control, and the status
+          rail's view readout — and a breadcrumb that cannot be navigated is just a label. */}
+      <nav className="breadcrumb" aria-label="Project">
+        <span className="crumb-current">{model?.project.name ?? "—"}</span>
       </nav>
 
       {offline && (

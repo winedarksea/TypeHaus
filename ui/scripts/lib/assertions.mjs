@@ -94,7 +94,14 @@ export const PROBE_DRAWING_FINGERPRINT = `
   for (const name of ${JSON.stringify(FROZEN_TOKENS)}) {
     tokens[name] = computed.getPropertyValue(name).trim();
   }
-  return { markup: clone.outerHTML, tokens };
+  return {
+    markup: clone.outerHTML,
+    tokens,
+    // The engine's model revision. Without it this check cannot tell "the chrome moved the
+    // drawing" from "somebody edited the house", and an unrelated plan edit lights up all 34
+    // shots as failures — which is how a guard gets ignored.
+    revision: window.__haus?.store?.getState().model?.revision ?? null,
+  };
 `;
 
 /** Where the 3D pane is on screen, so the runner can clip a screenshot to it. */
@@ -158,10 +165,20 @@ export function judge(shotName, probes, isPhone, baselineFingerprints) {
   if (probes.fingerprint) {
     const digest = hashFingerprint(probes.fingerprint);
     probes.fingerprintDigest = digest;
+    probes.modelRevision = probes.fingerprint.revision;
     const baseline = baselineFingerprints[shotName];
     if (baseline !== undefined) {
-      add("drawing-unchanged", baseline === digest,
-        baseline === digest ? "identical" : `digest ${baseline} -> ${digest}`);
+      // A different model revision means the house itself was edited, so the digests are
+      // simply not comparable — say so rather than reporting a drawing regression.
+      const staleModel = baseline.revision && probes.fingerprint.revision
+        && baseline.revision !== probes.fingerprint.revision;
+      if (staleModel) {
+        add("drawing-unchanged", true,
+          `model revision changed (${baseline.revision} -> ${probes.fingerprint.revision}); not comparable`);
+      } else {
+        add("drawing-unchanged", baseline.digest === digest,
+          baseline.digest === digest ? "identical" : `digest ${baseline.digest} -> ${digest}`);
+      }
     }
   }
 
@@ -182,4 +199,9 @@ export function hashFingerprint(fingerprint) {
     .update(JSON.stringify(fingerprint.tokens))
     .digest("hex")
     .slice(0, 16);
+}
+
+/** True when the served house is not the one the baseline digests were taken against. */
+export function modelRevisionChanged(fingerprint, baseline) {
+  return Boolean(fingerprint?.revision && baseline?.revision && fingerprint.revision !== baseline.revision);
 }

@@ -515,7 +515,7 @@ SOFFITS = [
 ]
 
 # Drawn to the main floor's *finished* well, the way FO-M-STAIR is drawn to the basement's:
-# W-M-STRW's and W-M-C5's stair-side gwb faces, W-M-STRS's north face, and the exterior
+# W-M-STRW's and W-M-C5's stair-side faces, W-M-STRS's north face extended east, and the exterior
 # wall's inside face. That is both the shaft the flight climbs and the line the outer
 # stringers bear on — an opening on the wall centrelines instead put the stringers inside
 # the stud cavities and left the flight to be posted down (plans/TODO.md D3).
