@@ -413,3 +413,46 @@
   cursor: default;
   opacity: var(--md-state-disabled-content);
 }
+
+/* ── MD3 dialog + snackbar ──────────────────────────────────────────────────
+   The modal and the toasts were the last surfaces still on the pre-MD3 shape and
+   elevation language. */
+.modal {
+  background: var(--md-surface-container-high);
+  border-radius: var(--md-shape-xl);
+  box-shadow: var(--md-elev-3);
+  padding: var(--space-5);
+}
+.modal-header {
+  margin-bottom: var(--space-4);
+  font-size: var(--text-lg);
+}
+.toast {
+  background: var(--md-surface-container-highest);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--md-shape-xs);
+  box-shadow: var(--md-elev-3);
+  padding: 12px 16px;
+}
+.cmdk {
+  background: var(--md-surface-container-high);
+  border-radius: var(--md-shape-xl);
+  box-shadow: var(--md-elev-3);
+}
+.cmdk-input {
+  background: transparent;
+  min-height: var(--hit);
+}
+.cmdk-item {
+  min-height: var(--hit);
+  border-radius: var(--md-shape-xs);
+}
+.ctx-menu {
+  background: var(--md-surface-container-high);
+  border-radius: var(--md-shape-sm);
+  box-shadow: var(--md-elev-3);
+}
+.ctx-menu button {
+  min-height: var(--hit);
+  border-radius: var(--md-shape-xs);
+}
