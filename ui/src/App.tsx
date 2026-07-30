@@ -66,11 +66,9 @@ export function App() {
   const setSubOperation = useStore((s) => s.setSubOperation);
   const selection = useStore((s) => s.selection);
   const select = useStore((s) => s.select);
-  const projectDrawerOpen = useStore((s) => s.projectDrawerOpen);
-  const setProjectDrawerOpen = useStore((s) => s.setProjectDrawerOpen);
+  const activePanel = useStore((s) => s.activePanel);
+  const setActivePanel = useStore((s) => s.setActivePanel);
   const setCommandPaletteOpen = useStore((s) => s.setCommandPaletteOpen);
-  const issuesDrawerOpen = useStore((s) => s.issuesDrawerOpen);
-  const setIssuesDrawerOpen = useStore((s) => s.setIssuesDrawerOpen);
   const detailView = useStore((s) => s.detailView);
   const setDetailView = useStore((s) => s.setDetailView);
   const activeLens = useStore((s) => s.activeLens);
@@ -168,10 +166,10 @@ export function App() {
 
       <div className="topbar">
         <button
-          className={`btn${projectDrawerOpen ? " active" : ""}`}
-          onClick={() => setProjectDrawerOpen(!projectDrawerOpen)}
+          className={`btn${activePanel === "project" ? " active" : ""}`}
+          onClick={() => setActivePanel("project")}
           title="Toggle project drawer"
-          aria-pressed={projectDrawerOpen}
+          aria-pressed={activePanel === "project"}
         >
           ☰
         </button>
@@ -325,7 +323,7 @@ export function App() {
         <span className="spacer" />
         <button
           className="health-pill"
-          onClick={() => setIssuesDrawerOpen(!issuesDrawerOpen)}
+          onClick={() => setActivePanel("issues")}
           title="Design health — errors · warnings · advisories (open Issues)"
         >
           <span className="hp-err">{errCount} err</span>

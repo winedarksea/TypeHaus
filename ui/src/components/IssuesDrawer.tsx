@@ -25,8 +25,8 @@ const SEVERITY_ORDER: Severity[] = ["error", "warn", "info"];
 const SEVERITY_LABEL: Record<Severity, string> = { error: "Errors", warn: "Warnings", info: "Advisories" };
 
 export function IssuesDrawer() {
-  const open = useStore((s) => s.issuesDrawerOpen);
-  const setOpen = useStore((s) => s.setIssuesDrawerOpen);
+  const open = useStore((s) => s.activePanel === "issues");
+  const setActivePanel = useStore((s) => s.setActivePanel);
   const model = useStore((s) => s.model);
   const zoomToUid = useStore((s) => s.zoomToUid);
   const [states, setStates] = useState<Record<string, IssueState>>(loadStates);
@@ -59,7 +59,7 @@ export function IssuesDrawer() {
     <div className="issues-drawer" role="region" aria-label="Issues">
       <div className="issues-header">
         <h3 style={{ margin: 0 }}>Issues · {findings.length}</h3>
-        <button className="btn" onClick={() => setOpen(false)} title="Collapse issues">
+        <button className="btn" onClick={() => setActivePanel(null)} title="Collapse issues">
           ▾
         </button>
       </div>

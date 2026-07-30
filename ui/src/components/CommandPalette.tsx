@@ -46,8 +46,7 @@ export function CommandPalette() {
   const threeMode = useStore((s) => s.threeMode);
   const setTradeVisible = useStore((s) => s.setTradeVisible);
   const visibleTrades = useStore((s) => s.visibleTrades);
-  const setProjectDrawerOpen = useStore((s) => s.setProjectDrawerOpen);
-  const setViewsPanelOpen = useStore((s) => s.setViewsPanelOpen);
+  const setActivePanel = useStore((s) => s.setActivePanel);
   const setRepresentation = useStore((s) => s.setRepresentation);
   const setActiveWorkspace = useStore((s) => s.setActiveWorkspace);
   const setActiveLens = useStore((s) => s.setActiveLens);
@@ -76,8 +75,8 @@ export function CommandPalette() {
       { id: "view-3d", title: "View: 3D", group: "View", run: () => setViewMode("3d") },
       { id: "three-nordic", title: "3D: Nordic shading", group: "View", run: () => setThreeMode("nordic") },
       { id: "three-schematic", title: "3D: Schematic shading", group: "View", run: () => setThreeMode("schematic") },
-      { id: "drawer-project", title: "Open Project drawer", group: "Panels", run: () => setProjectDrawerOpen(true) },
-      { id: "panel-views", title: "Open Views panel", group: "Panels", run: () => setViewsPanelOpen(true) },
+      { id: "drawer-project", title: "Open Project drawer", group: "Panels", run: () => setActivePanel("project") },
+      { id: "panel-views", title: "Open Views panel", group: "Panels", run: () => setActivePanel("views") },
       { id: "ws-design", title: "Workspace: Design", group: "Workspace", run: () => setActiveWorkspace("design") },
       { id: "ws-analyze", title: "Workspace: Analyze", group: "Workspace", run: () => setActiveWorkspace("analyze") },
       { id: "ws-document", title: "Workspace: Document", group: "Workspace", run: () => setActiveWorkspace("document") },
@@ -118,7 +117,7 @@ export function CommandPalette() {
     void threeMode;
     return list;
   }, [undo, redo, setTool, setViewMode, setThreeMode, threeMode, setTradeVisible, visibleTrades,
-    setProjectDrawerOpen, setViewsPanelOpen, setRepresentation, setActiveWorkspace, setActiveLens,
+    setActivePanel, setRepresentation, setActiveWorkspace, setActiveLens,
     setLayerGroupVisible, visibleLayerGroups, showEverything, setDetailView, reload, offline]);
 
   const results = useMemo(() => {

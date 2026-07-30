@@ -12,8 +12,8 @@ import { DetailsNavigator } from "./DetailsNavigator";
 // DrawerSections so the drawer reads as a single, consistent, scannable outline.
 export function ProjectDrawer() {
   const model = useStore((s) => s.model);
-  const open = useStore((s) => s.projectDrawerOpen);
-  const setOpen = useStore((s) => s.setProjectDrawerOpen);
+  const open = useStore((s) => s.activePanel === "project");
+  const setActivePanel = useStore((s) => s.setActivePanel);
   const setWorkbench = useStore((s) => s.setWorkbench);
 
   if (!open || !model) return null;
@@ -22,7 +22,7 @@ export function ProjectDrawer() {
     <aside className="project-drawer">
       <div className="drawer-header">
         <h3 style={{ margin: 0 }}>{model.project.name}</h3>
-        <button className="btn" onClick={() => setOpen(false)} title="Close project drawer">
+        <button className="btn" onClick={() => setActivePanel(null)} title="Close project drawer">
           ✕
         </button>
       </div>

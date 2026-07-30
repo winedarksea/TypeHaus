@@ -22,6 +22,7 @@ const PWA_STANDALONE = import.meta.env.VITE_PWA_STANDALONE === "1";
 import type { Model } from "../model/types";
 import { ALL_LAYER_VISIBILITY_GROUPS, type LayerVisibilityGroup } from "../model/visibility";
 import { locateUid } from "./locate";
+import type { PanelId } from "./panels";
 import { createMutationActions, type MutationActions } from "./mutations";
 import {
   ALL_TRADES,
@@ -44,13 +45,13 @@ export interface StoreState extends MutationActions {
   subOperation: boolean; // true mid-draw (e.g. wall chain in progress) — drives Esc hierarchy
   drawAssembly: string | null; // ContextBar-selected wall assembly for new walls
   chainDraw: boolean; // keep the wall tool armed after each segment
-  projectDrawerOpen: boolean; // left project drawer (dashboards, hierarchy — Phase 6)
+  // One left-hand panel at a time. Replaced three independent booleans whose mutual
+  // exclusion was only half-wired (Issues closed neither of the other two).
+  activePanel: PanelId | null;
   commandPaletteOpen: boolean; // ⌘K fuzzy command surface (Phase 4)
   recentCommands: string[]; // command ids, most-recent first (Phase 4)
-  issuesDrawerOpen: boolean; // bottom Issues drawer (Phase 5)
   activeWorkspace: Workspace; // DESIGN / ANALYZE / DOCUMENT (Phase 6)
   representation: Representation; // conceptual → fabrication detail level (Phase 6)
-  viewsPanelOpen: boolean; // Views control panel (Phase 6)
   workbench: "assembly" | "stair" | null; // focus-mode workbench for complex edits (Phase 7)
   activeLens: Lens; // building-science lens (Phase 9)
   preview3DOpen: boolean; // floating synchronized 3D preview over the 2D plan (Phase 10)
@@ -85,13 +86,12 @@ export interface StoreState extends MutationActions {
   setSubOperation: (v: boolean) => void;
   setDrawAssembly: (tag: string | null) => void;
   setChainDraw: (v: boolean) => void;
-  setProjectDrawerOpen: (v: boolean) => void;
+  // Passing the id that is already active closes it, so a rail item toggles.
+  setActivePanel: (panel: PanelId | null) => void;
   setCommandPaletteOpen: (v: boolean) => void;
   pushRecentCommand: (id: string) => void;
-  setIssuesDrawerOpen: (v: boolean) => void;
   setActiveWorkspace: (w: Workspace) => void;
   setRepresentation: (r: Representation) => void;
-  setViewsPanelOpen: (v: boolean) => void;
   setWorkbench: (w: "assembly" | "stair" | null) => void;
   setActiveLens: (l: Lens) => void;
   setPreview3DOpen: (v: boolean) => void;
@@ -142,13 +142,11 @@ export const useStore = create<StoreState>((set, get) => ({
   subOperation: false,
   drawAssembly: null,
   chainDraw: true,
-  projectDrawerOpen: false,
+  activePanel: null,
   commandPaletteOpen: false,
   recentCommands: [],
-  issuesDrawerOpen: false,
   activeWorkspace: "design",
   representation: "detailed",
-  viewsPanelOpen: false,
   workbench: null,
   activeLens: "none",
   preview3DOpen: false,
@@ -266,20 +264,16 @@ export const useStore = create<StoreState>((set, get) => ({
   setSubOperation: (subOperation) => set({ subOperation }),
   setDrawAssembly: (drawAssembly) => set({ drawAssembly }),
   setChainDraw: (chainDraw) => set({ chainDraw }),
-  // Left side hosts one large panel at a time (reviewer rule): opening one closes the other.
-  setProjectDrawerOpen: (projectDrawerOpen) =>
-    set(projectDrawerOpen ? { projectDrawerOpen, viewsPanelOpen: false } : { projectDrawerOpen }),
+  // Left side hosts one large panel at a time (reviewer rule).
+  setActivePanel: (panel) => set((s) => ({ activePanel: s.activePanel === panel ? null : panel })),
   setCommandPaletteOpen: (commandPaletteOpen) => set({ commandPaletteOpen }),
   pushRecentCommand: (id) =>
     set((s) => ({ recentCommands: [id, ...s.recentCommands.filter((c) => c !== id)].slice(0, 6) })),
-  setIssuesDrawerOpen: (issuesDrawerOpen) => set({ issuesDrawerOpen }),
   setActiveWorkspace: (activeWorkspace) => set({ activeWorkspace }),
   // Representation generalizes the old showFraming boolean: detailed/fabrication show framing,
   // conceptual/schematic show wall fills only.
   setRepresentation: (representation) =>
     set({ representation, showFraming: representation === "detailed" || representation === "fabrication" }),
-  setViewsPanelOpen: (viewsPanelOpen) =>
-    set(viewsPanelOpen ? { viewsPanelOpen, projectDrawerOpen: false } : { viewsPanelOpen }),
   setWorkbench: (workbench) => set({ workbench }),
   setActiveLens: (activeLens) => set({ activeLens }),
   setPreview3DOpen: (preview3DOpen) => set({ preview3DOpen }),
