@@ -316,3 +316,100 @@
   padding: 16px;
   text-align: center;
 }
+
+/* ── Anchored menu (components/ui/Menu.tsx) ─────────────────────────────────
+   The surface that lets the top bar stop clipping its own contents: groups that
+   used to sit inline — six reader buttons, density, appearance — now live behind
+   a named trigger instead of running off the right edge. */
+.menu-root {
+  position: relative;
+  display: inline-flex;
+}
+
+.menu-trigger-label {
+  white-space: nowrap;
+}
+.menu-trigger-caret {
+  opacity: 0.6;
+  margin-inline-start: -2px;
+}
+
+.menu-surface {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  z-index: var(--z-ctx-menu);
+  min-width: 200px;
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+  padding: var(--space-1);
+  background: var(--md-surface-container-high);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--md-shape-sm);
+  box-shadow: var(--md-elev-3);
+  animation: menu-in var(--md-dur-short-4) var(--md-ease-decel);
+}
+.menu-align-start { left: 0; }
+.menu-align-end { right: 0; }
+
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.menu-section + .menu-section {
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--panel-line);
+}
+.menu-section-label {
+  padding: 6px 10px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--md-on-surface-variant);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: var(--hit);
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--md-shape-xs);
+  background: transparent;
+  color: var(--md-on-surface);
+  text-align: left;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.menu-item-icon {
+  width: 20px;
+  flex: 0 0 auto;
+  color: var(--md-on-surface-variant);
+}
+.menu-item-label {
+  flex: 1;
+  white-space: nowrap;
+}
+.menu-item-trailing {
+  color: var(--md-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+.menu-item.selected {
+  background: var(--md-secondary-container);
+  color: var(--md-on-secondary-container);
+}
+.menu-item.selected .menu-item-icon {
+  color: inherit;
+}
+.menu-item.danger {
+  color: var(--md-error);
+}
+.menu-item:disabled {
+  color: var(--md-on-surface-variant);
+  cursor: default;
+  opacity: var(--md-state-disabled-content);
+}

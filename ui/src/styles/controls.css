@@ -58,6 +58,7 @@
 .cmdk-item,
 .ctx-menu button,
 .wall-assembly-popup-close,
+.menu-item,
 .md-state {
   position: relative;
   isolation: isolate;
@@ -81,6 +82,7 @@
 .cmdk-item::before,
 .ctx-menu button::before,
 .wall-assembly-popup-close::before,
+.menu-item::before,
 .md-state::before {
   content: "";
   position: absolute;
@@ -111,6 +113,7 @@
   .cmdk-item:hover:not(.disabled)::before,
   .ctx-menu button:hover:not(:disabled)::before,
   .wall-assembly-popup-close:hover::before,
+  .menu-item:hover:not(:disabled)::before,
   .md-state:hover:not(:disabled)::before {
     opacity: var(--md-state-hover);
   }

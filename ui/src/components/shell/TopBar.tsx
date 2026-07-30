@@ -1,0 +1,116 @@
+import { useStore } from "../../state/store";
+import { Icon } from "../../icons/Icon";
+import { Menu } from "../ui/Menu";
+import { OverflowMenu } from "./OverflowMenu";
+import { REPORTS, VIEW_MODES } from "./navigationConfig";
+import type { PwaState } from "../../pwa/register";
+import type { ViewMode } from "../../state/vocabulary";
+
+/**
+ * The top app bar: identity and location on the left, global actions on the right.
+ *
+ * Replaces a 130-line inline block in App.tsx that held roughly twenty controls in a 44px
+ * flex row with no overflow handling. Two rules keep it from silting up again — the bar
+ * carries only what is used constantly (view mode, undo/redo, search), and everything else
+ * goes behind a named trigger. That is what reclaims ~380px from the reader buttons alone.
+ */
+export function TopBar({ pwa }: { pwa: PwaState }) {
+  const model = useStore((s) => s.model);
+  const activeStorey = useStore((s) => s.activeStorey);
+  const offline = useStore((s) => s.offline);
+  const offlineHouse = useStore((s) => s.offlineHouse);
+  const activePanel = useStore((s) => s.activePanel);
+  const setActivePanel = useStore((s) => s.setActivePanel);
+  const setCommandPaletteOpen = useStore((s) => s.setCommandPaletteOpen);
+  const detailView = useStore((s) => s.detailView);
+  const setDetailView = useStore((s) => s.setDetailView);
+  const viewMode = useStore((s) => s.viewMode);
+  const setViewMode = useStore((s) => s.setViewMode);
+  const undo = useStore((s) => s.undo);
+  const redo = useStore((s) => s.redo);
+
+  const activeReport = REPORTS.find((r) => r.id === detailView);
+
+  return (
+    <header className="topbar">
+      <button
+        className={`btn icon-btn${activePanel === "project" ? " active" : ""}`}
+        onClick={() => setActivePanel("project")}
+        title="Toggle project drawer"
+        aria-pressed={activePanel === "project"}
+      >
+        <Icon name="menu" />
+      </button>
+
+      <span className="title">Type:Haus</span>
+
+      <nav className="breadcrumb" aria-label="Project location">
+        <span>{model?.project.name ?? "—"}</span>
+        {activeStorey && (
+          <>
+            <Icon name="chevron-right" size={14} className="crumb-sep" />
+            <span className="crumb-current">{activeStorey}</span>
+          </>
+        )}
+      </nav>
+
+      {offline && (
+        <span className="badge-offline" title={`offline — ${offlineHouse ?? "in-browser engine"}`}>
+          OFFLINE{offlineHouse ? ` · ${offlineHouse}` : ""}
+        </span>
+      )}
+
+      <div className="spacer" />
+
+      {/* One trigger for the six full-screen readers. Reflects the open one so the bar still
+          says where you are, which the segmented row did by staying lit. */}
+      <Menu
+        label={activeReport ? activeReport.label : "Reports"}
+        title="Reports — assembly, BOM, circuits, HVAC, plumbing, lighting"
+        icon="report"
+        triggerClassName={`btn reports-trigger${activeReport ? " active" : ""}`}
+        align="end"
+        items={REPORTS.map((report) => ({
+          id: report.id,
+          label: report.label,
+          icon: report.icon,
+          hint: report.hint,
+          selected: detailView === report.id,
+          onSelect: () => setDetailView(detailView === report.id ? "none" : report.id),
+        }))}
+      />
+
+      <div className="seg-group" role="group" aria-label="View mode">
+        {VIEW_MODES.map((mode) => (
+          <button
+            key={mode.id}
+            className={`seg-btn${viewMode === mode.id ? " active" : ""}`}
+            onClick={() => setViewMode(mode.id as ViewMode)}
+            aria-pressed={viewMode === mode.id}
+            title={mode.hint}
+          >
+            <Icon name={mode.icon} size={18} />
+            <span className="seg-btn-label">{mode.label}</span>
+          </button>
+        ))}
+      </div>
+
+      <button className="btn icon-btn" onClick={() => void undo()} title="Undo (⌘Z)">
+        <Icon name="undo" />
+      </button>
+      <button className="btn icon-btn" onClick={() => void redo()} title="Redo (⇧⌘Z)">
+        <Icon name="redo" />
+      </button>
+
+      <button
+        className="btn icon-btn"
+        onClick={() => setCommandPaletteOpen(true)}
+        title="Command palette (⌘K)"
+      >
+        <Icon name="search" />
+      </button>
+
+      <OverflowMenu pwa={pwa} />
+    </header>
+  );
+}

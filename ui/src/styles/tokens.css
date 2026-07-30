@@ -189,6 +189,13 @@
   --drawer-w: 300px;     /* project drawer / views panel */
   --gutter: var(--space-3);
 
+  /* Device safe areas. These resolve to 0px everywhere except a notched phone — and they
+     resolve to 0px even there unless index.html sets viewport-fit=cover, which it now does. */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+
   /* Live width of the resizable inspector. Inspector.tsx republishes this while
      dragging (it owns the number in React state); the default here is its MIN_W so
      the first paint agrees with the component before any drag has happened. Rules

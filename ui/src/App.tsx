@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useStore } from "./state/store";
 import { visibleFindings } from "./state/locate";
-import { subscribePwa, promptInstall, type PwaState } from "./pwa/register";
+import { subscribePwa, type PwaState } from "./pwa/register";
 import { fsAccessSupported } from "./engine/openHouse";
 import { Toolbar } from "./components/Toolbar";
+import { TopBar } from "./components/shell/TopBar";
 import { ContextBar } from "./components/ContextBar";
 import { CommandPalette } from "./components/CommandPalette";
 import { IssuesDrawer } from "./components/IssuesDrawer";
@@ -24,7 +25,6 @@ import { ProjectDrawer } from "./components/ProjectDrawer";
 import { ConflictBanner } from "./components/ConflictBanner";
 import { ExtentsHUD } from "./components/ExtentsHUD";
 import { Toasts } from "./components/Toasts";
-import { useTheme, useDensity, type ThemePreference, type Density } from "./theme/theme";
 
 // Interaction-state label shown near the top-left canvas corner (Phase 2).
 function interactionLabel(tool: string, subOperation: boolean): string {
@@ -45,19 +45,13 @@ function interactionLabel(tool: string, subOperation: boolean): string {
 }
 
 export function App() {
-  const { preference: themePreference, setPreference: setThemePreference } = useTheme();
-  const { density, setDensity } = useDensity();
   const init = useStore((s) => s.init);
-  const connected = useStore((s) => s.connected);
   const viewMode = useStore((s) => s.viewMode);
-  const setViewMode = useStore((s) => s.setViewMode);
   const model = useStore((s) => s.model);
   const loading = useStore((s) => s.loading);
   const error = useStore((s) => s.error);
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
-  const offline = useStore((s) => s.offline);
-  const offlineHouse = useStore((s) => s.offlineHouse);
   const openOfflineHouse = useStore((s) => s.openOfflineHouse);
   const activeStorey = useStore((s) => s.activeStorey);
   const tool = useStore((s) => s.tool);
@@ -66,7 +60,6 @@ export function App() {
   const setSubOperation = useStore((s) => s.setSubOperation);
   const selection = useStore((s) => s.selection);
   const select = useStore((s) => s.select);
-  const activePanel = useStore((s) => s.activePanel);
   const setActivePanel = useStore((s) => s.setActivePanel);
   const setCommandPaletteOpen = useStore((s) => s.setCommandPaletteOpen);
   const detailView = useStore((s) => s.detailView);
@@ -164,143 +157,7 @@ export function App() {
         </div>
       </div>
 
-      <div className="topbar">
-        <button
-          className={`btn${activePanel === "project" ? " active" : ""}`}
-          onClick={() => setActivePanel("project")}
-          title="Toggle project drawer"
-          aria-pressed={activePanel === "project"}
-        >
-          ☰
-        </button>
-        <span className="title">Type:Haus</span>
-        <nav className="breadcrumb" aria-label="Project location">
-          <span>{model?.project.name ?? "—"}</span>
-          {activeStorey && (
-            <>
-              <span className="crumb-sep">▸</span>
-              <span className="crumb-current">{activeStorey}</span>
-            </>
-          )}
-        </nav>
-        {offline && (
-          <span className="badge-offline" title={`offline — ${offlineHouse ?? "in-browser engine"}`}>
-            OFFLINE{offlineHouse ? ` · ${offlineHouse}` : ""}
-          </span>
-        )}
-
-        {/* These slots used to hold DESIGN / ANALYZE / DOCUMENT, which only re-emphasized
-            panels. Workspace now lives in the Views panel with the rest of the view recipe;
-            the topbar spends its space on the readers that answer real questions. */}
-        <div className="workspace-seg" role="group" aria-label="Model readers">
-          <button
-            className={`seg-btn${detailView === "assembly" ? " active" : ""}`}
-            onClick={() => setDetailView(detailView === "assembly" ? "none" : "assembly")}
-            aria-pressed={detailView === "assembly"}
-            title="Assembly details — transitions, resolved conditions, layer stacks"
-          >
-            ASSEMBLY
-          </button>
-          <button
-            className={`seg-btn${detailView === "bom" ? " active" : ""}`}
-            onClick={() => setDetailView(detailView === "bom" ? "none" : "bom")}
-            aria-pressed={detailView === "bom"}
-            title="Bill of materials — every part in the model"
-          >
-            BOM
-          </button>
-          <button
-            className={`seg-btn${detailView === "circuits" ? " active" : ""}`}
-            onClick={() => setDetailView(detailView === "circuits" ? "none" : "circuits")}
-            aria-pressed={detailView === "circuits"}
-            title="Circuits — panel schedule, service load, conduit, PV"
-          >
-            CIRCUITS
-          </button>
-          <button
-            className={`seg-btn${detailView === "hvac" ? " active" : ""}`}
-            onClick={() => setDetailView(detailView === "hvac" ? "none" : "hvac")}
-            aria-pressed={detailView === "hvac"}
-            title="HVAC — heat-pump systems, zone loads, ducts, registers, ERV"
-          >
-            HVAC
-          </button>
-          <button
-            className={`seg-btn${detailView === "plumbing" ? " active" : ""}`}
-            onClick={() => setDetailView(detailView === "plumbing" ? "none" : "plumbing")}
-            aria-pressed={detailView === "plumbing"}
-            title="Plumbing — isometric riser, fixture units, pipe takeoff, cast-in sleeves"
-          >
-            PLUMBING
-          </button>
-          <button
-            className={`seg-btn${detailView === "lighting" ? " active" : ""}`}
-            onClick={() => setDetailView(detailView === "lighting" ? "none" : "lighting")}
-            aria-pressed={detailView === "lighting"}
-            title="Lighting — luminaire schedule, controls, LED runs, connected load"
-          >
-            LIGHTING
-          </button>
-        </div>
-
-        <div className="spacer" />
-        <button className="btn cmdk-trigger" onClick={() => setCommandPaletteOpen(true)} title="Command palette (⌘K)">
-          ⌘K
-        </button>
-        {pwa.installable && (
-          <button className="btn" onClick={() => void promptInstall()} title="Install Type:Haus">
-            Install
-          </button>
-        )}
-        <div className="seg-group" role="group" aria-label="View mode">
-          {(["2d", "split", "3d"] as const).map((m) => (
-            <button
-              key={m}
-              className={`seg-btn${viewMode === m ? " active" : ""}`}
-              onClick={() => setViewMode(m)}
-              aria-pressed={viewMode === m}
-            >
-              {m.toUpperCase()}
-            </button>
-          ))}
-        </div>
-        <button className="btn" onClick={() => void undo()} title="Undo (⌘Z)">
-          ↶
-        </button>
-        <button className="btn" onClick={() => void redo()} title="Redo (⇧⌘Z)">
-          ↷
-        </button>
-        <div className="theme-selector" role="group" aria-label="Density">
-          {(["compact", "comfortable", "touch"] as Density[]).map((choice) => (
-            <button
-              key={choice}
-              className={`seg-btn${density === choice ? " active" : ""}`}
-              onClick={() => setDensity(choice)}
-              title={`${choice[0].toUpperCase() + choice.slice(1)} density`}
-              aria-pressed={density === choice}
-            >
-              {choice === "compact" ? "▪" : choice === "comfortable" ? "▫" : "▢"}
-            </button>
-          ))}
-        </div>
-        <div className="theme-selector" role="group" aria-label="Appearance">
-          {(["system", "light", "dark"] as ThemePreference[]).map((choice) => (
-            <button
-              key={choice}
-              className={`seg-btn${themePreference === choice ? " active" : ""}`}
-              onClick={() => setThemePreference(choice)}
-              title={`Use ${choice === "system" ? "system appearance" : `${choice} appearance`}`}
-              aria-pressed={themePreference === choice}
-            >
-              {choice === "system" ? "System" : choice[0].toUpperCase() + choice.slice(1)}
-            </button>
-          ))}
-        </div>
-        <span
-          className={`status-dot${connected ? " up" : ""}`}
-          title={connected ? "engine connected" : "engine disconnected"}
-        />
-      </div>
+      <TopBar pwa={pwa} />
 
       <Toolbar />
       <ContextBar />

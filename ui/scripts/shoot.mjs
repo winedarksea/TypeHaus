@@ -45,12 +45,30 @@ const flag = (name, fallback) => {
 const targetUrl = flag("url", "http://127.0.0.1:8123");
 const acceptBaselines = args.includes("--accept");
 
-async function applyTheme(session, theme) {
-  await evaluate(session, `
-    document.documentElement.dataset.theme = ${JSON.stringify(theme)};
-    window.localStorage.setItem("typehaus.theme-preference", ${JSON.stringify(theme)});
-    return true;
-  `);
+/**
+ * Force the theme, belt and braces, BEFORE the page loads.
+ *
+ * Poking `documentElement.dataset.theme` after load is not enough: theme.ts re-applies the
+ * resolved preference whenever a component using useTheme mounts, so the app quietly wins the
+ * argument and the shot comes out in the wrong theme — which shows up as a light shot hashing
+ * identical to its dark twin. Instead, emulate the OS preference (which "system" reads) and
+ * seed the explicit preference into localStorage before any script runs, so every path the
+ * app might take agrees.
+ */
+let seededThemeScriptId = null;
+
+async function forceTheme(session, theme) {
+  await session.send("Emulation.setEmulatedMedia", {
+    features: [{ name: "prefers-color-scheme", value: theme }],
+  });
+  // Replace rather than stack: these registrations accumulate for the page's lifetime.
+  if (seededThemeScriptId) {
+    await session.send("Page.removeScriptToEvaluateOnNewDocument", { identifier: seededThemeScriptId });
+  }
+  const { identifier } = await session.send("Page.addScriptToEvaluateOnNewDocument", {
+    source: `window.localStorage.setItem("typehaus.theme-preference", ${JSON.stringify(theme)});`,
+  });
+  seededThemeScriptId = identifier;
 }
 
 async function poseAndProbe(session, shot) {
@@ -154,8 +172,8 @@ async function main() {
         currentTheme = null;      // re-navigate below re-reads the theme from storage
       }
       if (currentTheme !== shot.theme) {
+        await forceTheme(session, shot.theme);   // must precede the load, not follow it
         await navigate(session, targetUrl);
-        await applyTheme(session, shot.theme);
         await evaluate(session, WAIT_FOR_MODEL);
         currentTheme = shot.theme;
       }
