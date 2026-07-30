@@ -186,6 +186,7 @@
   --topbar-h: 44px;
   --statusrail-h: 30px;
   --rail-w: 72px;        /* navigation rail: MD3's 80dp, trimmed to the app's density */
+  --bottomnav-h: 68px;   /* compact-only; replaces the rail below 680px */
   --drawer-w: 300px;     /* project drawer / views panel */
   --gutter: var(--space-3);
 
@@ -307,3 +308,44 @@
   --control-vapor: #B48EAD;
   --control-thermal: #EBCB8B;
 }
+
+/* ══ Breakpoints ════════════════════════════════════════════════════════════
+   Keep the numbers in sync with theme/breakpoints.ts by hand — there is no native
+   @custom-media, and generating CSS from TypeScript is not worth a build step for
+   three integers.
+
+   Because stage 1 routed every chrome inset through the tokens above, rewriting a
+   handful of them here reskins the entire shell: no JS re-render on resize, and no
+   flash of the desktop layout on first paint. */
+
+/* medium — tablet portrait. A 72px rail plus a 300px drawer plus a 320px inspector
+   is 712px of chrome on a 1024 tablet, so the panels get narrower and (in panels.css)
+   modal, occluding the drawing rather than competing with it for width. */
+@media (max-width: 1023px) {
+  :root {
+    --rail-w: 64px;
+    --drawer-w: 288px;
+    --inspector-w: 280px;
+  }
+}
+
+/* compact — phone. The rail becomes a bottom bar and panels become sheets, both of
+   which are component swaps in useBreakpoint rather than styles; what changes here is
+   the geometry those components sit in.
+
+   The density override needs [data-density] on the selector, not a bare :root: a plain
+   :root (0,1,0) loses to :root[data-density="compact"] (0,2,0), so the stored density
+   preference would quietly beat the breakpoint and leave 32px targets on a phone. Equal
+   specificity plus later source order is what makes "every control is reachable at
+   390px" hold structurally instead of needing a per-component audit. */
+@media (max-width: 679px) {
+  :root[data-density] {
+    --hit: 48px;
+    --row-h: 48px;
+    --pad-panel: 16px;
+    --topbar-h: 56px;
+    --rail-w: 0px;
+    --gutter: var(--space-2);
+  }
+}
+

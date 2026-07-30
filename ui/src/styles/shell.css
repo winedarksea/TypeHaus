@@ -424,3 +424,87 @@
 .canvas-context-controls .hud {
   position: static;
 }
+
+/* ── Bottom navigation (compact only) ───────────────────────────────────────
+   The phone-class counterpart to the navigation rail. Same rail-item vocabulary,
+   laid out horizontally, sitting where a thumb actually reaches. */
+.bottom-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--bottomnav-h) + var(--safe-b));
+  padding-bottom: var(--safe-b);
+  padding-inline: var(--safe-l) var(--safe-r);
+  z-index: var(--z-rail);
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  background: var(--md-surface-container);
+  border-top: 1px solid var(--panel-line);
+}
+.bottom-nav .rail-item {
+  flex: 1 1 0;
+  justify-content: center;
+  padding: 8px 0;
+}
+.bottom-nav .menu-root {
+  flex: 1 1 0;
+}
+.bottom-nav-tools {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  gap: 2px;
+}
+/* The trigger is one of four peers in the bar, so its icon wears the same indicator
+   pill the destinations do. */
+.bottom-nav-tools .icon {
+  display: block;
+}
+/* The tools menu is anchored in the bottom bar, so its surface must open upward. */
+.bottom-nav .menu-surface {
+  top: auto;
+  bottom: calc(100% + var(--space-1));
+}
+
+@media (max-width: 679px) {
+  /* Canvas chrome loses the left rail gutter and gains a bottom-bar one. */
+  .interaction-state,
+  .contextbar,
+  .canvas-context-controls,
+  .hud,
+  .lens-legend {
+    left: var(--gutter);
+  }
+  .contextbar {
+    right: var(--gutter);
+    top: calc(var(--topbar-h) + var(--safe-t) + var(--gutter));
+  }
+  .hud,
+  .lens-legend,
+  .preview3d-toggle,
+  .preview3d {
+    bottom: calc(var(--bottomnav-h) + var(--safe-b) + var(--gutter));
+  }
+  /* Nothing on the right needs to clear an inspector that presents as a sheet here. */
+  .preview3d-toggle,
+  .preview3d {
+    right: var(--gutter);
+  }
+  /* The status rail's readouts do not fit next to a 48px-target bottom bar; its content
+     lives in the Views sheet and the Issues destination instead. */
+  .statusrail {
+    display: none;
+  }
+  /* The top bar's segmented buttons shed the desktop trim: at this size the hit target is
+     the point, not the density. Specificity has to beat `.seg-group .seg-btn { min-width:
+     auto }` in controls.css, which is why these are not bare class selectors. */
+  .topbar .seg-group .seg-btn {
+    min-height: var(--hit);
+    min-width: var(--hit);
+  }
+  .app .preview3d-toggle {
+    min-height: var(--hit);
+  }
+}

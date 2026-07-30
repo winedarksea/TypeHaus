@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
+import { useIsCompact } from "./hooks/useBreakpoint";
 import { useStore } from "./state/store";
 import { subscribePwa, type PwaState } from "./pwa/register";
 import { fsAccessSupported } from "./engine/openHouse";
 import { TopBar } from "./components/shell/TopBar";
 import { NavigationRail } from "./components/shell/NavigationRail";
+import { BottomNav } from "./components/shell/BottomNav";
+import { PanelHost } from "./components/shell/PanelHost";
 import { StatusRail } from "./components/shell/StatusRail";
 import { ContextBar } from "./components/ContextBar";
 import { CommandPalette } from "./components/CommandPalette";
-import { IssuesDrawer } from "./components/IssuesDrawer";
-import { ViewsPanel } from "./components/ViewsPanel";
 import { Workbench } from "./components/Workbench";
 import { AssemblyDetailsView } from "./components/AssemblyDetailsView";
 import { BomView } from "./components/BomView";
@@ -21,7 +22,6 @@ import { Preview3D } from "./components/Preview3D";
 import { Canvas2D } from "./components/Canvas2D";
 import { Panel3D } from "./components/Panel3D";
 import { Inspector } from "./components/Inspector";
-import { ProjectDrawer } from "./components/ProjectDrawer";
 import { ConflictBanner } from "./components/ConflictBanner";
 import { ExtentsHUD } from "./components/ExtentsHUD";
 import { Toasts } from "./components/Toasts";
@@ -63,6 +63,9 @@ export function App() {
   const detailView = useStore((s) => s.detailView);
   const setDetailView = useStore((s) => s.setDetailView);
 
+  const isCompact = useIsCompact();
+  const setViewMode = useStore((s) => s.setViewMode);
+
   const [pwa, setPwa] = useState<PwaState>({
     online: true,
     installable: false,
@@ -73,6 +76,13 @@ export function App() {
   useEffect(() => {
     void init();
   }, [init]);
+
+  // Split is not viable on a phone: two ~195px panes render the plan illegibly and cost a
+  // second GPU surface. Coerce on entry only — one tap restores it, so there is no state to
+  // remember and nothing to get wrong on the way back out.
+  useEffect(() => {
+    if (isCompact && useStore.getState().viewMode === "split") setViewMode("2d");
+  }, [isCompact, setViewMode]);
 
   // Desktop accelerators (touch keeps on-screen equivalents, → 21).
   useEffect(() => {
@@ -151,20 +161,18 @@ export function App() {
 
       <TopBar pwa={pwa} />
 
-      <NavigationRail />
+      {isCompact ? <BottomNav /> : <NavigationRail />}
       <ContextBar />
       <div className="interaction-state" aria-live="polite">
         {interactionLabel(tool, subOperation)}
       </div>
       <LensBar />
       <Preview3D />
-      <ViewsPanel />
-      <ProjectDrawer />
+      <PanelHost />
       <Inspector />
 
       <StatusRail />
 
-      <IssuesDrawer />
       {detailView === "assembly" && <AssemblyDetailsView />}
       {detailView === "bom" && <BomView />}
       {detailView === "circuits" && <CircuitsView />}

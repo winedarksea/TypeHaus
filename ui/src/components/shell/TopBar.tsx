@@ -1,4 +1,5 @@
 import { useStore } from "../../state/store";
+import { useIsCompact } from "../../hooks/useBreakpoint";
 import { Icon } from "../../icons/Icon";
 import { Menu } from "../ui/Menu";
 import { OverflowMenu } from "./OverflowMenu";
@@ -26,6 +27,7 @@ export function TopBar({ pwa }: { pwa: PwaState }) {
   const setDetailView = useStore((s) => s.setDetailView);
   const viewMode = useStore((s) => s.viewMode);
   const setViewMode = useStore((s) => s.setViewMode);
+  const isCompact = useIsCompact();
   const undo = useStore((s) => s.undo);
   const redo = useStore((s) => s.redo);
 
@@ -42,7 +44,9 @@ export function TopBar({ pwa }: { pwa: PwaState }) {
         <Icon name="menu" />
       </button>
 
-      <span className="title">Type:Haus</span>
+      {/* On a phone the wordmark yields to the breadcrumb: which storey you are on is
+          navigational, the app's own name is not. */}
+      {!isCompact && <span className="title">Type:Haus</span>}
 
       <nav className="breadcrumb" aria-label="Project location">
         <span>{model?.project.name ?? "—"}</span>
@@ -63,8 +67,9 @@ export function TopBar({ pwa }: { pwa: PwaState }) {
       <div className="spacer" />
 
       {/* One trigger for the six full-screen readers. Reflects the open one so the bar still
-          says where you are, which the segmented row did by staying lit. */}
-      <Menu
+          says where you are, which the segmented row did by staying lit. Folds into the
+          overflow on a phone, where there is only room for the constant actions. */}
+      {!isCompact && <Menu
         label={activeReport ? activeReport.label : "Reports"}
         title="Reports — assembly, BOM, circuits, HVAC, plumbing, lighting"
         icon="report"
@@ -78,10 +83,10 @@ export function TopBar({ pwa }: { pwa: PwaState }) {
           selected: detailView === report.id,
           onSelect: () => setDetailView(detailView === report.id ? "none" : report.id),
         }))}
-      />
+      />}
 
       <div className="seg-group" role="group" aria-label="View mode">
-        {VIEW_MODES.map((mode) => (
+        {VIEW_MODES.filter((mode) => !(isCompact && mode.id === "split")).map((mode) => (
           <button
             key={mode.id}
             className={`seg-btn${viewMode === mode.id ? " active" : ""}`}
@@ -90,27 +95,30 @@ export function TopBar({ pwa }: { pwa: PwaState }) {
             title={mode.hint}
           >
             <Icon name={mode.icon} size={18} />
-            <span className="seg-btn-label">{mode.label}</span>
+            {!isCompact && <span className="seg-btn-label">{mode.label}</span>}
           </button>
         ))}
       </div>
 
-      <button className="btn icon-btn" onClick={() => void undo()} title="Undo (⌘Z)">
-        <Icon name="undo" />
-      </button>
-      <button className="btn icon-btn" onClick={() => void redo()} title="Redo (⇧⌘Z)">
-        <Icon name="redo" />
-      </button>
+      {!isCompact && (
+        <>
+          <button className="btn icon-btn" onClick={() => void undo()} title="Undo (⌘Z)">
+            <Icon name="undo" />
+          </button>
+          <button className="btn icon-btn" onClick={() => void redo()} title="Redo (⇧⌘Z)">
+            <Icon name="redo" />
+          </button>
+          <button
+            className="btn icon-btn"
+            onClick={() => setCommandPaletteOpen(true)}
+            title="Command palette (⌘K)"
+          >
+            <Icon name="search" />
+          </button>
+        </>
+      )}
 
-      <button
-        className="btn icon-btn"
-        onClick={() => setCommandPaletteOpen(true)}
-        title="Command palette (⌘K)"
-      >
-        <Icon name="search" />
-      </button>
-
-      <OverflowMenu pwa={pwa} />
+      <OverflowMenu pwa={pwa} compact={isCompact} />
     </header>
   );
 }

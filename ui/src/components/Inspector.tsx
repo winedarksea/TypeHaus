@@ -8,6 +8,8 @@ import { StairDesigner } from "./StairDesigner";
 import { Provenance } from "./Provenance";
 import { FloorInspector, FootingBeddingInspector, MemberInspector, RoofInspector, SolarPanelInspector, SolidInspector } from "./DerivedInspectors";
 import { locateMember } from "../model/memberIdentity";
+import { useIsCompact } from "../hooks/useBreakpoint";
+import { Sheet } from "./ui/Sheet";
 
 // Strict contextual inspector (Phase 3): answers only "what can I change about the selected
 // thing?" — hidden when nothing is selected. Extracted from the retired Sidebar; the
@@ -15,6 +17,10 @@ import { locateMember } from "../model/memberIdentity";
 const INSPECTOR_WIDTH_KEY = "typehaus.inspector-width";
 const MIN_W = 320;
 const MAX_W = 400;
+/** Gutter between the panel and the shell's right edge — mirrors --gutter. */
+const GUTTER_PX = 12;
+/** The drawing must never be squeezed to a strip, whatever the viewport. */
+const MIN_CANVAS_PX = 320;
 
 function savedWidth(): number {
   try {
@@ -33,6 +39,9 @@ export function Inspector() {
   // not whatever sorts first in the index. `null` = closed.
   const [detailKey, setDetailKey] = useState<string | null>(null);
   const [width, setWidth] = useState(savedWidth);
+  const asideRef = useRef<HTMLElement>(null);
+  const isCompact = useIsCompact();
+  const select = useStore((s) => s.select);
   const [dragging, setDragging] = useState(false);
   const widthRef = useRef(width);
   widthRef.current = width;
@@ -40,9 +49,15 @@ export function Inspector() {
   useEffect(() => {
     if (!dragging) return;
     const onMove = (e: PointerEvent) => {
-      // The panel is anchored to the right; dragging its left edge leftward widens it.
-      const next = Math.min(MAX_W, Math.max(MIN_W, window.innerWidth - e.clientX - 12));
-      setWidth(next);
+      // Measure the shell, not the window. The old form assumed this panel was anchored to
+      // the *window's* right edge with a fixed 12px gutter, which stopped being true once the
+      // gutter varies per breakpoint. Also cap against the canvas so a drag can never squeeze
+      // the drawing away entirely.
+      const shell = asideRef.current?.offsetParent?.getBoundingClientRect();
+      const shellRight = shell?.right ?? window.innerWidth;
+      const shellWidth = shell?.width ?? window.innerWidth;
+      const maxWidth = Math.min(MAX_W, Math.max(MIN_W, shellWidth - MIN_CANVAS_PX));
+      setWidth(Math.min(maxWidth, Math.max(MIN_W, shellRight - e.clientX - GUTTER_PX)));
     };
     const onUp = () => {
       setDragging(false);
@@ -79,8 +94,30 @@ export function Inspector() {
   // Strict: no selection → no panel.
   if (!model || !selection.uid) return null;
 
+  const body = (
+    <SelectionInspector
+      model={model}
+      kind={selection.kind}
+      uid={selection.uid}
+      onShowDetails={setDetailKey}
+    />
+  );
+
+  // On a phone the inspector is a sheet like the other panels. Closing it clears the
+  // selection, because a selection you cannot see is the thing that makes the next tap
+  // do something unexpected.
+  if (isCompact) {
+    return (
+      <>
+        <Sheet title="Selection" onClose={() => select(null, null)}>{body}</Sheet>
+        {detailKey !== null && <DetailViewer initialKey={detailKey} onClose={() => setDetailKey(null)} />}
+      </>
+    );
+  }
+
   return (
     <aside
+      ref={asideRef}
       className="inspector"
       style={{ width }}
       onMouseEnter={() => setHover(selection.uid)}
@@ -94,12 +131,7 @@ export function Inspector() {
         }}
         title="Drag to resize"
       />
-      <SelectionInspector
-        model={model}
-        kind={selection.kind}
-        uid={selection.uid}
-        onShowDetails={setDetailKey}
-      />
+      {body}
       {detailKey !== null && <DetailViewer initialKey={detailKey} onClose={() => setDetailKey(null)} />}
     </aside>
   );

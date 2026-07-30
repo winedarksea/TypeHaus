@@ -316,7 +316,9 @@ export const useStore = create<StoreState>((set, get) => ({
     if (!model) return;
     const located = locateUid(model, uid);
     if (!located) return;
-    if (viewMode === "3d") set({ viewMode: "split" }); // make sure the 2D plan is visible
+    // Show the plan outright rather than half of it: the user asked to look at a
+    // specific element, and a half-width plan was never the better answer.
+    if (viewMode === "3d") set({ viewMode: "2d" });
     if (located.storey) set({ activeStorey: located.storey });
     set({ selection: { kind: located.kind, uid }, hoverUid: uid });
     // Pan so the centroid lands at the viewport center (project: sx = tx + x·scale, sy = ty − y·scale).
