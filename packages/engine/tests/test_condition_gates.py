@@ -233,14 +233,18 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     """The 12 node-sharing false positives are down to the real in-plan changes.
 
     Each entry is a genuine assembly transition authored in the catlin plan, not
-    junction-solver noise. The mudroom entry arrived with the 2026-07-30 batch,
-    which put the stair-face wall W-M-STRW on the new exposed-framing assembly
-    CATLIN_MUDROOM_INT_2X6_EXPOSED where it meets the bearing wall run.
+    junction-solver noise.
+
+    A CATLIN_INT_2X6_BRG|CATLIN_MUDROOM_INT_2X6_EXPOSED entry sat here between the
+    two 2026-07-30 batches: the first put the stair-face wall W-M-STRW on the new
+    exposed-framing assembly but left its 6" jog W-M-STRW2 on the plain bearing
+    assembly, so the two halves of one wall line met at N-M-STRJ as a transition.
+    The second batch put the jog on the same assembly and alignment, and the
+    transition went away with it — one continuous plane, nothing to change through.
     """
     keys = sorted({c.key for c in catlin_model.conditions
                    if c.key.startswith("assembly_change:")})
     assert keys == [
         "assembly_change:CATLIN_CONC_12_INT|SAUNA_LINER_ON_CONCRETE",
-        "assembly_change:CATLIN_INT_2X6_BRG|CATLIN_MUDROOM_INT_2X6_EXPOSED",
         "assembly_change:PORCH_RAILING_MASONRY|SUNKEN_GARDEN_WALL",
     ]

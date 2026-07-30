@@ -94,6 +94,15 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   butting an end stud. Same underlying gap as before — `resolve/topology.py` wants a
   species-class notion rather than lying about the stud species — but now on a finish
   detail rather than on the bearing line.
+- **`electrical.receptacle_spacing`'s RM-M-LIVING gap now sits over the stair well.** Still
+  one gap, and the check already failed for this room before 2026-07-30 — but retiring
+  RM-M-STAIR into RM-M-LIVING moved the reported location from (22.3', 35.9') to
+  (15.5', 35.9'), which is the well's north end, x 10'-6"..17'-6" of `FO-M-STAIR`. That is
+  wall space you cannot stand in front of: it is over a 9' drop, and NEC 210.52 wall space
+  should not be traced across a floor opening. Fix in the check (skip wall space fronting a
+  `FloorOpening`), not by hanging a receptacle above the stairwell.
+  `test_electrical_circuits.py::test_catlin_receptacle_spacing_passes_after_fill` is red for
+  this plus a pre-existing RM-S-SUITE pair, and was red before this batch too.
 - **`FURN-M-MUD-CLOSET-N` type is unused** — the north mudroom closet became RM-M-MECH
   (radon + plumbing riser) instead. Delete the type or place it elsewhere.
 - **RM-S-PLANT has no fresh-air terminal, by decision (2026-07-30)** — a dedicated mini-HRV
@@ -234,3 +243,4 @@ Have the windows be trimmed with charcoal gray (this is easy to change so we can
 Dark base to the house
 Dark panel along the panel of the corner most panels
 Standing seam clamps to anchor decorative elements
+Architectural lighting on facade (try to aim to be dark sky friendly)
