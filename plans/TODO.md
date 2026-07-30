@@ -196,10 +196,13 @@ the future.
 - Confirm the default toilet's 28" body depth vs an elongated bowl (29–31") — the code
   clearance is already modeled separately (`_water_closet_required_clearance` in
   `library/placeables/fixtures.py`), so this is a one-line footprint question.
-- D-B-PLAY door needs to have a "glazed 60 interior french door" style, not a bifold.
-- Basic UI visual overhaul, perhaps Material Design 3 aligned. Perhaps the most awkward thing now is the way "Views" is opened. It's the most used tab and it's a tiny button.
 - Laundry room needs to fit a sink + closet, 24" W x 21" D x 43" H. like https://www.homedepot.com/p/Glacier-Bay-24-in-W-x-21-in-D-x-34-in-L-Stainless-Steel-Laundry-Utility-Sink-with-Faucet-and-Cabinet-in-White-QL033Y/206057007 The sink will double as the air gapped condensate drain for the heat pump dryer. It looks like we also need to model the standard air gapped clothes washer drain too.
-- It looks like beams BM-S-HALL and BM-M-HALL are not getting grouped as part of the framing in the view. Also want to double check that beams are properly considered as a type of framing, for example the hall beams should likely be defined similarly to RIDGE-BEAM, garage header HEADER-0, the porch beams such as BM-SG-BKW, and possibly some of the window and door headers.
+- It looks like beams BM-S-HALL and BM-M-HALL are not getting grouped as part of the framing in the view. Also want to double check that beams are properly considered as a type of framing, for example the hall beams should likely be defined similarly to RIDGE-BEAM, garage header HEADER-0, the porch beams such as BM-SG-BKW, and possibly some of the window and door headers. We also may have some cases where we have headers specified over windows or doors when a large beam
+- D-S-STUDY2 can be replaced with just an opening. Likely framed the same as a door of 30", so perhaps a new type of door that is just an opening.
+- D-B-PLAY door needs to have a "glazed 60 interior french door" style, not a bifold.
+- O-S-CLOSET actually needs to be a bifold closet door.
+- The 'Sun' slider doesn't actually seem to do anything. I think the basic idea was just to move a sun icon so users could get a sense of where the sun would be at certain times (not actually modeling shadows), but if that happens now, it isn't visible on the main canvas.
+- The tube grow lights need to look in 3d more like suspended lights (which is basically a box with two poles/strings coming down from the ceiling on each end).
 
 Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
@@ -209,3 +212,11 @@ Questions:
 - Edits in 2d don't always update all the necessary pieces (like when we switched a shower to showertub)
 - Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?
 - Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model)
+
+## Windows
+We want to make some of the south facing windows, and generally make windows more symmetrical from the outside view of the house (while still following stud spacing needs and being 'pleasantly' spaced from an inside perspective as well).
+
+The main consideration here for symmetric are the south facing windows on RM-S-PLANT, RM-S-STUDY2, RM-A-STUDY and RM-A-DEN/WEST. 
+We also might want a bit more symmetric between the main and second floor windows on the east side (RM-S-LIVING versus the bedrooms above).
+
+RM-S-PLANT and RM-S-STUDY2 should have bigger windows, likely 42" wide, breaking two studs in line.
