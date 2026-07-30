@@ -1,0 +1,197 @@
+/* Panel contents: section headings, text fields, selects, checkboxes and chips —
+   the MD3 form vocabulary the panels are built from. */
+
+/* Section headings: one rhythm for every panel. */
+.inspector h3,
+.project-drawer h3,
+.views-panel h3 {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--md-on-surface-variant);
+}
+.inspector h3:first-child,
+.project-drawer h3:first-child,
+.views-panel h3:first-child {
+  margin-top: var(--space-1);
+}
+
+/* MD3 outlined text field / select. The bare browser control was the single biggest
+   thing making the panels look unfinished. */
+.inspector input,
+.inspector select,
+.project-drawer input,
+.project-drawer select,
+.views-panel input,
+.views-panel select,
+.sheet-body input,
+.sheet-body select {
+  min-height: var(--hit);
+  padding: 0 10px;
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-shape-xs);
+  background: var(--md-surface-container-lowest);
+  color: var(--md-on-surface);
+  font-size: var(--text-sm);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.inspector select,
+.project-drawer select,
+.views-panel select,
+.sheet-body select {
+  /* Room for the native chevron without the text running under it. */
+  padding-right: 28px;
+}
+.inspector input:hover,
+.inspector select:hover,
+.views-panel input:hover,
+.views-panel select:hover {
+  border-color: var(--md-on-surface);
+}
+.inspector input:focus-visible,
+.inspector select:focus-visible,
+.views-panel input:focus-visible,
+.views-panel select:focus-visible {
+  border-color: var(--md-primary);
+  outline-offset: 1px;
+}
+
+/* Filter chips: single-select rows inside a panel (representation, shading, labels,
+   roles). Full-round, full hit target. */
+.seg-row {
+  gap: var(--space-1);
+}
+.seg-row .seg-btn {
+  min-height: max(32px, calc(var(--hit) - 8px));
+  padding: 0 14px;
+  border-radius: var(--md-shape-full);
+  border-color: var(--md-outline);
+  background: transparent;
+  font-size: var(--text-xs);
+}
+
+/* MD3 checkbox for the discipline and layer grids. The bare <input type=checkbox> was
+   the only unstyled control left in the panels, and at ~13px it was also the smallest
+   thing anyone was expected to hit. */
+.trade-grid {
+  gap: 0;
+}
+.trade-chip {
+  gap: 10px;
+  min-height: max(36px, calc(var(--hit) - 4px));
+  padding: 0 6px;
+  margin: 0 -6px;
+  border-radius: var(--md-shape-xs);
+  font-size: var(--text-sm);
+}
+.trade-chip input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 2px solid var(--md-outline);
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.trade-chip input[type="checkbox"]:checked {
+  background: var(--md-primary);
+  border-color: var(--md-primary);
+}
+/* The tick is drawn rather than a glyph, so it scales with the box and never goes tofu. */
+.trade-chip input[type="checkbox"]:checked::before {
+  content: "";
+  width: 10px;
+  height: 5px;
+  border: 2px solid var(--md-on-primary);
+  border-top: 0;
+  border-right: 0;
+  transform: translateY(-1px) rotate(-45deg);
+}
+
+/* Hierarchy pills — same chip language as .seg-row. */
+.hierarchy-levels {
+  gap: var(--space-1);
+}
+.hierarchy-level {
+  min-height: max(32px, calc(var(--hit) - 8px));
+  padding: 0 14px;
+  border-radius: var(--md-shape-full);
+  border-color: var(--md-outline);
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+}
+.hierarchy-level.active {
+  background: var(--md-secondary-container);
+  color: var(--md-on-secondary-container);
+  border-color: var(--md-outline);
+}
+
+/* Collapsible section headers, list rows, and jump targets all get a real row height. */
+.drawer-section-head {
+  min-height: var(--hit);
+  padding-inline: 6px;
+}
+.detail-jump,
+.issue-jump {
+  min-height: max(36px, calc(var(--hit) - 4px));
+}
+.saved-view-apply {
+  min-height: max(36px, calc(var(--hit) - 4px));
+  border-radius: var(--md-shape-xs);
+  border-color: var(--md-outline-variant);
+}
+.saved-view-del {
+  min-width: var(--hit);
+  min-height: var(--hit);
+  border-radius: var(--md-shape-full);
+}
+
+.views-hint {
+  color: var(--md-on-surface-variant);
+  line-height: 1.5;
+}
+
+/* On a phone the density trim comes off everything in a panel: the desktop's compact
+   rhythm is a reasonable trade at a mouse, and no trade at all under a thumb. */
+@media (max-width: 679px) {
+  .seg-row .seg-btn,
+  .hierarchy-level,
+  .trade-chip,
+  .detail-jump,
+  .issue-jump,
+  .saved-view-apply {
+    min-height: var(--hit);
+  }
+  /* A short label ("All") would otherwise leave the chip narrower than it is tall. */
+  .seg-row .seg-btn,
+  .hierarchy-level {
+    min-width: var(--hit);
+  }
+}
+
+@media (max-width: 679px) {
+  /* A two-column key/value grid is the wrong shape at this width — the value column
+     ends up narrower than the values it holds, and a long assembly tag pushes the row
+     past the sheet edge. Stack them instead. */
+  .sheet-body .kv {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+  .sheet-body .kv .k {
+    margin-top: var(--space-2);
+  }
+  .sheet-body .kv > *:first-child {
+    margin-top: 0;
+  }
+}

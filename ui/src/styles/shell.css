@@ -97,18 +97,6 @@
   font-weight: 600;
 }
 
-.workspace-seg {
-  display: flex;
-  gap: 2px;
-  margin: 0 auto;
-}
-.workspace-seg .seg-btn {
-  min-width: auto;
-  min-height: 30px;
-  padding: 0 12px;
-  font-size: var(--text-xs);
-  letter-spacing: 0.06em;
-}
 
 .topbar .spacer {
   flex: 1;

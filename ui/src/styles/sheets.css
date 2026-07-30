@@ -1,0 +1,126 @@
+/* Bottom sheets: how the side panels present themselves on a phone.
+
+   A 320px panel docked to the left edge of a 390px viewport is not a panel — it is
+   the whole screen with a sliver of drawing behind it, so on a phone the same panel
+   components are wrapped in a sheet instead. */
+
+.sheet-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-scrim);
+  background: var(--md-scrim);
+  display: flex;
+  align-items: flex-end;
+  animation: sheet-scrim-in var(--md-dur-short-4) var(--md-ease-standard);
+}
+@keyframes sheet-scrim-in { from { opacity: 0; } to { opacity: 1; } }
+
+.sheet {
+  width: 100%;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--md-surface-container-low);
+  border-radius: var(--md-shape-xl) var(--md-shape-xl) 0 0;
+  box-shadow: var(--md-elev-3);
+  padding-bottom: max(var(--space-4), var(--safe-b));
+  animation: sheet-in var(--md-dur-medium-2) var(--md-ease-decel);
+}
+@keyframes sheet-in { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+/* MD3's drag handle, drawn because it is the affordance people look for — and wired as
+   a close button, because drag-to-dismiss is not implemented (see ui/Sheet.tsx). */
+.sheet-handle {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  /* Full hit target, not just the 4px grip: this is the affordance a thumb goes for. */
+  min-height: var(--hit);
+  padding: 10px 0 4px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.sheet-handle-grip {
+  width: 32px;
+  height: 4px;
+  border-radius: var(--md-shape-full);
+  background: var(--md-outline-variant);
+}
+.sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 0 var(--pad-panel) var(--space-2);
+}
+.sheet-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+.sheet-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 var(--pad-panel);
+}
+
+/* Inside a sheet the panels drop their own absolute positioning and flow normally —
+   the sheet already owns the geometry. */
+.sheet-body .inspector,
+.sheet-body .project-drawer,
+.sheet-body .views-panel,
+.sheet-body .issues-drawer {
+  position: static;
+  width: auto;
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  background: transparent;
+  overflow: visible;
+}
+/* The sheet header names the panel, so the panel's own header would say it twice. */
+.sheet-body .drawer-header,
+.sheet-body .issues-header {
+  display: none;
+}
+
+/* medium — an open left panel occludes rather than competes. Rail plus drawer plus
+   inspector is 712px of chrome on a 1024 tablet, which leaves the drawing a strip. */
+@media (min-width: 680px) and (max-width: 1023px) {
+  .project-drawer,
+  .views-panel,
+  .issues-drawer {
+    box-shadow: var(--md-elev-3);
+  }
+}
+
+/* Fields inside a panel must not be sized by their widest option. A <select> defaults to
+   fitting its longest option, so an assembly named CATLIN_EXT_2X6 pushed the inspector's
+   own content past the panel edge and off the viewport. */
+.inspector select,
+.inspector input,
+.project-drawer select,
+.project-drawer input,
+.views-panel select,
+.views-panel input {
+  max-width: 100%;
+  min-width: 0;
+}
+/* A grid's `auto` track sizes to its content's max-content width, so max-width:100% on
+   the <select> inside it changes nothing — the track itself has to be allowed to shrink.
+   This is what let the assembly picker push the inspector's content past the panel edge
+   and off the viewport entirely. */
+.inspector .kv,
+.project-drawer .kv {
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+}
+.inspector .kv > *,
+.inspector .field-label {
+  min-width: 0;
+}
+
+

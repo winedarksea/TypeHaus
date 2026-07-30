@@ -225,8 +225,8 @@ OPENINGS = [
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-SA-W", type_ref="DT-INT-SWING24",
          position=from_node("N-B-S1", ft(10, 10.4375))),
     # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.
-    Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3", type_ref="DT-EXT-SLIDE60",
-         position=from_node("N-B-S2", ft(1, 4)), sill_height=inch(7)),
+    Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3", type_ref="DT-EXT-FRENCH60",
+         position=from_node("N-B-S2", ft(1, 4)), sill_height=inch(7), flip_swing=True),
     Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2",
            type_ref="WT-3660", position=from_node("N-B-S1", ft(2, 6)),
            sill_height=ft(3)),

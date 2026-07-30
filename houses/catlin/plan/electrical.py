@@ -400,8 +400,8 @@ MAIN_EQUIPMENT = [
     # ED-M-HP3-DISC — the short lineset run to the head over the stairs is why it is here
     # and not out with the other two.
     Equipment(uid="CEE027AAAA", tag="EQ-M-HP3-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(4), ft(38)), footprint=(inch(31), inch(13)),
-              type_ref="EQ-T-GREE-SAPPHIRE-9-OD", circuit="CKT-HP3"),
+              position=pt(m(2.50437), m(11.4357)), footprint=(inch(31), inch(13)),
+              type_ref="EQ-T-GREE-SAPPHIRE-9-OD", circuit="CKT-HP3", room=None),
     # --- System 2's main-floor heads. Both hang high on the south wall either side of the
     # centre wall at x=18' (plans/TODO.md §HVAC), backs south (rotation 180), blowing north
     # into the length of the room. Power comes from the outdoor unit on a multi, so neither

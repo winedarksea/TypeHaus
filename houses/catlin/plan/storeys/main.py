@@ -300,8 +300,8 @@ OPENINGS = [
     # door reaches the west wall almost whole. See RM-M-MUDROOM below.
     Door(uid="CMD201AAAA", tag="D-M-ENTRY", host="W-M-N3", type_ref="DT-EXT-SWING36",
          position=from_node("N-M-N2", ft(0, 6))),
-    Door(uid="CMD202AAAA", tag="D-M-BALC", host="W-M-S2", type_ref="DT-EXT-SLIDE60",
-         position=from_node("N-M-S1", ft(1, 4))),
+    Door(uid="CMD202AAAA", tag="D-M-BALC", host="W-M-S2", type_ref="DT-EXT-FRENCH60",
+         position=from_node("N-M-S1", ft(1, 4)), flip_swing=True),
     # Interior
     # x 10'-8 1/16"..13'-4 1/16": the west lane, which since ST-B2M was mirrored is the one
     # the basement flight arrives in — so this is now the door onto the basement stairs, and

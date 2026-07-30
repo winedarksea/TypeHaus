@@ -313,7 +313,7 @@ OPENINGS = [
     # The source opening measures 5'-3"; standardize it to the catalog's 5'-0" French pair
     # instead of distorting it into a narrow 3'-0" double door or two overlapping openings.
     Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-EXT-FRENCH60",
-         position=from_node("N-S-S1", ft(1, 10))),                       # x 21'-4"
+         position=from_node("N-S-S1", ft(1, 10)), flip_swing=True),                       # x 21'-4"
     # Windows — east wall, on the source's four 2'-8" openings (we build 27", the bearing cap)
     Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2736",
            position=from_node("N-S-SE", ft(2, 10.5)), sill_height=ft(2, 6)),  # y 4'-0"

@@ -9,6 +9,8 @@
 @import "./shell.css";
 @import "./controls.css";
 @import "./panels.css";
+@import "./fields.css";
+@import "./sheets.css";
 @import "./canvas.css";
 @import "./readers.css";
 @import "./overlays.css";
