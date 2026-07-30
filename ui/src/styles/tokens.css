@@ -1,0 +1,302 @@
+/* Type:Haus editor chrome. Colors track the Nordic palette (nordic/palette.ts) so the
+   app frame agrees with the drawing surfaces. Touch-first: >=44px hit targets, no
+   hover-only affordances (→ 21 touch-first). */
+
+:root {
+  --bg: #f4f2ed;
+  --ink: #33312c;
+  --line: #5b574f;
+  --muted: #837d70;
+  --accent: #6d8a96;
+  --error: #c0392b;
+  --warn: #d08a1d;
+  --ok: #4a7a52;
+  --error-bg: #fdecea;
+  --warn-bg: #fff5e6;
+  --code-bg: #eef3f5;
+  --canvas-dim: rgba(245, 243, 237, 0.74);
+  --canvas-white: #fff;
+  --canvas-wood: #704c34;
+  --canvas-wood-soft: rgba(112, 76, 52, 0.14);
+  --canvas-selection: rgba(109, 138, 150, 0.18);
+  --canvas-grid: rgba(91, 87, 79, 0.07);
+  --detail-ink: #333;
+  --detail-line: #555;
+  --detail-muted: #777;
+  --detail-symbol: #888;
+  --detail-batt: #c9a94f;
+  --detail-rigid: #7aa7c7;
+  --detail-osb: #b98a4f;
+  --detail-lumber: #9c7b45;
+  --detail-concrete: #9aa0a6;
+  --detail-foam: #f2d9b0;
+  --detail-foam-dot: #e0b878;
+  --material-lumber: #d8c9a6;
+  --material-osb: #c9a86a;
+  --material-rigid: #e8d64f;
+  --material-batt: #f3c6d0;
+  --material-gypsum: #efeae2;
+  --material-membrane: #4a4a4a;
+  --material-siding: #b8bcc0;
+  --material-metal: #6b7076;
+  --material-concrete: #a9a9a9;
+  --material-masonry: #9c5a45;
+  --material-fallback: #cfc9bd;
+  --control-air: #c0392b;
+  --control-water: #2980b9;
+  --control-vapor: #8e44ad;
+  --control-thermal: #e67e22;
+
+  /* ══ Material Design 3 role layer ═══════════════════════════════════════════
+     Nordic stays the primitive layer and MD3 roles are derived from it — never
+     the other way round. Everything above this line is FROZEN: nordic/palette.ts
+     hands --bg / --ink / --line / --accent and the canvas-*, detail-*, material-*
+     and control-* families straight to SVG fill and stroke attributes, so moving
+     one changes the drawing rather than the chrome. (three.js is unaffected; it
+     uses hex literals in three/materials.ts.)
+
+     Container colors are literal per theme rather than computed. The Nordic dark
+     ramp #2E3440 → #3B4252 → #434C5E already encodes MD3's tonal elevation lift,
+     so there is no surface-tint math anywhere in this app. Text and outline roles
+     ARE derived, via color-mix against --ink / --bg, which flip per theme — one
+     formula then serves light and dark with no second table to keep in sync. */
+
+  --md-surface: var(--bg);
+  --md-surface-container-lowest: #ffffff;
+  --md-surface-container-low: #fbfaf7;
+  --md-surface-container: #f7f4ee;
+  --md-surface-container-high: #f1ede4;
+  --md-surface-container-highest: #eae5d9;
+
+  --md-on-surface: var(--ink);
+  --md-on-surface-variant: var(--line);
+  --md-outline: var(--muted);
+  --md-outline-variant: #ddd7cb;
+
+  --md-primary: var(--accent);
+  --md-on-primary: var(--canvas-white);
+  --md-primary-container: color-mix(in srgb, var(--accent) 22%, var(--bg));
+  --md-on-primary-container: color-mix(in srgb, var(--accent) 60%, var(--ink));
+  /* Nordic has no secondary hue, so the "selected" wash — nav-rail indicator,
+     segmented button — is a desaturated primary. It must read as state, not brand. */
+  --md-secondary-container: color-mix(in srgb, var(--accent) 20%, var(--md-surface-container-high));
+  --md-on-secondary-container: color-mix(in srgb, var(--accent) 55%, var(--ink));
+
+  --md-error: var(--error);
+  --md-on-error: var(--canvas-white);
+  --md-error-container: var(--error-bg);
+  --md-warn: var(--warn);
+  --md-warn-container: var(--warn-bg);
+  /* --success was used at OpeningShapes.tsx with no fallback and never defined
+     anywhere, so the valid-opening preview stroke resolved to nothing. --ok is the
+     color that was meant; both names now point at it. */
+  --md-success: var(--ok);
+  --success: var(--ok);
+  --md-scrim: rgba(0, 0, 0, 0.32);
+
+  /* Shape scale. */
+  --md-shape-none: 0;
+  --md-shape-xs: 4px;
+  --md-shape-sm: 8px;
+  --md-shape-md: 12px;
+  --md-shape-lg: 16px;
+  --md-shape-xl: 28px;
+  --md-shape-full: 999px;
+
+  /* Elevation 0–5. */
+  --md-elev-0: none;
+  --md-elev-1: 0 1px 2px rgba(0, 0, 0, 0.30), 0 1px 3px 1px rgba(0, 0, 0, 0.12);
+  --md-elev-2: 0 1px 2px rgba(0, 0, 0, 0.30), 0 2px 6px 2px rgba(0, 0, 0, 0.12);
+  --md-elev-3: 0 4px 8px 3px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.30);
+  --md-elev-4: 0 6px 10px 4px rgba(0, 0, 0, 0.12), 0 2px 3px rgba(0, 0, 0, 0.30);
+  --md-elev-5: 0 8px 12px 6px rgba(0, 0, 0, 0.12), 0 4px 4px rgba(0, 0, 0, 0.30);
+
+  /* State-layer opacities (see controls.css for the one ::before that applies them). */
+  --md-state-hover: 0.08;
+  --md-state-focus: 0.10;
+  --md-state-press: 0.10;
+  --md-state-disabled-content: 0.38;
+
+  /* Motion. */
+  --md-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-ease-decel: cubic-bezier(0, 0, 0, 1);
+  --md-ease-accel: cubic-bezier(0.3, 0, 1, 1);
+  --md-dur-short-2: 100ms;
+  --md-dur-short-4: 200ms;
+  --md-dur-medium-2: 300ms;
+  --md-dur-medium-4: 400ms;
+
+  /* ── Compatibility aliases ─────────────────────────────────────────────────
+     The pre-MD3 names, re-pointed rather than renamed, so ~1800 lines of existing
+     CSS inherit the role layer without being touched. New code should prefer the
+     --md-* names; these migrate opportunistically. */
+  --panel: var(--md-surface-container-low);
+  --raised: var(--md-surface-container-lowest);
+  --panel-line: var(--md-outline-variant);
+  --overlay: var(--md-scrim);
+  /* Was a flat color; now a real MD3 state layer. `currentColor` resolves at the use
+     site, so this automatically inverts to a white wash on an active (accent-filled)
+     button instead of needing a second token for the inverse case. */
+  --hover: color-mix(in srgb, currentColor calc(var(--md-state-hover) * 100%), transparent);
+  --shadow-1: var(--md-elev-1);
+  --shadow-2: var(--md-elev-2);
+  --shadow-3: var(--md-elev-3);
+
+  /* ── Design system (Phase 1) ───────────────────────────────────────────────
+     Type scale (tabular-nums applied on dimensions via .num / inputs). */
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+
+  /* Spacing scale. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+
+  /* Radius scale, now the MD3 shape scale (5/7/10 → 4/8/12). */
+  --radius-input: var(--md-shape-xs);
+  --radius-menu: var(--md-shape-sm);
+  --radius-overlay: var(--md-shape-md);
+
+  /* Glass — kept for overlays that float over the drawing, where seeing through to
+     the plan is the point. Structural chrome (top bar, rails) is opaque instead: a
+     full-screen backdrop blur recomputes every frame over a rotating three.js canvas,
+     and a translucent surface has no defined contrast against whatever it is over. */
+  --glass-bg: color-mix(in srgb, var(--md-surface-container) 82%, transparent);
+  --glass-blur: blur(10px);
+
+  /* Motion — fast, non-elastic. No bounce/overshoot. */
+  --ease: var(--md-ease-standard);
+  --dur-fast: var(--md-dur-short-2);
+  --dur-med: var(--md-dur-short-4);
+
+  /* Density-driven metrics (overridden per data-density below). */
+  --hit: 40px;
+  --row-h: 30px;
+  --pad-panel: 12px;
+
+  /* ── Shell geometry ────────────────────────────────────────────────────────
+     Every chrome inset resolves through these. They were previously repeated as
+     bare 44px / 30px / 320px / 300px / 72px literals across ~20 rules, which meant
+     a layout change was a find-and-replace you could only half-finish — and the
+     responsive work rewrites all of them per breakpoint from one place. */
+  --topbar-h: 44px;
+  --statusrail-h: 30px;
+  --rail-w: 72px;        /* left gutter the tool rail occupies, incl. its margin */
+  --drawer-w: 300px;     /* project drawer / views panel */
+  --gutter: var(--space-3);
+
+  /* Live width of the resizable inspector. Inspector.tsx republishes this while
+     dragging (it owns the number in React state); the default here is its MIN_W so
+     the first paint agrees with the component before any drag has happened. Rules
+     that must clear the inspector read the token instead of hardcoding 320px — the
+     contextbar did exactly that and overlapped a widened inspector. */
+  --inspector-w: 320px;
+
+  /* ── Stacking order ────────────────────────────────────────────────────────
+     One ladder, so a new surface is placed by naming its layer rather than by
+     guessing a number alongside 15 literals spread over 8 files.
+
+     The values are deliberately the ones already in use, not a tidied-up sequence:
+     renumbering would reorder real surfaces (context menus would jump above the top
+     bar), and this pass is meant to be provably zero-change. Tidy later, on purpose,
+     with the screenshots to prove it. */
+  --z-canvas: 0;
+  --z-canvas-hud: 10;
+  --z-canvas-overlay: 15;   /* interaction-state, lens bar, view chips, lens legend */
+  --z-preview: 16;
+  --z-context: 18;          /* contextual tool bar */
+  --z-panel: 20;            /* tool rail, side panels, in-canvas popovers */
+  --z-panel-resizer: 21;
+  --z-issues: 24;
+  --z-ctx-overlay: 25;      /* status rail sits here too — both are "above panels" */
+  --z-ctx-menu: 26;
+  --z-appbar: 30;           /* top bar, tool flyouts, plan-warning popovers */
+  /* The ft-in keypad and the reader/workbench backdrop are both 40 today, so which
+     one wins is decided by DOM order alone. Left equal here rather than silently
+     picked apart; it is a dialog-layering question, settled with the MD3 dialog work. */
+  --z-scrim: 40;
+  --z-toast: 50;
+  --z-modal: 60;
+  --z-cmdk: 70;
+}
+
+/* Semantic-color precedence (documented; enforced where colors are chosen):
+   error/warn > selection > active lens > discipline > object.
+   A more-urgent layer always wins the pixel; never encode state by color alone. */
+
+:root[data-density="compact"] {
+  --hit: 32px;
+  --row-h: 26px;
+  --pad-panel: 8px;
+}
+:root[data-density="comfortable"] {
+  --hit: 40px;
+  --row-h: 30px;
+  --pad-panel: 12px;
+}
+:root[data-density="touch"] {
+  --hit: 44px;
+  --row-h: 40px;
+  --pad-panel: 14px;
+}
+
+:root[data-theme="dark"] {
+  --bg: #2E3440;
+  --ink: #ECEFF4;
+  --line: #D8DEE9;
+  --muted: #939cad;
+  --accent: #88C0D0;
+  --error: #BF616A;
+  --warn: #EBCB8B;
+  --ok: #A3BE8C;
+  --error-bg: #4a2d36;
+  --warn-bg: #51472e;
+  --code-bg: #344957;
+  --canvas-dim: rgba(46, 52, 64, 0.78);
+
+  /* Only the literal MD3 roles are re-stated here. Everything derived — the
+     containers, the on-* pairs, the state layer — follows automatically, because it
+     is mixed against --ink / --bg, which this block already flipped. */
+  --md-surface-container-lowest: #292E39;
+  --md-surface-container-low: #3B4252;
+  --md-surface-container: #3F4757;
+  --md-surface-container-high: #434C5E;
+  --md-surface-container-highest: #4C566A;
+  --md-outline-variant: #4C566A;
+  --md-scrim: rgba(0, 0, 0, 0.5);
+  --canvas-white: #ECEFF4;
+  --canvas-wood: #D6B06F;
+  --canvas-wood-soft: rgba(214, 176, 111, 0.18);
+  --canvas-selection: rgba(136, 192, 208, 0.25);
+  --canvas-grid: rgba(216, 222, 233, 0.08);
+  --detail-ink: #ECEFF4;
+  --detail-line: #D8DEE9;
+  --detail-muted: #BFC8D5;
+  --detail-symbol: #AEB8C6;
+  --detail-batt: #EBCB8B;
+  --detail-rigid: #88C0D0;
+  --detail-osb: #D6B06F;
+  --detail-lumber: #D6B06F;
+  --detail-concrete: #BFC8D5;
+  --detail-foam: #D6B06F;
+  --detail-foam-dot: #EBCB8B;
+  --material-lumber: #D6B06F;
+  --material-osb: #D09A57;
+  --material-rigid: #EBCB8B;
+  --material-batt: #D9A4B2;
+  --material-gypsum: #D8DEE9;
+  --material-membrane: #BFC8D5;
+  --material-siding: #AEB8C6;
+  --material-metal: #9AA8BA;
+  --material-concrete: #B0B8C4;
+  --material-masonry: #A86550;
+  --material-fallback: #C4BDAE;
+  --control-air: #BF616A;
+  --control-water: #88C0D0;
+  --control-vapor: #B48EAD;
+  --control-thermal: #EBCB8B;
+}

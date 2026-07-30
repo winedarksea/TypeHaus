@@ -4,7 +4,7 @@ import { App } from "./App";
 import { registerPwa } from "./pwa/register";
 import { initializeTheme, initializeDensity } from "./theme/theme";
 import { useStore } from "./state/store";
-import "./styles.css";
+import "./styles/index.css";
 
 initializeTheme();
 initializeDensity();

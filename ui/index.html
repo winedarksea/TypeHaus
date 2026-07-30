@@ -2,7 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!-- No user-scalable=no: it is a WCAG 1.4.4 failure, iOS Safari has ignored it since
+         iOS 10 anyway, and the thing it was there to stop — pinch fighting the canvas — is
+         already handled properly by `touch-action: none` on .canvas-svg. viewport-fit=cover
+         is required or every env(safe-area-inset-*) resolves to 0px. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Type:Haus</title>
     <meta
       name="description"

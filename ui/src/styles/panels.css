@@ -1,0 +1,404 @@
+/* Side panels and their contents: inspector, project drawer, views panel, issues
+   drawer, plus the field/list/section atoms those panels are built from. */
+
+/* Strict inspector (right) + project drawer (left) — floating side panels (Phase 3). */
+.inspector,
+.project-drawer,
+.views-panel {
+  position: absolute;
+  top: calc(var(--topbar-h) + var(--gutter));
+  bottom: calc(var(--statusrail-h) + var(--gutter));
+  z-index: var(--z-panel);
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-2);
+  overflow-y: auto;
+  padding: var(--pad-panel);
+}
+
+.inspector {
+  right: var(--gutter);
+  width: var(--inspector-w);
+}
+
+.project-drawer,
+.views-panel {
+  left: var(--gutter);
+  width: var(--drawer-w);
+}
+
+/* When a left drawer is open the tool rail shifts right of it to stay clickable. */
+.app:has(.project-drawer) .toolrail,
+.app:has(.views-panel) .toolrail {
+  left: calc(var(--drawer-w) + var(--gutter) + var(--gutter));
+}
+
+.inspector h3,
+.project-drawer h3,
+.views-panel h3 {
+  margin: 4px 0 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--line);
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inspector-resizer {
+  position: absolute;
+  top: 0;
+  left: -3px;
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+  z-index: var(--z-panel-resizer);
+}
+.inspector-resizer:hover {
+  background: linear-gradient(to right, transparent, var(--accent), transparent);
+  opacity: 0.4;
+}
+
+.finding {
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  border-left: 3px solid var(--line);
+  background: var(--raised);
+  cursor: pointer;
+}
+
+.finding.error {
+  border-left-color: var(--error);
+}
+.finding.warn {
+  border-left-color: var(--warn);
+}
+.finding.info {
+  border-left-color: var(--accent);
+}
+
+.prov {
+  font-size: 11px;
+  color: var(--line);
+  font-family: ui-monospace, monospace;
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 8px;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.kv .k {
+  color: var(--muted);
+}
+
+.field-label {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.field-label > span {
+  display: flex;
+  gap: 6px;
+}
+
+.field-label input,
+.field-label select {
+  min-width: 0;
+  flex: 1;
+  padding: 5px 7px;
+}
+
+.layer-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid var(--panel-line);
+  flex: 0 0 auto;
+}
+
+.muted {
+  color: var(--line);
+  font-size: 12px;
+}
+
+/* Project drawer hierarchy (Phase 6). */
+.hierarchy-levels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.hierarchy-level {
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-input);
+  background: var(--raised);
+  color: var(--ink);
+  padding: 4px 10px;
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+.hierarchy-level.active {
+  background: var(--accent);
+  color: var(--canvas-white);
+  border-color: var(--accent);
+}
+
+/* Details navigator (Phase 8). */
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--panel-line);
+}
+.detail-jump {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  min-height: 28px;
+}
+.detail-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+}
+.detail-row.detail-missing .detail-marker,
+.detail-row.detail-conflicting .detail-marker {
+  border-color: var(--error);
+  color: var(--error);
+}
+.detail-row.detail-stale .detail-marker,
+.detail-row.detail-overridden .detail-marker {
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
+.seg-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.seg-row .seg-btn {
+  min-width: auto;
+  min-height: 28px;
+  padding: 0 10px;
+  font-size: var(--text-xs);
+  text-transform: capitalize;
+}
+.trade-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 8px;
+}
+.trade-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  color: var(--line);
+  cursor: pointer;
+}
+.trade-chip.on {
+  color: var(--ink);
+}
+.saved-view-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+.saved-view-apply {
+  flex: 1;
+  text-align: left;
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-input);
+  background: var(--raised);
+  color: var(--ink);
+  padding: 5px 8px;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.saved-view-apply:hover {
+  background: var(--hover);
+}
+.saved-view-del {
+  border: 0;
+  background: transparent;
+  color: var(--line);
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+/* Issues drawer (Phase 5) — expandable bottom drawer above the status rail. */
+.issues-drawer {
+  position: absolute;
+  left: var(--space-3);
+  right: var(--space-3);
+  bottom: calc(var(--statusrail-h) + var(--space-2));
+  z-index: var(--z-issues);
+  max-height: 42vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+}
+.issues-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px var(--space-3);
+  border-bottom: 1px solid var(--panel-line);
+}
+.issues-body {
+  overflow-y: auto;
+  padding: 6px var(--space-3) var(--space-3);
+}
+.issues-group-head {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--line);
+  padding: 10px 0 4px;
+}
+.issue-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--panel-line);
+}
+.issue-jump {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  font-size: var(--text-sm);
+}
+.issue-jump:hover .issue-text {
+  text-decoration: underline;
+}
+.sev-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.sev-dot.sev-error,
+.issues-group-head.sev-error {
+  color: var(--error);
+}
+.sev-dot.sev-error {
+  background: var(--error);
+}
+.sev-dot.sev-warn,
+.issues-group-head.sev-warn {
+  color: var(--warn);
+}
+.sev-dot.sev-warn {
+  background: var(--warn);
+}
+.sev-dot.sev-info,
+.issues-group-head.sev-info {
+  color: var(--accent);
+}
+.sev-dot.sev-info {
+  background: var(--accent);
+}
+.issue-state {
+  font-size: 11px;
+  padding: 2px 4px;
+}
+/* Resolved / waived / n-a issues read as handled — dim them. */
+.issue-row.state-resolved,
+.issue-row.state-waived,
+.issue-row.state-n-a {
+  opacity: 0.5;
+}
+
+/* Collapsible drawer sections (ProjectDrawer) — one consistent section rhythm. Each section
+   is a divider-topped block whose header reads as the single title for its body. */
+.drawer-section { border-top: 1px solid var(--panel-line); }
+.drawer-section:first-of-type { border-top: none; }
+.drawer-section-head {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  background: none; border: none; cursor: pointer;
+  padding: 10px 6px; margin: 0 -6px; border-radius: var(--radius-input);
+  color: var(--ink);
+  font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+  transition: background var(--dur-fast) var(--ease);
+}
+.drawer-section-head:hover { background: var(--hover); }
+.drawer-section-head .chev { color: var(--muted); font-size: 10px; width: 10px; }
+.drawer-section-title { flex: 1; text-align: left; }
+.drawer-section-right { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.drawer-section-body { padding: 2px 0 12px; }
+
+/* Table-like readouts inside the drawer get hairline row separators so the label/value
+   columns scan as a table rather than a wall of text (esp. in dark mode). */
+.project-drawer .kv { gap: 0 12px; margin-bottom: 4px; }
+.project-drawer .kv > * {
+  padding: 5px 0;
+  border-bottom: 1px solid var(--panel-line);
+}
+.project-drawer .kv > *:nth-last-child(-n + 2) { border-bottom: none; }
+.project-drawer .kv > span:not(.k) { color: var(--ink); }
+
+/* A discipline the 2D plan has no geometry for is badged rather than left inert. */
+.trade-surface {
+  margin-left: auto;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  border: 1px solid var(--panel-line);
+  border-radius: 3px;
+  padding: 0 3px;
+}
+.views-hint { font-size: 11px; margin: 4px 0 0; }
+
+/* The room/area id line sits under its human name and is what a plan edit references. */
+.space-label-id { letter-spacing: 0.04em; }

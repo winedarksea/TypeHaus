@@ -60,6 +60,22 @@ export function Inspector() {
     };
   }, [dragging]);
 
+  const visible = model !== null && selection.uid !== null;
+
+  // Publish the live width so chrome that must clear this panel can position off it. The
+  // context bar used to hardcode 320px — this panel's *minimum* — so widening the inspector
+  // slid it underneath. Anything anchored to the right edge reads --inspector-w instead.
+  //
+  // Reverts to the token default while the panel is hidden: the reserved gutter is only
+  // honest about a panel that is actually on screen, and that also matches what the
+  // hardcoded 320px did before.
+  useEffect(() => {
+    const root = document.documentElement.style;
+    if (!visible) return;
+    root.setProperty("--inspector-w", `${width}px`);
+    return () => { root.removeProperty("--inspector-w"); };
+  }, [width, visible]);
+
   // Strict: no selection → no panel.
   if (!model || !selection.uid) return null;
 

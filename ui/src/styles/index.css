@@ -1,0 +1,14 @@
+/* Type:Haus editor chrome.
+
+   Split out of a single 1868-line styles.css: import order IS cascade order, so this
+   manifest is the one place the layering is decided. Tokens first (everything reads them),
+   then bare-element defaults, then components from the outside in. */
+
+@import "./tokens.css";
+@import "./base.css";
+@import "./shell.css";
+@import "./controls.css";
+@import "./panels.css";
+@import "./canvas.css";
+@import "./readers.css";
+@import "./overlays.css";

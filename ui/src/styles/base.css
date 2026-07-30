@@ -1,0 +1,80 @@
+/* Reset, document defaults, focus ring, and the cross-cutting motion + numeric
+   rules. Anything that applies to bare elements rather than to a named component. */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-user-select: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: var(--ink);
+}
+
+input,
+select,
+textarea {
+  background: var(--raised);
+  border: 1px solid var(--panel-line);
+  border-radius: 4px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Motion (Phase 1) — fast, non-elastic; no bounce/overshoot. */
+.tool-btn,
+.seg-btn,
+.btn,
+.health-pill {
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+.sidebar,
+.toolrail {
+  transition:
+    width var(--dur-med) var(--ease),
+    transform var(--dur-med) var(--ease),
+    opacity var(--dur-med) var(--ease);
+}
+.num,
+.kv,
+.hud,
+.statusrail {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

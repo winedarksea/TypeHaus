@@ -1,0 +1,415 @@
+/* Things that float over the drawing: HUDs, popovers, the lens bar and legend,
+   view chips, the 3D preview, and plan diagnostic markers. */
+
+.canvas-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+.canvas-draw {
+  cursor: crosshair;
+}
+
+.tool-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.popover {
+  bottom: auto;
+  max-width: 220px;
+}
+
+.hud {
+  position: absolute;
+  bottom: calc(var(--statusrail-h) + var(--gutter));
+  left: 12px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-menu);
+  box-shadow: var(--shadow-1);
+  padding: 8px 10px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  pointer-events: auto;
+}
+
+.hud .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+}
+
+.wall-assembly-popup {
+  position: absolute;
+  z-index: var(--z-panel);
+  width: min(280px, calc(100% - 24px));
+  max-height: min(360px, calc(100% - 24px));
+  overflow-y: auto;
+  padding: 10px;
+  background: color-mix(in srgb, var(--panel) 98%, transparent);
+  border: 1px solid var(--panel-line);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.wall-assembly-popup-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.wall-assembly-popup-title {
+  font-weight: 700;
+}
+
+.wall-assembly-popup-assembly {
+  margin-top: 2px;
+  color: var(--line);
+  overflow-wrap: anywhere;
+}
+
+.wall-assembly-popup-close {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--line);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.wall-assembly-popup-close:hover {
+  background: var(--hover);
+}
+
+.wall-assembly-popup-dimensions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin: 10px 0;
+}
+
+.wall-assembly-popup-dimensions span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wall-assembly-popup-dimensions b,
+.wall-assembly-popup-layer-heading {
+  color: var(--line);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.wall-assembly-popup-layers {
+  border-top: 1px solid var(--panel-line);
+  padding-top: 7px;
+}
+
+.wall-assembly-popup-layers .layer-row {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  column-gap: 6px;
+  align-items: center;
+  padding: 4px 0 0;
+}
+
+.wall-assembly-popup-layer-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wall-assembly-popup-layer-material {
+  grid-column: 2 / -1;
+  color: var(--line);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.banner {
+  position: absolute;
+  top: calc(var(--topbar-h) + var(--space-2));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--error-bg);
+  border: 1px solid var(--error);
+  color: var(--error);
+  border-radius: 8px;
+  padding: 8px 14px;
+  z-index: var(--z-panel);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Building-science lenses (Phase 9). */
+.lens-bar {
+  position: absolute;
+  top: calc(var(--topbar-h) + var(--gutter) + 40px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-canvas-overlay);
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-menu);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--panel-line);
+  box-shadow: var(--shadow-1);
+}
+.lens-chip {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--line);
+  padding: 3px 10px;
+  border-radius: var(--radius-input);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.lens-chip:hover {
+  background: var(--hover);
+}
+.lens-chip.active {
+  background: var(--raised);
+  color: var(--ink);
+}
+.lens-legend {
+  position: absolute;
+  left: 12px;
+  bottom: calc(var(--statusrail-h) + var(--gutter) + 64px);
+  z-index: var(--z-canvas-overlay);
+  max-width: 260px;
+  padding: 10px 12px;
+  border-radius: var(--radius-menu);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--panel-line);
+  box-shadow: var(--shadow-1);
+  font-size: var(--text-xs);
+}
+.lens-legend-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.lens-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--line);
+}
+.lens-legend-stat {
+  margin-top: 6px;
+  font-weight: 600;
+  color: inherit;
+}
+.lens-legend-ok {
+  margin-top: 4px;
+  color: var(--success, #3a7d44);
+}
+.lens-legend-issues {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+.lens-issue {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid var(--panel-line);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: var(--text-xs);
+  color: inherit;
+  cursor: pointer;
+}
+.lens-issue:hover:not(:disabled) {
+  border-color: currentColor;
+}
+.lens-issue:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+/* When a lens is active, ordinary geometry is muted so the lens reads as dominant. The plan's
+   wall fills carry most of that mute, because the control-layer overlay they sit behind is
+   drawn as a sibling and must stay at full contrast; the stage keeps a light tint so the 3D
+   panel still signals that a lens is on. */
+:root:not([data-lens="none"]) .stage {
+  opacity: 0.88;
+  transition: opacity var(--dur-med) var(--ease);
+}
+:root:not([data-lens="none"]) .wall-fills {
+  opacity: 0.34;
+  transition: opacity var(--dur-med) var(--ease);
+}
+
+/* Views (Phase 6). */
+.view-chips {
+  position: absolute;
+  top: calc(var(--topbar-h) + var(--gutter));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-canvas-overlay);
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-menu);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--panel-line);
+  box-shadow: var(--shadow-1);
+}
+.view-chip {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  padding: 3px 10px;
+  border-radius: var(--radius-input);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.view-chip:hover {
+  background: var(--hover);
+}
+.view-chip.chip-more.active {
+  background: var(--accent);
+  color: var(--canvas-white);
+}
+
+.preview3d-toggle {
+  position: absolute;
+  right: calc(var(--inspector-w) + var(--gutter) + var(--gutter));
+  bottom: calc(var(--statusrail-h) + var(--gutter));
+  z-index: var(--z-preview);
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-input);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  color: var(--ink);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  box-shadow: var(--shadow-1);
+}
+.preview3d {
+  position: absolute;
+  right: calc(var(--inspector-w) + var(--gutter) + var(--gutter));
+  bottom: calc(var(--statusrail-h) + var(--gutter));
+  width: 300px;
+  height: 220px;
+  z-index: var(--z-preview);
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+}
+.preview3d-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  font-size: var(--text-xs);
+  border-bottom: 1px solid var(--panel-line);
+}
+.preview3d-head .btn {
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0 6px;
+}
+.preview3d-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Clickable plan diagnostic markers (open wall ends, junction fallbacks). */
+.plan-warning-popover {
+  position: absolute;
+  z-index: var(--z-appbar);
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-3);
+  padding: 10px 12px;
+  max-height: 320px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+.plan-warning-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.plan-warning-head > div { flex: 1; }
+.plan-warning-title { font-weight: 700; }
+.plan-warning-message { margin: 0 0 8px; line-height: 1.45; }
+.plan-warning-subhead {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.plan-warning-findings { margin: 4px 0 0; padding-left: 0; list-style: none; }
+.plan-warning-findings li { display: flex; gap: 6px; align-items: baseline; padding: 3px 0; }
+
+/* Vapour lens readings: resolved permeance + IRC R702.7 retarder class, tightest first. */
+.lens-vapor-readings {
+  margin: 6px 0 0;
+  padding-left: 0;
+  list-style: none;
+  max-height: 180px;
+  overflow-y: auto;
+}
+.lens-vapor-readings li {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 8px;
+  align-items: baseline;
+  padding: 3px 0;
+  border-top: 1px solid var(--panel-line);
+  font-size: 11px;
+}
+.lens-vapor-readings li:first-child { border-top: none; }
+.lens-vapor-readings .vapor-perms {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--control-vapor);
+  white-space: nowrap;
+}
+.lens-vapor-readings .vapor-class { white-space: nowrap; }
+/* An unauthored permeance is a question, not a measurement — it must not read as a number. */
+.lens-vapor-readings li.vapor-unknown .vapor-perms { color: var(--warn); }
+.control-tag.control-vapor { color: var(--control-vapor); }

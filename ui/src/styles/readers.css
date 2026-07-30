@@ -1,0 +1,113 @@
+/* The workbench shell and the six full-screen readers that reuse it. */
+
+/* Workbench focus mode (Phase 7). */
+.workbench-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-scrim);
+  background: var(--canvas-dim);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: calc(var(--topbar-h) + var(--gutter)) var(--gutter) calc(var(--statusrail-h) + var(--gutter));
+}
+.workbench {
+  width: min(1100px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+}
+.workbench-bread {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px var(--space-3);
+  border-bottom: 1px solid var(--panel-line);
+}
+.workbench-title {
+  font-weight: 600;
+}
+.workbench-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+/* Full-width readers (assembly details, bill of materials) reuse the workbench shell. */
+.reader-subtitle { font-size: 12px; }
+.reader-section { margin-bottom: 22px; }
+.reader-section-title { margin: 0 0 2px; font-size: 14px; }
+.reader-section-note { margin: 0 0 10px; font-size: 12px; line-height: 1.45; }
+.reader-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; }
+/* One engine BOM section inside its reader group (BomView). */
+.bom-subsection { margin-bottom: 14px; }
+.bom-subsection-title { margin: 0 0 4px; font-size: 12px; text-transform: capitalize; }
+.reader-table-scroll { overflow-x: auto; }
+.reader-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.reader-table th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--panel-line);
+  padding: 5px 8px 5px 0;
+  white-space: nowrap;
+}
+.reader-table td { padding: 5px 8px 5px 0; border-bottom: 1px solid var(--panel-line); }
+.reader-table .num-col { text-align: right; font-variant-numeric: tabular-nums; }
+.reader-card {
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-overlay);
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+.reader-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.reader-card-title { font-weight: 700; font-size: 12.5px; }
+.reader-chip {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 3px;
+  padding: 0 4px;
+}
+.reader-list { margin: 2px 0; padding-left: 0; list-style: none; font-size: 12px; }
+.reader-list li { padding: 2px 0; }
+.reader-expand { margin-top: 6px; font-size: 11px; }
+.reader-tag-cloud { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.reader-tag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  border: 1px solid var(--panel-line);
+  background: var(--panel);
+  color: var(--ink);
+  border-radius: 3px;
+  padding: 1px 5px;
+  cursor: pointer;
+}
+.reader-tag:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.reader-tag:disabled { opacity: 0.5; cursor: default; }
+.control-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 6px;
+}
+.control-tag.control-air { color: var(--control-air); }
+.control-tag.control-water { color: var(--control-water); }
+.control-tag.control-thermal { color: var(--control-thermal); }

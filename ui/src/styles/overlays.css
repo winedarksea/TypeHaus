@@ -1,0 +1,324 @@
+/* Surfaces that sit above everything and take focus: keypad, toasts, modals,
+   the assembly editor, context menus, and the command palette. */
+
+.keypad {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: var(--z-scrim);
+}
+
+.keypad .pad {
+  background: var(--panel);
+  border-radius: 12px 12px 0 0;
+  padding: 16px;
+  width: min(420px, 100%);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.keypad .display {
+  grid-column: 1 / -1;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  padding: 8px 12px;
+  background: var(--raised);
+  border: 1px solid var(--panel-line);
+  border-radius: 8px;
+}
+
+.keypad .key {
+  min-height: 52px;
+  font-size: 18px;
+  border: 1px solid var(--panel-line);
+  background: var(--raised);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.keypad .key.wide {
+  grid-column: span 2;
+}
+
+.toasts {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: var(--z-toast);
+}
+
+.toast {
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.toast.error {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.toast-clear {
+  align-self: flex-end;
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted, inherit);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.toast-clear:hover {
+  color: inherit;
+  border-color: var(--ink, currentColor);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+}
+
+.modal {
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 16px;
+  width: min(720px, 92vw);
+  max-height: 86vh;
+  overflow-y: auto;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.assembly-editor-body {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 16px;
+}
+
+/* Workbench focus mode has room for a dedicated live-section column (Phase 7). */
+.assembly-editor-body.embedded {
+  grid-template-columns: 200px minmax(0, 1fr) 280px;
+}
+
+.assembly-preview {
+  min-width: 0;
+  align-self: start;
+  position: sticky;
+  top: 0;
+}
+
+.drag-handle {
+  cursor: grab;
+  user-select: none;
+  color: var(--line);
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+  touch-action: none;
+}
+.drag-handle:active { cursor: grabbing; }
+
+.layer-edit-row.dragging { opacity: 0.4; }
+.layer-edit-row.drop-before { box-shadow: inset 0 2px 0 0 var(--accent); }
+.layer-drop-tail {
+  height: 10px;
+  border-radius: 4px;
+}
+.layer-drop-tail.drop-before { box-shadow: inset 0 2px 0 0 var(--accent); }
+
+.assembly-list {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.assembly-detail {
+  min-width: 0;
+}
+
+.layer-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.layer-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.layer-edit-row select,
+.layer-edit-row input {
+  font-size: 12px;
+}
+
+.finding.selected {
+  outline: 2px solid var(--accent);
+}
+
+.section-card {
+  border: 1px solid var(--panel-line);
+  border-radius: 8px;
+  background: var(--raised);
+  padding: 8px;
+}
+
+.layer-list {
+  font-size: 12px;
+}
+
+/* Interaction polish (Phase 10). */
+.ctx-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-ctx-overlay);
+}
+.ctx-menu {
+  position: absolute;
+  z-index: var(--z-ctx-menu);
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-menu);
+  box-shadow: var(--shadow-3);
+}
+.ctx-menu button {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radius-input);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.ctx-menu button:hover:not(:disabled) {
+  background: var(--hover);
+}
+.ctx-menu button:disabled {
+  color: var(--line);
+  cursor: default;
+}
+.ctx-menu .ctx-danger {
+  color: var(--error);
+}
+
+/* Command palette (Phase 4). */
+.cmdk-trigger {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+.cmdk-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-cmdk);
+  background: var(--overlay);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+}
+.cmdk {
+  width: min(560px, 92vw);
+  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+}
+.cmdk-input {
+  border: 0;
+  border-bottom: 1px solid var(--panel-line);
+  border-radius: 0;
+  background: var(--panel);
+  padding: 14px 16px;
+  font-size: var(--text-lg);
+}
+.cmdk-input:focus-visible {
+  outline: none;
+}
+.cmdk-list {
+  overflow-y: auto;
+  padding: 6px;
+}
+.cmdk-section {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--line);
+  padding: 8px 10px 4px;
+}
+.cmdk-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: var(--row-h);
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--radius-input);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  font-size: var(--text-sm);
+}
+.cmdk-item.active {
+  background: var(--hover);
+}
+.cmdk-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.cmdk-group {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--line);
+  min-width: 58px;
+}
+.cmdk-title {
+  flex: 1;
+}
+.cmdk-shortcut {
+  font-variant-numeric: tabular-nums;
+  color: var(--line);
+  font-size: 12px;
+}
+.cmdk-empty {
+  padding: 16px;
+  text-align: center;
+}
