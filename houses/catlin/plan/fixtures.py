@@ -154,20 +154,23 @@ MAIN_FIXTURES = (
             drain_position=pt(ft(1), ft(16, 6))),
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-WASHER", room="RM-M-LAUNDRY",
               position=pt(ft(10, 6), ft(20)), wall_ref="W-M-BA2E2"),
-    # Kitchen sink: dropped into the 36" base FURN-M-KIT-SINKBASE and centred on
-    # WIN-M-KITCH (y=32'-8", 42" sill = counter height), so it centres in the 24" counter
-    # depth at x=34'-5 3/8". rotation -90 turns its back (+y, where the faucet is) to the
-    # east wall. W-M-E2 is the wet wall — a 2x6 exterior wall, deep enough for the stack,
-    # and one that W-S-E3/E4/E5 stack on, so the vent rises inside it without an offset.
-    # `drain_position` sets the trap 6 5/8" back from the bowl centre, over SP-M-KITCH.
-    # The 27" mount is what drops the bowls into the counter instead of standing them on the
-    # floor: the resolver reads the *instance* Mount, so the type's own recommendation has to
-    # be restated here to take effect. The symbol's deck sits at half its 18" height, so 27"
-    # lands the rim exactly on the 36" counter, 9" of bowl hanging into the base below it.
+    # Kitchen sink: moved to the north wall 2026-07-30 with the range/sink wall swap (see
+    # plan/placeables.py's kitchen header), then flipped with the dishwasher the same day to
+    # pull it toward the middle of the run. Dropped into the 36" base FURN-M-KIT-SINKBASE and
+    # centred close to WIN-M-KITCH (x=28'-7", 42" sill = counter height, 7" off true centre so
+    # the RO lands on a stud line), so it centres in the 24" counter depth at y=34'-5 3/8".
+    # rotation 0 (omitted) turns its back (+y, where the faucet is) to the north wall. W-M-N1
+    # is the wet wall — CATLIN_EXT_2X6, same assembly and depth as the old W-M-E2 — see
+    # plan/mep.py's PR-M-KITCH-VENT comment for the riser. `drain_position` still sets the
+    # trap 6 5/8" back from the bowl centre (+y), over SP-M-KITCH. The 27" mount is what drops
+    # the bowls into the counter instead of standing them on the floor: the resolver reads the
+    # *instance* Mount, so the type's own recommendation has to be restated here to take
+    # effect. The symbol's deck sits at half its 18" height, so 27" lands the rim exactly on
+    # the 36" counter, 9" of bowl hanging into the base below it.
     Fixture(uid="WZRCBGNDFW", tag="FX-M-KITCH-SINK", type_ref="FX-KITCHEN-SINK-33", room="RM-M-LIVING",
-            position=pt(ft(34, 5.375), ft(32, 8)), rotation=deg(-90), wall_ref="W-M-E2",
+            position=pt(ft(28, 7), ft(34, 5.375)), wall_ref="W-M-N1",
             mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
-            drain_position=pt(ft(35), ft(32, 8))),
+            drain_position=pt(ft(28, 7), ft(35))),
 )
 
 

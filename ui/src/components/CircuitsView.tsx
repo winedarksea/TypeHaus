@@ -3,6 +3,7 @@ import { useStore } from "../state/store";
 import { uidByTag } from "../model/tagIndex";
 import type { PanelScheduleRow, ServiceLoad } from "../model/types";
 import { ReaderSection, ReaderShell } from "./ReaderShell";
+import { Icon } from "../icons/Icon";
 
 // "Circuits" — the third reader, and the on-screen twin of the E-601 permit sheet. Every
 // number here is carried whole from model.json's `electrical` block, which is
@@ -84,7 +85,7 @@ function PanelSchedule({ rows, expanded, onExpand, index, onZoom }: {
                     {row.devices.length > 0 ? (
                       <button className="reader-tag" title={open ? "Hide devices" : "Show the devices on this circuit"}
                         onClick={() => onExpand(open ? null : row.circuit)}>
-                        {open ? "▾ " : "▸ "}<span className="reader-mono">{row.circuit}</span>
+                        <Icon name={open ? "chevron-down" : "chevron-right"} size={14} /> <span className="reader-mono">{row.circuit}</span>
                       </button>
                     ) : (
                       <span className="reader-mono" style={{ paddingLeft: 12 }}>{row.circuit}</span>

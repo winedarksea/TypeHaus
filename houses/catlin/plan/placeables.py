@@ -95,7 +95,9 @@ MAIN_PLACEABLES = [
               position=pt(ft(29, 5), ft(20, 2))),
     # --- kitchen: the NE corner of the open living face (no Room of its own) -------------
     #
-    # Two datums set every number below, and both are finish faces read off the resolved
+    # Swapped 2026-07-30 (owner's call): the cooking wall and the sink wall traded places, so
+    # the sink now sits under north light instead of east and the range moved to the east
+    # wall. Two datums still set every number below, both finish faces read off the resolved
     # wall layers rather than off the module lines: the north and east interior gwb are at
     # 35'-5 3/8" (36' sheathing - 1/2" sheathing - 5 1/2" stud - 5/8" gwb), and the centre
     # bearing wall's east gwb is at 18'-3 3/8". Cabinet backs sit on those faces, so the runs
@@ -103,13 +105,22 @@ MAIN_PLACEABLES = [
     #
     # Rotation says which way a unit opens: 0 = back north, deg(90) = back west/opens east,
     # deg(-90) = back east/opens west, deg(180) = back south.
+    #
+    # The two runs share one inside corner (35'-5 3/8", 35'-5 3/8") and only one of them can
+    # physically turn it — a run's own 24"-deep footprint can't overlap the perpendicular
+    # run's. Before the swap the sink run (east) claimed the corner and the cooking run
+    # (north) yielded at x=33'-4", 1 3/8" shy of the sink run's depth-zone. Now that's
+    # mirrored: the cooking run (east) claims the corner and the sink run (north) yields at
+    # the same x=33'-4", 1 3/8" shy of the cooking run's depth-zone — same joint, same
+    # numbers, just which run gets to turn it has swapped with them.
 
     # West run — cold storage and pantry against the centre bearing wall, opening east into
-    # the kitchen. Packed from the north wall down: 12" + 18" tall pull-outs, freezer,
-    # refrigerator, then the closet pantry in the nook by the stair tee. The two cold boxes
-    # sit *below* the talls deliberately — their 3' door zones reach x=24'-1 3/8", and any
-    # further north that band would run into the north counter run at y=33'-5 3/8".
-    # Cabinets are 24" deep (centre x = 19'-3 3/8"); the cold boxes are 34" (centre 19'-8 3/8").
+    # the kitchen. Untouched by the swap. Packed from the north wall down: 12" + 18" tall
+    # pull-outs, freezer, refrigerator, then the closet pantry in the nook by the stair tee.
+    # The two cold boxes sit *below* the talls deliberately — their 3' door zones reach
+    # x=24'-1 3/8", and any further north that band would run into the north counter run at
+    # y=33'-5 3/8". Cabinets are 24" deep (centre x = 19'-3 3/8"); the cold boxes are 34"
+    # (centre 19'-8 3/8").
     Furniture(uid="WKMKJHJ7D7", tag="FURN-M-KIT-TALL-N", type_ref="CASE-TALL-PANTRY-12", room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(34, 11.375)), rotation=deg(90)),
     Furniture(uid="RABKK6V43P", tag="FURN-M-KIT-TALL-S", type_ref="CASE-TALL-PANTRY-18", room="RM-M-LIVING",
@@ -132,77 +143,78 @@ MAIN_PLACEABLES = [
               position=pt(ft(19, 3.375), ft(28, 5.375)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
 
-    # North run — the cooking wall. Bases are 24" deep, so their centre is y=34'-5 3/8"; the
-    # range is 30" deep and so centres 3" further out at 34'-2 3/8", which is the number the
-    # island aisle is measured from. The run starts where the west run's talls end
-    # (x=20'-3 3/8") and stops at the east run (x=33'-4", leaving a 1 3/8" corner filler).
-    # KIT-N2 is the cabinet under WIN-M-KITCH-N, the smoke window.
-    Furniture(uid="KA0ETVK8F8", tag="FURN-M-KIT-N1", type_ref="CASE-B36", room="RM-M-LIVING",
-              position=pt(ft(21, 9.375), ft(34, 5.375))),
-    Furniture(uid="BZ9SVQVTVP", tag="FURN-M-KIT-N2", type_ref="CASE-B24", room="RM-M-LIVING",
-              position=pt(ft(24, 3.375), ft(34, 5.375))),
-    Appliance(uid="417H1EH5C3", tag="APPL-M-RANGE", type_ref="APPL-ELECTRIC-RANGE", room="RM-M-LIVING",
-              position=pt(ft(26, 7), ft(34, 2.375))),
-    Furniture(uid="7YPYR8K5FS", tag="FURN-M-KIT-N3", type_ref="CASE-B36", room="RM-M-LIVING",
-              position=pt(ft(29, 4), ft(34, 5.375))),
-    Furniture(uid="NF48E9MESN", tag="FURN-M-KIT-N4", type_ref="CASE-B30", room="RM-M-LIVING",
-              position=pt(ft(32, 1), ft(34, 5.375))),
-
-    # North wall cabinets, 13" deep at a 54" mount (18" of backsplash over the counter, top
-    # at 96" to match the talls). They are laid out around the one window rough — the smoke
-    # window at x 24'-1"..25'-3" — and around the hood.
-    Furniture(uid="2BF9VM3SFA", tag="FURN-M-KIT-WN1", type_ref="CASE-W24", room="RM-M-LIVING",
-              position=pt(ft(21, 3.375), ft(34, 10.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-    Furniture(uid="4HM5A8P53B", tag="FURN-M-KIT-WN2", type_ref="CASE-W18", room="RM-M-LIVING",
-              position=pt(ft(23, 0.375), ft(34, 10.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-    # Recirculating canopy hood, 30" over the cooktop: mount 5'-6" on a 3' range.
-    Appliance(uid="Q0W3FYXJGX", tag="APPL-M-HOOD", type_ref="APPL-HOOD-RECIRC", room="RM-M-LIVING",
-              position=pt(ft(26, 7), ft(34, 7.375)),
-              mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
-    # East of the hood the wall is now unbroken, so the two 18" uppers that used to flank
-    # WIN-M-KITCH-N are one 5'-6" run instead: 27'-10" (the hood's east edge) to 33'-4" (where
-    # the base run below it stops). Shop-built as two ganged boxes behind a continuous face —
-    # see CASE-W66 — it is the whole east half of the cooking wall in one gesture.
-    Furniture(uid="DVWYR4A5J3", tag="FURN-M-KIT-WN3", type_ref="CASE-W66", room="RM-M-LIVING",
-              position=pt(ft(30, 7), ft(34, 10.875)),
-              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
-
-    # East run — the sink wall, opening west. The 36" sink base centres on WIN-M-KITCH
-    # (y=32'-8", sill 42" = counter height), the dishwasher sits immediately south of it on
-    # the hand a right-handed cook loads with, and a 15" base closes the blind corner under
-    # the north counter's return.
-    Furniture(uid="49B0RDP4NW", tag="FURN-M-KIT-E1", type_ref="CASE-B30", room="RM-M-LIVING",
-              position=pt(ft(34, 5.375), ft(27, 11)), rotation=deg(-90)),
-    Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-DISHWASHER", room="RM-M-LIVING",
-              position=pt(ft(34, 5.375), ft(30, 2)), rotation=deg(-90)),
-    Furniture(uid="F8A30SK31X", tag="FURN-M-KIT-SINKBASE", type_ref="CASE-SINK-BASE-36", room="RM-M-LIVING",
-              position=pt(ft(34, 5.375), ft(32, 8)), rotation=deg(-90)),
-    Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="CASE-B15", room="RM-M-LIVING",
-              position=pt(ft(34, 5.375), ft(34, 9.5)), rotation=deg(-90)),
-    # The larder, south of where the counter run stops (KIT-E1's south end, y=26'-8") and
-    # running 4' down the wall to 22'-8". Twice the width of the west run's closet pantry and
-    # the only bulk storage on this side of the kitchen, which is the trade for the two
-    # dining windows moving 6' south to clear it — see WIN-M-DIN-E1/E2 in storeys/main.py.
-    # Two 24" doors rather than one 48" (→ CASE-PANTRY-CLOSET-48), and 8' tall to close the
-    # east wall out at the same line as the west run's talls.
+    # North run — the sink wall. Sink and dishwasher flipped 2026-07-30 (owner's call) to pull
+    # the sink toward the middle of the run: pantry and the base cabinet stay put, but the
+    # sink now sits where the dishwasher used to (closer to the run's centre) and the
+    # dishwasher takes the sink's old spot, immediately east of it — the opposite hand from
+    # before, since the swap put the sink on the pantry side. Bases are 24" deep, centre
+    # y=34'-5 3/8".
     Furniture(uid="Z0H6MVXC71", tag="FURN-M-KIT-PANTRY-E", type_ref="CASE-PANTRY-CLOSET-48", room="RM-M-LIVING",
-              position=pt(ft(34, 5.375), ft(24, 8)), rotation=deg(-90)),
+              position=pt(ft(22, 7), ft(34, 5.375))),
+    Furniture(uid="49B0RDP4NW", tag="FURN-M-KIT-E1", type_ref="CASE-B30", room="RM-M-LIVING",
+              position=pt(ft(25, 10), ft(34, 5.375))),
+    # The 36" sink base centres close to WIN-M-KITCH (moved with it — see OPENINGS in
+    # storeys/main.py), 7" off true centre so the RO still lands on a stud line.
+    Furniture(uid="F8A30SK31X", tag="FURN-M-KIT-SINKBASE", type_ref="CASE-SINK-BASE-36", room="RM-M-LIVING",
+              position=pt(ft(28, 7), ft(34, 5.375))),
+    Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-DISHWASHER", room="RM-M-LIVING",
+              position=pt(ft(31, 1), ft(34, 5.375))),
+    Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="CASE-B15", room="RM-M-LIVING",
+              position=pt(ft(32, 8.5), ft(34, 5.375))),
+
+    # North wall uppers — WE1 stays over the base; WE2 followed the dishwasher to its new
+    # spot. Nothing over the sink (the window's there), the pantry (already full height) or
+    # the corner filler.
     Furniture(uid="AQTQJBTXRR", tag="FURN-M-KIT-WE1", type_ref="CASE-W30", room="RM-M-LIVING",
-              position=pt(ft(34, 10.875), ft(27, 11)), rotation=deg(-90),
+              position=pt(ft(25, 10), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
     Furniture(uid="VKP909PNS6", tag="FURN-M-KIT-WE2", type_ref="CASE-W24", room="RM-M-LIVING",
-              position=pt(ft(34, 10.875), ft(30, 2)), rotation=deg(-90),
+              position=pt(ft(31, 1), ft(34, 10.875)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
 
-    # Island — 5' x 3', the mid-landing of a work triangle the architect's fridge-west /
-    # sink-east program stretches to ~30' of perimeter. Dropped 6" south of where it started
-    # so the work aisle is 42" rather than 36": the range front is at y=32'-11 3/8" and the
-    # island's north face is now 29'-5 3/8". 36" is the bare code-side minimum a body fits
-    # through; 42" is the NKBA one-cook recommendation, and it is the number that lets the
-    # oven door (a 30" range's drops ~24") open with someone still standing behind it.
-    # 36" deep = 24" of carcass plus the 12" overhang the stools tuck under.
+    # East run — the cooking wall. Range and hood flipped 2026-07-30 (owner's call) further
+    # north, swapping with N3: the corner filler N4 is unchanged, but the range now sits
+    # where N3 used to and N3 takes the range's old spot, closer to N2/N1 to the south. Bases
+    # are 24" deep (centre x = 34'-5 3/8"); the range is 30" deep and centres 3" further out
+    # at 34'-2 3/8", same as it always did, and still the number the island aisle is measured
+    # from.
+    #
+    # This run still claims the corner (N4 runs flush to 35'-5 3/8" — see header): the range
+    # moving doesn't change which run gets to turn it, since N4 didn't move.
+    Furniture(uid="KA0ETVK8F8", tag="FURN-M-KIT-N4", type_ref="CASE-B30", room="RM-M-LIVING",
+              position=pt(ft(34, 5.375), ft(34, 2.375)), rotation=deg(-90)),
+    Appliance(uid="417H1EH5C3", tag="APPL-M-RANGE", type_ref="APPL-ELECTRIC-RANGE", room="RM-M-LIVING",
+              position=pt(ft(34, 2.375), ft(31, 8.375)), rotation=deg(-90)),
+    Furniture(uid="7YPYR8K5FS", tag="FURN-M-KIT-N3", type_ref="CASE-B36", room="RM-M-LIVING",
+              position=pt(ft(34, 5.375), ft(28, 11.375)), rotation=deg(-90)),
+    Furniture(uid="BZ9SVQVTVP", tag="FURN-M-KIT-N2", type_ref="CASE-B24", room="RM-M-LIVING",
+              position=pt(ft(34, 5.375), ft(26, 5.375)), rotation=deg(-90)),
+    Furniture(uid="NF48E9MESN", tag="FURN-M-KIT-N1", type_ref="CASE-B36", room="RM-M-LIVING",
+              position=pt(ft(34, 5.375), ft(23, 11.375)), rotation=deg(-90)),
+
+    # East wall uppers, 13" deep at a 54" mount. With the range between N4 and N3 now, N3+N4
+    # no longer share a face for one CASE-W66; N4 gets its own 30" box, and N3+N2 (36"+24" =
+    # 60", the same combination the old WN1/WN2 pair covered) split into two plain 30" boxes.
+    # N1 (south end) still gets no upper, same as before.
+    Furniture(uid="2BF9VM3SFA", tag="FURN-M-KIT-WN1", type_ref="CASE-W30", room="RM-M-LIVING",
+              position=pt(ft(34, 10.875), ft(34, 2.375)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+    Furniture(uid="4HM5A8P53B", tag="FURN-M-KIT-WN2", type_ref="CASE-W30", room="RM-M-LIVING",
+              position=pt(ft(34, 10.875), ft(26, 8.375)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+    # Recirculating canopy hood, 30" over the cooktop: mount 5'-6" on a 3' range. Moved north
+    # with the range.
+    Appliance(uid="Q0W3FYXJGX", tag="APPL-M-HOOD", type_ref="APPL-HOOD-RECIRC", room="RM-M-LIVING",
+              position=pt(ft(34, 7.375), ft(31, 8.375)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
+    Furniture(uid="DVWYR4A5J3", tag="FURN-M-KIT-WN3", type_ref="CASE-W30", room="RM-M-LIVING",
+              position=pt(ft(34, 10.875), ft(29, 2.375)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
+
+    # Island — 5' x 3', footprint unchanged by the swap. Its 42" work aisle used to be
+    # measured off the range's old front (y=32'-11 3/8", north face at 29'-5 3/8"); left in
+    # place pending `haus check` against the new range (east wall) and sink (north wall)
+    # locations, since neither is the wall this clearance used to read from.
     Furniture(uid="PD9W4Q86MD", tag="FURN-M-KIT-ISLAND", type_ref="CASE-ISLAND-60", room="RM-M-LIVING",
               position=pt(ft(27, 6), ft(27, 11.375))),
     Furniture(uid="MZNJ9TAN56", tag="FURN-M-KIT-STOOL1", type_ref="FURN-BAR-STOOL", room="RM-M-LIVING",

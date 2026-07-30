@@ -5,6 +5,7 @@ import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
 import { SpaceDashboard } from "./SpaceDashboard";
 import { RoofDesigner } from "./RoofDesigner";
 import { DetailsNavigator } from "./DetailsNavigator";
+import { Icon } from "../icons/Icon";
 
 // Left project drawer (Phase 3 relocation; Phase 6 grows the object hierarchy + Views).
 // Houses the always-on dashboards evicted from the strict inspector. Opens as one of the
@@ -23,7 +24,7 @@ export function ProjectDrawer() {
       <div className="drawer-header">
         <h3 style={{ margin: 0 }}>{model.project.name}</h3>
         <button className="btn" onClick={() => setActivePanel(null)} title="Close project drawer">
-          ✕
+          <Icon name="close" />
         </button>
       </div>
 
@@ -71,7 +72,7 @@ function DrawerSection({ title, defaultOpen = false, right, children }: {
   return (
     <section className="drawer-section">
       <button className="drawer-section-head" aria-expanded={open} onClick={() => setOpen(!open)}>
-        <span className="chev">{open ? "▾" : "▸"}</span>
+        <Icon name={open ? "chevron-down" : "chevron-right"} size={16} className="chev" />
         <span className="drawer-section-title">{title}</span>
         {right && (
           <span className="drawer-section-right" onClick={(e) => e.stopPropagation()}>{right}</span>

@@ -20,7 +20,7 @@ import {
   attachToPage, captureScreenshot, evaluate, launchChromium, navigate, setViewport,
 } from "./lib/cdp.mjs";
 import {
-  AWAIT_STABLE_VIEW, POSE_PREAMBLE, SETTLE, WAIT_FOR_MODEL, shotMatrix,
+  AWAIT_STABLE_VIEW, POSE_PREAMBLE, SETTLE, WAIT_FOR_MODEL, awaitSettled, shotMatrix,
 } from "./lib/shots.mjs";
 import {
   PROBE_CLIPPED_CONTROLS, PROBE_DRAWING_FINGERPRINT, PROBE_OVERFLOW, PROBE_THREE_PANE_RECT,
@@ -72,7 +72,14 @@ async function forceTheme(session, theme) {
 }
 
 async function poseAndProbe(session, shot) {
-  await evaluate(session, `${POSE_PREAMBLE} ${shot.state.pose} return true;`);
+  const pose = `${POSE_PREAMBLE} ${shot.state.pose} return true;`;
+  await evaluate(session, pose);
+  await evaluate(session, SETTLE);
+  // Re-assert after settling. An effect that runs on mount can land after the pose and
+  // quietly undo part of it — that showed up as one state's drawing digest occasionally
+  // matching another's. Every pose is idempotent, so applying it twice is free insurance.
+  await evaluate(session, pose);
+  if (shot.state.settled) await evaluate(session, awaitSettled(shot.state.settled));
   await evaluate(session, SETTLE);
   await evaluate(session, AWAIT_STABLE_VIEW);
 

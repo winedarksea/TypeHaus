@@ -1,5 +1,6 @@
 import { useStore } from "../state/store";
 import { Panel3D } from "./Panel3D";
+import { Icon } from "../icons/Icon";
 
 // Floating synchronized 3D preview (Phase 10): a small 3D window over the 2D plan — the
 // recommended everyday mode. Selection, hover, level, and visibility already sync through the
@@ -15,7 +16,7 @@ export function Preview3D() {
   if (!open) {
     return (
       <button className="preview3d-toggle" onClick={() => setOpen(true)} title="Show 3D preview">
-        3D ▸
+        3D <Icon name="chevron-right" size={14} />
       </button>
     );
   }
@@ -24,7 +25,7 @@ export function Preview3D() {
     <div className="preview3d">
       <div className="preview3d-head">
         <span>3D preview</span>
-        <button className="btn" onClick={() => setOpen(false)} title="Hide 3D preview">✕</button>
+        <button className="btn icon-btn" onClick={() => setOpen(false)} title="Hide 3D preview"><Icon name="close" size={16} /></button>
       </div>
       <div className="preview3d-body">
         <Panel3D />

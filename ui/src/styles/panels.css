@@ -704,3 +704,19 @@
     min-width: var(--hit);
   }
 }
+
+@media (max-width: 679px) {
+  /* A two-column key/value grid is the wrong shape at this width — the value column
+     ends up narrower than the values it holds, and a long assembly tag pushes the row
+     past the sheet edge. Stack them instead. */
+  .sheet-body .kv {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+  .sheet-body .kv .k {
+    margin-top: var(--space-2);
+  }
+  .sheet-body .kv > *:first-child {
+    margin-top: 0;
+  }
+}

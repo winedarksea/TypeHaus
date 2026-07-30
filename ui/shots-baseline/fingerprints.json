@@ -28,11 +28,9 @@
   "phone-light-project": "83728f7216156ea1",
   "phone-light-inspector": "83728f7216156ea1",
   "phone-light-reader-circuits": "83728f7216156ea1",
-  "phone-light-split": "773b5a5237627740",
   "phone-dark-default": "e1fb52de5c89bac0",
   "phone-dark-views": "e1fb52de5c89bac0",
   "phone-dark-project": "e1fb52de5c89bac0",
   "phone-dark-inspector": "e1fb52de5c89bac0",
-  "phone-dark-reader-circuits": "e1fb52de5c89bac0",
-  "phone-dark-split": "b675aa250e99720b"
+  "phone-dark-reader-circuits": "e1fb52de5c89bac0"
 }

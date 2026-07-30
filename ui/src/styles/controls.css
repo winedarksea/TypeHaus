@@ -58,6 +58,7 @@
 .wall-assembly-popup-close,
 .menu-item,
 .rail-indicator,
+.reader-expand,
 .status-view-readout,
 .status-lens-trigger,
 .md-state {
@@ -83,6 +84,7 @@
 .wall-assembly-popup-close::before,
 .menu-item::before,
 .rail-indicator::before,
+.reader-expand::before,
 .status-view-readout::before,
 .status-lens-trigger::before,
 .md-state::before {
@@ -115,6 +117,7 @@
   .wall-assembly-popup-close:hover::before,
   .menu-item:hover:not(:disabled)::before,
   .rail-item:hover:not(:disabled) .rail-indicator::before,
+  .reader-expand:hover::before,
   .status-view-readout:hover::before,
   .status-lens-trigger:hover::before,
   .md-state:hover:not(:disabled)::before {

@@ -191,9 +191,11 @@ SLEEVES = [
                       position=pt(ft(8), ft(20)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-LAUNDRY"),
     # The kitchen sink's waste through the 9" deck. Authored at exactly FX-M-KITCH-SINK's
-    # `drain_position`, which is what makes `mep.sleeve_alignment` read 0.00".
+    # `drain_position`, which is what makes `mep.sleeve_alignment` read 0.00". Moved to the
+    # north wall 2026-07-30 with the sink, then re-centred the same day with the sink/
+    # dishwasher flip — see plan/fixtures.py.
     SleevePenetration(uid="BFQH6F04VQ", tag="SP-M-KITCH", host_ref="SL-M-DECK",
-                      position=pt(ft(35), ft(32, 8)), pipe_diameter=inch(2),
+                      position=pt(ft(28, 7), ft(35)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-KITCH-SINK"),
 ]
 
@@ -222,11 +224,14 @@ SUPPLY_SLEEVES = [
     SleevePenetration(uid="CMPS06AAAA", tag="SP-M-HW-WASH", host_ref="SL-M-DECK",
                       position=pt(ft(8), ft(21, 2.4)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
+    # Moved to the north wall 2026-07-30 with the sink, then re-centred with the sink/
+    # dishwasher flip: same offset magnitude from the sink centre, but the along-wall
+    # component now points *east* (toward the dishwasher's new spot) instead of west.
     SleevePenetration(uid="CMPS07AAAA", tag="SP-M-CW-KITCH", host_ref="SL-M-DECK",
-                      position=pt(ft(34, 1.2), ft(32, 2.4)), pipe_diameter=inch(0.75),
+                      position=pt(ft(29, 0.6), ft(34, 1.2)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
     SleevePenetration(uid="CMPS08AAAA", tag="SP-M-HW-KITCH", host_ref="SL-M-DECK",
-                      position=pt(ft(33, 7.2), ft(31, 8.4)), pipe_diameter=inch(0.75),
+                      position=pt(ft(29, 6.6), ft(33, 7.2)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
     SleevePenetration(uid="CMPS09AAAA", tag="SP-M-CW-SBATH", host_ref="SL-M-DECK",
                       position=pt(ft(5, 7.2), ft(26, 4)), pipe_diameter=inch(0.75),
@@ -403,17 +408,19 @@ WALL_SLEEVES = [
                       position=pt(ft(10), ft(19, 9)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
                       purpose=Service.WATER_HOT, center_elevation=ft(-1)),
-    # W-B-CE (y=18', x 18..36) — the kitchen lines' way east.
+    # W-B-CE (y=18', x 18..36) — the kitchen lines' way east. x-columns moved 2026-07-30 with
+    # the sink to the north wall and again the same day with the sink/dishwasher flip (see
+    # plan/placeables.py's kitchen header); y=18' is W-B-CE's own line and is unaffected.
     SleevePenetration(uid="CBPW12AAAA", tag="SP-B-CE-KITCH-DR", host_ref="W-B-CE",
-                      position=pt(ft(34, 7.2), ft(18)), pipe_diameter=inch(2),
+                      position=pt(ft(28, 7), ft(18)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), axis="horizontal",
                       center_elevation=ft(-1.17)),
     SleevePenetration(uid="CBPW13AAAA", tag="SP-B-CE-KITCH-CW", host_ref="W-B-CE",
-                      position=pt(ft(34, 1.2), ft(18)), pipe_diameter=inch(1),
+                      position=pt(ft(29, 0.6), ft(18)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-0.86)),
     SleevePenetration(uid="CBPW14AAAA", tag="SP-B-CE-KITCH-HW", host_ref="W-B-CE",
-                      position=pt(ft(33, 7.2), ft(18)), pipe_diameter=inch(1),
+                      position=pt(ft(29, 6.6), ft(18)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_HOT, center_elevation=ft(-0.97)),
     # W-B-CS2 (x=18', y 13'-10"..18') — the kitchen drain's crossing of the centre line,
@@ -534,12 +541,18 @@ DRAINS = [
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
                     "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
+    # Re-routed 2026-07-30 with the sink's move to the north wall, then re-routed again the
+    # same day with the sink/dishwasher flip: straight down the deck sleeve's own column (no
+    # jog — a jog at y=35' would run right along W-B-N1's inner concrete face) to the same
+    # W-B-CE/W-B-CS2 crossings (SP-B-CE-KITCH-DR, SP-B-CS2-KITCH) and west to the main stack
+    # tie-in — that route is fixed by the basement framing, not by where in the kitchen the
+    # sink sits. Elevations re-solved to land on both sleeves' cast centerlines exactly, at
+    # >= 0.25"/ft on every segment.
     PipeRun(uid="S0Y00EZNNG", tag="PR-B-KITCH-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(35), ft(32, 8)), pt(ft(35), ft(32, 8)),
-                  pt(ft(34, 7.2), ft(32, 8)), pt(ft(34, 7.2), ft(16, 6)),
-                  pt(ft(6), ft(16, 6))),
+            path=(pt(ft(28, 7), ft(35)), pt(ft(28, 7), ft(35)),
+                  pt(ft(28, 7), ft(16, 6)), pt(ft(6), ft(16, 6))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(9), ft(8, 0.6), ft(8, 0.5), ft(7, 8.4), ft(7, 1)),
+            elevations=(ft(9), ft(8, 2.9), ft(7, 8.44), ft(6, 11.57)),
             serves=("FX-M-KITCH-SINK",)),
     # BATH2's WC, at its re-pointed flange on the wet wall (→ SP-M-WC2).
     PipeRun(uid="CBPD01AAAA", tag="PR-B-WC2-DRAIN", system=PipeSystem.DRAIN,
@@ -734,15 +747,18 @@ VENT_BRANCHES_MAIN = [
             # ties into the leg already drawn there — well inside Table 1002.2's 42" for 1.5".
             serves=("FX-M-BATH2-WC", "FX-M-BATH1-WC", "FX-M-BATH2-SH",
                     "FX-M-BATH2-TUB", "FX-M-BATH1-LAV")),
-    # Kitchen sink. W-M-E2 *does* continue to the storey above (W-S-E3/E4/E5 stack on it), so
-    # `mep.vent_reachability` is already satisfied by the wet-wall path — this run is the
-    # drawn route, not a check-driven workaround. It rises in the E2 stud bay at x=35'-9",
-    # turns west in the FS-SECOND joist bay whose centre is y=24'-8" (bays are 8"+n*16"; this
+    # Kitchen sink. Re-routed 2026-07-30 with the sink's move to the north wall: W-M-N1
+    # *does* continue to the storey above at this x (W-S-N1 stacks on it, into RM-S-BED3's
+    # wall), so `mep.vent_reachability` is still satisfied by the wet-wall path. x=32'-8" is
+    # the riser's bay — clear of WIN-M-KITCH's RO (29'-5".."31'-8"), WIN-M-KITCH-N's RO
+    # (33'-5".."34'-7") and, one storey up, WIN-S-HALL-N's RO (28'-1".."30'-7") — rather than
+    # x=30'-7" under the sink itself, which sits inside two stacked window ROs. From there it
+    # turns west in the same FS-SECOND joist bay as before, y=24'-8" (bays are 8"+n*16"; this
     # one passes south of FO-S-STAIR, which starts at y=25'-2 3/8", and north of both trunk
     # ducts at 20'-8" and 23'-4"), then north to the shared radon/vent chase at (1', 34'-6").
     # It rises 6" over its length so condensate drains back to the fixture.
     PipeRun(uid="ZTQRPPRATP", tag="PR-M-KITCH-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(35, 9), ft(32, 8)), pt(ft(35, 9), ft(24, 8)),
+            path=(pt(ft(32, 8), ft(35, 9)), pt(ft(32, 8), ft(24, 8)),
                   pt(ft(1), ft(24, 8)), pt(ft(1), ft(34, 6))),
             diameter=inch(1.5), start_elevation=ft(9, 3), end_elevation=ft(9, 9),
             serves=("FX-M-KITCH-SINK",)),
@@ -1289,21 +1305,29 @@ MAIN_DEVICES = [
     # a panel schedule. Counter outlets sit at 42" — 6" of backsplash over the 36" counter,
     # under the 54" wall cabinets. The refrigerator's future battery-backup circuit is not
     # modeled; KRF1 is an ordinary duplex until that circuit is designed.
+    #
+    # Repositioned 2026-07-30 with the range/sink wall swap, then again the same day with the
+    # sink/dishwasher flip and the range/N3 flip. KET1 stayed on FURN-M-KIT-E1's open counter;
+    # KGF1 moved off the sink (now under it) onto the dishwasher's new spot instead. KGF2
+    # stayed put — it was never over an appliance. KGF3 followed the range's cooking zone
+    # north with N3.
+    ElectricalDevice(uid="VDGMBY3YW7", tag="ED-M-LIVING-KET1", kind=DeviceKind.RECEPTACLE_240,
+                     position=pt(ft(25, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-620", circuit="CKT-KETTLE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
     ElectricalDevice(uid="N9317V3K8Y", tag="ED-M-LIVING-KGF1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(22, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA1",
+                     position=pt(ft(31, 1), ft(35, 4)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
     ElectricalDevice(uid="J34E2ZM4GG", tag="ED-M-LIVING-KGF2", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(28, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA1",
+                     position=pt(ft(32), ft(35, 4)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
     ElectricalDevice(uid="EJYZJRDFG0", tag="ED-M-LIVING-KGF3", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(35, 4), ft(30, 6)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA2",
+                     position=pt(ft(35, 4), ft(28, 11.375)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
-    ElectricalDevice(uid="VDGMBY3YW7", tag="ED-M-LIVING-KET1", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(21, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-620", circuit="CKT-KETTLE",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
-    # Behind the range at 6": the whip drops to the floor box, not to a counter height.
+    # Behind the range at 6": the whip drops to the floor box, not to a counter height. Moved
+    # north with APPL-M-RANGE when it swapped with N3; x is still the wall-face constant
+    # (35'-4") and y is the range's new along-wall position.
     ElectricalDevice(uid="S8DH5FRQQA", tag="ED-M-LIVING-KRG1", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(26, 7), ft(35, 4)), type_ref="ED-T-RECEPTACLE-240", circuit="CKT-RANGE",
+                     position=pt(ft(35, 4), ft(31, 8.375)), type_ref="ED-T-RECEPTACLE-240", circuit="CKT-RANGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(6))),
     # On the centre bearing wall's east face, behind APPL-M-FRIDGE, at 48" — above the
     # coil deck, so the plug is reachable without pulling the whole cabinet out.
@@ -1311,8 +1335,10 @@ MAIN_DEVICES = [
                      position=pt(ft(18, 4), ft(31, 5.375)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     # Inside the sink base, 18" up: the dishwasher's cord and the disposer share the box.
+    # Followed APPL-M-DW to its new spot when it flipped with the sink; x is the dishwasher's
+    # along-wall position and y is the wall-face constant (35'-4").
     ElectricalDevice(uid="WK41TSMA97", tag="ED-M-LIVING-KDW1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35, 4), ft(32)), type_ref="ED-T-RECEPTACLE", circuit="CKT-DISHWASHER",
+                     position=pt(ft(31, 1), ft(35, 4)), type_ref="ED-T-RECEPTACLE", circuit="CKT-DISHWASHER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
 ]
 
@@ -1560,8 +1586,8 @@ WATER_SUPPLY = [
 SUPPLY = [
     PipeRun(uid="CBPW30AAAA", tag="PR-B-CW-TRUNK", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5), ft(1)), pt(ft(5), ft(1)), pt(ft(5), ft(16)),
-                  pt(ft(8), ft(16)), pt(ft(34, 1.2), ft(16)),
-                  pt(ft(34, 1.2), ft(32, 2.4)), pt(ft(34, 1.2), ft(32, 2.4))),
+                  pt(ft(8), ft(16)), pt(ft(29, 0.6), ft(16)),
+                  pt(ft(29, 0.6), ft(34, 1.2)), pt(ft(29, 0.6), ft(34, 1.2))),
             diameter=inch(1.25), material="pex",
             elevations=(ft(3), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2),
                         ft(8, 1.2), ft(12, 6)),
@@ -1640,8 +1666,8 @@ SUPPLY = [
             wall_refs=(None, None, "W-M-BA2E"),
             serves=("FX-M-LAUNDRY",)),
     PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(33, 7.2), ft(15, 6)),
-                  pt(ft(33, 7.2), ft(31, 8.4)), pt(ft(33, 7.2), ft(31, 8.4))),
+            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(29, 6.6), ft(15, 6)),
+                  pt(ft(29, 6.6), ft(33, 7.2)), pt(ft(29, 6.6), ft(33, 7.2))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(8), ft(8), ft(8), ft(12, 6)),
             serves=("FX-M-KITCH-SINK",)),

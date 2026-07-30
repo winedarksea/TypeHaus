@@ -568,9 +568,12 @@ CONDUIT_TRUNKS = [
                      pt(ft(16), ft(41, 6))),
                start_elevation=ft(-4), end_elevation=ft(5, 10),
                from_ref="ED-B-PANEL", to_ref="ED-G-EV-1450"),
-    # Across the basement ceiling to the kitchen's east counter wall.
+    # Across the basement ceiling to the kitchen's east counter wall — still the east wall
+    # after the 2026-07-30 range/sink swap, since KGF3 (the device this feeds) stayed the
+    # east-wall device; its position along that wall moved twice since, with the cooking run
+    # and then with the range/N3 flip.
     ConduitRun(uid="CDT003AAAA", tag="CD-B-KITCHEN", trade_size=inch(0.75),
-               path=(pt(ft(2), ft(29)), pt(ft(35), ft(29)), pt(ft(35), ft(32))),
+               path=(pt(ft(2), ft(29)), pt(ft(35), ft(29)), pt(ft(35), ft(28, 11))),
                start_elevation=ft(-1), end_elevation=ft(3, 6),
                from_ref="ED-B-PANEL", to_ref="ED-M-LIVING-KGF3"),
     # South out of the basement to the hot tub disconnect under the porch.

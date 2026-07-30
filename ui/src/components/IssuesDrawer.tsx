@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useStore } from "../state/store";
 import { visibleFindings } from "../state/locate";
 import type { Finding, Severity } from "../model/types";
+import { Icon } from "../icons/Icon";
 
 // Issue states are UI metadata layered over the engine's Finding (which has no such notion).
 // Persisted to localStorage, keyed by a stable identity derived from the finding.
@@ -60,7 +61,7 @@ export function IssuesDrawer() {
       <div className="issues-header">
         <h3 style={{ margin: 0 }}>Issues · {findings.length}</h3>
         <button className="btn" onClick={() => setActivePanel(null)} title="Collapse issues">
-          ▾
+          <Icon name="close" />
         </button>
       </div>
       <div className="issues-body">

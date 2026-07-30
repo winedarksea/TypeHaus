@@ -6,6 +6,7 @@ import { transitionCoverage } from "../model/transitions";
 import { uidByTag } from "../model/tagIndex";
 import { DetailViewer } from "./DetailViewer";
 import { ReaderSection, ReaderShell } from "./ReaderShell";
+import { Icon } from "../icons/Icon";
 
 // "Assembly details (ie transitions)" (→ TODO Editor). The library's authored Transitions are
 // printed by the engine and carried in model.json, but nothing surfaced them: this reader pairs
@@ -213,7 +214,7 @@ export function AssemblyDetailsView() {
                       <td>
                         <button className="reader-tag" onClick={() => setExpandedKind(open ? null : kind)}
                           title={open ? "Hide these conditions" : "List these conditions"}>
-                          {open ? "▾" : "▸"} <span className="reader-mono">{kind}</span>
+                          <Icon name={open ? "chevron-down" : "chevron-right"} size={14} /> <span className="reader-mono">{kind}</span>
                         </button>
                       </td>
                       <td className="num-col">{items.length}</td>

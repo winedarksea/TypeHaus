@@ -1,6 +1,7 @@
 import { useStore } from "../state/store";
 import { AssemblyEditor } from "./AssemblyEditor";
 import { StairDesigner } from "./StairDesigner";
+import { Icon } from "../icons/Icon";
 
 // Workbench (Phase 7): complex edits temporarily take over the UI in focus mode — the canvas
 // dims behind a breadcrumb back, instead of cramming the strict inspector or firing modals.
@@ -19,7 +20,7 @@ export function Workbench() {
     <div className="workbench-backdrop">
       <div className="workbench">
         <div className="workbench-bread">
-          <button className="btn" onClick={close} title="Back to canvas">← Back</button>
+          <button className="btn" onClick={close} title="Back to canvas"><Icon name="arrow-left" size={18} /> Back</button>
           <span className="workbench-title">{title}</span>
         </div>
         <div className="workbench-body">

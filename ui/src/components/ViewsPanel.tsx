@@ -7,6 +7,7 @@ import {
   TRADE_SURFACES,
   type LayerVisibilityGroup,
 } from "../model/visibility";
+import { Icon } from "../icons/Icon";
 
 // Views (Phase 6): untangles workspace / visibility / representation, and adds saved view
 // recipes. Consolidates the loose 3D trade toggles + nordic/schematic switch (relocated out
@@ -154,7 +155,7 @@ export function ViewsPanel() {
     <aside className="views-panel">
       <div className="drawer-header">
         <h3 style={{ margin: 0 }}>Views</h3>
-        <button className="btn" onClick={() => setActivePanel(null)} title="Close views">✕</button>
+        <button className="btn icon-btn" onClick={() => setActivePanel(null)} title="Close views"><Icon name="close" /></button>
       </div>
 
       <h3>Level</h3>
@@ -286,7 +287,7 @@ export function ViewsPanel() {
           {views.map((v) => (
             <div key={v.name} className="saved-view-row">
               <button className="saved-view-apply" onClick={() => applyView(v)}>{v.name}</button>
-              <button className="saved-view-del" onClick={() => deleteView(v.name)} title="Delete">✕</button>
+              <button className="saved-view-del" onClick={() => deleteView(v.name)} title="Delete"><Icon name="close" size={16} /></button>
             </div>
           ))}
         </div>

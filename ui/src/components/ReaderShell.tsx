@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Icon } from "../icons/Icon";
 
 // The chrome the two full-width readers share (assembly details, bill of materials). Same
 // focus-mode treatment as the Workbench — canvas dims behind a breadcrumb back — because both
@@ -14,7 +15,7 @@ export function ReaderShell({ title, subtitle, onClose, toolbar, children }: {
     <div className="workbench-backdrop">
       <div className="workbench" role="dialog" aria-label={title}>
         <div className="workbench-bread">
-          <button className="btn" onClick={onClose} title="Back to canvas">← Back</button>
+          <button className="btn" onClick={onClose} title="Back to canvas"><Icon name="arrow-left" size={18} /> Back</button>
           <span className="workbench-title">{title}</span>
           <span className="muted reader-subtitle">{subtitle}</span>
           <span className="spacer" style={{ flex: 1 }} />

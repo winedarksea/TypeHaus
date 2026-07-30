@@ -111,3 +111,130 @@
 .control-tag.control-air { color: var(--control-air); }
 .control-tag.control-water { color: var(--control-water); }
 .control-tag.control-thermal { color: var(--control-thermal); }
+
+/* ══ MD3 readers ════════════════════════════════════════════════════════════
+   All six full-screen readers share this vocabulary through ReaderShell, so the
+   restyle is CSS on ~12 classes rather than six component rewrites. */
+
+.workbench {
+  background: var(--md-surface-container-low);
+  border: 0;
+  border-radius: var(--md-shape-lg);
+  box-shadow: var(--md-elev-3);
+}
+
+/* The reader's own top app bar. */
+.workbench-bread {
+  gap: var(--space-3);
+  min-height: 56px;
+  padding: 0 var(--space-4);
+  background: var(--md-surface-container);
+  border-bottom: 1px solid var(--panel-line);
+}
+.workbench-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+.reader-subtitle {
+  color: var(--md-on-surface-variant);
+}
+
+/* Readers exist to be read out of and copied out of. `body` sets user-select:none
+   globally for the drawing surface, which also made it impossible to select a number
+   from the panel schedule. */
+.workbench-body {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.reader-section-title {
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+.reader-section-note {
+  color: var(--md-on-surface-variant);
+}
+
+/* MD3 data table: sticky header so the column names survive a long schedule, hairline
+   separators in outline-variant, and rows tall enough to track across. */
+.reader-table-scroll {
+  border: 1px solid var(--panel-line);
+  border-radius: var(--md-shape-sm);
+  background: var(--md-surface-container-lowest);
+}
+.reader-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 10px 12px;
+  background: var(--md-surface-container);
+  color: var(--md-on-surface-variant);
+  border-bottom: 1px solid var(--panel-line);
+}
+.reader-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+.reader-table tr:last-child td {
+  border-bottom: 0;
+}
+
+/* MD3 outlined card. */
+.reader-card {
+  border-radius: var(--md-shape-md);
+  border-color: var(--panel-line);
+  background: var(--md-surface-container-lowest);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-3);
+}
+.reader-card-title {
+  font-size: var(--text-md);
+}
+
+/* MD3 assist / filter chips. */
+.reader-chip,
+.reader-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: var(--md-shape-sm);
+  border-color: var(--md-outline);
+}
+.reader-chip {
+  color: var(--md-on-secondary-container);
+  background: var(--md-secondary-container);
+  border-color: transparent;
+}
+.reader-tag {
+  background: var(--md-surface-container);
+}
+
+.reader-expand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--md-outline);
+  border-radius: var(--md-shape-full);
+  background: transparent;
+  color: var(--md-on-surface);
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+
+@media (max-width: 679px) {
+  /* Readers go full-bleed: the shell's chrome insets describe a layout the phone does
+     not have, and a reader is the whole screen here. */
+  .workbench-backdrop {
+    padding: 0;
+  }
+  .workbench {
+    border-radius: 0;
+  }
+  .reader-expand,
+  .reader-tag {
+    min-height: var(--hit);
+  }
+}

@@ -3,6 +3,7 @@ import { useStore } from "../state/store";
 import type { AssemblySpec, CatalogLayer, Layer } from "../model/types";
 import { formatFtIn, parseFtIn } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
+import { Icon } from "../icons/Icon";
 
 // The assembly editor (WP2.4d/e, → 21b feature 7): clone-and-tweak over the standard
 // journal. Library presets are read-only until duplicated into the project (`editable`
@@ -112,7 +113,7 @@ export function AssemblyEditor({ onClose, embedded = false }: { onClose: () => v
       {!embedded && (
         <div className="modal-header">
           <h3 style={{ margin: 0 }}>Assemblies</h3>
-          <button className="btn" onClick={onClose}>✕</button>
+          <button className="btn icon-btn" onClick={onClose} aria-label="Close"><Icon name="close" /></button>
         </div>
       )}
         <div className={`assembly-editor-body${embedded ? " embedded" : ""}`}>
@@ -185,7 +186,7 @@ export function AssemblyEditor({ onClose, embedded = false }: { onClose: () => v
                         }} />
                       <button className="btn" onClick={() => moveLayer(i, -1)} disabled={i === 0} title="Move up">↑</button>
                       <button className="btn" onClick={() => moveLayer(i, 1)} disabled={i === draft.length - 1} title="Move down">↓</button>
-                      <button className="btn" onClick={() => removeLayer(i)} title="Remove layer">✕</button>
+                      <button className="btn icon-btn" onClick={() => removeLayer(i)} title="Remove layer"><Icon name="close" size={16} /></button>
                     </div>
                   ))}
                   {/* trailing drop zone so a layer can be dragged to the very bottom */}

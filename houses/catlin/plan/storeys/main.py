@@ -398,19 +398,22 @@ OPENINGS = [
     Window(uid="CMX312AAAA", tag="WIN-M-DIN-E2", host="W-M-E2",
            type_ref="WT-2736", position=from_node("N-M-E1", ft(1, 6.5)),
            sill_height=ft(2, 6)),
-    Window(uid="CMX313AAAA", tag="WIN-M-KITCH", host="W-M-E2",
-           type_ref="WT-2736", position=from_node("N-M-NE", ft(2, 2.5)),
+    # Moved to the north wall 2026-07-30 with the sink (plan/placeables.py's kitchen header),
+    # then re-centred the same day when the sink flipped with the dishwasher toward the
+    # middle of the run: still directly in front of the sink, still 42" sill = counter
+    # height, centred at x=28'-0" — 7" off FURN-M-KIT-SINKBASE's x=28'-7" so the RO lands on
+    # a stud line instead. Host is W-M-N1.
+    Window(uid="CMX313AAAA", tag="WIN-M-KITCH", host="W-M-N1",
+           type_ref="WT-2736", position=from_node("N-M-NE", ft(6, 10.5)),
            sill_height=ft(3, 6)),
-    # The cooking window, and the north wall's only one. A recirculating hood moves no air
-    # outdoors, so the only way to clear a scorched pan is to open something next to the
-    # stove: a 14" awning, immediately west of the range and reachable across the counter.
-    # Centre x = 24'-8" is a bay centre on the 16" module, so it breaks no stud; sill 42"
-    # clears the 36" counter by 6". The 30x60 that used to sit east of the range at
-    # 29'-5"..31'-11" is gone: that stretch of wall is now one 5'-6" run of uppers, which is
-    # the trade this kitchen wants — a north window on a north wall buys little light, and the
-    # east wall's WIN-M-KITCH already lights the sink.
+    # Relocated to the NE corner 2026-07-30 with the range/sink wall swap: it lost its old job
+    # (clearing a scorched pan next to the range — the range is on the east wall now) and its
+    # old spot (over the cabinet that's now FURN-M-KIT-E2/the sink run). Kept as a small
+    # corner window rather than dropped: centre x=34'-0" is a bay centre on the same 16"
+    # module measured off N-M-NE, clear of WIN-M-KITCH by 20 1/2" and of the corner face
+    # (35'-5 3/8") by 10 3/8".
     Window(uid="82WVR597PA", tag="WIN-M-KITCH-N", host="W-M-N1", type_ref="WT-1424",
-           position=from_node("N-M-NE", ft(10, 9)), sill_height=ft(3, 6)),
+           position=from_node("N-M-NE", ft(1, 5)), sill_height=ft(3, 6)),
     # Exterior
     RoughOpening(uid="S4PSJ99JQF", tag="RO-1", host="W-M-STRS", position=from_node("N-M-STR1", ft(4, 4.375)), width=ft(3), height=ft(6, 8), sill_height=m(0)),
 ]
