@@ -35,8 +35,8 @@ from plan.storeys.garage import GARAGE_Y_NORTH, GARAGE_Y_SOUTH
 # --- house strip footings --------------------------------------------------------
 _HOUSE_WALL_TAGS = [
     "W-B-S1", "W-B-S2", "W-B-S3", "W-B-E1", "W-B-E2", "W-B-N1", "W-B-N2",
-    "W-B-N3", "W-B-W1", "W-B-W2", "W-B-CS", "W-B-CS2", "W-B-CN", "W-B-CW",
-    "W-B-CE", "W-B-STR",
+    "W-B-N3", "W-B-W1", "W-B-W2", "W-B-CS", "W-B-CS2", "W-B-CN", "W-B-CN2", "W-B-CW",
+    "W-B-CE", "W-B-STR", "W-B-STR2",
 ]
 
 HOUSE_FOOTINGS = [

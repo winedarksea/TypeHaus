@@ -154,11 +154,31 @@ BASEMENT_LIGHTING = [
                      position=pt(ft(10, 5), ft(23)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+    # Moved north from y=21' on 2026-07-30: RM-B-BATH took the shaft's south 3'-0", so the old
+    # position is inside the bathroom now and `integrity.placeable_room_mismatch` said so. At
+    # y=23'-6" the can is still in the arrival zone at the foot of the flight, between the
+    # bathroom door's outswing arc and D-B-NE's opening at 22'-6"..25'-2".
     ElectricalDevice(uid="QTB000JAAA", tag="ED-B-STAIR-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(14), ft(21)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(14), ft(23, 6)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR",
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+
+    # RM-B-BATH (2026-07-30). One can and one switch, on the same CKT-LT-BACKUP the rest of
+    # the stair block is on — deliberately, so the light at the bottom of the stair and the
+    # light in the room off it both stay lit when the backup panel is carrying the house.
+    # The can is centred over the room's length at x=14', clear of the exhaust terminal over
+    # the WC at 11'-8". The switch is inside the room on the partition beside the door's latch
+    # jamb (the leaf swings out, so the switch is behind you as you enter, not behind the leaf).
+    ElectricalDevice(uid="QTB000KAAA", tag="ED-B-BATH-CAN1", kind=DeviceKind.LIGHT,
+                     position=pt(ft(14), ft(20)), type_ref="ED-T-LT-CAN4-WET",
+                     circuit="CKT-LT-BACKUP", room="RM-B-BATH",
+                     controlled_by=("ED-B-BATH-SW",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="QTB000LAAA", tag="ED-B-BATH-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(15, 8), ft(21, 4)), type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-BACKUP", room="RM-B-BATH", rotation=deg(180),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]
 
 # --- Main storey ----------------------------------------------------------------------

@@ -307,6 +307,17 @@ BASEMENT_DEVICES = [
     ElectricalDevice(uid="CEE011AAAA", tag="ED-B-SPA-RC", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(8, 6), ft(-5.5)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
+    # RM-B-BATH's required receptacle (2026-07-30, NEC 210.52(D)): GFCI, on the wall adjacent
+    # to the basin and within 3'-0" of its outside edge — 1'-0" here, on the north partition
+    # just west of the lavatory (which occupies y 19'-0"..21'-0" against the east wall). It
+    # cannot go on the east wall itself: that is 12" cast concrete with the basin against it.
+    # On CKT-RC-BSMT with the basement's other receptacles rather than its own 20A circuit,
+    # which is the trade this house already made for the panel it has (see plans/TODO.md's
+    # open panel_spaces item — nothing here adds a slot).
+    ElectricalDevice(uid="CEE040AAAA", tag="ED-B-BATH-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(15, 4), ft(21, 4)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-RC-BSMT", room="RM-B-BATH", rotation=deg(180),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
 ]
 
 BASEMENT_EQUIPMENT = [
@@ -333,7 +344,7 @@ BASEMENT_EQUIPMENT = [
               outdoor_ref="EQ-M-HP2-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6)),
               zone_rooms=("RM-B-GYM", "RM-B-PLAY-N", "RM-B-STAIR", "RM-B-WORKSHOP",
-                          "RM-B-SAUNA", "RM-B-FURNACE")),
+                          "RM-B-SAUNA", "RM-B-FURNACE", "RM-B-BATH")),
     Equipment(uid="CEE020AAAA", tag="EQ-B-SAUNA-HTR", kind=EquipmentKind.SAUNA_HEATER,
               position=pt(ft(9, 9.8125), ft(8, 9)), footprint=(inch(18), inch(16)),
               room="RM-B-SAUNA", type_ref="EQ-T-SAUNA-HEATER", rotation=deg(90),

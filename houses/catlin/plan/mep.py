@@ -243,25 +243,63 @@ STACK_SLEEVES = [
 
 # Slab-on-grade stub-ups. A fixture standing on grade has no wall drain stack — its trap
 # arm runs *under* the slab — so the penetration is set before the pour exactly like the
-# deck sleeves above. FX-1 (the furnace-room utility sink, plan/placeables.py) authors this
-# same point as its `drain_position`, which is what makes the alignment check exact.
+# deck sleeves above. Each fixture authors this same point as its `drain_position` (or, where
+# there is no override, as its own position), which is what makes the alignment check exact.
+#
+# Four of them now (2026-07-30). The basement went from one slab fixture to four in one
+# decision: a bathroom at the foot of the stair, and the sauna's shower end resolved into a
+# curbed pan plus a floor drain.
 SLAB_STUBS = [
-    SleevePenetration(uid="CBP901AAAA", tag="SP-B-UTILITY", host_ref="SL-B-FLOOR",
-                      position=pt(ft(7), ft(19, 6)), pipe_diameter=inch(1.5),
-                      sleeve_diameter=inch(2), serves_fixture="FX-1"),
+    # Was SP-B-UTILITY, FX-1's stub at (7', 19'-6"), until 2026-07-30. Same cast-in, moved
+    # and upsized to 3" for the bathroom's water closet: the utility sink it used to serve is
+    # gone and the fixture that replaced it is a WC, which needs a 3" closet bend rather than
+    # a 1 1/2" trap arm. The uid rides along because it is the same penetration in the same
+    # pour schedule, not a new one.
+    SleevePenetration(uid="CBP901AAAA", tag="SP-B-BATH-WC", host_ref="SL-B-FLOOR",
+                      position=pt(ft(11, 8), ft(20)), pipe_diameter=inch(3),
+                      sleeve_diameter=inch(4), serves_fixture="FX-B-BATH-WC"),
+    SleevePenetration(uid="CBP904AAAA", tag="SP-B-BATH-LAV", host_ref="SL-B-FLOOR",
+                      position=pt(ft(17), ft(20)), pipe_diameter=inch(1.5),
+                      sleeve_diameter=inch(2), serves_fixture="FX-B-BATH-LAV"),
+    # The sauna's two. The pan's is under the centre of the 36" x 36" curbed shower; the floor
+    # drain's is the drain body itself, which is why its position and the fixture's are the
+    # same point with no `drain_position` override on either.
+    SleevePenetration(uid="CBP905AAAA", tag="SP-B-SAUNA-SH", host_ref="SL-B-FLOOR",
+                      position=pt(ft(15, 8.5), ft(12, 0.1875)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), serves_fixture="FX-B-SAUNA-SH"),
+    SleevePenetration(uid="CBP906AAAA", tag="SP-B-SAUNA-FD", host_ref="SL-B-FLOOR",
+                      position=pt(ft(13, 6), ft(12, 9)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), serves_fixture="FX-B-SAUNA-FD"),
     # Where the ceiling collector turns down to become the under-slab building drain
     # (2026-07-30). A 3" waste through cast concrete is a cast-in exactly like the fixture
     # stubs; `mep.sleeve_coverage` holds the crossing to it.
     SleevePenetration(uid="CBP902AAAA", tag="SP-B-SLAB-MAIN", host_ref="SL-B-FLOOR",
                       position=pt(ft(3), ft(15, 6)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4)),
-    # FX-1's trap arm passing beneath FT-B-CW's bearing plane on its way to the main
-    # (IRC P2604). Invert at the crossing is -9'-10 1/2" project, so the centre is
-    # -9'-9 3/4"; `mep.footing_clearance` requires it.
-    SleevePenetration(uid="CBP903AAAA", tag="SP-B-CW-UTIL-DR", host_ref="FT-B-CW",
-                      position=pt(ft(7), ft(18)), pipe_diameter=inch(1.5),
-                      sleeve_diameter=inch(2), axis="horizontal",
-                      center_elevation=ft(-9.825)),
+    # The bathroom branch's two under-footing crossings on its way to the main (IRC P2604,
+    # the same relieving-arch treatment PR-G-HYDRANT-CW gets under the garage footing).
+    # `mep.footing_clearance` requires both: at each one the pipe's crown sits below the
+    # footing's -9'-8" bearing plane, so it is a crossing *through* the footing, not a pipe
+    # standing clear of its 45° influence line.
+    #
+    # This one was SP-B-CW-UTIL-DR (FX-1's 1 1/2" arm) until 2026-07-30. The crossing point is
+    # unchanged — the new bathroom branch runs the same corridor down the mechanical room, so
+    # the hole stays where the concrete crew already had it — but it carries the 3" bathroom
+    # branch now. Invert at the crossing is -9'-11 1/8" project, so the centre is -9'-9 5/8" —
+    # 1 5/8" below FT-B-CW's -9'-8" bearing plane, which is what makes this an under-footing
+    # crossing rather than a pipe standing inside the footing's 45 degree influence line.
+    SleevePenetration(uid="CBP903AAAA", tag="SP-B-CW-BATH-DR", host_ref="FT-B-CW",
+                      position=pt(ft(7), ft(18)), pipe_diameter=inch(3),
+                      sleeve_diameter=inch(4), axis="horizontal",
+                      center_elevation=ft(-9.8)),
+    # Under FT-B-STR, where the branch leaves the bathroom westward into the mechanical room.
+    # The stair shaft is boxed in cast concrete on three sides, so every service this room
+    # gets has to cross one of them: the drain crosses here, below the footing, and the vent
+    # and the two supplies cross the wall above (WALL_SLEEVES).
+    SleevePenetration(uid="CBP907AAAA", tag="SP-B-STR-BATH-DR", host_ref="FT-B-STR2",
+                      position=pt(ft(10), ft(20)), pipe_diameter=inch(3),
+                      sleeve_diameter=inch(4), axis="horizontal",
+                      center_elevation=ft(-9.675)),
 ]
 
 # Horizontal sleeves through the basement's cast concrete walls. The whole ceiling-level
@@ -300,10 +338,18 @@ WALL_SLEEVES = [
                       position=pt(ft(6, 6), ft(18)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_HOT, center_elevation=ft(-0.96)),
-    SleevePenetration(uid="CBPW08AAAA", tag="SP-B-CW-COND", host_ref="W-B-CW",
-                      position=pt(ft(7), ft(18)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(1.5), axis="horizontal",
-                      center_elevation=ft(-2.037)),
+    # (SP-B-CW-COND stood at (7', 18') until 2026-07-30, for the condensate collector's run up
+    # to FX-1's basin. PR-B-COND no longer crosses this wall at all — it now terminates over
+    # the sauna's floor drain, which is south of y=18' — so the hole is retired rather than
+    # left cast for a route nothing takes, the same call the SUITE drain sleeve got below.)
+    # The sauna group's vent crossing, on its way north to the shared radon/vent chase. x=9'
+    # is the one free slot on this wall: the supply and drain sleeves either side of it run
+    # 2'-3" to 8' at 5"+ pitch, and 9' leaves 12" to the nearest of them and 6" to W-B-STR's
+    # west face. Elevation is the run's own interpolated centreline where it passes through.
+    SleevePenetration(uid="CBPW24AAAA", tag="SP-B-CW-SAUNA-VENT", host_ref="W-B-CW",
+                      position=pt(ft(9), ft(18)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), axis="horizontal",
+                      purpose=Service.VENT, center_elevation=ft(-1.276)),
     SleevePenetration(uid="CBPW09AAAA", tag="SP-B-CW-BATH1-CW", host_ref="W-B-CW",
                       position=pt(ft(7, 4.8), ft(18)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
@@ -317,6 +363,27 @@ WALL_SLEEVES = [
     # never crosses W-B-CW. A sleeve was authored at (9', 18') for a route the run does not
     # take; `mep.sleeve_coverage` had it as the one unclaimed drain sleeve on this wall, and
     # a hole cast for nothing is the same defect as a missing one.)
+    # W-B-STR (x=10', y 18'-6"..35'), the stair shaft's west wall — the stair-foot bathroom's
+    # only way out to the mechanical room's trunks (2026-07-30). Three crossings at the
+    # basement ceiling, spread 6"–18" apart along y so the 4"-tolerance sleeve matcher can
+    # tell them apart, and all of them land inside the room's 18'-6"..21'-6" depth:
+    #   vent  at y=21'-0", highest of the three (its riser stands 9" further north, inside
+    #          the partition itself, and the leg turns west just south of it)
+    #   cold   at y=20'-3"
+    #   hot    at y=19'-9"
+    # The fourth service, the drain, goes *under* the footing instead — SP-B-STR-BATH-DR.
+    SleevePenetration(uid="CBPW23AAAA", tag="SP-B-STR-BATH-VENT", host_ref="W-B-STR2",
+                      position=pt(ft(10), ft(21)), pipe_diameter=inch(1.5),
+                      sleeve_diameter=inch(2), axis="horizontal",
+                      purpose=Service.VENT, center_elevation=ft(-1.25)),
+    SleevePenetration(uid="CBPW25AAAA", tag="SP-B-STR-BATH-CW", host_ref="W-B-STR2",
+                      position=pt(ft(10), ft(20, 3)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-0.9)),
+    SleevePenetration(uid="CBPW26AAAA", tag="SP-B-STR-BATH-HW", host_ref="W-B-STR2",
+                      position=pt(ft(10), ft(19, 9)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), axis="horizontal",
+                      purpose=Service.WATER_HOT, center_elevation=ft(-1)),
     # W-B-CE (y=18', x 18..36) — the kitchen lines' way east.
     SleevePenetration(uid="CBPW12AAAA", tag="SP-B-CE-KITCH-DR", host_ref="W-B-CE",
                       position=pt(ft(34, 7.2), ft(18)), pipe_diameter=inch(2),
@@ -337,18 +404,20 @@ WALL_SLEEVES = [
                       sleeve_diameter=inch(3), axis="horizontal",
                       center_elevation=ft(-1.56)),
     SleevePenetration(uid="CBPW21AAAA", tag="SP-B-CS2-CW", host_ref="W-B-CS2",
-                      position=pt(ft(18), ft(16)), pipe_diameter=inch(1),
-                      sleeve_diameter=inch(2), axis="horizontal",
+                      position=pt(ft(18), ft(16)), pipe_diameter=inch(1.25),
+                      sleeve_diameter=inch(2.5), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-0.86)),
     SleevePenetration(uid="CBPW22AAAA", tag="SP-B-CS2-HW", host_ref="W-B-CS2",
                       position=pt(ft(18), ft(15, 6)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_HOT, center_elevation=ft(-0.97)),
     # W-B-CS (x=18', y 0..13'-10") — the condensate collector's two crossings.
+    # Re-levelled 2026-07-30 with PR-B-COND's new termination: same hole, same plan position,
+    # 3/8" lower than the crossing it was cast for.
     SleevePenetration(uid="CBPW16AAAA", tag="SP-B-CS-COND", host_ref="W-B-CS",
                       position=pt(ft(18), ft(9)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
-                      center_elevation=ft(-1.535)),
+                      center_elevation=ft(-1.567)),
     SleevePenetration(uid="CBPW17AAAA", tag="SP-B-CS-COND2", host_ref="W-B-CS",
                       position=pt(ft(18), ft(1, 5.3)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
@@ -421,7 +490,8 @@ GARAGE_SLEEVES = [
 # So the collector stays hung at the basement ceiling where it belongs (that is where the
 # upper-floor stacks arrive), and at its downstream end it drops through the slab at
 # (3', 16'-6") — SP-B-SLAB-MAIN — and runs under the slab to the exit. That drop is also
-# what finally gives FX-1 a gravity drain: see PR-B-UTIL-DRAIN below.
+# what makes every slab fixture in the basement possible: see PR-B-BATH-DRAIN and
+# PR-B-SAUNA-DRAIN below. (Until 2026-07-30 there was exactly one such fixture, FX-1.)
 DRAINS = [
     PipeRun(uid="CMP905AAAA", tag="PR-B-MAIN-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(6), ft(22, 7)), pt(ft(6), ft(22, 7)), pt(ft(6), ft(16, 6)),
@@ -486,20 +556,76 @@ DRAINS = [
             diameter=inch(2), material="pvc",
             elevations=(ft(9), ft(8, 0.6), ft(7, 8.4)),
             serves=("FX-M-LAUNDRY",)),
-    # FX-1, the mechanical-room utility sink — the one fixture that had no drain until the
-    # main went under the slab, because it stands *on* the basement floor and the ceiling
-    # collector runs 6'-6" above it. Its trap arm drops through the cast SP-B-UTILITY stub,
-    # runs south under the slab, passes beneath FT-B-CW's bearing plane in a protection
-    # sleeve (SP-B-CW-UTIL-DR, IRC P2604), then west to meet the main's under-slab leg at
-    # (3', 15'-6"). Inverts are basement-relative: -0.85 → -1.05 is -9'-10 1/5" → -10'-0 3/5"
-    # project, a 0.3"/ft fall the whole way, deep enough that the crown clears the footing
-    # bottom by 1 5/8" where it crosses and the slab underside by 6 1/2".
-    PipeRun(uid="CBPD07AAAA", tag="PR-B-UTIL-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(7), ft(19, 6)), pt(ft(7), ft(19, 6)), pt(ft(7), ft(15, 6)),
-                  pt(ft(3), ft(15, 6))),
+    # --- the two basement slab-fixture branches (2026-07-30) ---------------------------
+    #
+    # Every fixture on these two runs stands *on* the basement floor, so none of them can
+    # reach the ceiling collector 6'-6" overhead: each drops through its cast stub and runs
+    # under the slab to PR-B-MAIN-DRAIN's under-slab leg at x=3'. That leg exists because the
+    # sewer goes out under the slab (the 2026-07-30 decision above); before it there was no
+    # gravity drain anywhere on this floor, which is why the basement had one fixture.
+    #
+    # Inverts are basement-relative, so -0.7 reads as 8 2/5" below the finish floor. Both runs
+    # fall a uniform 0.3"/ft — above the 1/4"/ft `mep.drain_slope` minimum for <= 3" with
+    # enough margin that no segment lands on the threshold — and both stay deep enough that
+    # their crowns keep the 1" of bedding `mep.under_slab_burial` wants below the slab's
+    # -9'-3 1/2" underside, while arriving at the main between its invert and its crown so the
+    # tie is a wye into the upper half of the pipe rather than a bottom entry.
+    #
+    # A note on what these runs are NOT on: neither fixture group appears in
+    # PR-B-MAIN-DRAIN's `serves`. That follows the convention FX-1 set — a slab branch carries
+    # its own fixtures and the main lists the stacks it collects — but the arithmetic is worth
+    # writing down, because the answer changed today. The main lists 34 DFU against the 35 a
+    # 3" horizontal branch carries (Table 703.2); the four fixtures below add 8 more, so the
+    # building drain's real load is now ~42 DFU and it wants to be 4". That is a sizing
+    # decision on the 2026-07-30 under-slab main, not something this bathroom should make
+    # silently — recorded in plans/TODO.md.
+    #
+    # The bathroom branch. Its route is the one FX-1's used, extended east into the new room:
+    # 3" out of the WC's closet bend at (11'-8", 20'), west under FT-B-STR's bearing plane in
+    # a protection sleeve (SP-B-STR-BATH-DR), across the mechanical room, under FT-B-CW in the
+    # second sleeve (SP-B-CW-BATH-DR — FX-1's old crossing, upsized in place), then west to the
+    # main at (3', 15'-6"). Going west rather than straight south is deliberate: south would
+    # cross under W-B-CW2, which has no footing in params/foundations.py to hang a protection
+    # sleeve on, and a crossing that depends on a missing footing is not a crossing that has
+    # been detailed.
+    PipeRun(uid="CBPD07AAAA", tag="PR-B-BATH-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(11, 8), ft(20)), pt(ft(11, 8), ft(20)), pt(ft(7), ft(20)),
+                  pt(ft(7), ft(15, 6)), pt(ft(3), ft(15, 6))),
+            diameter=inch(3), material="pvc",
+            elevations=(ft(0), ft(-0.758), ft(-0.875), ft(-0.988), ft(-1.088)),
+            serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
+    # The lavatory's own 1 1/2" arm, west along the room to the WC's branch — the same
+    # relationship PR-B-LAV1-DRAIN has to the main-floor collector. It arrives at -7 5/8",
+    # inside the 3" branch's upper half at that point (invert -8 5/8", crown -5 5/8").
+    PipeRun(uid="CBPD09AAAA", tag="PR-B-BATH-LAV-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(17), ft(20)), pt(ft(17), ft(20)), pt(ft(11, 8), ft(20))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(1, 6), ft(-0.85), ft(-0.95), ft(-1.05)),
-            serves=("FX-1",)),
+            elevations=(ft(1, 6), ft(-0.52), ft(-0.653)),
+            serves=("FX-B-BATH-LAV",)),
+    # The sauna group: the curbed pan's 2" drop at (15'-8 1/2", 12'-0 3/16"), south to the
+    # wet floor's own line, west through the floor drain at (13'-6", 12'-9"), then straight
+    # west under the workshop to the main. One 2" branch carries both — 4 DFU against the 6 a
+    # 2" horizontal branch takes — and passes under no footing on the way: W-B-SA-W is a
+    # framed partition on the slab, and the run stops 1'-8" short of FT-B-W2 while sitting only
+    # 5" below its bearing plane, so it stays outside the 45° influence line.
+    PipeRun(uid="CBPD08AAAA", tag="PR-B-SAUNA-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(15, 8.5), ft(12, 0.1875)), pt(ft(15, 8.5), ft(12, 0.1875)),
+                  pt(ft(15, 8.5), ft(12, 9)), pt(ft(13, 6), ft(12, 9)),
+                  pt(ft(3), ft(12, 9))),
+            diameter=inch(2), material="pvc",
+            elevations=(ft(0, 2), ft(-0.715), ft(-0.733), ft(-0.788), ft(-1.051)),
+            serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
+    # The floor drain's own way through the slab, and the whole of it: a floor drain has no
+    # trap arm above the floor to draw — the body *is* the penetration — so this run is one
+    # vertical drop from the strainer at finish floor onto the branch above. It is authored
+    # separately rather than as a vertex on the branch because a mid-run vertex crosses no
+    # slab, and `mep.sleeve_coverage` correctly reads a cast stub that no run passes through
+    # as either a stale sleeve or a mis-routed run.
+    PipeRun(uid="CBPD10AAAA", tag="PR-B-SAUNA-FD-DROP", system=PipeSystem.DRAIN,
+            path=(pt(ft(13, 6), ft(12, 9)), pt(ft(13, 6), ft(12, 9))),
+            diameter=inch(2), material="pvc",
+            elevations=(ft(0), ft(-0.788)),
+            serves=("FX-B-SAUNA-FD",)),
 ]
 
 # Second-storey waste stacks, filed on ``main`` (datum 0' = the deck they drop through)
@@ -523,8 +649,8 @@ SECOND_DRAINS = [
 ]
 
 # Heat-pump condensate (plans/TODO.md §condensate): a collected 3/4" air-gap line at the
-# basement ceiling, falling continuously to terminate over the mechanical-room sink
-# (FX-1) — never tied into the sanitary system. PR-M-COND-HEADS drops the two main-storey
+# basement ceiling, falling continuously to terminate over a receptor — never tied into the
+# sanitary system. PR-M-COND-HEADS drops the two main-storey
 # wall heads (master bed + living room, both by the centre line on the south wall)
 # through SP-M-COND and hands off to the basement collector, which also picks up the gym
 # head. EQ-S-HP1-AH's line down the second-floor chase is still undrawn — the chase route
@@ -536,14 +662,30 @@ CONDENSATE_MAIN = [
             elevations=(ft(2, 6), ft(-1), ft(-1.342))),
 ]
 
+# Re-terminated 2026-07-30, when FX-1 was retired: the collector used to run north across
+# W-B-CW and air-gap over that sink's basin, and it now stops short of that wall and
+# terminates over FX-B-SAUNA-FD instead — the sauna wet floor's drain (owner's call). A
+# condensate air gap wants a trapped receptor that sees water in normal use, which a shower
+# floor's drain is and a finished bathroom's lavatory is not.
+#
+# The route west across the sauna ceiling is the one this run already took (SP-B-CS-COND, the
+# cast crossing of the centre wall at (18', 9'), is unchanged in plan and re-levelled to the
+# new interpolated centreline); it runs above the sauna's hung drop ceiling. What is new is
+# the last leg: north to y=12'-9" and then straight down in a boxed chase against W-B-SA-N,
+# which is why the floor drain sits 12" off that wall rather than mid-floor — a 3/4" drop in
+# the open middle of a tiled wet room is not a detail anyone would build. The air gap is 9"
+# above the finish floor.
+#
+# 0.3"/ft of fall across all three horizontal legs — more than a condensate line needs, but
+# `mep.drain_slope` grades this run as what it is filed as, a DRAIN, and holds every segment to
+# IRC P3005.3's 1/4"/ft. It drains toward the receptor over its whole length either way.
 CONDENSATE = [
     PipeRun(uid="CBPC01AAAA", tag="PR-B-COND", system=PipeSystem.DRAIN,
-            path=(pt(ft(27), ft(9)), pt(ft(9), ft(9)), pt(ft(9), ft(16, 10.8)),
-                  pt(ft(7), ft(16, 10.8)), pt(ft(7), ft(19)), pt(ft(7), ft(19))),
+            path=(pt(ft(27), ft(9)), pt(ft(18), ft(9)), pt(ft(13, 6), ft(9)),
+                  pt(ft(13, 6), ft(12, 9)), pt(ft(13, 6), ft(12, 9))),
             diameter=inch(0.75), material="pvc",
-            elevations=(ft(7, 7.9), ft(7, 2.5), ft(7, 0.1), ft(6, 11.5), ft(6, 10.9),
-                        ft(3, 7.2))),
-
+            elevations=(ft(7, 7.9), ft(7, 5.2), ft(7, 3.85), ft(7, 2.725),
+                        ft(0, 9))),
 ]
 
 # --- Vent branches: wet wall -> shared chase ----------------------------------------
@@ -662,6 +804,15 @@ DUCTS_BASEMENT = [
     DuctRun(uid="CBDV02AAAA", tag="DU-B-ERV-RET", system=DuctSystem.RETURN,
            path=(pt(ft(5), ft(29)), pt(ft(5), ft(8)), pt(ft(16), ft(8))),
            width=inch(8), depth=inch(6), routing=DuctRouting.CHASE),
+    # The stair-foot bathroom's branch off that trunk (2026-07-30). 6" x 4" for one 50 cfm
+    # terminal, taken off at y=20' and run east into the room — which means a cast opening
+    # through W-B-STR2's 12" concrete at the ceiling, on the same line as the room's three
+    # service sleeves and set before the pour with them. Ducts carry no SleevePenetration in
+    # this model (the trunk it tees off already crosses W-B-CW the same way), so the opening
+    # lives in this comment and on the concrete crew's drawing rather than as an element.
+    DuctRun(uid="CBDV03AAAA", tag="DU-B-ERV-BATH", system=DuctSystem.EXHAUST,
+           path=(pt(ft(5), ft(20)), pt(ft(11, 8), ft(20))),
+           width=inch(6), depth=inch(4), routing=DuctRouting.CHASE),
 ]
 
 # Attic distribution rides the FS-ATTIC joist bays: supply at 18'-0" (8"+13*16"), return
@@ -871,7 +1022,15 @@ REGISTERS_BASEMENT = [
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     Register(uid="CBRV04AAAA", tag="REG-B-RET2", kind=DuctSystem.RETURN, room="RM-B-SAUNA",
             position=pt(ft(16), ft(6)), duct_ref="DU-B-ERV-RET", type_ref="REG-T-ERV-EXH",
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(7))),
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+    # RM-B-BATH (2026-07-30). Filed as EXHAUST rather than RETURN, like RM-S-BATH1's terminal
+    # and unlike the basement's other two stale pickups: a bathroom's air is pulled and not
+    # recirculated. It sits over the water closet at the room's west end, the far corner from
+    # the door, so the room's makeup air crosses it on the way through.
+    Register(uid="CBRV05AAAA", tag="REG-B-EXH1", kind=DuctSystem.EXHAUST, room="RM-B-BATH",
+            position=pt(ft(11, 8), ft(20)), duct_ref="DU-B-ERV-BATH",
+            type_ref="REG-T-ERV-EXH",
+            mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
 ]
 
 # Attic terminals are floor boots in the FS-ATTIC bays, like the second storey's. The
@@ -1222,17 +1381,24 @@ WATER_SUPPLY = [
 # rise to each wet-wall group through the SUPPLY_SLEEVES cast in the deck. `serves` on a
 # trunk is the union of everything downstream, so `mep.pipe_sizing` sums the real WSFU.
 # Filed on ``basement`` (datum -9'): ceiling runs read as 8'-ish heights.
+#
+# The cold trunk went from 1" to 1 1/4" on 2026-07-30, and it is worth saying why rather than
+# just how: the stair-foot bathroom and the sauna shower added 4 WSFU of cold, taking the trunk
+# from 30 to 34 against the 32 a 1" branch carries in Table 610.4's 46–60 psi / <100' column.
+# Nothing else about the distribution changed — the hot trunk is still 1" at 21.5 WSFU — and
+# the one cast crossing the trunk makes on its way east (SP-B-CS2-CW) grew with it.
 SUPPLY = [
     PipeRun(uid="CBPW30AAAA", tag="PR-B-CW-TRUNK", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5), ft(1)), pt(ft(5), ft(1)), pt(ft(5), ft(16)),
                   pt(ft(8), ft(16)), pt(ft(34, 1.2), ft(16)),
                   pt(ft(34, 1.2), ft(32, 2.4)), pt(ft(34, 1.2), ft(32, 2.4))),
-            diameter=inch(1), material="pex",
+            diameter=inch(1.25), material="pex",
             elevations=(ft(3), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2),
                         ft(8, 1.2), ft(12, 6)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
                     "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK",
-                    "FX-M-LAUNDRY", "FX-M-KITCH-SINK", "FX-1",
+                    "FX-M-LAUNDRY", "FX-M-KITCH-SINK",
+                    "FX-B-BATH-WC", "FX-B-BATH-LAV", "FX-B-SAUNA-SH",
                     "FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
                     "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
@@ -1243,7 +1409,8 @@ SUPPLY = [
             diameter=inch(1), material="pex",
             elevations=(ft(4), ft(8), ft(8), ft(8)),
             serves=("FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
-                    "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-KITCH-SINK", "FX-1",
+                    "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-KITCH-SINK",
+                    "FX-B-BATH-LAV", "FX-B-SAUNA-SH",
                     "FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
                     "FX-S-VANITY-LAV2", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
@@ -1346,47 +1513,103 @@ SUPPLY = [
             diameter=inch(0.75), material="pex",
             elevations=(ft(8), ft(8), ft(21, 6)),
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
-    # The mechanical-room utility sink (FX-1), fed from the water-heater corner.
-    PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-UTIL", system=PipeSystem.WATER_COLD,
-            path=(pt(m(1.88684), m(10.0015)), pt(ft(7), ft(26)), pt(ft(7), ft(19, 2.4)),
-                  pt(ft(7), ft(19, 2.4))),
+    # The stair-foot bathroom, fed from the water-heater corner down the mechanical room's
+    # ceiling — the same pair of runs that fed FX-1 until 2026-07-30 (same uids), turned east
+    # through W-B-STR's two new sleeves instead of dropping to a sink at x=7'. Each crosses at
+    # its own y so the sleeves stay distinguishable (cold 20'-3", hot 19'-9"), then runs east
+    # to x=16' and north to the partition line, where both drop inside W-B-BA-N's cavity to the
+    # fixtures. Cold carries the WC and the lavatory (3.25 WSFU), hot the lavatory alone.
+    PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-BATH", system=PipeSystem.WATER_COLD,
+            path=(pt(m(1.88684), m(10.0015)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
+                  pt(ft(16), ft(20, 3)), pt(ft(16), ft(21, 9.375)),
+                  pt(ft(16), ft(21, 9.375))),
             diameter=inch(0.5), material="pex",
-            elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(3, 6)),
-            serves=("FX-1",)),
-    PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-UTIL", system=PipeSystem.WATER_HOT,
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2),
+                        ft(2, 6)),
+            serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
+    PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-BATH", system=PipeSystem.WATER_HOT,
             path=(pt(m(1.88684), m(10.0015)), pt(ft(7, 3.6), ft(26)),
-                  pt(ft(7, 3.6), ft(19, 2.4)), pt(ft(7, 3.6), ft(19, 2.4))),
+                  pt(ft(7, 3.6), ft(19, 9)), pt(ft(16), ft(19, 9)),
+                  pt(ft(16), ft(21, 9.375)), pt(ft(16), ft(21, 9.375))),
             diameter=inch(0.5), material="pex",
-            elevations=(ft(8), ft(8), ft(8), ft(3, 6)),
-            serves=("FX-1",)),
+            elevations=(ft(8), ft(8), ft(8), ft(8), ft(8), ft(2, 6)),
+            serves=("FX-B-BATH-LAV",)),
+    # The sauna shower's mixer, the first supply this room has ever had. Both legs tee off the
+    # trunks where they already run — cold off PR-B-CW-TRUNK's y=16' leg, hot off the end of
+    # PR-B-HW-TRUNK at (6'-6", 15'-6") — come down the aisle at x=17'-4", pass through
+    # W-B-SA-N's stud bay (a framed partition needs no cast sleeve, unlike every service the
+    # bathroom gets) and drop to the valve at 4'-6" inside W-B-CS's liner build-up, 4" apart on
+    # either side of the pan's centreline. x=17'-4" keeps both of them 2" clear of W-B-CS2's
+    # concrete face at 17'-6" on the way past. No supply runs to FX-B-SAUNA-FD: a floor drain
+    # has none, which is why FX-FLOOR-DRAIN declares neither WATER_COLD nor WATER_HOT.
+    PipeRun(uid="CBPW46AAAA", tag="PR-B-CW-SAUNA", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(17, 4), ft(16)), pt(ft(17, 4), ft(12, 2)),
+                  pt(ft(17, 4), ft(12, 2))),
+            diameter=inch(0.5), material="pex",
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(4, 6)),
+            serves=("FX-B-SAUNA-SH",)),
+    PipeRun(uid="CBPW47AAAA", tag="PR-B-HW-SAUNA", system=PipeSystem.WATER_HOT,
+            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(17, 4), ft(15, 6)),
+                  pt(ft(17, 4), ft(11, 10)), pt(ft(17, 4), ft(11, 10))),
+            diameter=inch(0.5), material="pex",
+            elevations=(ft(8), ft(8), ft(8), ft(4, 6)),
+            serves=("FX-B-SAUNA-SH",)),
 ]
 
 MAIN_ELEMENTS = [*SLEEVES, *SUPPLY_SLEEVES, *STACK_SLEEVES, *SECOND_DRAINS, *CONDENSATE_MAIN,
                  *VENT_BRANCHES_MAIN, *MAIN_DEVICES, *WATER_SUPPLY, *GARAGE_SLEEVES,
                  *DUCTS_MAIN, *REGISTERS_MAIN]
-# The basement's only plumbing vent, and the last fixture in the house to get one
-# (2026-07-30). FX-1 could not be vented while it had no drain — there was nothing to tee
-# off — and its wet wall W-B-CW is 12" cast concrete that stops at the main-floor deck, so
-# there is no stud cavity to rise in and no wall continuing up: this is the offset-vent case,
-# authored to the shared radon/vent chase like every other branch in the house.
+# The basement's two plumbing vents. Both are offset vents to VR-M-RADON-VENT's shared
+# radon/plumbing chase at (1', 34'-6"), because neither room has a wet wall that continues to
+# the storey above: every wall around the stair-foot bathroom except its own north partition
+# is 12" cast concrete stopping at the main-floor deck, and the sauna's are a 2x4 partition,
+# the centre concrete wall and the foundation. `mep.vent_reachability` grades the authored
+# path — nothing here is inferred, so an unvented fixture would still fail loudly.
 #
-# The tee is on the trap arm above the floor, 1'-0" of arm carries it to the wall, and the
-# riser goes up the concrete's north face (boxed in) at y=18'-8" — 8" off the wall axis, so
-# `mep.vent_reachability` reads it as leaving the wet wall, and 2" clear of the y=18'-6" face
-# so it is not drawn inside the concrete. It rises 3" over its 22' to the chase so any
-# condensate drains back to the fixture, the way the other branches do.
+# Both share the same vertical band: the tee sits low, the riser goes up inside the room's own
+# stud cavity, and the horizontal leg tops out at 8'-1" basement-relative rather than 8'-3",
+# because the "basement ceiling" here is 9" of cast concrete and a run at the deck's underside
+# would be cast into it (which `mep.sleeve_coverage` caught the first time it was tried). Each
+# rises a few inches over its length to the chase so condensate drains back to the fixtures.
 #
-# The horizontal leg tops out at 8'-1" basement-relative because the "basement ceiling" here
-# is 9" of cast concrete: SL-M-DECK's underside is 8'-3" on this datum, and the run's crown
-# has to stay under it — at 8'-3" the vent would be cast into the deck, and the first attempt
-# was, which `mep.sleeve_coverage` caught as two uncast crossings.
+# Neither shares a leg with the other — the bathroom's runs north at x=7', the sauna's at
+# x=9' — the same rule PR-S-SUITEBATH-VENT follows against the hall bath's branch.
 VENT_BRANCHES_BASEMENT = [
-    PipeRun(uid="CBPV01AAAA", tag="PR-B-UTIL-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(7), ft(19, 6)), pt(ft(7), ft(18, 8)), pt(ft(7), ft(18, 8)),
-                  pt(ft(7), ft(34, 6)), pt(ft(1), ft(34, 6))),
+    # RM-B-BATH. Was PR-B-UTIL-VENT, FX-1's vent, until 2026-07-30: same uid, same corridor
+    # north at x=7' to the chase, new fixtures at the near end. The riser now stands in a real
+    # stud cavity for the first time — W-B-BA-N, the bathroom's INT_2X6_STAGGERED_PLUMBING
+    # north partition — instead of boxed onto a concrete face, which is what that wall's
+    # assembly was chosen for. It crosses W-B-STR's concrete through SP-B-STR-BATH-VENT.
+    #
+    # The riser stands on the partition's line at (16', 21'-9 3/8"); the leg west runs 9"
+    # south of it at y=21'-0", so its crossing of W-B-STR2 stays clear of the node the
+    # partition tees into. Trap arms measured to that leg: 1'-0" from the water closet's
+    # flange and 1'-5" from the lavatory's trap, against Table 1002.2's 6'-0" for 3" and
+    # 3'-6" for 1 1/2".
+    PipeRun(uid="CBPV01AAAA", tag="PR-B-BATH-VENT", system=PipeSystem.VENT,
+            path=(pt(ft(16), ft(21, 9.375)), pt(ft(16), ft(21, 9.375)),
+                  pt(ft(16), ft(21)), pt(ft(7), ft(21)), pt(ft(7), ft(34, 6)),
+                  pt(ft(1), ft(34, 6))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(1, 6), ft(1, 6), ft(7, 10), ft(8, 0.5), ft(8, 1)),
-            serves=("FX-1",)),
+            elevations=(ft(1, 6), ft(7, 8), ft(7, 9), ft(7, 10), ft(8, 0.5), ft(8, 1)),
+            serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
+    # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-4", 13'-0") — inside W-B-CS's
+    # 3 1/2" liner build-up, in the pan's own east wall, 6" south of the north liner and clear
+    # of the mixer's two supply drops at 11'-10" and 12'-2". That is both fixtures' declared
+    # wet wall (plan/fixtures.py) and the one basement wet wall that carries a framed wall on
+    # the storey above, so the vent has a true stack path as well as this drawn one.
+    #
+    # Trap arms as the check measures them: 14" from the pan's drain and 23" from the floor
+    # drain, against Table 1002.2's 5'-0" for a 2" arm. Above the sauna's hung ceiling the run leaves
+    # the build-up north over W-B-SA-N, crosses the aisle west, and passes W-B-CW through
+    # SP-B-CW-SAUNA-VENT at x=9'.
+    PipeRun(uid="CBPV02AAAA", tag="PR-B-SAUNA-VENT", system=PipeSystem.VENT,
+            path=(pt(ft(17, 4), ft(13)), pt(ft(17, 4), ft(13)),
+                  pt(ft(17, 4), ft(14, 8)), pt(ft(9), ft(14, 8)),
+                  pt(ft(9), ft(34, 6)), pt(ft(1), ft(34, 6))),
+            diameter=inch(2), material="pvc",
+            elevations=(ft(0, 6), ft(7, 4), ft(7, 6), ft(7, 8), ft(8, 0.5), ft(8, 1)),
+            serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
 ]
 
 BASEMENT_ELEMENTS = [*DRAINS, *CONDENSATE, *SUPPLY, *WALL_SLEEVES, *SLAB_STUBS,

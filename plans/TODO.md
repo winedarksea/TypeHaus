@@ -1,11 +1,6 @@
 # TODO
 Reminder: all items should design around clean export to Revit/Sketchup/IFC (follow industry standards where practical), and also be coded in accessible, "vibe code friendly" configs.
 
-*2026-07-25: the parallel-workstream sweep cleared most of this file (windows, 2x6, BATH1,
-condensation gate, soil ΔT, IFC geometry, detail scaffolding, sunken-garden third pass,
-ridge vents, fascia removal, Canvas2D split, variants/BOM/prices, PyPI prep). What follows is
-what genuinely remains, with fresh measurements.*
-
 ## Needs your decision
 
 - **D2 — the winder turn does not fit in a 3'-0" well, and framing cannot fix that.** The
@@ -25,24 +20,6 @@ what genuinely remains, with fresh measurements.*
   assignments and `electrical.panel_spaces` measures 48 required against ED-T-PANEL's
   declared 42 — an honest FAIL until the panel type is swapped to a 54-circuit enclosure
   (one-line change on the type). That swap is yours.
-
-- ~~**FX-1 cannot drain by gravity — ejector, or main under the slab?**~~ — **decided
-  2026-07-30: the main goes under the slab.** The sewer connection is buried below the slab,
-  as Minnesota does to keep it under frost, so no ejector is needed. What changed:
-  - the collector stays hung at the basement ceiling (that is where the upper-floor stacks
-    arrive) and drops through `SP-B-SLAB-MAIN` at (3', 15'-6"), then runs under the slab to
-    invert -10'-6 3/5" and leaves **beneath** `FT-B-S1`. It has to go under the footing
-    rather than through the wall: the walls stop at -9'-0", which is the slab top, so there
-    is no wall left at that depth — the exit is an under-footing protection sleeve (IRC
-    P2604), the same treatment `PR-G-HYDRANT-CW` already gets under the garage footing. The
-    old exit at -2'-3" was above the 42" frost line, which is what this decision retires.
-  - `PR-B-UTIL-DRAIN` gives FX-1 its gravity drain, passing under `FT-B-CW` in
-    `SP-B-CW-UTIL-DR`, and `PR-B-UTIL-VENT` is the basement's first vent branch. The trap
-    moved 6" north to 19'-6" so the drop clears FT-B-CW's 45° influence line.
-  - `mep.sewer_exit_invert` grew the under-footing case (a protection sleeve is not a
-    through-crossing, so it is matched by proximity with the invert interpolated).
-
-  Every plumbing check and the whole mn-2024 permit checklist now pass.
 
 ## Remaining Work
 
@@ -207,12 +184,16 @@ the future.
   (replaces the "Space labels" checkbox). A selected element always shows its own label.
 - RM-M-STORAGE should become the "Mudroom". Doors should go as far east on both walls as is practical with framing. WIN-M-STOR should be replaced by a 14" wide fixed (picture) window on the midpoint of the west wall (midpoint, but such that it fits elegantly between studs). Then on the north and south sides of the mudroom, from door to west wall, there should be full closests added, leaving a hallway width (36") between them, and a 36" width bench under the window there for changing shoes. The mudroom should have an ERV ventilation intake (but not an outlet). Maybe sliding doors on those closets (like shower doors, two panels that can overlap, not the sash kind that go into the wall).
 - Make Wall W-M-STRW a special wall type. It will not have drywall facing the mudroom, so it can have space for hanging coats between the studs. The studs will be Select Grade S4S 2x6 for better visual appearance (likely douglas fir, perhaps slightly rounded (eased) corners). The rear side of the wall (facing the stairs) will have 3/4" cabinet-grade plywood (which can support coat hooks directly). Try to keep electrical and plumbing out of this wall then (it might work carefully but easier to avoid.)
+- Make sure the framing of the duct chase down the second floor hallway actually framed that as appropriate
+- RM-S-PLANT needs furniture, showing two armchairs or rocking chairs and two plants (one under each light, just some sort of simple potted plant as a representation of the larger collection of plants that will be there)
+- We don't need the 30 some ERV inlets and outlets in the house. We can reduce down to an intake in each bathroom, on the edge of the kitchen, and in the mudroom. The second floor bedrooms also have intakes (the ducts for the heating provide the matching outlets there). There is an ERV outlet near the ducted intake for the second floor HVAC, in the master bedroom (pairs with the intake in the BATH2 master bedroom). There should be an ERV intake in the workshop (this one over a bench for light fume handling) and an outlet somewhat near the gym. There should be an outlet in RM-M-STUDY too. The sauna like needs an intake and an outlet both (input (outlet) ventilation above heater near ceiling or in ceiling, output (intake) ventilation below foot bench near floor), the sauna ones should be sized small and/or adjustable to close. Here "outlet" means fresh air and "intake" means gathers stale air.
+- D-B-PLAY door needs to have a "glazed 60 interior french door" style, not a bifold.
+- Basic UI visual overhaul, perhaps Material Design 3 aligned. Perhaps the most awkward thing now is the way "Views" is opened. It's the most used tab and it's a tiny button.
 
 Questions:
 - Do we want floor drains in kitchen/laundry room
 - Is the door opening inside the breezeway code compliant
 - No overhang roof 
-- ~~2nd floor hallway dropped ceiling for HVAC~~ (done 2026-07-29: `SF-S-DUCT`)
 - Outdoor hydrants plus more complete internal plumbing 
 - Edits in 2d don't always update all the necessary pieces (like when we switched a shower to showertub)
 - Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?

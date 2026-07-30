@@ -203,6 +203,30 @@ def shower() -> Builder:
     return build
 
 
+def floor_drain() -> Builder:
+    """A floor drain: the square strainer flange with its round grate and the drafting cross.
+
+    The one fixture in this catalog with no vessel and no supply — it *is* the opening in the
+    floor — so the glyph is the flange square, the grate circle inside it and the diagonal
+    cross that says "drain" on a plan rather than "6-inch square object". Nothing here reads
+    as a basin, because a floor drain that draws like a basin reads as a mop sink.
+
+    In 3D the massing is only the strainer standing proud of the finish floor by the type's
+    height; the trap and the riser below it are ``PipeRun`` geometry, not the fixture's.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        grate_r = min(width, depth) * 0.36
+        strokes = [rect(0, 0, width, depth, fill="metal"),
+                   circle(0, 0, grate_r, weight=DETAIL_WEIGHT),
+                   line((-grate_r, -grate_r), (grate_r, grate_r), weight=DETAIL_WEIGHT),
+                   line((-grate_r, grate_r), (grate_r, -grate_r), weight=DETAIL_WEIGHT)]
+        parts = [box(0, 0, 0.0, height, width, depth, "metal")]
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def kitchen_sink(*, bowls: int = 2) -> Builder:
     """A drop-in kitchen sink: a stainless rim deck, one or two bowls, a gooseneck faucet.
 
@@ -353,5 +377,6 @@ PLUMBING_SYMBOLS: dict[str, Builder] = {
     "tub": tub(),
     "tub-shower": tub_shower(),
     "shower": shower(),
+    "floor-drain": floor_drain(),
     "kitchen-sink": kitchen_sink(bowls=2),
 }

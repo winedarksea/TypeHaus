@@ -10,17 +10,17 @@ from typehaus.model import DeviceKind, deg, ft, inch, m, pt
 # rotation 0 puts an object's back at +y (project north), so the sofa faces the media
 # console across the room and the chairs face the table from both sides.
 
-# FX-1 is the furnace-room utility sink. It stands against the north face of the 12"
-# concrete cross wall W-B-CW (centerline y=18', so the face is y=18'-6"), and — like every
-# fixture on a slab-on-grade — its waste drops straight down rather than into a wall stack,
-# so `drain_position` puts the trap out from the wall on the basin centerline and
-# SP-B-UTILITY (plan/mep.py) is the pre-pour stub-up through SL-B-FLOOR that serves it.
+# FX-1, the furnace-room utility sink, stood here until 2026-07-30. It is gone, not deleted:
+# the owner's decision that day put a bathroom at the foot of the stair and moved the
+# basement's one lavatory into it as FX-B-BATH-LAV (plan/fixtures.py), which carries this
+# fixture's uid forward. What went with it: SP-B-UTILITY became the new WC's stub-up,
+# SP-B-CW-UTIL-DR became SP-B-CW-BATH-DR, and PR-B-UTIL-DRAIN / -VENT / PR-B-CW-UTIL /
+# PR-B-HW-UTIL were all re-pointed at the new room (plan/mep.py).
 #
-# The trap moved from y=19'-0" to y=19'-6" on 2026-07-30, when the under-slab building drain
-# gave this sink a real gravity drain. At 19'-0" the stub-up stood 2" clear of FT-B-CW while
-# its pipe dropped 2 1/4" below that footing's bearing plane — just inside the 45° influence
-# line, an honest `mep.footing_clearance` FAIL. 19'-6" is still under the basin (whose centre
-# is y=19'-4 1/2") and puts 8" between the drop and the footing.
+# The one thing that did *not* simply follow it is the heat-pump condensate: PR-B-COND used to
+# air-gap over this sink's basin. It now terminates over FX-B-SAUNA-FD, the sauna wet floor's
+# drain — a trapped indirect-waste receptor that sees water in normal use, which is what a
+# condensate air gap wants and what a finished bathroom lavatory is not.
 #
 # The sauna benches are dimensioned to *liner faces*, not to the node lines the walls are
 # authored on, because that is the surface the joiner scribes to. Read off the resolved
@@ -29,9 +29,6 @@ from typehaus.model import DeviceKind, deg, ft, inch, m, pt
 # 12'-6 1/8" clear box. notes/sauna_shower_basement_detail.md reserves the north 4' for the
 # shower, so everything below stops at y=9'-6" and the benches never cross into it.
 BASEMENT_PLACEABLES = [
-    Fixture(uid="5BBZTZNBWN", tag="FX-1", type_ref="FX-LAV-24", room="RM-B-FURNACE",
-            position=pt(ft(7), ft(19, 4.5)), wall_ref="W-B-CW",
-            drain_position=pt(ft(7), ft(19, 6))),
     # The long two-tier run takes the east wall: it is the only unbroken face in the room —
     # the west wall has D-B-SAUNA, the south wall WIN-B-SAUNA — so the bench lands as one
     # 8'-6" carcass with no scribes around an opening. rotation -90 puts its back (+y local)

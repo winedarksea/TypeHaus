@@ -59,9 +59,10 @@ SYMBOL_NAMES = frozenset({
     "furnace", "erv", "heat-pump-outdoor", "water-heater", "sauna-heater", "panel", "register",
     # plumbing fixtures. "hydrant" is the odd one out: it is a standpipe, not a vessel, so
     # its glyph is the riser's own diameter with a handle bar and an outlet nipple rather
-    # than a basin.
+    # than a basin. "floor-drain" is the other one: it is the opening itself, so its glyph is
+    # a strainer flange with a grate, and it is the only plumbing symbol with no supply side.
     "toilet", "lavatory", "vanity", "tub", "tub-shower", "shower", "kitchen-sink",
-    "hydrant",
+    "hydrant", "floor-drain",
     # luminaires — one name per LuminaireForm that has a point instance. STRIP has none:
     # a cove strip is a LightRun polyline, drawn by the lighting plan, not a placeable.
     # "linear-light" covers LINEAR_TUBE, WALL_LAMP and MIRROR_LIGHT, which differ by

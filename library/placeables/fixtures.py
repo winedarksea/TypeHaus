@@ -98,6 +98,26 @@ KITCHEN_SINK = FixtureType(
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
 )
 
+# A floor drain is a fixture in the schedule's sense — it traps, it drains, it vents, it has
+# to be located — but it is not a *served* fixture: nothing supplies it, so ``needs`` carries
+# neither WATER_COLD nor WATER_HOT and the supply checks correctly leave it alone (the same
+# asymmetry FX-HYDRANT-Y34SS has in the other direction). Footprint is the strainer flange a
+# plan can draw; ``height`` is only how far that flange stands above the finish floor, because
+# everything else about the fixture is below it and is PipeRun geometry rather than massing.
+#
+# No trap primer is declared: this type exists for wet-room floors that see water in normal
+# use, where the trap seal is maintained by use. A floor drain in a room that stays dry for
+# months (a mechanical room) wants a primer line, which would be a different type.
+FLOOR_DRAIN = FixtureType(
+    tag="FX-FLOOR-DRAIN", name="Floor drain", footprint=(inch(6), inch(6)), height=inch(0.5),
+    plan_symbol="floor-drain",
+    needs=frozenset({Service.DRAIN, Service.VENT}),
+    source='6" square adjustable strainer over a 2" cast body with an integral trap; final '
+           "selection by owner. Set the strainer flush with the finish floor at the low "
+           "point of the slope, and coordinate the flange with the waterproofing membrane's "
+           "clamping ring.",
+)
+
 # --- compact bathroom class ---------------------------------------------------------
 # A powder room too small for the standard pair is not a catlin problem: a wall-hung WC on
 # an in-wall carrier plus an 18" lavatory is the standard answer, so both are shared types
@@ -138,4 +158,4 @@ WALL_HYDRANT = FixtureType(
 )
 
 STARTER_FIXTURE_TYPES = (TOILET, LAVATORY, VANITY, TUB, TUB_SHOWER, SHOWER, KITCHEN_SINK,
-                         TOILET_WALL_HUNG, LAVATORY_COMPACT, WALL_HYDRANT)
+                         FLOOR_DRAIN, TOILET_WALL_HUNG, LAVATORY_COMPACT, WALL_HYDRANT)

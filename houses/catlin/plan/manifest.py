@@ -92,7 +92,8 @@ PLAN = (
     PlanModel(project=_project, library=_library, storeys=_storeys)
     .with_elements(
         "basement",
-        [*basement.ELEMENTS, *sunken_garden.BASEMENT_ELEMENTS,
+        [*basement.ELEMENTS, *fixtures.BASEMENT_FIXTURES,
+         *sunken_garden.BASEMENT_ELEMENTS,
          *raised_garden.BASEMENT_ELEMENTS, *foundations.BASEMENT_ELEMENTS,
          *mep.BASEMENT_ELEMENTS, *electrical.BASEMENT_ELEMENTS,
          *lighting.BASEMENT_LIGHTING,

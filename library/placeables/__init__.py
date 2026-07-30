@@ -17,9 +17,9 @@ from library.placeables.casework import (BAR_STOOL, BASE_15, BASE_24, BASE_30, B
                                          BESTA_UNIT, SINK_BASE_36,
                                          STARTER_CASEWORK_TYPES, TALL_PANTRY_12,
                                          TALL_PANTRY_18, WALL_18, WALL_24, WALL_30, WALL_66)
-from library.placeables.fixtures import (KITCHEN_SINK, LAVATORY, LAVATORY_COMPACT,
-                                         SHOWER, STARTER_FIXTURE_TYPES, TOILET,
-                                         TOILET_WALL_HUNG, TUB, TUB_SHOWER, VANITY,
+from library.placeables.fixtures import (FLOOR_DRAIN, KITCHEN_SINK, LAVATORY,
+                                         LAVATORY_COMPACT, SHOWER, STARTER_FIXTURE_TYPES,
+                                         TOILET, TOILET_WALL_HUNG, TUB, TUB_SHOWER, VANITY,
                                          WALL_HYDRANT)
 from library.placeables.furniture import (ARMCHAIR, BOOKCASE, CHEST, COFFEE_TABLE, DESK_CHAIR,
                                           DINING_CHAIR, DRESSER, EIGHT_SEAT_DINING_TABLE,
@@ -51,5 +51,5 @@ __all__ = [
     "FREEZER_UPRIGHT", "HOOD_RECIRC", "WASHER",
     # plumbing fixtures
     "TOILET", "LAVATORY", "VANITY", "TUB", "TUB_SHOWER", "SHOWER", "KITCHEN_SINK",
-    "TOILET_WALL_HUNG", "LAVATORY_COMPACT", "WALL_HYDRANT",
+    "TOILET_WALL_HUNG", "LAVATORY_COMPACT", "WALL_HYDRANT", "FLOOR_DRAIN",
 ]
