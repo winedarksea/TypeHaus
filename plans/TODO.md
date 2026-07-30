@@ -198,7 +198,8 @@ the future.
   `library/placeables/fixtures.py`), so this is a one-line footprint question.
 - D-B-PLAY door needs to have a "glazed 60 interior french door" style, not a bifold.
 - Basic UI visual overhaul, perhaps Material Design 3 aligned. Perhaps the most awkward thing now is the way "Views" is opened. It's the most used tab and it's a tiny button.
-- Laundry room needs to fit a sink + closet, 24" W x 21" D x 43" H.
+- Laundry room needs to fit a sink + closet, 24" W x 21" D x 43" H. like https://www.homedepot.com/p/Glacier-Bay-24-in-W-x-21-in-D-x-34-in-L-Stainless-Steel-Laundry-Utility-Sink-with-Faucet-and-Cabinet-in-White-QL033Y/206057007 The sink will double as the air gapped condensate drain for the heat pump dryer. It looks like we also need to model the standard air gapped clothes washer drain too.
+- It looks like beams BM-S-HALL and BM-M-HALL are not getting grouped as part of the framing in the view. Also want to double check that beams are properly considered as a type of framing, for example the hall beams should likely be defined similarly to RIDGE-BEAM, garage header HEADER-0, the porch beams such as BM-SG-BKW, and possibly some of the window and door headers.
 
 Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
