@@ -108,6 +108,34 @@ def air_handler() -> Builder:
     return build
 
 
+def outdoor_condenser(*, grille_bars: int = 5) -> Builder:
+    """An outdoor heat-pump condenser with its fan guard and front coil grille.
+
+    A generic equipment box disappears against an exterior wall in the 3D view. The fan
+    guard is the useful plan-scale cue; the raised top band and front grille make the same
+    distinction survive an oblique 3D view without claiming a product-specific casing.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        top_h = height * 0.12
+        grille_t = min(depth * 0.12, 0.035)
+        fan_r = min(width, depth) * 0.27
+        strokes = [rect(0, 0, width, depth, fill="appliance-steel"),
+                   circle(0, 0, fan_r, weight=DETAIL_WEIGHT)]
+        for index in range(1, max(2, grille_bars)):
+            x = -width * 0.43 + width * 0.86 * index / max(2, grille_bars)
+            strokes.append(line((x, -depth * 0.42), (x, depth * 0.42)))
+        parts = [box(0, 0, 0.0, height - top_h, width, depth, "appliance-steel"),
+                 # The shallow, contrasting top reads as the fan guard from above.
+                 box(0, 0, height - top_h, height, width * 0.88, depth * 0.88, "metal"),
+                 # Keep the coil grille within the declared footprint at the front face.
+                 box(0, -depth / 2 + grille_t / 2, height * 0.12, height * 0.78,
+                     width * 0.90, grille_t, "metal")]
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def sauna_heater(*, stone_columns: int = 3, stone_rows: int = 3) -> Builder:
     """An electric sauna heater: a steel casing carrying an open bed of stones.
 
@@ -187,6 +215,7 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "microwave": appliance_case(doors=1, body="appliance-steel"),
     "hood": canopy_hood(),
     "furnace": air_handler(),
+    "heat-pump-outdoor": outdoor_condenser(),
     # An ERV/HRV core is the same read at plan scale as any other air-side cabinet — a box
     # with a filter slot and a plenum collar on top — so it shares the builder rather than
     # inventing a glyph that differs only in the label beside it.

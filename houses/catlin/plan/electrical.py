@@ -195,6 +195,7 @@ EQUIPMENT_TYPES = (
     EquipmentType(tag="EQ-T-GREE-VIREO-GEN3",
                   name="Gree Vireo GEN3 outdoor unit, 24k",
                   footprint=(inch(38), inch(16)), height=inch(32),
+                  plan_symbol="heat-pump-outdoor",
                   heating_capacity_btuh=27000,  # TODO verify datasheet
                   heating_capacity_at_design_btuh=16500,  # TODO verify datasheet
                   cooling_capacity_btuh=24000,  # TODO verify datasheet
@@ -208,6 +209,7 @@ EQUIPMENT_TYPES = (
     EquipmentType(tag="EQ-T-GREE-MULTI-U30",
                   name="Gree Multi Ultra 3-port outdoor unit, 30k (-22F)",
                   footprint=(inch(37), inch(16)), height=inch(34),
+                  plan_symbol="heat-pump-outdoor",
                   heating_capacity_btuh=32000,  # TODO verify datasheet
                   heating_capacity_at_design_btuh=22000,  # TODO verify datasheet
                   cooling_capacity_btuh=30000,  # TODO verify datasheet
@@ -241,6 +243,7 @@ EQUIPMENT_TYPES = (
     EquipmentType(tag="EQ-T-GREE-SAPPHIRE-9-OD",
                   name="Gree Sapphire R32 outdoor unit, 9.1k (-22F)",
                   footprint=(inch(31), inch(13)), height=inch(23),
+                  plan_symbol="heat-pump-outdoor",
                   heating_capacity_btuh=12000,  # TODO verify datasheet
                   heating_capacity_at_design_btuh=8000,  # TODO verify datasheet
                   cooling_capacity_btuh=9100,  # TODO verify datasheet

@@ -206,7 +206,7 @@ def test_shelf_flashing_falls_away_from_the_wall(catlin_model):
 def test_interior_partition_step_gets_no_shelf_flashing(catlin_model):
     """An interior wall stepping in leaves no weather ledge — flashing it would be fiction."""
     _derived, scene = _detail_scene(
-        catlin_model, "stack_width_change:INT_2X4_PARTITION|INT_2X6_PLUMBING")
+        catlin_model, "stack_width_change:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING")
     assert "stack-shelf-flashing" not in _component_tags(scene)
 
 

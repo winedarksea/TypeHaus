@@ -25,6 +25,10 @@ class FramingSpec(HausModel):
     member: str = "2x6"  # nominal lumber size, e.g. "2x4", "2x6", "2x8"
     spacing: Length | None = None  # o.c.; defaults to 16" at the solver
     layout: PartitionLayout = PartitionLayout.SINGLE
+    # STAGGERED layout: the plate (and end/corner/opening framing) size when it differs
+    # from ``member`` — the classic acoustic wet wall is 2x4 studs on 2x6 plates. None
+    # means plates match ``member`` (every SINGLE-layout wall today).
+    plate_member: str | None = None
     double_top_plate: bool = True
     # Roof STRUCTURE layers only: "rafter" (plain sloped members, the default) or "truss"
     # (top + bottom chord + web members with a raised heel at the eave bearing). Declarative,

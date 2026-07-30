@@ -99,10 +99,13 @@ def test_the_hydrant_is_on_the_garage_storey_at_the_authored_spot(catlin_model):
 
 # --- 3. the supply run --------------------------------------------------------------------
 
-def test_the_supply_run_is_the_projects_first_water_cold_run(catlin_model):
+def test_the_supply_run_carries_the_hydrant(catlin_model):
+    """No longer the project's *only* cold run — the 2026-07-29 plumbing pass authored the
+    whole domestic distribution — but the hydrant's own feed must still exist and serve it."""
     runs = [r for r in catlin_model.pipe_runs if r.system == PipeSystem.WATER_COLD.value]
-    assert [r.tag for r in runs] == ["PR-G-HYDRANT-CW"]
-    assert "FX-G-HYDRANT" in runs[0].serves
+    hydrant = [r for r in runs if r.tag == "PR-G-HYDRANT-CW"]
+    assert len(hydrant) == 1
+    assert "FX-G-HYDRANT" in hydrant[0].serves
 
 
 def test_the_supply_run_stays_six_feet_down_for_its_whole_length(catlin_model):
@@ -113,8 +116,11 @@ def test_the_supply_run_stays_six_feet_down_for_its_whole_length(catlin_model):
     run = _supply(catlin_model)
     assert run.storey == "main"
     grade = catlin_model.plan.project.site.grade.meters
-    for z in (run.z_start_m, run.z_end_m):
-        assert z is not None
+    # Every vertex holds the 6' bury except the terminal standpipe — the hydrant's own
+    # self-draining barrel, a repeated final plan point rising through the slab.
+    assert run.z_m is not None
+    buried = run.z_m[:-1] if run.path[-1] == run.path[-2] else run.z_m
+    for z in buried:
         assert (grade - z) * _M_TO_FT == pytest.approx(6.0, abs=1e-6)
     # ...and 72" is well below the 42" footing frost depth, not in conflict with it.
     assert (grade - run.z_start_m) > 42 / 12 / _M_TO_FT
@@ -188,7 +194,8 @@ def test_a_shallow_supply_run_fails_the_freeze_depth_rule(catlin_model):
 
     ctx = _context(catlin_model)
     run = catlin_model.plan.by_tag("PR-G-HYDRANT-CW")
-    shallow = run.model_copy(update={"start_elevation": ft(-3), "end_elevation": ft(-3)})
+    shallow = run.model_copy(update={"elevations": tuple(
+        ft(-3) if e.feet < 0 else e for e in run.elevations)})
     patched = catlin_model.plan.with_elements(
         "main", [shallow if e.tag == run.tag else e
                  for e in catlin_model.plan.storey_elements("main")])
@@ -211,7 +218,10 @@ def test_a_run_that_surfaces_mid_way_fails_even_with_deep_ends(catlin_model):
 
     ctx = _context(catlin_model)
     run = catlin_model.plan.by_tag("PR-G-HYDRANT-CW")
-    rising = run.model_copy(update={"start_elevation": ft(-1)})   # deep at the hydrant only
+    # Raise one mid-route vertex to -1' while both ends stay deep: the run now has a
+    # genuine high point between deep ends, which is where a supply line freezes.
+    rising = run.model_copy(update={"elevations": tuple(
+        ft(-1) if i == 1 else e for i, e in enumerate(run.elevations))})
     patched = catlin_model.plan.with_elements(
         "main", [rising if e.tag == run.tag else e
                  for e in catlin_model.plan.storey_elements("main")])

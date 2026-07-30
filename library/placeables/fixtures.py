@@ -113,7 +113,13 @@ TOILET_WALL_HUNG = FixtureType(
 LAVATORY_COMPACT = FixtureType(
     tag="FX-LAV-COMPACT", name="Compact lavatory", footprint=(ft(1, 6), inch(14)),
     height=ft(2, 10), plan_symbol="lavatory",
-    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN}),
+    # VENT added 2026-07-30: it was missing while its sibling FX-TOILET-WH above declared it,
+    # which is the same omission the library dedupe found on the other lavatory types — a
+    # fixture that drains is vented, and leaving VENT off does not make the vent unnecessary,
+    # only unchecked. `mep.trap_arm_length` is what surfaced it: that check walks DRAIN
+    # fixtures, so it asked for this lavatory's vent while `mep.vent_reachability`, which
+    # walks VENT fixtures, was skipping it entirely.
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     source='Compact powder-room lavatory, 18" x 14"; final fixture selection by owner.',
 )
 # The point of this type is what is *not* in ``needs``: only WATER_COLD. A frost-free

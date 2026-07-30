@@ -16,6 +16,7 @@ from typehaus import (
     Material,
     inch,
 )
+from typehaus.model import PartitionLayout
 from library import INT_2X4_PARTITION, STARTER_MATERIALS
 
 # Named face roles the junction solver binds mixed-assembly corners/tees to (#44). The
@@ -395,6 +396,28 @@ INT_2X6_PLUMBING = Assembly(
     source="wet wall — depth for 3\" stacks",
 )
 
+# Non-bearing wet walls: 2x4 studs staggered on 2x6 plates — same 5.5" pipe cavity as
+# INT_2X6_PLUMBING (which stays for any *bearing* wet wall, needing continuous studs),
+# but the staggered studs decouple the two faces for noise and leave a continuous
+# cavity that never needs a stud bored on the way through.
+INT_2X6_STAGGERED_PLUMBING = Assembly(
+    tag="INT_2X6_STAGGERED_PLUMBING",
+    layers=(
+        Layer(name="gwb-a", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="staggered-studs", material_ref="spf", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", plate_member="2x6", spacing=inch(16),
+                                  layout=PartitionLayout.STAGGERED,
+                                  stagger_gap=inch(1.5)),
+              cavity=CavityFill(material_ref="fiberglass", thickness=inch(3.5))),
+        Layer(name="gwb-b", material_ref="gwb", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+    ),
+    interfaces=(_STUD_BEARING,),
+    source="wet wall, non-bearing — 2x4 staggered on 2x6 plates per USG/GA WP 5530 (16\" o.c. per face, 8\" combined), 3.5\" fiberglass sound batt",
+)
+
 # --- sauna ---------------------------------------------------------------------
 # The hot side of a sauna is its own wall type, not a lining override on a partition:
 # the foil-faced polyiso is the vapour/air control layer and the T&G liner is a
@@ -580,6 +603,7 @@ ASSEMBLIES = [
     GARAGE_ROOF,
     CATLIN_INT_2X6_BRG,
     INT_2X6_PLUMBING,
+    INT_2X6_STAGGERED_PLUMBING,
     INT_2X4_PARTITION,
     SAUNA_2X4,
     SAUNA_LINER_ON_CONCRETE,

@@ -13,6 +13,7 @@ import { AssemblyDetailsView } from "./components/AssemblyDetailsView";
 import { BomView } from "./components/BomView";
 import { CircuitsView } from "./components/CircuitsView";
 import { HvacView } from "./components/HvacView";
+import { PlumbingView } from "./components/PlumbingView";
 import { LightingView } from "./components/LightingView";
 import { LensBar } from "./components/LensBar";
 import { Preview3D } from "./components/Preview3D";
@@ -227,6 +228,14 @@ export function App() {
             HVAC
           </button>
           <button
+            className={`seg-btn${detailView === "plumbing" ? " active" : ""}`}
+            onClick={() => setDetailView(detailView === "plumbing" ? "none" : "plumbing")}
+            aria-pressed={detailView === "plumbing"}
+            title="Plumbing — isometric riser, fixture units, pipe takeoff, cast-in sleeves"
+          >
+            PLUMBING
+          </button>
+          <button
             className={`seg-btn${detailView === "lighting" ? " active" : ""}`}
             onClick={() => setDetailView(detailView === "lighting" ? "none" : "lighting")}
             aria-pressed={detailView === "lighting"}
@@ -330,6 +339,7 @@ export function App() {
       {detailView === "circuits" && <CircuitsView />}
       {detailView === "lighting" && <LightingView />}
       {detailView === "hvac" && <HvacView />}
+      {detailView === "plumbing" && <PlumbingView />}
       <Workbench />
       <CommandPalette />
       <Toasts />

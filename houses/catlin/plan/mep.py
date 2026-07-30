@@ -146,8 +146,11 @@ SLEEVES = [
     SleevePenetration(uid="CMP901AAAA", tag="SP-M-WC1", host_ref="SL-M-DECK",
                       position=pt(ft(6), ft(22, 7)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-M-BATH1-WC"),
+    # Re-pointed 2026-07-29 (plans/TODO.md): the BATH2 WC moved to the wet wall and its
+    # routed drain (PR-B-WC2-DRAIN) now drops at the fixture's own flange, so the sleeve
+    # finally sits where the pipe actually is instead of at the old (3', 18') position.
     SleevePenetration(uid="CMP902AAAA", tag="SP-M-WC2", host_ref="SL-M-DECK",
-                      position=pt(ft(3), ft(18)), pipe_diameter=inch(3),
+                      position=pt(m(0.686504), m(6.14439)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-M-BATH2-WC"),
     SleevePenetration(uid="CMP907AAAA", tag="SP-M-BATH2-SH", host_ref="SL-M-DECK",
                       position=pt(ft(1, 9), ft(17, 3)), pipe_diameter=inch(2),
@@ -175,14 +178,221 @@ SLEEVES = [
                       sleeve_diameter=inch(3), serves_fixture="FX-M-KITCH-SINK"),
 ]
 
+# Supply risers through the 9" concrete deck — every hot/cold branch that leaves the
+# basement ceiling for a main- or second-storey wet wall crosses SL-M-DECK, and a PEX
+# riser through cast concrete is a cast-in sleeve exactly like a waste drop
+# (`mep.sleeve_coverage` holds every crossing to one). Positions sit on (or tight to) the
+# wet wall each riser feeds, spaced >= 5" from every neighbouring penetration so the
+# 4"-tolerance sleeve matcher can never confuse two.
+SUPPLY_SLEEVES = [
+    SleevePenetration(uid="CMPS01AAAA", tag="SP-M-CW-BATH1", host_ref="SL-M-DECK",
+                      position=pt(ft(6), ft(23, 7.2)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
+    SleevePenetration(uid="CMPS02AAAA", tag="SP-M-HW-BATH1", host_ref="SL-M-DECK",
+                      position=pt(ft(6), ft(24)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
+    SleevePenetration(uid="CMPS03AAAA", tag="SP-M-CW-BATH2", host_ref="SL-M-DECK",
+                      position=pt(ft(2, 3), ft(17, 2.4)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
+    SleevePenetration(uid="CMPS04AAAA", tag="SP-M-HW-BATH2", host_ref="SL-M-DECK",
+                      position=pt(ft(2, 3), ft(16, 9.6)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
+    SleevePenetration(uid="CMPS05AAAA", tag="SP-M-CW-WASH", host_ref="SL-M-DECK",
+                      position=pt(ft(8), ft(20, 7.2)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
+    SleevePenetration(uid="CMPS06AAAA", tag="SP-M-HW-WASH", host_ref="SL-M-DECK",
+                      position=pt(ft(8), ft(21, 2.4)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
+    SleevePenetration(uid="CMPS07AAAA", tag="SP-M-CW-KITCH", host_ref="SL-M-DECK",
+                      position=pt(ft(34, 1.2), ft(32, 2.4)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
+    SleevePenetration(uid="CMPS08AAAA", tag="SP-M-HW-KITCH", host_ref="SL-M-DECK",
+                      position=pt(ft(33, 7.2), ft(31, 8.4)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
+    SleevePenetration(uid="CMPS09AAAA", tag="SP-M-CW-SBATH", host_ref="SL-M-DECK",
+                      position=pt(ft(5, 7.2), ft(26, 4)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
+    SleevePenetration(uid="CMPS10AAAA", tag="SP-M-HW-SBATH", host_ref="SL-M-DECK",
+                      position=pt(ft(6, 2.4), ft(26, 4)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
+    SleevePenetration(uid="CMPS11AAAA", tag="SP-M-CW-SUITE", host_ref="SL-M-DECK",
+                      position=pt(ft(13, 7.2), ft(16, 10.8)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
+    SleevePenetration(uid="CMPS12AAAA", tag="SP-M-HW-SUITE", host_ref="SL-M-DECK",
+                      position=pt(ft(14, 2.4), ft(16, 10.8)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
+]
+
+# Second-storey waste stacks. The upstairs bathrooms drain down through framed walls and
+# floors — no sleeve needed there — but each stack still has to pass the one concrete
+# plate in its way, the SL-M-DECK deck, on the way to the basement-ceiling collector.
+STACK_SLEEVES = [
+    SleevePenetration(uid="CMPS13AAAA", tag="SP-M-S-BATH1", host_ref="SL-M-DECK",
+                      position=pt(ft(5), ft(26, 4)), pipe_diameter=inch(3),
+                      sleeve_diameter=inch(4), serves_fixture="FX-S-BATH1-WC"),
+    SleevePenetration(uid="CMPS14AAAA", tag="SP-M-S-SUITE", host_ref="SL-M-DECK",
+                      position=pt(ft(13), ft(16, 10.8)), pipe_diameter=inch(3),
+                      sleeve_diameter=inch(4), serves_fixture="FX-S-SUITEBATH-WC"),
+    # The heat-pump condensate drop from the main-storey wall heads (master bedroom +
+    # living room, both on the south wall by the centre line) down to the collected
+    # air-gap line at the basement ceiling (plans/TODO.md §condensate).
+    SleevePenetration(uid="CMPS15AAAA", tag="SP-M-COND", host_ref="SL-M-DECK",
+                      position=pt(ft(17, 6), ft(1)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.DRAIN),
+]
+
 # Slab-on-grade stub-ups. A fixture standing on grade has no wall drain stack — its trap
 # arm runs *under* the slab — so the penetration is set before the pour exactly like the
 # deck sleeves above. FX-1 (the furnace-room utility sink, plan/placeables.py) authors this
 # same point as its `drain_position`, which is what makes the alignment check exact.
 SLAB_STUBS = [
     SleevePenetration(uid="CBP901AAAA", tag="SP-B-UTILITY", host_ref="SL-B-FLOOR",
-                      position=pt(ft(7), ft(19)), pipe_diameter=inch(1.5),
+                      position=pt(ft(7), ft(19, 6)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), serves_fixture="FX-1"),
+    # Where the ceiling collector turns down to become the under-slab building drain
+    # (2026-07-30). A 3" waste through cast concrete is a cast-in exactly like the fixture
+    # stubs; `mep.sleeve_coverage` holds the crossing to it.
+    SleevePenetration(uid="CBP902AAAA", tag="SP-B-SLAB-MAIN", host_ref="SL-B-FLOOR",
+                      position=pt(ft(3), ft(15, 6)), pipe_diameter=inch(3),
+                      sleeve_diameter=inch(4)),
+    # FX-1's trap arm passing beneath FT-B-CW's bearing plane on its way to the main
+    # (IRC P2604). Invert at the crossing is -9'-10 1/2" project, so the centre is
+    # -9'-9 3/4"; `mep.footing_clearance` requires it.
+    SleevePenetration(uid="CBP903AAAA", tag="SP-B-CW-UTIL-DR", host_ref="FT-B-CW",
+                      position=pt(ft(7), ft(18)), pipe_diameter=inch(1.5),
+                      sleeve_diameter=inch(2), axis="horizontal",
+                      center_elevation=ft(-9.825)),
+]
+
+# Horizontal sleeves through the basement's cast concrete walls. The whole ceiling-level
+# distribution — collector, branches, supply trunks, hydrant line — has to get past the
+# y=18' centre cross walls and out the perimeter, and every one of those crossings is a
+# cast-in-place hole the concrete crew sets before the pour (`mep.sleeve_coverage`).
+# center_elevation is project-frame absolute (the walls span -9'..0'); positions along
+# y=18' keep >= 5" between neighbours so the 4"-tolerance matcher stays unambiguous.
+WALL_SLEEVES = [
+    # W-B-CW (y=18', x 0..10), west centre wall — the mechanical wall of the house.
+    SleevePenetration(uid="CBPW01AAAA", tag="SP-B-CW-WC2", host_ref="W-B-CW",
+                      position=pt(m(0.686504), ft(18)), pipe_diameter=inch(3),
+                      sleeve_diameter=inch(4), axis="horizontal",
+                      center_elevation=ft(-1.37)),
+    SleevePenetration(uid="CBPW02AAAA", tag="SP-B-CW-SBATH-CW", host_ref="W-B-CW",
+                      position=pt(ft(4), ft(18)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-0.87)),
+    SleevePenetration(uid="CBPW03AAAA", tag="SP-B-CW-SBATH-DR", host_ref="W-B-CW",
+                      position=pt(ft(4, 6.4), ft(18)), pipe_diameter=inch(3),
+                      sleeve_diameter=inch(4), axis="horizontal",
+                      center_elevation=ft(-1.748)),
+    SleevePenetration(uid="CBPW04AAAA", tag="SP-B-CW-HYD", host_ref="W-B-CW",
+                      position=pt(ft(5), ft(18)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-6)),
+    SleevePenetration(uid="CBPW05AAAA", tag="SP-B-CW-WH", host_ref="W-B-CW",
+                      position=pt(ft(5, 6), ft(18)), pipe_diameter=inch(1),
+                      sleeve_diameter=inch(2), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-0.86)),
+    SleevePenetration(uid="CBPW06AAAA", tag="SP-B-CW-MAIN", host_ref="W-B-CW",
+                      position=pt(ft(6), ft(18)), pipe_diameter=inch(3),
+                      sleeve_diameter=inch(4), axis="horizontal",
+                      center_elevation=ft(-1.63)),
+    SleevePenetration(uid="CBPW07AAAA", tag="SP-B-CW-HW", host_ref="W-B-CW",
+                      position=pt(ft(6, 6), ft(18)), pipe_diameter=inch(1),
+                      sleeve_diameter=inch(2), axis="horizontal",
+                      purpose=Service.WATER_HOT, center_elevation=ft(-0.96)),
+    SleevePenetration(uid="CBPW08AAAA", tag="SP-B-CW-COND", host_ref="W-B-CW",
+                      position=pt(ft(7), ft(18)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), axis="horizontal",
+                      center_elevation=ft(-2.037)),
+    SleevePenetration(uid="CBPW09AAAA", tag="SP-B-CW-BATH1-CW", host_ref="W-B-CW",
+                      position=pt(ft(7, 4.8), ft(18)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-0.87)),
+    SleevePenetration(uid="CBPW10AAAA", tag="SP-B-CW-WASH-CW", host_ref="W-B-CW",
+                      position=pt(ft(8), ft(18)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-0.87)),
+    # (There is no SUITE drain sleeve here. The ensuite stack drops at x=13' — east of this
+    # wall's x 1'..10' extent — and its collector runs south of y=18' to the main, so it
+    # never crosses W-B-CW. A sleeve was authored at (9', 18') for a route the run does not
+    # take; `mep.sleeve_coverage` had it as the one unclaimed drain sleeve on this wall, and
+    # a hole cast for nothing is the same defect as a missing one.)
+    # W-B-CE (y=18', x 18..36) — the kitchen lines' way east.
+    SleevePenetration(uid="CBPW12AAAA", tag="SP-B-CE-KITCH-DR", host_ref="W-B-CE",
+                      position=pt(ft(34, 7.2), ft(18)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), axis="horizontal",
+                      center_elevation=ft(-1.17)),
+    SleevePenetration(uid="CBPW13AAAA", tag="SP-B-CE-KITCH-CW", host_ref="W-B-CE",
+                      position=pt(ft(34, 1.2), ft(18)), pipe_diameter=inch(1),
+                      sleeve_diameter=inch(2), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-0.86)),
+    SleevePenetration(uid="CBPW14AAAA", tag="SP-B-CE-KITCH-HW", host_ref="W-B-CE",
+                      position=pt(ft(33, 7.2), ft(18)), pipe_diameter=inch(1),
+                      sleeve_diameter=inch(2), axis="horizontal",
+                      purpose=Service.WATER_HOT, center_elevation=ft(-0.97)),
+    # W-B-CS2 (x=18', y 13'-10"..18') — the kitchen drain's crossing of the centre line,
+    # up at the ceiling well above D-B-GYM's 6'-8" head.
+    SleevePenetration(uid="CBPW15AAAA", tag="SP-B-CS2-KITCH", host_ref="W-B-CS2",
+                      position=pt(ft(18), ft(16, 6)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), axis="horizontal",
+                      center_elevation=ft(-1.56)),
+    SleevePenetration(uid="CBPW21AAAA", tag="SP-B-CS2-CW", host_ref="W-B-CS2",
+                      position=pt(ft(18), ft(16)), pipe_diameter=inch(1),
+                      sleeve_diameter=inch(2), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-0.86)),
+    SleevePenetration(uid="CBPW22AAAA", tag="SP-B-CS2-HW", host_ref="W-B-CS2",
+                      position=pt(ft(18), ft(15, 6)), pipe_diameter=inch(1),
+                      sleeve_diameter=inch(2), axis="horizontal",
+                      purpose=Service.WATER_HOT, center_elevation=ft(-0.97)),
+    # W-B-CS (x=18', y 0..13'-10") — the condensate collector's two crossings.
+    SleevePenetration(uid="CBPW16AAAA", tag="SP-B-CS-COND", host_ref="W-B-CS",
+                      position=pt(ft(18), ft(9)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), axis="horizontal",
+                      center_elevation=ft(-1.535)),
+    SleevePenetration(uid="CBPW17AAAA", tag="SP-B-CS-COND2", host_ref="W-B-CS",
+                      position=pt(ft(18), ft(1, 5.3)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), axis="horizontal",
+                      center_elevation=ft(-0.987)),
+    # Perimeter exits.
+    # The building drain leaves *under* FT-B-S1, not through W-B-S1 (2026-07-30): with the
+    # sewer connection below the slab there is no wall left at that depth — the walls stop at
+    # -9'-0", the slab top — so the exit is an under-footing protection sleeve set at the
+    # footing centerline, y=0. center_elevation is the pipe centreline where it crosses:
+    # PR-B-MAIN-DRAIN's invert there is -10'-6 1/4", so the sleeve centre is -10'-4 3/4".
+    # `mep.footing_clearance` is what requires this sleeve (IRC P2604) and matches the run to
+    # it; `mep.sewer_exit_invert` holds the invert to the number cast in.
+    SleevePenetration(uid="CBPW18AAAA", tag="SP-B-SEWER-EXIT", host_ref="FT-B-S1",
+                      position=pt(ft(3), ft(0)), pipe_diameter=inch(3),
+                      sleeve_diameter=inch(4), axis="horizontal",
+                      center_elevation=ft(-10.398)),
+    SleevePenetration(uid="CBPW19AAAA", tag="SP-B-S1-HYD", host_ref="W-B-S1",
+                      position=pt(ft(5), ft(0, 6)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-6)),
+    SleevePenetration(uid="CBPW20AAAA", tag="SP-B-N3-HYD", host_ref="W-B-N3",
+                      position=pt(ft(5), ft(35, 6)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-6)),
+]
+
+# The hydrant line's garage-foundation protection (IRC P2604): the buried run passes
+# under FT-GF-S at its 6' bury (22" below the footing's 4'-2" bearing plane) inside a
+# protection sleeve, and its rise at the hydrant encroaches on FT-GF-W's 45° influence
+# line, protected at the marked point. `mep.footing_clearance` requires both. The barrel
+# also passes the 4" topping pedestal, whose block-out is its own cast-in.
+GARAGE_SLEEVES = [
+    SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S",
+                      position=pt(ft(5), ft(41)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(2), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-6)),
+    SleevePenetration(uid="CGPW02AAAA", tag="SP-GF-W-HYD", host_ref="FT-GF-W",
+                      position=pt(ft(0, 9.6), ft(61, 6)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(2), axis="horizontal",
+                      purpose=Service.WATER_COLD, center_elevation=ft(-6)),
+    SleevePenetration(uid="CGPW03AAAA", tag="SP-G-HYDRANT-PED", host_ref="SL-G-HYDRANT-PED",
+                      position=pt(ft(1, 6), ft(62)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(2), purpose=Service.WATER_COLD,
+                      serves_fixture="FX-G-HYDRANT"),
 ]
 
 # Basement-ceiling collector: picks up both WC sleeves, heads to the south-wall sewer
@@ -191,22 +401,149 @@ SLAB_STUBS = [
 # exact (4'-7" + 1' + 18' = 23'-7"); inverts give a comfortable 8"/23'-7" ≈ 0.34"/ft
 # slope, well above the 1/4"/ft minimum for a 3" line, and SP-M-WC2 still ties in at the
 # (3', 18') corner fitting.
+# Routed 3D drains (2026-07-29 plumbing pass). Every run now carries an invert at every
+# vertex (`elevations`), vertical drops are repeated plan points, and the collector rides
+# y=16'-6" — a foot clear of the y=18' concrete cross walls it used to be drawn *inside*
+# of — crossing them perpendicular through the WALL_SLEEVES above. The first leg falls hard
+# (≈2"/ft) so the 46' kitchen branch can hold its own 1/4"/ft and still tie in from above.
+#
+# The sewer goes out UNDER the slab (2026-07-30, owner's call: the municipal connection is
+# buried below the slab, as Minnesota does to keep it under frost). That changes where the
+# building drain leaves and it is worth writing down why the geometry has only one answer:
+#
+#   * the foundation walls stop at -9'-0", which is the *top* of the slab, so there is no
+#     wall left to pass through below it — the old exit at -2'-3" through W-B-S1 was 2'-3"
+#     under grade, above MN's 42" frost line, which is the thing the owner's note rules out;
+#   * the footings sit -9'-8" to -9'-0", so the drain leaves *beneath* FT-B-S1 inside a
+#     protection sleeve — IRC P2604, the same relieving-arch treatment PR-G-HYDRANT-CW
+#     already gets under the garage footing.
+#
+# So the collector stays hung at the basement ceiling where it belongs (that is where the
+# upper-floor stacks arrive), and at its downstream end it drops through the slab at
+# (3', 16'-6") — SP-B-SLAB-MAIN — and runs under the slab to the exit. That drop is also
+# what finally gives FX-1 a gravity drain: see PR-B-UTIL-DRAIN below.
 DRAINS = [
     PipeRun(uid="CMP905AAAA", tag="PR-B-MAIN-DRAIN", system=PipeSystem.DRAIN,
-           path=(pt(ft(6), ft(22, 7)), pt(ft(6), ft(18)), pt(ft(3), ft(18)),
-                 pt(ft(3), ft(0))),
-           diameter=inch(3), start_elevation=ft(8), end_elevation=ft(7, 4),
-           serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-M-KITCH-SINK")),
-    # Kitchen branch: down SP-M-KITCH, then the long haul across the basement ceiling to the
-    # main drain's own corner fitting at (3', 18'). 46'-8" of 2" pipe needs 11 3/4" of fall
-    # to hold 1/4"/ft, so it starts tight under the deck at 8'-10" and lands at 7'-10" — a
-    # hair above the main's interpolated 7.84' invert there, which is the direction a wye
-    # has to be tied. Tying in anywhere further downstream only makes the run longer and
-    # the start higher, so this corner is the best point on the line.
+            path=(pt(ft(6), ft(22, 7)), pt(ft(6), ft(22, 7)), pt(ft(6), ft(16, 6)),
+                  pt(ft(3), ft(16, 6)), pt(ft(3), ft(15, 6)), pt(ft(3), ft(15, 6)),
+                  pt(ft(3), ft(-1))),
+            diameter=inch(3), material="pvc",
+            # …ceiling collector… | 1' more at the ceiling | drop through the slab |
+            # under-slab to the exit. The drop is at y=15'-6", not at the collector's own
+            # y=16'-6" turn: 5'-6" down under the slab the pipe sits 10 5/8" below FT-B-CW's
+            # bearing plane, so it needs at least that much lateral clearance from the
+            # footing's 45° influence line and 16'-6" gave only 8". y=15'-6" gives 20".
+            # -1.1 and -1.55 are basement-relative: -10'-1 1/5" and -10'-6 3/5" project, so
+            # the 16'-6" under-slab leg falls 5.4" (0.33"/ft) and its crown clears the slab
+            # underside by 6.7".
+            elevations=(ft(9), ft(8), ft(7), ft(6, 11.2), ft(6, 10.9), ft(-1.1),
+                        ft(-1.55)),
+            serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-M-KITCH-SINK",
+                    "FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
+                    "FX-M-BATH2-SINK", "FX-M-LAUNDRY",
+                    "FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
+                    "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
+                    "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
+                    "FX-S-SUITEBATH-TUBSH")),
     PipeRun(uid="S0Y00EZNNG", tag="PR-B-KITCH-DRAIN", system=PipeSystem.DRAIN,
-            path=(pt(ft(35), ft(32, 8)), pt(ft(35), ft(18)), pt(ft(3), ft(18))),
-            diameter=inch(2), start_elevation=ft(8, 10), end_elevation=ft(7, 10),
+            path=(pt(ft(35), ft(32, 8)), pt(ft(35), ft(32, 8)),
+                  pt(ft(34, 7.2), ft(32, 8)), pt(ft(34, 7.2), ft(16, 6)),
+                  pt(ft(6), ft(16, 6))),
+            diameter=inch(2), material="pvc",
+            elevations=(ft(9), ft(8, 0.6), ft(8, 0.5), ft(7, 8.4), ft(7, 1)),
             serves=("FX-M-KITCH-SINK",)),
+    # BATH2's WC, at its re-pointed flange on the wet wall (→ SP-M-WC2).
+    PipeRun(uid="CBPD01AAAA", tag="PR-B-WC2-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(m(0.686504), m(6.14439)), pt(m(0.686504), m(6.14439)),
+                  pt(m(0.686504), ft(16, 6)), pt(ft(3), ft(16, 6))),
+            diameter=inch(3), material="pvc",
+            elevations=(ft(9), ft(8), ft(7, 2), ft(7)),
+            serves=("FX-M-BATH2-WC",)),
+    PipeRun(uid="CBPD02AAAA", tag="PR-B-LAV1-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(6), m(7.00891)), pt(ft(6), m(7.00891)), pt(ft(6), ft(22, 7))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(ft(9), ft(8, 0.6), ft(8, 0.2)),
+            serves=("FX-M-BATH1-LAV",)),
+    PipeRun(uid="CBPD03AAAA", tag="PR-B-TUB2-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(7, 4), ft(19, 4.8)), pt(ft(7, 4), ft(19, 4.8)),
+                  pt(ft(6), ft(19, 4.8))),
+            diameter=inch(2), material="pvc",
+            elevations=(ft(9), ft(8, 0.6), ft(7, 7.2)),
+            serves=("FX-M-BATH2-TUB",)),
+    PipeRun(uid="CBPD04AAAA", tag="PR-B-SH2-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(1, 9), ft(17, 3)), pt(ft(1, 9), ft(17, 3)),
+                  pt(ft(3), ft(16, 6))),
+            diameter=inch(2), material="pvc",
+            elevations=(ft(9), ft(8, 0.6), ft(7, 1.2)),
+            serves=("FX-M-BATH2-SH",)),
+    PipeRun(uid="CBPD05AAAA", tag="PR-B-SINK2-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(1), ft(16, 6)), pt(ft(1), ft(16, 6)), pt(ft(3), ft(16, 6))),
+            diameter=inch(2), material="pvc",
+            elevations=(ft(9), ft(8, 0.6), ft(7, 0.6)),
+            serves=("FX-M-BATH2-SINK",)),
+    PipeRun(uid="CBPD06AAAA", tag="PR-B-WASH-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(8), ft(20)), pt(ft(8), ft(20)), pt(ft(6), ft(20))),
+            diameter=inch(2), material="pvc",
+            elevations=(ft(9), ft(8, 0.6), ft(7, 8.4)),
+            serves=("FX-M-LAUNDRY",)),
+    # FX-1, the mechanical-room utility sink — the one fixture that had no drain until the
+    # main went under the slab, because it stands *on* the basement floor and the ceiling
+    # collector runs 6'-6" above it. Its trap arm drops through the cast SP-B-UTILITY stub,
+    # runs south under the slab, passes beneath FT-B-CW's bearing plane in a protection
+    # sleeve (SP-B-CW-UTIL-DR, IRC P2604), then west to meet the main's under-slab leg at
+    # (3', 15'-6"). Inverts are basement-relative: -0.85 → -1.05 is -9'-10 1/5" → -10'-0 3/5"
+    # project, a 0.3"/ft fall the whole way, deep enough that the crown clears the footing
+    # bottom by 1 5/8" where it crosses and the slab underside by 6 1/2".
+    PipeRun(uid="CBPD07AAAA", tag="PR-B-UTIL-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(7), ft(19, 6)), pt(ft(7), ft(19, 6)), pt(ft(7), ft(15, 6)),
+                  pt(ft(3), ft(15, 6))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(ft(1, 6), ft(-0.85), ft(-0.95), ft(-1.05)),
+            serves=("FX-1",)),
+]
+
+# Second-storey waste stacks, filed on ``main`` (datum 0' = the deck they drop through)
+# so the elevations read as heights on the storey the pipe is actually visible from:
+# +9'-9" is the second floor's underside, the negative inverts are the basement ceiling.
+SECOND_DRAINS = [
+    PipeRun(uid="CMPD07AAAA", tag="PR-M-S-BATH1-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(5), ft(26, 4)), pt(ft(5), ft(26, 4)),
+                  pt(ft(4, 6.4), ft(17, 4.8)), pt(ft(3), ft(16, 6))),
+            diameter=inch(3), material="pvc",
+            elevations=(ft(9, 9), ft(-1.5), ft(-1.9), ft(-2)),
+            serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
+                    "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
+    PipeRun(uid="CMPD08AAAA", tag="PR-M-S-SUITE-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(13), ft(16, 10.8)), pt(ft(13), ft(16, 10.8)),
+                  pt(ft(6, 2.4), ft(16, 8.4)), pt(ft(6), ft(16, 6))),
+            diameter=inch(3), material="pvc",
+            elevations=(ft(9, 9), ft(-1.5), ft(-1.917), ft(-1.983)),
+            serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
+                    "FX-S-SUITEBATH-TUBSH")),
+]
+
+# Heat-pump condensate (plans/TODO.md §condensate): a collected 3/4" air-gap line at the
+# basement ceiling, falling continuously to terminate over the mechanical-room sink
+# (FX-1) — never tied into the sanitary system. PR-M-COND-HEADS drops the two main-storey
+# wall heads (master bed + living room, both by the centre line on the south wall)
+# through SP-M-COND and hands off to the basement collector, which also picks up the gym
+# head. EQ-S-HP1-AH's line down the second-floor chase is still undrawn — the chase route
+# to this collector is a follow-up, recorded rather than guessed.
+CONDENSATE_MAIN = [
+    PipeRun(uid="CMPC02AAAA", tag="PR-M-COND-HEADS", system=PipeSystem.DRAIN,
+            path=(pt(ft(17, 6), ft(1)), pt(ft(17, 6), ft(1)), pt(ft(27), ft(9))),
+            diameter=inch(0.75), material="pvc",
+            elevations=(ft(2, 6), ft(-1), ft(-1.342))),
+]
+
+CONDENSATE = [
+    PipeRun(uid="CBPC01AAAA", tag="PR-B-COND", system=PipeSystem.DRAIN,
+            path=(pt(ft(27), ft(9)), pt(ft(9), ft(9)), pt(ft(9), ft(16, 10.8)),
+                  pt(ft(7), ft(16, 10.8)), pt(ft(7), ft(19)), pt(ft(7), ft(19))),
+            diameter=inch(0.75), material="pvc",
+            elevations=(ft(7, 7.9), ft(7, 2.5), ft(7, 0.1), ft(6, 11.5), ft(6, 10.9),
+                        ft(3, 7.2))),
+
 ]
 
 # --- Vent branches: wet wall -> shared chase ----------------------------------------
@@ -227,10 +564,15 @@ VENT_BRANCHES_MAIN = [
     # Bath2 takeoff on W-M-BA2E (x=8') -> across the hall -> bath1 takeoff on W-M-BAE
     # (x=6') -> north through the storage-room ceiling -> chase. 2" for two water closets.
     PipeRun(uid="CMP906AAAA", tag="PR-M-WC-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(8), ft(18)), pt(ft(8), ft(24)), pt(ft(6), ft(24)),
+            path=(pt(ft(2, 3.6), ft(17, 3.6)), pt(ft(8), ft(18)), pt(ft(8), ft(24)), pt(ft(6), ft(24)),
                   pt(ft(6), ft(34, 6)), pt(ft(1), ft(34, 6))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5.5),
-            serves=("FX-M-BATH2-WC", "FX-M-BATH1-WC")),
+            # FX-M-BATH1-LAV joined on 2026-07-30, when FX-LAV-COMPACT finally declared
+            # Service.VENT. No new pipe: this run's x=6' leg is W-M-BAE's own stud bay and it
+            # passes 1'-0" north of the lavatory's drain point at (6', 23'), so the trap arm
+            # ties into the leg already drawn there — well inside Table 1002.2's 42" for 1.5".
+            serves=("FX-M-BATH2-WC", "FX-M-BATH1-WC", "FX-M-BATH2-SH",
+                    "FX-M-BATH2-TUB", "FX-M-BATH1-LAV")),
     # Kitchen sink. W-M-E2 *does* continue to the storey above (W-S-E3/E4/E5 stack on it), so
     # `mep.vent_reachability` is already satisfied by the wet-wall path — this run is the
     # drawn route, not a check-driven workaround. It rises in the E2 stud bay at x=35'-9",
@@ -249,9 +591,11 @@ VENT_BRANCHES_SECOND = [
     # Hall-bath takeoff on W-S-BD-N (y=26'-4") -> west to the chase line -> north to the
     # chase.
     PipeRun(uid="CSP901AAAA", tag="PR-S-BATH1-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(5), ft(26, 4)), pt(ft(1), ft(26, 4)), pt(ft(1), ft(34, 6))),
+            path=(pt(ft(9, 8.4), ft(31)), pt(ft(5), ft(26, 4)), pt(ft(1), ft(26, 4)),
+                  pt(ft(1), ft(34, 6))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 4),
-            serves=("FX-S-BATH1-WC",)),
+            serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
+                    "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
     # The suite bath's own vent: takeoff on its west wet wall W-S-DC2 (x=9'-7 1/2"), north
     # through the landing and the hall bath, then west along y=34'-6" to the shared
     # radon/plumbing chase. It runs up the x=9'-7 1/2" line rather than joining the hall
@@ -262,9 +606,11 @@ VENT_BRANCHES_SECOND = [
     # 2026-07-28 from the NE corner specifically so it could carry this riser; storeys/
     # second.py).
     PipeRun(uid="CSP902AAAA", tag="PR-S-SUITEBATH-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(9, 7.5), ft(20)), pt(ft(9, 7.5), ft(34, 6)), pt(ft(1), ft(34, 6))),
+            path=(pt(ft(13, 10), ft(16)), pt(ft(9, 7.5), ft(20)),
+                  pt(ft(9, 7.5), ft(34, 6)), pt(ft(1), ft(34, 6))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5),
-            serves=("FX-S-SUITEBATH-WC",)),
+            serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
+                    "FX-S-SUITEBATH-TUBSH")),
 ]
 
 # --- Ventilation: ERV fresh-air / stale-air trunks in the FS-SECOND joist bays -------
@@ -848,17 +1194,204 @@ NEMA_CLAMP = [
 # The interior shutoff is ED/EQ-free by design: it is the hydrant's own valve at the
 # buried end plus the isolation valve immediately downstream of the slab penetration, both
 # of which mep.hydrant_freeze_depth asserts against this run's geometry.
+# Re-routed 2026-07-29: the buried leg now runs at x=5' the whole way north (it used to
+# hug the garage's west footing 8" off its edge for 24', inside the 45° influence line)
+# and turns west only at y=61', crossing *under* FT-GF-S through SP-GF-S-HYD and rising
+# through SP-G-HYDRANT / the pedestal block-out at the fixture. The three basement wall
+# crossings (S1 / CW / N3) are cast horizontal sleeves at the -6' bury; between them the
+# line runs exposed across the heated basement at the same elevation, which is what keeps
+# every buried vertex at the full 72" the fixture is specified for
+# (`mep.hydrant_freeze_depth` walks all of them; the terminal rise is the hydrant's own
+# self-draining barrel and is exempt).
 WATER_SUPPLY = [
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5), ft(0)), pt(ft(5), ft(38)), pt(ft(1, 6), ft(38)),
-                  pt(ft(1, 6), ft(62))),
-            diameter=inch(0.75), start_elevation=ft(-6), end_elevation=ft(-6),
+            path=(pt(ft(5), ft(0)), pt(ft(5), ft(61)), pt(ft(1, 6), ft(61)),
+                  pt(ft(1, 6), ft(62)), pt(ft(1, 6), ft(62))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(-6), ft(-6), ft(-6), ft(-6), ft(0, 4.8)),
             serves=("FX-G-HYDRANT",)),
 ]
 
-MAIN_ELEMENTS = [*SLEEVES, *VENT_BRANCHES_MAIN, *MAIN_DEVICES, *WATER_SUPPLY,
+# --- Domestic hot/cold distribution (2026-07-29 plumbing pass) -----------------------
+#
+# PEX home-run-lite: a 1" cold trunk tees off the water service where it crosses the
+# house (the hydrant line above IS the service; the tee at (5', 1') rises to the
+# basement ceiling), and a 1" hot trunk leaves EQ-B-WH. Both run the ceiling band just
+# south of the y=18' wall (cold at y=16'-2.4", hot at y=15'-10.8" — 3.6" apart, under the
+# routed drains' y=16'-6" line), cross the concrete through their own WALL_SLEEVES, and
+# rise to each wet-wall group through the SUPPLY_SLEEVES cast in the deck. `serves` on a
+# trunk is the union of everything downstream, so `mep.pipe_sizing` sums the real WSFU.
+# Filed on ``basement`` (datum -9'): ceiling runs read as 8'-ish heights.
+SUPPLY = [
+    PipeRun(uid="CBPW30AAAA", tag="PR-B-CW-TRUNK", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(5), ft(1)), pt(ft(5), ft(1)), pt(ft(5), ft(16)),
+                  pt(ft(8), ft(16)), pt(ft(34, 1.2), ft(16)),
+                  pt(ft(34, 1.2), ft(32, 2.4)), pt(ft(34, 1.2), ft(32, 2.4))),
+            diameter=inch(1), material="pex",
+            elevations=(ft(3), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2),
+                        ft(8, 1.2), ft(12, 6)),
+            serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
+                    "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK",
+                    "FX-M-LAUNDRY", "FX-M-KITCH-SINK", "FX-1",
+                    "FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
+                    "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
+                    "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
+                    "FX-S-SUITEBATH-TUBSH")),
+    PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
+            path=(pt(m(1.88684), m(10.0015)), pt(m(1.88684), m(10.0015)),
+                  pt(ft(6, 6), ft(19, 2.4)), pt(ft(6, 6), ft(15, 6))),
+            diameter=inch(1), material="pex",
+            elevations=(ft(4), ft(8), ft(8), ft(8)),
+            serves=("FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
+                    "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-KITCH-SINK", "FX-1",
+                    "FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
+                    "FX-S-VANITY-LAV2", "FX-S-SUITEBATH-LAV",
+                    "FX-S-SUITEBATH-TUBSH")),
+    # Cold feed to the water heater itself (equipment, not a fixture — no fixture units).
+    PipeRun(uid="CBPW32AAAA", tag="PR-B-CW-WH", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(5), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(19, 2.4)),
+                  pt(m(1.88684), m(10.0015)), pt(m(1.88684), m(10.0015))),
+            diameter=inch(1), material="pex",
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(4))),
+    # Main-storey groups.
+    PipeRun(uid="CBPW33AAAA", tag="PR-B-CW-BATH1", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(5), ft(16)), pt(ft(7, 4.8), ft(16, 9.6)),
+                  pt(ft(7, 4.8), ft(19, 2.4)), pt(ft(6), ft(23, 7.2)),
+                  pt(ft(6), ft(23, 7.2)), pt(ft(6), ft(23, 7.2))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(9), ft(12, 6)),
+            wall_refs=(None, None, None, None, "W-M-BAE"),
+            serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
+    PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
+            path=(pt(m(1.88684), m(10.0015)), pt(ft(6), ft(24)), pt(ft(6), ft(24)),
+                  pt(ft(6), ft(24))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(8), ft(8), ft(9), ft(12, 6)),
+            wall_refs=(None, None, "W-M-BAE"),
+            serves=("FX-M-BATH1-LAV",)),
+    PipeRun(uid="CBPW35AAAA", tag="PR-B-CW-BATH2", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(5), ft(16)), pt(ft(2, 3), ft(16)),
+                  pt(ft(2, 3), ft(17, 2.4)), pt(ft(2, 3), ft(17, 2.4))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(12)),
+            serves=("FX-M-BATH2-WC", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
+                    "FX-M-BATH2-SINK")),
+    PipeRun(uid="CBPW36AAAA", tag="PR-B-HW-BATH2", system=PipeSystem.WATER_HOT,
+            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(2, 3), ft(15, 6)),
+                  pt(ft(2, 3), ft(16, 9.6)), pt(ft(2, 3), ft(16, 9.6))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(8), ft(8), ft(8), ft(12)),
+            serves=("FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK")),
+    # The laundry pair rises inside W-M-BA2E, so each riser is split at the deck top
+    # (ft(9) basement-relative = 0'-0" project) like the BATH1 pair above: the lower leg is
+    # the sleeved concrete crossing and hosts no wall, the leg above it is in the stud
+    # cavity and names it. `mep.wet_wall_occupancy` checks the declared segment's z-range
+    # against the wall's own extent, so a single riser spanning both would read as escaping
+    # the wall it is actually inside.
+    PipeRun(uid="CBPW37AAAA", tag="PR-B-CW-WASH", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(8), ft(16)), pt(ft(8), ft(20, 7.2)),
+                  pt(ft(8), ft(20, 7.2)), pt(ft(8), ft(20, 7.2))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(9), ft(12)),
+            wall_refs=(None, None, "W-M-BA2E"),
+            serves=("FX-M-LAUNDRY",)),
+    PipeRun(uid="CBPW38AAAA", tag="PR-B-HW-WASH", system=PipeSystem.WATER_HOT,
+            path=(pt(m(1.88684), m(10.0015)), pt(ft(8), ft(21, 2.4)),
+                  pt(ft(8), ft(21, 2.4)), pt(ft(8), ft(21, 2.4))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(8), ft(8), ft(9), ft(12)),
+            wall_refs=(None, None, "W-M-BA2E"),
+            serves=("FX-M-LAUNDRY",)),
+    PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,
+            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(33, 7.2), ft(15, 6)),
+                  pt(ft(33, 7.2), ft(31, 8.4)), pt(ft(33, 7.2), ft(31, 8.4))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(8), ft(8), ft(8), ft(12, 6)),
+            serves=("FX-M-KITCH-SINK",)),
+    # Second-storey groups: risers straight up through the deck to the wet walls above.
+    # These two climb two storeys of wall to reach the hall bath, so each riser is split at
+    # both storey lines — deck top ft(9) and the second floor ft(19) (basement-relative;
+    # 0'-0" and 10'-0" project) — and names the wall it is inside on each leg. The
+    # main-storey leg passes through a storage-room 2x4 partition (3.5" cavity, ample for
+    # 3/4" PEX); only the second-storey leg is in a staggered wet wall.
+    PipeRun(uid="CBPW40AAAA", tag="PR-B-CW-SBATH", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(5), ft(16)), pt(ft(4), ft(16, 9.6)), pt(ft(4), ft(26, 4)),
+                  pt(ft(5, 7.2), ft(26, 4)), pt(ft(5, 7.2), ft(26, 4)),
+                  pt(ft(5, 7.2), ft(26, 4)), pt(ft(5, 7.2), ft(26, 4))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(9), ft(19),
+                        ft(21, 6)),
+            wall_refs=(None, None, None, None, "W-M-STOS", "W-S-BD-N"),
+            serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
+                    "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
+    PipeRun(uid="CBPW41AAAA", tag="PR-B-HW-SBATH", system=PipeSystem.WATER_HOT,
+            path=(pt(m(1.88684), m(10.0015)), pt(ft(6, 2.4), ft(26, 4)),
+                  pt(ft(6, 2.4), ft(26, 4)), pt(ft(6, 2.4), ft(26, 4)),
+                  pt(ft(6, 2.4), ft(26, 4))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(8), ft(8), ft(9), ft(19), ft(21, 6)),
+            wall_refs=(None, None, "W-M-STOS2", "W-S-BD-N1B"),
+            serves=("FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
+                    "FX-S-VANITY-LAV2")),
+    PipeRun(uid="CBPW42AAAA", tag="PR-B-CW-SUITE", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(8), ft(16)), pt(ft(13, 7.2), ft(16, 10.8)),
+                  pt(ft(13, 7.2), ft(16, 10.8))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(21, 6)),
+            serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
+                    "FX-S-SUITEBATH-TUBSH")),
+    PipeRun(uid="CBPW43AAAA", tag="PR-B-HW-SUITE", system=PipeSystem.WATER_HOT,
+            path=(pt(ft(6, 6), ft(15, 6)), pt(ft(14, 2.4), ft(16, 10.8)),
+                  pt(ft(14, 2.4), ft(16, 10.8))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(8), ft(8), ft(21, 6)),
+            serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
+    # The mechanical-room utility sink (FX-1), fed from the water-heater corner.
+    PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-UTIL", system=PipeSystem.WATER_COLD,
+            path=(pt(m(1.88684), m(10.0015)), pt(ft(7), ft(26)), pt(ft(7), ft(19, 2.4)),
+                  pt(ft(7), ft(19, 2.4))),
+            diameter=inch(0.5), material="pex",
+            elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(3, 6)),
+            serves=("FX-1",)),
+    PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-UTIL", system=PipeSystem.WATER_HOT,
+            path=(pt(m(1.88684), m(10.0015)), pt(ft(7, 3.6), ft(26)),
+                  pt(ft(7, 3.6), ft(19, 2.4)), pt(ft(7, 3.6), ft(19, 2.4))),
+            diameter=inch(0.5), material="pex",
+            elevations=(ft(8), ft(8), ft(8), ft(3, 6)),
+            serves=("FX-1",)),
+]
+
+MAIN_ELEMENTS = [*SLEEVES, *SUPPLY_SLEEVES, *STACK_SLEEVES, *SECOND_DRAINS, *CONDENSATE_MAIN,
+                 *VENT_BRANCHES_MAIN, *MAIN_DEVICES, *WATER_SUPPLY, *GARAGE_SLEEVES,
                  *DUCTS_MAIN, *REGISTERS_MAIN]
-BASEMENT_ELEMENTS = [*DRAINS, *SLAB_STUBS, *EQUIPMENT, *PANEL, *BASEMENT_DEVICES,
+# The basement's only plumbing vent, and the last fixture in the house to get one
+# (2026-07-30). FX-1 could not be vented while it had no drain — there was nothing to tee
+# off — and its wet wall W-B-CW is 12" cast concrete that stops at the main-floor deck, so
+# there is no stud cavity to rise in and no wall continuing up: this is the offset-vent case,
+# authored to the shared radon/vent chase like every other branch in the house.
+#
+# The tee is on the trap arm above the floor, 1'-0" of arm carries it to the wall, and the
+# riser goes up the concrete's north face (boxed in) at y=18'-8" — 8" off the wall axis, so
+# `mep.vent_reachability` reads it as leaving the wet wall, and 2" clear of the y=18'-6" face
+# so it is not drawn inside the concrete. It rises 3" over its 22' to the chase so any
+# condensate drains back to the fixture, the way the other branches do.
+#
+# The horizontal leg tops out at 8'-1" basement-relative because the "basement ceiling" here
+# is 9" of cast concrete: SL-M-DECK's underside is 8'-3" on this datum, and the run's crown
+# has to stay under it — at 8'-3" the vent would be cast into the deck, and the first attempt
+# was, which `mep.sleeve_coverage` caught as two uncast crossings.
+VENT_BRANCHES_BASEMENT = [
+    PipeRun(uid="CBPV01AAAA", tag="PR-B-UTIL-VENT", system=PipeSystem.VENT,
+            path=(pt(ft(7), ft(19, 6)), pt(ft(7), ft(18, 8)), pt(ft(7), ft(18, 8)),
+                  pt(ft(7), ft(34, 6)), pt(ft(1), ft(34, 6))),
+            diameter=inch(1.5), material="pvc",
+            elevations=(ft(1, 6), ft(1, 6), ft(7, 10), ft(8, 0.5), ft(8, 1)),
+            serves=("FX-1",)),
+]
+
+BASEMENT_ELEMENTS = [*DRAINS, *CONDENSATE, *SUPPLY, *WALL_SLEEVES, *SLAB_STUBS,
+                     *VENT_BRANCHES_BASEMENT,
+                     *EQUIPMENT, *PANEL, *BASEMENT_DEVICES,
                      *RADON_SUMP, *VENT_RISERS, *VENT_CLAMPS, *DUCTS_BASEMENT,
                      *REGISTERS_BASEMENT]
 SECOND_ELEMENTS = [*DUCTS, *DUCTS_HVAC_SECOND, *REGISTERS, *REGISTERS_SECOND,

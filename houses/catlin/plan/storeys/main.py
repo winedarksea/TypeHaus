@@ -230,7 +230,7 @@ WALLS = [
          end_node="N-M-STRJ", assembly="INT_2X4_PARTITION", top=ft(9)),
     # --- powder bath west of hallway -------------------------------------------
     Wall(uid="CMW121AAAA", tag="W-M-BAE", start_node="N-M-BA1",
-         end_node="N-M-BA2", assembly="INT_2X6_PLUMBING", top=ft(9)),
+         end_node="N-M-BA2", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     # --- hallway south wall band ------------------------------------------------
     Wall(uid="CMW122AAAA", tag="W-M-HS1", start_node="N-M-W2",
          end_node="N-M-BA2", assembly="INT_2X4_PARTITION", top=ft(9)),
@@ -242,9 +242,9 @@ WALLS = [
          end_node="N-M-C2", assembly="INT_2X4_PARTITION", top=ft(9)),
     # --- bath2 / laundry / study / closet block ---------------------------------
     Wall(uid="CMW126AAAA", tag="W-M-BA2E", start_node="N-M-D1",
-         end_node="N-M-D2", assembly="INT_2X6_PLUMBING", top=ft(9)),
+         end_node="N-M-D2", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     Wall(uid="CMW127AAAA", tag="W-M-BA2E2", start_node="N-M-D2",
-         end_node="N-M-D3", assembly="INT_2X6_PLUMBING", top=ft(9)),
+         end_node="N-M-D3", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     Wall(uid="CMW128AAAA", tag="W-M-LS", start_node="N-M-E2",
          end_node="N-M-E3", assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CMW129AAAA", tag="W-M-CLN", start_node="N-M-D2",

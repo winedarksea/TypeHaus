@@ -382,7 +382,12 @@ class BoundaryCondition:
 
 @dataclass(frozen=True)
 class ResolvedPipeRun:
-    """One validated plumbing run — a plan-frame polyline with invert elevations."""
+    """One validated plumbing run — a routed 3D polyline.
+
+    ``z_m`` carries the absolute project-frame invert at every path vertex (None when the
+    run was authored with no elevations at all); ``z_start_m``/``z_end_m`` remain for the
+    consumers that only need the endpoints. ``length_m`` is developed 3D length —
+    vertical drops (repeated plan point, different z) count."""
 
     uid: str
     tag: str
@@ -396,6 +401,9 @@ class ResolvedPipeRun:
     # Fixture tags this run carries. Authored on ``PipeRun.serves``; carried into the IR so
     # a check can ask "which run vents/drains this fixture" without re-reading plan source.
     serves: tuple[str, ...] = ()
+    z_m: tuple[float, ...] | None = None  # per-vertex absolute inverts, len == len(path)
+    wall_refs: tuple[str | None, ...] = ()  # host wall per segment; () -> none declared
+    material: str | None = None
 
 
 @dataclass(frozen=True)
@@ -460,7 +468,12 @@ class ResolvedLightRun:
 
 @dataclass(frozen=True)
 class ResolvedSleeve:
-    """A cast-in-place sleeve, plus how far it sits from the fixture's expected drain point."""
+    """A cast-in-place sleeve, plus how far it sits from the fixture's expected drain point.
+
+    ``host_slab`` keeps its historical name but may now be any concrete host —
+    ``host_category`` says which ("slab" | "footing" | "wall"). ``axis`` is "vertical"
+    for a through-slab drop, "horizontal" for a foundation-wall/rim crossing whose
+    centerline sits at ``center_z_m``."""
 
     uid: str
     tag: str
@@ -474,6 +487,10 @@ class ResolvedSleeve:
     serves_fixture: str | None
     expected_center: tuple[float, float] | None  # None -> UNKNOWN, not silent PASS
     offset_m: float | None
+    axis: str = "vertical"
+    host_category: str = "slab"
+    center_z_m: float | None = None  # horizontal sleeves: absolute centerline elevation
+    purpose: str = "drain"
 
 
 @dataclass(frozen=True)

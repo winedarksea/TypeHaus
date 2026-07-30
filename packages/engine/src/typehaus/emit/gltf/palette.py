@@ -97,6 +97,13 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "connector": (0.35, 0.36, 0.38, 1.0),  # galvanized hardware
     "sump": (0.30, 0.32, 0.34, 1.0),       # pit
     "vent": (0.88, 0.88, 0.86, 1.0),       # painted vent pipe
+    # routed plumbing runs (→ resolve/mep.py _emit_pipe_solids), riser-diagram colors
+    "pipe_drain": (0.20, 0.20, 0.22, 1.0),       # ABS/PVC waste, near-black
+    "pipe_vent": (0.88, 0.88, 0.86, 1.0),        # same as the vent risers
+    "pipe_water_hot": (0.80, 0.25, 0.22, 1.0),   # red PEX
+    "pipe_water_cold": (0.20, 0.40, 0.75, 1.0),  # blue PEX
+    "pipe_gas": (0.85, 0.75, 0.20, 1.0),         # yellow CSST
+    "pipe_radon": (0.55, 0.58, 0.60, 1.0),       # bare gray
     "solar": (0.10, 0.14, 0.28, 1.0),      # PV module glass, deep blue
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
     "soffit": (0.88, 0.88, 0.85, 1.0),     # vented soffit panel under the overhang

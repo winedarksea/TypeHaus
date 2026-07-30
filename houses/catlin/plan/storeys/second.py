@@ -218,15 +218,16 @@ WALLS = [
     # --- west block: walk-in, suite, suite bath, vanity alcove ------------------
     Wall(uid="CSW129AAAA", tag="W-S-DC1", start_node="N-S-D1", end_node="N-S-D2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
-    # RM-S-SUITEBATH's west + south walls carry its drain stack, so both are the 2x6
-    # plumbing assembly: `advisory.wet_wall_depth` reads preferences.toml's
+    # RM-S-SUITEBATH's west + south walls carry its drain stack, so both are the
+    # staggered wet-wall assembly (2x4 studs on 2x6 plates, 5.5" continuous cavity):
+    # `advisory.wet_wall_depth` reads preferences.toml's
     # `drain_stack_required_structure_in = 5.5`, which a 2x4 partition cannot hold.
     Wall(uid="CSW142AAAA", tag="W-S-DC2", start_node="N-S-D3", end_node="N-S-D4",
-         assembly="INT_2X6_PLUMBING", top=ft(9)),
+         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     Wall(uid="CSW143AAAA", tag="W-S-CLN", start_node="N-S-D2", end_node="N-S-C2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW144AAAA", tag="W-S-SBS", start_node="N-S-D3", end_node="N-S-C2B",
-         assembly="INT_2X6_PLUMBING", top=ft(9)),
+         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     Wall(uid="CSW145AAAA", tag="W-S-SN1", start_node="N-S-W2", end_node="N-S-V1",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW146AAAA", tag="W-S-SN2", start_node="N-S-V1", end_node="N-S-D4",
@@ -236,17 +237,17 @@ WALLS = [
     Wall(uid="CSW148AAAA", tag="W-S-VE", start_node="N-S-V1", end_node="N-S-V2",
          assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CSW132AAAA", tag="W-S-BD-N", start_node="N-S-W1", end_node="N-S-V2",
-         assembly="INT_2X6_PLUMBING", top=ft(9)),
+         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     Wall(uid="CSW149AAAA", tag="W-S-BD-N1B", start_node="N-S-V2", end_node="N-S-BA1",
-         assembly="INT_2X6_PLUMBING", top=ft(9)),
+         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     # W-S-BD-N2 (the stair's south wall on y=25', with the 6'-0" O-S-STAIRTOP through it)
     # came out on 2026-07-28 with the centre line: a wall pierced by a 6' hole between two
     # halves of what is now one room was doing nothing but hiding the stair. The well head
     # is guarded by RL-S-STAIRHEAD instead, which stops at the flight's own throat.
     Wall(uid="CSW134AAAA", tag="W-S-BA-E", start_node="N-S-N2", end_node="N-S-BA-SPLIT",
-         assembly="INT_2X6_PLUMBING", top=ft(9)),
+         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     Wall(uid="CSW150AAAA", tag="W-S-BA-E1B", start_node="N-S-BA-SPLIT", end_node="N-S-BA1",
-         assembly="INT_2X6_PLUMBING", top=ft(9)),
+         assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     # W-S-BA-E2 (N-S-BA1 to the stair shaft's freed N-S-STR2 corner) came out with this
     # edit: since W-S-BD-N2 came out it was a stub dead-ending on an open node, poking into
     # the hallway with nothing on its far end to tie into.

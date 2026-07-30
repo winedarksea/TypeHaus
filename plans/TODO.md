@@ -20,16 +20,29 @@ what genuinely remains, with fresh measurements.*
   layout change to the RM-S-STUDY-2 opening), and there is 2.5" of tread slack in the
   straight run to pay for it (11.28" against the 10" minimum). Both checks stay advisory
   WARN and keep printing the measured numbers.
-- ~~**Service load exceeds the service**~~ — **decided 2026-07-27: the EV EMS lever.**
-  `LM-EV` (Emporia Vue, `strategy="ems"`) caps `CKT-EV-1450` + `CKT-EV-620` at 5,760 VA
-  (24A @ 240V), credited per NEC 625.42. Demand falls 223.7A → 191.7A and fits the 200A
-  service, so the check passes. 5,760 VA is the largest round setpoint inside the 32.3A of
-  headroom the rest of the house leaves, and stays well above the 6A floor an EVSE may
-  never be throttled below. Authored in `houses/catlin/plan/circuits.py`.
+
 - **Panel needs to be a 54-space one (2026-07-26).** All 35 circuits now carry slot
   assignments and `electrical.panel_spaces` measures 48 required against ED-T-PANEL's
   declared 42 — an honest FAIL until the panel type is swapped to a 54-circuit enclosure
   (one-line change on the type). That swap is yours.
+
+- ~~**FX-1 cannot drain by gravity — ejector, or main under the slab?**~~ — **decided
+  2026-07-30: the main goes under the slab.** The sewer connection is buried below the slab,
+  as Minnesota does to keep it under frost, so no ejector is needed. What changed:
+  - the collector stays hung at the basement ceiling (that is where the upper-floor stacks
+    arrive) and drops through `SP-B-SLAB-MAIN` at (3', 15'-6"), then runs under the slab to
+    invert -10'-6 3/5" and leaves **beneath** `FT-B-S1`. It has to go under the footing
+    rather than through the wall: the walls stop at -9'-0", which is the slab top, so there
+    is no wall left at that depth — the exit is an under-footing protection sleeve (IRC
+    P2604), the same treatment `PR-G-HYDRANT-CW` already gets under the garage footing. The
+    old exit at -2'-3" was above the 42" frost line, which is what this decision retires.
+  - `PR-B-UTIL-DRAIN` gives FX-1 its gravity drain, passing under `FT-B-CW` in
+    `SP-B-CW-UTIL-DR`, and `PR-B-UTIL-VENT` is the basement's first vent branch. The trap
+    moved 6" north to 19'-6" so the drop clears FT-B-CW's 45° influence line.
+  - `mep.sewer_exit_invert` grew the under-footing case (a protection sleeve is not a
+    through-crossing, so it is matched by proximity with the invert interpolated).
+
+  Every plumbing check and the whole mn-2024 permit checklist now pass.
 
 ## Remaining Work
 
@@ -70,10 +83,12 @@ what genuinely remains, with fresh measurements.*
 - **Hall cans sit inside the new soffit (2026-07-29).** `ED-S-HALL-CAN1/2/3` are at x=20',
   inside `SF-S-DUCT`'s widened plan extent, still mounted at the 9'-0" ceiling. They want
   re-setting into the soffit face at 7'-10" in a lighting pass.
-- **Heat-pump condensate is not modeled (2026-07-29).** Each indoor unit drains to a
-  collected air-gap line terminating over the mechanical-room sink; needs the plumbing pass
-  that gives that sink its own drain. Refrigerant linesets are also unmodeled — only the
-  indoor→outdoor pairing is recorded (`Equipment.outdoor_ref`).
+- **Refrigerant linesets are unmodeled** — only the indoor→outdoor pairing is recorded
+  (`Equipment.outdoor_ref`). (Heat-pump *condensate* is modeled as of the plumbing pass:
+  `PR-M-COND-HEADS` drops the two main-storey wall heads through `SP-M-COND` to
+  `PR-B-COND`, the collected air-gap line falling to terminate over the mechanical-room
+  sink — which now has the drain that was the blocker. `EQ-S-HP1-AH`'s line down the
+  second-floor chase is still undrawn.)
 - **The panel is now 52 spaces over a 42-space enclosure (2026-07-29).** Two more two-pole
   circuits (CKT-HP1-AH, CKT-HP2) landed with the three-system design; `electrical.panel_spaces`
   FAILs until the panel is swapped for a 54-space unit, which was already true at 48.
@@ -82,10 +97,6 @@ what genuinely remains, with fresh measurements.*
   and PT-SG-COL plus the six balcony pillars bear on non-Pad chains (grouted CMU / bell
   footing) so `deck_footing_size` can't resolve. `deck_beam_span` also surfaces genuine
   R507.5(1) overspans (porch 2-2x12 @ 10' vs 8.25'; balcony 2-2x10 @ 8.67' vs 5.75').
-- **SP-M-WC2 sleeve holds the old drain position (2026-07-26).** The BATH2 WC moved to the
-  wet wall but the cast-in sleeve's `drain_position` deliberately stays at (3', 18') so
-  `mep.sleeve_alignment` resolves; re-pointing sleeve + PR-B-MAIN-DRAIN at the new flange is
-  a follow-up in `plan/mep.py`.
 - **`lsl` and `fiber-cement` have no sourced permeance** — deliberately UNKNOWN rather than
   invented. (The two library starter walls no longer need it for a verdict: their rainscreen
   is a real FURRING layer now and the Glaser walk truncates at the vented cavity.)
@@ -196,7 +207,6 @@ the future.
   (replaces the "Space labels" checkbox). A selected element always shows its own label.
 - RM-M-STORAGE should become the "Mudroom". Doors should go as far east on both walls as is practical with framing. WIN-M-STOR should be replaced by a 14" wide fixed (picture) window on the midpoint of the west wall (midpoint, but such that it fits elegantly between studs). Then on the north and south sides of the mudroom, from door to west wall, there should be full closests added, leaving a hallway width (36") between them, and a 36" width bench under the window there for changing shoes. The mudroom should have an ERV ventilation intake (but not an outlet). Maybe sliding doors on those closets (like shower doors, two panels that can overlap, not the sash kind that go into the wall).
 - Make Wall W-M-STRW a special wall type. It will not have drywall facing the mudroom, so it can have space for hanging coats between the studs. The studs will be Select Grade S4S 2x6 for better visual appearance (likely douglas fir, perhaps slightly rounded (eased) corners). The rear side of the wall (facing the stairs) will have 3/4" cabinet-grade plywood (which can support coat hooks directly). Try to keep electrical and plumbing out of this wall then (it might work carefully but easier to avoid.)
-- Unittests that the stairs align between floors and reach the correct ceiling height while meeting code. The winders for ST-S2A are still messed up (last winder is level with the floor, not a step up), and the regular stair tread can come down to 11".
 
 Questions:
 - Do we want floor drains in kitchen/laundry room

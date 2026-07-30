@@ -21,11 +21,17 @@ MN_2024 = JurisdictionProfile(
     effective_date="2020-03-31",
     irc_base="2018 IRC + MN amendments",
     coverage_statement=(
-        "Encodes a declared subset: R305 ceiling height, R310 emergency escape openings, "
-        "R311.7 stairways, R311.6 hallway width, egress door width, and R401.3 lot "
-        "drainage away from the foundation. Does NOT cover "
-        "structural, mechanical, electrical, plumbing, or energy chapters. "
-        "This profile covers a declared subset of the code; results are never 'code compliant'."
+        "Encodes a declared subset. Habitability and egress: R305 ceiling height, R310 "
+        "emergency escape openings, R311.7 stairways, R311.6 hallway width, egress door "
+        "width. Site: R401.3 lot drainage away from the foundation, local setbacks. "
+        "Energy: the N1102.1.2 prescriptive envelope only. Structural: frost depth and "
+        "I-joist span tables only — no engineered analysis, no lateral system, no "
+        "connection design. Plumbing: rough-in geometry and MN ch. 4714 sizing tables "
+        "(sleeving, drain slope, wall occupancy, under-slab and footing clearance, sewer "
+        "invert, DFU/WSFU sizing, trap-arm length) — no gas, no fixture venting beyond "
+        "trap arms, no testing. Does NOT cover mechanical or electrical chapters at all. "
+        "Every permit item names the checks that answer it; this profile covers a declared "
+        "subset of the code; results are never 'code compliant'."
     ),
     frost_depth_in=42.0,
     # IRC Table R401.4.1 presumptive value for sandy/silty clay, the conservative default
@@ -55,6 +61,28 @@ MN_2024 = JurisdictionProfile(
                        ("manufacturer span table",)),
         PermitItemSpec("Plumbing sleeve alignment", ("mep.sleeve_alignment",), ()),
         PermitItemSpec("Plumbing drain slope", ("mep.drain_slope",), ("IRC P3005.3",)),
+        # The plumbing pass (2026-07-29) landed eight more CODE-tier checks. Every one of
+        # them answers a line a plan reviewer actually asks about, so they go on the
+        # checklist rather than into the exclusion list — the pour-day sleeve schedule most
+        # of all, since it is the one item that cannot be corrected after the fact.
+        PermitItemSpec("Cast-in sleeve coverage", ("mep.sleeve_coverage",), ()),
+        # Grouped: both answer "is the pipe in this wall, and can the wall still do its job".
+        PermitItemSpec("Plumbing in framed walls",
+                       ("mep.wet_wall_occupancy", "structural.wet_wall_bearing"), ()),
+        # Grouped as one line for the same reason: pipe against concrete below grade.
+        # `under_slab_burial` contributes nothing on a house with no under-slab drainage,
+        # which is why it is not a line of its own — an item with no findings at all grades
+        # UNKNOWN, and "this house routes its basement main at the ceiling" is not an
+        # unevaluated permit question.
+        PermitItemSpec("Pipe below and beside concrete",
+                       ("mep.under_slab_burial", "mep.footing_clearance"),
+                       ("IRC P2604",)),
+        PermitItemSpec("Building sewer invert at the exit sleeve",
+                       ("mep.sewer_exit_invert",), ()),
+        PermitItemSpec("Drain and supply pipe sizing", ("mep.pipe_sizing",),
+                       ("MN Plumbing Code (ch. 4714) Tables 702.1, 703.2, 610.3, 610.4",)),
+        PermitItemSpec("Trap-arm length", ("mep.trap_arm_length",),
+                       ("MN Plumbing Code (ch. 4714) Table 1002.2",)),
     ),
     permit_exclusions=(
         ("mep.hydrant_freeze_depth",

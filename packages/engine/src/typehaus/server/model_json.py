@@ -29,6 +29,7 @@ from typehaus.takeoff.electrical import (
     solar_takeoff,
 )
 from typehaus.takeoff.hvac import hvac_takeoff
+from typehaus.takeoff.plumbing import plumbing_takeoff
 from typehaus.takeoff.lighting import (
     connected_lighting_va,
     light_run_takeoff,
@@ -453,6 +454,10 @@ def model_to_dict(
         # schedule is shared. None for a house with no preferences loaded: the zone rows are
         # block loads, and there is no block load without the envelope preferences.
         "hvac": (hvac_takeoff(model, preferences) if preferences is not None else None),
+        # The plumbing reader's whole payload, verbatim from takeoff/plumbing.py — riser
+        # geometry, fixture units (the same tables mep.pipe_sizing grades with), and the
+        # pour-day cast-in list. No preferences dependency: fixture units are code tables.
+        "plumbing": plumbing_takeoff(model),
         "electrical": {
             "panel_schedule": panel_schedule(model),
             "service_load": (service_load_summary(model)

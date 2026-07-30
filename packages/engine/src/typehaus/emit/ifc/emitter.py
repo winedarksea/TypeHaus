@@ -769,17 +769,32 @@ def _emit_pipe_run(f: Any, body: Any, run: Any, storeys: dict[str, Any], project
     invert (a boxy placeholder profile, not a true cylindrical sweep, → Phase 2 spec)."""
     half = run.diameter_m / 2.0
     cumulative = 0.0
+    z_m = getattr(run, "z_m", None)
     for index in range(len(run.path) - 1):
         p0, p1 = run.path[index], run.path[index + 1]
         seg_len = ((p1[0] - p0[0]) ** 2 + (p1[1] - p0[1]) ** 2) ** 0.5
-        z0 = _interpolated_invert(run, cumulative, cumulative + seg_len)
+        if z_m is not None:
+            z0 = (z_m[index] + z_m[index + 1]) / 2.0
+        else:
+            z0 = _interpolated_invert(run, cumulative, cumulative + seg_len)
         cumulative += seg_len
-        profile = rect_between(p0, p1, -half, half)
+        if seg_len < 1e-6:
+            # Vertical drop (repeated plan point, different inverts): a square prism the
+            # pipe's own section, spanning the drop.
+            if z_m is None or abs(z_m[index + 1] - z_m[index]) < 1e-9:
+                continue
+            lo, hi = sorted((z_m[index], z_m[index + 1]))
+            profile = [(p0[0] - half, p0[1] - half), (p0[0] + half, p0[1] - half),
+                       (p0[0] + half, p0[1] + half), (p0[0] - half, p0[1] + half)]
+            height, base = hi - lo, lo
+        else:
+            profile = rect_between(p0, p1, -half, half)
+            height, base = run.diameter_m, z0 - half
         child_key = f"seg-{index:02d}"
         element = ll.create_entity(f, "IfcPipeSegment", name=f"{run.tag}/{child_key}")
         element.GlobalId = derive_child_guid(project_uuid, run.uid, child_key)
         _assign_representation(f, element, ll.add_prism_from_profile(
-            f, body, profile, run.diameter_m, z0 - half,
+            f, body, profile, height, base,
         ))
         ll.ensure_pset(f, element, PSET_SOURCE, {"uid": run.uid, "tag": run.tag})
         ll.ensure_pset(f, element, "TypeHaus_Pipe", {

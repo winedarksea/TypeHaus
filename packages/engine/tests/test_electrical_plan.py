@@ -136,6 +136,19 @@ def test_both_water_heaters_are_modeled(catlin_model):
     assert equipment["EQ-M-HP3-STAIR"].outdoor_ref == "EQ-M-HP3-OD"
 
 
+def test_outdoor_heat_pumps_have_distinct_3d_symbol_geometry(catlin_model):
+    """The outdoor halves are visible condensers, not anonymous massing boxes."""
+    from typehaus.model.placeable_symbols import model_parts
+
+    types = {product.tag: product for product in catlin_model.plan.library.equipment_types}
+    for type_tag in ("EQ-T-GREE-VIREO-GEN3", "EQ-T-GREE-MULTI-U30",
+                     "EQ-T-GREE-SAPPHIRE-9-OD"):
+        product = types[type_tag]
+        assert product.plan_symbol == "heat-pump-outdoor"
+        width, depth = (dimension.meters for dimension in product.footprint)
+        assert len(model_parts(product.plan_symbol, width, depth, product.height.meters)) >= 3
+
+
 def test_electrical_plan_dxf_round_trips(catlin_model, tmp_path: Path):
     import ezdxf
 

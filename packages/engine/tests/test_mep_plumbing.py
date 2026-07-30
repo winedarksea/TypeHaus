@@ -36,16 +36,80 @@ def test_wc_expected_drain_point_is_authored_carrier_outlet(catlin_model):
     assert sleeve.expected_center != fixture.position.xy_m
 
 
-def test_floor_wc_expected_drain_point_follows_its_authored_drain_position(catlin_model):
-    """BATH2's WC moved onto its W-M-BA2E wet wall but keeps ``drain_position`` on
-    SP-M-WC2's cast-in sleeve at the (3', 18') main-drain corner fitting, so the pre-pour
-    sleeve contract still reads 0.00" — the authored override wins over the
-    footprint-position fallback."""
+def test_floor_wc_drains_under_its_own_bowl(catlin_model):
+    """BATH2's WC is floor-mounted, so the closet flange is under the bowl and the
+    convention needs no override. It carried one — parked at the old (3', 18') main-drain
+    corner while the fixture moved to the wet wall — until the plumbing pass re-pointed
+    SP-M-WC2 and PR-B-WC2-DRAIN at the real flange and the override came out."""
     sleeve = next(s for s in catlin_model.sleeves if s.tag == "SP-M-WC2")
     fixture = catlin_model.plan.by_tag("FX-M-BATH2-WC")
-    assert fixture.drain_position is not None
-    assert sleeve.expected_center == fixture.drain_position.xy_m
+    assert fixture.drain_position is None
+    assert sleeve.expected_center == fixture.position.xy_m
     assert sleeve.offset_m == pytest.approx(0.0, abs=1e-9)
+
+
+def test_catlin_sleeve_expectation_sources_agree(catlin_model):
+    """On this house the three expectation sources are not in conflict, and that is the
+    point: SP-M-WC1's authored carrier outlet, the vertex of the run serving it, and the
+    sleeve's own position are one point. Precedence only ever decides a disagreement, so if
+    this test starts needing it, something drifted."""
+    from typehaus.resolve.mep import _pipe_expected_point
+
+    sleeve = next(el for el in catlin_model.plan.all_elements()
+                  if el.element_kind == "SleevePenetration" and el.tag == "SP-M-WC1")
+    fixture = catlin_model.plan.by_tag("FX-M-BATH1-WC")
+    assert _pipe_expected_point(catlin_model, sleeve) == fixture.drain_position.xy_m
+
+
+def test_authored_drain_position_outranks_the_routed_run():
+    """The precedence in `_expected_sleeve_point`, pinned on a deliberate disagreement:
+    authored `drain_position` beats a routed vertex, which beats the fixture convention.
+
+    Order matters in the direction that surfaces defects. If a routed run could override the
+    override, a stale `drain_position` would be silently ignored instead of failing
+    `mep.sleeve_alignment` — which is exactly how SP-M-WC2's old position hid. So re-routing
+    a run away from an authored flange must move the *expectation* nowhere; the sleeve stays
+    where the human put it and the check reports the gap.
+    """
+    from types import SimpleNamespace
+
+    from typehaus.model.enums import Service
+    from typehaus.model.mep import SleevePenetration
+    from typehaus.model.spatial import Fixture
+    from typehaus.quantities import inch, m, pt
+    from typehaus.resolve.mep import _expected_sleeve_point
+    from typehaus.resolve.model import ResolvedPipeRun
+
+    flange = pt(m(1.0), m(1.0))          # what the plan says
+    routed = (m(4.0).meters, m(4.0).meters)  # where the run actually goes — 3m away
+    sleeve = SleevePenetration(
+        uid="TESTSLV001", tag="SP-T", host_ref="SL-T", position=flange,
+        pipe_diameter=inch(3), sleeve_diameter=inch(4), serves_fixture="FX-T")
+    assert sleeve.purpose == Service.DRAIN
+    run = ResolvedPipeRun(
+        uid="TESTRUN001", tag="PR-T", storey="main", system="drain",
+        path=(routed, (routed[0], routed[1] + 1.0)), diameter_m=inch(3).meters,
+        z_start_m=0.0, z_end_m=0.0, length_m=1.0, serves=("FX-T",))
+
+    fixture = Fixture(uid="TESTFIX001", tag="FX-T", type_ref="FX-TOILET-STD",
+                      position=pt(m(1.2), m(1.2)), drain_position=flange)
+    held = {"fixture": fixture}
+    model = SimpleNamespace(plan=SimpleNamespace(by_tag=lambda tag: held["fixture"]),
+                            pipe_runs=[run])
+
+    # The routed vertex is inside the snap radius of nothing here — it is 3m off — but the
+    # authored point answers regardless of how near or far the run is.
+    with_override = _expected_sleeve_point(model, sleeve)
+    assert with_override == flange.xy_m
+
+    # Drop the override and the run's own vertex becomes the expectation.
+    held["fixture"] = fixture.model_copy(update={"drain_position": None})
+    near = pt(m(1.05), m(1.0))  # a vertex within the 0.3m snap of the sleeve center
+    model.pipe_runs = [ResolvedPipeRun(
+        uid="TESTRUN002", tag="PR-T2", storey="main", system="drain",
+        path=(near.xy_m, routed), diameter_m=inch(3).meters,
+        z_start_m=0.0, z_end_m=0.0, length_m=1.0, serves=("FX-T",))]
+    assert _expected_sleeve_point(model, sleeve) == near.xy_m
 
 
 def test_lav_expected_drain_point_projects_onto_wet_wall(catlin_model):
@@ -301,42 +365,28 @@ def test_catlin_door_swings_are_clear_of_fixtures(catlin_model):
     assert not matched, [f.message for f in matched]
 
 
-# Fixtures whose vent path the model does not yet carry, each with the reason. Declared
-# rather than tolerated: the check keeps firing, and an *undeclared* unvented fixture still
-# fails this test.
+# Every fixture in the house vents, and this test exists to keep it that way.
 #
-# These all surfaced together when the library dedupe retagged catlin's house-local fixture
-# types onto the shared ones. The house-local FX-LAV / FX-SHOWER / FX-TUB / FX-TUBSHOWER
-# omitted Service.VENT from `needs`; the shared FX-LAV-24 / FX-SHOWER-36 / FX-TUB-60 /
-# FX-TUBSHOWER-60 state it, which is correct — every one of them drains, and a drained
-# fixture is vented. So the house's vent design (water closets only) was authored against a
-# claim its own fixture types quietly did not make, and these eight were never *passing*,
-# they were never checked.
+# It used to carry an UNVENTED_FIXTURES dict of eight declared exceptions. They surfaced
+# together when the library dedupe retagged catlin's house-local fixture types onto the
+# shared ones: the house-local FX-LAV / FX-SHOWER / FX-TUB / FX-TUBSHOWER omitted
+# Service.VENT from `needs` while the shared FX-LAV-24 / FX-SHOWER-36 / FX-TUB-60 /
+# FX-TUBSHOWER-60 state it — correctly, because a fixture that drains is vented. So the
+# house's vent design (water closets only) had been authored against a claim its own fixture
+# types quietly did not make: those eight were never *passing*, they were never checked.
 #
-# Each needs a VENT PipeRun authored from its wet wall to a VentRun chase. That is plumbing
-# design for this house, not a mechanical fix, so it is recorded here rather than invented.
-UNVENTED_FIXTURES = {
-    "FX-1": "basement utility lavatory (W-B-CW): the basement has no vent branch at all",
-    "FX-M-BATH2-SH": "main bath 2 shower (W-M-BA2E): wall stops at its own ceiling",
-    "FX-M-BATH2-TUB": "main bath 2 tub (W-M-BA2E): wall stops at its own ceiling",
-    "FX-S-BATH1-LAV": "second bath 1 lavatory (W-S-BA-E1B)",
-    "FX-S-BATH1-SH": "second bath 1 tub-shower (W-S-BD-N)",
-    "FX-S-SUITEBATH-LAV": "ensuite lavatory (W-S-SBS)",
-    "FX-S-VANITY-LAV1": "vanity lavatory 1 (W-S-BD-N)",
-    "FX-S-VANITY-LAV2": "vanity lavatory 2 (W-S-BD-N)",
-}
-
-
-def test_catlin_water_closets_all_reach_a_vent_chase(catlin_model):
+# The plumbing pass closed all eight. Seven got real vent runs on 2026-07-29 (the main-bath-2
+# fixtures tie into PR-M-WC-VENT rather than needing W-M-BA2E to continue past its ceiling).
+# FX-1 was last, on 2026-07-30: it could not be vented while it had no drain, and it could
+# not drain until the building main went under the slab — see PR-B-UTIL-VENT, the basement's
+# only vent branch. A ninth fixture, FX-M-BATH1-LAV, joined the check that same day when
+# FX-LAV-COMPACT was given the Service.VENT it had always been missing.
+def test_catlin_fixtures_all_reach_a_vent_chase(catlin_model):
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
     matched = [f for f in report.findings if f.check_id == "mep.vent_reachability"]
     assert matched
-    unvented = [f for f in matched if f.result.value != "pass"]
-    undeclared = [f.message for f in unvented
-                  if not any(tag in UNVENTED_FIXTURES for tag in f.element_tags)]
-    assert not undeclared, undeclared
-    stale = UNVENTED_FIXTURES.keys() - {tag for f in unvented for tag in f.element_tags}
-    assert not stale, f"these fixtures vent now — delete them from UNVENTED_FIXTURES: {stale}"
+    unvented = [(f.message) for f in matched if f.result.value != "pass"]
+    assert not unvented, unvented
     # The two whose wet wall stops at its own ceiling must say so, not silently pass.
     # (FX-S-BATH1-WC used to be the third: since the ensuite de-overlap pass it backs
     # onto the exterior W-S-W1, which continues up, so it vents in-wall.)
@@ -352,7 +402,11 @@ def test_authored_vent_branches_carry_their_fixtures_into_the_ir(catlin_model):
     runs = {run.tag: run for run in catlin_model.pipe_runs if run.system == "vent"}
     assert "FX-M-BATH1-WC" in runs["PR-M-WC-VENT"].serves
     assert "FX-M-BATH2-WC" in runs["PR-M-WC-VENT"].serves
-    assert runs["PR-S-BATH1-VENT"].serves == ("FX-S-BATH1-WC",)
+    # The hall-bath branch vents the whole group, not just the water closet: the plumbing
+    # pass added the lavatories and the tub-shower whose trap arms tie into the same leg.
+    assert runs["PR-S-BATH1-VENT"].serves == (
+        "FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
+        "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")
 
 
 def _vent_path_model(run_path, wall_axis, chase_xy, systems=None):

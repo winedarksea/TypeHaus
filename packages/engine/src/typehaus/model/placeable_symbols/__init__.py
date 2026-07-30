@@ -56,7 +56,7 @@ SYMBOL_NAMES = frozenset({
     "tall-cabinet-triple", "besta",
     # appliances + mechanical/electrical equipment
     "refrigerator", "range", "dishwasher", "washer", "dryer", "microwave", "hood",
-    "furnace", "erv", "water-heater", "sauna-heater", "panel", "register",
+    "furnace", "erv", "heat-pump-outdoor", "water-heater", "sauna-heater", "panel", "register",
     # plumbing fixtures. "hydrant" is the odd one out: it is a standpipe, not a vessel, so
     # its glyph is the riser's own diameter with a handle bar and an outlet nipple rather
     # than a basin.

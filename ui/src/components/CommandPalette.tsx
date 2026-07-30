@@ -95,6 +95,7 @@ export function CommandPalette() {
       { id: "reader-bom", title: "Bill of materials", group: "Model", run: () => setDetailView("bom") },
       { id: "reader-circuits", title: "Circuits (panel schedule)", group: "Model", run: () => setDetailView("circuits") },
       { id: "reader-lighting", title: "Lighting (luminaire schedule)", group: "Model", run: () => setDetailView("lighting") },
+      { id: "reader-plumbing", title: "Plumbing (riser, fixture units)", group: "Model", run: () => setDetailView("plumbing") },
       { id: "show-everything", title: "Show everything (clear visibility filters)", group: "Isolate", run: showEverything },
     ];
     for (const trade of ALL_TRADES) {

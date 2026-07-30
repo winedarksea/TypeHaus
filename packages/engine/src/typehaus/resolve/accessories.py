@@ -30,14 +30,13 @@ from typehaus.resolve.vent_termination import (
     exterior_riser_point,
 )
 
-# Pipe risers are round sections faceted into the prism-only solid IR. A horizontal run
-# cannot be a vertical prism at all, so it is swept as bands stacked in Z whose plan width
-# tracks the circle. The band boundaries land on the *same* regular-polygon vertex
-# elevations the vertical risers are faceted at, so the jog reads as the identical n-gon
-# section rather than as a few square bands: an n-gon spans n/2 bands top to bottom.
-_PIPE_FACETS = 12
-_PIPE_SWEEP_BANDS = _PIPE_FACETS // 2
-_PIPE_BUNDLE_SPACING = 1.6  # centre-to-centre spacing of bundled risers, in diameters
+# Round-section faceting lives in resolve/round_solids.py, shared with pipe runs.
+from typehaus.resolve.round_solids import (
+    PIPE_BUNDLE_SPACING as _PIPE_BUNDLE_SPACING,
+    PIPE_FACETS as _PIPE_FACETS,
+    PIPE_SWEEP_BANDS as _PIPE_SWEEP_BANDS,
+    round_run_bands as _round_run_bands,
+)
 
 # Trim ``TrimKind`` values collapse onto a small render/IFC category set.
 _TRIM_CATEGORY = {
@@ -358,28 +357,6 @@ def _resolve_sump(model: ResolvedModel, el: Sump, storey) -> None:
         uid=el.uid or f"{el.tag}-sump", tag=el.tag, storey=storey.tag,
         category="sump", outline=_square(cx, cy, half, half), z0_m=z0, z1_m=z1,
     ))
-
-
-def _round_run_bands(start: tuple[float, float], end: tuple[float, float], radius: float,
-                     center_z: float) -> list[tuple[list[tuple[float, float]], float, float]]:
-    """Sweep a horizontal pipe as ``(outline, z0, z1)`` bands stacked in Z.
-
-    ``ResolvedSolid`` only extrudes a plan outline vertically, so a horizontal run has no
-    round cross-section available to it. Each band spans an equal arc of the circle and is
-    as wide as the chord at that arc's midpoint, so the stack neither inscribes nor
-    circumscribes the pipe and its silhouette stays centred on the true diameter. With
-    ``_PIPE_SWEEP_BANDS`` bands the boundaries fall on the riser polygon's own vertex
-    elevations, so the jog's section is that same polygon turned on its side.
-    """
-    bands = []
-    for index in range(_PIPE_SWEEP_BANDS):
-        low_angle = math.pi * index / _PIPE_SWEEP_BANDS
-        high_angle = math.pi * (index + 1) / _PIPE_SWEEP_BANDS
-        half_width = radius * math.sin((low_angle + high_angle) / 2.0)
-        bands.append((rect_between(start, end, -half_width, half_width),
-                      center_z - radius * math.cos(low_angle),
-                      center_z - radius * math.cos(high_angle)))
-    return bands
 
 
 def _resolve_vent(model: ResolvedModel, el: VentRun, storey: str) -> list[Finding]:

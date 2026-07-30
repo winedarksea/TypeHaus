@@ -23,26 +23,52 @@ from typehaus.quantities import Length, Point2D
 
 @register_element
 class PipeRun(Element):
-    """One authored plumbing run — a plan-frame polyline with inverts at each end."""
+    """One authored plumbing run — a routed 3D polyline.
+
+    ``path`` is the plan-frame polyline; ``elevations`` (optional) gives the invert at
+    every vertex, storey-relative, so a run can slope per segment and drop vertically —
+    a vertical drop is a repeated plan point with two different elevations. When
+    ``elevations`` is None the resolver interpolates linearly between
+    ``start_elevation``/``end_elevation`` over developed plan length, which is exactly
+    the old two-invert behaviour — existing authored runs resolve unchanged.
+
+    ``wall_refs`` names the host wall per segment (len == len(path) - 1); a None entry
+    means the segment is in-floor/under-slab/exposed, not in a wall. ``wall_ref`` is
+    sugar for a run living in one wall throughout. The resolver validates in-wall
+    segments against the named wall's structure cavity (mep.wet_wall_occupancy) —
+    the pipe must actually fit the wall it claims.
+    """
 
     system: PipeSystem
     path: tuple[Point2D, ...]  # plan-frame polyline, >= 2 points
     diameter: Length
     start_elevation: Length | None = None  # invert at path[0], storey-relative
     end_elevation: Length | None = None
+    elevations: tuple[Length, ...] | None = None  # per-vertex inverts, len == len(path)
     serves: tuple[str, ...] = ()  # upstream Fixture tags
+    wall_refs: tuple[str | None, ...] | None = None  # host wall per segment
+    wall_ref: str | None = None  # sugar: every segment hosted by this one wall
+    material: str | None = None  # "pex" | "pvc" | "abs" | "copper" — takeoff grouping
 
 
 @register_element
 class SleevePenetration(Element):
-    """A cast-in-place sleeve through a structural slab — position cannot move after pour."""
+    """A cast-in-place sleeve through concrete — position cannot move after pour.
 
-    host_ref: str  # Slab tag, e.g. "SL-M-DECK"
+    ``host_ref`` may name a slab, footing, or concrete wall. ``axis`` is "vertical" for
+    the common slab drop; "horizontal" for a foundation-wall or rim crossing (sewer
+    exit, water-service entry), where ``position`` is the plan point on the host and
+    ``center_elevation`` is the project-frame elevation of the sleeve centerline.
+    """
+
+    host_ref: str  # Slab/Footing/Wall tag, e.g. "SL-M-DECK"
     position: Point2D  # exact cast-in-place center
     pipe_diameter: Length  # 3" WC, 2" shower, 1.5" lav
     sleeve_diameter: Length  # pipe + annular space
     serves_fixture: str | None = None
     purpose: Service = Service.DRAIN
+    axis: str = "vertical"  # "vertical" | "horizontal"
+    center_elevation: Length | None = None  # horizontal sleeves: project-frame center z
 
 
 @register_element

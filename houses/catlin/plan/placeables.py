@@ -13,8 +13,14 @@ from typehaus.model import DeviceKind, deg, ft, inch, m, pt
 # FX-1 is the furnace-room utility sink. It stands against the north face of the 12"
 # concrete cross wall W-B-CW (centerline y=18', so the face is y=18'-6"), and — like every
 # fixture on a slab-on-grade — its waste drops straight down rather than into a wall stack,
-# so `drain_position` puts the trap 6" out from the wall on the basin centerline and
+# so `drain_position` puts the trap out from the wall on the basin centerline and
 # SP-B-UTILITY (plan/mep.py) is the pre-pour stub-up through SL-B-FLOOR that serves it.
+#
+# The trap moved from y=19'-0" to y=19'-6" on 2026-07-30, when the under-slab building drain
+# gave this sink a real gravity drain. At 19'-0" the stub-up stood 2" clear of FT-B-CW while
+# its pipe dropped 2 1/4" below that footing's bearing plane — just inside the 45° influence
+# line, an honest `mep.footing_clearance` FAIL. 19'-6" is still under the basin (whose centre
+# is y=19'-4 1/2") and puts 8" between the drop and the footing.
 #
 # The sauna benches are dimensioned to *liner faces*, not to the node lines the walls are
 # authored on, because that is the surface the joiner scribes to. Read off the resolved
@@ -25,7 +31,7 @@ from typehaus.model import DeviceKind, deg, ft, inch, m, pt
 BASEMENT_PLACEABLES = [
     Fixture(uid="5BBZTZNBWN", tag="FX-1", type_ref="FX-LAV-24", room="RM-B-FURNACE",
             position=pt(ft(7), ft(19, 4.5)), wall_ref="W-B-CW",
-            drain_position=pt(ft(7), ft(19))),
+            drain_position=pt(ft(7), ft(19, 6))),
     # The long two-tier run takes the east wall: it is the only unbroken face in the room —
     # the west wall has D-B-SAUNA, the south wall WIN-B-SAUNA — so the bench lands as one
     # 8'-6" carcass with no scribes around an opening. rotation -90 puts its back (+y local)

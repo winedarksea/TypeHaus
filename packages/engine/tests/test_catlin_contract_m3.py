@@ -131,6 +131,14 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset():
     # both faces; the garage slab floors an unheated detached structure), so the gate is
     # fully evaluated. It must stay that way: an UNKNOWN reappearing means a component lost
     # its thermal input again, which is exactly what this item exists to catch.
+    #
+    # The plumbing pass (2026-07-29) put eight more checks on this checklist. Two of the
+    # resulting items sat UNKNOWN for a day on one open design decision — FX-1, the
+    # mechanical-room utility sink, had no routed drain, and could not have one by gravity
+    # while the basement main hung at the ceiling 6'-6" above the slab it stands on. That is
+    # settled: the sewer connection is below the slab (Minnesota buries them under frost), so
+    # the main now drops through SP-B-SLAB-MAIN and runs under the slab out beneath FT-B-S1,
+    # and FX-1 drains and vents. Every declared item is evaluated and passes again.
     assert all(item.result is Result.PASS for item in checklist.items), \
         [(item.label, item.result, item.detail) for item in checklist.items
          if item.result is not Result.PASS]

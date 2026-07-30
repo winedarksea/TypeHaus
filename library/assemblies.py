@@ -189,7 +189,7 @@ INT_2X4_STAGGERED_DOUBLE_GWB = Assembly(
               function=LayerFunction.FINISH),
         Layer(name="staggered-studs", material_ref="spf", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE,
-              framing=FramingSpec(member="2x4", spacing=inch(8),
+              framing=FramingSpec(member="2x4", spacing=inch(16), plate_member="2x6",
                                   layout=PartitionLayout.STAGGERED,
                                   stagger_gap=inch(1.5)),
               cavity=CavityFill(material_ref="fiberglass", thickness=inch(3.5))),
@@ -199,7 +199,8 @@ INT_2X4_STAGGERED_DOUBLE_GWB = Assembly(
               function=LayerFunction.FINISH),
     ),
     stc=52,
-    source=("USG/GA WP 5530: 2x4 wood studs staggered at 8 in. o.c. on 2x6 plates, "
+    source=("USG/GA WP 5530: 2x4 wood studs staggered on 2x6 plates (16 in. o.c. per "
+            "face, 8 in. combined rhythm), "
             "3.5 in. fiberglass, two 5/8 in. gypsum layers each side, STC 52; "
             "https://assemblies-tools.usg.com/content/usgcom/en/design-studio/"
             "assemblies/assembly-detail.30226.html"),

@@ -311,15 +311,35 @@ def hydrant() -> Builder:
         if outlet_len > 0:
             strokes.append(rect(0, outlet_cy, outlet_t, outlet_len, fill="metal"))
             strokes.append(circle(0, -outlet_far, breaker_r, weight=DETAIL_WEIGHT))
-        handle_h = min(handle_t, height * 0.12)
-        handle_z = min(height * 0.86, height - handle_h)
+        # 3D massing, Woodford-W34-style pieces in the box-only vocabulary: an escutcheon
+        # flange at the floor, a slim standpipe, a wider head casting at the top, the
+        # lever handle above the head, and the outlet nipple capped by its hose-bib
+        # vacuum breaker. Round sections are honest squares — the parts vocabulary has
+        # no cylinder — but the proportions are the fixture's, which is what makes it
+        # read as a hydrant instead of as three anonymous blocks.
+        head_h = clamp(height * 0.14, riser_r * 2, height * 0.2)
+        head_w = riser_r * 3.2
+        head_z0 = height - head_h
+        handle_h = min(handle_t, height * 0.06)
+        pipe_w = riser_r * 1.6  # the galvanized standpipe, slimmer than the head casting
+        flange_w = min(riser_r * 4.0, min(width, depth) * 0.96)
+        flange_h = min(0.012, height * 0.02)
+        outlet_z1 = head_z0  # the nipple leaves the casting's underside
+        outlet_z0 = max(outlet_z1 - outlet_t, 0.0)
         parts = [
-            box(0, 0, 0.0, height, riser_r * 2, riser_r * 2, "metal"),
-            box(0, 0, handle_z, handle_z + handle_h, handle_len, handle_t, "metal"),
+            box(0, 0, 0.0, flange_h, flange_w, flange_w, "metal"),  # escutcheon
+            box(0, 0, flange_h, head_z0, pipe_w, pipe_w, "metal"),  # standpipe
+            box(0, 0, head_z0, height, head_w, head_w, "metal"),  # head casting
+            # Lever handle: the bar across the head top.
+            box(0, 0, height - handle_h, height, handle_len, handle_t, "metal"),
         ]
         if outlet_len > 0:
-            parts.append(box(0, outlet_cy, max(height * 0.5 - outlet_t, 0.0),
-                             min(height * 0.5, height), outlet_t, outlet_len, "metal"))
+            parts.append(box(0, outlet_cy, outlet_z0, outlet_z1,
+                             outlet_t, outlet_len, "metal"))
+            # Hose-bib vacuum breaker: the fatter cap screwed onto the nipple's tip.
+            parts.append(box(0, -outlet_far, outlet_z0 - breaker_r * 0.5,
+                             min(outlet_z1 + breaker_r * 0.5, height),
+                             breaker_r * 2.0, breaker_r * 2.0, "metal"))
         return tuple(strokes), tuple(parts)
 
     return build

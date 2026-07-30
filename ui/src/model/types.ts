@@ -553,6 +553,105 @@ export interface Hvac {
   ventilation: HvacVentilation;
 }
 
+// The plumbing take-off, carried verbatim from takeoff/plumbing.py (→ model_json.py
+// "plumbing"). The fixture-unit arithmetic is the same takeoff/plumbing_calc.py the
+// mep.pipe_sizing check grades with, so this reader and the finding can never disagree.
+// Riser vertices are raw routed geometry — the reader projects, never re-derives.
+export interface PlumbingRiserRun {
+  tag: string;
+  uid: string;
+  storey: string;
+  system: string;
+  diameter_in: number;
+  material: string | null;
+  length_ft: number;
+  serves: string[];
+  wall_refs: string[];
+  vertices: [number, number, number | null][]; // metres; z null = no authored invert
+}
+
+export interface PlumbingFixtureRow {
+  tag: string;
+  symbol: string;
+  room: string | null;
+  dfu: number | null;
+  wsfu_total: number | null;
+  wsfu_hot: number | null;
+  wsfu_cold: number | null;
+}
+
+export interface PlumbingRunLoadRow {
+  tag: string;
+  uid: string;
+  system: string;
+  diameter_in: number;
+  serves: string[];
+  load: number | null;
+  unit: string; // "DFU" | "WSFU"
+  required_in: number | null;
+  status: string | null; // "pass" | "fail" | "unknown" | null
+  unresolved: string[];
+}
+
+export interface PlumbingPipeGroup {
+  system: string;
+  material: string;
+  diameter_in: number;
+  runs: number;
+  length_ft: number;
+  tags: string[];
+}
+
+export interface PlumbingFittingRow {
+  system: string;
+  diameter_in: number;
+  fitting: string;
+  count: number;
+}
+
+export interface PlumbingCastInRow {
+  tag: string;
+  uid: string;
+  storey: string;
+  host: string;
+  host_category: string;
+  axis: string;
+  purpose: string;
+  x_ft: number;
+  y_ft: number;
+  center_z_ft: number | null;
+  pipe_in: number;
+  sleeve_in: number;
+  serves: string | null;
+  offset_in: number | null;
+}
+
+export interface PlumbingHydrantRow {
+  tag: string;
+  uid: string;
+  storey: string;
+  type_ref: string | null;
+  room: string | null;
+  supply_runs: string[];
+  source: string | null;
+}
+
+export interface Plumbing {
+  riser: PlumbingRiserRun[];
+  fixture_units: {
+    fixtures: PlumbingFixtureRow[];
+    runs: PlumbingRunLoadRow[];
+    total_dfu: number | null;
+    total_wsfu: number | null;
+  };
+  takeoff: {
+    pipe: PlumbingPipeGroup[];
+    fittings: PlumbingFittingRow[];
+    cast_in: PlumbingCastInRow[];
+    hydrants: PlumbingHydrantRow[];
+  };
+}
+
 export interface Condition {
   kind: string;
   key: string;
@@ -923,6 +1022,7 @@ export interface Model {
   transitions?: Transition[]; // library transition documentation; absent on older model.json
   electrical?: Electrical | null; // the electrical take-off; absent on older model.json
   hvac?: Hvac | null; // the HVAC take-off; null without preferences, absent on older model.json
+  plumbing?: Plumbing | null; // the plumbing take-off; absent on older model.json
   stack_edges: StackEdge[];
   building_science?: BuildingScience | null;
   catalog?: Catalog; // authoring palette (→ _catalog); absent on older model.json

@@ -10,7 +10,7 @@ from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.elements import Door, Wall
-from typehaus.model.enums import LayerFunction
+from typehaus.model.enums import LayerFunction, PartitionLayout
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.framing.backing import append_blocking_rows, append_tee_backing
 from typehaus.resolve.framing.corners import (
@@ -75,7 +75,20 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     d = unit(sub(p1, p0))
     spacing = (spec.spacing or DEFAULT_SPACING).meters
     member = spec.member
+    # STAGGERED layout (#50 acoustic partitions): narrow studs alternate between the two
+    # faces of a wider plate (2x4s on 2x6 plates), 16" o.c. per face — 8" combined rhythm —
+    # leaving a continuous cavity. Plates, end/corner studs, tee backing, and opening
+    # packs stay full plate depth so drywall backing and load paths are conventional; only
+    # the module studs stagger.
+    staggered = spec.layout is PartitionLayout.STAGGERED
+    plate_member = spec.plate_member or member
+    frame_member = plate_member if staggered else member
     thickness = member_actual(member)[0] * 0.0254  # stud face dimension along the wall
+    stagger_offset = 0.0
+    if staggered:
+        plate_depth = member_actual(plate_member)[1] * 0.0254
+        stud_depth = member_actual(member)[1] * 0.0254
+        stagger_offset = max((plate_depth - stud_depth) / 2.0, 0.0)
     z0 = rw.z0_m
     plate_h = 1.5 * 0.0254
 
@@ -96,7 +109,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # --- plates ---------------------------------------------------------------
     top_start, top_end = _wall_top_elevations(rw)
     top_plates = 2 if spec.double_top_plate and not spec.advanced_framing else 1
-    _append_plates(members, rw, member, p0, d, axis_len, z0, plate_h, top_plates,
+    _append_plates(members, rw, plate_member, p0, d, axis_len, z0, plate_h, top_plates,
                    top_start, top_end, structure_polygon, start_role, end_role, thickness,
                    neighbour_insets_start, neighbour_insets_end)
 
@@ -134,7 +147,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
             point = add(p0, scale(d, station))
             corner_top = top_at(station)
             members.append(FramedMember(rw.uid, f"corner-{endpoint}{suffix}", "corner",
-                                        member, point, point, stud_z0, corner_top,
+                                        frame_member, point, point, stud_z0, corner_top,
                                         corner_top - stud_z0, orient=d))
 
     # Standard framing practice puts a stud at both ends of every wall; the module loop
@@ -142,36 +155,52 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # corner neither end stud sits on the module at all (it sits where the corner square
     # lets it). Both end studs are therefore explicit, and module stations that would land
     # inside the end/corner pack are dropped rather than allowed to interpenetrate it.
+    module_spacing = spacing / 2.0 if staggered else spacing
     stud_stations = sorted(
         station for station in _module_stations(
-            axis_len, spacing, thickness,
+            axis_len, module_spacing, thickness,
             (start_end.end_stud_station_m, far_end.end_stud_station_m),
             (max((start_end.end_stud_station_m, *corner_stations["start"])),
              min((far_end.end_stud_station_m, *corner_stations["end"]))))
         if not in_exclusion(station, stud_zones)
     )
+    perpendicular = normal(d)
+    end_stations = {start_end.end_stud_station_m, far_end.end_stud_station_m}
     for index, station in enumerate(stud_stations):
         point = add(p0, scale(d, station))
         stud_top = top_at(station)
-        members.append(FramedMember(rw.uid, f"stud-{index:03d}", "stud", member,
+        profile = member
+        if staggered:
+            if station in end_stations:
+                # End studs stay full plate depth on the centerline — both faces of
+                # drywall need backing where the wall meets its neighbours.
+                profile = frame_member
+            else:
+                # Face parity from the station itself (not the loop index) so a dropped
+                # station under an opening never flips the rest of the wall's rhythm.
+                side = 1.0 if round(station / module_spacing) % 2 == 0 else -1.0
+                point = add(point, scale(perpendicular, side * stagger_offset))
+        members.append(FramedMember(rw.uid, f"stud-{index:03d}", "stud", profile,
                                     point, point, stud_z0, stud_top, stud_top - stud_z0,
                                     orient=d))
 
     for station, junction_key in tee_stations:
         append_tee_backing(
-            members, rw, spec, member, d, p0, axis_len, station, junction_key,
+            members, rw, spec, frame_member, d, p0, axis_len, station, junction_key,
             stud_z0, top_at,
         )
 
     # --- opening framing (king/jack/header/cripple/sill) ----------------------
+    # Staggered walls frame their openings full plate depth: a king/jack pack split
+    # across two faces has no continuous bearing surface for the header.
     for opening_index, opening in enumerate(openings):
         members.extend(
-            frame_opening(rw, d, p0, opening, member, stud_z0, top_at,
+            frame_opening(rw, d, p0, opening, frame_member, stud_z0, top_at,
                           opening_index, spacing, tuple(stud_stations))
         )
 
     # --- in-line blocking courses (fire/backing blocking) ---------------------
-    append_blocking_rows(members, rw, spec, member, d, p0, stud_z0, spacing,
+    append_blocking_rows(members, rw, spec, member, d, p0, stud_z0, module_spacing,
                          stud_stations)
     return tuple(members)
 

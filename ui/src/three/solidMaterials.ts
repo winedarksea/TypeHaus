@@ -27,6 +27,14 @@ export const SOLID_CATEGORY_COLOR: Record<string, number> = {
   connector: 0x595c61, // galvanized hardware
   sump: 0x4d5257, // pit
   vent: 0xe0e0db, // painted vent pipe
+  // routed plumbing runs (engine resolve/mep.py _emit_pipe_solids), riser-diagram colors —
+  // mirrors emit/gltf/palette.py, change one change the other.
+  pipe_drain: 0x333338, // ABS/PVC waste, near-black
+  pipe_vent: 0xe0e0db, // same as the vent risers
+  pipe_water_hot: 0xcc4038, // red PEX
+  pipe_water_cold: 0x3366bf, // blue PEX
+  pipe_gas: 0xd9bf33, // yellow CSST
+  pipe_radon: 0x8c9499, // bare gray
   fascia: 0xebebe6, // PVC fascia
   gutter: 0xd9dbde, // metal gutter
   flashing: 0xbfc4cc, // metal flashing

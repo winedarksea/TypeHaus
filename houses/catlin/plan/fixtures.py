@@ -35,13 +35,14 @@ MAIN_FIXTURES = (
     # tank edge on the room's 7'-11 3/8" east clear face. Footprint x 5'-5 3/8"..7'-11 3/8",
     # y 17'-3"..19'-9"; its 30"/21" REQUIRED clearance zone (x 3'-8 3/8"..7'-11 3/8",
     # same y band) holds nothing else — the room's only other object is the door swing.
-    # `drain_position` stays on SP-M-WC2's (3', 18') cast-in sleeve — the corner fitting
-    # where PR-B-MAIN-DRAIN turns (plan/mep.py) — so the pre-pour sleeve contract holds
-    # while the WC itself moves; re-pointing the sleeve+drain at the new flange is mep.py's
-    # own pass.
+    # The `drain_position` override is gone as of 2026-07-29: it was parked on SP-M-WC2's
+    # old (3', 18') position — the corner fitting where PR-B-MAIN-DRAIN turns — to keep the
+    # pre-pour sleeve contract holding while the WC moved to this wall. The plumbing pass
+    # re-pointed both the sleeve and PR-B-WC2-DRAIN at the real closet flange, which for a
+    # floor-mounted WC is simply under the bowl, so the convention (fixture position) is now
+    # correct and an override would only be a second place to keep in sync.
     Fixture(uid="CMQ803AAAA", tag="FX-M-BATH2-WC", type_ref="FX-TOILET-STD", room="RM-M-BATH2",
-            position=pt(m(0.686504), m(6.14439)), rotation=deg(0), wall_ref="W-M-BA2E",
-            drain_position=pt(ft(3), ft(18))),
+            position=pt(m(0.686504), m(6.14439)), rotation=deg(0), wall_ref="W-M-BA2E"),
     # BATH2 has separate bathing fixtures: the 36" shower sits north of the door swing,
     # while the 60" tub runs north/south along the east plumbing wall. They are intentionally
     # separate instances/types rather than a tub-shower combination, so the permit schedule
