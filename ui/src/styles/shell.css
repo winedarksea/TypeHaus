@@ -114,9 +114,6 @@
 .health-pill .hp-warn {
   color: var(--warn);
 }
-.health-pill:hover {
-  background: var(--hover);
-}
 
 .status-dot {
   width: 10px;

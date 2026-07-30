@@ -90,10 +90,6 @@
   line-height: 1;
 }
 
-.wall-assembly-popup-close:hover {
-  background: var(--hover);
-}
-
 .wall-assembly-popup-dimensions {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -183,9 +179,6 @@
   font-size: var(--text-xs);
   cursor: pointer;
   white-space: nowrap;
-}
-.lens-chip:hover {
-  background: var(--hover);
 }
 .lens-chip.active {
   background: var(--raised);
@@ -292,9 +285,6 @@
   font-size: var(--text-xs);
   cursor: pointer;
   white-space: nowrap;
-}
-.view-chip:hover {
-  background: var(--hover);
 }
 .view-chip.chip-more.active {
   background: var(--accent);

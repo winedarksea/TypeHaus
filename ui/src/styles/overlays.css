@@ -221,9 +221,6 @@
   font-size: var(--text-sm);
   cursor: pointer;
 }
-.ctx-menu button:hover:not(:disabled) {
-  background: var(--hover);
-}
 .ctx-menu button:disabled {
   color: var(--line);
   cursor: default;
@@ -295,9 +292,6 @@
   text-align: left;
   cursor: pointer;
   font-size: var(--text-sm);
-}
-.cmdk-item.active {
-  background: var(--hover);
 }
 .cmdk-item.disabled {
   opacity: 0.4;

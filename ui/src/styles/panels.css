@@ -253,9 +253,6 @@
   font-size: var(--text-sm);
   cursor: pointer;
 }
-.saved-view-apply:hover {
-  background: var(--hover);
-}
 .saved-view-del {
   border: 0;
   background: transparent;
@@ -371,7 +368,6 @@
   font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
   transition: background var(--dur-fast) var(--ease);
 }
-.drawer-section-head:hover { background: var(--hover); }
 .drawer-section-head .chev { color: var(--muted); font-size: 10px; width: 10px; }
 .drawer-section-title { flex: 1; text-align: left; }
 .drawer-section-right { text-transform: none; letter-spacing: 0; font-weight: 400; }

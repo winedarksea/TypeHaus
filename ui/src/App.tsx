@@ -254,15 +254,18 @@ export function App() {
             Install
           </button>
         )}
-        {(["2d", "split", "3d"] as const).map((m) => (
-          <button
-            key={m}
-            className={`seg-btn${viewMode === m ? " active" : ""}`}
-            onClick={() => setViewMode(m)}
-          >
-            {m.toUpperCase()}
-          </button>
-        ))}
+        <div className="seg-group" role="group" aria-label="View mode">
+          {(["2d", "split", "3d"] as const).map((m) => (
+            <button
+              key={m}
+              className={`seg-btn${viewMode === m ? " active" : ""}`}
+              onClick={() => setViewMode(m)}
+              aria-pressed={viewMode === m}
+            >
+              {m.toUpperCase()}
+            </button>
+          ))}
+        </div>
         <button className="btn" onClick={() => void undo()} title="Undo (⌘Z)">
           ↶
         </button>

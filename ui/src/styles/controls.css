@@ -172,9 +172,6 @@
   text-align: left;
   cursor: pointer;
 }
-.flyout-item:hover {
-  background: var(--hover);
-}
 .flyout-item.active {
   background: var(--accent);
   color: var(--canvas-white);
@@ -184,19 +181,73 @@
   text-align: center;
 }
 
+/* ── MD3 segmented button ───────────────────────────────────────────────────
+   Four groups were hand-rolled separately (view mode, density, appearance, and
+   the panel-side .seg-row); they now share one shape language. MD3 renders a
+   segmented button as a single pill subdivided by hairlines, so the outer corners
+   are fully rounded, the inner ones square, and adjacent borders are collapsed
+   with a negative margin rather than doubled.
+
+   The selected segment uses secondary-container rather than a filled accent: it
+   is one choice among peers, not a primary action, and a full-accent fill made
+   these read as six separate call-to-action buttons. */
+.seg-group,
+.workspace-seg,
 .theme-selector {
   display: flex;
-  gap: 2px;
+  align-items: center;
+  gap: 0;
+}
+
+.seg-group .seg-btn,
+.workspace-seg .seg-btn,
+.theme-selector .seg-btn {
+  min-width: auto;
+  border-radius: 0;
+  margin-left: -1px;   /* collapse the shared border instead of doubling it */
+}
+
+.seg-group .seg-btn:first-child,
+.workspace-seg .seg-btn:first-child,
+.theme-selector .seg-btn:first-child {
+  border-start-start-radius: var(--md-shape-full);
+  border-end-start-radius: var(--md-shape-full);
+  margin-left: 0;
+}
+
+.seg-group .seg-btn:last-child,
+.workspace-seg .seg-btn:last-child,
+.theme-selector .seg-btn:last-child {
+  border-start-end-radius: var(--md-shape-full);
+  border-end-end-radius: var(--md-shape-full);
 }
 
 .theme-selector .seg-btn {
-  min-width: auto;
   padding: 0 8px;
 }
 
-.btn:active,
-.tool-btn:active {
-  transform: translateY(1px);
+/* .seg-row is deliberately NOT a segmented button. It wraps (the Roles row wraps
+   explicitly), and a connected pill cannot survive wrapping — :first-child is the
+   first in the DOM, not the first on each visual line. They are also single-select
+   filters inside a panel rather than a mode switch, so MD3 filter chips are the
+   right component: individually rounded, gap-separated. */
+.seg-row .seg-btn {
+  border-radius: var(--md-shape-sm);
+}
+
+/* One selected-state treatment for both. Secondary-container, not a filled accent:
+   these are one choice among peers, and a full-accent fill made a row of six read
+   as six separate calls to action. */
+.seg-group .seg-btn.active,
+.workspace-seg .seg-btn.active,
+.theme-selector .seg-btn.active,
+.seg-row .seg-btn.active {
+  background: var(--md-secondary-container);
+  color: var(--md-on-secondary-container);
+  border-color: var(--md-outline);
+  /* Lift the selected segment's shared borders above its neighbours' so the
+     outline reads as one continuous shape rather than a seam. */
+  z-index: 1;
 }
 
 .badge {
