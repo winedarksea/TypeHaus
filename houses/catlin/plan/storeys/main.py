@@ -49,6 +49,8 @@ DOOR_TYPES = [
     DoorType(tag="DT-INT-SWING24", width=ft(2), height=ft(6, 8)),
     DoorType(tag="DT-INT-BIFOLD60", width=ft(5), height=ft(6, 8), operation="bifold"),
     DoorType(tag="DT-INT-BIFOLD56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),
+    DoorType(tag="DT-INT-FRENCH60", width=ft(5), height=ft(6, 8),
+             operation="double_swing", glazed=True),
     DoorType(tag="DT-EXT-OVERHEAD192", width=ft(16), height=ft(7), exterior=True,
              operation="overhead"),
 ]

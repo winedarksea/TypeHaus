@@ -5,7 +5,9 @@
 // global WebSocket (>= 22) covers the whole protocol surface we need.
 
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 // Chromium needs a real GL backend or Panel3D renders nothing — `--disable-gpu` yields a
 // blank 3D pane with no error anywhere, so swiftshader is mandatory, not an optimization.
@@ -54,15 +56,26 @@ async function waitForDevToolsEndpoint(port, timeoutMs = 20_000) {
   throw new Error(`DevTools endpoint never came up on :${port} (${lastError?.message})`);
 }
 
-export async function launchChromium({ port = 9222, userDataDir = "/tmp/chrome-haus-shots" } = {}) {
+/**
+ * A fresh profile per run, always.
+ *
+ * This app registers a service worker, and a reused --user-data-dir keeps that worker
+ * and its asset cache alive across runs — so the harness ends up photographing a mixture
+ * of the current build and a previously-cached one. It presents as digests that shift on
+ * every run and states that hash identically to each other, which reads like a flaky app
+ * rather than a poisoned browser profile. Combined with Network.setBypassServiceWorker
+ * below, every run now sees exactly what the server is serving.
+ */
+export async function launchChromium({ port = 9222, userDataDir = null } = {}) {
+  const profileDir = userDataDir ?? mkdtempSync(join(tmpdir(), "haus-shots-"));
   const binary = findChromiumBinary();
   const child = spawn(
     binary,
-    [...CHROMIUM_FLAGS, `--remote-debugging-port=${port}`, `--user-data-dir=${userDataDir}`, "about:blank"],
+    [...CHROMIUM_FLAGS, `--remote-debugging-port=${port}`, `--user-data-dir=${profileDir}`, "about:blank"],
     { stdio: "ignore", detached: false },
   );
   const version = await waitForDevToolsEndpoint(port);
-  return { child, port, version };
+  return { child, port, version, profileDir };
 }
 
 /** Attach to the browser's first page target and return a request/response session. */
@@ -113,6 +126,11 @@ export async function attachToPage(port) {
 
   await send("Page.enable");
   await send("Runtime.enable");
+  await send("Network.enable");
+  // Belt and braces with the fresh profile above: never let the PWA's service worker
+  // answer a request, so a shot can only ever show the build currently being served.
+  await send("Network.setBypassServiceWorker", { bypass: true });
+  await send("Network.setCacheDisabled", { cacheDisabled: true });
 
   return { send, once, close: () => socket.close() };
 }

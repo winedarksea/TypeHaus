@@ -188,7 +188,7 @@ OPENINGS = [
     # Interior circulation
     Door(uid="CBD201AAAA", tag="D-B-FURN", host="W-B-CW", type_ref="DT-INT-SWING32",
          position=from_node("N-B-W1", ft(3))),
-    Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT-BIFOLD56",
+    Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT-FRENCH60",
          position=from_node("N-B-C", ft(6))),
     # Centred in the 3'-4" aisle the sauna's north wall leaves against the center wall.
     # ``from_node`` offsets the opening's near *edge*, so 8" leaves ~4" of concrete jamb

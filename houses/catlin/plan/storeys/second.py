@@ -275,8 +275,10 @@ OPENINGS = [
          position=from_node("N-S-B2", ft(4, 10))),                       # y 24'-1"
     Door(uid="CSD203AAAA", tag="D-S-BED3", host="W-S-BW3", type_ref="DT-INT-SWING30",
          position=from_node("N-S-B3", ft(0, 8))),                        # y 28'-11"
-    Door(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1", type_ref="DT-INT-SWING30-GLAZED",
-         position=from_node("N-S-C1", ft(1, 0.625))),                    # x 20'-3 5/8"
+    # Just an opening, framed the same as a 30" door: no leaf needed for this passthrough.
+    RoughOpening(uid="CSD204AAAA", tag="D-S-STUDY2", host="W-S-SS1",
+                 position=from_node("N-S-C1", ft(1, 0.625)), width=ft(2, 6),
+                 height=ft(6, 8)),                                       # x 20'-3 5/8"
     # Three doors through the centre bearing line, on the source's own gaps. Each takes a
     # header exactly like O-M-HALL / O-M-DRESS one storey down; the wall itself is unbroken.
     # Full-lite glass leaf admits daylight from the south-facing plant room into the hall.
@@ -287,15 +289,9 @@ OPENINGS = [
     # O-S-HALLW (a 3'-0" cased opening at y 28'-7") is gone: the whole 8'-6" between
     # N-S-C2C and N-S-C3D is open under BM-S-HALL now, so there is no wall left to host it.
     # West block
-    # The walk-in's 4'-7 1/8" source opening, cased. Not a DT-INT-BIFOLD56 bifold, which is the
-    # obvious stock door for a closet this wide and would keep `advisory.window_size_variety`
-    # at its historical 8 (that check counts every RoughOpening as a glazing size): the
-    # resolver draws a bifold's clearance as a full 4'-8" quarter-disc swing, which reaches
-    # across the whole suite arm and reads as four spurious `integrity.door_swing_conflict`
-    # findings. An opening with no leaf is both the truer model and the quieter one.
-    RoughOpening(uid="CSD213AAAA", tag="O-S-CLOSET", host="W-S-CLN",
-                 position=from_node("N-S-D2", ft(1, 10)), width=ft(4, 7),
-                 height=ft(6, 8)),                                       # x 13'-9"
+    # Bifold closet door, DT-INT-BIFOLD56 (4'-8"), replacing the former bare RoughOpening.
+    Door(uid="CSD213AAAA", tag="O-S-CLOSET", host="W-S-CLN", type_ref="DT-INT-BIFOLD56",
+         position=from_node("N-S-D2", ft(1, 10))),                       # x 13'-9"
     # The source's gap starts hard against the corner at x=9'-10 11/16"; ours starts 3"
     # further east so the leaf's king stud clears W-S-DC2's corner pack instead of
     # pinwheeling through it (test_wall_corner_and_opening_framing).
