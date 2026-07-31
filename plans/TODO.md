@@ -229,7 +229,6 @@ Questions:
 - Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?
 - Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model)
 - Pantry
-- Maybe don't need gutters on house, run down standing seam siding
 
 ## Windows
 We want to make some of the south facing windows, and generally make windows more symmetrical from the outside view of the house (while still following stud spacing needs and being 'pleasantly' spaced from an inside perspective as well).

@@ -150,11 +150,11 @@ OPENINGS = [
     # The south gables take WT-4242 (2026-07-30 enlargement): the 42" width of the
     # house's new south-glazing family, 6" shorter than the main/second WT-4248 because
     # the 4:12 rake can't clear the taller header at a usable sill. Two studs broken
-    # each, so every RO centre is a bay centre on its own host's grid. Sills chase the
-    # rake instead of a shared line: 2'-8" where the roof allows (heads 6'-2"),
-    # WIN-A-STUDY-S2 drops to 2'-4" (head 5'-10") because its header would hit the
-    # raked top plate at anything higher — the far-east gable is the shortest wall any
-    # 42" unit stands in.
+    # each, so every RO centre is a bay centre on its own host's grid. All three share
+    # the 2'-4" sill / 5'-10" head line: WIN-A-STUDY-S2's header would hit the raked
+    # top plate at anything higher (the far-east gable is the shortest wall any 42"
+    # unit stands in), and one storey-wide line beats two sills that differ by 4" on
+    # the same facade — it also buys the west gable's header real rake clearance.
     #
     # The source's three south-gable openings are 2'-7 1/2" at x 7'-5", 4'-0" at
     # x 17'-11 3/4" and 2'-7 1/2" at x 28'-11". The middle one is centred on the bearing
@@ -164,10 +164,10 @@ OPENINGS = [
     # at 25'-4" is off limits (king stud inside the W-A-VE tee pack), so it sits one
     # module east at 25'-8".
     Window(uid="CAX301AAAA", tag="WIN-A-DEN-S", host="W-A-S1", type_ref="WT-4242",
-           position=from_node("N-A-SW", ft(5, 7)), sill_height=ft(2, 8)),  # x 7'-4"
+           position=from_node("N-A-SW", ft(5, 7)), sill_height=ft(2, 4)),  # x 7'-4"
     Window(uid="CAX302AAAA", tag="WIN-A-STUDY-S1", host="W-A-S4",
            type_ref="WT-4242", position=from_node("N-A-V1", ft(1, 7)),
-           sill_height=ft(2, 8)),                                          # x 25'-8"
+           sill_height=ft(2, 4)),                                          # x 25'-8"
     Window(uid="CAX303AAAA", tag="WIN-A-STUDY-S2", host="W-A-S4",
            type_ref="WT-4242", position=from_node("N-A-V1", ft(5, 7)),
            sill_height=ft(2, 4)),                                          # x 29'-8"

@@ -383,7 +383,7 @@ MAIN_DEVICES = [
     # FH-M-DINING's thermostat. The zone is free-standing in the middle of a 642 ft2 room,
     # so its control goes on the nearest real wall: the east wall's interior face at
     # x=35'-11 3/8", in the clear stretch between WIN-M-LIV-E2's rough opening (ends
-    # y=15'-9 1/2" after the 2026-07-30 restack) and WIN-M-DIN-E2's (starts y=19'-6 1/2").
+    # y=15'-9 1/2" after the 2026-07-30 restack) and WIN-M-DIN-E2's (starts y=18'-2 1/2").
     # ED-M-LIVING-RC3 sits at y=16'-11", so 17'-9" keeps 10" between the two boxes.
     # The sensor lead runs the 5' back to the zone edge.
     ElectricalDevice(uid="CEE024AAAA", tag="ED-M-DINING-FH-STAT", kind=DeviceKind.SWITCH,

@@ -428,7 +428,7 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
 // (constants _WINDOW_TRIM_FACE_WIDTH_M / _WINDOW_TRIM_PROUD_DEPTH_M): a picture-frame of
 // flat boards proud of the cladding plane, windows in clad walls only. The colour rides
 // members.ts CATEGORY_COLOR ("window_trim"), keeping recolors a palette-only edit.
-const WINDOW_TRIM_FACE_WIDTH_M = 0.089;
+const WINDOW_TRIM_FACE_WIDTH_M = 0.064;
 const WINDOW_TRIM_PROUD_DEPTH_M = 0.019;
 
 // Mirrors resolve/geometry_openings.py::_exterior_face — the exterior cladding plane as a
@@ -471,7 +471,21 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   const rotation = Math.atan2(direction[1], direction[0]);
   const frameWidth = Math.min(0.075, opening.width_m / 4, availableHeight / 4);
   const depth = 0.08;
-  const frameMaterial = new THREE.MeshStandardMaterial({ color: palette.member.wood, roughness: mode === "nordic" ? 0.85 : 1, flatShading: mode === "schematic" });
+  // An opening in a clad wall is an exterior product: frame/mullion/stile boxes take the
+  // charcoal exterior tone, doors and windows alike, and the frame extends from its
+  // interior face out to the casing's proud face so the reveal reads charcoal instead of
+  // exposing the wall layers' cut foam. Mirrors resolve/geometry_openings.py.
+  const exterior = exteriorFace(wall);
+  const frameMaterial = new THREE.MeshStandardMaterial({
+    color: exterior ? categoryColor("window_trim") : palette.member.wood,
+    roughness: mode === "nordic" ? 0.85 : 1, flatShading: mode === "schematic" });
+  let frameDepth = depth, frameOffset = 0;
+  if (exterior) {
+    const outerEdge = exterior.plane + exterior.sign * WINDOW_TRIM_PROUD_DEPTH_M;
+    const innerEdge = -exterior.sign * (depth / 2);
+    frameDepth = Math.abs(outerEdge - innerEdge);
+    frameOffset = (outerEdge + innerEdge) / 2;
+  }
   const addBox = (width: number, height: number, thickness: number, along: number, elevation: number, material: THREE.Material, normalOffset = 0) => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, thickness), material);
     mesh.position.copy(projectPointToScene([
@@ -484,10 +498,10 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   if (!isTrimless) {
     // A trimless door (drywall return jamb, no applied casing) draws no frame boxes; the
     // leaf keeps its framed size so the reveal reads the same. Mirrors emit/gltf/openings.py.
-    addBox(frameWidth, availableHeight, depth, -opening.width_m / 2 + frameWidth / 2, midElevation, frameMaterial);
-    addBox(frameWidth, availableHeight, depth, opening.width_m / 2 - frameWidth / 2, midElevation, frameMaterial);
-    addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial);
-    addBox(opening.width_m, frameWidth, depth, 0, wall.z0_m + opening.sill_m + frameWidth / 2, frameMaterial);
+    addBox(frameWidth, availableHeight, frameDepth, -opening.width_m / 2 + frameWidth / 2, midElevation, frameMaterial, frameOffset);
+    addBox(frameWidth, availableHeight, frameDepth, opening.width_m / 2 - frameWidth / 2, midElevation, frameMaterial, frameOffset);
+    addBox(opening.width_m, frameWidth, frameDepth, 0, wall.z0_m + opening.sill_m + availableHeight - frameWidth / 2, frameMaterial, frameOffset);
+    addBox(opening.width_m, frameWidth, frameDepth, 0, wall.z0_m + opening.sill_m + frameWidth / 2, frameMaterial, frameOffset);
   }
   const panelHeight = Math.max(0.01, availableHeight - 2 * frameWidth);
   const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x8fb7c9, transparent: true, opacity: 0.48,
@@ -538,14 +552,13 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
       wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, glassMaterial);
   }
   if (opening.kind === "window") {
-    const face = exteriorFace(wall);
-    if (face) {
+    if (exterior) {
       // Picture-frame casing on the cladding plane: two jambs beside the RO, a head band
       // over it, an apron under the sill. Mirrors resolve/geometry_openings.py, including
       // the per-board rake clip — a head band reaches past the RO span the availableHeight
       // clip already honoured, so each board checks the raked top over its own footprint.
       const trimW = WINDOW_TRIM_FACE_WIDTH_M;
-      const trimOffset = face.plane + face.sign * (WINDOW_TRIM_PROUD_DEPTH_M / 2);
+      const trimOffset = exterior.plane + exterior.sign * (WINDOW_TRIM_PROUD_DEPTH_M / 2);
       const trimMaterial = new THREE.MeshStandardMaterial({ color: categoryColor("window_trim"),
         roughness: 0.9, flatShading: mode === "schematic" });
       const rakedHost = wall.top_z0_m != null || wall.top_z1_m != null;

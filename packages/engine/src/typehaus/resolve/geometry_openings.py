@@ -42,9 +42,11 @@ _GLASS_KEY = "glass"
 # --- exterior window casing ---------------------------------------------------------------
 # A picture-frame of flat boards around the RO on the exterior cladding plane, for windows
 # hosted in clad walls only. The colour is a design choice (charcoal today) authored in
-# emit/gltf/palette.py and mirrored in ui/src/three — not derived from any material.
+# emit/gltf/palette.py and mirrored in ui/src/three — not derived from any material. The
+# frame/mullion/stile boxes of any opening in a clad wall take the same charcoal, so the
+# whole exterior unit reads as one dark product against the siding.
 _WINDOW_TRIM_KEY = "window_trim"
-_WINDOW_TRIM_FACE_WIDTH_M = 0.089            # 3 1/2" casing face around the RO
+_WINDOW_TRIM_FACE_WIDTH_M = 0.064            # 2 1/2" casing face around the RO
 _WINDOW_TRIM_PROUD_DEPTH_M = 0.019           # 3/4" board proud of the cladding plane
 
 
@@ -112,6 +114,21 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                       width / _OPENING_FRAME_SPAN_DIVISOR,
                       available_height / _OPENING_FRAME_SPAN_DIVISOR)
     depth = _OPENING_FRAME_DEPTH_M
+    # An opening in a clad wall is an exterior product: its frame, mullion and stile boxes
+    # take the charcoal exterior tone rather than interior wood, doors and windows alike.
+    # The frame also extends from its interior face out to the casing's proud face — an
+    # axis-centred frame stops ~3 1/2" behind the cladding and leaves the wall layers' cut
+    # edges (white foam) showing in the reveal between casing and frame. Extending it makes
+    # the whole reveal charcoal, the way sided walls trim out around a window in practice.
+    exterior = _exterior_face(wall)
+    frame_key = _WINDOW_TRIM_KEY if exterior is not None else _FRAME_KEY
+    frame_depth, frame_offset = depth, 0.0
+    if exterior is not None:
+        plane, sign = exterior
+        outer_edge = plane + sign * _WINDOW_TRIM_PROUD_DEPTH_M
+        inner_edge = -sign * (depth / 2.0)
+        frame_depth = abs(outer_edge - inner_edge)
+        frame_offset = (outer_edge + inner_edge) / 2.0
 
     def box(box_w: float, box_h: float, box_t: float, along: float,
             elevation: float, normal_offset: float = 0.0) -> GPrism:
@@ -129,12 +146,15 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
     parts: list[GPart] = []
     mid_elev = z0 + sill + available_height / 2.0
     if not is_trimless:
-        parts.append(GPart(key="frame", material_key=_FRAME_KEY, solids=(
-            box(frame_width, available_height, depth, -width / 2.0 + frame_width / 2.0, mid_elev),
-            box(frame_width, available_height, depth, width / 2.0 - frame_width / 2.0, mid_elev),
-            box(width, frame_width, depth, 0.0,
-                z0 + sill + available_height - frame_width / 2.0),
-            box(width, frame_width, depth, 0.0, z0 + sill + frame_width / 2.0),
+        parts.append(GPart(key="frame", material_key=frame_key, solids=(
+            box(frame_width, available_height, frame_depth,
+                -width / 2.0 + frame_width / 2.0, mid_elev, frame_offset),
+            box(frame_width, available_height, frame_depth,
+                width / 2.0 - frame_width / 2.0, mid_elev, frame_offset),
+            box(width, frame_width, frame_depth, 0.0,
+                z0 + sill + available_height - frame_width / 2.0, frame_offset),
+            box(width, frame_width, frame_depth, 0.0,
+                z0 + sill + frame_width / 2.0, frame_offset),
         )))
     panel_height = max(_OPENING_MIN_PANEL_DIMENSION_M, available_height - 2.0 * frame_width)
     panel_elev = z0 + sill + frame_width + panel_height / 2.0
@@ -147,7 +167,7 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                          (clear_width - mullion_width) / _DOUBLE_SWING_LEAF_COUNT)
         leaf_offset = mullion_width / 2.0 + leaf_width / 2.0
         leaf_thickness = _WINDOW_GLAZING_THICKNESS_M if is_glazed else _DOOR_LEAF_THICKNESS_M
-        parts.append(GPart(key="mullion", material_key=_FRAME_KEY,
+        parts.append(GPart(key="mullion", material_key=frame_key,
                            solids=(box(mullion_width, available_height, depth, 0.0, mid_elev),)))
         parts.append(GPart(
             key="leaf", material_key=_GLASS_KEY if is_glazed else _FRAME_KEY,
@@ -162,9 +182,9 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
         panel_width = max(_OPENING_MIN_PANEL_DIMENSION_M,
                           (clear_width - stile_width) / _SLIDING_PANEL_COUNT)
         panel_offset = stile_width / 2.0 + panel_width / 2.0
-        parts.append(GPart(key="sliding_stile", material_key=_FRAME_KEY,
+        parts.append(GPart(key="sliding_stile", material_key=frame_key,
                            solids=(box(stile_width, panel_height, depth, 0.0, panel_elev),)))
-        parts.append(GPart(key="sliding_track", material_key=_FRAME_KEY, solids=(
+        parts.append(GPart(key="sliding_track", material_key=frame_key, solids=(
             box(clear_width, min(_SLIDING_TRACK_HEIGHT_M, panel_height), depth, 0.0,
                 z0 + sill + frame_width + min(_SLIDING_TRACK_HEIGHT_M, panel_height) / 2.0),
         )))
@@ -200,12 +220,11 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
             box(max(_OPENING_MIN_PANEL_DIMENSION_M, clear_width), panel_height,
                 _WINDOW_GLAZING_THICKNESS_M, 0.0, panel_elev),)))
     if opening.kind == "window":
-        face = _exterior_face(wall)
-        if face is not None:
+        if exterior is not None:
             # Picture-frame casing on the cladding plane: two jambs beside the RO, a head
             # band over it, an apron under the sill, each a flat board sitting proud of the
             # exterior face. Appended last so every pre-existing part keeps its box order.
-            plane, sign = face
+            plane, sign = exterior
             trim_w = _WINDOW_TRIM_FACE_WIDTH_M
             trim_offset = plane + sign * _WINDOW_TRIM_PROUD_DEPTH_M / 2.0
             head_z = z0 + sill + available_height

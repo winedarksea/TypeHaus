@@ -439,21 +439,21 @@ OPENINGS = [
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
            type_ref="WT-2736", position=from_node("N-M-SE", ft(13, 6.5)),
            sill_height=ft(2, 6)),
-    # The dining pair after the 2026-07-30 east restack. E1 moved up to 23'-4" — 4 bays
-    # up W-M-E2's grid (16" from y=18'), host reassigned from W-M-E1 — where it stacks
-    # exactly under survey-pinned WIN-S-BED2. That band is over base cabinet
-    # FURN-M-KIT-N1's 36" counter, so the sill rises to 3'-6", the same over-counter
-    # treatment as WIN-M-KITCH. Its RO clears E2's by 5" (kings plus one module stud).
+    # WIN-M-DIN-E1 (CMX311AAAA) was retired in the 2026-07-30 east restack. Its two
+    # candidate homes both fought the kitchen swap: stacked under survey-pinned
+    # WIN-S-BED2 at 23'-4" it sat over FURN-M-KIT-N1's counter, forcing a 3'-6" sill
+    # (then a shortened WT-2724) that never sat right against the row's 2'-6"/5'-6"
+    # lines, and every station nearer its old 16'-0" collides with WIN-M-LIV-E2's new
+    # RO. The kitchen keeps WIN-M-KITCH on the north wall; the east facade reads as a
+    # three-window row with two of the three stacked exactly under the storey above.
     #
-    # E2 stays at 20'-8" (2 bays up W-M-E2): the fourth second-floor column, WIN-S-BED3
-    # at 32'-4", is unreachable down here — the 2026-07-30 kitchen swap put the range,
-    # hood and cooking run on that stretch of wall, and every stud-line station near
-    # 32'-4" lands behind them. Three stacked columns plus this one is the honest best.
-    Window(uid="CMX311AAAA", tag="WIN-M-DIN-E1", host="W-M-E2",
-           type_ref="WT-2736", position=from_node("N-M-E1", ft(4, 2.5)),
-           sill_height=ft(3, 6)),
+    # E2 cannot take the fourth second-floor column either: WIN-S-BED3 at 32'-4" is
+    # unreachable down here — the kitchen swap put the range, hood and cooking run on
+    # that stretch of wall, and every stud-line station near 32'-4" lands behind them.
+    # It sits at 19'-4" (1 bay up W-M-E2) rather than its old 20'-8" so its king pack
+    # keeps clear of the 23'-4" column band it used to crowd.
     Window(uid="CMX312AAAA", tag="WIN-M-DIN-E2", host="W-M-E2",
-           type_ref="WT-2736", position=from_node("N-M-E1", ft(1, 6.5)),
+           type_ref="WT-2736", position=from_node("N-M-E1", ft(0, 2.5)),
            sill_height=ft(2, 6)),
     # Moved to the north wall 2026-07-30 with the sink (plan/placeables.py's kitchen header),
     # then re-centred the same day when the sink flipped with the dishwasher toward the

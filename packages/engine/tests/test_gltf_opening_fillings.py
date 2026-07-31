@@ -171,8 +171,11 @@ def test_a_window_ships_a_four_piece_frame_and_one_glass_pane(starter_model):
     solids = _solids_of_node(gltf, blob, _opening_node(gltf, opening.uid))
 
     panes = [s for s in solids if s.has_thickness(_WINDOW_GLAZING_THICKNESS_M)]
-    frame = [s for s in solids if s.has_thickness(_OPENING_FRAME_DEPTH_M)]
     trim = [s for s in solids if s.has_thickness(_WINDOW_TRIM_PROUD_DEPTH_M)]
+    # A clad-wall frame extends from its interior face to the casing's proud face, so its
+    # thickness is per-wall rather than the fixed _OPENING_FRAME_DEPTH_M — identify the
+    # frame as everything that is neither glazing nor a casing board.
+    frame = [s for s in solids if s not in panes and s not in trim]
     assert len(solids) == _FRAME_PIECE_COUNT + _TRIM_PIECE_COUNT + 1, (
         "a window in a clad wall is four frame pieces, four casing boards and glazing")
     assert len(panes) == 1 and len(frame) == _FRAME_PIECE_COUNT
