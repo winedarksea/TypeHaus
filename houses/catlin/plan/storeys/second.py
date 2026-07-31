@@ -328,21 +328,28 @@ OPENINGS = [
            position=from_node("N-S-W2", ft(8, 2.5)), sill_height=ft(3)),      # y 13'-0"
     Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W3", type_ref="WT-2736",
            position=from_node("N-S-W2", ft(1, 6.5)), sill_height=ft(3)),      # y 19'-8"
-    # Plant room — south glazing (non-bearing: WT-3036 row), centred in the source's two
-    # 6'-0" openings (x 2'-3"..8'-3" and 10'-1"..16'-1").
-    Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-3036",
-           position=from_node("N-S-SW", ft(4, 1)), sill_height=ft(2)),        # x 5'-4"
-    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3036",
-           position=from_node("N-S-SW", ft(12, 1)), sill_height=ft(2)),       # x 13'-4"
+    # Plant room — south glazing, enlarged to WT-4248 (2026-07-30): centres 3'-4" and
+    # 8'-8" are bay centres on W-S-S1's grid (two studs broken each) and stack exactly
+    # over WIN-M-BED-S1/2 below. Sill 2'-8" = the shared 6'-8" head line. The grow pots
+    # and LED tubes (placeables.py / lighting.py) moved with their windows.
+    Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-4248",
+           position=from_node("N-S-SW", ft(1, 7)), sill_height=ft(2, 8)),     # x 3'-4"
+    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-4248",
+           position=from_node("N-S-SW", ft(6, 11)), sill_height=ft(2, 8)),    # x 8'-8"
     # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
     # type and not the 30" south-glazing one — "resize windows to fit the grid" (CLAUDE.md).
     Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736",
            position=from_node("N-S-W3", ft(2, 10.5)), sill_height=ft(2)),     # y 5'-0"
-    # Study 2's south pair, both inside the source's single 6'-0" opening at 28'-10"..34'-10".
-    Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3036",
-           position=from_node("N-S-S1", ft(10, 9)), sill_height=ft(2, 6)),    # x 30'-0"
-    Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3036",
-           position=from_node("N-S-S1", ft(14, 9)), sill_height=ft(2, 6)),    # x 34'-0"
+    # Study 2's south pair, enlarged to WT-4248 (2026-07-30): centres 28'-0" and 33'-4"
+    # are bay centres on W-S-S2's grid and stack exactly over WIN-M-LIV-S2/S1. The true
+    # mirror of the plant pair (27'-4"/32'-8") is unreachable — the two south segments'
+    # stud grids are 8" out of phase — so this is the phase-minimum miss. Sill raised
+    # 2'-6" -> 2'-8" onto the shared 6'-8" head line; the west RO edge clears
+    # D-S-DECK-E's french-door RO (ends 24'-10") by 17".
+    Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-4248",
+           position=from_node("N-S-S1", ft(8, 3)), sill_height=ft(2, 8)),     # x 28'-0"
+    Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-4248",
+           position=from_node("N-S-S1", ft(13, 7)), sill_height=ft(2, 8)),    # x 33'-4"
     # Baths + north. The source draws no opening in the north wall west of x=21'-10" and
     # none in the west wall north of y=25'-8"; WIN-S-BATH-N/W are kept anyway so the hall
     # bath has daylight, and are the storey's only two openings with no source counterpart.

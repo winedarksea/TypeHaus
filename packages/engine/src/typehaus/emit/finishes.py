@@ -42,6 +42,9 @@ ACCESSORY_KEYS = frozenset({
     # — a glazing panel is not "structure" — and leaves picking their tones to the emitter
     # switch, where a colour change is a reviewable diff rather than a side effect.
     "glazing", "glazing_trim", "bug_screen",
+    # Exterior window casing on the cladding plane (resolve/geometry_openings.py). Its
+    # colour is a design choice authored in both palettes, not derived from a material.
+    "window_trim",
 })
 
 # Material families, inferred from a material ref by `emit/draw/palette.family_of` (mirrored

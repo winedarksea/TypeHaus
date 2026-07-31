@@ -15,7 +15,7 @@ import {
   applyMasonryWallUv, applyStandingSeamWallUv, createMasonryMaterial,
   createStandingSeamMaterial, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM,
 } from "../materials";
-import { buildMembers } from "../members";
+import { buildMembers, categoryColor } from "../members";
 import {
   createPlanPrismGeometry, createRakedPlanPrismGeometry, projectPointToScene, type PlanCenter,
 } from "../planGeometry";
@@ -424,6 +424,36 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
   return pieces;
 }
 
+// Exterior window casing — mirrors the exterior_trim part in resolve/geometry_openings.py
+// (constants _WINDOW_TRIM_FACE_WIDTH_M / _WINDOW_TRIM_PROUD_DEPTH_M): a picture-frame of
+// flat boards proud of the cladding plane, windows in clad walls only. The colour rides
+// members.ts CATEGORY_COLOR ("window_trim"), keeping recolors a palette-only edit.
+const WINDOW_TRIM_FACE_WIDTH_M = 0.089;
+const WINDOW_TRIM_PROUD_DEPTH_M = 0.019;
+
+// Mirrors resolve/geometry_openings.py::_exterior_face — the exterior cladding plane as a
+// signed offset along the wall's right-hand normal, or null when the outermost depth layer
+// is not cladding (a concrete wall or interior partition has no plane to sit a casing on).
+function exteriorFace(wall: Wall): { plane: number; sign: number } | null {
+  const layers = wall.layers.filter((layer) => !layer.is_cavity);
+  if (layers.length < 2) return null;
+  const outerLayer = layers[layers.length - 1];
+  if (outerLayer.function.trim().toLowerCase() !== "cladding") return null;
+  const [[x0, y0], [x1, y1]] = wall.axis;
+  const length = Math.hypot(x1 - x0, y1 - y0);
+  if (length < 1e-9) return null;
+  const nx = -(y1 - y0) / length, ny = (x1 - x0) / length;
+  const project = (ring: [number, number][]) =>
+    ring.map(([px, py]) => (px - x0) * nx + (py - y0) * ny);
+  const outer = project(outerLayer.polygon), inner = project(layers[0].polygon);
+  if (!outer.length || !inner.length) return null;
+  const mean = (values: number[]) => values.reduce((a, b) => a + b, 0) / values.length;
+  const outward = mean(outer) - mean(inner);
+  if (Math.abs(outward) < 1e-9) return null;
+  const sign = outward > 0 ? 1 : -1;
+  return { plane: sign > 0 ? Math.max(...outer) : Math.min(...outer), sign };
+}
+
 export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, operation: DoorOperation | undefined,
   picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>, isGlazed = false, isTrimless = false) {
@@ -442,9 +472,11 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   const frameWidth = Math.min(0.075, opening.width_m / 4, availableHeight / 4);
   const depth = 0.08;
   const frameMaterial = new THREE.MeshStandardMaterial({ color: palette.member.wood, roughness: mode === "nordic" ? 0.85 : 1, flatShading: mode === "schematic" });
-  const addBox = (width: number, height: number, thickness: number, along: number, elevation: number, material: THREE.Material) => {
+  const addBox = (width: number, height: number, thickness: number, along: number, elevation: number, material: THREE.Material, normalOffset = 0) => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, thickness), material);
-    mesh.position.copy(projectPointToScene([position[0] + direction[0] * along, position[1] + direction[1] * along], elevation, center));
+    mesh.position.copy(projectPointToScene([
+      position[0] + direction[0] * along - direction[1] * normalOffset,
+      position[1] + direction[1] * along + direction[0] * normalOffset], elevation, center));
     mesh.rotation.y = rotation;
     parent.add(mesh);
   };
@@ -505,8 +537,42 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     addBox(Math.max(0.01, opening.width_m - 2 * frameWidth), panelHeight, 0.015, 0,
       wall.z0_m + opening.sill_m + frameWidth + panelHeight / 2, glassMaterial);
   }
-  // Frame, leaf/mullion and glazing are one door or window: clicking any of them selects the
-  // opening record, which the Inspector already knows how to edit.
+  if (opening.kind === "window") {
+    const face = exteriorFace(wall);
+    if (face) {
+      // Picture-frame casing on the cladding plane: two jambs beside the RO, a head band
+      // over it, an apron under the sill. Mirrors resolve/geometry_openings.py, including
+      // the per-board rake clip — a head band reaches past the RO span the availableHeight
+      // clip already honoured, so each board checks the raked top over its own footprint.
+      const trimW = WINDOW_TRIM_FACE_WIDTH_M;
+      const trimOffset = face.plane + face.sign * (WINDOW_TRIM_PROUD_DEPTH_M / 2);
+      const trimMaterial = new THREE.MeshStandardMaterial({ color: categoryColor("window_trim"),
+        roughness: 0.9, flatShading: mode === "schematic" });
+      const rakedHost = wall.top_z0_m != null || wall.top_z1_m != null;
+      const sillZ = wall.z0_m + opening.sill_m;
+      const bands: [number, number, number, number][] = [
+        [trimW, availableHeight, -opening.width_m / 2 - trimW / 2, sillZ],
+        [trimW, availableHeight, opening.width_m / 2 + trimW / 2, sillZ],
+        [opening.width_m + 2 * trimW, trimW, 0, sillZ + availableHeight],
+        [opening.width_m + 2 * trimW, trimW, 0, sillZ - trimW],
+      ];
+      for (const [bandW, bandH, along, baseZ] of bands) {
+        let zTop = baseZ + bandH;
+        if (rakedHost) {
+          for (const end of [-1, 1]) {
+            zTop = Math.min(zTop, rakedTopAt(wall,
+              position[0] + direction[0] * (along + end * bandW / 2),
+              position[1] + direction[1] * (along + end * bandW / 2)));
+          }
+        }
+        if (zTop - baseZ <= 1e-9) continue;
+        addBox(bandW, zTop - baseZ, WINDOW_TRIM_PROUD_DEPTH_M, along,
+          baseZ + (zTop - baseZ) / 2, trimMaterial, trimOffset);
+      }
+    }
+  }
+  // Frame, leaf/mullion, glazing and exterior casing are one door or window: clicking any of
+  // them selects the opening record, which the Inspector already knows how to edit.
   registerSelectable(parent, firstChildIndex, opening.uid, "opening", picks, byUid);
 }
 

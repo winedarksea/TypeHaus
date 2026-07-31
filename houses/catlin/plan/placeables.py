@@ -290,9 +290,11 @@ SECOND_PLACEABLES = [
               position=pt(m(8.43311), m(10.4735)), rotation=deg(0)),
     Furniture(uid="CHR703AAAA", tag="FURN-S-DESK-CHAIR3", type_ref="FURN-DESK-CHAIR", room="RM-S-BED3",
               position=pt(m(8.41785), m(10.0705)), rotation=deg(180)),
-    # Compact two-person table in Study 2: west of and north of WIN-S-STUDY1, against the
-    # south wall. Its west edge stays 8" clear of D-S-DECK-E's east jamb; the two chairs sit
-    # on the north side, so neither the table nor its usable seating is in the door opening.
+    # Compact two-person table in Study 2, against the south wall. Since the 2026-07-30
+    # enlargement it sits partly under WIN-S-STUDY1 (centre 28'-0", sill 2'-8" — a
+    # couple inches above the table top, which is the pleasant place for a table). Its
+    # west edge stays 8" clear of D-S-DECK-E's east jamb; the two chairs sit on the
+    # north side, so neither the table nor its usable seating is in the door opening.
     Furniture(uid="TAB701AAAA", tag="FURN-S-STUDY-TABLE", type_ref="FURN-DINING-2-36",
               room="RM-S-STUDY2", position=pt(m(8.10913), m(0.646066))),
     Furniture(uid="CHR704AAAA", tag="FURN-S-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
@@ -369,12 +371,13 @@ SECOND_PLACEABLES = [
     # room. The room's clear face is the full x 0'-0 5/8"..17'-11 3/8", y 0'-0 5/8"..8'-11 3/8"
     # bay, and the program divides along y — plants on the glass, seating behind them.
     #
-    # The two plants stand directly under ED-S-PLANT-TUBE1/2 (plan/lighting.py: x=5'/13',
-    # y=2', suspended 2'-3" below the ceiling), which is the whole reason those tubes are on a
-    # photoperiod timer: the light has to land on the foliage, not beside it. That also puts
-    # both pots in the south glazing — WIN-S-PLANT1 is centred x=5'-4" and WIN-S-PLANT2
-    # x=13'-4", both with 2'-0" sills — so each plant gets daylight and the tube supplements
-    # it. An 18" pot at y=2' occupies y 1'-3"..2'-9", well off the 5/8" wall face.
+    # The two plants stand directly under ED-S-PLANT-TUBE1/2 (plan/lighting.py:
+    # x=3'-4"/8'-8", y=2', suspended 2'-3" below the ceiling), which is the whole reason
+    # those tubes are on a photoperiod timer: the light has to land on the foliage, not
+    # beside it. That also puts both pots in the south glazing — WIN-S-PLANT1 is centred
+    # x=3'-4" and WIN-S-PLANT2 x=8'-8" (the 42" WT-4248 pair, 2'-8" sills) — so each
+    # plant gets daylight and the tube supplements it. An 18" pot at y=2' occupies
+    # y 1'-3"..2'-9", well off the 5/8" wall face.
     #
     # The chairs sit north of the plants facing them (rotation 0 puts a chair's back at +y, so
     # it looks south down the room and out the windows). Neither reaches the plants: the
@@ -387,9 +390,9 @@ SECOND_PLACEABLES = [
     # the centre bearing line at y=4'-5 1/2" and its 2'-6" leaf sweeps back to about
     # x=15'-5". Both chairs stop 3'-2" short of that arc.
     Furniture(uid="PLT701AAAA", tag="FURN-S-PLANT-POT1", type_ref="FURN-PLANT-18",
-              room="RM-S-PLANT", position=pt(ft(5), ft(2))),
+              room="RM-S-PLANT", position=pt(ft(3, 4), ft(2))),
     Furniture(uid="PLT702AAAA", tag="FURN-S-PLANT-POT2", type_ref="FURN-PLANT-18",
-              room="RM-S-PLANT", position=pt(ft(13), ft(2))),
+              room="RM-S-PLANT", position=pt(ft(8, 8), ft(2))),
     Furniture(uid="CHR706AAAA", tag="FURN-S-PLANT-CHAIR", type_ref="FURN-ARMCHAIR-35",
               room="RM-S-PLANT", position=pt(m(1.13772), m(1.8808)), rotation=deg(45)),
     Furniture(uid="RCK702AAAA", tag="FURN-S-PLANT-ROCKER", type_ref="FURN-ROCKING-CHAIR-30",

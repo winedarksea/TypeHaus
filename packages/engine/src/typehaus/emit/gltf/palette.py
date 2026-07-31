@@ -90,6 +90,11 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # theme to follow, so it ships the default one buildOpening reads for the same boxes.
     "opening_frame": (0.702, 0.522, 0.310, 1.0),
     "glass": (0.561, 0.718, 0.788, 0.48),
+    # Exterior window casing (resolve/geometry_openings.py). Charcoal is the design
+    # choice of the day and deliberately easy to change: this entry plus the mirrored
+    # WINDOW_TRIM_COLOR in ui/src/three (members.ts / builders/walls.ts) are the whole
+    # recolor. Rounds exactly to 0x3a3d40.
+    "window_trim": (0.227, 0.239, 0.251, 1.0),
     # accessories (→ resolve/accessories.py)
     "railing": (0.80, 0.81, 0.83, 1.0),   # aluminum guard
     "dowel": (0.20, 0.55, 0.35, 1.0),     # GFRP rebar (green)

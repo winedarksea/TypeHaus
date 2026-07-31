@@ -39,6 +39,45 @@ _SLIDING_TRACK_HEIGHT_M = 0.02
 _FRAME_KEY = "opening_frame"
 _GLASS_KEY = "glass"
 
+# --- exterior window casing ---------------------------------------------------------------
+# A picture-frame of flat boards around the RO on the exterior cladding plane, for windows
+# hosted in clad walls only. The colour is a design choice (charcoal today) authored in
+# emit/gltf/palette.py and mirrored in ui/src/three — not derived from any material.
+_WINDOW_TRIM_KEY = "window_trim"
+_WINDOW_TRIM_FACE_WIDTH_M = 0.089            # 3 1/2" casing face around the RO
+_WINDOW_TRIM_PROUD_DEPTH_M = 0.019           # 3/4" board proud of the cladding plane
+
+
+def _exterior_face(wall: ResolvedWall) -> tuple[float, float] | None:
+    """The exterior cladding plane as ``(signed normal offset, outward sign)``, or None.
+
+    Trim belongs on walls whose outermost depth layer is cladding — every clad exterior
+    wall and nothing else: a concrete basement wall or an interior partition has no
+    cladding plane to sit a casing on. Offsets are along the wall's right-hand normal
+    measured from the axis line, the same frame ``opening_parts`` lays its boxes out in.
+    """
+    layers = wall.depth_layers()
+    if len(layers) < 2 or layers[-1].function.strip().lower() != "cladding":
+        return None
+    (x0, y0), (x1, y1) = wall.axis
+    length = math.hypot(x1 - x0, y1 - y0)
+    if length < 1e-9:
+        return None
+    nx, ny = -(y1 - y0) / length, (x1 - x0) / length
+
+    def proj(ring) -> list[float]:
+        return [(px - x0) * nx + (py - y0) * ny for px, py in ring]
+
+    outer, inner = proj(layers[-1].polygon), proj(layers[0].polygon)
+    if not outer or not inner:
+        return None
+    outward = sum(outer) / len(outer) - sum(inner) / len(inner)
+    if abs(outward) < 1e-9:
+        return None
+    sign = 1.0 if outward > 0 else -1.0
+    plane = max(outer) if sign > 0 else min(outer)
+    return plane, sign
+
 
 def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
                   is_glazed: bool = False, is_trimless: bool = False) -> tuple[GPart, ...]:
@@ -75,8 +114,9 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
     depth = _OPENING_FRAME_DEPTH_M
 
     def box(box_w: float, box_h: float, box_t: float, along: float,
-            elevation: float) -> GPrism:
-        cx, cy = posx + ux * along, posy + uy * along
+            elevation: float, normal_offset: float = 0.0) -> GPrism:
+        cx = posx + ux * along + nx * normal_offset
+        cy = posy + uy * along + ny * normal_offset
         hw, ht = box_w / 2.0, box_t / 2.0
         ring = (
             (cx + ux * hw + nx * ht, cy + uy * hw + ny * ht),
@@ -159,4 +199,38 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
         parts.append(GPart(key="glass", material_key=_GLASS_KEY, solids=(
             box(max(_OPENING_MIN_PANEL_DIMENSION_M, clear_width), panel_height,
                 _WINDOW_GLAZING_THICKNESS_M, 0.0, panel_elev),)))
+    if opening.kind == "window":
+        face = _exterior_face(wall)
+        if face is not None:
+            # Picture-frame casing on the cladding plane: two jambs beside the RO, a head
+            # band over it, an apron under the sill, each a flat board sitting proud of the
+            # exterior face. Appended last so every pre-existing part keeps its box order.
+            plane, sign = face
+            trim_w = _WINDOW_TRIM_FACE_WIDTH_M
+            trim_offset = plane + sign * _WINDOW_TRIM_PROUD_DEPTH_M / 2.0
+            head_z = z0 + sill + available_height
+            bands = (
+                (trim_w, available_height, -width / 2.0 - trim_w / 2.0, z0 + sill),
+                (trim_w, available_height, width / 2.0 + trim_w / 2.0, z0 + sill),
+                (width + 2.0 * trim_w, trim_w, 0.0, head_z),
+                (width + 2.0 * trim_w, trim_w, 0.0, z0 + sill - trim_w),
+            )
+            trim_solids = []
+            for band_w, band_h, along, base_z in bands:
+                z_top = base_z + band_h
+                if top_at is not None:
+                    # The head band (and a jamb's outer edge) reaches past the RO the rake
+                    # clip already honoured, so each board is clipped against the raked top
+                    # over its *own* span — same rule, wider footprint.
+                    z_top = min([z_top] + [
+                        top_at(posx + ux * (along + end * band_w / 2.0),
+                               posy + uy * (along + end * band_w / 2.0))
+                        for end in (-1.0, 1.0)])
+                if z_top - base_z <= 1e-9:
+                    continue
+                trim_solids.append(box(band_w, z_top - base_z, _WINDOW_TRIM_PROUD_DEPTH_M,
+                                       along, base_z + (z_top - base_z) / 2.0, trim_offset))
+            if trim_solids:
+                parts.append(GPart(key="exterior_trim", material_key=_WINDOW_TRIM_KEY,
+                                   solids=tuple(trim_solids)))
     return tuple(parts)

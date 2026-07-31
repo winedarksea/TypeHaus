@@ -85,6 +85,9 @@ const CATEGORY_COLOR: Record<string, number> = {
   fascia: 0xebebe6,
   soffit: 0xe0e0d9,
   gutter: 0xd9dbde,
+  // Exterior window casing (charcoal), drawn by builders/walls.ts buildOpening. The
+  // design colour of the day: change it here and in emit/gltf/palette.py together.
+  window_trim: 0x3a3d40,
 };
 export const CATEGORY_FALLBACK = 0xb0b0b0;
 

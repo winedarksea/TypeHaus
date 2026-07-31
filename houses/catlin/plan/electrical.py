@@ -381,10 +381,11 @@ MAIN_DEVICES = [
                      circuit="CKT-FH-BATH2", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     # FH-M-DINING's thermostat. The zone is free-standing in the middle of a 642 ft2 room,
-    # so its control goes on the nearest real wall: W-M-E1's interior face at x=35'-11 3/8",
-    # in the 2'-5" of clear wall between WIN-M-DIN-E1's rough opening (y 13'-9"..16'-0") and
-    # WIN-M-DIN-E2's (y 18'-4 3/4"..20'-8"). ED-M-LIVING-RC3 sits at y=16'-11", so 17'-9"
-    # keeps 10" between the two boxes. The sensor lead runs the 5' back to the zone edge.
+    # so its control goes on the nearest real wall: the east wall's interior face at
+    # x=35'-11 3/8", in the clear stretch between WIN-M-LIV-E2's rough opening (ends
+    # y=15'-9 1/2" after the 2026-07-30 restack) and WIN-M-DIN-E2's (starts y=19'-6 1/2").
+    # ED-M-LIVING-RC3 sits at y=16'-11", so 17'-9" keeps 10" between the two boxes.
+    # The sensor lead runs the 5' back to the zone edge.
     ElectricalDevice(uid="CEE024AAAA", tag="ED-M-DINING-FH-STAT", kind=DeviceKind.SWITCH,
                      position=pt(ft(35, 11), ft(17, 9)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-DINING", room="RM-M-LIVING",
@@ -441,19 +442,20 @@ MAIN_EQUIPMENT = [
               mount=Mount(kind=MountKind.WALL, elevation=ft(7),
                           recessed_into_host_surface=True),
               zone_rooms=("RM-M-MUDROOM", "RM-M-MECH")),
-    # Electric fireplace, SE corner of the living room. It hangs on the *east* wall rather
-    # than the south one because that is where the corner has wall left: W-M-S2 gives only
-    # 2'-1" between WIN-M-LIV-S1's rough opening and the corner, while W-M-E1 runs clear
-    # from the corner up to WIN-M-LIV-E1's sill line at y=5'-9". The 48" cabinet takes
-    # y 0'-10"..4'-10" — 9 1/2" off the corner, 7 1/2" short of ED-M-LIVING-RC4 at
-    # y=5'-6 1/2". rotation -90 puts its back east against the wall (interior face
-    # x=35'-11 3/8"; the 7" cabinet centres at 35'-8"). Mounted at 36" so the glass sits
-    # above FURN-M-MEDIA's 30" top on the wall around the corner.
+    # Electric fireplace, SE corner of the living room, on the east wall. Dropped from a
+    # 36" mount to 7" (2026-07-30) when WIN-M-LIV-E1 restacked to y=4'-0": the window's
+    # RO (y 2'-10 1/2"..5'-1 1/2", sill at 30") now crosses the cabinet's band, so the
+    # unit reads as a hearth *under* the glass instead — the 21" cabinet tops out at
+    # 28", 2" below the sill, the way a radiator sits under a window. The old height
+    # was up rather high anyway (it cleared FURN-M-MEDIA's 30" top for no local reason).
+    # The 48" cabinet keeps y 0'-10"..4'-10" — 9 1/2" off the corner, 7 1/2" short of
+    # ED-M-LIVING-RC4 at y=5'-6 1/2". rotation -90 puts its back east against the wall
+    # (interior face x=35'-11 3/8"; the 7" cabinet centres at 35'-8").
     Equipment(uid="CEE022AAAA", tag="EQ-M-FIREPLACE", kind=EquipmentKind.SPACE_HEATER,
               position=pt(ft(35, 8), ft(2, 10)), footprint=(inch(48), inch(7)),
               room="RM-M-LIVING", type_ref="EQ-T-FIREPLACE-EL", rotation=deg(-90),
               circuit="CKT-FIREPLACE",
-              mount=Mount(kind=MountKind.WALL, elevation=inch(36))),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(7))),
 ]
 
 # --- Second storey: the NW bathroom's floor-heat control -------------------------------
@@ -461,8 +463,11 @@ SECOND_DEVICES = [
     # NEC 440.14 disconnects for the two condensers on the upper balcony. They sit on
     # the second-storey south wall behind the units, within sight from the balcony door
     # while staying clear of D-S-DECK-E's 5' French-door opening at x=18'-10"..23'-10".
+    # HP1's box moved x=11' -> 12' (2026-07-30): WIN-S-PLANT2's enlarged RO now ends at
+    # x=10'-5" and its exterior casing 3 1/2" past that, so 12' keeps clear wall around
+    # the box instead of butting the trim.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(11), ft(0, 6)), type_ref="ED-T-DISCONNECT-3R",
+                     position=pt(ft(12), ft(0, 6)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
                      position=pt(ft(15), ft(0, 6)), type_ref="ED-T-DISCONNECT-3R",

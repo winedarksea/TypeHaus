@@ -25,9 +25,11 @@ from typehaus.emit.gltf.openings import (
     _OPENING_FRAME_FACE_WIDTH_M,
     _OPENING_FRAME_SPAN_DIVISOR,
     _WINDOW_GLAZING_THICKNESS_M,
+    _WINDOW_TRIM_PROUD_DEPTH_M,
     _add_opening_filling,
 )
 from typehaus.resolve import resolve
+from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.model import ResolvedLayer, ResolvedOpening, ResolvedWall
 from typehaus.source import load_plan
 
@@ -39,6 +41,10 @@ _DIMENSION_TOLERANCE_M = 1e-4
 
 # Panel3D and the emitter both build a frame of exactly four pieces: two jambs, head, sill.
 _FRAME_PIECE_COUNT = 4
+# A window in a *clad* wall also ships a four-board exterior casing on the cladding plane
+# (two jamb boards, head, apron) — the ``exterior_trim`` part in resolve/geometry_openings.py.
+# Doors never do, and neither does a window in an unclad host (concrete, interior).
+_TRIM_PIECE_COUNT = 4
 # One box = 4 side quads + 2 caps = 12 triangles, de-indexed to 3 vertices each.
 _VERTICES_PER_BOX = 36
 
@@ -166,8 +172,11 @@ def test_a_window_ships_a_four_piece_frame_and_one_glass_pane(starter_model):
 
     panes = [s for s in solids if s.has_thickness(_WINDOW_GLAZING_THICKNESS_M)]
     frame = [s for s in solids if s.has_thickness(_OPENING_FRAME_DEPTH_M)]
-    assert len(solids) == _FRAME_PIECE_COUNT + 1, "a window is four frame pieces plus glazing"
+    trim = [s for s in solids if s.has_thickness(_WINDOW_TRIM_PROUD_DEPTH_M)]
+    assert len(solids) == _FRAME_PIECE_COUNT + _TRIM_PIECE_COUNT + 1, (
+        "a window in a clad wall is four frame pieces, four casing boards and glazing")
     assert len(panes) == 1 and len(frame) == _FRAME_PIECE_COUNT
+    assert len(trim) == _TRIM_PIECE_COUNT, "the exterior casing is a four-board picture frame"
     # Glazing is the export's only translucent material — the viewer draws it at 48% opacity.
     assert gltf["materials"][panes[0].material_index]["pbrMetallicRoughness"][
         "baseColorFactor"][3] == pytest.approx(0.48)
@@ -308,14 +317,24 @@ def test_closed_slider_and_bifold_products_ship_their_operation_specific_panels(
 
 # --- rough openings and raked walls --------------------------------------------------------
 
-def _synthetic_wall(top_z0_m: float | None = None, top_z1_m: float | None = None) -> ResolvedWall:
-    """A bare 4 m wall along +x with a single structure layer, for unit-level filling checks."""
+def _synthetic_wall(top_z0_m: float | None = None, top_z1_m: float | None = None,
+                    clad: bool = False) -> ResolvedWall:
+    """A bare 4 m wall along +x with a single structure layer, for unit-level filling checks.
+
+    ``clad=True`` adds a thin cladding band on the +y side, which is what qualifies a host
+    for the exterior window casing.
+    """
+    layers = [ResolvedLayer(name="structure", material_ref="spf", thickness_m=0.14,
+                            function="structure",
+                            polygon=((0.0, -0.07), (4.0, -0.07), (4.0, 0.07), (0.0, 0.07)))]
+    if clad:
+        layers.append(ResolvedLayer(name="cladding", material_ref="fiber-cement",
+                                    thickness_m=0.01, function="cladding",
+                                    polygon=((0.0, 0.07), (4.0, 0.07), (4.0, 0.08), (0.0, 0.08))))
     return ResolvedWall(
         uid="W-TEST", tag="W-TEST", storey="main", assembly="EXT",
         axis=((0.0, 0.0), (4.0, 0.0)),
-        layers=(ResolvedLayer(name="structure", material_ref="spf", thickness_m=0.14,
-                              function="structure",
-                              polygon=((0.0, -0.07), (4.0, -0.07), (4.0, 0.07), (0.0, 0.07))),),
+        layers=tuple(layers),
         z0_m=0.0, z1_m=3.0, top_z0_m=top_z0_m, top_z1_m=top_z1_m,
     )
 
@@ -326,6 +345,25 @@ def _synthetic_opening(kind: str, height_m: float = 2.0) -> ResolvedOpening:
         width_m=0.9, height_m=height_m, sill_m=0.0, center_along_m=2.0,
         kind=kind, is_door=kind == "door",
     )
+
+
+def test_a_window_in_an_unclad_wall_ships_no_exterior_casing():
+    """The casing sits on a cladding plane; a host without one (concrete, interior) gets none."""
+    parts = opening_parts(_synthetic_wall(), _synthetic_opening("window"), None)
+    assert [part.key for part in parts] == ["frame", "glass"]
+
+
+def test_a_window_in_a_clad_wall_ships_a_four_board_exterior_casing():
+    parts = opening_parts(_synthetic_wall(clad=True), _synthetic_opening("window"), None)
+    assert [part.key for part in parts] == ["frame", "glass", "exterior_trim"]
+    trim = parts[-1]
+    assert trim.material_key == "window_trim"
+    assert len(trim.solids) == _TRIM_PIECE_COUNT
+    for solid in trim.solids:
+        # Every board sits proud of the exterior cladding face (y=0.08), not in the void.
+        across = [y for _x, y in solid.ring]
+        assert min(across) == pytest.approx(0.08, abs=1e-9)
+        assert max(across) == pytest.approx(0.08 + _WINDOW_TRIM_PROUD_DEPTH_M, abs=1e-9)
 
 
 def test_a_rough_opening_ships_no_product():

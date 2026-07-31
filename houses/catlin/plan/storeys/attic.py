@@ -147,23 +147,30 @@ OPENINGS = [
          position=from_node("N-A-C2", ft(0, 8.875))),                 # x 19'-11 7/8"
     Door(uid="CAD204AAAA", tag="D-A-VEST", host="W-A-VE", type_ref="DT-INT-SWING30",
          position=from_node("N-A-V1", ft(0, 11.25))),                 # y 2'-2 1/4"
-    # The gables take the shared 30"x36" type (its 36" height was chosen for exactly
-    # these walls — heads below the cathedral-roof framing); every opening starts 24"
-    # above the finished attic floor per the brief.
+    # The south gables take WT-4242 (2026-07-30 enlargement): the 42" width of the
+    # house's new south-glazing family, 6" shorter than the main/second WT-4248 because
+    # the 4:12 rake can't clear the taller header at a usable sill. Two studs broken
+    # each, so every RO centre is a bay centre on its own host's grid. Sills chase the
+    # rake instead of a shared line: 2'-8" where the roof allows (heads 6'-2"),
+    # WIN-A-STUDY-S2 drops to 2'-4" (head 5'-10") because its header would hit the
+    # raked top plate at anything higher — the far-east gable is the shortest wall any
+    # 42" unit stands in.
     #
     # The source's three south-gable openings are 2'-7 1/2" at x 7'-5", 4'-0" at
     # x 17'-11 3/4" and 2'-7 1/2" at x 28'-11". The middle one is centred on the bearing
     # wall and cannot be built, so WIN-A-DEN-S takes the westernmost (now in the west
     # loft, since the Den moved off the gable's centre) and WIN-A-STUDY-S2 the eastern;
-    # WIN-A-STUDY-S1 stays in a clear bay with no source counterpart.
-    Window(uid="CAX301AAAA", tag="WIN-A-DEN-S", host="W-A-S1", type_ref="WT-3036",
-           position=from_node("N-A-SW", ft(6, 9)), sill_height=ft(2)),   # x 8'-0"
+    # WIN-A-STUDY-S1 stays in a clear bay with no source counterpart — its bay centre
+    # at 25'-4" is off limits (king stud inside the W-A-VE tee pack), so it sits one
+    # module east at 25'-8".
+    Window(uid="CAX301AAAA", tag="WIN-A-DEN-S", host="W-A-S1", type_ref="WT-4242",
+           position=from_node("N-A-SW", ft(5, 7)), sill_height=ft(2, 8)),  # x 7'-4"
     Window(uid="CAX302AAAA", tag="WIN-A-STUDY-S1", host="W-A-S4",
-           type_ref="WT-3036", position=from_node("N-A-V1", ft(1, 5)),
-           sill_height=ft(2)),                                          # x 25'-0"
+           type_ref="WT-4242", position=from_node("N-A-V1", ft(1, 7)),
+           sill_height=ft(2, 8)),                                          # x 25'-8"
     Window(uid="CAX303AAAA", tag="WIN-A-STUDY-S2", host="W-A-S4",
-           type_ref="WT-3036", position=from_node("N-A-V1", ft(5, 5)),
-           sill_height=ft(2)),                                          # x 29'-0"
+           type_ref="WT-4242", position=from_node("N-A-V1", ft(5, 7)),
+           sill_height=ft(2, 4)),                                          # x 29'-8"
     # The source attic has no north, east or west opening at all; these three are kept for
     # daylight and cross-ventilation and are this storey's only openings with no counterpart.
     Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3036",

@@ -100,12 +100,12 @@ BASEMENT_FIXTURES = (
 # 26'-1-5/8") — too small to pack the shared FX-TOILET + FX-LAV pair without running them
 # wall-to-wall, so this room takes the BATH1-only compact types (fixture_types.py).
 # The WC is a wall-hung compact (15" x 19.3") on the south wall, west of the lavatory.
-# Rotation 0 turns its back (+y local) toward W-M-HS1. Its carrier and waste remain tied to
+# Rotation 180 turns its bowl/front north and its back toward W-M-HS1. Its carrier and waste remain tied to
 # the established W-M-BAE wet-wall stack; the bowl's placement is independent of that
 # service-wall connection.
 MAIN_FIXTURES = (
     Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOILET-WH", room="RM-M-BATH1",
-            position=pt(ft(2, 8), ft(23, 0.3)), rotation=deg(0), wall_ref="W-M-BAE",
+            position=pt(m(0.670778), m(7.06806)), rotation=deg(180), wall_ref="W-M-BAE",
             drain_position=pt(ft(6), ft(22, 7))),
     # y nudged +6" (2026-07-29, with N-M-W2/N-M-C2's north push for the BATH2 wall move):
     # the room's south face moved with it and the lavatory's old y left it poking through

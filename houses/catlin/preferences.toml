@@ -17,7 +17,7 @@ adequate_overhang_ft = 0.0
 module_in = 16
 corner = "three-stud"
 max_window_ro_unbroken_in = 14
-max_window_ro_nonbearing_in = 30
+max_window_ro_nonbearing_in = 42
 max_window_ro_bearing_in = 27
 
 [plumbing]

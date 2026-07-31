@@ -55,11 +55,18 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   `W-A-C1/C2` bearing wall, which stacks unbroken to the footings. That is what makes the
   rafters simple spans and keeps thrust off the 5' knee walls. Opening that center line up
   without a beam under it dumps ~1.5 klf of thrust into knee walls that can take ~0.1.
-- Window rules: 14" RO fits a stud bay; 30" RO max non-bearing (one stud broken);
-  27" RO max bearing (jacks added). Resize windows to fit the grid, not vice versa.
-  One type per width family — WT-1424, WT-2736, WT-3036, WT-3660 (basement concrete
-  only) — each family sharing the one height that fits its most constrained wall
-  (attic knee wall for 14", the garage's 8' wall for 27", the attic gables for 30").
+- Window rules: 14" RO fits a stud bay (centre on a bay centre); 27" RO max bearing
+  (centre on a stud line, jacks added); 42" RO max non-bearing (centre on a BAY CENTRE
+  — it breaks two studs, so a stud-line centre breaks three and fails the module
+  check). Resize windows to fit the grid, not vice versa. One type per width family —
+  WT-1424, WT-2736, WT-3036 (north gables/hall), WT-4248 (the south-glazing size,
+  head at 6'-8"), WT-3660 (basement concrete only) — each family sharing the one
+  height that fits its most constrained wall. The one exception: WT-4242 is the 42"
+  family's attic-gable variant (the 4:12 rake can't clear WT-4248's header), 6"
+  shorter, attic south gables only.
+- Exterior window casing: every window in a clad wall ships a charcoal picture-frame
+  casing (resolve/geometry_openings.py `exterior_trim`). Recolor = emit/gltf/palette.py
+  `window_trim` + ui/src/three/members.ts `CATEGORY_COLOR.window_trim`, nothing else.
 
 ## The loop: edit → build → check → *look* → fix
 ```

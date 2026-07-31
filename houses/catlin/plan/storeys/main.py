@@ -2,8 +2,9 @@
 # Main floor — 36'x36' at sheathing, 16" o.c. module, east half open living (WP3.1).
 # Exterior walls: CATLIN_EXT_2X6, sheathing exterior face on the 0/36 lines.
 # Bearing lines: west wall, center N-S wall (x=18), east wall (18' I-joist spans, E-W).
-# Smaller windows follow the stud-bay rules: WT-1424 fits one bay unbroken; WT-3036
-# breaks one stud (non-bearing walls only); WT-2736 adds jacks on bearing walls.
+# Windows follow the stud-bay rules: WT-1424 fits one bay unbroken; WT-4248 breaks two
+# studs (non-bearing walls only, RO centred on a bay centre); WT-2736 adds jacks on
+# bearing walls (RO centred on a stud line).
 from typehaus import (
     Alarm,
     AlarmKind,
@@ -54,6 +55,9 @@ DOOR_TYPES = [
 ]
 # One size per width family: every placement of a family shares one height, chosen as
 # the tallest that still fits the family's most constrained wall anywhere in the house.
+# The one exception is the 42" family (WT-4248/WT-4242): the attic's raked gables can't
+# take the 48" height at any usable sill, so the attic variant gives up 6" rather than
+# dragging every south window down to what the rake allows.
 WINDOW_TYPES = [
     # 14" RO — falls between studs on the 16" grid without breaking a stud line. 24"
     # tall because the 5' attic knee wall (WIN-A-W-SM) needs room for the modeled
@@ -66,8 +70,21 @@ WINDOW_TYPES = [
     WindowType(tag="WT-2736", width=inch(27), height=ft(3), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 30" RO — non-load-bearing size (N*2-6): one stud broken. 36" tall keeps the
-    # attic-gable heads below the cathedral-roof framing.
+    # attic-gable heads below the cathedral-roof framing. Since the 2026-07-30 south
+    # enlargement this is the north-side size (attic gable pair, hall).
     WindowType(tag="WT-3036", width=inch(30), height=ft(3), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement"),
+    # 42" RO — the enlarged south-glazing size (2026-07-30): breaks two studs, which
+    # means the RO centre sits on a bay centre (8"+16n from the host wall's start),
+    # not a stud line. 48" tall with the shared 2'-8" sill puts the head at 6'-8" —
+    # level with the door heads, glass above a standing adult's head, which is the
+    # point of the enlargement. Non-bearing walls only (preferences [framing]).
+    WindowType(tag="WT-4248", width=inch(42), height=ft(4), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement"),
+    # The attic-gable member of the 42" family — the documented exception to
+    # one-height-per-family (see the preamble above): the 4:12 rake can't clear
+    # WT-4248's header at a usable sill, so the attic keeps the width, loses 6".
+    WindowType(tag="WT-4242", width=inch(42), height=ft(3, 6), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 36" RO — concrete basement wall only (no stud module to respect down there).
     WindowType(tag="WT-3660", width=ft(3), height=ft(5), u_factor=u_us(0.25),
@@ -374,12 +391,16 @@ OPENINGS = [
     Window(uid="CMX302AAAA", tag="WIN-M-BED-W2", host="W-M-W4",
            type_ref="WT-2736", position=from_node("N-M-SW", ft(9, 6.5)),
            sill_height=ft(2)),
+    # South pair enlarged to WT-4248 (2026-07-30): centres 3'-4" and 8'-8" are bay
+    # centres on W-M-S1's grid (two studs broken each), stacking exactly under
+    # WIN-S-PLANT1/2 above — main and second share the wall start, so the columns
+    # line up to the inch. Sill 2'-8" puts the heads at 6'-8" with the doors.
     Window(uid="CMX303AAAA", tag="WIN-M-BED-S1", host="W-M-S1",
-           type_ref="WT-3036", position=from_node("N-M-SW", ft(4, 1)),
-           sill_height=ft(2)),
+           type_ref="WT-4248", position=from_node("N-M-SW", ft(1, 7)),
+           sill_height=ft(2, 8)),
     Window(uid="CMX304AAAA", tag="WIN-M-BED-S2", host="W-M-S1",
-           type_ref="WT-3036", position=from_node("N-M-SW", ft(9, 5)),
-           sill_height=ft(2)),
+           type_ref="WT-4248", position=from_node("N-M-SW", ft(6, 11)),
+           sill_height=ft(2, 8)),
     # Offset bumped 4'-5" -> 4'-11" (2026-07-29) when N-M-W2 pushed 6" north for the
     # hall/bath2 wall move: W-M-W3's stud grid anchors off N-M-W2, so the window has
     # to move with it to stay on the same bay it was already sitting in.
@@ -396,33 +417,41 @@ OPENINGS = [
     Window(uid="CMX306AAAA", tag="WIN-M-MUD", host="W-M-W1",
            type_ref="WT-1424-FIX", position=from_node("N-M-NW", ft(4, 1)),
            sill_height=ft(3)),
+    # South pair enlarged to WT-4248 (2026-07-30): centres 28'-0" and 33'-4" are bay
+    # centres on W-M-S2's grid (8"+16n off N-M-S1), stacking exactly under
+    # WIN-S-STUDY1/2. The mirror of the bedroom pair about x=18' would be 27'-4" and
+    # 32'-8", but the two south segments lay studs from their own starts and sit 8"
+    # out of phase, so this is as close as bay-centred windows can mirror. The west
+    # RO edge clears D-M-BALC's french-door RO (ends 24'-4") by 23".
     Window(uid="CMX307AAAA", tag="WIN-M-LIV-S1", host="W-M-S2",
-           type_ref="WT-3036", position=from_node("N-M-SE", ft(3, 5)),
-           sill_height=ft(2)),
+           type_ref="WT-4248", position=from_node("N-M-SE", ft(0, 11)),
+           sill_height=ft(2, 8)),
     Window(uid="CMX308AAAA", tag="WIN-M-LIV-S2", host="W-M-S2",
-           type_ref="WT-3036", position=from_node("N-M-SE", ft(7, 5)),
-           sill_height=ft(2)),
+           type_ref="WT-4248", position=from_node("N-M-SE", ft(6, 3)),
+           sill_height=ft(2, 8)),
+    # East pair restacked (2026-07-30) under the second-floor columns: 4'-0" sits
+    # exactly under WIN-S-STUDY3 (both walls start their grids at y=0), 14'-8" is the
+    # closest stud line to WIN-S-BED1's survey-pinned 14'-4". The fireplace that stood
+    # across the 4'-0" band dropped to a 7" hearth mount below the sill (electrical.py).
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
-           type_ref="WT-2736", position=from_node("N-M-SE", ft(6, 10.5)),
+           type_ref="WT-2736", position=from_node("N-M-SE", ft(2, 10.5)),
            sill_height=ft(2, 6)),
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
-           type_ref="WT-2736", position=from_node("N-M-SE", ft(10, 10.5)),
+           type_ref="WT-2736", position=from_node("N-M-SE", ft(13, 6.5)),
            sill_height=ft(2, 6)),
-    # The dining pair, pushed south of where it started (centres were 22' and 26'). The 48"
-    # pantry closet now takes the east wall from 22'-8" to 26'-8" and a tall cabinet over a
-    # window is not a window, so the glass moved rather than the casework: centres 16'-0" and
-    # 20'-8", the northern one clearing the pantry's south end by 8 1/2" of framing.
+    # The dining pair after the 2026-07-30 east restack. E1 moved up to 23'-4" — 4 bays
+    # up W-M-E2's grid (16" from y=18'), host reassigned from W-M-E1 — where it stacks
+    # exactly under survey-pinned WIN-S-BED2. That band is over base cabinet
+    # FURN-M-KIT-N1's 36" counter, so the sill rises to 3'-6", the same over-counter
+    # treatment as WIN-M-KITCH. Its RO clears E2's by 5" (kings plus one module stud).
     #
-    # The pair no longer reads at the 4' spacing the living windows below it use, and cannot:
-    # E1 crosses onto the south wall segment, and each segment lays its studs out from its own
-    # start, so W-M-E1's grid (16" from y=0) and W-M-E2's (16" from y=18') are 8" out of phase
-    # with each other. A 27" RO in a bearing wall has to break exactly one stud, which pins
-    # each centre to its own host's grid — 16'-0" is 12 bays up W-M-E1, 20'-8" is 2 bays up
-    # W-M-E2 — and 4'-8" apart is where that lands them. The node at y=18' is a collinear
-    # split rather than a corner, so the wall itself runs through unbroken.
-    Window(uid="CMX311AAAA", tag="WIN-M-DIN-E1", host="W-M-E1",
-           type_ref="WT-2736", position=from_node("N-M-SE", ft(14, 10.5)),
-           sill_height=ft(2, 6)),
+    # E2 stays at 20'-8" (2 bays up W-M-E2): the fourth second-floor column, WIN-S-BED3
+    # at 32'-4", is unreachable down here — the 2026-07-30 kitchen swap put the range,
+    # hood and cooking run on that stretch of wall, and every stud-line station near
+    # 32'-4" lands behind them. Three stacked columns plus this one is the honest best.
+    Window(uid="CMX311AAAA", tag="WIN-M-DIN-E1", host="W-M-E2",
+           type_ref="WT-2736", position=from_node("N-M-E1", ft(4, 2.5)),
+           sill_height=ft(3, 6)),
     Window(uid="CMX312AAAA", tag="WIN-M-DIN-E2", host="W-M-E2",
            type_ref="WT-2736", position=from_node("N-M-E1", ft(1, 6.5)),
            sill_height=ft(2, 6)),

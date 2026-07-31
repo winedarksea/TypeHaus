@@ -24,6 +24,8 @@ from typehaus.resolve.geometry_openings import (  # noqa: F401
     _OPENING_FRAME_SPAN_DIVISOR,
     _OPENING_MIN_PANEL_DIMENSION_M,
     _WINDOW_GLAZING_THICKNESS_M,
+    _WINDOW_TRIM_FACE_WIDTH_M,
+    _WINDOW_TRIM_PROUD_DEPTH_M,
     opening_parts,
 )
 from typehaus.resolve.model import ResolvedWall

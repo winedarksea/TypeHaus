@@ -606,12 +606,12 @@ SECOND_LIGHTING = [
     # they run a photoperiod rather than whenever somebody remembers. The fan-light
     # (ED-S-PLANT-LT, re-typed) moves the humid air a plant room makes.
     ElectricalDevice(uid="QTS000PAAA", tag="ED-S-PLANT-TUBE1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(5), ft(2)), type_ref="ED-T-LT-TUBE6",
+                     position=pt(ft(3, 4), ft(2)), type_ref="ED-T-LT-TUBE6",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(2, 3))),
     ElectricalDevice(uid="QTS000QAAA", tag="ED-S-PLANT-TUBE2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13), ft(2)), type_ref="ED-T-LT-TUBE6",
+                     position=pt(ft(8, 8), ft(2)), type_ref="ED-T-LT-TUBE6",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(2, 3))),
