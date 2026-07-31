@@ -106,8 +106,13 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     thickness = member_actual(member)[0] * _M_PER_IN  # stud face dimension along the wall
     kings, jacks = jamb_pack_counts(_m(opening.width_m), pattern)
     center, half = opening.center_m, opening.width_m / 2
-    header_bottom = (z0 + opening.height_m if opening.is_door
-                     else z0 + opening.sill_m + opening.height_m)
+    # Head = threshold + clear height, doors included. Doors used to skip the ``sill_m``
+    # term on the assumption a door always starts at its host wall's own floor; the Catlin
+    # garage breaks that (its overhead door drops a negative sill to the slab below the ICF
+    # stem the wall bears on), and skipping the term there left the framed header 22" above
+    # the head the wall body, the IFC void and the viewer had all already cut. Every
+    # sill_m == 0 door is unaffected.
+    header_bottom = z0 + opening.sill_m + opening.height_m
 
     if not needs_jamb_pack(opening, spacing, thickness):
         return _frame_inside_one_bay(rw, direction, wall_start, opening, member, z0,

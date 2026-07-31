@@ -79,7 +79,10 @@ _storeys = (
            default_ceiling_height=ft(9)),
     Storey(uid="STMAINAAAA", tag="main", elevation=ft(0),
            default_ceiling_height=ft(9)),
-    Storey(uid="STGARAAAAA", tag="garage", elevation=ft(1, 10),
+    # The garage storey *is* the stem top: its wood walls bear there. The slab it floors
+    # stays down at grade, one GARAGE_STEM_REVEAL below — which is why the overhead door
+    # carries a negative sill (plan/storeys/garage.py).
+    Storey(uid="STGARAAAAA", tag="garage", elevation=garage.GARAGE_STEM_REVEAL,
            default_ceiling_height=ft(8)),
     # Platform framing: 9' stud wall plus the nominal 12" floor system above it.
     Storey(uid="STSECDAAAA", tag="second", elevation=ft(10),

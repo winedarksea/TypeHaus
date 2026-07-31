@@ -31,6 +31,7 @@ from typehaus import (
 # authored on. The stem must sit under them and the slab inside them, so both derive from
 # there rather than repeating the literal.
 from plan.storeys.garage import (
+    GARAGE_STEM_REVEAL,
     GARAGE_Y_NORTH,
     GARAGE_Y_SOUTH,
     OVERHEAD_DOOR_OFFSET,
@@ -66,14 +67,17 @@ HOUSE_FOOTING_BEDDING = [
 
 # --- garage ICF stem (basement storey; absolute elevations) -----------------------
 _FROST = 42.0 / 12.0  # frost depth below grade
-_STEM_TOP = 22.0 / 12.0  # exposed above grade
-# A vehicle can't climb a 22" ICF stem, so the east stem wall gaps at the overhead door:
-# the two flanking segments keep the full 22" reveal, and the segment behind the door drops
-# to a low apron — assumed 4" here (a typical slab-edge/curb reveal) pending your call on
-# the real number; the wood door framing above still bears at the uniform 22" datum like the
-# rest of W-G-E (splitting *that* wall would break the ridge closure it carries — see
-# plan/storeys/garage.py), so the apron is a foundation/flatwork detail, not a framing one.
-_APRON_TOP = 4.0 / 12.0
+# Exposed above grade, and the garage storey datum besides — one value, authored next to
+# the wall lines it belongs with (plan/storeys/garage.py).
+_STEM_TOP = GARAGE_STEM_REVEAL
+# A car can't climb a 22" ICF stem, so the east stem gaps at the overhead door: the two
+# flanking segments keep the full reveal, and the segment behind the door becomes a grade
+# beam topping out flush with the slab at 0'-0", leaving flat concrete from driveway to
+# slab with no curb across the opening. Nothing above changes — W-G-E still bears on the
+# uniform stem-top datum for its whole length (splitting *that* wall would break the ridge
+# closure it carries), so this is a foundation detail; the *door* is what reaches down to
+# the slab, via the negative sill_height in plan/storeys/garage.py.
+_GRADE_BEAM_TOP = ft(0)
 
 GARAGE_STEM_NODES = [
     Node(uid="CGF001AAAA", tag="N-GF-SW", position=pt(ft(0), GARAGE_Y_SOUTH)),
@@ -85,10 +89,10 @@ GARAGE_STEM_NODES = [
          position=pt(ft(24), GARAGE_Y_SOUTH + OVERHEAD_DOOR_OFFSET + OVERHEAD_DOOR_WIDTH)),
 ]
 
-_STEM = dict(assembly="GARAGE_ICF_8", top_elevation=ft(_STEM_TOP),
+_STEM = dict(assembly="GARAGE_ICF_8", top_elevation=_STEM_TOP,
              bottom_elevation=ft(-_FROST))
-_APRON = dict(assembly="GARAGE_ICF_8", top_elevation=ft(_APRON_TOP),
-              bottom_elevation=ft(-_FROST))
+_GRADE_BEAM = dict(assembly="GARAGE_ICF_8", top_elevation=_GRADE_BEAM_TOP,
+                   bottom_elevation=ft(-_FROST))
 
 GARAGE_STEM_WALLS = [
     FoundationWall(uid="CGF101AAAA", tag="W-GF-S", start_node="N-GF-SW",
@@ -96,7 +100,7 @@ GARAGE_STEM_WALLS = [
     FoundationWall(uid="CGF102AAAA", tag="W-GF-E1", start_node="N-GF-SE",
                    end_node="N-GF-E-DRS", **_STEM),
     FoundationWall(uid="CGF105AAAA", tag="W-GF-E-DR", start_node="N-GF-E-DRS",
-                   end_node="N-GF-E-DRN", **_APRON),
+                   end_node="N-GF-E-DRN", **_GRADE_BEAM),
     FoundationWall(uid="CGF106AAAA", tag="W-GF-E2", start_node="N-GF-E-DRN",
                    end_node="N-GF-NE", **_STEM),
     FoundationWall(uid="CGF103AAAA", tag="W-GF-N", start_node="N-GF-NE",
@@ -107,8 +111,8 @@ GARAGE_STEM_WALLS = [
 
 # Not a comprehension any more: the east wall split into three, and giving each a fresh
 # uid would reassign CGF203/204AAAA (footings that didn't conceptually change) to the new
-# door-apron pieces instead. S/N/W and the E1 remnant of the old single E wall keep their
-# original uids; only the apron and the far side of the door split are genuinely new.
+# door pieces instead. S/N/W and the E1 remnant of the old single E wall keep their
+# original uids; only the grade beam and the far side of the door split are genuinely new.
 GARAGE_FOOTINGS = [
     Footing(uid="CGF201AAAA", tag="FT-GF-S", under="W-GF-S", width=inch(20), depth=inch(8)),
     Footing(uid="CGF202AAAA", tag="FT-GF-E1", under="W-GF-E1", width=inch(20), depth=inch(8)),

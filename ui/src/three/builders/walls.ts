@@ -292,16 +292,23 @@ export function createSmoothArchedWallLayerGeometry(
   for (const opening of openings) {
     const start = Math.max(minAlong, opening.center_along_m - opening.width_m / 2);
     const end = Math.min(maxAlong, opening.center_along_m + opening.width_m / 2);
-    const bottom = Math.max(wall.z0_m, wall.z0_m + opening.sill_m);
+    // The threshold is where the opening's height is measured *from*, and it can sit below
+    // the wall that hosts it — the garage overhead door lands on the slab, one stem reveal
+    // under W-G-E's base. Only the cut is clamped to the wall body; measuring the head off
+    // the clamped value instead would make the hole as much too tall as the sill is
+    // negative, and disagree with the wall solids (resolve/geometry_walls.py, and
+    // wallLayerPieces below, which both measure from the threshold).
+    const threshold = wall.z0_m + opening.sill_m;
+    const bottom = Math.max(wall.z0_m, threshold);
     if (end - start <= 1e-9 || bottom >= wall.z1_m - 1e-9) continue;
     const hole = new THREE.Path();
     const archRise = opening.arch_rise_m ?? 0;
     if (archRise <= 1e-9) {
-      const top = Math.min(wall.z1_m, bottom + opening.height_m);
+      const top = Math.min(wall.z1_m, threshold + opening.height_m);
       hole.moveTo(start, bottom); hole.lineTo(start, top); hole.lineTo(end, top); hole.lineTo(end, bottom);
     } else {
       const radiusM = opening.width_m / 2;
-      const springlineM = bottom + Math.max(0, opening.height_m - archRise);
+      const springlineM = threshold + Math.max(0, opening.height_m - archRise);
       const segmentCount = archSoffitSegmentCount(radiusM);
       hole.moveTo(start, bottom);
       hole.lineTo(start, Math.min(wall.z1_m, springlineM));

@@ -37,6 +37,12 @@ from typehaus import (
 GARAGE_Y_SOUTH = ft(41)
 GARAGE_Y_NORTH = ft(65)
 
+# How far the ICF stem stands above grade — which is the same number as this storey's
+# elevation, because the wood walls sit on the stem top. Published so the storey table
+# (plan/manifest.py), the stem itself (params/foundations.py) and the overhead door's
+# drop to grade below all read one value instead of three copies of 22".
+GARAGE_STEM_REVEAL = ft(1, 10)
+
 NODES = [
     Node(uid="CGN001AAAA", tag="N-G-SW", position=pt(ft(0), GARAGE_Y_SOUTH)),
     Node(uid="CGN002AAAA", tag="N-G-SE", position=pt(ft(24), GARAGE_Y_SOUTH)),
@@ -61,16 +67,29 @@ WALLS = [
 
 # Published so params/foundations.py can gap the ICF stem under the overhead door instead
 # of repeating this offset/width: there is no 22"-above-grade stem wall under a vehicle
-# door (it would be a curb the car has to climb), so the stem drops to a low apron there.
+# door (it would be a curb the car has to climb), so the stem drops to a grade beam there.
 OVERHEAD_DOOR_OFFSET = ft(4)
 OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 
 OPENINGS = [
     # The 16' opening is past the prescriptive header table, so the engineered beam
     # is named on the instance: a 2-ply 14" LVL across the overhead door.
+    #
+    # A car drives in off the slab, so this door's threshold is the slab at grade — not the
+    # base of the wall hosting it. Every other opening in the house sits on its host wall's
+    # own floor, but W-G-E starts at the stem top, one GARAGE_STEM_REVEAL above the slab
+    # inside it, so the door reaches *down* past its host: the one negative sill_height in
+    # this plan, and the exact negation of that reveal. The dialect bans arithmetic here, so
+    # the two cannot be spelled as one expression — the tie is held instead by a contract
+    # test asserting the resolved threshold lands on SL-G-FLOOR's top
+    # (test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade).
+    # The head follows the threshold down to 7'-0" above the slab (a 7' door is 7' of clear
+    # opening wherever it sits), leaving the LVL and its cripples in the wall's top 2'-10".
+    # params/foundations.py gaps the stem to a grade beam under exactly this opening, so
+    # there is no curb left across the threshold for the car to climb.
     Door(uid="CGD201AAAA", tag="D-G-OVERHEAD", host="W-G-E",
          type_ref="DT-EXT-OVERHEAD192", position=from_node("N-G-SE", OVERHEAD_DOOR_OFFSET),
-         header_spec='2-ply 14" LVL'),
+         sill_height=ft(-1, -10), header_spec='2-ply 14" LVL'),
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING36",
          position=from_node("N-G-SW", ft(5))),
     # This 8' wall (vs. the house's 10') is why the whole 27" family is 36" tall: a
