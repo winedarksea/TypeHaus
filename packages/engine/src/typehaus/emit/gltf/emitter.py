@@ -26,9 +26,8 @@ from typehaus.emit.gltf.palette import _FALLBACK, _color, _solid_color
 from typehaus.emit.gltf.roofs import _add_roof
 from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.emit.gltf.walls import _add_wall_body
+from typehaus.emit.room_floor import room_floor_elevation
 from typehaus.resolve.model import ResolvedModel
-
-from shapely.geometry import Polygon
 
 # Re-exported for callers that reach past the entry point (tests pinning palette parity, the
 # arch-soffit tessellation, the wall/roof builders). Import them from their own modules in new
@@ -110,7 +109,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
 
     for room in sorted(model.rooms, key=lambda r: r.uid):
         if room.clear_face:
-            storey_z = _room_z(model, room)
+            storey_z = room_floor_elevation(model, room)
             mb = _MeshBuilder()
             mb.add_prism(room.clear_face, storey_z, storey_z + 0.02,
                          _room_floor_color(model, room.floor_finish))
@@ -196,44 +195,6 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         mb.add_prism([(0, 0), (0.001, 0), (0.001, 0.001)], 0.0, 0.001, _FALLBACK)
         scene.add_object(mb, trade="earth")
     return scene.build()
-
-
-# A slab filed on a different storey than the room it floors (the garage: its slab is
-# poured at grade and filed on "main", while its wood walls — and so the room — sit on the
-# "garage" storey, 22" up on the ICF stem) is still a low step-up, not a full storey.
-# Bounding the match to this tolerance lets it catch that step-up while refusing to let,
-# say, a main-storey room fall through to the basement slab a full storey below — every
-# storey in this house is taller than 4' between finish floors, so nothing legitimate is lost.
-_SLAB_MATCH_TOLERANCE_M = 1.2192  # 4 ft
-
-
-def _room_z(model: ResolvedModel, room) -> float:
-    """The elevation a room's floor mesh sits at.
-
-    Usually the room's storey walls bottom out exactly where its floor structure does, so
-    the wall base is a fine default. Where a room's actual floor slab is filed on a
-    different storey than the room (see ``_SLAB_MATCH_TOLERANCE_M``), prefer the nearest
-    slab under the room's footprint instead.
-    """
-    wall_z = 0.0
-    for w in model.walls:
-        if w.storey == room.storey:
-            wall_z = w.z0_m
-            break
-    if not room.clear_face:
-        return wall_z
-    centroid = Polygon(room.clear_face).centroid
-    best = None
-    for solid in model.solids:
-        if solid.category != "slab":
-            continue
-        if abs(solid.z1_m - wall_z) >= _SLAB_MATCH_TOLERANCE_M:
-            continue
-        if not Polygon(solid.outline).contains(centroid):
-            continue
-        if best is None or abs(solid.z1_m - wall_z) < abs(best.z1_m - wall_z):
-            best = solid
-    return best.z1_m if best is not None else wall_z
 
 
 def _ir_part(model: ResolvedModel, uid: str, key: str):

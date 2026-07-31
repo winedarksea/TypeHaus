@@ -60,11 +60,23 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   — it breaks two studs, so a stud-line centre breaks three and fails the module
   check). Resize windows to fit the grid, not vice versa. One type per width family —
   WT-1424, WT-2736, WT-3036 (north gables/hall), WT-4248 (the south-glazing size,
-  head at 6'-8"), WT-3660 (basement concrete only) — each family sharing the one
-  height that fits its most constrained wall. The one exception: WT-4242 is the 42"
-  family's attic-gable variant (the 4:12 rake can't clear WT-4248's header), 6"
-  shorter, attic south gables only — all three attic south windows share its 2'-4"
-  sill / 5'-10" head line.
+  head at 6'-8") — each family sharing the one height that fits its most constrained
+  wall. Four sizes carry the whole house.
+- Facade rules (2026-07-30 pass). Windows line up or they are not there:
+  - **Columns.** The south face stacks four columns clean through main, second and
+    attic (x 3'-4", 8'-8", 28'-0", 33'-4" — the attic's east pair sits 4" off because
+    W-A-S4's grid starts at N-A-V1, not at x=18'). The north face stacks one three-storey
+    column at x=28'-0" (WIN-M-KITCH / WIN-S-HALL-N / WIN-A-N2).
+  - **Rows.** Where a column is impossible, the storey's own rhythm wins instead: the
+    east face runs an exact 9'-0" beat on the second storey (WIN-S-STUDY3 leaves its
+    survey station for this) and 8'-0"/7'-4" on the main, and stacking between them is
+    deliberately abandoned. The kitchen stretch north of WIN-M-DIN-E2 stays blank.
+  - **Head lines.** The west face puts every main and second head on one 6'-0" line —
+    27" units at a 3'-0" sill, 14" units at 4'-0". The south face shares a 2'-8" sill.
+  - **Gables** read symmetric about the ridge before they answer to anything below:
+    that is why WIN-A-N1 stays at 7'-4" rather than stacking on WIN-S-STAIR-N.
+  - WT-1424 does the work wherever a bigger unit will not fit — under the 4:12 rake and
+    in the 5' knee walls, where its 2'-0" height is the only one that clears the plate.
 - Exterior opening finish: every window in a clad wall ships a charcoal picture-frame
   casing (resolve/geometry_openings.py `exterior_trim`), and every opening in a clad
   wall — doors included — draws its frame/mullion/stile boxes in the same charcoal.

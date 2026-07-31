@@ -53,15 +53,17 @@ DOOR_TYPES = [
     DoorType(tag="DT-EXT-OVERHEAD192", width=ft(16), height=ft(7), exterior=True,
              operation="overhead"),
 ]
-# One size per width family: every placement of a family shares one height, chosen as
-# the tallest that still fits the family's most constrained wall anywhere in the house.
-# The one exception is the 42" family (WT-4248/WT-4242): the attic's raked gables can't
-# take the 48" height at any usable sill, so the attic variant gives up 6" rather than
-# dragging every south window down to what the rake allows.
+# One size per width family, no exceptions: every placement of a family shares one
+# height, chosen as the tallest that still fits the family's most constrained wall
+# anywhere in the house. The 42" family used to carry a shorter WT-4242 twin for the
+# attic's raked gables; the 2026-07-30 facade pass retired it by giving those gables
+# WT-1424 instead, which is what the rake could always actually take.
 WINDOW_TYPES = [
-    # 14" RO — falls between studs on the 16" grid without breaking a stud line. 24"
-    # tall because the 5' attic knee wall (WIN-A-W-SM) needs room for the modeled
-    # header above the opening below its top plate.
+    # 14" RO — falls between studs on the 16" grid without breaking a stud line, so it
+    # frames with no header, no jacks and no kings. 24" tall because the 5' attic knee
+    # walls (WIN-A-W-S/W-N, WIN-A-E-S/E-N) have only that much room under the top plate
+    # — the same 24" is what lets this size duck under the 4:12 south rake as well.
+    # That combination makes it the house's fallback wherever a bigger unit will not go.
     WindowType(tag="WT-1424", width=inch(14), height=ft(2), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="awning"),
     # 27" RO — bearing-wall size (N*2-9): one stud broken, jacks added. 36" tall
@@ -81,12 +83,9 @@ WINDOW_TYPES = [
     # point of the enlargement. Non-bearing walls only (preferences [framing]).
     WindowType(tag="WT-4248", width=inch(42), height=ft(4), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
-    # The attic-gable member of the 42" family — the documented exception to
-    # one-height-per-family (see the preamble above): the 4:12 rake can't clear
-    # WT-4248's header at a usable sill, so the attic keeps the width, loses 6".
-    WindowType(tag="WT-4242", width=inch(42), height=ft(3, 6), u_factor=u_us(0.25),
-               shgc=0.35, vt=0.5, operation="casement"),
     # 36" RO — concrete basement wall only (no stud module to respect down there).
+    # Catalog-only since 2026-07-30: WIN-B-SAUNA was its last instance and took WT-1424.
+    # Kept as an available product for the next basement opening rather than deleted.
     WindowType(tag="WT-3660", width=ft(3), height=ft(5), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # Same unit, same glass, no sash: a picture window for the openings that are there for

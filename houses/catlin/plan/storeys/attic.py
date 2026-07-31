@@ -148,7 +148,8 @@ OPENINGS = [
     Door(uid="CAD204AAAA", tag="D-A-VEST", host="W-A-VE", type_ref="DT-INT-SWING30",
          position=from_node("N-A-V1", ft(0, 11.25))),                 # y 2'-2 1/4"
     # South gable: four WT-1424 on the lower storeys' own window columns (2026-07-30
-    # facade pass). The gable used to carry two/three WT-4242s that capped no column at
+    # facade pass). The gable used to carry two/three WT-4242s — a type this change
+    # retired from the catalog entirely — that capped no column at
     # all — the 42" RO is simply too wide to reach the outer columns under a 4:12 rake
     # (at x 3'-4" its west jamb stands where the wall is 5'-6" and the header wants
     # 6'-2"), and at the 8'-8" column it would run 5" past W-A-S1's end at x=10'.

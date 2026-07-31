@@ -428,7 +428,10 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
 // (constants _WINDOW_TRIM_FACE_WIDTH_M / _WINDOW_TRIM_PROUD_DEPTH_M): a picture-frame of
 // flat boards proud of the cladding plane, windows in clad walls only. The colour rides
 // members.ts CATEGORY_COLOR ("window_trim"), keeping recolors a palette-only edit.
-const WINDOW_TRIM_FACE_WIDTH_M = 0.064;
+// 1 1/4" face: the visible width of standard J-channel/flat trim. Was 0.064 (2 1/2")
+// until 2026-07-30 — too heavy in 3D, since casing and window frame are both charcoal
+// here and read as one band.
+const WINDOW_TRIM_FACE_WIDTH_M = 0.032;
 const WINDOW_TRIM_PROUD_DEPTH_M = 0.019;
 
 // Mirrors resolve/geometry_openings.py::_exterior_face — the exterior cladding plane as a

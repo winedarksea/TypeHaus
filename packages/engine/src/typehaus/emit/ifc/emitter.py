@@ -21,6 +21,7 @@ from typehaus.emit.ifc import lowlevel as ll
 from typehaus.emit.ifc.electrical import (emit_conduits, emit_light_runs,
                                           emit_solar_panels)
 from typehaus.emit.ifc.roof import emit_roof, member_class, member_representation
+from typehaus.emit.room_floor import room_floor_elevation
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section
@@ -84,7 +85,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
         _emit_brace(f, body, brace, storeys, project_uuid)
 
     for room in sorted(model.rooms, key=lambda r: r.uid):
-        _emit_space(f, body, room, storeys, project_uuid)
+        _emit_space(f, body, room, storeys, project_uuid, model)
 
     _emit_furniture(f, body, model, storeys, project_uuid)
     _emit_resolved_placeables(f, body, model, storeys, project_uuid)
@@ -467,11 +468,18 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
 
 
 def _emit_space(f: Any, body: Any, room: Any, storeys: dict[str, Any],
-                project_uuid: Any) -> None:
+                project_uuid: Any, model: ResolvedModel) -> None:
     space = ll.create_entity(f, "IfcSpace", name=room.tag)
     space.GlobalId = derive_guid(project_uuid, room.uid)
     if room.clear_face:
-        rep = ll.add_prism_from_profile(f, body, room.clear_face, 2.7, 0.0)
+        # Geometry is authored in the world frame (see ``ensure_local_placement``), so the
+        # space's floor has to be given its real elevation here — it is not automatically
+        # inherited from the containing IfcBuildingStorey's placement. Matches the glTF
+        # viewer's floor mesh (``emit/gltf/emitter.py``): both read ``room_floor_elevation``
+        # so a room whose slab is filed on a different storey than the room (the garage)
+        # doesn't disagree between the two exports.
+        rep = ll.add_prism_from_profile(f, body, room.clear_face, 2.7,
+                                        room_floor_elevation(model, room))
         _assign_representation(f, space, rep)
     ll.ensure_pset(f, space, PSET_SOURCE, {"uid": room.uid, "tag": room.tag})
     ll.ensure_pset(f, space, "Pset_SpaceCommon", {

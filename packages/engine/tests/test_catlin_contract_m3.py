@@ -426,17 +426,18 @@ def test_raked_gable_king_studs_match_roof_plane_at_own_station(catlin_model):
     """WP0: king-stud tops on a raked wall follow the roof line at their own plan
     position. A prior bug reused the last regular stud's leftover top for every
     king on the wall, regardless of the opening's actual station."""
-    # The two raked south gables that carry glazing: W-A-S1 (west, WIN-A-DEN-S) and
-    # W-A-S4 (east of the stair-vestibule screen, WIN-A-STUDY-S2). Both are swept
-    # because the 2026-07-30 facade pass cut the gables from three windows to two —
-    # one per wall — so no single wall carries a pair any more. A window's own two
-    # kings still sit 42"+ apart on a raked wall, which is all this regression needs.
-    # (W-A-S3, west of the screen, is a blank 4'-4" stub and carries none.)
+    # The two raked north gables: W-A-N1 (WIN-A-N2) and W-A-N2 (WIN-A-N1), each a 30" RO
+    # that breaks a stud and so pulls in a header, jacks and kings. The south gables used
+    # to be the subject here, but the 2026-07-30 facade pass moved them to the 14" family
+    # — a 14" RO fits a stud bay unbroken and frames with no header and no kings at all,
+    # leaving nothing on those walls for this rule to bite on. The north gables rake
+    # 6'-0" over their 18', so a single window's two kings land at clearly different
+    # heights, which is all this regression needs.
     plate_h = inch(1.5).meters
     top_plates = 2  # CATLIN_EXT_2X6 double top plate, not advanced framing
     checked = 0
 
-    for tag in ("W-A-S1", "W-A-S4"):
+    for tag in ("W-A-N1", "W-A-N2"):
         wall = next(w for w in catlin_model.walls if w.tag == tag)
         assert wall.top_z0_m is not None and wall.top_z1_m is not None
         (x0, y0), (x1, y1) = wall.axis
@@ -763,14 +764,22 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
 
 def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     stem = [w for w in catlin_model.walls if w.tag.startswith("W-GF-")]
-    assert len(stem) == 4
+    # 6, not 4: the east stem gaps at the overhead door (W-GF-E1/W-GF-E-DR/W-GF-E2) rather
+    # than running one continuous 22" band under a 16' vehicle door.
+    assert len(stem) == 6
     ys = [p[1] for w in stem for p in w.axis]
     assert min(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT).meters)
     assert max(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT + GARAGE_SIZE_FT).meters)
-    # Stem runs frost depth (-42") to +22" — absolute elevations, walkout-style.
+    # Stem runs frost depth (-42") to +22" — absolute elevations, walkout-style — except the
+    # overhead-door apron (W-GF-E-DR), which drops to a low reveal instead of the full 22"
+    # so the stem isn't a curb the car has to climb.
+    apron = next(w for w in stem if w.tag == "W-GF-E-DR")
     for wall in stem:
         assert wall.z0_m == pytest.approx(-inch(42.0).meters)
-        assert wall.z1_m == pytest.approx(inch(22.0).meters)
+        if wall is apron:
+            assert wall.z1_m < inch(22.0).meters
+        else:
+            assert wall.z1_m == pytest.approx(inch(22.0).meters)
     # Garage roof: ridge E-W (rotated 90° vs the house), 16" overhangs.
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
     assert roof.ridge_direction == "x"
@@ -781,14 +790,24 @@ def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
 
 def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
     """Wood members must follow studs rather than the exterior ZIP-R datum axis."""
-    stems = {wall.tag.removeprefix("W-GF-"): wall for wall in catlin_model.walls
-             if wall.tag.startswith("W-GF-")}
+    # The east side's stem splits into 3 segments at the overhead door (W-GF-E1/
+    # W-GF-E-DR/W-GF-E2), so it no longer matches the (unsplit) wood wall 1:1 — group by
+    # side and check the wood wall's endpoints are among the group's stem corners instead.
+    stem_groups: dict[str, list] = {}
+    for wall in catlin_model.walls:
+        if not wall.tag.startswith("W-GF-"):
+            continue
+        side = wall.tag.removeprefix("W-GF-").split("-")[0].rstrip("12")
+        stem_groups.setdefault(side, []).append(wall)
     garage_walls = [wall for wall in catlin_model.walls if wall.tag.startswith("W-G-")]
     assert len(garage_walls) == 4
 
     for wall in garage_walls:
-        stem = stems[wall.tag.removeprefix("W-G-")]
-        assert wall.axis == stem.axis  # both systems share the intended garage footprint
+        group = stem_groups[wall.tag.removeprefix("W-G-")]
+        stem_points = [p for stem in group for p in stem.axis]
+        for point in wall.axis:  # both systems share the intended garage footprint
+            assert any(point == pytest.approx(stem_point, abs=1e-9)
+                       for stem_point in stem_points)
         structure = next(layer for layer in wall.layers if layer.function == "structure")
         start, end = wall.axis
         dx, dy = end[0] - start[0], end[1] - start[1]

@@ -227,7 +227,11 @@ export const useStore = create<StoreState>((set, get) => ({
         model,
         loading: false,
         conflict: null,
-        activeStorey: prev.activeStorey ?? model.storeys[0]?.tag ?? null,
+        activeStorey:
+          prev.activeStorey ??
+          model.storeys.find((s) => s.tag === "main")?.tag ??
+          model.storeys[0]?.tag ??
+          null,
       });
     } catch (err) {
       set({ loading: false, error: (err as Error).message });

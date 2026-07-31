@@ -59,11 +59,17 @@ WALLS = [
          structural_role=StructuralRole.NONBEARING),
 ]
 
+# Published so params/foundations.py can gap the ICF stem under the overhead door instead
+# of repeating this offset/width: there is no 22"-above-grade stem wall under a vehicle
+# door (it would be a curb the car has to climb), so the stem drops to a low apron there.
+OVERHEAD_DOOR_OFFSET = ft(4)
+OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
+
 OPENINGS = [
     # The 16' opening is past the prescriptive header table, so the engineered beam
     # is named on the instance: a 2-ply 14" LVL across the overhead door.
     Door(uid="CGD201AAAA", tag="D-G-OVERHEAD", host="W-G-E",
-         type_ref="DT-EXT-OVERHEAD192", position=from_node("N-G-SE", ft(4)),
+         type_ref="DT-EXT-OVERHEAD192", position=from_node("N-G-SE", OVERHEAD_DOOR_OFFSET),
          header_spec='2-ply 14" LVL'),
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING36",
          position=from_node("N-G-SW", ft(5))),
