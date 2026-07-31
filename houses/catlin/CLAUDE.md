@@ -72,8 +72,10 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   — it breaks two studs, so a stud-line centre breaks three and fails the module
   check). Resize windows to fit the grid, not vice versa. One type per width family —
   WT-1424, WT-2736, WT-3036 (north gables/hall), WT-4248 (the south-glazing size,
-  head at 6'-8") — each family sharing the one height that fits its most constrained
-  wall. Four sizes carry the whole house.
+  head at 6'-8"), WT-3276 (the attic gable's tilt-turn juliet pair, head at 9'-0") —
+  each family sharing the one height that fits its most constrained wall. Five sizes
+  carry the whole house; the 32" family, like the 42", breaks two studs and so centres
+  on a bay centre.
 - Facade rules (2026-07-30 pass). Windows line up or they are not there:
   - **Columns.** The south face stacks four columns clean through main, second and
     attic (x 3'-4", 8'-8", 28'-0", 33'-4" — the attic's east pair sits 4" off because

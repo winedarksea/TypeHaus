@@ -20,7 +20,8 @@ export type WindowOperation =
   | "casement"
   | "double_hung"
   | "slider"
-  | "awning";
+  | "awning"
+  | "tilt_turn";
 
 export interface Provenance {
   file: string;

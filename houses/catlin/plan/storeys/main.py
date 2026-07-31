@@ -58,6 +58,14 @@ DOOR_TYPES = [
 # anywhere in the house. The 42" family used to carry a shorter WT-4242 twin for the
 # attic's raked gables; the 2026-07-30 facade pass retired it by giving those gables
 # WT-1424 instead, which is what the rake could always actually take.
+#
+# The 32" family (WT-3276) is a deliberate fifth family, added 2026-07-31 for the attic's
+# south juliet pair, and it is the same shape of argument that retired WT-4242 — one
+# height per family, so a unit the committed heights cannot express needs its own family
+# rather than a second height on an existing one. No committed height gives the door-like
+# 1:2.4 proportion the pair is for (the 30" family is 36" tall, less than half of it), and
+# a tilt-turn is a different hardware line from the casements anyway, so the two would not
+# have been one product even at a shared width.
 WINDOW_TYPES = [
     # 14" RO — falls between studs on the 16" grid without breaking a stud line, so it
     # frames with no header, no jacks and no kings. 24" tall because the 5' attic knee
@@ -76,6 +84,13 @@ WINDOW_TYPES = [
     # enlargement this is the north-side size (attic gable pair, hall).
     WindowType(tag="WT-3036", width=inch(30), height=ft(3), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
+    # 32" RO — the attic gable's juliet size (2026-07-31). Two studs broken like the 42",
+    # so its centre sits on a bay centre, not a stud line; non-bearing walls only. 76" tall
+    # is the point of it: with the storey-wide 2'-8" south sill the head lands at 9'-0",
+    # under the peak of the south gable where the wall is nearly 12'. Tilt-turn because the
+    # pair is meant to swing inward like a door leaf onto the view.
+    WindowType(tag="WT-3276", width=inch(32), height=ft(6, 4), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="tilt_turn"),
     # 42" RO — the enlarged south-glazing size (2026-07-30): breaks two studs, which
     # means the RO centre sits on a bay centre (8"+16n from the host wall's start),
     # not a stud line. 48" tall with the shared 2'-8" sill puts the head at 6'-8" —

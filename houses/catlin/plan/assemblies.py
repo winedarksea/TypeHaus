@@ -608,15 +608,16 @@ MATERIALS = [
     # first, so an unauthored "polycarbonate-multiwall" renders as bright-yellow rigid foam
     # in both the GLB and the viewer. The alpha byte is what makes it read as glazing rather
     # than a solid panel (emit/gltf/scene.py switches to alphaMode BLEND below 1.0).
-    # `perm_rating` is deliberately UNSET: solid polycarbonate is very nearly a vapour
-    # barrier, but the published ASTM E96 figures are for solid sheet at a stated thickness,
-    # not for a five-wall extrusion with sealed flutes, and inventing one would put a made-up
-    # number into the Glaser profile. Leaving it unset makes that report UNKNOWN, which is
-    # the true answer — the same call `lsl` and `fiber-cement` make in library/materials.py.
+    # EN 16153's default PC-sheet permeability is 3.8e-5 mg/(m·h·Pa). Converted to US
+    # perm-inch and divided across this 16 mm sheet, that is about 0.012 perms. Store the
+    # result as product permeance: the source is for multiwall sheet, and dividing it again
+    # by nominal thickness would understate resistance. This is Class I (<0.1 perm), which
+    # is the expected lower-than-Class-II result for a relatively thick structural panel.
     Material(tag="polycarbonate-multiwall", name="Multiwall polycarbonate glazing (16mm)",
-             r_per_inch=1.54, density=1200.0, hatch="glass", color="#cfe3e8b0",
+             r_per_inch=1.54, density=1200.0, vapor_permeance_perms=0.012,
+             hatch="glass", color="#cfe3e8b0",
              finish="polycarbonate",
-             source="breezeway enclosure — 16mm 5-wall sheet, R-2.5/sheet (manufacturer)"),
+             source="SABIC LEXAN THERMOCLEAR multiwall declaration EN 16153:2013+A1:2015 https://ff.sabic.eu/uploads/resources/DoP%20LT2UV329X38%20-%202023.pdf"),
     # Mill-finish extruded aluminium: the U/H/F channels, the glazing bars, and the panel
     # fasteners' washers. "alum" matches no needle in the family inference at all, so this
     # colour is authored for the same reason the polycarbonate's is.

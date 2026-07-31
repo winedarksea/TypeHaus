@@ -70,11 +70,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   and PT-SG-COL plus the six balcony pillars bear on non-Pad chains (grouted CMU / bell
   footing) so `deck_footing_size` can't resolve. (`deck_beam_span`'s two genuine R507.5(1)
   overspans were closed 2026-07-31 by going engineered — see "Accepted, by decision".)
-- **`lsl` and `fiber-cement` have no sourced permeance** — deliberately UNKNOWN rather than
-  invented. (The two library starter walls no longer need it for a verdict: their rainscreen
-  is a real FURRING layer now and the Glaser walk truncates at the vented cavity.)
-- **Polycarbonate has no authored vapour permeance** (five-wall extrusion ≠ solid-sheet ASTM
-  E96 figures). Needs a sourced figure.
 - **KneeBrace paint is authored but not rendered.** `KneeBrace.assembly="POST_WHITE_PAINT"`
   is in the schema and the catlin plan; the diagonal resolves to a `FramedMember`, which has
   no finish slot — rendering the paint needs an IR + emitter change. (The APVKB bands are

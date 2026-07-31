@@ -105,6 +105,11 @@ class WindowOperation(str, Enum):  # noqa: UP042 — StrEnum needs 3.11; the too
     ``FIXED`` is a picture window — no sash, no hardware, and no ventilation or egress
     credit — which is why it must be a distinct type from an operable unit of the same size
     rather than a trim note on one.
+
+    ``TILT_TURN`` is the European dual-axis unit: one sash on hardware that swings it
+    bottom-hung for trickle ventilation or side-hung for a full door-like leaf. The second
+    mode is what separates it from ``AWNING``, which is bottom-hung only — a tilt-turn opens
+    the *entire* rough opening, so it carries full ventilation and egress credit.
     """
 
     FIXED = "fixed"
@@ -112,6 +117,7 @@ class WindowOperation(str, Enum):  # noqa: UP042 — StrEnum needs 3.11; the too
     DOUBLE_HUNG = "double_hung"
     SLIDER = "slider"
     AWNING = "awning"
+    TILT_TURN = "tilt_turn"
 
 
 class AlarmKind(Enum):

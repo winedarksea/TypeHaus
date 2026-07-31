@@ -1,7 +1,7 @@
 """``WindowOperation`` is a closed vocabulary, and the catlin catalog respects it.
 
 Windows carried a bare ``str`` operation with the vocabulary written out in a comment, so a
-typo ("cassement") or a plausible-but-unmodeled value ("tilt_turn") authored in a house's
+typo ("cassement") or a plausible-but-unmodeled value ("jalousie") authored in a house's
 plan reached the plan symbol and the schedule unchallenged and simply drew nothing. Typing
 the field turns that into a load error at authoring time — this test pins the guarantee, and
 pins the split between a picture unit and an operable one of identical size, which is the
@@ -62,4 +62,13 @@ def test_window_operation_coerces_authored_strings_and_rejects_unmodeled_ones():
     # it claims neither ventilation nor egress.
     assert WindowType(tag="WT-TEST", width=ft(3), height=ft(5)).operation is WindowOperation.FIXED
     with pytest.raises(Exception):
-        WindowType(tag="WT-TEST", width=ft(3), height=ft(5), operation="tilt_turn")
+        WindowType(tag="WT-TEST", width=ft(3), height=ft(5), operation="jalousie")
+
+
+def test_the_attic_juliet_pair_is_a_tilt_turn_and_not_an_awning(catlin_plan):
+    by_tag = {wt.tag: wt for wt in catlin_plan.library.window_types}
+    juliet = by_tag["WT-3276"]
+    # The pair's whole premise is a sash that swings inward like a door leaf; an awning
+    # (bottom-hung only) would open the head and nothing else, which is not the same window.
+    assert juliet.operation is WindowOperation.TILT_TURN
+    assert juliet.operation == "tilt_turn"

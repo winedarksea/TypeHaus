@@ -108,8 +108,9 @@ WALLS = [
          assembly="CATLIN_INT_2X6_BRG", top=ToRoof(roof_ref="RF-HOUSE"),
          structural_role=StructuralRole.BEARING, stacks_on="W-S-C4B"),
     # South rooms: den (west of center) + study (east of center). Framed to the roof
-    # deck like the other attic partitions; the den's ft(7,6) dropped ceiling (see its
-    # Room.ceiling below) is a finish elevation for headroom checks, not a wall height.
+    # deck like the other attic partitions, and since 2026-07-31 the den follows the roof
+    # too (see its Room.ceiling below) — it lost its 7'-6" dropped ceiling to the south
+    # gable's juliet pair, whose 9'-0" head the drop would have buried.
     #
     # WHY THE DEN MOVED WEST INSTEAD OF ONTO ITS SOURCE FOOTPRINT (see the structural-ridge
     # note above): the source draws the Den at x 13'-9"..22'-4", straddling the bearing line,
@@ -174,6 +175,31 @@ OPENINGS = [
            position=from_node("N-A-V1", ft(5, 5)), sill_height=ft(2, 8)),   # x 28'-4"
     Window(uid="CAX307AAAA", tag="WIN-A-S4", host="W-A-S4", type_ref="WT-1424",
            position=from_node("N-A-V1", ft(10, 9)), sill_height=ft(2, 8)),  # x 33'-8"
+    # ...and the middle of the same gable, which those four leave blank: a pair of 32x76
+    # tilt-turns straddling the ridge, reading together like a juliet balcony without being
+    # one. No door, no guard, no walking surface — the 2'-8" sill (the storey-wide south
+    # line, held here on purpose) clears R312.2's 24" fall-protection trigger by 8", so the
+    # rule never fires. The head at 9'-0" is 1'-10" under the roof underside at each
+    # window's outer jamb, room for the header and the raked double top plate, and short of
+    # the silent shortening in resolve/geometry_openings.py.
+    #
+    # WHY BAY CENTRES AND NOT STUD LINES: a 32" RO breaks two studs on a bay centre and
+    # three on a stud line, so bay centres are the cheaper frame — the same rule WT-4248
+    # follows. x 16'-0" is 72" along W-A-S2 (from N-A-S1 at x 10') and x 20'-0" is 24"
+    # along W-A-S3 (from N-A-S2 at x 18'); both are 8"+16n. The nearer stud lines at ±16"
+    # from the ridge would leave a 1" edge distance, which is unbuildable.
+    #
+    # WHY 32" AND NOT 36": the clear pier between the two ROs is 16", centred on W-A-C1 and
+    # the RB-HOUSE south bearing point — enough for the ridge post plus a jack each side.
+    # A 36" pair at the same bay centres leaves 12", which is not. That pier is also the
+    # composition's mullion: it is why the two units read as one opening.
+    #
+    # Tags are descriptive rather than positional because WIN-A-S1..S4 number west→east and
+    # a mid-facade insertion cannot join that sequence without renumbering all six.
+    Window(uid="CAX311AAAA", tag="WIN-A-S-JUL-W", host="W-A-S2", type_ref="WT-3276",
+           position=from_node("N-A-S1", ft(4, 8)), sill_height=ft(2, 8)),   # x 16'-0"
+    Window(uid="CAX312AAAA", tag="WIN-A-S-JUL-E", host="W-A-S3", type_ref="WT-3276",
+           position=from_node("N-A-S2", ft(0, 8)), sill_height=ft(2, 8)),   # x 20'-0"
     # The source attic has no north, east or west opening at all; these three are kept for
     # daylight and cross-ventilation and are this storey's only openings with no counterpart.
     Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3036",
@@ -209,9 +235,13 @@ ROOMS = [
     Room(uid="CAR402AAAA", tag="RM-A-EAST", seed=pt(ft(27), ft(20)),
          occupancy=Occupancy.STORAGE, floor_finish="carpet",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
+    # Cathedral like the other three (2026-07-31): the 7'-6" dropped ceiling it used to
+    # carry would have buried the 9'-0" head of WIN-A-S-JUL-W, which stands in this room's
+    # stretch of the south gable. Under RF-HOUSE the Den's clear face (x 10'-18') runs
+    # 9'-4" to 12'-0" of headroom, so R305 is satisfied with room to spare.
     Room(uid="CAR403AAAA", tag="RM-A-DEN", seed=pt(ft(14), ft(4)),
          occupancy=Occupancy.STORAGE, floor_finish="carpet",
-         ceiling=ft(7, 6)),
+         ceiling=FollowRoof(roof_ref="RF-HOUSE")),
     Room(uid="CAR404AAAA", tag="RM-A-STUDY", seed=pt(ft(27), ft(4)),
          occupancy=Occupancy.OFFICE, floor_finish="oak",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),

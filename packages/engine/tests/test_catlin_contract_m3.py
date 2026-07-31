@@ -528,6 +528,56 @@ def test_catlin_window_openings_follow_the_sixteen_inch_framing_module():
     assert not findings, [finding.message for finding in findings]
 
 
+def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_height(catlin_model):
+    """The gable peak's composition: two 32x76 tilt-turns symmetric about the x=18' ridge.
+
+    Every number here is load-bearing on the design. The rake is what makes this worth
+    pinning: ``resolve/geometry_openings.py`` *shortens* an opening that runs into the roof
+    underside rather than erroring, so "the head still lands at 9'-0"" is a claim that has
+    to be asserted rather than assumed from the authored type height.
+    """
+    west = next(item for item in catlin_model.openings if item.tag == "WIN-A-S-JUL-W")
+    east = next(item for item in catlin_model.openings if item.tag == "WIN-A-S-JUL-E")
+
+    # Bay centres on their own hosts: W-A-S2 starts at N-A-S1 (x 10'), W-A-S3 at N-A-S2
+    # (x 18'), so these put the two RO centres at world x 16'-0" and 20'-0" — 2'-0" either
+    # side of the ridge, which is the whole point of the pair.
+    assert west.host_wall == "W-A-S2"
+    assert east.host_wall == "W-A-S3"
+    assert west.center_along_m == pytest.approx(ft(6).meters, abs=1e-6)
+    assert east.center_along_m == pytest.approx(ft(2).meters, abs=1e-6)
+    west_x = ft(10).meters + west.center_along_m
+    east_x = ft(18).meters + east.center_along_m
+    assert west_x == pytest.approx(ft(16).meters, abs=1e-6)
+    assert east_x == pytest.approx(ft(20).meters, abs=1e-6)
+    assert ft(18).meters - west_x == pytest.approx(east_x - ft(18).meters, abs=1e-9)
+
+    for opening in (west, east):
+        # The storey-wide south sill line, held here deliberately — and 8" above the 24"
+        # R312.2 fall-protection trigger, which is why this pair reads as a juliet balcony
+        # while needing no guard.
+        assert opening.sill_m == pytest.approx(ft(2, 8).meters, abs=1e-6)
+        assert opening.sill_m > inch(24).meters
+        # Unclipped: the rake did not silently eat the head.
+        assert opening.height_m == pytest.approx(inch(76).meters, abs=1e-6)
+        assert opening.sill_m + opening.height_m == pytest.approx(ft(9).meters, abs=1e-6)
+        assert opening.width_m == pytest.approx(inch(32).meters, abs=1e-6)
+
+    # The clear pier between the two ROs, centred on W-A-C1 / the RB-HOUSE south bearing
+    # point: 16" carries the ridge post plus a jack each side, and is why the pair is
+    # 32" wide rather than 36". It is also the composition's mullion.
+    pier = (east_x - inch(16).meters) - (west_x + inch(16).meters)
+    assert pier == pytest.approx(inch(16).meters, abs=1e-6)
+
+    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+    for check_id in ("structural.window_framing_module", "integrity.opening_fits"):
+        offenders = [finding for finding in report.findings
+                     if finding.check_id == check_id
+                     and finding.result is Result.FAIL
+                     and ("WIN-A-S-JUL-W" in finding.message or "WIN-A-S-JUL-E" in finding.message)]
+        assert not offenders, [finding.message for finding in offenders]
+
+
 def test_every_catlin_boundary_condition_has_a_transition_binding():
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     findings = [finding for finding in report.findings

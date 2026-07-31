@@ -262,7 +262,8 @@ export function runWindowSymbolTests() {
 
   // Every member of each vocabulary is labelled: a picker that falls through to a raw enum
   // value is the failure this map exists to prevent.
-  const operations: WindowOperation[] = ["fixed", "casement", "double_hung", "slider", "awning"];
+  const operations: WindowOperation[] = ["fixed", "casement", "double_hung", "slider", "awning",
+                                        "tilt_turn"];
   for (const operation of operations) {
     if (!WINDOW_OPERATION_LABELS[operation]) {
       throw new Error(`Window operation ${operation} has no trade label`);

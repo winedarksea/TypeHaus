@@ -11,6 +11,7 @@ export const WINDOW_OPERATION_LABELS: Record<WindowOperation, string> = {
   double_hung: "double-hung",
   slider: "slider",
   awning: "awning",
+  tilt_turn: "tilt & turn",
 };
 
 // Settings popover for a clicked window — mirrors DoorSettingsPopover. Type edits apply
