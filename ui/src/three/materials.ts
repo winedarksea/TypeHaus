@@ -15,7 +15,9 @@ import { familyOf } from "../nordic/palette";
 /** Nominal flat-pan width of a mechanically seamed panel. */
 export const SEAM_PAN_WIDTH_M = 0.4064; // 16"
 
-const NORMAL_MAP_PX = 256;
+// 128 px per pan. At 256 (64 px/pan) the seam ridge was only ~4 px wide and mip generation
+// ate it unevenly, so the module survived at some distances and not others.
+const NORMAL_MAP_PX = 512;
 /** How many pan modules the shared normal map covers, so `repeat` stays in whole pans. */
 const PANS_PER_TILE = 4;
 export const SEAM_TILE_SIZE_M = SEAM_PAN_WIDTH_M * PANS_PER_TILE;
@@ -30,9 +32,15 @@ export function isStandingSeam(materialRef: string | null | undefined): boolean 
 }
 
 /**
- * One canvas, generated on first use and reused by every surface. Low-frequency noise is
- * the oil canning; the fine vertical striations are the anti-oil-canning ribs rolled into
- * the pan; the hard step at each pan edge is the seam itself.
+ * One canvas, generated on first use and reused by every surface. The ridge at each pan edge
+ * is the seam itself; the fine vertical striations are the anti-oil-canning ribs rolled into
+ * the pan; a trace of low-frequency waviness is the oil canning.
+ *
+ * Everything here is deliberately band-limited. This map is minified hard (a 12 m wall spans
+ * ~18 repeats) and viewed at grazing angles, so any slope discontinuity or any wander that
+ * varies pan-to-pan survives filtering only in patches — which reads as random grey streaks
+ * rather than as siding. A smooth ridge profile and a waviness term with no per-row phase
+ * keep the 16" rhythm identical on every pan and at every distance.
  */
 function standingSeamNormalMap(): THREE.Texture {
   if (sharedNormalMap) return sharedNormalMap;
@@ -42,22 +50,26 @@ function standingSeamNormalMap(): THREE.Texture {
   if (!ctx) throw new Error("2D canvas unavailable for the standing-seam normal map");
   const image = ctx.createImageData(NORMAL_MAP_PX, NORMAL_MAP_PX);
   const panPx = NORMAL_MAP_PX / PANS_PER_TILE;
-  const seamPx = panPx * 0.06;
+  const seamPx = panPx * 0.08;
 
   for (let y = 0; y < NORMAL_MAP_PX; y++) {
     for (let x = 0; x < NORMAL_MAP_PX; x++) {
       const withinPan = x % panPx;
-      // dx is the surface slope across the panel: the seam is a sharp pair of opposing
-      // slopes at the pan edge, everything else is millimetre-scale waviness.
+      // dx is the surface slope across the panel: the seam is a rib standing off the pan edge,
+      // everything else is millimetre-scale waviness. The rib is a raised-cosine bump, so its
+      // slope is one full sine period straddling the pan boundary — a lit face and a shaded
+      // face, meeting the flat pan at zero slope on both sides. The old profile was a linear
+      // ramp that stepped by a full unit where it met the pan; that discontinuity is what mip
+      // filtering could not carry, so the module survived in patches and read as streaks.
       let dx = 0;
-      if (withinPan < seamPx) dx = -1 + withinPan / seamPx * 2;
-      else if (withinPan > panPx - seamPx) dx = -(1 - (panPx - withinPan) / seamPx * 2);
+      if (withinPan < seamPx) dx = -Math.sin(withinPan / seamPx * Math.PI);
+      else if (withinPan > panPx - seamPx) dx = Math.sin((panPx - withinPan) / seamPx * Math.PI);
       else {
         const t = (withinPan - seamPx) / (panPx - 2 * seamPx);
         dx += 0.05 * Math.sin(t * Math.PI * 14); // striations
-        dx += 0.12 * Math.sin(t * Math.PI * 1.3 + y * 0.02) * Math.sin(y * 0.011); // oil canning
+        dx += 0.03 * Math.sin(t * Math.PI * 1.3); // oil canning
       }
-      const dy = 0.04 * Math.sin(y * 0.05 + x * 0.003);
+      const dy = 0.015 * Math.sin(y * 0.05 + x * 0.003);
       const n = new THREE.Vector3(-dx, -dy, 1).normalize();
       const i = (y * NORMAL_MAP_PX + x) * 4;
       image.data[i] = (n.x * 0.5 + 0.5) * 255;

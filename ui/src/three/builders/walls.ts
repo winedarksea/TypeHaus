@@ -120,7 +120,13 @@ export function buildWall(
       tradeGroups.walls.add(mesh);
       picks.push(mesh);
 
-      if (mode === "nordic") {
+      // Nordic outlines, except on the cladding. `wallLayerPieces` splits a layer at every
+      // opening jamb, so outlining each piece drew a full-height line down the facade at every
+      // window and a full-width one at every storey break — grid lines across a finish that has
+      // no joints there. The finish carries its own definition (seam module, coursing) and the
+      // building's corners come from the shading, so the outermost layer goes without; the
+      // layers behind it keep theirs, where the piece boundary is a real edge.
+      if (mode === "nordic" && ly.function !== "cladding") {
         tradeGroups.walls.add(new THREE.LineSegments(
           new THREE.EdgesGeometry(geo, 25),
           new THREE.LineBasicMaterial({ color: palette.edge, transparent: true, opacity: 0.35 }),

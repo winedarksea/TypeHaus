@@ -200,6 +200,18 @@ function createScene(
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  // Without tone mapping three hard-clips anything over 1.0, and a Regal White (#E8E8E2,
+  // albedo 0.91) wall under this light rig lands well past it: the whole envelope rendered at
+  // a flat 255 and swallowed the standing-seam shading, leaving only the few seams that
+  // happened to fall on a dark lobe of the finish's waviness — irregular grey streaks on
+  // white. Neutral rather than ACES: ACES adds a contrast/saturation shift that warms and
+  // darkens near-white architectural surfaces, which is the one thing this palette can't take.
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = 1;
+  // Repeated world-scaled maps (seam, masonry, deck boards) are viewed at grazing angles on
+  // every wall; at the default anisotropy of 1 their mips smear unevenly and the module reads
+  // as moiré. Set before any texture is constructed — the maps are built lazily in setModel.
+  THREE.Texture.DEFAULT_ANISOTROPY = renderer.capabilities.getMaxAnisotropy();
   mount.appendChild(renderer.domElement);
 
   const content = new THREE.Group();
@@ -240,8 +252,14 @@ function createScene(
   const hiddenLayerGroups = new Set<LayerVisibilityGroup>();
 
   // Lighting: soft neutral environment (Nordic). Hemisphere + a key light.
-  const hemi = new THREE.HemisphereLight(0xffffff, 0xbcb6a8, 0.9);
-  const key = new THREE.DirectionalLight(0xffffff, 0.7);
+  //
+  // The budget is set against a white cladding face: hemisphere + key + environment together
+  // have to land it comfortably under 1.0, or tone mapping is compressing an already-blown
+  // surface and the seam finish has nothing to modulate. The key carries proportionally more
+  // of it than it used to, because a normal map is only visible in *directional* light —
+  // under pure ambient the seam ridges vanish however much headroom they have.
+  const hemi = new THREE.HemisphereLight(0xffffff, 0xbcb6a8, 0.8);
+  const key = new THREE.DirectionalLight(0xffffff, 0.9);
   key.position.set(4, 8, 6);
   key.castShadow = true;
   key.shadow.bias = -0.0001;
@@ -253,6 +271,10 @@ function createScene(
   const pmrem = new THREE.PMREMGenerator(renderer);
   const environment = pmrem.fromScene(new RoomEnvironment(), 0.04);
   scene.environment = environment.texture;
+  // RoomEnvironment is bright enough to be a third full light source. Dial it back to what it
+  // is actually here for — feeding the clearcoat on painted metal — instead of a unit of flat
+  // irradiance on top of the two lights above.
+  scene.environmentIntensity = 0.6;
 
   // Simple orbit: drag to rotate, wheel or pinch to dolly (no external controls dependency).
   let theta = Math.PI * 0.25;
