@@ -22,14 +22,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `LoadManagement` over `CKT-SPA` + `CKT-SAUNA` capped at 11,500 VA — they are mutually
   exclusive by use, and the 9,000 VA credit lands the estimate near 183A without touching
   the meter. (`LM-EV` already caps the two EV circuits; that credit is in the 220.9A.)
-- **Both sunken-garden beam lines are engineered, so R507.5(1) no longer verifies them**
-  (2026-07-31). `SPEC.back_beam` is a 2-1.75x11.25 LVL and `SPEC.balcony_beam` a
-  2-1.75x9.25 LVL, both at their sawn predecessor's depth so no elevation moved.
-  `structural.deck_beam_span` now reports all five UNKNOWN — an engineered member is sized
-  off the manufacturer's span table, not the prescriptive one. The porch pair could have
-  stayed checkable as a 3-ply sawn 2x12 (10'-3" allowed vs the 10'-0" span); the balcony had
-  no prescriptive answer at all, since its 10'-6" joists read the 12' row where even 3-2x12
-  stops at 8'-4" against an 8'-8" span.
 
 ## Remaining Work
 
@@ -87,11 +79,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ### Residuals from the 2026-07-30 batch
 
-- **`N-M-STR1` junction WARN (honest fallback).** W-M-STRS's 2x4 `spf` partition dies into
-  the end of W-M-STRW2's 2x6 `df-select-s4s`, and an L only resolves on an identical
-  assembly or a shared bearing material. Physically a partition butting an end stud.
-  `resolve/topology.py` wants a species-class notion rather than the plan lying about the
-  stud species.
 - **The mudroom 6" jog has to stay its own `Wall`** — a standing constraint, not a task.
   `resolve/topology.py` builds junction incidents from wall endpoints only, so the
   W-M-STOS2 tee needs a node both walls terminate at; merging the jog re-opens `N-M-STRJ`.
@@ -146,26 +133,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 ## Breezeway — remaining niggles
 
 - **The 1" fall toward the garage is drawn, not framed** (lives in the drainage wedges; a
-  `Beam` is a prism). If the wedge becomes a real element the fall moves into it.
-
-## Stair framing — accepted limitations and standing constraints
-
-- **Winders keep the `tapered tread` 1.5" band** — a trapezoid is not expressible as
-  axis + band width in this IR. (These are also the only 3 of 2099 members without a real
-  IFC representation, by design.) The band is the pie panel's *nosing/fan line*; the box
-  tier under it carries the panel's real footprint.
-- **The two wells share one south edge, and it is the stair wall's face** (2026-07-28).
-  Not a free choice either: `FO-S-STAIR`'s south edge is ST-M2S's *springing point* — its
-  first tread starts there — so any wall north of that line stands on that tread, and
-  `FO-M-STAIR` cannot start south of the wall or the wall overhangs the slab opening. Each
-  well then takes whatever run its own north limit leaves, which is why ST-B2M's treads are
-  11 15/16" and ST-M2S's are 11". Worth remembering before moving W-M-STRS again.
-  (2026-07-30: W-M-STRW/STRW2 are now the exposed-stud coat wall; the stair face is pinned
-  by an explicit `alignment` so the well geometry cannot drift with assembly thickness.
-  Same day, W-M-STRS was cut back to the well partition at x=14'-2 1/4" — it frames
-  D-M-STAIR and stops — so the up-flight's lane is open to the living room. RO-1 went with
-  the removed length, and RM-M-STAIR retired into RM-M-LIVING, since the well is inside
-  that room's polygonized face now.)
+  `Beam` is a prism). If the wedge becomes a real element the fall moves into it. (It should be a 1" slope by angle of the framing, plus a east to west slope by a small wedge under the centerpoint of each rafter to slightly bend the polycarbonate)
 
 ## Current Orientation
 
@@ -193,5 +161,5 @@ Questions:
 ### Other visual ideas
 Dark base to the house
 Dark panel along the panel of the corner most panels
-Standing seam clamps to anchor decorative elements
+Standing seam clamps to anchor decorative elements, possibly at gable peak, or lightning rod
 Architectural lighting on facade (try to aim to be dark sky friendly)

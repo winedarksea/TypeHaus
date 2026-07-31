@@ -1,9 +1,9 @@
 """Cross-section recipes shared by the derived and the authored trim runs.
 
-A gutter is the same piece of formed metal whether it is derived off a roof plane
-(:mod:`typehaus.resolve.roof_trim`) or authored as an edge run on a deck
+A gutter — or a drip edge — is the same piece of formed metal whether it is derived off a
+roof plane (:mod:`typehaus.resolve.roof_trim`) or authored as an edge run on a deck
 (:mod:`typehaus.resolve.accessories`). The member IR and the solid IR are both boxes-only,
-so the channel has to be *composed* out of thin bands either way — and if each resolver
+so the section has to be *composed* out of thin bands either way — and if each resolver
 rolled its own the two would drift into different-looking gutters on the same house.
 """
 
@@ -39,4 +39,26 @@ def open_channel_bands(thickness_m: float, depth_m: float) -> tuple[Band, Band, 
         ("back", 0.0, shell, depth_m, 0.0),
         ("bottom", shell, thickness_m - 2.0 * shell, depth_m, depth_m - shell),
         ("front", thickness_m - shell, shell, depth_m, 0.0),
+    )
+
+
+def drip_edge_bands(thickness_m: float, depth_m: float) -> tuple[Band, Band]:
+    """The two legs of a drip edge ``thickness_m`` out from the roof edge, ``depth_m`` deep.
+
+    A drip edge is a bent angle, not a bar: a flat leg nailed to the roof furring under the
+    roofing, and a leg turned down at the outboard end so the water leaves the roof clear of
+    everything behind it. Drawn as one solid box the piece reads as a length of stock hung in
+    front of the roof edge — it laps nothing, and nothing can be seen to lap it, which is the
+    whole point of the piece.
+
+    Same frame as :func:`open_channel_bands`: offsets run across the thickness from the
+    *inboard* (roof) end, drops run down from the run's top. The lap leg occupies the top of
+    the section across the full thickness; the turn-down hangs off its outboard end for the
+    rest of the depth. Both are a shell thick, clamped like the channel's so a shallow or
+    narrow run still resolves as an angle rather than as a solid.
+    """
+    shell = min(GUTTER_SHELL_M, thickness_m / 3.0, depth_m / 3.0)
+    return (
+        ("lap", 0.0, thickness_m, shell, 0.0),
+        ("drip", thickness_m - shell, shell, depth_m, shell),
     )

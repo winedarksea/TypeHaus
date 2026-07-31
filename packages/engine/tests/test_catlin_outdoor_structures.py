@@ -267,9 +267,22 @@ def test_porch_joists_reach_the_deck_edge_without_oversailing_the_front_wall(
 
 def test_balcony_gutter_rim_meets_the_drip_edge(catlin_model) -> None:
     """Water shedding off the drip flashing lands in the trough: the gutter's top meets
-    the drip's lower edge instead of hanging 6" of open air below it."""
+    the drip's lower edge instead of hanging 6" of open air below it.
+
+    Both runs are formed metal composed out of bands — the gutter an open-top U, the drip a
+    bent angle whose turn-down hangs off its outboard end (resolve/trim_bands.py). The
+    turn-down is the piece that has to reach the rim, and it has to reach it *over the
+    channel*: a drip that clears the rim outboard of the front sheet misses the trough.
+    """
     bands = [s for s in catlin_model.solids if s.tag.startswith("TR-SG-GUTTER-1-")]
     assert {s.tag.rsplit("-", 1)[1] for s in bands} == {"BACK", "BOTTOM", "FRONT"}
-    drip = _solid(catlin_model, "TR-SG-DRIP-1")
+    drip = [s for s in catlin_model.solids if s.tag.startswith("TR-SG-DRIP-1-")]
+    assert {s.tag.rsplit("-", 1)[1] for s in drip} == {"LAP", "DRIP"}
+    turn_down = _solid(catlin_model, "TR-SG-DRIP-1-DRIP")
     # The channel is an open-top U, so its rim is the top of its tallest band.
-    assert max(s.z1_m for s in bands) == pytest.approx(drip.z0_m)
+    assert max(s.z1_m for s in bands) == pytest.approx(turn_down.z0_m)
+    # And the turn-down hangs between the two sheets, not past either of them.
+    trough = _solid(catlin_model, "TR-SG-GUTTER-1-BOTTOM")
+    span = [p[1] for p in trough.outline]
+    drop = [p[1] for p in turn_down.outline]
+    assert min(span) < min(drop) and max(drop) < max(span)

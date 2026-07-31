@@ -337,21 +337,28 @@ def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
     # No hand-authored fascia solids — that would double the derived band.
     assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-FASCIA")]
     for side in ("W", "E"):
-        # The channel is an open-top U, so the run resolves as three bands rather than one
-        # solid bar; the envelope they occupy is what the eave detail pins.
+        # Both runs are *formed* metal, so each resolves into its section's bands rather than
+        # one solid bar: the gutter into an open-top U, the drip edge into a lap leg and a
+        # turn-down. Where those bands sit relative to each other — the lap chain the eave
+        # depends on — is pinned in test_catlin_eave_water.py; this is the envelope.
         bands = [s for s in catlin_model.solids
                  if s.tag.startswith(f"TR-RF-GUTTER-{side}-1-")]
         assert {s.tag.rsplit("-", 1)[1] for s in bands} == {"BACK", "BOTTOM", "FRONT"}
-        drip = next(s for s in catlin_model.solids if s.tag == f"TR-RF-DRIP-{side}-1")
-        assert {s.category for s in bands} == {"gutter"} and drip.category == "flashing"
+        drip = [s for s in catlin_model.solids if s.tag.startswith(f"TR-RF-DRIP-{side}-1-")]
+        assert {s.tag.rsplit("-", 1)[1] for s in drip} == {"LAP", "DRIP"}
+        assert {s.category for s in bands} == {"gutter"}
+        assert {s.category for s in drip} == {"flashing"}
         gutter_top, gutter_bottom = max(s.z1_m for s in bands), min(s.z0_m for s in bands)
-        # Box gutter hangs with its top 1.2" below the roof-furring underside (7.25"
-        # perpendicular above the deck), 5" channel height.
-        assert gutter_top == pytest.approx(eave + inch(7.25 - 1.2).meters)
+        # 5" of channel, its rim high enough to lap behind the corner trim's 2" leg and low
+        # enough to leave the eave end of the roof's vent channel open.
         assert gutter_top - gutter_bottom == pytest.approx(inch(5.0).meters)
-        # Drip edge turns down over the fascia into the gutter from the metal eave.
-        assert drip.z1_m == pytest.approx(eave + inch(9.0).meters)
-        assert drip.z0_m < gutter_top + inch(1.0).meters
+        vent_slot = eave + inch(7.25 * math.hypot(1.0, 4.0 / 12.0)).meters
+        assert gutter_top < vent_slot, "the rim would dam the eave vent slot"
+        # The drip's turn-down ends inside the trough, below the rim it empties over.
+        assert min(s.z0_m for s in drip) < gutter_top
+    # Each eave drains to a leader, so the gutters' slope notes point somewhere real.
+    leaders = [s for s in catlin_model.solids if s.tag.startswith("TR-RF-LEADER-")]
+    assert {s.tag for s in leaders} == {"TR-RF-LEADER-W", "TR-RF-LEADER-E"}
     assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-")
                 and "GARAGE" in s.tag]
 

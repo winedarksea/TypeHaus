@@ -24,6 +24,12 @@ proposing any design change.
   editable: `frozenset` again). Marks must stay unique; the E-602 schedule is keyed on
   them. Also holds the two 24V supply types and the dimmer/timer switch types.
 - `params/solar.py` — rooftop PV array (12 × 440 W on the gable ridge, computed max fit).
+- `params/roof_trim.py` — the eave water chain on RF-HOUSE's west/east eaves: drip edge →
+  box gutter → downspout, each piece's position derived from the one above it so the laps
+  hold. RF-HOUSE has **no fascia** (continuous standing-seam skin ⇒ the resolver's corner
+  trim), so every offset is measured off the corner trim's face, never a fascia's. The lap
+  order is enforced by `packages/engine/tests/test_catlin_eave_water.py` — read it before
+  moving any of these numbers.
 - `library/placeables/*.py` (repo root, not this directory) — the shared FixtureType/
   ApplianceType/FurnitureType *catalog*, wired in by `plan/manifest.py`. NOT editable: it
   uses `frozenset(...)`, which the dialect forbids. Type libraries stay non-editable;

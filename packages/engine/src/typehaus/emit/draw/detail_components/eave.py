@@ -20,6 +20,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     rect_region,
 )
 from typehaus.emit.draw.scene import IRNode
+from typehaus.resolve.roof_geometry import roof_height_at
 
 
 def zero_overhang_eave(model, wall, crop, direction, station) -> list[IRNode]:
@@ -32,7 +33,6 @@ def zero_overhang_eave(model, wall, crop, direction, station) -> list[IRNode]:
     if is_outboard_high is None or crop is None:
         return []
     (_cu0, cz0), (_cu1, _cz1) = crop
-    junction_z = (wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m) * M_TO_IN
     intervals = layer_intervals(wall, direction, station)
     weather_face = (outermost_with_function(intervals, "cladding")
                     or outermost_with_function(intervals, "furring"))
@@ -40,11 +40,17 @@ def zero_overhang_eave(model, wall, crop, direction, station) -> list[IRNode]:
         return []
     out_sign = 1.0 if is_outboard_high else -1.0
     clad_out = face_of(weather_face, is_outboard_high, outer=True)
+    roof = _roof_over(model, direction, station, clad_out)
+    junction_z = _junction_z_in(roof, wall, direction, station, clad_out)
     cfg = SHEET_METAL
 
     nodes: list[IRNode] = []
     # Apron flashing: laps down off the roof edge over the head of the wall cladding, behind
-    # the drip edge — the reference's roofing-membrane-return-to-wall executed in metal.
+    # the drip edge — the reference's roofing-membrane-return-to-wall executed in metal. It
+    # is drawn even where a derived corner trim already caps the edge (the flush
+    # continuous-cladding case, resolve/roof_trim.py::_corner_trim_members): the trim is cut
+    # into the drawing as a plain rectangle of roof member, and this is the piece that
+    # carries the *name* and the lap direction a builder reads the detail for.
     apron = path_from_steps(
         (clad_out - out_sign * cfg.apron_back_in, junction_z + cfg.apron_run_in - 0.2),
         [(out_sign * cfg.apron_run_in, 0.0), (0.0, -cfg.apron_drop_in)])
@@ -65,6 +71,47 @@ def zero_overhang_eave(model, wall, crop, direction, station) -> list[IRNode]:
 
     nodes += eave_vent_screen(clad_out, junction_z, out_sign, cz0 * M_TO_IN)
     return nodes
+
+
+def _cut_point(direction: str, station: float, u_in: float) -> tuple[float, float]:
+    """A plan point from the section's own frame: ``u`` across the cut, ``station`` along it."""
+    u_m = u_in / M_TO_IN
+    return (u_m, station) if direction == "x" else (station, u_m)
+
+
+def _roof_over(model, direction: str, station: float, clad_out_in: float):
+    """The roof whose footprint covers the eave point, or ``None``.
+
+    Containment is given an inch of slop deliberately: on a zero-overhang roof the wall's
+    cladding face *is* the footprint edge, so an exact test lands on the boundary and its
+    answer is a rounding coin-flip. Where roofs overlap the highest wins, which is the one
+    the eave is under.
+    """
+    point = _cut_point(direction, station, clad_out_in)
+    tolerance = 1.0 / M_TO_IN
+    covering = []
+    for roof in model.roofs:
+        xs = [p[0] for p in roof.footprint]
+        ys = [p[1] for p in roof.footprint]
+        if (min(xs) - tolerance <= point[0] <= max(xs) + tolerance
+                and min(ys) - tolerance <= point[1] <= max(ys) + tolerance):
+            covering.append(roof)
+    return max(covering, key=lambda r: roof_height_at(r, point)) if covering else None
+
+
+def _junction_z_in(roof, wall, direction: str, station: float, clad_out_in: float) -> float:
+    """The elevation the eave assembly hangs from, in inches — the **roof plane**, not the plate.
+
+    A wall stops at its top plate; the roof deck at the eave sits the rafter's own rise above
+    that (on catlin, the I-joist's 10" of depth less its seat drop). Registering the gutter,
+    drip and vent slot on ``wall.top_z1_m`` therefore drew the whole assembly most of a foot
+    below the eave it belongs to — floating mid-wall, with the authored gutter it is supposed
+    to work with a storey of roof stack above it. Only a wall with no roof over it, which has
+    no eave to detail anyway, falls back to its plate.
+    """
+    if roof is not None:
+        return roof_height_at(roof, _cut_point(direction, station, clad_out_in)) * M_TO_IN
+    return (wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m) * M_TO_IN
 
 
 def _authored_gutter_at(model, clad_out_in: float, direction: str) -> bool:

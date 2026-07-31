@@ -122,8 +122,9 @@ def _edge_trim(
         # innermost nailer sits directly *under* the deck and must keep topping out at the
         # plane, or it would rise into the deck itself.
         rise = fascia_rise_m if inner >= -CLOSURE_TOLERANCE_M else 0.0
-        # Faces as distances *inboard* of the footprint edge, which is what the corner miter
-        # is measured in; a board hung outboard of the edge reads negative.
+        # ``inner``/``outer`` are faces measured along the *outward* normal, which is the
+        # frame ``_offset`` works in. ``mitred_span`` measures inboard-positive, so the same
+        # faces are handed to it negated.
         span = mitred_span(run, -outer, -inner)
         if span is not None:
             center = (inner + outer) / 2.0
@@ -315,11 +316,14 @@ def _corner_trim_members(
     members: list[FramedMember] = []
     for run in roof_edge_runs(roof):
         # Inner face on the footprint edge (the wall cladding's outer face), outer face
-        # clear of the roofing edge — outboard values are negative inboard distances.
+        # clear of the roofing edge. ``mitred_span`` measures faces *inboard*-positive, so
+        # the outboard face reads negative there; ``_offset`` measures along the outward
+        # normal, where the same face reads positive. Signing the centre the mitre's way put
+        # the trim inboard of the edge — buried in the wall cladding it is meant to lap over.
         span = mitred_span(run, -_CORNER_TRIM_THICKNESS_M, 0.0)
         if span is None:
             continue
-        center = -_CORNER_TRIM_THICKNESS_M / 2.0
+        center = _CORNER_TRIM_THICKNESS_M / 2.0
         a, b = _offset(span.p0, run.normal, center), _offset(span.p1, run.normal, center)
         members.append(FramedMember(
             parent_uid=roof.uid, child_key=f"{run.key}-corner-trim", category="corner_trim",

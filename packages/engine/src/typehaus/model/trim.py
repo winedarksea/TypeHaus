@@ -6,6 +6,10 @@ drip flashing turning the deck membrane down into that gutter, and a counter-fla
 the high (rear) edge tucked up under the house WRB. Each is authored as a plan-frame
 polyline run with a cross-section; the resolver extrudes a thin solid so it reads in the
 model, IFC, and take-off instead of living only in a note.
+
+The :class:`Downspout` is the exception to the shape and the reason for the family: it is a
+point, not a run, but a gutter that drains nowhere is not drainage, so it belongs beside the
+gutter it empties rather than off in the plumbing.
 """
 
 from __future__ import annotations
@@ -28,6 +32,13 @@ class _EdgeRun(Element):
     thickness: Length  # cross-section thickness (out from the edge)
     material: str = ""  # e.g. "PVC", "aluminum"
     host_ref: str | None = None  # deck/slab/fascia tag the run trims
+    # Which side of the p0→p1 path faces the building ("left" is the path's left-hand
+    # normal, resolve/geometry.py::normal). Every formed run has an inboard and an outboard
+    # end, and a section that is not symmetric about its centre line has to know which is
+    # which — a drip edge's turn-down hangs off the *outboard* end, so getting this wrong
+    # points the drip back at the wall. On a symmetric section (the gutter channel, a plain
+    # extruded band) it only decides which band is named BACK and which FRONT.
+    back_side: Literal["left", "right"] = "left"
 
 
 @register_element
@@ -63,17 +74,42 @@ class Gutter(_EdgeRun):
 
     kind: TrimKind = TrimKind.GUTTER
     slope: str = ""  # optional drainage note, e.g. "1/16 in/ft to SE downspout"
-    # Which side of the p0→p1 path faces the fascia/house ("left" is the path's left-hand
-    # normal, resolve/geometry.py::normal). Naming only: the channel's cross-section is
-    # symmetric about its centre line, so this decides which band is tagged BACK and which
-    # FRONT, never where any of them sits.
-    back_side: Literal["left", "right"] = "left"
+
+
+@register_element
+class Downspout(Element):
+    """The leader carrying a gutter's water down the wall to grade.
+
+    Not an ``_EdgeRun``: the rest of this family runs *along* an edge and is billed by the
+    lineal foot of a cross-section, while a leader is a single vertical round pipe at one
+    point in plan. It lives here anyway because it is the other half of the gutter — a
+    gutter with nowhere to drain is not a drainage system — and because the take-off and the
+    roof trade want the two on the same line.
+
+    ``clamp_refs`` names the securement hardware steadying the pipe against the cladding.
+    Those clamps are explicitly *not* the leader's primary support; that is what the
+    ``Connector`` records say, and it matters to whoever hangs it.
+    """
+
+    kind: TrimKind = TrimKind.GUTTER
+    position: Point2D                # plan-frame centre of the pipe
+    top_elevation: Length            # the outlet at the gutter floor
+    bottom_elevation: Length         # discharge, normally just above grade
+    diameter: Length
+    material: str = ""
+    gutter_ref: str | None = None    # the Gutter tag this leader drains
+    clamp_refs: tuple[str, ...] = ()
 
 
 @register_element
 class Flashing(_EdgeRun):
     """Edge/counter flashing. ``kind`` distinguishes a front drip into the gutter from a
-    rear counter-flashing tucked into the house WRB."""
+    rear counter-flashing tucked into the house WRB.
+
+    A ``DRIP_FLASHING`` resolves as a bent angle — a flat leg lapped under the roofing and a
+    turn-down at the outboard end that throws the water clear — so its ``back_side`` is load
+    bearing. A ``WRB_COUNTERFLASHING`` is a flat back pan and stays a single band.
+    """
 
     kind: TrimKind = TrimKind.DRIP_FLASHING
 
@@ -148,6 +184,7 @@ for _name, _obj in (
     ("Fascia", Fascia),
     ("EaveSoffit", EaveSoffit),
     ("Gutter", Gutter),
+    ("Downspout", Downspout),
     ("Flashing", Flashing),
     ("GlazingTrim", GlazingTrim),
     ("FasciaBoard", FasciaBoard),

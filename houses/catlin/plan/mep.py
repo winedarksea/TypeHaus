@@ -1616,6 +1616,53 @@ NEMA_CLAMP = [
               connects=("ED-A-NEMA-JB", "W-A-N2")),
 ]
 
+# --- Downspout securement: S-5! CanDuit clamps on the standing-seam siding ------------
+# The two roof leaders (params/roof_trim.py, TR-RF-LEADER-W/E) run ~24' from the gutter
+# outlet down the north end of the west and east faces. They are steadied — NOT supported —
+# by the same hardware the radon riser uses: an S-5! non-penetrating standing-seam clamp
+# with an S-5! CanDuit pipe clamp on its M8 shaft, exactly as CN-M-VENT-CLAMP1..3 above.
+# https://3482954.fs1.hubspotusercontent-na1.net/hubfs/3482954/Resources/Product%20Documents/Utility/CanDuit%20Pipe%20Clamp/WEB-Hybrid-Sales-Tech-CanDuit-Pipe-Clamp-Cut-Sheet.pdf
+# CanDuit comes in 14 sizes; a 4" round leader (4.0" OD) takes the **#13** ring, whose
+# 4.00-4.37" adjustability range is the only one that closes on it. The reference note is
+# explicit that these keep the leader against the wall and are not its primary support.
+#
+# Four per leader at roughly 6' o.c. (5' / 11' / 17' / 23'), each on the wall that actually
+# has cladding at that elevation: main to 10', second to 20', the attic knee wall above. In
+# plan they sit on the leader's own centre line — 8.77" outboard of the sheathing datum,
+# which is the trough's mid-width (params/roof_trim.py::_TROUGH_MID_IN) and also just about
+# where a strapped 4" round leader's centre lands off 5.02" of wall stack.
+# (Literal offsets, not arithmetic: the editable-plan dialect forbids binary operators.)
+_LEADER_X_W = inch(-8.77)
+_LEADER_X_E = ft(36, 8.77)
+_LEADER_Y = ft(35, 6)
+
+LEADER_CLAMPS = [
+    Connector(uid="CMLC01AAAA", tag="CN-A-LEADER-W1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(5), size="S-5! CanDuit #13",
+              connects=("TR-RF-LEADER-W", "W-M-W1B")),
+    Connector(uid="CMLC02AAAA", tag="CN-A-LEADER-W2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(11), size="S-5! CanDuit #13",
+              connects=("TR-RF-LEADER-W", "W-S-W1B")),
+    Connector(uid="CMLC03AAAA", tag="CN-A-LEADER-W3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(17), size="S-5! CanDuit #13",
+              connects=("TR-RF-LEADER-W", "W-S-W1B")),
+    Connector(uid="CMLC04AAAA", tag="CN-A-LEADER-W4", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(_LEADER_X_W, _LEADER_Y), elevation=ft(23), size="S-5! CanDuit #13",
+              connects=("TR-RF-LEADER-W", "W-A-W1")),
+    Connector(uid="CMLC05AAAA", tag="CN-A-LEADER-E1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(5), size="S-5! CanDuit #13",
+              connects=("TR-RF-LEADER-E", "W-M-E2")),
+    Connector(uid="CMLC06AAAA", tag="CN-A-LEADER-E2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(11), size="S-5! CanDuit #13",
+              connects=("TR-RF-LEADER-E", "W-S-E4")),
+    Connector(uid="CMLC07AAAA", tag="CN-A-LEADER-E3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(17), size="S-5! CanDuit #13",
+              connects=("TR-RF-LEADER-E", "W-S-E4")),
+    Connector(uid="CMLC08AAAA", tag="CN-A-LEADER-E4", kind=ConnectorKind.STANDING_SEAM_CLAMP,
+              position=pt(_LEADER_X_E, _LEADER_Y), elevation=ft(23), size="S-5! CanDuit #13",
+              connects=("TR-RF-LEADER-E", "W-A-E2")),
+]
+
 # --- Water supply: the house entry out to the garage hydrant ------------------------
 #
 # The project's first PipeSystem.WATER_COLD run — everything authored before this is DRAIN
@@ -1905,5 +1952,6 @@ BASEMENT_ELEMENTS = [*DRAINS, *CONDENSATE, *SUPPLY, *WALL_SLEEVES, *SLAB_STUBS,
                      *REGISTERS_BASEMENT]
 SECOND_ELEMENTS = [*DUCTS, *DUCTS_HVAC_SECOND, *REGISTERS, *REGISTERS_SECOND,
                    *REGISTERS_HVAC_SECOND, *VENT_BRANCHES_SECOND, *SECOND_DEVICES]
-ATTIC_ELEMENTS = [*NEMA_BOX, *NEMA_CLAMP, *ATTIC_DEVICES, *DUCTS_ATTIC, *DUCTS_HVAC_ATTIC,
+ATTIC_ELEMENTS = [*NEMA_BOX, *NEMA_CLAMP, *LEADER_CLAMPS,
+                  *ATTIC_DEVICES, *DUCTS_ATTIC, *DUCTS_HVAC_ATTIC,
                   *REGISTERS_ATTIC, *REGISTERS_HVAC_ATTIC]

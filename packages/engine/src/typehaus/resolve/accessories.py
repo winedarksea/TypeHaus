@@ -15,7 +15,7 @@ from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.enums import LayerFunction, TrimKind
 from typehaus.model.mep import Sump, VentRun
 from typehaus.model.structure import Connector, Dowel, KneeBrace, Railing
-from typehaus.model.trim import EaveSoffit, Fascia, Flashing, GlazingTrim, Gutter
+from typehaus.model.trim import Downspout, EaveSoffit, Fascia, Flashing, GlazingTrim, Gutter
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import circle_outline, length, rect_between, sub
@@ -25,7 +25,7 @@ from typehaus.resolve.model import (
     ResolvedModel,
     ResolvedSolid,
 )
-from typehaus.resolve.trim_bands import open_channel_bands
+from typehaus.resolve.trim_bands import drip_edge_bands, open_channel_bands
 from typehaus.resolve.vent_termination import (
     derived_termination_elevation,
     exterior_riser_point,
@@ -86,6 +86,8 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
                 _resolve_sump(model, el, storey)
             elif isinstance(el, VentRun):
                 findings.extend(_resolve_vent(model, el, storey.tag))
+            elif isinstance(el, Downspout):
+                _resolve_downspout(model, el, storey.tag)
             elif isinstance(el, (EaveSoffit, Fascia, Gutter, Flashing, GlazingTrim)):
                 _resolve_edge_run(model, el, storey.tag)
     _resolve_bug_screens(model)
@@ -413,8 +415,13 @@ def _resolve_edge_run(model: ResolvedModel, el, storey: str) -> None:
     top = el.top_elevation.meters
     z0 = top - el.depth.meters
     half = el.thickness.meters / 2.0
-    if el.kind is TrimKind.GUTTER:
-        _resolve_gutter_run(model, el, storey, path, category, top, half)
+    # Two of the kinds are *formed* metal, not extruded stock, and the boxes-only solid IR
+    # can only say so by composing the section out of bands (see :mod:`.trim_bands`). The
+    # rest are genuinely one band and fall through to the plain extrusion below.
+    recipe = _BANDED_SECTIONS.get(el.kind)
+    if recipe is not None:
+        _resolve_banded_run(model, el, storey, path, category, top, half,
+                            recipe(2.0 * half, el.depth.meters))
         return
     for i, (a, b) in enumerate(zip(path[:-1], path[1:])):
         model.solids.append(ResolvedSolid(
@@ -423,30 +430,61 @@ def _resolve_edge_run(model: ResolvedModel, el, storey: str) -> None:
         ))
 
 
-def _resolve_gutter_run(model: ResolvedModel, el, storey: str, path, category: str,
-                        top: float, half: float) -> None:
-    """An authored gutter as an open-top U, exactly like the derived eave gutters.
+#: Which edge-run kinds resolve as a composed section rather than as one extruded band.
+#: A gutter is an open-top U — the single bar it used to get read as a solid billet of
+#: aluminium, nothing rain could fall *into*. A drip edge is a bent angle: a flat leg lapped
+#: under the roofing and a turn-down that throws the water clear. Both are the same recipes
+#: the roof's *derived* trim uses, so an authored run and a derived one cannot drift into
+#: different-looking metal on the same house.
+_BANDED_SECTIONS = {
+    TrimKind.GUTTER: open_channel_bands,
+    TrimKind.DRIP_FLASHING: drip_edge_bands,
+}
 
-    The single extruded bar every other edge run gets reads as a solid billet of aluminum
-    hung off the deck — nothing rain could fall *into*. The channel is instead composed
-    from the three bands of :func:`open_channel_bands` (the recipe the roof's derived
-    gutters use), laid across the same ``[-half, +half]`` cross span the bar occupied, so
-    the run stays where it was authored and only becomes hollow.
+
+def _resolve_banded_run(model: ResolvedModel, el, storey: str, path, category: str,
+                        top: float, half: float, bands) -> None:
+    """Lay a composed section's bands across the ``[-half, +half]`` span the bar occupied.
+
+    The run stays exactly where it was authored; only its cross-section stops being solid.
     """
-    depth = el.depth.meters
-    bands = open_channel_bands(2.0 * half, depth)
-    # Cross offsets run from one edge of the span; ``rect_between`` measures from the
-    # path's left-hand normal, so a channel whose back faces left is named from the far
-    # end. The section is symmetric about its centre line, so this only moves the names.
-    keys = [band[0] for band in bands]
-    if getattr(el, "back_side", "left") == "left":
-        keys.reverse()
-    for i, (a, b) in enumerate(zip(path[:-1], path[1:])):
-        for key, (_, offset, band_t, bottom_drop, top_drop) in zip(keys, bands):
-            left = -half + offset
+    for key, offset, band_t, bottom_drop, top_drop in bands:
+        left, right = _cross_span(half, offset, band_t, el.back_side)
+        for i, (a, b) in enumerate(zip(path[:-1], path[1:])):
             model.solids.append(ResolvedSolid(
                 uid=f"{el.uid}-{i:02d}-{key}", tag=f"{el.tag}-{i + 1}-{key.upper()}",
                 storey=storey, category=category,
-                outline=rect_between(a, b, left, left + band_t),
+                outline=rect_between(a, b, left, right),
                 z0_m=top - bottom_drop, z1_m=top - top_drop,
             ))
+
+
+def _resolve_downspout(model: ResolvedModel, el, storey: str) -> None:
+    """The leader as a round prism from the gutter outlet down to its discharge.
+
+    Faceted exactly like the vent riser (:func:`_resolve_vent`) so the two read as the same
+    kind of round metal on the elevation rather than one being smooth and the other a prism.
+    """
+    z0, z1 = el.bottom_elevation.meters, el.top_elevation.meters
+    if z1 - z0 <= 0.0:
+        return
+    model.solids.append(ResolvedSolid(
+        uid=f"{el.uid}-00", tag=el.tag, storey=storey, category="gutter",
+        outline=circle_outline(el.position.xy_m, el.diameter.meters / 2.0, _PIPE_FACETS),
+        z0_m=z0, z1_m=z1))
+
+
+def _cross_span(half: float, offset: float, band_t: float,
+                back_side: str) -> tuple[float, float]:
+    """A band's ``[left, right]`` offsets, given where its inboard end sits.
+
+    The band recipes measure offsets from the section's *inboard* end. ``rect_between``
+    measures from the path's left-hand normal, so when the building is on the left the two
+    frames run in opposite directions and the offsets have to be mirrored — not merely
+    relabelled.
+    """
+    if back_side == "left":
+        right = half - offset
+        return right - band_t, right
+    left = -half + offset
+    return left, left + band_t
