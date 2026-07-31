@@ -11,6 +11,7 @@
 import * as THREE from "three";
 import type { Catalog, Solid } from "../model/types";
 import { materialColor, materialOpacity, type ResolvedNordicPalette } from "../nordic/palette";
+import type { Trade } from "../state/vocabulary";
 
 // solid category → sRGB hex, mirroring emit/gltf/emitter.py `_PALETTE` (the same keys, its
 // linear triples rounded to 8-bit). Categories with no entry fall back to the theme's concrete
@@ -43,6 +44,53 @@ export const SOLID_CATEGORY_COLOR: Record<string, number> = {
   // palette's "soffit" carries (0.88, 0.88, 0.85), so the viewer and the export agree.
   soffit: 0xe0e0d9,
 };
+
+// solid category → visibility trade, mirroring packages/engine/src/typehaus/emit/trades.py
+// `SOLID_CATEGORY_TRADE` (change one, change the other — tests/test_solid_trade_parity.py checks
+// both directions). Every solid used to be handed to the `concrete` group regardless of what it
+// was, which filed the standalone beams and posts away from the studs and rafters they carry,
+// and put all 791 routed pipe solids behind the Concrete toggle instead of Plumbing.
+//
+// Categories absent here take the `concrete` fallback. `railing` and `connector` are on it
+// deliberately, not by omission — see the engine table for why.
+export const SOLID_CATEGORY_TRADE: Record<string, Trade> = {
+  // Standalone structure: an authored Beam/Post is the same lumber as the members it carries,
+  // and an authored ridge beam already appears under framing (the engine re-types it as a
+  // FramedMember owned by the roof).
+  beam: "framing",
+  column: "framing",
+  // Routed plumbing runs, one category per system (engine resolve/mep.py).
+  pipe_drain: "plumbing",
+  pipe_vent: "plumbing",
+  pipe_water_hot: "plumbing",
+  pipe_water_cold: "plumbing",
+  pipe_gas: "plumbing",
+  pipe_radon: "plumbing",
+  // Bath/dryer exhaust and the radon riser.
+  vent: "mechanical",
+  // Fenestration and the extrusions that hold it, plus the rainscreen base closure — envelope
+  // detail, hidden with the openings rather than with the concrete.
+  glazing: "openings",
+  glazing_trim: "openings",
+  bug_screen: "openings",
+  // Roof edge trim.
+  fascia: "roof",
+  gutter: "roof",
+  flashing: "roof",
+  // A dropped soffit is framed and finished like the ceiling it hangs under.
+  soffit: "floors",
+  // Equal to the fallback, named so the parity test's "unclassified" list stays meaningful.
+  slab: "concrete",
+  footing: "concrete",
+  pad: "concrete",
+  dowel: "concrete",
+  thermal_break: "concrete",
+};
+
+/** The trade group a resolved solid belongs to (engine: emit/trades.py::solid_trade). */
+export function solidTrade(solid: Pick<Solid, "category">): Trade {
+  return SOLID_CATEGORY_TRADE[solid.category?.toLowerCase() ?? ""] ?? "concrete";
+}
 
 // Shop-finished metal accessories read as metal, not matte plastic: a gutter, a drip flashing
 // and an aluminium guard all catch the environment light the way the standing-seam wall finish

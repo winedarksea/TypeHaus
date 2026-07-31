@@ -11,6 +11,7 @@ from typehaus.emit.gltf.buffers import (
     _deindex_with_normals,
 )
 from typehaus.emit.gltf.mesh import _MeshBuilder
+from typehaus.emit.trades import TRADES
 
 
 # The selection-kind vocabulary the UI honours — mirrors ``SelectionKind`` in
@@ -73,6 +74,11 @@ class _SceneBuilder:
         """
         if kind is not None and kind not in _SELECTION_KINDS:
             raise ValueError(f"unknown selection kind {kind!r}; expected one of {sorted(_SELECTION_KINDS)}")
+        # Trades used to be literals at the call sites; solids now take theirs from a table
+        # (emit/trades.py), so a typo there has to fail here rather than ship a node whose
+        # group the UI has nowhere to put.
+        if trade not in TRADES:
+            raise ValueError(f"unknown trade {trade!r}; expected one of {sorted(TRADES)}")
         primitives: list[dict] = []
         for color, positions, indices in mb.buckets():
             # De-index into flat triangle soup with one geometric normal per face. Every builder

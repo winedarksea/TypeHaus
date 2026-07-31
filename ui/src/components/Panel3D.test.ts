@@ -84,6 +84,40 @@ export function runOpeningGeometryTests() {
   );
   assert(mitered.some((piece) => piece.polygon.some(([x, y]) => x === -0.25 && y === 0)),
     "Opening splitting preserves a junction-solved miter vertex");
+
+  // A door can start *below* the wall hosting it: the Catlin garage's overhead door lands on
+  // the slab, one 22" ICF stem reveal under W-G-E's base. Height is measured from that
+  // threshold, so the head must come down with it — both builders have to agree with
+  // resolve/geometry_walls.py, which measures from the (unclamped) threshold too.
+  const stemReveal = 0.5588, doorHeight = 2.1336;
+  const onStem = { ...wall([[0, 0], [4, 0]]), z0_m: stemReveal, z1_m: stemReveal + 2.4384 };
+  const dropped = { ...opening(2, -stemReveal, doorHeight, 0, 1.6), kind: "door" as const, is_door: true };
+  const head = doorHeight;  // threshold (0) + height, NOT the wall base + height
+
+  const belowGrade = wallLayerPieces(onStem, [[0, -0.1], [4, -0.1], [4, 0.1], [0, 0.1]], [dropped]);
+  assert(!belowGrade.some((piece) => piece.z0_m < stemReveal - 1e-9),
+    "A below-base threshold adds no wall piece under the wall itself");
+  assert(!belowGrade.some((piece) => piece.z0_m < head - 1e-9 && piece.z1_m > stemReveal + 1e-9
+    && piece.polygon.some(([x]) => x > 1.5 && x < 2.5)),
+    "No wall piece fills the dropped door's void between the wall base and its head");
+  assert(belowGrade.some((piece) => Math.abs(piece.z0_m - head) < 1e-9),
+    "The header piece starts at the head measured from the threshold, not from the wall base");
+
+  // Same rule in the swept-Shape builder, which only engages for arched openings — hence the
+  // arch rise here. Its springline is the threshold plus the square part of the opening, so
+  // it is the term that moves if the threshold is read off the clamped bottom instead.
+  // Elevation survives as the geometry's Y (the extrude maps across to Z).
+  const archRise = 0.4;
+  const archedDrop = { ...dropped, arch_rise_m: archRise };
+  const swept = createSmoothArchedWallLayerGeometry(
+    onStem, [[0, -0.1], [4, -0.1], [4, 0.1], [0, 0.1]], [archedDrop], [0, 0]);
+  assert(swept, "An arched opening admits the wall layer to the swept-Shape path");
+  const ys = Array.from(swept!.getAttribute("position").array).filter((_, i) => i % 3 === 1);
+  const springline = doorHeight - archRise;  // from the threshold at 0, not from the wall base
+  assert(ys.some((y) => Math.abs(y - springline) < 1e-6),
+    "Swept hole springs from the threshold-measured springline");
+  assert(!ys.some((y) => Math.abs(y - (stemReveal + springline)) < 1e-6),
+    "Swept hole never springs from the wall base, which is where a clamped threshold would put it");
 }
 
 // Arches must read as true half circles, not a stack of stripes. That needs the swept-Shape

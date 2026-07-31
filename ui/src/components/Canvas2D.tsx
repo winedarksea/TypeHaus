@@ -407,9 +407,11 @@ export function Canvas2D() {
             selected={selection.uid === stair.uid} hovered={hoverUid === stair.uid}
             onSelect={selectEl} onHover={hoverEl} />)}
         {/* guards over the stair wells and open edges, drawn on top of the flight they
-            protect. Gated on `concrete` because every ResolvedSolid — slab, footing, railing
-            — lands in the 3D viewer's concrete group, so the toggle behaves the same in
-            both viewers rather than the plan inventing its own grouping. */}
+            protect. Gated on `concrete` because that is where a `railing` solid still lands in
+            the 3D viewer (three/solidMaterials.ts::SOLID_CATEGORY_TRADE keeps it on the
+            fallback for exactly this reason), so the toggle behaves the same in both viewers
+            rather than the plan inventing its own grouping. Re-home the category and this gate
+            moves with it — `stairs` is the likelier answer for a guard. */}
         {visibleTrades.concrete && <RailingOutlines railings={railingsOnStorey} project={project} />}
         {(model.canvas_objects ?? [])
           // Doors/windows remain topology-aware SVG shapes below; their normalized records

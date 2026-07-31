@@ -770,22 +770,53 @@ def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     ys = [p[1] for w in stem for p in w.axis]
     assert min(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT).meters)
     assert max(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT + GARAGE_SIZE_FT).meters)
-    # Stem runs frost depth (-42") to +22" — absolute elevations, walkout-style — except the
-    # overhead-door apron (W-GF-E-DR), which drops to a low reveal instead of the full 22"
-    # so the stem isn't a curb the car has to climb.
-    apron = next(w for w in stem if w.tag == "W-GF-E-DR")
+    # Stem runs frost depth (-42") to +22" — absolute elevations, walkout-style — except
+    # under the overhead door, where it becomes a grade beam topping out *flush with the
+    # slab* rather than at any reveal at all: a low curb across a 16' vehicle door is still
+    # a curb the car has to climb.
+    grade_beam = next(w for w in stem if w.tag == "W-GF-E-DR")
+    slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
     for wall in stem:
         assert wall.z0_m == pytest.approx(-inch(42.0).meters)
-        if wall is apron:
-            assert wall.z1_m < inch(22.0).meters
-        else:
-            assert wall.z1_m == pytest.approx(inch(22.0).meters)
+        expected_top = slab.z1_m if wall is grade_beam else inch(22.0).meters
+        assert wall.z1_m == pytest.approx(expected_top)
     # Garage roof: ridge E-W (rotated 90° vs the house), 16" overhangs.
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
     assert roof.ridge_direction == "x"
     xs = [p[0] for p in roof.footprint]
     assert max(xs) - min(xs) == pytest.approx(
         ft(GARAGE_SIZE_FT).meters + 2 * inch(GARAGE_OVERHANG_IN).meters)
+
+
+def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
+    """The one negative sill in the plan, and the thing that makes the garage drivable.
+
+    W-G-E bears on the ICF stem, 22" above the slab poured inside it, so a door sitting on
+    its host wall's own base would open 22" up in the air. D-G-OVERHEAD instead drops that
+    exact reveal to land on SL-G-FLOOR. This is the assertion that holds ``sill_height``
+    tied to ``GARAGE_STEM_REVEAL``: the editable-plan dialect bans arithmetic, so the two
+    numbers cannot be spelled as one expression in plan/storeys/garage.py.
+    """
+    wall = catlin_model.wall("W-G-E")
+    door = next(o for o in catlin_model.openings if o.tag == "D-G-OVERHEAD")
+    slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
+
+    threshold = wall.z0_m + door.sill_m
+    assert threshold == pytest.approx(slab.z1_m)
+    assert door.sill_m == pytest.approx(-(wall.z0_m - slab.z1_m))
+    # A 7' door is 7' of clear opening wherever its threshold lands, so the head comes down
+    # with it — and stays inside the 8' wall, leaving room for the LVL and its cripples.
+    head = threshold + door.height_m
+    assert head == pytest.approx(slab.z1_m + ft(7.0).meters)
+    assert head < wall.z1_m
+
+    # The framed header follows the head down too. It used to be pinned to the host wall's
+    # base regardless of sill, which left the LVL 22" above the hole every other emitter cut.
+    plate_top = min(m.z1_m for m in catlin_model.all_members()
+                    if m.parent_uid == wall.uid and m.child_key == "plate-bottom")
+    header = next(m for m in catlin_model.all_members()
+                  if m.parent_uid == wall.uid and m.category == "header")
+    assert header.z0_m == pytest.approx(plate_top + door.sill_m + door.height_m)
 
 
 def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):

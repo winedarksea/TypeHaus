@@ -28,10 +28,13 @@ export type Lens = "none" | "air" | "water" | "thermal" | "vapor";
 
 // 3D trade visibility (→ 21 §3D panel WP7): one THREE.Group per trade so toggling never
 // rebuilds the scene, just flips group.visible. "walls" is layer polygons (sheathing,
-// insulation, cladding); "framing" is wall members (studs/plates/headers); "floors" is
-// floor decks (hideable for stair continuity); "concrete" is resolved solids (slabs,
-// footings, pads); "roof" is the roof surface + its members (incl. ridge beam); "earth"
-// is the translucent site context sheet.
+// insulation, cladding); "framing" is every stick in the building — wall members
+// (studs/plates/headers), floor joists, roof rafters and the ridge beam, plus the standalone
+// Beam/Post solids the resolver emits; "floors" is floor decks (hideable for stair continuity)
+// and dropped soffits; "concrete" is the pours (slabs, footings, pads) and the fallback for any
+// solid category not yet classified; "roof" is the roof shell and its edge trim, but not its
+// sticks; "earth" is the translucent site context sheet. Which trade a resolved solid lands on
+// is the shared table in three/solidMaterials.ts::SOLID_CATEGORY_TRADE.
 export type Trade = "walls" | "openings" | "framing" | "floors" | "concrete" | "roof" | "stairs" | "furniture" | "plumbing" | "electrical" | "mechanical" | "earth";
 export const ALL_TRADES: Trade[] = [
   "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth",

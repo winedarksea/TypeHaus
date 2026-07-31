@@ -27,6 +27,7 @@ from typehaus.emit.gltf.roofs import _add_roof
 from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.emit.gltf.walls import _add_wall_body
 from typehaus.emit.room_floor import room_floor_elevation
+from typehaus.emit.trades import solid_trade
 from typehaus.resolve.model import ResolvedModel
 
 # Re-exported for callers that reach past the entry point (tests pinning palette parity, the
@@ -127,7 +128,10 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             mb = _MeshBuilder()
             mb.add_prism_with_rectangular_voids(solid.outline, solid.voids, solid.z0_m,
                                                 solid.z1_m, _solid_color(model, solid))
-            scene.add_object(mb, trade="concrete", kind="solid", uid=solid.uid)
+            # Not every solid is a pour: a standalone beam or post is framing, a routed pipe
+            # run is plumbing, roof edge trim is roof (→ emit/trades.py).
+            scene.add_object(mb, trade=solid_trade(solid.category), kind="solid",
+                             uid=solid.uid)
 
     for bedding in sorted(model.footing_beddings, key=lambda item: item.uid):
         if bedding.outline and bedding.z1_m > bedding.z0_m:

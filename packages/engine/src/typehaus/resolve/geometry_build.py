@@ -30,6 +30,7 @@ from typehaus.emit.finishes import (
     member_material_key,
     normalize,
 )
+from typehaus.emit.trades import solid_trade
 from typehaus.resolve.geometry_ir import (
     ElementGeometry,
     GBox,
@@ -108,7 +109,8 @@ def _wall_geometry(wall: ResolvedWall, openings) -> ElementGeometry:
 
 
 def _solid_geometry(solid: ResolvedSolid) -> ElementGeometry:
-    """A slab/footing/pad: its plan outline extruded between its two elevations.
+    """Any solid — pour, beam, post, pipe run, trim: its plan outline extruded between its
+    two elevations.
 
     ``voids`` ride the prism rather than being pre-subtracted, so the IFC emitter can express
     them as real openings while the glTF emitter tessellates them away — same input, each
@@ -116,12 +118,8 @@ def _solid_geometry(solid: ResolvedSolid) -> ElementGeometry:
     """
     prism = GPrism(ring=solid.outline, z0_m=solid.z0_m, z1_m=solid.z1_m,
                    voids=tuple(solid.voids))
-    # Almost every solid is a pour. A dropped soffit is the exception: it is framed and
-    # finished like the ceiling it hangs under, so it rides the floors trade instead of
-    # appearing in a concrete take-off it has no business in.
     return ElementGeometry(
-        uid=solid.uid, kind=solid.category,
-        trade="floors" if solid.category == "soffit" else "concrete",
+        uid=solid.uid, kind=solid.category, trade=solid_trade(solid.category),
         parts=(GPart(key="body", solids=(prism,),
                      material_key=normalize(solid.category),
                      layer_group="structure"),),

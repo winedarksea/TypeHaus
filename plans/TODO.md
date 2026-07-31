@@ -214,9 +214,6 @@ the future.
   `library/placeables/fixtures.py`), so this is a one-line footprint question.
 - Laundry room needs to fit a sink + closet, 24" W x 21" D x 43" H. like https://www.homedepot.com/p/Glacier-Bay-24-in-W-x-21-in-D-x-34-in-L-Stainless-Steel-Laundry-Utility-Sink-with-Faucet-and-Cabinet-in-White-QL033Y/206057007 The sink will double as the air gapped condensate drain for the heat pump dryer. The sink will have a wall rack over it (one of those that folds down). It looks like we also need to model the standard air gapped clothes washer drain too. The washer/dryer becomes a stacked unit (floorplan area 28 inch width, 40 inch depth, 80 inch height, something like). No vent is needed for a heat pump dryer.
 - It looks like beams BM-S-HALL and BM-M-HALL are not getting grouped as part of the framing in the view. Also want to double check that beams are properly considered as a type of framing, for example the hall beams should likely be defined similarly to RIDGE-BEAM, garage header HEADER-0, the porch beams such as BM-SG-BKW, and possibly some of the window and door headers. We also may have some cases where we have headers specified over windows or doors when a large beam
-- D-S-STUDY2 can be replaced with just an opening. Likely framed the same as a door of 30", so perhaps a new type of door that is just an opening.
-- D-B-PLAY door needs to have a "glazed 60 interior french door" style, not a bifold.
-- O-S-CLOSET actually needs to be a bifold closet door.
 - The 'Sun' slider doesn't actually seem to do anything. I think the basic idea was just to move a sun icon so users could get a sense of where the sun would be at certain times (not actually modeling shadows), but if that happens now, it isn't visible on the main canvas.
 - The tube grow lights need to look in 3d more like suspended lights (which is basically a box with two poles/strings coming down from the ceiling on each end).
 

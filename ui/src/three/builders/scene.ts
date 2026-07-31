@@ -13,6 +13,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { Model } from "../../model/types";
 import type { ResolvedNordicPalette } from "../../nordic/palette";
 import { disposeGroup } from "../members";
+import { solidTrade } from "../solidMaterials";
 import {
   projectPlanRotationToSceneRadians, projectPointToScene, type PlanCenter,
 } from "../planGeometry";
@@ -94,11 +95,15 @@ export function populateScene(options: PopulateSceneOptions) {
   // The site sheet is context, not an element: it has no uid in model.json, so it stays out
   // of the raycast set and a click through it falls to whatever building geometry is behind.
   buildEarth(tradeGroups.earth, model, center, mode);
+  // A solid is not automatically concrete: a standalone beam or post is framing (the same
+  // lumber as the studs and rafters it carries), a routed pipe run is plumbing, roof edge trim
+  // is roof. The mapping is shared with the exporter — see solidTrade / emit/trades.py.
   for (const solid of model.solids ?? []) {
-    buildSolid(tradeGroups.concrete, solid, center, mode, palette, model.catalog,
+    buildSolid(tradeGroups[solidTrade(solid)], solid, center, mode, palette, model.catalog,
       registry.picks, registry.byUid);
   }
   for (const bedding of model.footing_beddings ?? []) {
+    // Beddings have no category to consult: a footing's gravel bed is a pour by definition.
     buildFootingBedding(tradeGroups.concrete, bedding, center, mode, registry.picks, registry.byUid);
   }
   for (const floor of model.floors ?? []) {

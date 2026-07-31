@@ -284,11 +284,13 @@ def test_emit_gltf_dict_tags_every_node_with_a_kind_and_uid(plan):
     # A framing node inherits its owner's identity: individual sticks are merged into one draw
     # call in the viewer, so a stud selects the wall that owns it and a rafter selects its roof.
     # Roofs and floors contribute framing too — their sticks belong under the framing toggle
-    # with every other stick, not hidden behind the roof/floors toggle.
+    # with every other stick, not hidden behind the roof/floors toggle. A standalone Beam/Post
+    # arrives as its own selectable solid (kind "solid"), routed by emit/trades.py.
     framing = [n for n in gltf["nodes"] if n["extras"]["trade"] == "framing"]
     assert framing, "expected at least one framing node"
     owners = {"wall": {w.uid for w in model.walls}, "roof": {r.uid for r in model.roofs},
-              "floor": {f.uid for f in model.floors}}
+              "floor": {f.uid for f in model.floors},
+              "solid": {s.uid for s in model.solids}}
     for node in framing:
         kind = node["extras"]["kind"]
         assert kind in owners, f"framing node has unexpected owner kind {kind}"
