@@ -33,17 +33,15 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Remaining Work
 
-- **`mep.heating_capacity` still fails on the HP2 zone, now by 764 Btu/h** (2026-07-31).
-  Was **-8,764**: the envelope-wall fix below made this zone's block load measurable for the
-  first time (30,764 Btu/h at design over the basement plus the main-floor bedroom/bath/
-  living side) against 22,000 Btu/h of at-design capacity. `EQ-T-GREE-MULTI-U30` was bumped
-  to the max-heating variant of the same box (36,000 Btu/h at 47F, 30,000 at design), which
-  leaves **-764 Btu/h** for a later review rather than pretending the zone is covered. Both
-  capacity figures are still REPRESENTATIVE PLACEHOLDER — the real answer wants the Gree
-  datasheet. The radiant mats, the fireplace and the garage heater stay excluded from the
-  zone total by design (`plan/circuits.py` calls them supplemental); if the radiant is in
-  fact carrying that last 764, it should stop being modeled as supplemental.
-
+- **`mep.heating_capacity` still fails on the HP2 zone, by 764 Btu/h** (2026-07-31). Block
+  load 30,764 Btu/h at design over the basement plus the main-floor bedroom/bath/living
+  side. `EQ-T-GREE-MULTI-U30` is the max-heating variant of the 3-port box (36,000 Btu/h at
+  47F, 30,000 at design), which leaves **-764 Btu/h** rather than pretending the zone is
+  covered. Both capacity figures are still REPRESENTATIVE PLACEHOLDER — the real answer
+  wants the Gree datasheet. The radiant mats, the fireplace and the garage heater stay
+  excluded from the zone total by design (`plan/circuits.py` calls them supplemental); if
+  the radiant is in fact carrying that last 764, it should stop being modeled as
+  supplemental.
 - **Handrail schema + real R311.7.8 check** (2026-07-31). `Railing` needs a
   role/kind (handrail vs guard) plus per-flight authoring before presence, 34"–38" height
   and continuity can be measured; `code.R311_7_8_handrail` reports the gap as UNKNOWN on
@@ -94,28 +92,14 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ### Residuals from the 2026-07-30 batch
 
-- ~~**`N-M-STRJ` junction WARN**~~ and ~~**W-M-STRW2 kept the standard gwb assembly**~~ —
-  both closed 2026-07-30 by giving the 6" jog `CATLIN_MUDROOM_INT_2X6_EXPOSED` and
-  W-M-STRW's alignment. One continuous plane, no 1/2" step, and the through-pair matches
-  on material so the tee resolves. The jog itself has to stay a separate `Wall`:
+- **`N-M-STR1` junction WARN (honest fallback).** W-M-STRS's 2x4 `spf` partition dies into
+  the end of W-M-STRW2's 2x6 `df-select-s4s`, and an L only resolves on an identical
+  assembly or a shared bearing material. Physically a partition butting an end stud.
+  `resolve/topology.py` wants a species-class notion rather than the plan lying about the
+  stud species.
+- **The mudroom 6" jog has to stay its own `Wall`** — a standing constraint, not a task.
   `resolve/topology.py` builds junction incidents from wall endpoints only, so the
-  W-M-STOS2 tee needs a node both walls terminate at.
-- **`N-M-STR1` junction WARN (honest fallback).** The successor to the above: W-M-STRS's
-  2x4 `spf` partition dies into the end of W-M-STRW2's 2x6 `df-select-s4s`, and an L only
-  resolves on an identical assembly or a shared bearing material. Physically a partition
-  butting an end stud. Same underlying gap as before — `resolve/topology.py` wants a
-  species-class notion rather than lying about the stud species — but now on a finish
-  detail rather than on the bearing line.
-- ~~**`electrical.receptacle_spacing`'s RM-M-LIVING gap now sits over the stair well**~~ —
-  closed in the check 2026-07-31, as this entry proposed. `_floor_opening_intervals` breaks
-  wall space where the room boundary runs within 12" of a `FloorOpening`, on the same footing
-  as a doorway: 210.52(A)(2) measures "along the floor line" and a well is where the floor
-  line stops. It also surfaced three receptacles that were *on* those ledges and therefore
-  never reachable — ED-A-STUDY-RC1 (1 3/4" of deck against RM-A-STUDY's north wall) and
-  ED-A-STUDY-RC2 (6 5/8" against its east wall), both moved; and ED-S-SUITE-RC2, which was
-  not on a ledge but was sitting inside O-S-CLOSET's 4'-8" cased opening. RM-S-SUITE also
-  gained ED-S-SUITE-RC7 on the 2'-2" of wall between D-S-SUITE and the closet opening.
-  RM-S-SUITE and RM-A-STUDY now pass; only the kitchen wall above is left.
+  W-M-STOS2 tee needs a node both walls terminate at; merging the jog re-opens `N-M-STRJ`.
 - **RM-S-PLANT has no fresh-air terminal, by decision (2026-07-30)** — a dedicated mini-HRV
   just for the plant room is under consideration. RM-S-STUDY2 likewise has no fresh-air
   terminal, by decision. `mep.ventilation_distribution` names exactly these two rooms and
@@ -133,48 +117,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `Layer` has no colour slot; a second colour needs a second paint `Material` plus per-room
   `wall_lining` overrides. Rationale in the comment above `_PAINT_FINISH` in
   `houses/catlin/plan/assemblies.py`.
-
-### Check-tier changes from the 2026-07-31 sweep
-
-Catlin went from 30 build warnings to 1, and from 404 pass / 17 fail / 39 unknown to
-412 / 6 / 20. Almost all of it was the checks describing the house wrongly, not the house:
-
-- **A ≤4" wall projection clears a floor space at any height**
-  (`resolve/placeable_clear_floor_obstruction.py`). A117.1 §307.2 states its 4" limit for
-  leading edges above 27"; below 27" it sets no limit at all, so a body inside the stated
-  limit is clear either way. The old code applied the allowance only above 27", which made
-  every receptacle at 16"–18" AFF an "obstruction" of the floor beside a bed — eight of
-  catlin's warnings.
-- **A clearance zone stops at the owner's own footprint, and at a partition**
-  (`resolve/placeables.py`). A `surround_zone` is authored as the whole enlarged rectangle,
-  so a pendant hung over the table it lights read as an encroachment on that table's
-  chair-use margin; and a zone drawn through a bedroom wall read as encroached by whatever
-  stood in the next room.
-- **A door leaf is stopped by the same bodies a clear floor space is.** The swing check
-  shares `clear_floor_space_obstruction` now instead of testing plan overlap under the head,
-  so a leaf passes over a flush floor register and clears a 2" switch plate.
-- **Interior foundation walls are not thermal envelope** (`energy.py::_is_envelope_wall`).
-  `is_foundation` was the whole below-grade test, but a basement's centre bearing walls carry
-  that flag with conditioned space on both faces. 810 ft2 of catlin's bare interior concrete
-  was in every block load, and four interior basement doors were being asked for envelope
-  U-factors — which is what kept `mep.heating_capacity` UNKNOWN. HP2's zone load fell 38,548
-  → 30,764 Btu/h and HP1's cooling finding became evaluable.
-- **Wall space stops at a counterless fixed cabinet, and a combination receptacle counts**
-  (`checks/mep/electrical.py`). Both were needed to close catlin's last receptacle gap, the
-  kitchen's north wall. 210.52(A)(2)(1) lists "fixed cabinets that do not have countertops or
-  similar work surfaces" alongside doorways as what wall space is unbroken by, so
-  `FurnitureType.work_surface` now says which a cabinet is (the catalog's base/sink/island
-  runs True, its tall pantry runs False) rather than the check guessing from height. And
-  ED-M-LIVING-KET1 is a `RECEPTACLE_240` *kind* whose type is a 5-20R/6-20R duplex — one box
-  with an ordinary 125V outlet in it — so receptacle-ness is read off the type's ports, per
-  the `DeviceKind` docstring's own rule that the kind stays flat and the type differentiates.
-  RM-M-LIVING passes, and so does `test_catlin_receptacle_spacing_passes_after_fill`.
-- **Three advisories report as facts, not verdicts** (`Result.PASS`, same message, same WARN
-  severity): `advisory.window_size_variety` (any house has more than one window size),
-  `advisory.floor_finish_over_radiant` (a commissioning constraint on a legal pairing), and
-  `building_science.condensation.cold_snap` — whose own fix_hint says the monthly gate is the
-  verdict and this is a screen. A fail count nobody can drive to zero is a fail count nobody
-  reads.
 
 ## Phase 2 — Complete Catlin junctions (needs your intent — construction-rule authoring)
 
@@ -211,54 +153,12 @@ Catlin went from 30 build warnings to 1, and from 404 pass / 17 fail / 39 unknow
 - **The 1" fall toward the garage is drawn, not framed** (lives in the drainage wedges; a
   `Beam` is a prism). If the wedge becomes a real element the fall moves into it.
 
-## Stair framing follow-ups
+## Stair framing — accepted limitations and standing constraints
 
-- ~~**D2 — the winder turn does not fit in a 3'-0" well**~~ — closed 2026-07-31, no layout
-  decision needed. The radial fan the numbers came from (narrow end 1.375", walk line 5.0")
-  is gone: the fan is now laid out with narrow ends *constructed* at exact 6" offsets around
-  the inside corner (`resolve/stairs/winder.py`, "the inside ends deliberately do not
-  converge at the newel"), so the code-minimum path is built in rather than measured after
-  the fact. Measured today: narrow end **6.0"** (= R311.7.5.2.1's 6" minimum) and walk-line
-  going **11.1"** against the 10" minimum — both PASS, pinned by
-  `test_stair_tread_geometry.py`. The well never widened; stair `width` (3'-0"), not the
-  well, sets the walk-line spread. The "~2'-2" from the pivot" arithmetic described the old
-  radial fan only.
 - **Winders keep the `tapered tread` 1.5" band** — a trapezoid is not expressible as
   axis + band width in this IR. (These are also the only 3 of 2099 members without a real
-  IFC representation, by design.) Sharper now that the turn is boxed: the band is the pie
-  panel's *nosing/fan line*, and the box tier under it carries the panel's real footprint
-  (true as of 2026-07-31 — see the next item). Wedge rings are now stripped of coincident
-  and collinear vertices (`winder.py::_clean_ring`, guarded by
-  `test_winder_wedge_rings_are_minimal_simple_polygons`): the first wedge no longer
-  carries a zero-area excursion through the outer corner, which was the doubled outer
-  edge line in plan and the overlapping pie panels in 3D.
-- **The turn is framed Haun-style** (2026-07-25; re-framed 2026-07-31): one platform box
-  per winder step, sides ripped to a riser less the deck (`1.5x6 rim`) so tiers stack dead
-  flush, a diagonal block per box, rims ledgered to W-S-E1/W-S-SS2 (`bearing_refs`) and
-  dying into the newel at the inside corner, and the straight flight landing on the top
-  box's doubled departing rim. 2026-07-31: box `k` is now bounded by its *leading* fan
-  line (`k-1`; the square's entering edge for box 0), so box 0 is the full corner
-  platform, tiers nest wedding-cake, and every pie panel bears on its own box. The old
-  framing bounded box `k` by its *own* fan line — complementary wedges, every panel
-  cantilevered one riser above its support (the "floating pies" in 3D), and the top tier
-  collapsed to two coincident rims. The two raked "winder carriages" and the slung header
-  are gone — no framer cuts a compound-angle carriage through a turn.
-- **Every tread/landing board is now dropped to its step elevation** (`stairs/common.py::
-  _notch_z`), house-wide rather than winder-only. Boards used to sit *on* the theoretical
-  step, which stretched each flight's first riser by 1.5" and shortened its last by the
-  same — 9" and 6" against a 7.5" design riser. `structural.stair_riser_uniformity` (new,
-  IRC R311.7.5.1) measures the built risers off the members; all three catlin stairs now
-  read 0.00" variation.
-- **A u-split's landing depth is floored at 36", not at the stair width** (2026-07-28,
-  `stairs/common.py::_MIN_LANDING_DEPTH_M`). R311.7.6 has two numbers and the resolver was
-  applying the wrong one to the wrong axis: the *width* rule ("not less than the stairway
-  served") is cross-run, which a half-landing meets by construction; only the 36" is
-  measured in the direction of travel. The old floor silently lengthened every U-well by
-  (width - 36").
-- **`turn_direction` now names a u-split's hand too** (2026-07-28), not just a winder's.
-  It swaps which lane each flight occupies and nothing else — the well, the partition and
-  the landing zone are symmetric — so mirroring a stair never changes the opening it needs.
-  `None`/`"right"` is the pre-existing behaviour; catlin's ST-B2M and ST-M2S are `"left"`.
+  IFC representation, by design.) The band is the pie panel's *nosing/fan line*; the box
+  tier under it carries the panel's real footprint.
 - **The two wells share one south edge, and it is the stair wall's face** (2026-07-28).
   Not a free choice either: `FO-S-STAIR`'s south edge is ST-M2S's *springing point* — its
   first tread starts there — so any wall north of that line stands on that tread, and
@@ -271,10 +171,6 @@ Catlin went from 30 build warnings to 1, and from 404 pass / 17 fail / 39 unknow
   D-M-STAIR and stops — so the up-flight's lane is open to the living room. RO-1 went with
   the removed length, and RM-M-STAIR retired into RM-M-LIVING, since the well is inside
   that room's polygonized face now.)
-- **Guards draw in 2D** (`emit/draw/floorplan.py::_emit_railings`, layer `A-RAIL`). Every
-  resolved railing solid is drawn as its own plan outline, so a post reads at its true
-  section and a rail as the band it sweeps. Coincident stacked rails are deduped. An open
-  well edge and a guarded one used to draw identically on plan.
 
 ## Current Orientation
 
@@ -286,9 +182,7 @@ the future.
   clearance is already modeled separately (`_water_closet_required_clearance` in
   `library/placeables/fixtures.py`), so this is a one-line footprint question.
 - It looks like beams BM-S-HALL and BM-M-HALL are not getting grouped as part of the framing in the view. Also want to double check that beams are properly considered as a type of framing, for example the hall beams should likely be defined similarly to RIDGE-BEAM, garage header HEADER-0, the porch beams such as BM-SG-BKW, and possibly some of the window and door headers. We also may have some cases where we have headers specified over windows or doors when a large beam
-- The 'Sun' slider doesn't actually seem to do anything. I think the basic idea was just to move a sun icon so users could get a sense of where the sun would be at certain times (not actually modeling shadows), but if that happens now, it isn't visible on the main canvas.
 - The tube grow lights need to look in 3d more like suspended lights (which is basically a box with two poles/strings coming down from the ceiling on each end).
-- We need a zoom in/zoom out little button to click (material design 3 style integrated)
 - Make sure there is an electric outlet in the kitchen island where usable for appliances in accordance with code
 
 Questions:
