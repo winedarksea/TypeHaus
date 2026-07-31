@@ -36,6 +36,9 @@ export type IconName =
   | "view-2d"
   | "view-split"
   | "view-3d"
+  // Canvas navigation
+  | "zoom-in"
+  | "zoom-out"
   // Preferences
   | "density-compact"
   | "density-comfortable"

@@ -8,6 +8,7 @@ import {
   formatFtIn, M_PER_FT, openingHostWall, snapWorld, orthoLock, wallLength,
 } from "../model/geometry";
 import { SunIndicator } from "./SunIndicator";
+import { ZoomControls } from "./ZoomControls";
 import { BackgroundGrid, nodeTagMatches } from "./plan/PlanChrome";
 import { CanvasHud } from "./plan/CanvasHud";
 import { CanvasObjectFootprint, ClearanceOverlays, NodeHandle } from "./plan/ObjectShapes";
@@ -239,7 +240,7 @@ export function Canvas2D() {
     setDoorPopup, setWindowPopup, commitWall, commitStair,
   }, world, screen);
 
-  const { onWheel, onPointerDown, onPointerMove, onPointerUp, onClickCapture } = usePanZoom({
+  const { zoomBy, onPointerDown, onPointerMove, onPointerUp, onClickCapture } = usePanZoom({
     svgRef, model, activeStorey, wallsOnStorey, unproject, onTap: handleTap,
     shiftRef: shift, setCursor,
   });
@@ -312,7 +313,6 @@ export function Canvas2D() {
       <svg
         ref={svgRef}
         className={`canvas-svg ${cursorClass}`}
-        onWheel={onWheel}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -519,7 +519,12 @@ export function Canvas2D() {
         warningPopup={warningPopup} setWarningPopup={setWarningPopup}
         ctxMenu={ctxMenu} setCtxMenu={setCtxMenu}
       />
-      <SunIndicator model={model} />
+      {/* The plan's bottom-*left* is the extents card, so its zoom stacks over the sun chip on
+          the right instead — one cluster, so neither has to know the other's height. */}
+      <div className="canvas-nav-controls side">
+        <ZoomControls label="Plan zoom" onZoom={zoomBy} />
+        <SunIndicator model={model} />
+      </div>
       <CanvasHud model={model} serviceOptions={serviceOptions}
         activeService={activeService} setActiveService={setActiveService}
         showClearances={showClearances} setShowClearances={setShowClearances}

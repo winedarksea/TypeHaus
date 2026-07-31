@@ -270,6 +270,36 @@ def linear_light() -> Builder:
     return build
 
 
+def suspended_linear_light() -> Builder:
+    """A cable-hung linear tube: shallow body below, two supports above.
+
+    The declared height is the complete ceiling-to-fixture assembly, not the depth of
+    the lamp body.  Keeping the cables as separate parts makes that drop legible in 3D
+    while the plan glyph remains the same compact linear-fixture convention.
+    """
+
+    linear_strokes = linear_light()
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        strokes, _ = linear_strokes(width, depth, height)
+        body_h = min(height * 0.12, 0.0762)  # 3 in. maximum shallow tube housing
+        lens_h = body_h * 0.45
+        end_cap = clamp(width * 0.06, 0.0, width * 0.12)
+        lit_w = width - 2 * end_cap
+        lit_d = depth * 0.62
+        support_inset = min(width * 0.06, 0.1016)  # no more than 4 in. from an end
+        cable_t = min(depth * 0.08, 0.003175)  # 1/8 in. black suspension cable
+        parts: list[Part] = [
+            box(0, 0, lens_h, body_h, width, depth, "luminaire-housing"),
+            box(0, 0, 0.0, lens_h, lit_w, lit_d, "lamp"),
+        ]
+        for x in (-width / 2 + support_inset, width / 2 - support_inset):
+            parts.append(box(x, 0, body_h, height, cable_t, cable_t, "luminaire-housing"))
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 LIGHTING_SYMBOLS: dict[str, Builder] = {
     "recessed-can": recessed_can(),
     "panel-light": panel_light(),
@@ -280,4 +310,5 @@ LIGHTING_SYMBOLS: dict[str, Builder] = {
     "chandelier": chandelier(arms=6),
     "ceiling-fan-light": ceiling_fan_light(blades=4),
     "linear-light": linear_light(),
+    "suspended-linear-light": suspended_linear_light(),
 }

@@ -92,6 +92,22 @@ def test_every_colour_role_resolves_to_a_hex_string() -> None:
         assert part_hex(role).startswith("#") and len(part_hex(role)) == 7
 
 
+def test_suspended_linear_light_has_a_shallow_body_and_two_end_cables() -> None:
+    """A grow tube's declared height is its drop, not a 27-inch-deep lamp box."""
+    width, depth, height = 1.8288, 0.0762, 0.6858  # 6 ft x 3 in., dropped 2 ft 3 in.
+    parts = model_parts("suspended-linear-light", width, depth, height)
+
+    housing, lens, *cables = parts
+    assert housing["color"] == "luminaire-housing"
+    assert housing["size"][2] == pytest.approx(0.0762 - 0.0762 * 0.45)
+    assert lens["color"] == "lamp"
+    assert len(cables) == 2
+    assert all(cable["color"] == "luminaire-housing" for cable in cables)
+    assert all(cable["size"][2] == pytest.approx(height - 0.0762) for cable in cables)
+    assert cables[0]["center"][0] == pytest.approx(-cables[1]["center"][0])
+    assert cables[0]["center"][2] == pytest.approx((height + 0.0762) / 2)
+
+
 def test_place_local_matches_the_resolvers_own_footprint_transform() -> None:
     """The resolver bakes rotation into ``footprint`` but not into symbol geometry, so the two
     transforms have to be the same one — otherwise a rotated sofa's arms leave its outline."""

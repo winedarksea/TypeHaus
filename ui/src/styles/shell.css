@@ -423,6 +423,47 @@
   position: static;
 }
 
+/* ── Canvas navigation clusters ─────────────────────────────────────────────
+   The same device as .canvas-context-controls, at the bottom of a pane: a flex box
+   owns the corner, so HUDs that sit next to each other never have to hand-sum each
+   other's widths in an inline `left:` — which is exactly the arithmetic that rots
+   the moment a control changes size or the density token moves.
+
+   Two variants because the two panes have different corners free: the plan's
+   bottom-left already holds the extents card, so its zoom stacks above the sun chip
+   on the right instead. */
+.canvas-nav-controls {
+  position: absolute;
+  bottom: calc(var(--statusrail-h) + var(--gutter));
+  left: calc(var(--rail-w) + var(--gutter) + var(--safe-l));
+  z-index: var(--z-canvas-hud);
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: calc(100% - 24px);
+  flex-wrap: wrap;
+}
+
+.canvas-nav-controls.side {
+  left: auto;
+  right: var(--gutter);
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.canvas-nav-controls .hud {
+  position: static;
+}
+
+/* Zoom is one control in two halves, so it reads as a single pill rather than two
+   buttons that happen to be adjacent. */
+.zoom-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px;
+}
+
 /* ── Bottom navigation (compact only) ───────────────────────────────────────
    The phone-class counterpart to the navigation rail. Same rail-item vocabulary,
    laid out horizontally, sitting where a thumb actually reaches. */
@@ -467,9 +508,13 @@
   .interaction-state,
   .contextbar,
   .canvas-context-controls,
+  .canvas-nav-controls,
   .hud,
   .lens-legend {
     left: var(--gutter);
+  }
+  .canvas-nav-controls.side {
+    left: auto;
   }
   .contextbar {
     right: var(--gutter);
@@ -477,6 +522,7 @@
   }
   .hud,
   .lens-legend,
+  .canvas-nav-controls,
   .preview3d-toggle,
   .preview3d {
     bottom: calc(var(--bottomnav-h) + var(--safe-b) + var(--gutter));

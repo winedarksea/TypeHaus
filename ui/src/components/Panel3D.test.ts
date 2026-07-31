@@ -2,8 +2,9 @@ import * as THREE from "three";
 import type { CanvasObject, Catalog, Floor, FootingBedding, Member, ModelPart, Opening, Roof, Solid, Stair, Vec2, Wall, Model } from "../model/types";
 import { compassBearingScreenDirection } from "./Panel3D";
 import {
-  frameRadiusForBounds, normalizedWheelDeltaPx, VIEW_FIT_MIN_RADIUS_M, VIEW_FIT_POLAR_ANGLE,
-  WHEEL_MAX_STEP_PX,
+  BUTTON_DOLLY_FACTOR, clampDollyRadius, frameRadiusForBounds, MAX_DOLLY_RADIUS_M,
+  MIN_DOLLY_RADIUS_M, normalizedWheelDeltaPx, pinchDollyRadius, VIEW_FIT_MIN_RADIUS_M,
+  VIEW_FIT_POLAR_ANGLE, WHEEL_MAX_STEP_PX,
 } from "../three/cameraFraming";
 import { wholeHouseGlbAssignment } from "../three/wholeHouseGlb";
 import { isRenderedInScene } from "../three/builders/registry";
@@ -602,6 +603,29 @@ export function runViewFramingTests() {
   assert(normalizedWheelDeltaPx(4000, 0) === WHEEL_MAX_STEP_PX,
     "A trackpad flick is clamped so one gesture cannot cross the whole zoom range");
   assert(normalizedWheelDeltaPx(-4000, 0) === -WHEEL_MAX_STEP_PX, "Clamping is symmetric");
+
+  // Dolly range: wheel, pinch and the on-screen buttons share one clamp, so no input can put
+  // the camera somewhere another input cannot get it back from.
+  assert(clampDollyRadius(0) === MIN_DOLLY_RADIUS_M && clampDollyRadius(1e6) === MAX_DOLLY_RADIUS_M,
+    "A dolly distance is pinned to the usable range at both ends");
+  assert(clampDollyRadius(12) === 12, "A distance already in range is left alone");
+
+  // A press of zoom-out followed by zoom-in has to land back where it started, or the buttons
+  // walk the view somewhere new every time you change your mind.
+  const pressed = clampDollyRadius(clampDollyRadius(12 * BUTTON_DOLLY_FACTOR) / BUTTON_DOLLY_FACTOR);
+  assert(Math.abs(pressed - 12) < 1e-9, "Zoom out then in returns the camera to its start");
+  assert(clampDollyRadius(12 * BUTTON_DOLLY_FACTOR) > 12 && BUTTON_DOLLY_FACTOR > 1,
+    "A zoom-out press moves the camera further away");
+
+  // Pinch: the span between the fingers maps to the dolly inversely, anchored on the span the
+  // gesture opened at rather than integrated per move.
+  assert(pinchDollyRadius(20, 100, 200) === 10, "Fingers twice as far apart halve the distance");
+  assert(pinchDollyRadius(20, 200, 100) === 40, "Fingers half as far apart double it");
+  assert(pinchDollyRadius(20, 100, 100) === 20, "A span back at its opening value restores the zoom");
+  assert(pinchDollyRadius(20, 100, 0) === MAX_DOLLY_RADIUS_M,
+    "A degenerate span cannot produce a non-finite dolly distance");
+  assert(pinchDollyRadius(MIN_DOLLY_RADIUS_M, 100, 400) === MIN_DOLLY_RADIUS_M,
+    "Pinch honours the same near clamp the wheel does");
 
   // Picking has to honour the same visibility the renderer does, or a hidden trade keeps
   // intercepting clicks aimed at whatever it was hiding.

@@ -86,7 +86,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 for zone, ring in zones if zone.occupant_types and not _is_required(zone))
     model.canvas_objects.extend(assign_placement_groups(resolved_objects, anchor_zones))
     findings.extend(_clearance_conflicts(model, obstruction_by_uid))
-    findings.extend(_door_swing_conflicts(model))
+    findings.extend(_door_swing_conflicts(model, obstruction_by_uid))
     return findings
 
 
@@ -239,6 +239,13 @@ def _clearance_conflicts(model: ResolvedModel,
     *recommended* zones: the chairs tucked under a dining table are what its chair-use zone is
     for. A required zone is a code minimum and is never exempted — grouping describes intent,
     not permission.
+
+    Two more things a zone is not. It is not the space its *owner* stands in: a
+    ``surround_zone`` is authored as the whole enlarged rectangle, so the owner's own
+    footprint is subtracted before comparing, and a pendant hung over the table it lights
+    stops reading as an encroachment on that table's chair-use margin. And it does not reach
+    through a partition: a zone drawn past a wall into the next room is already stopped by the
+    wall, so a peer standing in a different room is not encroaching on it.
     """
     findings: list[Finding] = []
     for item in model.canvas_objects:
@@ -247,7 +254,9 @@ def _clearance_conflicts(model: ResolvedModel,
         # compared against anything (a bed's second side-access zone, a fridge's swing).
         peers = [peer for peer in model.canvas_objects
                  if peer.storey == item.storey and peer.uid != item.uid
-                 and obstruction_by_uid[peer.uid].obstructs]
+                 and obstruction_by_uid[peer.uid].obstructs
+                 and not _separated_by_construction(item, peer)]
+        own_footprint = Polygon(item.footprint)
         for zones, severity, policy_name in (
             (item.required_clearances, Severity.ERROR, "required"),
             (item.recommended_clearances, Severity.WARN, "recommended"),
@@ -255,6 +264,8 @@ def _clearance_conflicts(model: ResolvedModel,
             group_exempt = severity is Severity.WARN and item.placement_group is not None
             for zone in zones:
                 zone_shape = Polygon(zone)
+                if zone_shape.is_valid and own_footprint.is_valid:
+                    zone_shape = zone_shape.difference(own_footprint)
                 if zone_shape.is_empty or not zone_shape.is_valid:
                     continue
                 for peer in peers:
@@ -276,13 +287,37 @@ def _clearance_conflicts(model: ResolvedModel,
     return findings
 
 
-def _door_swing_conflicts(model: ResolvedModel) -> list[Finding]:
+def _separated_by_construction(item: ResolvedCanvasObject,
+                               peer: ResolvedCanvasObject) -> bool:
+    """Do these two stand in different rooms, i.e. is there construction between them?
+
+    Rooms are resolved from the wall faces that bound them, so two different room tags on one
+    storey mean a partition (or a chase, or a stair well) stands between the two bodies. A
+    recommended zone that runs past that partition is already stopped by it: the 18" of side
+    access a bed wants is not taken by the wardrobe standing on the *other* side of the
+    bedroom wall, and reporting it as taken sends the reader to a room where nothing is wrong.
+
+    ``None`` on either side means the object resolved to no room at all (a porch light, a
+    body standing in a doorway), which is not evidence of separation — those still compare.
+    """
+    return (item.room is not None and peer.room is not None and item.room != peer.room)
+
+
+def _door_swing_conflicts(model: ResolvedModel,
+                          obstruction_by_uid: dict[str, ClearFloorSpaceObstruction],
+                          ) -> list[Finding]:
     """Door leaf sweeps are advisory overlays: flag encroachments without blocking edits.
 
     The sweep is a plan polygon but a leaf is not infinitely tall: it stops at the head.
     A body whose base sits at or above that head is not in the leaf's way — a recessed can
     at the 9' ceiling plane cannot obstruct a 6'-8" door, and reporting that it does trains
     the reader to skip the whole check.
+
+    Below the head the same three-dimensional question applies as to a clearance zone, and it
+    has the same published answer, so the obstruction test is shared rather than re-derived
+    (→ resolve/placeable_clear_floor_obstruction). A leaf passes over a flush floor register
+    and clears a switch plate proud of its own wall by 2"; only a body that really stands in
+    the sweep stops the door.
     """
     findings: list[Finding] = []
     wall_by_tag = {wall.tag: wall for wall in model.walls}
@@ -296,6 +331,8 @@ def _door_swing_conflicts(model: ResolvedModel) -> list[Finding]:
         swing = Polygon(opening.swing_clearance)
         for item in model.canvas_objects:
             if item.storey != wall.storey or item.z_m >= leaf_head_m - 1e-6:
+                continue
+            if not obstruction_by_uid[item.uid].obstructs:
                 continue
             if swing.intersection(Polygon(item.footprint)).area <= 1e-8:
                 continue

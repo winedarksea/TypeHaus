@@ -26,6 +26,8 @@ from typehaus.model import (
     PlacementStrategy,
     PlanModel,
     Project,
+    Register,
+    RegisterType,
     Service,
     ServicePort,
     Site,
@@ -40,6 +42,7 @@ from typehaus.model import (
     pt,
 )
 from typehaus.model.canvas import canvas_object_types, canvas_objects, resolved_canvas_objects
+from typehaus.model.enums import DuctSystem
 from typehaus.resolve import resolve
 from typehaus.source.coordinator import ProjectCoordinator
 from typehaus.source.loader import load_plan
@@ -526,3 +529,35 @@ def test_catlin_furnished_rooms_resolve_against_the_shared_starter_catalog() -> 
     symbols = {item["tag"]: item["plan_strokes"] for item in canvas_object_types(plan)}
     # The shared fixtures opted in too, so the very first render shows a real glyph.
     assert symbols["FX-LAV-24"] and symbols["EQ-T-ERV"] and symbols["ED-T-PANEL"]
+
+
+def test_a_door_leaf_passes_over_a_flush_body_in_its_sweep() -> None:
+    """The sweep is a plan polygon, but a leaf is a solid: below the head it is stopped by
+    the same bodies a clear floor space is, and by no others. A recessed floor register lying
+    flush in the sweep — the catlin D-A-STUDY / REG-A-HP-EAST case — stops nothing, so the
+    check now shares ``clear_floor_space_obstruction`` instead of testing plan overlap alone.
+    """
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    plan = load_plan(house).plan
+    assert plan is not None
+    initial, _ = resolve(plan)
+    original = next(item for item in initial.openings if item.is_door and item.swing_clearance)
+    opening_storey = next(wall.storey for wall in initial.walls if wall.tag == original.host_wall)
+    center = tuple(sum(point[index] for point in original.swing_clearance)
+                   / len(original.swing_clearance) for index in (0, 1))
+    register_type = RegisterType(tag="REG-T-FLUSH", name="Flush floor register",
+                                 footprint=(m(.3), m(.15)), height=m(.025))
+    flush = Register(uid="swing-register", tag="REG-SWING", kind=DuctSystem.SUPPLY,
+                     type_ref="REG-T-FLUSH", position=pt(m(center[0]), m(center[1])),
+                     mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True))
+    plan = plan.model_copy(update={
+        "library": plan.library.model_copy(update={
+            "register_types": (*plan.library.register_types, register_type)}),
+        "elements": {**plan.elements,
+                     opening_storey: (*plan.storey_elements(opening_storey), flush)},
+    })
+    _, findings = resolve(plan)
+
+    assert not [item for item in findings
+                if item.check_id == "integrity.door_swing_conflict"
+                and "REG-SWING" in item.element_tags]

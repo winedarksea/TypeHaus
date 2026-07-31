@@ -42,7 +42,7 @@ def _storey_is_conditioned(plan: PlanModel, storey_tag: str) -> bool:
     return any(room.conditioned for room in rooms)
 
 
-def _is_envelope_wall(wall: ResolvedWall) -> bool:
+def _is_envelope_wall(wall: ResolvedWall, model: ResolvedModel) -> bool:
     """Is this wall on the thermal boundary — clad above grade, or below grade?
 
     Interior partitions separate two rooms at the same setpoint, so they carry no UA
@@ -50,8 +50,53 @@ def _is_envelope_wall(wall: ResolvedWall) -> bool:
     inflates the block load by the entire interior wall area and fills ``unknown_inputs``
     with closet doors that have no business in an envelope report. Cladding is the same
     above-grade marker the condensation check scopes itself with.
+
+    ``is_foundation`` alone is not that marker. A basement's centre bearing walls are cast
+    the same way its perimeter is and carry the same flag, but they have conditioned space on
+    *both* faces: no ΔT, no UA, and the interior doors through them are not envelope doors.
+    Catlin's nine interior foundation walls put 810 ft2 of bare concrete into the block load
+    and four closet-grade doors into ``unknown_inputs``, which is what left
+    ``mep.heating_capacity`` UNKNOWN on a zone whose margin the number then decided.
     """
-    return wall.is_foundation or any(layer.function == "cladding" for layer in wall.layers)
+    if any(layer.function == "cladding" for layer in wall.layers):
+        return True
+    return wall.is_foundation and not _stands_between_conditioned_rooms(wall, model)
+
+
+# How far off a wall face to sample for the room on that side: half the wall depth clears the
+# construction, and the extra 3" clears the room clear-face inset without reaching across a
+# 4" partition into the room beyond.
+_WALL_SIDE_PROBE_SLOP_M = 3 * 0.0254
+# Fractions along the axis to probe. Three, not one: a wall may be a room's boundary over part
+# of its run only, and one midpoint sample on a wall that runs past a room's corner lies.
+_WALL_SIDE_PROBE_FRACTIONS = (0.25, 0.5, 0.75)
+
+
+def _stands_between_conditioned_rooms(wall: ResolvedWall, model: ResolvedModel) -> bool:
+    """Does conditioned space stand on both faces of this wall?
+
+    Sampled from the resolved room polygons rather than asked of the wall, because a wall
+    records at most the one ``interior_room`` it was authored against — a bearing wall
+    between two finished basement rooms names one of them and knows nothing of the other.
+    """
+    from shapely.geometry import Point, Polygon
+
+    (x0, y0), (x1, y1) = wall.axis
+    run = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+    if run < 1e-9:
+        return False
+    tangent = ((x1 - x0) / run, (y1 - y0) / run)
+    normal = (-tangent[1], tangent[0])
+    offset = wall.thickness_m / 2 + _WALL_SIDE_PROBE_SLOP_M
+    faces = [Polygon(room.clear_face) for room in model.rooms
+             if room.storey == wall.storey and room.conditioned and len(room.clear_face) >= 3]
+    for sign in (1, -1):
+        probes = [Point(x0 + tangent[0] * run * t + normal[0] * offset * sign,
+                        y0 + tangent[1] * run * t + normal[1] * offset * sign)
+                  for t in _WALL_SIDE_PROBE_FRACTIONS]
+        if not any(face.covers(probe) for face in faces for probe in probes):
+            return False
+    return True
 
 
 _M3_TO_FT3 = 35.31466672148859
@@ -299,7 +344,7 @@ def estimate_block_load(
         scope = _room_scope(model, rooms)
         conditioned_storeys &= set(scope)
     envelope_walls = [wall for wall in model.walls
-                      if wall.storey in conditioned_storeys and _is_envelope_wall(wall)
+                      if wall.storey in conditioned_storeys and _is_envelope_wall(wall, model)
                       and not wall.tag.startswith(_FREESTANDING_WALL_PREFIXES)]
     wall_fraction = {wall.tag: _wall_scope_fraction(wall, scope) for wall in envelope_walls}
     envelope_walls = [wall for wall in envelope_walls if wall_fraction[wall.tag] > 0.0]

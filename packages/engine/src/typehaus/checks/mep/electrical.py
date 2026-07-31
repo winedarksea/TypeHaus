@@ -69,9 +69,28 @@ def _devices_in_room(ctx: CheckContext, storey_tag: str, room) -> list:
 
 
 _RECEPTACLE_KINDS = {"receptacle", "gfci"}  # the 125V 15/20A devices 210.52 counts
+# A 240V kind still counts if its *type* offers a 125V port — the combination 5-20R/6-20R
+# device is one box with two receptacles in it, and the 5-20R half is a 210.52 receptacle
+# like any other. (This is the DeviceKind precedent: the kind stays flat, the type
+# differentiates.)
+_COMBINATION_RECEPTACLE_KIND = "receptacle_240"
 _MAX_TO_RECEPTACLE_M = 6 * 0.3048  # no point along the wall line > 6' from a receptacle
 _MIN_WALL_SPACE_M = 2 * 0.3048  # wall spaces under 2' are exempt
 _NEAR_WALL_M = 0.5  # how close to the room boundary a device must sit to serve it
+# How much floor may survive between a floor opening and the wall face behind it and still
+# count as standing room. 12" of ledge along a stair well is not somewhere you plug a lamp in.
+_FLOOR_OPENING_LEDGE_M = 12 * 0.0254
+
+
+def _counts_as_a_125v_receptacle(ctx: CheckContext, device) -> bool:
+    if device.kind.value in _RECEPTACLE_KINDS:
+        return True
+    if device.kind.value != _COMBINATION_RECEPTACLE_KIND or device.type_ref is None:
+        return False
+    device_type = next((t for t in ctx.plan.library.electrical_device_types
+                        if t.tag == device.type_ref), None)
+    return device_type is not None and any(
+        port.service.value == "power_120" for port in device_type.ports)
 
 
 def _perimeter_position(ring: list, point: tuple) -> tuple[float, float]:
@@ -126,6 +145,61 @@ def _door_intervals(ctx: CheckContext, ring: list, storey_tag: str) -> list[tupl
     return intervals
 
 
+def _floor_opening_intervals(ctx: CheckContext, ring: list,
+                             storey_tag: str) -> list[tuple[float, float]]:
+    """Perimeter intervals where the boundary fronts a floor opening rather than floor.
+
+    210.52(A)(2)'s subject is *wall space*, and its yardstick is "measured horizontally along
+    the floor line". Where a stair well runs up against the wall there is no floor line to
+    measure along — the boundary looks like wall on plan, but standing in front of it means
+    standing over the drop, and the only way to satisfy the 6' rule there is to hang a
+    receptacle above a stairwell. So a well breaks the measurement the same way a doorway
+    does; the spaces either side of it are still measured in full.
+
+    ``_FLOOR_OPENING_LEDGE_M`` is how much floor may survive between the well edge and the
+    wall face and still count as somewhere to stand. It is deliberately small: a foot of
+    concrete ledge along a 9' drop is not a place a lamp gets plugged in.
+    """
+    from shapely.geometry import LineString, Point, Polygon
+
+    boundary = LineString(list(ring) + [ring[0]])
+    intervals: list[tuple[float, float]] = []
+    for element in ctx.plan.storey_elements(storey_tag):
+        # A chase is boxed and decked over — there is floor on it, so it breaks nothing. Only
+        # an opening you could step into takes the floor line away.
+        if element.element_kind != "FloorOpening" or element.purpose.value == "chase":
+            continue
+        well = Polygon([point.xy_m for point in element.outline])
+        if not well.is_valid or well.is_empty:
+            continue
+        fronting = boundary.intersection(well.buffer(_FLOOR_OPENING_LEDGE_M))
+        for piece in getattr(fronting, "geoms", (fronting,)):
+            if piece.is_empty or piece.length <= 0:
+                continue
+            offsets = [boundary.project(Point(coord)) for coord in piece.coords]
+            intervals.append((min(offsets), max(offsets)))
+    return intervals
+
+
+def _merged_intervals(intervals: list[tuple[float, float]],
+                      perimeter: float) -> list[tuple[float, float]]:
+    """Clamp the breaks to the ring, sort them, and union any that overlap.
+
+    The wall-space builder pairs each break's end with the next break's start, which only
+    describes wall space while the breaks are disjoint: a doorway opening straight onto a
+    stair well would otherwise manufacture a negative-length "space" between the two.
+    """
+    merged: list[tuple[float, float]] = []
+    for start, end in sorted((max(0.0, a), min(perimeter, b)) for a, b in intervals):
+        if end <= start:
+            continue
+        if merged and start <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+        else:
+            merged.append((start, end))
+    return merged
+
+
 def _coverage_gaps(space: tuple[float, float], positions: list[float]) -> list[float]:
     """Perimeter coordinates of points in a linear wall space > 6' from any receptacle."""
     a, b = space
@@ -151,8 +225,9 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
 
     Geometry-based, unlike ``room_lighting``'s tag matching: the room's resolved
     ``clear_face`` ring is unrolled into an arc-length coordinate (so corners measure
-    correctly), door openings break it into wall spaces, spaces under 2' are exempt, and
-    every remaining point must be within 6' of a receptacle projected onto the boundary.
+    correctly), doorways and floor openings break it into wall spaces, spaces under 2' are
+    exempt, and every remaining point must be within 6' of a receptacle projected onto the
+    boundary.
     The kitchen-counter rule (210.52(C)) is not evaluated — counters are casework, not
     resolved geometry — and reports UNKNOWN so the gap stays visible.
     """
@@ -179,15 +254,17 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
             for i in range(len(ring)))
         positions = []
         for device in devices_by_storey.get(room.storey, []):
-            if device.kind.value not in _RECEPTACLE_KINDS:
+            if not _counts_as_a_125v_receptacle(ctx, device):
                 continue
             s, d = _perimeter_position(ring, device.position.xy_m)
             if d <= _NEAR_WALL_M:
                 positions.append(s)
-        doors = sorted((max(0.0, a), min(perimeter, b))
-                       for a, b in _door_intervals(ctx, ring, room.storey))
-        # Wall spaces: the perimeter minus door spans. Door-free rooms are one circular
-        # space, where coverage means the largest receptacle-to-receptacle arc.
+        breaks = (_door_intervals(ctx, ring, room.storey)
+                  + _floor_opening_intervals(ctx, ring, room.storey))
+        doors = _merged_intervals(breaks, perimeter)
+        # Wall spaces: the perimeter minus the spans that break it. A room with no break at
+        # all is one circular space, where coverage means the largest receptacle-to-receptacle
+        # arc.
         gaps: list[float] = []
         if not doors:
             if not positions:

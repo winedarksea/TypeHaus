@@ -28,7 +28,7 @@ export function Preview3D() {
         <button className="btn icon-btn" onClick={() => setOpen(false)} title="Hide 3D preview"><Icon name="close" size={16} /></button>
       </div>
       <div className="preview3d-body">
-        <Panel3D />
+        <Panel3D compact />
       </div>
     </div>
   );

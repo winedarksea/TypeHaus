@@ -61,6 +61,8 @@ from typehaus import (
     pt,
 )
 
+from typehaus.resolve.framing.profiles import cross_section
+
 from params.arches import arch_offsets_ft
 
 
@@ -102,7 +104,16 @@ class SunkenGardenSpec:
     column_south_offset_in: float = 17.0
     porch_joist: str = "2x8"
     porch_joist_oc_in: float = 16.0
-    back_beam: str = "2-2x12"  # PT, two ~9'6" spans column -> side-wall hangers
+    # Two-ply treated LVL, 11 1/4" deep so the depth constant below and every elevation
+    # derived from it are unchanged from the 2-2x12 this replaced (2026-07-31). The sawn
+    # built-up beam was 1'-9" past IRC Table R507.5(1)'s 8'-3" limit on this 10'-0" span at
+    # the 8' joist-span row; the fix is the member, not the geometry, because the column and
+    # the two side-wall hangers are the only bearings this line can have. Being engineered it
+    # leaves the prescriptive table's scope, so `structural.deck_beam_span` now reports it
+    # UNKNOWN rather than PASS — the manufacturer's span table is the authority instead.
+    # (A 3-ply sawn 2x12 would also have cleared it, at 10'-3", and would have stayed
+    # checkable; the engineered member was the decision.)
+    back_beam: str = "2-1.75x11.25 LVL"
     porch_deck_thickness_in: float = 1.0  # composite plank
     # The porch's two joist ends are not alike, so it cannot share the balcony's symmetric
     # cantilever: the south end bears on the arched front wall's sill (flush — nothing may
@@ -112,7 +123,13 @@ class SunkenGardenSpec:
     # balcony framing
     pillar_size: str = "6x6"
     rear_pillar_rise_in: float = 2.0  # rear row taller for drainage slope
-    balcony_beam: str = "2-2x10"  # three N-S beams over the pillar lines
+    # Three N-S beams over the pillar lines. Two-ply treated LVL at the 2x10's own 9 1/4"
+    # depth (2026-07-31), so `_balcony_beam_depth_ft` and the soffit plane it sets are
+    # unchanged. The 2-2x10 was nearly 3'-0" past R507.5(1)'s 5'-9" on this 8'-8" span: the
+    # balcony's joists span 10'-6", which reads the table's 12' row, and no built-up sawn
+    # size in that table reaches 8'-8" there (3-2x12, the largest row, stops at 8'-4"). So
+    # unlike the porch this line had no prescriptive answer at all short of re-framing.
+    balcony_beam: str = "2-1.75x9.25 LVL"
     balcony_joist: str = "2x8"
     balcony_joist_oc_in: float = 16.0
     balcony_deck_thickness_in: float = 1.5  # aluminum plank
@@ -432,12 +449,17 @@ BALCONY_BEAMS = [
 #
 # A girt sharing the beams' band cannot run the full 20' — it would pass *through* the
 # three N-S beams — so each row is two segments meeting the beams cleanly:
-# - Front row: segment ends at the beam faces (±1.5" off the pillar axes). The end laps
-#   onto the 1.25" pillar-top strip beside the double-2x10 and butts the beam side.
+# - Front row: segment ends at the beam faces. The end laps onto the pillar-top strip
+#   beside the N-S beam and butts the beam side.
 # - Rear row: the rear pillars run 2" proud of the shared soffit (the drainage rise), so
 #   the segments stop at the pillar faces (±2.75") and butt that proud pillar top instead;
-#   the 1.25" back to the beam face is the hanger's saddle at each end.
-_beam_face_ft = 1.5 / 12.0   # half the 3"-wide double-2x10 N-S beam
+#   the rest of the way back to the beam face is the hanger's saddle at each end.
+#
+# The front-row half-width is read off ``SPEC.balcony_beam`` rather than written down.
+# It was the literal 1.5" that suited the old 3"-wide double-2x10, and the 2026-07-31 swap
+# to a 3 1/2"-wide two-ply LVL drove the girts 1/4" into every beam they butt —
+# `structural.member_interference` caught it, which is the number's whole job.
+_beam_face_ft = cross_section(SPEC.balcony_beam).width_m / 2 / 0.3048
 _pillar_face_ft = 2.75 / 12.0  # half the 5.5" actual 6x6
 GIRT_NODES = [
     Node(uid="SGNG01AAAA", tag="N-SGG-RW1", position=pt(ft(_x_ax_w + _pillar_face_ft), ft(_y_in_n))),

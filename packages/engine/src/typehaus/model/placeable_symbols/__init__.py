@@ -66,10 +66,10 @@ SYMBOL_NAMES = frozenset({
     "hydrant", "floor-drain", "laundry-sink",
     # luminaires — one name per LuminaireForm that has a point instance. STRIP has none:
     # a cove strip is a LightRun polyline, drawn by the lighting plan, not a placeable.
-    # "linear-light" covers LINEAR_TUBE, WALL_LAMP and MIRROR_LIGHT, which differ by
-    # mounting and schedule row rather than by glyph.
+    # "linear-light" covers ordinary compact linear fixtures. The plant tube has the
+    # same plan glyph but its own 3D cable-suspension massing.
     "recessed-can", "panel-light", "sconce", "sconce-updown", "sconce-spot",
-    "pendant", "chandelier", "ceiling-fan-light", "linear-light",
+    "pendant", "chandelier", "ceiling-fan-light", "linear-light", "suspended-linear-light",
 })
 
 # Names in the vocabulary with no builder yet. Kept explicit so "not implemented" is a

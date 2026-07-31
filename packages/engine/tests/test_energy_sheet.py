@@ -128,7 +128,8 @@ def test_block_load_counts_only_the_envelope(catlin_model):
     # Gross clad area less its openings; never the whole (partition-inclusive) wall stock.
     assert 0 < walls.area_ft2 <= clad_wall_area_ft2
 
-    envelope_wall_tags = {wall.tag for wall in catlin_model.walls if _is_envelope_wall(wall)}
+    envelope_wall_tags = {wall.tag for wall in catlin_model.walls
+                          if _is_envelope_wall(wall, catlin_model)}
     interior_door_tags = {opening.tag for opening in catlin_model.openings
                           if opening.is_door and opening.host_wall not in envelope_wall_tags}
     assert interior_door_tags  # catlin has interior doors, so this is a real exclusion

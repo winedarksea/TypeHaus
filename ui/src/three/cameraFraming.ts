@@ -29,11 +29,36 @@ export const WHEEL_MAX_STEP_PX = 90;
 export const WHEEL_DOLLY_SENSITIVITY = 0.0016;
 export const MIN_DOLLY_RADIUS_M = 0.8;
 export const MAX_DOLLY_RADIUS_M = 400;
+// One press of an on-screen zoom button, as a multiplier on the dolly radius — roughly four
+// mouse notches. Visible progress per tap, without a double-tap overshooting the thing you
+// were trying to get closer to.
+export const BUTTON_DOLLY_FACTOR = 1.3;
 
 /** Normalize one wheel event to a clamped pixel delta (see WHEEL_* constants). */
 export function normalizedWheelDeltaPx(deltaY: number, deltaMode: number): number {
   const pixels = deltaMode === 1 ? deltaY * WHEEL_LINE_HEIGHT_PX : deltaY;
   return Math.max(-WHEEL_MAX_STEP_PX, Math.min(WHEEL_MAX_STEP_PX, pixels));
+}
+
+/**
+ * Clamp a dolly distance into the usable range. Wheel, pinch and the zoom buttons all go
+ * through here, so the three inputs cannot disagree about how close or how far back you can get.
+ */
+export function clampDollyRadius(radius: number): number {
+  return Math.max(MIN_DOLLY_RADIUS_M, Math.min(MAX_DOLLY_RADIUS_M, radius));
+}
+
+/**
+ * The dolly distance for a two-finger pinch: the radius the gesture opened at, scaled by how
+ * much the span between the fingers has changed. Fingers apart is a wider span is a closer
+ * camera, so the ratio inverts.
+ *
+ * Anchored on the opening span rather than integrated move-by-move, which is what makes the
+ * view follow the fingers exactly — and makes a gesture that returns to where it began return
+ * the zoom with it, instead of accumulating drift.
+ */
+export function pinchDollyRadius(startRadius: number, startSpan: number, span: number): number {
+  return clampDollyRadius((startRadius * Math.max(1, startSpan)) / Math.max(1, span));
 }
 
 /**

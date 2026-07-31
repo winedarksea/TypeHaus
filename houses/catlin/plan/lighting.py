@@ -431,8 +431,14 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-HALL-SW", "ED-M-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # West end of the run, on W-M-BAE's hall face just south of D-M-BATH1 (the door spans
+    # y 23'-4" to 25'-4", so this is the only piece of that wall a plate fits on). Moved here
+    # 2026-07-31: it was authored at x=4'-5", which is 1'-7" *inside* RM-M-BATH1 — the wall
+    # is at x=6'-0" — so the hall's west 3-way was on the wrong side of the bathroom wall and
+    # `integrity.placeable_room_mismatch` had been reporting it. rotation 90 faces it east
+    # into the hall, which is what it always meant.
     ElectricalDevice(uid="QTM0013AAA", tag="ED-M-HALL-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(4, 5), ft(22, 3)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(6, 4.5), ft(22, 9)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     ElectricalDevice(uid="QTM0014AAA", tag="ED-M-HALL-SW2", kind=DeviceKind.SWITCH,

@@ -15,6 +15,8 @@ from typehaus.model import (
     Furniture,
     FurnitureType,
     Library,
+    Mount,
+    MountKind,
     PlanModel,
     Project,
     Site,
@@ -148,3 +150,22 @@ def test_every_clearance_zone_is_compared_not_just_the_first() -> None:
     _, findings = resolve(plan)
 
     assert _conflicts(findings) == [("BED", "BOX")]
+
+
+def test_a_pendant_over_the_table_it_lights_is_not_in_the_table_s_zone() -> None:
+    """A ``surround_zone`` is authored as the whole enlarged rectangle, so the owner's own
+    footprint is part of it on paper. It is not part of it in fact: nothing standing where
+    the table stands is encroaching on the margin *around* the table, and a pendant hung over
+    it — the catlin ED-M-DINING-PEND case — sits entirely inside that footprint."""
+    pendant = FurnitureType(tag="F-PENDANT", name="Pendant", footprint=(m(0.45), m(0.45)),
+                            height=m(1))
+    plan = _dining_set_plan(
+        Furniture(uid="pendant-1", tag="PENDANT", type_ref="F-PENDANT",
+                  position=pt(m(0), m(0)),
+                  mount=Mount(kind=MountKind.CEILING, drop=m(1.3))),
+    )
+    plan = plan.model_copy(update={"library": plan.library.model_copy(update={
+        "furniture_types": plan.library.furniture_types + (pendant,)})})
+    _, findings = resolve(plan)
+
+    assert _conflicts(findings) == []

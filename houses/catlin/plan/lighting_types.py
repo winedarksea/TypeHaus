@@ -98,7 +98,8 @@ LUMINAIRE_TYPES = (
     # of putting them here is supplementing a north-of-45 winter.
     LuminaireType(tag="ED-T-LT-TUBE6", name="6' suspended linear tube, damp, growth spectrum",
                   form=LuminaireForm.LINEAR_TUBE, type_mark="F",
-                  footprint=(ft(6), inch(3)), height=ft(2, 3), plan_symbol="linear-light",
+                  footprint=(ft(6), inch(3)), height=ft(2, 3),
+                  plan_symbol="suspended-linear-light",
                   lamp="T8 LED, multi-watt selectable 25/40/50 W", watts=50.0,
                   lumens=6000.0, cct_k=3500, cri=90, dimmable=True, damp_rated=True,
                   load_va=50.0, ports=_POWER_120,

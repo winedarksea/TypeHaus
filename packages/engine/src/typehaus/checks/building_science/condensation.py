@@ -158,11 +158,15 @@ def _gate_finding(assessment: MonthlyAssessment | None, assembly_tag: str) -> Fi
 def _screen_finding(analysis: CondensationAnalysis, boundary: str) -> Finding:
     """The 99%-design-hour walk, relabeled as the cold-snap screen (not the gate)."""
     if analysis.has_risk:
+        # ``Result.PASS`` with the crossing spelled out, not ``FAIL``: the fix_hint below
+        # says in as many words that this is not the verdict, and a finding that both
+        # disclaims being a verdict and files a failure against the tally is a finding
+        # arguing with itself. The gate (``CHECK_ID``) owns the pass/fail on this assembly.
         return Finding(
             severity=Severity.WARN, check_id=SCREEN_CHECK_ID,
             message=(f"cold-snap screen: dew point reached at {analysis.crossing_layer} "
                      f"({analysis.crossing_fraction:.0%} through layer) at {boundary}"),
-            element_tags=(analysis.assembly_tag,), result=Result.FAIL,
+            element_tags=(analysis.assembly_tag,), result=Result.PASS,
             fix_hint="screen only — the monthly (ISO 13788-style) gate is the pass/fail "
                      "verdict; this is the 99% design hour, not a seasonal mean, so a "
                      "crossing here means the plane runs wet during a cold snap and must "

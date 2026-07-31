@@ -15,6 +15,19 @@ def _warn(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
                    result=Result.FAIL)
 
 
+def _note(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
+    """A finding that reports a *fact* the reader should know, not a verdict against them.
+
+    Same WARN severity and the same words as ``_warn`` — it still prints, and the advice is
+    the point — but a passing result, because there is nothing here to fix. A check that
+    cannot pass (a house always has more than one window size; a wood floor over radiant is
+    always temperature-limited) contributes a permanent failure to the tally, and a fail
+    count nobody can drive to zero is a fail count nobody reads.
+    """
+    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
+                   result=Result.PASS)
+
+
 @check(Tier.ADVISORY, "advisory.habitable_window")
 def habitable_room_window(ctx: CheckContext) -> list[Finding]:
     """Habitable rooms should have an exterior window (natural light, R303)."""
@@ -43,8 +56,10 @@ def window_size_variety(ctx: CheckContext) -> list[Finding]:
     if len(sizes) <= 1:
         return []
     hist = ", ".join(f"{w*39.37:.0f}x{h*39.37:.0f}\"×{n}" for (w, h), n in sizes.items())
-    return [_warn("advisory.window_size_variety",
-                  f"{len(sizes)} unique window sizes — fewer eases ordering ({hist})")]
+    total = sum(sizes.values())
+    return [_note("advisory.window_size_variety",
+                  f"{len(sizes)} unique window sizes across {total} windows — fewer eases "
+                  f"ordering ({hist})")]
 
 
 @check(Tier.ADVISORY, "advisory.control_continuity")
@@ -193,7 +208,9 @@ def floor_finish_over_radiant(ctx: CheckContext) -> list[Finding]:
             reason = _RADIANT_LIMITED_FINISHES.get(room.floor_finish or "")
             if reason is None:
                 continue
-            out.append(_warn(
+            # A note, not a verdict — the docstring above says every one of these pairings
+            # is a legal one people build, and a commissioning constraint is not a defect.
+            out.append(_note(
                 "advisory.floor_finish_over_radiant",
                 f"floor-heat zone {zone.tag} runs under {room.tag}'s "
                 f"{room.floor_finish} floor: {reason}",

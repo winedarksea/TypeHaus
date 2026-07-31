@@ -12,7 +12,8 @@ export function SunIndicator({ model }: { model: Model }) {
 
   if (!model.site) return null;
   return (
-    <div className="hud" style={{ left: "auto", right: 12, bottom: 12, width: visible ? 206 : "auto" }}>
+    // Placement belongs to the cluster that hosts it (→ .canvas-nav-controls.side).
+    <div className="hud" style={{ width: visible ? 206 : "auto" }}>
       <button className="btn" onClick={() => setVisible(!visible)} title="Solar orientation indicator">
         ☀ Sun
       </button>

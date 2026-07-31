@@ -570,3 +570,37 @@ def test_service_load_is_null_without_circuits():
     payload = model_to_dict(model)["electrical"]
     assert payload["service_load"] is None
     assert payload["panel_schedule"] == [] and payload["conduit"] == []
+
+
+def _room_result(model, room_tag: str) -> str:
+    report = run_from_model(model, [], tier=Tier.ADVISORY)
+    finding = next(f for f in report.findings
+                   if f.check_id == "electrical.receptacle_spacing"
+                   and f.element_tags == (room_tag,))
+    return finding.result.value
+
+
+def test_wall_space_is_not_traced_across_a_stair_well():
+    """210.52(A)(2) measures "along the floor line", and a stair well is where the floor line
+    stops. The only way to satisfy the 6' rule on the strip of wall a well runs up against is
+    to hang a box over the drop, so the well breaks the measurement the way a doorway does —
+    and, once it does, a receptacle already sitting on that strip stops counting.
+
+    FO-A-STAIR takes the north 3'-0" of RM-A-STUDY, leaving 6 5/8" of deck against the east
+    wall. ED-A-STUDY-RC2 was authored on exactly that strip; moved south of the well it both
+    becomes reachable and is what closes the run from RC3 round the southeast corner, so
+    putting it back is the room's only failure.
+    """
+    plan = load_plan(CATLIN_DIR).plan
+    model, _ = resolve(plan)
+    assert _room_result(model, "RM-A-STUDY") == "pass"
+
+    ledge = pt(m(35.83 * 0.3048), m(8.28 * 0.3048))  # where RC2 used to sit
+    stranded = tuple(
+        element.model_copy(update={"position": ledge})
+        if getattr(element, "tag", None) == "ED-A-STUDY-RC2" else element
+        for element in plan.storey_elements("attic"))
+    plan = plan.model_copy(update={"elements": {**plan.elements, "attic": stranded}})
+    model, _ = resolve(plan)
+
+    assert _room_result(model, "RM-A-STUDY") == "fail"

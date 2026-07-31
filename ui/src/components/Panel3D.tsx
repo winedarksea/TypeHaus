@@ -11,7 +11,7 @@ import { disposeGroup } from "../three/members";
 import { locateMember } from "../model/memberIdentity";
 import { buildMemberHighlight, resolveMemberPickUid } from "../three/memberPicking";
 import {
-  frameRadiusForBounds, MAX_DOLLY_RADIUS_M, MIN_DOLLY_RADIUS_M, normalizedWheelDeltaPx,
+  clampDollyRadius, frameRadiusForBounds, normalizedWheelDeltaPx, pinchDollyRadius,
   VIEW_FIT_POLAR_ANGLE, VIEW_PAN_STEP_FRACTION, WHEEL_DOLLY_SENSITIVITY, type PanDirection,
 } from "../three/cameraFraming";
 import {
@@ -25,6 +25,7 @@ import {
   type PlanCenter,
 } from "../three/planGeometry";
 import { useTheme } from "../theme/theme";
+import { ZoomControls } from "./ZoomControls";
 
 // The 3D panel behind an implicit ModelViewer seam (→ 21 §3D panel).
 //
@@ -43,7 +44,11 @@ import { useTheme } from "../theme/theme";
 // + edge linework) attach to the three.js scene, so they survive either route. Clicking a wall
 // cross-highlights the 2D plan and surfaces its file:line provenance.
 
-export function Panel3D() {
+// `compact` is the 300x220 floating preview (→ Preview3D). The pan/zoom cluster is 206px wide
+// there, which leaves the preview previewing its own chrome, so that surface goes without: it is
+// a companion to the plan, not somewhere a view gets composed, and the pane it mirrors has the
+// full controls. Drag and pinch still work in it.
+export function Panel3D({ compact = false }: { compact?: boolean }) {
   const model = useStore((s) => s.model);
   const threeMode = useStore((s) => s.threeMode);
   const select = useStore((s) => s.select);
@@ -125,23 +130,28 @@ export function Panel3D() {
           </text>
         ))}
       </svg>
-      <div
-        className="hud"
-        aria-label="3D view navigation"
-        style={{ bottom: 12, top: "auto", left: "calc(var(--rail-w) + var(--gutter) + var(--safe-l))", right: "auto", display: "grid", gridTemplateColumns: "repeat(3, var(--hit))", gap: 4, padding: 4 }}
-      >
-        <span />
-        <button className="seg-btn" aria-label="Pan view up" title="Pan up" onClick={() => api.current?.pan("up")}>↑</button>
-        <span />
-        <button className="seg-btn" aria-label="Pan view left" title="Pan left" onClick={() => api.current?.pan("left")}>←</button>
-        <button className="seg-btn" aria-label="Reset 3D view"
-          title="Frame the whole model (three-quarter view)"
-          onClick={() => api.current?.resetView()}>⌾</button>
-        <button className="seg-btn" aria-label="Pan view right" title="Pan right" onClick={() => api.current?.pan("right")}>→</button>
-        <span />
-        <button className="seg-btn" aria-label="Pan view down" title="Pan down" onClick={() => api.current?.pan("down")}>↓</button>
-        <span />
-      </div>
+      {/* Pan and zoom are one cluster: a flex box owns the corner, so neither has to know how
+          wide the other is (→ styles/shell.css .canvas-nav-controls). */}
+      {!compact && <div className="canvas-nav-controls">
+        <div
+          className="hud"
+          aria-label="3D view navigation"
+          style={{ display: "grid", gridTemplateColumns: "repeat(3, var(--hit))", gap: 4, padding: 4 }}
+        >
+          <span />
+          <button className="seg-btn" aria-label="Pan view up" title="Pan up" onClick={() => api.current?.pan("up")}>↑</button>
+          <span />
+          <button className="seg-btn" aria-label="Pan view left" title="Pan left" onClick={() => api.current?.pan("left")}>←</button>
+          <button className="seg-btn" aria-label="Reset 3D view"
+            title="Frame the whole model (three-quarter view)"
+            onClick={() => api.current?.resetView()}>⌾</button>
+          <button className="seg-btn" aria-label="Pan view right" title="Pan right" onClick={() => api.current?.pan("right")}>→</button>
+          <span />
+          <button className="seg-btn" aria-label="Pan view down" title="Pan down" onClick={() => api.current?.pan("down")}>↓</button>
+          <span />
+        </div>
+        <ZoomControls label="3D view zoom" onZoom={(factor) => api.current?.zoomBy(factor)} />
+      </div>}
       {/* Nordic/schematic switch + discipline toggles now live in the shared Views panel
           (Phase 6), reachable from the Views panel. */}
     </div>
@@ -153,6 +163,7 @@ interface SceneApi {
   setWholeHouseGlb: (blob: Blob) => void;
   setPalette: (palette: ResolvedNordicPalette) => void;
   pan: (direction: PanDirection) => void;
+  zoomBy: (factor: number) => void;
   resetView: () => void;
   highlight: (uid: string | null) => void;
   setVisibility: (trade: Trade, visible: boolean) => void;
@@ -243,7 +254,7 @@ function createScene(
   const environment = pmrem.fromScene(new RoomEnvironment(), 0.04);
   scene.environment = environment.texture;
 
-  // Simple orbit: drag to rotate, wheel to dolly (no external controls dependency).
+  // Simple orbit: drag to rotate, wheel or pinch to dolly (no external controls dependency).
   let theta = Math.PI * 0.25;
   let phi = Math.PI * 0.32;
   let radius = 12;
@@ -255,6 +266,12 @@ function createScene(
   let dragging = false;
   let panning = false; // orbit vs. screen-pan for the active pointer drag
   let last = [0, 0];
+  // Every pointer currently down, so a second finger reads as a pinch instead of fighting the
+  // first one over the orbit. Same bookkeeping as the plan canvas (→ plan/usePanZoom.ts): the
+  // two views should not speak different dialects of the same gesture.
+  const pointers = new Map<number, [number, number]>();
+  let pinch: { span: number; radius: number } | null = null;
+  let tapCandidate = false; // a lone pointer that has not yet become a drag or a pinch
 
   const updateCompass = () => {
     if (!compass) return;
@@ -334,17 +351,40 @@ function createScene(
   };
 
   el.addEventListener("contextmenu", (e) => e.preventDefault()); // right-drag pans, no menu
+  const pinchSpan = (): number => {
+    const [a, b] = [...pointers.values()];
+    return Math.hypot(a[0] - b[0], a[1] - b[1]);
+  };
   el.addEventListener("pointerdown", (e) => {
     stopTween();
+    pointers.set(e.pointerId, [e.clientX, e.clientY]);
+    el.setPointerCapture(e.pointerId);
+    if (pointers.size === 2) {
+      // Second finger down: the gesture is a pinch from here on. Ending the drag also withdraws
+      // the tap, so spreading two fingers never selects whatever the first one landed on.
+      pinch = { span: pinchSpan(), radius };
+      dragging = false;
+      tapCandidate = false;
+      return;
+    }
+    if (pointers.size > 2) return; // a third finger neither orbits nor re-scales the pinch
     dragging = true;
+    tapCandidate = true;
     // Middle/right button or a held modifier pans; plain left-drag orbits (matches most
     // 3D tools and keeps single-button/trackpad orbit as the default).
     panning = e.button === 1 || e.button === 2 || e.shiftKey || e.metaKey;
     last = [e.clientX, e.clientY];
     downAt = [e.clientX, e.clientY];
-    el.setPointerCapture(e.pointerId);
   });
   el.addEventListener("pointermove", (e) => {
+    if (!pointers.has(e.pointerId)) return;
+    pointers.set(e.pointerId, [e.clientX, e.clientY]);
+    if (pinch && pointers.size === 2) {
+      radius = pinchDollyRadius(pinch.radius, pinch.span, pinchSpan());
+      viewAdjustedByUser = true;
+      requestRender();
+      return;
+    }
     if (!dragging) return;
     const dx = e.clientX - last[0];
     const dy = e.clientY - last[1];
@@ -365,10 +405,29 @@ function createScene(
     viewAdjustedByUser = true;
     requestRender();
   });
+  // Forget a pointer however it ends. `pointercancel` matters as much as `pointerup` now that
+  // there is a map to keep straight: an interrupted touch that is never deleted leaves the panel
+  // convinced a finger is still down, and every later gesture reads as a pinch.
+  const forgetPointer = (e: PointerEvent) => {
+    pointers.delete(e.pointerId);
+    if (pointers.size < 2) pinch = null;
+    // Still pinching, but possibly between a different pair of fingers now. Re-anchor on the
+    // survivors at the current distance, or the span would appear to jump and take the zoom
+    // with it the moment a third finger leaves.
+    else if (pinch) pinch = { span: pinchSpan(), radius };
+    if (pointers.size === 0) dragging = false;
+    if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+  };
+  el.addEventListener("pointercancel", (e) => {
+    tapCandidate = false;
+    forgetPointer(e);
+  });
   el.addEventListener("pointerup", (e) => {
-    dragging = false;
+    const wasTap = tapCandidate && pointers.size === 1;
+    tapCandidate = false;
+    forgetPointer(e);
     // treat a near-zero drag as a click → raycast pick
-    if (Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) < 4) {
+    if (wasTap && Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) < 4) {
       const r = el.getBoundingClientRect();
       const ndc = new THREE.Vector2(
         ((e.clientX - r.left) / r.width) * 2 - 1,
@@ -401,8 +460,7 @@ function createScene(
     // zooming in no longer drifts off whatever you were inspecting.
     const anchor = pointerGroundPoint(e.clientX, e.clientY);
     const step = normalizedWheelDeltaPx(e.deltaY, e.deltaMode);
-    const nextRadius = THREE.MathUtils.clamp(
-      radius * Math.exp(step * WHEEL_DOLLY_SENSITIVITY), MIN_DOLLY_RADIUS_M, MAX_DOLLY_RADIUS_M);
+    const nextRadius = clampDollyRadius(radius * Math.exp(step * WHEEL_DOLLY_SENSITIVITY));
     if (anchor) {
       const zoomInFraction = THREE.MathUtils.clamp(1 - nextRadius / radius, 0, 0.6);
       target.lerp(anchor, zoomInFraction);
@@ -410,7 +468,14 @@ function createScene(
     radius = nextRadius;
     viewAdjustedByUser = true;
     requestRender();
-  });
+  }, { passive: false }); // preventDefault above is the only thing stopping browser page zoom
+
+  // Safari/iPadOS answers a trackpad or touch pinch with its own `gesture*` events, which
+  // `touch-action: none` does not suppress. Left alone they zoom the *page* — the document
+  // scaling out from under a canvas that was already handling the same fingers.
+  for (const name of ["gesturestart", "gesturechange", "gestureend"]) {
+    el.addEventListener(name, (e) => e.preventDefault());
+  }
 
   const resize = () => {
     const w = mount.clientWidth || 1;
@@ -504,7 +569,20 @@ function createScene(
     requestRender();
   };
 
-  const setModel = (m: Model, mode: "nordic" | "schematic", palette: ResolvedNordicPalette, preserveView: boolean) => {
+  // Button zoom. The wheel homes on the cursor, but a button press has no cursor to home on, so
+  // this dollies straight down the current sightline and leaves the composed angle and centre
+  // exactly where they were. Eased like resetView rather than snapped — a jump cut here reads
+  // as the model moving rather than the camera.
+  const zoomBy = (factor: number) => {
+    const next = clampDollyRadius(radius * factor);
+    if (next === radius) return; // already at a clamp: nothing to animate
+    viewAdjustedByUser = true;
+    // target.clone(): animateTo lerps `target` toward the vector it is handed, so handing it
+    // the live target would have it interpolating toward itself as it mutates.
+    animateTo(theta, phi, next, target.clone());
+  };
+
+  const setModel =(m: Model, mode: "nordic" | "schematic", palette: ResolvedNordicPalette, preserveView: boolean) => {
     clear();
     activePalette = palette;
     scene.background = new THREE.Color(palette.bg);
@@ -669,6 +747,7 @@ function createScene(
     setWholeHouseGlb,
     setPalette,
     pan,
+    zoomBy,
     resetView,
     highlight,
     setVisibility,

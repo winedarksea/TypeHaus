@@ -10,7 +10,8 @@ import { clampScale } from "./PlanChrome";
 import { TAP_PX } from "./canvasTypes";
 
 export interface PanZoomHandlers {
-  onWheel: (e: React.WheelEvent) => void;
+  /** Zoom about the viewport centre. Factor > 1 means *further away*, as in the 3D panel. */
+  zoomBy: (factor: number) => void;
   onPointerDown: (e: React.PointerEvent) => void;
   onPointerMove: (e: React.PointerEvent) => void;
   onPointerUp: (e: React.PointerEvent) => void;
@@ -80,16 +81,51 @@ export function usePanZoom(args: {
     return () => observer.disconnect();
   }, [activeStorey, model.rooms, setView, svgRef, wallsOnStorey]);
 
-  const onWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const rect = svgRef.current!.getBoundingClientRect();
-    const cx = e.clientX - rect.left;
-    const cy = e.clientY - rect.top;
-    const factor = Math.exp(-e.deltaY * 0.0015);
-    const scale = clampScale(view.scale * factor);
-    const wx = (cx - view.tx) / view.scale;
-    const wy = (view.ty - cy) / view.scale;
+  // Scale about a point in viewport coordinates, keeping the world point under it fixed.
+  // Reads the live view out of the store rather than the closed-over render value, so the same
+  // function can serve a native listener that is only subscribed once.
+  const zoomAbout = (factor: number, cx: number, cy: number) => {
+    const current = useStore.getState().view;
+    const scale = clampScale(current.scale * factor);
+    const wx = (cx - current.tx) / current.scale;
+    const wy = (current.ty - cy) / current.scale;
     setView({ scale, tx: cx - wx * scale, ty: cy + wy * scale });
+  };
+
+  // The wheel is a *native*, explicitly non-passive listener rather than React's `onWheel`.
+  // React attaches wheel at the root passively, so preventDefault() from a synthetic handler is
+  // ignored — and a trackpad pinch, which arrives here as ctrl+wheel, fell through to the
+  // browser and zoomed the page instead of the plan. Safari's own `gesture*` pinch events need
+  // the same treatment; `touch-action: none` does not cover them.
+  useLayoutEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const rect = svg.getBoundingClientRect();
+      zoomAbout(Math.exp(-e.deltaY * 0.0015), e.clientX - rect.left, e.clientY - rect.top);
+    };
+    const swallow = (e: Event) => e.preventDefault();
+    svg.addEventListener("wheel", onWheel, { passive: false });
+    for (const name of ["gesturestart", "gesturechange", "gestureend"]) {
+      svg.addEventListener(name, swallow);
+    }
+    return () => {
+      svg.removeEventListener("wheel", onWheel);
+      for (const name of ["gesturestart", "gesturechange", "gestureend"]) {
+        svg.removeEventListener(name, swallow);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [svgRef]);
+
+  // A button press has no cursor to zoom about, so it works on the middle of the pane. Factor
+  // is inverted on the way in: the shared control speaks in dolly distance (up = further away),
+  // the plan in pixels per metre.
+  const zoomBy = (factor: number) => {
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    zoomAbout(1 / factor, rect.width / 2, rect.height / 2);
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
@@ -163,5 +199,5 @@ export function usePanZoom(args: {
     e.stopPropagation();
   };
 
-  return { onWheel, onPointerDown, onPointerMove, onPointerUp, onClickCapture };
+  return { zoomBy, onPointerDown, onPointerMove, onPointerUp, onClickCapture };
 }

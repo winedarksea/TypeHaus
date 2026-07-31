@@ -217,9 +217,14 @@ def test_an_object_with_no_stated_height_still_reports_and_says_why() -> None:
         # Exactly at the 1/4" untreated level change clears; a hair over it does not.
         (PlaceableBodyProfile(0.0, 0.00635), False),
         (PlaceableBodyProfile(0.0, 0.0064), True),
-        # Wall-mounted at 27" exactly is *not* above the protruding-object floor.
-        (PlaceableBodyProfile(0.6858, 0.05, 0.05), True),
+        # A projection inside the 4" limit clears at any mounting height. §307.2 states the
+        # limit for leading edges above 27"; below that it sets none at all, so a body that
+        # would satisfy the stated limit up where you can walk into it satisfies it down
+        # where a cane finds it. (This is what stops every 16"-AFF receptacle reading as an
+        # obstruction of the floor beside a bed.)
+        (PlaceableBodyProfile(0.6858, 0.05, 0.05), False),
         (PlaceableBodyProfile(0.6859, 0.05, 0.05), False),
+        (PlaceableBodyProfile(0.4064, 0.0508, 0.0508), False),
         # 4" of projection is the limit, not a hair more.
         (PlaceableBodyProfile(1.2, 0.05, 0.1016), False),
         (PlaceableBodyProfile(1.2, 0.05, 0.102), True),
@@ -238,3 +243,18 @@ def test_thresholds_carry_the_sections_they_come_from() -> None:
     assert thresholds.maximum_protrusion_into_a_circulation_path.inches == pytest.approx(4)
     assert thresholds.maximum_untreated_change_in_level.inches == pytest.approx(0.25)
     assert thresholds.source == "ICC A117.1-2017 §303.2, §305.2, §307.2, §307.4"
+
+
+def test_a_receptacle_at_outlet_height_leaves_the_floor_clear() -> None:
+    """The same 4" allowance, 32" lower. A 2"-deep cover plate at 16" AFF is the single most
+    common thing standing in a bedroom clearance zone, and it costs the floor nothing."""
+    receptacle_type = ElectricalDeviceType(tag="ED-T-RECEPTACLE", name="Duplex receptacle",
+                                           footprint=(inch(4), inch(2)), height=inch(2))
+    plan = _bedroom_plan(
+        _device("RECEPTACLE", "ED-T-RECEPTACLE",
+                Mount(kind=MountKind.WALL, elevation=inch(16))),
+        library_extras={"electrical_device_types": (receptacle_type,)},
+    )
+    _, findings = resolve(plan)
+
+    assert _conflicts(findings) == []

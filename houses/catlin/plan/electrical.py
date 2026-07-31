@@ -853,8 +853,19 @@ NEC_FILL_SECOND = [
                      position=pt(ft(26.82), ft(27.16)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # Moved 2026-07-31: RC2 was authored at x=13'-1" on the arm's south wall, which is inside
+    # O-S-CLOSET's 4'-8" cased opening (x 11'-5 1/2"..16'-1 1/2") — a box in a doorway. On the
+    # suite's east wall instead, where it also closes the 8'-5" run 210.52 measured from the
+    # opening's west jamb round to RC3.
     ElectricalDevice(uid="NEC042AAAA", tag="ED-S-SUITE-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(13.08), ft(12.53)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(9.5), ft(11)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-RC-SECOND",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # The 2'-2" of wall between D-S-SUITE's east jamb and O-S-CLOSET's east jamb. Short, but
+    # 210.52(A)(2) counts any unbroken run of 2'-0" or more as wall space, and this one had
+    # nothing on it.
+    ElectricalDevice(uid="NEC047AAAA", tag="ED-S-SUITE-RC7", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(17.2), ft(12.55)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC043AAAA", tag="ED-S-SUITE-RC3", kind=DeviceKind.RECEPTACLE,
@@ -909,12 +920,19 @@ NEC_FILL_ATTIC = [
                      position=pt(ft(26.53), ft(9.18)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # RC1 and RC2 both moved 2026-07-31. FO-A-STAIR takes the north 3'-0" of this room
+    # (x 21'-2"..35'-5 3/8", y 5'-9 5/8"..8'-9 5/8"), leaving 1 3/4" of deck against the north
+    # wall and 6 5/8" against the east wall above the well. RC1 sat on the first of those and
+    # RC2 on the second: boxes you would have to lean over a 9' drop to reach. RC1 takes the
+    # middle of the south wall, between RC4 and RC3 under the windows; RC2 drops to the east
+    # wall south of the well, where it is what closes the 7'-10" run from RC3 round the
+    # southeast corner.
     ElectricalDevice(uid="NEC056AAAA", tag="ED-A-STUDY-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(26.37), ft(8.82)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(29), ft(0.15)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC057AAAA", tag="ED-A-STUDY-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35.83), ft(8.28)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35.83), ft(2)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC058AAAA", tag="ED-A-STUDY-RC3", kind=DeviceKind.RECEPTACLE,

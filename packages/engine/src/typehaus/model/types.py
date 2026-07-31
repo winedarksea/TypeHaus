@@ -61,6 +61,12 @@ class FurnitureType(HausModel):
     footprint: tuple[Length, Length]  # (width, depth)
     height: Length
     storage: bool = False
+    # NEC 210.52(A)(2)(1) breaks wall space at "fixed cabinets that do not have countertops
+    # or similar work surfaces", so a run of tall pantry is not somewhere a receptacle is
+    # required and a run of base cabinet is. ``None`` means the question does not arise: the
+    # type is not fixed cabinetry standing on the floor, and a bookcase you can pull away
+    # from the wall breaks nothing whatever its top is made of.
+    work_surface: bool | None = None
     clearance: tuple[Length, Length, Length, Length] | None = None  # front/back/L/R
     mesh: MeshRef | None = None
     source: str | None = None

@@ -288,8 +288,11 @@ GARAGE_PLACEABLES = [
 # sit 9'-7" apart rather than on the rooms' 9'-0" pitch so each foot zone stops short of the
 # headboard of the bed in the room below it. Heads therefore float 5"-6" off the north wall.
 SECOND_PLACEABLES = [
+    # BED1 is 7" further east than the other two (2026-07-31): the head goes tight to the
+    # east wall so its foot zone leaves the north wall a 4'-0 wardrobe slot clear of
+    # D-S-BED1's sweep. See the wardrobe block below.
     Furniture(uid="819QDDYMZ5", tag="FURN-S-BED1", type_ref="FURN-QUEEN-BED", room="RM-S-BED1",
-              position=pt(m(9.71131), m(4.07897)), rotation=deg(270)),
+              position=pt(m(9.88911), m(4.07897)), rotation=deg(270)),
     Furniture(uid="CSB701AAAA", tag="FURN-S-BED2", type_ref="FURN-QUEEN-BED", room="RM-S-BED2",
               position=pt(m(9.68788), m(6.90099)), rotation=deg(-90)),
     Furniture(uid="CSB702AAAA", tag="FURN-S-BED3", type_ref="FURN-QUEEN-BED", room="RM-S-BED3",
@@ -305,10 +308,15 @@ SECOND_PLACEABLES = [
               position=pt(m(7.3692), m(5.88414)), rotation=deg(0)),
     Furniture(uid="CHR702AAAA", tag="FURN-S-DESK-CHAIR2", type_ref="FURN-DESK-CHAIR", room="RM-S-BED2",
               position=pt(m(7.38828), m(6.31867)), rotation=deg(0)),
+    # BED3's pair sits 1'-3" west of where the other two rooms put theirs (2026-07-31). The
+    # bed in this room is the one that faces north rather than west, so its west side-access
+    # zone runs down x=28'-6" instead of along a wall, and the desk's east end stood 1'-2"
+    # inside it. Moving the desk west is free: it stops 4 1/2" clear of FURN-S-BED3-WARD and
+    # the pull-out zone still lands in open floor.
     Furniture(uid="DSK703AAAA", tag="FURN-S-DESK3", type_ref="FURN-DESK-48", room="RM-S-BED3",
-              position=pt(m(8.43311), m(10.4735)), rotation=deg(0)),
+              position=pt(m(8.05211), m(10.4735)), rotation=deg(0)),
     Furniture(uid="CHR703AAAA", tag="FURN-S-DESK-CHAIR3", type_ref="FURN-DESK-CHAIR", room="RM-S-BED3",
-              position=pt(m(8.41785), m(10.0705)), rotation=deg(180)),
+              position=pt(m(8.03685), m(10.0705)), rotation=deg(180)),
     # Compact two-person table in Study 2, against the south wall. Since the 2026-07-30
     # enlargement it sits partly under WIN-S-STUDY1 (centre 28'-0", sill 2'-8" — a
     # couple inches above the table top, which is the pleasant place for a table). Its
@@ -353,21 +361,22 @@ SECOND_PLACEABLES = [
     #
     # - BED2 north partition and BED3 south partition each have a slot that conflicts with
     #   nothing at all, so both take one.
-    # - BED1 has none. Its door lands at y 13'-11" to 16'-5", so the north wall's clear run
-    #   starts at x=23'-4 1/2" where the swing arc leaves the wall, and the bed's 18"
-    #   recommended foot zone starts at x=26'-10 1/3": 3'-5 3/4" of wall for a 4'-0 case.
-    #   The position below is the least-bad of the enumeration — clear of the swing, clipping
-    #   the foot zone by 1 7/32" over 6 5/16" (0.05 sf), which reports as one
-    #   integrity.placeable_recommended_clearance_conflict advisory. Moving the bed 1 7/32"
-    #   south would clear it, but that breaks the 9'-7" bed-to-bed pitch the comment above
-    #   is built on and pushes the bed's south side zone onto the room's south wall.
+    # - BED1 had none while the bed stayed put. Its door lands at y 13'-11" to 16'-5", so the
+    #   north wall's clear run starts where the swing arc leaves the wall, and the bed's 18"
+    #   recommended foot zone ends the run 3'-5 3/4" later — a slot too short for a 4'-0 case,
+    #   so the wardrobe used to stand in the door's sweep. Closed 2026-07-31 by moving *both*:
+    #   the bed 7" east (its head now sits 1/2" off the east wall instead of 7", which is
+    #   where a headboard belongs anyway) and the case 15" east and 2" north. That buys the
+    #   1'-3" the slot was short and clears the swing, the foot zone and the side zones
+    #   outright. The 7" is free because it is an x move — the 9'-7" bed-to-bed *pitch* the
+    #   comment above is built on is a y dimension and does not change.
     #
     # BED1's and BED2's wardrobes stand over ED-S-BED1-RC1 / ED-S-BED2-RC1, the north-wall
     # general receptacles at 16"-18" AFF. That is not a code problem (210.52 spacing counts
     # the receptacle whether or not a case stands in front of it) but it is worth knowing
     # before the electrician sets the boxes: neither room has a 4'-0 run of wall without one.
     Furniture(uid="CSB704AAAA", tag="FURN-S-BED1-WARD", type_ref="FURN-WARDROBE-48",
-              room="RM-S-BED1", position=pt(m(7.36343), m(5.11445)), rotation=deg(0)),
+              room="RM-S-BED1", position=pt(m(7.74443), m(5.16525)), rotation=deg(0)),
     Furniture(uid="CSB705AAAA", tag="FURN-S-BED2-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED2", position=pt(m(7.36477), m(7.8429)), rotation=deg(0)),
     Furniture(uid="CSB706AAAA", tag="FURN-S-BED3-WARD", type_ref="FURN-WARDROBE-48",
@@ -433,10 +442,14 @@ ATTIC_PLACEABLES = [
               room="RM-A-STUDY", position=pt(m(10.1656), m(0.489306)), rotation=deg(0)),
     Furniture(uid="CAK701AAAA", tag="FURN-A-STUDY-DESK-CHAIR", type_ref="FURN-DESK-CHAIR",
               room="RM-A-STUDY", position=pt(m(10.205), m(1.10716)), rotation=deg(0)),
+    # The table set moved 4" west on 2026-07-31. Its 3'-0" chair surround reached 2 1/4" past
+    # the desk's west end, which is the one direction the desk cannot give: its own east end
+    # is against ED-A-STUDY-SPOT's wall. 4" west costs the set nothing — the room runs on to
+    # x=18'-0 5/8" and CHAIR2 still stands 5'-3" clear of the west knee wall.
     Furniture(uid="TAK701AAAA", tag="FURN-A-STUDY-TABLE", type_ref="FURN-DINING-2-36",
-              room="RM-A-STUDY", position=pt(m(8.24139), m(0.65023))),
+              room="RM-A-STUDY", position=pt(m(8.13979), m(0.65023))),
     Furniture(uid="CAK702AAAA", tag="FURN-A-STUDY-CHAIR1", type_ref="FURN-DINING-CHAIR",
-              room="RM-A-STUDY", position=pt(m(9.03786), m(0.532453)), rotation=deg(-90)),
+              room="RM-A-STUDY", position=pt(m(8.93626), m(0.532453)), rotation=deg(-90)),
     Furniture(uid="CAK703AAAA", tag="FURN-A-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
-              room="RM-A-STUDY", position=pt(m(7.45287), m(0.57089)), rotation=deg(90)),
+              room="RM-A-STUDY", position=pt(m(7.35127), m(0.57089)), rotation=deg(90)),
 ]

@@ -59,6 +59,11 @@ export const ICON_PATHS: Record<IconName, ReactNode> = {
   "view-split": <><rect x="3" y="4" width="18" height="16" rx="1" /><path d="M12 4v16" /></>,
   "view-3d": <><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" /><path d="M12 12l8-4.5" /><path d="M12 12v9" /><path d="M12 12L4 7.5" /></>,
 
+  // ── Canvas navigation ────────────────────────────────────────────────────
+  // The `search` lens with a sign in it, so the zoom pair reads as one family with it.
+  "zoom-in": <><circle cx="11" cy="11" r="6" /><path d="M20 20l-4.5-4.5" /><path d="M8 11h6" /><path d="M11 8v6" /></>,
+  "zoom-out": <><circle cx="11" cy="11" r="6" /><path d="M20 20l-4.5-4.5" /><path d="M8 11h6" /></>,
+
   // ── Preferences ──────────────────────────────────────────────────────────
   // Density reads as row spacing: the same rows, further apart.
   "density-compact": <><path d="M4 7h16" /><path d="M4 10.5h16" /><path d="M4 14h16" /><path d="M4 17.5h16" /></>,

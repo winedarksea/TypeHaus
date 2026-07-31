@@ -45,10 +45,10 @@ CLEAR_FLOOR_SPACE_OBSTRUCTION_THRESHOLDS = ClearFloorSpaceObstructionThresholds(
     minimum_headroom_over_clear_floor_space=inch(80),
     # A117.1 307.2 Protrusion Limits: "Objects with leading edges more than 27 inches
     # (685 mm) and not more than 80 inches (2030 mm) above the floor shall protrude 4 inches
-    # (100 mm) maximum horizontally into a circulation path." The 27" floor on that allowance
-    # is load-bearing: below it an object is cane-detectable and the standard stops limiting
-    # its projection, which is not the same as the object ceasing to occupy the space, so this
-    # module only ever applies the allowance *above* 27".
+    # (100 mm) maximum horizontally into a circulation path." Kept as a named threshold
+    # because it is the *height band the standard polices*; below 27" an object is
+    # cane-detectable and §307.2 stops limiting projection at all, which is why a body inside
+    # the 4" allowance is clear at any height (→ ``clear_floor_space_obstruction``).
     lowest_leading_edge_of_a_protruding_object=inch(27),
     maximum_protrusion_into_a_circulation_path=inch(4),
     # A117.1 303.2 Vertical: "Changes in level of 1/4 inch (6.4 mm) maximum in height shall be
@@ -114,12 +114,21 @@ def clear_floor_space_obstruction(
     protrusion_m = body.horizontal_projection_from_wall_m
     lowest_edge_m = thresholds.lowest_leading_edge_of_a_protruding_object.meters
     protrusion_limit_m = thresholds.maximum_protrusion_into_a_circulation_path.meters
-    if protrusion_m is not None and base_m > lowest_edge_m and protrusion_m <= protrusion_limit_m:
+    # The allowance is applied at *any* mounting height, not only in the 27"–80" band §307.2
+    # polices. 4" is the projection the standard tolerates where a walking person can strike
+    # it face-on; the same 4" lower down, where a cane finds it and §307.2 imposes no limit at
+    # all, cannot be worse. Restricting the allowance to the band it is quoted from made every
+    # receptacle at 16"-18" AFF an "obstruction" of the floor beside a bed — a 2" cover plate
+    # costing a room no usable inch, reported often enough to train the reader to skip the
+    # check. A body that genuinely reaches into the room (a low bench, a radiator) projects
+    # well past 4" and still reports.
+    if protrusion_m is not None and protrusion_m <= protrusion_limit_m:
         return ClearFloorSpaceObstruction(False, (
             f"it is wall-mounted with its leading edge {_inches(base_m)} above the floor and "
             f"projects {_inches(protrusion_m)}, within the {_inches(protrusion_limit_m)} "
-            f"A117.1 §307.2 allows an object above {_inches(lowest_edge_m)} to protrude into a "
-            "circulation path"))
+            f"A117.1 §307.2 allows an object to protrude into a circulation path (the limit "
+            f"is stated for leading edges above {_inches(lowest_edge_m)}; below that the "
+            "standard sets no limit at all)"))
     return ClearFloorSpaceObstruction(True, (
         f"its body occupies {_inches(base_m)}–{_inches(top_m)} above the floor"))
 
