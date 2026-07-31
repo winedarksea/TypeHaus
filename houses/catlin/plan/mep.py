@@ -159,9 +159,9 @@ ELECTRICAL_DEVICE_TYPES = (
 
 SLEEVES = [
     # BATH1's WC is wall-hung on an in-wall carrier (FX-TOILET-WH): the bowl bolts to a
-    # steel carrier frame inside W-M-BAE's 2x6 stud bay and the 3" waste drops *inside the
-    # wall*, so the pre-pour sleeve sits on the wall centerline (x=6') at the fixture's
-    # authored drain_position — under the carrier, not under the bowl.
+    # steel carrier frame inside W-M-BAE's 2x6 stud bay and the 3" waste drops inside the
+    # wall, so the pre-pour sleeve sits on that wall's centerline at the fixture's authored
+    # drain_position — under the carrier, not under the bowl.
     SleevePenetration(uid="CMP901AAAA", tag="SP-M-WC1", host_ref="SL-M-DECK",
                       position=pt(ft(6), ft(22, 7)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-M-BATH1-WC"),

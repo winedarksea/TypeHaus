@@ -228,6 +228,8 @@ Questions:
 - Edits in 2d don't always update all the necessary pieces (like when we switched a shower to showertub)
 - Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?
 - Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model)
+- Pantry
+- Maybe don't need gutters on house, run down standing seam siding
 
 ## Windows
 We want to make some of the south facing windows, and generally make windows more symmetrical from the outside view of the house (while still following stud spacing needs and being 'pleasantly' spaced from an inside perspective as well).
@@ -237,7 +239,7 @@ We also might want a bit more symmetric between the main and second floor window
 
 RM-S-PLANT and RM-S-STUDY2 should have bigger windows, likely 42" wide, breaking two studs in line. Possibly larger windows for the other south facing windows as well.
 
-Have the windows be trimmed with charcoal gray (this is easy to change so we can experiment with the color)
+Have the windows be trimmed with charcoal gray on the exterior (this is easy to change so we can experiment with the color)
 
 ### Other visual ideas
 Dark base to the house
