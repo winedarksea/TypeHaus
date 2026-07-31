@@ -385,12 +385,15 @@ OPENINGS = [
     # O-M-HALL, the 2'-8" cased pass-through from the living room into the hall, retired
     # 2026-07-28 with its host wall W-M-C4: the whole 4'-2" it stood in is the opening now.
     # Cased pass-through: living room → dressing corridor (per floorplan).
+    # Sills raised 2'-0" -> 3'-0" (2026-07-30 facade pass): the west facade's 27" units
+    # all sit on the 3'-0" sill (with WIN-S-SUITE1/2 above) and its 14" units on 4'-0",
+    # so every main/second head on that face lands on one 6'-0" line.
     Window(uid="CMX301AAAA", tag="WIN-M-BED-W1", host="W-M-W4",
            type_ref="WT-2736", position=from_node("N-M-SW", ft(4, 2.5)),
-           sill_height=ft(2)),
+           sill_height=ft(3)),
     Window(uid="CMX302AAAA", tag="WIN-M-BED-W2", host="W-M-W4",
            type_ref="WT-2736", position=from_node("N-M-SW", ft(9, 6.5)),
-           sill_height=ft(2)),
+           sill_height=ft(3)),
     # South pair enlarged to WT-4248 (2026-07-30): centres 3'-4" and 8'-8" are bay
     # centres on W-M-S1's grid (two studs broken each), stacking exactly under
     # WIN-S-PLANT1/2 above — main and second share the wall start, so the columns
@@ -412,11 +415,12 @@ OPENINGS = [
     # corner (8"+16n) and the closest bay centre to that middle is 4'-8" — 2" off true
     # centre, one 14" RO short of breaking a stud. `from_node` measures to the near edge,
     # not the centre, so the offset below is the bay centre (4'-8") less half the 14" RO.
-    # Sill at 3'-0" clears FURN-M-MUD-BENCH's 18" seat the same way WIN-B-SAUNA clears its
-    # bench below.
+    # Sill raised 3'-0" -> 4'-0" (2026-07-30 facade pass) onto the west facade's 14"-unit
+    # sill line, putting its head on the shared 6'-0" line with WIN-M-BATH2 and the
+    # 27" units; it clears FURN-M-MUD-BENCH's 18" seat by even more than it used to.
     Window(uid="CMX306AAAA", tag="WIN-M-MUD", host="W-M-W1",
            type_ref="WT-1424-FIX", position=from_node("N-M-NW", ft(4, 1)),
-           sill_height=ft(3)),
+           sill_height=ft(4)),
     # South pair enlarged to WT-4248 (2026-07-30): centres 28'-0" and 33'-4" are bay
     # centres on W-M-S2's grid (8"+16n off N-M-S1), stacking exactly under
     # WIN-S-STUDY1/2. The mirror of the bedroom pair about x=18' would be 27'-4" and
@@ -429,15 +433,20 @@ OPENINGS = [
     Window(uid="CMX308AAAA", tag="WIN-M-LIV-S2", host="W-M-S2",
            type_ref="WT-4248", position=from_node("N-M-SE", ft(6, 3)),
            sill_height=ft(2, 8)),
-    # East pair restacked (2026-07-30) under the second-floor columns: 4'-0" sits
-    # exactly under WIN-S-STUDY3 (both walls start their grids at y=0), 14'-8" is the
-    # closest stud line to WIN-S-BED1's survey-pinned 14'-4". The fireplace that stood
-    # across the 4'-0" band dropped to a 7" hearth mount below the sill (electrical.py).
+    # East row respaced (2026-07-30 facade pass): the facade favors within-storey
+    # rhythm over between-storey stacking on this side now — the second storey runs
+    # its own exact 9'-0" beat and this row runs as even as its own grid allows:
+    # 4'-0" / 12'-0" / 19'-4" (8'-0" then 7'-4"; the true-even 11'-8" middle is not
+    # a stud line on W-M-E1). The kitchen stretch north of WIN-M-DIN-E2 stays
+    # deliberately blank. The fireplace that stood across the 4'-0" band dropped to
+    # a 7" hearth mount below the sill (electrical.py). Both sills stay 2'-6": the
+    # BESTA run lining this wall tops out at 29 3/4" on its 2x4 frame (placeables.py),
+    # so the 30" sill line clears the countertop by 1/4" and E2 can cross the run.
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
            type_ref="WT-2736", position=from_node("N-M-SE", ft(2, 10.5)),
            sill_height=ft(2, 6)),
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
-           type_ref="WT-2736", position=from_node("N-M-SE", ft(13, 6.5)),
+           type_ref="WT-2736", position=from_node("N-M-SE", ft(10, 10.5)),
            sill_height=ft(2, 6)),
     # WIN-M-DIN-E1 (CMX311AAAA) was retired in the 2026-07-30 east restack. Its two
     # candidate homes both fought the kitchen swap: stacked under survey-pinned

@@ -186,11 +186,24 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
 
     # East wall: the source's four 2'-8" openings at y 3'-10", 13'-9", 22'-9", 31'-8",
     # each snapped to the nearest stud line on its own host.
-    for tag, source_y in (("WIN-S-STUDY3", 3 + 10 / 12), ("WIN-S-BED1", 13.75),
-                          ("WIN-S-BED2", 22.75), ("WIN-S-BED3", 31 + 8 / 12)):
+    for tag, source_y in (("WIN-S-BED1", 13.75), ("WIN-S-BED2", 22.75),
+                          ("WIN-S-BED3", 31 + 8 / 12)):
         x, y = centres[tag]
         assert x == pytest.approx(ft(36).meters, abs=ft(1).meters), tag
         assert abs(y - ft(source_y).meters) <= ft(0, 8).meters, tag
+
+    # WIN-S-STUDY3 is the one east opening that leaves its source station on purpose
+    # (2026-07-30 facade pass). The source draws it at y 3'-10", which put the row at
+    # 10'-4"/9'-0"/9'-0"; at y 5'-4" the four windows run one exact 9'-0" rhythm, and
+    # the facade's own regularity outranks a survey position the way the 16" module
+    # already does. Asserted against the rhythm, not the survey.
+    x, y = centres["WIN-S-STUDY3"]
+    assert x == pytest.approx(ft(36).meters, abs=ft(1).meters)
+    assert y == pytest.approx(ft(5, 4).meters, abs=TOL_M)
+    for near, far in (("WIN-S-STUDY3", "WIN-S-BED1"), ("WIN-S-BED1", "WIN-S-BED2"),
+                      ("WIN-S-BED2", "WIN-S-BED3")):
+        assert centres[far][1] - centres[near][1] == pytest.approx(ft(9).meters,
+                                                                  abs=TOL_M), far
 
     # One balcony door, east of the centre line, inside the source's 18'-8"..23'-11" run.
     assert "D-S-DECK-W" not in centres

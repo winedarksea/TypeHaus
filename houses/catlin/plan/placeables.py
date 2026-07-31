@@ -301,8 +301,9 @@ SECOND_PLACEABLES = [
               room="RM-S-STUDY2", position=pt(m(8.90614), m(0.530999)), rotation=deg(-90)),
     Furniture(uid="CHR705AAAA", tag="FURN-S-STUDY-CHAIR2", type_ref="FURN-DINING-CHAIR",
               room="RM-S-STUDY2", position=pt(m(7.32372), m(0.536064)), rotation=deg(90)),
-    # A compact rocking chair occupies the southeast corner, below WIN-S-STUDY3 and with its
-    # back to the south wall. The armchair symbol is the intentional close-enough 2D/3D
+    # A compact rocking chair occupies the southeast corner, with its back to the south
+    # wall and WIN-S-STUDY3 just north of it up the east wall (the window moved from
+    # y 4'-0" to 5'-4" in the 2026-07-30 facade pass, off the chair rather than over it). The armchair symbol is the intentional close-enough 2D/3D
     # approximation: it keeps the plan readable while the catalog type preserves the use.
     Furniture(uid="RCK701AAAA", tag="FURN-S-STUDY-ROCKING-CHAIR",
               type_ref="FURN-ROCKING-CHAIR-30", room="RM-S-STUDY2",

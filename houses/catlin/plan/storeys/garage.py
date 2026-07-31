@@ -74,6 +74,14 @@ OPENINGS = [
     # should never need (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs).
     Window(uid="CGX301AAAA", tag="WIN-G-N1", host="W-G-W", type_ref="WT-1424",
            position=from_node("N-G-NW", ft(1, 5)), sill_height=ft(3, 6)),
+    # WIN-G-N1's mirror at the south end of the same wall (2026-07-30): the west wall is
+    # 24'-0" node-to-node and N1's centre sits 2'-0" off the north corner, so 22'-0" off
+    # it — 2'-0" off the south corner — is the exact mirror. It is also a bay centre
+    # (22'-0" = 8" + 16"x16 on W-G-W's grid, which lays out from N-G-NW), so the pair is
+    # symmetric AND both keep the unbroken stud bay a 14" RO exists to get. Same 3'-6"
+    # sill: above a workbench, and the one head line this wall has.
+    Window(uid="CGX302AAAA", tag="WIN-G-S1", host="W-G-W", type_ref="WT-1424",
+           position=from_node("N-G-NW", ft(21, 5)), sill_height=ft(3, 6)),
 ]
 
 ROOMS = [

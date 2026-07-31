@@ -314,9 +314,14 @@ OPENINGS = [
     # instead of distorting it into a narrow 3'-0" double door or two overlapping openings.
     Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-EXT-FRENCH60",
          position=from_node("N-S-S1", ft(1, 10)), flip_swing=True),                       # x 21'-4"
-    # Windows — east wall, on the source's four 2'-8" openings (we build 27", the bearing cap)
+    # Windows — east wall, on the source's four 2'-8" openings (we build 27", the bearing cap).
+    # WIN-S-STUDY3 departs from its source position (y 3'-10") on purpose (2026-07-30
+    # facade pass): at y 4'-0" the row read 10'-4"/9'-0"/9'-0" and its 2'-6" sill broke
+    # the storey's 3'-0" line. At y 5'-4" (a stud line) the four windows run an exact
+    # 9'-0" rhythm and one sill line — the facade now favors within-storey rhythm over
+    # between-storey stacking on this side (LIV-E1 below no longer stacks under it).
     Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2736",
-           position=from_node("N-S-SE", ft(2, 10.5)), sill_height=ft(2, 6)),  # y 4'-0"
+           position=from_node("N-S-SE", ft(4, 2.5)), sill_height=ft(3)),      # y 5'-4"
     Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E2", type_ref="WT-2736",
            position=from_node("N-S-E1", ft(4, 2.5)), sill_height=ft(3)),      # y 14'-4"
     Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E3", type_ref="WT-2736",
@@ -338,8 +343,10 @@ OPENINGS = [
            position=from_node("N-S-SW", ft(6, 11)), sill_height=ft(2, 8)),    # x 8'-8"
     # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
     # type and not the 30" south-glazing one — "resize windows to fit the grid" (CLAUDE.md).
+    # Sill raised 2'-0" -> 3'-0" (2026-07-30 facade pass): the west facade's 27" units
+    # all sit on the 3'-0" sill so every head lands on one 6'-0" line.
     Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736",
-           position=from_node("N-S-W3", ft(2, 10.5)), sill_height=ft(2)),     # y 5'-0"
+           position=from_node("N-S-W3", ft(2, 10.5)), sill_height=ft(3)),     # y 5'-0"
     # Study 2's south pair, enlarged to WT-4248 (2026-07-30): centres 28'-0" and 33'-4"
     # are bay centres on W-S-S2's grid and stack exactly over WIN-M-LIV-S2/S1. The true
     # mirror of the plant pair (27'-4"/32'-8") is unreachable — the two south segments'
@@ -366,8 +373,23 @@ OPENINGS = [
     # chase's south wall splits it there. Same physical window position (y=31'-11").
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424",
            position=from_node("N-S-CH3", ft(1, 5)), sill_height=ft(4)),
+    # Moved 29'-4" -> 28'-0" (2026-07-30 facade pass): WIN-M-KITCH below and WIN-A-N2
+    # above are both centred at x 28'-0", and 28'-0" is a stud line on W-S-N1's own
+    # grid too, so the north facade gets one exact three-storey column.
     Window(uid="CSX313AAAA", tag="WIN-S-HALL-N", host="W-S-N1", type_ref="WT-3036",
-           position=from_node("N-S-NE", ft(5, 5)), sill_height=ft(3)),        # x 29'-4"
+           position=from_node("N-S-NE", ft(6, 9)), sill_height=ft(3)),        # x 28'-0"
+    # Stairwell daylight (2026-07-30 facade pass): W-S-N2 is the wall over ST-M2S's
+    # well, and the north facade was blank from the entry column to x=21'-11". Centre
+    # x 12'-8" is the stud line inside the arriving upper flight's lane (x 10'-3"..
+    # 13'-9"); RO edges keep 1'-5" clear of the N-S-N2 corner. Same type and 3'-0"
+    # sill as WIN-S-HALL-N — the landing it lights sits a half-storey below, so the
+    # glass is well out of guard territory. WIN-A-N1 could stack on this (12'-8" is a
+    # stud line on W-A-N2 too) but deliberately does not: it stays at 7'-4" so the
+    # north gable reads near-symmetric about the ridge (10'-8" west vs 10'-0" east),
+    # the same way the south gable pair does. On a gable end ridge symmetry is the
+    # stronger read than a two-storey column, and the two gables then match.
+    Window(uid="CSX315AAAA", tag="WIN-S-STAIR-N", host="W-S-N2", type_ref="WT-3036",
+           position=from_node("N-S-N1", ft(4, 1)), sill_height=ft(3)),        # x 12'-8"
 ]
 
 ROOMS = [

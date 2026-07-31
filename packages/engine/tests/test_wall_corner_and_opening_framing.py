@@ -281,10 +281,18 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     walls = {wall.tag: wall for wall in catlin_resolved.walls}
     small = [o for o in catlin_resolved.openings
              if not o.is_door and o.width_m <= inch(14).meters + 1e-9]
+    # This is a stud-framing rule, so it only applies to windows in framed walls. A 14" RO
+    # in a poured wall has no bay to fit between and no stud to avoid breaking: WIN-B-SAUNA
+    # took WT-1424 on 2026-07-30 for its *size*, and its host W-B-S2 is 12" concrete with no
+    # members at all. Split rather than filtered so a framed wall can never quietly drop out
+    # of the checks below by losing its framing.
+    concrete = [o for o in small if not walls[o.host_wall].members]
+    framed = [o for o in small if walls[o.host_wall].members]
+    assert [o.tag for o in concrete] == ["WIN-B-SAUNA"], [o.tag for o in concrete]
     # WIN-G-N1 (garage) and WIN-A-W-SM (attic knee wall) joined the original 5 once those
     # storeys got their own WT-1424 windows; each still passes the per-window checks below.
-    assert len(small) == 7, [o.tag for o in small]
-    for opening in small:
+    assert len(framed) == 7, [o.tag for o in framed]
+    for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)
         direction = unit(sub(end, start))

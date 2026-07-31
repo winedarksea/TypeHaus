@@ -277,8 +277,8 @@ EQUIPMENT_TYPES = (
 SERVICE_DEVICES = [
     # Exterior west wall at y=29', 6" outside the sheathing plane, 5' up.
     ElectricalDevice(uid="CEE001AAAA", tag="ED-M-METER", kind=DeviceKind.METER,
-                     position=pt(ft(-0.5), ft(29)), type_ref="ED-T-METER",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+                     position=pt(m(-0.1524), m(9.07074)), type_ref="ED-T-METER",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None),
 ]
 
 BACKUP_ENCLOSURE = [
@@ -383,7 +383,8 @@ MAIN_DEVICES = [
     # FH-M-DINING's thermostat. The zone is free-standing in the middle of a 642 ft2 room,
     # so its control goes on the nearest real wall: the east wall's interior face at
     # x=35'-11 3/8", in the clear stretch between WIN-M-LIV-E2's rough opening (ends
-    # y=15'-9 1/2" after the 2026-07-30 restack) and WIN-M-DIN-E2's (starts y=18'-2 1/2").
+    # y=13'-1 1/2" after the 2026-07-30 facade pass respaced the east row) and
+    # WIN-M-DIN-E2's (starts y=18'-2 1/2") — a 5'-1" gap, wider than the 2'-5" it had.
     # ED-M-LIVING-RC3 sits at y=16'-11", so 17'-9" keeps 10" between the two boxes.
     # The sensor lead runs the 5' back to the zone edge.
     ElectricalDevice(uid="CEE024AAAA", tag="ED-M-DINING-FH-STAT", kind=DeviceKind.SWITCH,

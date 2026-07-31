@@ -128,7 +128,7 @@ export function Panel3D() {
       <div
         className="hud"
         aria-label="3D view navigation"
-        style={{ bottom: 12, top: "auto", left: 12, right: "auto", display: "grid", gridTemplateColumns: "repeat(3, var(--hit))", gap: 4, padding: 4 }}
+        style={{ bottom: 12, top: "auto", left: "calc(var(--rail-w) + var(--gutter) + var(--safe-l))", right: "auto", display: "grid", gridTemplateColumns: "repeat(3, var(--hit))", gap: 4, padding: 4 }}
       >
         <span />
         <button className="seg-btn" aria-label="Pan view up" title="Pan up" onClick={() => api.current?.pan("up")}>↑</button>

@@ -227,8 +227,15 @@ OPENINGS = [
     # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.
     Door(uid="CBD206AAAA", tag="D-B-PATIO", host="W-B-S3", type_ref="DT-EXT-FRENCH60",
          position=from_node("N-B-S2", ft(1, 4)), sill_height=inch(7), flip_swing=True),
+    # WT-1424, down from WT-3660 (2026-07-30): a sauna wants a small window, not a 3'x5'
+    # one — less glass to lose heat through and less of the room's wall given up. It is the
+    # 14" family's one appearance in a concrete wall, where the 16" stud module that
+    # normally motivates that width does not apply; the size is the point here, not the
+    # module. Sill stays 3'-0" (head drops 8'-0" -> 5'-0"), still well above the 18" bench
+    # top (placeables.py). This retires the last WT-3660 instance — the type and its
+    # WT-3660-FIX twin stay in the catalog as available products.
     Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2",
-           type_ref="WT-3660", position=from_node("N-B-S1", ft(2, 6)),
+           type_ref="WT-1424", position=from_node("N-B-S1", ft(2, 6)),
            sill_height=ft(3)),
 ]
 

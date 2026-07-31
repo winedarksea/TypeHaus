@@ -751,7 +751,8 @@ VENT_BRANCHES_MAIN = [
     # *does* continue to the storey above at this x (W-S-N1 stacks on it, into RM-S-BED3's
     # wall), so `mep.vent_reachability` is still satisfied by the wet-wall path. x=32'-8" is
     # the riser's bay — clear of WIN-M-KITCH's RO (29'-5".."31'-8"), WIN-M-KITCH-N's RO
-    # (33'-5".."34'-7") and, one storey up, WIN-S-HALL-N's RO (28'-1".."30'-7") — rather than
+    # (33'-5".."34'-7") and, one storey up, WIN-S-HALL-N's RO (26'-9".."29'-3" since the
+    # 2026-07-30 facade pass stacked it on WIN-M-KITCH's column) — rather than
     # x=30'-7" under the sink itself, which sits inside two stacked window ROs. From there it
     # turns west in the same FS-SECOND joist bay as before, y=24'-8" (bays are 8"+n*16"; this
     # one passes south of FO-S-STAIR, which starts at y=25'-2 3/8", and north of both trunk

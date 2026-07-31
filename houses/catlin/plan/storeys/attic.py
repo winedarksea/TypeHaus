@@ -147,38 +147,58 @@ OPENINGS = [
          position=from_node("N-A-C2", ft(0, 8.875))),                 # x 19'-11 7/8"
     Door(uid="CAD204AAAA", tag="D-A-VEST", host="W-A-VE", type_ref="DT-INT-SWING30",
          position=from_node("N-A-V1", ft(0, 11.25))),                 # y 2'-2 1/4"
-    # The south gables take WT-4242 (2026-07-30 enlargement): the 42" width of the
-    # house's new south-glazing family, 6" shorter than the main/second WT-4248 because
-    # the 4:12 rake can't clear the taller header at a usable sill. Two studs broken
-    # each, so every RO centre is a bay centre on its own host's grid. All three share
-    # the 2'-4" sill / 5'-10" head line: WIN-A-STUDY-S2's header would hit the raked
-    # top plate at anything higher (the far-east gable is the shortest wall any 42"
-    # unit stands in), and one storey-wide line beats two sills that differ by 4" on
-    # the same facade — it also buys the west gable's header real rake clearance.
+    # South gable: four WT-1424 on the lower storeys' own window columns (2026-07-30
+    # facade pass). The gable used to carry two/three WT-4242s that capped no column at
+    # all — the 42" RO is simply too wide to reach the outer columns under a 4:12 rake
+    # (at x 3'-4" its west jamb stands where the wall is 5'-6" and the header wants
+    # 6'-2"), and at the 8'-8" column it would run 5" past W-A-S1's end at x=10'.
     #
-    # The source's three south-gable openings are 2'-7 1/2" at x 7'-5", 4'-0" at
-    # x 17'-11 3/4" and 2'-7 1/2" at x 28'-11". The middle one is centred on the bearing
-    # wall and cannot be built, so WIN-A-DEN-S takes the westernmost (now in the west
-    # loft, since the Den moved off the gable's centre) and WIN-A-STUDY-S2 the eastern;
-    # WIN-A-STUDY-S1 stays in a clear bay with no source counterpart — its bay centre
-    # at 25'-4" is off limits (king stud inside the W-A-VE tee pack), so it sits one
-    # module east at 25'-8".
-    Window(uid="CAX301AAAA", tag="WIN-A-DEN-S", host="W-A-S1", type_ref="WT-4242",
-           position=from_node("N-A-SW", ft(5, 7)), sill_height=ft(2, 4)),  # x 7'-4"
-    Window(uid="CAX302AAAA", tag="WIN-A-STUDY-S1", host="W-A-S4",
-           type_ref="WT-4242", position=from_node("N-A-V1", ft(1, 7)),
-           sill_height=ft(2, 4)),                                          # x 25'-8"
-    Window(uid="CAX303AAAA", tag="WIN-A-STUDY-S2", host="W-A-S4",
-           type_ref="WT-4242", position=from_node("N-A-V1", ft(5, 7)),
-           sill_height=ft(2, 4)),                                          # x 29'-8"
+    # Dropping to the 14" family solves both: a 14" RO clears a stud bay unbroken, needs
+    # no header, and its head at 4'-8" ducks under the rake everywhere it is asked to
+    # stand — 1'-0" of clearance at the tightest station (33'-8", where the wall is
+    # 5'-8"). So the attic finally reads as four columns capped, matching WIN-M-BED-S1/S2
+    # and WIN-M-LIV-S1/S2 below and WIN-S-PLANT1/2 and WIN-S-STUDY1/2 between.
+    #
+    # The west pair lands exactly on its columns; the east pair misses by 4" because
+    # W-A-S4's stud grid starts at N-A-V1 (x 22'-4") while the storeys below lay out
+    # from x 18'-0", and 4'-4" is 4" off the 16" module. That phase error is fixed by
+    # the plan, not by the window. Sill 2'-8" is the storey-wide south sill line.
+    # Renamed off the old room-based tags, which had gone stale anyway (the Den moved
+    # off the gable years ago): these are facade positions, like WIN-A-N1/N2.
+    Window(uid="CAX301AAAA", tag="WIN-A-S1", host="W-A-S1", type_ref="WT-1424",
+           position=from_node("N-A-SW", ft(2, 9)), sill_height=ft(2, 8)),   # x 3'-4"
+    Window(uid="CAX302AAAA", tag="WIN-A-S2", host="W-A-S1", type_ref="WT-1424",
+           position=from_node("N-A-SW", ft(8, 1)), sill_height=ft(2, 8)),   # x 8'-8"
+    Window(uid="CAX303AAAA", tag="WIN-A-S3", host="W-A-S4", type_ref="WT-1424",
+           position=from_node("N-A-V1", ft(5, 5)), sill_height=ft(2, 8)),   # x 28'-4"
+    Window(uid="CAX307AAAA", tag="WIN-A-S4", host="W-A-S4", type_ref="WT-1424",
+           position=from_node("N-A-V1", ft(10, 9)), sill_height=ft(2, 8)),  # x 33'-8"
     # The source attic has no north, east or west opening at all; these three are kept for
     # daylight and cross-ventilation and are this storey's only openings with no counterpart.
     Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3036",
            position=from_node("N-A-NW", ft(6, 1)), sill_height=ft(2)),
     Window(uid="CAX305AAAA", tag="WIN-A-N2", host="W-A-N1", type_ref="WT-3036",
            position=from_node("N-A-NE", ft(6, 9)), sill_height=ft(2)),
-    Window(uid="CAX306AAAA", tag="WIN-A-W-SM", host="W-A-W1", type_ref="WT-1424",
-           position=from_node("N-A-NW", ft(17, 5)), sill_height=ft(2)),
+    # Knee-wall windows, one at each end of the east and west walls (2026-07-30 facade
+    # pass). The 5' knee walls are the one place in the house where the 14" family is
+    # chosen for height rather than width: at sill 2'-6" the head sits at 4'-6", 3" under
+    # the double top plate, which is all a 5' wall has to give. Placing them in pairs at
+    # the ends rather than one in the middle gives each long blank flank two accents and
+    # lets the corner rooms — not just the middle of the loft — see out.
+    #
+    # WIN-A-W-N is the old WIN-A-W-SM (uid kept, so its IFC GlobalId survives), moved off
+    # the wall's midpoint at y=18'. Every centre is a bay centre on its own host's grid.
+    # West lands 3'-4" in from both corners, exactly symmetric about y=18'. East is 4"
+    # off that at its north end: W-A-E2's grid starts at N-A-E1 (y=9'), not at the corner,
+    # so 32'-8" is not a bay centre there and 32'-4" is the nearest one.
+    Window(uid="CAX308AAAA", tag="WIN-A-W-S", host="W-A-W1", type_ref="WT-1424",
+           position=from_node("N-A-NW", ft(32, 1)), sill_height=ft(2, 6)),   # y 3'-4"
+    Window(uid="CAX306AAAA", tag="WIN-A-W-N", host="W-A-W1", type_ref="WT-1424",
+           position=from_node("N-A-NW", ft(2, 9)), sill_height=ft(2, 6)),    # y 32'-8"
+    Window(uid="CAX309AAAA", tag="WIN-A-E-S", host="W-A-E1", type_ref="WT-1424",
+           position=from_node("N-A-SE", ft(2, 9)), sill_height=ft(2, 6)),    # y 3'-4"
+    Window(uid="CAX310AAAA", tag="WIN-A-E-N", host="W-A-E2", type_ref="WT-1424",
+           position=from_node("N-A-E1", ft(22, 9)), sill_height=ft(2, 6)),   # y 32'-4"
 ]
 
 ROOMS = [
