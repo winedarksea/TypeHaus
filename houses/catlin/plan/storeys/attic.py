@@ -110,7 +110,7 @@ WALLS = [
     # South rooms: den (west of center) + study (east of center). Framed to the roof
     # deck like the other attic partitions, and since 2026-07-31 the den follows the roof
     # too (see its Room.ceiling below) — it lost its 7'-6" dropped ceiling to the south
-    # gable's juliet pair, whose 9'-0" head the drop would have buried.
+    # gable's juliet pair, whose 8'-0" head the drop would have buried.
     #
     # WHY THE DEN MOVED WEST INSTEAD OF ONTO ITS SOURCE FOOTPRINT (see the structural-ridge
     # note above): the source draws the Den at x 13'-9"..22'-4", straddling the bearing line,
@@ -175,31 +175,42 @@ OPENINGS = [
            position=from_node("N-A-V1", ft(5, 5)), sill_height=ft(2, 8)),   # x 28'-4"
     Window(uid="CAX307AAAA", tag="WIN-A-S4", host="W-A-S4", type_ref="WT-1424",
            position=from_node("N-A-V1", ft(10, 9)), sill_height=ft(2, 8)),  # x 33'-8"
-    # ...and the middle of the same gable, which those four leave blank: a pair of 32x76
-    # tilt-turns straddling the ridge, reading together like a juliet balcony without being
+    # ...and the middle of the same gable, which those four leave blank: a pair of 18x64
+    # casements straddling the ridge, reading together like a juliet balcony without being
     # one. No door, no guard, no walking surface — the 2'-8" sill (the storey-wide south
     # line, held here on purpose) clears R312.2's 24" fall-protection trigger by 8", so the
-    # rule never fires. The head at 9'-0" is 1'-10" under the roof underside at each
-    # window's outer jamb, room for the header and the raked double top plate, and short of
-    # the silent shortening in resolve/geometry_openings.py.
+    # rule never fires. The head at 8'-0" is 3'-3" under the roof underside at each window's
+    # outer jamb, far clear of the silent shortening in resolve/geometry_openings.py — this
+    # pair's height is a proportion decision, not a rake one.
     #
-    # WHY BAY CENTRES AND NOT STUD LINES: a 32" RO breaks two studs on a bay centre and
-    # three on a stud line, so bay centres are the cheaper frame — the same rule WT-4248
-    # follows. x 16'-0" is 72" along W-A-S2 (from N-A-S1 at x 10') and x 20'-0" is 24"
-    # along W-A-S3 (from N-A-S2 at x 18'); both are 8"+16n. The nearer stud lines at ±16"
-    # from the ridge would leave a 1" edge distance, which is unbuildable.
+    # WHY THE PAIR SHRANK (2026-07-31, hours after it was first drawn at 32x76 on the
+    # x 16'-0"/20'-0" bay centres): 80" x 76" of glass took over a gable whose other four
+    # openings are 14x24, and the two units read as two windows rather than one mullioned
+    # opening. 50" x 64" overall is the same composition at a size the facade can hold.
     #
-    # WHY 32" AND NOT 36": the clear pier between the two ROs is 16", centred on W-A-C1 and
-    # the RB-HOUSE south bearing point — enough for the ridge post plus a jack each side.
-    # A 36" pair at the same bay centres leaves 12", which is not. That pier is also the
-    # composition's mullion: it is why the two units read as one opening.
+    # WHY STUD LINES AND NOT BAY CENTRES: the gable's stud grid is continuous across the
+    # ridge — W-A-S2 lays out from N-A-S1 (x 10'-0") and W-A-S3 from N-A-S2 (x 18'-0"), and
+    # 8'-0" is exactly six modules — so a pair symmetric about the ridge has only two
+    # positions: the bay centres at x 16'-0"/20'-0" (48" apart) or the stud lines at
+    # x 16'-8"/19'-4" (32" apart). That fixes `pier + RO width` at 48" or 32", and the
+    # 32" pairing is the only one that brings the units closer. An 18" RO centred on a stud
+    # line interrupts that one stud and nothing else (resolve/framing/stud_module.py: at 16"
+    # o.c. with 1-1/2" studs, anything up to 30" clears the flanking lines), so the tighter
+    # pair is also the cheaper frame — one broken stud each instead of the 32" unit's two.
+    #
+    # WHY 18" AND NOT 20": the clear pier between the two ROs is 14", centred on W-A-C1 and
+    # the RB-HOUSE south bearing point. W-A-C1's 5-1/2" stud body plus a jack and king each
+    # side is 11-1/2", so 14" carries the bearing with 2-1/2" to spare and lets the kings
+    # double as the T-intersection's drywall backing; a 20" pair leaves 12", which is the
+    # arithmetic minimum and no more. That pier is also the composition's mullion: it is why
+    # the two units read as one opening.
     #
     # Tags are descriptive rather than positional because WIN-A-S1..S4 number west→east and
     # a mid-facade insertion cannot join that sequence without renumbering all six.
-    Window(uid="CAX311AAAA", tag="WIN-A-S-JUL-W", host="W-A-S2", type_ref="WT-3276",
-           position=from_node("N-A-S1", ft(4, 8)), sill_height=ft(2, 8)),   # x 16'-0"
-    Window(uid="CAX312AAAA", tag="WIN-A-S-JUL-E", host="W-A-S3", type_ref="WT-3276",
-           position=from_node("N-A-S2", ft(0, 8)), sill_height=ft(2, 8)),   # x 20'-0"
+    Window(uid="CAX311AAAA", tag="WIN-A-S-JUL-W", host="W-A-S2", type_ref="WT-1864",
+           position=from_node("N-A-S1", ft(5, 11)), sill_height=ft(2, 8)),  # x 16'-8"
+    Window(uid="CAX312AAAA", tag="WIN-A-S-JUL-E", host="W-A-S3", type_ref="WT-1864",
+           position=from_node("N-A-S2", ft(0, 7)), sill_height=ft(2, 8)),   # x 19'-4"
     # The source attic has no north, east or west opening at all; these three are kept for
     # daylight and cross-ventilation and are this storey's only openings with no counterpart.
     Window(uid="CAX304AAAA", tag="WIN-A-N1", host="W-A-N2", type_ref="WT-3036",
@@ -236,7 +247,7 @@ ROOMS = [
          occupancy=Occupancy.STORAGE, floor_finish="carpet",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
     # Cathedral like the other three (2026-07-31): the 7'-6" dropped ceiling it used to
-    # carry would have buried the 9'-0" head of WIN-A-S-JUL-W, which stands in this room's
+    # carry would have buried the 8'-0" head of WIN-A-S-JUL-W, which stands in this room's
     # stretch of the south gable. Under RF-HOUSE the Den's clear face (x 10'-18') runs
     # 9'-4" to 12'-0" of headroom, so R305 is satisfied with room to spare.
     Room(uid="CAR403AAAA", tag="RM-A-DEN", seed=pt(ft(14), ft(4)),

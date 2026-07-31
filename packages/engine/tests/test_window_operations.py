@@ -65,10 +65,22 @@ def test_window_operation_coerces_authored_strings_and_rejects_unmodeled_ones():
         WindowType(tag="WT-TEST", width=ft(3), height=ft(5), operation="jalousie")
 
 
-def test_the_attic_juliet_pair_is_a_tilt_turn_and_not_an_awning(catlin_plan):
+def test_the_attic_juliet_pair_is_a_casement_and_not_an_awning(catlin_plan):
     by_tag = {wt.tag: wt for wt in catlin_plan.library.window_types}
-    juliet = by_tag["WT-3276"]
-    # The pair's whole premise is a sash that swings inward like a door leaf; an awning
-    # (bottom-hung only) would open the head and nothing else, which is not the same window.
-    assert juliet.operation is WindowOperation.TILT_TURN
-    assert juliet.operation == "tilt_turn"
+    juliet = by_tag["WT-1864"]
+    # The pair's whole premise is a sash that swings like a door leaf; an awning (bottom-hung
+    # only) would open the head and nothing else, which is not the same window. It was a
+    # TILT_TURN for the few hours the pair was 32" wide — narrowing the RO to 18" put it
+    # under the ~500 mm minimum frame that hardware line is made in, and a casement leaf is
+    # what a juliet unit is anyway.
+    assert juliet.operation is WindowOperation.CASEMENT
+    assert juliet.operation == "casement"
+
+
+def test_tilt_turn_is_a_modeled_operation_even_with_no_current_placement():
+    # No catlin type carries it today (see above), but the member is the vocabulary's only
+    # dual-axis entry — it is what an authored "tilt_turn" has to coerce to rather than
+    # failing the closed-vocabulary check, and dropping it would silently reject valid source.
+    unit = WindowType(tag="WT-TEST", width=ft(2, 8), height=ft(6, 4), operation="tilt_turn")
+    assert unit.operation is WindowOperation.TILT_TURN
+    assert unit.operation == "tilt_turn"

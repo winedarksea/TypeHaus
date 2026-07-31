@@ -188,6 +188,7 @@ Questions:
 - Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?
 - Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model)
 - Pantry
+- Add the plant room wall types
 
 ### Other visual ideas
 Dark base to the house

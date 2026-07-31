@@ -742,11 +742,14 @@ ATTIC_LIGHTING = [
     # fixture carries its own (notes: "upper wall spotlight sconce for task lighting with
     # switch on sconce"). Naming no `controlled_by` is deliberate and `integral_switch`
     # on the type is what exempts it from `electrical.lighting_controls`.
-    # Moved x 14'-0" → 13'-0" on 2026-07-31: WIN-A-S-JUL-W's west jamb now stands at
-    # x 14'-8" on this same gable face, and 8" left the charcoal casing and the interior
-    # jamb extension crowding the sconce. 20" of clearance instead.
+    # Moved to x 13'-0" and back to x 14'-0" on 2026-07-31: WIN-A-S-JUL-W was briefly 32"
+    # wide with its west jamb at x 14'-8", which left 8" to the sconce and crowded it
+    # against the charcoal casing and the interior jamb extension. Narrowing the pair to
+    # 18" put that jamb at x 15'-11", so the original position has 1'-11" of clearance —
+    # more than the 20" the temporary move bought — and the sconce goes back on the Den's
+    # own centre line.
     ElectricalDevice(uid="QTA0001AAA", tag="ED-A-DEN-SCONCE", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13), ft(0, 5)), type_ref="ED-T-LT-SPOT-SW",
+                     position=pt(ft(14), ft(0, 5)), type_ref="ED-T-LT-SPOT-SW",
                      circuit="CKT-LT-UPPER", room="RM-A-DEN", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
 

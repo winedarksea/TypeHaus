@@ -59,13 +59,11 @@ DOOR_TYPES = [
 # attic's raked gables; the 2026-07-30 facade pass retired it by giving those gables
 # WT-1424 instead, which is what the rake could always actually take.
 #
-# The 32" family (WT-3276) is a deliberate fifth family, added 2026-07-31 for the attic's
+# The 18" family (WT-1864) is a deliberate fifth family, added 2026-07-31 for the attic's
 # south juliet pair, and it is the same shape of argument that retired WT-4242 — one
 # height per family, so a unit the committed heights cannot express needs its own family
-# rather than a second height on an existing one. No committed height gives the door-like
-# 1:2.4 proportion the pair is for (the 30" family is 36" tall, less than half of it), and
-# a tilt-turn is a different hardware line from the casements anyway, so the two would not
-# have been one product even at a shared width.
+# rather than a second height on an existing one. No committed height gives the tall narrow
+# proportion the pair is for (the 30" family is 36" tall, little more than half of it).
 WINDOW_TYPES = [
     # 14" RO — falls between studs on the 16" grid without breaking a stud line, so it
     # frames with no header, no jacks and no kings. 24" tall because the 5' attic knee
@@ -74,6 +72,19 @@ WINDOW_TYPES = [
     # That combination makes it the house's fallback wherever a bigger unit will not go.
     WindowType(tag="WT-1424", width=inch(14), height=ft(2), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="awning"),
+    # 18" RO — the attic gable's juliet size (2026-07-31, narrowed from a 32" tilt-turn the
+    # same day). One stud broken, so the centre sits on a STUD LINE, not a bay centre: at
+    # 16" o.c. with 1-1/2" studs anything from 16" to 30" wide clears the two flanking stud
+    # lines when it is centred on one, which is the cheap frame (a single header on a jack
+    # and king each side) and, more to the point here, the one that lets the pair sit 32"
+    # apart instead of 48". 64" tall: with the storey-wide 2'-8" south sill the head lands
+    # at 8'-0", and the 4:12 rake is nowhere near it (roof underside is 11'-4" at the outer
+    # jamb), so the height is a proportion decision rather than a clearance one — 18x64
+    # keeps a door-like slot without the pair dominating the gable. Casement, not tilt-turn:
+    # 18" is below the ~500 mm minimum frame any tilt-turn hardware line is made in, and an
+    # in-swing casement leaf is what a juliet unit is anyway.
+    WindowType(tag="WT-1864", width=inch(18), height=ft(5, 4), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO — bearing-wall size (N*2-9): one stud broken, jacks added. 36" tall
     # because the garage's 8' wall can't take a 60" height at a 42" sill (header would
     # land above the top plate). 27x36 still clears R310 egress (6.75 sf > 5.7).
@@ -84,13 +95,6 @@ WINDOW_TYPES = [
     # enlargement this is the north-side size (attic gable pair, hall).
     WindowType(tag="WT-3036", width=inch(30), height=ft(3), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
-    # 32" RO — the attic gable's juliet size (2026-07-31). Two studs broken like the 42",
-    # so its centre sits on a bay centre, not a stud line; non-bearing walls only. 76" tall
-    # is the point of it: with the storey-wide 2'-8" south sill the head lands at 9'-0",
-    # under the peak of the south gable where the wall is nearly 12'. Tilt-turn because the
-    # pair is meant to swing inward like a door leaf onto the view.
-    WindowType(tag="WT-3276", width=inch(32), height=ft(6, 4), u_factor=u_us(0.25),
-               shgc=0.35, vt=0.5, operation="tilt_turn"),
     # 42" RO — the enlarged south-glazing size (2026-07-30): breaks two studs, which
     # means the RO centre sits on a bay centre (8"+16n from the host wall's start),
     # not a stud line. 48" tall with the shared 2'-8" sill puts the head at 6'-8" —

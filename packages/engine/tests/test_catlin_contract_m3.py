@@ -529,27 +529,29 @@ def test_catlin_window_openings_follow_the_sixteen_inch_framing_module():
 
 
 def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_height(catlin_model):
-    """The gable peak's composition: two 32x76 tilt-turns symmetric about the x=18' ridge.
+    """The gable peak's composition: two 18x64 casements symmetric about the x=18' ridge.
 
     Every number here is load-bearing on the design. The rake is what makes this worth
     pinning: ``resolve/geometry_openings.py`` *shortens* an opening that runs into the roof
-    underside rather than erroring, so "the head still lands at 9'-0"" is a claim that has
+    underside rather than erroring, so "the head still lands at 8'-0"" is a claim that has
     to be asserted rather than assumed from the authored type height.
     """
     west = next(item for item in catlin_model.openings if item.tag == "WIN-A-S-JUL-W")
     east = next(item for item in catlin_model.openings if item.tag == "WIN-A-S-JUL-E")
 
-    # Bay centres on their own hosts: W-A-S2 starts at N-A-S1 (x 10'), W-A-S3 at N-A-S2
-    # (x 18'), so these put the two RO centres at world x 16'-0" and 20'-0" — 2'-0" either
-    # side of the ridge, which is the whole point of the pair.
+    # Stud lines on their own hosts: W-A-S2 starts at N-A-S1 (x 10'), W-A-S3 at N-A-S2
+    # (x 18'), and both offsets are whole 16" modules, so the two RO centres land at world
+    # x 16'-8" and 19'-4" — 1'-4" either side of the ridge, which is the whole point of the
+    # pair. The bay centres at x 16'-0"/20'-0" are the only other symmetric position, and
+    # they are 48" apart rather than 32".
     assert west.host_wall == "W-A-S2"
     assert east.host_wall == "W-A-S3"
-    assert west.center_along_m == pytest.approx(ft(6).meters, abs=1e-6)
-    assert east.center_along_m == pytest.approx(ft(2).meters, abs=1e-6)
+    assert west.center_along_m == pytest.approx(ft(6, 8).meters, abs=1e-6)
+    assert east.center_along_m == pytest.approx(ft(1, 4).meters, abs=1e-6)
     west_x = ft(10).meters + west.center_along_m
     east_x = ft(18).meters + east.center_along_m
-    assert west_x == pytest.approx(ft(16).meters, abs=1e-6)
-    assert east_x == pytest.approx(ft(20).meters, abs=1e-6)
+    assert west_x == pytest.approx(ft(16, 8).meters, abs=1e-6)
+    assert east_x == pytest.approx(ft(19, 4).meters, abs=1e-6)
     assert ft(18).meters - west_x == pytest.approx(east_x - ft(18).meters, abs=1e-9)
 
     for opening in (west, east):
@@ -559,15 +561,16 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
         assert opening.sill_m == pytest.approx(ft(2, 8).meters, abs=1e-6)
         assert opening.sill_m > inch(24).meters
         # Unclipped: the rake did not silently eat the head.
-        assert opening.height_m == pytest.approx(inch(76).meters, abs=1e-6)
-        assert opening.sill_m + opening.height_m == pytest.approx(ft(9).meters, abs=1e-6)
-        assert opening.width_m == pytest.approx(inch(32).meters, abs=1e-6)
+        assert opening.height_m == pytest.approx(inch(64).meters, abs=1e-6)
+        assert opening.sill_m + opening.height_m == pytest.approx(ft(8).meters, abs=1e-6)
+        assert opening.width_m == pytest.approx(inch(18).meters, abs=1e-6)
 
     # The clear pier between the two ROs, centred on W-A-C1 / the RB-HOUSE south bearing
-    # point: 16" carries the ridge post plus a jack each side, and is why the pair is
-    # 32" wide rather than 36". It is also the composition's mullion.
-    pier = (east_x - inch(16).meters) - (west_x + inch(16).meters)
-    assert pier == pytest.approx(inch(16).meters, abs=1e-6)
+    # point: W-A-C1's 5-1/2" stud body plus a jack and king each side is 11-1/2", so 14"
+    # carries the bearing with room to spare, and it is why the pair is 18" wide rather
+    # than the 20" that would leave exactly 12". It is also the composition's mullion.
+    pier = (east_x - inch(9).meters) - (west_x + inch(9).meters)
+    assert pier == pytest.approx(inch(14).meters, abs=1e-6)
 
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     for check_id in ("structural.window_framing_module", "integrity.opening_fits"):
