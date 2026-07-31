@@ -604,3 +604,50 @@ def test_wall_space_is_not_traced_across_a_stair_well():
     model, _ = resolve(plan)
 
     assert _room_result(model, "RM-A-STUDY") == "fail"
+
+
+def test_a_combination_receptacle_counts_by_its_125v_half():
+    """ED-M-LIVING-KET1 is a ``RECEPTACLE_240`` kind, but its type is a 5-20R/6-20R duplex:
+    one box holding a 240V outlet for the kettle and an ordinary 125V outlet beside it. The
+    125V half is a 210.52 receptacle like any other, so the kind alone cannot decide this —
+    the type's ports do (the DeviceKind precedent: the kind stays flat, the type
+    differentiates). Drop the 120V port and the north kitchen counter loses its coverage.
+    """
+    plan = load_plan(CATLIN_DIR).plan
+    model, _ = resolve(plan)
+    assert _room_result(model, "RM-M-LIVING") == "pass"
+
+    library = plan.library
+    demoted = tuple(
+        device_type.model_copy(update={
+            "ports": tuple(p for p in device_type.ports if p.service is not Service.POWER_120)})
+        if device_type.tag == "ED-T-RECEPTACLE-620" else device_type
+        for device_type in library.electrical_device_types)
+    plan = plan.model_copy(update={"library": library.model_copy(
+        update={"electrical_device_types": demoted})})
+    model, _ = resolve(plan)
+
+    assert _room_result(model, "RM-M-LIVING") == "fail"
+
+
+def test_wall_space_stops_at_a_run_of_counterless_fixed_cabinet():
+    """210.52(A)(2)(1) lists "fixed cabinets that do not have countertops or similar work
+    surfaces" alongside doorways as things wall space is unbroken by, and catlin's kitchen is
+    the case: 7'-1" of the north wall is floor-to-ceiling pantry (FURN-M-KIT-PANTRY-E and the
+    tall pull-outs at the head of the west run). Give those types a countertop and the same
+    stretch becomes wall space that nothing serves.
+    """
+    plan = load_plan(CATLIN_DIR).plan
+    model, _ = resolve(plan)
+    assert _room_result(model, "RM-M-LIVING") == "pass"
+
+    library = plan.library
+    countertopped = tuple(
+        furniture_type.model_copy(update={"work_surface": True})
+        if furniture_type.work_surface is False else furniture_type
+        for furniture_type in library.furniture_types)
+    plan = plan.model_copy(update={"library": library.model_copy(
+        update={"furniture_types": countertopped})})
+    model, _ = resolve(plan)
+
+    assert _room_result(model, "RM-M-LIVING") == "fail"

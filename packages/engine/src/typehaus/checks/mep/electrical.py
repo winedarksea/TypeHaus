@@ -80,6 +80,9 @@ _NEAR_WALL_M = 0.5  # how close to the room boundary a device must sit to serve 
 # How much floor may survive between a floor opening and the wall face behind it and still
 # count as standing room. 12" of ledge along a stair well is not somewhere you plug a lamp in.
 _FLOOR_OPENING_LEDGE_M = 12 * 0.0254
+# How far a cabinet's base may sit above the floor and still meet the floor line: a toe-kick
+# tolerance, which an upper cabinet is nowhere near.
+_FIXED_CABINET_FLOOR_CONTACT_M = 6 * 0.0254
 
 
 def _counts_as_a_125v_receptacle(ctx: CheckContext, device) -> bool:
@@ -181,6 +184,46 @@ def _floor_opening_intervals(ctx: CheckContext, ring: list,
     return intervals
 
 
+def _fixed_cabinet_intervals(ctx: CheckContext, ring: list,
+                             storey_tag: str) -> list[tuple[float, float]]:
+    """Perimeter intervals occupied by fixed cabinets that have no work surface.
+
+    210.52(A)(2)(1) names them alongside doorways and fireplaces as the things wall space is
+    unbroken by, and for the same reason: a run of floor-to-ceiling pantry has no floor line
+    in front of it and nowhere to put a lamp, so requiring a receptacle within 6' of its
+    middle would put one behind a cabinet. A base run is the opposite case — its countertop
+    is exactly what the receptacle is for — which is why the type has to say which it is
+    (``FurnitureType.work_surface``) rather than the check guessing from height.
+    """
+    from shapely.geometry import LineString, Point, Polygon
+
+    boundary = LineString(list(ring) + [ring[0]])
+    floor_z = next((s.elevation.meters for s in ctx.plan.storeys if s.tag == storey_tag), 0.0)
+    types = {t.tag: t for t in ctx.plan.library.furniture_types}
+    intervals: list[tuple[float, float]] = []
+    for item in ctx.model.canvas_objects:
+        if item.storey != storey_tag or item.type_ref is None:
+            continue
+        item_type = types.get(item.type_ref)
+        if item_type is None or item_type.work_surface is not False:
+            continue
+        # An upper cabinet is also a fixed cabinet with no counter, but 210.52(A)(2) measures
+        # along the floor line and an upper does not reach it.
+        if item.z_m - floor_z > _FIXED_CABINET_FLOOR_CONTACT_M:
+            continue
+        carcass = Polygon(item.footprint)
+        if not carcass.is_valid or carcass.is_empty:
+            continue
+        if carcass.distance(boundary) > _NEAR_WALL_M:
+            continue
+        # Projected rather than buffered: a buffer wide enough to reach the boundary (which
+        # is the room polygon, not the drywall face — see _NEAR_WALL_M) would also run that
+        # far past each end of the carcass and swallow the wall either side of it.
+        offsets = [boundary.project(Point(coord)) for coord in carcass.exterior.coords]
+        intervals.append((min(offsets), max(offsets)))
+    return intervals
+
+
 def _merged_intervals(intervals: list[tuple[float, float]],
                       perimeter: float) -> list[tuple[float, float]]:
     """Clamp the breaks to the ring, sort them, and union any that overlap.
@@ -225,9 +268,9 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
 
     Geometry-based, unlike ``room_lighting``'s tag matching: the room's resolved
     ``clear_face`` ring is unrolled into an arc-length coordinate (so corners measure
-    correctly), doorways and floor openings break it into wall spaces, spaces under 2' are
-    exempt, and every remaining point must be within 6' of a receptacle projected onto the
-    boundary.
+    correctly), doorways, floor openings and counterless fixed cabinets break it into wall
+    spaces, spaces under 2' are exempt, and every remaining point must be within 6' of a
+    receptacle projected onto the boundary.
     The kitchen-counter rule (210.52(C)) is not evaluated — counters are casework, not
     resolved geometry — and reports UNKNOWN so the gap stays visible.
     """
@@ -260,7 +303,8 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
             if d <= _NEAR_WALL_M:
                 positions.append(s)
         breaks = (_door_intervals(ctx, ring, room.storey)
-                  + _floor_opening_intervals(ctx, ring, room.storey))
+                  + _floor_opening_intervals(ctx, ring, room.storey)
+                  + _fixed_cabinet_intervals(ctx, ring, room.storey))
         doors = _merged_intervals(breaks, perimeter)
         # Wall spaces: the perimeter minus the spans that break it. A room with no break at
         # all is one circular space, where coverage means the largest receptacle-to-receptacle

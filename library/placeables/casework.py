@@ -46,7 +46,8 @@ BESTA_UNIT = FurnitureType(
 def _base(tag: str, width) -> FurnitureType:
     return FurnitureType(
         tag=tag, name=f'{width.inches:.0f}" base cabinet', footprint=(width, _BASE_DEPTH),
-        height=_BASE_HEIGHT, plan_symbol="base-cabinet", storage=True, source=REFERENCE,
+        height=_BASE_HEIGHT, plan_symbol="base-cabinet", storage=True, work_surface=True,
+        source=REFERENCE,
     )
 
 
@@ -66,7 +67,8 @@ BASE_36 = _base("CASE-B36", ft(3))
 # models it as the shell it is, which is also the only way the sink dropped into it is visible.
 SINK_BASE_36 = FurnitureType(
     tag="CASE-SINK-BASE-36", name='36" sink base', footprint=(ft(3), _BASE_DEPTH),
-    height=_BASE_HEIGHT, plan_symbol="sink-base", storage=True, source=REFERENCE,
+    height=_BASE_HEIGHT, plan_symbol="sink-base", storage=True, work_surface=True,
+    source=REFERENCE,
 )
 
 WALL_18 = _wall("CASE-W18", inch(18))
@@ -90,18 +92,20 @@ OVER_APPLIANCE_36 = FurnitureType(
 # ends of a run without stealing counter frontage.
 TALL_PANTRY_12 = FurnitureType(
     tag="CASE-TALL-PANTRY-12", name='12" tall pantry pull-out', footprint=(ft(1), _BASE_DEPTH),
-    height=_TALL_HEIGHT, plan_symbol="tall-cabinet", storage=True, source=REFERENCE,
+    height=_TALL_HEIGHT, plan_symbol="tall-cabinet", storage=True, work_surface=False,
+    source=REFERENCE,
 )
 TALL_PANTRY_18 = FurnitureType(
     tag="CASE-TALL-PANTRY-18", name='18" tall pantry pull-out',
     footprint=(inch(18), _BASE_DEPTH), height=_TALL_HEIGHT, plan_symbol="tall-cabinet",
-    storage=True, source=REFERENCE,
+    storage=True, work_surface=False, source=REFERENCE,
 )
 # The closet-style pantry: same carcass, but a swing door onto fixed shelves — the unit that
 # holds the bulk goods a pull-out cannot.
 PANTRY_CLOSET_24 = FurnitureType(
     tag="CASE-PANTRY-CLOSET-24", name='24" pantry closet', footprint=(ft(2), _BASE_DEPTH),
-    height=_TALL_HEIGHT, plan_symbol="tall-cabinet", storage=True, source=REFERENCE,
+    height=_TALL_HEIGHT, plan_symbol="tall-cabinet", storage=True, work_surface=False,
+    source=REFERENCE,
 )
 # The double-width closet pantry: two 24" doors on one 48" carcass. Twice the shelf run of the
 # 24" for the same 24" of depth, and the width at which a pantry stops being a leftover-end
@@ -109,14 +113,16 @@ PANTRY_CLOSET_24 = FurnitureType(
 # gap in a counter run.
 PANTRY_CLOSET_48 = FurnitureType(
     tag="CASE-PANTRY-CLOSET-48", name='48" pantry closet', footprint=(ft(4), _BASE_DEPTH),
-    height=_TALL_HEIGHT, plan_symbol="tall-cabinet-double", storage=True, source=REFERENCE,
+    height=_TALL_HEIGHT, plan_symbol="tall-cabinet-double", storage=True, work_surface=False,
+    source=REFERENCE,
 )
 # The linen/utility closet: three 24" doors on one 72" carcass, half again the shelf run of
 # the 48" for the same depth. Wide enough that it is the storage wall of the room it stands
 # in rather than a unit in a run, which is why it appears in a bathroom and not a kitchen.
 PANTRY_CLOSET_72 = FurnitureType(
     tag="CASE-PANTRY-CLOSET-72", name='72" pantry closet', footprint=(ft(6), _BASE_DEPTH),
-    height=_TALL_HEIGHT, plan_symbol="tall-cabinet-triple", storage=True, source=REFERENCE,
+    height=_TALL_HEIGHT, plan_symbol="tall-cabinet-triple", storage=True, work_surface=False,
+    source=REFERENCE,
 )
 
 # An island is a base run turned loose in the room: 36" deep is 24" of carcass plus the 12"
@@ -124,7 +130,8 @@ PANTRY_CLOSET_72 = FurnitureType(
 # below it.
 ISLAND_60 = FurnitureType(
     tag="CASE-ISLAND-60", name='60" kitchen island', footprint=(ft(5), ft(3)),
-    height=_BASE_HEIGHT, plan_symbol="base-cabinet", storage=True, source=REFERENCE,
+    height=_BASE_HEIGHT, plan_symbol="base-cabinet", storage=True, work_surface=True,
+    source=REFERENCE,
 )
 # Counter-height seating. No pull-out zone of its own for the same reason a dining chair has
 # none: the stool lives in the island's overhang, and a zone there would report the correct

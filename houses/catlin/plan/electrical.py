@@ -215,11 +215,16 @@ EQUIPMENT_TYPES = (
                   name="Gree Multi Ultra 3-port outdoor unit, 30k (-22F)",
                   footprint=(inch(37), inch(16)), height=inch(34),
                   plan_symbol="heat-pump-outdoor",
-                  heating_capacity_btuh=32000,  # TODO verify datasheet
-                  heating_capacity_at_design_btuh=22000,  # TODO verify datasheet
+                  # Upsized 2026-07-31 to the maximum-heating variant of the same box. The
+                  # envelope-wall fix made this zone's block load measurable for the first
+                  # time (30,764 Btu/h at design), and the old at-design figure was 8,764
+                  # short of it. 30,000 leaves ~800 Btu/h for a later review rather than
+                  # pretending the zone is covered.
+                  heating_capacity_btuh=36000,  # TODO verify datasheet
+                  heating_capacity_at_design_btuh=30000,  # TODO verify datasheet
                   cooling_capacity_btuh=30000,  # TODO verify datasheet
                   min_operating_temp_f=-22.0,  # TODO verify datasheet
-                  source="REPRESENTATIVE PLACEHOLDER — 2.5-ton 3-port multi class (~32,000 Btu/h at 47F, ~22,000 Btu/h at -15F, rated to -22F). TODO verify datasheet.",
+                  source="REPRESENTATIVE PLACEHOLDER — 2.5-ton 3-port multi class, max-heating variant (~36,000 Btu/h at 47F, ~30,000 Btu/h at -15F, rated to -22F). TODO verify datasheet.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # The heads themselves: no heating rating, by design. A multi's three heads share one

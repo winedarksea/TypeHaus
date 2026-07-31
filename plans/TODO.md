@@ -33,30 +33,16 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Remaining Work
 
-- **`mep.heating_capacity` now fails for real on the HP2 zone** (2026-07-31, newly
-  measurable — see the envelope-wall fix below). Block load 30,764 Btu/h at design over the
-  basement plus the main-floor bedroom/bath/living side, against 22,000 Btu/h of at-design
-  capacity: **-8,764 Btu/h**. The radiant mats, the fireplace and the garage heater are
-  excluded from the zone total by design (`plan/circuits.py` calls them supplemental), so
-  the open question is whether the radiant is in fact carrying that difference — in which
-  case it should stop being modeled as supplemental — or whether the zone wants a bigger
-  outdoor unit. Was UNKNOWN before because four *interior* basement doors were being asked
-  for envelope U-factors.
-- **`electrical.receptacle_spacing`'s last catlin gap is the kitchen's north wall**
-  (2026-07-31). RM-M-LIVING now reports one gap at (17.8', 35.9'): 13'-7" of wall between
-  FO-M-STAIR's east edge and ED-M-LIVING-KGF1 over the dishwasher. Two things are tangled in
-  it, and they want separate answers:
-  1. 7'-1" of that run is full-height pantry casework (FURN-M-KIT-TALL-N/S, -PANTRY-E).
-     NEC 210.52(A)(2)(1) breaks wall space at "fixed cabinets that do not have countertops or
-     similar work surfaces" — so that stretch is arguably not wall space at all, and the check
-     has no way to know. Teaching it would mean a real signal on the type (a work-surface
-     flag), not a guess from height or `plan_symbol`.
-  2. The counter run x 24'-7"..33'-4" carries **no 125V receptacle** over 6'-6" of it —
-     only ED-M-LIVING-KET1, which is a 240V 6-20R kettle outlet and does not count. That is
-     a genuine 210.52(C)(1) violation (no point on a countertop more than 2' from a
-     receptacle) that the check explicitly does not evaluate. Two GFCIs at about x=26'-0"
-     and x=28'-6" on CKT-KITCH-SA1/SA2 would close it. Related: the island receptacle item
-     under "Items after Phase 6".
+- **`mep.heating_capacity` still fails on the HP2 zone, now by 764 Btu/h** (2026-07-31).
+  Was **-8,764**: the envelope-wall fix below made this zone's block load measurable for the
+  first time (30,764 Btu/h at design over the basement plus the main-floor bedroom/bath/
+  living side) against 22,000 Btu/h of at-design capacity. `EQ-T-GREE-MULTI-U30` was bumped
+  to the max-heating variant of the same box (36,000 Btu/h at 47F, 30,000 at design), which
+  leaves **-764 Btu/h** for a later review rather than pretending the zone is covered. Both
+  capacity figures are still REPRESENTATIVE PLACEHOLDER — the real answer wants the Gree
+  datasheet. The radiant mats, the fireplace and the garage heater stay excluded from the
+  zone total by design (`plan/circuits.py` calls them supplemental); if the radiant is in
+  fact carrying that last 764, it should stop being modeled as supplemental.
 
 - **Handrail schema + real R311.7.8 check** (2026-07-31). `Railing` needs a
   role/kind (handrail vs guard) plus per-flight authoring before presence, 34"–38" height
@@ -151,7 +137,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 ### Check-tier changes from the 2026-07-31 sweep
 
 Catlin went from 30 build warnings to 1, and from 404 pass / 17 fail / 39 unknown to
-411 / 7 / 20. Almost all of it was the checks describing the house wrongly, not the house:
+412 / 6 / 20. Almost all of it was the checks describing the house wrongly, not the house:
 
 - **A ≤4" wall projection clears a floor space at any height**
   (`resolve/placeable_clear_floor_obstruction.py`). A117.1 §307.2 states its 4" limit for
@@ -173,6 +159,16 @@ Catlin went from 30 build warnings to 1, and from 404 pass / 17 fail / 39 unknow
   was in every block load, and four interior basement doors were being asked for envelope
   U-factors — which is what kept `mep.heating_capacity` UNKNOWN. HP2's zone load fell 38,548
   → 30,764 Btu/h and HP1's cooling finding became evaluable.
+- **Wall space stops at a counterless fixed cabinet, and a combination receptacle counts**
+  (`checks/mep/electrical.py`). Both were needed to close catlin's last receptacle gap, the
+  kitchen's north wall. 210.52(A)(2)(1) lists "fixed cabinets that do not have countertops or
+  similar work surfaces" alongside doorways as what wall space is unbroken by, so
+  `FurnitureType.work_surface` now says which a cabinet is (the catalog's base/sink/island
+  runs True, its tall pantry runs False) rather than the check guessing from height. And
+  ED-M-LIVING-KET1 is a `RECEPTACLE_240` *kind* whose type is a 5-20R/6-20R duplex — one box
+  with an ordinary 125V outlet in it — so receptacle-ness is read off the type's ports, per
+  the `DeviceKind` docstring's own rule that the kind stays flat and the type differentiates.
+  RM-M-LIVING passes, and so does `test_catlin_receptacle_spacing_passes_after_fill`.
 - **Three advisories report as facts, not verdicts** (`Result.PASS`, same message, same WARN
   severity): `advisory.window_size_variety` (any house has more than one window size),
   `advisory.floor_finish_over_radiant` (a commissioning constraint on a legal pairing), and
