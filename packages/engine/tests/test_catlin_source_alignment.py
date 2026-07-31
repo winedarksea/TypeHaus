@@ -205,10 +205,14 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
         assert centres[far][1] - centres[near][1] == pytest.approx(ft(9).meters,
                                                                   abs=TOL_M), far
 
-    # One balcony door, east of the centre line, inside the source's 18'-8"..23'-11" run.
-    assert "D-S-DECK-W" not in centres
+    # The source draws one balcony door, east of the centre line, inside its 18'-8"..23'-11"
+    # run. D-S-DECK-W is ours, not the survey's (2026-07-31) — the second door off the plant
+    # room — and it is held to the mirror of D-S-DECK-E about the x=18' centre line rather
+    # than to a source station it has none of.
     x, _y = centres["D-S-DECK-E"]
     assert ft(18, 8).meters < x < ft(23, 11).meters
+    west, _y = centres["D-S-DECK-W"]
+    assert ft(36).meters - x == pytest.approx(west, abs=TOL_M)
 
 
 def test_balcony_french_door_uses_the_standard_60_inch_type(catlin_plan):

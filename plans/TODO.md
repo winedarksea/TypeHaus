@@ -177,7 +177,6 @@ the future.
   clearance is already modeled separately (`_water_closet_required_clearance` in
   `library/placeables/fixtures.py`), so this is a one-line footprint question.
 - It looks like beams BM-S-HALL and BM-M-HALL are not getting grouped as part of the framing in the view. Also want to double check that beams are properly considered as a type of framing, for example the hall beams should likely be defined similarly to RIDGE-BEAM, garage header HEADER-0, the porch beams such as BM-SG-BKW, and possibly some of the window and door headers. We also may have some cases where we have headers specified over windows or doors when a large beam
-- The tube grow lights need to look in 3d more like suspended lights (which is basically a box with two poles/strings coming down from the ceiling on each end).
 - Make sure there is an electric outlet in the kitchen island where usable for appliances in accordance with code
 
 Questions:

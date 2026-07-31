@@ -490,17 +490,21 @@ MAIN_EQUIPMENT = [
 
 # --- Second storey: the NW bathroom's floor-heat control -------------------------------
 SECOND_DEVICES = [
-    # NEC 440.14 disconnects for the two condensers on the upper balcony. They sit on
-    # the second-storey south wall behind the units, within sight from the balcony door
-    # while staying clear of D-S-DECK-E's 5' French-door opening at x=18'-10"..23'-10".
-    # HP1's box moved x=11' -> 12' (2026-07-30): WIN-S-PLANT2's enlarged RO now ends at
-    # x=10'-5" and its exterior casing 3 1/2" past that, so 12' keeps clear wall around
-    # the box instead of butting the trim.
+    # NEC 440.14 disconnects for the two condensers on the upper balcony, on the
+    # second-storey south wall within sight of the units they serve. Both boxes moved
+    # 2026-07-31 with D-S-DECK-W: at x=12' and x=15' they stood inside that door's
+    # x 11'-2"..16'-2" rough opening. Each now sits on a clear stretch of wall whose
+    # 110.26 working space — 3'-0" out from the wall, 2'-6" wide — no condenser stands in:
+    #   HP1's box in the 15" of wall between the two plant windows (RO edges 5'-1" and
+    #   6'-11", casings 3 1/2" past each), 2'-0" west of its unit's west face.
+    #   HP2's box east of D-S-DECK-E, where the wall runs clear from that door's casing
+    #   (x 24'-1 1/2") to WIN-S-STUDY1's (x 25'-11 1/2"). Its unit is 7' west between the
+    #   two doors, in plain sight across the open deck — 440.14 asks for sight, not reach.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(12), ft(0, 6)), type_ref="ED-T-DISCONNECT-3R",
+                     position=pt(ft(6), ft(0, 6)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(15), ft(0, 6)), type_ref="ED-T-DISCONNECT-3R",
+                     position=pt(ft(24, 6), ft(0, 6)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-S-BATH1's thermostat, inside the room on its south wall (W-S-BD-N1B, interior
     # face y=26'-4 11/16"), 9" west of D-S-BATH1's opening (x 7'-3"..9'-9"). Same
@@ -516,13 +520,29 @@ SECOND_EQUIPMENT = [
     # The Vireo (System 1, the concealed ducted upstairs unit) and the Multi Ultra
     # (System 2) share the upper balcony, not the main-level porch. The balcony's walking
     # surface is the second-storey datum (10'); keeping these in SECOND_ELEMENTS gives the
-    # 3D model that elevation rather than drawing them at grade. Both sit west of the
-    # French-door opening, with their 16" deep cabinets aligned east-west across the deck.
+    # 3D model that elevation rather than drawing them at grade.
+    #
+    # Both turned 90 degrees and re-stationed 2026-07-31 for D-S-DECK-W. Broadside to the
+    # house at x 8'-2 1/2"..11'-4 3/4" and 12'-2 1/2"..15'-3 1/2" they filled the whole of
+    # the plant room's balcony frontage, and the new door's RO (x 11'-2"..16'-2") landed on
+    # both of them. Standing them end-on — 16" of x each instead of 37"/38" — is what makes
+    # the two south doors and two condensers share one 21' deck:
+    #   HP1 at the deck's west end, x 8'-0"..9'-4", 6" inboard of RL-SG-BALCONY's west
+    #   run. It stands in front of WIN-S-PLANT2's west half but tops out below its 2'-8"
+    #   sill, so it takes no glass.
+    #   HP2 in the 2'-8" of wall between the two French doors, x 16'-10"..18'-2" — 8" clear
+    #   of each rough opening, and clear of both leaf sweeps, which stay inside their own
+    #   ROs (each 2'-6" leaf hinges at a jamb and swings out).
+    # Both keep their 1'-0" standoff from the wall, so the line sets penetrate behind the
+    # units as before; the deck is 8'-8" deep, so their 3'-1"/3'-2" of depth leaves over
+    # 4'-6" of walking surface south of them.
     Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(m(2.98655), m(-0.527314)), footprint=(inch(38), inch(16)),
+              position=pt(ft(8, 8), ft(-2, -7)), footprint=(inch(38), inch(16)),
+              rotation=deg(90),
               type_ref="EQ-T-GREE-VIREO-GEN3", circuit="CKT-HP1", room=None),
     Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(m(4.19103), m(-0.538707)), footprint=(inch(37), inch(16)),
+              position=pt(ft(17, 6), ft(-2, -6.5)), footprint=(inch(37), inch(16)),
+              rotation=deg(90),
               type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2", room=None),
     # System 1's concealed ducted air handler, INSIDE SF-S-DUCT's dropped box at the south
     # end of the full hallway trunk (2026-07-30). It cannot go in the floor structure: the
@@ -778,8 +798,15 @@ NEC_FILL_MAIN = [
 # face: none of these devices carries `room=`, so a stale coordinate more than 19 5/8"
 # (`_NEAR_WALL_M`) off simply stops counting toward the room and nothing reports it.
 NEC_FILL_SECOND = [
+    # Moved x=15.89' -> 17.0' (2026-07-31): D-S-DECK-W's rough opening runs
+    # x 11'-2"..16'-2", so the old station was in the doorway. 17'-0" is the middle of the
+    # 1'-10" of wall left between that opening and the centre-line corner — under the 2'-0"
+    # NEC 210.52(A)(2) counts as wall space, so it is a receptacle the spacing rule no
+    # longer demands, kept because the south wall is where the plant gear plugs in. The
+    # stretch west of the door is still ED-S-PLANT-RC2's: from x=5.85' nothing on
+    # x 0'..11'-2" is more than 6' away.
     ElectricalDevice(uid="NEC021AAAA", tag="ED-S-PLANT-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(15.89), ft(0.12)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(17.0), ft(0.12)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC022AAAA", tag="ED-S-PLANT-RC2", kind=DeviceKind.RECEPTACLE,

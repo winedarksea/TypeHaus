@@ -308,12 +308,23 @@ OPENINGS = [
     Door(uid="CSD217AAAA", tag="D-S-NCLOSET", host="W-S-CLN-S", type_ref="DT-INT-SWING30",
          position=from_node("N-S-C3D", ft(0, 8.5))),                     # x 19'-11 1/2"
     # O-S-STAIRTOP, the 6'-0" cased stair head, went with its host wall W-S-BD-N2.
-    # Balcony door — ONE opening in the source (x 18'-8"..23'-11", 5'-3", drawn with two
-    # leaves), east of the centre line, not the pair of them the port had flanking it.
-    # The source opening measures 5'-3"; standardize it to the catalog's 5'-0" French pair
-    # instead of distorting it into a narrow 3'-0" double door or two overlapping openings.
+    # Balcony doors. The source draws ONE opening (x 18'-8"..23'-11", 5'-3", with two
+    # leaves), east of the centre line; that is D-S-DECK-E, standardized to the catalog's
+    # 5'-0" French pair rather than distorted into a narrow 3'-0" double door.
+    # D-S-DECK-W is a deliberate addition to the source (2026-07-31): the balcony runs the
+    # full x 7'-6"..28'-6" and only the study reached it, so the plant room now opens onto
+    # it too, at the exact mirror of the east door about the x=18' centre line — centre
+    # x 13'-8", the same 5'-0" French pair. Mirroring a *pair* is position only: the glyph
+    # is symmetric about the opening and `flip_swing` names the side along the wall normal,
+    # not a hand, so this carries the east door's flag verbatim to swing out onto the deck.
+    # Authoring it flipped instead (flip_hinge, no flip_swing) drew both leaves sweeping
+    # north into the plant room — caught in `haus render --view plan`, not by any check.
+    # The mirror station is what forced the two balcony condensers off the plant room's
+    # wall band: see SECOND_EQUIPMENT in plan/electrical.py.
+    Door(uid="CSD218AAAA", tag="D-S-DECK-W", host="W-S-S1", type_ref="DT-EXT-FRENCH60",
+         position=from_node("N-S-SW", ft(11, 2)), flip_swing=True),                       # x 13'-8"
     Door(uid="CSD211AAAA", tag="D-S-DECK-E", host="W-S-S2", type_ref="DT-EXT-FRENCH60",
-         position=from_node("N-S-S1", ft(1, 10)), flip_swing=True),                       # x 21'-4"
+         position=from_node("N-S-S1", ft(1, 10)), flip_swing=True),                       # x 22'-4"
     # Windows — east wall, on the source's four 2'-8" openings (we build 27", the bearing cap).
     # WIN-S-STUDY3 departs from its source position (y 3'-10") on purpose (2026-07-30
     # facade pass): at y 4'-0" the row read 10'-4"/9'-0"/9'-0" and its 2'-6" sill broke
