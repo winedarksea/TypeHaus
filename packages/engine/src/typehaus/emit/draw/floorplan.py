@@ -199,7 +199,13 @@ def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                                closed=True, layer="A-STAIR", lineweight=0.25,
                                uid=stair.uid, tag=member.child_key))
                 continue
-            b.add(Polyline(points=(_in(member.p0), _in(member.p1)), layer="A-STAIR",
+            # A tread's mark is its riser face, not its board centreline: the centreline
+            # sits half a going past the riser, which drew a (going - nosing)/2 sliver at
+            # one end of every flight and (going + nosing)/2 at the other — uniform steps
+            # that read as non-uniform.
+            a, c = member.riser_line if member.riser_line is not None else (member.p0,
+                                                                            member.p1)
+            b.add(Polyline(points=(_in(a), _in(c)), layer="A-STAIR",
                            lineweight=0.25, uid=stair.uid, tag=member.child_key))
         start = (minx, (miny + maxy) / 2) if along_x else ((minx + maxx) / 2, miny)
         end = (maxx, (miny + maxy) / 2) if along_x else ((minx + maxx) / 2, maxy)

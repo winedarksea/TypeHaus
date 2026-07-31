@@ -7,7 +7,7 @@
 import { memo, useRef } from "react";
 import type { DoorOperation, Model, Opening, Stair, Vec2, Wall, WindowOperation } from "../../model/types";
 import { doorStrokeGlyph, hostWallThicknessM, windowStrokeGlyph } from "../../model/doorSymbols";
-import { openingHostWall, pointAlong } from "../../model/geometry";
+import { memberFootprint, openingHostWall, pointAlong } from "../../model/geometry";
 import { swingArcSweepFlag } from "../../three/planGeometry";
 import { NORDIC_ACCENT, NORDIC_INK } from "../../nordic/palette";
 import type { Selection } from "../../state/vocabulary";
@@ -243,7 +243,19 @@ export const StairShape = memo(function StairShape({ stair, project, selected, h
         return <polygon key={member.key} points={member.plan_outline.map(project).map((point) => point.join(",")).join(" ")}
           fill="none" stroke={stroke} strokeWidth={1} />;
       }
-      const [x0, y0] = project(member.p0); const [x1, y1] = project(member.p1);
+      if (member.category === "landing") {
+        // A landing's symbol is its outline, not its axis: the deck member is a board
+        // with a width, and one centreline down the middle of a platform is the "weird
+        // split on the landing" the engine emitter already fixed (_member_footprint).
+        return <polygon key={member.key}
+          points={memberFootprint(member).map(project).map((point) => point.join(",")).join(" ")}
+          fill="none" stroke={stroke} strokeWidth={1} />;
+      }
+      // A tread's mark is its riser face (going * i), not its board centreline — the
+      // centreline sits half a going past the riser, which made uniform flights read as
+      // unevenly stepped at both ends. The engine emitter draws the same line.
+      const [a, b] = member.riser_line ?? [member.p0, member.p1];
+      const [x0, y0] = project(a); const [x1, y1] = project(b);
       return <line key={member.key} x1={x0} y1={y0} x2={x1} y2={y1} stroke={stroke} strokeWidth={1} />;
     })}
     <line x1={arrowStartX} y1={arrowStartY} x2={arrowEndX} y2={arrowEndY} stroke={stroke}

@@ -469,6 +469,32 @@ def test_tread_marks_along_a_flight_are_evenly_spaced(catlin_model, tag, storey)
                 stair.going_depth_m * M_TO_IN, rel=1e-6)
 
 
+@pytest.mark.parametrize("tag,storey", [("ST-B2M", "basement"), ("ST-M2S", "main")])
+def test_tread_marks_are_flush_with_the_flight_ends(catlin_model, tag, storey):
+    """The drawn grid is the riser faces, flush at the flight boundaries.
+
+    The old symbols drew each board's *centreline*, half a going past its riser — so
+    every flight showed a (going - nosing)/2 sliver at the springing and
+    (going + nosing)/2 against the landing, framing 10" interiors with 4.5"/5.5" ends.
+    The risers were uniform; the drawing said they were not.
+    """
+    stair = next(s for s in catlin_model.stairs if s.tag == tag)
+    drawn = {node.tag: node for node in _stair_polylines(catlin_model, storey, stair.uid)}
+    along = 1 if stair.run_direction == "y" else 0
+    going = stair.going_depth_m * M_TO_IN
+    springing = min(point[along] for point in stair.outline) * M_TO_IN
+    lower = [node.points[0][along] for tag_, node in drawn.items()
+             if tag_.startswith("tread-lower-")]
+    upper = [node.points[0][along] for tag_, node in drawn.items()
+             if tag_.startswith("tread-upper-")]
+    landing_edge = min(point[along] for point in drawn["landing-lower"].points)
+    # The first lower mark sits ON the springing edge, the last one going before the
+    # landing, and the first upper mark ON the landing-zone edge.
+    assert min(lower) == pytest.approx(springing, abs=1e-6)
+    assert max(lower) == pytest.approx(landing_edge - going, abs=1e-6)
+    assert max(upper) == pytest.approx(landing_edge, abs=1e-6)
+
+
 # --------------------------------------------------------------- 9. the winder turn
 def _winder_reference(catlin_model, winder_stair):
     subfloor = _subfloor(catlin_model, winder_stair)
@@ -487,9 +513,43 @@ def test_winder_turn_has_three_code_sized_raised_surfaces(catlin_model, winder_s
     assert newel.z1_m == pytest.approx(subfloor + riser * count)
     winders = [m for m in winder_stair.members if m.category == "winder"]
     assert len(winders) == count
-    assert all(winder.plan_outline and len(winder.plan_outline) >= 4 for winder in winders)
+    # A wedge can legitimately be a triangle (the first and last are, once degenerate
+    # vertices are stripped) — three distinct corners is the floor, not four.
+    assert all(winder.plan_outline and len(winder.plan_outline) >= 3 for winder in winders)
     assert [winder.z1_m for winder in winders] == pytest.approx(
         [subfloor + riser * step for step in range(1, count + 1)])
+
+
+def _ring_area(ring) -> float:
+    return abs(sum(a[0] * b[1] - b[0] * a[1]
+                   for a, b in zip(ring, ring[1:] + ring[:1]))) / 2.0
+
+
+def test_winder_wedge_rings_are_minimal_simple_polygons(winder_stair):
+    """The pie panels are clean polygons that together tile the turn square exactly.
+
+    The old ring construction appended the outer corner into the first wedge — whose
+    nosings both sit on the entering edge — as a zero-area excursion doubling a line along
+    the whole outer edge, and kept vertices collinear along the newel line. Both drew as
+    plan artifacts and extruded to coincident opposite-facing prism quads.
+    """
+    width = next(m.length_m for m in winder_stair.members if m.category == "tread")
+    wedges = [m for m in winder_stair.members if m.category == "winder"]
+    for wedge in wedges:
+        ring = list(wedge.plan_outline)
+        assert _ring_area(ring) > 1e-6, wedge.child_key
+        for index in range(len(ring)):
+            a, b, c = ring[index - 1], ring[index], ring[(index + 1) % len(ring)]
+            assert math.hypot(b[0] - a[0], b[1] - a[1]) > 1e-9, (wedge.child_key, b)
+            cross = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
+            assert abs(cross) > 1e-9, (wedge.child_key, "collinear vertex", b)
+    # The wedges tile the turn square except one 6"x6"/2 triangle at the inside corner:
+    # the code-minimum narrow path crosses that corner on the diagonal between the first
+    # two fan lines' narrow ends rather than hugging the newel, so the triangle belongs
+    # to no walking surface. Anything else missing (or doubled) is a construction defect.
+    corner_cut = inch(6).meters ** 2 / 2.0
+    assert sum(_ring_area(list(w.plan_outline)) for w in wedges) == pytest.approx(
+        width * width - corner_cut, rel=1e-6)
 
 
 def test_winder_turn_is_a_stack_of_platform_boxes(catlin_model, winder_stair):

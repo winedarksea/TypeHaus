@@ -47,13 +47,19 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
         # The board spans one going plus the nose beyond the lower riser.  Adjacent boards
         # overlap by the nose in plan but are one riser apart vertically, as built treads are.
         centre = going * index + (going - nosing) / 2.0
+        riser_s = going * index  # the riser face itself, which the plan drawing marks
         if along_x:
             a = (start_x + sign * centre, start_y)
             b = (start_x + sign * centre, start_y + width)
+            riser_line = ((start_x + sign * riser_s, start_y),
+                          (start_x + sign * riser_s, start_y + width))
         else:
             a = (start_x, start_y + sign * centre)
             b = (start_x + width, start_y + sign * centre)
+            riser_line = ((start_x, start_y + sign * riser_s),
+                          (start_x + width, start_y + sign * riser_s))
         top = z0 + riser * (index + 1)  # the finished walking face, board dropped below it
         out.append(FramedMember(stair.uid, f"tread-{index:03d}", "tread", tread_profile,
-                                a, b, _notch_z(top), top, stair.width.meters))
+                                a, b, _notch_z(top), top, stair.width.meters,
+                                riser_line=riser_line))
     return tuple(out)

@@ -69,27 +69,6 @@ def _tread_board_profile(tread_depth_m: float) -> str:
     return f"deck {tread_depth_m / inch(1).meters:g}x{_TREAD_THICKNESS_IN:g}"
 
 
-def _newel_face_point(newel: tuple[float, float], toward: tuple[float, float],
-                      half_face_m: float) -> tuple[float, float]:
-    """Where the ray ``newel`` -> ``toward`` leaves the square newel post's face.
-
-    Every winder narrow end used to sit on the newel *centreline*, so all of them converged
-    on one bare point and the narrow-end tread depth was exactly 0 (defect D2 in
-    plans/TODO.md). A winder actually starts at the face the newel presents to it, which is
-    what this returns. It does not by itself buy the 6" IRC R311.7.5.2.1 wants at the narrow
-    end — a quarter turn taken in this few risers cannot — so
-    ``structural.winder_narrow_tread_depth`` measures what the layout does deliver.
-    """
-    dx, dy = toward[0] - newel[0], toward[1] - newel[1]
-    run = math.hypot(dx, dy)
-    if run < 1e-9:
-        return newel
-    ux, uy = dx / run, dy / run
-    # A square footprint: the ray exits through whichever face its dominant axis points at.
-    reach = half_face_m / max(abs(ux), abs(uy))
-    return (newel[0] + ux * reach, newel[1] + uy * reach)
-
-
 def _grid_positions(span: float, spacing: float) -> list[float]:
     """Deduplicated on-center positions ``{0, s, 2s, …, span}`` including both edges.
 

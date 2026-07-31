@@ -113,6 +113,12 @@ class FramedMember:
     # member axis remains for framing/bearing, while every visual/export consumer uses this
     # explicit footprint when present.
     plan_outline: Ring | None = None
+    # The riser face this tread serves — the ``going * i`` line a stair plan marks. The
+    # member axis is the board's *centreline*, half a going past this line, so drawing the
+    # axis put a (going − nosing)/2 sliver at one end of every flight and (going + nosing)/2
+    # at the other against full-going interiors: uniform steps that read as non-uniform.
+    # ``None`` for anything that is not a straight tread (a winder's axis IS its fan line).
+    riser_line: tuple[tuple[float, float], tuple[float, float]] | None = None
 
 
 @dataclass(frozen=True)

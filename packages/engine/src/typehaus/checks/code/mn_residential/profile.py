@@ -43,7 +43,9 @@ MN_2024 = JurisdictionProfile(
                        ("IRC R305",)),
         PermitItemSpec("Sleeping-room emergency escape", ("code.R310_egress",), ("IRC R310",)),
         PermitItemSpec("Egress door clear width", ("code.R311_door_width",), ("IRC R311.2",)),
-        PermitItemSpec("Stair geometry and headroom", ("code.R311_7_stair_geometry",),
+        PermitItemSpec("Stair geometry and headroom",
+                       ("code.R311_7_stair_geometry", "code.R311_7_2_stair_headroom",
+                        "code.R311_7_1_stair_width", "code.R311_7_6_landing_depth"),
                        ("IRC R311.7",)),
         PermitItemSpec("Smoke / CO alarm placement",
                        ("code.R314_R315_alarms", "code.R315_garage_alarms"),
@@ -88,6 +90,11 @@ MN_2024 = JurisdictionProfile(
         ("mep.hydrant_freeze_depth",
          "a fixture-durability rule (a yard hydrant's own freeze protection), not a "
          "permit-plan review item; it stays in the full check report"),
+        ("code.R311_7_8_handrail",
+         "no handrail is modeled yet — Railing elements are guards with no handrail "
+         "role/graspability semantics, so the check reports UNKNOWN by design in the "
+         "full check report; it joins the checklist when the schema grows a handrail "
+         "role (plans/TODO.md)"),
     ),
 )
 

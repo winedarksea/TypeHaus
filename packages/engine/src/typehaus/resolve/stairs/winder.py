@@ -33,6 +33,33 @@ class _FanLine(NamedTuple):
     wraps_outer_corner: bool
 
 
+def _clean_ring(ring: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """A ring reduced to its distinct corner vertices.
+
+    The fan construction can hand a wedge coincident consecutive points (a nosing landing
+    exactly on the outer corner) and vertices collinear with their neighbours (three narrow
+    ends sharing the newel line; the first wedge's entering corner doubling back along the
+    entering edge). Both survive plan drawing but produce zero-area flaps and coincident
+    opposite-facing side quads once the ring is extruded to a prism.
+    """
+    deduped: list[tuple[float, float]] = []
+    for point in ring:
+        if not deduped or math.hypot(point[0] - deduped[-1][0],
+                                     point[1] - deduped[-1][1]) > 1e-9:
+            deduped.append(point)
+    if len(deduped) > 1 and math.hypot(deduped[0][0] - deduped[-1][0],
+                                       deduped[0][1] - deduped[-1][1]) <= 1e-9:
+        deduped.pop()
+    out: list[tuple[float, float]] = []
+    count = len(deduped)
+    for index in range(count):
+        a, b, c = deduped[index - 1], deduped[index], deduped[(index + 1) % count]
+        cross = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
+        if abs(cross) > 1e-9:
+            out.append(b)
+    return out
+
+
 def _box_rim_profile(frame_depth_m: float, plies: int = 1) -> str:
     """A box side ripped to ``frame_depth_m``, in ``plies`` plies of 2x stock."""
     return (f"{_BOX_RIM_PLY_IN * plies:g}x"
@@ -127,13 +154,18 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
         # nosing.  Carry its actual boundary through the shared member model so every view
         # sees the same three rising surfaces.
         outline = [previous_narrow, previous_nosing]
-        if wraps_outer_corner or (index and fan[index - 1].wraps_outer_corner):
+        # The outer corner belongs in a wedge only when the wedge *spans* it: previous
+        # nosing still on the entering edge, this one already past the corner. Appending it
+        # whenever the current line wrapped put it inside the first wedge too — whose
+        # nosings both sit on the entering edge — as a zero-area excursion doubling a line
+        # along the whole outer edge in plan and in the extruded prism.
+        if index and fan[index - 1].wraps_outer_corner and not wraps_outer_corner:
             outline.append(outer_corner)
         outline.extend((nosing_point, narrow))
         out.append(FramedMember(stair.uid, f"winder-{index:03d}", "winder", "tapered tread",
                                 narrow, nosing_point, _notch_z(top), top,
                                 math.hypot(nosing_point[0] - narrow[0], nosing_point[1] - narrow[1]),
-                                plan_outline=outline))
+                                plan_outline=_clean_ring(outline)))
         previous_nosing, previous_narrow = nosing_point, narrow
     tread_profile = _tread_board_profile(tread_depth)
     for index in range(straight_treads):
@@ -142,9 +174,11 @@ def _winder_stair_members(stair: Stair, minx: float, miny: float, z0: float,
         out.append(FramedMember(stair.uid, f"tread-{index:03d}", "tread", tread_profile,
                                 offset(inside, centre, 0.0),
                                 offset(inside, centre, width),
-                                _notch_z(top), top, width))
-    out.extend(_winder_box_framing(stair, z0, riser, fan, inside, outer_corner, turn,
-                                   (float(run_u[0]), float(run_u[1]))))
+                                _notch_z(top), top, width,
+                                riser_line=(offset(inside, tread * index, 0.0),
+                                            offset(inside, tread * index, width))))
+    out.extend(_winder_box_framing(stair, z0, riser, fan, P(0.0, 0.0), inside,
+                                   outer_corner, turn, (float(run_u[0]), float(run_u[1]))))
     return tuple(out)
 
 
@@ -179,6 +213,7 @@ def _polyline_midpoint(segments: list[tuple[tuple[float, float], tuple[float, fl
 
 
 def _winder_box_framing(stair: Stair, z0: float, riser: float, fan: list[_FanLine],
+                        entering_corner: tuple[float, float],
                         inside: tuple[float, float], outer_corner: tuple[float, float],
                         turn: tuple[float, float],
                         orient: tuple[float, float]) -> list[FramedMember]:
@@ -189,11 +224,16 @@ def _winder_box_framing(stair: Stair, z0: float, riser: float, fan: list[_FanLin
     framer builds), each winder step is its own platform box, stacked one riser above the
     last:
 
-    - **A box per step.** Sides ripped from 2x stock to exactly one riser less the deck
-      they carry, so box ``k`` lands dead flush on box ``k-1``'s deck and box 0 lands on
-      the subfloor. Perimeter: the fan line the riser board nails to, the outside edges of
-      the turn square, and the departing edge — the box's deck *is* the winder tread, and
-      the pie-shaped panel on top is the walking surface.
+    - **A box per step, bounded by its *leading* fan line.** Box ``k`` covers everything
+      ahead of fan line ``k-1`` (the riser face a walker steps up at onto its deck; the
+      turn square's entering edge for box 0), so box 0 is the full corner platform and
+      each later box nests inside the one below — a wedding cake, every tier fully
+      carried. Framing box ``k`` ahead of its *own* fan line instead left every pie
+      panel cantilevered one riser above the box that actually sat under it, and
+      collapsed the top tier to two coincident rims on the departing edge.
+    - **Sides ripped from 2x stock** to exactly one riser less the deck they carry, so
+      box ``k`` lands dead flush on box ``k-1``'s deck and box 0 lands on the subfloor.
+      The pie-shaped panel on top is the walking surface.
     - **A diagonal block** across each box, newel to the mid-point of its outside run,
       splitting the wedge into two bearing triangles under the pie panel.
     - **Ledgers and posts come for free.** The sides are category ``landing`` with
@@ -214,16 +254,19 @@ def _winder_box_framing(stair: Stair, z0: float, riser: float, fan: list[_FanLin
     newel_top = z0 + riser * stair.winder_count
     out = [FramedMember(stair.uid, "newel-000", "newel", stair.newel_profile, inside,
                         inside, z0, newel_top, newel_top - z0, orient=orient)]
-    for index, line in enumerate(fan):
+    # Box 0's leading edge is the turn square's entering riser face.
+    entering = _FanLine(inside, entering_corner, wraps_outer_corner=True)
+    for index in range(len(fan)):
         deck = _notch_z(z0 + riser * (index + 1))  # the box's sides top out under its deck
         base = z0 + riser * index  # ... and land on the tier below (the subfloor at k=0)
-        outside = _box_perimeter(line, outer_corner, turn)
+        leading = fan[index - 1] if index else entering
+        outside = _box_perimeter(leading, outer_corner, turn)
         top_tier = index == len(fan) - 1
         # Rims run to the newel's *centreline*, not the face its tread starts at: the post
         # is what carries their inside ends, and the bearing pass looks for a load path at
         # the endpoint itself. The tread above still starts at the face it can be walked
         # from — that difference is the narrow-end depth the winder rule measures.
-        rims = [(inside, line.nosing), *outside, (turn, inside)]
+        rims = [(inside, leading.nosing), *outside, (turn, inside)]
         for edge, (a, b) in enumerate(rims):
             length = math.hypot(b[0] - a[0], b[1] - a[1])
             if length < 1e-9:  # a fan line landing exactly on the outer corner

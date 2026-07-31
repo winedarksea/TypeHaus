@@ -8,10 +8,11 @@ Two geometry defects, both of which the member IR made easy to miss:
 * **D2: winder narrow ends converged on a point.** Every winder started at the newel's
   *centreline*, so the narrow-end tread depth was exactly 0 where IRC R311.7.5.2.1 wants 6".
 
-The narrow ends now leave the newel's face, which is real construction but still short of
-the 6" — a quarter turn taken in three winders cannot reach it. That residual is reported
-by ``structural.winder_narrow_tread_depth`` rather than papered over, and the last test
-here is what holds the reporting honest in both directions.
+The fan now *constructs* the narrow path at the 6" code minimum — three 6" offsets around
+the inside corner rather than a radial fan converging on the newel — so
+``structural.winder_narrow_tread_depth`` measures a built-in PASS. The check stays: it is
+what keeps the construction honest, and the synthetic-fan tests here hold it honest in
+both directions.
 """
 
 from __future__ import annotations
@@ -123,6 +124,64 @@ def test_top_tread_board_reaches_the_arrival_deck(catlin_model):
                for tread in _treads(winder)]
     assert min(reaches) == pytest.approx(going, abs=1e-9)  # first board starts at the springing
     assert max(reaches) == pytest.approx(going * len(reaches), abs=1e-9)
+
+
+# ------------------------------------------------------------------ riser lines
+def test_every_straight_tread_carries_its_riser_line(catlin_model):
+    """The 2D stair icon marks riser faces, not board centrelines: each tread publishes the
+    ``going * i`` face it serves, parallel to the board and one going from its neighbours.
+    Drawing the centrelines instead put a (going − nosing)/2 sliver at one end of every
+    flight and (going + nosing)/2 at the other, against full-going interiors — uniform
+    steps that read as non-uniform."""
+    for stair in catlin_model.stairs:
+        going = stair.going_depth_m
+        by_flight: dict[str, list] = {}
+        for tread in _treads(stair):
+            assert tread.riser_line is not None, tread.child_key
+            a, b = tread.riser_line
+            assert math.dist(a, b) == pytest.approx(tread.length_m, abs=1e-9), tread.child_key
+            axis = (tread.p1[0] - tread.p0[0], tread.p1[1] - tread.p0[1])
+            line = (b[0] - a[0], b[1] - a[1])
+            assert abs(axis[0] * line[1] - axis[1] * line[0]) < 1e-9, tread.child_key
+            by_flight.setdefault(tread.child_key.rsplit("-", 1)[0], []).append(tread)
+        for key, treads in by_flight.items():
+            treads.sort(key=lambda member: member.z0_m)
+            steps = [math.dist(lower.riser_line[0], upper.riser_line[0])
+                     for lower, upper in zip(treads, treads[1:])]
+            assert steps == pytest.approx([going] * len(steps), abs=1e-9), key
+
+
+def test_riser_grid_is_flush_at_the_springing_and_the_landing_zone(catlin_model):
+    """Flush ends are the point: the first drawn line sits exactly where the flight
+    springs, and a landing edge is exactly one going past the last riser before it."""
+    def _collinear(point, a, b):
+        return abs((b[0] - a[0]) * (point[1] - a[1])
+                   - (b[1] - a[1]) * (point[0] - a[0])) < 1e-9
+
+    winder = next(stair for stair in catlin_model.stairs if stair.winder_count)
+    # The straight flight springs at the turn square's departing edge — the top winder's
+    # fan line — so its first riser line lies on that same line.
+    top_fan = next(member for member in winder.members
+                   if member.child_key == f"winder-{winder.winder_count - 1:03d}")
+    first = min(_treads(winder), key=lambda member: member.z0_m)
+    assert _collinear(top_fan.p0, *first.riser_line)
+    assert _collinear(top_fan.p1, *first.riser_line)
+    for stair in (s for s in catlin_model.stairs if s.layout == "u_split_landing"):
+        along = 1 if stair.run_direction == "y" else 0
+        going = stair.going_depth_m
+        by_flight: dict[str, list] = {}
+        for tread in _treads(stair):
+            by_flight.setdefault(tread.child_key.rsplit("-", 1)[0], []).append(tread)
+        lower = sorted(by_flight["tread-lower"], key=lambda member: member.z0_m)
+        upper = sorted(by_flight["tread-upper"], key=lambda member: member.z0_m)
+        landing = next(member for member in stair.members
+                       if member.child_key == "landing-lower")
+        near_edge = landing.p0[along]  # the landing zone's edge toward the flights
+        # The upper flight's first riser face IS the landing-zone edge...
+        assert upper[0].riser_line[0][along] == pytest.approx(near_edge, abs=1e-9), stair.tag
+        # ...and the lower flight's last riser sits exactly one going before it.
+        assert abs(near_edge - lower[-1].riser_line[0][along]) == pytest.approx(
+            going, abs=1e-9), stair.tag
 
 
 # ------------------------------------------------------------- winder narrow ends

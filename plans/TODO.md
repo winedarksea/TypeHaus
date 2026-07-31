@@ -3,19 +3,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-- **D2 — the winder turn does not fit in a 3'-0" well, and framing cannot fix that.** The
-  turn is now a Haun tiered corner box (real boxes, ledgers, diagonal blocks — see "Stair
-  framing follow-ups"), which fixed the *framing* fiction but moves neither code number,
-  because both are set by the well:
-  - narrow end **1.375"** against IRC R311.7.5.2.1's **6"** (`structural.winder_narrow_tread_depth`)
-  - walk-line going **5.0"** against the same rule's **10"** (`structural.winder_walk_line_depth`, new)
-
-  Three winders sweep 22.5° each, so the walk line would have to sit ~2'-2" out from the
-  pivot to open to 10" — the levers are a wider well or a turn spread over more risers (a
-  layout change to the RM-S-STUDY-2 opening), and there is 2.5" of tread slack in the
-  straight run to pay for it (11.28" against the 10" minimum). Both checks stay advisory
-  WARN and keep printing the measured numbers.
-
 - **The building drain is at 3" and the basement's real load is now ~42 DFU (2026-07-30).**
   The stair-foot bathroom and the sauna shower end added four slab fixtures (WC 3 + lav 1 +
   shower 2 + floor drain 2 = 8 DFU). They ride their own under-slab branches —
@@ -29,6 +16,19 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Remaining Work
 
+- **Handrail schema + real R311.7.8 check** (2026-07-31). `Railing` needs a
+  role/kind (handrail vs guard) plus per-flight authoring before presence, 34"–38" height
+  and continuity can be measured; `code.R311_7_8_handrail` reports the gap as UNKNOWN on
+  every 4+-riser flight until then. (Headroom is now really measured —
+  `code.R311_7_2_stair_headroom` samples the sloped nosing line plumb against floor/roof/
+  soffit structure; `code.R311_7_1_stair_width` and `code.R311_7_6_landing_depth` measure
+  the built members. The old check reported the arrival storey's nominal ceiling height as
+  "headroom".)
+- **Stair/well guard check (R312)** — next in line after headroom: classify each floor
+  opening's edges as wall-backed vs open (against resolved wall faces), and require a
+  `railing` solid path at >= 36" along the open ones. Measurable today from resolved
+  geometry, no new authoring; catlin's RL-S-STAIR/RL-S-STAIRHEAD guards are the first
+  real fixture.
 - **In-plan variant forks + compare UI** (scoped out of the sweep by decision: catalog only).
   `model.json` now carries the variant catalog; `prices.toml` $-ranges work in
   `haus variants compare` and takeoff. Still missing: `variant_of`/`active` forks with
@@ -142,16 +142,36 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Stair framing follow-ups
 
+- ~~**D2 — the winder turn does not fit in a 3'-0" well**~~ — closed 2026-07-31, no layout
+  decision needed. The radial fan the numbers came from (narrow end 1.375", walk line 5.0")
+  is gone: the fan is now laid out with narrow ends *constructed* at exact 6" offsets around
+  the inside corner (`resolve/stairs/winder.py`, "the inside ends deliberately do not
+  converge at the newel"), so the code-minimum path is built in rather than measured after
+  the fact. Measured today: narrow end **6.0"** (= R311.7.5.2.1's 6" minimum) and walk-line
+  going **11.1"** against the 10" minimum — both PASS, pinned by
+  `test_stair_tread_geometry.py`. The well never widened; stair `width` (3'-0"), not the
+  well, sets the walk-line spread. The "~2'-2" from the pivot" arithmetic described the old
+  radial fan only.
 - **Winders keep the `tapered tread` 1.5" band** — a trapezoid is not expressible as
   axis + band width in this IR. (These are also the only 3 of 2099 members without a real
   IFC representation, by design.) Sharper now that the turn is boxed: the band is the pie
-  panel's *leading edge*, and the box tier under it carries the panel's real footprint.
-- **The turn is framed Haun-style** (2026-07-25): one platform box per winder step, sides
-  ripped to a riser less the deck (`1.5x6 rim`) so tiers stack dead flush, a diagonal block
-  per box, rims ledgered to W-S-E1/W-S-SS2 (`bearing_refs`, newly authored) and dying into
-  the newel at the inside corner, and the straight flight landing on the top box's doubled
-  departing rim. The two raked "winder carriages" and the slung header are gone — no framer
-  cuts a compound-angle carriage through a turn.
+  panel's *nosing/fan line*, and the box tier under it carries the panel's real footprint
+  (true as of 2026-07-31 — see the next item). Wedge rings are now stripped of coincident
+  and collinear vertices (`winder.py::_clean_ring`, guarded by
+  `test_winder_wedge_rings_are_minimal_simple_polygons`): the first wedge no longer
+  carries a zero-area excursion through the outer corner, which was the doubled outer
+  edge line in plan and the overlapping pie panels in 3D.
+- **The turn is framed Haun-style** (2026-07-25; re-framed 2026-07-31): one platform box
+  per winder step, sides ripped to a riser less the deck (`1.5x6 rim`) so tiers stack dead
+  flush, a diagonal block per box, rims ledgered to W-S-E1/W-S-SS2 (`bearing_refs`) and
+  dying into the newel at the inside corner, and the straight flight landing on the top
+  box's doubled departing rim. 2026-07-31: box `k` is now bounded by its *leading* fan
+  line (`k-1`; the square's entering edge for box 0), so box 0 is the full corner
+  platform, tiers nest wedding-cake, and every pie panel bears on its own box. The old
+  framing bounded box `k` by its *own* fan line — complementary wedges, every panel
+  cantilevered one riser above its support (the "floating pies" in 3D), and the top tier
+  collapsed to two coincident rims. The two raked "winder carriages" and the slung header
+  are gone — no framer cuts a compound-angle carriage through a turn.
 - **Every tread/landing board is now dropped to its step elevation** (`stairs/common.py::
   _notch_z`), house-wide rather than winder-only. Boards used to sit *on* the theoretical
   step, which stretched each flight's first riser by 1.5" and shortened its last by the
@@ -198,6 +218,7 @@ the future.
 - The 'Sun' slider doesn't actually seem to do anything. I think the basic idea was just to move a sun icon so users could get a sense of where the sun would be at certain times (not actually modeling shadows), but if that happens now, it isn't visible on the main canvas.
 - The tube grow lights need to look in 3d more like suspended lights (which is basically a box with two poles/strings coming down from the ceiling on each end).
 - We need a zoom in/zoom out little button to click (material design 3 style integrated)
+- Make sure there is an electric outlet in the kitchen island where usable for appliances in accordance with code
 
 Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)

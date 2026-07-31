@@ -104,15 +104,22 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
         s = tread * index + (tread - nosing) / 2.0
         out.append(FramedMember(stair.uid, f"tread-lower-{index:03d}", "tread", tread_profile,
                                 at(s, lower_lane), at(s, lower_lane + width),
-                                _notch_z(top), top, width))
+                                _notch_z(top), top, width,
+                                riser_line=(at(tread * index, lower_lane),
+                                            at(tread * index, lower_lane + width))))
     # Upper flight climbs back toward the start edge; its first tread leaves the upper
-    # landing, and its top tread ends one riser below the arrival deck.
+    # landing, and its top tread ends one riser below the arrival deck. Its riser faces run
+    # back from the landing-zone edge — ``flight_len - tread * index`` is the face a walker
+    # steps up at to reach tread ``index``, so the drawn grid stays flush at both ends.
     for index in range(upper_treads):
         top = z0 + riser * (lower_treads + 3 + index)
         s = flight_len - tread * (index + 1) + (tread - nosing) / 2.0
         out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", tread_profile,
                                 at(s, upper_lane), at(s, upper_lane + width),
-                                _notch_z(top), top, width))
+                                _notch_z(top), top, width,
+                                riser_line=(at(flight_len - tread * index, upper_lane),
+                                            at(flight_len - tread * index,
+                                               upper_lane + width))))
     # Two landing platforms in the landing zone beyond the flight ends, each on its own
     # flight's side of the well partition.
     out.extend(_landing_platform(stair, "lower", at, flight_len, landing_depth_m,
