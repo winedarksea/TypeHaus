@@ -249,6 +249,22 @@ def test_branch_load_reports_unresolved_rather_than_partial_sums():
     assert load == 3.0 and not unresolved
 
 
+def test_laundry_pair_keeps_its_fixture_units_under_the_stacked_type(catlin_model):
+    """The fixture-unit tables are keyed on ``plan_symbol``, so retyping the washer to the
+    stacked pair silently zeroes its 3 DFU unless ``washer-dryer-stacked`` has its own rows.
+    A stack is still one washer for code: the heat-pump dryer above it drains condensate to
+    an indirect waste, which is not a drainage fixture and takes no water at all."""
+    from typehaus.takeoff.plumbing_calc import fixture_units
+
+    units = {u.tag: u for u in fixture_units(catlin_model.plan)}
+    washer = units["FX-M-LAUNDRY"]
+    assert washer.symbol == "washer-dryer-stacked"
+    assert (washer.dfu, washer.wsfu_total) == (3.0, 4.0)
+    tub = units["FX-M-LAUNDRY-SINK"]
+    assert tub.symbol == "laundry-sink"
+    assert (tub.dfu, tub.wsfu_total) == (2.0, 1.5)
+
+
 def test_plumbing_takeoff_block_shape(catlin_model):
     import json
 

@@ -245,6 +245,25 @@ MAIN_PLACEABLES = [
     Furniture(uid="CMF803AAAA", tag="FURN-M-MUD-BENCH", type_ref="FURN-M-MUD-BENCH",
               room="RM-M-MUDROOM", position=pt(ft(1, 3.125), ft(31, 4)),
               rotation=deg(90)),
+
+    # --- laundry (RM-M-LAUNDRY), 2026-07-31 ------------------------------------------
+    # The fold-down drying rack, on the south wall directly over FX-M-LAUNDRY-SINK and sharing
+    # its x centreline and its 24" width. rotation 180 puts its plate against that wall, the
+    # same way the tub and the stack below it face north into the bifold.
+    #
+    # 48" is the mount, and it is a clearance number rather than a comfort one: the tub's
+    # declared box tops out at 43" (34" rim plus its gooseneck, see library/placeables/
+    # fixtures.py), so 48" leaves the faucet 5" of air to swing under a rack that is stowed
+    # flat and 16" of arm to fall through when it is not. The rack's own RECOMMENDED zone
+    # names FX-LAUNDRY-SINK-24 as its occupant, so the tub underneath groups with it instead
+    # of reporting as an encroachment — the arrangement working, not a conflict.
+    #
+    # The instance restates the type's Mount because the resolver reads the *instance* one; a
+    # type-level recommendation alone would leave this on the floor (same note as
+    # FX-M-KITCH-SINK's 27" in plan/fixtures.py).
+    Furniture(uid="XJSV712BWZ", tag="FURN-M-LAUNDRY-RACK", type_ref="FURN-WALL-RACK-24", room="RM-M-LAUNDRY",
+              position=pt(ft(11, 9), ft(17, 7.135)), rotation=deg(180),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 ]
 GARAGE_PLACEABLES = [
     # The 60"-wide work surface runs along the west wall directly below the infrared

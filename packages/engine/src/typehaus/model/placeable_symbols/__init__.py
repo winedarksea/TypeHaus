@@ -48,21 +48,22 @@ SYMBOL_NAMES = frozenset({
     "sofa", "loveseat", "sectional", "armchair", "dining-chair", "office-chair",
     "dining-table", "round-table", "coffee-table", "end-table", "desk",
     "dresser", "chest", "nightstand", "media-console", "bookcase",
-    "bed", "tv", "potted-plant",
+    "bed", "tv", "potted-plant", "wall-rack",
     # sauna joinery — benches are fitted to the room, not bought as a set
     "sauna-bench", "sauna-bench-tiered",
     # kitchen/bath casework — the fitted millwork a room is built around
     "base-cabinet", "sink-base", "wall-cabinet", "tall-cabinet", "tall-cabinet-double",
     "tall-cabinet-triple", "besta",
     # appliances + mechanical/electrical equipment
-    "refrigerator", "range", "dishwasher", "washer", "dryer", "microwave", "hood",
+    "refrigerator", "range", "dishwasher", "washer", "dryer", "washer-dryer-stacked",
+    "microwave", "hood",
     "furnace", "erv", "heat-pump-outdoor", "water-heater", "sauna-heater", "panel", "register",
     # plumbing fixtures. "hydrant" is the odd one out: it is a standpipe, not a vessel, so
     # its glyph is the riser's own diameter with a handle bar and an outlet nipple rather
     # than a basin. "floor-drain" is the other one: it is the opening itself, so its glyph is
     # a strainer flange with a grate, and it is the only plumbing symbol with no supply side.
     "toilet", "lavatory", "vanity", "tub", "tub-shower", "shower", "kitchen-sink",
-    "hydrant", "floor-drain",
+    "hydrant", "floor-drain", "laundry-sink",
     # luminaires — one name per LuminaireForm that has a point instance. STRIP has none:
     # a cove strip is a LightRun polyline, drawn by the lighting plan, not a placeable.
     # "linear-light" covers LINEAR_TUBE, WALL_LAMP and MIRROR_LIGHT, which differ by

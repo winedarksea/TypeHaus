@@ -19,7 +19,9 @@ type of its own.
 
 from __future__ import annotations
 
-from typehaus.model import FurnitureType, ft, inch
+from typehaus.model import FurnitureType, Mount, MountKind, ft, inch
+
+from library.placeables._zones import front_zone
 
 REFERENCE = "Standard frameless cabinet modules; final millwork selection by owner."
 
@@ -132,10 +134,30 @@ BAR_STOOL = FurnitureType(
     height=ft(2, 6), plan_symbol="dining-chair", source=REFERENCE,
 )
 
+# The fold-down drying rack over a laundry tub. The one piece of casework in this module that
+# *does* carry a clearance zone, and for the reason the module header gives for withholding
+# them elsewhere: a cabinet's front is where you stand, but this rack's front is where it
+# physically goes. Folded flat it is a 5" board on the wall; folded down it swings its arms
+# 16" into the room, and that band has to be clear of anything tall.
+#
+# ``occupant_types`` names the laundry tub because the rack hangs *over* it — the sink under
+# the deployed arms is the arrangement working, not an encroachment, so it groups with the
+# rack instead of reporting against it. (The vertical body test would clear a 43" sink under
+# a 48" rack anyway; naming it here makes the intent explicit rather than incidental.)
+WALL_DRYING_RACK_24 = FurnitureType(
+    tag="FURN-WALL-RACK-24", name='24" fold-down wall drying rack',
+    footprint=(inch(24), inch(5)), height=inch(30), plan_symbol="wall-rack", storage=True,
+    mount=Mount(kind=MountKind.WALL, elevation=inch(48)),
+    clearances=(front_zone(inch(24), inch(5), inch(16), "drying rack, folded down",
+                           occupant_types=("FX-LAUNDRY-SINK-24",)),),
+    source="Wall-mounted folding drying rack; 5\" deep stowed, ~16\" of arm deployed. "
+           "Final selection by owner.",
+)
+
 STARTER_CASEWORK_TYPES = (
     BESTA_UNIT, BASE_15, BASE_24, BASE_30, BASE_36, SINK_BASE_36,
     WALL_18, WALL_24, WALL_30, WALL_66, OVER_APPLIANCE_36,
     TALL_PANTRY_12, TALL_PANTRY_18, PANTRY_CLOSET_24, PANTRY_CLOSET_48,
     PANTRY_CLOSET_72,
-    ISLAND_60, BAR_STOOL,
+    ISLAND_60, BAR_STOOL, WALL_DRYING_RACK_24,
 )

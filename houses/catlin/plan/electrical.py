@@ -358,10 +358,34 @@ BASEMENT_EQUIPMENT = [
 
 # --- Main storey: dryer, freezer, heat-pump condensers/heads + disconnects ------------
 MAIN_DEVICES = [
-    # Dryer behind the laundry pair (FX-M-LAUNDRY at (10'-6", 20')).
+    # The laundry pair's two outlets, moved to W-M-CLN on 2026-07-31 with the stacked unit.
+    # Both are recessed boxes in the south partition directly behind the tower, because that
+    # is the only place they can be: FX-M-LAUNDRY is now 40" deep and 80" tall, and the old
+    # (9'-6", 20') position at 36" is *inside* its footprint — an outlet no one could ever
+    # reach, on a wall the machine covers. A recessed box lets the machine sit flat against
+    # the wall with a plug behind it, which is what the 2x4 partition is deep enough for.
+    # 43" AFF is between the washer's top and the dryer's, so one box height serves both.
+    #
+    # CKT-DRYER stays a 30A 2-pole on a 14-30R even though the dryer is an LG DLHC5502V —
+    # 240V, 830 W, 15 A minimum branch. A ventless heat-pump dryer draws a fraction of what a
+    # resistance dryer does, but it still ships with a 4-prong dryer cord, and a 30A laundry
+    # circuit is what that cord plugs into. The oversize is a provision, not an oversight: it
+    # is also what lets a future owner put a conventional vented dryer back in this alcove
+    # without pulling new wire.
     ElectricalDevice(uid="CEE007AAAA", tag="ED-M-LAUNDRY-DR1", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(9, 6), ft(20)), type_ref="ED-T-RECEPTACLE-1430", circuit="CKT-DRYER",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(36))),
+                     position=pt(ft(9, 6), ft(17, 4.625)), type_ref="ED-T-RECEPTACLE-1430",
+                     circuit="CKT-DRYER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(43),
+                                 recessed_into_host_surface=True)),
+    # CKT-LAUNDRY (circuits.py slot 36, 20A, "Laundry receptacle (washer)") had no device on
+    # it at all — the circuit was scheduled and the outlet was never drawn. This is it: the
+    # washer half of the stack, 8" east of the dryer's box in the same wall, same 43" band.
+    # NEC 210.52(F)'s laundry receptacle, and the only 120V outlet this room has.
+    ElectricalDevice(uid="QBSRR1MWVB", tag="ED-M-LAUNDRY-RC1", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(10, 2), ft(17, 4.625)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-LAUNDRY",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(43),
+                                 recessed_into_host_surface=True)),
     # Freezer beside the fridge (KRF1 at (18'-4", 31'-5")) on the centre wall's east face;
     # fridge + freezer + PoE WiFi share the backup kitchen circuit.
     ElectricalDevice(uid="CEE006AAAA", tag="ED-M-LIVING-KFZ1", kind=DeviceKind.RECEPTACLE,

@@ -8,8 +8,8 @@ needs no entry here at all: the same symbol renders at whatever W×D×H the type
 from __future__ import annotations
 
 from typehaus.model.placeable_symbols._families import (Builder, bed, besta, case, counter_case,
-                                                        pedestal_seat, potted_plant, round_slab,
-                                                        sauna_bench, screen, seating,
+                                                        drying_rack, pedestal_seat, potted_plant,
+                                                        round_slab, sauna_bench, screen, seating,
                                                         sectional, sectional_points, shelving,
                                                         slab)
 
@@ -41,6 +41,9 @@ FURNITURE_SYMBOLS: dict[str, Builder] = {
     "nightstand": case(rows=2, cols=1),
     "media-console": case(rows=2, cols=3, pulls=False),
     "bookcase": shelving(shelves=5),
+    # Wall-hung utility joinery, not a case: a plate and a ladder of bars. It shares the
+    # casegoods' stained ``wood`` because that is what a folding rack is made of.
+    "wall-rack": drying_rack(bars=5),
     "bed": bed(pillows=2, headboard=True),
     "tv": screen(stand=True),
     # The one furnishing that is not joinery: a pot with leaves over it. Five blades is the

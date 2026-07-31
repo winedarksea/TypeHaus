@@ -157,5 +157,29 @@ WALL_HYDRANT = FixtureType(
            "backflow protection for a hose connection.",
 )
 
+# --- laundry ------------------------------------------------------------------------
+# The freestanding utility tub: a deep single basin in its own cabinet, standing on the floor
+# rather than dropped into a counter, which is why it is a fixture with a plinth and not a
+# sink plus a ``sink-base``.
+#
+# ``height`` is 43" and the cabinet is 34". That is not a contradiction, it is this module's
+# stated convention (see the docstring): the declared box has to contain the spout, and a
+# laundry faucet is a tall gooseneck standing 9" over the rim so a bucket fits under it. The
+# ``laundry-sink`` symbol puts its deck at 34/43 of the declared height, so the rim lands at
+# the cabinet's real 34" and the faucet occupies the band above.
+#
+# Its ``DRAIN``/``VENT`` pair is what lets it serve as an indirect-waste receptor: an air-gapped
+# condensate or appliance discharge wants a *trapped* receptor that sees water in normal use,
+# which a laundry tub is and a finished-room lavatory is not.
+LAUNDRY_SINK = FixtureType(
+    tag="FX-LAUNDRY-SINK-24", name="Laundry utility sink with cabinet",
+    footprint=(inch(24), inch(21)), height=inch(43), plan_symbol="laundry-sink",
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
+    source='Glacier Bay QL033Y class: 24" x 21" x 34" stainless laundry tub in a white '
+           'cabinet, with faucet. The 43" declared height is the box including the '
+           "gooseneck; the rim is at 34\". Final fixture selection by owner.",
+)
+
 STARTER_FIXTURE_TYPES = (TOILET, LAVATORY, VANITY, TUB, TUB_SHOWER, SHOWER, KITCHEN_SINK,
-                         FLOOR_DRAIN, TOILET_WALL_HUNG, LAVATORY_COMPACT, WALL_HYDRANT)
+                         FLOOR_DRAIN, TOILET_WALL_HUNG, LAVATORY_COMPACT, WALL_HYDRANT,
+                         LAUNDRY_SINK)

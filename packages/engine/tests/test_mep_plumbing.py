@@ -373,6 +373,48 @@ def test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other(catlin_model
     assert overlap.area <= 1e-9, f"{overlap.area * 10.7639:.2f} ft2 of fixture overlap"
 
 
+def test_laundry_goods_fit_the_alcove_and_clear_each_other(catlin_model):
+    """RM-M-LAUNDRY is 62 3/4" x 56 3/4" of clear floor holding 28" of stacked washer/dryer
+    plus a 24" utility tub, so there is no slack to lose. Both bodies have to stay inside the
+    room and off each other, and the fold-down rack has to hang over the tub without the two
+    ever meeting — it clears vertically (48" mount over a 43" fixture), not in plan."""
+    from shapely.geometry import Polygon
+
+    room = Polygon(next(r for r in catlin_model.rooms if r.tag == "RM-M-LAUNDRY").clear_face)
+    objects = {obj.tag: obj for obj in catlin_model.canvas_objects
+               if obj.room == "RM-M-LAUNDRY"}
+    assert {"FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK", "FURN-M-LAUNDRY-RACK"} <= set(objects)
+    for tag, obj in objects.items():
+        # By area, not `covers`: every one of these backs sits *on* the south finish face by
+        # design, so boundary-touching is the intended result and float noise at 1e-15 would
+        # make a containment predicate report it as an escape.
+        assert Polygon(obj.footprint).difference(room).area <= 1e-9, \
+            f"{tag} escapes RM-M-LAUNDRY"
+    overlap = Polygon(objects["FX-M-LAUNDRY"].footprint).intersection(
+        Polygon(objects["FX-M-LAUNDRY-SINK"].footprint))
+    assert overlap.area <= 1e-9, f"{overlap.area * 10.7639:.2f} ft2 of laundry overlap"
+    # The rack is the one pair that *does* overlap in plan, and must, since it hangs over the
+    # tub. It is a shelf rather than a collision only because it starts above the tub's box.
+    tub_height = next(t.height.meters for t in catlin_model.plan.library.fixture_types
+                      if t.tag == "FX-LAUNDRY-SINK-24")
+    assert objects["FURN-M-LAUNDRY-RACK"].z_m >= objects["FX-M-LAUNDRY-SINK"].z_m + tub_height
+
+
+def test_laundry_tub_drain_clears_the_centre_cross_wall(catlin_model):
+    """FX-M-LAUNDRY-SINK's body straddles y=18', where W-B-CW2's 12" of cast concrete runs
+    from the basement up to the deck. Its waste therefore drops at the front of the basin,
+    not under its centre — drop it at the fixture's own position and it lands on the wall."""
+    fixture = next(f for f in catlin_model.plan.all_elements()
+                   if getattr(f, "tag", None) == "FX-M-LAUNDRY-SINK")
+    assert fixture.drain_position is not None, "the override is the whole point"
+    _, drain_y = fixture.drain_position.xy_m
+    wall_north_face = next(w for w in catlin_model.walls if w.tag == "W-B-CW2")
+    assert wall_north_face.axis[0][1] == pytest.approx(18 * 0.3048)
+    # 12" wall on the y=18' axis -> north face at 18'-6". The drop must clear it and still
+    # land inside the tub, whose north edge is at 19'-1 1/8".
+    assert 18.5 * 0.3048 < drain_y < (19 + 1.125 / 12) * 0.3048
+
+
 def test_catlin_door_swings_are_clear_of_fixtures(catlin_model):
     report = run_from_model(catlin_model, [], tier=Tier.INTEGRITY)
     matched = [f for f in report.findings if f.check_id == "integrity.door_swing_conflict"]

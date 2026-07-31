@@ -212,6 +212,12 @@ APPLIANCE_SYMBOLS: dict[str, Builder] = {
     "dishwasher": appliance_case(doors=1, body="appliance-steel"),
     "washer": appliance_case(doors=1, porthole=True, controls=True),
     "dryer": appliance_case(doors=1, porthole=True, controls=True),
+    # A stacked pair is one tower with two front-loader doors, so the face splits in
+    # elevation and each half gets its own glass — a single centred porthole would sit on
+    # the seam between the machines. Only the upper machine wears a console, but the family
+    # draws one band at the top, which is where a stack's shared controls actually are.
+    "washer-dryer-stacked": appliance_case(doors=2, split="horizontal", porthole=True,
+                                           porthole_per_door=True, controls=True),
     "microwave": appliance_case(doors=1, body="appliance-steel"),
     "hood": canopy_hood(),
     "furnace": air_handler(),

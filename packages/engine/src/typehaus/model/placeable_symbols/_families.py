@@ -401,6 +401,34 @@ def shelving(*, shelves: int = 5) -> Builder:
     return build
 
 
+def drying_rack(*, bars: int = 5) -> Builder:
+    """A fold-down wall drying rack: a mounting plate at ``+y`` and a ladder of bars.
+
+    Stowed is what the footprint describes — the arms folded flat against the plate, which is
+    why a 24" rack is 5" deep. Deployed they swing into the band the catalog type declares as
+    a clearance zone, so the body stays the object and the swing stays the allowance.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        plate_d = clamp(depth * 0.30, 0.010, depth * 0.5)
+        bar_t = clamp(min(depth, height) * 0.12, 0.006, min(depth - plate_d, height) * 0.4)
+        bar_cy = -depth / 2 + max(bar_t / 2, (depth - plate_d) * 0.35)
+        plate_cy = depth / 2 - plate_d / 2
+        strokes = [rect(0, 0, width, depth, fill="wood"),
+                   rect(0, plate_cy, width, plate_d, weight=DETAIL_WEIGHT),
+                   # The bars stack in elevation, so in plan they are one line.
+                   line((-width * 0.47, bar_cy), (width * 0.47, bar_cy))]
+        parts = [box(0, plate_cy, 0.0, height, width, plate_d, "wood-dark")]
+        count = max(2, bars)
+        for index in range(count):
+            cz = clamp(height * (index + 0.5) / count, bar_t / 2, height - bar_t / 2)
+            parts.append(box(0, bar_cy, cz - bar_t / 2, cz + bar_t / 2, width * 0.94, bar_t,
+                             "wood"))
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 def sauna_bench(*, tiers: int = 1, upper_depth_fraction: float = 0.57) -> Builder:
     """A sauna bench: one seat platform per tier, stepping up toward the wall at ``+y``.
 
@@ -515,11 +543,15 @@ def screen(*, stand: bool = True) -> Builder:
 
 def appliance_case(*, doors: int = 1, split: str = "vertical", handle: bool = True,
                    body: str = "appliance-white", porthole: bool = False,
-                   controls: bool = False) -> Builder:
+                   porthole_per_door: bool = False, controls: bool = False) -> Builder:
     """The boxy white/steel goods: fridges, dishwashers, washers, dryers, microwaves.
 
     ``split`` picks how multiple doors divide the front face — ``"vertical"`` for a
     side-by-side refrigerator, ``"horizontal"`` for a freezer drawer under a fresh-food door.
+
+    ``porthole_per_door`` gives each cell its own door glass instead of one centred on the
+    whole face. A stacked laundry pair needs it: two machines, two doors, and a single
+    porthole at mid-height would land on the seam between them.
     """
 
     def build(width: float, depth: float, height: float) -> Geometry:
@@ -533,6 +565,7 @@ def appliance_case(*, doors: int = 1, split: str = "vertical", handle: bool = Tr
         parts = [box(0, front + HANDLE_DEPTH_M + face_d + body_d / 2, 0.0, height, width,
                      body_d, body)]
         count = max(1, doors)
+        glass_cells: list[Tuple[float, float]] = []
         control_h = min(0.09, height * 0.12) if controls else 0.0
         if controls:  # the console band a washer/dryer wears across its back top
             parts.append(box(0, depth / 2 - face_d, height - control_h, height, width,
@@ -552,6 +585,8 @@ def appliance_case(*, doors: int = 1, split: str = "vertical", handle: bool = Tr
             elif split == "horizontal" and index:
                 strokes.append(line((-width / 2, front + HANDLE_DEPTH_M + face_d),
                                     (width / 2, front + HANDLE_DEPTH_M + face_d)))
+            if porthole and porthole_per_door:
+                glass_cells.append((z0, z1))
             if not handle or porthole:
                 continue
             handle_x = cx + (cell_w * 0.4 if count > 1 and index == 0 else -cell_w * 0.4)
@@ -562,10 +597,15 @@ def appliance_case(*, doors: int = 1, split: str = "vertical", handle: bool = Tr
         if porthole:  # front-loaders read by their door glass, not by a handle
             glass_r = min(width * 0.3, height * 0.4)
             drawn_r = min(width * 0.3, (depth - HANDLE_DEPTH_M) * 0.4)
+            # One circle whatever the cell count: the doors of a stack are one above the
+            # other, so in plan they coincide and a second outline would only be ink.
             strokes.append(circle(0, front + HANDLE_DEPTH_M + drawn_r, drawn_r,
                                   weight=DETAIL_WEIGHT))
-            parts.append(box(0, front + HANDLE_DEPTH_M / 2, height * 0.5 - glass_r,
-                             height * 0.5 + glass_r, glass_r * 2, HANDLE_DEPTH_M, "glass"))
+            for z0, z1 in glass_cells or ((0.0, height),):
+                cell_r = min(glass_r, (z1 - z0) * 0.4)
+                cell_cz = (z0 + z1) / 2
+                parts.append(box(0, front + HANDLE_DEPTH_M / 2, cell_cz - cell_r,
+                                 cell_cz + cell_r, cell_r * 2, HANDLE_DEPTH_M, "glass"))
         return tuple(strokes), tuple(parts)
 
     return build

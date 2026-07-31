@@ -212,7 +212,22 @@ the future.
 - Confirm the default toilet's 28" body depth vs an elongated bowl (29–31") — the code
   clearance is already modeled separately (`_water_closet_required_clearance` in
   `library/placeables/fixtures.py`), so this is a one-line footprint question.
-- Laundry room needs to fit a sink + closet, 24" W x 21" D x 43" H. like https://www.homedepot.com/p/Glacier-Bay-24-in-W-x-21-in-D-x-34-in-L-Stainless-Steel-Laundry-Utility-Sink-with-Faucet-and-Cabinet-in-White-QL033Y/206057007 The sink will double as the air gapped condensate drain for the heat pump dryer. The sink will have a wall rack over it (one of those that folds down). It looks like we also need to model the standard air gapped clothes washer drain too. The washer/dryer becomes a stacked unit (floorplan area 28 inch width, 40 inch depth, 80 inch height, something like). No vent is needed for a heat pump dryer.
+- ~~Laundry room needs to fit a sink + closet, 24" W x 21" D x 43" H... The washer/dryer
+  becomes a stacked unit... No vent is needed for a heat pump dryer.~~ **Done 2026-07-31.**
+  RM-M-LAUNDRY is a bifold-fronted closet now: `APPL-WASHER-DRYER-STACKED` (28x40x80,
+  retyped in place onto FX-M-LAUNDRY so its whole MEP tail survived) and
+  `FX-LAUNDRY-SINK-24` (24x21, 34" rim in a 43" box) both back onto the south wall inside
+  the 56" opening, with `FURN-WALL-RACK-24` over the tub at 48". Both air gaps are drawn:
+  PR-M-WASH-STANDPIPE (2", 36" top, hose dropped in not sealed) and PR-M-DRYER-COND (3/4",
+  terminating 3'-0" — 2" over the tub's flood rim). No duct anywhere: the heat-pump dryer
+  is ventless by design, recorded on the type. The tub wet-vents off the laundry stack
+  through PR-M-WC-VENT (45" trap arm on 2", against Table 1002.2's 60"). Also fixed on the
+  way through: FX-M-LAUNDRY's `wall_ref` named W-M-BA2E2, a wall it does not touch, and
+  CKT-LAUNDRY had no receptacle on it at all.
+  - Not done, deliberately: the CW/HW risers still land at y=20'-7 1/5"/21'-2 2/5" rather
+    than being re-centred behind the machine. The cold one is already inside the unit's
+    y band and the hot is 6" past it — a fine place for a hose-bibb pair you have to reach
+    — and moving them would drag two cast deck sleeves along for no real gain.
 - It looks like beams BM-S-HALL and BM-M-HALL are not getting grouped as part of the framing in the view. Also want to double check that beams are properly considered as a type of framing, for example the hall beams should likely be defined similarly to RIDGE-BEAM, garage header HEADER-0, the porch beams such as BM-SG-BKW, and possibly some of the window and door headers. We also may have some cases where we have headers specified over windows or doors when a large beam
 - The 'Sun' slider doesn't actually seem to do anything. I think the basic idea was just to move a sun icon so users could get a sense of where the sun would be at certain times (not actually modeling shadows), but if that happens now, it isn't visible on the main canvas.
 - The tube grow lights need to look in 3d more like suspended lights (which is basically a box with two poles/strings coming down from the ceiling on each end).

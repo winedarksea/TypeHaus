@@ -369,8 +369,57 @@ def hydrant() -> Builder:
     return build
 
 
+# A laundry tub's rim is the cabinet it is sold as — 34" — and the declared box is 43"
+# because it has to contain a tall utility gooseneck. ``_deck_height`` cannot express that:
+# it subtracts a fixed 5 1/2" faucet band, which would put the rim of a 43" box at 37 1/2".
+# So this family authors the deck as the ratio it actually is and lets the faucet take the
+# remainder, which keeps the rim at 34" for the catalog size and still scales cleanly.
+LAUNDRY_TUB_DECK_FRACTION = 34.0 / 43.0
+# How deep the basin itself goes. A utility tub is deep — that is the whole reason to buy one
+# rather than a lavatory — so the bowl runs most of the way down the cabinet instead of
+# hanging a few inches under a counter.
+LAUNDRY_TUB_BASIN_DEPTH_M = 0.36
+
+
+def laundry_tub() -> Builder:
+    """A freestanding utility tub: cabinet carcass on a kick, one deep square basin, tall spout.
+
+    Square-cornered, not ovoid: a laundry basin is a pressed rectangular vessel, and drawing it
+    as an oval would make it read as the lavatory it exists not to be.
+    """
+
+    def build(width: float, depth: float, height: float) -> Geometry:
+        deck_z = height * LAUNDRY_TUB_DECK_FRACTION
+        top_t = min(0.03, deck_z * 0.2)
+        kick = min(0.09, deck_z * 0.12)
+        rim = clamp(min(width, depth) * 0.05, 0.012, 0.03)
+        basin_w, basin_d = width * 0.82, depth * 0.70
+        basin_cy = -depth * 0.05
+        bowl_top = deck_z - top_t
+        bowl_z0 = max(kick, bowl_top - min(LAUNDRY_TUB_BASIN_DEPTH_M,
+                                           (bowl_top - kick) * 0.9))
+        faucet = max(height - deck_z, 0.0)
+        strokes = [rect(0, 0, width, depth, fill="counter"),
+                   rect(0, basin_cy, basin_w, basin_d, weight=DETAIL_WEIGHT),
+                   circle(0, basin_cy, min(basin_w, basin_d) * 0.06, weight=DETAIL_WEIGHT),
+                   line((-width * 0.07, depth / 2 - depth * 0.12),
+                        (width * 0.07, depth / 2 - depth * 0.12))]
+        parts = [box(0, 0, bowl_top, deck_z, width, depth, "counter"),
+                 box(0, 0, kick, bowl_top, width, depth * 0.96, "cabinet-cream"),
+                 box(0, 0, 0.0, kick, width * 0.98, depth * 0.90, "cabinet-cream-dark"),
+                 *_basin(0, basin_cy, basin_w, basin_d, bowl_z0, bowl_top, rim,
+                         "appliance-steel")]
+        if faucet > 0:
+            parts.append(box(0, depth / 2 - depth * 0.09, deck_z, deck_z + faucet,
+                             width * 0.07, depth * 0.10, "metal"))
+        return tuple(strokes), tuple(parts)
+
+    return build
+
+
 PLUMBING_SYMBOLS: dict[str, Builder] = {
     "hydrant": hydrant(),
+    "laundry-sink": laundry_tub(),
     "toilet": toilet(),
     "lavatory": lavatory(pedestal=True),
     "vanity": vanity(),

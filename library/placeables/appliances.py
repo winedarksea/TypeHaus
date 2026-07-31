@@ -84,5 +84,44 @@ WASHER = ApplianceType(
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.POWER_240}),
 )
 
+# One object, two machines. A stack is not a washer with a dryer placed on top of it — it is
+# a single 80"-tall tower with one footprint, one clearance zone and one set of anchors, and
+# a laundry closet is sized against that tower rather than against either machine. Modelling
+# it as two placeables would put a body inside a body and give the room two door zones where
+# it has one.
+#
+# The dryer half is a *ventless heat pump*, which is what the ``needs`` set says and does not
+# say: no exhaust, so the standing caveat on ``DRYER`` above — that a dryer's duct has no
+# ``Service`` member — simply does not apply here. There is no duct to declare, no wall or
+# roof penetration, and the moisture leaves as condensate down a drain instead of as air
+# through a hood. It carries both power services because the two machines are on separate
+# branch circuits (120V for the washer, 240V for the dryer) even though they read as one
+# appliance.
+WASHER_DRYER_STACKED = ApplianceType(
+    tag="APPL-WASHER-DRYER-STACKED", name="Stacked washer / heat-pump dryer",
+    footprint=(inch(28), inch(40)), height=inch(80),
+    plan_symbol="washer-dryer-stacked", source=REFERENCE,
+    needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN,
+                     Service.POWER_120, Service.POWER_240}),
+    ports=(ServicePort(tag="power-washer", service=Service.POWER_120,
+                       position=(ft(0), ft(0), ft(0))),
+           ServicePort(tag="power-dryer", service=Service.POWER_240,
+                       position=(ft(0), ft(0), inch(43))),
+           ServicePort(tag="supply-hot", service=Service.WATER_HOT,
+                       position=(ft(0), ft(0), inch(36))),
+           ServicePort(tag="supply-cold", service=Service.WATER_COLD,
+                       position=(ft(0), ft(0), inch(36))),
+           # The washer's discharge and the dryer's condensate both leave at the standpipe
+           # band; neither is a sealed connection (see the air-gap notes on the instance).
+           ServicePort(tag="drain", service=Service.DRAIN,
+                       position=(ft(0), ft(0), inch(36)))),
+    # Front-loaders swing a full-diameter door: 30" is the band a user needs to load the
+    # lower machine, and it is RECOMMENDED so a laundry *closet* — where that band is the
+    # doorway you stand in — still builds.
+    clearances=(front_zone(inch(28), inch(40), inch(30),
+                           "front-loader door swing and loading"),),
+)
+
 STARTER_APPLIANCE_TYPES = (REFRIGERATOR, GAS_RANGE, ELECTRIC_RANGE, DISHWASHER, DRYER,
-                           MICROWAVE_OTR, FREEZER_UPRIGHT, HOOD_RECIRC, WASHER)
+                           MICROWAVE_OTR, FREEZER_UPRIGHT, HOOD_RECIRC, WASHER,
+                           WASHER_DRYER_STACKED)

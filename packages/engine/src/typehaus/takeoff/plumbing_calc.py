@@ -32,6 +32,9 @@ DFU_BY_SYMBOL: dict[str, float] = {
     "shower": 2.0,
     "kitchen-sink": 2.0,    # incl. food-waste grinder / dishwasher branch
     "washer": 3.0,          # clothes washer, 2" standpipe
+    # A stacked pair is one washer for fixture-unit purposes: the heat-pump dryer above it
+    # discharges condensate to an indirect waste, which is not a drainage fixture.
+    "washer-dryer-stacked": 3.0,
     "dishwasher": 2.0,
     "laundry-sink": 2.0,
     "floor-drain": 2.0,
@@ -47,6 +50,7 @@ WSFU_BY_SYMBOL: dict[str, tuple[float, float, float]] = {
     "shower": (2.0, 1.5, 1.5),
     "kitchen-sink": (1.5, 1.0, 1.0),
     "washer": (4.0, 3.0, 3.0),
+    "washer-dryer-stacked": (4.0, 3.0, 3.0),  # the dryer half takes no water
     "dishwasher": (1.5, 1.5, 0.0),
     "laundry-sink": (1.5, 1.0, 1.0),
     "hydrant": (2.5, 0.0, 2.5),  # hose bibb

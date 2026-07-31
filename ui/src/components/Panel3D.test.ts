@@ -19,7 +19,10 @@ import {
   buildFloor, buildFootingBedding, buildRoof, buildSolid, buildStair, FOOTING_BEDDING_COLOR,
 } from "../three/builders/structure";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
-import { SOLID_CATEGORY_COLOR, createSolidMaterial, solidColor } from "../three/solidMaterials";
+import {
+  SOLID_CATEGORY_COLOR, SOLID_CATEGORY_TRADE, createSolidMaterial, solidColor, solidTrade,
+} from "../three/solidMaterials";
+import { ALL_TRADES } from "../state/vocabulary";
 import { carriesMemberIdentity, resolveMemberPickUid } from "../three/memberPicking";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -308,6 +311,30 @@ export function runSolidMaterialTests() {
   assert(metal.metalness > 0, "Shop-finished metal accessories render metallic");
   const concrete = createSolidMaterial(solid("slab"), undefined, "nordic", PALETTE);
   assert(concrete.metalness === 0, "Cast concrete stays fully dielectric");
+
+  // A solid is not automatically concrete. BM-M-HALL and BM-S-HALL rendered under the Concrete
+  // toggle while RB-HOUSE — the same authored element kind, re-typed by the resolver as a roof
+  // member — rendered under Framing. The engine keeps the same table (emit/trades.py) and
+  // tests/test_solid_trade_parity.py holds the two literals in agreement; these assertions
+  // cover the lookup itself, which that text-reading test cannot see.
+  assert(solidTrade(solid("beam")) === "framing",
+    "A standalone beam is framing, not concrete");
+  assert(solidTrade(solid("column")) === "framing",
+    "A standalone post is framing, not concrete");
+  assert(solidTrade(solid("pipe_drain")) === "plumbing",
+    "A routed waste line follows the Plumbing toggle");
+  assert(solidTrade(solid("vent")) === "mechanical", "A vent riser is mechanical");
+  assert(solidTrade(solid("gutter")) === "roof", "Roof edge trim rides the roof toggle");
+  assert(solidTrade(solid("glazing")) === "openings", "Glazing reads as fenestration");
+  assert(solidTrade(solid("soffit")) === "floors",
+    "A dropped soffit is finished like the ceiling it hangs under");
+  assert(solidTrade(solid("slab")) === "concrete", "A pour is still concrete");
+  assert(solidTrade(solid("no-such-category")) === "concrete",
+    "An unclassified category falls back to concrete rather than dropping out of the scene");
+  for (const category of Object.keys(SOLID_CATEGORY_TRADE)) {
+    assert(ALL_TRADES.includes(SOLID_CATEGORY_TRADE[category]),
+      `${category} maps to a trade with no THREE.Group: ${SOLID_CATEGORY_TRADE[category]}`);
+  }
 }
 
 // --- B7: pick registration ---------------------------------------------------

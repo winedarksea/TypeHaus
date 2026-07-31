@@ -186,10 +186,23 @@ SLEEVES = [
     SleevePenetration(uid="CMP903AAAA", tag="SP-M-LAV1", host_ref="SL-M-DECK",
                       position=pt(ft(6), m(7.00891)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), serves_fixture="FX-M-BATH1-LAV"),
-    # Projection of FX-M-LAUNDRY (10'-6", 20') onto the W-M-BA2E2 centerline (x=8).
+    # Projection of FX-M-LAUNDRY onto the W-M-BA2E centerline (x=8'). The wall tag in this
+    # comment used to read "W-M-BA2E2", which spans y 13'-4"..17'-4" and so contains neither
+    # this sleeve nor the fixture — a stale tag, corrected 2026-07-31 here and on the
+    # fixture's own `wall_ref` (plan/fixtures.py). The position is unchanged: x=8' is the wet
+    # wall's centreline and y=20' sits inside the stacked pair's 17'-4 5/8"..20'-8 5/8" band,
+    # so the standpipe and the supply box land behind the machine rather than beside it.
     SleevePenetration(uid="CMP904AAAA", tag="SP-M-WASH", host_ref="SL-M-DECK",
                       position=pt(ft(8), ft(20)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-LAUNDRY"),
+    # The laundry tub's waste, straight down under its basin the way every other main-storey
+    # fixture drops through this 9" cast deck. 2" rather than the 1 1/2" one sink would take,
+    # because the branch below it is the tub's trap arm to the laundry stack and 2" is what
+    # buys the 60" Table 1002.2 allows for the 45" it runs. Authored at exactly the fixture's
+    # `drain_position`, which is what makes `mep.sleeve_alignment` read 0.00".
+    SleevePenetration(uid="ZW630NFAAS", tag="SP-M-LSINK", host_ref="SL-M-DECK",
+                      position=pt(ft(11, 9), ft(18, 9)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), serves_fixture="FX-M-LAUNDRY-SINK"),
     # The kitchen sink's waste through the 9" deck. Authored at exactly FX-M-KITCH-SINK's
     # `drain_position`, which is what makes `mep.sleeve_alignment` read 0.00". Moved to the
     # north wall 2026-07-30 with the sink, then re-centred the same day with the sink/
@@ -408,6 +421,17 @@ WALL_SLEEVES = [
                       position=pt(ft(10), ft(19, 9)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
                       purpose=Service.WATER_HOT, center_elevation=ft(-1)),
+    # The laundry tub's branch west to PR-B-MAIN-DRAIN (2026-07-31). Its own crossing at
+    # y=18'-9", a foot south of the stair-bathroom group above and 3" clear of W-B-CW2's
+    # north face, which is why the tub's waste drops at 18'-9" rather than under its own
+    # centre — see plan/fixtures.py. PR-B-LSINK-DRAIN's invert at x=10' is -1'-1 3/4"
+    # project, interpolated along its 1.32"/ft fall; the sleeve is cast at the pipe's
+    # centerline, 1" (half a diameter) above that, which is what `mep.sewer_exit_invert`
+    # matches to within 1/2".
+    SleevePenetration(uid="HTE6ZE86KX", tag="SP-B-STR-LSINK-DR", host_ref="W-B-STR2",
+                      position=pt(ft(10), ft(18, 9)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), axis="horizontal",
+                      center_elevation=ft(-1.0594)),
     # W-B-CE (y=18', x 18..36) — the kitchen lines' way east. x-columns moved 2026-07-30 with
     # the sink to the north wall and again the same day with the sink/dishwasher flip (see
     # plan/placeables.py's kitchen header); y=18' is W-B-CE's own line and is unaffected.
@@ -536,7 +560,7 @@ DRAINS = [
                         ft(-1.55)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-M-KITCH-SINK",
                     "FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
-                    "FX-M-BATH2-SINK", "FX-M-LAUNDRY",
+                    "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK",
                     "FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
                     "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
@@ -588,6 +612,23 @@ DRAINS = [
             diameter=inch(2), material="pvc",
             elevations=(ft(9), ft(8, 0.6), ft(7, 8.4)),
             serves=("FX-M-LAUNDRY",)),
+    # The laundry tub (2026-07-31). Down its own cast sleeve under the basin, then 5'-9" west
+    # along the basement ceiling to PR-B-MAIN-DRAIN's x=6' collector — the same two-move shape
+    # as PR-B-SINK2-DRAIN and PR-B-WASH-DRAIN above, because the 9" concrete deck leaves no
+    # other way off this floor.
+    #
+    # It is the tub's trap arm as well as its branch, and that is what sizes it: the vent is
+    # PR-M-WC-VENT's leg standing in W-M-BA2E at x=8', which this run passes 3'-9" from, and
+    # Table 1002.2 allows 60" on 2" against 42" on 1 1/2". Falls 7.6" over the 5'-9" horizontal
+    # (1.32"/ft, well over the 1/4"/ft floor) and arrives at 7'-5", about 6" above the
+    # collector's interpolated invert at this y — a branch tees into the top of a horizontal
+    # drain, not into its side.
+    PipeRun(uid="ZK49S63X8X", tag="PR-B-LSINK-DRAIN", system=PipeSystem.DRAIN,
+            path=(pt(ft(11, 9), ft(18, 9)), pt(ft(11, 9), ft(18, 9)),
+                  pt(ft(6), ft(18, 9))),
+            diameter=inch(2), material="pvc",
+            elevations=(ft(9), ft(8, 0.6), ft(7, 5)),
+            serves=("FX-M-LAUNDRY-SINK",)),
     # --- the two basement slab-fixture branches (2026-07-30) ---------------------------
     #
     # Every fixture on these two runs stands *on* the basement floor, so none of them can
@@ -694,6 +735,45 @@ CONDENSATE_MAIN = [
             elevations=(ft(2, 6), ft(-1), ft(-1.342))),
 ]
 
+# --- RM-M-LAUNDRY: the two air gaps (2026-07-31) --------------------------------------
+#
+# Both of this room's indirect wastes are air-gapped, and neither of them is a fitting the
+# model has a name for, so they are drawn as the pipe they are and explained here.
+#
+# The washer's is the ordinary one: a 2" standpipe rising in W-M-BA2E's stud bay behind the
+# machine, its top at 36" — inside the 18"..42"-above-the-trap band, and above the machine's
+# own tub so it cannot back-siphon. The discharge hose is *dropped into* that standpipe, not
+# sealed to it, and that open annulus is the air gap. A backup therefore spills out of the
+# box at 36" rather than into the machine. Below the deck the trap and the branch are already
+# drawn as PR-B-WASH-DRAIN; this run is the leg above the deck that was missing.
+#
+# The dryer's is the new one, and it is the reason this room needs no duct. A ventless
+# heat-pump dryer condenses its moisture instead of blowing it outdoors; the pump lifts that
+# condensate out of the machine and it has to land somewhere that is not the sanitary system.
+# It lands over the laundry tub — 3'-0", which is 2" clear of the tub's 34" flood rim, twice
+# the 1" a 3/4" line needs. A tub is what an air gap wants (trapped, sees water in normal
+# use), the same reading that put PR-B-COND over FX-B-SAUNA-FD rather than over a lavatory
+# when FX-1 was retired.
+#
+# The condensate line stays on this floor: PR-B-COND is a basement collector terminating over
+# the sauna floor drain and there is no reason to drop 9' and cross the house when the
+# receptor is 2' away. `mep.drain_slope` grades it as the DRAIN it is filed as and holds every
+# segment to IRC P3005.3's 1/4"/ft, which a 22" run at 12" of fall per leg clears many times
+# over. Neither run declares `serves`: a standpipe's fixture units are counted on the branch
+# below it, and condensate is not a drainage fixture at all.
+LAUNDRY_MAIN = [
+    PipeRun(uid="P8A9ADNE6N", tag="PR-M-WASH-STANDPIPE", system=PipeSystem.DRAIN,
+            path=(pt(ft(8), ft(20)), pt(ft(8), ft(20))),
+            diameter=inch(2), material="pvc",
+            elevations=(ft(3), ft(0)),
+            wall_refs=("W-M-BA2E",)),
+    PipeRun(uid="5NYN0SKYSV", tag="PR-M-DRYER-COND", system=PipeSystem.DRAIN,
+            path=(pt(ft(10, 8), ft(19, 0.635)), pt(ft(11, 9), ft(19, 0.635)),
+                  pt(ft(11, 9), ft(18, 3.135))),
+            diameter=inch(0.75), material="pvc",
+            elevations=(ft(5), ft(4), ft(3))),
+]
+
 # Re-terminated 2026-07-30, when FX-1 was retired: the collector used to run north across
 # W-B-CW and air-gap over that sink's basin, and it now stops short of that wall and
 # terminates over FX-B-SAUNA-FD instead — the sauna wet floor's drain (owner's call). A
@@ -745,8 +825,15 @@ VENT_BRANCHES_MAIN = [
             # Service.VENT. No new pipe: this run's x=6' leg is W-M-BAE's own stud bay and it
             # passes 1'-0" north of the lavatory's drain point at (6', 23'), so the trap arm
             # ties into the leg already drawn there — well inside Table 1002.2's 42" for 1.5".
+            # FX-M-LAUNDRY-SINK joined on 2026-07-31, on the same terms: this run's x=8' leg is
+            # W-M-BA2E's own stud bay and PR-B-LSINK-DRAIN arrives against that wall 3" south
+            # of the leg's start, so the tub wet-vents off the laundry stack with no new pipe.
+            # The trap arm is the 45" that branch runs below the deck, inside Table 1002.2's
+            # 60" for 2". The washer itself needs no entry — an Appliance declares no
+            # Service.VENT — but its standpipe (PR-M-WASH-STANDPIPE) is the physical riser
+            # this tee sits beside.
             serves=("FX-M-BATH2-WC", "FX-M-BATH1-WC", "FX-M-BATH2-SH",
-                    "FX-M-BATH2-TUB", "FX-M-BATH1-LAV")),
+                    "FX-M-BATH2-TUB", "FX-M-BATH1-LAV", "FX-M-LAUNDRY-SINK")),
     # Kitchen sink. Re-routed 2026-07-30 with the sink's move to the north wall: W-M-N1
     # *does* continue to the storey above at this x (W-S-N1 stacks on it, into RM-S-BED3's
     # wall), so `mep.vent_reachability` is still satisfied by the wet-wall path. x=32'-8" is
@@ -1606,7 +1693,8 @@ SUPPLY = [
             diameter=inch(1), material="pex",
             elevations=(ft(4), ft(8), ft(8), ft(8)),
             serves=("FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
-                    "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-KITCH-SINK",
+                    "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK",
+                    "FX-M-KITCH-SINK",
                     "FX-B-BATH-LAV", "FX-B-SAUNA-SH",
                     "FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
                     "FX-S-VANITY-LAV2", "FX-S-SUITEBATH-LAV",
@@ -1658,14 +1746,14 @@ SUPPLY = [
             diameter=inch(0.75), material="pex",
             elevations=(ft(8, 1.2), ft(8, 1.2), ft(9), ft(12)),
             wall_refs=(None, None, "W-M-BA2E"),
-            serves=("FX-M-LAUNDRY",)),
+            serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW38AAAA", tag="PR-B-HW-WASH", system=PipeSystem.WATER_HOT,
             path=(pt(m(1.88684), m(10.0015)), pt(ft(8), ft(21, 2.4)),
                   pt(ft(8), ft(21, 2.4)), pt(ft(8), ft(21, 2.4))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(8), ft(8), ft(9), ft(12)),
             wall_refs=(None, None, "W-M-BA2E"),
-            serves=("FX-M-LAUNDRY",)),
+            serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(29, 6.6), ft(15, 6)),
                   pt(ft(29, 6.6), ft(33, 7.2)), pt(ft(29, 6.6), ft(33, 7.2))),
@@ -1754,6 +1842,7 @@ SUPPLY = [
 ]
 
 MAIN_ELEMENTS = [*SLEEVES, *SUPPLY_SLEEVES, *STACK_SLEEVES, *SECOND_DRAINS, *CONDENSATE_MAIN,
+                 *LAUNDRY_MAIN,
                  *VENT_BRANCHES_MAIN, *MAIN_DEVICES, *WATER_SUPPLY, *GARAGE_SLEEVES,
                  *DUCTS_MAIN, *REGISTERS_MAIN]
 # The basement's two plumbing vents. Both are offset vents to VR-M-RADON-VENT's shared

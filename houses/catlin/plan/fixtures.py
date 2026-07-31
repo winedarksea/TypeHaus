@@ -1,8 +1,9 @@
 # haus: editable
 # Permit-schedule plumbing fixture/appliance *instances* for Catlin (M3 WP3.4/WP3.10).
 # `# haus: editable` so UI drags (moving a toilet, the washer, …) round-trip to source.
-# Their FixtureType/ApplianceType catalog lives in the non-editable `fixture_types.py`
-# (it uses `frozenset(...)`, which the editable dialect forbids).
+# Their FixtureType/ApplianceType catalog lives in the non-editable `library/placeables/`
+# at the repo root (it uses `frozenset(...)`, which the editable dialect forbids). The
+# house-local `fixture_types.py` this line used to name went away in the `3d3973a` dedupe.
 
 from typehaus import Appliance, Fixture, Mount, MountKind, deg, ft, inch, pt
 from typehaus.model import m
@@ -146,8 +147,73 @@ MAIN_FIXTURES = (
             room="RM-M-BATH2", position=pt(ft(1), ft(16, 6)), rotation=deg(90),
             wall_ref="W-M-W3", mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
             drain_position=pt(ft(1), ft(16, 6))),
-    Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-WASHER", room="RM-M-LAUNDRY",
-              position=pt(ft(10, 6), ft(20)), wall_ref="W-M-BA2E2"),
+    # --- RM-M-LAUNDRY (2026-07-31) -----------------------------------------------------
+    #
+    # The room is an alcove, not a room you stand in: 62 3/4" x 56 3/4" clear
+    # (x 8'-0 5/8"..13'-3 3/8", y 17'-4 5/8"..22'-1 3/8") with D-M-LAUN, a 56" bifold, taking
+    # the whole north side (opening x 8'-4"..13'-0"; its leaves fold north into the hall, so
+    # nothing in here has to clear a swing). That makes it a laundry *closet*: both goods back
+    # onto the south wall and every front faces north through the opening, and you work them
+    # from the hall rather than from inside. rotation 180 is what turns those backs south.
+    #
+    # 28" of stack + 1" + 24" of tub = 53" inside a 56" opening, so both objects are fully
+    # visible and reachable in the doorway, with 9 3/4" of the room's 62 3/4" left east. The
+    # stack's west face is set on the door opening at 8'-4" rather than on the wall face at
+    # 8'-0 5/8": those 3 3/8" would have hidden a slice of the machine behind the jamb return
+    # for nothing, and putting it here centres the tower on x=9'-6", which is where the dryer
+    # receptacle already was. Backs sit on the finish face; the units are pushed 1/8" clear of
+    # nothing, they simply land on it, the way FX-M-BATH2-WC lands on its east clear face.
+    #
+    # `wall_ref` names W-M-BA2E — the west INT_2X6_STAGGERED_PLUMBING wall — even though
+    # neither object's back is on it, and that is the correct reading of the field: it is the
+    # *service* wall, not the back wall. Both wastes cross SL-M-DECK and drop into the
+    # basement (SP-M-WASH, SP-M-LSINK), so there is no wall stack anywhere in this room; what
+    # the 2x6 carries is the washer standpipe and the supply box, which is exactly what a
+    # 3 1/2" partition could not. Note the old value here was "W-M-BA2E2", which spans
+    # y 13'-4"..17'-4" and therefore contains neither this fixture nor its sleeve — a stale
+    # tag, not a design decision. plan/mep.py's SP-M-WASH comment repeated the same error.
+    #
+    # Retyped from APPL-WASHER to the stacked pair, keeping uid and tag: every
+    # `serves=("FX-M-LAUNDRY",)` in plan/mep.py — both supply trunks, the drain branch, the
+    # vent branches and the sleeve — still means this machine. The heat-pump dryer above the
+    # washer is ventless, so nothing in this room penetrates the envelope; its moisture leaves
+    # as condensate down PR-M-DRYER-COND to the tub beside it.
+    # Footprint x 8'-4"..10'-8", y 17'-4 5/8"..20'-8 5/8".
+    Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-WASHER-DRYER-STACKED",
+              room="RM-M-LAUNDRY", position=pt(ft(9, 6), ft(19, 0.635)), rotation=deg(180),
+              wall_ref="W-M-BA2E"),
+    # The utility tub, 1" east of the stack. It is a working fixture — the bucket sink, the
+    # hand-wash — and it is also the *receptor*: PR-M-DRYER-COND air-gaps over its 34" rim,
+    # which is why the dryer needs no vent and no separate condensate pump line to the
+    # basement. A laundry tub is what an air gap wants (trapped, sees water in normal use),
+    # the same reasoning that put PR-B-COND over FX-B-SAUNA-FD rather than over a lavatory.
+    # Footprint x 10'-9"..12'-9", y 17'-4 5/8"..19'-1 1/8".
+    #
+    # `drain_position` is at y=18'-9", the front third of the basin rather than its centre,
+    # and the basement is what puts it there: W-B-CW2 is 12" of cast concrete on the y=18'
+    # axis, so the band y 17'-6"..18'-6" has solid wall under it all the way up to the deck.
+    # A waste dropped at the tub's own centre (18'-3 1/8") would land on top of that wall.
+    # 18'-9" clears its north face by 3" and still sits 4" inside the tub, which is where a
+    # laundry tub's outlet can perfectly well go — the basin is 21" deep and the tailpiece
+    # follows the drain, not the other way round.
+    #
+    # SL-M-DECK is 9" of cast concrete, so nothing on this floor runs a trap arm sideways
+    # before it drops: every main-storey fixture goes straight down its own cast sleeve and
+    # turns west in the open basement ceiling, which is what PR-B-SINK2-DRAIN and
+    # PR-B-WASH-DRAIN beside it already do. This tub is no different — SP-M-LSINK is directly
+    # under the basin, and PR-B-LSINK-DRAIN carries the branch from there.
+    #
+    # That leaves the vent, and the answer is the ordinary one: the tub wet-vents off the
+    # laundry stack. Its 2" branch runs 45" west below the deck to the W-M-BA2E line where the
+    # washer's standpipe stands, and PR-M-WC-VENT's x=8' leg — already drawn in that wall's
+    # stud bay, and passing 3" north of this branch's arrival — is the vent it tees onto. No
+    # new pipe, the same reasoning that added FX-M-BATH1-LAV to that run on 2026-07-30.
+    # 45" is also the number that has to clear code: MN Plumbing Code Table 1002.2 allows 60"
+    # of trap arm on 2" and only 42" on 1 1/2", which is why this branch is 2" rather than the
+    # 1 1/2" a lone sink would otherwise take.
+    Fixture(uid="J7VY2GZ062", tag="FX-M-LAUNDRY-SINK", type_ref="FX-LAUNDRY-SINK-24", room="RM-M-LAUNDRY",
+            position=pt(ft(11, 9), ft(18, 3.135)), rotation=deg(180), wall_ref="W-M-BA2E",
+            drain_position=pt(ft(11, 9), ft(18, 9))),
     # Kitchen sink: moved to the north wall 2026-07-30 with the range/sink wall swap (see
     # plan/placeables.py's kitchen header), then flipped with the dishwasher the same day to
     # pull it toward the middle of the run. Dropped into the 36" base FURN-M-KIT-SINKBASE and

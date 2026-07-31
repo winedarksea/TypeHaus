@@ -24,9 +24,12 @@ proposing any design change.
   editable: `frozenset` again). Marks must stay unique; the E-602 schedule is keyed on
   them. Also holds the two 24V supply types and the dimmer/timer switch types.
 - `params/solar.py` — rooftop PV array (12 × 440 W on the gable ridge, computed max fit).
-- `plan/fixture_types.py` — the FixtureType/ApplianceType *catalog* (NOT editable: uses
-  `frozenset(...)`, which the dialect forbids). Type libraries stay non-editable; movable
-  instances that reference them live in the editable modules above.
+- `library/placeables/*.py` (repo root, not this directory) — the shared FixtureType/
+  ApplianceType/FurnitureType *catalog*, wired in by `plan/manifest.py`. NOT editable: it
+  uses `frozenset(...)`, which the dialect forbids. Type libraries stay non-editable;
+  movable instances that reference them live in the editable modules above. The house-local
+  `plan/fixture_types.py` this line used to name was deleted in the `3d3973a` library
+  dedupe; only `plan/furniture_types.py` (the two mudroom closets) is still house-local.
 - `params/sunken_garden.py` — the freestanding arched porch/garden structure (math OK here).
 - `params/foundations.py` — house footings, garage ICF stem + slab.
 - `params/breezeway.py` — the enclosed breezeway: pads, piers, posts, deck, roof, glazing.
@@ -42,6 +45,15 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
 - Four structures: house, freestanding garage (4' north), freestanding sunken-garden/
   porch/balcony concrete structure (5" south gap), enclosed breezeway on freestanding 6x6
   posts spanning that 4' gap door-to-door (`params/breezeway.py`).
+- **The garage storey datum is not the garage floor.** Its wood walls bear on the ICF stem
+  at `GARAGE_STEM_REVEAL` (1'-10"), which is the `garage` storey elevation; the slab they
+  enclose is poured at grade, 1'-10" lower, and filed on `main`. Anything that has to sit
+  on the garage floor must say so explicitly — D-G-OVERHEAD carries the plan's only
+  negative `sill_height` to reach it, and the stem becomes a grade beam flush with the slab
+  under that door so there is no curb across it. Emitters read
+  `emit/room_floor.py::room_floor_elevation` rather than the storey elevation for the same
+  reason. Raising the stem means re-dropping the door: the tie is enforced by
+  `test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade`.
 - 36'x36' at sheathing; everything on the 16" o.c. module; exterior walls carry
   `alignment=face("sheathing-ext")` so the sheathing plane is the vertical datum (#43).
 - The side-wall stack is 2x6 throughout — one `CATLIN_EXT_2X6` on main, second and
