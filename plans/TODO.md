@@ -33,22 +33,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `model.json` now carries the variant catalog; `prices.toml` $-ranges work in
   `haus variants compare` and takeoff. Still missing: `variant_of`/`active` forks with
   one-active integrity + promote-with-uid-remap, and the UI side-by-side compare canvases.
-- **Gree capacities are representative placeholders (2026-07-29).** Every capacity on
-  `EQ-T-GREE-*` and the ERV's SRE carries `# TODO verify datasheet` and a `source` saying so.
-  `mep.heating_capacity` sizes per *zone of rooms* (`Equipment.zone_rooms` + `outdoor_ref`)
-  off `estimate_block_load(rooms=…)`. Current honest findings, whole-house block load
-  56,434 Btu/h at design:
-  - System 1 (Vireo GEN3 + ducted air handler, upstairs + 3 attic rooms): 14,810 vs 16,500
-    at-design — PASS (was 11,415/2 rooms before RM-A-WEST joined the zone on 2026-07-30
-    via REG-A-HP-WEST; the margin is thinner now, +1,690).
-  - System 2 (Multi Ultra 3-port, basement + west main + living room): **37,303 vs 22,000
-    at-design — undersized by ~15,000 Btu/h.** Reported UNKNOWN today only because five
-    basement door U-factors are missing from the block-load inputs; once those are authored
-    it is an advisory FAIL. Either the zone splits (the basement wants its own system) or
-    the outdoor unit grows — a real design decision, not a modelling artifact.
-  - System 3 (Sapphire R32, stair + mudroom + mech): 4,094 vs 8,000 at-design — PASS.
-  - `RM-A-DEN` is in **no** zone; the check names it unclaimed rather than guessing.
-    (RM-A-WEST left this list 2026-07-30.)
 - **Refrigerant linesets are unmodeled** — only the indoor→outdoor pairing is recorded
   (`Equipment.outdoor_ref`). (Heat-pump *condensate* is modeled as of the plumbing pass:
   `PR-M-COND-HEADS` drops the two main-storey wall heads through `SP-M-COND` to
@@ -103,8 +87,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `FloorOpening`), not by hanging a receptacle above the stairwell.
   `test_electrical_circuits.py::test_catlin_receptacle_spacing_passes_after_fill` is red for
   this plus a pre-existing RM-S-SUITE pair, and was red before this batch too.
-- **`FURN-M-MUD-CLOSET-N` type is unused** — the north mudroom closet became RM-M-MECH
-  (radon + plumbing riser) instead. Delete the type or place it elsewhere.
 - **RM-S-PLANT has no fresh-air terminal, by decision (2026-07-30)** — a dedicated mini-HRV
   just for the plant room is under consideration. RM-S-STUDY2 likewise has no fresh-air
   terminal, by decision. `mep.ventilation_distribution` names exactly these two rooms and
@@ -212,25 +194,10 @@ the future.
 - Confirm the default toilet's 28" body depth vs an elongated bowl (29–31") — the code
   clearance is already modeled separately (`_water_closet_required_clearance` in
   `library/placeables/fixtures.py`), so this is a one-line footprint question.
-- ~~Laundry room needs to fit a sink + closet, 24" W x 21" D x 43" H... The washer/dryer
-  becomes a stacked unit... No vent is needed for a heat pump dryer.~~ **Done 2026-07-31.**
-  RM-M-LAUNDRY is a bifold-fronted closet now: `APPL-WASHER-DRYER-STACKED` (28x40x80,
-  retyped in place onto FX-M-LAUNDRY so its whole MEP tail survived) and
-  `FX-LAUNDRY-SINK-24` (24x21, 34" rim in a 43" box) both back onto the south wall inside
-  the 56" opening, with `FURN-WALL-RACK-24` over the tub at 48". Both air gaps are drawn:
-  PR-M-WASH-STANDPIPE (2", 36" top, hose dropped in not sealed) and PR-M-DRYER-COND (3/4",
-  terminating 3'-0" — 2" over the tub's flood rim). No duct anywhere: the heat-pump dryer
-  is ventless by design, recorded on the type. The tub wet-vents off the laundry stack
-  through PR-M-WC-VENT (45" trap arm on 2", against Table 1002.2's 60"). Also fixed on the
-  way through: FX-M-LAUNDRY's `wall_ref` named W-M-BA2E2, a wall it does not touch, and
-  CKT-LAUNDRY had no receptacle on it at all.
-  - Not done, deliberately: the CW/HW risers still land at y=20'-7 1/5"/21'-2 2/5" rather
-    than being re-centred behind the machine. The cold one is already inside the unit's
-    y band and the hot is 6" past it — a fine place for a hose-bibb pair you have to reach
-    — and moving them would drag two cast deck sleeves along for no real gain.
 - It looks like beams BM-S-HALL and BM-M-HALL are not getting grouped as part of the framing in the view. Also want to double check that beams are properly considered as a type of framing, for example the hall beams should likely be defined similarly to RIDGE-BEAM, garage header HEADER-0, the porch beams such as BM-SG-BKW, and possibly some of the window and door headers. We also may have some cases where we have headers specified over windows or doors when a large beam
 - The 'Sun' slider doesn't actually seem to do anything. I think the basic idea was just to move a sun icon so users could get a sense of where the sun would be at certain times (not actually modeling shadows), but if that happens now, it isn't visible on the main canvas.
 - The tube grow lights need to look in 3d more like suspended lights (which is basically a box with two poles/strings coming down from the ceiling on each end).
+- We need a zoom in/zoom out little button to click (material design 3 style integrated)
 
 Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
@@ -241,16 +208,6 @@ Questions:
 - Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?
 - Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model)
 - Pantry
-
-## Windows
-We want to make some of the south facing windows, and generally make windows more symmetrical from the outside view of the house (while still following stud spacing needs and being 'pleasantly' spaced from an inside perspective as well).
-
-The main consideration here for symmetric are the south facing windows on RM-S-PLANT, RM-S-STUDY2, RM-A-STUDY and RM-A-DEN/WEST. 
-We also might want a bit more symmetric between the main and second floor windows on the east side (RM-S-LIVING versus the bedrooms above).
-
-RM-S-PLANT and RM-S-STUDY2 should have bigger windows, likely 42" wide, breaking two studs in line. Possibly larger windows for the other south facing windows as well.
-
-Have the windows be trimmed with charcoal gray on the exterior (this is easy to change so we can experiment with the color)
 
 ### Other visual ideas
 Dark base to the house
