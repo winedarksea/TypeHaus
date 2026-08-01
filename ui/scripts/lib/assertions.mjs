@@ -117,9 +117,27 @@ export const PROBE_THREE_PANE_RECT = `
 // scene — Nordic shading plus edge linework — never does. Byte size is a crude signal, but
 // it is the only one available without a PNG decoder, and it catches the failure that
 // matters: Panel3D silently drawing nothing while every screenshot still "passes".
-const MIN_RENDERED_3D_PNG_BYTES = 12_000;
+//
+// This constant was derived by eyeballing a laptop-viewport (1600x1000, deviceScaleFactor 1)
+// capture, so used as-is it is meaningless at other viewport sizes: the tablet pane clips far
+// fewer pixels than the laptop pane, and the phone pane clips more pixels at 3x device scale —
+// both would either false-fail or stop meaning anything against a fixed byte floor. Scaling it
+// by the clipped area (in device pixels, i.e. CSS area x deviceScaleFactor^2) relative to the
+// laptop viewport's own area keeps the same "did it actually render" signal at every size.
+const MIN_RENDERED_3D_PNG_BYTES_AT_LAPTOP_REFERENCE = 12_000;
+const LAPTOP_REFERENCE_WIDTH = 1600;
+const LAPTOP_REFERENCE_HEIGHT = 1000;
+const LAPTOP_REFERENCE_DEVICE_SCALE_FACTOR = 1;
+const LAPTOP_REFERENCE_AREA =
+  LAPTOP_REFERENCE_WIDTH * LAPTOP_REFERENCE_HEIGHT * LAPTOP_REFERENCE_DEVICE_SCALE_FACTOR ** 2;
 
-export function judge(shotName, probes, isPhone, baselineFingerprints) {
+function minRendered3dPngBytes(clipArea, deviceScaleFactor) {
+  if (!clipArea) return MIN_RENDERED_3D_PNG_BYTES_AT_LAPTOP_REFERENCE;
+  const deviceArea = clipArea * deviceScaleFactor ** 2;
+  return MIN_RENDERED_3D_PNG_BYTES_AT_LAPTOP_REFERENCE * (deviceArea / LAPTOP_REFERENCE_AREA);
+}
+
+export function judge(shotName, probes, isPhone, baselineFingerprints, deviceScaleFactor = 1) {
   const results = [];
   const add = (id, ok, detail, blocking = true) =>
     results.push({ shot: shotName, id, ok, detail, blocking });
@@ -183,10 +201,11 @@ export function judge(shotName, probes, isPhone, baselineFingerprints) {
   }
 
   if (probes.threePng !== undefined && probes.threePng !== null) {
+    const floor = minRendered3dPngBytes(probes.threeClipArea, deviceScaleFactor);
     add(
       "3d-pane-rendered",
-      probes.threePng >= MIN_RENDERED_3D_PNG_BYTES,
-      `clipped 3D PNG ${probes.threePng} bytes (floor ${MIN_RENDERED_3D_PNG_BYTES})`,
+      probes.threePng >= floor,
+      `clipped 3D PNG ${probes.threePng} bytes (floor ${Math.round(floor)})`,
     );
   }
 

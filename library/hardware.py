@@ -23,6 +23,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_PIPE_CLAMP,
     ROLE_PV_SEAM_CLAMP,
     ROLE_SLOPED_JOIST_HANGER,
+    ROLE_SNOW_RETENTION,
     ROLE_STANDING_SEAM_CLAMP,
     ROLE_STUD_PLATE_TIE,
     StructuralHardware,
@@ -216,6 +217,23 @@ S5_CANDUIT_PIPE_CLAMP = StructuralHardware(
     requires_role=ROLE_STANDING_SEAM_CLAMP,
 )
 
+# Snow retention for a standing-seam slope that sheds onto something. ColorGard is a rail
+# system, not a discrete "guard": a continuous 1"x1" aluminum bar runs the width of the slope
+# through the seam clamps, with a colour-matched strip clipped into it. It reaches the panel
+# only through those clamps, so like the CanDuit ring above it declares ``requires_role`` and
+# every foot of rail ordered brings its clamps with it.
+S5_COLORGARD_SNOW_RETENTION = StructuralHardware(
+    tag="s5-colorgard-snow-retention",
+    name="S-5! ColorGard snow-retention rail",
+    role=ROLE_SNOW_RETENTION,
+    manufacturer="S-5!",
+    model="S-5! ColorGard",
+    source="S-5! ColorGard snow retention system (s-5.com) — 1\" x 1\" aluminum crossbar "
+           "with a colour-matched panel strip, carried on S-5! seam clamps; spacing and row "
+           "count are the manufacturer's calculation at the site ground snow load",
+    requires_role=ROLE_STANDING_SEAM_CLAMP,
+)
+
 KBS_BEAM_HOLD_DOWN = StructuralHardware(
     tag="simpson-kbs1z-strap",
     name="KBS1Z knee-brace / beam strap (ZMAX)",
@@ -272,6 +290,7 @@ STRUCTURAL_HARDWARE: tuple = (
     S5_SEAM_CLAMP,
     S5_CANDUIT_PIPE_CLAMP,
     S5_PV_KIT,
+    S5_COLORGARD_SNOW_RETENTION,
     KBS_BEAM_HOLD_DOWN,
     POLY_PANEL_FASTENER,
 )

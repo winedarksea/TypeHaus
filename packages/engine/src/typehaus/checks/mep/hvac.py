@@ -175,10 +175,15 @@ def heating_capacity(ctx: CheckContext) -> list[Finding]:
 
     A zone is the authored ``Equipment.zone_rooms`` of a rated unit, unioned with the rooms
     of every indoor head that names it through ``outdoor_ref``. Only equipment carrying an
-    authored ``heating_capacity*`` rating counts as a zone heat source: radiant floor mats
-    (12 W/ft2 surface tempering), the electric fireplace, and the garage unit heater are
-    supplemental by design (plan/circuits.py) and are excluded — none is sized to carry a
-    room, and the garage is unconditioned anyway.
+    authored ``heating_capacity*`` rating opens a zone.
+
+    Supplemental resistance heat inside a zone's rooms — sized radiant mats, the electric
+    fireplace — is *added to* that zone's capacity rather than ignored: at the design
+    temperature it is heat the outdoor unit does not have to make, and pretending otherwise
+    reports a shortfall the house does not have. It never opens a zone of its own (nothing is
+    sized around a fireplace), and it is keyed by room, so it can never be credited twice. The
+    garage unit heater still counts for nothing — it carries no rating and the garage is
+    unconditioned.
 
     Nothing here is a Manual J: it reuses ``estimate_block_load`` with a room filter (whose
     room attribution is approximate — see its docstring), and missing inputs stay UNKNOWN,
@@ -210,10 +215,12 @@ def heating_capacity(ctx: CheckContext) -> list[Finding]:
                      "heating_capacity_at_design_btuh", (zone.equipment_tag,)))
             continue
         margin = zone.heating_margin_btuh or 0.0
+        supplement = (f" + {zone.supplemental_btuh:,.0f} Btu/h supplemental "
+                      f"({', '.join(zone.supplemental_tags)})"
+                      if zone.supplemental_tags else "")
         detail = (f"{zone.name}: block load {load:,.0f} Btu/h at design over {served} vs "
-                  f"{capacity:,.0f} Btu/h at-design capacity "
-                  f"(margin {margin:+,.0f} Btu/h; radiant/fireplace/garage heater "
-                  "excluded as supplemental)")
+                  f"{capacity:,.0f} Btu/h at-design capacity{supplement} "
+                  f"(margin {margin:+,.0f} Btu/h)")
         if zone.unknown_inputs:
             out.append(_unknown(
                 cid, f"{detail}; block-load inputs missing: "

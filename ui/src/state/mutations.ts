@@ -23,7 +23,12 @@ export interface MutationActions {
   // Self-throttled live drag preview (→ Phase 4): coalesces to the latest request if a
   // preview is already in flight, so a fast pointermove stream never queues up requests.
   // Never journaled/mutating; swallows errors (offline, ops that can't preview) as `null`.
-  previewMacro: (request: MacroRequest) => Promise<PreviewGeometry | null>;
+  //
+  // Pass `rehearse` on a gesture's FIRST preview to also pre-check writeback routing. A
+  // refusal resolves to the "refused" sentinel (and toasts once) rather than `null`, because
+  // the two mean opposite things to a drag: `null` is a transient miss the drag rides out
+  // holding its last geometry, "refused" is a verdict that this edit can never land.
+  previewMacro: (request: MacroRequest, rehearse?: boolean) => Promise<PreviewGeometry | null | "refused">;
   deleteSelection: () => Promise<void>;
   duplicateSelection: () => Promise<void>;
   calibrateUnderlay: (calibration: UnderlayCalibration) => Promise<boolean>;
@@ -83,15 +88,23 @@ export function createMutationActions(
     }
   },
 
-  previewMacro: async (request) => {
+  previewMacro: async (request, rehearse = false) => {
     if (previewInFlight) {
       pendingPreviewRequest = request; // superseded: only the latest pointer position matters
       return null;
     }
     previewInFlight = true;
     try {
-      return await get().client.previewMacro(request);
-    } catch {
+      return await get().client.previewMacro(request, rehearse);
+    } catch (err) {
+      // Only a rehearsal can produce a *verdict*; a plain preview 422 ("can't apply in
+      // memory") is the ordinary transient miss and stays swallowed. Surfacing the reason
+      // here is the whole point of rehearsing — the user learns why at drag-start instead of
+      // watching the element snap back after mouseup.
+      if (rehearse && err instanceof EngineError && err.status === 422) {
+        get().toast((err as Error).message, "error");
+        return "refused" as const;
+      }
       return null; // offline, or ops that can't apply in memory — caller keeps last geometry
     } finally {
       previewInFlight = false;
@@ -137,7 +150,12 @@ export function createMutationActions(
       const item = (model.canvas_objects ?? []).find((x) => x.uid === selection.uid);
       type = item?.kind ?? null; tag = item?.tag ?? null;
     }
-    if (!type || !tag) return;
+    // Nothing above claimed the selection (an unhandled kind, or a record the model no longer
+    // carries). Say so — a Del key that does nothing at all reads as a broken keyboard.
+    if (!type || !tag) {
+      get().toast("Nothing deletable is selected", "info");
+      return;
+    }
     const ok = await applyOps([{ op: "delete", type, tag }]);
     if (ok) { get().toast(`${tag} deleted`); select(null, null); }
   },
@@ -157,7 +175,12 @@ export function createMutationActions(
       tag = opening?.tag ?? null;
       storey = host?.storey ?? null;
     }
-    if (!tag || !storey) return;
+    // Duplication is defined only for placeables and openings (both need a host storey).
+    // Everything else — walls, rooms, framing — has no meaningful "copy" macro yet.
+    if (!tag || !storey) {
+      get().toast("That selection can't be duplicated", "info");
+      return;
+    }
     const result = await runMacro({ macro: "duplicate_canvas_object", storey, tag });
     if (result) get().toast(`${tag} duplicated`);
   },

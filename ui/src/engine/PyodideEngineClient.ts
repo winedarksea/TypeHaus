@@ -183,7 +183,7 @@ export class PyodideEngineClient implements EngineClient {
   runMacro(_request: MacroRequest, _revision: string): Promise<MacroResult> {
     return Promise.reject(new OfflineUnsupported("This tool"));
   }
-  previewMacro(_request: MacroRequest): Promise<PreviewGeometry> {
+  previewMacro(_request: MacroRequest, _rehearse?: boolean): Promise<PreviewGeometry> {
     return Promise.reject(new OfflineUnsupported("Drag preview"));
   }
   async undo(): Promise<HistoryResult> {

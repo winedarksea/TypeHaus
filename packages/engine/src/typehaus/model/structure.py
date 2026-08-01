@@ -20,6 +20,16 @@ class FoundationWall(Wall):
 
     top_elevation: Length | None = None
     bottom_elevation: Length | None = None
+    # Height of backfill retained against this wall with no balancing fill on the other side —
+    # the span IRC Table R404.1.2(1) is indexed on. Authored only where the derived value
+    # (grade down to the footing) is not the real condition: a wall backfilled part way, or
+    # one with a slab bearing against its inside face. Left None it is derived — see
+    # checks/structural/foundation.py.
+    unbalanced_fill: Length | None = None
+    # An engineer's design for this wall, verbatim. Same escape hatch as Door.header_spec:
+    # an authored spec IS the design, so the prescriptive table stops applying and the check
+    # reports PASS citing it rather than FAIL demanding what is already in hand.
+    engineering_spec: str | None = None
 
 
 @register_element

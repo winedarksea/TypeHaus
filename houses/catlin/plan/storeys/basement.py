@@ -107,16 +107,22 @@ WALLS = [
                    alignment=face("concrete-ext"),
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     # Center cross walls (12" concrete) — the 18' bearing grid.
+    # Every wall from here down is an *interior* cross wall: it has soil on neither side, so
+    # `unbalanced_fill=ft(0)` says so explicitly. Without it
+    # `structural.foundation_unbalanced_fill` derives the backfill height from grade down to
+    # the footing — the conservative proxy it documents — and reads these eight as retaining
+    # 9' apiece, which they do not.
+    #
     # This segment is exactly the sauna's east boundary, so it carries the liner stack
     # directly on the concrete. Aligned on the concrete's far face so the 18' bearing
     # grid stays put and the liner grows into the sauna.
     FoundationWall(uid="CBW111AAAA", tag="W-B-CS", start_node="N-B-C1",
-                   end_node="N-B-S2", assembly="SAUNA_LINER_ON_CONCRETE",
+                   end_node="N-B-S2", assembly="SAUNA_LINER_ON_CONCRETE", unbalanced_fill=ft(0),
                    alignment=face("concrete-ext", offset=inch(-6)),
                    interior_room="RM-B-SAUNA",
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     FoundationWall(uid="CBW112AAAA", tag="W-B-CS2", start_node="N-B-C1",
-                   end_node="N-B-C", assembly="CATLIN_CONC_12_INT",
+                   end_node="N-B-C", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     # Split at N-B-BA-E on 2026-07-30, the same way W-B-CW is split at N-B-STR and for the
     # same reason: the stair-foot bathroom's north partition tees into this line, and a tee
@@ -124,20 +130,20 @@ WALLS = [
     # as a wall with a free end. W-B-CN keeps the tag, the uid and the north 14'-2 5/8" —
     # which is the whole run W-M-C5 stacks on, so the bearing stack above is untouched.
     FoundationWall(uid="CBW113AAAA", tag="W-B-CN", start_node="N-B-BA-E",
-                   end_node="N-B-N1", assembly="CATLIN_CONC_12_INT",
+                   end_node="N-B-N1", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     FoundationWall(uid="CBW121AAAA", tag="W-B-CN2", start_node="N-B-C",
-                   end_node="N-B-BA-E", assembly="CATLIN_CONC_12_INT",
+                   end_node="N-B-BA-E", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     # Split at the stair shaft's west wall so the shaft is a real tee, not a wall end.
     FoundationWall(uid="CBW114AAAA", tag="W-B-CW", start_node="N-B-W1",
-                   end_node="N-B-STR", assembly="CATLIN_CONC_12_INT",
+                   end_node="N-B-STR", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     FoundationWall(uid="CBW119AAAA", tag="W-B-CW2", start_node="N-B-STR",
-                   end_node="N-B-C", assembly="CATLIN_CONC_12_INT",
+                   end_node="N-B-C", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     FoundationWall(uid="CBW115AAAA", tag="W-B-CE", start_node="N-B-C",
-                   end_node="N-B-E1", assembly="CATLIN_CONC_12_INT",
+                   end_node="N-B-E1", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     # Stair shaft's west wall — 12" concrete on x=10', running the full north-row depth
     # so the shaft encloses (reference: "Stairway 7' x 16' 6 1/2""). 12" rather than 8"
@@ -148,10 +154,10 @@ WALLS = [
     # W-B-STR2 is the 3'-3 3/8" stub alongside the bathroom, and it is the segment the room's
     # three ceiling-level service crossings are cast into (plan/mep.py's WALL_SLEEVES).
     FoundationWall(uid="CBW116AAAA", tag="W-B-STR", start_node="N-B-N2",
-                   end_node="N-B-BA-W", assembly="CATLIN_CONC_12_INT",
+                   end_node="N-B-BA-W", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     FoundationWall(uid="CBW122AAAA", tag="W-B-STR2", start_node="N-B-BA-W",
-                   end_node="N-B-STR", assembly="CATLIN_CONC_12_INT",
+                   end_node="N-B-STR", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     # Sauna partitions — SAUNA_2X4 carries the hot-side liner (T&G over furring over
     # foil-faced polyiso) as part of the wall type, so the vapour control layer is a

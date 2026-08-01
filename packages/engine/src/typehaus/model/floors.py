@@ -130,6 +130,10 @@ class FloorHeat(Element):
     embed: Embed | None = None
     stat: Point2D | None = None
     sensors: tuple[Point2D, ...] = ()
+    # Connected electric input, when the mat is sized. Left None the output is unknown and the
+    # mat contributes nothing to its zone's heating capacity — never inferred from area, since
+    # a guessed W/ft2 would move a sizing verdict on an assumption the author never made.
+    watts: float | None = None
 
 
 class FinishZone(HausModel):

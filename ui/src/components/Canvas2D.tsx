@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
+import { locateUid } from "../state/locate";
 import type { PreviewGeometry } from "../engine/EngineClient";
 import type { Vec2, Wall } from "../model/types";
 import { canvasObjectTrade } from "../model/visibility";
@@ -205,6 +206,37 @@ export function Canvas2D() {
       dx: nb[0] - b[0], dy: nb[1] - b[1],
     });
     if (ok) toast(`${w.tag} → ${fmt(newLenM)}`);
+  };
+
+  // --- gesture pre-emption (→ W7b) ------------------------------------------
+  // An edit that can't be written back already fails synchronously on commit, but only after
+  // the user has dragged the thing across the canvas. These two screens refuse it up front.
+
+  // Screen 1, free: the loader told us this element's authoring statement isn't in a
+  // `# haus: editable` file. `editable === null` means "no provenance captured" — unknown, not
+  // forbidden, so it falls through to the server rehearsal rather than blocking the gesture.
+  const refuseIfNotEditable = (uid: string): boolean => {
+    const located = locateUid(model, uid);
+    if (!located || located.editable !== false) return false;
+    toast(`${located.tag} is params-generated — edit ${located.source ?? "its source"} instead`,
+      "error");
+    return true;
+  };
+
+  // Note this screens the *selected* element, which for a node drag is the wall, not the node
+  // being moved — nodes carry no uid the model indexes. That is a heuristic (a wall and its
+  // nodes are authored together in practice), which is exactly why screen 2 below exists: the
+  // rehearsal routes the real op and is the authoritative answer.
+  //
+  // Screen 2, one round trip: ask the server to rehearse routing for the edit this gesture
+  // will eventually commit (a zero-delta move: same ops, no movement). Fired once at
+  // drag-start — can_route re-reads every editable file, far too heavy per pointermove.
+  const rehearseNodeDrag = async (tag: string) => {
+    if (!activeStorey) return;
+    const verdict = await previewMacro(
+      { macro: "move_nodes", storey: activeStorey, nodes: [tag], dx: 0, dy: 0 }, true);
+    // previewMacro toasts the server's reason; cancelling the in-flight drag is ours to do.
+    if (verdict === "refused") { setNodeDrag(null); setPreviewGeom(null); }
   };
 
   const commitNodeDrag = async (drag: NodeDrag) => {
@@ -445,7 +477,9 @@ export function Canvas2D() {
               project={project}
               onStart={() => {
                 const tag = nearestNodeTag(p);
-                if (tag) setNodeDrag({ tag, from: p, to: p });
+                if (!tag || refuseIfNotEditable(selection.uid!)) return;
+                setNodeDrag({ tag, from: p, to: p });
+                void rehearseNodeDrag(tag); // may cancel the drag a beat later
               }}
               onMove={(clientX, clientY) => setNodeDrag((d) => {
                 if (!d) return d;
@@ -457,7 +491,7 @@ export function Canvas2D() {
                   const dy = to[1] - d.from[1];
                   void previewMacro({
                     macro: "move_nodes", storey: activeStorey, nodes: [d.tag], dx, dy,
-                  }).then((geom) => { if (geom) setPreviewGeom(geom); });
+                  }).then((geom) => { if (geom && geom !== "refused") setPreviewGeom(geom); });
                 }
                 return { ...d, to };
               })}

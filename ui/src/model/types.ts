@@ -508,6 +508,11 @@ export interface HvacZoneRow {
   indoor_tags: string[];
   heating_load_btu_per_hour: number;
   heating_capacity_at_design_btuh: number | null;
+  // Resistance heat inside the zone's rooms (mats, electric fireplace) and the tags it came
+  // from. Already folded into heating_margin_btuh — shown separately so a margin that only
+  // clears with supplemental heat reads as exactly that.
+  supplemental_btuh: number;
+  supplemental_tags: string[];
   heating_margin_btuh: number | null;
   cooling_load_btu_per_hour: number;
   cooling_capacity_btuh: number | null;

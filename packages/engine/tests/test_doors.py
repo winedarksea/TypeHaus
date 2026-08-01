@@ -70,6 +70,7 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         "DT-INT-SWING24": (24.0, DoorOperation.SWING, False, False),
         "DT-INT-BIFOLD60": (60.0, DoorOperation.BIFOLD, False, False),
         "DT-INT-BIFOLD56": (56.0, DoorOperation.BIFOLD, False, False),
+        "DT-INT-FRENCH60": (60.0, DoorOperation.DOUBLE_SWING, False, True),
         "DT-EXT-OVERHEAD192": (192.0, DoorOperation.OVERHEAD, True, False),
     }
     assert set(types) == set(expected)
@@ -305,20 +306,23 @@ def test_catlin_interior_bifolds_emit_the_bifold_symbol(catlin_model):
     assert DOOR_BIFOLD in names
 
 
-def test_catlin_patio_slider_emits_the_sliding_symbol(catlin_model):
-    """The 5 ft patio slider (DT-EXT-SLIDE60) must not draw a swing arc into the room."""
-    sliders = [node for node in build_floorplan(catlin_model, "main").nodes
-               if isinstance(node, Symbol) and node.name == DOOR_SLIDING]
-    assert sliders
-    for slider in sliders:
-        geometry = door_symbol_geometry(slider)
-        assert not geometry.arcs
-        assert len(geometry.strokes) == 4
+def test_synthetic_slide_door_emits_the_sliding_symbol():
+    """No SLIDE-operation door is instantiated in the catlin model any more — the balcony
+    door D-M-BALC was retyped from slide to french, its intended replacement. The catalog
+    entry DT-EXT-SLIDE60 is orphaned (no opening references it) but is deliberately kept in
+    the catalog, so the SLIDE operation itself must still be exercised synthetically here
+    rather than dropped: a slider must not draw a swing arc into the room.
+    """
+    width_in = 60.0
+    assert symbol_name_for_operation(DoorOperation.SLIDE) == DOOR_SLIDING
+    geometry = door_symbol_geometry(_symbol(DOOR_SLIDING, width_in))
+    assert not geometry.arcs
+    assert len(geometry.strokes) == 4
 
 
 @pytest.mark.parametrize("storey", ["garage", "main"])
 def test_new_symbols_survive_both_writers(catlin_model, tmp_path, storey):
-    """Garage carries the sectional; main carries the slider, the bifolds and the alarms."""
+    """Garage carries the sectional; main carries the bifolds and the alarms."""
     scene = build_floorplan(catlin_model, storey)
     assert write_dxf(scene, tmp_path / f"{storey}.dxf").exists()
     assert write_raster(scene, tmp_path / f"{storey}.png").exists()

@@ -20,6 +20,8 @@ from typehaus.checks.registry import Preferences
 from typehaus.resolve.model import ResolvedModel
 
 _M_TO_FT = 3.280839895
+# Electric resistance heat converts at the physical constant — no efficiency term to apply.
+_W_TO_BTUH = 3.412141633
 _M_TO_IN = 39.37007874015748
 
 # The indoor halves of a split system: both pair back to a condenser and neither carries a
@@ -48,6 +50,7 @@ class HvacUnit:
     min_operating_temp_f: float | None
     ventilation_cfm: float | None
     sensible_recovery_effectiveness: float | None
+    supplemental_heat: bool
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -61,6 +64,7 @@ class HvacUnit:
             "min_operating_temp_f": self.min_operating_temp_f,
             "ventilation_cfm": self.ventilation_cfm,
             "sensible_recovery_effectiveness": self.sensible_recovery_effectiveness,
+            "supplemental_heat": self.supplemental_heat,
         }
 
 
@@ -78,13 +82,19 @@ class HvacZone:
     cooling_load_btu_per_hour: float
     cooling_capacity_btuh: float | None
     min_operating_temp_f: float | None
+    # Resistance heat inside this zone's rooms: mats and the electric fireplace. It carries no
+    # zone of its own, but at design temp it is heat the outdoor unit does not have to make,
+    # so it counts toward the margin.
+    supplemental_btuh: float
+    supplemental_tags: tuple[str, ...]
     unknown_inputs: tuple[str, ...]
 
     @property
     def heating_margin_btuh(self) -> float | None:
         if self.heating_capacity_at_design_btuh is None:
             return None
-        return self.heating_capacity_at_design_btuh - self.heating_load_btu_per_hour
+        return (self.heating_capacity_at_design_btuh + self.supplemental_btuh
+                - self.heating_load_btu_per_hour)
 
     @property
     def cooling_margin_btuh(self) -> float | None:
@@ -99,6 +109,8 @@ class HvacZone:
             "indoor_tags": list(self.indoor_tags),
             "heating_load_btu_per_hour": self.heating_load_btu_per_hour,
             "heating_capacity_at_design_btuh": self.heating_capacity_at_design_btuh,
+            "supplemental_btuh": self.supplemental_btuh,
+            "supplemental_tags": list(self.supplemental_tags),
             "heating_margin_btuh": self.heating_margin_btuh,
             "cooling_load_btu_per_hour": self.cooling_load_btu_per_hour,
             "cooling_capacity_btuh": self.cooling_capacity_btuh,
@@ -134,6 +146,7 @@ def hvac_units(model: ResolvedModel) -> list[HvacUnit]:
                 ventilation_cfm=getattr(product, "ventilation_cfm", None),
                 sensible_recovery_effectiveness=getattr(
                     product, "sensible_recovery_effectiveness", None),
+                supplemental_heat=bool(getattr(product, "supplemental_heat", False)),
             ))
     return sorted(units, key=lambda unit: unit.tag)
 
@@ -145,15 +158,75 @@ def equipment_schedule(model: ResolvedModel) -> list[dict[str, object]]:
 def _rated(unit: HvacUnit) -> bool:
     """Does this unit carry a capacity rating a zone can be sized against?
 
-    Radiant floor mats, the electric fireplace and the garage unit heater are supplemental
-    by design and carry no rating, so they never claim a zone. Indoor heads never do either,
-    even when their type states a nominal capacity: the outdoor unit is what has to make the
-    heat at the design temperature.
+    Supplemental resistance heat — the electric fireplace, radiant mats — never claims a zone
+    however it is rated: nothing sizes a house around a fireplace, and letting a rated one
+    open a zone of its own would double-count it against the zone it actually sits inside.
+    It still counts *toward* that zone through :func:`supplemental_heat_by_room`. The garage
+    unit heater carries no rating at all and the garage is unconditioned besides. Indoor heads
+    never claim a zone either, even when their type states a nominal capacity: the outdoor
+    unit is what has to make the heat at the design temperature.
     """
-    if unit.kind in _INDOOR_KINDS:
+    if unit.kind in _INDOOR_KINDS or unit.supplemental_heat:
         return False
     return (unit.heating_capacity_btuh is not None
             or unit.heating_capacity_at_design_btuh is not None)
+
+
+def supplemental_heat_by_room(model: ResolvedModel) -> dict[str, list[tuple[str, float]]]:
+    """Resistance heat that supplements a zone, gathered onto the room it heats.
+
+    Two authoring shapes feed this, and both are keyed by *room* so the sum partitions across
+    zones exactly as the rooms do — a room belongs to at most one zone, so nothing can be
+    counted twice however the zones are drawn:
+
+    * ``Equipment`` whose type is ``supplemental_heat`` and carries an at-design rating,
+      placed in a room (the electric fireplace);
+    * ``FloorHeat`` with authored ``watts`` — by ``room_ref`` when it names one, else by the
+      room whose clear face contains the resolved zone. That fallback is what lets a mat sit
+      free-standing inside a large room (Catlin's dining zone is 58 ft2 of a 642 ft2 living
+      room, deliberately without a ``room_ref``) without forcing an untrue whole-room claim.
+    """
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.model.floors import FloorHeat
+
+    out: dict[str, list[tuple[str, float]]] = {}
+
+    def add(room: str, tag: str, btuh: float) -> None:
+        out.setdefault(room, []).append((tag, btuh))
+
+    for unit in hvac_units(model):
+        if not unit.supplemental_heat or unit.room is None:
+            continue
+        rated = unit.heating_capacity_at_design_btuh
+        if rated is None:  # resistance heat has no derate, so 47 °F output stands in
+            rated = unit.heating_capacity_btuh
+        if rated is not None:
+            add(unit.room, unit.tag, rated)
+
+    # Resolved zones carry the geometry; the authored records carry `watts` and `room_ref`.
+    resolved = {item.tag: item for item in model.floor_heat}
+    rooms_by_storey: dict[str, list[object]] = {}
+    for room in model.rooms:
+        rooms_by_storey.setdefault(room.storey, []).append(room)
+
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            if not isinstance(element, FloorHeat) or element.watts is None:
+                continue
+            btuh = element.watts * _W_TO_BTUH
+            if element.room_ref:
+                add(element.room_ref, element.tag, btuh)
+                continue
+            zone = resolved.get(element.tag)
+            if zone is None or not zone.zone:
+                continue
+            centre = Polygon(zone.zone).representative_point()
+            host = next((room for room in rooms_by_storey.get(storey.tag, [])
+                         if Polygon(room.clear_face).contains(Point(centre))), None)
+            if host is not None:
+                add(host.tag, element.tag, btuh)
+    return out
 
 
 def heating_zones(
@@ -168,6 +241,7 @@ def heating_zones(
     from typehaus.energy import estimate_block_load
 
     units = hvac_units(model)
+    supplemental = supplemental_heat_by_room(model)
     heads_by_outdoor: dict[str, list[HvacUnit]] = {}
     for unit in units:
         if unit.kind in _INDOOR_KINDS and unit.outdoor_ref is not None:
@@ -183,6 +257,9 @@ def heating_zones(
         for head in heads:
             rooms |= set(head.zone_rooms)
         claimed |= rooms
+        # Rooms partition across zones, so summing per-room supplemental heat here can never
+        # credit the same mat or fireplace to two zones.
+        contributions = [entry for room in sorted(rooms) for entry in supplemental.get(room, ())]
         report = estimate_block_load(model, preferences, rooms=frozenset(rooms)) \
             if rooms else None
         zones.append(HvacZone(
@@ -197,6 +274,8 @@ def heating_zones(
                 report.cooling_load_btu_per_hour if report else 0.0),
             cooling_capacity_btuh=unit.cooling_capacity_btuh,
             min_operating_temp_f=unit.min_operating_temp_f,
+            supplemental_btuh=sum(btuh for _tag, btuh in contributions),
+            supplemental_tags=tuple(tag for tag, _btuh in contributions),
             unknown_inputs=tuple(report.unknown_inputs) if report else
             (f"{unit.tag} zone_rooms (no rooms authored)",),
         ))

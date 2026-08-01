@@ -246,7 +246,11 @@ def authored_connector_rows(model: ResolvedModel) -> list:
         groups[(element.kind.value, element.size)] += 1
         item = hardware_by_model(element.size)
         if item is not None and item.requires_role is not None:
-            carried[item.requires_role] += 1
+            # Keyed by (carrier role, requiring part) so the basis text can name what asked
+            # for the carrier. Two different parts riding the same clamp — a CanDuit ring and
+            # a ColorGard rail — must not collapse into one row reading "to mount a pipe
+            # clamp": the count would be right and the reason would be a lie.
+            carried[(item.requires_role, item.name)] += 1
 
     rows = []
     for (kind, size), count in sorted(groups.items()):
@@ -257,11 +261,11 @@ def authored_connector_rows(model: ResolvedModel) -> list:
 
     # Carriers required by a pipe clamp but not otherwise modeled: their own row, keyed by
     # the *carrier's* published model so it prices and orders as the same part number.
-    for role, count in sorted(carried.items()):
+    for (role, requiring), count in sorted(carried.items()):
         carrier = hardware_for_role(role)
         rows.append(hardware_row(
-            carrier, scope="pipe clamp mount", count=count, part_number=carrier.model,
-            basis=f"{count} required to mount a modeled pipe clamp"))
+            carrier, scope="carried-mount", count=count, part_number=carrier.model,
+            basis=f"{count} required to mount a modeled {requiring}"))
     return rows
 
 

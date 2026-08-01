@@ -197,11 +197,20 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
     def post_preview(body: dict[str, Any]) -> Any:
         """→ Phase 4: a live drag preview. Read-only reduced-resolve geometry for ``ops``
         against the current plan — no revision bump, no writeback, no checks. The client
-        polls this while the mouse is down and commits with the real PATCH /plan on mouseup."""
+        polls this while the mouse is down and commits with the real PATCH /plan on mouseup.
+
+        ``"rehearse": true`` additionally pre-checks writeback routing (422 when the ops could
+        never be written back). Clients send it on a gesture's *first* preview only — it
+        re-reads every editable file, so it is too heavy for per-move frames."""
         try:
             ops = [PatchOp.from_json(o) for o in body.get("ops", [])]
         except ValueError as exc:
             return JSONResponse({"error": str(exc)}, status_code=400)
+        if body.get("rehearse"):
+            try:
+                state.rehearse(ops)
+            except (WritebackError, ExternalEdit) as exc:
+                return JSONResponse({"error": str(exc)}, status_code=422)
         preview = state.preview(ops)
         if preview is None:
             return JSONResponse({"error": "ops cannot be previewed in memory"}, status_code=422)
@@ -212,7 +221,9 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
         """→ Phase 4: the macro-request form of ``/preview`` — builds the same ops
         ``/macro`` would (e.g. move_nodes' dx/dy → per-node PatchOps) but only previews them,
         so a client dragging a node can reuse the macro request shape it already sends on
-        mouseup instead of hand-building dialect PatchOps for a live overlay."""
+        mouseup instead of hand-building dialect PatchOps for a live overlay.
+
+        Honours the same ``"rehearse": true`` writeback pre-check as ``/preview``."""
         from typehaus.server.macros_api import build_macro_ops, MacroRequestError
 
         if state.model is None:
@@ -221,6 +232,11 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
             result = build_macro_ops(state.model.plan, body)
         except MacroRequestError as exc:
             return JSONResponse({"error": str(exc)}, status_code=400)
+        if body.get("rehearse"):
+            try:
+                state.rehearse(result.ops)
+            except (WritebackError, ExternalEdit) as exc:
+                return JSONResponse({"error": str(exc)}, status_code=422)
         preview = state.preview(result.ops)
         if preview is None:
             return JSONResponse({"error": "macro ops cannot be previewed in memory"},

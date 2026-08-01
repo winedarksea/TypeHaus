@@ -24,16 +24,53 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   exclusive by use, and the 9,000 VA credit lands the estimate near 183A without touching
   the meter. (`LM-EV` already caps the two EV circuits; that credit is in the 220.9A.)
 
-- **The HP2 zone stays 764 Btu/h short, and `mep.heating_capacity` stays failing**
-  (accepted 2026-07-31). Block load 30,764 Btu/h at design over the basement plus the
-  main-floor bedroom/bath/living side vs `EQ-T-GREE-MULTI-U30`'s 30,000 at design.
-  Accepted rather than fixed because both capacity figures are REPRESENTATIVE
-  PLACEHOLDER — the -764 is placeholder arithmetic, not an equipment verdict. Revisit at
-  equipment selection, when the real Gree datasheet 47F/design capacities go into
-  `plan/electrical.py`; the fail then resolves on real numbers whichever way they land.
-  The radiant mats, the fireplace and the garage heater stay excluded from the zone
-  total by design (`plan/circuits.py` calls them supplemental); if the radiant is in
-  fact carrying that last 764, it should stop being modeled as supplemental.
+- **HP2 passes on real Gree data once supplemental resistance heat is counted
+  (2026-08-01, workstreams W2 + W3).** `EQ-T-GREE-MULTI-U30` is the Gree
+  MUL30HP230V1R32AO: 30,000 Btu/h at 47F, 23,500 Btu/h at the -15F design temp
+  (interpolated between the datasheet's -13F/-22F chart points). Block load over the
+  basement plus the main-floor bedroom/bath/living side is 30,764 Btu/h at design, so the
+  condenser alone is short 7,264 Btu/h. W3 changed `mep.heating_capacity` to count the
+  resistance heat inside a zone's rooms, which is real heat at design temp: FH-M-BATH2
+  (500 W), FH-M-DINING (700 W) and EQ-M-FIREPLACE (1,500 W) total **9,195 Btu/h**, giving
+  32,695 Btu/h available against 30,764 — **margin +1,931 Btu/h, PASS**. Supplemental heat
+  is keyed by room and never opens a zone of its own, so it cannot be double-counted.
+
+- **HP1 stays short by ~1,100 Btu/h at the design temp, accepted by decision.**
+  `EQ-T-GREE-VIREO-GEN3` is the Gree VIR24HP230V1R32AO: 27,000 Btu/h at 47F (valid because
+  it feeds the EQ-T-GREE-SLIM24 ducted air handler, not a wall head), 13,500 Btu/h at -15F
+  design (interpolated, includes the ducted static-pressure derate). Block load over the
+  attic plus the second-storey bedroom/bath side is 16,338 Btu/h. The only supplemental
+  heat on that zone is FH-S-BATH1 (510 W = 1,740 Btu/h), so available capacity is
+  15,240 Btu/h — **margin -1,098 Btu/h, FAIL**. Accepted rather than fixed: it is a 6.7%
+  shortfall at the -15F design temperature only, the zone's own thermal mass and the
+  stack effect from the (passing, +1,931 Btu/h) floor below cover the gap in practice, and
+  the alternative is upsizing the condenser for a handful of hours a year. The levers if
+  it ever needs pulling, in order of cost: a resistance element in the EQ-S-HP1-AH air
+  handler (authored as another `supplemental_heat` type), a second radiant mat in
+  RM-S-SUITEBATH, or the next Vireo frame size. Revisit if the blower-door result comes in
+  worse than the 900 cfm50 the block load assumes.
+  - HP3 (Sapphire) is unaffected: real data gives it +6,765 Btu/h margin, comfortably
+    passing.
+
+- **The basement and sunken-garden foundation walls exceed the plain-concrete unbalanced-fill
+  limit, and stay failing until the engineer's schedule lands (2026-08-01, workstream W5).**
+  The new `structural.foundation_unbalanced_fill` reads IRC Table R404.1.2(1) at the MN
+  profile's presumptive GM soil class (45 psf/ft equivalent fluid), where a 12" *plain*
+  concrete wall is good for 7' of unbalanced backfill:
+  - 10 `CATLIN_BASEMENT_12` walls retain 9.0' — **FAIL**.
+  - 5 `SUNKEN_GARDEN_WALL` walls retain 9.8' — **FAIL**.
+  - `SUNKEN_GARDEN_ARCH_16` is 16" thick, past the table's 12" maximum — UNKNOWN, engineered
+    either way.
+  - The 6 `GARAGE_ICF_8` stem walls retain 3.5' against a 5' limit — PASS.
+  - `RETAINING_BLOCK_12` (2.5') passes; the interior basement cross walls now author
+    `unbalanced_fill=ft(0)` because they have soil on neither side, so they are not screened.
+
+  This is expected and is **not** being papered over with an invented rebar spec. A 9'
+  basement wall in Minnesota is a reinforced wall — it always was — and the model simply had
+  no field to say so until now. Resolution: author `FoundationWall.engineering_spec` with the
+  structural engineer's vertical reinforcement schedule when it arrives, which flips these to
+  PASS citing the spec. Until then the FAIL is the correct reading: the prescriptive path
+  does not cover these walls.
 
 ## Remaining Work
 

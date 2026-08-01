@@ -151,9 +151,19 @@ def test_pv_mounting_kits_are_billed(catlin_model):
     pv = [row for row in rows if row["part_number"] == "S-5-PVKIT"]
     assert len(pv) == 1
     assert pv[0]["count"] == 48  # 4 kits x 12 modules
-    # The plain S-5! clamps (vent riser + boxes) keep their own line.
-    plain = [row for row in rows if row["part_number"] == "S-5!"]
-    assert plain and plain[0]["count"] >= 5
+    # The plain S-5! clamps (vent riser + boxes) split across scopes: directly modeled
+    # connectors get their own row, and the clamps carried under a mounted pipe clamp
+    # (which reaches the roof but is not itself a separately modeled Connector) get
+    # another — see authored_connector_rows in takeoff/anchors.py. Gather every S-5! row
+    # regardless of scope and use `>=` throughout: an upcoming change adds more S-5! rows
+    # for snow guards, so this must not pin an exact count or index a single row.
+    s5_rows = [row for row in rows if row["part_number"] == "S-5!"]
+    assert s5_rows
+    modeled = sum(row["count"] for row in s5_rows if row["scope"] == "modeled connector")
+    carried = sum(row["count"] for row in s5_rows if row["scope"] == "carried-mount")
+    assert modeled >= 2
+    assert carried >= 11
+    assert sum(row["count"] for row in s5_rows) >= 13
 
 
 def test_model_json_serializes_solar(catlin_model):

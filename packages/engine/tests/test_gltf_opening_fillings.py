@@ -28,6 +28,7 @@ from typehaus.emit.gltf.openings import (
     _WINDOW_TRIM_PROUD_DEPTH_M,
     _add_opening_filling,
 )
+from typehaus.model.enums import DoorOperation
 from typehaus.resolve import resolve
 from typehaus.resolve.geometry_openings import opening_parts
 from typehaus.resolve.model import ResolvedLayer, ResolvedOpening, ResolvedWall
@@ -298,24 +299,61 @@ def test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion(catlin_m
             "the two leaves must sit symmetrically either side of the mullion")
 
 
-def test_closed_slider_and_bifold_products_ship_their_operation_specific_panels(catlin_model):
+def test_the_balcony_door_ships_the_french_door_solid_shape(catlin_model):
+    """D-M-BALC was retyped from a slider to a French pair (DT-EXT-FRENCH60) — a locked
+    design decision (the door stays a french door), not a bug — so it now ships the same
+    double-swing shape as any other French door: four frame pieces, a center mullion, and
+    two leaves (see ``test_a_double_swing_door_ships_two_leaves_split_by_a_center_mullion``
+    for the same math against the exterior French door).
+    """
     gltf, blob = emit_gltf_dict(catlin_model)
-    slider = next(op for op in catlin_model.openings if op.tag == "D-M-BALC")
+    balcony = next(op for op in catlin_model.openings if op.tag == "D-M-BALC")
+    wall = _host_wall(catlin_model, balcony)
+    solids = _solids_of_node(gltf, blob, _opening_node(gltf, balcony.uid))
+
+    available_height = min(balcony.height_m, wall.z1_m - wall.z0_m - balcony.sill_m)
+    frame_width = _frame_width_m(balcony, available_height)
+    clear_width = balcony.width_m - 2 * frame_width
+    mullion_width = min(frame_width, clear_width / _DOUBLE_SWING_MULLION_CLEAR_WIDTH_DIVISOR)
+    leaf_width = (clear_width - mullion_width) / 2
+
+    assert len(solids) == _FRAME_PIECE_COUNT + 3, "four frame pieces, a mullion and two leaves"
+    balcony_leaves = [solid for solid in solids
+                      if solid.has_thickness(_WINDOW_GLAZING_THICKNESS_M)]
+    assert len(balcony_leaves) == 2, "the balcony french door is two glazed leaves"
+    for leaf in balcony_leaves:
+        assert leaf.plan_dimensions_m[1] == pytest.approx(leaf_width, abs=_DIMENSION_TOLERANCE_M)
+    assert all(gltf["materials"][leaf.material_index]["alphaMode"] == "BLEND"
+               for leaf in balcony_leaves)
+
+
+def test_the_laundry_bifold_still_holds_at_bifold56(catlin_model):
+    """D-M-LAUN kept its bifold operation across the retype — only its catalog width family
+    changed (BIFOLD60 → BIFOLD56) — so its closed, four-leaf coplanar shape must still hold.
+    """
     bifold = next(op for op in catlin_model.openings if op.tag == "D-M-LAUN")
+    assert bifold.type_ref == "DT-INT-BIFOLD56"
+    door_type = next(dt for dt in catlin_model.plan.library.door_types
+                     if dt.tag == "DT-INT-BIFOLD56")
+    assert door_type.width.inches == pytest.approx(56.0)
 
-    slider_solids = _solids_of_node(gltf, blob, _opening_node(gltf, slider.uid))
-    slider_panes = [solid for solid in slider_solids
-                    if solid.has_thickness(_WINDOW_GLAZING_THICKNESS_M)]
-    assert len(slider_solids) == _FRAME_PIECE_COUNT + 4  # stile, track, two panes
-    assert len(slider_panes) == 2, "a closed slider is two glazed panels"
-    assert all(gltf["materials"][pane.material_index]["alphaMode"] == "BLEND"
-               for pane in slider_panes)
-
+    gltf, blob = emit_gltf_dict(catlin_model)
     bifold_solids = _solids_of_node(gltf, blob, _opening_node(gltf, bifold.uid))
     bifold_leaves = [solid for solid in bifold_solids
                      if solid.has_thickness(_DOOR_LEAF_THICKNESS_M)]
     assert len(bifold_solids) == _FRAME_PIECE_COUNT + 4
     assert len(bifold_leaves) == 4, "a closed bifold is four coplanar leaves"
+
+
+def test_a_synthetic_slider_ships_a_stile_track_and_two_panels():
+    """The slider-panel assertions used to ride on D-M-BALC, which is now a French door (see
+    above), so they move onto a synthetic opening: a closed slider still stays coplanar,
+    with two glazed panels meeting at a narrow stile over a low track.
+    """
+    parts = opening_parts(_synthetic_wall(), _synthetic_opening("door"),
+                          DoorOperation.SLIDE, is_glazed=True)
+    solids = [solid for part in parts for solid in part.solids]
+    assert len(solids) == _FRAME_PIECE_COUNT + 4  # frame, stile, track, two panes
 
 
 # --- rough openings and raked walls --------------------------------------------------------

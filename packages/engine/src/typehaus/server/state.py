@@ -267,6 +267,17 @@ class ProjectState:
         return EditResult(self._revision, result.minted_uids,
                           self._undo_depth, self._redo_depth, fast=False)
 
+    def rehearse(self, ops: list[PatchOp]) -> None:
+        """Ask *before* the gesture whether ``ops`` could ever be written back, raising the
+        same WritebackError/ExternalEdit :meth:`apply_edit` would raise at commit.
+
+        This is the pre-emption half of the editable-writeback contract: apply_edit already
+        fails synchronously (422) so an edit never silently snaps back, but by then the user
+        has dragged an element across the canvas for nothing. A client calls this once at
+        drag-*start* to refuse the gesture up front. It re-reads every editable file, so it is
+        far too heavy to call per move — hence "once per gesture", not per preview frame."""
+        self.coordinator.can_route(ops)
+
     # --- live drag preview (→ Phase 4) --------------------------------------
     def preview(self, ops: list[PatchOp]) -> dict[str, Any] | None:
         """A read-only, reduced-resolve preview of ``ops`` against the current plan: no

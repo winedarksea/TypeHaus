@@ -134,6 +134,10 @@ export const AWAIT_STABLE_VIEW = `
     stableFrames = current === previous ? stableFrames + 1 : 0;
     previous = current;
   }
+  // A timed-out wait must not silently hand back whatever frame happened to be current —
+  // that is exactly how a mid-animation frame used to flow into the blocking fingerprint.
+  // The caller is expected to retry once rather than treat this as fatal on the first miss.
+  if (stableFrames < 8) throw new Error(\`View never stabilized (AWAIT_STABLE_VIEW timed out): \${previous}\`);
   return previous;
 `;
 
@@ -149,12 +153,63 @@ export const WAIT_FOR_MODEL = `
   throw new Error("Model never loaded");
 `;
 
-/** Two animation frames + a settle beat: React commit, then three.js draws at least once. */
-export const SETTLE = `
-  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-  await new Promise((r) => setTimeout(r, 350));
-  return true;
+const SETTLE_BEAT_MS = 350;
+const SETTLE_DEADLINE_MS = 5000;
+
+/**
+ * The in-page probe a settle attempt compares. Deliberately NOT a pixel screenshot: an actual
+ * capture-compare-by-PNG-bytes was tried here first and it does not work in this app — a
+ * software (swiftshader) 3D render and CSS panel-open transitions mean *something* is
+ * legitimately still moving often enough that two full-page captures came back byte-identical
+ * only by luck, and one state (a panel mid-transition) never converged inside the deadline at
+ * all. What SETTLE actually needs to know is "did React commit and has nothing left mid-flight" —
+ * DOM size, any Web Animations API animation/transition still `running`, and the document's
+ * own box all answer that without needing pixels, and are exactly reproducible frame to frame.
+ */
+const SETTLE_PROBE = `
+  JSON.stringify({
+    html: document.body.innerHTML.length,
+    animating: Array.from(document.getAnimations()).some((a) => a.playState === "running"),
+    rect: (() => {
+      const r = document.documentElement.getBoundingClientRect();
+      return [Math.round(r.width), Math.round(r.height)];
+    })(),
+  })
 `;
+
+/**
+ * Two animation frames, then a capture-compare loop: repeatedly probe the page and wait for
+ * two consecutive probes to come back identical before calling it settled.
+ *
+ * The previous version raced a flat 350ms against React's commit + three.js's first draw — on
+ * a slow run that beat could elapse mid-animation and the harness would photograph a
+ * transitional frame without ever knowing it. Comparing actual probes means "settled" is
+ * verified rather than assumed; 350ms is kept as the beat between attempts, not as the whole
+ * budget. `session` is the CDP session (see lib/cdp.mjs).
+ */
+export async function settle(session) {
+  await session.send("Runtime.evaluate", {
+    expression: "new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))",
+    awaitPromise: true,
+  });
+  const deadline = Date.now() + SETTLE_DEADLINE_MS;
+  let previous = null;
+  while (Date.now() < deadline) {
+    const result = await session.send("Runtime.evaluate", {
+      expression: SETTLE_PROBE,
+      returnByValue: true,
+    });
+    if (result.exceptionDetails) {
+      const detail = result.exceptionDetails.exception?.description ?? result.exceptionDetails.text;
+      throw new Error(`SETTLE probe threw: ${detail}`);
+    }
+    const current = result.result.value;
+    if (previous !== null && previous === current) return;
+    previous = current;
+    await new Promise((r) => setTimeout(r, SETTLE_BEAT_MS));
+  }
+  throw new Error(`View never settled (SETTLE deadline exceeded): ${previous}`);
+}
 
 /** Poll a state's `settled` predicate until the DOM actually reflects the pose. */
 export function awaitSettled(predicate) {

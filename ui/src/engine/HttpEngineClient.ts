@@ -108,11 +108,11 @@ export class HttpEngineClient implements EngineClient {
     return (await res.json()) as MacroResult;
   }
 
-  async previewMacro(request: MacroRequest): Promise<PreviewGeometry> {
+  async previewMacro(request: MacroRequest, rehearse = false): Promise<PreviewGeometry> {
     const res = await fetch(this.url("/macro/preview"), {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(request),
+      body: JSON.stringify(rehearse ? { ...request, rehearse: true } : request),
     });
     if (!res.ok) throw new EngineError(await readError(res), res.status);
     return (await res.json()) as PreviewGeometry;

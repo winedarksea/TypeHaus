@@ -5,6 +5,8 @@
 from typehaus import (
     Alarm,
     AlarmKind,
+    Connector,
+    ConnectorKind,
     Door,
     Downspout,
     EaveGutter,
@@ -172,6 +174,49 @@ ROOFS = [
          eave_trim=_GARAGE_EAVE_TRIM),
 ]
 
+# Snow retention on the south slope. The garage roof sheds toward the breezeway, whose
+# polycarbonate canopy (GL-BW-ROOF, x 2'-6"..6'-6", top at 7'-5 3/8") sits 3.0' below this
+# eave and squarely in the discharge band — see structural.sliding_snow. A 4:12 standing-seam
+# slope is about the most willing shedding surface there is, and 4' x 8' multiwall
+# polycarbonate is about the least willing receiving one.
+#
+# S-5! ColorGard: a continuous 1"x1" aluminum crossbar carried on seam clamps, so the take-off
+# bills the clamps under it automatically (StructuralHardware.requires_role). The row runs
+# x 1'-4"..8'-0" — the canopy's width plus a full bay of margin at each end, because snow
+# releases at an angle and the canopy edge is not the edge of the problem. Row count and
+# spacing at Pg = 50 psf are the manufacturer's calculation, not this model's: the check
+# screens for retention being *authored*, not for it being sufficient.
+#
+# Placed at y = 40'-0", 4" up-slope of the eave. The eave is at y = 39'-8" — the wall line at
+# y = 41'-0" less the 1'-4" overhang — so 4" of run on the 4:12 plane lifts the bar 1 3/8"
+# above the 10'-5 5/8" eave, i.e. z = 10'-7". That is deliberately close to the eave: snow
+# retention holds the pack at the bottom of the slope, where the load it resists lives.
+# Written out rather than generated: the editable-plan dialect allows no comprehensions, and
+# six clamps at 1'-4" o.c. read fine as six lines.
+_SNOW_GUARD_Y = ft(40)
+_SNOW_GUARD_Z = ft(10, 7)
+_SNOW_GUARD_SIZE = "S-5! ColorGard"
+SNOW_GUARDS = [
+    Connector(uid="CGSG01AAAA", tag="CN-G-SNOW-1", kind=ConnectorKind.SNOW_GUARD,
+              position=pt(ft(1, 4), _SNOW_GUARD_Y), elevation=_SNOW_GUARD_Z,
+              size=_SNOW_GUARD_SIZE, connects=("RF-GARAGE",)),
+    Connector(uid="CGSG02AAAA", tag="CN-G-SNOW-2", kind=ConnectorKind.SNOW_GUARD,
+              position=pt(ft(2, 8), _SNOW_GUARD_Y), elevation=_SNOW_GUARD_Z,
+              size=_SNOW_GUARD_SIZE, connects=("RF-GARAGE",)),
+    Connector(uid="CGSG03AAAA", tag="CN-G-SNOW-3", kind=ConnectorKind.SNOW_GUARD,
+              position=pt(ft(4), _SNOW_GUARD_Y), elevation=_SNOW_GUARD_Z,
+              size=_SNOW_GUARD_SIZE, connects=("RF-GARAGE",)),
+    Connector(uid="CGSG04AAAA", tag="CN-G-SNOW-4", kind=ConnectorKind.SNOW_GUARD,
+              position=pt(ft(5, 4), _SNOW_GUARD_Y), elevation=_SNOW_GUARD_Z,
+              size=_SNOW_GUARD_SIZE, connects=("RF-GARAGE",)),
+    Connector(uid="CGSG05AAAA", tag="CN-G-SNOW-5", kind=ConnectorKind.SNOW_GUARD,
+              position=pt(ft(6, 8), _SNOW_GUARD_Y), elevation=_SNOW_GUARD_Z,
+              size=_SNOW_GUARD_SIZE, connects=("RF-GARAGE",)),
+    Connector(uid="CGSG06AAAA", tag="CN-G-SNOW-6", kind=ConnectorKind.SNOW_GUARD,
+              position=pt(ft(8), _SNOW_GUARD_Y), elevation=_SNOW_GUARD_Z,
+              size=_SNOW_GUARD_SIZE, connects=("RF-GARAGE",)),
+]
+
 ALARMS = [
     # A garage gets a *heat* detector, not a smoke alarm: exhaust, dust and a space that runs
     # to outdoor temperature would nuisance-trip a smoke head, which is why R315 asks for CO
@@ -186,4 +231,5 @@ ALARMS = [
           circuit="CKT-LT-BACKUP"),
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS, _GARAGE_LEADER, *ALARMS]
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS, _GARAGE_LEADER,
+            *SNOW_GUARDS, *ALARMS]

@@ -5,7 +5,7 @@
 // global WebSocket (>= 22) covers the whole protocol surface we need.
 
 import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -67,7 +67,32 @@ async function waitForDevToolsEndpoint(port, timeoutMs = 20_000) {
  * below, every run now sees exactly what the server is serving.
  */
 export async function launchChromium({ port = 9222, userDataDir = null } = {}) {
+  // Only a dir *we* mkdtemp'd is ours to delete. A caller-supplied --user-data-dir is theirs —
+  // removing it out from under them would be a much worse bug than the leak this fixes.
+  const ownsProfileDir = userDataDir == null;
   const profileDir = userDataDir ?? mkdtempSync(join(tmpdir(), "haus-shots-"));
+
+  let cleanedUp = false;
+  const cleanupProfileDir = () => {
+    if (!ownsProfileDir || cleanedUp) return;
+    cleanedUp = true;
+    rmSync(profileDir, { recursive: true, force: true });
+  };
+  // Armed here, *before* the launch can fail. A Chromium that never comes up throws out of
+  // waitForDevToolsEndpoint below, and arming after that await is how the small 4-entry
+  // profile dirs leaked. "exit" alone is not enough either: it does not fire for SIGINT or
+  // SIGTERM, so a Ctrl-C mid-run leaked a full profile. Handlers must be synchronous, which
+  // is exactly what rmSync gives us; the signal handlers re-raise so the exit code is honest.
+  if (ownsProfileDir) {
+    process.on("exit", cleanupProfileDir);
+    for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
+      process.on(signal, () => {
+        cleanupProfileDir();
+        process.exit(signal === "SIGINT" ? 130 : 143);
+      });
+    }
+  }
+
   const binary = findChromiumBinary();
   const child = spawn(
     binary,
@@ -75,7 +100,25 @@ export async function launchChromium({ port = 9222, userDataDir = null } = {}) {
     { stdio: "ignore", detached: false },
   );
   const version = await waitForDevToolsEndpoint(port);
-  return { child, port, version, profileDir };
+
+  /** Kill the browser, wait for it to actually die, then remove its profile dir.
+   *
+   * The wait is not ceremony: Chromium keeps writing its profile as it shuts down, so
+   * removing the tree the instant after `kill()` races those final writes and they simply
+   * recreate the directory behind us — which is why a "cleaned up" run still left a
+   * 39-entry `haus-shots-*` dir. Bounded, because a browser that will not die must not hang
+   * the harness; the "exit" handler above is the backstop if we give up waiting.
+   */
+  const close = async () => {
+    if (child.exitCode === null && child.signalCode === null) {
+      const dead = new Promise((resolve) => child.once("exit", resolve));
+      child.kill();
+      await Promise.race([dead, new Promise((resolve) => setTimeout(resolve, 3000))]);
+    }
+    cleanupProfileDir();
+  };
+
+  return { child, port, version, profileDir, close };
 }
 
 /** Attach to the browser's first page target and return a request/response session. */

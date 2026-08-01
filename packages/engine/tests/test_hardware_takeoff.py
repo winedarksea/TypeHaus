@@ -314,10 +314,14 @@ def test_each_pipe_clamp_also_bills_the_seam_clamp_it_mounts_on(catlin_model) ->
     rings = sum(row["count"] for row in rows if row["role"] == "pipe_clamp")
     seam = [row for row in rows if row["role"] == "standing_seam_clamp"]
     modeled = next(row for row in seam if row["scope"] == "modeled connector")
-    mounts = next(row for row in seam if row["scope"] == "pipe clamp mount")
+    # One carried-mount row per *requiring* part: the CanDuit rings and the ColorGard snow
+    # rail both ride S-5! clamps, and merging them would give a right count with a wrong
+    # reason. Pick the rings' row by its basis text.
+    mounts = next(row for row in seam
+                  if row["scope"] == "carried-mount" and "CanDuit" in row["basis"])
     assert modeled["part_number"] == mounts["part_number"] == "S-5!"
     assert mounts["count"] == rings
-    assert "required to mount a modeled pipe clamp" in mounts["basis"]
+    assert "required to mount a modeled S-5! CanDuit pipe clamp" in mounts["basis"]
 
 
 def test_every_hardware_row_is_a_purchasable_catalogued_line(catlin_model) -> None:

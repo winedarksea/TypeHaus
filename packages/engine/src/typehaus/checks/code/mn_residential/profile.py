@@ -37,6 +37,11 @@ MN_2024 = JurisdictionProfile(
     # IRC Table R401.4.1 presumptive value for sandy/silty clay, the conservative default
     # where no soils report exists. A real geotechnical report supersedes it.
     soil_bearing_psf=1500.0,
+    # Twin Cities glacial till backfill reads as GM/ML (silty gravel to inorganic silt) on
+    # the Hennepin County soil survey — IRC Table R405.1's 45 psf/ft equivalent-fluid group,
+    # the middle of the three columns. Like soil_bearing_psf above this is the presumptive
+    # value where no soils report exists, and a real geotechnical report supersedes it.
+    soil_class="GM",
     climate=MN_ZONE_6,
     permit_items=(
         PermitItemSpec("Ceiling height / habitable attic", ("code.R305_ceiling_height",),

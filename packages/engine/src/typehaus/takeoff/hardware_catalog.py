@@ -39,6 +39,10 @@ ROLE_PIPE_CLAMP = "pipe_clamp"
 ROLE_BEAM_HOLD_DOWN = "beam_hold_down"
 # The gasketed stainless screw that holds a multiwall glazing sheet down to its framing.
 ROLE_GLAZING_PANEL_FASTENER = "glazing_panel_fastener"
+# Snow retention on a standing-seam slope: the rail/fence assembly that holds a snow pack on
+# the roof instead of letting it release onto whatever is below. Like the CanDuit ring it
+# does not reach the panel itself — it mounts on seam clamps (``requires_role``).
+ROLE_SNOW_RETENTION = "snow_retention"
 
 
 @dataclass(frozen=True)

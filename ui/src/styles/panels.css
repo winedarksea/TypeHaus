@@ -400,3 +400,15 @@
 
 /* The room/area id line sits under its human name and is what a plan edit references. */
 .space-label-id { letter-spacing: 0.04em; }
+
+/* Filter chip shown when another surface opened the issues drawer narrowed to one severity
+   (→ ConflictBanner's LoadErrorBanner). Always paired with a "Show all" escape. */
+.issues-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) 12px;
+  border-bottom: 1px solid var(--rule, rgba(127, 127, 127, 0.25));
+  font-size: 0.85em;
+}

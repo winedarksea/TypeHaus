@@ -195,3 +195,24 @@
     margin-top: 0;
   }
 }
+
+/* Params-generated selection: the inspector's controls are disabled behind one fieldset
+   (→ Inspector.tsx), because the element's authoring statement lives outside a
+   `# haus: editable` file and every edit here would 422 on commit. The fieldset is purely a
+   disabling mechanism — strip its default chrome so the panel looks unchanged apart from
+   the notice and the dimming. */
+.inspector-readonly {
+  margin: 0 0 var(--space-2);
+  padding: var(--space-2);
+  border-left: 3px solid var(--warn, #b8860b);
+  background: var(--surface-sunken, rgba(127, 127, 127, 0.08));
+  font-size: 0.85em;
+  line-height: 1.4;
+}
+.inspector-readonly-fields {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0; /* fieldset defaults to min-content, which breaks the kv grid */
+  opacity: 0.65;
+}

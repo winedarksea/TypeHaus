@@ -484,6 +484,8 @@ FLOOR_HEAT = [
                     pt(ft(7, 11), ft(31, 3)), pt(ft(3, 3), ft(31, 3)),
                     pt(ft(3, 3), ft(28, 6)), pt(ft(0, 5), ft(28, 6))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
+              # 42.4 ft2 at the 12 W/ft2 of plan/circuits.py -> 509 W, carried at 510.
+              watts=510,
               stat=pt(ft(1, 6), ft(32))),
 ]
 
@@ -599,14 +601,19 @@ FLOOR_OPENINGS = [
 #   attic floor  FS-ATTIC, 18' tributary (half of each 18' I-joist span), 40 psf LL +
 #                15 psf DL habitable                                        ~ 990 plf
 #   roof         RB-HOUSE bears continuously on W-A-C1/C1B/C2 and takes half of each
-#                18' rafter run either side, 18' tributary at 30 psf snow + 15 psf DL
-#                                                                           ~ 810 plf
+#                18' rafter run either side, 18' tributary at the site's flat-roof snow
+#                load Pf = 35 psf (0.7 x the 50 psf Pg in plan/site.py, at
+#                Ce = Ct = Is = 1.0) + 15 psf DL
+#                                                                           ~ 900 plf
 #   walls        W-A-C2 above plus this storey's own plate                  ~  100 plf
-#                                                                    total ~ 1,900 plf
-# Over an 8'-6" clear span that is M = wL^2/8 = 17.2 ft-k and V = 8.1 k. Three plies of
+#                                                                    total ~ 1,990 plf
+# (The roof line read 810 plf at 30 psf until 2026-08-01 — a snow load this house does not
+# have. Correcting it to Pf moves the beam, not the answer.)
+# Over an 8'-6" clear span that is M = wL^2/8 = 18.0 ft-k and V = 8.5 k. Three plies of
 # 1.75x11.875 LVL give Sx = 123 in^3 (26.7 ft-k at Fb = 2,600 psi) and 62 in^2 of shear
-# area (11.8 k), and deflect 0.15" against the L/360 = 0.28" limit at E = 2.0e6. Same
-# section and same ply count as RB-HOUSE, which keeps one LVL depth on the job.
+# area (11.8 k), and deflect 0.16" against the L/360 = 0.28" limit at E = 2.0e6 — still
+# comfortably within capacity on all three. Same section and same ply count as RB-HOUSE,
+# which keeps one LVL depth on the job.
 #
 # It bears on the ends of the wall segments it replaced — W-S-C2C south, W-S-C4B north —
 # each of which needs a jack pack under it, and both stack onto the main-storey centre

@@ -140,6 +140,11 @@ class EquipmentType(FurnitureType):
     # Lowest outdoor temperature the unit is rated to operate at (cold-climate heat pumps).
     # Compared against the site heating design temperature by the HVAC schedule.
     min_operating_temp_f: float | None = None
+    # True for resistance heat that *supplements* a zone rather than carrying it: an electric
+    # fireplace, a radiant mat. It never claims a zone of its own however it is rated — but
+    # its output does count toward the zone that contains its room, because at design temp
+    # it is real heat the heat pump doesn't have to make.
+    supplemental_heat: bool = False
 
 
 class RegisterType(FurnitureType):

@@ -180,9 +180,13 @@ def roof_framing_notes(model: ResolvedModel, roof: ResolvedRoof) -> list[str]:
 
 # Flat-roof snow load p_f = 0.7 * Ce * Ct * Is * p_g (ASCE 7 eq. 7.3-1). The sheet states
 # the load case at the fully-exposed, heated, Risk Category II defaults — Ce = Ct = Is = 1.0
-# — which is what makes p_f a printable number rather than a design decision. Anything else
-# (drift, sliding snow off the taller house roof onto a lower one, unbalanced load) is the
-# engineer's, and the note says so alongside.
+# — which is what makes p_f a printable number rather than a design decision. Drift and
+# unbalanced load remain the engineer's, and the note says so alongside.
+#
+# Sliding snow is the one case that is no longer wholly unscreened: `structural.sliding_snow`
+# now reports whether a pitched roof discharges onto a lower roof or a glazed surface and
+# whether retention was authored for it. That is an *exposure* screen, not an impact load —
+# the sheet's disclaimer below still stands for the load itself.
 _SNOW_FLAT_ROOF_FACTOR = 0.7
 
 
@@ -193,7 +197,8 @@ def _snow_load_note(model: ResolvedModel) -> str | None:
         return None
     flat = _SNOW_FLAT_ROOF_FACTOR * ground
     return (f"GROUND SNOW LOAD Pg = {ground:.0f} PSF; FLAT-ROOF Pf = {flat:.0f} PSF AT "
-            f"Ce = Ct = Is = 1.0. DRIFT, SLIDING AND UNBALANCED CASES ARE NOT COMPUTED HERE.")
+            f"Ce = Ct = Is = 1.0. DRIFT, SLIDING AND UNBALANCED LOAD CASES ARE NOT "
+            f"COMPUTED HERE.")
 
 
 def roof_framing_findings(model: ResolvedModel, roof: ResolvedRoof) -> list[Finding]:

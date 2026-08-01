@@ -59,6 +59,10 @@ function ZoneCard({ zone, index, onZoom }: {
         <span>{btuh(zone.heating_load_btu_per_hour)}</span>
         <span className="k">At-design capacity</span>
         <span>{btuh(zone.heating_capacity_at_design_btuh)}</span>
+        {zone.supplemental_tags.length > 0 && <>
+          <span className="k">Supplemental heat</span>
+          <span>{btuh(zone.supplemental_btuh)} · {zone.supplemental_tags.join(", ")}</span>
+        </>}
         <span className="k">Heating margin</span>
         <span>{signedBtuh(zone.heating_margin_btuh)}</span>
         <span className="k">Sensible cooling load</span>

@@ -584,6 +584,8 @@ FLOOR_HEAT = [
                     pt(ft(3, 10), ft(21, 5)), pt(ft(3, 6), ft(21, 5)),
                     pt(ft(3, 6), ft(15, 6)), pt(ft(0, 5), ft(15, 6))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
+              # 41.5 ft2 at the 12 W/ft2 of plan/circuits.py -> 498 W, carried at 500.
+              watts=500,
               stat=pt(ft(2), ft(17, 6))),
     # Under the dining table. FURN-M-DINING covers x 22'-11"..30'-11", y 15'-7"..19'-1"; the
     # zone takes the table's exact width and runs y 13'-9"..21'-0" so it reaches under both
@@ -594,6 +596,8 @@ FLOOR_HEAT = [
               zone=(pt(ft(22, 11), ft(13, 9)), pt(ft(30, 11), ft(13, 9)),
                     pt(ft(30, 11), ft(21)), pt(ft(22, 11), ft(21))),
               system=RadiantSystem.ELECTRIC, spacing=inch(3), embed=in_slab(inch(0.5)),
+              # 58.0 ft2 at 12 W/ft2 -> 696 W, carried at 700.
+              watts=700,
               stat=pt(ft(26, 11), ft(17, 4))),
 ]
 

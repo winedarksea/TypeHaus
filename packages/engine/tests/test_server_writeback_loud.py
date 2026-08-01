@@ -66,3 +66,31 @@ def test_failed_async_writeback_fires_the_callback(starter_dir: Path, tmp_path: 
     state.apply_edit([PatchOp("update", "Wall", tag, {})], None)
     state._flush_writes()
     assert seen and "dialect lint" in seen[0]
+
+
+def test_rehearse_refuses_uneditable_target_without_mutating(uneditable_house: Path) -> None:
+    """The pre-emption half (→ W7b): a client can ask *before* the gesture.
+
+    `apply_edit` already fails synchronously, but only after the user has dragged the element
+    across the canvas. `rehearse` raises the same error with nothing applied — no revision
+    bump, no journal entry — so a drag can be refused at drag-start instead of at mouseup.
+    """
+    state = ProjectState.open(uneditable_house)
+    before = state._revision
+    op = PatchOp("update", "Equipment", "EQ-B-WH", {"x": "3'"})
+    with pytest.raises(WritebackError) as exc:
+        state.rehearse([op])
+    assert "EQ-B-WH" in str(exc.value)
+    assert state._revision == before
+
+
+def test_rehearse_passes_an_editable_target(starter_dir: Path, tmp_path: Path) -> None:
+    """Control: rehearsal must not refuse the ordinary case, and must stay side-effect free."""
+    dst = tmp_path / "starter"
+    shutil.copytree(starter_dir, dst)
+    state = ProjectState.open(dst)
+    assert state.plan is not None
+    before = state._revision
+    tag = state.model.walls[0].tag  # type: ignore[union-attr]
+    state.rehearse([PatchOp("update", "Wall", tag, {})])
+    assert state._revision == before

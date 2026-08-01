@@ -293,14 +293,21 @@ def test_catlin_margins_read_off_the_resolved_model(catlin_model) -> None:
     for zone in zones:
         finding = findings[zone.equipment_tag]
         capacity = zone.heating_capacity_at_design_btuh
-        assert capacity is not None  # authored (placeholder) rating is present
+        assert capacity is not None  # authored datasheet rating is present
         load = zone.heating_load_btu_per_hour
+        # Supplemental resistance heat in the zone's rooms counts toward the margin, and is
+        # named in the message so a margin that only clears because of it says so.
+        available = capacity + zone.supplemental_btuh
         # The message reports exactly the resolved load, capacity, and margin.
         assert f"block load {load:,.0f} Btu/h" in finding.message
         assert f"{capacity:,.0f} Btu/h at-design capacity" in finding.message
-        assert f"margin {capacity - load:+,.0f} Btu/h" in finding.message
+        assert f"margin {available - load:+,.0f} Btu/h" in finding.message
+        if zone.supplemental_tags:
+            assert f"{zone.supplemental_btuh:,.0f} Btu/h supplemental" in finding.message
+            for tag in zone.supplemental_tags:
+                assert tag in finding.message
         if finding.result is not Result.UNKNOWN:
-            expected = Result.PASS if capacity >= load else Result.FAIL
+            expected = Result.PASS if available >= load else Result.FAIL
             assert finding.result is expected
         else:
             assert "missing" in finding.message  # unknown_inputs are named, not hidden
@@ -322,3 +329,76 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
     # on 2026-07-30: REG-A-HP-WEST (a floor boot off DU-S-HP-SUITE) put it in System 1's
     # zone.
     assert set(unclaimed) == {"RM-A-DEN"}
+
+
+# --- supplemental resistance heat ------------------------------------------------------
+#
+# A radiant mat or an electric fireplace is real heat at the design temperature: excluding it
+# reports a shortfall the house does not have. But it is never a zone of its own — nothing is
+# sized around a fireplace — so it is credited to the zone containing its room and nowhere
+# else. These four tests pin both halves of that rule.
+
+
+def _supplemental(tag: str, type_ref: str, uid: str, room: str) -> Equipment:
+    return Equipment(uid=uid, tag=tag, kind=EquipmentKind.SPACE_HEATER,
+                     position=pt(ft(10), ft(7)), footprint=(inch(30), inch(12)),
+                     type_ref=type_ref, room=room)
+
+
+def _undersized_plus_supplemental(capacity: float, supplemental: float) -> CheckContext:
+    return _context(_plan(
+        (_heater("EQ-T-HP", "Heat pump", heating_capacity_at_design_btuh=capacity),
+         _heater("EQ-T-FP", "Electric fireplace",
+                 heating_capacity_btuh=supplemental,
+                 heating_capacity_at_design_btuh=supplemental,
+                 supplemental_heat=True)),
+        (_outdoor("EQ-HP", "EQ-T-HP", "EQ00000h20", _BOTH_ROOMS),
+         _supplemental("EQ-FP", "EQ-T-FP", "EQ00000h21", _LOWER_ROOM))))
+
+
+def _load(ctx: CheckContext) -> float:
+    return estimate_block_load(ctx.model, ctx.preferences).heating_load_btu_per_hour
+
+
+def test_supplemental_heat_joins_the_zone_containing_its_room() -> None:
+    """Capacity alone is short; capacity + the fireplace clears the load."""
+    probe = _undersized_plus_supplemental(1000.0, 0.0)
+    load = _load(probe)
+    ctx = _undersized_plus_supplemental(load - 2000.0, 5000.0)
+    findings = heating_capacity(ctx)
+    assert [f.result for f in findings] == [Result.PASS]
+    assert "5,000 Btu/h supplemental (EQ-FP)" in findings[0].message
+
+
+def test_supplemental_heat_never_opens_a_zone_of_its_own() -> None:
+    """It is rated, so a naive `_rated()` would give it a zone — and double-count it."""
+    ctx = _undersized_plus_supplemental(90000.0, 5000.0)
+    findings = heating_capacity(ctx)
+    assert [f.element_tags[0] for f in findings] == ["EQ-HP"]
+    assert "EQ-FP zone" not in findings[0].message
+
+
+def test_supplemental_heat_in_an_unclaimed_room_is_not_counted() -> None:
+    """The fireplace heats the *upper* room, which the heat pump's zone does not include, so
+    it must not pad the lower zone's margin — and the upper room stays honestly unclaimed."""
+    ctx = _context(_plan(
+        (_heater("EQ-T-HP", "Heat pump", heating_capacity_at_design_btuh=90000),
+         _heater("EQ-T-FP", "Electric fireplace", heating_capacity_at_design_btuh=5000,
+                 supplemental_heat=True)),
+        (_outdoor("EQ-HP", "EQ-T-HP", "EQ00000h22", (_LOWER_ROOM,)),
+         _supplemental("EQ-FP", "EQ-T-FP", "EQ00000h23", _UPPER_ROOM))))
+    findings = heating_capacity(ctx)
+    zone = next(f for f in findings if f.element_tags[0] == "EQ-HP")
+    assert "supplemental" not in zone.message
+    assert any("in no equipment zone_rooms" in f.message and _UPPER_ROOM in f.message
+               for f in findings)
+
+
+def test_a_zone_without_supplemental_heat_says_nothing_about_it() -> None:
+    """No supplemental heat authored → the message stays the plain capacity-vs-load line."""
+    ctx = _context(_plan(
+        (_heater("EQ-T-HP", "Heat pump", heating_capacity_at_design_btuh=90000),),
+        (_outdoor("EQ-HP", "EQ-T-HP", "EQ00000h24", _BOTH_ROOMS),)))
+    findings = heating_capacity(ctx)
+    assert [f.result for f in findings] == [Result.PASS]
+    assert "supplemental" not in findings[0].message

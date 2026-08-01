@@ -175,12 +175,14 @@ EQUIPMENT_TYPES = (
                                      position=(ft(0), ft(0), inch(24))))),
     # --- The three Gree heat-pump systems (plans/TODO.md §HVAC) ----------------------
     #
-    # EVERY CAPACITY BELOW IS A REPRESENTATIVE FIGURE FOR ITS PRODUCT CLASS, NOT A
-    # DATASHEET READING. Each carries `# TODO verify datasheet` and its `source` says so.
-    # The at-design column is the *authored derate* at the site's -15 F heating design
-    # temperature (plan/site.py): the model does no performance-curve interpolation, so a
-    # wrong number here is a wrong number in mep.heating_capacity — check them before
-    # anything is ordered.
+    # The three outdoor units below carry real Gree datasheet capacities (model numbers
+    # in each `source`), not placeholders. `heating_capacity_at_design_btuh` is a linear
+    # interpolation between the manufacturer's published chart points bracketing the
+    # site's -15 F heating design temperature (plan/site.py) — the model does no
+    # performance-curve interpolation of its own, so this field is the authored derate
+    # that mep.heating_capacity sizes each zone against. The indoor heads below the
+    # outdoor units keep `# TODO verify datasheet` on purpose: they carry no heating
+    # rating by design (see the per-block comments), so there is nothing to verify yet.
     #
     # System 1 — Gree Slim concealed ducted indoor unit in RM-S-STUDY2, feeding the
     # dropped hallway chase north to the bedrooms and the two attic branches; Vireo GEN3
@@ -201,11 +203,11 @@ EQUIPMENT_TYPES = (
                   name="Gree Vireo GEN3 outdoor unit, 24k",
                   footprint=(inch(38), inch(16)), height=inch(32),
                   plan_symbol="heat-pump-outdoor",
-                  heating_capacity_btuh=27000,  # TODO verify datasheet
-                  heating_capacity_at_design_btuh=16500,  # TODO verify datasheet
-                  cooling_capacity_btuh=24000,  # TODO verify datasheet
-                  min_operating_temp_f=-4.0,  # TODO verify datasheet
-                  source="REPRESENTATIVE PLACEHOLDER — 2-ton cold-climate inverter class (~27,000 Btu/h at 47F, ~16,500 Btu/h at -15F, rated to -4F). The Vireo is NOT the -22F unit; the Multi Ultra below is. TODO verify datasheet.",
+                  heating_capacity_btuh=27000,
+                  heating_capacity_at_design_btuh=13500,
+                  cooling_capacity_btuh=22000,
+                  min_operating_temp_f=-22.0,
+                  source="Gree VIR24HP230V1R32AO (R32 refrigerant). Datasheet chart: 27,000 Btu/h at 47F (the 47F rating holds despite the smaller at-design number below because this outdoor unit is paired with the EQ-T-GREE-SLIM24 slim-duct air handler, not a wall head), ~16,100-16,500 Btu/h at 5F, ~14,200 Btu/h at -13F, ~12,000 Btu/h at -22F. -15F at-design (13,500 Btu/h) is linearly interpolated between the -13F and -22F chart points and additionally derated for slim-duct static-pressure loss. Cooling is the conservative end of the published 22,000-24,000 Btu/h range. min_operating_temp_f -22F per datasheet operating envelope.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # System 2 — Gree Multi Ultra, one 3-port outdoor unit driving three wall-mount heads
@@ -215,16 +217,11 @@ EQUIPMENT_TYPES = (
                   name="Gree Multi Ultra 3-port outdoor unit, 30k (-22F)",
                   footprint=(inch(37), inch(16)), height=inch(34),
                   plan_symbol="heat-pump-outdoor",
-                  # Upsized 2026-07-31 to the maximum-heating variant of the same box. The
-                  # envelope-wall fix made this zone's block load measurable for the first
-                  # time (30,764 Btu/h at design), and the old at-design figure was 8,764
-                  # short of it. 30,000 leaves ~800 Btu/h for a later review rather than
-                  # pretending the zone is covered.
-                  heating_capacity_btuh=36000,  # TODO verify datasheet
-                  heating_capacity_at_design_btuh=30000,  # TODO verify datasheet
-                  cooling_capacity_btuh=30000,  # TODO verify datasheet
-                  min_operating_temp_f=-22.0,  # TODO verify datasheet
-                  source="REPRESENTATIVE PLACEHOLDER — 2.5-ton 3-port multi class, max-heating variant (~36,000 Btu/h at 47F, ~30,000 Btu/h at -15F, rated to -22F). TODO verify datasheet.",
+                  heating_capacity_btuh=30000,
+                  heating_capacity_at_design_btuh=23500,
+                  cooling_capacity_btuh=28400,
+                  min_operating_temp_f=-22.0,
+                  source="Gree MUL30HP230V1R32AO. Datasheet chart: 30,000 Btu/h at 47F, 27,000 Btu/h at 5F, ~24,500 Btu/h at -13F, ~21,500 Btu/h at -22F. -15F at-design (23,500 Btu/h) is linearly interpolated between the -13F and -22F chart points. Cooling 28,400 Btu/h and min_operating_temp_f -22F per datasheet.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # The heads themselves: no heating rating, by design. A multi's three heads share one
@@ -254,19 +251,25 @@ EQUIPMENT_TYPES = (
                   name="Gree Sapphire R32 outdoor unit, 9.1k (-22F)",
                   footprint=(inch(31), inch(13)), height=inch(23),
                   plan_symbol="heat-pump-outdoor",
-                  heating_capacity_btuh=12000,  # TODO verify datasheet
-                  heating_capacity_at_design_btuh=8000,  # TODO verify datasheet
-                  cooling_capacity_btuh=9100,  # TODO verify datasheet
-                  min_operating_temp_f=-22.0,  # TODO verify datasheet
-                  source="REPRESENTATIVE PLACEHOLDER — Sapphire-class 9.1k outdoor unit (~12,000 Btu/h at 47F, ~8,000 Btu/h at -15F, rated to -22F). TODO verify datasheet.",
+                  heating_capacity_btuh=10600,
+                  heating_capacity_at_design_btuh=9300,
+                  cooling_capacity_btuh=9100,
+                  min_operating_temp_f=-22.0,
+                  source="Gree SAP09HP230V1R32AO. Datasheet chart: 10,600 Btu/h at 47F, ~11,500-13,000 Btu/h at 5F, ~10,000 Btu/h at -13F, ~8,200 Btu/h at -22F. -15F at-design (9,300 Btu/h) is linearly interpolated between the -13F and -22F chart points. Cooling 9,100 Btu/h and min_operating_temp_f -22F per datasheet.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # Wall-mount linear electric fireplace, 1,500 W max on 120V — 12.5A, which is why the
     # circuit is 20A and not 15A: 12.5 x 1.25 (continuous) = 15.6A needs the 16A a 20A
     # breaker allows. 48" x 7" cabinet, 21" tall, hard-wired (hence Equipment: the circuit
     # hook lives on the placeable, so there is no receptacle behind the glass).
+    # Rated as supplemental heat: 1,500 W x 3.412 = 5,118 Btu/h, carried at 5,100. Resistance
+    # heat has no cold-weather derate, so the at-design figure is the same number. It is
+    # `supplemental_heat` so it never opens an HVAC zone of its own — it counts toward the
+    # zone containing RM-M-LIVING (see takeoff/hvac.py supplemental_heat_by_room).
     EquipmentType(tag="EQ-T-FIREPLACE-EL", name="Electric fireplace, 1.5 kW linear wall-mount",
                   footprint=(inch(48), inch(7)), height=inch(21),
+                  heating_capacity_btuh=5100, heating_capacity_at_design_btuh=5100,
+                  supplemental_heat=True,
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
     # Garage infrared heater lamp — same 1,500 W / 120V / 20A arithmetic as the fireplace.

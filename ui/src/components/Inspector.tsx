@@ -8,6 +8,7 @@ import { StairDesigner } from "./StairDesigner";
 import { Provenance } from "./Provenance";
 import { FloorInspector, FootingBeddingInspector, MemberInspector, RoofInspector, SolarPanelInspector, SolidInspector } from "./DerivedInspectors";
 import { locateMember } from "../model/memberIdentity";
+import { locateUid } from "../state/locate";
 import { useIsCompact } from "../hooks/useBreakpoint";
 import { Sheet } from "./ui/Sheet";
 
@@ -94,6 +95,13 @@ export function Inspector() {
   // Strict: no selection → no panel.
   if (!model || !selection.uid) return null;
 
+  // A params-generated element has no writeback destination: every field edit and macro in
+  // this panel would 422 on commit. Say so and disable the controls, rather than offering
+  // affordances that can only fail. `editable === null` (no provenance captured) is unknown,
+  // not forbidden — those panels stay live and fail at commit as before.
+  const located = locateUid(model, selection.uid);
+  const readOnly = located?.editable === false;
+
   const body = (
     <SelectionInspector
       model={model}
@@ -102,6 +110,16 @@ export function Inspector() {
       onShowDetails={setDetailKey}
     />
   );
+  // One fieldset rather than a `disabled` prop threaded through a dozen sub-inspectors: it
+  // covers every control natively and can't drift as new fields are added.
+  const guarded = readOnly ? (
+    <>
+      <p className="inspector-readonly" role="note">
+        Params-generated — edit {located?.source ?? "its source"} to change this.
+      </p>
+      <fieldset className="inspector-readonly-fields" disabled>{body}</fieldset>
+    </>
+  ) : body;
 
   // On a phone the inspector is a sheet like the other panels. Closing it clears the
   // selection, because a selection you cannot see is the thing that makes the next tap
@@ -109,7 +127,7 @@ export function Inspector() {
   if (isCompact) {
     return (
       <>
-        <Sheet title="Selection" onClose={() => select(null, null)}>{body}</Sheet>
+        <Sheet title="Selection" onClose={() => select(null, null)}>{guarded}</Sheet>
         {detailKey !== null && <DetailViewer initialKey={detailKey} onClose={() => setDetailKey(null)} />}
       </>
     );
@@ -131,7 +149,7 @@ export function Inspector() {
         }}
         title="Drag to resize"
       />
-      {body}
+      {guarded}
       {detailKey !== null && <DetailViewer initialKey={detailKey} onClose={() => setDetailKey(null)} />}
     </aside>
   );

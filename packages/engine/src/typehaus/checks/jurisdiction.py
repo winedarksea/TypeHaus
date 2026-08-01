@@ -46,6 +46,12 @@ class JurisdictionProfile:
     # meaningless without it — required area is tributary load divided by this — so the
     # footing check reports UNKNOWN rather than a silent pass when a profile omits it.
     soil_bearing_psf: float | None = None
+    # Unified soil classification of the backfill (IRC Table R405.1 group names: "GW", "GP",
+    # "GM", "SW", "SC", "ML", "CL", ...). It selects the equivalent-fluid lateral pressure
+    # column — 30, 45 or 60 psf/ft — that IRC Table R404.1.2(1) is published against. Absent,
+    # the unbalanced-fill check reports UNKNOWN: the three columns give wall thicknesses two
+    # steps apart, so guessing one is choosing an answer, not defaulting.
+    soil_class: str | None = None
     # The permit checklist this jurisdiction gates on, in print order.
     permit_items: tuple[PermitItemSpec, ...] = ()
     # (check_id, reason) for registered CODE-tier checks this profile deliberately does not

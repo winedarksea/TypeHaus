@@ -20,7 +20,7 @@ import {
   attachToPage, captureScreenshot, evaluate, launchChromium, navigate, setViewport,
 } from "./lib/cdp.mjs";
 import {
-  AWAIT_STABLE_VIEW, POSE_PREAMBLE, SETTLE, WAIT_FOR_MODEL, awaitSettled, shotMatrix,
+  AWAIT_STABLE_VIEW, POSE_PREAMBLE, WAIT_FOR_MODEL, awaitSettled, settle, shotMatrix,
 } from "./lib/shots.mjs";
 import {
   PROBE_CLIPPED_CONTROLS, PROBE_DRAWING_FINGERPRINT, PROBE_OVERFLOW, PROBE_THREE_PANE_RECT,
@@ -44,7 +44,7 @@ const flag = (name, fallback) => {
   const index = args.indexOf(`--${name}`);
   return index === -1 ? fallback : (args[index + 1] ?? true);
 };
-const targetUrl = flag("url", "http://127.0.0.1:8123");
+const targetUrl = flag("url", "http://127.0.0.1:8765");
 const acceptBaselines = args.includes("--accept");
 
 /**
@@ -73,17 +73,31 @@ async function forceTheme(session, theme) {
   seededThemeScriptId = identifier;
 }
 
+/**
+ * Retry an async attempt once. AWAIT_STABLE_VIEW now throws on timeout instead of quietly
+ * handing back a mid-motion frame (see lib/shots.mjs) — a single transient miss (a resize
+ * still in flight, an animation frame that landed late) is common enough that failing the
+ * whole run on the first timeout would be noisy, so one retry is allowed before it counts.
+ */
+async function withOneRetry(attempt) {
+  try {
+    return await attempt();
+  } catch {
+    return await attempt();
+  }
+}
+
 async function poseAndProbe(session, shot) {
   const pose = `${POSE_PREAMBLE} ${shot.state.pose} return true;`;
   await evaluate(session, pose);
-  await evaluate(session, SETTLE);
+  await settle(session);
   // Re-assert after settling. An effect that runs on mount can land after the pose and
   // quietly undo part of it — that showed up as one state's drawing digest occasionally
   // matching another's. Every pose is idempotent, so applying it twice is free insurance.
   await evaluate(session, pose);
   if (shot.state.settled) await evaluate(session, awaitSettled(shot.state.settled));
-  await evaluate(session, SETTLE);
-  await evaluate(session, AWAIT_STABLE_VIEW);
+  await settle(session);
+  await withOneRetry(() => evaluate(session, AWAIT_STABLE_VIEW));
   // Re-check immediately before probing. Settling can complete and then be undone by a late
   // effect or a resize that had not reached the SVG yet; measuring a state that has since
   // stopped holding is how a shot ends up filed under the wrong name.
@@ -106,6 +120,9 @@ async function poseAndProbe(session, shot) {
       captureBeyondViewport: false,
     });
     probes.threePng = Buffer.from(data, "base64").length;
+    // So the byte-size floor can scale with how many pixels were actually clipped, rather
+    // than assuming every viewport clips the same laptop-sized pane (see lib/assertions.mjs).
+    probes.threeClipArea = threeRect.width * threeRect.height;
   }
   return probes;
 }
@@ -139,9 +156,17 @@ function report(results) {
   return failures.length;
 }
 
+// This comparison is deliberately advisory, never blocking (it does not add to `results` and
+// so cannot fail the run — see the header comment in main()). It is raw byte-equals against a
+// laptop/light-only committed set, so it is fragile in ways the blocking assertions are not:
+// host font rendering, subpixel AA and Chromium version drift can all flip a pixel with zero
+// meaningful change to the drawing. Treat a "changed" line here as "go look", not as a defect.
 async function compareBaselines() {
+  console.log("\nBaseline PNG comparison — ADVISORY ONLY (raw byte-equals; laptop/light "
+    + "reference set only; sensitive to host font rendering and Chromium version — not a "
+    + "blocking gate, review before trusting a diff here):");
   if (!existsSync(BASELINE_DIR)) {
-    console.log("\nNo committed baselines yet — run with --accept to create them.");
+    console.log("  No committed baselines yet — run with --accept to create them.");
     return 0;
   }
   const names = (await readdir(BASELINE_DIR)).filter((n) => n.endsWith(".png"));
@@ -155,8 +180,8 @@ async function compareBaselines() {
     if (!before.equals(after)) { console.log(`  ~ ${name} — differs from baseline`); changed++; }
   }
   console.log(changed === 0
-    ? `\nBaselines: all ${names.length} identical.`
-    : `\nBaselines: ${changed} of ${names.length} changed (review .shots/, then --accept).`);
+    ? `  All ${names.length} identical.`
+    : `  ${changed} of ${names.length} changed (review .shots/, then --accept).`);
   return changed;
 }
 
@@ -169,7 +194,7 @@ async function main() {
     : {};
   const capturedFingerprints = {};
 
-  const { child, port } = await launchChromium();
+  const { port, close } = await launchChromium();
   const session = await attachToPage(port);
   const results = [];
 
@@ -193,7 +218,9 @@ async function main() {
 
       const probes = await poseAndProbe(session, shot);
       await writeFile(join(SHOTS_DIR, `${shot.name}.png`), await captureScreenshot(session));
-      results.push(...judge(shot.name, probes, shot.viewport.mobile, baselineFingerprints));
+      results.push(...judge(
+        shot.name, probes, shot.viewport.mobile, baselineFingerprints, shot.viewport.deviceScaleFactor,
+      ));
       if (probes.fingerprintDigest) {
         capturedFingerprints[shot.name] = { digest: probes.fingerprintDigest, revision: probes.modelRevision };
       }
@@ -202,7 +229,7 @@ async function main() {
     console.log(`\n\n${shots.length} shots -> ${SHOTS_DIR}`);
   } finally {
     session.close();
-    child.kill();
+    await close(); // waits for Chromium to die before removing its profile dir
   }
 
   const failureCount = report(results);

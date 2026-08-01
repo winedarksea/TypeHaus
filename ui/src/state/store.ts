@@ -19,7 +19,7 @@ import { loadBundledHouse, pickHouseDirectory } from "../engine/openHouse";
 // Catlin house in the in-browser pyodide engine by default. `haus serve` builds leave this unset
 // and keep the HttpEngineClient default.
 const PWA_STANDALONE = import.meta.env.VITE_PWA_STANDALONE === "1";
-import type { Model } from "../model/types";
+import type { Model, Severity } from "../model/types";
 import { ALL_LAYER_VISIBILITY_GROUPS, type LayerVisibilityGroup } from "../model/visibility";
 import { locateUid } from "./locate";
 import type { PanelId } from "./panels";
@@ -47,6 +47,10 @@ export interface StoreState extends MutationActions {
   // One left-hand panel at a time. Replaced three independent booleans whose mutual
   // exclusion was only half-wired (Issues closed neither of the other two).
   activePanel: PanelId | null;
+  // Severity the issues drawer is narrowed to, or null for "everything". Set when a surface
+  // opens the drawer *about* something specific (the load-error banner opens it on "error"),
+  // so the user lands on the findings they were just told about instead of the whole list.
+  issuesSeverityFilter: Severity | null;
   commandPaletteOpen: boolean; // ⌘K fuzzy command surface (Phase 4)
   recentCommands: string[]; // command ids, most-recent first (Phase 4)
   activeWorkspace: Workspace; // DESIGN / ANALYZE / DOCUMENT (Phase 6)
@@ -88,6 +92,8 @@ export interface StoreState extends MutationActions {
   setChainDraw: (v: boolean) => void;
   // Passing the id that is already active closes it, so a rail item toggles.
   setActivePanel: (panel: PanelId | null) => void;
+  // Open (never toggle closed) the issues drawer, narrowed to `severity`.
+  openIssues: (severity: Severity | null) => void;
   setCommandPaletteOpen: (v: boolean) => void;
   pushRecentCommand: (id: string) => void;
   setActiveWorkspace: (w: Workspace) => void;
@@ -141,6 +147,7 @@ export const useStore = create<StoreState>((set, get) => ({
   drawAssembly: null,
   chainDraw: true,
   activePanel: null,
+  issuesSeverityFilter: null,
   commandPaletteOpen: false,
   recentCommands: [],
   activeWorkspace: "design",
@@ -267,7 +274,10 @@ export const useStore = create<StoreState>((set, get) => ({
   setDrawAssembly: (drawAssembly) => set({ drawAssembly }),
   setChainDraw: (chainDraw) => set({ chainDraw }),
   // Left side hosts one large panel at a time (reviewer rule).
-  setActivePanel: (panel) => set((s) => ({ activePanel: s.activePanel === panel ? null : panel })),
+  setActivePanel: (panel) => set((s) => ({ activePanel: s.activePanel === panel ? null : panel,
+    // A hand-driven open starts unfiltered; only openIssues narrows it.
+    issuesSeverityFilter: panel === "issues" ? null : s.issuesSeverityFilter })),
+  openIssues: (issuesSeverityFilter) => set({ activePanel: "issues", issuesSeverityFilter }),
   setCommandPaletteOpen: (commandPaletteOpen) => set({ commandPaletteOpen }),
   pushRecentCommand: (id) =>
     set((s) => ({ recentCommands: [id, ...s.recentCommands.filter((c) => c !== id)].slice(0, 6) })),

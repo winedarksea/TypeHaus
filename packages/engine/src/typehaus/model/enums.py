@@ -284,6 +284,7 @@ class ConnectorKind(Enum):
     POST_BASE = "post_base"                # standoff post base (e.g. Simpson ABU/CBSQ)
     HOLD_DOWN = "hold_down"                # beam-to-post uplift strap (e.g. Simpson KBS/LSTA)
     STANDING_SEAM_CLAMP = "standing_seam_clamp"  # S-5!-style seam clamp on the siding
+    SNOW_GUARD = "snow_guard"              # e.g. S-5! ColorGard snow-retention rail
 
 
 class RailingKind(Enum):

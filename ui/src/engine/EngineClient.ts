@@ -202,7 +202,11 @@ export interface EngineClient {
   // frequency. Rejects (OfflineUnsupported offline) if the macro's ops can't preview in
   // memory. Mirrors runMacro's request shape so a drag can reuse the same MacroRequest it
   // will later commit with runMacro on mouseup.
-  previewMacro(request: MacroRequest): Promise<PreviewGeometry>;
+  //
+  // ``rehearse`` additionally asks the server whether this edit could ever be written back,
+  // rejecting with a 422 EngineError when it can't. It re-reads every editable source file,
+  // so callers pass it on a gesture's *first* preview only — never per drag-move frame.
+  previewMacro(request: MacroRequest, rehearse?: boolean): Promise<PreviewGeometry>;
   build(): Promise<BuildResult>;
   undo(): Promise<HistoryResult>;
   redo(): Promise<HistoryResult>;
