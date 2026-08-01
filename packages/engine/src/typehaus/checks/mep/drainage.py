@@ -54,6 +54,21 @@ def _gutter_hosts(ctx: CheckContext) -> dict[str, object]:
     return hosts
 
 
+def _gutter_runs(ctx: CheckContext):
+    """``(tag, run)`` for every gutter in the plan, authored or derived.
+
+    A derived ``EaveGutter`` has no tag of its own — it is a spec inside ``Roof.eave_trim``
+    — so it reports under the roof that carries it, which is also what a leader must name.
+    """
+    for element in _elements(ctx):
+        if isinstance(element, Gutter):
+            yield element.tag, element
+        eave_trim = getattr(element, "eave_trim", None)
+        eave_gutter = getattr(eave_trim, "gutter", None) if eave_trim is not None else None
+        if eave_gutter is not None:
+            yield element.tag, eave_gutter
+
+
 @check(Tier.ADVISORY, "drainage.downspout_ref")
 def downspout_ref(ctx: CheckContext) -> list[Finding]:
     """Every gutter falls to a leader that exists, and every leader hangs off a real gutter."""
@@ -65,19 +80,19 @@ def downspout_ref(ctx: CheckContext) -> list[Finding]:
 
     for tag, run in _gutter_runs(ctx):
         ref = run.downspout_ref
-            if ref is None:
-                # The prose was the only claim, so the prose is what we hold it to: a note
-                # that names a downspout while the field naming one is empty is exactly the
-                # gutter that sloped to a leader that did not exist.
-                if "downspout" in (run.slope or "").lower():
-                    out.append(_advisory_fail(
-                        cid, f"gutter {tag} slopes to a downspout in its note "
-                             f"({run.slope!r}) but names none in downspout_ref", (tag,)))
-                continue
-            if ref not in leaders:
+        if ref is None:
+            # The prose was the only claim, so the prose is what it is held to: a note that
+            # names a downspout while the field naming one is empty is exactly the gutter
+            # that sloped to a leader nobody had authored.
+            if "downspout" in (run.slope or "").lower():
                 out.append(_advisory_fail(
-                    cid, f"gutter {tag} falls to downspout {ref!r}, which no element "
-                         f"declares", (tag,)))
+                    cid, f"gutter {tag} slopes to a downspout in its note ({run.slope!r}) "
+                         f"but names none in downspout_ref", (tag,)))
+            continue
+        if ref not in leaders:
+            out.append(_advisory_fail(
+                cid, f"gutter {tag} falls to downspout {ref!r}, which no element declares",
+                (tag,)))
 
     for leader in leaders.values():
         if leader.gutter_ref is not None and leader.gutter_ref not in hosts:

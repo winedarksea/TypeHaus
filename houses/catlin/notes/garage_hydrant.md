@@ -34,7 +34,7 @@ plug by December, and a drain to the sanitary system is the thing the code is ob
 
 So the floor is poured to fall toward the overhead door instead, and the wash water leaves
 the building the way it came in — across the apron and into the gravel pit outside the west
-wall (`DW-G-HYDRANT`). The pit is a `Drywell`: 3' of fabric-wrapped washed stone, 3' across,
+wall (`DRW-G-HYDRANT`). The pit is a `Drywell`: 3' of fabric-wrapped washed stone, 3' across,
 centred 3' outside the west wall line so the excavation clears the footing.
 
 It was modelled as a locally deepened `FootingBedding` for as long as that was the closest

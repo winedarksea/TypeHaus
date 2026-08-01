@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
-from typehaus.checks.mep import electrical, hvac, lighting, plumbing  # noqa: F401 - register
+from typehaus.checks.mep import (  # noqa: F401 - register
+    drainage, electrical, hvac, lighting, plumbing)
 
 __all__: list[str] = []

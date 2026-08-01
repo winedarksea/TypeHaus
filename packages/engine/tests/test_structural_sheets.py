@@ -116,7 +116,10 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
 def test_s100_calls_frost_depth_drainage_and_steps(catlin_model):
     notes = " | ".join(foundation_general_notes(catlin_model))
     assert '42" MIN BELOW FINISHED GRADE' in notes
-    assert "DRAIN TILE" in notes and "SUMP SM-B-RADON" in notes
+    # The note reads the tile's authored discharge. It used to say "TO SUMP SM-B-RADON"
+    # merely because a sump solid existed somewhere in the model, while every DrainTile on
+    # the project discharges to daylight — a sheet note that contradicted its own drawing.
+    assert "DRAIN TILE" in notes and "DRAINING TO DAYLIGHT" in notes
     assert "STEP FOOTING" in notes
     # step callouts are placed at real adjacencies, not at every elevation pair
     steps = footing_steps(catlin_model)

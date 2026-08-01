@@ -195,7 +195,7 @@ GARAGE_HYDRANT_SLEEVE = SleevePenetration(
 # foot: a soakaway dug against a footing undermines it.
 _DRYWELL_X_FT = -3.0
 GARAGE_HYDRANT_DRYWELL = Drywell(
-    uid="CGP603AAAA", tag="DW-G-HYDRANT",
+    uid="CGP603AAAA", tag="DRW-G-HYDRANT",
     position=pt(ft(_DRYWELL_X_FT), ft(HYDRANT_Y_FT)),
     diameter=ft(3), depth=ft(3), geotextile=True,
     inlet_refs=("FX-G-HYDRANT",),

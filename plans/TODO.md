@@ -165,7 +165,26 @@ Questions:
 - Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model)
 - Pantry
 - Add the plant room wall types
-- Add french drains (sump pump, down spouts, around footings) and possibly a drywell in the sunken garden
+- Is there a way we can "star" certain details to include in drawings? Right now we have drawings for most (all?) transitions, even some that don't really need details (framers don't need a reference for generic internal framing transitions). It would be nice to have the UI highlight important details and exclude from the primary export any we think we don't really need to show.
+- ~~Add french drains (sump pump, down spouts, around footings) and possibly a drywell (probably 6 feet or so deep) or two in the sunken garden (so we have more than the sump pump as options for getting water out from there)~~
+  Done 2026-07-31: a `drainage` trade/toggle; the perimeter drain tile grew real geometry
+  instead of being a bool; `FrenchDrain`, `Drywell` and `Sump.pump` are first-class; the two
+  leaders that existed only in slope notes (TR-G-LEADER-E, TR-SG-LEADER-SE) are authored; the
+  garage hydrant pit is a `Drywell` (DRW-G-HYDRANT) rather than a deepened footing bedding;
+  DRW-SG-MAIN is a 6'-deep soakaway under the middle of the sunken garden with its top at the
+  underside of the 42" bearing bed — the bed is a bearing course that happens to drain, *not*
+  a drywell, and the two are now separate things — taking the balcony leader and the garden's
+  footing tile, which cannot daylight 9' down; and the whole family exports as
+  `IfcPipeSegment` / `IfcDistributionChamberElement` / `IfcPump` under one STORMWATER
+  `IfcDistributionSystem`. (Drywell tags are `DRW-`: `DW-` is already the dowel prefix.)
+  Deliberately left for later:
+  - A second garden well, if percolation testing says one 5'x6' is not enough — the sizing
+    is nominal, not computed from a soil infiltration rate.
+  - Authored `FrenchDrain` runs beyond the derived bedding tile.
+  - Siteplan drainage overlay, and a 2D plan pass for the drainage trade (3D-only today).
+  - Flashing/fascia LF take-off: the drainage take-off bills gutter and leader by the foot,
+    the rest of the edge-trim family is still solids-only.
+  - RAINWATER / SEWAGE `IfcDistributionSystem`s for the authored plumbing pipe runs.
 
 ### Other visual ideas
 Dark base to the house

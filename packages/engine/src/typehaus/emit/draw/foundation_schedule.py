@@ -334,13 +334,26 @@ def footing_steps(model: ResolvedModel
 
 
 def _drainage_note(model: ResolvedModel) -> str:
+    """Where the perimeter tile discharges, read off the tile.
+
+    This used to print "DRAINING TO SUMP SM-B-RADON" because a sump *solid* existed
+    somewhere in the model — while every authored ``DrainTile`` on the project said
+    ``discharge="daylight"``. A sheet note is a statement about the building, so it reads
+    the field that makes the statement, and says so plainly when the tile does not.
+    """
     beddings = [bedding for bedding in model.footing_beddings if bedding.drain_tile]
     if not beddings:
         return ""
-    sumps = sorted(solid.tag for solid in model.solids if solid.category == "sump")
-    destination = f" TO SUMP {', '.join(sumps)}" if sumps else ""
+    discharges = sorted({bedding.drain_tile_spec.discharge.strip().upper()
+                         for bedding in beddings
+                         if bedding.drain_tile_spec is not None
+                         and bedding.drain_tile_spec.discharge})
+    if not discharges:
+        destination = "TO AN APPROVED OUTLET (NOT MODELLED)"
+    else:
+        destination = f"TO {', '.join(discharges)}"
     return (f"PERIMETER DRAIN TILE IN THE FOOTING BEDDING AT {len(beddings)} FOOTINGS,"
-            f" DRAINING{destination or ' TO AN APPROVED OUTLET (NOT MODELLED)'}.")
+            f" DRAINING {destination}.")
 
 
 def foundation_sheet_findings(model: ResolvedModel) -> list[Finding]:

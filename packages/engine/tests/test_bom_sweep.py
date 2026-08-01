@@ -140,16 +140,20 @@ def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):
     assert float(row["volume_cubic_yards"]) > 0
     assert float(row["geotextile_sqft"]) > 0
     assert float(row["drain_tile_ft"]) > 0
-    # Tile rows group on the product, not just on "there is tile": 4" sock-wrapped HDPE to
-    # daylight is a different order from bare 6" pipe to a sump, and a row that says only a
+    # Tile rows group on the product, not just on "there is tile": a row that says only a
     # footage cannot be priced or bought.
     tile_rows = [r for r in rows if r["drain_tile"]]
     assert tile_rows
     for tile_row in tile_rows:
         assert float(tile_row["drain_tile_diameter_in"]) == pytest.approx(4.0, abs=0.01)
-        assert tile_row["drain_tile_discharge"] == "daylight"
         assert tile_row["drain_tile_sock"] is True
         assert "HDPE" in str(tile_row["drain_tile_material"])
+    # And where a run discharges is part of the key, not a note: the house tile daylights,
+    # the sunken garden's cannot — its floor is 9' down — so it falls to DRW-SG-MAIN. Those
+    # are two different runs of the same pipe and the take-off has to keep them apart.
+    assert {r["drain_tile_discharge"] for r in tile_rows} == {"daylight", "DRW-SG-MAIN"}
+    garden = next(r for r in tile_rows if r["drain_tile_discharge"] == "DRW-SG-MAIN")
+    assert all(tag.startswith("FB-SG-") for tag in garden["tags"]), garden["tags"]
 
 
 def test_drainage_bills_the_whole_storm_run_by_the_foot(catlin_model, bom):

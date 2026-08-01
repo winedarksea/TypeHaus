@@ -41,6 +41,7 @@ from typehaus import (
     Dowel,
     DrainTile,
     Downspout,
+    Drywell,
     Fascia,
     Flashing,
     FloorSystem,
@@ -281,13 +282,41 @@ FOOTING_BEDDING = [
         host_ref=f.tag,
         undercut=inch(SPEC.aggregate_bedding_depth_in),
         cast_foam_in_aggregate=f.tag in _HOUSE_ADJACENT,
-        # Same 4" sock-wrapped tile to daylight as the house footings (params/foundations.py).
-        # These beddings carried the bare bool, which billed their perimeter as an unpriceable
-        # run of nothing in particular and left the garden footings out of the tile order.
-        drain_tile_spec=DrainTile(diameter=inch(4), sock=True, discharge="daylight"),
+        # Same 4" sock-wrapped tile as the house footings (params/foundations.py). These
+        # beddings carried the bare bool, which billed their perimeter as an unpriceable run
+        # of nothing in particular and left the garden footings out of the tile order.
+        #
+        # Unlike the house's, this tile cannot daylight: the garden floor is 9' down and
+        # there is no grade to run out to. It falls to the drywell below instead — which is
+        # the whole reason DRW-SG-MAIN exists.
+        drain_tile_spec=DrainTile(diameter=inch(4), sock=True, discharge="DRW-SG-MAIN"),
     )
     for i, f in enumerate(FOOTINGS, start=1)
 ]
+
+# The sunken garden's own soakaway, under the middle of the structure and *below* the
+# 42" bearing bed — not part of it. The aggregate under the footings is a bearing course
+# that happens to drain; this is a hole dug to take water and give it to the soil, and the
+# distinction matters because the garden has no other way out. Its floor sits 9' below
+# grade with no downhill side, so everything that lands in it — the balcony leader, the
+# perimeter tile around the footings, the slab itself — has nowhere to go but down.
+#
+# Top of stone at the underside of the bearing bed, so the two stack rather than intersect;
+# 6' of washed stone below that, per plans/TODO.md. Fabric-wrapped: an unwrapped well in
+# this clay silts its voids shut in a season and becomes a hole full of mud.
+#
+# Tagged DRW-, not DW-: DW- is this house's *dowel* prefix (DOWELS below), and the first
+# drywell authored as DW-SG-MAIN collided outright with the dowel uid beside it.
+_SG_DRYWELL_TOP = ft(-(SPEC.basement_depth_ft + 0.75)
+                     - SPEC.footing_thickness_in / 12.0
+                     - SPEC.aggregate_bedding_depth_in / 12.0)
+GARDEN_DRYWELL = Drywell(
+    uid="SGDR01AAAA", tag="DRW-SG-MAIN",
+    position=pt(ft(_cx), ft((_y_in_s + _y_in_n) / 2.0)),
+    diameter=ft(5), depth=ft(6), geotextile=True,
+    top_elevation=_SG_DRYWELL_TOP,
+    inlet_refs=("TR-SG-LEADER-SE", *(b.tag for b in FOOTING_BEDDING)),
+)
 
 # --- arches: one garden-level tier, two arches across the 16" front wall ----------
 # Three piers + two arches ("three columns and an arched beam"). Sill at the garden slab.
@@ -698,8 +727,8 @@ BALCONY_GUTTER = Gutter(
 # 3" round, not the roof's 4": this catches the balcony deck alone (~200 sq ft), a fraction
 # of the 648 sq ft each house eave sheds. It hangs just inboard of the deck's east edge, on
 # the trough centreline, and drops the full storey into the sunken garden, discharging a foot
-# above the garden slab. Where the garden then takes it is deliberately not modelled yet
-# (plans/TODO.md — the garden wants its own drywell).
+# above the garden slab — where DRW-SG-MAIN, 5' below that slab, is what finally takes it.
+# There is no other way out: the garden floor is 9' down with no downhill side.
 _SG_LEADER_INSET = 0.5   # ft inboard of the deck edge, so the drop clears the fascia return
 _SG_LEADER_BOTTOM = ft(-SPEC.basement_depth_ft) + ft(1)
 BALCONY_LEADER = Downspout(
@@ -725,7 +754,8 @@ BALCONY_REAR_FLASH = Flashing(
 # Per-storey exports (spliced into plan/manifest.py).
 # ============================================================================
 BASEMENT_ELEMENTS = [*NODES, *WALLS, *RAILING_WALLS, COLUMN, *FOOTINGS,
-                     *FOOTING_BEDDING, *ARCH_OPENINGS, GARDEN_SLAB, *DOWELS]
+                     *FOOTING_BEDDING, GARDEN_DRYWELL, *ARCH_OPENINGS, GARDEN_SLAB,
+                     *DOWELS]
 # Every remaining connector is porch hardware at the deck (post bases, hangers, the column
 # tie), so main takes them whole; the knee braces are the only second-storey hardware.
 MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, PORCH_JOISTS, *CONNECTORS]

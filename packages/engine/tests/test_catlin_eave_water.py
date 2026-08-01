@@ -175,11 +175,18 @@ def test_nothing_dams_the_eave_end_of_the_roofs_vent_channel(eave) -> None:
 
 def test_each_eave_drains_to_a_leader_that_reaches_grade(catlin_model, eave) -> None:
     """A gutter sloping to a downspout that does not exist is not a drainage system."""
-    gutters = [el for el in catlin_model.plan.all_elements()
-               if getattr(el, "tag", "").startswith("TR-RF-GUTTER-")]
+    # Every gutter in the house, not just this roof's two: the guard was scoped to the
+    # TR-RF- prefix while the balcony's and the garage's ran to leaders nobody had authored.
+    # A slope note is prose, so what is asserted now is the ref an element can be held to.
+    from typehaus.model.trim import Downspout, Gutter
+
+    leaders = {el.tag for el in catlin_model.plan.all_elements()
+               if isinstance(el, Downspout)}
+    gutters = [el for el in catlin_model.plan.all_elements() if isinstance(el, Gutter)]
     assert gutters
     for gutter in gutters:
-        assert "downspout" in gutter.slope
+        assert gutter.downspout_ref in leaders, \
+            f"{gutter.tag} falls to {gutter.downspout_ref!r}, which no element declares"
     leader = next(s for s in catlin_model.solids if s.tag == "TR-RF-LEADER-E")
     trough_floor = eave.solid("TR-RF-GUTTER-E-1-BOTTOM")
     assert eave._up(leader.z1_m) == pytest.approx(trough_floor[2]), \
