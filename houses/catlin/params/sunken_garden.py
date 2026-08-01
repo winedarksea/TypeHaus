@@ -39,6 +39,8 @@ from typehaus import (
     ConnectorKind,
     DeckLayer,
     Dowel,
+    DrainTile,
+    Downspout,
     Fascia,
     Flashing,
     FloorSystem,
@@ -279,6 +281,10 @@ FOOTING_BEDDING = [
         host_ref=f.tag,
         undercut=inch(SPEC.aggregate_bedding_depth_in),
         cast_foam_in_aggregate=f.tag in _HOUSE_ADJACENT,
+        # Same 4" sock-wrapped tile to daylight as the house footings (params/foundations.py).
+        # These beddings carried the bare bool, which billed their perimeter as an unpriceable
+        # run of nothing in particular and left the garden footings out of the tile order.
+        drain_tile_spec=DrainTile(diameter=inch(4), sock=True, discharge="daylight"),
     )
     for i, f in enumerate(FOOTINGS, start=1)
 ]
@@ -682,9 +688,28 @@ BALCONY_GUTTER = Gutter(
     uid="SGGT01AAAA", tag="TR-SG-GUTTER", kind=TrimKind.GUTTER, path=_FRONT_PATH,
     top_elevation=_deck_top - inch(_drip_depth_in), depth=inch(4), thickness=inch(5),
     material="aluminum", host_ref="TR-SG-FASCIA", slope="1/16 in/ft to SE downspout",
+    downspout_ref="TR-SG-LEADER-SE",
     # The run goes west→east, so its left-hand normal (resolve/geometry.py::normal) points
     # north (+y) — the porch/house side. The channel's back sheet rides the fascia there.
     back_side="left")
+# The leader TR-SG-GUTTER has always sloped to. It was named in prose only, so the balcony
+# drained to a downspout nobody had authored — the trough simply stopped at the east end.
+#
+# 3" round, not the roof's 4": this catches the balcony deck alone (~200 sq ft), a fraction
+# of the 648 sq ft each house eave sheds. It hangs just inboard of the deck's east edge, on
+# the trough centreline, and drops the full storey into the sunken garden, discharging a foot
+# above the garden slab. Where the garden then takes it is deliberately not modelled yet
+# (plans/TODO.md — the garden wants its own drywell).
+_SG_LEADER_INSET = 0.5   # ft inboard of the deck edge, so the drop clears the fascia return
+_SG_LEADER_BOTTOM = ft(-SPEC.basement_depth_ft) + ft(1)
+BALCONY_LEADER = Downspout(
+    uid="SGDS01AAAA", tag="TR-SG-LEADER-SE",
+    position=pt(ft(_deck_x_e - _SG_LEADER_INSET), ft(_y_ax_arch)),
+    top_elevation=_deck_top - inch(_drip_depth_in) - inch(4),  # the trough floor
+    bottom_elevation=_SG_LEADER_BOTTOM,
+    diameter=inch(3), material="aluminum", gutter_ref="TR-SG-GUTTER",
+)
+
 BALCONY_DRIP = Flashing(
     uid="SGFF01AAAA", tag="TR-SG-DRIP", kind=TrimKind.DRIP_FLASHING, path=_FRONT_PATH,
     top_elevation=_deck_top, depth=inch(_drip_depth_in), thickness=inch(3),
@@ -706,4 +731,4 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *RAILING_WALLS, COLUMN, *FOOTINGS,
 MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, PORCH_JOISTS, *CONNECTORS]
 SECOND_ELEMENTS = [*SECOND_NODES, *GIRT_NODES, *BALCONY_BEAMS, *BALCONY_GIRTS, *PILLARS, DECK_FLOOR,
                    BALCONY_JOISTS, *KNEE_BRACES, BALCONY_GUARD, BALCONY_FASCIA,
-                   BALCONY_GUTTER, BALCONY_DRIP, BALCONY_REAR_FLASH]
+                   BALCONY_GUTTER, BALCONY_LEADER, BALCONY_DRIP, BALCONY_REAR_FLASH]

@@ -140,6 +140,41 @@ def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):
     assert float(row["volume_cubic_yards"]) > 0
     assert float(row["geotextile_sqft"]) > 0
     assert float(row["drain_tile_ft"]) > 0
+    # Tile rows group on the product, not just on "there is tile": 4" sock-wrapped HDPE to
+    # daylight is a different order from bare 6" pipe to a sump, and a row that says only a
+    # footage cannot be priced or bought.
+    tile_rows = [r for r in rows if r["drain_tile"]]
+    assert tile_rows
+    for tile_row in tile_rows:
+        assert float(tile_row["drain_tile_diameter_in"]) == pytest.approx(4.0, abs=0.01)
+        assert tile_row["drain_tile_discharge"] == "daylight"
+        assert tile_row["drain_tile_sock"] is True
+        assert "HDPE" in str(tile_row["drain_tile_material"])
+
+
+def test_drainage_bills_the_whole_storm_run_by_the_foot(catlin_model, bom):
+    """Gutter and leader were billed only as solids — cubic feet of aluminium, which is not
+    how either is bought. Every authored run belongs on the order, and so does the channel a
+    roof derives along its own eave: an estimator buying gutter does not care which."""
+    from typehaus.model.trim import Downspout, Gutter
+
+    rows = bom["drainage"]
+    billed = {tag for row in rows for tag in row["tags"]}
+    authored = {element.tag for storey in catlin_model.plan.storeys
+                for element in catlin_model.plan.storey_elements(storey.tag)
+                if isinstance(element, (Gutter, Downspout))}
+    assert authored <= billed, sorted(authored - billed)
+    assert any(tag.startswith("RF-GARAGE:") for tag in billed), \
+        "the garage's derived eave gutter is aluminium somebody has to buy"
+
+    for row in rows:
+        assert float(row["length_ft"]) > 0 or float(row["aggregate_cubic_yards"]) > 0, row
+    leaders = [row for row in rows if row["category"] == "downspout"]
+    assert leaders
+    # A leader is billed by its drop; its plan run is a point.
+    assert all(float(row["length_ft"]) > 0 for row in leaders)
+    wells = [row for row in rows if row["category"] == "drywell"]
+    assert wells and all(float(row["aggregate_cubic_yards"]) > 0 for row in wells)
 
 
 # --- openings, envelope, stairs -----------------------------------------------------------
@@ -284,7 +319,7 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         "envelope_layers", "glazing_panels", "glazing_trim", "bug_screens", "openings",
         "floor_finishes", "stair_finish", "railings",
         # Mechanical & plumbing
-        "pipe_runs", "ducts", "sleeves", "floor_heat",
+        "pipe_runs", "ducts", "sleeves", "floor_heat", "drainage",
         # Electrical
         "electrical_devices", "panel_schedule", "service_load", "conduit", "conductors",
         "solar", "backup_components",

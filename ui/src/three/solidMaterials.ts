@@ -39,6 +39,12 @@ export const SOLID_CATEGORY_COLOR: Record<string, number> = {
   fascia: 0xebebe6, // PVC fascia
   gutter: 0xd9dbde, // metal gutter
   flashing: 0xbfc4cc, // metal flashing
+  // Stormwater below the gutter — the leader is the gutter's own aluminium, the buried three
+  // read as perforated tile and washed rock so a drainage view is not one grey.
+  downspout: 0xd9dbde, // leader, same aluminium as the gutter it drains
+  drain_tile: 0x292624, // corrugated HDPE tile — warmer than the ABS `pipe_drain` beside it
+  french_drain: 0x9e998f, // washed-rock trench
+  drywell: 0x857f78, // soakaway aggregate
   // A dropped soffit is painted gwb, like the ceiling it hangs under — not concrete, which
   // is what the fallback would have made the second-floor HVAC chase. Same triple the glTF
   // palette's "soffit" carries (0.88, 0.88, 0.85), so the viewer and the export agree.
@@ -75,8 +81,17 @@ export const SOLID_CATEGORY_TRADE: Record<string, Trade> = {
   bug_screen: "openings",
   // Roof edge trim.
   fascia: "roof",
-  gutter: "roof",
   flashing: "roof",
+  // Stormwater. A gutter hangs on the roof edge but *is* the head of a run that continues
+  // down the leader, through the perimeter tile and out to daylight, so the whole run rides
+  // one toggle instead of being split between roof and concrete. The last three have no
+  // instances yet — declared so the first one authored is routed, not poured into concrete.
+  gutter: "drainage",
+  downspout: "drainage",
+  sump: "drainage",
+  drain_tile: "drainage",
+  french_drain: "drainage",
+  drywell: "drainage",
   // A dropped soffit is framed and finished like the ceiling it hangs under.
   soffit: "floors",
   // Equal to the fallback, named so the parity test's "unclassified" list stays meaningful.
@@ -95,7 +110,9 @@ export function solidTrade(solid: Pick<Solid, "category">): Trade {
 // Shop-finished metal accessories read as metal, not matte plastic: a gutter, a drip flashing
 // and an aluminium guard all catch the environment light the way the standing-seam wall finish
 // does. Everything else stays fully dielectric.
-const METALLIC_SOLID_CATEGORIES = new Set(["railing", "gutter", "flashing", "connector"]);
+const METALLIC_SOLID_CATEGORIES = new Set([
+  "railing", "gutter", "downspout", "flashing", "connector",
+]);
 
 // Painted finishes name their colour in the material ref ("post-paint-white"). The served
 // catalog (server/model_json.py) carries only tag/name/R/perm/density, so the engine's authored

@@ -30,12 +30,11 @@ LAYER = "A-DETL-CMPT"
 class PerimeterDrainConfig:
     """Perforated drain tile in its washed-rock surround at the footing.
 
-    Building facts, from ``basementconstruction.json`` ``foundation``. **These belong on the
-    model, not the view**: ``FootingBedding`` currently models the drain as a bare
-    ``drain_tile: bool`` with no size, so the drawing has nowhere to read them from. Until
-    ``FootingBedding`` grows ``drain_diameter`` / ``drain_rock_width`` / ``drain_rock_depth``
-    (``model/structure.py``, outside this workstream's ownership), the reference numbers are
-    pinned here rather than scattered through the drawing code.
+    Building facts, from ``basementconstruction.json`` ``foundation``. The model now owns
+    these — ``DrainTile.diameter`` / ``.rock_width`` / ``.rock_depth`` — and the detail reads
+    the authored spec whenever the bedding carries one. What remains here is the fallback for
+    a bedding that models the drain as the bare ``drain_tile: bool``: reference numbers, so a
+    tile with no spec still draws at a real size instead of not drawing at all.
     """
 
     #: 4" perforated pipe (``foundation/french_drain_diameter_in``).

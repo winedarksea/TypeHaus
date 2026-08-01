@@ -44,6 +44,7 @@ _TRIM_CATEGORY = {
     "fascia": "fascia",
     "soffit": "soffit",
     "gutter": "gutter",
+    "downspout": "downspout",
     "drip_flashing": "flashing",
     "wrb_counterflashing": "flashing",
     # The glazing extrusions share the edge-run shape but not the flashing category: they
@@ -469,7 +470,7 @@ def _resolve_downspout(model: ResolvedModel, el, storey: str) -> None:
     if z1 - z0 <= 0.0:
         return
     model.solids.append(ResolvedSolid(
-        uid=f"{el.uid}-00", tag=el.tag, storey=storey, category="gutter",
+        uid=f"{el.uid}-00", tag=el.tag, storey=storey, category="downspout",
         outline=circle_outline(el.position.xy_m, el.diameter.meters / 2.0, _PIPE_FACETS),
         z0_m=z0, z1_m=z1))
 

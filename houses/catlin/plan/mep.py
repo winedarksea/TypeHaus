@@ -40,6 +40,7 @@ from typehaus import (
     ServicePort,
     SleevePenetration,
     Sump,
+    SumpPump,
     VentRun,
     ft,
     inch,
@@ -1567,7 +1568,14 @@ ATTIC_DEVICES = [
 RADON_SUMP = [
     Sump(uid="CMSP01AAAA", tag="SM-B-RADON", position=pt(ft(1), ft(34, 6)),
          diameter=inch(18), depth=inch(24), host_ref="SL-B-FLOOR",
-         sealed_cover=True, radon_vent=True, vent_ref="VR-M-RADON-VENT"),
+         sealed_cover=True, radon_vent=True, vent_ref="VR-M-RADON-VENT",
+         # CKT-SUMP has existed on the panel schedule all along; the pit it feeds only
+         # implied a pump. Saying it here is what puts an IfcPump/SUMPPUMP in the export,
+         # joins it to the stormwater system, and gives the discharge somewhere to be
+         # checked — the foundation schedule used to infer "DRAINING TO SUMP" from the mere
+         # existence of this pit while every drain tile on the project said "daylight".
+         pump=SumpPump(model="1/3 hp cast-iron submersible", horsepower=0.33,
+                       discharge="daylight", circuit_ref="CKT-SUMP")),
 ]
 
 VENT_RISERS = [

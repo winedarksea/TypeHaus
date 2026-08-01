@@ -21,6 +21,7 @@ from typehaus.emit.ifc import lowlevel as ll
 from typehaus.emit.ifc.electrical import (emit_conduits, emit_light_runs,
                                           emit_solar_panels)
 from typehaus.emit.ifc.roof import emit_roof, member_class, member_representation
+from typehaus.emit.trades import DRAINAGE_CATEGORIES
 from typehaus.emit.room_floor import room_floor_elevation
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
@@ -66,8 +67,13 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     for opening in sorted(model.openings, key=lambda o: o.uid):
         _emit_opening(f, body, opening, model, wall_entities, storeys, project_uuid, opening_types)
 
+    drainage_elements = []
     for solid in sorted(model.solids, key=lambda item: item.uid):
-        _emit_solid(f, body, solid, storeys, project_uuid, model)
+        element = _emit_solid(f, body, solid, storeys, project_uuid, model)
+        if (solid.category or "").lower() in DRAINAGE_CATEGORIES:
+            drainage_elements.append(element)
+    drainage_elements.extend(_emit_sump_pumps(f, model, storeys, project_uuid))
+    _emit_stormwater_system(f, building, drainage_elements)
 
     for ret in sorted(model.construction_returns, key=lambda item: item.uid):
         _emit_construction_return(f, body, ret, storeys, project_uuid)
@@ -596,19 +602,94 @@ def _emit_resolved_placeables(f: Any, body: Any, model: ResolvedModel, storeys: 
         ll.assign_container(f, element, storeys[item.storey])
 
 
+# What a resolved solid becomes in IFC: ``(class, PredefinedType | None)``. A category with
+# no entry falls through to ``IfcFooting``, which is right for a pour and wrong for anything
+# else — every category that is not a pour belongs in this table.
+#
+# The drainage rows are the ones IFC actually has homes for, and using them is what makes the
+# export read as a stormwater system in Revit/Bonsai rather than as loose proxies:
+# ``IfcPipeSegment`` for anything the water runs *through* (its PredefinedType separates the
+# hung channel from the rigid leader from the flexible buried tile), and
+# ``IfcDistributionChamberElement`` for anything it collects *in*. ``SOAKAWAY`` has no enum
+# member, so the drywell is USERDEFINED with an ObjectType that names it.
+_SOLID_IFC_CLASS: dict[str, tuple[str, str | None]] = {
+    "slab": ("IfcSlab", None), "column": ("IfcColumn", None), "beam": ("IfcBeam", None),
+    "railing": ("IfcRailing", None), "dowel": ("IfcReinforcingBar", None),
+    "connector": ("IfcMechanicalFastener", None),
+    "vent": ("IfcBuildingElementProxy", None),
+    "fascia": ("IfcCovering", None), "soffit": ("IfcCovering", None),
+    "flashing": ("IfcCovering", None),
+    "thermal_break": ("IfcBuildingElementProxy", None),
+    # stormwater (→ emit/trades.py DRAINAGE_CATEGORIES)
+    "gutter": ("IfcPipeSegment", "GUTTER"),
+    "downspout": ("IfcPipeSegment", "RIGIDSEGMENT"),
+    "drain_tile": ("IfcPipeSegment", "FLEXIBLESEGMENT"),
+    "sump": ("IfcDistributionChamberElement", "SUMP"),
+    "french_drain": ("IfcDistributionChamberElement", "TRENCH"),
+    "drywell": ("IfcDistributionChamberElement", "USERDEFINED"),
+}
+
+#: Where the IFC4 enum has no member for what the thing is, ``ObjectType`` carries the name.
+_SOLID_OBJECT_TYPE = {"drywell": "SOAKAWAY"}
+
+
+STORMWATER_SYSTEM_NAME = "Stormwater"
+
+
+def _emit_sump_pumps(f: Any, model: ResolvedModel, storeys: dict[str, Any],
+                     project_uuid: Any) -> list:
+    """An ``IfcPump/SUMPPUMP`` for every pit that carries one.
+
+    The pump is a spec on the ``Sump``, not an element with a plan position of its own, so
+    it has no solid and would otherwise never reach IFC — leaving the export with a pit and
+    no way to say the water leaves it under power. No representation: what matters here is
+    that the equipment exists, is on a named circuit, and belongs to the stormwater system.
+    """
+    pumps = []
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            pump = getattr(element, "pump", None)
+            if pump is None or element.element_kind != "Sump":
+                continue
+            entity = ll.create_entity(f, "IfcPump", name=f"{element.tag}-PUMP")
+            entity.PredefinedType = "SUMPPUMP"
+            entity.GlobalId = derive_child_guid(project_uuid, element.uid, "pump")
+            ll.ensure_pset(f, entity, PSET_SOURCE, {
+                "uid": element.uid, "tag": element.tag, "category": "sump_pump"})
+            ll.ensure_pset(f, entity, "TypeHaus_SumpPump", {
+                "model": pump.model, "horsepower": pump.horsepower,
+                "discharge": pump.discharge or "", "circuit_ref": pump.circuit_ref or ""})
+            ll.assign_container(f, entity, storeys[storey.tag])
+            pumps.append(entity)
+    return pumps
+
+
+def _emit_stormwater_system(f: Any, building: Any, elements: list) -> Any:
+    """Group every drainage element into one ``IfcDistributionSystem/STORMWATER``.
+
+    The gutter, the leader it drops into, the perimeter tile and the pit are one system in
+    the building even though they resolve from four unrelated authored elements. Saying so in
+    IFC is the difference between a BIM tool showing "Stormwater" in its system browser and
+    showing four unrelated proxies that happen to be near each other.
+    """
+    if not elements:
+        return None
+    system = ll.create_system(f, STORMWATER_SYSTEM_NAME, "STORMWATER")
+    ll.assign_to_group(f, system, elements)
+    ll.serves_building(f, system, building)
+    return system
+
+
 def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_uuid: Any,
-                model: Any = None) -> None:
-    # NB: IfcPipeSegment is reserved for authored PipeRuns (test_ifc_mep asserts the count
-    # equals pipe-run segments) — accessory vents/gutters stay generic proxies.
-    ifc_class = {"slab": "IfcSlab", "column": "IfcColumn", "beam": "IfcBeam",
-                 "railing": "IfcRailing", "dowel": "IfcReinforcingBar",
-                 "connector": "IfcMechanicalFastener", "sump": "IfcTank",
-                 "vent": "IfcBuildingElementProxy", "gutter": "IfcBuildingElementProxy",
-                 "fascia": "IfcCovering", "soffit": "IfcCovering",
-                 "flashing": "IfcCovering",
-                 "thermal_break": "IfcBuildingElementProxy"}.get(solid.category,
-                                                                  "IfcFooting")
+                model: Any = None) -> Any:
+    """One resolved solid as its IFC element. Returns it, so systems can group members."""
+    ifc_class, predefined_type = _SOLID_IFC_CLASS.get(solid.category, ("IfcFooting", None))
     element = ll.create_entity(f, ifc_class, name=solid.tag)
+    if predefined_type is not None:
+        element.PredefinedType = predefined_type
+    object_type = _SOLID_OBJECT_TYPE.get(solid.category)
+    if object_type is not None:
+        element.ObjectType = object_type
     element.GlobalId = derive_guid(project_uuid, solid.uid)
     if solid.outline:
         _assign_representation(
@@ -620,6 +701,7 @@ def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_
     ll.ensure_pset(f, element, PSET_SOURCE, {"uid": solid.uid, "tag": solid.tag,
                                                "category": solid.category})
     ll.assign_container(f, element, storeys[solid.storey])
+    return element
 
 
 def _emit_construction_return(f: Any, body: Any, ret: Any, storeys: dict[str, Any],

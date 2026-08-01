@@ -6,6 +6,7 @@ from typehaus import (
     Alarm,
     AlarmKind,
     Door,
+    Downspout,
     EaveGutter,
     EaveTrim,
     FasciaBoard,
@@ -141,7 +142,27 @@ _GARAGE_EAVE_TRIM = EaveTrim(
     soffit_material="pvc-cellular", soffit_thickness=inch(0.5), soffit_vented=True,
     gutter=EaveGutter(material="aluminum", depth=inch(5), thickness=inch(5),
                       top_drop=inch(0.5), edges=("south",),
-                      slope="1/16 in/ft to the east downspout"),
+                      slope="1/16 in/ft to the east downspout",
+                      downspout_ref="TR-G-LEADER-E"),
+)
+
+# The leader the south gutter has always sloped to. It was named in the slope note and never
+# authored, so the garage gutter drained to nothing — the same gap the house eaves had.
+#
+# 3" round, not the house's 4": this slope sheds about 290 sq ft (half of 24'x24' plus the
+# overhang) against each house eave's 648, and a 3" leader clears roughly 425 sq ft at the
+# 8 in/hr design intensity (params/roof_trim.py works the number).
+#
+# Its position and top are read off the *resolved* eave rather than derived here, which the
+# EaveGutter above deliberately is not: a raised-heel truss lifts the deck plane during the
+# envelope stage. test_drainage_elements.py holds the two together, so a change to the roof
+# that moves the trough fails there instead of leaving a leader hanging beside it.
+_GARAGE_LEADER = Downspout(
+    uid="CGDS01AAAA", tag="TR-G-LEADER-E",
+    position=pt(ft(25), ft(39, 4.5)),   # east end of the trough, on its centreline
+    top_elevation=ft(10),               # inside the trough floor
+    bottom_elevation=ft(1),             # splash block, a foot above the apron
+    diameter=inch(3), material="aluminum", gutter_ref="RF-GARAGE",
 )
 
 ROOFS = [
@@ -165,4 +186,4 @@ ALARMS = [
           circuit="CKT-LT-BACKUP"),
 ]
 
-ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS, *ALARMS]
+ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ROOFS, _GARAGE_LEADER, *ALARMS]

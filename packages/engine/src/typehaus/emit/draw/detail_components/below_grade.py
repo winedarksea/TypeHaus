@@ -37,19 +37,23 @@ def soil_body(u0: float, u1: float, grade_z: float, z_bottom: float) -> list[IRN
 
 
 def french_drain(center_u: float, invert_z: float,
-                 diameter_in: float | None = None) -> list[IRNode]:
+                 diameter_in: float | None = None,
+                 rock_width_in: float | None = None,
+                 rock_depth_in: float | None = None) -> list[IRNode]:
     """Perforated drain tile in a washed-rock surround, sitting on the footing bedding.
 
     Drawn as its rock envelope plus the pipe bore — the reference's own construction. The
     pipe is a square-cut octagon rather than a circle because the IR has no arc primitive
-    that both writers render. ``diameter_in`` is the authored ``DrainTile.diameter`` when
-    the bedding carries a spec; None falls back to the pinned reference 4".
+    that both writers render. Each dimension is the authored ``DrainTile`` field when the
+    bedding carries a spec; None falls back to the pinned reference numbers, which is what
+    every one of these was before the model had fields to hold them.
     """
     cfg = PERIMETER_DRAIN
-    half_rock = cfg.rock_width_in / 2.0
+    half_rock = (rock_width_in if rock_width_in is not None else cfg.rock_width_in) / 2.0
+    rock_depth = rock_depth_in if rock_depth_in is not None else cfg.rock_depth_in
     nodes = closed_region(
         rect_points(center_u - half_rock, invert_z,
-                    center_u + half_rock, invert_z + cfg.rock_depth_in),
+                    center_u + half_rock, invert_z + rock_depth),
         "river-rock", "river-rock", "gravel",
     )
     radius = (diameter_in if diameter_in is not None else cfg.drain_diameter_in) / 2.0
@@ -150,13 +154,21 @@ def build_below_grade_components(model, wall, crop, direction: str,
     # actually in frame — a wall-top junction cropped 4 ft down the basement wall does not
     # reach it, and a drain floating at the crop edge is worse than no drain.
     footing = footing_under(model, wall)
-    rock_depth_m = PERIMETER_DRAIN.rock_depth_in / M_TO_IN
+    spec = drain_tile_spec_for(model, footing)
+    diameter_in = _spec_inches(spec, "diameter")
+    rock_width_in = _spec_inches(spec, "rock_width") or PERIMETER_DRAIN.rock_width_in
+    rock_depth_in = _spec_inches(spec, "rock_depth") or PERIMETER_DRAIN.rock_depth_in
+    rock_depth_m = rock_depth_in / M_TO_IN
     if footing is not None and cz0 <= footing.z0_m and footing.z0_m + rock_depth_m <= cz1:
-        offset = (PERIMETER_DRAIN.rock_width_in / 2.0
-                  + PERIMETER_DRAIN.rock_offset_from_wall_in)
+        offset = rock_width_in / 2.0 + PERIMETER_DRAIN.rock_offset_from_wall_in
         sign = 1.0 if is_outboard_high else -1.0
-        spec = drain_tile_spec_for(model, footing)
-        diameter_in = spec.diameter.meters * M_TO_IN if spec is not None else None
         nodes += french_drain(face_in + sign * offset, footing.z0_m * M_TO_IN,
-                              diameter_in=diameter_in)
+                              diameter_in=diameter_in, rock_width_in=rock_width_in,
+                              rock_depth_in=rock_depth_in)
     return nodes
+
+
+def _spec_inches(spec, field: str) -> float | None:
+    """One optional ``Length`` off a ``DrainTile``, in the drawing's inches."""
+    length = getattr(spec, field, None) if spec is not None else None
+    return length.meters * M_TO_IN if length is not None else None

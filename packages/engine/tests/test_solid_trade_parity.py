@@ -21,7 +21,8 @@ from pathlib import Path
 
 import pytest
 
-from typehaus.emit.trades import FALLBACK_TRADE, SOLID_CATEGORY_TRADE, TRADES, solid_trade
+from typehaus.emit.trades import (
+    DRAINAGE_CATEGORIES, FALLBACK_TRADE, SOLID_CATEGORY_TRADE, TRADES, solid_trade)
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
 
@@ -31,7 +32,7 @@ SOLID_MATERIALS_TS = REPO_ROOT / "ui" / "src" / "three" / "solidMaterials.ts"
 
 # Categories that ride the fallback on purpose, so "unclassified" stays a meaningful signal.
 # Keep the reasons in emit/trades.py, next to the table.
-DELIBERATELY_UNCLASSIFIED = {"sump", "railing", "connector"}
+DELIBERATELY_UNCLASSIFIED = {"railing", "connector"}
 
 
 @pytest.fixture(scope="module")
@@ -105,6 +106,17 @@ def test_routed_pipe_runs_are_plumbing(catlin_model) -> None:
     pipes = [s for s in catlin_model.solids if s.category.startswith("pipe_")]
     assert pipes, "fixture regression: the Catlin house lost its routed plumbing"
     assert {solid_trade(s.category) for s in pipes} == {"plumbing"}
+
+
+def test_the_whole_stormwater_run_is_one_trade(catlin_model) -> None:
+    """Drainage used to be split: the gutter under Roof, the leader with it (it carried the
+    gutter category outright), and the sump pit on the concrete fallback. One run, one toggle."""
+    for category in ("gutter", "downspout", "sump"):
+        assert solid_trade(category) == "drainage"
+    assert DRAINAGE_CATEGORIES == {"gutter", "downspout", "sump",
+                                   "drain_tile", "french_drain", "drywell"}
+    leaders = [s for s in catlin_model.solids if s.category == "downspout"]
+    assert leaders, "fixture regression: the Catlin house lost its downspouts"
 
 
 def test_solid_trade_falls_back_rather_than_raising() -> None:

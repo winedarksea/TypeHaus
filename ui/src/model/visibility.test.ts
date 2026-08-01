@@ -11,7 +11,7 @@ import {
 // Spelled out rather than imported from the store: importing the store instantiates an engine
 // client at module scope, which has no business running inside a geometry test.
 const EXPECTED_TRADES = ["walls", "openings", "framing", "floors", "concrete", "roof", "stairs",
-  "furniture", "plumbing", "electrical", "mechanical", "earth"];
+  "furniture", "plumbing", "electrical", "mechanical", "earth", "drainage"];
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);

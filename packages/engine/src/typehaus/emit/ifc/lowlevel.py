@@ -255,6 +255,39 @@ def assign_type(f: Any, occurrence: Any, type_object: Any) -> None:
     ifcopenshell.api.run("type.assign_type", f, related_objects=[occurrence], relating_type=type_object)
 
 
+def create_system(f: Any, name: str, predefined_type: str | None = None) -> Any:
+    """An ``IfcDistributionSystem`` — the entity a BIM tool reads as a *system*.
+
+    Loose pipe elements sharing a category are only a naming convention; a system is the
+    grouping Revit and Bonsai surface in their browsers, filter on, and schedule against.
+    ``predefined_type`` is the IFC4 enum (``STORMWATER``, ``SANITARY``, ``VENT``…), which is
+    what makes the group mean drainage rather than merely being called it.
+    """
+    system = create_entity(f, "IfcDistributionSystem", name=name)
+    if predefined_type is not None:
+        system.PredefinedType = predefined_type
+    return system
+
+
+def assign_to_group(f: Any, group: Any, elements: list[Any]) -> Any:
+    """``IfcRelAssignsToGroup`` group ← elements, membership for systems and zones."""
+    import ifcopenshell.api
+
+    return ifcopenshell.api.run("group.assign_group", f, products=list(elements),
+                                group=group)
+
+
+def serves_building(f: Any, system: Any, building: Any) -> Any:
+    """``IfcRelServicesBuildings`` — which spatial structure a system serves.
+
+    Without it the system floats unattached to the building, and importers that walk the
+    spatial tree to find services never reach it.
+    """
+    return f.create_entity(
+        "IfcRelServicesBuildings", GlobalId=new_guid(), RelatingSystem=system,
+        RelatedBuildings=[building])
+
+
 def aggregate(f: Any, parent: Any, children: list[Any]) -> None:
     """IfcRelAggregates parent ← children (framed-LOD member aggregation)."""
     import ifcopenshell.api

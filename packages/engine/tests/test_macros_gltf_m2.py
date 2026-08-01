@@ -209,11 +209,11 @@ def test_glb_endpoint_serves_binary(client):
     assert resp.content[:4] == b"glTF"
 
 
-# The 12 visibility trades the UI honours (ui/src/state/store.ts ALL_TRADES). A whole-house glb
-# is only promoted to the primary scene when every node classifies to one of these.
+# The 13 visibility trades the UI honours (ui/src/state/vocabulary.ts ALL_TRADES). A whole-house
+# glb is only promoted to the primary scene when every node classifies to one of these.
 _ALL_TRADES = {
     "walls", "openings", "framing", "floors", "concrete", "roof",
-    "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth",
+    "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth", "drainage",
 }
 
 # The selection kinds the UI honours (ui/src/state/store.ts SelectionKind). Spelled out here

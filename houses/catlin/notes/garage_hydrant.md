@@ -34,11 +34,13 @@ plug by December, and a drain to the sanitary system is the thing the code is ob
 
 So the floor is poured to fall toward the overhead door instead, and the wash water leaves
 the building the way it came in — across the apron and into the gravel pit outside the west
-wall (`FB-G-HYDRANT-PIT`). The pit is modelled as a locally deepened bedding on the garage's
-west footing, which is what it physically is: the same washed stone on the same non-woven
-geotextile as every other footing bedding on the project, dug 3' further down and given a 4"
-sock-wrapped drain tile to daylight. `FootingBedding` is the closest thing the model has to
-a drywell, and it already carries undercut / geotextile / `DrainTile`.
+wall (`DW-G-HYDRANT`). The pit is a `Drywell`: 3' of fabric-wrapped washed stone, 3' across,
+centred 3' outside the west wall line so the excavation clears the footing.
+
+It was modelled as a locally deepened `FootingBedding` for as long as that was the closest
+thing the model had. The stand-in cost something real: a bedding's perimeter bills as
+perimeter drain tile, so the sitework take-off was ordering a ring of tile around a soakaway
+that has none.
 
 **Consequence to accept:** in deep winter the wash water will not soak away — it will freeze
 where it lands. That is the trade the no-floor-drain decision makes, and it is the right one:

@@ -304,16 +304,20 @@ def test_pipe_clamps_bill_as_canduit_rings_not_as_bare_seam_clamps(catlin_model)
 def test_each_pipe_clamp_also_bills_the_seam_clamp_it_mounts_on(catlin_model) -> None:
     """A CanDuit is a strap: the seam clamp under it is what reaches the roof.
 
-    The carrier count folds into the existing seam-clamp line rather than opening a second
-    line for the same part number, and the line's basis separates the two so the number can
-    be audited back to the plan.
+    Same part number, its own row: the carrier line's ``scope`` marks it as implied by a
+    modeled ring rather than authored directly, so the count stays auditable back to the
+    plan instead of being folded into the directly-modeled clamps' total. In the 3D view a
+    ring and the clamp it mounts on stay one modeled ``Connector`` — this split only affects
+    how the BOM itemizes the same hardware, not the geometry.
     """
     rows = hardware_takeoff(catlin_model)
     rings = sum(row["count"] for row in rows if row["role"] == "pipe_clamp")
     seam = [row for row in rows if row["role"] == "standing_seam_clamp"]
-    assert len(seam) == 1, "one part number, one line"
-    assert seam[0]["count"] > rings, "carriers plus the clamps that hold no pipe"
-    assert f"+ {rings} carrying a pipe clamp" in seam[0]["basis"]
+    modeled = next(row for row in seam if row["scope"] == "modeled connector")
+    mounts = next(row for row in seam if row["scope"] == "pipe clamp mount")
+    assert modeled["part_number"] == mounts["part_number"] == "S-5!"
+    assert mounts["count"] == rings
+    assert "required to mount a modeled pipe clamp" in mounts["basis"]
 
 
 def test_every_hardware_row_is_a_purchasable_catalogued_line(catlin_model) -> None:

@@ -92,7 +92,10 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "railings",
                         # The rainscreen's base vent/insect closure — derived off the wall
                         # stack, so it is billed by the lineal foot rather than authored.
-                        "bug_screens"}
+                        "bug_screens",
+                        # Stormwater by the foot and the piece: gutter, leader, trench,
+                        # soakaway. Billed only as cubic feet of aluminium and stone before.
+                        "drainage"}
     assert all(section for section in bom.values()), "no BOM section may come back empty"
     # The framing section still reconciles 1:1 with the resolved members.
     assert sum(int(row["pieces"]) for row in bom["framing"]) == len(catlin_model.all_members())

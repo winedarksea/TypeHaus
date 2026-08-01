@@ -230,9 +230,13 @@ def authored_connector_rows(model: ResolvedModel) -> list:
 
     A part that mounts on another catalogued part (``StructuralHardware.requires_role``)
     also bills one of *those* per unit — an S-5! CanDuit pipe clamp is a strap, and it is
-    the seam clamp under it that reaches the roof. The carrier count is folded into whatever
-    line already bills that role, so the BOM keeps one line per part rather than sprouting a
-    near-duplicate beside every ring.
+    the seam clamp under it that reaches the roof. That carrier gets its **own row**, same
+    part number as any directly modeled clamp of that kind but a different ``scope``, rather
+    than being folded into the modeled row's count: the two came from different rules (one
+    is authored directly, one is implied by a ring mounted somewhere), and merging their
+    counts would erase which is which the moment someone asks why the number is 13. In the
+    3D view a ring and the clamp under it stay a single modeled ``Connector`` — this split
+    is a BOM-only distinction, not a second solid.
     """
     groups: Counter = Counter()
     carried: Counter = Counter()
@@ -244,23 +248,20 @@ def authored_connector_rows(model: ResolvedModel) -> list:
         if item is not None and item.requires_role is not None:
             carried[item.requires_role] += 1
 
-    # Fold each carrier onto the line that already bills its part number, so one part stays
-    # one line. A role with no modeled connector of its own opens a line here.
-    for role, count in carried.items():
-        carrier = hardware_for_role(role)
-        key = next((k for k in groups if k[1] == carrier.model), (role, carrier.model))
-        groups[key] += count
-
     rows = []
     for (kind, size), count in sorted(groups.items()):
         item = hardware_by_model(size)
-        mounted = carried.get(item.role, 0) if item is not None else 0
-        modeled = count - mounted
-        basis = f"{modeled} modeled {kind.replace('_', ' ')} connector(s) in the plan"
-        if mounted:
-            basis += f" + {mounted} carrying a pipe clamp"
         rows.append(hardware_row(
-            item, scope="modeled connector", count=count, part_number=size, basis=basis))
+            item, scope="modeled connector", count=count, part_number=size,
+            basis=f"{count} modeled {kind.replace('_', ' ')} connector(s) in the plan"))
+
+    # Carriers required by a pipe clamp but not otherwise modeled: their own row, keyed by
+    # the *carrier's* published model so it prices and orders as the same part number.
+    for role, count in sorted(carried.items()):
+        carrier = hardware_for_role(role)
+        rows.append(hardware_row(
+            carrier, scope="pipe clamp mount", count=count, part_number=carrier.model,
+            basis=f"{count} required to mount a modeled pipe clamp"))
     return rows
 
 

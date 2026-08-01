@@ -44,9 +44,9 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
   },
   {
     id: "mep",
-    note: "Pipe, duct, cast-in sleeves and radiant floor element.",
+    note: "Pipe, duct, cast-in sleeves, radiant floor element and the storm run.",
     title: "Mechanical & plumbing",
-    sections: ["pipe_runs", "ducts", "sleeves", "floor_heat"],
+    sections: ["pipe_runs", "ducts", "sleeves", "floor_heat", "drainage"],
   },
   {
     id: "electrical",

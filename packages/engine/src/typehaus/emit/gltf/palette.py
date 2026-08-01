@@ -113,6 +113,13 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
     "soffit": (0.88, 0.88, 0.85, 1.0),     # vented soffit panel under the overhang
     "gutter": (0.85, 0.86, 0.87, 1.0),     # metal gutter
+    # stormwater below the gutter (→ emit/trades.py, trade "drainage")
+    "downspout": (0.85, 0.86, 0.87, 1.0),  # the gutter's own aluminium, drawn down the wall
+    # Perforated tile is a warmer near-black than the ABS waste `pipe_drain` above, so a
+    # buried drainage view can tell the storm ring from the sanitary run it parallels.
+    "drain_tile": (0.16, 0.15, 0.13, 1.0),   # corrugated HDPE tile
+    "french_drain": (0.62, 0.60, 0.56, 1.0),  # washed-rock trench
+    "drywell": (0.52, 0.50, 0.47, 1.0),      # soakaway aggregate, darker than the trench
     "ridge_cap": (0.85, 0.86, 0.87, 1.0),  # vented standing-seam ridge cap
     "corner_trim": (0.85, 0.86, 0.87, 1.0),  # eave corner trim (continuous skin)
     "flashing": (0.75, 0.77, 0.80, 1.0),   # metal flashing

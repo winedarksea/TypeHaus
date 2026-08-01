@@ -14,6 +14,7 @@ from typehaus.model.structure import Beam, Footing, FootingBedding, GlazingPanel
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import circle_outline, polygon_area, rect_between
 from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
+from typehaus.resolve.drain_tile import drain_tile_solids, resolved_spec
 from typehaus.resolve.model import (
     BoundaryCondition,
     ResolvedFootingBedding,
@@ -215,10 +216,19 @@ def _resolve_footing_bedding(
                              f"{bedding.host_ref!r}", bedding.tag)]
     perimeter_m = (bedding.perimeter_insulation.meters
                   if bedding.perimeter_insulation is not None else None)
+    z0 = host.z0_m - bedding.undercut.meters
+    spec = resolved_spec(bedding.drain_tile_spec)
+    # The tile is derived, not authored: nobody draws a perimeter ring by hand, it follows
+    # the excavation. Emitted here so the drainage toggle and the IFC stormwater system see
+    # the ring the take-off has always billed by the foot.
+    if bedding.drain_tile:
+        model.solids.extend(drain_tile_solids(
+            bedding.uid, bedding.tag, storey, host.outline, z0, spec))
     return ResolvedFootingBedding(
         bedding.uid, bedding.tag, storey, host.tag, host.outline,
-        host.z0_m - bedding.undercut.meters, host.z0_m, bedding.aggregate,
+        z0, host.z0_m, bedding.aggregate,
         bedding.geotextile, bedding.drain_tile, perimeter_m, bedding.cast_foam_in_aggregate,
+        spec,
     ), []
 
 

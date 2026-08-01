@@ -73,7 +73,7 @@ def _solids(model, category):
 
 def test_catlin_resolves_all_accessory_categories(catlin_model) -> None:
     for category in ("railing", "dowel", "thermal_break", "connector",
-                     "fascia", "gutter", "flashing", "sump", "vent"):
+                     "fascia", "gutter", "downspout", "flashing", "sump", "vent"):
         assert _solids(catlin_model, category), f"no {category} solids resolved"
 
 

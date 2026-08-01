@@ -31,7 +31,7 @@ from __future__ import annotations
 # so a typo in the table below fails a test rather than shipping a node the UI drops.
 TRADES = frozenset({
     "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture",
-    "plumbing", "electrical", "mechanical", "earth",
+    "plumbing", "electrical", "mechanical", "earth", "drainage",
 })
 
 # What a solid whose category is not in the table resolves to. Named rather than implicit,
@@ -70,8 +70,21 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
 
     # Roof edge trim (``resolve/accessories.py::_TRIM_CATEGORY``, ``resolve/roof_trim.py``).
     "fascia": "roof",
-    "gutter": "roof",
     "flashing": "roof",
+
+    # Stormwater. A gutter is roof-edge trim by where it hangs, but what it *is* is the head
+    # of a drainage run that continues down a leader, through the perimeter tile and out to
+    # daylight — the same family IFC files under ``IfcDistributionSystem/STORMWATER``. Filing
+    # the run's head under "roof" and its tail under "concrete" is what made drainage the
+    # least legible family in the model, so the whole run rides one toggle.
+    "gutter": "drainage",
+    "downspout": "drainage",
+    "sump": "drainage",
+    # No instances yet — declared here like ``pipe_gas`` above so the first one authored is
+    # routed rather than poured into concrete. Geometry arrives in later phases.
+    "drain_tile": "drainage",
+    "french_drain": "drainage",
+    "drywell": "drainage",
 
     # A dropped soffit is framed and finished like the ceiling it hangs under, so it rides the
     # floors trade instead of appearing in a concrete take-off it has no business in. This was
@@ -89,8 +102,6 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
 
     # Deliberately left on the fallback, not oversights:
     #
-    # "sump"      — the pit is a pour; the pump that makes it plumbing is a Fixture, and
-    #               fixtures already route by their own domain.
     # "railing"   — guards are built framing, but ``ui/src/components/Canvas2D.tsx`` gates the
     #               2D railing outlines on ``visibleTrades.concrete``. Moving the category here
     #               alone would split a railing's 2D and 3D toggles; it wants the plan gate
@@ -100,6 +111,14 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     #               clamps (mechanical). One category cannot be all three; this wants routing by
     #               *host* rather than by category, which is a larger change than a table.
 }
+
+
+# The stormwater family, derived from the table so the two can never disagree. The IFC emitter
+# groups exactly these solids into one ``IfcDistributionSystem`` with ``PredefinedType=STORMWATER``
+# (``emit/ifc/emitter.py``), which is what Revit and Bonsai read as a real system rather than as
+# loose proxies.
+DRAINAGE_CATEGORIES = frozenset(
+    category for category, trade in SOLID_CATEGORY_TRADE.items() if trade == "drainage")
 
 
 def solid_trade(category: str | None) -> str:

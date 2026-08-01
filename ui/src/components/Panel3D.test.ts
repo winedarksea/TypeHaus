@@ -325,7 +325,12 @@ export function runSolidMaterialTests() {
   assert(solidTrade(solid("pipe_drain")) === "plumbing",
     "A routed waste line follows the Plumbing toggle");
   assert(solidTrade(solid("vent")) === "mechanical", "A vent riser is mechanical");
-  assert(solidTrade(solid("gutter")) === "roof", "Roof edge trim rides the roof toggle");
+  assert(solidTrade(solid("fascia")) === "roof", "Roof edge trim rides the roof toggle");
+  // The stormwater run is one toggle end to end: the gutter used to sit under Roof and the
+  // pit it drains to on the concrete fallback, which meant no single checkbox showed drainage.
+  assert(solidTrade(solid("gutter")) === "drainage", "A gutter is the head of the storm run");
+  assert(solidTrade(solid("downspout")) === "drainage", "A leader follows its gutter");
+  assert(solidTrade(solid("sump")) === "drainage", "The pit is the tail of the same run");
   assert(solidTrade(solid("glazing")) === "openings", "Glazing reads as fenestration");
   assert(solidTrade(solid("soffit")) === "floors",
     "A dropped soffit is finished like the ceiling it hangs under");

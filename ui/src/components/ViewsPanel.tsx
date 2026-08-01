@@ -16,6 +16,7 @@ const TRADE_LABEL: Record<Trade, string> = {
   walls: "Walls", openings: "Openings", framing: "Framing", floors: "Floors",
   concrete: "Concrete", roof: "Roof", stairs: "Stairs", furniture: "Furniture",
   plumbing: "Plumbing", electrical: "Electrical", mechanical: "Mechanical", earth: "Site",
+  drainage: "Drainage",
 };
 
 const REPRESENTATIONS: Representation[] = ["conceptual", "schematic", "detailed", "fabrication"];
@@ -26,8 +27,11 @@ const REPRESENTATIONS: Representation[] = ["conceptual", "schematic", "detailed"
 const ROLE_TRADES: Record<string, Trade[]> = {
   Architecture: ["walls", "openings", "floors", "roof", "stairs", "furniture"],
   Structure: ["framing", "concrete", "roof", "stairs"],
-  MEP: ["plumbing", "electrical", "mechanical"],
-  Site: ["earth", "concrete"],
+  // Drainage sits in both: it is a service run an MEP reviewer sizes, and the half of it that
+  // matters on site — the tile ring, the trenches, where the leaders discharge — is read
+  // against the grade sheet.
+  MEP: ["plumbing", "electrical", "mechanical", "drainage"],
+  Site: ["earth", "concrete", "drainage"],
 };
 function roleMatches(role: keyof typeof ROLE_TRADES, visible: Record<Trade, boolean>): boolean {
   const wanted = new Set(ROLE_TRADES[role]);

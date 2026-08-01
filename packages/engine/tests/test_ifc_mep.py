@@ -33,7 +33,12 @@ def test_ifc_has_pipe_segments_and_sleeve_proxies(catlin_model, tmp_path: Path):
     out = emit_ifc(catlin_model, tmp_path / "model.ifc")
     f = ifcopenshell.open(str(out))
 
-    pipes = f.by_type("IfcPipeSegment")
+    # Authored PipeRuns are the segments with no PredefinedType. Drainage now emits real
+    # IfcPipeSegments too — a gutter is GUTTER, a leader RIGIDSEGMENT, buried tile
+    # FLEXIBLESEGMENT (test_ifc_drainage.py) — so the count that identifies a routed run is
+    # the untyped one, not every pipe segment in the file.
+    pipes = [p for p in f.by_type("IfcPipeSegment")
+             if p.PredefinedType in (None, "NOTDEFINED")]
     total_segments = sum(len(run.path) - 1 for run in catlin_model.pipe_runs)
     assert len(pipes) == total_segments
     assert all(p.GlobalId for p in pipes)

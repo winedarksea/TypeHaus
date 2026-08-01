@@ -7,7 +7,7 @@ Auto-routing is a declared non-goal.
 
 from __future__ import annotations
 
-from typehaus.model.base import Element
+from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import (
     DeviceKind,
     DuctRouting,
@@ -130,6 +130,21 @@ class Equipment(Element):
     outdoor_ref: str | None = None
 
 
+class SumpPump(HausModel):
+    """The pump in a pit. A spec, not an element: it has no plan position of its own — it
+    sits in the ``Sump`` that carries it, and moving the pit moves the pump.
+
+    ``discharge`` says where the pumped water goes ("daylight", a ``Drywell`` tag, a storm
+    lateral); ``circuit_ref`` is the branch it must be on, which is the thing an inspector
+    actually looks for — a pit with no dedicated circuit is a pit that stops working when
+    something else trips."""
+
+    model: str = ""
+    horsepower: float = 0.0
+    discharge: str | None = None
+    circuit_ref: str | None = None
+
+
 @register_element
 class Sump(Element):
     """A sump pit (basement slab low point) with an optional radon-vent takeoff.
@@ -145,6 +160,9 @@ class Sump(Element):
     sealed_cover: bool = True  # gasketed/sealed cover (required for a radon sump)
     radon_vent: bool = True
     vent_ref: str | None = None  # VentRun tag the radon takeoff joins
+    # None means the pit takes water and lets it go by gravity. A pit with a pump exports an
+    # IfcPump/SUMPPUMP joined to the stormwater system.
+    pump: SumpPump | None = None
 
 
 @register_element
@@ -253,6 +271,7 @@ for _name, _obj in (
     ("ConduitRun", ConduitRun),
     ("LightRun", LightRun),
     ("Sump", Sump),
+    ("SumpPump", SumpPump),
     ("VentRun", VentRun),
 ):
     register_constructor(_name, _obj)

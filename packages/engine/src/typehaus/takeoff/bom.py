@@ -38,6 +38,7 @@ from typehaus.takeoff.mep import duct_takeoff, pipe_run_takeoff, sleeve_takeoff
 from typehaus.takeoff.openings import opening_takeoff
 from typehaus.takeoff.placeables import floor_heat_takeoff, placeables_takeoff
 from typehaus.takeoff.railings import railing_takeoff
+from typehaus.takeoff.drainage import drainage_takeoff
 from typehaus.takeoff.sitework import footing_bedding_takeoff
 from typehaus.takeoff.stairs import stair_finish_takeoff
 
@@ -90,6 +91,9 @@ def bill_of_materials(
         "openings": opening_takeoff(model),
         "stair_finish": stair_finish_takeoff(model),
         "footing_bedding": footing_bedding_takeoff(model),
+        # Stormwater by the foot and the piece — gutter and leader were billed only as
+        # cubic feet of aluminium, which is not how either is bought.
+        "drainage": drainage_takeoff(model),
         "pipe_runs": pipe_run_takeoff(model),
         "ducts": duct_takeoff(model),
         "sleeves": sleeve_takeoff(model),

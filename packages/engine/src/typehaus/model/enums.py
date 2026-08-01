@@ -300,6 +300,7 @@ class TrimKind(Enum):
     FASCIA = "fascia"                    # PVC/wood fascia board
     SOFFIT = "soffit"                    # panel closing the underside of an overhang
     GUTTER = "gutter"                    # hung gutter channel
+    DOWNSPOUT = "downspout"              # vertical leader carrying a gutter down to grade
     DRIP_FLASHING = "drip_flashing"      # front-edge drip flashing into the gutter
     WRB_COUNTERFLASHING = "wrb_counterflashing"  # rear flashing tucked into the house WRB
     # Multiwall-glazing extrusions. A panel edge is never left open: an open flute end wicks

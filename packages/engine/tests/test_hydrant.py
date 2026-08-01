@@ -156,13 +156,17 @@ def test_the_pedestal_rides_on_the_slab_rather_than_bearing_on_soil(catlin_model
 
 def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):
     """There is deliberately no floor drain — see notes/garage_hydrant.md. The pit is a
-    locally deepened footing bedding, which is what it physically is and the closest thing
-    the model has to a drywell."""
-    pit = catlin_model.plan.by_tag("FB-G-HYDRANT-PIT")
-    assert pit.host_ref == "FT-GF-W"
-    assert pit.undercut.meters * _M_TO_FT == pytest.approx(3.0, abs=1e-6)
-    assert pit.geotextile and pit.drain_tile
-    assert pit.drain_tile_spec.discharge == "daylight"
+    Drywell; it was a deepened FootingBedding only while that was the closest thing the model
+    had, and that stand-in billed the pit's perimeter as drain tile that is not there."""
+    pit = catlin_model.plan.by_tag("DW-G-HYDRANT")
+    assert pit.depth.meters * _M_TO_FT == pytest.approx(3.0, abs=1e-6)
+    assert pit.geotextile
+    assert "FX-G-HYDRANT" in pit.inlet_refs
+    # Outside the west wall line, clear of the 20"-wide footing it must not undermine.
+    x_ft = pit.position.xy_m[0] * _M_TO_FT
+    assert x_ft < 0 and abs(x_ft) - pit.diameter.meters * _M_TO_FT / 2 > 20 / 24
+    solid = next(s for s in catlin_model.solids if s.tag == "DW-G-HYDRANT")
+    assert solid.category == "drywell"
     # No drain fixture, and no DRAIN run, anywhere in the garage.
     garage_fixtures = [e for e in catlin_model.plan.storey_elements("garage")
                        if e.element_kind == "Fixture"]

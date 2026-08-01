@@ -88,7 +88,8 @@ def takeoff(
                "sleeves": bom["sleeves"],
                "conductors": bom["conductors"],
                "railings": bom["railings"],
-               "bug_screens": bom["bug_screens"]}
+               "bug_screens": bom["bug_screens"],
+               "drainage": bom["drainage"]}
     if prices is not None:
         payload["cost_estimate"] = estimate_costs(bom, prices)
     if as_json:

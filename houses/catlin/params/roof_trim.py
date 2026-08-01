@@ -161,6 +161,7 @@ def _eave_water(side: str, index: int, eave_x, outward: float):
         top_elevation=_above_deck(_GUTTER_RIM_IN), depth=_GUTTER_DEPTH,
         thickness=inch(_GUTTER_THICK_IN), material="aluminum", host_ref="RF-HOUSE",
         slope=f'1/16 in/ft to the north-end {side} downspout',
+        downspout_ref=f"TR-RF-LEADER-{side}",
         back_side=back_side)
     return [drip, gutter]
 

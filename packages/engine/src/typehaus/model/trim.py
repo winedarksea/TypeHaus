@@ -74,6 +74,10 @@ class Gutter(_EdgeRun):
 
     kind: TrimKind = TrimKind.GUTTER
     slope: str = ""  # optional drainage note, e.g. "1/16 in/ft to SE downspout"
+    # Which leader the run falls to. The ``slope`` note said so in prose, which nothing could
+    # check — two Catlin gutters sloped to downspouts that had never been authored. This is
+    # the same statement in a form ``checks/mep/drainage.py`` can hold to a real element.
+    downspout_ref: str | None = None
 
 
 @register_element
@@ -91,7 +95,7 @@ class Downspout(Element):
     ``Connector`` records say, and it matters to whoever hangs it.
     """
 
-    kind: TrimKind = TrimKind.GUTTER
+    kind: TrimKind = TrimKind.DOWNSPOUT
     position: Point2D                # plan-frame centre of the pipe
     top_elevation: Length            # the outlet at the gutter floor
     bottom_elevation: Length         # discharge, normally just above grade
@@ -137,6 +141,7 @@ class EaveGutter(HausModel):
     top_drop: Length   # top of the channel below the roof plane at the eave edge
     edges: tuple[str, ...] = ()  # footprint edges ("south"/"north"/...); empty = every eave
     slope: str = ""    # optional drainage note, e.g. "1/16 in/ft to the east downspout"
+    downspout_ref: str | None = None  # the leader it falls to (see Gutter.downspout_ref)
 
 
 @register_element

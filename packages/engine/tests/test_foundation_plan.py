@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 
 import pytest
@@ -97,6 +98,35 @@ def test_sunken_garden_t_wall_footings_bear_on_42_inches_of_aggregate(catlin_mod
     for bedding in garden_bedding.values():
         assert bedding.z1_m - bedding.z0_m == pytest.approx(inch(42).meters)
         assert "#57" in bedding.aggregate
+
+
+def test_bedding_drain_tile_resolves_as_a_ring_of_solids(catlin_model):
+    """The tile was a geometry-less bool: billed by the foot, drawn in the wall detail, and
+    invisible in 3D. It is derived from the bedding it runs in, like an eave's gutter members
+    are derived from the eave, so its length is the bedding perimeter it follows."""
+    bedding = next(fb for fb in catlin_model.footing_beddings if fb.host_footing == "FT-B-S1")
+    tile = [s for s in catlin_model.solids
+            if s.category == "drain_tile" and s.tag.startswith(f"{bedding.tag}-DT-")]
+    assert tile, "a bedding that runs tile must resolve one"
+
+    ring = list(bedding.outline)
+    perimeter = sum(math.dist(a, b) for a, b in zip(ring, ring[1:] + ring[:1]))
+    # Each band is the run's own length; the ends butt rather than mitre, which is the same
+    # simplification the take-off's perimeter measure makes.
+    length = sum(max(_span(s.outline)) for s in tile)
+    assert length == pytest.approx(perimeter, rel=0.05)
+
+    spec = bedding.drain_tile_spec
+    assert spec is not None and spec.diameter_m == pytest.approx(inch(4).meters)
+    # The pipe floats on a course of bedding rather than sitting on the excavation floor.
+    assert min(s.z0_m for s in tile) > bedding.z0_m
+    assert max(s.z1_m for s in tile) < bedding.z1_m
+
+
+def _span(outline) -> tuple[float, float]:
+    xs = [x for x, _ in outline]
+    ys = [y for _, y in outline]
+    return (max(xs) - min(xs), max(ys) - min(ys))
 
 
 def test_foundation_plan_has_footing_bedding_leader(catlin_model):

@@ -49,6 +49,12 @@ class DrainTile(HausModel):
     material: str = "perforated corrugated HDPE"
     sock: bool = True  # filter-fabric sock over the perforations
     discharge: str | None = None  # "daylight" | "sump" | free-text run note
+    # The washed-rock surround the tile floats in. Optional because a bedding that only says
+    # "there is a tile" is a legitimate level of detail; when authored, the perimeter-drain
+    # detail draws these instead of the pinned reference dimensions it had to inline while
+    # the model had nowhere to put them (``emit/draw/detail_components/config.py``).
+    rock_width: Length | None = None
+    rock_depth: Length | None = None
 
 
 @register_element
@@ -71,6 +77,50 @@ class FootingBedding(Element):
     drain_tile_spec: DrainTile | None = None
     perimeter_insulation: Length | None = None
     cast_foam_in_aggregate: bool = False
+
+
+@register_element
+class FrenchDrain(Element):
+    """A stone-filled interceptor trench with a tile in it, on an authored plan path.
+
+    Distinct from the tile a :class:`FootingBedding` runs: that one is *derived* from the
+    excavation it sits in and always follows a footing, while this is a run somebody put
+    where the water goes — across a slope, along a retaining wall, out to daylight. It is
+    what the code below grade drains *to* rather than part of a bearing detail.
+
+    ``invert`` is the trench floor at the run's start; the tile inside it is derived from
+    ``tile`` exactly as a bedding's is (``resolve/drain_tile.py``), so both kinds of run bill
+    and draw the same way. ``discharge_ref`` names where it lets go — a ``Drywell``, a
+    ``Sump``, or nothing when it daylights.
+    """
+
+    path: tuple[Point2D, ...]  # plan centreline, start → discharge end
+    invert: Length             # trench floor elevation
+    trench_width: Length
+    trench_depth: Length
+    tile: DrainTile | None = None
+    discharge_ref: str | None = None
+
+
+@register_element
+class Drywell(Element):
+    """An aggregate-filled soakaway: a hole that takes water faster than it arrives.
+
+    Where a :class:`FrenchDrain` moves water sideways, a drywell holds it while the soil
+    takes it, which is why it is a volume (diameter × depth of stone) rather than a run. Its
+    ``inlet_refs`` name what feeds it — leaders, french drains, a footing's tile.
+    """
+
+    position: Point2D
+    diameter: Length
+    depth: Length  # of stone, measured down from the top of the well
+    aggregate: str = "ASTM C33 #57 washed crushed stone"
+    geotextile: bool = True  # fabric-wrapped, or the surrounding soil silts the voids shut
+    inlet_refs: tuple[str, ...] = ()
+    # Top of stone. A soakaway is dug from the ground, not from a floor, so this defaults to
+    # site grade rather than to the storey datum — a drywell outside the garage authored on
+    # the basement storey would otherwise start at the basement floor.
+    top_elevation: Length | None = None
 
 
 @register_element
@@ -266,6 +316,8 @@ for _name, _obj in (
     ("SolarPanel", SolarPanel),
     ("Pad", Pad),
     ("FootingBedding", FootingBedding),
+    ("FrenchDrain", FrenchDrain),
+    ("Drywell", Drywell),
     ("Post", Post),
     ("Beam", Beam),
     ("Dowel", Dowel),

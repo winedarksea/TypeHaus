@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from typehaus import (
     DrainTile,
+    Drywell,
     Footing,
     FootingBedding,
     FoundationWall,
@@ -184,17 +185,22 @@ GARAGE_HYDRANT_SLEEVE = SleevePenetration(
 )
 
 # The exterior gravel pit — the wash-down water's only drainage path, since there is
-# deliberately no floor drain (notes/garage_hydrant.md). Modelled as a locally deepened
-# bedding on the garage's west footing, which is what it physically is: the same washed
-# stone on the same geotextile, dug 3' further down and given a drain tile, immediately
-# outside the wall the hydrant is on. FootingBedding is the closest thing the model has to
-# a drywell and it already carries undercut / geotextile / DrainTile.
-GARAGE_HYDRANT_PIT = FootingBedding(
-    uid="CGP603AAAA", tag="FB-G-HYDRANT-PIT", host_ref="FT-GF-W",
-    undercut=ft(3), geotextile=True, drain_tile=True,
-    drain_tile_spec=DrainTile(diameter=inch(4), sock=True, discharge="daylight"),
+# deliberately no floor drain (notes/garage_hydrant.md). It *is* a drywell, and now says so:
+# it was a locally deepened FootingBedding only because FootingBedding was the closest thing
+# the model had, and the cost of that stand-in was real — the pit's excavation perimeter was
+# billing as perimeter drain tile in the sitework take-off, tile that is not there and that
+# nobody would install around a soakaway.
+#
+# Centred 3' *outside* the west wall line (x=0), which clears the 20"-wide west footing by a
+# foot: a soakaway dug against a footing undermines it.
+_DRYWELL_X_FT = -3.0
+GARAGE_HYDRANT_DRYWELL = Drywell(
+    uid="CGP603AAAA", tag="DW-G-HYDRANT",
+    position=pt(ft(_DRYWELL_X_FT), ft(HYDRANT_Y_FT)),
+    diameter=ft(3), depth=ft(3), geotextile=True,
+    inlet_refs=("FX-G-HYDRANT",),
 )
 
 BASEMENT_ELEMENTS = [*HOUSE_FOOTINGS, *HOUSE_FOOTING_BEDDING, *GARAGE_STEM_NODES,
-                     *GARAGE_STEM_WALLS, *GARAGE_FOOTINGS, GARAGE_HYDRANT_PIT]
+                     *GARAGE_STEM_WALLS, *GARAGE_FOOTINGS, GARAGE_HYDRANT_DRYWELL]
 MAIN_ELEMENTS = [GARAGE_SLAB, GARAGE_HYDRANT_PEDESTAL, GARAGE_HYDRANT_SLEEVE]

@@ -33,11 +33,13 @@ export type Lens = "none" | "air" | "water" | "thermal" | "vapor";
 // Beam/Post solids the resolver emits; "floors" is floor decks (hideable for stair continuity)
 // and dropped soffits; "concrete" is the pours (slabs, footings, pads) and the fallback for any
 // solid category not yet classified; "roof" is the roof shell and its edge trim, but not its
-// sticks; "earth" is the translucent site context sheet. Which trade a resolved solid lands on
+// sticks; "earth" is the translucent site context sheet; "drainage" is the whole stormwater run
+// — gutters, leaders, the perimeter tile ring, trenches, drywells and the sump pit, which used
+// to be split between the roof and concrete toggles. Which trade a resolved solid lands on
 // is the shared table in three/solidMaterials.ts::SOLID_CATEGORY_TRADE.
-export type Trade = "walls" | "openings" | "framing" | "floors" | "concrete" | "roof" | "stairs" | "furniture" | "plumbing" | "electrical" | "mechanical" | "earth";
+export type Trade = "walls" | "openings" | "framing" | "floors" | "concrete" | "roof" | "stairs" | "furniture" | "plumbing" | "electrical" | "mechanical" | "earth" | "drainage";
 export const ALL_TRADES: Trade[] = [
-  "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth",
+  "walls", "openings", "framing", "floors", "concrete", "roof", "stairs", "furniture", "plumbing", "electrical", "mechanical", "earth", "drainage",
 ];
 
 // The work surfaces that replaced the old DESIGN/ANALYZE topbar buttons: the assembly /

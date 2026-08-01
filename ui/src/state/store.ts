@@ -159,6 +159,7 @@ export const useStore = create<StoreState>((set, get) => ({
   visibleTrades: {
     walls: true, openings: true, framing: true, floors: true, concrete: true, roof: true,
     stairs: true, furniture: true, plumbing: true, electrical: true, mechanical: true, earth: true,
+    drainage: true,
   },
   visibleLayerGroups: Object.fromEntries(
     ALL_LAYER_VISIBILITY_GROUPS.map((group) => [group, true]),

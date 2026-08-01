@@ -522,6 +522,28 @@ class ResolvedSleeve:
 
 
 @dataclass(frozen=True)
+class ResolvedDrainTile:
+    """A ``DrainTile`` spec flattened to SI, carried on the bedding that runs it.
+
+    The bare ``drain_tile: bool`` says only that one exists, which left the take-off billing
+    every tile on the project as one undifferentiated run of pipe and the perimeter-drain
+    detail with nowhere to read a size from. Everything downstream groups and draws on this.
+    """
+
+    diameter_m: float
+    material: str
+    sock: bool
+    discharge: str | None
+    rock_width_m: float | None
+    rock_depth_m: float | None
+
+    @property
+    def order_key(self) -> tuple[float, str, bool, str]:
+        """What makes two runs the same order: size, product, sock, where it lets go."""
+        return (round(self.diameter_m, 6), self.material, self.sock, self.discharge or "")
+
+
+@dataclass(frozen=True)
 class ResolvedFootingBedding:
     """Sub-footing excavation/bedding prep resolved against its host footing solid."""
 
@@ -537,6 +559,8 @@ class ResolvedFootingBedding:
     drain_tile: bool
     perimeter_insulation_m: float | None
     cast_foam_in_aggregate: bool
+    # None where the bedding only carries the bool — see ResolvedDrainTile.
+    drain_tile_spec: ResolvedDrainTile | None = None
 
 
 @dataclass(frozen=True)
