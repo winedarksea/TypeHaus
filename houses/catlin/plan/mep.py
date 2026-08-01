@@ -1583,15 +1583,19 @@ VENT_RISERS = [
 # 25'-5.7" rake, so all three clamps sit on the pipe *and* on cladding they can actually
 # grip. The riser rides W-A-N2, the west half of the north gable wall (x=0..18); W-A-N1
 # is the east half.
+# These hold a *pipe*, so the part is an S-5! CanDuit ring on an S-5! seam clamp, not the
+# bare clamp — the same assembly the roof leaders use (LEADER_CLAMPS below). The ring is
+# selected on outer diameter, and 3" PVC DWV is 3.5" OD, which is the #11 (3.4-3.7") size;
+# the 4" leaders take #13. Authoring the bare "S-5!" here billed brackets and no rings.
 VENT_CLAMPS = [
     Connector(uid="CMVC01AAAA", tag="CN-M-VENT-CLAMP1", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(1), ft(37)), elevation=ft(24, 4), size="S-5!",
+              position=pt(ft(1), ft(37)), elevation=ft(24, 4), size="S-5! CanDuit #11",
               connects=("VR-M-RADON-VENT", "W-A-N2")),
     Connector(uid="CMVC02AAAA", tag="CN-M-VENT-CLAMP2", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(1), ft(37)), elevation=ft(24, 10), size="S-5!",
+              position=pt(ft(1), ft(37)), elevation=ft(24, 10), size="S-5! CanDuit #11",
               connects=("VR-M-RADON-VENT", "W-A-N2")),
     Connector(uid="CMVC03AAAA", tag="CN-M-VENT-CLAMP3", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(1), ft(37)), elevation=ft(25, 4), size="S-5!",
+              position=pt(ft(1), ft(37)), elevation=ft(25, 4), size="S-5! CanDuit #11",
               connects=("VR-M-RADON-VENT", "W-A-N2")),
 ]
 
@@ -1625,6 +1629,11 @@ NEMA_CLAMP = [
 # CanDuit comes in 14 sizes; a 4" round leader (4.0" OD) takes the **#13** ring, whose
 # 4.00-4.37" adjustability range is the only one that closes on it. The reference note is
 # explicit that these keep the leader against the wall and are not its primary support.
+#
+# The ring number is the part number: it is what `size` bills through `library/hardware.py`
+# (S5_CANDUIT_PIPE_CLAMP), which in turn declares `requires_role`, so the seam clamp each
+# ring mounts on is billed with it. Authoring a bare "S-5!" here would order the brackets
+# and none of the rings.
 #
 # Four per leader at roughly 6' o.c. (5' / 11' / 17' / 23'), each on the wall that actually
 # has cladding at that elevation: main to 10', second to 20', the attic knee wall above. In

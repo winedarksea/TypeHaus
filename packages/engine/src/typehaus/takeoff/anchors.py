@@ -227,19 +227,40 @@ def authored_connector_rows(model: ResolvedModel) -> list:
 
     Knee braces are billed by :func:`knee_brace_rows`, which applies the per-joint pair
     rule, so they are excluded here to avoid double counting.
+
+    A part that mounts on another catalogued part (``StructuralHardware.requires_role``)
+    also bills one of *those* per unit — an S-5! CanDuit pipe clamp is a strap, and it is
+    the seam clamp under it that reaches the roof. The carrier count is folded into whatever
+    line already bills that role, so the BOM keeps one line per part rather than sprouting a
+    near-duplicate beside every ring.
     """
     groups: Counter = Counter()
-    for storey, element in _authored_connectors(model):
+    carried: Counter = Counter()
+    for _storey, element in _authored_connectors(model):
         if element.kind is ConnectorKind.KNEEBRACE:
             continue
         groups[(element.kind.value, element.size)] += 1
+        item = hardware_by_model(element.size)
+        if item is not None and item.requires_role is not None:
+            carried[item.requires_role] += 1
+
+    # Fold each carrier onto the line that already bills its part number, so one part stays
+    # one line. A role with no modeled connector of its own opens a line here.
+    for role, count in carried.items():
+        carrier = hardware_for_role(role)
+        key = next((k for k in groups if k[1] == carrier.model), (role, carrier.model))
+        groups[key] += count
 
     rows = []
     for (kind, size), count in sorted(groups.items()):
         item = hardware_by_model(size)
+        mounted = carried.get(item.role, 0) if item is not None else 0
+        modeled = count - mounted
+        basis = f"{modeled} modeled {kind.replace('_', ' ')} connector(s) in the plan"
+        if mounted:
+            basis += f" + {mounted} carrying a pipe clamp"
         rows.append(hardware_row(
-            item, scope="modeled connector", count=count, part_number=size,
-            basis=f"{count} modeled {kind.replace('_', ' ')} connector(s) in the plan"))
+            item, scope="modeled connector", count=count, part_number=size, basis=basis))
     return rows
 
 

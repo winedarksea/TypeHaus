@@ -43,7 +43,7 @@ from typehaus.resolve.roof_edge_geometry import (
     wall_face_inset,
 )
 from typehaus.resolve.roof_layer_setbacks import above_structure_layers
-from typehaus.resolve.trim_bands import open_channel_bands
+from typehaus.resolve.trim_bands import formed_edge_bands, open_channel_bands
 
 # A fascia board is envelope trim by category, but it is also the nailer the carpenter hangs
 # off the rafter tails — so it has to show up under a framing view toggle too.
@@ -299,20 +299,24 @@ def _edge_cladding_members(
 def _corner_trim_members(
     roof: ResolvedRoof, cladding, mating, slope_factor: float
 ) -> tuple[FramedMember, ...]:
-    """The formed angle capping a wrapped roof edge, one run per eave/rake.
+    """The formed cleat-and-hemmed-drip capping a wrapped roof edge, per eave/rake run.
 
     Where the wall and roof share one continuous cladding skin (the catlin house's
     standing-seam siding-and-roofing) there is no fascia and no drip-edge band — the wall
-    panels run up the stack edge to the roofing underside and the only trim is a corner
-    piece lapped over the joint. The box IR cannot fold an angle, so the piece is drawn as
-    a single vertical-leg box: hung just outboard of the wall face, deep enough to clear the
-    roofing's proud drip lap, its top flush with the roofing's top surface and its leg
-    lapping down over the head of the wall panels.
+    panels run up the stack edge to the roofing underside and the only trim is a formed
+    piece lapped over the joint. It is hung just outboard of the wall face, deep enough to
+    clear the roofing's proud drip lap, its top flush with the roofing's top surface and its
+    leg lapping down over the head of the wall panels.
+
+    Composed, not extruded: :func:`~typehaus.resolve.trim_bands.formed_edge_bands` gives it
+    the cleat / face / hem the fabricator actually folds, the same way
+    :func:`_gutter_members` gets its open-top U from ``open_channel_bands``. The whole piece
+    still mitres as one — the corner is resolved on the trim's *envelope*, so the bands share
+    a span and cannot tile a rake corner differently from each other.
     """
     top = (mating.cladding_under + cladding.thickness.meters) * slope_factor
     z_lo = mating.cladding_under * slope_factor - _CORNER_TRIM_LEG_M
-    height = top - z_lo
-    thickness_in = _CORNER_TRIM_THICKNESS_M / METERS_PER_INCH
+    bands = formed_edge_bands(_CORNER_TRIM_THICKNESS_M, top - z_lo)
     members: list[FramedMember] = []
     for run in roof_edge_runs(roof):
         # Inner face on the footprint edge (the wall cladding's outer face), outer face
@@ -323,16 +327,24 @@ def _corner_trim_members(
         span = mitred_span(run, -_CORNER_TRIM_THICKNESS_M, 0.0)
         if span is None:
             continue
-        center = _CORNER_TRIM_THICKNESS_M / 2.0
-        a, b = _offset(span.p0, run.normal, center), _offset(span.p1, run.normal, center)
-        members.append(FramedMember(
-            parent_uid=roof.uid, child_key=f"{run.key}-corner-trim", category="corner_trim",
-            profile=panel_profile(thickness_in, height / METERS_PER_INCH),
-            p0=a, p1=b, z0_m=span.z0_m + z_lo, z1_m=span.z0_m + top,
-            length_m=math.hypot(b[0] - a[0], b[1] - a[1]),
-            z0_end_m=span.z1_m + z_lo, z1_end_m=span.z1_m + top,
-            connection="roof:corner-trim", material=cladding.material_ref,
-        ))
+        for key, offset, band_t, bottom_drop, top_drop in bands:
+            # Offsets run outboard from the footprint edge, which is the section's inboard
+            # end; drops run down from the piece's top, which is flush with the roofing.
+            center = offset + band_t / 2.0
+            a = _offset(span.p0, run.normal, center)
+            b = _offset(span.p1, run.normal, center)
+            members.append(FramedMember(
+                parent_uid=roof.uid, child_key=f"{run.key}-corner-trim-{key}",
+                category="corner_trim",
+                profile=panel_profile(band_t / METERS_PER_INCH,
+                                      (bottom_drop - top_drop) / METERS_PER_INCH),
+                p0=a, p1=b,
+                z0_m=span.z0_m + top - bottom_drop, z1_m=span.z0_m + top - top_drop,
+                length_m=math.hypot(b[0] - a[0], b[1] - a[1]),
+                z0_end_m=span.z1_m + top - bottom_drop,
+                z1_end_m=span.z1_m + top - top_drop,
+                connection="roof:corner-trim", material=cladding.material_ref,
+            ))
     return tuple(members)
 
 

@@ -62,3 +62,33 @@ def drip_edge_bands(thickness_m: float, depth_m: float) -> tuple[Band, Band]:
         ("lap", 0.0, thickness_m, shell, 0.0),
         ("drip", thickness_m - shell, shell, depth_m, shell),
     )
+
+
+def formed_edge_bands(thickness_m: float, depth_m: float) -> tuple[Band, Band, Band]:
+    """A formed edge trim ``thickness_m`` deep in plan, ``depth_m`` tall: cleat, face, hem.
+
+    The piece capping a wrapped (continuous standing-seam) roof edge. Drawn as one solid box
+    it is a billet of aluminium as wide as the joint is deep — the same misreading the gutter
+    had before it became a channel. Sheet metal is a *surface*: what the eye reads at this
+    edge is a cleat lying on the roof plane, a face turning down over the joint, and the hem
+    the fabricator folds back under that face's bottom edge.
+
+    That hem is not decoration. A raw cut edge of sheet metal is sharp, it oil-cans, and it
+    holds a bead of water against the wall by surface tension; folding it back stiffens the
+    leg and throws the drip clear. It is the single most characteristic feature of formed
+    trim, and a flat band shows none of it.
+
+    Same frame as :func:`open_channel_bands`: offsets run across the thickness from the
+    *inboard* end, drops run down from the top. The cleat spans the full thickness at the
+    top; the face hangs off its outboard end for the rest of the depth; the hem returns
+    inboard along the bottom, stopping at the face's inner surface so the fold reads as a
+    fold rather than as two solids sharing a corner. The return is clamped so a shallow or
+    narrow run still resolves rather than folding back past its own cleat.
+    """
+    shell = min(GUTTER_SHELL_M, thickness_m / 3.0, depth_m / 3.0)
+    hem = min(2.0 * shell, max(0.0, thickness_m - 2.0 * shell))
+    return (
+        ("cleat", 0.0, thickness_m, shell, 0.0),
+        ("face", thickness_m - shell, shell, depth_m, shell),
+        ("hem", thickness_m - shell - hem, hem, depth_m, depth_m - shell),
+    )

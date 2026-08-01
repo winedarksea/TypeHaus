@@ -729,13 +729,59 @@ def test_a_wrapped_edge_swaps_the_band_for_a_corner_trim_piece(wrapped):
     """Same-material skin over a flush edge: no drip-edge band, a corner trim on each run."""
     assert _edge_cladding(wrapped) == []
     trims = [m for m in _roof(wrapped).members if m.category == "corner_trim"]
-    assert len(trims) == 6
+    # Each of the six runs is a formed section, not one extruded band: cleat, face, hem.
+    assert len(trims) == 18
+    assert {m.child_key.rsplit("-", 1)[1] for m in trims} == {"cleat", "face", "hem"}
     assert {m.material for m in trims} == {"wood"}
     assert {m.connection for m in trims} == {"roof:corner-trim"}
 
 
+def test_the_corner_trim_is_formed_metal_not_a_billet(wrapped):
+    """Cleat on the roof plane, face turned down at the outboard edge, hem folded back.
+
+    The failure this guards is the one it replaced: a single extruded band as thick in plan
+    as the joint is deep, which reads as a bar of solid metal rather than as sheet. What
+    makes it read as sheet is the negative — below the cleat, nothing spans the full
+    thickness, because the piece is a folded surface with air behind it.
+    """
+    roof = _roof(wrapped)
+    bands = {m.child_key.rsplit("-", 1)[1]: m
+             for m in roof.members
+             if m.category == "corner_trim" and m.child_key.startswith("eave-hi")}
+    assert set(bands) == {"cleat", "face", "hem"}
+    # An eave is perpendicular to the ridge, and "hi" is its far end on that axis — so the
+    # outward normal is +1 along it. Reading the axis off the roof keeps this independent of
+    # which way the fixture happens to run its ridge.
+    axis = 1 if roof.ridge_direction == "x" else 0
+
+    def span(member):
+        """Outboard ``(lo, hi)`` of a band, in the roof edge's own direction."""
+        half = cross_section(member.profile).width_m / 2.0
+        centre = member.p0[axis]
+        return centre - half, centre + half
+
+    cleat, face, hem = (span(bands[k]) for k in ("cleat", "face", "hem"))
+    thickness = cleat[1] - cleat[0]
+    # The cleat is the only band that reaches across the joint; it sits at the top.
+    assert bands["cleat"].z1_m == max(m.z1_m for m in bands.values())
+    assert face[1] - face[0] < thickness / 2.0
+    assert hem[1] - hem[0] < thickness / 2.0
+    # The face hangs off the cleat's *outboard* end — inboard of it would put the leg
+    # against the wall and the roofing edge outside the trim meant to cover it.
+    # (Micron tolerance: a band's width round-trips through its %g profile string.)
+    assert face[1] == pytest.approx(cleat[1], abs=1e-6)
+    # The hem folds back inboard along the bottom, stopping at the face's inner surface.
+    assert hem[1] == pytest.approx(face[0], abs=1e-6)
+    assert bands["hem"].z0_m == pytest.approx(bands["face"].z0_m, abs=1e-9)
+    assert bands["hem"].z1_m < bands["face"].z1_m
+
+
 def test_the_corner_trim_caps_the_roofing_edge(wrapped):
-    """Top flush with the roofing's top surface, leg lapping down over the wall panels."""
+    """Top flush with the roofing's top surface, leg lapping down over the wall panels.
+
+    Measured on the piece's *envelope* — the cleat carries its top and the face carries its
+    bottom, and it is the assembled section that has to land on those two planes.
+    """
     roof = _roof(wrapped)
     deck, foam, roofing = _WRAPPED_LAYERS
     span = max(p[1] for p in roof.footprint) - min(p[1] for p in roof.footprint)
@@ -744,11 +790,13 @@ def test_the_corner_trim_caps_the_roofing_edge(wrapped):
     top = under + roofing.thickness.meters * factor
     eaves = [m for m in _roof(wrapped).members
              if m.category == "corner_trim" and m.z0_m == pytest.approx(m.z0_end_m)]
-    assert len(eaves) == 2
-    for member in eaves:
-        assert member.z1_m == pytest.approx(roof.eave_z_m + top, abs=1e-9)
-        assert member.z0_m == pytest.approx(roof.eave_z_m + under - inch(2).meters,
-                                            abs=1e-9)
+    assert len(eaves) == 6, "two level eaves, three bands each"
+    for key in ("eave-lo", "eave-hi"):
+        bands = [m for m in eaves if m.child_key.startswith(key)]
+        assert len(bands) == 3
+        assert max(m.z1_m for m in bands) == pytest.approx(roof.eave_z_m + top, abs=1e-9)
+        assert min(m.z0_m for m in bands) == pytest.approx(
+            roof.eave_z_m + under - inch(2).meters, abs=1e-9)
 
 
 def test_a_wrapped_edge_runs_the_wall_cladding_to_the_roofing_underside(wrapped):

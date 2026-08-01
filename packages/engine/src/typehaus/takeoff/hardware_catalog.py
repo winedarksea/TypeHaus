@@ -28,6 +28,10 @@ ROLE_STANDING_SEAM_CLAMP = "standing_seam_clamp"
 # The PV mounting kit is its own role: hardware_for_role demands one product per role,
 # and the plain S-5! clamp (vent riser, exterior boxes) must keep serving its own.
 ROLE_PV_SEAM_CLAMP = "pv_seam_clamp"
+# The ring that secures a round pipe/conduit/leader to a seam clamp. Its own role for the
+# same reason: it is a separately purchased part, in fourteen diameters, and a plan that
+# says "clamp" without saying which ring is not orderable.
+ROLE_PIPE_CLAMP = "pipe_clamp"
 # A beam strapped down to the post it seats on. Its own role, not ROLE_KNEE_BRACE: a role
 # holds exactly one catalogued item (``hardware_for_role`` raises otherwise), and the KBS
 # strap and the APVKB knee brace are different products for different joints even though
@@ -52,6 +56,11 @@ class StructuralHardware:
     part_number_by_length_in: dict = field(default_factory=dict)
     # Nominal member sizes this part is published for (empty = size-independent).
     fits_nominal: tuple = ()
+    # A part that does not fasten to the building on its own, but mounts on another
+    # catalogued part — one of those is needed per unit of this one. Without it a BOM reads
+    # as orderable while being short every bracket: the CanDuit ring holds the pipe, but it
+    # is the S-5! clamp under it that holds the ring to the roof.
+    requires_role: str | None = None
 
     @property
     def available_lengths_in(self) -> tuple:

@@ -20,6 +20,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_POST_BASE,
     ROLE_BEAM_HOLD_DOWN,
     ROLE_GLAZING_PANEL_FASTENER,
+    ROLE_PIPE_CLAMP,
     ROLE_PV_SEAM_CLAMP,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_STANDING_SEAM_CLAMP,
@@ -194,6 +195,27 @@ S5_SEAM_CLAMP = StructuralHardware(
            "a standing-seam panel rib without piercing the panel",
 )
 
+# The ring that actually holds a round pipe — a downspout leader, a vent riser, conduit —
+# against the standing seam. It is *not* the same part as the clamp above: the CanDuit is an
+# electro-zinc strap with an EPDM liner pad, and its M8 threaded shaft mounts to any S-5!
+# clamp or bracket, so every ring ordered needs a clamp under it (``requires_role``).
+#
+# Fourteen diameters, selected on the pipe's *outer* diameter, not its trade size — which is
+# why the plan authors the ring number: a 4" round leader (4.0" OD) takes #13 (4.00-4.37"),
+# while 3" PVC DWV (3.5" OD) takes #11 (3.4-3.7"). Billing these as plain seam clamps, which
+# is what a family-prefix match on "S-5!" used to do, ships brackets and no rings.
+S5_CANDUIT_PIPE_CLAMP = StructuralHardware(
+    tag="s5-canduit-pipe-clamp",
+    name="S-5! CanDuit pipe clamp",
+    role=ROLE_PIPE_CLAMP,
+    manufacturer="S-5!",
+    model="S-5! CanDuit",
+    source="S-5! CanDuit pipe clamp (s-5.com) — electro-zinc coated steel strap with an "
+           "EPDM liner pad, 14 sizes for 0.79\"-4.6\" pipe OD; mounts on an S-5! clamp or "
+           "bracket by its M8 threaded shaft",
+    requires_role=ROLE_STANDING_SEAM_CLAMP,
+)
+
 KBS_BEAM_HOLD_DOWN = StructuralHardware(
     tag="simpson-kbs1z-strap",
     name="KBS1Z knee-brace / beam strap (ZMAX)",
@@ -248,6 +270,7 @@ STRUCTURAL_HARDWARE: tuple = (
     ABU_POST_BASE,
     H25A_HURRICANE_TIE,
     S5_SEAM_CLAMP,
+    S5_CANDUIT_PIPE_CLAMP,
     S5_PV_KIT,
     KBS_BEAM_HOLD_DOWN,
     POLY_PANEL_FASTENER,

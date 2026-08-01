@@ -331,7 +331,9 @@ def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
     # fascia boards and an edge-cladding band.
     assert not [m for m in roof.members if m.category == "fascia"]
     corner_trim = [m for m in roof.members if m.category == "corner_trim"]
-    assert len(corner_trim) == 6
+    # Six runs (two eaves + four rake halves), each a formed section of cleat / face / hem.
+    assert len(corner_trim) == 18
+    assert {m.child_key.rsplit("-", 1)[1] for m in corner_trim} == {"cleat", "face", "hem"}
     for member in corner_trim:
         assert member.z1_m > eave
     # No hand-authored fascia solids — that would double the derived band.

@@ -285,6 +285,37 @@ def test_coil_strap_is_ordered_by_the_coil(catlin_model) -> None:
     assert "straps" in row["basis"]
 
 
+def test_pipe_clamps_bill_as_canduit_rings_not_as_bare_seam_clamps(catlin_model) -> None:
+    """Every clamp holding a round pipe bills the ring, by its size, on one CanDuit line.
+
+    The bug this pins is a silent one. ``hardware_by_model`` falls back to a family-prefix
+    match, so an authored "S-5! CanDuit #13" used to resolve to the plain "S-5!" seam clamp
+    and print as one — a BOM that looked complete, priced fine, and would have arrived on
+    site as brackets with nothing to hold the leaders in.
+    """
+    rows = [row for row in hardware_takeoff(catlin_model) if row["role"] == "pipe_clamp"]
+    assert rows, "the roof leaders and the vent riser are held by pipe clamps"
+    assert all(row["description"] == "S-5! CanDuit pipe clamp" for row in rows)
+    # Selected on the pipe's OD, so the ring size is the part number and must reach the BOM.
+    by_part = {row["part_number"]: row["count"] for row in rows}
+    assert by_part == {"S-5! CanDuit #11": 3, "S-5! CanDuit #13": 8}
+
+
+def test_each_pipe_clamp_also_bills_the_seam_clamp_it_mounts_on(catlin_model) -> None:
+    """A CanDuit is a strap: the seam clamp under it is what reaches the roof.
+
+    The carrier count folds into the existing seam-clamp line rather than opening a second
+    line for the same part number, and the line's basis separates the two so the number can
+    be audited back to the plan.
+    """
+    rows = hardware_takeoff(catlin_model)
+    rings = sum(row["count"] for row in rows if row["role"] == "pipe_clamp")
+    seam = [row for row in rows if row["role"] == "standing_seam_clamp"]
+    assert len(seam) == 1, "one part number, one line"
+    assert seam[0]["count"] > rings, "carriers plus the clamps that hold no pipe"
+    assert f"+ {rings} carrying a pipe clamp" in seam[0]["basis"]
+
+
 def test_every_hardware_row_is_a_purchasable_catalogued_line(catlin_model) -> None:
     for row in hardware_takeoff(catlin_model):
         assert row["count"] > 0

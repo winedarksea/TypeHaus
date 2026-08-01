@@ -117,14 +117,22 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 - **Rake clip rules are extrapolated** from the eave-only golden reference; a rake detail
   drawing would confirm or correct them (same for the rake trim band).
 - **Layer end faces stay perpendicular to the slope**, not vertical as the 2D detail draws
-  them; serialized setbacks are drift-corrected but the cut face is raked.
-- **No closed-cell spray-foam wedge** at the roof/wall foam interface — the closure bands
-  follow the slope per-layer so the mismatch never forms; modelling the wedge means
-  modelling the flat cut first.
-- **The roof-edge metal is a flat band, not a formed cleat + hemmed drip.** Fine at model
-  scale; see `plans/standing_seam_design_hints.md`. (House fascia itself is gone: siding and
-  roofing are one continuous standing-seam skin with corner trim and a derived ridge-vent
-  cap on house + garage.)
+  them; serialized setbacks are drift-corrected but the cut face is raked. Each closure band
+  therefore tops out at its *own* mating face (`resolve/roof_edge.py::_closure_segment`), so
+  the stack ends as a per-layer staircase and **no wedge-shaped gap ever opens for the
+  closed-cell spray foam to fill** — modelling the wedge in 3D means modelling the flat cut
+  first. The 2D detail *does* draw one (`emit/draw/joints.py` builds the quad and hatches it
+  `spray-foam`, pinned by `test_transition_details.py::test_eave_has_per_layer_roof_bands_and_wedge`);
+  it is the 3D model the wedge is absent from.
+- ~~**The roof-edge metal is a flat band, not a formed cleat + hemmed drip.**~~ **Done.**
+  `resolve/trim_bands.py::formed_edge_bands` gives the corner trim the cleat / face / hem a
+  fabricator actually folds, the way `open_channel_bands` gives the gutter its U — so the
+  piece reads as sheet with air behind it rather than as a billet as thick as the joint is
+  deep. Pinned by `test_roof_gable_and_heel.py::test_the_corner_trim_is_formed_metal_not_a_billet`.
+  Each of the six runs is now three members; anything counting corner-trim members counts 18.
+  (House fascia itself is gone: siding and roofing are one continuous standing-seam skin with
+  corner trim and a derived ridge-vent cap on house + garage. Seam/panel modelling proper is
+  still out of scope — see `plans/standing_seam_design_hints.md`.)
 - **The garage gable is closed by carrying wall skin to the roof underside** rather than by
   real `top=ToRoof` gable walls (`W-G-E`'s ridge lands where the 16' door is centred).
   Accepted for now. (The gable-closure studs now lie flat in the drop-truss plane — the
@@ -157,6 +165,7 @@ Questions:
 - Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model)
 - Pantry
 - Add the plant room wall types
+- Add french drains (sump pump, down spouts, around footings) and possibly a drywell in the sunken garden
 
 ### Other visual ideas
 Dark base to the house

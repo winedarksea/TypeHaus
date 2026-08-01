@@ -98,7 +98,7 @@ def test_skin_members_carry_a_material_and_lumber_does_not(catlin_payload):
     house = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-HOUSE")
     # The house edge is a continuous standing-seam wrap (flush edge, one skin wall→roof):
     # the drip-edge band gave way to a corner trim piece in the roofing's own material.
-    trims = [m for m in house["members"] if m["key"].endswith("-corner-trim")]
+    trims = [m for m in house["members"] if "-corner-trim-" in m["key"]]
     assert trims and all(m["material"] == "standing-seam" for m in trims)
     garage = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-GARAGE")
     gable = [m for m in garage["members"]

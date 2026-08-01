@@ -55,13 +55,22 @@ class _EaveFrame:
         return (self._out(min(xs)), self._out(max(xs)),
                 self._up(found.z0_m), self._up(found.z1_m))
 
-    def member(self, child_key: str):
-        """One derived roof member, same frame. Members carry a centre line and a section."""
-        found = next(m for m in self.roof.members if m.child_key == child_key)
-        half = cross_section(found.profile).width_m / 2.0
-        centre = found.p0[0]
-        return (self._out(centre - half), self._out(centre + half),
-                self._up(found.z0_m), self._up(found.z1_m))
+    def member(self, prefix: str):
+        """Derived roof members' envelope, same frame. Members carry a centre line + section.
+
+        A prefix rather than an exact key because a *formed* piece is several members: the
+        corner trim is a cleat, a face and a hem. What laps what is a property of the
+        assembled piece, so the envelope is the honest thing to measure.
+        """
+        found = [m for m in self.roof.members if m.child_key.startswith(prefix)]
+        assert found, f"no member matching {prefix!r}"
+        los, his = [], []
+        for member in found:
+            half = cross_section(member.profile).width_m / 2.0
+            los.append(member.p0[0] - half)
+            his.append(member.p0[0] + half)
+        return (self._out(min(los)), self._out(max(his)),
+                self._up(min(m.z0_m for m in found)), self._up(max(m.z1_m for m in found)))
 
     def run_y(self, tag: str) -> tuple[float, float]:
         found = next(s for s in self.model.solids if s.tag == tag)
