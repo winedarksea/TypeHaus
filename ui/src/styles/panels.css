@@ -195,15 +195,19 @@
   font-size: 10px;
   font-weight: 700;
 }
-.detail-row.detail-missing .detail-marker,
-.detail-row.detail-conflicting .detail-marker {
-  border-color: var(--error);
-  color: var(--error);
+/* Starred = in the primary drawing export (Transition.star, server-backed). */
+.detail-row.detail-starred .detail-marker {
+  background: var(--accent);
+  color: var(--canvas-white);
 }
-.detail-row.detail-stale .detail-marker,
-.detail-row.detail-overridden .detail-marker {
-  border-color: var(--warn);
-  color: var(--warn);
+.detail-star {
+  flex: 0 0 auto;
+  min-width: 32px;
+  font-size: var(--text-md);
+  line-height: 1;
+}
+.detail-row.detail-starred .detail-star {
+  color: var(--accent);
 }
 
 .seg-row {

@@ -360,6 +360,9 @@ def print_sheets(
     handoff: bool = typer.Option(False, help="also write the architect-handoff bundle"),
     profile: Optional[str] = typer.Option(
         None, help="jurisdiction profile (default: preferences.toml, else the engine default)"),
+    details: str = typer.Option(
+        "all", help="all | primary — 'primary' keeps only starred transition details "
+                    "(Transition.star) in the composed set"),
 ) -> None:
     """Compose the permit-set PDF, plan DXFs, and optional architect handoff (M3)."""
     from typehaus.checks import evaluate_permit_checklist, load_preferences, run
@@ -392,7 +395,7 @@ def print_sheets(
             console.print(f"wrote {path}")
     if fmt in ("pdf", "both"):
         path, _ = write_permit_set(model, out / "permit_set.pdf", preferences,
-                                   profile=jurisdiction)
+                                   profile=jurisdiction, details=details)
         console.print(f"wrote {path}")
     if handoff:
         _write_handoff_bundle(d, model, preferences, jurisdiction)

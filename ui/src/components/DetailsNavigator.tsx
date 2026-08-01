@@ -1,50 +1,78 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "../state/store";
 import type { Condition } from "../model/types";
+import type { DetailIndexEntry } from "../engine/EngineClient";
 import { DetailViewer } from "./DetailViewer";
 
 // Details navigator (Phase 8): promotes derived boundary conditions (model.conditions) to
-// first-class linked objects. State is UI metadata (no engine field), persisted locally and
-// keyed by condition.key. Reuses DetailViewer for the focused detail drawing.
-type DetailState = "assigned" | "missing" | "draft" | "overridden" | "stale" | "conflicting";
-const STATES: DetailState[] = ["assigned", "missing", "draft", "overridden", "stale", "conflicting"];
-const DETAIL_STATE_KEY = "typehaus.detail-states";
-
-function loadStates(): Record<string, DetailState> {
-  try {
-    return JSON.parse(window.localStorage.getItem(DETAIL_STATE_KEY) ?? "{}");
-  } catch {
-    return {};
-  }
-}
-
+// first-class linked objects. The star is the engine's authored curation flag
+// (Transition.star, served per detail by GET /details and written back through the normal
+// PatchOp path) — starred details make the primary drawing export and read highlighted
+// here. This replaced a localStorage-only state enum that never round-tripped.
 export function DetailsNavigator() {
   const model = useStore((s) => s.model);
   const workspace = useStore((s) => s.activeWorkspace);
   const select = useStore((s) => s.select);
-  const [states, setStates] = useState<Record<string, DetailState>>(loadStates);
+  const client = useStore((s) => s.client);
+  const applyOps = useStore((s) => s.applyOps);
+  const [details, setDetails] = useState<Record<string, DetailIndexEntry>>({});
   const [viewerOpen, setViewerOpen] = useState(false);
+  const revision = model?.revision;
+
+  useEffect(() => {
+    let cancelled = false;
+    client
+      .getDetailIndex()
+      .then((entries) => {
+        if (cancelled) return;
+        const byKey: Record<string, DetailIndexEntry> = {};
+        for (const entry of entries) byKey[entry.key] = entry;
+        setDetails(byKey);
+      })
+      .catch(() => {
+        /* offline: no index — rows render without stars */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [client, revision]);
 
   // Only relevant in the DOCUMENT workspace.
   if (!model || workspace !== "document") return null;
 
   const conditions = model.conditions ?? [];
-  const stateOf = (c: Condition): DetailState => states[c.key] ?? "assigned";
-  const setState = (c: Condition, next: DetailState) => {
-    const updated = { ...states, [c.key]: next };
-    setStates(updated);
-    try {
-      window.localStorage.setItem(DETAIL_STATE_KEY, JSON.stringify(updated));
-    } catch {
-      /* private browsing */
-    }
-  };
 
   // Jump to the first referenced element so the junction is visible on the canvas.
   const jump = (c: Condition) => {
     const tag = c.elements[0];
     const wall = model.walls.find((w) => w.tag === tag);
     if (wall) select("wall", wall.uid);
+  };
+
+  const toggleStar = async (entry: DetailIndexEntry) => {
+    if (!entry.transition) return;
+    const next = !entry.star;
+    // Optimistic: flip locally, and flip every detail sharing the transition — the flag
+    // lives on the Transition, so all of its condition keys star together.
+    setDetails((prev) => {
+      const updated: Record<string, DetailIndexEntry> = {};
+      for (const [key, e] of Object.entries(prev)) {
+        updated[key] = e.transition === entry.transition ? { ...e, star: next } : e;
+      }
+      return updated;
+    });
+    const ok = await applyOps([
+      { op: "update", type: "Transition", tag: entry.transition, fields: { star: next } },
+    ]);
+    if (!ok) {
+      setDetails((prev) => {
+        const updated: Record<string, DetailIndexEntry> = {};
+        for (const [key, e] of Object.entries(prev)) {
+          updated[key] = e.transition === entry.transition ? { ...e, star: !next } : e;
+        }
+        return updated;
+      });
+    }
   };
 
   return (
@@ -56,25 +84,31 @@ export function DetailsNavigator() {
       {conditions.length === 0 ? (
         <div className="muted">No transition details generated.</div>
       ) : (
-        conditions.map((c) => (
-          <div key={c.key} className={`detail-row detail-${stateOf(c)}`}>
-            <button className="detail-jump" onClick={() => jump(c)} title="Show junction">
-              <span className="detail-marker">D</span>
-              <span className="detail-name">{c.kind}</span>
-              <span className="muted">{c.elements.join(", ")}</span>
-            </button>
-            <select
-              className="issue-state"
-              value={stateOf(c)}
-              onChange={(e) => setState(c, e.target.value as DetailState)}
-              aria-label="Detail state"
-            >
-              {STATES.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </div>
-        ))
+        conditions.map((c) => {
+          const entry = details[c.key];
+          const starred = entry?.star ?? false;
+          return (
+            <div key={c.key} className={`detail-row${starred ? " detail-starred" : ""}`}>
+              <button className="detail-jump" onClick={() => jump(c)} title="Show junction">
+                <span className="detail-marker">D</span>
+                <span className="detail-name">{c.kind}</span>
+                <span className="muted">{c.elements.join(", ")}</span>
+              </button>
+              {entry?.transition && (
+                <button
+                  className="btn detail-star"
+                  onClick={() => void toggleStar(entry)}
+                  title={starred
+                    ? "Starred: in the primary drawing export — click to unstar"
+                    : "Star this detail into the primary drawing export"}
+                  aria-pressed={starred}
+                >
+                  {starred ? "★" : "☆"}
+                </button>
+              )}
+            </div>
+          );
+        })
       )}
       {viewerOpen && <DetailViewer onClose={() => setViewerOpen(false)} />}
     </div>

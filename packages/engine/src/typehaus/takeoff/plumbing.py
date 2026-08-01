@@ -49,14 +49,24 @@ def riser_runs(model: ResolvedModel) -> list[dict[str, object]]:
 
 
 def fixture_unit_rows(model: ResolvedModel) -> dict[str, object]:
-    """Per-fixture DFU/WSFU plus per-run accumulated loads and required sizes."""
+    """Per-fixture DFU/WSFU plus per-run accumulated loads and required sizes.
+
+    Drain loads roll up the whole upstream subtree (``resolve/mep.py::accumulated_serves``)
+    exactly as ``mep.pipe_sizing`` grades them — the shared-derivation invariant."""
+    from typehaus.resolve.mep import accumulated_serves
+
     units = fixture_units(model.plan)
     units_by_tag = {row.tag: row for row in units}
+    rolled_up = accumulated_serves(model.pipe_runs)
     run_rows: list[dict[str, object]] = []
     for run in model.pipe_runs:
-        if run.system not in ("drain", "water_hot", "water_cold") or not run.serves:
+        if run.system not in ("drain", "water_hot", "water_cold"):
             continue
-        load, unresolved = branch_load(tuple(run.serves), units_by_tag, run.system)
+        serves = (rolled_up.get(run.tag, tuple(run.serves))
+                  if run.system == "drain" else tuple(run.serves))
+        if not serves:
+            continue
+        load, unresolved = branch_load(serves, units_by_tag, run.system)
         required = None
         if load is not None:
             required = (required_drain_diameter_in(load) if run.system == "drain"
@@ -68,7 +78,7 @@ def fixture_unit_rows(model: ResolvedModel) -> dict[str, object]:
                       else "pass" if diameter_in + 0.06 >= required else "fail")
         run_rows.append({
             "tag": run.tag, "uid": run.uid, "system": run.system,
-            "diameter_in": diameter_in, "serves": list(run.serves),
+            "diameter_in": diameter_in, "serves": list(serves),
             "load": load, "unit": "DFU" if run.system == "drain" else "WSFU",
             "required_in": required, "status": status,
             "unresolved": list(unresolved),

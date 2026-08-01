@@ -79,6 +79,9 @@ def opening_exclusions(openings: list[WallOpening], stud_thickness_m: float,
 
     The band covers the rough opening *and* the full trimmer+king pack on each side, so a
     module stud never lands inside the pack (redundant load path, guaranteed clash).
+    Because ``in_exclusion`` tests a module stud's *centreline*, the band must reach the
+    centreline of the last stud that would still clash — the pack's outer face plus half a
+    stud thickness — not merely the pack face itself.
     A header-free opening contributes no band at all: it adds no pack, and excluding one
     here is exactly what deleted the two module studs flanking every small window.
     """
@@ -89,7 +92,8 @@ def opening_exclusions(openings: list[WallOpening], stud_thickness_m: float,
         kings, jacks = jamb_pack_counts(_m(opening.width_m),
                                         opening_framing_pattern(opening.operation))
         zones.append((opening.center_m,
-                      opening.width_m / 2 + (kings + jacks) * stud_thickness_m + 0.005))
+                      opening.width_m / 2
+                      + (kings + jacks + 0.5) * stud_thickness_m + 0.005))
     return zones
 
 

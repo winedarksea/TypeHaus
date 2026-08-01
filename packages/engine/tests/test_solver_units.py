@@ -10,7 +10,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 from typehaus.model.assembly import FramingSpec, Layer
-from typehaus.model.enums import LayerFunction
+from typehaus.model.enums import LayerFunction, PartitionLayout
 from typehaus.quantities import inch
 from typehaus.resolve.framing.openings import WallOpening
 from typehaus.resolve.framing.solver import frame_wall
@@ -162,3 +162,52 @@ def test_window_that_breaks_a_stud_line_gets_a_header():
     members = frame_wall(plan, rw, openings=openings)
     assert [m for m in members if m.category == "header"]
     assert [m for m in members if m.category == "jack"]
+
+
+def _stations_by_category(members) -> dict[str, list[float]]:
+    out: dict[str, list[float]] = {}
+    for m in members:
+        if m.p0 == m.p1:  # vertical members carry their station in x (wall runs along +x)
+            out.setdefault(m.category, []).append(m.p0[0])
+    return out
+
+
+def test_module_stud_a_half_thickness_past_the_pack_face_is_excluded():
+    """Regression: the exclusion band used to end at the pack's outer *face*, but module
+    studs are tested by *centreline* — a station in the half-thickness sliver beyond the
+    face body-overlapped the outer king (catlin W-M-C3 stud-001 vs king-0-r0)."""
+    plan, rw = _wall_and_plan("3-stud")
+    # 30" opening centered at 0.75 m: the 48" module station (1.2192 m) lands 2.9 mm past
+    # the old band end (1.2122 m) and half-overlaps the king at 1.188 m.
+    openings = [WallOpening(0.75, inch(30).meters, inch(80).meters, 0.0, True)]
+    members = frame_wall(plan, rw, openings=openings)
+    stations = _stations_by_category(members)
+    thickness = inch(1.5).meters
+    for stud in stations.get("stud", []):
+        for pack in stations.get("king", []) + stations.get("jack", []):
+            assert abs(stud - pack) >= thickness - 1e-9, (stud, pack)
+
+
+def test_staggered_wall_module_studs_clear_the_jamb_pack():
+    """Same property on a staggered partition (catlin W-S-SBS stud-000 vs king-0-r0):
+    module studs ride the half-spacing combined rhythm, and the exclusion band must be
+    judged against that same rhythm."""
+    layer = Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+                  function=LayerFunction.STRUCTURE,
+                  framing=FramingSpec(member="2x4", plate_member="2x6",
+                                      layout=PartitionLayout.STAGGERED))
+    plan = SimpleNamespace(
+        library=SimpleNamespace(resolve_assembly=lambda tag: SimpleNamespace(layers=(layer,)))
+    )
+    rw = ResolvedWall(
+        uid="W1", tag="W-TEST", storey="MAIN", assembly="TEST_ASM",
+        axis=((0.0, 0.0), (4.0, 0.0)), layers=(), z0_m=0.0, z1_m=2.5,
+    )
+    openings = [WallOpening(0.75, inch(30).meters, inch(80).meters, 0.0, True)]
+    members = frame_wall(plan, rw, openings=openings)
+    stations = _stations_by_category(members)
+    thickness = inch(1.5).meters
+    assert stations.get("king"), "the 30\" door must still get its pack"
+    for stud in stations.get("stud", []):
+        for pack in stations.get("king", []) + stations.get("jack", []):
+            assert abs(stud - pack) >= thickness - 1e-9, (stud, pack)

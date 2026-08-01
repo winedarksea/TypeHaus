@@ -165,43 +165,92 @@ def test_the_basement_slab_fixtures_drain_by_gravity(catlin_model):
         assert set(fixtures) <= set(vent.serves), vent_tag
 
 
-def _on_segment(point, start, end, tol=1e-6):
-    """True when ``point`` lies on the segment ``start``-``end``.
-
-    The branches no longer all land on the main's own last vertex — one ties in at the head of
-    the under-slab leg and one part way down it — so the relationship to assert is
-    "somewhere on that leg", not "at its end".
-    """
-    (px, py), (ax, ay), (bx, by) = point, start, end
-    cross = (bx - ax) * (py - ay) - (by - ay) * (px - ax)
-    if abs(cross) > tol:
-        return False
-    dot = (px - ax) * (bx - ax) + (py - ay) * (by - ay)
-    length_sq = (bx - ax) ** 2 + (by - ay) ** 2
-    return -tol <= dot <= length_sq + tol
+# These started life as private copies here; the 2026-07-31 DFU rollup promoted them into
+# the engine (they are what `drain_tie_ins`/`accumulated_serves` derive the topology
+# with), so the tests import the one source of truth rather than cross-checking a fork.
+from typehaus.resolve.mep import on_pipe_segment as _on_segment  # noqa: E402
 
 
-def _invert_at(run, point, tol=1e-6):
-    """The run's authored invert where ``point`` sits on it, interpolated along the segment.
+def _invert_at(run, point):
+    from typehaus.resolve.mep import pipe_invert_at
 
-    Takes the *deepest* match, not the first. PR-B-MAIN-DRAIN passes through (3', 15'-6")
-    twice — once at the ceiling, where the collector turns, and once 9'-8" lower, where the
-    vertical drop through the slab lands — so one plan point carries two inverts. The under-slab
-    one is the leg a buried branch actually ties into, and it is the lower of the two.
-    """
-    candidates = []
-    for index in range(len(run.path) - 1):
-        start, end = run.path[index], run.path[index + 1]
-        if not _on_segment(point, start, end):
-            continue
-        length = ((end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2) ** 0.5
-        if length <= tol:
-            continue
-        travelled = ((point[0] - start[0]) ** 2 + (point[1] - start[1]) ** 2) ** 0.5
-        fraction = travelled / length
-        candidates.append(run.z_m[index] + (run.z_m[index + 1] - run.z_m[index]) * fraction)
-    assert candidates, f"{point} is not on {run.tag}"
-    return min(candidates)
+    z = pipe_invert_at(run, point)
+    assert z is not None, f"{point} is not on {run.tag}"
+    return z
+
+
+# --- drain-load topology (2026-07-31 rollup) -------------------------------------------
+
+def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
+    """The building drain grades on the union of every run that discharges into it —
+    the FX-1 serves convention (slab branches not re-listed on the main) can no longer
+    hide load. 34 authored + 8 slab-branch DFU = 42, which is what forced the 4" main."""
+    from typehaus.resolve.mep import accumulated_serves, drain_tie_ins
+    from typehaus.takeoff.plumbing_calc import branch_load, fixture_units
+
+    drains = [r for r in catlin_model.pipe_runs if r.system == "drain"]
+    acc = accumulated_serves(drains)
+    units = {row.tag: row for row in fixture_units(catlin_model.plan)}
+    main = acc["PR-B-MAIN-DRAIN"]
+    # Union by fixture tag — a fixture listed on both its branch and the main counts once.
+    assert len(main) == len(set(main))
+    for fx in ("FX-B-BATH-WC", "FX-B-SAUNA-SH", "FX-B-SAUNA-FD", "FX-B-BATH-LAV"):
+        assert fx in main, fx
+    load, unresolved = branch_load(main, units, "drain")
+    assert not unresolved
+    assert load == 42.0
+    # Every drain run discharges somewhere except the building drain itself and the
+    # dryer condensate's air-gap termination — a new run silently missing its tie-in
+    # would show up here as an extra terminal, understating every load downstream of it.
+    ties = drain_tie_ins(drains)
+    terminals = {r.tag for r in drains} - set(ties)
+    assert terminals == {"PR-B-MAIN-DRAIN", "PR-M-DRYER-COND"}
+
+
+def test_rollup_is_a_union_never_a_sum_and_unknown_never_partial():
+    """Synthetic three-run tree: branch B (fixture also re-listed on main M) and orphan O.
+    The rollup must count the shared fixture once, leave the orphan alone, and go UNKNOWN
+    downstream when any upstream tag has no table row."""
+    from types import SimpleNamespace
+
+    from typehaus.resolve.mep import accumulated_serves
+    from typehaus.takeoff.plumbing_calc import FixtureUnits, branch_load
+
+    def run(tag, path, z, serves):
+        return SimpleNamespace(tag=tag, system="drain", path=path, z_m=z, serves=serves)
+
+    main = run("M", ((0.0, 0.0), (10.0, 0.0)), (-0.5, -0.6), ("FX-A",))
+    branch = run("B", ((5.0, 3.0), (5.0, 0.0)), (-0.3, -0.55), ("FX-A", "FX-B"))
+    orphan = run("O", ((20.0, 20.0), (25.0, 20.0)), (-0.3, -0.4), ("FX-C",))
+    acc = accumulated_serves([main, branch, orphan])
+    assert acc["M"] == ("FX-A", "FX-B")
+    assert acc["O"] == ("FX-C",)
+    units = {"FX-A": FixtureUnits("FX-A", "toilet", None, 3.0, 2.5, 0.0, 2.5),
+             "FX-B": FixtureUnits("FX-B", "lavatory", None, 1.0, 1.0, 1.0, 1.5)}
+    load, unresolved = branch_load(acc["M"], units, "drain")
+    assert load == 4.0 and not unresolved
+    # FX-B loses its table row: the main's load is unknowable, never 3.0-and-shrug.
+    load, unresolved = branch_load(acc["M"], {"FX-A": units["FX-A"]}, "drain")
+    assert load is None and unresolved == ("FX-B",)
+
+
+def test_a_sibling_terminating_on_the_same_junction_is_not_a_parent():
+    """Several branches all ending on one wye point are siblings discharging into
+    whatever continues downstream — deriving parent links between them would both
+    inflate their loads and put a cycle in the graph (catlin's WC2/BATH1 junction)."""
+    from types import SimpleNamespace
+
+    from typehaus.resolve.mep import drain_tie_ins
+
+    def run(tag, path, z, serves=()):
+        return SimpleNamespace(tag=tag, system="drain", path=path, z_m=z, serves=serves)
+
+    junction = (3.0, 0.0)
+    a = run("A", ((3.0, 5.0), junction), (-0.5, -0.61))
+    b = run("B", ((3.0, -5.0), junction), (-0.5, -0.61))
+    main = run("M", ((0.0, 0.0), (10.0, 0.0)), (-0.6, -0.7))
+    ties = drain_tie_ins([a, b, main])
+    assert ties == {"A": "M", "B": "M"}
 
 
 # --- staggered-stud framing -----------------------------------------------------------

@@ -309,11 +309,12 @@ SLAB_STUBS = [
                       position=pt(ft(13, 6), ft(12, 9)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-B-SAUNA-FD"),
     # Where the ceiling collector turns down to become the under-slab building drain
-    # (2026-07-30). A 3" waste through cast concrete is a cast-in exactly like the fixture
-    # stubs; `mep.sleeve_coverage` holds the crossing to it.
+    # (2026-07-30; 4" since the 2026-07-31 building-drain upsize). A 4" waste through cast
+    # concrete is a cast-in exactly like the fixture stubs; `mep.sleeve_coverage` holds the
+    # crossing to it.
     SleevePenetration(uid="CBP902AAAA", tag="SP-B-SLAB-MAIN", host_ref="SL-B-FLOOR",
-                      position=pt(ft(3), ft(15, 6)), pipe_diameter=inch(3),
-                      sleeve_diameter=inch(4)),
+                      position=pt(ft(3), ft(15, 6)), pipe_diameter=inch(4),
+                      sleeve_diameter=inch(6)),
     # The bathroom branch's two under-footing crossings on its way to the main (IRC P2604,
     # the same relieving-arch treatment PR-G-HYDRANT-CW gets under the garage footing).
     # `mep.footing_clearance` requires both: at each one the pipe's crown sits below the
@@ -368,10 +369,12 @@ WALL_SLEEVES = [
                       position=pt(ft(5, 6), ft(18)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-0.86)),
+    # The collector's own crossing. centre = invert at y=18' (-1'-9.0" project) + half of
+    # 4" — re-solved with the 2026-07-31 building-drain upsize.
     SleevePenetration(uid="CBPW06AAAA", tag="SP-B-CW-MAIN", host_ref="W-B-CW",
-                      position=pt(ft(6), ft(18)), pipe_diameter=inch(3),
-                      sleeve_diameter=inch(4), axis="horizontal",
-                      center_elevation=ft(-1.63)),
+                      position=pt(ft(6), ft(18)), pipe_diameter=inch(4),
+                      sleeve_diameter=inch(6), axis="horizontal",
+                      center_elevation=ft(-1.587)),
     SleevePenetration(uid="CBPW07AAAA", tag="SP-B-CW-HW", host_ref="W-B-CW",
                       position=pt(ft(6, 6), ft(18)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(2), axis="horizontal",
@@ -478,13 +481,14 @@ WALL_SLEEVES = [
     # sewer connection below the slab there is no wall left at that depth — the walls stop at
     # -9'-0", the slab top — so the exit is an under-footing protection sleeve set at the
     # footing centerline, y=0. center_elevation is the pipe centreline where it crosses:
-    # PR-B-MAIN-DRAIN's invert there is -10'-6 1/4", so the sleeve centre is -10'-4 3/4".
+    # PR-B-MAIN-DRAIN's invert there is -10'-6 1/4", so with the 4" building drain
+    # (2026-07-31 upsize) the sleeve centre is invert + 2" = -10'-4 1/4" = ft(-10.356).
     # `mep.footing_clearance` is what requires this sleeve (IRC P2604) and matches the run to
     # it; `mep.sewer_exit_invert` holds the invert to the number cast in.
     SleevePenetration(uid="CBPW18AAAA", tag="SP-B-SEWER-EXIT", host_ref="FT-B-S1",
-                      position=pt(ft(3), ft(0)), pipe_diameter=inch(3),
-                      sleeve_diameter=inch(4), axis="horizontal",
-                      center_elevation=ft(-10.398)),
+                      position=pt(ft(3), ft(0)), pipe_diameter=inch(4),
+                      sleeve_diameter=inch(6), axis="horizontal",
+                      center_elevation=ft(-10.356)),
     SleevePenetration(uid="CBPW19AAAA", tag="SP-B-S1-HYD", host_ref="W-B-S1",
                       position=pt(ft(5), ft(0, 6)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
@@ -519,8 +523,9 @@ GARAGE_SLEEVES = [
 # exit. Starts at SP-M-WC1's new carrier-outlet point on the x=4' wall line (the wall-hung
 # WC drops its waste inside W-M-BAE, → SLEEVES). Axis-aligned so the authored length is
 # exact (4'-7" + 1' + 18' = 23'-7"); inverts give a comfortable 8"/23'-7" ≈ 0.34"/ft
-# slope, well above the 1/4"/ft minimum for a 3" line, and SP-M-WC2 still ties in at the
-# (3', 18') corner fitting.
+# slope, well above the 1/8"/ft minimum a 4" line needs (it was sized 3" until the
+# 2026-07-31 building-drain upsize), and SP-M-WC2 still ties in at the (3', 18') corner
+# fitting.
 # Routed 3D drains (2026-07-29 plumbing pass). Every run now carries an invert at every
 # vertex (`elevations`), vertical drops are repeated plan points, and the collector rides
 # y=16'-6" — a foot clear of the y=18' concrete cross walls it used to be drawn *inside*
@@ -540,7 +545,7 @@ GARAGE_SLEEVES = [
 #
 # So the collector stays hung at the basement ceiling where it belongs (that is where the
 # upper-floor stacks arrive), and at its downstream end it drops through the slab at
-# (3', 16'-6") — SP-B-SLAB-MAIN — and runs under the slab to the exit. That drop is also
+# (3', 15'-6") — SP-B-SLAB-MAIN — and runs under the slab to the exit. That drop is also
 # what makes every slab fixture in the basement possible: see PR-B-BATH-DRAIN and
 # PR-B-SAUNA-DRAIN below. (Until 2026-07-30 there was exactly one such fixture, FX-1.)
 DRAINS = [
@@ -548,15 +553,18 @@ DRAINS = [
             path=(pt(ft(6), ft(22, 7)), pt(ft(6), ft(22, 7)), pt(ft(6), ft(16, 6)),
                   pt(ft(3), ft(16, 6)), pt(ft(3), ft(15, 6)), pt(ft(3), ft(15, 6)),
                   pt(ft(3), ft(-1))),
-            diameter=inch(3), material="pvc",
+            diameter=inch(4), material="pvc",
             # …ceiling collector… | 1' more at the ceiling | drop through the slab |
             # under-slab to the exit. The drop is at y=15'-6", not at the collector's own
             # y=16'-6" turn: 5'-6" down under the slab the pipe sits 10 5/8" below FT-B-CW's
             # bearing plane, so it needs at least that much lateral clearance from the
             # footing's 45° influence line and 16'-6" gave only 8". y=15'-6" gives 20".
             # -1.1 and -1.55 are basement-relative: -10'-1 1/5" and -10'-6 3/5" project, so
-            # the 16'-6" under-slab leg falls 5.4" (0.33"/ft) and its crown clears the slab
-            # underside by 6.7".
+            # the 16'-6" under-slab leg falls 5.4" (0.33"/ft — a 4" line only needs
+            # 0.125"/ft) and its 4" crown clears the slab underside by 5.7". Sized 4"
+            # (2026-07-31): the rolled-up basement load is 42 DFU, past the 35 a 3"
+            # horizontal branch carries (Table 703.2); inverts stayed put, only the crown
+            # rose.
             elevations=(ft(9), ft(8), ft(7), ft(6, 11.2), ft(6, 10.9), ft(-1.1),
                         ft(-1.55)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH2-WC", "FX-M-KITCH-SINK",
@@ -646,13 +654,12 @@ DRAINS = [
     # tie is a wye into the upper half of the pipe rather than a bottom entry.
     #
     # A note on what these runs are NOT on: neither fixture group appears in
-    # PR-B-MAIN-DRAIN's `serves`. That follows the convention FX-1 set — a slab branch carries
-    # its own fixtures and the main lists the stacks it collects — but the arithmetic is worth
-    # writing down, because the answer changed today. The main lists 34 DFU against the 35 a
-    # 3" horizontal branch carries (Table 703.2); the four fixtures below add 8 more, so the
-    # building drain's real load is now ~42 DFU and it wants to be 4". That is a sizing
-    # decision on the 2026-07-30 under-slab main, not something this bathroom should make
-    # silently — recorded in plans/TODO.md.
+    # PR-B-MAIN-DRAIN's `serves`. That follows the convention FX-1 set — a slab branch
+    # carries its own fixtures and the main lists the stacks it collects — and since
+    # 2026-07-31 the convention is load-safe: `mep.pipe_sizing` rolls every drain's load
+    # up through the routed geometry (resolve/mep.py::accumulated_serves), so these 8 DFU
+    # land on the main whether or not they are re-listed. That rollup is what showed the
+    # building drain carrying 42 DFU against the 35 a 3" line takes, and why it is 4" now.
     #
     # The bathroom branch. Its route is the one FX-1's used, extended east into the new room:
     # 3" out of the WC's closet bend at (11'-8", 20'), west under FT-B-STR's bearing plane in

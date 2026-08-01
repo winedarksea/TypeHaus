@@ -21,6 +21,7 @@ from typehaus.checks.code.mn_residential.rules import (
     stair_headroom,
     stair_landing_depth,
     stair_width,
+    stairwell_guard,
 )
 from typehaus.findings import Result
 from typehaus.quantities import inch
@@ -152,3 +153,72 @@ def test_handrail_is_unknown_on_required_flights_not_silent(catlin_ctx):
 def test_handrail_not_required_under_four_risers():
     stub = _flight(tread_count=2)  # 3 risers
     assert [f.result for f in stair_handrail(_ctx(stub))] == [Result.PASS]
+
+
+# --- R312.1 stair-well guards ----------------------------------------------------------
+
+def _ctx_with_elements(ctx, keep):
+    """The real catlin context with its authored element list filtered/mapped — the
+    cheapest way to knock a railing out (or shrink one) without a second plan load."""
+    elements = [keep(e) for e in ctx.plan.all_elements()]
+    elements = [e for e in elements if e is not None]
+    plan = SimpleNamespace(all_elements=lambda: elements)
+    return SimpleNamespace(plan=plan, model=ctx.model, preferences=ctx.preferences)
+
+
+def test_catlin_stair_wells_are_guarded(catlin_ctx):
+    findings = stairwell_guard(catlin_ctx)
+    assert {f.result for f in findings} == {Result.PASS}, [f.message for f in findings]
+    by_msg = {f.message.split(":")[0]: f.message for f in findings}
+    # Both wells adjudicated, and the pass names the members actually doing the guarding —
+    # the second-storey well's east edge is RL-S-STAIR plus wall W-S-C4B beyond y=30'-10",
+    # which is exactly the split this check exists to measure.
+    assert set(by_msg) == {"FO-S-STAIR", "FO-A-STAIR"}
+    assert "RL-S-STAIR" in by_msg["FO-S-STAIR"]
+    assert "RL-A-STAIR" in by_msg["FO-A-STAIR"]
+
+
+def test_removing_the_stairhead_guard_opens_the_south_edge(catlin_ctx):
+    ctx = _ctx_with_elements(
+        catlin_ctx, lambda e: None if getattr(e, "tag", "") == "RL-S-STAIRHEAD" else e)
+    findings = stairwell_guard(ctx)
+    fails = [f for f in findings if f.result is Result.FAIL]
+    assert fails and any("FO-S-STAIR" in f.message and "south edge" in f.message
+                         for f in fails), [f.message for f in findings]
+
+
+def test_a_34_inch_railing_is_not_a_guard(catlin_ctx):
+    from typehaus.model.structure import Railing
+
+    def shrink(e):
+        if isinstance(e, Railing) and e.tag == "RL-S-STAIRHEAD":
+            return e.model_copy(update={"height": inch(34)})
+        return e
+
+    findings = stairwell_guard(_ctx_with_elements(catlin_ctx, shrink))
+    fails = [f for f in findings if f.result is Result.FAIL and "FO-S-STAIR" in f.message]
+    assert fails, [f.message for f in findings]
+
+
+def test_guard_check_never_passes_by_absence(catlin_ctx):
+    from typehaus.model.floors import FloorOpening
+
+    ctx = _ctx_with_elements(
+        catlin_ctx, lambda e: None if isinstance(e, FloorOpening) else e)
+    findings = stairwell_guard(ctx)
+    assert [f.result for f in findings] == [Result.UNKNOWN]
+
+
+def test_the_stair_throat_is_not_an_open_side(catlin_ctx):
+    """The second-storey well's south edge is guarded RL-S-STAIRHEAD + the flight entry;
+    with the railing gone the *whole* remainder reports, but the throat span itself
+    (x 10'-3 3/8"..13'-9 3/4", where ST-M2S arrives) never does on the intact plan —
+    pinned by the clean pass above. Here: the reported gap with the railing removed is
+    the railing's own span, not the throat's."""
+    ctx = _ctx_with_elements(
+        catlin_ctx, lambda e: None if getattr(e, "tag", "") == "RL-S-STAIRHEAD" else e)
+    fail = next(f for f in stairwell_guard(ctx)
+                if f.result is Result.FAIL and "FO-S-STAIR" in f.message)
+    # The gap starts at the railing's authored west end (13'-9 3/4" = 13.81'), east of
+    # the throat — the flight's own entry span stays exempt.
+    assert "13.8" in fail.message, fail.message

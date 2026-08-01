@@ -1,4 +1,7 @@
-"""Catlin transition library — documentation overlays never alter resolved geometry."""
+# haus: editable
+# Catlin transition library — documentation overlays never alter resolved geometry.
+# Editable so the UI's detail star toggle (Transition.star — the primary-set curation
+# flag) round-trips to source; the geometry-free fields here are still design decisions.
 
 from typehaus import Continuity, Transition
 
@@ -10,24 +13,27 @@ AIR_WATER_THERMAL = (
 )
 
 TRANSITIONS = (
+    # star=True marks the details a framer/builder actually opens on site — the primary
+    # export (`haus print --details primary`) keeps exactly these; the rest still derive.
     Transition(uid="CATR001AAAA", tag="TR-CATLIN-EAVE", condition_pattern="wall_roof:*",
                notes="notes/roof_wall_eave_detail.md", overlay="zero-overhang-eave",
-               continuity=AIR_WATER_THERMAL),
+               continuity=AIR_WATER_THERMAL, star=True),
     Transition(uid="CATR002AAAA", tag="TR-CATLIN-FOUNDATION",
                condition_pattern="wall_foundation:*",
                notes="notes/basement_to_framed_wall_detail.md",
                overlay="basement-framed-wall", continuity=AIR_WATER_THERMAL,
-               documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-FOUNDATION-FOAM-RETURN")),
+               documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-FOUNDATION-FOAM-RETURN"),
+               star=True),
     Transition(uid="CATR003AAAA", tag="TR-CATLIN-RIM-BAND",
                condition_pattern="storey_stack:rim:*", overlay="rim-band-air-seal",
-               continuity=AIR_WATER_THERMAL),
+               continuity=AIR_WATER_THERMAL, star=True),
     Transition(uid="CATR004AAAA", tag="TR-CATLIN-STACK-SHELF",
                condition_pattern="stack_width_change:*", overlay="stack-width-shelf",
                continuity=AIR_WATER_THERMAL),
     Transition(uid="CATR005AAAA", tag="TR-CATLIN-FRAMED-OPENING",
                condition_pattern="opening_perimeter:CATLIN_EXT_*",
                notes="notes/roof_wall_eave_detail.md", overlay="window-head-jamb-sill",
-               continuity=AIR_WATER_THERMAL),
+               continuity=AIR_WATER_THERMAL, star=True),
     Transition(uid="CATR006AAAA", tag="TR-CATLIN-CONCRETE-OPENING",
                condition_pattern="opening_perimeter:CATLIN_CONC_*",
                notes="notes/sauna_basement_wall_detail.md", overlay="concrete-opening"),
@@ -38,11 +44,8 @@ TRANSITIONS = (
     Transition(uid="CATR008AAAA", tag="TR-CATLIN-GARDEN-ARCH",
                condition_pattern="opening_perimeter:SUNKEN_GARDEN_*",
                suppress=True,
-               suppress_reason=(
-                   "the sunken-garden arch is an open-air rough opening in exposed "
-                   "concrete — no buck, no frame, no flashing is applied at its "
-                   "perimeter; the arch geometry the plans and sections draw is the "
-                   "whole story, so a perimeter detail sheet would add nothing")),
+               # (single literal: the editable dialect forbids concatenated strings)
+               suppress_reason="the sunken-garden arch is an open-air rough opening in exposed concrete — no buck, no frame, no flashing is applied at its perimeter; the arch geometry the plans and sections draw is the whole story, so a perimeter detail sheet would add nothing"),
     Transition(uid="CATR009AAAA", tag="TR-CATLIN-GARAGE-OPENING",
                condition_pattern="opening_perimeter:GARAGE_WALL_2X6",
                notes="notes/garage_wall_detail_side.md", overlay="garage-opening"),
@@ -61,12 +64,8 @@ TRANSITIONS = (
                documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-SAUNA-LINER-RETURN",
                                 "CR-PORCH-MASONRY-RETURN"),
                suppress=True,
-               suppress_reason=(
-                   "the jog happens *along* the wall run, while a derived detail cuts "
-                   "perpendicular to the wall — the change of assembly is simply not in "
-                   "that cut plane, so any sheet here would describe a junction the "
-                   "drawing does not show; the returns themselves are documented by the "
-                   "construction rules this transition records")),
+               # (single literal: the editable dialect forbids concatenated strings)
+               suppress_reason="the jog happens *along* the wall run, while a derived detail cuts perpendicular to the wall — the change of assembly is simply not in that cut plane, so any sheet here would describe a junction the drawing does not show; the returns themselves are documented by the construction rules this transition records"),
     # The sauna door breaks the hot side's vapour control layer — the foil-faced polyiso
     # has to be returned into the jamb and sealed, not just butted.
     Transition(uid="CATR014AAAA", tag="TR-CATLIN-SAUNA-OPENING",

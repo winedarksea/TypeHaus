@@ -59,12 +59,20 @@ class SheetSpec:
     page: PageFn | None = None         # table/cover pages
     size: tuple[float, float] = LEDGER  # paper preset (width, height) in inches
     north_arrow: bool = False          # stamp a north arrow in the viewport (plan sheets)
+    # Whether the sheet belongs in the *primary* set. Plans/sections/schedules and
+    # authored details always do; a derived transition detail only when its Transition
+    # is starred (model/views.py). ``build_sheet_index(details="primary")`` filters on it.
+    primary: bool = True
 
 
 def build_sheet_index(model: ResolvedModel,
                       preferences: "Preferences | None" = None,
-                      profile: "JurisdictionProfile | None" = None) -> list[SheetSpec]:
-    """Assemble the ordered permit-set sheet list — the one place sheet order/content lives."""
+                      profile: "JurisdictionProfile | None" = None,
+                      details: str = "all") -> list[SheetSpec]:
+    """Assemble the ordered permit-set sheet list — the one place sheet order/content lives.
+
+    ``details="all"`` (default) keeps every derived transition detail; ``"primary"``
+    keeps only starred ones (the curated set a builder actually opens)."""
     sheets: list[SheetSpec] = [SheetSpec("A-000", "Cover / code summary")]
     sheets.append(SheetSpec("G-002", "General notes",
                             page=partial(_write_general_notes, profile=profile)))
@@ -131,10 +139,10 @@ def build_sheet_index(model: ResolvedModel,
         sheets.append(SheetSpec(number, f"{facing.title()} exterior elevation",
                                 scene=partial(build_elevation, facing=facing)))
 
-    details = [item for item in model.plan.elements_of_kind("Slice")
-              if item.kind.value == "detail"]
+    authored_details = [item for item in model.plan.elements_of_kind("Slice")
+                        if item.kind.value == "detail"]
     next_detail = 401
-    for detail in details:
+    for detail in authored_details:
         sheets.append(SheetSpec(f"A-{next_detail}", detail.title or detail.tag,
                                 scene=partial(build_authored_detail_scene, view=detail)))
         next_detail += 1
@@ -142,8 +150,12 @@ def build_sheet_index(model: ResolvedModel,
     # Derived transition details — one per distinct bound condition key, sorted by key,
     # continuing the A-4xx block after any authored details (→ 11b transition details).
     for derived in derive_detail_slices(model):
+        starred = bool(getattr(derived.transition, "star", False))
+        if details == "primary" and not starred:
+            continue
         sheets.append(SheetSpec(f"A-{next_detail}", derived.view.title or derived.key,
-                                scene=partial(_derived_detail_scene, derived=derived)))
+                                scene=partial(_derived_detail_scene, derived=derived),
+                                primary=starred))
         next_detail += 1
 
     sheets.append(SheetSpec("A-601", "Door / window schedule", page=_write_opening_schedule))
@@ -193,6 +205,7 @@ def _storey_elevation(model: ResolvedModel, storey_tag: str) -> float:
 def write_permit_set(model: ResolvedModel, output: Path,
                      preferences: "Preferences | None" = None,
                      profile: "JurisdictionProfile | None" = None,
+                     details: str = "all",
                      ) -> tuple[Path, dict[str, object]]:
     """Compose the permit-set baseline into one multi-page PDF.
 
@@ -211,7 +224,7 @@ def write_permit_set(model: ResolvedModel, output: Path,
     if profile is None:
         profile = resolve_profile(preferences or Preferences())
     output.parent.mkdir(parents=True, exist_ok=True)
-    sheets = build_sheet_index(model, preferences, profile)
+    sheets = build_sheet_index(model, preferences, profile, details=details)
     index = [(sheet.number, sheet.title) for sheet in sheets]
     with PdfPages(output) as pdf:
         for sheet in sheets:

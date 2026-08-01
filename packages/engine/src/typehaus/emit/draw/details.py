@@ -294,6 +294,7 @@ def detail_index(model: ResolvedModel) -> list[dict]:
             "overlay": getattr(tr, "overlay", None) if tr is not None else None,
             "elements": list(d.condition.element_tags),
             "state": "authored" if authored else "seed",
+            "star": bool(getattr(tr, "star", False)) if tr is not None else False,
         })
     return out
 

@@ -47,6 +47,8 @@ MN_2024 = JurisdictionProfile(
                        ("code.R311_7_stair_geometry", "code.R311_7_2_stair_headroom",
                         "code.R311_7_1_stair_width", "code.R311_7_6_landing_depth"),
                        ("IRC R311.7",)),
+        PermitItemSpec("Guards at stair-well openings", ("code.R312_1_guard",),
+                       ("IRC R312.1",)),
         PermitItemSpec("Smoke / CO alarm placement",
                        ("code.R314_R315_alarms", "code.R315_garage_alarms"),
                        ("IRC R314", "IRC R315")),

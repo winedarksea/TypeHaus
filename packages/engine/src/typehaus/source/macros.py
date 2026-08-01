@@ -544,6 +544,83 @@ def detach_placeable(plan: PlanModel, storey: str, *, tag: str,
     return MutationResult(ops=[PatchOp("update", item.element_kind, tag, fields)])
 
 
+def retype_placeable(plan: PlanModel, storey: str, *, tag: str,
+                     type_ref: str) -> MutationResult:
+    """Swap a placeable's product type, keeping its wall-mounted face where it was.
+
+    A bare ``type_ref`` PATCH grows/shrinks the footprint about the authored *center*
+    (position is the footprint centroid, ``resolve/placeables.py::_local_footprint``),
+    which un-seats a wall-backed unit: the 2026-07-30 shower→tub-shower hand edit had to
+    recompute position by hand. This macro does that arithmetic: when both types carry a
+    rectangular footprint and the item names a ``wall_ref``, the position shifts by
+    ``(d_old − d_new)/2`` along the *back* direction (local +y under the item's rotation
+    — ``resolve/placeables.py`` defines local −y as the room-facing front), so the
+    mounted back face stays exactly where it was. The along-wall center station keeps;
+    re-centring in an alcove stays the author's call. Items placed by a
+    ``location.attachment`` need no shift (the resolver re-derives their center from the
+    wall face each build), and items with neither get a warning instead of a guess.
+
+    Every other authored reference to the tag (``PipeRun.serves``,
+    ``Sleeve.serves_fixture``, lighting ``controlled_by``, …) stays *valid* — the tag
+    does not change — but sizing that was authored against the old type (drain/trap
+    diameters, slice cut planes) is not rewritten; those surface as warnings for review.
+    Out of scope, deliberately: tag renames, catalog/type edits, rewriting dependent
+    diameters."""
+    from typehaus.resolve.placeables import _TYPE_COLLECTIONS
+
+    item = _placeable(plan, storey, tag)
+    if item is None:
+        raise MacroError(f"no placeable {tag!r} on storey {storey!r}")
+    types = {entry.tag: entry for collection, _, _ in _TYPE_COLLECTIONS
+             for entry in getattr(plan.library, collection)}
+    new_type = types.get(type_ref)
+    if new_type is None:
+        raise MacroError(f"unknown product type {type_ref!r}")
+    old_type = types.get(getattr(item, "type_ref", None))
+    fields: dict[str, object] = {"type_ref": type_ref}
+    warnings: list[str] = []
+
+    old_fp = getattr(old_type, "footprint", None) if old_type is not None else None
+    new_fp = getattr(new_type, "footprint", None)
+    if old_fp is not None and new_fp is not None:
+        depth_shift_m = (old_fp[1].meters - new_fp[1].meters) / 2.0
+        footprint_changed = (abs(old_fp[0].meters - new_fp[0].meters) > 1e-9
+                             or abs(depth_shift_m) > 1e-9)
+        location = getattr(item, "location", None)
+        attached = location is not None and getattr(location, "attachment", None) is not None
+        if footprint_changed and not attached:
+            if getattr(item, "wall_ref", None) and abs(depth_shift_m) > 1e-9:
+                rotation = getattr(item, "rotation", None)
+                theta = rotation.radians if rotation is not None else 0.0
+                x, y = item.position.xy_m
+                fields["position"] = _point_expr_m(
+                    x - depth_shift_m * math.sin(theta),
+                    y + depth_shift_m * math.cos(theta))
+                warnings.append(
+                    f"{tag} re-anchored: back face held against {item.wall_ref} "
+                    f"(center moved {abs(depth_shift_m) / 0.0254:.1f}\" "
+                    f"{'toward' if depth_shift_m > 0 else 'away from'} the wall)")
+            elif not getattr(item, "wall_ref", None):
+                warnings.append(
+                    f"{tag} footprint changed ({old_fp[0].fmt()} x {old_fp[1].fmt()} → "
+                    f"{new_fp[0].fmt()} x {new_fp[1].fmt()}) but it names no wall_ref — "
+                    "position kept as-is; verify placement")
+
+    for element in plan.all_elements():
+        if element.tag == tag:
+            continue
+        referencing = sorted(
+            field for field, value in element.model_dump().items()
+            if value == tag or (isinstance(value, (list, tuple)) and tag in value))
+        if referencing:
+            warnings.append(
+                f"{element.element_kind} {element.tag} references {tag} via "
+                f"{', '.join(referencing)} — authored against the old type; review "
+                "sizing/placement")
+    return MutationResult(ops=[PatchOp("update", item.element_kind, tag, fields)],
+                          warnings=tuple(warnings))
+
+
 def assign_placeable_room(plan: PlanModel, storey: str, *, tag: str,
                           room: str | None) -> MutationResult:
     """Set or clear the explicit room claim; geometry containment remains resolver-owned."""

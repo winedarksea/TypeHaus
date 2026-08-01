@@ -218,7 +218,6 @@ function SelectionInspector({
 }
 
 function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullable<Model["canvas_objects"]>[number] }) {
-  const applyOps = useStore((state) => state.applyOps);
   const runMacro = useStore((state) => state.runMacro);
   const toast = useStore((state) => state.toast);
   const setDetailView = useStore((state) => state.setDetailView);
@@ -280,8 +279,12 @@ function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullabl
   };
   const changeType = async (typeRef: string) => {
     if (!typeRef || typeRef === item.type) return;
-    const ok = await applyOps([{ op: "update", type: item.kind, tag: item.tag, fields: { type_ref: typeRef } }]);
-    if (!ok) toast("Could not change object type", "error");
+    // A macro, not a raw type_ref PATCH: the engine re-anchors a wall-backed unit's
+    // mounted face under the footprint change and returns reference warnings (which
+    // runMacro already surfaces as toasts).
+    const result = await runMacro({ macro: "retype_placeable", storey: item.storey,
+      tag: item.tag, type_ref: typeRef });
+    if (!result) toast("Could not change object type", "error");
   };
   const lightingControls = model.electrical?.lighting?.controls ?? [];
   const controlledBy = lightingControls.find((row) => row.tag === item.tag)?.switches ?? [];

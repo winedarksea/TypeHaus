@@ -84,6 +84,11 @@ class Transition(Element):
     # for it. ``suppress_reason`` says why, so the gap never reads as an oversight.
     suppress: bool = False
     suppress_reason: str = ""
+    # Authored curation: a starred transition's detail belongs in the *primary* drawing
+    # set (and the UI highlights it); unstarred details still derive and render, but the
+    # primary export may leave them out. Orthogonal to ``suppress`` — suppress is "no
+    # sheet at all, on the record", star is "this sheet is one a builder actually needs".
+    star: bool = False
 
 
 @register_element

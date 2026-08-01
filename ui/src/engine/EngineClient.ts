@@ -108,6 +108,10 @@ export type MacroRequest =
   | { macro: "place_placeable"; storey: string; type_ref: string; position: [string, string]; hint_file?: string; tag?: string }
   | { macro: "assign_placeable_room"; storey: string; tag: string; room?: string | null }
   | { macro: "duplicate_canvas_object"; storey: string; tag: string }
+  // Swap a placeable's product type; the engine re-anchors a wall-backed unit's mounted
+  // face under the footprint change and returns warnings for authored references
+  // (serves lists, sleeves, …) that were sized against the old type.
+  | { macro: "retype_placeable"; storey: string; tag: string; type_ref: string }
   // Library macros (no storey): the assembly-editor clone-and-tweak flow (→ 21b WP2.4d/e).
   | { macro: "duplicate_assembly"; source: string; tag: string }
   | { macro: "blank_assembly"; tag: string }
@@ -127,6 +131,9 @@ export interface DetailIndexEntry {
   overlay: string | null;
   elements: string[];
   state: "authored" | "seed";
+  // Authored curation flag (Transition.star): starred details make the primary drawing
+  // export (`haus print --details primary`) and are highlighted in the navigator.
+  star: boolean;
 }
 export interface DetailAnnotationSpec {
   uid: string | null;

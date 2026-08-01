@@ -637,6 +637,118 @@ def _matching_sleeve(model: ResolvedModel, host_tag: str, point: tuple[float, fl
     return best[1] if best is not None else None
 
 
+def on_pipe_segment(point: tuple[float, float], start: tuple[float, float],
+                    end: tuple[float, float], tol: float = 1e-6) -> bool:
+    """True when ``point`` lies on the plan segment ``start``–``end`` (endpoints included)."""
+    (px, py), (ax, ay), (bx, by) = point, start, end
+    cross = (bx - ax) * (py - ay) - (by - ay) * (px - ax)
+    if abs(cross) > tol:
+        return False
+    dot = (px - ax) * (bx - ax) + (py - ay) * (by - ay)
+    length_sq = (bx - ax) ** 2 + (by - ay) ** 2
+    return -tol <= dot <= length_sq + tol
+
+
+def pipe_invert_at(run, point: tuple[float, float], tol: float = 1e-6) -> float | None:
+    """The run's invert where ``point`` sits on its plan path, or None if it doesn't.
+
+    Takes the *deepest* match, not the first: a run's plan path can visit one point twice
+    at two elevations (PR-B-MAIN-DRAIN passes (3', 15'-6") at the ceiling where the
+    collector turns and again 9'-8" lower where the drop through the slab lands). The
+    deeper leg is the one a buried branch actually ties into.
+    """
+    if run.z_m is None:
+        return None
+    candidates = []
+    for index in range(len(run.path) - 1):
+        start, end = run.path[index], run.path[index + 1]
+        if not on_pipe_segment(point, start, end, tol):
+            continue
+        seg_len = length(sub(end, start))
+        if seg_len <= tol:
+            continue
+        travelled = length(sub(point, start))
+        fraction = travelled / seg_len
+        candidates.append(run.z_m[index]
+                          + (run.z_m[index + 1] - run.z_m[index]) * fraction)
+    return min(candidates) if candidates else None
+
+
+# Arrival may read slightly below the receiving invert at the matched vertex: authored
+# inverts interpolate along whole segments, while the physical wye sits a little way
+# downstream of a corner (catlin's kitchen branch arrives 0.43" under the main's invert
+# at the (6', 16'-6") turn). One inch of slack keeps the *load* graph connected — grading
+# slope/backflow is drain_slope's job, not the rollup's; a missed tie-in here silently
+# under-sizes the pipe downstream, which is the worse failure.
+_TIE_IN_INVERT_TOL_M = 0.0254
+
+
+def drain_tie_ins(pipe_runs) -> dict[str, str]:
+    """Child drain run tag → the drain run it discharges into, derived geometrically.
+
+    ``PipeRun`` carries no upstream/downstream refs, so the connection is the geometry
+    itself: a run ties into another when its *last* path vertex lies on a segment of the
+    other's path and arrives at or above the other's invert there (a branch below the
+    main it joins would not flow — the resolver-level gravity test pins the same
+    relation). Runs without elevation data can't be judged and never tie in.
+
+    A run never receives at its own terminal vertex: that point is where *it*
+    discharges, so several branches all ending on one junction are siblings meeting at
+    a wye on whatever continues downstream, not each other's parents (this is also what
+    keeps the derivation acyclic on real junctions).
+    """
+    drains = [r for r in pipe_runs if r.system == "drain"]
+    out: dict[str, str] = {}
+    for child in drains:
+        if child.z_m is None or not child.path:
+            continue
+        end_point, end_invert = child.path[-1], child.z_m[-1]
+        best: tuple[float, str] | None = None
+        for parent in drains:
+            if parent.tag == child.tag or not parent.path:
+                continue
+            if length(sub(end_point, parent.path[-1])) <= 1e-6:
+                continue  # the parent terminates here too — a sibling, not a receiver
+            invert = pipe_invert_at(parent, end_point)
+            if invert is None or end_invert < invert - _TIE_IN_INVERT_TOL_M:
+                continue
+            # Of several runs passing under the arrival point, the receiving pipe is
+            # the one whose invert sits closest beneath the arrival.
+            if best is None or invert > best[0]:
+                best = (invert, parent.tag)
+        if best is not None:
+            out[child.tag] = best[1]
+    return out
+
+
+def accumulated_serves(pipe_runs) -> dict[str, tuple[str, ...]]:
+    """Per drain run: the union of ``serves`` tags over its whole upstream subtree.
+
+    Fixture tags are re-listed across runs by authoring convention (a fixture may appear
+    on both its branch and the main), so the accumulation is a *union keyed by fixture
+    tag* — summing per-branch loads would double-count. The result feeds
+    ``branch_load``, which keeps its UNKNOWN-not-partial contract: one untabulated tag
+    anywhere upstream makes the downstream run's load unknowable.
+    """
+    drains = [r for r in pipe_runs if r.system == "drain"]
+    tie_ins = drain_tie_ins(drains)
+    children: dict[str, list[str]] = {}
+    for child_tag, parent_tag in tie_ins.items():
+        children.setdefault(parent_tag, []).append(child_tag)
+    by_tag = {r.tag: r for r in drains}
+
+    def collect(tag: str, seen: set) -> set:
+        if tag in seen:  # cycle guard: mutual geometric matches must not recurse forever
+            return set()
+        seen.add(tag)
+        tags = set(by_tag[tag].serves)
+        for child in children.get(tag, ()):
+            tags |= collect(child, seen)
+        return tags
+
+    return {run.tag: tuple(sorted(collect(run.tag, set()))) for run in drains}
+
+
 def is_parallel_to_floor(path: list[tuple[float, float]], floor) -> bool:
     """Whether every segment of ``path`` runs parallel to the floor's joist axis."""
     along_x = floor.direction == "x"

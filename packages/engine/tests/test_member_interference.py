@@ -132,10 +132,12 @@ def test_balcony_knee_braces_are_not_a_clash():
 
 def test_catlin_framing_interference_stays_near_zero():
     """Guards the ~2662 -> 0 cleanup (correct stud orientation, slope-aware z, intended
-    corner/tee/bearing/stair joints). A small ceiling keeps it robust to model tweaks."""
+    corner/tee/bearing/stair joints), then the centreline exclusion-band fix that took the
+    last two same-wall stud/king clashes to zero. A small ceiling keeps it robust to
+    model tweaks."""
     ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
     findings = member_interference(ctx)
-    assert len(findings) <= 5, [f.message for f in findings]
+    assert len(findings) <= 2, [f.message for f in findings]
 
 
 def _stair_beside_wall_member(kind: str):

@@ -786,19 +786,28 @@ def wet_wall_bearing(ctx: CheckContext) -> list[Finding]:
 @check(Tier.CODE, "mep.pipe_sizing")
 def pipe_sizing(ctx: CheckContext) -> list[Finding]:
     """Run diameter vs the fixture units it carries (MN Plumbing Code / UPC tables in
-    takeoff/plumbing_calc.py — the reader shows the same numbers). UNKNOWN whenever the
-    serves graph is incomplete: a partial sum passed off as a load is how a house ends
-    up with a 1.5" line feeding three fixtures."""
+    takeoff/plumbing_calc.py — the reader shows the same numbers). Drain runs are graded
+    on the union of ``serves`` over their whole upstream subtree, derived geometrically
+    (``resolve/mep.py::accumulated_serves``) — trusting each run's own ``serves`` list
+    let a branch's load silently escape the main it discharges into. Supply runs still
+    grade on their authored ``serves`` (no supply topology derivation yet). UNKNOWN
+    whenever the serves graph is incomplete: a partial sum passed off as a load is how a
+    house ends up with a 1.5" line feeding three fixtures."""
+    from typehaus.resolve.mep import accumulated_serves
     from typehaus.takeoff.plumbing_calc import (
         branch_load, fixture_units, required_drain_diameter_in, required_supply_size_in)
 
     cid = "mep.pipe_sizing"
     units_by_tag = {row.tag: row for row in fixture_units(ctx.plan)}
+    rolled_up = accumulated_serves(ctx.model.pipe_runs)
     out: list[Finding] = []
     for run in ctx.model.pipe_runs:
-        if run.system not in ("drain", "water_hot", "water_cold") or not run.serves:
+        if run.system not in ("drain", "water_hot", "water_cold"):
             continue
-        load, unresolved = branch_load(run.serves, units_by_tag, run.system)
+        serves = rolled_up.get(run.tag, run.serves) if run.system == "drain" else run.serves
+        if not serves:
+            continue
+        load, unresolved = branch_load(serves, units_by_tag, run.system)
         if load is None:
             out.append(_unknown(
                 cid, f"run {run.tag} serves {', '.join(unresolved)}, which carry no "

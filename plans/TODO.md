@@ -3,16 +3,17 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-- **The building drain is at 3" and the basement's real load is now ~42 DFU (2026-07-30).**
-  The stair-foot bathroom and the sauna shower end added four slab fixtures (WC 3 + lav 1 +
-  shower 2 + floor drain 2 = 8 DFU). They ride their own under-slab branches —
-  `PR-B-BATH-DRAIN` and `PR-B-SAUNA-DRAIN` — and by the convention FX-1 set they are *not*
-  re-listed in `PR-B-MAIN-DRAIN`'s `serves`, so `mep.pipe_sizing` still measures the main at
-  34 of the 35 DFU a 3" horizontal branch carries (Table 703.2) and passes. The pipe is
-  carrying ~42. Sizing the building drain up to 4" is the honest fix and it is not a one-liner:
-  `SP-B-SLAB-MAIN`, `SP-B-SEWER-EXIT` and the under-slab inverts the 2026-07-30 sewer decision
-  set all move with it, and there is only ~10" between the slab underside and that leg to move
-  them in. Yours, because it re-opens that decision.
+(nothing right now)
+
+- ~~**The building drain is at 3" and the basement's real load is now ~42 DFU.**~~
+  **Done 2026-07-31, both halves.** The building drain is 4" whole-run (inverts stayed
+  put — the 4" crown still clears the slab underside by 5.7" against the 1" bedding
+  minimum; `SP-B-SLAB-MAIN`, `SP-B-CW-MAIN` and `SP-B-SEWER-EXIT` re-cast at 4"/6" with
+  re-solved centres). And the class of error is closed at the engine: `mep.pipe_sizing`
+  and the reader's fixture-unit rows now roll every drain's load up through the routed
+  geometry (`resolve/mep.py::drain_tie_ins`/`accumulated_serves` — union by fixture tag,
+  never a sum of branch loads), so a branch's DFU can no longer escape the main it
+  discharges into by not being re-listed in `serves`.
 
 ## Accepted, by decision (2026-07-31 warnings sweep)
 
@@ -23,17 +24,19 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   exclusive by use, and the 9,000 VA credit lands the estimate near 183A without touching
   the meter. (`LM-EV` already caps the two EV circuits; that credit is in the 220.9A.)
 
+- **The HP2 zone stays 764 Btu/h short, and `mep.heating_capacity` stays failing**
+  (accepted 2026-07-31). Block load 30,764 Btu/h at design over the basement plus the
+  main-floor bedroom/bath/living side vs `EQ-T-GREE-MULTI-U30`'s 30,000 at design.
+  Accepted rather than fixed because both capacity figures are REPRESENTATIVE
+  PLACEHOLDER — the -764 is placeholder arithmetic, not an equipment verdict. Revisit at
+  equipment selection, when the real Gree datasheet 47F/design capacities go into
+  `plan/electrical.py`; the fail then resolves on real numbers whichever way they land.
+  The radiant mats, the fireplace and the garage heater stay excluded from the zone
+  total by design (`plan/circuits.py` calls them supplemental); if the radiant is in
+  fact carrying that last 764, it should stop being modeled as supplemental.
+
 ## Remaining Work
 
-- **`mep.heating_capacity` still fails on the HP2 zone, by 764 Btu/h** (2026-07-31). Block
-  load 30,764 Btu/h at design over the basement plus the main-floor bedroom/bath/living
-  side. `EQ-T-GREE-MULTI-U30` is the max-heating variant of the 3-port box (36,000 Btu/h at
-  47F, 30,000 at design), which leaves **-764 Btu/h** rather than pretending the zone is
-  covered. Both capacity figures are still REPRESENTATIVE PLACEHOLDER — the real answer
-  wants the Gree datasheet. The radiant mats, the fireplace and the garage heater stay
-  excluded from the zone total by design (`plan/circuits.py` calls them supplemental); if
-  the radiant is in fact carrying that last 764, it should stop being modeled as
-  supplemental.
 - **Handrail schema + real R311.7.8 check** (2026-07-31). `Railing` needs a
   role/kind (handrail vs guard) plus per-flight authoring before presence, 34"–38" height
   and continuity can be measured; `code.R311_7_8_handrail` reports the gap as UNKNOWN on

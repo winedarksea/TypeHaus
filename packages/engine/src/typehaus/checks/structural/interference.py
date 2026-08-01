@@ -394,8 +394,10 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
                          f"{b.label} interpenetrate: {inter.area:.4f} m² shared in plan, "
                          f"{z_overlap:.3f} m vertical overlap"),
                 element_tags=(a.label, b.label),
-                fix_hint=("wood should stack post → beam → joist, not overlap; check the "
-                          "bearing-stack elevation arithmetic in resolve/envelope.py"),
+                fix_hint=("wood should stack post → beam → joist, not overlap; same-wall "
+                          "stud clashes come from the exclusion bands in "
+                          "resolve/framing/openings.py, station layout from "
+                          "resolve/framing/solver.py"),
                 result=Result.FAIL,
             ))
     return out

@@ -249,7 +249,7 @@ export function PlumbingView() {
 
       <ReaderSection
         title="Fixture units"
-        note="MN Plumbing Code (UPC) Tables 702.1 / 610.3, per fixture, and each run's accumulated load against Table 703.2 / 610.4 sizing — the same tables mep.pipe_sizing grades with. A fixture with no table row reads —, and any run serving it reads unknown, never a partial sum."
+        note="MN Plumbing Code (UPC) Tables 702.1 / 610.3, per fixture, and each run's load against Table 703.2 / 610.4 sizing — the same tables mep.pipe_sizing grades with. Drain loads roll up every run that discharges into this one (derived from the routed geometry), so a drain row's Serves lists its whole upstream subtree; supply rows list their authored fixtures. A fixture with no table row reads —, and any run serving it reads unknown, never a partial sum."
         count={units.fixtures.length}
       >
         <div className="reader-card">

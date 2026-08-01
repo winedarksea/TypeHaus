@@ -136,6 +136,10 @@ def _assign_placeable_room(plan: PlanModel, storey: str, body: dict[str, Any]) -
     return macros.assign_placeable_room(plan, storey, tag=body["tag"], room=body.get("room"))
 
 
+def _retype_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.retype_placeable(plan, storey, tag=body["tag"], type_ref=body["type_ref"])
+
+
 def _duplicate_canvas_object(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
     return macros.duplicate_canvas_object(plan, storey, tag=body["tag"])
 
@@ -195,6 +199,7 @@ _DISPATCH = {
     "detach_placeable": _detach_placeable,
     "place_placeable": _place_placeable,
     "assign_placeable_room": _assign_placeable_room,
+    "retype_placeable": _retype_placeable,
     "duplicate_canvas_object": _duplicate_canvas_object,
     "duplicate_assembly": _duplicate_assembly,
     "blank_assembly": _blank_assembly,

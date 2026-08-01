@@ -117,8 +117,11 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     stud_z0 = z0 + plate_h
     # A regular module stud that would fall inside an opening's trimmer/king pack is
     # redundant (the pack already carries the load there) and would only interpenetrate
-    # it. Exclude the full pack width, not just the rough opening.
-    stud_zones = opening_exclusions(openings, thickness, spacing)
+    # it. Exclude the full pack width, not just the rough opening. Staggered walls place
+    # module studs on the combined half-spacing rhythm, so the jamb-pack verdict (and
+    # every other consumer of the module) must see that same rhythm.
+    module_spacing = spacing / 2.0 if staggered else spacing
+    stud_zones = opening_exclusions(openings, thickness, module_spacing)
 
     def top_at(s: float) -> float:
         """Framing top (below the top plate(s)) at station ``s`` along the wall axis.
@@ -155,7 +158,6 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # corner neither end stud sits on the module at all (it sits where the corner square
     # lets it). Both end studs are therefore explicit, and module stations that would land
     # inside the end/corner pack are dropped rather than allowed to interpenetrate it.
-    module_spacing = spacing / 2.0 if staggered else spacing
     stud_stations = sorted(
         station for station in _module_stations(
             axis_len, module_spacing, thickness,
@@ -196,7 +198,7 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     for opening_index, opening in enumerate(openings):
         members.extend(
             frame_opening(rw, d, p0, opening, frame_member, stud_z0, top_at,
-                          opening_index, spacing, tuple(stud_stations))
+                          opening_index, module_spacing, tuple(stud_stations))
         )
 
     # --- in-line blocking courses (fire/backing blocking) ---------------------
