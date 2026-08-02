@@ -5,7 +5,8 @@ x=18', 4:12, 36' footprint), landscape orientation (69.4" edge along the ridge),
 floor(36' / 5.783') = 6 modules per row, centred, 12 x 440 W = 5,280 W installed. Mounted
 on S-5! PVKIT standing-seam kits (no penetrations), four per module; the DC/AC run leaves
 the roof at ED-A-PV-JB beside the radon-vent riser (plan/electrical.py) and lands on the
-panel's CKT-PV backfeed breaker (plan/circuits.py).
+EG4 12kPV's MPPTs (EQ-B-ESS-INV, plan/electrical.py) — the array does not backfeed on
+its own any more; the inverter's grid port does, on CKT-ESS-GRID (plan/circuits.py).
 
 Generated — max fit is computed, so this cannot live in a ``# haus: editable`` module
 (the dialect forbids loops); ``SolarPanel`` is not a UI-movable kind, so a params home is
@@ -27,7 +28,35 @@ PANEL_W_IN = 69.4  # along-ridge edge (landscape)
 PANEL_L_IN = 44.6  # down-slope edge, in the panel plane
 PANEL_T_IN = 1.2
 PANEL_WATTS = 440.0
-PRODUCT = "440 W module, 69.4 x 44.6 x 1.2 in"
+PRODUCT = "Aptos 440 W module, 69.4 x 44.6 x 1.2 in"
+
+# --- module electrical identity (2026-08-02) ---------------------------------------
+# Aptos 440 W: Voc 39.03 V, Vmp 33.48 V, temperature coefficients -0.30%/degC on Pmax,
+# -0.25%/degC on Voc, +0.046%/degC on Isc (owner-supplied datasheet figures).
+PANEL_VOC = 39.03
+VOC_TEMP_COEFF_PER_C = -0.0025
+# Site design low. -30 degC is the cold-side design temperature used for the array's
+# voltage correction — colder than the ASHRAE extreme annual mean minimum for the Twin
+# Cities, deliberately, because a string is sized on the coldest sunny morning and not on
+# an average of minima. NOT the heating design temperature: this number sizes conductors
+# and the 690.12 grouping, not a heat load.
+DESIGN_LOW_C = -30.0
+STC_C = 25.0
+# 39.03 x (1 + (-0.0025)(-30 - 25)) = 44.40 V. The number every voltage rule must use:
+# rated Voc understates a January morning by 5.4 V per module, which is the difference
+# between a two-module group at 78.1 V (legal) and one at 88.8 V (not).
+PANEL_VOC_COLD = PANEL_VOC * (1.0 + VOC_TEMP_COEFF_PER_C * (DESIGN_LOW_C - STC_C))
+
+# One string per roof side, six modules each, landing on the EG4 12kPV's two MPPTs
+# (EQ-B-ESS-INV, plan/electrical.py). 6 x 44.40 = 266.4 V cold per string, well inside the
+# inverter's 600 VDC ceiling.
+#
+# RSD on every module, and that is a computed outcome rather than a preference: two
+# adjacent Aptos modules sum to 88.8 V cold against NEC 690.12(B)(2)'s 80 V limit, so
+# "every other module" — the option plans/TODO.md hoped for — does not clear it here. One
+# transmitter per module is what `code.NEC_690_12_rapid_shutdown` accepts, and if a future
+# module with a lower Voc changes that arithmetic the check will say so.
+PANEL_RSD = True
 RIDGE_CLEARANCE_FT = 1.0  # plan gap between the ridge line and the modules' top edge
 CLAMPS_PER_PANEL = 4
 PLANE_Z_AT_X0_FT = 25.84  # resolved RF-HOUSE deck plane at the footprint edge (eave_z)
@@ -58,6 +87,8 @@ def _build():
                 origin=pt(ft(origin_x), ft(origin_y)),
                 width=inch(PANEL_W_IN), length=inch(PANEL_L_IN),
                 thickness=inch(PANEL_T_IN), watts=PANEL_WATTS, product=PRODUCT,
+                string=f"STR-{side}", voc=PANEL_VOC, voc_cold=PANEL_VOC_COLD,
+                rsd=PANEL_RSD,
             ))
             # Four PVKIT clamps per module, inset 6" from each corner in plan.
             near_x = origin_x + sign * 0.5

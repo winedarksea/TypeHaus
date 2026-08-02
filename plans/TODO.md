@@ -224,17 +224,43 @@ Questions:
 - We want to calculate the board feet of walnut required to panel the walls of the small first floor study up to 36" high
 - We may add other tongue and groove paneling on walls, floors, or ceilings, and want to make sure this is designed generally to support calculating necessary sq ft by need (split by species)
 
-## Backup Power System Refactor
-- Backup power should be a proper microgrid, with solar panels and a limited number of circuits.
-- EG4 is likely the system we should spec to start with https://eg4electronics.com/categories/inverters/eg4-12kpv-all-in-one-hybrid-inverter/
-- We are starting with the 12 kV size but want a calculation of how long we can likely run this system (assuming strong solar every other day), to know if we need to size up.
-- EG4 sends a message to Sunspec-compliant RSD devices. Can do every other panel (sum VOC < 80V), possibly even every third panel for RSD. If you aren't roof mounted, probably still a good idea but you can just do the last one (+ end) in a string.
-- What's on the backup the kitchen fridge and freezer, an outlet in the mechnical room (that does router and home assistant power), mechanical room lights (should be a small load), and the kitchen lights and a kitchen outlet (meant for charging phones, etc)
-- What's on the backup behind a relay (or several relays, ie like the Shelly Pro 4PM) that we shut off when the battery is low and sun is not out: the smallest minisplit (9K BTU Sapphire R32), the heat pump water heater (just the heat pump part, no electric resistance heating connection to backup), and the sump pump
-- Backup battery is in mechanical room. Paired with another heat rise alarm and a smoke alarm. Keep a 3' clearance from other devices. Inside a small utility closet using metal studs, and 5/8" Type X drywall.
-- Code enforces a 40 kWh maximum indoors. UL 9540 battery certification required.
-- We might in the future redesign this to use a car as the battery. We might also redesign this to place the enclosure in the garage. The code doesn't need to implement these but should be designed to make the switch easier in the future.
-- Future improvements might be: high flow water spigot near battery, mechanical ventilation directly to exterior of cabinet.
+## Backup Power System Refactor — DONE 2026-08-02
+Built as decision #54; the design and its numbers are recorded in
+`houses/catlin/notes/backup_power.md`. What landed against each line of the original ask:
+
+- **A proper microgrid, solar + a limited number of circuits.** `Circuit.backup_tier`
+  (ALWAYS_ON / SHED) on six circuits, re-homed to `ED-B-BACKUP-PANEL` — a 12-space subpanel
+  on the inverter's dedicated load output. The array now lands on the inverter's MPPTs
+  instead of backfeeding on its own.
+- **EG4 spec.** `EQ-T-EG4-12KPV` + `EQ-T-ESS-BATT` (EG4 PowerPro WallMount Indoor,
+  14.3 kWh). Note the 12kPV puts out **8 kW AC continuous**; the 12k is its PV input.
+- **How long can it run.** `takeoff/backup_calc.py` answers it, on the E-601 sheet and in
+  the viewer: 53.0 h on the always-on tier unaided, and with strong sun every other day the
+  always-on tier is net **+4.19 kWh** per 48 h — it rides indefinitely. Both tiers together
+  do not (−30.61 kWh), which is what the shed tier is for. **One battery is enough; no need
+  to size up.** The numbers rest on authored `duty_cycle` estimates — meter and revise.
+- **RSD every other panel.** Computed, not assumed, and the answer came back no: the Aptos
+  440 W module is 44.40 V cold at the −30 °C design low, so a pair sums to 88.8 V against
+  690.12's 80 V. Every module carries a transmitter. `code.NEC_690_12_rapid_shutdown` reads
+  `voc_cold`, so a lower-Voc module would change the verdict without changing the check.
+- **What is on backup, and what is behind a relay.** Exactly as asked — see the tier table
+  in the note.
+- **Battery in the mechanical room, heat + smoke alarm, 3' clearance, metal studs, Type X.**
+  `RM-B-ESS` in the furnace room's SE corner on `INT_ESS_CLOSET_STEEL`, with
+  `AL-B-ESS-SMOKE` + `AL-B-ESS-HEAT` inside it on the always-on tier. The 3' separation is a
+  REQUIRED `ClearanceZone` graded by `advisory.ess_clearance` against other equipment and
+  panels **through walls** — the resolver's own clearance test exempts peers in another
+  room, and a stud wall does not make the distance.
+- **40 kWh indoor max, UL 9540.** `code.R327_ess_capacity` and `code.R327_ess_listing`.
+  (R327, not R328: this profile's base is the 2018 IRC, where the article is numbered R327.)
+- **Keep the future switches easy.** Both are recorded as seams in the note: the garage
+  relocation is a re-room (the capacity check already exempts garage occupancy), and V2H is
+  a second `source=True` circuit that needs a feeder element first — the one thing the
+  705.12 check cannot yet do is find a subpanel's own main OCPD.
+
+Still open, and deliberately not built (nothing to author against yet):
+- High-flow water spigot near the battery.
+- Mechanical ventilation from the cabinet direct to exterior.
 
 ### Other visual ideas (just ideas, not a TODO)
 Dark base to the house

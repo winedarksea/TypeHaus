@@ -42,6 +42,37 @@ def _unknown(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
                    element_tags=tags, result=Result.UNKNOWN)
 
 
+# Structural materials that are the enclosure by themselves. Read off the material's own
+# tag rather than the wall's, for the same reason ``_gypsum_grade`` reads gypsum_type: a
+# house that spells its concrete differently should still be gradeable, and this list is
+# the honest minimum of what this engine can currently tell apart.
+_MASS_NONCOMBUSTIBLE_MATERIALS = frozenset({"concrete", "concrete-icf", "cmu"})
+
+
+def _is_mass_noncombustible(ctx: CheckContext, layer) -> bool:
+    from typehaus.model.enums import LayerFunction
+
+    if getattr(layer, "function", None) is not LayerFunction.STRUCTURE:
+        return False
+    return getattr(layer, "material_ref", None) in _MASS_NONCOMBUSTIBLE_MATERIALS
+
+
+def _panel_tags(ctx: CheckContext) -> set:
+    """Tags of the PANEL-kind electrical devices — read off ``DeviceKind``, not the type
+    name: ``ED-T-LT-PANEL`` is a flat ceiling luminaire, and matching on "PANEL" in a type
+    tag files it as switchgear."""
+    return {element.tag for element in ctx.plan.all_elements()
+            if element.element_kind == "ElectricalDevice"
+            and getattr(getattr(element, "kind", None), "value", None) == "panel"}
+
+
+def _is_separable_device(obj, panels: set) -> bool:
+    """Is this placeable one of the "other devices" the 3' separation is measured from?"""
+    # A panel is the one electrical device with a bus in it; every other kind on a wall is
+    # a switch, an outlet or a light, and a battery is not kept away from those.
+    return obj.kind == "Equipment" or obj.tag in panels
+
+
 def _batteries(ctx: CheckContext) -> list:
     return [element for element in ctx.plan.all_elements()
             if element.element_kind == "Equipment"
@@ -54,8 +85,15 @@ def ess_enclosure(ctx: CheckContext) -> list[Finding]:
 
     Measured off the assembly's own layers, through ``fire_separation._gypsum_grade`` — the
     material states its gypsum grade, so a library that spells the product differently
-    still grades correctly. Walls bounding the ESS room are found the way the garage
-    separation check finds its shared walls: by the room's resolved face, not by tag prefix.
+    still grades correctly. Walls bounding the ESS room are found from the room's resolved
+    face, not by tag prefix: a wall counts when most of its own length runs along the
+    room's boundary, which keeps out the wall that merely touches a corner from the far
+    side of a partition.
+
+    A wall of solid non-combustible mass passes outright. The owner's rule is about what
+    the enclosure is made of, and 12" of concrete is not improved by gypsum: demanding a
+    membrane on it would report a defect that no builder would fix and that no reader would
+    believe twice.
     """
     from shapely.geometry import LineString, Polygon
 
@@ -77,9 +115,15 @@ def ess_enclosure(ctx: CheckContext) -> list[Finding]:
             continue
         face = Polygon(room.clear_face)
         band = face.boundary.buffer(inch(12).meters)
-        bounding = [wall for wall in ctx.model.walls
-                    if wall.storey == room.storey
-                    and band.intersects(LineString([wall.axis[0], wall.axis[1]]))]
+        bounding = []
+        for wall in ctx.model.walls:
+            if wall.storey != room.storey:
+                continue
+            axis = LineString([wall.axis[0], wall.axis[1]])
+            if axis.length <= 1e-9:
+                continue
+            if axis.intersection(band).length >= 0.5 * axis.length:
+                bounding.append(wall)
         if not bounding:
             out.append(_unknown(cid, f"no wall bounds ESS room {room_tag}",
                                 (str(room_tag),)))
@@ -90,6 +134,8 @@ def ess_enclosure(ctx: CheckContext) -> list[Finding]:
             if assembly is None:
                 continue
             layers = tuple(assembly.layers) + tuple(assembly.default_lining)
+            if any(_is_mass_noncombustible(ctx, layer) for layer in layers):
+                continue
             type_x = sum(layer.thickness.meters for layer in layers
                          if _gypsum_grade(ctx, layer) == "type-x"
                          and layer.thickness is not None)
@@ -112,17 +158,28 @@ def ess_enclosure(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.ADVISORY, "advisory.ess_clearance")
 def ess_clearance(ctx: CheckContext) -> list[Finding]:
-    """The battery declares a REQUIRED working-clearance zone, and it fits its room.
+    """The battery declares a REQUIRED separation zone, and nothing stands in it.
 
-    Two things the resolver does not already say. The resolver reports a REQUIRED zone that
-    another *placeable body* stands in (``integrity.placeable_required_clearance_conflict``)
-    — that half is covered and this check does not duplicate it. What is left is the zone
-    that runs *through a wall*: a 3' clearance authored on a battery in a 3'x4' closet is
-    satisfied on paper and impossible in the room, and no placeable overlaps to reveal it.
+    The owner's rule is "keep a 3' clearance from other devices" (plans/TODO.md) — a
+    *separation* from neighbouring equipment, not a working space in front of a face. That
+    distinction decides how this is measured, and it is why the check exists alongside the
+    resolver's own clearance test rather than duplicating it.
 
-    So: the zone must exist and be REQUIRED (an ESS clearance the owner asked for and
-    nobody authored is the failure that matters), and it must lie inside the room's clear
-    face.
+    ``integrity.placeable_required_clearance_conflict`` already reports a peer body standing
+    in a REQUIRED zone — but it exempts peers in a *different room*, on the sound reasoning
+    that a partition stops a use zone. A stud wall does not stop the thing this zone is
+    about. So this check asks the same question with that exemption removed: any placeable
+    on the storey whose footprint enters the zone is reported, wall or no wall.
+
+    "Other devices" is read narrowly and deliberately: placed ``Equipment`` and panel-kind
+    enclosures. The concern behind the rule is another heat source or another live bus
+    beside a lithium pack — not the ceiling light panel two rooms away, not a switch, not
+    the water closet on the far side of a foot of concrete. Reporting those would be
+    literally true of a 3' sphere and useless to the person reading it, which is how an
+    advisory finding gets ignored.
+
+    It also reports a battery that declares no REQUIRED zone at all. A separation nobody
+    authored is a separation nothing defends.
     """
     from shapely.geometry import Polygon
 
@@ -130,8 +187,8 @@ def ess_clearance(ctx: CheckContext) -> list[Finding]:
     batteries = _batteries(ctx)
     if not batteries:
         return []
-    rooms = {room.tag: room for room in ctx.model.rooms}
     canvas = {obj.tag: obj for obj in ctx.model.canvas_objects}
+    panels = _panel_tags(ctx)
 
     out: list[Finding] = []
     for battery in sorted(batteries, key=lambda e: e.tag):
@@ -143,26 +200,33 @@ def ess_clearance(ctx: CheckContext) -> list[Finding]:
         if not obj.required_clearances:
             out.append(_warn(
                 cid, f"{battery.tag} declares no REQUIRED clearance zone; the owner's ESS "
-                     "standard is a 3' working clearance, and a zone nobody authored is a "
-                     "clearance nothing defends",
+                     "standard is a 3' separation from other devices, and a zone nobody "
+                     "authored is a separation nothing defends",
                 (battery.tag,)))
             continue
-        room = rooms.get(obj.room or "")
-        if room is None or len(room.clear_face) < 3:
-            out.append(_unknown(cid, f"{battery.tag} resolved to no room, so its clearance "
-                                     "cannot be tested against one", (battery.tag,)))
-            continue
-        face = Polygon(room.clear_face)
-        spill = sum(max(Polygon(zone).difference(face).area, 0.0)
-                    for zone in obj.required_clearances)
-        if spill > 1e-3:
+        own = Polygon(obj.footprint)
+        intruders: list[str] = []
+        for zone in obj.required_clearances:
+            shape = Polygon(zone)
+            if shape.is_valid and own.is_valid:
+                shape = shape.difference(own)
+            if shape.is_empty:
+                continue
+            for peer in ctx.model.canvas_objects:
+                if peer.uid == obj.uid or peer.storey != obj.storey:
+                    continue
+                if not _is_separable_device(peer, panels):
+                    continue
+                if shape.intersection(Polygon(peer.footprint)).area > 1e-3:
+                    intruders.append(peer.tag)
+        if intruders:
             out.append(_warn(
-                cid, f"{battery.tag}'s required clearance runs {spill * 10.7639:.2f} sf "
-                     f"past the walls of {room.tag}; the clearance the owner asked for does "
-                     "not fit the room it is drawn in",
-                (battery.tag, room.tag)))
+                cid, f"{battery.tag}'s 3' separation zone holds "
+                     + ", ".join(sorted(set(intruders)))
+                     + " — the wall between them does not make the distance",
+                tuple([battery.tag] + sorted(set(intruders)))))
         else:
             out.append(_pass(
-                cid, f"{battery.tag}'s required clearance zone lies inside {room.tag}",
-                (battery.tag, room.tag)))
+                cid, f"nothing stands in {battery.tag}'s REQUIRED separation zone, in its "
+                     f"room or through the walls of it", (battery.tag,)))
     return out

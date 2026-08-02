@@ -521,8 +521,12 @@ INT_2X6_STAGGERED_PLUMBING = Assembly(
 # No cavity fill: mineral wool would be the choice if this were an acoustic wall, but the
 # closet wants its heat to reach the heat alarm outside it (AL-B-ESS-HEAT), not to be
 # insulated away from it.
-ESS_CLOSET_STEEL = Assembly(
-    tag="ESS_CLOSET_STEEL",
+# The INT token in the tag is load-bearing, not decoration: `mn_energy._is_interior_assembly`
+# reads it to keep an interior partition out of the prescriptive envelope table, and the IFC
+# emitter's Pset_WallCommon.IsExternal uses the same signal. Without it a closet wall inside
+# a mechanical room is graded against R-21.
+INT_ESS_CLOSET_STEEL = Assembly(
+    tag="INT_ESS_CLOSET_STEEL",
     layers=(
         _PAINT_FINISH_A,
         Layer(name="gwb-x-a", material_ref="gwb-x", thickness=inch(0.625),
@@ -790,7 +794,7 @@ ASSEMBLIES = [
     INT_2X6_PLUMBING,
     INT_2X6_STAGGERED_PLUMBING,
     INT_2X4_PARTITION,
-    ESS_CLOSET_STEEL,
+    INT_ESS_CLOSET_STEEL,
     SAUNA_2X4,
     SAUNA_LINER_ON_CONCRETE,
     CATLIN_MUDROOM_INT_2X6_EXPOSED,

@@ -416,7 +416,8 @@ def backup_component_rows(model: ResolvedModel) -> list[dict[str, object]]:
             rows.append({
                 "component": "Shelly Pro 4PM 4-channel DIN relay",
                 "count": math.ceil(len(relay_circuits) / BACKUP_CIRCUITS_PER_RELAY),
-                "basis": (f"{len(relay_circuits)} shed-tier circuits "
+                "basis": (f"{len(relay_circuits)} shed-tier circuit"
+                          f"{'s' if len(relay_circuits) != 1 else ''} "
                           f"({', '.join(c.tag for c in relay_circuits)}) at "
                           f"{BACKUP_CIRCUITS_PER_RELAY} channels per relay"),
             })

@@ -316,7 +316,7 @@ BACKUP_ENCLOSURE = [
     # The subpanel the two backup tiers are homed to (plan/circuits.py). On the west wall
     # 2'-0" south of ED-B-PANEL, so the inverter's grid conductors and its load conductors
     # run to two enclosures a person can stand between.
-    ElectricalDevice(uid="CEE012AAAA", tag="ED-B-BACKUP-PANEL", kind=DeviceKind.PANEL,
+    ElectricalDevice(uid="CEE060AAAA", tag="ED-B-BACKUP-PANEL", kind=DeviceKind.PANEL,
                      position=pt(ft(2), ft(27)), type_ref="ED-T-BACKUP-PANEL",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room="RM-B-FURNACE"),
 ]
@@ -659,7 +659,7 @@ GARAGE_EQUIPMENT = [
 # --- Attic: PV junction box beside the radon riser (ED-A-NEMA-JB at (6', 37')) --------
 PV_JBOX = [
     ElectricalDevice(uid="CEE014AAAA", tag="ED-A-PV-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(9), ft(37)), type_ref="ED-T-PV-JB", circuit="CKT-PV",
+                     position=pt(ft(9), ft(37)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
 PV_JBOX_CLAMP = [

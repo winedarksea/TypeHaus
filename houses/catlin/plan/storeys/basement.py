@@ -208,7 +208,7 @@ WALLS = [
     Wall(uid="CBW120AAAA", tag="W-B-BA-N", start_node="N-B-BA-W",
          end_node="N-B-BA-E", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(8),
          interior_room="RM-B-BATH"),
-    # The ESS closet's two framed walls (2026-08-02). ESS_CLOSET_STEEL: steel studs, 5/8"
+    # The ESS closet's two framed walls (2026-08-02). INT_ESS_CLOSET_STEEL: steel studs, 5/8"
     # Type X both faces — an owner standard, not a code-rated assembly, and the reason
     # `advisory.ess_enclosure` is advisory (see plan/assemblies.py).
     #
@@ -219,10 +219,10 @@ WALLS = [
     # ``interior_room`` names the closet on both, so the Type X membrane the enclosure
     # exists for is unambiguously the face inside it.
     Wall(uid="CBW124AAAA", tag="W-B-ESS-W", start_node="N-B-ESS-S",
-         end_node="N-B-ESS-N", assembly="ESS_CLOSET_STEEL", top=ft(8),
+         end_node="N-B-ESS-N", assembly="INT_ESS_CLOSET_STEEL", top=ft(8),
          interior_room="RM-B-ESS"),
     Wall(uid="CBW125AAAA", tag="W-B-ESS-N", start_node="N-B-ESS-N",
-         end_node="N-B-BA-W", assembly="ESS_CLOSET_STEEL", top=ft(8),
+         end_node="N-B-BA-W", assembly="INT_ESS_CLOSET_STEEL", top=ft(8),
          interior_room="RM-B-ESS"),
 ]
 
@@ -267,10 +267,12 @@ OPENINGS = [
     # The ESS closet's door, on its north partition and opening into the furnace room.
     # DT-INT-SWING24: a 2'-0" leaf is what a 2'-8 1/4" clear closet can take with jamb on
     # both sides, and it is enough to reach the battery, which is the whole use of the room.
-    # ``from_node`` offsets the near *edge*, so 4" leaves the leaf clear of the west
-    # partition's framing and the rest of the jamb against the concrete at x=10'.
+    # ``from_node`` offsets the near *edge*. 10", not the 4" this started at: at 4" the
+    # opening's king stud and the wall's corner post occupied the same wood, which
+    # `structural.member_interference` reported against CBW125AAAA. 10" clears the corner
+    # pack and still leaves 3'-3" of partition to hang a 2'-0" leaf in.
     Door(uid="CBD208AAAA", tag="D-B-ESS", host="W-B-ESS-N", type_ref="DT-INT-SWING24",
-         position=from_node("N-B-ESS-N", inch(4))),
+         position=from_node("N-B-ESS-N", inch(10))),
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-SA-W", type_ref="DT-INT-SWING24",
          position=from_node("N-B-S1", ft(10, 10.4375))),
     # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.

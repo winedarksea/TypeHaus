@@ -181,27 +181,28 @@ CIRCUITS = (
     # only job was to feed the backup enclosure from the *grid* side is exactly backwards.
 
     # -- ALWAYS_ON --
-    # 800 VA of fridge + freezer + PoE WiFi. Two compressors cycling at roughly a third
-    # duty in a house that is not being opened every ten minutes, plus ~15 W of network
-    # that never stops; 0.35 is that mix, and it is the single largest always-on term.
+    # 800 VA is the *circuit allowance*, not the draw, and the gap between those two is
+    # the whole reason duty_cycle exists. A current-generation fridge averages ~60 W over
+    # its cycle and a chest freezer ~45 W; the PoE AP adds ~15 W that never stops. 120 W of
+    # 800 VA = 0.15. Still the largest always-on term, and the one most worth metering.
     Circuit(uid="CKT016AAAA", tag="CKT-FRIDGE", slot=2, panel_ref=_BACKUP_PANEL,
             breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
-            load_va=800, duty_cycle=0.35,
+            load_va=800, duty_cycle=0.15,
             description="Kitchen outlet 1: fridge + freezer + PoE WiFi"),
-    # 300 VA authored as an outlet allowance; the actual load is a router and a small HA
-    # server, which together sit near 150 W and never cycle off. 0.5 is that ratio, not a
-    # duty cycle in the compressor sense — the load is continuous and the allowance is
-    # generous.
+    # 300 VA is again an outlet allowance. The real load is a router (~12 W) and a small
+    # always-on HA server (~28 W) — 40 W of 300 VA = 0.13. Not a duty cycle in the
+    # compressor sense: this load never cycles off, the allowance is simply generous.
     Circuit(uid="CKT017AAAA", tag="CKT-HA", slot=4, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, gfci=True,
-            load_va=300, duty_cycle=0.5,
+            load_va=300, duty_cycle=0.13,
             description="Basement outlet 1: HA server + router"),
     # load_va is None: the luminaires carry real typed loads and the panel-schedule takeoff
-    # sums the fixtures actually on the circuit. 0.2 = about five hours of the twenty-four
-    # with the mechanical-room and kitchen lights on, which is what an outage evening looks
-    # like when the rest of the house is dark.
+    # sums the fixtures actually on the circuit (558 VA today). 0.15 is about five hours of
+    # the twenty-four with roughly two thirds of those fixtures lit — an outage evening in
+    # the kitchen and the mechanical room while the rest of the house stays dark.
     Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", slot=6, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
+            duty_cycle=0.15,
             description="Basement + kitchen lighting (LED, backup light)"),
 
     # -- SHED --
