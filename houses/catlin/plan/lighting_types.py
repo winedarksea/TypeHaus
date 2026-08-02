@@ -1,4 +1,4 @@
-"""Catlin luminaire *type* catalog — the E-602 schedule's marks A through P.
+"""Catlin luminaire *type* catalog — the E-602 schedule's marks A through S.
 
 NOT ``# haus: editable``: like ``fixture_types.py`` these are catalog type definitions,
 not placed instances, and ``ElectricalDeviceType.needs`` is a ``frozenset``, which the
@@ -212,6 +212,37 @@ LUMINAIRE_TYPES = (
                   footprint=(ft(4), inch(5)), height=inch(3), plan_symbol="linear-light",
                   lamp="LED integrated", watts=40.0, lumens=4400.0, cct_k=4000, cri=80,
                   damp_rated=True, load_va=40.0, ports=_POWER_120),
+
+    # --- R/S: exterior fixtures, both full cutoff ------------------------------------
+    # Both are dark-sky fixtures by specification, not accident: `full_cutoff=True` says
+    # the housing emits nothing above the horizontal, which is what
+    # `advisory.dark_sky_lighting` grades every exterior luminaire on, and both hold the
+    # house's 3000K warm line — the other half of the same advisory. Wet rated outright:
+    # each hangs in the open (a garage face, a freestanding porch pillar), not under a
+    # soffit deep enough to argue damp.
+    #
+    # R is the garage-door light: a shielded down-only wall sconce beside D-G-OVERHEAD.
+    # `form=SCONCE` rather than a new enum kind — the enum docstring discourages new
+    # kinds, and a wall pack is a sconce that grew a cutoff hood.
+    LuminaireType(tag="ED-T-LT-SCONCE-EXT", name="Exterior wall sconce, full cutoff, wet",
+                  form=LuminaireForm.SCONCE, type_mark="R",
+                  footprint=(inch(6), inch(5)), height=inch(9), plan_symbol="sconce",
+                  lamp="LED integrated", watts=12.0, lumens=900.0, cct_k=3000, cri=90,
+                  damp_rated=True, wet_rated=True, full_cutoff=True, load_va=12.0,
+                  ports=_POWER_120,
+                  source="WAC WS-W2506 full-cutoff outdoor wall light, black, 3000K"),
+    # S is the porch flood: a narrow-throw spot aimed down off the balcony's centre
+    # pillar. Same reasoning on the form — an adjustable exterior spot is the sconce-spot
+    # family in a wet housing — and the cutoff is in the aiming shroud, which is why the
+    # narrow beam is the point: it lights the deck, not the neighbourhood.
+    LuminaireType(tag="ED-T-LT-FLOOD-NARROW",
+                  name="Narrow-throw LED flood, full cutoff shroud, wet",
+                  form=LuminaireForm.SCONCE, type_mark="S",
+                  footprint=(inch(5), inch(5)), height=inch(8), plan_symbol="sconce-spot",
+                  lamp="LED integrated, 25 deg beam", watts=20.0, lumens=1800.0,
+                  cct_k=3000, cri=90, damp_rated=True, wet_rated=True, full_cutoff=True,
+                  load_va=20.0, ports=_POWER_120,
+                  source="RAB LFLED26 narrow flood + full-cutoff visor, black, 3000K"),
 
     # --- P: mirror lighting -----------------------------------------------------------
     LuminaireType(tag="ED-T-LT-MIRROR", name='24" LED mirror light bar, damp',

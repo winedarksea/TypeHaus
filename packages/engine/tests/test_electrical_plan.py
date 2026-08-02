@@ -217,3 +217,69 @@ def test_a_fixture_with_no_switch_is_reported(catlin_model):
                  for element in catlin_model.plan.storey_elements("main")])
     failures = [f for f in lighting_controls(context(patched)) if f.result.value == "fail"]
     assert [f.element_tags for f in failures] == [("ED-M-BED-CAN2",)]
+
+
+def test_dark_sky_lighting_passes_on_the_catlin_house(catlin_model):
+    """``advisory.dark_sky_lighting`` (→ checks/mep/lighting): the three exterior
+    luminaires — the garage-door sconce, the porch flood, and the ceiling-hung porch fan
+    (exempt from the cutoff grading; the deck above it is the shield) — are full cutoff
+    where gradeable and all at or under the 3000K ceiling."""
+    from typehaus.checks import run_from_model
+    from typehaus.checks.registry import Tier
+
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    findings = [f for f in report.findings if f.check_id == "advisory.dark_sky_lighting"]
+    assert findings
+    assert all(f.result.value == "pass" for f in findings), \
+        [f.message for f in findings if f.result.value != "pass"]
+
+
+def test_an_unshielded_cool_exterior_luminaire_is_reported(catlin_model):
+    """Retype the garage-door light to the 4000K, unshielded shop light: both dark-sky
+    gradings fail on that one fixture — no cutoff, and over the CCT ceiling."""
+    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.mep.lighting import dark_sky_lighting
+    from typehaus.checks.registry import CheckContext, Preferences
+
+    device = catlin_model.plan.by_tag("ED-G-EXT-LT")
+    broken = device.model_copy(update={"type_ref": "ED-T-LT-SHOP4"})
+    patched = catlin_model.plan.with_elements(
+        "garage", [broken if element.tag == device.tag else element
+                   for element in catlin_model.plan.storey_elements("garage")])
+    context = CheckContext(plan=patched, model=catlin_model, preferences=Preferences(),
+                           profile=MN_2024)
+    failures = [f for f in dark_sky_lighting(context) if f.result.value == "fail"]
+    assert [f.element_tags for f in failures] == [("ED-G-EXT-LT",), ("ED-G-EXT-LT",)]
+    assert any("full-cutoff" in f.message for f in failures)
+    assert any("4000" in f.message for f in failures)
+
+
+def test_island_receptacle_passes_on_the_catlin_house(catlin_model):
+    """``electrical.island_receptacle``: the kitchen island's end-mounted GFCI
+    (ED-M-LIVING-KGF4) is inside the island's reach, so the one freestanding
+    work-surface carcass in the house is served."""
+    from typehaus.checks import run_from_model
+    from typehaus.checks.registry import Tier
+
+    report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
+    findings = [f for f in report.findings if f.check_id == "electrical.island_receptacle"]
+    assert findings
+    assert all(f.result.value == "pass" for f in findings), \
+        [f.message for f in findings if f.result.value != "pass"]
+    assert any("FURN-M-KIT-ISLAND" in f.element_tags for f in findings)
+
+
+def test_an_island_with_no_receptacle_is_reported(catlin_model):
+    """Delete the island's receptacle: the island fails, citing 210.52(C)."""
+    from typehaus.checks.code.mn_residential.profile import MN_2024
+    from typehaus.checks.mep.electrical import island_receptacle
+    from typehaus.checks.registry import CheckContext, Preferences
+
+    patched = catlin_model.plan.with_elements(
+        "main", [element for element in catlin_model.plan.storey_elements("main")
+                 if element.tag != "ED-M-LIVING-KGF4"])
+    context = CheckContext(plan=patched, model=catlin_model, preferences=Preferences(),
+                           profile=MN_2024)
+    failures = [f for f in island_receptacle(context) if f.result.value == "fail"]
+    assert [f.element_tags for f in failures] == [("FURN-M-KIT-ISLAND",)]
+    assert "210.52(C)" in failures[0].message
