@@ -342,6 +342,83 @@ def receptacle_spacing(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+# How far past an island's carcass a receptacle may sit and still be serving it: an end-
+# or side-mounted device projects an inch or two off the face, and anything much farther
+# out is a wall receptacle that happens to be nearby. Kept well under _NEAR_WALL_M so a
+# freestanding island (> _NEAR_WALL_M from every boundary) can never borrow one.
+_ISLAND_RECEPTACLE_MARGIN_M = 12 * 0.0254
+
+
+@check(Tier.ADVISORY, "electrical.island_receptacle")
+def island_receptacle(ctx: CheckContext) -> list[Finding]:
+    """Every freestanding work-surface island has a receptacle at its footprint.
+
+    2023 NEC 210.52(C)(2) stopped *requiring* an island or peninsular countertop
+    receptacle, but where none is installed it requires provisions for adding one, and
+    210.52(C)(3) confines any receptacle that serves the countertop to on/above/in the
+    counter surface. An island with nothing at all — no receptacle, no provision — is the
+    thing worth flagging: the appliance ends up on an extension cord across the aisle.
+
+    Population: ``FurnitureType.work_surface is True`` (the same type attribute
+    ``_fixed_cabinet_intervals`` reads for the opposite purpose), sitting on the floor,
+    standing free of every room boundary by more than ``_NEAR_WALL_M`` — a base run
+    against a wall is the wall receptacles' problem and ``receptacle_spacing``'s beat. A
+    peninsula (attached to a wall at one end) reads as near-wall here and is not graded.
+    """
+    from shapely.geometry import LineString, Point, Polygon
+
+    cid = "electrical.island_receptacle"
+    furniture_types = {t.tag: t for t in ctx.plan.library.furniture_types}
+    if not furniture_types:
+        return [_unknown(cid, "no furniture types in the library")]
+
+    boundaries_by_storey: dict[str, list] = {}
+    for room in ctx.model.rooms:
+        ring = [tuple(point) for point in room.clear_face]
+        if len(ring) >= 3:
+            boundaries_by_storey.setdefault(room.storey, []).append(
+                LineString(ring + [ring[0]]))
+    receptacles_by_storey: dict[str, list] = {}
+    for storey in ctx.plan.storeys:
+        receptacles_by_storey[storey.tag] = [
+            element for element in ctx.plan.storey_elements(storey.tag)
+            if element.element_kind == "ElectricalDevice"
+            and _counts_as_a_125v_receptacle(ctx, element)]
+
+    floor_z = {s.tag: s.elevation.meters for s in ctx.plan.storeys}
+    out: list[Finding] = []
+    islands = 0
+    for item in ctx.model.canvas_objects:
+        item_type = furniture_types.get(item.type_ref or "")
+        if item_type is None or item_type.work_surface is not True:
+            continue
+        if item.z_m - floor_z.get(item.storey, 0.0) > _FIXED_CABINET_FLOOR_CONTACT_M:
+            continue
+        carcass = Polygon(item.footprint)
+        if not carcass.is_valid or carcass.is_empty:
+            continue
+        near_wall = any(carcass.distance(boundary) <= _NEAR_WALL_M
+                        for boundary in boundaries_by_storey.get(item.storey, []))
+        if near_wall:
+            continue
+        islands += 1
+        reach = carcass.buffer(_ISLAND_RECEPTACLE_MARGIN_M)
+        served = any(reach.contains(Point(device.position.xy_m))
+                     for device in receptacles_by_storey.get(item.storey, []))
+        if served:
+            out.append(_pass(cid, f"island {item.tag} has a receptacle at its footprint",
+                             (item.tag,)))
+        else:
+            out.append(_warn_fail(
+                cid, f"island {item.tag} has no receptacle within its footprint — "
+                     f"NEC 210.52(C)(2) wants one (or provisions for one), and "
+                     f"210.52(C)(3) wants any that serves the countertop on/above/in "
+                     f"the counter surface", (item.tag,)))
+    if not islands:
+        return [_unknown(cid, "no freestanding work-surface casework modeled")]
+    return out
+
+
 @check(Tier.ADVISORY, "electrical.circuit_refs")
 def circuit_refs(ctx: CheckContext) -> list[Finding]:
     """Every ``circuit`` reference resolves, every panel_ref is a panel, poles match ports."""

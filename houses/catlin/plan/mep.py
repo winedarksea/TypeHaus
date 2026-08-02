@@ -47,6 +47,7 @@ from typehaus import (
     Sump,
     SumpPump,
     VentRun,
+    deg,
     ft,
     inch,
     pt,
@@ -1535,6 +1536,23 @@ MAIN_DEVICES = [
     ElectricalDevice(uid="EJYZJRDFG0", tag="ED-M-LIVING-KGF3", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(35, 4), ft(28, 11.375)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
+    # The island receptacle (2026-08-02). FURN-M-KIT-ISLAND (CASE-ISLAND-60, 5'x3',
+    # x 25'-0"..30'-0", y 26'-5 3/8"..29'-5 3/8", 36" counter) had none. 2023 NEC
+    # 210.52(C)(2) no longer *requires* an island countertop receptacle — but where none
+    # serves the countertop it requires provisions for adding one, and 210.52(C)(3) now
+    # confines a receptacle that SERVES the countertop to on/above/in the counter surface
+    # (the old below-counter side-mount allowance is gone, precisely because of cords
+    # draped over an edge people sit at). So this one goes on the island's EAST END face —
+    # never the south face, where the seating overhang is and the stools tuck under — at
+    # 32", just below the 36" top with no overhang above it on that end, wired as the
+    # 210.52(C)(2) provision and a usable point for stand-mixer-class appliances. GFCI at
+    # the device per 210.8(A)(6) (all kitchen 125V receptacles), on CKT-KITCH-SA2, the
+    # counter-east small-appliance circuit the east end of the kitchen already runs on
+    # (20A, dual-function GFCI+AFCI breaker). rotation 90 backs it west into the carcass.
+    ElectricalDevice(uid="CEDKGF4AAA", tag="ED-M-LIVING-KGF4", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(30, 1), ft(27, 11.375)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA2",
+                     rotation=deg(90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(32))),
     # Behind the range at 6": the whip drops to the floor box, not to a counter height. Moved
     # north with APPL-M-RANGE when it swapped with N3; x is still the wall-face constant
     # (35'-4") and y is the range's new along-wall position.

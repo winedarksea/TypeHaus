@@ -492,6 +492,28 @@ MAIN_LIGHTING = [
                      position=pt(ft(8, 9), ft(-1.25)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+
+    # The porch flood (2026-08-02): mark S, the narrow-throw full-cutoff spot, hung on
+    # the balcony's centre rear pillar PT-SG-BR2 (a post, not a Wall — `wall_ref` names
+    # only Walls, so this is a free-positioned device at the pillar's plan point).
+    # rotation 0 backs it onto the pillar's north side, throwing south down the deck;
+    # 8'-0" up the 10' pillar keeps the head above eye line and under the deck edge.
+    # NO `room=`: like the porch fan it stands outside every modeled room, which is how
+    # the wet-location and dark-sky checks know it is exterior. Same CKT-LT-MAIN as the
+    # fan — 20 VA more on the porch's own lighting branch.
+    ElectricalDevice(uid="QTM001EAAA", tag="ED-M-PORCH-FLOOD", kind=DeviceKind.LIGHT,
+                     position=pt(ft(18), ft(-0.8333)), type_ref="ED-T-LT-FLOOD-NARROW",
+                     circuit="CKT-LT-MAIN", rotation=deg(0),
+                     controlled_by=("ED-M-PORCH-FLOOD-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(8))),
+    # Its own switch, second gang 4" below ED-M-PORCH-SW on the same face — separate leg,
+    # not shared control: the fan-light runs whole evenings, the flood is the you-heard-
+    # something light, and one switch for both means the flood glares every night the fan
+    # spins. Two gangs side by side keeps both reaches in the one spot by the door.
+    ElectricalDevice(uid="QTM001FAAA", tag="ED-M-PORCH-FLOOD-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(8, 9), ft(-1.583)), type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", rotation=deg(90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]
 
 # --- Second storey --------------------------------------------------------------------
@@ -653,6 +675,36 @@ SECOND_LIGHTING = [
                      position=pt(ft(9, 9), ft(29, 6)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+    # The hall bath's lit niche (2026-08-02), mirroring the suite's LR-S-NICHE — same
+    # KERDI-BOARD-SNLT board, same E1 tape, same rules (notes/shower_niche.md: the board
+    # IS the membrane; the driver lead is its only permitted penetration, out through the
+    # head channel, sealed with KERDI-FIX).
+    #
+    # FX-S-BATH1-SH's alcove (x 2'-11 3/4"..7'-11 3/4", y 32'-10 1/2"..35'-4 1/2") backs
+    # onto the glazed north exterior wall (WIN-S-BATH-N sits over the tub's west end), so
+    # the niche cannot go in the back wall the way the suite's did. It goes in the tub's
+    # west END wall instead: W-S-CH-W, the chase's east wall at x=2'-9" — interior, dry
+    # side is a mechanical chase, no window, no door — with the 12"x28" SNLT board stood
+    # VERTICAL (12" wide, 28" tall) because that wall's clear run inside the alcove is
+    # only ~25". The head channel is then 1'-0" of tape at the 5'-0" head — the same
+    # bottle-at-hand-height head the suite's uses — centred on the alcove's clear run at
+    # y=34'-4". x=3'-0" is the recess face, 3" proud of the wall centre line.
+    LightRun(uid="QRS0005AAA", tag="LR-S-BATH1-NICHE", type_ref="ED-T-LT-NICHE-SNLT",
+             path=(pt(ft(3), ft(33, 10)), pt(ft(3), ft(34, 10))),
+             room="RM-S-BATH1", psu_ref="ED-S-BATH1-NICHE-PSU",
+             controlled_by=("ED-S-BATH1-SW",),
+             mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+    # Its own 60 W driver in the bath's ceiling, south of the tub and outside the shower
+    # zone, where it can be serviced without opening tile. NOT a share of ED-S-NICHE-PSU:
+    # that driver is a storey away across the plan (16'-6", 21'-6"), and the catalog's
+    # per-area-supply rule (plan/lighting_types.py) keeps the long wire at 120V — a 30'
+    # 24V home run for 3 W of tape is exactly what it forbids. 1'-0" at 3 W/ft is 3 W;
+    # x1.25 = 3.75 W against the 60 W box.
+    ElectricalDevice(uid="QTS001CAAA", tag="ED-S-BATH1-NICHE-PSU",
+                     kind=DeviceKind.JUNCTION_BOX,
+                     position=pt(ft(7), ft(31, 6)), type_ref="ED-T-LT-PSU-60",
+                     circuit="CKT-LT-UPPER", room="RM-S-BATH1",
+                     mount=Mount(kind=MountKind.CEILING)),
 
     # RM-S-PLANT: two suspended tubes over the plants at the south windows, on a timer so
     # they run a photoperiod rather than whenever somebody remembers. The fan-light
@@ -889,6 +941,28 @@ GARAGE_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="QTG0003AAA", tag="ED-G-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(8, 6), ft(41, 3)), type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+
+    # The garage-door light (2026-08-02): mark R, the full-cutoff exterior sconce, on
+    # W-G-E's outside face beside D-G-OVERHEAD — on the 4' pier south of the door
+    # (the door runs y 45'..61'), where it lights the apron without being struck by the
+    # door panel. x=24'-4" stands it just proud of the wall plane at x=24'; rotation -90
+    # backs it onto the east wall; NO `room=`, deliberately — it stands outside RM-GARAGE
+    # and `electrical.wet_location` / `advisory.dark_sky_lighting` both decide "exterior"
+    # geometrically from that. Elevation 7'-0" is storey-relative (the garage datum is the
+    # stem top at 1'-10" over the slab), so the fixture sits 8'-10" over the apron and
+    # its 9" housing still clears the wall's 8'-0" top plate.
+    ElectricalDevice(uid="QTG0004AAA", tag="ED-G-EXT-LT", kind=DeviceKind.LIGHT,
+                     position=pt(ft(24, 4), ft(43)), type_ref="ED-T-LT-SCONCE-EXT",
+                     circuit="CKT-LT-MAIN", rotation=deg(-90),
+                     controlled_by=("ED-G-EXT-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+    # Its switch, inside, ganged beside ED-G-SW at the service door (D-G-SERVICE's east
+    # jamb is at 6'-6"; the shop-light switch sits at 8'-6", this one 6" west of it) —
+    # walk in, one reach turns on the shop lights and the apron light both.
+    ElectricalDevice(uid="QTG0005AAA", tag="ED-G-EXT-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(8), ft(41, 3)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]

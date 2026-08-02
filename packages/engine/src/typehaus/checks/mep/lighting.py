@@ -169,6 +169,72 @@ def wet_location(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+# The warmest colour temperature a dark-sky exterior fixture may run: IDA/IES guidance
+# (and MN's own outdoor-lighting statute for state-funded fixtures) draws the line at
+# 3000K, above which the blue content scatters into skyglow out of proportion to the lumens.
+DARK_SKY_MAX_CCT_K = 3000
+
+
+@check(Tier.ADVISORY, "advisory.dark_sky_lighting")
+def dark_sky_lighting(ctx: CheckContext) -> list[Finding]:
+    """Every exterior luminaire is full cutoff and warm — the two dark-sky levers.
+
+    The same population ``electrical.wet_location`` calls exterior, found the same way:
+    a luminaire standing inside no modeled room, decided geometrically rather than by a
+    blank ``room`` field. Two gradings per fixture: ``full_cutoff`` on the type (the
+    housing emits nothing above the horizontal) and ``cct_k <= 3000`` (warmer light
+    scatters less into skyglow and bothers fewer of the neighbours it falls on).
+
+    Ceiling-hung exterior fixtures — the porch fan under the balcony deck is the case —
+    are exempt from the cutoff grading: the structure they hang beneath is the shield,
+    and no fan light kit carries a cutoff listing. Their CCT still counts; skyglow is not
+    the only thing warm light is for.
+    """
+    cid = "advisory.dark_sky_lighting"
+    types = _luminaire_types(ctx)
+    if not types:
+        return [_unknown(cid, "no luminaire types in the library")]
+
+    out: list[Finding] = []
+    checked = 0
+    for element, storey_tag in _lit_elements(ctx):
+        product = types.get(getattr(element, "type_ref", "") or "")
+        if product is None:
+            continue
+        if getattr(element, "room", None) is not None:
+            continue
+        if not _stands_outside_every_room(ctx, element, storey_tag):
+            continue
+        checked += 1
+        mount = getattr(element, "mount", None)
+        under_cover = (mount is not None
+                       and getattr(mount.kind, "value", None) == "ceiling")
+        if not under_cover and not getattr(product, "full_cutoff", False):
+            out.append(_warn_fail(
+                cid, "exterior luminaire " + element.tag + " uses " + product.tag
+                     + ", which is not a full-cutoff fixture — it spills light above "
+                     "the horizontal", (element.tag,)))
+        cct = getattr(product, "cct_k", None)
+        if cct is None:
+            out.append(_unknown(
+                cid, "exterior luminaire " + element.tag + "'s type " + product.tag
+                     + " states no colour temperature, so the "
+                     + str(DARK_SKY_MAX_CCT_K) + "K ceiling cannot be checked",
+                (element.tag,)))
+        elif cct > DARK_SKY_MAX_CCT_K:
+            out.append(_warn_fail(
+                cid, "exterior luminaire " + element.tag + " runs at " + str(cct)
+                     + "K, over the " + str(DARK_SKY_MAX_CCT_K) + "K dark-sky ceiling",
+                (element.tag,)))
+    if not checked:
+        return [_unknown(cid, "no exterior luminaires modeled")]
+    if not out:
+        out.append(_pass(cid, str(checked) + " exterior luminaires are full cutoff (or "
+                              "shielded by the ceiling they hang under) and <= "
+                              + str(DARK_SKY_MAX_CCT_K) + "K"))
+    return out
+
+
 def _stands_outside_every_room(ctx: CheckContext, element: object, storey_tag: str) -> bool:
     """Whether the element's plan point falls in no room's clear face on its storey.
 

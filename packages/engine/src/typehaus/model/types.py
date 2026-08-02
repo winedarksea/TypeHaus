@@ -258,6 +258,10 @@ class LuminaireType(ElectricalDeviceType):
     # A fixture switched at the fixture itself (a pull chain, a sconce paddle). Exempt
     # from the controls check — there is no wall switch to name.
     integral_switch: bool = False
+    # Dark-sky shielding declaration: the housing emits no light above the horizontal
+    # plane (IES/IDA "full cutoff"). A product attribute like the UL listings above it —
+    # ``advisory.dark_sky_lighting`` grades exterior fixtures on it.
+    full_cutoff: bool = False
     # Linear forms only: the load per lineal foot a ``LightRun`` multiplies by its length
     # to get connected VA and to size its 24V supply.
     watts_per_ft: float | None = None
