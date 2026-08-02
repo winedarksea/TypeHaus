@@ -75,12 +75,6 @@ DECLARED_DIVERGENCES = {
         "the old center wall ran the full 36' as one solid; the basement's N-S centerline is "
         "now split into segments at door and stair openings, so no single run spans it"
     ),
-    "House Basement Stair Side Wall (8\")": (
-        "the stair shaft's west wall is 12\" concrete on x=10' now, not 8\" on x=11', and it "
-        "runs the full north-row depth instead of dying at the stair foot: 12\" on that line "
-        "is what gives the shaft its code-minimum 7'-0\" clear well and the furnace room its "
-        "8'-6\", both measured off the same wall (reference basement plan)"
-    ),
     "House Centerline Wall (Second)": (
         "8'-6\" of that line (y 22'-4\"..30'-10\") is BM-S-HALL now — a flush 3-ply 11-7/8\" "
         "LVL over the open hall/landing/stair — so no single wall run spans the storey and "
@@ -133,6 +127,26 @@ DECLARED_DIVERGENCES = {
 # grew, so faces move by layer thicknesses, not by feet.
 MAX_PAIRED_PLACEMENT_DELTA_M = 0.9      # ~3', the attic knee/gable stack's own height change
 MAX_PAIRED_PLAN_EXTENT_DELTA_M = 0.75   # ~2'-6"
+
+# Walls whose plan extent changed *by decision* and so may exceed the delta above. Same
+# shape and the same discipline as DECLARED_STOREY_ELEVATION_MOVES: the change is pinned to
+# its expected magnitude, so a further silent stretch of an already-declared wall still
+# fails, and a stale entry is deleted the moment the wall stops diverging.
+#
+# Keyed on the *reference* name — the current tag is the thing that may be renamed.
+DECLARED_WALL_EXTENT_CHANGES = {
+    "House Basement Stair Side Wall (8\")": (
+        1.03,
+        "the stair shaft's west wall is 12\" concrete on x=10' now, not 8\" on x=11', and it "
+        "runs the full north-row depth (14'-2 5/8\" of W-B-STR) instead of dying at the "
+        "stair foot — 3'-4\" longer. 12\" on that line is what gives the shaft its "
+        "code-minimum 7'-0\" clear well and the furnace room its 8'-6\", both measured off "
+        "the same wall (reference basement plan). It read as an unpaired deletion until "
+        "2026-08-02, when the ESS closet's two partitions and the W-B-CW split changed the "
+        "basement's wall pool enough for the matcher to find the counterpart that was "
+        "always there — the pairing is the right answer, and this is the size of it"
+    ),
+}
 
 HOUSE_SIZE_FT = 36.0
 
@@ -275,7 +289,21 @@ def test_paired_walls_stay_on_their_reference_wall_lines(equivalence):
     for item in pairs:
         assert item.placement_delta_m <= MAX_PAIRED_PLACEMENT_DELTA_M, item.as_dict()
         plan_delta = max(abs(item.size_delta_m[0]), abs(item.size_delta_m[1]))
-        assert plan_delta <= MAX_PAIRED_PLAN_EXTENT_DELTA_M, item.as_dict()
+        declared = DECLARED_WALL_EXTENT_CHANGES.get(item.reference_name)
+        if declared is not None:
+            expected, _reason = declared
+            assert plan_delta <= expected, item.as_dict()
+        else:
+            assert plan_delta <= MAX_PAIRED_PLAN_EXTENT_DELTA_M, item.as_dict()
+    # A declared stretch that no longer exceeds the ordinary tolerance is a line nobody
+    # needs; the same guard DECLARED_STOREY_ELEVATION_MOVES carries.
+    paired_deltas = {item.reference_name: max(abs(item.size_delta_m[0]),
+                                              abs(item.size_delta_m[1]))
+                     for item in pairs}
+    stale = [name for name in DECLARED_WALL_EXTENT_CHANGES
+             if paired_deltas.get(name, 0.0) <= MAX_PAIRED_PLAN_EXTENT_DELTA_M]
+    assert not stale, ("DECLARED_WALL_EXTENT_CHANGES lists walls within the ordinary "
+                       f"tolerance — delete them: {stale}")
 
 
 def test_house_walls_gain_layers_rather_than_lose_them(equivalence):
