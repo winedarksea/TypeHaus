@@ -46,6 +46,13 @@ _RE_DECK = re.compile(r"^deck\s+(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?
 _RE_IJOIST = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+I-joist$")
 _RE_MULTI_NOMINAL = re.compile(r"^(?P<plies>\d+)-(?P<nominal>\d+x\d+)$")
 _RE_NOMINAL = re.compile(r"^\d+x\d+$")
+# Actual (already-milled) rectangular dimensions, e.g. a custom 6.125x6.125 timber post.
+# A decimal point is the tell: no nominal lumber size carries one, so "6.125x6.125" is
+# stated dimensions, not a LUMBER_ACTUAL key — checked before the nominal fallback so a
+# custom timber never resolves as a 1.5x5.5 stud.
+_RE_ACTUAL = re.compile(
+    r"^(?P<width>\d+\.\d+)x(?P<depth>\d+(?:\.\d+)?)$|^(?P<width2>\d+)x(?P<depth2>\d+\.\d+)$"
+)
 # Round column, e.g. a 12" sonotube-cast concrete pier: "12 round".
 _RE_ROUND = re.compile(r"^(?P<dia>\d+(?:\.\d+)?)\s+round$")
 # Sheet goods swept as a member rather than milled lumber — a soffit panel, or the
@@ -121,6 +128,11 @@ def cross_section(profile: str) -> CrossSection:
         plies = int(match["plies"])
         thickness_in, depth_in = LUMBER_ACTUAL.get(match["nominal"], _FALLBACK_ACTUAL_IN)
         return _rect(thickness_in * plies, depth_in, plies=plies)
+
+    if match := _RE_ACTUAL.match(text):
+        width_in = float(match["width"] or match["width2"])
+        depth_in = float(match["depth"] or match["depth2"])
+        return _rect(width_in, depth_in)
 
     if _RE_NOMINAL.match(text):
         thickness_in, depth_in = LUMBER_ACTUAL.get(text, _FALLBACK_ACTUAL_IN)

@@ -387,6 +387,29 @@ class ResolvedFinishZone:
 
 
 @dataclass(frozen=True)
+class ResolvedPaneling:
+    """One wall's share of a ``WallPaneling`` band (→ model/paneling.py).
+
+    A room-scoped paneling resolves to one record per bounding wall it covers, area
+    already net of the openings that punch the band — so the takeoff sums, it never
+    re-intersects. ``band_z0_m``/``band_z1_m`` are wall-local, measured up from the wall
+    base (the room floor), matching ``ResolvedOpening.sill_m``.
+    """
+
+    uid: str
+    tag: str
+    storey: str
+    room: str
+    wall_tag: str
+    material_ref: str
+    area_m2: float
+    band_z0_m: float
+    band_z1_m: float
+    run_m: float
+    replaces_wall_finish: bool
+
+
+@dataclass(frozen=True)
 class ResolvedRoom:
     uid: str
     tag: str
@@ -686,6 +709,7 @@ class ResolvedModel:
     braces: list[ResolvedBrace] = field(default_factory=list)
     floor_heat: list[ResolvedFloorHeat] = field(default_factory=list)
     rooms: list[ResolvedRoom] = field(default_factory=list)
+    panelings: list[ResolvedPaneling] = field(default_factory=list)
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
     pipe_runs: list[ResolvedPipeRun] = field(default_factory=list)

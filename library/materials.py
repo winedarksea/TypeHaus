@@ -170,6 +170,7 @@ STARTER_MATERIALS: tuple[Material, ...] = (
     # and their thermal/vapour fields stay unset rather than being filled with numbers no
     # published test measured. `color` and `hatch` are what these entries exist to carry.
     Material(tag="oak", name="3/4\" white-oak strip flooring", hatch="lumber", color="#c69c6d",
+             species="oak",
              source="finish covering, not an assembly layer: thermal/vapour fields unset "
                     "(no published rating located, and nothing consumes them here)"),
     Material(tag="lvp", name="Luxury vinyl plank, click-lock", hatch="lumber", color="#a08a72",

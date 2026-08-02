@@ -90,7 +90,16 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # that makes the house pass. Without a pin, "not yet gating" quietly becomes "never gating".
 #
 # Lower this number when you flip an item. Raising it needs a reason in the commit message.
-MAX_NON_BLOCKING_ITEMS = {"mn-2024": 21}
+#
+# 21 -> 23 on 2026-08-02, and the reason is structural rather than "not yet": the two items
+# added there — "Energy storage system" (R327) and "PV interconnection and rapid shutdown"
+# (NEC 705.12 / 690.12) — are about equipment a house may simply not have. Their checks
+# no-op when no ESS and no PV are placed, and an item with no matched findings resolves to
+# UNKNOWN. Blocking on them would fail the permit gate for every house without a battery on
+# the wall, which is the opposite of what the gate is for. These two stay non-gating by
+# nature, not by staging, and flipping them would need a "this house has no ESS" concept
+# the checklist does not have.
+MAX_NON_BLOCKING_ITEMS = {"mn-2024": 23}
 
 
 @pytest.mark.parametrize("profile", ALL_PROFILES, ids=lambda p: p.name)

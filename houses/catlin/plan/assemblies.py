@@ -347,6 +347,20 @@ POST_WHITE_PAINT = Assembly(
 # A guard is metal, not painted PT: `_solid_color` reads the STRUCTURE layer's material, so
 # naming metal-dark-exterior here is what actually darkens the railings in both renderers
 # (the "railing" entry in the category palettes is dead for any solid that has an assembly).
+# The suite bedroom's four elm tudor posts (plans/TODO.md §Hardwood). Same pattern as
+# POST_WHITE_PAINT: a single STRUCTURE layer whose material is what colours the solid in
+# both renderers and names the species the wood_surfaces takeoff bills. 6.125" body = the
+# custom timber, sheathing face to drywall face — a deviation within W-S-W3's stud line,
+# deliberately NOT a change to CATLIN_EXT_2X6.
+ELM_TIMBER = Assembly(
+    tag="ELM_TIMBER",
+    layers=(
+        Layer(name="elm-timber", material_ref="elm-timber", thickness=inch(6.125),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="plans/TODO.md — suite tudor posts, elm 6-1/8\" square",
+)
+
 RAILING_DARK_METAL = Assembly(
     tag="RAILING_DARK_METAL",
     layers=(
@@ -631,7 +645,19 @@ MATERIALS = [
              source="plans/TODO.md — mudroom wall's stair face; 3/4\" is structural backing so coat hooks screw directly into it (a 1/2\" panel would need blocking); permeability per the plywood series used for struct-1-plywood"),
     Material(tag="sauna-tg", name="Basswood/aspen T&G sauna liner (5/4)", r_per_inch=1.3,
              perm_rating=20.0, hatch="lumber", color="#e6d4ae",
-             source="notes/sauna_basement_wall_detail.md — low-conductivity species (American basswood, Canadian poplar, aspen)"),
+             species="basswood", stock_bf_per_sqft=1.25,
+             source="notes/sauna_basement_wall_detail.md — low-conductivity species (American basswood, Canadian poplar, aspen); 5/4 stock = 1.25 bf/sf"),
+    # --- species wood finishes (plans/TODO.md §Hardwood, 2026-08-02) -----------
+    # RM-M-STUDY wainscot to 36". 4/4 stock: board feet = square feet.
+    Material(tag="walnut-tg", name="Black walnut T&G wainscot (4/4)", r_per_inch=1.1,
+             density=610.0, hatch="lumber", color="#5d4433",
+             finish="clear-satin-hardwax-oil", species="walnut", stock_bf_per_sqft=1.0,
+             source="plans/TODO.md — first-floor study walnut paneling to 36\""),
+    # The suite's four 6-1/8\" square tudor posts, ordered as 10' sections and cut down.
+    Material(tag="elm-timber", name="Elm timber 6-1/8\" square, S4S", r_per_inch=1.1,
+             density=560.0, hatch="lumber", color="#b08d5e",
+             finish="clear-satin-hardwax-oil", species="elm",
+             source="plans/TODO.md — suite bedroom tudor posts, 10' sections cut to fit"),
     Material(tag="polyiso-foil", name="Foil-faced polyisocyanurate", r_per_inch=6.0,
              perm_rating=0.03, hatch="rigid", color="#d9d2a8",
              source="foil facer is the sauna's vapour retarder as well as its CI"),
@@ -785,6 +811,7 @@ ASSEMBLIES = [
     BREEZEWAY_GLAZED_WALL,
     BALCONY_DECK_ALUMINUM,
     POST_WHITE_PAINT,
+    ELM_TIMBER,
     RAILING_DARK_METAL,
     GARAGE_ICF_8,
     GARAGE_WALL_2X6,

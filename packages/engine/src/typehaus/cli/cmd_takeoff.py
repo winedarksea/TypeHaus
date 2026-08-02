@@ -80,6 +80,7 @@ def takeoff(
                # estimate and to `haus variants compare`.
                "floor_finishes": bom["floor_finishes"],
                "envelope_layers": bom["envelope_layers"],
+               "wood_surfaces": bom["wood_surfaces"],
                "openings": bom["openings"],
                "stair_finish": bom["stair_finish"],
                "footing_bedding": bom["footing_bedding"],
@@ -160,6 +161,17 @@ def takeoff(
             label = item["name"] or item["type"]
             nema = f" NEMA {item['nema']}" if item["nema"] and item["nema"] not in label else ""
             console.print(f"  {item['count']:>5} ea    {item['kind']}: {label}{nema}")
+    if payload["wood_surfaces"]:
+        console.print("[bold]Wood surfaces by species[/bold]  (species · material · kind)")
+        for item in payload["wood_surfaces"]:
+            if item.get("net_area_sqft") is not None:
+                qty = (f"{item['net_area_sqft']} sf net / "
+                       f"{item['order_area_sqft']} sf order")
+            else:
+                qty = (f"{item['count']} pc / {item['order_length_ft']} LF ordered")
+            bf = f" · {item['board_feet']} bf" if item.get("board_feet") else ""
+            console.print(f"  {str(item['species'] or '?'):>9} · {item['material']:<14} "
+                          f"{item['kind']:<20} {qty}{bf}")
     if payload["panel_schedule"]:
         load = payload["service_load"]
         console.print(f"[bold]Panel schedule[/bold]  ({len(payload['panel_schedule'])} circuits; "

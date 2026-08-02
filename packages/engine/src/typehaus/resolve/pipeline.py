@@ -27,6 +27,7 @@ from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.mep import resolve_mep
 from typehaus.resolve.solar import resolve_solar
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedOpening
+from typehaus.resolve.paneling import resolve_paneling
 from typehaus.resolve.placeables import resolve_placeables
 from typehaus.resolve.platform import extend_walls_to_platform
 from typehaus.resolve.roof_edge import resolve_roof_edges
@@ -102,6 +103,8 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_drainage(model))
     with _stage("rooms"):
         findings.extend(resolve_rooms(plan, model))
+    with _stage("paneling"):
+        findings.extend(resolve_paneling(plan, model))
     with _stage("placeables"):
         findings.extend(resolve_placeables(plan, model))
     with _stage("floor_heat"):

@@ -54,6 +54,15 @@ class Material(HausModel):
     # ``code.R302_5_garage_separation`` reads it for R302.6's 5/8" Type X requirement where
     # habitable space sits above a garage; without it that sub-rule can only report UNKNOWN.
     gypsum_type: Literal["regular", "type-x", "type-c"] | None = None
+    # Wood species ("basswood", "oak", "walnut", "elm", ...) where the material *is* a wood
+    # product an estimator orders by species. Authoring it is what admits the material into
+    # the species-split ``wood_surfaces`` takeoff; a wood-ish tag without it stays out —
+    # species by tag-substring guessing is exactly what this field retires.
+    species: str | None = None
+    # Board feet ordered per square foot of coverage, on nominal stock thickness: 1.0 for
+    # 4/4 stock, 1.25 for 5/4. None means "no board-feet figure" — the takeoff omits the
+    # column rather than inventing a thickness (#32).
+    stock_bf_per_sqft: float | None = None
     # Optional freeform provenance (URL, standard, or "generic assumption") (#46).
     source: str | None = None
 

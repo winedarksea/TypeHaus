@@ -39,8 +39,8 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     id: "envelope",
     note: "The layers that separate inside from out, and the holes through them.",
     title: "Envelope & openings",
-    sections: ["envelope_layers", "glazing_panels", "glazing_trim", "bug_screens",
-      "openings", "floor_finishes", "stair_finish", "railings"],
+    sections: ["envelope_layers", "wood_surfaces", "glazing_panels", "glazing_trim",
+      "bug_screens", "openings", "floor_finishes", "stair_finish", "railings"],
   },
   {
     id: "mep",

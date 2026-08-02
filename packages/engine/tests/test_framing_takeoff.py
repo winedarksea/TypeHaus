@@ -80,7 +80,7 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "construction_returns", "sheet_goods", "glazing_panels",
                         "glazing_trim", "hardware", "placeables", "floor_heat",
                         "electrical_devices", "panel_schedule", "service_load",
-                        "conduit", "conductors", "solar", "backup_components",
+                        "conduit", "conductors", "solar", "backup_power",
                         "luminaire_schedule", "lighting_controls", "light_runs",
                         "lighting_load",
                         # The 2026-07-25 sweep: resolved-but-unbilled families.

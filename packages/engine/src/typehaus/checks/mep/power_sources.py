@@ -130,10 +130,17 @@ def rapid_shutdown(ctx: CheckContext) -> list[Finding]:
     Minnesota design low a module puts out meaningfully more than its STC nameplate, and a
     grouping sized on rated Voc is a grouping that is legal in July and not in January.
 
-    The check does not assume the answer. It computes the largest run of consecutive
-    non-RSD modules on each string and compares that run's cold Voc against the limit — so
-    "every module" and "every other module" are both outcomes the model can produce, not
-    postures the check is written around.
+    A *group* is one shutdown device together with the modules downstream of it that have
+    none of their own — the device is inside the group it controls, not outside it. That
+    detail is the whole arithmetic: with a transmitter on every other module the groups are
+    pairs at 88.8 V cold, not singletons at 44.4 V, and a check that measured only the
+    uncontrolled modules would call the every-other scheme compliant when it is not.
+
+    The check does not assume the answer. It walks each string, builds those groups, and
+    compares the largest one against the limit — so "every module" and "every other module"
+    are both outcomes the model can produce, not postures the check is written around. A
+    module reached before any device on its string is in no group at all and reports as
+    uncontrolled.
     """
     cid, code = "code.NEC_690_12_rapid_shutdown", "NEC 690.12(B)(2)"
     panels = list(ctx.model.solar_panels)
@@ -157,39 +164,45 @@ def rapid_shutdown(ctx: CheckContext) -> list[Finding]:
                 "author voc_cold from the module datasheet's Voc temperature coefficient "
                 "at the site design low"))
             continue
-        # Longest run of consecutive modules with no shutdown device of their own — the
-        # worst-case group whose conductors stay energized after a shutdown command.
-        runs: list[list] = []
-        run: list = []
+        groups: list[list] = []
+        uncontrolled: list = []
         for panel in modules:
             if panel.rsd:
-                run = []
-                continue
-            if not run:
-                runs.append(run)
-            run.append(panel)
-        runs = [item for item in runs if item]
-        worst_run = max(runs, key=lambda item: sum(p.voc_cold for p in item), default=[])
-        if not worst_run:
+                groups.append([panel])
+            elif groups:
+                groups[-1].append(panel)
+            else:
+                uncontrolled.append(panel)
+        if uncontrolled:
+            tags = tuple(p.tag for p in uncontrolled)
             out.append(_finding(
-                cid, Result.PASS,
-                f"string {string_tag}: all {len(modules)} modules carry a rapid-shutdown "
-                "device", tuple(p.tag for p in modules), code))
+                cid, Result.FAIL,
+                f"string {string_tag}: {len(uncontrolled)} module(s) are reached before any "
+                f"shutdown device on the string ({', '.join(tags)}), so nothing controls "
+                "them", tags, code,
+                "fit a SunSpec transmitter to the first module of the string"))
             continue
-        run_v = sum(p.voc_cold for p in worst_run)
-        tags = tuple(p.tag for p in worst_run)
+        worst = max(groups, key=lambda item: sum(p.voc_cold for p in item), default=[])
+        run_v = sum(p.voc_cold for p in worst)
+        tags = tuple(p.tag for p in worst)
         if run_v > _RAPID_SHUTDOWN_LIMIT_V + 1e-9:
             out.append(_finding(
                 cid, Result.FAIL,
-                f"string {string_tag}: {len(worst_run)} consecutive module(s) without a "
-                f"shutdown device sum to {run_v:.1f}V cold Voc, over the "
-                f"{_RAPID_SHUTDOWN_LIMIT_V:g}V limit ({', '.join(tags)})", tags, code,
-                "fit a SunSpec transmitter to more modules until no ungrouped run exceeds "
+                f"string {string_tag}: the largest shutdown group is {len(worst)} module(s) "
+                f"at {run_v:.1f}V cold Voc, over the {_RAPID_SHUTDOWN_LIMIT_V:g}V limit "
+                f"({', '.join(tags)})", tags, code,
+                "fit a SunSpec transmitter to more modules until no group exceeds "
                 f"{_RAPID_SHUTDOWN_LIMIT_V:g}V cold"))
+        elif len(worst) == 1:
+            out.append(_finding(
+                cid, Result.PASS,
+                f"string {string_tag}: all {len(modules)} modules carry a rapid-shutdown "
+                f"device of their own ({run_v:.1f}V cold each)",
+                tuple(p.tag for p in modules), code))
         else:
             out.append(_finding(
                 cid, Result.PASS,
-                f"string {string_tag}: the largest group without its own shutdown device "
-                f"is {len(worst_run)} module(s) at {run_v:.1f}V cold, within the "
-                f"{_RAPID_SHUTDOWN_LIMIT_V:g}V limit", tags, code))
+                f"string {string_tag}: the largest shutdown group is {len(worst)} module(s) "
+                f"at {run_v:.1f}V cold, within the {_RAPID_SHUTDOWN_LIMIT_V:g}V limit",
+                tags, code))
     return out

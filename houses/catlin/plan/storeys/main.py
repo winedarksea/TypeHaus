@@ -21,6 +21,7 @@ from typehaus import (
     Stair,
     StructuralRole,
     Wall,
+    WallPaneling,
     Window,
     WindowType,
     face,
@@ -593,10 +594,12 @@ ROOMS = [
     # the well is inside the same polygonized face. Two seeds in one face billed the 62 sf of
     # stair well twice — both claims resolved to the identical 768 sf. The 768 sf is the
     # honest area of the room you can now walk around; the stair is part of it.
+    # Main-floor finishes revised 2026-08-02 (plans/TODO.md §Hardwood): solid oak is the
+    # studies' floor (RM-A-STUDY + RM-S-STUDY2) — living/study here go LVP, bed/closet carpet.
     Room(uid="CMR401AAAA", tag="RM-M-LIVING", seed=pt(ft(27), ft(12)),
-         occupancy=Occupancy.LIVING, floor_finish="oak"),
+         occupancy=Occupancy.LIVING, floor_finish="lvp"),
     Room(uid="CMR402AAAA", tag="RM-M-BED", seed=pt(ft(9), ft(6)),
-         occupancy=Occupancy.BEDROOM, floor_finish="oak"),
+         occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
     Room(uid="CMR403AAAA", tag="RM-M-BATH1", seed=pt(ft(2), ft(24, 6)),
          occupancy=Occupancy.BATHROOM, floor_finish="tile"),
     Room(uid="CMR404AAAA", tag="RM-M-BATH2", seed=pt(ft(4), ft(18)),
@@ -604,9 +607,9 @@ ROOMS = [
     Room(uid="CMR405AAAA", tag="RM-M-LAUNDRY", seed=pt(ft(10, 6), ft(20)),
          occupancy=Occupancy.LAUNDRY, floor_finish="tile"),
     Room(uid="CMR406AAAA", tag="RM-M-STUDY", seed=pt(ft(15, 8), ft(20)),
-         occupancy=Occupancy.OFFICE, floor_finish="oak"),
+         occupancy=Occupancy.OFFICE, floor_finish="lvp"),
     Room(uid="CMR407AAAA", tag="RM-M-CLOSET", seed=pt(ft(13), ft(15, 4)),
-         occupancy=Occupancy.STORAGE, floor_finish="oak"),
+         occupancy=Occupancy.STORAGE, floor_finish="carpet"),
     # Retagged from RM-M-STORAGE with the mudroom conversion (2026-07-28): entry vestibule
     # now, not bulk storage, but still Occupancy.STORAGE — there is no MUDROOM occupancy in
     # the closed enum and STORAGE is the closer fit of what exists (unheated-adjacent,
@@ -776,5 +779,13 @@ BEAMS = [
          top_elevation=ft(10)),
 ]
 
+# The first-floor study's walnut wainscot (plans/TODO.md §Hardwood): every bounding wall
+# to 36" above the floor, D-M-STUDY's punch subtracted by the resolver. Board feet come
+# off the walnut-tg material's 4/4 stock (bf = sf) in the wood_surfaces takeoff.
+PANELING = [
+    WallPaneling(uid="CMP901AAAA", tag="WP-M-STUDY-WAINSCOT", room="RM-M-STUDY",
+                 material_ref="walnut-tg", height=ft(3)),
+]
+
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SLABS,
-            *FLOOR_OPENINGS, *STAIRS, *BEAMS]
+            *FLOOR_OPENINGS, *STAIRS, *BEAMS, *PANELING]

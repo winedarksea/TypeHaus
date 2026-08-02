@@ -8,7 +8,7 @@ import pytest
 
 from typehaus.checks import run_from_model
 from typehaus.checks.registry import Tier
-from typehaus.model import (Building, Circuit, DeviceKind, ElectricalDevice, ElectricalDeviceType,
+from typehaus.model import (BackupTier, Building, Circuit, DeviceKind, ElectricalDevice, ElectricalDeviceType,
                             Library, PlanModel, Project, Service, ServicePort, Site, Storey, m, pt)
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
@@ -205,7 +205,8 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     from typehaus.takeoff import backup_component_rows, panel_schedule, service_load_summary
 
     rows = {row["circuit"]: row for row in panel_schedule(catlin_model)}
-    assert len(rows) == 37  # +2 with the three-system HVAC design (CKT-HP1-AH, CKT-HP2)
+    # 36 since the 2026-08-02 microgrid refactor retired CKT-BACKUP-FEED (was 37).
+    assert len(rows) == 36
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
     # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor; the
     # dining zone takes the same protection because every mat maker asks for it).
@@ -227,16 +228,25 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     assert rows["CKT-EV-1450"]["connected_va"] == 9600
     assert rows["CKT-EV-1450"]["devices"] == ["ED-G-EV-1450"]
     assert rows["CKT-DRYER"]["connected_va"] == 5000
-    # The notes' backup set is flagged.
+    # The notes' backup set is tiered, and every one of them is on the subpanel.
     backup = {tag for tag, row in rows.items() if row["backup"]}
     assert backup == {"CKT-WH-HP", "CKT-SUMP", "CKT-FRIDGE", "CKT-HA",
                       "CKT-LT-BACKUP", "CKT-HP3"}
-    # ceil(6 backup circuits / 4 channels) = 2 relays, one PSU, one UPS, and a contactor
-    # for each backup circuit a 16A relay channel can't switch directly (sump 20A,
-    # fridge 20A, the 2-pole heat pump).
+    assert {tag for tag, row in rows.items() if row["backup_tier"] == "always_on"} == {
+        "CKT-FRIDGE", "CKT-HA", "CKT-LT-BACKUP"}
+    assert {tag for tag, row in rows.items() if row["backup_tier"] == "shed"} == {
+        "CKT-WH-HP", "CKT-SUMP", "CKT-HP3"}
+    assert all(rows[tag]["panel"] == "ED-B-BACKUP-PANEL" for tag in backup)
+    # Only the SHED tier buys switching gear — that is what the tier means. One relay for
+    # CKT-WH-HP (the one 120V shed circuit inside a 16A channel) and a contactor for each
+    # shed circuit a channel cannot switch directly (CKT-SUMP at 20A, the 2-pole CKT-HP3).
+    # The always-on tier contributes none, where the old flat `backup` flag bought three.
     components = {row["component"]: row["count"] for row in backup_component_rows(catlin_model)}
-    assert components["Shelly Pro 4PM 4-channel DIN relay"] == 2
-    assert components["DIN contactor (relay-driven)"] == 3
+    assert components["Shelly Pro 4PM 4-channel DIN relay"] == 1
+    assert components["DIN contactor (relay-driven)"] == 2
+    # The source circuit is a source, and the schedule says so rather than leaving a reader
+    # to infer it from a zero.
+    assert rows["CKT-ESS-GRID"]["source"] and not rows["CKT-ESS-GRID"]["backup"]
     load = service_load_summary(catlin_model)
     assert load["floor_area_ft2"] > 4000
     assert load["demand_amps"] > 100  # a real number, not a stub
@@ -313,8 +323,11 @@ def test_conduit_emits_cable_carrier_segments(project, tmp_path: Path):
 def test_catlin_conduit_trunks(catlin_model):
     from typehaus.takeoff import conduit_takeoff
 
-    assert len(catlin_model.conduits) == 4
-    assert all(run.from_ref == "ED-B-PANEL" for run in catlin_model.conduits)
+    assert len(catlin_model.conduits) == 7  # 4 trunks + the 3 ESS microgrid runs
+    # Not all from the panel any more: the three 2026-08-02 runs start at the PV junction
+    # box and at the inverter, which is the point of them.
+    assert {run.from_ref for run in catlin_model.conduits} == {
+        "ED-B-PANEL", "ED-A-PV-JB", "EQ-B-ESS-INV"}
     rows = conduit_takeoff(catlin_model)
     assert {row["trade_size_in"] for row in rows} == {0.75, 1.0, 1.25, 1.5}
     assert all(20 < row["length_ft"] < 60 for row in rows)
@@ -330,7 +343,7 @@ def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
 
     bom = bill_of_materials(catlin_model)
     for section in ("electrical_devices", "panel_schedule", "service_load", "conduit",
-                    "solar", "backup_components"):
+                    "solar", "backup_power"):
         assert section in bom, section
     assert bom["panel_schedule"] == panel_schedule(catlin_model)
     assert bom["solar"]["total_watts"] == 5280
@@ -342,8 +355,19 @@ def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
         1 for storey in catlin_model.plan.storeys
         for element in catlin_model.plan.storey_elements(storey.tag)
         if element.element_kind == "ElectricalDevice")
+    # Rows are trade-size groups, not runs: the three 1" microgrid runs join the group the
+    # 1" trunk already made.
     assert len(bom["conduit"]) == 4
-    assert bom["backup_components"][0]["count"] == 2  # ceil(6/4) relays
+    # The microgrid section is derived twice over: the placed ESS hardware, then the
+    # shed-tier switching gear. The first row is the inverter because equipment leads.
+    components = bom["backup_power"]["components"]
+    assert components[0]["component"].startswith("EG4 12kPV")
+    assert any(row["component"].startswith("EG4 PowerPro") for row in components)
+    relays = next(row for row in components if "Pro 4PM" in row["component"])
+    assert relays["count"] == 1  # one 120V shed circuit inside the 16A channel
+    contactors = next(row for row in components if "contactor" in row["component"])
+    assert contactors["count"] == 2  # CKT-HP3 (2-pole) + CKT-SUMP (20A)
+    assert bom["backup_power"]["runtime"]["modeled"] is True
 
 
 # --- panel spaces + slot map ----------------------------------------------------------
@@ -391,35 +415,55 @@ def test_panel_spaces_unknown_without_declared_spaces():
 
 
 def test_catlin_slot_map_is_complete_and_unique(catlin_model):
-    """Every authored circuit holds a slot; positions never collide; columns are honest
-    (2-pole pairs share a column because slot and slot+2 have the same parity)."""
+    """Every authored circuit holds a slot; positions never collide *within a panel*;
+    columns are honest (2-pole pairs share a column because slot and slot+2 have the same
+    parity).
+
+    Per panel since 2026-08-02: the house has two enclosures now, and slot 2 of the backup
+    subpanel is a different piece of metal from slot 2 of the service panel. Collapsing
+    them into one map made the second panel's first circuit look like a double-tap.
+    """
     circuits = catlin_model.plan.library.circuits
     assert all(circuit.slot is not None for circuit in circuits)
-    occupied = {}
+    assert len({c.panel_ref for c in circuits}) == 2
+    occupied: dict = {}
     for circuit in circuits:
         positions = (circuit.slot,) if circuit.poles == 1 else (circuit.slot,
                                                                 circuit.slot + 2)
         for position in positions:
-            assert position not in occupied, (position, circuit.tag, occupied[position])
-            occupied[position] = circuit.tag
+            key = (circuit.panel_ref, position)
+            assert key not in occupied, (key, circuit.tag, occupied[key])
+            occupied[key] = circuit.tag
     assert len(occupied) == sum(circuit.poles for circuit in circuits)
 
 
 def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     """ED-T-PANEL was a 42-space enclosure carrying a 52-space schedule, so this check
     used to FAIL by design and the last ten circuits sat past the bus. The panel was
-    swapped for a 54-space unit (plan/mep.py), and the check now PASSES with two spaces
-    spare. Both numbers are measured off the model, never pinned."""
+    swapped for a 54-space unit (plan/mep.py), and the check now PASSES.
+
+    Since 2026-08-02 the check reconciles *both* enclosures, and the service panel is far
+    less crowded: moving the six backup circuits and retiring CKT-BACKUP-FEED took it from
+    52 spaces of 54 down to 44, with the subpanel carrying 7 of its 12. All four numbers
+    are measured off the model, never pinned."""
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
     findings = [f for f in report.findings if f.check_id == "electrical.panel_spaces"]
     assert findings
     assert all(f.result.value == "pass" for f in findings), [f.message for f in findings]
     circuits = catlin_model.plan.library.circuits
+    types = {t.tag: t for t in catlin_model.plan.library.electrical_device_types}
+
+    def spaces(panel_ref: str, type_ref: str) -> tuple:
+        return (sum(c.poles for c in circuits if c.panel_ref == panel_ref),
+                types[type_ref].spaces)
+
+    main = spaces("ED-B-PANEL", "ED-T-PANEL")
+    backup = spaces("ED-B-BACKUP-PANEL", "ED-T-BACKUP-PANEL")
+    assert main[0] <= main[1] and backup[0] <= backup[1]
+    assert main == (44, 54)  # the spare capacity is the point
+    assert backup == (7, 12)
     required = sum(circuit.poles for circuit in circuits)
-    declared = next(t.spaces for t in catlin_model.plan.library.electrical_device_types
-                    if t.tag == "ED-T-PANEL")
-    assert required <= declared
-    assert (required, declared) == (52, 54)  # the spare capacity is the point
+    declared = main[1]
     # And the enclosure it replaced still would not have held the schedule — which is why
     # it was replaced, and what keeps this from passing for the wrong reason.
     retagged = tuple(c.model_copy(update={"panel_ref": "ED-M-PANEL"}) for c in circuits)
@@ -503,8 +547,12 @@ def test_load_management_flags_unknown_circuits():
 
 def test_circuit_is_schedule_data_not_geometry():
     """A Circuit never enters storey element lists; it lives in Library.circuits."""
-    circuit = Circuit(tag="CKT-01", panel_ref="ED-B-PANEL", breaker_amps=20, backup=True)
-    assert circuit.poles == 1 and circuit.backup and not circuit.gfci
+    circuit = Circuit(tag="CKT-01", panel_ref="ED-B-PANEL", breaker_amps=20,
+                      backup_tier=BackupTier.ALWAYS_ON)
+    assert circuit.poles == 1 and not circuit.gfci
+    # Never inferred, never defaulted: no tier, no source, no duty cycle unless authored.
+    assert circuit.backup_tier is BackupTier.ALWAYS_ON
+    assert circuit.source is False and circuit.duty_cycle is None
     library = Library(circuits=(circuit,))
     assert library.circuits[0].tag == "CKT-01"
 
@@ -523,14 +571,15 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
 
     payload = model_to_dict(catlin_model)["electrical"]
     assert set(payload) == {"panel_schedule", "service_load", "conduit", "devices", "solar",
-                            "backup_components", "lighting"}
+                            "backup_components", "backup_runtime", "lighting"}
     assert set(payload["lighting"]) == {"schedule", "controls", "runs", "connected_va"}
     assert payload["panel_schedule"] == panel_schedule(catlin_model)
     assert payload["service_load"] == service_load_summary(catlin_model)
     assert payload["conduit"] == conduit_takeoff(catlin_model)
     assert payload["devices"] == electrical_device_takeoff(catlin_model)
     assert payload["solar"] == solar_takeoff(catlin_model)
-    assert len(payload["panel_schedule"]) == 37
+    # 36, not the 37 before the 2026-08-02 microgrid refactor: CKT-BACKUP-FEED retired.
+    assert len(payload["panel_schedule"]) == 36
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):

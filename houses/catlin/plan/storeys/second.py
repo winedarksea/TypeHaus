@@ -45,6 +45,7 @@ from typehaus import (
     RadiantSystem,
     Railing,
     RailingKind,
+    Post,
     Room,
     RoughOpening,
     Soffit,
@@ -709,6 +710,30 @@ FLOOR = [
                 openings=("FO-S-STAIR",)),
 ]
 
+# The suite bedroom's four "tudor" posts (plans/TODO.md §Hardwood): custom 6-1/8" square
+# elm timbers standing in W-S-W3's stud line, faces flush with the drywall plane.
+# Deliberately NOT a change to CATLIN_EXT_2X6 — each post is a deviation *within* the stud
+# line, so the wall assembly, its framing counts and the sheathing plane are untouched.
+# Geometry: the axis is the sheathing-ext plane (x=0); sheathing 1/2" + stud 5.5" + gwb
+# 5/8" puts the 6.125" body from x=1/2" (back of the stud bay) to x=6-5/8" (drywall face),
+# centre x=3-9/16". Standing on FS-SECOND's subfloor (10'-0 3/4"), cut 8'-11 1/4" to top
+# out flush with the 9' plate; ordered as 10' sections and cut down. y-positions keep
+# >6" clear of both WT-2736 ROs (y 11'-10 1/2"..14'-1 1/2" and 18'-6 1/2"..20'-9 1/2").
+POSTS = [
+    Post(uid="CSP901AAAA", tag="P-S-TUDOR1", position=pt(inch(3.5625), ft(10, 8)),
+         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-SECOND",
+         assembly="ELM_TIMBER"),
+    Post(uid="CSP902AAAA", tag="P-S-TUDOR2", position=pt(inch(3.5625), ft(15, 4)),
+         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-SECOND",
+         assembly="ELM_TIMBER"),
+    Post(uid="CSP903AAAA", tag="P-S-TUDOR3", position=pt(inch(3.5625), ft(17, 4)),
+         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-SECOND",
+         assembly="ELM_TIMBER"),
+    Post(uid="CSP904AAAA", tag="P-S-TUDOR4", position=pt(inch(3.5625), ft(21, 4)),
+         size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-SECOND",
+         assembly="ELM_TIMBER"),
+]
+
 STAIRS = [
     # 7'-5 1/4" well = 3'-6 3/8" + 4 1/2" well partition + 3'-6 3/8". Landing is the
     # R311.7.6 36" minimum measured in the direction of travel.
@@ -725,4 +750,4 @@ STAIRS = [
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SOFFITS,
-            *FLOOR_OPENINGS, *BEAMS, *STAIR_GUARDS, *FLOOR, *STAIRS]
+            *FLOOR_OPENINGS, *BEAMS, *STAIR_GUARDS, *FLOOR, *POSTS, *STAIRS]

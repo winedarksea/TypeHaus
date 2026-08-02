@@ -49,7 +49,8 @@ except ModuleNotFoundError:  # pragma: no cover - exercised on <3.11 only
 PRICES_FILENAME = "prices.toml"
 
 _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "placeables",
-             "floor_finishes", "envelope_layers", "openings", "footing_bedding",
+             "floor_finishes", "envelope_layers", "wood_surfaces", "openings",
+             "footing_bedding",
              "pipe_runs", "ducts", "sleeves", "conduit",
              # Plumbing specialties (2026-08-01): devices by the piece, their loose install
              # kits, and hot-line insulation by the foot.
@@ -106,6 +107,10 @@ class Prices:
     # so every new billable family gets a table here even where no house supplies prices yet.
     floor_finishes: Mapping[str, PriceRange] = field(default_factory=dict)
     envelope_layers: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Species wood (2026-08-02), keyed on material tag. Mind the mirrors: rows flagged
+    # ``also_in_*`` are billed primarily in envelope_layers / floor_finishes /
+    # structural_solids — price a material here OR there, not in both tables.
+    wood_surfaces: Mapping[str, PriceRange] = field(default_factory=dict)
     openings: Mapping[str, PriceRange] = field(default_factory=dict)
     footing_bedding: Mapping[str, PriceRange] = field(default_factory=dict)
     pipe_runs: Mapping[str, PriceRange] = field(default_factory=dict)
@@ -188,6 +193,10 @@ def estimate_costs(bom: dict, prices: Prices) -> dict:
          "order_area_sqft", "SF"),
         ("envelope_layers", "envelope_layers", prices.envelope_layers, "material",
          "net_area_sqft", "SF"),
+        # Order quantity like floor_finishes (wood is bought with its waste). Timber rows
+        # carry no order_area_sqft and price as 0 here — they bill via structural_solids.
+        ("wood_surfaces", "wood_surfaces", prices.wood_surfaces, "material",
+         "order_area_sqft", "SF"),
         ("openings", "openings", prices.openings, "type", "count", "ea"),
         ("footing_bedding", "footing_bedding", prices.footing_bedding, "aggregate",
          "volume_cubic_yards", "cy"),

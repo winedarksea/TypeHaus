@@ -58,6 +58,7 @@ from typehaus.model.floors import (
 )
 from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.materials import Material
+from typehaus.model.paneling import PanelingSpan, WallPaneling
 from typehaus.model.mep import (
     ConduitRun,
     DuctRun,
@@ -225,6 +226,7 @@ __all__ = [
     "JoistSpec", "DeckLayer", "FloorSystem", "FloorOpening", "Slab", "SlabThermalBreak",
     "Soffit",
     "FloorHeat", "FinishZone",
+    "PanelingSpan", "WallPaneling",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",
     "WallLiningException",

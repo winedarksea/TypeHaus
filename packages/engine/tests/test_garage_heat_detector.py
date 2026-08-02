@@ -71,7 +71,7 @@ def test_every_alarm_names_an_unswitched_circuit(catlin_model):
     for alarm in _alarms(catlin_model):
         assert alarm.circuit == "CKT-LT-BACKUP", alarm.tag
     backup = circuits["CKT-LT-BACKUP"]
-    assert backup.backup is True and backup.poles == 1
+    assert backup.backup_tier is not None and backup.poles == 1
 
 
 def test_the_alarms_reconcile_against_the_panel_schedule(catlin_model):

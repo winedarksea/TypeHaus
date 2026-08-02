@@ -45,6 +45,7 @@ from typehaus.takeoff.railings import railing_takeoff
 from typehaus.takeoff.drainage import drainage_takeoff
 from typehaus.takeoff.sitework import footing_bedding_takeoff
 from typehaus.takeoff.stairs import stair_finish_takeoff
+from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 
 
 def bill_of_materials(
@@ -89,6 +90,11 @@ def bill_of_materials(
         # Resolved-but-unbilled until the 2026-07-25 sweep.
         "floor_finishes": floor_finish_rows(model),
         "envelope_layers": envelope_layer_takeoff(model),
+        # The species rollup — sauna liner, wainscot/tile-splash panelings, timber posts,
+        # species floors — in square feet and board feet. Rows mirroring another section
+        # carry ``also_in_envelope_layers`` / ``also_in_structural_solids`` /
+        # ``also_in_floor_finishes``; the primary billing stays in those sections.
+        "wood_surfaces": wood_surfaces_takeoff(model),
         # The rainscreen's base closure, by the lineal foot — the solids sweep counts the
         # strip, but in cubic feet, which is not how it is bought.
         "bug_screens": bug_screen_takeoff(model),
