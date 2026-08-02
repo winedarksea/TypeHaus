@@ -312,6 +312,61 @@ def test_catlin_balcony_guard_is_a_42in_railing(catlin_model) -> None:
         assert math.isclose(post.z1_m - deck.z1_m, 3.5 * FT, abs_tol=0.02)
 
 
+def test_catlin_stair_guard_still_resolves_flat(catlin_model) -> None:
+    """A guard with no ``serves_stair`` extrudes at one elevation, exactly as before the
+    raking branch existed: posts ride the authored base, rails sit at fixed levels.
+    Regression pin for the ``serves_stair`` fork in ``_resolve_railing``."""
+    posts = [s for s in catlin_model.solids if s.tag.startswith("RL-S-STAIR-POST")]
+    rails = [s for s in catlin_model.solids if s.tag.startswith("RL-S-STAIR-RAIL")]
+    assert posts and rails
+    base, top = 10 * FT, 13.5 * FT
+    assert all(math.isclose(p.z0_m, base, abs_tol=1e-9) for p in posts)
+    assert all(math.isclose(p.z1_m, top, abs_tol=1e-9) for p in posts)
+    rail_half = 0.75 * 0.0254
+    centres = {round(r.z0_m + rail_half, 4) for r in rails}
+    assert centres == {round(base, 4), round(top, 4)}  # rail_count=2: bottom + top rail
+
+
+def test_catlin_stair_handrail_rakes_along_the_flight(catlin_model) -> None:
+    """A ``serves_stair`` handrail slopes with its flight: each post stands on the nosing
+    line under it and rises ``top_height``, and the rail bands climb monotonically instead
+    of extruding one horizontal bar over the stair (the gap this branch closes)."""
+    def along_y(solid):
+        return min(y for _, y in solid.outline)
+
+    posts = sorted((s for s in catlin_model.solids
+                    if s.tag.startswith("RL-S-HANDRAIL-E-POST")), key=along_y)
+    assert len(posts) >= 2
+    # ST-M2S lower flight: first tread top one riser above the main floor, landing at the
+    # far end — the posts stand on the walking line, not on the authored base_elevation.
+    assert posts[0].z0_m == pytest.approx(0.1905, abs=1e-3)
+    assert posts[-1].z0_m == pytest.approx(1.524, abs=1e-3)
+    rail_h = 36 * 0.0254
+    for post in posts:
+        assert post.z1_m - post.z0_m == pytest.approx(rail_h)
+    bands = sorted((s for s in catlin_model.solids
+                    if s.tag.startswith("RL-S-HANDRAIL-E-RAIL")), key=along_y)
+    zs = [band.z0_m for band in bands]
+    assert len(zs) >= 4
+    assert zs == sorted(zs), "rail bands must climb with the flight"
+    assert zs[-1] - zs[0] > 1.0  # the full ~4'4" rise of the lower flight
+    # The top band's rail rides ~top_height above the walking line under it (its own
+    # band-mid station on the slope, a shade under the landing edge's 1.524 m).
+    assert 1.524 + rail_h - 0.15 < bands[-1].z1_m < 1.524 + rail_h + 0.05
+
+
+def test_knee_brace_member_carries_its_paint_material(catlin_model) -> None:
+    """``KneeBrace.assembly`` reduces to its structure layer's material on the resolved
+    member (the IR slot both emitters read), and the glTF palette resolves that ref to
+    the authored white rather than the bare "brace" category lumber."""
+    from typehaus.emit.gltf.palette import _hex_rgba, _material_finish_color
+
+    for brace in catlin_model.braces:
+        assert brace.members[0].material == "post-paint-white", brace.tag
+    assert (_material_finish_color("post-paint-white", "brace")
+            == _hex_rgba("#f4f2ee"))
+
+
 def test_catlin_sump_sits_below_the_basement_slab(catlin_model) -> None:
     sumps = _solids(catlin_model, "sump")
     assert len(sumps) == 1

@@ -140,6 +140,38 @@ def test_catlin_framing_interference_stays_near_zero():
     assert len(findings) <= 2, [f.message for f in findings]
 
 
+# A window opening's own framing pack, by child-key prefix ("king-0-l0", "header-0", …).
+_OPENING_FRAMING_KEYS = ("king-", "jack-", "header-", "sill-")
+
+
+def test_catlin_window_member_overlaps_pinned_at_eight():
+    """The 8 residual window/member overlaps, pinned (plans/TODO.md "Windows: 8 residual").
+
+    Measured with the junction-proximity clear disabled — the honest metric the TODO
+    records, since every one of these sits at a junction and would otherwise be silently
+    cleared. The TODO's prose summarised them as 4 at two L corners + 4 at one T; the walls
+    have moved since and the measured composition today is:
+
+    - 6 at one T: CSW148's jamb pack (king/jack/header) against the neighbouring walls'
+      end studs (CSW145:stud-005, CSW146:stud-000) — the jamb pack sits at the junction.
+    - 1 at an L corner: CMW103:stud-008 against CMW104:king-0-l0 — the neighbouring
+      wall's 1.5" stud/plate elevation mismatch.
+    - 1 raked: CSW141:king-0-r0 against the stair soffit's bottom plate
+      (CSF601AAAA:soffit-plate-bottom-e).
+
+    The count is the regression guard (historic: 138 -> 8); the docstring is the map for
+    whoever moves it."""
+    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+    ctx.model.junctions = []  # disable the junction-proximity clear
+    window_findings = [
+        f for f in member_interference(ctx)
+        if any(t.split(":")[-1].startswith(_OPENING_FRAMING_KEYS)
+               for t in f.element_tags)
+    ]
+    assert len(window_findings) == 8, sorted(
+        f.element_tags for f in window_findings)
+
+
 def _stair_beside_wall_member(kind: str):
     """A stringer running along a wall member of ``kind``, sharing its volume.
 

@@ -701,7 +701,10 @@ BALCONY_GUARD = Railing(
     kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
     base_elevation=_deck_walking_surface,
     post_spacing=inch(60), post_size="2x2", rail_count=2, mount="fascia",
-    assembly="RAILING_DARK_METAL")
+    assembly="RAILING_DARK_METAL",
+    # R312.1.3: vertical balusters between the 60" posts at a 4" clear gap — the largest
+    # opening the 4"-sphere rule admits.
+    infill="balusters", baluster_spacing=inch(4))
 
 BALCONY_FASCIA = Fascia(
     uid="SGFC01AAAA", tag="TR-SG-FASCIA", kind=TrimKind.FASCIA, path=_GUARD_PATH,

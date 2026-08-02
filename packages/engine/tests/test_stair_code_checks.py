@@ -118,6 +118,53 @@ def test_catlin_stair_widths_pass_at_or_above_the_minimum(catlin_ctx):
     assert all(f.result is Result.PASS for f in findings)
     # ST-S2A rides the 36" limit exactly — the tolerance idiom is what keeps it passing.
     assert any("36.00" in f.message for f in findings)
+    # Every stair now carries handrails, so each pass also reports the measured clear
+    # width past the rail (the R311.7.1 31.5"/27" rules, no longer deferred).
+    assert all("clear past" in f.message for f in findings), \
+        [f.message for f in findings]
+
+
+def _handrail_at(x_in: float, tag: str = "RL-T"):
+    """A synthetic handrail running up the _flight fixture at plan ``x`` (inches)."""
+    from typehaus.model import pt
+    from typehaus.model.structure import Railing
+
+    return Railing(uid="AAAAAAAAAZ", tag=tag,
+                   path=(pt(inch(x_in), inch(-4)), pt(inch(x_in), inch(48))),
+                   height=inch(36), base_elevation=inch(0), post_spacing=inch(48),
+                   rail_count=1, role="handrail", serves_stair="S-STR",
+                   top_height=inch(36), graspable_profile="type-I")
+
+
+def _ctx_with_rails(stair, rails):
+    return SimpleNamespace(
+        model=SimpleNamespace(stairs=[stair], floors=[], roofs=[], soffits=[]),
+        plan=SimpleNamespace(all_elements=lambda: list(rails)))
+
+
+def test_width_measures_clear_width_past_a_handrail():
+    """The 31.5" one-side rule, two-sided: a 39.4" flight keeps ~36.6" past a rail hugging
+    its edge and passes; the same flight with the rail 8" into it keeps ~30.6" and fails —
+    the geometry the old check's docstring deferred until a handrail existed to measure."""
+    wide = _ctx_with_rails(_flight(width_m=1.0), [_handrail_at(2.0)])
+    assert [f.result for f in stair_width(wide)] == [Result.PASS]
+    pinched = _ctx_with_rails(_flight(width_m=1.0), [_handrail_at(8.0)])
+    findings = stair_width(pinched)
+    assert [f.result for f in findings] == [Result.FAIL]
+    assert "31.5" in findings[0].message
+
+
+def test_width_past_rails_both_sides_uses_the_27_inch_limit():
+    both_tight = _ctx_with_rails(
+        _flight(width_m=1.0),
+        [_handrail_at(8.0), _handrail_at(1.0 / .0254 - 8.0, tag="RL-T2")])
+    findings = stair_width(both_tight)
+    assert [f.result for f in findings] == [Result.FAIL]
+    assert "27.0" in findings[0].message
+    both_edge = _ctx_with_rails(
+        _flight(width_m=1.0),
+        [_handrail_at(2.0), _handrail_at(1.0 / .0254 - 2.0, tag="RL-T2")])
+    assert [f.result for f in stair_width(both_edge)] == [Result.PASS]
 
 
 # ------------------------------------------------------------------- landings
@@ -143,16 +190,59 @@ def test_catlin_landings_pass_both_axes(catlin_ctx):
 
 
 # ------------------------------------------------------------------ handrails
-def test_handrail_is_unknown_on_required_flights_not_silent(catlin_ctx):
+def test_catlin_flights_have_graded_handrails(catlin_ctx):
+    """Every 4+-riser stair carries authored, graded handrails: one wall-mounted rail per
+    flight (two per U stair, one along the winder stair's straight flight), each raked
+    along the nosing line at resolve and graded here on top_height (34"-38" above the
+    nosings), continuity and graspability."""
     findings = stair_handrail(catlin_ctx)
+    assert [f.result for f in findings] == [Result.PASS] * 5, \
+        [f.message for f in findings]
+    assert {f.message.split()[0] for f in findings} == {"ST-B2M", "ST-M2S", "ST-S2A"}
+
+
+def test_handrail_is_unknown_when_no_handrail_is_authored_anywhere(catlin_ctx):
+    """No Railing in the whole plan declares a handrail role -> a modeling gap (UNKNOWN),
+    never a silent pass and never a fabricated deficiency."""
+    from typehaus.model.structure import Railing
+
+    ctx = _ctx_with_elements(
+        catlin_ctx,
+        lambda e: None if isinstance(e, Railing) and e.role == "handrail" else e)
+    findings = stair_handrail(ctx)
     assert len(findings) == 3
     assert all(f.result is Result.UNKNOWN for f in findings)
     assert all("handrail" in f.message for f in findings)
 
 
+def test_a_stair_left_without_its_handrail_fails_once_any_exists(catlin_ctx):
+    """Handrails are adopted in this house but ST-S2A's is knocked out -> that stair is a
+    deficiency FAIL while the others keep passing."""
+    ctx = _ctx_with_elements(
+        catlin_ctx,
+        lambda e: None if getattr(e, "serves_stair", None) == "ST-S2A" else e)
+    by_stair: dict = {}
+    for f in stair_handrail(ctx):
+        by_stair.setdefault(f.message.split()[0], set()).add(f.result)
+    assert by_stair["ST-S2A"] == {Result.FAIL}
+    assert by_stair["ST-B2M"] == {Result.PASS}
+    assert by_stair["ST-M2S"] == {Result.PASS}
+
+
 def test_handrail_not_required_under_four_risers():
     stub = _flight(tread_count=2)  # 3 risers
     assert [f.result for f in stair_handrail(_ctx(stub))] == [Result.PASS]
+
+
+def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
+    """R312.1.3 measures all four authored guards: baluster infill at a 4" clear gap —
+    the largest opening the sphere rule admits — flips the census from UNKNOWN to PASS.
+    The handrail-only railings are deliberately absent: they are not guards."""
+    from typehaus.checks.code.mn_residential.fall_protection import guard_opening_limit
+
+    findings = guard_opening_limit(catlin_ctx)
+    assert len(findings) == 4, [f.message for f in findings]
+    assert {f.result for f in findings} == {Result.PASS}
 
 
 # --- R312.1 stair-well guards ----------------------------------------------------------

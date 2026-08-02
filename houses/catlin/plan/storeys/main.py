@@ -16,6 +16,8 @@ from typehaus import (
     Node,
     Occupancy,
     RadiantSystem,
+    Railing,
+    RailingKind,
     Room,
     Slab,
     Stair,
@@ -744,6 +746,39 @@ STAIRS = [
           start=pt(ft(10, 6), ft(26, 0.375)), landing_depth=ft(3)),
 ]
 
+# ST-B2M handrails (R311.7.8): one wall-mounted rail per flight, `serves_stair` rakes each
+# along its flight's nosing line at resolve and code.R311_7_8_handrail grades `top_height`
+# (34"-38" above the nosings), continuity and graspability. Same authoring as ST-M2S's
+# rails one storey up (storeys/second.py STAIR_HANDRAILS): the lower flight springs in the
+# east lane (x 14'-2 1/4"..17'-6"), rail 2" off the well's east wall face, first riser at
+# y 26'-0 3/8" to the lower-landing edge at 31'-0 3/8"; the upper flight climbs back south
+# in the west lane (x 10'-6"..13'-9 3/4"), rail 2" off the west wall (W-M-STRW's stair
+# face), landing edge down to one going past the top riser (y 26'-10 3/8").
+STAIR_HANDRAILS = [
+    Railing(
+        uid="CMRL01AAAA", tag="RL-M-HANDRAIL-E", path=(
+            pt(ft(17, 4), ft(26, 0.375)),
+            pt(ft(17, 4), ft(31, 0.375)),
+        ),
+        kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
+        base_elevation=ft(-9), post_spacing=inch(48), post_size="2x2", rail_count=1,
+        mount="wall", assembly="RAILING_DARK_METAL",
+        role="handrail", serves_stair="ST-B2M", top_height=inch(36),
+        graspable_profile="1.5in round — Type I",
+    ),
+    Railing(
+        uid="CMRL02AAAA", tag="RL-M-HANDRAIL-W", path=(
+            pt(ft(10, 8), ft(31, 0.375)),
+            pt(ft(10, 8), ft(26, 10.375)),
+        ),
+        kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
+        base_elevation=ft(0), post_spacing=inch(48), post_size="2x2", rail_count=1,
+        mount="wall", assembly="RAILING_DARK_METAL",
+        role="handrail", serves_stair="ST-B2M", top_height=inch(36),
+        graspable_profile="1.5in round — Type I",
+    ),
+]
+
 # The beam that lets the main-storey centre line be open between the hall and the living
 # room (2026-07-28) — the twin of BM-S-HALL one storey up, and authored the same way.
 #
@@ -788,4 +823,4 @@ PANELING = [
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SLABS,
-            *FLOOR_OPENINGS, *STAIRS, *BEAMS, *PANELING]
+            *FLOOR_OPENINGS, *STAIRS, *STAIR_HANDRAILS, *BEAMS, *PANELING]
