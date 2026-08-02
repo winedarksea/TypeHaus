@@ -43,6 +43,7 @@ from typehaus.takeoff.openings import opening_takeoff
 from typehaus.takeoff.placeables import floor_heat_takeoff, placeables_takeoff
 from typehaus.takeoff.railings import railing_takeoff
 from typehaus.takeoff.drainage import drainage_takeoff
+from typehaus.takeoff.edge_trim import edge_trim_takeoff
 from typehaus.takeoff.sitework import footing_bedding_takeoff
 from typehaus.takeoff.stairs import stair_finish_takeoff
 from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
@@ -104,6 +105,10 @@ def bill_of_materials(
         # Stormwater by the foot and the piece — gutter and leader were billed only as
         # cubic feet of aluminium, which is not how either is bought.
         "drainage": drainage_takeoff(model),
+        # The rest of the edge-run family by the foot: fascia, soffit, flashing and the
+        # roof's derived formed trim. Same gap as drainage — flashing billed as cubic feet
+        # of aluminium is not an order.
+        "edge_trim": edge_trim_takeoff(model),
         "pipe_runs": pipe_run_takeoff(model),
         # The supply system's protection budget, which no section could see before
         # `PipeAccessory` existed: valves and preventers by the piece, and the loose

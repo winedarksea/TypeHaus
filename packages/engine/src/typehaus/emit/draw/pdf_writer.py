@@ -60,6 +60,13 @@ _LAYER_STYLE = {
     "A-WALL-BELW": ("#aaaaaa", 0.3),
     "P-SANR-PIPE": ("#6a4a2a", 0.6),
     "P-DOMW-PIPE": ("#3a6a8a", 0.6),
+    # Stormwater (P-2xx drainage plans + the C-101 overlay): channel/leader in the domestic
+    # blue family, buried tile and pits earth-toned like the sewer utility they join.
+    "P-STRM-GUTR": ("#2a5a7a", 0.6),
+    "P-STRM-LEDR": ("#2a5a7a", 0.7),
+    "P-STRM-TILE": ("#6a5a3a", 0.5),
+    "P-STRM-PIT": ("#5a4a2a", 0.7),
+    "C-STRM-DRAN": ("#4a6a8a", 0.4),
     "M-HVAC-SDFF": ("#2a6a4a", 0.6),
     "M-HVAC-RDFF": ("#4a8a6a", 0.6),
     "M-HVAC-EXHS": ("#6a8a2a", 0.6),

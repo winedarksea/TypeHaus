@@ -37,6 +37,7 @@ def build_site_plan(model: ResolvedModel) -> Scene:
     _emit_contours(builder, site)  # survey topo basemap, drawn under everything else
     _emit_roofs_or_wall_footprints(builder, model)
     _emit_foundation_and_post_supports(builder, model)
+    _emit_drainage_overlay(builder, model)
     _emit_parcel_and_setbacks(builder, model, site)
     _emit_utilities(builder, site)
     _emit_spot_elevations_and_drainage(builder, site)
@@ -177,6 +178,45 @@ def _emit_foundation_and_post_supports(builder: SceneBuilder, model: ResolvedMod
             continue
         builder.add(Polyline(points=tuple(_in(point) for point in solid.outline), closed=True,
                              layer="A-SITE-FOUND", lineweight=0.3, uid=solid.uid, tag=solid.tag))
+
+
+#: Buried stormwater draws dashed; the hung/surface family (gutter, leader, pit cover)
+#: draws solid — the convention the P-2xx drainage plans use, carried onto the site sheet.
+_BURIED_DRAINAGE = frozenset({"drain_tile", "french_drain", "drywell"})
+
+
+def _emit_drainage_overlay(builder: SceneBuilder, model: ResolvedModel) -> None:
+    """Where the roof water goes once it leaves the building (R801.3 story, on one sheet).
+
+    The site plan shows grade falling away and the surveyed low points, but nothing of the
+    system built to use them: the gutters, the leaders down the walls, the buried tile and
+    the drywells were absent, so the sheet answered "which way does water fall" without
+    answering "and what carries it there". One overlay, drawn from the same resolved solids
+    the stormwater IFC system groups (``emit/trades.py::DRAINAGE_CATEGORIES``).
+    """
+    from typehaus.emit.trades import DRAINAGE_CATEGORIES
+
+    labelled: set[str] = set()
+    for solid in sorted(model.solids, key=lambda s: s.uid):
+        category = (solid.category or "").lower()
+        if category not in DRAINAGE_CATEGORIES:
+            continue
+        points = tuple(_in(p) for p in solid.outline)
+        if len(points) < 2:
+            continue
+        builder.add(Polyline(
+            points=points, closed=True, layer="C-STRM-DRAN", lineweight=0.3,
+            linetype="DASHED" if category in _BURIED_DRAINAGE else "CONTINUOUS",
+            uid=solid.uid, tag=solid.tag))
+        # Pits and wells get a name — they are the destinations the arrows on this sheet
+        # point toward; labelling every gutter band would bury the basemap instead.
+        base = (solid.tag or "").rstrip("0123456789").rstrip("-")
+        if category in {"sump", "drywell"} and base and base not in labelled:
+            labelled.add(base)
+            x = sum(p[0] for p in points) / len(points)
+            y = max(p[1] for p in points)
+            builder.add(Text(anchor=(x, y + 0.5), content=base, height=1.8,
+                             layer="C-STRM-DRAN", align="center"))
 
 
 def _emit_parcel_and_setbacks(builder: SceneBuilder, model: ResolvedModel, site) -> None:

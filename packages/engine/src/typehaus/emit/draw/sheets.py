@@ -21,6 +21,7 @@ from typehaus.emit.draw.foundationplan import build_foundation_plan, has_foundat
 from typehaus.emit.draw.framingplan import build_framing_plan
 from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
 from typehaus.emit.draw.lightingplan import build_lighting_plan, has_lighting_content
+from typehaus.emit.draw.drainageplan import build_drainage_plan, has_drainage_content
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
 from typehaus.emit.draw.sheet_writer import LEDGER, compose_sheet, sheet_chrome
 from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
@@ -164,6 +165,16 @@ def build_sheet_index(model: ResolvedModel,
     for index, storey_tag in enumerate(plumbing_storeys, start=1):
         sheets.append(SheetSpec(f"P-{100 + index}", f"Plumbing plan — {storey_tag}",
                                 scene=partial(build_plumbing_plan, storey=storey_tag)))
+
+    # P-2xx: the drainage plans, one per storey with stormwater content — the same
+    # second-series-per-trade convention the lighting sheets use against E-10x. Gutters,
+    # leaders, tile, trenches and pits are a different installer (and inspection) from the
+    # sanitary/domestic rough-in on P-10x, and merging them buries the buried work.
+    drainage_storeys = [s.tag for s in storeys if has_drainage_content(model, s.tag)]
+    for index, storey_tag in enumerate(drainage_storeys, start=1):
+        sheets.append(SheetSpec(f"P-{200 + index}", f"Drainage plan — {storey_tag}",
+                                scene=partial(build_drainage_plan, storey=storey_tag),
+                                north_arrow=True))
 
     hvac_storeys = [s.tag for s in storeys if has_hvac_content(model, s.tag)]
     for index, storey_tag in enumerate(hvac_storeys, start=1):

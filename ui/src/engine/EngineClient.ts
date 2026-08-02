@@ -173,6 +173,69 @@ export interface DetailPayload {
  */
 export type EngineBom = Record<string, unknown>;
 
+// --- Cost tracking (server/costs_api.py over takeoff/costs.py) ---------------------------
+// State lives in the house's costs.toml, durable and git-versioned; the UI only edits it
+// through PUT /costs ops. Deliberately outside the plan patch/undo journal — paying a bill
+// is not a plan edit.
+
+export interface EnginePriceRange {
+  low: number;
+  high: number;
+}
+export interface EngineCostEntry {
+  paid: boolean;
+  paid_date: string | null;
+  product: string | null;
+  actual_cost: number | null;
+  note: string | null;
+}
+export interface EngineExtraItem {
+  id: string;
+  name: string;
+  cost: EnginePriceRange | null;
+  paid: boolean;
+  product: string | null;
+  category: string | null;
+  note: string | null;
+}
+export interface EngineEstimateRow {
+  key: string;
+  quantity: number;
+  unit: string;
+  unit_price: EnginePriceRange;
+  cost: EnginePriceRange;
+  cost_fmt: string;
+}
+export interface EngineEstimate {
+  sections: Record<string, { rows: EngineEstimateRow[]; subtotal: EnginePriceRange; subtotal_fmt: string }>;
+  total: EnginePriceRange;
+  total_fmt: string;
+  unpriced: { section: string; key: string; quantity: number; unit: string }[];
+}
+export interface EngineCostsJoin {
+  bom_key: string;
+  key_field: string;
+  quantity_field: string;
+  unit: string;
+}
+export interface EngineCosts {
+  prices_loaded: boolean;
+  estimate: EngineEstimate | null;
+  // How each estimate section maps onto BOM rows — authored once in cli/prices.py
+  // ESTIMATE_PLANS, so the client never re-guesses the (section, key) join.
+  join: Record<string, EngineCostsJoin>;
+  entries: Record<string, Record<string, EngineCostEntry>>;
+  extra: EngineExtraItem[];
+  // Entries whose (section, key) matches no current BOM row — surfaced, never dropped.
+  stale: { section: string; key: string }[];
+  totals: Record<string, unknown>;
+}
+
+export type CostsOp =
+  | { op: "set_entry"; section: string; key: string; entry: Partial<Omit<EngineCostEntry, never>> }
+  | { op: "set_extra"; item: Partial<EngineExtraItem> & { name: string; cost?: EnginePriceRange | number | null } }
+  | { op: "delete_extra"; id: string };
+
 export interface ReferenceRemap {
   renamed: Record<string, string>;
   deleted: string[];
@@ -193,6 +256,11 @@ export interface EngineClient {
   getDetail(key: string): Promise<DetailPayload>;
   // The bill of materials — computed by the engine, never in the browser (see EngineBom).
   getBom(): Promise<EngineBom>;
+  // Cost tracking: the costs.toml state joined against the live BOM and price estimate.
+  getCosts(): Promise<EngineCosts>;
+  // Fold ops over costs.toml and return the fresh payload; rejects OfflineUnsupported
+  // without a server (the offline house snapshot is read-only).
+  patchCosts(ops: CostsOp[]): Promise<EngineCosts>;
   // Append one construction note to the detail's Transition.notes markdown file.
   // Resolves to the updated file content; rejects OfflineUnsupported without a server.
   appendDetailNote(key: string, text: string): Promise<string>;

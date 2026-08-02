@@ -12,6 +12,7 @@ try {
   const { runModelGeometryTests } = await server.ssrLoadModule("/src/model/geometry.test.ts");
   const { runVisibilityTests } = await server.ssrLoadModule("/src/model/visibility.test.ts");
   const { runEngineBomTests } = await server.ssrLoadModule("/src/model/engineBom.test.ts");
+  const { runEngineCostsTests } = await server.ssrLoadModule("/src/model/engineCosts.test.ts");
   const { runPlanWarningTests, runSpaceLabelTests } = await server.ssrLoadModule("/src/model/planWarnings.test.ts");
   const { runTransitionTests } = await server.ssrLoadModule("/src/model/transitions.test.ts");
   const { runTagIndexTests } = await server.ssrLoadModule("/src/model/tagIndex.test.ts");
@@ -39,6 +40,7 @@ try {
   runViewFramingTests();
   runVisibilityTests();
   runEngineBomTests();
+  runEngineCostsTests();
   runPlanWarningTests();
   runSpaceLabelTests();
   runTransitionTests();

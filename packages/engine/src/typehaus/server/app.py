@@ -114,6 +114,36 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
             return JSONResponse({"error": "model does not resolve"}, status_code=409)
         return JSONResponse(bill_of_materials(state.model))
 
+    @app.get("/costs")
+    def get_costs() -> Any:
+        """The cost-tracking payload: BOM join, price estimate, entries, extras, staleness.
+
+        Re-read per request (prices.toml/costs.toml are hand-editable) and deliberately
+        outside the PatchOp/undo journal — paying a bill is not a plan edit.
+        """
+        from typehaus.server.costs_api import CostsRequestError, build_costs_payload
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        try:
+            return JSONResponse(build_costs_payload(state.model, state.house_dir))
+        except CostsRequestError as exc:
+            return JSONResponse({"error": str(exc)}, status_code=400)
+
+    @app.put("/costs")
+    def put_costs(body: dict[str, Any]) -> Any:
+        """Fold ``{"ops": [...]}`` over costs.toml, write it, return the fresh payload."""
+        from typehaus.server.costs_api import (CostsRequestError, apply_costs_ops,
+                                               build_costs_payload)
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        try:
+            apply_costs_ops(state.house_dir, body.get("ops"))
+            return JSONResponse(build_costs_payload(state.model, state.house_dir))
+        except CostsRequestError as exc:
+            return JSONResponse({"error": str(exc)}, status_code=400)
+
     @app.get("/detail")
     def get_detail(key: str) -> Any:  # key carries '|'/':' — a query param, not a path seg
         from typehaus.emit.draw.details import detail_payload

@@ -102,19 +102,27 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     _emit_furniture(f, body, model, storeys, project_uuid)
     _emit_resolved_placeables(f, body, model, storeys, project_uuid)
 
-    # The domestic-water systems, built the way the stormwater one above is: the segments
-    # and the devices on them are collected as they are emitted, then grouped. Two systems
-    # rather than one, because hot and cold are two systems in every tool that reads this —
-    # a recirculation loop, an insulation requirement and a mixing valve all belong to one
-    # of them and not the other.
-    supply_elements: dict[str, list] = {"water_cold": [], "water_hot": []}
+    # The piped distribution systems, built the way the stormwater one above is: the
+    # segments and the devices on them are collected as they are emitted, then grouped, one
+    # ``IfcDistributionSystem`` per authored ``PipeSystem``. Separate systems on purpose —
+    # hot and cold are two systems in every tool that reads this (a recirculation loop, an
+    # insulation requirement and a mixing valve belong to one and not the other), and the
+    # waste side splits the same way (a cleanout schedule is sanitary; an air-admittance
+    # question is vent). Every authored run lands in a system: ``system_elements`` covers
+    # the whole ``PipeSystem`` enum via ``_PIPE_SYSTEM_TYPES``, so the old failure mode —
+    # ``.get(run.system, [])`` silently discarding any system the dict lacked, which kept
+    # every drain and vent run unsystemed — cannot recur. An accessory without a host
+    # system (``accessory.system`` empty) stays ungrouped deliberately: inventing a system
+    # for it would file a device under plumbing that nobody authored onto a run.
+    system_elements: dict[str, list] = {key: [] for key in _PIPE_SYSTEM_TYPES}
     for run in sorted(model.pipe_runs, key=lambda item: item.uid):
         segments = _emit_pipe_run(f, body, run, storeys, project_uuid)
-        supply_elements.get(run.system, []).extend(segments)
+        system_elements[run.system].extend(segments)
     for accessory, entity in _emit_pipe_accessories(f, body, model, storeys, project_uuid):
-        supply_elements.get(accessory.system or "", []).append(entity)
-    for system_key, name in _SUPPLY_SYSTEM_NAMES.items():
-        _emit_supply_system(f, building, name, supply_elements[system_key])
+        if (accessory.system or "") in system_elements:
+            system_elements[accessory.system].append(entity)
+    for system_key in _PIPE_SYSTEM_TYPES:
+        _emit_pipe_system(f, building, system_key, system_elements[system_key])
 
     for sleeve in sorted(model.sleeves, key=lambda item: item.uid):
         _emit_sleeve(f, body, sleeve, storeys, project_uuid)
@@ -698,14 +706,32 @@ def _emit_stormwater_system(f: Any, building: Any, elements: list) -> Any:
 
 
 #: ``PipeSystem`` value → the ``IfcDistributionSystem`` it belongs to, as
-#: ``(system name, PredefinedType)``. Sanitary and rainwater stay deferred (plans/TODO.md);
-#: these two are the ones the supply-protection work needs, and they are the two IFC has
-#: unambiguous enum members for.
-_SUPPLY_SYSTEM_TYPES = {
+#: ``(system name, PredefinedType)``. Every authored system is mapped — a run whose system
+#: is missing here is *silently* unsystemed, which is the bug the grouping loop used to
+#: have. Rainwater alone is deliberately absent: gutters/leaders/drain tile are solids, not
+#: ``PipeRun``s, and they already group under ``_emit_stormwater_system``/STORMWATER.
+#:
+#: PredefinedType choices, against IfcDistributionSystemEnum (IFC4):
+#: * drain → ``SEWAGE``. The enum has no SANITARY member; SEWAGE is IFC4's sanitary
+#:   drainage ("removal of foul water"), where DRAINAGE is the generic and WASTEWATER the
+#:   treated-effluent variant. SEWAGE is the specific one a DWV stack is.
+#: * vent → ``VENT`` — exact.
+#: * radon → ``USERDEFINED`` with ``ObjectType`` "RADON" (→ ``_PIPE_SYSTEM_OBJECT_TYPES``).
+#:   Folding it into VENT would claim the soil-gas riser connects to the plumbing vents,
+#:   which is exactly what a radon rough-in must never do; the enum has no member for it,
+#:   and USERDEFINED+ObjectType is IFC's way of saying so honestly.
+#: * gas → ``GAS`` — exact (no catlin runs today, but an authored one must not vanish).
+_PIPE_SYSTEM_TYPES = {
     "water_cold": ("DomesticColdWater", "DOMESTICCOLDWATER"),
     "water_hot": ("DomesticHotWater", "DOMESTICHOTWATER"),
+    "drain": ("Sanitary", "SEWAGE"),
+    "vent": ("SanitaryVent", "VENT"),
+    "radon": ("RadonVent", "USERDEFINED"),
+    "gas": ("Gas", "GAS"),
 }
-_SUPPLY_SYSTEM_NAMES = {key: name for key, (name, _) in _SUPPLY_SYSTEM_TYPES.items()}
+#: Where the enum has no member for what the system is, ``ObjectType`` carries the name —
+#: the same convention ``_SOLID_OBJECT_TYPE`` uses for the drywell.
+_PIPE_SYSTEM_OBJECT_TYPES = {"radon": "RADON"}
 
 # What a ``PipeAccessoryKind`` becomes in IFC. The valves are ``IfcValve`` with the
 # PredefinedType that says which valve it is — ISOLATING for a shutoff, DOUBLECHECK for a
@@ -771,17 +797,21 @@ def _emit_pipe_accessories(f: Any, body: Any, model: ResolvedModel,
     return out
 
 
-def _emit_supply_system(f: Any, building: Any, name: str, elements: list) -> Any:
-    """Group one temperature's segments and devices into an ``IfcDistributionSystem``.
+def _emit_pipe_system(f: Any, building: Any, system_key: str, elements: list) -> Any:
+    """Group one ``PipeSystem``'s segments and devices into an ``IfcDistributionSystem``.
 
     The same argument ``_emit_stormwater_system`` makes: without this the trunk, its
     branches and the shutoff on it are unrelated proxies that happen to be near each other,
-    and a BIM tool's system browser shows nothing at all under domestic water.
+    and a BIM tool's system browser shows nothing at all under domestic water — or, until
+    the sanitary/vent systems landed, under the entire waste side of the house.
     """
     if not elements:
         return None
-    key = next(k for k, n in _SUPPLY_SYSTEM_NAMES.items() if n == name)
-    system = ll.create_system(f, name, _SUPPLY_SYSTEM_TYPES[key][1])
+    name, predefined = _PIPE_SYSTEM_TYPES[system_key]
+    system = ll.create_system(f, name, predefined)
+    object_type = _PIPE_SYSTEM_OBJECT_TYPES.get(system_key)
+    if object_type is not None:
+        system.ObjectType = object_type
     ll.assign_to_group(f, system, elements)
     ll.serves_building(f, system, building)
     return system

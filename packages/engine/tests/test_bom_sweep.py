@@ -49,9 +49,11 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
     exactly those. The two halves are only useful together."""
     lvp = next(row for row in bom["floor_finishes"] if row["finish"] == "lvp")
     # RM-S-LANDING was folded into RM-S-HALL when the centre line opened up under
-    # BM-S-HALL, so the one hall row now bills what used to be two.
+    # BM-S-HALL, so the one hall row now bills what used to be two. The hardwood pass
+    # (60dbb7a) then moved the main-storey living room and study onto LVP as well.
     assert set(lvp["rooms"]) == {"RM-S-HALL", "RM-S-SUITEBATH",
-                                 "RM-S-VANITY", "RM-S-BATH1"}
+                                 "RM-S-VANITY", "RM-S-BATH1",
+                                 "RM-M-LIVING", "RM-M-STUDY"}
     lvp_area = sum(room.area_m2 for room in catlin_model.rooms
                    if room.floor_finish == "lvp") * _M2_TO_FT2
     # Rows round to a tenth of a square foot, which is the tolerance here.
@@ -179,6 +181,43 @@ def test_drainage_bills_the_whole_storm_run_by_the_foot(catlin_model, bom):
     assert all(float(row["length_ft"]) > 0 for row in leaders)
     wells = [row for row in rows if row["category"] == "drywell"]
     assert wells and all(float(row["aggregate_cubic_yards"]) > 0 for row in wells)
+
+
+def test_edge_trim_bills_the_authored_runs_and_the_derived_roof_trim_by_the_foot(
+        catlin_model, bom):
+    """Fascia, soffit and flashing were billed only as solids/members — cubic feet of PVC,
+    which is not how a fascia board is bought. Every authored edge run reaches the order,
+    and so does the trim a roof derives along its own edges."""
+    from typehaus.model.trim import EaveSoffit, Fascia, Flashing
+
+    rows = bom["edge_trim"]
+    billed = {tag for row in rows for tag in row["tags"]}
+    authored = {element.tag for storey in catlin_model.plan.storeys
+                for element in catlin_model.plan.storey_elements(storey.tag)
+                if isinstance(element, (Fascia, EaveSoffit, Flashing))}
+    assert authored, "fixture regression: the Catlin house lost its edge trim"
+    assert authored <= billed, sorted(authored - billed)
+    for row in rows:
+        assert float(row["length_ft"]) > 0, row
+    # The balcony's PVC fascia bills its authored path, mirrored (not primary) in solids.
+    fascia = next(row for row in rows
+                  if row["category"] == "fascia" and "TR-SG-FASCIA" in row["tags"])
+    assert fascia["also_in_structural_solids"] and not fascia["also_in_framing"]
+    # The garage roof's derived fascia boards bill too, mirrored in the framing cut list.
+    derived = [row for row in rows if row["also_in_framing"]]
+    assert any(tag.startswith("RF-GARAGE:") for row in derived for tag in row["tags"]), \
+        "the garage's derived fascia/soffit is trim somebody has to buy"
+    # A derived gutter must NOT appear here: `drainage` bills it, and one channel on two
+    # orders is double-billing.
+    assert not any(row["category"] == "gutter" for row in rows)
+    # The house's formed corner trim is composed of three bands sharing one span; billing
+    # every band would treble the order, so each run counts once.
+    corner = [row for row in rows if row["category"] == "corner_trim"]
+    if corner:
+        member_lf = sum(m.length_m for roof in catlin_model.roofs for m in roof.members
+                        if m.category == "corner_trim") * 3.280839895
+        billed_lf = sum(float(row["length_ft"]) for row in corner)
+        assert billed_lf < member_lf * 0.5, "banded corner trim must bill one band per run"
 
 
 # --- openings, envelope, stairs -----------------------------------------------------------
@@ -320,8 +359,8 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         "framing", "framing_by_size", "structural_solids", "sheet_goods",
         "construction_returns", "hardware", "footing_bedding",
         # Envelope & openings
-        "envelope_layers", "glazing_panels", "glazing_trim", "bug_screens", "openings",
-        "floor_finishes", "stair_finish", "railings",
+        "envelope_layers", "wood_surfaces", "glazing_panels", "glazing_trim", "edge_trim",
+        "bug_screens", "openings", "floor_finishes", "stair_finish", "railings",
         # Mechanical & plumbing
         "pipe_runs", "plumbing_specialties", "install_parts", "pipe_insulation",
         "ducts", "sleeves", "floor_heat", "drainage",
