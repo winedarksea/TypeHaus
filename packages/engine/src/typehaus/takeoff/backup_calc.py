@@ -25,8 +25,10 @@ from typehaus.model.enums import BackupTier
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.electrical import (
     _circuit_consumers,
-    _connected_va as _va,
     backup_equipment,
+)
+from typehaus.takeoff.electrical import (
+    _connected_va as _va,
 )
 
 # Usable fraction of nameplate battery energy. LFP packs are commonly cycled to ~90% DoD;

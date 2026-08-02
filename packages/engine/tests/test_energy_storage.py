@@ -18,8 +18,11 @@ from pathlib import Path
 import pytest
 
 from typehaus.checks.advisory.energy_storage import ess_clearance, ess_enclosure
-from typehaus.checks.code.mn_residential.energy_storage import (ess_capacity, ess_detection,
-                                                                ess_listing)
+from typehaus.checks.code.mn_residential.energy_storage import (
+    ess_capacity,
+    ess_detection,
+    ess_listing,
+)
 from typehaus.checks.code.mn_residential.profile import get_profile
 from typehaus.checks.mep.power_sources import interconnection_busbar, rapid_shutdown
 from typehaus.checks.registry import CheckContext, Preferences

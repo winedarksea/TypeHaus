@@ -529,7 +529,7 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
         backup_rows = [(row["component"], f"{row['count']}", row["basis"])
                        for row in backup]
         _add_table(fig, backup_rows, ("Component", "Qty", "Basis"),
-                   bbox=(0.04, 0.105, 0.56, 0.05))
+                   bbox=(0.04, 0.095, 0.92, 0.06))
 
     # The runtime estimate rides beside the component list and is labeled an ESTIMATE on
     # the sheet, because that is exactly what it is (→ takeoff/backup_calc.py).
@@ -538,7 +538,9 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
         autonomy = runtime["autonomy"]
         cycle = runtime["cycle_48h"]
         peak = runtime["peak"]
-        fig.text(0.62, 0.165, "BACKUP RUNTIME — ESTIMATE, NOT A GUARANTEE", fontsize=10,
+        # Beside the service load, not under the component list: the two bottom blocks
+        # were overrunning each other, and this half of the sheet is otherwise empty.
+        fig.text(0.62, 0.38, "BACKUP RUNTIME — ESTIMATE, NOT A GUARANTEE", fontsize=10,
                  family="monospace", weight="bold")
         runtime_rows = [
             ("Usable storage",
@@ -554,9 +556,12 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
              f"{cycle['solar_day_kwh']:g} kWh in vs "
              f"{cycle['two_day_load_kwh_all_tiers']:g} kWh out "
              f"= {cycle['net_kwh_all_tiers']:+g} kWh"),
-            ("Verdict", str(runtime["verdict"])),
         ]
-        _add_table(fig, runtime_rows, ("Line", "Value"), bbox=(0.62, 0.105, 0.34, 0.05))
+        _add_table(fig, runtime_rows, ("Line", "Value"), bbox=(0.62, 0.24, 0.34, 0.12))
+        # The verdict is a sentence, not a cell — it wraps as text under the table rather
+        # than running off the right edge of a column sized for numbers.
+        fig.text(0.62, 0.225, f"Verdict: {runtime['verdict']}", fontsize=7,
+                 family="monospace", wrap=True, va="top")
     sheet_chrome(fig, model, number, name)
     pdf.savefig(fig)
     plt.close(fig)

@@ -217,12 +217,30 @@ Questions:
     true description of an exterior hose bib hosted by an interior room's wall rather than a
     defect. The model has no outdoor-room concept to file them under.
 
-## Hardwood
-- Need to calculate and show in BOM the square feet required for sauna wall cladding tongue and groove. Note the shower in the corner is tile on the two walls of its spash area, not wood. This is basswood.
-- In the second floor suite bedroom, we are going to have four custom oversized 6.125" by 6.125" posts that sit in the stud framing line but extend out to level with the drywall on the west wall. We would like to show these here, a sort of "tudor framing", but this should not be a change to the wall assembly (while a deviation, it is still effectively part of the stud line as such)
-- Room RM-A-STUDY is the only room that has full hardwood floors, we want the sq ft of hardwood floor needed there (it's oak).
-- We want to calculate the board feet of walnut required to panel the walls of the small first floor study up to 36" high
-- We may add other tongue and groove paneling on walls, floors, or ceilings, and want to make sure this is designed generally to support calculating necessary sq ft by need (split by species)
+## Hardwood — DONE 2026-08-02
+Landed as the `wood_surfaces` BOM section: one row per (species, material, kind), driven
+by the new `Material.species`/`stock_bf_per_sqft` fields and the new room-scoped
+`WallPaneling` element (`model/paneling.py` → `resolve/paneling.py` →
+`takeoff/wood_surfaces.py`; tests in `test_wood_surfaces.py`). Against each line:
+- **Sauna basswood T&G** — billed off the SAUNA assemblies' `sauna-tg` FINISH layers
+  (`species="basswood"`, 5/4 → 1.25 bf/sf): ~252 sf net / 278 sf order / ~348 bf. The
+  shower corner's two 36" splash walls are `WP-B-SAUNA-SPLASH`, a `replaces_wall_finish`
+  tile override to the full 7'-6" liner height — 45 sf net of tile, subtracted from the
+  wood. (Known carry-over: W-B-CS bills at full foundation height, the envelope_layers
+  convention.) The sauna *ceiling* T&G is still unbilled — the design extends to a
+  ceiling variant when wanted.
+- **Tudor posts** — four elm `Post`s (`P-S-TUDOR1..4`, `size="6.125x6.125"`, new
+  `ELM_TIMBER` finish assembly) standing in W-S-W3's stud line, sheathing face to drywall
+  face, tops flush with the 9' plate; no change to CATLIN_EXT_2X6. Billed as 4 pc /
+  40 LF ordered (10' sections) / 125.1 bf, mirrored from `structural_solids`.
+- **Oak floors** — solid oak retreated to the studies: main-floor living/study went LVP,
+  bed/closet carpet; **RM-S-STUDY2 keeps oak alongside RM-A-STUDY** (decision
+  2026-08-02), so the oak row bills exactly those two rooms (~318 sf net).
+- **Walnut wainscot** — `WP-M-STUDY-WAINSCOT` panels RM-M-STUDY's bounding walls to 36"
+  (door punch subtracted): ~50 sf net / 55 sf order = 55 bf of 4/4 (`walnut-tg`).
+- **Generality** — any future T&G on walls is a `WallPaneling` (full-height or band,
+  per-wall spans, override-or-applied); floors already flow through `floor_finish` +
+  species; ceilings are the one surface still without a home.
 
 ## Backup Power System Refactor — DONE 2026-08-02
 Built as decision #54; the design and its numbers are recorded in
