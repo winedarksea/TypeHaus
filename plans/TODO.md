@@ -3,6 +3,28 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
+- **PT-SG-BR2 bearing — recommendation: reinforce locally, don't move it** (investigated
+  2026-08-02). The question was lateral; the finding is gravity: BR2 (~2.2 kips tributary)
+  stands at the extreme tip of the porch deck's 17" cantilever, catching ~1.5" of one 2x8
+  edge plus the rim — a single tip-loaded 2x8 is over allowable moment ~2.4×, and the rest
+  of the base bears on 1" composite plank. Moving BR2 south onto the column line was
+  rejected (breaks the rear girt line and the frame's symmetry; the column itself cannot
+  move north — bell footing vs FT-B-S2). Recommended: sister the joist under the base to
+  3-ply PT 2x8, solid blocking so the ABU base bears on framing, and a positive uplift tie
+  (~0.45 kips) at the back-span bearing. The global path already lands on PT-SG-COL within
+  17". Approve to author the sistered cluster + blocking (wants a way to author it, and
+  ideally a check for concentrated loads on cantilever tips).
+- **2D-edit sync — fix design proposed** (investigated 2026-08-02). Root cause confirmed: a
+  PatchOp rewrites one constructor; derived data recomputes, authored cross-references
+  don't. `retype_placeable` (2026-08-01) already re-anchors wall-fitted placeables and
+  scans tag references. Still open, ~3–4 days if approved: (i) authored refs +
+  advisory checks for geometry-coupled consumers (`Slice.subject_ref`, `DuctRun.serves`),
+  (ii) promote retype warnings to durable review findings, (iii) route *opening* retypes
+  through a centre-holding macro (raw PATCH still slides them today).
+- **Detail stars fan out per-condition**: starring TR-CATLIN-RIM-BAND/FOUNDATION pulls ~10
+  interior-condition sheets (e.g. `rim:INT_2X4_PARTITION`) into the primary set. Trimming
+  them needs pattern-split transitions or a per-condition star — worth it?
+
 ## Accepted, by decision (2026-07-31 warnings sweep)
 
 - **The basement and sunken-garden foundation walls exceed the plain-concrete unbalanced-fill
@@ -27,20 +49,18 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Remaining Work
 
-- **Handrail schema + real R311.7.8 check** (2026-07-31). `Railing` needs a
-  role/kind (handrail vs guard) plus per-flight authoring before presence, 34"–38" height
-  and continuity can be measured; `code.R311_7_8_handrail` reports the gap as UNKNOWN on
-  every 4+-riser flight until then. (Headroom is now really measured —
-  `code.R311_7_2_stair_headroom` samples the sloped nosing line plumb against floor/roof/
-  soffit structure; `code.R311_7_1_stair_width` and `code.R311_7_6_landing_depth` measure
-  the built members. The old check reported the arrival storey's nominal ceiling height as
-  "headroom".)
-- **Stair/well guard check (R312)** — next in line after headroom: classify each floor
-  opening's edges as wall-backed vs open (against resolved wall faces), and require a
-  `railing` solid path at >= 36" along the open ones. Measurable today from resolved
-  geometry, no new authoring; catlin's RL-S-STAIR/RL-S-STAIRHEAD guards are the first
-  real fixture.
-- **In-plan variant forks + compare UI** (scoped out of the sweep by decision: catalog only).
+- ~~**Handrail schema + real R311.7.8 check**~~ DONE 2026-08-02. The schema and check had
+  in fact already shipped; what was missing was authoring and a resolver. This batch:
+  wall-mounted handrails authored for all three stairs (`role="handrail"`, `serves_stair`,
+  36" top, Type I round), `_resolve_railing` now **rakes** a `serves_stair` railing along
+  the flight nosing line (shared math in `resolve/stairs/walkline.py`; guards still resolve
+  flat, pinned), and `code.R311_7_1_stair_width` gained the 31.5"/27" clear-past-handrail
+  measurement. R311.7.8: UNKNOWN → PASS on every 4+-riser flight.
+- ~~**Stair/well guard check (R312)**~~ — shipped earlier than this file remembered
+  (`code.R312_1_guard`, `code.R312_1_guard_height`, `code.R312_1_3_guard_opening_limit`).
+  2026-08-02: the four guards now author `infill="balusters"` + 4" spacing, flipping
+  R312.1.3 UNKNOWN → PASS.
+- **In-plan variant forks + compare UI** (deferred again by decision 2026-08-02).
   `model.json` now carries the variant catalog; `prices.toml` $-ranges work in
   `haus variants compare` and takeoff. Still missing: `variant_of`/`active` forks with
   one-active integrity + promote-with-uid-remap, and the UI side-by-side compare canvases.
@@ -50,20 +70,22 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   and PT-SG-COL plus the six balcony pillars bear on non-Pad chains (grouted CMU / bell
   footing) so `deck_footing_size` can't resolve. (`deck_beam_span`'s two genuine R507.5(1)
   overspans were closed 2026-07-31 by going engineered — see "Accepted, by decision".)
-- **KneeBrace paint is authored but not rendered.** `KneeBrace.assembly="POST_WHITE_PAINT"`
-  is in the schema and the catlin plan; the diagonal resolves to a `FramedMember`, which has
-  no finish slot — rendering the paint needs an IR + emitter change. (The APVKB bands are
-  correctly black hardware.)
-- **`diff/equivalence.py` storey keys are last-wins** over duplicate reference names (porch
-  storeys shadow the house's "basement"); the equivalence test works around it via the
-  `building` attribute — a cleanup could prefer the house building when collapsing keys.
-- **Windows: 8 residual member-interference overlaps** (junction-proximity clear disabled —
-  the honest metric): 4 at two L corners from a neighbouring wall's 1.5" stud/plate
-  elevation mismatch, 4 at one T where a jamb pack sits at the junction. Outside the corner
-  rule. (Historic: 138 → 8.)
-- **`interior_slab_drip_flashing` detail gate** still needs "is there enclosed space
-  beneath" (storey elevations on resolved rooms) to distinguish `SL-M-DECK` from
-  `SL-G-FLOOR`.
+- ~~**KneeBrace paint is authored but not rendered.**~~ DONE 2026-08-02:
+  `_resolve_knee_brace` resolves the assembly to the structure layer's material via the new
+  shared `resolve/assembly_material.py`, `FramedMember.material` carries it (the slot
+  already existed), `_FINISH_BASE` knows `post-paint-white`, and `_emit_brace` associates
+  the `IfcMaterial`. The braces render white in glb, viewer, and IFC.
+- ~~**`diff/equivalence.py` storey keys are last-wins**~~ — stale entry: fixed some time ago
+  via `datum_buildings` (`pick_datum_storey` raises `AmbiguousStoreyDatum` rather than
+  picking silently). Removed.
+- **Windows: 8 residual member-interference overlaps** — now **pinned** by
+  `test_catlin_window_member_overlaps_pinned_at_eight` (junction clear disabled — the
+  honest metric). Measured composition drifted from this file's memory of 4+4: it is 6 at
+  one T (CSW148 jamb pack), 1 L corner, 1 vs the stair soffit plate. (Historic: 138 → 8.)
+- ~~**`interior_slab_drip_flashing` detail gate**~~ DONE 2026-08-02: `slab_is_on_grade`
+  asks whether any lower-storey room's clear face covers the slab centroid below its z0 —
+  `SL-G-FLOOR` gates in, `SL-M-DECK` out, no assembly-name matching. Draws at
+  `wall_foundation:GARAGE_ICF_8|GARAGE_WALL_2X6`.
 
 ### Residuals from the 2026-07-30 batch
 
@@ -83,12 +105,17 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   into the soffit is not modeled (`DuctRun` carries no elevation) — same status as
   EQ-S-HP1-AH's condensate drop. Physically it wants the hall/bedroom wall corner furred
   or the soffit's east cheek; decide when the chase details get drawn.
-- **Per-wall paint colour.** `latex-paint` over gwb is modeled (Class III, IRC R702.7.1) but
-  `Layer` has no colour slot; a second colour needs a second paint `Material` plus per-room
-  `wall_lining` overrides. Rationale in the comment above `_PAINT_FINISH` in
-  `houses/catlin/plan/assemblies.py`.
+- ~~**Per-wall paint colour.**~~ DONE 2026-08-02, exactly as the `_PAINT_FINISH` comment
+  prescribed: `latex-paint-accent` (colour on the `Material`, physics identical) +
+  `Room.wall_lining`/`WallLiningException` now actually reach resolved wall layers
+  (`resolve/rooms.py::wall_lining_overrides` → `resolve_wall_geometry(lining_override=)`;
+  shared-wall conflicts and lining-less assemblies warn instead of silently applying).
+  First accent: `W-S-BED1`'s east wall in deep spruce `#2e4a44`. Fixing this also fixed the
+  glb↔viewer parity gap — the glTF palette now honours authored `Material.color` on wall
+  layers, so latex-paint itself finally matches the browser. IFC wall types split per
+  resolved layer stack (`{assembly}~lining{n}`).
 
-## Phase 2 — Complete Catlin junctions (needs your intent — construction-rule authoring)
+## Phase 2 — Complete Catlin junctions (deferred by decision 2026-08-02 — construction-rule authoring)
 
 - Resolve mixed-assembly L corners and collinear assembly changes through named
   `AssemblyInterface` roles rather than layer-name or layer-index matching.
@@ -116,31 +143,76 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 +X: east, +Y: north, +Z: vertical/up. Will need to support rotating the house off axis in
 the future.
 
-### Items after Phase 6
-- Confirm the default toilet's 28" body depth vs an elongated bowl (29–31")
-- Make sure there is an electric outlet in the kitchen island where usable for appliances in accordance with code
-- Add an outdoor, dark sky friendly light to the garage, outside near the garage door. We actually want to add "dark sky friendly" as an advisory check for all outdoor lights.
-- Add an outdoor flood light mounted to the porch above the sunken garden, on the porch roof center column (might be able to share a circuit with the ceiling fan on the porch).
-- FURN-M-MUD-CLOSET-S needs to be replaced by a fully framed closet (basically a new room). This should aim for 32" to 36" depth, if sufficient space.
+### Items after Phase 6 — all closed 2026-08-02
+- ~~Toilet 28" vs elongated~~ — **decided: keep the 28" round bowl.** No model change.
+- ~~Kitchen island outlet~~ — `ED-M-LIVING-KGF4` on the island's east end face at 32", on
+  CKT-KITCH-SA2, placed per 2023-NEC 210.52(C) (not on the south seating face). A new
+  advisory `electrical.island_receptacle` now grades any free-standing work surface.
+- ~~Garage dark-sky light + advisory~~ — `ED-G-EXT-LT` (mark **R**, full-cutoff wet
+  sconce, 3000K) on the pier south of the overhead door at 8'-10" over the slab, switched
+  inside the service door. `LuminaireType.full_cutoff` is the shielding declaration, and
+  `advisory.dark_sky_lighting` grades every geometrically-exterior luminaire (cutoff +
+  CCT ≤ 3000K; ceiling-mounted fixtures exempt from the cutoff test — the deck above is
+  the shield, which is what lets the porch fan pass).
+- ~~Porch flood on the roof center column~~ — `ED-M-PORCH-FLOOD` (mark **S**, narrow-throw
+  wet sconce) on PT-SG-BR2 at 8', sharing CKT-LT-MAIN with the fan as hoped, but on its
+  **own** switch beside `ED-M-PORCH-SW` — the fan runs whole evenings; the flood shouldn't
+  glare with it.
+- ~~FURN-M-MUD-CLOSET-S → framed closet~~ — `RM-M-MUD-CLOSET`, 34¾" interior depth (in the
+  32"–36" band), partition at y=29'-7½" stopping ⅛" shy of the bench, 48"
+  `DT-INT-BYPASS48` sliding door (slide is handled end-to-end, so the bypass intent
+  survived), `W-M-W1` split at the new tee per the endpoint rule. RC9 stays inside as an
+  in-closet receptacle (NEC restricts closet *luminaires*, not receptacles; the mudroom is
+  STORAGE so no 210.52 wall space loses coverage). Bonus finds: `WIN-M-MUD` had silently
+  slid 2'-8" south since the 2026-07-28 MECH split (`from_node` measures from the host's
+  start node — re-authored to the true bench/aisle line), and the `PR-B-HW-SBATH` riser
+  sat half inside the new corner pack (moved one bay east with its sleeve).
 
 Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
-- Is the door opening inside the breezeway code compliant
-- Edits in 2d don't always update all the necessary pieces (like when we switched a shower to showertub)
-- Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?
-- Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model), and also tagging in exact chosen products (where not already explicit as a comment, ie a specific model of recessed light)
-- Pantry
-- Add the plant room wall types
-- basement ceiling, some of this wood joists maybe
-- study on first floor location adjustments
-- Is there a way we can "star" certain details to include in drawings? Right now we have drawings for most (all?) transitions, even some that don't really need details (framers don't need a reference for generic internal framing transitions). It would be nice to have the UI highlight important details and exclude from the primary export any we think we don't really need to show.
+- ~~Is the door opening inside the breezeway code compliant~~ — **answered 2026-08-02:
+  yes.** Both `D-M-ENTRY` and `D-G-SERVICE` are 3'-0" × 6'-8" exterior doors — PASS
+  R311 width, and the new `code.R311_2_door_height` (78" min) passes both 80" leaves. The
+  breezeway's N-S beam soffits at +6'-3½" over the walk line remain authored-deliberate
+  (`params/breezeway.py:38-45`).
+- ~~Edits in 2d don't always update all the necessary pieces~~ — investigated 2026-08-02;
+  root cause + proposed fix under **Needs your decision** above.
+- ~~Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?~~ — investigated
+  2026-08-02; recommendation under **Needs your decision** above.
+- ~~Cost tracking in the UI~~ — DONE 2026-08-02. `houses/catlin/costs.toml` (paid flags,
+  exact-product tags, extra non-modeled line items) keyed by the same `(section, key)` join
+  `prices.toml` uses, served over `GET/PUT /costs` (outside the undo journal — paying a
+  bill is not a plan edit), rendered in the BOM view: cost columns, paid checkboxes,
+  extras, and **stale entries surfaced, never dropped** when the model stops matching a
+  key. A starter `prices.toml` ships with every section header and ~300 commented rows
+  keyed from the real BOM — fill in quotes as they arrive.
+- Pantry (deferred by decision 2026-08-02)
+- Add the plant room wall types (deferred by decision 2026-08-02)
+- basement ceiling, some of this wood joists maybe (deferred by decision 2026-08-02)
+- study on first floor location adjustments (deferred by decision 2026-08-02)
+- ~~"Star" certain details~~ — the machinery already existed (`Transition.star`, UI toggle,
+  `details="primary"` filter); 2026-08-02 curated the stars (6 of 14 transitions: eave,
+  foundation sill, rim band, framed opening, garage/breezeway threshold, sauna-liner
+  opening — 31 of 46 A-4xx sheets in the primary set) and flipped `haus print` to
+  primary-by-default (`--details all` still there). Per-condition fan-out is under
+  **Needs your decision**.
 
 ### Drainage Outstanding
     is nominal, not computed from a soil infiltration rate.
-  - Authored `FrenchDrain` runs beyond the derived bedding tile.
-  - Siteplan drainage overlay, and a 2D plan pass for the drainage trade (3D-only today).
-  - Flashing/fascia LF take-off: the drainage take-off bills gutter and leader by the foot, the rest of the edge-trim family is still solids-only.
-  - RAINWATER / SEWAGE `IfcDistributionSystem`s for the authored plumbing pipe runs.
+  - Authored `FrenchDrain` runs beyond the derived bedding tile — **moot for now**: no house
+    authors a `FrenchDrain` yet (catlin has drywells only); revisit when one exists.
+  - ~~Siteplan drainage overlay + 2D drainage plan~~ DONE 2026-08-02: `drainageplan.py`
+    (P-201 series, buried work dashed, per-storey gate) and a `C-STRM-DRAN` overlay on
+    C-101.
+  - ~~Flashing/fascia LF take-off~~ DONE 2026-08-02: new `edge_trim` BOM section bills
+    authored fascia/soffit/flashing runs plus the derived roof-trim family by the foot
+    (band-deduped; derived gutters stay in `drainage`; rows cross-reference their
+    solids/framing mirrors).
+  - ~~RAINWATER / SEWAGE `IfcDistributionSystem`s~~ DONE 2026-08-02: DRAIN runs → SEWAGE
+    (IFC4's sanitary member), VENT → VENT, the radon riser deliberately **not** grouped
+    with plumbing vents (USERDEFINED/"RADON"), and the silent discard of non-supply
+    systems in the emitter is gone. Rainwater stays with the STORMWATER solids system, on
+    purpose — the storm run is gutters/leaders/tile, not `PipeRun`s.
 
 ### Plumbing
 - ~~Irrigation system for plants on upper balcony (frost-free hydrant, insulated metal pipe
@@ -203,12 +275,14 @@ Questions:
 
   Deliberately left for later:
   - **No hose reel, hanger or splash block** at either hydrant, and no water leak/freeze
-    `Alarm` anywhere in the house.
+    `Alarm` anywhere in the house. (Re-affirmed deferred, 2026-08-02.)
   - **The RO unit itself.** `PA-M-RO-STUB` is a capped 1/4" tee with no fixture and no
     fixture units — the provision, not the machine.
-  - **A second niche in `RM-S-BATH1`**, which has a shower and no niche authored at all.
-  - **SANITARY / RAINWATER `IfcDistributionSystem`s** are still deferred (see the drainage
-    block above); only the two domestic-water systems landed here.
+  - ~~A second niche in `RM-S-BATH1`~~ — added 2026-08-02 (`LR-S-BATH1-NICHE` in
+    `W-S-CH-W`, board stood vertical, own PSU per the per-area-supply rule;
+    `notes/shower_niche.md` updated).
+  - ~~SANITARY / RAINWATER `IfcDistributionSystem`s~~ — closed 2026-08-02, see the
+    drainage block above.
   - **`mep.backflow_prevention` grades hose connections only.** The basement's two dual-check
     preventers are reported where authored but are not *required* by the check — a general
     cross-connection survey (hose-end sprayers, the boiler fill that does not exist yet) is
