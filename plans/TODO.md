@@ -40,10 +40,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `railing` solid path at >= 36" along the open ones. Measurable today from resolved
   geometry, no new authoring; catlin's RL-S-STAIR/RL-S-STAIRHEAD guards are the first
   real fixture.
-- **In-plan variant forks + compare UI** (scoped out of the sweep by decision: catalog only).
-  `model.json` now carries the variant catalog; `prices.toml` $-ranges work in
-  `haus variants compare` and takeoff. Still missing: `variant_of`/`active` forks with
-  one-active integrity + promote-with-uid-remap, and the UI side-by-side compare canvases.
+- **In-plan variant forks + compare UI** (deferred)
 
 - **Deck post/footing UNKNOWNs (2026-07-26, by design).** Both sunken-garden decks are now
   `service="deck"`: `deck_post_size` has no R507.4 row for the 12" round column PT-SG-COL,
@@ -143,70 +140,12 @@ Questions:
   - RAINWATER / SEWAGE `IfcDistributionSystem`s for the authored plumbing pipe runs.
 
 ### Plumbing
-- ~~Irrigation system for plants on upper balcony (frost-free hydrant, insulated metal pipe
-  to PEX to reduce thermal bridging, silicone gasket, plastic mounting bracket, closed-cell
-  spray foam); backflow preventer on the basement fixtures connection; lacquered copper
-  where visible in the basement and PEX elsewhere; water-hammer arrestors at the washing
-  machine valve; an accessible main shutoff; hot-water line insulation in the BOM; a lit
-  shower niche in the master bath (Schluter-KERDI-BOARD-SNLT); a reverse-osmosis tap
-  provision at the main sink~~
-  Done 2026-08-01, as one pass, because seven of the eight items were the same missing
-  element: the model had 44 authored `PipeRun`s and nothing that could say *"there is a
-  valve here"*. `mep.hydrant_freeze_depth` said so in its own output — it emitted an UNKNOWN
-  reading "the model has no valve or backflow-preventer element, so neither can be evaluated
-  here" — and the rest of the list lived in this file.
-
-  `PipeAccessory` is that element (`MAIN_SHUTOFF`, `SHUTOFF`, `BACKFLOW_PREVENTER`,
-  `VACUUM_BREAKER`, `WATER_HAMMER_ARRESTOR`, `RO_STUB`, `PENETRATION_SEAL`), authored-only
-  like `PipeRun`, with a small brass solid on the plumbing trade. It locates itself on its
-  host run: an accessory with no authored elevation takes the run's invert at the nearest
-  vertex, because a valve *is on* a pipe and a copied number goes stale. `PipeRun` gained
-  `finish` and `insulation` beside `material` — three fields because they are three
-  purchases, and folding them together would bill the same copper twice the moment one run
-  was left bare. The house now carries 16 accessories; `haus check` is clean.
-
-  **Two south-face wall hydrants, not one balcony hydrant** (owner's call, 2026-08-01):
-  `FX-M-PORCH-HYD` on `W-M-S1` at x=12' and `FX-S-BALC-HYD` on `W-S-S1` at x=16'-8", with
-  the plant room behind it. The proposed north-face hydrant was dropped — `FX-G-HYDRANT`
-  already stands 26' off the north-west corner and reaches everything it would have. These
-  are a different fixture family from the garage's: a **wall** hydrant's seat is inside the
-  conditioned envelope and the barrel self-drains outward, so it has no bury depth at all
-  and is never winterised, where the garage's **yard** hydrant puts its seat 6' down. Both
-  hydrants are fed out of the second floor's joist space, because a supply cannot reach an
-  exterior stud cavity from below: 12" of cast concrete (`W-B-S1`) stands directly under it.
-  `notes/balcony_irrigation.md` has the routing and the penetration detail.
-
-  The **material rule is geometric, not a tag list**, which is what the owner asked for:
-  `mep.pipe_material_preference` (ADVISORY) asks what is *directly overhead* each basement
-  supply segment. Cast concrete means the pipe is hung in the open and reads as finish;
-  a framed floor means it will be covered. So swapping `SL-M-DECK` for wood joists retires
-  the rule under it with nothing to edit, and a new trunk on the same ceiling inherits it.
-  19 runs converted to lacquered copper; the finish half is waived on insulated runs,
-  because a jacketed pipe's visible surface is the jacket.
-
-  Also landed with it, because the checks asked: `mep.hot_water_insulation` (CODE,
-  N1103.4.2 — 7 hot runs at 3/4"+ now author a spec), `mep.main_shutoff`,
-  `mep.backflow_prevention` and `mep.water_hammer_arrestor` (CODE, one permit line between
-  them), `mep.exterior_hydrant_protection` (ADVISORY), and `ApplianceType.quick_closing` —
-  declared rather than guessed from a product name. That last one surfaced a real gap: the
-  **dishwasher was taking hot water from a branch that never declared it**, so its 1.5 WSFU
-  was missing from the trunk's load and P2903.5 had no supply to ask about. Fixed, and it
-  has an arrestor now. New BOM sections `plumbing_specialties`, `install_parts` and
-  `pipe_insulation`; new `DomesticColdWater`/`DomesticHotWater` `IfcDistributionSystem`s
-  grouping the supply segments and their devices (`IfcValve` with the PredefinedType that
-  says which valve it is, rather than the `IfcFooting` fallback).
-
-  The niche light is `ED-T-LT-NICHE-SNLT` (mark **E1** — "Q" was taken), a wet-rated 24V
-  variant of the cove tape, in `W-S-C2C` inside the tub-shower alcove.
-  `notes/shower_niche.md` records the waterproofing tie-in — the board *is* the membrane,
-  and the driver lead is the only penetration it may have.
 
   Deliberately left for later:
   - **No hose reel, hanger or splash block** at either hydrant, and no water leak/freeze
     `Alarm` anywhere in the house.
   - **The RO unit itself.** `PA-M-RO-STUB` is a capped 1/4" tee with no fixture and no
     fixture units — the provision, not the machine.
-  - **A second niche in `RM-S-BATH1`**, which has a shower and no niche authored at all.
   - **SANITARY / RAINWATER `IfcDistributionSystem`s** are still deferred (see the drainage
     block above); only the two domestic-water systems landed here.
   - **`mep.backflow_prevention` grades hose connections only.** The basement's two dual-check
@@ -216,69 +155,6 @@ Questions:
   - **The wall hydrants draw an `integrity.placeable_room_mismatch` apiece**, which is the
     true description of an exterior hose bib hosted by an interior room's wall rather than a
     defect. The model has no outdoor-room concept to file them under.
-
-## Hardwood — DONE 2026-08-02
-Landed as the `wood_surfaces` BOM section: one row per (species, material, kind), driven
-by the new `Material.species`/`stock_bf_per_sqft` fields and the new room-scoped
-`WallPaneling` element (`model/paneling.py` → `resolve/paneling.py` →
-`takeoff/wood_surfaces.py`; tests in `test_wood_surfaces.py`). Against each line:
-- **Sauna basswood T&G** — billed off the SAUNA assemblies' `sauna-tg` FINISH layers
-  (`species="basswood"`, 5/4 → 1.25 bf/sf): ~252 sf net / 278 sf order / ~348 bf. The
-  shower corner's two 36" splash walls are `WP-B-SAUNA-SPLASH`, a `replaces_wall_finish`
-  tile override to the full 7'-6" liner height — 45 sf net of tile, subtracted from the
-  wood. (Known carry-over: W-B-CS bills at full foundation height, the envelope_layers
-  convention.) The sauna *ceiling* T&G is still unbilled — the design extends to a
-  ceiling variant when wanted.
-- **Tudor posts** — four elm `Post`s (`P-S-TUDOR1..4`, `size="6.125x6.125"`, new
-  `ELM_TIMBER` finish assembly) standing in W-S-W3's stud line, sheathing face to drywall
-  face, tops flush with the 9' plate; no change to CATLIN_EXT_2X6. Billed as 4 pc /
-  40 LF ordered (10' sections) / 125.1 bf, mirrored from `structural_solids`.
-- **Oak floors** — solid oak retreated to the studies: main-floor living/study went LVP,
-  bed/closet carpet; **RM-S-STUDY2 keeps oak alongside RM-A-STUDY** (decision
-  2026-08-02), so the oak row bills exactly those two rooms (~318 sf net).
-- **Walnut wainscot** — `WP-M-STUDY-WAINSCOT` panels RM-M-STUDY's bounding walls to 36"
-  (door punch subtracted): ~50 sf net / 55 sf order = 55 bf of 4/4 (`walnut-tg`).
-- **Generality** — any future T&G on walls is a `WallPaneling` (full-height or band,
-  per-wall spans, override-or-applied); floors already flow through `floor_finish` +
-  species; ceilings are the one surface still without a home.
-
-## Backup Power System Refactor — DONE 2026-08-02
-Built as decision #54; the design and its numbers are recorded in
-`houses/catlin/notes/backup_power.md`. What landed against each line of the original ask:
-
-- **A proper microgrid, solar + a limited number of circuits.** `Circuit.backup_tier`
-  (ALWAYS_ON / SHED) on six circuits, re-homed to `ED-B-BACKUP-PANEL` — a 12-space subpanel
-  on the inverter's dedicated load output. The array now lands on the inverter's MPPTs
-  instead of backfeeding on its own.
-- **EG4 spec.** `EQ-T-EG4-12KPV` + `EQ-T-ESS-BATT` (EG4 PowerPro WallMount Indoor,
-  14.3 kWh). Note the 12kPV puts out **8 kW AC continuous**; the 12k is its PV input.
-- **How long can it run.** `takeoff/backup_calc.py` answers it, on the E-601 sheet and in
-  the viewer: 53.0 h on the always-on tier unaided, and with strong sun every other day the
-  always-on tier is net **+4.19 kWh** per 48 h — it rides indefinitely. Both tiers together
-  do not (−30.61 kWh), which is what the shed tier is for. **One battery is enough; no need
-  to size up.** The numbers rest on authored `duty_cycle` estimates — meter and revise.
-- **RSD every other panel.** Computed, not assumed, and the answer came back no: the Aptos
-  440 W module is 44.40 V cold at the −30 °C design low, so a pair sums to 88.8 V against
-  690.12's 80 V. Every module carries a transmitter. `code.NEC_690_12_rapid_shutdown` reads
-  `voc_cold`, so a lower-Voc module would change the verdict without changing the check.
-- **What is on backup, and what is behind a relay.** Exactly as asked — see the tier table
-  in the note.
-- **Battery in the mechanical room, heat + smoke alarm, 3' clearance, metal studs, Type X.**
-  `RM-B-ESS` in the furnace room's SE corner on `INT_ESS_CLOSET_STEEL`, with
-  `AL-B-ESS-SMOKE` + `AL-B-ESS-HEAT` inside it on the always-on tier. The 3' separation is a
-  REQUIRED `ClearanceZone` graded by `advisory.ess_clearance` against other equipment and
-  panels **through walls** — the resolver's own clearance test exempts peers in another
-  room, and a stud wall does not make the distance.
-- **40 kWh indoor max, UL 9540.** `code.R327_ess_capacity` and `code.R327_ess_listing`.
-  (R327, not R328: this profile's base is the 2018 IRC, where the article is numbered R327.)
-- **Keep the future switches easy.** Both are recorded as seams in the note: the garage
-  relocation is a re-room (the capacity check already exempts garage occupancy), and V2H is
-  a second `source=True` circuit that needs a feeder element first — the one thing the
-  705.12 check cannot yet do is find a subpanel's own main OCPD.
-
-Still open, and deliberately not built (nothing to author against yet):
-- High-flow water spigot near the battery.
-- Mechanical ventilation from the cabinet direct to exterior.
 
 ### Other visual ideas (just ideas, not a TODO)
 Dark base to the house
