@@ -46,9 +46,13 @@ TRANSITIONS = (
                suppress=True,
                # (single literal: the editable dialect forbids concatenated strings)
                suppress_reason="the sunken-garden arch is an open-air rough opening in exposed concrete — no buck, no frame, no flashing is applied at its perimeter; the arch geometry the plans and sections draw is the whole story, so a perimeter detail sheet would add nothing"),
+    # Starred: the garage/breezeway threshold condition — both doors open onto the slab
+    # at grade, with the ICF stem dropped to a grade beam under them, so the perimeter
+    # flashing here is nothing like a standard framed opening.
     Transition(uid="CATR009AAAA", tag="TR-CATLIN-GARAGE-OPENING",
                condition_pattern="opening_perimeter:GARAGE_WALL_2X6",
-               notes="notes/garage_wall_detail_side.md", overlay="garage-opening"),
+               notes="notes/garage_wall_detail_side.md", overlay="garage-opening",
+               star=True),
     Transition(uid="CATR010AAAA", tag="TR-CATLIN-INTERIOR-OPENING",
                condition_pattern="opening_perimeter:INT_*", overlay="interior-opening"),
     Transition(uid="CATR011AAAA", tag="TR-CATLIN-CENTER-OPENING",
@@ -74,7 +78,8 @@ TRANSITIONS = (
                continuity=(Continuity(control="vapor", from_face="foil-polyiso",
                                       to_face="foil-polyiso"),
                            Continuity(control="air", from_face="foil-polyiso",
-                                      to_face="foil-polyiso"))),
+                                      to_face="foil-polyiso")),
+               star=True),
     Transition(uid="CATR013AAAA", tag="TR-CATLIN-RIDGE-BEAM",
                condition_pattern="roof_ridge:*", overlay="lvl-ridge-hanger"),
 )

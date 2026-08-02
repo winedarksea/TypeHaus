@@ -147,6 +147,30 @@ FOUNDATION_FACE = FoundationFaceConfig()
 
 
 @dataclass(frozen=True)
+class InteriorSlabDripConfig:
+    """Interior drip flashing where an unheated slab-on-grade meets its stem wall.
+
+    Reference: ``garage_wall_detail_side_ifc.png`` — "interior drip flashing turning water
+    in onto the sloped slab". Water coming down the stem's interior face (blown past the
+    overhead door, or condensation on the cold concrete) has to be turned out onto the
+    slab, which slopes to the apron; without the flashing it wicks into the wall base.
+    All drawing convention — the legs draw at schematic proportions so their directions
+    read at detail scale.
+    """
+
+    #: How far the vertical leg rises up the wall's interior face above the slab surface.
+    rise_in: float = 3.0
+    #: How far the horizontal leg runs in over the slab surface.
+    run_in: float = 2.5
+    #: The drip kick at the inboard end, turned down with the slab's fall.
+    kick_in: float = 0.5
+    kick_drop_in: float = 0.25
+
+
+INTERIOR_SLAB_DRIP = InteriorSlabDripConfig()
+
+
+@dataclass(frozen=True)
 class RimBandConfig:
     """The floor-band air seal at a storey stack (``rim-band-air-seal``).
 

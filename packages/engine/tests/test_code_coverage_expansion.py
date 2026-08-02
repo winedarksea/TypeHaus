@@ -32,6 +32,7 @@ from typehaus.checks.code.mn_residential.alarms import (
 )
 from typehaus.checks.code.mn_residential.egress import (
     basement_storey_egress,
+    egress_door_height,
     exterior_door_landing,
     window_well,
 )
@@ -743,3 +744,42 @@ def test_window_well_is_registered_as_a_constructible_element():
 
     assert "WindowWell" in constructor_names()
     assert "WindowWell" in element_kinds()
+
+
+# --- R311.2 egress door clear height -----------------------------------------------------
+
+def _door_height_ctx(height_in: float, *, exterior: bool = True, type_known: bool = True):
+    door_type = SimpleNamespace(tag="DT-TEST", exterior=exterior, width=inch(36),
+                                height=inch(height_in))
+    door = SimpleNamespace(element_kind="Door", tag="D-TEST",
+                           type_ref="DT-TEST" if type_known else "DT-MISSING")
+    plan = SimpleNamespace(all_elements=lambda: [door],
+                           library=SimpleNamespace(door_types=[door_type]))
+    return SimpleNamespace(plan=plan)
+
+
+def test_door_height_passes_a_standard_six_eight_leaf():
+    findings = egress_door_height(_door_height_ctx(80.0))
+    assert _results(findings) == [Result.PASS]
+
+
+def test_door_height_fails_below_78_inches():
+    findings = egress_door_height(_door_height_ctx(76.0))
+    assert _results(findings) == [Result.FAIL]
+    assert findings[0].code_ref == "R311.2"
+
+
+def test_door_height_reports_unknown_for_an_unknown_door_type():
+    findings = egress_door_height(_door_height_ctx(80.0, type_known=False))
+    assert _results(findings) == [Result.UNKNOWN]
+
+
+def test_interior_doors_are_not_held_to_the_egress_height_bar():
+    findings = egress_door_height(_door_height_ctx(76.0, exterior=False))
+    assert _results(findings) == [Result.PASS]
+
+
+def test_catlin_exterior_doors_clear_the_height_bar(catlin_ctx):
+    """Both breezeway-adjacent doors carry 6'-8" (80") leaves — everything passes."""
+    findings = egress_door_height(catlin_ctx)
+    assert findings and all(f.result is Result.PASS for f in findings)

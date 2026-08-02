@@ -57,6 +57,21 @@ def test_primary_sheet_set_keeps_only_starred_derived_details(catlin_model):
     assert non_detail(everything) == non_detail(primary)
 
 
+def test_haus_print_composes_the_primary_set_by_default():
+    """`haus print` defaults to the curated primary set; `--details all` stays available.
+
+    The library defaults (``build_sheet_index`` / ``write_permit_set``) deliberately stay
+    ``"all"`` — the flip is a CLI decision about what a builder gets by default, not a
+    change to what the composers do.
+    """
+    import inspect
+
+    from typehaus.cli.app import print_sheets
+
+    option = inspect.signature(print_sheets).parameters["details"].default
+    assert getattr(option, "default", option) == "primary"
+
+
 def test_star_writes_back_to_the_real_transitions_source(tmp_path):
     house = tmp_path / "catlin"
     shutil.copytree(CATLIN_DIR, house,
