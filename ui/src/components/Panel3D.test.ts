@@ -21,7 +21,8 @@ import {
 } from "../three/builders/structure";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import {
-  SOLID_CATEGORY_COLOR, SOLID_CATEGORY_TRADE, createSolidMaterial, solidColor, solidTrade,
+  SOLID_CATEGORY_COLOR, SOLID_CATEGORY_TRADE, createSolidMaterial, solidCategoryLabel,
+  solidColor, solidTrade,
 } from "../three/solidMaterials";
 import { ALL_TRADES } from "../state/vocabulary";
 import { carriesMemberIdentity, resolveMemberPickUid } from "../three/memberPicking";
@@ -324,6 +325,17 @@ export function runSolidMaterialTests() {
     "A standalone post is framing, not concrete");
   assert(solidTrade(solid("pipe_drain")) === "plumbing",
     "A routed waste line follows the Plumbing toggle");
+  assert(solidTrade(solid("vacuum_breaker")) === "plumbing",
+    "A backflow device follows the pipe it interrupts, not the concrete fallback");
+  assert(solidTrade(solid("penetration_seal")) === "plumbing",
+    "So does the seal around a pipe crossing the envelope");
+  // Per-device categories, so the Inspector heading names the device rather than its family.
+  // "pipe accessory" was true of a shutoff, a preventer and a can of foam alike.
+  assert(solidCategoryLabel("vacuum_breaker") === "Vacuum breaker",
+    "A known category gets its human name");
+  assert(solidCategoryLabel("some_new_thing") === "Some new thing",
+    "An unmapped category is still readable on the day it lands");
+  assert(solidCategoryLabel(undefined) === "Solid", "A category-less solid still has a heading");
   assert(solidTrade(solid("vent")) === "mechanical", "A vent riser is mechanical");
   assert(solidTrade(solid("fascia")) === "roof", "Roof edge trim rides the roof toggle");
   // The stormwater run is one toggle end to end: the gutter used to sit under Roof and the

@@ -3,119 +3,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-(nothing right now)
-
-- ~~**The building drain is at 3" and the basement's real load is now ~42 DFU.**~~
-  **Done 2026-07-31, both halves.** The building drain is 4" whole-run (inverts stayed
-  put — the 4" crown still clears the slab underside by 5.7" against the 1" bedding
-  minimum; `SP-B-SLAB-MAIN`, `SP-B-CW-MAIN` and `SP-B-SEWER-EXIT` re-cast at 4"/6" with
-  re-solved centres). And the class of error is closed at the engine: `mep.pipe_sizing`
-  and the reader's fixture-unit rows now roll every drain's load up through the routed
-  geometry (`resolve/mep.py::drain_tie_ins`/`accumulated_serves` — union by fixture tag,
-  never a sum of branch loads), so a branch's DFU can no longer escape the main it
-  discharges into by not being re-listed in `serves`.
-
-## Permit + code sweep, 2026-08-01
-
-Every blocking item in the `mn-2024` permit subset now passes: `haus permit-check` reads
-**35 pass / 0 fail / 5 unknown**, and the five unknowns are the modelling gaps already
-tracked below (handrail role, guard infill, window well, floor protection over the basement,
-TPR discharge). The whole registry went 67 FAIL → 6, and all six survivors are decisions
-already recorded on this page.
-
-What changed, grouped by what the finding actually was:
-
-- **Real deficiencies, fixed.**
-  - GFCI: five dedicated circuits picked up breaker protection (CKT-SUMP, CKT-HA,
-    CKT-KETTLE, CKT-DISHWASHER, CKT-LAUNDRY) and eight outlets on the two storey receptacle
-    circuits became GFCI *devices*. The split is deliberate — CKT-RC-MAIN/SECOND each reach
-    a whole floor, and nobody puts thirty outlets behind one 5 mA trip.
-  - AFCI declared on the fourteen 120V 15/20A circuits E3902.16 actually reaches.
-  - Safety glazing: all four glazed door types are tempered (R308.4.1 has no location test),
-    and ten windows in hazardous locations moved to four new tempered twin types
-    (`WT-1424-T`, `WT-2736-T`, `WT-3036-T`, `WT-3048-T`) — same RO, same height, same
-    position on the module, so no facade or framing rule sees them.
-  - The five wet-room ERV pickups are `EXHAUST` rather than `RETURN` and each states the
-    20 cfm it is balanced to. A bathroom's air is thrown away, not recirculated.
-  - `EQ-T-ERV` 197 → 210 cfm: the conditioned area had drifted to 5,115 ft2 and the ASHRAE
-    62.2 rate with it, leaving N1103.6 one cfm short.
-  - `D-G-SERVICE` now opens off the garage slab, with the ICF stem gapped to a grade beam
-    under it — the same treatment `D-G-OVERHEAD` has always had. The "22" step at the garage
-    door" that `params/breezeway.py` recorded as a deferred mismatch is closed.
-  - **The breezeway was standing 3'-6" west of the door it exists for.** `params/breezeway.py`
-    was written on 2026-07-27 against a house entry at x=4'-0"; the 2026-07-28 mudroom
-    conversion moved `D-M-ENTRY` to x=8'-0" and nothing followed it. The enclosure's centre
-    moved 4'-6" → 7'-3", midway between the doors as actually built. Its 4'-0" width cannot
-    cover two doors whose outer jambs span 4'-6", so each door's outer 3" of leaf oversails
-    the deck at one corner — accepted to keep the brief's three-sheets-one-cut enclosure,
-    and both doors still clear R311.3's landing patch at 92%.
-  - RM-B-PLAY-N got its fresh-air register back (old uid, old hole) and two more cans.
-- **Design decisions taken with the user.**
-  - `RM-A-WEST` is STORAGE, not MEDIA: 598 sf under a 4:12 cathedral whose only glazable
-    wall is a 5' knee wall cannot carry R303.1's 8%, and the room joins RM-A-EAST/RM-A-DEN
-    which were already storage for the same reason.
-  - `WIN-S-BED1`/`BED2` widened 27" → 30" (`WT-3048`) in the east *bearing* wall, framed
-    with the ordinary jack/king/header pack; `preferences.toml`'s bearing RO cap went 27 →
-    30 with them. Margin against R303.1 is 0.05 sf — see the note in `storeys/second.py`.
-- **Check bugs, fixed in the engine rather than papered over in the house.**
-  - `code.E3902_16_afci` screened on rooms only, so it wrote up eight 240V circuits (range,
-    dryer, three heat pumps, air handler, kettle, PV) that no AFCI breaker is made for. Now
-    scoped to 120V 15/20A, which is what NEC 210.12 says.
-  - `code.M1502_dryer_exhaust` demanded a duct from a *ventless heat-pump* dryer. M1502.1
-    exempts listed condensing dryers; `ApplianceType.ductless` says so and
-    `APPL-WASHER-DRYER-STACKED` sets it.
-  - `code.R303_1_light_and_ventilation` had no Exception 1 path, so every windowless
-    habitable room was a violation with no lawful answer. It now adjudicates the exception —
-    6 fc of installed lumens (stated CU/LLF, both named in the message) plus mechanical
-    outdoor air to the room from a whole-house system that meets its own rate — and reports
-    UNKNOWN, never PASS, where an input is missing.
-  - `code.R303_3_local_exhaust` read a shared trunk's `design_cfm` as one bathroom's
-    exhaust. Rate now comes off `Register.design_cfm`, falling back to the run only where
-    the run has exactly one terminal on it.
-  - `mep.footing_clearance` measured the 45° influence line off construction joints in
-    continuous concrete: splitting the south stem for the service door gave the hydrant line
-    a "footing edge" 3" away that is not an edge. Abutting footings at one bearing elevation
-    are now measured as one pour.
-- **Data defect found on the way through:** `plan/circuits.py` had duplicate uids —
-  CKT-HP1-AH and CKT-HP2 reused CKT031/032AAAA from the radiant-floor circuits. Renumbered
-  to CKT036/037AAAA.
-
 ## Accepted, by decision (2026-07-31 warnings sweep)
-
-- **The 200A service stays, and `electrical.service_load` stays failing at 220.9A.**
-  Accepted rather than fixed: NEC 220.82 is a whole-house estimate and this house never runs
-  range + spa + sauna + both EVs at once. The lever if it ever needs pulling is a second
-  `LoadManagement` over `CKT-SPA` + `CKT-SAUNA` capped at 11,500 VA — they are mutually
-  exclusive by use, and the 9,000 VA credit lands the estimate near 183A without touching
-  the meter. (`LM-EV` already caps the two EV circuits; that credit is in the 220.9A.)
-
-- **HP2 passes on real Gree data once supplemental resistance heat is counted
-  (2026-08-01, workstreams W2 + W3).** `EQ-T-GREE-MULTI-U30` is the Gree
-  MUL30HP230V1R32AO: 30,000 Btu/h at 47F, 23,500 Btu/h at the -15F design temp
-  (interpolated between the datasheet's -13F/-22F chart points). Block load over the
-  basement plus the main-floor bedroom/bath/living side is 30,764 Btu/h at design, so the
-  condenser alone is short 7,264 Btu/h. W3 changed `mep.heating_capacity` to count the
-  resistance heat inside a zone's rooms, which is real heat at design temp: FH-M-BATH2
-  (500 W), FH-M-DINING (700 W) and EQ-M-FIREPLACE (1,500 W) total **9,195 Btu/h**, giving
-  32,695 Btu/h available against 30,764 — **margin +1,931 Btu/h, PASS**. Supplemental heat
-  is keyed by room and never opens a zone of its own, so it cannot be double-counted.
-
-- **HP1 stays short by ~1,100 Btu/h at the design temp, accepted by decision.**
-  `EQ-T-GREE-VIREO-GEN3` is the Gree VIR24HP230V1R32AO: 27,000 Btu/h at 47F (valid because
-  it feeds the EQ-T-GREE-SLIM24 ducted air handler, not a wall head), 13,500 Btu/h at -15F
-  design (interpolated, includes the ducted static-pressure derate). Block load over the
-  attic plus the second-storey bedroom/bath side is 16,338 Btu/h. The only supplemental
-  heat on that zone is FH-S-BATH1 (510 W = 1,740 Btu/h), so available capacity is
-  15,240 Btu/h — **margin -1,098 Btu/h, FAIL**. Accepted rather than fixed: it is a 6.7%
-  shortfall at the -15F design temperature only, the zone's own thermal mass and the
-  stack effect from the (passing, +1,931 Btu/h) floor below cover the gap in practice, and
-  the alternative is upsizing the condenser for a handful of hours a year. The levers if
-  it ever needs pulling, in order of cost: a resistance element in the EQ-S-HP1-AH air
-  handler (authored as another `supplemental_heat` type), a second radiant mat in
-  RM-S-SUITEBATH, or the next Vireo frame size. Revisit if the blower-door result comes in
-  worse than the 900 cfm50 the block load assumes.
-  - HP3 (Sapphire) is unaffected: real data gives it +6,765 Btu/h margin, comfortably
-    passing.
 
 - **The basement and sunken-garden foundation walls exceed the plain-concrete unbalanced-fill
   limit, and stay failing until the engineer's schedule lands (2026-08-01, workstream W5).**
@@ -156,12 +44,7 @@ What changed, grouped by what the finding actually was:
   `model.json` now carries the variant catalog; `prices.toml` $-ranges work in
   `haus variants compare` and takeoff. Still missing: `variant_of`/`active` forks with
   one-active integrity + promote-with-uid-remap, and the UI side-by-side compare canvases.
-- **Refrigerant linesets are unmodeled** — only the indoor→outdoor pairing is recorded
-  (`Equipment.outdoor_ref`). (Heat-pump *condensate* is modeled as of the plumbing pass:
-  `PR-M-COND-HEADS` drops the two main-storey wall heads through `SP-M-COND` to
-  `PR-B-COND`, the collected air-gap line falling to terminate over the mechanical-room
-  sink — which now has the drain that was the blocker. `EQ-S-HP1-AH`'s line down the
-  second-floor chase is still undrawn.)
+
 - **Deck post/footing UNKNOWNs (2026-07-26, by design).** Both sunken-garden decks are now
   `service="deck"`: `deck_post_size` has no R507.4 row for the 12" round column PT-SG-COL,
   and PT-SG-COL plus the six balcony pillars bear on non-Pad chains (grouted CMU / bell
@@ -219,25 +102,6 @@ What changed, grouped by what the finding actually was:
 
 ## Roof-eave follow-ups (accepted-for-now / awaiting reference drawings)
 
-- **Rake clip rules are extrapolated** from the eave-only golden reference; a rake detail
-  drawing would confirm or correct them (same for the rake trim band).
-- **Layer end faces stay perpendicular to the slope**, not vertical as the 2D detail draws
-  them; serialized setbacks are drift-corrected but the cut face is raked. Each closure band
-  therefore tops out at its *own* mating face (`resolve/roof_edge.py::_closure_segment`), so
-  the stack ends as a per-layer staircase and **no wedge-shaped gap ever opens for the
-  closed-cell spray foam to fill** — modelling the wedge in 3D means modelling the flat cut
-  first. The 2D detail *does* draw one (`emit/draw/joints.py` builds the quad and hatches it
-  `spray-foam`, pinned by `test_transition_details.py::test_eave_has_per_layer_roof_bands_and_wedge`);
-  it is the 3D model the wedge is absent from.
-- ~~**The roof-edge metal is a flat band, not a formed cleat + hemmed drip.**~~ **Done.**
-  `resolve/trim_bands.py::formed_edge_bands` gives the corner trim the cleat / face / hem a
-  fabricator actually folds, the way `open_channel_bands` gives the gutter its U — so the
-  piece reads as sheet with air behind it rather than as a billet as thick as the joint is
-  deep. Pinned by `test_roof_gable_and_heel.py::test_the_corner_trim_is_formed_metal_not_a_billet`.
-  Each of the six runs is now three members; anything counting corner-trim members counts 18.
-  (House fascia itself is gone: siding and roofing are one continuous standing-seam skin with
-  corner trim and a derived ridge-vent cap on house + garage. Seam/panel modelling proper is
-  still out of scope — see `plans/standing_seam_design_hints.md`.)
 - **The garage gable is closed by carrying wall skin to the roof underside** rather than by
   real `top=ToRoof` gable walls (`W-G-E`'s ridge lands where the 16' door is centred).
   Accepted for now. (The gable-closure studs now lie flat in the drop-truss plane — the
@@ -245,8 +109,7 @@ What changed, grouped by what the finding actually was:
 
 ## Breezeway — remaining niggles
 
-- **The 1" fall toward the garage is drawn, not framed** (lives in the drainage wedges; a
-  `Beam` is a prism). If the wedge becomes a real element the fall moves into it. (It should be a 1" slope by angle of the framing, plus a east to west slope by a small wedge under the centerpoint of each rafter to slightly bend the polycarbonate)
+- **The 1" fall toward the garage is drawn, not framed** (lives in the drainage wedges; a `Beam` is a prism). If the wedge becomes a real element the fall moves into it. (It should be a 1" slope by angle of the framing, plus a east to west slope by a small wedge under the centerpoint of each rafter to slightly bend the polycarbonate)
 
 ## Current Orientation
 
@@ -254,56 +117,124 @@ What changed, grouped by what the finding actually was:
 the future.
 
 ### Items after Phase 6
-- Confirm the default toilet's 28" body depth vs an elongated bowl (29–31") — the code
-  clearance is already modeled separately (`_water_closet_required_clearance` in
-  `library/placeables/fixtures.py`), so this is a one-line footprint question.
-- It looks like beams BM-S-HALL and BM-M-HALL are not getting grouped as part of the framing in the view. Also want to double check that beams are properly considered as a type of framing, for example the hall beams should likely be defined similarly to RIDGE-BEAM, garage header HEADER-0, the porch beams such as BM-SG-BKW, and possibly some of the window and door headers. We also may have some cases where we have headers specified over windows or doors when a large beam
+- Confirm the default toilet's 28" body depth vs an elongated bowl (29–31")
 - Make sure there is an electric outlet in the kitchen island where usable for appliances in accordance with code
+- Add an outdoor, dark sky friendly light to the garage, outside near the garage door. We actually want to add "dark sky friendly" as an advisory check for all outdoor lights.
+- Add an outdoor flood light mounted to the porch above the sunken garden, on the porch roof center column (might be able to share a circuit with the ceiling fan on the porch).
+- FURN-M-MUD-CLOSET-S needs to be replaced by a fully framed closet (basically a new room). This should aim for 32" to 36" depth, if sufficient space.
 
 Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
 - Is the door opening inside the breezeway code compliant
-- No overhang roof 
-- Outdoor hydrants plus more complete internal plumbing 
 - Edits in 2d don't always update all the necessary pieces (like when we switched a shower to showertub)
 - Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?
-- Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model)
+- Add tracking costs in the UI (so BOM can show costs if known, possibly check off if/when paid, and extra items not present in the 2d or 3d model), and also tagging in exact chosen products (where not already explicit as a comment, ie a specific model of recessed light)
 - Pantry
 - Add the plant room wall types
+- basement ceiling, some of this wood joists maybe
+- study on first floor location adjustments
 - Is there a way we can "star" certain details to include in drawings? Right now we have drawings for most (all?) transitions, even some that don't really need details (framers don't need a reference for generic internal framing transitions). It would be nice to have the UI highlight important details and exclude from the primary export any we think we don't really need to show.
-- ~~Add french drains (sump pump, down spouts, around footings) and possibly a drywell (probably 6 feet or so deep) or two in the sunken garden (so we have more than the sump pump as options for getting water out from there)~~
-  Done 2026-07-31: a `drainage` trade/toggle; the perimeter drain tile grew real geometry
-  instead of being a bool; `FrenchDrain`, `Drywell` and `Sump.pump` are first-class; the two
-  leaders that existed only in slope notes (TR-G-LEADER-E, TR-SG-LEADER-SE) are authored; the
-  garage hydrant pit is a `Drywell` (DRW-G-HYDRANT) rather than a deepened footing bedding;
-  DRW-SG-MAIN is a 6'-deep soakaway under the middle of the sunken garden with its top at the
-  underside of the 42" bearing bed — the bed is a bearing course that happens to drain, *not*
-  a drywell, and the two are now separate things — taking the balcony leader and the garden's
-  footing tile, which cannot daylight 9' down; and the whole family exports as
-  `IfcPipeSegment` / `IfcDistributionChamberElement` / `IfcPump` under one STORMWATER
-  `IfcDistributionSystem`. (Drywell tags are `DRW-`: `DW-` is already the dowel prefix.)
-  Deliberately left for later:
-  - A second garden well, if percolation testing says one 5'x6' is not enough — the sizing
+
+### Drainage Outstanding
     is nominal, not computed from a soil infiltration rate.
   - Authored `FrenchDrain` runs beyond the derived bedding tile.
   - Siteplan drainage overlay, and a 2D plan pass for the drainage trade (3D-only today).
-  - Flashing/fascia LF take-off: the drainage take-off bills gutter and leader by the foot,
-    the rest of the edge-trim family is still solids-only.
+  - Flashing/fascia LF take-off: the drainage take-off bills gutter and leader by the foot, the rest of the edge-trim family is still solids-only.
   - RAINWATER / SEWAGE `IfcDistributionSystem`s for the authored plumbing pipe runs.
 
 ### Plumbing
-Irrigation system for plants on upper balcony
-		Frost free hydrant, insulated metal pipe, to PEX to reduce thermal bridging, silicone gasket, plastic mounting bracket
-			This is probably a case to use closed cell spray foam to keep moisture off the cold metal hydrant part
-Backflow preventer on basement fixtures connection
-Pipes will be lacquered copper where visible in the basement. In other places, PEX.
-Water hammer arrestors on valve for washing machine
-Main water shutoff that is accessible
-BOM include insulation of main hot water lines
-Have lighting in the shower niche of master bedroom, it looks cool, Schluter®-KERDI-BOARD-SNLT
-Provision for a reverse osmosis tap next to the main sink
+- ~~Irrigation system for plants on upper balcony (frost-free hydrant, insulated metal pipe
+  to PEX to reduce thermal bridging, silicone gasket, plastic mounting bracket, closed-cell
+  spray foam); backflow preventer on the basement fixtures connection; lacquered copper
+  where visible in the basement and PEX elsewhere; water-hammer arrestors at the washing
+  machine valve; an accessible main shutoff; hot-water line insulation in the BOM; a lit
+  shower niche in the master bath (Schluter-KERDI-BOARD-SNLT); a reverse-osmosis tap
+  provision at the main sink~~
+  Done 2026-08-01, as one pass, because seven of the eight items were the same missing
+  element: the model had 44 authored `PipeRun`s and nothing that could say *"there is a
+  valve here"*. `mep.hydrant_freeze_depth` said so in its own output — it emitted an UNKNOWN
+  reading "the model has no valve or backflow-preventer element, so neither can be evaluated
+  here" — and the rest of the list lived in this file.
 
-### Other visual ideas
+  `PipeAccessory` is that element (`MAIN_SHUTOFF`, `SHUTOFF`, `BACKFLOW_PREVENTER`,
+  `VACUUM_BREAKER`, `WATER_HAMMER_ARRESTOR`, `RO_STUB`, `PENETRATION_SEAL`), authored-only
+  like `PipeRun`, with a small brass solid on the plumbing trade. It locates itself on its
+  host run: an accessory with no authored elevation takes the run's invert at the nearest
+  vertex, because a valve *is on* a pipe and a copied number goes stale. `PipeRun` gained
+  `finish` and `insulation` beside `material` — three fields because they are three
+  purchases, and folding them together would bill the same copper twice the moment one run
+  was left bare. The house now carries 16 accessories; `haus check` is clean.
+
+  **Two south-face wall hydrants, not one balcony hydrant** (owner's call, 2026-08-01):
+  `FX-M-PORCH-HYD` on `W-M-S1` at x=12' and `FX-S-BALC-HYD` on `W-S-S1` at x=16'-8", with
+  the plant room behind it. The proposed north-face hydrant was dropped — `FX-G-HYDRANT`
+  already stands 26' off the north-west corner and reaches everything it would have. These
+  are a different fixture family from the garage's: a **wall** hydrant's seat is inside the
+  conditioned envelope and the barrel self-drains outward, so it has no bury depth at all
+  and is never winterised, where the garage's **yard** hydrant puts its seat 6' down. Both
+  hydrants are fed out of the second floor's joist space, because a supply cannot reach an
+  exterior stud cavity from below: 12" of cast concrete (`W-B-S1`) stands directly under it.
+  `notes/balcony_irrigation.md` has the routing and the penetration detail.
+
+  The **material rule is geometric, not a tag list**, which is what the owner asked for:
+  `mep.pipe_material_preference` (ADVISORY) asks what is *directly overhead* each basement
+  supply segment. Cast concrete means the pipe is hung in the open and reads as finish;
+  a framed floor means it will be covered. So swapping `SL-M-DECK` for wood joists retires
+  the rule under it with nothing to edit, and a new trunk on the same ceiling inherits it.
+  19 runs converted to lacquered copper; the finish half is waived on insulated runs,
+  because a jacketed pipe's visible surface is the jacket.
+
+  Also landed with it, because the checks asked: `mep.hot_water_insulation` (CODE,
+  N1103.4.2 — 7 hot runs at 3/4"+ now author a spec), `mep.main_shutoff`,
+  `mep.backflow_prevention` and `mep.water_hammer_arrestor` (CODE, one permit line between
+  them), `mep.exterior_hydrant_protection` (ADVISORY), and `ApplianceType.quick_closing` —
+  declared rather than guessed from a product name. That last one surfaced a real gap: the
+  **dishwasher was taking hot water from a branch that never declared it**, so its 1.5 WSFU
+  was missing from the trunk's load and P2903.5 had no supply to ask about. Fixed, and it
+  has an arrestor now. New BOM sections `plumbing_specialties`, `install_parts` and
+  `pipe_insulation`; new `DomesticColdWater`/`DomesticHotWater` `IfcDistributionSystem`s
+  grouping the supply segments and their devices (`IfcValve` with the PredefinedType that
+  says which valve it is, rather than the `IfcFooting` fallback).
+
+  The niche light is `ED-T-LT-NICHE-SNLT` (mark **E1** — "Q" was taken), a wet-rated 24V
+  variant of the cove tape, in `W-S-C2C` inside the tub-shower alcove.
+  `notes/shower_niche.md` records the waterproofing tie-in — the board *is* the membrane,
+  and the driver lead is the only penetration it may have.
+
+  Deliberately left for later:
+  - **No hose reel, hanger or splash block** at either hydrant, and no water leak/freeze
+    `Alarm` anywhere in the house.
+  - **The RO unit itself.** `PA-M-RO-STUB` is a capped 1/4" tee with no fixture and no
+    fixture units — the provision, not the machine.
+  - **A second niche in `RM-S-BATH1`**, which has a shower and no niche authored at all.
+  - **SANITARY / RAINWATER `IfcDistributionSystem`s** are still deferred (see the drainage
+    block above); only the two domestic-water systems landed here.
+  - **`mep.backflow_prevention` grades hose connections only.** The basement's two dual-check
+    preventers are reported where authored but are not *required* by the check — a general
+    cross-connection survey (hose-end sprayers, the boiler fill that does not exist yet) is
+    not encoded.
+  - **The wall hydrants draw an `integrity.placeable_room_mismatch` apiece**, which is the
+    true description of an exterior hose bib hosted by an interior room's wall rather than a
+    defect. The model has no outdoor-room concept to file them under.
+
+## Hardwood
+- Need to calculate and show in BOM the square feet required for sauna wall cladding tongue and groove. Note the shower in the corner is tile on the two walls of its spash area, not wood.
+- In the second floor suite bedroom, we are going to have four custom oversized 6.125" by 6.125" posts that sit in the stud framing line but extend out to level with the drywall on the west wall. We would like to show these here, a sort of "tudor framing", but this should not be a change to the wall assembly (while a deviation, it is still effectively part of the stud line as such)
+- We want to calculate the board feet of walnut required to panel the walls of the small first floor study
+
+## Backup Power System Refactor
+- Backup power should be a proper microgrid, with solar panels and a limited number of circuits.
+- EG4 is likely the system we should spec to start with https://eg4electronics.com/categories/inverters/eg4-12kpv-all-in-one-hybrid-inverter/
+- We are starting with the 12 kV size but want a calculation of how long we can likely run this system (assuming strong solar every other day), to know if we need to size up.
+- EG4 sends a message to Sunspec-compliant RSD devices. Can do every other panel (sum VOC < 80V), possibly even every third panel for RSD. If you aren't roof mounted, probably still a good idea but you can just do the last one (+ end) in a string.
+- What's on the backup the kitchen fridge and freezer, an outlet in the mechnical room (that does router and home assistant power), mechanical room lights (should be a small load), and the kitchen lights and a kitchen outlet (meant for charging phones, etc)
+- What's on the backup behind a relay (or several relays, ie like the Shelly Pro 4PM) that we shut off when the battery is low and sun is not out: the smallest minisplit (9K BTU Sapphire R32), the heat pump water heater (just the heat pump part, no electric resistance heating connection to backup), and the sump pump
+- Backup battery is in mechanical room. Paired with another heat rise alarm and a smoke alarm. Keep a 3' clearance from other devices. Inside a small utility closet using metal studs, and 5/8" Type X drywall.
+- Code enforces a 40 kWh maximum indoors. UL 9540 battery certification required.
+- We might in the future redesign this to use a car as the battery. We might also redesign this to place the enclosure in the garage. The code doesn't need to implement these but should be designed to make the switch easier in the future.
+- Future improvements might be: high flow water spigot near battery, mechanical ventilation directly to exterior of cabinet.
+
+### Other visual ideas (just ideas, not a TODO)
 Dark base to the house
 Dark panel along the panel of the corner most panels
 Standing seam clamps to anchor decorative elements, possibly at gable peak, or lightning rod

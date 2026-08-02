@@ -32,6 +32,8 @@ from typehaus import (
     EquipmentType,
     Mount,
     MountKind,
+    PipeAccessory,
+    PipeAccessoryKind,
     PipeRun,
     PipeSystem,
     Register,
@@ -259,6 +261,16 @@ SUPPLY_SLEEVES = [
     SleevePenetration(uid="CMPS12AAAA", tag="SP-M-HW-SUITE", host_ref="SL-M-DECK",
                       position=pt(ft(14, 2.4), ft(16, 10.8)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
+    # The two south-face wall hydrants' shared riser (2026-08-01). One crossing, not two:
+    # both hydrants are fed from the second-floor joist space, so a single 3/4" branch
+    # leaves the basement here and splits up there. y=13'-4" is W-M-BDN1's line — the
+    # main-storey partition the riser stands inside — and it is over open basement ceiling
+    # at x=6' (W-B-SA-N, the sauna's north partition, starts at x=8'-10"), so the
+    # penetration lands in the deck rather than on top of a wall below it. Nothing else
+    # crosses within 3' of it.
+    SleevePenetration(uid="CMPS16AAAA", tag="SP-M-CW-HYD", host_ref="SL-M-DECK",
+                      position=pt(ft(6), ft(13, 4)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
 ]
 
 # Second-storey waste stacks. The upstairs bathrooms drain down through framed walls and
@@ -1781,7 +1793,7 @@ SUPPLY = [
             path=(pt(ft(5), ft(1)), pt(ft(5), ft(1)), pt(ft(5), ft(16)),
                   pt(ft(8), ft(16)), pt(ft(29, 0.6), ft(16)),
                   pt(ft(29, 0.6), ft(34, 1.2)), pt(ft(29, 0.6), ft(34, 1.2))),
-            diameter=inch(1.25), material="pex",
+            diameter=inch(1.25), material="copper", finish="lacquered",
             elevations=(ft(3), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2),
                         ft(8, 1.2), ft(12, 6)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
@@ -1791,11 +1803,15 @@ SUPPLY = [
                     "FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2",
                     "FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
-                    "FX-S-SUITEBATH-TUBSH")),
+                    "FX-S-SUITEBATH-TUBSH",
+                    # The two south-face wall hydrants (2026-08-01), 2.5 WSFU cold each.
+                    # 34 -> 39 on a 1 1/4" trunk that carries 64 in Table 610.4's 46-60 psi
+                    # column, so the tee costs nothing in size.
+                    "FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
             path=(pt(m(1.88684), m(10.0015)), pt(m(1.88684), m(10.0015)),
                   pt(ft(6, 6), ft(19, 2.4)), pt(ft(6, 6), ft(15, 6))),
-            diameter=inch(1), material="pex",
+            diameter=inch(1), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(4), ft(8), ft(8), ft(8)),
             serves=("FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK",
@@ -1803,40 +1819,45 @@ SUPPLY = [
                     "FX-B-BATH-LAV", "FX-B-SAUNA-SH",
                     "FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
                     "FX-S-VANITY-LAV2", "FX-S-SUITEBATH-LAV",
-                    "FX-S-SUITEBATH-TUBSH")),
+                    "FX-S-SUITEBATH-TUBSH",
+                    # The dishwasher was taking hot water from a branch that never declared
+                    # it (2026-08-01). Undeclared, its 1.5 WSFU was missing from the trunk's
+                    # load *and* `mep.water_hammer_arrestor` had no supply to ask about, so
+                    # the quick-closing valve on it went ungraded rather than failing.
+                    "APPL-M-DW")),
     # Cold feed to the water heater itself (equipment, not a fixture — no fixture units).
     PipeRun(uid="CBPW32AAAA", tag="PR-B-CW-WH", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(19, 2.4)),
                   pt(m(1.88684), m(10.0015)), pt(m(1.88684), m(10.0015))),
-            diameter=inch(1), material="pex",
+            diameter=inch(1), material="copper", finish="lacquered",
             elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(4))),
     # Main-storey groups.
     PipeRun(uid="CBPW33AAAA", tag="PR-B-CW-BATH1", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5), ft(16)), pt(ft(7, 4.8), ft(16, 9.6)),
                   pt(ft(7, 4.8), ft(19, 2.4)), pt(ft(6), ft(23, 7.2)),
                   pt(ft(6), ft(23, 7.2)), pt(ft(6), ft(23, 7.2))),
-            diameter=inch(0.75), material="pex",
+            diameter=inch(0.75), material="copper", finish="lacquered",
             elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(9), ft(12, 6)),
             wall_refs=(None, None, None, None, "W-M-BAE"),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
     PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
             path=(pt(m(1.88684), m(10.0015)), pt(ft(6), ft(24)), pt(ft(6), ft(24)),
                   pt(ft(6), ft(24))),
-            diameter=inch(0.75), material="pex",
+            diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8), ft(8), ft(9), ft(12, 6)),
             wall_refs=(None, None, "W-M-BAE"),
             serves=("FX-M-BATH1-LAV",)),
     PipeRun(uid="CBPW35AAAA", tag="PR-B-CW-BATH2", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5), ft(16)), pt(ft(2, 3), ft(16)),
                   pt(ft(2, 3), ft(17, 2.4)), pt(ft(2, 3), ft(17, 2.4))),
-            diameter=inch(0.75), material="pex",
+            diameter=inch(0.75), material="copper", finish="lacquered",
             elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(12)),
             serves=("FX-M-BATH2-WC", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK")),
     PipeRun(uid="CBPW36AAAA", tag="PR-B-HW-BATH2", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(2, 3), ft(15, 6)),
                   pt(ft(2, 3), ft(16, 9.6)), pt(ft(2, 3), ft(16, 9.6))),
-            diameter=inch(0.75), material="pex",
+            diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8), ft(8), ft(8), ft(12)),
             serves=("FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK")),
     # The laundry pair rises inside W-M-BA2E, so each riser is split at the deck top
@@ -1848,23 +1869,23 @@ SUPPLY = [
     PipeRun(uid="CBPW37AAAA", tag="PR-B-CW-WASH", system=PipeSystem.WATER_COLD,
             path=(pt(ft(8), ft(16)), pt(ft(8), ft(20, 7.2)),
                   pt(ft(8), ft(20, 7.2)), pt(ft(8), ft(20, 7.2))),
-            diameter=inch(0.75), material="pex",
+            diameter=inch(0.75), material="copper", finish="lacquered",
             elevations=(ft(8, 1.2), ft(8, 1.2), ft(9), ft(12)),
             wall_refs=(None, None, "W-M-BA2E"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW38AAAA", tag="PR-B-HW-WASH", system=PipeSystem.WATER_HOT,
             path=(pt(m(1.88684), m(10.0015)), pt(ft(8), ft(21, 2.4)),
                   pt(ft(8), ft(21, 2.4)), pt(ft(8), ft(21, 2.4))),
-            diameter=inch(0.75), material="pex",
+            diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8), ft(8), ft(9), ft(12)),
             wall_refs=(None, None, "W-M-BA2E"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(29, 6.6), ft(15, 6)),
                   pt(ft(29, 6.6), ft(33, 7.2)), pt(ft(29, 6.6), ft(33, 7.2))),
-            diameter=inch(0.75), material="pex",
+            diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8), ft(8), ft(8), ft(12, 6)),
-            serves=("FX-M-KITCH-SINK",)),
+            serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
     # Second-storey groups: risers straight up through the deck to the wet walls above.
     # These two climb two storeys of wall to reach the hall bath, so each riser is split at
     # both storey lines — deck top ft(9) and the second floor ft(19) (basement-relative;
@@ -1875,7 +1896,7 @@ SUPPLY = [
             path=(pt(ft(5), ft(16)), pt(ft(4), ft(16, 9.6)), pt(ft(4), ft(26, 4)),
                   pt(ft(5, 7.2), ft(26, 4)), pt(ft(5, 7.2), ft(26, 4)),
                   pt(ft(5, 7.2), ft(26, 4)), pt(ft(5, 7.2), ft(26, 4))),
-            diameter=inch(0.75), material="pex",
+            diameter=inch(0.75), material="copper", finish="lacquered",
             elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(9), ft(19),
                         ft(21, 6)),
             wall_refs=(None, None, None, None, "W-M-STOS", "W-S-BD-N"),
@@ -1885,7 +1906,7 @@ SUPPLY = [
             path=(pt(m(1.88684), m(10.0015)), pt(ft(6, 2.4), ft(26, 4)),
                   pt(ft(6, 2.4), ft(26, 4)), pt(ft(6, 2.4), ft(26, 4)),
                   pt(ft(6, 2.4), ft(26, 4))),
-            diameter=inch(0.75), material="pex",
+            diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8), ft(8), ft(9), ft(19), ft(21, 6)),
             wall_refs=(None, None, "W-M-STOS2", "W-S-BD-N1B"),
             serves=("FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
@@ -1893,14 +1914,14 @@ SUPPLY = [
     PipeRun(uid="CBPW42AAAA", tag="PR-B-CW-SUITE", system=PipeSystem.WATER_COLD,
             path=(pt(ft(8), ft(16)), pt(ft(13, 7.2), ft(16, 10.8)),
                   pt(ft(13, 7.2), ft(16, 10.8))),
-            diameter=inch(0.75), material="pex",
+            diameter=inch(0.75), material="copper", finish="lacquered",
             elevations=(ft(8, 1.2), ft(8, 1.2), ft(21, 6)),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
     PipeRun(uid="CBPW43AAAA", tag="PR-B-HW-SUITE", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(14, 2.4), ft(16, 10.8)),
                   pt(ft(14, 2.4), ft(16, 10.8))),
-            diameter=inch(0.75), material="pex",
+            diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8), ft(8), ft(21, 6)),
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
     # The stair-foot bathroom, fed from the water-heater corner down the mechanical room's
@@ -1913,7 +1934,7 @@ SUPPLY = [
             path=(pt(m(1.88684), m(10.0015)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
                   pt(ft(16), ft(20, 3)), pt(ft(16), ft(21, 9.375)),
                   pt(ft(16), ft(21, 9.375))),
-            diameter=inch(0.5), material="pex",
+            diameter=inch(0.5), material="copper", finish="lacquered",
             elevations=(ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2), ft(8, 1.2),
                         ft(2, 6)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
@@ -1921,7 +1942,7 @@ SUPPLY = [
             path=(pt(m(1.88684), m(10.0015)), pt(ft(7, 3.6), ft(26)),
                   pt(ft(7, 3.6), ft(19, 9)), pt(ft(16), ft(19, 9)),
                   pt(ft(16), ft(21, 9.375)), pt(ft(16), ft(21, 9.375))),
-            diameter=inch(0.5), material="pex",
+            diameter=inch(0.5), material="copper", finish="lacquered",
             elevations=(ft(8), ft(8), ft(8), ft(8), ft(8), ft(2, 6)),
             serves=("FX-B-BATH-LAV",)),
     # The sauna shower's mixer, the first supply this room has ever had. Both legs tee off the
@@ -1935,20 +1956,278 @@ SUPPLY = [
     PipeRun(uid="CBPW46AAAA", tag="PR-B-CW-SAUNA", system=PipeSystem.WATER_COLD,
             path=(pt(ft(17, 4), ft(16)), pt(ft(17, 4), ft(12, 2)),
                   pt(ft(17, 4), ft(12, 2))),
-            diameter=inch(0.5), material="pex",
+            diameter=inch(0.5), material="copper", finish="lacquered",
             elevations=(ft(8, 1.2), ft(8, 1.2), ft(4, 6)),
             serves=("FX-B-SAUNA-SH",)),
     PipeRun(uid="CBPW47AAAA", tag="PR-B-HW-SAUNA", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(17, 4), ft(15, 6)),
                   pt(ft(17, 4), ft(11, 10)), pt(ft(17, 4), ft(11, 10))),
-            diameter=inch(0.5), material="pex",
+            diameter=inch(0.5), material="copper", finish="lacquered",
             elevations=(ft(8), ft(8), ft(8), ft(4, 6)),
             serves=("FX-B-SAUNA-SH",)),
+]
+
+# --- The two south-face wall hydrants (2026-08-01) -----------------------------------
+#
+# One branch, two hydrants, and the route is decided by a wall that is not there.
+#
+# A frost-free *wall* hydrant is fed from inside: its seat sits in the stud cavity and the
+# pipe reaching it has to arrive inside that cavity. On this house a supply cannot arrive
+# from below. The main-storey exterior wall's stud bay is at y 0.5"..6" off the sheathing
+# plane, and directly under it stands W-B-S1, 12" of cast concrete spanning y 0"..12" — a
+# riser through SL-M-DECK into that cavity would come up through the top of a bearing wall.
+# The same is true of W-M-C1 over W-B-CS on the centre line.
+#
+# So both hydrants are fed from *above*, out of the second floor's joist space, which is
+# framed (FS-SECOND, 11 7/8" I-joists) and reaches every exterior wall in the house. One
+# riser leaves the basement, and up there it splits: one leg drops down inside W-M-S1 to the
+# porch hydrant, the other rises into W-S-S1 to the balcony hydrant. Neither leg is ever
+# outboard of the wall's 4" of continuous exterior insulation, which is what makes a pipe in
+# this exterior cavity a warm pipe rather than a burst one.
+#
+# The riser stands in W-M-BDN1, a main-storey 2x4 partition (3.5" cavity — ample for 3/4"
+# PEX, the same clearance PR-B-CW-SBATH's W-M-STOS leg has) whose line at y=13'-4" is over
+# open basement ceiling at x=6', so its deck crossing (SP-M-CW-HYD) lands in the slab and
+# not on a wall below.
+HYDRANT_BRANCH_BASEMENT = [
+    # Two runs for one branch, because the material changes at the deck. The ceiling leg is
+    # hung in the open under cast concrete, so it is lacquered copper like everything else
+    # down here; from the slab up it is inside a wall and a joist bay, where nobody sees it
+    # and PEX's tolerance for a hard freeze is worth more than a finish.
+    PipeRun(uid="X4M2QP7B0K", tag="PR-B-CW-HYD", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(6), ft(16)), pt(ft(6), ft(13, 4))),
+            diameter=inch(0.75), material="copper", finish="lacquered",
+            elevations=(ft(8, 1.2), ft(8, 1.2)),
+            serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
+    PipeRun(uid="Z5NB8QMK2H", tag="PR-B-CW-HYD-RISER", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(6), ft(13, 4)), pt(ft(6), ft(13, 4)), pt(ft(6), ft(13, 4)),
+                  pt(ft(6), ft(13, 4))),
+            diameter=inch(0.75), material="pex",
+            # Basement-relative: 8'-1.2" is the ceiling trunk band, 9'-0" is the top of the
+            # 9" deck (0'-0" project), 18'-0" is the top plate of W-M-BDN1 (9'-0" project —
+            # main-storey partitions stop there, 9'-0" being the ceiling height), and
+            # 18'-3" is 9'-3" project, inside the second floor's joist space, whose 11 7/8"
+            # joists hang 9'-0 1/8" to 10'-0". The split at the plate is what
+            # `mep.wet_wall_occupancy` grades: a declared in-wall segment has to stay inside
+            # the wall's own z-extent, and a riser drawn straight from the deck to the joist
+            # bay escapes it by 3".
+            elevations=(ft(8, 1.2), ft(9), ft(18), ft(18, 3)),
+            wall_refs=(None, "W-M-BDN1", None),
+            serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
+]
+
+# The joist-space distribution and the two legs off it. Filed on ``main`` (datum 0'-0")
+# because these are the main storey's ceiling, and a main-relative elevation of 9'-3" reads
+# as the height it is; on ``second`` the same plane would have to be authored as -0'-9".
+#
+# The east–west leg at y=0'-9" runs *along* a joist bay rather than across one. The leg that
+# gets there from the riser crosses joists at x=6' and is drilled through their webs — 3/4"
+# PEX in an 11 7/8" I-joist web, which is inside every manufacturer's hole chart and is why
+# the branch is PEX here rather than the copper it becomes downstairs.
+HYDRANT_BRANCH_MAIN = [
+    PipeRun(uid="R9TC5VZ1WQ", tag="PR-M-CW-HYD-DIST", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(6), ft(13, 4)), pt(ft(6), ft(0, 9)), pt(ft(16, 8), ft(0, 9))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(9, 3), ft(9, 3), ft(9, 3)),
+            serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
+    # Porch leg: south into the wall's own plane (y=3 1/4", the 2x6 cavity's centre line),
+    # then straight down inside W-M-S1 to the hydrant's seat at 2'-0".
+    PipeRun(uid="B6HD0NKX3M", tag="PR-M-CW-PORCH-HYD", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(12), ft(0, 9)), pt(ft(12), ft(0, 3.25)), pt(ft(12), ft(0, 3.25))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(9, 3), ft(9, 3), ft(2)),
+            wall_refs=(None, "W-M-S1"),
+            serves=("FX-M-PORCH-HYD",)),
+    # Balcony leg: the same jog into the wall plane, then up. Split at 10'-0" because the
+    # second floor is between: below that line the pipe is crossing the deck and hosted by
+    # nothing, above it it is inside W-S-S1's cavity (which starts at 10'-0"), and
+    # `mep.wet_wall_occupancy` grades a declared segment against the wall's own z-extent.
+    PipeRun(uid="V2FJ8LRY6P", tag="PR-M-CW-BALC-HYD", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(16, 8), ft(0, 9)), pt(ft(16, 8), ft(0, 3.25)),
+                  pt(ft(16, 8), ft(0, 3.25)), pt(ft(16, 8), ft(0, 3.25))),
+            diameter=inch(0.75), material="pex",
+            elevations=(ft(9, 3), ft(9, 3), ft(10), ft(12)),
+            wall_refs=(None, None, "W-S-S1"),
+            serves=("FX-S-BALC-HYD",)),
+    # The barrel. This short copper leg is the hydrant's own metal tube plus the sleeve over
+    # it, modelled as a run so that the insulation has somewhere to be billed and so that
+    # `mep.exterior_hydrant_protection` has something to grade. It is the one place in the
+    # house where a supply pipe is *in* the envelope rather than behind it: 10" of metal
+    # from the seat in the stud cavity, out through 1/2" sheathing, 2" polyiso, 2" EPS and
+    # the rainscreen, to the escutcheon on the cladding face at y = -5". PEX stops at the
+    # seat — continuing in copper inboard would extend the bridge into the room.
+    PipeRun(uid="T8WQ3E5AZC", tag="PR-M-CW-PORCH-HYD-CU", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(12), ft(0, 3.25)), pt(ft(12), inch(-5))),
+            diameter=inch(0.75), material="copper",
+            insulation='1/2" closed-cell elastomeric sleeve, foil-faced, over the barrel',
+            elevations=(ft(2), ft(2)),
+            serves=("FX-M-PORCH-HYD",)),
+]
+
+# The balcony hydrant's barrel, filed on ``second`` (datum 10'-0") with the wall it pierces.
+HYDRANT_BRANCH_SECOND = [
+    PipeRun(uid="G7YB4XN2SD", tag="PR-S-CW-BALC-HYD-CU", system=PipeSystem.WATER_COLD,
+            path=(pt(ft(16, 8), ft(0, 3.25)), pt(ft(16, 8), inch(-5))),
+            diameter=inch(0.75), material="copper",
+            insulation='1/2" closed-cell elastomeric sleeve, foil-faced, over the barrel',
+            elevations=(ft(2), ft(2)),
+            serves=("FX-S-BALC-HYD",)),
+]
+
+# --- In-line supply devices (2026-08-01) ---------------------------------------------
+#
+# Everything below used to be prose. `notes/garage_hydrant.md` recorded the hydrant's
+# shutoff and vacuum breaker in a sentence, `mep.hydrant_freeze_depth` emitted an UNKNOWN
+# saying the model had no element for either, and the backflow preventer, the arrestors,
+# the main shutoff and the RO provision lived only in `plans/TODO.md`. `PipeAccessory` is
+# the element that makes them real; these are the fifteen the house actually has.
+#
+# An accessory with no `elevation` takes its host run's invert at the nearest vertex, which
+# is what a valve on a pipe is at. Only the ones that sit somewhere other than on the pipe's
+# own line — a stub rising to a cabinet, a breaker at a handle height — author one.
+SUPPLY_DEVICES_BASEMENT = [
+    # P2903.9.1. The service enters buried at -6'-0" and stays there all the way to the
+    # garage (PR-G-HYDRANT-CW *is* the service); the house tees off it at (5', 1') and rises
+    # to the basement ceiling, and this valve is on that riser at 4'-0" above the basement
+    # floor — head height in the mechanical room, reachable with one hand and no ladder,
+    # which is what "accessible" means and is not true of anything buried.
+    #
+    # The garage hydrant is upstream of it, on the service itself. That is deliberate rather
+    # than an oversight: the hydrant's own seat is 6' down and is its shutoff, and bringing
+    # the yard line up to a valve inside the house and back down would put a high point
+    # above frost in the middle of it — the exact failure `mep.hydrant_freeze_depth` exists
+    # to catch.
+    PipeAccessory(uid="N5PK9WQ2TB", tag="PA-B-MAIN-SHUTOFF",
+                  kind=PipeAccessoryKind.MAIN_SHUTOFF, pipe_ref="PR-B-CW-TRUNK",
+                  position=pt(ft(5), ft(1)), elevation=ft(4), accessible=True,
+                  room="RM-B-FURNACE",
+                  model='1 1/4" full-port bronze ball valve, lever handle',
+                  serves=("PR-B-CW-TRUNK",)),
+    # P2902, the owner's request (plans/TODO.md §Plumbing): backflow protection on the
+    # basement fixture connections. Two rather than one, because the two basement groups tee
+    # off different trunks in different rooms and no single point is upstream of both. These
+    # fixtures sit 9' below grade with the building drain leaving under the slab, which is
+    # the condition that makes a siphon back into the supply worth a device rather than
+    # trusting each fixture's own air gap.
+    PipeAccessory(uid="H2VD7MCX4L", tag="PA-B-BFP-BATH",
+                  kind=PipeAccessoryKind.BACKFLOW_PREVENTER, pipe_ref="PR-B-CW-BATH",
+                  position=pt(ft(7), ft(26)), room="RM-B-FURNACE", accessible=True,
+                  model='1/2" dual-check backflow preventer, testable',
+                  serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
+    PipeAccessory(uid="Q8RJ1ZFN6V", tag="PA-B-BFP-SAUNA",
+                  kind=PipeAccessoryKind.BACKFLOW_PREVENTER, pipe_ref="PR-B-CW-SAUNA",
+                  position=pt(ft(17, 4), ft(16)), room="RM-B-SAUNA", accessible=True,
+                  model='1/2" dual-check backflow preventer, testable',
+                  serves=("FX-B-SAUNA-SH",)),
+    # P2903.5. The washer slams two solenoids shut, so it takes two arrestors — one on each
+    # supply. An arrestor on the cold alone leaves the hot line to hammer, which is the
+    # failure this pair exists to prevent and the reason the check grades per system rather
+    # than per appliance. Both sit at the machine's own riser, within the 6' of the quick-
+    # closing valve the manufacturers specify.
+    PipeAccessory(uid="F3ZC6TWL9N", tag="PA-M-WASH-WHA-CW",
+                  kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-B-CW-WASH",
+                  position=pt(ft(8), ft(20, 7.2)), room="RM-M-LAUNDRY",
+                  model="Sioux Chief MiniRester 660-G class, size A",
+                  serves=("FX-M-LAUNDRY",)),
+    PipeAccessory(uid="K7XB2VDR5H", tag="PA-M-WASH-WHA-HW",
+                  kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-B-HW-WASH",
+                  position=pt(ft(8), ft(21, 2.4)), room="RM-M-LAUNDRY",
+                  model="Sioux Chief MiniRester 660-G class, size A",
+                  serves=("FX-M-LAUNDRY",)),
+    # The dishwasher's fill solenoid is the other quick-closing valve in the house. It takes
+    # hot water only, so it takes one arrestor, on the kitchen hot branch at the sink base.
+    PipeAccessory(uid="W4NL8QSJ0M", tag="PA-M-DW-WHA-HW",
+                  kind=PipeAccessoryKind.WATER_HAMMER_ARRESTOR, pipe_ref="PR-B-HW-KITCH",
+                  position=pt(ft(29, 6.6), ft(33, 7.2)), room="RM-M-LIVING",
+                  model="Sioux Chief MiniRester 660-G class, size A",
+                  serves=("APPL-M-DW",)),
+    # The branch isolation for both wall hydrants, at the tee where their shared riser
+    # leaves the cold trunk. Not a code item — the hydrants' own seats are their shutoffs
+    # and neither is winterised — but a hose bib is the thing most likely to need a valve
+    # turned off in a hurry, and this is the last point where one valve reaches both.
+    PipeAccessory(uid="Y6MT3HKB1F", tag="PA-B-HYD-ISO", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-B-CW-HYD", position=pt(ft(6), ft(16)), accessible=True,
+                  room="RM-B-GYM", model='3/4" quarter-turn ball valve',
+                  serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
+]
+
+# The garage yard hydrant's two devices, on the service run they belong to (which is filed
+# on ``main``, → WATER_SUPPLY above). The seat is the hydrant's own buried valve at -6'-0" —
+# it takes the run's elevation, which is exactly the 72" bury `mep.hydrant_freeze_depth`
+# grades — and the vacuum breaker screws onto the outlet at the handle, 2'-6" up.
+SUPPLY_DEVICES_GARAGE = [
+    PipeAccessory(uid="C9GW5PXV2R", tag="PA-G-HYD-SEAT", kind=PipeAccessoryKind.SHUTOFF,
+                  pipe_ref="PR-G-HYDRANT-CW", position=pt(ft(1, 6), ft(62)),
+                  room="RM-GARAGE", model="hydrant's own compression seat, 6' bury",
+                  serves=("FX-G-HYDRANT",)),
+    PipeAccessory(uid="J1DS4RQZ8X", tag="PA-G-HYD-VB",
+                  kind=PipeAccessoryKind.VACUUM_BREAKER, pipe_ref="PR-G-HYDRANT-CW",
+                  position=pt(ft(1, 6), ft(62)), elevation=ft(2, 6), room="RM-GARAGE",
+                  model="screw-on hose-bib vacuum breaker, ASSE 1011",
+                  serves=("FX-G-HYDRANT",)),
+]
+
+# The porch hydrant's three, and the RO provision. All on ``main``.
+SUPPLY_DEVICES_MAIN = [
+    PipeAccessory(uid="A5VK7BND3T", tag="PA-M-PORCH-HYD-SEAT",
+                  kind=PipeAccessoryKind.SHUTOFF, pipe_ref="PR-M-CW-PORCH-HYD",
+                  position=pt(ft(12), ft(0, 3.25)), room="RM-M-BED",
+                  model="hydrant's own compression seat, inboard end of the barrel",
+                  serves=("FX-M-PORCH-HYD",)),
+    PipeAccessory(uid="E2QH9LCW6Y", tag="PA-M-PORCH-HYD-VB",
+                  kind=PipeAccessoryKind.VACUUM_BREAKER, pipe_ref="PR-M-CW-PORCH-HYD-CU",
+                  position=pt(ft(12), inch(-5)),
+                  model="integral anti-siphon vacuum breaker, ASSE 1052",
+                  serves=("FX-M-PORCH-HYD",)),
+    # The penetration itself. This is the element that says "this hydrant is protected by
+    # the envelope rather than by bury depth", which is what exempts it from
+    # `mep.hydrant_freeze_depth` and hands it to `mep.exterior_hydrant_protection`. Its
+    # `install_parts` are the three loose items the TODO asked for by name: nobody stocks
+    # them as a hydrant, and they are properties of this hole in this wall.
+    PipeAccessory(uid="U3FP6ZMG8B", tag="PA-M-PORCH-HYD-SEAL",
+                  kind=PipeAccessoryKind.PENETRATION_SEAL, pipe_ref="PR-M-CW-PORCH-HYD-CU",
+                  position=pt(ft(12), ft(0)),
+                  model="gasketed escutcheon over a foamed barrel penetration",
+                  install_parts=("silicone gasket, hydrant escutcheon",
+                                 "plastic mounting bracket, non-conductive",
+                                 'closed-cell spray foam, 1/4" annulus around the barrel'),
+                  serves=("FX-M-PORCH-HYD",)),
+    # P2903 has nothing to say about this one: it is a capped 1/4" tee off the kitchen cold
+    # riser, left for a reverse-osmosis unit nobody has bought yet. No fixture and no
+    # fixture units, because a capped stub draws no water — what it buys is that the wall
+    # does not have to be opened the day one is.
+    PipeAccessory(uid="L8CY2WRT4K", tag="PA-M-RO-STUB", kind=PipeAccessoryKind.RO_STUB,
+                  pipe_ref="PR-B-CW-TRUNK", position=pt(ft(29, 0.6), ft(34, 1.2)),
+                  elevation=ft(2, 6), room="RM-M-LIVING", accessible=True,
+                  model='1/4" compression stop on a capped tee, in the sink base'),
+]
+
+# The balcony hydrant's three, on ``second``.
+SUPPLY_DEVICES_SECOND = [
+    PipeAccessory(uid="S6BN1JXV7Q", tag="PA-S-BALC-HYD-SEAT",
+                  kind=PipeAccessoryKind.SHUTOFF, pipe_ref="PR-M-CW-BALC-HYD",
+                  position=pt(ft(16, 8), ft(0, 3.25)), room="RM-S-PLANT",
+                  model="hydrant's own compression seat, inboard end of the barrel",
+                  serves=("FX-S-BALC-HYD",)),
+    PipeAccessory(uid="P0GZ5DKF9W", tag="PA-S-BALC-HYD-VB",
+                  kind=PipeAccessoryKind.VACUUM_BREAKER, pipe_ref="PR-S-CW-BALC-HYD-CU",
+                  position=pt(ft(16, 8), inch(-5)),
+                  model="integral anti-siphon vacuum breaker, ASSE 1052",
+                  serves=("FX-S-BALC-HYD",)),
+    PipeAccessory(uid="M4TQ8HRC1Z", tag="PA-S-BALC-HYD-SEAL",
+                  kind=PipeAccessoryKind.PENETRATION_SEAL, pipe_ref="PR-S-CW-BALC-HYD-CU",
+                  position=pt(ft(16, 8), ft(0)),
+                  model="gasketed escutcheon over a foamed barrel penetration",
+                  install_parts=("silicone gasket, hydrant escutcheon",
+                                 "plastic mounting bracket, non-conductive",
+                                 'closed-cell spray foam, 1/4" annulus around the barrel'),
+                  serves=("FX-S-BALC-HYD",)),
 ]
 
 MAIN_ELEMENTS = [*SLEEVES, *SUPPLY_SLEEVES, *STACK_SLEEVES, *SECOND_DRAINS, *CONDENSATE_MAIN,
                  *LAUNDRY_MAIN,
                  *VENT_BRANCHES_MAIN, *MAIN_DEVICES, *WATER_SUPPLY, *GARAGE_SLEEVES,
+                 *HYDRANT_BRANCH_MAIN, *SUPPLY_DEVICES_MAIN, *SUPPLY_DEVICES_GARAGE,
                  *DUCTS_MAIN, *REGISTERS_MAIN]
 # The basement's two plumbing vents. Both are offset vents to VR-M-RADON-VENT's shared
 # radon/plumbing chase at (1', 34'-6"), because neither room has a wet wall that continues to
@@ -2003,13 +2282,15 @@ VENT_BRANCHES_BASEMENT = [
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
 ]
 
-BASEMENT_ELEMENTS = [*DRAINS, *CONDENSATE, *SUPPLY, *WALL_SLEEVES, *SLAB_STUBS,
+BASEMENT_ELEMENTS = [*DRAINS, *CONDENSATE, *SUPPLY, *HYDRANT_BRANCH_BASEMENT,
+                     *SUPPLY_DEVICES_BASEMENT, *WALL_SLEEVES, *SLAB_STUBS,
                      *VENT_BRANCHES_BASEMENT,
                      *EQUIPMENT, *PANEL, *BASEMENT_DEVICES,
                      *RADON_SUMP, *VENT_RISERS, *VENT_CLAMPS, *DUCTS_BASEMENT,
                      *REGISTERS_BASEMENT]
 SECOND_ELEMENTS = [*DUCTS, *DUCTS_HVAC_SECOND, *REGISTERS, *REGISTERS_SECOND,
-                   *REGISTERS_HVAC_SECOND, *VENT_BRANCHES_SECOND, *SECOND_DEVICES]
+                   *REGISTERS_HVAC_SECOND, *VENT_BRANCHES_SECOND, *SECOND_DEVICES,
+                   *HYDRANT_BRANCH_SECOND, *SUPPLY_DEVICES_SECOND]
 ATTIC_ELEMENTS = [*NEMA_BOX, *NEMA_CLAMP, *LEADER_CLAMPS,
                   *ATTIC_DEVICES, *DUCTS_ATTIC, *DUCTS_HVAC_ATTIC,
                   *REGISTERS_ATTIC, *REGISTERS_HVAC_ATTIC]

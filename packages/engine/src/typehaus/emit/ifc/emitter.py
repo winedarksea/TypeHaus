@@ -21,7 +21,7 @@ from typehaus.emit.ifc import lowlevel as ll
 from typehaus.emit.ifc.electrical import (emit_conduits, emit_light_runs,
                                           emit_solar_panels)
 from typehaus.emit.ifc.roof import emit_roof, member_class, member_representation
-from typehaus.emit.trades import DRAINAGE_CATEGORIES
+from typehaus.emit.trades import DRAINAGE_CATEGORIES, PIPE_ACCESSORY_CATEGORIES
 from typehaus.emit.room_floor import room_floor_elevation
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
@@ -69,6 +69,12 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
 
     drainage_elements = []
     for solid in sorted(model.solids, key=lambda item: item.uid):
+        # Pipe accessories have a dedicated emitter (``_emit_pipe_accessories``) that knows
+        # which IfcValve PredefinedType each kind is. Emitting the solid too would put a
+        # second, untyped copy of every shutoff in the file — and, since none of these
+        # categories is in ``_SOLID_IFC_CLASS``, that copy would be an ``IfcFooting``.
+        if (solid.category or "").lower() in PIPE_ACCESSORY_CATEGORIES:
+            continue
         element = _emit_solid(f, body, solid, storeys, project_uuid, model)
         if (solid.category or "").lower() in DRAINAGE_CATEGORIES:
             drainage_elements.append(element)
@@ -96,8 +102,19 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     _emit_furniture(f, body, model, storeys, project_uuid)
     _emit_resolved_placeables(f, body, model, storeys, project_uuid)
 
+    # The domestic-water systems, built the way the stormwater one above is: the segments
+    # and the devices on them are collected as they are emitted, then grouped. Two systems
+    # rather than one, because hot and cold are two systems in every tool that reads this —
+    # a recirculation loop, an insulation requirement and a mixing valve all belong to one
+    # of them and not the other.
+    supply_elements: dict[str, list] = {"water_cold": [], "water_hot": []}
     for run in sorted(model.pipe_runs, key=lambda item: item.uid):
-        _emit_pipe_run(f, body, run, storeys, project_uuid)
+        segments = _emit_pipe_run(f, body, run, storeys, project_uuid)
+        supply_elements.get(run.system, []).extend(segments)
+    for accessory, entity in _emit_pipe_accessories(f, body, model, storeys, project_uuid):
+        supply_elements.get(accessory.system or "", []).append(entity)
+    for system_key, name in _SUPPLY_SYSTEM_NAMES.items():
+        _emit_supply_system(f, building, name, supply_elements[system_key])
 
     for sleeve in sorted(model.sleeves, key=lambda item: item.uid):
         _emit_sleeve(f, body, sleeve, storeys, project_uuid)
@@ -680,6 +697,96 @@ def _emit_stormwater_system(f: Any, building: Any, elements: list) -> Any:
     return system
 
 
+#: ``PipeSystem`` value → the ``IfcDistributionSystem`` it belongs to, as
+#: ``(system name, PredefinedType)``. Sanitary and rainwater stay deferred (plans/TODO.md);
+#: these two are the ones the supply-protection work needs, and they are the two IFC has
+#: unambiguous enum members for.
+_SUPPLY_SYSTEM_TYPES = {
+    "water_cold": ("DomesticColdWater", "DOMESTICCOLDWATER"),
+    "water_hot": ("DomesticHotWater", "DOMESTICHOTWATER"),
+}
+_SUPPLY_SYSTEM_NAMES = {key: name for key, (name, _) in _SUPPLY_SYSTEM_TYPES.items()}
+
+# What a ``PipeAccessoryKind`` becomes in IFC. The valves are ``IfcValve`` with the
+# PredefinedType that says which valve it is — ISOLATING for a shutoff, DOUBLECHECK for a
+# backflow assembly, ANTIVACUUM for a hose-bib vacuum breaker, DRAWOFFCOCK for the capped RO
+# tee (a draw-off point that is not yet drawn off). The other two are not valves at all: an
+# arrestor is a sealed chamber in the line and a penetration seal is a fitting around it, so
+# both are ``IfcPipeFitting/USERDEFINED`` with an ObjectType naming what they are — inventing
+# a valve type for either would put a device in a valve schedule that nobody can turn.
+_ACCESSORY_IFC_CLASS: dict[str, tuple[str, str]] = {
+    "main_shutoff": ("IfcValve", "ISOLATING"),
+    "shutoff": ("IfcValve", "ISOLATING"),
+    "backflow_preventer": ("IfcValve", "DOUBLECHECK"),
+    "vacuum_breaker": ("IfcValve", "ANTIVACUUM"),
+    "ro_stub": ("IfcValve", "DRAWOFFCOCK"),
+    "water_hammer_arrestor": ("IfcPipeFitting", "USERDEFINED"),
+    "penetration_seal": ("IfcPipeFitting", "USERDEFINED"),
+}
+_ACCESSORY_OBJECT_TYPE = {
+    "water_hammer_arrestor": "WATERHAMMERARRESTOR",
+    "penetration_seal": "PENETRATIONSEAL",
+}
+
+
+def _emit_pipe_accessories(f: Any, body: Any, model: ResolvedModel,
+                           storeys: dict[str, Any], project_uuid: Any) -> list[tuple]:
+    """Every in-line supply device as its own typed IFC element.
+
+    Returns ``(accessory, entity)`` pairs so the caller can file each into the hot or cold
+    system its host run belongs to. The box representation is the resolver's marker solid,
+    rebuilt here rather than taken from ``model.solids`` because the generic solid loop
+    deliberately skips this category — a device that fell through ``_SOLID_IFC_CLASS`` would
+    export as an ``IfcFooting``, which is exactly the wart this emitter exists to avoid.
+    """
+    out: list[tuple] = []
+    for accessory in sorted(model.pipe_accessories, key=lambda item: item.uid):
+        ifc_class, predefined = _ACCESSORY_IFC_CLASS.get(
+            accessory.kind, ("IfcPipeFitting", "USERDEFINED"))
+        element = ll.create_entity(f, ifc_class, name=accessory.tag)
+        element.PredefinedType = predefined
+        object_type = _ACCESSORY_OBJECT_TYPE.get(accessory.kind)
+        if object_type is not None:
+            element.ObjectType = object_type
+        element.GlobalId = derive_guid(project_uuid, accessory.uid)
+        solid = next((s for s in model.solids
+                      if s.tag == accessory.tag
+                      and s.category in PIPE_ACCESSORY_CATEGORIES), None)
+        if solid is not None and solid.outline:
+            _assign_representation(f, element, ll.add_prism_from_profile(
+                f, body, solid.outline, solid.z1_m - solid.z0_m, solid.z0_m))
+        # The category is per-device (``emit/trades.py``), so it carries into the file as the
+        # device rather than as the family — a downstream reader filtering PSET_SOURCE gets
+        # "vacuum_breaker", the same string every other consumer of this solid sees.
+        ll.ensure_pset(f, element, PSET_SOURCE, {
+            "uid": accessory.uid, "tag": accessory.tag, "category": accessory.kind})
+        ll.ensure_pset(f, element, "TypeHaus_PipeAccessory", {
+            "kind": accessory.kind, "model": accessory.model,
+            "pipe_ref": accessory.pipe_ref or "", "system": accessory.system or "",
+            "accessible": accessory.accessible, "room": accessory.room or "",
+            "serves": ", ".join(accessory.serves),
+            "install_parts": ", ".join(accessory.install_parts)})
+        ll.assign_container(f, element, storeys[accessory.storey])
+        out.append((accessory, element))
+    return out
+
+
+def _emit_supply_system(f: Any, building: Any, name: str, elements: list) -> Any:
+    """Group one temperature's segments and devices into an ``IfcDistributionSystem``.
+
+    The same argument ``_emit_stormwater_system`` makes: without this the trunk, its
+    branches and the shutoff on it are unrelated proxies that happen to be near each other,
+    and a BIM tool's system browser shows nothing at all under domestic water.
+    """
+    if not elements:
+        return None
+    key = next(k for k, n in _SUPPLY_SYSTEM_NAMES.items() if n == name)
+    system = ll.create_system(f, name, _SUPPLY_SYSTEM_TYPES[key][1])
+    ll.assign_to_group(f, system, elements)
+    ll.serves_building(f, system, building)
+    return system
+
+
 def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_uuid: Any,
                 model: Any = None) -> Any:
     """One resolved solid as its IFC element. Returns it, so systems can group members."""
@@ -853,10 +960,15 @@ def _emit_stair(f: Any, body: Any, stair: Any, storeys: dict[str, Any], project_
         ll.aggregate(f, element, members)
 
 
-def _emit_pipe_run(f: Any, body: Any, run: Any, storeys: dict[str, Any], project_uuid: Any) -> None:
+def _emit_pipe_run(f: Any, body: Any, run: Any, storeys: dict[str, Any],
+                   project_uuid: Any) -> list:
     """One IfcPipeSegment per path segment — a plan rectangle of width ``diameter_m``
     around the centerline, extruded ``diameter_m`` tall at the segment's interpolated
-    invert (a boxy placeholder profile, not a true cylindrical sweep, → Phase 2 spec)."""
+    invert (a boxy placeholder profile, not a true cylindrical sweep, → Phase 2 spec).
+
+    Returns the segments, so the caller can group a run's pieces into the
+    ``IfcDistributionSystem`` its system belongs to."""
+    segments: list = []
     half = run.diameter_m / 2.0
     cumulative = 0.0
     z_m = getattr(run, "z_m", None)
@@ -882,6 +994,7 @@ def _emit_pipe_run(f: Any, body: Any, run: Any, storeys: dict[str, Any], project
             height, base = run.diameter_m, z0 - half
         child_key = f"seg-{index:02d}"
         element = ll.create_entity(f, "IfcPipeSegment", name=f"{run.tag}/{child_key}")
+        segments.append(element)
         element.GlobalId = derive_child_guid(project_uuid, run.uid, child_key)
         _assign_representation(f, element, ll.add_prism_from_profile(
             f, body, profile, height, base,
@@ -890,8 +1003,13 @@ def _emit_pipe_run(f: Any, body: Any, run: Any, storeys: dict[str, Any], project
         ll.ensure_pset(f, element, "TypeHaus_Pipe", {
             "system": run.system, "diameter_m": run.diameter_m,
             "slope": _slope_text(run),
+            # Blank rather than absent where unset: a pset key that comes and goes makes a
+            # schedule column that comes and goes.
+            "material": run.material or "", "finish": run.finish or "",
+            "insulation": run.insulation or "",
         })
         ll.assign_container(f, element, storeys[run.storey])
+    return segments
 
 
 def _interpolated_invert(run: Any, from_len: float, to_len: float) -> float:

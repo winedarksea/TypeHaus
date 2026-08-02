@@ -7,6 +7,7 @@
 import type { FootingBedding, Floor, Model, Roof, Solid, SolarPanel, Vec2 } from "../model/types";
 import { formatFtIn } from "../model/geometry";
 import type { LocatedMember } from "../model/memberIdentity";
+import { solidCategoryLabel } from "../three/solidMaterials";
 import { useStore } from "../state/store";
 import { Provenance } from "./Provenance";
 
@@ -37,8 +38,11 @@ function DerivedNote({ source }: { source: string }) {
 
 export function SolidInspector({ solid }: { solid: Solid }) {
   return <div>
-    <h3>{solid.category} · {solid.tag}</h3>
+    <h3>{solidCategoryLabel(solid.category)} · {solid.tag}</h3>
     <div className="kv">
+      {/* Heading is the human name; the raw category stays on the row beneath it, because
+          it is the key every palette, trade table and take-off is written against and a
+          reader chasing one needs to see it spelled the way the code spells it. */}
       <span className="k">Category</span><span>{solid.category}</span>
       <span className="k">Assembly</span><span>{solid.assembly ?? "—"}</span>
       <span className="k">Plan extent</span><PlanExtent points={solid.outline} />

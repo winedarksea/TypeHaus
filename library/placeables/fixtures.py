@@ -156,6 +156,36 @@ WALL_HYDRANT = FixtureType(
            "immersion), and a screw-on hose-bib vacuum breaker on the outlet — required "
            "backflow protection for a hose connection.",
 )
+# The other way to make a hydrant frost-free, and the one a wall in a heated building
+# allows. ``WALL_HYDRANT`` above is a *yard* hydrant: its seat is 6' down, below the frost
+# line, and the barrel drains to it. This one's seat is at the inboard end of the barrel,
+# inside the conditioned envelope, and the barrel pitches outward so it drains itself the
+# moment the handle closes. There is no bury depth to specify because there is no bury —
+# which is why ``mep.hydrant_freeze_depth`` exempts these and
+# ``mep.exterior_hydrant_protection`` grades them on the penetration instead.
+#
+# What that trades away is the wall it goes through. A metal tube from outside air to inside
+# air is a thermal bridge, so the installation is as much of the product as the hydrant is:
+# transition to PEX at the seat rather than continuing in metal, sleeve the barrel, and seal
+# the hole with a gasket, a bracket and closed-cell foam. Those parts ride the
+# ``PipeAccessory(PENETRATION_SEAL)`` at each hydrant, not this type — the same hydrant
+# through a different wall takes a different kit.
+#
+# ``mount`` is WALL at 24": the handle stands two feet over whatever deck the hydrant serves,
+# which is the height you can get a hose fitting onto without kneeling.
+WALL_HYDRANT_SELF_DRAINING = FixtureType(
+    tag="FX-HYDRANT-SD34", name='Self-draining frost-free wall hydrant, 3/4", anti-siphon',
+    footprint=(inch(6), inch(6)), height=inch(8), plan_symbol="hydrant",
+    needs=frozenset({Service.WATER_COLD}),
+    mount=Mount(kind=MountKind.WALL, elevation=inch(24)),
+    source="Self-draining frost-free wall hydrant class (Woodford Model 22 / Prier C-234 "
+           'and similar), 3/4" inlet, integral anti-siphon vacuum breaker, barrel length '
+           "chosen for the wall stack it passes (here 2x6 + 4\" continuous exterior "
+           "insulation + rainscreen ~= 10\"). The seat sits inside the conditioned "
+           "envelope and the barrel pitches outward to drain; specify the PEX transition "
+           "at the seat, a sleeve over the barrel, and the manufacturer's gasketed "
+           "escutcheon over a foamed penetration.",
+)
 
 # --- laundry ------------------------------------------------------------------------
 # The freestanding utility tub: a deep single basin in its own cabinet, standing on the floor
@@ -182,4 +212,4 @@ LAUNDRY_SINK = FixtureType(
 
 STARTER_FIXTURE_TYPES = (TOILET, LAVATORY, VANITY, TUB, TUB_SHOWER, SHOWER, KITCHEN_SINK,
                          FLOOR_DRAIN, TOILET_WALL_HUNG, LAVATORY_COMPACT, WALL_HYDRANT,
-                         LAUNDRY_SINK)
+                         WALL_HYDRANT_SELF_DRAINING, LAUNDRY_SINK)

@@ -12,14 +12,17 @@ from __future__ import annotations
 import math
 
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.enums import DuctRouting, LuminaireForm, Service
-from typehaus.model.mep import ConduitRun, DuctRun, LightRun, PipeRun, SleevePenetration
+from typehaus.model.enums import (DuctRouting, LuminaireForm, PipeAccessoryKind,
+                                   Service)
+from typehaus.model.mep import (ConduitRun, DuctRun, LightRun, PipeAccessory, PipeRun,
+                                SleevePenetration)
 from typehaus.model.spatial import Appliance, Fixture
 from typehaus.quantities import inch
 from typehaus.resolve.geometry import circle_outline, length, sub
 from typehaus.resolve.round_solids import PIPE_FACETS, sloped_run_bands
 from typehaus.resolve.model import (ResolvedConduitRun, ResolvedDuct, ResolvedLightRun,
-                                    ResolvedModel, ResolvedPipeRun, ResolvedSleeve)
+                                    ResolvedModel, ResolvedPipeAccessory, ResolvedPipeRun,
+                                    ResolvedSleeve, ResolvedSolid)
 from typehaus.resolve.placeables import resolved_mount_elevation
 
 _JOIST_BREADTH_M = inch(1.5).meters
@@ -45,6 +48,13 @@ def resolve_mep(model: ResolvedModel) -> list[Finding]:
                 findings.extend(_resolve_conduit_run(model, element, storey.tag))
             elif isinstance(element, LightRun):
                 findings.extend(_resolve_light_run(model, element, storey))
+    # Accessories last: each one locates itself on a resolved run, so every run in the
+    # model — not just this storey's — must already exist. A basement trunk carries the
+    # main-storey seal at a hydrant two floors up.
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            if isinstance(element, PipeAccessory):
+                findings.extend(_resolve_pipe_accessory(model, element, storey))
     return findings
 
 
@@ -225,8 +235,81 @@ def _resolve_pipe_run(model: ResolvedModel, run: PipeRun, storey) -> list[Findin
         length_m=developed, serves=tuple(run.serves),
         z_m=tuple(z) if z is not None else None,
         wall_refs=wall_refs, material=run.material,
+        finish=run.finish, insulation=run.insulation,
     ))
     return findings
+
+
+#: The accessory box, in metres. A valve body is not a pipe and is not to scale with one —
+#: it is drawn as a marker you can find in the 3D view and click, the way a sump pit is.
+_ACCESSORY_BOX = (inch(4).meters, inch(4).meters, inch(6).meters)
+
+#: A solid's category is what every consumer *labels* it with — the 3D inspector's heading,
+#: the ``structural_solids`` rollup, the palette. "pipe_accessory" is the family, and a
+#: family name is a useless label: clicking the hose bib on the balcony would say "pipe
+#: accessory", which is true of a shutoff, a backflow preventer and a can of foam alike. So
+#: each kind carries its own category, straight off the enum, and the family stays available
+#: as a set (``emit/trades.py::PIPE_ACCESSORY_CATEGORIES``) for the consumers that do want
+#: to treat them alike.
+def _accessory_category(kind: PipeAccessoryKind) -> str:
+    return kind.value
+
+
+def _resolve_pipe_accessory(model: ResolvedModel, el: PipeAccessory,
+                            storey) -> list[Finding]:
+    """Locate an in-line device on its host run and give it a solid.
+
+    The host run is required: an accessory's system, bore and (usually) its elevation all
+    come from the pipe it sits on, and one floating in space is an authoring slip rather
+    than a device — it would bill, schedule and export as real while protecting nothing.
+    """
+    host = next((r for r in model.pipe_runs if r.tag == el.pipe_ref), None)
+    if host is None:
+        return [Finding(
+            severity=Severity.ERROR, check_id="integrity.pipe_accessory_host",
+            message=(f"pipe accessory {el.tag} references pipe_ref={el.pipe_ref!r}, "
+                     "which is not a resolved PipeRun"),
+            element_tags=(el.tag,), result=Result.FAIL)]
+    cx, cy = el.position.xy_m
+    if el.elevation is not None:
+        z = storey.elevation.meters + el.elevation.meters
+    else:
+        z = _host_z_at(host, (cx, cy))
+        if z is None:
+            return [Finding(
+                severity=Severity.ERROR, check_id="integrity.pipe_accessory_elevation",
+                message=(f"pipe accessory {el.tag} authors no elevation and its host run "
+                         f"{host.tag} carries none either — nothing to fall back to"),
+                element_tags=(el.tag, host.tag), result=Result.FAIL)]
+    bx, by, bz = _ACCESSORY_BOX
+    model.pipe_accessories.append(ResolvedPipeAccessory(
+        uid=el.uid, tag=el.tag, storey=storey.tag, kind=el.kind.value,
+        position=(cx, cy), z_m=z, pipe_ref=host.tag, system=host.system,
+        diameter_m=host.diameter_m, serves=tuple(el.serves), accessible=el.accessible,
+        room=el.room, wall_ref=el.wall_ref, model=el.model,
+        install_parts=tuple(el.install_parts),
+    ))
+    model.solids.append(ResolvedSolid(
+        uid=el.uid or f"{el.tag}-acc", tag=el.tag, storey=storey.tag,
+        category=_accessory_category(el.kind),
+        outline=((cx - bx / 2.0, cy - by / 2.0), (cx + bx / 2.0, cy - by / 2.0),
+                 (cx + bx / 2.0, cy + by / 2.0), (cx - bx / 2.0, cy + by / 2.0)),
+        z0_m=z - bz / 2.0, z1_m=z + bz / 2.0,
+    ))
+    return []
+
+
+def _host_z_at(host: ResolvedPipeRun, point: tuple[float, float]) -> float | None:
+    """The host run's invert at its vertex nearest ``point``.
+
+    Nearest *vertex* rather than an interpolation along the segment: a valve is authored at
+    a fitting, and a fitting is a vertex. Interpolating would put a shutoff at the elevation
+    of the sloping leg it is beside rather than of the tee it is on."""
+    if host.z_m is None:
+        return None
+    best = min(range(len(host.path)),
+               key=lambda i: length(sub(host.path[i], point)))
+    return host.z_m[best]
 
 
 _CONCRETE_SOLID_CATEGORIES = ("slab", "footing")

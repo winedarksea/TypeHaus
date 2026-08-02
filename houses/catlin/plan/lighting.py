@@ -578,6 +578,30 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH", rotation=deg(180),
                      controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
+    # The lit shower niche (plans/TODO.md §Plumbing: "Have lighting in the shower niche of
+    # master bedroom, it looks cool, Schluter-KERDI-BOARD-SNLT").
+    #
+    # It goes in W-S-C2C, the east wall FX-S-SUITEBATH-TUBSH's alcove backs onto — the one
+    # wall of the alcove that is neither the room's glazed south side nor a door. The tape
+    # is 2'-4" of the 28"-wide niche's head channel, centred on the alcove's y 17'-0"..22'-0"
+    # at y=19'-6", so it lights the shelf from above rather than glaring out of it.
+    # x=17'-9" is the recess face, 3" proud of the wall centre line.
+    #
+    # Head at 5'-0": the niche sill sits at 4'-0", which clears the tub deck by 2'-4" and
+    # puts a bottle at hand height standing up, and the channel is at its 1'-0" head.
+    #
+    # 24V like every other tape in the house, so it has no branch circuit of its own — its
+    # driver does. 2'-4" at 3 W/ft is 7 W; the 60 W supply is the smallest catalog size and
+    # it sits in the ceiling above, outside the shower zone, where it can be serviced.
+    LightRun(uid="QRS0004AAA", tag="LR-S-NICHE", type_ref="ED-T-LT-NICHE-SNLT",
+             path=(pt(ft(17, 9), ft(18, 4)), pt(ft(17, 9), ft(20, 8))),
+             room="RM-S-SUITEBATH", psu_ref="ED-S-NICHE-PSU",
+             controlled_by=("ED-S-SUITEBATH-SW",),
+             mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+    ElectricalDevice(uid="QTS000E1AA", tag="ED-S-NICHE-PSU", kind=DeviceKind.JUNCTION_BOX,
+                     position=pt(ft(16, 6), ft(21, 6)), type_ref="ED-T-LT-PSU-60",
+                     circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH",
+                     mount=Mount(kind=MountKind.CEILING)),
 
     # RM-S-VANITY: two lavatories, two mirror lights, both on the north wet wall.
     ElectricalDevice(uid="QTS000FAAA", tag="ED-S-VANITY-MIRROR1", kind=DeviceKind.LIGHT,

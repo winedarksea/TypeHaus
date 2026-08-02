@@ -95,7 +95,11 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "bug_screens",
                         # Stormwater by the foot and the piece: gutter, leader, trench,
                         # soakaway. Billed only as cubic feet of aluminium and stone before.
-                        "drainage"}
+                        "drainage",
+                        # The supply system's protection budget and the hot-line
+                        # insulation, neither of which anything could see before
+                        # `PipeAccessory` and `PipeRun.insulation` existed.
+                        "plumbing_specialties", "install_parts", "pipe_insulation"}
     assert all(section for section in bom.values()), "no BOM section may come back empty"
     # The framing section still reconciles 1:1 with the resolved members.
     assert sum(int(row["pieces"]) for row in bom["framing"]) == len(catlin_model.all_members())
@@ -141,7 +145,8 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "construction_returns": ("construction_returns",),
     "floor_heat": ("floor_heat",),
     "rooms": ("floor_finishes",),
-    "pipe_runs": ("pipe_runs",),
+    "pipe_runs": ("pipe_runs", "pipe_insulation"),
+    "pipe_accessories": ("plumbing_specialties", "install_parts"),
     "sleeves": ("sleeves",),
     "ducts": ("ducts",),
     "conduits": ("conduit", "conductors"),

@@ -172,19 +172,41 @@ def hydrant_rows(model: ResolvedModel) -> list[dict[str, object]]:
 
 
 def pipe_takeoff_by_material(model: ResolvedModel) -> list[dict[str, object]]:
-    """Lineal feet grouped by (system, material, diameter) — what an estimator orders."""
-    groups: dict[tuple[str, str, float], dict[str, object]] = {}
+    """Lineal feet grouped by (system, material, finish, diameter) — what an estimator orders.
+
+    ``finish`` joins the key because lacquered copper is a different line than bare copper:
+    the lacquer is applied labour and a separate product, and a house that runs both — as
+    this one does, copper where it is seen against concrete and PEX everywhere else — would
+    otherwise roll them into one row and price the coating over all of it.
+    """
+    groups: dict[tuple[str, str, str, float], dict[str, object]] = {}
     for run in model.pipe_runs:
-        key = (run.system, run.material or "—", round(run.diameter_m * _M_TO_IN, 2))
+        key = (run.system, run.material or "—", run.finish or "—",
+               round(run.diameter_m * _M_TO_IN, 2))
         entry = groups.setdefault(key, {"length_m": 0.0, "runs": 0, "tags": []})
         entry["length_m"] += run.length_m
         entry["runs"] += 1
         entry["tags"].append(run.tag)
-    return [{"system": system, "material": material, "diameter_in": diameter,
-             "runs": int(entry["runs"]),
+    return [{"system": system, "material": material, "finish": finish,
+             "diameter_in": diameter, "runs": int(entry["runs"]),
              "length_ft": round(float(entry["length_m"]) * _M_TO_FT, 1),
              "tags": sorted(entry["tags"])}
-            for (system, material, diameter), entry in sorted(groups.items())]
+            for (system, material, finish, diameter), entry in sorted(groups.items())]
+
+
+def accessory_rows(model: ResolvedModel) -> list[dict[str, object]]:
+    """Every in-line device, one row each, for the plumbing sheet's specialties schedule.
+
+    Not the rolled-up BOM section (``takeoff/plumbing_specialties.py``): a schedule prints
+    one line per device with its tag, where it is, and what it protects, because that is
+    what an inspector walks the house with."""
+    return [
+        {"tag": acc.tag, "kind": acc.kind, "storey": acc.storey, "system": acc.system,
+         "pipe_ref": acc.pipe_ref, "room": acc.room, "model": acc.model,
+         "accessible": acc.accessible, "serves": list(acc.serves),
+         "install_parts": list(acc.install_parts)}
+        for acc in sorted(model.pipe_accessories, key=lambda a: a.tag)
+    ]
 
 
 def plumbing_takeoff(model: ResolvedModel) -> dict[str, object]:
@@ -197,5 +219,6 @@ def plumbing_takeoff(model: ResolvedModel) -> dict[str, object]:
             "fittings": fitting_estimate(model),
             "cast_in": cast_in_list(model),
             "hydrants": hydrant_rows(model),
+            "accessories": accessory_rows(model),
         },
     }

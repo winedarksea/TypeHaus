@@ -92,6 +92,30 @@ LUMINAIRE_TYPES = (
                   lamp="LED tape, 24V DC", watts_per_ft=3.0, lumens=250.0,
                   cct_k=3000, cri=90, voltage=24, dimmable=True),
 
+    # --- E1: the shower niche's lit shelf ---------------------------------------------
+    # A variant of E, not a new family: same 24V tape, same driver, same per-foot pricing.
+    # Mark "E1" because "Q" — the next free single letter — is the garage shop light, and
+    # the E-602 schedule is keyed on the mark.
+    #
+    # What it is not is a niche. Schluter's KERDI-BOARD-SNLT is the *board*: a prefabricated,
+    # bonded-waterproof niche with a channel moulded into its head for a tape. The niche is
+    # a hole in a wall, which the model has no element for and does not need one for — what
+    # a schedule and a BOM need is the light and the board it comes in, and naming the board
+    # here bills the two together, the way they are actually bought.
+    #
+    # ``wet_rated`` rather than ``damp_rated``: this is inside the tub-shower's own alcove,
+    # in the zone water is directed at. ``electrical.wet_location`` walks LightRuns as well
+    # as fixtures, so it grades this one without any extension.
+    LuminaireType(tag="ED-T-LT-NICHE-SNLT",
+                  name="Lit shower niche, 24V tape in a KERDI-BOARD-SNLT channel",
+                  form=LuminaireForm.STRIP, type_mark="E1",
+                  footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
+                  lamp="LED tape, 24V DC, IP67", watts_per_ft=3.0, lumens=250.0,
+                  cct_k=3000, cri=90, voltage=24, dimmable=True, wet_rated=True,
+                  source="Schluter-KERDI-BOARD-SNLT prefabricated bonded-waterproof niche "
+                         "with an integrated LIPROTEC-LLP profile; LIPROTEC-ES 24V driver "
+                         "(here the shared ED-T-LT-PSU-60 in the ceiling above)."),
+
     # --- F: the plant-room tubes ------------------------------------------------------
     # Damp rated and growth-spectrum, hung on a cable suspension kit over the plants at the
     # south windows. Multi-watt selectable; specified at the 50 W setting because the point

@@ -178,17 +178,40 @@ def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):
 # --- 4. the check -------------------------------------------------------------------------
 
 def test_the_freeze_depth_rule_passes_on_the_house_as_built(catlin_model):
+    """Three findings for this hydrant now, and none of them UNKNOWN.
+
+    It used to be two PASSes and one UNKNOWN, the UNKNOWN reading "the model has no valve
+    or backflow-preventer element, so neither can be evaluated here". ``PipeAccessory``
+    (2026-08-01) is that element, and `PA-G-HYD-SEAT`/`PA-G-HYD-VB` are what the third
+    finding now grades — the shutoff and the vacuum breaker this file's §5 used to record
+    only as a sentence on the fixture type's ``source``.
+    """
+    from typehaus.checks.mep.plumbing import hydrant_freeze_depth
+
+    findings = [f for f in hydrant_freeze_depth(_context(catlin_model))
+                if "FX-G-HYDRANT" in f.element_tags]
+    assert not [f for f in findings if f.result is not Result.PASS], \
+        [f.message for f in findings if f.result is not Result.PASS]
+    messages = " | ".join(f.message for f in findings)
+    assert "below grade over its whole length" in messages   # bury depth
+    assert "SP-G-HYDRANT" in messages                        # the sleeve
+    assert "PA-G-HYD-SEAT" in messages and "PA-G-HYD-VB" in messages
+
+
+def test_the_yard_hydrant_and_the_wall_hydrants_are_graded_differently(catlin_model):
+    """The house has both families now, and the boundary between them is the thing most
+    likely to break quietly: a wall hydrant has no bury depth, so holding it to 72" would
+    fail it forever. See ``notes/balcony_irrigation.md``."""
     from typehaus.checks.mep.plumbing import hydrant_freeze_depth
 
     findings = hydrant_freeze_depth(_context(catlin_model))
     assert not [f for f in findings if f.result is Result.FAIL]
-    passed = [f for f in findings if f.result is Result.PASS]
-    assert len(passed) == 2, [f.message for f in passed]   # bury depth + the sleeve
-    # The two things the model cannot express are UNKNOWN, not a silent PASS (#32).
-    unknown = [f for f in findings if f.result is Result.UNKNOWN]
-    assert len(unknown) == 1
-    assert "vacuum breaker" in unknown[0].message
-    assert "interior shutoff" in unknown[0].message
+    graded = {tag for f in findings for tag in f.element_tags if tag.startswith("FX-")}
+    assert {"FX-G-HYDRANT", "FX-M-PORCH-HYD", "FX-S-BALC-HYD"} <= graded
+    for tag in ("FX-M-PORCH-HYD", "FX-S-BALC-HYD"):
+        message = " | ".join(f.message for f in findings if tag in f.element_tags)
+        assert "no bury depth to grade" in message
+        assert "below grade" not in message
 
 
 def test_a_shallow_supply_run_fails_the_freeze_depth_rule(catlin_model):

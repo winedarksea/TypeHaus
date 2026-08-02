@@ -606,6 +606,9 @@ export interface PlumbingRunLoadRow {
 export interface PlumbingPipeGroup {
   system: string;
   material: string;
+  /** Applied coating, e.g. "lacquered" over copper — part of the grouping key, since the
+   *  lacquer is a separate product and separate labour from the pipe it goes on. */
+  finish: string;
   diameter_in: number;
   runs: number;
   length_ft: number;
@@ -646,6 +649,21 @@ export interface PlumbingHydrantRow {
   source: string | null;
 }
 
+/** One in-line supply device: a shutoff, backflow preventer, arrestor, RO stub or the
+ *  gasket/bracket/foam kit sealing an envelope penetration. */
+export interface PlumbingAccessoryRow {
+  tag: string;
+  kind: string;
+  storey: string;
+  system: string | null;
+  pipe_ref: string | null;
+  room: string | null;
+  model: string;
+  accessible: boolean;
+  serves: string[];
+  install_parts: string[];
+}
+
 export interface Plumbing {
   riser: PlumbingRiserRun[];
   fixture_units: {
@@ -659,6 +677,7 @@ export interface Plumbing {
     fittings: PlumbingFittingRow[];
     cast_in: PlumbingCastInRow[];
     hydrants: PlumbingHydrantRow[];
+    accessories: PlumbingAccessoryRow[];
   };
 }
 

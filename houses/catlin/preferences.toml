@@ -26,6 +26,22 @@ max_window_ro_bearing_in = 30
 
 [plumbing]
 drain_stack_required_structure_in = 5.5
+# Supply pipe you can see is lacquered copper; everywhere else it is PEX. A style rule, not
+# a code one — both are listed for potable water — which is why `mep.pipe_material_preference`
+# is ADVISORY.
+#
+# "Where you can see it" is not a list of run tags, and deliberately so. The check asks what
+# is *directly above* each basement supply segment: a cast concrete deck means the pipe is
+# hung in the open and reads as part of the room, a framed floor means it will be covered.
+# So the rule re-derives itself. Change SL-M-DECK to wood joists and everything under it
+# stops being visible pipe with nothing here to edit; reroute a trunk along the same ceiling
+# and the new route inherits the rule. Runs inside a stud cavity, and runs buried under the
+# slab, are never visible and are never asked.
+#
+# The finish half applies only to bare pipe: an insulated hot line is inside its jacket, so
+# it owes the copper and not the lacquer.
+visible_basement_material = "copper"
+visible_basement_finish = "lacquered"
 
 [units]
 system = "imperial"

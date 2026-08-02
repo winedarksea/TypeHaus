@@ -151,6 +151,12 @@ class ApplianceType(FurnitureType):
     # 28x40 boxes named "dryer" with a 240V port. False is the safe default — an unstated
     # dryer is a vented dryer and owes the code a duct.
     ductless: bool = False
+    # A solenoid or other fast-acting supply valve — the thing P2903.5 requires a
+    # water-hammer arrestor for. A washer and a dishwasher both have one; a refrigerator's
+    # ice-maker line usually does too. Declared rather than inferred for the same reason
+    # ``ductless`` is: "washer" in a product name is a naming convention, and a check that
+    # keyed on one would silently stop applying the day a product was renamed.
+    quick_closing: bool = False
 
 
 class EquipmentType(FurnitureType):

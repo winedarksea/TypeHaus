@@ -69,6 +69,8 @@ def load_preferences(house_dir: Path) -> Preferences:
         ),
         plumbing=PlumbingPreferences(
             drain_stack_required_structure_in=plumbing.get("drain_stack_required_structure_in", 5.5),
+            visible_basement_material=plumbing.get("visible_basement_material"),
+            visible_basement_finish=plumbing.get("visible_basement_finish"),
         ),
         underlays=underlays,
         suppressed=suppressed,

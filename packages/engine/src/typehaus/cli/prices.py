@@ -50,7 +50,10 @@ PRICES_FILENAME = "prices.toml"
 
 _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "placeables",
              "floor_finishes", "envelope_layers", "openings", "footing_bedding",
-             "pipe_runs", "ducts", "sleeves", "conduit")
+             "pipe_runs", "ducts", "sleeves", "conduit",
+             # Plumbing specialties (2026-08-01): devices by the piece, their loose install
+             # kits, and hot-line insulation by the foot.
+             "plumbing_specialties", "install_parts", "pipe_insulation")
 
 
 def _dollars(value: float) -> str:
@@ -109,6 +112,11 @@ class Prices:
     ducts: Mapping[str, PriceRange] = field(default_factory=dict)
     sleeves: Mapping[str, PriceRange] = field(default_factory=dict)
     conduit: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Plumbing specialties (2026-08-01). Keyed on the accessory *kind* / part name / spec
+    # rather than a model number: a price list is written before the model is chosen.
+    plumbing_specialties: Mapping[str, PriceRange] = field(default_factory=dict)
+    install_parts: Mapping[str, PriceRange] = field(default_factory=dict)
+    pipe_insulation: Mapping[str, PriceRange] = field(default_factory=dict)
 
 
 def _price(section: str, key: str, raw: object, path: Path) -> PriceRange:
@@ -187,6 +195,11 @@ def estimate_costs(bom: dict, prices: Prices) -> dict:
         ("ducts", "ducts", prices.ducts, "system", "length_ft", "LF"),
         ("sleeves", "sleeves", prices.sleeves, "sleeve_diameter_in", "count", "ea"),
         ("conduit", "conduit", prices.conduit, "trade_size_in", "length_ft", "LF"),
+        ("plumbing_specialties", "plumbing_specialties", prices.plumbing_specialties,
+         "kind", "count", "ea"),
+        ("install_parts", "install_parts", prices.install_parts, "part", "count", "ea"),
+        ("pipe_insulation", "pipe_insulation", prices.pipe_insulation, "spec",
+         "length_ft", "LF"),
     )
     sections: dict[str, dict] = {}
     unpriced: list[dict] = []

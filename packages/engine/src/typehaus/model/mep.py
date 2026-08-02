@@ -13,6 +13,7 @@ from typehaus.model.enums import (
     DuctRouting,
     DuctSystem,
     EquipmentKind,
+    PipeAccessoryKind,
     PipeSystem,
     Service,
 )
@@ -49,6 +50,50 @@ class PipeRun(Element):
     wall_refs: tuple[str | None, ...] | None = None  # host wall per segment
     wall_ref: str | None = None  # sugar: every segment hosted by this one wall
     material: str | None = None  # "pex" | "pvc" | "abs" | "copper" — takeoff grouping
+    # How the pipe is finished where it is seen. Separate from ``material`` because it is a
+    # separate purchase and a separate operation: copper is the pipe, lacquer is a coating
+    # applied to it, and a takeoff that folded the two into one string would bill the same
+    # copper twice under two names the moment one run was left bare.
+    finish: str | None = None  # e.g. "lacquered"
+    # The pipe insulation spec, billed by the foot. A field rather than an element because
+    # insulation has no route of its own — it is exactly as long as the run it sleeves, and
+    # an authored second polyline tracking a first is a second source of truth for one
+    # length. ``None`` means bare pipe, which for a hot line is what N1103.4.2 fails.
+    insulation: str | None = None  # e.g. '1" fiberglass, ASJ'
+
+
+@register_element
+class PipeAccessory(Element):
+    """One in-line device on a supply run — valve, backflow preventer, arrestor, seal.
+
+    ``pipe_ref`` names the ``PipeRun`` it sits on, which is what gives it a system, a
+    diameter and a route; ``position`` is its plan point. ``elevation`` is storey-relative
+    and optional — left off, the resolver takes the host run's invert at the nearest path
+    vertex, which is nearly always what is meant (a valve is *on* the pipe) and is the one
+    number an author would otherwise have to copy by hand and keep in step.
+
+    ``install_parts`` is the kit that comes with the device and is billed with it: the
+    balcony hydrant's silicone gasket, plastic mounting bracket and closed-cell foam are
+    three line items nobody stocks as a "hydrant", and they are properties of *this*
+    installation rather than of the hydrant type, which is why they ride the accessory and
+    not the catalog.
+
+    ``accessible`` is the claim P2903.9.1 tests on a main shutoff — reachable without
+    removing a panel or standing on something. Authored, never inferred: whether a valve
+    behind the water heater can be reached is a judgement about the room, and the model
+    would only be guessing.
+    """
+
+    kind: PipeAccessoryKind
+    position: Point2D
+    pipe_ref: str | None = None  # host PipeRun tag
+    elevation: Length | None = None  # storey-relative; None -> host run z at nearest vertex
+    serves: tuple[str, ...] = ()  # Fixture/Equipment/PipeRun tags downstream of it
+    accessible: bool = False
+    room: str | None = None
+    wall_ref: str | None = None
+    model: str = ""  # manufacturer/model, for the plumbing schedule
+    install_parts: tuple[str, ...] = ()  # sealing/mounting kit billed with the device
 
 
 @register_element
@@ -279,6 +324,7 @@ class LightRun(Element):
 
 for _name, _obj in (
     ("PipeRun", PipeRun),
+    ("PipeAccessory", PipeAccessory),
     ("SleevePenetration", SleevePenetration),
     ("DuctRun", DuctRun),
     ("Register", Register),

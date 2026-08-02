@@ -111,6 +111,16 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "pipe_water_cold": (0.20, 0.40, 0.75, 1.0),  # blue PEX
     "pipe_gas": (0.85, 0.75, 0.20, 1.0),         # yellow CSST
     "pipe_radon": (0.55, 0.58, 0.60, 1.0),       # bare gray
+    # In-line supply devices, one category per PipeAccessoryKind (→ emit/trades.py). Brass
+    # for anything with a body you turn or that holds pressure, so hardware reads as hardware
+    # against the PEX it interrupts; the two that are not valves get their own tone.
+    "main_shutoff": (0.72, 0.58, 0.28, 1.0),          # brass
+    "shutoff": (0.72, 0.58, 0.28, 1.0),
+    "backflow_preventer": (0.72, 0.58, 0.28, 1.0),
+    "vacuum_breaker": (0.72, 0.58, 0.28, 1.0),
+    "ro_stub": (0.72, 0.58, 0.28, 1.0),
+    "water_hammer_arrestor": (0.62, 0.64, 0.66, 1.0),  # sealed steel chamber, not a valve
+    "penetration_seal": (0.95, 0.72, 0.35, 1.0),       # the foam/gasket kit, not plumbing metal
     "solar": (0.10, 0.14, 0.28, 1.0),      # PV module glass, deep blue
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
     "soffit": (0.88, 0.88, 0.85, 1.0),     # vented soffit panel under the overhang

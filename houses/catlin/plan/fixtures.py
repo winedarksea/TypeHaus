@@ -303,3 +303,51 @@ GARAGE_FIXTURES = (
     Fixture(uid="CGQ801AAAA", tag="FX-G-HYDRANT", type_ref="FX-HYDRANT-Y34SS",
             room="RM-GARAGE", position=pt(ft(1, 6), ft(62)), wall_ref="W-G-W"),
 )
+
+# --- the two south-face wall hydrants (2026-08-01) -------------------------------------
+#
+# A different animal from FX-G-HYDRANT above, and the difference is the whole design. The
+# garage hydrant is a *yard* hydrant: its seat is 6' down, below frost, and the barrel
+# self-drains to it. These two are *wall* hydrants — the seat is at the inboard end of an
+# ~10" barrel, inside the conditioned envelope, and the barrel pitches outward and drains
+# itself when the handle closes. Neither has a bury depth, because neither is buried; they
+# are not shut down for the winter, which is exactly what the owner asked for.
+#
+# Both stand on the south face because that is where the outdoor rooms are: the porch at
+# 0'-0" and the balcony 10' above it, both on the freestanding sunken-garden structure whose
+# north edge stops 5" short of the house cladding. A hydrant on this wall is reachable from
+# the deck in front of it with a 5" reach. The north face has the garage hydrant 26' away
+# and needs no third one.
+#
+#   FX-M-PORCH-HYD  x=12'-0" on W-M-S1 — the long blank stretch between WIN-M-BED-S2's east
+#                   jamb (10'-7") and the centre line at 18'. Over the porch, which spans
+#                   x 8'-6"..27'-6".
+#   FX-S-BALC-HYD   x=16'-8" on W-S-S1 — a 16" module bay centre (8" + 12x16"), 3" clear of
+#                   D-S-DECK-W's east RO edge at 16'-2" and 16" from the corner. Behind it is
+#                   RM-S-PLANT, which is the point: the balcony irrigation this hydrant
+#                   exists for waters that room's plants when they summer outside.
+#
+# Each names the room *behind* it, and each therefore draws an
+# `integrity.placeable_room_mismatch` — "assigned to RM-M-BED but its footprint centre is
+# outside that room". That is not a defect to fix, it is the true description of an exterior
+# hose bib: the escutcheon is outdoors and the seat it belongs to is in that room's wall.
+# The alternative, leaving `room` unset, trades the UNKNOWN for an
+# `advisory.fixture_room_unassigned` FAIL and leaves the permit fixture schedule with a
+# blank cell, which is worse — a schedule reader needs to know which wall to look at.
+#
+# `mount` comes from the type (WALL at 24"), so each handle stands 2'-0" over the deck in
+# front of it — 1'-11" over the porch's composite plank, which sits 1" proud of the 0'-0"
+# datum, and 2'-0" over the balcony's aluminium boards, which finish flush at 10'-0".
+#
+# The wall each one pierces is why this works at all: CATLIN_EXT_2X6 carries 4" of
+# continuous exterior insulation (2" polyiso + 2" EPS) outboard of the sheathing, so the
+# stud cavity a hydrant's seat and its feed sit in is on the warm side of the whole thermal
+# break. In a cavity-only wall the same detail would freeze.
+PORCH_HYDRANT = (
+    Fixture(uid="7QK2M4XR0B", tag="FX-M-PORCH-HYD", type_ref="FX-HYDRANT-SD34",
+            room="RM-M-BED", position=pt(ft(12), ft(0)), wall_ref="W-M-S1"),
+)
+BALCONY_HYDRANT = (
+    Fixture(uid="D3NLW8VC5T", tag="FX-S-BALC-HYD", type_ref="FX-HYDRANT-SD34",
+            room="RM-S-PLANT", position=pt(ft(16, 8), ft(0)), wall_ref="W-S-S1"),
+)

@@ -34,7 +34,10 @@ from typehaus.takeoff.hardware_config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
     HardwareTakeoffConfig,
 )
-from typehaus.takeoff.mep import duct_takeoff, pipe_run_takeoff, sleeve_takeoff
+from typehaus.takeoff.mep import (duct_takeoff, pipe_insulation_takeoff, pipe_run_takeoff,
+                                  sleeve_takeoff)
+from typehaus.takeoff.plumbing_specialties import (install_parts_takeoff,
+                                                   plumbing_specialties_takeoff)
 from typehaus.takeoff.openings import opening_takeoff
 from typehaus.takeoff.placeables import floor_heat_takeoff, placeables_takeoff
 from typehaus.takeoff.railings import railing_takeoff
@@ -95,6 +98,14 @@ def bill_of_materials(
         # cubic feet of aluminium, which is not how either is bought.
         "drainage": drainage_takeoff(model),
         "pipe_runs": pipe_run_takeoff(model),
+        # The supply system's protection budget, which no section could see before
+        # `PipeAccessory` existed: valves and preventers by the piece, and the loose
+        # gasket/bracket/foam kits that go in with them.
+        "plumbing_specialties": plumbing_specialties_takeoff(model),
+        "install_parts": install_parts_takeoff(model),
+        # Hot-water line insulation by the foot (IRC N1103.4.2). A field on the run, so it
+        # cannot drift out of length with the pipe it sleeves.
+        "pipe_insulation": pipe_insulation_takeoff(model),
         "ducts": duct_takeoff(model),
         "sleeves": sleeve_takeoff(model),
         # The electrical program (→ takeoff/electrical.py): devices by type, the panel

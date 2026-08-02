@@ -38,6 +38,15 @@ export const SOLID_CATEGORY_COLOR: Record<string, number> = {
   pipe_water_cold: 0x3366bf, // blue PEX
   pipe_gas: 0xd9bf33, // yellow CSST
   pipe_radon: 0x8c9499, // bare gray
+  // In-line supply devices, one category per PipeAccessoryKind. Brass for anything with a
+  // body you turn; the arrestor is a sealed steel chamber and the seal is not metal at all.
+  main_shutoff: 0xb89447, // brass
+  shutoff: 0xb89447,
+  backflow_preventer: 0xb89447,
+  vacuum_breaker: 0xb89447,
+  ro_stub: 0xb89447,
+  water_hammer_arrestor: 0x9ea3a8,
+  penetration_seal: 0xf2b859,
   fascia: 0xebebe6, // PVC fascia
   gutter: 0xd9dbde, // metal gutter
   flashing: 0xbfc4cc, // metal flashing
@@ -74,6 +83,16 @@ export const SOLID_CATEGORY_TRADE: Record<string, Trade> = {
   pipe_water_cold: "plumbing",
   pipe_gas: "plumbing",
   pipe_radon: "plumbing",
+  // In-line supply devices (engine resolve/mep.py::_resolve_pipe_accessory), one category
+  // per PipeAccessoryKind — a solid's category is what the inspector labels it with, and
+  // "pipe accessory" tells a reader nothing about which device they clicked.
+  main_shutoff: "plumbing",
+  shutoff: "plumbing",
+  backflow_preventer: "plumbing",
+  vacuum_breaker: "plumbing",
+  water_hammer_arrestor: "plumbing",
+  ro_stub: "plumbing",
+  penetration_seal: "plumbing",
   // Bath/dryer exhaust and the radon riser.
   vent: "mechanical",
   // Fenestration and the extrusions that hold it, plus the rainscreen base closure — envelope
@@ -204,4 +223,50 @@ export function createSolidMaterial(
     side: translucent ? THREE.DoubleSide : THREE.FrontSide,
     depthWrite: !translucent,
   });
+}
+
+// Solid category → what a person calls it. The Inspector used to print the raw category as
+// its heading, which reads fine for `slab` and badly for everything with an underscore in
+// it — and worst of all for a family name: "pipe accessory" is true of a shutoff, a backflow
+// preventer and a can of foam alike, so it told a reader nothing about the thing they had
+// just clicked. Categories are now per-device (see SOLID_CATEGORY_TRADE above); this map
+// gives the rest of them sentence case too.
+//
+// Anything absent falls back to the category with its underscores opened out, so a new
+// category is readable on the day it lands and gets a proper name when someone has one.
+const SOLID_CATEGORY_LABEL: Record<string, string> = {
+  main_shutoff: "Main shutoff valve",
+  shutoff: "Isolation valve",
+  backflow_preventer: "Backflow preventer",
+  vacuum_breaker: "Vacuum breaker",
+  water_hammer_arrestor: "Water-hammer arrestor",
+  ro_stub: "RO tap provision (capped)",
+  penetration_seal: "Envelope penetration seal",
+  pipe_drain: "Waste pipe",
+  pipe_vent: "Vent pipe",
+  pipe_water_hot: "Hot water pipe",
+  pipe_water_cold: "Cold water pipe",
+  pipe_gas: "Gas pipe",
+  pipe_radon: "Radon pipe",
+  drain_tile: "Drain tile",
+  french_drain: "French drain",
+  drywell: "Drywell",
+  downspout: "Downspout",
+  sump: "Sump pit",
+  thermal_break: "Thermal break",
+  bug_screen: "Rainscreen base closure",
+  glazing_trim: "Glazing trim",
+  window_trim: "Window casing",
+  opening_frame: "Opening frame",
+  ridge_cap: "Ridge cap",
+  corner_trim: "Corner trim",
+};
+
+export function solidCategoryLabel(category: string | null | undefined): string {
+  if (!category) return "Solid";
+  const key = category.trim().toLowerCase();
+  const known = SOLID_CATEGORY_LABEL[key];
+  if (known) return known;
+  const opened = key.replace(/_/g, " ");
+  return opened.charAt(0).toUpperCase() + opened.slice(1);
 }

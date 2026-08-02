@@ -41,6 +41,37 @@ def pipe_run_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     ]
 
 
+def pipe_insulation_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
+    """Lineal feet of pipe insulation, grouped by spec and pipe diameter.
+
+    Insulation is bought as sleeve stock sized to the pipe it goes over, so the bore is part
+    of the key exactly as it is for the pipe itself — 3/4" and 1" sleeve are two SKUs. The
+    length is the host run's developed length, because the sleeve follows the pipe through
+    its drops; there is nothing else it could be, which is why insulation is a field on the
+    run rather than a routed element of its own.
+
+    Runs with no ``insulation`` are absent rather than billed at zero: a bare hot line is a
+    finding (``mep.hot_water_insulation``), not a row of nothing.
+    """
+    specs: dict[tuple[str, float], dict[str, object]] = {}
+    for run in model.pipe_runs:
+        if not run.insulation:
+            continue
+        key = (run.insulation, round(run.diameter_m * _M_TO_IN, 3))
+        entry = specs.setdefault(key, {"length_m": 0.0, "count": 0, "tags": []})
+        entry["length_m"] = float(entry["length_m"]) + run.length_m
+        entry["count"] = int(entry["count"]) + 1
+        tags = entry["tags"]
+        assert isinstance(tags, list)
+        tags.append(run.tag)
+    return [
+        {"spec": spec, "pipe_diameter_in": diameter, "runs": int(entry["count"]),
+         "length_ft": round(float(entry["length_m"]) * _M_TO_FT, 1),
+         "tags": sorted(entry["tags"])}
+        for (spec, diameter), entry in sorted(specs.items())
+    ]
+
+
 def duct_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Lineal feet of duct, grouped by system and section.
 

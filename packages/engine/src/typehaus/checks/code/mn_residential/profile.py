@@ -175,6 +175,18 @@ MN_2024 = JurisdictionProfile(
                        ("MN Plumbing Code (ch. 4714) Tables 702.1, 703.2, 610.3, 610.4",)),
         PermitItemSpec("Trap-arm length", ("mep.trap_arm_length",),
                        ("MN Plumbing Code (ch. 4714) Table 1002.2",)),
+        # The supply-protection pass (2026-08-01). Grouped as one line because a reviewer
+        # asks them as one question — "how is the potable supply controlled and protected" —
+        # and because two of the three are contingent on what the house contains: a plan
+        # with no hose connection produces no backflow findings and one with no washer no
+        # arrestor findings, and either alone would grade an item UNKNOWN for the honest
+        # reason that the house has nothing to evaluate.
+        PermitItemSpec("Water supply protection and shutoff",
+                       ("mep.main_shutoff", "mep.backflow_prevention",
+                        "mep.water_hammer_arrestor"),
+                       ("IRC P2902", "IRC P2903.5", "IRC P2903.9.1")),
+        PermitItemSpec("Hot-water pipe insulation", ("mep.hot_water_insulation",),
+                       ("IRC N1103.4.2",)),
     ),
     permit_exclusions=(
         ("mep.hydrant_freeze_depth",

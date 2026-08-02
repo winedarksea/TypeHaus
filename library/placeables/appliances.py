@@ -36,6 +36,7 @@ DISHWASHER = ApplianceType(
     tag="APPL-DISHWASHER", name="Dishwasher", footprint=(ft(2), ft(2)), height=ft(2, 10),
     plan_symbol="dishwasher", source=REFERENCE,
     needs=frozenset({Service.WATER_HOT, Service.DRAIN, Service.POWER_120}),
+    quick_closing=True,  # solenoid fill valve — P2903.5 wants an arrestor on its supply
     ports=(ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
            ServicePort(tag="supply", service=Service.WATER_HOT, position=(ft(0), ft(0), ft(0))),
            ServicePort(tag="drain", service=Service.DRAIN, position=(ft(0), ft(0), ft(0)))),
@@ -81,6 +82,7 @@ HOOD_RECIRC = ApplianceType(
 WASHER = ApplianceType(
     tag="APPL-WASHER", name="Clothes washer", footprint=(ft(2, 3), ft(2, 6)), height=ft(3),
     plan_symbol="washer", source=REFERENCE,
+    quick_closing=True,  # solenoid fill valves on both supplies — P2903.5
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.POWER_240}),
 )
 
@@ -106,6 +108,7 @@ WASHER_DRYER_STACKED = ApplianceType(
     # oversight — code.M1502_dryer_exhaust read this product as a vented dryer missing its
     # duct. ``ductless=True`` is M1502.1's exemption stated outright.
     ductless=True,
+    quick_closing=True,  # the washer half's solenoid fill valves — P2903.5
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN,
                      Service.POWER_120, Service.POWER_240}),
     ports=(ServicePort(tag="power-washer", service=Service.POWER_120,

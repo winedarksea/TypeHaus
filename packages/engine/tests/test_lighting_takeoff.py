@@ -59,8 +59,14 @@ def test_a_run_type_reports_lineal_feet_instead_of_a_count(catlin_model):
     assert row["count"] == 0 and row["length_ft"] > 0
     assert row["watts"] is None and row["watts_per_ft"] == 3.0
     assert row["volts"] == 24
-    total = sum(run.length_m for run in catlin_model.light_runs) * _M_TO_FT
+    # Only this type's runs. The sum used to be over *every* light run, which was
+    # accidentally right while ED-T-LT-STRIP24 was the only STRIP type in the house and
+    # wrong the moment ED-T-LT-NICHE-SNLT joined it — a schedule row is per type.
+    total = sum(run.length_m for run in catlin_model.light_runs
+                if run.type_ref == "ED-T-LT-STRIP24") * _M_TO_FT
     assert row["length_ft"] == pytest.approx(round(total, 1))
+    assert len({run.type_ref for run in catlin_model.light_runs}) > 1, \
+        "this assertion only means something while more than one run type exists"
 
 
 def test_unstated_photometrics_report_none_rather_than_zero(catlin_model):

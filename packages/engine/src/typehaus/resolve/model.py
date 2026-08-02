@@ -438,6 +438,36 @@ class ResolvedPipeRun:
     z_m: tuple[float, ...] | None = None  # per-vertex absolute inverts, len == len(path)
     wall_refs: tuple[str | None, ...] = ()  # host wall per segment; () -> none declared
     material: str | None = None
+    finish: str | None = None      # applied coating, e.g. "lacquered" over copper
+    insulation: str | None = None  # pipe-insulation spec, billed by the foot; None -> bare
+
+
+@dataclass(frozen=True)
+class ResolvedPipeAccessory:
+    """One in-line supply device located on its host run.
+
+    ``z_m`` is absolute project-frame like every other resolved z: authored elevations are
+    storey-relative, and where none was authored the resolver has already substituted the
+    host run's invert at the nearest path vertex, so a consumer never has to know which of
+    the two it got."""
+
+    uid: str
+    tag: str
+    storey: str
+    kind: str
+    position: tuple[float, float]
+    z_m: float
+    pipe_ref: str | None = None
+    # The host run's system ("water_cold"/"water_hot"/…) and bore, copied at resolve so a
+    # check or a schedule row does not have to re-find the run to size the device.
+    system: str | None = None
+    diameter_m: float | None = None
+    serves: tuple[str, ...] = ()
+    accessible: bool = False
+    room: str | None = None
+    wall_ref: str | None = None
+    model: str = ""
+    install_parts: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -651,6 +681,7 @@ class ResolvedModel:
     conditions: list[BoundaryCondition] = field(default_factory=list)
     stack_edges: list[StackEdge] = field(default_factory=list)
     pipe_runs: list[ResolvedPipeRun] = field(default_factory=list)
+    pipe_accessories: list[ResolvedPipeAccessory] = field(default_factory=list)
     sleeves: list[ResolvedSleeve] = field(default_factory=list)
     ducts: list[ResolvedDuct] = field(default_factory=list)
     conduits: list[ResolvedConduitRun] = field(default_factory=list)

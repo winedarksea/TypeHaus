@@ -30,6 +30,19 @@ const SYSTEM_LABEL: Record<string, string> = {
   radon: "radon",
 };
 
+// PipeAccessoryKind → what a plumbing sheet calls it. Mirrors the engine enum
+// (packages/engine/src/typehaus/model/enums.py::PipeAccessoryKind); an unmapped kind falls
+// through to its raw value rather than disappearing.
+const ACCESSORY_LABEL: Record<string, string> = {
+  main_shutoff: "main shutoff",
+  shutoff: "isolation valve",
+  backflow_preventer: "backflow preventer",
+  vacuum_breaker: "vacuum breaker",
+  water_hammer_arrestor: "water-hammer arrestor",
+  ro_stub: "RO tap provision (capped)",
+  penetration_seal: "envelope penetration seal",
+};
+
 // True isometric (30° axonometric) — the classic plumbing-riser projection. The authored
 // geometry is drawn exactly as routed; overlapping lines are honest, not a layout defect.
 const COS30 = Math.cos(Math.PI / 6);
@@ -379,15 +392,16 @@ export function PlumbingView() {
           <table className="reader-table">
             <thead>
               <tr>
-                <th>System</th><th>Material</th><th className="num-col">Ø</th>
+                <th>System</th><th>Material</th><th>Finish</th><th className="num-col">Ø</th>
                 <th className="num-col">Runs</th><th className="num-col">Length</th><th>Tags</th>
               </tr>
             </thead>
             <tbody>
               {takeoff.pipe.map((row) => (
-                <tr key={`${row.system}-${row.material}-${row.diameter_in}`}>
+                <tr key={`${row.system}-${row.material}-${row.finish}-${row.diameter_in}`}>
                   <td className="reader-mono">{SYSTEM_LABEL[row.system] ?? row.system}</td>
                   <td className="reader-mono">{row.material}</td>
+                  <td className="reader-mono muted">{row.finish}</td>
                   <td className="num-col">{row.diameter_in}"</td>
                   <td className="num-col">{row.runs}</td>
                   <td className="num-col">{row.length_ft} lf</td>
@@ -433,6 +447,33 @@ export function PlumbingView() {
                 <span>
                   {row.type_ref ?? "—"} · fed by{" "}
                   {row.supply_runs.length > 0 ? row.supply_runs.join(", ") : "no supply run"}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+        {takeoff.accessories.length > 0 && (
+          <div className="reader-card">
+            <div className="reader-card-head">
+              <span className="reader-card-title">In-line devices</span>
+              <span className="muted">{takeoff.accessories.length}</span>
+            </div>
+            {takeoff.accessories.map((row) => (
+              <div className="kv" key={row.tag}>
+                <span className="k">
+                  <button className="reader-tag" onClick={() => jump(row.tag)}
+                    disabled={!index.has(row.tag)} title="Zoom to device">
+                    <span className="reader-mono">{row.tag}</span>
+                  </button>
+                </span>
+                <span>
+                  {ACCESSORY_LABEL[row.kind] ?? row.kind}
+                  {row.model ? ` · ${row.model}` : ""}
+                  {row.pipe_ref ? ` · on ${row.pipe_ref}` : ""}
+                  {row.accessible ? " · accessible" : ""}
+                  {row.install_parts.length > 0
+                    ? ` · kit: ${row.install_parts.join(", ")}`
+                    : ""}
                 </span>
               </div>
             ))}

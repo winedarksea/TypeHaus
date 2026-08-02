@@ -27,6 +27,8 @@ is the link between the two, in both directions.
 
 from __future__ import annotations
 
+from typehaus.model.enums import PipeAccessoryKind
+
 # The visibility trades the UI honours (``ui/src/state/vocabulary.ts::Trade``). Spelled out here
 # so a typo in the table below fails a test rather than shipping a node the UI drops.
 TRADES = frozenset({
@@ -55,6 +57,19 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     # and a gas line appearing under "concrete" is exactly the bug this table exists to fix.
     "pipe_gas": "plumbing",
     "pipe_radon": "plumbing",
+    # In-line supply devices (``resolve/mep.py::_resolve_pipe_accessory``). One category per
+    # ``PipeAccessoryKind`` rather than one "pipe_accessory" for the lot: a solid's category
+    # is what the 3D inspector and the solids rollup *label* it with, and a family name tells
+    # a reader nothing — a shutoff, a backflow preventer and a sealed penetration are three
+    # different things to find in a model. ``PIPE_ACCESSORY_CATEGORIES`` below keeps the
+    # family available for the consumers that do want them treated alike.
+    "main_shutoff": "plumbing",
+    "shutoff": "plumbing",
+    "backflow_preventer": "plumbing",
+    "vacuum_breaker": "plumbing",
+    "water_hammer_arrestor": "plumbing",
+    "ro_stub": "plumbing",
+    "penetration_seal": "plumbing",
 
     # Vent runs — bath/dryer exhaust and the radon riser (``resolve/accessories.py``).
     "vent": "mechanical",
@@ -119,6 +134,12 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
 # loose proxies.
 DRAINAGE_CATEGORIES = frozenset(
     category for category, trade in SOLID_CATEGORY_TRADE.items() if trade == "drainage")
+
+# The in-line supply devices, derived from the enum so the two can never disagree. The IFC
+# emitter skips exactly these in its generic solid loop, because ``_emit_pipe_accessories``
+# owns them and knows which ``IfcValve`` PredefinedType each one is; a device that fell
+# through the generic path would export as the ``IfcFooting`` fallback.
+PIPE_ACCESSORY_CATEGORIES = frozenset(kind.value for kind in PipeAccessoryKind)
 
 
 def solid_trade(category: str | None) -> str:

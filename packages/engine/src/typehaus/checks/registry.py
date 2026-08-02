@@ -46,6 +46,17 @@ class PlumbingPreferences:
     """Planning allowances for advisory service checks, not plumbing sizing."""
 
     drain_stack_required_structure_in: float = 5.5
+    # The house's own rule for what visible supply pipe is made of. Not code — copper and
+    # PEX are both listed for potable water everywhere in the house — but it is a rule the
+    # model can hold to, which is the difference between a style decision and a memory.
+    #
+    # ``visible_basement_material`` is what a run gets where it is *seen*; the Catlin rule is
+    # geometric rather than a tag list, so it survives a reroute: a basement supply run whose
+    # ceiling is cast concrete is exposed and reads as finish, and one under a framed floor
+    # will be covered. Change the deck to wood joists and the same rule stops applying to
+    # everything under it, with nothing to edit.
+    visible_basement_material: str | None = None
+    visible_basement_finish: str | None = None
 
 
 @dataclass(frozen=True)

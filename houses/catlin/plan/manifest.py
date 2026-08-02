@@ -104,7 +104,8 @@ PLAN = (
     )
     .with_elements(
         "main",
-        [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *sunken_garden.MAIN_ELEMENTS,
+        [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *fixtures.PORCH_HYDRANT,
+         *sunken_garden.MAIN_ELEMENTS,
          *foundations.MAIN_ELEMENTS, *breezeway.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
          *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING,
          *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES],
@@ -114,6 +115,7 @@ PLAN = (
                               *lighting.GARAGE_LIGHTING,
                               *placeables.GARAGE_PLACEABLES])
     .with_elements("second", [*second.ELEMENTS, *fixtures.SECOND_FIXTURES,
+                                *fixtures.BALCONY_HYDRANT,
                                 *sunken_garden.SECOND_ELEMENTS, *mep.SECOND_ELEMENTS,
                                 *electrical.SECOND_ELEMENTS, *lighting.SECOND_LIGHTING,
                                 *placeables.SECOND_PLACEABLES])

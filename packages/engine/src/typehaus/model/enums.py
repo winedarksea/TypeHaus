@@ -187,6 +187,24 @@ class PipeSystem(Enum):
     RADON = "radon"  # passive soil-gas vent, routed alongside the plumbing vent
 
 
+class PipeAccessoryKind(Enum):
+    """In-line devices on a ``PipeRun`` — the things a supply system is judged by.
+
+    A pipe run says where water goes; none of these say that, and all of them are what an
+    inspector looks for. They are one element rather than seven because they share every
+    field that matters (a host run, a point on it, a model number, what it protects) and
+    differ only in what IFC class and code section they answer to.
+    """
+
+    MAIN_SHUTOFF = "main_shutoff"            # P2903.9.1 — the one valve for the whole house
+    SHUTOFF = "shutoff"                      # a branch/fixture isolation valve
+    BACKFLOW_PREVENTER = "backflow_preventer"  # P2902 — cross-connection control
+    VACUUM_BREAKER = "vacuum_breaker"        # P2902.3.1 — hose-connection backflow
+    WATER_HAMMER_ARRESTOR = "water_hammer_arrestor"  # P2903.5 — quick-closing valves
+    RO_STUB = "ro_stub"                      # capped tee, provision for a future RO tap
+    PENETRATION_SEAL = "penetration_seal"    # the gasket/bracket/foam kit at an envelope pass
+
+
 class DuctSystem(Enum):
     """HVAC air-side system a ``DuctRun``/``Register`` belongs to (→ MEP Phase 3)."""
 
