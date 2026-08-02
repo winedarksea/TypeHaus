@@ -35,6 +35,7 @@ from typehaus.takeoff.framing import (
     sheet_goods_takeoff,
     structural_solids_takeoff,
 )
+from typehaus.takeoff.edge_trim import edge_trim_takeoff
 from typehaus.takeoff.glazing import (
     glazing_fastener_rows,
     glazing_panel_takeoff,
@@ -61,6 +62,7 @@ __all__ = [
     "panel_schedule", "service_load_summary", "solar_takeoff",
     "bill_of_materials",
     "construction_returns_takeoff",
+    "edge_trim_takeoff",
     "floor_heat_takeoff",
     "framing_bom_by_size",
     "framing_takeoff",

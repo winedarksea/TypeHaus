@@ -54,7 +54,8 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              "pipe_runs", "ducts", "sleeves", "conduit",
              # Plumbing specialties (2026-08-01): devices by the piece, their loose install
              # kits, and hot-line insulation by the foot.
-             "plumbing_specialties", "install_parts", "pipe_insulation")
+             "plumbing_specialties", "install_parts", "pipe_insulation",
+             "edge_trim")
 
 
 def _dollars(value: float) -> str:
@@ -122,6 +123,9 @@ class Prices:
     plumbing_specialties: Mapping[str, PriceRange] = field(default_factory=dict)
     install_parts: Mapping[str, PriceRange] = field(default_factory=dict)
     pipe_insulation: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Edge trim by the lineal foot (2026-08-02), keyed on the row category — fascia,
+    # soffit, drip_flashing, edge_cladding, corner_trim, ridge_cap ...
+    edge_trim: Mapping[str, PriceRange] = field(default_factory=dict)
 
 
 def _price(section: str, key: str, raw: object, path: Path) -> PriceRange:
@@ -209,6 +213,7 @@ def estimate_costs(bom: dict, prices: Prices) -> dict:
         ("install_parts", "install_parts", prices.install_parts, "part", "count", "ea"),
         ("pipe_insulation", "pipe_insulation", prices.pipe_insulation, "spec",
          "length_ft", "LF"),
+        ("edge_trim", "edge_trim", prices.edge_trim, "category", "length_ft", "LF"),
     )
     sections: dict[str, dict] = {}
     unpriced: list[dict] = []

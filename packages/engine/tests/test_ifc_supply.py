@@ -94,13 +94,55 @@ def test_each_system_owns_exactly_its_own_temperature(catlin_model, catlin_ifc):
         assert 0 < len(emitted) <= expected_segments
 
 
-def test_drain_and_vent_runs_still_belong_to_no_system(catlin_ifc):
-    """SANITARY/RAINWATER are deliberately deferred (plans/TODO.md). This asserts the
-    deferral rather than leaving it as an absence nobody notices — the waste stack must not
-    have quietly been swept into a domestic-water group."""
-    for predefined in ("SANITARY", "RAINWATER", "VENT"):
-        assert not [s for s in catlin_ifc.by_type("IfcDistributionSystem")
-                    if s.PredefinedType == predefined]
+def test_the_waste_side_is_systems_now_sanitary_vent_and_radon(catlin_model, catlin_ifc):
+    """The deferral this test used to pin is closed: every drain run belongs to a SEWAGE
+    system (IFC4's sanitary drainage — the enum has no SANITARY member), every vent run to
+    a VENT system, and the radon riser to its own USERDEFINED/RADON system rather than
+    being folded into the plumbing vents it must never connect to."""
+    for predefined, key in (("SEWAGE", "drain"), ("VENT", "vent")):
+        system = _system(catlin_ifc, predefined)
+        members = _members(catlin_ifc, system)
+        assert members, f"{predefined} groups nothing"
+        assert {_pset(m, "TypeHaus_Pipe").get("system") for m in members
+                if m.is_a("IfcPipeSegment")} == {key}
+        expected_segments = sum(
+            max(len(run.path) - 1, 0) for run in catlin_model.pipe_runs if run.system == key)
+        emitted = [m for m in members if m.is_a("IfcPipeSegment")]
+        assert 0 < len(emitted) <= expected_segments
+    # A radon *pipe run* would get its own USERDEFINED/RADON system rather than being
+    # folded into VENT (a soil-gas riser must never read as connected to the plumbing
+    # vents). Catlin's radon is a VentRun riser — solids, not a PipeRun — so the mapping is
+    # asserted on the table and the absence of a hollow system is asserted on the file.
+    from typehaus.emit.ifc.emitter import _PIPE_SYSTEM_OBJECT_TYPES, _PIPE_SYSTEM_TYPES
+
+    assert _PIPE_SYSTEM_TYPES["radon"] == ("RadonVent", "USERDEFINED")
+    assert _PIPE_SYSTEM_OBJECT_TYPES["radon"] == "RADON"
+    assert not any(run.system == "radon" for run in catlin_model.pipe_runs), \
+        "fixture drift: catlin now authors a radon PipeRun — assert its system here"
+    assert not [s for s in catlin_ifc.by_type("IfcDistributionSystem")
+                if s.Name == "RadonVent"], "an empty system must not be emitted"
+    # Rainwater stays a non-system among the pipe runs on purpose: the stormwater solids
+    # (gutter, leader, tile) already group under STORMWATER.
+    assert not [s for s in catlin_ifc.by_type("IfcDistributionSystem")
+                if s.PredefinedType == "RAINWATER"]
+
+
+def test_every_authored_pipe_run_lands_in_exactly_one_system(catlin_model, catlin_ifc):
+    """The grouping loop used to ``.get(run.system, []).extend(...)`` — a silent discard
+    that kept 26 of catlin's runs unsystemed. Every emitted segment must now belong to
+    exactly one distribution system."""
+    systems = [s for s in catlin_ifc.by_type("IfcDistributionSystem")]
+    owner_count: dict = {}
+    for system in systems:
+        for member in _members(catlin_ifc, system):
+            if member.is_a("IfcPipeSegment") and _pset(member, "TypeHaus_Pipe"):
+                owner_count[member.Name] = owner_count.get(member.Name, 0) + 1
+    run_tags = {run.tag for run in catlin_model.pipe_runs}
+    orphaned = [tag for tag in run_tags
+                if not any(name.startswith(f"{tag}/") for name in owner_count)]
+    assert not orphaned, f"authored runs in no system: {sorted(orphaned)}"
+    doubles = {name: n for name, n in owner_count.items() if n > 1}
+    assert not doubles, f"segments grouped twice: {doubles}"
 
 
 def test_every_accessory_is_a_typed_device_and_never_a_footing(catlin_model, catlin_ifc):

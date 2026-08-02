@@ -66,6 +66,12 @@ _LAYER_STYLE = {
     "A-WALL-BELW": (9, 15),
     "P-SANR-PIPE": (33, 30),
     "P-DOMW-PIPE": (5, 30),
+    # Stormwater (P-2xx drainage plans + the C-101 overlay); colours track the PDF palette.
+    "P-STRM-GUTR": (140, 30),
+    "P-STRM-LEDR": (140, 35),
+    "P-STRM-TILE": (37, 25),
+    "P-STRM-PIT": (36, 35),
+    "C-STRM-DRAN": (150, 18),
     "M-HVAC-SDFF": (92, 30),
     "M-HVAC-RDFF": (94, 30),
     "M-HVAC-EXHS": (72, 30),

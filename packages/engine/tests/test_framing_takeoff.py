@@ -99,7 +99,12 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # The supply system's protection budget and the hot-line
                         # insulation, neither of which anything could see before
                         # `PipeAccessory` and `PipeRun.insulation` existed.
-                        "plumbing_specialties", "install_parts", "pipe_insulation"}
+                        "plumbing_specialties", "install_parts", "pipe_insulation",
+                        # The species-wood rollup (2026-08-02, hardwood pass).
+                        "wood_surfaces",
+                        # Edge trim by the lineal foot: the fascia/soffit/flashing family,
+                        # authored runs and derived roof trim alike (→ takeoff/edge_trim.py).
+                        "edge_trim"}
     assert all(section for section in bom.values()), "no BOM section may come back empty"
     # The framing section still reconciles 1:1 with the resolved members.
     assert sum(int(row["pieces"]) for row in bom["framing"]) == len(catlin_model.all_members())
@@ -151,6 +156,8 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "ducts": ("ducts",),
     "conduits": ("conduit", "conductors"),
     "footing_beddings": ("footing_bedding",),
+    # The paneling records (sauna liner, wainscot, tile splash) roll up by species/material.
+    "panelings": ("wood_surfaces",),
 }
 
 

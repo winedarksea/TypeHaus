@@ -91,6 +91,10 @@ export function runEngineBomTests() {
   const claimed = SECTION_GROUPS.flatMap((group) => group.sections);
   assert(new Set(claimed).size === claimed.length,
     "No section key appears in two groups");
+  // Engine sections added since the groups were authored must be claimed, not left to
+  // fall into "Other" (test_bom_sweep.py pins the same key on the engine side).
+  assert(claimed.includes("edge_trim"),
+    "edge_trim (takeoff/edge_trim.py) must be claimed by the envelope group");
 
   // --- cells ------------------------------------------------------------------------------
 
