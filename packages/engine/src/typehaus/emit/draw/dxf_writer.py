@@ -32,7 +32,7 @@ _DASHED_LINETYPE = "DASHED"
 _DEVICE_SYMBOLS = frozenset({
     "register-supply", "register-return", "receptacle", "gfci", "receptacle_240",
     "switch", "light", "panel", "spot-elev", "utility-entry", "level-marker", "alarm",
-    "junction_box", "meter", "disconnect",
+    "junction_box", "meter", "disconnect", "data_outlet",
 })
 
 # Symbols drawn by a branch of their own; anything else falls through to the window mark,
@@ -78,6 +78,12 @@ _LAYER_STYLE = {
     "M-HVAC-EQPM": (92, 40),
     "E-POWR-DEVC": (10, 25),
     "E-POWR-CNDT": (12, 18),
+    # Low-voltage is its own AIA discipline (E-COMM), not a flavour of E-POWR: the
+    # separation is the whole point on site, where comms and power may not share a raceway,
+    # and a low-voltage tech wants the branch-circuit layers off. Cyan, clear of the power
+    # reds and the E-LITE ambers.
+    "E-COMM-DEVC": (4, 25),
+    "E-COMM-CNDT": (140, 18),
     "E-LITE": (50, 25),
     # Cove/tape runs read as a continuous source, not a device: a heavier line than the
     # fixtures so a 21' run is legible against the can grid it shares a room with.

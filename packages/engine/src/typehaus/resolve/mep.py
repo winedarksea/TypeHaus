@@ -22,7 +22,7 @@ from typehaus.resolve.geometry import circle_outline, length, sub
 from typehaus.resolve.round_solids import PIPE_FACETS, sloped_run_bands
 from typehaus.resolve.model import (ResolvedConduitRun, ResolvedDuct, ResolvedLightRun,
                                     ResolvedModel, ResolvedPipeAccessory, ResolvedPipeRun,
-                                    ResolvedSleeve, ResolvedSolid)
+                                    ResolvedSleeve, ResolvedSolid, Ring)
 from typehaus.resolve.placeables import resolved_mount_elevation
 
 _JOIST_BREADTH_M = inch(1.5).meters
@@ -117,6 +117,7 @@ def _resolve_conduit_run(model: ResolvedModel, run: ConduitRun, storey_tag: str)
         uid=run.uid, tag=run.tag, storey=storey_tag, path=path,
         trade_size_m=run.trade_size.meters, z_start_m=z0, z_end_m=z1,
         length_m=plan_len + rise, from_ref=run.from_ref, to_ref=run.to_ref,
+        service=run.service.value if run.service is not None else None,
     ))
     return []
 
@@ -626,13 +627,34 @@ def _wall_layout(model: ResolvedModel, wall) -> str:
     return "single"
 
 
+def _conduit_vertical_profile(run: ResolvedConduitRun) -> tuple[Ring, list[float]] | None:
+    """A conduit's path and per-vertex z, in the same shape a ``PipeRun`` resolves to.
+
+    A ``ConduitRun`` travels its plan polyline flat at ``z_start_m`` and rises vertically at
+    its last point (→ model/mep.py ConduitRun), so the riser is expressed the way pipe runs
+    express one: the final plan point repeated, carrying the two different elevations."""
+    if run.z_start_m is None or run.z_end_m is None or len(run.path) < 2:
+        return None
+    path = list(run.path)
+    z = [run.z_start_m] * len(path)
+    if abs(run.z_end_m - run.z_start_m) > 1e-9:
+        path.append(path[-1])
+        z.append(run.z_end_m)
+    return path, z
+
+
 def concrete_crossings(model: ResolvedModel) -> list[dict]:
-    """Every point where a routed pipe passes through concrete — the pour-day list.
+    """Every point where a routed pipe or raceway passes through concrete — the pour-day list.
 
     Walks each resolved run with vertical information against every concrete solid
     (slab/footing) and foundation wall. Returns plain dicts: run, host, host_category,
     point (plan), z_m, matched sleeve tag or None. A run with no z information cannot be
-    walked and is skipped — the check reports those runs as UNKNOWN, never silently."""
+    walked and is skipped — the check reports those runs as UNKNOWN, never silently.
+
+    Conduit is walked alongside pipe because the defect is identical and does not care which
+    trade caused it: a raceway crossing a deck that cured without a sleeve gets cored just the
+    same. Leaving conduit out is why ``CD-B-ATTIC-RISER`` and ``CD-B-KITCHEN`` punched through
+    catlin's 9" ``SL-M-DECK`` unsleeved and unnoticed."""
     from shapely.geometry import LineString, Point, Polygon
 
     hosts = [(s.tag, s.category, Polygon(s.outline), s.z0_m, s.z1_m)
@@ -646,22 +668,34 @@ def concrete_crossings(model: ResolvedModel) -> list[dict]:
             hosts.append((wall.tag, "wall", Polygon(structure.polygon),
                           wall.z0_m, wall.z1_m))
 
-    crossings: list[dict] = []
-    for run in model.pipe_runs:
-        if run.z_m is None:
+    # (tag, system label, outside diameter, path, per-vertex z) for both trades. A raceway's
+    # "diameter" is its trade size, which is what a sleeve has to be sized around.
+    walkable: list[tuple[str, str, float, Ring, list[float]]] = [
+        (run.tag, run.system, run.diameter_m, run.path, run.z_m)
+        for run in model.pipe_runs if run.z_m is not None
+    ]
+    for conduit in model.conduits:
+        profile = _conduit_vertical_profile(conduit)
+        if profile is None:
             continue
-        for i in range(len(run.path) - 1):
-            a, b = run.path[i], run.path[i + 1]
-            za, zb = run.z_m[i], run.z_m[i + 1]
+        path, z = profile
+        walkable.append((conduit.tag, conduit.service or "spare",
+                         conduit.trade_size_m, path, z))
+
+    crossings: list[dict] = []
+    for tag, system, diameter_m, path, z_m in walkable:
+        for i in range(len(path) - 1):
+            a, b = path[i], path[i + 1]
+            za, zb = z_m[i], z_m[i + 1]
             for host_tag, category, footprint, hz0, hz1 in hosts:
                 hit = _segment_concrete_hit(a, b, za, zb, footprint, hz0, hz1,
                                             LineString, Point)
                 if hit is None:
                     continue
                 point, z_at = hit
-                sleeve = _matching_sleeve(model, host_tag, point, z_at)
+                sleeve = _matching_sleeve(model, host_tag, system, point, z_at)
                 crossings.append(dict(
-                    run=run.tag, system=run.system, diameter_m=run.diameter_m,
+                    run=tag, system=system, diameter_m=diameter_m,
                     host=host_tag, host_category=category, point=point, z_m=z_at,
                     sleeve=sleeve))
     return crossings
@@ -708,11 +742,31 @@ def _segment_concrete_hit(a, b, za, zb, footprint, hz0, hz1, LineString, Point):
 _SLEEVE_MATCH_TOL_M = 0.1  # a cast-in sleeve within 4" of the crossing claims it
 
 
-def _matching_sleeve(model: ResolvedModel, host_tag: str, point: tuple[float, float],
-                     z_at: float) -> str | None:
+#: Which ``SleevePenetration.purpose`` values a crossing of each system may claim. Proximity
+#: alone is not enough: a 1" power raceway that happens to pass within 4" of a 3" drain
+#: sleeve is not threading it, and letting it match reported a false PASS on the raceway
+#: *and* stole the sleeve from the drain that really goes through it (which is how
+#: ``mep.sewer_exit_invert`` came to grade CD-B-SPA as a drain). Systems are the ``PipeSystem``
+#: values plus, for conduit, the ``Service`` the raceway carries or "spare" for a capped one.
+_SLEEVE_PURPOSES_BY_SYSTEM = {
+    "water_cold": {"water_cold"}, "water_hot": {"water_hot"},
+    "drain": {"drain"}, "vent": {"vent"}, "radon": {"vent", "drain"}, "gas": {"gas"},
+    # A raceway may share a sleeve with another raceway of any voltage — they are all
+    # electrical work — but never with a plumbing one. A spare pipe is electrical too: it is
+    # in the electrician's rough-in, whatever eventually goes through it.
+    "power_120": {"power_120", "power_240"}, "power_240": {"power_120", "power_240"},
+    "data": {"data"}, "spare": {"power_120", "power_240", "data"},
+}
+
+
+def _matching_sleeve(model: ResolvedModel, host_tag: str, system: str,
+                     point: tuple[float, float], z_at: float) -> str | None:
+    allowed = _SLEEVE_PURPOSES_BY_SYSTEM.get(system)
     best: tuple[float, str] | None = None
     for sleeve in model.sleeves:
         if sleeve.host_slab != host_tag:
+            continue
+        if allowed is not None and sleeve.purpose not in allowed:
             continue
         d = length(sub(sleeve.center, point))
         if d <= _SLEEVE_MATCH_TOL_M and (best is None or d < best[0]):

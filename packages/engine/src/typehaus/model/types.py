@@ -230,6 +230,22 @@ class ElectricalDeviceType(FurnitureType):
     # (a plain toggle). Read by the lighting-controls check and printed in the E-602
     # control schedule; a product attribute, not a kind, for the same reason NEMA is.
     control: str | None = None
+    # IFC export class for this product, overriding the ``DeviceKind`` map in
+    # emit/ifc/emitter.py::_device_ifc_classes. ``DeviceKind`` is the symbol axis and is
+    # deliberately coarse — one ``DATA_OUTLET`` covers a patch enclosure, an access point and
+    # a PoE camera — but those are three different IFC entities and three different Revit
+    # categories, and exporting them all as one would land them there as proxies. Naming the
+    # entity on the *type* means the next low-voltage product is a catalog entry, not a patch
+    # to five engine maps. ``ifc_type_entity`` is the paired IfcTypeObject; left None it is
+    # derived as ``ifc_entity + "Type"``, which holds for every IFC4 class used here.
+    ifc_entity: str | None = None
+    ifc_predefined_type: str | None = None
+    ifc_type_entity: str | None = None
+    # Power drawn over the data cable, where a device is fed by the PoE switch rather than
+    # from a branch circuit. Distinct from ``load_va``: this load lands on the switch's
+    # circuit, not the device's own (a PoE access point names no ``circuit`` at all), so a
+    # per-panel ``load_va`` sum must not pick it up. E-603 totals it against the switch.
+    poe_watts: float | None = None
 
 
 class LuminaireType(ElectricalDeviceType):

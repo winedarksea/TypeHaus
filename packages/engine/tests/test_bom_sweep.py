@@ -369,6 +369,8 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         "solar", "backup_power",
         # Lighting
         "luminaire_schedule", "lighting_controls", "light_runs", "lighting_load",
+        # Data & low-voltage
+        "data_devices", "data_raceways", "poe_budget",
         # Placeables
         "placeables",
     }, "add the new section to ui/src/model/engineBom.ts SECTION_GROUPS in the same change"

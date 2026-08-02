@@ -75,6 +75,11 @@ class Service(Enum):
     SUPPLY_AIR = "supply_air"
     RETURN_AIR = "return_air"
     VENT = "vent"
+    # Structured cabling (CAT6 and successors). Its own service rather than a flavour of
+    # POWER_120 because NEC 800.133/725 forbids comms and power conductors sharing a
+    # raceway: a run carrying this may never also carry power, and saying so in the type
+    # system is what makes that unrepresentable rather than merely undrawn.
+    DATA = "data"
 
 
 class DoorOperation(str, Enum):  # noqa: UP042 — StrEnum needs 3.11; the toolchain is 3.9
@@ -281,6 +286,12 @@ class DeviceKind(Enum):
     configuration lives on ``ElectricalDeviceType.nema``), not a kind of their own.
     """
 
+    # This enum is the *symbol* axis — what glyph the plan draws and which discipline layer
+    # it lands on. It is deliberately not the IFC axis: ``ElectricalDeviceType.ifc_entity``
+    # overrides the export class per product, which is how one ``DATA_OUTLET`` kind covers a
+    # patch enclosure, an access point and a PoE camera while each still reaches Revit as its
+    # own category.
+
     RECEPTACLE = "receptacle"
     RECEPTACLE_GFCI = "gfci"
     RECEPTACLE_240 = "receptacle_240"
@@ -290,6 +301,10 @@ class DeviceKind(Enum):
     JUNCTION_BOX = "junction_box"  # NEMA 3R weatherproof exterior box (blank/gasketed)
     METER = "meter"  # utility meter, separate from the panel (200A service)
     DISCONNECT = "disconnect"  # equipment disconnect (heat pump, hot tub, WH)
+    # Any low-voltage structured-cabling endpoint: patch enclosure, wireless access point,
+    # data jack, PoE camera. One kind, because they share a plan glyph and the E-COMM layer;
+    # the product identity (and the IFC class) rides ``type_ref``.
+    DATA_OUTLET = "data_outlet"
 
 
 class LuminaireForm(Enum):

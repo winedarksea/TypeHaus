@@ -95,6 +95,7 @@ export function CommandPalette() {
       { id: "reader-circuits", title: "Circuits (panel schedule)", group: "Model", run: () => setDetailView("circuits") },
       { id: "reader-lighting", title: "Lighting (luminaire schedule)", group: "Model", run: () => setDetailView("lighting") },
       { id: "reader-plumbing", title: "Plumbing (riser, fixture units)", group: "Model", run: () => setDetailView("plumbing") },
+      { id: "reader-data", title: "Data (low-voltage schedule)", group: "Model", run: () => setDetailView("data") },
       { id: "show-everything", title: "Show everything (clear visibility filters)", group: "Isolate", run: showEverything },
     ];
     for (const trade of ALL_TRADES) {

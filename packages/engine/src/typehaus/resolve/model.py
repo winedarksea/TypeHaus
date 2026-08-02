@@ -537,6 +537,8 @@ class ResolvedConduitRun:
     length_m: float
     from_ref: str | None = None
     to_ref: str | None = None
+    # ``Service`` value, or None for a capped spare (→ model/mep.py ConduitRun.service).
+    service: str | None = None
 
 
 @dataclass(frozen=True)

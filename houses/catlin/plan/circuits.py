@@ -183,19 +183,26 @@ CIRCUITS = (
     # -- ALWAYS_ON --
     # 800 VA is the *circuit allowance*, not the draw, and the gap between those two is
     # the whole reason duty_cycle exists. A current-generation fridge averages ~60 W over
-    # its cycle and a chest freezer ~45 W; the PoE AP adds ~15 W that never stops. 120 W of
-    # 800 VA = 0.15. Still the largest always-on term, and the one most worth metering.
+    # its cycle and a chest freezer ~45 W — 105 W of 800 VA = 0.13. Still the largest
+    # always-on term, and the one most worth metering.
+    #
+    # The ~15 W PoE allowance this circuit used to carry moved to CKT-HA on 2026-08-02, when
+    # the access points became real elements: they are fed by the switch in ED-B-NET-PATCH,
+    # not from a kitchen receptacle, so the load belongs on the switch's circuit.
     Circuit(uid="CKT016AAAA", tag="CKT-FRIDGE", slot=2, panel_ref=_BACKUP_PANEL,
             breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
-            load_va=800, duty_cycle=0.15,
-            description="Kitchen outlet 1: fridge + freezer + PoE WiFi"),
-    # 300 VA is again an outlet allowance. The real load is a router (~12 W) and a small
-    # always-on HA server (~28 W) — 40 W of 300 VA = 0.13. Not a duty cycle in the
-    # compressor sense: this load never cycles off, the allowance is simply generous.
+            load_va=800, duty_cycle=0.13,
+            description="Kitchen outlet 1: fridge + freezer"),
+    # 300 VA is again an outlet allowance. The real load is a router (~12 W), a small
+    # always-on HA server (~28 W), and the PoE switch feeding three access points at 15 W
+    # each (~45 W of port load plus conversion loss) — ~90 W of 300 VA = 0.30. Not a duty
+    # cycle in the compressor sense: this load never cycles off, the allowance is simply
+    # generous. The per-device PoE draw is scheduled on E-603 (→ takeoff/data.py), which is
+    # the only place it can be read, since a PoE device names no circuit of its own.
     Circuit(uid="CKT017AAAA", tag="CKT-HA", slot=4, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, gfci=True,
-            load_va=300, duty_cycle=0.13,
-            description="Basement outlet 1: HA server + router"),
+            load_va=300, duty_cycle=0.30,
+            description="Basement outlet 1: HA server + router + PoE switch"),
     # load_va is None: the luminaires carry real typed loads and the panel-schedule takeoff
     # sums the fixtures actually on the circuit (558 VA today). 0.15 is about five hours of
     # the twenty-four with roughly two thirds of those fixtures lit — an outage evening in

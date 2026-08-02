@@ -323,14 +323,21 @@ def test_conduit_emits_cable_carrier_segments(project, tmp_path: Path):
 def test_catlin_conduit_trunks(catlin_model):
     from typehaus.takeoff import conduit_takeoff
 
-    assert len(catlin_model.conduits) == 7  # 4 trunks + the 3 ESS microgrid runs
-    # Not all from the panel any more: the three 2026-08-02 runs start at the PV junction
-    # box and at the inverter, which is the point of them.
+    # 4 power trunks + the 3 ESS microgrid runs + the 5 structured-cabling runs.
+    assert len(catlin_model.conduits) == 12
+    # Not all from the panel any more: the three 2026-08-02 microgrid runs start at the PV
+    # junction box and at the inverter, and every data run starts at the patch enclosure.
     assert {run.from_ref for run in catlin_model.conduits} == {
-        "ED-B-PANEL", "ED-A-PV-JB", "EQ-B-ESS-INV"}
+        "ED-B-PANEL", "ED-A-PV-JB", "EQ-B-ESS-INV", "ED-B-NET-PATCH"}
     rows = conduit_takeoff(catlin_model)
+    # Power only — data and the capped spare are billed by takeoff/data.py, because comms
+    # and power are separate orders pulled by separate trades and may not share a raceway.
     assert {row["trade_size_in"] for row in rows} == {0.75, 1.0, 1.25, 1.5}
-    assert all(20 < row["length_ft"] < 60 for row in rows)
+    # A loose sanity band, not a contract: no trunk group is a stub and none crosses the
+    # house twice. The 1" group sits at 60 ft because it is four runs, not one.
+    assert all(20 < row["length_ft"] < 70 for row in rows)
+    assert not [run.tag for row in rows for run in catlin_model.conduits
+                if run.tag in row["tags"] and run.service in ("data", None)]
     # The PV riser reaches the attic junction box.
     riser = next(run for run in catlin_model.conduits if run.tag == "CD-B-ATTIC-RISER")
     assert riser.to_ref == "ED-A-PV-JB" and riser.z_end_m > 7.0
@@ -571,6 +578,7 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
 
     payload = model_to_dict(catlin_model)["electrical"]
     assert set(payload) == {"panel_schedule", "service_load", "conduit", "devices", "solar",
+                            "data",
                             "backup_components", "backup_runtime", "lighting"}
     assert set(payload["lighting"]) == {"schedule", "controls", "runs", "connected_va"}
     assert payload["panel_schedule"] == panel_schedule(catlin_model)

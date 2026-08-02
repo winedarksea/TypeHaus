@@ -51,6 +51,7 @@ from typehaus import (
     MountKind,
     Service,
     ServicePort,
+    SleevePenetration,
     deg,
     ft,
     inch,
@@ -125,6 +126,44 @@ DEVICE_TYPES = (
     ElectricalDeviceType(tag="ED-T-FLOOR-STAT", name="Radiant floor thermostat, 120V",
                           footprint=(inch(4), inch(2)), height=inch(4),
                           ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                             position=(ft(0), ft(0), ft(0))),)),
+    # --- structured cabling (plans/electrical_notes.md: "WiFi (energy efficient, POE") ----
+    # All three are DeviceKind.DATA_OUTLET, which is the plan-symbol axis only; what each
+    # one *is* rides `ifc_entity`/`ifc_predefined_type`, so they reach Revit as Communication
+    # Devices instead of proxies and the PoE cameras still to come are one more entry here
+    # rather than a patch to the engine's kind maps.
+    #
+    # The enclosure is the head end: router, PoE switch and the patch field, on CKT-HA with
+    # the HA server. It is the only one of the three that takes power from a branch circuit
+    # — the access points are fed over their data cables, which is why they carry poe_watts
+    # and no `circuit`, and why the panel schedule cannot see them (E-603 totals them).
+    ElectricalDeviceType(tag="ED-T-NET-ENCLOSURE",
+                          name="Structured media enclosure, 28in (router + PoE switch + patch)",
+                          footprint=(inch(15), inch(4)), height=inch(28),
+                          ifc_entity="IfcCommunicationsAppliance",
+                          ifc_predefined_type="NETWORKHUB",
+                          ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                             position=(ft(0), ft(0), ft(0))),
+                                 ServicePort(tag="data", service=Service.DATA,
+                                             position=(ft(0), ft(0), ft(0))),)),
+    # 15 W is the 802.3af class-4 ceiling a Wi-Fi 6/6E ceiling AP draws under load; the
+    # allowance already carried in plan/circuits.py said the same number before there was
+    # anywhere to put it.
+    ElectricalDeviceType(tag="ED-T-AP-CEILING",
+                          name="Wireless access point, ceiling, PoE 802.3af",
+                          poe_watts=15.0,
+                          footprint=(inch(8), inch(8)), height=inch(2),
+                          ifc_entity="IfcCommunicationsAppliance",
+                          ifc_predefined_type="NETWORKAPPLIANCE",
+                          ports=(ServicePort(tag="data", service=Service.DATA,
+                                             position=(ft(0), ft(0), ft(0))),)),
+    ElectricalDeviceType(tag="ED-T-AP-OUTDOOR",
+                          name="Wireless access point, outdoor wet-rated, PoE 802.3af",
+                          poe_watts=15.0,
+                          footprint=(inch(9), inch(9)), height=inch(3),
+                          ifc_entity="IfcCommunicationsAppliance",
+                          ifc_predefined_type="NETWORKAPPLIANCE",
+                          ports=(ServicePort(tag="data", service=Service.DATA,
                                              position=(ft(0), ft(0), ft(0))),)),
 )
 
@@ -673,9 +712,13 @@ PV_JBOX_CLAMP = [
 # storeys). Each run travels its plan polyline flat at start_elevation and rises
 # vertically at its last point to end_elevation; the takeoff bills the developed length.
 CONDUIT_TRUNKS = [
-    # Up the (3', 33') mechanical chase beside the radon vent to the PV junction box.
+    # Up the mechanical chase beside the radon vent to the PV junction box. The chase moved
+    # from (3', 33') to (1', 34'-6") on 2026-07-28 when RM-M-MECH was framed around it and
+    # this run did not follow: (3', 33') is 4" south of W-M-MECH-S, i.e. out in the open
+    # mudroom floor with no enclosure. Corrected 2026-08-02 to (1'-6", 34'-6"), the same
+    # line the data riser takes, 6" east of the radon/vent bundle.
     ConduitRun(uid="CDT001AAAA", tag="CD-B-ATTIC-RISER", trade_size=inch(1.5),
-               path=(pt(ft(2), ft(29)), pt(ft(3), ft(33))),
+               path=(pt(ft(2), ft(29)), pt(ft(1, 6), ft(34, 6))),
                start_elevation=ft(-4), end_elevation=ft(25, 6),
                from_ref="ED-B-PANEL", to_ref="ED-A-PV-JB"),
     # --- the backup microgrid's three raceways (2026-08-02) --------------------------
@@ -685,7 +728,7 @@ CONDUIT_TRUNKS = [
     # attic riser above feeds ED-A-PV-JB as before, and this run takes it the rest of the
     # way down the same chase to EQ-B-ESS-INV.
     ConduitRun(uid="CDT005AAAA", tag="CD-B-PV-INV", trade_size=inch(1),
-               path=(pt(ft(3), ft(33)), pt(ft(2), ft(24, 6))),
+               path=(pt(ft(1, 6), ft(34, 6)), pt(ft(2), ft(24, 6))),
                start_elevation=ft(-4), end_elevation=ft(-4),
                from_ref="ED-A-PV-JB", to_ref="EQ-B-ESS-INV"),
     # Grid port up to the service panel's CKT-ESS-GRID breaker: 4'-6" of wall, but it is
@@ -701,8 +744,13 @@ CONDUIT_TRUNKS = [
                start_elevation=ft(-4), end_elevation=ft(-4),
                from_ref="EQ-B-ESS-INV", to_ref="ED-B-BACKUP-PANEL"),
     # North under the 4'-ish house/garage gap to the EV receptacles on W-G-S.
+    # The east leg runs y=35', not y=36': the north foundation wall's structure sits on the
+    # 36' sheathing line, so the old route travelled 14' *inside* W-B-N2/W-B-N3 and read as
+    # three separate wall crossings. Pulled 1' south it stays in the basement and punches
+    # the wall once, where SP-B-N-GARAGE is (2026-08-02, when conduit joined the pour-day
+    # crossing walk).
     ConduitRun(uid="CDT002AAAA", tag="CD-B-GARAGE", trade_size=inch(1.25),
-               path=(pt(ft(2), ft(29)), pt(ft(2), ft(36)), pt(ft(16), ft(36)),
+               path=(pt(ft(2), ft(29)), pt(ft(2), ft(35)), pt(ft(16), ft(35)),
                      pt(ft(16), ft(41, 6))),
                start_elevation=ft(-4), end_elevation=ft(5, 10),
                from_ref="ED-B-PANEL", to_ref="ED-G-EV-1450"),
@@ -714,12 +762,213 @@ CONDUIT_TRUNKS = [
                path=(pt(ft(2), ft(29)), pt(ft(35), ft(29)), pt(ft(35), ft(28, 11))),
                start_elevation=ft(-1), end_elevation=ft(3, 6),
                from_ref="ED-B-PANEL", to_ref="ED-M-LIVING-KGF3"),
-    # South out of the basement to the hot tub disconnect under the porch.
+    # South out of the basement to the hot tub disconnect under the porch. Same 2026-08-02
+    # correction as CD-B-GARAGE above: the east leg was on the y=0 sheathing line, i.e.
+    # inside W-B-S1 for 6'-6". Pulled 1' north it crosses that wall once.
     ConduitRun(uid="CDT004AAAA", tag="CD-B-SPA", trade_size=inch(1),
-               path=(pt(ft(2), ft(29)), pt(ft(2), ft(0)), pt(ft(8, 6), ft(0)),
+               path=(pt(ft(2), ft(29)), pt(ft(2), ft(1)), pt(ft(8, 6), ft(1)),
                      pt(ft(8, 6), ft(-7.833))),
                start_elevation=ft(-4), end_elevation=ft(-4),
                from_ref="ED-B-PANEL", to_ref="ED-B-SPA-DISC"),
+]
+
+# --- Structured cabling: the head end, three access points, and the spine trunk ---------
+#
+# The house already has a full-height chase — the shared radon/plumbing shaft at
+# (1', 34'-6"), enclosed the whole way up by RM-B-FURNACE, RM-M-MECH, the notch in
+# RM-S-BATH1 and out through the attic (plan/mep.py VENT_RISERS). It is the trunk route in
+# everything but name, so the CAT6 rides it too, in its own raceways: NEC 800.133/725
+# forbids comms sharing a raceway with power.
+#
+# Four risers on the y=34'-6" line, 6" apart — enough to pull each without disturbing its
+# neighbours, and >= 5" so mep.sleeve_coverage's matcher cannot confuse two of the sleeves
+# they need through SL-M-DECK:
+#     x=1'-0"   radon + plumbing vent, two 3" pipes (VR-M-RADON-VENT)
+#     x=1'-6"   CD-B-ATTIC-RISER, 1.5" — PV DC up to ED-A-PV-JB
+#     x=2'-0"   CD-B-DATA-CHASE, 1.25" — this one
+#     x=2'-6"   CD-B-SPARE-CHASE, 2" — capped, empty, pull string
+# All four sit inside RM-M-MECH (x 0..6', y 33'-4"..36') where it crosses the main storey.
+#
+# Star topology, not a daisy chain — every run is a home run from ED-B-NET-PATCH, which is
+# how structured wiring is actually pulled and what makes the from_ref/to_ref graph
+# `electrical.data_reachability` walks mean something. The vertical is a fact of the chase,
+# not of the cable.
+DATA_HEAD_END = [
+    # Router, PoE switch and patch field in the basement mechanical room, 2' north of
+    # ED-B-PANEL (29') and clear of the ERV duct crossing at 31'-4". It is the only
+    # low-voltage device on a branch circuit: CKT-HA, with the HA server it sits beside.
+    ElectricalDevice(uid="CND001AAAA", tag="ED-B-NET-PATCH", kind=DeviceKind.DATA_OUTLET,
+                     position=pt(ft(2), ft(31)), type_ref="ED-T-NET-ENCLOSURE",
+                     circuit="CKT-HA", room="RM-B-FURNACE",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+]
+
+DATA_TRUNKS = [
+    # The spine riser: basement mechanical room to the attic floor, 6" east of the
+    # radon/vent bundle. Every upstairs pull goes through this one pipe.
+    ConduitRun(uid="CDT008AAAA", tag="CD-B-DATA-CHASE", trade_size=inch(1.25),
+               service=Service.DATA,
+               path=(pt(ft(2), ft(31)), pt(ft(2), ft(34, 6))),
+               start_elevation=ft(-4), end_elevation=ft(20, 6),
+               from_ref="ED-B-NET-PATCH"),
+    # The capped spare, another 6" east. No service and no conductors — a pull string and
+    # 2" of room, which is the whole of what electrical_notes.md line 3 ("conduit, make it
+    # easy to run new lines") asks for. It is where the PoE cameras go.
+    ConduitRun(uid="CDT009AAAA", tag="CD-B-SPARE-CHASE", trade_size=inch(2),
+               service=None,
+               path=(pt(ft(2), ft(31)), pt(ft(2, 6), ft(34, 6))),
+               start_elevation=ft(-4), end_elevation=ft(20, 6),
+               from_ref="ED-B-NET-PATCH"),
+]
+
+MAIN_DATA_TRUNKS = [
+    # Out of the chase at the main ceiling plane and east across the FS-SECOND joist bay to
+    # the open kitchen/living ceiling. (19', 29') sits east of the FO-M-STAIR well
+    # (x 10'-6"..17'-6") and between the kitchen, the stair and RM-M-STUDY — one radio
+    # covering all three, which is what put it here rather than over the counter.
+    ConduitRun(uid="CDT010AAAA", tag="CD-M-DATA-KITCH", trade_size=inch(0.75),
+               service=Service.DATA,
+               path=(pt(ft(2), ft(34, 6)), pt(ft(19), ft(34, 6)), pt(ft(19), ft(29))),
+               start_elevation=ft(9, 2), end_elevation=ft(9, 2),
+               from_ref="ED-B-NET-PATCH", to_ref="ED-M-KITCH-AP"),
+    # South through the same joist bay and out under the balcony deck to the porch soffit,
+    # sharing SP-SG-PORCH-ELEC with the ceiling fan's supply — one hole, two raceways.
+    ConduitRun(uid="CDT011AAAA", tag="CD-M-DATA-PORCH", trade_size=inch(0.75),
+               service=Service.DATA,
+               path=(pt(ft(2), ft(34, 6)), pt(ft(17, 6), ft(34, 6)),
+                     pt(ft(17, 6), ft(-4.833))),
+               start_elevation=ft(9, 2), end_elevation=ft(8, 8),
+               from_ref="ED-B-NET-PATCH", to_ref="ED-M-PORCH-AP"),
+]
+
+ATTIC_DATA_TRUNKS = [
+    # Along the attic floor to the NE corner, then up the gable to the access point.
+    ConduitRun(uid="CDT012AAAA", tag="CD-A-DATA-NE", trade_size=inch(0.75),
+               service=Service.DATA,
+               path=(pt(ft(2), ft(34, 6)), pt(ft(33), ft(34, 6)), pt(ft(33), ft(35, 5))),
+               start_elevation=ft(20, 6), end_elevation=ft(24),
+               from_ref="ED-B-NET-PATCH", to_ref="ED-A-EAST-AP"),
+]
+
+MAIN_DATA_DEVICES = [
+    ElectricalDevice(uid="CND002AAAA", tag="ED-M-KITCH-AP", kind=DeviceKind.DATA_OUTLET,
+                     position=pt(ft(19), ft(29)), type_ref="ED-T-AP-CEILING",
+                     room="RM-M-LIVING",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    # No `room=`, deliberately — the same reason ED-M-PORCH-FAN carries none, so the wet/
+    # exterior classifiers place it geometrically instead of believing a label. 1' west of
+    # the fan, in the same soffit bay and through the same deck penetration.
+    ElectricalDevice(uid="CND003AAAA", tag="ED-M-PORCH-AP", kind=DeviceKind.DATA_OUTLET,
+                     position=pt(ft(17), ft(-4.833)), type_ref="ED-T-AP-OUTDOOR",
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 6))),
+]
+
+ATTIC_DATA_DEVICES = [
+    # High on the north gable in the NE corner of RM-A-EAST. Mount elevation is
+    # storey-relative (attic datum 20'), so 4' here is 24' absolute — under the 4:12 rake,
+    # which at x=33' carries the roof to 26'.
+    ElectricalDevice(uid="CND004AAAA", tag="ED-A-EAST-AP", kind=DeviceKind.DATA_OUTLET,
+                     position=pt(ft(33), ft(35, 5)), type_ref="ED-T-AP-CEILING",
+                     room="RM-A-EAST", wall_ref="W-A-N1",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
+]
+
+# No porch deck penetration, and the reason is worth keeping: SL-SG-DECK resolves at
+# 10'-0"..10'-1 1/2", while ED-M-PORCH-FAN and ED-M-PORCH-AP both hang at 8'-6" and
+# CD-M-DATA-PORCH tops out at 9'-2". Everything on the porch is *under* the balcony deck, not
+# through it — the raceways leave the house through the framed south wall and run in the
+# soffit, and a framed wall takes a drilled hole, not a cast sleeve. A sleeve authored on
+# SL-SG-DECK (tried 2026-08-02) modelled a penetration nothing makes, and graded UNKNOWN
+# forever because `concrete_crossings` correctly found no run through it.
+#
+# ED-M-PORCH-FAN's supply is still undrawn, as it has always been. That is a branch-wiring
+# gap, not a penetration gap: under the "only main trunks are modeled" rule the last leg to
+# any device is undrawn, and the fan is no different from every receptacle in the house.
+
+# --- Raceway penetrations through cast concrete (2026-08-02) ---------------------------
+# Every one of these existed as a hole in the concrete and as nothing in the model:
+# `concrete_crossings` walked only pipe runs, so no check could see that the raceways were
+# crossing decks, foundation walls and footings unsleeved. Teaching it about conduit turned
+# up fifteen, three of them on risers authored in this same pass.
+#
+# Positions are the crossing points the resolver computes, not hand-measured ones — a sleeve
+# has to be where the run actually goes through, and `mep.sleeve_coverage` matches on that.
+# Wall and footing crossings are horizontal and carry the run's elevation; deck and slab
+# crossings are vertical.
+CONDUIT_SLEEVES = [
+    # The three risers through SL-M-DECK inside RM-M-MECH, 6" apart on the y=34'-6" line.
+    SleevePenetration(uid="CNS002AAAA", tag="SP-M-CD-PV", host_ref="SL-M-DECK",
+                      position=pt(ft(1, 6), ft(34, 6)), pipe_diameter=inch(1.5),
+                      sleeve_diameter=inch(2.5), purpose=Service.POWER_240),
+    SleevePenetration(uid="CNS003AAAA", tag="SP-M-CD-DATA", host_ref="SL-M-DECK",
+                      position=pt(ft(2), ft(34, 6)), pipe_diameter=inch(1.25),
+                      sleeve_diameter=inch(2), purpose=Service.DATA),
+    # The spare's sleeve is as unassigned as the pipe in it; POWER_120 is the field's
+    # default, not a claim about what gets pulled.
+    SleevePenetration(uid="CNS004AAAA", tag="SP-M-CD-SPARE", host_ref="SL-M-DECK",
+                      position=pt(ft(2, 6), ft(34, 6)), pipe_diameter=inch(2),
+                      sleeve_diameter=inch(3), purpose=Service.POWER_120),
+    # CD-B-GARAGE: west to east across the basement at -4', then north under the house/
+    # garage gap and up through the garage slab.
+    SleevePenetration(uid="CNS005AAAA", tag="SP-B-N3-CD-GAR", host_ref="W-B-N3",
+                      position=pt(ft(6), ft(35)), pipe_diameter=inch(1.25),
+                      sleeve_diameter=inch(2), purpose=Service.POWER_240,
+                      axis="horizontal", center_elevation=ft(-4)),
+    SleevePenetration(uid="CNS006AAAA", tag="SP-B-STR-CD-GAR", host_ref="W-B-STR",
+                      position=pt(ft(10), ft(35)), pipe_diameter=inch(1.25),
+                      sleeve_diameter=inch(2), purpose=Service.POWER_240,
+                      axis="horizontal", center_elevation=ft(-4)),
+    SleevePenetration(uid="CNS007AAAA", tag="SP-B-N2-CD-GAR", host_ref="W-B-N2",
+                      position=pt(ft(13), ft(35)), pipe_diameter=inch(1.25),
+                      sleeve_diameter=inch(2), purpose=Service.POWER_240,
+                      axis="horizontal", center_elevation=ft(-4)),
+    SleevePenetration(uid="CNS008AAAA", tag="SP-B-N2-CD-GAR2", host_ref="W-B-N2",
+                      position=pt(ft(16), ft(35, 6)), pipe_diameter=inch(1.25),
+                      sleeve_diameter=inch(2), purpose=Service.POWER_240,
+                      axis="horizontal", center_elevation=ft(-4)),
+    SleevePenetration(uid="CNS009AAAA", tag="SP-GF-CD-GAR", host_ref="FT-GF-S2",
+                      position=pt(ft(16), ft(40, 10)), pipe_diameter=inch(1.25),
+                      sleeve_diameter=inch(2), purpose=Service.POWER_240,
+                      axis="horizontal", center_elevation=ft(-4)),
+    SleevePenetration(uid="CNS010AAAA", tag="SP-G-CD-GAR", host_ref="SL-G-FLOOR",
+                      position=pt(ft(16), ft(41, 6)), pipe_diameter=inch(1.25),
+                      sleeve_diameter=inch(2), purpose=Service.POWER_240),
+    # CD-B-KITCHEN: east across the basement ceiling at -1' and up through SL-M-DECK to the
+    # kitchen's east counter wall. The wall and deck sleeves are 1/2" apart in plan but in
+    # different hosts, which is what the matcher keys on.
+    SleevePenetration(uid="CNS011AAAA", tag="SP-B-STR-CD-KITCH", host_ref="W-B-STR",
+                      position=pt(ft(10), ft(29)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.POWER_120,
+                      axis="horizontal", center_elevation=ft(-1)),
+    SleevePenetration(uid="CNS012AAAA", tag="SP-B-CN-CD-KITCH", host_ref="W-B-CN",
+                      position=pt(ft(18), ft(29)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.POWER_120,
+                      axis="horizontal", center_elevation=ft(-1)),
+    SleevePenetration(uid="CNS013AAAA", tag="SP-B-E2-CD-KITCH", host_ref="W-B-E2",
+                      position=pt(ft(35), ft(28, 11.5)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.POWER_120,
+                      axis="horizontal", center_elevation=ft(-1)),
+    SleevePenetration(uid="CNS014AAAA", tag="SP-M-CD-KITCH", host_ref="SL-M-DECK",
+                      position=pt(ft(35), ft(28, 11)), pipe_diameter=inch(0.75),
+                      sleeve_diameter=inch(1.5), purpose=Service.POWER_120),
+    # CD-B-SPA: south out of the basement and under the sunken garden to the hot tub
+    # disconnect.
+    # This one was invisible until the sleeve matcher learned to check purpose: the run
+    # passes 2" from SP-B-CW-WC2, the WC2 drain's sleeve, and proximity alone let a 1" power
+    # raceway claim a 3" plumbing sleeve — reported as a PASS, and it also stole the sleeve
+    # from the drain, which is how mep.sewer_exit_invert came to grade CD-B-SPA as a drain.
+    SleevePenetration(uid="CNS017AAAA", tag="SP-B-CW-CD-SPA", host_ref="W-B-CW",
+                      position=pt(ft(2), ft(18)), pipe_diameter=inch(1),
+                      sleeve_diameter=inch(1.75), purpose=Service.POWER_240,
+                      axis="horizontal", center_elevation=ft(-4)),
+    SleevePenetration(uid="CNS015AAAA", tag="SP-B-S1-CD-SPA", host_ref="W-B-S1",
+                      position=pt(ft(8, 6), ft(0, 6)), pipe_diameter=inch(1),
+                      sleeve_diameter=inch(1.75), purpose=Service.POWER_240,
+                      axis="horizontal", center_elevation=ft(-4)),
+    SleevePenetration(uid="CNS016AAAA", tag="SP-SG-W1-CD-SPA", host_ref="W-SG-W1",
+                      position=pt(ft(8, 6), ft(-4.3332)), pipe_diameter=inch(1),
+                      sleeve_diameter=inch(1.75), purpose=Service.POWER_240,
+                      axis="horizontal", center_elevation=ft(-4)),
 ]
 
 # --- NEC 210.52 fill (generated positions, hand-authored constructors) ---------------
@@ -1073,8 +1322,11 @@ NEC_FILL_ATTIC = [
 ]
 
 BASEMENT_ELEMENTS = [*BACKUP_ENCLOSURE, *ESS_EQUIPMENT, *BASEMENT_DEVICES,
-                     *BASEMENT_EQUIPMENT, *CONDUIT_TRUNKS, *NEC_FILL_BASEMENT]
-MAIN_ELEMENTS = [*SERVICE_DEVICES, *MAIN_DEVICES, *MAIN_EQUIPMENT, *NEC_FILL_MAIN]
+                     *BASEMENT_EQUIPMENT, *CONDUIT_TRUNKS, *DATA_HEAD_END, *DATA_TRUNKS,
+                     *NEC_FILL_BASEMENT]
+MAIN_ELEMENTS = [*SERVICE_DEVICES, *MAIN_DEVICES, *MAIN_EQUIPMENT, *MAIN_DATA_DEVICES,
+                 *MAIN_DATA_TRUNKS, *CONDUIT_SLEEVES, *NEC_FILL_MAIN]
 GARAGE_ELEMENTS = [*GARAGE_DEVICES, *GARAGE_EQUIPMENT]
 SECOND_ELEMENTS = [*SECOND_DEVICES, *SECOND_EQUIPMENT, *NEC_FILL_SECOND]
-ATTIC_ELEMENTS = [*PV_JBOX, *PV_JBOX_CLAMP, *NEC_FILL_ATTIC]
+ATTIC_ELEMENTS = [*PV_JBOX, *PV_JBOX_CLAMP, *ATTIC_DATA_DEVICES, *ATTIC_DATA_TRUNKS,
+                  *NEC_FILL_ATTIC]

@@ -75,6 +75,11 @@ def takeoff(
                "lighting_controls": bom["lighting_controls"],
                "light_runs": bom["light_runs"],
                "lighting_load": bom["lighting_load"],
+               # Low-voltage (2026-08-02). Same argument as lighting_controls above: a
+               # section the CLI drops is invisible to the estimate and to variant compare.
+               "data_devices": bom["data_devices"],
+               "data_raceways": bom["data_raceways"],
+               "poe_budget": bom["poe_budget"],
                # The 2026-07-25 sweep's sections. Forwarded here rather than left in
                # bill_of_materials only: a section the CLI drops is invisible to the
                # estimate and to `haus variants compare`.

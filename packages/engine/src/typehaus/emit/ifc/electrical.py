@@ -27,9 +27,17 @@ _MIN_RISE_M = 0.05  # a rise smaller than this is drawn flat
 
 
 def emit_conduits(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, Any],
-                  project_uuid: Any, assign_representation) -> None:
+                  project_uuid: Any, assign_representation) -> dict[str, list[Any]]:
+    """Emit every raceway; return its segments grouped by ``service`` so the caller can put
+    them in an ``IfcDistributionSystem``. A capped spare (``service`` None) is returned under
+    no key — an empty pipe belongs to no system, and that is what a reader should see."""
+    by_service: dict[str, list[Any]] = {}
     for run in model.conduits:
-        _emit_conduit_run(f, body, run, storeys, project_uuid, assign_representation)
+        segments = _emit_conduit_run(f, body, run, storeys, project_uuid,
+                                     assign_representation)
+        if run.service is not None:
+            by_service.setdefault(run.service, []).extend(segments)
+    return by_service
 
 
 def emit_light_runs(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, Any],
@@ -120,7 +128,7 @@ def emit_solar_panels(f: Any, body: Any, model: ResolvedModel, storeys: dict[str
 
 
 def _emit_conduit_run(f: Any, body: Any, run: Any, storeys: dict[str, Any],
-                      project_uuid: Any, assign_representation) -> None:
+                      project_uuid: Any, assign_representation) -> list[Any]:
     half = run.trade_size_m / 2.0
     z_flat = run.z_start_m if run.z_start_m is not None else 0.0
     segments: list[tuple[str, Any]] = []
@@ -138,6 +146,7 @@ def _emit_conduit_run(f: Any, body: Any, run: Any, storeys: dict[str, Any],
                    (x + half, y + half), (x - half, y + half)]
         z0, z1 = sorted((run.z_start_m, run.z_end_m))
         segments.append(("riser", (profile, z1 - z0, z0)))
+    emitted: list[Any] = []
     for child_key, (profile, height, z0) in segments:
         element = ll.create_entity(f, "IfcCableCarrierSegment",
                                    name=f"{run.tag}/{child_key}")
@@ -151,5 +160,8 @@ def _emit_conduit_run(f: Any, body: Any, run: Any, storeys: dict[str, Any],
             "trade_size_in": run.trade_size_m * _M_TO_IN,
             "from_ref": run.from_ref or "", "to_ref": run.to_ref or "",
             "length_ft": run.length_m * 3.280839895013123,
+            "service": run.service or "spare",
         })
         ll.assign_container(f, element, storeys[run.storey])
+        emitted.append(element)
+    return emitted

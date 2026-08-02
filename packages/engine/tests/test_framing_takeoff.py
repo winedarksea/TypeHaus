@@ -83,6 +83,8 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "conduit", "conductors", "solar", "backup_power",
                         "luminaire_schedule", "lighting_controls", "light_runs",
                         "lighting_load",
+                        # Structured cabling (2026-08-02).
+                        "data_devices", "data_raceways", "poe_budget",
                         # The 2026-07-25 sweep: resolved-but-unbilled families.
                         "floor_finishes", "envelope_layers", "openings", "stair_finish",
                         # Species wood rollup (2026-08-02): sauna liner, panelings,

@@ -63,6 +63,15 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     sections: ["luminaire_schedule", "lighting_controls", "light_runs", "lighting_load"],
   },
   {
+    id: "data",
+    // Its own group rather than a tail on Electrical, for the reason the trades are split on
+    // site: comms conductors may not share a raceway with power, so the pipe is a separate
+    // order and the PoE load lands on the switch instead of on the panel schedule.
+    note: "Low-voltage devices, the comms and spare raceways, and the PoE load on the switch.",
+    title: "Data & low-voltage",
+    sections: ["data_devices", "data_raceways", "poe_budget"],
+  },
+  {
     id: "placeables",
     note: "Casework, appliances and fixtures — everything placed rather than framed.",
     title: "Placeables",

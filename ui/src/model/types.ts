@@ -523,6 +523,42 @@ export interface Lighting {
   connected_va: LightingLoad;
 }
 
+// The low-voltage take-off, carried verbatim from takeoff/data.py (→ model_json.py
+// "electrical.data"). `poe_watts` is null, never zero, for a product that states no PoE
+// draw — the budget counts those separately rather than hiding them in a total.
+export interface DataDeviceRow {
+  tag: string;
+  type_ref: string;
+  type_name: string;
+  room: string;
+  mount: string;
+  mount_elevation_ft: number | null;
+  poe_watts: number | null;
+  circuit: string;
+}
+
+export interface DataRacewayRow {
+  trade_size_in: number;
+  service: string; // "data" | "spare"
+  runs: number;
+  length_ft: number;
+  tags: string[];
+}
+
+export interface PoeBudget {
+  devices?: number;
+  powered_devices?: number;
+  unknown_devices?: number;
+  connected_watts?: number;
+  basis?: string;
+}
+
+export interface DataTakeoff {
+  devices: DataDeviceRow[];
+  raceways: DataRacewayRow[];
+  poe_budget: PoeBudget;
+}
+
 export interface Electrical {
   panel_schedule: PanelScheduleRow[];
   // null for a house that authors no circuits — the summary would be an estimate over nothing.
@@ -533,6 +569,7 @@ export interface Electrical {
   backup_components: BackupComponentRow[];
   backup_runtime?: BackupRuntime; // absent on a model.json built before the ESS refactor
   lighting?: Lighting | null; // absent on a model.json built before the lighting plan
+  data?: DataTakeoff | null; // absent on a model.json built before structured cabling
 }
 
 // The HVAC take-off, carried verbatim from takeoff/hvac.py (→ model_json.py "hvac"). Field

@@ -1,5 +1,5 @@
 # TODO
-Reminder: all items should design around clean export to Revit/Sketchup/IFC (follow industry standards where practical), and also be coded in accessible, "vibe code friendly" configs.
+Reminder: all items should design around clean export to Revit/Sketchup/IFC (follow industry standards where practical), and also be coded in accessible, "vibe code friendly" library configs.
 
 ## Needs your decision
 
@@ -49,6 +49,49 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Remaining Work
 
+- ~~**Structured cabling (CAT6) up the chase + a low-voltage schedule**~~ DONE 2026-08-02.
+  `Service.DATA`, `ConduitRun.service` (`None` = capped spare), `DeviceKind.DATA_OUTLET`.
+  Catlin gets a patch enclosure in `RM-B-FURNACE` home-running three PoE access points
+  (kitchen ceiling, porch soffit, attic NE) up the radon/vent chase, plus a 2" capped spare.
+  Four risers now share the y=34'-6" line at 6" centres: vent bundle 1'-0", PV 1'-6", data
+  2'-0", spare 2'-6".
+  - **`ElectricalDeviceType.ifc_entity`/`ifc_predefined_type`/`ifc_type_entity`** is the
+    lever that keeps this a catalog: `DeviceKind` stays the plan-symbol axis, and the IFC
+    class rides the product type. The APs export as `IfcCommunicationsAppliance`/
+    `NETWORKAPPLIANCE` (Revit → Communication Devices), grouped in one
+    `IfcDistributionSystem`/`COMMUNICATION`. **A PoE camera is one `DEVICE_TYPES` entry and
+    zero engine edits** — `IfcAudioVisualAppliance`/`CAMERA`, and it appears on E-603 and in
+    the Data reader automatically. The capped spare is where its cable goes.
+  - New: `electrical.data_reachability` (ADVISORY, pure `from_ref`/`to_ref` graph walk — no
+    invented distance tolerance, because branch cable is undrawn by doctrine),
+    `takeoff/data.py`, sheet **E-603**, UI reader **Data**, AIA layers `E-COMM-DEVC`/
+    `E-COMM-CNDT`.
+  - `conduit_takeoff` now bills **power only**; data and the spare are billed by
+    `takeoff/data.py`. Comms and power may not share a raceway (NEC 800.133/725), so one
+    merged lineal-foot row is not an order either trade can buy against.
+  - PoE load moved from `CKT-FRIDGE` (where a single notional 15 W allowance sat) to
+    `CKT-HA`, which feeds the switch. **Consequence: battery-only always-on autonomy fell
+    ~50 h → 46.3 h**, because two of the three APs had never been counted anywhere. The 48-h
+    *solar* cycle still sustains the always-on tier (net +2.5 kWh), which is the question the
+    backup design is actually built around.
+- ~~**Conduit was invisible to the pour-day sleeve walk**~~ DONE 2026-08-02, found while
+  doing the above. `concrete_crossings` walked only `model.pipe_runs`, so **15 raceway
+  crossings of cast concrete had no sleeve** and nothing could say so. It now walks conduit
+  too. Three consequences worth remembering:
+  - `CD-B-GARAGE` and `CD-B-SPA` were routed *along* the y=36'/y=0' sheathing lines, i.e.
+    **inside** the foundation walls for 14' and 6'-6". Pulled 1' inboard; each now crosses
+    once, where a sleeve is.
+  - `_matching_sleeve` matched on proximity alone, so a 1" power raceway could claim a 3"
+    drain sleeve 2" away — a false PASS that *also* stole the sleeve from the drain, which
+    is how `mep.sewer_exit_invert` came to grade `CD-B-SPA` as a drain. It now checks
+    `SleevePenetration.purpose` against the crossing's system.
+  - `CD-B-ATTIC-RISER`/`CD-B-PV-INV` still ended at **(3', 33')**, the pre-2026-07-28 chase
+    location — 4" outside `W-M-MECH-S`, floating in the mudroom. Repointed, uids kept.
+- **No porch deck penetration, and that is correct** (settled 2026-08-02). `SL-SG-DECK`
+  resolves at 10'-0"; `ED-M-PORCH-FAN`, `ED-M-PORCH-AP` and `CD-M-DATA-PORCH` are all at
+  8'-6"–9'-2", i.e. *under* it. The raceways leave through the framed south wall, which
+  takes a drilled hole, not a cast sleeve. `ED-M-PORCH-FAN`'s supply is still undrawn — a
+  branch-wiring gap like every other device's, not a penetration gap.
 - ~~**Handrail schema + real R311.7.8 check**~~ DONE 2026-08-02. The schema and check had
   in fact already shipped; what was missing was authoring and a resolver. This batch:
   wall-mounted handrails authored for all three stairs (`role="handrail"`, `serves_stair`,

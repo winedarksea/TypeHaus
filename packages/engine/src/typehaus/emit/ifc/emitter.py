@@ -23,7 +23,7 @@ from typehaus.emit.ifc.electrical import (emit_conduits, emit_light_runs,
 from typehaus.emit.ifc.roof import emit_roof, member_class, member_representation
 from typehaus.emit.trades import DRAINAGE_CATEGORIES, PIPE_ACCESSORY_CATEGORIES
 from typehaus.emit.room_floor import room_floor_elevation
-from typehaus.model.enums import DoorOperation
+from typehaus.model.enums import DoorOperation, Service
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import polygon_area, rect_between
@@ -131,11 +131,20 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     for duct in sorted(model.ducts, key=lambda item: item.uid):
         _emit_duct_run(f, body, model, duct, storeys, project_uuid)
 
-    emit_conduits(f, body, model, storeys, project_uuid, _assign_representation)
+    raceways_by_service = emit_conduits(f, body, model, storeys, project_uuid,
+                                        _assign_representation)
     emit_light_runs(f, body, model, storeys, project_uuid, _assign_representation)
     emit_solar_panels(f, body, model, storeys, project_uuid, _assign_representation)
 
-    _emit_registers_equipment_devices(f, body, model, storeys, project_uuid)
+    data_devices = _emit_registers_equipment_devices(f, body, model, storeys, project_uuid)
+    # Structured cabling as one ``IfcDistributionSystem``, for the same reason the piped
+    # systems above are: without it the raceway, the patch enclosure and the access point on
+    # the end of it are unrelated elements that happen to be near each other, and a BIM
+    # tool's system browser shows nothing under communications. Power raceways stay
+    # ungrouped — a branch-circuit topology is the panel schedule's job, not the raceway's,
+    # and inventing a system per circuit would claim a routing nobody authored.
+    _emit_data_system(f, building, raceways_by_service.get(Service.DATA.value, []),
+                      data_devices)
     _emit_utilities(f, body, model, project_uuid)
 
     for bedding in sorted(model.footing_beddings, key=lambda item: item.uid):
@@ -851,6 +860,22 @@ def _emit_pipe_system(f: Any, building: Any, system_key: str, elements: list) ->
     return system
 
 
+def _emit_data_system(f: Any, building: Any, raceways: list, devices: list) -> Any:
+    """Structured cabling as one ``IfcDistributionSystem``/COMMUNICATION.
+
+    COMMUNICATION rather than IfcDistributionSystemEnum's DATA: DATA is the narrower
+    "data circuits" member, while COMMUNICATION is the one Revit and the common IFC
+    importers map onto their Communication Devices category, which is where the access
+    points need to land for this to be worth exporting at all."""
+    elements = list(raceways) + list(devices)
+    if not elements:
+        return None
+    system = ll.create_system(f, "Data", "COMMUNICATION")
+    ll.assign_to_group(f, system, elements)
+    ll.serves_building(f, system, building)
+    return system
+
+
 def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_uuid: Any,
                 model: Any = None) -> Any:
     """One resolved solid as its IFC element. Returns it, so systems can group members."""
@@ -1135,7 +1160,14 @@ def _emit_duct_run(f: Any, body: Any, model: ResolvedModel, duct: Any, storeys: 
 
 
 def _emit_registers_equipment_devices(f: Any, body: Any, model: ResolvedModel,
-                                      storeys: dict[str, Any], project_uuid: Any) -> None:
+                                      storeys: dict[str, Any],
+                                      project_uuid: Any) -> list[Any]:
+    """Emit them all; return the low-voltage devices so they can join the data system.
+
+    An access point that exports as a well-classed ``IfcCommunicationsAppliance`` but belongs
+    to no system is still invisible in a BIM tool's system browser — the same argument
+    ``_emit_pipe_system`` makes for a shutoff valve."""
+    data_devices: list[Any] = []
     type_collections = {
         "Register": {item.tag: item for item in model.plan.library.register_types},
         "Equipment": {item.tag: item for item in model.plan.library.equipment_types},
@@ -1158,9 +1190,15 @@ def _emit_registers_equipment_devices(f: Any, body: Any, model: ResolvedModel,
                                                     type_class, project_uuid),
                                 ifc_class)
             elif element.element_kind == "ElectricalDevice":
-                ifc_class, type_class = _device_ifc_classes(element.kind.value)
-                _emit_device(f, body, element, storey, storeys, project_uuid, product_type, resolved_item,
-                             _placeable_ifc_type(f, type_cache, product_type, ifc_class, type_class, project_uuid))
+                ifc_class, type_class = _device_ifc_classes(element.kind.value, product_type)
+                entity = _emit_device(
+                    f, body, element, storey, storeys, project_uuid, product_type,
+                    resolved_item,
+                    _placeable_ifc_type(f, type_cache, product_type, ifc_class, type_class,
+                                        project_uuid))
+                if element.kind.value == "data_outlet":
+                    data_devices.append(entity)
+    return data_devices
 
 
 def _emit_register(f: Any, body: Any, register: Any, storey: Any, storeys: dict[str, Any],
@@ -1277,16 +1315,19 @@ def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dic
 
 def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str, Any],
                  project_uuid: Any, product_type: Any | None, resolved: Any | None,
-                 type_object: Any | None) -> None:
+                 type_object: Any | None) -> Any:
     x, y = device.position.xy_m
     half = 0.05  # 4"x4" nominal device box
     outline = resolved.footprint if resolved is not None else _rectangle(x, y, half * 2, half * 2)
     # The placeable resolver owns the Mount contract, so IFC reads the same elevation as
     # glTF and the UI instead of carrying its own per-kind defaults (which used to diverge).
     z0 = resolved.z_m if resolved is not None else resolved_mount_elevation(storey, device)
-    ifc_class, _ = _device_ifc_classes(device.kind.value)
+    ifc_class, _ = _device_ifc_classes(device.kind.value, product_type)
     element = ll.create_entity(f, ifc_class, name=device.tag)
     element.GlobalId = derive_guid(project_uuid, device.uid)
+    predefined = getattr(product_type, "ifc_predefined_type", None)
+    if predefined and hasattr(element, "PredefinedType"):
+        element.PredefinedType = predefined
     _assign_representation(f, element, ll.add_prism_from_profile(
         f, body, outline, product_type.height.meters if product_type is not None else 0.05, z0))
     ll.ensure_pset(f, element, PSET_SOURCE, {"uid": device.uid, "tag": device.tag,
@@ -1295,12 +1336,16 @@ def _emit_device(f: Any, body: Any, device: Any, storey: Any, storeys: dict[str,
                                                         "source_type": device.type_ref or ""})
     ll.ensure_pset(f, element, "TypeHaus_Device", {
         "kind": device.kind.value, "circuit": device.circuit or "",
+        # A PoE device names no circuit — its power arrives over the data cable — so the
+        # schedule needs the watts here or the load has nowhere to be read.
+        "poe_watts": getattr(product_type, "poe_watts", None) or 0.0,
     })
     if product_type is not None:
         _emit_service_ports(f, element, product_type.ports, project_uuid, device.uid)
     if type_object is not None:
         ll.assign_type(f, element, type_object)
     ll.assign_container(f, element, storeys[storey.tag])
+    return element
 
 
 def _placeable_ifc_type(f: Any, cache: dict[tuple[str, str], Any], product_type: Any | None,
@@ -1349,7 +1394,18 @@ def _luminaire_photometry(product_type: Any) -> dict[str, Any]:
     }
 
 
-def _device_ifc_classes(kind: str) -> tuple[str, str]:
+def _device_ifc_classes(kind: str, product_type: Any | None = None) -> tuple[str, str]:
+    """The IFC entity pair for a device: its product type wins, else the kind map.
+
+    ``DeviceKind`` is the plan-symbol axis and is deliberately coarse — one ``DATA_OUTLET``
+    covers a patch enclosure, a wireless access point and a PoE camera, which share a glyph
+    and the E-COMM layer but are three different IFC entities landing in three different
+    Revit categories. Letting ``ElectricalDeviceType.ifc_entity`` override means the next
+    low-voltage product is one catalog entry rather than a patch to five engine maps."""
+    entity = getattr(product_type, "ifc_entity", None)
+    if entity:
+        type_entity = getattr(product_type, "ifc_type_entity", None) or f"{entity}Type"
+        return entity, type_entity
     # Mirrored by diff/ifc_adapter.py (electrical_classes + the external read list) —
     # change both together or the round-trip diff reads an edit as a deletion.
     return {
@@ -1361,6 +1417,9 @@ def _device_ifc_classes(kind: str) -> tuple[str, str]:
         "junction_box": ("IfcJunctionBox", "IfcJunctionBoxType"),
         "meter": ("IfcFlowMeter", "IfcFlowMeterType"),
         "disconnect": ("IfcSwitchingDevice", "IfcSwitchingDeviceType"),
+        # Bare fallback for a low-voltage device whose type names no ``ifc_entity``: a data
+        # jack is an outlet. Access points and cameras override it on the type.
+        "data_outlet": ("IfcOutlet", "IfcOutletType"),
     }.get(kind, ("IfcBuildingElementProxy", "IfcBuildingElementProxyType"))
 
 

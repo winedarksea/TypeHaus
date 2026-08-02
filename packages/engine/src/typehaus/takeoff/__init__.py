@@ -41,6 +41,8 @@ from typehaus.takeoff.glazing import (
     glazing_panel_takeoff,
     glazing_trim_takeoff,
 )
+from typehaus.takeoff.data import (data_device_schedule, data_raceway_takeoff,
+                                   poe_budget)
 from typehaus.takeoff.hardware import hardware_takeoff
 from typehaus.takeoff.lighting import (
     connected_lighting_va,
@@ -68,6 +70,7 @@ __all__ = [
     "framing_takeoff",
     "hardware_takeoff",
     "luminaire_schedule", "lighting_controls", "light_run_takeoff", "connected_lighting_va",
+    "data_device_schedule", "data_raceway_takeoff", "poe_budget",
     "placeables_takeoff",
     "railing_takeoff",
     "sheet_goods_takeoff",

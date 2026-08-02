@@ -90,13 +90,19 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         "switch": "IfcSwitchingDevice", "light": "IfcLightFixture",
         "panel": "IfcElectricDistributionBoard",
         "junction_box": "IfcJunctionBox", "meter": "IfcFlowMeter",
-        "disconnect": "IfcSwitchingDevice",
+        "disconnect": "IfcSwitchingDevice", "data_outlet": "IfcOutlet",
     }
+    device_types = {t.tag: t for t in model.plan.library.electrical_device_types}
     for item in model.canvas_objects:
         source = model.plan.by_tag(item.tag)
         source_kind = getattr(getattr(source, "kind", None), "value", "")
         if item.kind == "ElectricalDevice":
-            ifc_class = electrical_classes.get(source_kind, "IfcBuildingElementProxy")
+            # The type's ``ifc_entity`` overrides the kind map on the way out
+            # (emitter.py::_device_ifc_classes), so it has to override it on the way back in
+            # too — otherwise every access point reads as a deletion on a round trip.
+            product_type = device_types.get(item.type_ref or "")
+            ifc_class = (getattr(product_type, "ifc_entity", None)
+                         or electrical_classes.get(source_kind, "IfcBuildingElementProxy"))
         elif item.kind == "Equipment":
             ifc_class = equipment_classes.get(source_kind, "IfcBuildingElementProxy")
         else:
@@ -149,7 +155,11 @@ def external_elems(ifc_path: Path) -> list[DiffElem]:
                 "IfcSanitaryTerminal", "IfcBuildingElementProxy", "IfcOutlet", "IfcAirTerminal",
                 "IfcSwitchingDevice", "IfcLightFixture", "IfcElectricDistributionBoard",
                 "IfcJunctionBox", "IfcFlowMeter", "IfcUnitaryEquipment",
-                "IfcAirToAirHeatRecovery"):
+                "IfcAirToAirHeatRecovery",
+                # Low-voltage, reachable only through ``ElectricalDeviceType.ifc_entity``.
+                # Left off this list, every access point and camera we exported would read
+                # back as a deletion.
+                "IfcCommunicationsAppliance", "IfcAudioVisualAppliance"):
         for prod in model.by_type(cls):
             # A door/window's void is implementation detail of its filling relationship.
             # Unfilled rough openings remain independently reconcilable occurrences.

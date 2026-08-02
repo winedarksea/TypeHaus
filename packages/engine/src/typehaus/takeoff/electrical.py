@@ -185,9 +185,17 @@ def service_load_summary(model: ResolvedModel) -> dict[str, object]:
 
 
 def conduit_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
-    """Lineal feet of raceway by EMT trade size — developed length (plan + riser)."""
+    """Lineal feet of *power* raceway by EMT trade size — developed length (plan + riser).
+
+    Data and spare raceways are billed by ``takeoff/data.py`` instead. Same pipe, different
+    order: comms may not share a raceway with power (NEC 800.133/725), so the two are pulled
+    by different trades on different days, and merging 40 ft of 3/4" power with 40 ft of 3/4"
+    data into one 80 ft row would produce a line nobody can buy against.
+    """
     groups: dict[float, dict[str, object]] = {}
     for run in model.conduits:
+        if run.service in ("data", None):
+            continue
         row = groups.setdefault(run.trade_size_m, {
             "trade_size_in": round(run.trade_size_m * 39.37007874015748, 2),
             "runs": 0, "length_m": 0.0, "tags": []})
@@ -222,8 +230,13 @@ def conductor_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     total raceway length times the conductors a branch circuit of each pole count needs,
     rather than pulled circuit by circuit. The panel schedule is what says which circuits
     exist; the raceway is what says how far they run.
+
+    Only power raceways are counted. A data raceway carries no branch circuit, and a capped
+    spare carries nothing at all — billing THHN against either would buy wire for pipe that
+    will never hold it.
     """
-    total_ft = sum(run.length_m * 3.280839895013123 for run in model.conduits)
+    power_runs = [run for run in model.conduits if run.service not in ("data", None)]
+    total_ft = sum(run.length_m * 3.280839895013123 for run in power_runs)
     if total_ft <= 0.0:
         return []
     by_poles: dict[int, int] = {}
@@ -235,7 +248,7 @@ def conductor_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         per = _CONDUCTORS_PER_CIRCUIT.get(poles)
         if per is None:
             continue
-        pull_ft = total_ft / max(len(model.conduits), 1) + _MAKEUP_ALLOWANCE_FT
+        pull_ft = total_ft / max(len(power_runs), 1) + _MAKEUP_ALLOWANCE_FT
         rows.append({
             "poles": poles,
             "circuits": circuits,

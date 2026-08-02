@@ -29,6 +29,8 @@ from typehaus.takeoff.electrical import (
     service_load_summary,
     solar_takeoff,
 )
+from typehaus.takeoff.data import (data_device_schedule, data_raceway_takeoff,
+                                   poe_budget)
 from typehaus.takeoff.hvac import hvac_takeoff
 from typehaus.takeoff.plumbing import plumbing_takeoff
 from typehaus.takeoff.lighting import (
@@ -481,6 +483,15 @@ def model_to_dict(
                 "controls": lighting_controls(model),
                 "runs": light_run_takeoff(model),
                 "connected_va": connected_lighting_va(model),
+            },
+            # The low-voltage reader's whole payload, verbatim from takeoff/data.py — the
+            # three derivations the E-603 sheet prints. Filed under `electrical` beside
+            # `lighting` for the same reason that one is: they are separate readers over one
+            # trade, not separate trades.
+            "data": {
+                "devices": data_device_schedule(model),
+                "raceways": data_raceway_takeoff(model),
+                "poe_budget": poe_budget(model),
             },
         },
         "stairs": [

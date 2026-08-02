@@ -14,6 +14,7 @@ import { Workbench } from "./components/Workbench";
 import { AssemblyDetailsView } from "./components/AssemblyDetailsView";
 import { BomView } from "./components/BomView";
 import { CircuitsView } from "./components/CircuitsView";
+import { DataView } from "./components/DataView";
 import { HvacView } from "./components/HvacView";
 import { PlumbingView } from "./components/PlumbingView";
 import { LightingView } from "./components/LightingView";
@@ -180,6 +181,7 @@ export function App() {
       {detailView === "lighting" && <LightingView />}
       {detailView === "hvac" && <HvacView />}
       {detailView === "plumbing" && <PlumbingView />}
+      {detailView === "data" && <DataView />}
       <Workbench />
       <CommandPalette />
       <Toasts />

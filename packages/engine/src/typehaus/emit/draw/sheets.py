@@ -203,6 +203,10 @@ def build_sheet_index(model: ResolvedModel,
         sheets.append(SheetSpec("E-602", "Luminaire schedule / lighting controls",
                                 page=_write_luminaire_schedule))
 
+    if _has_data_content(model):
+        sheets.append(SheetSpec("E-603", "Data / low-voltage schedule",
+                                page=_write_data_schedule))
+
     sheets.append(SheetSpec("EN-1", "Energy compliance summary",
                             page=partial(_write_energy_sheet, preferences=preferences)))
     return sheets
@@ -665,6 +669,78 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
     _add_table(fig, load_rows, ("Circuit", "Fixtures", "Connected VA"),
                bbox=(0.03, 0.02, 0.52, 0.06))
     fig.text(0.57, 0.06, str(load["basis"]), fontsize=6, family="sans-serif", wrap=True)
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
+def _has_data_content(model: ResolvedModel) -> bool:
+    return any(element.element_kind == "ElectricalDevice"
+               and element.kind.value == "data_outlet"
+               for storey in model.plan.storeys
+               for element in model.plan.storey_elements(storey.tag))
+
+
+def _write_data_schedule(pdf, model: ResolvedModel, number: str, name: str) -> None:
+    """The low-voltage twin of E-602: what the devices are, what pipe reaches them, and
+    what the PoE switch has to carry.
+
+    The raceway table is here rather than folded into the power conduit schedule because
+    comms and power are pulled by different trades on different days and may not share a
+    raceway (NEC 800.133/725) — one combined lineal-foot number is not an order either of
+    them can buy against. The spare appears with them: the reader who wants to know what can
+    still be pulled is this one (→ takeoff/data.py — nothing here is hand-summed).
+    """
+    import matplotlib.pyplot as plt
+
+    from typehaus.takeoff import data_device_schedule, data_raceway_takeoff, poe_budget
+
+    fig = plt.figure(figsize=(11, 17))
+    fig.text(0.04, 0.97, f"{number} · {name}", fontsize=16, family="monospace")
+
+    devices = data_device_schedule(model)
+    fig.text(0.04, 0.945, "LOW-VOLTAGE DEVICE SCHEDULE", fontsize=10, family="monospace",
+             weight="bold")
+    device_rows = [
+        (row["tag"], row["type_name"] or row["type_ref"] or "—", row["room"] or "—",
+         row["mount"], _number(row["mount_elevation_ft"], "{:.1f}'") or "—",
+         _number(row["poe_watts"], "{:.0f} W") or "—",
+         row["circuit"] or "PoE")
+        for row in devices
+    ]
+    _add_table(fig, device_rows,
+               ("Tag", "Product", "Room", "Mount", "Elev", "PoE", "Circuit"),
+               bbox=(0.03, 0.62, 0.94, 0.30))
+
+    raceways = data_raceway_takeoff(model)
+    fig.text(0.04, 0.595, "DATA AND SPARE RACEWAYS", fontsize=10, family="monospace",
+             weight="bold")
+    raceway_rows = [
+        (f"{row['trade_size_in']:g}\"", str(row["service"]).upper(), str(row["runs"]),
+         f"{row['length_ft']:.1f}", ", ".join(row["tags"])[:62])
+        for row in raceways
+    ]
+    _add_table(fig, raceway_rows,
+               ("Trade size", "Carries", "Runs", "LF", "Tags"),
+               bbox=(0.03, 0.40, 0.94, 0.17))
+
+    budget = poe_budget(model)
+    fig.text(0.04, 0.375, "PoE BUDGET", fontsize=10, family="monospace", weight="bold")
+    budget_rows = [
+        ("Data devices", str(budget.get("devices", 0))),
+        ("Powered over ethernet", str(budget.get("powered_devices", 0))),
+        ("Connected PoE load", f"{budget.get('connected_watts', 0):,.0f} W"),
+    ]
+    unknown = int(budget.get("unknown_devices", 0) or 0)
+    if unknown:
+        budget_rows.append(("Unrated devices", f"{unknown} — PoE draw not stated"))
+    _add_table(fig, budget_rows, ("", ""), bbox=(0.03, 0.30, 0.52, 0.05))
+    fig.text(0.57, 0.34, str(budget.get("basis", "")), fontsize=6, family="sans-serif",
+             wrap=True)
+    fig.text(0.03, 0.26,
+             "PoE devices carry no branch circuit — their load lands on the switch, not the "
+             "panel schedule.\nComms conductors share no raceway with power (NEC 800.133, "
+             "725); shared penetrations are permitted.",
+             fontsize=7, family="sans-serif")
     pdf.savefig(fig)
     plt.close(fig)
 

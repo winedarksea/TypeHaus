@@ -123,8 +123,18 @@ def test_usable_storage_is_nameplate_times_the_declared_dod(summary):
 
 
 def test_the_always_on_tier_outlasts_the_shed_tier_by_a_wide_margin(summary):
+    """Battery-only autonomy, which fell from ~50 h to 46.3 h on 2026-08-02.
+
+    Nothing was added to the house's *design* — the three PoE access points became real
+    elements, and the model had only ever carried one notional 15 W allowance for them
+    (parked on CKT-FRIDGE, of all circuits). Counting all three, on the switch's circuit
+    where they actually land, put ~30 W of genuine always-on load on the books for the first
+    time. The 48-hour question the design is built around is still answered yes — see
+    ``test_the_48_hour_cycle_sustains_the_always_on_tier_but_not_both``, which is the one
+    that includes solar — but on battery alone the tier no longer spans two full days.
+    """
     autonomy = summary["autonomy"]
-    assert autonomy["hours_always_on_only"] > 48.0
+    assert 45.0 < autonomy["hours_always_on_only"] < 48.0
     assert autonomy["hours_all_tiers"] < autonomy["hours_always_on_only"]
 
 

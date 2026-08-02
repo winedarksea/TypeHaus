@@ -31,6 +31,8 @@ from typehaus.takeoff.glazing import glazing_panel_takeoff, glazing_trim_takeoff
 from typehaus.takeoff.hardware import hardware_takeoff
 from typehaus.takeoff.lighting import (connected_lighting_va, light_run_takeoff,
                                        lighting_controls, luminaire_schedule)
+from typehaus.takeoff.data import (data_device_schedule, data_raceway_takeoff,
+                                   poe_budget)
 from typehaus.takeoff.hardware_config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
     HardwareTakeoffConfig,
@@ -143,4 +145,10 @@ def bill_of_materials(
         "lighting_controls": lighting_controls(model),
         "light_runs": light_run_takeoff(model),
         "lighting_load": connected_lighting_va(model),
+        # The low-voltage program (→ takeoff/data.py): the E-603 device schedule, the data
+        # and spare raceways ``conduit`` deliberately excludes, and the PoE draw the panel
+        # schedule cannot see because a PoE device names no circuit.
+        "data_devices": data_device_schedule(model),
+        "data_raceways": data_raceway_takeoff(model),
+        "poe_budget": poe_budget(model),
     }

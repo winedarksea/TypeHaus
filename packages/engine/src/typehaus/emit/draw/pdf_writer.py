@@ -73,6 +73,8 @@ _LAYER_STYLE = {
     "M-HVAC-EQPM": ("#2a6a4a", 0.8),
     "E-POWR-DEVC": ("#8a2a2a", 0.5),
     "E-POWR-CNDT": ("#b05050", 0.4),
+    "E-COMM-DEVC": ("#1f6f7a", 0.5),
+    "E-COMM-CNDT": ("#2f9aa8", 0.4),
     "E-LITE": ("#c08a00", 0.5),
     "E-LITE-COVE": ("#d06000", 0.8),
     "E-LITE-CIRC": ("#c8a040", 0.3),
@@ -115,6 +117,11 @@ _MARKER_STYLE = {
     "level-marker": ("<", "#204070"), "alarm": ("h", "#555555"),
     "junction_box": ("$J$", "#8a2a2a"), "meter": ("$M$", "#8a2a2a"),
     "disconnect": ("$D$", "#8a2a2a"),
+    # Teal, not the power reds or the lighting amber — low-voltage is a third trade and the
+    # E-COMM layer it draws on says so. "N" rather than the conventional data triangle
+    # because ^/v are already the supply/return registers, and a third triangle in a fourth
+    # colour is exactly the ambiguity a plan reader cannot resolve at 1/4" scale.
+    "data_outlet": ("$N$", "#1f6f7a"),
 }
 # Symbols drawn by a branch of their own. Anything else falls through to the window-glass
 # bar, so an unlisted name is not a missing glyph but a *wrong* one — how every smoke alarm

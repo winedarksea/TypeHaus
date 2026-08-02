@@ -15,12 +15,16 @@ _DEVICE_LAYER = {
     "receptacle": "E-POWR-DEVC", "gfci": "E-POWR-DEVC", "receptacle_240": "E-POWR-DEVC",
     "switch": "E-LITE", "light": "E-LITE", "panel": "E-POWR-DEVC",
     "junction_box": "E-POWR-DEVC", "meter": "E-POWR-DEVC", "disconnect": "E-POWR-DEVC",
+    # Low-voltage lands on its own AIA discipline layer, not E-POWR: an electrician pulling
+    # branch circuits and a low-voltage tech pulling CAT6 want to switch each other off.
+    "data_outlet": "E-COMM-DEVC",
 }
 _LEGEND = (
     ("receptacle", "DUPLEX RECEPTACLE"), ("gfci", "GFCI RECEPTACLE"),
     ("receptacle_240", "240V RECEPTACLE"), ("switch", "SWITCH"), ("light", "LIGHT"),
     ("panel", "ELECTRICAL PANEL"), ("junction_box", "JUNCTION BOX"),
     ("meter", "UTILITY METER"), ("disconnect", "DISCONNECT"),
+    ("data_outlet", "DATA / LOW-VOLTAGE"),
 )
 
 
@@ -50,11 +54,19 @@ def build_electrical_plan(model: ResolvedModel, storey: str) -> Scene:
     for run in model.conduits:
         if run.storey != storey:
             continue
-        b.add(Polyline(points=tuple(_in(p) for p in run.path), layer="E-POWR-CNDT",
+        # Data raceways draw on E-COMM-CNDT so the comms pulls can be isolated from the
+        # power ones — the same separation the trades keep on site. A capped spare stays on
+        # the power layer: it is an empty pipe, and claiming it for either trade would
+        # pre-decide what gets pulled through it.
+        layer = "E-COMM-CNDT" if run.service == "data" else "E-POWR-CNDT"
+        b.add(Polyline(points=tuple(_in(p) for p in run.path), layer=layer,
                        linetype="DASHED", uid=run.uid, tag=run.tag))
         mid = run.path[len(run.path) // 2]
-        b.add(Text(anchor=_in((mid[0] + 0.1, mid[1] + 0.25)),
-                   content=f"{run.tag.removeprefix('CD-')} {run.trade_size_m * 39.3701:.3g}\"",
+        size = f"{run.trade_size_m * 39.3701:.3g}\""
+        label = f"{run.tag.removeprefix('CD-')} {size}"
+        if run.service is None:
+            label = f"{label} SPARE"
+        b.add(Text(anchor=_in((mid[0] + 0.1, mid[1] + 0.25)), content=label,
                    height=1.5, layer="A-ANNO-TEXT"))
 
     _emit_legend(b, model, storey)
