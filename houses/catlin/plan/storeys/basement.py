@@ -241,7 +241,7 @@ OPENINGS = [
     # top (placeables.py). This retires the last WT-3660 instance — the type and its
     # WT-3660-FIX twin stay in the catalog as available products.
     Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2",
-           type_ref="WT-1424", position=from_node("N-B-S1", ft(2, 6)),
+           type_ref="WT-1424-T", position=from_node("N-B-S1", ft(2, 6)),
            sill_height=ft(3)),
 ]
 

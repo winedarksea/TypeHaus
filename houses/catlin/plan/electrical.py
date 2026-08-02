@@ -158,13 +158,19 @@ EQUIPMENT_TYPES = (
     # collars; `Service` has no OUTDOOR_AIR/EXHAUST_AIR member to name them with, so they
     # stay unmodeled rather than mislabeled as house-side ports.)
     # ventilation_cfm is the continuous balanced rate the trunks in plan/mep.py are sized
-    # for: ASHRAE 62.2 at 0.03 x 5,078 ft2 + 7.5 x (5 bedrooms + 1) = ~197 cfm. The
-    # sensible recovery effectiveness is what the block load's ventilation term turns on —
-    # at 197 cfm and an 85 F design ΔT, every 0.05 of SRE is ~2,000 Btu/h — so it is the
+    # for: ASHRAE 62.2 at 0.03 x conditioned ft2 + 7.5 x (5 bedrooms + 1). It was 197,
+    # computed against 5,078 ft2 conditioned; the conditioned area has since drifted to
+    # 5,115 ft2 and the requirement with it (198 cfm), which put code.N1103_6 one cfm short
+    # (2026-08-01). Now 210: the requirement rounded up, plus enough headroom that the next
+    # 400 ft2 of conditioned area does not fail the check again. Still quiet — 210 cfm
+    # through the 10x6 trunk (0.42 ft2) is ~505 fpm.
+    #
+    # The sensible recovery effectiveness is what the block load's ventilation term turns on
+    # — at this rate and an 85 F design ΔT, every 0.05 of SRE is ~2,000 Btu/h — so it is the
     # one number here that most needs the datasheet.
     EquipmentType(tag="EQ-T-ERV", name="ERV, 240V", footprint=(inch(24), inch(24)), height=inch(30),
                   plan_symbol="erv",
-                  ventilation_cfm=197,  # TODO verify datasheet
+                  ventilation_cfm=210,  # TODO verify datasheet
                   sensible_recovery_effectiveness=0.75,  # TODO verify datasheet
                   source="Airflow is the computed ASHRAE 62.2 whole-house rate; SRE 0.75 is a REPRESENTATIVE PLACEHOLDER for a good residential ERV core. TODO verify datasheet.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
@@ -725,16 +731,25 @@ NEC_FILL_MAIN = [
     # and the band had no receptacles at all. Positions are the four gaps
     # `electrical.receptacle_spacing` measured on the merged clear face, each 0.05' off its
     # wall like the fills above.
+    #
+    # Eight of the outlets on the two storey receptacle circuits are GFCI *devices* rather
+    # than ordinary ones (2026-08-01, code.E3902_gfci_locations). Each is in an E3902
+    # location — RC8 is in RM-M-BATH2, RC9/RC12/BED-RC2/STUDY-RC2 and the three suite
+    # outlets are inside the 6' sink reach of E3902.10 — while the circuits they ride reach
+    # a whole storey. Protection therefore goes at the outlet: CKT-RC-MAIN and
+    # CKT-RC-SECOND stay non-GFCI at the breaker (see plan/circuits.py) so one splashed
+    # bathroom outlet cannot take a floor of receptacles with it.
+    #
     # y flipped to W-M-HS1's south (living) face (2026-07-28): W-M-BAE's 2' east shift
     # extended W-M-HS1 to x=6', and the north face at this x is now inside RM-M-BATH1.
-    ElectricalDevice(uid="NEC066AAAA", tag="ED-M-LIVING-RC8", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(5.40), ft(21.56)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="NEC066AAAA", tag="ED-M-LIVING-RC8", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(5.40), ft(21.56)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # y flipped to W-M-STOS's north (mudroom) face (2026-07-28): W-M-BAE's 2' east shift
     # extended W-M-STOS's south face — where this device sat — into RM-M-BATH1.
-    ElectricalDevice(uid="NEC067AAAA", tag="ED-M-LIVING-RC9", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(4.55), ft(26.43)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="NEC067AAAA", tag="ED-M-LIVING-RC9", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(4.55), ft(26.43)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC068AAAA", tag="ED-M-LIVING-RC10", kind=DeviceKind.RECEPTACLE,
@@ -752,12 +767,12 @@ NEC_FILL_MAIN = [
     # STUDY-RC3 and the door into RM-M-STOS (2026-07-29): N-M-W2/N-M-C2 pushed 6" north
     # for the BATH2 wall move, stretching this door-to-door wall space past the 6' rule.
     # Positioned centred in that space (the door itself brackets the run at 13'-9" east).
-    ElectricalDevice(uid="NEC070AAAA", tag="ED-M-LIVING-RC12", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(16, 1.2), ft(22, 2.6)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="NEC070AAAA", tag="ED-M-LIVING-RC12", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(16, 1.2), ft(22, 2.6)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC013AAAA", tag="ED-M-BED-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(8.52), ft(13.28)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="NEC013AAAA", tag="ED-M-BED-RC2", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(8.52), ft(13.28)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC014AAAA", tag="ED-M-BED-RC3", kind=DeviceKind.RECEPTACLE,
@@ -784,8 +799,8 @@ NEC_FILL_MAIN = [
                      position=pt(ft(17.95), ft(18.96)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC020AAAA", tag="ED-M-STUDY-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(13.39), ft(18.79)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="NEC020AAAA", tag="ED-M-STUDY-RC2", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(13.39), ft(18.79)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # Fills the >6' gap electrical.receptacle_spacing flags on the centre bearing wall,
@@ -911,12 +926,12 @@ NEC_FILL_SECOND = [
                      position=pt(ft(0.18), ft(12.99)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC045AAAA", tag="ED-S-SUITE-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(1.06), ft(22.2)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="NEC045AAAA", tag="ED-S-SUITE-RC5", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(1.06), ft(22.2)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC046AAAA", tag="ED-S-SUITE-RC6", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(9.57), ft(20.53)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="NEC046AAAA", tag="ED-S-SUITE-RC6", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(9.57), ft(20.53)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
 ]

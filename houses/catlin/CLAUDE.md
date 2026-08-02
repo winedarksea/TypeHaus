@@ -52,6 +52,13 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
 - Four structures: house, freestanding garage (4' north), freestanding sunken-garden/
   porch/balcony concrete structure (5" south gap), enclosed breezeway on freestanding 6x6
   posts spanning that 4' gap door-to-door (`params/breezeway.py`).
+  **The breezeway follows the doors, and nothing enforces that but this line.** It is a
+  4'-0" enclosure centred between `D-M-ENTRY` and `D-G-SERVICE`; when either door moves,
+  `_GLAZING_CENTER_X` moves with it. It did not, once: the 2026-07-28 mudroom conversion
+  pushed the entry 4'-0" east and the shelter stood 3'-6" off its own door until 2026-08-01,
+  when `code.R311_3_exterior_landing` finally caught it. Both doors now open onto the deck
+  at 0'-0" — `D-G-SERVICE` carries the same negative `sill_height` as `D-G-OVERHEAD`, with
+  the ICF stem gapped to a grade beam under it in `params/foundations.py`.
 - **The garage storey datum is not the garage floor.** Its wood walls bear on the ICF stem
   at `GARAGE_STEM_REVEAL` (1'-10"), which is the `garage` storey elevation; the slab they
   enclose is poured at grade, 1'-10" lower, and filed on `main`. Anything that has to sit
@@ -124,6 +131,18 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   - WT-1424 still does the work wherever a bigger unit will not fit — in the 5' knee
     walls, where its 2'-0" height is the only one that clears the plate, and in the
     mudroom. Under the south rake it handed off to WT-1448.
+  - **Tempered twins (2026-08-01).** `WT-1424-T`, `WT-2736-T`, `WT-3036-T` and `WT-3048-T`
+    are their parents in every dimension and differ only in the glass, for the ten units
+    R308.4 puts in a hazardous location (a wet room, within 24" of a door, within 60" of a
+    stair). They are **not** width families and no facade or framing rule sees them: adding
+    a tempered unit is a retype, never a move. All four glazed *door* types are tempered
+    outright — R308.4.1 has no location test to fail.
+  - **The east bearing wall now takes a 30" RO** (2026-08-01): `WIN-S-BED1`/`BED2` had 6.75
+    sf of glass against R303.1's 9.95 sf, and 27" cannot reach it at any height that fits
+    under the 9'-0" plate. `preferences.toml`'s `max_window_ro_bearing_in` went 27 → 30 with
+    them; the jack/king/header pack is what pays for it. The margin is 0.05 sf — growing
+    either room's clear face fails R303.1 again, and the answer then is a taller unit, not
+    a wider one.
 - **One exterior dark, `#1c1f24`** (2026-08-01), carried by every dark metal element on the
   envelope so they read at one weight: the opening casings, the roof's rake/eave/ridge trim
   coil, the eave water chain (drip edge, box gutter, downspouts), and the guards.

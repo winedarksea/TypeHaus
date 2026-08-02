@@ -553,18 +553,65 @@ def under_slab_burial(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+class _Pour:
+    """One continuous concrete pour: the footings that touch, measured as one."""
+
+    def __init__(self, members):
+        self.tags = frozenset(m.tag for m in members)
+        self.tag = " + ".join(sorted(self.tags))
+        # The shallowest bearing plane in the group governs: it is the one a pipe below the
+        # group is closest to, and the one whose influence line reaches furthest.
+        self.z0_m = min(m.z0_m for m in members)
+
+
+def _footing_pours(solids, polygon_type):
+    """Group footing solids into pours, unioning the footprints that abut.
+
+    Same bearing elevation and touching in plan is the test — two footings at different
+    depths meeting at a step are two pours, and each keeps its own edge.
+    """
+    from shapely.ops import unary_union
+
+    remaining = [(s, polygon_type(s.outline)) for s in solids]
+    pours = []
+    while remaining:
+        seed, seed_poly = remaining.pop()
+        members, shapes = [seed], [seed_poly]
+        grew = True
+        while grew:
+            grew = False
+            for candidate in list(remaining):
+                solid, poly = candidate
+                if abs(solid.z0_m - seed.z0_m) > 1e-6:
+                    continue
+                if any(poly.distance(shape) <= 1e-6 for shape in shapes):
+                    members.append(solid)
+                    shapes.append(poly)
+                    remaining.remove(candidate)
+                    grew = True
+        pours.append((_Pour(members), unary_union(shapes)))
+    return pours
+
+
 @check(Tier.CODE, "mep.footing_clearance")
 def footing_clearance(ctx: CheckContext) -> list[Finding]:
     """A pipe deeper than a footing's bearing plane must stay outside its 45° influence
     line: lateral offset >= how far below the footing bottom the pipe sits. A crossing
-    *through* the footing is legal only via a sleeve (mep.sleeve_coverage owns that)."""
+    *through* the footing is legal only via a sleeve (mep.sleeve_coverage owns that).
+
+    Abutting footings at the same bearing elevation are measured as one pour
+    (``_footing_pours``). A strip footing is split into several ``Footing`` elements
+    wherever the wall above it is — at a stem gap under a door, say — and the joints that
+    creates are construction joints in continuous concrete, not free edges. Measuring the
+    influence line off one would fail a pipe for being near the middle of a footing.
+    """
     from shapely.geometry import LineString, Polygon
 
     from shapely.geometry import Point
 
     cid = "mep.footing_clearance"
-    footings = [(s, Polygon(s.outline)) for s in ctx.model.solids
-                if s.category == "footing" and len(s.outline) >= 3]
+    footings = _footing_pours([s for s in ctx.model.solids
+                               if s.category == "footing" and len(s.outline) >= 3], Polygon)
     out: list[Finding] = []
     for run in ctx.model.pipe_runs:
         if run.z_m is None:
@@ -582,7 +629,7 @@ def footing_clearance(ctx: CheckContext) -> list[Finding]:
                     # Passing under (or through) the footing: legal per IRC P2604 only
                     # inside a protection sleeve / relieving arch authored on the footing.
                     protected = any(
-                        s.host_slab == footing.tag
+                        s.host_slab in footing.tags
                         and seg.distance(Point(s.center)) < 0.3
                         for s in ctx.model.sleeves)
                     if protected:
@@ -597,10 +644,14 @@ def footing_clearance(ctx: CheckContext) -> list[Finding]:
                                  "bearing plane with no protection sleeve (IRC P2604)",
                             (run.tag, footing.tag)))
                     continue
-                distance = seg.distance(footprint.exterior)
+                # ``.boundary``, not ``.exterior``: a pour is a union, which can come back as
+                # a MultiPolygon when two footings meet at a corner only, and that has no
+                # ``exterior``. The boundary is also the more correct edge — a hole through a
+                # pour is as much an edge as its outside is.
+                distance = seg.distance(footprint.boundary)
                 if distance + 1e-9 < depth_below:
                     protected = any(
-                        s.host_slab == footing.tag
+                        s.host_slab in footing.tags
                         and seg.distance(Point(s.center)) < 0.3
                         for s in ctx.model.sleeves)
                     if protected:

@@ -145,6 +145,12 @@ class ApplianceType(FurnitureType):
     """A product requiring services but not a plumbing fixture (for example a washer)."""
 
     needs: frozenset[Service] = frozenset()
+    # A listed condensing (ductless) appliance — the heat-pump dryer that throws its moisture
+    # down a condensate line instead of out a wall. M1502.1 exempts exactly these from the
+    # whole of M1502, and there is no other way to tell one from a vented dryer: both are
+    # 28x40 boxes named "dryer" with a 240V port. False is the safe default — an unstated
+    # dryer is a vented dryer and owes the code a duct.
+    ductless: bool = False
 
 
 class EquipmentType(FurnitureType):

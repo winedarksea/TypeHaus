@@ -18,7 +18,11 @@ module_in = 16
 corner = "three-stud"
 max_window_ro_unbroken_in = 14
 max_window_ro_nonbearing_in = 42
-max_window_ro_bearing_in = 27
+# 27 -> 30 on 2026-08-01, by decision: WIN-S-BED1/BED2 needed a 30" RO in the east bearing
+# line to reach R303.1's 8% glazing, and a 30" RO on a stud line is one broken stud with the
+# ordinary jack/king/header pack — a framing detail, not a structural problem. This is a
+# preference, not code; the constraint it encodes is cost and simplicity of framing.
+max_window_ro_bearing_in = 30
 
 [plumbing]
 drain_stack_required_structure_in = 5.5

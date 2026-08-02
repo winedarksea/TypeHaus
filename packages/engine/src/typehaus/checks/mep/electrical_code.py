@@ -189,6 +189,19 @@ _AFCI_OCCUPANCIES = frozenset({
     Occupancy.MEDIA.value, Occupancy.OFFICE.value, Occupancy.STORAGE.value,
 })
 
+# ...and only on the circuits the section actually reaches. E3902.16 (NEC 210.12) is written
+# for "120-volt, single-phase, 15- and 20-ampere branch circuits", which is the ordinary
+# lighting-and-receptacle wiring and nothing else: a 240V range, dryer, heat-pump or EV
+# circuit is outside it, and so is a 120V circuit over 20A. Screening on the *rooms* alone
+# wrote up eight breakers in this house that no AFCI device is even made for.
+_AFCI_MAX_AMPS = 20
+
+
+def _afci_applies(circuit) -> bool:
+    """Is this circuit one of the 120V 15/20A branch circuits E3902.16 covers?"""
+    return (getattr(circuit, "poles", 1) == 1
+            and getattr(circuit, "breaker_amps", 0) <= _AFCI_MAX_AMPS)
+
 
 @check(Tier.CODE, "code.E3902_16_afci")
 def afci_branch_circuits(ctx: CheckContext) -> list[Finding]:
@@ -198,6 +211,11 @@ def afci_branch_circuits(ctx: CheckContext) -> list[Finding]:
     single breaker covers every device on the run, so one circuit reaching one bedroom puts
     the whole circuit in scope. That also makes the finding actionable — it names the
     breaker to change, not the eleven receptacles downstream of it.
+
+    Two screens, both necessary: the circuit must reach a room on the section's list *and*
+    be one of the 120V 15/20A branch circuits the section is written for (``_afci_applies``).
+    A 2-pole range or heat-pump circuit lands in a living room like every other circuit does
+    and is not what E3902.16 is about.
     """
     from shapely.geometry import Point, Polygon
 
@@ -231,6 +249,8 @@ def afci_branch_circuits(ctx: CheckContext) -> list[Finding]:
 
     out: list[Finding] = []
     for tag, circuit in sorted(circuits.items()):
+        if not _afci_applies(circuit):
+            continue
         occupancies = served.get(tag, set())
         if not occupancies:
             if tag in unplaced:

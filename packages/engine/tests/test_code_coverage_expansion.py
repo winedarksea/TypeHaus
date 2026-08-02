@@ -225,7 +225,16 @@ def test_co_alarm_passes_outside_the_sleeping_area_and_fails_inside_it():
 # --- R303.1 light and ventilation ---------------------------------------------------------
 
 def _light_ctx(glazed_w: float, glazed_h: float, *, operation: str = "casement",
-               area_m2: float = 20.0):
+               area_m2: float = 20.0, lumens: float | None = None, supply: bool = False,
+               erv_cfm: float | None = None):
+    """A room with one window, and optionally the three things R303.1 Exception 1 needs.
+
+    The exception's inputs default to absent, which is the state that matters most: a room
+    short of glazing and with no artificial light stated has no lawful path and must FAIL.
+    Pass ``lumens``/``supply``/``erv_cfm`` to build the room that does.
+    """
+    from typehaus.model.enums import DeviceKind, DuctSystem, EquipmentKind
+
     ring = ((0.0, 0.0), (5.0, 0.0), (5.0, area_m2 / 5.0), (0.0, area_m2 / 5.0))
     room = SimpleNamespace(tag="RM-BED", storey="main", occupancy="bedroom",
                            clear_face=ring, area_m2=area_m2, conditioned=True)
@@ -236,8 +245,27 @@ def _light_ctx(glazed_w: float, glazed_h: float, *, operation: str = "casement",
                               center_along_m=2.5)
     window_type = SimpleNamespace(tag="WT",
                                   operation=SimpleNamespace(value=operation))
+    elements = []
+    device_types = []
+    equipment_types = []
+    if lumens is not None:
+        device_types.append(SimpleNamespace(tag="LT-T", lumens=lumens))
+        elements.append(SimpleNamespace(element_kind="ElectricalDevice", tag="ED-LT",
+                                        kind=DeviceKind.LIGHT, room="RM-BED",
+                                        type_ref="LT-T"))
+    if supply:
+        elements.append(SimpleNamespace(element_kind="Register", tag="REG-SUP",
+                                        kind=DuctSystem.SUPPLY, room="RM-BED"))
+    if erv_cfm is not None:
+        equipment_types.append(SimpleNamespace(tag="ERV-T", ventilation_cfm=erv_cfm))
+        elements.append(SimpleNamespace(element_kind="Equipment", tag="EQ-ERV",
+                                        kind=EquipmentKind.ERV, type_ref="ERV-T"))
     return SimpleNamespace(
-        plan=SimpleNamespace(library=SimpleNamespace(window_types=[window_type])),
+        plan=SimpleNamespace(
+            library=SimpleNamespace(window_types=[window_type],
+                                    electrical_device_types=device_types,
+                                    equipment_types=equipment_types),
+            all_elements=lambda: elements),
         model=SimpleNamespace(rooms=[room], openings=[opening],
                               wall=lambda tag: wall if tag == "W-S" else None),
     )
@@ -253,6 +281,8 @@ def test_habitable_light_fails_when_the_glazing_drops_under_eight_percent():
     findings = habitable_light_and_ventilation(_light_ctx(0.6, 0.6))
     assert _results(findings) == [Result.FAIL]
     assert "8%" in findings[0].message
+    # ...and says why the lawful alternative is not open to it, rather than only the shortfall.
+    assert "Exception 1 is not available" in findings[0].message
 
 
 def test_habitable_light_fails_on_fixed_glass_that_passes_the_light_test():
@@ -261,6 +291,42 @@ def test_habitable_light_fails_on_fixed_glass_that_passes_the_light_test():
     findings = habitable_light_and_ventilation(_light_ctx(1.5, 1.5, operation="fixed"))
     assert _results(findings) == [Result.FAIL]
     assert "openable" in findings[0].message
+
+
+def test_r303_exception_1_carries_a_windowless_room_that_is_lit_and_ventilated():
+    """R303.1 Exception 1 — 6 fc of artificial light plus mechanical outdoor air.
+
+    A 215 sf room at CU 0.60 x LLF 0.80 needs 6 x 215 / 0.48 = 2,688 lm to reach 6 fc, and
+    the whole-house rate for one 215 sf conditioned room with one bedroom is 6.5 + 15 = 22
+    cfm. This room clears both, so the glazing is not required and the finding is a PASS
+    that names the exception.
+    """
+    findings = habitable_light_and_ventilation(
+        _light_ctx(0.6, 0.6, lumens=3000.0, supply=True, erv_cfm=60.0))
+    assert _results(findings) == [Result.PASS]
+    assert "Exception 1" in findings[0].message
+
+
+def test_r303_exception_1_fails_a_room_the_lighting_cannot_carry():
+    """Lit, ventilated, and still short: the exception is adjudicated, not granted on
+    presence. 1,000 lm over 215 sf is 2.2 fc against the 6 fc required."""
+    findings = habitable_light_and_ventilation(
+        _light_ctx(0.6, 0.6, lumens=1000.0, supply=True, erv_cfm=60.0))
+    assert _results(findings) == [Result.FAIL]
+    assert "short of the 6 fc" in findings[0].message
+
+
+def test_r303_exception_1_is_unknown_when_a_fixture_states_no_lumens():
+    """A fixture with no photometrics is a gap in the model, not a dark room — UNKNOWN,
+    never a PASS and never a FAIL."""
+    findings = habitable_light_and_ventilation(
+        _light_ctx(0.6, 0.6, lumens=None, supply=True, erv_cfm=60.0))
+    assert _results(findings) == [Result.FAIL]  # no luminaire at all: exception unavailable
+    ctx = _light_ctx(0.6, 0.6, lumens=900.0, supply=True, erv_cfm=60.0)
+    ctx.plan.library.electrical_device_types[0].lumens = None
+    findings = habitable_light_and_ventilation(ctx)
+    assert _results(findings) == [Result.UNKNOWN]
+    assert "no lumens" in findings[0].message
 
 
 def test_habitable_light_is_unknown_when_a_window_type_does_not_resolve():
@@ -457,6 +523,39 @@ def test_afci_passes_a_protected_circuit_and_fails_an_unprotected_one():
     assert "CKT-BED" in findings[0].message
 
 
+def test_afci_does_not_reach_a_240v_or_oversized_circuit():
+    """E3902.16 / NEC 210.12 covers 120V single-phase 15- and 20-ampere branch circuits.
+
+    A range, a dryer, a heat pump and an EV charger all land in rooms on the section's list,
+    and none of them is what the section is about — there is no AFCI breaker made for most
+    of them. Screening on the room alone wrote up eight of these in the catlin panel.
+    """
+    from typehaus.model.electrical import Circuit
+    from typehaus.quantities import pt
+
+    def _ctx(**circuit_kwargs):
+        circuit = Circuit(uid="CKTAAAAAAA", tag="CKT-RANGE", panel_ref="ED-PANEL",
+                          afci=False, **circuit_kwargs)
+        device = SimpleNamespace(element_kind="ElectricalDevice", tag="ED-RANGE",
+                                 circuit="CKT-RANGE", position=pt(ft(2), ft(2)),
+                                 room="RM-LIVING")
+        room = SimpleNamespace(tag="RM-LIVING", storey="main", occupancy="living",
+                               clear_face=((0.0, 0.0), (3.0, 0.0), (3.0, 3.0), (0.0, 3.0)))
+        return SimpleNamespace(
+            plan=SimpleNamespace(
+                library=SimpleNamespace(circuits=[circuit]),
+                storeys=[SimpleNamespace(tag="main", elevation=ft(0))],
+                storey_elements=lambda tag: [device] if tag == "main" else []),
+            model=SimpleNamespace(rooms=[room]),
+        )
+
+    # 240V, and a 120V circuit over 20A: both out of scope, so neither is reported at all.
+    assert afci_branch_circuits(_ctx(breaker_amps=50, poles=2))[0].result is Result.PASS
+    assert afci_branch_circuits(_ctx(breaker_amps=30, poles=1))[0].result is Result.PASS
+    # ...while the 120V 20A circuit beside them still fails.
+    assert _results(afci_branch_circuits(_ctx(breaker_amps=20, poles=1))) == [Result.FAIL]
+
+
 def test_dryer_exhaust_passes_a_short_run_and_fails_a_long_one():
     from typehaus.model.enums import DuctSystem
     from typehaus.quantities import pt
@@ -470,7 +569,8 @@ def test_dryer_exhaust_passes_a_short_run_and_fails_a_long_one():
         dryer = SimpleNamespace(element_kind="Appliance", tag="AP-DRYER",
                                 type_ref="AT-DRYER")
         return SimpleNamespace(
-            plan=SimpleNamespace(all_elements=lambda: [run, dryer]),
+            plan=SimpleNamespace(all_elements=lambda: [run, dryer],
+                                 library=SimpleNamespace(appliance_types=[])),
             model=SimpleNamespace(rooms=[]),
         )
 
@@ -482,6 +582,31 @@ def test_dryer_exhaust_passes_a_short_run_and_fails_a_long_one():
     assert "35'" in failing[0].message
 
 
+def test_dryer_exhaust_exempts_a_listed_condensing_dryer():
+    """M1502.1 — the section does not reach a ventless heat-pump dryer.
+
+    Without ``ApplianceType.ductless`` there is nothing to tell one from a vented dryer:
+    both are boxes named "dryer" with a 240V connection, so the check demanded a duct, and
+    the only way to satisfy it would have been to author a hole in the envelope for an
+    appliance whose moisture leaves down a drain.
+    """
+    vented = SimpleNamespace(element_kind="Appliance", tag="AP-DRYER", type_ref="AT-VENTED")
+    ductless = SimpleNamespace(element_kind="Appliance", tag="AP-HP-DRYER",
+                               type_ref="AT-DUCTLESS")
+
+    def _ctx(dryer, ductless_flag):
+        appliance_type = SimpleNamespace(tag=dryer.type_ref, ductless=ductless_flag)
+        return SimpleNamespace(
+            plan=SimpleNamespace(all_elements=lambda: [dryer],
+                                 library=SimpleNamespace(appliance_types=[appliance_type])),
+            model=SimpleNamespace(rooms=[]))
+
+    assert _results(dryer_exhaust(_ctx(vented, False))) == [Result.FAIL]
+    findings = dryer_exhaust(_ctx(ductless, True))
+    assert _results(findings) == [Result.PASS]
+    assert findings[0].code_ref == "M1502.1"
+
+
 def test_dryer_exhaust_charges_elbows_against_the_length_budget():
     """34' of duct passes; the same 34' with one 90-degree turn does not. That is the whole
     point of a *developed* length, and it is what makes a run measured off a tape lie."""
@@ -491,8 +616,10 @@ def test_dryer_exhaust_charges_elbows_against_the_length_budget():
     def _ctx(path):
         run = SimpleNamespace(element_kind="DuctRun", tag="DR-DRYER",
                               system=DuctSystem.DRYER, path=tuple(path), storey="main")
-        return SimpleNamespace(plan=SimpleNamespace(all_elements=lambda: [run]),
-                               model=SimpleNamespace(rooms=[]))
+        return SimpleNamespace(
+            plan=SimpleNamespace(all_elements=lambda: [run],
+                                 library=SimpleNamespace(appliance_types=[])),
+            model=SimpleNamespace(rooms=[]))
 
     straight = [f for f in dryer_exhaust(_ctx([pt(ft(0), ft(0)), pt(ft(34), ft(0))]))
                 if f.code_ref == "M1502.4.5.1"]

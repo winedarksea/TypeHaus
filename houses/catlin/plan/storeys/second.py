@@ -20,8 +20,9 @@
 #   and the source's single 181.02 sf "Hallway" now reads as one room, RM-S-HALL, taking
 #   in the old landing and the open stair well; RL-S-STAIR guards the well's east edge.
 # - The source's south-wall openings are four 6'/5'-3" runs and its bearing-wall windows are
-#   2'-8"; `preferences.toml` caps a bearing RO at 27" and a non-bearing one at 30". The
-#   existing window *types* are kept and only their positions move onto the source openings.
+#   2'-8"; `preferences.toml` caps a bearing RO at 30" (raised from 27" on 2026-08-01 for
+#   WIN-S-BED1/BED2) and a non-bearing one at 42". The existing window *types* are kept and
+#   only their positions move onto the source openings.
 # - `WIN-S-BATH-W` and `WIN-S-BATH-N` have no counterpart — the source draws no opening in
 #   the west wall north of y=25'-8" and none in the north wall west of x=21'-10". Both are
 #   kept for bathroom daylight.
@@ -331,12 +332,30 @@ OPENINGS = [
     # the storey's 3'-0" line. At y 5'-4" (a stud line) the four windows run an exact
     # 9'-0" rhythm and one sill line — the facade now favors within-storey rhythm over
     # between-storey stacking on this side (LIV-E1 below no longer stacks under it).
-    Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2736",
+    Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2736-T",
            position=from_node("N-S-SE", ft(4, 2.5)), sill_height=ft(3)),      # y 5'-4"
-    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E2", type_ref="WT-2736",
-           position=from_node("N-S-E1", ft(4, 2.5)), sill_height=ft(3)),      # y 14'-4"
-    Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E3", type_ref="WT-2736",
-           position=from_node("N-S-E2", ft(4, 2.5)), sill_height=ft(3)),      # y 23'-4"
+    # BED1/BED2 carry the 30" unit, not the east wall's 27" bearing size (2026-08-01, by
+    # decision). Both rooms are 124.3 sf with one window each, so R303.1 wants 9.95 sf of
+    # glazing and 4.97 sf openable and a 27x36 delivers 6.75/3.38 — a third short. The east
+    # wall is a bearing line, where the house's own cap is a 27" RO, and the decision was to
+    # widen anyway and frame it properly: a 30" RO centred on a stud line breaks one stud and
+    # takes the ordinary jack/king/header pack the solver already builds for it.
+    # `preferences.toml [framing] max_window_ro_bearing_in` moved 27 -> 30 with this.
+    #
+    # WT-3048 rather than a new size: 10.0 sf glazed / 5.0 sf openable, which clears both
+    # thresholds — but by 0.05 sf and 0.03 sf respectively, so the margin is arithmetic, not
+    # comfort. Anything that grows these two rooms' clear face fails R303.1 again and the
+    # answer then is a taller unit, not a wider one (the 9'-0" plate takes a 54" leaf at this
+    # sill).
+    #
+    # The sill stays on the east face's 3'-0" line — that line and the 9'-0" beat are what
+    # this facade is organized by, per CLAUDE.md, and the 48" height puts these two heads at
+    # 7'-0" where WIN-S-STUDY3 and WIN-S-BED3 stay at 6'-0". BED3 needs nothing: it has a
+    # second window and reads 14.2 sf.
+    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E2", type_ref="WT-3048",
+           position=from_node("N-S-E1", ft(4, 1)), sill_height=ft(3)),      # y 14'-4"
+    Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E3", type_ref="WT-3048",
+           position=from_node("N-S-E2", ft(4, 1)), sill_height=ft(3)),      # y 23'-4"
     Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-2736",
            position=from_node("N-S-E3", ft(4, 2.5)), sill_height=ft(3)),      # y 32'-4"
     # West suite (bearing wall) — source openings at y 12'-7" and 19'-4"
@@ -354,7 +373,7 @@ OPENINGS = [
     # supplement still lands on the foliage.
     Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-3048",
            position=from_node("N-S-SW", ft(2, 9)), sill_height=ft(2, 8)),     # x 4'-0"
-    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3048",
+    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3048-T",
            position=from_node("N-S-SW", ft(8, 1)), sill_height=ft(2, 8)),     # x 9'-4"
     # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
     # type and not the 30" south-glazing one — "resize windows to fit the grid" (CLAUDE.md).
@@ -369,7 +388,7 @@ OPENINGS = [
     # away whichever line these sit on; this is that phase-minimum miss, unchanged. Sill
     # 2'-8" is the shared 6'-8" head line, and D-S-DECK-E's french-door RO (ends 24'-10")
     # stays clear by 1'-3".
-    Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3048",
+    Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3048-T",
            position=from_node("N-S-S1", ft(8, 1)), sill_height=ft(2, 8)),     # x 27'-4"
     Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3048",
            position=from_node("N-S-S1", ft(13, 5)), sill_height=ft(2, 8)),    # x 32'-8"
@@ -383,11 +402,11 @@ OPENINGS = [
     # at 1' the RO straddled the module stud line instead of centering in the bay, breaking
     # two studs and pulling in a header/jacks a 14" RO should never need
     # (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs).
-    Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1424",
+    Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1424-T",
            position=from_node("N-S-CH2", ft(0, 8)), sill_height=ft(4)),
     # Re-hosted off N-S-CH3 (2026-07-28): W-S-W1 no longer starts at N-S-NW now that the
     # chase's south wall splits it there. Same physical window position (y=31'-11").
-    Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424",
+    Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424-T",
            position=from_node("N-S-CH3", ft(1, 5)), sill_height=ft(4)),
     # Moved 29'-4" -> 28'-0" (2026-07-30 facade pass): WIN-M-KITCH below and WIN-A-N2
     # above are both centred at x 28'-0", and 28'-0" is a stud line on W-S-N1's own
@@ -404,7 +423,7 @@ OPENINGS = [
     # north gable reads near-symmetric about the ridge (10'-8" west vs 10'-0" east),
     # the same way the south gable pair does. On a gable end ridge symmetry is the
     # stronger read than a two-storey column, and the two gables then match.
-    Window(uid="CSX315AAAA", tag="WIN-S-STAIR-N", host="W-S-N2", type_ref="WT-3036",
+    Window(uid="CSX315AAAA", tag="WIN-S-STAIR-N", host="W-S-N2", type_ref="WT-3036-T",
            position=from_node("N-S-N1", ft(4, 1)), sill_height=ft(3)),        # x 12'-8"
 ]
 

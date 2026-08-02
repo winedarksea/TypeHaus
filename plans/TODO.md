@@ -15,6 +15,71 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   never a sum of branch loads), so a branch's DFU can no longer escape the main it
   discharges into by not being re-listed in `serves`.
 
+## Permit + code sweep, 2026-08-01
+
+Every blocking item in the `mn-2024` permit subset now passes: `haus permit-check` reads
+**35 pass / 0 fail / 5 unknown**, and the five unknowns are the modelling gaps already
+tracked below (handrail role, guard infill, window well, floor protection over the basement,
+TPR discharge). The whole registry went 67 FAIL → 6, and all six survivors are decisions
+already recorded on this page.
+
+What changed, grouped by what the finding actually was:
+
+- **Real deficiencies, fixed.**
+  - GFCI: five dedicated circuits picked up breaker protection (CKT-SUMP, CKT-HA,
+    CKT-KETTLE, CKT-DISHWASHER, CKT-LAUNDRY) and eight outlets on the two storey receptacle
+    circuits became GFCI *devices*. The split is deliberate — CKT-RC-MAIN/SECOND each reach
+    a whole floor, and nobody puts thirty outlets behind one 5 mA trip.
+  - AFCI declared on the fourteen 120V 15/20A circuits E3902.16 actually reaches.
+  - Safety glazing: all four glazed door types are tempered (R308.4.1 has no location test),
+    and ten windows in hazardous locations moved to four new tempered twin types
+    (`WT-1424-T`, `WT-2736-T`, `WT-3036-T`, `WT-3048-T`) — same RO, same height, same
+    position on the module, so no facade or framing rule sees them.
+  - The five wet-room ERV pickups are `EXHAUST` rather than `RETURN` and each states the
+    20 cfm it is balanced to. A bathroom's air is thrown away, not recirculated.
+  - `EQ-T-ERV` 197 → 210 cfm: the conditioned area had drifted to 5,115 ft2 and the ASHRAE
+    62.2 rate with it, leaving N1103.6 one cfm short.
+  - `D-G-SERVICE` now opens off the garage slab, with the ICF stem gapped to a grade beam
+    under it — the same treatment `D-G-OVERHEAD` has always had. The "22" step at the garage
+    door" that `params/breezeway.py` recorded as a deferred mismatch is closed.
+  - **The breezeway was standing 3'-6" west of the door it exists for.** `params/breezeway.py`
+    was written on 2026-07-27 against a house entry at x=4'-0"; the 2026-07-28 mudroom
+    conversion moved `D-M-ENTRY` to x=8'-0" and nothing followed it. The enclosure's centre
+    moved 4'-6" → 7'-3", midway between the doors as actually built. Its 4'-0" width cannot
+    cover two doors whose outer jambs span 4'-6", so each door's outer 3" of leaf oversails
+    the deck at one corner — accepted to keep the brief's three-sheets-one-cut enclosure,
+    and both doors still clear R311.3's landing patch at 92%.
+  - RM-B-PLAY-N got its fresh-air register back (old uid, old hole) and two more cans.
+- **Design decisions taken with the user.**
+  - `RM-A-WEST` is STORAGE, not MEDIA: 598 sf under a 4:12 cathedral whose only glazable
+    wall is a 5' knee wall cannot carry R303.1's 8%, and the room joins RM-A-EAST/RM-A-DEN
+    which were already storage for the same reason.
+  - `WIN-S-BED1`/`BED2` widened 27" → 30" (`WT-3048`) in the east *bearing* wall, framed
+    with the ordinary jack/king/header pack; `preferences.toml`'s bearing RO cap went 27 →
+    30 with them. Margin against R303.1 is 0.05 sf — see the note in `storeys/second.py`.
+- **Check bugs, fixed in the engine rather than papered over in the house.**
+  - `code.E3902_16_afci` screened on rooms only, so it wrote up eight 240V circuits (range,
+    dryer, three heat pumps, air handler, kettle, PV) that no AFCI breaker is made for. Now
+    scoped to 120V 15/20A, which is what NEC 210.12 says.
+  - `code.M1502_dryer_exhaust` demanded a duct from a *ventless heat-pump* dryer. M1502.1
+    exempts listed condensing dryers; `ApplianceType.ductless` says so and
+    `APPL-WASHER-DRYER-STACKED` sets it.
+  - `code.R303_1_light_and_ventilation` had no Exception 1 path, so every windowless
+    habitable room was a violation with no lawful answer. It now adjudicates the exception —
+    6 fc of installed lumens (stated CU/LLF, both named in the message) plus mechanical
+    outdoor air to the room from a whole-house system that meets its own rate — and reports
+    UNKNOWN, never PASS, where an input is missing.
+  - `code.R303_3_local_exhaust` read a shared trunk's `design_cfm` as one bathroom's
+    exhaust. Rate now comes off `Register.design_cfm`, falling back to the run only where
+    the run has exactly one terminal on it.
+  - `mep.footing_clearance` measured the 45° influence line off construction joints in
+    continuous concrete: splitting the south stem for the service door gave the hydrant line
+    a "footing edge" 3" away that is not an edge. Abutting footings at one bearing elevation
+    are now measured as one pour.
+- **Data defect found on the way through:** `plan/circuits.py` had duplicate uids —
+  CKT-HP1-AH and CKT-HP2 reused CKT031/032AAAA from the radiant-floor circuits. Renumbered
+  to CKT036/037AAAA.
+
 ## Accepted, by decision (2026-07-31 warnings sweep)
 
 - **The 200A service stays, and `electrical.service_load` stays failing at 220.9A.**
@@ -225,6 +290,18 @@ Questions:
   - Flashing/fascia LF take-off: the drainage take-off bills gutter and leader by the foot,
     the rest of the edge-trim family is still solids-only.
   - RAINWATER / SEWAGE `IfcDistributionSystem`s for the authored plumbing pipe runs.
+
+### Plumbing
+Irrigation system for plants on upper balcony
+		Frost free hydrant, insulated metal pipe, to PEX to reduce thermal bridging, silicone gasket, plastic mounting bracket
+			This is probably a case to use closed cell spray foam to keep moisture off the cold metal hydrant part
+Backflow preventer on basement fixtures connection
+Pipes will be lacquered copper where visible in the basement. In other places, PEX.
+Water hammer arrestors on valve for washing machine
+Main water shutoff that is accessible
+BOM include insulation of main hot water lines
+Have lighting in the shower niche of master bedroom, it looks cool, Schluter®-KERDI-BOARD-SNLT
+Provision for a reverse osmosis tap next to the main sink
 
 ### Other visual ideas
 Dark base to the house

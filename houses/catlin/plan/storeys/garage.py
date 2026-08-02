@@ -74,6 +74,15 @@ WALLS = [
 OVERHEAD_DOOR_OFFSET = ft(4)
 OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 
+# The same pair for the service door (2026-08-01). It needs the identical treatment for the
+# identical reason: it opens off the slab at grade, not off the stem top its host wall
+# starts on, so the stem gaps to a grade beam under it too. A person will not climb a 22"
+# curb any more happily than a car does — this door stood 1'-10" above both the garage slab
+# inside it and the breezeway deck outside it, which the breezeway module recorded as a
+# "known, deferred mismatch" and code.R311_3_exterior_landing eventually failed outright.
+SERVICE_DOOR_OFFSET = ft(5)
+SERVICE_DOOR_WIDTH = ft(3)  # DT-EXT-SWING36
+
 OPENINGS = [
     # The 16' opening is past the prescriptive header table, so the engineered beam
     # is named on the instance: a 2-ply 14" LVL across the overhead door.
@@ -93,8 +102,12 @@ OPENINGS = [
     Door(uid="CGD201AAAA", tag="D-G-OVERHEAD", host="W-G-E",
          type_ref="DT-EXT-OVERHEAD192", position=from_node("N-G-SE", OVERHEAD_DOOR_OFFSET),
          sill_height=ft(-1, -10), header_spec='2-ply 14" LVL'),
+    # Reaches down to the slab exactly as D-G-OVERHEAD does, and for the same reason — see
+    # SERVICE_DOOR_OFFSET above. Same negation of GARAGE_STEM_REVEAL, spelled out for the
+    # same dialect reason (no arithmetic in an editable file), and the head follows the
+    # threshold down so a 6'-8" door is 6'-8" of clear opening off the floor it opens onto.
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING36",
-         position=from_node("N-G-SW", ft(5))),
+         position=from_node("N-G-SW", SERVICE_DOOR_OFFSET), sill_height=ft(-1, -10)),
     # This 8' wall (vs. the house's 10') is why the whole 27" family is 36" tall: a
     # 60" height at this 42" sill would push the header above the top plate.
     # Nudged to 1'-5" (2026-07-29): at 1'-4 5/8" the RO missed the 16" module bay's

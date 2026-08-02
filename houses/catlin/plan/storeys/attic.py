@@ -262,15 +262,22 @@ OPENINGS = [
            position=from_node("N-A-NW", ft(32, 1)), sill_height=ft(2, 6)),   # y 3'-4"
     Window(uid="CAX306AAAA", tag="WIN-A-W-N", host="W-A-W1", type_ref="WT-1424",
            position=from_node("N-A-NW", ft(2, 9)), sill_height=ft(2, 6)),    # y 32'-8"
-    Window(uid="CAX309AAAA", tag="WIN-A-E-S", host="W-A-E1", type_ref="WT-1424",
+    Window(uid="CAX309AAAA", tag="WIN-A-E-S", host="W-A-E1", type_ref="WT-1424-T",
            position=from_node("N-A-SE", ft(2, 9)), sill_height=ft(2, 6)),    # y 3'-4"
     Window(uid="CAX310AAAA", tag="WIN-A-E-N", host="W-A-E2", type_ref="WT-1424",
            position=from_node("N-A-E1", ft(22, 9)), sill_height=ft(2, 6)),   # y 32'-4"
 ]
 
 ROOMS = [
+    # STORAGE, not MEDIA (2026-08-01, by decision). 598 sf under a 4:12 cathedral with two
+    # 14" knee-wall units in it: R303.1 wants 47.8 sf of glazing for a habitable room and
+    # the only wall that could carry it is the west knee wall, which is 5' tall. The room
+    # joins RM-A-EAST and RM-A-DEN, which were already STORAGE for the same reason — the
+    # attic's habitable space is RM-A-STUDY, which has the gable to glaze. Retagging is the
+    # honest move rather than the cheap one: it is what stops the permit set describing a
+    # bedroom-grade room the daylight cannot support.
     Room(uid="CAR401AAAA", tag="RM-A-WEST", seed=pt(ft(9), ft(20)),
-         occupancy=Occupancy.MEDIA, floor_finish="carpet",
+         occupancy=Occupancy.STORAGE, floor_finish="carpet",
          ceiling=FollowRoof(roof_ref="RF-HOUSE")),
     Room(uid="CAR402AAAA", tag="RM-A-EAST", seed=pt(ft(27), ft(20)),
          occupancy=Occupancy.STORAGE, floor_finish="carpet",

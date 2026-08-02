@@ -37,6 +37,8 @@ from plan.storeys.garage import (
     GARAGE_Y_SOUTH,
     OVERHEAD_DOOR_OFFSET,
     OVERHEAD_DOOR_WIDTH,
+    SERVICE_DOOR_OFFSET,
+    SERVICE_DOOR_WIDTH,
 )
 
 # --- house strip footings --------------------------------------------------------
@@ -79,6 +81,8 @@ _STEM_TOP = GARAGE_STEM_REVEAL
 # closure it carries), so this is a foundation detail; the *door* is what reaches down to
 # the slab, via the negative sill_height in plan/storeys/garage.py.
 _GRADE_BEAM_TOP = ft(0)
+# How much wider than the opening the service door's stem gap is formed — see N-GF-S-DRW.
+_SERVICE_GAP_MARGIN = ft(0, 3)
 
 GARAGE_STEM_NODES = [
     Node(uid="CGF001AAAA", tag="N-GF-SW", position=pt(ft(0), GARAGE_Y_SOUTH)),
@@ -88,6 +92,20 @@ GARAGE_STEM_NODES = [
     Node(uid="CGF005AAAA", tag="N-GF-E-DRS", position=pt(ft(24), GARAGE_Y_SOUTH + OVERHEAD_DOOR_OFFSET)),
     Node(uid="CGF006AAAA", tag="N-GF-E-DRN",
          position=pt(ft(24), GARAGE_Y_SOUTH + OVERHEAD_DOOR_OFFSET + OVERHEAD_DOOR_WIDTH)),
+    # The service door's gap in the south stem (2026-08-01), the same two nodes one wall
+    # over. W-GF-S runs west-to-east from N-GF-SW, so these are plain x stations.
+    #
+    # 3" of margin each side, where the overhead door's gap has none: the hydrant line
+    # (PR-G-HYDRANT-CW) crosses this wall buried at x = 5'-0", which is the door's west jamb
+    # to the inch. A gap that starts exactly there puts the crossing on the joint between two
+    # footings, belonging to neither, and mep.footing_clearance rightly asks for a sleeve in
+    # both. Forming the block-out a few inches wider than the opening is what actually
+    # happens on site anyway, and it puts the crossing unambiguously inside the grade beam.
+    Node(uid="CGF007AAAA", tag="N-GF-S-DRW",
+         position=pt(SERVICE_DOOR_OFFSET - _SERVICE_GAP_MARGIN, GARAGE_Y_SOUTH)),
+    Node(uid="CGF008AAAA", tag="N-GF-S-DRE",
+         position=pt(SERVICE_DOOR_OFFSET + SERVICE_DOOR_WIDTH + _SERVICE_GAP_MARGIN,
+                     GARAGE_Y_SOUTH)),
 ]
 
 _STEM = dict(assembly="GARAGE_ICF_8", top_elevation=_STEM_TOP,
@@ -96,7 +114,14 @@ _GRADE_BEAM = dict(assembly="GARAGE_ICF_8", top_elevation=_GRADE_BEAM_TOP,
                    bottom_elevation=ft(-_FROST))
 
 GARAGE_STEM_WALLS = [
-    FoundationWall(uid="CGF101AAAA", tag="W-GF-S", start_node="N-GF-SW",
+    # South stem, split three ways at the service door on 2026-08-01 — the east wall's
+    # pattern exactly. W-GF-S1 keeps the original uid as the remnant of the single wall;
+    # the grade beam and the far segment are new.
+    FoundationWall(uid="CGF101AAAA", tag="W-GF-S1", start_node="N-GF-SW",
+                   end_node="N-GF-S-DRW", **_STEM),
+    FoundationWall(uid="CGF107AAAA", tag="W-GF-S-DR", start_node="N-GF-S-DRW",
+                   end_node="N-GF-S-DRE", **_GRADE_BEAM),
+    FoundationWall(uid="CGF108AAAA", tag="W-GF-S2", start_node="N-GF-S-DRE",
                    end_node="N-GF-SE", **_STEM),
     FoundationWall(uid="CGF102AAAA", tag="W-GF-E1", start_node="N-GF-SE",
                    end_node="N-GF-E-DRS", **_STEM),
@@ -115,7 +140,10 @@ GARAGE_STEM_WALLS = [
 # door pieces instead. S/N/W and the E1 remnant of the old single E wall keep their
 # original uids; only the grade beam and the far side of the door split are genuinely new.
 GARAGE_FOOTINGS = [
-    Footing(uid="CGF201AAAA", tag="FT-GF-S", under="W-GF-S", width=inch(20), depth=inch(8)),
+    Footing(uid="CGF201AAAA", tag="FT-GF-S1", under="W-GF-S1", width=inch(20), depth=inch(8)),
+    Footing(uid="CGF207AAAA", tag="FT-GF-S-DR", under="W-GF-S-DR",
+            width=inch(20), depth=inch(8)),
+    Footing(uid="CGF208AAAA", tag="FT-GF-S2", under="W-GF-S2", width=inch(20), depth=inch(8)),
     Footing(uid="CGF202AAAA", tag="FT-GF-E1", under="W-GF-E1", width=inch(20), depth=inch(8)),
     Footing(uid="CGF205AAAA", tag="FT-GF-E-DR", under="W-GF-E-DR",
             width=inch(20), depth=inch(8)),

@@ -129,6 +129,24 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N",
                      controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # Cans 3 and 4 (2026-08-01, code.R303_1_light_and_ventilation). This room has no glazing
+    # at all, so it is habitable only under R303.1 Exception 1, and the exception's first half
+    # is 6 footcandles average at the work plane. Two sconces and two cans is 3,200 lm, which
+    # over 324 sf estimates 4.7 fc — short. Two more cans put it at 5,000 lm / 7.4 fc with
+    # margin to spare, and the room ends up on the same four-can grid RM-B-GYM already runs
+    # at the same 324 sf. On the same dimmer as the other four fixtures: the whole point of
+    # this room is that all of it goes down together, and a code minimum is a *capability*,
+    # not a setting anyone has to sit under.
+    ElectricalDevice(uid="QTB0010AAA", tag="ED-B-PLAY-N-CAN3", kind=DeviceKind.LIGHT,
+                     position=pt(ft(24), ft(30)), type_ref="ED-T-LT-CAN4",
+                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N",
+                     controlled_by=("ED-B-PLAY-N-SW",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="QTB0011AAA", tag="ED-B-PLAY-N-CAN4", kind=DeviceKind.LIGHT,
+                     position=pt(ft(30), ft(30)), type_ref="ED-T-LT-CAN4",
+                     circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N",
+                     controlled_by=("ED-B-PLAY-N-SW",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTB000FAAA", tag="ED-B-PLAY-N-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(18, 5), ft(20)), type_ref="ED-T-SWITCH-DIM",
                      circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(90),

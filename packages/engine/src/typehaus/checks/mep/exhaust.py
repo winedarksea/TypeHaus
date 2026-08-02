@@ -34,12 +34,25 @@ def dryer_exhaust(ctx: CheckContext) -> list[Finding]:
     import math
 
     cid, code = "code.M1502_dryer_exhaust", "M1502"
+    appliance_types = {t.tag: t for t in ctx.plan.library.appliance_types}
     dryers = [e for e in ctx.plan.all_elements()
               if e.element_kind == "Appliance"
               and "dryer" in f"{e.tag} {e.type_ref or ''}".lower()]
+    # M1502.1 — the section does not reach a listed condensing (ductless) dryer. Its moisture
+    # leaves as condensate down a drain, so there is no duct to be too long, to share, or to
+    # terminate in the wrong place, and demanding one would be demanding a hole in the
+    # envelope for nothing.
+    ductless = [d for d in dryers
+                if getattr(appliance_types.get(d.type_ref), "ductless", False)]
+    dryers = [d for d in dryers if d not in ductless]
     runs = [d for d in ctx.plan.all_elements()
             if d.element_kind == "DuctRun" and d.system is DuctSystem.DRYER]
     if not dryers and not runs:
+        if ductless:
+            return [_finding(cid, Result.PASS,
+                             f"{', '.join(sorted(d.tag for d in ductless))} is a condensing "
+                             "(ductless) dryer — M1502.1 exempts it from this section", (),
+                             "M1502.1")]
         return [_finding(cid, Result.UNKNOWN, "no dryer and no dryer exhaust run are "
                          "modeled", (), code)]
     if not runs:

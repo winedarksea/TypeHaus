@@ -824,9 +824,11 @@ def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
 
 def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     stem = [w for w in catlin_model.walls if w.tag.startswith("W-GF-")]
-    # 6, not 4: the east stem gaps at the overhead door (W-GF-E1/W-GF-E-DR/W-GF-E2) rather
-    # than running one continuous 22" band under a 16' vehicle door.
-    assert len(stem) == 6
+    # 8, not 4: both stems that carry a door gap at it rather than running a continuous 22"
+    # band across it — the east at the overhead door (W-GF-E1/W-GF-E-DR/W-GF-E2) and, since
+    # 2026-08-01, the south at the service door (W-GF-S1/W-GF-S-DR/W-GF-S2). A person will
+    # not climb a 22" curb any more happily than a car will.
+    assert len(stem) == 8
     ys = [p[1] for w in stem for p in w.axis]
     assert min(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT).meters)
     assert max(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT + GARAGE_SIZE_FT).meters)
@@ -834,11 +836,12 @@ def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     # under the overhead door, where it becomes a grade beam topping out *flush with the
     # slab* rather than at any reveal at all: a low curb across a 16' vehicle door is still
     # a curb the car has to climb.
-    grade_beam = next(w for w in stem if w.tag == "W-GF-E-DR")
+    grade_beams = {w.tag for w in stem if w.tag in ("W-GF-E-DR", "W-GF-S-DR")}
+    assert grade_beams == {"W-GF-E-DR", "W-GF-S-DR"}
     slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
     for wall in stem:
         assert wall.z0_m == pytest.approx(-inch(42.0).meters)
-        expected_top = slab.z1_m if wall is grade_beam else inch(22.0).meters
+        expected_top = slab.z1_m if wall.tag in grade_beams else inch(22.0).meters
         assert wall.z1_m == pytest.approx(expected_top)
     # Garage roof: ridge E-W (rotated 90° vs the house), 16" overhangs.
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
@@ -877,6 +880,28 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
     header = next(m for m in catlin_model.all_members()
                   if m.parent_uid == wall.uid and m.category == "header")
     assert header.z0_m == pytest.approx(plate_top + door.sill_m + door.height_m)
+
+
+def test_garage_service_door_opens_from_the_slab_at_grade(catlin_model):
+    """The second negative sill, added 2026-08-01 for the same reason as the first.
+
+    D-G-SERVICE hung on its host wall's own base until then, which put its threshold 1'-10"
+    above the garage slab inside it and the same 1'-10" above the breezeway deck outside it
+    — a 22" step in both directions, recorded in params/breezeway.py as a "known, deferred
+    mismatch" and failed outright by code.R311_3_exterior_landing. Same fix as the vehicle
+    door: drop the reveal, and gap the stem to a grade beam under the opening so no curb is
+    left across it.
+    """
+    wall = catlin_model.wall("W-G-S")
+    door = next(o for o in catlin_model.openings if o.tag == "D-G-SERVICE")
+    slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
+
+    threshold = wall.z0_m + door.sill_m
+    assert threshold == pytest.approx(slab.z1_m)
+    assert door.sill_m == pytest.approx(-(wall.z0_m - slab.z1_m))
+    # The breezeway deck outside it is within R311.3.1's 1 1/2" of that threshold.
+    deck = next(s for s in catlin_model.solids if s.tag == "SL-BW-DECK")
+    assert abs(deck.z1_m - threshold) <= inch(1.5).meters
 
 
 def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):

@@ -59,10 +59,14 @@ CIRCUITS = (
     # air handler does get its own, because a ducted blower is fed at the unit.
     Circuit(uid="CKT009AAAA", tag="CKT-HP1", slot=6, panel_ref=_PANEL, breaker_amps=25, poles=2,
             load_va=4800, description="Heat pump 1 outdoor, Vireo GEN3 (EQ-M-HP1-OD)"),
-    Circuit(uid="CKT031AAAA", tag="CKT-HP1-AH", slot=50, panel_ref=_PANEL, breaker_amps=15, poles=2,
+    # uids CKT036/037, not CKT031/032: those two were already spent on the radiant-floor
+    # circuits below, so this pair was a straight duplicate from the day it was authored
+    # (found 2026-08-01). Nothing references a Circuit by uid — devices name the tag — so
+    # renumbering the newer pair is the whole fix.
+    Circuit(uid="CKT036AAAA", tag="CKT-HP1-AH", slot=50, panel_ref=_PANEL, breaker_amps=15, poles=2,
             load_va=1000,
             description="Heat pump 1 indoor, concealed ducted air handler (EQ-S-HP1-AH)"),
-    Circuit(uid="CKT032AAAA", tag="CKT-HP2", slot=49, panel_ref=_PANEL, breaker_amps=30, poles=2,
+    Circuit(uid="CKT037AAAA", tag="CKT-HP2", slot=49, panel_ref=_PANEL, breaker_amps=30, poles=2,
             load_va=6000,
             description="Heat pump 2 outdoor, Multi Ultra 3-port (EQ-M-HP2-OD; feeds its 3 heads)"),
     # System 3 is the one on the backup subsystem: a true-VFD compressor soft-starts, which
@@ -70,8 +74,13 @@ CIRCUITS = (
     Circuit(uid="CKT010AAAA", tag="CKT-HP3", slot=10, panel_ref=_PANEL, breaker_amps=15, poles=2,
             backup=True, load_va=1500,
             description="Heat pump 3 outdoor, Sapphire R32 VFD (EQ-M-HP3-OD; backup battery)"),
+    # GFCI at the breaker (2026-08-01, code.E3902_gfci_locations): ED-M-LIVING-KET1 sits
+    # 3.2' from the kitchen sink. E3902.10 reaches it even though it is 240V — the section
+    # covers receptacles from 125V through 250V at 50A or less, not just the 125V ones — and
+    # a 2-pole GFCI breaker is the only place to put protection on a 6-20R.
     Circuit(uid="CKT011AAAA", tag="CKT-KETTLE", slot=14, panel_ref=_PANEL, breaker_amps=20, poles=2,
-            nema="6-20R", load_va=3840, description="Kitchen kettle outlet (6-20R half)"),
+            nema="6-20R", gfci=True, load_va=3840,
+            description="Kitchen kettle outlet (6-20R half)"),
     # PV backfeed lands at the opposite end of the bus from the main (120% rule headroom
     # is why the panel is 225A on a 200A service). Source, not load: load_va stays 0.
     Circuit(uid="CKT012AAAA", tag="CKT-PV", slot=40, panel_ref=_PANEL, breaker_amps=30, poles=2,
@@ -102,8 +111,11 @@ CIRCUITS = (
     Circuit(uid="CKT031AAAA", tag="CKT-FH-BATH2", slot=29, panel_ref=_PANEL, breaker_amps=15, poles=1,
             gfci=True, load_va=498,
             description="Radiant floor heat — main bath (FH-M-BATH2, 41.5 ft2)"),
+    # AFCI too (2026-08-01): this mat is in RM-M-LIVING, and E3902.16 covers the 120V 15/20A
+    # circuits *supplying outlets or devices* in a living room — a heating mat is a device.
+    # The two bath mats are not: E3902.16's room list stops at the bathroom door.
     Circuit(uid="CKT032AAAA", tag="CKT-FH-DINING", slot=31, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            gfci=True, load_va=696,
+            gfci=True, afci=True, load_va=696,
             description="Radiant floor heat — under the dining table (FH-M-DINING, 58.0 ft2)"),
     Circuit(uid="CKT033AAAA", tag="CKT-FH-BATH1", slot=33, panel_ref=_PANEL, breaker_amps=15, poles=1,
             gfci=True, load_va=509,
@@ -117,7 +129,7 @@ CIRCUITS = (
     # would need it, which is the reason both are modeled as Equipment with the circuit on
     # the placeable rather than as a receptacle with something plugged into it.
     Circuit(uid="CKT034AAAA", tag="CKT-FIREPLACE", slot=35, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            load_va=1500,
+            afci=True, load_va=1500,
             description="Electric fireplace, living room SE corner (EQ-M-FIREPLACE)"),
     Circuit(uid="CKT035AAAA", tag="CKT-GAR-HEAT", slot=37, panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=1500,
@@ -127,44 +139,70 @@ CIRCUITS = (
     Circuit(uid="CKT014AAAA", tag="CKT-WH-HP", slot=39, panel_ref=_PANEL, breaker_amps=15, poles=1,
             backup=True, load_va=500,
             description="Heat pump water heater, Rheem 120V (EQ-B-WH, compressor only)"),
+    # The two basement receptacle circuits carry GFCI at the breaker (2026-08-01): both
+    # outlets are in RM-B-FURNACE, which is unfinished below-grade space under E3902.11, and
+    # the 2020 cycle removed the old sump-pump exception that used to excuse ED-B-SUMP-RC.
+    # GFCI only, not dual-function: E3902.16's room list does not reach a mechanical room,
+    # and claiming AFCI here would be specifying a breaker the code does not ask for.
     Circuit(uid="CKT015AAAA", tag="CKT-SUMP", slot=41, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            backup=True, load_va=1000, description="Sump pump"),
+            backup=True, gfci=True, load_va=1000, description="Sump pump"),
     Circuit(uid="CKT016AAAA", tag="CKT-FRIDGE", slot=22, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            backup=True, load_va=800,
+            backup=True, afci=True, load_va=800,
             description="Kitchen outlet 1: fridge + freezer + PoE WiFi"),
     Circuit(uid="CKT017AAAA", tag="CKT-HA", slot=24, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            backup=True, load_va=300, description="Basement outlet 1: HA server + router"),
+            backup=True, gfci=True, load_va=300,
+            description="Basement outlet 1: HA server + router"),
     # load_va is None on all three lighting circuits since the lighting plan went in: the
     # luminaires carry real typed loads now, so the panel-schedule takeoff sums the
     # fixtures actually on each circuit instead of repeating a placeholder allowance.
     Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", slot=26, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            backup=True,
+            backup=True, afci=True,
             description="Basement + kitchen lighting (LED, backup light)"),
     Circuit(uid="CKT019AAAA", tag="CKT-BACKUP-FEED", slot=28, panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=200, description="Backup enclosure feed (DIN relays, 24V PSU, UPS)"),
 
     # --- general-use 120V ------------------------------------------------------------
+    #
+    # ``afci=True`` on every circuit below (2026-08-01, code.E3902_16_afci): each one reaches
+    # a room on E3902.16's list and each is a 120V 15/20A branch circuit, which is the whole
+    # of what the section covers. The 240V loads — range, dryer, the three heat pumps, the
+    # kettle, the PV backfeed — are outside it and stay as they are.
+    #
+    # Where a circuit is both GFCI and AFCI, that is one dual-function breaker, not two
+    # devices, so the two flags cost no panel spaces between them.
     Circuit(uid="CKT020AAAA", tag="CKT-KITCH-SA1", slot=30, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            gfci=True, load_va=1500, description="Kitchen small-appliance 1 (counter west)"),
+            gfci=True, afci=True, load_va=1500,
+            description="Kitchen small-appliance 1 (counter west)"),
     Circuit(uid="CKT021AAAA", tag="CKT-KITCH-SA2", slot=32, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            gfci=True, load_va=1500, description="Kitchen small-appliance 2 (counter east)"),
+            gfci=True, afci=True, load_va=1500,
+            description="Kitchen small-appliance 2 (counter east)"),
+    # GFCI here as well: ED-M-LIVING-KDW1 is 2.7' from the kitchen sink (E3902.10), which is
+    # the ordinary place a dishwasher receptacle lands and the ordinary reason its breaker
+    # is dual-function.
     Circuit(uid="CKT022AAAA", tag="CKT-DISHWASHER", slot=34, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            load_va=1200, description="Dishwasher + disposer (sink base)"),
+            gfci=True, afci=True, load_va=1200,
+            description="Dishwasher + disposer (sink base)"),
+    # E3902.9 puts the laundry-area receptacle on GFCI outright, no distance test.
     Circuit(uid="CKT023AAAA", tag="CKT-LAUNDRY", slot=36, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            load_va=1500, description="Laundry receptacle (washer)"),
+            gfci=True, afci=True, load_va=1500,
+            description="Laundry receptacle (washer)"),
     Circuit(uid="CKT024AAAA", tag="CKT-LT-MAIN", slot=38, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            description="General lighting — main storey, porch and garage"),
+            afci=True, description="General lighting — main storey, porch and garage"),
     Circuit(uid="CKT025AAAA", tag="CKT-LT-UPPER", slot=43, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            description="General lighting — second + attic"),
+            afci=True, description="General lighting — second + attic"),
+    # The two storey receptacle circuits stay non-GFCI at the breaker on purpose: each reaches
+    # a whole floor, and putting thirty outlets behind one 5 mA trip is not how any of this
+    # gets built. The handful of outlets that *are* in an E3902 location — a bath, a mudroom
+    # sink, a wet bar — are GFCI *devices* instead (plan/electrical.py, plan/mep.py).
     Circuit(uid="CKT026AAAA", tag="CKT-RC-MAIN", slot=44, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            load_va=1500, description="General receptacles — main storey"),
+            afci=True, load_va=1500, description="General receptacles — main storey"),
     Circuit(uid="CKT027AAAA", tag="CKT-RC-SECOND", slot=45, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            load_va=1500, description="General receptacles — second storey"),
+            afci=True, load_va=1500, description="General receptacles — second storey"),
     Circuit(uid="CKT028AAAA", tag="CKT-RC-BSMT", slot=46, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            gfci=True, load_va=1500,
+            gfci=True, afci=True, load_va=1500,
             description="General receptacles — basement + spa convenience"),
     Circuit(uid="CKT029AAAA", tag="CKT-RC-ATTIC", slot=47, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            load_va=1000, description="General receptacles — attic rooms"),
+            afci=True, load_va=1000, description="General receptacles — attic rooms"),
     Circuit(uid="CKT030AAAA", tag="CKT-RC-GARAGE", slot=48, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, load_va=1500, description="Garage general receptacles"),
 )

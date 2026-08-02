@@ -101,6 +101,11 @@ WASHER_DRYER_STACKED = ApplianceType(
     tag="APPL-WASHER-DRYER-STACKED", name="Stacked washer / heat-pump dryer",
     footprint=(inch(28), inch(40)), height=inch(80),
     plan_symbol="washer-dryer-stacked", source=REFERENCE,
+    # The paragraph above, said in a field the code check can read (2026-08-01). ``needs``
+    # could only be silent about the exhaust, and silence is indistinguishable from an
+    # oversight — code.M1502_dryer_exhaust read this product as a vented dryer missing its
+    # duct. ``ductless=True`` is M1502.1's exemption stated outright.
+    ductless=True,
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN,
                      Service.POWER_120, Service.POWER_240}),
     ports=(ServicePort(tag="power-washer", service=Service.POWER_120,

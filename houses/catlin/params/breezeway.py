@@ -74,9 +74,11 @@ Three places this deviates from the brief or from the plan it was built to, each
    E-W are already a sloping element on every rafter, so they carry the N-S fall too — one
    sloping part instead of a slope the structure cannot hold.
 
-The 22" step at the garage door is a known, deferred mismatch: ``D-G-SERVICE`` sits on the
-``garage`` storey (the ICF stem top, 1'-10") while this deck and the house entry are both at
-0'-0". Recorded in plans/TODO.md, not resolved here.
+The 22" step at the garage door is resolved as of 2026-08-01, and not here: ``D-G-SERVICE``
+now carries the same negative ``sill_height`` ``D-G-OVERHEAD`` always did, so it opens off
+the garage slab at 0'-0" like this deck does, and ``params/foundations.py`` gaps the ICF stem
+to a grade beam under it the same way it does under the vehicle door. The deck's +1" walking
+surface is 1" above that threshold, inside R311.3.1's 1 1/2".
 """
 
 from __future__ import annotations
@@ -129,10 +131,22 @@ _POST_Y1 = _GARAGE_STEM_Y - _POST_HALF_FT  # 40.2292'
 _GLAZING_Y0 = _HOUSE_CLADDING_Y
 _GLAZING_Y1 = _HOUSE_CLADDING_Y + _PANEL_FT
 
-# E-W: exactly 4'-0", centred on x = 4'-6" — midway between the house entry (x = 4'-0")
-# and the garage service door (x = 5'-0"). This is the enclosure's *third* 4'-0" dimension,
-# and it is what makes the roof one half-sheet rather than a full one.
-_GLAZING_CENTER_X = 4.5
+# E-W: exactly 4'-0", centred midway between the two doors it shelters. That centre moved
+# from x = 4'-6" to x = 7'-3" on 2026-08-01, and the reason is a coordination miss rather
+# than a design change: this module was written on 2026-07-27 against a house entry at
+# x = 4'-0" and a service door at x = 5'-0", and the 2026-07-28 mudroom conversion pushed
+# D-M-ENTRY east to x = 8'-0" without the shelter following. It has been standing 3'-6" west
+# of the door it exists for ever since — the deck did not touch the entry's landing patch at
+# all, which is what code.R311_3_exterior_landing eventually reported.
+#
+# The two doors are 1'-6" apart in x (entry 8'-0", service 6'-6"), so their outer jambs span
+# 4'-6" and a 4'-0" enclosure cannot cover both to the last inch: each door's outer 3" of
+# leaf oversails the deck edge at one corner. The brief's literal 8x4x4 — three sheets, one
+# cut — is what this module is built to keep, so the 3" is accepted rather than paid for with
+# a wider (and two-cut) enclosure. Both doors clear R311.3's 36"-deep landing patch at 92%
+# coverage, and the walk line door-to-door is unaffected: it runs up the middle, where the
+# deck is full width.
+_GLAZING_CENTER_X = 7.25
 _GLAZING_X0 = _GLAZING_CENTER_X - _PANEL_FT / 2.0  # 2.5'
 _GLAZING_X1 = _GLAZING_CENTER_X + _PANEL_FT / 2.0  # 6.5'
 # The posts stand *inside* the glazing lines with the sheets on their outer faces, so the

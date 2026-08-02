@@ -36,20 +36,25 @@ from typehaus import (
 DOOR_TYPES = [
     DoorType(tag="DT-EXT-SWING36", width=ft(3), height=ft(6, 8), exterior=True,
              u_factor=u_us(0.20)),
+    # Every glazed door in the house is tempered (2026-08-01, code.R308_4_safety_glazing).
+    # R308.4.1 has no location test to fail: glazing *in a door* is a hazardous location by
+    # definition, so this is a property of the product wherever it is hung — which is why it
+    # is set on the four glazed types below and needs no tempered variant of any of them.
     DoorType(tag="DT-EXT-FRENCH60", width=ft(5), height=ft(6, 8), exterior=True,
-             operation="double_swing", glazed=True, u_factor=u_us(0.20)),
+             operation="double_swing", glazed=True, tempered=True, u_factor=u_us(0.20)),
     DoorType(tag="DT-EXT-SLIDE60", width=ft(5), height=ft(6, 8), exterior=True,
-             operation="slide", glazed=True, u_factor=u_us(0.25)),
+             operation="slide", glazed=True, tempered=True, u_factor=u_us(0.25)),
     DoorType(tag="DT-INT-SWING32", width=ft(2, 8), height=ft(6, 8)),
     DoorType(tag="DT-INT-SWING30", width=ft(2, 6), height=ft(6, 8)),
-    DoorType(tag="DT-INT-SWING30-GLAZED", width=ft(2, 6), height=ft(6, 8), glazed=True),
+    DoorType(tag="DT-INT-SWING30-GLAZED", width=ft(2, 6), height=ft(6, 8), glazed=True,
+             tempered=True),
     # Frameless jamb system (no applied casing — drywall return jamb), flush with the gwb.
     DoorType(tag="DT-INT-SWING30-TRIMLESS", width=ft(2, 6), height=ft(6, 8), trimless=True),
     DoorType(tag="DT-INT-SWING24", width=ft(2), height=ft(6, 8)),
     DoorType(tag="DT-INT-BIFOLD60", width=ft(5), height=ft(6, 8), operation="bifold"),
     DoorType(tag="DT-INT-BIFOLD56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),
     DoorType(tag="DT-INT-FRENCH60", width=ft(5), height=ft(6, 8),
-             operation="double_swing", glazed=True),
+             operation="double_swing", glazed=True, tempered=True),
     DoorType(tag="DT-EXT-OVERHEAD192", width=ft(16), height=ft(7), exterior=True,
              operation="overhead"),
 ]
@@ -165,6 +170,26 @@ WINDOW_TYPES = [
     # separate from WT-3660: fixed vs. operable is a different product on the schedule.
     WindowType(tag="WT-1424-FIX", width=inch(14), height=ft(2), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="fixed"),
+    # --- tempered twins (2026-08-01, code.R308_4_safety_glazing) ----------------------
+    #
+    # Four types, each identical to its parent but for the glass. R308.4 makes a *location*
+    # hazardous — in a wet room, within 24" of a door, within 60" of a stair — and it is the
+    # unit that lands there that has to be ordered tempered, not the size. So this is the
+    # WT-3660-FIX/WT-1424-FIX precedent one more time: a different product on the quote gets
+    # its own tag, and the twelve units of these sizes that sit in ordinary locations keep
+    # ordinary glass rather than paying the tempering adder for nothing.
+    #
+    # These are *not* new width families and no facade or framing rule sees them: same RO,
+    # same height, same operation, same ideal position on the 16" module as their parents.
+    # Adding a tempered unit is a retype, never a move.
+    WindowType(tag="WT-1424-T", width=inch(14), height=ft(2), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="awning", tempered=True),
+    WindowType(tag="WT-2736-T", width=inch(27), height=ft(3), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement", tempered=True),
+    WindowType(tag="WT-3036-T", width=inch(30), height=ft(3), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement", tempered=True),
+    WindowType(tag="WT-3048-T", width=inch(30), height=ft(4), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement", tempered=True),
 ]
 
 NODES = [
@@ -481,7 +506,7 @@ OPENINGS = [
     # hall/bath2 wall move: W-M-W3's stud grid anchors off N-M-W2, so the window has
     # to move with it to stay on the same bay it was already sitting in.
     Window(uid="CMX305AAAA", tag="WIN-M-BATH2", host="W-M-W3",
-           type_ref="WT-1424", position=from_node("N-M-W3", ft(4, 11)),
+           type_ref="WT-1424-T", position=from_node("N-M-W3", ft(4, 11)),
            sill_height=ft(4)),
     # Picture unit at the wall's stud-grid midpoint: W-M-W1 runs 9'-8" node-to-node, so the
     # true middle is 4'-10" off N-M-NW, but studs on this wall lay out from N-M-NW's own
@@ -506,7 +531,7 @@ OPENINGS = [
            type_ref="WT-3048", position=from_node("N-M-SE", ft(2, 1)),
            sill_height=ft(2, 8)),
     Window(uid="CMX308AAAA", tag="WIN-M-LIV-S2", host="W-M-S2",
-           type_ref="WT-3048", position=from_node("N-M-SE", ft(7, 5)),
+           type_ref="WT-3048-T", position=from_node("N-M-SE", ft(7, 5)),
            sill_height=ft(2, 8)),
     # East row respaced (2026-07-30 facade pass): the facade favors within-storey
     # rhythm over between-storey stacking on this side now — the second storey runs

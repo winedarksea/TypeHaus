@@ -100,6 +100,12 @@ class Register(Element):
     location: Location | None = None
     mount: Mount = Mount()
     circuit: str | None = None  # Circuit tag (panel schedule), mirrors ElectricalDevice
+    # The airflow this *terminal* is balanced to — the number a mechanical schedule prints
+    # against a grille, and what a balancing report measures at it. ``DuctRun.design_cfm``
+    # cannot stand in for it: a trunk with seven pickups on it carries seven rooms' air, so
+    # crediting its total to any one of them would overstate that room by a factor of seven.
+    # Documentation like the run's, not a solved quantity; unstated stays UNKNOWN.
+    design_cfm: float | None = None
 
 
 @register_element
