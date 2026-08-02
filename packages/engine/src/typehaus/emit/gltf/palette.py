@@ -222,15 +222,34 @@ def _is_aluminum_deck_board(material_ref: str | None) -> bool:
     return "deck" in s and ("alum" in s or family_of(material_ref) == "metal")
 
 
+def authored_colors(model: ResolvedModel) -> dict[str, object]:
+    """The catalog materials that state their own colour, keyed by tag.
+
+    The ``authored`` argument of :func:`_material_finish_color` — built once per export and
+    threaded through the wall/roof layer colouring, because a resolved layer carries only its
+    material *ref* and cannot reach the catalog on its own.
+    """
+    return {m.tag: m for m in model.plan.library.materials if m.color}
+
+
 def _material_finish_color(material_ref: str | None,
-                           function: str) -> tuple[float, float, float, float]:
-    """Colour a material by its named finish, else its family + finish classification, mirroring
-    the viewer's materialColor. ``function`` is the lowercased layer function string
+                           function: str,
+                           authored: dict | None = None) -> tuple[float, float, float, float]:
+    """Colour a material by its named finish, else its authored catalog colour, else its
+    family + finish classification, mirroring the viewer's materialColor
+    (ui/src/nordic/palette.ts: FINISH_BASE → authored ``color`` → family inference — keep
+    the precedence in step). ``function`` is the lowercased layer function string
     ("cladding", …), used for the standing-seam test and as the fallback palette key when no
-    family is recognised."""
+    family is recognised. ``authored`` is the :func:`authored_colors` dict; without it this
+    guessed a family for every layer, so an authored wall-paint colour reached the viewer
+    but never the .glb."""
     named = _FINISH_BASE.get((material_ref or "").lower())
     if named is not None:
         return _hex_rgba(named)
+    if authored:
+        material = authored.get(material_ref or "")
+        if material is not None:
+            return _hex_rgba(material_color(material.hatch, material.color))
     if function == "cladding" and _is_standing_seam(material_ref):
         return _hex_rgba(_SEAM_BASE)
     if _is_aluminum_deck_board(material_ref):
@@ -246,10 +265,11 @@ def _material_finish_color(material_ref: str | None,
     return _color(function)
 
 
-def _layer_color(layer) -> tuple[float, float, float, float]:
-    """Colour a resolved wall layer by material family; falls back to the function palette for
-    layers with no recognisable material ref."""
-    return _material_finish_color(layer.material_ref, layer.function)
+def _layer_color(layer, authored: dict | None = None) -> tuple[float, float, float, float]:
+    """Colour a resolved wall layer: named finish, then the material's authored catalog colour
+    (``authored`` = :func:`authored_colors`), then material family; falls back to the function
+    palette for layers with no recognisable material ref."""
+    return _material_finish_color(layer.material_ref, layer.function, authored)
 
 
 def _room_floor_color(model: ResolvedModel,

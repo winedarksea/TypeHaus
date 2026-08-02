@@ -25,6 +25,7 @@ from typehaus.resolve.model import (
     ResolvedWall,
 )
 from typehaus.resolve.orientation import resolve_storey_windings, wall_outward_sign
+from typehaus.resolve.rooms import wall_lining_overrides
 
 _EPS = 1e-4  # meters — cavity-insulation coincidence tolerance
 _DIRECTION_EPS = 1e-9
@@ -99,8 +100,15 @@ def _face_offset_from_interior(layers: list, added: list, alignment: object,
 def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                           z1: float, endpoint_extensions: dict[tuple[str, str], float],
                           is_foundation: bool,
-                          outward_sign: float = 1.0) -> ResolvedWall | None:
-    """Build a ResolvedWall with per-layer polygons for one authored wall."""
+                          outward_sign: float = 1.0,
+                          lining_override: tuple | None = None) -> ResolvedWall | None:
+    """Build a ResolvedWall with per-layer polygons for one authored wall.
+
+    ``lining_override`` is a Room-authored replacement for the assembly's interior lining
+    (``Room.wall_lining`` / ``wall_lining_exceptions``, mapped per wall by
+    :func:`typehaus.resolve.rooms.wall_lining_overrides`). ``None`` means "no override";
+    an empty tuple is an authored bare face.
+    """
     nodes = {e.tag: e for e in plan.storey_elements(storey_tag) if e.element_kind == "Node"}
     n0, n1 = nodes.get(wall.start_node), nodes.get(wall.end_node)
     if n0 is None or n1 is None:
@@ -111,7 +119,8 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
         return None
 
     # Full inside→outside stack: interior lining, then the core layers.
-    stack = list(asm.default_lining) + list(asm.layers)
+    lining = lining_override if lining_override is not None else asm.default_lining
+    stack = list(lining) + list(asm.layers)
     added = _added_thicknesses(stack)
     total = sum(a for (_l, a, _c) in added)
     axis_from_int = _axis_offset_from_interior(stack, added, wall.alignment, total)
@@ -679,6 +688,9 @@ def resolve_storey_walls(plan: PlanModel, storey_tag: str, z0: float,
     # One graph trace per storey, split into independent structures: a storey key is a floor
     # level, not a building, so the basement and the sunken garden get their own windings.
     windings = resolve_storey_windings(plan, storey_tag)
+    # Room-authored lining swaps (Room.wall_lining / wall_lining_exceptions), mapped to the
+    # walls they reach once per storey, before any wall resolves.
+    lining_overrides, findings = wall_lining_overrides(plan, storey_tag)
     out: list[ResolvedWall] = []
     for wall in _walls(plan, storey_tag):
         rw = resolve_wall_geometry(
@@ -686,10 +698,12 @@ def resolve_storey_walls(plan: PlanModel, storey_tag: str, z0: float,
             is_foundation=wall.element_kind == "FoundationWall",
             outward_sign=wall_outward_sign(plan, wall, storey_tag,
                                            windings.sign_for_wall(wall)),
+            lining_override=lining_overrides.get(wall.tag),
         )
         if rw is not None:
             out.append(rw)
-    solved, findings = solve_junction_polygons(out, junctions)
+    solved, junction_findings = solve_junction_polygons(out, junctions)
+    findings.extend(junction_findings)
     return solved, junctions, findings
 
 
