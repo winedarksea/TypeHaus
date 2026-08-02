@@ -241,10 +241,17 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     assembly, so the two halves of one wall line met at N-M-STRJ as a transition.
     The second batch put the jog on the same assembly and alignment, and the
     transition went away with it — one continuous plane, nothing to change through.
+
+    The third entry arrived 2026-08-02 with the ESS closet: its north partition and the
+    stair-foot bathroom's north partition run on the *same* y=21'-9 3/8" line, meeting at
+    N-B-BA-W on either side of W-B-STR2's concrete. Steel studs with Type X on one side of
+    that node, 2x4-staggered wet wall on the other — a real change of construction along
+    one line, which is exactly what an assembly-change condition is for, not solver noise.
     """
     keys = sorted({c.key for c in catlin_model.conditions
                    if c.key.startswith("assembly_change:")})
     assert keys == [
         "assembly_change:CATLIN_CONC_12_INT|SAUNA_LINER_ON_CONCRETE",
+        "assembly_change:INT_2X6_STAGGERED_PLUMBING|INT_ESS_CLOSET_STEEL",
         "assembly_change:PORCH_RAILING_MASONRY|SUNKEN_GARDEN_WALL",
     ]
