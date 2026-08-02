@@ -85,6 +85,9 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "lighting_load",
                         # The 2026-07-25 sweep: resolved-but-unbilled families.
                         "floor_finishes", "envelope_layers", "openings", "stair_finish",
+                        # Species wood rollup (2026-08-02): sauna liner, panelings,
+                        # timber posts and species floors in sf/bf.
+                        "wood_surfaces",
                         "footing_bedding", "pipe_runs", "ducts", "sleeves",
                         # Railings got their own takeoff category in 33bac47; this list and
                         # the `haus takeoff` payload both missed it, so guard rail and cable
@@ -145,6 +148,7 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "construction_returns": ("construction_returns",),
     "floor_heat": ("floor_heat",),
     "rooms": ("floor_finishes",),
+    "panelings": ("wood_surfaces",),
     "pipe_runs": ("pipe_runs", "pipe_insulation"),
     "pipe_accessories": ("plumbing_specialties", "install_parts"),
     "sleeves": ("sleeves",),

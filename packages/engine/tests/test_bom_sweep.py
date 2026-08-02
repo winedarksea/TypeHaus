@@ -49,9 +49,11 @@ def test_the_second_storey_lvp_and_carpet_rows_match_what_was_authored(catlin_mo
     exactly those. The two halves are only useful together."""
     lvp = next(row for row in bom["floor_finishes"] if row["finish"] == "lvp")
     # RM-S-LANDING was folded into RM-S-HALL when the centre line opened up under
-    # BM-S-HALL, so the one hall row now bills what used to be two.
+    # BM-S-HALL, so the one hall row now bills what used to be two. The two main-floor
+    # rooms joined on 2026-08-02 when solid oak retreated to the studies (§Hardwood).
     assert set(lvp["rooms"]) == {"RM-S-HALL", "RM-S-SUITEBATH",
-                                 "RM-S-VANITY", "RM-S-BATH1"}
+                                 "RM-S-VANITY", "RM-S-BATH1",
+                                 "RM-M-LIVING", "RM-M-STUDY"}
     lvp_area = sum(room.area_m2 for room in catlin_model.rooms
                    if room.floor_finish == "lvp") * _M2_TO_FT2
     # Rows round to a tenth of a square foot, which is the tolerance here.
@@ -320,8 +322,8 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         "framing", "framing_by_size", "structural_solids", "sheet_goods",
         "construction_returns", "hardware", "footing_bedding",
         # Envelope & openings
-        "envelope_layers", "glazing_panels", "glazing_trim", "bug_screens", "openings",
-        "floor_finishes", "stair_finish", "railings",
+        "envelope_layers", "wood_surfaces", "glazing_panels", "glazing_trim",
+        "bug_screens", "openings", "floor_finishes", "stair_finish", "railings",
         # Mechanical & plumbing
         "pipe_runs", "plumbing_specialties", "install_parts", "pipe_insulation",
         "ducts", "sleeves", "floor_heat", "drainage",

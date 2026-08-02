@@ -720,18 +720,18 @@ FLOOR = [
 # out flush with the 9' plate; ordered as 10' sections and cut down. y-positions keep
 # >6" clear of both WT-2736 ROs (y 11'-10 1/2"..14'-1 1/2" and 18'-6 1/2"..20'-9 1/2").
 POSTS = [
-    Post(uid="CSP901AAAA", tag="P-S-TUDOR1", position=pt(inch(3.5625), ft(10, 8)),
+    Post(uid="CSK901AAAA", tag="P-S-TUDOR1", position=pt(inch(3.5625), ft(10, 8)),
          size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-SECOND",
-         assembly="ELM_TIMBER"),
-    Post(uid="CSP902AAAA", tag="P-S-TUDOR2", position=pt(inch(3.5625), ft(15, 4)),
+         within_wall="W-S-W3", assembly="ELM_TIMBER"),
+    Post(uid="CSK902AAAA", tag="P-S-TUDOR2", position=pt(inch(3.5625), ft(15, 4)),
          size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-SECOND",
-         assembly="ELM_TIMBER"),
-    Post(uid="CSP903AAAA", tag="P-S-TUDOR3", position=pt(inch(3.5625), ft(17, 4)),
+         within_wall="W-S-W3", assembly="ELM_TIMBER"),
+    Post(uid="CSK903AAAA", tag="P-S-TUDOR3", position=pt(inch(3.5625), ft(17, 4)),
          size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-SECOND",
-         assembly="ELM_TIMBER"),
-    Post(uid="CSP904AAAA", tag="P-S-TUDOR4", position=pt(inch(3.5625), ft(21, 4)),
+         within_wall="W-S-W3", assembly="ELM_TIMBER"),
+    Post(uid="CSK904AAAA", tag="P-S-TUDOR4", position=pt(inch(3.5625), ft(21, 4)),
          size="6.125x6.125", height=ft(8, 11.25), supported_by="FS-SECOND",
-         assembly="ELM_TIMBER"),
+         within_wall="W-S-W3", assembly="ELM_TIMBER"),
 ]
 
 STAIRS = [
