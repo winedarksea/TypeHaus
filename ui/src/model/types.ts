@@ -860,6 +860,9 @@ export interface Solid {
   z0_m: number;
   z1_m: number;
   assembly: string | null;
+  // The material the authored element named directly, for the solids that have one instead of
+  // an assembly (the trim-run family). Mirrors ResolvedSolid.material.
+  material?: string | null;
   provenance: Provenance | null;
 }
 

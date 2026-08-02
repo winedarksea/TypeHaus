@@ -86,6 +86,14 @@ _CLADDING_HEAD_IN = 8.0 * _SLOPE_FACTOR      # 8.43" — roofing underside == wa
 _TRIM_FACE_IN = 1.25
 _TRIM_BOTTOM_IN = _CLADDING_HEAD_IN - 2.0    # 6.43" above the deck plane
 
+#: The coil the whole chain is ordered in (2026-08-01). The derived corner trim above it is
+#: already `RF-HOUSE.edge_trim_material` — the house's one exterior dark — and the gutter hangs
+#: directly under it on the eaves, 6" of it, so leaving the trough in mill aluminium put a pale
+#: grey band along the two edges where the dark outline is supposed to be continuous: the rakes
+#: read black and the eaves read weak grey. The leader takes the same coil, as a gutter's leader
+#: does. Ordinary stock — every gutter manufacturer's colour card carries the roof coil's darks.
+_CHAIN_MATERIAL = "metal-dark-exterior"
+
 #: The overlap every joint in the chain takes. Half an inch is also the thickness the
 #: boxes-only IR draws sheet metal at (resolve/trim_bands.py::GUTTER_SHELL_M), so a lap of
 #: one nominal shell is the smallest one that still reads as a lap in the model.
@@ -153,13 +161,13 @@ def _eave_water(side: str, index: int, eave_x, outward: float):
         uid=f"RTFF0{index}AAAA", tag=f"TR-RF-DRIP-{side}", kind=TrimKind.DRIP_FLASHING,
         path=_run(out(_DRIP_INNER_IN + _DRIP_THICK_IN / 2.0)),
         top_elevation=_above_deck(_DRIP_TOP_IN), depth=_DRIP_DEPTH,
-        thickness=inch(_DRIP_THICK_IN), material="aluminum",
+        thickness=inch(_DRIP_THICK_IN), material=_CHAIN_MATERIAL,
         host_ref="RF-HOUSE", back_side=back_side)
     gutter = Gutter(
         uid=f"RTGT0{index}AAAA", tag=f"TR-RF-GUTTER-{side}", kind=TrimKind.GUTTER,
         path=_run(out(_GUTTER_BACK_IN + _GUTTER_THICK_IN / 2.0)),
         top_elevation=_above_deck(_GUTTER_RIM_IN), depth=_GUTTER_DEPTH,
-        thickness=inch(_GUTTER_THICK_IN), material="aluminum", host_ref="RF-HOUSE",
+        thickness=inch(_GUTTER_THICK_IN), material=_CHAIN_MATERIAL, host_ref="RF-HOUSE",
         slope=f'1/16 in/ft to the north-end {side} downspout',
         downspout_ref=f"TR-RF-LEADER-{side}",
         back_side=back_side)
@@ -190,7 +198,7 @@ def _leader(side: str, index: int, eave_x, outward: float):
         position=pt(eave_x + offset if outward > 0 else eave_x - offset, _LEADER_Y),
         top_elevation=_above_deck(_GUTTER_RIM_IN) - _GUTTER_DEPTH,
         bottom_elevation=_LEADER_BOTTOM, diameter=inch(_LEADER_DIA_IN),
-        material="aluminum", gutter_ref=f"TR-RF-GUTTER-{side}",
+        material=_CHAIN_MATERIAL, gutter_ref=f"TR-RF-GUTTER-{side}",
         # Four clamps at roughly 6' o.c. down the ~24' run (plan/mep.py::LEADER_CLAMPS).
         clamp_refs=tuple(f"CN-A-LEADER-{side}{n}" for n in (1, 2, 3, 4)))
 

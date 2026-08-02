@@ -242,6 +242,12 @@ class ResolvedSolid:
     z1_m: float
     assembly: str | None = None
     voids: tuple[Ring, ...] = ()
+    # The material the *authored* element named, for solids that name one directly instead of
+    # through an assembly (the trim-run family: gutter, drip edge, downspout, glazing trim).
+    # A framed member has carried its material ref since it was introduced; a solid could only
+    # say "I am category gutter", so a gutter ordered in a second coil colour had no way to
+    # say so and rendered the palette's mill aluminium in both renderers.
+    material: str | None = None
 
 
 @dataclass

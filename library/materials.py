@@ -57,9 +57,17 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              source=f"{_UAF}: 'Mineral wool, unprotected' 116 perm-in; AHFC Appendix 2 "
                     "gives 28.97 perm at 100 mm (4 in.), the same 116 perm-in"),
     Material(tag="gwb", name="5/8\" gypsum board", r_per_inch=0.9, perm_rating=18.8,
-             hatch="gypsum", color="#efeae2",
+             gypsum_type="regular", hatch="gypsum", color="#efeae2",
              source=f"{_UAF}: 'Gypsum wall board, plain' 50 perm at 0.375\" = 18.8 perm-in "
                     "(≈30 perm at 5/8\", consistent with USG's 34.2 perm at 1/2\")"),
+    # Type X differs from regular board in its glass-fibre core, not in any property this
+    # engine calculates with — same R per inch, same permeance. It exists as a separate
+    # material precisely so an assembly can *say* which board it uses, which is the whole
+    # question R302.6 asks about a garage ceiling with habitable space over it.
+    Material(tag="gwb-x", name="5/8\" Type X gypsum board", r_per_inch=0.9,
+             perm_rating=18.8, gypsum_type="type-x", hatch="gypsum", color="#efeae2",
+             source="thermal and vapour properties as 'gwb' above; the Type X core changes "
+                    "fire performance, not conductivity or permeance"),
     # A hat channel is a spaced 25 ga. section, not a continuous metal skin: vapour crosses
     # the still-air space between channels, so the layer is rated as that air space.
     Material(tag="resilient-channel", name="1/2\" resilient channel", r_per_inch=0.0,

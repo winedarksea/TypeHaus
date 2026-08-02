@@ -376,6 +376,7 @@ def model_to_dict(
              "category": solid.category, "outline": [list(point) for point in solid.outline],
              "voids": [[list(point) for point in ring] for ring in solid.voids],
              "z0_m": solid.z0_m, "z1_m": solid.z1_m, "assembly": solid.assembly,
+             "material": solid.material,
              "provenance": _provenance(provenance, solid.tag)}
             for solid in sorted(model.solids, key=lambda item: item.uid)
         ],

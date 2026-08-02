@@ -196,6 +196,11 @@ class DuctSystem(Enum):
     # a shower takeoff). No separate HRV member: an HRV/ERV is modeled as its SUPPLY and
     # EXHAUST sides.
     EXHAUST = "exhaust"
+    # Clothes-dryer exhaust. Its own member rather than a flavour of EXHAUST because M1502
+    # makes it a genuinely independent system: it may not join any other duct, it may not
+    # terminate anywhere another exhaust does, and its length is limited by a rule no other
+    # run obeys. One enum member is the entire schema cost of checking all three.
+    DRYER = "dryer"
 
 
 class DuctRouting(Enum):

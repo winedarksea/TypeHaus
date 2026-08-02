@@ -701,7 +701,7 @@ BALCONY_GUARD = Railing(
     kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
     base_elevation=_deck_walking_surface,
     post_spacing=inch(60), post_size="2x2", rail_count=2, mount="fascia",
-    assembly="POST_WHITE_PAINT")
+    assembly="RAILING_DARK_METAL")
 
 BALCONY_FASCIA = Fascia(
     uid="SGFC01AAAA", tag="TR-SG-FASCIA", kind=TrimKind.FASCIA, path=_GUARD_PATH,

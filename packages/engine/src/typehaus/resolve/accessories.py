@@ -428,6 +428,7 @@ def _resolve_edge_run(model: ResolvedModel, el, storey: str) -> None:
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-{i:02d}", tag=f"{el.tag}-{i + 1}", storey=storey,
             category=category, outline=rect_between(a, b, -half, half), z0_m=z0, z1_m=top,
+            material=el.material,
         ))
 
 
@@ -457,6 +458,7 @@ def _resolve_banded_run(model: ResolvedModel, el, storey: str, path, category: s
                 storey=storey, category=category,
                 outline=rect_between(a, b, left, right),
                 z0_m=top - bottom_drop, z1_m=top - top_drop,
+                material=el.material,
             ))
 
 
@@ -472,7 +474,7 @@ def _resolve_downspout(model: ResolvedModel, el, storey: str) -> None:
     model.solids.append(ResolvedSolid(
         uid=f"{el.uid}-00", tag=el.tag, storey=storey, category="downspout",
         outline=circle_outline(el.position.xy_m, el.diameter.meters / 2.0, _PIPE_FACETS),
-        z0_m=z0, z1_m=z1))
+        z0_m=z0, z1_m=z1, material=el.material))
 
 
 def _cross_span(half: float, offset: float, band_t: float,

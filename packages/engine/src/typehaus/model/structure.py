@@ -257,6 +257,27 @@ class Railing(Element):
     rail_count: int = 2  # horizontal rails (top + bottom)
     mount: str = "fascia"  # "fascia" | "surface"
     assembly: str | None = None  # optional finish assembly for render/IFC material
+    # --- guard vs handrail (R311.7.8, R312.1.3) ------------------------------------------
+    # A Railing was only ever a *guard*: a plan path with a height, framed into posts and
+    # rails. That is the right model for a balcony edge and the wrong one for a stair, where
+    # the code asks two further questions a guard cannot answer — is there something to hold
+    # onto, and can a 4" sphere pass through what is under it.
+    #
+    # Every field below is optional and defaulted, so existing authoring loads unchanged and
+    # a house that says nothing gets UNKNOWN rather than a fabricated verdict.
+    role: Literal["guard", "handrail", "guard_and_handrail"] = "guard"
+    serves_stair: str | None = None  # Stair tag; None for a floor-edge guard
+    # Handrail top above the *nosings*, which is not the same datum as ``height`` (the guard
+    # height above the deck). R311.7.8.1 wants 34"-38" measured from the nosing line.
+    top_height: Length | None = None
+    # R311.7.8.3 graspability: "type-I" (circular 1-1/4"-2", or equivalent perimeter),
+    # "type-II" (the shaped profile with a finger recess), or a product name.
+    graspable_profile: str | None = None
+    continuous: bool = True  # R311.7.8.2: the full length of the flight, no interruption
+    infill: Literal["balusters", "panel", "cable", "mesh"] | None = None
+    # R312.1.3: the largest opening the infill admits. For balusters this is the clear gap
+    # between them, which is *not* ``post_spacing`` — that is the structural post rhythm.
+    baluster_spacing: Length | None = None
 
 
 @register_element
@@ -290,6 +311,10 @@ class GlazingPanel(Element):
     # modeled: it is 2 mil of surface treatment, not a layer with a thermal or dimensional
     # consequence, but it is a line on the order and a note on the drawing.
     film: str | None = None
+    # Safety glazing. A breezeway enclosure and a canopy are both R308.4 hazardous
+    # locations by construction — a free-standing sheet at walking height is the case the
+    # section was written for — so this is the one place the flag is nearly always true.
+    tempered: bool = False
 
 
 @register_element

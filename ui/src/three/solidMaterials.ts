@@ -10,7 +10,9 @@
 // RGB values are the source of truth for the export. Change one, change the other.
 import * as THREE from "three";
 import type { Catalog, Solid } from "../model/types";
-import { materialColor, materialOpacity, type ResolvedNordicPalette } from "../nordic/palette";
+import {
+  materialColor, materialOpacity, statesOwnColor, type ResolvedNordicPalette,
+} from "../nordic/palette";
 import type { Trade } from "../state/vocabulary";
 
 // solid category → sRGB hex, mirroring emit/gltf/emitter.py `_PALETTE` (the same keys, its
@@ -139,10 +141,17 @@ export function paintedFinishColor(materialRef: string | null | undefined): numb
 // an authored assembly wins (its structure layer's material is the visible face), otherwise the
 // per-category palette. Returned as a THREE-ready sRGB integer.
 export function solidColor(
-  solid: Pick<Solid, "category" | "assembly">,
+  solid: Pick<Solid, "category" | "assembly" | "material">,
   catalog: Catalog | undefined,
   palette: ResolvedNordicPalette,
 ): number {
+  // A trim run names its material directly rather than through an assembly, and that ref wins
+  // over the category — it is how a gutter ordered in the roof's trim coil says so. Only a
+  // material the catalog actually describes counts (materialColor's family inference would
+  // repaint every generic "aluminum" run), so a run that never stated a colour is unchanged.
+  if (statesOwnColor(solid.material, catalog?.materials)) {
+    return new THREE.Color(materialColor(solid.material, palette, catalog?.materials)).getHex();
+  }
   const assembly = solid.assembly
     ? catalog?.assemblies.find((candidate) => candidate.tag === solid.assembly)
     : undefined;
@@ -176,7 +185,7 @@ export function solidOpacity(
 }
 
 export function createSolidMaterial(
-  solid: Pick<Solid, "category" | "assembly">,
+  solid: Pick<Solid, "category" | "assembly" | "material">,
   catalog: Catalog | undefined,
   mode: "nordic" | "schematic",
   palette: ResolvedNordicPalette,

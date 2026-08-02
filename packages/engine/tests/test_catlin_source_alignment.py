@@ -75,8 +75,14 @@ ATTIC_LINES = (
     # 6 3/4" wall where ours is 4 1/2".
     ("N-A-C2", "y", 9, 0, 9.228, 3.0),
     ("N-A-E1", "y", 9, 0, 9.228, 3.0),
-    ("N-A-V1", "x", 22, 4, 22.31),     # stair vestibule east screen
-    ("N-A-V2", "x", 22, 4, 22.31),
+    # Stair vestibule east screen. 4 1/4" east of its source line since 2026-08-01, and the
+    # one node in this table that is off its source for a reason outside the survey: N-A-V1
+    # is where W-A-S4 starts, so it sets the phase of every bay centre on the east half of
+    # the south gable. 36' - 22'-4" is not a multiple of 16", so at the source line the
+    # gable could not mirror about the ridge; 22'-8" is 16 x 17 and it can. The screen is a
+    # dangling pair that dimensions nothing else, which is what makes the trade payable.
+    ("N-A-V1", "x", 22, 8, 22.31, 4.5),
+    ("N-A-V2", "x", 22, 8, 22.31, 4.5),
     ("N-A-V3", "x", 21, 2, 21.14),     # its north screen, stopping at the well
 )
 

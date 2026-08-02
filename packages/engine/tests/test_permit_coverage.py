@@ -67,6 +67,42 @@ def test_checklist_labels_are_unique(profile) -> None:
     assert len(labels) == len(set(labels)), labels
 
 
+@pytest.mark.parametrize("profile", ALL_PROFILES, ids=lambda p: p.name)
+def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
+    """The profile's stated rigor is that "every rule carries a citation" — until now
+    nothing enforced it, and an uncited CODE finding is unreviewable: a plan reviewer cannot
+    check an assertion that names no section."""
+    from typehaus.checks import run
+    from typehaus.source import load_plan
+
+    result = load_plan(starter_dir)
+    assert result.plan is not None
+    report = run(result.plan, starter_dir, profile=profile.name)
+    code_ids = _registered_ids(Tier.CODE)
+    uncited = sorted({finding.check_id for finding in report.findings
+                      if finding.check_id in code_ids and not finding.code_ref})
+    assert not uncited, f"{profile.name}: CODE findings with no code_ref: {uncited}"
+
+
+# How many checklist items may sit in the non-gating staging lane (PermitItemSpec.blocking).
+# Pinned so the lane can only shrink: an item goes non-blocking when its rule is newly
+# encoded and the reference house cannot answer it yet, and flips to blocking in the commit
+# that makes the house pass. Without a pin, "not yet gating" quietly becomes "never gating".
+#
+# Lower this number when you flip an item. Raising it needs a reason in the commit message.
+MAX_NON_BLOCKING_ITEMS = {"mn-2024": 21}
+
+
+@pytest.mark.parametrize("profile", ALL_PROFILES, ids=lambda p: p.name)
+def test_the_non_gating_lane_only_shrinks(profile) -> None:
+    staged = [item.label for item in profile.permit_items if not item.blocking]
+    limit = MAX_NON_BLOCKING_ITEMS[profile.name]
+    assert len(staged) <= limit, (
+        f"{profile.name} has {len(staged)} non-gating permit items (limit {limit}): "
+        f"{staged}. Flip one to blocking, or state why the limit rises."
+    )
+
+
 def test_r401_3_is_actually_on_the_checklist() -> None:
     """The specific drift this test was written for: both R401.3 checks are registered and
     the coverage statement names lot drainage, but no permit item referenced them."""

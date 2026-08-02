@@ -21,15 +21,36 @@ MN_2024 = JurisdictionProfile(
     effective_date="2020-03-31",
     irc_base="2018 IRC + MN amendments",
     coverage_statement=(
-        "Encodes a declared subset. Habitability and egress: R305 ceiling height, R310 "
-        "emergency escape openings, R311.7 stairways, R311.6 hallway width, egress door "
-        "width. Site: R401.3 lot drainage away from the foundation, local setbacks. "
-        "Energy: the N1102.1.2 prescriptive envelope only. Structural: frost depth and "
-        "I-joist span tables only — no engineered analysis, no lateral system, no "
-        "connection design. Plumbing: rough-in geometry and MN ch. 4714 sizing tables "
-        "(sleeving, drain slope, wall occupancy, under-slab and footing clearance, sewer "
-        "invert, DFU/WSFU sizing, trap-arm length) — no gas, no fixture venting beyond "
-        "trap arms, no testing. Does NOT cover mechanical or electrical chapters at all. "
+        "Encodes a declared subset. "
+        "Habitability, egress and circulation: R305 ceiling height, R310 emergency escape "
+        "openings (sleeping rooms and basements), R311.2 egress door width, R311.3 "
+        "landings at exterior doors, R311.6 hallway width, R311.7 stairways. "
+        "Fall protection: R312.1 guards at stair wells and raised walking surfaces, "
+        "R312.1.3 guard opening limits, R311.7.8 stair handrails, and R312.2 window fall "
+        "protection. Glazing: R308.4 safety glazing in hazardous locations. "
+        "Fire safety: R302.5/R302.6 garage-to-dwelling separation (gypsum thickness, doors "
+        "into sleeping rooms, ducts into garages) and R302.13 floor-assembly protection; "
+        "R314/R315 smoke and CO alarms per storey and per sleeping area. "
+        "Light and ventilation: R303.1 glazing and openable area, R303.3 local exhaust, "
+        "N1103.6 whole-house ventilation rate. "
+        "Site: R401.3 lot drainage away from the foundation, local setbacks. "
+        "Energy: the N1102.1.2 prescriptive envelope and the N1102.4.1.2 air-leakage "
+        "target. "
+        "Attic: R807.1 access and R806.2 ventilation net free area. "
+        "Structural: frost depth and I-joist span tables only — no engineered analysis, no "
+        "lateral system, no connection design. "
+        "Plumbing: rough-in geometry and MN ch. 4714 sizing tables (sleeving, drain slope, "
+        "wall occupancy, under-slab and footing clearance, sewer invert, DFU/WSFU sizing, "
+        "trap-arm length) — no gas, no fixture venting beyond trap arms, no testing. "
+        "Electrical: E3902 GFCI receptacle locations and E3902.16 AFCI branch-circuit "
+        "coverage only — no conductor sizing, box fill, or load calculation, none of which "
+        "is claimed as a code result. "
+        "Explicitly NOT covered, and not merely unimplemented: fireblocking and "
+        "draftstopping (R302.11-.12), crawl spaces (R408), chimneys and solid-fuel "
+        "appliances (R1001-R1004), and notching and boring limits (R502.8/R602.6). "
+        "Also covered: R310.2.3 window wells, M1502 dryer exhaust, and P2801.6/P2804.6.1 "
+        "water-heater relief discharge and pan. Not covered: "
+        "and assembly fire-resistance ratings beyond gypsum grade and thickness. "
         "Every permit item names the checks that answer it; this profile covers a declared "
         "subset of the code; results are never 'code compliant'."
     ),
@@ -46,17 +67,77 @@ MN_2024 = JurisdictionProfile(
     permit_items=(
         PermitItemSpec("Ceiling height / habitable attic", ("code.R305_ceiling_height",),
                        ("IRC R305",)),
-        PermitItemSpec("Sleeping-room emergency escape", ("code.R310_egress",), ("IRC R310",)),
+        # R310.1 is two requirements, and only the room-level one was encoded: a basement
+        # with habitable space needs its own escape opening whether or not anyone sleeps in
+        # it. The storey-level rule joins this line rather than opening a new one — a plan
+        # reviewer asks "can you get out" once.
+        PermitItemSpec("Emergency escape and rescue openings",
+                       ("code.R310_egress", "code.R310_1_storey_egress",
+                        "code.R310_2_3_window_well"), ("IRC R310",), blocking=False),
         PermitItemSpec("Egress door clear width", ("code.R311_door_width",), ("IRC R311.2",)),
+        PermitItemSpec("Landings at exterior doors", ("code.R311_3_exterior_landing",),
+                       ("IRC R311.3", "IRC R311.3.1"), blocking=False),
+        # Claimed by the coverage statement since it was written, implemented by nothing:
+        # the meta-tests catch a checklist item with no check and a check on no item, but
+        # not a prose claim with neither.
+        PermitItemSpec("Hallway width", ("code.R311_6_hallway_width",), ("IRC R311.6",),
+                       blocking=False),
         PermitItemSpec("Stair geometry and headroom",
                        ("code.R311_7_stair_geometry", "code.R311_7_2_stair_headroom",
-                        "code.R311_7_1_stair_width", "code.R311_7_6_landing_depth"),
-                       ("IRC R311.7",)),
+                        "code.R311_7_1_stair_width", "code.R311_7_6_landing_depth",
+                        "structural.stair_riser_uniformity"),
+                       ("IRC R311.7", "IRC R311.7.5.1")),
         PermitItemSpec("Guards at stair-well openings", ("code.R312_1_guard",),
                        ("IRC R312.1",)),
+        # The stair-well rule above and structural.deck_guard covered two shapes of the same
+        # requirement; every other raised edge went unmeasured.
+        PermitItemSpec("Guards at raised walking surfaces", ("code.R312_1_guard_height",),
+                       ("IRC R312.1.1", "IRC R312.1.2"), blocking=False),
+        PermitItemSpec("Window fall protection", ("code.R312_2_window_fall_protection",),
+                       ("IRC R312.2",), blocking=False),
+        # Railing grew a handrail role, so this leaves permit_exclusions and joins the
+        # checklist in the same change — a check may not be both.
+        PermitItemSpec("Stair handrails", ("code.R311_7_8_handrail",),
+                       ("IRC R311.7.8",), blocking=False),
+        PermitItemSpec("Guard opening limit", ("code.R312_1_3_guard_opening_limit",),
+                       ("IRC R312.1.3",), blocking=False),
+        PermitItemSpec("Safety glazing", ("code.R308_4_safety_glazing",),
+                       ("IRC R308.4",), blocking=False),
+        PermitItemSpec("Garage / dwelling separation",
+                       ("code.R302_5_garage_separation",),
+                       ("IRC R302.5.1", "IRC R302.5.2", "IRC R302.6"), blocking=False),
+        PermitItemSpec("Floor assembly protection", ("code.R302_13_floor_protection",),
+                       ("IRC R302.13",), blocking=False),
+        PermitItemSpec("Habitable light and ventilation",
+                       ("code.R303_1_light_and_ventilation",), ("IRC R303.1",),
+                       blocking=False),
+        PermitItemSpec("Bathroom and kitchen exhaust", ("code.R303_3_local_exhaust",),
+                       ("IRC R303.3", "IRC M1507"), blocking=False),
+        PermitItemSpec("Whole-house ventilation rate",
+                       ("code.N1103_6_whole_house_ventilation",),
+                       ("IRC N1103.6", "ASHRAE 62.2"), blocking=False),
+        PermitItemSpec("Attic access", ("code.R807_1_attic_access",), ("IRC R807.1",),
+                       blocking=False),
+        PermitItemSpec("Attic ventilation", ("code.R806_2_attic_ventilation",),
+                       ("IRC R806.2",), blocking=False),
+        PermitItemSpec("GFCI receptacle locations", ("code.E3902_gfci_locations",),
+                       ("IRC E3902",), blocking=False),
+        PermitItemSpec("AFCI branch circuits", ("code.E3902_16_afci",),
+                       ("IRC E3902.16",), blocking=False),
+        PermitItemSpec("Dryer exhaust", ("code.M1502_dryer_exhaust",), ("IRC M1502",),
+                       blocking=False),
+        PermitItemSpec("Water-heater relief and pan", ("code.P2804_water_heater_relief",),
+                       ("IRC P2801.6", "IRC P2804.6.1"), blocking=False),
         PermitItemSpec("Smoke / CO alarm placement",
                        ("code.R314_R315_alarms", "code.R315_garage_alarms"),
                        ("IRC R314", "IRC R315")),
+        # R314.3's actual requirement — an alarm on *each* storey, basements included — had
+        # no rule: the existing check only visits storeys that have a bedroom on them, so a
+        # basement with zero alarms passed the gate. Non-blocking until the house carries the
+        # alarms the rule asks for.
+        PermitItemSpec("Alarms on every storey",
+                       ("code.R314_alarm_every_storey", "code.R315_co_every_sleeping_area"),
+                       ("IRC R314.3", "IRC R314.4", "IRC R315.3"), blocking=False),
         # R401.3 was two registered checks no checklist item referenced — precisely the
         # drift the coverage test now prevents. Lot drainage is a permit-plan requirement,
         # and the coverage statement above has always claimed it.
@@ -65,6 +146,8 @@ MN_2024 = JurisdictionProfile(
         PermitItemSpec("Site setbacks", ("code.site_setback",), ("local zoning",)),
         PermitItemSpec("Energy prescriptive envelope", ("code.energy_prescriptive",),
                        ("IRC N1102.1.2",)),
+        PermitItemSpec("Envelope air-leakage target", ("code.N1102_4_air_leakage",),
+                       ("IRC N1102.4.1.2", "MN Rules 1322")),
         PermitItemSpec("Foundation frost depth", ("structural.frost_depth",), ("IRC R403.1.4",)),
         PermitItemSpec("I-joist span table", ("structural.ijoist_span",),
                        ("manufacturer span table",)),
@@ -97,11 +180,6 @@ MN_2024 = JurisdictionProfile(
         ("mep.hydrant_freeze_depth",
          "a fixture-durability rule (a yard hydrant's own freeze protection), not a "
          "permit-plan review item; it stays in the full check report"),
-        ("code.R311_7_8_handrail",
-         "no handrail is modeled yet — Railing elements are guards with no handrail "
-         "role/graspability semantics, so the check reports UNKNOWN by design in the "
-         "full check report; it joins the checklist when the schema grows a handrail "
-         "role (plans/TODO.md)"),
     ),
 )
 

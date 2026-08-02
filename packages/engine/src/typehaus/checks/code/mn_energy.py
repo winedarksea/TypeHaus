@@ -186,17 +186,23 @@ def evaluate_envelope(model: ResolvedModel, plan: PlanModel,
     return rows
 
 
+_PRESCRIPTIVE_REF = "N1102.1.2"
+
+
 def _to_finding(row: PrescriptiveRow) -> Finding:
     message = f"{row.role} {row.component}: {row.provided} vs. {row.required} required"
     if row.verdict == "unknown":
         return Finding(severity=Severity.WARN, check_id="code.energy_prescriptive",
                        message=f"UNKNOWN — {row.role} {row.component} {row.provided}",
-                       element_tags=(row.component,), result=Result.UNKNOWN)
+                       element_tags=(row.component,), code_ref=_PRESCRIPTIVE_REF,
+                       result=Result.UNKNOWN)
     if row.verdict == "pass":
         return Finding(severity=Severity.WARN, check_id="code.energy_prescriptive",
-                       message=message, element_tags=(row.component,), result=Result.PASS)
+                       message=message, element_tags=(row.component,),
+                       code_ref=_PRESCRIPTIVE_REF, result=Result.PASS)
     return Finding(severity=Severity.ERROR, check_id="code.energy_prescriptive", message=message,
-                   element_tags=(row.component,), result=Result.FAIL)
+                   element_tags=(row.component,), code_ref=_PRESCRIPTIVE_REF,
+                   result=Result.FAIL)
 
 
 @check(Tier.CODE, "code.energy_prescriptive")
@@ -212,6 +218,54 @@ def energy_prescriptive(ctx: CheckContext) -> list[Finding]:
             severity=Severity.WARN, check_id="code.energy_prescriptive",
             message=(f"UNKNOWN — profile {ctx.profile.name} states no prescriptive envelope "
                      "table, so no component requirement can be evaluated"),
-            result=Result.UNKNOWN,
+            code_ref=_PRESCRIPTIVE_REF, result=Result.UNKNOWN,
         )]
     return [_to_finding(row) for row in evaluate_envelope(ctx.model, ctx.plan, envelope)]
+
+
+# N1102.4.1.2 (MN Rules 1322): the blower-door result must not exceed 3.0 air changes per
+# hour at 50 Pa. Minnesota amends the IRC's climate-zone table to a flat 3.0 statewide.
+_MAX_ACH50 = 3.0
+_AIR_LEAKAGE_REF = "N1102.4.1.2"
+
+
+@check(Tier.CODE, "code.N1102_4_air_leakage")
+def air_leakage(ctx: CheckContext) -> list[Finding]:
+    """N1102.4.1.2 — envelope air leakage at or under 3.0 ACH50.
+
+    This is the one energy requirement with a *test* behind it rather than a table lookup,
+    and the number is already authored: ``preferences.ach50`` (or ``cfm50``, which wins
+    when both are present because a test report states CFM50 and the ACH50 is derived from
+    it — see the Preferences docstring).
+
+    Deriving ACH50 from CFM50 needs the conditioned volume, which this engine does not
+    resolve as a single figure. So a house that states only ``cfm50`` reports UNKNOWN with
+    that reason rather than a volume guess: the whole point of a blower-door number is that
+    it is measured.
+    """
+    cid = "code.N1102_4_air_leakage"
+    prefs = ctx.preferences
+    if prefs.cfm50 is not None and prefs.ach50 is None:
+        return [Finding(
+            severity=Severity.WARN, check_id=cid, code_ref=_AIR_LEAKAGE_REF,
+            message=(f"UNKNOWN — the house states cfm50 = {prefs.cfm50:g} but no ach50, and "
+                     "converting between them needs a conditioned volume this engine does "
+                     "not resolve"),
+            result=Result.UNKNOWN)]
+    if prefs.ach50 is None:
+        return [Finding(
+            severity=Severity.WARN, check_id=cid, code_ref=_AIR_LEAKAGE_REF,
+            message=("UNKNOWN — no blower-door result authored ([envelope].ach50 in "
+                     f"preferences.toml); N1102.4.1.2 requires {_MAX_ACH50:g} ACH50 or less"),
+            result=Result.UNKNOWN)]
+    if prefs.ach50 > _MAX_ACH50 + 1e-9:
+        return [Finding(
+            severity=Severity.ERROR, check_id=cid, code_ref=_AIR_LEAKAGE_REF,
+            message=(f"envelope leaks {prefs.ach50:g} ACH50; N1102.4.1.2 allows at most "
+                     f"{_MAX_ACH50:g}"),
+            fix_hint="tighten the air barrier, or correct [envelope].ach50 to the tested value",
+            result=Result.FAIL)]
+    return [Finding(
+        severity=Severity.WARN, check_id=cid, code_ref=_AIR_LEAKAGE_REF,
+        message=f"envelope tests at {prefs.ach50:g} ACH50 (<= {_MAX_ACH50:g})",
+        result=Result.PASS)]

@@ -11,9 +11,9 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from typehaus.model.base import HausModel
+from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import UtilityKind
-from typehaus.model.registry import register_constructor
+from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D, ft, m, pt
 
 
@@ -130,6 +130,31 @@ def load_basemap_geojson(path: str | Path, *, unit: str = "ft") -> Basemap:
     return Basemap(parcel=parcel, contours=tuple(contours))
 
 
+@register_element
+class WindowWell(Element):
+    """An areaway serving a below-grade emergency escape opening (R310.2.3).
+
+    A first-class element rather than a nested value object, unlike its neighbours here,
+    because it *references* one: ``serves_opening`` names the Window or RoughOpening it
+    belongs to, and only elements carry tags other elements can point at.
+
+    Deliberately non-geometric — no resolve pass, no glTF or IFC emission, not draggable in
+    the UI. The check reads the authored element directly, the way the stair-well guard rule
+    reads ``FloorOpening`` and ``Railing``. Adding it as a geometric kind would mean touching
+    the resolver, both emitters and the viewer for a rectangle in the dirt that nobody looks
+    at in 3D; adding it as data costs three lines and answers the code question.
+    """
+
+    serves_opening: str  # Window / RoughOpening tag this well lets you climb out of
+    outline: tuple[Point2D, ...]  # well plan ring, project frame
+    floor_elevation: Length  # well bottom, datum-relative like SpotElevation
+    # R310.2.3.1: a well deeper than 44" needs a permanently affixed ladder or steps.
+    ladder: bool = False
+    ladder_width: Length | None = None
+    drained: bool = False  # R310.2.3.2 connection to the foundation drainage system
+    cover: str | None = None  # grate/cover product, where one is fitted
+
+
 def _ring_to_points(ring: list, to_length) -> tuple[Point2D, ...]:
     pts = [pt(to_length(c[0]), to_length(c[1])) for c in ring]
     # GeoJSON polygons repeat the first vertex to close the ring; the plan frame does not.
@@ -145,5 +170,6 @@ for _name, _obj in (
     ("ImperviousSurface", ImperviousSurface),
     ("UtilityLine", UtilityLine),
     ("Contour", Contour),
+    ("WindowWell", WindowWell),
 ):
     register_constructor(_name, _obj)

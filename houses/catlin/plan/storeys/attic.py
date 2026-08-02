@@ -36,7 +36,17 @@ NODES = [
     Node(uid="CAN001AAAA", tag="N-A-SW", position=pt(ft(0), ft(0))),
     Node(uid="CAN002AAAA", tag="N-A-S1", position=pt(ft(10), ft(0))),
     Node(uid="CAN003AAAA", tag="N-A-S2", position=pt(ft(18), ft(0))),
-    Node(uid="CAN011AAAA", tag="N-A-V1", position=pt(ft(22, 4), ft(0))),
+    # Vestibule screen line. 22'-8", not the source's 22.31 (2026-08-01 gable pass): this
+    # node is where W-A-S4 starts, and a wall's stud grid lays out from its start node, so
+    # this x sets the phase of every bay centre on the east half of the south gable. At
+    # 22'-4" the east half was 4" out of phase with a mirror of the west half — 36' minus
+    # 22'-4" is 13'-8", which is not a multiple of 16" — which is the "the plan, not the
+    # window" phase error the old WIN-A-S3/S4 note described. 22'-8" is 272" = 16 x 17, so
+    # W-A-S4's bay centres and W-A-S1's are the same phase and mirror exactly about x=18'.
+    # The screen is a dangling pair that closes no room polygon (see W-A-VE below), so the
+    # 4" costs nothing but its own position; it moves the screen *away* from the stair well
+    # at x 21'-1 3/4", widening that gap rather than pinching it.
+    Node(uid="CAN011AAAA", tag="N-A-V1", position=pt(ft(22, 8), ft(0))),
     Node(uid="CAN004AAAA", tag="N-A-SE", position=pt(ft(36), ft(0))),
     Node(uid="CAN005AAAA", tag="N-A-E1", position=pt(ft(36), ft(9))),
     Node(uid="CAN006AAAA", tag="N-A-NE", position=pt(ft(36), ft(36))),
@@ -46,7 +56,7 @@ NODES = [
     Node(uid="CAN009AAAA", tag="N-A-C1", position=pt(ft(18), ft(5, 7))),
     Node(uid="CAN012AAAA", tag="N-A-C2", position=pt(ft(18), ft(9))),
     Node(uid="CAN010AAAA", tag="N-A-D1", position=pt(ft(10), ft(5, 7))),
-    Node(uid="CAN013AAAA", tag="N-A-V2", position=pt(ft(22, 4), ft(5, 7))),
+    Node(uid="CAN013AAAA", tag="N-A-V2", position=pt(ft(22, 8), ft(5, 7))),
     # A legitimate wing-wall terminus: the vestibule's north screen stops at the stair
     # well's west edge, exactly as the source's Den north wall does.
     Node(uid="CAN014AAAA", tag="N-A-V3", position=pt(ft(21, 2), ft(5, 7)),
@@ -126,11 +136,13 @@ WALLS = [
          assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
     Wall(uid="CAW113AAAA", tag="W-A-SN", start_node="N-A-C2", end_node="N-A-E1",
          assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
-    # Stair vestibule screen: the source's Den east + north walls, kept where the source
-    # draws them (x 22.31, y 5.611) even though the Den itself moved west. They wrap the
-    # head of ST-S2A so the arrival is enclosed on the Study side. Being a dangling pair
+    # Stair vestibule screen: the source's Den east + north walls, kept near where the
+    # source draws them (y 5.611 exactly; x moved from the source's 22.31 to 22'-8" by the
+    # 2026-08-01 gable pass — see N-A-V1) even though the Den itself moved west. They wrap
+    # the head of ST-S2A so the arrival is enclosed on the Study side. Being a dangling pair
     # they close no polygonized face, so RM-A-STUDY still reads as one room around them —
-    # which is also how the source's 123.39 sf "Study" reads.
+    # which is also how the source's 123.39 sf "Study" reads. That is also what makes the
+    # 4" x-shift free: nothing dimensions off this line except the screen itself.
     Wall(uid="CAW116AAAA", tag="W-A-VE", start_node="N-A-V1", end_node="N-A-V2",
          assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE")),
     Wall(uid="CAW117AAAA", tag="W-A-VN", start_node="N-A-V3", end_node="N-A-V2",
@@ -148,34 +160,47 @@ OPENINGS = [
          position=from_node("N-A-C2", ft(0, 8.875))),                 # x 19'-11 7/8"
     Door(uid="CAD204AAAA", tag="D-A-VEST", host="W-A-VE", type_ref="DT-INT-SWING30",
          position=from_node("N-A-V1", ft(0, 11.25))),                 # y 2'-2 1/4"
-    # South gable: four WT-1424 on the lower storeys' own window columns (2026-07-30
-    # facade pass). The gable used to carry two/three WT-4242s — a type this change
-    # retired from the catalog entirely — that capped no column at
-    # all — the 42" RO is simply too wide to reach the outer columns under a 4:12 rake
-    # (at x 3'-4" its west jamb stands where the wall is 5'-6" and the header wants
-    # 6'-2"), and at the 8'-8" column it would run 5" past W-A-S1's end at x=10'.
+    # South gable, 2026-08-01 pass: two WT-1448 flanking the juliet pair below, and that
+    # is the whole gable — four openings, mirror-symmetric about the ridge.
     #
-    # Dropping to the 14" family solves both: a 14" RO clears a stud bay unbroken, needs
-    # no header, and its head at 4'-8" ducks under the rake everywhere it is asked to
-    # stand — 1'-0" of clearance at the tightest station (33'-8", where the wall is
-    # 5'-8"). So the attic finally reads as four columns capped, matching WIN-M-BED-S1/S2
-    # and WIN-M-LIV-S1/S2 below and WIN-S-PLANT1/2 and WIN-S-STUDY1/2 between.
+    # WHAT THIS REPLACED, AND WHY. The 2026-07-30 pass put four WT-1424 here, one on each
+    # of the lower storeys' four south columns (x 3'-4", 8'-8", 28'-0", 33'-4"). It was
+    # right about the framing and wrong about the elevation: 14x24 next to the 18x64 juliet
+    # pair is a 4:1 jump, so the four read as vents rather than windows, on a second head
+    # line (4'-8") 3'-4" below the pair's, with 8' of blank gable between the two groups.
+    # And the gable was not symmetric — this file's own rule (CLAUDE.md: "gables read
+    # symmetric about the ridge before they answer to anything below") lost to the columns.
     #
-    # The west pair lands exactly on its columns; the east pair misses by 4" because
-    # W-A-S4's stud grid starts at N-A-V1 (x 22'-4") while the storeys below lay out
-    # from x 18'-0", and 4'-4" is 4" off the 16" module. That phase error is fixed by
-    # the plan, not by the window. Sill 2'-8" is the storey-wide south sill line.
-    # Renamed off the old room-based tags, which had gone stale anyway (the Den moved
-    # off the gable years ago): these are facade positions, like WIN-A-N1/N2.
-    Window(uid="CAX301AAAA", tag="WIN-A-S1", host="W-A-S1", type_ref="WT-1424",
-           position=from_node("N-A-SW", ft(2, 9)), sill_height=ft(2, 8)),   # x 3'-4"
-    Window(uid="CAX302AAAA", tag="WIN-A-S2", host="W-A-S1", type_ref="WT-1424",
+    # The corner pair went first. At x 3'-4" the 4:12 rake leaves 6'-1" of wall and at
+    # x 33'-8" it leaves 6'-0"; nothing can stand there that does not look like a stamp.
+    # Cutting them is what lets the survivors grow, because the two that remain (x 8'-8"
+    # and its mirror) stand where the wall is 8'-8" at the outer jamb — 2'-0" of clear
+    # above a 6'-8" head. So they take WT-1448 and the gable reads as one graded group
+    # stepping with the rake: heads at 6'-8" then 8'-0", one 2'-8" sill under all four.
+    #
+    # WHY NOT WT-1864 FOR THE FLANKERS, which would have made the four one family and
+    # needed no new type: an 18" RO breaks a stud, so it takes the jamb pack, and on a
+    # nonbearing wall that header is a 2-2x6 (5.5"). At the nearest usable stud line
+    # (x 8'-0"/28'-0") the header's outer end lands at x 7'-0", where the roof underside is
+    # 8'-3.7" and the header top wants 8'-5.5" — 1.8" short. It is the header, not the
+    # glass, that the rake refuses. A 14" RO fits inside a bay and takes no pack at all
+    # (resolve/framing/openings.py needs_jamb_pack), so only its own head has to clear.
+    #
+    # SYMMETRY. WIN-A-S3 sits at x 27'-4", the exact mirror of WIN-A-S2's 8'-8", which is
+    # only possible because N-A-V1 moved to 22'-8" this pass — see the note there. Both are
+    # bay centres on their own host's grid (8" + 16n from the wall start), as a 14" RO must
+    # be. The cost is that neither flanker caps a lower-storey column any more: the columns
+    # are 8'-8"/28'-0" and a mirror of 8'-8" is 27'-4", so on the east half the gable and
+    # the storeys below now disagree by 8". That is the same 8" phase error the main and
+    # second storeys carry, and the gable rule says the ridge wins.
+    #
+    # Tags: WIN-A-S1/S4 (the retired corner pair) are gone rather than renumbered, so S2/S3
+    # keep their uids and IFC GlobalIds. The sequence reads S2, JUL-W, JUL-E, S3 west→east.
+    Window(uid="CAX302AAAA", tag="WIN-A-S2", host="W-A-S1", type_ref="WT-1448",
            position=from_node("N-A-SW", ft(8, 1)), sill_height=ft(2, 8)),   # x 8'-8"
-    Window(uid="CAX303AAAA", tag="WIN-A-S3", host="W-A-S4", type_ref="WT-1424",
-           position=from_node("N-A-V1", ft(5, 5)), sill_height=ft(2, 8)),   # x 28'-4"
-    Window(uid="CAX307AAAA", tag="WIN-A-S4", host="W-A-S4", type_ref="WT-1424",
-           position=from_node("N-A-V1", ft(10, 9)), sill_height=ft(2, 8)),  # x 33'-8"
-    # ...and the middle of the same gable, which those four leave blank: a pair of 18x64
+    Window(uid="CAX303AAAA", tag="WIN-A-S3", host="W-A-S4", type_ref="WT-1448",
+           position=from_node("N-A-V1", ft(4, 1)), sill_height=ft(2, 8)),   # x 27'-4"
+    # ...and the middle of the same gable, which the flankers leave blank: a pair of 18x64
     # casements straddling the ridge, reading together like a juliet balcony without being
     # one. No door, no guard, no walking surface — the 2'-8" sill (the storey-wide south
     # line, held here on purpose) clears R312.2's 24" fall-protection trigger by 8", so the
@@ -185,8 +210,10 @@ OPENINGS = [
     #
     # WHY THE PAIR SHRANK (2026-07-31, hours after it was first drawn at 32x76 on the
     # x 16'-0"/20'-0" bay centres): 80" x 76" of glass took over a gable whose other four
-    # openings are 14x24, and the two units read as two windows rather than one mullioned
-    # opening. 50" x 64" overall is the same composition at a size the facade can hold.
+    # openings were then 14x24, and the two units read as two windows rather than one
+    # mullioned opening. 50" x 64" overall is the same composition at a size the facade can
+    # hold. The 2026-08-01 pass came at the same gap from the other end — the flankers grew
+    # to 14x48 instead of the pair shrinking further — so 50x64 stands.
     #
     # WHY STUD LINES AND NOT BAY CENTRES: the gable's stud grid is continuous across the
     # ridge — W-A-S2 lays out from N-A-S1 (x 10'-0") and W-A-S3 from N-A-S2 (x 18'-0"), and
@@ -205,8 +232,10 @@ OPENINGS = [
     # arithmetic minimum and no more. That pier is also the composition's mullion: it is why
     # the two units read as one opening.
     #
-    # Tags are descriptive rather than positional because WIN-A-S1..S4 number west→east and
-    # a mid-facade insertion cannot join that sequence without renumbering all six.
+    # Tags are descriptive rather than positional because the WIN-A-S* numbers ran west→east
+    # and a mid-facade insertion could not join that sequence without renumbering the lot.
+    # (The 2026-08-01 pass retired S1 and S4, which would now make the numbers contiguous
+    # again — but renaming these two would break their IFC GlobalIds for cosmetics.)
     Window(uid="CAX311AAAA", tag="WIN-A-S-JUL-W", host="W-A-S2", type_ref="WT-1864",
            position=from_node("N-A-S1", ft(5, 11)), sill_height=ft(2, 8)),  # x 16'-8"
     Window(uid="CAX312AAAA", tag="WIN-A-S-JUL-E", host="W-A-S3", type_ref="WT-1864",
@@ -273,7 +302,14 @@ ALARMS = [
 ROOFS = [
     Roof(uid="CARF01AAAA", tag="RF-HOUSE", form=RoofForm.GABLE,
          pitch=Pitch(4, 12), bearing_refs=("W-A-E1", "W-A-E2", "W-A-W1"),
-         assembly="CATLIN_ROOF", overhang=ft(0), ridge_direction="y"),
+         assembly="CATLIN_ROOF", overhang=ft(0), ridge_direction="y",
+         # The barge-board answer for a roof that cannot have a barge board (2026-08-01).
+         # With zero overhang the formed corner trim is the only piece standing at the rake,
+         # and it was ordered in the panels' own white — so the gable read as a knife edge.
+         # Ordered in the casings' charcoal instead, its 4" leg draws a 4-1/2" dark band
+         # down both rakes, round both eaves and along the ridge: one outline, no new
+         # geometry, no custom fabrication, just a second coil colour.
+         edge_trim_material="metal-dark-exterior"),
 ]
 
 BEAMS = [
@@ -326,7 +362,7 @@ STAIR_GUARD = Railing(
     ),
     kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
     base_elevation=ft(20), post_spacing=inch(60), post_size="2x2", rail_count=2,
-    mount="fascia", assembly="POST_WHITE_PAINT",
+    mount="fascia", assembly="RAILING_DARK_METAL",
 )
 
 STAIRS = [

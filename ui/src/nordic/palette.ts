@@ -133,6 +133,14 @@ export function familyOf(materialRef: string | null | undefined): string | null 
   return null;
 }
 
+// Material refs whose colour is fixed by their finish rather than inferred from their family.
+// Mirrors _FINISH_BASE in packages/engine/src/typehaus/emit/gltf/palette.py — the .glb and the
+// viewer must agree, and the family guess is wrong for finish variants (a charcoal trim coil
+// is "metal" by family, which would paint it the palette's blue-grey).
+const FINISH_BASE: Readonly<Record<string, string>> = {
+  "metal-dark-exterior": "#1c1f24",
+};
+
 // The authored-appearance slice of a catalog material (ui/src/model/types.ts MaterialSpec).
 // Structural so palette.ts stays free of model imports and tests can pass literals.
 export interface MaterialAppearance {
@@ -142,6 +150,23 @@ export interface MaterialAppearance {
   // A sealer/stain rather than a covering: it colours what it is applied over and adds no
   // thickness, so nothing draws a plane for it (see `buildRoomFloor`).
   readonly coating?: boolean | null;
+}
+
+/**
+ * Does this ref state its own colour — a named finish, or a catalog material with an authored
+ * `color` — rather than leaving `materialColor` to guess a family from substrings?
+ *
+ * The distinction matters wherever a material ref is an *override* on something that already
+ * has a colour of its own (a solid's category palette): a stated colour should win, a guessed
+ * one should not repaint every generic "aluminum" run in the model.
+ */
+export function statesOwnColor(
+  materialRef: string | null | undefined,
+  materials?: readonly MaterialAppearance[],
+): boolean {
+  if (!materialRef) return false;
+  if (FINISH_BASE[materialRef.toLowerCase()]) return true;
+  return Boolean(authoredAppearance(materialRef, materials)?.color);
 }
 
 /** The catalog entry for a material tag, when the model shipped one. */
@@ -164,6 +189,12 @@ export function materialColor(
   palette?: ResolvedNordicPalette,
   materials?: readonly MaterialAppearance[],
 ): string {
+  // A material whose *finish* is named in FINISH_BASE resolves there first. Members carry a
+  // material ref but no catalog (memberColor passes only the palette), so an authored colour
+  // is invisible to them — and formed edge trim in a second coil colour is a member. Mirrors
+  // _FINISH_BASE in emit/gltf/palette.py; keep the two in step.
+  const named = materialRef ? FINISH_BASE[materialRef.toLowerCase()] : undefined;
+  if (named) return named;
   const authored = authoredAppearance(materialRef, materials)?.color;
   // An authored colour may carry an alpha byte (`#RRGGBBAA`) to declare that the material is
   // see-through. THREE.Color cannot parse eight digits, so the alpha is stripped here and

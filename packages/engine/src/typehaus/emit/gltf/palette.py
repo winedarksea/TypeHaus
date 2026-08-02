@@ -90,11 +90,13 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # theme to follow, so it ships the default one buildOpening reads for the same boxes.
     "opening_frame": (0.702, 0.522, 0.310, 1.0),
     "glass": (0.561, 0.718, 0.788, 0.48),
-    # Exterior window casing (resolve/geometry_openings.py). Charcoal is the design
-    # choice of the day and deliberately easy to change: this entry plus the mirrored
-    # WINDOW_TRIM_COLOR in ui/src/three (members.ts / builders/walls.ts) are the whole
-    # recolor. Rounds exactly to 0x3a3d40.
-    "window_trim": (0.227, 0.239, 0.251, 1.0),
+    # Exterior window casing (resolve/geometry_openings.py). This entry plus the mirrored
+    # CATEGORY_COLOR.window_trim in ui/src/three/members.ts are the whole recolor. Rounds
+    # exactly to 0x1c1f24 — the house's one exterior dark, shared with the roof-edge trim
+    # coil and the guards (metal-dark-exterior in _FINISH_BASE below). It reads as the
+    # charcoal 0x3a3d40 was meant to be: the viewer's ambient lifts a dark albedo well above
+    # itself, so the authored value has to sit under the tone you want on screen.
+    "window_trim": (0.110, 0.122, 0.141, 1.0),
     # accessories (→ resolve/accessories.py)
     "railing": (0.80, 0.81, 0.83, 1.0),   # aluminum guard
     "dowel": (0.20, 0.55, 0.35, 1.0),     # GFRP rebar (green)
@@ -162,10 +164,16 @@ _CMU_BASE = "#9c988f"           # materials.ts CMU_STYLE.base
 _WHITE_BRICK_BASE = "#e9e6df"   # materials.ts WHITE_BRICK_STYLE.base
 _DECK_BOARD_BASE = "#b9bcc0"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0xb9bcc0)
 
+_EXTERIOR_DARK = "#1c1f24"      # the house's one exterior dark; see window_trim above
+
 _FINISH_BASE: dict[str, str] = {
     "standing-seam": _SEAM_BASE,
     "cmu": _CMU_BASE,
     "white-brick": _WHITE_BRICK_BASE,
+    # Formed edge trim ordered in a second coil colour (Roof.edge_trim_material). Without an
+    # entry it falls to the "metal" family's blue-grey, and the accent that makes a
+    # zero-overhang rake legible would differ between the .glb and the viewer.
+    "metal-dark-exterior": _EXTERIOR_DARK,
 }
 
 
@@ -250,7 +258,22 @@ def _room_floor_color(model: ResolvedModel,
 
 def _solid_color(model: ResolvedModel, solid) -> tuple[float, float, float, float]:
     """A solid with an authored assembly (e.g. a composite/aluminum deck) reads with its
-    material colour; otherwise it falls back to the per-category palette."""
+    material colour; otherwise it falls back to the per-category palette.
+
+    A trim run names its material directly rather than through an assembly, and that ref wins
+    over the category — it is how a gutter ordered in the roof's trim coil says so. Only a
+    *named* finish or a catalog material with an authored colour counts: the generic refs the
+    family already carries ("aluminum") stay on their category tone, so this changes nothing
+    for a run that never stated a colour.
+    """
+    named = _FINISH_BASE.get((solid.material or "").lower())
+    if named is not None:
+        return _hex_rgba(named)
+    if solid.material:
+        authored = next((m for m in model.plan.library.materials
+                         if m.tag == solid.material and m.color), None)
+        if authored is not None:
+            return _hex_rgba(material_color(authored.hatch, authored.color))
     if solid.assembly:
         assembly = model.plan.library.resolve_assembly(solid.assembly)
         if assembly is not None and assembly.layers:

@@ -2,7 +2,7 @@
 # Main floor — 36'x36' at sheathing, 16" o.c. module, east half open living (WP3.1).
 # Exterior walls: CATLIN_EXT_2X6, sheathing exterior face on the 0/36 lines.
 # Bearing lines: west wall, center N-S wall (x=18), east wall (18' I-joist spans, E-W).
-# Windows follow the stud-bay rules: WT-1424 fits one bay unbroken; WT-4248 breaks two
+# Windows follow the stud-bay rules: WT-1424 fits one bay unbroken; WT-3048 breaks two
 # studs (non-bearing walls only, RO centred on a bay centre); WT-2736 adds jacks on
 # bearing walls (RO centred on a stud line).
 from typehaus import (
@@ -57,13 +57,28 @@ DOOR_TYPES = [
 # height, chosen as the tallest that still fits the family's most constrained wall
 # anywhere in the house. The 42" family used to carry a shorter WT-4242 twin for the
 # attic's raked gables; the 2026-07-30 facade pass retired it by giving those gables
-# WT-1424 instead, which is what the rake could always actually take.
+# WT-1424 instead, which is what the rake could always actually take. The 42" family
+# itself is gone as of 2026-08-01, when the south glazing narrowed to WT-3048.
 #
 # The 18" family (WT-1864) is a deliberate fifth family, added 2026-07-31 for the attic's
 # south juliet pair, and it is the same shape of argument that retired WT-4242 — one
 # height per family, so a unit the committed heights cannot express needs its own family
 # rather than a second height on an existing one. No committed height gives the tall narrow
 # proportion the pair is for (the 30" family is 36" tall, little more than half of it).
+#
+# "No exceptions" now has two, both 2026-08-01, and neither is a drift — each is a case
+# where the escape hatch the previous paragraph offers (give it its own width family) costs
+# more than the second height does:
+#
+#   - WT-1448, because the 4:12 rake forbids the hatch outright. Any width above 14" breaks
+#     a stud and takes a header, and it is the *header*, not the glass, that hits the rake;
+#     see WT-1448's own note for the 1.8" that closes WT-1864 out of the position.
+#   - WT-3048, because the 30" family's committed height (WT-3036's 36") would drop the
+#     south head off the 6'-8" door-head line the whole south facade is built on, and a
+#     fresh width family for the same glass is a width the facade columns cannot take.
+#
+# Read the rule as: one height per width family, unless a second height is the only way to
+# keep a fact the roof or the facade already committed to.
 WINDOW_TYPES = [
     # 14" RO — falls between studs on the 16" grid without breaking a stud line, so it
     # frames with no header, no jacks and no kings. 24" tall because the 5' attic knee
@@ -72,6 +87,29 @@ WINDOW_TYPES = [
     # That combination makes it the house's fallback wherever a bigger unit will not go.
     WindowType(tag="WT-1424", width=inch(14), height=ft(2), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="awning"),
+    # 14" RO, 48" tall — the south gable's flanker size (2026-08-01 facade pass), and the
+    # one place the "one height per family" rule above is broken on purpose. The gable's
+    # two survivors (WIN-A-S2/S3, after the 3'-4"/33'-8" corner pair was retired) needed a
+    # unit tall enough to belong with the 18x64 juliet pair, and every alternative is closed:
+    #
+    #   - WT-1424's 24" is what made them read as vents beside the juliets in the first place.
+    #   - WT-1864, the obvious "own family" answer the rule prescribes, does not fit. An 18"
+    #     RO breaks a stud, so it takes the jamb pack — and on a NONBEARING gable wall
+    #     framing/tables.py header_size(..., bearing=False) is a 2-2x6, 5.5" deep. At the
+    #     nearest stud line the pair can use (x 8'-0" / 28'-0") the header's outer end lands
+    #     at x 7'-0", where the 4:12 roof underside is 8'-3.7" and the header top wants
+    #     8'-5.5": short by 1.8". The rake closes the 18" family out of this position.
+    #
+    # 14" is the only width that ducks it, and for the reason WT-1424's note already gives:
+    # it lands wholly inside a bay, so framing/openings.py needs_jamb_pack skips the pack
+    # entirely and there is no header to collide with the rake — only the RO head, which at
+    # 6'-8" clears the underside by 2'-0" at the outer jamb. 48" is not a new height in the
+    # house either (the south glazing, WT-3048, is 48"), and the 6'-8" head is the main
+    # storey's own head line.
+    # Casement rather than WT-1424's awning: a 48"-tall leaf is far past what a bottom-hinged
+    # awning projects, and it puts the pair on the juliets' operation.
+    WindowType(tag="WT-1448", width=inch(14), height=ft(4), u_factor=u_us(0.25),
+               shgc=0.35, vt=0.5, operation="casement"),
     # 18" RO — the attic gable's juliet size (2026-07-31, narrowed from a 32" tilt-turn the
     # same day). One stud broken, so the centre sits on a STUD LINE, not a bay centre: at
     # 16" o.c. with 1-1/2" studs anything from 16" to 30" wide clears the two flanking stud
@@ -95,12 +133,20 @@ WINDOW_TYPES = [
     # enlargement this is the north-side size (attic gable pair, hall).
     WindowType(tag="WT-3036", width=inch(30), height=ft(3), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
-    # 42" RO — the enlarged south-glazing size (2026-07-30): breaks two studs, which
-    # means the RO centre sits on a bay centre (8"+16n from the host wall's start),
-    # not a stud line. 48" tall with the shared 2'-8" sill puts the head at 6'-8" —
-    # level with the door heads, glass above a standing adult's head, which is the
-    # point of the enlargement. Non-bearing walls only (preferences [framing]).
-    WindowType(tag="WT-4248", width=inch(42), height=ft(4), u_factor=u_us(0.25),
+    # 30" RO — the south-glazing size, narrowed from the 42" WT-4248 the 2026-07-30 pass
+    # introduced (2026-08-01). One stud broken, not two: the module's ideal position moves
+    # with the RO width, so where 42" had to take a bay centre these take the stud line,
+    # and the four facade columns moved 8" inboard with them (3'-4"/8'-8" -> 4'-0"/9'-4",
+    # 28'-0"/33'-4" -> 27'-4"/32'-8"). The 6'-8" head line and the main-over-second
+    # stacking are untouched.
+    #
+    # A second height in the 30" family, and the second deliberate break of "one height per
+    # width family" (see WT-1448). The alternative — putting these on WT-3036 — would drop
+    # the head from 6'-8" to 5'-8" with the 2'-8" sill, off the door-head line the south face
+    # is built on, and the head line is the fact the facade rules protect. Narrower glass on
+    # the same head is a proportion change; a head 12" lower is a different facade.
+    # Non-bearing walls only (preferences [framing]).
+    WindowType(tag="WT-3048", width=inch(30), height=ft(4), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 36" RO — concrete basement wall only (no stud module to respect down there).
     # Catalog-only since 2026-07-30: WIN-B-SAUNA was its last instance and took WT-1424.
@@ -412,15 +458,24 @@ OPENINGS = [
     Window(uid="CMX302AAAA", tag="WIN-M-BED-W2", host="W-M-W4",
            type_ref="WT-2736", position=from_node("N-M-SW", ft(9, 6.5)),
            sill_height=ft(3)),
-    # South pair enlarged to WT-4248 (2026-07-30): centres 3'-4" and 8'-8" are bay
-    # centres on W-M-S1's grid (two studs broken each), stacking exactly under
-    # WIN-S-PLANT1/2 above — main and second share the wall start, so the columns
-    # line up to the inch. Sill 2'-8" puts the heads at 6'-8" with the doors.
+    # South pair: centres 4'-0" and 9'-4" are STUD LINES on W-M-S1's grid (one stud broken
+    # each), stacking exactly under WIN-S-PLANT1/2 above — main and second share the wall
+    # start, so the columns line up to the inch. Sill 2'-8" puts the heads at 6'-8" with
+    # the doors.
+    #
+    # Moved 8" east off the 3'-4"/8'-8" bay centres when the units narrowed 42" -> 30"
+    # (WT-3048, 2026-08-01), because the module's ideal position is a property of the RO
+    # width, not of the wall: a 42" RO breaks 3 studs on a stud line and 2 on a bay centre,
+    # so the bay centre was right for it; a 30" RO breaks 1 on the line and 2 off it, so
+    # the same position is now the wasteful one (structural.window_framing_module, held by
+    # test_catlin_contract_m3). Both south segments moved *inboard* — this pair east, the
+    # W-M-S2 pair west — which keeps every RO further from a corner than it was and leaves
+    # the two segments' 8" phase miss exactly where it was.
     Window(uid="CMX303AAAA", tag="WIN-M-BED-S1", host="W-M-S1",
-           type_ref="WT-4248", position=from_node("N-M-SW", ft(1, 7)),
+           type_ref="WT-3048", position=from_node("N-M-SW", ft(2, 9)),
            sill_height=ft(2, 8)),
     Window(uid="CMX304AAAA", tag="WIN-M-BED-S2", host="W-M-S1",
-           type_ref="WT-4248", position=from_node("N-M-SW", ft(6, 11)),
+           type_ref="WT-3048", position=from_node("N-M-SW", ft(8, 1)),
            sill_height=ft(2, 8)),
     # Offset bumped 4'-5" -> 4'-11" (2026-07-29) when N-M-W2 pushed 6" north for the
     # hall/bath2 wall move: W-M-W3's stud grid anchors off N-M-W2, so the window has
@@ -439,17 +494,19 @@ OPENINGS = [
     Window(uid="CMX306AAAA", tag="WIN-M-MUD", host="W-M-W1",
            type_ref="WT-1424-FIX", position=from_node("N-M-NW", ft(4, 1)),
            sill_height=ft(4)),
-    # South pair enlarged to WT-4248 (2026-07-30): centres 28'-0" and 33'-4" are bay
-    # centres on W-M-S2's grid (8"+16n off N-M-S1), stacking exactly under
-    # WIN-S-STUDY1/2. The mirror of the bedroom pair about x=18' would be 27'-4" and
-    # 32'-8", but the two south segments lay studs from their own starts and sit 8"
-    # out of phase, so this is as close as bay-centred windows can mirror. The west
-    # RO edge clears D-M-BALC's french-door RO (ends 24'-4") by 23".
+    # South pair: centres 27'-4" and 32'-8" are stud lines on W-M-S2's grid (16n off
+    # N-M-S1), stacking exactly under WIN-S-STUDY1/2. Moved 8" west off the old
+    # 28'-0"/33'-4" bay centres with the WT-3048 narrowing — see WIN-M-BED-S1/2 for why a
+    # 30" RO wants the line the 42" RO could not use. The mirror of the bedroom pair about
+    # x=18' would be 28'-8" and 34'-0", but the two south segments lay studs from their own
+    # starts and sit 8" out of phase, so an 8" miss is as close as on-module windows can
+    # mirror — the same miss this pair has always carried, in the same direction.
+    # D-M-BALC's french-door RO (ends 24'-4") stays clear by 1'-9".
     Window(uid="CMX307AAAA", tag="WIN-M-LIV-S1", host="W-M-S2",
-           type_ref="WT-4248", position=from_node("N-M-SE", ft(0, 11)),
+           type_ref="WT-3048", position=from_node("N-M-SE", ft(2, 1)),
            sill_height=ft(2, 8)),
     Window(uid="CMX308AAAA", tag="WIN-M-LIV-S2", host="W-M-S2",
-           type_ref="WT-4248", position=from_node("N-M-SE", ft(6, 3)),
+           type_ref="WT-3048", position=from_node("N-M-SE", ft(7, 5)),
            sill_height=ft(2, 8)),
     # East row respaced (2026-07-30 facade pass): the facade favors within-storey
     # rhythm over between-storey stacking on this side now — the second storey runs

@@ -344,30 +344,35 @@ OPENINGS = [
            position=from_node("N-S-W2", ft(8, 2.5)), sill_height=ft(3)),      # y 13'-0"
     Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W3", type_ref="WT-2736",
            position=from_node("N-S-W2", ft(1, 6.5)), sill_height=ft(3)),      # y 19'-8"
-    # Plant room — south glazing, enlarged to WT-4248 (2026-07-30): centres 3'-4" and
-    # 8'-8" are bay centres on W-S-S1's grid (two studs broken each) and stack exactly
-    # over WIN-M-BED-S1/2 below. Sill 2'-8" = the shared 6'-8" head line. The grow pots
-    # and LED tubes (placeables.py / lighting.py) moved with their windows.
-    Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-4248",
-           position=from_node("N-S-SW", ft(1, 7)), sill_height=ft(2, 8)),     # x 3'-4"
-    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-4248",
-           position=from_node("N-S-SW", ft(6, 11)), sill_height=ft(2, 8)),    # x 8'-8"
+    # Plant room — south glazing: centres 4'-0" and 9'-4" are stud lines on W-S-S1's grid
+    # (one stud broken each) and stack exactly over WIN-M-BED-S1/2 below. Sill 2'-8" = the
+    # shared 6'-8" head line. Narrowed 42" -> 30" and moved 8" east off the old
+    # 3'-4"/8'-8" bay centres (WT-3048, 2026-08-01) — see WIN-M-BED-S1/2 for why the
+    # module's ideal position flips with the RO width. The grow pots and their LED tubes
+    # (placeables.py / lighting.py) stay at x 3'-4"/8'-8": each still stands inside its
+    # window's 30" of glass (RO 2'-9"..5'-3" and 8'-1"..10'-7"), so the daylight the tubes
+    # supplement still lands on the foliage.
+    Window(uid="CSX306AAAA", tag="WIN-S-PLANT1", host="W-S-S1", type_ref="WT-3048",
+           position=from_node("N-S-SW", ft(2, 9)), sill_height=ft(2, 8)),     # x 4'-0"
+    Window(uid="CSX307AAAA", tag="WIN-S-PLANT2", host="W-S-S1", type_ref="WT-3048",
+           position=from_node("N-S-SW", ft(8, 1)), sill_height=ft(2, 8)),     # x 9'-4"
     # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
     # type and not the 30" south-glazing one — "resize windows to fit the grid" (CLAUDE.md).
     # Sill raised 2'-0" -> 3'-0" (2026-07-30 facade pass): the west facade's 27" units
     # all sit on the 3'-0" sill so every head lands on one 6'-0" line.
     Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736",
            position=from_node("N-S-W3", ft(2, 10.5)), sill_height=ft(3)),     # y 5'-0"
-    # Study 2's south pair, enlarged to WT-4248 (2026-07-30): centres 28'-0" and 33'-4"
-    # are bay centres on W-S-S2's grid and stack exactly over WIN-M-LIV-S2/S1. The true
-    # mirror of the plant pair (27'-4"/32'-8") is unreachable — the two south segments'
-    # stud grids are 8" out of phase — so this is the phase-minimum miss. Sill raised
-    # 2'-6" -> 2'-8" onto the shared 6'-8" head line; the west RO edge clears
-    # D-S-DECK-E's french-door RO (ends 24'-10") by 17".
-    Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-4248",
-           position=from_node("N-S-S1", ft(8, 3)), sill_height=ft(2, 8)),     # x 28'-0"
-    Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-4248",
-           position=from_node("N-S-S1", ft(13, 7)), sill_height=ft(2, 8)),    # x 33'-4"
+    # Study 2's south pair: centres 27'-4" and 32'-8" are stud lines on W-S-S2's grid and
+    # stack exactly over WIN-M-LIV-S2/S1. Moved 8" west off the old 28'-0"/33'-4" bay
+    # centres with the WT-3048 narrowing (2026-08-01) — see WIN-M-BED-S1/2. The two south
+    # segments' stud grids are 8" out of phase, so the mirror of the plant pair stays 8"
+    # away whichever line these sit on; this is that phase-minimum miss, unchanged. Sill
+    # 2'-8" is the shared 6'-8" head line, and D-S-DECK-E's french-door RO (ends 24'-10")
+    # stays clear by 1'-3".
+    Window(uid="CSX309AAAA", tag="WIN-S-STUDY1", host="W-S-S2", type_ref="WT-3048",
+           position=from_node("N-S-S1", ft(8, 1)), sill_height=ft(2, 8)),     # x 27'-4"
+    Window(uid="CSX310AAAA", tag="WIN-S-STUDY2", host="W-S-S2", type_ref="WT-3048",
+           position=from_node("N-S-S1", ft(13, 5)), sill_height=ft(2, 8)),    # x 32'-8"
     # Baths + north. The source draws no opening in the north wall west of x=21'-10" and
     # none in the west wall north of y=25'-8"; WIN-S-BATH-N/W are kept anyway so the hall
     # bath has daylight, and are the storey's only two openings with no source counterpart.
@@ -656,7 +661,7 @@ STAIR_GUARDS = [
         ),
         kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
         base_elevation=ft(10), post_spacing=inch(60), post_size="2x2", rail_count=2,
-        mount="fascia", assembly="POST_WHITE_PAINT",
+        mount="fascia", assembly="RAILING_DARK_METAL",
     ),
     # 3'-6 7/8" from the west jamb of the throat — the well partition's west face — to the
     # well's east edge, where RL-S-STAIR turns the corner.
@@ -667,7 +672,7 @@ STAIR_GUARDS = [
         ),
         kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
         base_elevation=ft(10), post_spacing=inch(60), post_size="2x2", rail_count=2,
-        mount="fascia", assembly="POST_WHITE_PAINT",
+        mount="fascia", assembly="RAILING_DARK_METAL",
     ),
 ]
 

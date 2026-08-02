@@ -1,0 +1,366 @@
+"""R311.7 stairways — built geometry, headroom, width, landings and handrails.
+
+Split out of ``rules.py`` unchanged. The doctrine here is measure-the-output: every rule
+reads the *resolved* members rather than re-deriving the flight from authored inputs, which
+is what caught a stretched first riser that authored rise and riser count agreed on.
+"""
+
+from __future__ import annotations
+
+import math
+
+from shapely.geometry import Point, Polygon
+
+from typehaus.checks.code.mn_residential._common import _fail, _pass, _unknown
+from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.findings import Finding
+from typehaus.quantities import ft, inch
+from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.roof_geometry import roof_underside_at
+
+_MAX_STAIR_RISER = inch(7.75)
+_MIN_STAIR_GOING = inch(10)
+_MIN_STAIR_HEADROOM = ft(6, 8)
+_MIN_STAIR_WIDTH = inch(36)  # R311.7.1, above the handrail / between finished walls
+_MIN_STAIR_LANDING_DEPTH = inch(36)  # R311.7.6, in the direction of travel
+_MIN_HANDRAIL_RISERS = 4  # R311.7.8: required on flights with four or more risers
+# R311.7.8.1: handrail top measured above the sloped nosing line, not above any floor.
+_MIN_HANDRAIL_HEIGHT = inch(34)
+_MAX_HANDRAIL_HEIGHT = inch(38)
+# Plumb-clearance sampling along the sloped nosing line: plan step between samples, and
+# where across the flight each station is probed (both edges + centre — the worst point
+# under a raking well header is at one side, not the middle).
+_HEADROOM_SAMPLE_STEP_M = 0.05
+_HEADROOM_LATERAL_FRACTIONS = (0.0, 0.5, 1.0)
+# An obstruction must clear the walking surface by at least this to count as *overhead*
+# rather than the surface's own construction.
+_HEADROOM_OVERHEAD_EPS_M = 0.001
+# Floor/soffit cover shrinks by this before containment: stair edges are authored on the
+# well's edges, so boundary samples otherwise flip between in-void and under-deck on
+# float summation error. 5 mm decides no real header.
+_HEADROOM_PLAN_EPS_M = 0.005
+
+
+@check(Tier.CODE, "code.R311_7_stair_geometry")
+def stair_geometry(ctx: CheckContext) -> list[Finding]:
+    """Verify the built walking sequence reaches the next finished floor with code geometry.
+
+    The resolver owns the exact opening and roof geometry.  This check intentionally measures
+    its output rather than re-solving it from authored inputs, catching a dropped/level tread
+    even when the design rise and riser count still look mathematically consistent.
+    """
+    if not ctx.model.stairs:
+        return [_unknown("code.R311_7_stair_geometry", "no resolved stairs", (), "R311.7")]
+    out: list[Finding] = []
+    for stair in ctx.model.stairs:
+        source = ctx.plan.storey(stair.storey)
+        target = ctx.plan.storey(stair.to_storey)
+        if source is None or target is None:
+            out.append(_unknown("code.R311_7_stair_geometry", "unresolved stair storey",
+                                (stair.tag,), "R311.7"))
+            continue
+        walking = sorted(member.z1_m for member in stair.members
+                         if member.category in {"tread", "winder", "landing"})
+        arrival = target.elevation.meters
+        expected = [source.elevation.meters + stair.riser_height_m * step
+                    for step in range(1, stair.riser_count)]
+        # Headroom is NOT this check's business: it is a plumb measurement against the
+        # overhead structure, made by code.R311_7_2_stair_headroom. Reporting the arrival
+        # storey's nominal ceiling height here — as this check once did — is not headroom.
+        valid = (
+            stair.riser_height_m <= _MAX_STAIR_RISER.meters + 1e-9
+            and stair.going_depth_m >= _MIN_STAIR_GOING.meters - 1e-9
+            and len(walking) == len(expected)
+            and all(abs(actual - wanted) <= 1e-6 for actual, wanted in zip(walking, expected))
+            and abs(source.elevation.meters + stair.riser_count * stair.riser_height_m - arrival) <= 1e-6
+        )
+        if valid:
+            out.append(_pass("code.R311_7_stair_geometry",
+                             f"{stair.tag} reaches {stair.to_storey} with "
+                             f"{stair.riser_count} built risers at "
+                             f"{stair.riser_height_m / .0254:.2f}\" on a "
+                             f"{stair.going_depth_m / .0254:.1f}\" going", "R311.7"))
+        else:
+            out.append(_fail("code.R311_7_stair_geometry",
+                             f"{stair.tag} fails built rise or going",
+                             (stair.tag,), "R311.7"))
+    return out
+
+
+def _flight_stations(stair) -> dict[str, list[tuple[tuple[float, float],
+                                                    tuple[float, float], float]]]:
+    """Per flight, the nosing stations of the sloped walking line, in climb order.
+
+    A station is ``(a, b, z)``: the riser-face segment (a winder's fan line) at its
+    tread's finished walking elevation. R311.7.2 measures plumb from the sloped line
+    adjoining the nosings, so the line to sample is the interpolation between
+    consecutive stations of one flight — never across flights, whose runs occupy
+    different lanes.
+    """
+    flights: dict[str, list] = {}
+    for member in stair.members:
+        if member.category == "winder":
+            flights.setdefault("winder", []).append((member.p0, member.p1, member.z1_m))
+        elif member.category == "tread" and member.riser_line is not None:
+            a, b = member.riser_line
+            key = member.child_key.rsplit("-", 1)[0]
+            flights.setdefault(key, []).append((a, b, member.z1_m))
+        elif member.category == "landing":
+            # A landing's walking surface: its two end edges at the deck face, swept from
+            # the member axis by the profile's true half-width.
+            (x0, y0), (x1, y1) = member.p0, member.p1
+            run = math.hypot(x1 - x0, y1 - y0)
+            if run < 1e-9:
+                continue
+            ux, uy = (x1 - x0) / run, (y1 - y0) / run
+            half = cross_section(member.profile).width_m / 2.0
+            px, py = -uy * half, ux * half
+            flights[member.child_key] = [
+                ((x0 - px, y0 - py), (x0 + px, y0 + py), member.z1_m),
+                ((x1 - px, y1 - py), (x1 + px, y1 + py), member.z1_m),
+            ]
+    for key, stations in flights.items():
+        stations.sort(key=lambda station: station[2])
+        # Extend a straight flight one station past its top riser: the sloped line runs
+        # to the edge it arrives at (the landing zone or the arrival deck), one going
+        # beyond and one riser above the last nosing. Only tread flights extend — a
+        # landing's stations already are its edges, and a winder fan's continuation is
+        # the straight flight itself (its first riser line lies on the turn's departing
+        # edge).
+        if key.startswith("tread") and len(stations) >= 2:
+            (a0, b0, z0), (a1, b1, z1) = stations[-2], stations[-1]
+            stations.append(((2 * a1[0] - a0[0], 2 * a1[1] - a0[1]),
+                             (2 * b1[0] - b0[0], 2 * b1[1] - b0[1]), 2 * z1 - z0))
+    return flights
+
+
+def _walk_samples(stations):
+    """Points ``(x, y, z)`` densely covering the sloped walking line between stations."""
+    for (a0, b0, z0), (a1, b1, z1) in zip(stations, stations[1:]):
+        span = max(math.hypot(a1[0] - a0[0], a1[1] - a0[1]),
+                   math.hypot(b1[0] - b0[0], b1[1] - b0[1]))
+        steps = max(1, math.ceil(span / _HEADROOM_SAMPLE_STEP_M))
+        for step in range(steps + 1):
+            t = step / steps
+            ax, ay = a0[0] + (a1[0] - a0[0]) * t, a0[1] + (a1[1] - a0[1]) * t
+            bx, by = b0[0] + (b1[0] - b0[0]) * t, b0[1] + (b1[1] - b0[1]) * t
+            z = z0 + (z1 - z0) * t
+            for u in _HEADROOM_LATERAL_FRACTIONS:
+                yield (ax + (bx - ax) * u, ay + (by - ay) * u, z)
+
+
+@check(Tier.CODE, "code.R311_7_2_stair_headroom")
+def stair_headroom(ctx: CheckContext) -> list[Finding]:
+    """Measure the plumb clearance from the sloped nosing line to the structure above.
+
+    This is the measurement ``code.R311_7_stair_geometry`` used to *claim*: it reported
+    the arrival storey's nominal ceiling height, which is not headroom over any tread.
+    Here every flight's nosing line is sampled and probed plumb against the resolved
+    overhead structure: floor decks (outside their stair-well voids) down to their
+    deepest framing, roof planes at their structural underside, and soffit faces.
+    Structure only — ceiling finishes, freestanding beams and ducts are not modeled
+    against the walk — and never PASS by absence: a stair with no resolved structure
+    overhead reports UNKNOWN.
+    """
+    cid, code = "code.R311_7_2_stair_headroom", "R311.7.2"
+    if not ctx.model.stairs:
+        return [_unknown(cid, "no resolved stairs", (), code)]
+    floors = []
+    for floor in ctx.model.floors:
+        if not floor.deck_outline:
+            continue
+        underside = min([member.z0_m for member in floor.members] + [floor.deck_z0_m])
+        cover = Polygon(floor.deck_outline,
+                        holes=[list(void) for void in floor.deck_voids]
+                        ).buffer(-_HEADROOM_PLAN_EPS_M)
+        if not cover.is_empty:
+            floors.append((cover, underside, floor.tag))
+    roofs = [(Polygon(roof.footprint), roof) for roof in ctx.model.roofs if roof.footprint]
+    soffits = []
+    for soffit in ctx.model.soffits:
+        if not soffit.outline:
+            continue
+        cover = Polygon(soffit.outline).buffer(-_HEADROOM_PLAN_EPS_M)
+        if not cover.is_empty:
+            soffits.append((cover, soffit.z0_m, soffit.tag))
+    out: list[Finding] = []
+    for stair in ctx.model.stairs:
+        worst: tuple[float, tuple[float, float], str] | None = None
+        for stations in _flight_stations(stair).values():
+            for x, y, z in _walk_samples(stations):
+                point = Point(x, y)
+                lowest: tuple[float, str] | None = None
+                for polygon, underside, tag in floors:
+                    if underside > z + _HEADROOM_OVERHEAD_EPS_M and polygon.contains(point):
+                        if lowest is None or underside < lowest[0]:
+                            lowest = (underside, tag)
+                for polygon, roof in roofs:
+                    if polygon.contains(point):
+                        underside = roof_underside_at(ctx.model, roof, (x, y))
+                        if underside > z + _HEADROOM_OVERHEAD_EPS_M and (
+                                lowest is None or underside < lowest[0]):
+                            lowest = (underside, roof.tag)
+                for polygon, underside, tag in soffits:
+                    if underside > z + _HEADROOM_OVERHEAD_EPS_M and polygon.contains(point):
+                        if lowest is None or underside < lowest[0]:
+                            lowest = (underside, tag)
+                if lowest is None:
+                    continue
+                clearance = lowest[0] - z
+                if worst is None or clearance < worst[0]:
+                    worst = (clearance, (x, y), lowest[1])
+        if worst is None:
+            out.append(_unknown(cid, f"{stair.tag}: no resolved structure overhead of "
+                                "the walking line (floors, roofs, soffits)",
+                                (stair.tag,), code))
+            continue
+        clearance, (x, y), tag = worst
+        where = (f"{clearance / .3048:.2f}' plumb under {tag} at "
+                 f"({x / .3048:.1f}', {y / .3048:.1f}')")
+        if clearance >= _MIN_STAIR_HEADROOM.meters - 1e-9:
+            out.append(_pass(cid, f"{stair.tag} headroom {where} (>= 6'-8\"; structure "
+                             "only, finishes unmodeled)", code))
+        else:
+            out.append(_fail(cid, f"{stair.tag} headroom {where} < 6'-8\"",
+                             (stair.tag, tag), code))
+    return out
+
+
+@check(Tier.CODE, "code.R311_7_1_stair_width")
+def stair_width(ctx: CheckContext) -> list[Finding]:
+    """Built flight width from the tread boards themselves (R311.7.1: 36" minimum).
+
+    Handrails are unmodeled (see code.R311_7_8_handrail), so this is the width between
+    finished walls — the 36" number — not the 31.5"/27" clear-past-handrail rules, which
+    cannot be measured until a handrail exists to project into the flight. The winder
+    turn is excluded: its width is the turn square's by construction, and its own code
+    minimums are the narrow-end and walk-line checks.
+    """
+    cid, code = "code.R311_7_1_stair_width", "R311.7.1"
+    if not ctx.model.stairs:
+        return [_unknown(cid, "no resolved stairs", (), code)]
+    out: list[Finding] = []
+    for stair in ctx.model.stairs:
+        widths = [member.length_m for member in stair.members
+                  if member.category == "tread"]
+        if not widths:
+            out.append(_unknown(cid, f"{stair.tag} has no tread boards to measure",
+                                (stair.tag,), code))
+            continue
+        width = min(widths)
+        if width >= _MIN_STAIR_WIDTH.meters - 1e-9:
+            out.append(_pass(cid, f"{stair.tag} flight width {width / .0254:.2f}\" "
+                             ">= 36\" (handrail projection unmodeled)", code))
+        else:
+            out.append(_fail(cid, f"{stair.tag} flight width {width / .0254:.2f}\" "
+                             "< 36\"", (stair.tag,), code))
+    return out
+
+
+@check(Tier.CODE, "code.R311_7_6_landing_depth")
+def stair_landing_depth(ctx: CheckContext) -> list[Finding]:
+    """Built landing platforms measured off the members (R311.7.6).
+
+    Two numbers, on two axes: 36" in the direction of travel (the deck member's run),
+    and never narrower than the stairway served (its swept width against the widest
+    tread). The resolver *floors* authored depths at 36", but this measures what was
+    built — the doctrine that caught the stretched first risers is measure-the-output,
+    not trust-the-generator. Stairs without landing members (a straight or winder run
+    between floors) have nothing to measure: the floors they arrive at serve as the
+    R311.7.6 landing.
+    """
+    cid, code = "code.R311_7_6_landing_depth", "R311.7.6"
+    if not ctx.model.stairs:
+        return [_unknown(cid, "no resolved stairs", (), code)]
+    out: list[Finding] = []
+    for stair in ctx.model.stairs:
+        stair_width_m = max([member.length_m for member in stair.members
+                             if member.category == "tread"], default=0.0)
+        for member in stair.members:
+            if member.category != "landing":
+                continue
+            depth = member.length_m
+            width = cross_section(member.profile).width_m
+            if depth < _MIN_STAIR_LANDING_DEPTH.meters - 1e-9:
+                out.append(_fail(cid, f"{stair.tag} {member.child_key} runs "
+                                 f"{depth / .0254:.2f}\" in the direction of travel "
+                                 "< 36\"", (stair.tag,), code))
+            elif width < stair_width_m - 1e-9:
+                out.append(_fail(cid, f"{stair.tag} {member.child_key} is "
+                                 f"{width / .0254:.2f}\" wide, narrower than the "
+                                 f"{stair_width_m / .0254:.2f}\" stairway it serves",
+                                 (stair.tag,), code))
+            else:
+                out.append(_pass(cid, f"{stair.tag} {member.child_key} "
+                                 f"{depth / .0254:.2f}\" deep x {width / .0254:.2f}\" "
+                                 "wide", code))
+    return out
+
+
+@check(Tier.CODE, "code.R311_7_8_handrail")
+def stair_handrail(ctx: CheckContext) -> list[Finding]:
+    """R311.7.8 — a flight of four or more risers has a graspable handrail 34"-38" up.
+
+    This reported UNKNOWN for as long as it existed, because nothing in the model *was* a
+    handrail: a ``Railing`` was a guard — a plan path with a height — with no role, no
+    graspability and no continuity. It now carries all three, so the rule measures.
+
+    The height datum is the one thing worth being careful about. A guard's ``height`` is
+    measured from the deck it stands on; a handrail's is measured from the *nosings*, which
+    on a flight is a sloped line, not a floor. That is why ``top_height`` is a separate
+    field rather than a reuse of ``height`` — reusing it would silently measure a stair
+    handrail from the landing at the bottom of the flight.
+    """
+    cid, code = "code.R311_7_8_handrail", "R311.7.8"
+    from typehaus.model.structure import Railing
+
+    if not ctx.model.stairs:
+        return [_unknown(cid, "no resolved stairs", (), code)]
+    railings: list | None = None  # looked up lazily: a house of short flights needs none
+    out: list[Finding] = []
+    for stair in ctx.model.stairs:
+        if stair.riser_count < _MIN_HANDRAIL_RISERS:
+            out.append(_pass(cid, f"{stair.tag} has {stair.riser_count} risers — no "
+                             "handrail required", code))
+            continue
+        if railings is None:
+            railings = [e for e in ctx.plan.all_elements() if isinstance(e, Railing)
+                        and e.role in ("handrail", "guard_and_handrail")]
+        serving = [r for r in railings if r.serves_stair == stair.tag]
+        if not serving:
+            # Distinguish "no handrail" from "handrails are not authored in this house at
+            # all". The first is a deficiency; the second is a modeling gap, and calling it
+            # a deficiency would fail every house that has not adopted the field yet.
+            if not railings:
+                out.append(_unknown(cid, f"{stair.tag} ({stair.riser_count} risers) requires "
+                                    "a handrail and no Railing in the plan declares a "
+                                    "handrail role", (stair.tag,), code))
+            else:
+                out.append(_fail(cid, f"{stair.tag} ({stair.riser_count} risers) has no "
+                                 "handrail; R311.7.8 requires one on every flight of four "
+                                 "or more risers", (stair.tag,), code))
+            continue
+        for rail in serving:
+            top = rail.top_height
+            if top is None:
+                out.append(_unknown(cid, f"handrail {rail.tag} on {stair.tag} states no "
+                                    "top_height above the nosings", (rail.tag,), code))
+            elif not (_MIN_HANDRAIL_HEIGHT.meters - 1e-9 <= top.meters
+                      <= _MAX_HANDRAIL_HEIGHT.meters + 1e-9):
+                out.append(_fail(cid, f"handrail {rail.tag} on {stair.tag} tops out at "
+                                 f"{top.inches:.1f}\" above the nosings; R311.7.8.1 requires "
+                                 "34\"-38\"", (rail.tag, stair.tag), "R311.7.8.1"))
+            elif not rail.continuous:
+                out.append(_fail(cid, f"handrail {rail.tag} on {stair.tag} is not continuous "
+                                 "for the full length of the flight",
+                                 (rail.tag, stair.tag), "R311.7.8.2"))
+            elif rail.graspable_profile is None:
+                out.append(_unknown(cid, f"handrail {rail.tag} on {stair.tag} states no "
+                                    "graspable_profile, so R311.7.8.3 type I/II "
+                                    "graspability cannot be evaluated", (rail.tag,),
+                                    "R311.7.8.3"))
+            else:
+                out.append(_pass(cid, f"{stair.tag} has handrail {rail.tag} at "
+                                 f"{top.inches:.1f}\" ({rail.graspable_profile}), continuous",
+                                 code))
+    return out

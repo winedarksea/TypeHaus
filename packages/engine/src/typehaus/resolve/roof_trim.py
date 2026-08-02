@@ -69,7 +69,14 @@ _RIDGE_CAP_HEIGHT_M = inch(_RIDGE_CAP_STAND_IN).meters
 # roofing's drip lap (the metal runs ~0.6" proud of the furring); its vertical leg laps down
 # over the top of the wall panels.
 _CORNER_TRIM_THICKNESS_M = inch(1.25).meters
-_CORNER_TRIM_LEG_M = inch(2).meters
+# 4", not the 2" this started at (2026-08-01). On a zero-overhang gable this piece is the
+# only thing standing at the rake, so its leg *is* the barge board: at 2" it showed a 2-1/2"
+# face, which against a wall of the same metal read as no edge at all. 4" gives a 4-1/2"
+# band with a 1-1/4" projection to throw a shadow — still ordinary brake-formed stock off
+# the same coil, a longer flange and nothing else, bounded only by coil width. Only roofs
+# taking the continuous-skin path have this piece at all (a roof with an overhang gets
+# fascia + soffit instead), so this is the rake trim of a wrapped edge and nothing else.
+_CORNER_TRIM_LEG_M = inch(4).meters
 
 
 def roof_trim_members(
@@ -264,7 +271,8 @@ def _edge_cladding_members(
     # needs no band at all: the wall→roof closure carries the wall's own metal up to the
     # roofing underside, and the joint gets a corner trim piece instead of a drip-edge band.
     if continuous_skin_cladding(model, roof, walls):
-        return _corner_trim_members(roof, cladding, mating, slope_factor)
+        return _corner_trim_members(roof, cladding, mating, slope_factor,
+                                    model.plan.by_tag(roof.tag))
     base = mating.foam_under * slope_factor          # where the wall cladding stops
     height = mating.cladding_under * slope_factor - base
     if height <= CLOSURE_TOLERANCE_M:
@@ -296,8 +304,21 @@ def _edge_cladding_members(
 
 # --- corner trim (continuous standing-seam edge) -----------------------------------------
 
+def _edge_trim_material(element, default: str | None) -> str | None:
+    """The coil the formed edge trim is ordered in: the roof's own, else the panels' stock.
+
+    ``Roof.edge_trim_material`` is how a standing-seam roof says its rake/eave/ridge trim is a
+    different colour from its panels — the ordinary way that roof gets an accent edge. It has
+    to be authored per roof rather than assumed: on this repo's two roofs the house wants a
+    charcoal rake against white panels and the garage wants its white fascia left alone.
+    """
+    named = getattr(element, "edge_trim_material", None) if isinstance(element, Roof) else None
+    return named or default
+
+
 def _corner_trim_members(
-    roof: ResolvedRoof, cladding, mating, slope_factor: float
+    roof: ResolvedRoof, cladding, mating, slope_factor: float,
+    element=None,
 ) -> tuple[FramedMember, ...]:
     """The formed cleat-and-hemmed-drip capping a wrapped roof edge, per eave/rake run.
 
@@ -343,7 +364,8 @@ def _corner_trim_members(
                 length_m=math.hypot(b[0] - a[0], b[1] - a[1]),
                 z0_end_m=span.z1_m + top - bottom_drop,
                 z1_end_m=span.z1_m + top - top_drop,
-                connection="roof:corner-trim", material=cladding.material_ref,
+                connection="roof:corner-trim",
+                material=_edge_trim_material(element, cladding.material_ref),
             ))
     return tuple(members)
 
@@ -388,6 +410,10 @@ def _ridge_vent_members(model: ResolvedModel, roof: ResolvedRoof) -> tuple[Frame
     slope = abs(roof_slope(roof))
     length = math.hypot(ridge.p1[0] - ridge.p0[0], ridge.p1[1] - ridge.p0[1])
     material = cladding.material_ref if cladding is not None else "aluminum"
+    # The cap is formed trim, so it follows the roof's trim coil when one is named — the ridge
+    # is part of the same outline the rake trim draws, and a light cap inside a dark edge reads
+    # as a mistake rather than as a choice.
+    material = _edge_trim_material(element, material)
     # The plane falls away from the peak, so the cap's underside is set by its outer edges.
     bottom = z0 - inch(_RIDGE_CAP_HALF_WIDTH_IN).meters * slope
     top = z0 + inch(_RIDGE_CAP_STAND_IN).meters

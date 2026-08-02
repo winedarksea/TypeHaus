@@ -97,7 +97,7 @@ def test_the_alarms_reconcile_against_the_panel_schedule(catlin_model):
 # --- 3. the rule --------------------------------------------------------------------------
 
 def test_the_garage_rule_passes_on_the_house_as_built(catlin_model):
-    from typehaus.checks.code.mn_residential.rules import garage_heat_and_co_alarms
+    from typehaus.checks.code.mn_residential.alarms import garage_heat_and_co_alarms
 
     findings = garage_heat_and_co_alarms(_context(catlin_model))
     assert findings and all(f.result is Result.PASS for f in findings), [
@@ -109,7 +109,7 @@ def test_the_garage_rule_passes_on_the_house_as_built(catlin_model):
 
 def test_the_garage_rule_fails_when_the_detector_is_missing(catlin_model):
     """A rule that only ever passes proves nothing — remove the detector and it must fail."""
-    from typehaus.checks.code.mn_residential.rules import garage_heat_and_co_alarms
+    from typehaus.checks.code.mn_residential.alarms import garage_heat_and_co_alarms
 
     ctx = _context(catlin_model)
     stripped = catlin_model.plan.with_elements(
@@ -126,7 +126,7 @@ def test_the_garage_rule_fails_when_the_detector_is_missing(catlin_model):
 def test_a_heat_detector_does_not_satisfy_the_bedroom_smoke_rule(catlin_model):
     """R314's filter is (SMOKE, COMBO), so a HEAT alarm is correctly invisible to it — a
     garage detector must never be mistaken for a bedroom's smoke alarm."""
-    from typehaus.checks.code.mn_residential.rules import smoke_and_co_alarm_placement
+    from typehaus.checks.code.mn_residential.alarms import smoke_and_co_alarm_placement
 
     ctx = _context(catlin_model)
     # Re-kind every bedroom alarm on the second storey to HEAT: the rule must go red.

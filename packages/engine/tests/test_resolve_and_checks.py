@@ -110,7 +110,12 @@ def test_tri_state_counts(project) -> None:
     report = run(_rect_plan(project))
     p, f, u = report.counts()
     assert p + f + u == len(report.findings)
-    # The fixture's minimal "EXT" assembly (R-8, → _lib()) is a resolve/geometry test
-    # double, not a code-compliant wall — code.energy_prescriptive correctly flags it.
-    non_energy_errors = [e for e in report.errors if e.check_id != "code.energy_prescriptive"]
+    # The fixture is a bare rectangle of walls, not a house: its minimal "EXT" assembly
+    # (R-8, → _lib()) is not a code-compliant wall, it models no Alarm anywhere, and its
+    # single room has no windows. All three CODE rules below are working correctly on a
+    # fixture that was never meant to pass them. What this test actually asserts is that
+    # *resolve* produced nothing broken.
+    fixture_gaps = {"code.energy_prescriptive", "code.R314_alarm_every_storey",
+                    "code.R303_1_light_and_ventilation"}
+    non_energy_errors = [e for e in report.errors if e.check_id not in fixture_gaps]
     assert not non_energy_errors

@@ -128,6 +128,16 @@ class Equipment(Element):
     # ``Equipment`` tag). Refrigerant lineset geometry is deliberately not modeled — this
     # pairing is what the schedule and the capacity check need.
     outdoor_ref: str | None = None
+    # --- P2804: temperature and pressure relief, water heaters -------------------------
+    # The TPR valve's discharge pipe, as a PipeRun tag. It is the one piece of a water
+    # heater that is a life-safety device rather than a convenience, and the ways it is got
+    # wrong are geometric: it traps, it terminates somewhere nobody would see it discharge,
+    # or it was never run at all. All three are answerable once the run is named.
+    relief_discharge_ref: str | None = None
+    # P2801.6: a pan under a heater installed where a leak damages what is below it, and
+    # the indirect waste that empties the pan.
+    drain_pan: bool = False
+    pan_drain_ref: str | None = None
 
 
 class SumpPump(HausModel):

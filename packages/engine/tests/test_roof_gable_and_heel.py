@@ -432,12 +432,60 @@ def test_flush_gable_rake_carries_the_skin_above_the_deck_plane(flush):
     assert "W-E1-closure-0-sheathing" not in keys
     member = _closure(flush, "W-E1", "cladding")
     wall = next(w for w in flush.walls if w.tag == "W-E1")
-    # It springs from the raked wall top (the deck plane) and climbs above it.
-    assert member.z0_m == pytest.approx(wall.top_z0_m, abs=1e-9)
+    # It springs from the raked wall top (the deck plane) and climbs above it. Not from the
+    # top at the *start node*: the band runs the layer polygon's span, which is mitred past
+    # the node into the outside corner, so on a rake it springs from the deck plane
+    # extrapolated back over that mitre — a touch lower, by (mitre run x slope).
+    (ax, ay), (bx, by) = wall.axis
+    axis_len = math.hypot(bx - ax, by - ay)
+    mitre = min(((x - ax) * (bx - ax) + (y - ay) * (by - ay)) / axis_len**2
+                for layer in wall.depth_layers() if layer.name == "cladding"
+                for x, y in layer.polygon)
+    assert mitre < 0.0  # the corner really is outboard of the start node
+    raked = wall.top_z0_m + (wall.top_z1_m - wall.top_z0_m) * mitre
+    assert member.z0_m == pytest.approx(raked, abs=1e-9)
+    assert member.z0_m < wall.top_z0_m
     assert member.z1_m > member.z0_m
     # A wall that already reaches its face produces nothing at all — this one still does,
     # because the deck plane is not where its cladding dies.
     assert _closures(flush, "W-E1")
+
+
+def test_closure_bands_wrap_the_buildings_outside_corners(flush):
+    """No (skin depth)² column is left open where two clad walls meet under a flush roof.
+
+    The bands used to run the wall's raw axis while the prism under them was already mitred
+    into the corner, so every outside corner had a square column of stack height claimed by
+    neither wall — and the wall's exterior foam showed its end grain in it (a gold square at
+    each lower gable corner in any 3D view of the catlin house). Checked as coverage rather
+    than as an offset, so the assertion survives whatever the mitre convention becomes.
+    """
+    roof = _roof(flush)
+    walls = {w.tag: w for w in flush.walls}
+    bands = [m for m in roof.members if "-closure-" in m.child_key]
+    assert bands
+    for tag, wall in walls.items():
+        own = [m for m in bands if m.child_key.startswith(f"{tag}-closure-")]
+        if not own:
+            continue
+        (ax, ay), (bx, by) = wall.axis
+        axis_len2 = (bx - ax) ** 2 + (by - ay) ** 2
+
+        def along_axis(x, y):
+            return ((x - ax) * (bx - ax) + (y - ay) * (by - ay)) / axis_len2
+
+        for layer in wall.depth_layers():
+            # A gable wall is split at the ridge, so one layer can own several segments —
+            # what has to cover the polygon is their union, not any one of them.
+            segments = [m for m in own if m.child_key.endswith(f"-{layer.name}")]
+            if not segments:
+                continue
+            ends = [along_axis(*point) for m in segments for point in (m.p0, m.p1)]
+            along = [along_axis(x, y) for x, y in layer.polygon]
+            # The bands must reach at least as far along the axis as their own layer
+            # polygon — i.e. all the way into the mitre — at both ends.
+            assert min(ends) <= min(along) + 1e-9, (tag, layer.name, min(ends), min(along))
+            assert max(ends) >= max(along) - 1e-9, (tag, layer.name, max(ends), max(along))
 
 
 # --- 8. mitred rake corners ----------------------------------------------------------------
@@ -795,8 +843,13 @@ def test_the_corner_trim_caps_the_roofing_edge(wrapped):
         bands = [m for m in eaves if m.child_key.startswith(key)]
         assert len(bands) == 3
         assert max(m.z1_m for m in bands) == pytest.approx(roof.eave_z_m + top, abs=1e-9)
+        # 4" of leg, not the 2" this piece started with. On a zero-overhang roof this trim is
+        # the only thing standing at the rake, so the leg is what a barge board would be —
+        # deepened 2026-08-01 so the edge reads as a band rather than a pinstripe. Pinned to
+        # the authored number rather than to _CORNER_TRIM_LEG_M: the depth is a design
+        # decision, and a test that reads the constant back cannot notice it changing.
         assert min(m.z0_m for m in bands) == pytest.approx(
-            roof.eave_z_m + under - inch(2).meters, abs=1e-9)
+            roof.eave_z_m + under - inch(4).meters, abs=1e-9)
 
 
 def test_a_wrapped_edge_runs_the_wall_cladding_to_the_roofing_underside(wrapped):

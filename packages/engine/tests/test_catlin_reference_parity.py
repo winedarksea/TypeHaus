@@ -103,9 +103,13 @@ def test_basement_exterior_insulation_matches_the_reference(catlin_model):
 
 
 def test_basement_wall_layers_run_interior_to_exterior(catlin_model):
+    # "parge" joined the roster on 2026-08-01: the XPS used to be the wall's outermost
+    # material, which on the south elevation meant bare foam was the finish from the sunken
+    # garden's floor up to the siding. It is last because it is outboard of everything —
+    # which is also why adding it moved nothing (these walls align on face("concrete-ext")).
     asm = catlin_model.plan.library.resolve_assembly("CATLIN_BASEMENT_12")
     assert [layer.name for layer in asm.layers] == [
-        "concrete", "damp-proof", "xps-a", "xps-b"
+        "concrete", "damp-proof", "xps-a", "xps-b", "parge"
     ]
 
 

@@ -145,9 +145,22 @@ CATLIN_BASEMENT_12 = Assembly(
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+        # Parge coat over mesh — the layer that makes the foam a finished surface rather
+        # than the wall's outermost material (2026-08-01). Two reasons, one of them not
+        # cosmetic: exposed XPS is a UV- and impact-degrading finish, and on this house the
+        # exposure is not a token few inches. The south wall stands open from the sunken
+        # garden's floor all the way to the main-storey siding, so before this the widest
+        # band of "finish" on the south elevation was bare pink foam — which is exactly how
+        # it read in the 3D view. Reuses the porch railing's Portland-cement stucco because
+        # a parge coat is that product; the layer is named for its job, not the material.
+        # It rides outboard of everything, so nothing already resolved moves: these walls
+        # align on face("concrete-ext"), so the concrete face — the datum the footings,
+        # damp-proofing and the drain-tile chain all key off — is untouched.
+        Layer(name="parge", material_ref="stucco", thickness=inch(0.5),
+              function=LayerFunction.FINISH),
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house basement: 12\" wall + 2x2\" exterior XPS",
+    source="catlin-house basement: 12\" wall + 2x2\" exterior XPS + parge",
 )
 
 # Basement slab-on-grade: 3" XPS below the slab (R-15 @ 40 psi compressive — rated for
@@ -324,6 +337,23 @@ POST_WHITE_PAINT = Assembly(
               function=LayerFunction.STRUCTURE),
     ),
     source="catlin-house balcony 6x6 pillars — white-painted finish",
+)
+
+# The guards, split off POST_WHITE_PAINT on 2026-08-01. They used to share it with the
+# balcony's 6x6 pillars and knee braces, so there was no way to darken a railing without
+# turning the pillars black too — and the pillars are meant to stay white. Same 5.5"
+# nominal body so nothing about the solids changes but their colour.
+#
+# A guard is metal, not painted PT: `_solid_color` reads the STRUCTURE layer's material, so
+# naming metal-dark-exterior here is what actually darkens the railings in both renderers
+# (the "railing" entry in the category palettes is dead for any solid that has an assembly).
+RAILING_DARK_METAL = Assembly(
+    tag="RAILING_DARK_METAL",
+    layers=(
+        Layer(name="rail-metal", material_ref="metal-dark-exterior", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house guards — near-black painted metal, the house's one exterior dark",
 )
 
 # --- garage (freestanding: ICF stem + 2x6 wood wall) ---------------------------
@@ -587,9 +617,31 @@ MATERIALS = [
     Material(tag="grout", name="Masonry grout", r_per_inch=0.08, density=2240.0,
              perm_rating=2.5, hatch="concrete", color="#9a958c",
              source="fills the CMU cores for balcony post bases; cementitious grout ~2-3 perm-in"),
+    # The house's one exterior dark (2026-08-01). Every dark metal element on the envelope —
+    # the roof's rake/eave/ridge trim coil, the window and door casings, the guards — is this
+    # value, so they read at one weight instead of three near-misses.
+    #
+    # WHY #1c1f24 AND NOT THE #3a3d40 THIS STARTED AT: the authored colour is an albedo, not
+    # a pixel. The viewer lights the scene with a 0.8 hemisphere + 0.9 key + 0.6 IBL, which
+    # is over unit irradiance, so a dark surface leaves the shader well above its albedo —
+    # #3a3d40 arrived on screen near #525252 and read as generic grey, and the corner trim's
+    # cleat band, which faces up into the hemisphere, caught the most of it. #1c1f24 lands
+    # about where #3a3d40 was meant to. Not pure black on purpose: a zero albedo takes the
+    # shading with it and the trim's folds and the guard's posts stop reading as solids.
+    #
+    # Deliberately not named "*seam*": the renderers key the ribbed standing-seam finish off
+    # that substring, and this is flat brake-formed stock. The colour is authored here so the
+    # .glb and the viewer both read it from the catalog rather than inferring "metal" and
+    # landing on a blue-grey.
+    Material(tag="metal-dark-exterior", name="Near-black painted metal (exterior)",
+             r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
+             color="#1c1f24",
+             source="RF-HOUSE rake/eave/ridge trim coil, opening casings, exterior guards"),
     Material(tag="stucco", name="Portland-cement stucco", r_per_inch=0.20, density=1900.0,
              perm_rating=10.0, hatch="concrete", color="#d9d2c4",
-             source="porch railing CMU back-face finish"),
+             # Two jobs, one product: the porch railing's CMU back-face finish, and the
+             # basement wall's parge coat over its exterior XPS (CATLIN_BASEMENT_12).
+             source="porch railing CMU back face; basement exterior-XPS parge coat"),
     Material(tag="composite-deck", name="Composite decking (capped PVC/wood)",
              r_per_inch=1.0, density=1000.0, perm_rating=0.5, hatch="lumber", color="#8a7f70",
              source="porch floor walking surface; PVC-capped composite ~0.5 perm-in (low)"),
@@ -698,6 +750,7 @@ ASSEMBLIES = [
     BREEZEWAY_GLAZED_WALL,
     BALCONY_DECK_ALUMINUM,
     POST_WHITE_PAINT,
+    RAILING_DARK_METAL,
     GARAGE_ICF_8,
     GARAGE_WALL_2X6,
     GARAGE_SLAB_ON_GRADE,

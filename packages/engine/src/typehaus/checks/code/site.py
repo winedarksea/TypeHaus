@@ -13,19 +13,25 @@ from typehaus.findings import Finding, Result, Severity
 _M_TO_IN = 39.37007874015748
 
 
+# Setbacks are a *local zoning* requirement, not an IRC one — there is no section number to
+# cite, and citing one would be a fabrication. "local zoning" is the honest citation, and
+# saying so is what lets the coverage test insist every CODE finding carries one.
+_SETBACK_REF = "local zoning"
+
+
 def _pass(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
     return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.PASS)
+                   code_ref=_SETBACK_REF, result=Result.PASS)
 
 
 def _fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
     return Finding(severity=Severity.ERROR, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.FAIL)
+                   code_ref=_SETBACK_REF, result=Result.FAIL)
 
 
 def _unknown(cid: str, reason: str, tags: tuple[str, ...] = ()) -> Finding:
     return Finding(severity=Severity.WARN, check_id=cid, message=f"UNKNOWN — {reason}",
-                   element_tags=tags, result=Result.UNKNOWN)
+                   element_tags=tags, code_ref=_SETBACK_REF, result=Result.UNKNOWN)
 
 
 @check(Tier.CODE, "code.site_setback")

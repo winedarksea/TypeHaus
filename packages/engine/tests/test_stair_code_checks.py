@@ -16,12 +16,12 @@ from types import SimpleNamespace
 import pytest
 
 from typehaus.checks import build_context
-from typehaus.checks.code.mn_residential.rules import (
+from typehaus.checks.code.mn_residential.fall_protection import stairwell_guard
+from typehaus.checks.code.mn_residential.stairs import (
     stair_handrail,
     stair_headroom,
     stair_landing_depth,
     stair_width,
-    stairwell_guard,
 )
 from typehaus.findings import Result
 from typehaus.quantities import inch

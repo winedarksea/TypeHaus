@@ -404,7 +404,7 @@ SECOND_PLACEABLES = [
     # x=3'-4"/8'-8", y=2', suspended 2'-3" below the ceiling), which is the whole reason
     # those tubes are on a photoperiod timer: the light has to land on the foliage, not
     # beside it. That also puts both pots in the south glazing — WIN-S-PLANT1 is centred
-    # x=3'-4" and WIN-S-PLANT2 x=8'-8" (the 42" WT-4248 pair, 2'-8" sills) — so each
+    # x=3'-4" and WIN-S-PLANT2 x=8'-8" (the 30" WT-3048 pair, 2'-8" sills) — so each
     # plant gets daylight and the tube supplements it. An 18" pot at y=2' occupies
     # y 1'-3"..2'-9", well off the 5/8" wall face.
     #

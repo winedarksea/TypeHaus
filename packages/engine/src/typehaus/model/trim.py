@@ -62,6 +62,12 @@ class EaveSoffit(_EdgeRun):
 
     kind: TrimKind = TrimKind.SOFFIT
     vented: bool = False  # continuous intake venting into the roof's eave-to-ridge channel
+    # Net free ventilating area, square inches per linear foot of run — the number printed
+    # on the vented-soffit product, not something derivable from the panel's dimensions
+    # (perforation pattern and open area vary by an order of magnitude between products).
+    # R806.2 is an *area* requirement, so ``vented=True`` alone cannot answer it: without
+    # this the attic-ventilation check knows there is intake and not how much.
+    net_free_area_in2_per_ft: float | None = None
 
 
 @register_element
@@ -182,6 +188,12 @@ class EaveTrim(HausModel):
     soffit_material: str = ""
     soffit_thickness: Length | None = None
     soffit_vented: bool = False
+    # Net free area of the intake soffit, and of the ridge vent this eave's roof exhausts
+    # through — both in square inches per linear foot, as the products are rated. The ridge
+    # figure lives here rather than on the ridge because the derived ridge-vent run is a
+    # product of the roof trim resolution this element drives.
+    soffit_nfva_in2_per_ft: float | None = None
+    ridge_vent_nfva_in2_per_ft: float | None = None
     gutter: EaveGutter | None = None
 
 

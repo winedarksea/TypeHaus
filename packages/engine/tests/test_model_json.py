@@ -97,13 +97,22 @@ def test_skin_members_carry_a_material_and_lumber_does_not(catlin_payload):
     assert all("material" in member for member in members)
     house = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-HOUSE")
     # The house edge is a continuous standing-seam wrap (flush edge, one skin wall→roof):
-    # the drip-edge band gave way to a corner trim piece in the roofing's own material.
+    # the drip-edge band gave way to a corner trim piece. Since 2026-08-01 that piece is
+    # ordered in RF-HOUSE's own `edge_trim_material` rather than the roofing's stock — the
+    # charcoal accent coil that makes a zero-overhang rake legible. What matters here is
+    # unchanged: it names *a* material, so neither renderer falls back to category grey.
     trims = [m for m in house["members"] if "-corner-trim-" in m["key"]]
-    assert trims and all(m["material"] == "standing-seam" for m in trims)
+    assert trims and all(m["material"] == "metal-dark-exterior" for m in trims)
+    # The ridge cap is part of the same outline, so it follows the same coil — while the
+    # garage, which authors no trim material, keeps its cap in the roofing's own stock.
+    house_cap = [m for m in house["members"] if m["category"] == "ridge_cap"]
+    assert house_cap and all(m["material"] == "metal-dark-exterior" for m in house_cap)
     garage = next(r for r in catlin_payload["roofs"] if r["tag"] == "RF-GARAGE")
     gable = [m for m in garage["members"]
              if "W-G-E-closure-" in m["key"] and m["category"] == "cladding"]
     assert gable and all(m["material"] == "standing-seam" for m in gable)
+    garage_cap = [m for m in garage["members"] if m["category"] == "ridge_cap"]
+    assert garage_cap and all(m["material"] == "standing-seam" for m in garage_cap)
     studs = [m for m in house["members"] if m["category"] == "rafter"]
     assert studs and all(m["material"] is None for m in studs)
 

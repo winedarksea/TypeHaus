@@ -150,11 +150,24 @@ def permit_check(
                       for item in checklist.items],
         }))
     else:
-        table = Table("Result", "Requirement", "Detail")
-        for item in checklist.items:
-            color = {Result.PASS: "green", Result.FAIL: "red", Result.UNKNOWN: "yellow"}[item.result]
-            table.add_row(f"[{color}]{item.result.value.upper()}[/{color}]", item.label, item.detail)
-        console.print(table)
+        colors = {Result.PASS: "green", Result.FAIL: "red", Result.UNKNOWN: "yellow"}
+
+        def _render(rows, title: str) -> None:
+            table = Table("Result", "Requirement", "Detail", title=title)
+            for item in rows:
+                color = colors[item.result]
+                table.add_row(f"[{color}]{item.result.value.upper()}[/{color}]",
+                              item.label, item.detail)
+            console.print(table)
+
+        gating = [item for item in checklist.items if item.blocking]
+        _render(gating, "Permit gate")
+        # Encoded, running, and deliberately not yet gating — see PermitItemSpec.blocking.
+        # Printed separately rather than hidden: a rule this house cannot answer yet is a
+        # real coverage statement, and burying it would repeat the drift the profile
+        # mechanism exists to stop.
+        if checklist.under_review:
+            _render(checklist.under_review, "Under review — encoded, not gating")
         console.print(
             "Declared MN subset only; local amendments, engineering, MEP, and energy review remain external."
         )
@@ -385,7 +398,7 @@ def print_sheets(
     if not checklist.ok:
         console.print("[red]permit print blocked: declared checklist has failures or unknowns[/red]")
         for item in checklist.items:
-            if item.result is not Result.PASS:
+            if item.blocking and item.result is not Result.PASS:
                 console.print(f"  {item.label}: {item.detail}")
         raise typer.Exit(1)
     model, _ = resolve(result.plan)

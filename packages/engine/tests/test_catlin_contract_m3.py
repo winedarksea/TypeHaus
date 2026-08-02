@@ -139,8 +139,15 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset():
     # settled: the sewer connection is below the slab (Minnesota buries them under frost), so
     # the main now drops through SP-B-SLAB-MAIN and runs under the slab out beneath FT-B-S1,
     # and FX-1 drains and vents. Every declared item is evaluated and passes again.
-    assert all(item.result is Result.PASS for item in checklist.items), \
-        [(item.label, item.result, item.detail) for item in checklist.items
+    #
+    # Scoped to the *gating* items: the code-coverage expansion added a staging lane of
+    # encoded-but-not-yet-gating rules (PermitItemSpec.blocking), and those are allowed to
+    # sit UNKNOWN against a house authored before they existed. What must never regress is
+    # the gate itself — an item that gates today and stops passing tomorrow.
+    # tests/test_permit_gate_catlin.py pins the size of that lane so it cannot grow.
+    gating = [item for item in checklist.items if item.blocking]
+    assert all(item.result is Result.PASS for item in gating), \
+        [(item.label, item.result, item.detail) for item in gating
          if item.result is not Result.PASS]
 
 

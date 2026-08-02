@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from typehaus.model.base import HausModel
 from typehaus.model.registry import register_constructor
 
@@ -43,6 +45,15 @@ class Material(HausModel):
     # Drawing one is how a sealed slab reads as two floors: the slab, plus a finish plane
     # sitting on the same face (→ TODO "the garage seems to have two floors").
     coating: bool = False
+    # Gypsum board grade, where the material *is* gypsum board. Not a general fire-rating
+    # field: residential construction has exactly two rated assemblies (the garage/dwelling
+    # separation and a dwelling-unit separation), and putting a fire-resistance rating on
+    # every assembly would mean authoring a number for hundreds of walls that nobody tested.
+    # The grade of the board, on the other hand, is printed on the board.
+    #
+    # ``code.R302_5_garage_separation`` reads it for R302.6's 5/8" Type X requirement where
+    # habitable space sits above a garage; without it that sub-rule can only report UNKNOWN.
+    gypsum_type: Literal["regular", "type-x", "type-c"] | None = None
     # Optional freeform provenance (URL, standard, or "generic assumption") (#46).
     source: str | None = None
 

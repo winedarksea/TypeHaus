@@ -23,6 +23,9 @@ class PermitChecklistItem:
     result: Result
     detail: str
     check_ids: tuple[str, ...]
+    # Mirrors PermitItemSpec.blocking — see the reasoning there. A non-blocking item is
+    # evaluated and printed exactly like any other; it just does not hold the gate shut.
+    blocking: bool = True
 
 
 @dataclass(frozen=True)
@@ -34,7 +37,12 @@ class PermitChecklist:
 
     @property
     def ok(self) -> bool:
-        return all(item.result is Result.PASS for item in self.items)
+        return all(item.result is Result.PASS for item in self.items if item.blocking)
+
+    @property
+    def under_review(self) -> tuple[PermitChecklistItem, ...]:
+        """Items that are encoded and running but not yet gating."""
+        return tuple(item for item in self.items if not item.blocking)
 
 
 def evaluate_permit_checklist(report: CheckReport,
@@ -55,29 +63,44 @@ def evaluate_permit_checklist(report: CheckReport,
         from typehaus.checks.code.mn_residential.profile import get_profile
 
         profile = get_profile(profile)
-    items = [_item_from_findings(spec.label, spec.check_ids, report.findings)
+    items = [_item_from_findings(spec.label, spec.check_ids, report.findings,
+                                 blocking=spec.blocking)
              for spec in profile.permit_items]
-    items.append(_integrity_item(report.findings))
+    items.append(_integrity_item(report.findings, profile.permit_check_ids()))
     return PermitChecklist(profile_name=profile.name, items=tuple(items))
 
 
-def _item_from_findings(label: str, check_ids: tuple[str, ...], findings: list[Finding]) -> PermitChecklistItem:
+def _item_from_findings(label: str, check_ids: tuple[str, ...], findings: list[Finding],
+                        *, blocking: bool = True) -> PermitChecklistItem:
     matched = [finding for finding in findings if finding.check_id in check_ids]
     failed = [finding for finding in matched if finding.result is Result.FAIL]
     unknown = [finding for finding in matched if finding.result is Result.UNKNOWN]
     if failed:
-        return PermitChecklistItem(label, Result.FAIL, failed[0].message, check_ids)
+        return PermitChecklistItem(label, Result.FAIL, failed[0].message, check_ids, blocking)
     if unknown:
-        return PermitChecklistItem(label, Result.UNKNOWN, unknown[0].message, check_ids)
+        return PermitChecklistItem(label, Result.UNKNOWN, unknown[0].message, check_ids, blocking)
     if not matched:
-        return PermitChecklistItem(label, Result.UNKNOWN, "no evaluable model input", check_ids)
-    return PermitChecklistItem(label, Result.PASS, f"{len(matched)} evaluated result(s) pass", check_ids)
+        return PermitChecklistItem(label, Result.UNKNOWN, "no evaluable model input", check_ids,
+                                   blocking)
+    return PermitChecklistItem(label, Result.PASS, f"{len(matched)} evaluated result(s) pass",
+                               check_ids, blocking)
 
 
-def _integrity_item(findings: list[Finding]) -> PermitChecklistItem:
+def _integrity_item(findings: list[Finding],
+                    covered: frozenset[str] = frozenset()) -> PermitChecklistItem:
+    """The catch-all line: model errors that no other checklist item answers.
+
+    ``covered`` matters more than it looks. This used to sweep up *every* ERROR-severity
+    finding, which was harmless while every CODE check passed and became a real bug the
+    moment one did not: a check on a deliberately non-gating item still emits an
+    ERROR-severity FAIL, that error landed here, and this item is always blocking — so the
+    staging lane silently blocked the gate anyway. A finding that already has a line of its
+    own is reported there, once.
+    """
     relevant = [finding for finding in findings
-                if finding.severity is Severity.ERROR
-                or finding.check_id == "integrity.condition_coverage"]
+                if finding.check_id not in covered
+                and (finding.severity is Severity.ERROR
+                     or finding.check_id == "integrity.condition_coverage")]
     if relevant:
         return PermitChecklistItem(
             "Resolved-model and transition integrity", Result.FAIL, relevant[0].message,

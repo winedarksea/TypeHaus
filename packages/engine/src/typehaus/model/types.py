@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from typehaus.model.base import HausModel
 from typehaus.model.enums import DoorOperation, LuminaireForm, Service, WindowOperation
 from typehaus.model.placeables import (ClearanceZone, Footprint2D, ModelRepresentation,
@@ -29,6 +31,21 @@ class DoorType(HausModel):
     # that the solver's dimensional-lumber header tables don't apply; a Door instance's
     # own header_spec wins over this.
     header_spec: str | None = None
+    # --- R302.5.1: the door between a garage and the dwelling ---------------------------
+    # The code offers three ways to comply and names two of them by construction: a 1-3/8"
+    # solid-wood or solid/honeycomb-steel door, or a 20-minute fire-rated assembly. Both
+    # are properties of the product, so both live on the type.
+    #
+    # ``self_closing`` is separate because it is a property of the *installation* that the
+    # product must support (and Minnesota amends R302.5.1 to require it). None/False means
+    # "not stated", which the check reports as UNKNOWN rather than as a deficiency — an
+    # interior passage door that never touches a garage has no business claiming a rating.
+    core: Literal["solid", "hollow"] | None = None
+    fire_rating_minutes: int | None = None
+    self_closing: bool = False
+    # Safety glazing in the leaf — R308.4.1 requires it of every glazed door, with no
+    # location test to derive. Meaningful only where ``glazed`` is true.
+    tempered: bool = False
     source: str | None = None
 
 
@@ -44,6 +61,15 @@ class WindowType(HausModel):
     # A closed vocabulary, like a door's: the operation picks the plan symbol and is what
     # separates a picture unit from an operable one of identical size on the schedule.
     operation: WindowOperation = WindowOperation.FIXED
+    # Safety (tempered or laminated) glazing. R308.4 lists the *locations* that require it —
+    # in a door, beside a door, near a tub, near a stair, low and large — and the check
+    # derives every one of those from geometry. What geometry cannot tell you is whether the
+    # unit that landed there was ordered tempered, which is exactly what this states.
+    tempered: bool = False
+    # R312.2 fall protection: an opening control device, a fall-prevention device, or a
+    # guard at the window. "none" is the honest default — most windows have nothing, and
+    # most windows do not need anything.
+    fall_protection: Literal["none", "limiter", "guard", "screen_rated"] = "none"
     source: str | None = None
 
 

@@ -30,6 +30,20 @@ class PermitItemSpec:
     check_ids: tuple[str, ...]
     # The citation(s) this line rests on, for the printed cover sheet.
     code_refs: tuple[str, ...] = ()
+    # Does this line gate the permit set? A non-blocking item is printed and evaluated like
+    # any other, but does not hold up `haus permit-check` or `haus print`.
+    #
+    # This exists because UNKNOWN blocks exactly as hard as FAIL — correctly, since "we could
+    # not evaluate this" is not a permit-ready answer — and a newly encoded rule normally
+    # starts UNKNOWN against a house authored before it existed. Without a way to say "this
+    # rule is real, is running, and is not yet gating", the only options when adding a rule
+    # are to brick the reference house's print pipeline or to leave the rule off the
+    # checklist entirely, and the second is the drift this profile mechanism exists to stop.
+    #
+    # An item flips to blocking in the commit that makes the house pass it. It is a staging
+    # lane, not a parking lot: `tests/test_permit_coverage.py` pins how many items may sit
+    # in it, so the count can only shrink.
+    blocking: bool = True
 
 
 @dataclass(frozen=True)

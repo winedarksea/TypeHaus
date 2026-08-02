@@ -28,6 +28,12 @@ class Circuit(Element):
     poles: int = 1
     nema: str | None = None  # receptacle configuration where one defines the circuit
     gfci: bool = False  # GFCI protection at the breaker (not the outlet)
+    # AFCI protection at the breaker. E3902.16 requires it on the 120V branch circuits
+    # serving nearly every habitable room, and unlike GFCI there is no device-level
+    # alternative in common use — the breaker is where it lives, so the flag lives here and
+    # nowhere else. False means "not stated": the check reports a circuit that needs AFCI
+    # and does not declare it, rather than assuming either answer.
+    afci: bool = False
     backup: bool = False
     load_va: float | None = None
     description: str = ""

@@ -94,6 +94,29 @@ def _layer_offset_m(wall: ResolvedWall, layer) -> float:
     return (cx - ax) * normal[0] + (cy - ay) * normal[1]
 
 
+def _layer_axis_fractions(wall: ResolvedWall, layer) -> tuple[float, float]:
+    """The along-axis fractions the layer's own plan polygon spans (a mitre reaches past 0/1).
+
+    A wall's layers are already mitred into the building's outside corners by the time they
+    resolve: on the catlin attic's SW corner W-A-S1's cladding polygon runs x -0.128..3.048
+    against a 0..3.048 axis, and W-A-W1's runs the matching 0.128 past its own end. The
+    closure band above it was the one piece still measured on the raw axis, so at each
+    outside corner a (skin depth)² column — 4 3/4" square on this house, the full height of
+    the wall→roof stack — was claimed by neither wall's band, and the wall's exterior foam
+    showed its end grain there. (Visible as a gold square at both lower gable corners in any
+    3D view.) Taking the span from the polygon makes the band inherit whatever mitre the
+    layer beneath it already has, including its convention at every other junction kind, so
+    this cannot drift from the prism it caps.
+    """
+    (ax, ay), (bx, by) = wall.axis
+    dx, dy = bx - ax, by - ay
+    run = math.hypot(dx, dy)
+    if run <= 1e-9:
+        return (0.0, 1.0)
+    along = [((x - ax) * dx + (y - ay) * dy) / (run * run) for x, y in layer.polygon]
+    return (min(along), max(along))
+
+
 def _offset_point(wall: ResolvedWall, fraction: float, offset: float) -> tuple[float, float]:
     (ax, ay), (bx, by) = wall.axis
     dx, dy = bx - ax, by - ay
@@ -160,17 +183,23 @@ def _closure_segment(
     segment: int, structure_depth: float,
     mating: MatingFaces | None, slope_factor: float, continuous: bool = False,
 ) -> tuple[FramedMember, ...]:
-    tops = (_wall_top_at(wall, t0), _wall_top_at(wall, t1))
     members: list[FramedMember] = []
     for layer in skin_layers(wall):
         offset = _layer_offset_m(wall, layer)
-        p0 = _offset_point(wall, t0, offset)
-        p1 = _offset_point(wall, t1, offset)
+        # Run the band over the layer polygon's own span, so it inherits the outside-corner
+        # mitre the prism below it already has. Only the *ends* of the wall stretch: an
+        # interior split (the ridge crossing) is a fraction we chose, not a corner.
+        mitre0, mitre1 = _layer_axis_fractions(wall, layer)
+        f0 = min(t0, mitre0) if t0 <= 1e-9 else t0
+        f1 = max(t1, mitre1) if t1 >= 1.0 - 1e-9 else t1
+        tops = (_wall_top_at(wall, f0), _wall_top_at(wall, f1))
+        p0 = _offset_point(wall, f0, offset)
+        p1 = _offset_point(wall, f1, offset)
         if mating is None:
             # Overhung edge: one band per layer, up to the structure's underside, measured on
             # the wall's own axis (the soffit closes everything outboard of that).
             targets = tuple(roof_height_at(roof, _offset_point(wall, fraction, 0.0))
-                            - structure_depth for fraction in (t0, t1))
+                            - structure_depth for fraction in (f0, f1))
         else:
             # Flush edge: each layer rises to its own face in the roof stack, measured at that
             # layer's own plan position — the layers are parallel to the slope, so a layer
