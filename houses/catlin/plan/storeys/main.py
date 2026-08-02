@@ -54,6 +54,15 @@ DOOR_TYPES = [
     DoorType(tag="DT-INT-SWING24", width=ft(2), height=ft(6, 8)),
     DoorType(tag="DT-INT-BIFOLD60", width=ft(5), height=ft(6, 8), operation="bifold"),
     DoorType(tag="DT-INT-BIFOLD56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),
+    # RM-M-MUD-CLOSET's opening (2026-08-02): a 48" sliding bypass pair, keeping the
+    # replaced FURN-M-MUD-CLOSET-S's no-swing intent — the closet aisle has no floor to
+    # spare for a swing, same reasoning as library's FURN-WARDROBE-48. "slide" is the
+    # closed DoorOperation vocabulary's bypass form and is handled end to end: coplanar
+    # panel pair + track in resolve/geometry_openings.py, the door-sliding plan symbol
+    # in emit/draw/door_symbols.py, and SLIDING_TO_LEFT in the IFC emitter. 48" is the
+    # largest standard bypass whose RO (50") fits the partition's 63 1/8" framed span
+    # with jamb packs to spare; 60" would leave 1 1/8" total.
+    DoorType(tag="DT-INT-BYPASS48", width=ft(4), height=ft(6, 8), operation="slide"),
     DoorType(tag="DT-INT-FRENCH60", width=ft(5), height=ft(6, 8),
              operation="double_swing", glazed=True, tempered=True),
     DoorType(tag="DT-EXT-OVERHEAD192", width=ft(16), height=ft(7), exterior=True,
@@ -250,6 +259,17 @@ NODES = [
     Node(uid="CMN025AAAA", tag="N-M-MECH1", position=pt(ft(0), ft(33, 4))),
     Node(uid="CMN026AAAA", tag="N-M-MECH2", position=pt(ft(6), ft(33, 4))),
     Node(uid="CMN027AAAA", tag="N-M-MECH3", position=pt(ft(6), ft(36))),
+    # RM-M-MUD-CLOSET: the framed south mudroom closet (2026-08-02), replacing
+    # FURN-M-MUD-CLOSET-S the way RM-M-MECH replaced its north twin. The partition axis
+    # at y=29'-7 1/2" is computed from both of its constraints at once: the interior
+    # depth from W-M-STOS's north face (26'-6 3/8") to the partition's south face
+    # (29'-5 1/8") lands at 34 3/4" — inside the 32"-36" reach-in band — and the
+    # partition's north face (29'-9 7/8") stops 1/8" shy of FURN-M-MUD-BENCH's south end
+    # at y=29'-10". The east end reuses N-M-BA1's x=6' line so the return wall tees into
+    # the existing W-M-STOS/W-M-STOS2 junction; its east face at 6'-2 3/8" keeps 5 5/8"
+    # clear of D-M-MUD's near jamb at 6'-8".
+    Node(uid="N9H36K3W70", tag="N-M-MUDC1", position=pt(ft(0), ft(29, 7.5))),
+    Node(uid="T374Q35GT9", tag="N-M-MUDC2", position=pt(ft(6), ft(29, 7.5))),
 ]
 
 WALLS = [
@@ -290,7 +310,15 @@ WALLS = [
     Wall(uid="CMW136AAAA", tag="W-M-W1B", start_node="N-M-NW", end_node="N-M-MECH1",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W1"),
-    Wall(uid="CMW108AAAA", tag="W-M-W1", start_node="N-M-MECH1", end_node="N-M-W1",
+    # Split again at N-M-MUDC1, where RM-M-MUD-CLOSET's north partition tees into the
+    # west wall (2026-08-02) — the same endpoint-only junction rule that forced the
+    # N-M-MECH1 split above. WIN-M-MUD (RO y 30'-9"..31'-11") stays on this, the northern
+    # segment, and the segment's start node (N-M-MECH1) is unchanged, so its stud grid
+    # and the window's bay position do not move.
+    Wall(uid="CMW108AAAA", tag="W-M-W1", start_node="N-M-MECH1", end_node="N-M-MUDC1",
+         assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
+         structural_role=StructuralRole.BEARING, stacks_on="W-B-W1"),
+    Wall(uid="WM8EB2TX38", tag="W-M-W1C", start_node="N-M-MUDC1", end_node="N-M-W1",
          assembly="CATLIN_EXT_2X6", alignment=face("sheathing-ext"), top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-W1"),
     Wall(uid="CMW109AAAA", tag="W-M-W2", start_node="N-M-W1", end_node="N-M-W2",
@@ -425,6 +453,15 @@ WALLS = [
          end_node="N-M-MECH2", assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CMW138AAAA", tag="W-M-MECH-E", start_node="N-M-MECH2",
          end_node="N-M-MECH3", assembly="INT_2X4_PARTITION", top=ft(9)),
+    # --- RM-M-MUD-CLOSET: framed south mudroom closet (2026-08-02) --------------
+    # Replaces FURN-M-MUD-CLOSET-S (plan/furniture_types.py, now empty). The north
+    # partition carries the closet's opening — the bypass slider in D-M-MUDC — and the
+    # east return dies into the existing N-M-BA1 tee, so the room closes against
+    # W-M-W1C (west), W-M-STOS (south) and these two.
+    Wall(uid="KKVYSAJKZF", tag="W-M-MUDC-N", start_node="N-M-MUDC1", end_node="N-M-MUDC2",
+         assembly="INT_2X4_PARTITION", top=ft(9)),
+    Wall(uid="21GE85HJDT", tag="W-M-MUDC-E", start_node="N-M-MUDC2", end_node="N-M-BA1",
+         assembly="INT_2X4_PARTITION", top=ft(9)),
 ]
 
 OPENINGS = [
@@ -458,6 +495,13 @@ OPENINGS = [
     # corner stud pack (the N-M-C2-class overlap). This clears it with margin to spare.
     Door(uid="CMD211AAAA", tag="D-M-MECH", host="W-M-MECH-S", type_ref="DT-INT-SWING30",
          position=from_node("N-M-MECH1", ft(3, 0.9375)), flip_swing=True, flip_hinge=True),
+    # RM-M-MUD-CLOSET's bypass slider, opening north into the mudroom aisle — no swing,
+    # so nothing to clear against the bench or D-M-MUD. Near jamb 1'-1" off N-M-MUDC1
+    # centres the 50" RO in the partition's framed span (W-M-W1C's inner face at 6 1/2"
+    # to W-M-MUDC-E's corner at 5'-9 5/8"): 6 1/2" of wall west of the RO and 6 5/8"
+    # east — both clear of the corner stud packs (the D-M-MECH king-stud lesson).
+    Door(uid="QBTZNWG6AG", tag="D-M-MUDC", host="W-M-MUDC-N", type_ref="DT-INT-BYPASS48",
+         position=from_node("N-M-MUDC1", ft(1, 1))),
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
          position=from_node("N-M-W3", ft(2)), flip_swing=True, flip_hinge=True),
     Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-INT-BIFOLD56",
@@ -509,16 +553,21 @@ OPENINGS = [
     Window(uid="CMX305AAAA", tag="WIN-M-BATH2", host="W-M-W3",
            type_ref="WT-1424-T", position=from_node("N-M-W3", ft(4, 11)),
            sill_height=ft(4)),
-    # Picture unit at the wall's stud-grid midpoint: W-M-W1 runs 9'-8" node-to-node, so the
-    # true middle is 4'-10" off N-M-NW, but studs on this wall lay out from N-M-NW's own
-    # corner (8"+16n) and the closest bay centre to that middle is 4'-8" — 2" off true
-    # centre, one 14" RO short of breaking a stud. `from_node` measures to the near edge,
-    # not the centre, so the offset below is the bay centre (4'-8") less half the 14" RO.
+    # Picture unit centred y=31'-4", the bench/aisle centreline (see FURN-M-MUD-BENCH in
+    # plan/placeables.py). Re-authored off N-M-MECH1 (2026-08-02): the offset was written
+    # as from_node("N-M-NW", 4'-1") when N-M-NW was still this wall's start, but the
+    # resolver measures a from_node offset from the host's *start* node unless the named
+    # node is its end node — so when the 2026-07-28 MECH split made N-M-MECH1 the start,
+    # the window silently slid 2'-8" south to centre y=28'-8", out of line with the bench
+    # and behind the then-furniture closet's 8' carcass. 1'-5" off N-M-MECH1 puts the
+    # centre 2'-0" down the wall — a bay centre on this wall's grid (8"+16n from the
+    # start node), so the 14" RO stays inside a stud bay — which is y=31'-4" exactly,
+    # back on the northern segment after the N-M-MUDC1 split below it.
     # Sill raised 3'-0" -> 4'-0" (2026-07-30 facade pass) onto the west facade's 14"-unit
     # sill line, putting its head on the shared 6'-0" line with WIN-M-BATH2 and the
     # 27" units; it clears FURN-M-MUD-BENCH's 18" seat by even more than it used to.
     Window(uid="CMX306AAAA", tag="WIN-M-MUD", host="W-M-W1",
-           type_ref="WT-1424-FIX", position=from_node("N-M-NW", ft(4, 1)),
+           type_ref="WT-1424-FIX", position=from_node("N-M-MECH1", ft(1, 5)),
            sill_height=ft(4)),
     # South pair: centres 27'-4" and 32'-8" are stud lines on W-M-S2's grid (16n off
     # N-M-S1), stacking exactly under WIN-S-STUDY1/2. Moved 8" west off the old
@@ -620,6 +669,13 @@ ROOMS = [
     # radon+plumbing riser rides its SW corner. STORAGE is the closed enum's closest fit
     # for a mechanical closet, same reasoning as RM-M-MUDROOM above.
     Room(uid="CMR411AAAA", tag="RM-M-MECH", seed=pt(ft(3), ft(34, 6)),
+         occupancy=Occupancy.STORAGE, floor_finish="sealed-concrete"),
+    # Framed south mudroom closet, replacing FURN-M-MUD-CLOSET-S (2026-08-02): the last
+    # furniture closet becomes a real reach-in — 34 3/4" deep clear, bypass slider in its
+    # north partition. Tagged RM-M-MUD-CLOSET because RM-M-CLOSET (CMR407AAAA) already
+    # names the dressing corridor. STORAGE + sealed-concrete match its parent mudroom,
+    # the same closed-enum reasoning as RM-M-MUDROOM/RM-M-MECH above.
+    Room(uid="G01HFSH967", tag="RM-M-MUD-CLOSET", seed=pt(ft(3), ft(28)),
          occupancy=Occupancy.STORAGE, floor_finish="sealed-concrete"),
 ]
 

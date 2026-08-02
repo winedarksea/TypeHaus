@@ -233,15 +233,13 @@ MAIN_PLACEABLES = [
               position=pt(m(2.5945), m(2.89975))),
 
     # --- mudroom (RM-M-MUDROOM), converted from storage 2026-07-28 --------------------
-    # South closet backs onto the south wall, running from its door to the west wall. Its
-    # north-wall counterpart, FURN-M-MUD-CLOSET-N, was reframed as RM-M-MECH (2026-07-28,
-    # storeys/main.py) — the radon+plumbing shaft needed real walls, not furniture, and
-    # that corner was the NW-most one available.
-    Furniture(uid="CMF802AAAA", tag="FURN-M-MUD-CLOSET-S", type_ref="FURN-M-MUD-CLOSET-S",
-              room="RM-M-MUDROOM", position=pt(ft(3, 8.0625), ft(28, 2.1875)),
-              rotation=deg(180)),
+    # Both mudroom closets are framed rooms now, not furniture: the north one became
+    # RM-M-MECH (2026-07-28) and the south one, FURN-M-MUD-CLOSET-S, became
+    # RM-M-MUD-CLOSET (2026-08-02, storeys/main.py) — same footprint corner, real 2x4
+    # partitions, sliding bypass door.
     # Back to the west wall (rotation 90 = back west, opens east), centred on WIN-M-MUD at
-    # y=31'-4" so the aisle between the two closets above lands on the window too.
+    # y=31'-4" so the aisle between RM-M-MECH and RM-M-MUD-CLOSET lands on the window too.
+    # Its south end at y=29'-10" clears RM-M-MUD-CLOSET's north face (29'-9 7/8") by 1/8".
     Furniture(uid="CMF803AAAA", tag="FURN-M-MUD-BENCH", type_ref="FURN-M-MUD-BENCH",
               room="RM-M-MUDROOM", position=pt(ft(1, 3.125), ft(31, 4)),
               rotation=deg(90)),

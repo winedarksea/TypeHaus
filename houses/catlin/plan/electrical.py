@@ -814,6 +814,13 @@ NEC_FILL_MAIN = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # y flipped to W-M-STOS's north (mudroom) face (2026-07-28): W-M-BAE's 2' east shift
     # extended W-M-STOS's south face — where this device sat — into RM-M-BATH1.
+    # Inside RM-M-MUD-CLOSET since the closet was framed (2026-08-02) — kept, on purpose:
+    # NEC restricts luminaires in clothes closets (410.16), not receptacles, and a
+    # receptacle in a mudroom reach-in is the boot-dryer/vacuum-charger outlet. Moving it
+    # buys nothing: RM-M-MUDROOM is Occupancy.STORAGE, which electrical.receptacle_spacing
+    # never walks (habitable rooms only), so no 210.52 wall space loses coverage by the
+    # enclosure. It stays a GFCI device because its E3902.10 sink-reach location
+    # (RM-M-BATH1's lav, through W-M-STOS) did not move either.
     ElectricalDevice(uid="NEC067AAAA", tag="ED-M-LIVING-RC9", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(4.55), ft(26.43)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
