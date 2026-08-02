@@ -370,6 +370,27 @@ STAIR_GUARD = Railing(
     kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
     base_elevation=ft(20), post_spacing=inch(60), post_size="2x2", rail_count=2,
     mount="fascia", assembly="RAILING_DARK_METAL",
+    # R312.1.3: 4" clear between balusters — the largest opening the sphere rule admits.
+    infill="balusters", baluster_spacing=inch(4),
+)
+
+# ST-S2A handrail (R311.7.8), wall-mounted on W-S-SS2 — the north wall the well was
+# snapped to — 2" off its south gwb face at y 8'-11 3/8", raked along the straight
+# flight's nosing line by the resolver (`serves_stair`). The run covers the flight from
+# its bottom riser at x 32'-5 3/8" up to the arrival edge at 22'-5 3/8"; the three lower
+# winders turn inside the tiered box at the east end, where the walk-line hugs the newel
+# side and the wall side is the box's own riser stack — there is no raking wall line to
+# mount a rail on until the straight flight leaves the turn.
+STAIR_HANDRAIL = Railing(
+    uid="CARL02AAAA", tag="RL-A-HANDRAIL", path=(
+        pt(ft(32, 5.375), ft(8, 7.625)),
+        pt(ft(22, 5.375), ft(8, 7.625)),
+    ),
+    kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
+    base_elevation=ft(20), post_spacing=inch(48), post_size="2x2", rail_count=1,
+    mount="wall", assembly="RAILING_DARK_METAL",
+    role="handrail", serves_stair="ST-S2A", top_height=inch(36),
+    graspable_profile="1.5in round — Type I",
 )
 
 STAIRS = [
@@ -390,4 +411,4 @@ STAIRS = [
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *ROOFS, *BEAMS, *FLOOR_OPENINGS,
-            *FLOOR, STAIR_GUARD, *STAIRS]
+            *FLOOR, STAIR_GUARD, STAIR_HANDRAIL, *STAIRS]

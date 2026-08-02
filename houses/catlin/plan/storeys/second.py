@@ -682,6 +682,9 @@ STAIR_GUARDS = [
         kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
         base_elevation=ft(10), post_spacing=inch(60), post_size="2x2", rail_count=2,
         mount="fascia", assembly="RAILING_DARK_METAL",
+        # R312.1.3: vertical balusters between the 60" posts, 4" clear gap — the largest
+        # opening the 4"-sphere rule admits.
+        infill="balusters", baluster_spacing=inch(4),
     ),
     # 3'-6 7/8" from the west jamb of the throat — the well partition's west face — to the
     # well's east edge, where RL-S-STAIR turns the corner.
@@ -693,6 +696,46 @@ STAIR_GUARDS = [
         kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
         base_elevation=ft(10), post_spacing=inch(60), post_size="2x2", rail_count=2,
         mount="fascia", assembly="RAILING_DARK_METAL",
+        infill="balusters", baluster_spacing=inch(4),
+    ),
+]
+
+# ST-M2S handrails (R311.7.8): one wall-mounted rail per flight, both graded by
+# code.R311_7_8_handrail via `serves_stair`, and both raked along the flight's nosing line
+# by the resolver (`top_height` is the R311.7.8.1 above-the-nosings datum, 34"-38").
+#
+# Placement reads off the resolved flights (u_split, turn left): the LOWER flight springs
+# in the east lane (x 14'-2 1/4"..17'-8 5/8"), so its rail mounts on the well's east wall
+# (W-M-C5's stair face at 17'-8 5/8") and runs the flight's own y-span — first riser at
+# y 26'-0 3/8" to the lower-landing edge at 31'-10 3/8". The UPPER flight climbs back
+# south in the west lane (x 10'-3 3/8"..13'-9 3/4"), rail on the well's west wall
+# (W-M-STRW2's face at 10'-3 3/8"), upper-landing edge down to one going past the top
+# riser (y 26'-10 3/8", the arrival edge). Each path sits 2" off its wall face — the
+# bracket standoff — and `base_elevation` is only the off-flight fallback (the rail never
+# leaves its flight). rail_count=1: a handrail is the one graspable rail, not a guard
+# frame; role="handrail" keeps these out of the R312.1.3 guard-infill census.
+STAIR_HANDRAILS = [
+    Railing(
+        uid="CSRL03AAAA", tag="RL-S-HANDRAIL-E", path=(
+            pt(ft(17, 6.625), ft(26, 0.375)),
+            pt(ft(17, 6.625), ft(31, 10.375)),
+        ),
+        kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
+        base_elevation=ft(0), post_spacing=inch(48), post_size="2x2", rail_count=1,
+        mount="wall", assembly="RAILING_DARK_METAL",
+        role="handrail", serves_stair="ST-M2S", top_height=inch(36),
+        graspable_profile="1.5in round — Type I",
+    ),
+    Railing(
+        uid="CSRL04AAAA", tag="RL-S-HANDRAIL-W", path=(
+            pt(ft(10, 5.375), ft(31, 10.375)),
+            pt(ft(10, 5.375), ft(26, 10.375)),
+        ),
+        kind=RailingKind.METAL_SURFACE_MOUNT, height=inch(36),
+        base_elevation=ft(10), post_spacing=inch(48), post_size="2x2", rail_count=1,
+        mount="wall", assembly="RAILING_DARK_METAL",
+        role="handrail", serves_stair="ST-M2S", top_height=inch(36),
+        graspable_profile="1.5in round — Type I",
     ),
 ]
 
@@ -750,4 +793,5 @@ STAIRS = [
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SOFFITS,
-            *FLOOR_OPENINGS, *BEAMS, *STAIR_GUARDS, *FLOOR, *POSTS, *STAIRS]
+            *FLOOR_OPENINGS, *BEAMS, *STAIR_GUARDS, *STAIR_HANDRAILS, *FLOOR, *POSTS,
+            *STAIRS]

@@ -931,6 +931,7 @@ def _emit_brace(f: Any, body: Any, brace: Any, storeys: dict[str, Any],
     container = storeys.get(brace.storey)
     if container is None:
         return
+    materials: dict[str, Any] = {}
     for member in sorted(brace.members, key=lambda item: item.child_key):
         child = ll.create_entity(f, "IfcMember", name=f"{brace.tag}/{member.child_key}")
         child.GlobalId = derive_child_guid(project_uuid, brace.uid, member.child_key)
@@ -938,6 +939,19 @@ def _emit_brace(f: Any, body: Any, brace: Any, storeys: dict[str, Any],
         representation = member_representation(f, body, member)
         if representation is not None:
             _assign_representation(f, child, representation)
+        # The member's resolved finish material (a knee brace's POST_WHITE_PAINT reduces to
+        # its structure layer's ref at resolve). The association follows the
+        # ``_assign_solid_material`` pattern, but as a single ``IfcMaterial`` rather than a
+        # layer set: a stick has one body, not a stack of thicknesses. Without it the BRACE
+        # exported with no material at all while the pillars beside it carried theirs.
+        if member.material:
+            material = materials.get(member.material)
+            if material is None:
+                # IfcMaterial is unrooted (no GlobalId/OwnerHistory) — bypass create_entity.
+                material = f.create_entity("IfcMaterial", Name=member.material)
+                materials[member.material] = material
+            f.create_entity("IfcRelAssociatesMaterial", GlobalId=ll.new_guid(),
+                            RelatedObjects=[child], RelatingMaterial=material)
         ll.ensure_pset(f, child, PSET_SOURCE, {
             "uid": brace.uid, "tag": f"{brace.tag}/{member.child_key}",
             "category": member.category, "profile": member.profile,
