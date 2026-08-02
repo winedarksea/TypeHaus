@@ -19,6 +19,8 @@
 # FloorOpening (x:11'-18', y:25'-36') and both cross the central bearing wall at x=18'.
 
 from typehaus import (
+    ClearancePolicy,
+    ClearanceZone,
     Connector,
     ConnectorKind,
     DeviceKind,
@@ -30,6 +32,7 @@ from typehaus import (
     Equipment,
     EquipmentKind,
     EquipmentType,
+    Footprint2D,
     Mount,
     MountKind,
     PipeAccessory,
@@ -117,12 +120,72 @@ EQUIPMENT_TYPES = (
                   ports=(ServicePort(tag="cold", service=Service.WATER_COLD, position=(ft(0), ft(0), ft(4))),
                          ServicePort(tag="hot", service=Service.WATER_HOT, position=(ft(0), ft(0), ft(4))),
                          ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))))),
+    # --- the backup microgrid (2026-08-02, notes/backup_power.md) ----------------------
+    #
+    # EG4 12kPV. The name is the PV input, not the output: 12,000 W of array in, 8,000 W of
+    # AC out continuous, which is the number the autonomy calc checks the backup loads
+    # against and the number the CKT-ESS-GRID breaker is sized on. Surge is the datasheet's
+    # 16 kW / 0.5 s step (12 kW/1 s, 10 kW/1 min below it); the 0.5 s figure is the one a
+    # compressor start actually asks for.
+    #
+    # UL 9540 belongs to the *battery*, not here — the listing R327.2 wants is on the energy
+    # storage system, and marking an inverter with it would make the check pass on the
+    # strength of the wrong product.
+    EquipmentType(tag="EQ-T-EG4-12KPV", name="EG4 12kPV hybrid inverter",
+                  footprint=(inch(27), inch(12)), height=inch(35),
+                  inverter_kw_continuous=8.0, inverter_kw_surge=16.0, pv_input_kw=12.0,
+                  ports=(ServicePort(tag="grid", service=Service.POWER_240,
+                                     position=(ft(0), ft(0), ft(0))),
+                         ServicePort(tag="load", service=Service.POWER_240,
+                                     position=(ft(0), ft(0), ft(0))),),
+                  source="EG4 12kPV spec sheet, read 2026-08-02: 8,000 W continuous AC output (120/240V split phase), 12,000 W PV input over 2 MPPTs at 600 VDC max, 16 kW/0.5 s surge, UL 1741 + UL 9540 listed."),
+    # EG4 PowerPro WallMount Indoor, 14.3 kWh. One unit to start; the R327.5 aggregate check
+    # is what a second one would have to answer to (40 kWh indoors — two of these is 28.6,
+    # three is 42.9 and fails, which is the real ceiling on this closet).
+    #
+    # ``ul_9540_listed=True`` is a declaration about this product, and `code.R327_ess_listing`
+    # reports exactly what is declared here — it never infers a listing from the name.
+    #
+    # The 3'-0" REQUIRED clearance is the owner's separation rule (plans/TODO.md: "Keep a 3'
+    # clearance from other devices"), not a code working space, which is why
+    # `advisory.ess_clearance` grades it and no CODE check does. Authored as a band all the
+    # way around: the concern is a neighbouring device in any direction, not access to a
+    # front face.
+    EquipmentType(tag="EQ-T-ESS-BATT", name="EG4 PowerPro WallMount Indoor, 14.3 kWh",
+                  footprint=(inch(24), inch(10)), height=inch(43),
+                  storage_kwh=14.3, ul_9540_listed=True,
+                  clearances=(ClearanceZone(
+                      footprint=Footprint2D(points=(
+                          pt(inch(-48), inch(-41)), pt(inch(48), inch(-41)),
+                          pt(inch(48), inch(41)), pt(inch(-48), inch(41)))),
+                      purpose="3'-0\" separation from other devices",
+                      policy=ClearancePolicy.REQUIRED,
+                      source="owner rule, plans/TODO.md backup-power block"),),
+                  ports=(ServicePort(tag="dc", service=Service.POWER_240,
+                                     position=(ft(0), ft(0), ft(0))),),
+                  source="EG4 PowerPro WallMount Indoor 14.3 kWh (LFP), UL 9540 listed. Capacity is nameplate; the autonomy calc applies its own depth of discharge (takeoff/backup_calc.py)."),
 )
 
 ELECTRICAL_DEVICE_TYPES = (
+    # ``bus_amps=225`` is what `code.NEC_705_12_interconnection` computes the 120% rule
+    # against (2026-08-02). It is the busbar rating, deliberately not the 200A service:
+    # NEC 705.12(B)(3)(2) sizes the allowable backfeed on the bus, and this panel is a 225A
+    # bus on a 200A main precisely so there is 70A of source headroom.
     ElectricalDeviceType(tag="ED-T-PANEL", name="225A electrical panel (200A service)", footprint=(inch(20), inch(4)), height=ft(3),
-                          plan_symbol="panel", spaces=54,
+                          plan_symbol="panel", spaces=54, bus_amps=225,
                           ports=(ServicePort(tag="service", service=Service.POWER_240,
+                                             position=(ft(0), ft(0), ft(0))),)),
+    # The backup subpanel on the EG4's dedicated load output (2026-08-02). 12 spaces for the
+    # 7 the two tiers use — the spare six are the room a second always-on circuit needs, and
+    # a 12-space enclosure costs nothing over an 8. No ``bus_amps``: nothing backfeeds this
+    # bus today, and stating a rating the 705.12 check would then grade against a service
+    # main it does not have would be worse than saying nothing (see the note in
+    # checks/mep/power_sources.py about the missing feeder element).
+    ElectricalDeviceType(tag="ED-T-BACKUP-PANEL",
+                          name="12-space backup subpanel (EG4 load output)",
+                          footprint=(inch(14), inch(4)), height=ft(1, 8),
+                          plan_symbol="panel", spaces=12,
+                          ports=(ServicePort(tag="feed", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
     # ED-T-LIGHT is gone. It was a generic "Ceiling light" with no lamp, no lumens and no
     # listing, standing one per room; every light in the house is now a real product from
@@ -337,9 +400,9 @@ SLAB_STUBS = [
     # unchanged — the new bathroom branch runs the same corridor down the mechanical room, so
     # the hole stays where the concrete crew already had it — but it carries the 3" bathroom
     # branch now. Invert at the crossing is -9'-11 1/8" project, so the centre is -9'-9 5/8" —
-    # 1 5/8" below FT-B-CW's -9'-8" bearing plane, which is what makes this an under-footing
+    # 1 5/8" below FT-B-CW3's -9'-8" bearing plane, which is what makes this an under-footing
     # crossing rather than a pipe standing inside the footing's 45 degree influence line.
-    SleevePenetration(uid="CBP903AAAA", tag="SP-B-CW-BATH-DR", host_ref="FT-B-CW",
+    SleevePenetration(uid="CBP903AAAA", tag="SP-B-CW-BATH-DR", host_ref="FT-B-CW3",
                       position=pt(ft(7), ft(18)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), axis="horizontal",
                       center_elevation=ft(-9.8)),
@@ -360,7 +423,11 @@ SLAB_STUBS = [
 # center_elevation is project-frame absolute (the walls span -9'..0'); positions along
 # y=18' keep >= 5" between neighbours so the 4"-tolerance matcher stays unambiguous.
 WALL_SLEEVES = [
-    # W-B-CW (y=18', x 0..10), west centre wall — the mechanical wall of the house.
+    # W-B-CW (y=18', x 0..6'-9"), west centre wall — the mechanical wall of the house.
+    # Split at N-B-ESS-S on 2026-08-02 for the ESS closet: the three sleeves east of
+    # x=6'-9" (BATH1-CW at 7'-4.8", WASH-CW at 8'-0", SAUNA-VENT at 9'-0") now host on
+    # W-B-CW3, the stub that forms the closet's south wall. Same concrete, same positions,
+    # same runs through them — only the segment they name changed.
     SleevePenetration(uid="CBPW01AAAA", tag="SP-B-CW-WC2", host_ref="W-B-CW",
                       position=pt(m(0.686504), ft(18)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), axis="horizontal",
@@ -399,15 +466,15 @@ WALL_SLEEVES = [
     # is the one free slot on this wall: the supply and drain sleeves either side of it run
     # 2'-3" to 8' at 5"+ pitch, and 9' leaves 12" to the nearest of them and 6" to W-B-STR's
     # west face. Elevation is the run's own interpolated centreline where it passes through.
-    SleevePenetration(uid="CBPW24AAAA", tag="SP-B-CW-SAUNA-VENT", host_ref="W-B-CW",
+    SleevePenetration(uid="CBPW24AAAA", tag="SP-B-CW-SAUNA-VENT", host_ref="W-B-CW3",
                       position=pt(ft(9), ft(18)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), axis="horizontal",
                       purpose=Service.VENT, center_elevation=ft(-1.276)),
-    SleevePenetration(uid="CBPW09AAAA", tag="SP-B-CW-BATH1-CW", host_ref="W-B-CW",
+    SleevePenetration(uid="CBPW09AAAA", tag="SP-B-CW-BATH1-CW", host_ref="W-B-CW3",
                       position=pt(ft(7, 4.8), ft(18)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-0.87)),
-    SleevePenetration(uid="CBPW10AAAA", tag="SP-B-CW-WASH-CW", host_ref="W-B-CW",
+    SleevePenetration(uid="CBPW10AAAA", tag="SP-B-CW-WASH-CW", host_ref="W-B-CW3",
                       position=pt(ft(8), ft(18)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-0.87)),

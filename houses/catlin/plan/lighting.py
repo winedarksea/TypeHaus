@@ -101,8 +101,12 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
                      controlled_by=("ED-B-FURNACE-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
+    # Moved north 2026-08-02: (9'-7", 20'-0") is inside RM-B-ESS now that the closet took
+    # the furnace room's SE corner, and a switch for the furnace-room lights cannot live
+    # behind the battery closet's door. It stays on the same concrete face (W-B-STR, x=10')
+    # at the closet's north side, where you reach it walking in from D-B-FURN.
     ElectricalDevice(uid="QTB000AAAA", tag="ED-B-FURNACE-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(9, 7), ft(20)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(9, 7), ft(23)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 

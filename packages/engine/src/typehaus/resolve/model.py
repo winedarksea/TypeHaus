@@ -487,6 +487,14 @@ class ResolvedSolarPanel:
     corners_top: tuple[tuple[float, float, float], ...]
     watts: float
     product: str = ""
+    # Electrical identity of the module, carried through unchanged from the authored
+    # SolarPanel (→ model/structure.py): series string, rated and cold-corrected Voc, and
+    # whether a SunSpec RSD transmitter is fitted. The solar takeoff and the 690.12 check
+    # read these; the tilt math ignores them.
+    string: str = ""
+    voc: float | None = None
+    voc_cold: float | None = None
+    rsd: bool = False
 
 
 @dataclass(frozen=True)

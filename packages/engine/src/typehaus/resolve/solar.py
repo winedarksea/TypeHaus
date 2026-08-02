@@ -87,5 +87,6 @@ def _resolve_panel(model: ResolvedModel, panel: SolarPanel, storey_tag: str) -> 
         corners_bottom=offset(plan, standoff),
         corners_top=offset(plan, standoff + panel.thickness.meters),
         watts=panel.watts, product=panel.product,
+        string=panel.string, voc=panel.voc, voc_cold=panel.voc_cold, rsd=panel.rsd,
     ))
     return []

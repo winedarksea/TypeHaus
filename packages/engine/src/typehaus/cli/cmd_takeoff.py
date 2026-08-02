@@ -68,7 +68,7 @@ def takeoff(
                "service_load": bom["service_load"],
                "conduit": bom["conduit"],
                "solar": bom["solar"],
-               "backup_components": bom["backup_components"],
+               "backup_power": bom["backup_power"],
                "luminaire_schedule": bom["luminaire_schedule"],
                # lighting_controls was the one section bill_of_materials produced and this
                # payload dropped — the switch legs simply never reached `haus takeoff`.
@@ -168,7 +168,9 @@ def takeoff(
                       + ("" if load["within_service"] else " — [red]OVER[/red]") + ")")
         for row in payload["panel_schedule"]:
             flags = "".join((" GFCI" if row["gfci"] else "",
-                             " BKUP" if row["backup"] else ""))
+                             f" {row['backup_tier'].upper()}" if row["backup_tier"]
+                             else "",
+                             " SOURCE" if row["source"] else ""))
             console.print(f"  {row['circuit']:<16} {row['breaker_amps']:>3}A/{row['poles']}p "
                           f"{row['connected_va']:>7,.0f} VA{flags} — {row['description']}")
     if payload["conduit"]:
@@ -181,11 +183,20 @@ def takeoff(
         kw = solar["total_watts"] / 1000.0
         console.print(f"[bold]Solar[/bold]  {solar['panels']} × "
                       f"{solar['by_product'][0]['product']} = {kw:.2f} kW installed")
-    if payload["backup_components"]:
-        console.print("[bold]Backup subsystem (DIN components)[/bold]")
-        for item in payload["backup_components"]:
+    if payload["backup_power"]["components"]:
+        console.print("[bold]Backup microgrid[/bold]")
+        for item in payload["backup_power"]["components"]:
             console.print(f"  {item['count']:>5} ea    {item['component']}")
             console.print(f"        [dim]{item['basis']}[/dim]")
+    runtime = payload["backup_power"]["runtime"]
+    if runtime.get("modeled"):
+        autonomy, cycle = runtime["autonomy"], runtime["cycle_48h"]
+        hours = autonomy["hours_always_on_only"]
+        console.print(f"[bold]Backup runtime[/bold] (estimate)  "
+                      f"{autonomy['usable_kwh']:g} kWh usable · always-on tier "
+                      + (f"{hours:.1f} h" if hours is not None else "not computable")
+                      + f" · 48h net {cycle['net_kwh_all_tiers']:+g} kWh")
+        console.print(f"        [dim]{runtime['verdict']}[/dim]")
     if payload["luminaire_schedule"]:
         console.print("[bold]Luminaire schedule[/bold]  (mark · qty: description)")
         for row in payload["luminaire_schedule"]:

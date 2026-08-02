@@ -465,12 +465,23 @@ def _write_hardware_schedule(pdf, model: ResolvedModel, number: str, name: str) 
     plt.close(fig)
 
 
+def _hours_label(hours: float | None) -> str:
+    """An unknown autonomy prints as unknown — never as "0.0 h", which reads as a fact."""
+    return "not computable (no storage or no authored draw)" if hours is None \
+        else f"{hours:.1f} h"
+
+
 def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> None:
     """The panel schedule + NEC 220.82-style load summary + backup component list, all
     derived from Library.circuits (→ takeoff.electrical — nothing here is hand-summed)."""
     import matplotlib.pyplot as plt
 
-    from typehaus.takeoff import backup_component_rows, panel_schedule, service_load_summary
+    from typehaus.takeoff import (
+        backup_component_rows,
+        backup_runtime_summary,
+        panel_schedule,
+        service_load_summary,
+    )
 
     fig = plt.figure(figsize=LEDGER)
     fig.text(0.04, 0.945, f"{number} · {name}", fontsize=16, family="monospace")
@@ -478,16 +489,21 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
     schedule = panel_schedule(model)
     fig.text(0.04, 0.90, "PANEL SCHEDULE — ED-B-PANEL (225A, 200A SERVICE)",
              fontsize=10, family="monospace", weight="bold")
+    # The backup column names the tier, not just the fact: a reader has to be able to tell
+    # the circuits that ride through an outage from the ones a relay drops.
+    _TIER_LABEL = {"always_on": "BKUP-ON", "shed": "BKUP-SHED"}
     schedule_rows = [
         (row["circuit"], row["description"], f"{row['breaker_amps']}A/{row['poles']}p",
-         f"{row['volts']}V", row["nema"] or "—",
-         ("GFCI" if row["gfci"] else "") + ("+BKUP" if row["backup"] and row["gfci"] else
-                                            "BKUP" if row["backup"] else "") or "—",
+         f"{row['volts']}V", row["nema"] or "—", row["panel"],
+         ("GFCI " if row["gfci"] else "")
+         + _TIER_LABEL.get(str(row["backup_tier"]), "")
+         + ("SOURCE" if row["source"] else "") or "—",
          f"{row['connected_va']:,.0f}")
         for row in schedule
     ]
     _add_table(fig, schedule_rows,
-               ("Circuit", "Description", "Breaker", "Volts", "NEMA", "Prot.", "VA"),
+               ("Circuit", "Description", "Breaker", "Volts", "NEMA", "Panel", "Prot.",
+                "VA"),
                bbox=(0.04, 0.42, 0.92, 0.46))
 
     load = service_load_summary(model)
@@ -508,12 +524,39 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
 
     backup = backup_component_rows(model)
     if backup:
-        fig.text(0.04, 0.165, "BACKUP SUBSYSTEM COMPONENTS (ED-B-BACKUP-ENCL)", fontsize=10,
+        fig.text(0.04, 0.165, "BACKUP MICROGRID COMPONENTS", fontsize=10,
                  family="monospace", weight="bold")
         backup_rows = [(row["component"], f"{row['count']}", row["basis"])
                        for row in backup]
         _add_table(fig, backup_rows, ("Component", "Qty", "Basis"),
-                   bbox=(0.04, 0.105, 0.92, 0.05))
+                   bbox=(0.04, 0.105, 0.56, 0.05))
+
+    # The runtime estimate rides beside the component list and is labeled an ESTIMATE on
+    # the sheet, because that is exactly what it is (→ takeoff/backup_calc.py).
+    runtime = backup_runtime_summary(model)
+    if runtime.get("modeled"):
+        autonomy = runtime["autonomy"]
+        cycle = runtime["cycle_48h"]
+        peak = runtime["peak"]
+        fig.text(0.62, 0.165, "BACKUP RUNTIME — ESTIMATE, NOT A GUARANTEE", fontsize=10,
+                 family="monospace", weight="bold")
+        runtime_rows = [
+            ("Usable storage",
+             f"{autonomy['usable_kwh']:g} kWh of {autonomy['nameplate_kwh']:g} "
+             f"({autonomy['depth_of_discharge']:.0%} DoD)"),
+            ("Simultaneous backup load",
+             f"{peak['simultaneous_va']:,.0f} VA vs "
+             + (f"{peak['inverter_kw_continuous']:g} kW cont."
+                if peak["inverter_kw_continuous"] is not None else "no rating")),
+            ("Autonomy, both tiers", _hours_label(autonomy["hours_all_tiers"])),
+            ("Autonomy, always-on only", _hours_label(autonomy["hours_always_on_only"])),
+            (f"48h cycle ({cycle['array_kw']:g} kW array)",
+             f"{cycle['solar_day_kwh']:g} kWh in vs "
+             f"{cycle['two_day_load_kwh_all_tiers']:g} kWh out "
+             f"= {cycle['net_kwh_all_tiers']:+g} kWh"),
+            ("Verdict", str(runtime["verdict"])),
+        ]
+        _add_table(fig, runtime_rows, ("Line", "Value"), bbox=(0.62, 0.105, 0.34, 0.05))
     sheet_chrome(fig, model, number, name)
     pdf.savefig(fig)
     plt.close(fig)

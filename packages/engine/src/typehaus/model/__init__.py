@@ -20,6 +20,7 @@ from typehaus.model.base import Element, HausModel
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
 from typehaus.model.enums import (
     AlarmKind,
+    BackupTier,
     ConditionKind,
     ConnectorKind,
     ControlLayer,
@@ -242,7 +243,7 @@ __all__ = [
     "LayerFunction", "ControlLayer", "JunctionPolicy", "Occupancy", "Service", "AlarmKind",
     "StructuralRole", "SliceKind", "FloorOpeningPurpose", "RadiantSystem",
     "PartitionLayout", "RoofForm", "ConditionKind",
-    "PipeSystem", "PipeAccessoryKind", "DuctSystem", "DuctRouting", "EquipmentKind", "DeviceKind", "LuminaireForm", "UtilityKind",
+    "PipeSystem", "PipeAccessoryKind", "DuctSystem", "DuctRouting", "EquipmentKind", "BackupTier", "DeviceKind", "LuminaireForm", "UtilityKind",
     "ConnectorKind", "RailingKind", "TrimKind",
     "PlacementStrategy", "MountKind", "ClearancePolicy", "Footprint2D", "ClearanceZone",
     "ServicePort", "PlanRepresentation", "ModelRepresentation", "Location", "WallAttachment", "Mount",

@@ -7,25 +7,42 @@ files), and ``electrical.circuit_refs`` reconciles the two directions.
 Conventions:
 - ``poles=2`` is a 240V circuit; ``poles=1`` is 120V.
 - ``gfci=True`` is protection at the *breaker* (plans/TODO.md: GFCI at breaker, not outlet).
-- ``backup=True`` marks the circuits behind the smart-relay backup subsystem (Shelly Pro
-  4PM in ED-B-BACKUP-ENCL) — the backup loads named in electrical_notes.md lines 9-29.
+- ``backup_tier`` places a circuit on the backup microgrid (notes/backup_power.md).
+  ALWAYS_ON rides the EG4's load output through the whole outage; SHED sits behind a
+  Shelly Pro 4PM relay or a relay-driven contactor in ED-B-BACKUP-ENCL and drops when the
+  battery is low and the sun is not out. Every tiered circuit is homed to
+  ``ED-B-BACKUP-PANEL``, the 12-space subpanel on the inverter's dedicated load output —
+  which is what makes the tier physical rather than a label.
+- ``duty_cycle`` is the authored average-draw fraction the autonomy calc multiplies the
+  connected VA by (→ takeoff/backup_calc.py). Estimates, each with its basis in a comment;
+  a tiered circuit without one is reported as an unknown contributor, never as zero.
+- ``source=True`` marks a power-source interconnection — excluded from the 220.82 load
+  summary and counted by the 705.12 busbar check instead.
 - ``load_va`` is authored where the devices carry no typed load (equipment, lighting
   allowances); circuits whose receptacle types carry ``load_va`` leave it None and the
   panel-schedule takeoff sums the device types.
 - ``slot`` is the physical breaker position: odd numbers run down the left column, even
   down the right, and a 2-pole breaker takes ``slot`` and ``slot + 2`` (same column).
-  PV backfeeds at the bottom of the bus (40/42), opposite the main (120% rule).
-  HONEST STATE: 15 two-pole + 22 one-pole = 52 spaces used of the 54 ED-T-PANEL now
-  carries (the panel was swapped for a 54-space enclosure), so the six 120V circuits in
-  slots 43-48 and the two heat-pump circuits in 49-52 all land inside the enclosure and
-  ``electrical.panel_spaces`` PASSES, with two spaces left spare.
+  The ESS grid port backfeeds at the bottom of the bus (40/42), opposite the main (120%
+  rule); ``code.NEC_705_12_interconnection`` now grades that arithmetic instead of this
+  comment asserting it.
+  HONEST STATE (2026-08-02, the backup-microgrid refactor): ED-B-PANEL carries 15 two-pole
+  + 16 one-pole = 46 spaces of the 54 ED-T-PANEL holds — eight spaces freed by moving the
+  six backup circuits (7 poles) and retiring CKT-BACKUP-FEED (1 pole) to the subpanel, so
+  eight are now spare. ED-B-BACKUP-PANEL carries 1 two-pole + 5 one-pole = 7 of its 12.
+  ``electrical.panel_spaces`` reconciles both.
 """
 
 from __future__ import annotations
 
-from typehaus import Circuit, LoadManagement
+from typehaus import BackupTier, Circuit, LoadManagement
 
 _PANEL = "ED-B-PANEL"
+# The backup subpanel on the EG4 12kPV's dedicated load output (plan/electrical.py). The
+# tiered circuits live here rather than in ED-B-PANEL because that is physically what a
+# hybrid inverter's load port is: a separate bus that stays energized when the grid does
+# not. Slot numbering is the same convention — odd left, even right.
+_BACKUP_PANEL = "ED-B-BACKUP-PANEL"
 
 CIRCUITS = (
     # --- 240V dedicated loads (electrical_notes.md line 4) ---------------------------
@@ -69,11 +86,9 @@ CIRCUITS = (
     Circuit(uid="CKT037AAAA", tag="CKT-HP2", slot=49, panel_ref=_PANEL, breaker_amps=30, poles=2,
             load_va=6000,
             description="Heat pump 2 outdoor, Multi Ultra 3-port (EQ-M-HP2-OD; feeds its 3 heads)"),
-    # System 3 is the one on the backup subsystem: a true-VFD compressor soft-starts, which
-    # is what makes it carryable by the battery inverter at all.
-    Circuit(uid="CKT010AAAA", tag="CKT-HP3", slot=10, panel_ref=_PANEL, breaker_amps=15, poles=2,
-            backup=True, load_va=1500,
-            description="Heat pump 3 outdoor, Sapphire R32 VFD (EQ-M-HP3-OD; backup battery)"),
+    # System 3 is the one on the backup microgrid: a true-VFD compressor soft-starts, which
+    # is what makes it carryable by the battery inverter at all. Lives on the subpanel with
+    # the rest of the backup program — see the microgrid block below.
     # GFCI at the breaker (2026-08-01, code.E3902_gfci_locations): ED-M-LIVING-KET1 sits
     # 3.2' from the kitchen sink. E3902.10 reaches it even though it is 240V — the section
     # covers receptacles from 125V through 250V at 50A or less, not just the 125V ones — and
@@ -81,10 +96,22 @@ CIRCUITS = (
     Circuit(uid="CKT011AAAA", tag="CKT-KETTLE", slot=14, panel_ref=_PANEL, breaker_amps=20, poles=2,
             nema="6-20R", gfci=True, load_va=3840,
             description="Kitchen kettle outlet (6-20R half)"),
-    # PV backfeed lands at the opposite end of the bus from the main (120% rule headroom
-    # is why the panel is 225A on a 200A service). Source, not load: load_va stays 0.
-    Circuit(uid="CKT012AAAA", tag="CKT-PV", slot=40, panel_ref=_PANEL, breaker_amps=30, poles=2,
-            load_va=0, description="PV backfeed, rooftop array via ED-A-PV-JB"),
+    # The EG4 12kPV's grid port, at the opposite end of the bus from the main (120% rule
+    # headroom is why the panel is 225A on a 200A service). Both the PV array and the
+    # battery reach the service through this one breaker now — the array no longer
+    # backfeeds on its own, it lands on the inverter's MPPTs (EQ-B-ESS-INV).
+    #
+    # 50A: the 12kPV puts out 8,000 W continuous at 240V = 33.3A, x125% = 41.7A, and 50A is
+    # the next standard size (datasheet 2026-08-02; grid passthrough is rated 80A, which is
+    # the pass-through capability, not the backfeed). The 705.12 ceiling on this bus is
+    # 225 x 1.2 - 200 = 70A, so 50A leaves 20A for a future second source (V2H).
+    #
+    # source=True is what excludes it from the 220.82 load summary and includes it in the
+    # 705.12 busbar check — the string-matching on "pv "/"backfeed" that used to do the
+    # first half is gone.
+    Circuit(uid="CKT012AAAA", tag="CKT-ESS-GRID", slot=40, panel_ref=_PANEL, breaker_amps=50,
+            poles=2, source=True, load_va=0,
+            description="EG4 12kPV grid port — PV + battery interconnection (EQ-B-ESS-INV)"),
     Circuit(uid="CKT013AAAA", tag="CKT-SPARE-240", slot=18, panel_ref=_PANEL, breaker_amps=30, poles=2,
             load_va=0, description="Spare 2-pole (conduit stubbed for future 240V)"),
 
@@ -135,31 +162,71 @@ CIRCUITS = (
             load_va=1500,
             description="Garage infrared heater lamp, 1.5 kW (EQ-G-HEATER)"),
 
-    # --- 120V backup subsystem (electrical_notes.md lines 9-29) ----------------------
-    Circuit(uid="CKT014AAAA", tag="CKT-WH-HP", slot=39, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            backup=True, load_va=500,
-            description="Heat pump water heater, Rheem 120V (EQ-B-WH, compressor only)"),
-    # The two basement receptacle circuits carry GFCI at the breaker (2026-08-01): both
-    # outlets are in RM-B-FURNACE, which is unfinished below-grade space under E3902.11, and
-    # the 2020 cycle removed the old sump-pump exception that used to excuse ED-B-SUMP-RC.
-    # GFCI only, not dual-function: E3902.16's room list does not reach a mechanical room,
-    # and claiming AFCI here would be specifying a breaker the code does not ask for.
-    Circuit(uid="CKT015AAAA", tag="CKT-SUMP", slot=41, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            backup=True, gfci=True, load_va=1000, description="Sump pump"),
-    Circuit(uid="CKT016AAAA", tag="CKT-FRIDGE", slot=22, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            backup=True, afci=True, load_va=800,
+    # --- the backup microgrid (notes/backup_power.md) ---------------------------------
+    #
+    # Every circuit below is homed to ED-B-BACKUP-PANEL, the 12-space subpanel on the
+    # EG4 12kPV's dedicated load output. Two tiers:
+    #
+    #   ALWAYS_ON  rides the whole outage — the food, the network, and enough light to
+    #              live in the two rooms that matter.
+    #   SHED       is dropped by a relay (or a relay-driven contactor, for the 2-pole and
+    #              over-16A ones) when the battery is low and the sun is not out.
+    #
+    # ``duty_cycle`` on each is an ESTIMATE with its basis stated, authored 2026-08-02 for
+    # the autonomy calc. They are the least certain numbers in this file and the ones the
+    # 48-hour verdict is most sensitive to — revise them against real metering, not vibes.
+    #
+    # CKT-BACKUP-FEED is retired in the same change: the DIN gear it fed is now downstream
+    # of the inverter's load output like everything else on this bus, and a circuit whose
+    # only job was to feed the backup enclosure from the *grid* side is exactly backwards.
+
+    # -- ALWAYS_ON --
+    # 800 VA of fridge + freezer + PoE WiFi. Two compressors cycling at roughly a third
+    # duty in a house that is not being opened every ten minutes, plus ~15 W of network
+    # that never stops; 0.35 is that mix, and it is the single largest always-on term.
+    Circuit(uid="CKT016AAAA", tag="CKT-FRIDGE", slot=2, panel_ref=_BACKUP_PANEL,
+            breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
+            load_va=800, duty_cycle=0.35,
             description="Kitchen outlet 1: fridge + freezer + PoE WiFi"),
-    Circuit(uid="CKT017AAAA", tag="CKT-HA", slot=24, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            backup=True, gfci=True, load_va=300,
+    # 300 VA authored as an outlet allowance; the actual load is a router and a small HA
+    # server, which together sit near 150 W and never cycle off. 0.5 is that ratio, not a
+    # duty cycle in the compressor sense — the load is continuous and the allowance is
+    # generous.
+    Circuit(uid="CKT017AAAA", tag="CKT-HA", slot=4, panel_ref=_BACKUP_PANEL,
+            breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, gfci=True,
+            load_va=300, duty_cycle=0.5,
             description="Basement outlet 1: HA server + router"),
-    # load_va is None on all three lighting circuits since the lighting plan went in: the
-    # luminaires carry real typed loads now, so the panel-schedule takeoff sums the
-    # fixtures actually on each circuit instead of repeating a placeholder allowance.
-    Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", slot=26, panel_ref=_PANEL, breaker_amps=15, poles=1,
-            backup=True, afci=True,
+    # load_va is None: the luminaires carry real typed loads and the panel-schedule takeoff
+    # sums the fixtures actually on the circuit. 0.2 = about five hours of the twenty-four
+    # with the mechanical-room and kitchen lights on, which is what an outage evening looks
+    # like when the rest of the house is dark.
+    Circuit(uid="CKT018AAAA", tag="CKT-LT-BACKUP", slot=6, panel_ref=_BACKUP_PANEL,
+            breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
             description="Basement + kitchen lighting (LED, backup light)"),
-    Circuit(uid="CKT019AAAA", tag="CKT-BACKUP-FEED", slot=28, panel_ref=_PANEL, breaker_amps=20, poles=1,
-            load_va=200, description="Backup enclosure feed (DIN relays, 24V PSU, UPS)"),
+
+    # -- SHED --
+    # 2-pole, so it switches through a relay-driven contactor rather than a Pro 4PM channel
+    # (takeoff/electrical.py::RELAY_CHANNEL_AMPS). 0.4: a modulating 9K head holding one
+    # room in shoulder weather runs most of the time at a fraction of nameplate; this is
+    # the term that decides whether the shed tier is affordable at all.
+    Circuit(uid="CKT010AAAA", tag="CKT-HP3", slot=1, panel_ref=_BACKUP_PANEL,
+            breaker_amps=15, poles=2, backup_tier=BackupTier.SHED, load_va=1500,
+            duty_cycle=0.4,
+            description="Heat pump 3 outdoor, Sapphire R32 VFD (EQ-M-HP3-OD; shed tier)"),
+    # Compressor only — no resistance element reaches the backup bus, by design. A HPWH
+    # makes a household day of hot water in three to four hours of compressor run, so
+    # 0.15 of twenty-four.
+    Circuit(uid="CKT014AAAA", tag="CKT-WH-HP", slot=5, panel_ref=_BACKUP_PANEL,
+            breaker_amps=15, poles=1, backup_tier=BackupTier.SHED, load_va=500,
+            duty_cycle=0.15,
+            description="Heat pump water heater, Rheem 120V (EQ-B-WH, compressor only)"),
+    # GFCI at the breaker (2026-08-01): RM-B-FURNACE is unfinished below-grade space under
+    # E3902.11, and the 2020 cycle removed the old sump-pump exception. 0.05 is a pump that
+    # runs a minute or two an hour in wet weather — the peak matters here, not the average,
+    # which is why it is on the shed tier despite the small energy number.
+    Circuit(uid="CKT015AAAA", tag="CKT-SUMP", slot=7, panel_ref=_BACKUP_PANEL,
+            breaker_amps=20, poles=1, backup_tier=BackupTier.SHED, gfci=True,
+            load_va=1000, duty_cycle=0.05, description="Sump pump"),
 
     # --- general-use 120V ------------------------------------------------------------
     #

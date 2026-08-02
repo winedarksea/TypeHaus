@@ -506,6 +506,37 @@ INT_2X6_STAGGERED_PLUMBING = Assembly(
     source="wet wall, non-bearing — 2x4 staggered on 2x6 plates per USG/GA WP 5530 (16\" o.c. per face, 8\" combined), 3.5\" fiberglass sound batt",
 )
 
+# --- energy storage closet -------------------------------------------------------
+# The ESS closet's partitions (notes/backup_power.md, 2026-08-02). Two departures from
+# every other partition in this house, both owner decisions rather than code:
+#
+# - **Steel studs, not spf.** There is no combustible framing inside the enclosure around
+#   a 14 kWh lithium pack. IRC R327 does not ask for this (it permits an ESS in an
+#   ordinary utility closet outright), which is why `advisory.ess_enclosure` grades it and
+#   `checks/code/mn_residential/energy_storage.py` does not.
+# - **5/8" Type X both faces**, the same membrane R302.6 wants over a garage — the closet
+#   has to hold a fire in for long enough to leave, in both directions, and a battery
+#   closet is the one place in a basement where the fire starts on the *inside*.
+#
+# No cavity fill: mineral wool would be the choice if this were an acoustic wall, but the
+# closet wants its heat to reach the heat alarm outside it (AL-B-ESS-HEAT), not to be
+# insulated away from it.
+ESS_CLOSET_STEEL = Assembly(
+    tag="ESS_CLOSET_STEEL",
+    layers=(
+        _PAINT_FINISH_A,
+        Layer(name="gwb-x-a", material_ref="gwb-x", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        Layer(name="steel-stud", material_ref="steel-stud", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE,
+              framing=FramingSpec(member="2x4", spacing=inch(16))),
+        Layer(name="gwb-x-b", material_ref="gwb-x", thickness=inch(0.625),
+              function=LayerFunction.FINISH),
+        _PAINT_FINISH_B,
+    ),
+    source="owner ESS-closet standard, 2026-08-02: 25 ga. steel C-stud at 16 in. o.c. with 5/8 in. Type X both faces (notes/backup_power.md). Not a code-required rated assembly and not claimed as one — no tested assembly number is cited.",
+)
+
 # --- sauna ---------------------------------------------------------------------
 # The hot side of a sauna is its own wall type, not a lining override on a partition:
 # the foil-faced polyiso is the vapour/air control layer and the T&G liner is a
@@ -759,6 +790,7 @@ ASSEMBLIES = [
     INT_2X6_PLUMBING,
     INT_2X6_STAGGERED_PLUMBING,
     INT_2X4_PARTITION,
+    ESS_CLOSET_STEEL,
     SAUNA_2X4,
     SAUNA_LINER_ON_CONCRETE,
     CATLIN_MUDROOM_INT_2X6_EXPOSED,

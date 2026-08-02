@@ -253,6 +253,25 @@ class EquipmentKind(Enum):
     # IfcBuildingElementProxy regardless. The service-load takeoff reads this kind to put
     # the load under NEC 220.82(C) instead of the fixed-appliance bucket in (B)(3).
     SPACE_HEATER = "space_heater"
+    # Energy-storage battery module and the hybrid inverter it pairs with. Flat kinds: the
+    # product (EG4 PowerPro, EG4 12kPV) is named by the ``type_ref``, per the same rule
+    # ``DeviceKind`` uses for EV receptacles. Capacity and inverter ratings live on
+    # ``EquipmentType``, so a second battery module is one more placement, not a new kind.
+    BATTERY = "battery"
+    INVERTER = "inverter"
+
+
+class BackupTier(Enum):
+    """Which half of the two-tier backup scheme a circuit sits in.
+
+    ALWAYS_ON rides the inverter's load output for the whole event. SHED sits behind a
+    relay or contactor that opens when the battery is low and the sun is not out. The tier
+    is authored, never derived: whether a load is worth carrying through an outage is an
+    owner decision, not a property of the load.
+    """
+
+    ALWAYS_ON = "always_on"
+    SHED = "shed"
 
 
 class DeviceKind(Enum):

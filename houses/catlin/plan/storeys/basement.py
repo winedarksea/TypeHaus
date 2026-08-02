@@ -62,6 +62,18 @@ NODES = [
     # 21'-6" + 3 3/8".
     Node(uid="CBN015AAAA", tag="N-B-BA-W", position=pt(ft(10), ft(21, 9.375))),
     Node(uid="CBN016AAAA", tag="N-B-BA-E", position=pt(ft(18), ft(21, 9.375))),
+    # The ESS closet (2026-08-02, notes/backup_power.md). Two nodes, and the geometry is
+    # chosen so it needs only two: the closet takes the furnace room's SE corner, so
+    # W-B-STR2 is already its east wall and W-B-CW is already its south wall, and its north
+    # partition runs on y=21'-9 3/8" — the *same line* W-B-BA-N runs on the other side of
+    # the concrete, landing on the existing N-B-BA-W rather than inventing a node.
+    #
+    # x=6'-9" is not a round number and is not free: D-B-FURN's leaf ends at x=5'-8", and
+    # the last sleeve in the west half of W-B-CW (SP-B-CW-HW) is at x=6'-6". 6'-9" clears
+    # both, which is what fixes the closet's width at 2'-8 1/4" clear rather than the 3'-0"
+    # first sketched. It is a cabinet you reach into, not a room you stand in.
+    Node(uid="CBN017AAAA", tag="N-B-ESS-S", position=pt(ft(6, 9), ft(18))),
+    Node(uid="CBN018AAAA", tag="N-B-ESS-N", position=pt(ft(6, 9), ft(21, 9.375))),
 ]
 
 WALLS = [
@@ -136,7 +148,15 @@ WALLS = [
                    end_node="N-B-BA-E", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     # Split at the stair shaft's west wall so the shaft is a real tee, not a wall end.
+    # Split at N-B-ESS-S on 2026-08-02, where the ESS closet's west partition tees in —
+    # the same move W-B-STR made for the bathroom partition. W-B-CW keeps its tag, uid and
+    # the west 6'-9" (D-B-FURN and the six sleeves west of the tee ride on it unchanged);
+    # W-B-CW3 is the 3'-3" stub that forms the closet's south wall, and the three sleeves
+    # east of the tee are re-hosted to it in plan/mep.py.
     FoundationWall(uid="CBW114AAAA", tag="W-B-CW", start_node="N-B-W1",
+                   end_node="N-B-ESS-S", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
+                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+    FoundationWall(uid="CBW123AAAA", tag="W-B-CW3", start_node="N-B-ESS-S",
                    end_node="N-B-STR", assembly="CATLIN_CONC_12_INT", unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=ft(-9)),
     FoundationWall(uid="CBW119AAAA", tag="W-B-CW2", start_node="N-B-STR",
@@ -188,6 +208,22 @@ WALLS = [
     Wall(uid="CBW120AAAA", tag="W-B-BA-N", start_node="N-B-BA-W",
          end_node="N-B-BA-E", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(8),
          interior_room="RM-B-BATH"),
+    # The ESS closet's two framed walls (2026-08-02). ESS_CLOSET_STEEL: steel studs, 5/8"
+    # Type X both faces — an owner standard, not a code-rated assembly, and the reason
+    # `advisory.ess_enclosure` is advisory (see plan/assemblies.py).
+    #
+    # ``top=ft(8)``, not the slab underside: the closet is a full-height enclosure, and 8'-0"
+    # is the same plate line W-B-BA-N carries on the other side of the concrete, so the two
+    # partitions on this one y-line read as one line in section.
+    #
+    # ``interior_room`` names the closet on both, so the Type X membrane the enclosure
+    # exists for is unambiguously the face inside it.
+    Wall(uid="CBW124AAAA", tag="W-B-ESS-W", start_node="N-B-ESS-S",
+         end_node="N-B-ESS-N", assembly="ESS_CLOSET_STEEL", top=ft(8),
+         interior_room="RM-B-ESS"),
+    Wall(uid="CBW125AAAA", tag="W-B-ESS-N", start_node="N-B-ESS-N",
+         end_node="N-B-BA-W", assembly="ESS_CLOSET_STEEL", top=ft(8),
+         interior_room="RM-B-ESS"),
 ]
 
 OPENINGS = [
@@ -228,6 +264,13 @@ OPENINGS = [
     # only clear floor, never the fixture) and the lavatory's west edge at 15'-10".
     Door(uid="CBD207AAAA", tag="D-B-BATH", host="W-B-BA-N", type_ref="DT-INT-SWING32",
          position=from_node("N-B-BA-W", ft(2, 8))),
+    # The ESS closet's door, on its north partition and opening into the furnace room.
+    # DT-INT-SWING24: a 2'-0" leaf is what a 2'-8 1/4" clear closet can take with jamb on
+    # both sides, and it is enough to reach the battery, which is the whole use of the room.
+    # ``from_node`` offsets the near *edge*, so 4" leaves the leaf clear of the west
+    # partition's framing and the rest of the jamb against the concrete at x=10'.
+    Door(uid="CBD208AAAA", tag="D-B-ESS", host="W-B-ESS-N", type_ref="DT-INT-SWING24",
+         position=from_node("N-B-ESS-N", inch(4))),
     Door(uid="CBD205AAAA", tag="D-B-SAUNA", host="W-B-SA-W", type_ref="DT-INT-SWING24",
          position=from_node("N-B-S1", ft(10, 10.4375))),
     # Raise the exterior threshold above the basement floor to resist sunken-garden flooding.
@@ -273,10 +316,32 @@ ROOMS = [
          occupancy=Occupancy.MEDIA, floor_finish="carpet"),
     Room(uid="CBR405AAAA", tag="RM-B-GYM", seed=pt(ft(27), ft(9)),
          occupancy=Occupancy.LIVING, floor_finish="rubber"),
+    # The ESS closet (2026-08-02). MECHANICAL like the room it is carved out of — it holds
+    # equipment and nothing else, and calling it STORAGE would put it in front of the
+    # habitability rules that ask a storage room for things a battery cabinet has no use
+    # for. R327.4 permits an ESS in a utility closet, which is exactly what this is.
+    Room(uid="CBR408AAAA", tag="RM-B-ESS", seed=pt(ft(8, 6), ft(20)),
+         occupancy=Occupancy.MECHANICAL, floor_finish="sealed-concrete"),
 ]
 
 ALARMS = [
     Alarm(uid="CBA701AAAA", tag="AL-B-COMBO", kind=AlarmKind.COMBO, room="RM-B-PLAY-N",
+          circuit="CKT-LT-BACKUP"),
+    # IRC R327.7 wants both smoke and heat coverage at the storage system, and the two are
+    # not interchangeable: a lithium cell's failure announces itself as heat well before
+    # there is smoke outside the cabinet, and a smoke head alone in a sealed closet is a
+    # detector that reports the event after it has left the room.
+    #
+    # Both are in RM-B-ESS rather than outside its door. The closet is small enough that
+    # `code.R327_ess_detection` would accept a head in RM-B-FURNACE within 6', but the
+    # point of a heat alarm here is to sense the cabinet, and outside the Type X membrane
+    # it senses the room instead.
+    #
+    # On CKT-LT-BACKUP so they ride the always-on tier: an alarm that dies with the grid is
+    # the wrong alarm for the thing that carries the house when the grid dies.
+    Alarm(uid="CBA702AAAA", tag="AL-B-ESS-SMOKE", kind=AlarmKind.SMOKE, room="RM-B-ESS",
+          circuit="CKT-LT-BACKUP"),
+    Alarm(uid="CBA703AAAA", tag="AL-B-ESS-HEAT", kind=AlarmKind.HEAT, room="RM-B-ESS",
           circuit="CKT-LT-BACKUP"),
 ]
 

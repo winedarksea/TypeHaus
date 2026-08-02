@@ -10,6 +10,7 @@ the circuit list.
 from __future__ import annotations
 
 from typehaus.model.base import Element
+from typehaus.model.enums import BackupTier
 from typehaus.model.registry import register_constructor, register_element
 
 
@@ -17,10 +18,10 @@ from typehaus.model.registry import register_constructor, register_element
 class Circuit(Element):
     """One branch circuit / breaker position in a panel.
 
-    ``poles`` carries the voltage (1 → 120V, 2 → 240V); ``backup`` marks circuits on the
-    smart-relay backup subsystem (Shelly Pro 4PM behind the DIN enclosure), which the
-    backup-component takeoff counts. ``load_va`` is an authored override — when unset the
-    panel schedule sums ``ElectricalDeviceType.load_va`` over the referencing devices.
+    ``poles`` carries the voltage (1 → 120V, 2 → 240V); ``backup_tier`` places a circuit
+    on the backup microgrid, and says which of the two tiers it belongs to — see
+    :class:`BackupTier`. ``load_va`` is an authored override — when unset the panel
+    schedule sums ``ElectricalDeviceType.load_va`` over the referencing devices.
     """
 
     panel_ref: str  # PANEL-kind ElectricalDevice tag, e.g. "ED-B-PANEL"
@@ -34,7 +35,18 @@ class Circuit(Element):
     # nowhere else. False means "not stated": the check reports a circuit that needs AFCI
     # and does not declare it, rather than assuming either answer.
     afci: bool = False
-    backup: bool = False
+    # None means "not on the backup microgrid" — the common case. ALWAYS_ON / SHED is the
+    # authored two-tier scheme; nothing infers a tier from the load.
+    backup_tier: BackupTier | None = None
+    # A power-source interconnection (PV/ESS grid port, a future V2H port), not a load.
+    # The service-load summary excludes these: a backfeed breaker is not demand. The
+    # 705.12 interconnection check reads exactly this flag to find the source breakers.
+    source: bool = False
+    # Authored average-draw fraction of ``load_va`` over a backup event, 0..1. ESTIMATE
+    # ONLY, and only meaningful on backup circuits — it exists so the autonomy calc can
+    # say "the fridge is not drawing 700 VA for 24 hours". Never defaulted: a circuit
+    # without one is reported as an unknown contributor, never silently as zero.
+    duty_cycle: float | None = None
     load_va: float | None = None
     description: str = ""
     # Physical breaker position in the enclosure. Real panel numbering: odd slots run down

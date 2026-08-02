@@ -54,7 +54,7 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     note: "Devices, the panel schedule and service load, raceway, conductors, PV and backup.",
     title: "Electrical",
     sections: ["electrical_devices", "panel_schedule", "service_load", "conduit",
-      "conductors", "solar", "backup_components"],
+      "conductors", "solar", "backup_power"],
   },
   {
     id: "lighting",

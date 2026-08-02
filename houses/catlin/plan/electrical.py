@@ -295,10 +295,54 @@ SERVICE_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None),
 ]
 
+# --- the backup microgrid (2026-08-02, notes/backup_power.md) ------------------------
+#
+# Four pieces, and where each one stands is the whole design:
+#
+#   EQ-B-ESS-BATT   inside RM-B-ESS, the Type X closet. The only thing in that room.
+#   EQ-B-ESS-INV    outside it, on the furnace room's west wall between the closet and the
+#                   panel. The inverter is not the fire risk and does not belong in the
+#                   sealed box; it also has to be reachable to be reset.
+#   ED-B-BACKUP-PANEL  beside the inverter, on its dedicated load output.
+#   ED-B-BACKUP-ENCL   unchanged in place, but demoted: it now holds only the shed-tier
+#                   relays and the 24V bus, not a feed of its own.
 BACKUP_ENCLOSURE = [
+    # circuit= is gone with CKT-BACKUP-FEED (plan/circuits.py): this enclosure's gear lives
+    # downstream of the inverter's load output now, and naming a grid-side branch circuit on
+    # it said the opposite.
     ElectricalDevice(uid="CEE002AAAA", tag="ED-B-BACKUP-ENCL", kind=DeviceKind.PANEL,
-                     position=pt(m(0.571135), m(9.43475)), type_ref="ED-T-BACKUP-ENCL", circuit="CKT-BACKUP-FEED",
+                     position=pt(m(0.571135), m(9.43475)), type_ref="ED-T-BACKUP-ENCL",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room="RM-B-FURNACE"),
+    # The subpanel the two backup tiers are homed to (plan/circuits.py). On the west wall
+    # 2'-0" south of ED-B-PANEL, so the inverter's grid conductors and its load conductors
+    # run to two enclosures a person can stand between.
+    ElectricalDevice(uid="CEE012AAAA", tag="ED-B-BACKUP-PANEL", kind=DeviceKind.PANEL,
+                     position=pt(ft(2), ft(27)), type_ref="ED-T-BACKUP-PANEL",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room="RM-B-FURNACE"),
+]
+
+ESS_EQUIPMENT = [
+    # The battery, on the ESS closet's east face (the 12" concrete of W-B-STR2, which is the
+    # one wall in that closet that will hold 300 lb without question). Its footprint runs
+    # 24" along x and 10" deep in y, so at (8'-4", 20'-3") it stands clear of both framed
+    # partitions and of the door swing.
+    #
+    # RM-B-ESS is what `code.R327_ess_capacity` reads to decide this is storage *inside the
+    # dwelling* — 14.3 kWh of the 40 kWh that article allows indoors. Moving this one line
+    # to a garage room is the whole of the future relocation the TODO asks to keep easy.
+    Equipment(uid="CEQ020AAAA", tag="EQ-B-ESS-BATT", kind=EquipmentKind.BATTERY,
+              position=pt(ft(8, 4), ft(20, 3)), footprint=(inch(24), inch(10)),
+              type_ref="EQ-T-ESS-BATT",
+              room="RM-B-ESS", circuit="CKT-ESS-GRID",
+              mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
+    # The inverter, outside the closet on the furnace room's west wall. Not on a branch
+    # circuit: its grid port IS CKT-ESS-GRID, which is a source, and its load output feeds
+    # ED-B-BACKUP-PANEL.
+    Equipment(uid="CEQ021AAAA", tag="EQ-B-ESS-INV", kind=EquipmentKind.INVERTER,
+              position=pt(ft(2), ft(24, 6)), footprint=(inch(27), inch(12)),
+              type_ref="EQ-T-EG4-12KPV",
+              room="RM-B-FURNACE", circuit="CKT-ESS-GRID",
+              mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
 ]
 
 # --- Basement: backup outlets, sauna, spa (sunken garden files on this storey) --------
@@ -634,6 +678,28 @@ CONDUIT_TRUNKS = [
                path=(pt(ft(2), ft(29)), pt(ft(3), ft(33))),
                start_elevation=ft(-4), end_elevation=ft(25, 6),
                from_ref="ED-B-PANEL", to_ref="ED-A-PV-JB"),
+    # --- the backup microgrid's three raceways (2026-08-02) --------------------------
+    #
+    # The PV string conductors no longer terminate at the panel: they land on the
+    # inverter's MPPTs, and only the inverter's AC grid port reaches ED-B-PANEL. So the
+    # attic riser above feeds ED-A-PV-JB as before, and this run takes it the rest of the
+    # way down the same chase to EQ-B-ESS-INV.
+    ConduitRun(uid="CDT005AAAA", tag="CD-B-PV-INV", trade_size=inch(1),
+               path=(pt(ft(3), ft(33)), pt(ft(2), ft(24, 6))),
+               start_elevation=ft(-4), end_elevation=ft(-4),
+               from_ref="ED-A-PV-JB", to_ref="EQ-B-ESS-INV"),
+    # Grid port up to the service panel's CKT-ESS-GRID breaker: 4'-6" of wall, but it is
+    # the run that carries the backfeed and it is billed like any other.
+    ConduitRun(uid="CDT006AAAA", tag="CD-B-INV-PANEL", trade_size=inch(1),
+               path=(pt(ft(2), ft(24, 6)), pt(ft(2), ft(29))),
+               start_elevation=ft(-4), end_elevation=ft(-4),
+               from_ref="EQ-B-ESS-INV", to_ref="ED-B-PANEL"),
+    # Load output down to the backup subpanel — the conductors that stay live when the
+    # grid does not.
+    ConduitRun(uid="CDT007AAAA", tag="CD-B-INV-BACKUP", trade_size=inch(1),
+               path=(pt(ft(2), ft(24, 6)), pt(ft(2), ft(27))),
+               start_elevation=ft(-4), end_elevation=ft(-4),
+               from_ref="EQ-B-ESS-INV", to_ref="ED-B-BACKUP-PANEL"),
     # North under the 4'-ish house/garage gap to the EV receptacles on W-G-S.
     ConduitRun(uid="CDT002AAAA", tag="CD-B-GARAGE", trade_size=inch(1.25),
                path=(pt(ft(2), ft(29)), pt(ft(2), ft(36)), pt(ft(16), ft(36)),
@@ -999,8 +1065,8 @@ NEC_FILL_ATTIC = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
 ]
 
-BASEMENT_ELEMENTS = [*BACKUP_ENCLOSURE, *BASEMENT_DEVICES, *BASEMENT_EQUIPMENT,
-                     *CONDUIT_TRUNKS, *NEC_FILL_BASEMENT]
+BASEMENT_ELEMENTS = [*BACKUP_ENCLOSURE, *ESS_EQUIPMENT, *BASEMENT_DEVICES,
+                     *BASEMENT_EQUIPMENT, *CONDUIT_TRUNKS, *NEC_FILL_BASEMENT]
 MAIN_ELEMENTS = [*SERVICE_DEVICES, *MAIN_DEVICES, *MAIN_EQUIPMENT, *NEC_FILL_MAIN]
 GARAGE_ELEMENTS = [*GARAGE_DEVICES, *GARAGE_EQUIPMENT]
 SECOND_ELEMENTS = [*SECOND_DEVICES, *SECOND_EQUIPMENT, *NEC_FILL_SECOND]

@@ -183,6 +183,24 @@ class EquipmentType(FurnitureType):
     # its output does count toward the zone that contains its room, because at design temp
     # it is real heat the heat pump doesn't have to make.
     supplemental_heat: bool = False
+    # --- Energy storage (BATTERY kinds) ------------------------------------------------
+    # Usable energy of one module, kWh. The R327.5 capacity check sums this per unit and
+    # in aggregate; the autonomy calc divides it by the tier draw.
+    storage_kwh: float | None = None
+    # Listed and labeled to UL 9540 (IRC R327.2). Declared, never inferred: no product
+    # name or capacity implies a listing, and an unlisted battery must read as unlisted
+    # rather than as a gap in the model.
+    ul_9540_listed: bool = False
+    # --- Hybrid inverter (INVERTER kinds) ----------------------------------------------
+    # Continuous AC output, kW — the ceiling the simultaneous backup load is checked
+    # against. Note this is NOT the product's name plate PV number (the EG4 "12kPV" puts
+    # 8 kW out and takes 12 kW of PV in).
+    inverter_kw_continuous: float | None = None
+    # Short-duration output ceiling, kW, for motor starting (the datasheet's largest surge
+    # step). The autonomy calc compares a compressor's locked-rotor start against it.
+    inverter_kw_surge: float | None = None
+    # Maximum PV array the inverter accepts, kW DC.
+    pv_input_kw: float | None = None
 
 
 class RegisterType(FurnitureType):
@@ -204,6 +222,10 @@ class ElectricalDeviceType(FurnitureType):
     # Breaker spaces in the enclosure (panel kinds only) — what electrical.panel_spaces
     # reconciles the circuit slots against.
     spaces: int | None = None
+    # Busbar rating in amps (panel kinds only). NEC 705.12(B)(3)(2) sizes the allowable
+    # backfeed against the bus, not the main breaker, so the number has to be carried on
+    # the type rather than assumed equal to the service size.
+    bus_amps: int | None = None
     # How a SWITCH device controls what it feeds: "dimmer" | "timer" | "smart" | None
     # (a plain toggle). Read by the lighting-controls check and printed in the E-602
     # control schedule; a product attribute, not a kind, for the same reason NEMA is.

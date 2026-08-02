@@ -20,6 +20,7 @@ from typehaus.resolve import site_earth
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedModel
 from typehaus.source.provenance import Provenance
+from typehaus.takeoff.backup_calc import backup_runtime_summary
 from typehaus.takeoff.electrical import (
     backup_component_rows,
     conduit_takeoff,
@@ -468,6 +469,9 @@ def model_to_dict(
             "devices": electrical_device_takeoff(model),
             "solar": solar_takeoff(model),
             "backup_components": backup_component_rows(model),
+            # The autonomy estimate the E-601 sheet prints, verbatim — same reason the
+            # panel schedule is shared rather than recomputed in the browser.
+            "backup_runtime": backup_runtime_summary(model),
             # The lighting reader's whole payload, verbatim from takeoff/lighting.py — the
             # same four derivations the E-602 sheet prints, for the same reason the panel
             # schedule is shared: a schedule the browser recomputed could disagree with the

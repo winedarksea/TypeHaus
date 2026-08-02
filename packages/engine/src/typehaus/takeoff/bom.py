@@ -15,6 +15,7 @@ from typehaus.takeoff.framing import (
     sheet_goods_takeoff,
     structural_solids_takeoff,
 )
+from typehaus.takeoff.backup_calc import backup_runtime_summary
 from typehaus.takeoff.electrical import (
     backup_component_rows,
     conductor_takeoff,
@@ -117,7 +118,13 @@ def bill_of_materials(
         "conduit": conduit_takeoff(model),
         "conductors": conductor_takeoff(model),
         "solar": solar_takeoff(model),
-        "backup_components": backup_component_rows(model),
+        # The backup microgrid (→ takeoff/electrical.py + takeoff/backup_calc.py): the
+        # placed ESS hardware and shed-tier switching gear, plus the runtime estimate that
+        # says whether the system as sized actually carries the house.
+        "backup_power": {
+            "components": backup_component_rows(model),
+            "runtime": backup_runtime_summary(model),
+        },
         # The lighting program (→ takeoff/lighting.py): the E-602 schedule by mark, the
         # switch legs, the LED runs with their supplies sized against them, and the real
         # connected load beside the 3 VA/ft2 allowance the service calculation uses.

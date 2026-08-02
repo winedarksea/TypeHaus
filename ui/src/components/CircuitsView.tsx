@@ -1,7 +1,7 @@
 import { Fragment, useMemo, useState } from "react";
 import { useStore } from "../state/store";
 import { uidByTag } from "../model/tagIndex";
-import type { PanelScheduleRow, ServiceLoad } from "../model/types";
+import type { BackupRuntime, PanelScheduleRow, ServiceLoad } from "../model/types";
 import { ReaderSection, ReaderShell } from "./ReaderShell";
 import { Icon } from "../icons/Icon";
 
@@ -16,6 +16,68 @@ const VA_PER_KW = 1000;
 
 function formatVa(va: number): string {
   return va >= VA_PER_KW ? `${(va / VA_PER_KW).toFixed(1)} kVA` : `${Math.round(va)} VA`;
+}
+
+// The runtime block reads as a verdict for the same reason the service-load block does:
+// the question is "does this system carry the house", and the badge is the answer. Null
+// means not computable from what is authored, and prints that way — never as a zero.
+function hours(value: number | null): string {
+  return value === null ? "not computable" : `${value.toFixed(1)} h`;
+}
+
+function BackupRuntimeCard({ runtime }: { runtime: BackupRuntime }) {
+  const autonomy = runtime.autonomy!;
+  const cycle = runtime.cycle_48h!;
+  const peak = runtime.peak!;
+  const unknown = [
+    ...(runtime.tiers?.always_on.unknown_duty_cycle ?? []),
+    ...(runtime.tiers?.shed.unknown_duty_cycle ?? []),
+  ];
+  return (
+    <div className="reader-card">
+      <div className="reader-card-head">
+        <span className="reader-card-title">
+          {autonomy.usable_kwh} kWh usable · always-on {hours(autonomy.hours_always_on_only)}
+        </span>
+        <span className={`badge ${runtime.complete && cycle.sustains_always_on ? "" : "confirm"}`}>
+          {runtime.complete ? (cycle.sustains_always_on ? "sustains" : "does not sustain") : "incomplete"}
+        </span>
+        <span className="muted">estimate</span>
+      </div>
+      <div className="kv">
+        <span className="k">Storage</span>
+        <span>
+          {autonomy.usable_kwh} kWh of {autonomy.nameplate_kwh} nameplate
+          {" "}({Math.round(autonomy.depth_of_discharge * 100)}% DoD)
+        </span>
+        <span className="k">Simultaneous backup load</span>
+        <span>
+          {formatVa(peak.simultaneous_va)}
+          {peak.inverter_kw_continuous !== null
+            ? ` of ${peak.inverter_kw_continuous} kW continuous`
+            : " — inverter rating not declared"}
+        </span>
+        <span className="k">Autonomy, both tiers</span>
+        <span>{hours(autonomy.hours_all_tiers)}</span>
+        <span className="k">Autonomy, always-on only</span>
+        <span>{hours(autonomy.hours_always_on_only)}</span>
+        <span className="k">48-hour cycle</span>
+        <span>
+          {cycle.array_kw} kW array · {cycle.solar_day_kwh} kWh in vs
+          {" "}{cycle.two_day_load_kwh_all_tiers} kWh out ={" "}
+          {cycle.net_kwh_all_tiers > 0 ? "+" : ""}{cycle.net_kwh_all_tiers} kWh
+        </span>
+        {unknown.length > 0 && (
+          <>
+            <span className="k">No authored duty cycle</span>
+            <span className="reader-mono">{unknown.join(", ")}</span>
+          </>
+        )}
+        <span className="k">Verdict</span>
+        <span>{runtime.verdict}</span>
+      </div>
+    </div>
+  );
 }
 
 // The service-load block reads as a verdict, not a table: the last two lines are the whole
@@ -97,8 +159,10 @@ function PanelSchedule({ rows, expanded, onExpand, index, onZoom }: {
                   <td className="reader-mono">{row.nema || "—"}</td>
                   <td>
                     {row.gfci && <span className="reader-chip">GFCI</span>}
-                    {row.backup && <span className="reader-chip">backup</span>}
-                    {!row.gfci && !row.backup && <span className="muted">—</span>}
+                    {row.backup_tier === "always_on" && <span className="reader-chip">always-on</span>}
+                    {row.backup_tier === "shed" && <span className="reader-chip">shed</span>}
+                    {row.source && <span className="reader-chip">source</span>}
+                    {!row.gfci && !row.backup && !row.source && <span className="muted">—</span>}
                   </td>
                   {/* A circuit with neither an authored load nor typed consumers reports 0 —
                       the engine's honest state, shown as such rather than as an estimate. */}
@@ -170,6 +234,7 @@ export function CircuitsView() {
   }
 
   const { service_load: load, conduit, devices, solar, backup_components: backup } = electrical;
+  const runtime = electrical.backup_runtime;
   const kw = (solar.total_watts / VA_PER_KW).toFixed(2);
 
   return (
@@ -205,8 +270,8 @@ export function CircuitsView() {
       </ReaderSection>
 
       <ReaderSection
-        title="Backup subsystem"
-        note="DIN-rail components derived from the backup-flagged circuits — never a hand-typed parts list."
+        title="Backup microgrid"
+        note="Derived twice over: the storage and conversion rows from the placed ESS equipment, the switching gear from the shed-tier circuits — never a hand-typed parts list."
         count={backup.length}
       >
         <div className="reader-table-scroll">
@@ -224,6 +289,16 @@ export function CircuitsView() {
           </table>
         </div>
       </ReaderSection>
+
+      {runtime?.modeled && runtime.autonomy && runtime.cycle_48h && (
+        <ReaderSection
+          title="Backup runtime"
+          note="An estimate, not a guarantee: tier draw is connected VA times an authored duty cycle, and the 48-hour cycle assumes one strong solar day in two. A circuit with no authored duty cycle is listed as unknown, never counted as zero."
+          count={1}
+        >
+          <BackupRuntimeCard runtime={runtime} />
+        </ReaderSection>
+      )}
 
       <ReaderSection
         title="Conduit"

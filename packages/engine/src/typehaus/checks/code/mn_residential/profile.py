@@ -45,6 +45,12 @@ MN_2024 = JurisdictionProfile(
         "Electrical: E3902 GFCI receptacle locations and E3902.16 AFCI branch-circuit "
         "coverage only — no conductor sizing, box fill, or load calculation, none of which "
         "is claimed as a code result. "
+        "Energy storage: R327.2 UL 9540 listing, R327.5 per-unit and aggregate energy "
+        "ratings, and R327.7 smoke and heat detection at the system. R327.3 installation "
+        "per the manufacturer's instructions and R327.6 protection from impact are NOT "
+        "covered — neither has anything in the model to grade. Source-side NEC: 705.12 "
+        "busbar interconnection and 690.12 PV rapid shutdown; no other article of the NEC "
+        "is claimed. "
         "Explicitly NOT covered, and not merely unimplemented: fireblocking and "
         "draftstopping (R302.11-.12), crawl spaces (R408), chimneys and solid-fuel "
         "appliances (R1001-R1004), and notching and boring limits (R502.8/R602.6). "
@@ -124,6 +130,18 @@ MN_2024 = JurisdictionProfile(
                        ("IRC E3902",), blocking=False),
         PermitItemSpec("AFCI branch circuits", ("code.E3902_16_afci",),
                        ("IRC E3902.16",), blocking=False),
+        # The energy storage system. R327 is the 2018 IRC's article number for it; the 2021
+        # edition renumbered the same material to R328, and this profile's base is 2018.
+        PermitItemSpec("Energy storage system",
+                       ("code.R327_ess_listing", "code.R327_ess_capacity",
+                        "code.R327_ess_detection"),
+                       ("IRC R327.2", "IRC R327.5", "IRC R327.7"), blocking=False),
+        # The two source-side NEC rules. Separate item from the ESS: an inspector signs off
+        # on a backfeed breaker and a roof shutdown at a different moment than on a battery.
+        PermitItemSpec("PV interconnection and rapid shutdown",
+                       ("code.NEC_705_12_interconnection",
+                        "code.NEC_690_12_rapid_shutdown"),
+                       ("NEC 705.12(B)(3)(2)", "NEC 690.12(B)(2)"), blocking=False),
         PermitItemSpec("Dryer exhaust", ("code.M1502_dryer_exhaust",), ("IRC M1502",),
                        blocking=False),
         PermitItemSpec("Water-heater relief and pan", ("code.P2804_water_heater_relief",),

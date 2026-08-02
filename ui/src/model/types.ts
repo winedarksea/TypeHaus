@@ -335,6 +335,9 @@ export interface PanelScheduleRow {
   nema: string;
   gfci: boolean;
   backup: boolean;
+  backup_tier: string; // "" | "always_on" | "shed"
+  panel: string;
+  source: boolean; // a power-source interconnection, excluded from the service load
   connected_va: number;
   devices: string[];
 }
@@ -371,13 +374,68 @@ export interface DeviceCountRow {
 export interface SolarTakeoff {
   panels: number;
   total_watts: number;
+  rsd_transmitters: number;
   by_product: { product: string; panels: number; watts: number; tags: string[] }[];
+  // Per series string. Either Voc sum is null when a module in the string does not declare
+  // that voltage — a partial sum of a series string is a wrong number, not a smaller one.
+  by_string: {
+    string: string; panels: number; watts: number;
+    voc_v: number | null; voc_cold_v: number | null;
+    rsd_modules: number; tags: string[];
+  }[];
 }
 
 export interface BackupComponentRow {
   component: string;
   count: number;
   basis: string;
+}
+
+// The backup runtime estimate, carried verbatim from takeoff/backup_calc.py. Every
+// nullable field below is null for "not computable from what is authored" and must render
+// as such — a zero here would read as a measured fact about how long the house runs.
+export interface BackupTierSummary {
+  circuits: {
+    circuit: string; description: string; connected_va: number;
+    duty_cycle: number | null; average_w: number | null;
+  }[];
+  connected_va: number;
+  average_w: number;
+  daily_kwh: number;
+  unknown_duty_cycle: string[];
+  complete: boolean;
+}
+
+export interface BackupRuntime {
+  modeled: boolean;
+  estimate?: boolean;
+  complete?: boolean;
+  batteries?: { equipment: string; type: string; storage_kwh: number | null }[];
+  batteries_without_capacity?: string[];
+  inverters?: {
+    equipment: string; type: string;
+    kw_continuous: number | null; kw_surge: number | null; pv_input_kw: number | null;
+  }[];
+  pv_input_kw?: number | null;
+  tiers?: { always_on: BackupTierSummary; shed: BackupTierSummary };
+  peak?: {
+    simultaneous_va: number; always_on_va: number;
+    inverter_kw_continuous: number | null; inverter_kw_surge: number | null;
+    largest_motor_start_va: number; motor_start_multiple: number;
+    within_continuous: boolean | null; always_on_within_continuous: boolean | null;
+    within_surge: boolean | null;
+  };
+  autonomy?: {
+    usable_kwh: number; nameplate_kwh: number; depth_of_discharge: number;
+    hours_all_tiers: number | null; hours_always_on_only: number | null; basis: string;
+  };
+  cycle_48h?: {
+    array_kw: number; strong_day_kwh_per_kw: number; solar_day_kwh: number;
+    two_day_load_kwh_all_tiers: number; two_day_load_kwh_always_on: number;
+    net_kwh_all_tiers: number; net_kwh_always_on: number;
+    sustains_all_tiers: boolean; sustains_always_on: boolean; basis: string;
+  };
+  verdict?: string;
 }
 
 // The lighting take-off, mirroring takeoff/lighting.py field for field. Every optional here
@@ -473,6 +531,7 @@ export interface Electrical {
   devices: DeviceCountRow[];
   solar: SolarTakeoff;
   backup_components: BackupComponentRow[];
+  backup_runtime?: BackupRuntime; // absent on a model.json built before the ESS refactor
   lighting?: Lighting | null; // absent on a model.json built before the lighting plan
 }
 

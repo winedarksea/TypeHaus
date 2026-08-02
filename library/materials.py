@@ -85,6 +85,15 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              density=1700.0, hatch="siding", color="#b8bcc0",
              source="no published ASTM E96 rating located for fibre-cement lap siding; "
                     "vapour fields unset so the Glaser walk reports UNKNOWN"),
+    # Light-gauge steel framing (25 ga. C-stud). Like the resilient channel above it is a
+    # spaced section, not a skin, so the vapour path through the layer is the still air
+    # between studs — the same 120 perm-in the channel carries, and for the same reason.
+    # R per inch is zero: a steel stud is a thermal bridge, not an insulator, and stating
+    # any positive number here would credit the wall for the worst part of it.
+    Material(tag="steel-stud", name="25 ga. steel C-stud", r_per_inch=0.0,
+             density=7850.0, perm_rating=120.0, hatch="metal", color="#91979d",
+             source=f"{_UAF}: 'Air, still' 120 perm-in — the vapour path through a spaced "
+                    "metal section is the air between the sections, not the steel"),
     Material(tag="standing-seam", name="Standing-seam steel", r_per_inch=0.0,
              density=7800.0, vapor_permeance_perms=0.0, hatch="metal", color="#6b7076",
              source=f"{_UAF}: metal foil at 0.001\" reads 0 perm; continuous sheet steel is "

@@ -14,6 +14,7 @@ from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers chec
     attic_ventilation,
     circulation,
     egress,
+    energy_storage,
     fall_protection,
     fire_separation,
     glazing,

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.model.enums import BackupTier
 from typehaus.resolve.model import ResolvedModel
 
 _M2_TO_FT2 = 10.7639104167
@@ -104,7 +105,10 @@ def panel_schedule(model: ResolvedModel) -> list[dict[str, object]]:
             "volts": 240 if circuit.poles == 2 else 120,
             "nema": circuit.nema or "",
             "gfci": circuit.gfci,
-            "backup": circuit.backup,
+            "backup": circuit.backup_tier is not None,
+            "backup_tier": circuit.backup_tier.value if circuit.backup_tier else "",
+            "panel": circuit.panel_ref,
+            "source": circuit.source,
             "connected_va": round(_connected_va(model, circuit, served), 0),
             "devices": sorted(element.tag for element in served),
         })
@@ -134,6 +138,8 @@ def service_load_summary(model: ResolvedModel) -> dict[str, object]:
     ev_va = 0.0
     appliance_va = 0.0
     for circuit in model.plan.library.circuits:
+        if circuit.source:
+            continue  # a source interconnection, not a load — typed, not name-matched
         va = _connected_va(model, circuit, consumers.get(circuit.tag, []))
         description = circuit.description.lower()
         if _is_heat_pump(circuit, consumers.get(circuit.tag, [])):
@@ -143,8 +149,6 @@ def service_load_summary(model: ResolvedModel) -> dict[str, object]:
             resistance_heat_units += 1
         elif "ev charging" in description:
             ev_va += va  # already continuous (125% of plug load = 80% of breaker basis)
-        elif "pv " in description or description.startswith("pv") or "backfeed" in description:
-            continue  # a source, not a load
         elif ("lighting" in description or "general receptacles" in description
               or "small-appliance" in description or "laundry" in description):
             continue  # covered by the 3 VA/ft2 + 4500 VA general allowance above
@@ -263,12 +267,40 @@ def electrical_device_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 
 
 def solar_takeoff(model: ResolvedModel) -> dict[str, object]:
-    """The array as installed: module count, total DC watts, and per-product rollup.
+    """The array as installed: module count, total DC watts, per-product and per-string.
 
     Watts are summed from the resolved panels (the authored ``SolarPanel.watts`` carried
     through resolve), never a hand-typed total; the mounting kits are billed by the
     hardware take-off like every other modeled connector.
+
+    The per-string rollup carries both Voc sums. ``voc_cold_v`` is the one that sizes
+    conductors and gates the 690.12 grouping — a string that sums under the rated Voc
+    limit can still be over it on a January morning — and either sum is None when any
+    module in the string doesn't declare that voltage, because a partial sum of a series
+    string is not a smaller string, it is a wrong number.
     """
+    by_string: dict[str, dict[str, object]] = {}
+    for panel in model.solar_panels:
+        row = by_string.setdefault(panel.string or "(unstrung)", {
+            "string": panel.string, "panels": 0, "watts": 0.0,
+            "voc_v": 0.0, "voc_cold_v": 0.0, "voc_known": True, "voc_cold_known": True,
+            "rsd_modules": 0, "tags": []})
+        row["panels"] = int(row["panels"]) + 1
+        row["watts"] = float(row["watts"]) + panel.watts
+        if panel.voc is None:
+            row["voc_known"] = False
+        else:
+            row["voc_v"] = float(row["voc_v"]) + panel.voc
+        if panel.voc_cold is None:
+            row["voc_cold_known"] = False
+        else:
+            row["voc_cold_v"] = float(row["voc_cold_v"]) + panel.voc_cold
+        if panel.rsd:
+            row["rsd_modules"] = int(row["rsd_modules"]) + 1
+        tags = row["tags"]
+        assert isinstance(tags, list)
+        tags.append(panel.tag)
+
     by_product: dict[str, dict[str, object]] = {}
     for panel in model.solar_panels:
         row = by_product.setdefault(panel.product or "(unspecified module)", {
@@ -281,34 +313,137 @@ def solar_takeoff(model: ResolvedModel) -> dict[str, object]:
     return {
         "panels": len(model.solar_panels),
         "total_watts": round(sum(panel.watts for panel in model.solar_panels), 0),
+        "rsd_transmitters": sum(1 for panel in model.solar_panels if panel.rsd),
         "by_product": [
             {"product": row["product"], "panels": int(row["panels"]),
              "watts": round(float(row["watts"]), 0), "tags": sorted(row["tags"])}
             for row in (by_product[key] for key in sorted(by_product))
         ],
+        "by_string": [
+            {"string": row["string"], "panels": int(row["panels"]),
+             "watts": round(float(row["watts"]), 0),
+             "voc_v": round(float(row["voc_v"]), 1) if row["voc_known"] else None,
+             "voc_cold_v": (round(float(row["voc_cold_v"]), 1)
+                            if row["voc_cold_known"] else None),
+             "rsd_modules": int(row["rsd_modules"]), "tags": sorted(row["tags"])}
+            for row in (by_string[key] for key in sorted(by_string))
+        ],
     }
 
 
+def backup_equipment(model: ResolvedModel) -> dict[str, list]:
+    """The placed pieces of the backup microgrid, by role: batteries, inverters, panels.
+
+    One place to ask "is there an ESS here", so the takeoff, the autonomy calc and the
+    R327 checks all agree on the answer instead of each re-scanning the storeys.
+    """
+    batteries, inverters = [], []
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            if element.element_kind != "Equipment":
+                continue
+            kind = getattr(getattr(element, "kind", None), "value", None)
+            if kind == "battery":
+                batteries.append(element)
+            elif kind == "inverter":
+                inverters.append(element)
+    return {"batteries": batteries, "inverters": inverters}
+
+
 def backup_component_rows(model: ResolvedModel) -> list[dict[str, object]]:
-    """DIN-rail components derived from the backup-flagged circuits: ceil(n/4) Shelly Pro
-    4PM relays, one 24V PSU, one DIN UPS. Empty when nothing is flagged for backup."""
-    backup = [circuit for circuit in model.plan.library.circuits if circuit.backup]
-    if not backup:
+    """The backup microgrid's bill of components: the placed inverter and battery
+    modules, the backup subpanel they feed, and the DIN gear that sheds the SHED tier.
+
+    Derived twice over — the storage/inverter rows from placed ``Equipment`` (so a second
+    battery module is a placement, not an edit here), the switching rows from the
+    ``SHED``-tier circuits (so re-tiering a circuit re-counts the relays). The ALWAYS_ON
+    tier deliberately contributes no switching hardware: that is what the tier *means*.
+    Empty when nothing is placed and nothing is tiered.
+    """
+    circuits = model.plan.library.circuits
+    shed = [c for c in circuits if c.backup_tier is BackupTier.SHED]
+    always_on = [c for c in circuits if c.backup_tier is BackupTier.ALWAYS_ON]
+    placed = backup_equipment(model)
+    if not (shed or always_on or placed["batteries"] or placed["inverters"]):
         return []
-    relays = math.ceil(len(backup) / BACKUP_CIRCUITS_PER_RELAY)
-    basis = (f"{len(backup)} backup circuits ({', '.join(c.tag for c in backup)}) at "
-             f"{BACKUP_CIRCUITS_PER_RELAY} channels per relay")
-    contactor_circuits = [c for c in backup
-                          if c.breaker_amps > RELAY_CHANNEL_AMPS or c.poles == 2]
-    rows: list[dict[str, object]] = [
-        {"component": "Shelly Pro 4PM 4-channel DIN relay", "count": relays, "basis": basis},
-    ]
-    if contactor_circuits:
+
+    types = {t.tag: t for t in model.plan.library.equipment_types}
+    device_types = {t.tag: t for t in model.plan.library.electrical_device_types}
+    rows: list[dict[str, object]] = []
+
+    for element in sorted(placed["inverters"], key=lambda e: e.tag):
+        product = types.get(element.type_ref or "")
+        kw = getattr(product, "inverter_kw_continuous", None) if product else None
         rows.append({
-            "component": "DIN contactor (relay-driven)", "count": len(contactor_circuits),
-            "basis": (f"backup circuits over the {RELAY_CHANNEL_AMPS}A relay channel or "
-                      f"2-pole ({', '.join(c.tag for c in contactor_circuits)})"),
+            "component": (product.name if product is not None else "hybrid inverter"),
+            "count": 1,
+            "basis": (f"{element.tag}"
+                      + (f" — {kw:g} kW continuous AC" if kw else "")),
         })
+    battery_kwh = 0.0
+    for element in sorted(placed["batteries"], key=lambda e: e.tag):
+        product = types.get(element.type_ref or "")
+        kwh = getattr(product, "storage_kwh", None) if product else None
+        battery_kwh += float(kwh or 0.0)
+        rows.append({
+            "component": (product.name if product is not None else "battery module"),
+            "count": 1,
+            "basis": (f"{element.tag}"
+                      + (f" — {kwh:g} kWh" if kwh else " — capacity not declared")),
+        })
+
+    # The backup subpanel: whichever panel the tiered circuits are homed to, when that is
+    # not the same panel the rest of the house is on.
+    backup_panels = sorted({c.panel_ref for c in (*always_on, *shed)})
+    main_panels = sorted({c.panel_ref for c in circuits if c.backup_tier is None})
+    for panel_ref in backup_panels:
+        if panel_ref in main_panels:
+            continue
+        spaces = getattr(device_types.get(_panel_type_ref(model, panel_ref) or ""),
+                         "spaces", None)
+        rows.append({
+            "component": f"backup subpanel {panel_ref}", "count": 1,
+            "basis": (f"{len(always_on) + len(shed)} backup circuits"
+                      + (f", {spaces}-space enclosure" if spaces else "")),
+        })
+
+    if shed:
+        relay_circuits = [c for c in shed
+                          if c.breaker_amps <= RELAY_CHANNEL_AMPS and c.poles == 1]
+        contactor_circuits = [c for c in shed
+                              if c.breaker_amps > RELAY_CHANNEL_AMPS or c.poles == 2]
+        if relay_circuits:
+            rows.append({
+                "component": "Shelly Pro 4PM 4-channel DIN relay",
+                "count": math.ceil(len(relay_circuits) / BACKUP_CIRCUITS_PER_RELAY),
+                "basis": (f"{len(relay_circuits)} shed-tier circuits "
+                          f"({', '.join(c.tag for c in relay_circuits)}) at "
+                          f"{BACKUP_CIRCUITS_PER_RELAY} channels per relay"),
+            })
+        if contactor_circuits:
+            rows.append({
+                "component": "DIN contactor (relay-driven)",
+                "count": len(contactor_circuits),
+                "basis": (f"shed-tier circuits over the {RELAY_CHANNEL_AMPS}A relay "
+                          f"channel or 2-pole "
+                          f"({', '.join(c.tag for c in contactor_circuits)})"),
+            })
+        # One relay channel drives however many contactors there are; a shed tier made
+        # entirely of contactor circuits still needs the relay that commands them.
+        if contactor_circuits and not relay_circuits:
+            rows.append({
+                "component": "Shelly Pro 4PM 4-channel DIN relay", "count": 1,
+                "basis": "one relay to drive the shed-tier contactor coils",
+            })
+
+    rsd = sum(1 for panel in model.solar_panels if panel.rsd)
+    if rsd:
+        rows.append({
+            "component": "SunSpec rapid-shutdown transmitter (module level)",
+            "count": rsd,
+            "basis": f"{rsd} modules carrying rsd=True (690.12; EG4 sends the keep-alive)",
+        })
+
     rows.extend([
         {"component": "24V DIN-rail power supply", "count": 1,
          "basis": "one 24V bus for LED backup lighting + PoE (notes lines 13-15)"},
@@ -316,3 +451,11 @@ def backup_component_rows(model: ResolvedModel) -> list[dict[str, object]]:
          "basis": "backup light/network ride-through (notes line 14)"},
     ])
     return rows
+
+
+def _panel_type_ref(model: ResolvedModel, panel_tag: str) -> str | None:
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            if element.element_kind == "ElectricalDevice" and element.tag == panel_tag:
+                return element.type_ref
+    return None

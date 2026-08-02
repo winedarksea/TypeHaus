@@ -46,6 +46,11 @@ _HOUSE_WALL_TAGS = [
     "W-B-S1", "W-B-S2", "W-B-S3", "W-B-E1", "W-B-E2", "W-B-N1", "W-B-N2",
     "W-B-N3", "W-B-W1", "W-B-W2", "W-B-CS", "W-B-CS2", "W-B-CN", "W-B-CN2", "W-B-CW",
     "W-B-CE", "W-B-STR", "W-B-STR2",
+    # Appended, not inserted: the uid is enumerate()'d over this list, so a new tag goes on
+    # the end or every footing after it silently renumbers. W-B-CW3 is the 2026-08-02 split
+    # of W-B-CW at the ESS closet (plan/storeys/basement.py) — same 12" concrete, so the
+    # same 20"x8" strip runs under it.
+    "W-B-CW3",
 ]
 
 HOUSE_FOOTINGS = [

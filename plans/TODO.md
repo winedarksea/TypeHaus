@@ -218,9 +218,11 @@ Questions:
     defect. The model has no outdoor-room concept to file them under.
 
 ## Hardwood
-- Need to calculate and show in BOM the square feet required for sauna wall cladding tongue and groove. Note the shower in the corner is tile on the two walls of its spash area, not wood.
+- Need to calculate and show in BOM the square feet required for sauna wall cladding tongue and groove. Note the shower in the corner is tile on the two walls of its spash area, not wood. This is basswood.
 - In the second floor suite bedroom, we are going to have four custom oversized 6.125" by 6.125" posts that sit in the stud framing line but extend out to level with the drywall on the west wall. We would like to show these here, a sort of "tudor framing", but this should not be a change to the wall assembly (while a deviation, it is still effectively part of the stud line as such)
-- We want to calculate the board feet of walnut required to panel the walls of the small first floor study
+- Room RM-A-STUDY is the only room that has full hardwood floors, we want the sq ft of hardwood floor needed there (it's oak).
+- We want to calculate the board feet of walnut required to panel the walls of the small first floor study up to 36" high
+- We may add other tongue and groove paneling on walls, floors, or ceilings, and want to make sure this is designed generally to support calculating necessary sq ft by need (split by species)
 
 ## Backup Power System Refactor
 - Backup power should be a proper microgrid, with solar panels and a limited number of circuits.
