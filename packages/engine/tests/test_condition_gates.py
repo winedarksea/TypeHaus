@@ -247,11 +247,19 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
     N-B-BA-W on either side of W-B-STR2's concrete. Steel studs with Type X on one side of
     that node, 2x4-staggered wet wall on the other — a real change of construction along
     one line, which is exactly what an assembly-change condition is for, not solver noise.
+
+    A fourth arrived the same day with the framed mudroom closet: its east return wall
+    (W-M-MUDC-N -> W-M-MUDC-E, plain INT_2X4_PARTITION) dies into N-M-BA1 exactly
+    collinear with W-M-BAE, the powder bath's INT_2X6_STAGGERED_PLUMBING wet wall running
+    on through south — the closet doesn't carry plumbing, so there is no reason to give it
+    the wet wall's stud depth, and the straight-through jog at N-M-BA1 is real framing a
+    builder needs called out, not a solver artifact.
     """
     keys = sorted({c.key for c in catlin_model.conditions
                    if c.key.startswith("assembly_change:")})
     assert keys == [
         "assembly_change:CATLIN_CONC_12_INT|SAUNA_LINER_ON_CONCRETE",
+        "assembly_change:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
         "assembly_change:INT_2X6_STAGGERED_PLUMBING|INT_ESS_CLOSET_STEEL",
         "assembly_change:PORCH_RAILING_MASONRY|SUNKEN_GARDEN_WALL",
     ]

@@ -334,7 +334,13 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
     # every side by conditioned space, its own occupant is a heat *source*, and a supply
     # boot into a sealed Type X box is the last thing that enclosure wants. Unclaimed here
     # means "served by no zone", which is the true statement, not a gap to fill.
-    assert set(unclaimed) == {"RM-A-DEN", "RM-B-ESS"}
+    #
+    # RM-M-MUD-CLOSET joined the same day, for the mundane version of the same reason:
+    # it replaced the furniture closet FURN-M-MUD-CLOSET-S sat in (never a room, never
+    # zoned), and its 48" bypass slider onto the conditioned mudroom is wide open air
+    # transfer, not a sealed enclosure — a dedicated supply register would be serving a
+    # storage closet through its own open door.
+    assert set(unclaimed) == {"RM-A-DEN", "RM-B-ESS", "RM-M-MUD-CLOSET"}
 
 
 # --- supplemental resistance heat ------------------------------------------------------
