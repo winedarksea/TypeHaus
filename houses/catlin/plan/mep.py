@@ -315,8 +315,11 @@ SUPPLY_SLEEVES = [
     SleevePenetration(uid="CMPS09AAAA", tag="SP-M-CW-SBATH", host_ref="SL-M-DECK",
                       position=pt(ft(5, 7.2), ft(26, 4)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
+    # x=6'-2.4" -> 6'-4" (2026-08-02) with PR-B-HW-SBATH's riser below: RM-M-MUD-CLOSET's
+    # east return now tees into N-M-BA1 and its corner pack took the old station — see the
+    # note on that PipeRun.
     SleevePenetration(uid="CMPS10AAAA", tag="SP-M-HW-SBATH", host_ref="SL-M-DECK",
-                      position=pt(ft(6, 2.4), ft(26, 4)), pipe_diameter=inch(0.75),
+                      position=pt(ft(6, 4), ft(26, 4)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
     SleevePenetration(uid="CMPS11AAAA", tag="SP-M-CW-SUITE", host_ref="SL-M-DECK",
                       position=pt(ft(13, 7.2), ft(16, 10.8)), pipe_diameter=inch(0.75),
@@ -1969,10 +1972,16 @@ SUPPLY = [
             wall_refs=(None, None, None, None, "W-M-STOS", "W-S-BD-N"),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
+    # Riser moved 2.4" -> 4" east of N-M-BA1 (2026-08-02, RM-M-MUD-CLOSET): W-M-MUDC-E now
+    # tees into that node from the north, and the junction trims W-M-STOS2's stud cavity
+    # back to the partition's east face at x=6'-2 3/8" — the old x=6'-2.4" left half the
+    # pipe in the corner pack. 6'-4" is the first clean bay past the tee, still 6 1/2"
+    # west of D-M-MUD's jamb pack here and 8" west of D-S-BATH1's on the leg above.
+    # SP-M-HW-SBATH (the SL-M-DECK sleeve this riser crosses) moved with it.
     PipeRun(uid="CBPW41AAAA", tag="PR-B-HW-SBATH", system=PipeSystem.WATER_HOT,
-            path=(pt(m(1.88684), m(10.0015)), pt(ft(6, 2.4), ft(26, 4)),
-                  pt(ft(6, 2.4), ft(26, 4)), pt(ft(6, 2.4), ft(26, 4)),
-                  pt(ft(6, 2.4), ft(26, 4))),
+            path=(pt(m(1.88684), m(10.0015)), pt(ft(6, 4), ft(26, 4)),
+                  pt(ft(6, 4), ft(26, 4)), pt(ft(6, 4), ft(26, 4)),
+                  pt(ft(6, 4), ft(26, 4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8), ft(8), ft(9), ft(19), ft(21, 6)),
             wall_refs=(None, None, "W-M-STOS2", "W-S-BD-N1B"),
