@@ -61,6 +61,7 @@ from typehaus.emit.gltf.palette import (  # noqa: F401
     _hex_rgba,
     _material_finish_color,
     _room_floor_color,
+    authored_colors,
 )
 from typehaus.emit.gltf.walls import _wall_top_at  # noqa: F401
 
@@ -81,11 +82,16 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
     for op in model.openings:
         openings_by_wall.setdefault(op.host_wall, []).append(op)
 
+    # Catalog materials that author their own colour, so a wall/roof layer's paint or liner
+    # reads with it — the viewer already prefers authored colour (nordic/palette.ts
+    # materialColor); this is the .glb's half of that parity.
+    authored = authored_colors(model)
+
     for wall in sorted(model.walls, key=lambda w: w.uid):
         # Wall layer prisms are the selectable "walls" body; its framing members are their own
         # "framing" node so the framing visibility toggle reaches the studs.
         body = _MeshBuilder()
-        _add_wall_body(body, wall, lod, openings_by_wall.get(wall.tag, ()))
+        _add_wall_body(body, wall, lod, openings_by_wall.get(wall.tag, ()), authored)
         scene.add_object(body, trade="walls", kind="wall", uid=wall.uid)
         if wall.members:
             framing = _MeshBuilder()
@@ -141,7 +147,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
 
     for roof in sorted(model.roofs, key=lambda item: item.uid):
         mb = _MeshBuilder()
-        _add_roof(mb, roof, model)
+        _add_roof(mb, roof, model, authored)
         scene.add_object(mb, trade="roof", kind="roof", uid=roof.uid)
         # Rafters, trusses and gable studs are framing, and belong in the framing trade with
         # every other stick in the building — not hidden behind the roof toggle. Same split

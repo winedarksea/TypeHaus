@@ -33,6 +33,7 @@ from typehaus import (
     Alarm,
     AlarmKind,
     Beam,
+    ControlLayer,
     Door,
     DeckLayer,
     FloorHeat,
@@ -40,6 +41,8 @@ from typehaus import (
     FloorSystem,
     FramingSpec,
     JoistSpec,
+    Layer,
+    LayerFunction,
     Node,
     Occupancy,
     RadiantSystem,
@@ -52,6 +55,7 @@ from typehaus import (
     Stair,
     StructuralRole,
     Wall,
+    WallLiningException,
     Window,
     face,
     from_node,
@@ -433,8 +437,26 @@ ROOMS = [
          occupancy=Occupancy.LIVING, floor_finish="tile"),
     Room(uid="CSR402AAAA", tag="RM-S-STUDY2", seed=pt(ft(27), ft(4)),
          occupancy=Occupancy.OFFICE, floor_finish="oak"),
+    # BED1's east wall is the house's one painted accent (spruce green-blue): the exception
+    # swaps that wall's lining stack for assemblies.py's ACCENT_GWB_LINING — same film, same
+    # gypsum, same thickness, only the paint *material* differs. The two layers are re-stated
+    # inline because the editable dialect imports only from typehaus.*/library.*, never from
+    # a sibling plan module; keep them in step with ACCENT_GWB_LINING. W-S-E2 is exterior,
+    # so no second room can claim it (integrity.wall_lining_conflict stays quiet), and
+    # CATLIN_EXT_2X6 carries the default_lining the override replaces.
     Room(uid="CSR403AAAA", tag="RM-S-BED1", seed=pt(ft(29), ft(13, 6)),
-         occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
+         occupancy=Occupancy.BEDROOM, floor_finish="carpet",
+         wall_lining_exceptions=(
+             WallLiningException(
+                 uid="CSL501AAAA", tag="LX-S-BED1-E", wall_ref="W-S-E2",
+                 lining=(
+                     Layer(name="paint", material_ref="latex-paint-accent",
+                           thickness=inch(0.01), function=LayerFunction.FINISH,
+                           control={ControlLayer.VAPOR}),
+                     Layer(name="gwb-int", material_ref="gwb", thickness=inch(0.625),
+                           function=LayerFunction.FINISH),
+                 )),
+         )),
     Room(uid="CSR404AAAA", tag="RM-S-BED2", seed=pt(ft(29), ft(22, 6)),
          occupancy=Occupancy.BEDROOM, floor_finish="carpet"),
     Room(uid="CSR405AAAA", tag="RM-S-BED3", seed=pt(ft(29), ft(31, 6)),

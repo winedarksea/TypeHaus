@@ -34,15 +34,26 @@ _CMU_BEARING = AssemblyInterface(role="bearing", layer_name="cmu", outboard=Fals
 # III, 1.0-10 perm). Modelling the lining as bare gypsum reads ~30 perm and says the wall has
 # no vapour retarder at all, which is not the wall that gets built.
 #
-# Colour is carried on the `latex-paint` material (a soft off-white), not here: `Layer` has no
-# colour slot, so there is currently no honest way to say "this wall is a different colour"
-# without inventing schema. The one mechanism that exists today is `Room.wall_lining` /
-# `wall_lining_exceptions`, which swaps a whole lining stack — so a second colour would have to
-# be a second `Material` tag plus a per-room lining override, authored in the storey files. That
-# is a deliberate follow-up, not something to fake with a colour field the schema does not have.
+# Colour is carried on the `latex-paint` material (a soft off-white), not here: `Layer` has
+# no colour slot, so a different wall colour is a different *material*. That mechanism is
+# real now: `latex-paint-accent` (in MATERIALS below) is the identical film with an authored
+# accent colour, `ACCENT_GWB_LINING` is the lining stack that carries it, and
+# `Room.wall_lining` / `wall_lining_exceptions` swap a room's (or one wall's) lining stack
+# for it — resolve/rooms.py::wall_lining_overrides feeds the swap into the wall-geometry
+# resolve, so the accent reaches the .glb, the viewer, the takeoff and the IFC layer set.
+# Authored per room/wall in the storey files: see RM-S-BED1's feature wall in
+# storeys/second.py (the storey files re-state the two layers inline because the editable
+# dialect only imports from typehaus.*/library.*, not from this sibling module).
 _PAINT_FINISH = Layer(name="paint", material_ref="latex-paint", thickness=inch(0.01),
                       function=LayerFunction.FINISH,
                       control={ControlLayer.VAPOR})
+
+# The accent film. Same name ("paint"), same thickness, same Class III vapour job — only the
+# material (and so the colour) differs, which is what keeps an accent wall's Glaser walk and
+# lining inset identical to its neighbours'.
+_PAINT_FINISH_ACCENT = Layer(name="paint", material_ref="latex-paint-accent",
+                             thickness=inch(0.01), function=LayerFunction.FINISH,
+                             control={ControlLayer.VAPOR})
 
 # The same film named per face, for partitions that carry their gypsum in `layers` and so
 # have two room faces rather than one lining. `-a`/`-b` match the `gwb-a`/`gwb-b` each sits on.
@@ -55,6 +66,15 @@ _PAINT_FINISH_B = Layer(name="paint-b", material_ref="latex-paint", thickness=in
 
 _GWB_LINING = (
     _PAINT_FINISH,
+    Layer(name="gwb-int", material_ref="gwb", thickness=inch(0.625),
+          function=LayerFunction.FINISH),
+)
+
+# The accent-wall lining: `_GWB_LINING` with the accent film in place of the off-white one.
+# Same gypsum sheet, same total thickness, so swapping it via `Room.wall_lining` /
+# `wall_lining_exceptions` moves no face and changes no clear-floor inset — only the colour.
+ACCENT_GWB_LINING = (
+    _PAINT_FINISH_ACCENT,
     Layer(name="gwb-int", material_ref="gwb", thickness=inch(0.625),
           function=LayerFunction.FINISH),
 )
@@ -626,6 +646,18 @@ CATLIN_MUDROOM_INT_2X6_EXPOSED = Assembly(
 
 MATERIALS = [
     *STARTER_MATERIALS,
+    # --- accent wall paint -------------------------------------------------------
+    # The house's one interior accent: a deep spruce green-blue on a single feature wall
+    # (RM-S-BED1, storeys/second.py). Physically it IS `latex-paint` (library/materials.py)
+    # — same two-coat film, same Class III ~5 perm warm-side retarder, same coating=True so
+    # it bills by coverage and draws no second wall face — because a colour change must not
+    # change the wall's building science. Authored dark on purpose: the viewer's lighting
+    # (0.8 hemisphere + 0.9 key + 0.6 IBL) lifts a dark albedo well above itself, so the
+    # value sits under the tone meant to read on screen (see metal-dark-exterior below).
+    Material(tag="latex-paint-accent", name="Interior latex paint, spruce accent",
+             r_per_inch=0.0, vapor_permeance_perms=5.0, color="#2e4a44",
+             finish="matte-latex", coating=True,
+             source="same film as latex-paint (IRC R702.7.1 Class III over gypsum); only the colour differs — a second Material tag is how a wall says it is a different colour, since Layer has no colour slot"),
     # --- mudroom exposed-stud wall ---------------------------------------------
     # Appearance-grade framing, because in W-M-STRW the studs ARE the finish. Select
     # Structural S4S with eased corners: the grade buys straightness and a clean face, the

@@ -27,6 +27,101 @@ def _storey_faces(plan: PlanModel, storey_tag: str) -> list[Polygon]:
     return list(polygonize(merged))
 
 
+# A wall's axis midpoint sits *on* its room face boundary exactly (the faces are polygonized
+# from the wall axes themselves), so the tolerance only absorbs shapely's floating-point
+# noise. Verified empirically on the catlin plan: boundary distance for a bounding wall is
+# < 1e-12 m; the nearest non-bounding wall is a full wall thickness away.
+_LINING_FACE_TOLERANCE_M = 1e-6
+
+
+def wall_lining_overrides(plan: PlanModel,
+                          storey_tag: str) -> tuple[dict[str, tuple], list[Finding]]:
+    """Per-wall lining overrides authored on the storey's Rooms, plus their findings.
+
+    ``Room.wall_lining`` / ``wall_lining_exceptions`` existed in the schema (and set the
+    clear-face inset via :func:`_lining_inset`) but never reached wall geometry: the
+    resolver always stacked ``assembly.default_lining``. This is the missing map — wall tag
+    → lining layer tuple — computed from plan inputs only (the same seed-claimed faces
+    :func:`resolve_rooms` uses) so :func:`~typehaus.resolve.topology.resolve_storey_walls`
+    can consume it before any wall resolves.
+
+    Rules: a room's override reaches every wall whose axis midpoint lies on its claimed
+    face boundary; a ``WallLiningException`` naming one of those walls wins over the
+    room-wide lining. Two rooms overriding one shared wall apply NEITHER and warn
+    (``integrity.wall_lining_conflict``); an override on a wall whose assembly has no
+    ``default_lining`` is not applied and warns (``integrity.wall_lining_unlined``) — that
+    assembly carries its finishes in ``layers`` (or has no finish at all), so swapping a
+    lining it does not have would silently do nothing or invent a face.
+    """
+    findings: list[Finding] = []
+    rooms = [e for e in plan.storey_elements(storey_tag)
+             if e.element_kind == "Room"
+             and (e.wall_lining or e.wall_lining_exceptions)]
+    if not rooms:
+        return {}, findings
+    faces = _storey_faces(plan, storey_tag)
+    nodes = {e.tag: e.position.xy_m
+             for e in plan.storey_elements(storey_tag) if e.element_kind == "Node"}
+    walls = {e.tag: e for e in plan.storey_elements(storey_tag)
+             if e.element_kind in ("Wall", "FoundationWall")}
+    # wall tag -> [(room tag, lining), ...]: every claim first, then conflicts resolved.
+    claims: dict[str, list[tuple[str, tuple]]] = {}
+    for room in rooms:
+        face = next((f for f in faces if f.contains(Point(room.seed.xy_m))), None)
+        if face is None:
+            continue  # resolve_rooms already reports the unclaimed seed as an ERROR
+        boundary = face.exterior
+        exceptions = {exc.wall_ref: tuple(exc.lining)
+                      for exc in room.wall_lining_exceptions}
+        for wall in walls.values():
+            a, b = nodes.get(wall.start_node), nodes.get(wall.end_node)
+            if a is None or b is None:
+                continue
+            midpoint = Point((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0)
+            if boundary.distance(midpoint) > _LINING_FACE_TOLERANCE_M:
+                continue
+            if wall.tag in exceptions:
+                lining = exceptions[wall.tag]
+            elif room.wall_lining:
+                lining = tuple(room.wall_lining)
+            else:
+                continue
+            claims.setdefault(wall.tag, []).append((room.tag, lining))
+    overrides: dict[str, tuple] = {}
+    for wall_tag in sorted(claims):
+        claimed = claims[wall_tag]
+        room_tags = sorted({room_tag for room_tag, _lining in claimed})
+        if len(room_tags) > 1:
+            findings.append(Finding(
+                severity=Severity.WARN,
+                check_id="integrity.wall_lining_conflict",
+                message=f"wall {wall_tag}: rooms {', '.join(room_tags)} both override its "
+                        "lining — a wall has one interior lining stack, so neither is "
+                        "applied",
+                element_tags=(wall_tag, *room_tags),
+                fix_hint="keep the room-wide wall_lining on one room and name the shared "
+                         "wall in the other room's wall_lining_exceptions (or drop one)",
+                result=Result.UNKNOWN,
+            ))
+            continue
+        assembly = plan.library.resolve_assembly(walls[wall_tag].assembly)
+        if assembly is None or not assembly.default_lining:
+            findings.append(Finding(
+                severity=Severity.WARN,
+                check_id="integrity.wall_lining_unlined",
+                message=f"wall {wall_tag} ({walls[wall_tag].assembly}) has no "
+                        f"default_lining for room {room_tags[0]}'s override to replace — "
+                        "not applied",
+                element_tags=(wall_tag, room_tags[0]),
+                fix_hint="that assembly carries its finish in `layers` (or is deliberately "
+                         "unlined); author a variant assembly instead of a lining override",
+                result=Result.UNKNOWN,
+            ))
+            continue
+        overrides[wall_tag] = claimed[0][1]
+    return overrides, findings
+
+
 def resolve_rooms(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     """Claim faces by room seeds; derive clear-face polygons + areas; check closure."""
     findings: list[Finding] = []

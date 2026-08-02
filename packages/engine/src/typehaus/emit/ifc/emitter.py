@@ -29,6 +29,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import polygon_area, rect_between
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.placeables import resolved_mount_elevation
+from typehaus.resolve.topology import _added_thicknesses
 
 
 def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
@@ -200,29 +201,62 @@ def _emit_utilities(f: Any, body: Any, model: ResolvedModel, project_uuid: Any) 
             })
 
 
+def _wall_type_key(wall: ResolvedWall) -> tuple:
+    """What makes two walls the same IfcWallType: assembly AND resolved layer stack.
+
+    Keying representatives by assembly alone was right until ``Room.wall_lining`` overrides
+    became real: an accent-lined wall shares its assembly with its neighbours but not their
+    layer set, and one representative would file both under one (wrong) IfcMaterialLayerSet.
+    """
+    return (wall.assembly, tuple((ly.name, ly.material_ref, round(ly.thickness_m, 6))
+                                 for ly in wall.depth_layers()))
+
+
+def _assembly_default_signature(model: ResolvedModel, assembly_tag: str) -> tuple | None:
+    """The layer signature a wall of this assembly resolves to with NO lining override."""
+    assembly = model.plan.library.resolve_assembly(assembly_tag)
+    if assembly is None:
+        return None
+    stack = list(assembly.default_lining) + list(assembly.layers)
+    return tuple((layer.name, layer.material_ref, round(layer.thickness.meters, 6))
+                 for (layer, _added, cavity) in _added_thicknesses(stack) if not cavity)
+
+
 def _emit_wall_types(f: Any, model: ResolvedModel,
-                     project_uuid: Any) -> dict[str, tuple[Any, Any]]:
-    result: dict[str, tuple[Any, Any]] = {}
-    representatives = {
-        wall.assembly: wall for wall in sorted(model.walls, key=lambda item: item.uid)
-    }
-    for assembly_tag, representative in sorted(representatives.items()):
-        wall_type = ll.create_entity(f, "IfcWallType", name=assembly_tag)
-        wall_type.GlobalId = derive_child_guid(project_uuid, "wall-types", assembly_tag)
-        layer_set = ll.assign_material_layer_set(
-            f, wall_type,
-            [{"name": layer.name, "material_ref": layer.material_ref,
-              "thickness_m": layer.thickness_m, "category": layer.function}
-             for layer in representative.depth_layers()],
-            name=assembly_tag,
-        )
-        result[assembly_tag] = (wall_type, layer_set)
+                     project_uuid: Any) -> dict[tuple, tuple[Any, Any]]:
+    result: dict[tuple, tuple[Any, Any]] = {}
+    representatives: dict[tuple, ResolvedWall] = {}
+    for wall in sorted(model.walls, key=lambda item: item.uid):
+        representatives[_wall_type_key(wall)] = wall
+    grouped: dict[str, list] = {}
+    for key in representatives:
+        grouped.setdefault(key[0], []).append(key)
+    for assembly_tag in sorted(grouped):
+        # The unoverridden stack keeps the bare assembly name (and so its GlobalId — a
+        # pre-override export round-trips unchanged); lining variants suffix ``~lining<n>``.
+        default_signature = _assembly_default_signature(model, assembly_tag)
+        keys = sorted(grouped[assembly_tag],
+                      key=lambda key: (key[1] != default_signature, key[1]))
+        for index, key in enumerate(keys):
+            name = assembly_tag if index == 0 and key[1] == default_signature \
+                else f"{assembly_tag}~lining{index}"
+            representative = representatives[key]
+            wall_type = ll.create_entity(f, "IfcWallType", name=name)
+            wall_type.GlobalId = derive_child_guid(project_uuid, "wall-types", name)
+            layer_set = ll.assign_material_layer_set(
+                f, wall_type,
+                [{"name": layer.name, "material_ref": layer.material_ref,
+                  "thickness_m": layer.thickness_m, "category": layer.function}
+                 for layer in representative.depth_layers()],
+                name=name,
+            )
+            result[key] = (wall_type, layer_set)
     return result
 
 
 def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
                project_uuid: Any, lod: str,
-               wall_types: dict[str, tuple[Any, Any]]) -> Any:
+               wall_types: dict[tuple, tuple[Any, Any]]) -> Any:
     guid = derive_guid(project_uuid, rw.uid)
     ifc_class = "IfcWall"
     wall = ll.create_entity(f, ifc_class, name=rw.tag)
@@ -241,7 +275,7 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
     ll.ensure_pset(f, wall, "Pset_WallCommon", {
         "IsExternal": not rw.tag.startswith("INT"),
     })
-    wall_type, layer_set = wall_types[rw.assembly]
+    wall_type, layer_set = wall_types[_wall_type_key(rw)]
     ll.assign_type(f, wall, wall_type)
     _assign_wall_material(f, wall, rw, layer_set)
     if rw.is_foundation:
