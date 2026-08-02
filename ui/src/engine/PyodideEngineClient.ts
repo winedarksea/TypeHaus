@@ -11,8 +11,10 @@ import type { Finding, Model } from "../model/types";
 import PyodideWorker from "./pyodide/worker?worker";
 import {
   type BuildResult,
+  type CostsOp,
   type DetailIndexEntry,
   type EngineBom,
+  type EngineCosts,
   type DetailPayload,
   EngineError,
   type EngineArtifact,
@@ -132,6 +134,18 @@ export class PyodideEngineClient implements EngineClient {
     const payload = await this.call<DetailPayload | null>("detail", { key });
     if (payload === null) throw new EngineError(`no detail ${key}`, 404);
     return payload;
+  }
+
+  async getCosts(): Promise<EngineCosts> {
+    // The worker reads the house snapshot's prices.toml/costs.toml off its own FS, so the
+    // offline view shows the same join/estimate/check-off state the server would serve.
+    await this.initialized;
+    return this.call<EngineCosts>("costs");
+  }
+
+  patchCosts(_ops: CostsOp[]): Promise<EngineCosts> {
+    // The offline house is a read-only snapshot — costs.toml has nowhere durable to go.
+    return Promise.reject(new OfflineUnsupported("Recording costs"));
   }
 
   async appendDetailNote(): Promise<string> {

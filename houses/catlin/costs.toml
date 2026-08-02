@@ -1,0 +1,23 @@
+# costs.toml — cost tracking for the catlin house (empty; written by Type:Haus, safe to
+# edit by hand). State the model cannot know: what was actually bought, from whom, for how
+# much, and whether it has been paid. Durable here (git-versioned with the plan) and edited
+# by the BOM view through the server's PUT /costs — deliberately OUTSIDE the plan undo
+# journal, because paying a bill is not a plan edit.
+#
+# Schema (→ packages/engine/src/typehaus/takeoff/costs.py):
+#
+#   [entries.<section>.<key>]        # the (section, key) join cli/prices.py's
+#   paid = true                      # ESTIMATE_PLANS uses — the same row the estimate
+#   paid_date = "2026-08-02"         # prices (e.g. [entries.framing."2x6"],
+#   product = "Menards SPF #2 KD"    # [entries.concrete."slab"]). All fields optional;
+#   actual_cost = 3184.50            # clearing every field deletes the entry. Entries
+#   note = "second quote"            # whose BOM row disappears are surfaced as STALE,
+#                                    # never dropped.
+#
+#   [[extra]]                        # spend the model does not bill (permits, dumpster,
+#   id = "building-permit"           # delivery). id is minted from the name when omitted
+#   name = "Building permit"         # in a UI op; unique across items.
+#   cost = { low = 1800, high = 2400 }   # a number or a { low, high } range
+#   paid = false
+#   category = "fees"
+#   note = ""

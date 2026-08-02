@@ -5,8 +5,10 @@
 import type { Finding, Model } from "../model/types";
 import {
   type BuildResult,
+  type CostsOp,
   type DetailIndexEntry,
   type EngineBom,
+  type EngineCosts,
   type DetailPayload,
   EngineError,
   type EngineArtifact,
@@ -73,6 +75,22 @@ export class HttpEngineClient implements EngineClient {
     const res = await fetch(this.url("/bom"));
     if (!res.ok) throw new EngineError(await readError(res), res.status);
     return (await res.json()) as EngineBom;
+  }
+
+  async getCosts(): Promise<EngineCosts> {
+    const res = await fetch(this.url("/costs"));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as EngineCosts;
+  }
+
+  async patchCosts(ops: CostsOp[]): Promise<EngineCosts> {
+    const res = await fetch(this.url("/costs"), {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ops }),
+    });
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as EngineCosts;
   }
 
   async appendDetailNote(key: string, text: string): Promise<string> {

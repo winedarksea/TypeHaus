@@ -26,7 +26,7 @@ interface LoadHouseMsg {
 }
 interface CallMsg {
   id: number;
-  type: "model" | "checks" | "bom" | "glb" | "ifc" | "detailIndex" | "undo" | "redo";
+  type: "model" | "checks" | "bom" | "costs" | "glb" | "ifc" | "detailIndex" | "undo" | "redo";
 }
 interface DetailMsg {
   id: number;
@@ -173,6 +173,13 @@ async function handle(msg: InMsg): Promise<unknown> {
     case "bom": {
       await ensureReady();
       const d = engine.bom_json();
+      const out = d.toJs({ dict_converter: Object.fromEntries });
+      d.destroy();
+      return out;
+    }
+    case "costs": {
+      await ensureReady();
+      const d = engine.costs_json();
       const out = d.toJs({ dict_converter: Object.fromEntries });
       d.destroy();
       return out;

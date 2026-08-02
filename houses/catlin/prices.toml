@@ -1,0 +1,345 @@
+# prices.toml — unit prices for the catlin house (none supplied yet).
+#
+# Type:Haus ships NO default prices: material cost is local, seasonal, and negotiated.
+# Every row below is a COMMENTED placeholder keyed from the house's own bill of materials
+# (`haus takeoff` / cli/prices.py ESTIMATE_PLANS) — uncomment a row and fill in a real
+# number (`KEY = 1.23`) or a quote range (`KEY = { low = 1.0, high = 1.5 }`) to have
+# `haus takeoff` and the BOM view price that line. Rows left commented stay honestly
+# UNPRICED in the estimate; they are never priced at zero.
+#
+# Cost tracking (paid check-offs, exact products, actual $) lives in costs.toml, keyed by
+# the same (section, key) join used here.
+
+[framing]
+# $/LF of ordered stock, by lumber profile
+# "0.02x0.02 panel" =    # 76 LF
+# "0.375x0.375 panel" =    # 108 LF
+# "0.416667x0.416667 panel" =    # 156 LF
+# "0.416667x4.11038 panel" =    # 156 LF
+# "0.5x0.5 panel" =    # 498 LF
+# "0.5x5 panel" =    # 56 LF
+# "1.25x0.416667 panel" =    # 156 LF
+# "1.25x11.875 rim" =    # 144 LF
+# "1.25x7.25 rim" =    # 76 LF
+# "1.5x1.5 panel" =    # 96 LF
+# "1.5x5.5 panel" =    # 112 LF
+# "1.5x6 rim" =    # 80 LF
+# "11.875 I-joist" =    # 3824 LF
+# "12x4 panel" =    # 66 LF
+# "13.625x0.5 panel" =    # 112 LF
+# "1x6.81165 panel" =    # 112 LF
+# "2-1.75x11.875 LVL" =    # 16 LF
+# "2-1.75x14 LVL" =    # 20 LF
+# "2-2x10" =    # 24 LF
+# "2-2x6" =    # 16 LF
+# "2-2x8" =    # 432 LF
+# "2x10" =    # 82 LF
+# "2x12" =    # 92 LF
+# "2x2" =    # 816 LF
+# "2x2 panel" =    # 316 LF
+# "2x4" =    # 7850 LF
+# "2x6" =    # 10612 LF
+# "2x8" =    # 672 LF
+# "3-1.75x11.875 LVL" =    # 36 LF
+# "3x6 rim" =    # 8 LF
+# "4x0.5 panel" =    # 28 LF
+# "4x4" =    # 32 LF
+# "6x6" =    # 8 LF
+# "deck 11x1.5" =    # 288 LF
+# "deck 42x1.5" =    # 16 LF
+# "deck 44.625x1.5" =    # 16 LF
+# "hanger" =    # 32 LF
+# "tapered tread" =    # 24 LF
+
+[sheet_goods]
+# $/4x8 sheet, by material tag
+# "composite-deck" =    # 6 sheets
+# "plywood-subfloor" =    # 78 sheets
+# "struct-1-plywood" =    # 179 sheets
+# "zip-r" =    # 20 sheets
+
+[hardware]
+# $/unit (usually each), by part number
+# "ABU66SS" =    # 10 ea
+# "APVB12-6" =    # 16 ea
+# "APVKB45-6" =    # 8 ea
+# "CS16" =    # 1 ea
+# "H2.5A" =    # 1 ea
+# "HUCQ" =    # 4 ea
+# "KBS1Z" =    # 4 ea
+# "LSSR" =    # 56 ea
+# "LUS" =    # 42 ea
+# "LUS210" =    # 2 ea
+# "MASA" =    # 107 ea
+# "S-5!" =    # 19 ea
+# "S-5! CanDuit #11" =    # 3 ea
+# "S-5! CanDuit #13" =    # 8 ea
+# "S-5! ColorGard" =    # 6 ea
+# "S-5-PVKIT" =    # 48 ea
+# "SDWH191000DB" =    # 537 ea
+# "SDWS22800DB" =    # 1865 ea
+# "SP6" =    # 423 ea
+# "SS-GASKET-12" =    # 32 ea
+# "STHD" =    # 36 ea
+
+[concrete]
+# $/cy placed, by solid category. Non-concrete categories (trim, pipe markers, ...) appear in
+# structural_solids too but bill primarily in their own sections — price the pours here, not
+# the aluminium.
+# "beam" =    # 0.86 cy
+# "column" =    # 1.25 cy
+# "dowel" =    # 0 cy
+# "footing" =    # 38.63 cy
+# "pad" =    # 0.59 cy
+# "slab" =    # 60.63 cy
+# "thermal_break" =    # 0.03 cy
+
+[floor_heat]
+# $/LF of element/wire, by system
+# "electric" =    # 393 LF
+
+[placeables]
+# $ each, by catalog type tag
+# "APPL-DISHWASHER" =    # 1 ea
+# "APPL-ELECTRIC-RANGE" =    # 1 ea
+# "APPL-FREEZER-UPRIGHT" =    # 1 ea
+# "APPL-HOOD-RECIRC" =    # 1 ea
+# "APPL-REFRIGERATOR" =    # 1 ea
+# "APPL-WASHER-DRYER-STACKED" =    # 1 ea
+# "CASE-B15" =    # 1 ea
+# "CASE-B24" =    # 1 ea
+# "CASE-B30" =    # 2 ea
+# "CASE-B36" =    # 2 ea
+# "CASE-ISLAND-60" =    # 1 ea
+# "CASE-OVER-36" =    # 2 ea
+# "CASE-PANTRY-CLOSET-24" =    # 1 ea
+# "CASE-PANTRY-CLOSET-48" =    # 1 ea
+# "CASE-PANTRY-CLOSET-72" =    # 1 ea
+# "CASE-SINK-BASE-36" =    # 1 ea
+# "CASE-TALL-PANTRY-12" =    # 1 ea
+# "CASE-TALL-PANTRY-18" =    # 1 ea
+# "CASE-W24" =    # 1 ea
+# "CASE-W30" =    # 4 ea
+# "ED-T-BACKUP-ENCL" =    # 1 ea
+# "ED-T-BACKUP-PANEL" =    # 1 ea
+# "ED-T-DISCONNECT-3R" =    # 4 ea
+# "ED-T-EV-1450" =    # 1 ea
+# "ED-T-EV-620" =    # 1 ea
+# "ED-T-FLOOR-STAT" =    # 3 ea
+# "ED-T-JBOX" =    # 1 ea
+# "ED-T-LT-CAN3" =    # 16 ea
+# "ED-T-LT-CAN4" =    # 49 ea
+# "ED-T-LT-CAN4-4000" =    # 4 ea
+# "ED-T-LT-CAN4-WET" =    # 9 ea
+# "ED-T-LT-CHANDELIER" =    # 1 ea
+# "ED-T-LT-FAN52" =    # 2 ea
+# "ED-T-LT-FAN60" =    # 1 ea
+# "ED-T-LT-MIRROR" =    # 5 ea
+# "ED-T-LT-MIRROR-RING" =    # 1 ea
+# "ED-T-LT-PANEL" =    # 6 ea
+# "ED-T-LT-PENDANT" =    # 1 ea
+# "ED-T-LT-PSU-200" =    # 2 ea
+# "ED-T-LT-PSU-60" =    # 2 ea
+# "ED-T-LT-SCONCE-SPOT" =    # 5 ea
+# "ED-T-LT-SCONCE-STAIR" =    # 3 ea
+# "ED-T-LT-SCONCE-UD" =    # 2 ea
+# "ED-T-LT-SHOP4" =    # 2 ea
+# "ED-T-LT-SPOT-SW" =    # 1 ea
+# "ED-T-LT-TUBE6" =    # 2 ea
+# "ED-T-LT-WALL-LINEAR" =    # 1 ea
+# "ED-T-METER" =    # 1 ea
+# "ED-T-PANEL" =    # 1 ea
+# "ED-T-PV-JB" =    # 1 ea
+# "ED-T-RECEPTACLE" =    # 70 ea
+# "ED-T-RECEPTACLE-1430" =    # 1 ea
+# "ED-T-RECEPTACLE-240" =    # 1 ea
+# "ED-T-RECEPTACLE-620" =    # 1 ea
+# "ED-T-RECEPTACLE-GFCI" =    # 14 ea
+# "ED-T-SAUNA-JB" =    # 1 ea
+# "ED-T-SWITCH" =    # 34 ea
+# "ED-T-SWITCH-DIM" =    # 6 ea
+# "ED-T-SWITCH-TIMER" =    # 1 ea
+# "EQ-T-EG4-12KPV" =    # 1 ea
+# "EQ-T-ERV" =    # 1 ea
+# "EQ-T-ESS-BATT" =    # 1 ea
+# "EQ-T-FIREPLACE-EL" =    # 1 ea
+# "EQ-T-GARAGE-HEATER" =    # 1 ea
+# "EQ-T-GREE-HEAD-12" =    # 2 ea
+# "EQ-T-GREE-HEAD-9" =    # 1 ea
+# "EQ-T-GREE-MULTI-U30" =    # 1 ea
+# "EQ-T-GREE-SAPPHIRE-9" =    # 1 ea
+# "EQ-T-GREE-SAPPHIRE-9-OD" =    # 1 ea
+# "EQ-T-GREE-SLIM24" =    # 1 ea
+# "EQ-T-GREE-VIREO-GEN3" =    # 1 ea
+# "EQ-T-SAUNA-HEATER" =    # 1 ea
+# "EQ-T-WATER-HEATER" =    # 1 ea
+# "EQ-T-WATER-HEATER-240" =    # 1 ea
+# "FURN-ARMCHAIR-35" =    # 1 ea
+# "FURN-BAR-STOOL" =    # 3 ea
+# "FURN-BED-KING" =    # 1 ea
+# "FURN-BESTA-2358" =    # 9 ea
+# "FURN-DESK-48" =    # 4 ea
+# "FURN-DESK-CHAIR" =    # 4 ea
+# "FURN-DINING-2-36" =    # 2 ea
+# "FURN-DINING-8" =    # 1 ea
+# "FURN-DINING-CHAIR" =    # 10 ea
+# "FURN-G-WORKBENCH" =    # 1 ea
+# "FURN-M-MUD-BENCH" =    # 1 ea
+# "FURN-M-MUD-CLOSET-S" =    # 1 ea
+# "FURN-MEDIA-60" =    # 1 ea
+# "FURN-PLANT-18" =    # 2 ea
+# "FURN-QUEEN-BED" =    # 4 ea
+# "FURN-ROCKING-CHAIR-30" =    # 2 ea
+# "FURN-SAUNA-BENCH-2T-102" =    # 1 ea
+# "FURN-SAUNA-BENCH-54" =    # 1 ea
+# "FURN-SOFA-84" =    # 1 ea
+# "FURN-WALL-RACK-24" =    # 1 ea
+# "FURN-WARDROBE-48" =    # 3 ea
+# "FX-FLOOR-DRAIN" =    # 1 ea
+# "FX-HYDRANT-SD34" =    # 2 ea
+# "FX-HYDRANT-Y34SS" =    # 1 ea
+# "FX-KITCHEN-SINK-33" =    # 2 ea
+# "FX-LAUNDRY-SINK-24" =    # 1 ea
+# "FX-LAV-24" =    # 5 ea
+# "FX-LAV-COMPACT" =    # 1 ea
+# "FX-SHOWER-36" =    # 2 ea
+# "FX-TOILET-STD" =    # 4 ea
+# "FX-TOILET-WH" =    # 1 ea
+# "FX-TUB-60" =    # 1 ea
+# "FX-TUBSHOWER-60" =    # 2 ea
+# "REG-T-ERV-EXH" =    # 15 ea
+# "REG-T-ERV-SAUNA-EXH" =    # 1 ea
+# "REG-T-ERV-SAUNA-SUP" =    # 1 ea
+# "REG-T-ERV-SUP" =    # 5 ea
+# "REG-T-HP-RET" =    # 1 ea
+# "REG-T-HP-SUP" =    # 8 ea
+
+[floor_finishes]
+# $/SF on the ORDER quantity (waste included), by finish
+# "carpet" =    # 2525 SF
+# "carpet-pad" =    # 2525 SF
+# "lvp" =    # 1275 SF
+# "lvp-underlayment" =    # 1275 SF
+# "oak" =    # 351 SF
+# "rubber" =    # 357 SF
+# "sealed-concrete" =    # 1156 SF
+# "tile" =    # 499 SF
+
+[envelope_layers]
+# $/SF net, by material tag
+# "air-barrier" =    # 8386.3 SF
+# "cabinet-plywood" =    # 101.2 SF
+# "eps" =    # 3515.7 SF
+# "fiberglass" =    # 438.8 SF
+# "gwb" =    # 11078.9 SF
+# "gwb-x" =    # 92.3 SF
+# "icf-eps" =    # 952.5 SF
+# "latex-paint" =    # 7004.9 SF
+# "mineral-wool" =    # 6316.6 SF
+# "polyiso" =    # 4946 SF
+# "polyiso-foil" =    # 297.4 SF
+# "sauna-tg" =    # 297.4 SF
+# "standing-seam" =    # 6326.9 SF
+# "struct-1-plywood" =    # 5695.6 SF
+# "stucco" =    # 1394.1 SF
+# "white-brick" =    # 133.8 SF
+# "xps" =    # 2520.7 SF
+# "zip-r" =    # 631.3 SF
+
+[wood_surfaces]
+# $/SF on the order quantity, by material tag. Mind the mirrors: rows flagged also_in_* bill
+# primarily elsewhere — price a material here OR there, not both.
+# "elm-timber" =    # 0 SF
+# "oak" =    # 351 SF
+# "sauna-tg" =    # 278 SF
+# "tile" =    # 52 SF
+# "walnut-tg" =    # 59 SF
+
+[openings]
+# $ each, by door/window type
+# "DT-EXT-FRENCH60" =    # 4 ea
+# "DT-EXT-OVERHEAD192" =    # 1 ea
+# "DT-EXT-SWING36" =    # 2 ea
+# "DT-INT-BIFOLD56" =    # 2 ea
+# "DT-INT-FRENCH60" =    # 1 ea
+# "DT-INT-SWING24" =    # 3 ea
+# "DT-INT-SWING30" =    # 12 ea
+# "DT-INT-SWING30-GLAZED" =    # 1 ea
+# "DT-INT-SWING30-TRIMLESS" =    # 1 ea
+# "DT-INT-SWING32" =    # 9 ea
+# "None" =    # 4 ea
+# "WT-1424" =    # 6 ea
+# "WT-1424-FIX" =    # 1 ea
+# "WT-1424-T" =    # 5 ea
+# "WT-1448" =    # 2 ea
+# "WT-1864" =    # 2 ea
+# "WT-2736" =    # 10 ea
+# "WT-2736-T" =    # 1 ea
+# "WT-3036" =    # 3 ea
+# "WT-3036-T" =    # 1 ea
+# "WT-3048" =    # 7 ea
+# "WT-3048-T" =    # 3 ea
+
+[footing_bedding]
+# $/cy, by aggregate spec
+# "ASTM C33 #57 washed crushed stone" =    # 96.97 cy
+
+[pipe_runs]
+# $/LF, by system
+# "drain" =    # 224.5 LF
+# "vent" =    # 209.6 LF
+# "water_cold" =    # 319.4 LF
+# "water_hot" =    # 194.3 LF
+
+[ducts]
+# $/LF, by system
+# "exhaust" =    # 20.7 LF
+# "return" =    # 92.5 LF
+# "supply" =    # 123.7 LF
+
+[sleeves]
+# $ each, by sleeve diameter (in)
+# "1.5" =    # 24 ea
+# "2.0" =    # 12 ea
+# "2.5" =    # 1 ea
+# "3.0" =    # 12 ea
+# "4.0" =    # 9 ea
+# "6.0" =    # 3 ea
+
+[conduit]
+# $/LF, by trade size (in)
+# "0.75" =    # 37.6 LF
+# "1.0" =    # 58.9 LF
+# "1.25" =    # 36.3 LF
+# "1.5" =    # 33.6 LF
+
+[plumbing_specialties]
+# $ each, by device kind
+# "backflow_preventer" =    # 2 ea
+# "main_shutoff" =    # 1 ea
+# "penetration_seal" =    # 2 ea
+# "ro_stub" =    # 1 ea
+# "shutoff" =    # 4 ea
+# "vacuum_breaker" =    # 3 ea
+# "water_hammer_arrestor" =    # 3 ea
+
+[install_parts]
+# $ each, by loose part
+# "closed-cell spray foam, 1/4\" annulus around the barrel" =    # 2 ea
+# "plastic mounting bracket, non-conductive" =    # 2 ea
+# "silicone gasket, hydrant escutcheon" =    # 2 ea
+
+[pipe_insulation]
+# $/LF, by spec
+# "1\" fiberglass sleeve, ASJ jacket (R-3.5)" =    # 146.9 LF
+# "1/2\" closed-cell elastomeric sleeve, foil-faced, over the barrel" =    # 1.4 LF
+
+[edge_trim]
+# $/LF, by trim category (fascia, soffit, flashings, formed roof trim)
+# "corner_trim" =    # 147.8 LF
+# "drip_flashing" =    # 94.7 LF
+# "edge_cladding" =    # 243.9 LF
+# "fascia" =    # 251.5 LF
+# "ridge_cap" =    # 63.5 LF
+# "soffit" =    # 101.1 LF
+# "wrb_counterflashing" =    # 21 LF

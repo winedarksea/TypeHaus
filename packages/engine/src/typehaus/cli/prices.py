@@ -175,6 +175,42 @@ def _sum(ranges: Iterable[PriceRange]) -> PriceRange:
     return total
 
 
+#: How each price section joins the BOM, authored once: ``(estimate section, bom key,
+#: price key field, quantity field, unit)``. The price table itself is the ``Prices``
+#: attribute named by the section. Both :func:`estimate_costs` and the cost-tracking
+#: payload (``takeoff/costs.py``) read this — the ``(section, key)`` a paid check-off is
+#: stored under has to be the *same* join the estimate prices, or the two views drift.
+ESTIMATE_PLANS = (
+    ("framing", "framing_by_size", "profile", "order_length_ft", "LF"),
+    ("sheet_goods", "sheet_goods", "material", "sheets_4x8", "sheets"),
+    ("hardware", "hardware", "part_number", "count", "ea"),
+    ("concrete", "structural_solids", "category", "volume_cubic_yards", "cy"),
+    ("floor_heat", "floor_heat", "system", "wire_length_ft", "LF"),
+    ("placeables", "placeables", "type", "count", "ea"),
+    # Priced on the *order* quantity, not the net area: a finish is bought with its
+    # waste, and pricing net area would under-cost every plank and tile room.
+    ("floor_finishes", "floor_finishes", "finish", "order_area_sqft", "SF"),
+    ("envelope_layers", "envelope_layers", "material", "net_area_sqft", "SF"),
+    # Order quantity like floor_finishes (wood is bought with its waste). Timber rows
+    # carry no order_area_sqft and price as 0 here — they bill via structural_solids.
+    ("wood_surfaces", "wood_surfaces", "material", "order_area_sqft", "SF"),
+    ("openings", "openings", "type", "count", "ea"),
+    ("footing_bedding", "footing_bedding", "aggregate", "volume_cubic_yards", "cy"),
+    ("pipe_runs", "pipe_runs", "system", "length_ft", "LF"),
+    ("ducts", "ducts", "system", "length_ft", "LF"),
+    ("sleeves", "sleeves", "sleeve_diameter_in", "count", "ea"),
+    ("conduit", "conduit", "trade_size_in", "length_ft", "LF"),
+    ("plumbing_specialties", "plumbing_specialties", "kind", "count", "ea"),
+    ("install_parts", "install_parts", "part", "count", "ea"),
+    ("pipe_insulation", "pipe_insulation", "spec", "length_ft", "LF"),
+    ("edge_trim", "edge_trim", "category", "length_ft", "LF"),
+)
+
+#: The price table an estimate section reads: every section except concrete (which prices
+#: the ``structural_solids`` rows) shares its table's name.
+_PLAN_TABLE = {name: name for name, *_ in ESTIMATE_PLANS}
+
+
 def estimate_costs(bom: dict, prices: Prices) -> dict:
     """Price a :func:`typehaus.takeoff.bill_of_materials` payload against ``prices``.
 
@@ -182,43 +218,11 @@ def estimate_costs(bom: dict, prices: Prices) -> dict:
     "unpriced": [...]}}``. Sections the BOM has no rows for are omitted; rows without a
     price land in ``unpriced`` so the total is honest about what it excludes.
     """
-    plans = (
-        # (estimate section, bom key, price table, price key field, quantity field, unit)
-        ("framing", "framing_by_size", prices.framing, "profile", "order_length_ft", "LF"),
-        ("sheet_goods", "sheet_goods", prices.sheet_goods, "material", "sheets_4x8", "sheets"),
-        ("hardware", "hardware", prices.hardware, "part_number", "count", "ea"),
-        ("concrete", "structural_solids", prices.concrete, "category",
-         "volume_cubic_yards", "cy"),
-        ("floor_heat", "floor_heat", prices.floor_heat, "system", "wire_length_ft", "LF"),
-        ("placeables", "placeables", prices.placeables, "type", "count", "ea"),
-        # Priced on the *order* quantity, not the net area: a finish is bought with its
-        # waste, and pricing net area would under-cost every plank and tile room.
-        ("floor_finishes", "floor_finishes", prices.floor_finishes, "finish",
-         "order_area_sqft", "SF"),
-        ("envelope_layers", "envelope_layers", prices.envelope_layers, "material",
-         "net_area_sqft", "SF"),
-        # Order quantity like floor_finishes (wood is bought with its waste). Timber rows
-        # carry no order_area_sqft and price as 0 here — they bill via structural_solids.
-        ("wood_surfaces", "wood_surfaces", prices.wood_surfaces, "material",
-         "order_area_sqft", "SF"),
-        ("openings", "openings", prices.openings, "type", "count", "ea"),
-        ("footing_bedding", "footing_bedding", prices.footing_bedding, "aggregate",
-         "volume_cubic_yards", "cy"),
-        ("pipe_runs", "pipe_runs", prices.pipe_runs, "system", "length_ft", "LF"),
-        ("ducts", "ducts", prices.ducts, "system", "length_ft", "LF"),
-        ("sleeves", "sleeves", prices.sleeves, "sleeve_diameter_in", "count", "ea"),
-        ("conduit", "conduit", prices.conduit, "trade_size_in", "length_ft", "LF"),
-        ("plumbing_specialties", "plumbing_specialties", prices.plumbing_specialties,
-         "kind", "count", "ea"),
-        ("install_parts", "install_parts", prices.install_parts, "part", "count", "ea"),
-        ("pipe_insulation", "pipe_insulation", prices.pipe_insulation, "spec",
-         "length_ft", "LF"),
-        ("edge_trim", "edge_trim", prices.edge_trim, "category", "length_ft", "LF"),
-    )
     sections: dict[str, dict] = {}
     unpriced: list[dict] = []
     total = ZERO
-    for name, bom_key, table, key_field, quantity_field, unit in plans:
+    for name, bom_key, key_field, quantity_field, unit in ESTIMATE_PLANS:
+        table = getattr(prices, _PLAN_TABLE[name])
         rows = []
         for row in bom.get(bom_key, []) or []:
             key = str(row.get(key_field))

@@ -219,6 +219,26 @@ class OfflineEngine:
             return {}
         return bill_of_materials(self.model)
 
+    def costs_json(self) -> dict[str, Any]:
+        """The cost-tracking payload, offline. Mirrors the served ``GET /costs`` — the
+        worker's house snapshot carries prices.toml/costs.toml when the house has them, so
+        the offline view shows the same join/estimate/check-off state. Read-only: edits go
+        through the server (``PyodideEngineClient.patchCosts`` rejects)."""
+        from typehaus.cli.prices import load_prices
+        from typehaus.takeoff.bom import bill_of_materials
+        from typehaus.takeoff.costs import CostsState, costs_payload, load_costs
+
+        if self.model is None:
+            return {}
+        try:
+            prices = load_prices(self.house_dir)
+            state = load_costs(self.house_dir)
+        except ValueError:
+            # A malformed hand-edited file degrades to the empty state offline; the server
+            # path is where the loud 400 with the offending key lives.
+            prices, state = None, CostsState()
+        return costs_payload(bill_of_materials(self.model), prices, state)
+
     def detail_index(self) -> list[dict[str, Any]]:
         from typehaus.emit.draw.details import detail_index
 
