@@ -140,6 +140,17 @@ def test_catlin_framing_interference_stays_near_zero():
     assert len(findings) <= 2, [f.message for f in findings]
 
 
+def test_tudor_posts_within_their_wall_are_not_a_clash():
+    """The suite's four elm timbers stand in W-S-W3's stud line (``Post.within_wall``):
+    the framer cuts the plates and studs around them, so their shared volume with that
+    one wall's framing is the cut, not an elevation bug. The clearance is authored —
+    remove ``within_wall`` and the same posts report against all three plates."""
+    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+    tudor = [f for f in member_interference(ctx)
+             if any("TUDOR" in tag for tag in f.element_tags)]
+    assert not tudor, [f.message for f in tudor]
+
+
 # A window opening's own framing pack, by child-key prefix ("king-0-l0", "header-0", …).
 _OPENING_FRAMING_KEYS = ("king-", "jack-", "header-", "sill-")
 

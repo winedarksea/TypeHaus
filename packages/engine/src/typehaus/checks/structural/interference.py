@@ -230,6 +230,37 @@ def _intended_framing_joint(a: _Candidate, b: _Candidate) -> bool:
     return False
 
 
+def _within_wall_pairs(plan) -> set[tuple[str, str]]:
+    """``(post tag, wall uid)`` pairs the author declared with ``Post.within_wall``.
+
+    A full-height timber standing in a wall's stud line (the suite's tudor posts) has the
+    plates and studs cut around it — joinery the box IR cannot express, so the post reads
+    as sharing volume with that wall's framing for its whole height. The clearance is
+    authored, never guessed: only the named wall's members are cleared, so the same post
+    left too tall against a beam, or crashing a wall it never named, is still reported.
+    """
+    from typehaus.model.elements import Wall
+    from typehaus.model.structure import Post
+
+    if plan is None:
+        return set()
+    wall_uid = {el.tag: el.uid for el in plan.all_elements() if isinstance(el, Wall)}
+    return {
+        (el.tag, wall_uid[el.within_wall])
+        for el in plan.all_elements()
+        if isinstance(el, Post) and el.within_wall in wall_uid
+    }
+
+
+def _column_within_wall(a: _Candidate, b: _Candidate,
+                        within_pairs: set[tuple[str, str]]) -> bool:
+    """True for a column standing inside the one wall its author placed it within."""
+    for column, member in ((a, b), (b, a)):
+        if column.kind == "column" and (column.label, member.parent) in within_pairs:
+            return True
+    return False
+
+
 def _flush_framed_pairs(plan) -> set[tuple[str, str]]:
     """``(floor uid, beam tag)`` pairs the author declared as flush-framed.
 
@@ -307,6 +338,7 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
     junction_pts = [j.point for j in getattr(ctx.model, "junctions", ())]
     junction_tol = inch(10.0).meters
     flush_pairs = _flush_framed_pairs(getattr(ctx, "plan", None))
+    within_pairs = _within_wall_pairs(getattr(ctx, "plan", None))
 
     candidates: list[_Candidate] = []
     for member in ctx.model.all_members():
@@ -377,6 +409,11 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
             # A joist hung *flush* into a beam it is authored to bear on — the same joint
             # the floor-opening-header clause above clears, just against a beam.
             if _flush_framed_into_beam(a, b, flush_pairs):
+                continue
+            # A column its author stood *inside* a wall's stud line (Post.within_wall):
+            # the plates/studs are cut around it, so shared volume with that one wall's
+            # framing is the cut, not an elevation bug.
+            if _column_within_wall(a, b, within_pairs):
                 continue
             # Cross-wall framing butting together at an L corner or T junction: perpendicular
             # walls' studs/plates lap, and a gable's rake plate/rafters/ridge meet there. A

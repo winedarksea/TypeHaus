@@ -328,7 +328,13 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
     # Catlin's attic den is deliberately served by nothing yet. RM-A-WEST left this set
     # on 2026-07-30: REG-A-HP-WEST (a floor boot off DU-S-HP-SUITE) put it in System 1's
     # zone.
-    assert set(unclaimed) == {"RM-A-DEN"}
+    #
+    # RM-B-ESS joined it 2026-08-02 and stays: the battery closet is a 12 sf cabinet carved
+    # out of RM-B-FURNACE, and it gets no terminal of its own on purpose. It is enclosed on
+    # every side by conditioned space, its own occupant is a heat *source*, and a supply
+    # boot into a sealed Type X box is the last thing that enclosure wants. Unclaimed here
+    # means "served by no zone", which is the true statement, not a gap to fill.
+    assert set(unclaimed) == {"RM-A-DEN", "RM-B-ESS"}
 
 
 # --- supplemental resistance heat ------------------------------------------------------

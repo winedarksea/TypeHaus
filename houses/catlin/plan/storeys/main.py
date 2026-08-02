@@ -874,7 +874,7 @@ BEAMS = [
 # to 36" above the floor, D-M-STUDY's punch subtracted by the resolver. Board feet come
 # off the walnut-tg material's 4/4 stock (bf = sf) in the wood_surfaces takeoff.
 PANELING = [
-    WallPaneling(uid="CMP901AAAA", tag="WP-M-STUDY-WAINSCOT", room="RM-M-STUDY",
+    WallPaneling(uid="CMK901AAAA", tag="WP-M-STUDY-WAINSCOT", room="RM-M-STUDY",
                  material_ref="walnut-tg", height=ft(3)),
 ]
 

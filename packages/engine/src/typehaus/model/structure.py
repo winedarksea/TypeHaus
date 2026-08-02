@@ -145,6 +145,13 @@ class Post(Element):
     # top at its storey datum instead.
     supported_by: str | None = None
     assembly: str | None = None  # optional finish assembly (e.g. paint) for render/IFC material
+    # Tag of the wall this post deliberately stands *inside* — the suite's tudor timbers
+    # sit in W-S-W3's stud line, proud to the drywall face. The framer cuts the plates and
+    # studs around such a post, a joint the box IR cannot express, so
+    # ``structural.member_interference`` clears the post against exactly this wall's
+    # framing and no other. Authored, never guessed (same doctrine as flush-framed beams):
+    # a post that merely crashes into a wall it never named is still reported.
+    within_wall: str | None = None
 
 
 @register_element

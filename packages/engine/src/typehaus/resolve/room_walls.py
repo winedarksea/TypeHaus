@@ -22,6 +22,13 @@ from typehaus.resolve.model import ResolvedModel, ResolvedRoom, ResolvedWall
 # resolve/rooms.py::_lining_inset) plus polygonize jitter; small enough not to claim the
 # parallel wall one stud bay over.
 _BOUNDING_SLOP_M = 0.08
+# Extra clip margin past the wall's own offset when deriving the shared run. Small on
+# purpose: at offset d the clip disk reaches only ~sqrt(2·d·slop) past a face corner
+# (about an inch), where clipping at the membership reach ran ~5" past every corner.
+_CLIP_SLOP_M = 0.02
+# Shared runs shorter than this are corner artifacts — the ~1" of a collinear neighbour
+# wall the clip disk still catches past a face corner — not walls a finish runs along.
+_MIN_RUN_M = 0.05
 
 
 def bounding_walls(
@@ -44,9 +51,14 @@ def bounding_walls(
         if axis.length <= 0.0:
             continue
         reach = wall.thickness_m / 2.0 + _BOUNDING_SLOP_M
-        if axis.distance(face) > reach:
+        offset = axis.distance(face)
+        if offset > reach:
             continue
-        shared = axis.intersection(face.buffer(reach))
+        # Clip with the wall's *actual* offset from the face (its half-thickness-ish
+        # lining inset), not the membership reach: clipping with the full reach ran every
+        # interval ~reach past each corner and picked up stub runs from collinear
+        # neighbour walls, inflating a wainscot's perimeter by a couple of lineal feet.
+        shared = axis.intersection(face.buffer(offset + _CLIP_SLOP_M))
         segments = (
             shared.geoms if shared.geom_type in ("MultiLineString", "GeometryCollection")
             else (shared,)
@@ -58,6 +70,6 @@ def bounding_walls(
             u0 = axis.project(Point(coords[0]))
             u1 = axis.project(Point(coords[-1]))
             lo, hi = sorted((u0, u1))
-            if hi - lo > 1e-6:
+            if hi - lo > _MIN_RUN_M:
                 out.append((wall, (lo, hi)))
     return out

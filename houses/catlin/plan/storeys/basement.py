@@ -372,7 +372,7 @@ FLOOR_OPENINGS = [
 # W-B-CS runs from N-B-C1 (the shower corner), so its splash is the first 3'; W-B-SA-N
 # runs west→east into that corner, so its splash is the last 3' of its 9'-2" run.
 PANELING = [
-    WallPaneling(uid="CBP901AAAA", tag="WP-B-SAUNA-SPLASH", room="RM-B-SAUNA",
+    WallPaneling(uid="CBK901AAAA", tag="WP-B-SAUNA-SPLASH", room="RM-B-SAUNA",
                  material_ref="tile", height=ft(7, 6), replaces_wall_finish=True,
                  spans=(PanelingSpan(wall_ref="W-B-CS", start=ft(0), length=ft(3)),
                         PanelingSpan(wall_ref="W-B-SA-N", start=ft(6, 2), length=ft(3)))),
