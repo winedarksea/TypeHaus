@@ -374,8 +374,9 @@ def print_sheets(
     profile: Optional[str] = typer.Option(
         None, help="jurisdiction profile (default: preferences.toml, else the engine default)"),
     details: str = typer.Option(
-        "all", help="all | primary — 'primary' keeps only starred transition details "
-                    "(Transition.star) in the composed set"),
+        "primary", help="primary | all — 'primary' (default) keeps only starred transition "
+                        "details (Transition.star) in the composed set; 'all' composes "
+                        "every derived detail sheet"),
 ) -> None:
     """Compose the permit-set PDF, plan DXFs, and optional architect handoff (M3)."""
     from typehaus.checks import evaluate_permit_checklist, load_preferences, run

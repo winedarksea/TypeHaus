@@ -15,6 +15,7 @@ from __future__ import annotations
 from typehaus.emit.draw.detail_components.config import (
     BASEMENT_TO_FRAMED_WALL,
     FOUNDATION_FACE,
+    INTERIOR_SLAB_DRIP,
     M_TO_IN,
     SLAB_EDGE,
 )
@@ -61,10 +62,12 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
                              "sill-gasket", "rubber", "metal", lineweight=0.35)
 
     if concrete is not None:
-        # Discrete 1" break where a slab edge meets the foundation wall, and protection over
-        # any foundation foam that surfaces above grade. Both self-gate on their subject
-        # being in frame, so a junction without one draws nothing rather than guessing.
+        # Discrete 1" break where a slab edge meets the foundation wall, protection over
+        # any foundation foam that surfaces above grade, and the interior drip at an
+        # unheated slab-on-grade. All self-gate on their subject being in frame, so a
+        # junction without one draws nothing rather than guessing.
         nodes += slab_thermal_break(model, concrete, crop, direction, station)
+        nodes += interior_slab_drip_flashing(model, concrete, crop, direction, station)
         nodes += foam_protection_board(model, concrete, crop, direction, station)
     return nodes
 
@@ -187,6 +190,60 @@ def slab_thermal_break(model, wall, crop, direction, station) -> list[IRNode]:
     nodes += rect_region(face, slab_top, inner_edge, slab_top + SLAB_EDGE.sealant_cap_in,
                          "thermal-break-sealant", "sealant", "metal", lineweight=0.3)
     return nodes
+
+
+def slab_is_on_grade(model, slab) -> bool:
+    """True when no enclosed space sits beneath the slab — a genuine slab-on-grade.
+
+    Discriminated from the model, never from the assembly name: a resolved room on a lower
+    storey whose clear face covers the slab's centroid, with that storey's floor below the
+    slab's underside, means the "slab" is really a suspended deck over occupied space (the
+    main-floor deck over the basement), and the on-grade vocabulary would be fiction there.
+    """
+    from shapely.geometry import Polygon
+
+    if len(slab.outline) < 3:
+        return True
+    centroid = Polygon(slab.outline).centroid
+    for room in model.rooms:
+        if len(room.clear_face) < 3:
+            continue
+        storey = model.plan.storey(room.storey)
+        if storey is None or storey.elevation.meters >= slab.z0_m:
+            continue
+        if Polygon(room.clear_face).covers(centroid):
+            return False
+    return True
+
+
+def interior_slab_drip_flashing(model, wall, crop, direction, station) -> list[IRNode]:
+    """Interior drip flashing turning water in onto an unheated slab-on-grade.
+
+    The garage reference's remaining piece: water coming down the stem's interior face
+    (blown past the overhead door, or condensation on the cold concrete) is turned out onto
+    the sloped slab instead of wicking into the wall base. Gated on the cut slab genuinely
+    being on grade — a suspended deck over occupied space below (the main-floor deck over
+    the conditioned basement) drains to no apron, so drawing the drip there would lie.
+    """
+    is_outboard_high = outboard_is_high(wall, direction, station)
+    if is_outboard_high is None or crop is None:
+        return []
+    u_lo, u_hi = wall_cut_bounds_m(wall, direction, station)
+    if u_lo is None:
+        return []
+    inboard_face_m = u_lo if is_outboard_high else u_hi
+    in_sign = -1.0 if is_outboard_high else 1.0
+    slab = slab_at_junction(model, crop, direction, station, inboard_face_m)
+    if slab is None or not slab_is_on_grade(model, slab):
+        return []
+    cfg = INTERIOR_SLAB_DRIP
+    face = inboard_face_m * M_TO_IN
+    slab_top = slab.z1_m * M_TO_IN
+    path = path_from_steps((face, slab_top + cfg.rise_in),
+                           [(0.0, -cfg.rise_in),
+                            (in_sign * cfg.run_in, 0.0),
+                            (in_sign * cfg.kick_in, -cfg.kick_drop_in)])
+    return flashing_nodes(path, tag="interior-drip-flashing")
 
 
 def foam_protection_board(model, wall, crop, direction, station) -> list[IRNode]:

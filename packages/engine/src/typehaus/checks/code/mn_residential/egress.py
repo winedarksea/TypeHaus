@@ -23,6 +23,7 @@ _MIN_EGRESS_HEIGHT = inch(24)
 _MAX_EGRESS_SILL = inch(44)
 _MIN_EGRESS_AREA_SF = 5.7  # grade-floor 5.0; upper 5.7 (R310.2.1)
 _MIN_DOOR_CLEAR = inch(31.75)  # 32" nominal clear (R311.2)
+_MIN_DOOR_CLEAR_HEIGHT = inch(78)  # R311.2: 78" minimum clear height at the egress door
 
 # R310.1 applies to a basement holding habitable space. "Habitable" is R202's list — living,
 # sleeping, eating, cooking — and explicitly excludes bathrooms, closets, halls, storage and
@@ -296,6 +297,34 @@ def egress_door_width(ctx: CheckContext) -> list[Finding]:
                              (door.tag,), "R311.2"))
         else:
             out.append(_pass("code.R311_door_width", f"door {door.tag} width ok", "R311.2"))
+    return out
+
+
+@check(Tier.CODE, "code.R311_2_door_height")
+def egress_door_height(ctx: CheckContext) -> list[Finding]:
+    """R311.2 — the egress door needs 78" of clear height, not just 32" of width.
+
+    Graded over every exterior door, the same stricter reading the width check applies:
+    R311.2 technically demands one complying egress door, but which exterior door is "the
+    required" one is a designation the plan does not carry, so every exterior door is held
+    to the bar. A standard 6'-8" (80") leaf clears it; a cut-down cellar or utility door
+    is exactly what this exists to catch.
+    """
+    out: list[Finding] = []
+    for door in (e for e in ctx.plan.all_elements() if e.element_kind == "Door"):
+        dt = next((t for t in ctx.plan.library.door_types if t.tag == door.type_ref), None)
+        if dt is None:
+            out.append(_unknown("code.R311_2_door_height", "unknown door type",
+                                (door.tag,), "R311.2"))
+            continue
+        if dt.exterior and dt.height < _MIN_DOOR_CLEAR_HEIGHT:
+            out.append(_fail(
+                "code.R311_2_door_height",
+                f"egress door {door.tag} height {dt.height.fmt()} < 78\" clear",
+                (door.tag,), "R311.2"))
+        else:
+            out.append(_pass("code.R311_2_door_height", f"door {door.tag} height ok",
+                             "R311.2"))
     return out
 
 

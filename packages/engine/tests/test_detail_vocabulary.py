@@ -136,6 +136,9 @@ def test_no_detail_component_is_ever_a_symbol(catlin_model):
     ("wall_foundation:CATLIN_BASEMENT_12", "sill-gasket"),
     # The rainscreen's base vent/insect strip — the same closure the resolver bills.
     ("wall_foundation:CATLIN_BASEMENT_12", "bug-screen"),
+    # The unheated slab-on-grade base: water on the stem's interior face is turned in
+    # onto the sloped slab (``garage_wall_detail_side_ifc.png``).
+    ("wall_foundation:GARAGE_ICF_8", "interior-drip-flashing"),
 ])
 def test_component_is_drawn_as_a_closed_outline_with_a_fill(catlin_model, key_prefix, name):
     """Each named component draws a closed outline, and a hatch shares its boundary."""
@@ -239,6 +242,51 @@ def test_buried_foundation_foam_gets_no_protection_board(catlin_model):
     """The house basement's XPS tops out at grade — nothing is exposed to protect."""
     _derived, scene = _detail_scene(catlin_model, "wall_foundation:CATLIN_BASEMENT_12")
     assert "foam-protection-board" not in _component_tags(scene)
+
+
+# --- interior slab drip (unheated slab-on-grade) ------------------------------
+
+def test_garage_slab_base_draws_the_interior_drip_flashing(catlin_model):
+    """The garage reference's remaining piece: an interior drip at the stem base.
+
+    Reference: ``garage_wall_detail_side_ifc.png`` — "interior drip flashing turning water
+    in onto the sloped slab". The profile has to actually turn down (the kick), or it is a
+    shelf that ponds instead of a drip that sheds.
+    """
+    from typehaus.emit.draw.detail_components import INTERIOR_SLAB_DRIP
+
+    _derived, scene = _detail_scene(catlin_model, "wall_foundation:GARAGE_ICF_8")
+    drips = _component_nodes(scene, "interior-drip-flashing")
+    assert drips, "an unheated slab-on-grade base must draw the interior drip"
+    drip = drips[0]
+    assert isinstance(drip, Polyline) and drip.closed
+    z_span = max(z for _u, z in drip.points) - min(z for _u, z in drip.points)
+    assert z_span > INTERIOR_SLAB_DRIP.rise_in, "the drip kick must turn down"
+
+
+def test_suspended_deck_base_gets_no_interior_drip(catlin_model):
+    """The house foundation detail sits over the conditioned basement.
+
+    ``SL-M-DECK`` is 9" of suspended structural concrete with rooms beneath it, not a
+    slab-on-grade — it drains to no apron, so drawing the drip there would be fiction.
+    """
+    _derived, scene = _detail_scene(catlin_model, "wall_foundation:CATLIN_BASEMENT_12")
+    assert "interior-drip-flashing" not in _component_tags(scene)
+
+
+def test_slab_on_grade_is_read_from_rooms_below_not_the_assembly_name(catlin_model):
+    """The discriminator is occupied space beneath the slab, never a name string.
+
+    A resolved room on a lower storey whose clear face covers the slab's centroid — with
+    that storey's floor below the slab's underside — makes the slab a suspended deck.
+    """
+    from typehaus.emit.draw.detail_components import slab_is_on_grade
+
+    slabs = {s.tag: s for s in catlin_model.solids if s.category == "slab"}
+    assert slab_is_on_grade(catlin_model, slabs["SL-G-FLOOR"]), (
+        "the garage slab has nothing but earth beneath it")
+    assert not slab_is_on_grade(catlin_model, slabs["SL-M-DECK"]), (
+        "the main deck sits over the conditioned basement")
 
 
 # --- dimensional parity for the drawn vocabulary ------------------------------

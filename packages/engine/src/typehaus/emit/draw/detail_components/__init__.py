@@ -57,6 +57,7 @@ from typehaus.emit.draw.detail_components.config import (
     BASEMENT_TO_FRAMED_WALL,
     BREEZEWAY_GLAZING,
     FOUNDATION_FACE,
+    INTERIOR_SLAB_DRIP,
     LAYER,
     M_TO_IN,
     OPENING_DETAIL,
@@ -133,6 +134,8 @@ from typehaus.emit.draw.detail_components.stack import (
 from typehaus.emit.draw.detail_components.wall_base import (
     basement_framed_wall,
     foam_protection_board,
+    interior_slab_drip_flashing,
+    slab_is_on_grade,
     slab_thermal_break,
 )
 
@@ -140,6 +143,7 @@ __all__ = [
     "BASEMENT_TO_FRAMED_WALL",
     "BREEZEWAY_GLAZING",
     "FOUNDATION_FACE",
+    "INTERIOR_SLAB_DRIP",
     "LAYER",
     "M_TO_IN",
     "OPENING_DETAIL",
@@ -189,6 +193,7 @@ __all__ = [
     "foam_protection_board",
     "french_drain",
     "grade_line",
+    "interior_slab_drip_flashing",
     "lvl_ridge_hanger",
     "material_legend",
     "path_from_steps",
@@ -208,6 +213,7 @@ __all__ = [
     "shower_overlay_for_slice",
     "shower_recess",
     "shower_wall_lining",
+    "slab_is_on_grade",
     "slab_thermal_break",
     "soil_body",
     "stack_width_shelf",

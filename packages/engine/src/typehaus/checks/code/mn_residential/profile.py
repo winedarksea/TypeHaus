@@ -23,8 +23,8 @@ MN_2024 = JurisdictionProfile(
     coverage_statement=(
         "Encodes a declared subset. "
         "Habitability, egress and circulation: R305 ceiling height, R310 emergency escape "
-        "openings (sleeping rooms and basements), R311.2 egress door width, R311.3 "
-        "landings at exterior doors, R311.6 hallway width, R311.7 stairways. "
+        "openings (sleeping rooms and basements), R311.2 egress door width and height, "
+        "R311.3 landings at exterior doors, R311.6 hallway width, R311.7 stairways. "
         "Fall protection: R312.1 guards at stair wells and raised walking surfaces, "
         "R312.1.3 guard opening limits, R311.7.8 stair handrails, and R312.2 window fall "
         "protection. Glazing: R308.4 safety glazing in hazardous locations. "
@@ -80,7 +80,11 @@ MN_2024 = JurisdictionProfile(
         PermitItemSpec("Emergency escape and rescue openings",
                        ("code.R310_egress", "code.R310_1_storey_egress",
                         "code.R310_2_3_window_well"), ("IRC R310",), blocking=False),
-        PermitItemSpec("Egress door clear width", ("code.R311_door_width",), ("IRC R311.2",)),
+        # R311.2 fixes both dimensions of the required egress door; one permit line, two
+        # checks — a plan reviewer measures the door once.
+        PermitItemSpec("Egress door clear width and height",
+                       ("code.R311_door_width", "code.R311_2_door_height"),
+                       ("IRC R311.2",)),
         PermitItemSpec("Landings at exterior doors", ("code.R311_3_exterior_landing",),
                        ("IRC R311.3", "IRC R311.3.1"), blocking=False),
         # Claimed by the coverage statement since it was written, implemented by nothing:
