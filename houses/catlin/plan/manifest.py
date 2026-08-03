@@ -72,6 +72,9 @@ _project = Project(
     building=Building(name="Catlin House"),
     format_version=format_version,
     requires_engine=requires_engine,
+    # One pan-button click right + one down from the plain whole-building fit — the start
+    # position the model is actually reviewed from (2026-08-03).
+    default_view_pan=(1.0, 1.0),
 )
 
 _storeys = (

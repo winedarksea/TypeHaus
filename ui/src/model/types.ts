@@ -1113,7 +1113,14 @@ export interface Model {
   units: string;
   projectNorth: number;
   findings: Finding[];
-  project: { name: string; uuid: string; active_code_profile?: string | null };
+  project: {
+    name: string;
+    uuid: string;
+    active_code_profile?: string | null;
+    // Default 3D framing offset, as (right, down) pan-button clicks on top of the whole-
+    // building fit. Absent on older model.json, which leaves the fit unadjusted.
+    default_view_pan?: [number, number];
+  };
   site?: {
     lat: number;
     lon: number;

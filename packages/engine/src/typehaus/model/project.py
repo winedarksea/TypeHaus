@@ -72,6 +72,10 @@ class Project(HausModel):
     format_version: int = 1
     requires_engine: str = ">=0.1,<0.2"
     active_code_profile: str | None = None
+    # Viewer's default 3D framing, expressed as (right, down) clicks of the pan buttons
+    # (Panel3D.tsx `pan()`, one click == VIEW_PAN_STEP_FRACTION of the fit radius) applied on
+    # top of the whole-building three-quarter fit. (0, 0) reproduces today's plain fit.
+    default_view_pan: tuple[float, float] = (0.0, 0.0)
 
 
 for _name, _obj in (

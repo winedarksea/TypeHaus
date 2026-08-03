@@ -351,8 +351,8 @@ MAIN_LIGHTING = [
     # applies to the two studies that do (RM-S-STUDY2, RM-A-STUDY). This one gets a down
     # spot on the centre bearing wall for the desk, over a general can.
     ElectricalDevice(uid="QTM000HAAA", tag="ED-M-STUDY-SPOT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(17, 7), ft(19, 6)), type_ref="ED-T-LT-SCONCE-SPOT",
-                     circuit="CKT-LT-MAIN", room="RM-M-STUDY", rotation=deg(-90),
+                     position=pt(m(4.83893), m(6.64057)), type_ref="ED-T-LT-SCONCE-SPOT",
+                     circuit="CKT-LT-MAIN", room="RM-M-STUDY", rotation=deg(0),
                      controlled_by=("ED-M-STUDY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
 
@@ -390,7 +390,7 @@ MAIN_LIGHTING = [
                      controlled_by=("ED-M-BATH2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000QAAA", tag="ED-M-BATH2-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(ft(0, 5), ft(18)), type_ref="ED-T-LT-MIRROR",
+                     position=pt(m(0.136904), m(5.01218)), type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH2", rotation=deg(90),
                      controlled_by=("ED-M-BATH2-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),

@@ -217,21 +217,25 @@ GARAGE_HYDRANT_SLEEVE = SleevePenetration(
     serves_fixture="FX-G-HYDRANT", purpose=Service.WATER_COLD,
 )
 
-# The exterior gravel pit — the wash-down water's only drainage path, since there is
-# deliberately no floor drain (notes/garage_hydrant.md). It *is* a drywell, and now says so:
-# it was a locally deepened FootingBedding only because FootingBedding was the closest thing
-# the model had, and the cost of that stand-in was real — the pit's excavation perimeter was
-# billing as perimeter drain tile in the sitework take-off, tile that is not there and that
-# nobody would install around a soakaway.
+# The gravel bed FX-G-HYDRANT's own weep drains into — a Woodford Y34-style frost-free
+# hydrant self-drains through a weep hole at its buried shutoff when the head closes, and
+# that water has nowhere to go but into stone packed around the valve. It is *not* an
+# exterior catch basin for garage wash-down water and there is no floor drain reading on it
+# (notes/garage_hydrant.md); it exists solely to take the hydrant's own weep. It was a
+# locally deepened FootingBedding only because FootingBedding was the closest thing the
+# model had, and the cost of that stand-in was real — the excavation perimeter was billing
+# as perimeter drain tile in the sitework take-off, tile that is not there.
 #
-# Centred 3' *outside* the west wall line (x=0), which clears the 20"-wide west footing by a
-# foot: a soakaway dug against a footing undermines it.
-_DRYWELL_X_FT = -3.0
+# So it sits right on the hydrant's own stack (HYDRANT_X_FT, HYDRANT_Y_FT), not offset to
+# clear the west footing: the weep needs stone at the valve, not stone somewhere else that
+# a pipe would have to carry it to. What clears the footing is depth, not plan offset — the
+# stone starts a foot above the shutoff (well below the footing's -4'-2" bearing) and runs
+# down past it, so nothing here is beside the footing at the footing's own depth.
 GARAGE_HYDRANT_DRYWELL = Drywell(
     uid="CGP603AAAA", tag="DRW-G-HYDRANT",
-    position=pt(ft(_DRYWELL_X_FT), ft(HYDRANT_Y_FT)),
-    diameter=ft(3), depth=ft(3), geotextile=True,
-    inlet_refs=("FX-G-HYDRANT",),
+    position=pt(ft(HYDRANT_X_FT), ft(HYDRANT_Y_FT)),
+    diameter=ft(2), depth=ft(4), top_elevation=ft(-(HYDRANT_BURY_FT - 1)),
+    geotextile=True, inlet_refs=("FX-G-HYDRANT",),
 )
 
 BASEMENT_ELEMENTS = [*HOUSE_FOOTINGS, *HOUSE_FOOTING_BEDDING, *GARAGE_STEM_NODES,

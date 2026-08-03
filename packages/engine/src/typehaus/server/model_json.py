@@ -235,6 +235,7 @@ def model_to_dict(
             "name": model.plan.project.name,
             "uuid": str(model.plan.project.project_uuid),
             "active_code_profile": model.plan.project.active_code_profile,
+            "default_view_pan": list(model.plan.project.default_view_pan),
         },
         "site": {
             "lat": model.plan.project.site.lat,

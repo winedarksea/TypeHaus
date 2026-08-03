@@ -282,3 +282,6 @@ Dark base to the house
 Dark panel along the panel of the corner most panels
 Standing seam clamps to anchor decorative elements, possibly at gable peak, or lightning rod
 Architectural lighting on facade (try to aim to be dark sky friendly)
+
+### Potential cost cutting (just ideas, not a TODO)
+Remove the attic level and switch to truss/blown in insulation

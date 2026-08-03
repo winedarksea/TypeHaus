@@ -282,6 +282,9 @@ function createScene(
   let radius = 12;
   let target = new THREE.Vector3(0, 1, 0);
   let trueNorthDegrees = 0;
+  // (right, down) pan-button clicks applied on top of the whole-building fit — see setModel's
+  // `m.project?.default_view_pan`.
+  let defaultViewPan: [number, number] = [0, 0];
   // Set once the operator orbits/dollies/pans. A resize re-frames only while this is false, so
   // dragging the split divider never yanks a view someone has just composed.
   let viewAdjustedByUser = false;
@@ -539,6 +542,23 @@ function createScene(
     return box;
   };
 
+  // The screen-space basis pan() derives from camera.quaternion (line ~583 below), rederived
+  // for an arbitrary orbit state rather than the live camera — lets defaultViewPan reproduce
+  // N pan-button clicks against a framing that hasn't been applied to the camera yet.
+  const screenBasisFor = (orbitTheta: number, orbitPhi: number, orbitRadius: number, orbitTarget: THREE.Vector3) => {
+    const eye = new THREE.Vector3(
+      orbitTarget.x + orbitRadius * Math.sin(orbitPhi) * Math.cos(orbitTheta),
+      orbitTarget.y + orbitRadius * Math.cos(orbitPhi),
+      orbitTarget.z + orbitRadius * Math.sin(orbitPhi) * Math.sin(orbitTheta),
+    );
+    const m = new THREE.Matrix4().lookAt(eye, orbitTarget, camera.up);
+    const q = new THREE.Quaternion().setFromRotationMatrix(m);
+    return {
+      screenRight: new THREE.Vector3(1, 0, 0).applyQuaternion(q),
+      screenUp: new THREE.Vector3(0, 1, 0).applyQuaternion(q),
+    };
+  };
+
   // Compute the framing that shows the whole building from a three-quarter viewpoint, at the
   // pane's *current* aspect. Reset recomputes rather than replaying a snapshot, so a view fitted
   // in the narrow split pane still frames correctly once the panel goes full width.
@@ -551,6 +571,14 @@ function createScene(
       box, fitTarget, fitTheta, VIEW_FIT_POLAR_ANGLE,
       THREE.MathUtils.degToRad(camera.fov), camera.aspect,
     );
+    const [rightClicks, downClicks] = defaultViewPan;
+    if (rightClicks || downClicks) {
+      const { screenRight, screenUp } = screenBasisFor(fitTheta, VIEW_FIT_POLAR_ANGLE, fitRadius, fitTarget);
+      const panStep = fitRadius * VIEW_PAN_STEP_FRACTION;
+      // Matches pan()'s own signs: right adds screenRight, down subtracts screenUp.
+      fitTarget.addScaledVector(screenRight, panStep * rightClicks)
+        .addScaledVector(screenUp, -panStep * downClicks);
+    }
     return { theta: fitTheta, phi: VIEW_FIT_POLAR_ANGLE, radius: fitRadius, target: fitTarget };
   };
 
@@ -609,6 +637,7 @@ function createScene(
     activePalette = palette;
     scene.background = new THREE.Color(palette.bg);
     trueNorthDegrees = m.site?.true_north_deg ?? 0;
+    defaultViewPan = m.project?.default_view_pan ?? [0, 0];
     if (!preserveView) target = new THREE.Vector3(0, 1.2, 0);
 
     const center = planCenterOf(m);

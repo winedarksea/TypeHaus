@@ -144,7 +144,7 @@ MAIN_FIXTURES = (
     # a house-local surrogate. Its 27" mount puts the library sink's deck at the intended
     # lavatory height; rotation +90 turns the back of the symbol toward the west wall.
     Fixture(uid="CMQ807AAAA", tag="FX-M-BATH2-SINK", type_ref="FX-KITCHEN-SINK-33",
-            room="RM-M-BATH2", position=pt(ft(1), ft(16, 6)), rotation=deg(90),
+            room="RM-M-BATH2", position=pt(m(0.434228), m(5.02659)), rotation=deg(90),
             wall_ref="W-M-W3", mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
             drain_position=pt(ft(1), ft(16, 6))),
     # --- RM-M-LAUNDRY (2026-07-31) -----------------------------------------------------

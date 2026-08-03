@@ -157,8 +157,9 @@ WALL_HYDRANT = FixtureType(
            "backflow protection for a hose connection.",
 )
 # The other way to make a hydrant frost-free, and the one a wall in a heated building
-# allows. ``WALL_HYDRANT`` above is a *yard* hydrant: its seat is 6' down, below the frost
-# line, and the barrel drains to it. This one's seat is at the inboard end of the barrel,
+# allows: a Woodford Model 19. ``WALL_HYDRANT`` above is a *yard* hydrant: its seat is 6'
+# down, below the frost line, and the barrel drains to it. This one's seat is at the inboard
+# end of the barrel,
 # inside the conditioned envelope, and the barrel pitches outward so it drains itself the
 # moment the handle closes. There is no bury depth to specify because there is no bury —
 # which is why ``mep.hydrant_freeze_depth`` exempts these and
@@ -178,13 +179,12 @@ WALL_HYDRANT_SELF_DRAINING = FixtureType(
     footprint=(inch(6), inch(6)), height=inch(8), plan_symbol="hydrant",
     needs=frozenset({Service.WATER_COLD}),
     mount=Mount(kind=MountKind.WALL, elevation=inch(24)),
-    source="Self-draining frost-free wall hydrant class (Woodford Model 22 / Prier C-234 "
-           'and similar), 3/4" inlet, integral anti-siphon vacuum breaker, barrel length '
-           "chosen for the wall stack it passes (here 2x6 + 4\" continuous exterior "
-           "insulation + rainscreen ~= 10\"). The seat sits inside the conditioned "
-           "envelope and the barrel pitches outward to drain; specify the PEX transition "
-           "at the seat, a sleeve over the barrel, and the manufacturer's gasketed "
-           "escutcheon over a foamed penetration.",
+    source="Woodford Model 19 self-draining frost-free wall faucet, 3/4\" NPT inlet, MHT "
+           "outlet, integral anti-siphon vacuum breaker, barrel length chosen for the wall "
+           "stack it passes (here 2x6 + 4\" continuous exterior insulation + rainscreen "
+           "~= 10\"). The seat sits inside the conditioned envelope and the barrel pitches "
+           "outward to drain; specify the PEX transition at the seat, a sleeve over the "
+           "barrel, and the manufacturer's gasketed escutcheon over a foamed penetration.",
 )
 
 # --- laundry ------------------------------------------------------------------------

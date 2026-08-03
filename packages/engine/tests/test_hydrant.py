@@ -155,18 +155,24 @@ def test_the_pedestal_rides_on_the_slab_rather_than_bearing_on_soil(catlin_model
 
 
 def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):
-    """There is deliberately no floor drain — see notes/garage_hydrant.md. The pit is a
-    Drywell; it was a deepened FootingBedding only while that was the closest thing the model
-    had, and that stand-in billed the pit's perimeter as drain tile that is not there."""
+    """There is deliberately no floor drain — see notes/garage_hydrant.md. The Y34's head
+    self-drains through a weep at its buried shutoff, into stone packed around the valve —
+    not into a separate exterior catch basin, so the pit sits on the hydrant's own stack."""
     pit = catlin_model.plan.by_tag("DRW-G-HYDRANT")
-    assert pit.depth.meters * _M_TO_FT == pytest.approx(3.0, abs=1e-6)
+    assert pit.depth.meters * _M_TO_FT == pytest.approx(4.0, abs=1e-6)
     assert pit.geotextile
     assert "FX-G-HYDRANT" in pit.inlet_refs
-    # Outside the west wall line, clear of the 20"-wide footing it must not undermine.
-    x_ft = pit.position.xy_m[0] * _M_TO_FT
-    assert x_ft < 0 and abs(x_ft) - pit.diameter.meters * _M_TO_FT / 2 > 20 / 24
+    # Collocated with the hydrant's own supply stack (SP-G-HYDRANT), not offset to some
+    # exterior spot — the weep has to reach stone at the valve, not stone a pipe carries it to.
+    x_ft, y_ft = pit.position.xy_m[0] * _M_TO_FT, pit.position.xy_m[1] * _M_TO_FT
+    assert x_ft == pytest.approx(1.5, abs=1e-6)
+    assert y_ft == pytest.approx(62.0, abs=1e-6)
+    # Top of stone starts a foot above the 6' shutoff — below the footing's -4'-2" bearing,
+    # so the excavation is never beside the footing at the footing's own depth.
     solid = next(s for s in catlin_model.solids if s.tag == "DRW-G-HYDRANT")
     assert solid.category == "drywell"
+    assert solid.z1_m * _M_TO_FT == pytest.approx(-5.0, abs=1e-6)
+    assert solid.z1_m * _M_TO_FT < -4.1667
     # No drain fixture, and no DRAIN run, anywhere in the garage.
     garage_fixtures = [e for e in catlin_model.plan.storey_elements("garage")
                        if e.element_kind == "Fixture"]
