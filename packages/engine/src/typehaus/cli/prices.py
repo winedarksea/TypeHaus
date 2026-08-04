@@ -55,7 +55,9 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              # Plumbing specialties (2026-08-01): devices by the piece, their loose install
              # kits, and hot-line insulation by the foot.
              "plumbing_specialties", "install_parts", "pipe_insulation",
-             "edge_trim")
+             "edge_trim",
+             # Monolithic wall structure (2026-08-03): concrete/masonry walls by the yard.
+             "wall_structure")
 
 
 def _dollars(value: float) -> str:
@@ -126,6 +128,12 @@ class Prices:
     # Edge trim by the lineal foot (2026-08-02), keyed on the row category — fascia,
     # soffit, drip_flashing, edge_cladding, corner_trim, ridge_cap ...
     edge_trim: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Monolithic wall structure (2026-08-03), keyed on the *assembly* tag rather than the
+    # material: a placed yard of SUNKEN_GARDEN_WALL and a yard of CATLIN_BASEMENT_12 are
+    # both "concrete" and are not the same price. Priced by the cubic yard; the rows also
+    # carry net_area_sqft, so a face-priced second plan entry can be added later — but
+    # price each assembly in one table only.
+    wall_structure: Mapping[str, PriceRange] = field(default_factory=dict)
 
 
 def _price(section: str, key: str, raw: object, path: Path) -> PriceRange:
@@ -204,6 +212,8 @@ ESTIMATE_PLANS = (
     ("install_parts", "install_parts", "part", "count", "ea"),
     ("pipe_insulation", "pipe_insulation", "spec", "length_ft", "LF"),
     ("edge_trim", "edge_trim", "category", "length_ft", "LF"),
+    # Placed by the yard, keyed on the assembly — see the field comment on ``Prices``.
+    ("wall_structure", "wall_structure", "assembly", "volume_cubic_yards", "cy"),
 )
 
 #: The price table an estimate section reads: every section except concrete (which prices

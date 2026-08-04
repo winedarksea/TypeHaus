@@ -48,6 +48,7 @@ from typehaus.takeoff.drainage import drainage_takeoff
 from typehaus.takeoff.edge_trim import edge_trim_takeoff
 from typehaus.takeoff.sitework import footing_bedding_takeoff
 from typehaus.takeoff.stairs import stair_finish_takeoff
+from typehaus.takeoff.wall_structure import wall_structure_takeoff
 from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 
 
@@ -93,6 +94,12 @@ def bill_of_materials(
         # Resolved-but-unbilled until the 2026-07-25 sweep.
         "floor_finishes": floor_finish_rows(model),
         "envelope_layers": envelope_layer_takeoff(model),
+        # The other half of the wall stack (2026-08-03): a STRUCTURE layer that does not
+        # frame — a pour, an ICF core, a CMU/SRW course, a brick wythe — produces no
+        # members and is not a solid, so it was billed nowhere at all. 43 of catlin's 154
+        # walls, ~131 cy. Partitions the walls with `framing` by the same predicate
+        # `frame_wall` branches on (→ takeoff/wall_structure.py).
+        "wall_structure": wall_structure_takeoff(model),
         # The species rollup — sauna liner, wainscot/tile-splash panelings, timber posts,
         # species floors — in square feet and board feet. Rows mirroring another section
         # carry ``also_in_envelope_layers`` / ``also_in_structural_solids`` /

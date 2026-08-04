@@ -359,6 +359,9 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         # Structure
         "framing", "framing_by_size", "structural_solids", "sheet_goods",
         "construction_returns", "hardware", "footing_bedding",
+        # Monolithic wall structure (2026-08-03): the concrete/masonry wall cores that
+        # frame no members and are not solids, so no other section could see them.
+        "wall_structure",
         # Envelope & openings
         "envelope_layers", "wood_surfaces", "glazing_panels", "glazing_trim", "edge_trim",
         "bug_screens", "openings", "floor_finishes", "stair_finish", "railings",

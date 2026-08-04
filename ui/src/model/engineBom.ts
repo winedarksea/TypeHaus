@@ -32,8 +32,10 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     id: "structure",
     note: "Sticks, sheets, solids and the steel that joins them.",
     title: "Structure",
-    sections: ["framing", "framing_by_size", "structural_solids", "sheet_goods",
-      "construction_returns", "hardware", "footing_bedding"],
+    // `wall_structure` sits beside `structural_solids`, not with the envelope layers: a
+    // concrete or masonry wall core is a pour, not a covering, and it is ordered by the yard.
+    sections: ["framing", "framing_by_size", "structural_solids", "wall_structure",
+      "sheet_goods", "construction_returns", "hardware", "footing_bedding"],
   },
   {
     id: "envelope",

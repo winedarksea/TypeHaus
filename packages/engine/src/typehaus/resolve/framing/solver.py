@@ -32,7 +32,8 @@ from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedWall
 
 
-def _structure_layer(plan: PlanModel, assembly_tag: str):
+def structure_layer(plan: PlanModel, assembly_tag: str):
+    """The assembly's STRUCTURE layer, or ``None`` if it has none."""
     asm = plan.library.resolve_assembly(assembly_tag)
     if asm is None:
         return None
@@ -40,6 +41,20 @@ def _structure_layer(plan: PlanModel, assembly_tag: str):
         if layer.function is LayerFunction.STRUCTURE:
             return layer
     return None
+
+
+def frames_as_members(layer) -> bool:
+    """Does this STRUCTURE layer become sticks of lumber, or is it a monolithic pour/course?
+
+    The one place the framed/monolithic split is decided. ``frame_wall`` returns no members
+    when this is false, and ``takeoff/wall_structure.py`` bills exactly that complement by
+    area and volume — so the predicate lives here, once, rather than being re-derived by
+    each consumer and drifting.
+
+    All three arms matter: a masonry course is arithmetic, not members (#23), and a
+    structure layer with no ``FramingSpec`` (a pour) has nothing to lay out.
+    """
+    return layer is not None and layer.masonry is None and layer.framing is not None
 
 
 def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
@@ -63,12 +78,13 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     ``FramingSpec.corner_style``. Per-end because a corner belongs to two walls and the
     override lives on the owning end, so two walls never fight over one corner's style.
     """
-    layer = _structure_layer(plan, rw.assembly)
-    if layer is None or layer.masonry is not None:
-        return ()  # masonry walls take the arithmetic-takeoff path, no members (#23)
-    spec = layer.framing
-    if spec is None:
+    layer = structure_layer(plan, rw.assembly)
+    if not frames_as_members(layer):
+        # Masonry and monolithic walls take the arithmetic-takeoff path, no members (#23);
+        # `takeoff/wall_structure.py` bills them by area and cubic yards.
         return ()
+    spec = layer.framing
+    assert spec is not None  # frames_as_members
 
     p0, p1 = _framing_axis(rw)
     axis_len = length(sub(p1, p0))
@@ -378,7 +394,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             corner_styles = {
                 layer.framing.corner_style
                 for item in junction.incidents
-                if (layer := _structure_layer(plan, item.assembly)) is not None
+                if (layer := structure_layer(plan, item.assembly)) is not None
                 and layer.framing is not None
             }
             if len(corner_styles) > 1:
@@ -401,7 +417,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 layer.framing.tee_backing_style
                 for item in junction.incidents
                 if item.wall_tag in junction.through_walls
-                and (layer := _structure_layer(plan, item.assembly)) is not None
+                and (layer := structure_layer(plan, item.assembly)) is not None
                 and layer.framing is not None
             }
             if len(tee_styles) > 1:

@@ -85,6 +85,7 @@ def takeoff(
                # estimate and to `haus variants compare`.
                "floor_finishes": bom["floor_finishes"],
                "envelope_layers": bom["envelope_layers"],
+               "wall_structure": bom["wall_structure"],
                "wood_surfaces": bom["wood_surfaces"],
                "openings": bom["openings"],
                "stair_finish": bom["stair_finish"],

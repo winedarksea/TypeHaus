@@ -95,6 +95,8 @@ export function runEngineBomTests() {
   // fall into "Other" (test_bom_sweep.py pins the same key on the engine side).
   assert(claimed.includes("edge_trim"),
     "edge_trim (takeoff/edge_trim.py) must be claimed by the envelope group");
+  assert(claimed.includes("wall_structure"),
+    "wall_structure (takeoff/wall_structure.py) must be claimed by the structure group");
 
   // --- cells ------------------------------------------------------------------------------
 

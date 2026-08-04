@@ -56,6 +56,7 @@ from typehaus.takeoff.hardware_config import (
 )
 from typehaus.takeoff.placeables import floor_heat_takeoff, placeables_takeoff
 from typehaus.takeoff.railings import railing_takeoff
+from typehaus.takeoff.wall_structure import wall_structure_takeoff
 
 __all__ = [
     "glazing_panel_takeoff", "glazing_trim_takeoff", "glazing_fastener_rows",
@@ -75,6 +76,7 @@ __all__ = [
     "railing_takeoff",
     "sheet_goods_takeoff",
     "structural_solids_takeoff",
+    "wall_structure_takeoff",
     "DEFAULT_HARDWARE_TAKEOFF_CONFIG",
     "HardwareTakeoffConfig",
     # Re-exported for the take-off unit tests, which exercise the ordering/board-foot rules.

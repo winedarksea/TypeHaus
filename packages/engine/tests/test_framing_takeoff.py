@@ -109,7 +109,11 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "wood_surfaces",
                         # Edge trim by the lineal foot: the fascia/soffit/flashing family,
                         # authored runs and derived roof trim alike (→ takeoff/edge_trim.py).
-                        "edge_trim"}
+                        "edge_trim",
+                        # Monolithic wall structure (2026-08-03): a STRUCTURE layer that
+                        # frames no members and is not a solid reached no row at all —
+                        # 43 of catlin's 154 walls, ~131 cy (→ takeoff/wall_structure.py).
+                        "wall_structure"}
     assert all(section for section in bom.values()), "no BOM section may come back empty"
     # The framing section still reconciles 1:1 with the resolved members.
     assert sum(int(row["pieces"]) for row in bom["framing"]) == len(catlin_model.all_members())
@@ -135,8 +139,6 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
                "members are FramedMembers under `all_members()` (billed by `framing`) "
                "and the finished box bills as that solid under `structural_solids`, so "
                "billing the record too would order the same chase twice",
-    "walls": "billed by their parts, not as walls: `framing` for the studs, "
-             "`envelope_layers` for the stack, `sheet_goods` for the sheathing",
     "roofs": "same split as walls — `framing` for the sticks, `envelope_layers` and "
              "`sheet_goods` for the skin",
     "floors": "same split — joists in `framing`, subfloor and ceiling in `sheet_goods`",
@@ -150,6 +152,12 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
 
 # collection name -> the BOM section(s) that bill it.
 _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
+    # Walls bill by their parts. This was a *waiver* until 2026-08-03, and its text —
+    # "`framing` for the studs, `envelope_layers` for the stack" — was the false claim the
+    # missing-concrete bug lived inside: `envelope_layers` never billed STRUCTURE, so a
+    # wall whose core is a pour or a masonry course reached no row at all.
+    # `test_every_wall_layer_is_billed_or_waived` below is the assertion that says so.
+    "walls": ("framing", "envelope_layers", "wall_structure"),
     "openings": ("openings",),
     "solids": ("structural_solids",),
     "construction_returns": ("construction_returns",),
@@ -193,6 +201,57 @@ def test_every_resolved_collection_is_billed_or_waived(catlin_model) -> None:
             assert bom.get(section), (
                 f"{collection} is resolved on catlin but its BOM section "
                 f"{section!r} is empty")
+
+
+# The layer-level twin of the collection sweep above. "walls are billed by their parts" is
+# only true if *every* part is billed, and nothing checked that: `envelope_layers` quietly
+# excluded STRUCTURE, so 43 walls' worth of concrete and masonry reached no order for months
+# while the collection-level gate stayed green. A layer function that is not billed must be
+# named here with the reason — keyed by function, and the reason has to survive reading.
+_WAIVED_LAYER_FUNCTIONS: dict[str, str] = {
+    "airgap": "an air gap is nothing at all — a void between layers, with no material",
+    # Honest note, not a clean waiver: the framing cut list does carry strapping as members
+    # for the walls that frame it, but W-B-CS (SAUNA_LINER_ON_CONCRETE) has a
+    # `struct-1-plywood` FURRING layer over a concrete core and zero members, so *that*
+    # strapping is billed nowhere. Known gap, tracked in plans/TODO.md; waiving by function
+    # here rather than fixing it is deliberate scope, and the note is the price of that.
+    "furring": "lineal-foot strapping the framing cut list carries as members — except on "
+               "monolithic walls, where it frames nothing: W-B-CS is a known unbilled gap",
+}
+
+
+def test_every_wall_layer_is_billed_or_waived(catlin_model) -> None:
+    """Every layer of every wall reaches a BOM section, or its function is waived above."""
+    from typehaus.model.enums import LayerFunction
+    from typehaus.takeoff.envelope import _BILLABLE, envelope_layer_takeoff
+    from typehaus.takeoff.wall_structure import wall_structure_takeoff
+
+    envelope = {(str(row["scope"]), str(row["function"]), str(row["material"]))
+                for row in envelope_layer_takeoff(catlin_model)}
+    monolithic = {tag for row in wall_structure_takeoff(catlin_model)
+                  for tag in row["tags"]}
+    billable = {function.value for function in _BILLABLE}
+
+    for wall in catlin_model.walls:
+        scope = "foundation wall" if wall.is_foundation else "wall"
+        for layer in wall.layers:
+            if getattr(layer, "is_cavity", False):
+                assert (scope, "insulation (cavity)", layer.material_ref) in envelope, (
+                    f"{wall.tag}: cavity layer {layer.material_ref} is billed nowhere")
+                continue
+            function = layer.function
+            if function in billable:
+                assert (scope, function, layer.material_ref) in envelope, (
+                    f"{wall.tag}: {function} layer {layer.material_ref} is billed nowhere")
+            elif function == LayerFunction.STRUCTURE.value:
+                framed = any(member.category == "stud" for member in wall.members)
+                assert framed or wall.tag in monolithic, (
+                    f"{wall.tag}: its {layer.material_ref} STRUCTURE layer frames no "
+                    "members and is not in `wall_structure` — it is billed nowhere")
+            else:
+                assert function in _WAIVED_LAYER_FUNCTIONS, (
+                    f"{wall.tag}: layer function {function!r} is neither billed nor waived "
+                    "— bill it or add it to _WAIVED_LAYER_FUNCTIONS with the reason")
 
 
 def test_the_cli_payload_forwards_every_bom_section(catlin_model) -> None:

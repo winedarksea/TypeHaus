@@ -250,6 +250,7 @@ Questions:
 - Curtain rods (on porch, in living room, master bedroom)
 - Show LED trips better, note drywall channels as needed in BOM
 - Reinforcement for exterior doors
+- Moving toilet needs to move its flange too in UI
 
 ### Drainage Outstanding
     is nominal, not computed from a soil infiltration rate.
@@ -262,6 +263,17 @@ Questions:
     authored fascia/soffit/flashing runs plus the derived roof-trim family by the foot
     (band-deduped; derived gutters stay in `drainage`; rows cross-reference their
     solids/framing mirrors).
+  - ~~Monolithic wall structure take-off~~ DONE 2026-08-03: new `wall_structure` BOM section
+    bills the wall cores that frame no members and are not solids — pours, ICF, CMU/SRW
+    courses, the sunken-garden brick wythe — by net area and cubic yards (43 of catlin's 154
+    walls, ~131 cy, previously in no row at all). Split from `framing` by
+    `resolve.framing.solver.frames_as_members`, the one predicate `frame_wall` branches on,
+    and gated by a per-wall-layer coverage test in `test_framing_takeoff.py`.
+  - Furring over a monolithic wall is still billed nowhere: `W-B-CS`
+    (`SAUNA_LINER_ON_CONCRETE`) carries a `struct-1-plywood` FURRING layer over a concrete
+    core, and the strapping frames no members, so the "carried by the framing cut list"
+    waiver is false for it. Waived by function in `_WAIVED_LAYER_FUNCTIONS` with that note;
+    fix by billing monolithic-wall furring by the lineal foot.
   - ~~RAINWATER / SEWAGE `IfcDistributionSystem`s~~ DONE 2026-08-02: DRAIN runs → SEWAGE
     (IFC4's sanitary member), VENT → VENT, the radon riser deliberately **not** grouped
     with plumbing vents (USERDEFINED/"RADON"), and the silent discard of non-supply

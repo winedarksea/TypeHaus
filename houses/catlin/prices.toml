@@ -246,6 +246,22 @@
 # "xps" =    # 2520.7 SF
 # "zip-r" =    # 631.3 SF
 
+[wall_structure]
+# $/CY placed, by wall assembly — the monolithic walls, which frame no members and so bill
+# nowhere else. Keyed on assembly, not material: garden work and house foundation concrete
+# are both "concrete" and are not the same price. For the CMU/block/brick rows the yardage
+# is gross wall volume (hollow units are not deducted), so price those per placed yard of
+# wall, not per yard of material.
+# "BASEMENT_BRICK_VENEER" =    # 1.37 CY
+# "CATLIN_BASEMENT_12" =    # 46.68 CY
+# "CATLIN_CONC_12_INT" =    # 22.18 CY
+# "GARAGE_ICF_8" =    # 11.76 CY
+# "PORCH_RAILING_MASONRY" =    # 3.15 CY
+# "RETAINING_BLOCK_12" =    # 9.07 CY
+# "SAUNA_LINER_ON_CONCRETE" =    # 4.61 CY
+# "SUNKEN_GARDEN_ARCH_16" =    # 3.31 CY
+# "SUNKEN_GARDEN_WALL" =    # 28.91 CY
+
 [wood_surfaces]
 # $/SF on the order quantity, by material tag. Mind the mirrors: rows flagged also_in_* bill
 # primarily elsewhere — price a material here OR there, not both.

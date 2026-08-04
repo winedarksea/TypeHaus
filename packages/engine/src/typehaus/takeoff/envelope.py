@@ -29,9 +29,13 @@ from typehaus.resolve.model import ResolvedModel
 _M2_TO_FT2 = 10.7639104
 _M_TO_FT = 3.280839895
 
-# Layer functions that are a purchased covering with an area. AIRGAP and FURRING are not:
-# an air gap is nothing at all, and furring is lineal-foot strapping that the framing cut
-# list already carries as members.
+# Layer functions that are a purchased covering with an area. STRUCTURE is deliberately
+# absent and is *not* unbilled: a framed structure layer bills as members in `framing`, and
+# a monolithic one (a pour, a masonry course) bills by area and cubic yards in
+# `takeoff/wall_structure.py` — concrete is bought by the yard, not the square foot. That
+# missing pointer is what let a whole basement's worth of concrete reach no order for
+# months. AIRGAP and FURRING are not billable here either: an air gap is nothing at all,
+# and furring is lineal-foot strapping the framing cut list carries as members.
 _BILLABLE = (
     LayerFunction.INSULATION,
     LayerFunction.SHEATHING,
@@ -41,6 +45,27 @@ _BILLABLE = (
 )
 
 
+def wall_net_areas_m2(model: ResolvedModel) -> dict[str, float]:
+    """Tag -> gross wall face (run x mean top height) less its openings, clamped at 0.
+
+    Shared by :func:`envelope_layer_takeoff` and
+    :func:`typehaus.takeoff.wall_structure.wall_structure_takeoff` so the covering and the
+    thing it covers are measured off exactly the same face — a wall cannot bill 200 sf of
+    drywall over 190 sf of concrete.
+    """
+    openings_by_wall: dict[str, float] = defaultdict(float)
+    for opening in model.openings:
+        openings_by_wall[opening.host_wall] += opening.width_m * opening.height_m
+
+    areas: dict[str, float] = {}
+    for wall in model.walls:
+        run = length(sub(wall.axis[1], wall.axis[0]))
+        mean_top = ((wall.top_z0_m or wall.z1_m) + (wall.top_z1_m or wall.z1_m)) / 2.0
+        gross = run * (mean_top - wall.z0_m)
+        areas[wall.tag] = max(0.0, gross - openings_by_wall[wall.tag])
+    return areas
+
+
 def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Net square feet per (scope, layer function, material, thickness).
 
@@ -48,16 +73,10 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     so a wall that is mostly glass does not order a wall's worth of drywall.
     """
     areas: dict[tuple[str, str, str, float], float] = defaultdict(float)
-
-    openings_by_wall: dict[str, float] = defaultdict(float)
-    for opening in model.openings:
-        openings_by_wall[opening.host_wall] += opening.width_m * opening.height_m
+    net_areas = wall_net_areas_m2(model)
 
     for wall in model.walls:
-        run = length(sub(wall.axis[1], wall.axis[0]))
-        mean_top = ((wall.top_z0_m or wall.z1_m) + (wall.top_z1_m or wall.z1_m)) / 2.0
-        gross = run * (mean_top - wall.z0_m)
-        net = max(0.0, gross - openings_by_wall[wall.tag])
+        net = net_areas[wall.tag]
         scope = "foundation wall" if wall.is_foundation else "wall"
         for layer in wall.layers:
             # A cavity layer shares the structure layer's polygon and adds no depth; billing
