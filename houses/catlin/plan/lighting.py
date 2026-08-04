@@ -114,12 +114,12 @@ BASEMENT_LIGHTING = [
     # answer (notes) and the dimmer is the whole point: bright enough to cross the room,
     # dark enough to watch something. Two cans on the same dimmer are the cleaning light.
     ElectricalDevice(uid="QTB000BAAA", tag="ED-B-PLAY-N-SCONCE1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(35, 7), ft(24)), type_ref="ED-T-LT-SCONCE-UD",
+                     position=pt(m(10.5992), m(7.13527)), type_ref="ED-T-LT-SCONCE-UD",
                      circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(-90),
                      controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
     ElectricalDevice(uid="QTB000CAAA", tag="ED-B-PLAY-N-SCONCE2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(35, 7), ft(30)), type_ref="ED-T-LT-SCONCE-UD",
+                     position=pt(m(10.6058), m(9.12493)), type_ref="ED-T-LT-SCONCE-UD",
                      circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N", rotation=deg(-90),
                      controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
@@ -401,8 +401,10 @@ MAIN_LIGHTING = [
 
     # RM-M-LAUNDRY / RM-M-CLOSET / RM-M-MUDROOM: 3" cans. Small rooms want a small
     # aperture — a 4" can in a 22 ft2 laundry is a headlamp.
+    # Both cans moved with the closet line on 2026-08-03: the laundry's keeps its position
+    # over the machines (+8", with them), the closet's re-centres on the widened corridor.
     ElectricalDevice(uid="QTM000SAAA", tag="ED-M-LAUNDRY-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(10, 8), ft(19, 6)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(10, 8), ft(20, 2)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-MAIN", room="RM-M-LAUNDRY",
                      controlled_by=("ED-M-LAUNDRY-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
@@ -411,7 +413,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LAUNDRY", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     ElectricalDevice(uid="QTM000VAAA", tag="ED-M-CLOSET-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13), ft(15, 5)), type_ref="ED-T-LT-CAN3",
+                     position=pt(ft(13), ft(15, 8)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET",
                      controlled_by=("ED-M-CLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),

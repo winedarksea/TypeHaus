@@ -249,11 +249,20 @@ NODES = [
     Node(uid="CMN016AAAA", tag="N-M-BA1", position=pt(ft(6), ft(26, 4))),
     Node(uid="CMN017AAAA", tag="N-M-BA2", position=pt(ft(6), ft(22, 2))),
     Node(uid="CMN018AAAA", tag="N-M-D1", position=pt(ft(8), ft(22, 2))),
-    Node(uid="CMN019AAAA", tag="N-M-D2", position=pt(ft(8), ft(17, 4))),
+    # The closet/laundry line moved north 8" — y 17'-4" -> 18'-0" — on 2026-08-03, taking
+    # W-M-CLN and W-M-CLN2 (and with them the north edge of RM-M-CLOSET) with it. All three
+    # nodes below move together or the line kinks; N-M-D2 and N-M-E4 are only split points on
+    # the x=8' and x=18' runs, so nothing but the split moves there. What it costs is 8" of
+    # RM-M-LAUNDRY and 8" of RM-M-STUDY, and what bounds it is the laundry: FX-M-LAUNDRY is
+    # 40" deep against a room that was 56 3/4" and is now 48 3/4" nominal clear, so the tower
+    # still stands free of D-M-LAUN's plane with room to spare (see plan/fixtures.py).
+    # y=18'-0" is also where W-B-CW2 runs below — the basement's 12" cast wall is on that same
+    # axis, so the partition now lands over solid concrete rather than mid-span of the deck.
+    Node(uid="CMN019AAAA", tag="N-M-D2", position=pt(ft(8), ft(18))),
     Node(uid="CMN020AAAA", tag="N-M-D3", position=pt(ft(8), ft(13, 4))),
-    Node(uid="CMN021AAAA", tag="N-M-E2", position=pt(ft(13, 4), ft(17, 4))),
+    Node(uid="CMN021AAAA", tag="N-M-E2", position=pt(ft(13, 4), ft(18))),
     Node(uid="CMN022AAAA", tag="N-M-E3", position=pt(ft(13, 4), ft(22, 2))),
-    Node(uid="CMN023AAAA", tag="N-M-E4", position=pt(ft(18), ft(17, 4))),
+    Node(uid="CMN023AAAA", tag="N-M-E4", position=pt(ft(18), ft(18))),
     # RM-M-MECH: the framed MEP shaft closet in the house's NW corner (2026-07-28),
     # replacing FURN-M-MUD-CLOSET-N. 6' wide (west wall to 6" shy of D-M-ENTRY's far
     # jamb at 6'-6") x 2'-8" deep — the radon+plumbing chase rides its SW corner, aligned
@@ -441,10 +450,18 @@ WALLS = [
          end_node="N-M-D3", assembly="INT_2X6_STAGGERED_PLUMBING", top=ft(9)),
     Wall(uid="CMW128AAAA", tag="W-M-LS", start_node="N-M-E2",
          end_node="N-M-E3", assembly="INT_2X4_PARTITION", top=ft(9)),
+    # The closet's north line, y=18'-0" since 2026-08-03 (was 17'-4"). See the NODES note
+    # over N-M-D2: the 8" came out of RM-M-LAUNDRY and RM-M-STUDY, and the laundry's 40"
+    # stacked pair is what says it could not be more.
+    # Both name W-B-CW2 explicitly. Landing on y=18'-0" put them over the basement's own
+    # y=18' line, and that line is two walls — W-B-CW3 (x 6'-9"..10') and W-B-CW2 (x 10'..18')
+    # — so `integrity.stack_ambiguous` asked which. W-B-CW2 is the answer for both: it carries
+    # all of W-M-CLN2 and 3'-4" of W-M-CLN's 5'-4". Nothing structural rides on the choice —
+    # these are non-bearing partitions on a 9" cast deck, and the deck is what holds them up.
     Wall(uid="CMW129AAAA", tag="W-M-CLN", start_node="N-M-D2",
-         end_node="N-M-E2", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-E2", assembly="INT_2X4_PARTITION", top=ft(9), stacks_on="W-B-CW2"),
     Wall(uid="CMW130AAAA", tag="W-M-CLN2", start_node="N-M-E2",
-         end_node="N-M-E4", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-E4", assembly="INT_2X4_PARTITION", top=ft(9), stacks_on="W-B-CW2"),
     # --- bedroom north wall ------------------------------------------------------
     Wall(uid="CMW131AAAA", tag="W-M-BDN1", start_node="N-M-W3",
          end_node="N-M-D3", assembly="INT_2X4_PARTITION", top=ft(9)),
@@ -508,8 +525,14 @@ OPENINGS = [
          position=from_node("N-M-W3", ft(2)), flip_swing=True, flip_hinge=True),
     Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-INT-BIFOLD56",
          position=from_node("N-M-D1", ft(0, 4))),
+    # Near jamb 6 11/16" off N-M-E4, not the 1'-2 11/16" it was: the node moved north 8"
+    # with the closet line (2026-08-03) and this offset came off it by the same 8" so the
+    # door itself did not move — same leaf, same swing, same spot in the hall's east wall.
+    # 6 11/16" is what is left between the RO and the corner, which is the D-M-MECH margin
+    # (6 1/2") and clears the N-M-E4 corner stud pack; the wall is 4'-2" long now and the
+    # 30" leaf plus its jacks is 3'-8" of it, so the door cannot move any further south.
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30",
-         position=from_node("N-M-E4", ft(1, 2.6875)), flip_swing=True),
+         position=from_node("N-M-E4", ft(0, 6.6875)), flip_swing=True),
     Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT-SWING32",
          position=from_node("N-M-D3", ft(5)), flip_hinge=False, flip_swing=True),
     # Second bedroom <-> living connection, straight through the centre bearing wall.
@@ -688,11 +711,12 @@ ALARMS = [
     # bedrooms" head. It is hosted by RM-M-LIVING because that is the space it is open to,
     # but the living room's seed is out at (27', 12') in the middle of the dining end, ~13'
     # from the bedroom door — nowhere near where the detector actually goes. The position
-    # below is the dressing corridor (the RM-M-CLOSET band, x 8'..18' × y 13'-4"..17'-4"),
+    # below is the dressing corridor (the RM-M-CLOSET band, x 8'..18' × y 13'-4"..18'-0"),
     # centred on the corridor and directly outside D-M-BED, whose leaf runs x 13'..15'-8" in
     # W-M-BDN2. Clear of the closet's sliding doors, which take the corridor's west end.
+    # y follows the corridor's centre north to 15'-8" with the 2026-08-03 wall move.
     Alarm(uid="CMA702AAAA", tag="AL-M-HALL", kind=AlarmKind.COMBO, room="RM-M-LIVING",
-          circuit="CKT-LT-BACKUP", position=pt(ft(14, 4), ft(15, 4))),
+          circuit="CKT-LT-BACKUP", position=pt(ft(14, 4), ft(15, 8))),
 ]
 
 # Electric radiant floor — the two main-storey comfort zones (2026-07-25). Neither is a

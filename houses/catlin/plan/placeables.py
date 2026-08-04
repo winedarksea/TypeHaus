@@ -260,7 +260,7 @@ MAIN_PLACEABLES = [
     # type-level recommendation alone would leave this on the floor (same note as
     # FX-M-KITCH-SINK's 27" in plan/fixtures.py).
     Furniture(uid="XJSV712BWZ", tag="FURN-M-LAUNDRY-RACK", type_ref="FURN-WALL-RACK-24", room="RM-M-LAUNDRY",
-              position=pt(ft(11, 9), ft(17, 7.135)), rotation=deg(180),
+              position=pt(m(3.9378), m(5.8566)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 ]
 GARAGE_PLACEABLES = [

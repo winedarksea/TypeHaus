@@ -254,11 +254,13 @@ SLEEVES = [
                       position=pt(ft(6), m(7.00891)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), serves_fixture="FX-M-BATH1-LAV"),
     # Projection of FX-M-LAUNDRY onto the W-M-BA2E centerline (x=8'). The wall tag in this
-    # comment used to read "W-M-BA2E2", which spans y 13'-4"..17'-4" and so contains neither
+    # comment used to read "W-M-BA2E2", which spans y 13'-4"..18'-0" and so contains neither
     # this sleeve nor the fixture — a stale tag, corrected 2026-07-31 here and on the
     # fixture's own `wall_ref` (plan/fixtures.py). The position is unchanged: x=8' is the wet
-    # wall's centreline and y=20' sits inside the stacked pair's 17'-4 5/8"..20'-8 5/8" band,
-    # so the standpipe and the supply box land behind the machine rather than beside it.
+    # wall's centreline and y=20' sits inside the stacked pair's band, so the standpipe and
+    # the supply box land behind the machine rather than beside it. It survived the 8" move
+    # north of 2026-08-03 without moving — the band is 18'-0 5/8"..21'-4 5/8" now and y=20'
+    # is still well inside it, as are SP-M-CW-WASH (20'-7.2") and SP-M-HW-WASH (21'-2.4").
     SleevePenetration(uid="CMP904AAAA", tag="SP-M-WASH", host_ref="SL-M-DECK",
                       position=pt(ft(8), ft(20)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-LAUNDRY"),
@@ -858,9 +860,12 @@ LAUNDRY_MAIN = [
             diameter=inch(2), material="pvc",
             elevations=(ft(3), ft(0)),
             wall_refs=("W-M-BA2E",)),
+    # Both ends ride their fixtures: +8" in y on 2026-08-03 with the stack and the tub, when
+    # W-M-CLN moved to y=18'-0". The run's shape, length and fall are unchanged — it leaves
+    # the dryer's east face and turns south over the tub exactly as before.
     PipeRun(uid="5NYN0SKYSV", tag="PR-M-DRYER-COND", system=PipeSystem.DRAIN,
-            path=(pt(ft(10, 8), ft(19, 0.635)), pt(ft(11, 9), ft(19, 0.635)),
-                  pt(ft(11, 9), ft(18, 3.135))),
+            path=(pt(ft(10, 8), ft(19, 8.635)), pt(ft(11, 9), ft(19, 8.635)),
+                  pt(ft(11, 9), ft(18, 11.135))),
             diameter=inch(0.75), material="pvc",
             elevations=(ft(5), ft(4), ft(3))),
 ]

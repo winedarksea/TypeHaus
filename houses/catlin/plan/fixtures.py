@@ -149,8 +149,8 @@ MAIN_FIXTURES = (
             drain_position=pt(ft(1), ft(16, 6))),
     # --- RM-M-LAUNDRY (2026-07-31) -----------------------------------------------------
     #
-    # The room is an alcove, not a room you stand in: 62 3/4" x 56 3/4" clear
-    # (x 8'-0 5/8"..13'-3 3/8", y 17'-4 5/8"..22'-1 3/8") with D-M-LAUN, a 56" bifold, taking
+    # The room is an alcove, not a room you stand in: 62 3/4" x 48 3/4" clear
+    # (x 8'-0 5/8"..13'-3 3/8", y 18'-0 5/8"..22'-1 3/8") with D-M-LAUN, a 56" bifold, taking
     # the whole north side (opening x 8'-4"..13'-0"; its leaves fold north into the hall, so
     # nothing in here has to clear a swing). That makes it a laundry *closet*: both goods back
     # onto the south wall and every front faces north through the opening, and you work them
@@ -170,7 +170,7 @@ MAIN_FIXTURES = (
     # basement (SP-M-WASH, SP-M-LSINK), so there is no wall stack anywhere in this room; what
     # the 2x6 carries is the washer standpipe and the supply box, which is exactly what a
     # 3 1/2" partition could not. Note the old value here was "W-M-BA2E2", which spans
-    # y 13'-4"..17'-4" and therefore contains neither this fixture nor its sleeve — a stale
+    # y 13'-4"..18'-0" and therefore contains neither this fixture nor its sleeve — a stale
     # tag, not a design decision. plan/mep.py's SP-M-WASH comment repeated the same error.
     #
     # Retyped from APPL-WASHER to the stacked pair, keeping uid and tag: every
@@ -178,24 +178,35 @@ MAIN_FIXTURES = (
     # vent branches and the sleeve — still means this machine. The heat-pump dryer above the
     # washer is ventless, so nothing in this room penetrates the envelope; its moisture leaves
     # as condensate down PR-M-DRYER-COND to the tub beside it.
-    # Footprint x 8'-4"..10'-8", y 17'-4 5/8"..20'-8 5/8".
+    # Footprint x 8'-4"..10'-8", y 18'-0 5/8"..21'-4 5/8".
+    #
+    # The whole room slid north 8" on 2026-08-03 (W-M-CLN/W-M-CLN2 moved to y=18'-0" to
+    # widen the RM-M-CLOSET dressing corridor), and both goods went with it because both
+    # back onto that wall. This appliance is the constraint that sized the move: 40" deep in
+    # a 48 3/4" room leaves 8 3/4" between the tower's face and the door plane, which is the
+    # margin the bifold's track and the jamb returns want and nothing more. 40" is itself a
+    # generous depth — the type is drawn at the machine's full box, knobs and door and hose
+    # tails included — so the remaining 8 3/4" is real working air, not the last of it.
+    # A further push north would put the tower in the doorway; this is the end of the line.
     Appliance(uid="CMQ804AAAA", tag="FX-M-LAUNDRY", type_ref="APPL-WASHER-DRYER-STACKED",
-              room="RM-M-LAUNDRY", position=pt(ft(9, 6), ft(19, 0.635)), rotation=deg(180),
+              room="RM-M-LAUNDRY", position=pt(m(2.89712), m(6.06006)), rotation=deg(180),
               wall_ref="W-M-BA2E"),
     # The utility tub, 1" east of the stack. It is a working fixture — the bucket sink, the
     # hand-wash — and it is also the *receptor*: PR-M-DRYER-COND air-gaps over its 34" rim,
     # which is why the dryer needs no vent and no separate condensate pump line to the
     # basement. A laundry tub is what an air gap wants (trapped, sees water in normal use),
     # the same reasoning that put PR-B-COND over FX-B-SAUNA-FD rather than over a lavatory.
-    # Footprint x 10'-9"..12'-9", y 17'-4 5/8"..19'-1 1/8".
+    # Footprint x 10'-9"..12'-9", y 18'-0 5/8"..19'-9 1/8".
     #
-    # `drain_position` is at y=18'-9", the front third of the basin rather than its centre,
-    # and the basement is what puts it there: W-B-CW2 is 12" of cast concrete on the y=18'
-    # axis, so the band y 17'-6"..18'-6" has solid wall under it all the way up to the deck.
-    # A waste dropped at the tub's own centre (18'-3 1/8") would land on top of that wall.
-    # 18'-9" clears its north face by 3" and still sits 4" inside the tub, which is where a
-    # laundry tub's outlet can perfectly well go — the basin is 21" deep and the tailpiece
-    # follows the drain, not the other way round.
+    # `drain_position` stays at y=18'-9" through the 2026-08-03 move north — the basin went
+    # 8" north and the waste did not, so what was an offset toward the front of the tub is
+    # now near its centre. Holding it still is deliberate: SP-M-LSINK, PR-B-LSINK-DRAIN and
+    # the 45" trap arm below are all authored on this y and none of them had to move.
+    # The reason it was offset in the first place is unchanged and still satisfied: W-B-CW2
+    # is 12" of cast concrete on the y=18' axis, so the band y 17'-6"..18'-6" has solid wall
+    # under it all the way up to the deck, and 18'-9" clears its north face by 3". (The
+    # basin's own centre, 18'-11 1/8", would now clear it too — but only by 5", and moving
+    # the drop would drag three basement elements with it for nothing.)
     #
     # SL-M-DECK is 9" of cast concrete, so nothing on this floor runs a trap arm sideways
     # before it drops: every main-storey fixture goes straight down its own cast sleeve and
@@ -212,7 +223,7 @@ MAIN_FIXTURES = (
     # of trap arm on 2" and only 42" on 1 1/2", which is why this branch is 2" rather than the
     # 1 1/2" a lone sink would otherwise take.
     Fixture(uid="J7VY2GZ062", tag="FX-M-LAUNDRY-SINK", type_ref="FX-LAUNDRY-SINK-24", room="RM-M-LAUNDRY",
-            position=pt(ft(11, 9), ft(18, 3.135)), rotation=deg(180), wall_ref="W-M-BA2E",
+            position=pt(m(3.62083), m(5.82791)), rotation=deg(180), wall_ref="W-M-BA2E",
             drain_position=pt(ft(11, 9), ft(18, 9))),
     # Kitchen sink: moved to the north wall 2026-07-30 with the range/sink wall swap (see
     # plan/placeables.py's kitchen header), then flipped with the dishwasher the same day to

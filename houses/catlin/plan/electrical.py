@@ -378,7 +378,7 @@ ESS_EQUIPMENT = [
     # circuit: its grid port IS CKT-ESS-GRID, which is a source, and its load output feeds
     # ED-B-BACKUP-PANEL.
     Equipment(uid="CEQ021AAAA", tag="EQ-B-ESS-INV", kind=EquipmentKind.INVERTER,
-              position=pt(ft(2), ft(24, 6)), footprint=(inch(27), inch(12)),
+              position=pt(m(2.48448), m(7.61735)), footprint=(inch(27), inch(12)),
               type_ref="EQ-T-EG4-12KPV",
               room="RM-B-FURNACE", circuit="CKT-ESS-GRID",
               mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
@@ -455,7 +455,9 @@ BASEMENT_EQUIPMENT = [
 
 # --- Main storey: dryer, freezer, heat-pump condensers/heads + disconnects ------------
 MAIN_DEVICES = [
-    # The laundry pair's two outlets, moved to W-M-CLN on 2026-07-31 with the stacked unit.
+    # The laundry pair's two outlets, moved to W-M-CLN on 2026-07-31 with the stacked unit,
+    # and north 8" with that wall on 2026-08-03 (y 17'-4 5/8" -> 18'-0 5/8"). They are boxes
+    # in this partition, so they go where it goes — see plan/storeys/main.py's NODES note.
     # Both are recessed boxes in the south partition directly behind the tower, because that
     # is the only place they can be: FX-M-LAUNDRY is now 40" deep and 80" tall, and the old
     # (9'-6", 20') position at 36" is *inside* its footprint — an outlet no one could ever
@@ -470,7 +472,7 @@ MAIN_DEVICES = [
     # is also what lets a future owner put a conventional vented dryer back in this alcove
     # without pulling new wire.
     ElectricalDevice(uid="CEE007AAAA", tag="ED-M-LAUNDRY-DR1", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(9, 6), ft(17, 4.625)), type_ref="ED-T-RECEPTACLE-1430",
+                     position=pt(ft(9, 6), ft(18, 0.625)), type_ref="ED-T-RECEPTACLE-1430",
                      circuit="CKT-DRYER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
                                  recessed_into_host_surface=True)),
@@ -479,7 +481,7 @@ MAIN_DEVICES = [
     # washer half of the stack, 8" east of the dryer's box in the same wall, same 43" band.
     # NEC 210.52(F)'s laundry receptacle, and the only 120V outlet this room has.
     ElectricalDevice(uid="QBSRR1MWVB", tag="ED-M-LAUNDRY-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(10, 2), ft(17, 4.625)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(10, 2), ft(18, 0.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-LAUNDRY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
                                  recessed_into_host_surface=True)),
