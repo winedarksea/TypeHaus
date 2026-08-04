@@ -138,9 +138,10 @@ def test_footing_bedding_bills_stone_fabric_and_tile(catlin_model, bom):
     rows = bom["footing_bedding"]
     assert ({tag for row in rows for tag in row["tags"]}
             == {bedding.tag for bedding in catlin_model.footing_beddings})
-    row = rows[0]
+    # An aggregate bedding, not FB-B-BRICK: the veneer plinth's "bedding" is a 2" XPS sheet
+    # on the house footing's toe, so it bills no stone, fabric or tile by design.
+    row = next(r for r in rows if float(r["geotextile_sqft"]) > 0)
     assert float(row["volume_cubic_yards"]) > 0
-    assert float(row["geotextile_sqft"]) > 0
     assert float(row["drain_tile_ft"]) > 0
     # Tile rows group on the product, not just on "there is tile": a row that says only a
     # footage cannot be priced or bought.

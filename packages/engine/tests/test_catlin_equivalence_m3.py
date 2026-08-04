@@ -109,7 +109,12 @@ DECLARED_DIVERGENCES = {
     "Sunken Garden Porch South Arch Wall (Upper)": (
         "the two-tier arch stack became a single 16\" arched front wall with two 8' arches"
     ),
-    "Sunken Garden North Wall Footing": "the garden's north wall was removed in the redesign",
+    # "Sunken Garden North Wall Footing" was declared here until 2026-08-03 — the garden's
+    # north wall was removed in the redesign and nothing stood on its footing line. It is
+    # gone from this list because something does again: FT-B-BRICK, the plinth under the
+    # glazed-brick veneer (params/foundations.py), lands 0.6 m from it and the matcher pairs
+    # the two. They are not the same element and the north wall is still gone; a strip of
+    # concrete simply runs along that line once more, which is all the matcher claims.
     # The garage moved 7'-0" south, from a 12' sheathing-plane gap to 5', so the breezeway
     # between it and the house is a 4'-0 1/2" slot sized to one polycarbonate panel. 7' is
     # far past MAX_PAIRED_PLACEMENT_DELTA_M — deliberately: an element that travelled that

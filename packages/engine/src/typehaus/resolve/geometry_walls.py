@@ -26,6 +26,7 @@ from typehaus.resolve.geometry_prims import (
     _arch_soffit_sample,
     _arch_soffit_segment_count,
     _lerp,
+    arch_soffit_circle,
     _slice,
     _thin_rect_edges,
 )
@@ -62,7 +63,7 @@ def _prism(ring, z0: float, z1: float, top_at) -> GPrism:
 
 
 def _arch_spandrel_mesh(edges, opening_start: float, opening_end: float, z1: float,
-                        springline: float, radius: float) -> GMesh:
+                        springline: float, half_span: float, rise: float) -> GMesh:
     """One continuous curved head, not a stack of prism strips.
 
     The soffit is a cylinder about a horizontal axis through the springlines, so each sample
@@ -70,7 +71,8 @@ def _arch_spandrel_mesh(edges, opening_start: float, opening_end: float, z1: flo
     no longer sits on that circle, so it is not marked, and the facets touching it fall back to
     their geometric normal.
     """
-    segment_count = _arch_soffit_segment_count(radius)
+    radius, half_angle, depth = arch_soffit_circle(half_span, rise)
+    segment_count = _arch_soffit_segment_count(radius, half_angle)
     (edge_start, edge_end) = edges[0]
     run = math.hypot(edge_end[0] - edge_start[0], edge_end[1] - edge_start[1]) or 1.0
     ux, uy = (edge_end[0] - edge_start[0]) / run, (edge_end[1] - edge_start[1]) / run
@@ -79,9 +81,11 @@ def _arch_spandrel_mesh(edges, opening_start: float, opening_end: float, z1: flo
     normals: list[Vec3] = []
     curved: set[int] = set()
     for segment in range(segment_count + 1):
-        offset, height = _arch_soffit_sample(segment, segment_count, radius)
+        offset, height = _arch_soffit_sample(segment, segment_count, radius, half_angle)
+        # Fractions run over the *opening*, so the divisor is the half-span, not the radius —
+        # on a segmental arch the circle is wider than the hole it springs from.
         fraction = opening_start + (opening_end - opening_start) * (
-            (offset + radius) / (2.0 * radius))
+            (offset + half_span) / (2.0 * half_span))
         crown = springline + height
         soffit = min(z1, crown)
         front = _lerp(edges[0][0], edges[0][1], fraction)
@@ -89,7 +93,10 @@ def _arch_spandrel_mesh(edges, opening_start: float, opening_end: float, z1: flo
         base = len(positions)
         positions.extend(((front[0], front[1], soffit), (back[0], back[1], soffit),
                           (front[0], front[1], z1), (back[0], back[1], z1)))
-        analytic = (offset / radius * ux, offset / radius * uy, height / radius)
+        # The outward radial direction at this sample. ``height`` is measured off the
+        # springline, so the circle's centre is ``depth`` below it — zero for a semicircle,
+        # which is why this read ``height / radius`` while every arch was one.
+        analytic = (offset / radius * ux, offset / radius * uy, (height + depth) / radius)
         # Only the two soffit corners lie on the cylinder; the top corners are on the flat
         # top. A sample clipped by the wall top has left the circle, so it is not curved
         # either and its facets fall back to the geometric normal.
@@ -146,7 +153,7 @@ def layer_solids(wall: ResolvedWall, polygon, openings) -> tuple[GSolid, ...]:
             springline = bottom + max(0.0, op.height_m - op.arch_rise_m)
             if z1 > springline + 1e-6:
                 solids.append(_arch_spandrel_mesh(edges, o0, o1, z1, springline,
-                                                  op.width_m / 2.0))
+                                                  op.width_m / 2.0, op.arch_rise_m))
         else:
             header = _slice(edges, o0, o1)
             if top_at is not None:

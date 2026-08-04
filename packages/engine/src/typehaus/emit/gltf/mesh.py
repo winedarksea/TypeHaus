@@ -9,6 +9,7 @@ from typehaus.emit.gltf.geometry import (
     Vec3,
     _arch_soffit_sample,
     _arch_soffit_segment_count,
+    arch_soffit_circle,
     _dedupe_ring,
     _lerp,
     _ring_signed_area,
@@ -259,7 +260,7 @@ class _MeshBuilder:
             indices.extend((base, base + 1, base + 2))
 
     def add_arched_spandrel(self, edges, opening_start: float, opening_end: float,
-                            z1: float, springline: float, radius: float,
+                            z1: float, springline: float, half_span: float, rise: float,
                             color: tuple[float, float, float, float]) -> None:
         """Add one continuous curved concrete head, not a stack of prism strips.
 
@@ -270,7 +271,8 @@ class _MeshBuilder:
         geometric normal.
         """
         positions, indices = self._bucket(color)
-        segment_count = _arch_soffit_segment_count(radius)
+        radius, half_angle, depth = arch_soffit_circle(half_span, rise)
+        segment_count = _arch_soffit_segment_count(radius, half_angle)
         base = len(positions)
         # The soffit normal rotates in the vertical plane containing the wall axis.
         (edge_start, edge_end) = edges[0]
@@ -278,9 +280,11 @@ class _MeshBuilder:
         ux, uy = (edge_end[0] - edge_start[0]) / run, (edge_end[1] - edge_start[1]) / run
         soffit_normals: list[Vec3 | None] = []
         for segment in range(segment_count + 1):
-            offset, height = _arch_soffit_sample(segment, segment_count, radius)
+            offset, height = _arch_soffit_sample(segment, segment_count, radius, half_angle)
+            # Over the *opening*, so the divisor is the half-span: a segmental arch's circle
+            # is wider than the hole it springs from.
             fraction = opening_start + (opening_end - opening_start) * (
-                (offset + radius) / (2.0 * radius))
+                (offset + half_span) / (2.0 * half_span))
             crown = springline + height
             soffit = min(z1, crown)
             front = _lerp(edges[0][0], edges[0][1], fraction)
@@ -290,7 +294,7 @@ class _MeshBuilder:
             # A sample clipped by the wall top no longer sits on the circle, so it earns no
             # analytic normal and its facets fall back to the geometric one.
             soffit_normals.append(None if soffit < crown - 1e-9 else _to_gltf(
-                offset / radius * ux, offset / radius * uy, height / radius))
+                offset / radius * ux, offset / radius * uy, (height + depth) / radius))
         for segment in range(segment_count):
             current, next_ = base + segment * 4, base + (segment + 1) * 4
             here, there = soffit_normals[segment], soffit_normals[segment + 1]

@@ -6,6 +6,7 @@
 from typehaus import (
     Alarm,
     AlarmKind,
+    Arch,
     Door,
     FloorOpening,
     FoundationWall,
@@ -15,6 +16,7 @@ from typehaus import (
     Occupancy,
     PanelingSpan,
     Room,
+    RoughOpening,
     Slab,
     SlabThermalBreak,
     SlabThermalBreak,
@@ -76,6 +78,24 @@ NODES = [
     # first sketched. It is a cabinet you reach into, not a room you stand in.
     Node(uid="CBN017AAAA", tag="N-B-ESS-S", position=pt(ft(6, 9), ft(18))),
     Node(uid="CBN018AAAA", tag="N-B-ESS-N", position=pt(ft(6, 9), ft(21, 9.375))),
+    # Glazed-brick veneer over the exposed south wall (W-B-BRICK). Two ends, both
+    # ``open_end`` — this is a freestanding wythe standing off the concrete, not part of any
+    # wall loop, exactly like the sunken garden's own N-SG-NW/NE.
+    #
+    # x: the run is only as long as the excavation in front of it. It starts on N-B-S1's own
+    # x (8'-10") and ends at 28'-0", which is params/sunken_garden.py's ``_x_ax_e`` — the
+    # garden's east wall axis, where the ground comes back up and W-B-S3 goes back to being
+    # a normal backfilled foundation wall that wants no face at all.
+    #
+    # y: NOT 0'-0". The south walls align on face("concrete-ext"), so their node line is the
+    # concrete's outer face, and CATLIN_BASEMENT_12 carries 4.55" outboard of it (0.05"
+    # damp-proofing + 2" + 2" XPS + 1/2" parge). The veneer stands off *that finished face*,
+    # so its node line is 4.55" further out — south, hence negative — and the wall itself
+    # aligns on face("air-gap-int") so the 1" cavity begins exactly on the parge.
+    Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(8, 10), inch(-4.55)),
+         open_end=True),
+    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(28), inch(-4.55)),
+         open_end=True),
 ]
 
 WALLS = [
@@ -226,6 +246,50 @@ WALLS = [
     Wall(uid="CBW125AAAA", tag="W-B-ESS-N", start_node="N-B-ESS-N",
          end_node="N-B-BA-W", assembly="INT_ESS_CLOSET_STEEL", top=ft(8),
          interior_room="RM-B-ESS"),
+    # The glazed forest-green brick veneer over the exposed run of W-B-S2/W-B-S3, where the
+    # sunken garden is dug out against them. Everywhere else this wall is buried and the
+    # parge over the XPS is a below-grade coating nobody sees; here it stands nine feet in
+    # the open on the house's most-looked-at elevation, and a parge coat is not a face.
+    #
+    # Authored west->east so it winds the same way as the walls it faces: the basement
+    # storey's outward sign is -1, so a wall's exterior is the right-hand normal of its
+    # authored direction, and W-B-S2/W-B-S3 both run west->east with their exterior south.
+    # Reverse this and the wythe would build back into the concrete.
+    #
+    # Bottom at -8'-5", NOT -9' with the concrete walls it faces, and the 7" is not
+    # arbitrary — it is D-B-PATIO's threshold. Two things force it:
+    #
+    #  1. There is no ground left to put a footing on at -9'. FT-B-S2/FT-B-S3 are 20" wide
+    #     centred on the y=0 node line, so the house footing already projects 10" south,
+    #     and the veneer's outer face lands at -9.175" — 0.8" inside that edge. The wythe
+    #     therefore bears on the house footing's own toe, and its "footing" (FT-B-BRICK,
+    #     params/foundations.py) is a shallow plinth cast ON that toe over a 2" XPS bed,
+    #     not a strip poured beside it. Nothing can be poured beside it; the toe is there.
+    #  2. That plinth then has to clear the doorway. D-B-PATIO's threshold sits 7" up to
+    #     resist sunken-garden flooding (see its note below), so 7" is exactly the height
+    #     the plinth can reach without stepping across the door — and landing the brick's
+    #     first course on the threshold line is the better detail anyway: the base course
+    #     of a glazed veneer is the last thing that should sit in standing water.
+    #
+    # The plinth shows 3.5" above the garden slab (-8'-8.5") as a concrete water table.
+    #
+    # Authored EAST->WEST, opposite W-B-S2/W-B-S3, and that is not a slip. Winding is
+    # resolved per connected wall-graph component, and this wythe is its own component: two
+    # open ends, no closed loop, so resolve/orientation.py hands it
+    # UNRECOVERABLE_WINDING_OUTWARD_SIGN (+1) instead of the -1 the house's perimeter loop
+    # earns. At +1 a west->east wall builds its exterior layers NORTH — the assembly grew
+    # straight back through the XPS into the concrete — so the direction has to carry what
+    # the winding cannot. Reversed, layer 0 (the air gap) lands on the parge and the brick
+    # stands south of it, in the garden.
+    #
+    # The reveals below still measure from N-B-BRICK-W: ``from_node`` recognises the wall's
+    # end node and counts back from the far end, so naming the west node keeps working when
+    # the west node is where the run finishes.
+    FoundationWall(uid="CBW126AAAA", tag="W-B-BRICK", start_node="N-B-BRICK-E",
+                   end_node="N-B-BRICK-W", assembly="BASEMENT_BRICK_VENEER",
+                   alignment=face("air-gap-int"),
+                   unbalanced_fill=ft(0),
+                   top_elevation=ft(0), bottom_elevation=ft(-8, -5)),
 ]
 
 OPENINGS = [
@@ -290,6 +354,33 @@ OPENINGS = [
     Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2",
            type_ref="WT-1424-T", position=from_node("N-B-S1", ft(2, 6)),
            sill_height=ft(3)),
+    # --- reveals through the brick veneer -------------------------------------------
+    # WIN-B-SAUNA and D-B-PATIO stay on the concrete walls; these are the holes the wythe in
+    # front of them needs, each with its own segmental brick arch. They are RoughOpenings,
+    # not a second Window/Door: there is one window and one door here, and modelling a
+    # duplicate unit in the veneer would double the schedule and the takeoff.
+    #
+    # Both are positioned off N-B-BRICK-W, which shares N-B-S1's x, so the window's offset is
+    # the same 2'-6" WIN-B-SAUNA uses; the door's is recomputed (D-B-PATIO sits 1'-4" east of
+    # N-B-S2 at x=18', i.e. x=19'-4", which is 10'-6" from 8'-10").
+    #
+    # Segmental, not semicircular like W-SG-ARCH: rise is ~1/7 of the clear width, so the
+    # heads read as shallow brick arches rather than as the porch's half-round openings.
+    # ``height`` is the unit's own height PLUS that rise, so the springline lands on the real
+    # head and the curve is clear masonry above it rather than eating into the opening.
+    #
+    # ``sill_height`` is measured from the HOST wall's bottom, and W-B-BRICK starts at
+    # -8'-5", not -9', so both are re-datumed off that: the window's 3'-0" above the
+    # basement floor becomes 2'-5" here, and the door's raised 7" threshold is the veneer's
+    # own base, hence 0.
+    RoughOpening(uid="CBO601AAAA", tag="AO-B-BRICK-WIN", host="W-B-BRICK",
+                 position=from_node("N-B-BRICK-W", ft(2, 6)),
+                 width=inch(14), height=inch(26), sill_height=inch(29),
+                 arch=Arch(rise=inch(2))),
+    RoughOpening(uid="CBO602AAAA", tag="AO-B-BRICK-DOOR", host="W-B-BRICK",
+                 position=from_node("N-B-BRICK-W", ft(10, 6)),
+                 width=ft(5), height=inch(88), sill_height=ft(0),
+                 arch=Arch(rise=inch(8))),
 ]
 
 ROOMS = [

@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from typehaus.resolve.geometry_prims import arch_soffit_circle
+
 if TYPE_CHECKING:
     import ifcopenshell
 
@@ -81,7 +83,13 @@ def add_arched_opening_prism(f: Any, body_ctx: Any, *, center_m: tuple[float, fl
                              wall_direction: tuple[float, float], wall_thickness_m: float,
                              width_m: float, height_m: float, arch_rise_m: float,
                              z0_m: float) -> Any:
-    """Extrude a rectangular-jamb, semicircular-head opening through a wall.
+    """Extrude a rectangular-jamb, circular-head opening through a wall.
+
+    The head is the circular *segment* through both springlines and the crown, so a shallow
+    ``arch_rise_m`` gives a segmental arch and ``arch_rise_m == width / 2`` gives the
+    semicircle this used to assume unconditionally. That assumption made the void taller than
+    the opening it voided whenever the rise was smaller — the head went to springline + width/2
+    however low the crown was authored — which showed up as an IFC self-diff "move".
 
     The profile lies in the opening's vertical plane: its local x-axis follows the wall and
     its local y-axis is vertical.  The swept local z-axis points through the wall, avoiding
@@ -94,7 +102,8 @@ def add_arched_opening_prism(f: Any, body_ctx: Any, *, center_m: tuple[float, fl
     normal = (uy, -ux)
     half_width = width_m / 2.0
     springline = max(0.0, height_m - arch_rise_m)
-    radius = half_width
+    # Same circle the resolver and both renderers use, so the void matches the hole.
+    radius, _half_angle, depth = arch_soffit_circle(half_width, arch_rise_m)
     left_bottom = f.createIfcCartesianPoint((-half_width, 0.0))
     right_bottom = f.createIfcCartesianPoint((half_width, 0.0))
     right_spring = f.createIfcCartesianPoint((half_width, springline))
@@ -102,7 +111,8 @@ def add_arched_opening_prism(f: Any, body_ctx: Any, *, center_m: tuple[float, fl
     bottom = f.createIfcPolyline((left_bottom, right_bottom))
     right_jamb = f.createIfcPolyline((right_bottom, right_spring))
     circle = f.createIfcCircle(
-        f.createIfcAxis2Placement2D(f.createIfcCartesianPoint((0.0, springline)), None), radius,
+        f.createIfcAxis2Placement2D(
+            f.createIfcCartesianPoint((0.0, springline - depth)), None), radius,
     )
     arch = f.createIfcTrimmedCurve(circle, (right_spring,), (left_spring,), True, "CARTESIAN")
     left_jamb = f.createIfcPolyline((left_spring, left_bottom))

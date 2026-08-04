@@ -95,7 +95,10 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     tables = {table.title: table for table in build_foundation_schedules(catlin_model)}
     footings = tables["FOOTING / PAD SCHEDULE"]
     assert footings.columns == ("MARK", "TYPE", "SIZE", "BEARING EL.", "QTY", "SUPPORTS")
-    strip = next(row for row in footings.rows if row[5].startswith("W-B-"))
+    # A house strip footing, not the veneer plinth: FT-B-BRICK also supports a "W-B-" wall
+    # but is 10"x5" cast on the house footing's toe (params/foundations.py).
+    strip = next(row for row in footings.rows
+                 if row[5].startswith("W-B-") and row[5] != "W-B-BRICK")
     assert strip[2] == '20" W × 8" D' and strip[3] == "-9.67'"
     walls = tables["FOUNDATION WALL SCHEDULE"]
     assert any(row[2] == '16"' and row[3].endswith("LF") for row in walls.rows)

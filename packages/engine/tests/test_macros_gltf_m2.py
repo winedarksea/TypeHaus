@@ -18,7 +18,7 @@ import pytest
 from typehaus.emit.gltf import emit_glb, emit_gltf_dict
 from typehaus.model.elements import RoughOpening
 from typehaus.model.refs import from_node
-from typehaus.quantities import ft
+from typehaus.quantities import ft, inch
 from typehaus.model.remap import ReferenceRemap, registered_ref_fields, remap_ops_for
 from typehaus.resolve import resolve
 from typehaus.source import load_plan, macros
@@ -444,7 +444,9 @@ def test_arch_soffit_ships_smooth_cylinder_normals():
     radius, springline, z1 = 1.2192, 1.4, 3.0
     edges = (((0.0, 0.0), (6.0, 0.0)), ((0.0, 0.4064), (6.0, 0.4064)))
     mb = _MeshBuilder()
-    mb.add_arched_spandrel(edges, 0.2, 0.6, z1, springline, radius, (0.5, 0.5, 0.5, 1.0))
+    # half_span == rise is the semicircle this test was written against.
+    mb.add_arched_spandrel(edges, 0.2, 0.6, z1, springline, radius, radius,
+                           (0.5, 0.5, 0.5, 1.0))
     (_color, positions, indices), = mb.buckets()
     assert len(indices.smooth_face_normals) == 2 * _arch_soffit_segment_count(radius)
 
@@ -456,6 +458,39 @@ def test_arch_soffit_ships_smooth_cylinder_normals():
     # would still satisfy that, so the distinct-normal count above is what proves smoothness.
     soffit_normals = [n for n in normals if n[1] < -1e-6]
     assert soffit_normals, "the curved soffit faces downward into the opening"
+
+
+def test_segmental_arch_crown_lands_on_the_authored_head():
+    """``Arch.rise`` shapes the curve, it does not merely move the springline.
+
+    Until 2026-08-03 the soffit was hard-wired to a half-circle of ``width / 2``, so a 2"
+    rise on a 14" opening still drew a 7" half-round and the head ended up 5" above where it
+    was authored — visible as a semicircular reveal in the basement veneer, and as a bogus
+    "moved" row in the IFC self-diff because the void outgrew its opening.
+    """
+    from typehaus.resolve.geometry_prims import (
+        _arch_soffit_sample,
+        _arch_soffit_segment_count,
+        arch_soffit_circle,
+    )
+
+    half_span, rise = inch(7).meters, inch(2).meters
+    radius, half_angle, depth = arch_soffit_circle(half_span, rise)
+    # A shallow rise means a circle far bigger than the opening, centred well below it.
+    assert radius > half_span and depth == pytest.approx(radius - rise)
+
+    count = _arch_soffit_segment_count(radius, half_angle)
+    samples = [_arch_soffit_sample(s, count, radius, half_angle) for s in range(count + 1)]
+    # Springline to springline, crown at the authored rise — not at the radius.
+    assert samples[0][0] == pytest.approx(-half_span) and samples[0][1] == pytest.approx(0.0)
+    assert samples[-1][0] == pytest.approx(half_span) and samples[-1][1] == pytest.approx(0.0)
+    assert max(h for _o, h in samples) == pytest.approx(rise, abs=1e-4)
+    assert max(h for _o, h in samples) < half_span, "a segmental arch is not a half-round"
+
+    # rise == half-span is still exactly the semicircle every existing arch is built on.
+    radius, half_angle, depth = arch_soffit_circle(half_span, half_span)
+    assert (radius, depth) == pytest.approx((half_span, 0.0))
+    assert half_angle == pytest.approx(math.pi / 2)
 
 
 def test_arch_soffit_segment_count_follows_the_radius():

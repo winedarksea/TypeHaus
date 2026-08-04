@@ -172,6 +172,7 @@ def _hex_rgba(hex_str: str) -> tuple[float, float, float, float]:
 _SEAM_BASE = "#e8e8e2"          # Panel3D.tsx createStandingSeamMaterial base (0xE8E8E2)
 _CMU_BASE = "#9c988f"           # materials.ts CMU_STYLE.base
 _WHITE_BRICK_BASE = "#e9e6df"   # materials.ts WHITE_BRICK_STYLE.base
+_GLAZED_GREEN_BRICK_BASE = "#1b4332"  # materials.ts GLAZED_GREEN_BRICK_STYLE.base
 _DECK_BOARD_BASE = "#b9bcc0"    # materials.ts ALUMINUM_DECK_BASE_COLOR (0xb9bcc0)
 
 _EXTERIOR_DARK = "#1c1f24"      # the house's one exterior dark; see window_trim above
@@ -180,6 +181,7 @@ _FINISH_BASE: dict[str, str] = {
     "standing-seam": _SEAM_BASE,
     "cmu": _CMU_BASE,
     "white-brick": _WHITE_BRICK_BASE,
+    "glazed-green-brick": _GLAZED_GREEN_BRICK_BASE,
     # Formed edge trim ordered in a second coil colour (Roof.edge_trim_material). Without an
     # entry it falls to the "metal" family's blue-grey, and the accent that makes a
     # zero-overhang rake legible would differ between the .glb and the viewer.

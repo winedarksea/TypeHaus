@@ -150,6 +150,12 @@ def test_framing_matches_the_reference(catlin_model):
         rise_over_run, abs=0.005)
 
 
+# Shares the house's FT-B- prefix but is not one of its strip footings, so the 20"x8" rule
+# below does not govern it: FT-B-BRICK is the shallow plinth under the glazed-brick veneer
+# (W-B-BRICK), cast on the house footing's toe over a 2" XPS bed rather than poured with it.
+_NON_STRIP_FT_B = {"FT-B-BRICK"}
+
+
 def test_house_footings_match_the_reference(catlin_model):
     """20\"x8\" footing per IRC Table R403.1, as the reference and the notes both fix it.
 
@@ -159,7 +165,8 @@ def test_house_footings_match_the_reference(catlin_model):
     params = _params("basementconstruction")["foundation"]
     depth_in = float(params["footing_thickness_in"])
     footings = [s for s in catlin_model.solids
-                if s.category == "footing" and s.tag.startswith("FT-B-")]
+                if s.category == "footing" and s.tag.startswith("FT-B-")
+                and s.tag not in _NON_STRIP_FT_B]
     assert footings, "catlin should resolve house footings"
     for footing in footings:
         assert (footing.z1_m - footing.z0_m) * 39.37007874015748 == pytest.approx(
@@ -169,7 +176,7 @@ def test_house_footings_match_the_reference(catlin_model):
 def test_house_footing_width_matches_the_reference(catlin_model):
     params = _params("basementconstruction")["foundation"]
     footings = [e for e in catlin_model.plan.elements_of_kind("Footing")
-                if e.tag.startswith("FT-B-")]
+                if e.tag.startswith("FT-B-") and e.tag not in _NON_STRIP_FT_B]
     assert footings, "catlin should author house footings"
     for footing in footings:
         assert footing.width.inches == pytest.approx(
@@ -183,7 +190,12 @@ def test_footing_bedding_carries_the_reference_drainage_vocabulary(catlin_model)
     exists and claims those parts — the drain's 4" diameter has nowhere to live on
     ``FootingBedding`` yet (tracked in plans/TODO.md).
     """
-    beddings = [e for e in catlin_model.plan.elements_of_kind("FootingBedding")]
+    # Every bedding that beds on *aggregate*. FB-B-BRICK is excluded because it is not one:
+    # the veneer plinth bears on a 2" XPS sheet laid on the house footing's toe (see
+    # params/foundations.py), so there is no stone, no fabric and no tile to claim — it uses
+    # this element for the one thing it does record, ``cast_foam_in_aggregate``.
+    beddings = [e for e in catlin_model.plan.elements_of_kind("FootingBedding")
+                if e.tag != "FB-B-BRICK"]
     assert beddings, "every house footing should carry a bearing-prep record"
     for bedding in beddings:
         assert bedding.geotextile

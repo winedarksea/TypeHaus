@@ -109,8 +109,10 @@ def test_catlin_basement_structures_resolve_independently(catlin_model) -> None:
     """Four structures share the ``basement`` key; each must answer for itself."""
     windings = resolve_storey_windings(catlin_model.plan, "basement")
 
-    # The house basement, the garage foundation, the retaining garden, the sunken garden.
-    assert len(windings.sign_by_component_key) == 4
+    # The house basement, the garage foundation, the retaining garden, the sunken garden —
+    # and, since 2026-08-03, the glazed-brick veneer over the exposed south wall, which is a
+    # two-node open run standing off the house and so traces as its own component.
+    assert len(windings.sign_by_component_key) == 5
     basement_walls = [e for e in catlin_model.plan.storey_elements("basement")
                       if e.element_kind in ("Wall", "FoundationWall")]
     sunken_garden = next(w for w in basement_walls if w.start_node.startswith("N-SG-"))

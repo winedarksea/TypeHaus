@@ -13,8 +13,8 @@ import {
   EARTH_FALLBACK_HALF_SIZE_M,
 } from "../three/builders/site";
 import {
-  archSoffitSegmentCount, buildOpening, createSmoothArchedWallLayerGeometry, wallLayerPieces,
-  withoutCollinearVertices,
+  archSoffitCircle, archSoffitSample, archSoffitSegmentCount, buildOpening,
+  createSmoothArchedWallLayerGeometry, wallLayerPieces, withoutCollinearVertices,
 } from "../three/builders/walls";
 import {
   buildFloor, buildFootingBedding, buildRoof, buildSolid, buildStair, FOOTING_BEDDING_COLOR,
@@ -179,6 +179,29 @@ export function runArchGeometryTests() {
   assert(createSmoothArchedWallLayerGeometry(archWall,
     [[-0.25, 0], [0, -0.2], [6, -0.2], [6, 0.2], [0, 0.2]], [arch], [0, 0]) === null,
     "A genuinely non-rectangular (mitered) footprint still falls back to strips");
+
+  // Segmental heads (2026-08-03). The soffit used to be hard-wired to a half-circle of
+  // width/2, so `arch_rise_m` only moved the springline and a 2" rise on a 14" opening still
+  // drew a 7" half-round. Mirrors `test_segmental_arch_crown_lands_on_the_authored_head`
+  // in packages/engine/tests/test_macros_gltf_m2.py — keep the two in step.
+  const halfSpan = 0.1778, rise = 0.0508;  // 7" and 2"
+  const segmental = archSoffitCircle(halfSpan, rise);
+  assert(segmental.radiusM > halfSpan && Math.abs(segmental.depthM - (segmental.radiusM - rise)) < 1e-12,
+    "A shallow rise gives a circle bigger than the opening, centred below it");
+  const count = archSoffitSegmentCount(segmental.radiusM, segmental.halfAngleRad);
+  const samples = Array.from({ length: count + 1 }, (_value, segment) =>
+    archSoffitSample(segment, count, segmental.radiusM, segmental.halfAngleRad));
+  assert(Math.abs(samples[0].offsetM + halfSpan) < 1e-9 && Math.abs(samples[0].heightM) < 1e-9 &&
+    Math.abs(samples[count].offsetM - halfSpan) < 1e-9 && Math.abs(samples[count].heightM) < 1e-9,
+    "The arc runs springline to springline");
+  const crown = Math.max(...samples.map(({ heightM }) => heightM));
+  assert(Math.abs(crown - rise) < 1e-4 && crown < halfSpan,
+    "The crown lands on the authored rise, not on the radius");
+  // rise === half-span is still exactly the semicircle every existing arch is built on.
+  const half = archSoffitCircle(halfSpan, halfSpan);
+  assert(Math.abs(half.radiusM - halfSpan) < 1e-12 && Math.abs(half.depthM) < 1e-12 &&
+    Math.abs(half.halfAngleRad - Math.PI / 2) < 1e-12,
+    "A rise of half the span is the semicircle, unchanged");
 }
 
 export function runEarthGeometryTests() {

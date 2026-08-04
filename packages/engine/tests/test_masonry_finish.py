@@ -96,6 +96,58 @@ def test_gltf_colors_white_brick_whitewashed() -> None:
         material_family_color("brick"))
 
 
+def test_glazed_green_brick_material_ships_its_appearance() -> None:
+    """The basement's south veneer (2026-08-03) — same pattern as the white brick above.
+
+    A third brick had to be distinguishable from the other two or the sunken garden's most
+    visible wall would render as the masonry family's red, which is the porch's brick, not
+    this one.
+    """
+    from typehaus.server.model_json import model_to_dict
+
+    model, _ = resolve(load_plan(CATLIN).plan)
+    materials = {m["tag"]: m for m in model_to_dict(model)["catalog"]["materials"]}
+    assert materials["glazed-green-brick"]["finish"] == "glazed-green-brick"
+    assert materials["glazed-green-brick"]["color"] == "#1b4332"
+    # Three bricks, three colours: the finish is a real distinction on both counts.
+    assert len({materials[tag]["color"]
+                for tag in ("brick", "white-brick", "glazed-green-brick")}) == 3
+
+
+def test_gltf_colors_glazed_green_brick_green() -> None:
+    from typehaus.emit.draw.palette import material_family_color
+    from typehaus.emit.gltf.emitter import _hex_rgba, _material_finish_color
+
+    # STRUCTURE, not "cladding": the veneer is a single self-supporting wythe, so its brick
+    # is the assembly's structure layer (BASEMENT_BRICK_VENEER). The finish must win either
+    # way — colour comes from the material, never from what the layer is doing.
+    green = _material_finish_color("glazed-green-brick", "structure")
+    assert green == _hex_rgba("#1b4332")
+    assert green == _material_finish_color("glazed-green-brick", "cladding")
+    assert green != _hex_rgba(material_family_color("brick")), "glazed brick must not read red"
+    assert green != _material_finish_color("white-brick", "cladding")
+
+
+def test_basement_veneer_brick_faces_the_garden() -> None:
+    """W-B-BRICK is authored east->west on purpose — see the note in plan/storeys/basement.py.
+
+    It is its own wall-graph component (two open ends, no loop), so it gets the fallback
+    outward sign rather than the house perimeter's, and at the house's own winding the wythe
+    built *north*, back through the XPS into the concrete. This pins the direction: the brick
+    must end up south of the air gap, in the sunken garden.
+    """
+    model, _ = resolve(load_plan(CATLIN).plan)
+    wall = model.wall("W-B-BRICK")
+    assert wall is not None, "W-B-BRICK missing from the resolved model"
+    layers = {ly.name: ly for ly in wall.depth_layers()}
+    assert set(layers) == {"air-gap", "brick"}
+    gap_y = _centroid(layers["air-gap"].polygon)[1]
+    brick_y = _centroid(layers["brick"].polygon)[1]
+    assert brick_y < gap_y, "the brick must sit outboard (south) of the cavity"
+    # And clear of the wall it faces: CATLIN_BASEMENT_12's parge ends at -4.55".
+    assert max(p[1] for p in layers["brick"].polygon) <= inch(-4.55).meters + 1e-9
+
+
 # --- the guard itself, on a minimal two-wall corner -----------------------------------
 
 _CLAD = Assembly(tag="CLAD", layers=(

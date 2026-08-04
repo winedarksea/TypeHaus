@@ -288,7 +288,11 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # of the checks below by losing its framing.
     concrete = [o for o in small if not walls[o.host_wall].members]
     framed = [o for o in small if walls[o.host_wall].members]
-    assert [o.tag for o in concrete] == ["WIN-B-SAUNA"], [o.tag for o in concrete]
+    # AO-B-BRICK-WIN joined it on 2026-08-03: the reveal through the glazed-brick veneer in
+    # front of WIN-B-SAUNA. Same 14", same reason — a single brick wythe has no members
+    # either, so there is no bay to fit between and no stud to break.
+    assert [o.tag for o in concrete] == ["WIN-B-SAUNA", "AO-B-BRICK-WIN"], \
+        [o.tag for o in concrete]
     # The original 5 became 15 as the 14" family took over the places where a bigger unit
     # never fit, then 13 when the 2026-08-01 gable pass retired the south gable's corner
     # pair (WIN-A-S1/S4). What is left on 14": the garage pair (WIN-G-N1/S1), the two

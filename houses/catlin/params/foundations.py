@@ -73,6 +73,49 @@ HOUSE_FOOTING_BEDDING = [
     for i, f in enumerate(HOUSE_FOOTINGS, start=1)
 ]
 
+# --- glazed-brick veneer plinth (W-B-BRICK) ---------------------------------------
+# Deliberately NOT appended to _HOUSE_WALL_TAGS: that loop pours a 20"x8" strip monolithic
+# with the house footing, which is the thermal bridge this detail exists to avoid.
+#
+# What it actually is: a shallow plinth cast ON the house footing's projecting toe rather
+# than a strip poured beside it, because there is nowhere beside it to pour. FT-B-S2/
+# FT-B-S3 are 20" wide centred on the y=0 node line, so the toe already runs 10" south,
+# and the veneer's outer brick face lands at -9.175" — inside that edge by 0.8". The wythe
+# has to bear on the toe; the only question is what separates the two pours.
+#
+# So the thermal break is a 2" XPS bed *under* the plinth (FB-B-BRICK below), not a block
+# beside it, and that is why this detail authors no ``Dowel``: the sunken garden's
+# DW-SG-W1/E1/COL cross a vertical joint where two footings meet edge to edge, and
+# ``Dowel.axis`` is "x" or "y" only, so it cannot describe a horizontal bed. The bars that
+# pin the plinth back are the veneer's own masonry ties, which are a construction note here
+# the same way the garden's dowels were before they became elements (plans/TODO.md).
+#
+# 10" x 5". The width is centred on the veneer's own node line at y=-4.55" (a Footing takes
+# its parent wall's axis), and the brick's outer face is at -9.175", so 9" would have left
+# the face 0.12" proud of its own plinth; 10" carries it with ~0.4" to spare and stops well
+# inside the house footing's -10" edge. The 5" of depth over the 2" bed tops out at -8'-5" —
+# D-B-PATIO's raised threshold, which is the highest it can go without stepping across the
+# door. See the note on W-B-BRICK in plan/storeys/basement.py for the full derivation.
+#
+# x=28' coordination: the veneer stops on the sunken garden's east wall axis, where
+# FT-SG-E1 already breaks thermally from the house footing (params/sunken_garden.py). No
+# third break is invented there and no solid collides: FT-SG-E1 is 84" wide but sits in the
+# -9.75'..-10.75' band under a wall whose bottom is -9.75', a clear 1'-5" below this plinth.
+VENEER_PLINTH = [
+    Footing(uid="CFV301AAAA", tag="FT-B-BRICK", under="W-B-BRICK",
+            width=inch(10), depth=inch(5)),
+]
+
+# The 2" of 40 psi XPS between the plinth and the house footing it bears on — the same
+# ``cast_foam_in_aggregate`` record the sunken garden's house-adjacent footings carry, used
+# here for a bed rather than a block. No drain tile: this sits a foot above the house
+# footing's own tile, inside the sunken garden, with nothing to collect.
+VENEER_PLINTH_BEDDING = [
+    FootingBedding(uid="CFV351AAAA", tag="FB-B-BRICK", host_ref="FT-B-BRICK",
+                   undercut=inch(2), geotextile=False, drain_tile=False,
+                   cast_foam_in_aggregate=True),
+]
+
 # --- garage ICF stem (basement storey; absolute elevations) -----------------------
 _FROST = 42.0 / 12.0  # frost depth below grade
 # Exposed above grade, and the garage storey datum besides — one value, authored next to
@@ -238,6 +281,7 @@ GARAGE_HYDRANT_DRYWELL = Drywell(
     geotextile=True, inlet_refs=("FX-G-HYDRANT",),
 )
 
-BASEMENT_ELEMENTS = [*HOUSE_FOOTINGS, *HOUSE_FOOTING_BEDDING, *GARAGE_STEM_NODES,
+BASEMENT_ELEMENTS = [*HOUSE_FOOTINGS, *HOUSE_FOOTING_BEDDING, *VENEER_PLINTH,
+                     *VENEER_PLINTH_BEDDING, *GARAGE_STEM_NODES,
                      *GARAGE_STEM_WALLS, *GARAGE_FOOTINGS, GARAGE_HYDRANT_DRYWELL]
 MAIN_ELEMENTS = [GARAGE_SLAB, GARAGE_HYDRANT_PEDESTAL, GARAGE_HYDRANT_SLEEVE]

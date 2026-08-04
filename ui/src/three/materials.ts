@@ -207,6 +207,14 @@ const WHITE_BRICK_STYLE: MasonryStyle = {
   jointFraction: 0.06, halfLap: 0.5, mortar: "#8f8f8c", base: "#e9e6df",
   jitterHSL: [0.006, 0.02, 0.05],
 };
+// Glazed forest-green brick over a dark mortar. Like the white brick the unit colour is fixed
+// (a ceramic glaze, not a clay body), so it ignores the brick-red family colour, and jitter is
+// muted lower still — a fired glaze is the most uniform masonry face on this house.
+const GLAZED_GREEN_BRICK_STYLE: MasonryStyle = {
+  key: "glazed-green-brick", unitM: BRICK_UNIT_M, unitsPerTile: 3, coursesPerTile: 6,
+  jointFraction: 0.06, halfLap: 0.5, mortar: "#4a4f49", base: "#1b4332",
+  jitterHSL: [0.004, 0.015, 0.04],
+};
 // Concrete block: the large face module, a fixed neutral grey, tighter joints and very low
 // jitter so it reads as cast block rather than laid brick.
 const CMU_STYLE: MasonryStyle = {
@@ -240,6 +248,7 @@ function isWhiteBrickRef(materialRef: string | null | undefined): boolean {
 export const MASONRY_STYLES: Readonly<Record<string, MasonryStyle>> = {
   brick: BRICK_STYLE,
   "white-brick": WHITE_BRICK_STYLE,
+  "glazed-green-brick": GLAZED_GREEN_BRICK_STYLE,
   cmu: CMU_STYLE,
 };
 

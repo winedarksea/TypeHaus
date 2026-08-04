@@ -23,7 +23,15 @@ _GROUND_COUPLED_KINDS = ("foundation_walls", "slab")
 # ``_storey_is_conditioned`` cannot see past them. Minimal duplicate of the same scoping in
 # ``checks.code.mn_energy`` (read-only to this module) — the block load and the
 # prescriptive table must agree about what the conditioned envelope is.
-_FREESTANDING_WALL_PREFIXES = ("W-SG-", "W-RG-")
+# Walls that stand outside the thermal boundary and must not be summed into a block load.
+# "W-B-BRICK" is not a freestanding *structure* like the sunken garden or raised garden — it
+# is a brick veneer wythe standing 1" off the basement's south wall — but it is freestanding
+# in the only sense this list cares about: the envelope it appears to be is already counted.
+# The thermal boundary there is CATLIN_BASEMENT_12 behind it (W-B-S2/W-B-S3), and the real
+# glazing is WIN-B-SAUNA / D-B-PATIO in that wall. Without this the veneer adds its own
+# nine-foot wall area plus two unglazed rough openings to the load, and the openings have no
+# window type, so they land in ``unknown_inputs`` and take the sizing verdict with them.
+_FREESTANDING_WALL_PREFIXES = ("W-SG-", "W-RG-", "W-B-BRICK")
 _FREESTANDING_SLAB_PREFIXES = ("SL-SG-", "SL-G-", "SL-BW-")
 
 

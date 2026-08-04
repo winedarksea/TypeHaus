@@ -49,6 +49,16 @@ TRANSITIONS = (
     # Starred: the garage/breezeway threshold condition — both doors open onto the slab
     # at grade, with the ICF stem dropped to a grade beam under them, so the perimeter
     # flashing here is nothing like a standard framed opening.
+    # Same reasoning as the garden arch above, one wall further north: the reveals through
+    # W-B-BRICK are open arched holes in a freestanding wythe, and the flashed, bucked,
+    # sealed opening is the one in the CATLIN_BASEMENT_12 wall behind them (TR-CATLIN-
+    # BASEMENT-OPENING already draws that). A second sheet here would detail a perimeter
+    # that has no perimeter work.
+    Transition(uid="CATR015AAAA", tag="TR-CATLIN-VENEER-OPENING",
+               condition_pattern="opening_perimeter:BASEMENT_BRICK_VENEER",
+               suppress=True,
+               # (single literal: the editable dialect forbids concatenated strings)
+               suppress_reason="the veneer reveal is an open segmental arch in a freestanding brick wythe standing 1\" off the basement wall — no buck, no frame, no flashing lands at its perimeter, and the opening that does get all three is the window/door in the concrete wall behind it, detailed by TR-CATLIN-BASEMENT-OPENING"),
     Transition(uid="CATR009AAAA", tag="TR-CATLIN-GARAGE-OPENING",
                condition_pattern="opening_perimeter:GARAGE_WALL_2X6",
                notes="notes/garage_wall_detail_side.md", overlay="garage-opening",

@@ -957,7 +957,9 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     assert all(w.assembly == "PORCH_RAILING_MASONRY" for w in railings)
 
     # A single garden-level tier of two 8'-wide arches across the front wall.
-    arches = [o for o in catlin_model.openings if o.tag.startswith("AO-")]
+    # "AO-" alone is no longer this structure's: the basement's glazed-brick veneer
+    # (W-B-BRICK) carries two arched reveals of its own, AO-B-BRICK-*.
+    arches = [o for o in catlin_model.openings if o.tag.startswith("AO-ARCH-")]
     assert len(arches) == 2
     assert all(o.width_m == pytest.approx(ft(8).meters) for o in arches)
     assert all(o.host_wall == "W-SG-ARCH" for o in arches)

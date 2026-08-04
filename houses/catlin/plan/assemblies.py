@@ -274,6 +274,35 @@ PORCH_RAILING_MASONRY = Assembly(
     source="catlin-house porch railing — white brick / air gap / grouted CMU / stucco",
 )
 
+# Glazed-brick veneer over the exposed basement wall, where the sunken garden is excavated
+# against it. Two layers only, and the missing one is the point: unlike PORCH_RAILING_MASONRY
+# there is no CMU backer wythe, because the existing CATLIN_BASEMENT_12 concrete (with its
+# damp-proofing, 4" of XPS and parge already outboard of it) IS the backer. This wall stands
+# 1" off that finished face on masonry ties, so the assembly is nothing but the cavity and
+# the wythe in front of it. Layer order runs backer-side -> exposed (garden) side, matching
+# every other clad wall here.
+#
+# No STRUCTURE layer: ``Assembly.structure_index()`` returns None rather than raising, and
+# inventing a fictional backer layer to satisfy it would double-count the concrete already
+# modeled by W-B-S2/W-B-S3. No ``interfaces`` either — the wythe is non-bearing and nothing
+# transitions onto it.
+BASEMENT_BRICK_VENEER = Assembly(
+    tag="BASEMENT_BRICK_VENEER",
+    layers=(
+        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.0),
+              function=LayerFunction.AIRGAP),
+        # STRUCTURE, not CLADDING, and the reason is what this assembly is: a wythe with
+        # nothing behind it. PORCH_RAILING_MASONRY's brick is cladding because a grouted CMU
+        # backer in the same assembly holds it up; here the backer is a *different wall*, so
+        # if the brick is not this assembly's structure layer nothing is — which is exactly
+        # what integrity.assembly_layers says. The self-supporting single-wythe precedent is
+        # RETAINING_BLOCK_12, which calls its one course STRUCTURE for the same reason.
+        Layer(name="brick", material_ref="glazed-green-brick", thickness=inch(3.625),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="basement south veneer over the sunken garden — glazed green brick, 1\" airgap, corrugated masonry ties back to the existing CATLIN_BASEMENT_12 wall (no CMU backer: the basement concrete is the backer, unlike PORCH_RAILING_MASONRY)",
+)
+
 # Raised-garden outer face: dry-stacked segmental retaining-wall block, one unit deep. No
 # core fill and no rebar — an SRW wall of this height is held by unit weight, batter and
 # the granular backfill behind it, which is exactly why it is the *outer* face here while
@@ -477,7 +506,8 @@ GARAGE_ROOF = Assembly(
 #   * CATLIN_MUDROOM_INT_2X6_EXPOSED — has no gypsum at all. Its two faces are the exposed
 #     Select Structural DF studs and 3/4" cabinet plywood, both already finished with
 #     clear-satin hardwax oil (see their `finish` in MATERIALS below).
-#   * PORCH_RAILING_MASONRY, SUNKEN_GARDEN_*, CATLIN_CONC_*_INT, RETAINING_BLOCK_12,
+#   * PORCH_RAILING_MASONRY, BASEMENT_BRICK_VENEER, SUNKEN_GARDEN_*, CATLIN_CONC_*_INT,
+#     RETAINING_BLOCK_12,
 #     the deck/glazing assemblies — no gypsum face: stucco, exposed concrete, brick/CMU,
 #     decking and polycarbonate sheet respectively.
 #   * POST_WHITE_PAINT — already a painted assembly, on its own `post-paint-white` material
@@ -704,6 +734,15 @@ MATERIALS = [
              density=1920.0, perm_rating=1.0, hatch="concrete", color="#e9e6df",
              finish="white-brick",
              source="porch railing outer wythe — white brick, grey mortar (brief.md)"),
+    # Glazed (fired-glaze) face brick in forest green — the sunken garden's south wall
+    # veneer. Same clay unit, R-value and density as the red/white brick; only the finish
+    # differs. Named explicitly so no renderer has to infer "green" from the tag: the glaze
+    # is a ceramic coat, which is why it reads uniform and low-jitter like the white brick
+    # rather than variegated like the red.
+    Material(tag="glazed-green-brick", name="Glazed forest-green face brick",
+             r_per_inch=0.20, density=1920.0, perm_rating=1.0, hatch="concrete",
+             color="#1b4332", finish="glazed-green-brick",
+             source="basement south veneer over the sunken garden — glazed brick, 1\" airgap off the existing concrete wall"),
     Material(tag="cmu", name="Grouted CMU (8\")", r_per_inch=0.11, density=2000.0,
              perm_rating=2.5, hatch="concrete", color="#b8b3ab", finish="cmu",
              source="porch railing inner wythe (grouted cores); concrete masonry ~2-3 perm-in"),
@@ -837,6 +876,7 @@ ASSEMBLIES = [
     SUNKEN_GARDEN_WALL,
     SUNKEN_GARDEN_ARCH_16,
     PORCH_RAILING_MASONRY,
+    BASEMENT_BRICK_VENEER,
     RETAINING_BLOCK_12,
     PORCH_DECK_COMPOSITE,
     BREEZEWAY_ROOF_GLAZING,

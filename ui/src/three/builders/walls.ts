@@ -210,25 +210,54 @@ export function withoutCollinearVertices(
 // is r·(1 − cos(π/2n)), so inverting it ties tessellation to the arch's actual size instead of a
 // flat guess: an 8'-wide garden arch and a small niche head come out equally smooth. Mirrors
 // `_arch_soffit_segment_count` in the glTF emitter.
-export function archSoffitSegmentCount(radiusM: number): number {
+export function archSoffitSegmentCount(radiusM: number, halfAngleRad = Math.PI / 2): number {
   if (!(radiusM > ARCH_SOFFIT_CHORD_TOLERANCE_M)) return ARCH_SOFFIT_MIN_SEGMENT_COUNT;
   const halfStep = Math.acos(Math.max(-1, 1 - ARCH_SOFFIT_CHORD_TOLERANCE_M / radiusM));
   return Math.min(ARCH_SOFFIT_MAX_SEGMENT_COUNT,
-    Math.max(ARCH_SOFFIT_MIN_SEGMENT_COUNT, Math.ceil(Math.PI / (2 * halfStep))));
+    Math.max(ARCH_SOFFIT_MIN_SEGMENT_COUNT, Math.ceil(halfAngleRad / halfStep)));
+}
+
+// The circle through both springlines and the crown of an arch of half-span `halfSpanM` rising
+// `riseM` above them: [radius, half-angle, how far the centre sits below the springline].
+//
+// This is what makes a *segmental* arch possible. The soffit used to be hard-wired to a
+// half-circle of width/2, so `arch_rise_m` only chose where the springline sat and every head
+// came out semicircular however shallow the rise said it was. A rise at or above the half-span
+// is the semicircle and is clamped to it. Mirrors `arch_soffit_circle` in the engine
+// (resolve/geometry_prims.py) — keep the two in step.
+export function archSoffitCircle(
+  halfSpanM: number, riseM: number,
+): { radiusM: number; halfAngleRad: number; depthM: number } {
+  const span = Math.max(halfSpanM, 1e-9);
+  const rise = Math.min(Math.max(riseM, 1e-9), span);
+  const radiusM = (span * span + rise * rise) / (2 * rise);
+  return {
+    radiusM,
+    halfAngleRad: Math.asin(Math.max(-1, Math.min(1, span / radiusM))),
+    depthM: radiusM - rise,
+  };
 }
 
 // One soffit sample as (offset from the arch centreline, height above the springline). The arc
 // is walked by *angle*: stepping evenly in x collapses near the springlines, where a semicircle
 // turns vertical, so the last step alone dropped ~40 cm on the catlin arches — the striping.
 // Mirrors `_arch_soffit_sample` in the glTF emitter.
+// Sweeping −halfAngle..+halfAngle and subtracting the circle's depth below the springline
+// generalises this to a segmental arch; at the default π/2 the depth is zero and this is the
+// same half-circle it always was, merely parameterised from the centre out.
 export function archSoffitSample(
-  segment: number, segmentCount: number, radiusM: number,
+  segment: number, segmentCount: number, radiusM: number, halfAngleRad = Math.PI / 2,
 ): { offsetM: number; heightM: number } {
-  const angle = Math.PI * segment / segmentCount;
-  return { offsetM: -radiusM * Math.cos(angle), heightM: radiusM * Math.sin(angle) };
+  const angle = -halfAngleRad + 2 * halfAngleRad * segment / segmentCount;
+  return {
+    offsetM: radiusM * Math.sin(angle),
+    heightM: radiusM * Math.cos(angle) - radiusM * Math.cos(halfAngleRad),
+  };
 }
 
-interface ArchSoffitCylinder { centerAlongM: number; springlineM: number; radiusM: number }
+// `circleCenterM` is the soffit circle's centre elevation — the springline for a semicircle,
+// and `depthM` below it for a segmental arch.
+interface ArchSoffitCylinder { centerAlongM: number; circleCenterM: number; radiusM: number }
 
 // ExtrudeGeometry sweeps every hole edge as its own detached quad, so the soffit ships per-facet
 // normals and shades as N flat strips however finely it is tessellated. Overwrite just the swept
@@ -245,8 +274,8 @@ function applySmoothArchSoffitNormals(
   for (let index = 0; index < position.count; index++) {
     if (Math.abs(normal.getZ(index)) > ARCH_SOFFIT_SWEPT_FACE_MAX_AXIAL_NORMAL) continue;
     const along = position.getX(index), elevation = position.getY(index);
-    for (const { centerAlongM, springlineM, radiusM } of soffits) {
-      const dx = along - centerAlongM, dy = elevation - springlineM;
+    for (const { centerAlongM, circleCenterM, radiusM } of soffits) {
+      const dx = along - centerAlongM, dy = elevation - circleCenterM;
       const distance = Math.hypot(dx, dy);
       if (dy < -ARCH_SOFFIT_RING_TOLERANCE_M ||
         Math.abs(distance - radiusM) > ARCH_SOFFIT_RING_TOLERANCE_M) continue;
@@ -313,17 +342,19 @@ export function createSmoothArchedWallLayerGeometry(
       const top = Math.min(wall.z1_m, threshold + opening.height_m);
       hole.moveTo(start, bottom); hole.lineTo(start, top); hole.lineTo(end, top); hole.lineTo(end, bottom);
     } else {
-      const radiusM = opening.width_m / 2;
+      const { radiusM, halfAngleRad, depthM } = archSoffitCircle(opening.width_m / 2, archRise);
       const springlineM = threshold + Math.max(0, opening.height_m - archRise);
-      const segmentCount = archSoffitSegmentCount(radiusM);
+      const segmentCount = archSoffitSegmentCount(radiusM, halfAngleRad);
       hole.moveTo(start, bottom);
       hole.lineTo(start, Math.min(wall.z1_m, springlineM));
       for (let segment = 0; segment <= segmentCount; segment++) {
-        const { offsetM, heightM } = archSoffitSample(segment, segmentCount, radiusM);
+        const { offsetM, heightM } = archSoffitSample(segment, segmentCount, radiusM, halfAngleRad);
         hole.lineTo(opening.center_along_m + offsetM, Math.min(wall.z1_m, springlineM + heightM));
       }
       hole.lineTo(end, bottom);
-      soffits.push({ centerAlongM: opening.center_along_m, springlineM, radiusM });
+      soffits.push({
+        centerAlongM: opening.center_along_m, circleCenterM: springlineM - depthM, radiusM,
+      });
     }
     hole.closePath();
     shape.holes.push(hole);
@@ -411,19 +442,21 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
     const archRise = active.arch_rise_m ?? 0;
     if (archRise > 1e-9) {
       const springline = openingBottom + Math.max(0, active.height_m - archRise);
-      const radius = active.width_m / 2;
+      const { radiusM: radius, halfAngleRad, depthM } = archSoffitCircle(active.width_m / 2, archRise);
       // Angular steps here too: even-x strips leave a ~40 cm riser at each springline.
-      const segmentCount = archSoffitSegmentCount(radius);
+      const segmentCount = archSoffitSegmentCount(radius, halfAngleRad);
       for (let segment = 0; segment < segmentCount; segment++) {
-        const segmentStart = active.center_along_m + archSoffitSample(segment, segmentCount, radius).offsetM;
-        const segmentEnd = active.center_along_m + archSoffitSample(segment + 1, segmentCount, radius).offsetM;
+        const segmentStart = active.center_along_m + archSoffitSample(segment, segmentCount, radius, halfAngleRad).offsetM;
+        const segmentEnd = active.center_along_m + archSoffitSample(segment + 1, segmentCount, radius, halfAngleRad).offsetM;
         const clippedStart = Math.max(start, segmentStart);
         const clippedEnd = Math.min(end, segmentEnd);
         if (clippedEnd - clippedStart <= 1e-9) continue;
         const midpoint = (clippedStart + clippedEnd) / 2;
         const offset = midpoint - active.center_along_m;
         const curve = radius * radius - offset * offset;
-        const soffit = springline + Math.sqrt(Math.max(0, curve));
+        // Height above the springline, not above the circle's centre — they differ by
+        // `depthM` on a segmental arch and coincide on a semicircle.
+        const soffit = springline + Math.sqrt(Math.max(0, curve)) - depthM;
         if (wall.z1_m > soffit + 1e-9)
           pieces.push({ polygon: ring(clippedStart, clippedEnd), z0_m: soffit,
             z1_m: wall.z1_m, topIsRaked: raked });

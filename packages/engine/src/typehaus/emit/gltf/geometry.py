@@ -15,6 +15,7 @@ from typehaus.resolve.geometry_prims import (  # noqa: F401 - re-exported for th
     Vec3,
     _arch_soffit_sample,
     _arch_soffit_segment_count,
+    arch_soffit_circle,
     _dedupe_ring,
     _lerp,
     _ring_signed_area,
