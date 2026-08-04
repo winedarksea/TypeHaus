@@ -302,65 +302,64 @@ Questions:
 
 ### The garbage disposal with safety toggle system
 Disposal is a 3/4 HP system, stainless steel, likely insinkerator
-1. The Rough-In (Before Drywall)
+1. The Power & Protection (The Breaker Panel)
 
-You will completely separate the control location (the backsplash) from the power location (under the sink).
+    Dedicated Circuit: Run a dedicated 12/2 Romex cable for the disposal. (If you want an instant-hot or dishwasher under the same sink, run a second dedicated circuit for them).
 
-    At the Backsplash (The Control): Have your electrician install a standard 2-gang Low-Voltage Mounting Ring (or a standard 2-gang plastic box). Do not run any 120V AC wire to this box.
+    Upstream GFCI: Install a 20-Amp GFCI Circuit Breaker at your main electrical panel. This protects the entire wire run, the contactor, and the outlet, and eliminates the need for a bulky GFCI receptacle under the sink.
 
-    In the Wall: Run a standard in-wall rated 18/4 CL2 low-voltage wire (often used for thermostats or security) from the backsplash box down into the sink base cabinet.
+2. The Backsplash Controls (The UI)
 
-    Under the Sink (The Power): Run a dedicated 20A, 120V AC circuit from your main breaker panel to a 2-gang metal junction box under the sink.
+Moving to a momentary "RUN" switch is a brilliant safety upgrade. It acts as a "dead man's switch." You flip the missile guard up, toggle the switch to ARM the system (the red light turns on), and then you push and hold the RUN button to grind the food. If a spoon falls in, you just let go of the button and it stops instantly.
 
-2. The High-End Aesthetic (The Finish)
+    The Wire: Run 18/6 CL2 thermostat/control wire in the wall. You only need 4 conductors, but the extra two wires give you a backup if a wire is nicked by a drywall screw, or allows for future expansion.
 
-Since this is a custom build, do not use a plastic blank insert with a hole drilled in it. It will look cheap next to your high-end finishes.
+    The Arming Switch: An aircraft-style guarded toggle switch. (Note: Because we are moving to 24V DC, you must buy a 24V-rated illuminated toggle, often sold for heavy-machinery/marine use, or simply use a standard 12V switch and wire a 1k-ohm resistor in series with the switch's ground pin to protect the LED from the 24V).
 
-    The Plate: Order a custom metal wall plate. Companies like Kyle Switch Plates or Front Panel Express allow you to order custom configurations. You want a 2-gang plate where Side A has a standard rectangular (Decora) or standard Toggle cutout, and Side B has a precise 12mm or 16mm round hole (depending on the thread size of your aircraft switch).
+    The Run Switch: A 24V DC momentary push button. A stainless steel "Anti-Vandal" push button (often used in elevators or custom PCs) looks incredibly premium and fits a round cutout perfectly.
 
-    The Main Switch: Use a premium, satisfying mechanical switch for the main activation (e.g., a standard Lutron Claro or standard toggle). It is purely mechanical, so it will switch 12V DC perfectly.
+    The Plate: A custom 2-gang metal plate with two round cutouts (sized to your specific switches, usually 12mm, 16mm, or 19mm).
 
-    The Arming Switch: Your 12V DC aircraft safety switch will bolt perfectly and flush into the custom metal plate.
+3. The Under-Sink Hardware (The Engine)
 
-3. The Under-Sink Utility Hub (The Hardware)
+    The Receptacle: Install a standard, commercial-grade 20A single receptacle (not a duplex). Because the GFCI breaker protects it, this is perfectly code-compliant.
 
-To avoid consumer-grade plug-in power supplies, we will use hardwired, commercial-grade, UL-Listed components tucked neatly into the sink cabinet.
+    The Contactor (Motor Relay): Instead of a generic relay, use a Definite Purpose (DP) Contactor with a 24V DC (or 24V AC) coil. These are specifically built for the brutal inrush current of electric motors. (e.g., a 1-pole or 2-pole 30-Amp contactor by Eaton, Schneider, or Packard).
 
-    The Power Supply: Use a Hardwired 12V DC Class 2 LED Driver (e.g., Magnitude Lighting or similar). These are standard in custom homes for under-cabinet lighting. They feature their own metal enclosure and knockouts. It takes 120V AC in, and gives you a perfectly safe, hardwired 12V DC out.
+    The Enclosure: Mount the contactor inside a standard 6x6x4 metal NEMA 1 enclosure (junction box) under the sink.
 
-    The Relay: The Functional Devices RIBU1C. This is a fully enclosed, UL-Listed "Relay in a Box." It has a threaded nipple that mounts directly to a knockout on your 120V metal junction box. The 120V wires are safely housed inside the box, and the low-voltage wires exit the relay on the outside.
+    The Power Supply: A UL-Listed Class 2 power supply. You can use a hardwired 24V DC transformer mounted directly to the side of the NEMA enclosure.
 
-    The Outlet: Install a standard Half-Hot GFCI receptacle under the sink. One plug is "always on" (for a dishwasher or instant-hot water tap), and the other plug is switched by the relay (for the disposal).
+4. The Wiring Logic
 
-4. How It Is Wired (The Logic)
+High Voltage (Inside the NEMA Enclosure):
 
-The High Voltage (Inside the under-sink junction box):
+    The 120V AC Line (Black) from the breaker connects to the L1 (Line) terminal on the Contactor.
 
-    The 120V AC power comes from the breaker.
+    The T1 (Load) terminal on the Contactor goes to the Hot (Brass) screw on your 20A Receptacle.
 
-    The Neutral and Ground go straight to the GFCI receptacle.
+    Neutral and Ground bypass the contactor and go directly to the Receptacle.
+    Result: The receptacle is dead until the contactor pulls shut.
 
-    The Hot (Black) splits:
+Low Voltage (The 24V Control Loop):
 
-        One branch provides constant power to the 12V DC LED driver.
+    24V Positive (+) from the power supply goes up the wall (via Wire 1) to the Power pin on the ARM Toggle Switch.
 
-        One branch goes to the Yellow wire of the RIB relay (Normally Open contact).
+    24V Negative (-) from the power supply splits:
 
-    The Orange wire from the RIB relay goes to the Hot terminal of the GFCI receptacle (the disposal plug).
+        One branch goes to the Negative Coil terminal on the under-sink Contactor.
 
-The Low Voltage (Using the 18/4 wire in the wall):
+        One branch goes up the wall (via Wire 2) to the Ground pin on the ARM Toggle Switch (this provides the ground path so the red LED lights up).
 
-    Take the 12V DC Positive (+) from your hardwired LED driver and send it up the wall to the Power pin on the Aircraft Switch.
+    A jumper wire goes from the Accessory/Load pin on the ARM Toggle Switch to one side of the momentary RUN button.
 
-    Take the 12V DC Negative (-) from the LED driver and split it:
+    The other side of the momentary RUN button goes down the wall (via Wire 3) to the Positive Coil terminal on the Contactor.
 
-        Send one branch up the wall to the Ground pin on the Aircraft Switch (this gives the LED a path to ground so it lights up).
-
-        Connect the other branch to the White/Blue wire on the RIB Relay (Coil Common).
-
-    Run a jumper wire from the Load pin of the Aircraft Switch to one brass screw on the Standard Toggle Switch.
-
-    Run a wire from the other brass screw on the Standard Toggle Switch down the wall to the White/Yellow wire on the RIB Relay (12V Coil Input).
+Main BOM additions:
+GFCI Breaker: A dedicated 20-Amp GFCI Circuit Breaker in the main panel (Brands: Square D, Siemens, Eaton—must match your home's electrical panel).
+Receptacle: A commercial-grade 20A Single Receptacle (e.g., Leviton 5361-W). Note: Use a "Single" receptacle (one plug), not a standard "Duplex" (two plugs), as this is a dedicated, switched circuit.
+Low Voltage Wire: 50 feet of 18/6 CL2 In-Wall Thermostat Wire.
+Boxes: A 2-gang low-voltage mounting ring for the backsplash, and a 4x4 metal junction box for under the sink.
 
 ### Other visual ideas (just ideas, not a TODO)
 Dark base to the house
