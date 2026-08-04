@@ -14,6 +14,7 @@ from typehaus.resolve.placeable_clear_floor_obstruction import (
     PlaceableBodyProfile, clear_floor_space_obstruction)
 from typehaus.resolve.placeable_groups import (PlacementGroupAnchorZone,
                                                assign_placement_groups)
+from typehaus.resolve.room_floor import room_floor_elevation
 
 _TYPE_COLLECTIONS = (
     ("furniture_types", "Furniture", "furniture"),
@@ -38,6 +39,9 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # Whether each body actually stands in a clear floor space, keyed by uid. Built here
     # because it needs the product type, which the resolved record deliberately does not carry.
     obstruction_by_uid: dict[str, ClearFloorSpaceObstruction] = {}
+    # ``room_floor_elevation`` walks every wall and slab, so the answer is memoised per room
+    # tag — a hundred placeables in the same room ask the same question.
+    floor_by_room: dict[str, float] = {}
     for storey in plan.storeys:
         rooms = [room for room in model.rooms if room.storey == storey.tag]
         for item in plan.storey_elements(storey.tag):
@@ -56,11 +60,17 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 continue
             local_footprint = _local_footprint(product_type, item)
             footprint = _transformed_polygon(local_footprint, center, rotation)
-            mount_elevation = resolved_mount_elevation(storey, item)
-            obstruction_by_uid[item.uid] = clear_floor_space_obstruction(
-                _body_profile(product_type, item, storey, mount_elevation, local_footprint))
             resolved_room = next((room.tag for room in rooms if Polygon(room.clear_face).covers(Point(center))), None)
             explicit_room = getattr(item, "room", None)
+            # Mount heights are measured off the floor the thing stands on, which is the
+            # storey datum everywhere except where a room's slab is filed on another storey
+            # (→ resolve/room_floor.py). Resolved before the elevation, not after, because the
+            # elevation depends on it.
+            floor = _floor_elevation(model, storey, explicit_room or resolved_room,
+                                     floor_by_room)
+            mount_elevation = resolved_mount_elevation(storey, item, floor_m=floor)
+            obstruction_by_uid[item.uid] = clear_floor_space_obstruction(
+                _body_profile(product_type, item, floor, mount_elevation, local_footprint))
             if explicit_room is not None and explicit_room != resolved_room:
                 findings.append(_finding("integrity.placeable_room_mismatch", item.tag,
                     f"placeable {item.tag} is assigned to {explicit_room} but its footprint center is outside that room",
@@ -90,16 +100,37 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     return findings
 
 
-def resolved_mount_elevation(storey: object, item: object) -> float:
+def _floor_elevation(model: ResolvedModel, storey: object, room_tag: str | None,
+                     cache: dict[str, float]) -> float:
+    """The absolute Z of the floor a placeable in ``room_tag`` stands on."""
+    if room_tag is None:
+        return storey.elevation.meters
+    if room_tag not in cache:
+        room = next((r for r in model.rooms if r.tag == room_tag), None)
+        cache[room_tag] = (storey.elevation.meters if room is None
+                           else room_floor_elevation(model, room))
+    return cache[room_tag]
+
+
+def resolved_mount_elevation(storey: object, item: object,
+                             floor_m: float | None = None) -> float:
     """The one project-frame Z for a placeable — glTF, the UI, and IFC all read this.
 
     ``Mount`` is the single authoritative height contract: an explicit ``elevation`` is a
-    storey-relative height and wins outright, because a ceiling-mounted fixture hung at a
+    floor-relative height and wins outright, because a ceiling-mounted fixture hung at a
     stated 8' must stay at 8' whatever the storey's default ceiling height is. Only a
     ceiling mount with no stated elevation falls back to hanging off the ceiling plane.
+
+    ``floor_m`` is the plane those heights are measured from. It defaults to the storey
+    datum, which is the same thing for every room whose slab is filed on its own storey;
+    ``resolve_placeables`` passes the room's actual floor instead (→ resolve/room_floor.py),
+    which is what keeps the Catlin garage's contents on the slab at grade rather than 22"
+    up in the air on the ICF stem top the storey datum sits at. Callers holding an element
+    that is not in a room — a PipeRun, an unplaced device — keep the storey default, which
+    is what their authored elevations have always meant.
     """
     mount = getattr(item, "mount", None)
-    floor = storey.elevation.meters
+    floor = storey.elevation.meters if floor_m is None else floor_m
     if mount is None:
         return floor
     if mount.elevation is not None:
@@ -110,10 +141,10 @@ def resolved_mount_elevation(storey: object, item: object) -> float:
     return floor
 
 
-def _body_profile(product_type: object | None, item: object, storey: object,
+def _body_profile(product_type: object | None, item: object, floor_m: float,
                   mount_elevation_m: float,
                   local_footprint: list[tuple[float, float]]) -> PlaceableBodyProfile:
-    """Measure the placeable's solid against the floor of the storey it stands on.
+    """Measure the placeable's solid against the floor it stands on.
 
     ``resolved_mount_elevation`` gives the *base* of the body, so the band is
     ``[base, base + height]`` — except for a recessed floor mount, whose body drops into the
@@ -125,7 +156,7 @@ def _body_profile(product_type: object | None, item: object, storey: object,
     recessed = bool(getattr(mount, "recessed_into_host_surface", False))
     height = getattr(product_type, "height", None)
     body_height_m = height.meters if height is not None else None
-    base_above_floor_m = mount_elevation_m - storey.elevation.meters
+    base_above_floor_m = mount_elevation_m - floor_m
     if recessed and mount_kind == "floor" and body_height_m is not None:
         base_above_floor_m -= body_height_m
     projection_m = None

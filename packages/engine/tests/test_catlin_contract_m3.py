@@ -1089,6 +1089,62 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     assert stairs["ST-S2A"]["run_reversed"] is True
 
 
+# Two devices are wall-*mounted* but not wall-*hosted*, and both say so in their own
+# comments: the island GFCI is let into FURN-M-KIT-ISLAND's east end, and the porch flood
+# is strapped to pillar PT-SG-BR2. Neither is a Wall, and `wall_ref` only names Walls.
+_NOT_WALL_HOSTED = {"ED-M-LIVING-KGF4", "ED-M-PORCH-FLOOD"}
+
+
+def test_wall_mounted_devices_resolve_against_a_wall_face(catlin_model):
+    """A switch or receptacle lands on the finish plane, not on the wall's centreline.
+
+    Authored device positions are plain plan points — nothing in the resolver pulls them
+    onto a wall — so a box authored at the wall's axis resolves *inside* the framing, and
+    one authored a few feet off resolves in mid-air. Both were widespread until the
+    2026-08-03 pass; this is what says they stay fixed. The test grades the resolved body,
+    not the authored point: its back edge sits on a wall face (a recessed box the other
+    way), it does not reach through into the studs, and it is not floating in a room.
+    """
+    from shapely.geometry import Polygon
+    from shapely.ops import unary_union
+
+    walls: dict[str, list] = {}
+    for wall in catlin_model.walls:
+        parts = [Polygon(layer.polygon) for layer in wall.layers if len(layer.polygon) >= 3]
+        parts = [p for p in parts if p.is_valid and p.area > 1e-9]
+        if parts:
+            walls.setdefault(wall.storey, []).append((unary_union(parts), wall.z0_m, wall.z1_m))
+
+    offenders = []
+    for item in catlin_model.canvas_objects:
+        if item.kind != "ElectricalDevice" or item.tag in _NOT_WALL_HOSTED:
+            continue
+        mount = item.mount
+        if mount is None or mount.kind.value != "wall":
+            continue
+        body = Polygon(item.footprint)
+        best = None
+        for solid, z0, z1 in walls.get(item.storey, []):
+            if z1 <= item.z_m + 1e-6 or z0 >= item.z_m + 1e-6:
+                continue  # this wall is not there at the height the device hangs
+            overlap = solid.intersection(body).area
+            gap = solid.distance(body)
+            if best is None or (overlap, -gap) > (best[0], -best[1]):
+                best = (overlap, gap)
+        if best is None:
+            offenders.append((item.tag, "no wall at its mounting height"))
+            continue
+        overlap, gap = best
+        # Positions are authored to 1/8", so grade how far the body reaches past the face
+        # rather than whether it touches it at all.
+        reach = overlap / math.sqrt(body.area)
+        if reach > inch(0.25).meters and not mount.recessed_into_host_surface:
+            offenders.append((item.tag, "buried %.2f\" into the wall" % (reach / inch(1).meters)))
+        elif overlap <= 1e-9 and gap > inch(0.25).meters:
+            offenders.append((item.tag, "floating %.1f\" off the wall" % (gap / inch(1).meters)))
+    assert not offenders, offenders
+
+
 def test_ifc_emission_when_available(catlin_model, tmp_path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
     import ifcopenshell.validate

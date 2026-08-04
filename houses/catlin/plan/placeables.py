@@ -425,7 +425,7 @@ SECOND_PLACEABLES = [
     Furniture(uid="RCK702AAAA", tag="FURN-S-PLANT-ROCKER", type_ref="FURN-ROCKING-CHAIR-30",
               room="RM-S-PLANT", position=pt(m(4.06734), m(1.93971)), rotation=deg(-45)),
     ElectricalDevice(uid="QTS0020AAA", tag="ED-S-PLANT-SPOT", kind=DeviceKind.LIGHT,
-                     position=pt(m(1.2726), m(2.63984)), type_ref="ED-T-LT-SCONCE-SPOT",
+                     position=pt(ft(4, 2.125), ft(8, 7.625)), type_ref="ED-T-LT-SCONCE-SPOT",
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6))),

@@ -26,7 +26,7 @@ from typehaus.emit.gltf.palette import _FALLBACK, _color, _solid_color
 from typehaus.emit.gltf.roofs import _add_roof
 from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.emit.gltf.walls import _add_wall_body
-from typehaus.emit.room_floor import room_floor_elevation
+from typehaus.resolve.room_floor import room_floor_elevation
 from typehaus.emit.trades import solid_trade
 from typehaus.resolve.model import ResolvedModel
 

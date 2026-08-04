@@ -239,6 +239,17 @@ Questions:
   opening — 31 of 46 A-4xx sheets in the primary set) and flipped `haus print` to
   primary-by-default (`--details all` still there). Per-condition fan-out is under
   **Needs your decision**.
+- Nest/loft design
+- House being a bit higher, cladding detail
+- Any rooms with fancy ceilings
+- Count/show tile, make sure electrical for mats is in if so
+- Garbage disposal in kitchen sink
+- Able to see the actual studs (or the end cut view of them) on the 2d when framing on
+- Window sealing detail
+- Access panels (mechanical, wall hung toilet)
+- Curtain rods (on porch, in living room, master bedroom)
+- Show LED trips better, note drywall channels as needed in BOM
+- Reinforcement for exterior doors
 
 ### Drainage Outstanding
     is nominal, not computed from a soil infiltration rate.
@@ -276,6 +287,68 @@ Questions:
   - **The wall hydrants draw an `integrity.placeable_room_mismatch` apiece**, which is the
     true description of an exterior hose bib hosted by an interior room's wall rather than a
     defect. The model has no outdoor-room concept to file them under.
+
+### The garbage disposal with safety toggle system
+Disposal is a 3/4 HP system, stainless steel, likely insinkerator
+1. The Rough-In (Before Drywall)
+
+You will completely separate the control location (the backsplash) from the power location (under the sink).
+
+    At the Backsplash (The Control): Have your electrician install a standard 2-gang Low-Voltage Mounting Ring (or a standard 2-gang plastic box). Do not run any 120V AC wire to this box.
+
+    In the Wall: Run a standard in-wall rated 18/4 CL2 low-voltage wire (often used for thermostats or security) from the backsplash box down into the sink base cabinet.
+
+    Under the Sink (The Power): Run a dedicated 20A, 120V AC circuit from your main breaker panel to a 2-gang metal junction box under the sink.
+
+2. The High-End Aesthetic (The Finish)
+
+Since this is a custom build, do not use a plastic blank insert with a hole drilled in it. It will look cheap next to your high-end finishes.
+
+    The Plate: Order a custom metal wall plate. Companies like Kyle Switch Plates or Front Panel Express allow you to order custom configurations. You want a 2-gang plate where Side A has a standard rectangular (Decora) or standard Toggle cutout, and Side B has a precise 12mm or 16mm round hole (depending on the thread size of your aircraft switch).
+
+    The Main Switch: Use a premium, satisfying mechanical switch for the main activation (e.g., a standard Lutron Claro or standard toggle). It is purely mechanical, so it will switch 12V DC perfectly.
+
+    The Arming Switch: Your 12V DC aircraft safety switch will bolt perfectly and flush into the custom metal plate.
+
+3. The Under-Sink Utility Hub (The Hardware)
+
+To avoid consumer-grade plug-in power supplies, we will use hardwired, commercial-grade, UL-Listed components tucked neatly into the sink cabinet.
+
+    The Power Supply: Use a Hardwired 12V DC Class 2 LED Driver (e.g., Magnitude Lighting or similar). These are standard in custom homes for under-cabinet lighting. They feature their own metal enclosure and knockouts. It takes 120V AC in, and gives you a perfectly safe, hardwired 12V DC out.
+
+    The Relay: The Functional Devices RIBU1C. This is a fully enclosed, UL-Listed "Relay in a Box." It has a threaded nipple that mounts directly to a knockout on your 120V metal junction box. The 120V wires are safely housed inside the box, and the low-voltage wires exit the relay on the outside.
+
+    The Outlet: Install a standard Half-Hot GFCI receptacle under the sink. One plug is "always on" (for a dishwasher or instant-hot water tap), and the other plug is switched by the relay (for the disposal).
+
+4. How It Is Wired (The Logic)
+
+The High Voltage (Inside the under-sink junction box):
+
+    The 120V AC power comes from the breaker.
+
+    The Neutral and Ground go straight to the GFCI receptacle.
+
+    The Hot (Black) splits:
+
+        One branch provides constant power to the 12V DC LED driver.
+
+        One branch goes to the Yellow wire of the RIB relay (Normally Open contact).
+
+    The Orange wire from the RIB relay goes to the Hot terminal of the GFCI receptacle (the disposal plug).
+
+The Low Voltage (Using the 18/4 wire in the wall):
+
+    Take the 12V DC Positive (+) from your hardwired LED driver and send it up the wall to the Power pin on the Aircraft Switch.
+
+    Take the 12V DC Negative (-) from the LED driver and split it:
+
+        Send one branch up the wall to the Ground pin on the Aircraft Switch (this gives the LED a path to ground so it lights up).
+
+        Connect the other branch to the White/Blue wire on the RIB Relay (Coil Common).
+
+    Run a jumper wire from the Load pin of the Aircraft Switch to one brass screw on the Standard Toggle Switch.
+
+    Run a wire from the other brass screw on the Standard Toggle Switch down the wall to the White/Yellow wire on the RIB Relay (12V Coil Input).
 
 ### Other visual ideas (just ideas, not a TODO)
 Dark base to the house

@@ -60,17 +60,38 @@ supply line freezes at its high point, not at its ends, so a run that surfaces a
 its length is not frost-protected no matter how deep both ends are. `mep.hydrant_freeze_depth`
 checks both: the bury at the shutoff, and that no point along the run rises above it.
 
-## The pedestal
+## The pedestal, and why there isn't one (2026-08-03)
 
-`SL-G-HYDRANT-PED` — an 18" square, 4" thick, poured on top of `SL-G-FLOOR`. Its job is to
-put the slab penetration and its sealant joint **above the wet line**. A garage floor here
-runs salt slush from December to March; a sleeve entry at slab level sits in that slush all
-winter, and the joint is the first thing to fail. Four inches is enough to clear it.
+There was one: `SL-G-HYDRANT-PED`, an 18" square, 4" thick, poured on top of `SL-G-FLOOR`,
+with its own block-out sleeve `SP-G-HYDRANT-PED`. Its job was to put the slab penetration and
+its sealant joint **above the wet line** — a garage floor here runs salt slush from December
+to March, a sleeve entry at slab level sits in that slush all winter, and the joint is the
+first thing to fail.
 
-It is authored as a `Slab` with `datum="walking_surface"`, not a `Pad`: a `Pad` is an
-isolated footing bearing on soil, which is how `structural.frost_depth` reads it — correctly,
-since a pad at 0'-0" really would be a footing above the frost line. This is a topping pour
-on an existing slab.
+**Retired by owner decision.** The hydrant does not need a dedicated slab; it stands on the
+garage's own floor slab like everything else in the room, and a 4" block in the middle of a
+floor that is swept, driven around and poured to fall toward the overhead door is its own
+nuisance. What the pedestal was buying is now bought by specification instead: a flexible,
+chloride-tolerant sealant at the penetration, on the maintenance list rather than designed
+out. **Consequence to accept:** that joint sits in the wet line and will want re-doing
+sooner than a joint 4" above it would.
+
+Nothing below grade changed, and that is where the freeze protection actually lives — the
+6'-0" bury, `SP-G-HYDRANT` through the slab, and the `DRW-G-HYDRANT` stone the barrel weeps
+into when the handle closes. Those are the system; the pedestal never was.
+
+## Where the hydrant sits
+
+On `SL-G-FLOOR` at 0'-0", which is **1'-10" below the `garage` storey datum** — that datum
+is the ICF stem top the wood walls bear on, not the floor (→ `CLAUDE.md`). No source file
+states the offset. `resolve/placeables.py` measures every mount off the floor of the room the
+placeable is in, via `resolve/room_floor.py`, and for `RM-GARAGE` that resolves to the slab.
+
+It measured off the *storey datum* until 2026-08-03, which stood this hydrant — and the
+workbench, and every receptacle, switch and light in the garage — a flat 22" higher than
+authored. `room_floor_elevation` already existed and already knew the answer; it just lived
+in `emit/` and only the two emitters called it, so the viewer drew the floor in the right
+place and the things standing on it in the wrong one.
 
 ## Specified with the fixture
 
@@ -86,4 +107,5 @@ UNKNOWN rather than claiming a review it did not perform.
   digging.
 
 Sealant at the slab penetration is a flexible, chloride-tolerant joint sealant, not a rigid
-grout: the pedestal and the slab move against each other seasonally.
+grout: the barrel and the slab move against each other seasonally. With the pedestal gone
+this joint is the only thing between the salt slush and the sleeve — see above.

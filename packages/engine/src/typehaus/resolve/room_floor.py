@@ -1,11 +1,16 @@
-"""Where a room's floor actually sits — shared by the glTF viewer and the IFC exporter.
+"""Where a room's floor actually sits — the one answer the whole pipeline shares.
 
 Usually a room's storey walls bottom out exactly where its floor structure does, so the
 wall base is a fine default. That assumption breaks when a room's real floor slab is filed
 on a different storey than the room itself (the Catlin garage: its slab is poured at grade
 and filed on "main", while its wood walls — and so the room — sit on the "garage" storey,
-22" up on the ICF stem). Both emitters need the same answer here, or the viewer and the IFC
-export disagree about where the garage floor is.
+22" up on the ICF stem).
+
+It lives in ``resolve`` rather than ``emit`` because ``resolve/placeables.py`` needs it too,
+and needs it *before* either emitter runs: a placeable's mount elevation is measured off the
+floor it stands on, not off its storey datum. While this was an emit-only helper, everything
+standing in the garage — the hydrant, the workbench, every receptacle and switch — resolved
+22" above the floor the viewer drew under it.
 """
 
 from __future__ import annotations

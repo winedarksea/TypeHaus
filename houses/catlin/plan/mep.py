@@ -587,8 +587,12 @@ WALL_SLEEVES = [
 # The hydrant line's garage-foundation protection (IRC P2604): the buried run passes
 # under FT-GF-S-DR at its 6' bury (22" below the footing's 4'-2" bearing plane) inside a
 # protection sleeve, and its rise at the hydrant encroaches on FT-GF-W's 45° influence
-# line, protected at the marked point. `mep.footing_clearance` requires both. The barrel
-# also passes the 4" topping pedestal, whose block-out is its own cast-in.
+# line, protected at the marked point. `mep.footing_clearance` requires both.
+#
+# There was a third sleeve here, SP-G-HYDRANT-PED, the block-out through the 4" topping
+# pedestal the barrel used to pass on its way up. The pedestal was retired 2026-08-03
+# (params/foundations.py) and its block-out went with it: the barrel now rises through
+# SP-G-HYDRANT in SL-G-FLOOR and nothing else.
 GARAGE_SLEEVES = [
     SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S-DR",
                       position=pt(ft(5), ft(41)), pipe_diameter=inch(0.75),
@@ -598,10 +602,6 @@ GARAGE_SLEEVES = [
                       position=pt(ft(0, 9.6), ft(61, 6)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-6)),
-    SleevePenetration(uid="CGPW03AAAA", tag="SP-G-HYDRANT-PED", host_ref="SL-G-HYDRANT-PED",
-                      position=pt(ft(1, 6), ft(62)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(2), purpose=Service.WATER_COLD,
-                      serves_fixture="FX-G-HYDRANT"),
 ]
 
 # Basement-ceiling collector: picks up both WC sleeves, heads to the south-wall sewer
@@ -1462,8 +1462,8 @@ EQUIPMENT = [
 # --- Electrical: symbols-only (decision 1 — panel/circuit schedule deferred) -------
 PANEL = [
     ElectricalDevice(uid="CEP901AAAA", tag="ED-B-PANEL", kind=DeviceKind.PANEL,
-                     position=pt(ft(2), ft(29)), type_ref="ED-T-PANEL",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+                     position=pt(ft(1, 2), ft(29)), type_ref="ED-T-PANEL",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), rotation=deg(90)),
 ]
 
 # One light + switch per habitable room, one code-minimum receptacle per bedroom (bare
@@ -1489,7 +1489,7 @@ BASEMENT_DEVICES = [
                      room="RM-B-GYM", controlled_by=("ED-B-GYM-SW",),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(1, 6))),
     ElectricalDevice(uid="CED010K2AA", tag="ED-B-GYM-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(25), ft(17)), type_ref="ED-T-SWITCH", circuit="CKT-LT-BACKUP",
+                     position=pt(ft(23, 6.5), ft(17, 5)), type_ref="ED-T-SWITCH", circuit="CKT-LT-BACKUP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 ]
 
@@ -1499,25 +1499,25 @@ MAIN_DEVICES = [
                      room="RM-M-LIVING", controlled_by=("ED-M-LIVING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED001K2AA", tag="ED-M-LIVING-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(26), ft(12)), type_ref="ED-T-SWITCH", circuit="CKT-LT-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     position=pt(ft(18, 4.375), ft(12)), type_ref="ED-T-SWITCH", circuit="CKT-LT-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     ElectricalDevice(uid="CED002K1AA", tag="ED-M-BED-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(5), ft(4)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-MAIN",
                      room="RM-M-BED", controlled_by=("ED-M-BED-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED002K2AA", tag="ED-M-BED-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8), ft(6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-MAIN",
+                     position=pt(ft(12, 6), ft(13, 0.625)), type_ref="ED-T-SWITCH", circuit="CKT-LT-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED002K3AA", tag="ED-M-BED-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(10), ft(6)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-MAIN",
+                     position=pt(ft(10), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED003K1AA", tag="ED-M-STUDY-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(15, 8), ft(19, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-MAIN",
                      room="RM-M-STUDY", controlled_by=("ED-M-STUDY-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED003K2AA", tag="ED-M-STUDY-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(14.667), ft(20)), type_ref="ED-T-SWITCH", circuit="CKT-LT-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     position=pt(ft(17, 7.625), ft(21, 5)), type_ref="ED-T-SWITCH", circuit="CKT-LT-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(270)),
     # --- kitchen outlets (RM-M-LIVING is open plan, so these keep the LIVING suffix) ---
     # Circuits are still deferred (decision 1): these are symbols and mounting heights, not
     # a panel schedule. Counter outlets sit at 42" — 6" of backsplash over the 36" counter,
@@ -1530,17 +1530,17 @@ MAIN_DEVICES = [
     # stayed put — it was never over an appliance. KGF3 followed the range's cooking zone
     # north with N3.
     ElectricalDevice(uid="VDGMBY3YW7", tag="ED-M-LIVING-KET1", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(25, 6), ft(35, 4)), type_ref="ED-T-RECEPTACLE-620", circuit="CKT-KETTLE",
+                     position=pt(ft(25, 6), ft(35, 3.375)), type_ref="ED-T-RECEPTACLE-620", circuit="CKT-KETTLE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
     ElectricalDevice(uid="N9317V3K8Y", tag="ED-M-LIVING-KGF1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(31, 1), ft(35, 4)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA1",
+                     position=pt(ft(31, 1), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
     ElectricalDevice(uid="J34E2ZM4GG", tag="ED-M-LIVING-KGF2", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(32), ft(35, 4)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA1",
+                     position=pt(ft(32), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
     ElectricalDevice(uid="EJYZJRDFG0", tag="ED-M-LIVING-KGF3", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(35, 4), ft(28, 11.375)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA2",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
+                     position=pt(ft(35, 4.375), ft(28, 11.375)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-KITCH-SA2",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(42)), rotation=deg(270)),
     # The island receptacle (2026-08-02). FURN-M-KIT-ISLAND (CASE-ISLAND-60, 5'x3',
     # x 25'-0"..30'-0", y 26'-5 3/8"..29'-5 3/8", 36" counter) had none. 2023 NEC
     # 210.52(C)(2) no longer *requires* an island countertop receptacle — but where none
@@ -1562,18 +1562,18 @@ MAIN_DEVICES = [
     # north with APPL-M-RANGE when it swapped with N3; x is still the wall-face constant
     # (35'-4") and y is the range's new along-wall position.
     ElectricalDevice(uid="S8DH5FRQQA", tag="ED-M-LIVING-KRG1", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(35, 4), ft(31, 8.375)), type_ref="ED-T-RECEPTACLE-240", circuit="CKT-RANGE",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(6))),
+                     position=pt(ft(35, 3.375), ft(31, 8.375)), type_ref="ED-T-RECEPTACLE-240", circuit="CKT-RANGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(6)), rotation=deg(270)),
     # On the centre bearing wall's east face, behind APPL-M-FRIDGE, at 48" — above the
     # coil deck, so the plug is reachable without pulling the whole cabinet out.
     ElectricalDevice(uid="D9EBW2FJTX", tag="ED-M-LIVING-KRF1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18, 4), ft(31, 5.375)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     position=pt(ft(18, 4.375), ft(31, 5.375)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     # Inside the sink base, 18" up: the dishwasher's cord and the disposer share the box.
     # Followed APPL-M-DW to its new spot when it flipped with the sink; x is the dishwasher's
     # along-wall position and y is the wall-face constant (35'-4").
     ElectricalDevice(uid="WK41TSMA97", tag="ED-M-LIVING-KDW1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(31, 1), ft(35, 4)), type_ref="ED-T-RECEPTACLE", circuit="CKT-DISHWASHER",
+                     position=pt(ft(31, 1), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE", circuit="CKT-DISHWASHER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
 ]
 
@@ -1590,55 +1590,55 @@ SECOND_DEVICES = [
                      mount=Mount(kind=MountKind.CEILING, drop=ft(1, 6))),
     # Beside D-S-PLANT, the door through the centre bearing wall at y=4'-5 1/2".
     ElectricalDevice(uid="CED004K2AA", tag="ED-S-PLANT-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(17, 3), ft(6, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     position=pt(ft(17, 7.625), ft(6, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(270)),
     ElectricalDevice(uid="CED005K1AA", tag="ED-S-STUDY2-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(24), ft(3)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-STUDY2", controlled_by=("ED-S-STUDY2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED005K2AA", tag="ED-S-STUDY2-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(19), ft(8, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(19), ft(8, 8.625)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED006K1AA", tag="ED-S-BED1-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(25), ft(11, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-BED1", controlled_by=("ED-S-BED1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED006K2AA", tag="ED-S-BED1-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(22, 6), ft(13, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     position=pt(ft(22, 2.375), ft(13, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     ElectricalDevice(uid="CED006K3AA", tag="ED-S-BED1-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(25.92), ft(17.85)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
+                     position=pt(ft(25, 11), ft(17, 8.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED007K1AA", tag="ED-S-BED2-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(25), ft(20, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-BED2", controlled_by=("ED-S-BED2-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED007K2AA", tag="ED-S-BED2-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(22, 6), ft(22, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     position=pt(ft(22, 2.375), ft(22, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     ElectricalDevice(uid="CED007K3AA", tag="ED-S-BED2-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(25.83), ft(26.85)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
+                     position=pt(ft(25, 10), ft(26, 8.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED008K1AA", tag="ED-S-BED3-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(25), ft(29, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-BED3", controlled_by=("ED-S-BED3-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED008K2AA", tag="ED-S-BED3-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(22, 6), ft(30, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     position=pt(ft(22, 2.375), ft(30, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     ElectricalDevice(uid="CED008K3AA", tag="ED-S-BED3-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(22.08), ft(35.51)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     position=pt(ft(22, 4.375), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(0)),
     ElectricalDevice(uid="CED009K1AA", tag="ED-S-SUITE-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(4), ft(11)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
                      room="RM-S-SUITE", controlled_by=("ED-S-SUITE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # In the suite's east arm, beside D-S-SUITE (the hall door through the bearing wall).
     ElectricalDevice(uid="CED009K2AA", tag="ED-S-SUITE-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(15), ft(13)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(16, 7), ft(12, 8.375)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED009K3AA", tag="ED-S-SUITE-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(15.25), ft(15.83)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-RC-SECOND",
+                     position=pt(ft(15, 3), ft(15, 6.625)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # --- rooms the survey added: suite bath, vanity alcove, landing, north closet -------
     # None is a habitable occupancy, so `electrical.room_lighting` does not require these;
@@ -1649,14 +1649,14 @@ SECOND_DEVICES = [
                      room="RM-S-SUITEBATH", controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED013K2AA", tag="ED-S-SUITEBATH-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(12, 9), ft(16, 8)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(12, 9), ft(16, 3.375)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED014K1AA", tag="ED-S-VANITY-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(3), ft(23, 6)), type_ref="ED-T-LT-CAN4-WET", circuit="CKT-LT-UPPER",
                      room="RM-S-VANITY", controlled_by=("ED-S-VANITY-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED014K2AA", tag="ED-S-VANITY-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(5), ft(25, 8)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(5), ft(25, 11.625)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED015K1AA", tag="ED-S-LANDING-LT", kind=DeviceKind.LIGHT,
                      position=pt(m(2.44371), m(7.41198)), type_ref="ED-T-LT-CAN3", circuit="CKT-LT-UPPER",
@@ -1665,14 +1665,14 @@ SECOND_DEVICES = [
     # On W-S-SN3's north face beside ED-S-STAIR-SW (plan/lighting.py): W-S-BD-N2, which
     # used to carry this switch, came out with O-S-STAIRTOP on 2026-07-28.
     ElectricalDevice(uid="CED015K2AA", tag="ED-S-LANDING-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(11, 6), ft(22, 7)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(11, 6), ft(22, 7.375)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED016K1AA", tag="ED-S-NCLOSET-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(20), ft(33)), type_ref="ED-T-LT-CAN3", circuit="CKT-LT-UPPER",
                      room="RM-S-NCLOSET", controlled_by=("ED-S-NCLOSET-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED016K2AA", tag="ED-S-NCLOSET-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(21), ft(30, 4)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(21, 5.5), ft(30, 6.625)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 ]
 
@@ -1687,8 +1687,8 @@ ATTIC_DEVICES = [
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 8),
                                  recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED011K2AA", tag="ED-A-EAST-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(19), ft(31)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     position=pt(ft(18, 4.375), ft(32, 5.5)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     # RM-A-STUDY (x 18'-36', y 0-8'-8"): switch inside D-A-STUDY, the door at (19', 8'-8").
     ElectricalDevice(uid="CED012K1AA", tag="ED-A-STUDY-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(22), ft(3)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
@@ -1696,7 +1696,7 @@ ATTIC_DEVICES = [
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(9, 8),
                                  recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED012K2AA", tag="ED-A-STUDY-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(20), ft(8)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(21, 8.375), ft(8, 8.625)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 ]
 
@@ -1765,12 +1765,15 @@ VENT_CLAMPS = [
 # 20') while a Connector elevation is project-frame absolute.
 NEMA_BOX = [
     ElectricalDevice(uid="CEJ901AAAA", tag="ED-A-NEMA-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(4), ft(37)), type_ref="ED-T-JBOX",
+                     position=pt(ft(4), ft(36, 8)), type_ref="ED-T-JBOX",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
 NEMA_CLAMP = [
+    # The clamp is the box's own fastener, so it shares the box's point exactly — it followed
+    # ED-A-NEMA-JB from y=37'-0" to the cladding face on 2026-08-03 (the box had been hanging
+    # 4" clear of the siding it is supposed to be clamped to).
     Connector(uid="CMNC01AAAA", tag="CN-A-NEMA-CLAMP", kind=ConnectorKind.STANDING_SEAM_CLAMP,
-              position=pt(ft(4), ft(37)), elevation=ft(25, 6), size="S-5!",
+              position=pt(ft(4), ft(36, 8)), elevation=ft(25, 6), size="S-5!",
               connects=("ED-A-NEMA-JB", "W-A-N2")),
 ]
 

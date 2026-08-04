@@ -23,6 +23,20 @@
 # Circuit assignments live in plan/circuits.py (non-editable); the `circuit=` strings
 # here are the join keys. Uids avoid I/L/O/U (Crockford base32, → model/ids.py).
 #
+# A device position is a *face* position (2026-08-03). Nothing in the resolver pulls a
+# wall-mounted device onto its wall — the authored point is where the body goes — so the
+# convention this file now holds to is: the point sits half the device's depth off the
+# finish plane, which puts its back on the plane and its plate proud of it, and `rotation`
+# turns the plate along the wall. Author a box at the wall's *axis* and it resolves inside
+# the studs; author it a few feet into the room and it resolves in mid-air. Both were
+# widespread here until that date (46 buried, 41 floating).
+# `test_catlin_contract_m3.py::test_wall_mounted_devices_resolve_against_a_wall_face`
+# is what keeps it true. Two devices are exempt there because they hang on something that
+# is not a Wall: ED-M-LIVING-KGF4 (the island's east end) and ED-M-PORCH-FLOOD (a pillar).
+# Note CATLIN_EXT_2X6's inside face is 6 5/8" in from the sheathing plane the plan datum
+# uses, and its cladding face 5" outboard of it — the two numbers most of the buried boxes
+# were missing.
+#
 # Positions worth knowing (project-north frame, house sheathing SW corner at 0,0):
 # - Meter: exterior face of the west wall (W-M-W1), directly outside ED-B-PANEL at
 #   (2', 29') in the basement below — shortest service-entrance run from the underground
@@ -330,8 +344,8 @@ EQUIPMENT_TYPES = (
 SERVICE_DEVICES = [
     # Exterior west wall at y=29', 6" outside the sheathing plane, 5' up.
     ElectricalDevice(uid="CEE001AAAA", tag="ED-M-METER", kind=DeviceKind.METER,
-                     position=pt(m(-0.1524), m(9.07074)), type_ref="ED-T-METER",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None),
+                     position=pt(ft(0, -8), ft(29, 9.125)), type_ref="ED-T-METER",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room=None, rotation=deg(270)),
 ]
 
 # --- the backup microgrid (2026-08-02, notes/backup_power.md) ------------------------
@@ -350,14 +364,14 @@ BACKUP_ENCLOSURE = [
     # downstream of the inverter's load output now, and naming a grid-side branch circuit on
     # it said the opposite.
     ElectricalDevice(uid="CEE002AAAA", tag="ED-B-BACKUP-ENCL", kind=DeviceKind.PANEL,
-                     position=pt(m(0.571135), m(9.43475)), type_ref="ED-T-BACKUP-ENCL",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room="RM-B-FURNACE"),
+                     position=pt(ft(1, 3), ft(32, 6)), type_ref="ED-T-BACKUP-ENCL",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room="RM-B-FURNACE", rotation=deg(90)),
     # The subpanel the two backup tiers are homed to (plan/circuits.py). On the west wall
     # 2'-0" south of ED-B-PANEL, so the inverter's grid conductors and its load conductors
     # run to two enclosures a person can stand between.
     ElectricalDevice(uid="CEE060AAAA", tag="ED-B-BACKUP-PANEL", kind=DeviceKind.PANEL,
-                     position=pt(ft(2), ft(27)), type_ref="ED-T-BACKUP-PANEL",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room="RM-B-FURNACE"),
+                     position=pt(ft(1, 2), ft(27)), type_ref="ED-T-BACKUP-PANEL",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), room="RM-B-FURNACE", rotation=deg(90)),
 ]
 
 ESS_EQUIPMENT = [
@@ -388,27 +402,27 @@ ESS_EQUIPMENT = [
 BASEMENT_DEVICES = [
     # HA server + router (backup). Beside the panel in the furnace room.
     ElectricalDevice(uid="CEE003AAAA", tag="ED-B-UTIL-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(3), ft(28)), type_ref="ED-T-RECEPTACLE", circuit="CKT-HA",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     position=pt(ft(1, 1), ft(28)), type_ref="ED-T-RECEPTACLE", circuit="CKT-HA",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     # Sump pump (backup; ~1000W start). GFCI lives at the breaker, not the outlet.
     ElectricalDevice(uid="CEE004AAAA", tag="ED-B-SUMP-RC", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(4, 6), ft(33)), type_ref="ED-T-RECEPTACLE", circuit="CKT-SUMP",
+                     position=pt(ft(4, 6), ft(34, 11)), type_ref="ED-T-RECEPTACLE", circuit="CKT-SUMP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     # Sauna heater connection: on the sauna's west liner wall immediately south of
     # EQ-B-SAUNA-HTR (its footprint is y 8'-0"..9'-6"), low like the heater terminals. It
     # used to sit at (15', 7'), which was neither on a wall nor in the "NE corner" its
     # comment claimed — and is now inside FURN-B-SAUNA-BENCH-E.
     ElectricalDevice(uid="CEE005AAAA", tag="ED-B-SAUNA-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(9, 3), ft(7, 9)), type_ref="ED-T-SAUNA-JB", circuit="CKT-SAUNA",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
+                     position=pt(ft(9, 4.875), ft(7, 9)), type_ref="ED-T-SAUNA-JB", circuit="CKT-SAUNA",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(18)), rotation=deg(90)),
     # Hot tub in the sunken garden: disconnect on the west porch wall, 7' from its north
     # end, under the porch deck (see header). NEC 680.22 convenience receptacle beside it.
     ElectricalDevice(uid="CEE010AAAA", tag="ED-B-SPA-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(8, 6), ft(-7.833)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-SPA",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+                     position=pt(ft(8, 8), ft(-7, -10)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-SPA",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), rotation=deg(90)),
     ElectricalDevice(uid="CEE011AAAA", tag="ED-B-SPA-RC", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(8, 6), ft(-5.5)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-RC-BSMT",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
+                     position=pt(ft(8, 7), ft(-5, -6)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-RC-BSMT",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(4)), rotation=deg(90)),
     # RM-B-BATH's required receptacle (2026-07-30, NEC 210.52(D)): GFCI, on the wall adjacent
     # to the basin and within 3'-0" of its outside edge — 1'-0" here, on the north partition
     # just west of the lavatory (which occupies y 19'-0"..21'-0" against the east wall). It
@@ -417,7 +431,7 @@ BASEMENT_DEVICES = [
     # which is the trade this house already made for the panel it has (see plans/TODO.md's
     # open panel_spaces item — nothing here adds a slot).
     ElectricalDevice(uid="CEE040AAAA", tag="ED-B-BATH-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(15, 4), ft(21, 4)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(15, 4), ft(21, 5)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-BSMT", room="RM-B-BATH", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(42))),
 ]
@@ -472,7 +486,7 @@ MAIN_DEVICES = [
     # is also what lets a future owner put a conventional vented dryer back in this alcove
     # without pulling new wire.
     ElectricalDevice(uid="CEE007AAAA", tag="ED-M-LAUNDRY-DR1", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(9, 6), ft(18, 0.625)), type_ref="ED-T-RECEPTACLE-1430",
+                     position=pt(ft(9, 6), ft(18, 0.375)), type_ref="ED-T-RECEPTACLE-1430",
                      circuit="CKT-DRYER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
                                  recessed_into_host_surface=True)),
@@ -481,39 +495,42 @@ MAIN_DEVICES = [
     # washer half of the stack, 8" east of the dryer's box in the same wall, same 43" band.
     # NEC 210.52(F)'s laundry receptacle, and the only 120V outlet this room has.
     ElectricalDevice(uid="QBSRR1MWVB", tag="ED-M-LAUNDRY-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(10, 2), ft(18, 0.625)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(10, 2), ft(18, 1.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-LAUNDRY",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
                                  recessed_into_host_surface=True)),
     # Freezer beside the fridge (KRF1 at (18'-4", 31'-5")) on the centre wall's east face;
     # fridge + freezer + PoE WiFi share the backup kitchen circuit.
     ElectricalDevice(uid="CEE006AAAA", tag="ED-M-LIVING-KFZ1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18, 4), ft(29, 10)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     position=pt(ft(18, 4.375), ft(29, 10)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     # System 3 (Sapphire, backup battery circuit): its outdoor unit stands on the north
     # side beside the mudroom door, so the disconnect goes on W-M-N2's exterior face west
     # of the breezeway — clear of ED-M-HP1-DISC's condenser gap.
     ElectricalDevice(uid="CEE026AAAA", tag="ED-M-HP3-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(4), ft(36.4)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
+                     position=pt(ft(4), ft(36, 7)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP3",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-M-BATH2's thermostat: inside the room on its south wall (W-M-BDN1, interior face
     # y=13'-4 11/16"), 8" east of D-M-BATH2's opening (x 1'-6 1/2"..4'-0 1/2") — the wall
     # you reach as the door closes behind you. Floor sensor is FH-M-BATH2's `stat` point.
     ElectricalDevice(uid="CEE021AAAA", tag="ED-M-BATH2-FH-STAT", kind=DeviceKind.SWITCH,
-                     position=pt(ft(4, 9), ft(13, 5)), type_ref="ED-T-FLOOR-STAT",
+                     position=pt(ft(4, 9), ft(13, 7.375)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-BATH2", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     # FH-M-DINING's thermostat. The zone is free-standing in the middle of a 642 ft2 room,
-    # so its control goes on the nearest real wall: the east wall's interior face at
-    # x=35'-11 3/8", in the clear stretch between WIN-M-LIV-E2's rough opening (ends
+    # so its control goes on the nearest real wall: the east wall's interior face — which is
+    # x=35'-5 3/8", not the x=35'-11 3/8" this note claimed until 2026-08-03. CATLIN_EXT_2X6
+    # carries 5" of exterior insulation and cladding outboard of the sheathing plane at 36',
+    # so the *inside* face is 6 5/8" in from it, and a box authored at 35'-11 3/8" sat in the
+    # studs. In the clear stretch between WIN-M-LIV-E2's rough opening (ends
     # y=13'-1 1/2" after the 2026-07-30 facade pass respaced the east row) and
     # WIN-M-DIN-E2's (starts y=18'-2 1/2") — a 5'-1" gap, wider than the 2'-5" it had.
     # ED-M-LIVING-RC3 sits at y=16'-11", so 17'-9" keeps 10" between the two boxes.
     # The sensor lead runs the 5' back to the zone edge.
     ElectricalDevice(uid="CEE024AAAA", tag="ED-M-DINING-FH-STAT", kind=DeviceKind.SWITCH,
-                     position=pt(ft(35, 11), ft(17, 9)), type_ref="ED-T-FLOOR-STAT",
+                     position=pt(ft(35, 4.375), ft(17, 9)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-DINING", room="RM-M-LIVING",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(270)),
 ]
 
 MAIN_EQUIPMENT = [
@@ -525,7 +542,7 @@ MAIN_EQUIPMENT = [
     # ED-M-HP3-DISC — the short lineset run to the head over the stairs is why it is here
     # and not out with the other two.
     Equipment(uid="CEE027AAAA", tag="EQ-M-HP3-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(m(2.50437), m(11.4357)), footprint=(inch(31), inch(13)),
+              position=pt(m(3.44566), m(11.3941)), footprint=(inch(31), inch(13)),
               type_ref="EQ-T-GREE-SAPPHIRE-9-OD", circuit="CKT-HP3", room=None),
     # --- System 2's main-floor heads. Both hang high on the south wall either side of the
     # centre wall at x=18' (plans/TODO.md §HVAC), backs south (rotation 180), blowing north
@@ -592,20 +609,25 @@ SECOND_DEVICES = [
     #   HP1's box in the 15" of wall between the two plant windows (RO edges 5'-1" and
     #   6'-11", casings 3 1/2" past each), 2'-0" west of its unit's west face.
     #   HP2's box east of D-S-DECK-E, where the wall runs clear from that door's casing
-    #   (x 24'-1 1/2") to WIN-S-STUDY1's (x 25'-11 1/2"). Its unit is 7' west between the
+    #   (x 25'-1 1/2") to WIN-S-STUDY1's (x 25'-11 1/2"). Its unit is 7' west between the
     #   two doors, in plain sight across the open deck — 440.14 asks for sight, not reach.
+    # Both are on the wall's *exterior* face (y=-7", the cladding plane less the box's own
+    # 4" depth). They were authored at y=+6" until 2026-08-03, which is 5/8" inside the
+    # interior finish — a weatherproof 3R disconnect standing in RM-S-PLANT and RM-S-STUDY2,
+    # on the wrong side of the wall from the condensers it isolates. HP2's x moved with it:
+    # 24'-6" was inside D-S-DECK-E's rough opening, not east of its casing.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(6), ft(0, 6)), type_ref="ED-T-DISCONNECT-3R",
+                     position=pt(ft(6), ft(0, -7)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(24, 6), ft(0, 6)), type_ref="ED-T-DISCONNECT-3R",
+                     position=pt(ft(25, 6.5), ft(0, -7)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP2", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
     # FH-S-BATH1's thermostat, inside the room on its south wall (W-S-BD-N1B, interior
     # face y=26'-4 11/16"), 9" west of D-S-BATH1's opening (x 7'-3"..9'-9"). Same
     # reach-as-the-door-shuts position as ED-M-BATH2-FH-STAT, and clear of the fixture
     # cluster, which all sits north of y=29'-9".
     ElectricalDevice(uid="CEE025AAAA", tag="ED-S-BATH1-FH-STAT", kind=DeviceKind.SWITCH,
-                     position=pt(ft(6, 6), ft(26, 5)), type_ref="ED-T-FLOOR-STAT",
+                     position=pt(ft(6, 6), ft(26, 8.375)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-BATH1", room="RM-S-BATH1",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 ]
@@ -673,10 +695,10 @@ SECOND_EQUIPMENT = [
 # --- Garage: both EV receptacles on the south wall, east of the service door ----------
 GARAGE_DEVICES = [
     ElectricalDevice(uid="CEE008AAAA", tag="ED-G-EV-620", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(m(0.256331), m(17.0886)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE"),
+                     position=pt(ft(0, 9.625), ft(56, 0.75)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE", rotation=deg(90)),
     ElectricalDevice(uid="CEE009AAAA", tag="ED-G-EV-1450", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(m(6.08013), m(12.6631)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
+                     position=pt(ft(19, 11.375), ft(41, 9.625)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE"),
 ]
 
@@ -700,7 +722,7 @@ GARAGE_EQUIPMENT = [
 # --- Attic: PV junction box beside the radon riser (ED-A-NEMA-JB at (6', 37')) --------
 PV_JBOX = [
     ElectricalDevice(uid="CEE014AAAA", tag="ED-A-PV-JB", kind=DeviceKind.JUNCTION_BOX,
-                     position=pt(ft(9), ft(37)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
+                     position=pt(ft(9), ft(36, 8)), type_ref="ED-T-PV-JB", circuit="CKT-ESS-GRID",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
 ]
 PV_JBOX_CLAMP = [
@@ -800,9 +822,9 @@ DATA_HEAD_END = [
     # ED-B-PANEL (29') and clear of the ERV duct crossing at 31'-4". It is the only
     # low-voltage device on a branch circuit: CKT-HA, with the HA server it sits beside.
     ElectricalDevice(uid="CND001AAAA", tag="ED-B-NET-PATCH", kind=DeviceKind.DATA_OUTLET,
-                     position=pt(ft(2), ft(31)), type_ref="ED-T-NET-ENCLOSURE",
+                     position=pt(ft(1, 2), ft(31)), type_ref="ED-T-NET-ENCLOSURE",
                      circuit="CKT-HA", room="RM-B-FURNACE",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), rotation=deg(90)),
 ]
 
 DATA_TRUNKS = [
@@ -870,7 +892,7 @@ ATTIC_DATA_DEVICES = [
     # storey-relative (attic datum 20'), so 4' here is 24' absolute — under the 4:12 rake,
     # which at x=33' carries the roof to 26'.
     ElectricalDevice(uid="CND004AAAA", tag="ED-A-EAST-AP", kind=DeviceKind.DATA_OUTLET,
-                     position=pt(ft(33), ft(35, 5)), type_ref="ED-T-AP-CEILING",
+                     position=pt(ft(33), ft(35, 1.375)), type_ref="ED-T-AP-CEILING",
                      room="RM-A-EAST", wall_ref="W-A-N1",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
 ]
@@ -979,69 +1001,69 @@ CONDUIT_SLEEVES = [
 # room boundary and are draggable like any other device.
 NEC_FILL_BASEMENT = [
     ElectricalDevice(uid="NEC001AAAA", tag="ED-B-GYM-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18.00), ft(2.62)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(17, 1.5), ft(2, 7.5)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC002AAAA", tag="ED-B-GYM-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18.00), ft(10.54)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(17, 1.5), ft(10, 6.5)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC003AAAA", tag="ED-B-GYM-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(20.58), ft(18.00)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(20, 7), ft(18, 7)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC004AAAA", tag="ED-B-GYM-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(33.29), ft(18.00)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(33, 3.5), ft(18, 7)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC005AAAA", tag="ED-B-GYM-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(36.00), ft(11.46)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(34, 11), ft(11, 5.5)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC006AAAA", tag="ED-B-GYM-RC6", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(36.00), ft(2.21)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(34, 11), ft(2, 2.5)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC007AAAA", tag="ED-B-GYM-RC7", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(28.96), ft(0.00)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(28, 11.5), ft(1, 1)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
 ]
 NEC_FILL_MAIN = [
     ElectricalDevice(uid="NEC008AAAA", tag="ED-M-LIVING-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18.05), ft(4.47)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(18, 4.375), ft(4, 5.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     ElectricalDevice(uid="NEC009AAAA", tag="ED-M-LIVING-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18.05), ft(15.87)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(18, 4.375), ft(15, 10.5)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     ElectricalDevice(uid="NEC010AAAA", tag="ED-M-LIVING-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35.95), ft(16.93)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35, 4.375), ft(16, 11.125)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      # On the east wall's BESTA run; keep the plan position for spacing, but
                      # raise it into the backsplash zone above the 29 3/4" cabinet line.
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(36))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(36)), rotation=deg(270)),
     ElectricalDevice(uid="NEC011AAAA", tag="ED-M-LIVING-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35.95), ft(5.53)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35, 4.375), ft(5, 6.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      # Same east-wall BESTA condition as RC3: 36" puts the box above the
                      # countertop while preserving the receptacle's wall-space location.
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(36))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(36)), rotation=deg(270)),
     ElectricalDevice(uid="NEC012AAAA", tag="ED-M-LIVING-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(30.03), ft(0.05)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(30, 0.375), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC061AAAA", tag="ED-M-LIVING-RC6", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35.95), ft(23.70)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35, 4.375), ft(23, 8.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     # Fills the >6' gap electrical.receptacle_spacing flags on the centre bearing wall
     # between RC2 (y=15.87) and the wall's south end, on the LIVING face.
     ElectricalDevice(uid="NEC064AAAA", tag="ED-M-LIVING-RC7", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18.05), ft(21.10)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(18, 4.375), ft(21, 1.25)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     # The old hall band, 2026-07-28. Opening the centre line under BM-M-HALL merged
     # RM-M-HALL into this room, and a hallway's walls are exempt from 210.52(A) only while
     # they *are* a hallway — as habitable-room wall space the same 6'/12' rule reaches them,
@@ -1060,7 +1082,7 @@ NEC_FILL_MAIN = [
     # y flipped to W-M-HS1's south (living) face (2026-07-28): W-M-BAE's 2' east shift
     # extended W-M-HS1 to x=6', and the north face at this x is now inside RM-M-BATH1.
     ElectricalDevice(uid="NEC066AAAA", tag="ED-M-LIVING-RC8", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(5.40), ft(21.56)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(5, 4.75), ft(21, 10.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # y flipped to W-M-STOS's north (mudroom) face (2026-07-28): W-M-BAE's 2' east shift
@@ -1073,18 +1095,18 @@ NEC_FILL_MAIN = [
     # enclosure. It stays a GFCI device because its E3902.10 sink-reach location
     # (RM-M-BATH1's lav, through W-M-STOS) did not move either.
     ElectricalDevice(uid="NEC067AAAA", tag="ED-M-LIVING-RC9", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(4.55), ft(26.43)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(4, 6.625), ft(26, 7.375)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC068AAAA", tag="ED-M-LIVING-RC10", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(9.50), ft(26.23)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(9, 6), ft(26, 0.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # On the 10 3/16" pier at W-M-STRS's east end, between D-M-STAIR and the well partition
     # the wall dies into — the only wall left on that face, and a useful one to have at the
     # head of the stairs.
     ElectricalDevice(uid="NEC069AAAA", tag="ED-M-LIVING-RC11", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(13.85), ft(25.73)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(13, 10.25), ft(25, 6.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # Fills the >6' gap electrical.receptacle_spacing opened on the hall band between RC7/
@@ -1092,45 +1114,50 @@ NEC_FILL_MAIN = [
     # for the BATH2 wall move, stretching this door-to-door wall space past the 6' rule.
     # Positioned centred in that space (the door itself brackets the run at 13'-9" east).
     ElectricalDevice(uid="NEC070AAAA", tag="ED-M-LIVING-RC12", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(16, 1.2), ft(22, 2.6)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(16, 1.25), ft(22, 5.375)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC013AAAA", tag="ED-M-BED-RC2", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(8.52), ft(13.28)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(8, 6.25), ft(13, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC014AAAA", tag="ED-M-BED-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17.95), ft(10.75)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(17, 7.625), ft(10, 9)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC015AAAA", tag="ED-M-BED-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17.95), ft(1.13)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(17, 7.625), ft(1, 1.5)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC016AAAA", tag="ED-M-BED-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(9.40), ft(0.05)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(9, 4.75), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC017AAAA", tag="ED-M-BED-RC6", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(0.05), ft(0.33)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(0, 7.625), ft(0, 10)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     ElectricalDevice(uid="NEC018AAAA", tag="ED-M-BED-RC7", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(0.05), ft(9.96)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(0, 7.625), ft(9, 11.5)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    ElectricalDevice(uid="NEC019AAAA", tag="ED-M-STUDY-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17.95), ft(18.96)), type_ref="ED-T-RECEPTACLE",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
+    # 2026-08-03: RC1 and RC3 both used to stand in W-M-C3, and RC1 stood in D-M-STUDY's
+    # rough opening. RM-M-STUDY is 4'-8" x 4'-2" and that east wall is nearly all door, so
+    # the pair moved onto the study's south and north walls — which puts them 5'-2" and 5'-10"
+    # from FX-M-LAUNDRY-SINK's bowl, inside E3902.10's 6'. Both are GFCI at the device now,
+    # the same trade ED-M-STUDY-RC2 already made on the wall between them.
+    ElectricalDevice(uid="NEC019AAAA", tag="ED-M-STUDY-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(17), ft(18, 3.375)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC020AAAA", tag="ED-M-STUDY-RC2", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(13.39), ft(18.79)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(13, 7.375), ft(18, 9.5)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     # Fills the >6' gap electrical.receptacle_spacing flags on the centre bearing wall,
     # on the STUDY face opposite ED-M-LIVING-RC7.
-    ElectricalDevice(uid="NEC065AAAA", tag="ED-M-STUDY-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17.95), ft(21.10)), type_ref="ED-T-RECEPTACLE",
+    ElectricalDevice(uid="NEC065AAAA", tag="ED-M-STUDY-RC3", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(17), ft(21, 10.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
 ]
@@ -1148,83 +1175,83 @@ NEC_FILL_SECOND = [
     # stretch west of the door is still ED-S-PLANT-RC2's: from x=5.85' nothing on
     # x 0'..11'-2" is more than 6' away.
     ElectricalDevice(uid="NEC021AAAA", tag="ED-S-PLANT-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17.0), ft(0.12)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(17), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC022AAAA", tag="ED-S-PLANT-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(5.85), ft(0.15)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(5, 10.25), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC023AAAA", tag="ED-S-PLANT-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(m(0.0519211), m(1.41351)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(0, 7.625), ft(4, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), room="RM-S-PLANT"),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), room="RM-S-PLANT", rotation=deg(90)),
     ElectricalDevice(uid="NEC024AAAA", tag="ED-S-PLANT-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(5.93), ft(8.85)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(5, 11.125), ft(8, 8.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC025AAAA", tag="ED-S-PLANT-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(15.97), ft(8.88)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(15, 11.625), ft(8, 8.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC026AAAA", tag="ED-S-STUDY2-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18.17), ft(0.79)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(18, 4.375), ft(0, 9.5)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     ElectricalDevice(uid="NEC027AAAA", tag="ED-S-STUDY2-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18.17), ft(7.78)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(18, 4.375), ft(7, 9.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     ElectricalDevice(uid="NEC028AAAA", tag="ED-S-STUDY2-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(26.13), ft(8.83)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(26, 1.5), ft(8, 8.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC029AAAA", tag="ED-S-STUDY2-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35.09), ft(8.89)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35, 1.125), ft(8, 8.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC062AAAA", tag="ED-S-STUDY2-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35.83), ft(0.64)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35, 2), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC063AAAA", tag="ED-S-STUDY2-RC6", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(27.37), ft(0.18)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(27, 4.5), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC030AAAA", tag="ED-S-BED1-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35.84), ft(17.18)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35, 4.375), ft(17, 2.125)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC031AAAA", tag="ED-S-BED1-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(33.24), ft(9.14)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(33, 2.875), ft(9, 3.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC032AAAA", tag="ED-S-BED1-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(22.61), ft(9.12)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(22, 7.375), ft(9, 3.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC034AAAA", tag="ED-S-BED2-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35.84), ft(26.26)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35, 4.375), ft(26, 3.125)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC035AAAA", tag="ED-S-BED2-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(33.32), ft(18.14)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(33, 3.875), ft(18, 3.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC036AAAA", tag="ED-S-BED2-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(22.7), ft(18.12)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(22, 8.375), ft(18, 3.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC038AAAA", tag="ED-S-BED3-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(32.33), ft(35.85)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(32, 4), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC039AAAA", tag="ED-S-BED3-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35.83), ft(28.72)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35, 4.375), ft(28, 8.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC040AAAA", tag="ED-S-BED3-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(26.82), ft(27.16)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(26, 9.875), ft(27, 3.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # Moved 2026-07-31: RC2 was authored at x=13'-1" on the arm's south wall, which is inside
@@ -1232,66 +1259,66 @@ NEC_FILL_SECOND = [
     # suite's east wall instead, where it also closes the 8'-5" run 210.52 measured from the
     # opening's west jamb round to RC3.
     ElectricalDevice(uid="NEC042AAAA", tag="ED-S-SUITE-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(9.5), ft(11)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(9, 4.125), ft(11)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     # The 2'-2" of wall between D-S-SUITE's east jamb and O-S-CLOSET's east jamb. Short, but
     # 210.52(A)(2) counts any unbroken run of 2'-0" or more as wall space, and this one had
     # nothing on it.
     ElectricalDevice(uid="NEC047AAAA", tag="ED-S-SUITE-RC7", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(17.2), ft(12.55)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(17, 2.375), ft(12, 8.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC043AAAA", tag="ED-S-SUITE-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(6.42), ft(9.16)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(6, 5), ft(9, 3.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC044AAAA", tag="ED-S-SUITE-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(0.18), ft(12.99)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(0, 7.625), ft(12, 11.875)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     ElectricalDevice(uid="NEC045AAAA", tag="ED-S-SUITE-RC5", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(1.06), ft(22.2)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(1, 0.75), ft(22, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC046AAAA", tag="ED-S-SUITE-RC6", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(9.57), ft(20.53)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     position=pt(ft(9, 3.125), ft(20, 6.375)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-SECOND",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
 ]
 # Same treatment for the attic's two habitable rooms. RM-A-WEST (media) and RM-A-DEN
 # (storage) are outside `_HABITABLE`, so 210.52 spacing is not evaluated for them.
 NEC_FILL_ATTIC = [
     ElectricalDevice(uid="NEC048AAAA", tag="ED-A-EAST-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18.14), ft(13.69)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(18, 4.375), ft(13, 8.25)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     ElectricalDevice(uid="NEC049AAAA", tag="ED-A-EAST-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18.18), ft(24.07)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(18, 4.375), ft(24, 0.875)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
     ElectricalDevice(uid="NEC050AAAA", tag="ED-A-EAST-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(19.45), ft(35.84)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(19, 5.375), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC051AAAA", tag="ED-A-EAST-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(29.94), ft(35.83)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(29, 11.25), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC052AAAA", tag="ED-A-EAST-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35.86), ft(31.27)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35, 4.375), ft(31, 3.25)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC053AAAA", tag="ED-A-EAST-RC6", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35.83), ft(20.8)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35, 4.375), ft(20, 9.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC054AAAA", tag="ED-A-EAST-RC7", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35.87), ft(10.31)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35, 4.375), ft(10, 3.75)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC055AAAA", tag="ED-A-EAST-RC8", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(26.53), ft(9.18)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(26, 6.375), ft(9, 3.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # RC1 and RC2 both moved 2026-07-31. FO-A-STAIR takes the north 3'-0" of this room
@@ -1302,25 +1329,25 @@ NEC_FILL_ATTIC = [
     # wall south of the well, where it is what closes the 7'-10" run from RC3 round the
     # southeast corner.
     ElectricalDevice(uid="NEC056AAAA", tag="ED-A-STUDY-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(29), ft(0.15)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(29), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC057AAAA", tag="ED-A-STUDY-RC2", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(35.83), ft(2)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(35, 4.375), ft(2)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(270)),
     ElectricalDevice(uid="NEC058AAAA", tag="ED-A-STUDY-RC3", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(33.9), ft(0.12)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(33, 10.75), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC059AAAA", tag="ED-A-STUDY-RC4", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(23.87), ft(0.15)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(23, 10.5), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC060AAAA", tag="ED-A-STUDY-RC5", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(18.18), ft(4.53)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(18, 4.375), ft(4, 6.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
 ]
 
 BASEMENT_ELEMENTS = [*BACKUP_ENCLOSURE, *ESS_EQUIPMENT, *BASEMENT_DEVICES,

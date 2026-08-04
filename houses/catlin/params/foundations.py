@@ -214,11 +214,11 @@ GARAGE_SLAB = Slab(
     perimeter_thermal_break=SlabThermalBreak(material_ref="xps", thickness=inch(1)),
 )
 
-# --- garage hydrant: pedestal, supply sleeve, gravel pit --------------------------
+# --- garage hydrant: supply sleeve, gravel pit -------------------------------------
 #
-# FX-G-HYDRANT stands on the west wall near the NW corner. Three pieces of foundation work
-# go with it, and none is UI-movable, which is why they belong in this (non-editable) module
-# while the fixture itself lives in the editable plan/fixtures.py.
+# FX-G-HYDRANT stands on the west wall near the NW corner. Two pieces of foundation work
+# go with it, and neither is UI-movable, which is why they belong in this (non-editable)
+# module while the fixture itself lives in the editable plan/fixtures.py.
 #
 # Elevations: garage slab top 0'-0", underside -3½"; ICF stem top +1'-10", bottom -3'-6";
 # footings bear at about -4'-2". ``_FROST`` above is the *footing* frost depth (42"). The
@@ -229,24 +229,14 @@ HYDRANT_X_FT = 1.5          # 1'-6" off the west wall line
 HYDRANT_Y_FT = 62.0         # near the NW corner, clear of both north windows
 HYDRANT_BURY_FT = 6.0       # shutoff depth below grade — the code number for this fixture
 
-# The raised pedestal. A garage floor runs salt slush all winter, and a sleeve entry at slab
-# level sits in it; this lifts the penetration 4" clear so the sealant joint is above the wet
-# line rather than in it.
-#
-# A ``Slab`` with ``datum="walking_surface"``, not a ``Pad``: a Pad is an isolated footing
-# bearing on soil, which is what ``structural.frost_depth`` reads it as — and it is right to,
-# because a Pad at 0'-0" really would be a footing above the frost line. This is a topping
-# pour riding on SL-G-FLOOR, so it is filed with that slab on ``main`` (the garage storey
-# datum is the stem top at +1'-10", not the slab) and rides 4" proud of the 0'-0" floor.
-_PED_HALF = 0.75  # 1'-6" square
-GARAGE_HYDRANT_PEDESTAL = Slab(
-    uid="CGP601AAAA", tag="SL-G-HYDRANT-PED",
-    outline=(pt(ft(HYDRANT_X_FT - _PED_HALF), ft(HYDRANT_Y_FT - _PED_HALF)),
-             pt(ft(HYDRANT_X_FT + _PED_HALF), ft(HYDRANT_Y_FT - _PED_HALF)),
-             pt(ft(HYDRANT_X_FT + _PED_HALF), ft(HYDRANT_Y_FT + _PED_HALF)),
-             pt(ft(HYDRANT_X_FT - _PED_HALF), ft(HYDRANT_Y_FT + _PED_HALF))),
-    thickness=inch(4), datum="walking_surface",
-)
+# There was a 4" topping pedestal here (SL-G-HYDRANT-PED, an 18" square poured on top of
+# SL-G-FLOOR) whose job was to lift the slab penetration and its sealant joint above the
+# salt-slush wet line a garage floor runs from December to March. It was retired on
+# 2026-08-03 by owner decision: the hydrant stands on the garage's own slab, like everything
+# else in the room. What replaces it is specification, not geometry — a flexible,
+# chloride-tolerant sealant at the penetration, inspected rather than elevated
+# (notes/garage_hydrant.md). Nothing below grade changed; the bury, the sleeve and the
+# drywell are the freeze protection and they are all still here.
 
 # The supply penetration through the garage slab. Filed on ``main`` with the slab it passes
 # through — SL-G-FLOOR is a "main" element because the garage storey datum is the stem top
@@ -284,4 +274,4 @@ GARAGE_HYDRANT_DRYWELL = Drywell(
 BASEMENT_ELEMENTS = [*HOUSE_FOOTINGS, *HOUSE_FOOTING_BEDDING, *VENEER_PLINTH,
                      *VENEER_PLINTH_BEDDING, *GARAGE_STEM_NODES,
                      *GARAGE_STEM_WALLS, *GARAGE_FOOTINGS, GARAGE_HYDRANT_DRYWELL]
-MAIN_ELEMENTS = [GARAGE_SLAB, GARAGE_HYDRANT_PEDESTAL, GARAGE_HYDRANT_SLEEVE]
+MAIN_ELEMENTS = [GARAGE_SLAB, GARAGE_HYDRANT_SLEEVE]

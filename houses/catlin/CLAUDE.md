@@ -64,9 +64,10 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   enclose is poured at grade, 1'-10" lower, and filed on `main`. Anything that has to sit
   on the garage floor must say so explicitly — D-G-OVERHEAD carries the plan's only
   negative `sill_height` to reach it, and the stem becomes a grade beam flush with the slab
-  under that door so there is no curb across it. Emitters read
-  `emit/room_floor.py::room_floor_elevation` rather than the storey elevation for the same
-  reason. Raising the stem means re-dropping the door: the tie is enforced by
+  under that door so there is no curb across it. Emitters — and, since 2026-08-03, the
+  placeable resolver that decides how high anything in the garage stands — read
+  `resolve/room_floor.py::room_floor_elevation` rather than the storey elevation for the
+  same reason. Raising the stem means re-dropping the door: the tie is enforced by
   `test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade`.
 - 36'x36' at sheathing; everything on the 16" o.c. module; exterior walls carry
   `alignment=face("sheathing-ext")` so the sheathing plane is the vertical datum (#43).

@@ -143,15 +143,56 @@ def test_the_supply_sleeve_is_a_water_penetration_on_the_slabs_own_storey(catlin
                 if o.tag == "FX-G-HYDRANT").storey == "garage"
 
 
-def test_the_pedestal_rides_on_the_slab_rather_than_bearing_on_soil(catlin_model):
-    """A Pad at 0'-0" is a footing above the frost line and structural.frost_depth says so,
-    correctly. This is a topping pour, so it is a walking-surface Slab."""
-    pedestal = catlin_model.plan.by_tag("SL-G-HYDRANT-PED")
-    assert pedestal.datum == "walking_surface"
-    solid = next(s for s in catlin_model.solids if s.tag == "SL-G-HYDRANT-PED")
+def test_the_hydrant_stands_on_the_garage_slab_not_on_the_storey_datum(catlin_model):
+    """The bug this test exists for: the hydrant floated 22" in the air.
+
+    RM-GARAGE's floor is SL-G-FLOOR, poured at grade and filed on `main`, while the `garage`
+    storey datum is the ICF stem top 1'-10" above it. A mount elevation measured off the
+    storey datum therefore lands a floor-standing fixture 22" over its own floor, which is
+    exactly where this one stood until `resolve_placeables` was taught to measure off
+    `room_floor_elevation` instead. No source file states the offset — the resolver derives
+    it — so nothing but this assertion would catch the regression.
+    """
+    hydrant = next(o for o in catlin_model.canvas_objects if o.tag == "FX-G-HYDRANT")
+    slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
+    assert hydrant.z_m == pytest.approx(slab.z1_m, abs=1e-6)
     grade = catlin_model.plan.project.site.grade.meters
-    assert solid.z0_m == pytest.approx(grade, abs=1e-6)
-    assert (solid.z1_m - solid.z0_m) * 12 * _M_TO_FT == pytest.approx(4.0, abs=1e-6)
+    assert hydrant.z_m == pytest.approx(grade, abs=1e-6)
+    # ...and that is a full GARAGE_STEM_REVEAL below the storey it is filed on.
+    storey = next(s for s in catlin_model.plan.storeys if s.tag == "garage")
+    assert (storey.elevation.meters - hydrant.z_m) * _M_TO_FT == pytest.approx(
+        1 + 10 / 12, abs=1e-6)
+
+
+def test_the_whole_garage_stands_on_its_floor_not_on_the_stem_top(catlin_model):
+    """The fix is not hydrant-specific and must not become so. Everything in RM-GARAGE was
+    22" high — the workbench off the floor, every device off its authored height — because
+    one shared resolver measured them all from the same wrong plane."""
+    by_tag = {o.tag: o for o in catlin_model.canvas_objects}
+    grade = catlin_model.plan.project.site.grade.meters
+    assert by_tag["FURN-G-WORKBENCH"].z_m == pytest.approx(grade, abs=1e-6)
+    for tag, above_floor_ft in (("ED-G-EV-620", 4.0), ("ED-G-EV-1450", 4.0),
+                                ("EQ-G-HEATER", 6.0), ("ED-G-SW", 46 / 12),
+                                ("ED-G-LT1", 8.0)):
+        assert (by_tag[tag].z_m - grade) * _M_TO_FT == pytest.approx(
+            above_floor_ft, abs=1e-6), tag
+    # The one deliberate exception: ED-G-EXT-LT is authored with no `room` (it stands outside
+    # RM-GARAGE, and `electrical.wet_location` decides "exterior" from that), so it keeps the
+    # storey datum its comment in plan/lighting.py already accounts for.
+    assert (by_tag["ED-G-EXT-LT"].z_m - grade) * _M_TO_FT == pytest.approx(
+        8 + 10 / 12, abs=1e-6)
+
+
+def test_the_pedestal_and_its_block_out_are_gone(catlin_model):
+    """Retired 2026-08-03 (notes/garage_hydrant.md): the hydrant uses the garage's own slab.
+    Both pieces went together — a block-out sleeve whose host no longer exists is an orphan
+    reference, not a leftover detail."""
+    assert catlin_model.plan.by_tag("SL-G-HYDRANT-PED") is None
+    assert catlin_model.plan.by_tag("SP-G-HYDRANT-PED") is None
+    assert not [s for s in catlin_model.solids if s.tag == "SL-G-HYDRANT-PED"]
+    # What stayed is what actually does the work: the slab penetration and the drywell.
+    assert catlin_model.plan.by_tag("SP-G-HYDRANT") is not None
+    assert catlin_model.plan.by_tag("DRW-G-HYDRANT") is not None
 
 
 def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):

@@ -385,6 +385,11 @@ def test_laundry_goods_fit_the_alcove_and_clear_each_other(catlin_model):
                if obj.room == "RM-M-LAUNDRY"}
     assert {"FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK", "FURN-M-LAUNDRY-RACK"} <= set(objects)
     for tag, obj in objects.items():
+        mount = obj.mount
+        if mount is not None and mount.recessed_into_host_surface and mount.kind.value == "wall":
+            continue  # ED-M-LAUNDRY-RC1/DR1 are boxes let *into* the partition — their body
+            # belongs behind the finish plane, which is the whole point of the recessed flag,
+            # and the machine sits flat against the wall because of it.
         # By area, not `covers`: every one of these backs sits *on* the south finish face by
         # design, so boundary-touching is the intended result and float noise at 1e-15 would
         # make a containment predicate report it as an escape.

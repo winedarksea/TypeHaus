@@ -301,9 +301,16 @@ SECOND_FIXTURES = (
 
 # The garage wash-down hydrant. On the west wall near the NW corner: that wall carries only
 # EQ-G-HEATER (at y=48', mounted 6'-0"), and the corner is clear of both north windows and
-# of both EV receptacles at y=41.5'. Standing 1'-6" off the wall line puts it on its
-# pedestal (PAD-G-HYDRANT) rather than in the salt slush the floor runs all winter, and
-# leaves room to swing a hose onto it.
+# of both EV receptacles at y=41.5'. Standing 1'-6" off the wall line leaves room to swing a
+# hose onto it.
+#
+# It stands on SL-G-FLOOR, the garage's own slab at 0'-0" — 1'-10" below the `garage` storey
+# datum, which is the ICF stem top the wood walls bear on. Nothing here says so, and nothing
+# here has to: `resolve/placeables.py` measures a mount off the floor of the room the thing
+# is in (`resolve/room_floor.py`), which is the slab, not the datum. It used to measure off
+# the datum, which is why this hydrant floated 22" in the air until 2026-08-03 — along with
+# the workbench and every device in the room. There was also a 4" topping pedestal under it
+# until that date; see params/foundations.py.
 #
 # The handle at 2'-6" is the type's height; everything below the slab — the 6' barrel, the
 # buried shutoff, the supply run and the sleeve — is authored in params/foundations.py and

@@ -104,16 +104,14 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     assert any(row[2] == '16"' and row[3].endswith("LF") for row in walls.rows)
     slabs = tables["SLAB-ON-GRADE SCHEDULE"]
     # Thickness keeps its eighth-inch fraction rather than rounding a 3-1/2" slab to 4".
-    # Asserted over the 3-1/2" pours specifically, not over every row: SL-G-HYDRANT-PED is a
-    # genuinely 4" topping block, and folding it in would only pass by rounding.
+    # The counterexample this used to lean on — SL-G-HYDRANT-PED, a genuinely 4" topping
+    # block, so folding it in would have passed by rounding — was retired 2026-08-03
+    # (houses/catlin/notes/garage_hydrant.md), and every remaining pour is 3-1/2".
     assert slabs.columns[1] == "TAG" and slabs.columns[2] == "THK"
     poured = {row[1]: row[2] for row in slabs.rows}
     assert poured["SL-B-FLOOR"] == '3-1/2"' and poured["SL-G-FLOOR"] == '3-1/2"'
-    # The one 4" row is the hydrant pedestal, a topping block on SL-G-FLOOR that really is
-    # 4" — it sits a third of a foot proud of the garage floor it is poured on.
-    assert poured["SL-G-HYDRANT-PED"] == '4"'
-    hydrant_row = next(row for row in slabs.rows if row[1] == "SL-G-HYDRANT-PED")
-    assert hydrant_row[-1] == "+0.33'"
+    assert "SL-G-HYDRANT-PED" not in poured
+    assert all(thickness == '3-1/2"' for thickness in poured.values()), poured
 
 
 def test_s100_calls_frost_depth_drainage_and_steps(catlin_model):

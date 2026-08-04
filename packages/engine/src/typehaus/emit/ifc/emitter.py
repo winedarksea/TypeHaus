@@ -22,7 +22,7 @@ from typehaus.emit.ifc.electrical import (emit_conduits, emit_light_runs,
                                           emit_solar_panels)
 from typehaus.emit.ifc.roof import emit_roof, member_class, member_representation
 from typehaus.emit.trades import DRAINAGE_CATEGORIES, PIPE_ACCESSORY_CATEGORIES
-from typehaus.emit.room_floor import room_floor_elevation
+from typehaus.resolve.room_floor import room_floor_elevation
 from typehaus.model.enums import DoorOperation, Service
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section
