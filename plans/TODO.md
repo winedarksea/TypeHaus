@@ -274,11 +274,6 @@ Questions:
     core, and the strapping frames no members, so the "carried by the framing cut list"
     waiver is false for it. Waived by function in `_WAIVED_LAYER_FUNCTIONS` with that note;
     fix by billing monolithic-wall furring by the lineal foot.
-  - ~~RAINWATER / SEWAGE `IfcDistributionSystem`s~~ DONE 2026-08-02: DRAIN runs → SEWAGE
-    (IFC4's sanitary member), VENT → VENT, the radon riser deliberately **not** grouped
-    with plumbing vents (USERDEFINED/"RADON"), and the silent discard of non-supply
-    systems in the emitter is gone. Rainwater stays with the STORMWATER solids system, on
-    purpose — the storm run is gutters/leaders/tile, not `PipeRun`s.
 
 ### Plumbing
 
@@ -287,11 +282,6 @@ Questions:
     `Alarm` anywhere in the house. (Re-affirmed deferred, 2026-08-02.)
   - **The RO unit itself.** `PA-M-RO-STUB` is a capped 1/4" tee with no fixture and no
     fixture units — the provision, not the machine.
-  - ~~A second niche in `RM-S-BATH1`~~ — added 2026-08-02 (`LR-S-BATH1-NICHE` in
-    `W-S-CH-W`, board stood vertical, own PSU per the per-area-supply rule;
-    `notes/shower_niche.md` updated).
-  - ~~SANITARY / RAINWATER `IfcDistributionSystem`s~~ — closed 2026-08-02, see the
-    drainage block above.
   - **`mep.backflow_prevention` grades hose connections only.** The basement's two dual-check
     preventers are reported where authored but are not *required* by the check — a general
     cross-connection survey (hose-end sprayers, the boiler fill that does not exist yet) is

@@ -6,7 +6,8 @@
 // resolved outline or lay out a member list, and none carries an editing path.
 import * as THREE from "three";
 import type {
-  Brace, Catalog, FootingBedding, Floor, Member, Roof, Room, Solid, SolarPanel, Stair, Vec2,
+  Brace, Catalog, FootingBedding, Floor, LightRun, Member, Roof, Room, Solid, SolarPanel, Stair,
+  Vec2,
 } from "../../model/types";
 import { layerVisibilityGroupOf, type LayerVisibilityGroup } from "../../model/visibility";
 import {
@@ -19,7 +20,8 @@ import {
 } from "../materials";
 import { buildMembers, isRoofFramingMember, memberColor } from "../members";
 import {
-  createPlanPrismGeometry, createProjectedSurfaceGeometry, type PlanCenter, type ProjectVertex,
+  createPlanPrismGeometry, createProjectedSurfaceGeometry, rectBetween, type PlanCenter,
+  type ProjectVertex,
 } from "../planGeometry";
 import {
   aboveStructureLayers, boundaryEdges, layerInsetRect, roofOffsetter, roofPlaneTriangles,
@@ -81,6 +83,71 @@ export function buildSolarPanel(parent: THREE.Group, panel: SolarPanel, center: 
   mesh.receiveShadow = true;
   parent.add(mesh);
   registerSelectable(parent, firstChildIndex, panel.uid, "solid", picks, byUid);
+}
+
+// LightRun's channel + tape — mirrors emit/gltf/palette.py `_PALETTE["cove_channel"]` /
+// `["led_tape"]`, and the same distinction the Inspector draws for a solid category (a
+// channel is what you'd order, tape is what lights).
+export const COVE_CHANNEL_COLOR = 0xcccccc; // mill-finish aluminium extrusion
+export const LED_TAPE_COLOR = 0xffeabb;     // warm-white tape, bright rather than lit
+
+// The run's outer envelope (→ resolve/geometry.py LIGHT_STRIP_WIDTH_M/HEIGHT_M) — half an
+// inch square, in metres.
+const LIGHT_STRIP_WIDTH_M = 0.0127;
+const LIGHT_STRIP_HEIGHT_M = 0.0127;
+const CHANNEL_WALL_M = 0.0048; // 3/16" (→ resolve/trim_bands.py CHANNEL_WALL_M)
+const TAPE_HEIGHT_M = 0.0023; // (→ resolve/trim_bands.py TAPE_HEIGHT_M)
+
+// (key, offset from the back, band width, bottom drop, top drop) — one band tuple per row,
+// same shape and same numbers as resolve/trim_bands.py `led_cove_bands`. Kept beside the
+// colours above rather than imported: this is a small, fixed cross-section recipe, and the
+// two sides of the mirror already have to move together (comment cross-reference does the
+// rest, the way emit/gltf/palette.py and this file's colour constants already do).
+function ledCoveBands(thicknessM: number, depthM: number):
+  [key: "back" | "base" | "lip" | "tape", left: number, right: number,
+   bottomDrop: number, topDrop: number][] {
+  const wall = Math.min(CHANNEL_WALL_M, thicknessM / 3, depthM / 3);
+  const lipDepth = depthM * 0.4;
+  const tapeH = Math.min(TAPE_HEIGHT_M, depthM - wall);
+  const half = thicknessM / 2;
+  const span = (offset: number, width: number): [number, number] =>
+    [-half + offset, -half + offset + width];
+  return [
+    ["back", ...span(0, wall), depthM, 0],
+    ["base", ...span(wall, thicknessM - 2 * wall), depthM, depthM - wall],
+    ["lip", ...span(thicknessM - wall, wall), lipDepth, 0],
+    ["tape", ...span(wall, thicknessM - 2 * wall), depthM - wall, depthM - wall - tapeH],
+  ];
+}
+
+// A cove/shadow-gap LED run: the resolver's plan polyline swept into a channel (back, base,
+// lip) with the tape laid in the trough — not one undifferentiated bar. One pick target for
+// the whole run, matching the single IfcLightFixture the IFC exporter emits for it.
+export function buildLightRun(parent: THREE.Group, run: LightRun, center: PlanCenter,
+  _mode: "nordic" | "schematic", picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  if (run.path.length < 2) return;
+  const firstChildIndex = parent.children.length;
+  for (const [key, left, right, bottomDrop, topDrop] of
+    ledCoveBands(LIGHT_STRIP_WIDTH_M, LIGHT_STRIP_HEIGHT_M)) {
+    const color = key === "tape" ? LED_TAPE_COLOR : COVE_CHANNEL_COLOR;
+    const z0 = run.z_m - bottomDrop;
+    const z1 = run.z_m - topDrop;
+    for (let index = 0; index < run.path.length - 1; index++) {
+      const p0 = run.path[index];
+      const p1 = run.path[index + 1];
+      if (Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) < 1e-6) continue;
+      const outline = rectBetween(p0, p1, left, right);
+      const geo = createPlanPrismGeometry(outline, z0, z1, [], center);
+      if (!geo) continue;
+      const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+        color, roughness: key === "tape" ? 0.4 : 0.5, metalness: key === "tape" ? 0 : 0.6,
+      }));
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      parent.add(mesh);
+    }
+  }
+  registerSelectable(parent, firstChildIndex, run.uid, "solid", picks, byUid);
 }
 
 // Compacted washed-stone footing bed: a below-grade gravel prism under a strip footing.

@@ -60,9 +60,10 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
   },
   {
     id: "lighting",
-    note: "The luminaire schedule by mark, switch legs, LED runs and connected load.",
+    note: "The luminaire schedule by mark, switch legs, LED runs, cove order lines and connected load.",
     title: "Lighting",
-    sections: ["luminaire_schedule", "lighting_controls", "light_runs", "lighting_load"],
+    sections: ["luminaire_schedule", "lighting_controls", "light_runs", "light_run_materials",
+      "lighting_load"],
   },
   {
     id: "data",

@@ -82,6 +82,43 @@ def test_light_runs_are_drawn_with_their_length(catlin_model):
                for node in scene.nodes)
 
 
+def test_light_run_ticks_mark_every_end_cap_and_corner(catlin_model):
+    """A short cross-hatch at every fitting a straight length of channel cannot be on its
+    own: two end caps (path endpoints) plus one per interior vertex where it turns."""
+    scene = build_lighting_plan(catlin_model, "second")
+    run = next(r for r in catlin_model.light_runs if r.tag == "LR-S-HALL-GAP")
+    assert len(run.path) > 2, "need a run that actually turns a corner for this test to bite"
+    cove_polylines = [node for node in scene.nodes
+                      if isinstance(node, Polyline) and node.layer == "E-LITE-COVE"]
+    # One 2-point polyline per path vertex is a tick; the run itself is the one polyline
+    # whose point count matches its own path and whose tag is the run's tag.
+    ticks = [node for node in cove_polylines
+             if node.tag != run.tag and len(node.points) == 2]
+    assert len(ticks) >= len(run.path), (
+        "expected at least one tick per path vertex across every run on this sheet")
+
+
+def test_psu_leader_connects_a_run_to_its_shared_supply(catlin_model):
+    """Two living-room runs share one PSU; the leader and its marker should appear once
+    per PSU, not once per run, and every leader should actually reach the PSU's position."""
+    scene = build_lighting_plan(catlin_model, "main")
+    psu = next(element for storey in catlin_model.plan.storeys
+              for element in catlin_model.plan.storey_elements(storey.tag)
+              if element.tag == "ED-M-LIVING-LT-PSU")
+    psu_xy = psu.position.xy_m
+    leaders = [node for node in scene.nodes
+              if isinstance(node, Polyline) and node.layer == "E-LITE-COVE"
+              and node.linetype == "DASHED"]
+    living_runs = [r for r in catlin_model.light_runs if r.psu_ref == "ED-M-LIVING-LT-PSU"]
+    assert len(leaders) == len(living_runs) == 2
+    _M_TO_IN = 39.37007874015748
+    psu_in = (psu_xy[0] * _M_TO_IN, psu_xy[1] * _M_TO_IN)
+    for leader in leaders:
+        assert any(pt == pytest.approx(psu_in, abs=1e-6) for pt in leader.points)
+    psu_labels = [node for node in scene.nodes if isinstance(node, Text) and node.content == "PSU"]
+    assert len(psu_labels) == 1, "one shared PSU should get one marker, not one per run"
+
+
 def test_switch_legs_are_dashed_and_only_drawn_where_both_ends_are_on_the_sheet(catlin_model):
     scene = build_lighting_plan(catlin_model, "basement")
     legs = [node for node in scene.nodes

@@ -74,6 +74,7 @@ def takeoff(
                # payload dropped — the switch legs simply never reached `haus takeoff`.
                "lighting_controls": bom["lighting_controls"],
                "light_runs": bom["light_runs"],
+               "light_run_materials": bom["light_run_materials"],
                "lighting_load": bom["lighting_load"],
                # Low-voltage (2026-08-02). Same argument as lighting_controls above: a
                # section the CLI drops is invisible to the estimate and to variant compare.

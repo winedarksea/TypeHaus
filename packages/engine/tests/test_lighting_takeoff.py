@@ -13,8 +13,8 @@ import pytest
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
 from typehaus.takeoff.lighting import (PSU_SIZING_FACTOR, connected_lighting_va,
-                                       light_run_takeoff, lighting_controls,
-                                       luminaire_schedule)
+                                       light_run_materials, light_run_takeoff,
+                                       lighting_controls, luminaire_schedule)
 
 CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 _M_TO_FT = 3.280839895013123
@@ -88,6 +88,35 @@ def test_run_lengths_and_watts_sum_from_the_authored_polylines(catlin_model):
     # 3 W/ft is the authored tape; the run watts are that times its own length.
     living = by_tag["LR-M-LIVING-W"]
     assert living["watts"] == pytest.approx(round(living["length_ft"] * 3.0, 1))
+
+
+def test_light_run_materials_splits_the_blended_length_into_order_lines(catlin_model):
+    """``light_run_takeoff`` bills one blended length per type; this is the real order
+    sheet a channel/tape install needs: channel and tape by the foot, end caps and corner
+    connectors by the piece."""
+    materials = light_run_materials(catlin_model)
+    by_key = {(row["type"], row["item"]): row for row in materials}
+    assert {row["item"] for row in materials} == {
+        "channel", "tape", "end_cap", "corner_connector"}
+
+    strip24 = {run.tag: run for run in catlin_model.light_runs if run.type_ref == "ED-T-LT-STRIP24"}
+    total_length_ft = sum(run.length_m * _M_TO_FT for run in strip24.values())
+    channel = by_key[("ED-T-LT-STRIP24", "channel")]
+    tape = by_key[("ED-T-LT-STRIP24", "tape")]
+    assert channel["quantity"] == pytest.approx(round(total_length_ft, 1))
+    # Channel and tape are the same length — the tape rides the channel end to end.
+    assert tape["quantity"] == channel["quantity"]
+    assert channel["unit"] == tape["unit"] == "LF"
+    # Every run takes exactly two end caps, one per open end.
+    end_cap = by_key[("ED-T-LT-STRIP24", "end_cap")]
+    assert end_cap["quantity"] == 2 * len(strip24)
+    assert end_cap["unit"] == "EA"
+    # A corner connector for every interior vertex — the hall's shadow-gap run turns
+    # corners, the two living-room runs are straight.
+    corner = by_key[("ED-T-LT-STRIP24", "corner_connector")]
+    expected_corners = sum(max(len(run.path) - 2, 0) for run in strip24.values())
+    assert corner["quantity"] == expected_corners
+    assert corner["quantity"] > 0, "the hall shadow-gap run should turn at least one corner"
 
 
 def test_every_supply_is_sized_at_125_percent_of_what_it_drives(catlin_model):

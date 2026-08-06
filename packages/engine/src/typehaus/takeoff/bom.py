@@ -29,8 +29,8 @@ from typehaus.takeoff.envelope import bug_screen_takeoff, envelope_layer_takeoff
 from typehaus.takeoff.finishes import floor_finish_rows
 from typehaus.takeoff.glazing import glazing_panel_takeoff, glazing_trim_takeoff
 from typehaus.takeoff.hardware import hardware_takeoff
-from typehaus.takeoff.lighting import (connected_lighting_va, light_run_takeoff,
-                                       lighting_controls, luminaire_schedule)
+from typehaus.takeoff.lighting import (connected_lighting_va, light_run_materials,
+                                       light_run_takeoff, lighting_controls, luminaire_schedule)
 from typehaus.takeoff.data import (data_device_schedule, data_raceway_takeoff,
                                    poe_budget)
 from typehaus.takeoff.hardware_config import (
@@ -64,8 +64,10 @@ def bill_of_materials(
     ``construction_returns``, ``sheet_goods`` and ``hardware`` complete the order.
     ``glazing`` covers what none of those could: sheet goods bought as panels rather than as
     sheathing, and the aluminium extrusions that cap them, bought by the lineal foot.
-    The ``luminaire_*``/``light_runs``/``lighting_load`` sections are the lighting order:
-    fixtures by schedule mark, tape by the lineal foot, and one supply per cove area.
+    The ``luminaire_*``/``light_runs``/``light_run_materials``/``lighting_load`` sections are
+    the lighting order: fixtures by schedule mark, tape by the lineal foot (blended, then
+    split into channel/tape/end-cap/corner-connector order lines), and one supply per cove
+    area.
     ``placeables`` counts the free-placed and wall-attached products (casework, appliances,
     fixtures — the UI BOM's placeablesSection twin) and ``floor_heat`` bills each radiant
     zone's element length, so no billable record lives only in a CLI patch or the browser.
@@ -151,6 +153,9 @@ def bill_of_materials(
         "luminaire_schedule": luminaire_schedule(model),
         "lighting_controls": lighting_controls(model),
         "light_runs": light_run_takeoff(model),
+        # The cove/LED order sheet: channel and tape by the foot, end caps and corner
+        # connectors by the piece — where ``light_runs`` above bills one blended length.
+        "light_run_materials": light_run_materials(model),
         "lighting_load": connected_lighting_va(model),
         # The low-voltage program (→ takeoff/data.py): the E-603 device schedule, the data
         # and spare raceways ``conduit`` deliberately excludes, and the PoE draw the panel

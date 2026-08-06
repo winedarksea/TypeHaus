@@ -82,7 +82,7 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         "electrical_devices", "panel_schedule", "service_load",
                         "conduit", "conductors", "solar", "backup_power",
                         "luminaire_schedule", "lighting_controls", "light_runs",
-                        "lighting_load",
+                        "light_run_materials", "lighting_load",
                         # Structured cabling (2026-08-02).
                         "data_devices", "data_raceways", "poe_budget",
                         # The 2026-07-25 sweep: resolved-but-unbilled families.

@@ -26,6 +26,7 @@ from typehaus.emit.gltf.palette import _FALLBACK, _color, _solid_color
 from typehaus.emit.gltf.roofs import _add_roof
 from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.emit.gltf.walls import _add_wall_body
+from typehaus.resolve.geometry import light_run_band_profiles
 from typehaus.resolve.room_floor import room_floor_elevation
 from typehaus.emit.trades import solid_trade
 from typehaus.resolve.model import ResolvedModel
@@ -164,6 +165,11 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         _add_solar_panel(mb, panel)
         scene.add_object(mb, trade="electrical", kind="solid", uid=panel.uid)
 
+    for run in sorted(model.light_runs, key=lambda item: item.uid):
+        mb = _MeshBuilder()
+        _add_light_run(mb, run)
+        scene.add_object(mb, trade="electrical", kind="solid", uid=run.uid)
+
     for floor in sorted(model.floors, key=lambda item: item.uid):
         # Joists are framing, and belong in the framing trade with every other stick in the
         # building — not hidden behind the floors toggle. Same split roof/wall framing use.
@@ -250,6 +256,20 @@ def _add_earth(mb: _MeshBuilder, model: ResolvedModel) -> None:
     for prism in part.solids:
         mb.add_prism_with_rectangular_voids(list(prism.ring), prism.voids,
                                             prism.z0_m, prism.z1_m, _color("earth"))
+
+
+_LIGHT_RUN_BAND_ROLE = {"back": "cove_channel", "base": "cove_channel", "lip": "cove_channel",
+                        "tape": "led_tape"}
+
+
+def _add_light_run(mb: _MeshBuilder, run) -> None:
+    """The cove channel + tape, one prism per band per leg (→ resolve/geometry.py
+    ``light_run_band_profiles``, mirrored in ui/src/three/builders/structure.ts)."""
+    for key, profiles, bottom_drop, top_drop in light_run_band_profiles(list(run.path)):
+        color = _color(_LIGHT_RUN_BAND_ROLE[key])
+        z0, z1 = run.z_m - bottom_drop, run.z_m - top_drop
+        for profile in profiles:
+            mb.add_prism(profile, z0, z1, color)
 
 
 def _add_solar_panel(mb: _MeshBuilder, panel) -> None:

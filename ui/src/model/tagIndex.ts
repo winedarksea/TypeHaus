@@ -24,5 +24,6 @@ export function uidByTag(model: Model): Map<string, string> {
   // so a tag from the panel schedule zooms like any other.
   add(model.canvas_objects ?? []);
   add(model.solar_panels ?? []);
+  add(model.light_runs ?? []);
   return index;
 }

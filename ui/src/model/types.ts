@@ -1023,6 +1023,23 @@ export interface SolarPanel {
   provenance: Provenance | null;
 }
 
+// A linear luminaire run — the plan polyline a cove/shadow-gap LED channel follows and the
+// height it is mounted at (→ resolve/model.py ResolvedLightRun, server/model_json.py).
+export interface LightRun {
+  uid: string;
+  tag: string;
+  storey: string;
+  path: Vec2[];
+  z_m: number;
+  length_m: number;
+  type: string;
+  room: string | null;
+  circuit: string | null;
+  psu_ref: string | null;
+  controlled_by: string[];
+  provenance: Provenance | null;
+}
+
 export interface FootingBedding {
   uid: string;
   tag: string;
@@ -1144,6 +1161,7 @@ export interface Model {
   construction_returns?: ConstructionReturn[];
   footing_beddings?: FootingBedding[];
   solar_panels?: SolarPanel[];
+  light_runs?: LightRun[];
   floors?: Floor[];
   stairs?: Stair[];
   braces?: Brace[];

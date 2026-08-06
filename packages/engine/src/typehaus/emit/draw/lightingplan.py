@@ -25,6 +25,8 @@ and the authoritative statement of what controls what is the E-602 control sched
 
 from __future__ import annotations
 
+import math
+
 from typehaus.emit.draw._shared import emit_wall
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Text
@@ -105,9 +107,15 @@ def build_lighting_plan(model: ResolvedModel, storey: str) -> Scene:
                    content=product.type_mark or product.tag,
                    height=2.0, layer="E-LITE"))
 
-    for run in model.light_runs:
-        if run.storey != storey:
-            continue
+    # Every device on the sheet, by tag — switches and luminaires already have their own
+    # entries in `positions`, but a PSU/driver (an ElectricalDevice of no luminaire form) is
+    # neither, so the leader below needs its own lookup rather than reusing `positions`.
+    device_positions = {element.tag: element.position.xy_m
+                        for element in model.plan.storey_elements(storey)
+                        if element.element_kind == "ElectricalDevice"}
+
+    runs_on_storey = [run for run in model.light_runs if run.storey == storey]
+    for run in runs_on_storey:
         forms_present.add("strip")
         b.add(Polyline(points=tuple(_in(point) for point in run.path),
                        layer="E-LITE-COVE", lineweight=0.6, uid=run.uid, tag=run.tag))
@@ -117,9 +125,10 @@ def build_lighting_plan(model: ResolvedModel, storey: str) -> Scene:
                    content=mark + "  " + "{:.1f}".format(run.length_m * _M_TO_FT) + " LF",
                    height=2.0, layer="E-LITE-COVE"))
         positions[run.tag] = mid
+        _emit_light_run_ticks(b, run)
 
-    _emit_switch_legs(b, [*luminaires, *(r for r in model.light_runs if r.storey == storey)],
-                      positions)
+    _emit_psu_leaders(b, runs_on_storey, device_positions)
+    _emit_switch_legs(b, [*luminaires, *runs_on_storey], positions)
     _emit_legend(b, model, storey, types, forms_present)
     return b.build()
 
@@ -161,6 +170,67 @@ def _emit_switch_legs(b: SceneBuilder, loads: list, positions: dict) -> None:
                 continue  # a switch on another storey (3-way up a stair) — off this sheet
             b.add(Polyline(points=(_in(origin), _in(target)), layer="E-LITE-CIRC",
                            lineweight=0.2, linetype="DASHED"))
+
+
+_TICK_HALF_LEN_M = 0.075  # a short hash mark, legible without reading as part of the run
+
+
+def _emit_light_run_ticks(b: SceneBuilder, run) -> None:
+    """A cross-hatch at every fitting a straight length of channel cannot be on its own: an
+    end cap at each open end, a corner connector at every interior vertex where it turns.
+
+    The mark is a short tick perpendicular to the run — at an interior vertex, perpendicular
+    to the *bisector* of the two legs meeting there, so a square corner's tick reads at 45°
+    to both rather than parallel to one of them.
+    """
+    path = run.path
+    for index, point in enumerate(path):
+        directions = []
+        if index > 0:
+            directions.append(_unit(_sub(point, path[index - 1])))
+        if index < len(path) - 1:
+            directions.append(_unit(_sub(path[index + 1], point)))
+        dx = sum(d[0] for d in directions)
+        dy = sum(d[1] for d in directions)
+        direction = _unit((dx, dy)) if (dx, dy) != (0.0, 0.0) else directions[0]
+        nx, ny = -direction[1], direction[0]
+        a = (point[0] - nx * _TICK_HALF_LEN_M, point[1] - ny * _TICK_HALF_LEN_M)
+        b_pt = (point[0] + nx * _TICK_HALF_LEN_M, point[1] + ny * _TICK_HALF_LEN_M)
+        b.add(Polyline(points=(_in(a), _in(b_pt)), layer="E-LITE-COVE", lineweight=0.4))
+
+
+def _sub(a: tuple[float, float], c: tuple[float, float]) -> tuple[float, float]:
+    return (a[0] - c[0], a[1] - c[1])
+
+
+def _unit(a: tuple[float, float]) -> tuple[float, float]:
+    n = math.hypot(a[0], a[1])
+    return (a[0] / n, a[1] / n) if n > 1e-12 else (0.0, 0.0)
+
+
+def _emit_psu_leaders(b: SceneBuilder, runs: list, device_positions: dict) -> None:
+    """A dashed leader from each run's nearest point to its PSU/driver, plus one marker per
+    PSU — two runs sharing a supply (a common cove wiring pattern) get one marker, not two.
+    """
+    drawn_psus: set[str] = set()
+    for run in runs:
+        psu = getattr(run, "psu_ref", None)
+        target = device_positions.get(psu) if psu else None
+        if target is None:
+            continue
+        origin = min(run.path, key=lambda point: math.dist(point, target))
+        b.add(Polyline(points=(_in(origin), _in(target)), layer="E-LITE-COVE",
+                       lineweight=0.2, linetype="DASHED"))
+        if psu in drawn_psus:
+            continue
+        drawn_psus.add(psu)
+        half = 0.09
+        box = [(target[0] - half, target[1] - half), (target[0] + half, target[1] - half),
+               (target[0] + half, target[1] + half), (target[0] - half, target[1] + half)]
+        b.add(Polyline(points=tuple(_in(p) for p in box), layer="E-LITE-COVE",
+                       lineweight=0.3, closed=True))
+        b.add(Text(anchor=_in((target[0] + half + 0.05, target[1])), content="PSU",
+                   height=1.8, layer="E-LITE-COVE"))
 
 
 def _emit_legend(b: SceneBuilder, model: ResolvedModel, storey: str, types: dict,

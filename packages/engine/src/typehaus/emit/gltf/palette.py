@@ -135,6 +135,10 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "ridge_cap": (0.85, 0.86, 0.87, 1.0),  # vented standing-seam ridge cap
     "corner_trim": (0.85, 0.86, 0.87, 1.0),  # eave corner trim (continuous skin)
     "flashing": (0.75, 0.77, 0.80, 1.0),   # metal flashing
+    # LightRun's channel + tape (→ emit/gltf/emitter.py::_add_light_run). Mirrors
+    # ui/src/three/builders/structure.ts COVE_CHANNEL_COLOR / LED_TAPE_COLOR.
+    "cove_channel": (0.80, 0.80, 0.80, 1.0),  # mill-finish aluminium extrusion
+    "led_tape": (1.00, 0.92, 0.72, 1.0),      # warm-white tape, bright rather than lit
 }
 _FALLBACK = (0.70, 0.70, 0.70, 1.0)
 

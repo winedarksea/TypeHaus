@@ -21,8 +21,8 @@ import type { Trade } from "../../state/vocabulary";
 import { buildCanvasObject, buildEarth } from "./site";
 import { buildOpening, buildWall } from "./walls";
 import {
-  buildBrace, buildFloor, buildFootingBedding, buildRoof, buildRoomFloor, buildSolarPanel,
-  buildSolid, buildStair, storeyFloorTopM,
+  buildBrace, buildFloor, buildFootingBedding, buildLightRun, buildRoof, buildRoomFloor,
+  buildSolarPanel, buildSolid, buildStair, storeyFloorTopM,
 } from "./structure";
 
 /** What a click can land on, and which materials the highlight pass drives per uid. */
@@ -127,6 +127,9 @@ export function populateScene(options: PopulateSceneOptions) {
   }
   for (const panel of model.solar_panels ?? []) {
     buildSolarPanel(tradeGroups.electrical, panel, center, mode, registry.picks, registry.byUid);
+  }
+  for (const run of model.light_runs ?? []) {
+    buildLightRun(tradeGroups.electrical, run, center, mode, registry.picks, registry.byUid);
   }
   for (const stair of model.stairs ?? []) {
     buildStair(tradeGroups.stairs, stair, center, mode, palette, registry.picks, registry.byUid);

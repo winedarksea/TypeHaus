@@ -98,7 +98,10 @@ def light_run_segment_profiles(path: list[Vec]) -> list[list[Vec]]:
     """The swept rectangle of every non-degenerate leg of a linear-luminaire run.
 
     A coincident authored pair is a typo, not a zero-width solid an IFC importer has to
-    cope with, so those legs are skipped rather than emitted degenerate.
+    cope with, so those legs are skipped rather than emitted degenerate. This is the run's
+    outer envelope — the diff adapter projects this same extent (→ diff/ifc_adapter), so it
+    stays a plain half-inch-square sweep even though :func:`light_run_band_profiles` below
+    now draws a channel, not a bar, inside that same envelope.
     """
     half = LIGHT_STRIP_WIDTH_M / 2.0
     profiles: list[list[Vec]] = []
@@ -108,3 +111,32 @@ def light_run_segment_profiles(path: list[Vec]) -> list[list[Vec]]:
             continue
         profiles.append(rect_between(p0, p1, -half, half))
     return profiles
+
+
+def light_run_band_profiles(
+    path: list[Vec], width_m: float = LIGHT_STRIP_WIDTH_M, depth_m: float = LIGHT_STRIP_HEIGHT_M,
+) -> list[tuple[str, list[list[Vec]], float, float]]:
+    """The channel+tape cross-section of a linear-luminaire run, swept along every leg.
+
+    One entry per band from :func:`~typehaus.resolve.trim_bands.led_cove_bands`: its key, the
+    per-leg swept rectangles (same shape as :func:`light_run_segment_profiles`, one per
+    non-degenerate leg), and the band's ``(bottom_drop, top_drop)`` below the run's mounted
+    height — a caller turns each into a prism between ``z_m - bottom_drop`` and
+    ``z_m - top_drop``. Every band's plan span sits inside the same ``[-width_m/2, width_m/2]``
+    envelope :func:`light_run_segment_profiles` sweeps, so the two stay geometrically nested
+    rather than drifting into different-sized runs on the same house.
+    """
+    from typehaus.resolve.trim_bands import led_cove_bands
+
+    half = width_m / 2.0
+    out: list[tuple[str, list[list[Vec]], float, float]] = []
+    for key, offset, band_t, bottom_drop, top_drop in led_cove_bands(width_m, depth_m):
+        left, right = -half + offset, -half + offset + band_t
+        profiles: list[list[Vec]] = []
+        for index in range(len(path) - 1):
+            p0, p1 = path[index], path[index + 1]
+            if length(sub(p1, p0)) < 1e-6:
+                continue
+            profiles.append(rect_between(p0, p1, left, right))
+        out.append((key, profiles, bottom_drop, top_drop))
+    return out

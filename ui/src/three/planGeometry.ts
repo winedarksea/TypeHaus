@@ -97,6 +97,28 @@ export function createPlanPrismGeometry(
 }
 
 /**
+ * A rectangular band around the p0→p1 plan axis, from `left` to `right` offsets off it —
+ * mirrors resolve/geometry.py `rect_between` (sans the miter-closing `extend0`/`extend1`,
+ * unused on this side). Used to sweep a cross-section band along a run's path leg by leg.
+ */
+export function rectBetween(p0: Vec2, p1: Vec2, left: number, right: number): Vec2[] {
+  const dx = p1[0] - p0[0];
+  const dy = p1[1] - p0[1];
+  const len = Math.hypot(dx, dy);
+  if (len < 1e-9) return [p0, p1, p1, p0];
+  const ux = dx / len;
+  const uy = dy / len;
+  const nx = -uy;
+  const ny = ux;
+  return [
+    [p0[0] + nx * left, p0[1] + ny * left],
+    [p1[0] + nx * left, p1[1] + ny * left],
+    [p1[0] + nx * right, p1[1] + ny * right],
+    [p0[0] + nx * right, p0[1] + ny * right],
+  ];
+}
+
+/**
  * SVG arc sweep-flag for a quarter-circle swing arc that must be centred on `center`
  * (screen pixel space, y pointing down). An `A r r 0 0 <flag> …` command from `from`
  * to `to` — both a radius away from `center` — has two candidate centres; the flag

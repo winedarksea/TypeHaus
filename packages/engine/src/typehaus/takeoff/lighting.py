@@ -232,6 +232,42 @@ def light_run_takeoff(model: ResolvedModel) -> dict[str, object]:
     }
 
 
+def light_run_materials(model: ResolvedModel) -> list[dict[str, object]]:
+    """Real order-sheet lines for every cove/LED run — channel stock and tape by the lineal
+    foot, end caps and corner connectors by the count — where ``light_run_takeoff`` bills one
+    blended length against the type.
+
+    A run's channel and tape are the same length (the tape rides the channel end to end); a
+    run always takes two end caps, one per open end; and it takes one corner connector per
+    interior path vertex, the fitting a straight length of stock cannot become on its own.
+    """
+    types = _device_types(model)
+    by_type: dict[str, dict[str, object]] = {}
+    for run in model.light_runs:
+        product = types.get(run.type_ref)
+        row = by_type.setdefault(run.type_ref, {
+            "type": run.type_ref, "mark": getattr(product, "type_mark", None) or "",
+            "runs": 0, "length_ft": 0.0, "end_caps": 0, "corner_connectors": 0})
+        row["runs"] = int(row["runs"]) + 1
+        row["length_ft"] = float(row["length_ft"]) + run.length_m * _M_TO_FT
+        row["end_caps"] = int(row["end_caps"]) + 2
+        row["corner_connectors"] = int(row["corner_connectors"]) + max(len(run.path) - 2, 0)
+
+    rows: list[dict[str, object]] = []
+    for tag in sorted(by_type):
+        row = by_type[tag]
+        length_ft = round(float(row["length_ft"]), 1)
+        for item, unit, quantity in (
+            ("channel", "LF", length_ft),
+            ("tape", "LF", length_ft),
+            ("end_cap", "EA", int(row["end_caps"])),
+            ("corner_connector", "EA", int(row["corner_connectors"])),
+        ):
+            rows.append({"type": tag, "mark": row["mark"], "item": item, "unit": unit,
+                         "quantity": quantity, "runs": int(row["runs"])})
+    return rows
+
+
 def connected_lighting_va(model: ResolvedModel) -> dict[str, object]:
     """The real connected lighting load per circuit, against the 220.82 area allowance.
 

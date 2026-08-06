@@ -6,7 +6,7 @@ import { SectionCard } from "./SectionCard";
 import { DetailViewer } from "./DetailViewer";
 import { StairDesigner } from "./StairDesigner";
 import { Provenance } from "./Provenance";
-import { FloorInspector, FootingBeddingInspector, MemberInspector, RoofInspector, SolarPanelInspector, SolidInspector } from "./DerivedInspectors";
+import { FloorInspector, FootingBeddingInspector, LightRunInspector, MemberInspector, RoofInspector, SolarPanelInspector, SolidInspector } from "./DerivedInspectors";
 import { locateMember } from "../model/memberIdentity";
 import { locateUid } from "../state/locate";
 import { useIsCompact } from "../hooks/useBreakpoint";
@@ -211,10 +211,12 @@ function SelectionInspector({
   if (kind === "solid") {
     const solid = (model.solids ?? []).find((item) => item.uid === uid);
     if (solid) return <SolidInspector solid={solid} />;
-    // Solar panels register their picks as "solid" derived geometry but live in their
-    // own model.json family.
+    // Solar panels and light runs register their picks as "solid" derived geometry but
+    // live in their own model.json families.
     const panel = (model.solar_panels ?? []).find((item) => item.uid === uid);
-    return panel ? <SolarPanelInspector panel={panel} /> : null;
+    if (panel) return <SolarPanelInspector panel={panel} />;
+    const run = (model.light_runs ?? []).find((item) => item.uid === uid);
+    return run ? <LightRunInspector run={run} /> : null;
   }
   if (kind === "footing_bedding") {
     const bedding = (model.footing_beddings ?? []).find((item) => item.uid === uid);

@@ -4,7 +4,9 @@
 // B7, so each needs a panel that answers "what is this, what is it made of, how big is it, and
 // where did it come from?" — none of them is editable in place; the edit lives on the element
 // or rule that produced it, which `Provenance` points at.
-import type { FootingBedding, Floor, Model, Roof, Solid, SolarPanel, Vec2 } from "../model/types";
+import type {
+  FootingBedding, Floor, LightRun, Model, Roof, Solid, SolarPanel, Vec2,
+} from "../model/types";
 import { formatFtIn } from "../model/geometry";
 import type { LocatedMember } from "../model/memberIdentity";
 import { solidCategoryLabel } from "../three/solidMaterials";
@@ -72,6 +74,25 @@ export function SolarPanelInspector({ panel }: { panel: SolarPanel }) {
     </div>
     <Provenance p={panel.provenance} />
     <DerivedNote source="its SolarPanel element and the roof plane it rides" />
+  </div>;
+}
+
+export function LightRunInspector({ run }: { run: LightRun }) {
+  return <div>
+    <h3>Cove/LED run · {run.tag}</h3>
+    <div className="kv">
+      <span className="k">Type</span><span>{run.type}</span>
+      <span className="k">Length</span><span>{formatFtIn(run.length_m)}</span>
+      <span className="k">Mounted at</span><span>{formatFtIn(run.z_m)}</span>
+      <span className="k">Room</span><span>{run.room ?? "—"}</span>
+      <span className="k">Circuit</span><span>{run.circuit ?? "—"}</span>
+      <span className="k">PSU</span><span>{run.psu_ref ?? "—"}</span>
+      <span className="k">Controlled by</span><span>{run.controlled_by.join(", ") || "—"}</span>
+      <span className="k">Storey</span><span>{run.storey}</span>
+      <span className="k">uid</span><span className="prov">{run.uid}</span>
+    </div>
+    <Provenance p={run.provenance} />
+    <DerivedNote source="its authored LightRun element" />
   </div>;
 }
 

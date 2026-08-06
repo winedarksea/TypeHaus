@@ -92,3 +92,35 @@ def formed_edge_bands(thickness_m: float, depth_m: float) -> tuple[Band, Band, B
         ("face", thickness_m - shell, shell, depth_m, shell),
         ("hem", thickness_m - shell - hem, hem, depth_m, depth_m - shell),
     )
+
+
+# A cove-lighting channel is a small extruded reveal, not formed sheet — but the same "clamp
+# the wall to a fraction of the section" trick keeps a narrow or shallow channel from resolving
+# as a solid billet. 3/16" reads as a light aluminium extrusion wall rather than the half-inch
+# sheet stock the gutter/drip-edge recipes above assume.
+CHANNEL_WALL_M = inch(0.1875).meters
+
+# The LED tape itself: about the height of real tape stock (copper strip, diodes, silicone).
+TAPE_HEIGHT_M = inch(0.09).meters
+
+
+def led_cove_bands(thickness_m: float, depth_m: float) -> tuple[Band, Band, Band, Band]:
+    """A shadow-gap LED channel ``thickness_m`` wide, ``depth_m`` deep: back, base, a front
+    lip that covers only the top of the opening, and the tape laid in the trough.
+
+    Unlike :func:`open_channel_bands` the front band is not full depth. A shadow-gap reveal
+    is read by what it *hides*: the lip returns just far enough to keep the tape out of a
+    normal sightline from below, leaving the rest of the opening clear so the wash of light is
+    what shows, not a second full-height wall closing the trough back up. Same frame as the
+    other recipes here: offsets run across the thickness from the back, drops run down from
+    the channel's top (the ceiling plane the reveal is cut into).
+    """
+    wall = min(CHANNEL_WALL_M, thickness_m / 3.0, depth_m / 3.0)
+    lip_depth = depth_m * 0.4
+    tape_h = min(TAPE_HEIGHT_M, depth_m - wall)
+    return (
+        ("back", 0.0, wall, depth_m, 0.0),
+        ("base", wall, thickness_m - 2.0 * wall, depth_m, depth_m - wall),
+        ("lip", thickness_m - wall, wall, lip_depth, 0.0),
+        ("tape", wall, thickness_m - 2.0 * wall, depth_m - wall, depth_m - wall - tape_h),
+    )

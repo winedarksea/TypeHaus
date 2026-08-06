@@ -372,7 +372,8 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         "electrical_devices", "panel_schedule", "service_load", "conduit", "conductors",
         "solar", "backup_power",
         # Lighting
-        "luminaire_schedule", "lighting_controls", "light_runs", "lighting_load",
+        "luminaire_schedule", "lighting_controls", "light_runs", "light_run_materials",
+        "lighting_load",
         # Data & low-voltage
         "data_devices", "data_raceways", "poe_budget",
         # Placeables
