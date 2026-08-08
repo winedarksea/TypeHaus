@@ -126,7 +126,7 @@ MAIN_FIXTURES = (
     # floor-mounted WC is simply under the bowl, so the convention (fixture position) is now
     # correct and an override would only be a second place to keep in sync.
     Fixture(uid="CMQ803AAAA", tag="FX-M-BATH2-WC", type_ref="FX-TOILET-STD", room="RM-M-BATH2",
-            position=pt(m(0.686504), m(6.30849)), rotation=deg(0), wall_ref="W-M-BA2E"),
+            position=pt(m(0.686504), m(6.14439)), rotation=deg(0), wall_ref="W-M-BA2E"),
     # BATH2 has separate bathing fixtures: the 36" shower sits north of the door swing,
     # while the 60" tub runs north/south along the east plumbing wall. They are intentionally
     # separate instances/types rather than a tub-shower combination, so the permit schedule
