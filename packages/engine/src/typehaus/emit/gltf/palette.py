@@ -54,6 +54,9 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "trimmer": (0.66, 0.48, 0.30, 1.0),
     "hanger": (0.35, 0.36, 0.38, 1.0),
     "joist": (0.72, 0.55, 0.36, 1.0),
+    # Plies sistered onto a joist line under a point load (resolve/floors.py). Same stock as
+    # the joist it doubles, a shade darker so a reinforced line reads as one in the viewer.
+    "sister_joist": (0.66, 0.48, 0.30, 1.0),
     "rim": (0.66, 0.48, 0.30, 1.0),
     "ridge_beam": (0.55, 0.38, 0.22, 1.0),
     "brace": (0.639, 0.463, 0.247, 1.0),         # 0xa3763f — as blocking

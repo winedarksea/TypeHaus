@@ -30,6 +30,27 @@ class JoistSpec(HausModel):
     cantilever_end: Length | None = None
 
 
+class JoistReinforcement(HausModel):
+    """Extra joist plies sistered under a concentrated load, plus solid blocking.
+
+    A post landing mid-span — worse, out on a cantilever — is carried by one 1 1/2" joist
+    unless something is added under it. Authoring the reinforcement here rather than as
+    loose members keeps the *intent* ("this point load is answered") in the plan: the
+    resolver derives the geometry, the take-off bills it, and
+    ``structural.cantilever_point_load`` reads it as the mitigation it is.
+
+    ``at`` is a plan point, not a joist index — the joist line nearest it is the one that
+    gets the plies, so a post that moves 2" does not silently reinforce its neighbour.
+    ``member`` defaults to the deck's own joist member (a sister is the same stock).
+    """
+
+    at: Point2D
+    plies: int = 3  # total plies at the line, the authored joist included
+    member: str | None = None  # None = the deck's own JoistSpec.member
+    blocking: bool = True  # solid blocking out to the joist line on each side
+    source: str | None = None
+
+
 class DeckLayer(HausModel):
     material_ref: str
     thickness: Length
@@ -54,6 +75,9 @@ class FloorSystem(Element):
     floor-to-floor rise (→ 11 §Floors)."""
 
     joists: JoistSpec
+    # Sistered plies + blocking under concentrated loads (a post bearing on the deck).
+    # Empty is the ordinary case: a deck with no point load on it needs none.
+    reinforcements: tuple[JoistReinforcement, ...] = ()
     subfloor: DeckLayer | None = None
     ceiling_below: DeckLayer | None = None
     openings: tuple[str, ...] = ()  # FloorOpening tags
@@ -145,6 +169,7 @@ class FinishZone(HausModel):
 
 for _name, _obj in (
     ("JoistSpec", JoistSpec),
+    ("JoistReinforcement", JoistReinforcement),
     ("DeckLayer", DeckLayer),
     ("FloorOpening", FloorOpening),
     ("FloorSystem", FloorSystem),

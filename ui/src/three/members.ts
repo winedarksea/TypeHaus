@@ -40,6 +40,9 @@ const CATEGORY_COLOR: Record<string, number> = {
   stringer: 0x996b41,
   tread: 0xb3854f,
   joist: 0xb88c5c,
+  // A sistered ply is the same lumber as the joist it doubles, a shade darker so a
+  // reinforced line reads as reinforced rather than as a joist drawn twice.
+  sister_joist: 0xa87a4d,
   rim: 0xa87a4c,
   ridge_beam: 0x8c6238,
   brace: 0xa3763f, // = blocking, as engine-side: the diagonal knee brace is framing lumber

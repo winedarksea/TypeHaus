@@ -48,12 +48,17 @@ def _category_color_keys() -> set[str]:
     return set(re.findall(r"^\s{2}([A-Za-z_][A-Za-z0-9_]*):\s*0x", block.group(1), re.M))
 
 
-# Categories the roof-eave stream added whose colour entries live in files that stream does
-# not own (emit/gltf/palette.py `_PALETTE` and ui/src/three/members.ts `CATEGORY_COLOR` —
-# both ui-stream territory). The palette additions are recorded as a coordinator escape;
-# REMOVE this set when applying it. Both member kinds carry a `material` (standing-seam /
-# aluminum), so the material colour path covers them in the meantime — only the category
-# fallback colour is missing.
+# Categories added by an engine stream whose *viewer* colour entry lives in ui/src, which
+# that stream does not own. Recorded as a coordinator escape; REMOVE an entry when the ui
+# side lands. The engine half (`_PALETTE`) is never escaped — that table is engine-owned, so
+# the first test below still covers every category.
+#
+# Empty as of 2026-08-07. WP1's sistered plies were the one entry; they landed in
+# members.ts as `sister_joist` the same day. The category was renamed off the hyphen it
+# was first written with (`sister-joist`) because `_category_color_keys()` reads bare TS
+# identifiers — a hyphenated category could never satisfy this test, and every other
+# member category in the model already uses underscores.
+VIEWER_COLOR_ESCAPES: set = set()
 
 
 def test_every_emitted_member_category_has_an_engine_color(catlin_member_categories) -> None:
@@ -65,7 +70,7 @@ def test_every_emitted_member_category_has_an_engine_color(catlin_member_categor
 def test_every_emitted_member_category_has_a_viewer_color(catlin_member_categories) -> None:
     missing = sorted(c for c in catlin_member_categories
                      if c not in _category_color_keys()
-                    )
+                     and c not in VIEWER_COLOR_ESCAPES)
     assert not missing, f"CATEGORY_COLOR (ui/src/three/members.ts) has no entry for: {missing}"
 
 

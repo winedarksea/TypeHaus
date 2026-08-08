@@ -84,6 +84,43 @@ def test_post_bases_are_abu66ss_at_each_pillar_base(catlin_model) -> None:
     assert len(embedded) == len(EMBEDDED_PILLAR_TAGS)
 
 
+def test_the_deck_borne_pillar_stands_on_a_sistered_and_blocked_joist_line(catlin_model) -> None:
+    """PT-SG-BR2 is the only pillar landing on framing, and it lands on the *cantilever*.
+
+    A 6x6 on the free tip of one PT 2x8 is the load path that reinforcement answers, so
+    the cluster is asserted where the post is, not merely somewhere on the deck: three
+    plies (the authored joist plus two sisters) inside half a joist spacing of it, and
+    solid blocking out to the neighbouring lines. ``structural.cantilever_point_load``
+    reads exactly these two categories.
+    """
+    floor = _floor(catlin_model, "FS-SG-PORCH")
+    post_x, post_y = catlin_model.plan.by_tag(DECK_BORNE_PILLAR_TAG).position.xy_m
+    spacing = 16 * INCH
+    sisters = [m for m in floor.members if m.category == "sister_joist"]
+    blocks = [m for m in floor.members if m.category == "blocking"]
+    assert len(sisters) == 2, "3-ply cluster = the joist + two sisters"
+    assert all(abs(m.p0[0] - post_x) < spacing / 2 for m in sisters)
+    assert len(blocks) == 2
+    assert all(abs(m.p0[1] - post_y) < 0.3 for m in blocks)
+    # The sisters run past the back-beam line the joists are split at, out to the tip the
+    # post stands on — a ply stopping at the support would carry nothing under the load.
+    joist_tip = max(max(m.p0[1], m.p1[1]) for m in floor.members if m.category == "joist")
+    assert all(max(m.p0[1], m.p1[1]) == pytest.approx(joist_tip) for m in sisters)
+
+
+def test_the_reinforced_line_is_tied_down_at_its_back_span_bearing(catlin_model) -> None:
+    """Loading a cantilever tip pries the far end of that joist off its bearing; H2.5A
+    (~455 lb) answers the ~0.45 kip of uplift, on the arch wall the back span lands on."""
+    tie = catlin_model.plan.by_tag("CN-SG-TIE-BR2")
+    assert tie.kind.value == "hurricane_tie"
+    assert tie.size == "H2.5A"
+    assert set(tie.connects) == {"FS-SG-PORCH", "W-SG-ARCH"}
+    post_x, post_y = catlin_model.plan.by_tag(DECK_BORNE_PILLAR_TAG).position.xy_m
+    tie_x, tie_y = tie.position.xy_m
+    assert abs(tie_x - post_x) < 16 * INCH / 2, "not on the reinforced joist line"
+    assert tie_y < post_y, "the tie belongs at the back-span bearing, not the loaded tip"
+
+
 # --- NEMA 3R weatherproof junction box ---------------------------------------
 def test_nema_box_sits_with_the_vent_clamps_not_at_eye_level(catlin_model) -> None:
     box = catlin_model.plan.by_tag("ED-A-NEMA-JB")

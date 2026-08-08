@@ -170,6 +170,14 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
                     p0, p1, z0, z1, segment_b - segment_a,
                 ))
 
+    # Sistered plies + solid blocking under an authored concentrated load. This runs on the
+    # joist field above (it needs its line positions and its cantilevered axis extent), and
+    # before the opening/rim framing so a reinforced line is already in ``members`` when the
+    # rim is drawn to the same tips.
+    members.extend(_reinforcement_members(
+        system, spec, positions, along_x,
+        boundaries[0] - cant_start_m, boundaries[-1] + cant_end_m, z0, z1))
+
     # Opening edge framing is generated once per opening, after clipping.  A declared
     # bearing wall directly under a long edge is the explicit support path; otherwise a
     # header closes that edge and receives the cut joists.
@@ -248,6 +256,90 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         deck_z0_m=deck_z0_m, deck_z1_m=deck_z1_m,
         deck_material_ref=(system.subfloor.material_ref if system.subfloor else None),
     ), []
+
+
+# --- concentrated-load reinforcement --------------------------------------------------
+# CHECK-RECOGNITION CONTRACT (``structural.cantilever_point_load``, checks/structural/
+# cantilever.py). That advisory fires when a Post bears on a FloorSystem inside its
+# cantilever band, and downgrades its FAIL to UNKNOWN when it can see the load answered.
+# It reads three things, all of which this function is what produces:
+#   (a) a ``FloorSystem.reinforcements`` entry whose ``at`` is near the post with
+#       ``plies >= 3`` — or, geometrically, resolved members of category
+#       ``"sister_joist"`` within *half a joist spacing* of the post. Hence the nearest-
+#       line rule below (never more than half a spacing away by construction) and the
+#       plies laid face to face *toward* the load, so the cluster brackets it.
+#   (b) members of category ``"blocking"`` within 0.3 m of the post. The blocks are
+#       therefore placed at the load's own axis coordinate, not at a bearing line.
+#   (c) a ``Connector`` (HURRICANE_TIE / HOLD_DOWN) on the same joist line — authored on
+#       the house, not emitted here (catlin: CN-SG-TIE-BR2 at the back-span bearing).
+# Changing either category string, or moving the blocking off the load, silently turns a
+# mitigated deck back into an unmitigated one. Both categories are also take-off
+# vocabulary — ``takeoff/framing.py`` groups by ``(profile, category)`` — so the plies and
+# the blocks bill themselves with no further wiring.
+def _reinforcement_members(system: FloorSystem, spec, positions: list[float], along_x: bool,
+                           axis_lo: float, axis_hi: float,
+                           z0: float, z1: float) -> list[FramedMember]:
+    """Sister plies + blocking for each of ``system.reinforcements``.
+
+    The plies run the *whole* joist — bearing line to bearing line including both
+    cantilevers — because a sister that stops at the support carries nothing where the load
+    actually is (out on the overhang, for the catlin porch). The blocks run to the adjacent
+    joist line on each side, cut to the clear gap between member faces so the frame does not
+    read as a clash in ``structural.member_interference``.
+    """
+    out: list[FramedMember] = []
+    if not positions:
+        return out
+    for index, reinforcement in enumerate(system.reinforcements):
+        at_x, at_y = reinforcement.at.xy_m
+        perp_at, axis_at = (at_y, at_x) if along_x else (at_x, at_y)
+        line = min(range(len(positions)), key=lambda i: abs(positions[i] - perp_at))
+        perp = positions[line]
+        member = reinforcement.member or spec.member
+        ply_width = cross_section(member).width_m
+        plies = max(int(reinforcement.plies), 1)
+        # The extra plies go on the side the load is on, so the cluster straddles it rather
+        # than leaving the post overhanging its own reinforcement. A load exactly on the
+        # line is arbitrary; +1 keeps it deterministic.
+        sign = 1.0 if perp_at >= perp else -1.0
+        normal = (0.0, sign) if along_x else (sign, 0.0)
+        if along_x:
+            p0, p1 = (axis_lo, perp), (axis_hi, perp)
+        else:
+            p0, p1 = (perp, axis_lo), (perp, axis_hi)
+        for ply in range(plies - 1):
+            s0, s1 = _shift(p0, p1, normal, (ply + 1) * ply_width)
+            out.append(FramedMember(
+                system.uid, f"sister-{index}-{ply}", "sister_joist", member,
+                s0, s1, z0, z1, axis_hi - axis_lo,
+            ))
+        if not reinforcement.blocking:
+            continue
+        # Outer faces of the finished cluster (authored joist + the plies just added).
+        spread = sign * (plies - 1) * ply_width
+        cluster_lo = perp - ply_width / 2.0 + min(0.0, spread)
+        cluster_hi = perp + ply_width / 2.0 + max(0.0, spread)
+        # Blocks sit at the load, held a full member width inside the joist tips so they
+        # clear the rim board riding on those tips.
+        block_axis = min(max(axis_at, axis_lo + ply_width), axis_hi - ply_width)
+        for key, neighbour in (("lo", line - 1), ("hi", line + 1)):
+            if not 0 <= neighbour < len(positions):
+                continue  # the cluster is on the field edge — nothing to block against
+            if key == "lo":
+                a, b = positions[neighbour] + ply_width / 2.0, cluster_lo
+            else:
+                a, b = cluster_hi, positions[neighbour] - ply_width / 2.0
+            if b - a <= 1e-6:
+                continue
+            if along_x:
+                q0, q1 = (block_axis, a), (block_axis, b)
+            else:
+                q0, q1 = (a, block_axis), (b, block_axis)
+            out.append(FramedMember(
+                system.uid, f"sister-{index}-block-{key}", "blocking", member,
+                q0, q1, z0, z1, b - a,
+            ))
+    return out
 
 
 def _bearing_axis(model: ResolvedModel, tag: str):

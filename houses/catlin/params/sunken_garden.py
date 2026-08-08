@@ -49,6 +49,7 @@ from typehaus import (
     FootingBedding,
     FoundationWall,
     Gutter,
+    JoistReinforcement,
     JoistSpec,
     KneeBrace,
     Node,
@@ -455,6 +456,14 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
                             supported_by=_railing or "FS-SG-PORCH",
                             assembly="POST_WHITE_PAINT"))
 
+# PT-SG-BR2 — the rear-centre pillar — is the one that misses the masonry and bears on the
+# porch decking, and the north edge it stands on is the *cantilevered* tip of the porch
+# joists (they run the column's 17" south-offset past the back-beam line). A 6x6 carrying
+# its share of the balcony onto the free end of a single PT 2x8 is the load path the
+# reinforcement below answers; this is the post's own authored point, read back off the
+# loop so the two cannot drift apart.
+_BR2_AT = next(p for p in PILLARS if p.tag == "PT-SG-BR2").position
+
 SECOND_NODES = [
     Node(uid="SGNB01AAAA", tag="N-SGB-NW", position=pt(ft(_x_ax_w), ft(_y_in_n))),
     Node(uid="SGNB02AAAA", tag="N-SGB-SW", position=pt(ft(_x_ax_w), ft(_y_ax_arch))),
@@ -551,6 +560,16 @@ PORCH_JOISTS = FloorSystem(
                      cantilever=inch(SPEC.porch_joist_cantilever_in),
                      cantilever_end=inch(SPEC.column_south_offset_in),
                      bearing_refs=("W-SG-ARCH", "BM-SG-BKW", "BM-SG-BKE")),
+    # Three plies (the authored joist + two sisters) and solid blocking under PT-SG-BR2.
+    # The pillar lands on the cantilever, so the single 2x8 under it is both over-stressed
+    # in bending and free to roll; the cluster runs the joist's whole length back to the
+    # arch-wall sill, and the blocking ties it to the lines either side so the point load
+    # is shared rather than hung on one member. Paired with CN-SG-TIE-BR2 below, which
+    # holds the back-span bearing down against the uplift the overhang puts there
+    # (~0.45 kip). ``structural.cantilever_point_load`` reads all three.
+    reinforcements=(JoistReinforcement(
+        at=_BR2_AT, plies=3,
+        source="PT-SG-BR2 lands on the porch cantilever — 3-ply PT 2x8 + solid blocking"),),
     outline=_PORCH_OUTLINE,
     # The composite plank *is* this deck's sheet: with SL-SG-PORCH gone the boards are the
     # floor system's own surface layer, which is both what a person stands on (the balcony
@@ -628,6 +647,14 @@ CONNECTORS += [
     Connector(uid="SGCT01AAAA", tag="CN-SG-TIE-COL", kind=ConnectorKind.HURRICANE_TIE,
               position=pt(ft(_cx), ft(_y_col)), elevation=_porch_top, size="H2.5A",
               connects=("BM-SG-BKW", "BM-SG-BKE", "PT-SG-COL")),
+    # Uplift tie at the *back-span* bearing of the sistered joist line. Loading the
+    # cantilever tip (PT-SG-BR2) pries the far end of that joist off the arch-wall sill;
+    # nothing but its own weight holds it there. H2.5A is ~455 lb of uplift against a
+    # ~0.45 kip demand — the same part already used over the column, so no new hardware.
+    # It shares the reinforced line's x, at the south bearing rather than the north edge.
+    Connector(uid="J6XRAXQG5T", tag="CN-SG-TIE-BR2", kind=ConnectorKind.HURRICANE_TIE,
+              position=pt(_BR2_AT.x, ft(_y_ax_arch)), elevation=_porch_top, size="H2.5A",
+              connects=("FS-SG-PORCH", "W-SG-ARCH")),
 ]
 
 # ============================================================================
