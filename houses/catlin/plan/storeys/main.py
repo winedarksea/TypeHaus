@@ -9,6 +9,8 @@ from typehaus import (
     Alarm,
     AlarmKind,
     Beam,
+    Connector,
+    ConnectorKind,
     Door,
     DoorType,
     FloorHeat,
@@ -902,5 +904,54 @@ PANELING = [
                  material_ref="walnut-tg", height=ft(3)),
 ]
 
+
+# --- exterior door-jamb hold-downs -------------------------------------------
+# The two exterior doors on this storey each punch a 3'-0"/5'-0" hole in a wall that is
+# otherwise the continuous shear line between the basement concrete and the roof. The
+# jamb studs beside a hole that wide are where the wall's uplift and overturning collect,
+# and until now nothing carried that load past the sill plate: `strap_holdown_rows`
+# derives STHDs at the *ends* of each sill-plate run, not at openings in the middle of one.
+#
+# These four are the missing link — embedded strap-tie holdowns cast into the foundation
+# wall below and nailed up onto the first-floor exterior-wall framing, one at each jamb.
+# `size="STHD"` merges into the existing `[hardware]` price key rather than adding a part.
+#
+# Geometry. `from_node` measures to the opening *start*, so each RO is the door type's
+# width run along the wall from that point:
+#   D-M-ENTRY  on W-M-N3 (N-M-N2 x=10' running west): RO x 6'-6"..9'-6"
+#   D-M-BALC   on W-M-S2 (N-M-S1 x=18' running east): RO x 19'-4"..24'-4"
+# A jamb pack is a 1 1/2" jack plus a 1 1/2" king, so 3" outboard of the RO edge is the
+# outer face of the king stud — where the strap lies, clear of the pack it restrains.
+# `_JAMB_Y_*` puts them on the stud-layer centre line: CATLIN_EXT_2X6 aligns its sheathing
+# exterior face to the wall line, so the 5 1/2" stud layer starts 1/2" in and centres 3 1/4"
+# in — 35'-8 3/4" on the north wall (inward is -y), 3 1/4" on the south (+y). The dialect
+# allows no arithmetic here, so every offset above is written out as the number it lands on.
+# Elevation is mid-height of the sill plate, which sits on its 1/4" gasket at the storey
+# datum — the plane the strap crosses on its way from the concrete to the studs.
+#
+# D-G-SERVICE is deliberately not in this list. It stands in the garage's ICF stem wall,
+# not on a poured foundation wall, and an ICF-embedded holdown is a different part with a
+# different embedment; that door is deferred rather than strapped with the wrong hardware.
+_JAMB_Y_NORTH = ft(35, 8.75)
+_JAMB_Y_SOUTH = inch(3.25)
+_JAMB_Z = inch(1)
+CONNECTORS = [
+    Connector(uid="RYMM0XWNBM", tag="CN-M-HD-ENTRY-E", kind=ConnectorKind.HOLD_DOWN,
+              position=pt(ft(9, 9), _JAMB_Y_NORTH), elevation=_JAMB_Z,
+              size="STHD", connects=("W-M-N3", "W-B-N3")),
+    Connector(uid="V5HNZ3S6Q1", tag="CN-M-HD-ENTRY-W", kind=ConnectorKind.HOLD_DOWN,
+              position=pt(ft(6, 3), _JAMB_Y_NORTH), elevation=_JAMB_Z,
+              size="STHD", connects=("W-M-N3", "W-B-N3")),
+    # W-M-S2 carries no `stacks_on`, but the foundation wall under x 19'-1"..24'-7" at
+    # y = 0 is W-B-S3 (N-B-S2 at x=18' east to N-B-SE) — not W-B-S2, which stops at 18'.
+    Connector(uid="5D80PTSEWM", tag="CN-M-HD-BALC-W", kind=ConnectorKind.HOLD_DOWN,
+              position=pt(ft(19, 1), _JAMB_Y_SOUTH), elevation=_JAMB_Z,
+              size="STHD", connects=("W-M-S2", "W-B-S3")),
+    Connector(uid="PJMETCQPK0", tag="CN-M-HD-BALC-E", kind=ConnectorKind.HOLD_DOWN,
+              position=pt(ft(24, 7), _JAMB_Y_SOUTH), elevation=_JAMB_Z,
+              size="STHD", connects=("W-M-S2", "W-B-S3")),
+]
+
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *FLOOR_HEAT, *SLABS,
-            *FLOOR_OPENINGS, *STAIRS, *STAIR_HANDRAILS, *BEAMS, *PANELING]
+            *FLOOR_OPENINGS, *STAIRS, *STAIR_HANDRAILS, *BEAMS, *PANELING,
+            *CONNECTORS]

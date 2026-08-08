@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import pytest
 
+from typehaus.model.enums import ConnectorKind
+from typehaus.model.structure import Connector
 from typehaus.resolve.model import (
     FramedMember,
     ResolvedConstructionReturn,
@@ -222,6 +224,38 @@ def test_catlin_anchors_every_sill_plate_on_concrete(catlin_model) -> None:
     assert anchors["count"] >= len(sill_runs) * CONFIG.sill_plate_anchors.minimum_anchors_per_run
     # Runs that butt at a corner share one holdown location, so holdowns < 2 per run.
     assert 0 < holdowns["count"] < len(sill_runs) * 2
+
+
+def test_exterior_door_jambs_are_strapped_to_the_foundation(catlin_model) -> None:
+    """The jambs of a main-storey exterior door take their own STHDs.
+
+    ``strap_holdown_rows`` derives holdowns at the *ends* of each sill-plate run, which
+    leaves the jamb studs beside a door punched through the middle of a run with no path
+    to the concrete. The four authored connectors are that path, and they bill on their
+    own ``modeled connector`` row rather than being folded into the derived count — same
+    part number, different rule, and the split is what keeps "why 40?" answerable.
+    """
+    jamb_holdowns = [element
+                     for storey in catlin_model.plan.storeys
+                     for element in catlin_model.plan.storey_elements(storey.tag)
+                     if isinstance(element, Connector)
+                     and element.kind is ConnectorKind.HOLD_DOWN
+                     and element.size == "STHD"]
+    assert {element.tag for element in jamb_holdowns} == {
+        "CN-M-HD-ENTRY-E", "CN-M-HD-ENTRY-W", "CN-M-HD-BALC-W", "CN-M-HD-BALC-E"}
+    # Each one names the framed wall it straps and the foundation wall it is cast into.
+    for element in jamb_holdowns:
+        assert len(element.connects) == 2, element.tag
+        framed, foundation = element.connects
+        assert catlin_model.plan.by_tag(framed) is not None, framed
+        assert catlin_model.plan.by_tag(foundation) is not None, foundation
+
+    rows = [row for row in hardware_takeoff(catlin_model)
+            if row["role"] == "embedded_strap_holdown"]
+    modeled = next(row for row in rows if row["scope"] == "modeled connector")
+    derived = next(row for row in rows if row["scope"] == "sill plate on concrete")
+    assert modeled["count"] == len(jamb_holdowns)
+    assert modeled["part_number"] == derived["part_number"] == "STHD"
 
 
 # --- knee braces, ties, straps, catalog ----------------------------------------------
