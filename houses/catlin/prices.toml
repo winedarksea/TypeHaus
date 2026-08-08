@@ -9,10 +9,38 @@
 # Cost tracking (paid check-offs, exact products, actual $) lives in costs.toml, keyed by
 # the same (section, key) join used here.
 #
-# EVERY NUMBER IN THIS FILE IS A RESEARCHED ESTIMATE FOR BUDGETING, not a quote. Two
+# EVERY NUMBER IN THIS FILE IS A RESEARCHED ESTIMATE FOR BUDGETING, not a quote. Three
 # research passes so far: 2026-08-07 (framing, sheet goods, concrete, envelope layers,
-# openings) and 2026-08-08 (everything else). Each section header carries its own basis
-# and sources.
+# openings), 2026-08-08a (everything else) and 2026-08-08b (owner answers: stair species,
+# railings, drainage, the Gree line, the furnishings split). Each section header carries
+# its own basis and sources.
+#
+# --- MATERIALS OR INSTALLED? -------------------------------------------------------------
+# The default in this file is MATERIAL ONLY: delivered stock, no labour, no waste factor
+# beyond what the takeoff's own order quantity already carries.
+#
+# TWO SECTIONS CARRY LABOUR, and say so in their own headers, because ready-mix concrete
+# is not sold as a material a homeowner takes delivery of:
+#
+#   [concrete]        $/cy PLACED — ready-mix delivered plus placement labour. Labour is
+#                     45-55% of installed concrete, so these are roughly 2x material.
+#   [wall_structure]  $/cy PLACED, same reason, derived from $/SF-of-face installed prices.
+#
+# ([footing_bedding] reads "$/cy delivered" and is material: bulk stone delivered to site.
+# Spreading it is in the excavator's number, which is not in this file at all.)
+#
+# FIVE MORE ARE MATERIAL ESTIMATES BACKED OUT of published installed prices, because the
+# trade does not publish a material-only number: [openings] at ~55-65% of installed,
+# [ducts] at the material third, [edge_trim] and [railings] at the lower third, [floor_heat]
+# from $/SF of floor. They are material-basis, but they are derived, and they will not
+# reconcile line for line against a supplier list.
+#
+# Everything else is a real material price from a real listing.
+#
+# A real quote usually arrives with materials and labour merged, and there is no field in
+# this format to say which a row is — so a quoted row cannot be recorded here without
+# quietly changing the file's basis. That gap is plans/TODO.md's "prices.toml has no
+# materials-vs-labour field".
 
 [framing]
 # RESEARCHED 2026-08-07 — [low, high] $/LF of ordered stock, material only, no waste
@@ -38,17 +66,31 @@
 #   profiles, the `ridge_cap` and the `soffit` profile. Their edge_trim rows carry
 #   `also_in_framing: true`, which is the flag that says so.
 #
-#   `0.5x0.5 panel` is the one genuinely unresolved row — 498 LF ordered, of which only
-#   the 244 LF of `cladding` is mirrored into edge_trim as `edge_cladding`; the rest is
-#   furring and sheathing that nothing bills. Pricing it double-counts the cladding half,
-#   blanking it drops the other half. Left blank pending a decision. See the questions in
-#   the commit message.
+#   `0.5x0.5 panel` was left blank last pass as unresolvable; 2026-08-08b resolves it.
+#   The row is 498 LF ordered / 462.9 LF cut and mixes three types. 243.9 LF of that cut is
+#   `cladding` — the roof-edge closure band, which is roof standing-seam metal (resolve/
+#   roof_trim.py `_edge_cladding_members`, material `standing-seam`) and is already billed
+#   by the foot as [edge_trim] `edge_cladding`. The other 219.0 LF is `furring` and
+#   `sheathing`, which the owner confirms are 1/2" plywood ripped from the same 4x8 sheet
+#   as the sheathing. So the row is priced at the plywood-rip rate x the non-cladding
+#   share, which bills the plywood and does not re-bill the metal:
+#     1/2" x 1/2" rips from a 4x8 sheet: 48" / (0.5" + 1/8" kerf) = 76 strips x 8' = 614
+#     LF per sheet. At the [sheet_goods] `struct-1-plywood` rate of $28-52/sheet that is
+#     $0.046-0.085/LF of rip. The plywood share of the ORDER is 498 x (219.0/462.9) = 236
+#     LF, so the blended rate over all 498 LF is 236/498 x $0.046-0.085 = $0.022-0.040.
+#   It is a $11-20 line. It is priced anyway because "too small to matter" is how a BOM
+#   quietly stops reconciling.
+#
+#   `0.375x0.375 panel` (108 LF, `furring`) is the same plywood rip and was repriced with
+#   it — the 2026-08-07 number treated it as milled SPF batten at 10x the real cost. The
+#   1.5x1.5 `sheathing` blocking is NOT a rip (nothing 1.5" thick comes off a 1/2" sheet)
+#   and keeps its 2x2 solid-stock rate.
 # $/LF of ordered stock, by lumber profile
 "0.02x0.02 panel" = { low = 0.35, high = 1 }  # 76 LF — membrane/flashing strip
-"0.375x0.375 panel" = { low = 0.25, high = 0.7 }  # 108 LF — 3/8" furring batten
+"0.375x0.375 panel" = { low = 0.05, high = 0.1 }  # 108 LF — 3/8" furring, plywood rip
 # "0.416667x0.416667 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
 # "0.416667x4.11038 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
-# "0.5x0.5 panel" =    # 498 LF — part edge_cladding (in [edge_trim]), part furring; unresolved
+"0.5x0.5 panel" = { low = 0.022, high = 0.04 }  # 498 LF — plywood-rip share only; see above
 "0.5x5 panel" = { low = 1.5, high = 5 }  # 56 LF — formed gutter stock
 # "1.25x0.416667 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
 "1.25x11.875 rim" = { low = 3, high = 4.75 }  # 144 LF
@@ -83,14 +125,30 @@
 "4x0.5 panel" = { low = 1.5, high = 5 }  # 28 LF — formed gutter stock
 "4x4" = { low = 2.2, high = 3.6 }  # 32 LF
 "6x6" = { low = 5, high = 8.5 }  # 8 LF
-# The stair members, 2026-08-08. Species is NOT settled in the plan, so each range spans
-# construction-grade to hardwood: an 11" x 1.5" tread is $4-9/LF in SPF/LVL and $12-30/LF
-# in oak. The landing decks are priced as 3.5-3.7 SF of 1.5" stock per LF.
-"deck 11x1.5" = { low = 6, high = 22 }  # 288 LF — stair treads
-"deck 42x1.5" = { low = 12, high = 30 }  # 16 LF — landing deck
-"deck 44.625x1.5" = { low = 13, high = 32 }  # 16 LF — landing deck
+# The stair members, repriced 2026-08-08b now that species is settled: RED OAK everywhere
+# except the basement flight (ST-B2M), which is heavy-duty carpet over a plain substrate.
+# `stair_finish` splits the three flights — ST-B2M 11 treads, ST-M2S 13, ST-S2A 15 — but
+# `framing_by_size` aggregates all 39 into one `deck 11x1.5` row, so this rate is a
+# deliberate blend and moves if the split does:
+#   28 red-oak treads at $60-120 each. A 48" x 11-1/2" x 1" unfinished red oak tread is
+#   $50-56 (floormechanics, homedepot EVERMARK, woodstairco); this profile is 1-1/2"
+#   thick and up to 44" wide, so it needs the thicker blank at the top of that.
+#   11 carpeted treads at $30-70 each all-in: a plain 1-1/2" tread substrate ($15-25) plus
+#   heavy-duty stair carpet and pad over tread and riser (~5 SF each at $3-8/SF).
+#   -> $2,030-4,110 over the 288 LF ordered = $7.05-14.27/LF.
+# The order quantity is generous (36 pieces of 8' stock for 39 treads ~3.3' wide, one
+# tread per piece) which is why the $/LF looks low against a $/LF of finished tread.
+"deck 11x1.5" = { low = 7, high = 14.5 }  # 288 LF — stair treads (blend: 28 oak, 11 carpet)
+# The two landing decks, one per flight that has one. `stair_finish` gives ST-B2M a widest
+# tread of 3.31' and ST-M2S 3.53', each ~2" narrower than one of these decks, which is how
+# the 42" deck is read as the carpeted basement flight and the 44.625" as the oak one.
+# Both are a 1-1/2" platform (3.5-3.7 SF of sheet stock per LF, $7-14/LF); the oak one
+# carries 3.7 SF/LF of finish flooring on top at the [floor_finishes] oak rate.
+"deck 42x1.5" = { low = 8, high = 16 }  # 16 LF — ST-B2M landing, carpeted
+"deck 44.625x1.5" = { low = 22, high = 48 }  # 16 LF — ST-M2S landing, oak
 "hanger" = { low = 1.5, high = 4 }  # 32 LF — stair hanger board, 2x stock
-"tapered tread" = { low = 8, high = 26 }  # 24 LF — winder treads
+# Winders are on ST-S2A (oak). A tapered blank is wider stock and more waste per tread.
+"tapered tread" = { low = 12.5, high = 25 }  # 24 LF — winder treads, red oak
 
 [sheet_goods]
 # RESEARCHED 2026-08-07 — [low, high] $/4x8 sheet, material only. Basis: 1/2" drywall
@@ -178,10 +236,16 @@
 #               0.19 cy. The line total, ~$130-400, is the number that matters.
 #
 # Everything else in structural_solids is thin-gauge metal or a marker solid that bills
-# primarily elsewhere — price the pours here, not the aluminium. Note that five families
-# (railing, gutter, downspout, bug_screen, flashing) have NO ESTIMATE_PLANS entry of their
-# own at all, so leaving them blank here leaves them unpriced everywhere. See the
-# questions in the commit message.
+# primarily elsewhere — price the pours here, not the aluminium.
+#
+# 2026-08-08b — four of the five families that had no billing path anywhere now have one,
+# so they stay blank here for the ordinary mirror reason rather than for lack of a table:
+#   railing            [railings], $/LF of guard line (the takeoff gained `length_ft`).
+#   gutter, downspout  [drainage], $/LF of run.
+#   flashing           already [edge_trim] `drip_flashing` + `wrb_counterflashing`.
+# `bug_screen` (0.04 cy, 240 LF of corrugated vent strip in the `bug_screens` table) is
+# the one left with no plan of its own. A vent strip is a few dollars a foot, so this is a
+# ~$250-700 hole — small, but it is a hole, not a zero.
 # $/cy placed, by solid category
 "beam" = { low = 260, high = 420 }  # 0.86 cy
 "column" = { low = 260, high = 420 }  # 1.25 cy
@@ -234,20 +298,29 @@
 #            currentconnected), EG4 PowerPro 14.3 kWh $2,400/module, HPWH unit $1,500-3,000
 #            (todayshomeowner 2026), whole-house ERV $800-2,000 for a 100-300 CFM unit
 #            (pickcomfort.com), 9 kW electric sauna heater $700-2,200 (tahoesaunacompany).
-#            The Gree line is dealer-direct with no published component pricing, so those
-#            five rows are scaled off the one published figure — the Vireo+ 2-head system at
-#            $2,499+ — and are the softest numbers in this section.
+#            The Gree line was repriced 2026-08-08b off the actual model numbers the plan
+#            names in its EquipmentType `source` fields, so these are no longer scaled
+#            guesses: SAP09HP230V1R32AO $1,955 and SAP09HP230V1R32AH $977 (hvacdirect, the
+#            pair sold as the SAP09HP230R32AK kit the owner linked), VIR24HP230V1R32AO
+#            $2,290, DUCT24HP230V1BD $928 (buycomfortdirect), MUL30HP230V1R32AO $2,956 on
+#            sale against a $3,639.99 list (efireplacestore/hvacdirect). The two Multi21+
+#            wall heads are the only Gree rows still interpolated — no retailer publishes
+#            the bare multi-zone head — and are set between a Livo 7k head at $450 and the
+#            Sapphire 9k head at $977.
 #   FURN-*   FF&E, not construction. See the note below.
 #   FX-*     homeguide.com 2026 bathroom cost guide (toilet unit $150-800, sink $40-300, tub
 #            $600-7,200), homedepot.com 33" kitchen sink $285, lawnstarter.com yard hydrant
 #            $50-400.
 #   REG-*    engineeringair.com / hvacwholesaledirect.com grille listings, $19-78 by size.
 #
-# FURNITURE IS PRICED BUT IS NOT A CONSTRUCTION COST. Every FURN-* row is furniture the
-# owner buys, and its subtotal will swing the estimate by tens of thousands with no bearing
-# on what it costs to build the house. It is priced here so the estimate has no silent holes,
-# NOT because it belongs in a build budget — see the questions in the commit message about
-# splitting it out.
+# FURNITURE SPLIT, 2026-08-08b. The loose furniture moved to [furnishings], which is priced
+# and reported BESIDE the construction total rather than inside it. The line the owner drew
+# is fixed-and-price-stable vs loose-and-volatile, not the FURN- tag: what stays here is the
+# eight FURN-* rows that are effectively built in — the nine BESTA wall units, both sauna
+# benches, the mudroom bench, the garage workbench, the wall rack and the three wardrobes —
+# because those are bought once with the house and do not swing. A sofa does.
+# FURN-WARDROBE-48 is the borderline one: kept here on the reading that it is a PAX-style
+# fitted wardrobe rather than a freestanding piece.
 #
 # The five house-local FT-* types are from the 2026-08-07 batch. Rods are the rod, brackets
 # and finials — not the fabric, which is an owner selection with no useful range.
@@ -331,13 +404,13 @@
 # The seven Gree rows: dealer-direct, no published component prices. Scaled off the one
 # figure that is public (Vireo+ 2-head system, $2,499+) with outdoor units carrying ~70% of
 # a system and heads the rest. Softest numbers in this file — get a dealer quote.
-"EQ-T-GREE-HEAD-12" = { low = 400, high = 800 }  # 2 ea
-"EQ-T-GREE-HEAD-9" = { low = 350, high = 700 }  # 1 ea
-"EQ-T-GREE-MULTI-U30" = { low = 1800, high = 3200 }  # 1 ea
-"EQ-T-GREE-SAPPHIRE-9" = { low = 400, high = 850 }  # 1 ea
-"EQ-T-GREE-SAPPHIRE-9-OD" = { low = 900, high = 1800 }  # 1 ea
-"EQ-T-GREE-SLIM24" = { low = 700, high = 1500 }  # 1 ea
-"EQ-T-GREE-VIREO-GEN3" = { low = 1500, high = 2800 }  # 1 ea
+"EQ-T-GREE-HEAD-12" = { low = 500, high = 800 }  # 2 ea — Multi21+ 12k wall head, interpolated
+"EQ-T-GREE-HEAD-9" = { low = 420, high = 680 }  # 1 ea — Multi21+ 9k wall head, interpolated
+"EQ-T-GREE-MULTI-U30" = { low = 2900, high = 3700 }  # 1 ea — MUL30HP230V1R32AO $2,956 sale / $3,640 list
+"EQ-T-GREE-SAPPHIRE-9" = { low = 850, high = 1150 }  # 1 ea — SAP09HP230V1R32AH $977
+"EQ-T-GREE-SAPPHIRE-9-OD" = { low = 1750, high = 2300 }  # 1 ea — SAP09HP230V1R32AO $1,955
+"EQ-T-GREE-SLIM24" = { low = 850, high = 1250 }  # 1 ea — DUCT24HP230V1BD $928
+"EQ-T-GREE-VIREO-GEN3" = { low = 2050, high = 2700 }  # 1 ea — VIR24HP230V1R32AO $2,290
 "EQ-T-SAUNA-HEATER" = { low = 700, high = 2200 }  # 1 ea
 "EQ-T-WATER-HEATER" = { low = 1500, high = 3000 }  # 1 ea
 "EQ-T-WATER-HEATER-240" = { low = 450, high = 1200 }  # 1 ea
@@ -346,27 +419,15 @@
 "FT-CURTAIN-ROD-48" = { low = 25, high = 90 }  # 8 ea
 "FT-CURTAIN-ROD-84" = { low = 40, high = 140 }  # 1 ea
 "FT-CURTAIN-ROD-OUTDOOR-114" = { low = 90, high = 260 }  # 2 ea
-# FF&E from here to FURN-WARDROBE-48 — owner furniture, not a build cost.
-"FURN-ARMCHAIR-35" = { low = 200, high = 1200 }  # 1 ea
-"FURN-BAR-STOOL" = { low = 60, high = 350 }  # 3 ea
-"FURN-BED-KING" = { low = 400, high = 2500 }  # 1 ea
+# The eight fitted FURN-* rows that stay in the build number. The loose ones are in
+# [furnishings] at the bottom of the file.
 "FURN-BESTA-2358" = { low = 90, high = 260 }  # 9 ea
-"FURN-DESK-48" = { low = 120, high = 600 }  # 4 ea
-"FURN-DESK-CHAIR" = { low = 100, high = 600 }  # 4 ea
-"FURN-DINING-2-36" = { low = 120, high = 600 }  # 2 ea
-"FURN-DINING-8" = { low = 500, high = 3000 }  # 1 ea
-"FURN-DINING-CHAIR" = { low = 60, high = 350 }  # 10 ea
 "FURN-G-WORKBENCH" = { low = 200, high = 900 }  # 1 ea
 # The two mudroom and two sauna rows are millwork, not catalogue furniture — they are
 # built, and the range is what the built article costs in materials and shop time.
 "FURN-M-MUD-BENCH" = { low = 150, high = 700 }  # 1 ea
-"FURN-MEDIA-60" = { low = 150, high = 800 }  # 1 ea
-"FURN-PLANT-18" = { low = 30, high = 150 }  # 2 ea
-"FURN-QUEEN-BED" = { low = 250, high = 1500 }  # 4 ea
-"FURN-ROCKING-CHAIR-30" = { low = 150, high = 700 }  # 2 ea
 "FURN-SAUNA-BENCH-2T-102" = { low = 400, high = 1500 }  # 1 ea
 "FURN-SAUNA-BENCH-54" = { low = 200, high = 800 }  # 1 ea
-"FURN-SOFA-84" = { low = 500, high = 3000 }  # 1 ea
 "FURN-WALL-RACK-24" = { low = 30, high = 150 }  # 1 ea
 "FURN-WARDROBE-48" = { low = 250, high = 1200 }  # 3 ea
 "FX-FLOOR-DRAIN" = { low = 30, high = 150 }  # 1 ea
@@ -665,3 +726,79 @@
 "ridge_cap" = { low = 4, high = 10 }  # 63.5 LF
 "soffit" = { low = 3.5, high = 9 }  # 101.1 LF
 "wrb_counterflashing" = { low = 1.5, high = 4 }  # 21 LF
+
+[railings]
+# RESEARCHED 2026-08-08b — [low, high] $/LF of guard line, MATERIALS including posts, caps
+# and mounting brackets. Published railing prices are installed prices; these are backed
+# out to the material component, so they will not match a contractor's per-foot number.
+#
+# The quantity is the takeoff's `length_ft`, added to the railing takeoff in this pass —
+# a count could not price these (one balcony guard and one stair guard are both "1"). It
+# is a PLAN-projected length, so the two stair guards' real rail is ~19% longer than the
+# feet billed here; that understatement is deliberate (see takeoff/railings.py) and is
+# worth remembering when reading their line totals.
+#
+#   RAILING-EXT-ALUMINUM-FASCIA  38.3 LF, the sunken-garden balcony guard, fascia-mounted.
+#                                Trex Signature per the owner: a 6' x 36" aluminium rail
+#                                kit is $129-259 at Lowe's ($21.50-43/LF) and the posts are
+#                                separate at roughly $70-110 each, ~$12-18/LF at 6' o.c.
+#                                Installed comparables are $60-100/LF, which brackets this.
+#   RAILING-INT-STAIR-GUARD      23.0 LF over three flights, assembly RAILING_DARK_METAL.
+#                                Interior dark-metal guard, materials.
+#   None                         30.0 LF of untyped handrails (RL-*-HANDRAIL). They carry
+#                                no product reference in the plan, so this is a placeholder
+#                                rate for a metal handrail with posts and brackets, NOT a
+#                                researched product price. It resolves the moment a
+#                                type_ref is set on them.
+# Sources: lowes.com Trex Signature 6' rail kits, decksdirect.com Signature component
+# pricing, homeadvisor.com 2026 deck railing replacement, trex.com Signature product page.
+# $/LF of guard line, by railing product type
+"None" = { low = 25, high = 60 }  # 30 LF — untyped handrails, placeholder
+"RAILING-EXT-ALUMINUM-FASCIA" = { low = 38, high = 70 }  # 38.3 LF — Trex Signature
+"RAILING-INT-STAIR-GUARD" = { low = 40, high = 90 }  # 23 LF
+
+[drainage]
+# RESEARCHED 2026-08-08b — [low, high] $/LF of run, material only, hangers/straps/elbows
+# and end caps folded into the rate. Owner's call for now: RAW ALUMINIUM, to be refined.
+# Basis: aluminium gutter material $1-6/LF and downspout material $5-10/LF; the ranges here
+# sit above those because half the run is not K-style stock but formed dark box gutter and
+# 4" leaders (`metal-dark-exterior`), which is fabricated, not off the shelf.
+#   gutter    121.5 LF — 47.8 LF plain aluminium (4" and 5") + 73.7 LF dark box gutter.
+#   downspout  76.4 LF — 26.4 LF 3" aluminium + 50.0 LF 4" dark.
+# `drywell` is deliberately absent: those rows carry length_ft 0 and bill their 4.83 cy of
+# washed stone in [concrete] instead, so a rate here would price nothing and mislead.
+# Sources: homeguide.com 2026 aluminum gutter installation cost, angi.com gutter
+# replacement 2026, modernize.com gutter cost calculator.
+# $/LF of run, by drainage category
+"downspout" = { low = 5, high = 12 }  # 76.4 LF
+"gutter" = { low = 4, high = 12 }  # 121.5 LF
+
+[furnishings]
+# RESEARCHED 2026-08-08a, split out of [placeables] 2026-08-08b — [low, high] $ each, same
+# catalog type tags and the same BOM rows. THIS SECTION IS NOT IN THE CONSTRUCTION TOTAL:
+# `estimate_costs` reports it as its own subtotal and adds it only into `grand_total`.
+#
+# What lives here is loose furniture — the pieces whose price is an owner decision that can
+# change by 5x after the house is built without a single drawing changing. Fitted pieces
+# (the BESTA runs, sauna and mudroom benches, wardrobes, workbench, wall rack) stayed in
+# [placeables] and DO count toward the build, because they are bought once with the house.
+# A type must appear in exactly one of the two tables; `load_prices` rejects the overlap.
+#
+# The ranges are deliberately enormous and are not worth narrowing until pieces are chosen:
+# a sofa is $500 or $3,000 depending on nothing the plan knows.
+# Basis: 2026 mainstream retail (IKEA / Wayfair / Article class) low end to mid-specified
+# high end, unit only, no delivery or assembly.
+# $ each, by catalog type tag
+"FURN-ARMCHAIR-35" = { low = 200, high = 1200 }  # 1 ea
+"FURN-BAR-STOOL" = { low = 60, high = 350 }  # 3 ea
+"FURN-BED-KING" = { low = 400, high = 2500 }  # 1 ea
+"FURN-DESK-48" = { low = 120, high = 600 }  # 4 ea
+"FURN-DESK-CHAIR" = { low = 100, high = 600 }  # 4 ea
+"FURN-DINING-2-36" = { low = 120, high = 600 }  # 2 ea
+"FURN-DINING-8" = { low = 500, high = 3000 }  # 1 ea
+"FURN-DINING-CHAIR" = { low = 60, high = 350 }  # 10 ea
+"FURN-MEDIA-60" = { low = 150, high = 800 }  # 1 ea
+"FURN-PLANT-18" = { low = 30, high = 150 }  # 2 ea
+"FURN-QUEEN-BED" = { low = 250, high = 1500 }  # 4 ea
+"FURN-ROCKING-CHAIR-30" = { low = 150, high = 700 }  # 2 ea
+"FURN-SOFA-84" = { low = 500, high = 3000 }  # 1 ea

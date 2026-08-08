@@ -29,7 +29,8 @@ try:  # tomllib is stdlib on 3.11+; the engine still supports 3.9
 except ModuleNotFoundError:  # pragma: no cover - exercised on <3.11 only
     import tomli as tomllib  # type: ignore[no-redef]
 
-from typehaus.cli.prices import ESTIMATE_PLANS, PriceRange, Prices, ZERO, estimate_costs
+from typehaus.cli.prices import (ESTIMATE_PLANS, EXCLUDED_FROM_TOTAL, PriceRange, Prices,
+                                 ZERO, estimate_costs)
 
 COSTS_FILENAME = "costs.toml"
 
@@ -300,7 +301,11 @@ def costs_payload(bom: dict, prices: Optional[Prices], state: CostsState) -> dic
     """
     estimate = estimate_costs(bom, prices) if prices is not None else None
     join = {name: {"bom_key": bom_key, "key_field": key_field,
-                   "quantity_field": quantity_field, "unit": unit}
+                   "quantity_field": quantity_field, "unit": unit,
+                   # False for a section reported beside the construction total
+                   # (furnishings). Two sections may share a bom_key, so a client that
+                   # maps bom_key -> section has to keep both, not the last one written.
+                   "in_total": name not in EXCLUDED_FROM_TOTAL}
             for name, bom_key, key_field, quantity_field, unit in ESTIMATE_PLANS}
     stale: list[dict] = []
     for section in sorted(state.entries):
@@ -338,6 +343,10 @@ def costs_payload(bom: dict, prices: Optional[Prices], state: CostsState) -> dic
         totals["estimate"] = estimate["total"]
         totals["combined"] = combined.as_dict()
         totals["combined_fmt"] = combined.fmt()
+        # Beside, not inside: `combined` stays the build number. A reader who wants the
+        # one-number version adds this to it.
+        totals["excluded"] = estimate["excluded_total"]
+        totals["excluded_fmt"] = estimate["excluded_total_fmt"]
     return {
         "prices_loaded": prices is not None,
         "estimate": estimate,

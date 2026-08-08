@@ -193,4 +193,10 @@ def test_payload_join_mirrors_estimate_plans(bom):
     assert set(payload["join"]) == {name for name, *_ in ESTIMATE_PLANS}
     framing = payload["join"]["framing"]
     assert framing == {"bom_key": "framing_by_size", "key_field": "profile",
-                       "quantity_field": "order_length_ft", "unit": "LF"}
+                       "quantity_field": "order_length_ft", "unit": "LF",
+                       "in_total": True}
+    # Furnishings read the same BOM table as placeables and are reported beside the
+    # construction total, so a client mapping bom_key -> section has to keep both.
+    assert payload["join"]["furnishings"]["bom_key"] == "placeables"
+    assert payload["join"]["furnishings"]["in_total"] is False
+    assert payload["join"]["placeables"]["in_total"] is True

@@ -252,11 +252,17 @@ def takeoff(
         console.print(f"[bold]Cost estimate[/bold]  (from {prices.path.name}; "
                       "user-supplied prices, no defaults shipped)")
         for name, section in estimate["sections"].items():
-            console.print(f"  {name}: {section['subtotal_fmt']}")
+            aside = "" if section.get("in_total", True) else "  [dim](beside the total)[/dim]"
+            console.print(f"  {name}: {section['subtotal_fmt']}{aside}")
             for row in section["rows"]:
                 console.print(f"    {row['quantity']:>9,.1f} {row['unit']:<6} "
                               f"{row['key']}: {row['cost_fmt']}")
-        console.print(f"  [bold]total: {estimate['total_fmt']}[/bold]")
+        console.print(f"  [bold]construction total: {estimate['total_fmt']}[/bold]")
+        if estimate.get("excluded_sections"):
+            console.print(f"  {'+'.join(estimate['excluded_sections'])}: "
+                          f"{estimate['excluded_total_fmt']}")
+            console.print(f"  [bold]with furnishings: "
+                          f"{estimate['grand_total_fmt']}[/bold]")
         if estimate["unpriced"]:
             missing = ", ".join(f"{row['section']}:{row['key']}"
                                 for row in estimate["unpriced"])

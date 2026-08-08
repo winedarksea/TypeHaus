@@ -56,32 +56,46 @@ export const COST_COLUMNS = ["unit_price", "est_cost", "actual_cost", "product",
  * for it.
  */
 export function decorateWithCosts(groups: BomGroup[], costs: EngineCosts): CostedGroup[] {
-  // bom_key → costs section. Mostly identical names; structural_solids → "concrete".
-  const sectionByBomKey = new Map<string, string>();
+  // bom_key → costs sections. Mostly one apiece and identically named (structural_solids
+  // → "concrete"), but a BOM table can feed two: `placeables` feeds both "placeables" and
+  // "furnishings". Keeping only the last one written would blank the cost columns for
+  // every row priced in the other, so the whole list is kept and rows resolve per key.
+  const sectionsByBomKey = new Map<string, string[]>();
   for (const [section, join] of Object.entries(costs.join)) {
-    sectionByBomKey.set(join.bom_key, section);
+    const seen = sectionsByBomKey.get(join.bom_key);
+    if (seen) seen.push(section);
+    else sectionsByBomKey.set(join.bom_key, [section]);
   }
   return groups.map((group) => ({
     ...group,
     sections: group.sections.map((section): CostedSection => {
-      const costSection = sectionByBomKey.get(section.key);
-      if (!costSection || section.table.kind !== "rows") return section;
+      const costSections = sectionsByBomKey.get(section.key);
+      if (!costSections || section.table.kind !== "rows") return section;
+      // Sections sharing a bom_key share its key field; the first is the section a row
+      // falls back to when nothing priced or checked it off.
+      const costSection = costSections[0];
       const keyField = costs.join[costSection].key_field;
       const keyIndex = section.table.columns.indexOf(keyField);
       if (keyIndex < 0) return section;
-      const estimateRows = new Map<string, EngineEstimateRow>();
-      for (const row of costs.estimate?.sections[costSection]?.rows ?? []) {
-        estimateRows.set(row.key, row);
+      const estimateRows = new Map<string, { section: string; row: EngineEstimateRow }>();
+      for (const from of costSections) {
+        for (const row of costs.estimate?.sections[from]?.rows ?? []) {
+          estimateRows.set(row.key, { section: from, row });
+        }
       }
-      const entries = costs.entries[costSection] ?? {};
       const rowCosts: RowCost[] = section.table.rows.map((row) => {
         const raw = row[keyIndex];
         const key = raw === null || raw === undefined ? null : String(raw);
+        const priced = key !== null ? estimateRows.get(key) ?? null : null;
+        // A check-off can exist without a price, so the entry is looked up across every
+        // section reading this table rather than only the one that priced the row.
+        const from = key === null ? null
+          : priced?.section ?? costSections.find((s) => costs.entries[s]?.[key]) ?? costSection;
         return {
-          section: costSection,
+          section: from ?? costSection,
           key,
-          entry: key !== null ? entries[key] ?? null : null,
-          estimate: key !== null ? estimateRows.get(key) ?? null : null,
+          entry: key !== null && from !== null ? costs.entries[from]?.[key] ?? null : null,
+          estimate: priced?.row ?? null,
         };
       });
       const table: CostedTable = {
@@ -146,10 +160,13 @@ export function costsSubtitle(costs: EngineCosts): string {
   const parts: string[] = [];
   const totals = costs.totals as {
     combined?: EnginePriceRange; estimate?: EnginePriceRange; extra?: EnginePriceRange;
-    actual_paid?: number; paid_entries?: number;
+    excluded?: EnginePriceRange; actual_paid?: number; paid_entries?: number;
   };
   if (totals.combined) parts.push(`est. ${formatRange(totals.combined)}`);
   else if (totals.estimate) parts.push(`est. ${formatRange(totals.estimate)}`);
+  // Beside the build number, never folded into it. A zero here means no furnishing is
+  // priced yet, which is not worth a subtitle slot.
+  if (totals.excluded?.high) parts.push(`+ furnishings ${formatRange(totals.excluded)}`);
   if (totals.actual_paid) {
     parts.push(`paid ${formatRange({ low: totals.actual_paid, high: totals.actual_paid })}`);
   }

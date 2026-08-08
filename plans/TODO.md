@@ -3,6 +3,18 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
+### prices.toml has no materials-vs-labour field
+Every row in `houses/catlin/prices.toml` is material-basis except [concrete] and
+[wall_structure], which are $/cy placed — and the file says so only in prose at the top.
+When real quotes come in they are usually materials+labour merged, and there is nowhere to
+record which a row is, so pasting one in silently changes the basis of that section.
+
+Options: (a) leave it as prose and keep quotes out of this file, (b) add an optional
+`labour = "included" | "excluded"` per row, (c) split every row into `material` and
+`labour` ranges. (c) is the honest one and the most work — most published prices cannot be
+split, so most rows would carry a made-up division.
+
+
 - ~~**PT-SG-BR2 bearing — reinforce locally, don't move it**~~ — **approved and authored
   2026-08-07.** `FloorSystem.reinforcements` is the way to author it: a
   `JoistReinforcement(at, plies, member, blocking, source)` on FS-SG-PORCH, whose `at` is
@@ -367,3 +379,6 @@ Architectural lighting on facade (try to aim to be dark sky friendly)
 ### Potential cost cutting (just ideas, not a TODO)
 Remove the attic level and switch to truss/blown in insulation
 Remove the arched concrete and switch to a metal railing on wood beam and columns
+
+Once an idea here has a number against it, it moves to `plans/cost-options.md` — the
+priced upgrade/downgrade menu (started 2026-08-08). Both of the two above are in it now.

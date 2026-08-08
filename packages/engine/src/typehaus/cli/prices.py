@@ -30,9 +30,18 @@ two yards)::
     [placeables]     # $ each, keyed by catalog type tag
     wolf-range-36 = { low = 9500, high = 12500 }
 
+    [furnishings]    # $ each, keyed by catalog type tag — the same rows [placeables]
+    ikea-sofa-84 = { low = 700, high = 2400 }   # reads, but reported beside the total
+
 Unpriced rows are never silently dropped from a total: every estimate carries the list of
 quantity rows it could not price, so a partial catalog reads as a partial estimate rather
 than a low bid.
+
+Nor are they silently *added*: what a sofa costs is not what the house costs. Sections in
+``EXCLUDED_FROM_TOTAL`` are priced and reported like any other and then summed into
+``excluded_total`` rather than ``total``, which is why there is a [furnishings] table with
+the same keys as [placeables] — where the line falls between built-in and loose is the
+owner's call, made by which table a type is written into, and no type may sit in both.
 """
 
 from __future__ import annotations
@@ -57,7 +66,13 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              "plumbing_specialties", "install_parts", "pipe_insulation",
              "edge_trim",
              # Monolithic wall structure (2026-08-03): concrete/masonry walls by the yard.
-             "wall_structure")
+             "wall_structure",
+             # Sheet-metal families the yard is the wrong unit for (2026-08-08): guards and
+             # gutter/leader runs by the foot.
+             "railings", "drainage",
+             # Loose furnishings (2026-08-08) — priced, reported, and deliberately *not*
+             # summed into the construction total. See ``EXCLUDED_FROM_TOTAL``.
+             "furnishings")
 
 
 def _dollars(value: float) -> str:
@@ -134,6 +149,22 @@ class Prices:
     # carry net_area_sqft, so a face-priced second plan entry can be added later — but
     # price each assembly in one table only.
     wall_structure: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Guards by the lineal foot of guard line (2026-08-08), keyed on the railing product
+    # type. A count cannot price a railing: a 6-ft balcony guard and a 20-ft stair guard
+    # are both "1".
+    railings: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Gutters and leaders by the foot (2026-08-08), keyed on the drainage row category.
+    # Mind the mirror: these runs also surface in ``structural_solids`` as a fraction of a
+    # cubic yard of sheet metal — price them here, and leave `gutter`/`downspout` blank in
+    # [concrete]. The drywell rows carry length 0 and bill their aggregate there instead.
+    drainage: Mapping[str, PriceRange] = field(default_factory=dict)
+    # Loose furnishings (2026-08-08), keyed on the same catalog type tag as [placeables]
+    # and read against the same BOM rows. A sofa is not a construction cost, and rolling
+    # one into the build number makes the build number wrong in both directions — it is
+    # too high to bid against and too volatile to track. Split rather than dropped: the
+    # estimate still prices and reports it, beside the total instead of inside it.
+    # ``load_prices`` rejects a type priced in both tables.
+    furnishings: Mapping[str, PriceRange] = field(default_factory=dict)
 
 
 def _price(section: str, key: str, raw: object, path: Path) -> PriceRange:
@@ -173,6 +204,13 @@ def load_prices(house_dir: Path) -> Optional[Prices]:
                   for key, raw in (data.get(section) or {}).items()}
         for section in _SECTIONS
     }
+    # [placeables] and [furnishings] price the same BOM rows, so a type in both would be
+    # billed twice — once in the construction total and once beside it.
+    both = sorted(set(sections["placeables"]) & set(sections["furnishings"]))
+    if both:
+        raise ValueError(f"{path}: {both} priced in both [placeables] and [furnishings]; "
+                         "each catalog type belongs to exactly one (furnishings are "
+                         "reported beside the construction total, not inside it)")
     return Prices(path=path, **sections)
 
 
@@ -214,7 +252,16 @@ ESTIMATE_PLANS = (
     ("edge_trim", "edge_trim", "category", "length_ft", "LF"),
     # Placed by the yard, keyed on the assembly — see the field comment on ``Prices``.
     ("wall_structure", "wall_structure", "assembly", "volume_cubic_yards", "cy"),
+    ("railings", "railings", "type", "length_ft", "LF"),
+    ("drainage", "drainage", "category", "length_ft", "LF"),
+    # Reads the *same* BOM rows as ``placeables`` — see ``EXCLUDED_FROM_TOTAL``.
+    ("furnishings", "placeables", "type", "count", "ea"),
 )
+
+#: Sections priced and reported but held out of the construction total. They stay in
+#: ``sections`` (with ``in_total: False``) and roll up into ``excluded_total`` /
+#: ``grand_total``, so nothing is hidden — only re-filed.
+EXCLUDED_FROM_TOTAL = frozenset({"furnishings"})
 
 #: The price table an estimate section reads: every section except concrete (which prices
 #: the ``structural_solids`` rows) shares its table's name.
@@ -227,10 +274,20 @@ def estimate_costs(bom: dict, prices: Prices) -> dict:
     Returns ``{"sections": {name: {"rows": [...], "subtotal": {...}}}, "total": {...},
     "unpriced": [...]}}``. Sections the BOM has no rows for are omitted; rows without a
     price land in ``unpriced`` so the total is honest about what it excludes.
+
+    ``total`` is the *construction* total: sections in :data:`EXCLUDED_FROM_TOTAL` are
+    priced and reported like any other, then summed into ``excluded_total`` instead.
+    ``grand_total`` is the two together, for the reader who wants one number.
     """
     sections: dict[str, dict] = {}
-    unpriced: list[dict] = []
     total = ZERO
+    excluded_total = ZERO
+    # A BOM table may feed more than one price section (``placeables`` feeds both
+    # [placeables] and [furnishings]), so a miss is only really unpriced when *no* section
+    # reading that table priced the key. Collect misses first, then drop the ones another
+    # plan caught — otherwise every furnished row would read as unpriced in the other.
+    priced: dict[str, set] = {}
+    misses: list[tuple] = []
     for name, bom_key, key_field, quantity_field, unit in ESTIMATE_PLANS:
         table = getattr(prices, _PLAN_TABLE[name])
         rows = []
@@ -240,17 +297,30 @@ def estimate_costs(bom: dict, prices: Prices) -> dict:
             price = table.get(key)
             if price is None:
                 if quantity:
-                    unpriced.append({"section": name, "key": key,
-                                     "quantity": round(quantity, 2), "unit": unit})
+                    misses.append((bom_key, {"section": name, "key": key,
+                                             "quantity": round(quantity, 2), "unit": unit}))
                 continue
+            priced.setdefault(bom_key, set()).add(key)
             cost = price.times(quantity)
             rows.append({"key": key, "quantity": round(quantity, 2), "unit": unit,
                          "unit_price": price.as_dict(), "cost": cost.as_dict(),
                          "cost_fmt": cost.fmt()})
         if rows:
             subtotal = _sum(PriceRange(r["cost"]["low"], r["cost"]["high"]) for r in rows)
+            in_total = name not in EXCLUDED_FROM_TOTAL
             sections[name] = {"rows": rows, "subtotal": subtotal.as_dict(),
-                              "subtotal_fmt": subtotal.fmt()}
-            total = total.plus(subtotal)
+                              "subtotal_fmt": subtotal.fmt(), "in_total": in_total}
+            if in_total:
+                total = total.plus(subtotal)
+            else:
+                excluded_total = excluded_total.plus(subtotal)
+    unpriced = [row for bom_key, row in misses
+                if row["key"] not in priced.get(bom_key, ())]
+    grand_total = total.plus(excluded_total)
     return {"sections": sections, "total": total.as_dict(), "total_fmt": total.fmt(),
+            "excluded_sections": sorted(n for n in sections
+                                        if n in EXCLUDED_FROM_TOTAL),
+            "excluded_total": excluded_total.as_dict(),
+            "excluded_total_fmt": excluded_total.fmt(),
+            "grand_total": grand_total.as_dict(), "grand_total_fmt": grand_total.fmt(),
             "unpriced": unpriced}

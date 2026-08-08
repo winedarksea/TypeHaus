@@ -214,9 +214,19 @@ export interface EngineEstimateRow {
   cost_fmt: string;
 }
 export interface EngineEstimate {
-  sections: Record<string, { rows: EngineEstimateRow[]; subtotal: EnginePriceRange; subtotal_fmt: string }>;
+  sections: Record<string, {
+    rows: EngineEstimateRow[]; subtotal: EnginePriceRange; subtotal_fmt: string;
+    // False for a section reported beside the construction total (furnishings).
+    in_total?: boolean;
+  }>;
+  // The *construction* total: sections with in_total false are not in it.
   total: EnginePriceRange;
   total_fmt: string;
+  excluded_sections?: string[];
+  excluded_total?: EnginePriceRange;
+  excluded_total_fmt?: string;
+  grand_total?: EnginePriceRange;
+  grand_total_fmt?: string;
   unpriced: { section: string; key: string; quantity: number; unit: string }[];
 }
 export interface EngineCostsJoin {
@@ -224,6 +234,9 @@ export interface EngineCostsJoin {
   key_field: string;
   quantity_field: string;
   unit: string;
+  // False for a section reported beside the construction total. Two sections can share a
+  // bom_key (placeables feeds both "placeables" and "furnishings").
+  in_total?: boolean;
 }
 export interface EngineCosts {
   prices_loaded: boolean;
