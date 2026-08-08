@@ -10,12 +10,14 @@ try {
   const { runPlanGeometryTests } = await server.ssrLoadModule("/src/three/planGeometry.test.ts");
   const { runArchGeometryTests, runCanvasObjectGeometryTests, runCanvasObjectPartsTests, runOpeningGeometryTests, runEarthGeometryTests, runFootingBeddingGeometryTests, runWholeHouseGlbTests, runSolidMaterialTests, runSelectionRegistrationTests, runViewFramingTests } = await server.ssrLoadModule("/src/components/Panel3D.test.ts");
   const { runModelGeometryTests } = await server.ssrLoadModule("/src/model/geometry.test.ts");
+  const { runMemberFootprintTests } = await server.ssrLoadModule("/src/model/memberFootprint.test.ts");
   const { runVisibilityTests } = await server.ssrLoadModule("/src/model/visibility.test.ts");
   const { runEngineBomTests } = await server.ssrLoadModule("/src/model/engineBom.test.ts");
   const { runEngineCostsTests } = await server.ssrLoadModule("/src/model/engineCosts.test.ts");
   const { runPlanWarningTests, runSpaceLabelTests } = await server.ssrLoadModule("/src/model/planWarnings.test.ts");
   const { runTransitionTests } = await server.ssrLoadModule("/src/model/transitions.test.ts");
   const { runTagIndexTests } = await server.ssrLoadModule("/src/model/tagIndex.test.ts");
+  const { runDetailStarTests } = await server.ssrLoadModule("/src/model/detailStar.test.ts");
   const { runVaporTests } = await server.ssrLoadModule("/src/model/vapor.test.ts");
   const { runOpenHouseTests } = await server.ssrLoadModule("/src/engine/openHouse.test.ts");
   const { runDoorSymbolTests, runWindowSymbolTests } = await server.ssrLoadModule("/src/model/doorSymbols.test.ts");
@@ -45,9 +47,11 @@ try {
   runSpaceLabelTests();
   runTransitionTests();
   runTagIndexTests();
+  runDetailStarTests();
   runVaporTests();
   runOpenHouseTests();
   runModelGeometryTests();
+  runMemberFootprintTests();
   runDoorSymbolTests();
   runWindowSymbolTests();
   runRoofGeometryTests();

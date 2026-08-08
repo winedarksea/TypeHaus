@@ -10,7 +10,16 @@ import { isLayerVisible, type LayerVisibilityGroup } from "../../model/visibilit
 import { layerCarriesControl, lensStrokeSpec } from "../LensBar";
 import type { Lens } from "../../state/vocabulary";
 import { formatFtIn, pointAlong, wallLength } from "../../model/geometry";
+import { crossWidth, memberFootprint } from "../../model/memberFootprint";
 import { materialColor, NORDIC_ACCENT, NORDIC_INK, NORDIC_LINE } from "../../nordic/palette";
+
+// Level-of-detail switch for framing. A member whose plan cross-section is narrower than this
+// on screen has no interior pixels left to fill: a 1.5" stud is under 2px below ~53 px/m, and
+// at that scale a filled footprint antialiases into a grey smudge that reads worse than the
+// crisp centreline it replaced (and costs a polygon per stud across the whole storey). At or
+// above it the footprint wins outright — a stud finally draws as its end-cut, and a plate
+// draws its real 5.5" flat instead of a hairline.
+const MEMBER_FOOTPRINT_MIN_PX = 2;
 
 export const WallShape = memo(function WallShape({ w, openings, project, selected, hovered, showFraming,
   showLayers, visibleLayerGroups, activeLens, onSelect, onHover }: {
@@ -70,6 +79,19 @@ export const WallShape = memo(function WallShape({ w, openings, project, selecte
           ) : null,
         )}
         {showFraming && w.members.map((m) => {
+          // Drawn inside the opening mask with the layer fills, so a window still cuts the
+          // framing it interrupts. pointerEvents stay off the fill: the wall's own layers
+          // underneath keep answering the click, exactly as they did for the centrelines.
+          // The hairline stroke (same spec as the layer fills above) is what makes the
+          // end-cuts legible at all: members paint in resolver order, so every stud lands on
+          // top of the top plate's own footprint in the *same* wood — without an outline a
+          // framed wall reads as one solid tan band and no stud is visible in it.
+          const outline = crossWidth(m) * pixelsPerMeter >= MEMBER_FOOTPRINT_MIN_PX
+            ? memberFootprint(m) : [];
+          if (outline.length >= 3) {
+            return <polygon key={m.key} points={poly(outline)} fill="var(--canvas-wood)"
+              stroke="var(--panel-line)" strokeWidth={0.5} pointerEvents="none" opacity={0.85} />;
+          }
           const [x0, y0] = project(m.p0);
           const [x1, y1] = project(m.p1);
           return <line key={m.key} x1={x0} y1={y0} x2={x1} y2={y1} stroke="var(--canvas-wood)"

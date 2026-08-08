@@ -3,7 +3,7 @@
 // for display, and deriving *view-only* aggregates (the node graph for hit-testing, the
 // bounding extents for the HUD readout) from the numbers model.json already resolved.
 
-import type { Member, Model, Opening, Vec2, Wall } from "./types";
+import type { Model, Opening, Vec2, Wall } from "./types";
 
 export const M_PER_FT = 0.3048;
 
@@ -240,18 +240,4 @@ export function orthoLock(anchor: Vec2, p: Vec2): Vec2 {
   return Math.abs(p[0] - anchor[0]) >= Math.abs(p[1] - anchor[1])
     ? [p[0], anchor[1]]
     : [anchor[0], p[1]];
-}
-
-// A board member's plan rectangle: its axis swept by its pre-resolved half-width — the
-// TS twin of the engine emitter's _member_footprint (emit/draw/floorplan.py), so a
-// stair landing draws as the platform it is instead of one line down its middle.
-export function memberFootprint(member: Member): Vec2[] {
-  const [x0, y0] = member.p0;
-  const [x1, y1] = member.p1;
-  const run = Math.hypot(x1 - x0, y1 - y0);
-  if (run < 1e-9) return [];
-  const half = member.width_m / 2;
-  const px = (-(y1 - y0) / run) * half;
-  const py = ((x1 - x0) / run) * half;
-  return [[x0 - px, y0 - py], [x0 + px, y0 + py], [x1 + px, y1 + py], [x1 - px, y1 - py]];
 }

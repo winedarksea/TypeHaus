@@ -7,7 +7,8 @@
 import { memo, useRef } from "react";
 import type { DoorOperation, Model, Opening, Stair, Vec2, Wall, WindowOperation } from "../../model/types";
 import { doorStrokeGlyph, hostWallThicknessM, windowStrokeGlyph } from "../../model/doorSymbols";
-import { memberFootprint, openingHostWall, pointAlong } from "../../model/geometry";
+import { openingHostWall, pointAlong } from "../../model/geometry";
+import { memberFootprint } from "../../model/memberFootprint";
 import { swingArcSweepFlag } from "../../three/planGeometry";
 import { NORDIC_ACCENT, NORDIC_INK } from "../../nordic/palette";
 import type { Selection } from "../../state/vocabulary";

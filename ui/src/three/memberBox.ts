@@ -6,16 +6,17 @@
 // Mirrors emit/gltf/emitter.py's add_member_box — vertical ends, sloped top/bottom for a
 // raked member, a plain prism otherwise.
 import * as THREE from "three";
+import { crossWidth, isVerticalMember, MIN_PLAN_RUN_M } from "../model/memberFootprint";
 import type { Member } from "../model/types";
 import { projectPlanDirectionToScene, projectPointToScene, type PlanCenter } from "./planGeometry";
+
+// Re-exported so the 3D layer keeps one import site for "which face does this member show":
+// the rules themselves live in model/memberFootprint.ts, where the 2D plan reads them too.
+export { crossWidth, isVerticalMember };
 
 // Degenerate extents would collapse the instance matrix (and its normals); 0.1 mm is far
 // below any real member dimension but keeps the basis invertible.
 export const MIN_EXTENT_M = 1e-4;
-
-// A plan run below this is no run at all: the member is vertical (a stud, a post) and its
-// free axis is world-up rather than p0->p1.
-const MIN_PLAN_RUN_M = 1e-9;
 
 // A unit box centred on its local origin in ALL THREE axes — every rect/i-joist instance is
 // this geometry, scaled + rotated + translated per instance.
@@ -32,20 +33,9 @@ export const UNIT_BOX = new THREE.BoxGeometry(1, 1, 1);
 const UP = new THREE.Vector3(0, 1, 0);
 const _scale = new THREE.Vector3();
 
-export function isVerticalMember(m: Member): boolean {
-  return m.p0[0] === m.p1[0] && m.p0[1] === m.p1[1];
-}
-
 /** A member whose two ends sit at different elevations — a rafter, a raked plate. */
 export function isRakedMember(m: Member): boolean {
   return m.z0_end_m != null || m.z1_end_m != null;
-}
-
-// Lying-flat members (plates) put their wide face (depth_m) across the wall; on-edge
-// members (headers/joists/rims/beams) put their thin face (width_m) across instead —
-// both trust the engine's own z1-z0 for the vertical extent rather than re-deriving it.
-export function crossWidth(m: Member): number {
-  return m.category === "plate" || m.category === "raked_plate" ? m.depth_m : m.width_m;
 }
 
 /**
