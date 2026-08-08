@@ -215,6 +215,15 @@ ELECTRICAL_DEVICE_TYPES = (
                                              position=(ft(0), ft(0), ft(0))),)),
     # The kettle outlet the brief asks for: a 5-20R and a 6-20R in one two-gang box, so a
     # 120V and a 240V appliance can share the spot. Two ports, one device.
+    # The disposer outlet. A *single* 5-20R, not a duplex: the receptacle is the disconnect
+    # for one cord-and-plug appliance on its own 20A branch (CKT-DISPOSAL), and a duplex
+    # would invite a second load onto a circuit sized for a motor's inrush. 20A because the
+    # branch is 20A — a 15A receptacle is only permitted where two or more share the branch.
+    ElectricalDeviceType(tag="ED-T-RECEPTACLE-520S",
+                          name="NEMA 5-20R single receptacle, 20A",
+                          footprint=(inch(4), inch(2)), height=inch(2),
+                          ports=(ServicePort(tag="power", service=Service.POWER_120,
+                                             position=(ft(0), ft(0), ft(0))),)),
     ElectricalDeviceType(tag="ED-T-RECEPTACLE-620",
                           name="NEMA 5-20R/6-20R duplex kettle outlet",
                           footprint=(inch(4), inch(4)), height=inch(4),
@@ -1569,11 +1578,21 @@ MAIN_DEVICES = [
     ElectricalDevice(uid="D9EBW2FJTX", tag="ED-M-LIVING-KRF1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(18, 4.375), ft(31, 5.375)), type_ref="ED-T-RECEPTACLE", circuit="CKT-FRIDGE",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
-    # Inside the sink base, 18" up: the dishwasher's cord and the disposer share the box.
+    # Inside the sink base, 18" up: the dishwasher's cord. It used to share this box with
+    # the disposer; the disposer moved to its own circuit and its own single receptacle
+    # 9" west (2026-08-07), so this one now serves APPL-M-DW alone.
     # Followed APPL-M-DW to its new spot when it flipped with the sink; x is the dishwasher's
     # along-wall position and y is the wall-face constant (35'-4").
     ElectricalDevice(uid="WK41TSMA97", tag="ED-M-LIVING-KDW1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(31, 1), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE", circuit="CKT-DISHWASHER",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
+    # The disposer outlet, 9" west of KDW1 at the sink base's east end and the same 18" up
+    # on the same wall face — a second box in the same cabinet run, reachable by the cord
+    # from APPL-M-DISP hanging under the bowl at 28'-7". Single 5-20R on CKT-DISPOSAL; the
+    # wall control is the 24V loop billed with the appliance, not a switch on this branch.
+    ElectricalDevice(uid="N4A3YD3680", tag="ED-M-LIVING-KDS1", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(30, 4), ft(35, 4.375)), type_ref="ED-T-RECEPTACLE-520S",
+                     circuit="CKT-DISPOSAL",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
 ]
 

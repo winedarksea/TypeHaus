@@ -130,6 +130,29 @@ WASHER_DRYER_STACKED = ApplianceType(
                            "front-loader door swing and loading"),),
 )
 
+# A disposer is the one kitchen appliance nobody sees: it hangs off the sink's drain
+# fitting inside the base cabinet, so it has no plan symbol and no clearance zone — the
+# cabinet around it already owns that floor. What it does have is a load and a drain
+# connection, and those are the two facts a panel schedule and a DFU count need from it.
+#
+# ``needs`` is POWER_120 + DRAIN and deliberately not WATER_COLD: a disposer takes no
+# supply of its own. The flushing water is the sink's, through the sink's faucet, on the
+# sink's stop — modelling a cold connection here would put a second supply branch in the
+# base cabinet that no plumber will ever run.
+DISPOSAL = ApplianceType(
+    tag="APPL-DISPOSAL", name='Food waste disposer, 3/4 HP',
+    # The unit is a ~7" cylinder hanging under the bowl; the footprint is its bounding
+    # square at the widest point of the grind chamber, and the height is the body below
+    # the mounting flange. Both are catalog nominals for the size class, not a purchase
+    # commitment to one model.
+    footprint=(inch(7), inch(7)), height=inch(12.5),
+    plan_symbol=None, source=REFERENCE,
+    needs=frozenset({Service.POWER_120, Service.DRAIN}),
+    ports=(ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))),
+           ServicePort(tag="drain", service=Service.DRAIN,
+                       position=(ft(0), ft(0), inch(12.5)))),
+)
+
 STARTER_APPLIANCE_TYPES = (REFRIGERATOR, GAS_RANGE, ELECTRIC_RANGE, DISHWASHER, DRYER,
                            MICROWAVE_OTR, FREEZER_UPRIGHT, HOOD_RECIRC, WASHER,
-                           WASHER_DRYER_STACKED)
+                           WASHER_DRYER_STACKED, DISPOSAL)

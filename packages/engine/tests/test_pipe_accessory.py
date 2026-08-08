@@ -125,6 +125,33 @@ def test_the_install_kit_rides_the_accessory_not_the_catalog(catlin_plan):
         "a seal is not a valve and must not be labelled as one"
 
 
+def test_an_appliances_install_kit_bills_in_the_same_section(catlin_plan):
+    """``install_parts`` is a shape of order, not a property of pipework.
+
+    The disposer's 24V control loop — transformer, contactor, enclosure, buttons, cable —
+    is seven part numbers with no route anyone has designed. Drawing conduit for it would
+    invent geometry; counting it is the true statement, and the section that already exists
+    for exactly this (the hydrant kits) is where it belongs. One takeoff, two carriers.
+    """
+    from typehaus.takeoff.plumbing_specialties import install_parts_takeoff
+
+    model, _ = resolve(catlin_plan)
+    rows = {row["part"]: row for row in install_parts_takeoff(model)}
+
+    disposer = next(element for element in model.plan.storey_elements("main")
+                    if getattr(element, "tag", None) == "APPL-M-DISP")
+    assert len(disposer.install_parts) == 7
+    for part in disposer.install_parts:
+        assert rows[part]["count"] == 1
+        assert rows[part]["tags"] == ["APPL-M-DISP"]
+
+    # The pipe-accessory kits are untouched and still carry their own tags: the two
+    # carriers share a section, not a count.
+    hydrant_kit = rows["silicone gasket, hydrant escutcheon"]
+    assert hydrant_kit["count"] == 2
+    assert "APPL-M-DISP" not in hydrant_kit["tags"]
+
+
 def test_pipe_runs_carry_a_finish_and_an_insulation_spec(catlin_plan):
     """Two fields, not one: copper is the pipe and lacquer is a coating on it, and a run
     can have either without the other."""

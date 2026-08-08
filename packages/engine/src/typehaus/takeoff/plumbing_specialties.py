@@ -17,10 +17,17 @@ mounting bracket, a can of closed-cell foam. Nobody stocks these as "hydrant"; t
 bought individually from three aisles. They ride ``PipeAccessory.install_parts`` rather than
 a catalog type because they are properties of *this* penetration: the same hydrant through
 a different wall takes a different kit.
+
+``Appliance.install_parts`` feeds the same section for the same reason. A disposer's 24V
+control loop — transformer, contactor, enclosure, buttons, low-voltage cable — is an order,
+not a route: nobody has decided where the cable runs, and inventing conduit for it would put
+geometry in the model that no drawing supports. Counting the parts is what is actually
+known, and it lands in the section that already exists for exactly this shape of order.
 """
 
 from __future__ import annotations
 
+from typehaus.model.spatial import Appliance
 from typehaus.resolve.model import ResolvedModel
 
 _M_TO_IN = 39.37007874015748
@@ -44,16 +51,30 @@ def plumbing_specialties_takeoff(model: ResolvedModel) -> list[dict[str, object]
     ]
 
 
+def _install_part_carriers(model: ResolvedModel) -> list:
+    """Everything in the model that carries an ``install_parts`` kit.
+
+    Two spellings, one order. Accessories come off the resolved run; appliances come off
+    the plan, because an ``Appliance``'s kit is a property of the authored installation and
+    survives whether or not the product resolves to anything with a service connection.
+    """
+    return [*model.pipe_accessories,
+            *(element
+              for storey in model.plan.storeys
+              for element in model.plan.storey_elements(storey.tag)
+              if isinstance(element, Appliance))]
+
+
 def install_parts_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """The sealing/mounting consumables, one row per distinct part, billed each."""
     rows: dict[str, dict[str, object]] = {}
-    for acc in model.pipe_accessories:
-        for part in acc.install_parts:
+    for carrier in _install_part_carriers(model):
+        for part in carrier.install_parts:
             entry = rows.setdefault(part, {"count": 0, "tags": []})
             entry["count"] = int(entry["count"]) + 1
             tags = entry["tags"]
             assert isinstance(tags, list)
-            tags.append(acc.tag)
+            tags.append(carrier.tag)
     return [
         {"part": part, "count": int(entry["count"]), "tags": sorted(entry["tags"])}
         for part, entry in sorted(rows.items())

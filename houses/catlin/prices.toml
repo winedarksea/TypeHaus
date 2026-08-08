@@ -80,7 +80,7 @@
 # "SDWS22800DB" =    # 1865 ea
 # "SP6" =    # 423 ea
 # "SS-GASKET-12" =    # 32 ea
-# "STHD" =    # 36 ea
+# "STHD" =    # 40 ea
 
 [concrete]
 # $/cy placed, by solid category. Non-concrete categories (trim, pipe markers, ...) appear in
@@ -101,6 +101,7 @@
 [placeables]
 # $ each, by catalog type tag
 # "APPL-DISHWASHER" =    # 1 ea
+# "APPL-DISPOSAL" =    # 1 ea
 # "APPL-ELECTRIC-RANGE" =    # 1 ea
 # "APPL-FREEZER-UPRIGHT" =    # 1 ea
 # "APPL-HOOD-RECIRC" =    # 1 ea
@@ -341,7 +342,16 @@
 
 [install_parts]
 # $ each, by loose part
+# The seven 24V rows are APPL-M-DISP's control loop, billed as parts because its route is
+# not designed (plan/placeables.py). They are an order, not geometry.
+# "18/6 CL2 control cable, 50 ft" =    # 1 ea
+# "24V Class-2 control transformer, 40 VA" =    # 1 ea
+# "2-gang low-voltage mounting ring and plate" =    # 1 ea
+# "NEMA 1 enclosure, 6x6x4, hinged" =    # 1 ea
 # "closed-cell spray foam, 1/4\" annulus around the barrel" =    # 2 ea
+# "double-pole contactor, 30 A, 24V coil" =    # 1 ea
+# "guarded illuminated toggle switch, 24V" =    # 1 ea
+# "momentary pushbutton, stainless, counter-top" =    # 1 ea
 # "plastic mounting bracket, non-conductive" =    # 2 ea
 # "silicone gasket, hydrant escutcheon" =    # 2 ea
 

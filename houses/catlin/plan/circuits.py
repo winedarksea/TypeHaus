@@ -26,11 +26,16 @@ Conventions:
   The ESS grid port backfeeds at the bottom of the bus (40/42), opposite the main (120%
   rule); ``code.NEC_705_12_interconnection`` now grades that arithmetic instead of this
   comment asserting it.
-  HONEST STATE (2026-08-02, the backup-microgrid refactor): ED-B-PANEL carries 15 two-pole
-  + 16 one-pole = 46 spaces of the 54 ED-T-PANEL holds — eight spaces freed by moving the
-  six backup circuits (7 poles) and retiring CKT-BACKUP-FEED (1 pole) to the subpanel, so
-  eight are now spare. ED-B-BACKUP-PANEL carries 1 two-pole + 5 one-pole = 7 of its 12.
-  ``electrical.panel_spaces`` reconciles both.
+  HONEST STATE (2026-08-07, CKT-DISPOSAL): ED-B-PANEL carries 14 two-pole + 17 one-pole =
+  45 spaces of the 54 ED-T-PANEL holds, so nine are spare. The 2026-08-02 backup-microgrid
+  refactor freed eight of those by moving the six backup circuits (7 poles) and retiring
+  CKT-BACKUP-FEED (1 pole) to the subpanel; splitting the disposer off CKT-DISHWASHER has
+  now spent one, at slot 39. ED-B-BACKUP-PANEL carries 1 two-pole + 5 one-pole = 7 of its
+  12. ``electrical.panel_spaces`` reconciles both.
+  (The line this replaced read "15 two-pole + 16 one-pole = 46". Both halves were wrong —
+  the panel has held 14 two-pole circuits since the refactor, and the arithmetic never
+  matched ``test_catlin_panel_spaces_fits_the_54_space_enclosure``'s 44. Counted from the
+  loaded plan this time rather than by hand.)
 """
 
 from __future__ import annotations
@@ -256,7 +261,20 @@ CIRCUITS = (
     # is dual-function.
     Circuit(uid="CKT022AAAA", tag="CKT-DISHWASHER", slot=34, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1200,
-            description="Dishwasher + disposer (sink base)"),
+            description="Dishwasher (sink base)"),
+    # The disposer came off CKT-DISHWASHER (2026-08-07). Both are cord-and-plug appliances
+    # in the same cabinet, and a shared 20A branch is legal, but the two run together every
+    # time a meal ends: a 3/4 HP motor's locked-rotor inrush on top of a dishwasher's heater
+    # is exactly the nuisance trip that gets a breaker taped on. Its own circuit is the
+    # cheap fix while the wall is open. GFCI at the breaker for the same E3902.10 reason as
+    # its neighbour — ED-M-LIVING-KDS1 is closer to the sink than KDW1 is, being under it.
+    #
+    # The 120V branch feeds the motor. The wall control is a 24V loop through a contactor —
+    # see APPL-M-DISP's `install_parts` in plan/placeables.py, which bills that loop as
+    # parts because its route is not designed.
+    Circuit(uid="CKT038AAAA", tag="CKT-DISPOSAL", slot=39, panel_ref=_PANEL, breaker_amps=20, poles=1,
+            gfci=True, afci=True, load_va=1000,
+            description="Food waste disposer (sink base)"),
     # E3902.9 puts the laundry-area receptacle on GFCI outright, no distance test.
     Circuit(uid="CKT023AAAA", tag="CKT-LAUNDRY", slot=36, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1500,

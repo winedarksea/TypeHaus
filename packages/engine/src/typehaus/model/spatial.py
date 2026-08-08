@@ -175,7 +175,17 @@ class Furniture(Element):
 
 @register_element
 class Appliance(Element):
-    """A service-bearing free or wall-attached product, separate from plumbing fixtures."""
+    """A service-bearing free or wall-attached product, separate from plumbing fixtures.
+
+    ``install_parts`` is the loose kit *this* installation carries, spelled the same way
+    :class:`~typehaus.model.mep.PipeAccessory` spells it and billed through the same
+    ``install_parts`` takeoff section. It is how a product whose accessories are not
+    geometry still reaches the order: a disposer's 24V control loop is a power supply, a
+    contactor, an enclosure, two buttons and a spool of cable — seven part numbers from
+    three aisles, none of them a thing you can drag on a canvas. Modelling that loop as
+    conduit and devices would be inventing routes nobody has decided; counting the parts is
+    the true statement the model can make today.
+    """
 
     type_ref: str
     position: Point2D
@@ -185,6 +195,7 @@ class Appliance(Element):
     mount: Mount = Mount()
     wall_ref: str | None = None
     drain_position: Point2D | None = None
+    install_parts: tuple[str, ...] = ()  # loose kit billed with this installation
 
 
 for _name, _obj in (

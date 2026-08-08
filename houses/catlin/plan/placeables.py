@@ -157,6 +157,30 @@ MAIN_PLACEABLES = [
     # storeys/main.py), 7" off true centre so the RO still lands on a stud line.
     Furniture(uid="F8A30SK31X", tag="FURN-M-KIT-SINKBASE", type_ref="CASE-SINK-BASE-36", room="RM-M-LIVING",
               position=pt(ft(28, 7), ft(34, 5.375))),
+    # The disposer, hanging off FX-M-KITCH-SINK's drain fitting inside the sink base. It
+    # sits at the sink's `drain_position` (28'-7", 35'-0"), not at the bowl centre — the
+    # unit bolts to the flange, and that flange is where the trap and SP-M-KITCH already
+    # are. The 14 1/2" mount is the *base* of the body: 27" bowl bottom less the 12 1/2"
+    # cylinder. Mount kind WALL is the file's idiom for "hangs at a stated height" (the
+    # uppers and APPL-M-HOOD read the same way); nothing here stands on the floor.
+    #
+    # `install_parts` is the 24V control loop, counted rather than drawn. The decision
+    # (2026-08-07) was a 120V branch for the motor — CKT-DISPOSAL, its own circuit now
+    # that it no longer shares CKT-DISHWASHER — plus a low-voltage loop so the switch on
+    # the counter is a 24V button, not a 120V toggle over a wet sink. The loop's route is
+    # not designed and inventing conduit for it would put geometry in the model that no
+    # drawing supports, so what is modelled is what is known: seven part numbers, billed
+    # through `[install_parts]` alongside the hydrant kits.
+    Appliance(uid="ADCW7VPPC1", tag="APPL-M-DISP", type_ref="APPL-DISPOSAL", room="RM-M-LIVING",
+              position=pt(ft(28, 7), ft(35)),
+              mount=Mount(kind=MountKind.WALL, elevation=inch(14.5)),
+              install_parts=("24V Class-2 control transformer, 40 VA",
+                             "double-pole contactor, 30 A, 24V coil",
+                             "NEMA 1 enclosure, 6x6x4, hinged",
+                             "guarded illuminated toggle switch, 24V",
+                             "momentary pushbutton, stainless, counter-top",
+                             "2-gang low-voltage mounting ring and plate",
+                             "18/6 CL2 control cable, 50 ft")),
     Appliance(uid="XPA5ZCQM5Q", tag="APPL-M-DW", type_ref="APPL-DISHWASHER", room="RM-M-LIVING",
               position=pt(ft(31, 1), ft(34, 5.375))),
     Furniture(uid="3QTQ2NFWYD", tag="FURN-M-KIT-E2", type_ref="CASE-B15", room="RM-M-LIVING",

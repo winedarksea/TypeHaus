@@ -205,8 +205,9 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     from typehaus.takeoff import backup_component_rows, panel_schedule, service_load_summary
 
     rows = {row["circuit"]: row for row in panel_schedule(catlin_model)}
-    # 36 since the 2026-08-02 microgrid refactor retired CKT-BACKUP-FEED (was 37).
-    assert len(rows) == 36
+    # 37: 36 after the 2026-08-02 microgrid refactor retired CKT-BACKUP-FEED, plus
+    # CKT-DISPOSAL, which came off CKT-DISHWASHER on 2026-08-07.
+    assert len(rows) == 37
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
     # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor; the
     # dining zone takes the same protection because every mat maker asks for it).
@@ -467,7 +468,7 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     main = spaces("ED-B-PANEL", "ED-T-PANEL")
     backup = spaces("ED-B-BACKUP-PANEL", "ED-T-BACKUP-PANEL")
     assert main[0] <= main[1] and backup[0] <= backup[1]
-    assert main == (44, 54)  # the spare capacity is the point
+    assert main == (45, 54)  # the spare capacity is the point; CKT-DISPOSAL spent one
     assert backup == (7, 12)
     required = sum(circuit.poles for circuit in circuits)
     declared = main[1]
@@ -586,8 +587,8 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     assert payload["conduit"] == conduit_takeoff(catlin_model)
     assert payload["devices"] == electrical_device_takeoff(catlin_model)
     assert payload["solar"] == solar_takeoff(catlin_model)
-    # 36, not the 37 before the 2026-08-02 microgrid refactor: CKT-BACKUP-FEED retired.
-    assert len(payload["panel_schedule"]) == 36
+    # 37: the 36 that survived the 2026-08-02 microgrid refactor plus CKT-DISPOSAL.
+    assert len(payload["panel_schedule"]) == 37
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):
@@ -673,6 +674,20 @@ def test_a_combination_receptacle_counts_by_its_125v_half():
     plan = load_plan(CATLIN_DIR).plan
     model, _ = resolve(plan)
     assert _room_result(model, "RM-M-LIVING") == "pass"
+
+    # ED-M-LIVING-KDS1 comes out with it. That is the disposer outlet inside the sink base
+    # (2026-08-07): 18" up in a cabinet, so nobody's idea of kitchen-counter coverage, but
+    # this check grades 210.52(A)'s *wall* rule, where a 125V receptacle below the 5'-6"
+    # cut-off counts wherever it stands. It happens to sit in the stretch this test empties,
+    # so leaving it would hold the north wall covered for a reason that has nothing to do
+    # with the kettle outlet under test. Removing the device, not demoting its type: a plain
+    # RECEPTACLE kind counts on the kind alone, and only the combination kind consults ports
+    # — which is the asymmetry this test exists to pin.
+    without_disposer = tuple(
+        element for element in plan.storey_elements("main")
+        if getattr(element, "tag", None) != "ED-M-LIVING-KDS1")
+    plan = plan.model_copy(update={
+        "elements": {**plan.elements, "main": without_disposer}})
 
     library = plan.library
     demoted = tuple(
