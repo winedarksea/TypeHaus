@@ -1,14 +1,18 @@
-# prices.toml — unit prices for the catlin house (none supplied yet).
+# prices.toml — unit prices for the catlin house.
 #
 # Type:Haus ships NO default prices: material cost is local, seasonal, and negotiated.
-# Every row below is a COMMENTED placeholder keyed from the house's own bill of materials
-# (`haus takeoff` / cli/prices.py ESTIMATE_PLANS) — uncomment a row and fill in a real
-# number (`KEY = 1.23`) or a quote range (`KEY = { low = 1.0, high = 1.5 }`) to have
-# `haus takeoff` and the BOM view price that line. Rows left commented stay honestly
-# UNPRICED in the estimate; they are never priced at zero.
+# Every row below is keyed from the house's own bill of materials (`haus takeoff` /
+# cli/prices.py ESTIMATE_PLANS). A row carries either a real number (`KEY = 1.23`) or a
+# quote range (`KEY = { low = 1.0, high = 1.5 }`); rows left COMMENTED stay honestly
+# UNPRICED in the estimate and are never priced at zero.
 #
 # Cost tracking (paid check-offs, exact products, actual $) lives in costs.toml, keyed by
 # the same (section, key) join used here.
+#
+# EVERY NUMBER IN THIS FILE IS A RESEARCHED ESTIMATE FOR BUDGETING, not a quote. Two
+# research passes so far: 2026-08-07 (framing, sheet goods, concrete, envelope layers,
+# openings) and 2026-08-08 (everything else). Each section header carries its own basis
+# and sources.
 
 [framing]
 # RESEARCHED 2026-08-07 — [low, high] $/LF of ordered stock, material only, no waste
@@ -19,34 +23,47 @@
 # these lean low-of-national. Sources: buildermuse.com lumber-price guide 2026,
 # buildestimatory.com lumber guide, homematerialcalc.com 2026 price guide,
 # wellbuiltflorida.com / designtransitionstudio.com LVL cost-per-foot guides.
-# ESTIMATES FOR BUDGETING — replace with supplier quotes before they mean anything.
 #
-# Not priced, deliberately: the `* panel` profiles and the `deck *` widths are glazing
-# extrusions, sauna liner and composite board that are bought by the piece from named
-# suppliers, not as lumber stock; `hanger` and `tapered tread` are not stock at all. Each
-# wants a quote, and a made-up $/LF would be worse than a blank.
+# 2026-08-08 addendum — the `* panel` and `deck *` profiles. The 2026-08-07 pass left
+# these blank on the guess that they were glazing extrusions and composite board. Reading
+# `framing_by_size[].types` says otherwise: they are the roof-edge, gutter, membrane and
+# stair members. So they split two ways.
+#
+#   Priced below, because nothing else bills them: the two `gutter` profiles, the
+#   `membrane` strip, the 3/8" `furring` batten, the 1.5x1.5 `sheathing` blocking, the 2x2
+#   `insulation` strip, and the five stair members (treads, landing decks, hanger, winder).
+#
+#   Left blank ON PURPOSE, because [edge_trim] already bills the same members by the foot
+#   and pricing both would double-count: the three `corner_trim` profiles, both `fascia`
+#   profiles, the `ridge_cap` and the `soffit` profile. Their edge_trim rows carry
+#   `also_in_framing: true`, which is the flag that says so.
+#
+#   `0.5x0.5 panel` is the one genuinely unresolved row — 498 LF ordered, of which only
+#   the 244 LF of `cladding` is mirrored into edge_trim as `edge_cladding`; the rest is
+#   furring and sheathing that nothing bills. Pricing it double-counts the cladding half,
+#   blanking it drops the other half. Left blank pending a decision. See the questions in
+#   the commit message.
 # $/LF of ordered stock, by lumber profile
-# "0.02x0.02 panel" =    # 76 LF
-# "0.375x0.375 panel" =    # 108 LF
-# "0.416667x0.416667 panel" =    # 156 LF
-# "0.416667x4.11038 panel" =    # 156 LF
-# "0.5x0.5 panel" =    # 498 LF
-# "0.5x5 panel" =    # 56 LF
-# "1.25x0.416667 panel" =    # 156 LF
+"0.02x0.02 panel" = { low = 0.35, high = 1 }  # 76 LF — membrane/flashing strip
+"0.375x0.375 panel" = { low = 0.25, high = 0.7 }  # 108 LF — 3/8" furring batten
+# "0.416667x0.416667 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
+# "0.416667x4.11038 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
+# "0.5x0.5 panel" =    # 498 LF — part edge_cladding (in [edge_trim]), part furring; unresolved
+"0.5x5 panel" = { low = 1.5, high = 5 }  # 56 LF — formed gutter stock
+# "1.25x0.416667 panel" =    # 156 LF — corner_trim, billed in [edge_trim]
 "1.25x11.875 rim" = { low = 3, high = 4.75 }  # 144 LF
 "1.25x7.25 rim" = { low = 2, high = 3.25 }  # 76 LF
-# "1.5x1.5 panel" =    # 96 LF
-# "1.5x5.5 panel" =    # 112 LF
+"1.5x1.5 panel" = { low = 0.35, high = 0.6 }  # 96 LF — sheathing blocking, priced as 2x2
+# "1.5x5.5 panel" =    # 112 LF — SPF fascia, billed in [edge_trim]
 "1.5x6 rim" = { low = 0.95, high = 1.55 }  # 80 LF
 "11.875 I-joist" = { low = 2.75, high = 4.25 }  # 3824 LF
-# "12x4 panel" =    # 66 LF
-# "13.625x0.5 panel" =    # 112 LF
+# "12x4 panel" =    # 66 LF — ridge_cap, billed in [edge_trim]
+# "13.625x0.5 panel" =    # 112 LF — PVC soffit, billed in [edge_trim]
 # 1x4 furring/strapping is not in the 2026-08-07 sweep above — it had no members to
 # price then. $0.45-0.85/LF is 8' furring strips at $3.50-6.75 a piece, 2026 Midwest
-# retail (SPF strapping runs a little under a 2x4 by the foot). ESTIMATE, same standing
-# as its neighbours: replace with a supplier quote before it means anything.
+# retail (SPF strapping runs a little under a 2x4 by the foot).
 "1x4" = { low = 0.45, high = 0.85 }  # 4496 LF
-# "1x6.81165 panel" =    # 112 LF
+# "1x6.81165 panel" =    # 112 LF — cellular-PVC fascia, billed in [edge_trim]
 "2-1.75x11.875 LVL" = { low = 6, high = 10 }  # 16 LF
 "2-1.75x14 LVL" = { low = 7.5, high = 12 }  # 20 LF
 "2-2x10" = { low = 3.6, high = 5.7 }  # 24 LF
@@ -55,32 +72,36 @@
 "2x10" = { low = 1.8, high = 2.85 }  # 82 LF
 "2x12" = { low = 2.4, high = 3.8 }  # 92 LF
 "2x2" = { low = 0.35, high = 0.6 }  # 816 LF
-# "2x2 panel" =    # 316 LF
+# 2"x2" rigid-insulation strip: 1/6 SF of 2" board per LF, at the [envelope_layers]
+# polyiso rate of $1.20-2.20/SF.
+"2x2 panel" = { low = 0.2, high = 0.45 }  # 316 LF
 "2x4" = { low = 0.6, high = 1 }  # 7850 LF
 "2x6" = { low = 0.95, high = 1.55 }  # 10612 LF
 "2x8" = { low = 1.35, high = 2.1 }  # 672 LF
 "3-1.75x11.875 LVL" = { low = 9, high = 15 }  # 36 LF
 "3x6 rim" = { low = 1.9, high = 3.1 }  # 8 LF
-# "4x0.5 panel" =    # 28 LF
+"4x0.5 panel" = { low = 1.5, high = 5 }  # 28 LF — formed gutter stock
 "4x4" = { low = 2.2, high = 3.6 }  # 32 LF
 "6x6" = { low = 5, high = 8.5 }  # 8 LF
-# "deck 11x1.5" =    # 288 LF
-# "deck 42x1.5" =    # 16 LF
-# "deck 44.625x1.5" =    # 16 LF
-# "hanger" =    # 32 LF
-# "tapered tread" =    # 24 LF
+# The stair members, 2026-08-08. Species is NOT settled in the plan, so each range spans
+# construction-grade to hardwood: an 11" x 1.5" tread is $4-9/LF in SPF/LVL and $12-30/LF
+# in oak. The landing decks are priced as 3.5-3.7 SF of 1.5" stock per LF.
+"deck 11x1.5" = { low = 6, high = 22 }  # 288 LF — stair treads
+"deck 42x1.5" = { low = 12, high = 30 }  # 16 LF — landing deck
+"deck 44.625x1.5" = { low = 13, high = 32 }  # 16 LF — landing deck
+"hanger" = { low = 1.5, high = 4 }  # 32 LF — stair hanger board, 2x stock
+"tapered tread" = { low = 8, high = 26 }  # 24 LF — winder treads
 
 [sheet_goods]
 # RESEARCHED 2026-08-07 — [low, high] $/4x8 sheet, material only. Basis: 1/2" drywall
 # $12-22/sheet, 1/2" CDX plywood $28-52/sheet, subfloor plywood a grade up from that,
 # ZIP-R quoted per SF ($2.20-4.20) and multiplied by 32 SF. Sources: homeguide.com drywall
 # price chart, woodworkingadvisor.com 4x8 plywood survey, latestcost.com ZIP-R guide.
-# ESTIMATES FOR BUDGETING — replace with supplier quotes before they mean anything.
-#
-# `composite-deck` is not priced: composite board is bought by the board from one named
-# brand, not as a 4x8 sheet, and the sheet-equivalent here would be a fiction.
 # $/4x8 sheet, by material tag
-# "composite-deck" =    # 6 sheets
+# Composite decking is bought by the board, not the sheet. 2026-08-08: rather than leave
+# it blank a second time, this is the sheet-EQUIVALENT — 32 SF at the $4-10/SF material
+# price of capped composite board. It is a unit conversion, not a product you can order.
+"composite-deck" = { low = 130, high = 320 }  # 6 sheets
 # Ceiling gypsum (FS-SECOND's `ceiling_below`), by the sheet. Distinct from the
 # `[envelope_layers]` "gwb" row, which is wall lining priced by the net SF.
 "gwb" = { low = 12, high = 22 }  # 39 sheets
@@ -89,28 +110,52 @@
 "zip-r" = { low = 70, high = 135 }  # 20 sheets
 
 [hardware]
+# RESEARCHED 2026-08-08 — [low, high] $ each, material only. Basis: single-piece and
+# small-box retail prices pulled per part number from Fasteners Plus, Connectors Only and
+# Lowe's, then widened downward because contractor-carton pricing runs 25-40% under
+# single-piece retail. Anchors actually read: MASA $1.99, SP6 $2.19, KBS1Z $4.19,
+# LSSR $11.99 (starting), STHD10 $19.99 / STHD14 $23.99, HUCQ 4x10 $45.99 G90 to $79.99
+# ZMAX, ABU66SS $202.00 (stainless — the reason this row is 4x its galvanised twin),
+# CS16 150' coil $197.99, SDWS22800DB $469.78-634.21 per 400 (= $1.17-1.59 ea),
+# SDWH191000DB $269.63 per 250 (= $1.08 ea), S-5! seam clamps $10.25-13.25.
+# Sources: fastenersplus.com per-SKU search pages, connectorsonly.com, lowes.com,
+# shop.bestbuymetals.com S-5! clamp listing, amazon.com Simpson listings.
 # $/unit (usually each), by part number
-# "ABU66SS" =    # 10 ea
-# "APVB12-6" =    # 16 ea
-# "APVKB45-6" =    # 8 ea
-# "CS16" =    # 1 ea
-# "H2.5A" =    # 1 ea
-# "HUCQ" =    # 4 ea
-# "KBS1Z" =    # 4 ea
-# "LSSR" =    # 56 ea
-# "LUS" =    # 42 ea
-# "LUS210" =    # 2 ea
-# "MASA" =    # 107 ea
-# "S-5!" =    # 19 ea
-# "S-5! CanDuit #11" =    # 3 ea
-# "S-5! CanDuit #13" =    # 8 ea
-# "S-5! ColorGard" =    # 6 ea
-# "S-5-PVKIT" =    # 48 ea
-# "SDWH191000DB" =    # 537 ea
-# "SDWS22800DB" =    # 1865 ea
-# "SP6" =    # 423 ea
-# "SS-GASKET-12" =    # 32 ea
-# "STHD" =    # 40 ea
+# ABU66SS is STAINLESS, not the ZMAX ABU66Z — $202 vs $55 for the same footprint. If the
+# posts are not in fact in a wet/corrosive location, this is the wrong part and the row
+# drops by a factor of four.
+"ABU66SS" = { low = 150, high = 230 }  # 10 ea
+"APVB12-6" = { low = 4, high = 9 }  # 16 ea — Outdoor Accents 1/2"x6" hex through-bolt + washer
+"APVKB45-6" = { low = 22, high = 45 }  # 8 ea — Outdoor Accents Avant 45-deg knee brace, 6x
+# The takeoff bills CS16 by the COIL (unit: "coil", 29.3 LF cut from a 150 ft coil), so
+# this is a whole coil, not a strap.
+"CS16" = { low = 130, high = 200 }  # 1 ea
+"H2.5A" = { low = 0.8, high = 1.75 }  # 2 ea
+# HUCQ into concrete/masonry. G90 to ZMAX; the stainless variant would be ~$170 and is
+# not what the plan calls for.
+"HUCQ" = { low = 45, high = 95 }  # 4 ea
+"KBS1Z" = { low = 3.5, high = 6.5 }  # 4 ea
+"LSSR" = { low = 12, high = 22 }  # 56 ea
+"LUS" = { low = 2, high = 6 }  # 42 ea
+"LUS210" = { low = 2.5, high = 6.5 }  # 2 ea
+"MASA" = { low = 1.75, high = 3 }  # 109 ea
+"S-5!" = { low = 9, high = 15 }  # 19 ea
+"S-5! CanDuit #11" = { low = 10, high = 22 }  # 3 ea
+"S-5! CanDuit #13" = { low = 10, high = 22 }  # 8 ea
+# ColorGard is a BAR system quoted by the foot of rail plus its clamps; the clamps are
+# already billed as the 6 carried-mount "S-5!" rows. This range treats each of the 6
+# modeled units as one 8' crossbar + colour strip at $10-16/LF. If the snow-retention
+# layout is ever run through the S-5! calculator, replace it with that output.
+"S-5! ColorGard" = { low = 80, high = 180 }  # 6 ea
+# PVKIT 2.0 mid-grab kits list around $14; the range tops out at $35 because the kit that
+# includes its own seam clamp (which this one must, since no separate PV clamp is billed)
+# costs materially more than the bare grab.
+"S-5-PVKIT" = { low = 14, high = 35 }  # 48 ea
+"SDWH191000DB" = { low = 1.05, high = 1.95 }  # 537 ea
+"SDWS22800DB" = { low = 1.15, high = 1.75 }  # 1865 ea
+"SP6" = { low = 1.5, high = 2.75 }  # 424 ea
+"SS-GASKET-12" = { low = 0.35, high = 0.9 }  # 32 ea — generic 304 SS #12 screw, bonded EPDM washer
+"STHD" = { low = 18, high = 32 }  # 40 ea
 
 [concrete]
 # RESEARCHED 2026-08-07 — [low, high] $/cy PLACED (ready-mix delivered + placement
@@ -119,156 +164,252 @@
 # small-volume pours (beams, columns, the thermal break) carry a much higher $/cy than a
 # slab because the forms, not the mud, are the cost. Sources: concretenetwork.com 2026
 # concrete prices, angi.com Minneapolis concrete slab cost, constructem.com 2026 yard cost.
-# ESTIMATES FOR BUDGETING — replace with a local ready-mix + flatwork quote.
-# $/cy placed, by solid category. Non-concrete categories (trim, pipe markers, ...) appear in
-# structural_solids too but bill primarily in their own sections — price the pours here, not
-# the aluminium.
+#
+# 2026-08-08 — three site-drainage categories added. They are not pours, but they are
+# bulk, and `structural_solids` is the only table that bills them at all, so a $/cy here
+# is the only way they reach the estimate. Each is converted from its real trade unit:
+#   drain_tile  4" perforated corrugated HDPE with sock at $1.00-1.60/LF. The solid is
+#               modeled as a 4x4 section = 0.111 cf/LF, so $/cy = $/LF x 243. The 804 LF
+#               that implies matches the 803 LF `footing_bedding` reports independently.
+#   drywell     the `drainage` rows say the drywells ARE #57 washed stone (4.83 cy of it),
+#               so this is the [footing_bedding] stone rate plus the chamber and fabric.
+#   sump        one radon sump pit at 0.19 cy. $/cy looks absurd because the unit is
+#               absurd for a single moulded basin: $150-400 for the pit and cover, over
+#               0.19 cy. The line total, ~$130-400, is the number that matters.
+#
+# Everything else in structural_solids is thin-gauge metal or a marker solid that bills
+# primarily elsewhere — price the pours here, not the aluminium. Note that five families
+# (railing, gutter, downspout, bug_screen, flashing) have NO ESTIMATE_PLANS entry of their
+# own at all, so leaving them blank here leaves them unpriced everywhere. See the
+# questions in the commit message.
+# $/cy placed, by solid category
 "beam" = { low = 260, high = 420 }  # 0.86 cy
 "column" = { low = 260, high = 420 }  # 1.25 cy
+"drain_tile" = { low = 240, high = 400 }  # 3.31 cy
+"drywell" = { low = 70, high = 180 }  # 4.71 cy
 # "dowel" =    # 0 cy
 "footing" = { low = 190, high = 300 }  # 38.63 cy
 "pad" = { low = 220, high = 350 }  # 0.59 cy
 "slab" = { low = 175, high = 280 }  # 60.63 cy
+"sump" = { low = 700, high = 2100 }  # 0.19 cy
 "thermal_break" = { low = 300, high = 500 }  # 0.03 cy
+# Mirrors and markers — billed in their own sections, or in no section at all:
+# "bug_screen" =    # 0.04 cy      # "conduit_data" =    # 0.02 cy
+# "conduit_power" =    # 0.06 cy   # "connector" =    # 0.3 cy
+# "downspout" =    # 0.2 cy        # "fascia" =    # 0.09 cy
+# "flashing" =    # 0.16 cy        # "glazing" =    # 0.16 cy
+# "glazing_trim" =    # 0.03 cy    # "gutter" =    # 0.17 cy
+# "pipe_drain" =    # 0.29 cy      # "pipe_sleeve" =    # 0.09 cy
+# "pipe_vent" =    # 0.14 cy       # "pipe_water_cold" =    # 0.05 cy
+# "pipe_water_hot" =    # 0.02 cy  # "railing" =    # 0.14 cy
+# "shutoff" =    # 0.01 cy         # "soffit" =    # 4.38 cy (framed duct soffits, not roof soffit)
+# "vacuum_breaker" =    # 0.01 cy  # "vent" =    # 0.14 cy
+# "water_hammer_arrestor" =    # 0.01 cy
 
 [floor_heat]
+# RESEARCHED 2026-08-08 — [low, high] $/LF of heating CABLE, material only, thermostat
+# excluded (the stats bill separately as placeables:ED-T-FLOOR-STAT). Derivation: electric
+# radiant material is quoted per square foot of floor, $5-12/SF; cable at 3" o.c. is 4 LF
+# per SF, so $/LF = $/SF / 4 = $1.25-3.00. The 393 LF billed works out to ~98 SF of heated
+# floor across the two baths and the dining area, which is the right order of magnitude.
+# Sources: homeguide.com radiant floor heating cost 2026, homewyse.com radiant floor heat,
+# heattechproducts.com per-SF system cost.
 # $/LF of element/wire, by system
-# "electric" =    # 393 LF
+"electric" = { low = 1.25, high = 3 }  # 393 LF
 
 [placeables]
+# RESEARCHED 2026-08-08 — [low, high] $ each for the UNIT ONLY: no installation, no rough-in,
+# no trim-out labour. Ranges are wide on purpose — most of this section is an owner selection
+# with a real 5x spread between builder-grade and specified, and a narrow range here would be
+# a false precision. Basis by family:
+#   APPL-*   homeguide.com 2026 appliance price chart: package of fridge/range/dishwasher/
+#            microwave $2,100-5,400; fridge $600-2,300; range $600-1,300; washer-dryer set
+#            $1,000-2,300 with stacked pairs at the top.
+#   CASE-*   RTA/stock casework at $75-200/LF of run (nextdaycabinets.com 2026 RTA guide,
+#            yardandgardenguru.com), converted to a per-box price by the box's own width.
+#   ED-T-*   device and fixture retail: receptacles/switches ~$3-9, GFCI $18-45, 4" LED cans
+#            $25-75, a 225A load centre $250-700. faradaycrew.com 2026 electrical pricing
+#            guide, homedepot.com / destinationlighting.com listings.
+#   EQ-T-*   named products where the plan names one: EG4 12kPV $3,156.88 (signaturesolar /
+#            currentconnected), EG4 PowerPro 14.3 kWh $2,400/module, HPWH unit $1,500-3,000
+#            (todayshomeowner 2026), whole-house ERV $800-2,000 for a 100-300 CFM unit
+#            (pickcomfort.com), 9 kW electric sauna heater $700-2,200 (tahoesaunacompany).
+#            The Gree line is dealer-direct with no published component pricing, so those
+#            five rows are scaled off the one published figure — the Vireo+ 2-head system at
+#            $2,499+ — and are the softest numbers in this section.
+#   FURN-*   FF&E, not construction. See the note below.
+#   FX-*     homeguide.com 2026 bathroom cost guide (toilet unit $150-800, sink $40-300, tub
+#            $600-7,200), homedepot.com 33" kitchen sink $285, lawnstarter.com yard hydrant
+#            $50-400.
+#   REG-*    engineeringair.com / hvacwholesaledirect.com grille listings, $19-78 by size.
+#
+# FURNITURE IS PRICED BUT IS NOT A CONSTRUCTION COST. Every FURN-* row is furniture the
+# owner buys, and its subtotal will swing the estimate by tens of thousands with no bearing
+# on what it costs to build the house. It is priced here so the estimate has no silent holes,
+# NOT because it belongs in a build budget — see the questions in the commit message about
+# splitting it out.
+#
+# The five house-local FT-* types are from the 2026-08-07 batch. Rods are the rod, brackets
+# and finials — not the fabric, which is an owner selection with no useful range.
 # $ each, by catalog type tag
-# "APPL-DISHWASHER" =    # 1 ea
-# "APPL-DISPOSAL" =    # 1 ea
-# The five house-local types from the 2026-08-07 batch. Rods are the rod, brackets and
-# finials — not the fabric, which is an owner selection with no useful range.
-"FT-ACCESS-PANEL-1414" = { low = 35, high = 90 }    # 2 ea
-"FT-ACCESS-PANEL-1429" = { low = 55, high = 140 }    # 1 ea
-"FT-CURTAIN-ROD-48" = { low = 25, high = 90 }    # 8 ea
-"FT-CURTAIN-ROD-84" = { low = 40, high = 140 }    # 1 ea
-"FT-CURTAIN-ROD-OUTDOOR-114" = { low = 90, high = 260 }    # 2 ea
-# "APPL-ELECTRIC-RANGE" =    # 1 ea
-# "APPL-FREEZER-UPRIGHT" =    # 1 ea
-# "APPL-HOOD-RECIRC" =    # 1 ea
-# "APPL-REFRIGERATOR" =    # 1 ea
-# "APPL-WASHER-DRYER-STACKED" =    # 1 ea
-# "CASE-B15" =    # 1 ea
-# "CASE-B24" =    # 1 ea
-# "CASE-B30" =    # 2 ea
-# "CASE-B36" =    # 2 ea
-# "CASE-ISLAND-60" =    # 1 ea
-# "CASE-OVER-36" =    # 2 ea
-# "CASE-PANTRY-CLOSET-24" =    # 1 ea
-# "CASE-PANTRY-CLOSET-48" =    # 1 ea
-# "CASE-PANTRY-CLOSET-72" =    # 1 ea
-# "CASE-SINK-BASE-36" =    # 1 ea
-# "CASE-TALL-PANTRY-12" =    # 1 ea
-# "CASE-TALL-PANTRY-18" =    # 1 ea
-# "CASE-W24" =    # 1 ea
-# "CASE-W30" =    # 4 ea
-# "ED-T-BACKUP-ENCL" =    # 1 ea
-# "ED-T-BACKUP-PANEL" =    # 1 ea
-# "ED-T-DISCONNECT-3R" =    # 4 ea
-# "ED-T-EV-1450" =    # 1 ea
-# "ED-T-EV-620" =    # 1 ea
-# "ED-T-FLOOR-STAT" =    # 3 ea
-# "ED-T-JBOX" =    # 1 ea
-# "ED-T-LT-CAN3" =    # 16 ea
-# "ED-T-LT-CAN4" =    # 49 ea
-# "ED-T-LT-CAN4-4000" =    # 4 ea
-# "ED-T-LT-CAN4-WET" =    # 9 ea
-# "ED-T-LT-CHANDELIER" =    # 1 ea
-# "ED-T-LT-FAN52" =    # 2 ea
-# "ED-T-LT-FAN60" =    # 1 ea
-# "ED-T-LT-MIRROR" =    # 5 ea
-# "ED-T-LT-MIRROR-RING" =    # 1 ea
-# "ED-T-LT-PANEL" =    # 6 ea
-# "ED-T-LT-PENDANT" =    # 1 ea
-# "ED-T-LT-PSU-200" =    # 2 ea
-# "ED-T-LT-PSU-60" =    # 2 ea
-# "ED-T-LT-SCONCE-SPOT" =    # 5 ea
-# "ED-T-LT-SCONCE-STAIR" =    # 3 ea
-# "ED-T-LT-SCONCE-UD" =    # 2 ea
-# "ED-T-LT-SHOP4" =    # 2 ea
-# "ED-T-LT-SPOT-SW" =    # 1 ea
-# "ED-T-LT-TUBE6" =    # 2 ea
-# "ED-T-LT-WALL-LINEAR" =    # 1 ea
-# "ED-T-METER" =    # 1 ea
-# "ED-T-PANEL" =    # 1 ea
-# "ED-T-PV-JB" =    # 1 ea
-# "ED-T-RECEPTACLE" =    # 70 ea
-# "ED-T-RECEPTACLE-1430" =    # 1 ea
-# "ED-T-RECEPTACLE-240" =    # 1 ea
-# "ED-T-RECEPTACLE-620" =    # 1 ea
-# "ED-T-RECEPTACLE-GFCI" =    # 14 ea
-# "ED-T-SAUNA-JB" =    # 1 ea
-# "ED-T-SWITCH" =    # 34 ea
-# "ED-T-SWITCH-DIM" =    # 6 ea
-# "ED-T-SWITCH-TIMER" =    # 1 ea
-# "EQ-T-EG4-12KPV" =    # 1 ea
-# "EQ-T-ERV" =    # 1 ea
-# "EQ-T-ESS-BATT" =    # 1 ea
-# "EQ-T-FIREPLACE-EL" =    # 1 ea
-# "EQ-T-GARAGE-HEATER" =    # 1 ea
-# "EQ-T-GREE-HEAD-12" =    # 2 ea
-# "EQ-T-GREE-HEAD-9" =    # 1 ea
-# "EQ-T-GREE-MULTI-U30" =    # 1 ea
-# "EQ-T-GREE-SAPPHIRE-9" =    # 1 ea
-# "EQ-T-GREE-SAPPHIRE-9-OD" =    # 1 ea
-# "EQ-T-GREE-SLIM24" =    # 1 ea
-# "EQ-T-GREE-VIREO-GEN3" =    # 1 ea
-# "EQ-T-SAUNA-HEATER" =    # 1 ea
-# "EQ-T-WATER-HEATER" =    # 1 ea
-# "EQ-T-WATER-HEATER-240" =    # 1 ea
-# "FURN-ARMCHAIR-35" =    # 1 ea
-# "FURN-BAR-STOOL" =    # 3 ea
-# "FURN-BED-KING" =    # 1 ea
-# "FURN-BESTA-2358" =    # 9 ea
-# "FURN-DESK-48" =    # 4 ea
-# "FURN-DESK-CHAIR" =    # 4 ea
-# "FURN-DINING-2-36" =    # 2 ea
-# "FURN-DINING-8" =    # 1 ea
-# "FURN-DINING-CHAIR" =    # 10 ea
-# "FURN-G-WORKBENCH" =    # 1 ea
-# "FURN-M-MUD-BENCH" =    # 1 ea
-# "FURN-M-MUD-CLOSET-S" =    # 1 ea
-# "FURN-MEDIA-60" =    # 1 ea
-# "FURN-PLANT-18" =    # 2 ea
-# "FURN-QUEEN-BED" =    # 4 ea
-# "FURN-ROCKING-CHAIR-30" =    # 2 ea
-# "FURN-SAUNA-BENCH-2T-102" =    # 1 ea
-# "FURN-SAUNA-BENCH-54" =    # 1 ea
-# "FURN-SOFA-84" =    # 1 ea
-# "FURN-WALL-RACK-24" =    # 1 ea
-# "FURN-WARDROBE-48" =    # 3 ea
-# "FX-FLOOR-DRAIN" =    # 1 ea
-# "FX-HYDRANT-SD34" =    # 2 ea
-# "FX-HYDRANT-Y34SS" =    # 1 ea
-# "FX-KITCHEN-SINK-33" =    # 2 ea
-# "FX-LAUNDRY-SINK-24" =    # 1 ea
-# "FX-LAV-24" =    # 5 ea
-# "FX-LAV-COMPACT" =    # 1 ea
-# "FX-SHOWER-36" =    # 2 ea
-# "FX-TOILET-STD" =    # 4 ea
-# "FX-TOILET-WH" =    # 1 ea
-# "FX-TUB-60" =    # 1 ea
-# "FX-TUBSHOWER-60" =    # 2 ea
-# "REG-T-ERV-EXH" =    # 15 ea
-# "REG-T-ERV-SAUNA-EXH" =    # 1 ea
-# "REG-T-ERV-SAUNA-SUP" =    # 1 ea
-# "REG-T-ERV-SUP" =    # 5 ea
-# "REG-T-HP-RET" =    # 1 ea
-# "REG-T-HP-SUP" =    # 8 ea
+"APPL-DISHWASHER" = { low = 450, high = 1200 }  # 1 ea
+"APPL-DISPOSAL" = { low = 90, high = 300 }  # 1 ea
+"APPL-ELECTRIC-RANGE" = { low = 600, high = 1600 }  # 1 ea
+"APPL-FREEZER-UPRIGHT" = { low = 550, high = 1400 }  # 1 ea
+"APPL-HOOD-RECIRC" = { low = 150, high = 600 }  # 1 ea
+"APPL-REFRIGERATOR" = { low = 900, high = 2600 }  # 1 ea
+"APPL-WASHER-DRYER-STACKED" = { low = 1100, high = 2600 }  # 1 ea
+"CASE-B15" = { low = 130, high = 330 }  # 1 ea
+"CASE-B24" = { low = 170, high = 420 }  # 1 ea
+"CASE-B30" = { low = 190, high = 480 }  # 2 ea
+"CASE-B36" = { low = 220, high = 550 }  # 2 ea
+"CASE-ISLAND-60" = { low = 500, high = 1400 }  # 1 ea
+"CASE-OVER-36" = { low = 150, high = 380 }  # 2 ea
+# The PANTRY-CLOSET rows are read as built-in casework at the same $/LF as the kitchen
+# boxes. If they are in fact wire/melamine closet systems they are 3-5x too high.
+"CASE-PANTRY-CLOSET-24" = { low = 200, high = 550 }  # 1 ea
+"CASE-PANTRY-CLOSET-48" = { low = 350, high = 950 }  # 1 ea
+"CASE-PANTRY-CLOSET-72" = { low = 500, high = 1400 }  # 1 ea
+"CASE-SINK-BASE-36" = { low = 230, high = 570 }  # 1 ea
+"CASE-TALL-PANTRY-12" = { low = 240, high = 600 }  # 1 ea
+"CASE-TALL-PANTRY-18" = { low = 280, high = 700 }  # 1 ea
+"CASE-W24" = { low = 140, high = 350 }  # 1 ea
+"CASE-W30" = { low = 160, high = 400 }  # 4 ea
+"ED-T-AP-CEILING" = { low = 100, high = 350 }  # 2 ea
+"ED-T-AP-OUTDOOR" = { low = 150, high = 450 }  # 1 ea
+"ED-T-BACKUP-ENCL" = { low = 250, high = 800 }  # 1 ea
+"ED-T-BACKUP-PANEL" = { low = 90, high = 260 }  # 1 ea
+"ED-T-DISCONNECT-3R" = { low = 30, high = 90 }  # 4 ea
+# Both EV rows are the RECEPTACLE, per the catalog name — not the EVSE that plugs into it.
+# If the Emporia unit is meant to be in the estimate it is a separate ~$400-600 line.
+"ED-T-EV-1450" = { low = 25, high = 80 }  # 1 ea
+"ED-T-EV-620" = { low = 15, high = 45 }  # 1 ea
+"ED-T-FLOOR-STAT" = { low = 130, high = 300 }  # 3 ea
+"ED-T-JBOX" = { low = 12, high = 40 }  # 1 ea
+"ED-T-LT-CAN3" = { low = 25, high = 70 }  # 16 ea
+"ED-T-LT-CAN4" = { low = 25, high = 75 }  # 49 ea
+"ED-T-LT-CAN4-4000" = { low = 25, high = 75 }  # 4 ea
+"ED-T-LT-CAN4-WET" = { low = 35, high = 95 }  # 9 ea
+"ED-T-LT-CHANDELIER" = { low = 300, high = 1500 }  # 1 ea
+"ED-T-LT-FAN52" = { low = 150, high = 500 }  # 2 ea
+"ED-T-LT-FAN60" = { low = 200, high = 600 }  # 1 ea
+"ED-T-LT-FLOOD-NARROW" = { low = 80, high = 250 }  # 1 ea
+"ED-T-LT-MIRROR" = { low = 120, high = 450 }  # 5 ea
+"ED-T-LT-MIRROR-RING" = { low = 150, high = 500 }  # 1 ea
+"ED-T-LT-PANEL" = { low = 45, high = 130 }  # 6 ea
+"ED-T-LT-PENDANT" = { low = 90, high = 400 }  # 1 ea
+"ED-T-LT-PSU-200" = { low = 60, high = 160 }  # 2 ea
+"ED-T-LT-PSU-60" = { low = 30, high = 90 }  # 3 ea
+"ED-T-LT-SCONCE-EXT" = { low = 70, high = 250 }  # 1 ea
+"ED-T-LT-SCONCE-SPOT" = { low = 70, high = 250 }  # 5 ea
+"ED-T-LT-SCONCE-STAIR" = { low = 60, high = 220 }  # 3 ea
+"ED-T-LT-SCONCE-UD" = { low = 70, high = 240 }  # 2 ea
+"ED-T-LT-SHOP4" = { low = 30, high = 80 }  # 2 ea
+"ED-T-LT-SPOT-SW" = { low = 60, high = 200 }  # 1 ea
+"ED-T-LT-TUBE6" = { low = 120, high = 350 }  # 2 ea
+"ED-T-LT-WALL-LINEAR" = { low = 100, high = 350 }  # 1 ea
+"ED-T-METER" = { low = 70, high = 200 }  # 1 ea
+# The enclosure AND its contents (router, PoE switch, patch panel), per the catalog name.
+"ED-T-NET-ENCLOSURE" = { low = 300, high = 900 }  # 1 ea
+"ED-T-PANEL" = { low = 250, high = 700 }  # 1 ea
+"ED-T-PV-JB" = { low = 25, high = 80 }  # 1 ea
+"ED-T-RECEPTACLE" = { low = 2.5, high = 9 }  # 68 ea
+"ED-T-RECEPTACLE-1430" = { low = 12, high = 35 }  # 1 ea
+"ED-T-RECEPTACLE-240" = { low = 15, high = 45 }  # 1 ea
+"ED-T-RECEPTACLE-520S" = { low = 4, high = 14 }  # 1 ea
+"ED-T-RECEPTACLE-620" = { low = 12, high = 35 }  # 1 ea
+"ED-T-RECEPTACLE-GFCI" = { low = 18, high = 45 }  # 17 ea
+"ED-T-SAUNA-JB" = { low = 12, high = 40 }  # 1 ea
+"ED-T-SWITCH" = { low = 3, high = 10 }  # 36 ea
+"ED-T-SWITCH-DIM" = { low = 20, high = 60 }  # 6 ea
+"ED-T-SWITCH-TIMER" = { low = 30, high = 80 }  # 1 ea
+"EQ-T-EG4-12KPV" = { low = 2800, high = 4200 }  # 1 ea
+"EQ-T-ERV" = { low = 900, high = 2200 }  # 1 ea
+"EQ-T-ESS-BATT" = { low = 2200, high = 3600 }  # 1 ea
+"EQ-T-FIREPLACE-EL" = { low = 300, high = 900 }  # 1 ea
+"EQ-T-GARAGE-HEATER" = { low = 80, high = 250 }  # 1 ea
+# The seven Gree rows: dealer-direct, no published component prices. Scaled off the one
+# figure that is public (Vireo+ 2-head system, $2,499+) with outdoor units carrying ~70% of
+# a system and heads the rest. Softest numbers in this file — get a dealer quote.
+"EQ-T-GREE-HEAD-12" = { low = 400, high = 800 }  # 2 ea
+"EQ-T-GREE-HEAD-9" = { low = 350, high = 700 }  # 1 ea
+"EQ-T-GREE-MULTI-U30" = { low = 1800, high = 3200 }  # 1 ea
+"EQ-T-GREE-SAPPHIRE-9" = { low = 400, high = 850 }  # 1 ea
+"EQ-T-GREE-SAPPHIRE-9-OD" = { low = 900, high = 1800 }  # 1 ea
+"EQ-T-GREE-SLIM24" = { low = 700, high = 1500 }  # 1 ea
+"EQ-T-GREE-VIREO-GEN3" = { low = 1500, high = 2800 }  # 1 ea
+"EQ-T-SAUNA-HEATER" = { low = 700, high = 2200 }  # 1 ea
+"EQ-T-WATER-HEATER" = { low = 1500, high = 3000 }  # 1 ea
+"EQ-T-WATER-HEATER-240" = { low = 450, high = 1200 }  # 1 ea
+"FT-ACCESS-PANEL-1414" = { low = 35, high = 90 }  # 2 ea
+"FT-ACCESS-PANEL-1429" = { low = 55, high = 140 }  # 1 ea
+"FT-CURTAIN-ROD-48" = { low = 25, high = 90 }  # 8 ea
+"FT-CURTAIN-ROD-84" = { low = 40, high = 140 }  # 1 ea
+"FT-CURTAIN-ROD-OUTDOOR-114" = { low = 90, high = 260 }  # 2 ea
+# FF&E from here to FURN-WARDROBE-48 — owner furniture, not a build cost.
+"FURN-ARMCHAIR-35" = { low = 200, high = 1200 }  # 1 ea
+"FURN-BAR-STOOL" = { low = 60, high = 350 }  # 3 ea
+"FURN-BED-KING" = { low = 400, high = 2500 }  # 1 ea
+"FURN-BESTA-2358" = { low = 90, high = 260 }  # 9 ea
+"FURN-DESK-48" = { low = 120, high = 600 }  # 4 ea
+"FURN-DESK-CHAIR" = { low = 100, high = 600 }  # 4 ea
+"FURN-DINING-2-36" = { low = 120, high = 600 }  # 2 ea
+"FURN-DINING-8" = { low = 500, high = 3000 }  # 1 ea
+"FURN-DINING-CHAIR" = { low = 60, high = 350 }  # 10 ea
+"FURN-G-WORKBENCH" = { low = 200, high = 900 }  # 1 ea
+# The two mudroom and two sauna rows are millwork, not catalogue furniture — they are
+# built, and the range is what the built article costs in materials and shop time.
+"FURN-M-MUD-BENCH" = { low = 150, high = 700 }  # 1 ea
+"FURN-MEDIA-60" = { low = 150, high = 800 }  # 1 ea
+"FURN-PLANT-18" = { low = 30, high = 150 }  # 2 ea
+"FURN-QUEEN-BED" = { low = 250, high = 1500 }  # 4 ea
+"FURN-ROCKING-CHAIR-30" = { low = 150, high = 700 }  # 2 ea
+"FURN-SAUNA-BENCH-2T-102" = { low = 400, high = 1500 }  # 1 ea
+"FURN-SAUNA-BENCH-54" = { low = 200, high = 800 }  # 1 ea
+"FURN-SOFA-84" = { low = 500, high = 3000 }  # 1 ea
+"FURN-WALL-RACK-24" = { low = 30, high = 150 }  # 1 ea
+"FURN-WARDROBE-48" = { low = 250, high = 1200 }  # 3 ea
+"FX-FLOOR-DRAIN" = { low = 30, high = 150 }  # 1 ea
+"FX-HYDRANT-SD34" = { low = 50, high = 200 }  # 2 ea
+"FX-HYDRANT-Y34SS" = { low = 90, high = 400 }  # 1 ea
+"FX-KITCHEN-SINK-33" = { low = 200, high = 700 }  # 2 ea
+"FX-LAUNDRY-SINK-24" = { low = 100, high = 400 }  # 1 ea
+# Read as the lavatory AND its vanity: no CASE-* row covers the bathrooms, so if this were
+# the bowl alone the vanities would be missing from the estimate entirely.
+"FX-LAV-24" = { low = 200, high = 800 }  # 5 ea
+"FX-LAV-COMPACT" = { low = 90, high = 350 }  # 1 ea
+"FX-SHOWER-36" = { low = 250, high = 900 }  # 2 ea
+"FX-TOILET-STD" = { low = 150, high = 600 }  # 4 ea
+# Wall-hung: the carrier and in-wall tank are most of the price, hence 3x the floor unit.
+"FX-TOILET-WH" = { low = 500, high = 1600 }  # 1 ea
+"FX-TUB-60" = { low = 300, high = 1500 }  # 1 ea
+"FX-TUBSHOWER-60" = { low = 400, high = 1400 }  # 2 ea
+"REG-T-ERV-EXH" = { low = 25, high = 80 }  # 15 ea
+"REG-T-ERV-SAUNA-EXH" = { low = 15, high = 60 }  # 1 ea
+"REG-T-ERV-SAUNA-SUP" = { low = 15, high = 60 }  # 1 ea
+"REG-T-ERV-SUP" = { low = 25, high = 80 }  # 5 ea
+"REG-T-HP-RET" = { low = 30, high = 90 }  # 1 ea
+"REG-T-HP-SUP" = { low = 15, high = 50 }  # 8 ea
 
 [floor_finishes]
+# RESEARCHED 2026-08-08 — [low, high] $/SF on the ORDER quantity (waste already in the
+# number of feet, not in the price), material only, no underlayment prep and no labour.
+# Basis: carpet $1-12/SF material with mid-grade nylon at the bottom third; rebond pad
+# $0.30-1.80; LVP $2-4.50 for mid-range, $5-7 for high-end; foam/cork LVP underlayment
+# $0.25-0.75; white oak $4-7 material; rubber tile $3-8; ceramic/porcelain $4-14.
+# `sealed-concrete` is the SEALER ONLY — the slab itself is already billed in [concrete],
+# so pricing a finished slab price here would bill the same concrete twice.
+# Sources: homeguide.com 2026 LVP / carpet / carpet-padding / tile-flooring cost charts,
+# dgfloors.com carpet grade table, angi.com oak flooring 2026, homeadvisor.com rubber floor.
 # $/SF on the ORDER quantity (waste included), by finish
-# "carpet" =    # 2525 SF
-# "carpet-pad" =    # 2525 SF
-# "lvp" =    # 1275 SF
-# "lvp-underlayment" =    # 1275 SF
-# "oak" =    # 351 SF
-# "rubber" =    # 357 SF
-# "sealed-concrete" =    # 1156 SF
-# "tile" =    # 499 SF
+"carpet" = { low = 1.5, high = 4 }  # 2533 SF
+"carpet-pad" = { low = 0.35, high = 1 }  # 2533 SF
+"lvp" = { low = 2, high = 4.5 }  # 1272 SF
+"lvp-underlayment" = { low = 0.25, high = 0.75 }  # 1272 SF
+"oak" = { low = 4, high = 8 }  # 351 SF
+"rubber" = { low = 3, high = 8 }  # 357 SF
+"sealed-concrete" = { low = 0.35, high = 1.2 }  # 1155 SF — densifier + sealer only
+"tile" = { low = 3, high = 9 }  # 495 SF
 
 [envelope_layers]
 # RESEARCHED 2026-08-07 — [low, high] $/SF net, material only. IMPORTANT: this section is
@@ -281,7 +422,6 @@
 # homeadvisor.com insulation costs, rmax.com XPS pricing, greenbuildingadvisor.com mineral
 # wool thread, westernstatesmetalroofing.com metal roof guide, homeguide.com drywall and
 # OSB-vs-plywood 2026 charts.
-# ESTIMATES FOR BUDGETING — replace with supplier quotes before they mean anything.
 # $/SF net, by material tag
 "air-barrier" = { low = 0.25, high = 0.6 }  # 8386.3 SF
 "cabinet-plywood" = { low = 2.5, high = 4.5 }  # 101.2 SF
@@ -291,6 +431,10 @@
 "gwb-x" = { low = 0.6, high = 1 }  # 92.3 SF
 "icf-eps" = { low = 2.2, high = 3.8 }  # 952.5 SF
 "latex-paint" = { low = 0.35, high = 0.8 }  # 7004.9 SF
+# 2026-08-08: the accent colour, 80 SF. A deep/custom base runs above a builder white and
+# the coverage per gallon is worse, so it sits a step over the `latex-paint` row.
+# homeguide.com 2026: $15-50/gal at 350-400 SF per gallon per coat.
+"latex-paint-accent" = { low = 0.45, high = 1.1 }  # 80 SF
 "mineral-wool" = { low = 1.1, high = 2 }  # 6316.6 SF
 "polyiso" = { low = 1.2, high = 2.2 }  # 4946 SF
 "polyiso-foil" = { low = 1.3, high = 2.4 }  # 297.4 SF
@@ -303,29 +447,54 @@
 "zip-r" = { low = 2.2, high = 4.2 }  # 631.3 SF
 
 [wall_structure]
-# $/CY placed, by wall assembly — the monolithic walls, which frame no members and so bill
-# nowhere else. Keyed on assembly, not material: garden work and house foundation concrete
-# are both "concrete" and are not the same price. For the CMU/block/brick rows the yardage
-# is gross wall volume (hollow units are not deducted), so price those per placed yard of
-# wall, not per yard of material.
-# "BASEMENT_BRICK_VENEER" =    # 1.37 CY
-# "CATLIN_BASEMENT_12" =    # 46.68 CY
-# "CATLIN_CONC_12_INT" =    # 22.18 CY
-# "GARAGE_ICF_8" =    # 11.76 CY
-# "PORCH_RAILING_MASONRY" =    # 3.15 CY
-# "RETAINING_BLOCK_12" =    # 9.07 CY
-# "SAUNA_LINER_ON_CONCRETE" =    # 4.61 CY
-# "SUNKEN_GARDEN_ARCH_16" =    # 3.31 CY
-# "SUNKEN_GARDEN_WALL" =    # 28.91 CY
+# RESEARCHED 2026-08-08 — [low, high] $/cy PLACED, by wall assembly. Keyed on assembly, not
+# material: garden work and house foundation concrete are both "concrete" and are not the
+# same price. Every range is derived from a published per-SF-of-face or per-LF-of-wall price
+# divided by the wall's own thickness, because that is how walls are actually quoted:
+#   poured 12" wall   $90-280/LF of a ~9' wall = 0.333 cy/LF -> $270-840/cy. Formwork, not
+#                     concrete, is the cost, which is why this is 2x the [concrete] footing
+#                     rate. CATLIN_BASEMENT_12, CATLIN_CONC_12_INT, SAUNA_LINER_ON_CONCRETE
+#                     (the concrete backing only — its sauna-tg liner bills in
+#                     [envelope_layers]) and SUNKEN_GARDEN_WALL sit on this basis.
+#   8" ICF            $12-25/SF of face installed; 1 SF of 8" wall = 0.0247 cy -> $486-1012/cy.
+#   16" arch          curved formwork, roughly double a straight wall of the same yardage.
+#   block retaining   $20-55/SF of face; 12" thick = 0.037 cy/SF -> $540-1485/cy.
+#   brick veneer      the yardage is GROSS wall volume (units not deducted). A 4" veneer at
+#                     $12-25/SF of face = 0.0123 cy/SF -> $975-2030/cy.
+#   masonry railing   small formed sections; the highest $/cy in the file because the yard
+#                     of material is the cheapest part of it.
+# Sources: homeguide.com 2026 precast/poured concrete wall cost, angi.com concrete wall,
+# latestcost.com ICF wall system guide, icfinsider.com 2026 cost guide, homeguide.com
+# concrete retaining wall, homewyse.com block retaining wall.
+# $/cy placed, by wall assembly
+"BASEMENT_BRICK_VENEER" = { low = 900, high = 1900 }  # 1.37 CY
+"CATLIN_BASEMENT_12" = { low = 320, high = 600 }  # 46.68 CY
+"CATLIN_CONC_12_INT" = { low = 320, high = 600 }  # 22.18 CY
+"GARAGE_ICF_8" = { low = 480, high = 1000 }  # 11.76 CY
+"PORCH_RAILING_MASONRY" = { low = 700, high = 1600 }  # 3.15 CY
+"RETAINING_BLOCK_12" = { low = 500, high = 1200 }  # 9.07 CY
+"SAUNA_LINER_ON_CONCRETE" = { low = 320, high = 600 }  # 4.61 CY
+"SUNKEN_GARDEN_ARCH_16" = { low = 600, high = 1200 }  # 3.31 CY
+"SUNKEN_GARDEN_WALL" = { low = 350, high = 650 }  # 28.91 CY
 
 [wood_surfaces]
-# $/SF on the order quantity, by material tag. Mind the mirrors: rows flagged also_in_* bill
-# primarily elsewhere — price a material here OR there, not both.
-# "elm-timber" =    # 0 SF
-# "oak" =    # 351 SF
-# "sauna-tg" =    # 278 SF
-# "tile" =    # 52 SF
-# "walnut-tg" =    # 59 SF
+# RESEARCHED 2026-08-08 — [low, high] $/SF on the order quantity, by material tag. Mind the
+# mirrors: this table shares three of its five materials with tables that already price them,
+# and the BOM says which by carrying `also_in_*`. Only `walnut-tg` is priced here, because
+# only `walnut-tg` is billed nowhere else.
+#   oak          also_in_floor_finishes  -> priced in [floor_finishes], 351 SF, same number
+#   sauna-tg     also_in_envelope_layers -> priced in [envelope_layers]
+#   elm-timber   also_in_structural_solids, and carries no order_area_sqft (bills as timber)
+#   tile         the RM-B-SAUNA override, 52 SF of the same tile [floor_finishes] prices
+# Basis for walnut: hardwood T&G paneling material $2-6/SF for common species, and walnut is
+# at the top of the species ladder — homeguide.com tongue-and-groove ceiling cost 2026,
+# designtransitionstudio.com walnut price guide, homewyse.com wall paneling 2026.
+# $/SF on the order quantity, by material tag
+# "elm-timber" =    # 0 SF — timber, bills in structural_solids
+# "oak" =    # 351 SF — billed in [floor_finishes]
+# "sauna-tg" =    # 278 SF — billed in [envelope_layers]
+# "tile" =    # 52 SF — billed in [floor_finishes]
+"walnut-tg" = { low = 8, high = 18 }  # 51 SF
 
 [openings]
 # RESEARCHED 2026-08-07 — [low, high] $ each for the UNIT ONLY: no installation, no
@@ -336,21 +505,24 @@
 # carry a tempered-glass adder over their parent (~30-40%) and are otherwise identical
 # units. Sources: simplywise.com, angi.com, homeguide.com french-door and garage-door cost
 # guides, homewyse.com fiberglass french door estimates.
-# ESTIMATES FOR BUDGETING — a real window schedule is quoted as a package, not per unit.
 #
-# `None` is not priced: it is the cased openings, which have no product to buy.
+# `None` is not priced: it is the six cased openings, which have no product to buy. The
+# drywall return and casing that make one are billed in [envelope_layers] and [edge_trim].
 # $ each, by door/window type
 "DT-EXT-FRENCH60" = { low = 1400, high = 3200 }  # 4 ea
 "DT-EXT-OVERHEAD192" = { low = 1400, high = 3200 }  # 1 ea
 "DT-EXT-SWING36" = { low = 700, high = 1800 }  # 2 ea
 "DT-INT-BIFOLD56" = { low = 220, high = 500 }  # 2 ea
+# 2026-08-08: new since the last pass. A 48" bypass (sliding) closet pair, hardware
+# included — priced between the bifold and the french on the same door-cost surveys.
+"DT-INT-BYPASS48" = { low = 180, high = 450 }  # 1 ea
 "DT-INT-FRENCH60" = { low = 500, high = 1200 }  # 1 ea
 "DT-INT-SWING24" = { low = 150, high = 380 }  # 3 ea
 "DT-INT-SWING30" = { low = 160, high = 400 }  # 12 ea
 "DT-INT-SWING30-GLAZED" = { low = 300, high = 650 }  # 1 ea
 "DT-INT-SWING30-TRIMLESS" = { low = 600, high = 1400 }  # 1 ea
 "DT-INT-SWING32" = { low = 170, high = 420 }  # 9 ea
-# "None" =    # 4 ea
+# "None" =    # 6 ea — cased openings, no product
 "WT-1424" = { low = 280, high = 550 }  # 6 ea
 "WT-1424-FIX" = { low = 250, high = 480 }  # 1 ea
 "WT-1424-T" = { low = 400, high = 700 }  # 5 ea
@@ -364,74 +536,132 @@
 "WT-3048-T" = { low = 720, high = 1300 }  # 3 ea
 
 [footing_bedding]
+# RESEARCHED 2026-08-08 — [low, high] $/cy delivered, by aggregate spec. Basis: #57 washed
+# crushed stone at $56-57/ton on full-truck loads, which at ~2,700 lb/cy is $76-77/cy;
+# crushed stone generally runs $25-60/cy at the low end and $50-110/cy typical. 97 cy is a
+# full-load quantity, so this sits at the delivered-in-bulk end rather than the by-the-bag
+# end. Sources: homeguide.com 2026 gravel prices, crushedstonecalculator.com #57 cost,
+# mygravelbuddy.com delivered #57 pricing.
 # $/cy, by aggregate spec
-# "ASTM C33 #57 washed crushed stone" =    # 96.97 cy
+"ASTM C33 #57 washed crushed stone" = { low = 45, high = 85 }  # 97.07 cy
 
 [pipe_runs]
+# RESEARCHED 2026-08-08 — [low, high] $/LF of run, material only, INCLUDING a share of
+# fittings (a DWV run is mostly fittings by cost, and a per-foot price that ignored them
+# would be about half the real number). Basis: 1/2" PEX $0.30-1.10/LF and 3/4" $0.50-1.50/LF;
+# PVC DWV at retail $1.29/LF for 1-1/2", $1.58/LF for 2", $2.60/LF for 4". Fittings carry
+# roughly a 50-80% adder on the bare pipe. Sources: designtransitionstudio.com PEX cost per
+# foot 2026, latestcost.com PEX install guide, lowes.com Charlotte Pipe DWV listings.
 # $/LF, by system
-# "drain" =    # 224.5 LF
-# "vent" =    # 209.6 LF
-# "water_cold" =    # 319.4 LF
-# "water_hot" =    # 194.3 LF
+"drain" = { low = 2, high = 4.5 }  # 224.5 LF
+"vent" = { low = 1.5, high = 3.5 }  # 209.6 LF
+"water_cold" = { low = 0.9, high = 2.2 }  # 319.4 LF
+"water_hot" = { low = 0.9, high = 2.2 }  # 194.3 LF
 
 [ducts]
+# RESEARCHED 2026-08-08 — [low, high] $/LF, material only. Sheet metal is $7-13/LF for
+# materials against $35-60/LF installed, so this is the material third of a published
+# installed price. Supply and return are the heat-pump trunk and branches in rigid metal;
+# `exhaust` is the smaller round ERV/vent runs, which are cheaper by the foot. Sources:
+# homeguide.com 2026 cost to replace ductwork, angi.com ductwork installation, angi.com flex
+# vs rigid duct comparison.
 # $/LF, by system
-# "exhaust" =    # 20.7 LF
-# "return" =    # 92.5 LF
-# "supply" =    # 123.7 LF
+"exhaust" = { low = 3, high = 8 }  # 20.7 LF
+"return" = { low = 6, high = 13 }  # 92.5 LF
+"supply" = { low = 6, high = 13 }  # 123.7 LF
 
 [sleeves]
+# RESEARCHED 2026-08-08 — [low, high] $ each, by sleeve diameter. Derived, not quoted: each
+# range is the sleeve's own average length (total_length_ft / count from the takeoff) times
+# PVC pipe at $1.30-2.60/LF by size, plus end caps and tape. The averages the takeoff gives
+# are 4.6' at 1.5", 9.3' at 1.75", 5.2' at 2", 4.9' at 2.5", 3.2' at 3", 2.5' at 4" and 3.3'
+# at 6" — which is why the 1.75" row is dearer than the 3" row despite the smaller bore.
+# Source for the pipe: lowes.com / homedepot.com PVC DWV listings, same as [pipe_runs].
 # $ each, by sleeve diameter (in)
-# "1.5" =    # 24 ea
-# "2.0" =    # 12 ea
-# "2.5" =    # 1 ea
-# "3.0" =    # 12 ea
-# "4.0" =    # 9 ea
-# "6.0" =    # 3 ea
+"1.5" = { low = 5, high = 12 }  # 28 ea
+"1.75" = { low = 10, high = 22 }  # 3 ea
+"2.0" = { low = 7, high = 16 }  # 18 ea
+"2.5" = { low = 10, high = 22 }  # 2 ea
+"3.0" = { low = 8, high = 18 }  # 13 ea
+"4.0" = { low = 9, high = 20 }  # 9 ea
+"6.0" = { low = 20, high = 45 }  # 3 ea
 
 [conduit]
+# RESEARCHED 2026-08-08 — [low, high] $/LF of EMT, material only, including couplings and
+# straps. Basis: EMT $0.60-2.00/LF across 1/2"-1", with 1" quoted at $1.50 wholesale and
+# $1.80 retail; larger trade sizes scale with the steel. Sources: bhumicalculator.com 2026
+# electrical conduit cost per foot, designtransitionstudio.com conduit price per foot,
+# shieldenstrut.com EMT conduit cost.
 # $/LF, by trade size (in)
-# "0.75" =    # 37.6 LF
-# "1.0" =    # 58.9 LF
-# "1.25" =    # 36.3 LF
-# "1.5" =    # 33.6 LF
+"0.75" = { low = 0.9, high = 1.8 }  # 37.6 LF
+"1.0" = { low = 1.3, high = 2.4 }  # 60.3 LF
+"1.25" = { low = 1.9, high = 3.4 }  # 36.3 LF
+"1.5" = { low = 2.3, high = 4.2 }  # 35.0 LF
 
 [plumbing_specialties]
+# RESEARCHED 2026-08-08 — [low, high] $ each, device only, no installation. Keyed on the
+# accessory KIND rather than a model number, so each range spans the products that kind is
+# bought as: a `backflow_preventer` is $60 as a hose-bibb device and $300 as a testable
+# assembly, and the plan does not yet say which. Basis: retail plumbing-supply listings for
+# quarter-turn stops, full-port ball valves, hammer arrestors, hose-bibb vacuum breakers and
+# modular pipe-penetration seals.
 # $ each, by device kind
-# "backflow_preventer" =    # 2 ea
-# "main_shutoff" =    # 1 ea
-# "penetration_seal" =    # 2 ea
-# "ro_stub" =    # 1 ea
-# "shutoff" =    # 4 ea
-# "vacuum_breaker" =    # 3 ea
-# "water_hammer_arrestor" =    # 3 ea
+"backflow_preventer" = { low = 60, high = 300 }  # 2 ea
+"main_shutoff" = { low = 25, high = 70 }  # 1 ea
+"penetration_seal" = { low = 25, high = 90 }  # 2 ea
+"ro_stub" = { low = 15, high = 45 }  # 1 ea
+"shutoff" = { low = 8, high = 25 }  # 4 ea
+"vacuum_breaker" = { low = 10, high = 35 }  # 3 ea
+"water_hammer_arrestor" = { low = 12, high = 35 }  # 3 ea
 
 [install_parts]
+# RESEARCHED 2026-08-08 — [low, high] $ each, by loose part. The seven 24V rows are
+# APPL-M-DISP's control loop, billed as parts because its route is not designed
+# (plan/placeables.py). They are an order, not geometry. Ranges are retail electrical-supply
+# prices for the named part; none is large enough to move the estimate.
 # $ each, by loose part
-# The seven 24V rows are APPL-M-DISP's control loop, billed as parts because its route is
-# not designed (plan/placeables.py). They are an order, not geometry.
-# "18/6 CL2 control cable, 50 ft" =    # 1 ea
-# "24V Class-2 control transformer, 40 VA" =    # 1 ea
-# "2-gang low-voltage mounting ring and plate" =    # 1 ea
-# "NEMA 1 enclosure, 6x6x4, hinged" =    # 1 ea
-# "closed-cell spray foam, 1/4\" annulus around the barrel" =    # 2 ea
-# "double-pole contactor, 30 A, 24V coil" =    # 1 ea
-# "guarded illuminated toggle switch, 24V" =    # 1 ea
-# "momentary pushbutton, stainless, counter-top" =    # 1 ea
-# "plastic mounting bracket, non-conductive" =    # 2 ea
-# "silicone gasket, hydrant escutcheon" =    # 2 ea
+"18/6 CL2 control cable, 50 ft" = { low = 30, high = 70 }  # 1 ea
+"24V Class-2 control transformer, 40 VA" = { low = 20, high = 50 }  # 1 ea
+"2-gang low-voltage mounting ring and plate" = { low = 4, high = 12 }  # 1 ea
+"NEMA 1 enclosure, 6x6x4, hinged" = { low = 25, high = 70 }  # 1 ea
+"closed-cell spray foam, 1/4\" annulus around the barrel" = { low = 8, high = 20 }  # 2 ea
+"double-pole contactor, 30 A, 24V coil" = { low = 20, high = 60 }  # 1 ea
+"guarded illuminated toggle switch, 24V" = { low = 12, high = 35 }  # 1 ea
+"momentary pushbutton, stainless, counter-top" = { low = 20, high = 60 }  # 1 ea
+"plastic mounting bracket, non-conductive" = { low = 3, high = 10 }  # 2 ea
+"silicone gasket, hydrant escutcheon" = { low = 3, high = 10 }  # 2 ea
 
 [pipe_insulation]
+# RESEARCHED 2026-08-08 — [low, high] $/LF, material only. Basis: 1" ASJ-jacketed fiberglass
+# pipe sleeve at roughly $1.50-3.50/LF by pipe size at plumbing supply, and closed-cell
+# elastomeric foil-faced sleeve a little dearer per foot for the same bore. The second row
+# is 1.4 LF and cannot move the estimate.
 # $/LF, by spec
-# "1\" fiberglass sleeve, ASJ jacket (R-3.5)" =    # 146.9 LF
-# "1/2\" closed-cell elastomeric sleeve, foil-faced, over the barrel" =    # 1.4 LF
+"1\" fiberglass sleeve, ASJ jacket (R-3.5)" = { low = 1.5, high = 3.5 }  # 146.9 LF
+"1/2\" closed-cell elastomeric sleeve, foil-faced, over the barrel" = { low = 1.5, high = 4 }  # 1.4 LF
 
 [edge_trim]
+# RESEARCHED 2026-08-08 — [low, high] $/LF, material only, formed stock delivered. THIS is
+# where the roof-edge members are priced; the matching `* panel` profiles in [framing] are
+# left blank so the same foot is not billed twice (their BOM rows carry `also_in_framing`).
+#
+# Each key blends more than one product, because the price key is the CATEGORY and the BOM
+# puts several materials under one:
+#   fascia        38.3 LF of 9"x1" PVC + 107.0 LF of cellular-PVC 1x6.8 + 106.2 LF of SPF
+#                 1.5x5.5. PVC trim is $3-7/LF and the SPF is ~$1-1.6/LF, so the range is
+#                 the blend and the mix matters if it changes.
+#   ridge_cap     36.8 LF dark formed metal + 26.7 LF standing-seam.
+#   drip_flashing 21.0 LF plain aluminium + 73.7 LF dark formed metal.
+# Basis: aluminium soffit material $0.50-2.00/LF and fascia $7-22/LF installed against
+# $10-24/LF total (so material is the lower third); aluminium drip edge $0.50-1.00/LF
+# material; formed and colour-matched metal trim runs well over plain stock.
+# Sources: homeguide.com 2026 soffit and fascia replacement, angi.com aluminum soffit cost,
+# homewyse.com aluminum fascia, homeguide.com drip edge cost 2026.
 # $/LF, by trim category (fascia, soffit, flashings, formed roof trim)
-# "corner_trim" =    # 147.8 LF
-# "drip_flashing" =    # 94.7 LF
-# "edge_cladding" =    # 243.9 LF
-# "fascia" =    # 251.5 LF
-# "ridge_cap" =    # 63.5 LF
-# "soffit" =    # 101.1 LF
-# "wrb_counterflashing" =    # 21 LF
+"corner_trim" = { low = 3, high = 8 }  # 147.8 LF
+"drip_flashing" = { low = 1, high = 3 }  # 94.7 LF
+"edge_cladding" = { low = 3, high = 8 }  # 243.9 LF
+"fascia" = { low = 2.5, high = 6.5 }  # 251.5 LF
+"ridge_cap" = { low = 4, high = 10 }  # 63.5 LF
+"soffit" = { low = 3.5, high = 9 }  # 101.1 LF
+"wrb_counterflashing" = { low = 1.5, high = 4 }  # 21 LF
