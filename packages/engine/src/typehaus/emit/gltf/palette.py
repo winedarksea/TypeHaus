@@ -107,7 +107,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "connector": (0.35, 0.36, 0.38, 1.0),  # galvanized hardware
     "sump": (0.30, 0.32, 0.34, 1.0),       # pit
     "vent": (0.88, 0.88, 0.86, 1.0),       # painted vent pipe
-    # routed plumbing runs (→ resolve/mep.py _emit_pipe_solids), riser-diagram colors
+    # routed plumbing runs (→ resolve/mep.py _emit_run_solids), riser-diagram colors
     "pipe_drain": (0.20, 0.20, 0.22, 1.0),       # ABS/PVC waste, near-black
     "pipe_vent": (0.88, 0.88, 0.86, 1.0),        # same as the vent risers
     "pipe_water_hot": (0.80, 0.25, 0.22, 1.0),   # red PEX
@@ -124,6 +124,19 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "ro_stub": (0.72, 0.58, 0.28, 1.0),
     "water_hammer_arrestor": (0.62, 0.64, 0.66, 1.0),  # sealed steel chamber, not a valve
     "penetration_seal": (0.95, 0.72, 0.35, 1.0),       # the foam/gasket kit, not plumbing metal
+    # Raceways (→ resolve/mep.py _emit_run_solids, one category per side of the NEC
+    # 800.133/725 power-vs-comms line). Deliberately *outside* the riser-diagram hues above:
+    # a raceway drawn in red or blue would read as a supply line in the one view where
+    # telling them apart matters — the basement ceiling, where CD-B-KITCHEN runs the length
+    # of the house alongside the hot and cold trunks. Violet and teal are what the plumbing
+    # convention leaves free, and they separate cleanly from each other, which is the
+    # distinction that actually earns a colour here.
+    "conduit_power": (0.545, 0.302, 0.702, 1.0),  # 0x8b4db3
+    "conduit_data": (0.180, 0.659, 0.608, 1.0),   # 0x2ea89b
+    # The cast-in block-out (→ resolve/mep.py _emit_sleeve_solid). Not concrete — it is the
+    # hole, and reading as the pour it sits in would defeat the point of drawing it — and not
+    # pipe metal either: the cream is the fibre void former the concrete crew actually sets.
+    "pipe_sleeve": (0.851, 0.788, 0.639, 1.0),    # 0xd9c9a3
     "solar": (0.10, 0.14, 0.28, 1.0),      # PV module glass, deep blue
     "fascia": (0.92, 0.92, 0.90, 1.0),     # PVC fascia
     "soffit": (0.88, 0.88, 0.85, 1.0),     # vented soffit panel under the overhang

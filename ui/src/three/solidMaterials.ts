@@ -30,7 +30,7 @@ export const SOLID_CATEGORY_COLOR: Record<string, number> = {
   connector: 0x595c61, // galvanized hardware
   sump: 0x4d5257, // pit
   vent: 0xe0e0db, // painted vent pipe
-  // routed plumbing runs (engine resolve/mep.py _emit_pipe_solids), riser-diagram colors —
+  // routed plumbing runs (engine resolve/mep.py _emit_run_solids), riser-diagram colors —
   // mirrors emit/gltf/palette.py, change one change the other.
   pipe_drain: 0x333338, // ABS/PVC waste, near-black
   pipe_vent: 0xe0e0db, // same as the vent risers
@@ -47,6 +47,15 @@ export const SOLID_CATEGORY_COLOR: Record<string, number> = {
   ro_stub: 0xb89447,
   water_hammer_arrestor: 0x9ea3a8,
   penetration_seal: 0xf2b859,
+  // Raceways, one colour per side of the NEC 800.133/725 power-vs-comms line. Kept off the
+  // riser-diagram hues above on purpose: a raceway in red or blue reads as a supply line in
+  // the basement ceiling, which is exactly where CD-B-KITCHEN runs beside the hot and cold
+  // trunks and where telling them apart is the whole point.
+  conduit_power: 0x8b4db3, // violet
+  conduit_data: 0x2ea89b, // teal
+  // The cast-in block-out. Not the grey of the pour it sits in — that would defeat drawing it
+  // — and not pipe metal: the cream is the fibre void former the concrete crew sets.
+  pipe_sleeve: 0xd9c9a3,
   fascia: 0xebebe6, // PVC fascia
   gutter: 0xd9dbde, // metal gutter
   flashing: 0xbfc4cc, // metal flashing
@@ -93,6 +102,14 @@ export const SOLID_CATEGORY_TRADE: Record<string, Trade> = {
   water_hammer_arrestor: "plumbing",
   ro_stub: "plumbing",
   penetration_seal: "plumbing",
+  // The cast-in block-outs. Plumbing even for the dozen that carry raceways: a sleeve is a
+  // pre-pour operation graded by the plumbing rough-in rules, and splitting the family by
+  // what eventually threads it would hide half the pour-day list behind another toggle.
+  pipe_sleeve: "plumbing",
+  // Raceway trunks, one category per side of the NEC 800.133/725 power-vs-comms line. Both
+  // are the electrician's work; the split is for the colour and the inspector heading.
+  conduit_power: "electrical",
+  conduit_data: "electrical",
   // Bath/dryer exhaust and the radon riser.
   vent: "mechanical",
   // Fenestration and the extrusions that hold it, plus the rainscreen base closure — envelope
@@ -248,6 +265,9 @@ const SOLID_CATEGORY_LABEL: Record<string, string> = {
   pipe_water_cold: "Cold water pipe",
   pipe_gas: "Gas pipe",
   pipe_radon: "Radon pipe",
+  pipe_sleeve: "Cast-in sleeve",
+  conduit_power: "Power conduit",
+  conduit_data: "Data conduit",
   drain_tile: "Drain tile",
   french_drain: "French drain",
   drywell: "Drywell",

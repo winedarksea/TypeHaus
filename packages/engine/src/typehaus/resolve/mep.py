@@ -113,13 +113,39 @@ def _resolve_conduit_run(model: ResolvedModel, run: ConduitRun, storey_tag: str)
     z0 = run.start_elevation.meters if run.start_elevation is not None else None
     z1 = run.end_elevation.meters if run.end_elevation is not None else None
     rise = abs(z1 - z0) if z0 is not None and z1 is not None else 0.0
-    model.conduits.append(ResolvedConduitRun(
+    resolved = ResolvedConduitRun(
         uid=run.uid, tag=run.tag, storey=storey_tag, path=path,
         trade_size_m=run.trade_size.meters, z_start_m=z0, z_end_m=z1,
         length_m=plan_len + rise, from_ref=run.from_ref, to_ref=run.to_ref,
         service=run.service.value if run.service is not None else None,
-    ))
+    )
+    model.conduits.append(resolved)
+    # Geometry from the same profile ``concrete_crossings`` walks, so the raceway a reader
+    # sees in the viewer is the one the pour-day crossing list was derived from — one
+    # derivation, not two that can disagree. A run with no elevation emits nothing, and that
+    # silence is deliberate: ``_conduit_vertical_profile`` returns None precisely when there
+    # is no vertical information to extrude, and a raceway drawn at an invented height would
+    # be a claim about where the electrician bores that nobody authored.
+    profile = _conduit_vertical_profile(resolved)
+    if profile is not None:
+        solid_path, solid_z = profile
+        _emit_run_solids(model, run.uid or run.tag, run.tag, storey_tag,
+                         solid_path, solid_z, run.trade_size.meters / 2.0,
+                         _conduit_category(resolved.service))
     return []
+
+
+#: A raceway's solid category. Two of them, because the one distinction that matters when you
+#: look at a raceway is which side of NEC 800.133/725 it is on: comms may never share a run
+#: with power, so "power or data" is the whole question, and the voltage is a property to read
+#: off the run (``ResolvedConduitRun.service``) rather than a thing to tell apart by colour.
+#: A capped spare rides with power — it is in the electrician's rough-in, and the only things
+#: that will ever go in it are power or comms; a third "conduit_spare" label would name an
+#: empty pipe nobody needs to distinguish on screen. (Categories are what the 3D inspector
+#: *prints*, so they are named for what a person calls the thing, never for its element
+#: family — "conduit run" would be as useless a heading as "pipe accessory" was.)
+def _conduit_category(service: str | None) -> str:
+    return "conduit_data" if service == Service.DATA.value else "conduit_power"
 
 
 def _pipe_vertex_z(run: PipeRun, path: list[tuple[float, float]],
@@ -176,16 +202,21 @@ def _pipe_wall_refs(run: PipeRun, n_segments: int) -> tuple[tuple[str | None, ..
     return (), []
 
 
-def _emit_pipe_solids(model: ResolvedModel, run_uid: str, run_tag: str, storey_tag: str,
-                      path: list[tuple[float, float]], z: list[float],
-                      radius: float, system: str) -> None:
+def _emit_run_solids(model: ResolvedModel, run_uid: str, run_tag: str, storey_tag: str,
+                     path: list[tuple[float, float]], z: list[float],
+                     radius: float, category: str) -> None:
     """Viewer/IFC solids for a routed run: vertical drops as faceted circle prisms,
     horizontal/sloped segments as chord-band stacks (→ resolve/round_solids.py).
-    Category is per-system (``pipe_drain``, ``pipe_water_hot``, …) so the viewer and
-    the glTF export color-code trades the way a riser diagram does."""
+
+    ``category`` is passed in rather than derived here because two trades route through this
+    one geometry: a pipe run is per-system (``pipe_drain``, ``pipe_water_hot``, …) and a
+    raceway is per-service (``conduit_power``/``conduit_data``). The sweep is identical — a
+    round section along a polyline with per-vertex elevations — and the only thing that
+    differs is the label the viewer and the glTF export colour-code by, so the label is the
+    argument. (It used to be ``system: str`` with ``f"pipe_{system}"`` baked in, which is why
+    conduit had no geometry at all: there was nowhere for a raceway to say what it was.)"""
     from typehaus.resolve.model import ResolvedSolid
 
-    category = f"pipe_{system}"
     for i in range(len(path) - 1):
         a, b = path[i], path[i + 1]
         za, zb = z[i], z[i + 1]
@@ -224,8 +255,8 @@ def _resolve_pipe_run(model: ResolvedModel, run: PipeRun, storey) -> list[Findin
         developed = sum(
             math.hypot(length(sub(path[i], path[i + 1])), z[i + 1] - z[i])
             for i in range(len(path) - 1))
-        _emit_pipe_solids(model, run.uid or run.tag, run.tag, storey.tag, path, z,
-                          run.diameter.meters / 2.0, run.system.value)
+        _emit_run_solids(model, run.uid or run.tag, run.tag, storey.tag, path, z,
+                         run.diameter.meters / 2.0, f"pipe_{run.system.value}")
     else:
         developed = plan_len
     model.pipe_runs.append(ResolvedPipeRun(
@@ -389,7 +420,7 @@ def _resolve_sleeve(model: ResolvedModel, sleeve: SleevePenetration,
 
     expected = _expected_sleeve_point(model, sleeve)
     offset = length(sub(center, expected)) if expected is not None else None
-    model.sleeves.append(ResolvedSleeve(
+    resolved = ResolvedSleeve(
         uid=sleeve.uid, tag=sleeve.tag, storey=storey_tag, host_slab=host_tag,
         center=center, pipe_d_m=sleeve.pipe_diameter.meters,
         sleeve_d_m=sleeve.sleeve_diameter.meters, z0_m=z0, z1_m=z1,
@@ -398,8 +429,117 @@ def _resolve_sleeve(model: ResolvedModel, sleeve: SleevePenetration,
         center_z_m=(sleeve.center_elevation.meters
                     if sleeve.center_elevation is not None else None),
         purpose=sleeve.purpose.value,
-    ))
+    )
+    model.sleeves.append(resolved)
+    _emit_sleeve_solid(model, resolved, outline, storey_tag)
     return findings
+
+
+#: One category for every sleeve, whatever it carries. Unlike a run — where hot, cold, waste
+#: and vent are four different things to find on a riser diagram — a block-out is a block-out:
+#: the concrete crew sets the same forms for all of them, and what eventually threads it is
+#: the *pipe's* business, not the hole's. Splitting by ``purpose`` would put four labels on one
+#: pour-day operation. Plumbing trade, because sleeve coverage is a plumbing rough-in question
+#: (``checks/mep/plumbing.py``), including for the raceways that share the pour.
+_SLEEVE_CATEGORY = "pipe_sleeve"
+
+#: Longer than any host is thick; the probe is clipped to the host footprint immediately.
+_SLEEVE_BORE_PROBE_M = 100.0
+
+
+def _emit_sleeve_solid(model: ResolvedModel, sleeve: ResolvedSleeve,
+                       outline: Ring, storey_tag: str) -> None:
+    """The cast-in block-out, drawn at ``sleeve_d_m`` — the hole, at the size it is formed.
+
+    A *solid*, not a void: ``ResolvedSolid`` extrudes a plan outline and has no boolean, so
+    what lands in the model is a short length of sleeve where the hole goes rather than an
+    absence in the pour (subtracting it from the host is deferred work, → plans/TODO.md
+    "boolean sleeve voids"). That is still the thing a pre-pour walk is looking for: a sleeve
+    you can click, at the diameter that gets set, in the concrete it gets set in.
+
+    Vertical (the slab drop) spans the host's full depth as a faceted cylinder. Horizontal
+    (a foundation-wall crossing, or the under-footing protection sleeves of IRC P2604) is
+    swept in chord bands along the host's normal, exactly as a horizontal pipe segment is
+    (``_emit_run_solids``), so a run and the sleeve it threads read as the same round section.
+    """
+    # Suffixed, never the bare element uid: the IFC emitter derives a GlobalId from it, and
+    # the ``SleevePenetration`` already exports under its own uid as an IfcBuildingElementProxy
+    # — reusing it put two entities in the file with the same GUID and failed express-rule
+    # IfcRoot.UR1 on every vertical sleeve.
+    uid = f"{sleeve.uid or sleeve.tag}-sleeve"
+    radius = sleeve.sleeve_d_m / 2.0
+    if sleeve.axis != "horizontal":
+        model.solids.append(ResolvedSolid(
+            uid=uid, tag=sleeve.tag, storey=storey_tag, category=_SLEEVE_CATEGORY,
+            outline=circle_outline(sleeve.center, radius, PIPE_FACETS),
+            z0_m=sleeve.z0_m, z1_m=sleeve.z1_m))
+        return
+    if sleeve.center_z_m is None:
+        return  # no centerline: already an integrity FAIL above, and nothing to draw it at
+    bore = _sleeve_bore(model, sleeve, outline)
+    if bore is None:
+        return
+    start, end = bore
+    for band, (band_outline, band_z0, band_z1) in enumerate(
+            sloped_run_bands(start, end, radius, sleeve.center_z_m, sleeve.center_z_m)):
+        model.solids.append(ResolvedSolid(
+            uid=f"{uid}-b{band:02d}", tag=f"{sleeve.tag}-B{band + 1}", storey=storey_tag,
+            category=_SLEEVE_CATEGORY, outline=band_outline, z0_m=band_z0, z1_m=band_z1))
+
+
+def _sleeve_bore(model: ResolvedModel, sleeve: ResolvedSleeve,
+                 outline: Ring) -> tuple[tuple[float, float], tuple[float, float]] | None:
+    """A horizontal sleeve's two plan endpoints: the host's normal, clipped to the host.
+
+    A wall states its own normal — perpendicular to its axis. A footing has no axis (an
+    under-footing crossing goes across a strip pour), so the direction comes off the shape
+    instead: the short side of the footprint's minimum rotated rectangle, which is
+    across-the-strip for the same reason the wall normal is across-the-wall. Clipping the
+    probe to the footprint gives the bore the host's real thickness at that point rather
+    than a nominal one, and because it is a plain intersection a stepped or chamfered pour
+    needs no special case.
+    """
+    from shapely.geometry import LineString, Polygon
+
+    footprint = Polygon(outline)
+    direction = None
+    if sleeve.host_category == "wall":
+        wall = model.wall(sleeve.host_slab)
+        if wall is not None:
+            (x0, y0), (x1, y1) = wall.axis
+            dx, dy = x1 - x0, y1 - y0
+            norm = math.hypot(dx, dy)
+            if norm > 1e-9:
+                direction = (-dy / norm, dx / norm)
+    if direction is None:
+        direction = _short_axis(footprint)
+    if direction is None:
+        return None
+    (cx, cy), (ux, uy) = sleeve.center, direction
+    inside = footprint.intersection(LineString((
+        (cx - ux * _SLEEVE_BORE_PROBE_M, cy - uy * _SLEEVE_BORE_PROBE_M),
+        (cx + ux * _SLEEVE_BORE_PROBE_M, cy + uy * _SLEEVE_BORE_PROBE_M))))
+    travel = [(x - cx) * ux + (y - cy) * uy
+              for part in getattr(inside, "geoms", (inside,))
+              for x, y in getattr(part, "coords", ())]
+    if not travel or max(travel) - min(travel) < 1e-6:
+        return None
+    lo, hi = min(travel), max(travel)
+    return (cx + ux * lo, cy + uy * lo), (cx + ux * hi, cy + uy * hi)
+
+
+def _short_axis(footprint) -> tuple[float, float] | None:
+    """The unit plan direction across a footprint's narrow dimension."""
+    boundary = getattr(footprint.minimum_rotated_rectangle, "exterior", None)
+    corners = list(boundary.coords)[:4] if boundary is not None else []
+    if len(corners) < 4:
+        return None
+    edges = [(corners[i], corners[(i + 1) % 4]) for i in range(4)]
+    (ax, ay), (bx, by) = min(
+        edges, key=lambda e: math.hypot(e[1][0] - e[0][0], e[1][1] - e[0][1]))
+    dx, dy = bx - ax, by - ay
+    norm = math.hypot(dx, dy)
+    return (dx / norm, dy / norm) if norm > 1e-9 else None
 
 
 def _expected_sleeve_point(model: ResolvedModel,

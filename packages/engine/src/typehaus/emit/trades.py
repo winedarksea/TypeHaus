@@ -48,7 +48,7 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     "beam": "framing",
     "column": "framing",
 
-    # Routed plumbing (``resolve/mep.py::_emit_pipe_solids``, one category per ``PipeSystem``).
+    # Routed plumbing (``resolve/mep.py::_emit_run_solids``, one category per ``PipeSystem``).
     "pipe_drain": "plumbing",
     "pipe_vent": "plumbing",
     "pipe_water_hot": "plumbing",
@@ -70,6 +70,19 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     "water_hammer_arrestor": "plumbing",
     "ro_stub": "plumbing",
     "penetration_seal": "plumbing",
+    # The cast-in block-outs (``resolve/mep.py::_emit_sleeve_solid``). Plumbing, even for the
+    # dozen that carry raceways: a sleeve is a pre-pour operation graded by the plumbing
+    # rough-in rules (``checks/mep/plumbing.py`` sleeve_coverage / footing_clearance), and
+    # splitting the family by what eventually threads it would hide half the pour-day list
+    # behind the Electrical toggle on the one walk where you want to see all of it at once.
+    "pipe_sleeve": "plumbing",
+
+    # Raceways (``resolve/mep.py::_resolve_conduit_run``), one category per side of the
+    # NEC 800.133/725 power-vs-comms line. Both are the electrician's work, so both ride the
+    # electrical toggle; the split exists for the colour and the inspector heading, not for
+    # the grouping.
+    "conduit_power": "electrical",
+    "conduit_data": "electrical",
 
     # Vent runs — bath/dryer exhaust and the radon riser (``resolve/accessories.py``).
     "vent": "mechanical",
