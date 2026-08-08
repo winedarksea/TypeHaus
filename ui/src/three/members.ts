@@ -44,6 +44,9 @@ const CATEGORY_COLOR: Record<string, number> = {
   // reinforced line reads as reinforced rather than as a joist drawn twice.
   sister_joist: 0xa87a4d,
   rim: 0xa87a4c,
+  // Furring strapping over the sheathing — paler than the studs behind it, so a
+  // rainscreen grid reads as its own layer. Mirrors the engine _PALETTE entry.
+  strapping: 0xc1986a,
   ridge_beam: 0x8c6238,
   brace: 0xa3763f, // = blocking, as engine-side: the diagonal knee brace is framing lumber
   king: 0xb3854f,

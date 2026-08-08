@@ -41,6 +41,11 @@
 "11.875 I-joist" = { low = 2.75, high = 4.25 }  # 3824 LF
 # "12x4 panel" =    # 66 LF
 # "13.625x0.5 panel" =    # 112 LF
+# 1x4 furring/strapping is not in the 2026-08-07 sweep above — it had no members to
+# price then. $0.45-0.85/LF is 8' furring strips at $3.50-6.75 a piece, 2026 Midwest
+# retail (SPF strapping runs a little under a 2x4 by the foot). ESTIMATE, same standing
+# as its neighbours: replace with a supplier quote before it means anything.
+"1x4" = { low = 0.45, high = 0.85 }  # 4496 LF
 # "1x6.81165 panel" =    # 112 LF
 "2-1.75x11.875 LVL" = { low = 6, high = 10 }  # 16 LF
 "2-1.75x14 LVL" = { low = 7.5, high = 12 }  # 20 LF

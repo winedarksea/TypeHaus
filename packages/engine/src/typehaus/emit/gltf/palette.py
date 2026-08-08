@@ -58,6 +58,10 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # the joist it doubles, a shade darker so a reinforced line reads as one in the viewer.
     "sister_joist": (0.66, 0.48, 0.30, 1.0),
     "rim": (0.66, 0.48, 0.30, 1.0),
+    # Furring strapping (resolve/framing/furring.py). Lighter than a stud: 1x4 battens
+    # over the sheathing are the last lumber outboard of the wall, and reading them as
+    # a paler grid over the darker frame is how a rainscreen is told apart from it.
+    "strapping": (0.757, 0.596, 0.416, 1.0),  # 0xc1986a
     "ridge_beam": (0.55, 0.38, 0.22, 1.0),
     "brace": (0.639, 0.463, 0.247, 1.0),         # 0xa3763f — as blocking
     # Stick-framed roof lumber + the blocking that fills between it. These had no entry at

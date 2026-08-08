@@ -103,6 +103,8 @@ export function runMemberColorTests() {
     "rafter", "blocking", "outlooker", "barge_rafter",
     "top_chord", "bottom_chord", "truss_web", "truss_heel", "seat_cut",
     "king", "jack", "cripple", "sill", "bearing_stiffener",
+    // Rainscreen/liner strapping: lumber on its own grid, not the grey fallback.
+    "strapping",
   ]) {
     assert(categoryColor(category) !== CATEGORY_FALLBACK,
       `${category} has its own colour rather than the grey fallback`);

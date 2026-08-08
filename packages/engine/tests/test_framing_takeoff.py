@@ -210,14 +210,15 @@ def test_every_resolved_collection_is_billed_or_waived(catlin_model) -> None:
 # named here with the reason — keyed by function, and the reason has to survive reading.
 _WAIVED_LAYER_FUNCTIONS: dict[str, str] = {
     "airgap": "an air gap is nothing at all — a void between layers, with no material",
-    # Honest note, not a clean waiver: the framing cut list does carry strapping as members
-    # for the walls that frame it, but W-B-CS (SAUNA_LINER_ON_CONCRETE) has a
-    # `struct-1-plywood` FURRING layer over a concrete core and zero members, so *that*
-    # strapping is billed nowhere. Known gap, tracked in plans/TODO.md; waiving by function
-    # here rather than fixing it is deliberate scope, and the note is the price of that.
-    "furring": "lineal-foot strapping the framing cut list carries as members — except on "
-               "monolithic walls, where it frames nothing: W-B-CS is a known unbilled gap",
 }
+
+# FURRING used to live in the waiver above, with an apology attached: no wall framed
+# strapping at all, so on a monolithic wall (W-B-CS, a `struct-1-plywood` liner band over
+# concrete) it reached no BOM section whatsoever. `resolve/framing/furring.py` now frames
+# every FURRING layer that carries a FramingSpec, so the waiver is gone and this is the
+# assertion that replaces it — asserted below rather than waived, because "the framing cut
+# list carries it" is exactly the kind of claim that was false for months while nobody
+# could see it.
 
 
 def test_every_wall_layer_is_billed_or_waived(catlin_model) -> None:
@@ -248,6 +249,17 @@ def test_every_wall_layer_is_billed_or_waived(catlin_model) -> None:
                 assert framed or wall.tag in monolithic, (
                     f"{wall.tag}: its {layer.material_ref} STRUCTURE layer frames no "
                     "members and is not in `wall_structure` — it is billed nowhere")
+            elif function == LayerFunction.FURRING.value:
+                # A FURRING layer bills as lineal-foot lumber in the framing cut list, and
+                # only if *this* layer resolved members there — including on walls whose
+                # structure is a pour and frames none. Keyed by layer name (the child_key
+                # `resolve/framing/furring.py` mints) rather than by category alone, so a
+                # second furring layer cannot ride on the first one's strapping.
+                assert any(member.category == "strapping"
+                           and member.child_key.startswith(f"strapping-{layer.name}-")
+                           for member in wall.members), (
+                    f"{wall.tag}: its {layer.material_ref} FURRING layer {layer.name!r} "
+                    "frames no strapping — it is billed nowhere")
             else:
                 assert function in _WAIVED_LAYER_FUNCTIONS, (
                     f"{wall.tag}: layer function {function!r} is neither billed nor waived "

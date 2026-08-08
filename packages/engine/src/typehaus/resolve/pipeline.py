@@ -20,6 +20,7 @@ from typehaus.resolve.construction import apply_construction_rules
 from typehaus.resolve.envelope import resolve_columns_and_beams, resolve_envelope_geometry
 from typehaus.resolve.floor_heat import resolve_floor_heat
 from typehaus.resolve.floors import resolve_floors
+from typehaus.resolve.framing.furring import frame_furring
 from typehaus.resolve.framing.roof import frame_roofs
 from typehaus.resolve.framing.soffit import frame_soffits
 from typehaus.resolve.framing.solver import frame_model
@@ -79,6 +80,10 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(apply_construction_rules(model))
     with _stage("framing"):
         findings.extend(frame_model(plan, model))
+        # Strapping over whatever the wall turned out to be: a separate pass because a
+        # FURRING layer frames its own grid in its own band even when the wall behind it
+        # is a pour, and `frame_wall` returns early for those (→ framing/furring.py).
+        findings.extend(frame_furring(plan, model))
         # Soffit ladders hang off records the envelope stage already created.
         findings.extend(frame_soffits(model))
         findings.extend(frame_roofs(model))

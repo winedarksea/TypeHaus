@@ -34,8 +34,12 @@ _M_TO_FT = 3.280839895
 # a monolithic one (a pour, a masonry course) bills by area and cubic yards in
 # `takeoff/wall_structure.py` — concrete is bought by the yard, not the square foot. That
 # missing pointer is what let a whole basement's worth of concrete reach no order for
-# months. AIRGAP and FURRING are not billable here either: an air gap is nothing at all,
-# and furring is lineal-foot strapping the framing cut list carries as members.
+# months. AIRGAP and FURRING are not billable *here* either, for opposite reasons: an air
+# gap is nothing at all, and furring is lineal-foot strapping, which the framing cut list
+# now carries as real ``strapping`` members — laid out by `resolve/framing/furring.py` for
+# every FURRING layer with a FramingSpec, monolithic walls included. That last clause is
+# the whole point of the pass: until it existed the claim on this line was simply false,
+# and W-B-CS's liner strapping over concrete was ordered by nobody.
 _BILLABLE = (
     LayerFunction.INSULATION,
     LayerFunction.SHEATHING,

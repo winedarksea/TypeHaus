@@ -924,18 +924,29 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
         for point in wall.axis:  # both systems share the intended garage footprint
             assert any(point == pytest.approx(stem_point, abs=1e-9)
                        for stem_point in stem_points)
-        structure = next(layer for layer in wall.layers if layer.function == "structure")
         start, end = wall.axis
         dx, dy = end[0] - start[0], end[1] - start[1]
         span = (dx * dx + dy * dy) ** 0.5
         normal_x, normal_y = -dy / span, dx / span
-        center_offset = sum(
-            (point[0] - start[0]) * normal_x + (point[1] - start[1]) * normal_y
-            for point in structure.polygon
-        ) / len(structure.polygon)
+
+        def band_offset(function: str) -> float:
+            layer = next(ly for ly in wall.layers if ly.function == function)
+            return sum(
+                (point[0] - start[0]) * normal_x + (point[1] - start[1]) * normal_y
+                for point in layer.polygon
+            ) / len(layer.polygon)
+
+        # Every member is on the centreline of the band it belongs to — the studs on the
+        # structure layer's, and the rainscreen strapping on the FURRING layer's, 4-7/16"
+        # outboard of it (resolve/framing/furring.py). Asserting one offset for all of them
+        # would put the battens inside the ZIP-R they are fastened over.
+        expected = {"strapping": band_offset("furring")}
+        default_offset = band_offset("structure")
 
         assert wall.members
+        assert any(member.category == "strapping" for member in wall.members)
         for member in wall.members:
+            center_offset = expected.get(member.category, default_offset)
             for point in (member.p0, member.p1):
                 offset = (point[0] - start[0]) * normal_x + (point[1] - start[1]) * normal_y
                 assert offset == pytest.approx(center_offset, abs=1e-9)

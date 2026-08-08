@@ -314,13 +314,23 @@ def _framing_axis(rw: ResolvedWall) -> tuple[tuple[float, float], tuple[float, f
     its authored direction and along-wall opening distances, but must sit inside the
     structure layer represented by the resolved polygon.
     """
-    polygon = _structure_polygon(rw)
+    return band_axis(rw.axis, _structure_polygon(rw))
+
+
+def band_axis(axis: tuple[tuple[float, float], tuple[float, float]],
+              polygon) -> tuple[tuple[float, float], tuple[float, float]]:
+    """``axis`` translated sideways onto the centreline of the band ``polygon`` occupies.
+
+    Shared with ``framing/furring.py``, which lays strapping in a FURRING layer's band
+    rather than the structure layer's: same arithmetic, different polygon, and a copy of
+    it would be a copy of the mid-band subtlety below.
+    """
     if not polygon:
-        return rw.axis
-    raw_start, raw_end = rw.axis
+        return axis
+    raw_start, raw_end = axis
     perpendicular = normal(unit(sub(raw_end, raw_start)))
     if perpendicular == (0.0, 0.0):
-        return rw.axis
+        return axis
     offsets = [
         (point[0] - raw_start[0]) * perpendicular[0]
         + (point[1] - raw_start[1]) * perpendicular[1]
