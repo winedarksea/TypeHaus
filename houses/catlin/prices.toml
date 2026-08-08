@@ -54,6 +54,9 @@
 [sheet_goods]
 # $/4x8 sheet, by material tag
 # "composite-deck" =    # 6 sheets
+# Ceiling gypsum (FS-SECOND's `ceiling_below`), by the sheet. Distinct from the
+# `[envelope_layers]` "gwb" row, which is wall lining priced by the net SF.
+# "gwb" =    # 39 sheets
 # "plywood-subfloor" =    # 78 sheets
 # "struct-1-plywood" =    # 179 sheets
 # "zip-r" =    # 20 sheets

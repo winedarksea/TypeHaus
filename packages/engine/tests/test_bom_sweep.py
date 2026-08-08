@@ -263,36 +263,31 @@ def test_stair_finish_bills_treads_risers_and_landings(catlin_model, bom):
 
 def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_model):
     """``FloorSystem.ceiling_below`` was read by nothing — a whole storey of ceiling drywall
-    absent from the order. catlin authors none, so this hangs one on a real deck and checks
-    it bills at the same area as the subfloor it shares that deck with."""
-    from typehaus.model import DeckLayer, inch
-    from typehaus.resolve import resolve
+    absent from the order. FS-SECOND authors 5/8" gypsum under its deck (that deck's
+    underside *is* the main storey's ceiling), and it has to bill over exactly the surface
+    its own subfloor covers: the same gross rectangle, less the same stair opening."""
+    from typehaus.resolve.geometry import polygon_area
     from typehaus.takeoff.framing import sheet_goods_takeoff
 
-    plan = catlin_model.plan
-    storey, system = next(
-        (storey.tag, element)
-        for storey in plan.storeys
-        for element in plan.storey_elements(storey.tag)
-        if element.element_kind == "FloorSystem" and element.subfloor is not None)
-    lidded = system.model_copy(update={
-        "ceiling_below": DeckLayer(material_ref="gwb", thickness=inch(0.625))})
-    patched = plan.with_elements(
-        storey, [lidded if element.tag == system.tag else element
-                 for element in plan.storey_elements(storey)])
-    model, _findings = resolve(patched)
-
-    before = {row["scope"] for row in sheet_goods_takeoff(catlin_model)}
-    assert "ceiling" not in before, "the fixture is supposed to have no ceiling_below"
-    rows = sheet_goods_takeoff(model)
+    rows = sheet_goods_takeoff(catlin_model)
     ceiling = [row for row in rows if row["scope"] == "ceiling"]
-    assert ceiling, "ceiling_below reached no order"
+    assert len(ceiling) == 1, "ceiling_below reached no order"
     assert ceiling[0]["material"] == "gwb"
-    # It covers the deck the subfloor covers, so their areas agree to the row's rounding.
+    assert float(ceiling[0]["thickness_in"]) == 0.625
+
+    floor = next(item for item in catlin_model.floors if item.tag == "FS-SECOND")
+    points = [point for member in floor.members for point in (member.p0, member.p1)]
+    gross = ((max(p[0] for p in points) - min(p[0] for p in points))
+             * (max(p[1] for p in points) - min(p[1] for p in points)))
+    opening = next(element for element in catlin_model.plan.all_elements()
+                   if getattr(element, "tag", None) == "FO-S-STAIR")
+    net_sqft = (gross - abs(polygon_area([p.xy_m for p in opening.outline]))) * 10.7639
+    assert float(ceiling[0]["net_area_sqft"]) == pytest.approx(net_sqft, abs=0.2)
+
+    # One deck of several: the house's subfloor area is larger than this one ceiling.
     subfloor_area = sum(float(row["net_area_sqft"]) for row in rows
                         if row["scope"] == "subfloor")
-    assert float(ceiling[0]["net_area_sqft"]) < subfloor_area  # one deck of several
-    assert float(ceiling[0]["net_area_sqft"]) > 0
+    assert 0 < float(ceiling[0]["net_area_sqft"]) < subfloor_area
 
 
 def test_conductors_bill_beside_the_raceway_they_pull_through(bom):

@@ -772,6 +772,16 @@ FLOOR = [
                                  bearing_refs=("W-M-W2", "W-M-C2", "W-M-E1",
                                                "BM-M-HALL")),
                 subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=inch(0.75)),
+                # The main floor's ceiling: this deck's underside *is* that ceiling, and
+                # 5/8" board is what hangs there. Until it was authored a whole storey of
+                # ceiling gypsum was missing from the order — the sheet take-off reads
+                # `ceiling_below`, and nothing else in the plan says a ceiling exists at
+                # all. Plain board, not type X: R302.13 reaches the floor over a basement,
+                # not this one. Layered ceiling assemblies (channel, insulation, a separate
+                # finish, as an authored stack) stay deferred — this is the sheet, billed,
+                # not a ceiling-assembly schema. The living room's resilient channel rides
+                # on it as CR-LIVING-CEIL-RC (plan/assemblies.py).
+                ceiling_below=DeckLayer(material_ref="gwb", thickness=inch(0.625)),
                 openings=("FO-S-STAIR",)),
 ]
 

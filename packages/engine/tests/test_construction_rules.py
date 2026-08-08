@@ -26,6 +26,7 @@ _RULE_TAGS = {
     "CR-FOUNDATION-FOAM-RETURN",
     "CR-PORCH-MASONRY-RETURN",
     "CR-DECK-ON-CONCRETE-SILL",
+    "CR-LIVING-CEIL-RC",
 }
 
 
@@ -33,6 +34,15 @@ def test_all_authored_returns_are_emitted(catlin_model) -> None:
     """Every authored ConstructionRule produces at least one resolved return."""
     emitted = {ret.tag for ret in catlin_model.construction_returns}
     assert _RULE_TAGS <= emitted, _RULE_TAGS - emitted
+
+
+def test_every_authored_predicate_has_a_finder(catlin_model) -> None:
+    """A rule whose ``applies_to`` no finder answers is inert: the pass skips it, the return
+    never exists, and nothing in the build says so. The registry is the contract."""
+    from typehaus.resolve.construction import _FINDERS
+
+    predicates = {rule.applies_to for rule in catlin_model.plan.library.construction_rules}
+    assert predicates <= set(_FINDERS), predicates - set(_FINDERS)
 
 
 def test_returns_carry_valid_quantity_geometry(catlin_model) -> None:
@@ -62,7 +72,7 @@ def test_returns_contribute_takeoff_rows(catlin_model) -> None:
     rows = construction_returns_takeoff(catlin_model)
     categories = {row["category"] for row in rows}
     assert {"pt-sill-plate", "sauna-liner-return", "foundation-foam-return",
-            "masonry-corner-return"} <= categories, categories
+            "masonry-corner-return", "resilient-channel"} <= categories, categories
     for row in rows:
         assert row["count"] >= 1
         assert row["length_ft"] > 0.0
@@ -142,3 +152,114 @@ def test_the_deck_sill_bills_as_pt_sill_plate(catlin_model) -> None:
             if row["category"] == "pt-sill-plate"]
     assert rows
     assert sum(row["length_ft"] for row in rows) > 19.0  # the wall sills plus the deck's
+
+
+# --- resilient channel under a ceiling ----------------------------------------
+# The living room's ceiling gypsum hangs on channel instead of straight off FS-SECOND's
+# I-joists, so footfall from the bedrooms above does not arrive as impact noise. It is the
+# one return billed from an *area*: the runs cross the joists at 16" o.c., so the total run
+# is the ceiling field over that spacing (the same derivation radiant-wire length uses).
+# The rule is scoped to RM-M-LIVING — the rest of that deck's ceiling is screwed direct.
+_RC_TAG = "CR-LIVING-CEIL-RC"
+_RC_SPACING_M = 16 * 0.0254
+
+
+def _rc(model):
+    rcs = [r for r in model.construction_returns if r.tag == _RC_TAG]
+    assert len(rcs) == 1, rcs
+    return rcs[0]
+
+
+def _living_room(model):
+    return next(r for r in model.rooms if r.tag == "RM-M-LIVING")
+
+
+def _stair_hole(model) -> Polygon:
+    opening = next(element for element in model.plan.all_elements()
+                   if getattr(element, "tag", None) == "FO-S-STAIR")
+    return Polygon([point.xy_m for point in opening.outline])
+
+
+def test_the_ceiling_channel_is_scoped_to_one_room(catlin_model) -> None:
+    """FS-SECOND decks the whole storey; the channel covers one room of it. The field is
+    the room's clear face itself — the same polygon the rooms stage publishes, re-derived
+    here because this pass runs long before that stage fills ``model.rooms``."""
+    rc = _rc(catlin_model)
+    assert rc.kind == "furring"
+    assert rc.takeoff_category == "resilient-channel"
+    assert set(rc.element_tags) == {"FS-SECOND", "RM-M-LIVING"}
+    assert rc.returning_layer == "gwb"  # the membrane it carries, authored on the deck
+    assert Polygon(rc.outline).area == pytest.approx(_living_room(catlin_model).area_m2)
+    # A field, not a junction lap: there is no boundary condition for an overlay to join on.
+    assert rc.condition_key is None
+
+
+def test_the_ceiling_channel_leaves_the_stair_well_out(catlin_model) -> None:
+    """No ceiling hangs under FO-S-STAIR, so no channel is ordered for it — ~70 sqft of
+    RM-M-LIVING, 9% of the room and 9% of the channel. The well falls *inside* the room, so
+    it is a hole: it comes off the billed quantity, which the outline ring cannot show."""
+    rc = _rc(catlin_model)
+    room = Polygon(_living_room(catlin_model).clear_face)
+    hole = _stair_hole(catlin_model)
+    assert hole.intersection(room).area > 5.0  # the guard only bites if they overlap
+    assert rc.length_m * _RC_SPACING_M == pytest.approx(room.difference(hole).area)
+    assert rc.length_m < Polygon(rc.outline).area / _RC_SPACING_M
+
+
+def test_the_ceiling_channel_length_is_its_field_over_the_spacing(catlin_model) -> None:
+    """Runs cross the joists at the authored o.c., so the lineal quantity is area/spacing —
+    ~525 LF for a 700 sqft ceiling at 16"."""
+    rc = _rc(catlin_model)
+    assert rc.lap_m == pytest.approx(_RC_SPACING_M)
+    room = Polygon(_living_room(catlin_model).clear_face)
+    field = room.difference(_stair_hole(catlin_model))
+    assert rc.length_m == pytest.approx(field.area / _RC_SPACING_M)
+    assert rc.length_m / 0.3048 == pytest.approx(524.0, abs=2.0)
+
+
+def test_the_ceiling_channel_hangs_below_the_joist_soffit(catlin_model) -> None:
+    """Under the deck, not in it: the 1/2" band tops out at the joist soffit, one 11-7/8"
+    I-joist below the second-storey datum, which is where the gypsum then starts."""
+    rc = _rc(catlin_model)
+    assert rc.z1_m == pytest.approx(10 * 0.3048 - 11.875 * 0.0254)
+    assert rc.z0_m == pytest.approx(rc.z1_m - 0.5 * 0.0254)
+    assert rc.thickness_m == pytest.approx(0.5 * 0.0254)
+
+
+def test_the_ceiling_channel_bills_lineal_feet_of_steel(catlin_model) -> None:
+    """It is steel by the foot, not gypsum by the sheet — its own BOM row, beside (not
+    inside) the ``sheet_goods`` row FS-SECOND's ``ceiling_below`` bills."""
+    rows = [row for row in construction_returns_takeoff(catlin_model)
+            if row["category"] == "resilient-channel"]
+    assert len(rows) == 1
+    assert rows[0]["material"] == "galv-steel"
+    assert rows[0]["count"] == 1
+    assert rows[0]["length_ft"] == pytest.approx(_rc(catlin_model).length_m / 0.3048, abs=0.1)
+
+
+def test_a_ceiling_channel_rule_naming_no_room_is_inert(catlin_model) -> None:
+    """A stale ``scope_ref`` (a room renamed out from under the rule) must emit nothing —
+    not crash, and above all not silently fall back to billing the whole deck."""
+    from typehaus.model.assembly import ConstructionRule
+    from typehaus.quantities import inch
+    from typehaus.resolve.construction import _find_ceiling_channel
+
+    rule = ConstructionRule(tag="CR-STALE", applies_to="floor:ceiling_channel",
+                            kind="furring", dimension=inch(16),
+                            takeoff_category="resilient-channel",
+                            scope_ref="RM-M-NO-SUCH-ROOM")
+    assert list(_find_ceiling_channel(catlin_model, rule)) == []
+
+
+def test_an_unscoped_ceiling_channel_rule_needs_an_authored_deck_outline(catlin_model) -> None:
+    """Documented limitation: an unscoped rule bills the deck's own ``outline``, and the
+    pass runs before the framing stage that would otherwise derive one. FS-SECOND authors
+    no outline, so an unscoped rule finds nothing here — scope it, or author the outline."""
+    from typehaus.model.assembly import ConstructionRule
+    from typehaus.quantities import inch
+    from typehaus.resolve.construction import _find_ceiling_channel
+
+    rule = ConstructionRule(tag="CR-WHOLE-DECK", applies_to="floor:ceiling_channel",
+                            kind="furring", dimension=inch(16),
+                            takeoff_category="resilient-channel")
+    assert list(_find_ceiling_channel(catlin_model, rule)) == []

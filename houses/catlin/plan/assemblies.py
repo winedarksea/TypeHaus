@@ -863,6 +863,28 @@ CONSTRUCTION_RULES = [
         dimension=inch(7.625),
         takeoff_category="masonry-corner-return",
     ),
+    # Resilient channel under the living room only. The bedrooms sit directly over it, and
+    # 5/8" gypsum screwed straight to the I-joists carries footfall down as impact noise;
+    # hanging it on channel at 16" o.c. across the joists breaks that path for the price of
+    # the channel. Scoped to RM-M-LIVING because it is a room decision, not a property of
+    # FS-SECOND — the rest of that deck's ceiling is screwed direct.
+    #
+    # The full layered ceiling (channel + insulation + a finish layer as an authored
+    # assembly) is deliberately deferred; this bills the two materials that are actually
+    # bought — the gypsum via FS-SECOND's `ceiling_below`, the channel here.
+    #
+    # KNOWN GAP: the `construction_returns` BOM section is not one of the sections
+    # `cli/prices.py::_SECTIONS` prices, so these lineal feet show up in the bill of
+    # materials and never in the cost estimate — as is already true of every PT sill plate,
+    # liner and foam return above. Flagged, not fixed here.
+    ConstructionRule(
+        tag="CR-LIVING-CEIL-RC",
+        applies_to="floor:ceiling_channel",
+        kind="furring",
+        dimension=inch(16),
+        takeoff_category="resilient-channel",
+        scope_ref="RM-M-LIVING",
+    ),
 ]
 
 ASSEMBLIES = [

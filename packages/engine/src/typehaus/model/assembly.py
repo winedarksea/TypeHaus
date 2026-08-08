@@ -159,9 +159,15 @@ class ConstructionRule(HausModel):
 
     tag: str
     applies_to: str  # family/role predicate, e.g. "roof:eave", "wall:rim"
-    kind: str  # "blocking" | "bearing_plate" | "web_stiffener" | "gap" | "offset"
+    kind: str  # "blocking" | "bearing_plate" | "web_stiffener" | "furring" | "gap" | "offset"
     dimension: Length | None = None
     takeoff_category: str | None = None
+    # Optional element tag the finder clips its search to — the rule applies *there* and
+    # nowhere else. A predicate alone selects a family ("every framed wall on concrete");
+    # some returns are a single room's decision (resilient channel under one living-room
+    # ceiling, not under the whole deck), and without this the only way to say so would be
+    # to invent a one-off predicate per room. Finders that ignore it are unaffected.
+    scope_ref: str | None = None
 
 
 for _name, _obj in (
