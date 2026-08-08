@@ -131,9 +131,16 @@ export interface DetailIndexEntry {
   overlay: string | null;
   elements: string[];
   state: "authored" | "seed";
-  // Authored curation flag (Transition.star): starred details make the primary drawing
-  // export (`haus print --details primary`) and are highlighted in the navigator.
+  // The *effective* curation flag for this condition key (Transition.stars(key)): starred
+  // details make the primary drawing export (`haus print --details primary`) and are
+  // highlighted in the navigator.
   star: boolean;
+  // The raw authored state behind it — the transition's pattern-wide default plus the
+  // per-condition overrides, so a star toggle can edit the right list instead of flipping
+  // the default out from under every sibling condition (model/detailStar.ts).
+  transition_star: boolean;
+  starred_conditions: string[];
+  unstarred_conditions: string[];
 }
 export interface DetailAnnotationSpec {
   uid: string | null;

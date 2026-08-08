@@ -294,7 +294,16 @@ def detail_index(model: ResolvedModel) -> list[dict]:
             "overlay": getattr(tr, "overlay", None) if tr is not None else None,
             "elements": list(d.condition.element_tags),
             "state": "authored" if authored else "seed",
-            "star": bool(getattr(tr, "star", False)) if tr is not None else False,
+            # ``star`` is the effective, per-condition answer the UI toggles and the
+            # primary export filters on; ``transition_star`` plus the two override lists
+            # are the raw authored state, so the navigator can tell "starred because the
+            # pattern is" from "starred by an override on this key alone".
+            "star": bool(tr.stars(d.key)) if tr is not None else False,
+            "transition_star": bool(getattr(tr, "star", False)) if tr is not None else False,
+            "starred_conditions": list(getattr(tr, "starred_conditions", ()))
+                                  if tr is not None else [],
+            "unstarred_conditions": list(getattr(tr, "unstarred_conditions", ()))
+                                    if tr is not None else [],
         })
     return out
 

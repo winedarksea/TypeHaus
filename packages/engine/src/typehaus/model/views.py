@@ -89,6 +89,28 @@ class Transition(Element):
     # primary export may leave them out. Orthogonal to ``suppress`` — suppress is "no
     # sheet at all, on the record", star is "this sheet is one a builder actually needs".
     star: bool = False
+    # One pattern usually spans many condition keys, and curation is rarely uniform across
+    # them: the rim band at an exterior wall is a sheet a framer opens, the same band over
+    # an interior bearing partition is not. These two lists override ``star`` for the exact
+    # condition keys they name, so a transition can stay one binding while its details are
+    # curated individually. Stale keys (a renamed assembly) are caught by
+    # ``integrity.condition_star_override``, never silently ignored.
+    starred_conditions: tuple[str, ...] = ()
+    unstarred_conditions: tuple[str, ...] = ()
+
+    def stars(self, key: str) -> bool:
+        """Whether the detail derived for condition ``key`` belongs in the primary set.
+
+        An explicit unstar wins over an explicit star (the narrower "definitely not this
+        one" always beats the broader claim); a key named by neither list falls back to the
+        pattern-wide ``star`` flag, so transitions authored before per-condition curation
+        keep their behaviour exactly.
+        """
+        if key in self.unstarred_conditions:
+            return False
+        if key in self.starred_conditions:
+            return True
+        return self.star
 
 
 @register_element

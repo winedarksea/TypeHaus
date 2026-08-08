@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import { useStore } from "../state/store";
 import type { Condition } from "../model/types";
 import type { DetailIndexEntry } from "../engine/EngineClient";
+import { nextStarFields } from "../model/detailStar";
 import { DetailViewer } from "./DetailViewer";
 
 // Details navigator (Phase 8): promotes derived boundary conditions (model.conditions) to
-// first-class linked objects. The star is the engine's authored curation flag
-// (Transition.star, served per detail by GET /details and written back through the normal
-// PatchOp path) — starred details make the primary drawing export and read highlighted
-// here. This replaced a localStorage-only state enum that never round-tripped.
+// first-class linked objects. The star is the engine's authored curation flag (served per
+// detail by GET /details and written back through the normal PatchOp path) — starred
+// details make the primary drawing export and read highlighted here. This replaced a
+// localStorage-only state enum that never round-tripped. Curation is per condition key:
+// the star edits the transition's override lists, so starring one junction no longer
+// stars every other condition the same transition happens to bind.
 export function DetailsNavigator() {
   const model = useStore((s) => s.model);
   const workspace = useStore((s) => s.activeWorkspace);
@@ -51,28 +54,15 @@ export function DetailsNavigator() {
 
   const toggleStar = async (entry: DetailIndexEntry) => {
     if (!entry.transition) return;
-    const next = !entry.star;
-    // Optimistic: flip locally, and flip every detail sharing the transition — the flag
-    // lives on the Transition, so all of its condition keys star together.
-    setDetails((prev) => {
-      const updated: Record<string, DetailIndexEntry> = {};
-      for (const [key, e] of Object.entries(prev)) {
-        updated[key] = e.transition === entry.transition ? { ...e, star: next } : e;
-      }
-      return updated;
-    });
+    const { star, fields } = nextStarFields(entry);
+    // Optimistic: flip only the toggled key. Siblings keep whatever the override lists
+    // (and the transition default) already said about them; the refetch on the next
+    // revision reconciles their `starred_conditions` copies.
+    setDetails((prev) => ({ ...prev, [entry.key]: { ...entry, star, ...fields } }));
     const ok = await applyOps([
-      { op: "update", type: "Transition", tag: entry.transition, fields: { star: next } },
+      { op: "update", type: "Transition", tag: entry.transition, fields },
     ]);
-    if (!ok) {
-      setDetails((prev) => {
-        const updated: Record<string, DetailIndexEntry> = {};
-        for (const [key, e] of Object.entries(prev)) {
-          updated[key] = e.transition === entry.transition ? { ...e, star: !next } : e;
-        }
-        return updated;
-      });
-    }
+    if (!ok) setDetails((prev) => ({ ...prev, [entry.key]: entry }));
   };
 
   return (

@@ -1,7 +1,8 @@
 # haus: editable
 # Catlin transition library — documentation overlays never alter resolved geometry.
-# Editable so the UI's detail star toggle (Transition.star — the primary-set curation
-# flag) round-trips to source; the geometry-free fields here are still design decisions.
+# Editable so the UI's detail star toggle (Transition.star and the per-condition
+# starred_conditions/unstarred_conditions overrides — the primary-set curation flags)
+# round-trips to source; the geometry-free fields here are still design decisions.
 
 from typehaus import Continuity, Transition
 
@@ -18,15 +19,39 @@ TRANSITIONS = (
     Transition(uid="CATR001AAAA", tag="TR-CATLIN-EAVE", condition_pattern="wall_roof:*",
                notes="notes/roof_wall_eave_detail.md", overlay="zero-overhang-eave",
                continuity=AIR_WATER_THERMAL, star=True),
+    # The starred half of this pattern is the envelope crossing — concrete to framed wall
+    # where the thermal, air and water layers all have to hand off. Where an interior
+    # partition or bearing wall lands on interior concrete none of those layers exist to
+    # continue, and the sill/anchor condition is already drawn once on the envelope sheet;
+    # unstarring those keys keeps the primary set the crossings a builder actually opens.
     Transition(uid="CATR002AAAA", tag="TR-CATLIN-FOUNDATION",
                condition_pattern="wall_foundation:*",
                notes="notes/basement_to_framed_wall_detail.md",
                overlay="basement-framed-wall", continuity=AIR_WATER_THERMAL,
                documents_rules=("CR-CONC-TO-FRAMED-SILL", "CR-FOUNDATION-FOAM-RETURN"),
-               star=True),
+               star=True,
+               unstarred_conditions=(
+                   "wall_foundation:CATLIN_CONC_12_INT|CATLIN_INT_2X6_BRG",
+                   "wall_foundation:CATLIN_CONC_12_INT|CATLIN_MUDROOM_INT_2X6_EXPOSED",
+                   "wall_foundation:CATLIN_CONC_12_INT|INT_2X4_PARTITION",
+                   "wall_foundation:CATLIN_INT_2X6_BRG|SAUNA_LINER_ON_CONCRETE",
+               )),
+    # Same curation as the foundation above: the rim band is a sheet because it is where
+    # the air barrier and the insulation cross a floor line. An interior partition's rim
+    # has neither — it is ordinary blocking, drawn on the framing plans.
     Transition(uid="CATR003AAAA", tag="TR-CATLIN-RIM-BAND",
                condition_pattern="storey_stack:rim:*", overlay="rim-band-air-seal",
-               continuity=AIR_WATER_THERMAL, star=True),
+               continuity=AIR_WATER_THERMAL, star=True,
+               unstarred_conditions=(
+                   "storey_stack:rim:CATLIN_CONC_12_INT|CATLIN_INT_2X6_BRG",
+                   "storey_stack:rim:CATLIN_CONC_12_INT|CATLIN_MUDROOM_INT_2X6_EXPOSED",
+                   "storey_stack:rim:CATLIN_CONC_12_INT|INT_2X4_PARTITION",
+                   "storey_stack:rim:CATLIN_INT_2X6_BRG",
+                   "storey_stack:rim:CATLIN_INT_2X6_BRG|SAUNA_LINER_ON_CONCRETE",
+                   "storey_stack:rim:CATLIN_MUDROOM_INT_2X6_EXPOSED|INT_2X6_STAGGERED_PLUMBING",
+                   "storey_stack:rim:INT_2X4_PARTITION",
+                   "storey_stack:rim:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
+               )),
     Transition(uid="CATR004AAAA", tag="TR-CATLIN-STACK-SHELF",
                condition_pattern="stack_width_change:*", overlay="stack-width-shelf",
                continuity=AIR_WATER_THERMAL),

@@ -151,7 +151,8 @@ def build_sheet_index(model: ResolvedModel,
     # Derived transition details — one per distinct bound condition key, sorted by key,
     # continuing the A-4xx block after any authored details (→ 11b transition details).
     for derived in derive_detail_slices(model):
-        starred = bool(getattr(derived.transition, "star", False))
+        tr = derived.transition
+        starred = bool(tr.stars(derived.key)) if tr is not None else False
         if details == "primary" and not starred:
             continue
         sheets.append(SheetSpec(f"A-{next_detail}", derived.view.title or derived.key,
