@@ -356,6 +356,10 @@ def _find_library_root(house_dir: Path) -> Path | None:
 _UI_EDITABLE_KINDS = frozenset({
     "Furniture", "Fixture", "Appliance", "Equipment", "Register", "ElectricalDevice",
     "Door", "Window", "RoughOpening", "Wall", "Room", "Node", "Stair", "Railing",
+    # Not dragged directly, but written by the same path: a fixture drag emits follower
+    # patches for the sleeve and drain run under its flange (`macros._drain_follower_ops`),
+    # so authoring either in a non-editable module breaks the *fixture's* move too.
+    "SleevePenetration", "PipeRun",
 })
 
 

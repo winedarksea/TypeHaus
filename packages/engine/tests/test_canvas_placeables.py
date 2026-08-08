@@ -46,6 +46,7 @@ from typehaus.model.enums import DuctSystem
 from typehaus.resolve import resolve
 from typehaus.source.coordinator import ProjectCoordinator
 from typehaus.source.loader import load_plan
+from typehaus.source.ops import RawExpr
 from typehaus.source.macros import (
     _rooms_with_moved_boundaries,
     assign_placeable_room,
@@ -380,6 +381,102 @@ def test_placeable_drag_updates_the_explicit_containing_room_assignment() -> Non
     assert plan is not None
     op = move_placeable(plan, "main", tag="FX-M-BATH1-WC", position=(0.6096, 7.3152)).ops[0]
     assert op.fields["room"] == "RM-M-BATH1"
+
+
+def test_dragging_a_floor_drained_wc_carries_its_sleeve_and_drain_run() -> None:
+    """The flange is not a symbol: a cast-in sleeve and a routed drop sit under it.
+
+    FX-M-BATH2-WC drains under its own bowl (no ``drain_position`` override, no hot-water
+    connection), so a drag has to re-point SP-M-WC2 and the head of PR-B-WC2-DRAIN with it.
+    The run lives on the *basement* storey, one below the fixture, which is why followers
+    are searched across the whole plan; and its riser is authored as the same plan point
+    twice (two inverts), so BOTH leading vertices have to move or the drop becomes a slope.
+    Leaving them behind is exactly the 76c1871 defect: a 6.46" nudge that built cleanly and
+    only showed up in `mep.sleeve_alignment`.
+    """
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    plan = load_plan(house).plan
+    assert plan is not None
+    fixture = next(item for item in plan.storey_elements("main") if item.tag == "FX-M-BATH2-WC")
+    old_x, old_y = fixture.position.xy_m
+    result = move_placeable(plan, "main", tag="FX-M-BATH2-WC", position=(old_x + 0.1, old_y - 0.05))
+
+    assert [(op.type, op.tag) for op in result.ops] == [
+        ("Fixture", "FX-M-BATH2-WC"),
+        ("SleevePenetration", "SP-M-WC2"),
+        ("PipeRun", "PR-B-WC2-DRAIN"),
+    ]
+    sleeve = next(item for item in plan.all_elements() if item.tag == "SP-M-WC2")
+    sleeve_x, sleeve_y = sleeve.position.xy_m
+    assert _expr_point(result.ops[1].fields["position"]) == pytest.approx(
+        (sleeve_x + 0.1, sleeve_y - 0.05), abs=1e-3)
+
+    run = next(item for item in plan.all_elements() if item.tag == "PR-B-WC2-DRAIN")
+    assert run.path[0] == run.path[1], "the riser's duplicated vertex pair is the point of this test"
+    moved_path = _expr_path(result.ops[2].fields["path"])
+    assert len(moved_path) == len(run.path)
+    for index, vertex in enumerate(run.path[:2]):
+        assert moved_path[index] == pytest.approx(
+            (vertex.xy_m[0] + 0.1, vertex.xy_m[1] - 0.05), abs=1e-3), f"vertex {index} did not follow"
+    # The downstream legs are the tie-in into the collector and must not drift with the bowl.
+    for index, vertex in enumerate(run.path[2:], start=2):
+        assert moved_path[index] == pytest.approx(vertex.xy_m, abs=1e-9)
+
+    joined = " | ".join(result.warnings)
+    assert "SP-M-WC2" in joined and "PR-B-WC2-DRAIN" in joined
+    # …and the runs that merely *serve* the WC (its supply, its vent, the house collector)
+    # are reported as left behind rather than silently dragged twenty feet across the plan.
+    assert "PR-B-MAIN-DRAIN" in joined and "left as routed" in joined
+
+
+def test_an_authored_drain_position_pins_the_drain_while_the_fixture_moves() -> None:
+    """``drain_position`` is the author saying where the waste leaves, independently of the
+    bowl — FX-M-BATH1-WC is wall-hung on a carrier inside W-M-BAE and its waste drops in the
+    wall. Moving the bowl says nothing about the carrier, so the macro emits its one op and
+    keeps its hands off SP-M-WC1 and PR-B-LAV1-DRAIN."""
+    house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    plan = load_plan(house).plan
+    assert plan is not None
+    result = move_placeable(plan, "main", tag="FX-M-BATH1-WC", position=(0.75, 7.2))
+    assert [(op.type, op.tag) for op in result.ops] == [("Fixture", "FX-M-BATH1-WC")]
+    assert result.warnings == ()
+
+
+def test_coupled_drain_move_writes_source_that_reloads(tmp_path: Path) -> None:
+    """Followers are only real if they land in source, which is why ``SleevePenetration``
+    and ``PipeRun`` are ``loader._UI_EDITABLE_KINDS``: a follower op aimed at a module
+    without the ``# haus: editable`` header is dropped at commit and the drag half-applies,
+    leaving the flange and the pipe further apart than before the move."""
+    house = tmp_path / "catlin"
+    shutil.copytree(Path(__file__).resolve().parents[3] / "houses" / "catlin", house)
+    plan = load_plan(house).plan
+    assert plan is not None
+    fixture = next(item for item in plan.storey_elements("main") if item.tag == "FX-M-BATH2-WC")
+    old_x, old_y = fixture.position.xy_m
+    ops = move_placeable(plan, "main", tag="FX-M-BATH2-WC",
+                         position=(old_x + 0.1, old_y - 0.05)).ops
+    coordinator = ProjectCoordinator(house)
+    coordinator.apply_patch(ops, coordinator.revision())
+
+    reloaded = load_plan(house)
+    assert reloaded.plan is not None, [finding.message for finding in reloaded.findings]
+    moved = {item.tag: item for item in reloaded.plan.all_elements()}
+    assert moved["SP-M-WC2"].position.xy_m == pytest.approx((old_x + 0.1, old_y - 0.05), abs=1e-3)
+    run = moved["PR-B-WC2-DRAIN"]
+    assert run.path[0].xy_m == pytest.approx((old_x + 0.1, old_y - 0.05), abs=1e-3)
+    assert run.path[0] == run.path[1]
+    # The rewrite replaces vertices in place, so the per-vertex invert list still lines up.
+    assert len(run.elevations) == len(run.path)
+
+
+def _expr_point(value: object) -> tuple[float, float]:
+    """Evaluate one emitted ``pt(...)`` back to meters."""
+    return _expr_path(RawExpr(f"({value.expr},)"))[0]
+
+
+def _expr_path(value: object) -> list[tuple[float, float]]:
+    points = eval(value.expr, {"pt": pt, "m": m, "ft": ft, "inch": inch})  # noqa: S307 - macro output
+    return [point.xy_m for point in points]
 
 
 def test_mount_height_edit_preserves_the_rest_of_the_authored_mount() -> None:

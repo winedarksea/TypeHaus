@@ -24,7 +24,8 @@ from typehaus.model.floors import FloorOpening, FloorSystem, Slab
 from typehaus.model.spatial import Appliance, Fixture, Furniture, Room, Stair
 from typehaus.model.mep import ElectricalDevice, Equipment, Register
 from typehaus.model.placeables import Mount
-from typehaus.model.enums import DeviceKind, DuctSystem, EquipmentKind
+from typehaus.model.enums import DeviceKind, DuctSystem, EquipmentKind, Service
+from typehaus.resolve.mep import _PIPE_SLEEVE_SNAP_M
 from typehaus.quantities import Length, deg
 from typehaus.quantities.length import ft, m
 from typehaus.quantities.point import pt
@@ -467,15 +468,168 @@ def _placeable(plan: PlanModel, storey: str, tag: str):
 
 
 def move_placeable(plan: PlanModel, storey: str, *, tag: str, position: XY) -> MutationResult:
-    """Move a free object and persist the room containing its new footprint center."""
+    """Move a free object, persisting the room containing its new footprint center.
+
+    A drained fixture is not a free object: its waste leaves through a cast-in-place
+    :class:`SleevePenetration` and drops into a routed :class:`PipeRun`, and neither of
+    those is derived from the fixture — both are authored plan geometry that a drag would
+    otherwise leave behind (`_drain_follower_ops`).
+    """
     item = _placeable(plan, storey, tag)
     if item is None:
         raise MacroError(f"no placeable {tag!r} on storey {storey!r}")
     x, y = _meters(position[0]), _meters(position[1])
-    return MutationResult(ops=[PatchOp("update", item.element_kind, tag, {
+    ops = [PatchOp("update", item.element_kind, tag, {
         "position": _point_expr(position[0], position[1]), "location": DELETE_FIELD,
         "room": _containing_room(plan, storey, (x, y)),
-    })])
+    })]
+    followers, warnings = _drain_follower_ops(plan, storey, item, (x, y))
+    ops.extend(followers)
+    return MutationResult(ops=ops, warnings=warnings)
+
+
+# --- coupled drain followers -------------------------------------------------
+#
+# Dragging a floor-drained fixture moves a closet flange, and a closet flange is the top of
+# a pipe that is already through the concrete: a pre-pour SleevePenetration at that point
+# and a PipeRun dropping through it.  Neither is resolver-derived — both are authored plan
+# geometry with their own coordinates — so a bare `position` patch silently decouples them.
+# That is the 76c1871 defect: FX-M-BATH2-WC was nudged 6.46" in a drive-by edit, SP-M-WC2
+# and PR-B-WC2-DRAIN stayed put, the plan still loaded and built, and only
+# `mep.sleeve_alignment` (and one plumbing test) ever said so.  So the move carries them.
+#
+# A fixture with an authored ``drain_position`` is excluded on purpose: that field *is* the
+# author saying where the waste leaves, independently of where the bowl sits, so moving the
+# bowl is not a statement about the drain at all (it is how FX-M-BATH1-WC's wall-hung
+# carrier stays put while its bowl slides along W-M-BAE).
+#
+# Followers are searched across the WHOLE plan, not the moved item's storey: the drain of a
+# main-floor WC is hung from the basement ceiling, one storey down from the thing that moved.
+
+
+def _placeable_type(plan: PlanModel, item: object) -> object | None:
+    """The fixture/appliance catalog entry behind ``item``, for its service list."""
+    return next((entry for entry in (*plan.library.fixture_types, *plan.library.appliance_types)
+                 if entry.tag == getattr(item, "type_ref", None)), None)
+
+
+def _convention_drain_point(plan: PlanModel, storey: str, item: object,
+                            at_m: tuple[float, float]) -> tuple[float, float] | None:
+    """Where ``item``'s waste would leave the floor if the unit stood at ``at_m``.
+
+    The plan-side mirror of ``resolve/mep.py::_expected_drain_point``'s convention branch,
+    and it reads the same signal for the same reason: a water closet is the only common
+    fixture with no hot-water connection, which makes "no WATER_HOT" the one reliable mark
+    of a floor-drained unit (drain under its own footprint) as against a wall-drained one
+    (trap arm back to the wet wall it names, so the drain rides that wall's axis).
+
+    It is stated twice rather than imported because the resolver can only answer for the
+    position a fixture *has*; a move macro has to answer for the position it is about to
+    have, which no resolved model holds.  The authored-``drain_position`` branch is the
+    caller's (a fixture that has one never gets here).
+    """
+    fixture_type = _placeable_type(plan, item)
+    if fixture_type is None:
+        return None
+    if Service.WATER_HOT not in fixture_type.needs:
+        return at_m
+    wall_ref = getattr(item, "wall_ref", None)
+    if wall_ref is None:
+        return None
+    wall = next((candidate for candidate in _walls(plan, storey)
+                 if candidate.tag == wall_ref), None)
+    if wall is None:
+        return None
+    by_tag = {node.tag: node for node in _nodes(plan, storey)}
+    start, end = by_tag.get(wall.start_node), by_tag.get(wall.end_node)
+    if start is None or end is None:
+        return None
+    p0, p1 = start.position.xy_m, end.position.xy_m
+    t = _project_param(p0, p1, at_m)
+    return (p0[0] + t * (p1[0] - p0[0]), p0[1] + t * (p1[1] - p0[1]))
+
+
+def _drain_follower_ops(plan: PlanModel, storey: str, item: object,
+                        new_xy: tuple[float, float]) -> tuple[list[PatchOp], tuple[str, ...]]:
+    """Patches that keep a moved fixture's sleeve and drain run under its flange.
+
+    Followers are claimed by proximity to the fixture's OLD drain point, within the same
+    ``_PIPE_SLEEVE_SNAP_M`` the resolver uses to decide a routed vertex belongs to a sleeve
+    — so the two agree on what "at the flange" means, and a collector that merely *serves*
+    the fixture from twenty feet away (PR-B-MAIN-DRAIN serves seventeen of them) is not
+    dragged along with it.  Everything found is reported either way: what followed, because
+    a cast-in sleeve moving is a fact the author must see, and what did not, because a
+    served run left behind is exactly the tie-in that now needs re-cutting by hand.
+    """
+    if not isinstance(item, (Fixture, Appliance)) or item.drain_position is not None:
+        return [], ()
+    sleeves = [element for element in plan.elements_of_kind("SleevePenetration")
+               if element.serves_fixture == item.tag]
+    runs = [element for element in plan.elements_of_kind("PipeRun")
+            if item.tag in element.serves]
+    if not sleeves and not runs:
+        return [], ()
+
+    old_xy = _convention_drain_point(plan, storey, item, item.position.xy_m)
+    target_xy = _convention_drain_point(plan, storey, item, new_xy)
+    if old_xy is None or target_xy is None:
+        # No convention applies (unknown type, or a wall-drained unit naming no wall), so
+        # there is no defensible delta.  Say so rather than guess: the drain is now stale.
+        return [], (f"{item.tag} moved but its drain point cannot be derived — "
+                    f"{', '.join(sorted(element.tag for element in (*sleeves, *runs)))} "
+                    "left in place; re-point by hand",)
+    dx, dy = target_xy[0] - old_xy[0], target_xy[1] - old_xy[1]
+    if abs(dx) < 1e-9 and abs(dy) < 1e-9:
+        return [], ()  # a wall-drained unit slid off its wall: the drain point is unchanged
+
+    ops: list[PatchOp] = []
+    warnings: list[str] = []
+    for sleeve in sleeves:
+        gap = _dist(sleeve.position.xy_m, old_xy)
+        if gap > _PIPE_SLEEVE_SNAP_M:
+            warnings.append(
+                f"sleeve {sleeve.tag} serves {item.tag} but sat {m(gap).fmt()} from its old "
+                "drain point — left where it was; re-point it by hand")
+            continue
+        sx, sy = sleeve.position.xy_m
+        ops.append(PatchOp("update", "SleevePenetration", sleeve.tag,
+                           {"position": _point_expr_m(sx + dx, sy + dy)}))
+        warnings.append(
+            f"sleeve {sleeve.tag} moved {m(_dist((0, 0), (dx, dy))).fmt()} with {item.tag} — "
+            "it is cast in place, so confirm the pour has not happened")
+    stayed: list[str] = []
+    for run in runs:
+        # EVERY vertex at the old point moves, not just the first: a vertical drop is
+        # authored as the same plan point repeated with two inverts (path[0] == path[1] on
+        # every riser here), so rewriting one of the pair would fold the riser into a slope.
+        moved = {index for index, vertex in enumerate(run.path)
+                 if _dist(vertex.xy_m, old_xy) <= _PIPE_SLEEVE_SNAP_M}
+        if not moved:
+            # Normal and expected for most of them — a WC's supply, its vent and the house
+            # collector all serve it without ever touching the flange — so these are one
+            # line, not one toast each, and they name a distance so a near miss stands out.
+            nearest = min((_dist(vertex.xy_m, old_xy) for vertex in run.path), default=None)
+            stayed.append(run.tag + (f" ({m(nearest).fmt()} away)" if nearest is not None else ""))
+            continue
+        vertices: list[str] = []
+        for index, vertex in enumerate(run.path):
+            if index in moved:
+                vx, vy = vertex.xy_m
+                vertices.append(_point_expr_m(vx + dx, vy + dy).expr)
+            else:
+                # Untouched vertices are re-emitted in their authored units, not round-tripped
+                # through meters, so a path rewrite never smears the rest of the route.
+                vertices.append(f"pt({vertex.x.to_source()}, {vertex.y.to_source()})")
+        ops.append(PatchOp("update", "PipeRun", run.tag,
+                           {"path": RawExpr("(" + ", ".join(vertices) + ",)")}))
+        warnings.append(
+            f"run {run.tag} followed {item.tag} ({len(moved)} of {len(run.path)} vertices "
+            "re-pointed); its inverts and slope were not re-solved")
+    if stayed:
+        warnings.append(
+            f"{len(stayed)} run(s) serving {item.tag} had no vertex at its old drain point "
+            f"and were left as routed — check the tie-ins: {', '.join(stayed)}")
+    return ops, tuple(warnings)
 
 
 def rotate_placeable(plan: PlanModel, storey: str, *, tag: str, degrees: float,
