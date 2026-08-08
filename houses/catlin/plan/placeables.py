@@ -286,6 +286,100 @@ MAIN_PLACEABLES = [
     Furniture(uid="XJSV712BWZ", tag="FURN-M-LAUNDRY-RACK", type_ref="FURN-WALL-RACK-24", room="RM-M-LAUNDRY",
               position=pt(m(3.9378), m(5.8566)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+
+    # --- curtain rods (2026-08-07) -------------------------------------------
+    # One head line for the whole storey: 7'-0". The tallest main-floor head is 6'-8"
+    # (the WT-3048 south glazing and both exterior doors), so a single 7'-0" rod line
+    # clears every opening it serves by at least 4" and reads as one line across a room
+    # that is open from the south glass to the east wall. The alternative — each rod 4"
+    # over its own head — would step three times across the living room and once more in
+    # the bedroom, which is exactly the facade discipline the elevations refuse to break.
+    # WIN-M-LIV-E1/E2 sit lowest (5'-6" head), so their curtains are the long ones; that
+    # is a fabric decision, not a bracket one.
+    #
+    # y = 10" (or x, on the side walls) puts the rod's centre 10" off the wall *line*: the
+    # finish face is 6 1/2" in (1/2" sheathing + 5 1/2" stud + GWB) and a bracket projects
+    # about 3 1/2" past it. Each rod centres on its opening's RO centre, which for the
+    # south pairs is the facade column the elevations stack on.
+    Furniture(uid="EYJ3ZHXFSF", tag="FURN-M-LIV-ROD-S1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
+              position=pt(ft(32, 8), ft(0, 10)), rotation=deg(180),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+    Furniture(uid="RECH3F3R45", tag="FURN-M-LIV-ROD-S2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
+              position=pt(ft(27, 4), ft(0, 10)), rotation=deg(180),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+    # The french pair takes the 84": a 60" RO with 12" of stackback each side, so the
+    # leaves clear the glass and the doors still swing.
+    Furniture(uid="WJTG6V6T09", tag="FURN-M-LIV-ROD-BALC", type_ref="FT-CURTAIN-ROD-84", room="RM-M-LIVING",
+              position=pt(ft(21, 10), ft(0, 10)), rotation=deg(180),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+    Furniture(uid="2M12W07AGB", tag="FURN-M-LIV-ROD-E1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
+              position=pt(ft(35, 2), ft(4)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+    Furniture(uid="94TRP24ZX6", tag="FURN-M-LIV-ROD-E2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
+              position=pt(ft(35, 2), ft(12)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+    # "Master bedroom" is read as RM-M-BED, the main-storey bedroom — not the second-storey
+    # suite. Flag if that was the wrong room: the four rods move, nothing else does.
+    Furniture(uid="BYYY8GG7E6", tag="FURN-M-BED-ROD-W1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
+              position=pt(ft(0, 10), ft(5, 4)), rotation=deg(90),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+    Furniture(uid="R4A47142RN", tag="FURN-M-BED-ROD-W2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
+              position=pt(ft(0, 10), ft(10, 8)), rotation=deg(90),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+    Furniture(uid="320A53KSR4", tag="FURN-M-BED-ROD-S1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
+              position=pt(ft(4), ft(0, 10)), rotation=deg(180),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+    Furniture(uid="9222FS9Q20", tag="FURN-M-BED-ROD-S2", type_ref="FT-CURTAIN-ROD-48", room="RM-M-BED",
+              position=pt(ft(9, 4), ft(0, 10)), rotation=deg(180),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
+
+    # --- plumbing access panels (2026-08-07) ---------------------------------
+    # FX-M-BATH1-WC is the house's one wall-hung WC: the bowl bolts to a steel carrier
+    # inside W-M-BAE's stud bay and the waste drops in the wall at SP-M-WC1 (6'-0",
+    # 22'-7"). Everything adjustable about that fixture — the carrier's feet, the flush
+    # valve, the waste connection — is behind drywall, and a 14x29 panel in BATH1's face of
+    # that wall (3 3/8" off the centreline) is the only way back to it. Base at 2'-0" so
+    # the opening spans 2'-0"..4'-5", which is the carrier frame's own band.
+    #
+    # NOTE, not fixed here: FX-M-BATH1-WC's authored `position` is (2'-2", 23'-2") with
+    # rotation 180, which stands its bowl ~3'-10" west of the carrier this panel serves.
+    # The sleeve, the drain and the `wall_ref` all agree on W-M-BAE; only the bowl does
+    # not. The panel follows the carrier, because that is where the fittings are.
+    Furniture(uid="RSDC92XMBB", tag="FURN-M-BATH1-AP", type_ref="FT-ACCESS-PANEL-1429", room="RM-M-BATH1",
+              position=pt(ft(5, 8.625), ft(22, 7)), rotation=deg(-90),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(2))),
+    # FX-M-BATH2-TUB drains at SP-M-BATH2-TUB (7'-4", 19'-4.8"), 8" off W-M-BA2E and
+    # behind the tub rather than at either end of it — so the trap and the waste-and-
+    # overflow are unreachable from BATH2 without pulling the tub. They are 8" the other
+    # side of that wall, in RM-M-LAUNDRY, which is where the panel goes: laundry face of
+    # W-M-BA2E at the drain's own y. Base at 6" puts the opening at 6"..1'-8", the band
+    # the tee and trap occupy.
+    Furniture(uid="TEBYP46W7Y", tag="FURN-M-BATH2-TUB-AP", type_ref="FT-ACCESS-PANEL-1414", room="RM-M-LAUNDRY",
+              position=pt(ft(8, 3.375), ft(19, 4.8)), rotation=deg(90),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(0, 6))),
+
+    # --- porch curtain rods (2026-08-07) --------------------------------------
+    # Two outdoor rods across the sunken garden's front pillar bays, PT-SG-BF1..BF2 and
+    # BF2..BF3. The front row stands at y = -9'-6" on 10'-0" centres, so each clear bay is
+    # 9'-6 1/2" between 6x6 faces and the 114" rod drops into it with half an inch to
+    # spare — which is why that is the length the type carries.
+    #
+    # Filed on `main`, not `second`, even though the pillars themselves are second-storey
+    # elements: `Mount.elevation` is measured from the *room floor*, and the only room that
+    # puts these at the right height is a main-storey one. 8'-6" over the main floor lands
+    # the rod 1 1/2" under the balcony beam soffit (8'-7 1/2"), which is what it hangs from.
+    # Against RM-S-PLANT at second-storey datum the same number would float them at 18'-6".
+    #
+    # `room="RM-M-BED"` follows FX-M-PORCH-HYD exactly: the porch is not a Room, so a
+    # placeable out here names the nearest interior one and accepts the resulting
+    # `integrity.placeable_room_mismatch` advisory. Two more of those are expected and
+    # correct — same standing as the two hydrants.
+    Furniture(uid="XH1JW70E8D", tag="FURN-M-PORCH-ROD-W", type_ref="FT-CURTAIN-ROD-OUTDOOR-114", room="RM-M-BED",
+              position=pt(ft(13), ft(-9.5)),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
+    Furniture(uid="90BCAAC74M", tag="FURN-M-PORCH-ROD-E", type_ref="FT-CURTAIN-ROD-OUTDOOR-114", room="RM-M-BED",
+              position=pt(ft(23), ft(-9.5)),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
 ]
 GARAGE_PLACEABLES = [
     # The 60"-wide work surface runs along the west wall directly below the infrared
@@ -453,6 +547,26 @@ SECOND_PLACEABLES = [
                      circuit="CKT-LT-UPPER", room="RM-S-PLANT",
                      controlled_by=("ED-S-PLANT-SW-TIMER",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
+
+    # --- plumbing access panel (2026-08-07) ----------------------------------
+    # FX-S-SUITEBATH-TUBSH runs north/south with its back on W-S-C2C and its north end
+    # 1" off W-S-SN3, the partition it shares with RM-S-HALL. The waste-and-overflow tee
+    # sits at that end at floor level, so the panel goes in the hall face of W-S-SN3
+    # (2 3/8" off the 4 3/4" partition's centreline) on the tub's own x centre — reachable
+    # standing in the hall instead of standing in the tub.
+    #
+    # FX-S-BATH1-SH gets none, deliberately. Its drain end is the west one, and what is
+    # west of W-S-CH-W is the plumbing chase, not a room: a panel there would open onto
+    # 2 3/4" of stud bay with nowhere to stand. The reachable face is BATH1's own, which
+    # puts the panel over the tub — no better than pulling the apron. Left for the ceiling
+    # below, where the trap actually is.
+    #
+    # Neither fixture carries a `drain_position`; the ends above are read off the resolved
+    # footprints and the walls that touch them. Author one and this placement should be
+    # re-checked against it.
+    Furniture(uid="NHFPDD49RB", tag="FURN-S-SUITEBATH-AP", type_ref="FT-ACCESS-PANEL-1414", room="RM-S-HALL",
+              position=pt(ft(16, 4.5), ft(22, 6.375)), rotation=deg(180),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(0, 6))),
 ]
 # The attic study uses the same compact work-and-meeting program as the second-storey
 # study, but the stair opening occupies the north side of the room. Keep the desk in the
