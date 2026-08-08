@@ -341,12 +341,18 @@ MAIN_PLACEABLES = [
     # that wall (3 3/8" off the centreline) is the only way back to it. Base at 2'-0" so
     # the opening spans 2'-0"..4'-5", which is the carrier frame's own band.
     #
+    # Centred at 23'-0", not on the flange at 22'-7": BATH1's south face is 22'-2 3/4", so a
+    # 14"-wide panel on the flange would put 2 5/8" of itself through the wall into the hall
+    # (caught by `test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other`). Pushed
+    # 5" north it clears that face by 2 3/8" and its opening still spans 22'-5"..23'-7" —
+    # the flange stays inside the hole, which is the part that matters.
+    #
     # NOTE, not fixed here: FX-M-BATH1-WC's authored `position` is (2'-2", 23'-2") with
     # rotation 180, which stands its bowl ~3'-10" west of the carrier this panel serves.
     # The sleeve, the drain and the `wall_ref` all agree on W-M-BAE; only the bowl does
     # not. The panel follows the carrier, because that is where the fittings are.
     Furniture(uid="RSDC92XMBB", tag="FURN-M-BATH1-AP", type_ref="FT-ACCESS-PANEL-1429", room="RM-M-BATH1",
-              position=pt(ft(5, 8.625), ft(22, 7)), rotation=deg(-90),
+              position=pt(ft(5, 8.625), ft(23)), rotation=deg(-90),
               mount=Mount(kind=MountKind.WALL, elevation=ft(2))),
     # FX-M-BATH2-TUB drains at SP-M-BATH2-TUB (7'-4", 19'-4.8"), 8" off W-M-BA2E and
     # behind the tub rather than at either end of it — so the trap and the waste-and-
