@@ -274,23 +274,14 @@ the future.
   leaves the run kinked. Warnings go both ways, so a partial follow is visible instead of
   silent, and SleevePenetration/PipeRun joined `_UI_EDITABLE_KINDS` so authoring one
   outside an editable file fails loudly.
-
-### Drainage Outstanding
-    is nominal, not computed from a soil infiltration rate.
-  - Authored `FrenchDrain` runs beyond the derived bedding tile — **moot for now**: no house
-    authors a `FrenchDrain` yet (catlin has drywells only); revisit when one exists.
-  - ~~Furring over a monolithic wall is still billed nowhere~~ — **fixed 2026-08-07,** and
-    the fix was better than the lineal-foot workaround this entry proposed: a FURRING layer
-    with a `FramingSpec` now frames real `strapping` members in its own band, whether or not
-    the wall frames anything else. 470 members, all 1x4, 3976 LF cut — and **W-B-CS goes
-    from 0 to 8**, eight horizontal courses at 16" o.c. up the 9' concrete wall. It bills
-    through the ordinary framing takeoff, so the `_WAIVED_LAYER_FUNCTIONS` entry is deleted
-    rather than reworded, and the test now asserts the credit instead of apologising for it.
-    Worth recording: the first run threw 42 `structural.member_interference` FAILs at the
-    corners and **none of them earned an exemption** — every one was the new code's own
-    geometry (a flat-laid strip's along-wall run is `depth_m`, not `width_m`; a mitre's far
-    tip is a corner of the band, not a station its centreline reaches). Both fixed, zero
-    findings, check left policing the category.
+- Possibly moving house and sunken garden up (not garage), accounting for split layer
+- Small windows on corners?
+- Balcony railing?
+- Pipe sleeve SP-GF-W-HYD-B3 is either unnecessary or misplaced (only one needed through garage floor slab there, not sideways like this one)
+- Do "drain tile" and "french drain" duplicate at all here?
+- The "draw stud end cuts" of e597019 doesn't seem to have worked? Or else it is just showing the top plate or sill, not the vertical members?
+- EQ-M-HP3-STAIR should be on the north wall of the stairs (on the northwest corner, wall W-M-N2 I believe), not the west wall. It also should have a register of some kind (passive, not hooked to the minisplit, just next to it) to allow air to flow from next to it into MUDROOM through wall W-M-STRW
+- We are thinking of switching W-SG-ARCH to be a column and beams like PT-SG-COL and BM-SG-BKE, then replacing the masonry railing right above it with a metal railing more like RL-SG-BALCONY
 
 ### Plumbing
 
@@ -306,69 +297,6 @@ the future.
   - **The wall hydrants draw an `integrity.placeable_room_mismatch` apiece**, which is the
     true description of an exterior hose bib hosted by an interior room's wall rather than a
     defect. The model has no outdoor-room concept to file them under.
-
-### The garbage disposal with safety toggle system
-Disposal is a 3/4 HP system, stainless steel, likely insinkerator.
-We don't need to show all of these exact switches and toggles, just the main underly electrical branch.
-
-1. The Power & Protection (The Breaker Panel)
-
-    Dedicated Circuit: Run a dedicated 12/2 Romex cable for the disposal. (If you want an instant-hot or dishwasher under the same sink, run a second dedicated circuit for them).
-
-    Upstream GFCI: Install a 20-Amp GFCI Circuit Breaker at your main electrical panel. This protects the entire wire run, the contactor, and the outlet, and eliminates the need for a bulky GFCI receptacle under the sink.
-
-2. The Backsplash Controls (The UI)
-
-Moving to a momentary "RUN" switch is a brilliant safety upgrade. It acts as a "dead man's switch." You flip the missile guard up, toggle the switch to ARM the system (the red light turns on), and then you push and hold the RUN button to grind the food. If a spoon falls in, you just let go of the button and it stops instantly.
-
-    The Wire: Run 18/6 CL2 thermostat/control wire in the wall. You only need 4 conductors, but the extra two wires give you a backup if a wire is nicked by a drywall screw, or allows for future expansion.
-
-    The Arming Switch: An aircraft-style guarded toggle switch. (Note: Because we are moving to 24V DC, you must buy a 24V-rated illuminated toggle, often sold for heavy-machinery/marine use, or simply use a standard 12V switch and wire a 1k-ohm resistor in series with the switch's ground pin to protect the LED from the 24V).
-
-    The Run Switch: A 24V DC momentary push button. A stainless steel "Anti-Vandal" push button (often used in elevators or custom PCs) looks incredibly premium and fits a round cutout perfectly.
-
-    The Plate: A custom 2-gang metal plate with two round cutouts (sized to your specific switches, usually 12mm, 16mm, or 19mm).
-
-3. The Under-Sink Hardware (The Engine)
-
-    The Receptacle: Install a standard, commercial-grade 20A single receptacle (not a duplex). Because the GFCI breaker protects it, this is perfectly code-compliant.
-
-    The Contactor (Motor Relay): Instead of a generic relay, use a Definite Purpose (DP) Contactor with a 24V DC (or 24V AC) coil. These are specifically built for the brutal inrush current of electric motors. (e.g., a 1-pole or 2-pole 30-Amp contactor by Eaton, Schneider, or Packard).
-
-    The Enclosure: Mount the contactor inside a standard 6x6x4 metal NEMA 1 enclosure (junction box) under the sink.
-
-    The Power Supply: A UL-Listed Class 2 power supply. You can use a hardwired 24V DC transformer mounted directly to the side of the NEMA enclosure.
-
-4. The Wiring Logic
-
-High Voltage (Inside the NEMA Enclosure):
-
-    The 120V AC Line (Black) from the breaker connects to the L1 (Line) terminal on the Contactor.
-
-    The T1 (Load) terminal on the Contactor goes to the Hot (Brass) screw on your 20A Receptacle.
-
-    Neutral and Ground bypass the contactor and go directly to the Receptacle.
-    Result: The receptacle is dead until the contactor pulls shut.
-
-Low Voltage (The 24V Control Loop):
-
-    24V Positive (+) from the power supply goes up the wall (via Wire 1) to the Power pin on the ARM Toggle Switch.
-
-    24V Negative (-) from the power supply splits:
-
-        One branch goes to the Negative Coil terminal on the under-sink Contactor.
-
-        One branch goes up the wall (via Wire 2) to the Ground pin on the ARM Toggle Switch (this provides the ground path so the red LED lights up).
-
-    A jumper wire goes from the Accessory/Load pin on the ARM Toggle Switch to one side of the momentary RUN button.
-
-    The other side of the momentary RUN button goes down the wall (via Wire 3) to the Positive Coil terminal on the Contactor.
-
-Main BOM additions:
-GFCI Breaker: A dedicated 20-Amp GFCI Circuit Breaker in the main panel (Brands: Square D, Siemens, Eaton—must match your home's electrical panel).
-Receptacle: A commercial-grade 20A Single Receptacle (e.g., Leviton 5361-W). Note: Use a "Single" receptacle (one plug), not a standard "Duplex" (two plugs), as this is a dedicated, switched circuit.
-Low Voltage Wire: 50 feet of 18/6 CL2 In-Wall Thermostat Wire.
-Boxes: A 2-gang low-voltage mounting ring for the backsplash, and a 4x4 metal junction box for under the sink.
 
 ### Other visual ideas (just ideas, not a TODO)
 Dark base to the house

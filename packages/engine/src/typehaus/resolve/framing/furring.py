@@ -19,6 +19,12 @@ The members land in the FURRING layer's own resolved polygon, never the structur
 On a catlin exterior wall that band sits 4.5" outboard of the studs behind two inches of
 polyiso; framing it on the structure centreline would put strapping inside the insulation
 and inside the stud bays it is supposed to hold cladding off of.
+
+Battens and courses are also cut around ``model.openings``: a rainscreen strip is not
+structural, but it still has to stop at a rough opening rather than run across the glass —
+``layer_solids`` (``geometry_walls.py``) already notches this same layer's *solid* the same
+way, and this pass mirrors that, not the padded jamb-pack exclusion zones ``framing/openings.py``
+uses for load-bearing studs.
 """
 
 from __future__ import annotations
@@ -32,7 +38,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.solver import _wall_top_elevations, band_axis
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
-from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedWall
+from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedOpening, ResolvedWall
 
 #: Category every member here carries. Strapping is billed by ``(profile, category)`` like
 #: all framing, so this string is what puts 1x4 battens on their own BOM row instead of
@@ -47,10 +53,18 @@ VERTICAL, HORIZONTAL = "vertical", "horizontal"
 
 def frame_furring(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     """Attach strapping members to every wall whose assembly furs out on a spec'd grid."""
+    # Keyed by host wall, same grouping ``frame_model`` builds in ``solver.py`` — but kept as
+    # plain ``ResolvedOpening`` records rather than translated into that pass's ``WallOpening``,
+    # since furring never needs the door-operation/header-spec fields that translation exists
+    # to carry.
+    by_host: dict[str, list[ResolvedOpening]] = {}
+    for op in model.openings:
+        by_host.setdefault(op.host_wall, []).append(op)
+
     findings: list[Finding] = []
     framed: list[ResolvedWall] = []
     for rw in model.walls:
-        members, wall_findings = frame_wall_furring(plan, rw)
+        members, wall_findings = frame_wall_furring(plan, rw, by_host.get(rw.tag, []))
         findings.extend(wall_findings)
         # ``replace`` rather than a field-by-field rebuild, as in ``frame_model``: this pass
         # only appends members, and respelling the constructor drops fields added later.
@@ -59,8 +73,9 @@ def frame_furring(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     return findings
 
 
-def frame_wall_furring(plan: PlanModel,
-                       rw: ResolvedWall) -> tuple[tuple[FramedMember, ...], list[Finding]]:
+def frame_wall_furring(
+        plan: PlanModel, rw: ResolvedWall,
+        openings: list[ResolvedOpening]) -> tuple[tuple[FramedMember, ...], list[Finding]]:
     """Strapping for one wall: every FURRING layer that carries a ``FramingSpec``.
 
     Returns ``(members, findings)`` — the shape ``framing/soffit.py`` uses, for the same
@@ -88,12 +103,19 @@ def frame_wall_furring(plan: PlanModel,
             findings.append(_direction_finding(rw, resolved.name, spec.direction))
             direction = VERTICAL
         layout = _layout_vertical if direction == VERTICAL else _layout_horizontal
-        members.extend(layout(rw, resolved, spec))
+        members.extend(layout(rw, resolved, spec, openings))
     return tuple(members), findings
 
 
-def _layout_vertical(rw: ResolvedWall, layer, spec) -> list[FramedMember]:
-    """Battens on centre along the wall axis, base to the framing top (raked or level)."""
+def _layout_vertical(rw: ResolvedWall, layer, spec,
+                     openings: list[ResolvedOpening]) -> list[FramedMember]:
+    """Battens on centre along the wall axis, split around any opening they cross.
+
+    Each station normally frames one member from the base to the framing top (raked or
+    level); a station whose footprint crosses a window or door instead frames the
+    below-sill and above-head pieces that survive, so a batten never runs across the
+    glass or the RO it doesn't carry any load over anyway.
+    """
     p0, direction, axis_len = _band_geometry(rw, layer)
     if axis_len <= 0.0:
         return []
@@ -114,21 +136,39 @@ def _layout_vertical(rw: ResolvedWall, layer, spec) -> list[FramedMember]:
     # cladding that is nailed to it.
     through = normal(direction)
     out: list[FramedMember] = []
-    for index, station in enumerate(stations):
+    index = 0
+    for station in stations:
         point = add(p0, scale(direction, station))
         fraction = station / axis_len if axis_len else 0.0
         top = top_start + (top_end - top_start) * fraction
-        out.append(FramedMember(
-            rw.uid, f"strapping-{layer.name}-{index:03d}", STRAPPING_CATEGORY,
-            spec.member, point, point, rw.z0_m, top, top - rw.z0_m, orient=through))
+        # An opening's straight-run ``height_m`` already includes any arch rise (a semi-
+        # circular head is a rectangle plus a curve above it), so cutting a plain rectangle
+        # to ``sill_m + height_m`` never lets the batten intrude into the opening — it only
+        # gives up a few conservative inches in an arch's spandrel corners, which
+        # ``layer_solids`` draws precisely because *that* solid is what a viewer sees.
+        cuts = [(rw.z0_m + op.sill_m, rw.z0_m + op.sill_m + op.height_m)
+                for op in openings
+                if _overlaps(station - face / 2.0, station + face / 2.0,
+                            op.center_along_m - op.width_m / 2.0,
+                            op.center_along_m + op.width_m / 2.0)]
+        for bottom, z1 in _subtract_spans(rw.z0_m, top, cuts):
+            if z1 - bottom <= face:
+                continue
+            out.append(FramedMember(
+                rw.uid, f"strapping-{layer.name}-{index:03d}", STRAPPING_CATEGORY,
+                spec.member, point, point, bottom, z1, z1 - bottom, orient=through))
+            index += 1
     return out
 
 
-def _layout_horizontal(rw: ResolvedWall, layer, spec) -> list[FramedMember]:
-    """Batten courses at the spec's spacing up the wall, each clipped to the wall it backs.
+def _layout_horizontal(rw: ResolvedWall, layer, spec,
+                       openings: list[ResolvedOpening]) -> list[FramedMember]:
+    """Batten courses at the spec's spacing up the wall, split around any opening they cross.
 
     A raked wall carries a course only where its top is above that course; the clipped
-    sub-span is closed-form because the top varies linearly between the two endpoints.
+    sub-span is closed-form because the top varies linearly between the two endpoints. A
+    course whose elevation band overlaps a window or door is further split around the
+    opening's width, so it frames the piece(s) flanking it rather than the piece over it.
     """
     p0, direction, axis_len = _band_geometry(rw, layer)
     if axis_len <= 0.0:
@@ -157,15 +197,62 @@ def _layout_horizontal(rw: ResolvedWall, layer, spec) -> list[FramedMember]:
         elevation += spacing
 
     out: list[FramedMember] = []
-    for index, z in enumerate(elevations):
+    index = 0
+    for z in elevations:
         lo, hi = _course_span(z + face, top_start, top_end, axis_len, first, last)
         if hi - lo <= face:
             continue
-        a, b = add(p0, scale(direction, lo)), add(p0, scale(direction, hi))
-        out.append(FramedMember(
-            rw.uid, f"strapping-{layer.name}-{index:03d}", STRAPPING_CATEGORY,
-            spec.member, a, b, z, z + face, length(sub(b, a))))
+        cuts = [(op.center_along_m - op.width_m / 2.0, op.center_along_m + op.width_m / 2.0)
+                for op in openings
+                if _overlaps(z, z + face, rw.z0_m + op.sill_m,
+                            rw.z0_m + op.sill_m + op.height_m)]
+        for seg_lo, seg_hi in _subtract_spans(lo, hi, cuts):
+            if seg_hi - seg_lo <= face:
+                continue
+            a = add(p0, scale(direction, seg_lo))
+            b = add(p0, scale(direction, seg_hi))
+            out.append(FramedMember(
+                rw.uid, f"strapping-{layer.name}-{index:03d}", STRAPPING_CATEGORY,
+                spec.member, a, b, z, z + face, length(sub(b, a))))
+            index += 1
     return out
+
+
+def _overlaps(a_lo: float, a_hi: float, b_lo: float, b_hi: float) -> bool:
+    """Whether ``[a_lo, a_hi]`` and ``[b_lo, b_hi]`` share any interior, past a small epsilon."""
+    return a_lo < b_hi - 1e-9 and b_lo < a_hi - 1e-9
+
+
+def _subtract_spans(lo: float, hi: float,
+                    cuts: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """``[lo, hi]`` with each interval in ``cuts`` removed, left to right.
+
+    ``cuts`` may be unsorted, overlap each other, or reach outside ``[lo, hi]`` — every cut
+    is clamped to ``[lo, hi]`` here, so a caller (an opening taller than the wall, one that
+    sits right at the band's edge) never has to clamp its own cuts before calling. An empty
+    ``cuts`` returns ``[(lo, hi)]`` unchanged, the identity a wall with no openings relies on.
+    """
+    if hi - lo <= 1e-9:
+        return []
+    clamped = sorted((max(lo, c0), min(hi, c1)) for c0, c1 in cuts if c1 > c0)
+    merged: list[tuple[float, float]] = []
+    for c0, c1 in clamped:
+        if c1 - c0 <= 1e-9:
+            continue
+        if merged and c0 <= merged[-1][1] + 1e-9:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], c1))
+        else:
+            merged.append((c0, c1))
+
+    segments: list[tuple[float, float]] = []
+    cursor = lo
+    for c0, c1 in merged:
+        if c0 - cursor > 1e-9:
+            segments.append((cursor, c0))
+        cursor = max(cursor, c1)
+    if hi - cursor > 1e-9:
+        segments.append((cursor, hi))
+    return segments
 
 
 def _band_geometry(rw: ResolvedWall, layer):
