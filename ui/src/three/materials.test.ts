@@ -123,14 +123,15 @@ export function runMemberColorTests() {
   assert(categoryColor("no-such-category") === CATEGORY_FALLBACK,
     "An unmapped category returns the neutral fallback");
 
-  // Material route: cellular-PVC trim reads as painted siding, not as the neutral fallback.
+  // Material route: cellular-PVC trim falls to the siding family by substring alone, but its
+  // FINISH_BASE entry (factory white, not the family's blue-grey) takes precedence.
   assert(familyOf("pvc-cellular") === "siding",
-    "Cellular PVC trim resolves to the siding family");
+    "Cellular PVC trim's substring guess is the siding family");
   assert(familyOf("air-barrier") === "membrane",
     "An air barrier resolves to the membrane family");
   const light = RESOLVED_NORDIC_PALETTE.light;
-  assert(materialColor("pvc-cellular", light) === light.material.siding,
-    "A pvc-cellular fascia/soffit member takes the siding tone, not the fallback");
+  assert(materialColor("pvc-cellular", light) === "#f4f2ee",
+    "A pvc-cellular fascia/soffit member takes its FINISH_BASE white, not the siding family tone");
   assert(materialColor("air-barrier", light) === light.material.membrane,
     "An air-barrier membrane member takes the membrane tone, not the fallback");
   for (const [category, material] of [["fascia", "pvc-cellular"], ["soffit", "pvc-cellular"],
@@ -145,7 +146,7 @@ export function runMemberColorTests() {
   // fallback ("var(--material-…)") reached THREE.Color, which logged an "unknown color" warning
   // for every skin member on every scene rebuild.
   for (const [materialRef, expected] of [
-    ["pvc-cellular", light.material.siding],
+    ["pvc-cellular", "#f4f2ee"],
     ["standing-seam", light.material.metal],
     ["air-barrier", light.material.membrane],
     ["no-such-material", light.material.fallback],

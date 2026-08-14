@@ -216,6 +216,10 @@ _FINISH_BASE: dict[str, str] = {
     # to the bare "brace" category lumber while the pillars it braces render white.
     # Value = the material's authored colour in houses/catlin/plan/assemblies.py.
     "post-paint-white": "#f4f2ee",
+    # Cellular PVC trim (garage fascia/soffit) is factory-white, not the "siding" family's
+    # blue-grey the substring guess falls to. Same white as post-paint-white — both are
+    # painted trim, just different substrates.
+    "pvc-cellular": "#f4f2ee",
 }
 
 
