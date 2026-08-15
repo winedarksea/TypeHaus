@@ -1,6 +1,6 @@
 # Type:Haus UI (M2)
 
-React + TypeScript + Vite editor — the local web app half of M2 (→ `docs/plan/21-m2-ui.md`,
+React + TypeScript + Vite editor — the local web app half of M2 (→ `plans/21-m2-ui.md`,
 `21b-m2-editor.md`). An SVG 2D floorplan editor + a three.js 3D panel, both pure views over
 the engine's `model.json`. **The server owns all geometry math**; the UI is a view + patch
 emitter (→ 20).

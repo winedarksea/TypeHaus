@@ -83,3 +83,22 @@ export function LoadErrorBanner() {
     </div>
   );
 }
+
+// `haus serve` imports the engine once and never reloads it; its watcher only watches the
+// house directory. So an edit under packages/engine/ changes nothing on screen and reports
+// nothing anywhere — the classic symptom is a correct fix that "did not work". The server
+// stamps the engine tree's mtime into GET /model (server/engine_stamp.py); when it has moved
+// past the mtime the process imported, say so. Restarting the server is the only remedy,
+// so there is no button: a reload would refetch the same stale geometry.
+export function EngineStaleBanner() {
+  const model = useStore((s) => s.model);
+  if (!model?.engine?.stale) return null;
+  return (
+    <div className="banner">
+      <span>
+        ⚠ The engine source on disk is newer than the code this server is running. Geometry
+        and checks are being produced by the old modules — restart <code>haus serve</code>.
+      </span>
+    </div>
+  );
+}

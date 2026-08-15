@@ -9,15 +9,21 @@ proposing any design change.
 - `plan/manifest.py` — plain-Python assembler (NOT editable); wires modules + params.
 - `plan/storeys/{basement,main,second,attic,garage}.py` — `# haus: editable` elements.
 - `plan/assemblies.py`, `plan/site.py`, `plan/placeables.py` — editable assemblies/site/placeables.
-- `plan/mep.py`, `plan/fixtures.py` — `# haus: editable` MEP + plumbing-fixture *instances*
-  (so UI drags round-trip). Only explicit constructors here — no functions/generators.
+- `plan/mep*.py` — MEP *instances*, split by system so no file runs past ~400 lines:
+  `mep_sleeves` (cast penetrations), `mep_drainage`, `mep_venting`, `mep_supply` +
+  `mep_supply_devices`, `mep_hvac` (ducts, equipment, terminal types), `mep_registers`,
+  `mep_electrical` (symbols). All eight are `# haus: editable`. `plan/mep.py` itself is
+  now only the four storey element lists the manifest consumes — NOT editable, because an
+  aggregator needs `from plan import ...` and the dialect forbids it.
+- `plan/fixtures.py` — `# haus: editable` plumbing-fixture *instances* (so UI drags
+  round-trip). Only explicit constructors in any of these — no functions/generators.
 - `plan/electrical.py` — `# haus: editable` electrical service upgrade: meter, backup
   enclosure, 240V/EV/spa devices, conduit trunks, NEC 210.52 fill receptacles.
 - `plan/circuits.py` — the panel schedule (NOT editable: Circuits are schedule data, not
   geometry). Devices point at circuits via `circuit=`; `electrical.circuit_refs` reconciles.
 - `plan/lighting.py` — `# haus: editable` luminaire/LED-run/control *instances*, room by
   room. Every light names its switch(es) in `controlled_by`; 24V runs name a `psu_ref`
-  instead of a circuit. The `ED-*-LT` fixtures still live in `plan/mep.py` — they were
+  instead of a circuit. The `ED-*-LT` fixtures still live in `plan/mep_electrical.py` — they were
   re-typed in place from the old generic `ED-T-LIGHT` so their uids (and IFC GlobalIds)
   survived — and each is one corner of a grid completed here.
 - `plan/lighting_types.py` — the `LuminaireType` catalog, schedule marks A–P (NOT

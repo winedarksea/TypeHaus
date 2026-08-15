@@ -163,6 +163,23 @@ class Length:
 
 
 def ft(feet: float, inches: float = 0.0) -> Length:
+    """Feet-and-inches as ``feet * 12 + inches``, with the sign carried by *each* argument.
+
+    There is no negation of the pair: **a negative length needs the sign on BOTH
+    arguments.** ``ft(-7, 10)`` is ``-84 + 10 = -74``″, not the ``-94``″ an author who
+    read it as "minus seven-foot-ten" expects — so that combination is rejected outright
+    rather than silently producing a length 20″ off in the wrong direction.
+
+    The sibling trap this cannot catch is ``ft(-0, 8)``: ``-0 == 0`` by the time the
+    function is called, so it quietly means ``+8``″. Only the source text still knows,
+    which is why ``dialect.mixed_sign_ft`` lints for it in editable plans.
+    """
+    if feet < 0 and inches > 0:
+        raise ValueError(
+            f"ft({feet}, {inches}): mixed signs. ft(f, i) is f*12 + i, so this is "
+            f"{feet * 12 + inches}\u2033, not -{abs(feet) * 12 + inches}\u2033. "
+            f"A negative length needs the sign on both arguments: ft({feet}, {-inches})."
+        )
     return Length(feet * M_PER_FT + inches * M_PER_IN, AuthoredUnit.FT_IN, (feet, inches))
 
 

@@ -17,9 +17,9 @@ from typehaus.cli.app import app, main  # `main` is the packaging entry point â€
 from _helpers import copy_house
 
 EXPECTED_COMMANDS = {
-    "build", "check", "compare", "diff", "energy", "explain", "export", "fmt", "import",
-    "import-project", "ls", "new", "permit-check", "print", "render", "serve", "takeoff",
-    "version",
+    "build", "check", "compare", "diff", "doctor", "energy", "explain", "export", "fmt",
+    "import", "import-project", "ls", "new", "permit-check", "print", "render", "serve",
+    "takeoff", "tasks", "version",
 }
 
 runner = CliRunner()
@@ -34,8 +34,8 @@ def test_every_command_is_registered() -> None:
     assert _names() == EXPECTED_COMMANDS
 
 
-def test_the_variants_subapp_is_still_mounted() -> None:
-    assert "variants" in {group.name for group in app.registered_groups}
+def test_the_subapps_are_still_mounted() -> None:
+    assert {"variants", "costs"} <= {group.name for group in app.registered_groups}
 
 
 def test_main_is_importable_from_the_entry_point_module() -> None:
@@ -58,14 +58,15 @@ def test_version_prints_the_engine_version() -> None:
 def test_check_reports_loader_findings_on_a_successful_import(tmp_path: Path) -> None:
     """A movable element in a non-editable file imports fine, so `check` used to print
     nothing about it â€” the error only reached the console when the import itself failed."""
-    import shutil
-
     catlin = Path(__file__).resolve().parents[3] / "houses" / "catlin"
     dst = tmp_path / "catlin"
     copy_house(catlin, dst)
-    mep = dst / "plan" / "mep.py"
+    # An MEP module that actually authors movable elements (Registers). plan/mep.py is now
+    # only the aggregator lists and carries no editable header to strip.
+    mep = dst / "plan" / "mep_registers.py"
     mep.write_text(mep.read_text().replace("# haus: editable\n", "", 1))
 
+    # Loader errors are never filtered by --only, so the default output must carry it.
     result = runner.invoke(app, ["check", str(dst)])
     assert "uneditable_movable_element" in result.output
     assert result.exit_code == 1

@@ -37,7 +37,60 @@ def build_space_summary(model: ResolvedModel) -> dict[str, object]:
     for row in rows.values():
         for key in total:
             total[key] += row[key]
-    return {"storeys": storeys, "overall": {**_rounded(total), "storage_ratio": _ratio(total)}}
+    gross = gross_area_sf(model)
+    storeys = [row | {"gross_sf": gross["storeys"].get(row["storey"], 0.0)} for row in storeys]
+    return {"storeys": storeys,
+            "overall": {**_rounded(total), "gross_sf": gross["overall"],
+                        "storage_ratio": _ratio(total)}}
+
+
+def gross_area_sf(model: ResolvedModel) -> dict[str, object]:
+    """Gross floor area per storey — the **exterior** footprint, walls included.
+
+    The three areas this module reports are three different questions and an estimate needs
+    all of them: ``usable_sf`` is what you can stand in, ``conditioned_sf`` is what the
+    energy code grades, and gross is what a builder means by "$/sf". None of them was gross
+    before this, so a $/sf figure had no honest denominator at all.
+
+    Derived from the wall *bodies*, not from the rooms: rooms stop at the finish face, so a
+    room-sum understates the building by its whole envelope thickness — about 6% on a 36x36
+    house with 12" foundation walls. Each wall layer already carries its own plan polygon;
+    their union per storey is the building's plan mass, and the exterior ring of that union
+    is the footprint. Interior courtyards are not filled — a ring's holes stay holes.
+    """
+    from shapely.geometry import Polygon
+    from shapely.ops import unary_union
+
+    per_storey: dict[str, list] = {}
+    for wall in model.walls:
+        bodies = [Polygon(layer.polygon) for layer in wall.layers
+                  if layer.polygon and len(layer.polygon) >= 3]
+        if bodies:
+            per_storey.setdefault(wall.storey, []).extend(bodies)
+    rooms_by_storey: dict[str, list] = {}
+    for room in model.rooms:
+        if room.clear_face and len(room.clear_face) >= 3:
+            rooms_by_storey.setdefault(room.storey, []).append(Polygon(room.clear_face))
+    out: dict[str, float] = {}
+    for storey, bodies in per_storey.items():
+        merged = unary_union([body.buffer(0) for body in bodies])
+        polys = list(merged.geoms) if merged.geom_type == "MultiPolygon" else [merged]
+        rooms = rooms_by_storey.get(storey, [])
+        area = 0.0
+        for poly in polys:
+            if poly.is_empty:
+                continue
+            shell = Polygon(poly.exterior)
+            # **An enclosure counts only if it encloses a Room.** The retaining walls of the
+            # sunken garden, the porch and balcony guards, and the breezeway posts are all
+            # walls on a storey and none of them is floor area anyone builds or buys. Rooms
+            # are the plan's own statement about what is a space (the garage is a Room, an
+            # unconditioned one, and a builder does price garage square footage) — so this
+            # tracks the plan rather than maintaining a list of structures to exclude.
+            if any(shell.contains(room.representative_point()) for room in rooms):
+                area += shell.area
+        out[storey] = round(area * 10.7639, 1)
+    return {"storeys": out, "overall": round(sum(out.values()), 1)}
 
 
 def _empty_row() -> dict[str, float]:

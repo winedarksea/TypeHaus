@@ -12,7 +12,7 @@ type-haus/
 ├── pyproject.toml               # uv workspace root
 ├── LICENSE                      # MIT
 ├── README.md
-├── docs/plan/                   # THIS document set (00–50), migrated at WP1.1
+├── plans/                       # THIS document set (00–50), the decision log, and TODO
 ├── packages/
 │   └── engine/                  # PyPI package: typehaus (hatchling backend)
 │       ├── pyproject.toml

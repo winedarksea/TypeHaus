@@ -16,7 +16,7 @@ import { Preview3D } from "./components/Preview3D";
 import { Canvas2D } from "./components/Canvas2D";
 import { Panel3D } from "./components/Panel3DLazy";
 import { Inspector } from "./components/Inspector";
-import { ConflictBanner, LoadErrorBanner } from "./components/ConflictBanner";
+import { ConflictBanner, EngineStaleBanner, LoadErrorBanner } from "./components/ConflictBanner";
 import { ExtentsHUD } from "./components/ExtentsHUD";
 import { Toasts } from "./components/Toasts";
 
@@ -161,6 +161,7 @@ export function App() {
                 <Canvas2D />
               )}
               <ConflictBanner />
+              <EngineStaleBanner />
               <LoadErrorBanner />
               <ExtentsHUD />
             </div>

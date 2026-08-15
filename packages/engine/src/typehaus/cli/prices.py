@@ -1,217 +1,58 @@
-"""Optional user-supplied unit prices (``prices.toml``) → $ / $-range estimates.
+"""Pricing a bill of materials — the join, the roll-up, and what it refuses to guess.
 
-Type:Haus ships **no** default prices — material cost is local, seasonal, and negotiated,
-so any bundled number would be authoritative-looking fiction. If a house directory carries
-a ``prices.toml`` (next to ``preferences.toml``), `haus takeoff` and `haus variants
-compare` decorate their quantity output with dollar estimates; without the file both
-commands behave exactly as before.
-
-Format — every section is optional, and every value is either a single number (an exact
-unit price) or an inline table ``{ low = ..., high = ... }`` (a $-range, e.g. quotes from
-two yards)::
-
-    [framing]        # $ per lineal foot of ORDERED stock, keyed by lumber profile
-    "2x4" = 0.72
-    "2x6" = { low = 0.95, high = 1.35 }
-
-    [sheet_goods]    # $ per 4x8 sheet, keyed by material tag
-    osb = 22.50
-    zip-r = { low = 42.0, high = 55.0 }
-
-    [hardware]       # $ per takeoff unit (usually each), keyed by part number
-    LUS210 = 1.85
-
-    [concrete]       # $ per cubic yard placed, keyed by solid category (slab, footing, ...)
-    slab = { low = 180, high = 240 }
-
-    [floor_heat]     # $ per lineal foot of element/wire, keyed by system name
-    electric = 12.0
-
-    [placeables]     # $ each, keyed by catalog type tag
-    wolf-range-36 = { low = 9500, high = 12500 }
-
-    [furnishings]    # $ each, keyed by catalog type tag — the same rows [placeables]
-    ikea-sofa-84 = { low = 700, high = 2400 }   # reads, but reported beside the total
-
-Unpriced rows are never silently dropped from a total: every estimate carries the list of
-quantity rows it could not price, so a partial catalog reads as a partial estimate rather
-than a low bid.
-
-Nor are they silently *added*: what a sofa costs is not what the house costs. Sections in
-``EXCLUDED_FROM_TOTAL`` are priced and reported like any other and then summed into
-``excluded_total`` rather than ``total``, which is why there is a [furnishings] table with
-the same keys as [placeables] — where the line falls between built-in and loose is the
-owner's call, made by which table a type is written into, and no type may sit in both.
+Split from :mod:`typehaus.cli.price_file`, which owns the *file format*: this module owns
+the *join* between a ``prices.toml`` and a ``bill_of_materials`` payload, and the two change
+for different reasons. Everything the old single module exported is still importable from
+here, so ``from typehaus.cli.prices import ...`` keeps working for every caller.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Iterable, Mapping, Optional
+from collections.abc import Iterable, Mapping
+from typing import Any, Optional
 
-try:  # tomllib is stdlib on 3.11+; the engine still supports 3.9
-    import tomllib
-except ModuleNotFoundError:  # pragma: no cover - exercised on <3.11 only
-    import tomli as tomllib  # type: ignore[no-redef]
+from typehaus.cli.price_file import (  # noqa: F401  (re-exported: this is the public name)
+    _SECTIONS,
+    BASES,
+    INSTALLED,
+    LABOUR,
+    MATERIAL,
+    PRICES_FILENAME,
+    WASTE_IN_QUANTITY,
+    ZERO,
+    Adjustments,
+    PriceRange,
+    Prices,
+    UnitPrice,
+    _dollars,
+    _price,
+    load_prices,
+    waste_in_quantity,
+)
 
-PRICES_FILENAME = "prices.toml"
+#: The re-export surface. ``price_file`` owns the file format and this module owns the join,
+#: but every existing caller says ``from typehaus.cli.prices import ...`` — naming the names
+#: here keeps that path a declared contract rather than an implicit one.
+__all__ = [
+    "BASES", "INSTALLED", "LABOUR", "MATERIAL", "PRICES_FILENAME", "Adjustments",
+    "ESTIMATE_PLANS", "EXCLUDED_FROM_TOTAL", "PriceRange", "Prices", "UnitPrice",
+    "WASTE_IN_QUANTITY", "ZERO", "estimate_costs", "load_prices", "waste_in_quantity",
+]
 
-_SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "placeables",
-             "floor_finishes", "envelope_layers", "wood_surfaces", "openings",
-             "footing_bedding",
-             "pipe_runs", "ducts", "sleeves", "conduit",
-             # Plumbing specialties (2026-08-01): devices by the piece, their loose install
-             # kits, and hot-line insulation by the foot.
-             "plumbing_specialties", "install_parts", "pipe_insulation",
-             "edge_trim",
-             # Monolithic wall structure (2026-08-03): concrete/masonry walls by the yard.
-             "wall_structure",
-             # Sheet-metal families the yard is the wrong unit for (2026-08-08): guards and
-             # gutter/leader runs by the foot.
-             "railings", "drainage",
-             # Loose furnishings (2026-08-08) — priced, reported, and deliberately *not*
-             # summed into the construction total. See ``EXCLUDED_FROM_TOTAL``.
-             "furnishings")
-
-
-def _dollars(value: float) -> str:
-    return f"-${abs(value):,.2f}" if value < 0 else f"${value:,.2f}"
-
-
-@dataclass(frozen=True)
-class PriceRange:
-    """An exact price is a range whose ends coincide; arithmetic keeps ends sorted."""
-
-    low: float
-    high: float
-
-    @property
-    def is_exact(self) -> bool:
-        return abs(self.high - self.low) < 1e-9
-
-    def times(self, quantity: float) -> "PriceRange":
-        ends = sorted((self.low * quantity, self.high * quantity))
-        return PriceRange(ends[0], ends[1])
-
-    def plus(self, other: "PriceRange") -> "PriceRange":
-        return PriceRange(self.low + other.low, self.high + other.high)
-
-    def fmt(self, signed: bool = False) -> str:
-        prefix = "+" if signed and self.low >= 0 else ""
-        if self.is_exact:
-            return prefix + _dollars(self.low)
-        return f"{prefix}{_dollars(self.low)} – {_dollars(self.high)}"
-
-    def as_dict(self) -> dict:
-        return {"low": round(self.low, 2), "high": round(self.high, 2)}
+#: BOM fields that read as a human description, most specific first. A CSV row that says
+#: only "framing / 2x6" is not something a supplier can quote from.
+_DESCRIPTION_FIELDS = ("description", "scope", "name", "label", "product", "assembly")
 
 
-ZERO = PriceRange(0.0, 0.0)
-
-
-@dataclass(frozen=True)
-class Prices:
-    """The parsed ``prices.toml``: per-section unit prices, each an exact $ or a $-range."""
-
-    path: Path
-    framing: Mapping[str, PriceRange] = field(default_factory=dict)
-    sheet_goods: Mapping[str, PriceRange] = field(default_factory=dict)
-    hardware: Mapping[str, PriceRange] = field(default_factory=dict)
-    concrete: Mapping[str, PriceRange] = field(default_factory=dict)
-    floor_heat: Mapping[str, PriceRange] = field(default_factory=dict)
-    placeables: Mapping[str, PriceRange] = field(default_factory=dict)
-    # The 2026-07-25 BOM sweep. An unpriced section is invisible in `haus variants compare`,
-    # so every new billable family gets a table here even where no house supplies prices yet.
-    floor_finishes: Mapping[str, PriceRange] = field(default_factory=dict)
-    envelope_layers: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Species wood (2026-08-02), keyed on material tag. Mind the mirrors: rows flagged
-    # ``also_in_*`` are billed primarily in envelope_layers / floor_finishes /
-    # structural_solids — price a material here OR there, not in both tables.
-    wood_surfaces: Mapping[str, PriceRange] = field(default_factory=dict)
-    openings: Mapping[str, PriceRange] = field(default_factory=dict)
-    footing_bedding: Mapping[str, PriceRange] = field(default_factory=dict)
-    pipe_runs: Mapping[str, PriceRange] = field(default_factory=dict)
-    ducts: Mapping[str, PriceRange] = field(default_factory=dict)
-    sleeves: Mapping[str, PriceRange] = field(default_factory=dict)
-    conduit: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Plumbing specialties (2026-08-01). Keyed on the accessory *kind* / part name / spec
-    # rather than a model number: a price list is written before the model is chosen.
-    plumbing_specialties: Mapping[str, PriceRange] = field(default_factory=dict)
-    install_parts: Mapping[str, PriceRange] = field(default_factory=dict)
-    pipe_insulation: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Edge trim by the lineal foot (2026-08-02), keyed on the row category — fascia,
-    # soffit, drip_flashing, edge_cladding, corner_trim, ridge_cap ...
-    edge_trim: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Monolithic wall structure (2026-08-03), keyed on the *assembly* tag rather than the
-    # material: a placed yard of SUNKEN_GARDEN_WALL and a yard of CATLIN_BASEMENT_12 are
-    # both "concrete" and are not the same price. Priced by the cubic yard; the rows also
-    # carry net_area_sqft, so a face-priced second plan entry can be added later — but
-    # price each assembly in one table only.
-    wall_structure: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Guards by the lineal foot of guard line (2026-08-08), keyed on the railing product
-    # type. A count cannot price a railing: a 6-ft balcony guard and a 20-ft stair guard
-    # are both "1".
-    railings: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Gutters and leaders by the foot (2026-08-08), keyed on the drainage row category.
-    # Mind the mirror: these runs also surface in ``structural_solids`` as a fraction of a
-    # cubic yard of sheet metal — price them here, and leave `gutter`/`downspout` blank in
-    # [concrete]. The drywell rows carry length 0 and bill their aggregate there instead.
-    drainage: Mapping[str, PriceRange] = field(default_factory=dict)
-    # Loose furnishings (2026-08-08), keyed on the same catalog type tag as [placeables]
-    # and read against the same BOM rows. A sofa is not a construction cost, and rolling
-    # one into the build number makes the build number wrong in both directions — it is
-    # too high to bid against and too volatile to track. Split rather than dropped: the
-    # estimate still prices and reports it, beside the total instead of inside it.
-    # ``load_prices`` rejects a type priced in both tables.
-    furnishings: Mapping[str, PriceRange] = field(default_factory=dict)
-
-
-def _price(section: str, key: str, raw: object, path: Path) -> PriceRange:
-    if isinstance(raw, (int, float)) and not isinstance(raw, bool):
-        value = float(raw)
-        if value < 0:
-            raise ValueError(f"{path}: [{section}] {key!r} is negative")
-        return PriceRange(value, value)
-    if isinstance(raw, dict):
-        extra = set(raw) - {"low", "high"}
-        if extra or set(raw) != {"low", "high"}:
-            raise ValueError(
-                f"{path}: [{section}] {key!r} must be a number or {{ low = ..., high = ... }}")
-        low, high = float(raw["low"]), float(raw["high"])
-        if low < 0 or high < low:
-            raise ValueError(f"{path}: [{section}] {key!r} needs 0 <= low <= high")
-        return PriceRange(low, high)
-    raise ValueError(f"{path}: [{section}] {key!r} must be a number or {{ low, high }} table")
-
-
-def load_prices(house_dir: Path) -> Optional[Prices]:
-    """Read ``prices.toml`` if the house supplies one; ``None`` (not an error) if absent.
-
-    A *malformed* file raises ``ValueError`` with the offending key — a mistyped price must
-    never be silently priced at zero.
-    """
-    path = Path(house_dir) / PRICES_FILENAME
-    if not path.exists():
-        return None
-    data = tomllib.loads(path.read_text())
-    unknown = set(data) - set(_SECTIONS)
-    if unknown:
-        raise ValueError(f"{path}: unknown section(s) {sorted(unknown)}; "
-                         f"expected {list(_SECTIONS)}")
-    sections = {
-        section: {str(key): _price(section, str(key), raw, path)
-                  for key, raw in (data.get(section) or {}).items()}
-        for section in _SECTIONS
-    }
-    # [placeables] and [furnishings] price the same BOM rows, so a type in both would be
-    # billed twice — once in the construction total and once beside it.
-    both = sorted(set(sections["placeables"]) & set(sections["furnishings"]))
-    if both:
-        raise ValueError(f"{path}: {both} priced in both [placeables] and [furnishings]; "
-                         "each catalog type belongs to exactly one (furnishings are "
-                         "reported beside the construction total, not inside it)")
-    return Prices(path=path, **sections)
+def _describe(row: Mapping[str, object], section: str, key: str) -> str:
+    for field_name in _DESCRIPTION_FIELDS:
+        value = row.get(field_name)
+        if isinstance(value, str) and value:
+            return value
+    types = row.get("types")
+    if isinstance(types, (list, tuple)) and types:
+        return ", ".join(str(t) for t in types)
+    return f"{section.replace('_', ' ')} · {key}"
 
 
 def _sum(ranges: Iterable[PriceRange]) -> PriceRange:
@@ -226,6 +67,9 @@ def _sum(ranges: Iterable[PriceRange]) -> PriceRange:
 #: attribute named by the section. Both :func:`estimate_costs` and the cost-tracking
 #: payload (``takeoff/costs.py``) read this — the ``(section, key)`` a paid check-off is
 #: stored under has to be the *same* join the estimate prices, or the two views drift.
+#:
+#: ``waste_in_quantity`` is derived from :data:`WASTE_IN_QUANTITY` rather than repeated as a
+#: sixth tuple element: one list, one place to be wrong.
 ESTIMATE_PLANS = (
     ("framing", "framing_by_size", "profile", "order_length_ft", "LF"),
     ("sheet_goods", "sheet_goods", "material", "sheets_4x8", "sheets"),
@@ -268,7 +112,9 @@ EXCLUDED_FROM_TOTAL = frozenset({"furnishings"})
 _PLAN_TABLE = {name: name for name, *_ in ESTIMATE_PLANS}
 
 
-def estimate_costs(bom: dict, prices: Prices) -> dict:
+
+def estimate_costs(bom: dict[str, Any], prices: Prices,
+                   areas: Optional[Mapping[str, float]] = None) -> dict[str, Any]:
     """Price a :func:`typehaus.takeoff.bill_of_materials` payload against ``prices``.
 
     Returns ``{"sections": {name: {"rows": [...], "subtotal": {...}}}, "total": {...},
@@ -278,19 +124,44 @@ def estimate_costs(bom: dict, prices: Prices) -> dict:
     ``total`` is the *construction* total: sections in :data:`EXCLUDED_FROM_TOTAL` are
     priced and reported like any other, then summed into ``excluded_total`` instead.
     ``grand_total`` is the two together, for the reader who wants one number.
+
+    Three further roll-ups ride alongside, each of them opt-in and each zero unless the
+    house's ``prices.toml`` asks for it (decision #28 — the house owns its numbers):
+
+    - ``basis``: material / labour / merged subtotals, per section and overall. A row is
+      merged when its price is ``installed`` with no declared split, and a merged number is
+      **never divided**.
+    - ``bid``: the ``net -> waste -> ordered -> contingency -> markup -> tax -> total``
+      ladder from :mod:`typehaus.takeoff.cost_model`, each stage its own reported line.
+    - ``per_sf``: $/sf against the ``areas`` mapping the caller supplies (conditioned and
+      gross, from ``server/space_summary.build_space_summary``). Absent when ``areas`` is.
     """
-    sections: dict[str, dict] = {}
+    from typehaus.takeoff.cost_codes import cost_code
+    from typehaus.takeoff.cost_model import (
+        apply_waste,
+        buckets_as_dict,
+        empty_buckets,
+        per_sf,
+        roll_up,
+        split_by_basis,
+    )
+    sections: dict[str, dict[str, Any]] = {}
     total = ZERO
     excluded_total = ZERO
     # A BOM table may feed more than one price section (``placeables`` feeds both
     # [placeables] and [furnishings]), so a miss is only really unpriced when *no* section
     # reading that table priced the key. Collect misses first, then drop the ones another
     # plan caught — otherwise every furnished row would read as unpriced in the other.
-    priced: dict[str, set] = {}
-    misses: list[tuple] = []
+    priced: dict[str, set[str]] = {}
+    misses: list[tuple[str, dict[str, Any]]] = []
+    section_buckets: dict[str, dict[str, PriceRange]] = {}
+    section_waste: dict[str, PriceRange] = {}
+    adjustments = prices.adjustments
     for name, bom_key, key_field, quantity_field, unit in ESTIMATE_PLANS:
         table = getattr(prices, _PLAN_TABLE[name])
         rows = []
+        buckets = empty_buckets()
+        waste_sum = ZERO
         for row in bom.get(bom_key, []) or []:
             key = str(row.get(key_field))
             quantity = float(row.get(quantity_field) or 0.0)
@@ -301,15 +172,43 @@ def estimate_costs(bom: dict, prices: Prices) -> dict:
                                              "quantity": round(quantity, 2), "unit": unit}))
                 continue
             priced.setdefault(bom_key, set()).add(key)
-            cost = price.times(quantity)
-            rows.append({"key": key, "quantity": round(quantity, 2), "unit": unit,
+            # Rounded to the cent *before* it is split or summed, so the three basis
+            # subtotals, the section subtotal and the grand total are all sums of the same
+            # numbers. Splitting the unrounded value instead lands the bid ladder a cent
+            # away from the total printed above it.
+            cost = PriceRange(**price.times(quantity).as_dict())
+            parts = split_by_basis(cost, price)
+            for bucket, value in parts.items():
+                buckets[bucket] = buckets[bucket].plus(value)
+            waste = apply_waste(name, key, cost, adjustments)
+            waste_sum = waste_sum.plus(waste)
+            code = cost_code(name, key, dict(prices.codes))
+            rows.append({"key": key, "description": _describe(row, name, key),
+                         "quantity": round(quantity, 2), "unit": unit,
                          "unit_price": price.as_dict(), "cost": cost.as_dict(),
-                         "cost_fmt": cost.fmt()})
+                         "cost_fmt": cost.fmt(),
+                         "basis": getattr(price, "basis", MATERIAL),
+                         "material": parts[MATERIAL].as_dict(),
+                         "labour": parts[LABOUR].as_dict(),
+                         "merged": parts["merged"].as_dict(),
+                         "waste_pct": round(adjustments.waste_rate(name, key), 4),
+                         "waste_in_quantity": waste_in_quantity(name),
+                         "order_quantity": round(quantity * (1.0 + (
+                             0.0 if waste_in_quantity(name)
+                             else adjustments.waste_rate(name, key))), 2),
+                         **code.as_dict()})
         if rows:
             subtotal = _sum(PriceRange(r["cost"]["low"], r["cost"]["high"]) for r in rows)
             in_total = name not in EXCLUDED_FROM_TOTAL
             sections[name] = {"rows": rows, "subtotal": subtotal.as_dict(),
-                              "subtotal_fmt": subtotal.fmt(), "in_total": in_total}
+                              "subtotal_fmt": subtotal.fmt(), "in_total": in_total,
+                              "basis": prices.basis.get(name, MATERIAL),
+                              "basis_note": prices.basis_notes.get(name),
+                              "basis_subtotals": buckets_as_dict(buckets),
+                              "waste": waste_sum.as_dict(),
+                              "waste_in_quantity": waste_in_quantity(name)}
+            section_buckets[name] = buckets
+            section_waste[name] = waste_sum
             if in_total:
                 total = total.plus(subtotal)
             else:
@@ -317,10 +216,23 @@ def estimate_costs(bom: dict, prices: Prices) -> dict:
     unpriced = [row for bom_key, row in misses
                 if row["key"] not in priced.get(bom_key, ())]
     grand_total = total.plus(excluded_total)
-    return {"sections": sections, "total": total.as_dict(), "total_fmt": total.fmt(),
-            "excluded_sections": sorted(n for n in sections
-                                        if n in EXCLUDED_FROM_TOTAL),
-            "excluded_total": excluded_total.as_dict(),
-            "excluded_total_fmt": excluded_total.fmt(),
-            "grand_total": grand_total.as_dict(), "grand_total_fmt": grand_total.fmt(),
-            "unpriced": unpriced}
+    bid = roll_up(section_buckets, section_waste, adjustments, EXCLUDED_FROM_TOTAL)
+    payload = {"sections": sections, "total": total.as_dict(), "total_fmt": total.fmt(),
+               "excluded_sections": sorted(n for n in sections
+                                           if n in EXCLUDED_FROM_TOTAL),
+               "excluded_total": excluded_total.as_dict(),
+               "excluded_total_fmt": excluded_total.fmt(),
+               "grand_total": grand_total.as_dict(), "grand_total_fmt": grand_total.fmt(),
+               "basis_declared": prices.basis_declared,
+               "basis": dict(prices.basis), "basis_notes": dict(prices.basis_notes),
+               "bid": bid,
+               "unpriced": unpriced}
+    if areas:
+        payload["areas"] = dict(areas)
+        payload["per_sf"] = {
+            "total": per_sf(total.as_dict(), areas),
+            "bid_total": per_sf(bid["total"], areas),
+            "sections": {name: per_sf(body["subtotal"], areas)
+                         for name, body in sections.items()},
+        }
+    return payload

@@ -1164,6 +1164,10 @@ export interface Finding {
 
 export interface Model {
   revision: string;
+  // Whether the server process is still running the engine code that is on disk.
+  // `haus serve` does not reload engine modules, so an edit under packages/engine/ is
+  // otherwise completely silent (server/engine_stamp.py). Absent on older model.json.
+  engine?: { imported_mtime: number; source_mtime: number; stale: boolean };
   // Hash of the on-disk plan source as of the last full rebuild. Stable across server
   // restarts (unlike `revision`, a fresh uuid per process) — this is what `npm run shots`
   // compares against a committed baseline to tell "the house changed" from "the server

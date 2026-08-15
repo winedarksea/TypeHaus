@@ -27,7 +27,7 @@ from _helpers import CATLIN, copy_house
 def uneditable_house(tmp_path: Path) -> Path:
     dst = tmp_path / "catlin"
     copy_house(CATLIN, dst)
-    mep = dst / "plan" / "mep.py"  # authors EQ-B-WH, a UI-movable placeable
+    mep = dst / "plan" / "mep_hvac.py"  # authors EQ-B-WH, a UI-movable placeable
     mep.write_text(mep.read_text().replace("# haus: editable\n", "", 1))
     return dst
 

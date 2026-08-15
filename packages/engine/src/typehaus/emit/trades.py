@@ -177,3 +177,73 @@ def solid_trade(category: str | None) -> str:
     if not category:
         return FALLBACK_TRADE
     return SOLID_CATEGORY_TRADE.get(category.strip().lower(), FALLBACK_TRADE)
+
+
+# --- construction sequence ------------------------------------------------------------
+#
+# ``TRADES`` above is a *visibility* axis — which toggles the 3D viewer offers — and carries
+# no ordering at all. A schedule needs one, and it is the one thing on this page that cannot
+# be derived from the model: nothing in the geometry says footings precede framing. It is
+# judgment, authored once, here beside the vocabulary it orders.
+#
+# Deliberately coarse. This is the order the trades come to site in, not a critical path:
+# durations, crew sizes and calendar dates are not in the model and a fabricated duration is
+# worse than an absent one (→ takeoff/tasks.py).
+
+#: Every trade in ``TRADES``, in the order work happens. Ties are broken toward the trade
+#: that is harder to redo.
+CONSTRUCTION_SEQUENCE: tuple[str, ...] = (
+    "earth",        # excavation, backfill, drain tile bedding
+    "concrete",     # footings, walls, slabs — everything cast
+    "drainage",     # perimeter drainage and the site work that has to precede backfill
+    "framing",      # sticks: studs, joists, rafters, beams, posts
+    "floors",       # decks and subfloor over the framing that carries them
+    "roof",         # dry-in: sheathing, underlayment, roofing, edge metal
+    "walls",        # sheathing, WRB, insulation, cladding — the envelope layers
+    "openings",     # windows and doors, after the rough openings and before finishes
+    "plumbing",     # rough-in runs while the walls are open ...
+    "electrical",   # ... and the three rough-ins share that window, in trade order
+    "mechanical",
+    "stairs",       # stairs and guards, once the floors they land on are down
+    "furniture",    # casework, appliances, fixtures set at the end
+)
+
+#: What must be substantially complete before a trade starts. A predecessor map rather than
+#: only the linear order above, because the three rough-ins genuinely run in parallel and a
+#: schedule that serializes them is one no builder will use.
+TRADE_PREDECESSORS: dict[str, tuple[str, ...]] = {
+    "earth": (),
+    "concrete": ("earth",),
+    "drainage": ("concrete",),
+    "framing": ("concrete",),
+    "floors": ("framing",),
+    "roof": ("framing",),
+    "walls": ("framing", "roof"),
+    "openings": ("walls",),
+    "plumbing": ("framing", "floors"),
+    "electrical": ("framing", "floors"),
+    "mechanical": ("framing", "floors"),
+    "stairs": ("floors",),
+    "furniture": ("walls", "openings", "plumbing", "electrical", "mechanical"),
+}
+
+
+def _validate_sequence() -> None:
+    """Import-time guard: the sequence and the predecessor map must cover exactly TRADES,
+    and no trade may depend on one that comes after it."""
+    if set(CONSTRUCTION_SEQUENCE) != TRADES:
+        missing = sorted(TRADES - set(CONSTRUCTION_SEQUENCE))
+        extra = sorted(set(CONSTRUCTION_SEQUENCE) - TRADES)
+        raise ValueError(f"CONSTRUCTION_SEQUENCE must cover TRADES exactly; "
+                         f"missing {missing}, unknown {extra}")
+    if set(TRADE_PREDECESSORS) != TRADES:
+        raise ValueError("TRADE_PREDECESSORS must have one entry per trade")
+    rank = {trade: i for i, trade in enumerate(CONSTRUCTION_SEQUENCE)}
+    for trade, predecessors in TRADE_PREDECESSORS.items():
+        for predecessor in predecessors:
+            if rank[predecessor] >= rank[trade]:
+                raise ValueError(f"{trade!r} depends on {predecessor!r}, which does not "
+                                 f"precede it in CONSTRUCTION_SEQUENCE")
+
+
+_validate_sequence()

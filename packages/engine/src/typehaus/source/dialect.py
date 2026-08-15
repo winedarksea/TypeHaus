@@ -46,11 +46,12 @@ class _DialectVisitor(cst.CSTVisitor):
         pos = self.get_metadata(cst.metadata.PositionProvider, node)
         return SourceLoc(file=self.file, line=pos.start.line, column=pos.start.column)
 
-    def _err(self, node: cst.CSTNode, msg: str, hint: str | None = None) -> None:
+    def _err(self, node: cst.CSTNode, msg: str, hint: str | None = None,
+             check_id: str = "dialect.grammar") -> None:
         self.findings.append(
             Finding(
                 severity=Severity.ERROR,
-                check_id="dialect.grammar",
+                check_id=check_id,
                 message=msg,
                 source_loc=self._loc(node),
                 fix_hint=hint,
@@ -105,6 +106,18 @@ class _DialectVisitor(cst.CSTVisitor):
             self._check_call(expr)
         elif isinstance(expr, (cst.SimpleString,)):
             return
+        elif isinstance(expr, cst.ConcatenatedString):
+            # Two adjacent string literals are implicit concatenation, which the writeback
+            # CST has no way to reproduce — so a long `source=` citation split across lines
+            # to satisfy the line-length limit is rejected. The message used to be the
+            # generic "disallowed expression ConcatenatedString", which names the node type
+            # and not the fix.
+            self._err(
+                expr,
+                "adjacent string literals (implicit concatenation) are not allowed",
+                hint="a long string value must be one physical line, even past the line-"
+                     "length limit — e.g. `source=\"...\"` stays on one line",
+            )
         elif isinstance(expr, (cst.Integer, cst.Float)):
             return
         elif isinstance(expr, cst.Name):
@@ -148,7 +161,9 @@ class _DialectVisitor(cst.CSTVisitor):
             self._err(call, "only direct constructor calls are allowed")
             return
         if name not in self.allowed:
-            self._err(call, f"'{name}' is not a registered element/quantity/library constructor")
+            self._err(call,
+                      f"'{name}' is not a registered element/quantity/library constructor",
+                      hint=_BUILTIN_HINTS.get(name))
         for arg in call.args:
             if arg.star:
                 self._err(arg, "starred arguments are not allowed")
@@ -159,6 +174,61 @@ class _DialectVisitor(cst.CSTVisitor):
                     f"'{name}' requires keyword arguments (positional allowed only for quantities)",
                 )
             self._check_expr(arg.value)
+        if name == "ft":
+            self._check_ft_signs(call)
+
+    def _check_ft_signs(self, call: cst.Call) -> None:
+        """``ft(f, i)`` is ``f*12 + i``; a negative length needs the sign on both arguments.
+
+        The CST is the only place this is decidable for the worst case, ``ft(-0, 8)``:
+        ``-0 == 0`` at runtime, so the function sees ``ft(0, 8)`` and returns a *positive*
+        8″ for source that plainly reads as "minus eight inches". ``quantities.length.ft``
+        raises for the cases it can still see (``feet < 0 and inches > 0``); this covers the
+        one it cannot.
+        """
+        positional = [a.value for a in call.args if a.keyword is None and not a.star]
+        if len(positional) != 2:
+            return
+        feet, inches = (_signed_literal(x) for x in positional)
+        if feet is None or inches is None:
+            return
+        if feet[0] and not inches[0] and inches[1] != 0:
+            self._err(
+                call,
+                f"ft(-{feet[1]:g}, {inches[1]:g}) mixes signs: ft(f, i) is f*12 + i, so this "
+                f"is {-feet[1] * 12 + inches[1]:g}″, not -{feet[1] * 12 + inches[1]:g}″",
+                hint=f"a negative length needs the sign on BOTH arguments: "
+                     f"ft(-{feet[1]:g}, -{inches[1]:g})",
+                check_id="dialect.mixed_sign_ft",
+            )
+
+
+# Builtins that are reached for often enough in editable plans to deserve the real answer
+# rather than "not a registered constructor", which reads as "you spelled it wrong".
+_BUILTIN_HINTS = {
+    "frozenset": "the dialect has no callable surface — a type catalog or any frozenset "
+                 "belongs in a non-editable module (e.g. plan/*_types.py), which the "
+                 "manifest imports",
+    "set": "use a set literal `{A, B}` for control layers; `set(...)` is a call",
+    "tuple": "use a tuple literal `(A, B)`; a 1-tuple needs its trailing comma `(A,)`",
+    "list": "use a list literal `[A, B]`",
+    "dict": "use keyword arguments; the dialect has no mapping literal",
+    "range": "generated sequences belong in params/*.py, not an editable plan",
+}
+
+
+def _signed_literal(expr: cst.BaseExpression) -> tuple[bool, float] | None:
+    """``(minus_sign_present, magnitude)`` for a numeric literal, else None.
+
+    The sign is reported separately from the value precisely so that ``-0`` — which no
+    arithmetic can distinguish from ``0`` — stays visible.
+    """
+    negated = isinstance(expr, cst.UnaryOperation) and isinstance(expr.operator, cst.Minus)
+    if negated:
+        expr = expr.expression  # type: ignore[attr-defined]
+    if isinstance(expr, (cst.Integer, cst.Float)):
+        return negated, float(expr.evaluated_value)
+    return None
 
 
 def lint_source(

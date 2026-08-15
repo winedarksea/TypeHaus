@@ -19,8 +19,35 @@ import typer
 from rich.table import Table
 
 from typehaus._meta import PROJECT_NAME, engine_version
-from typehaus.cli._shared import _print_findings, _resolve_house, app, console
+from typehaus.cli._shared import (
+    ExitOn,
+    TierName,
+    _print_findings,
+    _resolve_house,
+    app,
+    console,
+)
 from typehaus.findings import Result, Severity
+
+# `--only` accepts these result names, or `all`. Default is failures + unevaluable rules:
+# on catlin that is 1451 lines of output down to ~30, and the 716 passing checks it drops
+# were never the reason anyone ran the command.
+_ONLY_ALL = "all"
+_ONLY_DEFAULT = "fail,unknown"
+
+
+def _parse_only(only: str) -> frozenset[Result] | None:
+    """None means "no filter"; otherwise the set of results to print."""
+    wanted = [piece.strip().lower() for piece in only.split(",") if piece.strip()]
+    if _ONLY_ALL in wanted:
+        return None
+    try:
+        return frozenset(Result(name) for name in wanted)
+    except ValueError:
+        valid = ", ".join(r.value for r in Result)
+        console.print(f"[red]--only: expected `{_ONLY_ALL}` or a comma-separated subset "
+                      f"of {{{valid}}}, got {only!r}[/red]")
+        raise typer.Exit(2) from None
 
 
 @app.command()
@@ -33,6 +60,10 @@ def version() -> None:
 def build(
     house: Optional[Path] = typer.Argument(None, help="House directory (default: cwd)"),
     lod: str = typer.Option("framed", help="core | framed"),
+    with_schedule: bool = typer.Option(
+        False, "--with-schedule",
+        help="Also emit IfcWorkSchedule/IfcTask + IfcCostSchedule/IfcCostItem for the "
+             "derived work packages. Off by default: the permit IFC stays lean."),
     only: Optional[str] = typer.Option(None, help="ifc | json | card"),
     inspect: bool = typer.Option(False, help="parse-only; never imports params/"),
 ) -> None:
@@ -69,8 +100,10 @@ def build(
         try:
             from typehaus.emit.ifc import emit_ifc
 
-            p = emit_ifc(model, out / "model.ifc", lod=lod)
-            console.print(f"wrote {p} (lod={lod})")
+            p = emit_ifc(model, out / "model.ifc", lod=lod,
+                          sequence=with_schedule, house_dir=d)
+            extra = " + schedule" if with_schedule else ""
+            console.print(f"wrote {p} (lod={lod}{extra})")
         except RuntimeError as exc:
             console.print(f"[yellow]skipped IFC: {exc}[/yellow]")
     console.print("[green]build ok[/green]")
@@ -80,43 +113,65 @@ def build(
 def check(
     house: Optional[Path] = typer.Argument(None),
     profile: str = typer.Option("mn-2024"),
-    tier: Optional[str] = typer.Option(None, help="integrity|code|advisory|structural|building_science"),
+    tier: Optional[TierName] = typer.Option(None, help="Restrict to one checks tier."),
     as_json: bool = typer.Option(False, "--json"),
+    only: str = typer.Option(_ONLY_DEFAULT, "--only",
+                             help=f"Results to print: `{_ONLY_ALL}`, or a comma-separated "
+                                  "subset of pass,fail,unknown."),
+    exit_on: ExitOn = typer.Option(ExitOn.fail, "--exit-on",
+                                   help="What makes the command exit 1."),
+    plain: bool = typer.Option(False, "--plain",
+                               help="One unwrapped, uncoloured line per finding "
+                                    "(implied by NO_COLOR or a piped stdout)."),
 ) -> None:
     """Run the checks registry (same registry pytest runs)."""
     from typehaus.checks import Tier, run
     from typehaus.source import load_plan
 
+    plain_out = True if plain else None
+    keep = _parse_only(only)
     d = _resolve_house(house)
     result = load_plan(d)
     if result.plan is None:
-        _print_findings(result.findings)
+        _print_findings(result.findings, plain=plain_out)
         raise typer.Exit(1)
     # Loader findings appended *after* a successful import (e.g. a movable element authored
     # in a non-editable file) are still real errors — print them, don't only print on
-    # import failure.
+    # import failure. They are never filtered: a load error the user asked not to see is
+    # still the reason everything downstream is wrong.
     if result.findings:
-        _print_findings(result.findings)
-    tier_enum = Tier(tier) if tier else None
+        _print_findings(result.findings, plain=plain_out)
+    tier_enum = Tier(tier.value) if tier else None
     report = run(result.plan, d, profile=profile, tier=tier_enum)
     p, f, u = report.counts()
     if as_json:
         import json
 
+        # --json is the machine surface and stays complete regardless of --only.
         console.print_json(json.dumps({
             "pass": p, "fail": f, "unknown": u,
             "findings": [x.model_dump(mode="json") for x in report.findings],
         }))
     else:
-        _print_findings(report.findings)
+        shown = report.findings if keep is None else [
+            x for x in report.findings if x.result in keep]
+        _print_findings(shown, plain=plain_out)
+        hidden = len(report.findings) - len(shown)
+        suffix = f"; {hidden} hidden by --only {only} (--only all shows them)" if hidden else ""
         console.print(
             f"\n[bold]{p} pass, {f} fail, {u} not evaluable[/bold] of "
-            f"{p + f + u} encoded rules; this profile covers a declared subset of the code."
+            f"{p + f + u} encoded rules; this profile covers a declared subset of the "
+            f"code{suffix}.",
+            soft_wrap=True,
         )
-    from typehaus.findings import Severity
 
     load_errors = any(x.severity is Severity.ERROR for x in result.findings)
-    raise typer.Exit(1 if (report.errors or load_errors) else 0)
+    if exit_on is ExitOn.none:
+        raise typer.Exit(0)
+    gated = bool(report.errors) or load_errors
+    if exit_on is ExitOn.fail:
+        gated = gated or f > 0
+    raise typer.Exit(1 if gated else 0)
 
 
 @app.command(name="permit-check")

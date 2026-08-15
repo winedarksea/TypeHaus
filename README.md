@@ -18,31 +18,41 @@ refine in place to a permit-ready set, or hand off an IFC an architect can build
 
 ## Quickstart (source tree)
 
+`typehaus` is installed editable into `.venv` (Python 3.11), so the console script is the
+entry point — no `PYTHONPATH`, no `uv`.
+
 ```bash
-uv sync                                   # or: pip install -e packages/engine
-haus ls houses/starter --summary          # compact plan digest
-haus build houses/starter                 # -> houses/starter/out/model.json (+ IFC)
-haus check houses/starter                 # integrity/code/advisory/structural findings
-haus permit-check houses/catlin           # declared MN permit-submittal subset
-haus print houses/catlin --handoff        # gate + permit PDF, DXFs, architect bundle
-haus import furniture chair.glb houses/catlin --room RM-M-LIVING --at-m 7.0,4.0
-haus explain HOUSE_WALL_2X6_WITH_ZIPR houses/starter --card   # assembly section card SVG
-haus explain transitions houses/starter   # derived boundary conditions
+pip install -e packages/engine           # once, into a 3.11+ venv
+.venv/bin/haus ls houses/starter --summary          # compact plan digest
+.venv/bin/haus build houses/starter                 # -> houses/starter/out/model.json (+ IFC)
+.venv/bin/haus check houses/starter                 # integrity/code/advisory/structural findings
+.venv/bin/haus doctor                               # environment sanity check
+.venv/bin/haus permit-check houses/catlin           # declared MN permit-submittal subset
+.venv/bin/haus print houses/catlin --handoff        # gate + permit PDF, DXFs, architect bundle
+.venv/bin/haus import furniture chair.glb houses/catlin --room RM-M-LIVING --at-m 7.0,4.0
+.venv/bin/haus explain HOUSE_WALL_2X6_WITH_ZIPR houses/starter --card   # assembly section card SVG
+.venv/bin/haus explain transitions houses/starter   # derived boundary conditions
 ```
-for dev (not pip installed) run first:
+
+Tests and the full gate:
+
 ```bash
-alias haus='PYTHONPATH=packages/engine/src python3 -m typehaus.cli.app'
+.venv/bin/python -m pytest packages/engine/tests -q   # parallel by default (~4 min)
+scripts/verify.sh                                     # the CI gate; --fast skips builds/bench/npm
 ```
 
 ## UI Start
 Terminal 1
 ```bash
-PYTHONPATH=packages/engine/src /Users/colincatlin/mambaforge/bin/python3.10 -m typehaus.cli.app serve houses/starter --port 8000
+.venv/bin/haus serve houses/starter --port 8000
 ```
 Terminal 2
 ```bash
 cd ui && HAUS_ENGINE=http://127.0.0.1:8000 npm run dev
 ```
+
+`haus serve` watches the house directory only — restart it after editing
+`packages/engine/`, or the viewer keeps serving stale geometry.
 
 
 ## Layout
@@ -51,14 +61,14 @@ cd ui && HAUS_ENGINE=http://127.0.0.1:8000 npm run dev
   checks, CLI).
 - `library/` — shared assemblies/materials/types — the community contribution seam.
 - `houses/starter/` — the interim `haus new` template and cold-start delight target.
-- `docs/plan/` — the living design documentation (00–50).
+- `plans/` — the living design documentation (00–50) and the decision log.
 
 ## Trust model
 
 `haus build` **imports the plan package** — building a downloaded house executes its Python,
 the same trust decision as `pip install`. `# haus: editable` files are a constrained
 declarative subset with no executable surface (the linter proves it); `haus build --inspect`
-previews a plan without importing `params/`. See `docs/plan/02-architecture.md` §Git topology.
+previews a plan without importing `params/`. See `plans/02-architecture.md` §Git topology.
 
 ## License
 

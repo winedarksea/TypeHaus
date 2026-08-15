@@ -19,6 +19,9 @@ from typehaus.findings import Severity
 def takeoff(
     house: Optional[Path] = typer.Argument(None),
     as_json: bool = typer.Option(False, "--json"),
+    csv: Optional[Path] = typer.Option(
+        None, "--csv", help="Also write the priced estimate as a CSV at this path "
+                            "(the RSMeans / Craftsman / Buildertrend intake artifact)."),
 ) -> None:
     """Report the resolved bill of materials: framing, solids, sheet goods, glazing,
     hardware, placeables, and radiant floor heat.
@@ -102,7 +105,26 @@ def takeoff(
                "drainage": bom["drainage"],
                "edge_trim": bom["edge_trim"]}
     if prices is not None:
-        payload["cost_estimate"] = estimate_costs(bom, prices)
+        # $/sf needs a denominator, and the only honest ones are the space summary's:
+        # conditioned area is what the energy code grades, gross is what a builder means
+        # by "$/sf". Both come from the model, neither from a constant.
+        from typehaus.server.space_summary import build_space_summary
+
+        summary = build_space_summary(model)["overall"]
+        areas = {"conditioned": summary["conditioned_sf"], "gross": summary["gross_sf"]}
+        payload["cost_estimate"] = estimate_costs(bom, prices, areas)
+        payload["space_summary"] = summary
+    if csv is not None:
+        if prices is None:
+            console.print("[red]--csv needs prices: this house has no prices.toml[/red]")
+            raise typer.Exit(2)
+        from typehaus.emit.csv_writer import write_csv
+        from typehaus.takeoff.costs import load_costs
+        from typehaus.takeoff.estimate_csv import ESTIMATE_COLUMNS, estimate_rows
+
+        rows = estimate_rows(payload["cost_estimate"], load_costs(d))
+        written = write_csv(csv, ESTIMATE_COLUMNS, rows)
+        console.print(f"wrote {written} ({len(rows)} rows)", soft_wrap=True)
     if as_json:
         console.print_json(json.dumps(payload))
         return
@@ -257,6 +279,9 @@ def takeoff(
                 console.print(f"    {row['quantity']:>9,.1f} {row['unit']:<6} "
                               f"{row['key']}: {row['cost_fmt']}")
         console.print(f"  [bold]construction total: {estimate['total_fmt']}[/bold]")
+        _print_basis(estimate)
+        _print_bid_ladder(estimate)
+        _print_per_sf(estimate)
         if estimate.get("excluded_sections"):
             console.print(f"  {'+'.join(estimate['excluded_sections'])}: "
                           f"{estimate['excluded_total_fmt']}")
@@ -266,3 +291,45 @@ def takeoff(
             missing = ", ".join(f"{row['section']}:{row['key']}"
                                 for row in estimate["unpriced"])
             console.print(f"  [yellow]not priced (add to prices.toml): {missing}[/yellow]")
+
+
+def _print_basis(estimate: dict) -> None:
+    """material / labour / merged, and whether the file actually declared its basis.
+
+    A total that does not say what it includes is the difference between a homeowner's
+    shopping list and a contractor's bid, and until ``[basis]`` existed the only statement
+    of it was a prose comment at the top of prices.toml.
+    """
+    net = estimate["bid"]["net"]
+    if not estimate.get("basis_declared"):
+        console.print(r"  [yellow]no \[basis] table in prices.toml — every section is "
+                      "assumed material-only[/yellow]")
+    console.print(f"  [dim]basis: material {net['fmt']['material']} · "
+                  f"labour {net['fmt']['labour']} · "
+                  f"merged (installed, split unknown) {net['fmt']['merged']}[/dim]")
+
+
+def _print_bid_ladder(estimate: dict) -> None:
+    """The five stages, each on its own line — never folded into a section subtotal."""
+    stages = [row for row in estimate["bid"]["stages"]
+              if row["low"] or row["high"] or row["label"] in ("subtotal_net", "total")]
+    if len(stages) <= 2:
+        return  # nothing but net and total: the house declares no adjustments
+    console.print("  [bold]bid ladder[/bold]")
+    for row in stages:
+        rate = f"  [dim]({row['rate'] * 100:.3g}%)[/dim]" if row.get("rate") else ""
+        console.print(f"    {row['label']:<18} {row['fmt']}{rate}")
+    untaxed = estimate["bid"]["untaxed_merged"]
+    if untaxed["high"]:
+        console.print(f"    [dim]sales tax could not reach ${untaxed['low']:,.0f}–"
+                      f"${untaxed['high']:,.0f} of merged material+labour[/dim]")
+
+
+def _print_per_sf(estimate: dict) -> None:
+    per_sf = estimate.get("per_sf")
+    if not per_sf:
+        return
+    areas = estimate["areas"]
+    for name, value in sorted(per_sf["total"].items()):
+        console.print(f"  ${value['low']:,.0f}–${value['high']:,.0f} / {name} sf "
+                      f"[dim]({areas[name]:,.0f} sf)[/dim]")

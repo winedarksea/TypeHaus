@@ -85,7 +85,12 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
 
     @app.get("/model")
     def get_model() -> Any:
-        return JSONResponse(state.model_json())
+        from typehaus.server.engine_stamp import engine_stamp
+
+        # The engine stamp rides on /model rather than living at its own endpoint so the
+        # browser learns the server is running stale engine code on the same poll that
+        # brings it the geometry that code produced — see server/engine_stamp.py.
+        return JSONResponse(state.model_json() | {"engine": engine_stamp()})
 
     @app.get("/checks")
     def get_checks() -> Any:
@@ -142,6 +147,40 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
             apply_costs_ops(state.house_dir, body.get("ops"))
             return JSONResponse(build_costs_payload(state.model, state.house_dir))
         except CostsRequestError as exc:
+            return JSONResponse({"error": str(exc)}, status_code=400)
+
+    @app.get("/tasks")
+    def get_tasks() -> Any:
+        """Work packages at (trade x storey) with their persisted status.
+
+        Same shape and same rules as ``/costs``: re-read per request (tasks.toml is
+        hand-editable) and outside the undo journal — closing out a package is not a plan
+        edit. Task ids are stable GlobalIds, so a client may key on them across rebuilds.
+        """
+        from typehaus.server.tasks_api import TasksRequestError, build_tasks_payload
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        try:
+            return JSONResponse(build_tasks_payload(state.model, state.house_dir))
+        except TasksRequestError as exc:
+            return JSONResponse({"error": str(exc)}, status_code=400)
+
+    @app.put("/tasks")
+    def put_tasks(body: dict[str, Any]) -> Any:
+        """Fold ``{"ops": [...]}`` over tasks.toml, write it, return the fresh payload."""
+        from typehaus.server.tasks_api import (
+            TasksRequestError,
+            apply_task_ops,
+            build_tasks_payload,
+        )
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        try:
+            apply_task_ops(state.house_dir, body.get("ops"))
+            return JSONResponse(build_tasks_payload(state.model, state.house_dir))
+        except TasksRequestError as exc:
             return JSONResponse({"error": str(exc)}, status_code=400)
 
     @app.get("/detail")

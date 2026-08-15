@@ -68,8 +68,17 @@ __all__ = ["emit_ifc", "_ACCESSORY_IFC_CLASS", "_PIPE_SYSTEM_OBJECT_TYPES",
            "_PIPE_SYSTEM_TYPES"]
 
 
-def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
-    """Emit the resolved model to an IFC4 file at ``out_path``. Returns the path."""
+def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
+             sequence: bool = False, house_dir: Path | None = None) -> Path:
+    """Emit the resolved model to an IFC4 file at ``out_path``. Returns the path.
+
+    ``sequence=True`` additionally writes the derived work packages as
+    ``IfcWorkPlan``/``IfcWorkSchedule``/``IfcTask`` plus ``IfcCostSchedule``/``IfcCostItem``
+    (``emit/ifc/sequence.py``). Off by default: the permit IFC goes to a plan reviewer who
+    wants geometry, and a construction schedule in that file is noise they have to page
+    past. ``house_dir`` supplies ``prices.toml`` so the cost items carry numbers; without
+    it the tasks still emit, priceless.
+    """
     f = ll.new_file(IFC_APP_NAME)
     project_uuid = model.plan.project.project_uuid
     ifc_project = ll.create_entity(f, "IfcProject", name=model.plan.project.name)
@@ -104,6 +113,12 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     for opening in sorted(model.openings, key=lambda o: o.uid):
         _emit_opening(f, body, opening, model, wall_entities, storeys, project_uuid, opening_types)
 
+    # tag -> emitted entity, for the schedule emitter at the bottom of this function: an
+    # IfcTask is assigned to the products it covers, and it can only be assigned to entities
+    # that already exist. Collected as they are emitted rather than looked up afterwards —
+    # ifcopenshell has no tag index, and building one would re-walk the whole file.
+    element_entities: dict[str, Any] = dict(wall_entities)
+
     drainage_elements = []
     for solid in sorted(model.solids, key=lambda item: item.uid):
         # Pipe accessories have a dedicated emitter (``_emit_pipe_accessories``) that knows
@@ -113,6 +128,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
         if (solid.category or "").lower() in PIPE_ACCESSORY_CATEGORIES:
             continue
         element = _emit_solid(f, body, solid, storeys, project_uuid, model)
+        element_entities.setdefault(solid.tag, element)
         if (solid.category or "").lower() in DRAINAGE_CATEGORIES:
             drainage_elements.append(element)
     drainage_elements.extend(_emit_sump_pumps(f, model, storeys, project_uuid))
@@ -186,5 +202,39 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed") -> Path:
     for bedding in sorted(model.footing_beddings, key=lambda item: item.uid):
         _emit_footing_bedding(f, body, bedding, storeys, project_uuid)
 
+    # Last, and that ordering is the contract stated in this module's docstring: cost and
+    # task entities *reference* elements, so every product they assign has to exist first.
+    if sequence:
+        _emit_work_schedule(f, ifc_project, model, house_dir, element_entities)
+
     f.write(str(out_path))
     return out_path
+
+
+def _emit_work_schedule(f: Any, ifc_project: Any, model: ResolvedModel,
+                        house_dir: Any, element_entities: dict[str, Any]) -> None:
+    """Derive the work packages and hand them to the sequence emitter.
+
+    ``house_dir`` supplies ``prices.toml``: without it the packages still emit, carrying
+    their elements and their order but no cost — which is the correct behaviour under
+    decision #28, where dollars are opt-in and user-supplied.
+    """
+    from typehaus.emit.ifc.sequence import emit_sequence
+    from typehaus.takeoff.bom import bill_of_materials
+    from typehaus.takeoff.tasks import build_work_items
+
+    estimate = None
+    if house_dir is not None:
+        from pathlib import Path as _Path
+
+        from typehaus.cli.prices import estimate_costs, load_prices
+
+        try:
+            prices = load_prices(_Path(house_dir))
+        except ValueError:
+            prices = None  # a malformed prices.toml must not stop the IFC export
+        if prices is not None:
+            estimate = estimate_costs(bill_of_materials(model), prices)
+    bom = bill_of_materials(model)
+    emit_sequence(f, ifc_project, model, build_work_items(model, bom, estimate),
+                  element_entities)

@@ -6,7 +6,7 @@ typed, declarative Python; resolve topology, stacking, and framing; emit an IFC4
 
 > **Pre-alpha.** APIs, schema, and outputs change without notice. Not for production use.
 
-This is the Python package behind the `haus` CLI. See the repository root and `docs/plan/`
+This is the Python package behind the `haus` CLI. See the repository root and `plans/`
 for the full design documentation and monorepo layout.
 
 ## Install

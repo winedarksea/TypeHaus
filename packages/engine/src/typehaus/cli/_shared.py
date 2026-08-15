@@ -11,6 +11,9 @@ importing the resolver, the emitters, or ifcopenshell.
 
 from __future__ import annotations
 
+import os
+import sys
+from enum import StrEnum
 from pathlib import Path
 from typing import Optional
 
@@ -40,6 +43,34 @@ def _main(
     """`haus --version` — the packaging smoke every fresh install runs first."""
 
 
+class TierName(StrEnum):
+    """Typer-facing mirror of :class:`typehaus.checks.registry.Tier`.
+
+    Duplicated rather than imported because importing the registry drags in the whole
+    checks package (~180 ms), which every `haus --version` would then pay for. Parity is
+    pinned by ``tests/test_cli_check_output.py``.
+    """
+
+    integrity = "integrity"
+    code = "code"
+    advisory = "advisory"
+    structural = "structural"
+    building_science = "building_science"
+
+
+class ExitOn(StrEnum):
+    """What makes `haus check` exit non-zero.
+
+    ``fail`` is the default because the old ERROR-only gate could not see catlin's four
+    advisory FAILs — the command exited 0 while reporting failures, so no script could
+    use it as a gate.
+    """
+
+    error = "error"
+    fail = "fail"
+    none = "none"
+
+
 def _resolve_house(house: Optional[Path]) -> Path:
     return (house or Path.cwd()).resolve()
 
@@ -52,8 +83,25 @@ def _detail(el: object) -> str:
     return ""
 
 
-def _print_findings(findings: list) -> None:
+def _plain_by_default() -> bool:
+    """True when findings should print as bare lines: NO_COLOR, or stdout is not a tty.
+
+    rich sizes a non-tty console at 80 columns and hard-wraps mid-sentence, which turns
+    `haus check | grep` into a lie — half of every long finding lands on a continuation
+    line that matches nothing. Piped output is machine-facing, so it gets one physical
+    line per finding and no markup.
+    """
+    return bool(os.environ.get("NO_COLOR")) or not sys.stdout.isatty()
+
+
+def _print_findings(findings: list, plain: bool | None = None) -> None:
+    if plain is None:
+        plain = _plain_by_default()
+    if plain:
+        for f in findings:
+            print(f.render())
+        return
     for f in findings:
         color = "red" if f.severity is Severity.ERROR else (
             "yellow" if f.result is Result.FAIL else "dim")
-        console.print(f"[{color}]{f.render()}[/{color}]")
+        console.print(f"[{color}]{f.render()}[/{color}]", soft_wrap=True)

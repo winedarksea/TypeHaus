@@ -158,4 +158,40 @@ def _write_handoff_bundle(house: Path, model, preferences=None, profile=None) ->
         emit_ifc(model, handoff / "model_core.ifc", lod="core")
     except RuntimeError as exc:
         console.print(f"[yellow]handoff IFC unavailable: {exc}[/yellow]")
+    _write_handoff_numbers(house, model, handoff)
     console.print(f"wrote {handoff}")
+
+
+def _write_handoff_numbers(house: Path, model, handoff: Path) -> None:
+    """The estimate, as JSON and as CSV, beside the drawings.
+
+    A contractor bundle that carries only drawings makes whoever receives it re-do the
+    takeoff — which is the one thing this repo is *certain* about. The CSV is the intake
+    artifact (RSMeans Online, Craftsman Cloud and Buildertrend all read CSV/Excel); the
+    JSON carries the basis subtotals, the bid ladder and the $/sf the CSV's flat shape
+    cannot. Both are skipped silently when the house supplies no ``prices.toml`` — per
+    decision #28 dollars are opt-in, and an empty estimate is not worth a file.
+    """
+    import json
+
+    from typehaus.cli.prices import estimate_costs, load_prices
+    from typehaus.emit.csv_writer import write_csv
+    from typehaus.server.space_summary import build_space_summary
+    from typehaus.takeoff import bill_of_materials
+    from typehaus.takeoff.costs import load_costs
+    from typehaus.takeoff.estimate_csv import ESTIMATE_COLUMNS, estimate_rows
+
+    try:
+        prices = load_prices(house)
+    except ValueError as exc:
+        console.print(f"[yellow]handoff estimate skipped: {exc}[/yellow]")
+        return
+    if prices is None:
+        return
+    bom = bill_of_materials(model)
+    summary = build_space_summary(model)["overall"]
+    estimate = estimate_costs(bom, prices, {"conditioned": summary["conditioned_sf"],
+                                            "gross": summary["gross_sf"]})
+    (handoff / "estimate.json").write_text(json.dumps(estimate, indent=2, sort_keys=True))
+    write_csv(handoff / "estimate.csv", ESTIMATE_COLUMNS,
+              estimate_rows(estimate, load_costs(house)))

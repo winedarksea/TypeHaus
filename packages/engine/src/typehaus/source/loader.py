@@ -315,6 +315,7 @@ def _import_manifest_locked(house_dir: Path, findings: list[Finding]) -> PlanMod
                 check_id="loader.import_error",
                 message=f"error importing plan: {exc}",
                 source_loc=SourceLoc(file="plan/manifest.py", line=1),
+                fix_hint=_import_error_hint(exc),
             )
         )
         return None
@@ -323,6 +324,35 @@ def _import_manifest_locked(house_dir: Path, findings: list[Finding]) -> PlanMod
             sys.path.remove(added)
         if lib_added and lib_root is not None:
             sys.path.remove(str(lib_root))
+
+
+def _import_error_hint(exc: BaseException) -> str | None:
+    """Name the plan-source cause behind pydantic failures whose message hides it.
+
+    The one that matters: a tuple-typed field handed a bare element instead of a 1-tuple.
+    pydantic iterates the model looking for members, so **every field of that element**
+    comes back as its own ``model_type`` error with an ``('a', 1)`` input value, and the
+    actual cause — a single missing trailing comma — appears nowhere in the N-error wall of
+    text. The editable dialect cannot catch it (it does not know field types), so the hint
+    lands here, where the exception is.
+    """
+    errors = getattr(exc, "errors", None)
+    if not callable(errors):
+        return None
+    try:
+        rows = list(errors())
+    except Exception:  # noqa: BLE001 - a hint is never worth raising over
+        return None
+    if len(rows) < 2 or any(r.get("type") != "model_type" for r in rows):
+        return None
+    locs = {r["loc"][0] for r in rows if len(r.get("loc", ())) >= 2}
+    indices = {r["loc"][1] for r in rows if len(r.get("loc", ())) >= 2}
+    if len(locs) != 1 or not all(isinstance(i, int) for i in indices):
+        return None
+    field = next(iter(locs))
+    return (f"'{field}' is a tuple-typed field given one bare element — a 1-tuple needs its "
+            f"trailing comma: {field}=(X(...),). The {len(rows)} errors above are its "
+            f"fields, not {len(rows)} separate problems.")
 
 
 def _find_library_root(house_dir: Path) -> Path | None:
@@ -383,11 +413,51 @@ def _noneditable_authored(house_dir: Path, kind: str, tag: str) -> bool:
     return False
 
 
+def _identity_check(authored: list, findings: list[Finding]) -> None:
+    """uid and tag uniqueness, enforced at load time as hard errors.
+
+    `haus build` never runs the checks tier, so `integrity.uid_unique` — until now the only
+    uniqueness rule in the engine — was invisible on the build path: a hand-minted colliding
+    uid built green and shipped two elements sharing one derived IFC GlobalId. Tags had no
+    rule at all; the dict comprehension below this call silently kept the last of a
+    duplicate pair, so half the collision simply vanished from every downstream view.
+    Both are ERROR here, and the checks-tier rule stays as the mirror.
+    """
+    by_uid: dict[str, list[str]] = {}
+    by_tag: dict[str, int] = {}
+    for el in authored:
+        by_tag[el.tag] = by_tag.get(el.tag, 0) + 1
+        if el.uid:
+            by_uid.setdefault(el.uid, []).append(el.tag)
+    for uid, tags in sorted(by_uid.items()):
+        if len(tags) > 1:
+            findings.append(Finding(
+                severity=Severity.ERROR,
+                check_id="loader.uid_unique",
+                message=(f"uid {uid!r} is authored on {len(tags)} elements "
+                         f"({', '.join(sorted(tags))})"),
+                element_tags=tuple(sorted(tags)),
+                fix_hint="never hand-write a uid — delete the duplicate and run `haus fmt` "
+                         "to mint a fresh one",
+            ))
+    for tag, count in sorted(by_tag.items()):
+        if count > 1:
+            findings.append(Finding(
+                severity=Severity.ERROR,
+                check_id="loader.tag_unique",
+                message=f"tag {tag!r} is authored on {count} elements",
+                element_tags=(tag,),
+                fix_hint="tags are the plan's addressing scheme; rename one of them",
+            ))
+
+
 def _consistency_check(
     plan: PlanModel, prov: Provenance, findings: list[Finding], house_dir: Path
 ) -> None:
     """Assert the import view and the libcst view agree on the authored tag set."""
-    elements = {el.tag: el for el in plan.all_elements()}
+    authored = list(plan.all_elements())
+    _identity_check(authored, findings)
+    elements = {el.tag: el for el in authored}
     # Provenance may legitimately hold library/storey tags too; only flag plan
     # elements the libcst path never saw. Runtime capture (add_generated) supplies a
     # read-only location for params-generated ones — those are fine, not findings.

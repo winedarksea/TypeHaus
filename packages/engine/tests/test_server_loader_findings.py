@@ -22,7 +22,9 @@ def _loader_errors(findings: list[dict]) -> list[dict]:
 def uneditable_house(tmp_path: Path) -> Path:
     dst = tmp_path / "catlin"
     copy_house(CATLIN, dst)
-    mep = dst / "plan" / "mep.py"
+    # mep_hvac.py, not the old plan/mep.py: the MEP source was split by system and mep.py
+    # is now only the aggregator lists, which author no element and carry no header.
+    mep = dst / "plan" / "mep_hvac.py"
     mep.write_text(mep.read_text().replace("# haus: editable\n", "", 1))
     return dst
 

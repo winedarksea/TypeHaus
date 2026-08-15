@@ -50,11 +50,18 @@ class Finding(BaseModel):
     result: Result = Result.FAIL
 
     def render(self) -> str:
+        """One line, leading with the *result* — the thing a reader is scanning for.
+
+        Severity is a routing decision (does this stop the build?), not the verdict, and
+        leading with it rendered all 716 of catlin's passing checks as ``WARN``. The
+        severity is appended only when it is ERROR, which is the only case that changes
+        what the reader has to do about the finding.
+        """
         loc = f" ({self.source_loc})" if self.source_loc else ""
         tags = f" [{', '.join(self.element_tags)}]" if self.element_tags else ""
-        sev = self.severity.value.upper()
+        sev = " (error)" if self.severity is Severity.ERROR else ""
         hint = f"\n    hint: {self.fix_hint}" if self.fix_hint else ""
-        return f"{sev} {self.check_id}: {self.message}{tags}{loc}{hint}"
+        return f"{self.result.value.upper()}{sev} {self.check_id}: {self.message}{tags}{loc}{hint}"
 
 
 def element_error(check_id: str, message: str, tag: str) -> Finding:

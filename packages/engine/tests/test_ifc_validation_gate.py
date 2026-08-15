@@ -80,3 +80,73 @@ def test_the_baseline_is_a_valid_ids_document() -> None:
     specs = ids.open(str(BASELINE_IDS))
     assert specs.specifications
     assert all(spec.requirements for spec in specs.specifications)
+
+
+# --- the optional construction schedule ----------------------------------------------------
+#
+# Gated behind `emit_ifc(..., sequence=True)` / `haus build --with-schedule`, so it needs its
+# own build: the four combinations above deliberately exercise the lean permit file, which is
+# what a plan reviewer opens.
+
+@pytest.fixture(scope="module")
+def scheduled_ifc(tmp_path_factory) -> Path:
+    out = tmp_path_factory.mktemp("ifc-schedule") / "catlin-schedule.ifc"
+    house = HOUSES / "catlin"
+    result = load_plan(house)
+    assert result.plan is not None, [f.message for f in result.findings]
+    model, _findings = resolve(result.plan)
+    return emit_ifc(model, out, lod="core", sequence=True, house_dir=house)
+
+
+def test_the_scheduled_ifc_still_passes_express_rules(scheduled_ifc: Path) -> None:
+    """Cost and task entities are the newest thing in the file and the easiest to get
+    structurally wrong — an IfcTask missing its nesting opens as an empty schedule rather
+    than as an error, which is why this is validated and not merely eyeballed."""
+    logger = ifcopenshell.validate.json_logger()
+    ifcopenshell.validate.validate(str(scheduled_ifc), logger, express_rules=True)
+    assert not logger.statements, logger.statements
+
+
+def test_the_scheduled_ifc_still_meets_the_handoff_baseline(scheduled_ifc: Path) -> None:
+    ok, failures = _ids_ok(scheduled_ifc)
+    assert ok, failures
+
+
+def test_the_schedule_carries_tasks_costs_and_their_order(scheduled_ifc: Path) -> None:
+    model = ifcopenshell.open(str(scheduled_ifc))
+    tasks = model.by_type("IfcTask")
+    assert len(model.by_type("IfcWorkPlan")) == 1
+    assert len(model.by_type("IfcWorkSchedule")) == 1
+    assert tasks and len(model.by_type("IfcCostItem")) == len(tasks)
+    # The order is the authored CONSTRUCTION_SEQUENCE, expressed as real relationships
+    # rather than only as a name a reader would have to sort alphabetically.
+    assert model.by_type("IfcRelSequence")
+    assert all(rel.SequenceType == "FINISH_START" for rel in model.by_type("IfcRelSequence"))
+
+
+def test_no_task_claims_a_duration_the_model_cannot_know(scheduled_ifc: Path) -> None:
+    """Durations, crew sizes and dates are deliberately absent. A fabricated duration is
+    worse than an absent one: it is the number the whole schedule then gets built on."""
+    model = ifcopenshell.open(str(scheduled_ifc))
+    assert not model.by_type("IfcTaskTime")
+    assert all(task.TaskTime is None for task in model.by_type("IfcTask"))
+
+
+def test_tasks_are_linked_to_the_products_they_cover(scheduled_ifc: Path) -> None:
+    model = ifcopenshell.open(str(scheduled_ifc))
+    linked = model.by_type("IfcRelAssignsToProcess")
+    assert linked
+    assert sum(len(rel.RelatedObjects) for rel in linked) > 100
+
+
+def test_the_default_ifc_carries_no_schedule(built_ifc: Path) -> None:
+    """The permit file stays lean — that is the whole reason the emitter is gated."""
+    model = ifcopenshell.open(str(built_ifc))
+    assert not model.by_type("IfcTask")
+    assert not model.by_type("IfcCostSchedule")
+
+
+test_the_default_ifc_carries_no_schedule = pytest.mark.parametrize(
+    "built_ifc", COMBINATIONS, indirect=True,
+    ids=[f"{house}-{lod}" for house, lod in COMBINATIONS])(
+        test_the_default_ifc_carries_no_schedule)

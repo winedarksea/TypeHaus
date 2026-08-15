@@ -95,11 +95,21 @@ def _point_expr_m(x_m: float, y_m: float) -> RawExpr:
 
 
 def _round_len(x_m: float) -> Length:
+    """Meters -> an authored ``ft(f, i)``, snapped to the 1/16" grid when it lands on it.
+
+    The sign goes on *both* arguments for a negative length. ``divmod`` floors, so
+    ``divmod(-27, 12)`` is ``(-3, 9)`` — arithmetically right (``-3*12 + 9 == -27``) and
+    unreadable: the source it writes says ``ft(-3, 9)``, which every human reads as minus
+    three-foot-nine and is off by 18". Splitting the magnitude and negating both parts emits
+    ``ft(-2, -3)``, which reads as what it is. ``quantities.length.ft`` now rejects the
+    mixed-sign form outright, so this is also the only spelling it will accept.
+    """
     inches = x_m / 0.0254
     nearest = round(inches * 16) / 16  # 1/16" grid
     if abs(nearest - inches) < 1e-6:
-        feet, rem = divmod(nearest, 12)
-        return ft(feet, rem)
+        feet, rem = divmod(abs(nearest), 12)
+        sign = -1.0 if nearest < 0 else 1.0
+        return ft(sign * feet, sign * rem)
     return m(x_m)
 
 

@@ -26,9 +26,11 @@ def test_catlin_has_no_uneditable_movable_elements() -> None:
 def test_movable_element_in_noneditable_file_is_a_hard_error(tmp_path: Path) -> None:
     dst = tmp_path / "catlin"
     copy_house(CATLIN, dst)
-    mep = dst / "plan" / "mep.py"
-    # Strip the `# haus: editable` header → mep.py (which authors the water heater and
-    # other placeables) becomes non-editable, reproducing the silent "move didn't save" bug.
+    mep = dst / "plan" / "mep_hvac.py"
+    # Strip the `# haus: editable` header → mep_hvac.py (which authors the water heater and
+    # the rest of the equipment) becomes non-editable, reproducing the silent "move didn't
+    # save" bug. The old plan/mep.py was split by system and is now only the aggregator
+    # lists, which author no element and carry no editable header to strip.
     mep.write_text(mep.read_text().replace("# haus: editable\n", "", 1))
 
     result = load_plan(dst)

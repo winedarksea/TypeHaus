@@ -76,3 +76,4 @@ artifacts = ["src/typehaus/server/static/**"]
 "../../houses/starter/brief.md" = "typehaus/templates/starter/brief.md"
 "../../houses/starter/preferences.toml" = "typehaus/templates/starter/preferences.toml"
 "../../houses/starter/CLAUDE.md" = "typehaus/templates/starter/CLAUDE.md"
+

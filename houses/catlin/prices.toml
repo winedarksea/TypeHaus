@@ -16,31 +16,41 @@
 # its own basis and sources.
 #
 # --- MATERIALS OR INSTALLED? -------------------------------------------------------------
-# The default in this file is MATERIAL ONLY: delivered stock, no labour, no waste factor
-# beyond what the takeoff's own order quantity already carries.
+# This used to be four paragraphs of prose that no consumer could read. It is now the
+# [basis] and [basis_notes] tables at the bottom of this file, and the estimate reports
+# three subtotals off them: material, labour, and merged (an installed row whose split is
+# not known). A merged number is never divided into a guessed split.
 #
-# TWO SECTIONS CARRY LABOUR, and say so in their own headers, because ready-mix concrete
-# is not sold as a material a homeowner takes delivery of:
+# The default is MATERIAL ONLY: delivered stock, no labour, no waste factor beyond what the
+# takeoff's own order quantity already carries. [concrete] and [wall_structure] are
+# "installed", because ready-mix is not a material a homeowner takes delivery of.
 #
-#   [concrete]        $/cy PLACED — ready-mix delivered plus placement labour. Labour is
-#                     45-55% of installed concrete, so these are roughly 2x material.
-#   [wall_structure]  $/cy PLACED, same reason, derived from $/SF-of-face installed prices.
+# A row may now override its section:
 #
-# ([footing_bedding] reads "$/cy delivered" and is material: bulk stone delivered to site.
-# Spreading it is in the excavator's number, which is not in this file at all.)
+#   "2x10" = { low = 2.8, high = 3.4, basis = "installed" }        # a real merged quote
+#   "LVL"  = { material = { low = 7, high = 9 }, labour = { low = 3, high = 5 } }
 #
-# FIVE MORE ARE MATERIAL ESTIMATES BACKED OUT of published installed prices, because the
-# trade does not publish a material-only number: [openings] at ~55-65% of installed,
-# [ducts] at the material third, [edge_trim] and [railings] at the lower third, [floor_heat]
-# from $/SF of floor. They are material-basis, but they are derived, and they will not
-# reconcile line for line against a supplier list.
+# The second shape is the one to use when a quote arrives with the split spelled out. Until
+# then, "installed" and merged is the honest record — that gap was plans/TODO.md's
+# "prices.toml has no materials-vs-labour field", and it is closed.
 #
-# Everything else is a real material price from a real listing.
+# --- WASTE, CONTINGENCY, MARKUP, TAX ------------------------------------------------------
+# All four are opt-in and all four are absent below, so the estimate is still net. When you
+# add them, note that four sections ALREADY carry their waste in the quantity — framing,
+# sheet_goods, floor_finishes and wood_surfaces are billed on an ORDER quantity — and a
+# [waste] entry on one of those is a hard error naming the takeoff module that owns the
+# factor. That double-count is the whole reason the table is validated rather than trusted.
 #
-# A real quote usually arrives with materials and labour merged, and there is no field in
-# this format to say which a row is — so a quoted row cannot be recorded here without
-# quietly changing the file's basis. That gap is plans/TODO.md's "prices.toml has no
-# materials-vs-labour field".
+#   [waste]
+#   envelope_layers = 0.10
+#   "envelope_layers:standing-seam" = 0.05     # per-key override
+#   [contingency]
+#   rate = 0.10
+#   [markup]
+#   overhead = 0.10
+#   profit = 0.08
+#   [tax]
+#   material_rate = 0.06875                    # MN — applied to the MATERIAL portion only
 
 [framing]
 # RESEARCHED 2026-08-07 — [low, high] $/LF of ordered stock, material only, no waste
@@ -814,3 +824,49 @@
 "FURN-QUEEN-BED" = { low = 250, high = 1500 }  # 4 ea
 "FURN-ROCKING-CHAIR-30" = { low = 150, high = 700 }  # 2 ea
 "FURN-SOFA-84" = { low = 500, high = 3000 }  # 1 ea
+
+
+# --- WHAT THESE NUMBERS INCLUDE ---------------------------------------------------------
+# Machine-readable now, so `haus takeoff` can report material and labour separately and
+# so sales tax has something to apply itself to. Every section in cli/prices.py::_SECTIONS
+# must appear here — an incomplete [basis] is a hard load error, because the sections you
+# did declare would otherwise read as the exceptions.
+
+[basis]
+framing              = "material"
+sheet_goods          = "material"
+hardware             = "material"
+concrete             = "installed"
+floor_heat           = "material"
+placeables           = "material"
+floor_finishes       = "material"
+envelope_layers      = "material"
+wood_surfaces        = "material"
+openings             = "material"
+footing_bedding      = "material"
+pipe_runs            = "material"
+ducts                = "material"
+sleeves              = "material"
+conduit              = "material"
+plumbing_specialties = "material"
+install_parts        = "material"
+pipe_insulation      = "material"
+edge_trim            = "material"
+wall_structure       = "installed"
+railings             = "material"
+drainage             = "material"
+furnishings          = "material"
+
+# The provenance that used to live in this file's prose header. A derived number is still
+# a number, but it will not reconcile line for line against a supplier list, and the
+# reader is entitled to know which rows those are.
+
+[basis_notes]
+concrete        = "$/cy PLACED — ready-mix delivered plus placement labour, which is 45-55% of installed concrete, so these run roughly 2x material"
+wall_structure  = "$/cy PLACED, same reason as [concrete]; derived from $/SF-of-face installed prices"
+footing_bedding = "$/cy delivered — material. Spreading it is in the excavator's number, which is not in this file at all"
+openings        = "material backed out of installed at 55-65%"
+ducts           = "the material third of installed"
+edge_trim       = "material, taken as the lower third of installed"
+railings        = "material, taken as the lower third of installed"
+floor_heat      = "material, backed out of published $/SF-of-floor installed prices"

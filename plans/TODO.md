@@ -3,16 +3,35 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-### prices.toml has no materials-vs-labour field
-Every row in `houses/catlin/prices.toml` is material-basis except [concrete] and
-[wall_structure], which are $/cy placed — and the file says so only in prose at the top.
-When real quotes come in they are usually materials+labour merged, and there is nowhere to
-record which a row is, so pasting one in silently changes the basis of that section.
+*(nothing open)*
 
-Options: (a) leave it as prose and keep quotes out of this file, (b) add an optional
-`labour = "included" | "excluded"` per row, (c) split every row into `material` and
-`labour` ranges. (c) is the honest one and the most work — most published prices cannot be
-split, so most rows would carry a made-up division.
+### ~~prices.toml has no materials-vs-labour field~~ — **decided and implemented 2026-08-15**
+**Section defaults with a per-row override**, which is (b) and (c) taken together without
+paying for either's downside: existing rows are untouched, so migration was zero, and no row
+ever carries an invented split.
+
+`houses/catlin/prices.toml` now ends in a `[basis]` table with one entry per section in
+`cli/price_file.py::_SECTIONS` (a partial table is a hard load error) and a `[basis_notes]`
+table holding the provenance that used to live in the file's prose header. The value grammar
+grew two shapes:
+
+```toml
+"2x10" = { low = 2.8, high = 3.4, basis = "installed" }              # a real merged quote
+"LVL"  = { material = {low=7,high=9}, labour = {low=3,high=5} }      # split, where known
+```
+
+`estimate_costs` reports three subtotals per section and overall — `material`, `labour`, and
+`merged` (installed rows whose split is unknown) — and **never divides a merged number**;
+sales tax applies to the material subtotal only and the payload names how much sat in
+`merged` where tax could not reach it. Pinned by `tests/test_price_basis_and_bid.py`.
+
+Landed with it: `[waste]` / `[contingency]` / `[markup]` / `[tax]`, each its own reported
+stage (`net -> waste -> ordered -> contingency -> markup -> tax -> total`), with a hard error
+on a `[waste]` entry for a section whose BOM quantity already carries it; `$/sf` against the
+space summary's conditioned and a new gross figure; NAHB/CSI cost codes
+(`takeoff/cost_codes.py`, overridable per house); and `haus takeoff --csv`, the estimating-
+software intake artifact, which `haus costs import` reads back through the existing
+`(section, key)` join.
 
 
 - ~~**PT-SG-BR2 bearing — reinforce locally, don't move it**~~ — **approved and authored

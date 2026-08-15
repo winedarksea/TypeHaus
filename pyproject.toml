@@ -22,3 +22,15 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 python_version = "3.11"
 strict = true
 mypy_path = "packages/engine/src"
+
+# Bare `pytest` is serial and takes over an hour on this suite; xdist with per-file
+# distribution brings it to ~4 min. `loadfile` (not `load`) keeps every test in a module on
+# one worker, so module-scoped house fixtures are built once each rather than per test.
+#
+# This is the *only* pytest config in the repo. packages/engine/pytest.ini used to shadow
+# it — pytest picks the rootdir by walking up from the arguments, so `pytest
+# packages/engine/tests` found that file first and silently ran serial while a bare `pytest`
+# from the repo root ran parallel. One file, one rootdir, one set of addopts.
+[tool.pytest.ini_options]
+testpaths = ["packages/engine/tests"]
+addopts = "-q -n 6 --dist loadfile -p no:cacheprovider"

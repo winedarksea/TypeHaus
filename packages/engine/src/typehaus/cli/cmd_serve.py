@@ -85,4 +85,12 @@ def serve(
     console.print(f"serving {d} on http://{host}:{port}")
     if ui_dist is not None:
         console.print(f"  app UI from {ui_dist} → open http://{host}:{port}/")
+    # The watcher watches the house directory, not the engine. An edit under
+    # packages/engine/ is invisible to this process and produces no error of any kind —
+    # the viewer simply keeps showing geometry from the code imported at startup. Say so
+    # once, out loud, rather than letting it be rediscovered (server/engine_stamp.py also
+    # reports it live through GET /model).
+    console.print(
+        "[dim]watching plan source under this house only — engine edits under "
+        "packages/engine/ need a restart of this command.[/dim]")
     uvicorn.run(create_app(d, ui_dist), host=host, port=port)
