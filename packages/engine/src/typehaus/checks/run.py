@@ -18,6 +18,7 @@ from typehaus.checks.registry import (
     PlumbingPreferences,
     Preferences,
     ReferenceUnderlay,
+    StructuralPreferences,
     Tier,
     run_checks,
 )
@@ -35,6 +36,7 @@ def load_preferences(house_dir: Path) -> Preferences:
     env = data.get("envelope", {})
     framing = data.get("framing", {})
     plumbing = data.get("plumbing", {})
+    structural = data.get("structural", {})
     underlays = tuple(ReferenceUnderlay(
         path=item["path"], storey=item["storey"],
         origin_x_m=float(item.get("origin_x_m", 0.0)),
@@ -71,6 +73,10 @@ def load_preferences(house_dir: Path) -> Preferences:
             drain_stack_required_structure_in=plumbing.get("drain_stack_required_structure_in", 5.5),
             visible_basement_material=plumbing.get("visible_basement_material"),
             visible_basement_finish=plumbing.get("visible_basement_finish"),
+        ),
+        structural=StructuralPreferences(
+            max_guard_dead_load_on_wood_plf=structural.get(
+                "max_guard_dead_load_on_wood_plf", 50.0),
         ),
         underlays=underlays,
         suppressed=suppressed,

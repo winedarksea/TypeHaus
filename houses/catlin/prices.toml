@@ -746,15 +746,26 @@
 #                                Installed comparables are $60-100/LF, which brackets this.
 #   RAILING-INT-STAIR-GUARD      23.0 LF over three flights, assembly RAILING_DARK_METAL.
 #                                Interior dark-metal guard, materials.
-#   None                         30.0 LF of untyped handrails (RL-*-HANDRAIL). They carry
+#   (untyped railing)            30.0 LF of untyped handrails (RL-*-HANDRAIL). They carry
 #                                no product reference in the plan, so this is a placeholder
 #                                rate for a metal handrail with posts and brackets, NOT a
 #                                researched product price. It resolves the moment a
-#                                type_ref is set on them.
+#                                type_ref is set on them. (The key was "None" until the
+#                                takeoff stopped emitting a raw null here — the group key
+#                                the reader saw and the key the estimator matched on were
+#                                two different strings.)
+#   (masonry guard wall)         The porch's three W-SG-RAIL-* parapets, 37.3 LF. PRICED AT
+#                                ZERO ON PURPOSE: their CMU/brick/stucco volume already
+#                                bills by the cubic yard in [wall_structure]. The row exists
+#                                so a reader looking for "what guards the porch" finds it in
+#                                the railing schedule instead of having to know it is filed
+#                                as a wall. See the "price it in one table only" warning
+#                                above.
 # Sources: lowes.com Trex Signature 6' rail kits, decksdirect.com Signature component
 # pricing, homeadvisor.com 2026 deck railing replacement, trex.com Signature product page.
 # $/LF of guard line, by railing product type
-"None" = { low = 25, high = 60 }  # 30 LF — untyped handrails, placeholder
+"(untyped railing)" = { low = 25, high = 60 }  # 30 LF — untyped handrails, placeholder
+"(masonry guard wall)" = { low = 0, high = 0 }  # 37.3 LF — bills in [wall_structure], not here
 "RAILING-EXT-ALUMINUM-FASCIA" = { low = 38, high = 70 }  # 38.3 LF — Trex Signature
 "RAILING-INT-STAIR-GUARD" = { low = 40, high = 90 }  # 23 LF
 

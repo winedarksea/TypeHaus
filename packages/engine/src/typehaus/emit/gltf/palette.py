@@ -105,7 +105,18 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     # itself, so the authored value has to sit under the tone you want on screen.
     "window_trim": (0.110, 0.122, 0.141, 1.0),
     # accessories (→ resolve/accessories.py)
-    "railing": (0.80, 0.81, 0.83, 1.0),   # aluminum guard
+    "railing": (0.80, 0.81, 0.83, 1.0),   # aluminum guard — posts + rails, the frame
+    # Guard infill, split from the frame because the frame's tone and metalness are wrong for
+    # both halves of it (→ resolve/railings/parts.py). Opaque infill — pickets, cable, mesh,
+    # a solid sheet — reads as the same mill aluminium as the frame it hangs in; a translucent
+    # lite gets the opening glazing's blue-grey at its alpha, and is deliberately NOT in
+    # METALLIC_SOLID_CATEGORIES, where glass renders as dark metal.
+    #
+    # Both are fallbacks that a real guard rarely reaches: a category only becomes
+    # ``railing_glass`` because a material declared itself see-through, and that material's
+    # own colour wins over this table.
+    "railing_infill": (0.80, 0.81, 0.83, 1.0),
+    "railing_glass": (0.561, 0.718, 0.788, 0.48),
     "dowel": (0.20, 0.55, 0.35, 1.0),     # GFRP rebar (green)
     "thermal_break": (0.95, 0.55, 0.15, 1.0),  # XPS foam block (orange)
     "connector": (0.35, 0.36, 0.38, 1.0),  # galvanized hardware

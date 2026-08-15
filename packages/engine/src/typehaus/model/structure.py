@@ -285,6 +285,16 @@ class Railing(Element):
     # R312.1.3: the largest opening the infill admits. For balusters this is the clear gap
     # between them, which is *not* ``post_spacing`` — that is the structural post rhythm.
     baluster_spacing: Length | None = None
+    # --- per-part finish (→ resolve/railings/parts.py) -----------------------------------
+    # A guard is rarely one material: a glass balcony rail is aluminium posts, an aluminium
+    # cap and a glass lite, and ``assembly`` can only say one thing about all three. Each of
+    # these names a catalog ``Material`` for one part; ``None`` falls to the product type's
+    # own default, then to today's ``assembly`` behaviour, so authoring nothing changes
+    # nothing. The alpha byte of an authored ``#RRGGBBAA`` colour is what makes an infill
+    # read as glass, in both the .glb and the live viewer.
+    post_material: str | None = None
+    rail_material: str | None = None
+    infill_material: str | None = None
 
 
 @register_element

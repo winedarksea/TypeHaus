@@ -235,14 +235,31 @@ def test_handrail_not_required_under_four_risers():
 
 
 def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
-    """R312.1.3 measures all four authored guards: baluster infill at a 4" clear gap —
-    the largest opening the sphere rule admits — flips the census from UNKNOWN to PASS.
-    The handrail-only railings are deliberately absent: they are not guards."""
+    """R312.1.3 measures all four authored guards plus the three masonry ones: baluster
+    infill at a 4" clear gap — the largest opening the sphere rule admits — flips the census
+    from UNKNOWN to PASS. The handrail-only railings are deliberately absent: they are not
+    guards. The porch's W-SG-RAIL-* parapets are guards that happen to be walls
+    (``Wall.guard``), and pass by construction: solid masonry admits no sphere."""
     from typehaus.checks.code.mn_residential.fall_protection import guard_opening_limit
 
     findings = guard_opening_limit(catlin_ctx)
-    assert len(findings) == 4, [f.message for f in findings]
+    tags = sorted(t for f in findings for t in (f.message.split()[0],))
+    assert tags == ["RL-A-STAIR", "RL-S-STAIR", "RL-S-STAIRHEAD", "RL-SG-BALCONY",
+                    "W-SG-RAIL-E", "W-SG-RAIL-F", "W-SG-RAIL-W"], [f.message for f in findings]
     assert {f.result for f in findings} == {Result.PASS}
+
+
+def test_the_sphere_rule_is_measured_off_the_drawn_infill_not_only_the_field(catlin_ctx):
+    """The defect this rule shipped with: RL-SG-BALCONY passed on ``baluster_spacing``
+    alone while the 3D view showed a 42" guard with two bars and 40" of daylight between
+    them, because the infill had never been drawn. Every passing baluster finding now has to
+    quote a *drawn* gap, so a resolver that stops emitting pickets fails this rule rather
+    than silently going back to asserting a compliance it does not depict."""
+    from typehaus.checks.code.mn_residential.fall_protection import guard_opening_limit
+
+    drawn = [f for f in guard_opening_limit(catlin_ctx) if "draws" in f.message]
+    assert sorted(f.message.split()[0] for f in drawn) == [
+        "RL-A-STAIR", "RL-S-STAIR", "RL-S-STAIRHEAD", "RL-SG-BALCONY"]
 
 
 # --- R312.1 stair-well guards ----------------------------------------------------------

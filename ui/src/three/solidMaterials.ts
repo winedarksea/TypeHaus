@@ -25,7 +25,15 @@ export const SOLID_CATEGORY_COLOR: Record<string, number> = {
   pad: 0x808285,
   column: 0x99999e, // concrete/wood posts (sonotube, 6x6 pillars)
   beam: 0x9e7547, // PT / built-up wood beams — wood, never concrete
-  railing: 0xcccfd4, // aluminium guard
+  railing: 0xcccfd4, // aluminium guard — posts + rails, the frame
+  // Guard infill, split from the frame (engine resolve/railings/parts.py). Opaque infill —
+  // pickets, cable, mesh, a solid sheet — reads as the frame's mill aluminium; a translucent
+  // lite gets the opening glazing's blue-grey and is kept OUT of METALLIC_SOLID_CATEGORIES
+  // below, where it would render as dark metal. Both are fallbacks a real guard rarely
+  // reaches: `railing_glass` exists because a material declared itself see-through, and that
+  // material's own colour wins over this table.
+  railing_infill: 0xcccfd4,
+  railing_glass: 0x8fb7c9,
   dowel: 0x338c59, // GFRP rebar (green)
   thermal_break: 0xf28c26, // XPS foam block (orange)
   connector: 0x595c61, // galvanized hardware
@@ -149,8 +157,10 @@ export function solidTrade(solid: Pick<Solid, "category">): Trade {
 // Shop-finished metal accessories read as metal, not matte plastic: a gutter, a drip flashing
 // and an aluminium guard all catch the environment light the way the standing-seam wall finish
 // does. Everything else stays fully dielectric.
+// `railing_glass` is deliberately absent: metalness is keyed on category alone, so a glass
+// lite listed here renders as dark metal however its material is authored.
 const METALLIC_SOLID_CATEGORIES = new Set([
-  "railing", "gutter", "downspout", "flashing", "connector",
+  "railing", "railing_infill", "gutter", "downspout", "flashing", "connector",
 ]);
 
 // Painted finishes name their colour in the material ref ("post-paint-white"). The served
@@ -204,15 +214,25 @@ export function solidColor(
   return SOLID_CATEGORY_COLOR[solid.category] ?? palette.member.concrete;
 }
 
-// The opacity of one resolved solid, from its assembly's visible layer. A material declares
-// that it is see-through by authoring an alpha byte on its colour (`#RRGGBBAA`); nothing is
-// inferred from the category or the tag, so a new translucent material needs no code here.
-// Mirrors emit/gltf/palette.py::_hex_rgba + emit/gltf/scene.py's BLEND/doubleSided switch —
-// change one, change the other, or the `.glb` and the live viewer disagree.
+// The opacity of one resolved solid. A material declares that it is see-through by authoring
+// an alpha byte on its colour (`#RRGGBBAA`); nothing is inferred from the category or the tag,
+// so a new translucent material needs no code here. Mirrors emit/gltf/palette.py::_hex_rgba +
+// emit/gltf/scene.py's BLEND/doubleSided switch — change one, change the other, or the `.glb`
+// and the live viewer disagree.
+//
+// The direct `solid.material` ref is read first, exactly as `solidColor` above reads it: this
+// used to walk the assembly ONLY, so a solid whose translucency came from a material ref (a
+// glass railing lite, a trim run in a tinted coil) exported translucent in the `.glb` and
+// rendered opaque — and single-sided, since `createSolidMaterial` keys `transparent` / `side` /
+// `depthWrite` off this — in the live viewer. Colour and opacity have to walk the same ladder
+// or a pane picks up its glass tint and none of its transparency.
 export function solidOpacity(
-  solid: Pick<Solid, "assembly">,
+  solid: Pick<Solid, "assembly" | "material">,
   catalog: Catalog | undefined,
 ): number {
+  if (statesOwnColor(solid.material, catalog?.materials)) {
+    return materialOpacity(solid.material, catalog?.materials);
+  }
   const assembly = solid.assembly
     ? catalog?.assemblies.find((candidate) => candidate.tag === solid.assembly)
     : undefined;

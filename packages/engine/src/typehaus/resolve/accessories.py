@@ -19,14 +19,22 @@ from typehaus.model.trim import Downspout, EaveSoffit, Fascia, Flashing, Glazing
 from typehaus.quantities import inch
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.geometry import circle_outline, length, rect_between, sub
+from typehaus.resolve.geometry import (
+    bar,
+    circle_outline,
+    length,
+    nominal_actual_m,
+    rect_between,
+    square,
+    sub,
+)
 from typehaus.resolve.model import (
     FramedMember,
     ResolvedBrace,
     ResolvedModel,
     ResolvedSolid,
 )
-from typehaus.resolve.stairs.walkline import flight_walklines, walkline_z_at
+from typehaus.resolve.railings import resolve_railing
 from typehaus.resolve.trim_bands import drip_edge_bands, open_channel_bands
 from typehaus.resolve.vent_termination import (
     derived_termination_elevation,
@@ -84,7 +92,7 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
                     findings.append(element_error(
                         "integrity.unknown_railing_type",
                         f"railing {el.tag} references missing type {el.type_ref!r}", el.tag))
-                _resolve_railing(model, el, storey.tag)
+                findings.extend(resolve_railing(model, el, storey.tag))
             elif isinstance(el, Sump):
                 _resolve_sump(model, el, storey)
             elif isinstance(el, VentRun):
@@ -185,28 +193,6 @@ def screens_rainscreen_base(model: ResolvedModel, wall) -> bool:
             and not _continues_cavity_below(model, wall))
 
 
-# --- helpers ----------------------------------------------------------------
-def _square(cx: float, cy: float, half_x: float, half_y: float) -> list[tuple[float, float]]:
-    return [(cx - half_x, cy - half_y), (cx + half_x, cy - half_y),
-            (cx + half_x, cy + half_y), (cx - half_x, cy + half_y)]
-
-
-def _bar(cx: float, cy: float, axis: str, run_m: float, dia_m: float) -> list[tuple[float, float]]:
-    """Plan footprint of a horizontal bar of diameter ``dia_m`` running ``run_m`` along axis."""
-    if axis == "x":
-        return _square(cx, cy, run_m / 2.0, dia_m / 2.0)
-    return _square(cx, cy, dia_m / 2.0, run_m / 2.0)
-
-
-def _nominal_actual_m(size: str) -> float:
-    """Actual cross-section (m) from a nominal like "2x2" (2" nominal → 1.5" actual)."""
-    try:
-        nominal = float(size.lower().split("x")[0])
-    except (ValueError, IndexError):
-        nominal = 2.0
-    return max(nominal - 0.5, 0.75) * 0.0254
-
-
 # --- per-kind ---------------------------------------------------------------
 def _resolve_dowel(model: ResolvedModel, el: Dowel, storey: str) -> None:
     cx, cy = el.position.xy_m
@@ -229,7 +215,7 @@ def _resolve_dowel(model: ResolvedModel, el: Dowel, storey: str) -> None:
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-foam", tag=f"{el.tag}-FOAM", storey=storey,
             category="thermal_break",
-            outline=_square(cx, cy, half_x, half_y),
+            outline=square(cx, cy, half_x, half_y),
             z0_m=z - fh / 2.0, z1_m=z + fh / 2.0,
         ))
     # Individual dowel bars, spaced across the joint.
@@ -239,7 +225,7 @@ def _resolve_dowel(model: ResolvedModel, el: Dowel, storey: str) -> None:
         by = cy + off if perp == "y" else cy
         model.solids.append(ResolvedSolid(
             uid=f"{el.uid}-{i:02d}", tag=f"{el.tag}-{i + 1}", storey=storey,
-            category="dowel", outline=_bar(bx, by, el.axis, run, dia),
+            category="dowel", outline=bar(bx, by, el.axis, run, dia),
             z0_m=z - dia / 2.0, z1_m=z + dia / 2.0,
         ))
 
@@ -253,7 +239,7 @@ def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None
     half = inch(2.5).meters
     model.solids.append(ResolvedSolid(
         uid=el.uid or f"{el.tag}-conn", tag=el.tag, storey=storey,
-        category="connector", outline=_square(cx, cy, half, half),
+        category="connector", outline=square(cx, cy, half, half),
         z0_m=z - inch(3).meters, z1_m=z + inch(3).meters,
     ))
 
@@ -271,7 +257,7 @@ def _resolve_knee_brace(model: ResolvedModel, el: KneeBrace, storey: str) -> Non
     # Start at the post *face*: a brace end buried in the column overlaps it in plan by more
     # than the interference check's tolerance, and the butt-joint exemption does not reach an
     # endpoint that far inside the column's centroid.
-    offset = _nominal_actual_m(el.post_size) / 2.0
+    offset = nominal_actual_m(el.post_size) / 2.0
     p0 = (cx + ux * offset, cy + uy * offset)
     leg = el.leg.meters
     p1 = (p0[0] + ux * leg, p0[1] + uy * leg)
@@ -316,124 +302,6 @@ def _resolve_knee_brace(model: ResolvedModel, el: KneeBrace, storey: str) -> Non
         ))
 
 
-def _railing_post_stations(path: list[tuple[float, float]],
-                           spacing: float) -> list[tuple[float, float]]:
-    """Posts at every segment start plus interior spacing stations; final vertex closes."""
-    placed: list[tuple[float, float]] = []
-    for a, b in zip(path[:-1], path[1:]):
-        seg = length(sub(b, a))
-        n = max(int(seg // spacing), 1)
-        for k in range(n):
-            t = (k * spacing) / seg if seg else 0.0
-            placed.append((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t))
-    placed.append(path[-1])
-    return placed
-
-
-def _resolve_railing(model: ResolvedModel, el: Railing, storey: str) -> None:
-    path = [p.xy_m for p in el.path]
-    if len(path) < 2:
-        return
-    if el.serves_stair is not None:
-        stair = next((s for s in model.stairs if s.tag == el.serves_stair), None)
-        if stair is not None:
-            _resolve_raking_railing(model, el, storey, path, stair)
-            return
-    base = el.base_elevation.meters
-    top = base + el.height.meters
-    post = _nominal_actual_m(el.post_size)
-    spacing = max(el.post_spacing.meters, 0.3)
-    idx = 0
-    placed = _railing_post_stations(path, spacing)
-    for (px, py) in placed:
-        model.solids.append(ResolvedSolid(
-            uid=f"{el.uid}-p{idx:02d}", tag=f"{el.tag}-POST{idx + 1}", storey=storey,
-            category="railing", outline=_square(px, py, post / 2.0, post / 2.0),
-            z0_m=base, z1_m=top, assembly=el.assembly,
-        ))
-        idx += 1
-    # Rails: rail_count evenly spaced horizontal runs (top rail at the guard height).
-    rail = inch(1.5).meters
-    levels = el.rail_count if el.rail_count > 0 else 1
-    ridx = 0
-    for a, b in zip(path[:-1], path[1:]):
-        for j in range(levels):
-            frac = 1.0 - (j / max(levels - 1, 1)) if levels > 1 else 1.0
-            rz = base + el.height.meters * frac
-            model.solids.append(ResolvedSolid(
-                uid=f"{el.uid}-r{ridx:02d}", tag=f"{el.tag}-RAIL{ridx + 1}", storey=storey,
-                category="railing", outline=rect_between(a, b, -rail / 2.0, rail / 2.0),
-                z0_m=rz - rail / 2.0, z1_m=rz + rail / 2.0, assembly=el.assembly,
-            ))
-            ridx += 1
-
-
-# Sloped-rail banding: plan length of each flat band approximating a raking rail, and how
-# far a path point may sit from every flight centreline before it is judged *off* the stair
-# (and rides at the authored ``base_elevation`` instead). 2 m clears a rail path at the far
-# edge of a code-width flight plus a landing's depth without ever reaching the next lane's
-# flight one storey away in plan.
-_RAIL_BAND_STEP_M = 0.25
-_RAIL_STAIR_REACH_M = 2.0
-
-
-def _resolve_raking_railing(model: ResolvedModel, el: Railing, storey: str,
-                            path: list, stair) -> None:
-    """A ``serves_stair`` railing rakes along its stair's sloped nosing line.
-
-    The flat resolver extrudes every rail at one elevation, which turns an authored stair
-    handrail into a horizontal bar floating over the flight. Here each post stands on the
-    walking surface under it — the interpolated nosing line of the nearest flight
-    (:mod:`typehaus.resolve.stairs.walkline`, the same derivation the R311.7 checks
-    measure) — and rises ``top_height`` (R311.7.8.1's above-the-nosings datum; ``height``
-    when none is authored). Rails become short flat bands stepping along the slope: the
-    boxes-only solid IR extrudes plan outlines vertically, so a raking run is approximated
-    exactly the way the round pipe sweeps are (→ :mod:`typehaus.resolve.round_solids`).
-    Take-off is unaffected — railings bill per element (takeoff/railings.py), never off
-    these solids. Path points beyond every flight (a rail continuing onto a floor edge)
-    fall back to the authored ``base_elevation``, so a guard-and-handrail wrapping a well
-    corner stays level where the floor is.
-    """
-    lines = flight_walklines(stair)
-    base = el.base_elevation.meters
-    rail_h = (el.top_height if el.top_height is not None else el.height).meters
-
-    def surface_z(p: tuple) -> float:
-        z = walkline_z_at(lines, p, _RAIL_STAIR_REACH_M)
-        return base if z is None else z
-
-    post = _nominal_actual_m(el.post_size)
-    for idx, (px, py) in enumerate(_railing_post_stations(
-            path, max(el.post_spacing.meters, 0.3))):
-        z0 = surface_z((px, py))
-        model.solids.append(ResolvedSolid(
-            uid=f"{el.uid}-p{idx:02d}", tag=f"{el.tag}-POST{idx + 1}", storey=storey,
-            category="railing", outline=_square(px, py, post / 2.0, post / 2.0),
-            z0_m=z0, z1_m=z0 + rail_h, assembly=el.assembly,
-        ))
-    rail = inch(1.5).meters
-    levels = el.rail_count if el.rail_count > 0 else 1
-    ridx = 0
-    for a, b in zip(path[:-1], path[1:]):
-        seg = length(sub(b, a))
-        steps = max(int(math.ceil(seg / _RAIL_BAND_STEP_M)), 1)
-        for i in range(steps):
-            t0, t1 = i / steps, (i + 1) / steps
-            pa = (a[0] + (b[0] - a[0]) * t0, a[1] + (b[1] - a[1]) * t0)
-            pb = (a[0] + (b[0] - a[0]) * t1, a[1] + (b[1] - a[1]) * t1)
-            zs = surface_z(((pa[0] + pb[0]) / 2.0, (pa[1] + pb[1]) / 2.0))
-            for j in range(levels):
-                frac = 1.0 - (j / max(levels - 1, 1)) if levels > 1 else 1.0
-                rz = zs + rail_h * frac
-                model.solids.append(ResolvedSolid(
-                    uid=f"{el.uid}-r{ridx:02d}", tag=f"{el.tag}-RAIL{ridx + 1}",
-                    storey=storey, category="railing",
-                    outline=rect_between(pa, pb, -rail / 2.0, rail / 2.0),
-                    z0_m=rz - rail / 2.0, z1_m=rz + rail / 2.0, assembly=el.assembly,
-                ))
-                ridx += 1
-
-
 def _resolve_sump(model: ResolvedModel, el: Sump, storey) -> None:
     cx, cy = el.position.xy_m
     host = next((s for s in model.solids if s.tag == el.host_ref and s.category == "slab"),
@@ -443,7 +311,7 @@ def _resolve_sump(model: ResolvedModel, el: Sump, storey) -> None:
     half = el.diameter.meters / 2.0
     model.solids.append(ResolvedSolid(
         uid=el.uid or f"{el.tag}-sump", tag=el.tag, storey=storey.tag,
-        category="sump", outline=_square(cx, cy, half, half), z0_m=z0, z1_m=z1,
+        category="sump", outline=square(cx, cy, half, half), z0_m=z0, z1_m=z1,
     ))
 
 

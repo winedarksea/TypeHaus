@@ -97,6 +97,37 @@ def rect_between(p0: Vec, p1: Vec, left: float, right: float,
     ]
 
 
+def square(cx: float, cy: float, half_x: float, half_y: float) -> list[Vec]:
+    """Axis-aligned plan rectangle about ``(cx, cy)``.
+
+    Square to the *project* axes, not to any run — a member on a diagonal wants
+    :func:`rect_between` instead, or it comes out a lozenge.
+    """
+    return [(cx - half_x, cy - half_y), (cx + half_x, cy - half_y),
+            (cx + half_x, cy + half_y), (cx - half_x, cy + half_y)]
+
+
+def bar(cx: float, cy: float, axis: str, run_m: float, dia_m: float) -> list[Vec]:
+    """Plan footprint of a horizontal bar of diameter ``dia_m`` running ``run_m`` along axis."""
+    if axis == "x":
+        return square(cx, cy, run_m / 2.0, dia_m / 2.0)
+    return square(cx, cy, dia_m / 2.0, run_m / 2.0)
+
+
+def nominal_actual_m(size: str) -> float:
+    """Actual cross-section (m) from a nominal like "2x2" (2" nominal → 1.5" actual).
+
+    Dressed-lumber arithmetic, and *only* that: an extruded aluminium section states its
+    true dimension, so a product fact (``RailingType.baluster_width``) is a ``Length`` and
+    never goes through here.
+    """
+    try:
+        nominal = float(size.lower().split("x")[0])
+    except (ValueError, IndexError):
+        nominal = 2.0
+    return max(nominal - 0.5, 0.75) * 0.0254
+
+
 def circle_outline(center: Vec, radius: float, facets: int) -> list[Vec]:
     """A regular ``facets``-gon approximating a circle of ``radius`` about ``center``.
 

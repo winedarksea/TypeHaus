@@ -59,6 +59,18 @@ class PlumbingPreferences:
     visible_basement_finish: str | None = None
 
 
+@dataclass
+class StructuralPreferences:
+    """House-level allowances the structural advisories grade against, not code minima."""
+
+    # What a support may carry from a guard standing on it before the guard is too heavy for
+    # ordinary wood framing. A guard's dead load is derived from its own assembly, so this is
+    # the only number in that rule — roughly what a heavy wood guard with 6x6 posts weighs per
+    # foot of run, which is the load a deck rim designed to R507's 40 psf live + 10 psf dead
+    # was drawn expecting. A grouted-CMU-and-brick parapet is eight times it.
+    max_guard_dead_load_on_wood_plf: float = 50.0
+
+
 @dataclass(frozen=True)
 class ReferenceUnderlay:
     """A view-only calibrated reference image; never emitted as building geometry."""
@@ -103,6 +115,7 @@ class Preferences:
     cooling_solar_gain_btu_per_hour_ft2: float = 164.0
     framing: FramingPreferences = field(default_factory=FramingPreferences)
     plumbing: PlumbingPreferences = field(default_factory=PlumbingPreferences)
+    structural: StructuralPreferences = field(default_factory=StructuralPreferences)
     underlays: tuple[ReferenceUnderlay, ...] = ()
     suppressed: frozenset[str] = frozenset()
     # `[project].jurisdiction` from preferences.toml: the house's own answer to "whose code

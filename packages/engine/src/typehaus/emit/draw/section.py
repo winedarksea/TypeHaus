@@ -256,19 +256,27 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
 
 
 def _solid_material(model: ResolvedModel, solid) -> str:
-    """A cut solid's material tag, from its authored assembly's structure layer.
+    """A cut solid's material tag: its own material ref, else its assembly's structure layer.
 
     Every solid used to hatch as concrete, which is right for a footing and wrong for a
     composite deck, an aluminium extrusion or a polycarbonate sheet — all of which a detail
-    exists to tell apart. This is the same assembly -> structure layer -> material_ref walk
+    exists to tell apart. This is the same material -> assembly -> structure layer walk
     ``emit/gltf/palette.py::_solid_color`` already does, so the drawn detail and the 3D model
     name the same material for the same solid.
 
-    Without an assembly the fallback reads the member's own *section*, because that is what
+    The direct ref is read first because the assembly cannot answer for a solid that has no
+    business having one: a guard's glass lite and its aluminium posts share one
+    ``Railing.assembly``, and the whole point of the per-part material refs is that they are
+    not the same material. Reading only the assembly hatched a glass baluster panel as
+    concrete in every section and detail.
+
+    Without either the fallback reads the member's own *section*, because that is what
     actually says what it is made of: a "6x6" or a "2-2x8" is dressed lumber, a "12 round" is
     a sonotube-cast concrete pier. Slabs, footings and pads stay concrete — the case the old
     blanket rule was right about.
     """
+    if solid.material:
+        return solid.material
     if solid.assembly:
         assembly = model.plan.library.resolve_assembly(solid.assembly)
         if assembly is not None and assembly.layers:

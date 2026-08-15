@@ -23,6 +23,78 @@ def bom(catlin_model):
     return bill_of_materials(catlin_model)
 
 
+# --- railings: the run, the frame, and what fills it ---------------------------------------
+
+def test_railing_rows_still_bill_every_guard_by_its_run(bom):
+    """``length_ft`` is what prices a railing and none of the new columns may disturb it:
+    nine authored railings, grouped by product and storey, at their plan run."""
+    rows = [row for row in bom["railings"] if row["style"] != "masonry"]
+    assert sum(int(row["count"]) for row in rows) == 9
+    by_type = {}
+    for row in rows:
+        by_type[row["type"]] = by_type.get(row["type"], 0.0) + float(row["length_ft"])
+    assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(38.3, abs=0.1)
+    assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(23.0, abs=0.1)
+    assert by_type["(untyped railing)"] == pytest.approx(30.0, abs=0.1)
+
+
+def test_the_untyped_group_key_is_also_what_gets_emitted(bom):
+    """The defect: the group *key* was ``"(untyped railing)"`` and the emitted ``type`` was
+    a raw ``None``, so the estimator matched on ``"None"`` and prices.toml carried a
+    placeholder rate to work around it. The reader's key and the estimator's key are now
+    the same string."""
+    untyped = [row for row in bom["railings"] if row["type"] == "(untyped railing)"]
+    assert untyped, "the handrails carry no type_ref and must still group"
+    assert not [row for row in bom["railings"] if row["type"] is None]
+
+
+def test_railing_infill_counts_reconcile_against_the_models_own_solids(catlin_model, bom):
+    """The bill's picket count is the model's picket count. Summed rather than asserted per
+    row, because a per-row number can be right while a whole railing is missing from the
+    grouping."""
+    billed = sum(int(row.get("baluster_count") or 0) for row in bom["railings"])
+    drawn = len([s for s in catlin_model.solids if s.category == "railing_infill"])
+    assert billed == drawn
+
+
+def test_railing_post_counts_reconcile_against_the_models_own_posts(catlin_model, bom):
+    billed = sum(int(row["post_count"]) for row in bom["railings"])
+    drawn = len([s for s in catlin_model.solids
+                 if s.category == "railing" and "POST" in s.tag])
+    assert billed == drawn
+
+
+def test_a_raking_guards_top_rail_is_longer_than_its_plan_run(bom):
+    """``length_ft`` is a plan projection by design; the cap stock a rake consumes is not.
+    The untyped handrails are the five ``serves_stair`` railings, so every one of their rows
+    must show the slope."""
+    for row in bom["railings"]:
+        if row["type"] != "(untyped railing)":
+            continue
+        assert float(row["top_rail_length_ft"]) > float(row["length_ft"]) * 1.15, row
+
+
+def test_the_masonry_guard_bills_its_run_and_nothing_that_double_prices_it(bom):
+    """The porch parapets appear in the railing schedule so a reader looking for "what
+    guards the porch" finds them, and carry the note saying their masonry volume bills by
+    the cubic yard in ``wall_structure`` — the "price it in one table only" rule."""
+    masonry = [row for row in bom["railings"] if row["style"] == "masonry"]
+    assert len(masonry) == 1
+    row = masonry[0]
+    assert int(row["count"]) == 3
+    assert row["tags"] == ["W-SG-RAIL-E", "W-SG-RAIL-F", "W-SG-RAIL-W"]
+    assert row["post_count"] == 0 and "baluster_count" not in row
+    assert "wall_structure" in str(row["note"])
+
+
+def test_the_railing_frame_row_in_structural_solids_is_still_the_frame_alone(bom):
+    """Infill landing back on ``category="railing"`` would inflate this row and the plan
+    sheet at once. 78 is posts + rails across all nine railings."""
+    frame = [row for row in bom["structural_solids"]
+             if row["category"] == "railing" and row["assembly"] == "RAILING_DARK_METAL"]
+    assert len(frame) == 1 and int(frame[0]["count"]) == 78
+
+
 # --- floor finishes: the half of S3 that makes a finish purchasable ------------------------
 
 def test_floor_finishes_reconcile_against_the_houses_own_floor_area(catlin_model, bom):

@@ -124,6 +124,12 @@ MN_2024 = JurisdictionProfile(
                        ("IRC R312.1.3",), blocking=False),
         PermitItemSpec("Safety glazing", ("code.R308_4_safety_glazing",),
                        ("IRC R308.4",), blocking=False),
+        # Its own line rather than folded into the one above: R308.4 asks whether the unit
+        # in a hazardous *location* is safety glass, and R308.4.4 asks whether glass used as
+        # the guard itself has the redundancy that section wants. A reviewer asks those two
+        # questions of different drawings.
+        PermitItemSpec("Structural glass guards", ("code.R308_4_4_glass_guard",),
+                       ("IRC R308.4.4",), blocking=False),
         PermitItemSpec("Garage / dwelling separation",
                        ("code.R302_5_garage_separation",),
                        ("IRC R302.5.1", "IRC R302.5.2", "IRC R302.6"), blocking=False),

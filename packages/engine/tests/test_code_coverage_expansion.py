@@ -401,20 +401,24 @@ def test_every_new_rule_cites_its_section(check_fn, catlin_ctx):
 # keep once something can.
 
 def _railing(tag, **kw):
-    from typehaus.model.structure import Railing
-    from typehaus.quantities import pt
+    from _railing_fixtures import railing
 
-    defaults = dict(uid=f"RL{tag[-6:]:>08}"[:10], tag=tag,
-                    path=(pt(ft(0), ft(0)), pt(ft(10), ft(0))),
-                    height=inch(36), base_elevation=ft(0), post_spacing=ft(4))
-    defaults.update(kw)
-    return Railing(**defaults)
+    return railing(tag, height=inch(36), post_spacing=ft(4), **kw)
 
 
 def _railing_ctx(railings, stairs=()):
+    """A ctx whose model carries the railings' *resolved* geometry, not just the elements.
+
+    ``guard_opening_limit`` cross-checks its verdict against the drawn infill, so a ctx with
+    no solids in it would exercise only half the rule — and the half that was already there
+    when the balcony guard passed on an authored field while drawing nothing.
+    """
+    from _railing_fixtures import resolve_railings
+
+    model = resolve_railings(railings, stairs=stairs)
     return SimpleNamespace(
         plan=SimpleNamespace(all_elements=lambda: list(railings)),
-        model=SimpleNamespace(stairs=list(stairs)),
+        model=model,
     )
 
 
@@ -442,7 +446,11 @@ def test_guard_opening_limit_passes_a_solid_panel_with_no_spacing_to_measure():
 
 
 def _stair(tag="ST-1", risers=14):
-    return SimpleNamespace(tag=tag, riser_count=risers)
+    # ``members=()`` because the railing resolver now rakes a ``serves_stair`` rail along
+    # this stair's nosing line: an empty flight has no walkline, so every post falls back to
+    # the authored base elevation — which is exactly the flat geometry these handrail-band
+    # assertions were written against.
+    return SimpleNamespace(tag=tag, riser_count=risers, members=())
 
 
 def test_handrail_passes_in_band_and_fails_outside_it():

@@ -391,6 +391,12 @@ def deck_guard(ctx: CheckContext) -> list[Finding]:
                          "the site declares no grade datum to measure a drop against")]
     grade_m = grade.meters
     railings = [e for e in ctx.plan.all_elements() if isinstance(e, Railing)]
+    # A guard need not be a Railing. A masonry parapet standing at the edge is the same
+    # fixture in R312.1 terms, and is authored as a Wall with ``guard=True`` so it keeps its
+    # layer stack and its cubic-yard take-off (→ checks/structural/guards.py). Without this
+    # the rule failed a deck that is guarded, for having no element of the one class it knew.
+    guard_walls = [w for w in ctx.model.walls
+                   if getattr(ctx.plan.by_tag(w.tag), "guard", False)]
     out: list[Finding] = []
     for deck in decks:
         joists = deck.joists
@@ -412,7 +418,8 @@ def deck_guard(ctx: CheckContext) -> list[Finding]:
         # A guard is required. It has to actually sit on this deck, at full height.
         on_deck = [r for r in railings
                    if abs(r.base_elevation.meters - surface_m) < 0.15]
-        if not on_deck:
+        walls_on_deck = [w for w in guard_walls if abs(w.z0_m - surface_m) < 0.15]
+        if not on_deck and not walls_on_deck:
             out.append(_advisory(
                 "structural.deck_guard",
                 f"deck {deck.tag} walking surface is {drop_in:.1f}\" above grade and has no "
@@ -421,21 +428,25 @@ def deck_guard(ctx: CheckContext) -> list[Finding]:
                 fix_hint="author a Railing along the deck's open edges",
             ))
             continue
-        short = [r for r in on_deck if r.height.inches + 1e-9 < GUARD_MIN_HEIGHT_IN]
+        # Heights, in inches, keyed by tag — a Railing states one and a guard wall's is the
+        # run of its own resolved prism, so the two are measured the same way from here on.
+        heights = {r.tag: r.height.inches for r in on_deck}
+        heights.update({w.tag: (w.z1_m - w.z0_m) / M_PER_IN for w in walls_on_deck})
+        short = sorted(tag for tag, tall in heights.items()
+                       if tall + 1e-9 < GUARD_MIN_HEIGHT_IN)
         if short:
             out.append(_advisory(
                 "structural.deck_guard",
-                f"deck {deck.tag} guard {short[0].tag} is {short[0].height.inches:.0f}\" "
+                f"deck {deck.tag} guard {short[0]} is {heights[short[0]]:.0f}\" "
                 f"tall, under the {GUARD_MIN_HEIGHT_IN:.0f}\" IRC R312.1 minimum",
-                (deck.tag, short[0].tag), Result.FAIL,
+                (deck.tag, short[0]), Result.FAIL,
                 fix_hint=f"raise the guard to at least {GUARD_MIN_HEIGHT_IN:.0f}\"",
             ))
         else:
             out.append(_advisory(
                 "structural.deck_guard",
                 f"deck {deck.tag} is {drop_in:.1f}\" above grade and guarded by "
-                f"{', '.join(r.tag for r in on_deck)} at "
-                f"{min(r.height.inches for r in on_deck):.0f}\" or more",
-                (deck.tag, *(r.tag for r in on_deck)), Result.PASS,
+                f"{', '.join(sorted(heights))} at {min(heights.values()):.0f}\" or more",
+                (deck.tag, *sorted(heights)), Result.PASS,
             ))
     return out

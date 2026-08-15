@@ -35,7 +35,8 @@ ELEMENT_KEYS = frozenset({
 
 # Accessory and trim products (→ resolve/accessories.py, resolve/roof_trim.py).
 ACCESSORY_KEYS = frozenset({
-    "railing", "dowel", "thermal_break", "connector", "sump", "vent", "fascia", "soffit",
+    "railing", "railing_infill", "railing_glass",
+    "dowel", "thermal_break", "connector", "sump", "vent", "fascia", "soffit",
     "gutter", "ridge_cap", "corner_trim", "flashing",
     # Stormwater (→ emit/trades.py DRAINAGE_CATEGORIES). The leader is the gutter's own
     # aluminium; the buried three read as what they are made of — perforated HDPE tile and

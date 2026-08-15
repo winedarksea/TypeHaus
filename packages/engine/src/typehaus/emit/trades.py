@@ -134,6 +134,11 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     #               2D railing outlines on ``visibleTrades.concrete``. Moving the category here
     #               alone would split a railing's 2D and 3D toggles; it wants the plan gate
     #               changed in the same breath, and the "stairs" trade is the likelier home.
+    # "railing_infill" / "railing_glass"
+    #             — the pickets, cable, mesh or lite that fill the frame above. They ride the
+    #               same fallback for the same reason, and *because* it is the same reason:
+    #               routing the infill without the frame would split one guard across two
+    #               toggles, which is worse than the one wrong toggle they share today.
     # "connector" — too coarse to route. The 86 in the Catlin house are a mix of PV rail clamps
     #               (electrical), knee-brace straps and column base plates (framing), and vent
     #               clamps (mechanical). One category cannot be all three; this wants routing by

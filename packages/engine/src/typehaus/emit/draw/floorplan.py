@@ -230,6 +230,25 @@ def _emit_railings(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
 
     Guards top out at 42", below the 4' plan cut, so this is *below-cut* linework — hence
     the light 0.25 lineweight rather than the cut-wall weights ``emit_wall`` uses.
+
+    THE INFILL IS DELIBERATELY NOT DRAWN. The ``category == "railing"`` filter is the frame
+    — posts and rails — and the pickets, cable and lites land on ``railing_infill`` /
+    ``railing_glass`` (→ resolve/railings/parts.py), so they fall out of this pass with no
+    code here to exclude them. That is the intended behaviour, not an oversight:
+
+    * At 1/4"=1'-0" a 3/4" picket is 0.016" on paper and its pitch is 0.10". The balcony
+      guard alone would put 92 near-coincident squares on the sheet, which reads as a smudge
+      down the guard line and swamps the rail band that is actually saying something.
+    * A-RAIL's job on a floor plan is to say *this edge is guarded*. The rail band already
+      says it. What the infill **is** belongs on the section, and ``emit/draw/section.py``
+      already cuts ``model.solids`` unfiltered, so a picket, a cable and a glass lite each
+      appear there at their true section and with their own material hatch.
+
+    Two alternatives were considered and rejected, so nobody has to re-litigate them: a tag
+    substring test (``-BAL``/``-PANEL``) string-sniffs a naming format the resolver owns and
+    breaks silently the day it changes; an outline-area threshold cannot separate them —
+    a 3/4" picket and a 1-1/2" post are only 4.5x apart in area, which is inside the range
+    one house's post sizes already span.
     """
     seen: set[tuple[tuple[float, float], ...]] = set()
     for solid in (s for s in model.solids

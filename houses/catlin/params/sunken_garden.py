@@ -358,17 +358,23 @@ GARDEN_SLAB = Slab(
 # at 0'-3.5' via absolute elevations, so they stay filed with the freestanding structure
 # on the basement storey key (the house's own main/second loops must contain only house
 # walls, or storey-orientation detection traces this porch loop by mistake).
+#
+# ``guard=True`` says out loud what "railing" only says in the tag: these three ARE the
+# porch's guard, standing where a metal Railing would otherwise be. It is what lets the
+# R312.1.3 census see them (solid masonry admits no 4" sphere by construction),
+# ``structural.deck_guard`` count the porch as guarded, and
+# ``structural.masonry_guard_bearing`` ask what carries their ~420 plf of dead load.
 RAILING_WALLS = [
     FoundationWall(uid="SGRW01AAAA", tag="W-SG-RAIL-F", start_node="N-SG-MW",
-                   end_node="N-SG-ME", assembly="PORCH_RAILING_MASONRY",
+                   end_node="N-SG-ME", assembly="PORCH_RAILING_MASONRY", guard=True,
                    top_elevation=_railing_top, bottom_elevation=_porch_top),
     FoundationWall(uid="SGRW02AAAA", tag="W-SG-RAIL-W", start_node="N-SG-NW",
-                   end_node="N-SG-MW", assembly="PORCH_RAILING_MASONRY",
+                   end_node="N-SG-MW", assembly="PORCH_RAILING_MASONRY", guard=True,
                    top_elevation=_railing_top, bottom_elevation=_porch_top),
     # ME→NE (not NE→ME): the layered railing stack lays out along the wall's right-hand
     # normal on this storey, so the mirrored winding put the brick wythe on the porch side.
     FoundationWall(uid="SGRW03AAAA", tag="W-SG-RAIL-E", start_node="N-SG-ME",
-                   end_node="N-SG-NE", assembly="PORCH_RAILING_MASONRY",
+                   end_node="N-SG-NE", assembly="PORCH_RAILING_MASONRY", guard=True,
                    top_elevation=_railing_top, bottom_elevation=_porch_top),
 ]
 

@@ -167,3 +167,77 @@ def _hazard_reasons(ctx, opening, wall, storey, window_type, wall_doors, storey_
                     reasons.append(("R308.4.7", f"within 60\" of stair {stair_tag}"))
                     break
     return reasons
+
+
+# --- R308.4.4 structural glass baluster panels -----------------------------------------
+# The section that governs glass used *as* the guard rather than as a window in one. It asks
+# for a redundancy: a glass baluster panel carries load, and a single-ply tempered lite that
+# breaks is gone all at once. So either an attached top rail spans enough panels that losing
+# one leaves the rail supported, or the glass is laminated — two plies of equal thickness and
+# the same type, so the interlayer holds the broken lite in place and the guard is still a
+# guard.
+_MIN_PANELS_UNDER_A_SHARED_TOP_RAIL = 3
+#: Glazing types whose plies satisfy the laminated exception on their own.
+_LAMINATED_GLAZING = ("laminated", "laminated-tempered")
+
+
+@check(Tier.CODE, "code.R308_4_4_glass_guard")
+def structural_glass_guard(ctx: CheckContext) -> list[Finding]:
+    """R308.4.4 — a glass baluster panel has an attached top rail, or is laminated.
+
+    Applicability is the model's own statement that the panel is glass: the infill resolves
+    to the ``railing_glass`` category, which happens because its material authored an alpha
+    byte (→ resolve/railings/parts.py::is_translucent). An opaque sheet guard is not glazing
+    and gets no finding at all, the same way an ordinary bedroom window gets none from
+    R308.4 above.
+
+    Compliance is read off the product, never inferred: ``RailingType.glazing`` states what
+    was ordered, and a product that states nothing reports UNKNOWN. Nothing about a lite's
+    geometry can tell you whether it arrived laminated.
+    """
+    from typehaus.model.structure import Railing
+
+    cid, code = "code.R308_4_4_glass_guard", "R308.4.4"
+    railing_types = {t.tag: t for t in ctx.plan.library.railing_types}
+    glass_guards = []
+    for element in ctx.plan.all_elements():
+        if not isinstance(element, Railing) or element.infill != "panel":
+            continue
+        panels = [s for s in ctx.model.solids
+                  if s.category == "railing_glass" and s.tag.startswith(f"{element.tag}-")]
+        if panels:
+            glass_guards.append((element, len(panels)))
+    if not glass_guards:
+        return [_unknown(cid, "no guard in the plan is filled with a glass panel, so there "
+                         "is no structural glass baluster to grade", (), code)]
+
+    out: list[Finding] = []
+    for guard, panel_count in glass_guards:
+        product = railing_types.get(guard.type_ref or "")
+        glazing = getattr(product, "glazing", None)
+        if glazing is None:
+            out.append(_unknown(cid, f"{guard.tag} is glass-filled but its type "
+                                f"({guard.type_ref or 'none'}) states no glazing, so "
+                                "whether the lites are laminated cannot be read",
+                                (guard.tag,), code))
+        elif glazing in _LAMINATED_GLAZING:
+            out.append(_pass(cid, f"{guard.tag} is glazed {glazing} — two equal plies of the "
+                             "same type satisfy R308.4.4's exception with no top rail",
+                             code))
+        elif guard.rail_count < 1:
+            out.append(_fail(cid, f"{guard.tag} is glazed {glazing} (single ply) and frames "
+                             "no rail; R308.4.4 wants an attached top rail on a structural "
+                             "glass baluster panel, or laminated glass",
+                             (guard.tag,), code))
+        elif panel_count < _MIN_PANELS_UNDER_A_SHARED_TOP_RAIL:
+            out.append(_fail(cid, f"{guard.tag} is glazed {glazing} (single ply) and its top "
+                             f"rail spans {panel_count} panel(s); R308.4.4 wants the rail "
+                             f"supported by at least "
+                             f"{_MIN_PANELS_UNDER_A_SHARED_TOP_RAIL}, so losing one lite "
+                             "does not drop the rail, or laminated glass",
+                             (guard.tag,), code))
+        else:
+            out.append(_pass(cid, f"{guard.tag} carries an attached top rail over "
+                             f"{panel_count} glass panels (>= "
+                             f"{_MIN_PANELS_UNDER_A_SHARED_TOP_RAIL})", code))
+    return out

@@ -164,11 +164,6 @@ the future.
 
 ## Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
-- ~~Is the door opening inside the breezeway code compliant~~ — **answered 2026-08-02:
-  yes.** Both `D-M-ENTRY` and `D-G-SERVICE` are 3'-0" × 6'-8" exterior doors — PASS
-  R311 width, and the new `code.R311_2_door_height` (78" min) passes both 80" leaves. The
-  breezeway's N-S beam soffits at +6'-3½" over the walk line remain authored-deliberate
-  (`params/breezeway.py:38-45`).
 - ~~Edits in 2d don't always update all the necessary pieces~~ — investigated 2026-08-02;
   root cause + proposed fix under **Needs your decision** above.
 - ~~Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?~~ — investigated
@@ -244,7 +239,6 @@ the future.
 - Small windows on corners?
 - Balcony railing?
 - Do "drain tile" and "french drain" duplicate at all here?
-- The "draw stud end cuts" of e597019 doesn't seem to have worked? Or else it is just showing the top plate or sill, not the vertical members? This is a follow up to this claimed done item, which seems is not fully complete
 - ~~Able to see the actual studs (or the end cut view of them) on the 2d when framing on~~ —
   **done 2026-08-07.** Members now draw their plan footprint, not a centreline: a vertical
   stud is its oriented `width_m × depth_m` end cut, a horizontal one a band on the plate

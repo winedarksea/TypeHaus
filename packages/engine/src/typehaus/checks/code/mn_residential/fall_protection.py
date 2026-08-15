@@ -363,6 +363,20 @@ def window_fall_protection(ctx: CheckContext) -> list[Finding]:
 # relaxes rather than tightens.
 _GUARD_SPHERE = inch(4)
 
+#: The resolved categories the infill lands in (→ resolve/railings/parts.py). Posts and rails
+#: keep ``"railing"`` and are deliberately not measured here: the gap between two posts is
+#: what the infill fills, not an opening.
+_INFILL_CATEGORIES = ("railing_infill", "railing_glass")
+
+#: How far off the bay's own line an infill solid may sit and still be in that bay. A guard
+#: turning a corner puts two legs' worth of pickets within reach of one bay's station range;
+#: this is what separates them. Generous enough for a thick panel centred on the guard line.
+_GUARD_INFILL_PLANE_TOL_M = 0.05
+
+#: Two solids whose projections agree to this are in the same band of a raking run — the
+#: grouping that lets a sloped cable guard be measured band by band rather than as one smear.
+_BAND_TOL_M = 1e-4
+
 
 @check(Tier.CODE, "code.R312_1_3_guard_opening_limit")
 def guard_opening_limit(ctx: CheckContext) -> list[Finding]:
@@ -375,32 +389,139 @@ def guard_opening_limit(ctx: CheckContext) -> list[Finding]:
     ``baluster_spacing`` is deliberately not ``post_spacing``: the posts are the structural
     rhythm (typically 4'-6'), the balusters are the infill between them. Conflating the two
     would pass every guard in every house.
+
+    The verdict is then **cross-checked against the resolved geometry**: the largest clear
+    gap between adjacent infill solids, measured bay by bay, both along the run and up it.
+    That is what closes the defect this rule shipped with — it used to pass ``RL-SG-BALCONY``
+    on the authored field alone while the 3D view showed a 42" guard with two bars and a
+    wide-open 40" gap between them, because the infill had never been drawn. A guard whose
+    drawn opening and whose authored opening disagree is a resolver bug, and saying so here
+    is worth more than either half alone: ``panel`` now passes because a lite is *drawn*
+    edge to edge rather than on a claim, and ``mesh``/``cable`` are graded on what the model
+    actually shows.
+
+    Guard *walls* (a masonry parapet, ``Wall.guard``) are censused too and pass by
+    construction — solid masonry admits nothing, the same reasoning ``infill == "panel"``
+    already gets.
     """
+    from typehaus.model.elements import Wall
     from typehaus.model.structure import Railing
 
     cid, code = "code.R312_1_3_guard_opening_limit", "R312.1.3"
     guards = [e for e in ctx.plan.all_elements() if isinstance(e, Railing)
               and e.role in ("guard", "guard_and_handrail")]
-    if not guards:
+    guard_walls = [e for e in ctx.plan.all_elements()
+                   if isinstance(e, Wall) and e.guard]
+    if not guards and not guard_walls:
         return [_unknown(cid, "no guard railings in the plan", (), code)]
     out: list[Finding] = []
+    for wall in guard_walls:
+        out.append(_pass(cid, f"{wall.tag} is a solid masonry guard — no opening for a 4\" "
+                         "sphere", code))
     for guard in guards:
-        if guard.infill is None:
-            out.append(_unknown(cid, f"{guard.tag} states no infill, so the 4\" sphere test "
-                                "has nothing to measure", (guard.tag,), code))
-        elif guard.infill == "panel":
-            # A solid panel admits nothing by construction; there is no gap to measure.
-            out.append(_pass(cid, f"{guard.tag} is panel-filled — no opening for a 4\" "
-                             "sphere", code))
-        elif guard.baluster_spacing is None:
-            out.append(_unknown(cid, f"{guard.tag} is {guard.infill}-filled but states no "
-                                "baluster_spacing (the clear gap, not the post rhythm)",
-                                (guard.tag,), code))
-        elif guard.baluster_spacing.meters > _GUARD_SPHERE.meters + 1e-9:
-            out.append(_fail(cid, f"{guard.tag} leaves {guard.baluster_spacing.inches:.1f}\" "
-                             f"between its {guard.infill}; R312.1.3 passes no opening a 4\" "
-                             "sphere fits through", (guard.tag,), code))
-        else:
-            out.append(_pass(cid, f"{guard.tag} holds its {guard.infill} to "
-                             f"{guard.baluster_spacing.inches:.1f}\" (<= 4\")", code))
+        out.append(_grade_guard(ctx, guard, cid, code))
     return out
+
+
+def _grade_guard(ctx: CheckContext, guard, cid: str, code: str) -> Finding:
+    drawn = _largest_drawn_opening_m(ctx, guard)
+    if guard.infill is None:
+        return _unknown(cid, f"{guard.tag} states no infill, so the 4\" sphere test "
+                        "has nothing to measure", (guard.tag,), code)
+    # The authored gap is graded first, because when both are wrong it is the one the author
+    # can act on: the drawn opening is a consequence of it, and quoting the consequence sends
+    # the reader looking for a resolver bug that is not there.
+    if (guard.baluster_spacing is not None
+            and guard.baluster_spacing.meters > _GUARD_SPHERE.meters + 1e-9):
+        return _fail(cid, f"{guard.tag} leaves {guard.baluster_spacing.inches:.1f}\" "
+                     f"between its {guard.infill}; R312.1.3 passes no opening a 4\" "
+                     "sphere fits through", (guard.tag,), code)
+    if drawn is not None and drawn > _GUARD_SPHERE.meters + 1e-9:
+        # The authored field is compliant and the drawing is not. This is the case the
+        # cross-check exists for, and geometry wins: what is drawn is what gets built.
+        return _fail(cid, f"{guard.tag} draws a {drawn / .0254:.1f}\" clear opening between "
+                     f"adjacent {guard.infill}; R312.1.3 passes no opening a 4\" sphere "
+                     "fits through", (guard.tag,), code)
+    if guard.infill == "panel":
+        # A solid panel admits nothing by construction; there is no gap to measure.
+        return _pass(cid, f"{guard.tag} is panel-filled — no opening for a 4\" "
+                     "sphere", code)
+    if guard.baluster_spacing is None:
+        return _unknown(cid, f"{guard.tag} is {guard.infill}-filled but states no "
+                        "baluster_spacing (the clear gap, not the post rhythm)",
+                        (guard.tag,), code)
+    if drawn is None:
+        return _unknown(cid, f"{guard.tag} holds its {guard.infill} to "
+                        f"{guard.baluster_spacing.inches:.1f}\" but resolves no infill "
+                        "geometry, so the authored gap cannot be confirmed against what "
+                        "the model draws", (guard.tag,), code)
+    return _pass(cid, f"{guard.tag} holds its {guard.infill} to "
+                 f"{guard.baluster_spacing.inches:.1f}\" (<= 4\"), and draws "
+                 f"{drawn / .0254:.1f}\" between adjacent {guard.infill}", code)
+
+
+def _largest_drawn_opening_m(ctx: CheckContext, guard) -> float | None:
+    """The widest clear gap between adjacent infill solids, over every bay of the guard.
+
+    Measured in two directions because the two styles open in different ones: pickets leave
+    their gaps *along* the run, cable leaves them *up* it, and a sheet leaves none either
+    way. Both are the same sphere test, so the larger of the two is the answer.
+
+    ``None`` when the guard resolved no infill at all — which is a different statement from
+    "no gap", and is reported as UNKNOWN rather than as a pass.
+    """
+    from typehaus.resolve.geometry import length, normal, project_onto_axis, sub, unit
+    from typehaus.resolve.railings import railing_post_stations
+
+    prefix = f"{guard.tag}-"
+    solids = [s for s in ctx.model.solids
+              if s.category in _INFILL_CATEGORIES and s.tag.startswith(prefix)]
+    if not solids:
+        return None
+    path = [p.xy_m for p in guard.path]
+    if len(path) < 2:
+        return None
+    stations = railing_post_stations(path, max(guard.post_spacing.meters, 0.3))
+    largest = 0.0
+    for a, b in zip(stations[:-1], stations[1:]):
+        bay = length(sub(b, a))
+        if bay <= 1e-9:
+            continue
+        axis = unit(sub(b, a))
+        across = normal(axis)
+        placed: list[tuple[float, float, float, float]] = []
+        for solid in solids:
+            us = [project_onto_axis(point, a, axis) for point in solid.outline]
+            u0, u1 = min(us), max(us)
+            # Centred inside this bay, and *on* its line. Both halves matter on a guard that
+            # turns a corner: the neighbouring leg shares an endpoint, so a station test
+            # alone counts the perpendicular leg's pickets here — they project onto this
+            # axis at plausible stations and invent a gap that is not in any bay.
+            offsets = [abs(project_onto_axis(point, a, across)) for point in solid.outline]
+            if (-1e-6 <= (u0 + u1) / 2.0 <= bay + 1e-6
+                    and min(offsets) <= _GUARD_INFILL_PLANE_TOL_M):
+                placed.append((u0, u1, solid.z0_m, solid.z1_m))
+        if not placed:
+            continue
+        largest = max(largest, _interior_gap([(u0, u1) for u0, u1, _z0, _z1 in placed]))
+        # Group by plan footprint before measuring up: on a rake one bay holds several
+        # bands at different elevations, and merging those would smear a real gap shut.
+        bands: dict[tuple[int, int], list[tuple[float, float]]] = {}
+        for u0, u1, z0, z1 in placed:
+            key = (round(u0 / _BAND_TOL_M), round(u1 / _BAND_TOL_M))
+            bands.setdefault(key, []).append((z0, z1))
+        for spans in bands.values():
+            largest = max(largest, _interior_gap(spans))
+    return largest
+
+
+def _interior_gap(intervals: list[tuple[float, float]]) -> float:
+    """The widest uncovered run strictly between the merged extremes of ``intervals``."""
+    merged: list[list[float]] = []
+    for lo, hi in sorted(intervals):
+        if merged and lo <= merged[-1][1] + 1e-12:
+            merged[-1][1] = max(merged[-1][1], hi)
+        else:
+            merged.append([lo, hi])
+    return max((merged[i + 1][0] - merged[i][1] for i in range(len(merged) - 1)),
+               default=0.0)

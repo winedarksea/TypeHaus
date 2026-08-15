@@ -83,6 +83,10 @@ def _emit_framed_member(f: Any, body: Any, parent_tag: str, parent_uid: str,
 _SOLID_IFC_CLASS: dict[str, tuple[str, str | None]] = {
     "slab": ("IfcSlab", None), "column": ("IfcColumn", None), "beam": ("IfcBeam", None),
     "railing": ("IfcRailing", None), "dowel": ("IfcReinforcingBar", None),
+    # Guard infill exports as part of the railing it fills, not as ``IfcPlate``: ``diff/
+    # semantic.py`` has no ``IfcPlate`` row, so a glass lite exported that way would vanish
+    # from the ``haus diff`` census rather than round-trip.
+    "railing_infill": ("IfcRailing", None), "railing_glass": ("IfcRailing", None),
     "connector": ("IfcMechanicalFastener", None),
     "vent": ("IfcBuildingElementProxy", None),
     "fascia": ("IfcCovering", None), "soffit": ("IfcCovering", None),

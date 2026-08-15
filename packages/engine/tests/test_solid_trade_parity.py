@@ -28,7 +28,7 @@ SOLID_MATERIALS_TS = REPO_ROOT / "ui" / "src" / "three" / "solidMaterials.ts"
 
 # Categories that ride the fallback on purpose, so "unclassified" stays a meaningful signal.
 # Keep the reasons in emit/trades.py, next to the table.
-DELIBERATELY_UNCLASSIFIED = {"railing", "connector"}
+DELIBERATELY_UNCLASSIFIED = {"railing", "railing_infill", "railing_glass", "connector"}
 
 
 @pytest.fixture(scope="module")

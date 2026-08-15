@@ -24,6 +24,15 @@ max_window_ro_nonbearing_in = 42
 # preference, not code; the constraint it encodes is cost and simplicity of framing.
 max_window_ro_bearing_in = 30
 
+[structural]
+# The dead load a guard may put on ordinary wood framing (structural.masonry_guard_bearing).
+# A guard's own weight is derived from its assembly's layers and their material densities, so
+# this is the only authored number in that rule: roughly a heavy wood guard with 6x6 posts,
+# which is what a deck rim designed to R507's 40 psf live + 10 psf dead was drawn expecting.
+# The porch's grouted-CMU-and-white-brick parapet is ~420 plf against it — which is the point:
+# it lands on the concrete sunken-garden walls, and it could not land on a wood deck.
+max_guard_dead_load_on_wood_plf = 50
+
 [plumbing]
 drain_stack_required_structure_in = 5.5
 # Supply pipe you can see is lacquered copper; everywhere else it is PEX. A style rule, not

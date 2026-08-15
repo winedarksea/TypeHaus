@@ -45,6 +45,14 @@ class Wall(Element):
     # the extra stud, so two walls never fight over one corner's style.
     corner_style_start: str | None = None
     corner_style_end: str | None = None
+    # This wall *is* a guard at an open edge, not an enclosure — a masonry parapet standing
+    # where a Railing would otherwise be. A guard is the one thing a wall can be that
+    # changes which rules apply to it: R312.1.3 has nothing to measure in solid masonry
+    # (it admits no sphere by construction), structural.deck_guard has to see it as the
+    # guard the deck is relying on, and its own dead load has to land on something that can
+    # carry it (structural.masonry_guard_bearing). Marked rather than inferred: "short wall
+    # at a floor edge" describes a knee wall, a planter and a stair curb just as well.
+    guard: bool = False
     # Fork/variant provenance (#38).
     forked_from: str | None = None
 

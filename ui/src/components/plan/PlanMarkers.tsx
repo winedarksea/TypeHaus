@@ -108,11 +108,12 @@ export const SlabOutlines = memo(function SlabOutlines({ slabs, project }: {
   );
 });
 
-// Guards and handrails on the active storey. A railing resolves to one solid per post and
-// per rail (resolve/accessories.py::_resolve_railing), and each is drawn as its own plan
-// outline: a post reads at its true section, a rail as the 1 1/2" band it sweeps along the
-// path. That band is the line down the guard, so an open well edge and a guarded one finally
-// read differently — until now the 3D viewer was the only place a railing appeared.
+// Guards and handrails on the active storey. A railing's frame resolves to one solid per post
+// and per rail (engine resolve/railings/frame.py), and each is drawn as its own plan outline:
+// a post reads at its true section, a rail as the 1 1/2" band it sweeps along the path. That
+// band is the line down the guard, so an open well edge and a guarded one finally read
+// differently — until now the 3D viewer was the only place a railing appeared. The infill is
+// filtered out upstream in useStoreySlice, where the reasoning lives.
 //
 // `rail_count` rails share one footprint (they are stacked in Z, which plan cannot show), so
 // coincident outlines are drawn once. Graphical only, like SlabOutlines: a railing is derived

@@ -355,6 +355,92 @@ def test_catlin_stair_handrail_rakes_along_the_flight(catlin_model) -> None:
     assert 1.524 + rail_h - 0.15 < bands[-1].z1_m < 1.524 + rail_h + 0.05
 
 
+def _bay_pickets(model, tag):
+    """The balcony guard's pickets grouped into their bays, ordered along each bay.
+
+    The bay walk is recomputed from the element rather than read off the solids, so this is
+    a genuine cross-check: the pickets have to land where the posts say the bays are.
+    """
+    from typehaus.resolve.geometry import length, normal, project_onto_axis, sub, unit
+    from typehaus.resolve.railings import railing_post_stations
+
+    guard = model.plan.by_tag(tag)
+    pickets = [s for s in model.solids
+               if s.category == "railing_infill" and s.tag.startswith(f"{tag}-")]
+    path = [p.xy_m for p in guard.path]
+    stations = railing_post_stations(path, max(guard.post_spacing.meters, 0.3))
+    bays = []
+    for a, b in zip(stations[:-1], stations[1:]):
+        run = length(sub(b, a))
+        axis, across = unit(sub(b, a)), normal(sub(b, a))
+        here = []
+        for picket in pickets:
+            us = [project_onto_axis(point, a, axis) for point in picket.outline]
+            offsets = [abs(project_onto_axis(point, a, across)) for point in picket.outline]
+            if -1e-6 <= (min(us) + max(us)) / 2.0 <= run + 1e-6 and min(offsets) <= 0.05:
+                here.append(((min(us) + max(us)) / 2.0, max(us) - min(us)))
+        bays.append(sorted(here))
+    return bays
+
+
+def test_catlin_balcony_guard_draws_its_balusters(catlin_model) -> None:
+    """The defect this infill closes: ``RL-SG-BALCONY`` authored ``infill="balusters",
+    baluster_spacing=4"`` and drew two horizontal bars with 40" of daylight between them,
+    while the R312.1.3 check passed on the authored field alone. The pickets exist now, they
+    stand on the deck-walking-surface datum the guard is measured from, and they stop short
+    of both rails so they tuck under the banded rail instead of poking through it."""
+    deck = next(s for s in catlin_model.solids if s.tag == "SL-SG-DECK")
+    pickets = [s for s in catlin_model.solids
+               if s.category == "railing_infill" and s.tag.startswith("RL-SG-BALCONY-")]
+    assert len(pickets) > 80, "a 38' guard at a 4\" clear gap is ~90 pickets"
+    rail_half = 0.75 * 0.0254
+    for picket in pickets:
+        assert math.isclose(picket.z0_m, deck.z1_m + rail_half, abs_tol=1e-9), (
+            "a picket's foot sits on the walking surface, trimmed under the bottom rail")
+        assert math.isclose(picket.z1_m, deck.z1_m + 3.5 * FT - rail_half, abs_tol=1e-9), (
+            "...and its head stops under the top rail")
+
+
+def test_catlin_balcony_pickets_reconcile_against_the_sphere_rule(catlin_model) -> None:
+    """Per bay: every clear gap is at or under 4", AND one fewer picket would open one that
+    is not. The second half is what a ``<=``-only assert cannot catch — an off-by-one that
+    adds a picket passes the rule and bills the owner for metal nobody needs."""
+    gap_limit = 4 * 0.0254
+    for bay in _bay_pickets(catlin_model, "RL-SG-BALCONY"):
+        assert bay, "every bay of a baluster guard carries pickets"
+        width = bay[0][1]
+        gaps = [b_centre - a_centre - width for (a_centre, _w), (b_centre, _w2)
+                in zip(bay, bay[1:])]
+        assert gaps, "a bay with one picket cannot demonstrate a gap"
+        assert max(gaps) <= gap_limit + 1e-9, (
+            f"drawn gap {max(gaps) / 0.0254:.3f}\" exceeds the 4\" sphere")
+        # Minimality: the same clear span with one fewer picket must break the rule.
+        count = len(bay)
+        clear = count * width + sum(gaps) + 2 * gaps[0]
+        fewer = count - 1
+        assert (clear - fewer * width) / (fewer + 1) > gap_limit - 1e-9, (
+            "the picket count is not the smallest that satisfies R312.1.3")
+
+
+def test_catlin_handrails_get_no_infill(catlin_model) -> None:
+    """``role == "handrail"`` is the gate, and it is the same predicate the R312.1.3 census
+    uses — a handrail is not a guard and has nothing to fill."""
+    for tag in ("RL-A-HANDRAIL", "RL-M-HANDRAIL-E", "RL-M-HANDRAIL-W",
+                "RL-S-HANDRAIL-E", "RL-S-HANDRAIL-W"):
+        assert not [s for s in catlin_model.solids
+                    if s.tag.startswith(f"{tag}-")
+                    and s.category in ("railing_infill", "railing_glass")], tag
+
+
+def test_infill_never_lands_on_the_frame_category(catlin_model) -> None:
+    """The frame's ``"railing"`` category is what the 2D plan filter, the trades gate and
+    the BOM's frame row all key on. Infill landing there would put 147 near-coincident
+    squares on every floor plan and silently move the frame row's count."""
+    frame = [s for s in catlin_model.solids if s.category == "railing"]
+    assert len(frame) == 78, "posts + rails only"
+    assert all("POST" in s.tag or "RAIL" in s.tag for s in frame)
+
+
 def test_knee_brace_member_carries_its_paint_material(catlin_model) -> None:
     """``KneeBrace.assembly`` reduces to its structure layer's material on the resolved
     member (the IR slot both emitters read), and the glTF palette resolves that ref to

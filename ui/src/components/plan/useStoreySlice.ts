@@ -66,6 +66,14 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
   // (emit/draw/floorplan.py::_emit_railings): every post and rail as its own plan outline.
   // A guarded well edge and an open one used to look identical here — the 3D viewer was the
   // only place a railing existed.
+  //
+  // `category === "railing"` is the FRAME only. Guard infill resolves to `railing_infill` /
+  // `railing_glass` (engine resolve/railings/parts.py) and is excluded on purpose: at plan
+  // scale a 3/4" picket is 0.016" of paper on a 0.10" pitch, so the balcony guard's 92
+  // pickets read as a smudge down the guard line and swamp the rail band that carries the
+  // meaning. A plan says *this edge is guarded*; what the infill IS belongs on the section,
+  // which cuts every solid unfiltered. Keeping the filter on category also keeps this dedup
+  // set at ~2 entries per railing instead of ~145.
   const railingsOnStorey = useMemo(
     () => (model.solids ?? []).filter((solid) => solid.category === "railing" &&
       (!activeStorey || solid.storey === activeStorey) && solid.outline.length >= 3),

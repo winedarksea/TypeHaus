@@ -112,11 +112,32 @@ class FurnitureType(HausModel):
 
 
 class RailingType(HausModel):
-    """A railing product identity, separate from its resolved guard geometry."""
+    """A railing product identity, separate from its resolved guard geometry.
+
+    The three ``*_material`` refs are *product* defaults for the parts a guard is built
+    from; a ``Railing`` instance's own field wins over them, and where neither is authored
+    the part keeps today's assembly-driven colour (→ resolve/railings/parts.py).
+
+    The three dimensions below are product facts no code rule fixes — R312.1.3 constrains
+    the *gap*, never the picket. They are :class:`Length`, not nominal strings, because
+    dressed-lumber arithmetic (2" nominal → 1.5" actual) is a lumber convention a 3/4"
+    extruded aluminium picket does not obey.
+    """
 
     tag: str
     name: str
     mesh: MeshRef | None = None
+    post_material: str | None = None
+    rail_material: str | None = None
+    infill_material: str | None = None
+    baluster_width: Length | None = None   # picket cross-section, square
+    cable_diameter: Length | None = None   # tensioned cable, e.g. 3/16"
+    panel_thickness: Length | None = None  # lite / sheet thickness
+    # Safety glazing in a glass infill. Mirrors ``WindowType.tempered`` / ``DoorType
+    # .tempered``: geometry cannot know what was ordered, so the product states it. This
+    # is what R308.4.4 (structural glass balusters) reads; ``None`` means "not stated",
+    # which that rule reports as UNKNOWN rather than as a deficiency.
+    glazing: Literal["tempered", "laminated", "laminated-tempered"] | None = None
     source: str | None = None
 
 
