@@ -21,9 +21,8 @@ import pytest
 from typehaus.emit.gltf.emitter import _PALETTE
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR, REPO_ROOT
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-CATLIN_DIR = REPO_ROOT / "houses" / "catlin"
 MEMBERS_TS = REPO_ROOT / "ui" / "src" / "three" / "members.ts"
 
 

@@ -7,7 +7,7 @@ architectural plan family and the structural sheet family independent.
 
 from __future__ import annotations
 
-from typehaus.emit.draw._shared import M_TO_IN
+from typehaus.quantities import M_PER_IN
 
 M_TO_FT = 3.280839895013123
 IN_PER_FT = 12.0
@@ -15,7 +15,7 @@ IN_PER_FT = 12.0
 
 def feet_inches(meters: float) -> str:
     """Architectural length notation, e.g. ``12'-6"`` — rounded to the nearest inch."""
-    total_inches = round(meters * M_TO_IN)
+    total_inches = round(meters / M_PER_IN)
     sign = "-" if total_inches < 0 else ""
     total_inches = abs(total_inches)
     return f"{sign}{int(total_inches // IN_PER_FT)}'-{int(total_inches % IN_PER_FT)}\""
@@ -27,7 +27,7 @@ def inches(meters: float) -> str:
     A 3-1/2" slab must not print as 4" on a schedule the concrete crew reads, so this keeps
     the eighth-inch fraction carpenters and the authored ``Length`` both work in.
     """
-    return inches_text(meters * M_TO_IN)
+    return inches_text(meters / M_PER_IN)
 
 
 EIGHTHS_PER_INCH = 8

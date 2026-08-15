@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-IN_TO_M = 0.0254
 FT_TO_M = 0.3048
 
 

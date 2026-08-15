@@ -5,7 +5,6 @@ structurally unusable by writeback (the coordinator routes only through editable
 
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 import pytest
@@ -14,7 +13,8 @@ from typehaus.source import load_plan
 from typehaus.source.coordinator import ProjectCoordinator
 from typehaus.source.ops import PatchOp, WritebackError
 
-HOUSES = Path(__file__).resolve().parents[3] / "houses"
+from _helpers import HOUSES, copy_house
+
 
 # Tags assembled from an f-string over a loop variable: no static scan can see these.
 PARAMS_MODULE = '''"""Loop-generated nodes with dynamic tags (test fixture)."""
@@ -33,7 +33,7 @@ def build():
 @pytest.fixture()
 def params_house(tmp_path: Path) -> Path:
     dst = tmp_path / "starter"
-    shutil.copytree(HOUSES / "starter", dst)
+    copy_house(HOUSES / "starter", dst)
     (dst / "params").mkdir()
     (dst / "params" / "__init__.py").write_text("")
     (dst / "params" / "garden.py").write_text(PARAMS_MODULE)
@@ -84,7 +84,7 @@ def test_movable_subclass_in_noneditable_file_is_a_hard_error(tmp_path: Path) ->
     FoundationWall(Wall) authored in a plan module that lost its editable header is the
     silent "move didn't save" bug and must hard-error, not WARN."""
     dst = tmp_path / "catlin"
-    shutil.copytree(HOUSES / "catlin", dst)
+    copy_house(HOUSES / "catlin", dst)
     basement = dst / "plan" / "storeys" / "basement.py"
     basement.write_text(basement.read_text().replace("# haus: editable\n", "", 1))
 

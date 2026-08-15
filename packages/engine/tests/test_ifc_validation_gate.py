@@ -24,8 +24,8 @@ from ifctester import ids, reporter
 from typehaus.emit.ifc import emit_ifc
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
+from _helpers import HOUSES
 
-HOUSES = Path(__file__).resolve().parents[3] / "houses"
 BASELINE_IDS = Path(__file__).resolve().parent / "data" / "baseline.ids"
 
 # (house, LOD). `core` is the handoff LOD — the one that was never validated.

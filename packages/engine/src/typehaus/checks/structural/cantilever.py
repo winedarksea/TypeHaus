@@ -44,6 +44,8 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConnectorKind
 from typehaus.model.floors import FloorSystem
 from typehaus.model.structure import Connector, Post
+from typehaus.quantities import M_PER_IN
+
 # The bearing lines a deck's joists land on are the resolver's own derivation — a resolved
 # wall axis, or a standalone Beam looked up through its per-storey nodes. Re-deriving them
 # here would be a second answer to the same question (and the two would drift);
@@ -52,7 +54,6 @@ from typehaus.model.structure import Connector, Post
 from typehaus.resolve.floors import _bearing_axis
 from typehaus.resolve.model import ResolvedFloor
 
-_M_PER_IN = 0.0254
 # The tables are published at 12/16/24" o.c.; a FloorSystem that leaves JoistSpec.spacing
 # unset gets the solver's own default, which is the middle one. (Same constant as deck.py —
 # duplicated rather than shared because it is a restatement of the solver's default, not a
@@ -125,7 +126,7 @@ class _Cantilever:
     @property
     def spacing_m(self) -> float:
         spacing = self.authored.joists.spacing
-        return (spacing.inches if spacing is not None else _DEFAULT_SPACING_IN) * _M_PER_IN
+        return (spacing.inches if spacing is not None else _DEFAULT_SPACING_IN) * M_PER_IN
 
     @property
     def overhangs(self) -> tuple[float, float]:
@@ -252,13 +253,13 @@ def _mitigations(ctx: CheckContext, deck: _Cantilever,
                if abs(_axis_perp(m.p0, deck.along_x)[1] - post_perp) <= half_spacing + _EPS]
     if sisters:
         reasons.append(f"{len(sisters)} sistered {sisters[0].profile} plies within "
-                       f"{half_spacing / _M_PER_IN:.0f}\" of it")
+                       f"{half_spacing / M_PER_IN:.0f}\" of it")
     # (b) — blocking at the load.
     blocks = [m for m in deck.members("blocking")
               if _point_to_segment_m(post_xy, m.p0, m.p1) <= _BLOCKING_NEAR_M]
     if blocks:
         reasons.append(f"{len(blocks)} solid blocks within "
-                       f"{_BLOCKING_NEAR_M / _M_PER_IN:.0f}\" of it")
+                       f"{_BLOCKING_NEAR_M / M_PER_IN:.0f}\" of it")
     # (c) — an uplift tie on the same joist line, on the deck itself or on its back-span
     # bearing.
     anchors = {deck.tag} | _back_span_bearings(ctx, deck, extent)
@@ -295,7 +296,7 @@ def cantilever_point_load(ctx: CheckContext) -> list[Finding]:
                 "overhang band cannot be located",
                 (deck.tag, *(p.tag for p in carried))))
             continue
-        spacing_in = deck.spacing_m / _M_PER_IN
+        spacing_in = deck.spacing_m / M_PER_IN
         for post in carried:
             band = _band(deck, extent, post.position.xy_m)
             if band is None:
@@ -304,14 +305,14 @@ def cantilever_point_load(ctx: CheckContext) -> list[Finding]:
             # ``JoistSpec`` names the ends "start"/"end"; a reader of the finding needs to
             # know *which* edge of the deck that is, so print it as the span direction.
             edge = f"{'low' if end == 'start' else 'high'}-{deck.authored.joists.direction}"
-            where = (f"{depth_m / _M_PER_IN:.0f}\" cantilever at its {edge} edge "
+            where = (f"{depth_m / M_PER_IN:.0f}\" cantilever at its {edge} edge "
                      f"({deck.authored.joists.member} joists at {spacing_in:.0f}\" o.c.)")
             reasons, tags = _mitigations(ctx, deck, extent, post)
             element_tags = (deck.tag, post.tag, *tags)
             if not reasons:
                 out.append(_advisory(
                     f"post {post.tag} ({post.size}) bears on deck {deck.tag}'s {where}, "
-                    f"{past_m / _M_PER_IN:.1f}\" past the bearing line, with nothing in the "
+                    f"{past_m / M_PER_IN:.1f}\" past the bearing line, with nothing in the "
                     "model carrying the point load; the span tables are uniform-load tables "
                     "and have no row for this", element_tags, Result.FAIL,
                     fix_hint=("sister the joist line under the post (a JoistReinforcement "
@@ -321,7 +322,7 @@ def cantilever_point_load(ctx: CheckContext) -> list[Finding]:
                 continue
             out.append(_advisory(
                 f"post {post.tag} ({post.size}) bears on deck {deck.tag}'s {where}, "
-                f"{past_m / _M_PER_IN:.1f}\" past the bearing line; the load is answered by "
+                f"{past_m / M_PER_IN:.1f}\" past the bearing line; the load is answered by "
                 f"{'; '.join(reasons)} — but the prescriptive span tables assume no "
                 "cantilever point load, so this is reinforced, not verified",
                 element_tags, Result.UNKNOWN,

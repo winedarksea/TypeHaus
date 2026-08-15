@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.plumbing_calc import (
     branch_load,
@@ -23,7 +24,6 @@ from typehaus.takeoff.plumbing_calc import (
 )
 
 _M_TO_FT = 3.280839895
-_M_TO_IN = 39.37007874015748
 _ELBOW_MIN_TURN_DEG = 20.0
 _TEE_TOL_M = 0.02
 
@@ -39,7 +39,7 @@ def riser_runs(model: ResolvedModel) -> list[dict[str, object]]:
                              round(z, 4) if z is not None else None])
         rows.append({
             "tag": run.tag, "uid": run.uid, "storey": run.storey, "system": run.system,
-            "diameter_in": round(run.diameter_m * _M_TO_IN, 2), "material": run.material,
+            "diameter_in": round(run.diameter_m / M_PER_IN, 2), "material": run.material,
             "length_ft": round(run.length_m * _M_TO_FT, 1),
             "serves": list(run.serves),
             "wall_refs": [w for w in run.wall_refs if w is not None],
@@ -71,7 +71,7 @@ def fixture_unit_rows(model: ResolvedModel) -> dict[str, object]:
         if load is not None:
             required = (required_drain_diameter_in(load) if run.system == "drain"
                         else required_supply_size_in(load))
-        diameter_in = round(run.diameter_m * _M_TO_IN, 2)
+        diameter_in = round(run.diameter_m / M_PER_IN, 2)
         status = None
         if load is not None:
             status = ("unknown" if required is None
@@ -109,7 +109,7 @@ def fitting_estimate(model: ResolvedModel) -> list[dict[str, object]]:
     system), grouped by system + diameter. Estimates, not a schema — labeled as such."""
     counts: dict[tuple[str, float, str], int] = {}
     for run in model.pipe_runs:
-        diameter = round(run.diameter_m * _M_TO_IN, 2)
+        diameter = round(run.diameter_m / M_PER_IN, 2)
         for i in range(1, len(run.path) - 1):
             if _turn_angle_deg(run.path[i - 1], run.path[i],
                                run.path[i + 1]) >= _ELBOW_MIN_TURN_DEG:
@@ -122,7 +122,7 @@ def fitting_estimate(model: ResolvedModel) -> list[dict[str, object]]:
             for va in run_a.path:
                 if any(math.hypot(va[0] - vb[0], va[1] - vb[1]) <= _TEE_TOL_M
                        for vb in run_b.path):
-                    diameter = round(max(run_a.diameter_m, run_b.diameter_m) * _M_TO_IN, 2)
+                    diameter = round(max(run_a.diameter_m, run_b.diameter_m) / M_PER_IN, 2)
                     key = (run_a.system, diameter, "tee (estimated)")
                     counts[key] = counts.get(key, 0) + 1
                     break
@@ -140,10 +140,10 @@ def cast_in_list(model: ResolvedModel) -> list[dict[str, object]]:
         "y_ft": round(s.center[1] * _M_TO_FT, 2),
         "center_z_ft": (round(s.center_z_m * _M_TO_FT, 2)
                         if s.center_z_m is not None else None),
-        "pipe_in": round(s.pipe_d_m * _M_TO_IN, 2),
-        "sleeve_in": round(s.sleeve_d_m * _M_TO_IN, 2),
+        "pipe_in": round(s.pipe_d_m / M_PER_IN, 2),
+        "sleeve_in": round(s.sleeve_d_m / M_PER_IN, 2),
         "serves": s.serves_fixture,
-        "offset_in": (round(s.offset_m * _M_TO_IN, 2) if s.offset_m is not None
+        "offset_in": (round(s.offset_m / M_PER_IN, 2) if s.offset_m is not None
                       else None),
     } for s in sorted(model.sleeves, key=lambda s: s.tag)]
 
@@ -182,7 +182,7 @@ def pipe_takeoff_by_material(model: ResolvedModel) -> list[dict[str, object]]:
     groups: dict[tuple[str, str, str, float], dict[str, object]] = {}
     for run in model.pipe_runs:
         key = (run.system, run.material or "—", run.finish or "—",
-               round(run.diameter_m * _M_TO_IN, 2))
+               round(run.diameter_m / M_PER_IN, 2))
         entry = groups.setdefault(key, {"length_m": 0.0, "runs": 0, "tags": []})
         entry["length_m"] += run.length_m
         entry["runs"] += 1

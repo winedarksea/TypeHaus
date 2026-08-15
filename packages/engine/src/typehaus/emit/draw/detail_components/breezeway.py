@@ -30,11 +30,11 @@ from __future__ import annotations
 from typehaus.emit.draw.detail_components.config import (
     BREEZEWAY_GLAZING as CFG,
 )
-from typehaus.emit.draw.detail_components.config import LAYER, M_TO_IN
+from typehaus.emit.draw.detail_components.config import LAYER
 from typehaus.emit.draw.detail_components.geometry import closed_region, rect_region
 from typehaus.emit.draw.scene import IRNode, Polyline
+from typehaus.quantities import M_PER_IN
 
-_GLAZING = "polycarbonate-multiwall"
 _ALUMINUM = "aluminum-extrusion"
 
 
@@ -63,7 +63,7 @@ def _cut_solids(model, category: str, direction: str, station: float, crop):
         z0, z1 = max(solid.z0_m, cz0), min(solid.z1_m, cz1)
         if u1 - u0 <= 1e-9 or z1 - z0 <= 1e-9:
             continue
-        out.append((solid, u0 * M_TO_IN, u1 * M_TO_IN, z0 * M_TO_IN, z1 * M_TO_IN))
+        out.append((solid, u0 / M_PER_IN, u1 / M_PER_IN, z0 / M_PER_IN, z1 / M_PER_IN))
     return out
 
 
@@ -219,8 +219,8 @@ def breezeway_components(model, direction, station, crop) -> list[IRNode]:
                    if (item[0].assembly or "").endswith("ROOF_GLAZING")]
     if not roof_panels:
         return []
-    crop_in = ((crop[0][0] * M_TO_IN, crop[0][1] * M_TO_IN),
-               (crop[1][0] * M_TO_IN, crop[1][1] * M_TO_IN))
+    crop_in = ((crop[0][0] / M_PER_IN, crop[0][1] / M_PER_IN),
+               (crop[1][0] / M_PER_IN, crop[1][1] / M_PER_IN))
 
     nodes: list[IRNode] = []
     # The rafters the wedges sit on: the beam solids directly under the glazing.
@@ -264,8 +264,8 @@ def breezeway_components(model, direction, station, crop) -> list[IRNode]:
                 continue
             along = ([member.p0[0], member.p1[0]] if direction == "x"
                      else [member.p0[1], member.p1[1]])
-            joists.append((min(along) * M_TO_IN, max(along) * M_TO_IN,
-                           member.z1_m * M_TO_IN))
+            joists.append((min(along) / M_PER_IN, max(along) / M_PER_IN,
+                           member.z1_m / M_PER_IN))
     nodes += breather_tape(joists, crop_in)
     return nodes
 

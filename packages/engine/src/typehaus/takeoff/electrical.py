@@ -12,6 +12,7 @@ from __future__ import annotations
 import math
 
 from typehaus.model.enums import BackupTier
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 _M2_TO_FT2 = 10.7639104167
@@ -197,7 +198,7 @@ def conduit_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         if run.service in ("data", None):
             continue
         row = groups.setdefault(run.trade_size_m, {
-            "trade_size_in": round(run.trade_size_m * 39.37007874015748, 2),
+            "trade_size_in": round(run.trade_size_m / M_PER_IN, 2),
             "runs": 0, "length_m": 0.0, "tags": []})
         row["runs"] = int(row["runs"]) + 1
         row["length_m"] = float(row["length_m"]) + run.length_m

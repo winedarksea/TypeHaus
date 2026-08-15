@@ -108,7 +108,31 @@ class PlanModel(HausModel):
                 yield el
 
     def by_tag(self, tag: str) -> Element | None:
-        return next((el for el in self.all_elements() if el.tag == tag), None)
+        return self._tag_index().get(tag)
+
+    def _tag_index(self) -> dict[str, Element]:
+        """Tag -> element, built once per plan instance.
+
+        This was a linear scan over ``all_elements()``. On the reference house ``resolve``
+        called it ~4,000 times, which walked 1.18 M elements and cost ~13% of resolve's
+        self-time — the single hottest entry in the profile. First tag wins, matching the
+        old ``next(...)`` semantics on duplicates.
+
+        The cache is keyed on the identity of the ``elements`` mapping it was built from,
+        not merely stored on the instance: ``with_elements`` goes through ``model_copy``,
+        which shallow-copies ``__dict__``, so an instance-only cache rides along onto the
+        copy and answers for elements that copy no longer has. Comparing identity makes any
+        copy, reconstruction or deserialization miss and rebuild.
+        """
+        cached = self.__dict__.get("_tag_index_cache")
+        if cached is not None and cached[0] is self.elements:
+            return cached[1]
+        index: dict[str, Element] = {}
+        for el in self.all_elements():
+            if el.tag not in index:
+                index[el.tag] = el
+        object.__setattr__(self, "_tag_index_cache", (self.elements, index))
+        return index
 
     def with_elements(self, storey_tag: str, items: Iterable[Element]) -> PlanModel:
         merged = dict(self.elements)

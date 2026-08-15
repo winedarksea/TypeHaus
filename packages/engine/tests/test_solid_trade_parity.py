@@ -25,9 +25,8 @@ from typehaus.emit.trades import (
     DRAINAGE_CATEGORIES, FALLBACK_TRADE, SOLID_CATEGORY_TRADE, TRADES, solid_trade)
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR, REPO_ROOT
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-CATLIN_DIR = REPO_ROOT / "houses" / "catlin"
 SOLID_MATERIALS_TS = REPO_ROOT / "ui" / "src" / "three" / "solidMaterials.ts"
 
 # Categories that ride the fallback on purpose, so "unclassified" stays a meaningful signal.

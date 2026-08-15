@@ -10,8 +10,8 @@ from typehaus.emit.draw.electricalplan import build_electrical_plan, has_electri
 from typehaus.emit.draw.scene import Symbol
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 @pytest.fixture(scope="module")

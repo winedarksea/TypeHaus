@@ -25,8 +25,8 @@ from typehaus.quantities import inch
 from typehaus.resolve import resolve
 from typehaus.resolve.model import FramedMember, ResolvedStair
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 _DECK_Z = 0.0
 _POST_TOP_Z = 1.5

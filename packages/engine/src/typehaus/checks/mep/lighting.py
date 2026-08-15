@@ -10,8 +10,9 @@ two share nothing but the ``ElectricalDevice`` element kind.
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import advisory, passed as _pass, unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy
 
 # The sizing factor a 24V LED supply is picked by: continuous load at 125%, the same
@@ -22,19 +23,10 @@ PSU_SIZING_FACTOR = 1.25
 _M_TO_FT = 3.280839895013123
 
 
-def _pass(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.PASS)
-
-
+# WARN severity + FAIL result, deliberately: the permit integrity gate only blocks on ERROR
+# severity, and this finding is advisory, not a hard blocker.
 def _warn_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.FAIL)
-
-
-def _unknown(cid: str, reason: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message="UNKNOWN — " + reason,
-                   element_tags=tags, result=Result.UNKNOWN)
+    return advisory(cid, msg, tags, Result.FAIL)
 
 
 def _luminaire_types(ctx: CheckContext) -> dict[str, object]:

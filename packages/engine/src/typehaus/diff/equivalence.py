@@ -17,8 +17,8 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from pathlib import Path
 
+from typehaus.diff._json_report import JsonReport
 from typehaus.diff.matcher import match_elements
 from typehaus.diff.model import DiffElem
 from typehaus.diff.semantic import (
@@ -127,7 +127,7 @@ class EntityEquivalence:
 
 
 @dataclass
-class EquivalenceReport:
+class EquivalenceReport(JsonReport):
     """The whole comparison: hierarchy, census, per-entity equivalence, class totals."""
 
     reference_label: str
@@ -175,11 +175,6 @@ class EquivalenceReport:
 
     def to_json(self) -> str:
         return json.dumps(self.as_dict(), indent=2, sort_keys=True)
-
-    def write(self, path: Path) -> Path:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(self.to_json())
-        return path
 
 
 def _as_diff_elem(entity: SemanticEntity) -> DiffElem:

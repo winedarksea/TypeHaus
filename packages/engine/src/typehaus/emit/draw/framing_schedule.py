@@ -17,6 +17,7 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import StructuralRole
 from typehaus.model.floors import FloorSystem
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
+from typehaus.resolve.geometry import opening_center
 from typehaus.resolve.model import ResolvedFloor, ResolvedModel, ResolvedWall
 
 # JoistSpec leaves spacing unset when the solver's residential default applies; read that
@@ -122,17 +123,13 @@ def _wall_headers(model: ResolvedModel, walls: tuple) -> tuple:
 def _opening_for_header(model: ResolvedModel, wall: ResolvedWall, member) -> str:
     """Name the opening a header spans by matching midpoints along the wall axis."""
     midpoint = ((member.p0[0] + member.p1[0]) / 2.0, (member.p0[1] + member.p1[1]) / 2.0)
-    (x0, y0), (x1, y1) = wall.axis
-    length = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
-    if length <= 0.0:
-        return ""
-    ux, uy = (x1 - x0) / length, (y1 - y0) / length
     for opening in model.openings:
         if opening.host_wall != wall.tag:
             continue
-        cx = x0 + ux * opening.center_along_m
-        cy = y0 + uy * opening.center_along_m
-        if abs(cx - midpoint[0]) + abs(cy - midpoint[1]) < HEADER_TO_OPENING_TOLERANCE_M:
+        center = opening_center(wall, opening)
+        if center is None:
+            continue
+        if abs(center[0] - midpoint[0]) + abs(center[1] - midpoint[1]) < HEADER_TO_OPENING_TOLERANCE_M:
             return opening.tag
     return ""
 

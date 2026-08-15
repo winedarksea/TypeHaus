@@ -27,12 +27,11 @@ import math
 from typehaus.model.enums import LayerFunction
 from typehaus.model.spatial import Roof
 from typehaus.model.trim import EaveGutter, EaveTrim
-from typehaus.quantities import inch
+from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.framing.profiles import panel_profile
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoof, ResolvedWall
 from typehaus.resolve.roof_edge_geometry import (
     CLOSURE_TOLERANCE_M,
-    METERS_PER_INCH,
     EdgeRun,
     continuous_skin_cladding,
     mating_faces,
@@ -61,8 +60,6 @@ _FASCIA_TRADE = "framing"
 # It carries the roofing's own material, so it reads as the same metal as the roof.
 _RIDGE_CAP_HALF_WIDTH_IN = 6.0                                    # 12" edge to edge
 _RIDGE_CAP_STAND_IN = 2.0                                         # proud of the ridge
-_RIDGE_CAP_WIDTH_M = inch(2.0 * _RIDGE_CAP_HALF_WIDTH_IN).meters
-_RIDGE_CAP_HEIGHT_M = inch(_RIDGE_CAP_STAND_IN).meters
 
 # The corner trim capping a wrapped (continuous standing-seam) roof edge: a formed angle
 # read as a box straddling the wall-cladding/roofing joint. Its plan thickness clears the
@@ -138,8 +135,8 @@ def _edge_trim(
             a, b = _offset(span.p0, run.normal, center), _offset(span.p1, run.normal, center)
             members.append(FramedMember(
                 parent_uid=roof.uid, child_key=f"{run.key}-fascia-{index}", category="fascia",
-                profile=panel_profile(board.thickness.meters / METERS_PER_INCH,
-                                      (depth + rise) / METERS_PER_INCH),
+                profile=panel_profile(board.thickness.meters / M_PER_IN,
+                                      (depth + rise) / M_PER_IN),
                 p0=a, p1=b, z0_m=span.z0_m - depth, z1_m=span.z0_m + rise,
                 length_m=math.hypot(b[0] - a[0], b[1] - a[1]),
                 z0_end_m=span.z1_m - depth, z1_end_m=span.z1_m + rise,
@@ -183,7 +180,7 @@ def _soffit_member(
     a, b = _offset(span.p0, run.normal, center), _offset(span.p1, run.normal, center)
     return FramedMember(
         parent_uid=roof.uid, child_key=f"{run.key}-soffit", category="soffit",
-        profile=panel_profile(width / METERS_PER_INCH, thickness / METERS_PER_INCH),
+        profile=panel_profile(width / M_PER_IN, thickness / M_PER_IN),
         p0=a, p1=b, z0_m=span.z0_m - drop, z1_m=span.z0_m - drop + thickness,
         length_m=math.hypot(b[0] - a[0], b[1] - a[1]),
         z0_end_m=span.z1_m - drop, z1_end_m=span.z1_m - drop + thickness,
@@ -228,8 +225,8 @@ def _gutter_members(
         a, b = _offset(span.p0, run.normal, center), _offset(span.p1, run.normal, center)
         members.append(FramedMember(
             parent_uid=roof.uid, child_key=f"{run.key}-gutter-{key}", category="gutter",
-            profile=panel_profile(band_t / METERS_PER_INCH,
-                                  (bottom_drop - top_drop) / METERS_PER_INCH),
+            profile=panel_profile(band_t / M_PER_IN,
+                                  (bottom_drop - top_drop) / M_PER_IN),
             p0=a, p1=b, z0_m=top - bottom_drop, z1_m=top - top_drop,
             length_m=math.hypot(b[0] - a[0], b[1] - a[1]),
             z0_end_m=top_end - bottom_drop, z1_end_m=top_end - top_drop,
@@ -293,7 +290,7 @@ def _edge_cladding_members(
         a, b = _offset(span.p0, run.normal, center), _offset(span.p1, run.normal, center)
         members.append(FramedMember(
             parent_uid=roof.uid, child_key=f"{run.key}-edge-cladding", category="cladding",
-            profile=panel_profile(thickness / METERS_PER_INCH, height / METERS_PER_INCH),
+            profile=panel_profile(thickness / M_PER_IN, height / M_PER_IN),
             p0=a, p1=b, z0_m=z0, z1_m=z0 + height,
             length_m=math.hypot(b[0] - a[0], b[1] - a[1]),
             z0_end_m=z1, z1_end_m=z1 + height,
@@ -357,8 +354,8 @@ def _corner_trim_members(
             members.append(FramedMember(
                 parent_uid=roof.uid, child_key=f"{run.key}-corner-trim-{key}",
                 category="corner_trim",
-                profile=panel_profile(band_t / METERS_PER_INCH,
-                                      (bottom_drop - top_drop) / METERS_PER_INCH),
+                profile=panel_profile(band_t / M_PER_IN,
+                                      (bottom_drop - top_drop) / M_PER_IN),
                 p0=a, p1=b,
                 z0_m=span.z0_m + top - bottom_drop, z1_m=span.z0_m + top - top_drop,
                 length_m=math.hypot(b[0] - a[0], b[1] - a[1]),
@@ -419,7 +416,7 @@ def _ridge_vent_members(model: ResolvedModel, roof: ResolvedRoof) -> tuple[Frame
     top = z0 + inch(_RIDGE_CAP_STAND_IN).meters
     return (FramedMember(
         parent_uid=roof.uid, child_key="ridge-vent-cap", category="ridge_cap",
-        profile=panel_profile(2.0 * _RIDGE_CAP_HALF_WIDTH_IN, (top - bottom) / METERS_PER_INCH),
+        profile=panel_profile(2.0 * _RIDGE_CAP_HALF_WIDTH_IN, (top - bottom) / M_PER_IN),
         p0=ridge.p0, p1=ridge.p1, z0_m=bottom, z1_m=top, length_m=length,
         connection="ridge:vented-cap", material=material,
     ),)

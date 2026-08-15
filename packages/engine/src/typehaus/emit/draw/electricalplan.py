@@ -9,6 +9,7 @@ from __future__ import annotations
 from typehaus.emit.draw._shared import emit_wall
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 _DEVICE_LAYER = {
@@ -62,7 +63,7 @@ def build_electrical_plan(model: ResolvedModel, storey: str) -> Scene:
         b.add(Polyline(points=tuple(_in(p) for p in run.path), layer=layer,
                        linetype="DASHED", uid=run.uid, tag=run.tag))
         mid = run.path[len(run.path) // 2]
-        size = f"{run.trade_size_m * 39.3701:.3g}\""
+        size = f"{run.trade_size_m / M_PER_IN:.3g}\""
         label = f"{run.tag.removeprefix('CD-')} {size}"
         if run.service is None:
             label = f"{label} SPARE"

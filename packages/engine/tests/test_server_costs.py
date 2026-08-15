@@ -2,18 +2,17 @@
 
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 import pytest
+from _helpers import CATLIN, copy_house
 
-CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 @pytest.fixture
 def catlin_house(tmp_path: Path) -> Path:
     dst = tmp_path / "catlin"
-    shutil.copytree(CATLIN, dst)
+    copy_house(CATLIN, dst)
     return dst
 
 
@@ -78,7 +77,7 @@ def test_costs_endpoints_409_when_the_model_does_not_resolve(tmp_path: Path):
     from typehaus.server.app import create_app
 
     broken = tmp_path / "broken"
-    shutil.copytree(CATLIN, broken)
+    copy_house(CATLIN, broken)
     manifest = broken / "plan" / "manifest.py"
     manifest.write_text(manifest.read_text() + "\nraise RuntimeError('broken on purpose')\n")
     with fastapi_testclient.TestClient(create_app(broken)) as client:

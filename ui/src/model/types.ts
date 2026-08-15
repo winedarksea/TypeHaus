@@ -179,6 +179,41 @@ export interface Room {
   floor_finish: string | null;
 }
 
+export interface Alarm {
+  uid: string;
+  tag: string;
+  storey: string;
+  kind: "smoke" | "co" | "combo" | "heat";
+  room: string;
+  // The circuit that powers this detector, if any — the panel schedule names the alarms on
+  // a circuit, so this is the reverse edge a reader needs to show it from the alarm's side.
+  circuit: string | null;
+  provenance: Provenance | null;
+}
+
+export interface FloorHeat {
+  uid: string;
+  tag: string;
+  storey: string;
+  system: string;
+  zone: Vec2[];
+  spacing_m: number;
+  wire_length_m: number;
+}
+
+export interface VariantLayerThicknessOverride {
+  assembly: string;
+  layer: string;
+  thickness_in: number;
+}
+
+export interface Variant {
+  name: string;
+  description: string;
+  assembly_swaps: Record<string, string>;
+  layer_thickness: VariantLayerThicknessOverride[];
+}
+
 export interface Fixture {
   uid: string;
   tag: string;
@@ -1127,6 +1162,11 @@ export interface Finding {
 
 export interface Model {
   revision: string;
+  // Hash of the on-disk plan source as of the last full rebuild. Stable across server
+  // restarts (unlike `revision`, a fresh uuid per process) — this is what `npm run shots`
+  // compares against a committed baseline to tell "the house changed" from "the server
+  // restarted". Absent on older model.json.
+  contentHash?: string;
   units: string;
   projectNorth: number;
   findings: Finding[];
@@ -1167,6 +1207,9 @@ export interface Model {
   braces?: Brace[];
   fixtures?: Fixture[];
   furniture?: Furniture[];
+  alarms?: Alarm[];
+  floor_heat?: FloorHeat[];
+  variants?: Variant[];
   canvas_objects?: CanvasObject[];
   rooms: Room[];
   space_summary?: SpaceSummary;
@@ -1180,4 +1223,7 @@ export interface Model {
   building_science?: BuildingScience | null;
   catalog?: Catalog; // authoring palette (→ _catalog); absent on older model.json
   ok?: boolean; // server/offline resolve status (state.py / bootstrap.py add this)
+  // Server-only diagnostics (→ state.py `model_json`) — absent from a CLI-written model.json.
+  perf?: Record<string, number>;
+  checksPending?: boolean;
 }

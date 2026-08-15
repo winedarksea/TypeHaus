@@ -12,11 +12,11 @@ import pytest
 
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR
 from typehaus.takeoff.lighting import (PSU_SIZING_FACTOR, connected_lighting_va,
                                        light_run_materials, light_run_takeoff,
                                        lighting_controls, luminaire_schedule)
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 _M_TO_FT = 3.280839895013123
 
 

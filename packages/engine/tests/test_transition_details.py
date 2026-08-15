@@ -224,14 +224,14 @@ def test_authored_non_sauna_detail_is_unchanged(catlin_model):
 def test_sauna_bench_geometry_matches_reference(catlin_model):
     # Bench tops at 18"/36" above the floor slab, 1.5" boards — the reference numbers.
     from typehaus.emit.draw.detail_components import (
-        M_TO_IN,
         SAUNA_BENCH_LOWER_TOP_IN,
         SAUNA_BENCH_UPPER_TOP_IN,
         sauna_benches,
     )
+    from typehaus.quantities import M_PER_IN
 
     floor = next(s for s in catlin_model.solids if s.tag == "SL-B-FLOOR")
-    floor_z = floor.z1_m * M_TO_IN
+    floor_z = floor.z1_m / M_PER_IN
     nodes = sauna_benches(120.0, 210.0, floor_z)
     seats = [n for n in nodes if getattr(n, "tag", None) == "detail-component:sauna-bench"]
     assert len(seats) == 2, "a lower and an upper bench"

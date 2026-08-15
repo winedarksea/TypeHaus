@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, failed
 from typehaus.model import (ApplianceType, ClearancePolicy, ClearanceZone, ElectricalDeviceType,
                             EquipmentType, FixtureType, Footprint2D, FurnitureType, ModelRepresentation,
                             Mount, MountKind, PlacementStrategy, PlanRepresentation, RegisterType, Service,
@@ -85,8 +85,7 @@ def load_project_placeables(house_dir: Path, plan: PlanModel,
 
 
 def _error(message: str) -> Finding:
-    return Finding(severity=Severity.ERROR, check_id="placeables.catalog", message=message,
-                   result=Result.FAIL)
+    return failed("placeables.catalog", message)
 
 
 def _plan_symbol(value: object) -> str | None:

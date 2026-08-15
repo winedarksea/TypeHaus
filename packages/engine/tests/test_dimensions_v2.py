@@ -12,10 +12,11 @@ import math
 
 import pytest
 
-from typehaus.emit.draw._shared import _FACADE_TOL_M, _MIN_STATION_GAP_IN, M_TO_IN
+from typehaus.emit.draw._shared import _FACADE_TOL_M, _MIN_STATION_GAP_IN
 from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.roofplan import build_roof_plan
 from typehaus.emit.draw.scene import ArchDimension, Polyline, Symbol, Text
+from typehaus.quantities import M_PER_IN
 
 STRING_OFFSET = 14.0
 OVERALL_OFFSET = 24.0
@@ -38,8 +39,8 @@ def _dims(scene):
 def _axis_bbox_in(catlin_model, storey):
     pts = [p for w in catlin_model.walls if w.storey == storey
            for p in (w.axis[0], w.axis[1])]
-    xs = [p[0] * M_TO_IN for p in pts]
-    ys = [p[1] * M_TO_IN for p in pts]
+    xs = [p[0] / M_PER_IN for p in pts]
+    ys = [p[1] / M_PER_IN for p in pts]
     return min(xs), max(xs), min(ys), max(ys)
 
 
@@ -108,7 +109,7 @@ def test_stations_are_deduped(catlin_model, main_scene):
 def test_facade_opening_centerlines_appear_as_stations(catlin_model, main_scene):
     walls = {w.tag: w for w in catlin_model.walls if w.storey == "main"}
     bbox = _axis_bbox_in(catlin_model, "main")
-    minx, maxx, miny, maxy = (v / M_TO_IN for v in bbox)
+    minx, maxx, miny, maxy = (v * M_PER_IN for v in bbox)
     checked = 0
     for op in catlin_model.openings:
         wall = walls.get(op.host_wall)
@@ -124,7 +125,7 @@ def test_facade_opening_centerlines_appear_as_stations(catlin_model, main_scene)
                 continue
             length = math.hypot(ex - sx, ey - sy) or 1.0
             t = op.center_along_m / length
-            station = (sx + (ex - sx) * t, sy + (ey - sy) * t)[axis] * M_TO_IN
+            station = (sx + (ex - sx) * t, sy + (ey - sy) * t)[axis] / M_PER_IN
             chain, _ = _facade_chain(main_scene, bbox, facade)
             ends = {round(d.p0[axis], 3) for d in chain} | {round(d.p1[axis], 3)
                                                             for d in chain}

@@ -22,9 +22,9 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from _helpers import CATLIN as CATLIN_DIR
 
 from typehaus.checks.structural.stairs import stair_riser_uniformity
-from typehaus.emit.draw._shared import M_TO_IN
 from typehaus.emit.draw import build_floorplan
 from typehaus.emit.draw.scene import Polyline
 from typehaus.findings import Result
@@ -52,11 +52,10 @@ from typehaus.model import (
     pt,
 )
 from typehaus.model.enums import StructuralRole
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.source import load_plan
-
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 @pytest.fixture(scope="module")
@@ -443,8 +442,8 @@ def test_a_landing_draws_as_its_outline_not_its_axis(catlin_model):
         across = max(p[0] for p in node.points) - min(p[0] for p in node.points)
         along = max(p[1] for p in node.points) - min(p[1] for p in node.points)
         assert across == pytest.approx(
-            cross_section(deck.profile).width_m * M_TO_IN, rel=1e-6), key
-        assert along == pytest.approx(deck.length_m * M_TO_IN, rel=1e-6), key
+            cross_section(deck.profile).width_m / M_PER_IN, rel=1e-6), key
+        assert along == pytest.approx(deck.length_m / M_PER_IN, rel=1e-6), key
 
 
 @pytest.mark.parametrize("tag,storey", [("ST-B2M", "basement"), ("ST-M2S", "main")])
@@ -466,7 +465,7 @@ def test_tread_marks_along_a_flight_are_evenly_spaced(catlin_model, tag, storey)
         assert max(gaps) - min(gaps) < 1e-6, (flight, gaps)
         # ...and that one gap is the resolved going, not some other spacing.
         assert gaps[0] == pytest.approx(
-                stair.going_depth_m * M_TO_IN, rel=1e-6)
+                stair.going_depth_m / M_PER_IN, rel=1e-6)
 
 
 @pytest.mark.parametrize("tag,storey", [("ST-B2M", "basement"), ("ST-M2S", "main")])
@@ -481,8 +480,8 @@ def test_tread_marks_are_flush_with_the_flight_ends(catlin_model, tag, storey):
     stair = next(s for s in catlin_model.stairs if s.tag == tag)
     drawn = {node.tag: node for node in _stair_polylines(catlin_model, storey, stair.uid)}
     along = 1 if stair.run_direction == "y" else 0
-    going = stair.going_depth_m * M_TO_IN
-    springing = min(point[along] for point in stair.outline) * M_TO_IN
+    going = stair.going_depth_m / M_PER_IN
+    springing = min(point[along] for point in stair.outline) / M_PER_IN
     lower = [node.points[0][along] for tag_, node in drawn.items()
              if tag_.startswith("tread-lower-")]
     upper = [node.points[0][along] for tag_, node in drawn.items()

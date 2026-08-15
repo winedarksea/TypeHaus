@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.resolve.geometry import wall_frame
 from typehaus.resolve.geometry_ir import GMesh, GPrism, GSolid, Vec3
 from typehaus.resolve.geometry_prims import (
     _arch_soffit_sample,
@@ -30,6 +31,7 @@ from typehaus.resolve.geometry_prims import (
     _slice,
     _thin_rect_edges,
 )
+from typehaus.resolve.intervals import subtract as _subtract_spans
 from typehaus.resolve.model import ResolvedWall
 
 
@@ -130,19 +132,34 @@ def layer_solids(wall: ResolvedWall, polygon, openings) -> tuple[GSolid, ...]:
     if not ops:
         return (_prism(polygon, wall.z0_m, wall.z1_m, top_at),)
 
-    length = math.hypot(wall.axis[1][0] - wall.axis[0][0],
-                        wall.axis[1][1] - wall.axis[0][1]) or 1.0
+    _origin, _tangent, _normal, axis_length = wall_frame(wall)
+    length = axis_length or 1.0
     edges = _thin_rect_edges(polygon, wall.axis)
     z0, z1 = wall.z0_m, wall.z1_m
-    solids: list[GSolid] = []
-    cursor = 0.0
+
+    # The piers are the [0, 1]-fraction band not claimed by any opening's cutout — a gap
+    # computation, the same one ``framing/furring.py`` runs per station (→
+    # ``resolve/intervals.py``). Computed as one pass up front rather than threaded through
+    # the per-opening loop below, which only emits each pier at the point it falls due
+    # (immediately before the next opening it precedes, or trailing after the last one) so
+    # the solids come out in the same left-to-right order the wall draws in.
+    valid_ops: list[tuple[object, float, float]] = []
+    cuts: list[tuple[float, float]] = []
     for op in ops:
         o0 = max(0.0, (op.center_along_m - op.width_m / 2) / length)
         o1 = min(1.0, (op.center_along_m + op.width_m / 2) / length)
         if o1 <= o0:
             continue
-        if o0 > cursor + 1e-6:  # solid pier before this opening
-            solids.append(_prism(_slice(edges, cursor, o0), z0, z1, top_at))
+        valid_ops.append((op, o0, o1))
+        cuts.append((o0, o1))
+    piers = _subtract_spans(0.0, 1.0, cuts)
+
+    solids: list[GSolid] = []
+    pier_index = 0
+    for op, o0, o1 in valid_ops:
+        while pier_index < len(piers) and piers[pier_index][1] <= o0 + 1e-6:
+            solids.append(_prism(_slice(edges, *piers[pier_index]), z0, z1, top_at))
+            pier_index += 1
         bottom = min(z0 + op.sill_m, z1)
         head = min(bottom + op.height_m, z1)
         if bottom > z0 + 1e-6:  # sill band — always flat, below the rake
@@ -163,7 +180,7 @@ def layer_solids(wall: ResolvedWall, polygon, openings) -> tuple[GSolid, ...]:
                     solids.append(_prism(header, head, z1, top_at))
             elif z1 > head + 1e-6:
                 solids.append(GPrism(ring=tuple(header), z0_m=head, z1_m=z1))
-        cursor = max(cursor, o1)
-    if cursor < 1.0 - 1e-6:  # trailing pier
-        solids.append(_prism(_slice(edges, cursor, 1.0), z0, z1, top_at))
+    while pier_index < len(piers):  # trailing pier(s)
+        solids.append(_prism(_slice(edges, *piers[pier_index]), z0, z1, top_at))
+        pier_index += 1
     return tuple(solids)

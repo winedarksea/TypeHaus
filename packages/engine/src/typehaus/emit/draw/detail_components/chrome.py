@@ -7,14 +7,13 @@ Both emit ordinary IR nodes (``Hatch``/``Polyline``/``Text``/``ArchDimension``).
 
 from __future__ import annotations
 
+from typehaus.emit.draw.detail_components.below_grade import footing_under
 from typehaus.emit.draw.detail_components.config import (
     LAYER,
     LEGEND_ROW_PITCH_IN,
     LEGEND_SWATCH_IN,
-    M_TO_IN,
     TEXT_HEIGHT_IN,
 )
-from typehaus.emit.draw.detail_components.below_grade import footing_under
 from typehaus.emit.draw.detail_components.geometry import (
     layer_intervals,
     outboard_is_high,
@@ -22,6 +21,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     rect_points,
 )
 from typehaus.emit.draw.scene import ArchDimension, Hatch, IRNode, NamedPoint, Polyline, Text
+from typehaus.quantities import M_PER_IN
 
 
 def _participating_layers(model, derived):
@@ -33,7 +33,7 @@ def _participating_layers(model, derived):
         for layer in wall.layers:
             if layer.is_cavity:
                 continue
-            out.append((layer.material_ref, layer.thickness_m * M_TO_IN, layer.function))
+            out.append((layer.material_ref, layer.thickness_m / M_PER_IN, layer.function))
     for roof in model.roofs:
         if roof.tag not in derived.condition.element_tags:
             continue
@@ -41,7 +41,7 @@ def _participating_layers(model, derived):
         if asm is None:
             continue
         for layer in asm.layers:
-            out.append((layer.material_ref, layer.thickness.meters * M_TO_IN,
+            out.append((layer.material_ref, layer.thickness.meters / M_PER_IN,
                         layer.function))
     return out
 
@@ -118,20 +118,20 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
         host = walls[0] if walls else None
         if opening is None or host is None:
             return []
-        sill_z = (host.z0_m + opening.sill_m) * M_TO_IN
-        head_z = sill_z + opening.height_m * M_TO_IN
+        sill_z = (host.z0_m + opening.sill_m) / M_PER_IN
+        head_z = sill_z + opening.height_m / M_PER_IN
         _lo, hi = wall_cut_bounds_m(host, direction, station)
         if hi is None:
             return []
-        u = hi * M_TO_IN + 3.0
+        u = hi / M_PER_IN + 3.0
         _dim((u, sill_z), (u, head_z), 3.0,
-             f'{opening.height_m * M_TO_IN:.4g}" R.O.')
+             f'{opening.height_m / M_PER_IN:.4g}" R.O.')
         return nodes
 
     if framed is not None:
         intervals = layer_intervals(framed, direction, station)
-        junction_z = framed.z0_m * M_TO_IN
-        top = (framed.top_z1_m if framed.top_z1_m is not None else framed.z1_m) * M_TO_IN
+        junction_z = framed.z0_m / M_PER_IN
+        top = (framed.top_z1_m if framed.top_z1_m is not None else framed.z1_m) / M_PER_IN
         # At a wall→roof junction the band just under the plate is roofed over — the
         # sloped assembly stack crosses the wall there, and a dimension string 6" below
         # the plate prints its text straight into the rafter hatch. Drop the pair low
@@ -152,7 +152,7 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
         xps = [iv for iv in intervals.values() if iv[2] == "insulation"]
         if xps and outboard_is_high(concrete, direction, station) is not None:
             total = sum(abs(iv[1] - iv[0]) for iv in xps)
-            z_here = (concrete.z0_m + concrete.z1_m) / 2.0 * M_TO_IN
+            z_here = (concrete.z0_m + concrete.z1_m) / 2.0 / M_PER_IN
             _dim((min(iv[0] for iv in xps), z_here), (max(iv[1] for iv in xps), z_here),
                  3.0, f'{total:.3g}" XPS ({len(xps)} layers)')
 
@@ -165,9 +165,9 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
     if footing is not None and lo_z <= footing.z0_m and footing.z1_m <= hi_z:
         intervals_f = _ring_cut_intervals(footing.outline, direction, station)
         if intervals_f:
-            f_lo = min(min(iv) for iv in intervals_f) * M_TO_IN
-            f_hi = max(max(iv) for iv in intervals_f) * M_TO_IN
-            top, bottom = footing.z1_m * M_TO_IN, footing.z0_m * M_TO_IN
+            f_lo = min(min(iv) for iv in intervals_f) / M_PER_IN
+            f_hi = max(max(iv) for iv in intervals_f) / M_PER_IN
+            top, bottom = footing.z1_m / M_PER_IN, footing.z0_m / M_PER_IN
             _dim((f_lo, bottom - 3.0), (f_hi, bottom - 3.0), 3.0,
                  f'{f_hi - f_lo:.3g}" ftg width')
             _dim((f_lo - 3.0, bottom), (f_lo - 3.0, top), 3.0,

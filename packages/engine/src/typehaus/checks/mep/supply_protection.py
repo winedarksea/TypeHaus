@@ -18,21 +18,12 @@ FAILs against it would train the reader to ignore them.
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import failed as _fail, passed as _pass
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding
 from typehaus.model.enums import PipeAccessoryKind, PipeSystem, Service
 
 _SUPPLY_SYSTEMS = (PipeSystem.WATER_COLD.value, PipeSystem.WATER_HOT.value)
-
-
-def _pass(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.PASS)
-
-
-def _fail(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.ERROR, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.FAIL)
 
 
 def _has_supply(ctx: CheckContext) -> bool:

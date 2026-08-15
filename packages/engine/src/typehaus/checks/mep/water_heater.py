@@ -8,8 +8,9 @@ named, which is what ``Equipment.relief_discharge_ref`` is for.
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import failed, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result
 from typehaus.model.enums import EquipmentKind
 from typehaus.quantities import inch
 
@@ -21,10 +22,11 @@ _RISE_TOLERANCE_M = 0.005  # 5 mm of routing noise is not a trap
 
 
 def _finding(cid, result, message, tags, code, fix=None) -> Finding:
-    severity = Severity.ERROR if result is Result.FAIL else Severity.WARN
-    text = message if result is not Result.UNKNOWN else f"UNKNOWN — {message}"
-    return Finding(severity=severity, check_id=cid, message=text, element_tags=tags,
-                   code_ref=code, fix_hint=fix, result=result)
+    if result is Result.PASS:
+        return passed(cid, message, tags, code=code)
+    if result is Result.UNKNOWN:
+        return unknown(cid, message, tags, code=code, fix=fix)
+    return failed(cid, message, tags, code=code, fix=fix)
 
 
 @check(Tier.CODE, "code.P2804_water_heater_relief")

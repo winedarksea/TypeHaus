@@ -15,9 +15,9 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from pathlib import Path
 
 from typehaus.analysis import AssemblyMetrics, assembly_metrics
+from typehaus.diff._json_report import JsonReport
 from typehaus.model.plan import Library
 
 # Metrics the delta row carries, in the order a designer reads them. Each entry is
@@ -51,7 +51,7 @@ class MetricDelta:
 
 
 @dataclass
-class AssemblyComparison:
+class AssemblyComparison(JsonReport):
     """Side-by-side metrics for 2–3 assemblies plus each candidate's delta row."""
 
     metrics: list[AssemblyMetrics] = field(default_factory=list)
@@ -70,11 +70,6 @@ class AssemblyComparison:
 
     def to_json(self) -> str:
         return json.dumps(self.as_dict(), indent=2, sort_keys=True)
-
-    def write(self, path: Path) -> Path:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(self.to_json())
-        return path
 
 
 def _metric_value(metrics: AssemblyMetrics, key: str) -> float | None:

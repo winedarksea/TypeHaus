@@ -18,9 +18,10 @@ from typehaus.emit.draw.scene import (
 )
 from typehaus.model.canvas import canvas_object_types
 from typehaus.model.placeable_symbols import place_local
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.geometry import opening_center
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
-M_TO_IN = 39.37007874015748
 # How far below a symbol's footprint its tag sits, so the label never covers the glyph.
 _LABEL_GAP_M = 0.08
 
@@ -43,7 +44,7 @@ HATCH_PATTERN = {
 
 
 def to_in(p: tuple[float, float]) -> tuple[float, float]:
-    return (p[0] * M_TO_IN, p[1] * M_TO_IN)
+    return (p[0] / M_PER_IN, p[1] / M_PER_IN)
 
 
 def emit_wall(
@@ -183,13 +184,10 @@ def _facade_stations(walls: list[ResolvedWall], model: ResolvedModel,
         wall = model.wall(op.host_wall)
         if wall is None:
             continue
-        (sx, sy), (ex, ey) = wall.axis
-        length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5 or 1.0
-        t = op.center_along_m / length
-        center = (sx + (ex - sx) * t, sy + (ey - sy) * t)
+        center = opening_center(wall, op) or wall.axis[0]
         stations.append(center[along])
     stations.sort()
-    min_gap_m = _MIN_STATION_GAP_IN / M_TO_IN
+    min_gap_m = _MIN_STATION_GAP_IN * M_PER_IN
     deduped: list[float] = []
     for s in stations:
         if s < lo - _FACADE_TOL_M or s > hi + _FACADE_TOL_M:

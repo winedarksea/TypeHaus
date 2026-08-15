@@ -15,9 +15,10 @@ board or an out-of-frame beam draws nothing. Dimensions from
 
 from __future__ import annotations
 
-from typehaus.emit.draw.detail_components.config import M_TO_IN, RIDGE_HANGER
+from typehaus.emit.draw.detail_components.config import RIDGE_HANGER
 from typehaus.emit.draw.detail_components.geometry import flashing_nodes, path_from_steps
 from typehaus.emit.draw.scene import IRNode
+from typehaus.quantities import M_PER_IN
 
 
 def ridge_beam_member(roof):
@@ -50,13 +51,13 @@ def lvl_ridge_hanger(model, roof, crop, direction, station) -> list[IRNode]:
     if member is None or crop is None:
         return []
     (_cu0, cz0), (_cu1, cz1) = crop
-    top = member.z1_m * M_TO_IN
-    bottom = member.z0_m * M_TO_IN
+    top = member.z1_m / M_PER_IN
+    bottom = member.z0_m / M_PER_IN
     # The beam band has to genuinely overlap the crop — a hanger floating below an
     # out-of-frame beam would be a drawing that lies.
-    if top < min(cz0, cz1) * M_TO_IN or bottom > max(cz0, cz1) * M_TO_IN:
+    if top < min(cz0, cz1) / M_PER_IN or bottom > max(cz0, cz1) / M_PER_IN:
         return []
-    center_u = (member.p0[0] if direction == "x" else member.p0[1]) * M_TO_IN
+    center_u = (member.p0[0] if direction == "x" else member.p0[1]) / M_PER_IN
     half_width = beam_width_in(member.profile) / 2.0
     cfg = RIDGE_HANGER
     plate_drop = min(cfg.plate_drop_in, max(top - bottom - cfg.top_offset_in, 1.0))

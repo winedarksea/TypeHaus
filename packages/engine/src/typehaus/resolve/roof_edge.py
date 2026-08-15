@@ -27,12 +27,12 @@ from __future__ import annotations
 import math
 from dataclasses import replace
 
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import panel_profile
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoof, ResolvedWall
 from typehaus.resolve.roof_edge_geometry import (
     CLOSURE_TOLERANCE_M,
     FOOTPRINT_TOLERANCE_M,
-    METERS_PER_INCH,
     MatingFaces,
     bbox,
     continuous_skin_cladding,
@@ -209,7 +209,7 @@ def _closure_segment(
                             for point in (p0, p1))
         if max(targets[0] - tops[0], targets[1] - tops[1]) < CLOSURE_TOLERANCE_M:
             continue  # this layer already reaches its face (a ToRoof rake, or a flush eave)
-        thickness_in = layer.thickness_m / METERS_PER_INCH
+        thickness_in = layer.thickness_m / M_PER_IN
         members.append(FramedMember(
             parent_uid=wall.uid,
             child_key=f"{wall.tag}-closure-{segment}-{layer.name}",

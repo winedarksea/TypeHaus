@@ -10,10 +10,10 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 _M_TO_FT = 3.280839895
-_M_TO_IN = 39.37007874
 _M3_TO_CY = 1.30795062
 _M2_TO_FT2 = 10.7639104
 
@@ -75,7 +75,7 @@ def footing_bedding_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             # What is actually being ordered. A row that says only "1,240 ft of drain tile"
             # cannot be priced or bought: 4" sock-wrapped HDPE to daylight and 6" bare pipe
             # to a sump are two deliveries, and grouping them together said they were one.
-            "drain_tile_diameter_in": (round(diameter_m * _M_TO_IN, 2)
+            "drain_tile_diameter_in": (round(diameter_m / M_PER_IN, 2)
                                        if diameter_m is not None else None),
             "drain_tile_material": material,
             "drain_tile_sock": sock,

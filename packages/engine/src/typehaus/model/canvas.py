@@ -9,6 +9,7 @@ from typehaus.model.plan import PlanModel
 from typehaus.model.placeables import PlacementStrategy
 from typehaus.model.placeable_symbols import (lamp_role, model_parts, part_hex,
                                               plan_symbol_strokes)
+from typehaus.resolve.geometry import opening_center, wall_frame
 
 
 _TYPE_COLLECTIONS = (
@@ -190,13 +191,10 @@ def _resolved_openings(
         wall = wall_by_tag.get(opening.host_wall)
         if wall is None:
             continue
-        (sx, sy), (ex, ey) = wall.axis
-        length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5
-        if length == 0:
+        _origin, (ux, uy), (nx, ny), axis_length = wall_frame(wall)
+        if axis_length <= 1e-9:
             continue
-        ux, uy = (ex - sx) / length, (ey - sy) / length
-        nx, ny = -uy, ux
-        center = (sx + ux * opening.center_along_m, sy + uy * opening.center_along_m)
+        center = opening_center(wall, opening)
         half_width, half_depth = opening.width_m / 2, wall.thickness_m / 2
         footprint = [(center[0] - ux * half_width - nx * half_depth,
                       center[1] - uy * half_width - ny * half_depth),

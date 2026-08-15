@@ -14,9 +14,9 @@ from typehaus.emit.draw.scene import (
     Symbol,
     Text,
 )
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
-_M_TO_IN = 39.37007874015748
 _FACING = {"north", "south", "east", "west"}
 _CAPTURE_BAND_M = 3.048  # 10'
 _EXTEND_M = 0.6096  # 24"
@@ -74,7 +74,7 @@ def _emit_wall(b: SceneBuilder, model: ResolvedModel, wall: ResolvedWall, facing
     bottom = wall.z0_m
     top_start = wall.top_z0_m if wall.top_z0_m is not None else wall.z1_m
     top_end = wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m
-    points = tuple((u * _M_TO_IN, z * _M_TO_IN) for u, z in (
+    points = tuple((u / M_PER_IN, z / M_PER_IN) for u, z in (
         (start_u, bottom), (end_u, bottom), (end_u, top_end), (start_u, top_start),
     ))
     b.add(Polyline(points=points, layer="A-WALL", closed=True, lineweight=0.35,
@@ -85,7 +85,7 @@ def _emit_wall(b: SceneBuilder, model: ResolvedModel, wall: ResolvedWall, facing
         center = start_u + direction * opening.center_along_m
         half = opening.width_m / 2
         sill, head = wall.z0_m + opening.sill_m, wall.z0_m + opening.sill_m + opening.height_m
-        opening_points = tuple((u * _M_TO_IN, z * _M_TO_IN) for u, z in (
+        opening_points = tuple((u / M_PER_IN, z / M_PER_IN) for u, z in (
             (center - half, sill), (center + half, sill), (center + half, head), (center - half, head),
         ))
         if abs(center - start_u) <= length + 1e-6:
@@ -105,13 +105,13 @@ def _emit_roof_profile(b: SceneBuilder, roof, facing: str) -> None:
         profile = ((lo, roof.eave_z_m), (hi, roof.ridge_z_m))
     else:
         profile = ((lo, roof.eave_z_m), (hi, roof.eave_z_m))
-    b.add(Polyline(points=tuple((u * _M_TO_IN, z * _M_TO_IN) for u, z in profile),
+    b.add(Polyline(points=tuple((u / M_PER_IN, z / M_PER_IN) for u, z in profile),
                    layer="A-ROOF", lineweight=0.5, uid=roof.uid, tag=roof.tag))
 
 
 def _label_z(model: ResolvedModel) -> float:
     tops = [roof.ridge_z_m for roof in model.roofs]
-    return ((max(tops) if tops else 0.0) + 0.5) * _M_TO_IN
+    return ((max(tops) if tops else 0.0) + 0.5) / M_PER_IN
 
 
 def _facade_extent(walls: list[ResolvedWall], facing: str) -> tuple[float, float]:
@@ -173,7 +173,7 @@ def _emit_grade_profile(b: SceneBuilder, model: ResolvedModel, facing: str,
                             *(u for u, _ in deduped if lo_u - _EXTEND_M <= u <= hi_u + _EXTEND_M)})
         points = [(u, z_at(u)) for u in sample_us]
 
-    poly = tuple((u * _M_TO_IN, z * _M_TO_IN) for u, z in points)
+    poly = tuple((u / M_PER_IN, z / M_PER_IN) for u, z in points)
     b.add(Polyline(points=poly, layer="L-SITE-GRAD", lineweight=0.7))
     _emit_grade_hatch(b, points)
     b.add(Text(anchor=(poly[0][0], poly[0][1] - 3.0), content="GRADE", height=2.5,
@@ -191,8 +191,8 @@ def _emit_grade_hatch(b: SceneBuilder, points: list[tuple[float, float]]) -> Non
     u = lo_u
     while u <= hi_u:
         z = _interp(points, u)
-        b.add(Polyline(points=((u * _M_TO_IN, z * _M_TO_IN),
-                               ((u - 0.15) * _M_TO_IN, (z - 0.15) * _M_TO_IN)),
+        b.add(Polyline(points=((u / M_PER_IN, z / M_PER_IN),
+                               ((u - 0.15) / M_PER_IN, (z - 0.15) / M_PER_IN)),
                        layer="L-SITE-GRAD", lineweight=0.25))
         u += tick_spacing_m
 
@@ -224,9 +224,9 @@ def _emit_material_callouts(b: SceneBuilder, model: ResolvedModel, walls: list[R
         to_z = anchor_z - row * 0.9
         row += 1
         b.add(Leader(
-            anchor=NamedPoint(xy=(anchor_u * _M_TO_IN, anchor_z * _M_TO_IN), name=wall.tag),
-            at=(anchor_u * _M_TO_IN, anchor_z * _M_TO_IN),
-            to=(callout_u * _M_TO_IN, to_z * _M_TO_IN),
+            anchor=NamedPoint(xy=(anchor_u / M_PER_IN, anchor_z / M_PER_IN), name=wall.tag),
+            at=(anchor_u / M_PER_IN, anchor_z / M_PER_IN),
+            to=(callout_u / M_PER_IN, to_z / M_PER_IN),
             text=material, layer="A-ANNO-TEXT",
         ))
     if model.roofs:
@@ -235,8 +235,8 @@ def _emit_material_callouts(b: SceneBuilder, model: ResolvedModel, walls: list[R
         to_z = ridge_z - row * 0.9
         assembly = next(roof.assembly for roof in model.roofs).upper()
         b.add(Leader(
-            anchor=NamedPoint(xy=(mid_u * _M_TO_IN, ridge_z * _M_TO_IN), name="roof"),
-            at=(mid_u * _M_TO_IN, ridge_z * _M_TO_IN), to=(callout_u * _M_TO_IN, to_z * _M_TO_IN),
+            anchor=NamedPoint(xy=(mid_u / M_PER_IN, ridge_z / M_PER_IN), name="roof"),
+            at=(mid_u / M_PER_IN, ridge_z / M_PER_IN), to=(callout_u / M_PER_IN, to_z / M_PER_IN),
             text=assembly, layer="A-ANNO-TEXT",
         ))
 
@@ -263,21 +263,21 @@ def _emit_vertical_dim_string(b: SceneBuilder, model: ResolvedModel, facing: str
             continue
         b.add(ArchDimension(
             kind="linear",
-            ends=(NamedPoint(xy=(dim_u * _M_TO_IN, z0 * _M_TO_IN), name=label0),
-                  NamedPoint(xy=(dim_u * _M_TO_IN, z1 * _M_TO_IN), name=label1)),
-            p0=(dim_u * _M_TO_IN, z0 * _M_TO_IN), p1=(dim_u * _M_TO_IN, z1 * _M_TO_IN),
+            ends=(NamedPoint(xy=(dim_u / M_PER_IN, z0 / M_PER_IN), name=label0),
+                  NamedPoint(xy=(dim_u / M_PER_IN, z1 / M_PER_IN), name=label1)),
+            p0=(dim_u / M_PER_IN, z0 / M_PER_IN), p1=(dim_u / M_PER_IN, z1 / M_PER_IN),
             offset=6.0,
         ))
     for label, z in ordered:
-        b.add(Symbol(name="level-marker", insert=(dim_u * _M_TO_IN, z * _M_TO_IN),
+        b.add(Symbol(name="level-marker", insert=(dim_u / M_PER_IN, z / M_PER_IN),
                      layer="A-ANNO-SYMB"))
-        b.add(Text(anchor=((dim_u + 8.0) * _M_TO_IN, z * _M_TO_IN),
+        b.add(Text(anchor=((dim_u + 8.0) / M_PER_IN, z / M_PER_IN),
                    content=f"{label} EL. {_feet_inches_signed(z)}", height=2.5,
                    layer="A-ANNO-TEXT"))
 
 
 def _feet_inches_signed(z_m: float) -> str:
-    total_in = round(z_m * _M_TO_IN)
+    total_in = round(z_m / M_PER_IN)
     sign = "-" if total_in < 0 else ""
     total_in = abs(total_in)
     return f"{sign}{total_in // 12}'-{total_in % 12}\""

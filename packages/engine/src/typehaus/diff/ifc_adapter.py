@@ -7,14 +7,18 @@ matcher and report stay dependency-light and unit-testable).
 
 from __future__ import annotations
 
-import math
 import uuid
 from pathlib import Path
 
 from typehaus._meta import PSET_SOURCE
 from typehaus.diff.model import DiffElem
 from typehaus.model.ids import derive_child_guid
-from typehaus.resolve.geometry import LIGHT_STRIP_HEIGHT_M, light_run_segment_profiles
+from typehaus.resolve.geometry import (
+    LIGHT_STRIP_HEIGHT_M,
+    light_run_segment_profiles,
+    opening_center,
+    wall_frame,
+)
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 
@@ -33,9 +37,7 @@ def _guid(project_uuid: uuid.UUID, uid: str) -> str:
 
 
 def _wall_geometry(w: ResolvedWall) -> tuple[tuple[float, float, float], tuple[float, float, float], tuple[float, float]]:
-    (sx, sy), (ex, ey) = w.axis
-    length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5
-    dir_ = ((ex - sx) / length, (ey - sy) / length) if length else (0.0, 0.0)
+    _origin, dir_, _normal, _length = wall_frame(w)
     points = [point for layer in w.layers for point in layer.polygon]
     centroid, bbox = _bounds(points, w.z0_m, w.z1_m)
     return centroid, bbox, dir_
@@ -57,10 +59,6 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         host = wall_by_tag.get(o.host_wall)
         if host is None:
             continue
-        (sx, sy), (ex, ey) = host.axis
-        length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5 or 1.0
-        t = o.center_along_m / length
-        cx, cy = sx + (ex - sx) * t, sy + (ey - sy) * t
         frame_points = _opening_frame_bounds(host, o)
         centroid, bbox = _bounds(frame_points, host.z0_m + o.sill_m,
                                  host.z0_m + o.sill_m + o.height_m)
@@ -229,11 +227,8 @@ def _bounds(points: list[tuple[float, float]], z0: float, z1: float) -> tuple[tu
 
 
 def _opening_frame_bounds(wall: ResolvedWall, opening: object) -> list[tuple[float, float]]:
-    (sx, sy), (ex, ey) = wall.axis
-    length = math.hypot(ex - sx, ey - sy) or 1.0
-    ux, uy = (ex - sx) / length, (ey - sy) / length
-    nx, ny = -uy, ux
-    center = (sx + ux * opening.center_along_m, sy + uy * opening.center_along_m)
+    origin, (ux, uy), (nx, ny), _length = wall_frame(wall)
+    center = opening_center(wall, opening) or origin
     # Bare rough openings are emitted as a full wall-depth void; installed doors/windows
     # are emitted as their intentionally thin filling frame.
     half_width = opening.width_m / 2

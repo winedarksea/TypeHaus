@@ -14,6 +14,7 @@ import pytest
 from typer.testing import CliRunner
 
 from typehaus.cli.app import app, main  # `main` is the packaging entry point — keep it here
+from _helpers import copy_house
 
 EXPECTED_COMMANDS = {
     "build", "check", "compare", "diff", "energy", "explain", "export", "fmt", "import",
@@ -61,7 +62,7 @@ def test_check_reports_loader_findings_on_a_successful_import(tmp_path: Path) ->
 
     catlin = Path(__file__).resolve().parents[3] / "houses" / "catlin"
     dst = tmp_path / "catlin"
-    shutil.copytree(catlin, dst)
+    copy_house(catlin, dst)
     mep = dst / "plan" / "mep.py"
     mep.write_text(mep.read_text().replace("# haus: editable\n", "", 1))
 

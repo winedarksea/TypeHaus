@@ -5,6 +5,7 @@ Shares one table module with the framing solver (header sizing); adds I-joist sp
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import StructuralRole
@@ -31,11 +32,6 @@ _IJOIST_TABLE_SPACING_IN = 16.0
 _PRESCRIPTIVE_HEADER_SPAN_FT = 8.0
 
 
-def _advisory(cid: str, msg: str, tags: tuple[str, ...], result: Result,
-              fix_hint: str | None = None) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid,
-                   message=f"[advisory, not engineering] {msg}", element_tags=tags,
-                   result=result, fix_hint=fix_hint)
 
 
 @check(Tier.STRUCTURAL, "structural.header_prescriptive")

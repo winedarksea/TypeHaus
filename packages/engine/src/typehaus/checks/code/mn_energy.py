@@ -15,6 +15,7 @@ from dataclasses import dataclass
 
 from typehaus.analysis import assembly_r_value
 from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.energy import _storey_is_conditioned
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedModel
@@ -46,13 +47,6 @@ class PrescriptiveRow:
     verdict: str  # "pass" | "fail" | "unknown"
 
 
-def _storey_is_conditioned(plan: PlanModel, storey_tag: str) -> bool:
-    """The prescriptive envelope only binds the conditioned envelope — catlin's detached
-    garage (RM-GARAGE, ``conditioned=False``) has no R-49 ceiling requirement."""
-    rooms = [el for el in plan.storey_elements(storey_tag) if el.element_kind == "Room"]
-    if not rooms:
-        return True
-    return any(room.conditioned for room in rooms)
 
 
 def _walls_bounding_conditioned_space(model: ResolvedModel) -> frozenset[str]:

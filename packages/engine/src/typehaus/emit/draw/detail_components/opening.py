@@ -22,7 +22,6 @@ Section coordinates: ``u`` is the in-section axis, ``z`` is world z, both in mod
 from __future__ import annotations
 
 from typehaus.emit.draw.detail_components.config import (
-    M_TO_IN,
     OPENING_DETAIL,
     SAUNA_MEMBRANE_IN,
 )
@@ -37,18 +36,19 @@ from typehaus.emit.draw.detail_components.geometry import (
     rect_region,
 )
 from typehaus.emit.draw.scene import IRNode
+from typehaus.quantities import M_PER_IN
 
 
 def opening_z_in(wall, opening) -> tuple[float, float]:
     """``(sill, head)`` elevations in section inches. ``sill_m`` is storey-relative, so the
     wall's own base carries it to world z; ``height_m`` already includes any arch rise."""
-    sill = (wall.z0_m + opening.sill_m) * M_TO_IN
-    return sill, sill + opening.height_m * M_TO_IN
+    sill = (wall.z0_m + opening.sill_m) / M_PER_IN
+    return sill, sill + opening.height_m / M_PER_IN
 
 
 def _in_crop_z(z_in: float, crop) -> bool:
     (_cu0, cz0), (_cu1, cz1) = crop
-    return min(cz0, cz1) * M_TO_IN <= z_in <= max(cz0, cz1) * M_TO_IN
+    return min(cz0, cz1) / M_PER_IN <= z_in <= max(cz0, cz1) / M_PER_IN
 
 
 def window_head_jamb_sill(model, wall, opening, crop, direction, station) -> list[IRNode]:

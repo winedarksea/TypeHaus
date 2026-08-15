@@ -17,12 +17,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from typehaus.checks.registry import Preferences
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 _M_TO_FT = 3.280839895
 # Electric resistance heat converts at the physical constant — no efficiency term to apply.
 _W_TO_BTUH = 3.412141633
-_M_TO_IN = 39.37007874015748
 
 # The indoor halves of a split system: both pair back to a condenser and neither carries a
 # rating of its own that a zone should be sized against.
@@ -296,8 +296,8 @@ def duct_schedule(model: ResolvedModel) -> list[dict[str, object]]:
             "tag": duct.tag, "uid": duct.uid, "storey": duct.storey,
             "system": duct.system, "routing": duct.routing,
             "length_ft": round(length_m * _M_TO_FT, 1),
-            "width_in": round(duct.width_m * _M_TO_IN, 2),
-            "depth_in": round(duct.depth_m * _M_TO_IN, 2),
+            "width_in": round(duct.width_m / M_PER_IN, 2),
+            "depth_in": round(duct.depth_m / M_PER_IN, 2),
             "design_cfm": duct.design_cfm,
             "floor_ref": duct.floor_ref,
         })

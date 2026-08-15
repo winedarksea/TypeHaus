@@ -7,18 +7,22 @@ it is a CODE-tier FAIL, not an advisory suggestion.
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import advisory
+from typehaus.checks._authoring import failed as _fail
+from typehaus.checks._authoring import passed as _pass
+from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.mep.vent_path import evaluate_vent_path
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result
 from typehaus.model.enums import PipeAccessoryKind, PipeSystem, Service
 from typehaus.model.mep import VentRun
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.vent_termination import (
     VENT_TERMINATION_CLEARANCE_M,
     derived_termination_elevation,
 )
 
 _ALIGNMENT_TOLERANCE_M = 0.0127  # 1/2"
-_M_TO_IN = 39.37007874015748
 _M_TO_FT = 3.280839895
 _MIN_SLOPE_SMALL_IN_PER_FT = 0.25  # <= 3" diameter
 _MIN_SLOPE_LARGE_IN_PER_FT = 0.125  # > 3" diameter
@@ -30,27 +34,11 @@ _TERMINATION_TOLERANCE_M = 0.0254  # 1"
 _INSULATION_MIN_BORE_M = 0.01905
 
 
-def _pass(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.PASS)
-
-
-def _fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
-    return Finding(severity=Severity.ERROR, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.FAIL)
-
-
 def _advisory_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
     # Advisory findings never carry ERROR severity — that severity is reserved for
     # hard blockers, and permit.py's integrity gate treats any ERROR as a permit-set
     # blocker regardless of check_id.
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.FAIL)
-
-
-def _unknown(cid: str, reason: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=f"UNKNOWN — {reason}",
-                   element_tags=tags, result=Result.UNKNOWN)
+    return advisory(cid, msg, tags, Result.FAIL)
 
 
 @check(Tier.CODE, "mep.sleeve_alignment")
@@ -73,17 +61,17 @@ def sleeve_alignment(ctx: CheckContext) -> list[Finding]:
         if sleeve.offset_m <= _ALIGNMENT_TOLERANCE_M:
             out.append(_pass(
                 "mep.sleeve_alignment",
-                f"sleeve {sleeve.tag} is {sleeve.offset_m * _M_TO_IN:.2f}\" from its "
+                f"sleeve {sleeve.tag} is {sleeve.offset_m / M_PER_IN:.2f}\" from its "
                 "expected drain point (<= 1/2\" tolerance)", (sleeve.tag,),
             ))
             continue
-        dx = (sleeve.expected_center[0] - sleeve.center[0]) * _M_TO_IN
-        dy = (sleeve.expected_center[1] - sleeve.center[1]) * _M_TO_IN
+        dx = (sleeve.expected_center[0] - sleeve.center[0]) / M_PER_IN
+        dy = (sleeve.expected_center[1] - sleeve.center[1]) / M_PER_IN
         axis, delta = ("x", dx) if abs(dx) >= abs(dy) else ("y", dy)
         sign = "+" if delta >= 0 else "-"
         out.append(_fail(
             "mep.sleeve_alignment",
-            f"sleeve {sleeve.tag} is {sleeve.offset_m * _M_TO_IN:.2f}\" off its expected "
+            f"sleeve {sleeve.tag} is {sleeve.offset_m / M_PER_IN:.2f}\" off its expected "
             f"drain point — move sleeve {abs(delta):.1f}\" {sign}{axis}", (sleeve.tag,),
         ))
     out.extend(_missing_sleeve_findings(ctx))
@@ -212,20 +200,20 @@ def hydrant_freeze_depth(ctx: CheckContext) -> list[Finding]:
             if deepest + 1e-9 < _HYDRANT_BURY_M:
                 out.append(_fail(
                     cid, f"hydrant {hydrant.tag}'s shutoff is buried "
-                         f"{deepest * _M_TO_IN:.0f}\" on {run.tag}, under the "
-                         f"{_HYDRANT_BURY_M * _M_TO_IN:.0f}\" this fixture is specified for",
+                         f"{deepest / M_PER_IN:.0f}\" on {run.tag}, under the "
+                         f"{_HYDRANT_BURY_M / M_PER_IN:.0f}\" this fixture is specified for",
                     (hydrant.tag, run.tag)))
             elif shallowest + 1e-9 < _HYDRANT_BURY_M:
                 out.append(_fail(
-                    cid, f"supply run {run.tag} rises to {shallowest * _M_TO_IN:.0f}\" "
-                         f"below grade — above the {_HYDRANT_BURY_M * _M_TO_IN:.0f}\" bury "
+                    cid, f"supply run {run.tag} rises to {shallowest / M_PER_IN:.0f}\" "
+                         f"below grade — above the {_HYDRANT_BURY_M / M_PER_IN:.0f}\" bury "
                          f"{hydrant.tag} needs. A supply line freezes at its high point, "
                          "not at its ends",
                     (hydrant.tag, run.tag)))
             else:
                 out.append(_pass(
                     cid, f"{hydrant.tag} is fed by {run.tag} at "
-                         f"{deepest * _M_TO_IN:.0f}\" below grade over its whole length",
+                         f"{deepest / M_PER_IN:.0f}\" below grade over its whole length",
                     (hydrant.tag, run.tag)))
         # The penetration the supply comes up through: a hydrant whose sleeve is missing or
         # filed as a drain will be cored after the pour.
@@ -289,12 +277,12 @@ def hot_water_insulation(ctx: CheckContext) -> list[Finding]:
             continue
         if run.insulation:
             out.append(_pass(
-                cid, f"hot run {run.tag} ({run.diameter_m * _M_TO_IN:.2f}\") is insulated "
+                cid, f"hot run {run.tag} ({run.diameter_m / M_PER_IN:.2f}\") is insulated "
                      f"with {run.insulation} over {run.length_m * _M_TO_FT:.0f}'",
                 (run.tag,)))
         else:
             out.append(_fail(
-                cid, f"hot run {run.tag} is {run.diameter_m * _M_TO_IN:.2f}\" and authors "
+                cid, f"hot run {run.tag} is {run.diameter_m / M_PER_IN:.2f}\" and authors "
                      "no insulation — N1103.4.2 requires R-3 on hot-water piping 3/4\" and "
                      "larger", (run.tag,)))
     return out
@@ -491,7 +479,7 @@ def drain_slope(ctx: CheckContext) -> list[Finding]:
                 plan_ft = (((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5) * _M_TO_FT
                 if plan_ft <= 1e-6:
                     continue  # vertical drop
-                seg_slope = (run.z_m[i] - run.z_m[i + 1]) * _M_TO_IN / plan_ft
+                seg_slope = (run.z_m[i] - run.z_m[i + 1]) / M_PER_IN / plan_ft
                 if worst is None or seg_slope < worst[0]:
                     worst = (seg_slope, i)
             if worst is None:
@@ -521,7 +509,7 @@ def drain_slope(ctx: CheckContext) -> list[Finding]:
             ))
             continue
         length_ft = run.length_m * 3.280839895
-        slope_in_per_ft = (run.z_start_m - run.z_end_m) * _M_TO_IN / length_ft
+        slope_in_per_ft = (run.z_start_m - run.z_end_m) / M_PER_IN / length_ft
         if slope_in_per_ft >= minimum - 1e-9:
             out.append(_pass(
                 "mep.drain_slope",
@@ -547,7 +535,7 @@ def vent_termination_height(ctx: CheckContext) -> list[Finding]:
     number, and a builder sets the pipe from the print.
     """
     out: list[Finding] = []
-    clearance_in = VENT_TERMINATION_CLEARANCE_M * _M_TO_IN
+    clearance_in = VENT_TERMINATION_CLEARANCE_M / M_PER_IN
     for storey in ctx.plan.storeys:
         for vent in ctx.plan.storey_elements(storey.tag):
             if not isinstance(vent, VentRun):
@@ -568,8 +556,8 @@ def vent_termination_height(ctx: CheckContext) -> list[Finding]:
                 ))
                 continue
             authored = vent.roof_termination_elevation.meters
-            delta_in = (authored - derived) * _M_TO_IN
-            if abs(delta_in) <= _TERMINATION_TOLERANCE_M * _M_TO_IN:
+            delta_in = (authored - derived) / M_PER_IN
+            if abs(delta_in) <= _TERMINATION_TOLERANCE_M / M_PER_IN:
                 out.append(_pass(
                     "mep.vent_termination_height",
                     f"vent {vent.tag}'s authored termination matches the roof plane "
@@ -696,7 +684,7 @@ def sleeve_coverage(ctx: CheckContext) -> list[Finding]:
         else:
             x, y = crossing["point"]
             out.append(_fail(
-                cid, f"run {crossing['run']} (Ø{crossing['diameter_m'] * _M_TO_IN:.1f}\") "
+                cid, f"run {crossing['run']} (Ø{crossing['diameter_m'] / M_PER_IN:.1f}\") "
                      f"passes through {crossing['host_category']} {crossing['host']} at "
                      f"({x * _M_TO_FT:.1f}', {y * _M_TO_FT:.1f}') with no cast-in sleeve "
                      "— it gets cored after the pour",
@@ -783,13 +771,13 @@ def under_slab_burial(ctx: CheckContext) -> list[Finding]:
         if gap >= _UNDER_SLAB_COVER_M - 1e-9:
             out.append(_pass(
                 cid, f"run {run.tag}'s crown clears {slab_tag}'s underside by "
-                     f"{gap * _M_TO_IN:.1f}\" (>= {_UNDER_SLAB_COVER_M * _M_TO_IN:.0f}\")",
+                     f"{gap / M_PER_IN:.1f}\" (>= {_UNDER_SLAB_COVER_M / M_PER_IN:.0f}\")",
                 (run.tag, slab_tag)))
         else:
             out.append(_fail(
-                cid, f"run {run.tag}'s crown sits {gap * _M_TO_IN:.1f}\" below "
+                cid, f"run {run.tag}'s crown sits {gap / M_PER_IN:.1f}\" below "
                      f"{slab_tag}'s underside — under the "
-                     f"{_UNDER_SLAB_COVER_M * _M_TO_IN:.0f}\" bedding cover it needs",
+                     f"{_UNDER_SLAB_COVER_M / M_PER_IN:.0f}\" bedding cover it needs",
                 (run.tag, slab_tag)))
     return out
 
@@ -846,9 +834,7 @@ def footing_clearance(ctx: CheckContext) -> list[Finding]:
     creates are construction joints in continuous concrete, not free edges. Measuring the
     influence line off one would fail a pipe for being near the middle of a footing.
     """
-    from shapely.geometry import LineString, Polygon
-
-    from shapely.geometry import Point
+    from shapely.geometry import LineString, Point, Polygon
 
     cid = "mep.footing_clearance"
     footings = _footing_pours([s for s in ctx.model.solids
@@ -881,7 +867,7 @@ def footing_clearance(ctx: CheckContext) -> list[Finding]:
                     else:
                         out.append(_fail(
                             cid, f"run {run.tag} segment {i} passes under footing "
-                                 f"{footing.tag} {depth_below * _M_TO_IN:.0f}\" below its "
+                                 f"{footing.tag} {depth_below / M_PER_IN:.0f}\" below its "
                                  "bearing plane with no protection sleeve (IRC P2604)",
                             (run.tag, footing.tag)))
                     continue
@@ -903,9 +889,9 @@ def footing_clearance(ctx: CheckContext) -> list[Finding]:
                         continue
                     out.append(_fail(
                         cid, f"run {run.tag} segment {i} sits "
-                             f"{depth_below * _M_TO_IN:.0f}\" below footing "
+                             f"{depth_below / M_PER_IN:.0f}\" below footing "
                              f"{footing.tag}'s bearing plane only "
-                             f"{distance * _M_TO_IN:.0f}\" away — inside its 45° "
+                             f"{distance / M_PER_IN:.0f}\" away — inside its 45° "
                              "influence line; deepen the footing or move the run",
                         (run.tag, footing.tag)))
     if not out:
@@ -961,11 +947,11 @@ def sewer_exit_invert(ctx: CheckContext) -> list[Finding]:
         if abs(delta) <= _SEWER_INVERT_TOLERANCE_M:
             out.append(_pass(
                 cid, f"drain {run_tag} meets exit sleeve {sleeve.tag} within "
-                     f"{abs(delta) * _M_TO_IN:.2f}\" of its cast centerline",
+                     f"{abs(delta) / M_PER_IN:.2f}\" of its cast centerline",
                 (run_tag, sleeve.tag)))
         else:
             out.append(_fail(
-                cid, f"drain {run_tag} arrives {abs(delta) * _M_TO_IN:.1f}\" "
+                cid, f"drain {run_tag} arrives {abs(delta) / M_PER_IN:.1f}\" "
                      f"{'above' if delta > 0 else 'below'} exit sleeve {sleeve.tag}'s "
                      "cast centerline", (run_tag, sleeve.tag)))
     return out
@@ -1090,7 +1076,11 @@ def pipe_sizing(ctx: CheckContext) -> list[Finding]:
     house ends up with a 1.5" line feeding three fixtures."""
     from typehaus.resolve.mep import accumulated_serves
     from typehaus.takeoff.plumbing_calc import (
-        branch_load, fixture_units, required_drain_diameter_in, required_supply_size_in)
+        branch_load,
+        fixture_units,
+        required_drain_diameter_in,
+        required_supply_size_in,
+    )
 
     cid = "mep.pipe_sizing"
     units_by_tag = {row.tag: row for row in fixture_units(ctx.plan)}
@@ -1108,7 +1098,7 @@ def pipe_sizing(ctx: CheckContext) -> list[Finding]:
                 cid, f"run {run.tag} serves {', '.join(unresolved)}, which carry no "
                      "fixture-unit table row — its load cannot be summed", (run.tag,)))
             continue
-        diameter_in = run.diameter_m * _M_TO_IN
+        diameter_in = run.diameter_m / M_PER_IN
         required = (required_drain_diameter_in(load) if run.system == "drain"
                     else required_supply_size_in(load))
         unit_name = "DFU" if run.system == "drain" else "WSFU"
@@ -1167,7 +1157,7 @@ def trap_arm_length(ctx: CheckContext) -> list[Finding]:
             if limit_in is None:
                 out.append(_unknown(
                     cid, f"fixture {fixture.tag}'s trap arm Ø"
-                         f"{trap_arm_d * _M_TO_IN:.2f}\" has no table row",
+                         f"{trap_arm_d / M_PER_IN:.2f}\" has no table row",
                     (fixture.tag,)))
                 continue
             vent_point = None
@@ -1197,15 +1187,15 @@ def trap_arm_length(ctx: CheckContext) -> list[Finding]:
                          "to measure a trap arm against", (fixture.tag,)))
                 continue
             arm_in = (((vent_point[0] - drain_point[0]) ** 2
-                       + (vent_point[1] - drain_point[1]) ** 2) ** 0.5) * _M_TO_IN
+                       + (vent_point[1] - drain_point[1]) ** 2) ** 0.5) / M_PER_IN
             if arm_in <= limit_in + 1e-6:
                 out.append(_pass(
                     cid, f"fixture {fixture.tag}'s trap arm runs {arm_in:.0f}\" to its "
                          f"vent ({vent_via}), within the {limit_in:.0f}\" limit for "
-                         f"Ø{trap_arm_d * _M_TO_IN:.2f}\"", (fixture.tag,)))
+                         f"Ø{trap_arm_d / M_PER_IN:.2f}\"", (fixture.tag,)))
             else:
                 out.append(_fail(
                     cid, f"fixture {fixture.tag}'s trap arm runs {arm_in:.0f}\" to its "
                          f"vent ({vent_via}) — over the {limit_in:.0f}\" limit for "
-                         f"Ø{trap_arm_d * _M_TO_IN:.2f}\"", (fixture.tag,)))
+                         f"Ø{trap_arm_d / M_PER_IN:.2f}\"", (fixture.tag,)))
     return out

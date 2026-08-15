@@ -14,10 +14,10 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 _M_TO_FT = 3.280839895
-_M_TO_IN = 39.37007874015748
 
 
 def pipe_run_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -28,7 +28,7 @@ def pipe_run_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """
     runs: dict[tuple[str, float], dict[str, object]] = {}
     for run in model.pipe_runs:
-        key = (run.system, round(run.diameter_m * _M_TO_IN, 3))
+        key = (run.system, round(run.diameter_m / M_PER_IN, 3))
         entry = runs.setdefault(key, {"length_m": 0.0, "count": 0, "tags": []})
         entry["length_m"] += run.length_m
         entry["count"] += 1
@@ -57,7 +57,7 @@ def pipe_insulation_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     for run in model.pipe_runs:
         if not run.insulation:
             continue
-        key = (run.insulation, round(run.diameter_m * _M_TO_IN, 3))
+        key = (run.insulation, round(run.diameter_m / M_PER_IN, 3))
         entry = specs.setdefault(key, {"length_m": 0.0, "count": 0, "tags": []})
         entry["length_m"] = float(entry["length_m"]) + run.length_m
         entry["count"] = int(entry["count"]) + 1
@@ -85,8 +85,8 @@ def duct_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
             for a, b in zip(duct.path[:-1], duct.path[1:])
         )
-        key = (duct.system, round(duct.width_m * _M_TO_IN, 2),
-               round(duct.depth_m * _M_TO_IN, 2), duct.routing)
+        key = (duct.system, round(duct.width_m / M_PER_IN, 2),
+               round(duct.depth_m / M_PER_IN, 2), duct.routing)
         entry = runs.setdefault(key, {"length_m": 0.0, "count": 0, "tags": []})
         entry["length_m"] += length_m
         entry["count"] += 1
@@ -109,7 +109,7 @@ def sleeve_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """
     sleeves: dict[float, dict[str, object]] = {}
     for sleeve in model.sleeves:
-        key = round(sleeve.sleeve_d_m * _M_TO_IN, 2)
+        key = round(sleeve.sleeve_d_m / M_PER_IN, 2)
         entry = sleeves.setdefault(key, {"count": 0, "length_m": 0.0, "tags": []})
         entry["count"] += 1
         entry["length_m"] += max(sleeve.z1_m - sleeve.z0_m, 0.0)

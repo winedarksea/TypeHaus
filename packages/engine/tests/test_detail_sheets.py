@@ -10,8 +10,8 @@ from typehaus.emit.draw import build_sheet_index
 from typehaus.emit.draw.scene import Hatch, Text
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 def test_catlin_emits_authored_then_derived_detail_sheets(catlin_model):

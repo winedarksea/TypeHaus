@@ -19,10 +19,10 @@ from __future__ import annotations
 
 import math
 
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 _M_TO_FT = 3.280839895
-_M_TO_IN = 39.37007874
 _M3_TO_CY = 1.30795062
 
 
@@ -73,26 +73,26 @@ def drainage_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         for element in model.plan.storey_elements(storey.tag):
             if isinstance(element, Gutter):
                 rows.add("gutter", element.material or "",
-                         element.depth.meters * _M_TO_IN, tag=element.tag,
+                         element.depth.meters / M_PER_IN, tag=element.tag,
                          length_m=_path_length_m([p.xy_m for p in element.path]))
             elif isinstance(element, Downspout):
                 # A leader is billed by its drop, not by a plan run: it is one vertical
                 # length of pipe between the gutter outlet and the splash block.
                 rows.add("downspout", element.material or "",
-                         element.diameter.meters * _M_TO_IN, tag=element.tag,
+                         element.diameter.meters / M_PER_IN, tag=element.tag,
                          length_m=max(element.top_elevation.meters
                                       - element.bottom_elevation.meters, 0.0))
             elif isinstance(element, FrenchDrain):
                 length = _path_length_m([p.xy_m for p in element.path])
                 rows.add("french_drain", element.tile.material if element.tile else "stone",
-                         element.trench_width.meters * _M_TO_IN, tag=element.tag,
+                         element.trench_width.meters / M_PER_IN, tag=element.tag,
                          length_m=length,
                          volume_m3=(length * element.trench_width.meters
                                     * element.trench_depth.meters))
             elif isinstance(element, Drywell):
                 radius = element.diameter.meters / 2.0
                 rows.add("drywell", element.aggregate,
-                         element.diameter.meters * _M_TO_IN, tag=element.tag,
+                         element.diameter.meters / M_PER_IN, tag=element.tag,
                          volume_m3=math.pi * radius ** 2 * element.depth.meters)
 
     _add_derived_eave_gutters(model, rows)
@@ -122,5 +122,5 @@ def _add_derived_eave_gutters(model: ResolvedModel, rows: _Rows) -> None:
             if length <= 0.0:
                 continue
             rows.add("gutter", str(entry["material"]),
-                     float(entry.get("height_m", 0.0)) * _M_TO_IN,
+                     float(entry.get("height_m", 0.0)) / M_PER_IN,
                      tag=f"{roof.tag}:{run_key}", length_m=length)

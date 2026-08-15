@@ -12,24 +12,29 @@ matters: a rule that cannot evaluate reports UNKNOWN with the reason (#32), neve
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import failed, passed, unknown
 from typehaus.checks.registry import CheckContext
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding
 from typehaus.quantities import inch
+from typehaus.resolve.geometry import opening_center
 
 
+# Thin, signature-preserving adapters over ``checks._authoring``: every call site in this
+# package's topic modules (egress, stairs, alarms, ...) calls these three positionally as
+# ``(cid, msg, code)`` / ``(cid, msg, tags, code)`` — a shape the shared constructors don't
+# take directly (they put ``tags`` before ``code``, and ``code`` is optional there). Rather
+# than touch the ~150 call sites across this package, these adapters keep the old shape and
+# delegate the actual ``Finding(...)`` construction to the shared module.
 def _pass(cid: str, msg: str, code: str) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, code_ref=code,
-                   result=Result.PASS)
+    return passed(cid, msg, code=code)
 
 
 def _fail(cid: str, msg: str, tags: tuple[str, ...], code: str) -> Finding:
-    return Finding(severity=Severity.ERROR, check_id=cid, message=msg, element_tags=tags,
-                   code_ref=code, result=Result.FAIL)
+    return failed(cid, msg, tags, code=code)
 
 
 def _unknown(cid: str, reason: str, tags: tuple[str, ...], code: str) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=f"UNKNOWN — {reason}",
-                   element_tags=tags, code_ref=code, result=Result.UNKNOWN)
+    return unknown(cid, reason, tags, code=code)
 
 
 def _room_storey(ctx: CheckContext, room_tag: str):
@@ -55,12 +60,10 @@ def _room_windows(ctx: CheckContext, room, point_type, polygon_type) -> list:
         wall = ctx.model.wall(opening.host_wall)
         if wall is None or wall.storey != room.storey:
             continue
-        (sx, sy), (ex, ey) = wall.axis
-        axis_length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5
-        if axis_length <= 1e-9:
+        point = opening_center(wall, opening)
+        if point is None:
             continue
-        fraction = opening.center_along_m / axis_length
-        center = point_type(sx + (ex - sx) * fraction, sy + (ey - sy) * fraction)
+        center = point_type(*point)
         if boundary_band.covers(center):
             windows.append(opening)
     return windows

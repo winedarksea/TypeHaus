@@ -17,6 +17,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import SLEEPING_OCCUPANCIES, Occupancy
 from typehaus.quantities import inch
+from typehaus.resolve.geometry import wall_frame
 
 _MIN_EGRESS_WIDTH = inch(20)
 _MIN_EGRESS_HEIGHT = inch(24)
@@ -253,12 +254,9 @@ def _landing_patch(ctx: CheckContext, wall, opening, rooms_by_storey):
     """The 36"-deep rectangle outside the door, in the plan frame."""
     from shapely.geometry import Point, Polygon
 
-    (sx, sy), (ex, ey) = wall.axis
-    run = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5
+    (sx, sy), (ux, uy), (nx, ny), run = wall_frame(wall)
     if run <= 1e-9:
         return None
-    ux, uy = (ex - sx) / run, (ey - sy) / run
-    nx, ny = -uy, ux
     cx = sx + ux * opening.center_along_m
     cy = sy + uy * opening.center_along_m
     # Outward is whichever side has no room on it. Both sides roomless (a garden wall) or

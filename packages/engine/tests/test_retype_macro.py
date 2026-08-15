@@ -10,7 +10,6 @@ dependent diameters, alcove re-centring.
 
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 import pytest
@@ -18,8 +17,8 @@ import pytest
 from typehaus.source import load_plan
 from typehaus.source.coordinator import ProjectCoordinator
 from typehaus.source.macros import MacroError, retype_placeable
+from _helpers import CATLIN as CATLIN_DIR, copy_house
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 @pytest.fixture(scope="module")
@@ -49,8 +48,7 @@ def test_retype_holds_the_mounted_back_face(catlin_plan):
 
 def test_retype_round_trips_through_source_and_reseats_the_back_face(tmp_path):
     house = tmp_path / "catlin"
-    shutil.copytree(CATLIN_DIR, house,
-                    ignore=shutil.ignore_patterns("out", "__pycache__", ".claude"))
+    copy_house(CATLIN_DIR, house)
     plan = load_plan(house).plan
     shower = _fixture(plan, "FX-M-BATH2-SH")
     x, y = shower.position.xy_m

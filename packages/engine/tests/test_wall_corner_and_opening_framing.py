@@ -31,8 +31,8 @@ from typehaus.resolve.framing.stud_module import opening_stud_module
 from typehaus.resolve.geometry import sub, unit
 from typehaus.resolve.model import ResolvedLayer, ResolvedWall
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 _STUD_THICKNESS = inch(1.5).meters
 _STUD_DEPTH = inch(3.5).meters

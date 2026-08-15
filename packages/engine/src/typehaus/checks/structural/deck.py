@@ -19,6 +19,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from typehaus.checks._authoring import structural_advisory as _advisory
+from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.checks.structural.deck_tables import (
     DECK_TOTAL_LOAD_PSF,
@@ -32,30 +34,18 @@ from typehaus.checks.structural.deck_tables import (
     deck_post_height_limit,
     required_footing_area_ft2,
 )
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result
 from typehaus.model.floors import FloorSystem
 from typehaus.model.structure import Beam, Pad, Post, Railing
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedFloor
 
 _M_PER_FT = 0.3048
-_M_PER_IN = 0.0254
 # The tables are published at 12/16/24" o.c.; a FloorSystem that leaves JoistSpec.spacing
 # unset gets the solver's own default, which is the middle one.
 _DEFAULT_SPACING_IN = 16.0
 
 
-def _advisory(cid: str, msg: str, tags: tuple[str, ...], result: Result,
-              fix_hint: str | None = None) -> Finding:
-    """Same contract as the sibling structural checks: every deck finding says out loud
-    that a prescriptive table lookup is not an engineered design."""
-    return Finding(severity=Severity.WARN, check_id=cid,
-                   message=f"[advisory, not engineering] {msg}", element_tags=tags,
-                   result=result, fix_hint=fix_hint)
-
-
-def _unknown(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=f"UNKNOWN — {msg}",
-                   element_tags=tags, result=Result.UNKNOWN)
 
 
 @dataclass(frozen=True)
@@ -410,7 +400,7 @@ def deck_guard(ctx: CheckContext) -> list[Finding]:
                                 (deck.tag,)))
             continue
         surface_m = max(m.z1_m for m in joists)
-        drop_in = (surface_m - grade_m) / _M_PER_IN
+        drop_in = (surface_m - grade_m) / M_PER_IN
         if drop_in <= GUARD_REQUIRED_ABOVE_IN + 1e-9:
             out.append(_advisory(
                 "structural.deck_guard",

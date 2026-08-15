@@ -2,27 +2,21 @@
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import advisory, passed as _pass, unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result
 from typehaus.model.enums import Occupancy
+from typehaus.resolve.geometry import opening_center
+from typehaus.resolve.intervals import merge as _merge_intervals
 
 _HABITABLE = {Occupancy.BEDROOM, Occupancy.LIVING, Occupancy.KITCHEN, Occupancy.DINING,
              Occupancy.OFFICE}
 
 
-def _pass(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.PASS)
-
-
+# WARN severity + FAIL result, deliberately: the permit integrity gate only blocks on ERROR
+# severity, and this finding is advisory, not a hard blocker.
 def _warn_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.FAIL)
-
-
-def _unknown(cid: str, reason: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=f"UNKNOWN — {reason}",
-                   element_tags=tags, result=Result.UNKNOWN)
+    return advisory(cid, msg, tags, Result.FAIL)
 
 
 @check(Tier.ADVISORY, "electrical.room_lighting")
@@ -137,10 +131,7 @@ def _door_intervals(ctx: CheckContext, ring: list, storey_tag: str) -> list[tupl
         host = walls.get(opening.host_wall)
         if host is None:
             continue
-        (sx, sy), (ex, ey) = host.axis
-        length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5 or 1.0
-        t = opening.center_along_m / length
-        center = (sx + (ex - sx) * t, sy + (ey - sy) * t)
+        center = opening_center(host, opening) or host.axis[0]
         s, d = _perimeter_position(ring, center)
         if d <= _NEAR_WALL_M:
             half = opening.width_m / 2.0
@@ -232,15 +223,7 @@ def _merged_intervals(intervals: list[tuple[float, float]],
     describes wall space while the breaks are disjoint: a doorway opening straight onto a
     stair well would otherwise manufacture a negative-length "space" between the two.
     """
-    merged: list[tuple[float, float]] = []
-    for start, end in sorted((max(0.0, a), min(perimeter, b)) for a, b in intervals):
-        if end <= start:
-            continue
-        if merged and start <= merged[-1][1]:
-            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
-        else:
-            merged.append((start, end))
-    return merged
+    return _merge_intervals([(max(0.0, a), min(perimeter, b)) for a, b in intervals])
 
 
 def _coverage_gaps(space: tuple[float, float], positions: list[float]) -> list[float]:

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import json
 import math
-import shutil
 import struct
 from pathlib import Path
 
@@ -22,6 +21,7 @@ from typehaus.quantities import ft, inch
 from typehaus.model.remap import ReferenceRemap, registered_ref_fields, remap_ops_for
 from typehaus.resolve import resolve
 from typehaus.source import load_plan, macros
+from _helpers import copy_house
 
 
 @pytest.fixture
@@ -34,7 +34,7 @@ def plan(starter_dir: Path):
 @pytest.fixture
 def house(tmp_path: Path, starter_dir: Path) -> Path:
     dst = tmp_path / "starter"
-    shutil.copytree(starter_dir, dst)
+    copy_house(starter_dir, dst)
     return dst
 
 

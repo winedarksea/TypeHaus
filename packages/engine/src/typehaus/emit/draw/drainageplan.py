@@ -17,9 +17,8 @@ from __future__ import annotations
 from typehaus.emit.draw._shared import emit_wall
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Text
 from typehaus.emit.trades import DRAINAGE_CATEGORIES
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
-
-_M_TO_IN = 39.37007874015748
 
 #: Solid category → (layer, linetype). Buried work (tile, trench, soakaway) is dashed;
 #: hung and surface work draws solid. All four layers are styled in both writers
@@ -62,7 +61,7 @@ def has_drainage_content(model: ResolvedModel, storey_tag: str) -> bool:
 
 
 def _in(point: tuple[float, float]) -> tuple[float, float]:
-    return point[0] * _M_TO_IN, point[1] * _M_TO_IN
+    return point[0] / M_PER_IN, point[1] / M_PER_IN
 
 
 def build_drainage_plan(model: ResolvedModel, storey: str) -> Scene:

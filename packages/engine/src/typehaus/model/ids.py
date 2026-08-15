@@ -15,10 +15,6 @@ def new_uid() -> str:
     return "".join(secrets.choice(_CROCKFORD) for _ in range(_UID_LEN))
 
 
-def is_valid_uid(value: str) -> bool:
-    return len(value) == _UID_LEN and all(c in _CROCKFORD for c in value)
-
-
 def derive_guid(project_uuid: uuid.UUID, uid: str) -> str:
     """IFC GlobalId derived from (project_uuid, uid) — never from position/path.
 
@@ -34,8 +30,3 @@ def derive_child_guid(project_uuid: uuid.UUID, parent_uid: str, child_key: str) 
     from ifcopenshell.guid import compress
 
     return str(compress(uuid.uuid5(project_uuid, f"{parent_uid}/{child_key}").hex))
-
-
-def child_uid(parent_uid: str, child_key: str) -> str:
-    """The deterministic child uid string (used before a project_uuid is in scope)."""
-    return f"{parent_uid}/{child_key}"

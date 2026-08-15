@@ -12,6 +12,7 @@ from collections import Counter
 
 from typehaus.model.enums import ConnectorKind
 from typehaus.model.structure import Connector, KneeBrace
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_catalog import (
     ROLE_BRACE_THROUGH_BOLT,
@@ -27,7 +28,6 @@ from typehaus.takeoff.hardware_catalog import (
 )
 from typehaus.takeoff.hardware_config import (
     FT_TO_M,
-    IN_TO_M,
     HardwareTakeoffConfig,
     KneeBraceRules,
     SillPlateAnchorRules,
@@ -84,7 +84,7 @@ def strap_holdown_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
     for ret in returns:
         endpoints.extend(centerline_endpoints(list(ret.outline)))
     locations = merge_coincident_points(
-        endpoints, rules.coincident_end_tolerance_in * IN_TO_M)
+        endpoints, rules.coincident_end_tolerance_in * M_PER_IN)
     count = len(locations) * rules.holdowns_per_run_end
     item = hardware_for_role(ROLE_EMBEDDED_STRAP_HOLDOWN)
     return [hardware_row(
@@ -132,7 +132,7 @@ def coil_strap_rows(model: ResolvedModel, rules: WallTieRules) -> list:
     """
     exterior_framed = {wall.tag: wall for wall in model.walls if _is_exterior_framed_wall(wall)}
     stacked_below = {edge.lower_wall for edge in model.stack_edges}
-    lap_m = rules.coil_strap_lap_in * IN_TO_M
+    lap_m = rules.coil_strap_lap_in * M_PER_IN
 
     straps: list = []
     for junction in model.junctions:

@@ -7,13 +7,13 @@ surfaces (`haus takeoff`, `haus variants compare`) with and without the file pre
 
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 import pytest
 from typer.testing import CliRunner
 
 from typehaus.cli.prices import PriceRange, estimate_costs, load_prices
+from _helpers import copy_house
 
 _SAMPLE = """\
 [framing]
@@ -113,7 +113,7 @@ def _run(*args: str):
 def priced_starter(starter_dir: Path, tmp_path: Path) -> Path:
     """A disposable copy of the starter house carrying a sample prices.toml."""
     house = tmp_path / "house"
-    shutil.copytree(starter_dir, house, ignore=shutil.ignore_patterns("out", "__pycache__"))
+    copy_house(starter_dir, house)
     (house / "prices.toml").write_text(_SAMPLE)
     return house
 

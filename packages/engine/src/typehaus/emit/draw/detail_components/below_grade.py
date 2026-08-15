@@ -9,7 +9,7 @@ authored coordinates.
 
 from __future__ import annotations
 
-from typehaus.emit.draw.detail_components.config import M_TO_IN, PERIMETER_DRAIN
+from typehaus.emit.draw.detail_components.config import PERIMETER_DRAIN
 from typehaus.emit.draw.detail_components.geometry import (
     closed_region,
     outboard_is_high,
@@ -17,6 +17,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     wall_cut_bounds_m,
 )
 from typehaus.emit.draw.scene import IRNode, Polyline
+from typehaus.quantities import M_PER_IN
 
 
 def grade_line(u0: float, u1: float, grade_z: float, wall_face_u: float) -> list[IRNode]:
@@ -134,9 +135,9 @@ def build_below_grade_components(model, wall, crop, direction: str,
         return []
     face = u_hi if is_outboard_high else u_lo
 
-    face_in = face * M_TO_IN
-    grade_in, bottom_in = grade_z * M_TO_IN, cz0 * M_TO_IN
-    crop_lo_in, crop_hi_in = cu0 * M_TO_IN, cu1 * M_TO_IN
+    face_in = face / M_PER_IN
+    grade_in, bottom_in = grade_z / M_PER_IN, cz0 / M_PER_IN
+    crop_lo_in, crop_hi_in = cu0 / M_PER_IN, cu1 / M_PER_IN
     # Soil fills the crop on whichever side of the wall is outdoors, and the grade line runs
     # with it — mirrored, never assumed, so a wall detailed the other way round still reads.
     if is_outboard_high:
@@ -158,11 +159,11 @@ def build_below_grade_components(model, wall, crop, direction: str,
     diameter_in = _spec_inches(spec, "diameter")
     rock_width_in = _spec_inches(spec, "rock_width") or PERIMETER_DRAIN.rock_width_in
     rock_depth_in = _spec_inches(spec, "rock_depth") or PERIMETER_DRAIN.rock_depth_in
-    rock_depth_m = rock_depth_in / M_TO_IN
+    rock_depth_m = rock_depth_in * M_PER_IN
     if footing is not None and cz0 <= footing.z0_m and footing.z0_m + rock_depth_m <= cz1:
         offset = rock_width_in / 2.0 + PERIMETER_DRAIN.rock_offset_from_wall_in
         sign = 1.0 if is_outboard_high else -1.0
-        nodes += french_drain(face_in + sign * offset, footing.z0_m * M_TO_IN,
+        nodes += french_drain(face_in + sign * offset, footing.z0_m / M_PER_IN,
                               diameter_in=diameter_in, rock_width_in=rock_width_in,
                               rock_depth_in=rock_depth_in)
     return nodes
@@ -171,4 +172,4 @@ def build_below_grade_components(model, wall, crop, direction: str,
 def _spec_inches(spec, field: str) -> float | None:
     """One optional ``Length`` off a ``DrainTile``, in the drawing's inches."""
     length = getattr(spec, field, None) if spec is not None else None
-    return length.meters * M_TO_IN if length is not None else None
+    return length.meters / M_PER_IN if length is not None else None

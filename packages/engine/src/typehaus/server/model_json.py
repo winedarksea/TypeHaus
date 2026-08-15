@@ -195,6 +195,7 @@ def model_to_dict(
     model: ResolvedModel,
     *,
     revision: str = "",
+    content_hash: str = "",
     provenance: Provenance | None = None,
     findings: list[Finding] | None = None,
     preferences: Preferences | None = None,
@@ -225,6 +226,9 @@ def model_to_dict(
     return {
         # revision is the PATCH /plan precondition (#30); UI echoes it back on every op.
         "revision": revision,
+        # Stable across server restarts unlike `revision` (a fresh uuid per process) — the
+        # signal `npm run shots` needs to tell "the house changed" from "the server restarted".
+        "contentHash": content_hash,
         "units": "imperial",
         "canvas_objects": resolved_canvas_objects(
             model, lambda tag: _provenance(provenance, tag)
@@ -617,6 +621,7 @@ def write_model_json(
     path: Path,
     *,
     revision: str = "",
+    content_hash: str = "",
     provenance: Provenance | None = None,
     findings: list[Finding] | None = None,
     preferences: Preferences | None = None,
@@ -624,8 +629,8 @@ def write_model_json(
 ) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = model_to_dict(
-        model, revision=revision, provenance=provenance, findings=findings,
-        preferences=preferences, variants=variants,
+        model, revision=revision, content_hash=content_hash, provenance=provenance,
+        findings=findings, preferences=preferences, variants=variants,
     )
     # sort_keys for byte-determinism (→ 02 §Determinism).
     path.write_text(json.dumps(payload, indent=2, sort_keys=True))

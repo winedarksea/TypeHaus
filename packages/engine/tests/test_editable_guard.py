@@ -4,13 +4,11 @@ rather than let the move silently not persist. See loader._consistency_check."""
 
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 from typehaus.source import load_plan
+from _helpers import CATLIN, STARTER, copy_house
 
-CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
-STARTER = Path(__file__).resolve().parents[3] / "houses" / "starter"
 
 
 def _errors(result, check_id: str) -> list:
@@ -27,7 +25,7 @@ def test_catlin_has_no_uneditable_movable_elements() -> None:
 
 def test_movable_element_in_noneditable_file_is_a_hard_error(tmp_path: Path) -> None:
     dst = tmp_path / "catlin"
-    shutil.copytree(CATLIN, dst)
+    copy_house(CATLIN, dst)
     mep = dst / "plan" / "mep.py"
     # Strip the `# haus: editable` header → mep.py (which authors the water heater and
     # other placeables) becomes non-editable, reproducing the silent "move didn't save" bug.

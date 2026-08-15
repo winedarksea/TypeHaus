@@ -13,8 +13,9 @@ picking one silently would be choosing the answer.
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import structural_advisory as _advisory, unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result
 from typehaus.model.enums import LayerFunction
 
 _M_PER_FT = 0.3048
@@ -39,16 +40,6 @@ _PLAIN_CONCRETE_MAX_FILL_FT: dict[tuple[float, int], float] = {
 }
 
 
-def _advisory(cid: str, msg: str, tags: tuple[str, ...], result: Result,
-              fix_hint: str | None = None) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid,
-                   message=f"[advisory, not engineering] {msg}", element_tags=tags,
-                   result=result, fix_hint=fix_hint)
-
-
-def _unknown(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=f"UNKNOWN — {msg}",
-                   element_tags=tags, result=Result.UNKNOWN)
 
 
 def _structural_thickness_in(ctx: CheckContext, assembly_tag: str) -> float | None:

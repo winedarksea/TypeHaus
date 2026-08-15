@@ -14,8 +14,8 @@ import pytest
 from typehaus.checks import run
 from typehaus.checks.integrity.catalog_tags import CATALOGS
 from typehaus.source import load_plan
+from _helpers import HOUSES
 
-HOUSES = Path(__file__).resolve().parents[3] / "houses"
 
 
 def _dupes(report) -> list:

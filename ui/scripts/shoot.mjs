@@ -35,7 +35,7 @@ const BASELINE_DIR = join(UI_ROOT, "shots-baseline");
 const BASELINE_PREFIX = "laptop-light-";
 // Drawing digests, on the other hand, are committed for every shot — they are small, and
 // they are the guardrail that the chrome work never moves the drawing. Each carries the
-// engine's model revision so an unrelated house edit reads as "not comparable" rather than
+// engine's plan content hash so an unrelated house edit reads as "not comparable" rather than
 // as 34 drawing regressions.
 const FINGERPRINTS_FILE = join(BASELINE_DIR, "fingerprints.json");
 
@@ -222,7 +222,8 @@ async function main() {
         shot.name, probes, shot.viewport.mobile, baselineFingerprints, shot.viewport.deviceScaleFactor,
       ));
       if (probes.fingerprintDigest) {
-        capturedFingerprints[shot.name] = { digest: probes.fingerprintDigest, revision: probes.modelRevision };
+        capturedFingerprints[shot.name] =
+          { digest: probes.fingerprintDigest, contentHash: probes.modelContentHash };
       }
       process.stdout.write(".");
     }

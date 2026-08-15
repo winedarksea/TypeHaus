@@ -19,7 +19,7 @@ while a floor-to-ceiling sauna section gets the full room.
 from __future__ import annotations
 
 from typehaus.emit.draw.detail_components import config as cfg
-from typehaus.emit.draw.detail_components.config import LAYER, M_TO_IN
+from typehaus.emit.draw.detail_components.config import LAYER
 from typehaus.emit.draw.detail_components.geometry import (
     closed_region,
     flashing_nodes,
@@ -34,6 +34,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     wall_in_frame,
 )
 from typehaus.emit.draw.scene import IRNode, Polyline
+from typehaus.quantities import M_PER_IN
 
 
 def sauna_liner_base(model, wall, crop, direction, station) -> list[IRNode]:
@@ -60,9 +61,9 @@ def sauna_liner_base(model, wall, crop, direction, station) -> list[IRNode]:
         return []
     lo = min(min(iv[0], iv[1]) for iv in bands)
     hi = max(max(iv[0], iv[1]) for iv in bands)
-    hot_face = hot_face_m * M_TO_IN
+    hot_face = hot_face_m / M_PER_IN
     in_sign = -1.0 if is_outboard_high else 1.0  # toward the wall core, away from the room
-    slab_top = slab.z1_m * M_TO_IN
+    slab_top = slab.z1_m / M_PER_IN
     board_top = slab_top + cfg.SAUNA_BASEBOARD_IN
 
     nodes = rect_region(lo, slab_top, hi, board_top,
@@ -87,7 +88,7 @@ def sauna_room_interval(walls, direction: str, station: float):
     for wall in walls:
         lo, hi = wall_cut_bounds_m(wall, direction, station)
         if lo is not None:
-            spans.append((lo * M_TO_IN, hi * M_TO_IN))
+            spans.append((lo / M_PER_IN, hi / M_PER_IN))
     if len(spans) < 2:
         return None
     spans.sort(key=lambda s: (s[0] + s[1]) / 2.0)
@@ -111,7 +112,7 @@ def ceiling_slab_over(model, crop, direction, station, u_lo_in, u_hi_in):
         if solid.category != "slab" or not (mid_z < solid.z0_m <= hi_z + 0.05):
             continue
         for (a, b) in _ring_cut_intervals(solid.outline, direction, station):
-            lo, hi = min(a, b) * M_TO_IN, max(a, b) * M_TO_IN
+            lo, hi = min(a, b) / M_PER_IN, max(a, b) / M_PER_IN
             if lo <= u_hi_in and hi >= u_lo_in:
                 if best is None or solid.z0_m < best.z0_m:
                     best = solid
@@ -194,21 +195,21 @@ def build_sauna_room_components(model, walls, crop, direction, station) -> list[
         return []
     u_lo, u_hi = interval
     (cu0, _cz0), (cu1, _cz1) = crop
-    crop_lo, crop_hi = min(cu0, cu1) * M_TO_IN, max(cu0, cu1) * M_TO_IN
+    crop_lo, crop_hi = min(cu0, cu1) / M_PER_IN, max(cu0, cu1) / M_PER_IN
     if u_hi <= crop_lo or u_lo >= crop_hi:  # room interior not in frame
         return []
     floor = slab_at_junction(model, crop, direction, station,
-                             (u_lo + u_hi) / 2.0 / M_TO_IN)
+                             (u_lo + u_hi) / 2.0 * M_PER_IN)
     if floor is None:
         return []
-    floor_z = floor.z1_m * M_TO_IN
+    floor_z = floor.z1_m / M_PER_IN
     nodes: list[IRNode] = []
     nodes += sauna_floor_slope(u_lo, u_hi, floor_z)
     nodes += sauna_benches(u_lo, u_hi, floor_z)
     nodes += sauna_heater_clearance(u_lo, u_hi, floor_z)
     ceiling = ceiling_slab_over(model, crop, direction, station, u_lo, u_hi)
     if ceiling is not None:
-        nodes += sauna_drop_ceiling(u_lo, u_hi, ceiling.z0_m * M_TO_IN)
+        nodes += sauna_drop_ceiling(u_lo, u_hi, ceiling.z0_m / M_PER_IN)
     return nodes
 
 

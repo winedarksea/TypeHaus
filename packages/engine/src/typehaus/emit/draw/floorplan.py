@@ -10,11 +10,12 @@ come from the ``ResolvedModel`` (→ 20 "the UI never re-measures" rule, applied
 from __future__ import annotations
 
 from typehaus.emit.draw._shared import (
-    M_TO_IN,
     emit_bbox_dimension_chain,
     emit_facade_dimension_strings,
     emit_fixtures,
     emit_wall,
+)
+from typehaus.emit.draw._shared import (
     to_in as _in,
 )
 from typehaus.emit.draw.door_symbols import (
@@ -24,8 +25,9 @@ from typehaus.emit.draw.door_symbols import (
 )
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.model.enums import DoorOperation
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.resolve.geometry import rect_between
+from typehaus.resolve.geometry import opening_center, rect_between, wall_frame
 from typehaus.resolve.model import ResolvedModel
 
 
@@ -67,21 +69,20 @@ def _emit_openings(b: SceneBuilder, model: ResolvedModel, wall_tags: set[str]) -
         if wall is None:
             continue
         (sx, sy), (ex, ey) = wall.axis
-        length = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5 or 1.0
-        t = op.center_along_m / length
-        cx, cy = sx + (ex - sx) * t, sy + (ey - sy) * t
+        _origin, _tangent, (normal_x, normal_y), axis_length = wall_frame(wall)
+        length = axis_length or 1.0
+        cx, cy = opening_center(wall, op) or (sx, sy)
         angle = _angle(sx, sy, ex, ey)
         if op.is_door:
             _emit_door_symbol(b, model, op, (cx, cy), (ex - sx, ey - sy), length, angle,
-                              wall.thickness_m * M_TO_IN)
+                              wall.thickness_m / M_PER_IN)
             continue
         b.add(Symbol(
             name="window-mark", insert=_in((cx, cy)), rotation=angle,
-            scale=op.width_m * M_TO_IN, layer="A-GLAZ", uid=op.uid,
-            params={"width_in": op.width_m * M_TO_IN},
+            scale=op.width_m / M_PER_IN, layer="A-GLAZ", uid=op.uid,
+            params={"width_in": op.width_m / M_PER_IN},
         ))
         # Keep labels clear of the glazed opening while retaining the wall orientation.
-        normal_x, normal_y = -(ey - sy) / length, (ex - sx) / length
         b.add(Text(anchor=_in((cx + normal_x * 0.18, cy + normal_y * 0.18)),
                    content=op.tag, height=2.2, layer="A-GLAZ", align="center"))
 
@@ -99,7 +100,7 @@ def _emit_door_symbol(b: SceneBuilder, model: ResolvedModel, op, center: tuple[f
     """
     authored = model.plan.by_tag(op.tag)
     name = symbol_name_for_operation(_door_operation(model, op.type_ref))
-    width_in = op.width_m * M_TO_IN
+    width_in = op.width_m / M_PER_IN
     hinge_jamb_sign = -1.0 if getattr(authored, "flip_hinge", False) else 1.0
     insert = center if symbol_is_centre_anchored(name) else (
         center[0] + hinge_jamb_sign * axis_delta[0] / length * op.width_m / 2,
@@ -107,7 +108,7 @@ def _emit_door_symbol(b: SceneBuilder, model: ResolvedModel, op, center: tuple[f
     b.add(Symbol(
         name=name, insert=_in(insert), rotation=angle, scale=width_in, layer="A-DOOR",
         uid=op.uid,
-        params=door_symbol_params(name, width_in, op.height_m * M_TO_IN,
+        params=door_symbol_params(name, width_in, op.height_m / M_PER_IN,
                                   -1.0 if getattr(authored, "flip_swing", False) else 1.0,
                                   hinge_jamb_sign=hinge_jamb_sign,
                                   host_wall_thickness_in=host_wall_thickness_in),

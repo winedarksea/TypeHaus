@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.patterns import matches as _matches
@@ -9,14 +10,12 @@ from typehaus.model.patterns import matches as _matches
 
 def _err(check_id: str, msg: str, tags: tuple[str, ...] = (), hint: str | None = None,
          result: Result = Result.FAIL) -> Finding:
-    return Finding(severity=Severity.ERROR, check_id=check_id, message=msg,
-                   element_tags=tags, fix_hint=hint, result=result)
+    return advisory(check_id, msg, tags, result, fix=hint, severity=Severity.ERROR)
 
 
 def _warn(check_id: str, msg: str, tags: tuple[str, ...] = (),
           result: Result = Result.FAIL) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=check_id, message=msg,
-                   element_tags=tags, result=result)
+    return advisory(check_id, msg, tags, result, severity=Severity.WARN)
 
 
 @check(Tier.INTEGRITY, "integrity.tag_unique")

@@ -20,8 +20,9 @@ rules.
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import failed, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result
 
 # NEC 705.12(B)(3)(2), the "120% rule": bus rating x 1.2 >= main OCPD + Σ source breakers.
 _BUS_ALLOWANCE = 1.2
@@ -34,10 +35,11 @@ _RAPID_SHUTDOWN_LIMIT_V = 80.0
 
 def _finding(cid: str, result: Result, message: str, tags: tuple[str, ...],
              code: str, fix: str | None = None) -> Finding:
-    severity = Severity.ERROR if result is Result.FAIL else Severity.WARN
-    text = message if result is not Result.UNKNOWN else f"UNKNOWN — {message}"
-    return Finding(severity=severity, check_id=cid, message=text, element_tags=tags,
-                   code_ref=code, fix_hint=fix, result=result)
+    if result is Result.PASS:
+        return passed(cid, message, tags, code=code)
+    if result is Result.UNKNOWN:
+        return unknown(cid, message, tags, code=code, fix=fix)
+    return failed(cid, message, tags, code=code, fix=fix)
 
 
 @check(Tier.CODE, "code.NEC_705_12_interconnection")

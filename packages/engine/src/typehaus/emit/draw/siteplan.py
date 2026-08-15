@@ -19,9 +19,9 @@ from typehaus.emit.draw.scene import (
     Symbol,
     Text,
 )
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
-M_TO_IN = 39.37007874015748
 _DRAINAGE_RADIUS_FT = 40.0
 
 
@@ -341,4 +341,4 @@ def _project_onto_segment(point: tuple[float, float], a: tuple[float, float],
 
 
 def _in(point: tuple[float, float]) -> tuple[float, float]:
-    return point[0] * M_TO_IN, point[1] * M_TO_IN
+    return point[0] / M_PER_IN, point[1] / M_PER_IN

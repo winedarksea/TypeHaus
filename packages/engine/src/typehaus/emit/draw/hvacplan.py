@@ -10,10 +10,10 @@ from __future__ import annotations
 from typehaus.emit.draw._shared import emit_wall
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Symbol, Text
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.model import ResolvedModel
 
-_M_TO_IN = 39.37007874015748
 _SUPPLY_LAYER = "M-HVAC-SDFF"
 _RETURN_LAYER = "M-HVAC-RDFF"
 _EXHAUST_LAYER = "M-HVAC-EXHS"
@@ -53,7 +53,7 @@ def build_hvac_plan(model: ResolvedModel, storey: str) -> Scene:
             b.add(Polyline(points=tuple(_in(p) for p in outline), layer=layer, closed=True,
                            lineweight=0.35, uid=duct.uid, tag=f"{duct.tag}-seg{i}"))
         mid = duct.path[len(duct.path) // 2]
-        label = (f'{duct.width_m * _M_TO_IN:.0f}×{duct.depth_m * _M_TO_IN:.0f} '
+        label = (f'{duct.width_m / M_PER_IN:.0f}×{duct.depth_m / M_PER_IN:.0f} '
                 f'{duct.system.upper()}')
         b.add(Text(anchor=_in((mid[0], mid[1] + duct.width_m / 2 + 0.05)), content=label,
                    height=3.0, layer=layer))
@@ -61,7 +61,7 @@ def build_hvac_plan(model: ResolvedModel, storey: str) -> Scene:
             b.add(Leader(
                 anchor=NamedPoint(xy=_in((x, y)), name=duct.tag), at=_in((x, y)),
                 to=_in((x + 1.0, y + 1.0)),
-                text=(f'{duct.width_m * _M_TO_IN:.0f}×{duct.depth_m * _M_TO_IN:.0f} '
+                text=(f'{duct.width_m / M_PER_IN:.0f}×{duct.depth_m / M_PER_IN:.0f} '
                      f'{duct.system.upper()} IN JOIST BAY — CROSSES BRG WALL BETWEEN '
                      'JOISTS, FIRE BLOCKING REQ\'D'),
                 layer=layer,

@@ -18,10 +18,9 @@ import pytest
 from typehaus.emit.finishes import LAYER_VISIBILITY_GROUPS, layer_visibility_group
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
+from _helpers import HOUSES, REPO_ROOT
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
 VISIBILITY_TS = REPO_ROOT / "ui" / "src" / "model" / "visibility.ts"
-HOUSES = REPO_ROOT / "houses"
 
 
 def _ts_groups() -> list[str]:

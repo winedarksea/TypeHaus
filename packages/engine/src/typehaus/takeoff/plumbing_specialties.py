@@ -28,16 +28,15 @@ known, and it lands in the section that already exists for exactly this shape of
 from __future__ import annotations
 
 from typehaus.model.spatial import Appliance
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
-
-_M_TO_IN = 39.37007874015748
 
 
 def plumbing_specialties_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """In-line supply devices by the piece."""
     rows: dict[tuple[str, str, str, float], dict[str, object]] = {}
     for acc in model.pipe_accessories:
-        size = round((acc.diameter_m or 0.0) * _M_TO_IN, 2)
+        size = round((acc.diameter_m or 0.0) / M_PER_IN, 2)
         key = (acc.kind, acc.model, acc.system or "", size)
         entry = rows.setdefault(key, {"count": 0, "tags": []})
         entry["count"] = int(entry["count"]) + 1

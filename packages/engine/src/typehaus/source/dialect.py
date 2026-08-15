@@ -11,6 +11,7 @@ import libcst as cst
 
 from typehaus.findings import Finding, Result, Severity, SourceLoc
 from typehaus.model.registry import constructor_names
+from typehaus.source._naming import _dotted
 
 EDITABLE_HEADER = "# haus: editable"
 
@@ -158,14 +159,6 @@ class _DialectVisitor(cst.CSTVisitor):
                     f"'{name}' requires keyword arguments (positional allowed only for quantities)",
                 )
             self._check_expr(arg.value)
-
-
-def _dotted(node: cst.BaseExpression) -> str:
-    if isinstance(node, cst.Name):
-        return node.value
-    if isinstance(node, cst.Attribute):
-        return f"{_dotted(node.value)}.{node.attr.value}"
-    return ""
 
 
 def lint_source(

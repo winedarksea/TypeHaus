@@ -13,10 +13,10 @@ does. The switch's own draw is on its branch circuit like any other appliance.
 
 from __future__ import annotations
 
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 _M_TO_FT = 3.280839895013123
-_M_TO_IN = 39.37007874015748
 
 
 def _device_types(model: ResolvedModel) -> dict:
@@ -67,7 +67,7 @@ def data_raceway_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             continue
         key = (run.trade_size_m, run.service or "spare")
         row = groups.setdefault(key, {
-            "trade_size_in": round(run.trade_size_m * _M_TO_IN, 2),
+            "trade_size_in": round(run.trade_size_m / M_PER_IN, 2),
             "service": run.service or "spare",
             "runs": 0, "length_m": 0.0, "tags": []})
         row["runs"] = int(row["runs"]) + 1

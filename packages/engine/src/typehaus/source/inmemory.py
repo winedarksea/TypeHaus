@@ -22,7 +22,7 @@ from typing import Any
 from typehaus.model.base import Element
 from typehaus.model.ids import new_uid
 from typehaus.model.plan import PlanModel
-from typehaus.model.registry import element_kinds
+from typehaus.model.registry import _kind_has_uid, element_kinds
 from typehaus.source.ops import DELETE_FIELD, PatchOp, encode_value
 
 
@@ -49,11 +49,6 @@ def _eval_value(kind: str, name: str, value: Any) -> Any:
         return eval(expr, dict(_namespace()))  # noqa: S307 - dialect-only names, encoded here
     except Exception as exc:  # noqa: BLE001 - surfaced as an apply error
         raise InMemoryApplyError(f"cannot evaluate {kind}.{name} = {expr!r}: {exc}") from exc
-
-
-def _kind_has_uid(kind: str) -> bool:
-    cls = element_kinds().get(kind)
-    return cls is not None and "uid" in getattr(cls, "model_fields", {})
 
 
 def _build_element(op: PatchOp) -> tuple[Element, str | None]:

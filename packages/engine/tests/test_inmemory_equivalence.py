@@ -8,7 +8,6 @@ that over a corpus of ops (the plan's mandated apply-in-memory-vs-apply-to-sourc
 
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 import pytest
@@ -19,12 +18,13 @@ from typehaus.source.inmemory import apply_ops_to_plan, can_apply_in_memory
 from typehaus.model.ids import new_uid
 from typehaus.source.macros import draw_wall, move_nodes
 from typehaus.source.ops import PatchOp
+from _helpers import copy_house
 
 
 @pytest.fixture
 def house(tmp_path: Path, starter_dir: Path) -> Path:
     dst = tmp_path / "starter"
-    shutil.copytree(starter_dir, dst)
+    copy_house(starter_dir, dst)
     return dst
 
 

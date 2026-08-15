@@ -7,11 +7,11 @@ partition, blocking at a fixed height), and both are driven entirely by ``Framin
 
 from __future__ import annotations
 
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.tables import DEFAULT_TEE_BLOCKING_SPACING, member_actual
 from typehaus.resolve.geometry import add, scale
 from typehaus.resolve.model import FramedMember, ResolvedWall
 
-_M_PER_IN = 0.0254
 _EPSILON = 1e-9
 
 
@@ -27,7 +27,7 @@ def append_blocking_rows(members: list[FramedMember], rw: ResolvedWall, spec, me
     heights = getattr(spec, "blocking_heights", ()) or ()
     if not heights or len(stud_stations) < 2:
         return
-    thickness = member_actual(member)[0] * _M_PER_IN
+    thickness = member_actual(member)[0] * M_PER_IN
     block_height = thickness  # a flat 2x course
     max_bay = spacing * 1.5
     stations = sorted(stud_stations)
@@ -55,7 +55,7 @@ def append_tee_backing(members: list[FramedMember], rw: ResolvedWall, spec,
         return
     center = add(wall_start, scale(direction, station))
     if spec.tee_backing_style == "stud-pack":
-        thickness_m = member_actual(member)[0] * _M_PER_IN
+        thickness_m = member_actual(member)[0] * M_PER_IN
         for index, offset in enumerate((-thickness_m, thickness_m)):
             stud_station = min(max(station + offset, 0.0), axis_len)
             point = add(wall_start, scale(direction, stud_station))
@@ -67,12 +67,12 @@ def append_tee_backing(members: list[FramedMember], rw: ResolvedWall, spec,
             ))
         return
 
-    depth_m = member_actual(member)[1] * _M_PER_IN
+    depth_m = member_actual(member)[1] * M_PER_IN
     perpendicular = (-direction[1], direction[0])
     half_depth = depth_m / 2.0
     block_start = add(center, scale(perpendicular, -half_depth))
     block_end = add(center, scale(perpendicular, half_depth))
-    block_height = member_actual(member)[0] * _M_PER_IN
+    block_height = member_actual(member)[0] * M_PER_IN
     spacing = (spec.tee_blocking_spacing or DEFAULT_TEE_BLOCKING_SPACING).meters
     top = top_at(station)
     elevation = stud_bottom + spacing

@@ -6,7 +6,7 @@ import math
 
 from shapely.geometry import Point, Polygon
 
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result, Severity, advisory
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel, Ring
 from typehaus.resolve.placeable_clear_floor_obstruction import (
@@ -386,5 +386,6 @@ def _degrees(value: object | None) -> float:
 
 
 def _finding(check_id: str, tag: str, message: str, severity: Severity = Severity.ERROR) -> Finding:
-    return Finding(severity=severity, check_id=check_id, message=message,
-                   element_tags=(tag,), result=Result.FAIL if severity is Severity.ERROR else Result.UNKNOWN)
+    return advisory(check_id, message, (tag,),
+                    Result.FAIL if severity is Severity.ERROR else Result.UNKNOWN,
+                    severity=severity)

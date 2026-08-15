@@ -12,8 +12,8 @@ from typehaus.emit.draw.scene import Leader, Polyline
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
 from typehaus.quantities import inch
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 @pytest.fixture(scope="module")

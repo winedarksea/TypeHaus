@@ -54,11 +54,6 @@ class Occupancy(Enum):
     UNCONDITIONED = "unconditioned"
 
 
-# Occupancy classes used by the acoustic-adjacency advisory (#50).
-QUIET_OCCUPANCIES = frozenset({Occupancy.BEDROOM, Occupancy.OFFICE})
-NOISY_OCCUPANCIES = frozenset(
-    {Occupancy.BATHROOM, Occupancy.MECHANICAL, Occupancy.MEDIA, Occupancy.LAUNDRY}
-)
 # Sleeping rooms for R310 egress applicability.
 SLEEPING_OCCUPANCIES = frozenset({Occupancy.BEDROOM})
 

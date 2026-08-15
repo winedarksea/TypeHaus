@@ -22,8 +22,8 @@ from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 _DECK_PREFIXES = ("SGFS", "BM-SG", "FS-SG", "PT-SG")
 

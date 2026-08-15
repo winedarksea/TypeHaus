@@ -70,6 +70,10 @@ class ProjectState:
     checks_pending: bool = False
     # Per-stage rebuild timings in milliseconds (Phase 0). Surfaced via model_json()["perf"].
     timings: dict[str, float] = field(default_factory=dict)
+    # Hash of the house's on-disk plan source as of the last `rebuild()` — unlike `_revision`
+    # (a fresh uuid per process start), this is stable across restarts as long as the source is
+    # unchanged, so it is what `npm run shots` compares against a committed baseline (→ 20).
+    content_hash: str = ""
     # Client-facing monotonic revision token (Phase 2b): decoupled from the source content
     # hash so a fast push need not wait for the source writeback to land.
     _revision: str = field(default_factory=lambda: uuid.uuid4().hex[:16])
@@ -126,6 +130,7 @@ class ProjectState:
             result = load_plan(self.house_dir)
             timings["load_plan"] = (time.perf_counter() - t0) * 1000.0
             timings.update({f"load_plan.{k}": v for k, v in result.timings.items()})
+            self.content_hash = result.content_hash
             self.provenance = result.provenance
             self.findings = list(result.findings)
             self._load_findings = list(result.findings)
@@ -360,9 +365,14 @@ class ProjectState:
                 log.error(
                     "in-memory plan diverged from source after writeback; adopting source"
                 )
-                self.findings = list(reloaded.findings)
+                self.content_hash = reloaded.content_hash
                 self.provenance = reloaded.provenance
-                self._resolve_and_check(reloaded.plan, {})  # bumps _revision
+                # The reload's loader/dialect findings are the base this resolve sits on —
+                # omitting them dropped a required argument, so the one path that exists to
+                # recover from an applicator bug raised TypeError instead of recovering.
+                self._resolve_and_check(  # bumps _revision, sets self.findings
+                    reloaded.plan, {}, list(reloaded.findings)
+                )
                 if self._notify_diverged is not None:
                     self._notify_diverged()
             else:
@@ -377,6 +387,7 @@ class ProjectState:
             if self.model is None:
                 return {
                     "revision": revision,
+                    "contentHash": self.content_hash,
                     "units": "imperial", "projectNorth": 0.0,
                     "findings": [f.model_dump(mode="json") for f in self.findings],
                     "ok": False,
@@ -388,6 +399,7 @@ class ProjectState:
             payload = model_to_dict(
                 self.model,
                 revision=revision,
+                content_hash=self.content_hash,
                 provenance=self.provenance,
                 findings=self.findings,
                 preferences=load_preferences(self.house_dir),

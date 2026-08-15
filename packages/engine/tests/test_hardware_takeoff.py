@@ -10,6 +10,7 @@ import pytest
 
 from typehaus.model.enums import ConnectorKind
 from typehaus.model.structure import Connector
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import (
     FramedMember,
     ResolvedConstructionReturn,
@@ -35,29 +36,29 @@ from typehaus.takeoff.hardware_catalog import (
 from typehaus.takeoff.hardware_config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG,
 )
-from typehaus.takeoff.hardware_config import FT_TO_M, IN_TO_M
+from typehaus.takeoff.hardware_config import FT_TO_M
 
 FASTENERS = CONFIG.exterior_insulation_fasteners
-STRIP_SPACING_M = FASTENERS.strip_spacing_in * IN_TO_M
-FASTENER_PITCH_M = FASTENERS.fastener_pitch_along_strip_in * IN_TO_M
+STRIP_SPACING_M = FASTENERS.strip_spacing_in * M_PER_IN
+FASTENER_PITCH_M = FASTENERS.fastener_pitch_along_strip_in * M_PER_IN
 
 # The catlin exterior wall stack, interior→exterior (function, thickness_m, name).
 _CATLIN_EXT_STACK = [
-    ("finish", 0.625 * IN_TO_M, "gwb-int"),
-    ("structure", 5.5 * IN_TO_M, "stud"),
-    ("sheathing", 0.5 * IN_TO_M, "sheathing"),
-    ("membrane", 0.02 * IN_TO_M, "wrb"),
-    ("insulation", 2.0 * IN_TO_M, "polyiso"),
-    ("insulation", 2.0 * IN_TO_M, "eps"),
-    ("furring", 0.5 * IN_TO_M, "furring"),
-    ("cladding", 0.5 * IN_TO_M, "cladding"),
+    ("finish", 0.625 * M_PER_IN, "gwb-int"),
+    ("structure", 5.5 * M_PER_IN, "stud"),
+    ("sheathing", 0.5 * M_PER_IN, "sheathing"),
+    ("membrane", 0.02 * M_PER_IN, "wrb"),
+    ("insulation", 2.0 * M_PER_IN, "polyiso"),
+    ("insulation", 2.0 * M_PER_IN, "eps"),
+    ("furring", 0.5 * M_PER_IN, "furring"),
+    ("cladding", 0.5 * M_PER_IN, "cladding"),
 ]
 # A rainscreen batten straight over sheathing: nailed, not screwed through insulation.
 _RAINSCREEN_OVER_SHEATHING_STACK = [
-    ("structure", 5.5 * IN_TO_M, "stud"),
-    ("sheathing", 1.5 * IN_TO_M, "zip-r"),
-    ("furring", 0.375 * IN_TO_M, "rainscreen"),
-    ("cladding", 0.5 * IN_TO_M, "cladding"),
+    ("structure", 5.5 * M_PER_IN, "stud"),
+    ("sheathing", 1.5 * M_PER_IN, "zip-r"),
+    ("furring", 0.375 * M_PER_IN, "rainscreen"),
+    ("cladding", 0.5 * M_PER_IN, "cladding"),
 ]
 
 

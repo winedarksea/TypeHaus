@@ -16,7 +16,7 @@ between them, and both draw nothing when their subject is not genuinely in frame
 
 from __future__ import annotations
 
-from typehaus.emit.draw.detail_components.config import M_TO_IN, RIM_BAND, STACK_WIDTH_SHELF
+from typehaus.emit.draw.detail_components.config import RIM_BAND, STACK_WIDTH_SHELF
 from typehaus.emit.draw.detail_components.geometry import (
     face_of,
     flashing_nodes,
@@ -30,6 +30,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     wall_cut_bounds_m,
 )
 from typehaus.emit.draw.scene import IRNode
+from typehaus.quantities import M_PER_IN
 
 
 def _lower_and_upper(walls):
@@ -66,11 +67,11 @@ def rim_band_air_seal(model, walls, crop, direction, station) -> list[IRNode]:
     band = floor_band_at(model, upper.z0_m)
     if band is None:
         return []
-    band_z0, band_z1 = band[0] * M_TO_IN, band[1] * M_TO_IN
+    band_z0, band_z1 = band[0] / M_PER_IN, band[1] / M_PER_IN
     if band_z1 - band_z0 < RIM_BAND.min_band_depth_in:
         return []
     (_cu0, cz0), (_cu1, cz1) = crop
-    if band_z1 < min(cz0, cz1) * M_TO_IN or band_z0 > max(cz0, cz1) * M_TO_IN:
+    if band_z1 < min(cz0, cz1) / M_PER_IN or band_z0 > max(cz0, cz1) / M_PER_IN:
         return []  # band out of frame; a floating rim strip is worse than none
 
     cfg = RIM_BAND
@@ -131,17 +132,17 @@ def stack_width_shelf(model, walls, crop, direction, station) -> list[IRNode]:
         return []
     if is_outboard_high:
         lower_face, upper_face = lower_hi, upper_hi
-        ledge_in = (lower_face - upper_face) * M_TO_IN
+        ledge_in = (lower_face - upper_face) / M_PER_IN
     else:
         lower_face, upper_face = lower_lo, upper_lo
-        ledge_in = (upper_face - lower_face) * M_TO_IN
+        ledge_in = (upper_face - lower_face) / M_PER_IN
     cfg = STACK_WIDTH_SHELF
     if ledge_in < cfg.min_ledge_in:
         return []
 
     out_sign = 1.0 if is_outboard_high else -1.0
-    shelf_z = upper.z0_m * M_TO_IN
-    back_u = upper_face * M_TO_IN
+    shelf_z = upper.z0_m / M_PER_IN
+    back_u = upper_face / M_PER_IN
     # Back leg up behind the upper wall, fall outward across the ledge, drip off the edge.
     path = path_from_steps((back_u, shelf_z + cfg.back_leg_rise_in), [
         (0.0, -cfg.back_leg_rise_in),

@@ -16,7 +16,6 @@ from typehaus.emit.draw.detail_components.config import (
     BASEMENT_TO_FRAMED_WALL,
     FOUNDATION_FACE,
     INTERIOR_SLAB_DRIP,
-    M_TO_IN,
     SLAB_EDGE,
 )
 from typehaus.emit.draw.detail_components.geometry import (
@@ -31,6 +30,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     wall_cut_bounds_m,
 )
 from typehaus.emit.draw.scene import IRNode
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.accessories import BUG_SCREEN_HEIGHT_IN, BUG_SCREEN_MATERIAL
 
 
@@ -40,7 +40,7 @@ def basement_framed_wall(model, framed, concrete, crop, direction,
     is_outboard_high = outboard_is_high(framed, direction, station)
     if is_outboard_high is None or crop is None:
         return []
-    junction_z = framed.z0_m * M_TO_IN  # top of concrete == bottom of framed wall
+    junction_z = framed.z0_m / M_PER_IN  # top of concrete == bottom of framed wall
     intervals = layer_intervals(framed, direction, station)
     out_sign = 1.0 if is_outboard_high else -1.0
     cfg = BASEMENT_TO_FRAMED_WALL
@@ -147,7 +147,7 @@ def sill_gasket_in(model, wall) -> float:
         for layer in assembly.layers:
             spec = getattr(layer, "framing", None)
             if spec is not None and getattr(spec, "sill_gasket", None) is not None:
-                return spec.sill_gasket.meters * M_TO_IN
+                return spec.sill_gasket.meters / M_PER_IN
     return BASEMENT_TO_FRAMED_WALL.sill_gasket_in
 
 
@@ -177,13 +177,13 @@ def slab_thermal_break(model, wall, crop, direction, station) -> list[IRNode]:
     slab = slab_at_junction(model, crop, direction, station, inboard_face_m)
     if slab is None:
         return []
-    face = inboard_face_m * M_TO_IN
-    slab_top, slab_bottom = slab.z1_m * M_TO_IN, slab.z0_m * M_TO_IN
+    face = inboard_face_m / M_PER_IN
+    slab_top, slab_bottom = slab.z1_m / M_PER_IN, slab.z0_m / M_PER_IN
     spec = thermal_break_spec(model, slab)
-    thickness_in = (spec.thickness.meters * M_TO_IN if spec is not None
+    thickness_in = (spec.thickness.meters / M_PER_IN if spec is not None
                     else SLAB_EDGE.thermal_break_in)
     if spec is not None and spec.depth is not None:
-        slab_bottom = max(slab_bottom, slab_top - spec.depth.meters * M_TO_IN)
+        slab_bottom = max(slab_bottom, slab_top - spec.depth.meters / M_PER_IN)
     inner_edge = face + in_sign * thickness_in
     nodes = rect_region(face, slab_bottom, inner_edge, slab_top,
                         "thermal-break", "xps", "rigid", lineweight=0.35)
@@ -237,8 +237,8 @@ def interior_slab_drip_flashing(model, wall, crop, direction, station) -> list[I
     if slab is None or not slab_is_on_grade(model, slab):
         return []
     cfg = INTERIOR_SLAB_DRIP
-    face = inboard_face_m * M_TO_IN
-    slab_top = slab.z1_m * M_TO_IN
+    face = inboard_face_m / M_PER_IN
+    slab_top = slab.z1_m / M_PER_IN
     path = path_from_steps((face, slab_top + cfg.rise_in),
                            [(0.0, -cfg.rise_in),
                             (in_sign * cfg.run_in, 0.0),
@@ -270,12 +270,12 @@ def foam_protection_board(model, wall, crop, direction, station) -> list[IRNode]
     wall_top = (wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m)
     exposed_top = min(wall_top, max(cz0, cz1))
     exposed_bottom = max(grade_z, min(cz0, cz1))
-    height_in = (exposed_top - exposed_bottom) * M_TO_IN
+    height_in = (exposed_top - exposed_bottom) / M_PER_IN
     if height_in < FOUNDATION_FACE.min_exposed_height_in:
         return []
     out_sign = 1.0 if is_outboard_high else -1.0
     foam_out = face_of(foam, is_outboard_high, outer=True)
-    return rect_region(foam_out, exposed_bottom * M_TO_IN,
+    return rect_region(foam_out, exposed_bottom / M_PER_IN,
                        foam_out + out_sign * FOUNDATION_FACE.protection_board_in,
-                       exposed_top * M_TO_IN,
+                       exposed_top / M_PER_IN,
                        "foam-protection-board", "metal-dark", "SOLID", lineweight=0.4)

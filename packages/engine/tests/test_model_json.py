@@ -13,8 +13,8 @@ from typehaus.resolve import resolve
 from typehaus.quantities import inch
 from typehaus.server.model_json import model_to_dict
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 @pytest.fixture(scope="module")
@@ -318,3 +318,31 @@ def test_stairs_payload_carries_landing_depth(catlin_payload):
         assert stair["tread_depth_m"] == pytest.approx(inch(11).meters)
         assert stair["going_depth_m"] == pytest.approx(inch(10).meters)
         assert stair["nosing_depth_m"] == pytest.approx(inch(1).meters)
+
+
+def test_every_payload_key_has_a_ui_type(catlin_payload):
+    """The wire contract's cheap enforcement (→ Phase 5): every top-level key
+    ``model_to_dict`` emits must have a matching field on ``ui/src/model/types.ts``'s
+    ``Model`` interface. This is the whole mechanism keeping the two in lockstep — it used
+    to be a comment ("keep this file in lockstep with model_to_dict") that had already
+    silently dropped three whole blocks (alarms, floor_heat, variants) by the time anyone
+    checked. Line-scraping the field names out of the TS source is crude, but it needs no
+    TS toolchain and it catches exactly the failure mode that happened: a key present in
+    one language and absent in the other.
+    """
+    types_ts = (
+        Path(__file__).resolve().parents[3] / "ui" / "src" / "model" / "types.ts"
+    ).read_text()
+    start = types_ts.index("export interface Model {")
+    end = types_ts.index("\n}", start)
+    body = types_ts[start:end]
+    ts_fields = {
+        line.split(":", 1)[0].strip().rstrip("?")
+        for line in body.splitlines()
+        if ":" in line and not line.strip().startswith("//")
+    }
+    missing = sorted(set(catlin_payload) - ts_fields)
+    assert not missing, (
+        f"model_to_dict emits {missing} but ui/src/model/types.ts's Model interface "
+        "has no matching field(s) — the UI cannot see this data"
+    )

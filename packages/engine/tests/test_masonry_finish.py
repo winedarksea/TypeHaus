@@ -32,8 +32,8 @@ from typehaus.model import (
 )
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
+from _helpers import CATLIN
 
-CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 # The porch railing's brick wythe must land on the outboard face of each of the three walls:
 # the front wall faces the garden (south, -y) and the side walls face away from the porch

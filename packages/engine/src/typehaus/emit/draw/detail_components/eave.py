@@ -9,7 +9,7 @@ Neither reads in the drawing unless they are drawn, because neither is a model e
 
 from __future__ import annotations
 
-from typehaus.emit.draw.detail_components.config import M_TO_IN, SHEET_METAL
+from typehaus.emit.draw.detail_components.config import SHEET_METAL
 from typehaus.emit.draw.detail_components.geometry import (
     face_of,
     flashing_nodes,
@@ -20,6 +20,7 @@ from typehaus.emit.draw.detail_components.geometry import (
     rect_region,
 )
 from typehaus.emit.draw.scene import IRNode
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.roof_geometry import roof_height_at
 
 
@@ -69,13 +70,13 @@ def zero_overhang_eave(model, wall, crop, direction, station) -> list[IRNode]:
         nodes += flashing_nodes(drip, tag="drip-edge")
         nodes += box_gutter(clad_out, junction_z, out_sign)
 
-    nodes += eave_vent_screen(clad_out, junction_z, out_sign, cz0 * M_TO_IN)
+    nodes += eave_vent_screen(clad_out, junction_z, out_sign, cz0 / M_PER_IN)
     return nodes
 
 
 def _cut_point(direction: str, station: float, u_in: float) -> tuple[float, float]:
     """A plan point from the section's own frame: ``u`` across the cut, ``station`` along it."""
-    u_m = u_in / M_TO_IN
+    u_m = u_in * M_PER_IN
     return (u_m, station) if direction == "x" else (station, u_m)
 
 
@@ -88,7 +89,7 @@ def _roof_over(model, direction: str, station: float, clad_out_in: float):
     the eave is under.
     """
     point = _cut_point(direction, station, clad_out_in)
-    tolerance = 1.0 / M_TO_IN
+    tolerance = 1.0 * M_PER_IN
     covering = []
     for roof in model.roofs:
         xs = [p[0] for p in roof.footprint]
@@ -110,8 +111,8 @@ def _junction_z_in(roof, wall, direction: str, station: float, clad_out_in: floa
     no eave to detail anyway, falls back to its plate.
     """
     if roof is not None:
-        return roof_height_at(roof, _cut_point(direction, station, clad_out_in)) * M_TO_IN
-    return (wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m) * M_TO_IN
+        return roof_height_at(roof, _cut_point(direction, station, clad_out_in)) / M_PER_IN
+    return (wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m) / M_PER_IN
 
 
 def _authored_gutter_at(model, clad_out_in: float, direction: str) -> bool:
@@ -126,7 +127,7 @@ def _authored_gutter_at(model, clad_out_in: float, direction: str) -> bool:
         if not path:
             continue
         xy = path[0].xy_m
-        coord_in = (xy[0] if direction == "x" else xy[1]) * M_TO_IN
+        coord_in = (xy[0] if direction == "x" else xy[1]) / M_PER_IN
         if abs(coord_in - clad_out_in) <= 12.0:
             return True
     return False

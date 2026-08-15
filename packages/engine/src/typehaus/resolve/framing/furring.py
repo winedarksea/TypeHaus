@@ -38,6 +38,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.solver import _wall_top_elevations, band_axis
 from typehaus.resolve.framing.tables import DEFAULT_SPACING
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
+from typehaus.resolve.intervals import subtract as _subtract_spans
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedOpening, ResolvedWall
 
 #: Category every member here carries. Strapping is billed by ``(profile, category)`` like
@@ -223,36 +224,6 @@ def _overlaps(a_lo: float, a_hi: float, b_lo: float, b_hi: float) -> bool:
     return a_lo < b_hi - 1e-9 and b_lo < a_hi - 1e-9
 
 
-def _subtract_spans(lo: float, hi: float,
-                    cuts: list[tuple[float, float]]) -> list[tuple[float, float]]:
-    """``[lo, hi]`` with each interval in ``cuts`` removed, left to right.
-
-    ``cuts`` may be unsorted, overlap each other, or reach outside ``[lo, hi]`` — every cut
-    is clamped to ``[lo, hi]`` here, so a caller (an opening taller than the wall, one that
-    sits right at the band's edge) never has to clamp its own cuts before calling. An empty
-    ``cuts`` returns ``[(lo, hi)]`` unchanged, the identity a wall with no openings relies on.
-    """
-    if hi - lo <= 1e-9:
-        return []
-    clamped = sorted((max(lo, c0), min(hi, c1)) for c0, c1 in cuts if c1 > c0)
-    merged: list[tuple[float, float]] = []
-    for c0, c1 in clamped:
-        if c1 - c0 <= 1e-9:
-            continue
-        if merged and c0 <= merged[-1][1] + 1e-9:
-            merged[-1] = (merged[-1][0], max(merged[-1][1], c1))
-        else:
-            merged.append((c0, c1))
-
-    segments: list[tuple[float, float]] = []
-    cursor = lo
-    for c0, c1 in merged:
-        if c0 - cursor > 1e-9:
-            segments.append((cursor, c0))
-        cursor = max(cursor, c1)
-    if hi - cursor > 1e-9:
-        segments.append((cursor, hi))
-    return segments
 
 
 def _band_geometry(rw: ResolvedWall, layer):

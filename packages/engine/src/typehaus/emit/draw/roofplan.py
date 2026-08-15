@@ -18,9 +18,9 @@ from typehaus.emit.draw.scene import (
     Symbol,
     Text,
 )
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof
 
-_M_TO_IN = 39.37007874015748
 # Half-length of a slope arrow in inches (the writers draw the glyph from its params).
 _ARROW_HALF_IN = 24.0
 # Overhang dimensions inset this far from the footprint corner along the edge.
@@ -32,7 +32,7 @@ _MIN_OVERHANG_IN = 1.0
 
 
 def _in(p: tuple[float, float]) -> tuple[float, float]:
-    return (p[0] * _M_TO_IN, p[1] * _M_TO_IN)
+    return (p[0] / M_PER_IN, p[1] / M_PER_IN)
 
 
 def build_roof_plan(model: ResolvedModel) -> Scene:
@@ -123,7 +123,7 @@ def _emit_overhangs(b: SceneBuilder, model: ResolvedModel, roof: ResolvedRoof,
     cy1 = min(max(p[1] for p in clad_pts), fy1)
     overhangs = {"west": cx0 - fx0, "east": fx1 - cx1,
                  "south": cy0 - fy0, "north": fy1 - cy1}
-    if max(overhangs.values()) * _M_TO_IN >= _MIN_OVERHANG_IN:
+    if max(overhangs.values()) / M_PER_IN >= _MIN_OVERHANG_IN:
         b.add(Polyline(points=(_in((cx0, cy0)), _in((cx1, cy0)),
                                _in((cx1, cy1)), _in((cx0, cy1))),
                        layer="A-WALL-BELW", closed=True, lineweight=0.25,
@@ -136,7 +136,7 @@ def _emit_overhangs(b: SceneBuilder, model: ResolvedModel, roof: ResolvedRoof,
              "west": ((fx0, y_at), (cx0, y_at)), "east": ((cx1, y_at), (fx1, y_at))}
     seen: set = set()
     for edge in edge_order:
-        value_in = overhangs[edge] * _M_TO_IN
+        value_in = overhangs[edge] / M_PER_IN
         if value_in < _MIN_OVERHANG_IN:
             continue
         key = round(value_in * 4)  # distinct to the nearest 1/4"

@@ -7,11 +7,10 @@ applies to — a reasonable approximation near corners without a full offset-pol
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import failed, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
-
-_M_TO_IN = 39.37007874015748
-
+from typehaus.findings import Finding
+from typehaus.quantities import M_PER_IN
 
 # Setbacks are a *local zoning* requirement, not an IRC one — there is no section number to
 # cite, and citing one would be a fabrication. "local zoning" is the honest citation, and
@@ -20,18 +19,15 @@ _SETBACK_REF = "local zoning"
 
 
 def _pass(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   code_ref=_SETBACK_REF, result=Result.PASS)
+    return passed(cid, msg, tags, code=_SETBACK_REF)
 
 
 def _fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
-    return Finding(severity=Severity.ERROR, check_id=cid, message=msg, element_tags=tags,
-                   code_ref=_SETBACK_REF, result=Result.FAIL)
+    return failed(cid, msg, tags, code=_SETBACK_REF)
 
 
 def _unknown(cid: str, reason: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=f"UNKNOWN — {reason}",
-                   element_tags=tags, code_ref=_SETBACK_REF, result=Result.UNKNOWN)
+    return unknown(cid, reason, tags, code=_SETBACK_REF)
 
 
 @check(Tier.CODE, "code.site_setback")
@@ -54,7 +50,7 @@ def site_setback(ctx: CheckContext) -> list[Finding]:
             for point in (wall.axis[0], wall.axis[1]):
                 dist = Point(point).distance(edge)
                 if dist + 1e-6 < spec.distance.meters:
-                    shortfall_in = (spec.distance.meters - dist) * _M_TO_IN
+                    shortfall_in = (spec.distance.meters - dist) / M_PER_IN
                     violations.append((wall.tag, shortfall_in))
         if violations:
             tag, shortfall_in = max(violations, key=lambda item: item[1])

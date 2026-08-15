@@ -17,10 +17,10 @@ from typing import Any
 from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.model.ids import derive_child_guid, derive_guid
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry import light_run_band_profiles, rect_between
 from typehaus.resolve.model import ResolvedModel
 
-_M_TO_IN = 39.37007874015748
 _M_TO_FT = 3.280839895013123
 _MIN_RISE_M = 0.05  # a rise smaller than this is drawn flat
 
@@ -160,7 +160,7 @@ def _emit_conduit_run(f: Any, body: Any, run: Any, storeys: dict[str, Any],
         ))
         ll.ensure_pset(f, element, PSET_SOURCE, {"uid": run.uid, "tag": run.tag})
         ll.ensure_pset(f, element, "TypeHaus_Conduit", {
-            "trade_size_in": run.trade_size_m * _M_TO_IN,
+            "trade_size_in": run.trade_size_m / M_PER_IN,
             "from_ref": run.from_ref or "", "to_ref": run.to_ref or "",
             "length_ft": run.length_m * 3.280839895013123,
             "service": run.service or "spare",

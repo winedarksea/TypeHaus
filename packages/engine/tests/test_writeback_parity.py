@@ -9,7 +9,6 @@ browser with no native deps.
 from __future__ import annotations
 
 import re
-import shutil
 from pathlib import Path
 
 import pytest
@@ -18,6 +17,7 @@ from typehaus.source import load_plan
 from typehaus.source import writeback as W
 from typehaus.source.coordinator import ProjectCoordinator
 from typehaus.source.ops import PatchOp, RawExpr
+from _helpers import copy_house
 
 _UID = re.compile(r'uid="[0-9A-Z]{10}"')
 
@@ -90,7 +90,7 @@ def test_read_helpers_agree(main_src: str) -> None:
 def test_pure_backend_coordinator_round_trips(tmp_path: Path, starter_dir: Path) -> None:
     """Full add→undo and delete→undo identity under the pure backend (no libcst mutation)."""
     dst = tmp_path / "starter"
-    shutil.copytree(starter_dir, dst)
+    copy_house(starter_dir, dst)
     main = dst / "plan" / "storeys" / "main.py"
     try:
         W.set_backend("py")

@@ -159,7 +159,19 @@ class GeometryModel:
     elements: tuple[ElementGeometry, ...] = field(default_factory=tuple)
 
     def by_uid(self, uid: str) -> ElementGeometry | None:
-        return next((el for el in self.elements if el.uid == uid), None)
+        return self._uid_index().get(uid)
+
+    def _uid_index(self) -> dict[str, ElementGeometry]:
+        """Uid -> element, built once per instance and cached like ``PlanModel._tag_index``:
+        keyed on the identity of ``self.elements`` so a ``dataclasses.replace()`` copy (this
+        class is frozen) misses and rebuilds rather than inheriting a stale index. Both
+        emitters called this once per element via a linear scan over the whole model."""
+        cached = self.__dict__.get("_uid_index_cache")
+        if cached is not None and cached[0] is self.elements:
+            return cached[1]
+        index = {el.uid: el for el in self.elements}
+        object.__setattr__(self, "_uid_index_cache", (self.elements, index))
+        return index
 
     def of_kind(self, kind: str) -> tuple[ElementGeometry, ...]:
         return tuple(el for el in self.elements if el.kind == kind)

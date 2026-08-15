@@ -12,7 +12,6 @@ from enum import Enum
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from pydantic import GetCoreSchemaHandler
     from pydantic_core import CoreSchema
 
 
@@ -55,23 +54,3 @@ def pydantic_quantity_schema(
             lambda v: v.to_source(), when_used="json"
         ),
     )
-
-
-class QuantityMeta:
-    """Mixin providing pydantic-v2 integration hook expectations.
-
-    Concrete quantity classes implement ``to_source`` and ``fmt`` and register a core
-    schema via ``__get_pydantic_core_schema__``; this base just documents the contract.
-    """
-
-    def to_source(self) -> str:  # pragma: no cover - interface
-        raise NotImplementedError
-
-    def fmt(self, system: UnitSystem = UnitSystem.IMPERIAL) -> str:  # pragma: no cover
-        raise NotImplementedError
-
-    @classmethod
-    def __get_pydantic_core_schema__(
-        cls, _source: type, _handler: GetCoreSchemaHandler
-    ) -> CoreSchema:  # pragma: no cover - interface
-        raise NotImplementedError

@@ -27,8 +27,8 @@ from typehaus.model import (
 )
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
+from _helpers import STARTER
 
-STARTER = Path(__file__).resolve().parents[3] / "houses" / "starter"
 
 
 def _lib() -> Library:

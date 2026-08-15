@@ -125,6 +125,7 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
 
         model.geometry = build_geometry(model)
 
+    model.index_by_tag()
     return model, findings
 
 

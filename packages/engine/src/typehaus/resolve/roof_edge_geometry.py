@@ -22,7 +22,6 @@ from typehaus.resolve.roof_layer_setbacks import above_structure_layers
 # construction. Also the tolerance for "this wall sits under this roof".
 CLOSURE_TOLERANCE_M = inch(0.25).meters
 FOOTPRINT_TOLERANCE_M = inch(1.0).meters
-METERS_PER_INCH = inch(1).meters
 
 # Which `layer_edge_setbacks` key an edge run's outward normal names.
 EDGE_NAMES = {(-1.0, 0.0): "west", (1.0, 0.0): "east",

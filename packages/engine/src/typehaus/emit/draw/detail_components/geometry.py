@@ -20,8 +20,9 @@ from __future__ import annotations
 
 import math
 
-from typehaus.emit.draw.detail_components.config import LAYER, M_TO_IN
+from typehaus.emit.draw.detail_components.config import LAYER
 from typehaus.emit.draw.scene import Hatch, IRNode, Polyline
+from typehaus.quantities import M_PER_IN
 
 
 def closed_region(points, tag: str, material: str | None, pattern: str | None,
@@ -195,7 +196,7 @@ def layer_intervals(wall, direction: str, station: float) -> dict:
         if ivs:
             lo = min(min(iv) for iv in ivs)
             hi = max(max(iv) for iv in ivs)
-            out[layer.name] = (lo * M_TO_IN, hi * M_TO_IN, layer.function)
+            out[layer.name] = (lo / M_PER_IN, hi / M_PER_IN, layer.function)
     return out
 
 

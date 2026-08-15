@@ -21,8 +21,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-M_TO_IN = 39.37007874015748
-
 LAYER = "A-DETL-CMPT"
 
 
@@ -244,8 +242,6 @@ SAUNA_FLOOR_DRAIN_DEPTH_IN = 1.0
 SAUNA_FLOOR_DRAIN_LIP_IN = 0.5
 
 # Structure above (``structure``).
-SAUNA_CEILING_SLAB_IN = 9.0
-SAUNA_CLEAR_HEIGHT_IN = 108.0
 SAUNA_DROP_DEPTH_IN = 3.5
 SAUNA_DROP_GAP_IN = 1.0
 

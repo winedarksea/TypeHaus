@@ -15,6 +15,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from typehaus.diff._json_report import JsonReport
 from typehaus.diff.ifc_adapter import baseline_elems
 from typehaus.diff.report import DiffReport, build_report
 from typehaus.diff.variants import LayerThicknessOverride, apply_layer_thickness
@@ -98,7 +99,7 @@ class CheckDelta:
 
 
 @dataclass
-class CompareReport:
+class CompareReport(JsonReport):
     """Semantic element diff + quantity, envelope and check deltas between two variants."""
 
     label_a: str
@@ -123,11 +124,6 @@ class CompareReport:
                                 for e in self.envelope_deltas],
             "check_deltas": [asdict(c) for c in self.check_deltas],
         }
-
-    def write(self, path: Path) -> Path:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(self.to_json())
-        return path
 
 
 def apply_assembly_swaps(plan: "PlanModel", swaps: dict[str, str]) -> "PlanModel":

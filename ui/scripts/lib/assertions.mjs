@@ -97,10 +97,12 @@ export const PROBE_DRAWING_FINGERPRINT = `
   return {
     markup: clone.outerHTML,
     tokens,
-    // The engine's model revision. Without it this check cannot tell "the chrome moved the
-    // drawing" from "somebody edited the house", and an unrelated plan edit lights up all 34
-    // shots as failures — which is how a guard gets ignored.
-    revision: window.__haus?.store?.getState().model?.revision ?? null,
+    // The engine's plan content hash — stable across server restarts, unlike revision
+    // (a fresh uuid per process, which can never again equal a committed baseline once the
+    // server has restarted even once). Without this the check cannot tell "the chrome moved
+    // the drawing" from "somebody edited the house", and an unrelated plan edit lights up all
+    // 34 shots as failures — which is how a guard gets ignored.
+    contentHash: window.__haus?.store?.getState().model?.contentHash ?? null,
   };
 `;
 
@@ -183,16 +185,16 @@ export function judge(shotName, probes, isPhone, baselineFingerprints, deviceSca
   if (probes.fingerprint) {
     const digest = hashFingerprint(probes.fingerprint);
     probes.fingerprintDigest = digest;
-    probes.modelRevision = probes.fingerprint.revision;
+    probes.modelContentHash = probes.fingerprint.contentHash;
     const baseline = baselineFingerprints[shotName];
     if (baseline !== undefined) {
-      // A different model revision means the house itself was edited, so the digests are
-      // simply not comparable — say so rather than reporting a drawing regression.
-      const staleModel = baseline.revision && probes.fingerprint.revision
-        && baseline.revision !== probes.fingerprint.revision;
+      // A different content hash means the house's plan source itself changed, so the
+      // digests are simply not comparable — say so rather than reporting a drawing regression.
+      const staleModel = baseline.contentHash && probes.fingerprint.contentHash
+        && baseline.contentHash !== probes.fingerprint.contentHash;
       if (staleModel) {
         add("drawing-unchanged", true,
-          `model revision changed (${baseline.revision} -> ${probes.fingerprint.revision}); not comparable`);
+          `plan content changed (${baseline.contentHash} -> ${probes.fingerprint.contentHash}); not comparable`);
       } else {
         add("drawing-unchanged", baseline.digest === digest,
           baseline.digest === digest ? "identical" : `digest ${baseline.digest} -> ${digest}`);
@@ -221,6 +223,9 @@ export function hashFingerprint(fingerprint) {
 }
 
 /** True when the served house is not the one the baseline digests were taken against. */
-export function modelRevisionChanged(fingerprint, baseline) {
-  return Boolean(fingerprint?.revision && baseline?.revision && fingerprint.revision !== baseline.revision);
+export function modelContentChanged(fingerprint, baseline) {
+  return Boolean(
+    fingerprint?.contentHash && baseline?.contentHash
+      && fingerprint.contentHash !== baseline.contentHash,
+  );
 }

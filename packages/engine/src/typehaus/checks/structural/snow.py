@@ -11,8 +11,9 @@ leaves the rest where the sheet put it.
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import structural_advisory as _advisory, unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result
 from typehaus.model.enums import ConnectorKind
 
 _M_PER_FT = 0.3048
@@ -43,16 +44,6 @@ _RAFTER_SPAN_FT: dict[tuple[str, float], float] = {
 }
 
 
-def _advisory(cid: str, msg: str, tags: tuple[str, ...], result: Result,
-              fix_hint: str | None = None) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid,
-                   message=f"[advisory, not engineering] {msg}", element_tags=tags,
-                   result=result, fix_hint=fix_hint)
-
-
-def _unknown(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=f"UNKNOWN — {msg}",
-                   element_tags=tags, result=Result.UNKNOWN)
 
 
 # --- sliding snow ---------------------------------------------------------------------

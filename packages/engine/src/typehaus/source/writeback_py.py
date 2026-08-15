@@ -22,7 +22,7 @@ from __future__ import annotations
 import ast
 
 from typehaus.model import ids
-from typehaus.model.registry import element_kinds
+from typehaus.model.registry import _kind_has_uid
 from typehaus.source.ops import (
     DELETE_FIELD,
     PatchOp,
@@ -82,11 +82,6 @@ def _str_const(node: ast.AST | None) -> str | None:
 def _call_tag(call: ast.Call) -> str | None:
     kw = _kw(call, "tag")
     return _str_const(kw.value) if kw is not None else None
-
-
-def _kind_has_uid(kind: str) -> bool:
-    cls = element_kinds().get(kind)
-    return cls is not None and "uid" in getattr(cls, "model_fields", {})
 
 
 def _module_list_assigns(tree: ast.Module):

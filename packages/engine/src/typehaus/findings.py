@@ -65,3 +65,36 @@ def element_error(check_id: str, message: str, tag: str) -> Finding:
     """
     return Finding(severity=Severity.ERROR, check_id=check_id, message=message,
                    element_tags=(tag,), result=Result.FAIL)
+
+
+# The general-purpose four below are ``checks/_authoring.py``'s actual implementation —
+# re-exported from there for every checks-tier module. They live in this module, rather
+# than in ``checks/``, for the same reason ``element_error`` does: ``typehaus.checks``'s
+# package __init__ eagerly imports the whole checks tree (registering every check), which
+# reaches back into ``typehaus.resolve`` (e.g. ``checks.mep.hvac`` -> ``resolve.mep`` ->
+# ``resolve.placeables``). A resolver or source-loader module that needs one of these and
+# imported it from ``typehaus.checks`` would import the checks package mid-init and cycle;
+# importing from here, a leaf module with no checks/resolve dependency of its own, does not.
+
+
+def passed(cid: str, msg: str, tags: tuple[str, ...] = (), code: str | None = None) -> Finding:
+    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
+                   code_ref=code, result=Result.PASS)
+
+
+def failed(cid: str, msg: str, tags: tuple[str, ...] = (), code: str | None = None,
+           fix: str | None = None) -> Finding:
+    return Finding(severity=Severity.ERROR, check_id=cid, message=msg, element_tags=tags,
+                   code_ref=code, fix_hint=fix, result=Result.FAIL)
+
+
+def unknown(cid: str, reason: str, tags: tuple[str, ...] = (), code: str | None = None,
+            fix: str | None = None) -> Finding:
+    return Finding(severity=Severity.WARN, check_id=cid, message=f"UNKNOWN — {reason}",
+                   element_tags=tags, code_ref=code, fix_hint=fix, result=Result.UNKNOWN)
+
+
+def advisory(cid: str, msg: str, tags: tuple[str, ...], result: Result, code: str | None = None,
+             fix: str | None = None, severity: Severity = Severity.WARN) -> Finding:
+    return Finding(severity=severity, check_id=cid, message=msg, element_tags=tags,
+                   code_ref=code, fix_hint=fix, result=result)

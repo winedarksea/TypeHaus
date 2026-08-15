@@ -14,7 +14,7 @@ from typing import Any
 import libcst as cst
 
 from typehaus.model.ids import new_uid
-from typehaus.model.registry import element_kinds
+from typehaus.model.registry import _kind_has_uid
 from typehaus.source.ops import (
     DELETE_FIELD,
     PatchOp,
@@ -83,12 +83,6 @@ def _make_arg(name: str, source_expr: str) -> cst.Arg:
             whitespace_after=cst.SimpleWhitespace(""),
         ),
     )
-
-
-def _kind_has_uid(kind: str) -> bool:
-    """Element kinds carry a uid; library objects (Assembly/Layer/Material) do not."""
-    cls = element_kinds().get(kind)
-    return cls is not None and "uid" in getattr(cls, "model_fields", {})
 
 
 def _build_call(op: PatchOp, uid: str) -> cst.Call:

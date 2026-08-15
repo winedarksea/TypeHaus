@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-_M_TO_IN = 39.37007874015748
+from typehaus.quantities import M_PER_IN
 
 # MN Plumbing Code Table 702.1 (private). A tub-shower is one fixture, valued as a tub.
 DFU_BY_SYMBOL: dict[str, float] = {
@@ -183,7 +183,7 @@ def required_supply_size_in(wsfu: float) -> float | None:
 
 def trap_arm_limit_in(diameter_m: float) -> float | None:
     """Max trap-arm length for a trap-arm diameter (Table 1002.2); None = no row."""
-    diameter_in = round(diameter_m * _M_TO_IN, 2)
+    diameter_in = round(diameter_m / M_PER_IN, 2)
     for size_in, limit in TRAP_ARM_MAX_IN.items():
         if abs(diameter_in - size_in) < 0.06:
             return limit

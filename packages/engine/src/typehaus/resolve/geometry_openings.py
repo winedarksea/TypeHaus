@@ -16,9 +16,8 @@ re-blessing.
 
 from __future__ import annotations
 
-import math
-
 from typehaus.model.enums import DoorOperation
+from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.geometry_ir import GPart, GPrism
 from typehaus.resolve.geometry_walls import is_raked, wall_top_at
 from typehaus.resolve.model import ResolvedWall
@@ -68,11 +67,9 @@ def _exterior_face(wall: ResolvedWall) -> tuple[float, float] | None:
     layers = wall.depth_layers()
     if len(layers) < 2 or layers[-1].function.strip().lower() != "cladding":
         return None
-    (x0, y0), (x1, y1) = wall.axis
-    length = math.hypot(x1 - x0, y1 - y0)
-    if length < 1e-9:
+    (x0, y0), _tangent, (nx, ny), axis_length = wall_frame(wall)
+    if axis_length <= 1e-9:
         return None
-    nx, ny = -(y1 - y0) / length, (x1 - x0) / length
 
     def proj(ring) -> list[float]:
         return [(px - x0) * nx + (py - y0) * ny for px, py in ring]
@@ -98,13 +95,10 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
     """
     if opening.kind == "rough_opening":
         return ()
-    (x0, y0), (x1, y1) = wall.axis
-    length = math.hypot(x1 - x0, y1 - y0)
-    if length < 1e-9:
+    _origin, (ux, uy), (nx, ny), axis_length = wall_frame(wall)
+    if axis_length <= 1e-9:
         return ()
-    ux, uy = (x1 - x0) / length, (y1 - y0) / length
-    nx, ny = -uy, ux  # right-hand wall normal (across the wall depth)
-    posx, posy = x0 + ux * opening.center_along_m, y0 + uy * opening.center_along_m
+    posx, posy = opening_center(wall, opening)
     z0, sill = wall.z0_m, opening.sill_m
     width = opening.width_m
     # A gable/ToRoof wall's top slopes, so the product is clipped by the rake over *both*

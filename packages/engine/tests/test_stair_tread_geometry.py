@@ -36,8 +36,8 @@ from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedStair
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 _TREAD_THICKNESS_M = inch(1.5).meters
 # A profile string is a rounded human-readable catalog key ("deck 10.3333x1.5"), so a
 # going read back out of one lands within a thou of the resolver's own float.

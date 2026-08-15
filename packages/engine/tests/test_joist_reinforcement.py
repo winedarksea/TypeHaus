@@ -31,8 +31,8 @@ from typehaus.resolve.floors import _reinforcement_members
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.source import load_plan
 from typehaus.takeoff.framing import framing_takeoff
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 PLY_WIDTH_M = cross_section("2x8").width_m  # 1.5"
 SPACING_M = inch(16).meters

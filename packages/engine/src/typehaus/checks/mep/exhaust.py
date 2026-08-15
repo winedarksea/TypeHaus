@@ -8,8 +8,9 @@ in feet and elbows; the other two are relationships between runs.
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import failed, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result
 from typehaus.model.enums import DuctSystem
 
 # M1502.4.5.1: 35 feet of developed length from the connection to the termination, less
@@ -22,10 +23,11 @@ _MIN_TURN_DEGREES = 20.0
 
 
 def _finding(cid, result, message, tags, code, fix=None) -> Finding:
-    severity = Severity.ERROR if result is Result.FAIL else Severity.WARN
-    text = message if result is not Result.UNKNOWN else f"UNKNOWN — {message}"
-    return Finding(severity=severity, check_id=cid, message=text, element_tags=tags,
-                   code_ref=code, fix_hint=fix, result=result)
+    if result is Result.PASS:
+        return passed(cid, message, tags, code=code)
+    if result is Result.UNKNOWN:
+        return unknown(cid, message, tags, code=code, fix=fix)
+    return failed(cid, message, tags, code=code, fix=fix)
 
 
 @check(Tier.CODE, "code.M1502_dryer_exhaust")

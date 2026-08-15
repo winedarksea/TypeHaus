@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, failed as _error
 from typehaus.model import Furniture, FurnitureType, MeshRef, deg, m, pt
 from typehaus.model.ids import new_uid
 from typehaus.model.plan import PlanModel
@@ -79,8 +79,3 @@ def _instance_from_record(record: dict, rooms: dict[str, str], known_types: set[
         position=pt(m(float(x)), m(float(y))),
         rotation=deg(float(record["rotation_degrees"])) if "rotation_degrees" in record else None,
     )
-
-
-def _error(check_id: str, message: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.ERROR, check_id=check_id, message=message,
-                   element_tags=tags, result=Result.FAIL)

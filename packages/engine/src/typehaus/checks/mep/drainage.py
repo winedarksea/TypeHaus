@@ -12,23 +12,18 @@ stage of the drawing set, which is a note to the author and not a permit blocker
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import advisory, passed as _pass
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result
 from typehaus.model.mep import Sump
 from typehaus.model.structure import Drywell, FootingBedding, FrenchDrain
 from typehaus.model.trim import Downspout, Gutter
 
 
-def _pass(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.PASS)
-
-
 def _advisory_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
     # Advisory findings never carry ERROR severity — that is reserved for hard blockers, and
     # the permit integrity gate treats any ERROR as one regardless of check_id.
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.FAIL)
+    return advisory(cid, msg, tags, Result.FAIL)
 
 
 def _elements(ctx: CheckContext):

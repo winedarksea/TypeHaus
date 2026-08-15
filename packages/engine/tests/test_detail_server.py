@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 import pytest
 
 from typehaus.emit.draw.details import detail_index, detail_payload
+from _helpers import CATLIN, copy_house
 
-CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 def test_detail_index_and_payload_are_pure_data(catlin_model):
@@ -29,7 +28,7 @@ def test_detail_index_and_payload_are_pure_data(catlin_model):
 @pytest.fixture
 def catlin_house(tmp_path: Path) -> Path:
     dst = tmp_path / "catlin"
-    shutil.copytree(CATLIN, dst)
+    copy_house(CATLIN, dst)
     return dst
 
 

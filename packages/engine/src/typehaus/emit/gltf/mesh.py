@@ -4,6 +4,7 @@ by colour so each object becomes one mesh of a few primitives."""
 from __future__ import annotations
 
 import math
+from typing import TYPE_CHECKING
 
 from typehaus.emit.gltf.geometry import (
     Vec3,
@@ -15,6 +16,11 @@ from typehaus.emit.gltf.geometry import (
     _ring_signed_area,
     _to_gltf,
 )
+
+
+if TYPE_CHECKING:  # the IR types are annotations only — importing them at runtime would
+    # make the glTF emitter depend on the resolver package it is fed from.
+    from typehaus.resolve.geometry_ir import GBox, GMesh
 
 
 _Rect = tuple[float, float, float, float]  # (x0, x1, y0, y1), axis-aligned

@@ -3,19 +3,19 @@
 from __future__ import annotations
 
 import asyncio
-import shutil
 from pathlib import Path
 
 import pytest
 
 from typehaus.server.events import EventBus
 from typehaus.server.app import _is_project_source_change
+from _helpers import copy_house
 
 
 @pytest.fixture
 def house(tmp_path: Path, starter_dir: Path) -> Path:
     dst = tmp_path / "starter"
-    shutil.copytree(starter_dir, dst)
+    copy_house(starter_dir, dst)
     return dst
 
 
@@ -31,13 +31,28 @@ def client(house: Path):
 def test_model_contract_carries_revision_and_provenance(client):
     c, _ = client
     model = c.get("/model").json()
-    assert model["ok"] is True
     assert model["revision"]
     assert model["units"] == "imperial"
     assert "findings" in model
     wall = model["walls"][0]
     assert wall["provenance"]["file"].endswith(".py")
     assert wall["provenance"]["line"] > 0
+
+
+def test_ok_agrees_with_the_findings_it_was_derived_from(client):
+    """`ok` must be a function of the findings in the same payload, at any check state.
+
+    This used to be `assert model["ok"] is True`, which raced the Phase-3 async check job:
+    `ok` reflects resolve-time findings alone until the job lands, so the assertion passed
+    or failed on timing (measured: 1 of 3 identical runs failed). The invariant that does
+    hold at every moment is the agreement between `ok` and `findings` — and it also catches
+    the starter house's five real code-check ERRORs once the job has landed, instead of
+    hiding them behind a coin flip.
+    """
+    c, _ = client
+    model = c.get("/model").json()
+    errors = [f for f in model["findings"] if f["severity"] == "error"]
+    assert model["ok"] is (not errors), (model["ok"], model["checksPending"], errors)
 
 
 def test_asset_creation_is_watched_without_observing_output_files(tmp_path: Path):

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 import pytest
@@ -16,12 +15,13 @@ from typehaus.source.coordinator import (
 from typehaus.source.fmt import fmt_source
 from typehaus.source.ops import PatchOp, RawExpr, encode_value
 from typehaus.source.writeback import WritebackError, apply_ops_to_source
+from _helpers import copy_house
 
 
 @pytest.fixture
 def house(tmp_path: Path, starter_dir: Path) -> Path:
     dst = tmp_path / "starter"
-    shutil.copytree(starter_dir, dst)
+    copy_house(starter_dir, dst)
     return dst
 
 

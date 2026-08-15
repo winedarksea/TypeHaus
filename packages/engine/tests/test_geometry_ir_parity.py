@@ -21,8 +21,8 @@ from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry_members import MINIMUM_EXTENT_M, member_box, member_uid
 from typehaus.source import load_plan
+from _helpers import HOUSES
 
-HOUSES = Path(__file__).resolve().parents[3] / "houses"
 TOL = 1e-6
 
 

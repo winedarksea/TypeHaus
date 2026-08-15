@@ -12,18 +12,31 @@ from __future__ import annotations
 import math
 
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.enums import (DuctRouting, LuminaireForm, PipeAccessoryKind,
-                                   Service)
-from typehaus.model.mep import (ConduitRun, DuctRun, LightRun, PipeAccessory, PipeRun,
-                                SleevePenetration)
+from typehaus.model.enums import DuctRouting, LuminaireForm, PipeAccessoryKind, Service
+from typehaus.model.mep import (
+    ConduitRun,
+    DuctRun,
+    LightRun,
+    PipeAccessory,
+    PipeRun,
+    SleevePenetration,
+)
 from typehaus.model.spatial import Appliance, Fixture
-from typehaus.quantities import inch
+from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.geometry import circle_outline, length, sub
-from typehaus.resolve.round_solids import PIPE_FACETS, sloped_run_bands
-from typehaus.resolve.model import (ResolvedConduitRun, ResolvedDuct, ResolvedLightRun,
-                                    ResolvedModel, ResolvedPipeAccessory, ResolvedPipeRun,
-                                    ResolvedSleeve, ResolvedSolid, Ring)
+from typehaus.resolve.model import (
+    ResolvedConduitRun,
+    ResolvedDuct,
+    ResolvedLightRun,
+    ResolvedModel,
+    ResolvedPipeAccessory,
+    ResolvedPipeRun,
+    ResolvedSleeve,
+    ResolvedSolid,
+    Ring,
+)
 from typehaus.resolve.placeables import resolved_mount_elevation
+from typehaus.resolve.round_solids import PIPE_FACETS, sloped_run_bands
 
 _JOIST_BREADTH_M = inch(1.5).meters
 _DEFAULT_SPACING_M = inch(16).meters
@@ -1073,7 +1086,7 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
             if width_m > clear_width_m + 1e-9:
                 conflicts.append(
                     f"segment {i} width {width_m:.3f}m exceeds the {clear_width_m:.3f}m "
-                    f"clear bay at {spacing_m * 39.37007874015748:.0f}\" o.c."
+                    f"clear bay at {spacing_m / M_PER_IN:.0f}\" o.c."
                 )
         else:
             crossed = [jl for jl in joist_lines if min(pa, pb) < jl < max(pa, pb)]

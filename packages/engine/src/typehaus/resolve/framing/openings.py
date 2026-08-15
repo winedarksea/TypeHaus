@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from typehaus.model.enums import DoorOperation
+from typehaus.quantities import M_PER_IN
 from typehaus.quantities import m as _m
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.stud_module import OpeningStudModule, opening_stud_module
@@ -27,8 +28,7 @@ from typehaus.resolve.framing.tables import (
 from typehaus.resolve.geometry import add, scale
 from typehaus.resolve.model import FramedMember
 
-_M_PER_IN = 0.0254
-_PLATE_THICKNESS_M = 1.5 * _M_PER_IN
+_PLATE_THICKNESS_M = 1.5 * M_PER_IN
 
 
 @dataclass(frozen=True)
@@ -107,7 +107,7 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     """King/jack/header/cripple pack for one opening, plus its operation's extras."""
     out: list[FramedMember] = []
     pattern = opening_framing_pattern(opening.operation)
-    thickness = member_actual(member)[0] * _M_PER_IN  # stud face dimension along the wall
+    thickness = member_actual(member)[0] * M_PER_IN  # stud face dimension along the wall
     kings, jacks = jamb_pack_counts(_m(opening.width_m), pattern)
     center, half = opening.center_m, opening.width_m / 2
     # Head = threshold + clear height, doors included. Doors used to skip the ``sill_m``
@@ -196,7 +196,7 @@ def _append_track_jamb_legs(out: list[FramedMember], rw, direction, wall_start,
     They stop at the header: above it the panels are already on the horizontal track, and
     running them through the header would only clash with it.
     """
-    leg_thickness = member_actual(OVERHEAD_TRACK_MEMBER)[0] * _M_PER_IN
+    leg_thickness = member_actual(OVERHEAD_TRACK_MEMBER)[0] * M_PER_IN
     for side, sign in (("l", -1), ("r", +1)):
         station = opening.center_m + sign * (opening.width_m / 2 - leg_thickness / 2)
         position = add(wall_start, scale(direction, station))
@@ -208,7 +208,7 @@ def _append_track_jamb_legs(out: list[FramedMember], rw, direction, wall_start,
 def _append_track_backing(out: list[FramedMember], rw, header_left, header_right,
                           opening_index: int, header_top: float, span_m: float) -> None:
     """Flat nailer on top of the header: what the horizontal track and operator hang from."""
-    backing_thickness = member_actual(OVERHEAD_TRACK_MEMBER)[0] * _M_PER_IN
+    backing_thickness = member_actual(OVERHEAD_TRACK_MEMBER)[0] * M_PER_IN
     out.append(FramedMember(rw.uid, f"trackbacking-{opening_index}", "blocking",
                             OVERHEAD_TRACK_MEMBER, header_left, header_right, header_top,
                             header_top + backing_thickness, span_m))

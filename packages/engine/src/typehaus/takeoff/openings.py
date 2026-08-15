@@ -13,9 +13,8 @@ finishes section reports an unfinished room.
 
 from __future__ import annotations
 
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
-
-_M_TO_IN = 39.37007874015748
 
 
 def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
@@ -25,8 +24,8 @@ def opening_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 
     groups: dict[tuple[str, str, float, float], dict[str, object]] = {}
     for opening in model.openings:
-        key = (opening.kind, opening.type_ref or "", round(opening.width_m * _M_TO_IN, 2),
-               round(opening.height_m * _M_TO_IN, 2))
+        key = (opening.kind, opening.type_ref or "", round(opening.width_m / M_PER_IN, 2),
+               round(opening.height_m / M_PER_IN, 2))
         entry = groups.setdefault(key, {"count": 0, "tags": [], "arched": False})
         entry["count"] += 1
         entry["tags"].append(opening.tag)

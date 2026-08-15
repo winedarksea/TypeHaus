@@ -20,8 +20,8 @@ import pytest
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
 from typehaus.takeoff.backup_calc import DEPTH_OF_DISCHARGE, backup_runtime_summary
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 @pytest.fixture(scope="module")

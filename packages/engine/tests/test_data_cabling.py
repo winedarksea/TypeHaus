@@ -13,8 +13,8 @@ import pytest
 from typehaus.model.enums import Service
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = pathlib.Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 def _findings(model, check_id: str):

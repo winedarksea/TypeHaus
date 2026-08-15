@@ -18,17 +18,17 @@ from shapely.ops import unary_union
 
 from typehaus._meta import IFC_APP_NAME, PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
-from typehaus.emit.ifc.electrical import (emit_conduits, emit_light_runs,
-                                          emit_solar_panels)
+from typehaus.emit.ifc.electrical import emit_conduits, emit_light_runs, emit_solar_panels
 from typehaus.emit.ifc.roof import emit_roof, member_class, member_representation
 from typehaus.emit.trades import DRAINAGE_CATEGORIES, PIPE_ACCESSORY_CATEGORIES
-from typehaus.resolve.room_floor import room_floor_elevation
 from typehaus.model.enums import DoorOperation, Service
 from typehaus.model.ids import derive_child_guid, derive_guid
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import polygon_area, rect_between
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.resolve.placeables import resolved_mount_elevation
+from typehaus.resolve.room_floor import room_floor_elevation
 from typehaus.resolve.topology import _added_thicknesses
 
 
@@ -1127,7 +1127,7 @@ def _interpolated_invert(run: Any, from_len: float, to_len: float) -> float:
 def _slope_text(run: Any) -> str:
     if run.z_start_m is None or run.z_end_m is None or run.length_m <= 1e-9:
         return "unknown"
-    drop_in = (run.z_start_m - run.z_end_m) * 39.37007874015748
+    drop_in = (run.z_start_m - run.z_end_m) / M_PER_IN
     slope_in_per_ft = drop_in / (run.length_m * 3.280839895)
     return f"{slope_in_per_ft:.3f} in/ft"
 
@@ -1153,8 +1153,8 @@ def _emit_duct_run(f: Any, body: Any, model: ResolvedModel, duct: Any, storeys: 
         ))
         ll.ensure_pset(f, element, PSET_SOURCE, {"uid": duct.uid, "tag": duct.tag})
         ll.ensure_pset(f, element, "TypeHaus_Duct", {
-            "system": duct.system, "width_in": duct.width_m * 39.37007874015748,
-            "depth_in": duct.depth_m * 39.37007874015748, "routing": duct.routing,
+            "system": duct.system, "width_in": duct.width_m / M_PER_IN,
+            "depth_in": duct.depth_m / M_PER_IN, "routing": duct.routing,
         })
         ll.assign_container(f, element, storeys[duct.storey])
 
@@ -1444,8 +1444,8 @@ def _emit_sleeve(f: Any, body: Any, sleeve: Any, storeys: dict[str, Any],
                                                "host": sleeve.host_slab})
     ll.ensure_pset(f, element, "TypeHaus_Sleeve", {
         "host": sleeve.host_slab,
-        "pipe_diameter_in": sleeve.pipe_d_m * 39.37007874015748,
-        "sleeve_diameter_in": sleeve.sleeve_d_m * 39.37007874015748,
+        "pipe_diameter_in": sleeve.pipe_d_m / M_PER_IN,
+        "sleeve_diameter_in": sleeve.sleeve_d_m / M_PER_IN,
         "serves_fixture": sleeve.serves_fixture or "",
     })
     ll.assign_container(f, element, storeys[sleeve.storey])
@@ -1467,7 +1467,7 @@ def _emit_footing_bedding(f: Any, body: Any, bedding: Any, storeys: dict[str, An
         "aggregate": bedding.aggregate,
         "geotextile": bedding.geotextile,
         "drain_tile": bedding.drain_tile,
-        "perimeter_insulation_in": (bedding.perimeter_insulation_m * 39.37007874015748
+        "perimeter_insulation_in": (bedding.perimeter_insulation_m / M_PER_IN
                                     if bedding.perimeter_insulation_m is not None else 0.0),
         "cast_foam_in_aggregate": bedding.cast_foam_in_aggregate,
     })
@@ -1479,10 +1479,19 @@ def _georef(f: Any, ifc_project: Any, model: ResolvedModel, source_context: Any)
     site = model.plan.project.site
     crs = f.createIfcProjectedCRS(site.crs)
     try:
+        import math
+
         import pyproj
 
         transformer = pyproj.Transformer.from_crs("EPSG:4326", site.crs, always_xy=True)
         easting, northing = transformer.transform(site.lon, site.lat)
+        # A lat/lon outside the target CRS's valid domain (e.g. the (0, 0) placeholder a
+        # minimal test fixture authors against the Minnesota UTM default) transforms to inf,
+        # not an exception — IfcMapConversion then rejects it outright. Best-effort means
+        # this falls back with everything else out-of-domain, not that it takes the whole
+        # export down.
+        if not (math.isfinite(easting) and math.isfinite(northing)):
+            raise ValueError("non-finite georeference transform")
     except Exception:  # noqa: BLE001 - georef is best-effort in M1
         easting, northing = 0.0, 0.0
     f.createIfcMapConversion(
@@ -1490,22 +1499,6 @@ def _georef(f: Any, ifc_project: Any, model: ResolvedModel, source_context: Any)
         1.0, 0.0,  # XAxisAbscissa/Ordinate — true_north rotation applied here
         1.0,
     )
-
-
-def _outer_profile(rw: ResolvedWall) -> list[tuple[float, float]]:
-    """Exact union outer ring across resolved depth-bearing layer polygons."""
-    polygons = [
-        Polygon(layer.polygon) for layer in rw.depth_layers()
-        if len(layer.polygon) >= 3
-    ]
-    if not polygons:
-        return [(0, 0), (1, 0), (1, 0.1), (0, 0.1)]
-    geometry = unary_union(polygons)
-    candidates = [geometry] if isinstance(geometry, Polygon) else [
-        item for item in geometry.geoms if isinstance(item, Polygon)
-    ]
-    polygon = max(candidates, key=lambda item: item.area)
-    return [(float(x), float(y)) for x, y in list(polygon.exterior.coords)[:-1]]
 
 
 def _content_hash(rw: ResolvedWall) -> str:

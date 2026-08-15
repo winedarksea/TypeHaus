@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 import pytest
@@ -60,6 +59,7 @@ from typehaus.source.macros import (
     rotate_placeable,
     set_placeable_mount,
 )
+from _helpers import CATLIN, copy_house
 
 
 @pytest.mark.parametrize(("fixture_type", "expected_depth_inches"), (
@@ -243,7 +243,7 @@ def test_duplicate_placeable_uses_a_fresh_tag_and_offset_position() -> None:
 def test_catlin_furniture_palette_operation_writes_and_reloads(tmp_path: Path) -> None:
     source_house = Path(__file__).resolve().parents[3] / "houses" / "catlin"
     house = tmp_path / "catlin"
-    shutil.copytree(source_house, house)
+    copy_house(source_house, house)
     assets = house / "assets"
     assets.mkdir()
     (assets / "placeables.json").write_text(
@@ -448,7 +448,7 @@ def test_coupled_drain_move_writes_source_that_reloads(tmp_path: Path) -> None:
     without the ``# haus: editable`` header is dropped at commit and the drag half-applies,
     leaving the flange and the pipe further apart than before the move."""
     house = tmp_path / "catlin"
-    shutil.copytree(Path(__file__).resolve().parents[3] / "houses" / "catlin", house)
+    copy_house(CATLIN, house)
     plan = load_plan(house).plan
     assert plan is not None
     fixture = next(item for item in plan.storey_elements("main") if item.tag == "FX-M-BATH2-WC")
@@ -510,7 +510,7 @@ def test_mount_height_edit_preserves_the_rest_of_the_authored_mount() -> None:
 
 def test_mount_height_edit_writes_source_that_reloads(tmp_path: Path) -> None:
     house = tmp_path / "catlin"
-    shutil.copytree(Path(__file__).resolve().parents[3] / "houses" / "catlin", house)
+    copy_house(CATLIN, house)
     plan = load_plan(house).plan
     assert plan is not None
     ops = set_placeable_mount(plan, "basement", tag="ED-B-WORKSHOP-SW", elevation="6'").ops
@@ -536,7 +536,7 @@ def test_fixture_dragged_clear_of_every_room_writes_source_that_still_loads(tmp_
     nullable. While ``Fixture.room`` was a required str this legal drag wrote source the
     loader then rejected, taking `haus build` and the live server down until hand-repaired."""
     house = tmp_path / "catlin"
-    shutil.copytree(Path(__file__).resolve().parents[3] / "houses" / "catlin", house)
+    copy_house(CATLIN, house)
     plan = load_plan(house).plan
     assert plan is not None
     ops = move_placeable(plan, "main", tag="FX-M-BATH1-WC", position=(50.0, 50.0)).ops

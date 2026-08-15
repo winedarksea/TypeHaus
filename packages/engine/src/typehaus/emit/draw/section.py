@@ -15,10 +15,6 @@ from __future__ import annotations
 
 import math
 
-from typehaus.model.views import Slice
-from typehaus.model.enums import LayerFunction, SliceKind
-from typehaus.quantities import m, pt
-from typehaus.resolve.model import ResolvedModel, ResolvedWall
 from typehaus.emit.draw.annotate import LabelSpec, dodge, place_column
 from typehaus.emit.draw.palette import detail_hatch
 from typehaus.emit.draw.scene import (
@@ -30,8 +26,10 @@ from typehaus.emit.draw.scene import (
     SceneBuilder,
     Text,
 )
-
-M_TO_IN = 39.37007874015748
+from typehaus.model.enums import LayerFunction, SliceKind
+from typehaus.model.views import Slice
+from typehaus.quantities import M_PER_IN, m, pt
+from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 _FUNCTION_LAYER = {
     "structure": "A-WALL",
@@ -43,13 +41,6 @@ _FUNCTION_LAYER = {
     "airgap": "A-WALL-PATT",
     "furring": "A-WALL",
 }
-_HATCH_PATTERN = {
-    "insulation": "batt",
-    "sheathing": "osb",
-    "structure": "lumber",
-    "cladding": "SOLID",
-}
-
 
 def _ring_cut_intervals(ring, direction: str, station: float) -> list[tuple[float, float]]:
     """Intersect a plan-frame ring with the cut line -> sorted u-intervals (even-odd)."""
@@ -160,7 +151,7 @@ def _clip_polygon(points, crop):
 
 def _rect_nodes(u0, u1, z0, z1, layer, pattern, uid, tag, outline: bool = True,
                 material: str | None = None) -> list:
-    pts = tuple((u * M_TO_IN, z * M_TO_IN) for u, z in
+    pts = tuple((u / M_PER_IN, z / M_PER_IN) for u, z in
                 ((u0, z0), (u1, z0), (u1, z1), (u0, z1)))
     nodes: list = []
     if outline:
@@ -180,7 +171,7 @@ def _quad_nodes(u0, u1, z0, z1_left, z1_right, layer, pattern, uid, tag,
     Sibling of ``_rect_nodes`` for per-layer sloped terminations (Revit layer extension
     distances against a raked interface plane) — threads through detail cuts only.
     """
-    pts = tuple((u * M_TO_IN, z * M_TO_IN) for u, z in
+    pts = tuple((u / M_PER_IN, z / M_PER_IN) for u, z in
                 ((u0, z0), (u1, z0), (u1, z1_right), (u0, z1_left)))
     nodes: list = [Polyline(points=pts, layer=layer, closed=True,
                             lineweight=0.35 if layer == "A-WALL" else 0.18,
@@ -259,7 +250,7 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
 
     if crop is not None:
         (cu0, cz0), (cu1, cz1) = crop
-        b.add(Text(anchor=((cu0 * M_TO_IN), (cz1 * M_TO_IN) + 6.0),
+        b.add(Text(anchor=((cu0 / M_PER_IN), (cz1 / M_PER_IN) + 6.0),
                    content=view.tag, height=4.0, align="left"))
     return b.build()
 
@@ -332,11 +323,11 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
             pattern = detail_hatch(layer.material_ref, layer.function)
             if is_detail and not layer.is_cavity and layer.name not in label_entries:
                 # True-dimension label per layer (exaggeration labels true size, #36).
-                thickness_in = true_thickness * M_TO_IN
+                thickness_in = true_thickness / M_PER_IN
                 label = f"{layer.name} {thickness_in:.3g}\""
                 if exaggerated:
                     label += " (NTS)"
-                label_entries[layer.name] = (label, ((ru0 + ru1) / 2) * M_TO_IN)
+                label_entries[layer.name] = (label, ((ru0 + ru1) / 2) / M_PER_IN)
             sloped = term is not None and abs(layer_top_l - layer_top_r) > 1e-6
             if sloped:
                 # Raked layer termination against the interface plane — single sloped quad,
@@ -361,8 +352,8 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
                     if is_detail and full_span:
                         continue
                     # glazing/void line at the opening
-                    b.add(Polyline(points=(((ru0 + ru1) / 2 * M_TO_IN, z0 * M_TO_IN),
-                                           ((ru0 + ru1) / 2 * M_TO_IN, z1 * M_TO_IN)),
+                    b.add(Polyline(points=(((ru0 + ru1) / 2 / M_PER_IN, z0 / M_PER_IN),
+                                           ((ru0 + ru1) / 2 / M_PER_IN, z1 / M_PER_IN)),
                                    layer="A-GLAZ", lineweight=0.18,
                                    uid=wall.uid, tag=f"{wall.tag}-void"))
                     continue
@@ -380,7 +371,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
     if crop is not None:
         (cu0, cz0), (cu1, cz1) = crop
         z_top = min(wall_top, max(cz0, cz1))
-        text_u = min(cu0, cu1) * M_TO_IN - 1.0
+        text_u = min(cu0, cu1) / M_PER_IN - 1.0
     else:
         z_top = wall_top
         text_u = min(mid_u for (_lab, mid_u) in label_entries.values()) - 14.0
@@ -389,7 +380,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
     entries = [LabelSpec(text=label, target=(mid_u, 0.0), key=(wall.uid, name))
                for name, (label, mid_u) in
                sorted(label_entries.items(), key=lambda item: item[1][1])]
-    ladder_labels.extend(place_column(entries, x=text_u, z_top=z_top * M_TO_IN - 1.0,
+    ladder_labels.extend(place_column(entries, x=text_u, z_top=z_top / M_PER_IN - 1.0,
                                       step=_LABEL_RUNG_IN, height=1.6, align="right"))
 
 
@@ -532,7 +523,7 @@ def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None) -> Non
                 clipped = _clip_polygon(band_top + band_bot, crop)
                 if len(clipped) < 3:
                     continue
-                pts = tuple((u * M_TO_IN, z * M_TO_IN) for (u, z) in clipped)
+                pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
                 b.add(Polyline(points=pts, layer="A-ROOF", closed=True, lineweight=0.18,
                                uid=roof.uid, tag=f"{roof.tag}/{layer.name}"))
                 pat = detail_hatch(layer.material_ref, layer.function.value)
@@ -544,7 +535,7 @@ def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None) -> Non
         clipped = _clip_polygon(top + bottom, crop)
         if len(clipped) < 3:
             continue
-        pts = tuple((u * M_TO_IN, z * M_TO_IN) for (u, z) in clipped)
+        pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
         b.add(Polyline(points=pts, layer="A-ROOF", closed=True, lineweight=0.35,
                        uid=roof.uid, tag=roof.tag))
         b.add(Hatch(boundary=pts, pattern="batt", layer="A-WALL-PATT"))
@@ -675,7 +666,7 @@ def _member_flange_nodes(u0, u1, z0, z1, profile, uid, tag) -> list:
         return []
     nodes: list = []
     for z in (z0 + ft, z1 - ft):
-        nodes.append(Polyline(points=((u0 * M_TO_IN, z * M_TO_IN), (u1 * M_TO_IN, z * M_TO_IN)),
+        nodes.append(Polyline(points=((u0 / M_PER_IN, z / M_PER_IN), (u1 / M_PER_IN, z / M_PER_IN)),
                               layer="S-FRAM", lineweight=0.13, uid=uid,
                               tag=f"{tag}/flange"))
     return nodes
@@ -690,11 +681,11 @@ def _emit_raked_rafter(b, member, u0, u1, z0_a, z0_b, z1_a, z1_b, crop,
     (low) end so the rafter reads as a seated, notched member. The notch is a plumb heel cut
     of ``depth_in`` plus a horizontal seat bearing on the plate.
     """
-    d = depth_in / M_TO_IN
+    d = depth_in * M_PER_IN
     eave_at_u0 = z1_a <= z1_b  # eave = lower-top end (zero-overhang tail bears here)
     span_u = abs(u1 - u0) or 1e-9
     slope_bot = (z0_b - z0_a) / (u1 - u0)
-    run = min(3.5 / M_TO_IN, span_u * 0.35)  # seat run ~ a 2x4 plate bearing
+    run = min(3.5 * M_PER_IN, span_u * 0.35)  # seat run ~ a 2x4 plate bearing
     # The seat runs *inboard* (toward the ridge end) from the eave's plumb cut. The
     # endpoints carry no ordering guarantee — an east-half rafter's eave end is the
     # larger u — so the step direction comes from where the ridge end actually is.
@@ -711,7 +702,7 @@ def _emit_raked_rafter(b, member, u0, u1, z0_a, z0_b, z1_a, z1_b, crop,
     clipped = _clip_polygon(poly, crop)
     if len(clipped) < 3:
         return
-    pts = tuple((u * M_TO_IN, z * M_TO_IN) for (u, z) in clipped)
+    pts = tuple((u / M_PER_IN, z / M_PER_IN) for (u, z) in clipped)
     b.add(Polyline(points=pts, layer="S-FRAM", closed=True, lineweight=0.35,
                    uid=member.parent_uid, tag=member.child_key))
     b.add(Hatch(boundary=pts, pattern="lumber", layer="A-WALL-PATT",
@@ -727,8 +718,8 @@ def _emit_raked_rafter(b, member, u0, u1, z0_a, z0_b, z1_a, z1_b, crop,
             seg = _clip_segment((u0, za), (u1, zb), crop)
             if seg is not None:
                 (su0, sz0), (su1, sz1) = seg
-                b.add(Polyline(points=((su0 * M_TO_IN, sz0 * M_TO_IN),
-                                       (su1 * M_TO_IN, sz1 * M_TO_IN)),
+                b.add(Polyline(points=((su0 / M_PER_IN, sz0 / M_PER_IN),
+                                       (su1 / M_PER_IN, sz1 / M_PER_IN)),
                                layer="S-FRAM", lineweight=0.13,
                                uid=member.parent_uid, tag=f"{member.child_key}/flange"))
 

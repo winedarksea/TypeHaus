@@ -12,6 +12,7 @@ import math
 from collections import Counter
 from dataclasses import dataclass
 
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_catalog import (
@@ -19,10 +20,7 @@ from typehaus.takeoff.hardware_catalog import (
     hardware_row,
     screw_for_required_length,
 )
-from typehaus.takeoff.hardware_config import (
-    IN_TO_M,
-    ExteriorInsulationFastenerRules,
-)
+from typehaus.takeoff.hardware_config import ExteriorInsulationFastenerRules
 
 # Float slack when a run divides evenly into its spacing (an 18 ft wall at 16 in o.c.).
 _GRID_EPSILON = 1e-9
@@ -37,7 +35,7 @@ class ExteriorInsulationFastening:
     insulation_thickness_m: float
 
     def required_screw_length_in(self, rules: ExteriorInsulationFastenerRules) -> float:
-        return (self.through_thickness_m / IN_TO_M) + rules.minimum_structural_embedment_in
+        return (self.through_thickness_m / M_PER_IN) + rules.minimum_structural_embedment_in
 
 
 def exterior_insulation_fastening(
@@ -106,8 +104,8 @@ def exterior_insulation_screw_rows(model: ResolvedModel,
     head, and sill furring around it takes those fasteners back, so the gross grid is the
     estimate a framer orders against.
     """
-    strip_spacing_m = rules.strip_spacing_in * IN_TO_M
-    pitch_m = rules.fastener_pitch_along_strip_in * IN_TO_M
+    strip_spacing_m = rules.strip_spacing_in * M_PER_IN
+    pitch_m = rules.fastener_pitch_along_strip_in * M_PER_IN
 
     Group = dict
     groups: dict = {}
@@ -163,8 +161,8 @@ def exterior_insulation_screw_rows(model: ResolvedModel,
             by_storey=dict(sorted(group["by_storey"].items())),
             basis=(f"{rules.strip_spacing_in:g} in o.c. strips x "
                    f"{rules.fastener_pitch_along_strip_in:g} in o.c. fasteners through "
-                   f"{fastening.insulation_thickness_m / IN_TO_M:.2f} in exterior insulation "
-                   f"({fastening.through_thickness_m / IN_TO_M:.2f} in total penetration + "
+                   f"{fastening.insulation_thickness_m / M_PER_IN:.2f} in exterior insulation "
+                   f"({fastening.through_thickness_m / M_PER_IN:.2f} in total penetration + "
                    f"{rules.minimum_structural_embedment_in:g} in embedment = "
                    f"{group['required_in']:.2f} in required)"),
         ))

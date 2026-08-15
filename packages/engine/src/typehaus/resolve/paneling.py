@@ -8,7 +8,7 @@ typo'd room tag must not make a wainscot vanish from the order (#32).
 
 from __future__ import annotations
 
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, failed
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.model import ResolvedModel, ResolvedPaneling
 from typehaus.resolve.room_walls import bounding_walls
@@ -92,5 +92,4 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
 
 
 def _error(el, message: str) -> Finding:
-    return Finding(severity=Severity.ERROR, check_id="integrity.paneling_ref",
-                   message=message, element_tags=(el.tag,), result=Result.FAIL)
+    return failed("integrity.paneling_ref", message, (el.tag,))

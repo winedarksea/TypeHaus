@@ -18,6 +18,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.model.enums import Occupancy
 from typehaus.quantities import inch
+from typehaus.resolve.geometry import opening_center
 
 _ARC_OF_DOOR = inch(24)  # R308.4.2: within a 24" arc of either vertical door edge
 _DOOR_ARC_MAX_SILL = inch(60)  # ...with the bottom edge below 60" above the floor
@@ -141,11 +142,9 @@ def _hazard_reasons(ctx, opening, wall, storey, window_type, wall_doors, storey_
 
     # R308.4.5 — a wet location, bottom under 60" above the standing surface.
     if sill < _WET_MAX_SILL.meters:
-        (sx, sy), (ex, ey) = wall.axis
-        run = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5
-        if run > 1e-9:
-            t = opening.center_along_m / run
-            centre = point_type(sx + (ex - sx) * t, sy + (ey - sy) * t)
+        point = opening_center(wall, opening)
+        if point is not None:
+            centre = point_type(*point)
             for room, poly in storey_rooms:
                 if (room.occupancy in _WET_OCCUPANCIES
                         and poly.distance(centre) <= wall.thickness_m / 2.0 + 0.15):
@@ -155,11 +154,9 @@ def _hazard_reasons(ctx, opening, wall, storey, window_type, wall_doors, storey_
 
     # R308.4.6/.7 — within 60" of a stair, landing or ramp walking surface.
     if stair_lines:
-        (sx, sy), (ex, ey) = wall.axis
-        run = ((ex - sx) ** 2 + (ey - sy) ** 2) ** 0.5
-        if run > 1e-9:
-            t = opening.center_along_m / run
-            centre = point_type(sx + (ex - sx) * t, sy + (ey - sy) * t)
+        point = opening_center(wall, opening)
+        if point is not None:
+            centre = point_type(*point)
             floor_z = storey.elevation.meters
             for line, stair_tag, tread_z in stair_lines:
                 # Only a tread near this storey's floor plane is beside this window; a

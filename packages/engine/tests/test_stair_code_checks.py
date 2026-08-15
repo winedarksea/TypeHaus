@@ -27,8 +27,8 @@ from typehaus.findings import Result
 from typehaus.quantities import inch
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedStair
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 _RISER = 0.19
 _GOING = 0.254

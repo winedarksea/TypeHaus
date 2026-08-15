@@ -7,12 +7,11 @@ drag will not persist — never reached `GET /model`. The fast edit path zeroed 
 
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 import pytest
+from _helpers import CATLIN, copy_house
 
-CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 def _loader_errors(findings: list[dict]) -> list[dict]:
@@ -22,7 +21,7 @@ def _loader_errors(findings: list[dict]) -> list[dict]:
 @pytest.fixture
 def uneditable_house(tmp_path: Path) -> Path:
     dst = tmp_path / "catlin"
-    shutil.copytree(CATLIN, dst)
+    copy_house(CATLIN, dst)
     mep = dst / "plan" / "mep.py"
     mep.write_text(mep.read_text().replace("# haus: editable\n", "", 1))
     return dst

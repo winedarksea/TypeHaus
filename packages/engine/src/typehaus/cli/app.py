@@ -66,8 +66,8 @@ def build(
         from typehaus.checks import load_preferences
         from typehaus.server.model_json import load_variant_catalog, write_model_json
 
-        p = write_model_json(model, out / "model.json", preferences=load_preferences(d),
-                             variants=load_variant_catalog(d))
+        p = write_model_json(model, out / "model.json", content_hash=result.content_hash,
+                             preferences=load_preferences(d), variants=load_variant_catalog(d))
         console.print(f"wrote {p}")
     if only in (None, "ifc"):
         try:

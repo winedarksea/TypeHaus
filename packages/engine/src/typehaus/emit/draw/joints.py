@@ -16,9 +16,8 @@ from dataclasses import dataclass, field
 
 from typehaus.emit.draw.scene import Hatch, IRNode, Polyline
 from typehaus.model.patterns import matches
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel, ResolvedRoof, ResolvedWall
-
-M_TO_IN = 39.37007874015748
 
 
 @dataclass(frozen=True)
@@ -163,10 +162,10 @@ def _default_roof_joins(plan: JointPlan, model, wall: ResolvedWall, roof: Resolv
         u_ci, z_ci = ci_top_u
         u_sh, _ = sheath_face_u
         poly = (
-            (u_ci * M_TO_IN, z_ci * M_TO_IN),
-            (u_ci * M_TO_IN, underside.z(u_ci) * M_TO_IN),
-            (u_sh * M_TO_IN, underside.z(u_sh) * M_TO_IN),
-            (u_sh * M_TO_IN, wall_top * M_TO_IN),
+            (u_ci / M_PER_IN, z_ci / M_PER_IN),
+            (u_ci / M_PER_IN, underside.z(u_ci) / M_PER_IN),
+            (u_sh / M_PER_IN, underside.z(u_sh) / M_PER_IN),
+            (u_sh / M_PER_IN, wall_top / M_PER_IN),
         )
         plan.treatments.append(
             Hatch(boundary=poly, pattern="spray-foam", layer="A-DETL-TRMT",

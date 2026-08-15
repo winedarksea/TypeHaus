@@ -15,8 +15,8 @@ import pytest
 from typehaus.cli.scaffold import scaffold_house
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
+from _helpers import STARTER
 
-STARTER = Path(__file__).resolve().parents[3] / "houses" / "starter"
 
 
 def test_default_scaffold_builds_and_resolves(tmp_path: Path):

@@ -35,11 +35,47 @@ def normal(direction: Vec) -> Vec:
     return (-direction[1], direction[0])
 
 
-def offset_segment(p0: Vec, p1: Vec, offset: float) -> tuple[Vec, Vec]:
-    """Offset a segment perpendicular by ``offset`` (positive = left of direction)."""
-    d = unit(sub(p1, p0))
-    n = scale(normal(d), offset)
-    return (add(p0, n), add(p1, n))
+def wall_frame(wall) -> tuple[Vec, Vec, Vec, float]:  # noqa: ANN001 — avoids an import cycle
+    """``(origin, tangent, normal, axis_length)`` for a wall's axis.
+
+    Twelve call sites hand-unpacked ``wall.axis``, computed the tangent/length, and each
+    guarded the degenerate (zero-length axis) case differently — ``or 1.0``, ``<= 1e-9``,
+    ``== 0`` — a silent inconsistency, not just repetition. This is the one answer: a
+    degenerate axis returns a zero tangent/normal and ``axis_length == 0.0``; callers already
+    have to branch on a suspiciously-short wall for other reasons, so check ``axis_length``
+    rather than trust the direction vectors when it is near zero.
+    """
+    origin, end = wall.axis
+    tangent_vec = sub(end, origin)
+    axis_length = length(tangent_vec)
+    if axis_length <= 1e-9:
+        return origin, (0.0, 0.0), (0.0, 0.0), 0.0
+    tangent = unit(tangent_vec)
+    return origin, tangent, normal(tangent), axis_length
+
+
+def opening_center(wall, opening) -> Vec | None:  # noqa: ANN001 — avoids an import cycle
+    """The point on ``wall``'s axis at ``opening.center_along_m``, or ``None`` if the wall's
+    axis is degenerate (→ ``wall_frame``)."""
+    origin, tangent, _normal, axis_length = wall_frame(wall)
+    if axis_length <= 1e-9:
+        return None
+    return add(origin, scale(tangent, opening.center_along_m))
+
+
+def bbox(points: list[Vec]) -> tuple[Vec, Vec]:
+    """``(min, max)`` corners of the axis-aligned bounding box of ``points``."""
+    xs = [p[0] for p in points]
+    ys = [p[1] for p in points]
+    return (min(xs), min(ys)), (max(xs), max(ys))
+
+
+def project_onto_axis(point: Vec, origin: Vec, direction: Vec) -> float:
+    """Signed distance along ``direction`` (assumed unit) from ``origin`` to ``point``'s
+    projection — i.e. the scalar ``t`` such that ``origin + t * direction`` is the foot of
+    the perpendicular from ``point``."""
+    d = sub(point, origin)
+    return d[0] * direction[0] + d[1] * direction[1]
 
 
 def rect_between(p0: Vec, p1: Vec, left: float, right: float,

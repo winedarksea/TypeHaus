@@ -19,7 +19,7 @@ from typing import Any
 from pydantic import BaseModel
 
 from typehaus.model.base import Element
-from typehaus.source.ops import PatchOp, RawExpr
+from typehaus.source.ops import PatchOp, RawExpr, _quote
 
 
 def value_source(value: Any) -> str:
@@ -77,12 +77,6 @@ def _sort_key(value: Any) -> str:
     if isinstance(value, Enum):
         return value.name
     return str(value)
-
-
-def _quote(value: str) -> str:
-    if '"' in value and "'" not in value:
-        return f"'{value}'"
-    return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
 def element_add_op(

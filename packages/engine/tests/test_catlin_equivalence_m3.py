@@ -37,9 +37,8 @@ from typehaus.diff.equivalence import (
 )
 from typehaus.diff.semantic import semantic_model_from_ifc
 from typehaus.quantities import ft
+from _helpers import CATLIN as CATLIN_DIR, REPO_ROOT
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-CATLIN_DIR = REPO_ROOT / "houses" / "catlin"
 REFERENCE_ARCHIVE = (Path(__file__).parent / "fixtures" / "catlin_reference"
                      / "catlin_house_reference.ifc.gz")
 

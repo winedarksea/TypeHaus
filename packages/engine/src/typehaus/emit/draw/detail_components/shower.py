@@ -28,12 +28,12 @@ Section coordinates: ``u`` is the in-section axis, ``z`` is world z, both in mod
 from __future__ import annotations
 
 from typehaus.emit.draw.detail_components import config as cfg
-from typehaus.emit.draw.detail_components.config import M_TO_IN
 from typehaus.emit.draw.detail_components.geometry import (
     rect_region,
     wall_cut_bounds_m,
 )
 from typehaus.emit.draw.scene import IRNode
+from typehaus.quantities import M_PER_IN
 
 
 def _fixture_type(model, type_ref):
@@ -164,9 +164,9 @@ def shower_hrv_duct(model, direction: str, station: float, u_lo_m: float, u_hi_m
             continue
         if not (u_lo_m - cfg.SHOWER_DUCT_REACH_M <= u_m <= u_hi_m + cfg.SHOWER_DUCT_REACH_M):
             continue
-        u = u_m * M_TO_IN
-        width = duct.width_m * M_TO_IN
-        depth = duct.depth_m * M_TO_IN
+        u = u_m / M_PER_IN
+        width = duct.width_m / M_PER_IN
+        depth = duct.depth_m / M_PER_IN
         z0 = top_z_in + cfg.SHOWER_HRV_CLEAR_IN
         nodes += rect_region(u - width / 2.0, z0, u + width / 2.0, z0 + depth,
                              "shower-hrv-duct", "metal", "metal", lineweight=0.35)
@@ -178,18 +178,18 @@ def shower_components(model, crop, direction: str, station: float) -> list[IRNod
     if crop is None:
         return []
     (cu0, cz0), (cu1, cz1) = crop
-    crop_u_lo, crop_u_hi = min(cu0, cu1) * M_TO_IN, max(cu0, cu1) * M_TO_IN
-    crop_z_lo, crop_z_hi = min(cz0, cz1) * M_TO_IN, max(cz0, cz1) * M_TO_IN
+    crop_u_lo, crop_u_hi = min(cu0, cu1) / M_PER_IN, max(cu0, cu1) / M_PER_IN
+    crop_z_lo, crop_z_hi = min(cz0, cz1) / M_PER_IN, max(cz0, cz1) / M_PER_IN
     nodes: list[IRNode] = []
     for obj, ftype, (u_lo_m, u_hi_m) in shower_objects_in_cut(model, direction, station):
-        u_lo, u_hi = u_lo_m * M_TO_IN, u_hi_m * M_TO_IN
+        u_lo, u_hi = u_lo_m / M_PER_IN, u_hi_m / M_PER_IN
         if u_hi <= crop_u_lo or u_lo >= crop_u_hi:
             continue
-        floor_z = obj.z_m * M_TO_IN
+        floor_z = obj.z_m / M_PER_IN
         if not (crop_z_lo <= floor_z <= crop_z_hi):
             continue
         height = getattr(ftype, "height", None)
-        height_in = height.meters * M_TO_IN if height is not None else cfg.SHOWER_ENCLOSURE_H_IN
+        height_in = height.meters / M_PER_IN if height is not None else cfg.SHOWER_ENCLOSURE_H_IN
         walled = _walled_sides(model, direction, station, u_lo_m, u_hi_m,
                                obj.z_m + 0.1, obj.z_m + 1.5)
         nodes += shower_recess(u_lo, u_hi, floor_z)

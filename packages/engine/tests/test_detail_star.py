@@ -9,7 +9,6 @@ the ordinary PatchOp writeback — which is why that file is `# haus: editable` 
 from __future__ import annotations
 
 import re
-import shutil
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -21,8 +20,8 @@ from typehaus.resolve import resolve
 from typehaus.source import load_plan
 from typehaus.source.coordinator import ProjectCoordinator
 from typehaus.source.ops import PatchOp
+from _helpers import CATLIN as CATLIN_DIR, copy_house
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 _DETAIL_NUMBER = re.compile(r"A-4\d\d$")
 
 
@@ -75,8 +74,7 @@ def test_haus_print_composes_the_primary_set_by_default():
 
 def test_star_writes_back_to_the_real_transitions_source(tmp_path):
     house = tmp_path / "catlin"
-    shutil.copytree(CATLIN_DIR, house,
-                    ignore=shutil.ignore_patterns("out", "__pycache__", ".claude"))
+    copy_house(CATLIN_DIR, house)
     source = house / "plan" / "transitions.py"
     assert 'tag="TR-CATLIN-EAVE"' in source.read_text()
     coordinator = ProjectCoordinator(house)
@@ -172,8 +170,7 @@ def test_stale_override_keys_are_reported(catlin_model):
 def test_per_condition_override_writes_back_to_source(tmp_path):
     """The UI's one-PatchOp star toggle round-trips as a list field, like any other."""
     house = tmp_path / "catlin"
-    shutil.copytree(CATLIN_DIR, house,
-                    ignore=shutil.ignore_patterns("out", "__pycache__", ".claude"))
+    copy_house(CATLIN_DIR, house)
     coordinator = ProjectCoordinator(house)
     key = "wall_roof:GARAGE_ROOF|GARAGE_WALL_2X6"
     coordinator.apply_patch(

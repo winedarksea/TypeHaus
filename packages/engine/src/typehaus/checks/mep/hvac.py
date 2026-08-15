@@ -2,31 +2,20 @@
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import advisory
+from typehaus.checks._authoring import failed as _fail
+from typehaus.checks._authoring import passed as _pass
+from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.mep import is_parallel_to_floor
 
-_M_TO_IN = 39.37007874015748
 
-
-def _pass(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.PASS)
-
-
-def _fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
-    return Finding(severity=Severity.ERROR, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.FAIL)
-
-
+# WARN severity + FAIL result, deliberately: the permit integrity gate only blocks on ERROR
+# severity, and this finding is advisory, not a hard blocker.
 def _advisory_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.FAIL)
-
-
-def _unknown(cid: str, reason: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=f"UNKNOWN — {reason}",
-                   element_tags=tags, result=Result.UNKNOWN)
+    return advisory(cid, msg, tags, Result.FAIL)
 
 
 @check(Tier.STRUCTURAL, "mep.duct_joist_bay")
@@ -44,7 +33,7 @@ def duct_joist_bay(ctx: CheckContext) -> list[Finding]:
         if duct.conflicts or not duct.depth_ok:
             problems = list(duct.conflicts)
             if not duct.depth_ok:
-                problems.append(f"depth {duct.depth_m * _M_TO_IN:.1f}\" exceeds joist depth")
+                problems.append(f"depth {duct.depth_m / M_PER_IN:.1f}\" exceeds joist depth")
             out.append(_fail(
                 "mep.duct_joist_bay", f"duct {duct.tag}: " + "; ".join(problems), (duct.tag,),
             ))
@@ -52,7 +41,7 @@ def duct_joist_bay(ctx: CheckContext) -> list[Finding]:
         note = f"duct {duct.tag} occupies its joist bay cleanly"
         if duct.crossings:
             points = ", ".join(
-                f"({x * _M_TO_IN / 12:.1f}', {y * _M_TO_IN / 12:.1f}')" for x, y in duct.crossings
+                f"({x / M_PER_IN / 12:.1f}', {y / M_PER_IN / 12:.1f}')" for x, y in duct.crossings
             )
             note += (f"; crosses bearing wall(s) at {points} — "
                     "provide fire blocking per R302.11")

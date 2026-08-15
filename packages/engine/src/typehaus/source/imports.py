@@ -18,6 +18,7 @@ from __future__ import annotations
 import libcst as cst
 
 import typehaus.model as model_ns
+from typehaus.source._naming import _dotted
 
 MODEL_MODULE = "typehaus.model"
 
@@ -125,14 +126,6 @@ def _alias_bound(alias: cst.ImportAlias) -> str:
     if alias.asname is not None and isinstance(alias.asname.name, cst.Name):
         return alias.asname.name.value
     return alias.name.value if isinstance(alias.name, cst.Name) else ""
-
-
-def _dotted(node: cst.BaseExpression) -> str:
-    if isinstance(node, cst.Name):
-        return node.value
-    if isinstance(node, cst.Attribute):
-        return f"{_dotted(node.value)}.{node.attr.value}"
-    return ""
 
 
 def _is_import_line(stmt: object) -> bool:

@@ -24,6 +24,13 @@ from typehaus.emit.draw.lightingplan import build_lighting_plan, has_lighting_co
 from typehaus.emit.draw.drainageplan import build_drainage_plan, has_drainage_content
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
 from typehaus.emit.draw.sheet_writer import LEDGER, compose_sheet, sheet_chrome
+
+# E-602 carries four stacked tables (22 luminaire types, ~120 control rows in two columns,
+# the 24V runs and the connected load) — more vertical content than an 11x17 landscape sheet
+# holds at a legible type size. It prints portrait rather than shrinking the control schedule
+# to unreadable. Every other table sheet is LEDGER; this is the one deliberate exception, and
+# it still gets the same border and title block.
+PORTRAIT_LEDGER = (11.0, 17.0)
 from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
 from typehaus.emit.draw.roofplan import build_roof_plan
 from typehaus.emit.draw.scene import Scene
@@ -598,7 +605,7 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
     from typehaus.takeoff import (connected_lighting_va, light_run_takeoff,
                                   lighting_controls, luminaire_schedule)
 
-    fig = plt.figure(figsize=(11, 17))
+    fig = plt.figure(figsize=PORTRAIT_LEDGER)
     fig.text(0.04, 0.97, f"{number} · {name}", fontsize=16, family="monospace")
 
     schedule = luminaire_schedule(model)
@@ -616,10 +623,10 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
     _add_table(fig, schedule_rows,
                ("Mark", "Description", "Lamp", "Watts", "Lumens", "CCT", "V", "Mount",
                 "Dim", "Listing", "Qty", "Locations"),
-               bbox=(0.03, 0.66, 0.94, 0.27))
+               bbox=(0.03, 0.72, 0.94, 0.215))
 
     controls = lighting_controls(model)
-    fig.text(0.04, 0.635, "LIGHTING CONTROL SCHEDULE", fontsize=10, family="monospace",
+    fig.text(0.04, 0.695, "LIGHTING CONTROL SCHEDULE", fontsize=10, family="monospace",
              weight="bold")
     control_rows = [
         (row["tag"], row["mark"] or "—", row["room"] or "—",
@@ -633,10 +640,10 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
     ]
     _add_table(fig, control_rows,
                ("Load", "Mark", "Room", "Circuit", "Switched by", "Control", "Ways", "Note"),
-               bbox=(0.03, 0.24, 0.94, 0.37))
+               bbox=(0.03, 0.32, 0.94, 0.365))
 
     runs = light_run_takeoff(model)
-    fig.text(0.04, 0.215, "LED RUNS AND 24V SUPPLIES", fontsize=10, family="monospace",
+    fig.text(0.04, 0.295, "LED RUNS AND 24V SUPPLIES", fontsize=10, family="monospace",
              weight="bold")
     run_rows = [
         (row["tag"], row["mark"], row["room"] or "—", f"{row['length_ft']:.1f}",
@@ -646,7 +653,7 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
     run_rows.append(("TOTAL", "", "", f"{runs['total_length_ft']:.1f}", "", "", ""))
     _add_table(fig, run_rows,
                ("Run", "Mark", "Room", "LF", "Watts", "Volts", "Supply"),
-               bbox=(0.03, 0.115, 0.52, 0.09))
+               bbox=(0.03, 0.195, 0.52, 0.09))
     supply_rows = [
         (row["psu"], row["type"] or "—", f"{row['connected_watts']:.0f}",
          f"{row['required_watts']:.0f}",
@@ -656,10 +663,10 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
     ]
     _add_table(fig, supply_rows,
                ("Supply", "Type", "Connected W", "Req. W (125%)", "Rated W", ""),
-               bbox=(0.57, 0.115, 0.40, 0.09))
+               bbox=(0.57, 0.195, 0.40, 0.09))
 
     load = connected_lighting_va(model)
-    fig.text(0.04, 0.09, "CONNECTED LIGHTING LOAD", fontsize=10, family="monospace",
+    fig.text(0.04, 0.17, "CONNECTED LIGHTING LOAD", fontsize=10, family="monospace",
              weight="bold")
     load_rows = [(row["circuit"], str(row["fixtures"]), f"{row['connected_va']:,.0f}")
                  for row in load["per_circuit"]]
@@ -668,8 +675,9 @@ def _write_luminaire_schedule(pdf, model: ResolvedModel, number: str, name: str)
                       f"{load['allowance_va']:,.0f} VA at "
                       f"{load['allowance_va_per_ft2']:.0f} VA/ft2"))
     _add_table(fig, load_rows, ("Circuit", "Fixtures", "Connected VA"),
-               bbox=(0.03, 0.02, 0.52, 0.06))
-    fig.text(0.57, 0.06, str(load["basis"]), fontsize=6, family="sans-serif", wrap=True)
+               bbox=(0.03, 0.09, 0.52, 0.07))
+    fig.text(0.57, 0.15, str(load["basis"]), fontsize=6, family="sans-serif", wrap=True)
+    sheet_chrome(fig, model, number, name, size=PORTRAIT_LEDGER)
     pdf.savefig(fig)
     plt.close(fig)
 
@@ -695,11 +703,11 @@ def _write_data_schedule(pdf, model: ResolvedModel, number: str, name: str) -> N
 
     from typehaus.takeoff import data_device_schedule, data_raceway_takeoff, poe_budget
 
-    fig = plt.figure(figsize=(11, 17))
-    fig.text(0.04, 0.97, f"{number} · {name}", fontsize=16, family="monospace")
+    fig = plt.figure(figsize=LEDGER)
+    fig.text(0.04, 0.945, f"{number} · {name}", fontsize=16, family="monospace")
 
     devices = data_device_schedule(model)
-    fig.text(0.04, 0.945, "LOW-VOLTAGE DEVICE SCHEDULE", fontsize=10, family="monospace",
+    fig.text(0.04, 0.90, "LOW-VOLTAGE DEVICE SCHEDULE", fontsize=10, family="monospace",
              weight="bold")
     device_rows = [
         (row["tag"], row["type_name"] or row["type_ref"] or "—", row["room"] or "—",
@@ -710,10 +718,10 @@ def _write_data_schedule(pdf, model: ResolvedModel, number: str, name: str) -> N
     ]
     _add_table(fig, device_rows,
                ("Tag", "Product", "Room", "Mount", "Elev", "PoE", "Circuit"),
-               bbox=(0.03, 0.62, 0.94, 0.30))
+               bbox=(0.03, 0.60, 0.94, 0.28))
 
     raceways = data_raceway_takeoff(model)
-    fig.text(0.04, 0.595, "DATA AND SPARE RACEWAYS", fontsize=10, family="monospace",
+    fig.text(0.04, 0.565, "DATA AND SPARE RACEWAYS", fontsize=10, family="monospace",
              weight="bold")
     raceway_rows = [
         (f"{row['trade_size_in']:g}\"", str(row["service"]).upper(), str(row["runs"]),
@@ -722,10 +730,10 @@ def _write_data_schedule(pdf, model: ResolvedModel, number: str, name: str) -> N
     ]
     _add_table(fig, raceway_rows,
                ("Trade size", "Carries", "Runs", "LF", "Tags"),
-               bbox=(0.03, 0.40, 0.94, 0.17))
+               bbox=(0.03, 0.38, 0.94, 0.17))
 
     budget = poe_budget(model)
-    fig.text(0.04, 0.375, "PoE BUDGET", fontsize=10, family="monospace", weight="bold")
+    fig.text(0.04, 0.345, "PoE BUDGET", fontsize=10, family="monospace", weight="bold")
     budget_rows = [
         ("Data devices", str(budget.get("devices", 0))),
         ("Powered over ethernet", str(budget.get("powered_devices", 0))),
@@ -734,14 +742,15 @@ def _write_data_schedule(pdf, model: ResolvedModel, number: str, name: str) -> N
     unknown = int(budget.get("unknown_devices", 0) or 0)
     if unknown:
         budget_rows.append(("Unrated devices", f"{unknown} — PoE draw not stated"))
-    _add_table(fig, budget_rows, ("", ""), bbox=(0.03, 0.30, 0.52, 0.05))
-    fig.text(0.57, 0.34, str(budget.get("basis", "")), fontsize=6, family="sans-serif",
+    _add_table(fig, budget_rows, ("", ""), bbox=(0.03, 0.26, 0.52, 0.05))
+    fig.text(0.57, 0.30, str(budget.get("basis", "")), fontsize=6, family="sans-serif",
              wrap=True)
-    fig.text(0.03, 0.26,
+    fig.text(0.03, 0.21,
              "PoE devices carry no branch circuit — their load lands on the switch, not the "
              "panel schedule.\nComms conductors share no raceway with power (NEC 800.133, "
              "725); shared penetrations are permitted.",
              fontsize=7, family="sans-serif")
+    sheet_chrome(fig, model, number, name)
     pdf.savefig(fig)
     plt.close(fig)
 

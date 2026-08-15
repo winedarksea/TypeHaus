@@ -12,7 +12,6 @@ from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 _M2_TO_FT2 = 10.7639104167
-_WALL_UA_KINDS = ("walls", "windows", "doors")
 
 # Component kinds whose exterior boundary is the ground, not the outdoor design air.
 _GROUND_COUPLED_KINDS = ("foundation_walls", "slab")
@@ -40,9 +39,10 @@ def _storey_is_conditioned(plan: PlanModel, storey_tag: str) -> bool:
 
     The block load sums UA against the *interior setpoint*, so a storey whose rooms are all
     unconditioned (catlin's detached garage, ``conditioned=False``) carries no such UA and
-    must not be summed. This mirrors ``checks.code.mn_energy._storey_is_conditioned``
-    (read-only to this module) — a storey with no rooms at all stays in scope, because an
-    empty storey is a modelling gap, not a declared unconditioned space.
+    must not be summed. ``checks.code.mn_energy`` imports this rather than keeping its own
+    copy — the block load and the prescriptive table must agree about what the conditioned
+    envelope is. A storey with no rooms at all stays in scope, because an empty storey is a
+    modelling gap, not a declared unconditioned space.
     """
     rooms = [el for el in plan.storey_elements(storey_tag) if el.element_kind == "Room"]
     if not rooms:

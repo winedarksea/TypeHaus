@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, dataclass, field
 from enum import Enum
-from pathlib import Path
 
+from typehaus.diff._json_report import JsonReport
 from typehaus.diff.matcher import Match, match_elements
 from typehaus.diff.model import DiffElem
 from typehaus.quantities.length import Length
@@ -39,7 +39,7 @@ class Change:
 
 
 @dataclass
-class DiffReport:
+class DiffReport(JsonReport):
     changes: list[Change] = field(default_factory=list)
 
     def counts(self) -> dict[str, int]:
@@ -57,11 +57,6 @@ class DiffReport:
              "changes": [asdict(c) | {"kind": c.kind.value} for c in self.substantive()]},
             indent=2, sort_keys=True,
         )
-
-    def write(self, path: Path) -> Path:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(self.to_json())
-        return path
 
 
 def build_report(baseline: list[DiffElem], external: list[DiffElem]) -> DiffReport:

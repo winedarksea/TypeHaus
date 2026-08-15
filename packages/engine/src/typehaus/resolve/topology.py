@@ -705,7 +705,3 @@ def resolve_storey_walls(plan: PlanModel, storey_tag: str, z0: float,
     solved, junction_findings = solve_junction_polygons(out, junctions)
     findings.extend(junction_findings)
     return solved, junctions, findings
-
-
-def wall_axis_length(rw: ResolvedWall) -> float:
-    return length(sub(rw.axis[1], rw.axis[0]))

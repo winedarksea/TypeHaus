@@ -730,8 +730,45 @@ class ResolvedModel:
     # Per-stage resolve timings in milliseconds (Phase 0 instrumentation). Not serialized
     # as source; surfaced to the UI via the `perf` payload for measurement, not correctness.
     timings: dict[str, float] = field(default_factory=dict)
+    # Tag -> element, across every collection above that carries a ``tag`` (not junctions,
+    # keyed by ``node_tag``, or the untagged ``conditions``/``stack_edges``). Built once by
+    # ``resolve()`` as its final step (→ index_by_tag) — this dataclass is otherwise mutable,
+    # so an index built any earlier would go stale the moment a later stage appended to a
+    # collection; nothing mutates ``self`` after that point, so building it there is honest
+    # rather than lazy-and-hopeful. 56 call sites hand-rolled
+    # ``next((x for x in coll if x.tag == tag), None)`` over one collection each — this
+    # covers all of them in one dict lookup instead of a linear scan.
+    _tag_index: dict[str, object] = field(default_factory=dict, repr=False, compare=False)
+
+    def index_by_tag(self) -> None:
+        """Build ``_tag_index`` from every current collection. Call once, after every
+        resolve stage has finished mutating ``self`` — see the field's docstring."""
+        index: dict[str, object] = {}
+        for collection in (
+            self.walls, self.openings, self.solids, self.construction_returns, self.roofs,
+            self.stairs, self.floors, self.soffits, self.braces, self.floor_heat, self.rooms,
+            self.panelings, self.pipe_runs, self.pipe_accessories, self.sleeves, self.ducts,
+            self.conduits, self.light_runs, self.solar_panels, self.footing_beddings,
+            self.canvas_objects,
+        ):
+            for element in collection:
+                tag = getattr(element, "tag", None)
+                if tag is not None and tag not in index:
+                    index[tag] = element
+        self._tag_index = index
+
+    def by_tag(self, tag: str) -> object | None:
+        """Any tagged element, from any collection ``index_by_tag`` covers. Falls back to a
+        linear scan of ``walls`` alone if the index hasn't been built yet (e.g. a hand-built
+        ``ResolvedModel`` in a test) — the old ``next(...)`` behavior, not silently empty."""
+        if self._tag_index:
+            return self._tag_index.get(tag)
+        return self.wall(tag)
 
     def wall(self, tag: str) -> ResolvedWall | None:
+        if self._tag_index:
+            element = self._tag_index.get(tag)
+            return element if isinstance(element, ResolvedWall) else None
         return next((w for w in self.walls if w.tag == tag), None)
 
     def all_members(self) -> list[FramedMember]:

@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
-    from typehaus.quantities import Length, Point2D
+    from typehaus.quantities import Point2D
 
 # --- element-kind registry ---------------------------------------------------
 _ELEMENT_KINDS: dict[str, type] = {}
@@ -28,6 +28,12 @@ def element_kinds() -> dict[str, type]:
 
 def is_registered_element(name: str) -> bool:
     return name in _ELEMENT_KINDS
+
+
+def _kind_has_uid(kind: str) -> bool:
+    """Element kinds carry a uid; library objects (Assembly/Layer/Material) do not."""
+    cls = element_kinds().get(kind)
+    return cls is not None and "uid" in getattr(cls, "model_fields", {})
 
 
 # --- authoring-constructor registry (the dialect allowlist, → source/dialect) ----
@@ -84,7 +90,3 @@ class Positioned(Protocol):
 class Tagged(Protocol):
     uid: str
     tag: str
-
-
-def height_of(_length: Length) -> float:  # pragma: no cover - placeholder helper
-    return _length.meters

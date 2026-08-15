@@ -230,11 +230,11 @@ def test_exposed_foundation_foam_is_protected(catlin_model):
 
 def test_protection_board_starts_at_grade(catlin_model):
     """It protects the *exposed* height only — below grade the backfill does that job."""
-    from typehaus.emit.draw.detail_components import M_TO_IN
+    from typehaus.quantities import M_PER_IN
 
     _derived, scene = _detail_scene(catlin_model, "wall_foundation:GARAGE_ICF_8")
     board = _component_nodes(scene, "foam-protection-board")[0]
-    grade_in = catlin_model.plan.project.site.grade.meters * M_TO_IN
+    grade_in = catlin_model.plan.project.site.grade.meters / M_PER_IN
     assert min(z for _u, z in board.points) == pytest.approx(grade_in, abs=0.5)
 
 
@@ -402,7 +402,8 @@ def test_opening_and_ridge_conditions_scaffold_detail_slices(catlin_model):
 def test_opening_crop_holds_sill_and_head(catlin_model):
     """The z-window measures below from the sill and above from the head — the crop has
     to hold the whole opening or the head/sill vocabulary lands outside the drawing."""
-    from typehaus.emit.draw.detail_components import M_TO_IN, condition_opening
+    from typehaus.emit.draw.detail_components import condition_opening
+    from typehaus.quantities import M_PER_IN
 
     derived = next(d for d in derive_detail_slices(catlin_model)
                    if d.key == "opening_perimeter:CATLIN_EXT_2X6")
@@ -561,8 +562,8 @@ def test_shower_tile_rides_on_backer_on_the_walled_side(catlin_model):
 def test_shower_hrv_duct_draws_from_model_ducts(catlin_model):
     """The takeoff draws only when a resolved run actually crosses the cut over the
     shower, at the run's own resolved size — never from an invented duct."""
-    from typehaus.emit.draw.detail_components import M_TO_IN
     from typehaus.emit.draw.details import build_authored_detail_scene
+    from typehaus.quantities import M_PER_IN
     from typehaus.resolve.model import ResolvedDuct
 
     # Catlin now routes DU-S-BATH1-EXH over the shower (houses/catlin/plan/mep.py):
@@ -573,11 +574,11 @@ def test_shower_hrv_duct_draws_from_model_ducts(catlin_model):
     exhaust = next(d for d in catlin_model.ducts if d.system == "exhaust")
     widths = [max(u for u, _z in n.points) - min(u for u, _z in n.points)
               for n in drawn]
-    assert any(w == pytest.approx(exhaust.width_m * M_TO_IN, abs=1e-6) for w in widths)
+    assert any(w == pytest.approx(exhaust.width_m / M_PER_IN, abs=1e-6) for w in widths)
 
     duct = ResolvedDuct(uid="TESTDUCT01", tag="DU-S-HRV-SH", storey="second",
                         system="hrv", path=((1.0, 10.2), (2.0, 10.2)),
-                        width_m=3.0 / M_TO_IN, depth_m=3.0 / M_TO_IN,
+                        width_m=3.0 * M_PER_IN, depth_m=3.0 * M_PER_IN,
                         routing="ceiling", floor_ref=None, crossings=(), conflicts=(),
                         depth_ok=True)
     catlin_model.ducts.append(duct)
@@ -703,10 +704,10 @@ def test_no_glazing_line_spans_a_whole_detail_crop(catlin_model):
         crop = derived.view.crop
         if crop is None:
             continue
-        from typehaus.emit.draw.detail_components import M_TO_IN
+        from typehaus.quantities import M_PER_IN
 
         (_cu0, cz0), (_cu1, cz1) = crop[0].xy_m, crop[1].xy_m
-        span = abs(cz1 - cz0) * M_TO_IN
+        span = abs(cz1 - cz0) / M_PER_IN
         scene, _findings = build_detail(catlin_model, derived)
         for node in scene.nodes:
             if not isinstance(node, Polyline) or node.layer != "A-GLAZ":

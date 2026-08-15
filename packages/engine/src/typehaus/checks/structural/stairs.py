@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.quantities import inch
@@ -45,11 +46,6 @@ _BEARING_SOLID_CATEGORIES = frozenset({"slab", "footing", "pad", "beam", "column
 _LANDING_POST_PREFIX = "landing-post-"
 
 
-def _advisory(cid: str, msg: str, tags: tuple[str, ...], result: Result,
-              fix_hint: str | None = None) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid,
-                   message=f"[advisory, not engineering] {msg}", element_tags=tags,
-                   result=result, fix_hint=fix_hint)
 
 
 def _landing_posts(stair: ResolvedStair) -> list[FramedMember]:

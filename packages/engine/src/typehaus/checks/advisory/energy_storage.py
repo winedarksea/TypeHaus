@@ -16,8 +16,9 @@ Both no-op when no ESS is placed.
 
 from __future__ import annotations
 
+from typehaus.checks._authoring import advisory, passed as _pass, unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result, Severity
+from typehaus.findings import Finding, Result
 from typehaus.model.enums import EquipmentKind
 from typehaus.quantities import inch
 
@@ -27,19 +28,10 @@ from typehaus.quantities import inch
 _MIN_TYPE_X_MEMBRANE = inch(0.625)
 
 
+# WARN severity + FAIL result, deliberately: the permit integrity gate only blocks on ERROR
+# severity, and this finding is advisory, not a hard blocker.
 def _warn(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.FAIL)
-
-
-def _pass(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=msg, element_tags=tags,
-                   result=Result.PASS)
-
-
-def _unknown(cid: str, msg: str, tags: tuple[str, ...] = ()) -> Finding:
-    return Finding(severity=Severity.WARN, check_id=cid, message=f"UNKNOWN — {msg}",
-                   element_tags=tags, result=Result.UNKNOWN)
+    return advisory(cid, msg, tags, Result.FAIL)
 
 
 # Structural materials that are the enclosure by themselves. Read off the material's own

@@ -8,16 +8,15 @@ from pathlib import Path
 
 import pytest
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-STARTER = REPO_ROOT / "houses" / "starter"
+from _helpers import CATLIN, HOUSE_IGNORE, HOUSES, REPO_ROOT, STARTER, copy_house
+
+__all__ = ["CATLIN", "HOUSE_IGNORE", "HOUSES", "REPO_ROOT", "STARTER", "copy_house"]
 
 # The shared ``library`` package lives at the repo root; make it importable for tests that
 # reference it directly (the loader discovers it on its own for plan imports).
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-
-CATLIN = REPO_ROOT / "houses" / "catlin"
 
 
 @pytest.fixture(scope="session")

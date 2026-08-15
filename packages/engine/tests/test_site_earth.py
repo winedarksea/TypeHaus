@@ -16,8 +16,8 @@ from shapely.geometry import Point, Polygon
 from typehaus.resolve import resolve
 from typehaus.resolve.site_earth import earth_plane_void_rings, site_grade_elevation_m
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 FT = 0.3048
 
 # Interior points of the three excavated structures, in feet (project frame).

@@ -22,10 +22,8 @@ from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import SliceKind
 from typehaus.model.patterns import matches
 from typehaus.model.views import Slice
-from typehaus.quantities import m, pt
+from typehaus.quantities import M_PER_IN, m, pt
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel
-
-M_TO_IN = 39.37007874015748
 
 
 @dataclass(frozen=True)
@@ -469,7 +467,7 @@ def _chrome(model: ResolvedModel, derived: DerivedDetail, scene: Scene) -> list:
     bounds = _scene_bounds(scene)
     if bounds is None:
         (cu0, cz0), (cu1, cz1) = (crop[0].xy_m, crop[1].xy_m)
-        bounds = (cu0 * M_TO_IN, cz0 * M_TO_IN, cu1 * M_TO_IN, cz1 * M_TO_IN)
+        bounds = (cu0 / M_PER_IN, cz0 / M_PER_IN, cu1 / M_PER_IN, cz1 / M_PER_IN)
     min_u, min_z, max_u, max_z = bounds
     span = max(max_u - min_u, max_z - min_z)
     margin = max(4.0, span * 0.03)
@@ -568,7 +566,7 @@ def _frame(derived: DerivedDetail):
 
     def to_uz(x: float, y: float, z: float) -> tuple[float, float]:
         u = y if direction == "y" else x
-        return (u * M_TO_IN, z * M_TO_IN)
+        return (u / M_PER_IN, z / M_PER_IN)
 
     return to_uz
 
@@ -589,8 +587,8 @@ def _annotation_nodes(model: ResolvedModel, derived: DerivedDetail, scene: Scene
             point, err = resolve_anchor(model, frame, ann.anchor_uid, ann.anchor_face)
             if err is not None:
                 findings.append(err)
-            ox = ann.offset.x.meters * M_TO_IN if ann.offset is not None else 0.0
-            oy = ann.offset.y.meters * M_TO_IN if ann.offset is not None else 0.0
+            ox = ann.offset.x.meters / M_PER_IN if ann.offset is not None else 0.0
+            oy = ann.offset.y.meters / M_PER_IN if ann.offset is not None else 0.0
             at = (point[0] + ox, point[1] + oy)
             if ann.kind == "leader":
                 nodes.append(Leader(anchor=_point_anchor(point), at=at, to=point,
@@ -664,14 +662,14 @@ def _seed_nodes(model: ResolvedModel, derived: DerivedDetail,
                                       (cu0 + cu1) / 2.0)
     else:
         wall_u_hi = (cu0 + cu1) / 2.0
-    text_x = wall_u_hi * M_TO_IN + 5.0
-    top_y = cz1 * M_TO_IN - 2.0
+    text_x = wall_u_hi / M_PER_IN + 5.0
+    top_y = cz1 / M_PER_IN - 2.0
     step = ANNOTATION_TEXT_H * 2.4
 
     # A layer anchor resolves at its wall's mid-height, which for a storey-tall wall is far
     # outside a junction crop. What the callout is about is the layer *at the junction*, so
     # pin the elevation there and only take the layer's position across the wall depth.
-    junction_z = _junction_z(model, derived.condition, wall) * M_TO_IN if wall else None
+    junction_z = _junction_z(model, derived.condition, wall) / M_PER_IN if wall else None
     # Either side of a junction may own the layer being claimed — at a foundation detail the
     # sheathing and WRB belong to the framed wall above, not the concrete below. An opening
     # condition names no wall at all, so its host carries every claim.
@@ -706,7 +704,7 @@ def _seed_nodes(model: ResolvedModel, derived: DerivedDetail,
                                 to=label.spec.target, text=label.spec.text,
                                 height=label.height, uid=None))
     if getattr(tr, "overlay", None):
-        nodes.append(Text(anchor=(cu0 * M_TO_IN, cz0 * M_TO_IN - 4.0),
+        nodes.append(Text(anchor=(cu0 / M_PER_IN, cz0 / M_PER_IN - 4.0),
                           content=f"{tr.tag}  ·  {tr.overlay}", height=ANNOTATION_TEXT_H,
                           layer="A-ANNO-TEXT", uid=None))
     return nodes

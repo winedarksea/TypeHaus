@@ -10,11 +10,11 @@ from typehaus.resolve import resolve
 from typehaus.source import load_plan
 from typehaus.diff import ChangeKind, build_report
 from typehaus.diff.ifc_adapter import baseline_elems, external_elems
+from _helpers import CATLIN as CATLIN_DIR
 from typehaus.model import (Building, ElectricalDevice, ElectricalDeviceType, Equipment, EquipmentKind,
                             EquipmentType, Library, PlanModel, Project, Register, RegisterType, Service,
                             ServicePort, Site, Storey, DeviceKind, m, pt)
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 @pytest.fixture(scope="module")

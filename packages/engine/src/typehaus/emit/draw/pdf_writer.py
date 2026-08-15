@@ -23,6 +23,7 @@ from typehaus.emit.draw.scene import (
     Symbol,
     Text,
 )
+from typehaus.quantities import M_PER_IN
 
 # Drawing-IR linetype → matplotlib linestyle. Anything unlisted draws solid, which is what
 # an unrecognised CAD linetype should do rather than vanish.
@@ -188,7 +189,6 @@ def _leader_align(node: Leader) -> str:
 _MAX_FIG = (14.0, 11.0)
 _MIN_FIG = (5.0, 4.0)
 
-_M_TO_IN = 1000.0 / 25.4
 
 
 @dataclass(frozen=True)
@@ -221,11 +221,11 @@ def _draw_underlays(ax: object, underlays) -> None:
         path = Path(item.image_path)
         if not path.is_file():  # a missing reference must not break the snapshot
             continue
-        x0 = item.origin_x_m * _M_TO_IN
-        y0 = item.origin_y_m * _M_TO_IN
+        x0 = item.origin_x_m / M_PER_IN
+        y0 = item.origin_y_m / M_PER_IN
         ax.imshow(mpimg.imread(str(path)),
-                  extent=(x0, x0 + item.width_m * _M_TO_IN,
-                          y0, y0 + item.height_m * _M_TO_IN),
+                  extent=(x0, x0 + item.width_m / M_PER_IN,
+                          y0, y0 + item.height_m / M_PER_IN),
                   alpha=item.opacity, zorder=-10, interpolation="bilinear")
 
 

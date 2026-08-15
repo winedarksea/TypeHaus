@@ -26,6 +26,7 @@ from typehaus.resolve.framing.profiles import RIDGE_BEAM_DEFAULT, cross_section
 from typehaus.source import load_plan
 from typehaus.checks import run
 from typehaus.findings import Result
+from _helpers import CATLIN as CATLIN_DIR
 
 # Old CatlinHouseSpec contract values.
 HOUSE_SIZE_FT = 36.0
@@ -46,7 +47,6 @@ GARAGE_OVERHANG_IN = 16.0
 # detail (roof_wall_eave_detail_ifc.py). The birdsmouth notch itself stays 1.17" deep.
 DECK_RISE_FT = (11.875 - 5.5 / 3.0) / 12.0
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 @pytest.fixture(scope="module")

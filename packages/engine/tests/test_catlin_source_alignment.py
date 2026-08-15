@@ -20,8 +20,8 @@ import pytest
 
 from typehaus.quantities import ft
 from typehaus.source import load_plan
+from _helpers import CATLIN as CATLIN_DIR
 
-CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 TOL_M = 0.0254 / 2.0  # half an inch
 
 

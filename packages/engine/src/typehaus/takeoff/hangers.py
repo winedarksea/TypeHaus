@@ -12,6 +12,7 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass
 
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_catalog import (
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
@@ -20,7 +21,7 @@ from typehaus.takeoff.hardware_catalog import (
     hardware_for_role,
     hardware_row,
 )
-from typehaus.takeoff.hardware_config import IN_TO_M, HangerDetectionRules
+from typehaus.takeoff.hardware_config import HangerDetectionRules
 from typehaus.takeoff.plan_geometry import centerline_endpoints, distance_point_to_segment
 
 
@@ -77,8 +78,8 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
     carriers = _member_carriers(model, rules)
     if not carriers:
         return []
-    gap_tolerance_m = rules.end_gap_tolerance_in * IN_TO_M
-    seat_tolerance_m = rules.bearing_seat_tolerance_in * IN_TO_M
+    gap_tolerance_m = rules.end_gap_tolerance_in * M_PER_IN
+    seat_tolerance_m = rules.bearing_seat_tolerance_in * M_PER_IN
 
     found: list = []
     for member in model.all_members():

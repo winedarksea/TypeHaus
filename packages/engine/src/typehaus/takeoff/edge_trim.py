@@ -26,10 +26,10 @@ from __future__ import annotations
 
 import math
 
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 _M_TO_FT = 3.280839895013123
-_M_TO_IN = 39.37007874015748
 
 #: Derived roof-trim member categories billed here by the foot. ``gutter`` is excluded on
 #: purpose (``drainage`` bills it); everything else the roof derives along an edge is trim
@@ -86,7 +86,7 @@ def _path_length_m(points) -> float:
 
 def _section_profile(depth_m: float, thickness_m: float) -> str:
     """The authored run's cross-section as an orderable name, face × thickness in inches."""
-    return f'{depth_m * _M_TO_IN:g}" x {thickness_m * _M_TO_IN:g}"'
+    return f'{depth_m / M_PER_IN:g}" x {thickness_m / M_PER_IN:g}"'
 
 
 def edge_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
