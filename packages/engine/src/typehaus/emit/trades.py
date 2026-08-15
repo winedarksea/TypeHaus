@@ -128,21 +128,33 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     "dowel": "concrete",          # GFRP rebar doweled into a pour
     "thermal_break": "concrete",  # XPS block in the concrete stack
 
-    # Deliberately left on the fallback, not oversights:
+    # Guards and handrails, frame and infill together. "stairs" rather than "framing": a guard
+    # is the safety fitting of the circulation it protects, and six of the Catlin house's seven
+    # are stair-well guards or stair handrails. The one deck guard (RL-SG-BALCONY) rides along,
+    # which is the accepted cost of one toggle per guard.
     #
-    # "railing"   — guards are built framing, but ``ui/src/components/Canvas2D.tsx`` gates the
-    #               2D railing outlines on ``visibleTrades.concrete``. Moving the category here
-    #               alone would split a railing's 2D and 3D toggles; it wants the plan gate
-    #               changed in the same breath, and the "stairs" trade is the likelier home.
-    # "railing_infill" / "railing_glass"
-    #             — the pickets, cable, mesh or lite that fill the frame above. They ride the
-    #               same fallback for the same reason, and *because* it is the same reason:
-    #               routing the infill without the frame would split one guard across two
-    #               toggles, which is worse than the one wrong toggle they share today.
-    # "connector" — too coarse to route. The 86 in the Catlin house are a mix of PV rail clamps
-    #               (electrical), knee-brace straps and column base plates (framing), and vent
-    #               clamps (mechanical). One category cannot be all three; this wants routing by
-    #               *host* rather than by category, which is a larger change than a table.
+    # These were on the concrete fallback for a long time, with the fallback holding the 2D and
+    # 3D toggles in agreement: ``ui/src/components/Canvas2D.tsx`` gated the plan's railing
+    # outlines on ``visibleTrades.concrete`` *because* that is where the 3D viewer put them.
+    # That gate moved to ``stairs`` in the same change as these rows — the two have to move
+    # together or a railing appears in one viewer and not the other.
+    "railing": "stairs",
+    "railing_infill": "stairs",
+    "railing_glass": "stairs",
+
+    # Connection hardware, routed by *what kind of connection it is* rather than by the one
+    # "connector" category it used to share. Structural hardware — the hangers, ties, post
+    # bases, hold-downs and knee-brace straps — is the carpenter's work and rides with the
+    # members it joins. A post base is anchored into a pour and is still framing hardware:
+    # what makes a solid concrete is being a pour, not touching one.
+    "connector": "framing",
+    # The two roof/skin families, split out because they are genuinely different products and
+    # a category is what the 3D inspector *labels* a solid with. A snow-retention rail and an
+    # S-5!-style seam clamp both live on the standing-seam skin: the clamp is a fastener into
+    # the seam, whatever it happens to be holding — a PV rail, a leader, a vent riser — so it
+    # rides the roof it penetrates rather than following its payload into four trades.
+    "snow_guard": "roof",
+    "seam_clamp": "roof",
 }
 
 

@@ -88,6 +88,11 @@ _SOLID_IFC_CLASS: dict[str, tuple[str, str | None]] = {
     # from the ``haus diff`` census rather than round-trip.
     "railing_infill": ("IfcRailing", None), "railing_glass": ("IfcRailing", None),
     "connector": ("IfcMechanicalFastener", None),
+    # Not fasteners in the IFC sense: a snow-retention rail and a seam clamp are accessories
+    # mounted ON the roof skin, not hardware joining two structural members. ``diff/
+    # semantic.py`` carries an ``IfcDiscreteAccessory`` row, so both still round-trip.
+    "snow_guard": ("IfcDiscreteAccessory", None),
+    "seam_clamp": ("IfcDiscreteAccessory", None),
     "vent": ("IfcBuildingElementProxy", None),
     "fascia": ("IfcCovering", None), "soffit": ("IfcCovering", None),
     "flashing": ("IfcCovering", None),

@@ -250,8 +250,8 @@ def test_a_house_with_no_cable_guard_reports_unknown(catlin_ctx):
 # --- code.R308_4_4_glass_guard ---------------------------------------------------------------
 
 def _glass_ctx(glazing=None, rail_count=2, path_ft=10.0, materials=None):
-    from _railing_fixtures import railing, railing_type, resolve_railings
     from typehaus.quantities import ft, pt
+    from _railing_fixtures import railing, railing_type, resolve_railings
 
     product = railing_type("RT-GLASS", glazing=glazing)
     guard = railing("RL-GLASS", path=(pt(ft(0), ft(0)), pt(ft(path_ft), ft(0))),

@@ -12,7 +12,7 @@ from __future__ import annotations
 import math
 
 from typehaus.findings import Finding, Result, Severity, element_error
-from typehaus.model.enums import LayerFunction, TrimKind
+from typehaus.model.enums import ConnectorKind, LayerFunction, TrimKind
 from typehaus.model.mep import Sump, VentRun
 from typehaus.model.structure import Connector, Dowel, KneeBrace, Railing
 from typehaus.model.trim import Downspout, EaveSoffit, Fascia, Flashing, GlazingTrim, Gutter
@@ -230,6 +230,16 @@ def _resolve_dowel(model: ResolvedModel, el: Dowel, storey: str) -> None:
         ))
 
 
+#: Connection hardware whose *product* is not a structural fastener, and which therefore
+#: neither labels nor routes like one (→ emit/trades.py). Everything else keeps the generic
+#: ``connector`` category: a hanger, a tie, a post base and a hold-down are all one family to
+#: a reader, and all of them ride the framing toggle.
+_CONNECTOR_CATEGORY = {
+    ConnectorKind.SNOW_GUARD: "snow_guard",
+    ConnectorKind.STANDING_SEAM_CLAMP: "seam_clamp",
+}
+
+
 def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None:
     cx, cy = el.position.xy_m
     z = el.elevation.meters if el.elevation is not None else \
@@ -239,7 +249,8 @@ def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None
     half = inch(2.5).meters
     model.solids.append(ResolvedSolid(
         uid=el.uid or f"{el.tag}-conn", tag=el.tag, storey=storey,
-        category="connector", outline=square(cx, cy, half, half),
+        category=_CONNECTOR_CATEGORY.get(el.kind, "connector"),
+        outline=square(cx, cy, half, half),
         z0_m=z - inch(3).meters, z1_m=z + inch(3).meters,
     ))
 

@@ -36,7 +36,11 @@ export const SOLID_CATEGORY_COLOR: Record<string, number> = {
   railing_glass: 0x8fb7c9,
   dowel: 0x338c59, // GFRP rebar (green)
   thermal_break: 0xf28c26, // XPS foam block (orange)
-  connector: 0x595c61, // galvanized hardware
+  connector: 0x595c61, // galvanized structural hardware
+  // Roof/skin hardware, split off `connector` (engine resolve/accessories.py). Mill aluminium
+  // on the standing-seam skin rather than hot-dip galvanized steel, so a shade lighter.
+  snow_guard: 0xb8babf,
+  seam_clamp: 0xb8babf,
   sump: 0x4d5257, // pit
   vent: 0xe0e0db, // painted vent pipe
   // routed plumbing runs (engine resolve/mep.py _emit_run_solids), riser-diagram colors —
@@ -86,8 +90,9 @@ export const SOLID_CATEGORY_COLOR: Record<string, number> = {
 // was, which filed the standalone beams and posts away from the studs and rafters they carry,
 // and put all 791 routed pipe solids behind the Concrete toggle instead of Plumbing.
 //
-// Categories absent here take the `concrete` fallback. `railing` and `connector` are on it
-// deliberately, not by omission — see the engine table for why.
+// Categories absent here take the `concrete` fallback, which now means only what it says: the
+// pours, and the dowels and thermal-break blocks cast into them. Guards and connection hardware
+// used to ride it for want of a better home — see the engine table for where they went.
 export const SOLID_CATEGORY_TRADE: Record<string, Trade> = {
   // Standalone structure: an authored Beam/Post is the same lumber as the members it carries,
   // and an authored ridge beam already appears under framing (the engine re-types it as a
@@ -139,6 +144,21 @@ export const SOLID_CATEGORY_TRADE: Record<string, Trade> = {
   drain_tile: "drainage",
   french_drain: "drainage",
   drywell: "drainage",
+  // Guards and handrails, frame and infill together. "stairs" rather than "framing": a guard
+  // is the safety fitting of the circulation it protects, and most of them guard a stair well.
+  // The plan viewer's RailingOutlines gate (components/Canvas2D.tsx) moves with this row —
+  // the two have to agree or a railing appears in one viewer and not the other.
+  railing: "stairs",
+  railing_infill: "stairs",
+  railing_glass: "stairs",
+  // Connection hardware, by what kind of connection it is. Hangers, ties, post bases,
+  // hold-downs and knee-brace straps are the carpenter's work and ride with the members they
+  // join — a post base anchored into a pour is still framing hardware. Snow rails and seam
+  // clamps sit ON the standing-seam skin, so they ride the roof they penetrate rather than
+  // following their payload (a PV rail, a leader, a vent riser) into three more trades.
+  connector: "framing",
+  snow_guard: "roof",
+  seam_clamp: "roof",
   // A dropped soffit is framed and finished like the ceiling it hangs under.
   soffit: "floors",
   // Equal to the fallback, named so the parity test's "unclassified" list stays meaningful.
@@ -161,6 +181,7 @@ export function solidTrade(solid: Pick<Solid, "category">): Trade {
 // lite listed here renders as dark metal however its material is authored.
 const METALLIC_SOLID_CATEGORIES = new Set([
   "railing", "railing_infill", "gutter", "downspout", "flashing", "connector",
+  "snow_guard", "seam_clamp",
 ]);
 
 // Painted finishes name their colour in the material ref ("post-paint-white"). The served

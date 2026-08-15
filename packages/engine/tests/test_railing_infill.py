@@ -345,3 +345,53 @@ def test_a_diagonal_guard_draws_square_pickets_not_lozenges():
         for side in sides:
             assert math.isclose(side, parts.baluster_width_m, abs_tol=1e-9), (
                 f"picket sides, in inches: {[round(inches(s), 3) for s in sides]}")
+
+
+# --- the .glb half of the translucency contract ----------------------------------------------
+
+def test_a_glass_lite_exports_translucent_in_the_glb():
+    """The acceptance the live-viewer assertion in ui/src/components/Panel3D.test.ts cannot
+    reach: a glass guard has to be see-through in the *export* as well, or the model a
+    consultant opens in Revit shows a solid slab where the lite is.
+
+    Both halves read the same fact — the alpha byte of the material's authored
+    ``#RRGGBBAA`` — so this pins the engine end of a contract whose browser end is pinned
+    over there. ``emit/gltf/scene.py`` keys ``alphaMode: BLEND`` and ``doubleSided`` off the
+    alpha this returns, which is why a colour with alpha 1.0 is not merely a cosmetic miss:
+    it also makes a thin pane single-sided and invisible from behind.
+    """
+    from typehaus.emit.gltf.palette import _solid_color
+
+    model = _panel_model(material="lite-glass", materials={"lite-glass": "#8fb7c97a"})
+    lite = infill_of(model, "RL-PANEL")[0]
+    red, green, blue, alpha = _solid_color(model, lite)
+    assert alpha == pytest.approx(0x7a / 255, abs=1e-6), (
+        "the lite's own material ref carries its alpha through the solid colour walk")
+    assert (red, green, blue) == pytest.approx((0x8f / 255, 0xb7 / 255, 0xc9 / 255), abs=1e-6)
+
+    # An opaque sheet in the same guard shape stays opaque — the alpha is a material fact,
+    # never inferred from the category or the tag.
+    opaque = _panel_model(material="lite-steel", materials={"lite-steel": "#8fb7c9"})
+    assert _solid_color(opaque, infill_of(opaque, "RL-PANEL")[0])[3] == 1.0
+
+
+def test_the_glb_material_for_a_glass_lite_blends_and_is_double_sided():
+    """One step further down the same path: the scene builder's own switch. A pane that
+    exports OPAQUE or single-sided is the bug this alpha exists to prevent, and asserting the
+    colour alone would not catch a regression in the switch that reads it. Double-sided is not
+    a nicety — a lite is a thin prism, so a single-sided one vanishes when you walk around it.
+    """
+    from typehaus.emit.gltf.palette import _solid_color
+    from typehaus.emit.gltf.scene import _SceneBuilder
+
+    model = _panel_model(material="lite-glass", materials={"lite-glass": "#8fb7c97a"})
+    builder = _SceneBuilder()
+    index = builder._material(_solid_color(model, infill_of(model, "RL-PANEL")[0]))
+    material = builder._materials[index]
+    assert material["alphaMode"] == "BLEND"
+    assert material["doubleSided"] is True
+
+    opaque = _panel_model(material="lite-steel", materials={"lite-steel": "#8fb7c9"})
+    index = builder._material(_solid_color(opaque, infill_of(opaque, "RL-PANEL")[0]))
+    assert builder._materials[index]["alphaMode"] == "OPAQUE"
+    assert builder._materials[index]["doubleSided"] is False

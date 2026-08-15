@@ -24,7 +24,7 @@ import {
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import {
   SOLID_CATEGORY_COLOR, SOLID_CATEGORY_TRADE, createSolidMaterial,
-  solidColor, solidTrade,
+  solidColor, solidOpacity, solidTrade,
 } from "../three/solidMaterials";
 import { ALL_TRADES } from "../state/vocabulary";
 import { carriesMemberIdentity, resolveMemberPickUid } from "../three/memberPicking";
@@ -302,12 +302,20 @@ const POST_PAINT_CATALOG = {
   }],
 } as Catalog;
 
-function solid(category: string, assembly: string | null = null, uid = "S-1"): Solid {
+function solid(category: string, assembly: string | null = null, uid = "S-1",
+  material: string | null = null): Solid {
   return {
-    uid, tag: uid, storey: "L1", category, assembly, provenance: null,
+    uid, tag: uid, storey: "L1", category, assembly, provenance: null, material,
     outline: [[0, 0], [1, 0], [1, 0.2], [0, 0.2]], voids: [], z0_m: 0, z1_m: 2.4,
-  };
+  } as Solid;
 }
+
+// A material that declares itself see-through the only way one can: an alpha byte on its
+// authored colour. Nothing infers translucency from a category or a tag.
+const GLASS_CATALOG = {
+  window_types: [], door_types: [], occupancies: [], assemblies: [],
+  materials: [{ tag: "guard-glass", name: "Guard glass", color: "#8fb7c97a" }],
+} as unknown as Catalog;
 
 export function runSolidMaterialTests() {
   assert(solidColor(solid("beam"), undefined, PALETTE) === SOLID_CATEGORY_COLOR.beam,
@@ -378,6 +386,41 @@ export function runSolidMaterialTests() {
     assert(ALL_TRADES.includes(SOLID_CATEGORY_TRADE[category]),
       `${category} maps to a trade with no THREE.Group: ${SOLID_CATEGORY_TRADE[category]}`);
   }
+
+  // Guards ride the stairs toggle, and the plan viewer's RailingOutlines gate
+  // (components/Canvas2D.tsx) is on the same trade — the two have to agree or a railing shows
+  // in one viewer and not the other. They rode the concrete fallback for a long time.
+  for (const category of ["railing", "railing_infill", "railing_glass"]) {
+    assert(solidTrade(solid(category)) === "stairs",
+      `${category} follows the guard it belongs to, not the concrete fallback`);
+  }
+  // Connection hardware, by what kind of connection it is. 49 PV rail clamps and 8 gutter
+  // straps used to sit under Concrete for want of anywhere better.
+  assert(solidTrade(solid("connector")) === "framing",
+    "A hanger, tie, post base or hold-down is the carpenter's hardware");
+  assert(solidTrade(solid("snow_guard")) === "roof", "A snow rail sits on the roof skin");
+  assert(solidTrade(solid("seam_clamp")) === "roof",
+    "So does a seam clamp, whatever it happens to be holding");
+
+  // --- translucency ----------------------------------------------------------------------
+  // `solidOpacity` used to walk the assembly ONLY, while `solidColor` right above it read the
+  // direct material ref as well. A guard's glass lite gets its translucency from a material
+  // ref (its posts and its lite share one Railing.assembly and are not the same material), so
+  // it shipped translucent in the .glb and rendered OPAQUE — and single-sided — in the live
+  // viewer. Colour and opacity have to walk the same ladder.
+  const lite = solid("railing_glass", "RAILING_DARK_METAL", "S-GLASS", "guard-glass");
+  assert(Math.abs(solidOpacity(lite, GLASS_CATALOG) - 0x7a / 255) < 1e-6,
+    `A lite whose translucency comes from a material ref is see-through, got ${solidOpacity(lite, GLASS_CATALOG)}`);
+  const glassMaterial = createSolidMaterial(lite, GLASS_CATALOG, "nordic", PALETTE);
+  assert(glassMaterial.transparent, "...and its THREE material blends");
+  assert(glassMaterial.side === THREE.DoubleSide,
+    "A pane is a thin prism: without both faces it disappears from one side");
+  assert(glassMaterial.metalness === 0,
+    "railing_glass is deliberately outside METALLIC_SOLID_CATEGORIES — under it a lite renders as dark metal");
+  const picket = createSolidMaterial(solid("railing_infill"), undefined, "nordic", PALETTE);
+  assert(picket.metalness > 0, "Opaque infill is the same mill aluminium as the frame");
+  assert(solidOpacity(solid("railing"), undefined) === 1,
+    "A solid that names no translucent material is opaque");
 }
 
 // --- B7: pick registration ---------------------------------------------------

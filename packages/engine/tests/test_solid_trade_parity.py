@@ -28,7 +28,13 @@ SOLID_MATERIALS_TS = REPO_ROOT / "ui" / "src" / "three" / "solidMaterials.ts"
 
 # Categories that ride the fallback on purpose, so "unclassified" stays a meaningful signal.
 # Keep the reasons in emit/trades.py, next to the table.
-DELIBERATELY_UNCLASSIFIED = {"railing", "railing_infill", "railing_glass", "connector"}
+#
+# Empty as of 2026-08-15. ``railing`` and ``connector`` were the last two, and both were
+# escapes rather than answers: a guard rode the concrete toggle and so did 49 PV rail clamps.
+# Guards went to ``stairs`` (with the plan viewer's gate moving in the same change) and
+# connection hardware split by kind — structural hardware to framing, snow rails and seam
+# clamps to roof. What is left on the concrete fallback is pours and what is cast into them.
+DELIBERATELY_UNCLASSIFIED: set[str] = set()
 
 
 @pytest.fixture(scope="module")

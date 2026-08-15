@@ -119,7 +119,13 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "railing_glass": (0.561, 0.718, 0.788, 0.48),
     "dowel": (0.20, 0.55, 0.35, 1.0),     # GFRP rebar (green)
     "thermal_break": (0.95, 0.55, 0.15, 1.0),  # XPS foam block (orange)
-    "connector": (0.35, 0.36, 0.38, 1.0),  # galvanized hardware
+    "connector": (0.35, 0.36, 0.38, 1.0),  # galvanized structural hardware
+    # The two roof/skin hardware families, split off ``connector`` because they are different
+    # products and a category is what the 3D inspector labels a solid with. Both are mill
+    # aluminium sitting on the standing-seam skin rather than the hot-dip galvanized steel a
+    # hanger or a hold-down is, so they read a shade lighter than the fastener grey above.
+    "snow_guard": (0.72, 0.73, 0.75, 1.0),
+    "seam_clamp": (0.72, 0.73, 0.75, 1.0),
     "sump": (0.30, 0.32, 0.34, 1.0),       # pit
     "vent": (0.88, 0.88, 0.86, 1.0),       # painted vent pipe
     # routed plumbing runs (→ resolve/mep.py _emit_run_solids), riser-diagram colors

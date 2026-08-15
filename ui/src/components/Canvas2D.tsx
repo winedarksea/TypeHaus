@@ -492,12 +492,12 @@ export function Canvas2D() {
             selected={selection.uid === stair.uid} hovered={hoverUid === stair.uid}
             onSelect={selectEl} onHover={hoverEl} />)}
         {/* guards over the stair wells and open edges, drawn on top of the flight they
-            protect. Gated on `concrete` because that is where a `railing` solid still lands in
-            the 3D viewer (three/solidMaterials.ts::SOLID_CATEGORY_TRADE keeps it on the
-            fallback for exactly this reason), so the toggle behaves the same in both viewers
-            rather than the plan inventing its own grouping. Re-home the category and this gate
-            moves with it — `stairs` is the likelier answer for a guard. */}
-        {visibleTrades.concrete && <RailingOutlines railings={railingsOnStorey} project={project} />}
+            protect. Gated on `stairs`, which is where a `railing` solid lands in the 3D viewer
+            (three/solidMaterials.ts::SOLID_CATEGORY_TRADE), so the toggle behaves the same in
+            both viewers rather than the plan inventing its own grouping. These two move
+            together: re-home the category and this gate goes with it. It was `concrete` for as
+            long as the railing category rode the concrete fallback. */}
+        {visibleTrades.stairs && <RailingOutlines railings={railingsOnStorey} project={project} />}
         {footprintObjects
           .map((item) => <CanvasObjectFootprint key={item.uid} item={item}
             type={item.type ? canvasTypes.get(item.type) : undefined} project={project} scale={view.scale}

@@ -249,7 +249,7 @@ the future.
 - EQ-M-HP3-STAIR should be on the north wall of the stairs (on the northwest corner, wall W-M-N2 I believe), not the west wall. It also should have a register of some kind (passive, not hooked to the minisplit, just next to it) to allow air to flow from next to it into MUDROOM through wall W-M-STRW
 - We are thinking of switching W-SG-ARCH to be a column and beams like PT-SG-COL and BM-SG-BKE, then replacing the masonry railing right above it with a metal railing more like RL-SG-BALCONY
 - Add a packed gravel bed under the retaining wall blocks (W-RG-*)
-- Improve the symmetry of the windows on the east and west side so they look better from outside, where possible
+- Improve the symmetry of the windows on the east and west side (especially the west side) so they look better from outside, where possible, while still being useful for their matching interior rooms
 - Extend the outdoor curtain rods to cover all three exposed side of the porch (possibly as a single continuous curtain, if that is possible, or else as 4 single bay panels)
 - Permit drawings
 
