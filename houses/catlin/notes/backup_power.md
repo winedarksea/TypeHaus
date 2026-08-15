@@ -50,12 +50,24 @@ backwards once the enclosure's gear lives downstream of the inverter.
 | Tier | Circuits | What it is |
 |---|---|---|
 | `ALWAYS_ON` | `CKT-FRIDGE`, `CKT-HA`, `CKT-LT-BACKUP` | Food, network, and light in the kitchen and the mechanical room. Rides the whole outage. |
-| `SHED` | `CKT-HP3`, `CKT-WH-HP`, `CKT-SUMP` | Comfort and convenience. Dropped by a relay when the battery is low and the sun is not out. |
+| `SHED` | `CKT-HP3`, `CKT-WH-240`, `CKT-SUMP` | Comfort and convenience. Dropped by a relay when the battery is low and the sun is not out. |
 
 The tier is authored on the circuit (`Circuit.backup_tier`) and nothing infers it: whether a
 load is worth carrying through an outage is an owner decision, not a property of the load.
-The switching hardware follows from the tier — a Pro 4PM channel for the one 120V shed
-circuit inside 16A, relay-driven contactors for the 2-pole heat pump and the 20A sump.
+The switching hardware follows from the tier — relay-driven contactors for all three shed
+circuits now (the 2-pole heat pump, the 20A sump, and — since 2026-08-15 — the 2-pole water
+heater), with the Pro 4PM relay still bought to drive the contactor coils even though no
+circuit switches through one of its channels directly.
+
+**The water heater (2026-08-15).** `CKT-WH-HP` is gone. This house has one water heater — an
+80-gal Rheem ProTerra hybrid HPWH on one 240V/4,500 VA circuit — not the 120V-compressor /
+240V-element two-tank split this note used to describe; that split modelled a single
+product's two internal power draws as two appliances. `CKT-WH-240` now carries the whole
+unit on the SHED tier, and its 500 VA backup contribution — the same figure `CKT-WH-HP` used
+to carry — is enforced by `LM-WH` (`plan/circuits.py`): a Home Assistant automation
+(ESPHome's `esphome-econet`, bridging the unit's EcoNet API) forces Heat-Pump-Only mode
+whenever the house is on battery, so the number every calc below rests on is unchanged even
+though the modelling that produces it is now honest about there being one appliance, not two.
 
 ## Does the 12kPV carry it?
 

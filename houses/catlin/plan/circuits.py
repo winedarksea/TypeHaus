@@ -80,8 +80,8 @@ CIRCUITS = (
     # 46.9A at the 125% continuous factor, so 50A is the breaker and 10.5 kW the headroom.
     Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", slot=21, panel_ref=_PANEL, breaker_amps=50, poles=2,
             gfci=True, load_va=9000, description="Sauna heater (EQ-B-SAUNA-HTR)"),
-    Circuit(uid="CKT007AAAA", tag="CKT-WH-240", slot=25, panel_ref=_PANEL, breaker_amps=30, poles=2,
-            load_va=4500, description="Water heater, 240V tank (EQ-B-WH2)"),
+    # CKT-WH-240 moved to the backup subpanel 2026-08-15 — see the SHED tier below. Slot 25
+    # is a spare on the main panel now.
     Circuit(uid="CKT008AAAA", tag="CKT-ERV", slot=2, panel_ref=_PANEL, breaker_amps=15, poles=2,
             load_va=200, description="ERV"),
     # The three Gree heat-pump systems (plan/electrical.py). A multi's indoor heads are fed
@@ -240,13 +240,23 @@ CIRCUITS = (
             breaker_amps=15, poles=2, backup_tier=BackupTier.SHED, load_va=1500,
             duty_cycle=0.4,
             description="Heat pump 3 outdoor, Sapphire R32 VFD (EQ-M-HP3-OD; shed tier)"),
-    # Compressor only — no resistance element reaches the backup bus, by design. A HPWH
-    # makes a household day of hot water in three to four hours of compressor run, so
-    # 0.15 of twenty-four.
-    Circuit(uid="CKT014AAAA", tag="CKT-WH-HP", slot=5, panel_ref=_BACKUP_PANEL,
-            breaker_amps=15, poles=1, backup_tier=BackupTier.SHED, load_va=500,
+    # ONE circuit for the whole 80-gal ProTerra (EQ-B-WH), moved here from the main panel
+    # 2026-08-15 — not the old two-tank split (CKT-WH-HP compressor-only + CKT-WH-240
+    # elements), which modelled a real product's single power whip as two appliances on
+    # two panels. `load_va=4500` is the nameplate: what the 30A breaker, the panel
+    # schedule and the NEC 220.82 estimate are sized against, because a resistance-element
+    # call can happen any time the automation below hasn't (yet) forced Heat-Pump-Only
+    # mode. `LM-WH` is what actually governs the backup-event draw down to ~500W — see it
+    # and `EQ-T-WATER-HEATER`'s note in plan/mep.py for the mechanism. `duty_cycle=0.15`
+    # is unchanged from the old compressor-only circuit's reasoning: a HPWH makes a
+    # household day of hot water in three to four hours of compressor run.
+    # Slot 9 (not 5): a 2-pole breaker occupies its slot and slot+2 in the same column
+    # (electrical.panel_spaces), and 5+7 collides with CKT-SUMP at slot 7. 9+11 is clear.
+    Circuit(uid="CKT007AAAA", tag="CKT-WH-240", slot=9, panel_ref=_BACKUP_PANEL,
+            breaker_amps=30, poles=2, backup_tier=BackupTier.SHED, load_va=4500,
             duty_cycle=0.15,
-            description="Heat pump water heater, Rheem 120V (EQ-B-WH, compressor only)"),
+            description="Water heater, Rheem ProTerra 80gal hybrid HPWH (EQ-B-WH; "
+                        "EcoNet-automated to Heat-Pump-Only on backup)"),
     # GFCI at the breaker (2026-08-01): RM-B-FURNACE is unfinished below-grade space under
     # E3902.11, and the 2020 cycle removed the old sump-pump exception. 0.05 is a pump that
     # runs a minute or two an hour in wet weather — the peak matters here, not the average,
@@ -318,29 +328,31 @@ CIRCUITS = (
 #
 # The open decision in plans/TODO.md — "service load exceeds the service" — is settled here
 # with management rather than a service upgrade (re-affirmed by decision, 2026-08-15, with
-# the arithmetic below in front of it). It takes two groups now, and the reason the earlier
-# single group stopped being enough is that the house kept growing: the 2026-07-25 note
-# under LM-EV was written when the unmanaged estimate was 223.7A, and it is 254.2A today.
+# the arithmetic below in front of it). Three groups now: LM-WH joined 2026-08-15 when the
+# two-tank water-heater model (plan/mep.py's note has the full story) was corrected to the
+# single ProTerra it should have been all along, which is also what dropped the unmanaged
+# base by removing a phantom 500 VA appliance that never existed as its own circuit.
 #
 # Where the 220.82 estimate stands, and what each lever is worth (the numbers come out of
 # `haus schedule` / takeoff/electrical.py::service_load_summary, not from here):
 #
-#   unmanaged                                             254.2A
-#   dryer at its 830 W nameplate, not the 14-30R's 5 kVA   -7.0A  ->  215.3A
-#   LM-WELLNESS: spa + sauna one at a time                -15.0A  ->  200.3A
-#   LM-EV: EV pair capped 5,760 -> 5,600 VA                -0.7A  ->  199.6A
+#   unmanaged                                                     246.4A
+#   LM-EV: EV pair capped 5,760 -> 5,600 VA, credited at 100%     -32.7A  ->  213.7A
+#   LM-WELLNESS: spa + sauna one at a time, 9,000 VA excess *40%  -15.0A  ->  198.7A
+#   LM-WH: ProTerra forced Heat-Pump-Only near peak, 4,000 VA *40% -6.7A  ->  192.1A
 #
-# 0.4A of margin against the 200A service, and it is worth being blunt about what that
-# means: this house has no room left on 200A. Any load added after this — a second range
-# circuit, a workshop feeder, a heat kit bigger than EQ-S-HP1-STRIP's 2 kW — puts it over
-# again, and the answer then is the 400A service this pass deliberately did not buy.
+# 7.9A of margin against the 200A service. Better than the 0.4A this pass started the day
+# with, and still not slack: a workshop feeder or a heat kit bigger than EQ-S-HP1-STRIP's
+# 2 kW eats most of it, and the answer past that is the 400A service this pass deliberately
+# did not buy.
 #
 # Why the credits are worth what they are: a managed group's connected excess is removed in
 # the 220.82 term the load was counted in. The EV pair is added at 100% (already continuous),
-# so its excess comes off one-for-one; the spa and sauna are fixed appliances under (B)(3),
-# reached through the 40% remainder factor, so their 9,000 VA of excess is worth 3,600 VA of
-# demand. Crediting them at 100% would overstate the saving by 2.5x, which is what the
-# service_load check used to do.
+# so its excess comes off one-for-one; the spa/sauna and the water heater are fixed
+# appliances under (B)(3), reached through the 40% remainder factor, so their excess is
+# worth 40 cents on the dollar of demand. Crediting any of them at 100% would overstate the
+# saving, which is what the service_load check used to do before the credit moved into the
+# bucket the load was actually counted in.
 LOAD_MANAGEMENTS = (
     # The Emporia Vue's dynamic load management watches the whole-panel CTs and throttles the
     # 14-50 EVSE. 5,600 VA is 23.3A at 240V across both EV circuits together — above the
@@ -362,4 +374,20 @@ LOAD_MANAGEMENTS = (
                    max_simultaneous_va=11500, strategy="ems",
                    source="Emporia contactor-based priority shed, spa vs sauna (NEC 220.82 "
                           "connected-load management)"),
+    # CKT-WH-240's own governor, not a panel-level EMS: ESPHome's `esphome-econet` component
+    # bridges the Rheem ProTerra's EcoNet API to Home Assistant, and an automation there
+    # forces the unit into Heat-Pump-Only mode (compressor only, no resistance element)
+    # whenever the house is on battery or the whole-house draw is near the 200A peak,
+    # dropping back to Hybrid mode otherwise. 500 VA is the compressor's own steady-state
+    # ceiling in that mode (EQ-T-WATER-HEATER's note in plan/mep.py has the datasheet
+    # figure); 4,500 VA nameplate is what the breaker and the 220.82 base case still assume
+    # whenever the automation hasn't (yet) intervened. A single-circuit "group" is the
+    # correct shape here, not a simplification of a bigger one — this is one appliance
+    # governing its own two internal loads, the same physical fact the old two-circuit
+    # model was reaching for and got wrong by splitting it into two tanks.
+    LoadManagement(uid="EMSWH0AAAA", tag="LM-WH",
+                   managed_circuits=("CKT-WH-240",),
+                   max_simultaneous_va=500, strategy="ems",
+                   source="ESPHome esphome-econet -> Home Assistant automation, forcing "
+                          "Rheem EcoNet Heat-Pump-Only mode on battery or near peak demand"),
 )

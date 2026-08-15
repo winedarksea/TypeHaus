@@ -113,14 +113,37 @@ REGISTER_TYPES = (
 # EQ-T-GREE-SLIM24 (plan/electrical.py) — the two things left that push air, neither of
 # which burns anything.
 EQUIPMENT_TYPES = (
-    # The 120V Rheem heat-pump water heater (plans/electrical_notes.md lines 25-26): stays
-    # on the backup subsystem, so no gas and no 240V boost — the 240V tank is EQ-B-WH2
-    # (plan/electrical.py). Compressor ~500W; the type is electric-only.
-    EquipmentType(tag="EQ-T-WATER-HEATER", name="Heat pump water heater, Rheem 120V", footprint=(inch(24), inch(24)), height=ft(5),
+    # ONE 80-gallon hybrid heat-pump water heater (2026-08-15, replacing the two-tank
+    # 120V-compressor/240V-element split this house carried since plans/electrical_notes.md
+    # was first drafted — see the corrected note below). Rheem ProTerra PROPH80, EcoNet-
+    # enabled: 4.5 kW resistance element, 30A/240V dedicated circuit, single power whip —
+    # a real product, not two products standing in for one.
+    #
+    # The compressor's own steady-state draw in the mode EcoNet calls "Heat Pump" /
+    # "Energy Saver" — no resistance backup — is ~360-500W per the datasheet and vendor
+    # documentation; `LM-WH` (plan/circuits.py) carries that as its 500 VA
+    # `max_simultaneous_va` ceiling, the conservative round number. Home automation
+    # (ESPHome's `esphome-econet` component bridging the unit's EcoNet API to Home
+    # Assistant) forces Heat-Pump-Only mode whenever the house is on battery (grid down)
+    # or near the 200A service peak, and drops back to Hybrid mode otherwise. The nameplate
+    # 4.5 kW is what the breaker, the panel schedule and the NEC 220.82 estimate are sized
+    # against — the automation is a demand-response behavior layered on top of a normal
+    # circuit, not a second circuit, so it lives on `LoadManagement`, not on a second
+    # `Equipment`. See `code.P2804_water_heater_relief` for the TPR discharge this needs.
+    #
+    # Reverting to the original two-implementation note this replaced (single 120V
+    # "plug-in" HPWH, no 240V circuit at all, ~450W max, entirely on backup): swap
+    # `type_ref` on EQ-B-WH to a small 120V-only EquipmentType (power_120 port, no
+    # resistance element), retag its `circuit` to a 1-pole 120V circuit at ~450 VA, and
+    # delete `LM-WH` — the mode-switching automation has nothing left to switch. Nothing
+    # else in the plan (piping, position, room, TPR discharge) needs to move.
+    EquipmentType(tag="EQ-T-WATER-HEATER", name="Water heater, Rheem ProTerra 80gal hybrid heat pump (EcoNet)",
+                  footprint=(inch(24), inch(24)), height=ft(5, 8),
                   plan_symbol="water-heater",
+                  source="Rheem PROPH80 T2 RH400-30 / ProTerra XE80T10HS45U0 class: 80 gal, 4.5 kW resistance element, 30A/240V dedicated circuit, ~360-500W compressor draw in Heat Pump Only mode, EcoNet wifi module.",
                   ports=(ServicePort(tag="cold", service=Service.WATER_COLD, position=(ft(0), ft(0), ft(4))),
                          ServicePort(tag="hot", service=Service.WATER_HOT, position=(ft(0), ft(0), ft(4))),
-                         ServicePort(tag="power", service=Service.POWER_120, position=(ft(0), ft(0), ft(0))))),
+                         ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))))),
     # --- the backup microgrid (2026-08-02, notes/backup_power.md) ----------------------
     #
     # EG4 12kPV. The name is the PV input, not the output: 12,000 W of array in, 8,000 W of
@@ -905,36 +928,24 @@ CONDENSATE = [
                         ft(0, 9))),
 ]
 
-# --- TPR relief discharge, both tanks (P2804.6.1) -----------------------------------
+# --- TPR relief discharge (P2804.6.1) ------------------------------------------------
 #
 # The one pipe on a water heater whose job is to stop the tank exploding, and the one the
 # model had no instance of until 2026-08-15: `code.P2804_water_heater_relief` reported
-# UNKNOWN against both heaters because neither named a `relief_discharge_ref`, and an
-# unmodeled safety discharge is exactly the kind of gap a permit set is read for.
+# UNKNOWN because EQ-B-WH named no `relief_discharge_ref`, and an unmodeled safety
+# discharge is exactly the kind of gap a permit set is read for.
 #
-# Both tanks stand on the basement slab in RM-B-FURNACE, 2'-1 3/4" apart on the y~32'-9"
-# line, so each takes its discharge down its *outboard* face — EQ-B-WH's to the west,
-# EQ-B-WH2's to the east — rather than into the gap between them where nothing can be
-# serviced. The east drop stands at x=9'-0" and not against the tank: W-B-STR's inside face
-# is x=9'-6", and a run any further east cores that 12" wall instead of standing in front
-# of it (`mep.sleeve_coverage` caught exactly that at the first attempt). 3/4" full-size copper, which is the valve's own outlet size: P2804.6.1 forbids
-# reducing it, and forbids a valve, a trap or a rise anywhere along the run.
-#
-# Each run is a vertical drop from the valve at 3'-6" to 8" above the slab, then 1'-0" of
-# horizontal at 2"/ft to an air gap 6" over the floor — the low end of P2804.6.1's 6"-24"
-# band, and well past IRC P3005.3's 1/4"/ft, which `mep.drain_slope` holds every DRAIN
-# segment to. They discharge onto the slab in the mechanical room by design: the room's
-# floor falls to SM-B-RADON and there is no fixture below to damage, which is the same
-# reason P2801.6 asks for no pan under either tank.
+# 3/4" full-size copper, which is the valve's own outlet size: P2804.6.1 forbids reducing
+# it, and forbids a valve, a trap or a rise anywhere along the run. Vertical drop from the
+# valve at 3'-6" to 8" above the slab, then 1'-0" of horizontal at 2"/ft to an air gap 6"
+# over the floor — the low end of P2804.6.1's 6"-24" band, and well past IRC P3005.3's
+# 1/4"/ft, which `mep.drain_slope` holds every DRAIN segment to. It discharges onto the
+# slab in the mechanical room by design: the room's floor falls to SM-B-RADON and there is
+# no fixture below to damage, which is the same reason P2801.6 asks for no pan under it.
 TPR_DISCHARGE = [
     PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN,
             path=(pt(ft(5, 0.3), ft(32, 9.7)), pt(ft(5, 0.3), ft(32, 9.7)),
                   pt(ft(5, 0.3), ft(31, 9.7))),
-            diameter=inch(0.75), material="copper",
-            elevations=(ft(3, 6), ft(0, 8), ft(0, 6))),
-    PipeRun(uid="CBPT02AAAA", tag="PR-B-WH2-TPR", system=PipeSystem.DRAIN,
-            path=(pt(ft(9), ft(32, 5.4)), pt(ft(9), ft(32, 5.4)),
-                  pt(ft(9), ft(31, 5.4))),
             diameter=inch(0.75), material="copper",
             elevations=(ft(3, 6), ft(0, 8), ft(0, 6))),
 ]
@@ -1499,7 +1510,7 @@ REGISTERS_ATTIC = [
 
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(m(1.88684), m(10.0015)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-HP",
+             position=pt(m(1.88684), m(10.0015)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-240",
              relief_discharge_ref="PR-B-WH-TPR"),
 ]
 

@@ -412,8 +412,9 @@
 "EQ-T-GREE-SLIM24" = { low = 850, high = 1250 }  # 1 ea — DUCT24HP230V1BD $928
 "EQ-T-GREE-VIREO-GEN3" = { low = 2050, high = 2700 }  # 1 ea — VIR24HP230V1R32AO $2,290
 "EQ-T-SAUNA-HEATER" = { low = 700, high = 2200 }  # 1 ea
-"EQ-T-WATER-HEATER" = { low = 1500, high = 3000 }  # 1 ea
-"EQ-T-WATER-HEATER-240" = { low = 450, high = 1200 }  # 1 ea
+# One tank, not two (2026-08-15, replacing the two-row entry the old two-tank model
+# carried) — Rheem ProTerra 80gal PROPH80/XE80T10HS45U0 class, retail-listed $900-$1,300.
+"EQ-T-WATER-HEATER" = { low = 900, high = 1300 }  # 1 ea
 "FT-ACCESS-PANEL-1414" = { low = 35, high = 90 }  # 2 ea
 "FT-ACCESS-PANEL-1429" = { low = 55, high = 140 }  # 1 ea
 "FT-CURTAIN-ROD-48" = { low = 25, high = 90 }  # 8 ea

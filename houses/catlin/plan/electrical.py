@@ -188,14 +188,6 @@ DEVICE_TYPES = (
 )
 
 EQUIPMENT_TYPES = (
-    # The 240V resistance tank alongside the 120V Rheem HPWH (EQ-T-WATER-HEATER,
-    # plan/mep.py) — notes line 4 wants one of each.
-    EquipmentType(tag="EQ-T-WATER-HEATER-240", name="Electric water heater, 240V",
-                  footprint=(inch(24), inch(24)), height=ft(5),
-                  plan_symbol="water-heater",
-                  ports=(ServicePort(tag="cold", service=Service.WATER_COLD, position=(ft(0), ft(0), ft(4))),
-                         ServicePort(tag="hot", service=Service.WATER_HOT, position=(ft(0), ft(0), ft(4))),
-                         ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))))),
     # Electric sauna heater. RM-B-SAUNA's heated zone is 8'-0 11/16" x 8'-6" x 7'-6" ~= 513
     # cubic feet, and the trade rule is ~1 kW per 45-50 cf, so this room wants 9-10.5 kW —
     # which is the "240V, 50A GFCI breaker ... max 10.5 kW" the detail notes call for.
@@ -463,14 +455,12 @@ BASEMENT_DEVICES = [
 ]
 
 BASEMENT_EQUIPMENT = [
-    # 240V tank beside the HPWH (EQ-B-WH at ~(5'-11", 33')) in the furnace room.
-    # Its TPR discharge (PR-B-WH2-TPR) is authored beside EQ-B-WH's in plan/mep.py, where
-    # the rest of the basement pipe lives — a relief line is plumbing, not electrical, and
-    # only the tank it protects is filed here.
-    Equipment(uid="CEE015AAAA", tag="EQ-B-WH2", kind=EquipmentKind.WATER_HEATER,
-              position=pt(m(2.54347), m(9.89175)), footprint=(inch(24), inch(24)),
-              room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER-240", circuit="CKT-WH-240",
-              relief_discharge_ref="PR-B-WH2-TPR"),
+    # EQ-B-WH2, the second ("240V element") tank this basement used to carry beside
+    # EQ-B-WH, was retired 2026-08-15: this house has one water heater, an 80-gal Rheem
+    # ProTerra hybrid HPWH (plan/mep.py::EQ-T-WATER-HEATER), and the two-tank split was a
+    # modelling artifact of the original electrical notes describing one product's two
+    # internal power draws (compressor vs. resistance element) as if they were two
+    # appliances. See the note above `EQ-T-WATER-HEATER` for the corrected design.
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
               position=pt(m(2.09754), m(8.88149)), footprint=(inch(24), inch(24)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV", circuit="CKT-ERV"),

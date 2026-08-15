@@ -195,9 +195,10 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     from typehaus.takeoff import backup_component_rows, panel_schedule, service_load_summary
 
     rows = {row["circuit"]: row for row in panel_schedule(catlin_model)}
-    # 37: 36 after the 2026-08-02 microgrid refactor retired CKT-BACKUP-FEED, plus
-    # CKT-DISPOSAL, which came off CKT-DISHWASHER on 2026-08-07.
-    assert len(rows) == 37
+    # 36: 36 after the 2026-08-02 microgrid refactor retired CKT-BACKUP-FEED, plus
+    # CKT-DISPOSAL (2026-08-07), minus CKT-WH-HP folded into CKT-WH-240 (2026-08-15) when
+    # the two-tank water heater became one.
+    assert len(rows) == 36
     # Each radiant floor zone is its own 120V circuit with breaker-level GFCI, controlled
     # by one thermostat (NEC 424.44(G) — heating cable in a bathroom or kitchen floor; the
     # dining zone takes the same protection because every mat maker asks for it).
@@ -223,22 +224,25 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # the 14-30R stay — a provision for a future vented dryer — which is exactly why the
     # receptacle-derived figure was the wrong one to let stand on a service with no room.
     assert rows["CKT-DRYER"]["connected_va"] == 830
-    # The notes' backup set is tiered, and every one of them is on the subpanel.
+    # The notes' backup set is tiered, and every one of them is on the subpanel. CKT-WH-240
+    # joined the SHED tier 2026-08-15 in place of CKT-WH-HP, when the two-tank water heater
+    # became one ProTerra on one (governed) circuit.
     backup = {tag for tag, row in rows.items() if row["backup"]}
-    assert backup == {"CKT-WH-HP", "CKT-SUMP", "CKT-FRIDGE", "CKT-HA",
+    assert backup == {"CKT-WH-240", "CKT-SUMP", "CKT-FRIDGE", "CKT-HA",
                       "CKT-LT-BACKUP", "CKT-HP3"}
     assert {tag for tag, row in rows.items() if row["backup_tier"] == "always_on"} == {
         "CKT-FRIDGE", "CKT-HA", "CKT-LT-BACKUP"}
     assert {tag for tag, row in rows.items() if row["backup_tier"] == "shed"} == {
-        "CKT-WH-HP", "CKT-SUMP", "CKT-HP3"}
+        "CKT-WH-240", "CKT-SUMP", "CKT-HP3"}
     assert all(rows[tag]["panel"] == "ED-B-BACKUP-PANEL" for tag in backup)
-    # Only the SHED tier buys switching gear — that is what the tier means. One relay for
-    # CKT-WH-HP (the one 120V shed circuit inside a 16A channel) and a contactor for each
-    # shed circuit a channel cannot switch directly (CKT-SUMP at 20A, the 2-pole CKT-HP3).
+    # Only the SHED tier buys switching gear — that is what the tier means. Every shed
+    # circuit is now 2-pole or over the 16A relay-channel limit (CKT-WH-240 joined CKT-SUMP
+    # at 20A and the 2-pole CKT-HP3), so no circuit switches through a direct relay channel
+    # any more — but the relay itself is still bought, to drive the three contactor coils.
     # The always-on tier contributes none, where the old flat `backup` flag bought three.
     components = {row["component"]: row["count"] for row in backup_component_rows(catlin_model)}
     assert components["Shelly Pro 4PM 4-channel DIN relay"] == 1
-    assert components["DIN contactor (relay-driven)"] == 2
+    assert components["DIN contactor (relay-driven)"] == 3
     # The source circuit is a source, and the schedule says so rather than leaving a reader
     # to infer it from a zero.
     assert rows["CKT-ESS-GRID"]["source"] and not rows["CKT-ESS-GRID"]["backup"]
@@ -367,9 +371,9 @@ def test_bill_of_materials_carries_the_electrical_sections(catlin_model):
     assert components[0]["component"].startswith("EG4 12kPV")
     assert any(row["component"].startswith("EG4 PowerPro") for row in components)
     relays = next(row for row in components if "Pro 4PM" in row["component"])
-    assert relays["count"] == 1  # one 120V shed circuit inside the 16A channel
+    assert relays["count"] == 1  # drives the shed-tier contactor coils
     contactors = next(row for row in components if "contactor" in row["component"])
-    assert contactors["count"] == 2  # CKT-HP3 (2-pole) + CKT-SUMP (20A)
+    assert contactors["count"] == 3  # CKT-HP3 (2-pole), CKT-SUMP (20A), CKT-WH-240 (2-pole)
     assert bom["backup_power"]["runtime"]["modeled"] is True
 
 
@@ -447,8 +451,9 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
 
     Since 2026-08-02 the check reconciles *both* enclosures, and the service panel is far
     less crowded: moving the six backup circuits and retiring CKT-BACKUP-FEED took it from
-    52 spaces of 54 down to 44, with the subpanel carrying 7 of its 12. All four numbers
-    are measured off the model, never pinned."""
+    52 spaces of 54 down to 44 (2026-08-07's CKT-DISPOSAL and 2026-08-15's CKT-WH-240 move
+    to the backup subpanel land it at 43), with the subpanel carrying 8 of its 12. All four
+    numbers are measured off the model, never pinned."""
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
     findings = [f for f in report.findings if f.check_id == "electrical.panel_spaces"]
     assert findings
@@ -463,8 +468,8 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     main = spaces("ED-B-PANEL", "ED-T-PANEL")
     backup = spaces("ED-B-BACKUP-PANEL", "ED-T-BACKUP-PANEL")
     assert main[0] <= main[1] and backup[0] <= backup[1]
-    assert main == (45, 54)  # the spare capacity is the point; CKT-DISPOSAL spent one
-    assert backup == (7, 12)
+    assert main == (43, 54)  # CKT-DISPOSAL spent one, CKT-WH-240's move to backup freed two
+    assert backup == (8, 12)
     required = sum(circuit.poles for circuit in circuits)
     declared = main[1]
     # And the enclosure it replaced still would not have held the schedule — which is why
@@ -582,8 +587,9 @@ def test_model_json_carries_the_electrical_takeoff(catlin_model):
     assert payload["conduit"] == conduit_takeoff(catlin_model)
     assert payload["devices"] == electrical_device_takeoff(catlin_model)
     assert payload["solar"] == solar_takeoff(catlin_model)
-    # 37: the 36 that survived the 2026-08-02 microgrid refactor plus CKT-DISPOSAL.
-    assert len(payload["panel_schedule"]) == 37
+    # 36: the 36 that survived the 2026-08-02 microgrid refactor plus CKT-DISPOSAL
+    # (2026-08-07), minus CKT-WH-HP folded into CKT-WH-240 (2026-08-15).
+    assert len(payload["panel_schedule"]) == 36
 
 
 def test_model_json_canvas_objects_carry_their_circuit(catlin_model):
@@ -594,7 +600,7 @@ def test_model_json_canvas_objects_carry_their_circuit(catlin_model):
     assert objects["ED-G-EV-1450"]["circuit"] == "CKT-EV-1450"
     # Equipment consumes power too; a placeable that doesn't reports None rather than
     # omitting the key, so the UI can tell "no circuit" from "old model.json".
-    assert objects["EQ-B-WH"]["circuit"] == "CKT-WH-HP"
+    assert objects["EQ-B-WH"]["circuit"] == "CKT-WH-240"
     assert all("circuit" in item for item in objects.values() if item["domain"] != "opening")
     # Every tag the schedule names has to be addressable — this is the edge the reader's
     # device tags zoom through, and a row naming something the UI cannot reach is a dead end.

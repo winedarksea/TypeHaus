@@ -82,6 +82,25 @@ ones this file already accepts by decision: two ventilation terminals and the tw
 foundation-wall reinforcement schedules. Detail below; the sources behind each new rule are
 named in the module that encodes it._
 
+**Same-day correction: the house had two water heaters, and should have one (2026-08-15).**
+Authoring `EQ-B-WH`'s TPR relief discharge above surfaced a modelling defect the owner
+caught on review: `EQ-B-WH` (120V, "compressor only") and `EQ-B-WH2` (240V, "resistance
+element") were two `Equipment` instances standing in for one product's two internal power
+draws. The house now carries a single 80-gal Rheem ProTerra hybrid HPWH on one 240V/4,500 VA
+circuit (`CKT-WH-240`, moved to the backup subpanel's SHED tier), governed to a ~500 VA
+Heat-Pump-Only ceiling during a backup event or near the 200A peak by a Home Assistant
+automation (ESPHome's `esphome-econet` bridging the unit's EcoNet API) — modelled as
+`LM-WH`, a single-circuit `LoadManagement`, the same NEC 625.42/220.82 mechanism `LM-EV` and
+`LM-WELLNESS` already use. `takeoff/backup_calc.py` gained `_governed_va` so a load-managed
+circuit's contribution to the backup peak and autonomy averages reflects its enforced
+ceiling rather than its nameplate — previously latent (nothing exercised it), now load-
+bearing. Net effect on the service-load margin: **192.1A against 200A (7.9A of margin)**,
+up from 199.6A that morning, because the water heater's peak-avoidance behavior is now
+credited instead of silently absent. Explicitly supported for later: reverting to a single
+120V plug-in HPWH (no 240V circuit, ~450W, entirely on backup) needs only a `type_ref` swap
+on `EQ-B-WH`, a circuit retag, and deleting `LM-WH` — see the note above
+`EQ-T-WATER-HEATER` in `plan/mep.py`.
+
 **Rules added** (all six on the permit checklist, all six blocking, all six passing):
 
 - **`code.MN_1303_2402_radon`** — Minnesota's own passive radon system rule (MN Rules

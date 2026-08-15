@@ -108,14 +108,17 @@ def test_meter_and_disconnect_render_with_dedicated_symbols(catlin_model):
     assert {"meter", "disconnect"} <= symbols
 
 
-def test_both_water_heaters_are_modeled(catlin_model):
+def test_the_water_heater_is_modeled(catlin_model):
+    """One tank, not two (2026-08-15): the house carries a single 80-gal hybrid HPWH,
+    not a 120V-compressor tank beside a 240V-element tank — that split was a modelling
+    artifact of one product's two internal power draws, corrected in plan/mep.py."""
     equipment_with_storey = [(storey.tag, element) for storey in catlin_model.plan.storeys
                              for element in catlin_model.plan.storey_elements(storey.tag)
                              if element.element_kind == "Equipment"]
     equipment = {element.tag: element for _, element in equipment_with_storey}
     equipment_storeys = {element.tag: storey for storey, element in equipment_with_storey}
-    assert equipment["EQ-B-WH"].type_ref == "EQ-T-WATER-HEATER"  # 120V Rheem HPWH
-    assert equipment["EQ-B-WH2"].type_ref == "EQ-T-WATER-HEATER-240"
+    assert equipment["EQ-B-WH"].type_ref == "EQ-T-WATER-HEATER"  # Rheem ProTerra 80gal
+    assert "EQ-B-WH2" not in equipment
     # The three Gree outdoor units, and the indoor halves that name them.
     for tag in ("EQ-M-HP1-OD", "EQ-M-HP2-OD", "EQ-M-HP3-OD"):
         assert equipment[tag].kind.value == "heat_pump"
