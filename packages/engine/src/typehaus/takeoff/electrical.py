@@ -116,8 +116,106 @@ def panel_schedule(model: ResolvedModel) -> list[dict[str, object]]:
     return rows
 
 
+# The service size, when the model states none. 200A is the ordinary residential service and
+# the number this summary was hard-coded to before ``ElectricalDeviceType.service_amps``
+# existed; it is now a *fallback*, and the summary says which of the two it used.
+DEFAULT_SERVICE_AMPS = 200.0
+
+
+def _bucket(model: ResolvedModel, circuit, consumers: list) -> str:
+    """Which NEC 220.82 term a circuit's connected load lands in.
+
+    Split out of ``service_load_summary`` so the load-management credit can be taken in the
+    same bucket the load was counted in. Crediting an interlocked pair of appliances at 100%
+    of their connected excess — which is what subtracting the credit straight off the demand
+    did — overstates the saving by a factor of 2.5, because that excess only ever reached
+    the demand through 220.82(B)'s 40% remainder factor.
+    """
+    if circuit.source:
+        return "source"
+    description = circuit.description.lower()
+    if _is_heat_pump(circuit, consumers):
+        return "heat_pump"
+    if _is_resistance_heat(circuit, consumers):
+        return "resistance_heat"
+    if "ev charging" in description:
+        return "ev"
+    if ("lighting" in description or "general receptacles" in description
+            or "small-appliance" in description or "laundry" in description):
+        return "general"
+    return "appliance"
+
+
+def _service_amps(model: ResolvedModel) -> tuple[float, str]:
+    """The service ampacity this house states, and where it came from.
+
+    Authored on the service-entrance product — the meter socket or the main disconnect —
+    because that is the piece of equipment whose rating *is* the service size. It used to be
+    the literal ``200`` in the returned dict, which meant a house could not say it had a
+    400A service and the 220.82 comparison silently graded every plan against 200A.
+    """
+    types = {t.tag: t for t in model.plan.library.electrical_device_types}
+    best: tuple[float, str] | None = None
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            if element.element_kind != "ElectricalDevice":
+                continue
+            if getattr(element.kind, "value", None) not in ("meter", "panel"):
+                continue
+            product = types.get(getattr(element, "type_ref", "") or "")
+            amps = getattr(product, "service_amps", None)
+            if amps is None:
+                continue
+            # A meter socket is the service; a panel that states one is the main disconnect
+            # behind it. Where both speak, the meter wins — and the smaller of two panels
+            # never does, so the max is taken among panels only after the meter is missed.
+            if getattr(element.kind, "value", None) == "meter":
+                return float(amps), element.tag
+            if best is None or float(amps) > best[0]:
+                best = (float(amps), element.tag)
+    if best is not None:
+        return best
+    return DEFAULT_SERVICE_AMPS, "default"
+
+
+def load_management_credits(model: ResolvedModel) -> list[dict[str, object]]:
+    """Per-``LoadManagement`` connected excess, resolved into the buckets it came from.
+
+    A controller guarantees its group never draws more than ``max_simultaneous_va``
+    together, so the group's connected excess over that ceiling never reaches the service.
+    Where a group spans buckets the excess is removed from each circuit in proportion to its
+    share of the group's connected load — exact for the homogeneous groups anyone actually
+    builds (all EV, all resistance, all fixed appliance), and stated rather than hidden for
+    the mixed case.
+    """
+    consumers = _circuit_consumers(model)
+    circuits = {c.tag: c for c in model.plan.library.circuits}
+    out: list[dict[str, object]] = []
+    for management in model.plan.library.load_managements:
+        missing = [tag for tag in management.managed_circuits if tag not in circuits]
+        members = [circuits[tag] for tag in management.managed_circuits if tag in circuits]
+        group_va = sum(_connected_va(model, c, consumers.get(c.tag, [])) for c in members)
+        excess = max(0.0, group_va - management.max_simultaneous_va)
+        by_bucket: dict[str, float] = {}
+        if excess > 0 and group_va > 0:
+            for circuit in members:
+                va = _connected_va(model, circuit, consumers.get(circuit.tag, []))
+                share = excess * (va / group_va)
+                by_bucket[_bucket(model, circuit, consumers.get(circuit.tag, []))] = (
+                    by_bucket.get(_bucket(model, circuit, consumers.get(circuit.tag, [])), 0.0)
+                    + share)
+        out.append({
+            "tag": management.tag, "strategy": management.strategy,
+            "managed_circuits": list(management.managed_circuits),
+            "missing_circuits": missing,
+            "group_va": group_va, "cap_va": management.max_simultaneous_va,
+            "excess_va": excess, "by_bucket": by_bucket,
+        })
+    return out
+
+
 def service_load_summary(model: ResolvedModel) -> dict[str, object]:
-    """NEC 220.82-style optional-method estimate against the 200A service / 225A panel.
+    """NEC 220.82-style optional-method estimate against the authored service and panel bus.
 
     Labeled an estimate on the sheet: general lighting from resolved conditioned floor
     area, fixed appliances from the authored circuits, EV already at its continuous
@@ -128,43 +226,65 @@ def service_load_summary(model: ResolvedModel) -> dict[str, object]:
     Adding them would be double-counting a house that cannot run both flat out — and
     would also mean a 1.5 kW bench heater in an unconditioned garage landing in the
     fixed-appliance bucket (B)(3), which (B) explicitly excludes heating loads from.
+
+    Authored ``LoadManagement`` is applied here rather than by the caller, and in the bucket
+    each managed circuit was counted in: an interlock over two fixed appliances saves 40% of
+    its connected excess, not 100% of it, because that is the only rate at which the excess
+    ever reached the demand.
     """
     floor_area_ft2 = sum(room.area_m2 for room in model.rooms if room.conditioned) * _M2_TO_FT2
     general_va = GENERAL_LIGHTING_VA_PER_FT2 * floor_area_ft2 + SMALL_APPLIANCE_AND_LAUNDRY_VA
 
     consumers = _circuit_consumers(model)
-    heat_pump_va = 0.0
-    resistance_heat_va = 0.0
+    connected: dict[str, float] = {}
     resistance_heat_units = 0
-    ev_va = 0.0
-    appliance_va = 0.0
     for circuit in model.plan.library.circuits:
-        if circuit.source:
-            continue  # a source interconnection, not a load — typed, not name-matched
+        bucket = _bucket(model, circuit, consumers.get(circuit.tag, []))
+        if bucket in ("source", "general"):
+            continue  # a source is not a load; general is the 3 VA/ft2 allowance above
         va = _connected_va(model, circuit, consumers.get(circuit.tag, []))
-        description = circuit.description.lower()
-        if _is_heat_pump(circuit, consumers.get(circuit.tag, [])):
-            heat_pump_va += va  # 220.82(C)(2)
-        elif _is_resistance_heat(circuit, consumers.get(circuit.tag, [])):
-            resistance_heat_va += va
+        connected[bucket] = connected.get(bucket, 0.0) + va
+        if bucket == "resistance_heat":
             resistance_heat_units += 1
-        elif "ev charging" in description:
-            ev_va += va  # already continuous (125% of plug load = 80% of breaker basis)
-        elif ("lighting" in description or "general receptacles" in description
-              or "small-appliance" in description or "laundry" in description):
-            continue  # covered by the 3 VA/ft2 + 4500 VA general allowance above
-        else:
-            appliance_va += va
+
+    credits = load_management_credits(model)
+    managed: dict[str, float] = {}
+    for credit in credits:
+        for bucket, va in credit["by_bucket"].items():  # type: ignore[union-attr]
+            managed[bucket] = managed.get(bucket, 0.0) + va
+
+    def available(bucket: str) -> float:
+        return max(0.0, connected.get(bucket, 0.0) - managed.get(bucket, 0.0))
+
+    heat_pump_va = connected.get("heat_pump", 0.0)
+    resistance_heat_va = connected.get("resistance_heat", 0.0)
+    appliance_va = connected.get("appliance", 0.0)
+    ev_va = connected.get("ev", 0.0)
 
     resistance_factor = (RESISTANCE_HEAT_FACTOR_MANY
                          if resistance_heat_units >= SEPARATELY_CONTROLLED_UNIT_THRESHOLD
                          else RESISTANCE_HEAT_FACTOR_FEW)
-    hvac_va = max(heat_pump_va, resistance_heat_va * resistance_factor)
 
-    base = general_va + appliance_va
-    demand_va = (min(base, FIRST_10KVA)
-                 + max(base - FIRST_10KVA, 0.0) * REMAINDER_DEMAND_FACTOR
-                 + hvac_va + ev_va)
+    def demand(managed_applied: bool) -> float:
+        appliance = available("appliance") if managed_applied else appliance_va
+        heat_pump = available("heat_pump") if managed_applied else heat_pump_va
+        resistance = available("resistance_heat") if managed_applied else resistance_heat_va
+        ev = available("ev") if managed_applied else ev_va
+        base = general_va + appliance
+        return (min(base, FIRST_10KVA)
+                + max(base - FIRST_10KVA, 0.0) * REMAINDER_DEMAND_FACTOR
+                + max(heat_pump, resistance * resistance_factor) + ev)
+
+    unmanaged_demand_va = demand(False)
+    demand_va = demand(True)
+    service_amps, service_source = _service_amps(model)
+    types = {t.tag: t for t in model.plan.library.electrical_device_types}
+    bus = [getattr(types.get(getattr(e, "type_ref", "") or ""), "bus_amps", None)
+           for storey in model.plan.storeys
+           for e in model.plan.storey_elements(storey.tag)
+           if e.element_kind == "ElectricalDevice"
+           and getattr(e.kind, "value", None) == "panel"]
+    panel_rating = max([b for b in bus if b is not None], default=None)
     amps = demand_va / 240.0
     return {
         "method": "NEC 220.82 optional method (estimate)",
@@ -175,13 +295,17 @@ def service_load_summary(model: ResolvedModel) -> dict[str, object]:
         "resistance_heat_va": round(resistance_heat_va, 0),
         "resistance_heat_units": resistance_heat_units,
         "resistance_heat_factor": resistance_factor,
-        "hvac_va": round(hvac_va, 0),
+        "hvac_va": round(max(heat_pump_va, resistance_heat_va * resistance_factor), 0),
         "ev_va": round(ev_va, 0),
+        "unmanaged_demand_va": round(unmanaged_demand_va, 0),
+        "load_management_credit_va": round(unmanaged_demand_va - demand_va, 0),
+        "load_management": credits,
         "demand_va": round(demand_va, 0),
         "demand_amps": round(amps, 1),
-        "service_amps": 200,
-        "panel_rating_amps": 225,
-        "within_service": amps <= 200.0,
+        "service_amps": service_amps,
+        "service_amps_source": service_source,
+        "panel_rating_amps": panel_rating,
+        "within_service": amps <= service_amps,
     }
 
 

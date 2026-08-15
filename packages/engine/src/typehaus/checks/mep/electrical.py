@@ -516,13 +516,14 @@ def panel_spaces(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.ADVISORY, "electrical.service_load")
 def service_load(ctx: CheckContext) -> list[Finding]:
-    """The 220.82 demand estimate vs. the service, with load management credited.
+    """The 220.82 demand estimate vs. the authored service, with load management credited.
 
     A ``LoadManagement`` (EMS per NEC 625.42, interlock, ...) caps what its managed
     circuits can draw together, so the group's connected excess over
-    ``max_simultaneous_va`` comes off the demand before comparing to the service. With
-    none authored this reports the honest state — the levers are an EMS, an interlock,
-    or a service upgrade — and the decision stays open.
+    ``max_simultaneous_va`` comes off the demand — *in the 220.82 term the load was counted
+    in*, which ``takeoff/electrical.py`` now does rather than subtracting it flat off the
+    total. With none authored this reports the honest state: the levers are an EMS, an
+    interlock, or a bigger service.
     """
     from typehaus.takeoff.electrical import service_load_summary
 
@@ -533,35 +534,34 @@ def service_load(ctx: CheckContext) -> list[Finding]:
     summary = service_load_summary(ctx.model)
     demand_va = float(summary["demand_va"])  # type: ignore[arg-type]
     service_amps = float(summary["service_amps"])  # type: ignore[arg-type]
+    credit_va = float(summary["load_management_credit_va"])  # type: ignore[arg-type]
 
-    circuits = {c.tag: c for c in ctx.plan.library.circuits}
     out: list[Finding] = []
-    credit_va = 0.0
-    for management in ctx.plan.library.load_managements:
-        missing = [tag for tag in management.managed_circuits if tag not in circuits]
+    for credit in summary["load_management"]:  # type: ignore[union-attr]
+        tag = str(credit["tag"])
+        missing = list(credit["missing_circuits"])  # type: ignore[arg-type]
         if missing:
             out.append(_warn_fail(
-                cid, f"{management.tag} manages unknown circuits: {', '.join(missing)}",
-                (management.tag,)))
+                cid, f"{tag} manages unknown circuits: {', '.join(sorted(missing))}", (tag,)))
             continue
-        group_va = sum(circuits[tag].load_va or 0.0 for tag in management.managed_circuits)
-        excess = max(0.0, group_va - management.max_simultaneous_va)
-        if excess > 0:
-            credit_va += excess
+        if float(credit["excess_va"]):  # type: ignore[arg-type]
+            managed_tags = ", ".join(credit["managed_circuits"])  # type: ignore[arg-type]
             out.append(_pass(
-                cid, f"{management.tag} ({management.strategy}) caps "
-                     f"{', '.join(management.managed_circuits)} at "
-                     f"{management.max_simultaneous_va:.0f} VA — {excess:.0f} VA credited",
-                (management.tag,)))
+                cid, f"{tag} ({credit['strategy']}) caps {managed_tags} at "
+                     f"{float(credit['cap_va']):.0f} VA — "
+                     f"{float(credit['excess_va']):.0f} VA of connected load never reaches "
+                     "the service", (tag,)))
 
-    managed_amps = (demand_va - credit_va) / 240.0
+    managed_amps = demand_va / 240.0
+    where = ("" if summary["service_amps_source"] == "default"
+             else f" ({summary['service_amps_source']})")
     if managed_amps <= service_amps:
         out.append(_pass(
-            cid, f"demand {managed_amps:.1f}A (after {credit_va:.0f} VA load-management "
-                 f"credit) fits the {service_amps:.0f}A service"))
+            cid, f"demand {managed_amps:.1f}A (after a {credit_va:.0f} VA load-management "
+                 f"credit) fits the {service_amps:.0f}A service{where}"))
     else:
         out.append(_warn_fail(
             cid, f"estimated demand {managed_amps:.1f}A exceeds the {service_amps:.0f}A "
-                 f"service — options: an EMS per NEC 625.42 on the EV circuits, an "
+                 f"service{where} — options: an EMS per NEC 625.42 on the EV circuits, an "
                  f"interlock between competing loads, or a service upgrade", ()))
     return out

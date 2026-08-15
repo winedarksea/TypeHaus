@@ -74,6 +74,109 @@ split, so most rows would carry a made-up division.
 
 ## Remaining Work
 
+_Batch of 2026-08-15 — permit-completeness pass. `haus check` went 661/6/33 to **683 pass /
+4 fail / 25 not evaluable of 712**, and the permit gate passes every one of its (now 46)
+checklist items. Six rules were added, five were found to be over-reaching or reading the
+wrong field, and six real gaps in the house were closed. The four residual FAILs are the
+ones this file already accepts by decision: two ventilation terminals and the two
+foundation-wall reinforcement schedules. Detail below; the sources behind each new rule are
+named in the module that encodes it._
+
+**Rules added** (all six on the permit checklist, all six blocking, all six passing):
+
+- **`code.MN_1303_2402_radon`** — Minnesota's own passive radon system rule (MN Rules
+  1303.2400-.2402), which has no IRC parent and which nothing graded, even though this
+  house has modelled the whole system — sealed sump, shared radon/vent riser, exterior
+  junction box — for months. Grades the collection point, the sealed cover, the exhaust's
+  separation from openings, and subpart 6's fan box being outside conditioned space. It
+  found the one thing worth finding on the first run and then unfound it: measured from the
+  *riser line* the exhaust stands 3.2' from WIN-S-BATH-N, but MN's sentence is a copy of IRC
+  AF103's, which measures from the *exhaust point* and exempts any opening 2 ft or more
+  below it. The rule now reads it that way and says so in the finding. See `checks/code/
+  mn_residential/radon.py::_separation_findings` for the argument.
+- **`code.R403_1_6_foundation_anchorage`** — grades the sill-anchor *schedule rule* (4 ft
+  o.c., min 2 per plate run) against R403.1.6's 6 ft maximum, and reports UNKNOWN rather
+  than PASS when no sill-plate construction return resolves at all.
+- **`code.R405_1_foundation_drainage`** and **`code.R406_1_dampproofing`** — the footing
+  tile and the damp-proof layer, both scoped by their own text to walls that *enclose*
+  below-grade interior space. That scoping is the whole rule: screening on "retains fill"
+  alone produced four FAILs against the sunken-garden walls, the yard retaining blocks and
+  the garage ICF stem, none of which has a room behind it.
+- **`code.R303_7_stairway_illumination` / `code.R303_8_exterior_stairway_illumination`** —
+  a light over the treads, and a wall switch at *each* floor level for a flight of six or
+  more risers. The switch half is what drawings miss and what `controlled_by` already
+  records. Illuminance is deliberately not graded: the model carries lamp types, not IES
+  files.
+- **`code.R302_7_under_stair_protection`** — 1/2" gypsum in an enclosed usable space under
+  a stair reached by a door. Scope-passes here; the house has no such closet.
+
+**Checks that were wrong, and are now right:**
+
+- **`code.R310_2_3_window_well` screened every opening big enough**, not the openings R310.1
+  makes the house depend on. Three false subjects: a segmental arch in the basement brick
+  veneer and the two arches in the freestanding garden porch wall, none of which is anybody's
+  way out of a bedroom. It now walks the credited escape openings; the basement escapes
+  through D-B-FURN, so no well is required and the rule says so.
+- **`code.R302_13_floor_protection` only looked for a `FloorSystem`.** The floor over this
+  basement is SL-M-DECK, a 9" cast slab, which has no floor framing member to fasten a
+  membrane to and nothing in it that burns. UNKNOWN became a PASS naming the slab.
+- **`code.P2804_water_heater_relief` read `heater.storey`**, a field elements do not carry,
+  so every heater in every house reported "termination height unmeasured". It walks the
+  plan's own storey grouping now, and the 6"-24" band is actually measured.
+- **Every door got a 90-degree leaf sweep**, whatever its `DoorType.operation`. D-M-MUDC is a
+  bypass slider and carried a permanent `integrity.door_swing_conflict` against the mudroom
+  bench in front of it — and the plan sheets drew an arc for a slider besides. `resolve/
+  pipeline.py::_LEAF_SWEEP_FRACTION` gives a slider, a pocket door and an overhead sectional
+  no sweep, a bifold and a French leaf half a width.
+- **`electrical.service_load` credited a load-management group at 100% of its connected
+  excess**, whatever bucket the load was counted in. An interlock over two fixed appliances
+  is worth 40% of its excess, not 100% — the 220.82(B) remainder factor is the only rate at
+  which that load ever reached the demand. The credit is taken per bucket in
+  `takeoff/electrical.py` now, and the check reads the result rather than recomputing it.
+- **The service size was the literal `200` inside `takeoff/electrical.py`**, so no house
+  could state anything else. `ElectricalDeviceType.service_amps` carries it now (authored on
+  ED-T-METER), distinct from the panel's `bus_amps` that NEC 705.12 measures against.
+
+**Gaps closed in the house:**
+
+- **Both water heaters' TPR relief discharge is drawn** (`PR-B-WH-TPR`, `PR-B-WH2-TPR`,
+  plan/mep.py). 3/4" copper, full size, vertical to 8" then 1'-0" at 2"/ft to an air gap 6"
+  over the slab. It is the one pipe on a water heater whose job is to stop the tank
+  exploding and the model had no instance of it. The east run stands at x=9'-0" rather than
+  against the tank because W-B-STR's inside face is 6" further east and the first attempt
+  cored it — `mep.sleeve_coverage` said so.
+- **System 1's design-temperature shortfall has an answer**: `EQ-S-HP1-STRIP`, a 2 kW duct
+  heater in the supply plenum on `CKT-HP1-STRIP` (the panel's former spare 2-pole, breaker
+  down 30A -> 15A). 16,309 Btu/h of block load against 13,500 + FH-S-BATH1's mat was -1,069
+  Btu/h; it is +5,755 now. This is the ordinary cold-climate detail, not a workaround.
+- **The service fits, with management and no margin.** 254.2A unmanaged; the dryer at its
+  830 W heat-pump nameplate instead of the 14-30R's 5 kVA is -7.0A; `LM-WELLNESS` (spa and
+  sauna interlocked, one at a time) is -15.0A; `LM-EV` tightened 5,760 -> 5,600 VA is -0.7A.
+  **199.6A against 200A — 0.4A of margin, and that is the number to remember.** The next
+  load added to this house puts it over, and the answer then is the 400A service this pass
+  deliberately did not buy (decision, 2026-08-15; the arithmetic is in plan/circuits.py
+  above `LOAD_MANAGEMENTS`).
+- **`ED-M-STORAGE-CAN1` names the room it is in.** The 2026-08-02 closet conversion framed
+  RM-M-MUD-CLOSET around it and the light kept naming the mudroom; its sibling CAN2 took
+  the same correction in July. A label catching up with a wall — nothing moved.
+
+**Deliberately not done, and why:**
+
+- **RM-B-ESS and RM-M-MUD-CLOSET stay in no HVAC zone.** They were added to the zone lists
+  during this pass and then reverted: `test_heating_capacity.py` records why each is
+  unclaimed on purpose (a sealed Type X battery closet whose occupant is a heat source; a
+  storage closet behind a 48" bypass slider that is open air transfer). Unclaimed is the
+  true statement there, not a gap.
+- **The four exterior placeables keep their false room refs** (both wall hydrants, both
+  porch curtain rods). Giving them an honest home means unconditioned `Room`s for the porch
+  and the balcony — enclosing walls, envelope, energy and ventilation consequences — for
+  four UNKNOWNs this file already accepts. Not worth the complexity.
+- **The IRC reinforced-foundation tables were not encoded.** Tables R404.1.2(2)-(5) would
+  turn the two foundation FAILs into a prescriptive rebar schedule, which is the right
+  eventual answer, but no source consulted reproduced the table rows and a made-up
+  reinforcement schedule is worse than an honest FAIL. The engineer's schedule still lands
+  in `FoundationWall.engineering_spec`.
+
 _Batch of 2026-08-07: thirteen packages landed — the PT-SG-BR2 cluster and its cantilever
 check, per-condition detail stars, the disposal branch, curtain rods, access panels, the
 door-jamb hold-downs, the living-room ceiling, 2D stud end-cuts, conduit/sleeve solids,
@@ -271,6 +374,7 @@ the future.
 - We are thinking of switching W-SG-ARCH to be a column and beams like PT-SG-COL and BM-SG-BKE, then replacing the masonry railing right above it with a metal railing more like RL-SG-BALCONY
 - Add a packed gravel bed under the retaining wall blocks (W-RG-*)
 - Improve the symmetry of the windows on the east and west side so they look better from outside, where possible
+- Permit drawings
 
 ### Plumbing
 

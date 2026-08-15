@@ -67,7 +67,7 @@ def water_heater_relief(ctx: CheckContext) -> list[Finding]:
                                 "requires it to drain by gravity with no trap",
                                 (heater.tag, ref), "P2804.6.1"))
             continue
-        storey = storeys.get(getattr(heater, "storey", None))
+        storey = storeys.get(_storey_of(ctx, heater.tag))
         floor = storey.elevation.meters if storey else None
         if floor is None:
             out.append(_finding(cid, Result.PASS,
@@ -104,6 +104,23 @@ def water_heater_relief(ctx: CheckContext) -> list[Finding]:
                                 "P2801.6 requires one where a leak causes damage",
                                 (heater.tag,), "P2801.6"))
     return out
+
+
+def _storey_of(ctx: CheckContext, tag: str) -> str | None:
+    """The storey an element is filed on.
+
+    Elements carry no ``storey`` field — the plan files them *under* a storey — so
+    ``getattr(heater, "storey", None)`` was always None and every heater reported its
+    discharge as "termination height unmeasured". P2804.6.1's 6"-24" band is the half of
+    the rule most worth measuring, so the lookup walks the plan's own grouping instead.
+    """
+    storey_elements = getattr(ctx.plan, "storey_elements", None)
+    if storey_elements is None:
+        return None  # a synthetic context with no storey grouping to walk
+    for storey in ctx.plan.storeys:
+        if any(element.tag == tag for element in storey_elements(storey.tag)):
+            return storey.tag
+    return None
 
 
 def _stands_on_slab(ctx: CheckContext, heater) -> bool:

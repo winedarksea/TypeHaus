@@ -115,7 +115,12 @@ def test_tri_state_counts(project) -> None:
     # single room has no windows. All three CODE rules below are working correctly on a
     # fixture that was never meant to pass them. What this test actually asserts is that
     # *resolve* produced nothing broken.
+    #
+    # `code.MN_1303_2402_radon` joined them on 2026-08-15 for the same reason: Minnesota
+    # requires a passive soil-gas system in every new residential structure, unconditionally,
+    # so the rule has no scope-pass to give a plan with no radon riser in it — and a bare
+    # rectangle of walls is not a dwelling.
     fixture_gaps = {"code.energy_prescriptive", "code.R314_alarm_every_storey",
-                    "code.R303_1_light_and_ventilation"}
+                    "code.R303_1_light_and_ventilation", "code.MN_1303_2402_radon"}
     non_energy_errors = [e for e in report.errors if e.check_id not in fixture_gaps]
     assert not non_energy_errors

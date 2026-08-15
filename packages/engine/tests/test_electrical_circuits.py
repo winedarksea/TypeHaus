@@ -218,7 +218,11 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # the figure is the same 240x40 the receptacle type carries, so the row is unchanged.
     assert rows["CKT-EV-1450"]["connected_va"] == 9600
     assert rows["CKT-EV-1450"]["devices"] == ["ED-G-EV-1450"]
-    assert rows["CKT-DRYER"]["connected_va"] == 5000
+    # 830 W, not the 5,000 VA the 14-30R receptacle type carries: the dryer is a ventless
+    # heat-pump machine and CKT-DRYER authors its nameplate (2026-08-15). The 30A branch and
+    # the 14-30R stay — a provision for a future vented dryer — which is exactly why the
+    # receptacle-derived figure was the wrong one to let stand on a service with no room.
+    assert rows["CKT-DRYER"]["connected_va"] == 830
     # The notes' backup set is tiered, and every one of them is on the subpanel.
     backup = {tag for tag, row in rows.items() if row["backup"]}
     assert backup == {"CKT-WH-HP", "CKT-SUMP", "CKT-FRIDGE", "CKT-HA",
@@ -242,12 +246,13 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     assert load["floor_area_ft2"] > 4000
     assert load["demand_amps"] > 100  # a real number, not a stub
     assert load["panel_rating_amps"] == 225 and load["service_amps"] == 200
-    # 220.82(C) selects, it does not sum: five separately controlled resistance heaters
-    # (three mats, the fireplace, the garage heater) are taken at 40% and lose to the three
-    # heat-pump systems at 100%, so the heating term is the heat pumps' and the resistance
-    # heat costs the service nothing. The heat-pump circuits are identified by the typed
-    # Equipment on them, not by a word in the description (takeoff/electrical._is_heat_pump).
-    assert load["resistance_heat_units"] == 5 and load["resistance_heat_factor"] == 0.40
+    # 220.82(C) selects, it does not sum: six separately controlled resistance heaters
+    # (three mats, the fireplace, the garage heater, and since 2026-08-15 EQ-S-HP1-STRIP's
+    # 2 kW supply-plenum duct heater) are taken at 40% and lose to the three heat-pump
+    # systems at 100%, so the heating term is the heat pumps' and the resistance heat costs
+    # the service nothing. The heat-pump circuits are identified by the typed Equipment on
+    # them, not by a word in the description (takeoff/electrical._is_heat_pump).
+    assert load["resistance_heat_units"] == 6 and load["resistance_heat_factor"] == 0.40
     assert load["hvac_va"] == load["heat_pump_va"] > load["resistance_heat_va"] * 0.40
 
 

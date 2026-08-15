@@ -905,6 +905,40 @@ CONDENSATE = [
                         ft(0, 9))),
 ]
 
+# --- TPR relief discharge, both tanks (P2804.6.1) -----------------------------------
+#
+# The one pipe on a water heater whose job is to stop the tank exploding, and the one the
+# model had no instance of until 2026-08-15: `code.P2804_water_heater_relief` reported
+# UNKNOWN against both heaters because neither named a `relief_discharge_ref`, and an
+# unmodeled safety discharge is exactly the kind of gap a permit set is read for.
+#
+# Both tanks stand on the basement slab in RM-B-FURNACE, 2'-1 3/4" apart on the y~32'-9"
+# line, so each takes its discharge down its *outboard* face — EQ-B-WH's to the west,
+# EQ-B-WH2's to the east — rather than into the gap between them where nothing can be
+# serviced. The east drop stands at x=9'-0" and not against the tank: W-B-STR's inside face
+# is x=9'-6", and a run any further east cores that 12" wall instead of standing in front
+# of it (`mep.sleeve_coverage` caught exactly that at the first attempt). 3/4" full-size copper, which is the valve's own outlet size: P2804.6.1 forbids
+# reducing it, and forbids a valve, a trap or a rise anywhere along the run.
+#
+# Each run is a vertical drop from the valve at 3'-6" to 8" above the slab, then 1'-0" of
+# horizontal at 2"/ft to an air gap 6" over the floor — the low end of P2804.6.1's 6"-24"
+# band, and well past IRC P3005.3's 1/4"/ft, which `mep.drain_slope` holds every DRAIN
+# segment to. They discharge onto the slab in the mechanical room by design: the room's
+# floor falls to SM-B-RADON and there is no fixture below to damage, which is the same
+# reason P2801.6 asks for no pan under either tank.
+TPR_DISCHARGE = [
+    PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN,
+            path=(pt(ft(5, 0.3), ft(32, 9.7)), pt(ft(5, 0.3), ft(32, 9.7)),
+                  pt(ft(5, 0.3), ft(31, 9.7))),
+            diameter=inch(0.75), material="copper",
+            elevations=(ft(3, 6), ft(0, 8), ft(0, 6))),
+    PipeRun(uid="CBPT02AAAA", tag="PR-B-WH2-TPR", system=PipeSystem.DRAIN,
+            path=(pt(ft(9), ft(32, 5.4)), pt(ft(9), ft(32, 5.4)),
+                  pt(ft(9), ft(31, 5.4))),
+            diameter=inch(0.75), material="copper",
+            elevations=(ft(3, 6), ft(0, 8), ft(0, 6))),
+]
+
 # --- Vent branches: wet wall -> shared chase ----------------------------------------
 # None of the water-closet wet walls continues to the storey above (W-M-BAE and W-M-BA2E
 # die at the main-floor top plate; W-S-BD-N dies under the cathedral attic), so no vent can
@@ -1465,7 +1499,8 @@ REGISTERS_ATTIC = [
 
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
-             position=pt(m(1.88684), m(10.0015)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-HP"),
+             position=pt(m(1.88684), m(10.0015)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-HP",
+             relief_discharge_ref="PR-B-WH-TPR"),
 ]
 
 # --- Electrical: symbols-only (decision 1 — panel/circuit schedule deferred) -------
@@ -2403,7 +2438,8 @@ VENT_BRANCHES_BASEMENT = [
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
 ]
 
-BASEMENT_ELEMENTS = [*DRAINS, *CONDENSATE, *SUPPLY, *HYDRANT_BRANCH_BASEMENT,
+BASEMENT_ELEMENTS = [*DRAINS, *CONDENSATE, *TPR_DISCHARGE, *SUPPLY,
+                     *HYDRANT_BRANCH_BASEMENT,
                      *SUPPLY_DEVICES_BASEMENT, *WALL_SLEEVES, *SLAB_STUBS,
                      *VENT_BRANCHES_BASEMENT,
                      *EQUIPMENT, *PANEL, *BASEMENT_DEVICES,

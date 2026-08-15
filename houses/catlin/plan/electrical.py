@@ -74,7 +74,13 @@ from typehaus import (
 from typehaus.model import m
 
 DEVICE_TYPES = (
+    # `service_amps` is the service size stated as data rather than only in the product name
+    # (2026-08-15). It is what the 220.82 demand is compared against — before the field
+    # existed that comparison was a literal 200 inside takeoff/electrical.py, so a house
+    # could not say it had anything else. Distinct from the panel's `bus_amps`: the 225A bus
+    # behind this 200A meter is what NEC 705.12 measures a backfeed against.
     ElectricalDeviceType(tag="ED-T-METER", name="200A meter socket (meter separate from panel)",
+                          service_amps=200,
                           footprint=(inch(12), inch(6)), height=inch(16),
                           ports=(ServicePort(tag="service", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
@@ -331,6 +337,26 @@ EQUIPMENT_TYPES = (
                   supplemental_heat=True,
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
+    # Supplemental duct heater in System 1's supply plenum (2026-08-15). The zone the
+    # EQ-T-GREE-VIREO-GEN3 carries — the whole second storey plus three attic rooms — has a
+    # 16,309 Btu/h block load at the -15 F design temperature against 13,500 Btu/h of
+    # at-design output plus FH-S-BATH1's mat, and `mep.heating_capacity` had been calling
+    # that -1,069 Btu/h shortfall a failure with no answer authored against it. This is the
+    # answer, and it is the ordinary one: a cold-climate ducted heat pump carries resistance
+    # heat downstream of the coil for the handful of design hours a year the compressor
+    # cannot reach the load alone. 2 kW x 3.412 = 6,824 Btu/h, carried at 6,800, and
+    # resistance heat has no cold-weather derate, so the at-design figure is the same number.
+    #
+    # `supplemental_heat` for the same reason the fireplace carries it: this never opens an
+    # HVAC zone of its own, it counts toward the zone the room it sits in belongs to.
+    EquipmentType(tag="EQ-T-DUCT-HEATER-2KW",
+                  name="Inline duct heater, 2 kW, 240V (supply plenum)",
+                  footprint=(inch(16), inch(10)), height=inch(10),
+                  heating_capacity_btuh=6800, heating_capacity_at_design_btuh=6800,
+                  supplemental_heat=True,
+                  source="Generic 2 kW / 240 V single-stage open-coil duct heater with integral airflow and high-limit interlock, mounted in the supply plenum downstream of the air handler and enabled only on a second-stage call. Sized to cover the zone design-temperature shortfall with margin, not to carry the house.",
+                  ports=(ServicePort(tag="power", service=Service.POWER_240,
+                                     position=(ft(0), ft(0), ft(0))),)),
     # Garage infrared heater lamp — same 1,500 W / 120V / 20A arithmetic as the fireplace.
     # It is hard-wired equipment rather than a fan-forced unit; RM-GARAGE stays
     # `conditioned=False` and therefore out of the 3 VA/ft2 general-lighting area.
@@ -438,9 +464,13 @@ BASEMENT_DEVICES = [
 
 BASEMENT_EQUIPMENT = [
     # 240V tank beside the HPWH (EQ-B-WH at ~(5'-11", 33')) in the furnace room.
+    # Its TPR discharge (PR-B-WH2-TPR) is authored beside EQ-B-WH's in plan/mep.py, where
+    # the rest of the basement pipe lives — a relief line is plumbing, not electrical, and
+    # only the tank it protects is filed here.
     Equipment(uid="CEE015AAAA", tag="EQ-B-WH2", kind=EquipmentKind.WATER_HEATER,
               position=pt(m(2.54347), m(9.89175)), footprint=(inch(24), inch(24)),
-              room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER-240", circuit="CKT-WH-240"),
+              room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER-240", circuit="CKT-WH-240",
+              relief_discharge_ref="PR-B-WH2-TPR"),
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
               position=pt(m(2.09754), m(8.88149)), footprint=(inch(24), inch(24)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV", circuit="CKT-ERV"),
@@ -690,6 +720,24 @@ SECOND_EQUIPMENT = [
                           "RM-S-BED3", "RM-S-SUITE", "RM-S-SUITEBATH", "RM-S-VANITY",
                           "RM-S-BATH1", "RM-S-HALL", "RM-S-CLOSET", "RM-S-NCLOSET",
                           "RM-A-EAST", "RM-A-STUDY", "RM-A-WEST")),
+    # The duct heater above, in the supply plenum immediately north of the air handler's
+    # discharge — inside SF-S-DUCT's soffit box, 8" past the y=9'-7" line DU-S-HP-SUP leaves
+    # from, so it heats every branch the trunk feeds rather than one room's boot.
+    #
+    # `room` is RM-S-HALL, not RM-S-STUDY2 where the air handler is filed: the study's clear
+    # face stops at y=8'-11", the trunk soffit runs the hall, and this sits in the trunk.
+    # (`integrity.placeable_room_mismatch` said so at the first attempt.) It changes nothing
+    # about the credit — `supplemental_heat_by_room` keys on the room, and RM-S-HALL is in
+    # the same EQ-S-HP1-AH zone_rooms list as RM-S-STUDY2 — and it is where the part is.
+    #
+    # It takes CKT-SPARE-240, the 2-pole the panel has been holding since 2026-07-25 for
+    # "future 240V" — this is that load, and the breaker comes down 30A -> 15A with it
+    # (2,000 W / 240 V = 8.3 A, x125% continuous = 10.4 A). The panel therefore gains no
+    # slot and loses its last spare pair; see plans/TODO.md.
+    Equipment(uid="CEE033AAAA", tag="EQ-S-HP1-STRIP", kind=EquipmentKind.SPACE_HEATER,
+              position=pt(ft(19, 10), ft(10, 3)), footprint=(inch(16), inch(10)),
+              room="RM-S-HALL", type_ref="EQ-T-DUCT-HEATER-2KW",
+              circuit="CKT-HP1-STRIP", mount=Mount(kind=MountKind.CEILING)),
 ]
 
 # --- Garage: both EV receptacles on the south wall, east of the service door ----------

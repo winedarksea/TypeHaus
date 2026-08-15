@@ -334,15 +334,61 @@ _MAX_WELL_DEPTH_WITHOUT_LADDER = inch(44)
 _MIN_WELL_LADDER_WIDTH = inch(12)
 
 
+def _required_escape_openings(ctx: CheckContext) -> list:
+    """The openings this house *relies on* to satisfy R310.1 — nothing wider.
+
+    R310.2.3's subject is "the escape opening", and R310.1 says which openings those are:
+    the one serving each sleeping room, and the one serving a basement holding habitable
+    space. Screening every opening in the model on the R310.2.1 dimensions instead reads the
+    rule backwards — a 5'-wide arch in a freestanding garden wall and a segmental arch in a
+    brick veneer both clear 5.7 sf, and neither is anybody's way out of a bedroom. This
+    house produced three such false subjects until the screen moved here (2026-08-15).
+    """
+    credited: list = []
+    seen: set[str] = set()
+    for room in ctx.plan.all_elements():
+        if room.element_kind != "Room" or room.occupancy not in SLEEPING_OCCUPANCIES:
+            continue
+        resolved_room = next((item for item in ctx.model.rooms if item.tag == room.tag), None)
+        for opening in _room_windows(ctx, resolved_room, Point, Polygon):
+            if _meets_r310_2_1(opening, grade_floor=False) and opening.tag not in seen:
+                seen.add(opening.tag)
+                credited.append(opening)
+                break
+    rooms_by_storey = _rooms_by_storey(ctx)
+    for storey in ctx.plan.storeys:
+        if _storey_is_below_grade(ctx, storey) is not True:
+            continue
+        if not any(e.element_kind == "Room" and e.occupancy in HABITABLE_OCCUPANCIES
+                   for e in ctx.plan.storey_elements(storey.tag)):
+            continue
+        for opening in ctx.model.openings:
+            wall = ctx.model.wall(opening.host_wall)
+            if wall is None or wall.storey != storey.tag:
+                continue
+            if not _wall_is_exterior(ctx, wall, rooms_by_storey):
+                continue
+            if opening.is_door or _meets_r310_2_1(opening, grade_floor=True):
+                if opening.tag not in seen:
+                    seen.add(opening.tag)
+                    credited.append(opening)
+                break
+    return credited
+
+
 @check(Tier.CODE, "code.R310_2_3_window_well")
 def window_well(ctx: CheckContext) -> list[Finding]:
     """R310.2.3 — a below-grade escape opening has a well you can actually climb out of.
 
-    Applicability is the interesting half. A well is required exactly where an escape
-    opening's sill sits below the grade outside it, so this walks the openings first and the
-    wells second — a house whose escape openings are all above grade scope-passes, and one
-    whose below-grade opening has no well reports UNKNOWN rather than PASS, because the
+    Applicability is the interesting half, and it is *not* "any opening big enough". The
+    subjects are the openings R310.1 makes this house depend on (``_required_escape_openings``
+    above); of those, a well is required exactly where the sill sits below the grade outside
+    it. A house whose escape openings are all above grade scope-passes, and one whose
+    below-grade escape opening has no well reports UNKNOWN rather than PASS, because the
     absence of a well element is not evidence of an unobstructed opening.
+
+    A below-grade *door* — a walkout, which is how this basement escapes — is out of scope:
+    R310.2.3 sizes a window well, and the areaway in front of a door is R311.3's landing.
     """
     from typehaus.model.site import WindowWell
 
@@ -356,15 +402,13 @@ def window_well(ctx: CheckContext) -> list[Finding]:
              if isinstance(w, WindowWell)}
 
     below: list = []
-    for opening in ctx.model.openings:
+    for opening in _required_escape_openings(ctx):
         if opening.is_door:
             continue
         wall = ctx.model.wall(opening.host_wall)
         storey = storeys.get(wall.storey) if wall else None
         if storey is None:
             continue
-        if not _meets_r310_2_1(opening, grade_floor=True):
-            continue  # not an escape opening, so R310.2.3 has nothing to serve
         if storey.elevation.meters + opening.sill_m < grade.meters - 1e-6:
             below.append(opening)
     if not below:

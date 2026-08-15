@@ -177,7 +177,9 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
             axis_len = length(sub(rw.axis[1], rw.axis[0]))
             center = _opening_center(plan, el, rw, axis_len, width)
             sill = _opening_sill(el)
-            swing_clearance = _door_swing_clearance(rw, center, width, el) if is_door else ()
+            operation = _door_operation(plan, el) if is_door else None
+            swing_clearance = (_door_swing_clearance(rw, center, width, el, operation)
+                               if is_door else ())
             framing_bumper = _opening_framing_bumper(rw, center, width)
             arch = getattr(el, "arch", None)
             arch_rise = arch.rise.meters if arch is not None else 0.0
@@ -208,6 +210,14 @@ def _opening_size(plan: PlanModel, el) -> tuple[float, float, bool, str | None]:
     if t is None:
         return 0.9, 2.0, is_door, el.type_ref
     return t.width.meters, t.height.meters, is_door, el.type_ref
+
+
+def _door_operation(plan: PlanModel, el) -> str:
+    """A door's leaf motion, off its ``DoorType``. Defaults to ``"swing"``, which is what an
+    untyped door has always been drawn and framed as."""
+    door_type = next((x for x in plan.library.door_types if x.tag == el.type_ref), None)
+    operation = getattr(door_type, "operation", None)
+    return str(getattr(operation, "value", operation) or "swing")
 
 
 def _opening_center(plan: PlanModel, el, rw, axis_len: float, width: float) -> float:
@@ -243,8 +253,34 @@ def _opening_framing_bumper(wall, center_along_m: float, width_m: float) -> list
             for sign_u, sign_n in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
 
 
-def _door_swing_clearance(wall, center_along_m: float, width_m: float, door) -> list[tuple[float, float]]:
-    """Approximate the door leaf sweep as a true local-sector polygon in plan space."""
+# How much of a leaf's width actually sweeps into the room, by how the leaf moves. A slider,
+# a pocket door and an overhead sectional sweep nothing at all — the leaf stays in the wall
+# plane or runs up onto a ceiling track — and giving them the 90-degree quarter-circle every
+# door used to get invented a clearance they do not have. Catlin's mudroom-closet bypass
+# (D-M-MUDC) reported a permanent `integrity.door_swing_conflict` against the bench in front
+# of it for exactly that reason, and the plan sheets drew an arc for a slider besides. A
+# bifold's leaves do project, but folded, so roughly half the width rather than all of it.
+_LEAF_SWEEP_FRACTION: dict[str, float] = {
+    "swing": 1.0,
+    "double_swing": 0.5,  # a French pair is two leaves, each half the rough opening
+    "bifold": 0.5,
+    "slide": 0.0,
+    "pocket": 0.0,
+    "overhead": 0.0,
+}
+
+
+def _door_swing_clearance(wall, center_along_m: float, width_m: float, door,
+                          operation: str = "swing") -> list[tuple[float, float]]:
+    """Approximate the door leaf sweep as a true local-sector polygon in plan space.
+
+    ``operation`` selects how much of the leaf sweeps (:data:`_LEAF_SWEEP_FRACTION`); a
+    non-swinging door returns an empty ring, which every consumer already treats as "no
+    clearance to draw or defend".
+    """
+    sweep = _LEAF_SWEEP_FRACTION.get(str(operation or "swing"), 1.0)
+    if sweep <= 0.0:
+        return []
     (sx, sy), (ex, ey) = wall.axis
     length = math.hypot(ex - sx, ey - sy) or 1.0
     tangent = ((ex - sx) / length, (ey - sy) / length)
@@ -254,12 +290,13 @@ def _door_swing_clearance(wall, center_along_m: float, width_m: float, door) -> 
     hinge = start if hinge_at_start else (start[0] + tangent[0] * width_m, start[1] + tangent[1] * width_m)
     closed = tangent if hinge_at_start else (-tangent[0], -tangent[1])
     direction = -1 if bool(getattr(door, "flip_swing", False)) else 1
+    radius = width_m * sweep
     points = [hinge]
     for index in range(9):
         angle = direction * math.pi / 2 * index / 8
         cos, sin = math.cos(angle), math.sin(angle)
-        points.append((hinge[0] + width_m * (closed[0] * cos - closed[1] * sin),
-                       hinge[1] + width_m * (closed[0] * sin + closed[1] * cos)))
+        points.append((hinge[0] + radius * (closed[0] * cos - closed[1] * sin),
+                       hinge[1] + radius * (closed[0] * sin + closed[1] * cos)))
     return points
 
 

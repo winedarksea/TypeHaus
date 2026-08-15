@@ -226,6 +226,13 @@ class ElectricalDeviceType(FurnitureType):
     # backfeed against the bus, not the main breaker, so the number has to be carried on
     # the type rather than assumed equal to the service size.
     bus_amps: int | None = None
+    # Service ampacity (meter sockets and main-disconnect panels). Distinct from
+    # ``bus_amps``: the bus is what a backfeed is measured against, this is the main
+    # breaker the 220.82 demand is compared to, and a 225A-bus panel behind a 200A meter is
+    # the ordinary case where they differ. Before this field the service size was a literal
+    # 200 inside ``takeoff/electrical.py``, so a house could not state a 400A service and
+    # every plan was graded against 200A no matter what it drew.
+    service_amps: int | None = None
     # How a SWITCH device controls what it feeds: "dimmer" | "timer" | "smart" | None
     # (a plain toggle). Read by the lighting-controls check and printed in the E-602
     # control schedule; a product attribute, not a kind, for the same reason NEMA is.

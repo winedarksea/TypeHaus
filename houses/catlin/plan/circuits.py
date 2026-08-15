@@ -53,8 +53,16 @@ CIRCUITS = (
     # --- 240V dedicated loads (electrical_notes.md line 4) ---------------------------
     Circuit(uid="CKT001AAAA", tag="CKT-RANGE", slot=1, panel_ref=_PANEL, breaker_amps=50, poles=2,
             nema="14-50R", load_va=12000, description="Kitchen range"),
+    # load_va is the *nameplate*, 830 W, not the 5,000 VA the 14-30R receptacle type carries.
+    # This circuit had no authored load, so the connected VA fell back to the receptacle
+    # product — a breaker-shaped estimate for a machine that is an LG DLHC5502V ventless
+    # heat-pump dryer drawing 830 W (see ED-M-LAUNDRY-DR1 in plan/electrical.py, and note
+    # the 30A branch stays, deliberately, as a provision for a future vented dryer).
+    # 220.82(B)(3) counts "the nameplate rating" of a clothes dryer; the 5,000 VA minimum is
+    # 220.54's, which belongs to the standard method in Part III and not to this one. The
+    # difference is 4,170 VA of connected load, ~7A of demand, on a service with no room.
     Circuit(uid="CKT002AAAA", tag="CKT-DRYER", slot=5, panel_ref=_PANEL, breaker_amps=30, poles=2,
-            nema="14-30R", description="Dryer"),
+            nema="14-30R", load_va=830, description="Dryer"),
     # The two EV circuits author their load_va explicitly (same figures the receptacle
     # types carry: 240x40 and 240x16 continuous) because LOAD_MANAGEMENTS below reads the
     # managed group's connected load off the *circuits*, not the devices.
@@ -117,8 +125,14 @@ CIRCUITS = (
     Circuit(uid="CKT012AAAA", tag="CKT-ESS-GRID", slot=40, panel_ref=_PANEL, breaker_amps=50,
             poles=2, source=True, load_va=0,
             description="EG4 12kPV grid port — PV + battery interconnection (EQ-B-ESS-INV)"),
-    Circuit(uid="CKT013AAAA", tag="CKT-SPARE-240", slot=18, panel_ref=_PANEL, breaker_amps=30, poles=2,
-            load_va=0, description="Spare 2-pole (conduit stubbed for future 240V)"),
+    # Was the panel's spare 2-pole ("conduit stubbed for future 240V"). Claimed on
+    # 2026-08-15 by EQ-S-HP1-STRIP, the 2 kW duct heater that answers System 1's
+    # design-temperature shortfall — which is exactly the future load the pair was held for.
+    # 2,000 W / 240 V = 8.3 A, x 1.25 continuous = 10.4 A, so the breaker comes down to 15A;
+    # a 30A breaker on a fixed 8.3A heater protects nothing the conductor needs protecting
+    # from. The panel now holds no spare 2-pole (plans/TODO.md).
+    Circuit(uid="CKT013AAAA", tag="CKT-HP1-STRIP", slot=18, panel_ref=_PANEL, breaker_amps=15, poles=2,
+            load_va=2000, description="System 1 supplemental duct heater (EQ-S-HP1-STRIP)"),
 
     # --- electric space heating (2026-07-25) -----------------------------------------
     #
@@ -300,23 +314,52 @@ CIRCUITS = (
             gfci=True, load_va=1500, description="Garage general receptacles"),
 )
 
-# --- Load management (NEC 625.42) ------------------------------------------------------
+# --- Load management (NEC 625.42 / 220.82) ---------------------------------------------
 #
-# The open decision in plans/TODO.md — "service load exceeds the service" — is settled
-# here with an EMS rather than a service upgrade. Unmanaged, the 220.82 estimate lands at
-# 223.7A against the 200A service; the two EV circuits contribute 13,440 VA (56.0A) of
-# that, so everything else in the house is 167.7A and the headroom left for EV charging is
-# 32.3A (7,752 VA).
+# The open decision in plans/TODO.md — "service load exceeds the service" — is settled here
+# with management rather than a service upgrade (re-affirmed by decision, 2026-08-15, with
+# the arithmetic below in front of it). It takes two groups now, and the reason the earlier
+# single group stopped being enough is that the house kept growing: the 2026-07-25 note
+# under LM-EV was written when the unmanaged estimate was 223.7A, and it is 254.2A today.
 #
-# The Emporia Vue's dynamic load management watches the whole-panel CTs and throttles the
-# 14-50 EVSE, so the pair is capped at 5,760 VA — 24A at 240V, both EV circuits together.
-# That is the largest round setting that stays clearly inside the 32.3A headroom (it lands
-# the estimate near 192A, ~8A of margin for the loads this house has not authored yet) and
-# it is above the 6A/1.4 kW floor an EVSE must never be throttled below, so a car still
-# charges at ~24A whenever nothing else is competing for the service.
+# Where the 220.82 estimate stands, and what each lever is worth (the numbers come out of
+# `haus schedule` / takeoff/electrical.py::service_load_summary, not from here):
+#
+#   unmanaged                                             254.2A
+#   dryer at its 830 W nameplate, not the 14-30R's 5 kVA   -7.0A  ->  215.3A
+#   LM-WELLNESS: spa + sauna one at a time                -15.0A  ->  200.3A
+#   LM-EV: EV pair capped 5,760 -> 5,600 VA                -0.7A  ->  199.6A
+#
+# 0.4A of margin against the 200A service, and it is worth being blunt about what that
+# means: this house has no room left on 200A. Any load added after this — a second range
+# circuit, a workshop feeder, a heat kit bigger than EQ-S-HP1-STRIP's 2 kW — puts it over
+# again, and the answer then is the 400A service this pass deliberately did not buy.
+#
+# Why the credits are worth what they are: a managed group's connected excess is removed in
+# the 220.82 term the load was counted in. The EV pair is added at 100% (already continuous),
+# so its excess comes off one-for-one; the spa and sauna are fixed appliances under (B)(3),
+# reached through the 40% remainder factor, so their 9,000 VA of excess is worth 3,600 VA of
+# demand. Crediting them at 100% would overstate the saving by 2.5x, which is what the
+# service_load check used to do.
 LOAD_MANAGEMENTS = (
+    # The Emporia Vue's dynamic load management watches the whole-panel CTs and throttles the
+    # 14-50 EVSE. 5,600 VA is 23.3A at 240V across both EV circuits together — above the
+    # 6A/1.4 kW floor an EVSE must never be throttled below, so a car still charges at ~23A
+    # whenever nothing else is competing, and the cap is only the guaranteed floor the
+    # calculation rests on rather than the rate it charges at.
     LoadManagement(uid="EMSEV0AAAA", tag="LM-EV",
                    managed_circuits=("CKT-EV-1450", "CKT-EV-620"),
-                   max_simultaneous_va=5760, strategy="ems",
+                   max_simultaneous_va=5600, strategy="ems",
                    source="Emporia Vue dynamic load management (NEC 625.42 EMS)"),
+    # The two wellness loads, interlocked so only one heats at a time: 11,500 VA is the spa,
+    # the larger of the pair, so the group can never draw more than the tub alone does. They
+    # are the right pair to interlock because nobody uses both at once and because they are
+    # the two largest fixed appliances in the house (11.5 kVA + 9 kVA against a 12 kVA range).
+    # Contactor-based priority shedding on the same Emporia controller, not a mechanical
+    # interlock: the sauna is in the basement and the tub is in the sunken garden, 40' apart.
+    LoadManagement(uid="EMSWL0AAAA", tag="LM-WELLNESS",
+                   managed_circuits=("CKT-SPA", "CKT-SAUNA"),
+                   max_simultaneous_va=11500, strategy="ems",
+                   source="Emporia contactor-based priority shed, spa vs sauna (NEC 220.82 "
+                          "connected-load management)"),
 )

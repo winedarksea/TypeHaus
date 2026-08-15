@@ -55,8 +55,19 @@ MN_2024 = JurisdictionProfile(
         "draftstopping (R302.11-.12), crawl spaces (R408), chimneys and solid-fuel "
         "appliances (R1001-R1004), and notching and boring limits (R502.8/R602.6). "
         "Also covered: R310.2.3 window wells, M1502 dryer exhaust, and P2801.6/P2804.6.1 "
-        "water-heater relief discharge and pan. Not covered: "
-        "and assembly fire-resistance ratings beyond gypsum grade and thickness. "
+        "water-heater relief discharge and pan. "
+        "Added 2026-08-15: R302.7 under-stair protection, R303.7/R303.8 interior and "
+        "exterior stairway illumination (presence and switching only — illuminance is a "
+        "photometric result this model cannot compute), R403.1.6 sill-plate anchorage "
+        "(the schedule rule, not a bolt count), R405.1 foundation drainage, R406.1 "
+        "dampproofing, and MN Rules 1303.2400-.2402 passive radon control — the state's "
+        "own rule, with no IRC parent, covering the collection point, the sealed sump "
+        "cover, the exhaust's separation from openings into conditioned space, and the "
+        "power source for a future fan. Not covered within that radon rule, because the "
+        "model carries no field to grade them: the soil-gas membrane laps, the 10 ft of "
+        "perforated pipe under it, the vent labelling, the 24-inch fan clearance, and the "
+        "R-4 insulation on pipe in unconditioned space. Not covered: "
+        "assembly fire-resistance ratings beyond gypsum grade and thickness. "
         "Every permit item names the checks that answer it; this profile covers a declared "
         "subset of the code; results are never 'code compliant'."
     ),
@@ -118,6 +129,15 @@ MN_2024 = JurisdictionProfile(
                        ("IRC R302.5.1", "IRC R302.5.2", "IRC R302.6"), blocking=False),
         PermitItemSpec("Floor assembly protection", ("code.R302_13_floor_protection",),
                        ("IRC R302.13",), blocking=False),
+        PermitItemSpec("Under-stair protection", ("code.R302_7_under_stair_protection",),
+                       ("IRC R302.7",)),
+        # Two rules, one permit line: a reviewer asks "is the stair lit, and can you switch
+        # it from both ends" once, and the interior/exterior split is the code's own way of
+        # saying where the fixture goes, not a second question.
+        PermitItemSpec("Stairway illumination",
+                       ("code.R303_7_stairway_illumination",
+                        "code.R303_8_exterior_stairway_illumination"),
+                       ("IRC R303.7", "IRC R303.8")),
         PermitItemSpec("Habitable light and ventilation",
                        ("code.R303_1_light_and_ventilation",), ("IRC R303.1",),
                        blocking=False),
@@ -171,6 +191,19 @@ MN_2024 = JurisdictionProfile(
         PermitItemSpec("Envelope air-leakage target", ("code.N1102_4_air_leakage",),
                        ("IRC N1102.4.1.2", "MN Rules 1322")),
         PermitItemSpec("Foundation frost depth", ("structural.frost_depth",), ("IRC R403.1.4",)),
+        PermitItemSpec("Sill-plate anchorage", ("code.R403_1_6_foundation_anchorage",),
+                       ("IRC R403.1.6",)),
+        # Drainage and dampproofing are one sheet's worth of review — "how does water get
+        # away from this concrete" — but two independent findings, because a wall can have
+        # tile and no membrane or the reverse.
+        PermitItemSpec("Foundation drainage and dampproofing",
+                       ("code.R405_1_foundation_drainage", "code.R406_1_dampproofing"),
+                       ("IRC R405.1", "IRC R406.1")),
+        # Minnesota's own rule, with no IRC parent: every new residential structure in the
+        # state gets a passive soil-gas system, and it is drawn on the foundation and
+        # plumbing sheets rather than described in a note.
+        PermitItemSpec("Passive radon control system", ("code.MN_1303_2402_radon",),
+                       ("MN Rules 1303.2400-.2402",)),
         PermitItemSpec("I-joist span table", ("structural.ijoist_span",),
                        ("manufacturer span table",)),
         PermitItemSpec("Plumbing sleeve alignment", ("mep.sleeve_alignment",), ()),

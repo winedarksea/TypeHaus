@@ -421,9 +421,14 @@ MAIN_LIGHTING = [
                      position=pt(ft(8, 4.375), ft(16, 10)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+    # room re-pointed to RM-M-MUD-CLOSET (2026-08-15), the same correction its sibling
+    # CAN2 took in 2026-07-28: the 2026-08-02 closet conversion framed a room around this
+    # ceiling point, and the light kept naming the mudroom it used to hang in. It is 8"
+    # inside the closet's clear face; `integrity.placeable_room_mismatch` had been saying so
+    # ever since. Nothing moves — this is a label catching up with a wall.
     ElectricalDevice(uid="QTM000XAAA", tag="ED-M-STORAGE-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(5), ft(29)), type_ref="ED-T-LT-CAN3",
-                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUD-CLOSET",
                      controlled_by=("ED-M-STORAGE-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # room re-pointed to RM-M-MECH (2026-07-28): its ceiling position now lands inside the

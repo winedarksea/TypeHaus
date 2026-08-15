@@ -185,12 +185,15 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     load, unresolved = branch_load(main, units, "drain")
     assert not unresolved
     assert load == 42.0
-    # Every drain run discharges somewhere except the building drain itself and the
-    # dryer condensate's air-gap termination — a new run silently missing its tie-in
-    # would show up here as an extra terminal, understating every load downstream of it.
+    # Every drain run discharges somewhere except the building drain itself and the runs
+    # that terminate at an air gap — the dryer condensate, and the two water heaters' TPR
+    # relief discharges, which P2804.6.1 requires to end 6"-24" over the floor and forbids
+    # to be piped into a drain at all. A new run silently missing its tie-in would show up
+    # here as an extra terminal, understating every load downstream of it.
     ties = drain_tie_ins(drains)
     terminals = {r.tag for r in drains} - set(ties)
-    assert terminals == {"PR-B-MAIN-DRAIN", "PR-M-DRYER-COND"}
+    assert terminals == {"PR-B-MAIN-DRAIN", "PR-M-DRYER-COND",
+                         "PR-B-WH-TPR", "PR-B-WH2-TPR"}
 
 
 def test_rollup_is_a_union_never_a_sum_and_unknown_never_partial():

@@ -243,7 +243,7 @@ def floor_assembly_protection(ctx: CheckContext) -> list[Finding]:
     this house today. Failing it would be asserting a deficiency in an assembly that is not
     modeled, and the whole point of the tri-state is that those are different answers.
     """
-    from typehaus.model.floors import FloorSystem
+    from typehaus.model.floors import FloorSystem, Slab
 
     cid, code = "code.R302_13_floor_protection", "R302.13"
     from typehaus.checks.code.mn_residential._common import _storey_is_below_grade
@@ -270,6 +270,19 @@ def floor_assembly_protection(ctx: CheckContext) -> list[Finding]:
                if isinstance(fs, FloorSystem) and fs.service == "floor"]
     over = [fs for fs in systems if floor_storeys.get(fs.tag) in above_tags]
     if not over:
+        # A concrete deck is a floor over the basement too, and R302.13's subject is the
+        # "floor framing member" a membrane is fastened to. There is none in a 9" cast slab,
+        # and nothing in it burns — so a slab decking the storey above answers the rule
+        # rather than leaving it unevaluated. This was the whole of the Catlin UNKNOWN: the
+        # main floor is SL-M-DECK, not a joist system, and looking only for FloorSystem
+        # reported an unmodeled assembly for a floor that is modeled and exempt.
+        decks = [slab for tag in sorted(above_tags)
+                 for slab in ctx.plan.storey_elements(tag) if isinstance(slab, Slab)]
+        if decks:
+            return [_pass(cid, f"the floor over {', '.join(sorted(s.tag for s in below))} is "
+                          f"cast concrete ({', '.join(sorted(d.tag for d in decks))}) — "
+                          "R302.13 protects floor framing members, of which a slab has none",
+                          code)]
         return [_unknown(cid, f"no floor system resolves over below-grade storey(s) "
                          f"{', '.join(sorted(s.tag for s in below))}, so the assembly "
                          "R302.13 protects is not modeled",
