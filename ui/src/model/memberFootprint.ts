@@ -17,12 +17,26 @@ export function isVerticalMember(m: Member): boolean {
   return m.p0[0] === m.p1[0] && m.p0[1] === m.p1[1];
 }
 
-// Lying-flat members (plates) put their wide face (depth_m) across the wall; on-edge
-// members (headers/joists/rims/beams) put their thin face (width_m) across instead. For a
-// vertical member this is also its thin plan dimension — the one a level-of-detail switch
-// has to measure, because it is the first to fall below a pixel.
+// How far a member's vertical extent may miss its section thickness and still count as
+// flat-laid. Mirrors FLAT_LAID_TOLERANCE_M in resolve/framing/profiles.py — the house's flat
+// members land within 1e-8 m of their thickness and the nearest on-edge member is 0.021 m
+// away, so 0.1 mm separates the two with three orders of margin on both sides.
+export const FLAT_LAID_TOLERANCE_M = 1e-4;
+
+// Lying-flat members (plates, rough sills, blocking courses) put their wide face (depth_m)
+// across the wall; on-edge members (headers/joists/rims/beams) put their thin face (width_m)
+// across instead. For a vertical member this is also its thin plan dimension — the one a
+// level-of-detail switch has to measure, because it is the first to fall below a pixel.
+//
+// The member's own vertical extent states which way it was laid, so read that. Naming flat
+// *categories* instead — the rule this replaced — missed every flat category nobody
+// remembered to list, drawing 204 blocking members and 42 rough sills as 1.5" ribbons down
+// the middle of a 5.5" wall, and it went stale again each time the solver grew a category.
+// The Python twin is plan_cross_section_m in resolve/framing/profiles.py.
 export function crossWidth(m: Member): number {
-  return m.category === "plate" || m.category === "raked_plate" ? m.depth_m : m.width_m;
+  // z0_m..z1_m is the extent at one station, not the rise of a raked member end to end: a
+  // rafter climbs meters along its run while its section never changes.
+  return Math.abs(m.z1_m - m.z0_m - m.width_m) <= FLAT_LAID_TOLERANCE_M ? m.depth_m : m.width_m;
 }
 
 /**

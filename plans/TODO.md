@@ -164,20 +164,10 @@ the future.
 
 ## Questions:
 - Do we want floor drains in kitchen/laundry room (deferred 2026-07-30: neither, for now)
-- ~~Edits in 2d don't always update all the necessary pieces~~ — investigated 2026-08-02;
-  root cause + proposed fix under **Needs your decision** above.
-- ~~Should porch column PT-SG-BR2 bear more directly on PT-SG-COL?~~ — investigated
-  2026-08-02; recommendation under **Needs your decision** above.
 - Pantry (deferred by decision 2026-08-02)
 - Add the plant room wall types (deferred by decision 2026-08-02)
 - basement ceiling, some of this wood joists maybe (deferred by decision 2026-08-02)
 - study on first floor location adjustments (deferred by decision 2026-08-02)
-- ~~"Star" certain details~~ — the machinery already existed (`Transition.star`, UI toggle,
-  `details="primary"` filter); 2026-08-02 curated the stars (6 of 14 transitions: eave,
-  foundation sill, rim band, framed opening, garage/breezeway threshold, sauna-liner
-  opening — 31 of 46 A-4xx sheets in the primary set) and flipped `haus print` to
-  primary-by-default (`--details all` still there). Per-condition fan-out is under
-  **Needs your decision**.
 - Nest/loft design
 - House being a bit higher, cladding detail
 - ~~Count/show tile, make sure electrical for mats is in if so~~ — **answered 2026-08-07.**

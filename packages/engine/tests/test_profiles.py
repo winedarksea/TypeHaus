@@ -8,9 +8,11 @@ import pytest
 
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import (
+    FLAT_LAID_TOLERANCE_M,
     RIDGE_BEAM_DEFAULT,
     cross_section,
     panel_profile,
+    plan_cross_section_m,
 )
 from typehaus.resolve.framing.tables import LUMBER_ACTUAL
 
@@ -101,3 +103,32 @@ def test_unknown_profile_falls_back_safely():
     assert section.shape == "rect"
     assert section.width_m == pytest.approx(inch(1.5).meters)
     assert section.depth_m == pytest.approx(inch(5.5).meters)
+
+
+def test_a_member_standing_its_own_thickness_tall_lies_on_its_wide_face():
+    """A 2x6 plate/sill/block is 1.5" tall, so a plan cut sees its 5.5" face."""
+    section = cross_section("2x6")
+    assert plan_cross_section_m(section, section.width_m) == pytest.approx(section.depth_m)
+
+
+def test_a_member_standing_its_own_depth_tall_shows_its_thin_face():
+    """A 2x6 header/joist on edge is 5.5" tall, so a plan cut sees its 1.5" face."""
+    section = cross_section("2x6")
+    assert plan_cross_section_m(section, section.depth_m) == pytest.approx(section.width_m)
+
+
+def test_an_extent_matching_neither_face_keeps_the_on_edge_default():
+    """A seat cut, a tapered gable band: no constant section to read, so do not guess."""
+    section = cross_section("2x6")
+    odd = (section.width_m + section.depth_m) / 2
+    assert plan_cross_section_m(section, odd) == pytest.approx(section.width_m)
+
+
+def test_the_flat_test_tolerates_only_a_hair():
+    """Wide enough for float noise, far narrower than the 0.021 m gap to the nearest
+    on-edge member in either house — the margin the rule relies on to stay unambiguous."""
+    section = cross_section("2x6")
+    just_inside = section.width_m + FLAT_LAID_TOLERANCE_M * 0.9
+    just_outside = section.width_m + FLAT_LAID_TOLERANCE_M * 1.1
+    assert plan_cross_section_m(section, just_inside) == pytest.approx(section.depth_m)
+    assert plan_cross_section_m(section, just_outside) == pytest.approx(section.width_m)

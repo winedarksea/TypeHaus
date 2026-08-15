@@ -88,6 +88,36 @@ class CrossSection:
     plies: int = 1
 
 
+# How far the member's own vertical extent may miss its section thickness and still count as
+# flat-laid. The house's flat members land within 1e-8 m of their thickness and the nearest
+# on-edge member is 0.021 m away, so 0.1 mm separates the two cases with three orders of
+# margin on both sides.
+FLAT_LAID_TOLERANCE_M = 1e-4
+
+
+def plan_cross_section_m(section: CrossSection, vertical_extent_m: float) -> float:
+    """The section dimension a plan cut sees *across* a horizontal member's run.
+
+    The one place the flat-vs-on-edge question is answered — the 2D framing plan, the
+    interference check, the glTF/IFC solids and the viewer all read it from here. A member
+    lying flat (a plate, a rough sill, a blocking course) shows its wide ``depth_m`` face in
+    plan and stands only ``width_m`` tall; one on edge (a header, a joist, a rafter) shows
+    the narrow ``width_m`` and stands ``depth_m`` tall.
+
+    Classifying by *category* instead — the rule this replaced — silently missed every flat
+    category nobody remembered to list, drawing 5.5" blocking and rough sills as 1.5"
+    ribbons. The member's own vertical extent already states which way it was laid, so read
+    that: it cannot go stale when a new flat category appears.
+
+    ``vertical_extent_m`` is the member's z-extent at one station (``z1_m - z0_m``), not the
+    full span of a raked member — a rafter rises meters end to end while its section never
+    changes.
+    """
+    if abs(vertical_extent_m - section.width_m) <= FLAT_LAID_TOLERANCE_M:
+        return section.depth_m
+    return section.width_m
+
+
 def _rect(width_in: float, depth_in: float, plies: int = 1) -> CrossSection:
     return CrossSection(shape="rect", width_m=inch(width_in).meters,
                         depth_m=inch(depth_in).meters, plies=plies)

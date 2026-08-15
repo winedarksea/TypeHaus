@@ -26,7 +26,7 @@ from typehaus.emit.draw.door_symbols import (
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 from typehaus.resolve.geometry import opening_center, rect_between, wall_frame
 from typehaus.resolve.model import ResolvedModel
 
@@ -154,12 +154,14 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
 
 
 def _member_footprint(member) -> list[tuple[float, float]]:
-    """A member's plan rectangle: its axis swept by its own cross-section width.
+    """A member's plan rectangle: its axis swept by the section face it shows in plan.
 
     The same construction every emitter builds a member's footprint from, so a landing
-    drawn here covers exactly the plan area the 3D deck occupies.
+    drawn here covers exactly the plan area the 3D deck occupies — which means reading
+    the flat-vs-on-edge rule from ``plan_cross_section_m`` rather than assuming either.
     """
-    half = cross_section(member.profile).width_m / 2.0
+    half = plan_cross_section_m(cross_section(member.profile),
+                                member.z1_m - member.z0_m) / 2.0
     return rect_between(member.p0, member.p1, -half, half)
 
 

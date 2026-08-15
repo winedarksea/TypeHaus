@@ -6,6 +6,9 @@ import type { Member, Vec2 } from "./types";
 function member(fields: Partial<Member>): Member {
   return {
     category: "stud", p0: [0, 0], p1: [0, 0], width_m: 0.0381, depth_m: 0.1397,
+    // z0_m..z1_m is what says which way the member was laid, so a stub that omits it says
+    // nothing: default to standing on edge (depth_m tall) and let a flat case state its own.
+    z0_m: 0, z1_m: 0.1397,
     orient: null, plan_outline: null, ...fields,
   } as unknown as Member;
 }
@@ -67,13 +70,30 @@ export function runMemberFootprintTests() {
     || !near(extent(joistRing, 0), 0.0381) || !near(extent(joistRing, 1), 2)) {
     throw new Error("An on-edge horizontal member must draw a width_m band along its run");
   }
-  const plate = member({ category: "plate", p0: [0, 0], p1: [4, 0] });
+  const flat = { p0: [0, 0] as Vec2, p1: [4, 0] as Vec2, z0_m: 0, z1_m: 0.0381 };
+  const plate = member({ category: "plate", ...flat });
   const plateRing = memberFootprint(plate);
   if (crossWidth(plate) !== 0.1397 || !near(extent(plateRing, 1), 0.1397)
     || !near(extent(plateRing, 0), 4)) {
     throw new Error("A plate lies flat, so its plan band must be depth_m wide, not width_m");
   }
-  if (crossWidth(member({ category: "raked_plate" })) !== 0.1397) {
-    throw new Error("A raked plate lies flat too and must use the same plate rule");
+  // The rule is the member's own z-extent, not its category name. Blocking courses and rough
+  // sills lie just as flat as a plate and used to fall through to width_m — a 1.5" ribbon down
+  // the middle of a 5.5" wall, running past the rough-opening mask at every jamb.
+  for (const category of ["raked_plate", "blocking", "sill", "partition", "brand_new_category"]) {
+    if (crossWidth(member({ category, ...flat })) !== 0.1397) {
+      throw new Error(`A flat-laid ${category} must draw its depth_m face, whatever it is called`);
+    }
+  }
+  // ...and a category that *can* lie either way is read each time, not remembered.
+  if (crossWidth(member({ category: "blocking", p0: [0, 0], p1: [4, 0] })) !== 0.0381) {
+    throw new Error("Blocking standing on edge must still draw its width_m face");
+  }
+  // A raked member climbs meters end to end; only the extent at one station names the lay.
+  const rafter = member({
+    category: "rafter", p0: [0, 0], p1: [0, 4], z0_end_m: 2, z1_end_m: 2 + 0.1397,
+  });
+  if (crossWidth(rafter) !== 0.0381) {
+    throw new Error("A raked member's lay must read from z1_m - z0_m, not its end-to-end rise");
   }
 }

@@ -24,7 +24,7 @@ from typing import Any
 from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.model.ids import derive_child_guid, derive_guid
-from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 from typehaus.resolve.geometry_roofs import roof_parts
 from typehaus.resolve.model import FramedMember, ResolvedRoof
 
@@ -180,8 +180,11 @@ def member_representation(f: Any, body: Any, member: FramedMember) -> Any | None
     stretched to a wrong constant depth.
     """
     section = cross_section(member.profile)
-    width = max(section.width_m, _MINIMUM_EXTENT_M)
     height = max(member.z1_m - member.z0_m, _MINIMUM_EXTENT_M)
+    # A horizontal member's swept section is `height` tall, so the dimension across its run is
+    # whichever face is *not* standing up: the wide `depth_m` for a flat-laid plate/sill/block,
+    # the thin `width_m` for a member on edge. An upright takes the section as authored.
+    width = max(plan_cross_section_m(section, member.z1_m - member.z0_m), _MINIMUM_EXTENT_M)
     dx, dy = member.p1[0] - member.p0[0], member.p1[1] - member.p0[1]
     run = math.hypot(dx, dy)
     if run >= 1e-9 and _is_tapered(member):
@@ -192,7 +195,7 @@ def member_representation(f: Any, body: Any, member: FramedMember) -> Any | None
         return ll.add_swept_member(
             f, body, origin_m=(member.p0[0], member.p0[1], member.z0_m),
             axis=(0.0, 0.0, 1.0), ref_direction=(orient[0] / norm, orient[1] / norm, 0.0),
-            length_m=height, width_m=width,
+            length_m=height, width_m=max(section.width_m, _MINIMUM_EXTENT_M),
             depth_m=max(section.depth_m, _MINIMUM_EXTENT_M),
         )
     start_mid = (member.z0_m + member.z1_m) / 2.0

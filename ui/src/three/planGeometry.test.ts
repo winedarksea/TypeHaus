@@ -110,16 +110,18 @@ export function runPlanGeometryTests() {
   roofSurface.dispose();
 
   const framing = new THREE.Group();
+  // The plate stands exactly its own thickness (width_m) tall — that is what lying flat
+  // means, and it is what tells crossWidth to lay the wide depth_m face across the run.
   buildMembers(framing, [member({}), member({
     category: "raked_plate", p0: [13, 27], p1: [18, 27], z0_m: 3,
-    z1_m: 3.2, z0_end_m: 5, z1_end_m: 5.2, orient: null,
+    z1_m: 3.1, z0_end_m: 5, z1_end_m: 5.1, orient: null,
   })], center, "schematic", PALETTE, "TESTOWNER");
   const framingBounds = boundsForObject(framing);
   closeTo(framingBounds.min.z, -7.1, "Framing uses the same centered north axis");
   closeTo(framingBounds.max.z, -2.9, "Framing remains aligned with schematic north");
   closeTo(framingBounds.min.x, 1.95, "Vertical member uses the shared centered X axis");
   closeTo(framingBounds.min.y, 1, "Vertical member starts at its authored z0");
-  closeTo(framingBounds.max.y, 5.2, "Raked plate preserves its authored high-end z1");
+  closeTo(framingBounds.max.y, 5.1, "Raked plate preserves its authored high-end z1");
   disposeGroup(framing);
 
   checkMemberVerticalExtents();

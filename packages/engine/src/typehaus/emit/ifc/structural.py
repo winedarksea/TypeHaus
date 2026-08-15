@@ -20,7 +20,7 @@ from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.emit.ifc.roof import member_class, member_representation
 from typehaus.model.ids import derive_child_guid, derive_guid
-from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.model import ResolvedModel
 
@@ -202,7 +202,11 @@ def _emit_floor(f: Any, body: Any, floor: Any, storeys: dict[str, Any],
     for member in sorted(floor.members, key=lambda item: item.child_key):
         if (member.p0[0] - member.p1[0]) ** 2 + (member.p0[1] - member.p1[1]) ** 2 < 1e-12:
             continue  # a zero-length record has no sweepable footprint
-        half = cross_section(member.profile).width_m / 2.0
+        # The prism below is z1-z0 tall, so its plan half-width is the face that is not
+        # standing up — see ``plan_cross_section_m``. Floor members are all on edge today,
+        # but reading the rule keeps this from drifting if a flat one ever lands here.
+        half = plan_cross_section_m(cross_section(member.profile),
+                                    member.z1_m - member.z0_m) / 2.0
         profile = rect_between(member.p0, member.p1, -half, half)
         beam = ll.create_entity(f, "IfcBeam", name=f"{floor.tag}/{member.child_key}")
         beam.GlobalId = derive_child_guid(project_uuid, floor.uid, member.child_key)

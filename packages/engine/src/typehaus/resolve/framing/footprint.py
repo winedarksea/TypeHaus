@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import math
 
-from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 from typehaus.resolve.model import FramedMember, Ring
 
 
@@ -61,8 +61,9 @@ def member_footprint(member: FramedMember) -> tuple[Ring, float, float]:
                 (x0 + hw, y0 + hd), (x0 - hw, y0 + hd)]
         return ring, z_lo, z_hi
 
-    # Horizontal/sloped member: thickness-wide band along p0->p1.
-    hw = cs.width_m / 2.0
+    # Horizontal/sloped member: a band of its plan-visible cross dimension along p0->p1 —
+    # the wide face for a flat-laid plate/sill/block, the thin one for a member on edge.
+    hw = plan_cross_section_m(cs, member.z1_m - member.z0_m) / 2.0
     nx, ny = -dy / run * hw, dx / run * hw  # perpendicular half-width offset
     ring = [(x0 + nx, y0 + ny), (x1 + nx, y1 + ny),
             (x1 - nx, y1 - ny), (x0 - nx, y0 - ny)]

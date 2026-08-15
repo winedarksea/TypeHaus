@@ -761,7 +761,13 @@ def _emit_one_member(b, member, direction, station, crop) -> None:
     u = u0 + t * (u1 - u0)
     z0 = z0_a + t * (z0_b - z0_a)
     z1 = z1_a + t * (z1_b - z1_a)
-    half = 0.75 * M_PER_IN
+    # The cut is across the member's run, so it shows the section face the plan shows: the
+    # wide `depth_m` for a flat-laid plate/sill/block, the thin `width_m` for one on edge.
+    # A flat 1.5" was drawn here regardless of profile, which was right only by accident for
+    # the on-edge 2x sticks and drew every plate a quarter of its real width.
+    from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
+
+    half = plan_cross_section_m(cross_section(member.profile), z1_a - z0_a) / 2.0
     rect = _clip_rect(u - half, u + half, min(z0, z1), max(z0, z1), crop)
     if rect is not None:
         b.extend(_member_rect_nodes(rect, member))

@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 from typehaus.resolve import resolve
-from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 from typehaus.resolve.geometry_members import MINIMUM_EXTENT_M, member_box, member_uid
 from typehaus.source import load_plan
 from _helpers import HOUSES
@@ -131,7 +131,13 @@ def test_level_member_length_matches_the_record(model) -> None:
 
 
 def test_box_width_matches_the_parsed_section_for_level_members(model) -> None:
-    """Width is measured across the run — the IFC sweep's `width_m`."""
+    """Width is measured across the run — the IFC sweep's `width_m`.
+
+    *Which* section face lands across the run is the member's own business: one lying flat
+    shows the wide `depth_m` there and stands only `width_m` tall. This used to assert
+    `width_m` for every level member, which pinned the bug — a plate came out a 1.5" square
+    rod running along the wall instead of a 1.5" x 5.5" board lying on it.
+    """
     for member in _boxable_members(model):
         if member.p0 == member.p1:
             continue
@@ -140,8 +146,36 @@ def test_box_width_matches_the_parsed_section_for_level_members(model) -> None:
         run = math.hypot(bx - ax, by - ay)
         nx, ny = -(by - ay) / run, (bx - ax) / run
         across = [c[0] * nx + c[1] * ny for c in box.corners_bottom]
-        width = max(cross_section(member.profile).width_m, MINIMUM_EXTENT_M)
+        section = cross_section(member.profile)
+        width = max(plan_cross_section_m(section, member.z1_m - member.z0_m),
+                    MINIMUM_EXTENT_M)
         assert max(across) - min(across) == pytest.approx(width, abs=TOL), member.child_key
+
+
+def test_a_flat_laid_member_lies_on_its_wide_face(model) -> None:
+    """The regression the width test above cannot see on its own.
+
+    Every plate, rough sill and blocking course in both houses must come out `depth_m` across
+    the run and `width_m` tall — a board lying down, not a stick. Asserted over the real
+    houses rather than a fixture because the failure mode was a rule that only looked right
+    for the categories somebody remembered to list.
+    """
+    flat = 0
+    for member in _boxable_members(model):
+        if member.p0 == member.p1:
+            continue
+        section = cross_section(member.profile)
+        if abs(member.z1_m - member.z0_m - section.width_m) > TOL:
+            continue  # standing on edge, or a tapered band with no constant section
+        flat += 1
+        box = member_box(member)
+        (ax, ay), (bx, by) = member.p0, member.p1
+        run = math.hypot(bx - ax, by - ay)
+        nx, ny = -(by - ay) / run, (bx - ax) / run
+        across = [c[0] * nx + c[1] * ny for c in box.corners_bottom]
+        assert max(across) - min(across) == pytest.approx(
+            max(section.depth_m, MINIMUM_EXTENT_M), abs=TOL), member.child_key
+    assert flat > 0, "a house with no flat-laid member has no plates — the fixture is wrong"
 
 
 # --- the producer ---------------------------------------------------------------------
