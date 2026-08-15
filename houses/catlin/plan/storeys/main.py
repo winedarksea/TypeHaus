@@ -219,13 +219,30 @@ NODES = [
     Node(uid="CMN009AAAA", tag="N-M-W1", position=pt(ft(0), ft(26, 4))),
     # W-M-HS1..4 (hall/bath2-laundry-study partition) pushed 6" north to y=22'-2"
     # (2026-07-29): the hall was a flat 4'-2", more than R311.7's minimum, and BATH2
-    # needed the depth to separate the shower from the tub. Leaves the hall at 3'-8",
-    # still 8" clear of the 3' minimum.
-    Node(uid="CMN010AAAA", tag="N-M-W2", position=pt(ft(0), ft(22, 2))),
-    Node(uid="CMN011AAAA", tag="N-M-W3", position=pt(ft(0), ft(13, 4))),
+    # needed the depth to separate the shower from the tub.
+    #
+    # Both of the west wall's interior tees then moved again on 2026-08-15, for the west
+    # facade rather than for a room: W-M-W4 and W-M-W3 lay their studs out from N-M-W3 and
+    # N-M-W2, so those two nodes ARE the phase of the main storey's west stud grid, and at
+    # 13'-4" and 22'-2" that grid was 4" and 2" out of step with the second storey's (whose
+    # own tees, N-S-W3/W2, sit at 9'-0" and 22'-4" — both 12" mod 16"). No west window
+    # could column between the storeys except the two 14" units at 31'-4", which share a
+    # host start node at 33'-4". 13'-0" and 22'-4" are 12" mod 16" too, and four columns
+    # fall out (see WIN-M-BED-W1/W2/BATH2 below). Every node on each line moves together
+    # or the partition kinks — N-M-D3/N-M-C1 on the first, N-M-BA2/D1/E3/C2 on the second
+    # — and so do the boxes and the hydrant riser that hang on them (plan/electrical.py,
+    # plan/lighting.py, plan/mep.py), which no `haus check` catches but
+    # test_wall_mounted_devices_resolve_against_a_wall_face does.
+    #
+    # What it costs the rooms: RM-M-BED gives up 4" of depth, RM-M-BATH2 gains 4" at its
+    # south wall and 2" more at its north (the same direction the 2026-07-29 move went,
+    # for the same reason), and the hall goes 3'-8" -> 3'-6", still 6" clear of R311.6.
+    # N-M-W2 also lands on 22'-4" exactly under N-S-W2, which it never was before.
+    Node(uid="CMN010AAAA", tag="N-M-W2", position=pt(ft(0), ft(22, 4))),
+    Node(uid="CMN011AAAA", tag="N-M-W3", position=pt(ft(0), ft(13))),
     # Center bearing line ties
-    Node(uid="CMN012AAAA", tag="N-M-C1", position=pt(ft(18), ft(13, 4))),
-    Node(uid="CMN013AAAA", tag="N-M-C2", position=pt(ft(18), ft(22, 2))),
+    Node(uid="CMN012AAAA", tag="N-M-C1", position=pt(ft(18), ft(13))),
+    Node(uid="CMN013AAAA", tag="N-M-C2", position=pt(ft(18), ft(22, 4))),
     # N-M-C3 came south from y=26'-4" to the stair wall's line on 2026-07-28. It used to be
     # the W-M-C4B/W-M-C5 split; with W-M-C4/C4B gone it is BM-M-HALL's north bearing and
     # W-M-C5's south end. It stays on y=25'-10" now that W-M-STRS no longer reaches it —
@@ -249,8 +266,8 @@ NODES = [
     # W-M-BAE shifts 2' east (2026-07-28); the mudroom door remains at its existing
     # 6" tee clearance.
     Node(uid="CMN016AAAA", tag="N-M-BA1", position=pt(ft(6), ft(26, 4))),
-    Node(uid="CMN017AAAA", tag="N-M-BA2", position=pt(ft(6), ft(22, 2))),
-    Node(uid="CMN018AAAA", tag="N-M-D1", position=pt(ft(8), ft(22, 2))),
+    Node(uid="CMN017AAAA", tag="N-M-BA2", position=pt(ft(6), ft(22, 4))),
+    Node(uid="CMN018AAAA", tag="N-M-D1", position=pt(ft(8), ft(22, 4))),
     # The closet/laundry line moved north 8" — y 17'-4" -> 18'-0" — on 2026-08-03, taking
     # W-M-CLN and W-M-CLN2 (and with them the north edge of RM-M-CLOSET) with it. All three
     # nodes below move together or the line kinks; N-M-D2 and N-M-E4 are only split points on
@@ -261,9 +278,9 @@ NODES = [
     # y=18'-0" is also where W-B-CW2 runs below — the basement's 12" cast wall is on that same
     # axis, so the partition now lands over solid concrete rather than mid-span of the deck.
     Node(uid="CMN019AAAA", tag="N-M-D2", position=pt(ft(8), ft(18))),
-    Node(uid="CMN020AAAA", tag="N-M-D3", position=pt(ft(8), ft(13, 4))),
+    Node(uid="CMN020AAAA", tag="N-M-D3", position=pt(ft(8), ft(13))),
     Node(uid="CMN021AAAA", tag="N-M-E2", position=pt(ft(13, 4), ft(18))),
-    Node(uid="CMN022AAAA", tag="N-M-E3", position=pt(ft(13, 4), ft(22, 2))),
+    Node(uid="CMN022AAAA", tag="N-M-E3", position=pt(ft(13, 4), ft(22, 4))),
     Node(uid="CMN023AAAA", tag="N-M-E4", position=pt(ft(18), ft(18))),
     # RM-M-MECH: the framed MEP shaft closet in the house's NW corner (2026-07-28),
     # replacing FURN-M-MUD-CLOSET-N. 6' wide (west wall to 6" shy of D-M-ENTRY's far
@@ -549,12 +566,27 @@ OPENINGS = [
     # Sills raised 2'-0" -> 3'-0" (2026-07-30 facade pass): the west facade's 27" units
     # all sit on the 3'-0" sill (with WIN-S-SUITE1/2 above) and its 14" units on 4'-0",
     # so every main/second head on that face lands on one 6'-0" line.
+    #
+    # Both moved 4" south on 2026-08-15, following W-M-W4's stud grid down with N-M-W3
+    # (see NODES). The offsets are authored off N-M-SW at the *far* end of the wall, so
+    # they do not move with the grid and had to be rewritten by hand.
+    #
+    # W1 lands at 5'-0", under WIN-S-PLANT3 — the west face's first column. W2 does not
+    # column, and cannot: WIN-S-SUITE1 above it lives on W-S-W3, which runs 22'-4" down to
+    # 9'-0", while this wall stops at 13'-0", and a shared stud line has to be 12" mod 16"
+    # on both. That leaves exactly 124" and 140" in the overlap, and each needs ~16 1/2"
+    # of clear wall for its jamb pack where only 16" is on offer: 140" was built and its
+    # king stud came out sharing 6.8 in² — 83% of a 2x6 — with W-M-W3's end stud
+    # (structural.member_interference, measured with the junction clear off). 124" puts the
+    # same clash on the second storey instead. Three columns is the answer, per the plan
+    # that opened this: 5'-0" (here), 19'-8" (WIN-M-BATH2) and 31'-4" (WIN-M-MUD), all on
+    # the one 6'-0" head line, up from the single column the face had before.
     Window(uid="CMX301AAAA", tag="WIN-M-BED-W1", host="W-M-W4",
-           type_ref="WT-2736", position=from_node("N-M-SW", ft(4, 2.5)),
-           sill_height=ft(3)),
+           type_ref="WT-2736", position=from_node("N-M-SW", ft(3, 10.5)),
+           sill_height=ft(3)),                                                # y 5'-0"
     Window(uid="CMX302AAAA", tag="WIN-M-BED-W2", host="W-M-W4",
-           type_ref="WT-2736", position=from_node("N-M-SW", ft(9, 6.5)),
-           sill_height=ft(3)),
+           type_ref="WT-2736", position=from_node("N-M-SW", ft(9, 2.5)),
+           sill_height=ft(3)),                                               # y 10'-4"
     # South pair: centres 4'-0" and 9'-4" are STUD LINES on W-M-S1's grid (one stud broken
     # each), stacking exactly under WIN-S-PLANT1/2 above — main and second share the wall
     # start, so the columns line up to the inch. Sill 2'-8" puts the heads at 6'-8" with
@@ -577,9 +609,19 @@ OPENINGS = [
     # Offset bumped 4'-5" -> 4'-11" (2026-07-29) when N-M-W2 pushed 6" north for the
     # hall/bath2 wall move: W-M-W3's stud grid anchors off N-M-W2, so the window has
     # to move with it to stay on the same bay it was already sitting in.
+    #
+    # Retyped WT-1424-T -> WT-2736-T and moved 19'-8 1/2" -> 19'-8" on 2026-08-15, for the
+    # west face's third column (WIN-S-SUITE2 is directly above it). A 14" RO centres on a
+    # bay centre and a 27" RO on a stud line — 8" apart on the same grid — so a 14" unit
+    # can never column with a 27" one, and SUITE2 is 27". The wider unit is a code gain
+    # either way: code.R303_3_local_exhaust's window alternative wants 3 sf glazed / 1.5 sf
+    # openable and a 27x36 casement delivers 6.75 / 3.375 where the 14x24 delivered
+    # 2.33 / 1.17. The sill drops 4'-0" -> 3'-0" onto the west face's 27" sill line, which
+    # keeps the head on the shared 6'-0" line; `-T` stays because R308.4.5 tempers any
+    # sill under 60" in a bathroom regardless.
     Window(uid="CMX305AAAA", tag="WIN-M-BATH2", host="W-M-W3",
-           type_ref="WT-1424-T", position=from_node("N-M-W3", ft(4, 11)),
-           sill_height=ft(4)),
+           type_ref="WT-2736-T", position=from_node("N-M-W3", ft(5, 6.5)),
+           sill_height=ft(3)),                                               # y 19'-8"
     # Picture unit centred y=31'-4", the bench/aisle centreline (see FURN-M-MUD-BENCH in
     # plan/placeables.py). Re-authored off N-M-MECH1 (2026-08-02): the offset was written
     # as from_node("N-M-NW", 4'-1") when N-M-NW was still this wall's start, but the

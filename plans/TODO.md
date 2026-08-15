@@ -239,9 +239,37 @@ the future.
 - EQ-M-HP3-STAIR should be on the north wall of the stairs (on the northwest corner, wall W-M-N2 I believe), not the west wall. It also should have a register of some kind (passive, not hooked to the minisplit, just next to it) to allow air to flow from next to it into MUDROOM through wall W-M-STRW
 - We are thinking of switching W-SG-ARCH to be a column and beams like PT-SG-COL and BM-SG-BKE, then replacing the masonry railing right above it with a metal railing more like RL-SG-BALCONY
 - Add a packed gravel bed under the retaining wall blocks (W-RG-*)
-- Improve the symmetry of the windows on the east and west side (especially the west side) so they look better from outside, where possible, while still being useful for their matching interior rooms
+- ~~Improve the symmetry of the windows on the east and west side (especially the west
+  side) so they look better from outside, where possible, while still being useful for
+  their matching interior rooms~~ **done 2026-08-15.** The west went from one two-storey
+  column to three — 5'-0" / 19'-8" / 31'-4", on the one 6'-0" head line. The east second
+  storey went from an even 9'-0" beat sitting 10" north of centre to 4'-0" / 13'-0" /
+  23'-0" / 32'-0", exactly mirrored about the house centreline in station, width and head.
+  Both were **node** moves, not window moves: a wall lays its studs out from its own start
+  node, so an E/W tee off the 16" module puts that segment's whole grid out of phase and no
+  window on it can ever line up with one on a segment in a different phase. N-M-W3 13'-4" ->
+  13'-0" and N-M-W2 22'-2" -> 22'-4" put the main storey's west grid in phase with the
+  second's; N-S-E2 18'-0" -> 17'-8" and N-S-E3 27'-0" -> 26'-8" made the east mirror
+  stations reachable at all. Every node on a partition line moves together, and so do the
+  boxes and pipes hanging on it — eight devices, a WC and the hydrant riser were re-snapped,
+  which `haus check` does not catch but
+  `test_catlin_contract_m3.py::test_wall_mounted_devices_resolve_against_a_wall_face` does.
+  Rooms paid 4" here and there (RM-M-BED, RM-S-BED1 shrank; RM-M-BATH2, RM-S-BED3 grew) and
+  WIN-M-BATH2 was retyped 14" -> 27" because a 14" RO centres on a bay centre and a 27" one
+  on a stud line, 8" apart, so the two can never column.
+  Left alone on purpose: the west's fourth column — WIN-M-BED-W2 / WIN-S-SUITE1 have only
+  two shared stud lines available (10'-4" and 11'-8") and both drive a jamb pack into a
+  tee's stud pack, 83% of a 2x6 at the one that was built, so the pair is left unstacked and
+  pinned unstacked; the east main row's 8'-0"/7'-4" beat (the blank kitchen stretch is the
+  composition, not the hitch); and the attic knee band — WIN-A-E-N could take the column at
+  32'-0" or its own mirror at 32'-8", but both move the band wall that closes FO-A-STAIR's
+  north edge, and `code.R312_1_guard` reported 3'-0" of unguarded well when it was tried.
+  Pinned by `test_the_west_facade_stacks_three_two_storey_window_columns` and
+  `test_the_east_second_storey_window_row_mirrors_about_the_house_centreline`, and visible
+  via the new `haus render --view elevation`.
 - Extend the outdoor curtain rods to cover all three exposed side of the porch (possibly as a single continuous curtain, if that is possible, or else as 4 single bay panels)
 - Permit drawings
+- Garage ICF stem wall and framing should align on the exterior edge (drip flashing probably too). Right now the framing is aligned inwards, leaving a 'shelf' that will likely pool rainwater. Any adjustment will need to carefully consider both ICF form size and consistent stud spacing.
 
 ### Plumbing
 

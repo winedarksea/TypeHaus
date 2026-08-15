@@ -54,9 +54,13 @@ def test_the_sauna_liner_bills_net_of_the_shower_splash(catlin_model, bom):
     assert float(basswood["net_area_sqft"]) == pytest.approx(gross - splash, abs=0.05)
     assert basswood["species"] == "basswood"
     assert basswood["also_in_envelope_layers"] is True
-    # 5/4 stock: 1.25 bf per ordered square foot.
+    # 5/4 stock: 1.25 bf per ordered square foot. The tolerance is 0.06, not 0.05: the
+    # takeoff rounds board_feet to one decimal, so half a rounding step is 0.05 exactly and
+    # a tolerance of 0.05 fails on float slop whenever the true value lands on the step —
+    # which it did on 2026-08-15, when the sauna's north partition stopped being extended
+    # to the deck and the liner area moved onto the boundary.
     assert float(basswood["board_feet"]) == pytest.approx(
-        float(basswood["order_area_sqft"]) * 1.25, abs=0.05)
+        float(basswood["order_area_sqft"]) * 1.25, abs=0.06)
 
     tile = next(row for row in rows if row["kind"] == "override")
     assert tile["material"] == "tile"

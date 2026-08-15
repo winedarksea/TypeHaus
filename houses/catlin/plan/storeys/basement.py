@@ -210,6 +210,13 @@ WALLS = [
     Wall(uid="CBW117AAAA", tag="W-B-SA-W", start_node="N-B-S1",
          end_node="N-B-SA1", assembly="SAUNA_2X4", top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
+    # This one topped out at the deck rather than at its authored 7'-6" until 2026-08-15,
+    # and not on purpose: `resolve/platform.py` reads a wall as being on the same wall line
+    # as one above it within `max(thickness, 1mm)`, and W-M-BDN1 at y=13'-4" was 6" from
+    # this axis — inside the SAUNA_2X4 wall's own depth. The west facade pass moved that
+    # partition to 13'-0" and the false read went with it, so the sauna's two framed walls
+    # now stop level with each other, which is what the liner height means. It bills ~13.7
+    # sf less basswood (test_wood_surfaces).
     Wall(uid="CBW118AAAA", tag="W-B-SA-N", start_node="N-B-SA1",
          end_node="N-B-C1", assembly="SAUNA_2X4", top=ft(7, 6),
          interior_room="RM-B-SAUNA"),

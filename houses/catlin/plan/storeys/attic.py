@@ -53,6 +53,10 @@ NODES = [
     Node(uid="CAN007AAAA", tag="N-A-N1", position=pt(ft(18), ft(36))),
     Node(uid="CAN008AAAA", tag="N-A-NW", position=pt(ft(0), ft(36))),
     # Den north wall, y=5'-7" (source 5.611); band wall, y=9'-0" (source 9.228).
+    # 9'-0" is 12" out of phase with the 16" module, which is what costs the east knee
+    # pair its mirror (see WIN-A-E-N) — and it stays anyway: W-A-SN's south face is what
+    # closes FO-A-STAIR's north edge, so moving this line to 9'-4" opens a 3'-0" run of
+    # unguarded well (code.R312_1_guard, caught on 2026-08-15 when it was tried).
     Node(uid="CAN009AAAA", tag="N-A-C1", position=pt(ft(18), ft(5, 7))),
     Node(uid="CAN012AAAA", tag="N-A-C2", position=pt(ft(18), ft(9))),
     Node(uid="CAN010AAAA", tag="N-A-D1", position=pt(ft(10), ft(5, 7))),
@@ -258,6 +262,16 @@ OPENINGS = [
     # West lands 3'-4" in from both corners, exactly symmetric about y=18'. East is 4"
     # off that at its north end: W-A-E2's grid starts at N-A-E1 (y=9'), not at the corner,
     # so 32'-8" is not a bay centre there and 32'-4" is the nearest one.
+    #
+    # 2026-08-15: the knee band was left exactly as it stands, and both of its alternatives
+    # were priced. WIN-A-E-N used to column with WIN-S-BED3 at 32'-4"; BED3 moved to 32'-0"
+    # in the east mirror pass, and a 14" RO can only reach 32'-0" from a bay centre if
+    # N-A-E1 moves to 8'-8", while the pair's own mirror at 32'-8" needs it at 9'-4".
+    # Both move N-A-C2 with it (W-A-SN would kink otherwise), and W-A-SN's south face is
+    # what closes FO-A-STAIR's north edge — 9'-4" was built and reverted the same day
+    # because code.R312_1_guard then reported 3'-0" of unguarded well. The knee band reads
+    # as its own row across 5'-6" of blank wall, between a 14" unit and a 27" one, so
+    # neither alignment was worth reworking the stair well for.
     Window(uid="CAX308AAAA", tag="WIN-A-W-S", host="W-A-W1", type_ref="WT-1424",
            position=from_node("N-A-NW", ft(32, 1)), sill_height=ft(2, 6)),   # y 3'-4"
     Window(uid="CAX306AAAA", tag="WIN-A-W-N", host="W-A-W1", type_ref="WT-1424",

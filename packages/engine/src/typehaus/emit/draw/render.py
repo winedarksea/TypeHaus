@@ -75,6 +75,14 @@ def render_views(
 
         written.append(write_raster(build_center_section(model), out_dir / f"section_house.{fmt}",
                                     title="section · house center"))
+    elif view == "elevation":
+        from typehaus.emit.draw.elevation import build_elevation
+        from typehaus.emit.draw.pdf_writer import write_raster
+
+        for facing in ("north", "south", "east", "west"):
+            written.append(write_raster(build_elevation(model, facing),
+                                        out_dir / f"elev_{facing}.{fmt}",
+                                        title=f"elevation · {facing}"))
     elif view == "details":
         from typehaus.emit.draw.details import (
             build_authored_detail_scene,
@@ -101,5 +109,6 @@ def render_views(
             written.append(write_raster(scene, out_dir / f"detail_{slug}.{fmt}",
                                         title=f"detail · {derived.key}", dpi=300))
     else:
-        raise ValueError(f"unknown view {view!r} (plan|site|section|3d|details)")
+        raise ValueError(
+            f"unknown view {view!r} (plan|site|section|elevation|3d|details)")
     return written

@@ -351,7 +351,7 @@ MAIN_LIGHTING = [
     # applies to the two studies that do (RM-S-STUDY2, RM-A-STUDY). This one gets a down
     # spot on the centre bearing wall for the desk, over a general can.
     ElectricalDevice(uid="QTM000HAAA", tag="ED-M-STUDY-SPOT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(15, 10.5), ft(21, 9.625)), type_ref="ED-T-LT-SCONCE-SPOT",
+                     position=pt(ft(15, 10.5), ft(21, 11.625)), type_ref="ED-T-LT-SCONCE-SPOT",
                      circuit="CKT-LT-MAIN", room="RM-M-STUDY", rotation=deg(0),
                      controlled_by=("ED-M-STUDY-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
@@ -365,7 +365,7 @@ MAIN_LIGHTING = [
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # y nudged +6" (2026-07-29), matching FX-M-BATH1-LAV's move for the BATH2 wall push.
     ElectricalDevice(uid="QTM000KAAA", tag="ED-M-BATH1-MIRROR", kind=DeviceKind.LIGHT,
-                     position=pt(m(1.36284), m(6.84082)), type_ref="ED-T-LT-MIRROR",
+                     position=pt(m(1.36284), m(6.89162)), type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-MAIN", room="RM-M-BATH1", rotation=deg(-180),
                      controlled_by=("ED-M-BATH1-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
@@ -471,7 +471,7 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     ElectricalDevice(uid="QTM0014AAA", tag="ED-M-HALL-SW2", kind=DeviceKind.SWITCH,
-                     position=pt(ft(17, 7), ft(22, 5.375)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(17, 7), ft(22, 7.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 

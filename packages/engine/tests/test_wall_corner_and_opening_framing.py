@@ -295,13 +295,17 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
         [o.tag for o in concrete]
     # The original 5 became 15 as the 14" family took over the places where a bigger unit
     # never fit, then 13 when the 2026-08-01 gable pass retired the south gable's corner
-    # pair (WIN-A-S1/S4). What is left on 14": the garage pair (WIN-G-N1/S1), the two
+    # pair (WIN-A-S1/S4), then 12 when the 2026-08-15 west facade pass retyped WIN-M-BATH2
+    # up to a 27" WT-2736-T. That one is the family's limit rather than a counterexample:
+    # a 14" RO centres on a *bay centre* and a 27" one on a *stud line*, 8" apart, so a 14"
+    # unit can never stack in a column with a 27" one — and BATH2 had to join a column.
+    # What is left on 14": the garage pair (WIN-G-N1/S1), the two
     # surviving gable flankers (WIN-A-S2/S3, now WT-1448 — 48" tall but still a 14" RO, so
     # still headerless and still counted here), and the four 5' knee-wall windows
     # (WIN-A-W-S/W-N, WIN-A-E-S/E-N). Every one of them still passes the per-window checks
     # below — which is the whole reason the facade work could use this size so freely, and
     # why growing the flankers 24" taller cost the framing nothing.
-    assert len(framed) == 13, [o.tag for o in framed]
+    assert len(framed) == 12, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)

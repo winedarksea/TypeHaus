@@ -70,11 +70,17 @@ NODES = [
     Node(uid="CSN001AAAA", tag="N-S-SW", position=pt(ft(0), ft(0))),
     Node(uid="CSN002AAAA", tag="N-S-S1", position=pt(ft(18), ft(0))),
     Node(uid="CSN003AAAA", tag="N-S-SE", position=pt(ft(36), ft(0))),
-    # The three east bedrooms are equal 9'-0" bays (source 9.035 / 17.991 / 26.947),
-    # replacing the 8'-0" bays the port started with.
+    # The three east bedrooms started as equal 9'-0" bays (source 9.035 / 17.991 /
+    # 26.947), replacing the 8'-0" bays the port started with. N-S-E2/E3 then came 4"
+    # south — 18'-0" -> 17'-8", 27'-0" -> 26'-8" — in the 2026-08-15 east facade pass, so
+    # the bays now read 8'-8" / 9'-0" / 9'-4". A wall lays its studs from its own start
+    # node, so those two nodes ARE the phase of W-S-E3's and W-S-E4's grids: at 18'-0" and
+    # 27'-0" the four east windows could not be mirrored about y=18'-0" on stud lines at
+    # all (see the WINDOWS block). BED1 shrinks 4", which its 0.05 sf R303.1 margin wants;
+    # BED3 grows 4", which it can afford on two windows.
     Node(uid="CSN004AAAA", tag="N-S-E1", position=pt(ft(36), ft(9))),
-    Node(uid="CSN005AAAA", tag="N-S-E2", position=pt(ft(36), ft(18))),
-    Node(uid="CSN006AAAA", tag="N-S-E3", position=pt(ft(36), ft(27))),
+    Node(uid="CSN005AAAA", tag="N-S-E2", position=pt(ft(36), ft(17, 8))),
+    Node(uid="CSN006AAAA", tag="N-S-E3", position=pt(ft(36), ft(26, 8))),
     Node(uid="CSN008AAAA", tag="N-S-NE", position=pt(ft(36), ft(36))),
     Node(uid="CSN009AAAA", tag="N-S-N1", position=pt(ft(18), ft(36))),
     Node(uid="CSN010AAAA", tag="N-S-N2", position=pt(ft(10), ft(36))),
@@ -94,8 +100,8 @@ NODES = [
     Node(uid="CSN030AAAA", tag="N-S-C3D", position=pt(ft(18), ft(30, 10))),
     # East bedroom block — the hall/bedroom partition is x=21'-11" (source 21.894/21.898)
     Node(uid="CSN018AAAA", tag="N-S-B1", position=pt(ft(21, 11), ft(9))),
-    Node(uid="CSN019AAAA", tag="N-S-B2", position=pt(ft(21, 11), ft(18))),
-    Node(uid="CSN020AAAA", tag="N-S-B3", position=pt(ft(21, 11), ft(27))),
+    Node(uid="CSN019AAAA", tag="N-S-B2", position=pt(ft(21, 11), ft(17, 8))),
+    Node(uid="CSN020AAAA", tag="N-S-B3", position=pt(ft(21, 11), ft(26, 8))),
     Node(uid="CSN021AAAA", tag="N-S-B4", position=pt(ft(21, 11), ft(30, 10))),
     Node(uid="CSN022AAAA", tag="N-S-B5", position=pt(ft(21, 11), ft(36))),
     # West block: suite / walk-in / suite bath partition at x=9'-7 1/2" (source 9.616)
@@ -334,11 +340,26 @@ OPENINGS = [
     # Windows — east wall, on the source's four 2'-8" openings (we build 27", the bearing cap).
     # WIN-S-STUDY3 departs from its source position (y 3'-10") on purpose (2026-07-30
     # facade pass): at y 4'-0" the row read 10'-4"/9'-0"/9'-0" and its 2'-6" sill broke
-    # the storey's 3'-0" line. At y 5'-4" (a stud line) the four windows run an exact
-    # 9'-0" rhythm and one sill line — the facade now favors within-storey rhythm over
-    # between-storey stacking on this side (LIV-E1 below no longer stacks under it).
+    # the storey's 3'-0" line. It went to 5'-4" for an exact 9'-0" rhythm and one sill line
+    # — the facade favors within-storey rhythm over between-storey stacking on this side.
+    #
+    # 2026-08-15: that even beat was *off centre*. 5'-4" / 14'-4" / 23'-4" / 32'-4" leaves
+    # 5'-4" of wall at the south end against 3'-8" at the north, and a 20" asymmetry on a
+    # 36'-0" face reads as a mistake where the 9'-0" beat itself reads as nothing at all.
+    # The row is now 4'-0" / 13'-0" / 23'-0" / 32'-0" — 4+32 = 13+23 = 36, exactly mirrored
+    # about the house centreline, rhythm 9'-0" / 10'-0" / 9'-0". The widths already mirror
+    # (27 / 30 / 30 / 27) and so do the heads (6'-0" / 7'-0" / 7'-0" / 6'-0") over the one
+    # 3'-0" sill, so nothing was retyped for it.
+    #
+    # Getting there was two node moves, not four window moves: a segment lays its studs
+    # from its own start node, so N-S-E2 and N-S-E3 fix the phase of W-S-E3's and W-S-E4's
+    # grids. At 18'-0" and 27'-0" the mirror stations were not stud lines on those grids at
+    # any station at all; at 17'-8" and 26'-8" they are, and BED2/BED3's authored offsets
+    # never changed — their nodes carried them. See the NODES block for what the bedrooms
+    # paid. As a bonus WIN-S-STUDY3 at 4'-0" lands over WIN-M-LIV-E1, the east face's first
+    # two-storey column; WIN-A-E-N at 32'-4" is the one alignment given up (see attic.py).
     Window(uid="CSX314AAAA", tag="WIN-S-STUDY3", host="W-S-E1", type_ref="WT-2736-T",
-           position=from_node("N-S-SE", ft(4, 2.5)), sill_height=ft(3)),      # y 5'-4"
+           position=from_node("N-S-SE", ft(2, 10.5)), sill_height=ft(3)),     # y 4'-0"
     # BED1/BED2 carry the 30" unit, not the east wall's 27" bearing size (2026-08-01, by
     # decision). Both rooms are 124.3 sf with one window each, so R303.1 wants 9.95 sf of
     # glazing and 4.97 sf openable and a 27x36 delivers 6.75/3.38 — a third short. The east
@@ -353,17 +374,28 @@ OPENINGS = [
     # answer then is a taller unit, not a wider one (the 9'-0" plate takes a 54" leaf at this
     # sill).
     #
-    # The sill stays on the east face's 3'-0" line — that line and the 9'-0" beat are what
-    # this facade is organized by, per CLAUDE.md, and the 48" height puts these two heads at
-    # 7'-0" where WIN-S-STUDY3 and WIN-S-BED3 stay at 6'-0". BED3 needs nothing: it has a
-    # second window and reads 14.2 sf.
-    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E2", type_ref="WT-3048",
-           position=from_node("N-S-E1", ft(4, 1)), sill_height=ft(3)),      # y 14'-4"
+    # The sill stays on the east face's 3'-0" line — that line and the row's mirror are
+    # what this facade is organized by, per CLAUDE.md, and the 48" height puts these two
+    # heads at 7'-0" where WIN-S-STUDY3 and WIN-S-BED3 stay at 6'-0". BED3 needs nothing:
+    # it has a second window and reads 14.2 sf, which is also what let it absorb the 4" of
+    # depth the 2026-08-15 node moves handed it. BED1 lost 4" in the same pass, on purpose:
+    # 0.05 sf is the whole margin and it only ever had room to go the other way.
+    # WT-3048-T, not the bare WT-3048 BED2 carries: at y 13'-0" the glass comes inside
+    # 60" of ST-S2A, R308.4.5's stair band (code.R308_4_safety_glazing caught it on the
+    # move). A tempered twin is a retype and no facade rule sees it — the mirror with
+    # BED2 is width, head and station, all of which are unchanged.
+    Window(uid="CSX301AAAA", tag="WIN-S-BED1", host="W-S-E2", type_ref="WT-3048-T",
+           position=from_node("N-S-E1", ft(2, 9)), sill_height=ft(3)),      # y 13'-0"
     Window(uid="CSX302AAAA", tag="WIN-S-BED2", host="W-S-E3", type_ref="WT-3048",
-           position=from_node("N-S-E2", ft(4, 1)), sill_height=ft(3)),      # y 23'-4"
+           position=from_node("N-S-E2", ft(4, 1)), sill_height=ft(3)),      # y 23'-0"
     Window(uid="CSX303AAAA", tag="WIN-S-BED3", host="W-S-E4", type_ref="WT-2736",
-           position=from_node("N-S-E3", ft(4, 2.5)), sill_height=ft(3)),      # y 32'-4"
-    # West suite (bearing wall) — source openings at y 12'-7" and 19'-4"
+           position=from_node("N-S-E3", ft(4, 2.5)), sill_height=ft(3)),    # y 32'-0"
+    # West suite (bearing wall) — source openings at y 12'-7" and 19'-4". SUITE2 became a
+    # column on 2026-08-15 without moving at all: N-M-W2 came *up* to 22'-4" instead,
+    # putting W-M-W3's stud grid in phase with this wall's so WIN-M-BATH2 could reach
+    # 19'-8" from below (see main.py). SUITE1 stays at 13'-0" and stays uncolumned — the
+    # two candidate shared stud lines at 10'-4" and 11'-8" both put a jamb pack into a
+    # tee's stud pack, whichever storey takes it; see WIN-M-BED-W2 for the measurement.
     Window(uid="CSX304AAAA", tag="WIN-S-SUITE1", host="W-S-W3", type_ref="WT-2736",
            position=from_node("N-S-W2", ft(8, 2.5)), sill_height=ft(3)),      # y 13'-0"
     Window(uid="CSX305AAAA", tag="WIN-S-SUITE2", host="W-S-W3", type_ref="WT-2736",
@@ -383,7 +415,11 @@ OPENINGS = [
     # The plant room's west window is on W-S-W4, a bearing wall, so it takes the 27" bearing
     # type and not the 30" south-glazing one — "resize windows to fit the grid" (CLAUDE.md).
     # Sill raised 2'-0" -> 3'-0" (2026-07-30 facade pass): the west facade's 27" units
-    # all sit on the 3'-0" sill so every head lands on one 6'-0" line.
+    # all sit on the 3'-0" sill so every head lands on one 6'-0" line. Unmoved by the
+    # 2026-08-15 column pass and the reason the west face's south column is at 5'-0" rather
+    # than anywhere tidier: W-S-W4 starts at N-S-W3 (y=9'-0"), which nothing may move
+    # without dragging N-S-E1 and the whole east row off its own mirror, so WIN-M-BED-W1
+    # came up to meet this window instead.
     Window(uid="CSX308AAAA", tag="WIN-S-PLANT3", host="W-S-W4", type_ref="WT-2736",
            position=from_node("N-S-W3", ft(2, 10.5)), sill_height=ft(3)),     # y 5'-0"
     # Study 2's south pair: centres 27'-4" and 32'-8" are stud lines on W-S-S2's grid and
@@ -410,7 +446,11 @@ OPENINGS = [
     Window(uid="CSX311AAAA", tag="WIN-S-BATH-N", host="W-S-N3", type_ref="WT-1424-T",
            position=from_node("N-S-CH2", ft(0, 8)), sill_height=ft(4)),
     # Re-hosted off N-S-CH3 (2026-07-28): W-S-W1 no longer starts at N-S-NW now that the
-    # chase's south wall splits it there. Same physical window position (y=31'-11").
+    # chase's south wall splits it there. Same physical window position — which is centre
+    # y=31'-4", not the 31'-11" this note claimed until 2026-08-15 (31'-11" is the far edge
+    # of the rough opening). It matters because 31'-4" is the west face's fourth column:
+    # WIN-M-MUD is the same 14" unit at the same centre, both hosts starting at y=33'-4",
+    # and this pair has been the face's only true column since long before the others.
     Window(uid="CSX312AAAA", tag="WIN-S-BATH-W", host="W-S-W1", type_ref="WT-1424-T",
            position=from_node("N-S-CH3", ft(1, 5)), sill_height=ft(4)),
     # Moved 29'-4" -> 28'-0" (2026-07-30 facade pass): WIN-M-KITCH below and WIN-A-N2

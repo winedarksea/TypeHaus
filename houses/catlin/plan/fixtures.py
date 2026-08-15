@@ -104,9 +104,17 @@ BASEMENT_FIXTURES = (
 # Rotation 180 turns its bowl/front north and its back toward W-M-HS1. Its carrier and waste remain tied to
 # the established W-M-BAE wet-wall stack; the bowl's placement is independent of that
 # service-wall connection.
+#
+# y nudged +2" (2026-08-15) exactly as the lavatory below was nudged +6" in 2026-07-29,
+# and for the same reason: N-M-W2/N-M-C2 pushed north again — this time onto the 16"
+# module for the west facade's columns — and the room's south clear face came with them,
+# leaving the bowl 0.015" through the wall. The 2" preserves the authored 1.985" the bowl
+# has always stood off that face. `drain_position` stays at y 22'-7": it is the W-M-BAE
+# stack tie (SP-M-BATH1-WC and PR-*-WC-*, plan/mep.py), it is still well inside the bowl's
+# footprint, and moving it would drag three pipe runs for nothing.
 MAIN_FIXTURES = (
     Fixture(uid="CMQ801AAAA", tag="FX-M-BATH1-WC", type_ref="FX-TOILET-WH", room="RM-M-BATH1",
-            position=pt(m(0.670778), m(7.06806)), rotation=deg(180), wall_ref="W-M-BAE",
+            position=pt(m(0.670778), m(7.11886)), rotation=deg(180), wall_ref="W-M-BAE",
             drain_position=pt(ft(6), ft(22, 7))),
     # y nudged +6" (2026-07-29, with N-M-W2/N-M-C2's north push for the BATH2 wall move):
     # the room's south face moved with it and the lavatory's old y left it poking through

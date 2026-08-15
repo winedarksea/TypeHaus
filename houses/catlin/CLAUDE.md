@@ -104,19 +104,63 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     and takes no pack, so only the glass has to clear.
   - **WT-3048** (the south glazing): the 30" family's committed height (WT-3036's 36")
     would drop the south head off the 6'-8" door-head line the whole face is built on.
-- Facade rules (2026-07-30 pass, gable revised 2026-08-01). Windows line up or they are
-  not there:
+- Facade rules (2026-07-30 pass, gable revised 2026-08-01, E/W revised 2026-08-15).
+  Windows line up or they are not there:
+  - **The residue rule — read this before moving any window.** A wall segment lays its
+    studs out from **its own start node** (`resolve/framing/stud_module.py`), so where a
+    window may legally sit is a property of that node, not of the facade. Two segments are
+    in phase only if their start nodes share the same residue mod 16"; a **column** between
+    storeys needs the two host segments to have the **same** residue, and a **mirror pair**
+    within one storey needs the two residues to **sum to 0** mod 16". A near-miss on a
+    facade is almost always this and never a window's own offset — no amount of moving the
+    *window* fixes an out-of-phase *segment*. It is why the south gable needed N-A-V1 at
+    22'-8" (see **Gables**), and why the 2026-08-15 E/W pass is four node moves and only
+    then some window moves.
+    - **Corollary, the 8" rule.** `structural.window_framing_module` puts a 14" RO on a
+      **bay centre** and a 27"/30" RO on a **stud line** — 8" apart on one grid. So a 14"
+      unit can only column with a 27" unit when the two segments are 8" out of phase, and
+      *never* when they share a residue. Retyping the narrow unit is usually the answer
+      (WIN-M-BATH2, 2026-08-15).
   - **Columns.** The south face stacks four columns clean through main and second
     (x 4'-0", 9'-4", 27'-4", 32'-8" — all four moved 8" inboard on 2026-08-01 when the
     glazing narrowed to WT-3048 and the module's ideal position went with it, both pairs
     shifted the same way so the storeys still stack and the two segments' 8" phase miss
     is unchanged). The attic no longer joins them — see **Gables**.
+    The **west face stacks three** through main and second (y 5'-0", 19'-8", 31'-4"). It
+    had exactly one (31'-4", and only because both its hosts start at y=33'-4") until
+    2026-08-15, when N-M-W3 went 13'-4" -> 13'-0" and N-M-W2 went 22'-2" -> 22'-4" to put
+    the main storey's west stud grid in phase with the second's — the residue rule, applied
+    to the two tees rather than to the six windows. WIN-M-BATH2 was retyped WT-1424-T ->
+    WT-2736-T at a 3'-0" sill to reach the 19'-8" column (the 8" rule), which also buys
+    R303.3's window alternative outright. RM-M-BED gave up 4" and RM-M-BATH2 gained 6".
+    **The fourth column is deliberately absent** and is pinned absent by
+    `test_the_west_suite_window_pair_is_left_uncolumned_on_purpose`: WIN-M-BED-W2 (10'-4")
+    and WIN-S-SUITE1 (13'-0") are the same unit on the same head line, and the only two
+    shared stud lines their hosts offer are 10'-4" and 11'-8" — each leaving ~16" of wall
+    to the far tee where the jamb pack wants ~16 1/2". At 11'-8" the king stud came out
+    sharing 83% of a 2x6 with W-M-W3's end stud; at 10'-4" the identical clash lands on the
+    second storey. **When a column costs a stud, it is not a column** — buy the alignment
+    only with a whole 16" module of room depth, or not at all.
     The north face stacks one three-storey column at x=28'-0" (WIN-M-KITCH /
     WIN-S-HALL-N / WIN-A-N2).
-  - **Rows.** Where a column is impossible, the storey's own rhythm wins instead: the
-    east face runs an exact 9'-0" beat on the second storey (WIN-S-STUDY3 leaves its
-    survey station for this) and 8'-0"/7'-4" on the main, and stacking between them is
-    deliberately abandoned. The kitchen stretch north of WIN-M-DIN-E2 stays blank.
+  - **Rows.** Where a column is impossible, the storey's own rhythm wins instead — but a
+    row must be *centred*, not merely even. The east second storey ran a perfect 9'-0" beat
+    that sat 10" north of the centreline until 2026-08-15 (5'-4" of wall south, 3'-8"
+    north); it now reads 4'-0" / 13'-0" / 23'-0" / 32'-0", exactly mirrored about y=18'-0"
+    in station, width (27/30/30/27) and head (6'-0"/7'-0"/7'-0"/6'-0") over one 3'-0" sill.
+    That took N-S-E2 to 17'-8" and N-S-E3 to 26'-8" — again the residue rule — and the
+    bedroom bays became 8'-8"/9'-0"/9'-4" to pay for it, shrinking BED1 (whose R303.1
+    margin is 0.05 sf) and growing BED3 (which has two windows). The east main row keeps
+    its 8'-0"/7'-4" beat and its blank kitchen stretch north of WIN-M-DIN-E2: the blank is
+    the composition, so the 8" hitch is not worth moving N-M-E1 for. WIN-S-STUDY3 at 4'-0"
+    now also columns with WIN-M-LIV-E1.
+  - **Knee band.** Both 5' knee walls carry a WT-1424 pair; the west is exactly mirrored at
+    3'-4"/32'-8" and the east is 4" off at its north end, at 3'-4"/32'-4". It stays off:
+    W-A-E2's grid starts at N-A-E1 (y=9'-0"), and both fixes for it — 9'-4" for the pair's
+    own mirror, 8'-8" for a column under WIN-S-BED3 at 32'-0" — drag N-A-C2 and therefore
+    W-A-SN, whose south face is what closes FO-A-STAIR's north edge. Building 9'-4" put
+    3'-0" of unguarded stair well on `code.R312_1_guard`. The band reads as its own row
+    across 5'-6" of blank wall, so neither alignment is worth reworking the stair for.
   - **Head lines.** The west face puts every main and second head on one 6'-0" line —
     27" units at a 3'-0" sill, 14" units at 4'-0". The south face shares a 2'-8" sill.
   - **Gables** read symmetric about the ridge before they answer to anything below:
@@ -176,6 +220,7 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
 haus build .            # -> out/model.json (+ IFC when ifcopenshell present)
 haus check .            # integrity / code / structural findings
 haus render --view plan # -> out/render/plan_*.png  — LOOK at what you made
+haus render --view elevation   # -> out/render/elev_{n,s,e,w}.png — the facade rules' own eye
 haus ls --summary       # compact whole-plan digest
 ```
 After any spatial edit, **render and look**. After assembly edits,

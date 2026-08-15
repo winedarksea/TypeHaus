@@ -46,12 +46,20 @@ SECOND_LINES = (
     ("N-S-D1", "y", 9, 0, 9.035),
     ("N-S-B1", "y", 9, 0, 9.035),
     ("N-S-E1", "y", 9, 0, 9.035),
-    # East bedroom / hall partition and the two cross walls.
+    # East bedroom / hall partition and the two cross walls. The two cross-wall lines came
+    # 4" south of the survey on 2026-08-15, for the same class of reason as N-A-V1 below
+    # and against the same policy line: the 16" module outranks an interior partition.
+    # N-S-E2 and N-S-E3 are where W-S-E3 and W-S-E4 start, so they set the phase of the
+    # east wall's stud grid on the second storey; at the survey's 18'-0"/27'-0" the four
+    # east windows had no set of stud lines that mirrored about y=18'-0" at all, and at
+    # 17'-8"/26'-8" they have exactly one — 4'-0"/13'-0"/23'-0"/32'-0". The bedroom bays
+    # go 9'-0" x 3 to 8'-8"/9'-0"/9'-4", which is the whole cost, and it falls the right
+    # way round: RM-S-BED1's R303.1 margin is 0.05 sf and it is the bay that shrank.
     ("N-S-B2", "x", 21, 11, 21.894),
-    ("N-S-B2", "y", 18, 0, 17.991),
-    ("N-S-B3", "y", 27, 0, 26.947),
-    ("N-S-E2", "y", 18, 0, 17.991),
-    ("N-S-E3", "y", 27, 0, 26.947),
+    ("N-S-B2", "y", 17, 8, 17.991, 4.0),
+    ("N-S-B3", "y", 26, 8, 26.947, 4.0),
+    ("N-S-E2", "y", 17, 8, 17.991, 4.0),
+    ("N-S-E3", "y", 26, 8, 26.947, 4.0),
     # West block: walk-in / suite / suite bath.
     ("N-S-D2", "x", 9, 7.5, 9.616),
     ("N-S-D2", "y", 12, 5, 12.391),
@@ -184,32 +192,39 @@ def test_openings_land_on_the_source_gaps(catlin_plan):
 
     # Bedroom doors are on the hall partition, not on the cross walls: the port hosted
     # D-S-BED1 on W-S-BW1, whose centre resolved into the attic-stair band.
-    for tag, y_ft in (("D-S-BED1", 15 + 2 / 12), ("D-S-BED2", 24 + 1 / 12),
-                      ("D-S-BED3", 28 + 11 / 12)):
+    # D-S-BED2/BED3 came 4" south with N-S-B2/N-S-B3 on 2026-08-15 (their offsets are
+    # authored off those nodes and were left alone, so the doors kept their position in
+    # their own rooms); D-S-BED1 hangs off N-S-B1, which did not move.
+    for tag, y_ft in (("D-S-BED1", 15 + 2 / 12), ("D-S-BED2", 23 + 9 / 12),
+                      ("D-S-BED3", 28 + 7 / 12)):
         x, y = centres[tag]
         assert x == pytest.approx(ft(21, 11).meters, abs=TOL_M), tag
         assert y == pytest.approx(ft(y_ft).meters, abs=TOL_M), tag
 
-    # East wall: the source's four 2'-8" openings at y 3'-10", 13'-9", 22'-9", 31'-8",
-    # each snapped to the nearest stud line on its own host.
+    # East wall: the source's four 2'-8" openings at y 3'-10", 13'-9", 22'-9", 31'-8".
+    # The whole row left the survey on 2026-08-15 for the facade's own mirror (below), so
+    # what is still asserted against the source here is the *band* — each window is within
+    # 16" of the opening the survey draws for its room, which is what makes it the same
+    # window rather than a new one somewhere else in the wall.
     for tag, source_y in (("WIN-S-BED1", 13.75), ("WIN-S-BED2", 22.75),
                           ("WIN-S-BED3", 31 + 8 / 12)):
         x, y = centres[tag]
         assert x == pytest.approx(ft(36).meters, abs=ft(1).meters), tag
-        assert abs(y - ft(source_y).meters) <= ft(0, 8).meters, tag
+        assert abs(y - ft(source_y).meters) <= ft(1, 4).meters, tag
 
-    # WIN-S-STUDY3 is the one east opening that leaves its source station on purpose
-    # (2026-07-30 facade pass). The source draws it at y 3'-10", which put the row at
-    # 10'-4"/9'-0"/9'-0"; at y 5'-4" the four windows run one exact 9'-0" rhythm, and
-    # the facade's own regularity outranks a survey position the way the 16" module
-    # already does. Asserted against the rhythm, not the survey.
-    x, y = centres["WIN-S-STUDY3"]
-    assert x == pytest.approx(ft(36).meters, abs=ft(1).meters)
-    assert y == pytest.approx(ft(5, 4).meters, abs=TOL_M)
-    for near, far in (("WIN-S-STUDY3", "WIN-S-BED1"), ("WIN-S-BED1", "WIN-S-BED2"),
-                      ("WIN-S-BED2", "WIN-S-BED3")):
-        assert centres[far][1] - centres[near][1] == pytest.approx(ft(9).meters,
+    # The east row is a mirror, not a survey reading and no longer a rhythm either. It ran
+    # the source's stations until 2026-07-30, then an exact 9'-0" beat off y=5'-4", and
+    # since 2026-08-15 it runs 4'-0"/13'-0"/23'-0"/32'-0" — an even beat is invisible but
+    # a row 10" off the centre of the face it sits on is not. The facade's own regularity
+    # outranks a survey position the way the 16" module already does; what changed is which
+    # regularity. Asserted as the mirror, since that is now the load-bearing claim.
+    for near, far in (("WIN-S-STUDY3", "WIN-S-BED3"), ("WIN-S-BED1", "WIN-S-BED2")):
+        assert centres[near][0] == pytest.approx(ft(36).meters, abs=ft(1).meters), near
+        assert centres[far][0] == pytest.approx(ft(36).meters, abs=ft(1).meters), far
+        assert centres[near][1] + centres[far][1] == pytest.approx(ft(36).meters,
                                                                   abs=TOL_M), far
+    assert centres["WIN-S-STUDY3"][1] == pytest.approx(ft(4).meters, abs=TOL_M)
+    assert centres["WIN-S-BED1"][1] == pytest.approx(ft(13).meters, abs=TOL_M)
 
     # The source draws one balcony door, east of the centre line, inside its 18'-8"..23'-11"
     # run. D-S-DECK-W is ours, not the survey's (2026-07-31) — the second door off the plant

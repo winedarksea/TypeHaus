@@ -364,13 +364,13 @@ SUPPLY_SLEEVES = [
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
     # The two south-face wall hydrants' shared riser (2026-08-01). One crossing, not two:
     # both hydrants are fed from the second-floor joist space, so a single 3/4" branch
-    # leaves the basement here and splits up there. y=13'-4" is W-M-BDN1's line — the
+    # leaves the basement here and splits up there. y=13'-0" is W-M-BDN1's line — the
     # main-storey partition the riser stands inside — and it is over open basement ceiling
     # at x=6' (W-B-SA-N, the sauna's north partition, starts at x=8'-10"), so the
     # penetration lands in the deck rather than on top of a wall below it. Nothing else
     # crosses within 3' of it.
     SleevePenetration(uid="CMPS16AAAA", tag="SP-M-CW-HYD", host_ref="SL-M-DECK",
-                      position=pt(ft(6), ft(13, 4)), pipe_diameter=inch(0.75),
+                      position=pt(ft(6), ft(13)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
 ]
 
@@ -1576,7 +1576,7 @@ MAIN_DEVICES = [
                      room="RM-M-BED", controlled_by=("ED-M-BED-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="CED002K2AA", tag="ED-M-BED-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(12, 6), ft(13, 0.625)), type_ref="ED-T-SWITCH", circuit="CKT-LT-MAIN",
+                     position=pt(ft(12, 6), ft(12, 8.625)), type_ref="ED-T-SWITCH", circuit="CKT-LT-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED002K3AA", tag="ED-M-BED-RC1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(10), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-MAIN",
@@ -1687,7 +1687,7 @@ SECOND_DEVICES = [
                      position=pt(ft(22, 2.375), ft(13, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     ElectricalDevice(uid="CED006K3AA", tag="ED-S-BED1-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(25, 11), ft(17, 8.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
+                     position=pt(ft(25, 11), ft(17, 4.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED007K1AA", tag="ED-S-BED2-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(25), ft(20, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
@@ -1697,7 +1697,7 @@ SECOND_DEVICES = [
                      position=pt(ft(22, 2.375), ft(22, 6)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), rotation=deg(90)),
     ElectricalDevice(uid="CED007K3AA", tag="ED-S-BED2-RC1", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(25, 10), ft(26, 8.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
+                     position=pt(ft(25, 10), ft(26, 4.625)), type_ref="ED-T-RECEPTACLE", circuit="CKT-RC-SECOND",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="CED008K1AA", tag="ED-S-BED3-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(25), ft(29, 6)), type_ref="ED-T-LT-CAN4", circuit="CKT-LT-UPPER",
@@ -2185,13 +2185,13 @@ HYDRANT_BRANCH_BASEMENT = [
     # down here; from the slab up it is inside a wall and a joist bay, where nobody sees it
     # and PEX's tolerance for a hard freeze is worth more than a finish.
     PipeRun(uid="X4M2QP7B0K", tag="PR-B-CW-HYD", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(6), ft(16)), pt(ft(6), ft(13, 4))),
+            path=(pt(ft(6), ft(16)), pt(ft(6), ft(13))),
             diameter=inch(0.75), material="copper", finish="lacquered",
             elevations=(ft(8, 1.2), ft(8, 1.2)),
             serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
     PipeRun(uid="Z5NB8QMK2H", tag="PR-B-CW-HYD-RISER", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(6), ft(13, 4)), pt(ft(6), ft(13, 4)), pt(ft(6), ft(13, 4)),
-                  pt(ft(6), ft(13, 4))),
+            path=(pt(ft(6), ft(13)), pt(ft(6), ft(13)), pt(ft(6), ft(13)),
+                  pt(ft(6), ft(13))),
             diameter=inch(0.75), material="pex",
             # Basement-relative: 8'-1.2" is the ceiling trunk band, 9'-0" is the top of the
             # 9" deck (0'-0" project), 18'-0" is the top plate of W-M-BDN1 (9'-0" project —
@@ -2216,7 +2216,7 @@ HYDRANT_BRANCH_BASEMENT = [
 # the branch is PEX here rather than the copper it becomes downstairs.
 HYDRANT_BRANCH_MAIN = [
     PipeRun(uid="R9TC5VZ1WQ", tag="PR-M-CW-HYD-DIST", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(6), ft(13, 4)), pt(ft(6), ft(0, 9)), pt(ft(16, 8), ft(0, 9))),
+            path=(pt(ft(6), ft(13)), pt(ft(6), ft(0, 9)), pt(ft(16, 8), ft(0, 9))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(9, 3), ft(9, 3), ft(9, 3)),
             serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),

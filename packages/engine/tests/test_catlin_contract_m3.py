@@ -575,6 +575,133 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
         assert not offenders, [finding.message for finding in offenders]
 
 
+def _opening_plan_y(model, tag):
+    """World y of an opening's RO centre, walked along its host wall's axis.
+
+    ``center_along_m`` is measured from the host's *start* node, which is the whole point
+    of these two tests: a segment lays its studs from that node, so where a window can
+    legally sit is a property of the node, not of the facade.
+    """
+    opening = next(item for item in model.openings if item.tag == tag)
+    wall = model.wall(opening.host_wall)
+    (x0, y0), (x1, y1) = wall.axis
+    length = math.hypot(x1 - x0, y1 - y0)
+    return y0 + (y1 - y0) * (opening.center_along_m / length), opening
+
+
+def _framing_offenders(tags):
+    """Re-run the two framing gates and keep only failures naming one of ``tags``."""
+    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+    return [finding.message for finding in report.findings
+            if finding.check_id in ("structural.window_framing_module", "integrity.opening_fits")
+            and finding.result is Result.FAIL
+            and any(tag in finding.message for tag in tags)]
+
+
+def test_the_west_facade_stacks_three_two_storey_window_columns(catlin_model):
+    """Main and second column on the west at 5'-0", 19'-8" and 31'-4", on one head line.
+
+    Nothing else in the engine tests window *alignment*, so without this the arrangement is
+    one drive-by node edit away from drifting back. It drifted here in the first place: a
+    wall lays its studs out from its own start node, and the main storey's west tees
+    (N-M-W3, N-M-W2) sat 4" and 2" off the second storey's (N-S-W3, N-S-W2), which put the
+    two storeys' stud grids permanently out of phase — only 31'-4" columned, and only
+    because both its hosts happen to start at y=33'-4". No amount of moving *windows* fixes
+    that, which is why the fix was to move those two nodes and why this test exists at the
+    facade's altitude rather than the window's. The second half re-runs the framing gates,
+    so each shared station is pinned as a legal framing station and not just a coincidence.
+
+    The corollary that decides 19'-8": ``structural.window_framing_module`` puts a 14" RO
+    on a bay centre and a 27"/30" RO on a stud line, 8" apart on one grid. So a 14" unit
+    can never column with a 27" one, which is why WIN-M-BATH2 is a 27" unit and not the
+    14" one it was.
+
+    The fourth column is deliberately absent — see
+    ``test_the_west_suite_window_pair_is_left_uncolumned_on_purpose``.
+    """
+    columns = {
+        ft(5).meters: ("WIN-M-BED-W1", "WIN-S-PLANT3"),
+        ft(19, 8).meters: ("WIN-M-BATH2", "WIN-S-SUITE2"),
+        ft(31, 4).meters: ("WIN-M-MUD", "WIN-S-BATH-W"),
+    }
+    for expected_y, (main_tag, second_tag) in columns.items():
+        main_y, main = _opening_plan_y(catlin_model, main_tag)
+        second_y, second = _opening_plan_y(catlin_model, second_tag)
+        assert main_y == pytest.approx(expected_y, abs=1e-6), main_tag
+        assert second_y == pytest.approx(expected_y, abs=1e-6), second_tag
+        # A column is only a column if the units match, not just their centrelines.
+        assert main.width_m == pytest.approx(second.width_m, abs=1e-6), (main_tag, second_tag)
+        # One 6'-0" head line carries the whole face — the 27" units off a 3'-0" sill and
+        # the 14" units off 4'-0" (CLAUDE.md, Facade rules / Head lines).
+        for opening in (main, second):
+            assert opening.sill_m + opening.height_m == pytest.approx(ft(6).meters, abs=1e-6), \
+                opening.tag
+
+    assert not _framing_offenders([tag for pair in columns.values() for tag in pair])
+
+
+def test_the_west_suite_window_pair_is_left_uncolumned_on_purpose(catlin_model):
+    """WIN-M-BED-W2 (10'-4") and WIN-S-SUITE1 (13'-0") do not stack, and must not be made to.
+
+    Written as a test because the gap is exactly the kind a later pass "fixes": both windows
+    are the same 27" unit on the same 6'-0" head line, two storeys apart, 2'-8" out of
+    line. The reason they cannot column is arithmetic. Their hosts are W-M-W4 (13'-0" ->
+    0'-0") and W-S-W3 (22'-4" -> 9'-0"), whose start nodes are both 12" mod 16", so a
+    shared stud line is 12" mod 16" too — and the only two inside both walls are 10'-4" and
+    11'-8". Each leaves ~16" of wall between the RO and the far tee where the jamb pack
+    wants ~16 1/2"; 11'-8" was built and the king stud came out sharing 83% of a 2x6 with
+    W-M-W3's end stud, and 10'-4" moves the identical clash onto the second storey.
+
+    Buying it would mean moving a tee by a whole 16" module and taking a foot out of a room
+    (RM-M-BATH2's depth, or RM-S-PLANT's), which is a worse trade than an unstacked pair.
+    """
+    main_y, main = _opening_plan_y(catlin_model, "WIN-M-BED-W2")
+    second_y, second = _opening_plan_y(catlin_model, "WIN-S-SUITE1")
+    assert main_y == pytest.approx(ft(10, 4).meters, abs=1e-6)
+    assert second_y == pytest.approx(ft(13).meters, abs=1e-6)
+    # Both still obey the facade's own head line and the framing module, which is the
+    # standard they are held to instead of the column.
+    for opening in (main, second):
+        assert opening.sill_m + opening.height_m == pytest.approx(ft(6).meters, abs=1e-6)
+    assert not _framing_offenders(["WIN-M-BED-W2", "WIN-S-SUITE1"])
+
+
+def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(catlin_model):
+    """4'-0" / 13'-0" / 23'-0" / 32'-0" — 4+32 = 13+23 = 36'-0", exactly.
+
+    The row it replaced ran a perfectly even 9'-0" beat that sat 10" north of centre: 5'-4"
+    of wall at the south end against 3'-8" at the north. An even beat is invisible; a 20"
+    asymmetry on a 36'-0" face is not. Width and head mirror too, on one 3'-0" sill, so the
+    two halves are the same picture — that is the claim, and it is pinned in all three
+    dimensions because holding only the stations would let a retype break it silently.
+    """
+    house = ft(36).meters
+    pairs = (("WIN-S-STUDY3", "WIN-S-BED3", ft(4).meters),
+             ("WIN-S-BED1", "WIN-S-BED2", ft(13).meters))
+    tags = []
+    for south_tag, north_tag, expected_south_y in pairs:
+        south_y, south = _opening_plan_y(catlin_model, south_tag)
+        north_y, north = _opening_plan_y(catlin_model, north_tag)
+        tags += [south_tag, north_tag]
+        assert south_y == pytest.approx(expected_south_y, abs=1e-6), south_tag
+        assert south_y + north_y == pytest.approx(house, abs=1e-6), (south_tag, north_tag)
+        assert south.width_m == pytest.approx(north.width_m, abs=1e-6)
+        assert south.sill_m == pytest.approx(ft(3).meters, abs=1e-6)
+        assert north.sill_m == pytest.approx(ft(3).meters, abs=1e-6)
+        assert (south.sill_m + south.height_m
+                == pytest.approx(north.sill_m + north.height_m, abs=1e-6))
+
+    # And the row really is a row: the outer pair reads 6'-0" at the head, the inner 7'-0",
+    # so the composition steps up toward the middle rather than wandering.
+    heads = {tag: _opening_plan_y(catlin_model, tag)[1].sill_m
+                  + _opening_plan_y(catlin_model, tag)[1].height_m
+             for tag in tags}
+    assert heads["WIN-S-STUDY3"] == pytest.approx(ft(6).meters, abs=1e-6)
+    assert heads["WIN-S-BED1"] == pytest.approx(ft(7).meters, abs=1e-6)
+
+    assert not _framing_offenders(tags)
+
+
 def test_every_catlin_boundary_condition_has_a_transition_binding():
     report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
     findings = [finding for finding in report.findings
