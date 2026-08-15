@@ -462,6 +462,10 @@
 "REG-T-ERV-SUP" = { low = 25, high = 80 }  # 5 ea
 "REG-T-HP-RET" = { low = 30, high = 90 }  # 1 ea
 "REG-T-HP-SUP" = { low = 15, high = 50 }  # 8 ea
+# The passive transfer louver. Cheapest terminal in the house and it should be: a stamped
+# door/wall grille with no damper, no boot and no duct behind it. Bracketed against
+# REG-T-HP-SUP above, which is the same kind of stamped face with a duct collar on it.
+"REG-T-TRANSFER-1210" = { low = 15, high = 55 }  # 1 ea
 
 [floor_finishes]
 # RESEARCHED 2026-08-08 — [low, high] $/SF on the ORDER quantity (waste already in the

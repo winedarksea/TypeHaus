@@ -12,7 +12,9 @@
 #   System 2  EQ-M-HP2-OD (Multi Ultra 3-port, -22F) -> three wall heads: EQ-B-HP2-GYM,
 #             EQ-M-HP2-BED, EQ-M-HP2-LIVING.
 #   System 3  EQ-M-HP3-OD (Sapphire R32, VFD soft start, backup battery circuit) ->
-#             EQ-M-HP3-STAIR, recessed into W-M-STRW to reach the mudroom too.
+#             EQ-M-HP3-STAIR, high in the stair well's NW corner on W-M-N2. The mudroom is
+#             reached through REG-M-XFER-MUD, a passive louver in W-M-STRW beside it, not by
+#             the head itself (it was recessed into that wall until 2026-08-15).
 # EQ-B-ERV is still the only thing that moves *ventilation* air — its "supply" is fresh
 # air, not heat.
 #
@@ -560,7 +562,10 @@ MAIN_EQUIPMENT = [
     # IS the record (plans/TODO.md), and there is no wall penetration riding on it yet.
     # System 3's outdoor unit, north side beside the mudroom door and under
     # ED-M-HP3-DISC — the short lineset run to the head over the stairs is why it is here
-    # and not out with the other two.
+    # and not out with the other two. Shorter still since 2026-08-15: this unit stands at
+    # x 10'-0"..12'-7" on the far side of W-M-N2, and EQ-M-HP3-STAIR now hangs at
+    # x 10'-6"..13'-3" on that same wall's inside face, so the lineset is a straight punch
+    # through the wall it is bolted to rather than a run down the inside of the stair.
     Equipment(uid="CEE027AAAA", tag="EQ-M-HP3-OD", kind=EquipmentKind.HEAT_PUMP,
               position=pt(m(3.44566), m(11.3941)), footprint=(inch(31), inch(13)),
               type_ref="EQ-T-GREE-SAPPHIRE-9-OD", circuit="CKT-HP3", room=None),
@@ -585,23 +590,46 @@ MAIN_EQUIPMENT = [
               # One 768 sf open room (kitchen/dining/living/hall, and since 2026-07-30 the
               # stair well too, are all inside this claim).
               zone_rooms=("RM-M-LIVING",)),
-    # --- System 3's head: over the stair head, partly recessed into W-M-STRW (the bearing
-    # wall at x=10' between the stair and the mudroom) so one unit reaches both spaces —
-    # the cutout in that wall is the whole point of the position. Backs west (rotation 90)
-    # against the wall, high enough to clear the stair opening below it.
+    # --- System 3's head: high in the stair well's NW corner, on the north wall.
+    #
+    # Moved off W-M-STRW on 2026-08-15 (plans/TODO.md). It used to hang on the *west* wall
+    # at (10'-6", 30'), backing west and partly recessed into that wall's plywood stair face
+    # so a single unit reached the mudroom through the cutout. Two things were wrong with
+    # that: the recess was the one hole deliberately allowed in a wall whose whole detail is
+    # unbored appearance-grade studs (main.py W-M-STRW), and the unit stood in the middle of
+    # the west lane blowing across the flight rather than down the well. It is now on
+    # W-M-N2, and the mudroom is served by REG-M-XFER-MUD instead — a passive louver in the
+    # same wall, in a stud bay, with nothing mechanical in it (plan/mep_registers.py).
+    #
+    # Position, all four numbers constrained:
+    #   y  35'-1 3/8" — an 8" body with its back on W-M-N2's finished face at 35'-5 3/8".
+    #      Surface-mounted, not recessed: W-M-N2 is the insulated 2x6 envelope, and an 8"
+    #      unit does not fit a 5 1/2" cavity without furring the wall out or breaking the
+    #      sheathing plane. `recessed_into_host_surface` is gone with the old position.
+    #   x  11'-10 1/2" — the 33" case runs 10'-6"..13'-3", its west end on the x=10'-6" line
+    #      that is FO-M-STAIR's west edge and the west lane's face, 2 5/8" clear of
+    #      W-M-STRW's ply-stair face at 10'-3 3/8". Tight into the corner, and square over
+    #      the lane the flight arrives in.
+    #   z  7'-0", unchanged — top at 8'-0", 12" below the 9' ceiling.
+    #   rotation 0 — back north, blowing south down the length of the well. (Back south is
+    #      180 on the two System 2 heads, back east -90 on EQ-M-FIREPLACE.)
+    #
+    # It hangs over open well either way: FO-M-STAIR stops at y=35' and FO-S-STAIR runs
+    # right up to this wall, so there is 5 3/8" of main-floor deck under it and the mid
+    # landing ~4'-6" below that. The old position was over the well too — this is not a new
+    # service problem, it is the same ladder off the landing.
     #
     # `room` followed RM-M-STAIR into RM-M-LIVING on 2026-07-30 — the stair well is part of
-    # that room now (see main.py's ROOMS), and the head still hangs in the same place over
-    # it. `zone_rooms` did not: it is the mudroom and the mech closet. What this head is
-    # *sized* for is the entry side of the wall it is recessed in, and the stair volume it
-    # also blows into belongs to EQ-M-HP2-LIVING's 768 sf claim rather than being counted a
+    # that room now (see main.py's ROOMS). `zone_rooms` did not, and still does not: it is
+    # the mudroom and the mech closet. What this head is *sized* for is the entry side of
+    # the wall, now reached through the louver rather than a recess, and the stair volume it
+    # blows into belongs to EQ-M-HP2-LIVING's 768 sf claim rather than being counted a
     # second time here.
     Equipment(uid="CEE030AAAA", tag="EQ-M-HP3-STAIR", kind=EquipmentKind.INDOOR_HEAD,
-              position=pt(ft(10, 6), ft(30)), footprint=(inch(33), inch(8)),
-              room="RM-M-LIVING", type_ref="EQ-T-GREE-SAPPHIRE-9", rotation=deg(90),
+              position=pt(ft(11, 10.5), ft(35, 1.375)), footprint=(inch(33), inch(8)),
+              room="RM-M-LIVING", type_ref="EQ-T-GREE-SAPPHIRE-9", rotation=deg(0),
               outdoor_ref="EQ-M-HP3-OD",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(7),
-                          recessed_into_host_surface=True),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
               zone_rooms=("RM-M-MUDROOM", "RM-M-MECH")),
     # Electric fireplace, SE corner of the living room, on the east wall. Dropped from a
     # 36" mount to 7" (2026-07-30) when WIN-M-LIV-E1 restacked to y=4'-0": the window's

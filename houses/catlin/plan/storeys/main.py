@@ -414,8 +414,12 @@ WALLS = [
     # of the mudroom side, whose face moves east from 9'-8 5/8" to 9'-9 1/8".
     #
     # MEP: keep wiring and plumbing out of this wall — a bored stud shows. The one deliberate
-    # exception is EQ-M-HP3-STAIR's recess (plan/electrical.py), the stair mini-split, which
-    # is a designed cutout in the plywood face and stays.
+    # exception is REG-M-XFER-MUD (plan/mep_registers.py), the passive transfer louver that
+    # lets EQ-M-HP3-STAIR's air reach the mudroom: a 12" face cut in the plywood, centred at
+    # y=34'-0" in the 14 1/2" clear bay between the studs at 33'-4" and 34'-8", so no stud
+    # is cut and this bearing wall needs no header for it. The mudroom side needs no work at
+    # all — that face is the open coat-nook bays. Until 2026-08-15 the exception was the
+    # mini-split itself, recessed into this face; the head is on W-M-N2 now.
     Wall(uid="CMW117AAAA", tag="W-M-STRW", start_node="N-M-N2",
          end_node="N-M-STRJ", assembly="CATLIN_MUDROOM_INT_2X6_EXPOSED", top=ft(9),
          alignment=face("ply-stair-ext", offset=inch(-3.375)),

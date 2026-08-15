@@ -216,18 +216,24 @@ def garage_separation(ctx: CheckContext) -> list[Finding]:
                                  "1-3/8\" solid wood or steel, or a 20-minute rating",
                                  (door.tag, garage.tag), "R302.5.1"))
 
-        # 3. no supply/return duct opening into the garage
+        # 3. no supply/return duct, and no passive transfer louver, opening into the garage.
+        # TRANSFER is in the tuple for the same reason SUPPLY and RETURN are, and with less
+        # room for argument: a ducted register at least reaches the garage through sheet
+        # metal, where a transfer grille is a bare hole through the very wall R302.5.1 asks
+        # for. EXHAUST is left out — pulling garage air out of the garage is what a garage
+        # exhaust fan is, and it is not an opening between the garage and the dwelling.
         registers = [r for r in ctx.plan.all_elements()
                      if r.element_kind == "Register" and r.room == garage.tag
-                     and r.kind in (DuctSystem.SUPPLY, DuctSystem.RETURN)]
+                     and r.kind in (DuctSystem.SUPPLY, DuctSystem.RETURN,
+                                    DuctSystem.TRANSFER)]
         if registers:
             names = sorted(r.tag for r in registers)
-            out.append(_fail(cid, f"{garage.tag} has supply/return register(s) "
-                             f"{', '.join(names)}; R302.5.2 forbids a duct opening into a "
-                             "garage", (garage.tag, *names), "R302.5.2"))
+            out.append(_fail(cid, f"{garage.tag} has supply/return/transfer opening(s) "
+                             f"{', '.join(names)}; R302.5.2 forbids a duct or air opening "
+                             "into a garage", (garage.tag, *names), "R302.5.2"))
         else:
-            out.append(_pass(cid, f"no supply or return duct opens into {garage.tag}",
-                             "R302.5.2"))
+            out.append(_pass(cid, f"no supply, return or transfer opening connects "
+                             f"{garage.tag} to the dwelling", "R302.5.2"))
     return out
 
 

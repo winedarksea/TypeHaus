@@ -81,6 +81,29 @@ REGISTER_TYPES = (
                  plan_symbol="register",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
+    # A third family, and the shortest one: a passive transfer louver. No duct, no fan, no
+    # system — a hole in a wall with a grille on it, moving air on pressure difference
+    # alone. `ports=()` is the whole point: there is nothing to connect it to, so it must
+    # not advertise a service port the way the two families above do. (`needs` still reads
+    # SUPPLY_AIR, the RegisterType default. Nothing consumes `needs` for a register — it is
+    # a Fixture-side field — and the editable dialect has no way to spell an empty
+    # frozenset, so it is left alone rather than worked around.)
+    #
+    # Sized to pass through one 2x6 stud bay without cutting a stud: a 12" face in a 14 1/2"
+    # clear bay leaves 1 1/4" of bay each side, and the 10x8 free opening inside it is the
+    # air path. Anything wider is a header in a bearing wall.
+    #
+    # Dimensioned for a WALL mount, unlike every type above it: `footprint` is a *plan*
+    # footprint, so this one is 12" along the wall by 1" of plate thickness, and `height` is
+    # the 10" the face stands up. The ceiling diffusers read (face x face) x 1" thick
+    # because in plan that is genuinely their footprint. Authored the other way round this
+    # louver resolves as a 12x10 tile lying flat through the studs.
+    RegisterType(tag="REG-T-TRANSFER-1210",
+                 name="Passive transfer louver, 12x10 face (10x8 free opening)",
+                 footprint=(inch(12), inch(1)), height=inch(10),
+                 plan_symbol="register",
+                 source="Passive door/wall transfer grille, single 2x6 bay — no duct, no damper",
+                 ports=()),
 )
 
 # No gas appliance in the house: the gas furnace that used to stand at (4', 29'-4") is gone

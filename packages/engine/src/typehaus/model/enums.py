@@ -219,6 +219,15 @@ class DuctSystem(Enum):
     # terminate anywhere another exhaust does, and its length is limited by a rule no other
     # run obeys. One enum member is the entire schema cost of checking all three.
     DRYER = "dryer"
+    # A passive transfer opening between two spaces — a louver or grille in a wall, moving
+    # air on pressure difference alone. It belongs to no ducted system and carries no
+    # ``duct_ref``, which is exactly why it needs a member of its own: filed as RETURN it
+    # would be counted as an ERV stale pickup by the ventilation checks and printed as one
+    # on the register schedule, crediting a room with an extract it does not have. The
+    # checks that look for a fresh-air supply or a bathroom exhaust match on their own
+    # member and skip this one; the garage separation check deliberately does *not*, since
+    # a hole in the R302.5.1 wall is the plainest form of the opening R302.5.2 forbids.
+    TRANSFER = "transfer"
 
 
 class DuctRouting(Enum):

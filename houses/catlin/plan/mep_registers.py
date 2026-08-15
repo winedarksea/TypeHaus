@@ -1,12 +1,14 @@
 # haus: editable
-# Catlin MEP — air terminals — every supply, return and exhaust register, storey by storey.
+# Catlin MEP — air terminals — every supply, return, exhaust and transfer opening, storey by storey.
 #
 # Split out of the old 2,515-line plan/mep.py (AGENTS.md §1.1). Every element below moved
 # verbatim; plan/mep.py still re-exports the storey lists, so the manifest is unchanged.
 #
-# Two families, and the difference matters on the plan set: REG-T-ERV-* are ventilation terminals
-# on EQ-B-ERV's balanced trunks; REG-T-HP-* are System 1's conditioned-air terminals. Their types
-# and the ducts they sit on are in plan/mep_hvac.py.
+# Three families now, and the difference matters on the plan set: REG-T-ERV-* are ventilation
+# terminals on EQ-B-ERV's balanced trunks; REG-T-HP-* are System 1's conditioned-air terminals;
+# REG-T-TRANSFER-* is the passive one — a louver between two rooms, on no trunk at all, and the
+# only register here with no `duct_ref`. Their types and the ducts they sit on are in
+# plan/mep_hvac.py.
 
 from typehaus import (
     DuctRun,
@@ -14,6 +16,7 @@ from typehaus import (
     Mount,
     MountKind,
     Register,
+    deg,
     ft,
     inch,
     pt,
@@ -233,6 +236,44 @@ REGISTERS_MAIN = [
     Register(uid="CMRV09AAAA", tag="REG-M-RET-MUD", kind=DuctSystem.RETURN, room="RM-M-MUDROOM",
             position=pt(m(1.23013), m(9.56867)), duct_ref="DU-M1-ERV-RET", type_ref="REG-T-ERV-EXH",
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    # The one passive opening in the house (2026-08-15, plans/TODO.md). EQ-M-HP3-STAIR used
+    # to be recessed *into* W-M-STRW so a single head reached both the stair and the mudroom
+    # through the cutout; it has moved to the north wall at the NW corner, so this louver is
+    # now how the mudroom gets its share. No duct, no damper, no fan: `duct_ref` is None —
+    # the first register in the house with none — and `kind` is TRANSFER so the ventilation
+    # checks neither credit a room with fresh air it is not getting nor count it as a second
+    # stale pickup beside REG-M-RET-MUD.
+    #
+    # *** THE ROOM THIS SERVES IS RM-M-MUDROOM. `room` says RM-M-LIVING. ***
+    # Both are true and the field only holds one. A transfer opening is the one placeable
+    # that belongs to two rooms at once, and the resolver reads `room` as containment — it
+    # compares the footprint centre against the room polygon and files an
+    # integrity.placeable_room_mismatch when they disagree. The 1" plate is on the *stair*
+    # face of W-M-STRW, and the stair well is RM-M-LIVING, so RM-M-LIVING is what keeps the
+    # build log honest. The mudroom side of the relationship lives in this comment and in
+    # the tag, which is why the tag is XFER-MUD and not XFER-STAIR.
+    #
+    # It is REG-M-RET-MUD that makes the thing work at all. A hole between two rooms moves
+    # nothing without a pressure difference, and the mudroom is the low-pressure end of the
+    # main storey by design (see the note on that register): the ERV pulls out of it
+    # continuously, so what comes back in is the stair air this louver hands over, warmed by
+    # the head 2'-6" away round the corner.
+    #
+    # Geometry, all of it constrained:
+    #   x  10'-3 7/8" — a 1" body with its back on W-M-STRW's ply-stair face at 10'-3 3/8",
+    #      facing east into the well (rotation 90 backs it west, the same sense the head used
+    #      on this wall). The mudroom side needs no opening at all: that face is bare 2x6
+    #      bays (the coat nooks), so the bay behind this louver is already the room.
+    #   y  34'-0" — dead centre of the 14 1/2" clear bay between the studs at 33'-4" and
+    #      34'-8". W-M-STRW is BEARING; the bay north of it is only 7 1/8" clear (the corner
+    #      end stud sits at 35'-4 5/8"), and the 12" face will not fit there without cutting
+    #      a stud and heading it. This is the bay, not a preference.
+    #   z  7'-6" — top at 8'-4", 8" under the 9' ceiling, in the same high band as the head's
+    #      7'-0"..8'-0" body, and well over D-M-ENTRY's head just west of it.
+    Register(uid="MW7W7SBZ65", tag="REG-M-XFER-MUD", kind=DuctSystem.TRANSFER, room="RM-M-LIVING",
+            position=pt(ft(10, 3.875), ft(34)), type_ref="REG-T-TRANSFER-1210",
+            rotation=deg(90),
+            mount=Mount(kind=MountKind.WALL, elevation=ft(7, 6))),
 ]
 
 # Basement terminals hang from the SL-M-DECK underside off the CHASE trunks — except the

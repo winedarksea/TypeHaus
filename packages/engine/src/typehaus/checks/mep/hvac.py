@@ -56,6 +56,11 @@ def duct_joist_bay(ctx: CheckContext) -> list[Finding]:
 _SUPPLY_OCCUPANCIES = frozenset({"bedroom", "living", "office"})
 _STALE_OCCUPANCIES = frozenset({"bathroom", "laundry", "kitchen"})
 _STALE_KINDS = frozenset({"return", "exhaust"})
+# DuctSystem.TRANSFER is deliberately in neither set. A passive louver moves house air from
+# one room to the next; it neither delivers the fresh air this check is counting nor takes
+# any stale air out of the house, so crediting it either way would let a room pass on air it
+# has already breathed. It still shows up in ``by_room`` — the register is real and a plan
+# reader should see it — it just satisfies nothing.
 
 
 def _registers_by_room(ctx: CheckContext, cid: str) -> tuple[dict, list, list[Finding]]:

@@ -3,37 +3,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-*(nothing open)*
-
-### ~~prices.toml has no materials-vs-labour field~~ — **decided and implemented 2026-08-15**
-**Section defaults with a per-row override**, which is (b) and (c) taken together without
-paying for either's downside: existing rows are untouched, so migration was zero, and no row
-ever carries an invented split.
-
-`houses/catlin/prices.toml` now ends in a `[basis]` table with one entry per section in
-`cli/price_file.py::_SECTIONS` (a partial table is a hard load error) and a `[basis_notes]`
-table holding the provenance that used to live in the file's prose header. The value grammar
-grew two shapes:
-
-```toml
-"2x10" = { low = 2.8, high = 3.4, basis = "installed" }              # a real merged quote
-"LVL"  = { material = {low=7,high=9}, labour = {low=3,high=5} }      # split, where known
-```
-
-`estimate_costs` reports three subtotals per section and overall — `material`, `labour`, and
-`merged` (installed rows whose split is unknown) — and **never divides a merged number**;
-sales tax applies to the material subtotal only and the payload names how much sat in
-`merged` where tax could not reach it. Pinned by `tests/test_price_basis_and_bid.py`.
-
-Landed with it: `[waste]` / `[contingency]` / `[markup]` / `[tax]`, each its own reported
-stage (`net -> waste -> ordered -> contingency -> markup -> tax -> total`), with a hard error
-on a `[waste]` entry for a section whose BOM quantity already carries it; `$/sf` against the
-space summary's conditioned and a new gross figure; NAHB/CSI cost codes
-(`takeoff/cost_codes.py`, overridable per house); and `haus takeoff --csv`, the estimating-
-software intake artifact, which `haus costs import` reads back through the existing
-`(section, key)` join.
-
-
 - ~~**PT-SG-BR2 bearing — reinforce locally, don't move it**~~ — **approved and authored
   2026-08-07.** `FloorSystem.reinforcements` is the way to author it: a
   `JoistReinforcement(at, plies, member, blocking, source)` on FS-SG-PORCH, whose `at` is
@@ -163,14 +132,7 @@ below and in **Questions** carries its own note. `haus check` came out of it at 
   flashing, thermal-control continuity). `Transition` stays post-resolve documentation.
 - Add `Node.junction_override` only if the audit proves a rule cannot express a condition.
 
-## Roof-eave follow-ups (accepted-for-now / awaiting reference drawings)
-
-- **The garage gable is closed by carrying wall skin to the roof underside** rather than by
-  real `top=ToRoof` gable walls (`W-G-E`'s ridge lands where the 16' door is centred).
-  Accepted for now. (The gable-closure studs now lie flat in the drop-truss plane — the
-  visible-stud defect is fixed.)
-
-## Breezeway — remaining niggles
+## Breezeway
 
 - **The 1" fall toward the garage is drawn, not framed** (lives in the drainage wedges; a `Beam` is a prism). If the wedge becomes a real element the fall moves into it. (It should be a 1" slope by angle of the framing, plus a east to west slope by a small wedge under the centerpoint of each rafter to slightly bend the polycarbonate)
   **Re-affirmed deferred 2026-08-07:** framing the fall means a sloped-`Beam` schema change,
@@ -189,35 +151,8 @@ the future.
 - study on first floor location adjustments (deferred by decision 2026-08-02)
 - Nest/loft design
 - House being a bit higher, cladding detail
-- ~~Count/show tile, make sure electrical for mats is in if so~~ — **answered 2026-08-07.**
-  Tile was already counted: `floor_finish_rows` bills it by the room, so there was nothing
-  to add. On the mats, the decision is **none added** — FH-M-BATH2, FH-S-BATH1 and
-  FH-M-DINING are the three zones the house wants, each already its own 120V circuit with
-  breaker-level GFCI and its own thermostat. Recorded as a decision, not a deferral: the
-  next tiled floor to get a mat should be a deliberate addition, not a gap someone finds.
-- ~~Garbage disposal in kitchen sink~~ — **answered 2026-08-07,** and answered the way this
-  file asked for it ("just the main underlying electrical branch"). `APPL-M-DISP` hangs off
-  FX-M-KITCH-SINK's flange in the sink base; `CKT-DISPOSAL` (slot 39, 20A, GFCI+AFCI at the
-  breaker) is its own branch, off CKT-DISHWASHER, because a 3/4 HP motor's inrush on top of
-  a dishwasher heater is the nuisance trip that gets a breaker taped on; `ED-M-LIVING-KDS1`
-  is the single 5-20R disconnect 9" west of the dishwasher's box.
-  The 24V control loop is **counted, not drawn**: `Appliance.install_parts` now feeds the
-  same `[install_parts]` BOM section the hydrant kits do, so the transformer, DP contactor,
-  NEMA 1 enclosure, guarded toggle, momentary button, LV ring/plate and 50 ft of 18/6 CL2
-  all reach the order without inventing conduit routes nobody has designed. The spec
-  section further down this file is kept as the build instruction it is.
 - Window sealing detail
-- ~~Access panels (mechanical, wall hung toilet)~~ — **answered 2026-08-07.** The wall-hung
-  WC gets `FURN-M-BATH1-AP`, a 14x29 in BATH1's face of the W-M-BAE carrier wall. Three tub
-  traps were surveyed and two got 14x14 panels, both opening from the *adjacent* space
-  rather than over the tub: BATH2's through W-M-BA2E into the laundry (its drain is
-  authored behind the tub, not at an end), and the suite tub-shower's through W-S-SN3 into
-  the hall. FX-S-BATH1-SH gets none — its drain end backs onto the plumbing chase, with
-  nowhere to stand. **Mechanical: none, deliberately** — the equipment all stands in open
-  rooms and is reached without opening anything.
-  Loose end: neither second-storey tub-shower carries a `drain_position`, so their ends
-  were read off resolved footprints and the walls touching them. Author one and the suite
-  panel should be re-checked against it.
+- Make sure all desired access panels are in
 - ~~Any rooms with fancy ceilings? ... "Resilient channels on ceiling perpendicular to
   joists, hat channels maybe better, or sound isolation clips. Whichever the drywall guy
   prefers/is cheapest" for the Living Room ceiling.~~ — **minimal treatment authored
@@ -235,57 +170,13 @@ the future.
   **Gap worth knowing:** `construction_returns` is not in `cli/prices.py::_SECTIONS`, so
   those 523.7 LF reach the BOM and never the cost estimate. Verified empirically, noted on
   the rule, not fixed here.
-- ~~Moving toilet needs to move its flange too in UI~~ — **fixed 2026-08-07, and it was
-  live.** A drive-by edit in `76c1871` had already moved FX-M-BATH2-WC 6.46" off its
-  cast-in sleeve SP-M-WC2 and drain PR-B-WC2-DRAIN, with nothing complaining; the fixture
-  is back on its flange. `move_placeable` now emits follower ops for every sleeve serving
-  the fixture and every path vertex of every pipe run within snap of the old flange —
-  *every* vertex, because the riser is authored as a duplicated pair and rewriting one
-  leaves the run kinked. Warnings go both ways, so a partial follow is visible instead of
-  silent, and SleevePenetration/PipeRun joined `_UI_EDITABLE_KINDS` so authoring one
-  outside an editable file fails loudly.
 - Possibly moving house and sunken garden up (not garage), accounting for split layer
 - Small windows on corners?
 - Balcony railing?
 - Do "drain tile" and "french drain" duplicate at all here?
-- ~~Able to see the actual studs (or the end cut view of them) on the 2d when framing on~~ —
-  **done 2026-08-07.** Members now draw their plan footprint, not a centreline: a vertical
-  stud is its oriented `width_m × depth_m` end cut, a horizontal one a band on the plate
-  rule, ported from `resolve/framing/footprint.py`. Below 2px of cross-width the old line
-  stays, because a fill that thin antialiases into a smudge. Filed follow-up: the engine
-  does not populate `plan_outline`, so the **PDF/DXF sheets still draw centrelines** — the
-  viewer and the printed set disagree until that lands.
-- EQ-M-HP3-STAIR should be on the north wall of the stairs (on the northwest corner, wall W-M-N2 I believe), not the west wall. It also should have a register of some kind (passive, not hooked to the minisplit, just next to it) to allow air to flow from next to it into MUDROOM through wall W-M-STRW
 - We are thinking of switching W-SG-ARCH to be a column and beams like PT-SG-COL and BM-SG-BKE, then replacing the masonry railing right above it with a metal railing more like RL-SG-BALCONY
 - Add a packed gravel bed under the retaining wall blocks (W-RG-*)
-- ~~Improve the symmetry of the windows on the east and west side (especially the west
-  side) so they look better from outside, where possible, while still being useful for
-  their matching interior rooms~~ **done 2026-08-15.** The west went from one two-storey
-  column to three — 5'-0" / 19'-8" / 31'-4", on the one 6'-0" head line. The east second
-  storey went from an even 9'-0" beat sitting 10" north of centre to 4'-0" / 13'-0" /
-  23'-0" / 32'-0", exactly mirrored about the house centreline in station, width and head.
-  Both were **node** moves, not window moves: a wall lays its studs out from its own start
-  node, so an E/W tee off the 16" module puts that segment's whole grid out of phase and no
-  window on it can ever line up with one on a segment in a different phase. N-M-W3 13'-4" ->
-  13'-0" and N-M-W2 22'-2" -> 22'-4" put the main storey's west grid in phase with the
-  second's; N-S-E2 18'-0" -> 17'-8" and N-S-E3 27'-0" -> 26'-8" made the east mirror
-  stations reachable at all. Every node on a partition line moves together, and so do the
-  boxes and pipes hanging on it — eight devices, a WC and the hydrant riser were re-snapped,
-  which `haus check` does not catch but
-  `test_catlin_contract_m3.py::test_wall_mounted_devices_resolve_against_a_wall_face` does.
-  Rooms paid 4" here and there (RM-M-BED, RM-S-BED1 shrank; RM-M-BATH2, RM-S-BED3 grew) and
-  WIN-M-BATH2 was retyped 14" -> 27" because a 14" RO centres on a bay centre and a 27" one
-  on a stud line, 8" apart, so the two can never column.
-  Left alone on purpose: the west's fourth column — WIN-M-BED-W2 / WIN-S-SUITE1 have only
-  two shared stud lines available (10'-4" and 11'-8") and both drive a jamb pack into a
-  tee's stud pack, 83% of a 2x6 at the one that was built, so the pair is left unstacked and
-  pinned unstacked; the east main row's 8'-0"/7'-4" beat (the blank kitchen stretch is the
-  composition, not the hitch); and the attic knee band — WIN-A-E-N could take the column at
-  32'-0" or its own mirror at 32'-8", but both move the band wall that closes FO-A-STAIR's
-  north edge, and `code.R312_1_guard` reported 3'-0" of unguarded well when it was tried.
-  Pinned by `test_the_west_facade_stacks_three_two_storey_window_columns` and
-  `test_the_east_second_storey_window_row_mirrors_about_the_house_centreline`, and visible
-  via the new `haus render --view elevation`.
+- Improve the symmetry of the windows on the east and west side
 - Extend the outdoor curtain rods to cover all three exposed side of the porch (possibly as a single continuous curtain, if that is possible, or else as 4 single bay panels)
 - Permit drawings
 - Garage ICF stem wall and framing should align on the exterior edge (drip flashing probably too). Right now the framing is aligned inwards, leaving a 'shelf' that will likely pool rainwater. Any adjustment will need to carefully consider both ICF form size and consistent stud spacing.
