@@ -269,8 +269,7 @@ def foundation_general_notes(model: ResolvedModel,
     """Sheet notes derived from the code profile and the resolved bedding/drainage records.
 
     The profile is passed in by the sheet that prints these notes, so the frost depth on
-    S-100 is stated by the same jurisdiction the cover sheet and the checklist name. This
-    module used to hardcode its own ``PERMIT_PROFILE_NAME = "mn-2024"``.
+    S-100 is stated by the same jurisdiction the cover sheet and the checklist name.
     """
     from typehaus.checks.code.mn_residential.profile import DEFAULT_PROFILE_NAME, get_profile
 
@@ -336,10 +335,8 @@ def footing_steps(model: ResolvedModel
 def _drainage_note(model: ResolvedModel) -> str:
     """Where the perimeter tile discharges, read off the tile.
 
-    This used to print "DRAINING TO SUMP SM-B-RADON" because a sump *solid* existed
-    somewhere in the model — while every authored ``DrainTile`` on the project said
-    ``discharge="daylight"``. A sheet note is a statement about the building, so it reads
-    the field that makes the statement, and says so plainly when the tile does not.
+    A sheet note is a statement about the building, so it reads the field that makes the
+    statement, and says so plainly when the tile does not.
     """
     beddings = [bedding for bedding in model.footing_beddings if bedding.drain_tile]
     if not beddings:

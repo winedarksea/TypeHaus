@@ -1,8 +1,8 @@
-import { Fragment, useMemo, useState } from "react";
-import { useStore } from "../state/store";
-import { uidByTag } from "../model/tagIndex";
-import type { HvacRegisterRow, HvacZoneRow } from "../model/types";
-import { ReaderSection, ReaderShell } from "./ReaderShell";
+import { Fragment, useMemo } from "react";
+import type { Hvac, HvacDuctRow, HvacEquipmentRow, HvacRegisterRow, HvacZoneRow } from "../model/types";
+import {
+  ReaderEmpty, ReaderFilter, ReaderSection, ReaderShell, ReaderTable, TagCell, useReader,
+} from "./ReaderShell";
 
 // "HVAC" — the fifth reader: the heat-pump systems, their zones, the ducts and the terminals.
 // Presentation only, like the circuits reader beside it. Every number is carried whole from
@@ -47,10 +47,8 @@ function ZoneCard({ zone, index, onZoom }: {
   return (
     <div className="reader-card">
       <div className="reader-card-head">
-        <button className="reader-tag" onClick={() => onZoom(zone.equipment_tag)}
-          disabled={!index.has(zone.equipment_tag)} title="Zoom to the outdoor unit">
-          <span className="reader-mono">{zone.equipment_tag}</span>
-        </button>
+        <TagCell tag={zone.equipment_tag} index={index} onJump={onZoom}
+          title="Zoom to the outdoor unit" mono />
         <span className={`badge ${badge.className}`}>{badge.label}</span>
         <span className="muted">{zone.type_tag ?? "no type"}</span>
       </div>
@@ -79,19 +77,14 @@ function ZoneCard({ zone, index, onZoom }: {
       {zone.indoor_tags.length > 0 && (
         <div className="reader-tag-cloud">
           {zone.indoor_tags.map((tag) => (
-            <button key={tag} className="reader-tag" onClick={() => onZoom(tag)}
-              disabled={!index.has(tag)} title="Zoom to the indoor unit">
-              {tag}
-            </button>
+            <TagCell key={tag} tag={tag} index={index} onJump={onZoom}
+              title="Zoom to the indoor unit" />
           ))}
         </div>
       )}
       <div className="reader-tag-cloud">
         {zone.rooms.map((tag) => (
-          <button key={tag} className="reader-tag" onClick={() => onZoom(tag)}
-            disabled={!index.has(tag)} title="Zoom to room">
-            {tag}
-          </button>
+          <TagCell key={tag} tag={tag} index={index} onJump={onZoom} title="Zoom to room" />
         ))}
       </div>
       {zone.unknown_inputs.length > 0 && (
@@ -107,51 +100,27 @@ function RegisterTable({ rows, index, onZoom }: {
   onZoom: (tag: string) => void;
 }) {
   return (
-    <div className="reader-table-scroll">
-      <table className="reader-table">
-        <thead>
-          <tr>
-            <th>Terminal</th><th>Storey</th><th>System</th><th>Style</th>
-            <th>Room</th><th>Duct</th><th>Product</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.tag}>
-              <td>
-                <button className="reader-tag" onClick={() => onZoom(row.tag)}
-                  disabled={!index.has(row.tag)} title="Zoom to terminal">
-                  <span className="reader-mono">{row.tag}</span>
-                </button>
-              </td>
-              <td className="reader-mono">{row.storey}</td>
-              <td className="reader-mono">{row.kind}</td>
-              <td>
-                <span className="reader-chip">
-                  {row.ventilation_terminal ? "ventilation" : "conditioned air"}
-                </span>
-              </td>
-              <td className="reader-mono">{row.room ?? "—"}</td>
-              <td className="reader-mono muted">{row.duct_ref ?? "—"}</td>
-              <td>{row.type_name || <span className="muted">{row.type_ref ?? "—"}</span>}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <ReaderTable<HvacRegisterRow> rows={rows} rowKey={(row) => row.tag} columns={[
+      { key: "tag", header: "Terminal", cell: (r) =>
+        <TagCell tag={r.tag} index={index} onJump={onZoom} title="Zoom to terminal" mono /> },
+      { key: "storey", header: "Storey", cellClass: "reader-mono", cell: (r) => r.storey },
+      { key: "system", header: "System", cellClass: "reader-mono", cell: (r) => r.kind },
+      { key: "style", header: "Style", cell: (r) => (
+        <span className="reader-chip">
+          {r.ventilation_terminal ? "ventilation" : "conditioned air"}
+        </span>
+      ) },
+      { key: "room", header: "Room", cellClass: "reader-mono", cell: (r) => r.room ?? "—" },
+      { key: "duct", header: "Duct", cellClass: "reader-mono muted", cell: (r) => r.duct_ref ?? "—" },
+      { key: "product", header: "Product",
+        cell: (r) => r.type_name || <span className="muted">{r.type_ref ?? "—"}</span> },
+    ]} />
   );
 }
 
 export function HvacView() {
-  const model = useStore((s) => s.model);
-  const setDetailView = useStore((s) => s.setDetailView);
-  const zoomToUid = useStore((s) => s.zoomToUid);
-  const [filter, setFilter] = useState("");
-
-  const index = useMemo(() => (model ? uidByTag(model) : new Map<string, string>()), [model]);
-  const hvac = model?.hvac ?? null;
-
-  const needle = filter.trim().toLowerCase();
+  const { model, data: hvac, index, filter, setFilter, needle, jump, close } =
+    useReader<Hvac>((m) => m.hvac);
   const equipment = useMemo(() => {
     const rows = hvac?.equipment ?? [];
     return needle
@@ -163,23 +132,12 @@ export function HvacView() {
 
   if (!model) return null;
 
-  // Same jump contract as the other readers: zoom the plan, then get out of its way.
-  const jump = (tag: string) => {
-    const uid = index.get(tag);
-    if (uid) {
-      zoomToUid(uid);
-      setDetailView("none");
-    }
-  };
-
   if (!hvac) {
     return (
-      <ReaderShell title="HVAC" subtitle="no HVAC data" onClose={() => setDetailView("none")}>
-        <div className="muted">
-          This model carries no HVAC take-off. The zone rows are block loads, so they need the
-          envelope preferences — rebuild with a current engine and a preferences.toml.
-        </div>
-      </ReaderShell>
+      <ReaderEmpty title="HVAC" subtitle="no HVAC data" onClose={close}>
+        This model carries no HVAC take-off. The zone rows are block loads, so they need the
+        envelope preferences — rebuild with a current engine and a preferences.toml.
+      </ReaderEmpty>
     );
   }
 
@@ -190,16 +148,9 @@ export function HvacView() {
     <ReaderShell
       title="HVAC"
       subtitle={`${zones.length} zone${zones.length === 1 ? "" : "s"} · ${hvac.equipment.length} units · ${ducts.length} duct runs`}
-      onClose={() => setDetailView("none")}
-      toolbar={
-        <input
-          value={filter}
-          placeholder="Filter equipment…"
-          onChange={(event) => setFilter(event.target.value)}
-          aria-label="Filter HVAC equipment"
-          style={{ padding: "5px 7px", minWidth: 180 }}
-        />
-      }
+      onClose={close}
+      toolbar={<ReaderFilter value={filter} onChange={setFilter}
+        placeholder="Filter equipment…" label="Filter HVAC equipment" />}
     >
       <ReaderSection
         title="Systems"
@@ -221,10 +172,7 @@ export function HvacView() {
             </div>
             <div className="reader-tag-cloud">
               {unclaimed.map((tag) => (
-                <button key={tag} className="reader-tag" onClick={() => jump(tag)}
-                  disabled={!index.has(tag)} title="Zoom to room">
-                  {tag}
-                </button>
+                <TagCell key={tag} tag={tag} index={index} onJump={jump} title="Zoom to room" />
               ))}
             </div>
           </div>
@@ -269,40 +217,24 @@ export function HvacView() {
         note="Every modeled unit and the ratings its product type carries. A blank capacity means the datasheet has not been authored — not that the unit makes no heat."
         count={equipment.length}
       >
-        <div className="reader-table-scroll">
-          <table className="reader-table">
-            <thead>
-              <tr>
-                <th>Tag</th><th>Kind</th><th>Product</th><th>Storey</th><th>Room</th>
-                <th className="num-col">Heating @47</th><th className="num-col">@ design</th>
-                <th className="num-col">Cooling</th><th className="num-col">Min °F</th>
-                <th>Pairs with</th><th>Circuit</th>
-              </tr>
-            </thead>
-            <tbody>
-              {equipment.map((row) => (
-                <tr key={row.tag}>
-                  <td>
-                    <button className="reader-tag" onClick={() => jump(row.tag)}
-                      disabled={!index.has(row.tag)} title="Zoom to unit">
-                      <span className="reader-mono">{row.tag}</span>
-                    </button>
-                  </td>
-                  <td className="reader-mono">{row.kind}</td>
-                  <td>{row.name || <span className="muted">{row.type_ref ?? "—"}</span>}</td>
-                  <td className="reader-mono">{row.storey}</td>
-                  <td className="reader-mono">{row.room ?? "—"}</td>
-                  <td className="num-col">{btuh(row.heating_capacity_btuh)}</td>
-                  <td className="num-col">{btuh(row.heating_capacity_at_design_btuh)}</td>
-                  <td className="num-col">{btuh(row.cooling_capacity_btuh)}</td>
-                  <td className="num-col">{row.min_operating_temp_f ?? "—"}</td>
-                  <td className="reader-mono muted">{row.outdoor_ref ?? "—"}</td>
-                  <td className="reader-mono">{row.circuit ?? "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ReaderTable<HvacEquipmentRow> rows={equipment} rowKey={(row) => row.tag} columns={[
+          { key: "tag", header: "Tag", cell: (r) =>
+            <TagCell tag={r.tag} index={index} onJump={jump} title="Zoom to unit" mono /> },
+          { key: "kind", header: "Kind", cellClass: "reader-mono", cell: (r) => r.kind },
+          { key: "product", header: "Product",
+            cell: (r) => r.name || <span className="muted">{r.type_ref ?? "—"}</span> },
+          { key: "storey", header: "Storey", cellClass: "reader-mono", cell: (r) => r.storey },
+          { key: "room", header: "Room", cellClass: "reader-mono", cell: (r) => r.room ?? "—" },
+          { key: "heat47", header: "Heating @47", num: true,
+            cell: (r) => btuh(r.heating_capacity_btuh) },
+          { key: "heatdesign", header: "@ design", num: true,
+            cell: (r) => btuh(r.heating_capacity_at_design_btuh) },
+          { key: "cool", header: "Cooling", num: true, cell: (r) => btuh(r.cooling_capacity_btuh) },
+          { key: "mintemp", header: "Min °F", num: true, cell: (r) => r.min_operating_temp_f ?? "—" },
+          { key: "pairs", header: "Pairs with", cellClass: "reader-mono muted",
+            cell: (r) => r.outdoor_ref ?? "—" },
+          { key: "circuit", header: "Circuit", cellClass: "reader-mono", cell: (r) => r.circuit ?? "—" },
+        ]} />
       </ReaderSection>
 
       <ReaderSection
@@ -310,38 +242,20 @@ export function HvacView() {
         note="Authored routing, never solved: length is the developed plan run and design_cfm is the intent the run was drawn for. CHASE/SOFFIT runs are exempt from the joist-bay geometry checks because they are not in a joist bay."
         count={ducts.length}
       >
-        <div className="reader-table-scroll">
-          <table className="reader-table">
-            <thead>
-              <tr>
-                <th>Run</th><th>Storey</th><th>System</th><th>Routing</th>
-                <th className="num-col">Section</th><th className="num-col">Length</th>
-                <th className="num-col">Design</th><th>Floor</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ducts.map((row) => (
-                <tr key={row.tag}>
-                  <td>
-                    <button className="reader-tag" onClick={() => jump(row.tag)}
-                      disabled={!index.has(row.tag)} title="Zoom to duct run">
-                      <span className="reader-mono">{row.tag}</span>
-                    </button>
-                  </td>
-                  <td className="reader-mono">{row.storey}</td>
-                  <td className="reader-mono">{row.system}</td>
-                  <td className="reader-mono">{row.routing}</td>
-                  <td className="num-col">{row.width_in}" × {row.depth_in}"</td>
-                  <td className="num-col">{row.length_ft} lf</td>
-                  <td className="num-col">
-                    {row.design_cfm === null ? <span className="muted">—</span> : `${row.design_cfm} cfm`}
-                  </td>
-                  <td className="reader-mono muted">{row.floor_ref ?? "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ReaderTable<HvacDuctRow> rows={ducts} rowKey={(row) => row.tag} columns={[
+          { key: "tag", header: "Run", cell: (r) =>
+            <TagCell tag={r.tag} index={index} onJump={jump} title="Zoom to duct run" mono /> },
+          { key: "storey", header: "Storey", cellClass: "reader-mono", cell: (r) => r.storey },
+          { key: "system", header: "System", cellClass: "reader-mono", cell: (r) => r.system },
+          { key: "routing", header: "Routing", cellClass: "reader-mono", cell: (r) => r.routing },
+          { key: "section", header: "Section", num: true,
+            cell: (r) => <>{r.width_in}" × {r.depth_in}"</> },
+          { key: "length", header: "Length", num: true, cell: (r) => `${r.length_ft} lf` },
+          { key: "design", header: "Design", num: true, cell: (r) =>
+            r.design_cfm === null ? <span className="muted">—</span> : `${r.design_cfm} cfm` },
+          { key: "floor", header: "Floor", cellClass: "reader-mono muted",
+            cell: (r) => r.floor_ref ?? "—" },
+        ]} />
       </ReaderSection>
 
       <ReaderSection

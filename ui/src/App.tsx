@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useIsCompact } from "./hooks/useBreakpoint";
 import { useStore } from "./state/store";
 import { subscribePwa, type PwaState } from "./pwa/register";
@@ -11,21 +11,33 @@ import { StatusRail } from "./components/shell/StatusRail";
 import { ContextBar } from "./components/ContextBar";
 import { CommandPalette } from "./components/CommandPalette";
 import { Workbench } from "./components/Workbench";
-import { AssemblyDetailsView } from "./components/AssemblyDetailsView";
-import { BomView } from "./components/BomView";
-import { CircuitsView } from "./components/CircuitsView";
-import { DataView } from "./components/DataView";
-import { HvacView } from "./components/HvacView";
-import { PlumbingView } from "./components/PlumbingView";
-import { LightingView } from "./components/LightingView";
 import { LensBar } from "./components/LensBar";
 import { Preview3D } from "./components/Preview3D";
 import { Canvas2D } from "./components/Canvas2D";
-import { Panel3D } from "./components/Panel3D";
+import { Panel3D } from "./components/Panel3DLazy";
 import { Inspector } from "./components/Inspector";
 import { ConflictBanner, LoadErrorBanner } from "./components/ConflictBanner";
 import { ExtentsHUD } from "./components/ExtentsHUD";
 import { Toasts } from "./components/Toasts";
+
+// The readers are full-screen, opened one at a time from a menu, and none of them is on the
+// first paint — so each ships as its own chunk rather than as dead weight in the entry bundle
+// every visitor downloads before the plan draws. `lazy` needs a default export; the readers are
+// named exports, hence the `.then`.
+const AssemblyDetailsView = lazy(() => import("./components/AssemblyDetailsView")
+  .then((m) => ({ default: m.AssemblyDetailsView })));
+const BomView = lazy(() => import("./components/BomView")
+  .then((m) => ({ default: m.BomView })));
+const CircuitsView = lazy(() => import("./components/CircuitsView")
+  .then((m) => ({ default: m.CircuitsView })));
+const DataView = lazy(() => import("./components/DataView")
+  .then((m) => ({ default: m.DataView })));
+const HvacView = lazy(() => import("./components/HvacView")
+  .then((m) => ({ default: m.HvacView })));
+const PlumbingView = lazy(() => import("./components/PlumbingView")
+  .then((m) => ({ default: m.PlumbingView })));
+const LightingView = lazy(() => import("./components/LightingView")
+  .then((m) => ({ default: m.LightingView })));
 
 // Interaction-state label shown near the top-left canvas corner (Phase 2).
 function interactionLabel(tool: string, subOperation: boolean): string {
@@ -175,13 +187,17 @@ export function App() {
 
       <StatusRail />
 
-      {detailView === "assembly" && <AssemblyDetailsView />}
-      {detailView === "bom" && <BomView />}
-      {detailView === "circuits" && <CircuitsView />}
-      {detailView === "lighting" && <LightingView />}
-      {detailView === "hvac" && <HvacView />}
-      {detailView === "plumbing" && <PlumbingView />}
-      {detailView === "data" && <DataView />}
+      {/* Nothing to show while a reader's chunk arrives: the canvas behind it is still the
+          screen, and a spinner over it would read as the canvas breaking. */}
+      <Suspense fallback={null}>
+        {detailView === "assembly" && <AssemblyDetailsView />}
+        {detailView === "bom" && <BomView />}
+        {detailView === "circuits" && <CircuitsView />}
+        {detailView === "lighting" && <LightingView />}
+        {detailView === "hvac" && <HvacView />}
+        {detailView === "plumbing" && <PlumbingView />}
+        {detailView === "data" && <DataView />}
+      </Suspense>
       <Workbench />
       <CommandPalette />
       <Toasts />

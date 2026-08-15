@@ -8,10 +8,9 @@ import { DetailViewer } from "./DetailViewer";
 // Details navigator (Phase 8): promotes derived boundary conditions (model.conditions) to
 // first-class linked objects. The star is the engine's authored curation flag (served per
 // detail by GET /details and written back through the normal PatchOp path) — starred
-// details make the primary drawing export and read highlighted here. This replaced a
-// localStorage-only state enum that never round-tripped. Curation is per condition key:
-// the star edits the transition's override lists, so starring one junction no longer
-// stars every other condition the same transition happens to bind.
+// details make the primary drawing export and read highlighted here. Curation is per
+// condition key: the star edits the transition's override lists, so starring one junction
+// no longer stars every other condition the same transition happens to bind.
 export function DetailsNavigator() {
   const model = useStore((s) => s.model);
   const workspace = useStore((s) => s.activeWorkspace);

@@ -89,6 +89,20 @@ def emit_wall(
             ))
 
 
+def emit_ghost_walls(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
+    """Draw a storey's walls as background context on a trade plan.
+
+    Every MEP sheet opens the same way: the walls are there so the reader can locate a
+    device, not to be read as architecture, so they print thin, unhatched and unframed on
+    the below-line layer. Five plan builders spelled this loop out identically, which is
+    how the line weight drifted between them.
+    """
+    for wall in model.walls:
+        if wall.storey == storey:
+            emit_wall(b, wall, layer_override="A-WALL-BELW", weight_override=0.15,
+                      hatch=False, members=False)
+
+
 def emit_fixtures(b: SceneBuilder, model: ResolvedModel, storey: str,
                   domains: frozenset[str] | None = None) -> None:
     """Draw resolved placeable polygons when detailed SVG cannot safely enter technical output.

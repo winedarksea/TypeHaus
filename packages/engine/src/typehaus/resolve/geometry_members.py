@@ -62,10 +62,10 @@ def member_box(member: FramedMember) -> GBox | None:
         ux, uy = orient[0] / norm, orient[1] / norm
         nx, ny = -uy, ux
         hw, hd = width / 2.0, depth / 2.0
-        ring = tuple(
-            (ax + ux * sw * hw + nx * sd * hd, ay + uy * sw * hw + ny * sd * hd)
-            for sw, sd in ((-1, -1), (1, -1), (1, 1), (-1, 1))
-        )
+        uw, un = ux * hw, nx * hd
+        vw, vn = uy * hw, ny * hd
+        ring = ((ax - uw - un, ay - vw - vn), (ax + uw - un, ay + vw - vn),
+                (ax + uw + un, ay + vw + vn), (ax - uw + un, ay - vw + vn))
         z1 = max(member.z1_m, member.z0_m + MINIMUM_EXTENT_M)
         return GBox(
             corners_bottom=tuple((x, y, member.z0_m) for x, y in ring),
@@ -80,15 +80,18 @@ def member_box(member: FramedMember) -> GBox | None:
     z1_end = max(z1_end, z0_end + MINIMUM_EXTENT_M)
 
     # Ring order matches the IFC faceted box: start-left, end-left, end-right, start-right,
-    # so bottom and top correspond vertex for vertex.
-    plan_and_z = (
-        (ax - half_x, ay - half_y, member.z0_m, z1_start),
-        (bx - half_x, by - half_y, z0_end, z1_end),
-        (bx + half_x, by + half_y, z0_end, z1_end),
-        (ax + half_x, ay + half_y, member.z0_m, z1_start),
-    )
-    bottom: tuple[Vec3, ...] = tuple((x, y, low) for x, y, low, _high in plan_and_z)
-    top: tuple[Vec3, ...] = tuple((x, y, high) for x, y, _low, high in plan_and_z)
+    # so bottom and top correspond vertex for vertex. Written out rather than zipped from a
+    # packed (x, y, low, high) tuple: this function runs 15,160 times per resolve of
+    # houses/catlin, and the two generator expressions that used to unpack it were 43,300
+    # frame setups each.
+    slx, sly = ax - half_x, ay - half_y
+    elx, ely = bx - half_x, by - half_y
+    erx, ery = bx + half_x, by + half_y
+    srx, sry = ax + half_x, ay + half_y
+    bottom: tuple[Vec3, ...] = ((slx, sly, member.z0_m), (elx, ely, z0_end),
+                                (erx, ery, z0_end), (srx, sry, member.z0_m))
+    top: tuple[Vec3, ...] = ((slx, sly, z1_start), (elx, ely, z1_end),
+                             (erx, ery, z1_end), (srx, sry, z1_start))
     return GBox(corners_bottom=bottom, corners_top=top)
 
 

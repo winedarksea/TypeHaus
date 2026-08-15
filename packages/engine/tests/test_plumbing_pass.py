@@ -3,25 +3,11 @@ staggered-stud framing, fixture-unit tables, and the plumbing takeoff block."""
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 
 from typehaus.checks import run_from_model
 from typehaus.checks.registry import Tier
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
-
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, [f.message for f in errors]
-    return model
 
 
 @pytest.fixture(scope="module")
@@ -330,11 +316,16 @@ def test_plumbing_takeoff_block_shape(catlin_model):
 
 
 def test_reader_and_check_share_the_fixture_unit_derivation():
-    """The invariant that keeps the public page and the permit finding in agreement."""
-    import typehaus.checks.mep.plumbing as checks
-    import typehaus.takeoff.plumbing as takeoff
+    """The invariant that keeps the public page and the permit finding in agreement.
 
+    Points at ``plumbing_dwv`` rather than ``plumbing``: the latter is now a re-export
+    facade, so reading *its* source proved nothing — the check that actually derives
+    fixture units is ``mep.pipe_sizing``, and that lives in the DWV band.
+    """
     import inspect
+
+    import typehaus.checks.mep.plumbing_dwv as checks
+    import typehaus.takeoff.plumbing as takeoff
 
     assert "takeoff.plumbing_calc" in inspect.getsource(checks)
     assert "plumbing_calc" in inspect.getsource(takeoff)

@@ -14,7 +14,6 @@ table rather than letting the drawn member imply a prescriptive answer.
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 
@@ -22,21 +21,10 @@ from typehaus.checks import build_context
 from typehaus.checks.structural.checks import floor_opening_header_within_prescriptive
 from typehaus.findings import Result
 from typehaus.quantities import ft, inch
-from typehaus.resolve import resolve
 from typehaus.resolve.floors import opening_header_profile
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.source import load_plan
 from _helpers import CATLIN as CATLIN_DIR
-
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [finding for finding in findings if finding.severity.value == "error"]
-    assert not errors, [finding.message for finding in errors]
-    return model
 
 
 def _members(model, category):

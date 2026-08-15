@@ -26,6 +26,7 @@ import {
   memberUidsFor, tagInstancedMemberIdentity, tagMergedMemberIdentity,
 } from "./memberPicking";
 import { projectPlanDirectionToScene, projectPointToScene, type PlanCenter } from "./planGeometry";
+import { standardMaterial } from "./surfaces";
 
 // Mirrors emit/gltf/emitter.py's _PALETTE (member-category keys only; layer-function
 // colors live in nordic/palette.ts for wall fills).
@@ -212,9 +213,8 @@ function buildSeamMesh(group: THREE.Group, members: Member[], center: PlanCenter
 function buildRectInstances(group: THREE.Group, members: Member[], center: PlanCenter,
   mode: "nordic" | "schematic", palette: ResolvedNordicPalette, ownerUid: string) {
   if (!members.length) return;
-  const material = new THREE.MeshStandardMaterial({
-    roughness: mode === "nordic" ? 0.85 : 1, flatShading: mode === "schematic",
-  });
+  // No colour: every instance sets its own via `setColorAt`.
+  const material = standardMaterial(undefined, mode);
   const mesh = new THREE.InstancedMesh(UNIT_BOX, material, members.length);
   members.forEach((m, i) => {
     mesh.setMatrixAt(i, composeMemberBoxMatrix(_m, m, center));
@@ -253,9 +253,7 @@ function buildRakedMesh(group: THREE.Group, members: Member[], center: PlanCente
   geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
   geo.setIndex(indices);
   geo.computeVertexNormals();
-  const material = new THREE.MeshStandardMaterial({
-    vertexColors: true, roughness: mode === "nordic" ? 0.85 : 1, flatShading: mode === "schematic",
-  });
+  const material = standardMaterial(undefined, mode, { vertexColors: true });
   const mesh = new THREE.Mesh(geo, material);
   tagMergedMemberIdentity(mesh, memberUidsFor(ownerUid, drawn));
   group.add(mesh);
@@ -269,7 +267,7 @@ function buildIJoists(group: THREE.Group, members: Member[], center: PlanCenter,
   if (!members.length) return;
   const mkMesh = () => new THREE.InstancedMesh(
     UNIT_BOX,
-    new THREE.MeshStandardMaterial({ roughness: mode === "nordic" ? 0.85 : 1, flatShading: mode === "schematic" }),
+    standardMaterial(undefined, mode),
     members.length,
   );
   const top = mkMesh();

@@ -57,13 +57,14 @@ from typehaus.emit.draw.structural_common import (
 if TYPE_CHECKING:
     from typehaus.checks.jurisdiction import JurisdictionProfile
 
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 # Leader drops in metres, so a callout clears the geometry it points at.
 _LEADER_DROP_M = 1.0
 _BEDDING_LEADER_DROP_M = 2.0
 # Nominal post half-width used for the plan square when the Post carries only a size string.
-_POST_HALF_WIDTH_M = 0.0254
+_POST_HALF_WIDTH_M = M_PER_IN
 _SLAB_LABEL_HEIGHT_IN = 3.0
 
 

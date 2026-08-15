@@ -1,8 +1,11 @@
 import { Fragment, useMemo, useState } from "react";
-import { useStore } from "../state/store";
-import { uidByTag } from "../model/tagIndex";
-import type { BackupRuntime, PanelScheduleRow, ServiceLoad } from "../model/types";
-import { ReaderSection, ReaderShell } from "./ReaderShell";
+import type {
+  BackupComponentRow, ConduitRow, DeviceCountRow, Electrical, BackupRuntime, PanelScheduleRow,
+  ServiceLoad,
+} from "../model/types";
+import {
+  ReaderEmpty, ReaderFilter, ReaderSection, ReaderShell, ReaderTable, TagCell, useReader,
+} from "./ReaderShell";
 import { Icon } from "../icons/Icon";
 
 // "Circuits" — the third reader, and the on-screen twin of the E-601 permit sheet. Every
@@ -176,10 +179,8 @@ function PanelSchedule({ rows, expanded, onExpand, index, onZoom }: {
                     <td colSpan={8}>
                       <div className="reader-tag-cloud">
                         {row.devices.map((tag) => (
-                          <button key={tag} className="reader-tag" onClick={() => onZoom(tag)}
-                            disabled={!index.has(tag)} title="Zoom to device">
-                            {tag}
-                          </button>
+                          <TagCell key={tag} tag={tag} index={index} onJump={onZoom}
+                            title="Zoom to device" />
                         ))}
                       </div>
                     </td>
@@ -195,16 +196,9 @@ function PanelSchedule({ rows, expanded, onExpand, index, onZoom }: {
 }
 
 export function CircuitsView() {
-  const model = useStore((s) => s.model);
-  const setDetailView = useStore((s) => s.setDetailView);
-  const zoomToUid = useStore((s) => s.zoomToUid);
-  const [filter, setFilter] = useState("");
+  const { model, data: electrical, index, filter, setFilter, needle, jump, close } =
+    useReader<Electrical>((m) => m.electrical);
   const [expanded, setExpanded] = useState<string | null>(null);
-
-  const index = useMemo(() => (model ? uidByTag(model) : new Map<string, string>()), [model]);
-  const electrical = model?.electrical ?? null;
-
-  const needle = filter.trim().toLowerCase();
   const schedule = useMemo(() => {
     const rows = electrical?.panel_schedule ?? [];
     return needle
@@ -214,22 +208,11 @@ export function CircuitsView() {
 
   if (!model) return null;
 
-  // Same jump contract as the assembly reader: zoom the plan, then get out of its way.
-  const jump = (tag: string) => {
-    const uid = index.get(tag);
-    if (uid) {
-      zoomToUid(uid);
-      setDetailView("none");
-    }
-  };
-
   if (!electrical) {
     return (
-      <ReaderShell title="Circuits" subtitle="no electrical data" onClose={() => setDetailView("none")}>
-        <div className="muted">
-          This model carries no electrical take-off — rebuild with a current engine.
-        </div>
-      </ReaderShell>
+      <ReaderEmpty title="Circuits" subtitle="no electrical data" onClose={close}>
+        This model carries no electrical take-off — rebuild with a current engine.
+      </ReaderEmpty>
     );
   }
 
@@ -241,16 +224,9 @@ export function CircuitsView() {
     <ReaderShell
       title="Circuits"
       subtitle={`${electrical.panel_schedule.length} circuits${load ? ` · ${load.demand_amps} A demand on a ${load.service_amps} A service` : ""}`}
-      onClose={() => setDetailView("none")}
-      toolbar={
-        <input
-          value={filter}
-          placeholder="Filter circuits…"
-          onChange={(event) => setFilter(event.target.value)}
-          aria-label="Filter circuits"
-          style={{ padding: "5px 7px", minWidth: 180 }}
-        />
-      }
+      onClose={close}
+      toolbar={<ReaderFilter value={filter} onChange={setFilter}
+        placeholder="Filter circuits…" label="Filter circuits" />}
     >
       <ReaderSection
         title="Service load"
@@ -274,20 +250,11 @@ export function CircuitsView() {
         note="Derived twice over: the storage and conversion rows from the placed ESS equipment, the switching gear from the shed-tier circuits — never a hand-typed parts list."
         count={backup.length}
       >
-        <div className="reader-table-scroll">
-          <table className="reader-table">
-            <thead><tr><th>Component</th><th className="num-col">Count</th><th>Basis</th></tr></thead>
-            <tbody>
-              {backup.map((row) => (
-                <tr key={row.component}>
-                  <td>{row.component}</td>
-                  <td className="num-col">{row.count}</td>
-                  <td className="muted">{row.basis}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ReaderTable<BackupComponentRow> rows={backup} rowKey={(row) => row.component} columns={[
+          { key: "component", header: "Component", cell: (r) => r.component },
+          { key: "count", header: "Count", num: true, cell: (r) => r.count },
+          { key: "basis", header: "Basis", cellClass: "muted", cell: (r) => r.basis },
+        ]} />
       </ReaderSection>
 
       {runtime?.modeled && runtime.autonomy && runtime.cycle_48h && (
@@ -305,24 +272,13 @@ export function CircuitsView() {
         note="EMT trunks by trade size, in developed length — plan run plus riser, the way it is ordered."
         count={conduit.length}
       >
-        <div className="reader-table-scroll">
-          <table className="reader-table">
-            <thead>
-              <tr><th className="num-col">Trade size</th><th className="num-col">Runs</th>
-                <th className="num-col">Length</th><th>Tags</th></tr>
-            </thead>
-            <tbody>
-              {conduit.map((row) => (
-                <tr key={row.trade_size_in}>
-                  <td className="num-col">{row.trade_size_in}"</td>
-                  <td className="num-col">{row.runs}</td>
-                  <td className="num-col">{row.length_ft} lf</td>
-                  <td className="reader-mono muted">{row.tags.join(" · ")}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ReaderTable<ConduitRow> rows={conduit} rowKey={(row) => String(row.trade_size_in)} columns={[
+          { key: "size", header: "Trade size", num: true, cell: (r) => `${r.trade_size_in}"` },
+          { key: "runs", header: "Runs", num: true, cell: (r) => r.runs },
+          { key: "length", header: "Length", num: true, cell: (r) => `${r.length_ft} lf` },
+          { key: "tags", header: "Tags", cellClass: "reader-mono muted",
+            cell: (r) => r.tags.join(" · ") },
+        ]} />
       </ReaderSection>
 
       <ReaderSection
@@ -330,24 +286,14 @@ export function CircuitsView() {
         note="What the electrician's order reads: every modeled device counted by kind and product type."
         count={devices.length}
       >
-        <div className="reader-table-scroll">
-          <table className="reader-table">
-            <thead>
-              <tr><th>Kind</th><th>Type</th><th>Product</th><th>NEMA</th><th className="num-col">Count</th></tr>
-            </thead>
-            <tbody>
-              {devices.map((row) => (
-                <tr key={`${row.kind}·${row.type}`}>
-                  <td className="reader-mono">{row.kind}</td>
-                  <td className="reader-mono">{row.type}</td>
-                  <td>{row.name || <span className="muted">—</span>}</td>
-                  <td className="reader-mono">{row.nema || "—"}</td>
-                  <td className="num-col">{row.count}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ReaderTable<DeviceCountRow> rows={devices} rowKey={(row) => `${row.kind}·${row.type}`} columns={[
+          { key: "kind", header: "Kind", cellClass: "reader-mono", cell: (r) => r.kind },
+          { key: "type", header: "Type", cellClass: "reader-mono", cell: (r) => r.type },
+          { key: "product", header: "Product",
+            cell: (r) => r.name || <span className="muted">—</span> },
+          { key: "nema", header: "NEMA", cellClass: "reader-mono", cell: (r) => r.nema || "—" },
+          { key: "count", header: "Count", num: true, cell: (r) => r.count },
+        ]} />
       </ReaderSection>
 
       <ReaderSection
@@ -365,10 +311,7 @@ export function CircuitsView() {
             </div>
             <div className="reader-tag-cloud">
               {row.tags.map((tag) => (
-                <button key={tag} className="reader-tag" onClick={() => jump(tag)}
-                  disabled={!index.has(tag)} title="Zoom to module">
-                  {tag}
-                </button>
+                <TagCell key={tag} tag={tag} index={index} onJump={jump} title="Zoom to module" />
               ))}
             </div>
           </div>

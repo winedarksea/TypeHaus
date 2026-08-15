@@ -1,8 +1,12 @@
 import { useMemo, useState } from "react";
-import { useStore } from "../state/store";
-import { uidByTag } from "../model/tagIndex";
-import type { Plumbing, PlumbingRiserRun } from "../model/types";
-import { ReaderSection, ReaderShell } from "./ReaderShell";
+import type {
+  Plumbing, PlumbingCastInRow, PlumbingFittingRow, PlumbingFixtureRow, PlumbingPipeGroup,
+  PlumbingRiserRun, PlumbingRunLoadRow,
+} from "../model/types";
+import {
+  ReaderEmpty, ReaderFilter, ReaderSection, ReaderShell, ReaderTable, TagCell, useReader,
+  type ReaderColumn,
+} from "./ReaderShell";
 
 // "Plumbing" — the sixth reader: the isometric riser, the fixture-unit ledger, and the
 // takeoff with the pour-day cast-in list. Presentation only, like every reader beside it.
@@ -138,32 +142,25 @@ function statusBadge(status: string | null): { label: string; className: string 
 }
 
 export function PlumbingView() {
-  const model = useStore((s) => s.model);
-  const setDetailView = useStore((s) => s.setDetailView);
-  const zoomToUid = useStore((s) => s.zoomToUid);
-  const [filter, setFilter] = useState("");
-
-  const baseIndex = useMemo(() => (model ? uidByTag(model) : new Map<string, string>()), [model]);
-  const plumbing: Plumbing | null = model?.plumbing ?? null;
-
-  // A routed run has no record of its own in the scene — its geometry arrives as
-  // per-segment solids tagged `<RUN>-S1[B1]`. Alias each run tag to its first segment
-  // solid so the riser's zoom buttons land somewhere real.
-  const index = useMemo(() => {
-    const aliased = new Map(baseIndex);
-    for (const run of plumbing?.riser ?? []) {
-      if (aliased.has(run.tag)) continue;
-      for (const [tag, uid] of baseIndex) {
-        if (tag.startsWith(`${run.tag}-S`)) {
-          aliased.set(run.tag, uid);
-          break;
+  const { model, data: plumbing, index, filter, setFilter, needle, jump, close } =
+    useReader<Plumbing>((m) => m.plumbing,
+      // A routed run has no record of its own in the scene — its geometry arrives as
+      // per-segment solids tagged `<RUN>-S1[B1]`. Alias each run tag to its first segment
+      // solid so the riser's zoom buttons land somewhere real.
+      (base, data) => {
+        const aliased = new Map(base);
+        for (const run of data.riser) {
+          if (aliased.has(run.tag)) continue;
+          for (const [tag, uid] of base) {
+            if (tag.startsWith(`${run.tag}-S`)) {
+              aliased.set(run.tag, uid);
+              break;
+            }
+          }
         }
-      }
-    }
-    return aliased;
-  }, [baseIndex, plumbing]);
+        return aliased;
+      });
 
-  const needle = filter.trim().toLowerCase();
   const riser = useMemo(() => {
     const rows = plumbing?.riser ?? [];
     return needle
@@ -175,42 +172,28 @@ export function PlumbingView() {
 
   if (!model) return null;
 
-  // Same jump contract as the other readers: zoom the plan, then get out of its way.
-  const jump = (tag: string) => {
-    const uid = index.get(tag);
-    if (uid) {
-      zoomToUid(uid);
-      setDetailView("none");
-    }
-  };
-
   if (!plumbing) {
     return (
-      <ReaderShell title="Plumbing" subtitle="no plumbing data" onClose={() => setDetailView("none")}>
-        <div className="muted">
-          This model carries no plumbing take-off — rebuild with a current engine.
-        </div>
-      </ReaderShell>
+      <ReaderEmpty title="Plumbing" subtitle="no plumbing data" onClose={close}>
+        This model carries no plumbing take-off — rebuild with a current engine.
+      </ReaderEmpty>
     );
   }
 
   const { fixture_units: units, takeoff } = plumbing;
+  const runTag = (title: string): ReaderColumn<{ tag: string }> => ({
+    key: "tag", header: "Run",
+    cell: (row) => <TagCell tag={row.tag} index={index} onJump={jump} title={title} mono />,
+  });
   const systems = Array.from(new Set(plumbing.riser.map((run) => run.system)));
 
   return (
     <ReaderShell
       title="Plumbing"
       subtitle={`${plumbing.riser.length} runs · ${units.fixtures.length} fixtures · ${takeoff.cast_in.length} cast-in sleeves`}
-      onClose={() => setDetailView("none")}
-      toolbar={
-        <input
-          value={filter}
-          placeholder="Filter runs…"
-          onChange={(event) => setFilter(event.target.value)}
-          aria-label="Filter plumbing runs"
-          style={{ padding: "5px 7px", minWidth: 180 }}
-        />
-      }
+      onClose={close}
+      toolbar={<ReaderFilter value={filter} onChange={setFilter}
+        placeholder="Filter runs…" label="Filter plumbing runs" />}
     >
       <ReaderSection
         title="Isometric riser"
@@ -228,36 +211,20 @@ export function PlumbingView() {
             ))}
           </div>
         </div>
-        <div className="reader-table-scroll">
-          <table className="reader-table">
-            <thead>
-              <tr>
-                <th>Run</th><th>Storey</th><th>System</th><th>Material</th>
-                <th className="num-col">Ø</th><th className="num-col">Length</th>
-                <th>Hosted in</th><th>Serves</th>
-              </tr>
-            </thead>
-            <tbody>
-              {riser.map((run) => (
-                <tr key={run.tag}>
-                  <td>
-                    <button className="reader-tag" onClick={() => jump(run.tag)}
-                      disabled={!index.has(run.tag)} title="Zoom to run">
-                      <span className="reader-mono">{run.tag}</span>
-                    </button>
-                  </td>
-                  <td className="reader-mono">{run.storey}</td>
-                  <td className="reader-mono">{SYSTEM_LABEL[run.system] ?? run.system}</td>
-                  <td className="reader-mono">{run.material ?? "—"}</td>
-                  <td className="num-col">{run.diameter_in}"</td>
-                  <td className="num-col">{run.length_ft} lf</td>
-                  <td className="reader-mono muted">{run.wall_refs.length > 0 ? run.wall_refs.join(", ") : "—"}</td>
-                  <td className="reader-mono muted">{run.serves.length > 0 ? run.serves.join(", ") : "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ReaderTable<PlumbingRiserRun> rows={riser} rowKey={(run) => run.tag} columns={[
+          runTag("Zoom to run"),
+          { key: "storey", header: "Storey", cellClass: "reader-mono", cell: (r) => r.storey },
+          { key: "system", header: "System", cellClass: "reader-mono",
+            cell: (r) => SYSTEM_LABEL[r.system] ?? r.system },
+          { key: "material", header: "Material", cellClass: "reader-mono",
+            cell: (r) => r.material ?? "—" },
+          { key: "dia", header: "Ø", num: true, cell: (r) => `${r.diameter_in}"` },
+          { key: "length", header: "Length", num: true, cell: (r) => `${r.length_ft} lf` },
+          { key: "hosted", header: "Hosted in", cellClass: "reader-mono muted",
+            cell: (r) => r.wall_refs.length > 0 ? r.wall_refs.join(", ") : "—" },
+          { key: "serves", header: "Serves", cellClass: "reader-mono muted",
+            cell: (r) => r.serves.length > 0 ? r.serves.join(", ") : "—" },
+        ]} />
       </ReaderSection>
 
       <ReaderSection
@@ -274,71 +241,35 @@ export function PlumbingView() {
           </div>
         </div>
         {units.runs.length > 0 && (
-          <div className="reader-table-scroll">
-            <table className="reader-table">
-              <thead>
-                <tr>
-                  <th>Run</th><th>System</th><th className="num-col">Ø</th>
-                  <th className="num-col">Load</th><th className="num-col">Required</th>
-                  <th>Status</th><th>Serves</th>
-                </tr>
-              </thead>
-              <tbody>
-                {units.runs.map((row) => {
-                  const badge = statusBadge(row.status);
-                  return (
-                    <tr key={row.tag}>
-                      <td>
-                        <button className="reader-tag" onClick={() => jump(row.tag)}
-                          disabled={!index.has(row.tag)} title="Zoom to run">
-                          <span className="reader-mono">{row.tag}</span>
-                        </button>
-                      </td>
-                      <td className="reader-mono">{SYSTEM_LABEL[row.system] ?? row.system}</td>
-                      <td className="num-col">{row.diameter_in}"</td>
-                      <td className="num-col">{row.load === null ? "—" : `${row.load} ${row.unit}`}</td>
-                      <td className="num-col">{row.required_in === null ? "—" : `${row.required_in}"`}</td>
-                      <td><span className={`badge ${badge.className}`}>{badge.label}</span></td>
-                      <td className="reader-mono muted">
-                        {row.serves.join(", ")}
-                        {row.unresolved.length > 0 && ` (no table row: ${row.unresolved.join(", ")})`}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <ReaderTable<PlumbingRunLoadRow> rows={units.runs} rowKey={(row) => row.tag} columns={[
+            runTag("Zoom to run"),
+            { key: "system", header: "System", cellClass: "reader-mono",
+              cell: (r) => SYSTEM_LABEL[r.system] ?? r.system },
+            { key: "dia", header: "Ø", num: true, cell: (r) => `${r.diameter_in}"` },
+            { key: "load", header: "Load", num: true,
+              cell: (r) => r.load === null ? "—" : `${r.load} ${r.unit}` },
+            { key: "required", header: "Required", num: true,
+              cell: (r) => r.required_in === null ? "—" : `${r.required_in}"` },
+            { key: "status", header: "Status", cell: (r) => {
+              const badge = statusBadge(r.status);
+              return <span className={`badge ${badge.className}`}>{badge.label}</span>;
+            } },
+            { key: "serves", header: "Serves", cellClass: "reader-mono muted", cell: (r) => <>
+              {r.serves.join(", ")}
+              {r.unresolved.length > 0 && ` (no table row: ${r.unresolved.join(", ")})`}
+            </> },
+          ]} />
         )}
-        <div className="reader-table-scroll">
-          <table className="reader-table">
-            <thead>
-              <tr>
-                <th>Fixture</th><th>Kind</th><th>Room</th>
-                <th className="num-col">DFU</th><th className="num-col">WSFU</th>
-                <th className="num-col">hot</th><th className="num-col">cold</th>
-              </tr>
-            </thead>
-            <tbody>
-              {units.fixtures.map((row) => (
-                <tr key={row.tag}>
-                  <td>
-                    <button className="reader-tag" onClick={() => jump(row.tag)}
-                      disabled={!index.has(row.tag)} title="Zoom to fixture">
-                      <span className="reader-mono">{row.tag}</span>
-                    </button>
-                  </td>
-                  <td className="reader-mono">{row.symbol}</td>
-                  <td className="reader-mono muted">{row.room ?? "—"}</td>
-                  <td className="num-col">{row.dfu ?? "—"}</td>
-                  <td className="num-col">{row.wsfu_total ?? "—"}</td>
-                  <td className="num-col">{row.wsfu_hot ?? "—"}</td>
-                  <td className="num-col">{row.wsfu_cold ?? "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ReaderTable<PlumbingFixtureRow> rows={units.fixtures} rowKey={(row) => row.tag} columns={[
+          { key: "tag", header: "Fixture", cell: (r) =>
+            <TagCell tag={r.tag} index={index} onJump={jump} title="Zoom to fixture" mono /> },
+          { key: "kind", header: "Kind", cellClass: "reader-mono", cell: (r) => r.symbol },
+          { key: "room", header: "Room", cellClass: "reader-mono muted", cell: (r) => r.room ?? "—" },
+          { key: "dfu", header: "DFU", num: true, cell: (r) => r.dfu ?? "—" },
+          { key: "wsfu", header: "WSFU", num: true, cell: (r) => r.wsfu_total ?? "—" },
+          { key: "hot", header: "hot", num: true, cell: (r) => r.wsfu_hot ?? "—" },
+          { key: "cold", header: "cold", num: true, cell: (r) => r.wsfu_cold ?? "—" },
+        ]} />
       </ReaderSection>
 
       <ReaderSection
@@ -346,41 +277,23 @@ export function PlumbingView() {
         note="The pour-day list: every sleeve that must be set before concrete, with its exact coordinates. mep.sleeve_alignment and mep.sleeve_coverage grade these positions — an offset here is a defect the pour makes permanent."
         count={takeoff.cast_in.length}
       >
-        <div className="reader-table-scroll">
-          <table className="reader-table">
-            <thead>
-              <tr>
-                <th>Sleeve</th><th>Host</th><th>Axis</th><th>Purpose</th>
-                <th className="num-col">x</th><th className="num-col">y</th>
-                <th className="num-col">center z</th>
-                <th className="num-col">pipe</th><th className="num-col">sleeve</th>
-                <th>Serves</th><th className="num-col">offset</th>
-              </tr>
-            </thead>
-            <tbody>
-              {takeoff.cast_in.map((row) => (
-                <tr key={row.tag}>
-                  <td>
-                    <button className="reader-tag" onClick={() => jump(row.tag)}
-                      disabled={!index.has(row.tag)} title="Zoom to sleeve">
-                      <span className="reader-mono">{row.tag}</span>
-                    </button>
-                  </td>
-                  <td className="reader-mono">{row.host} <span className="muted">({row.host_category})</span></td>
-                  <td className="reader-mono">{row.axis}</td>
-                  <td className="reader-mono">{row.purpose}</td>
-                  <td className="num-col">{row.x_ft}'</td>
-                  <td className="num-col">{row.y_ft}'</td>
-                  <td className="num-col">{row.center_z_ft === null ? "—" : `${row.center_z_ft}'`}</td>
-                  <td className="num-col">{row.pipe_in}"</td>
-                  <td className="num-col">{row.sleeve_in}"</td>
-                  <td className="reader-mono muted">{row.serves ?? "—"}</td>
-                  <td className="num-col">{row.offset_in === null ? "—" : `${row.offset_in}"`}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ReaderTable<PlumbingCastInRow> rows={takeoff.cast_in} rowKey={(row) => row.tag} columns={[
+          { key: "tag", header: "Sleeve", cell: (r) =>
+            <TagCell tag={r.tag} index={index} onJump={jump} title="Zoom to sleeve" mono /> },
+          { key: "host", header: "Host", cellClass: "reader-mono",
+            cell: (r) => <>{r.host} <span className="muted">({r.host_category})</span></> },
+          { key: "axis", header: "Axis", cellClass: "reader-mono", cell: (r) => r.axis },
+          { key: "purpose", header: "Purpose", cellClass: "reader-mono", cell: (r) => r.purpose },
+          { key: "x", header: "x", num: true, cell: (r) => `${r.x_ft}'` },
+          { key: "y", header: "y", num: true, cell: (r) => `${r.y_ft}'` },
+          { key: "z", header: "center z", num: true,
+            cell: (r) => r.center_z_ft === null ? "—" : `${r.center_z_ft}'` },
+          { key: "pipe", header: "pipe", num: true, cell: (r) => `${r.pipe_in}"` },
+          { key: "sleeve", header: "sleeve", num: true, cell: (r) => `${r.sleeve_in}"` },
+          { key: "serves", header: "Serves", cellClass: "reader-mono muted", cell: (r) => r.serves ?? "—" },
+          { key: "offset", header: "offset", num: true,
+            cell: (r) => r.offset_in === null ? "—" : `${r.offset_in}"` },
+        ]} />
       </ReaderSection>
 
       <ReaderSection
@@ -388,47 +301,28 @@ export function PlumbingView() {
         note="Pipe by the lineal foot, grouped by system, material, and diameter — what an estimator orders. Fittings are estimated from the routed geometry (bends → elbows, shared vertices → tees); no fitting element exists in the model, so the counts say so."
         count={takeoff.pipe.length}
       >
-        <div className="reader-table-scroll">
-          <table className="reader-table">
-            <thead>
-              <tr>
-                <th>System</th><th>Material</th><th>Finish</th><th className="num-col">Ø</th>
-                <th className="num-col">Runs</th><th className="num-col">Length</th><th>Tags</th>
-              </tr>
-            </thead>
-            <tbody>
-              {takeoff.pipe.map((row) => (
-                <tr key={`${row.system}-${row.material}-${row.finish}-${row.diameter_in}`}>
-                  <td className="reader-mono">{SYSTEM_LABEL[row.system] ?? row.system}</td>
-                  <td className="reader-mono">{row.material}</td>
-                  <td className="reader-mono muted">{row.finish}</td>
-                  <td className="num-col">{row.diameter_in}"</td>
-                  <td className="num-col">{row.runs}</td>
-                  <td className="num-col">{row.length_ft} lf</td>
-                  <td className="reader-mono muted">{row.tags.join(", ")}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ReaderTable<PlumbingPipeGroup> rows={takeoff.pipe}
+          rowKey={(row) => `${row.system}-${row.material}-${row.finish}-${row.diameter_in}`}
+          columns={[
+            { key: "system", header: "System", cellClass: "reader-mono",
+              cell: (r) => SYSTEM_LABEL[r.system] ?? r.system },
+            { key: "material", header: "Material", cellClass: "reader-mono", cell: (r) => r.material },
+            { key: "finish", header: "Finish", cellClass: "reader-mono muted", cell: (r) => r.finish },
+            { key: "dia", header: "Ø", num: true, cell: (r) => `${r.diameter_in}"` },
+            { key: "runs", header: "Runs", num: true, cell: (r) => r.runs },
+            { key: "length", header: "Length", num: true, cell: (r) => `${r.length_ft} lf` },
+            { key: "tags", header: "Tags", cellClass: "reader-mono muted", cell: (r) => r.tags.join(", ") },
+          ]} />
         {takeoff.fittings.length > 0 && (
-          <div className="reader-table-scroll">
-            <table className="reader-table">
-              <thead>
-                <tr><th>Fitting</th><th>System</th><th className="num-col">Ø</th><th className="num-col">Count</th></tr>
-              </thead>
-              <tbody>
-                {takeoff.fittings.map((row) => (
-                  <tr key={`${row.system}-${row.diameter_in}-${row.fitting}`}>
-                    <td>{row.fitting}</td>
-                    <td className="reader-mono">{SYSTEM_LABEL[row.system] ?? row.system}</td>
-                    <td className="num-col">{row.diameter_in}"</td>
-                    <td className="num-col">{row.count}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ReaderTable<PlumbingFittingRow> rows={takeoff.fittings}
+            rowKey={(row) => `${row.system}-${row.diameter_in}-${row.fitting}`}
+            columns={[
+              { key: "fitting", header: "Fitting", cell: (r) => r.fitting },
+              { key: "system", header: "System", cellClass: "reader-mono",
+                cell: (r) => SYSTEM_LABEL[r.system] ?? r.system },
+              { key: "dia", header: "Ø", num: true, cell: (r) => `${r.diameter_in}"` },
+              { key: "count", header: "Count", num: true, cell: (r) => r.count },
+            ]} />
         )}
         {takeoff.hydrants.length > 0 && (
           <div className="reader-card">
@@ -439,10 +333,7 @@ export function PlumbingView() {
             {takeoff.hydrants.map((row) => (
               <div className="kv" key={row.tag}>
                 <span className="k">
-                  <button className="reader-tag" onClick={() => jump(row.tag)}
-                    disabled={!index.has(row.tag)} title="Zoom to hydrant">
-                    <span className="reader-mono">{row.tag}</span>
-                  </button>
+                  <TagCell tag={row.tag} index={index} onJump={jump} title="Zoom to hydrant" mono />
                 </span>
                 <span>
                   {row.type_ref ?? "—"} · fed by{" "}
@@ -461,10 +352,7 @@ export function PlumbingView() {
             {takeoff.accessories.map((row) => (
               <div className="kv" key={row.tag}>
                 <span className="k">
-                  <button className="reader-tag" onClick={() => jump(row.tag)}
-                    disabled={!index.has(row.tag)} title="Zoom to device">
-                    <span className="reader-mono">{row.tag}</span>
-                  </button>
+                  <TagCell tag={row.tag} index={index} onJump={jump} title="Zoom to device" mono />
                 </span>
                 <span>
                   {ACCESSORY_LABEL[row.kind] ?? row.kind}

@@ -12,6 +12,8 @@ import dataclasses
 
 import pytest
 
+from _helpers import check_context
+
 from typehaus.checks.building_science.condensation import (
     CHECK_ID,
     SCREEN_CHECK_ID,
@@ -23,7 +25,6 @@ from typehaus.checks.building_science.glaser import (
     analyze_layers_monthly,
     glaser_layers,
 )
-from typehaus.checks.code.mn_residential.profile import get_profile
 from typehaus.checks.registry import CheckContext, Preferences
 from typehaus.energy import estimate_block_load
 from typehaus.findings import Result
@@ -168,10 +169,7 @@ def _plan(*, monthly_normals=(), soil_temp_f=None, second_storey_conditioned=Non
 
 
 def _context(plan) -> CheckContext:
-    model, findings = resolve(plan)
-    assert not [f for f in findings if f.severity.value == "error"], findings
-    return CheckContext(plan=plan, model=model, preferences=Preferences(),
-                        profile=get_profile("mn-2024"), resolve_findings=list(findings))
+    return check_context(plan)
 
 
 def test_check_emits_the_gate_and_the_screen_per_assembly() -> None:

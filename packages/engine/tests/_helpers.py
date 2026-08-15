@@ -26,3 +26,39 @@ def copy_house(src: Path, dst: Path) -> Path:
     """Copy an authored house into a sandbox, leaving build output behind."""
     shutil.copytree(src, dst, ignore=HOUSE_IGNORE)
     return dst
+
+
+def check_context(plan=None, model=None, *, preferences=None, profile="mn-2024",
+                  resolve_findings=None):
+    """A ``CheckContext`` from a plan, a model, or both.
+
+    Ten test modules hand-rolled this, and the bodies differed only in which profile they
+    named and whether they resolved for you — which meant the "did resolve emit errors?"
+    assertion was present in some and absent in others, so a test could quietly be
+    checking a broken model.
+
+    Pass a ``plan`` and it resolves (asserting no ERROR findings) and threads the findings
+    through as ``resolve_findings`` — several checks read them. Pass a ``model`` and it
+    takes ``model.plan``. ``profile`` accepts a jurisdiction name, ``None`` for the
+    profile-independent checks, or an already-resolved profile object.
+    """
+    from typehaus.checks.code.mn_residential.profile import get_profile
+    from typehaus.checks.registry import CheckContext, Preferences
+    from typehaus.resolve import resolve
+
+    if plan is None:
+        assert model is not None, "check_context needs a plan or a model"
+        plan = model.plan
+    if model is None:
+        model, findings = resolve(plan)
+        errors = [f for f in findings if f.severity.value == "error"]
+        assert not errors, [f.message for f in errors]
+        if resolve_findings is None:
+            resolve_findings = list(findings)
+    return CheckContext(
+        plan=plan, model=model,
+        preferences=preferences if preferences is not None else Preferences(),
+        profile=get_profile(profile) if isinstance(profile, str) else profile,
+        resolve_findings=list(resolve_findings or ()),
+    )
+

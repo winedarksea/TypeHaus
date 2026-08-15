@@ -10,14 +10,12 @@ interference warning + deck bearing-stack fix).
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 
 from typehaus.checks import build_context
 from typehaus.checks.structural.interference import member_interference
 from typehaus.quantities import inch
-from typehaus.resolve import resolve
 from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
@@ -68,13 +66,6 @@ def test_member_footprint_raked_member_spans_min_max_z():
 
 
 # -------------------------------------------------------------------- integration
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, [f.message for f in errors]
-    return model
 
 
 def test_deck_stacks_post_beam_joist(catlin_model):

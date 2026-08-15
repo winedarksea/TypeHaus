@@ -12,7 +12,7 @@ import {
   type CostedTable,
   type RowCost,
 } from "../model/engineCosts";
-import { ReaderSection, ReaderShell } from "./ReaderShell";
+import { ReaderFilter, ReaderSection, ReaderShell } from "./ReaderShell";
 
 // "BOM of all parts" (→ TODO Editor): what is in this house, and how much of it.
 //
@@ -270,15 +270,8 @@ export function BomView() {
       title="Bill of materials"
       subtitle={subtitle}
       onClose={() => setDetailView("none")}
-      toolbar={
-        <input
-          value={filter}
-          placeholder="Filter parts…"
-          onChange={(event) => setFilter(event.target.value)}
-          aria-label="Filter bill of materials"
-          style={{ padding: "5px 7px", minWidth: 180 }}
-        />
-      }
+      toolbar={<ReaderFilter value={filter} onChange={setFilter}
+        placeholder="Filter parts…" label="Filter bill of materials" />}
     >
       {error !== null && (
         <p className="muted" role="alert">

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 
 from typehaus.checks import run
 from typehaus.model import (
@@ -19,7 +18,6 @@ from typehaus.model import (
     Storey,
     Wall,
     Window,
-    WindowType,
     centered,
     ft,
     inch,
@@ -62,7 +60,9 @@ def test_starter_resolves_clean(project) -> None:
     assert result.ok, [f.render() for f in result.findings]
     model, findings = resolve(result.plan)
     assert not findings
-    assert len(model.rooms) == 2
+    # main + upper bedroom + the upper landing R315.3 needs a non-bedroom room to host
+    # its CO alarm on.
+    assert len(model.rooms) == 3
     assert model.stack_edges, "two identical storeys must derive a wall-line stack"
     assert any(c.kind.value == "storey_stack" for c in model.conditions)
 

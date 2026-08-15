@@ -22,6 +22,7 @@ import math
 
 from typehaus.emit.draw.detail_components.config import LAYER
 from typehaus.emit.draw.scene import Hatch, IRNode, Polyline
+from typehaus.emit.draw.section import ring_cut_intervals
 from typehaus.quantities import M_PER_IN
 
 
@@ -147,17 +148,11 @@ def condition_walls(model, cond) -> list:
     return walls
 
 
-def _cut_intervals(ring, direction: str, station: float):
-    from typehaus.emit.draw.section import _ring_cut_intervals
-
-    return _ring_cut_intervals(ring, direction, station)
-
-
 def wall_cut_bounds_m(wall, direction: str, station: float):
     """``(u_lo, u_hi)`` in **metres** across every layer the cut crosses, or ``(None, None)``."""
     bounds: list[float] = []
     for layer in wall.layers:
-        for (a, b) in _cut_intervals(layer.polygon, direction, station):
+        for (a, b) in ring_cut_intervals(layer.polygon, direction, station):
             bounds.extend((a, b))
     if not bounds:
         return None, None
@@ -174,8 +169,8 @@ def outboard_is_high(wall, direction: str, station: float) -> bool | None:
     depth = wall.depth_layers()
     if len(depth) < 2:
         return None
-    first = _cut_intervals(depth[0].polygon, direction, station)
-    last = _cut_intervals(depth[-1].polygon, direction, station)
+    first = ring_cut_intervals(depth[0].polygon, direction, station)
+    last = ring_cut_intervals(depth[-1].polygon, direction, station)
     if not first or not last:
         return None
     return sum(last[0]) > sum(first[0])
@@ -192,7 +187,7 @@ def layer_intervals(wall, direction: str, station: float) -> dict:
     for layer in wall.layers:
         if getattr(layer, "is_cavity", False):
             continue
-        ivs = _cut_intervals(layer.polygon, direction, station)
+        ivs = ring_cut_intervals(layer.polygon, direction, station)
         if ivs:
             lo = min(min(iv) for iv in ivs)
             hi = max(max(iv) for iv in ivs)
@@ -242,7 +237,7 @@ def slab_at_junction(model, crop, direction, station, face_u_m):
     for solid in model.solids:
         if solid.category != "slab" or not (lo_z <= solid.z1_m < mid_z):
             continue
-        for (a, b) in _cut_intervals(solid.outline, direction, station):
+        for (a, b) in ring_cut_intervals(solid.outline, direction, station):
             lo, hi = min(a, b), max(a, b)
             if lo - _SLAB_EDGE_TOLERANCE_M <= face_u_m <= hi + _SLAB_EDGE_TOLERANCE_M:
                 if best is None or solid.z1_m > best.z1_m:

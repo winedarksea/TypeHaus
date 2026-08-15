@@ -18,7 +18,6 @@ both directions.
 from __future__ import annotations
 
 import math
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -31,7 +30,6 @@ from typehaus.checks.structural.stairs import (
 )
 from typehaus.findings import Result
 from typehaus.quantities import inch
-from typehaus.resolve import resolve
 from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedStair
@@ -42,15 +40,6 @@ _TREAD_THICKNESS_M = inch(1.5).meters
 # A profile string is a rounded human-readable catalog key ("deck 10.3333x1.5"), so a
 # going read back out of one lands within a thou of the resolver's own float.
 _PROFILE_ROUND_TRIP_M = inch(0.001).meters
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [finding for finding in findings if finding.severity.value == "error"]
-    assert not errors, [finding.message for finding in errors]
-    return model
 
 
 def _treads(stair):

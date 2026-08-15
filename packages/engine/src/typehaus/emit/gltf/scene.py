@@ -74,9 +74,8 @@ class _SceneBuilder:
         """
         if kind is not None and kind not in _SELECTION_KINDS:
             raise ValueError(f"unknown selection kind {kind!r}; expected one of {sorted(_SELECTION_KINDS)}")
-        # Trades used to be literals at the call sites; solids now take theirs from a table
-        # (emit/trades.py), so a typo there has to fail here rather than ship a node whose
-        # group the UI has nowhere to put.
+        # Solids take their trade from a table (emit/trades.py); a typo there has to fail
+        # here rather than ship a node whose group the UI has nowhere to put.
         if trade not in TRADES:
             raise ValueError(f"unknown trade {trade!r}; expected one of {sorted(TRADES)}")
         primitives: list[dict] = []

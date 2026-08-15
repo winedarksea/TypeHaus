@@ -9,39 +9,25 @@ checks that make the same mistake catchable next time.
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 
+from _helpers import check_context
+
 from typehaus.checks.mep.drainage import discharge_consistency, downspout_ref
-from typehaus.checks.code.mn_residential.profile import get_profile
-from typehaus.checks.registry import CheckContext, Preferences
+from typehaus.checks.registry import CheckContext
 from typehaus.findings import Result
 from typehaus.model.structure import Drywell, FrenchDrain
 from typehaus.model.trim import Downspout, Gutter
 from typehaus.quantities import ft, inch, pt
 from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
 
 _M_TO_FT = 3.280839895
 
 
-@pytest.fixture(scope="module")
-def catlin_plan():
-    return load_plan(CATLIN_DIR).plan
-
-
-@pytest.fixture(scope="module")
-def catlin_model(catlin_plan):
-    model, findings = resolve(catlin_plan)
-    assert not [f for f in findings if f.severity.value == "error"]
-    return model
-
 
 def _context(plan, model) -> CheckContext:
-    return CheckContext(plan=plan, model=model, preferences=Preferences(),
-                        profile=get_profile("mn-2024"))
+    return check_context(plan, model)
 
 
 def _failures(findings) -> list:

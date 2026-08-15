@@ -6,26 +6,14 @@ row on a permit sheet. That is the one failure here that a reader could not spot
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
 from typehaus.takeoff.lighting import (PSU_SIZING_FACTOR, connected_lighting_va,
                                        light_run_materials, light_run_takeoff,
                                        lighting_controls, luminaire_schedule)
 
 _M_TO_FT = 3.280839895013123
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    assert not [f for f in findings if f.severity.value == "error"], findings
-    return model
 
 
 def test_every_schedule_mark_is_unique_and_stated(catlin_model):

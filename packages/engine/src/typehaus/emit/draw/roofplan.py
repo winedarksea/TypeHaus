@@ -9,6 +9,7 @@ parallel bearing walls) cannot produce them — nothing is fabricated.
 
 from __future__ import annotations
 
+from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.scene import (
     ArchDimension,
     NamedPoint,
@@ -30,9 +31,6 @@ _LABEL_CLEAR_IN = 30.0
 # Overhangs shorter than this (inches) are construction laps, not designed eaves.
 _MIN_OVERHANG_IN = 1.0
 
-
-def _in(p: tuple[float, float]) -> tuple[float, float]:
-    return (p[0] / M_PER_IN, p[1] / M_PER_IN)
 
 
 def build_roof_plan(model: ResolvedModel) -> Scene:

@@ -186,7 +186,7 @@ def _apply_authored_join(plan: JointPlan, wall: ResolvedWall, join, direction, s
 
 
 def _layer_u_interval(layer, direction: str, station: float) -> tuple[float, float] | None:
-    from typehaus.emit.draw.section import _ring_cut_intervals
+    from typehaus.emit.draw.section import ring_cut_intervals
 
-    ivs = _ring_cut_intervals(layer.polygon, direction, station)
+    ivs = ring_cut_intervals(layer.polygon, direction, station)
     return ivs[0] if ivs else None

@@ -27,9 +27,10 @@ from __future__ import annotations
 
 import math
 
-from typehaus.emit.draw._shared import emit_wall
+from typehaus.emit.draw._shared import emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Text
+from typehaus.model.electrical import luminaire_types
 from typehaus.model.placeable_symbols import place_local, plan_symbol_strokes
 from typehaus.resolve.model import ResolvedModel
 
@@ -58,7 +59,7 @@ _FORM_LABEL = {
 
 def has_lighting_content(model: ResolvedModel, storey_tag: str) -> bool:
     """Whether a storey carries anything an E-2xx sheet would draw."""
-    types = _luminaire_types(model)
+    types = luminaire_types(model.plan.library)
     for element in model.plan.storey_elements(storey_tag):
         if element.element_kind == "LightRun":
             return True
@@ -70,12 +71,9 @@ def has_lighting_content(model: ResolvedModel, storey_tag: str) -> bool:
 
 def build_lighting_plan(model: ResolvedModel, storey: str) -> Scene:
     b = SceneBuilder(name="lighting-" + storey, units="in")
-    for wall in model.walls:
-        if wall.storey == storey:
-            emit_wall(b, wall, layer_override="A-WALL-BELW", weight_override=0.15,
-                      hatch=False, members=False)
+    emit_ghost_walls(b, model, storey)
 
-    types = _luminaire_types(model)
+    types = luminaire_types(model.plan.library)
     device_types = {product.tag: product
                     for product in model.plan.library.electrical_device_types}
     positions: dict[str, tuple[float, float]] = {}
@@ -131,11 +129,6 @@ def build_lighting_plan(model: ResolvedModel, storey: str) -> Scene:
     _emit_switch_legs(b, [*luminaires, *runs_on_storey], positions)
     _emit_legend(b, model, storey, types, forms_present)
     return b.build()
-
-
-def _luminaire_types(model: ResolvedModel) -> dict[str, object]:
-    return {product.tag: product for product in model.plan.library.electrical_device_types
-            if getattr(product, "form", None) is not None}
 
 
 def _rotation_degrees(element: object) -> float:

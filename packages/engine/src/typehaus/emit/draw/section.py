@@ -42,7 +42,7 @@ _FUNCTION_LAYER = {
     "furring": "A-WALL",
 }
 
-def _ring_cut_intervals(ring, direction: str, station: float) -> list[tuple[float, float]]:
+def ring_cut_intervals(ring, direction: str, station: float) -> list[tuple[float, float]]:
     """Intersect a plan-frame ring with the cut line -> sorted u-intervals (even-odd)."""
     if len(ring) < 3:
         return []
@@ -213,7 +213,7 @@ def build_section(model: ResolvedModel, view: Slice, joints=None) -> Scene:
 
     for solid in model.solids:
         material = _solid_material(model, solid)
-        for (u0, u1) in _ring_cut_intervals(solid.outline, direction, station):
+        for (u0, u1) in ring_cut_intervals(solid.outline, direction, station):
             rect = _clip_rect(u0, u1, solid.z0_m, solid.z1_m, crop)
             if rect is None:
                 continue
@@ -306,7 +306,7 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
     wall_top = _wall_top_at_cut(wall, direction, station)
     for layer in wall.layers:
         term = joints.termination(wall.uid, layer.name) if joints is not None else None
-        for (u0, u1) in _ring_cut_intervals(layer.polygon, direction, station):
+        for (u0, u1) in ring_cut_intervals(layer.polygon, direction, station):
             layer_top_l = term.z(u0) if term is not None else wall_top
             layer_top_r = term.z(u1) if term is not None else wall_top
             rect = _clip_rect(u0, u1, wall.z0_m, max(layer_top_l, layer_top_r), crop)
@@ -446,7 +446,7 @@ def _rafter_plan_span(roof, direction: str) -> tuple[float, float] | None:
 
 
 def _emit_roof_cut(b, model, roof, direction, station, crop, joints=None) -> None:
-    intervals = _ring_cut_intervals(roof.footprint, direction, station)
+    intervals = ring_cut_intervals(roof.footprint, direction, station)
     if not intervals:
         return
     asm = model.plan.library.resolve_assembly(roof.assembly)
@@ -563,7 +563,7 @@ def _emit_floor_cut(b, floor, direction, station, crop) -> None:
         # member crosses the cut: draw its section (1.5" wide x depth)
         t = (station - a0) / ((a1 - a0) or 1e-12)
         u = u0 + t * (u1 - u0)
-        half = 0.75 * 0.0254
+        half = 0.75 * M_PER_IN
         rect = _clip_rect(u - half, u + half, member.z0_m, member.z1_m, crop)
         if rect is None:
             continue
@@ -753,7 +753,7 @@ def _emit_one_member(b, member, direction, station, crop) -> None:
     u = u0 + t * (u1 - u0)
     z0 = z0_a + t * (z0_b - z0_a)
     z1 = z1_a + t * (z1_b - z1_a)
-    half = 0.75 * 0.0254
+    half = 0.75 * M_PER_IN
     rect = _clip_rect(u - half, u + half, min(z0, z1), max(z0, z1), crop)
     if rect is not None:
         b.extend(_member_rect_nodes(rect, member))

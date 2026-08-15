@@ -78,3 +78,16 @@ class LoadManagement(Element):
 
 
 register_constructor("LoadManagement", LoadManagement)
+
+
+def luminaire_types(library: object) -> dict[str, object]:
+    """The ``LuminaireType`` subset of ``Library.electrical_device_types``.
+
+    A luminaire is the electrical-device type that carries a ``LuminaireForm``; there is
+    no separate collection, so every consumer has to filter for it. Takes the library
+    rather than the plan so the check tier (which holds a ``CheckContext``) and the draw
+    and take-off tiers (which hold a model) can share one answer.
+    """
+    return {product.tag: product
+            for product in library.electrical_device_types  # type: ignore[attr-defined]
+            if getattr(product, "form", None) is not None}

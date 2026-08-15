@@ -46,11 +46,10 @@ def _finding(cid: str, result: Result, message: str, tags: tuple[str, ...],
 def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
     """NEC 705.12(B)(3)(2) — the 120% busbar allowance, per panel that carries a source.
 
-    Formalizes what used to be a comment beside a breaker slot. The main breaker term is
-    the service size the load summary reports — the same 200A the E-601 sheet prints, so
-    the sheet and the finding cannot disagree; source breakers are the circuits flagged
-    ``source=True`` on that panel — typed, so a renamed PV circuit cannot silently stop
-    counting.
+    The main breaker term is the service size the load summary reports — the same 200A the
+    E-601 sheet prints, so the sheet and the finding cannot disagree; source breakers are
+    the circuits flagged ``source=True`` on that panel — typed, so a renamed PV circuit
+    cannot silently stop counting.
 
     One documented limit: the model carries no feeder element, so a source landing on a
     *subpanel* has no modeled main OCPD of its own. This check applies the service main to

@@ -7,6 +7,16 @@ Run with the repo .venv::
 
     PYTHONPATH=packages/engine/src .venv/bin/python packages/engine/scripts/bench_rebuild.py \
         --house houses/catlin --iters 15
+
+As a regression guard (exits non-zero when a budget is blown)::
+
+    PYTHONPATH=packages/engine/src .venv/bin/python packages/engine/scripts/bench_rebuild.py \
+        --house houses/catlin --iters 10 --skip-macro \
+        --assert-under 400 --assert-stage-under resolve=300
+
+Budgets are medians, and a median is only meaningful against a quiet machine: pick a
+threshold with real headroom over the measured number (roughly 2x) so the guard catches an
+algorithmic regression rather than whatever else happened to be running.
 """
 
 from __future__ import annotations
@@ -37,7 +47,17 @@ def main() -> None:
     ap.add_argument("--iters", type=int, default=15)
     ap.add_argument("--storey", default="main")
     ap.add_argument("--node", default="N-M-S1")
+    ap.add_argument("--skip-macro", action="store_true",
+                    help="only run the plain rebuilds — the macro paths dominate wall time "
+                         "and a perf guard does not need them")
+    ap.add_argument("--assert-under", type=float, metavar="MS",
+                    help="exit 1 if the median full-rebuild wall time exceeds MS")
+    ap.add_argument("--assert-stage-under", action="append", default=[],
+                    metavar="STAGE=MS",
+                    help="exit 1 if the median of timing key STAGE exceeds MS; repeatable "
+                         "(e.g. resolve=300, resolve.junctions=120)")
     args = ap.parse_args()
+    budgets = _parse_stage_budgets(args.assert_stage_under)
 
     house = Path(args.house).resolve()
     print(f"opening {house} ...")
@@ -54,12 +74,16 @@ def main() -> None:
         state.rebuild()
         wall_times.append((time.perf_counter() - t0) * 1000.0)
         rebuild_runs.append(dict(state.timings))
-    print(f"\nfull rebuild wall time: median {statistics.median(wall_times):.1f} ms "
+    rebuild_median = statistics.median(wall_times)
+    print(f"\nfull rebuild wall time: median {rebuild_median:.1f} ms "
           f"(min {min(wall_times):.1f}, max {max(wall_times):.1f})")
-    _print_table("rebuild stage medians", _median_timings(rebuild_runs))
+    stage_medians = _median_timings(rebuild_runs)
+    _print_table("rebuild stage medians", stage_medians)
+
+    breaches = _budget_breaches(rebuild_median, stage_medians, args.assert_under, budgets)
 
     # --- one simulated move_nodes patch via the slow path (writeback + rebuild), then undo ---
-    if plan is not None:
+    if plan is not None and not args.skip_macro:
         body = {"macro": "move_nodes", "storey": args.storey,
                 "nodes": [args.node], "dx": 0.01, "dy": 0.0}
         patch_runs: list[dict[str, float]] = []
@@ -89,6 +113,45 @@ def main() -> None:
             state.history(undo=True)
         print(f"\nmove_nodes commit wall time (fast path, in-memory apply): median "
               f"{statistics.median(fast_times):.1f} ms")
+
+    if breaches:
+        print("\n== budget breaches ==")
+        for line in breaches:
+            print(f"  FAIL {line}")
+        raise SystemExit(1)
+    if args.assert_under is not None or budgets:
+        print("\nall budgets met")
+
+
+def _parse_stage_budgets(raw: list[str]) -> dict[str, float]:
+    budgets: dict[str, float] = {}
+    for entry in raw:
+        stage, separator, value = entry.partition("=")
+        if not separator or not stage:
+            raise SystemExit(f"--assert-stage-under expects STAGE=MS, got {entry!r}")
+        budgets[stage] = float(value)
+    return budgets
+
+
+def _budget_breaches(rebuild_median: float, stage_medians: dict[str, float],
+                     rebuild_budget: float | None,
+                     stage_budgets: dict[str, float]) -> list[str]:
+    """Every budget the run missed, as printable lines.
+
+    Collected rather than raised at the first miss so one run reports every regression.
+    """
+    breaches: list[str] = []
+    if rebuild_budget is not None and rebuild_median > rebuild_budget:
+        breaches.append(f"full rebuild median {rebuild_median:.1f} ms "
+                        f"> budget {rebuild_budget:.1f} ms")
+    for stage, budget in sorted(stage_budgets.items()):
+        if stage not in stage_medians:
+            breaches.append(f"stage {stage!r} was never timed — "
+                            f"known keys: {', '.join(sorted(stage_medians))}")
+        elif stage_medians[stage] > budget:
+            breaches.append(f"stage {stage} median {stage_medians[stage]:.1f} ms "
+                            f"> budget {budget:.1f} ms")
+    return breaches
 
 
 if __name__ == "__main__":

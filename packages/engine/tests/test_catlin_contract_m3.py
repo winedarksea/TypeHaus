@@ -48,19 +48,6 @@ GARAGE_OVERHANG_IN = 16.0
 DECK_RISE_FT = (11.875 - 5.5 / 3.0) / 12.0
 
 
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    assert result.plan is not None, [f.message for f in result.findings]
-    errors = [f for f in result.findings if f.severity.value == "error"]
-    assert not errors, [f.message for f in errors]
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, [f.message for f in errors]
-    return model
-
-
 def test_floor_joist_counts_match_old_model(catlin_model):
     """Old: positions = size/spacing + 1 (both ends), two 18' spans per floor."""
     expected_positions = int(round(HOUSE_SIZE_FT * 12.0 / FRAMING_SPACING_IN)) + 1

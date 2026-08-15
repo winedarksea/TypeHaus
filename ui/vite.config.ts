@@ -34,5 +34,21 @@ export default defineConfig({
       "/events": { target: ENGINE, ws: true },
     },
   },
-  build: { outDir: "dist", sourcemap: true },
+  build: {
+    outDir: "dist",
+    // Off by default: landing/build-site.mjs copies ui/dist wholesale to the public site, so
+    // `sourcemap: true` was publishing a 3.79 MB .js.map — bigger than everything else the
+    // site ships put together — to every visitor. Set HAUS_SOURCEMAP=1 for a build you intend
+    // to debug.
+    sourcemap: process.env.HAUS_SOURCEMAP === "1",
+    rollupOptions: {
+      output: {
+        // three.js is the one dependency big enough to be worth its own chunk, and it is
+        // reached only through the lazily-imported 3D panel (components/Panel3DLazy.tsx), so
+        // naming it here keeps it out of the entry chunk *and* lets it stay cached across
+        // deploys that only touch app code.
+        manualChunks: { three: ["three"] },
+      },
+    },
+  },
 });

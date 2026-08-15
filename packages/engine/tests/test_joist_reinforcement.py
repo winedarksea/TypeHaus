@@ -20,31 +20,18 @@ The categories are also a published contract — ``structural.cantilever_point_l
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 
 from typehaus.model.floors import FloorSystem, JoistReinforcement, JoistSpec
 from typehaus.quantities import ft, inch, pt
-from typehaus.resolve import resolve
 from typehaus.resolve.floors import _reinforcement_members
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.source import load_plan
 from typehaus.takeoff.framing import framing_takeoff
-from _helpers import CATLIN as CATLIN_DIR
 
 
 PLY_WIDTH_M = cross_section("2x8").width_m  # 1.5"
 SPACING_M = inch(16).meters
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [finding for finding in findings if finding.severity.value == "error"]
-    assert not errors, [finding.message for finding in errors]
-    return model
 
 
 def _system(at, **kwargs):

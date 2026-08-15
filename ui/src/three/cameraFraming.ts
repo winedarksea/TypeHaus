@@ -29,11 +29,6 @@ export const WHEEL_MAX_STEP_PX = 90;
 export const WHEEL_DOLLY_SENSITIVITY = 0.0016;
 export const MIN_DOLLY_RADIUS_M = 0.8;
 export const MAX_DOLLY_RADIUS_M = 400;
-// One press of an on-screen zoom button, as a multiplier on the dolly radius — roughly four
-// mouse notches. Visible progress per tap, without a double-tap overshooting the thing you
-// were trying to get closer to.
-export const BUTTON_DOLLY_FACTOR = 1.3;
-
 /** Normalize one wheel event to a clamped pixel delta (see WHEEL_* constants). */
 export function normalizedWheelDeltaPx(deltaY: number, deltaMode: number): number {
   const pixels = deltaMode === 1 ? deltaY * WHEEL_LINE_HEIGHT_PX : deltaY;

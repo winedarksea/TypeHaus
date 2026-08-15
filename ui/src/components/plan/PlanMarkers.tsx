@@ -3,7 +3,13 @@
 // and snap indicator, and the DOCUMENT workspace's detail (D-tag) markers. Split from
 // components/Canvas2D.tsx — each layer is a pure projection of model + gesture state handed
 // in as props; no store subscriptions live here.
-import { useState } from "react";
+//
+// Every layer but WallDraftLayer is memo()'d: their inputs are the storey memos in
+// useStoreySlice.ts and the stable callbacks in useCanvasInteractions.ts, so a hover or a
+// selection change re-renders Canvas2D without redrawing any of them. WallDraftLayer is left
+// plain on purpose — its props are the live rubber-band, which changes on every pointer move,
+// so a comparator would only add work.
+import { memo, useState } from "react";
 import type { PreviewGeometry } from "../../engine/EngineClient";
 import type { PlanWarningMarker } from "../../model/planWarnings";
 import { projectedExtentPx, spaceLabel, spaceLabelLineBudget } from "../../model/spaceLabels";
@@ -19,7 +25,7 @@ import type { RubberBand, WallDraft } from "./canvasTypes";
 // Rooms (tinted fills, behind walls) — a live drag's preview cascades into neighboring
 // rooms' clear-face polygons, matched by tag against the last preview. Labels drop from the
 // bottom up (name → id → area) as the space runs out of room on screen.
-export function RoomLayer({ rooms, previewGeom, tool, labelMode, project, onSelect }: {
+export const RoomLayer = memo(function RoomLayer({ rooms, previewGeom, tool, labelMode, project, onSelect }: {
   rooms: Room[];
   previewGeom: PreviewGeometry | null;
   tool: string;
@@ -74,14 +80,14 @@ export function RoomLayer({ rooms, previewGeom, tool, labelMode, project, onSele
       })}
     </>
   );
-}
+});
 
 // Resolved slabs on the active storey, drawn under the rooms the way the sheet emitters draw
 // them (emit/draw/foundationplan.py::_emit_slabs): the plan outline as a concrete-toned edge
 // with a whisper of fill, and every void (a stairwell, a sump pit) as a dashed inner ring.
 // Purely graphical — slabs are derived geometry, selected and inspected in 3D, so the layer
 // never intercepts the plan's pointer gestures.
-export function SlabOutlines({ slabs, project }: {
+export const SlabOutlines = memo(function SlabOutlines({ slabs, project }: {
   slabs: Solid[];
   project: (p: Vec2) => Vec2;
 }) {
@@ -100,7 +106,7 @@ export function SlabOutlines({ slabs, project }: {
       ))}
     </g>
   );
-}
+});
 
 // Guards and handrails on the active storey. A railing resolves to one solid per post and
 // per rail (resolve/accessories.py::_resolve_railing), and each is drawn as its own plan
@@ -111,7 +117,7 @@ export function SlabOutlines({ slabs, project }: {
 // `rail_count` rails share one footprint (they are stacked in Z, which plan cannot show), so
 // coincident outlines are drawn once. Graphical only, like SlabOutlines: a railing is derived
 // geometry and is selected in 3D, so the layer never takes the plan's pointer gestures.
-export function RailingOutlines({ railings, project }: {
+export const RailingOutlines = memo(function RailingOutlines({ railings, project }: {
   railings: Solid[];
   project: (p: Vec2) => Vec2;
 }) {
@@ -127,10 +133,10 @@ export function RailingOutlines({ railings, project }: {
       })}
     </g>
   );
-}
+});
 
 // Plain nodes; heal affordance on collinear 2-wall joints (select tool).
-export function PlanNodesLayer({ nodes, openEnds, model, tool, project, nearestNodeTag, onHeal }: {
+export const PlanNodesLayer = memo(function PlanNodesLayer({ nodes, openEnds, model, tool, project, nearestNodeTag, onHeal }: {
   nodes: Map<string, GeoNode>;
   openEnds: Set<string>;
   model: Model;
@@ -160,12 +166,11 @@ export function PlanNodesLayer({ nodes, openEnds, model, tool, project, nearestN
       })}
     </>
   );
-}
+});
 
-// Diagnostic markers. These used to be an unexplained glowing red dot; now each one names
-// itself on click, and a *declared* open end reads as advisory rather than as an error
-// (→ model/planWarnings.ts).
-export function WarningMarkerLayer({ markers, activeKey, project, onOpen }: {
+// Diagnostic markers: each one names itself on click, and a *declared* open end reads as
+// advisory rather than as an error (→ model/planWarnings.ts).
+export const WarningMarkerLayer = memo(function WarningMarkerLayer({ markers, activeKey, project, onOpen }: {
   markers: PlanWarningMarker[];
   activeKey: string | null;
   project: (p: Vec2) => Vec2;
@@ -193,7 +198,7 @@ export function WarningMarkerLayer({ markers, activeKey, project, onOpen }: {
       })}
     </>
   );
-}
+});
 
 // Wall draft (start marker + rubber band + live length) and the snap indicator for the wall
 // tool's next click.
@@ -240,7 +245,7 @@ export function WallDraftLayer({ draft, rubber, cursor, snapNodes, tolM, gridM, 
 }
 
 // Detail markers (Phase 8): D-tags at junctions, shown in the DOCUMENT workspace.
-export function DetailMarkerLayer({ model, activeStorey, project, onSelectWall }: {
+export const DetailMarkerLayer = memo(function DetailMarkerLayer({ model, activeStorey, project, onSelectWall }: {
   model: Model;
   activeStorey: string | null;
   project: (p: Vec2) => Vec2;
@@ -265,4 +270,4 @@ export function DetailMarkerLayer({ model, activeStorey, project, onSelectWall }
       })}
     </>
   );
-}
+});

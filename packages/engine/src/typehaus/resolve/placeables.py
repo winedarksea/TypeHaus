@@ -43,7 +43,14 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # tag — a hundred placeables in the same room ask the same question.
     floor_by_room: dict[str, float] = {}
     for storey in plan.storeys:
-        rooms = [room for room in model.rooms if room.storey == storey.tag]
+        # One shape per room, not one per (room, placeable): this was rebuilding every room's
+        # polygon for every placeable on the storey (~1,700 GEOS polygon builds per resolve).
+        # The bounds ride along so the common far-away case never reaches ``covers``.
+        room_shapes: list[tuple[str, Polygon, _Bounds]] = []
+        for room in model.rooms:
+            if room.storey == storey.tag:
+                shape = Polygon(room.clear_face)
+                room_shapes.append((room.tag, shape, shape.bounds))
         for item in plan.storey_elements(storey.tag):
             domain = kind_domains.get(item.element_kind)
             if domain is None:
@@ -60,7 +67,7 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 continue
             local_footprint = _local_footprint(product_type, item)
             footprint = _transformed_polygon(local_footprint, center, rotation)
-            resolved_room = next((room.tag for room in rooms if Polygon(room.clear_face).covers(Point(center))), None)
+            resolved_room = _containing_room(room_shapes, center)
             explicit_room = getattr(item, "room", None)
             # Mount heights are measured off the floor the thing stands on, which is the
             # storey datum everywhere except where a room's slab is filed on another storey
@@ -95,9 +102,30 @@ def resolve_placeables(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                                          occupant_types=frozenset(zone.occupant_types))
                 for zone, ring in zones if zone.occupant_types and not _is_required(zone))
     model.canvas_objects.extend(assign_placement_groups(resolved_objects, anchor_zones))
-    findings.extend(_clearance_conflicts(model, obstruction_by_uid))
-    findings.extend(_door_swing_conflicts(model, obstruction_by_uid))
+    # One shape per placed object, shared by both conflict passes: each was building its own
+    # copy of the same ~300 footprints, and the per-pair rebuild inside them was ~800 more.
+    footprints = {obj.uid: Polygon(obj.footprint) for obj in model.canvas_objects}
+    findings.extend(_clearance_conflicts(model, obstruction_by_uid, footprints))
+    findings.extend(_door_swing_conflicts(model, obstruction_by_uid, footprints))
     return findings
+
+
+_Bounds = tuple[float, float, float, float]
+
+
+def _containing_room(room_shapes: list[tuple[str, Polygon, _Bounds]],
+                     center: tuple[float, float]) -> str | None:
+    """Tag of the first room whose clear face covers ``center``, in ``model.rooms`` order."""
+    x, y = center
+    point = None
+    for tag, shape, (min_x, min_y, max_x, max_y) in room_shapes:
+        if not (min_x <= x <= max_x and min_y <= y <= max_y):
+            continue
+        if point is None:
+            point = Point(center)
+        if shape.covers(point):
+            return tag
+    return None
 
 
 def _floor_elevation(model: ResolvedModel, storey: object, room_tag: str | None,
@@ -255,7 +283,8 @@ def _resolved_clearance_zones(product_type: object | None, center: tuple[float, 
 
 
 def _clearance_conflicts(model: ResolvedModel,
-                         obstruction_by_uid: dict[str, ClearFloorSpaceObstruction]) -> list[Finding]:
+                         obstruction_by_uid: dict[str, ClearFloorSpaceObstruction],
+                         footprints: dict[str, Polygon]) -> list[Finding]:
     """Report use-space encroachments without rejecting the drag that created one.
 
     A clearance is an occupied planning zone, so compare it against other physical
@@ -279,15 +308,14 @@ def _clearance_conflicts(model: ResolvedModel,
     wall, so a peer standing in a different room is not encroaching on it.
     """
     findings: list[Finding] = []
+    peers_by_key = _obstructing_peers_by_key(model, obstruction_by_uid)
     for item in model.canvas_objects:
         # A list, not a generator: this is re-walked once per zone, and a generator was
         # exhausted by the first one — every zone after an object's first was silently never
         # compared against anything (a bed's second side-access zone, a fridge's swing).
-        peers = [peer for peer in model.canvas_objects
-                 if peer.storey == item.storey and peer.uid != item.uid
-                 and obstruction_by_uid[peer.uid].obstructs
-                 and not _separated_by_construction(item, peer)]
-        own_footprint = Polygon(item.footprint)
+        peers = [peer for peer in peers_by_key[(item.storey, item.room)]
+                 if peer.uid != item.uid]
+        own_footprint = footprints[item.uid]
         for zones, severity, policy_name in (
             (item.required_clearances, Severity.ERROR, "required"),
             (item.recommended_clearances, Severity.WARN, "recommended"),
@@ -299,10 +327,18 @@ def _clearance_conflicts(model: ResolvedModel,
                     zone_shape = zone_shape.difference(own_footprint)
                 if zone_shape.is_empty or not zone_shape.is_valid:
                     continue
+                zone_min_x, zone_min_y, zone_max_x, zone_max_y = zone_shape.bounds
                 for peer in peers:
                     if group_exempt and peer.placement_group == item.placement_group:
                         continue
-                    overlap = zone_shape.intersection(Polygon(peer.footprint))
+                    peer_shape = footprints[peer.uid]
+                    # Disjoint bounding boxes cannot intersect, so this skips the GEOS call
+                    # for the overwhelming majority of pairs without changing any answer.
+                    min_x, min_y, max_x, max_y = peer_shape.bounds
+                    if (max_x < zone_min_x or min_x > zone_max_x
+                            or max_y < zone_min_y or min_y > zone_max_y):
+                        continue
+                    overlap = zone_shape.intersection(peer_shape)
                     if overlap.area <= 1e-8:
                         continue
                     findings.append(Finding(
@@ -318,25 +354,43 @@ def _clearance_conflicts(model: ResolvedModel,
     return findings
 
 
-def _separated_by_construction(item: ResolvedCanvasObject,
-                               peer: ResolvedCanvasObject) -> bool:
-    """Do these two stand in different rooms, i.e. is there construction between them?
+def _obstructing_peers_by_key(model: ResolvedModel,
+                              obstruction_by_uid: dict[str, ClearFloorSpaceObstruction],
+                              ) -> dict[tuple[str, str | None], list[ResolvedCanvasObject]]:
+    """Candidate peers for every ``(storey, room)`` an object can occupy, in model order.
 
-    Rooms are resolved from the wall faces that bound them, so two different room tags on one
-    storey mean a partition (or a chase, or a stair well) stands between the two bodies. A
-    recommended zone that runs past that partition is already stopped by it: the 18" of side
-    access a bed wants is not taken by the wardrobe standing on the *other* side of the
-    bedroom wall, and reporting it as taken sends the reader to a room where nothing is wrong.
+    A peer only counts if it stands on the same storey, actually obstructs, and is not
+    separated from the object by construction. Rooms are resolved from the wall faces that
+    bound them, so two different room tags on one storey mean a partition (or a chase, or a
+    stair well) stands between the two bodies: the 18" of side access a bed wants is not
+    taken by the wardrobe standing on the *other* side of the bedroom wall, and reporting it
+    as taken sends the reader to a room where nothing is wrong. ``None`` on either side means
+    the object resolved to no room at all (a porch light, a body standing in a doorway),
+    which is not evidence of separation — those still compare.
 
-    ``None`` on either side means the object resolved to no room at all (a porch light, a
-    body standing in a doorway), which is not evidence of separation — those still compare.
+    All three conditions read only ``(storey, room)``, so the answer is shared by every
+    object with that key instead of being recomputed per pair — the per-item filter was
+    O(objects^2) with a dict lookup and a predicate call per pair. Self-exclusion is the
+    caller's one remaining per-item step. Lists stay in ``model.canvas_objects`` order so the
+    findings come out in exactly the order the per-item scan produced them.
     """
-    return (item.room is not None and peer.room is not None and item.room != peer.room)
+    obstructing: dict[str, list[ResolvedCanvasObject]] = {}
+    for obj in model.canvas_objects:
+        if obstruction_by_uid[obj.uid].obstructs:
+            obstructing.setdefault(obj.storey, []).append(obj)
+    out: dict[tuple[str, str | None], list[ResolvedCanvasObject]] = {}
+    for obj in model.canvas_objects:
+        key = (obj.storey, obj.room)
+        if key in out:
+            continue
+        out[key] = [peer for peer in obstructing.get(obj.storey, ())
+                    if obj.room is None or peer.room is None or peer.room == obj.room]
+    return out
 
 
 def _door_swing_conflicts(model: ResolvedModel,
                           obstruction_by_uid: dict[str, ClearFloorSpaceObstruction],
-                          ) -> list[Finding]:
+                          footprints: dict[str, Polygon]) -> list[Finding]:
     """Door leaf sweeps are advisory overlays: flag encroachments without blocking edits.
 
     The sweep is a plan polygon but a leaf is not infinitely tall: it stops at the head.
@@ -360,12 +414,19 @@ def _door_swing_conflicts(model: ResolvedModel,
             continue
         leaf_head_m = wall.z0_m + opening.sill_m + opening.height_m
         swing = Polygon(opening.swing_clearance)
+        swing_min_x, swing_min_y, swing_max_x, swing_max_y = swing.bounds
         for item in model.canvas_objects:
             if item.storey != wall.storey or item.z_m >= leaf_head_m - 1e-6:
                 continue
             if not obstruction_by_uid[item.uid].obstructs:
                 continue
-            if swing.intersection(Polygon(item.footprint)).area <= 1e-8:
+            item_shape = footprints[item.uid]
+            min_x, min_y, max_x, max_y = item_shape.bounds
+            # Disjoint bounding boxes cannot intersect — a cheap exact prefilter.
+            if (max_x < swing_min_x or min_x > swing_max_x
+                    or max_y < swing_min_y or min_y > swing_max_y):
+                continue
+            if swing.intersection(item_shape).area <= 1e-8:
                 continue
             findings.append(Finding(
                 severity=Severity.WARN, check_id="integrity.door_swing_conflict",

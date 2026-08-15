@@ -14,7 +14,6 @@ the author has to copy and keep in step by hand.
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 
@@ -22,15 +21,9 @@ from typehaus.model.enums import PipeAccessoryKind, PipeSystem
 from typehaus.model.mep import PipeAccessory, PipeRun
 from typehaus.quantities import ft, inch, pt
 from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
 
 _M_TO_FT = 3.280839895
 
-
-@pytest.fixture(scope="module")
-def catlin_plan():
-    return load_plan(CATLIN_DIR).plan
 
 
 def _plan_with(catlin_plan, *elements, storey: str = "basement"):

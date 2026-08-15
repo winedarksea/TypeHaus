@@ -75,7 +75,7 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         "appliance": "IfcBuildingElementProxy",
         "Register": "IfcAirTerminal", "Equipment": "IfcBuildingElementProxy",
     }
-    # Mirrors emit/ifc/emitter.py::_equipment_ifc_classes — HVAC equipment emits as a real
+    # Mirrors emit/ifc/mep.py::_equipment_ifc_classes — HVAC equipment emits as a real
     # IFC class, so it has to be read back as one here or every heat pump reads as a
     # deletion on a round trip against our own IFC.
     equipment_classes = {
@@ -96,7 +96,7 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         source_kind = getattr(getattr(source, "kind", None), "value", "")
         if item.kind == "ElectricalDevice":
             # The type's ``ifc_entity`` overrides the kind map on the way out
-            # (emitter.py::_device_ifc_classes), so it has to override it on the way back in
+            # (emit/ifc/mep.py::_device_ifc_classes), so it has to override it on the way back in
             # too — otherwise every access point reads as a deletion on a round trip.
             product_type = device_types.get(item.type_ref or "")
             ifc_class = (getattr(product_type, "ifc_entity", None)

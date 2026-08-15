@@ -19,6 +19,7 @@ import { buildMembers, categoryColor } from "../members";
 import {
   createPlanPrismGeometry, createRakedPlanPrismGeometry, projectPointToScene, type PlanCenter,
 } from "../planGeometry";
+import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 import { registerMemberPicks, registerSelectable, tagLayerGroup } from "./registry";
 import type { Trade } from "../../state/vocabulary";
 
@@ -93,12 +94,7 @@ export function buildWall(
       : masonryStyle
         ? createMasonryMaterial(mode, masonryStyle,
           materialColor(ly.material, palette, materials), appearance?.color)
-        : new THREE.MeshStandardMaterial({
-          color: new THREE.Color(materialColor(ly.material, palette, materials)),
-          roughness: mode === "nordic" ? 0.85 : 1,
-          metalness: 0,
-          flatShading: mode === "schematic",
-        });
+        : standardMaterial(new THREE.Color(materialColor(ly.material, palette, materials)), mode);
     mats.push(mat);
     const smoothArchGeometry = createSmoothArchedWallLayerGeometry(w, ly.polygon, openings, center);
     const geometries: (THREE.BufferGeometry | null)[] = smoothArchGeometry
@@ -111,9 +107,7 @@ export function buildWall(
       if (!geo) continue;
       if (seam) applyStandingSeamWallUv(geo, w.axis, center);
       else if (masonryStyle) applyMasonryWallUv(geo, w.axis, center, masonryTileSizeM(masonryStyle));
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
+      const mesh = makeSurfaceMesh(geo, mat);
       mesh.userData.uid = w.uid;
       mesh.userData.selectionKind = "wall";
       mesh.userData.tag = w.tag;
@@ -474,9 +468,9 @@ export function wallLayerPieces(wall: Wall, polygon: readonly [number, number][]
 // (constants _WINDOW_TRIM_FACE_WIDTH_M / _WINDOW_TRIM_PROUD_DEPTH_M): a picture-frame of
 // flat boards proud of the cladding plane, windows in clad walls only. The colour rides
 // members.ts CATEGORY_COLOR ("window_trim"), keeping recolors a palette-only edit.
-// 1 1/4" face: the visible width of standard J-channel/flat trim. Was 0.064 (2 1/2")
-// until 2026-07-30 — too heavy in 3D, since casing and window frame are both charcoal
-// here and read as one band.
+// 1 1/4" face: the visible width of standard J-channel/flat trim, chosen over a heavier
+// 2 1/2" face that read as too heavy in 3D — casing and window frame are both charcoal
+// here and blur into one band.
 const WINDOW_TRIM_FACE_WIDTH_M = 0.032;
 const WINDOW_TRIM_PROUD_DEPTH_M = 0.019;
 
@@ -525,9 +519,8 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
   // interior face out to the casing's proud face so the reveal reads charcoal instead of
   // exposing the wall layers' cut foam. Mirrors resolve/geometry_openings.py.
   const exterior = exteriorFace(wall);
-  const frameMaterial = new THREE.MeshStandardMaterial({
-    color: exterior ? categoryColor("window_trim") : palette.member.wood,
-    roughness: mode === "nordic" ? 0.85 : 1, flatShading: mode === "schematic" });
+  const frameMaterial = standardMaterial(
+    exterior ? categoryColor("window_trim") : palette.member.wood, mode);
   let frameDepth = depth, frameOffset = 0;
   if (exterior) {
     const outerEdge = exterior.plane + exterior.sign * WINDOW_TRIM_PROUD_DEPTH_M;
@@ -553,8 +546,8 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
     addBox(opening.width_m, frameWidth, frameDepth, 0, wall.z0_m + opening.sill_m + frameWidth / 2, frameMaterial, frameOffset);
   }
   const panelHeight = Math.max(0.01, availableHeight - 2 * frameWidth);
-  const glassMaterial = new THREE.MeshStandardMaterial({ color: 0x8fb7c9, transparent: true, opacity: 0.48,
-    roughness: 0.2, metalness: 0.05, flatShading: mode === "schematic", depthWrite: false });
+  const glassMaterial = standardMaterial(0x8fb7c9, mode, { transparent: true, opacity: 0.48,
+    roughness: 0.2, metalness: 0.05, depthWrite: false });
   if (opening.kind === "door" && operation === "double_swing") {
     // Two leaves meeting at a center mullion, matching the 2D French-door symbol.
     const mullionWidth = Math.min(frameWidth, (opening.width_m - 2 * frameWidth) / 6);
@@ -608,8 +601,8 @@ export function buildOpening(parent: THREE.Group, opening: Opening, wall: Wall, 
       // clip already honoured, so each board checks the raked top over its own footprint.
       const trimW = WINDOW_TRIM_FACE_WIDTH_M;
       const trimOffset = exterior.plane + exterior.sign * (WINDOW_TRIM_PROUD_DEPTH_M / 2);
-      const trimMaterial = new THREE.MeshStandardMaterial({ color: categoryColor("window_trim"),
-        roughness: 0.9, flatShading: mode === "schematic" });
+      const trimMaterial = standardMaterial(categoryColor("window_trim"), mode,
+        { roughness: NORDIC_ROUGHNESS.matte });
       const rakedHost = wall.top_z0_m != null || wall.top_z1_m != null;
       const sillZ = wall.z0_m + opening.sill_m;
       const bands: [number, number, number, number][] = [

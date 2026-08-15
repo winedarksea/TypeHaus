@@ -27,6 +27,7 @@ import {
   aboveStructureLayers, boundaryEdges, layerInsetRect, roofOffsetter, roofPlaneTriangles,
 } from "../roofGeometry";
 import { createSolidMaterial } from "../solidMaterials";
+import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 import { registerSelectable, tagLayerGroup } from "./registry";
 
 export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter,
@@ -39,10 +40,8 @@ export function buildSolid(parent: THREE.Group, solid: Solid, center: PlanCenter
     .some((layer) => isAluminumDeckBoard(layer.material));
   if (deckBoards) applyDeckBoardUv(geo, center);
   const firstChildIndex = parent.children.length;
-  const mesh = new THREE.Mesh(geo,
+  const mesh = makeSurfaceMesh(geo,
     deckBoards ? createDeckBoardMaterial(mode) : createSolidMaterial(solid, catalog, mode, palette));
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
   parent.add(mesh);
   registerSelectable(parent, firstChildIndex, solid.uid, "solid", picks, byUid);
 }
@@ -73,15 +72,12 @@ export function buildSolarPanel(parent: THREE.Group, panel: SolarPanel, center: 
   geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
   geo.computeVertexNormals();
   const firstChildIndex = parent.children.length;
-  const mat = new THREE.MeshStandardMaterial({
-    color: SOLAR_PANEL_COLOR,
+  const mat = standardMaterial(SOLAR_PANEL_COLOR, mode, {
     roughness: mode === "nordic" ? 0.25 : 0.6, // glassy face under the nordic sun
     metalness: mode === "nordic" ? 0.4 : 0.1,
+    flatShading: false, // a module is a single flat plate; faceting it adds nothing in schematic
   });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  parent.add(mesh);
+  parent.add(makeSurfaceMesh(geo, mat));
   registerSelectable(parent, firstChildIndex, panel.uid, "solid", picks, byUid);
 }
 
@@ -124,7 +120,7 @@ function ledCoveBands(thicknessM: number, depthM: number):
 // lip) with the tape laid in the trough — not one undifferentiated bar. One pick target for
 // the whole run, matching the single IfcLightFixture the IFC exporter emits for it.
 export function buildLightRun(parent: THREE.Group, run: LightRun, center: PlanCenter,
-  _mode: "nordic" | "schematic", picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
+  mode: "nordic" | "schematic", picks: THREE.Mesh[], byUid: Map<string, THREE.Material[]>) {
   if (run.path.length < 2) return;
   const firstChildIndex = parent.children.length;
   for (const [key, left, right, bottomDrop, topDrop] of
@@ -139,12 +135,10 @@ export function buildLightRun(parent: THREE.Group, run: LightRun, center: PlanCe
       const outline = rectBetween(p0, p1, left, right);
       const geo = createPlanPrismGeometry(outline, z0, z1, [], center);
       if (!geo) continue;
-      const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-        color, roughness: key === "tape" ? 0.4 : 0.5, metalness: key === "tape" ? 0 : 0.6,
-      }));
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      parent.add(mesh);
+      parent.add(makeSurfaceMesh(geo, standardMaterial(color, mode, {
+        roughness: key === "tape" ? 0.4 : 0.5, metalness: key === "tape" ? 0 : 0.6,
+        flatShading: false, // half-inch extrusion: its facets are below a pixel either way
+      })));
     }
   }
   registerSelectable(parent, firstChildIndex, run.uid, "solid", picks, byUid);
@@ -160,16 +154,11 @@ export function buildFootingBedding(parent: THREE.Group, bedding: FootingBedding
   const geo = createPlanPrismGeometry(bedding.outline, bedding.z0_m, bedding.z1_m, [], center);
   if (!geo) return;
   const firstChildIndex = parent.children.length;
-  const mat = new THREE.MeshStandardMaterial({
-    color: FOOTING_BEDDING_COLOR,
+  const mat = standardMaterial(FOOTING_BEDDING_COLOR, mode, {
     roughness: 1,
-    metalness: 0,
     flatShading: true, // faceted normals read as loose aggregate in both shading modes
   });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  parent.add(mesh);
+  parent.add(makeSurfaceMesh(geo, mat));
   if (mode === "nordic") {
     parent.add(new THREE.LineSegments(
       new THREE.EdgesGeometry(geo, 20),
@@ -198,10 +187,8 @@ export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter
       center,
     );
     if (!geometry) return;
-    parent.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
-      color: new THREE.Color(materialColor(floor.subfloor.material, palette)), roughness: mode === "nordic" ? 0.85 : 1,
-      flatShading: mode === "schematic",
-    })));
+    parent.add(new THREE.Mesh(geometry,
+      standardMaterial(new THREE.Color(materialColor(floor.subfloor.material, palette)), mode)));
   }
   registerSelectable(parent, firstChildIndex, floor.uid, "floor", picks, byUid);
   // Joists are framing, and belong under the framing toggle with every other stick in the
@@ -259,12 +246,12 @@ export function buildRoomFloor(parent: THREE.Group, room: Room, floorTopM: numbe
   if (!geometry) return;
   const firstChildIndex = parent.children.length;
   const surface = floorSurface(room.floor_finish);
-  const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
-    color: new THREE.Color(materialColor(room.floor_finish, palette, materials)),
-    roughness: mode === "nordic" ? surface.roughness : 1,
-    metalness: mode === "nordic" ? surface.metalness : 0,
-    flatShading: mode === "schematic",
-  }));
+  const mesh = new THREE.Mesh(geometry,
+    standardMaterial(new THREE.Color(materialColor(room.floor_finish, palette, materials)), mode, {
+      roughness: mode === "nordic" ? surface.roughness : 1,
+      metalness: mode === "nordic" ? surface.metalness : 0,
+    }));
+  // Receives but does not cast: a 20 mm finish laid on the deck has nothing to cast onto.
   mesh.receiveShadow = true;
   parent.add(mesh);
   registerSelectable(parent, firstChildIndex, room.uid, "room", picks, byUid);
@@ -313,15 +300,11 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
     const seam = layer.function === "cladding" && isStandingSeam(layer.material);
     const mat = seam
       ? createStandingSeamMaterial(mode, [Math.sqrt(roof.surface_area_m2), Math.sqrt(roof.surface_area_m2)])
-      : new THREE.MeshStandardMaterial({
-        color: new THREE.Color(materialColor(layer.material, palette)),
-        roughness: mode === "nordic" ? 0.9 : 1,
-        flatShading: mode === "schematic",
+      : standardMaterial(new THREE.Color(materialColor(layer.material, palette)), mode, {
+        roughness: mode === "nordic" ? NORDIC_ROUGHNESS.matte : 1,
         side: THREE.DoubleSide,
       });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
+    const mesh = makeSurfaceMesh(geo, mat);
     mesh.userData.layerGroup = layerVisibilityGroupOf(layer.function);
     parent.add(mesh);
     base = top;
@@ -361,10 +344,7 @@ export function buildStair(parent: THREE.Group, stair: Stair, center: PlanCenter
     if (!member.plan_outline || member.plan_outline.length < 3) continue;
     const geo = createPlanPrismGeometry(member.plan_outline, member.z0_m, member.z1_m, [], center);
     if (!geo) continue;
-    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-      color: memberColor(member, palette), roughness: mode === "nordic" ? 0.85 : 1,
-      flatShading: mode === "schematic",
-    }));
+    const mesh = new THREE.Mesh(geo, standardMaterial(memberColor(member, palette), mode));
     mesh.userData.memberKey = member.key;
     parent.add(mesh);
   }

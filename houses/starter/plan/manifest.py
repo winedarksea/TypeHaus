@@ -46,7 +46,7 @@ PLAN = (
     .with_elements(
         "main",
         [*main.NODES, *main.WALLS, *main.OPENINGS, *main.ROOMS, *main.FLOOR,
-         *views.DETAIL_SLICES],
+         *main.ALARMS, *views.DETAIL_SLICES],
     )
     .with_elements(
         "upper",

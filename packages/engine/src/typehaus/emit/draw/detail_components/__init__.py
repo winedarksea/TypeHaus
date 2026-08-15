@@ -12,23 +12,6 @@ already render polylines and hatches correctly and keep them hit-testable, where
 ``Symbol`` degrades to a bare circle in ``DetailCanvas.tsx`` and to a marker in
 ``pdf_writer.py``.
 
-Module map — one junction (or one concern) per file:
-
-* ``config``      — every dimension, named and traced to the reference param that fixes it.
-* ``geometry``    — shared emitters and the resolvers that read the live cut.
-* ``dispatch``    — ``Transition.overlay`` recipe id → vocabulary. The wiring point.
-* ``below_grade`` — grade line, soil body, perimeter drain.
-* ``eave``        — box gutter, drip edge, apron, screened vent path.
-* ``wall_base``   — flashings, sill gasket, slab thermal break, foam protection.
-* ``stack``       — rim-band air seal, stepped-wall shelf flashing.
-* ``opening``     — head flashing, sill pan, concrete bucks, sauna liner returns.
-* ``ridge``       — the LVL ridge's face-mount hanger vocabulary.
-* ``sauna``       — liner base plus the room-scale fit-out.
-* ``shower``      — recess, tile over backer, glass panel, HRV takeoff.
-* ``breezeway``   — the glazing enclosure: drainage wedges, weeping channels, glazing
-                    bar, gasketed fastener, breather tape.
-* ``chrome``      — material legend and derived dimension strings.
-
 Section coordinates throughout: ``u`` is the in-section axis, ``z`` is world z, both in model
 inches at the point these nodes are built (the cutter's convention).
 """

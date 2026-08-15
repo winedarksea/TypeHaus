@@ -10,24 +10,10 @@ system rather than as a naming convention.
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 
 from typehaus.emit.trades import DRAINAGE_CATEGORIES
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
-
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, errors
-    return model
 
 
 @pytest.fixture(scope="module")

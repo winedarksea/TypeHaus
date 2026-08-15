@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import pytest
 
+from _helpers import check_context
+
 from typehaus.findings import Result
 from typehaus.model.enums import AlarmKind, Occupancy
 
@@ -25,11 +27,7 @@ def _alarms(model):
 
 
 def _context(model):
-    from typehaus.checks.code.mn_residential.profile import MN_2024
-    from typehaus.checks.registry import CheckContext, Preferences
-
-    return CheckContext(plan=model.plan, model=model, preferences=Preferences(),
-                        profile=MN_2024)
+    return check_context(model=model)
 
 
 # --- 1. the enum member and its one hard crash site ---------------------------------------

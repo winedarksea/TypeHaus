@@ -98,7 +98,7 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
         condition_walls,
         wall_cut_bounds_m,
     )
-    from typehaus.emit.draw.section import _ring_cut_intervals
+    from typehaus.emit.draw.section import ring_cut_intervals
 
     nodes: list[IRNode] = []
     walls = condition_walls(model, derived.condition)
@@ -163,7 +163,7 @@ def dimension_strings(model, derived, crop, direction, station) -> list[IRNode]:
     footing_wall = concrete if concrete is not None else framed
     footing = footing_under(model, footing_wall) if footing_wall is not None else None
     if footing is not None and lo_z <= footing.z0_m and footing.z1_m <= hi_z:
-        intervals_f = _ring_cut_intervals(footing.outline, direction, station)
+        intervals_f = ring_cut_intervals(footing.outline, direction, station)
         if intervals_f:
             f_lo = min(min(iv) for iv in intervals_f) / M_PER_IN
             f_hi = max(max(iv) for iv in intervals_f) / M_PER_IN

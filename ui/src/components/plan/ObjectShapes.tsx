@@ -4,8 +4,9 @@
 //
 // Split out of components/Canvas2D.tsx. All three own a live pointer gesture, which is exactly
 // why they are separate components: each keeps its own drag state so a drag re-renders one
-// symbol rather than the whole plan.
-import { useRef, useState } from "react";
+// symbol rather than the whole plan. The two that are drawn once per record are memo()'d for
+// the same reason: a storey's worth of footprints must not re-render because a wall was hovered.
+import { memo, useRef, useState } from "react";
 import type { CanvasObject, CanvasObjectType, Model, Vec2, Wall } from "../../model/types";
 import { nearestWallHit, openingHostWall } from "../../model/geometry";
 import { draggedCenter, exceedsDragThreshold, grabOffsetFor } from "./objectDrag";
@@ -68,7 +69,7 @@ export function NodeHandle({ world, project, onStart, onMove, onEnd }: {
   );
 }
 
-export function CanvasObjectFootprint({ item, type, project, scale, walls, selected, labelMode = "all", onSelect, toWorld, onMove, onRotate }: {
+export const CanvasObjectFootprint = memo(function CanvasObjectFootprint({ item, type, project, scale, walls, selected, labelMode = "all", onSelect, toWorld, onMove, onRotate }: {
   item: CanvasObject;
   type?: CanvasObjectType;
   project: (point: Vec2) => Vec2;
@@ -215,9 +216,12 @@ export function CanvasObjectFootprint({ item, type, project, scale, walls, selec
         strokeWidth={1.5} strokeDasharray="4 3" pointerEvents="none" />;
     })()}
   </g>;
-}
+});
 
-export function ClearanceOverlays({ model, storey, project, scale }: {
+// memo()'d alongside CanvasObjectFootprint: it walks every fixture, furniture record, resolved
+// placeable and swing/bumper polygon in the model, which is the plan's most expensive derived
+// pass, and none of its inputs move when a hover or a selection does.
+export const ClearanceOverlays = memo(function ClearanceOverlays({ model, storey, project, scale }: {
   model: Model;
   storey: string | null;
   project: (point: Vec2) => Vec2;
@@ -257,4 +261,4 @@ export function ClearanceOverlays({ model, storey, project, scale }: {
       width={width} height={depth} fill="var(--canvas-wood-soft)" stroke="var(--error)"
       strokeDasharray="4 3" strokeWidth={1} />;
   })}</g>;
-}
+});

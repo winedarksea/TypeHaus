@@ -8,27 +8,12 @@ the building.
 
 from __future__ import annotations
 
-from pathlib import Path
 
-import pytest
 
 from typehaus.emit.draw.drainageplan import build_drainage_plan, has_drainage_content
 from typehaus.emit.draw.scene import Polyline
 from typehaus.emit.draw.siteplan import build_site_plan
 from typehaus.emit.trades import DRAINAGE_CATEGORIES
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
-
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, errors
-    return model
 
 
 def test_the_gate_opens_only_where_stormwater_lives(catlin_model):

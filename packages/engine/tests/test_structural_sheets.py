@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
 
 from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.foundation_schedule import (
@@ -35,19 +34,6 @@ from typehaus.emit.draw.roofframingplan import (
 )
 from typehaus.emit.draw.scene import Leader, Polyline, Text
 from typehaus.emit.draw.sheets import build_sheet_index
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
-
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [finding for finding in findings if finding.severity.value == "error"]
-    assert not errors, errors
-    return model
 
 
 def _texts(scene) -> list[str]:

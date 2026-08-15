@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from datetime import date
-from pathlib import Path
 
 import pytest
 
@@ -19,19 +18,6 @@ from typehaus.emit.draw.sheet_writer import (
     viewport_box,
 )
 from typehaus.emit.draw.sheets import SheetSpec, build_sheet_index
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
-
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, errors
-    return model
 
 
 def _fig_texts(fig) -> str:

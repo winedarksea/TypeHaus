@@ -1,14 +1,8 @@
 """The derived-geometry IR: one description of what the building *is*, shaped for emitters.
 
-Four pipelines used to re-derive the same solids from :class:`ResolvedModel` — the IFC
-emitter, the glTF emitter, the three.js builders in the UI, and the 2D section cuts — and
-they had drifted: the glTF member box ignored ``orient``/``depth_m`` (IFC did not), IFC's
-roof layers skipped the eave-drift compensation glTF and the viewer both applied, glTF drew
-no earth and no subfloor deck. So what the user saw was not provably what Revit received.
-
-This module is the shared answer. Geometry math happens once, in ``resolve/``, and the
-emitters became serializers: IFC still owns entity classes, psets and containment; glTF still
-owns buffers and materials; neither owns the shape of a stud.
+Geometry math happens once, in ``resolve/``, and the emitters are serializers: IFC still
+owns entity classes, psets and containment; glTF still owns buffers and materials; neither
+owns the shape of a stud.
 
 Both Python emitters read it today. The viewer's three.js builders deliberately still do not:
 that render path is staying (→ ``ui/src/three/wholeHouseGlb.ts`` ``WHOLE_HOUSE_GLB_PRIMARY``),
@@ -172,6 +166,18 @@ class GeometryModel:
         index = {el.uid: el for el in self.elements}
         object.__setattr__(self, "_uid_index_cache", (self.elements, index))
         return index
+
+    def part(self, uid: str, key: str) -> "GPart | None":
+        """One named part of one element, or ``None`` if either is absent.
+
+        Both emitters walked ``geometry -> by_uid -> part-by-key`` themselves, each with its
+        own copy of the "is there geometry at all" guard — ``resolve_preview`` skips the
+        geometry stage on purpose, so a caller can hand an emitter a model with no IR.
+        """
+        element = self.by_uid(uid)
+        if element is None:
+            return None
+        return next((part for part in element.parts if part.key == key), None)
 
     def of_kind(self, kind: str) -> tuple[ElementGeometry, ...]:
         return tuple(el for el in self.elements if el.kind == kind)

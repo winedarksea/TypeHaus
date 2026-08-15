@@ -3,25 +3,10 @@
 from __future__ import annotations
 
 import copy
-from pathlib import Path
 
-import pytest
 
 from typehaus.checks import run_from_model
 from typehaus.checks.registry import Tier
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
-
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, errors
-    return model
 
 
 def _model_with_site(catlin_model, **site_updates):

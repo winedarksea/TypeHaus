@@ -6,6 +6,7 @@ import { useStore } from "../state/store";
 import { ALL_TRADES, type SelectionKind, type Trade } from "../state/vocabulary";
 import { ALL_LAYER_VISIBILITY_GROUPS, type LayerVisibilityGroup } from "../model/visibility";
 import type { Model } from "../model/types";
+import type { EngineClient } from "../engine/EngineClient";
 import { RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
 import { disposeGroup } from "../three/members";
 import { locateMember } from "../model/memberIdentity";
@@ -36,13 +37,20 @@ import { ZoomControls } from "./ZoomControls";
 // (server /model.glb, or the Pyodide engine's glb artifact). When that glb carries per-object
 // trade metadata, setWholeHouseGlb can promote it to the PRIMARY scene, distributed across the
 // same trade groups so selection, highlight and the trade/role toggles keep working (see the
-// emitter contract on setWholeHouseGlb). The emitter writes per-object nodes and now draws the
-// same geometry this baseline does — both read the engine's derived-geometry IR — but promotion
-// stays gated off (WHOLE_HOUSE_GLB_PRIMARY) *by decision*: the glb carries one flat portable
-// colour per surface for Revit/SketchUp, where this path has the procedural themed finishes. So
-// the glb is discarded and the model.json baseline stands, unchanged. The Nordic passes (soft lighting
-// + edge linework) attach to the three.js scene, so they survive either route. Clicking a wall
-// cross-highlights the 2D plan and surfaces its file:line provenance.
+// emitter contract on setWholeHouseGlb). Why promotion stays gated off is explained at
+// WHOLE_HOUSE_GLB_PRIMARY's definition (three/wholeHouseGlb.ts) — the model.json baseline stands,
+// unchanged. The Nordic passes (soft lighting + edge linework) attach to the three.js scene, so
+// they survive either route. Clicking a wall cross-highlights the 2D plan and surfaces its
+// file:line provenance.
+
+// Scratch vectors for the pointer handlers below, which run once per pointermove: three.js
+// object construction is not free at that rate, and members.ts already keeps module scratch
+// (`_m`, `_color`) for the same reason. Each is consumed before the next event can start.
+const _right = new THREE.Vector3();
+const _up = new THREE.Vector3();
+const _ndc = new THREE.Vector2();
+const _hit = new THREE.Vector3();
+const PLANE_UP = new THREE.Vector3(0, 1, 0);
 
 // `compact` is the 300x220 floating preview (→ Preview3D). The pan/zoom cluster is 206px wide
 // there, which leaves the preview previewing its own chrome, so that surface goes without: it is
@@ -60,8 +68,8 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const compassRef = useRef<SVGSVGElement>(null);
   const api = useRef<SceneApi | null>(null);
-  const renderedModel = useRef<Model | null>(null);
-  const renderedTheme = useRef<string | null>(null);
+  // Which engine client this panel has already framed a building for (→ preserveView below).
+  const framedForClient = useRef<EngineClient | null>(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -76,17 +84,30 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
 
   useEffect(() => {
     if (!model) return;
-    const preserveView = renderedModel.current === model && renderedTheme.current !== null;
+    // Re-frame the camera when this is a different *building*, not when it is a different
+    // model object. The old test — `renderedModel.current === model` — could never be true
+    // after a reload: every reload re-parses model.json into a fresh object, so nudging a wall
+    // snapped the camera back to the fit view mid-edit. Keying on `contentHash`/`revision`
+    // does not fix that either; both change on exactly the edits the view should survive.
+    // The engine client is what is replaced when another house is opened (state/store.ts
+    // openOfflineHouse / init), so it is the thing that means "the old framing is meaningless".
+    // A remount (2D↔3D, split) starts with a null ref and therefore frames, as it must.
+    const preserveView = framedForClient.current === client;
     api.current?.setModel(model, threeMode, RESOLVED_NORDIC_PALETTE[theme], preserveView);
     // The uid index only holds what the 3D builders registered, so a plan-only selection
     // (a room) simply clears the previous highlight rather than needing a kind test here.
     api.current?.highlight(selection.uid);
-    renderedModel.current = model;
-    renderedTheme.current = theme;
+    framedForClient.current = client;
     // Ask the engine for its whole-house glb and, when it carries per-object metadata, promote
     // it to the primary scene. Any failure (monolithic/older glb, or offline without a glb)
     // silently keeps the model.json baseline built above. setWholeHouseGlb is guarded by the
     // scene generation, so a load that resolves after the next setModel is dropped.
+    //
+    // Gated on the same flag applyWholeHouseGlb bails on: fetching and parsing the whole-house
+    // glb (server-side emit_glb + a full GLTFLoader.parse of megabytes of geometry) is pure
+    // waste while promotion is off, since applyWholeHouseGlb would just dispose the result. The
+    // promotion path stays whole for whoever flips the flag; it just isn't paid for while it's off.
+    if (!WHOLE_HOUSE_GLB_PRIMARY) return;
     let cancelled = false;
     client.getArtifact("glb")
       .then((blob) => { if (!cancelled) api.current?.setWholeHouseGlb(blob); })
@@ -367,12 +388,11 @@ function createScene(
   // for cursor-centric zoom and the reference depth for screen-space panning.
   const pointerGroundPoint = (clientX: number, clientY: number): THREE.Vector3 | null => {
     const r = el.getBoundingClientRect();
-    const ndc = new THREE.Vector2(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
+    _ndc.set(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
     place();
-    raycaster.setFromCamera(ndc, camera);
-    groundPlane.set(new THREE.Vector3(0, 1, 0), -target.y);
-    const hit = new THREE.Vector3();
-    return raycaster.ray.intersectPlane(groundPlane, hit) ? hit : null;
+    raycaster.setFromCamera(_ndc, camera);
+    groundPlane.set(PLANE_UP, -target.y);
+    return raycaster.ray.intersectPlane(groundPlane, _hit) ? _hit : null;
   };
 
   el.addEventListener("contextmenu", (e) => e.preventDefault()); // right-drag pans, no menu
@@ -418,8 +438,8 @@ function createScene(
       // world-units-per-pixel at the target depth, so pan speed feels constant at any zoom.
       const height = mount.clientHeight || 1;
       const worldPerPixel = (2 * radius * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2)) / height;
-      const screenRight = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-      const screenUp = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+      const screenRight = _right.set(1, 0, 0).applyQuaternion(camera.quaternion);
+      const screenUp = _up.set(0, 1, 0).applyQuaternion(camera.quaternion);
       target.add(screenRight.multiplyScalar(-dx * worldPerPixel));
       target.add(screenUp.multiplyScalar(dy * worldPerPixel));
     } else {
@@ -454,11 +474,8 @@ function createScene(
     // treat a near-zero drag as a click → raycast pick
     if (wasTap && Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) < 4) {
       const r = el.getBoundingClientRect();
-      const ndc = new THREE.Vector2(
-        ((e.clientX - r.left) / r.width) * 2 - 1,
-        -((e.clientY - r.top) / r.height) * 2 + 1,
-      );
-      raycaster.setFromCamera(ndc, camera);
+      _ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      raycaster.setFromCamera(_ndc, camera);
       // Only pick what is actually on screen. `intersectObjects(..., false)` tests the meshes
       // directly, bypassing three's own visibility walk, so a hidden trade or a hidden assembly
       // layer would otherwise still intercept a click aimed at what it was hiding.
@@ -608,8 +625,8 @@ function createScene(
     // unchanged and therefore cannot alter the current rotation or zoom.
     place();
     const panStep = radius * VIEW_PAN_STEP_FRACTION;
-    const screenRight = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-    const screenUp = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+    const screenRight = _right.set(1, 0, 0).applyQuaternion(camera.quaternion);
+    const screenUp = _up.set(0, 1, 0).applyQuaternion(camera.quaternion);
     const offset = direction === "left" ? screenRight.multiplyScalar(-panStep)
       : direction === "right" ? screenRight.multiplyScalar(panStep)
         : direction === "up" ? screenUp.multiplyScalar(panStep)

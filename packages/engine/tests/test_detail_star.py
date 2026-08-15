@@ -9,28 +9,17 @@ the ordinary PatchOp writeback — which is why that file is `# haus: editable` 
 from __future__ import annotations
 
 import re
-from pathlib import Path
 from types import SimpleNamespace
 
-import pytest
 
 from typehaus.emit.draw.details import derive_detail_slices, detail_index
 from typehaus.emit.draw.sheets import build_sheet_index
-from typehaus.resolve import resolve
 from typehaus.source import load_plan
 from typehaus.source.coordinator import ProjectCoordinator
 from typehaus.source.ops import PatchOp
 from _helpers import CATLIN as CATLIN_DIR, copy_house
 
 _DETAIL_NUMBER = re.compile(r"A-4\d\d$")
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    assert result.plan is not None
-    model, _ = resolve(result.plan)
-    return model
 
 
 def test_star_reaches_the_detail_index(catlin_model):

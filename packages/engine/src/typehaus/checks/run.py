@@ -82,8 +82,9 @@ def resolve_profile(preferences: Preferences,
                     explicit: str | None = None) -> JurisdictionProfile:
     """Pick the jurisdiction, in precedence order: explicit flag > preferences.toml > default.
 
-    ``"mn-2024"`` used to be hardcoded at four call sites and defaulted at three signatures,
-    so a house could not state its own jurisdiction even though ``haus new`` wrote the key.
+    This lets a house state its own jurisdiction via ``preferences.toml``'s ``jurisdiction``
+    key, which ``haus new`` already writes, without needing an explicit flag at every call
+    site.
     """
     name = explicit or preferences.jurisdiction or DEFAULT_PROFILE_NAME
     return get_profile(name)

@@ -1,7 +1,9 @@
 // TypeScript mirror of the server's model.json contract (→ 20 §model.json,
 // server/model_json.py). All geometry is canonical SI meters; the UI is a pure view
 // over this document and never re-measures geometry (→ 21b: every number derives from
-// model.json). Keep this file in lockstep with `model_to_dict`.
+// model.json). Keep this file in lockstep with `model_to_dict` — enforced by
+// `test_every_payload_key_has_a_ui_type` (packages/engine/tests/test_model_json.py), which
+// walks `model_to_dict`'s emitted keys for the catlin house and asserts each appears here.
 
 export type Vec2 = [number, number];
 

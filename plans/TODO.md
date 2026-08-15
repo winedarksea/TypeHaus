@@ -81,19 +81,6 @@ furring-as-strapping, the coupled toilet-flange move, and the price research. Ea
 below and in **Questions** carries its own note. `haus check` came out of it at 661 pass /
 6 fail / 33 not evaluable of 700 — the same six accepted FAILs it went in with._
 
-
-- ~~Better representation of the electrical conduit and concrete penetrations in the 3d
-  view.~~ — **done 2026-08-07.** Conduit runs and cast-in sleeves now emit solids: 82
-  `conduit_power`, 45 `conduit_data`, 276 `pipe_sleeve` (1367 solids -> 1770). Conduit
-  geometry comes off the same `_conduit_vertical_profile` the pour-day `concrete_crossings`
-  list walks, so the viewer and the crossing list cannot disagree. Sleeves are a
-  `circle_outline` cylinder when vertical and a bore along the host normal when horizontal —
-  catlin authors 40 horizontal ones, 6 of them under footings. Violet/teal/cream sit outside
-  the riser-diagram hues on purpose, so a raceway never reads as a supply line where
-  CD-B-KITCHEN parallels the hot and cold trunks.
-  Filed, not fixed: the IFC generic solid loop has no `_SOLID_IFC_CLASS` entry for
-  `pipe_*` / `conduit_*` / `pipe_sleeve`, so all of these export as the `IfcFooting`
-  fallback — the same pre-existing wart the 895 pipe solids already had.
 - **In-plan variant forks + compare UI** (deferred again by decision 2026-08-02,
   **re-affirmed 2026-08-07**). `model.json` now carries the variant catalog; `prices.toml`
   $-ranges work in `haus variants compare` and takeoff. Still missing: `variant_of`/`active`
@@ -282,6 +269,8 @@ the future.
 - The "draw stud end cuts" of e597019 doesn't seem to have worked? Or else it is just showing the top plate or sill, not the vertical members?
 - EQ-M-HP3-STAIR should be on the north wall of the stairs (on the northwest corner, wall W-M-N2 I believe), not the west wall. It also should have a register of some kind (passive, not hooked to the minisplit, just next to it) to allow air to flow from next to it into MUDROOM through wall W-M-STRW
 - We are thinking of switching W-SG-ARCH to be a column and beams like PT-SG-COL and BM-SG-BKE, then replacing the masonry railing right above it with a metal railing more like RL-SG-BALCONY
+- Add a packed gravel bed under the retaining wall blocks (W-RG-*)
+- Improve the symmetry of the windows on the east and west side so they look better from outside, where possible
 
 ### Plumbing
 

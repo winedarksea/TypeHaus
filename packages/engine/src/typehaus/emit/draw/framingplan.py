@@ -30,13 +30,14 @@ from typehaus.emit.draw.schedule_block import (
     metrics_for,
 )
 from typehaus.emit.draw.structural_common import feet_inches, outline_center
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 # Label offsets in metres so a callout clears the member it names.
 _SPAN_LABEL_OFFSET_M = 1.0
 _LEADER_DROP_M = 0.8
 _BEARING_LABEL_OFFSET_M = 0.1
-_POST_HALF_WIDTH_M = 0.0254
+_POST_HALF_WIDTH_M = M_PER_IN
 _SPAN_ARROW_SCALE_IN = 24.0
 _MEMBER_LABEL_HEIGHT_IN = 3.0
 _BEARING_LABEL_HEIGHT_IN = 2.0

@@ -13,6 +13,7 @@ from __future__ import annotations
 from typehaus.checks._authoring import advisory, passed as _pass, unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
+from typehaus.model.electrical import luminaire_types
 from typehaus.model.enums import Occupancy
 
 # The sizing factor a 24V LED supply is picked by: continuous load at 125%, the same
@@ -27,12 +28,6 @@ _M_TO_FT = 3.280839895013123
 # severity, and this finding is advisory, not a hard blocker.
 def _warn_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
     return advisory(cid, msg, tags, Result.FAIL)
-
-
-def _luminaire_types(ctx: CheckContext) -> dict[str, object]:
-    """Library entries that carry a ``LuminaireForm`` — i.e. the ``LuminaireType`` subset."""
-    return {product.tag: product for product in ctx.plan.library.electrical_device_types
-            if getattr(product, "form", None) is not None}
 
 
 def _lit_elements(ctx: CheckContext) -> list[tuple[object, str]]:
@@ -69,7 +64,7 @@ def lighting_controls(ctx: CheckContext) -> list[Finding]:
     if not lit:
         return [_unknown(cid, "no luminaires modeled")]
 
-    types = _luminaire_types(ctx)
+    types = luminaire_types(ctx.plan.library)
     switches = {element.tag: element for storey in ctx.plan.storeys
                 for element in ctx.plan.storey_elements(storey.tag)
                 if element.element_kind == "ElectricalDevice"
@@ -126,7 +121,7 @@ def wet_location(ctx: CheckContext) -> list[Finding]:
     would turn a data gap into a code finding about the wrong thing.
     """
     cid = "electrical.wet_location"
-    types = _luminaire_types(ctx)
+    types = luminaire_types(ctx.plan.library)
     if not types:
         return [_unknown(cid, "no luminaire types in the library")]
 
@@ -183,7 +178,7 @@ def dark_sky_lighting(ctx: CheckContext) -> list[Finding]:
     the only thing warm light is for.
     """
     cid = "advisory.dark_sky_lighting"
-    types = _luminaire_types(ctx)
+    types = luminaire_types(ctx.plan.library)
     if not types:
         return [_unknown(cid, "no luminaire types in the library")]
 

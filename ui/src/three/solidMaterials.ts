@@ -14,6 +14,7 @@ import {
   materialColor, materialOpacity, statesOwnColor, type ResolvedNordicPalette,
 } from "../nordic/palette";
 import type { Trade } from "../state/vocabulary";
+import { NORDIC_ROUGHNESS, standardMaterial } from "./surfaces";
 
 // solid category → sRGB hex, mirroring emit/gltf/emitter.py `_PALETTE` (the same keys, its
 // linear triples rounded to 8-bit). Categories with no entry fall back to the theme's concrete
@@ -229,11 +230,9 @@ export function createSolidMaterial(
   const metallic = METALLIC_SOLID_CATEGORIES.has(solid.category);
   const opacity = solidOpacity(solid, catalog);
   const translucent = opacity < 1;
-  return new THREE.MeshStandardMaterial({
-    color: solidColor(solid, catalog, palette),
-    roughness: metallic ? 0.35 : translucent ? 0.15 : mode === "nordic" ? 0.9 : 1,
+  return standardMaterial(solidColor(solid, catalog, palette), mode, {
+    roughness: metallic ? 0.35 : translucent ? 0.15 : mode === "nordic" ? NORDIC_ROUGHNESS.matte : 1,
     metalness: metallic ? 0.8 : 0,
-    flatShading: mode === "schematic",
     transparent: translucent,
     opacity,
     // A pane is a thin prism: without both faces it disappears from one side.
@@ -242,51 +241,3 @@ export function createSolidMaterial(
   });
 }
 
-// Solid category → what a person calls it. The Inspector used to print the raw category as
-// its heading, which reads fine for `slab` and badly for everything with an underscore in
-// it — and worst of all for a family name: "pipe accessory" is true of a shutoff, a backflow
-// preventer and a can of foam alike, so it told a reader nothing about the thing they had
-// just clicked. Categories are now per-device (see SOLID_CATEGORY_TRADE above); this map
-// gives the rest of them sentence case too.
-//
-// Anything absent falls back to the category with its underscores opened out, so a new
-// category is readable on the day it lands and gets a proper name when someone has one.
-const SOLID_CATEGORY_LABEL: Record<string, string> = {
-  main_shutoff: "Main shutoff valve",
-  shutoff: "Isolation valve",
-  backflow_preventer: "Backflow preventer",
-  vacuum_breaker: "Vacuum breaker",
-  water_hammer_arrestor: "Water-hammer arrestor",
-  ro_stub: "RO tap provision (capped)",
-  penetration_seal: "Envelope penetration seal",
-  pipe_drain: "Waste pipe",
-  pipe_vent: "Vent pipe",
-  pipe_water_hot: "Hot water pipe",
-  pipe_water_cold: "Cold water pipe",
-  pipe_gas: "Gas pipe",
-  pipe_radon: "Radon pipe",
-  pipe_sleeve: "Cast-in sleeve",
-  conduit_power: "Power conduit",
-  conduit_data: "Data conduit",
-  drain_tile: "Drain tile",
-  french_drain: "French drain",
-  drywell: "Drywell",
-  downspout: "Downspout",
-  sump: "Sump pit",
-  thermal_break: "Thermal break",
-  bug_screen: "Rainscreen base closure",
-  glazing_trim: "Glazing trim",
-  window_trim: "Window casing",
-  opening_frame: "Opening frame",
-  ridge_cap: "Ridge cap",
-  corner_trim: "Corner trim",
-};
-
-export function solidCategoryLabel(category: string | null | undefined): string {
-  if (!category) return "Solid";
-  const key = category.trim().toLowerCase();
-  const known = SOLID_CATEGORY_LABEL[key];
-  if (known) return known;
-  const opened = key.replace(/_/g, " ");
-  return opened.charAt(0).toUpperCase() + opened.slice(1);
-}

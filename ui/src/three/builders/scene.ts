@@ -76,6 +76,51 @@ function placeableGroup(
   return tradeGroups.furniture;
 }
 
+// One loader and one in-flight load per asset URL, kept across rebuilds.
+//
+// The loader was constructed inside the placement loop, so N chairs of one type meant N fetches
+// and N parses of the same .glb — repeated in full on every setModel (an edit, a theme flip, a
+// nordic/schematic toggle). Nothing about the asset varies per placement, so the parse is
+// hoisted and each placement takes a copy.
+const placeableLoader = new GLTFLoader();
+const placeableAssets = new Map<string, Promise<THREE.Object3D>>();
+
+function loadPlaceableAsset(url: string): Promise<THREE.Object3D> {
+  let pending = placeableAssets.get(url);
+  if (!pending) {
+    pending = new Promise<THREE.Object3D>((resolve, reject) => {
+      placeableLoader.load(url, (gltf) => resolve(gltf.scene), undefined, reject);
+    });
+    // A failed load must not be cached as a permanent failure — the PWA loses the network and
+    // gets it back — but a rejected promise nobody awaits is an unhandled rejection, so the
+    // entry is dropped rather than left to reject again on the next rebuild.
+    pending.catch(() => placeableAssets.delete(url));
+    placeableAssets.set(url, pending);
+  }
+  return pending;
+}
+
+/**
+ * A private copy of a cached asset.
+ *
+ * Geometry and material are copied too, not shared with the cached original: `disposeGroup`
+ * frees whatever is in a trade group when the scene is rebuilt, which would otherwise gut the
+ * cache, and the highlight pass drives the selected object's *own* materials — sharing them
+ * would light up every instance of the type. Copying a parsed buffer is still far cheaper than
+ * re-fetching and re-parsing the file.
+ */
+function instantiatePlaceableAsset(prototype: THREE.Object3D): THREE.Object3D {
+  const copy = prototype.clone(true);
+  copy.traverse((node) => {
+    if (!(node instanceof THREE.Mesh)) return;
+    node.geometry = node.geometry.clone();
+    node.material = Array.isArray(node.material)
+      ? node.material.map((material) => material.clone())
+      : node.material.clone();
+  });
+  return copy;
+}
+
 export function populateScene(options: PopulateSceneOptions) {
   const {
     tradeGroups, model, center, mode, palette, registry, generation, currentGeneration,
@@ -150,11 +195,9 @@ export function populateScene(options: PopulateSceneOptions) {
     const fallback = buildCanvasObject(group, item, type, center, mode, palette, elevation,
       registry.picks, registry.byUid);
     if (!type?.model_glb || !fallback) continue;
-    new GLTFLoader().load(type.model_glb, (gltf) => {
-      if (generation !== currentGeneration() || !item.position_m) {
-        disposeGroup(gltf.scene);
-        return;
-      }
+    loadPlaceableAsset(type.model_glb).then((prototype) => {
+      if (generation !== currentGeneration() || !item.position_m) return;
+      const visual = instantiatePlaceableAsset(prototype);
       // The fallback may be a whole group of massing parts now, not one mesh, so drop
       // every pick it owns and dispose it as a subtree.
       group.remove(fallback);
@@ -162,7 +205,6 @@ export function populateScene(options: PopulateSceneOptions) {
       fallback.traverse((node) => replaced.add(node));
       disposeGroup(fallback);
       registry.picks = registry.picks.filter((mesh) => !replaced.has(mesh));
-      const visual = gltf.scene;
       visual.position.copy(projectPointToScene(item.position_m, elevation, center));
       visual.rotation.y = projectPlanRotationToSceneRadians(item.rotation ?? 0);
       const materials: THREE.Material[] = [];
@@ -179,6 +221,6 @@ export function populateScene(options: PopulateSceneOptions) {
       registry.byUid.set(item.uid, materials);
       group.add(visual);
       requestRender();
-    });
+    }).catch(() => { /* keep the fallback massing the placement already drew */ });
   }
 }

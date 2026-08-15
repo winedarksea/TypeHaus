@@ -16,18 +16,6 @@ from typehaus.emit.draw.lightingplan import build_lighting_plan, has_lighting_co
 from typehaus.emit.draw.scene import Polyline, Symbol, Text
 from typehaus.emit.draw.sheets import build_sheet_index
 from typehaus.model.placeable_symbols import SYMBOL_NAMES
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
-
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    assert not [f for f in findings if f.severity.value == "error"], findings
-    return model
 
 
 def test_the_sheet_index_carries_a_lighting_plan_per_storey_plus_the_schedule(catlin_model):

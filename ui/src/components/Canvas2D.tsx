@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
 import { locateUid } from "../state/locate";
 import type { PreviewGeometry } from "../engine/EngineClient";
-import type { Vec2, Wall } from "../model/types";
+import type { Opening, Room, Vec2, Wall } from "../model/types";
 import { canvasObjectTrade } from "../model/visibility";
 import type { PlanWarningMarker } from "../model/planWarnings";
 import {
@@ -41,6 +41,10 @@ import type {
 // the non-element SVG layers in PlanMarkers.tsx and the popover stack in CanvasOverlays.tsx.
 // This file keeps the gesture state, the commits, and the element render passes.
 
+// One shared empty list for walls with no openings, so those walls also keep a stable
+// `openings` reference across renders (a fresh `[]` would defeat WallShape's memo()).
+const NO_OPENINGS: Opening[] = [];
+
 export function Canvas2D() {
   const model = useStore((s) => s.model)!;
   const view = useStore((s) => s.view);
@@ -71,6 +75,7 @@ export function Canvas2D() {
   const draftRef = useRef<WallDraft | null>(null);
   const rubberRef = useRef<{ end: Vec2; len: number } | null>(null);
   const lengthEntryOpen = useRef(false);
+  const healNodeRef = useRef<(tag: string) => Promise<void>>(async () => {});
   const [pending, setPending] = useState<Pending | null>(null);
   const [draft, setDraft] = useState<WallDraft | null>(null);
   const [measure, setMeasure] = useState<MeasureDraft | null>(null); // read-only two-tap tape
@@ -114,9 +119,45 @@ export function Canvas2D() {
   } = useStoreySlice(model, activeStorey, tolM);
   const wallAssembly = drawAssembly || defaultAssembly;
 
-  const visibleServiceObjects = (model.canvas_objects ?? []).filter((item) =>
+  const visibleServiceObjects = useMemo(() => (model.canvas_objects ?? []).filter((item) =>
     item.position_m && (!activeStorey || item.storey === activeStorey) &&
-    (!activeService || (item.type ? canvasTypes.get(item.type)?.ports.some((port) => port.service === activeService) : false)));
+    (!activeService || (item.type ? canvasTypes.get(item.type)?.ports.some((port) => port.service === activeService) : false))),
+  [model.canvas_objects, activeStorey, activeService, canvasTypes]);
+
+  // Openings indexed by host wall tag. Two reasons, both about the wall pass below. The scan it
+  // replaces was O(walls x openings) per render, and — the one that actually cost frames — it
+  // allocated a fresh array per wall, so WallShape's memo() comparator missed on every render
+  // and every wall in the storey re-drew its layer polygons whenever a hover moved.
+  //
+  // The in-flight opening drag is folded in here rather than at the call site so the host wall
+  // still gets one stable array: the dragged opening is drawn at its preview position, not its
+  // committed one.
+  const openingsByHost = useMemo(() => {
+    const byHost = new Map<string, Opening[]>();
+    for (const opening of model.openings) {
+      if (opening.uid === openingDragPreview?.opening.uid) continue;
+      const hosted = byHost.get(opening.host);
+      if (hosted) hosted.push(opening);
+      else byHost.set(opening.host, [opening]);
+    }
+    if (openingDragPreview) {
+      const host = openingDragPreview.host.tag;
+      byHost.set(host, [...(byHost.get(host) ?? []), openingDragPreview.opening]);
+    }
+    return byHost;
+  }, [model.openings, openingDragPreview]);
+
+  const roomsOnStorey = useMemo(
+    () => model.rooms.filter((r) => !activeStorey || r.storey === activeStorey),
+    [model.rooms, activeStorey],
+  );
+  const footprintObjects = useMemo(() => (model.canvas_objects ?? [])
+    // Doors/windows remain topology-aware SVG shapes below; their normalized records
+    // serve inspection/interchange consumers and must not render a second footprint.
+    .filter((item) => item.domain !== "opening" && item.position_m &&
+      visibleTrades[canvasObjectTrade(item)] &&
+      (!activeStorey || item.storey === activeStorey)),
+  [model.canvas_objects, visibleTrades, activeStorey]);
   const popupWall = useMemo(
     () => wallAssemblyPopup ? model.walls.find((wall) => wall.uid === wallAssemblyPopup.wallUid) ?? null : null,
     [model.walls, wallAssemblyPopup],
@@ -263,6 +304,21 @@ export function Canvas2D() {
     const res = await runMacro({ macro: "heal_walls", storey: activeStorey, node: tag });
     if (res) toast("Joint healed");
   };
+  // Read through a ref so PlanNodesLayer's `onHeal` can be identity-stable while healNode
+  // itself stays a plain closure over the live storey/macro runner.
+  healNodeRef.current = healNode;
+
+  // Identity-stable props for the memo()'d layers below (→ plan/PlanMarkers.tsx). Written out
+  // rather than inlined in the JSX because an inline arrow is a new function every render,
+  // which is exactly the reference miss the memo() is there to avoid.
+  const selectRoom = useCallback((room: Room) => select("room", room.uid), [select]);
+  const selectWall = useCallback((wall: Wall) => select("wall", wall.uid), [select]);
+  const healNodeStable = useCallback((tag: string) => { void healNodeRef.current(tag); }, []);
+  const openWarningPopup = useCallback((marker: PlanWarningMarker, event: React.MouseEvent) => {
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setWarningPopup({ marker, screen: [event.clientX - rect.left, event.clientY - rect.top] });
+  }, []);
 
   // ---- tool tap dispatch (→ plan/toolDispatch.ts) ----------------------------
   const handleTap = (world: Vec2, screen: Vec2) => dispatchTap({
@@ -366,22 +422,19 @@ export function Canvas2D() {
         {/* resolved slabs first: the concrete plate everything on this storey stands on */}
         {visibleTrades.concrete && <SlabOutlines slabs={slabsOnStorey} project={project} />}
         {/* rooms next (tinted fills, behind walls; → plan/PlanMarkers.tsx::RoomLayer) */}
-        <RoomLayer rooms={model.rooms.filter((r) => !activeStorey || r.storey === activeStorey)}
+        <RoomLayer rooms={roomsOnStorey}
           previewGeom={previewGeom} tool={tool} labelMode={labelMode}
-          project={project} onSelect={(r) => select("room", r.uid)} />
+          project={project} onSelect={selectRoom} />
         {/* walls — likewise shown at their previewed axis (tag-matched) while a node drag is
             in flight, so connected walls visibly stretch/shrink before the commit lands */}
         {(visibleTrades.walls || visibleTrades.framing) && wallsOnStorey.map((w) => {
           const previewAxis = previewGeom?.walls.find((x) => x.tag === w.tag)?.axis;
           const displayWall = previewAxis ? { ...w, axis: previewAxis as [Vec2, Vec2] } : w;
-          const displayedOpenings = model.openings
-            .filter((opening) => opening.host === w.tag && opening.uid !== openingDragPreview?.opening.uid);
-          if (openingDragPreview?.host.tag === w.tag) displayedOpenings.push(openingDragPreview.opening);
           return (
             <WallShape
               key={w.uid}
               w={displayWall}
-              openings={displayedOpenings}
+              openings={openingsByHost.get(w.tag) ?? NO_OPENINGS}
               project={project}
               selected={selection.uid === w.uid}
               hovered={hoverUid === w.uid}
@@ -445,12 +498,7 @@ export function Canvas2D() {
             rather than the plan inventing its own grouping. Re-home the category and this gate
             moves with it — `stairs` is the likelier answer for a guard. */}
         {visibleTrades.concrete && <RailingOutlines railings={railingsOnStorey} project={project} />}
-        {(model.canvas_objects ?? [])
-          // Doors/windows remain topology-aware SVG shapes below; their normalized records
-          // serve inspection/interchange consumers and must not render a second footprint.
-          .filter((item) => item.domain !== "opening" && item.position_m &&
-            visibleTrades[canvasObjectTrade(item)] &&
-            (!activeStorey || item.storey === activeStorey))
+        {footprintObjects
           .map((item) => <CanvasObjectFootprint key={item.uid} item={item}
             type={item.type ? canvasTypes.get(item.type) : undefined} project={project} scale={view.scale}
             walls={wallsOnStorey}
@@ -459,13 +507,9 @@ export function Canvas2D() {
         {showClearances && <ClearanceOverlays model={model} storey={activeStorey} project={project}
           scale={view.scale} />}
         <PlanNodesLayer nodes={nodes} openEnds={openEnds} model={model} tool={tool}
-          project={project} nearestNodeTag={nearestNodeTag} onHeal={(tag) => void healNode(tag)} />
+          project={project} nearestNodeTag={nearestNodeTag} onHeal={healNodeStable} />
         <WarningMarkerLayer markers={warningMarkers} activeKey={warningPopup?.marker.key ?? null}
-          project={project} onOpen={(marker, event) => {
-            const rect = svgRef.current?.getBoundingClientRect();
-            if (!rect) return;
-            setWarningPopup({ marker, screen: [event.clientX - rect.left, event.clientY - rect.top] });
-          }} />
+          project={project} onOpen={openWarningPopup} />
         {/* draggable endpoint handles on the selected wall (stretch → move_nodes) */}
         {tool === "select" && selection.kind === "wall" && (() => {
           const w = wallsOnStorey.find((x) => x.uid === selection.uid);
@@ -502,7 +546,7 @@ export function Canvas2D() {
         {tool === "wall" && <WallDraftLayer draft={draft} rubber={rubber} cursor={cursor}
           snapNodes={snapNodes} tolM={tolM} gridM={gridM} project={project} />}
         {workspace === "document" && <DetailMarkerLayer model={model} activeStorey={activeStorey}
-          project={project} onSelectWall={(wall) => select("wall", wall.uid)} />}
+          project={project} onSelectWall={selectWall} />}
         {/* measure tape: a scratch two-tap segment, dual-unit readout, never written back */}
         {measure && measureEnd && (() => {
           const [sx, sy] = project(measure.start);

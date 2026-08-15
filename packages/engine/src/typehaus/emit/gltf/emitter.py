@@ -214,16 +214,9 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
 
 
 def _ir_part(model: ResolvedModel, uid: str, key: str):
-    """One named part of one IR element, or ``None`` if the model carries no geometry.
-
-    ``resolve_preview`` skips the geometry stage on purpose, and a caller can hand this
-    emitter a model built that way, so every IR read here is optional rather than assumed.
-    """
+    """One named part of one IR element, or ``None`` if the model carries no geometry."""
     geometry = getattr(model, "geometry", None)
-    element = geometry.by_uid(uid) if geometry is not None else None
-    if element is None:
-        return None
-    return next((part for part in element.parts if part.key == key), None)
+    return geometry.part(uid, key) if geometry is not None else None
 
 
 def _add_deck(mb: _MeshBuilder, model: ResolvedModel, floor) -> None:
@@ -244,11 +237,9 @@ def _add_deck(mb: _MeshBuilder, model: ResolvedModel, floor) -> None:
 def _add_earth(mb: _MeshBuilder, model: ResolvedModel) -> None:
     """The site earth sheet: the parcel at grade, cut by everything excavated out of it.
 
-    The glTF ``earth`` trade used to be empty, so the exported building floated with no
-    ground under it while the viewer drew a sheet under the same model. The tone is the
-    viewer's soil brown, but opaque: the viewer's translucency is a depth-sorted overlay
-    trick that an importer has no equivalent for, and a see-through ground imports into
-    Revit/SketchUp as a puzzle rather than a site.
+    The tone is the viewer's soil brown, but opaque: the viewer's translucency is a
+    depth-sorted overlay trick that an importer has no equivalent for, and a see-through
+    ground imports into Revit/SketchUp as a puzzle rather than a site.
     """
     part = _ir_part(model, "site-earth", "sheet")
     if part is None:

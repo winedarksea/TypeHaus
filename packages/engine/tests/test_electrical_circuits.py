@@ -15,16 +15,6 @@ from typehaus.source import load_plan
 from _helpers import CATLIN as CATLIN_DIR
 
 
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, errors
-    return model
-
-
 def _plan(circuits=(), devices=(), types=()):
     return PlanModel(
         project=Project(name="test", project_uuid="00000000-0000-0000-0000-000000000002",

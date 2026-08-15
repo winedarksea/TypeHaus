@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import math
 import textwrap
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import date
 from typing import TYPE_CHECKING
 
@@ -30,6 +32,12 @@ if TYPE_CHECKING:  # pragma: no cover — SheetSpec lives in sheets.py (which im
 # Paper presets, landscape (width, height) in inches.
 LEDGER = (17.0, 11.0)
 ARCH_D = (36.0, 24.0)
+# E-602 carries four stacked tables (22 luminaire types, ~120 control rows in two columns,
+# the 24V runs and the connected load) — more vertical content than an 11x17 landscape sheet
+# holds at a legible type size. It prints portrait rather than shrinking the control schedule
+# to unreadable. Every other table sheet is LEDGER; this is the one deliberate exception, and
+# it still gets the same border and title block.
+PORTRAIT_LEDGER = (11.0, 17.0)
 
 _MARGIN = 0.25       # border inset from the paper edge, inches
 _TITLE_H = 0.75      # title-block strip height above the bottom border line, inches
@@ -156,6 +164,50 @@ def compose_sheet(scene: Scene, spec: object, model: "ResolvedModel",
                  scale_label, size)
     _apply_text_scale(fig, ax, scaled_text)
     return fig
+
+
+@contextmanager
+def schedule_sheet(pdf, model: "ResolvedModel", number: str, name: str, *,
+                   size: "tuple[float, float]" = LEDGER,
+                   heading: "str | None" = None,
+                   heading_xy: "tuple[float, float]" = (0.04, 0.945)) -> "Iterator":
+    """Open a table page, hand back the figure, then chrome/save/close it.
+
+    Every ``_write_*`` schedule repeated the same six lines — create the figure at the
+    paper preset, letter the sheet number, draw the body, apply ``sheet_chrome``, save,
+    close. Two of them silently dropped the chrome call *and* passed a portrait figsize
+    to a landscape preset, shipping two untitled sheets in the wrong orientation. Making
+    the envelope a context manager makes that omission unrepresentable: the size the
+    figure is opened at is the size the chrome is drawn at, by construction.
+
+    ``heading`` defaults to ``"{number} · {name}"``; pass ``""`` for a page that letters
+    its own title (the cover), or an explicit string to override it.
+    """
+    import matplotlib.pyplot as plt
+
+    fig = plt.figure(figsize=size)
+    if heading is None:
+        heading = f"{number} · {name}"
+    if heading:
+        fig.text(*heading_xy, heading, fontsize=16, family="monospace")
+    try:
+        yield fig
+    except BaseException:
+        plt.close(fig)
+        raise
+    sheet_chrome(fig, model, number, name, size=size)
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
+def section(fig, x: float, y: float, title: str, *, fontsize: float = 10, **kwargs):
+    """A block header on a table page — bold monospace, one call rather than four kwargs.
+
+    Repeated 23 times across the schedules with the styling spelled out each time, which
+    is how the lettering drifted between sheets.
+    """
+    return fig.text(x, y, title, fontsize=fontsize, family="monospace", weight="bold",
+                    **kwargs)
 
 
 def sheet_chrome(fig, model: "ResolvedModel", number: str, title: str,

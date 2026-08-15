@@ -4,18 +4,16 @@ Split out of :mod:`typehaus.emit.ifc.emitter` because the roof is the one produc
 geometry is neither a plan prism nor a flat slab: it is a stack of pitched layers, each
 clipped at its own plan setback, carrying members that rake with the plane.
 
-Two things this module is responsible for getting right, both of which used to be missing:
+Two things this module is responsible for getting right:
 
 * **the shell.** Every above-structure layer is its own closed solid, clipped at its own
   plan setback (the deck at the wall sheathing face, the foam at the wall furring, the metal
-  running proud). The IFC roof used to be one flat 1" plate at the eave elevation, so it
-  agreed with no other emitter and no roof detail. The bands now come from the derived-
-  geometry IR (``resolve/geometry_roofs.py``) rather than from a fourth private copy of the
-  math, so IFC, the GLB and the viewer are the same roof by construction.
+  running proud). The bands come from the derived-geometry IR
+  (``resolve/geometry_roofs.py``) rather than from a fourth private copy of the math, so
+  IFC, the GLB and the viewer are the same roof by construction.
 * **the children.** Rafters, truss chords, gable studs, the derived fascia/soffit/gutter and
-  the closure bands were emitted as bare ``IfcMember`` identities with no representation at
-  all — present in the aggregation, invisible in any viewer. Each now carries a swept solid
-  on its own axis, and lands in the IFC class its trade actually calls for.
+  the closure bands each carry a swept solid on their own axis, and land in the IFC class
+  their trade actually calls for.
 """
 
 from __future__ import annotations
@@ -30,8 +28,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry_roofs import roof_parts
 from typehaus.resolve.model import FramedMember, ResolvedRoof
 
-# The no-layers-above-structure fallback skin used to be declared here as well as in the
-# glTF emitter and the viewer; it now lives once, in `resolve/geometry_roofs.py`.
+# The no-layers-above-structure fallback skin lives once, in `resolve/geometry_roofs.py`.
 # A degenerate member (a zero-height annotation record) still needs a sweepable section.
 _MINIMUM_EXTENT_M = 1e-4
 

@@ -46,10 +46,10 @@ _GLASS_KEY = "glass"
 # whole exterior unit reads as one dark product against the siding.
 _WINDOW_TRIM_KEY = "window_trim"
 # 1 1/4" casing face around the RO — the visible width of the J-channel/flat trim a sided
-# wall actually returns into, not a wide craftsman casing. Was 2 1/2" until 2026-07-30,
-# which read far too heavy in 3D: the casing and the window's own frame are both charcoal
-# on a clad wall, so what a viewer sees is one band of casing + frame face, and at 2 1/2"
-# that band came to 5 1/2" a side. Mirrored in ui/src/three/builders/walls.ts
+# wall actually returns into, not a wide craftsman casing. A wider casing (2 1/2") reads far
+# too heavy in 3D: the casing and the window's own frame are both charcoal on a clad wall,
+# so what a viewer sees is one band of casing + frame face, and at 2 1/2" that band came to
+# 5 1/2" a side. Mirrored in ui/src/three/builders/walls.ts
 # (WINDOW_TRIM_FACE_WIDTH_M) — the viewer draws this geometry itself; change both or the
 # glTF and the live panel disagree.
 _WINDOW_TRIM_FACE_WIDTH_M = 0.032            # 1 1/4" casing face around the RO

@@ -13,16 +13,13 @@ below are what prove the rule can fail at all, and that it fails for the right r
 
 from __future__ import annotations
 
-from pathlib import Path
 from types import SimpleNamespace
 
-import pytest
 
 from typehaus.checks import build_context
 from typehaus.checks.structural.stairs import landing_post_bearing
 from typehaus.findings import Result
 from typehaus.quantities import inch
-from typehaus.resolve import resolve
 from typehaus.resolve.model import FramedMember, ResolvedStair
 from typehaus.source import load_plan
 from _helpers import CATLIN as CATLIN_DIR
@@ -30,15 +27,6 @@ from _helpers import CATLIN as CATLIN_DIR
 
 _DECK_Z = 0.0
 _POST_TOP_Z = 1.5
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [finding for finding in findings if finding.severity.value == "error"]
-    assert not errors, [finding.message for finding in errors]
-    return model
 
 
 def test_catlin_landing_posts_all_land_on_something_bearing(catlin_model):

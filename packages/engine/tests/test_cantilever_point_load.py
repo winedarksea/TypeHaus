@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import pytest
 
+from _helpers import check_context
+
 from typehaus.checks.registry import CheckContext, Preferences, Tier, registered
 from typehaus.checks.structural.cantilever import cantilever_point_load
 from typehaus.findings import Result
@@ -101,11 +103,7 @@ def _plan(*, overhang_in: float = _OVERHANG_IN, posts=(), reinforcements=(),
 
 
 def _context(plan: PlanModel) -> CheckContext:
-    model, findings = resolve(plan)
-    assert not [f for f in findings if f.severity.value == "error"], \
-        [f.message for f in findings if f.severity.value == "error"]
-    return CheckContext(plan=plan, model=model, preferences=Preferences(), profile=None,
-                        resolve_findings=list(findings))
+    return check_context(plan, profile=None)
 
 
 def _post(tag: str, x_ft: float, y_ft: float, *, uid: str = "PT000000c1",

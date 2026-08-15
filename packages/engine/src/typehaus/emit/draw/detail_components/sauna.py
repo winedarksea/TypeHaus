@@ -102,7 +102,7 @@ def sauna_room_interval(walls, direction: str, station: float):
 def ceiling_slab_over(model, crop, direction, station, u_lo_in, u_hi_in):
     """The slab forming the sauna ceiling: the lowest-underside slab above the crop midpoint
     whose cut edge overlaps the room interior, or None (the drop ceiling then draws nothing)."""
-    from typehaus.emit.draw.section import _ring_cut_intervals
+    from typehaus.emit.draw.section import ring_cut_intervals
 
     (_cu0, cz0), (_cu1, cz1) = crop
     lo_z, hi_z = min(cz0, cz1), max(cz0, cz1)
@@ -111,7 +111,7 @@ def ceiling_slab_over(model, crop, direction, station, u_lo_in, u_hi_in):
     for solid in model.solids:
         if solid.category != "slab" or not (mid_z < solid.z0_m <= hi_z + 0.05):
             continue
-        for (a, b) in _ring_cut_intervals(solid.outline, direction, station):
+        for (a, b) in ring_cut_intervals(solid.outline, direction, station):
             lo, hi = min(a, b) / M_PER_IN, max(a, b) / M_PER_IN
             if lo <= u_hi_in and hi >= u_lo_in:
                 if best is None or solid.z0_m < best.z0_m:

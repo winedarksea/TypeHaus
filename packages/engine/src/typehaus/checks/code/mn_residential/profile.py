@@ -175,10 +175,10 @@ MN_2024 = JurisdictionProfile(
                        ("manufacturer span table",)),
         PermitItemSpec("Plumbing sleeve alignment", ("mep.sleeve_alignment",), ()),
         PermitItemSpec("Plumbing drain slope", ("mep.drain_slope",), ("IRC P3005.3",)),
-        # The plumbing pass (2026-07-29) landed eight more CODE-tier checks. Every one of
-        # them answers a line a plan reviewer actually asks about, so they go on the
-        # checklist rather than into the exclusion list — the pour-day sleeve schedule most
-        # of all, since it is the one item that cannot be corrected after the fact.
+        # Every one of these plumbing checks answers a line a plan reviewer actually asks
+        # about, so they go on the checklist rather than into the exclusion list — the
+        # pour-day sleeve schedule most of all, since it is the one item that cannot be
+        # corrected after the fact.
         PermitItemSpec("Cast-in sleeve coverage", ("mep.sleeve_coverage",), ()),
         # Grouped: both answer "is the pipe in this wall, and can the wall still do its job".
         PermitItemSpec("Plumbing in framed walls",
@@ -197,12 +197,12 @@ MN_2024 = JurisdictionProfile(
                        ("MN Plumbing Code (ch. 4714) Tables 702.1, 703.2, 610.3, 610.4",)),
         PermitItemSpec("Trap-arm length", ("mep.trap_arm_length",),
                        ("MN Plumbing Code (ch. 4714) Table 1002.2",)),
-        # The supply-protection pass (2026-08-01). Grouped as one line because a reviewer
-        # asks them as one question — "how is the potable supply controlled and protected" —
-        # and because two of the three are contingent on what the house contains: a plan
-        # with no hose connection produces no backflow findings and one with no washer no
-        # arrestor findings, and either alone would grade an item UNKNOWN for the honest
-        # reason that the house has nothing to evaluate.
+        # Grouped as one line because a reviewer asks them as one question — "how is the
+        # potable supply controlled and protected" — and because two of the three are
+        # contingent on what the house contains: a plan with no hose connection produces no
+        # backflow findings and one with no washer no arrestor findings, and either alone
+        # would grade an item UNKNOWN for the honest reason that the house has nothing to
+        # evaluate.
         PermitItemSpec("Water supply protection and shutoff",
                        ("mep.main_shutoff", "mep.backflow_prevention",
                         "mep.water_hammer_arrestor"),

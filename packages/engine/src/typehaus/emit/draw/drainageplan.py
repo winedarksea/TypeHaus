@@ -4,7 +4,7 @@ One sheet per storey that owns stormwater content: the resolved drainage solids 
 storey — authored gutters/leaders, drain tile, french drains, sumps and drywells — plus the
 channels a roof *derives* along its own eaves, which are members rather than solids and
 would otherwise appear on no drawing at all. The trade already has a real IFC system
-(``emit/ifc/emitter.py::_emit_stormwater_system``) and a real BOM section
+(``emit/ifc/mep.py::_emit_stormwater_system``) and a real BOM section
 (``takeoff/drainage.py``); this is the sheet an installer hangs it from.
 
 Same skeleton as :mod:`typehaus.emit.draw.plumbingplan`: ghost walls for orientation, one
@@ -14,10 +14,10 @@ inspector would ask about.
 
 from __future__ import annotations
 
-from typehaus.emit.draw._shared import emit_wall
+from typehaus.emit.draw._shared import emit_ghost_walls
+from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Text
 from typehaus.emit.trades import DRAINAGE_CATEGORIES
-from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 #: Solid category → (layer, linetype). Buried work (tile, trench, soakaway) is dashed;
@@ -60,16 +60,10 @@ def has_drainage_content(model: ResolvedModel, storey_tag: str) -> bool:
                 or _derived_gutter_members(model, storey_tag))
 
 
-def _in(point: tuple[float, float]) -> tuple[float, float]:
-    return point[0] / M_PER_IN, point[1] / M_PER_IN
-
 
 def build_drainage_plan(model: ResolvedModel, storey: str) -> Scene:
     b = SceneBuilder(name=f"drainage-{storey}", units="in")
-    for wall in model.walls:
-        if wall.storey == storey:
-            emit_wall(b, wall, layer_override="A-WALL-BELW", weight_override=0.15,
-                      hatch=False, members=False)
+    emit_ghost_walls(b, model, storey)
 
     # One label per element tag, at the first solid drawn for it: a banded gutter or a
     # multi-segment tile run is many solids and must not become a picket of labels.

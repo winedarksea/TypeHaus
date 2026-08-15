@@ -17,7 +17,6 @@ export type ThreeMode = "nordic" | "schematic";
 // because a plan dense enough to want fewer room labels wants fewer object labels too.
 // "hover" shows a label only under the pointer (a selected element always shows its own).
 export type LabelMode = "all" | "hover" | "off";
-// Phase 6 — three previously-conflated concepts pulled apart:
 export type Workspace = "design" | "analyze" | "document"; // tool/drawer emphasis
 export type Representation = "conceptual" | "schematic" | "detailed" | "fabrication"; // detail level
 // Building-science lenses (Phase 9): a lens semantically re-frames the model to answer one

@@ -18,11 +18,9 @@ from __future__ import annotations
 import math
 import uuid
 from dataclasses import replace
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from _helpers import CATLIN as CATLIN_DIR
 
 from typehaus.checks.structural.stairs import stair_riser_uniformity
 from typehaus.emit.draw import build_floorplan
@@ -55,17 +53,6 @@ from typehaus.model.enums import StructuralRole
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.source import load_plan
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    assert result.plan is not None, [f.message for f in result.findings]
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, [f.message for f in errors]
-    return model
 
 
 @pytest.fixture(scope="module")

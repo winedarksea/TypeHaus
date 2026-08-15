@@ -13,22 +13,10 @@ solar day against 48h of the always-on tier — because those are the sizing dec
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
 from typehaus.takeoff.backup_calc import DEPTH_OF_DISCHARGE, backup_runtime_summary
-from _helpers import CATLIN as CATLIN_DIR
-
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    model, findings = resolve(load_plan(CATLIN_DIR).plan)
-    assert not [f for f in findings if f.severity.value == "error"]
-    return model
 
 
 @pytest.fixture(scope="module")

@@ -6,7 +6,7 @@ Symbols-only E-101 (decision 1): device positions + a legend. No circuit numberi
 
 from __future__ import annotations
 
-from typehaus.emit.draw._shared import emit_wall
+from typehaus.emit.draw._shared import emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.quantities import M_PER_IN
@@ -36,10 +36,7 @@ def has_electrical_content(model: ResolvedModel, storey_tag: str) -> bool:
 
 def build_electrical_plan(model: ResolvedModel, storey: str) -> Scene:
     b = SceneBuilder(name=f"electrical-{storey}", units="in")
-    for wall in model.walls:
-        if wall.storey == storey:
-            emit_wall(b, wall, layer_override="A-WALL-BELW", weight_override=0.15,
-                     hatch=False, members=False)
+    emit_ghost_walls(b, model, storey)
 
     for element in model.plan.storey_elements(storey):
         if element.element_kind != "ElectricalDevice":

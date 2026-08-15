@@ -4,25 +4,11 @@ from __future__ import annotations
 
 import copy
 import dataclasses
-from pathlib import Path
 
 import pytest
 
 from typehaus.checks import run_from_model
 from typehaus.checks.registry import Tier
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
-
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, errors
-    return model
 
 
 def test_wc_expected_drain_point_is_authored_carrier_outlet(catlin_model):
@@ -120,9 +106,8 @@ def test_lav_expected_drain_point_projects_onto_wet_wall(catlin_model):
 
 
 def test_drain_position_override_wins():
-    from typehaus.model.mep import SleevePenetration
     from typehaus.model.spatial import Fixture
-    from typehaus.quantities import ft, inch, pt
+    from typehaus.quantities import ft, pt
     from typehaus.resolve.mep import _expected_drain_point
 
     fixture = Fixture(uid="FX1", tag="FX-OVR", type_ref="FX-LAV", room="RM-1",
@@ -286,7 +271,7 @@ def test_vent_termination_height_flags_an_authored_elevation_above_the_roof():
     findings = vent_termination_height(_vent_termination_context(m(5.5)))
     assert [f.result.value for f in findings] == ["fail"]
     assert "1.4" in findings[0].message or "too high" in findings[0].message
-    # Advisory findings never block the permit gate (see plumbing.py's _advisory_fail).
+    # Advisory findings never block the permit gate (see plumbing_common._advisory_fail).
     assert findings[0].severity.value == "warn"
 
 

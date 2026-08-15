@@ -242,6 +242,20 @@ def ensure_local_placement(f: Any, element: Any) -> None:
     element.ObjectPlacement = f.createIfcLocalPlacement(None, axis)
 
 
+def assign_representation(f: Any, element: Any, rep: Any) -> None:
+    assign_representations(f, element, [rep])
+
+
+def assign_representations(f: Any, element: Any, representations: list[Any]) -> None:
+    element.Representation = f.createIfcProductDefinitionShape(
+        None, None, representations
+    )
+    # Geometry is authored in the shared project frame inside its swept solid. IFC still
+    # requires every represented product to carry an ObjectPlacement; an identity placement
+    # expresses that frame explicitly and satisfies both schema validation and BIM importers.
+    ensure_local_placement(f, element)
+
+
 def ensure_pset(f: Any, element: Any, name: str, props: dict[str, Any]) -> None:
     """Attach a property set to an element (ported ensure_pset)."""
     import ifcopenshell.api

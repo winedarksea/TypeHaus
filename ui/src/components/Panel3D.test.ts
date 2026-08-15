@@ -1,8 +1,10 @@
 import * as THREE from "three";
 import type { CanvasObject, Catalog, Floor, FootingBedding, Member, ModelPart, Opening, Roof, Solid, Stair, Vec2, Wall, Model } from "../model/types";
 import { compassBearingScreenDirection } from "./Panel3D";
+import { BUTTON_DOLLY_FACTOR } from "./ZoomControls";
+import { solidCategoryLabel } from "../model/solidLabels";
 import {
-  BUTTON_DOLLY_FACTOR, clampDollyRadius, frameRadiusForBounds, MAX_DOLLY_RADIUS_M,
+  clampDollyRadius, frameRadiusForBounds, MAX_DOLLY_RADIUS_M,
   MIN_DOLLY_RADIUS_M, normalizedWheelDeltaPx, pinchDollyRadius, VIEW_FIT_MIN_RADIUS_M,
   VIEW_FIT_POLAR_ANGLE, WHEEL_MAX_STEP_PX,
 } from "../three/cameraFraming";
@@ -21,7 +23,7 @@ import {
 } from "../three/builders/structure";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import {
-  SOLID_CATEGORY_COLOR, SOLID_CATEGORY_TRADE, createSolidMaterial, solidCategoryLabel,
+  SOLID_CATEGORY_COLOR, SOLID_CATEGORY_TRADE, createSolidMaterial,
   solidColor, solidTrade,
 } from "../three/solidMaterials";
 import { ALL_TRADES } from "../state/vocabulary";
@@ -180,10 +182,10 @@ export function runArchGeometryTests() {
     [[-0.25, 0], [0, -0.2], [6, -0.2], [6, 0.2], [0, 0.2]], [arch], [0, 0]) === null,
     "A genuinely non-rectangular (mitered) footprint still falls back to strips");
 
-  // Segmental heads (2026-08-03). The soffit used to be hard-wired to a half-circle of
-  // width/2, so `arch_rise_m` only moved the springline and a 2" rise on a 14" opening still
-  // drew a 7" half-round. Mirrors `test_segmental_arch_crown_lands_on_the_authored_head`
-  // in packages/engine/tests/test_macros_gltf_m2.py — keep the two in step.
+  // Segmental heads: a rise that is a fraction of the half-span (here 2" on a 14" opening)
+  // must draw a shallow arc, not clamp to a full half-circle of width/2 regardless of the
+  // authored rise. Mirrors `test_segmental_arch_crown_lands_on_the_authored_head` in
+  // packages/engine/tests/test_macros_gltf_m2.py — keep the two in step.
   const halfSpan = 0.1778, rise = 0.0508;  // 7" and 2"
   const segmental = archSoffitCircle(halfSpan, rise);
   assert(segmental.radiusM > halfSpan && Math.abs(segmental.depthM - (segmental.radiusM - rise)) < 1e-12,

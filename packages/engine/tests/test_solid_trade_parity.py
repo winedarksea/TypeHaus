@@ -17,29 +17,18 @@ instead of Plumbing.
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
 import pytest
 
 from typehaus.emit.trades import (
     DRAINAGE_CATEGORIES, FALLBACK_TRADE, SOLID_CATEGORY_TRADE, TRADES, solid_trade)
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR, REPO_ROOT
+from _helpers import REPO_ROOT
 
 SOLID_MATERIALS_TS = REPO_ROOT / "ui" / "src" / "three" / "solidMaterials.ts"
 
 # Categories that ride the fallback on purpose, so "unclassified" stays a meaningful signal.
 # Keep the reasons in emit/trades.py, next to the table.
 DELIBERATELY_UNCLASSIFIED = {"railing", "connector"}
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    assert not [f for f in findings if f.severity.value == "error"]
-    return model
 
 
 @pytest.fixture(scope="module")

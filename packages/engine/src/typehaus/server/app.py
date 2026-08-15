@@ -302,14 +302,26 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
             "warnings": list(result.warnings),
         })
 
+    # Revision the glb sitting in out/model.glb was emitted from, so a repeat request for an
+    # unchanged model serves the file instead of re-running the whole emitter. Same key GET
+    # /model caches on (``ProjectState._model_cache``); kept here rather than on ProjectState
+    # because the artifact lives on disk, not in the payload the state object serializes.
+    emitted_glb_revision: str | None = None
+
     @app.get("/model.glb")
     def get_glb() -> Any:
+        nonlocal emitted_glb_revision
         out = state.house_dir / "out" / "model.glb"
         if state.model is None:
             return JSONResponse({"error": "model does not resolve"}, status_code=409)
         from typehaus.emit.gltf import emit_glb
 
-        emit_glb(state.model, out)
+        revision = state.revision()
+        # is_file() as well as the revision: `haus build` and hand-cleaning out/ both remove
+        # the artifact without touching the revision.
+        if emitted_glb_revision != revision or not out.is_file():
+            emit_glb(state.model, out)
+            emitted_glb_revision = revision
         return FileResponse(out, media_type="model/gltf-binary")
 
     @app.get("/underlay/{asset_path:path}")

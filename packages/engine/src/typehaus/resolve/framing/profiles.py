@@ -1,8 +1,8 @@
 """Structured lumber/engineered-member cross-section catalog (→ 20 WP framing).
 
 ``FramedMember.profile`` strings are structural-check keys (see
-``checks/structural/checks.py`` and ``cli/app.py``'s ``haus ls`` counters) — this
-module only *parses* them into real dimensions, it never rewrites a stored profile
+``checks/structural/checks.py`` and ``cli/cmd_takeoff.py``'s ``haus takeoff`` counters) —
+this module only *parses* them into real dimensions, it never rewrites a stored profile
 string. ``tables.py`` keeps its existing ``LUMBER_ACTUAL``/``member_actual`` for its
 existing consumers; this module is the new, fuller catalog consumed by serialization
 (WP5) and the UI (WP6-8).
@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from functools import lru_cache
 
 from typehaus.model.assembly import FramingSpec
 from typehaus.quantities import inch
@@ -92,11 +93,17 @@ def _rect(width_in: float, depth_in: float, plies: int = 1) -> CrossSection:
                         depth_m=inch(depth_in).meters, plies=plies)
 
 
+@lru_cache(maxsize=512)
 def cross_section(profile: str) -> CrossSection:
     """Parse a ``FramedMember.profile`` string into a :class:`CrossSection`.
 
     Never mutates or re-derives the stored profile string — parse-only, with a safe
     rectangular fallback for anything unrecognized so callers never have to guard.
+
+    Cached because it is a pure function of one string and the geometry stage calls it
+    15,160 times per resolve of ``houses/catlin`` — for a few dozen distinct profiles,
+    driving 116k regex matches underneath. :class:`CrossSection` is a frozen dataclass,
+    so handing every caller the same instance is safe.
     """
     text = profile.strip()
 

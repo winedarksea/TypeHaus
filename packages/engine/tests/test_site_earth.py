@@ -13,10 +13,7 @@ from pathlib import Path
 import pytest
 from shapely.geometry import Point, Polygon
 
-from typehaus.resolve import resolve
 from typehaus.resolve.site_earth import earth_plane_void_rings, site_grade_elevation_m
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
 
 FT = 0.3048
 
@@ -27,14 +24,6 @@ SUNKEN_GARDEN_POINT_FT = (18.0, -15.0)
 # Open yard — earth must still be there. East of the garage (which reaches x=24', y=41'-65'
 # now that it stands 4' off the house) and clear of the breezeway in the slot between them.
 OPEN_YARD_POINT_FT = (30.0, 48.0)
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    assert not [f for f in findings if f.severity.value == "error"]
-    return model
 
 
 def _covered_by_a_void(rings, point_ft) -> bool:

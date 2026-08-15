@@ -10,8 +10,8 @@ people stand on and the bottom of an excavation, so its plan outline is exactly 
 earth is missing. That covers the house basement, a freestanding garage on its own slab, and
 an open-air sunken garden alike — none of which share a storey, a room set, or a wall loop.
 
-Consumers: the IFC site pad (``emit/ifc/emitter.py``), the serialized UI contract
-(``server/model_json.py`` → ``site.earth_voids``), and the three.js site sheet.
+Consumers: the IFC site pad (``emit/ifc/site.py``), the serialized UI contract
+(``server/model_json_document.py`` → ``site.earth_voids``), and the three.js site sheet.
 """
 
 from __future__ import annotations

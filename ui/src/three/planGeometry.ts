@@ -118,23 +118,6 @@ export function rectBetween(p0: Vec2, p1: Vec2, left: number, right: number): Ve
   ];
 }
 
-/**
- * SVG arc sweep-flag for a quarter-circle swing arc that must be centred on `center`
- * (screen pixel space, y pointing down). An `A r r 0 0 <flag> …` command from `from`
- * to `to` — both a radius away from `center` — has two candidate centres; the flag
- * selects the one that keeps the pivot at `center`, so the arc stays correctly concave
- * toward the hinge. A double door's two leaves hinge at opposite jambs and are mirror
- * images, so they resolve to opposite flags — the reason a single shared flag rendered
- * one convex + one concave leaf.
- *
- * SVG sweep-flag 1 draws clockwise on screen; for a y-down frame a visually clockwise
- * turn from (from-center) to (to-center) has a positive 2D cross product.
- */
-export function swingArcSweepFlag(center: Vec2, from: Vec2, to: Vec2): 0 | 1 {
-  const cross = (from[0] - center[0]) * (to[1] - center[1]) - (from[1] - center[1]) * (to[0] - center[0]);
-  return cross > 0 ? 1 : 0;
-}
-
 /** Shoelace area of a plan ring; positive is counter-clockwise in plan coordinates. */
 export function planRingSignedArea(ring: readonly Vec2[]): number {
   let sum = 0;

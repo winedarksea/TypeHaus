@@ -72,14 +72,8 @@ def bill_of_materials(
     fixtures — the UI BOM's placeablesSection twin) and ``floor_heat`` bills each radiant
     zone's element length, so no billable record lives only in a CLI patch or the browser.
 
-    The 2026-07-25 sweep added the sections that had been resolved but never billed:
-    ``floor_finishes`` (with the pad/underlayment each implies), ``envelope_layers`` (every
-    layer of a stack, where ``sheet_goods`` bills only the sheathing), ``openings``
-    (A-601 drew the schedule and the BOM never saw it), ``pipe_runs``/``ducts``/``sleeves``,
-    ``footing_bedding`` (the browser billed it; the engine did not), ``stair_finish`` and
-    ``conductors``. ``test_framing_takeoff`` holds a coverage meta-test over
-    ``ResolvedModel``'s own collections so the next thing the IR learns to resolve cannot
-    quietly go unbilled.
+    ``test_framing_takeoff`` holds a coverage meta-test over ``ResolvedModel``'s own
+    collections so anything the IR learns to resolve cannot quietly go unbilled.
     """
     return {
         "framing": framing_takeoff(model),
@@ -93,14 +87,13 @@ def bill_of_materials(
         "placeables": placeables_takeoff(model),
         "railings": railing_takeoff(model),
         "floor_heat": floor_heat_takeoff(model),
-        # Resolved-but-unbilled until the 2026-07-25 sweep.
         "floor_finishes": floor_finish_rows(model),
         "envelope_layers": envelope_layer_takeoff(model),
-        # The other half of the wall stack (2026-08-03): a STRUCTURE layer that does not
-        # frame — a pour, an ICF core, a CMU/SRW course, a brick wythe — produces no
-        # members and is not a solid, so it was billed nowhere at all. 43 of catlin's 154
-        # walls, ~131 cy. Partitions the walls with `framing` by the same predicate
-        # `frame_wall` branches on (→ takeoff/wall_structure.py).
+        # The other half of the wall stack: a STRUCTURE layer that does not frame — a pour,
+        # an ICF core, a CMU/SRW course, a brick wythe — produces no members and is not a
+        # solid, so no other section can bill it. 43 of catlin's 154 walls, ~131 cy.
+        # Partitions the walls with `framing` by the same predicate `frame_wall` branches on
+        # (→ takeoff/wall_structure.py).
         "wall_structure": wall_structure_takeoff(model),
         # The species rollup — sauna liner, wainscot/tile-splash panelings, timber posts,
         # species floors — in square feet and board feet. Rows mirroring another section

@@ -14,11 +14,9 @@ against a 72" bury it does not have would fail it forever.
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 
-from typehaus.checks.code.mn_residential.profile import get_profile
 from typehaus.checks.mep.plumbing import (exterior_hydrant_protection, hot_water_insulation,
                                           hydrant_freeze_depth, pipe_material_preference)
 from typehaus.checks.mep.supply_protection import (backflow_prevention, main_shutoff,
@@ -29,14 +27,9 @@ from typehaus.findings import Result
 from typehaus.model.enums import PipeAccessoryKind
 from typehaus.model.mep import PipeAccessory
 from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
+from _helpers import CATLIN as CATLIN_DIR, check_context
 
 
-
-@pytest.fixture(scope="module")
-def catlin_plan():
-    return load_plan(CATLIN_DIR).plan
 
 
 @pytest.fixture(scope="module")
@@ -44,17 +37,8 @@ def catlin_prefs():
     return load_preferences(CATLIN_DIR)
 
 
-@pytest.fixture(scope="module")
-def catlin_model(catlin_plan):
-    model, findings = resolve(catlin_plan)
-    assert not [f for f in findings if f.severity.value == "error"]
-    return model
-
-
 def _context(plan, model, preferences: Preferences | None = None) -> CheckContext:
-    return CheckContext(plan=plan, model=model,
-                        preferences=preferences or Preferences(),
-                        profile=get_profile("mn-2024"))
+    return check_context(plan, model, preferences=preferences)
 
 
 def _fails(findings) -> list:

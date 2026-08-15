@@ -14,6 +14,7 @@ replacing it (→ takeoff/electrical.service_load_summary, which is unchanged).
 
 from __future__ import annotations
 
+from typehaus.model.electrical import luminaire_types
 from typehaus.resolve.model import ResolvedModel
 
 _M_TO_FT = 3.280839895013123
@@ -26,11 +27,6 @@ GENERAL_LIGHTING_VA_PER_FT2 = 3.0
 # The continuous-load factor a 24V driver is sized by (NEC 210.19(A)(1) basis), matching
 # ``checks/mep/lighting.PSU_SIZING_FACTOR``.
 PSU_SIZING_FACTOR = 1.25
-
-
-def _luminaire_types(model: ResolvedModel) -> dict:
-    return {product.tag: product for product in model.plan.library.electrical_device_types
-            if getattr(product, "form", None) is not None}
 
 
 def _device_types(model: ResolvedModel) -> dict:
@@ -71,7 +67,7 @@ def luminaire_schedule(model: ResolvedModel) -> list[dict[str, object]]:
     scans. ``count`` counts point fixtures; a linear type installed as runs reports its
     lineal feet instead, because a cove has no unit to count.
     """
-    types = _luminaire_types(model)
+    types = luminaire_types(model.plan.library)
     counts: dict[str, int] = {}
     rooms: dict[str, set] = {}
     for element in _luminaires(model):
@@ -122,7 +118,7 @@ def lighting_controls(model: ResolvedModel) -> list[dict[str, object]]:
     straight dashed lines rather than the arcs a hand-drafted set would use, so the plan
     shows *that* a leg exists and this table says exactly which.
     """
-    types = _luminaire_types(model)
+    types = luminaire_types(model.plan.library)
     device_types = _device_types(model)
     switches = {element.tag: element for storey in model.plan.storeys
                 for element in model.plan.storey_elements(storey.tag)
@@ -275,7 +271,7 @@ def connected_lighting_va(model: ResolvedModel) -> dict[str, object]:
     device on a branch circuit like any other. Counting both would double the tape.
     """
     types = _device_types(model)
-    luminaire_tags = set(_luminaire_types(model))
+    luminaire_tags = set(luminaire_types(model.plan.library))
     psu_tags = {run.psu_ref for run in model.light_runs if run.psu_ref}
 
     by_circuit: dict[str, dict[str, object]] = {}

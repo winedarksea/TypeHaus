@@ -11,6 +11,7 @@ import {
   createPlanPrismGeometry, projectPlanRotationToSceneRadians, projectPointToScene,
   type PlanCenter,
 } from "../planGeometry";
+import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
 
 export const EARTH_PLANE_OPACITY = 0.28;
 export const EARTH_PLANE_THICKNESS_M = 0.01;
@@ -53,14 +54,12 @@ export function buildEarth(parent: THREE.Group, model: Model, center: PlanCenter
     earthVoids(model), center,
   );
   if (!geometry) return;
-  const material = new THREE.MeshStandardMaterial({
-    color: 0x806040,
+  const material = standardMaterial(0x806040, mode, {
     transparent: true,
     opacity: EARTH_PLANE_OPACITY,
     depthWrite: false,
     side: THREE.DoubleSide,
-    roughness: mode === "nordic" ? 0.95 : 1,
-    flatShading: mode === "schematic",
+    roughness: mode === "nordic" ? NORDIC_ROUGHNESS.ground : 1,
   });
   parent.add(new THREE.Mesh(geometry, material));
 }
@@ -85,8 +84,8 @@ export function buildCanvasObject(
   }
   const color = item.domain === "electrical" ? 0xd69e2e
     : item.domain === "plumbing" ? 0x4299e1 : item.domain === "mechanical" ? 0x718096 : palette.member.wood;
-  const material = new THREE.MeshStandardMaterial({ color, roughness: mode === "nordic" ? 0.82 : 1,
-    flatShading: mode === "schematic" });
+  const material = standardMaterial(color, mode,
+    { roughness: mode === "nordic" ? NORDIC_ROUGHNESS.massing : 1 });
   // Keep a configured primitive visible while a potentially large GLB loads.
   const mesh = new THREE.Mesh(canvasObjectFallbackGeometry(
     item.model_primitive ?? type?.model_primitive, width, height, depth,
@@ -125,21 +124,16 @@ export function buildCanvasObjectParts(
   for (const part of parts) {
     let material = materials.get(part.color);
     if (!material) {
-      material = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(part.color),
-        roughness: mode === "nordic" ? 0.82 : 1,
-        flatShading: mode === "schematic",
-      });
+      material = standardMaterial(new THREE.Color(part.color), mode,
+        { roughness: mode === "nordic" ? NORDIC_ROUGHNESS.massing : 1 });
       materials.set(part.color, material);
     }
     const [sx, sy, sz] = part.size;
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(sx, sz, sy), material);
+    const mesh = makeSurfaceMesh(new THREE.BoxGeometry(sx, sz, sy), material);
     // Scene axes are (plan x, height, -plan y); projectPointToScene owns that mapping for the
     // object's origin, so a part only needs its own local offset expressed the same way.
     const [cx, cy, cz] = part.center;
     mesh.position.set(cx, cz, -cy);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
     mesh.userData.uid = item.uid;
     mesh.userData.selectionKind = "canvas_object";
     group.add(mesh);

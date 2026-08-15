@@ -24,14 +24,37 @@ def starter_dir() -> Path:
     return STARTER
 
 
-@pytest.fixture(scope="module")
-def catlin_model():
-    """The resolved catlin model — shared by detail-sheet and transition-detail tests."""
-    from typehaus.resolve import resolve
+@pytest.fixture(scope="session")
+def catlin_plan():
+    """The loaded catlin plan — once for the whole suite.
+
+    ``PlanModel`` is a frozen pydantic model, so one instance is safe to share across
+    every test that only reads it, and ``load_plan`` is the expensive half of the pair.
+    Forty test modules were each paying their own full load for the same bytes.
+
+    Tests that *mutate* house source must not take this: they copy the house to a
+    ``tmp_path`` sandbox (→ ``copy_house``) and load from there, which they already do.
+    """
     from typehaus.source import load_plan
 
     result = load_plan(CATLIN)
-    model, findings = resolve(result.plan)
+    assert result.plan is not None, [f.message for f in result.findings]
+    errors = [f for f in result.findings if f.severity.value == "error"]
+    assert not errors, [f.message for f in errors]
+    return result.plan
+
+
+@pytest.fixture(scope="module")
+def catlin_model(catlin_plan):
+    """The resolved catlin model, per test module.
+
+    Module-scoped rather than session-scoped on purpose: ``ResolvedModel`` is a *mutable*
+    dataclass with list fields, so a session-wide instance would let one module's test
+    leak into another's. Re-resolving is the cheap half; the plan above is the shared one.
+    """
+    from typehaus.resolve import resolve
+
+    model, findings = resolve(catlin_plan)
     errors = [f for f in findings if f.severity.value == "error"]
     assert not errors, errors
     return model

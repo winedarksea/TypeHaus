@@ -121,11 +121,11 @@ def shared_h_channel(u_center: float, z_joint: float, roof_sign: float,
                      crop_in) -> list[IRNode]:
     """The H channel where a standing sheet's head meets the roof sheet's edge.
 
-    This is the piece the eave U-channel and the wall F-head used to be. It matters that it
-    draws as a *joint*: ``_resolve_edge_run`` renders every glazing-trim profile as the same
-    solid box, so in 3D an H is indistinguishable from a U, and the section here is the only
-    place a reader can see that one extrusion now receives two sheets — the wall sheet
-    rising into the lower slot, the roof sheet entering the upper one from the side.
+    It matters that it draws as a *joint*: ``_resolve_edge_run`` renders every glazing-trim
+    profile as the same solid box, so in 3D an H is indistinguishable from a U, and the
+    section here is the only place a reader can see that one extrusion now receives two
+    sheets — the wall sheet rising into the lower slot, the roof sheet entering the upper
+    one from the side.
 
     ``roof_sign`` is which way the roof sheet runs from the channel (+1 at the west edge,
     -1 at the east), so the corner turns the right way at both ends of the cut.

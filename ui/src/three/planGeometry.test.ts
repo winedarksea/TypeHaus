@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import type { Member, Vec2 } from "../model/types";
+import { swingArcSweepFlag } from "../model/geometry";
 import { buildMembers, categoryColor, disposeGroup, isRoofFramingMember, memberColor } from "./members";
 import {
   createPlanPrismGeometry,
@@ -11,7 +12,6 @@ import {
   projectPlanRotationToSceneRadians,
   projectPointToScene,
   projectScenePointToPlan,
-  swingArcSweepFlag,
 } from "./planGeometry";
 import { applyDeckBoardUv, applyStandingSeamWallUv, DECK_BOARD_WIDTH_M, SEAM_PAN_WIDTH_M } from "./materials";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";

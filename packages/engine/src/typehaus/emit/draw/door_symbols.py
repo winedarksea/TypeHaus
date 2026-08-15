@@ -1,8 +1,8 @@
 """Door plan-symbol vocabulary: one geometry source for every writer (→ 20 §Drawing IR).
 
-A ``Symbol`` node carries only name/insert/rotation/params, so each writer used to
-re-derive the leaf and arc math from scratch — three copies that drifted the moment a
-non-swing operation was added. This module owns both halves of the contract:
+A ``Symbol`` node carries only name/insert/rotation/params; deriving the leaf and arc math
+independently per writer risks drift the moment a non-swing operation is added. This module
+owns both halves of the contract:
 
 * :func:`door_symbol` — what the plan builder emits for a :class:`DoorOperation`, with
   every geometric parameter resolved into ``Symbol.params`` (never re-derived downstream).

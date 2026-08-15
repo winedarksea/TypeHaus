@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import pytest
 
+from _helpers import check_context
+
 from typehaus.checks.registry import CheckContext, Preferences
 from typehaus.checks.structural.snow import rafter_span, sliding_snow
 from typehaus.findings import Result
@@ -39,7 +41,6 @@ from typehaus.model import (
     inch,
     pt,
 )
-from typehaus.resolve import resolve
 
 _MATERIALS = (
     Material(tag="spf", name="SPF framing", r_per_inch=1.25, perm_rating=2.9),
@@ -105,10 +106,7 @@ def _plan(*, ground_snow_psf: float | None = 50.0, canopy_top_ft: float | None =
 
 
 def _context(plan: PlanModel) -> CheckContext:
-    model, findings = resolve(plan)
-    assert not [f for f in findings if f.severity.value == "error"], findings
-    return CheckContext(plan=plan, model=model, preferences=Preferences(), profile=None,
-                        resolve_findings=list(findings))
+    return check_context(plan, profile=None)
 
 
 def _guards(count: int = 3) -> tuple:

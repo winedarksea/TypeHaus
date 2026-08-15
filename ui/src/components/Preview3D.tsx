@@ -1,5 +1,5 @@
 import { useStore } from "../state/store";
-import { Panel3D } from "./Panel3D";
+import { Panel3D } from "./Panel3DLazy";
 import { Icon } from "../icons/Icon";
 
 // Floating synchronized 3D preview (Phase 10): a small 3D window over the 2D plan — the

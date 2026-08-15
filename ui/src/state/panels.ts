@@ -20,8 +20,7 @@ export interface PanelSpec {
 
 /**
  * Order is the rail's order, top to bottom. Views sits first among the view-state panels
- * because it is the most-used destination in the app — it previously had no home at all
- * beyond a 12px chip floating over the drawing.
+ * because it is the most-used destination in the app.
  */
 export const PANELS: PanelSpec[] = [
   {

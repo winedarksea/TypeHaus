@@ -9,7 +9,7 @@ engine never invents routing, so the alternate path has to be *authored*: a ``Pi
 ``VentRun`` chase.
 
 This module answers only the geometry question ("is that path present and connected at both
-ends?").  ``checks/mep/plumbing.py`` turns the answer into a finding.
+ends?").  ``checks/mep/plumbing_dwv.py`` turns the answer into a finding.
 """
 
 from __future__ import annotations

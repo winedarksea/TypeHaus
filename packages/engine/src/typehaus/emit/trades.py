@@ -143,7 +143,7 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
 
 # The stormwater family, derived from the table so the two can never disagree. The IFC emitter
 # groups exactly these solids into one ``IfcDistributionSystem`` with ``PredefinedType=STORMWATER``
-# (``emit/ifc/emitter.py``), which is what Revit and Bonsai read as a real system rather than as
+# (``emit/ifc/mep.py``), which is what Revit and Bonsai read as a real system rather than as
 # loose proxies.
 DRAINAGE_CATEGORIES = frozenset(
     category for category, trade in SOLID_CATEGORY_TRADE.items() if trade == "drainage")

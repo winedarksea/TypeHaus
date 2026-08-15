@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import math
 
+from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.scene import (
     ArchDimension,
     NamedPoint,
@@ -19,7 +20,6 @@ from typehaus.emit.draw.scene import (
     Symbol,
     Text,
 )
-from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
 
 _DRAINAGE_RADIUS_FT = 40.0
@@ -339,6 +339,3 @@ def _project_onto_segment(point: tuple[float, float], a: tuple[float, float],
     t = ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / length2
     return (a[0] + t * dx, a[1] + t * dy)
 
-
-def _in(point: tuple[float, float]) -> tuple[float, float]:
-    return point[0] / M_PER_IN, point[1] / M_PER_IN

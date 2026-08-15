@@ -66,7 +66,7 @@ _RIDGE_CAP_STAND_IN = 2.0                                         # proud of the
 # roofing's drip lap (the metal runs ~0.6" proud of the furring); its vertical leg laps down
 # over the top of the wall panels.
 _CORNER_TRIM_THICKNESS_M = inch(1.25).meters
-# 4", not the 2" this started at (2026-08-01). On a zero-overhang gable this piece is the
+# 4", not 2". On a zero-overhang gable this piece is the
 # only thing standing at the rake, so its leg *is* the barge board: at 2" it showed a 2-1/2"
 # face, which against a wall of the same metal read as no edge at all. 4" gives a 4-1/2"
 # band with a 1-1/4" projection to throw a shadow — still ordinary brake-formed stock off

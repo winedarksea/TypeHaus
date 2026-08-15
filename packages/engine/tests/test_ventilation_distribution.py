@@ -2,32 +2,18 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from types import SimpleNamespace
 
-import pytest
 
 from typehaus.checks.mep.hvac import ventilation_distribution
 from typehaus.findings import Result
 from typehaus.model.enums import DuctSystem
 from typehaus.model.mep import Register
 from typehaus.quantities import ft, pt
-from typehaus.resolve import resolve
 from typehaus.resolve.model import ResolvedRoom
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
 
 
 CID = "mep.ventilation_distribution"
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, errors
-    return model
 
 
 def _run(model):

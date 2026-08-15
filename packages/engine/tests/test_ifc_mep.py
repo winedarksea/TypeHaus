@@ -7,23 +7,11 @@ from pathlib import Path
 import pytest
 
 from typehaus.resolve import resolve
-from typehaus.source import load_plan
 from typehaus.diff import ChangeKind, build_report
 from typehaus.diff.ifc_adapter import baseline_elems, external_elems
-from _helpers import CATLIN as CATLIN_DIR
 from typehaus.model import (Building, ElectricalDevice, ElectricalDeviceType, Equipment, EquipmentKind,
                             EquipmentType, Library, PlanModel, Project, Register, RegisterType, Service,
                             ServicePort, Site, Storey, DeviceKind, m, pt)
-
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, errors
-    return model
 
 
 def test_ifc_has_pipe_segments_and_sleeve_proxies(catlin_model, tmp_path: Path):

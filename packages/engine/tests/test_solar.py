@@ -9,18 +9,6 @@ import pytest
 
 from typehaus.resolve import resolve
 from typehaus.resolve.roof_geometry import roof_height_at
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
-
-
-
-@pytest.fixture(scope="module")
-def catlin_model():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, errors
-    return model
 
 
 def test_array_fit_and_wattage(catlin_model):

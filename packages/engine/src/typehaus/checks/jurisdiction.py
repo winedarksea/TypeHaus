@@ -1,16 +1,9 @@
 """What a jurisdiction *is*, as data (→ 12 §checks/code).
 
-A profile used to be a handful of scalars (frost depth, soil bearing) while the things that
-actually vary between jurisdictions lived hardcoded elsewhere: the permit checklist was a
-hand-written list in ``checks/permit.py``, and the climate table sat in ``mn_energy.py``
-under a Minnesota-specific name. Adding a second jurisdiction meant editing those modules,
-and the checklist had already drifted out of sync with the registry — ``code.R401_3_grading``
-and ``code.R401_3_impervious`` were registered checks no permit item ever referenced.
-
-So the profile becomes the coverage authority: it names its own permit items, and every
-CODE-tier check must either appear in one or be listed in ``permit_exclusions`` with a
-reason. ``tests/test_permit_coverage.py`` enforces exactly that, which is what makes the
-coverage statement a claim rather than a hope.
+The profile is the coverage authority: it names its own permit items, and every CODE-tier
+check must either appear in one or be listed in ``permit_exclusions`` with a reason.
+``tests/test_permit_coverage.py`` enforces exactly that, which is what makes the coverage
+statement a claim rather than a hope.
 """
 
 from __future__ import annotations

@@ -1,13 +1,14 @@
-import { Fragment, useMemo, useState } from "react";
-import { useStore } from "../state/store";
-import { uidByTag } from "../model/tagIndex";
+import { Fragment, useMemo } from "react";
 import type {
+  Lighting,
   LightingControlRow,
   LightingLoad,
   LightRunTakeoff,
   LuminaireScheduleRow,
 } from "../model/types";
-import { ReaderSection, ReaderShell } from "./ReaderShell";
+import {
+  ReaderEmpty, ReaderFilter, ReaderSection, ReaderShell, ReaderTable, TagCell, useReader,
+} from "./ReaderShell";
 
 // "Lighting" — the on-screen twin of the E-602 permit sheet, beside Circuits rather than
 // inside it. Both read model.json's `electrical` block, which is the engine take-off
@@ -38,62 +39,36 @@ function ScheduleTable({ rows, onZoomRoom }: {
   onZoomRoom: (tag: string) => void;
 }) {
   return (
-    <div className="reader-table-scroll">
-      <table className="reader-table">
-        <thead>
-          <tr>
-            <th>Mark</th>
-            <th>Description</th>
-            <th>Lamp</th>
-            <th className="num-col">Watts</th>
-            <th className="num-col">Lumens</th>
-            <th className="num-col">CCT</th>
-            <th className="num-col">CRI</th>
-            <th className="num-col">Volts</th>
-            <th>Mount</th>
-            <th>Control</th>
-            <th>Listing</th>
-            <th className="num-col">Qty</th>
-            <th>Locations</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.type}>
-              <td className="reader-mono">{row.mark}</td>
-              <td>{row.description}</td>
-              <td className="muted">{row.lamp || DASH}</td>
-              {/* A linear type has no per-fixture wattage — it has watts per foot. Showing
-                  one in the other's column would misprice the order. */}
-              <td className="num-col">
-                {row.watts !== null ? num(row.watts, " W")
-                  : row.watts_per_ft !== null ? `${row.watts_per_ft} W/ft` : DASH}
-              </td>
-              <td className="num-col">{num(row.lumens)}</td>
-              <td className="num-col">{row.cct_k ? `${row.cct_k}K` : DASH}</td>
-              <td className="num-col">{row.cri ?? DASH}</td>
-              <td className="num-col">{row.volts}</td>
-              <td className="muted">{row.mount}</td>
-              <td className="muted">{row.dimming}</td>
-              <td><RatingChip rating={row.rating} /></td>
-              <td className="num-col">
-                {row.count > 0 ? row.count : `${Math.round(row.length_ft ?? 0)} lf`}
-              </td>
-              <td>
-                <div className="reader-tag-cloud">
-                  {row.rooms.map((room) => (
-                    <button key={room} className="reader-tag" onClick={() => onZoomRoom(room)}
-                      title="Zoom to room">
-                      {room}
-                    </button>
-                  ))}
-                </div>
-              </td>
-            </tr>
+    <ReaderTable<LuminaireScheduleRow> rows={rows} rowKey={(row) => row.type} columns={[
+      { key: "mark", header: "Mark", cellClass: "reader-mono", cell: (r) => r.mark },
+      { key: "description", header: "Description", cell: (r) => r.description },
+      { key: "lamp", header: "Lamp", cellClass: "muted", cell: (r) => r.lamp || DASH },
+      // A linear type has no per-fixture wattage — it has watts per foot. Showing one in the
+      // other's column would misprice the order.
+      { key: "watts", header: "Watts", num: true, cell: (r) => r.watts !== null ? num(r.watts, " W")
+        : r.watts_per_ft !== null ? `${r.watts_per_ft} W/ft` : DASH },
+      { key: "lumens", header: "Lumens", num: true, cell: (r) => num(r.lumens) },
+      { key: "cct", header: "CCT", num: true, cell: (r) => r.cct_k ? `${r.cct_k}K` : DASH },
+      { key: "cri", header: "CRI", num: true, cell: (r) => r.cri ?? DASH },
+      { key: "volts", header: "Volts", num: true, cell: (r) => r.volts },
+      { key: "mount", header: "Mount", cellClass: "muted", cell: (r) => r.mount },
+      { key: "control", header: "Control", cellClass: "muted", cell: (r) => r.dimming },
+      { key: "listing", header: "Listing", cell: (r) => <RatingChip rating={r.rating} /> },
+      { key: "qty", header: "Qty", num: true,
+        cell: (r) => r.count > 0 ? r.count : `${Math.round(r.length_ft ?? 0)} lf` },
+      { key: "locations", header: "Locations", cell: (r) => (
+        <div className="reader-tag-cloud">
+          {r.rooms.map((room) => (
+            // Rooms are not in the tag index (a room is claimed, not placed), so this one
+            // stays a plain button rather than a TagCell that would always read disabled.
+            <button key={room} className="reader-tag" onClick={() => onZoomRoom(room)}
+              title="Zoom to room">
+              {room}
+            </button>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </div>
+      ) },
+    ]} />
   );
 }
 
@@ -103,68 +78,40 @@ function ControlsTable({ rows, index, onZoom }: {
   onZoom: (tag: string) => void;
 }) {
   return (
-    <div className="reader-table-scroll">
-      <table className="reader-table">
-        <thead>
-          <tr>
-            <th>Load</th>
-            <th>Mark</th>
-            <th>Room</th>
-            <th>Fed from</th>
-            <th>Switched by</th>
-            <th>Control</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.tag}>
-              <td>
-                <button className="reader-tag" onClick={() => onZoom(row.tag)}
-                  disabled={!index.has(row.tag)} title="Zoom to fixture">
-                  {row.tag}
-                </button>
-              </td>
-              <td className="reader-mono">{row.mark || DASH}</td>
-              <td className="muted">{row.room || DASH}</td>
-              {/* A 24V run has no branch circuit of its own; its supply does. Saying
-                  "via ED-…-PSU" is the honest answer, not a blank. */}
-              <td className="reader-mono">
-                {row.circuit || (row.psu ? <span className="muted">via {row.psu}</span> : DASH)}
-              </td>
-              <td>
-                {row.switches.length > 0 ? (
-                  <div className="reader-tag-cloud">
-                    {row.switches.map((tag) => (
-                      <button key={tag} className="reader-tag" onClick={() => onZoom(tag)}
-                        disabled={!index.has(tag)} title="Zoom to switch">
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
-                ) : row.integral_switch ? (
-                  <span className="muted">switch on fixture</span>
-                ) : (
-                  <span className="muted">{DASH}</span>
-                )}
-              </td>
-              <td>
-                {Array.from(new Set(row.controls)).map((control) => (
-                  <span key={control} className="reader-chip">{control}</span>
-                ))}
-                {row.ways > 1 && <span className="reader-chip">{row.ways}-way</span>}
-                {/* NEC 210.7: two circuits in one box need a simultaneous disconnect.
-                    Worth seeing; the engine reports it as advisory, not as a failure. */}
-                {row.cross_circuit.length > 0 && (
-                  <span className="badge confirm" title={`Switched from another circuit: ${row.cross_circuit.join(", ")}`}>
-                    cross-circuit
-                  </span>
-                )}
-              </td>
-            </tr>
+    <ReaderTable<LightingControlRow> rows={rows} rowKey={(row) => row.tag} columns={[
+      { key: "load", header: "Load", cell: (r) =>
+        <TagCell tag={r.tag} index={index} onJump={onZoom} title="Zoom to fixture" /> },
+      { key: "mark", header: "Mark", cellClass: "reader-mono", cell: (r) => r.mark || DASH },
+      { key: "room", header: "Room", cellClass: "muted", cell: (r) => r.room || DASH },
+      // A 24V run has no branch circuit of its own; its supply does. Saying "via ED-…-PSU" is
+      // the honest answer, not a blank.
+      { key: "fed", header: "Fed from", cellClass: "reader-mono",
+        cell: (r) => r.circuit || (r.psu ? <span className="muted">via {r.psu}</span> : DASH) },
+      { key: "switched", header: "Switched by", cell: (r) => r.switches.length > 0 ? (
+        <div className="reader-tag-cloud">
+          {r.switches.map((tag) => (
+            <TagCell key={tag} tag={tag} index={index} onJump={onZoom} title="Zoom to switch" />
           ))}
-        </tbody>
-      </table>
-    </div>
+        </div>
+      ) : r.integral_switch ? (
+        <span className="muted">switch on fixture</span>
+      ) : (
+        <span className="muted">{DASH}</span>
+      ) },
+      { key: "control", header: "Control", cell: (r) => <>
+        {Array.from(new Set(r.controls)).map((control) => (
+          <span key={control} className="reader-chip">{control}</span>
+        ))}
+        {r.ways > 1 && <span className="reader-chip">{r.ways}-way</span>}
+        {/* NEC 210.7: two circuits in one box need a simultaneous disconnect. Worth seeing;
+            the engine reports it as advisory, not as a failure. */}
+        {r.cross_circuit.length > 0 && (
+          <span className="badge confirm" title={`Switched from another circuit: ${r.cross_circuit.join(", ")}`}>
+            cross-circuit
+          </span>
+        )}
+      </> },
+    ]} />
   );
 }
 
@@ -187,10 +134,8 @@ function SupplyCards({ runs, index, onZoom }: {
       {runs.supplies.map((supply) => (
         <div key={supply.psu} className="reader-card">
           <div className="reader-card-head">
-            <button className="reader-tag reader-card-title" onClick={() => onZoom(supply.psu)}
-              disabled={!index.has(supply.psu)} title="Zoom to supply">
-              {supply.psu}
-            </button>
+            <TagCell tag={supply.psu} index={index} onJump={onZoom} title="Zoom to supply"
+              className="reader-card-title" />
             {/* The verdict is the reason this card exists: a driver run at its nameplate
                 does not last, so the sizing shown is 125% of connected, not connected. */}
             <span className={`badge ${supply.adequate === false ? "confirm" : ""}`}>
@@ -209,10 +154,9 @@ function SupplyCards({ runs, index, onZoom }: {
           </div>
           <div className="reader-tag-cloud">
             {(byPsu.get(supply.psu) ?? []).map((run) => (
-              <button key={run.tag} className="reader-tag" onClick={() => onZoom(run.tag)}
-                disabled={!index.has(run.tag)} title="Zoom to run">
+              <TagCell key={run.tag} tag={run.tag} index={index} onJump={onZoom} title="Zoom to run">
                 {run.tag} · {run.length_ft} lf
-              </button>
+              </TagCell>
             ))}
           </div>
         </div>
@@ -253,15 +197,8 @@ function LoadCard({ load }: { load: LightingLoad }) {
 }
 
 export function LightingView() {
-  const model = useStore((s) => s.model);
-  const setDetailView = useStore((s) => s.setDetailView);
-  const zoomToUid = useStore((s) => s.zoomToUid);
-  const [filter, setFilter] = useState("");
-
-  const index = useMemo(() => (model ? uidByTag(model) : new Map<string, string>()), [model]);
-  const lighting = model?.electrical?.lighting ?? null;
-
-  const needle = filter.trim().toLowerCase();
+  const { model, data: lighting, index, filter, setFilter, needle, jump, close } =
+    useReader<Lighting>((m) => m.electrical?.lighting);
   const schedule = useMemo(() => {
     const rows = lighting?.schedule ?? [];
     return needle
@@ -279,24 +216,12 @@ export function LightingView() {
 
   if (!model) return null;
 
-  // Same jump contract as every other reader: zoom the plan, then get out of its way.
-  const jump = (tag: string) => {
-    const uid = index.get(tag);
-    if (uid) {
-      zoomToUid(uid);
-      setDetailView("none");
-    }
-  };
-
   if (!lighting || lighting.schedule.length === 0) {
     return (
-      <ReaderShell title="Lighting" subtitle="no luminaires modeled"
-        onClose={() => setDetailView("none")}>
-        <div className="muted">
-          This model carries no lighting take-off — either nothing is lit yet, or it was
-          built with an engine older than the lighting plan.
-        </div>
-      </ReaderShell>
+      <ReaderEmpty title="Lighting" subtitle="no luminaires modeled" onClose={close}>
+        This model carries no lighting take-off — either nothing is lit yet, or it was
+        built with an engine older than the lighting plan.
+      </ReaderEmpty>
     );
   }
 
@@ -308,16 +233,9 @@ export function LightingView() {
     <ReaderShell
       title="Lighting"
       subtitle={`${lighting.schedule.length} marks · ${fixtures} fixtures · ${lighting.runs.total_length_ft} lf of tape`}
-      onClose={() => setDetailView("none")}
-      toolbar={
-        <input
-          value={filter}
-          placeholder="Filter marks, rooms, fixtures…"
-          onChange={(event) => setFilter(event.target.value)}
-          aria-label="Filter lighting"
-          style={{ padding: "5px 7px", minWidth: 200 }}
-        />
-      }
+      onClose={close}
+      toolbar={<ReaderFilter value={filter} onChange={setFilter}
+        placeholder="Filter marks, rooms, fixtures…" label="Filter lighting" />}
     >
       <ReaderSection
         title="Luminaire schedule"

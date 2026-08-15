@@ -231,7 +231,7 @@ class ElectricalDeviceType(FurnitureType):
     # control schedule; a product attribute, not a kind, for the same reason NEMA is.
     control: str | None = None
     # IFC export class for this product, overriding the ``DeviceKind`` map in
-    # emit/ifc/emitter.py::_device_ifc_classes. ``DeviceKind`` is the symbol axis and is
+    # emit/ifc/mep.py::_device_ifc_classes. ``DeviceKind`` is the symbol axis and is
     # deliberately coarse — one ``DATA_OUTLET`` covers a patch enclosure, an access point and
     # a PoE camera — but those are three different IFC entities and three different Revit
     # categories, and exporting them all as one would land them there as proxies. Naming the

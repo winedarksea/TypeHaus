@@ -11,13 +11,14 @@ from __future__ import annotations
 
 from dataclasses import replace
 
+from shapely import get_coordinates, is_valid
 from shapely.geometry import GeometryCollection, MultiPolygon, Polygon
 from shapely.ops import unary_union
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import LayerFunction
 from typehaus.model.plan import PlanModel
-from typehaus.resolve.geometry import length, rect_between, sub, unit
+from typehaus.resolve.geometry import length, polygon_area, rect_between, sub, unit
 from typehaus.resolve.model import (
     JunctionIncident,
     ResolvedJunction,
@@ -97,19 +98,29 @@ def _face_offset_from_interior(layers: list, added: list, alignment: object,
     return total / 2.0
 
 
+def _storey_nodes(plan: PlanModel, storey_tag: str) -> dict[str, object]:
+    return {e.tag: e for e in plan.storey_elements(storey_tag) if e.element_kind == "Node"}
+
+
 def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                           z1: float, endpoint_extensions: dict[tuple[str, str], float],
                           is_foundation: bool,
                           outward_sign: float = 1.0,
-                          lining_override: tuple | None = None) -> ResolvedWall | None:
+                          lining_override: tuple | None = None,
+                          nodes: dict[str, object] | None = None) -> ResolvedWall | None:
     """Build a ResolvedWall with per-layer polygons for one authored wall.
 
     ``lining_override`` is a Room-authored replacement for the assembly's interior lining
     (``Room.wall_lining`` / ``wall_lining_exceptions``, mapped per wall by
     :func:`typehaus.resolve.rooms.wall_lining_overrides`). ``None`` means "no override";
     an empty tuple is an authored bare face.
+
+    ``nodes`` is the storey's tag -> Node map. Building it here re-scanned every element of
+    the storey once per wall — 67k ``element_kind`` reads per resolve on ``houses/catlin``
+    — so :func:`resolve_storey_walls` builds it once and hands it down.
     """
-    nodes = {e.tag: e for e in plan.storey_elements(storey_tag) if e.element_kind == "Node"}
+    if nodes is None:
+        nodes = _storey_nodes(plan, storey_tag)
     n0, n1 = nodes.get(wall.start_node), nodes.get(wall.end_node)
     if n0 is None or n1 is None:
         return None
@@ -499,6 +510,12 @@ def _polygon_component(geometry, original: list[tuple[float, float]]) -> Polygon
         candidates = []
     if not candidates:
         return None
+    if len(candidates) == 1:
+        # ``max(containing or candidates, ...)`` can only ever return the sole candidate, so
+        # the containment test below is pure cost here — and on ``houses/catlin`` *every* one
+        # of the 792 calls per resolve takes this branch. Skipping it drops a ``Polygon``
+        # build, a ``representative_point`` and a ``buffer`` per call (~25 ms/resolve).
+        return candidates[0]
     original_polygon = Polygon(original)
     representative = original_polygon.representative_point()
     containing = [item for item in candidates if item.buffer(_EPS).contains(representative)]
@@ -514,10 +531,15 @@ def _normalized_ring(geometry, original: list[tuple[float, float]]) \
         component = _polygon_component(component.buffer(0), original)
         if component is None:
             return []
-    points = [(float(x), float(y)) for x, y in list(component.exterior.coords)[:-1]]
+    # ``get_coordinates(...).tolist()`` costs ~2.6 us/ring against ~15 us for iterating the
+    # CoordinateSequence, which is worth having at ~800 rings per resolve.
+    points = [(x, y) for x, y in get_coordinates(component.exterior)[:-1].tolist()]
     if len(points) < 3:
         return []
-    if Polygon(points).exterior.is_ccw:
+    # Signed shoelace instead of ``Polygon(points).exterior.is_ccw``: ``component`` is a valid
+    # polygon, so its exterior ring is simple and the two agree by definition. Saves a GEOS
+    # polygon construction per ring; verified identical over every catlin ring before landing.
+    if polygon_area(points) > 0.0:
         points.reverse()
     start = min(range(len(points)), key=lambda index: (
         round(points[index][0], 12), round(points[index][1], 12)
@@ -525,10 +547,19 @@ def _normalized_ring(geometry, original: list[tuple[float, float]]) \
     return points[start:] + points[:start]
 
 
-def _replace_layer_polygon(wall: ResolvedWall, layer_index: int,
-                           polygon: list[tuple[float, float]]) -> ResolvedWall:
+def _with_layer_polygons(wall: ResolvedWall,
+                         polygons: dict[int, list[tuple[float, float]]]) -> ResolvedWall:
+    """One wall rebuild for a whole clip pass.
+
+    Each layer's new polygon depends only on that layer's *original* ring, so replacing them
+    one at a time copied the layer tuple once per layer — quadratic in layer count for no
+    reason.
+    """
+    if not polygons:
+        return wall
     layers = list(wall.layers)
-    layers[layer_index] = replace(layers[layer_index], polygon=polygon)
+    for index, polygon in polygons.items():
+        layers[index] = replace(layers[index], polygon=polygon)
     return replace(wall, layers=tuple(layers))
 
 
@@ -538,14 +569,13 @@ def _clip_l_corner(walls: dict[str, ResolvedWall], junction: ResolvedJunction) -
         if own.wall_tag not in walls:
             continue
         wall = walls[own.wall_tag]
+        clipped_rings: dict[int, list[tuple[float, float]]] = {}
         for index, layer in enumerate(wall.layers):
             clipped = _clip_to_incident_sector(
                 layer.polygon, junction.point, own.direction, other.direction,
             )
-            wall = _replace_layer_polygon(
-                wall, index, _normalized_ring(Polygon(clipped), layer.polygon),
-            )
-        walls[own.wall_tag] = wall
+            clipped_rings[index] = _normalized_ring(Polygon(clipped), layer.polygon)
+        walls[own.wall_tag] = _with_layer_polygons(wall, clipped_rings)
 
 
 def _through_envelope(walls: dict[str, ResolvedWall], wall_tags: tuple[str, ...]):
@@ -566,13 +596,12 @@ def _butt_branches(walls: dict[str, ResolvedWall], junction: ResolvedJunction) -
         if wall_tag not in walls:
             continue
         wall = walls[wall_tag]
+        butted: dict[int, list[tuple[float, float]]] = {}
         for index, layer in enumerate(wall.layers):
             original = layer.polygon
             difference = Polygon(original).difference(envelope)
-            wall = _replace_layer_polygon(
-                wall, index, _normalized_ring(difference, original),
-            )
-        walls[wall_tag] = wall
+            butted[index] = _normalized_ring(difference, original)
+        walls[wall_tag] = _with_layer_polygons(wall, butted)
 
 
 def _remove_fallback_overlaps(walls: dict[str, ResolvedWall],
@@ -582,6 +611,7 @@ def _remove_fallback_overlaps(walls: dict[str, ResolvedWall],
         if incident.wall_tag not in walls:
             continue
         wall = walls[incident.wall_tag]
+        trimmed: dict[int, list[tuple[float, float]]] = {}
         for index, layer in enumerate(wall.layers):
             if layer.is_cavity or len(layer.polygon) < 3:
                 continue
@@ -593,11 +623,9 @@ def _remove_fallback_overlaps(walls: dict[str, ResolvedWall],
             # means this condition needs a project-specific rule, not a guessed deletion.
             if not normalized:
                 normalized = original
-            wall = _replace_layer_polygon(
-                wall, index, normalized,
-            )
+            trimmed[index] = normalized
             occupied = unary_union((occupied, polygon))
-        walls[incident.wall_tag] = wall
+        walls[incident.wall_tag] = _with_layer_polygons(wall, trimmed)
 
 
 def _synchronize_cavity_polygons(walls: dict[str, ResolvedWall]) -> None:
@@ -612,6 +640,37 @@ def _synchronize_cavity_polygons(walls: dict[str, ResolvedWall]) -> None:
                 changed = True
         if changed:
             walls[wall_tag] = replace(wall, layers=tuple(layers))
+
+
+def _invalid_polygon_findings(walls: dict[str, ResolvedWall]) -> list[Finding]:
+    """Report every layer whose solved ring is degenerate or self-intersecting.
+
+    One batched ``shapely.is_valid`` rather than ``Polygon(...).is_valid`` per ring: this
+    walks ~840 rings per resolve on ``houses/catlin``, and paying shapely's per-call ufunc
+    dispatch that many times measured ~1.5x the whole batched pass. Order of the findings
+    still follows the wall/layer walk exactly.
+    """
+    labels: list[tuple[str, str, int | None]] = []
+    candidates: list[Polygon] = []
+    for wall in walls.values():
+        for layer in wall.layers:
+            if len(layer.polygon) < 3:
+                labels.append((wall.tag, layer.name, None))
+                continue
+            labels.append((wall.tag, layer.name, len(candidates)))
+            candidates.append(Polygon(layer.polygon))
+    valid = is_valid(candidates) if candidates else ()
+    return [
+        Finding(
+            severity=Severity.ERROR,
+            check_id="integrity.junction_polygon",
+            message=f"{wall_tag}/{layer_name} resolved to an invalid junction polygon",
+            element_tags=(wall_tag,),
+            result=Result.FAIL,
+        )
+        for wall_tag, layer_name, index in labels
+        if index is None or not valid[index]
+    ]
 
 
 def solve_junction_polygons(resolved_walls: list[ResolvedWall],
@@ -635,16 +694,7 @@ def solve_junction_polygons(resolved_walls: list[ResolvedWall],
                 result=Result.UNKNOWN,
             ))
     _synchronize_cavity_polygons(walls)
-    for wall in walls.values():
-        for layer in wall.layers:
-            if len(layer.polygon) < 3 or not Polygon(layer.polygon).is_valid:
-                findings.append(Finding(
-                    severity=Severity.ERROR,
-                    check_id="integrity.junction_polygon",
-                    message=f"{wall.tag}/{layer.name} resolved to an invalid junction polygon",
-                    element_tags=(wall.tag,),
-                    result=Result.FAIL,
-                ))
+    findings.extend(_invalid_polygon_findings(walls))
     return [walls[wall.tag] for wall in resolved_walls], findings
 
 
@@ -691,6 +741,7 @@ def resolve_storey_walls(plan: PlanModel, storey_tag: str, z0: float,
     # Room-authored lining swaps (Room.wall_lining / wall_lining_exceptions), mapped to the
     # walls they reach once per storey, before any wall resolves.
     lining_overrides, findings = wall_lining_overrides(plan, storey_tag)
+    nodes = _storey_nodes(plan, storey_tag)
     out: list[ResolvedWall] = []
     for wall in _walls(plan, storey_tag):
         rw = resolve_wall_geometry(
@@ -699,6 +750,7 @@ def resolve_storey_walls(plan: PlanModel, storey_tag: str, z0: float,
             outward_sign=wall_outward_sign(plan, wall, storey_tag,
                                            windings.sign_for_wall(wall)),
             lining_override=lining_overrides.get(wall.tag),
+            nodes=nodes,
         )
         if rw is not None:
             out.append(rw)

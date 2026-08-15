@@ -1,5 +1,4 @@
 import { Icon } from "../icons/Icon";
-import { BUTTON_DOLLY_FACTOR } from "../three/cameraFraming";
 
 // On-screen zoom, shared by the 2D plan and the 3D panel.
 //
@@ -10,6 +9,13 @@ import { BUTTON_DOLLY_FACTOR } from "../three/cameraFraming";
 // `onZoom` takes a *multiplier* rather than a direction because the two panes zoom in different
 // units (the 3D dolly is a radius in metres, the plan is px/m); a factor is the one thing they
 // agree on. Above 1 means "further away" in both.
+// One press, as a multiplier on the pane's zoom — roughly four mouse notches. Visible progress
+// per tap, without a double-tap overshooting the thing you were trying to get closer to. It
+// lives here rather than beside the 3D dolly clamps (three/cameraFraming.ts) because this is the
+// only thing that presses it, and importing that module for one number put three.js in the entry
+// chunk of a session that never opens the 3D pane.
+export const BUTTON_DOLLY_FACTOR = 1.3;
+
 export function ZoomControls({ onZoom, label }: {
   onZoom: (factor: number) => void;
   label: string;

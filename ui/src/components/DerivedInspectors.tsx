@@ -9,7 +9,7 @@ import type {
 } from "../model/types";
 import { formatFtIn } from "../model/geometry";
 import type { LocatedMember } from "../model/memberIdentity";
-import { solidCategoryLabel } from "../three/solidMaterials";
+import { solidCategoryLabel } from "../model/solidLabels";
 import { useStore } from "../state/store";
 import { Provenance } from "./Provenance";
 

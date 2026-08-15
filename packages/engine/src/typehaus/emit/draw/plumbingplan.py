@@ -8,7 +8,7 @@ rough-in against the cast-in-place pour above it, → 2.5).
 
 from __future__ import annotations
 
-from typehaus.emit.draw._shared import emit_fixtures, emit_wall
+from typehaus.emit.draw._shared import emit_fixtures, emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.quantities import M_PER_IN
@@ -38,10 +38,7 @@ def has_plumbing_content(model: ResolvedModel, storey_tag: str) -> bool:
 
 def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
     b = SceneBuilder(name=f"plumbing-{storey}", units="in")
-    for wall in model.walls:
-        if wall.storey == storey:
-            emit_wall(b, wall, layer_override="A-WALL-BELW", weight_override=0.15,
-                     hatch=False, members=False)
+    emit_ghost_walls(b, model, storey)
     emit_fixtures(b, model, storey, frozenset({"plumbing", "appliance"}))
 
     for run in model.pipe_runs:
