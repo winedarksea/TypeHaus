@@ -259,6 +259,79 @@ def _footing_pours(solids, polygon_type):
     return pours
 
 
+def _threading_sleeve(ctx: CheckContext, footing, run, index: int, seg):
+    """The protection sleeve `run`'s segment `index` actually passes through, or None.
+
+    A sleeve is the hole a pipe goes through, so "protected" has to mean *this* pipe is in
+    *that* hole — in plan and in section both. Proximity alone is not the test and used to
+    be: the check asked only that some sleeve on the pour sit within 0.3 m of the segment,
+    which let SP-GF-W-HYD grade a PASS for a run that never came nearer than 8" to it and
+    ran parallel to the footing rather than across it. The bore it drew went through
+    concrete with nothing in it (→ houses/catlin/plan/mep.py, deleted 2026-08-15).
+
+    Two conditions, both cheap:
+
+    * plan — the segment passes within the sleeve's own radius of its centre, i.e. the pipe
+      is inside the formed hole rather than beside it. The radius is the honest tolerance
+      here because it is the physical one; 0.3 m was a guess an inch-scale defect hid in.
+    * section — the sleeve's cast centreline is within a sleeve diameter of the run's
+      elevation at that station, interpolated along the segment. A sleeve at the right plan
+      point but the wrong depth is the other way a block-out misses its pipe, and it is the
+      failure `mep.sewer_exit_invert` exists to grade precisely; catching it grossly here
+      costs nothing.
+
+    Footings abutting at one bearing elevation are measured as one pour, so a sleeve
+    authored on any member of `footing.tags` is a sleeve in this concrete.
+    """
+    from shapely.geometry import Point
+
+    a, b = run.path[index], run.path[index + 1]
+    z_a, z_b = run.z_m[index], run.z_m[index + 1]
+    for sleeve in ctx.model.sleeves:
+        if sleeve.host_slab not in footing.tags or sleeve.center_z_m is None:
+            continue
+        centre = Point(sleeve.center)
+        if seg.distance(centre) > sleeve.sleeve_d_m / 2.0 + 1e-9:
+            continue
+        # The run's elevation where the sleeve sits: project the centre onto the segment and
+        # interpolate. A repeated vertex (a vertical drop) has no length to project along,
+        # so it takes the deeper of its two ends — the same reading `invert` uses above.
+        span = (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2
+        if span <= 1e-12:
+            z_at = min(z_a, z_b)
+        else:
+            t = ((sleeve.center[0] - a[0]) * (b[0] - a[0])
+                 + (sleeve.center[1] - a[1]) * (b[1] - a[1])) / span
+            t = min(1.0, max(0.0, t))
+            z_at = z_a + (z_b - z_a) * t
+        # One sleeve diameter of slack: the block-out is formed two pipe sizes over, so a
+        # pipe genuinely inside it is within a fraction of this, and the slack absorbs the
+        # invert/centreline half-diameter that separates a run's authored z from the
+        # sleeve's without admitting a sleeve at a different depth entirely.
+        if abs(z_at - sleeve.center_z_m) <= sleeve.sleeve_d_m:
+            return sleeve
+    return None
+
+
+def _near_miss(ctx: CheckContext, footing, run, index: int, seg) -> str:
+    """A clause naming the nearest sleeve on this pour that failed to thread the run.
+
+    Without it a defective sleeve reads as a missing one, and the two want opposite fixes:
+    an absent sleeve gets authored, a misaligned one gets moved or deleted. Empty when the
+    pour carries no sleeve at all — then "no protection sleeve" is already the whole story.
+    """
+    from shapely.geometry import Point
+
+    nearest = min(
+        (s for s in ctx.model.sleeves if s.host_slab in footing.tags),
+        key=lambda s: seg.distance(Point(s.center)), default=None)
+    if nearest is None:
+        return ""
+    gap = seg.distance(Point(nearest.center))
+    return (f" — sleeve {nearest.tag} is on this pour but the run passes "
+            f"{gap / M_PER_IN:.0f}\" from its bore, so it protects nothing")
+
+
 @check(Tier.CODE, "mep.footing_clearance")
 def footing_clearance(ctx: CheckContext) -> list[Finding]:
     """A pipe deeper than a footing's bearing plane must stay outside its 45° influence
@@ -271,7 +344,7 @@ def footing_clearance(ctx: CheckContext) -> list[Finding]:
     creates are construction joints in continuous concrete, not free edges. Measuring the
     influence line off one would fail a pipe for being near the middle of a footing.
     """
-    from shapely.geometry import LineString, Point, Polygon
+    from shapely.geometry import LineString, Polygon
 
     cid = "mep.footing_clearance"
     footings = _footing_pours([s for s in ctx.model.solids
@@ -292,20 +365,18 @@ def footing_clearance(ctx: CheckContext) -> list[Finding]:
                 if seg.intersects(footprint):
                     # Passing under (or through) the footing: legal per IRC P2604 only
                     # inside a protection sleeve / relieving arch authored on the footing.
-                    protected = any(
-                        s.host_slab in footing.tags
-                        and seg.distance(Point(s.center)) < 0.3
-                        for s in ctx.model.sleeves)
-                    if protected:
+                    sleeve = _threading_sleeve(ctx, footing, run, i, seg)
+                    if sleeve is not None:
                         out.append(_pass(
                             cid, f"run {run.tag} passes under footing {footing.tag} "
-                                 "through an authored protection sleeve (IRC P2604)",
-                            (run.tag, footing.tag)))
+                                 f"through protection sleeve {sleeve.tag} (IRC P2604)",
+                            (run.tag, footing.tag, sleeve.tag)))
                     else:
                         out.append(_fail(
                             cid, f"run {run.tag} segment {i} passes under footing "
                                  f"{footing.tag} {depth_below / M_PER_IN:.0f}\" below its "
-                                 "bearing plane with no protection sleeve (IRC P2604)",
+                                 "bearing plane with no protection sleeve (IRC P2604)"
+                                 + _near_miss(ctx, footing, run, i, seg),
                             (run.tag, footing.tag)))
                     continue
                 # ``.boundary``, not ``.exterior``: a pour is a union, which can come back as
@@ -314,22 +385,20 @@ def footing_clearance(ctx: CheckContext) -> list[Finding]:
                 # pour is as much an edge as its outside is.
                 distance = seg.distance(footprint.boundary)
                 if distance + 1e-9 < depth_below:
-                    protected = any(
-                        s.host_slab in footing.tags
-                        and seg.distance(Point(s.center)) < 0.3
-                        for s in ctx.model.sleeves)
-                    if protected:
+                    sleeve = _threading_sleeve(ctx, footing, run, i, seg)
+                    if sleeve is not None:
                         out.append(_pass(
                             cid, f"run {run.tag} encroaches on footing {footing.tag}'s "
-                                 "influence line at an authored protection point "
-                                 "(IRC P2604)", (run.tag, footing.tag)))
+                                 f"influence line inside protection sleeve {sleeve.tag} "
+                                 "(IRC P2604)", (run.tag, footing.tag, sleeve.tag)))
                         continue
                     out.append(_fail(
                         cid, f"run {run.tag} segment {i} sits "
                              f"{depth_below / M_PER_IN:.0f}\" below footing "
                              f"{footing.tag}'s bearing plane only "
                              f"{distance / M_PER_IN:.0f}\" away — inside its 45° "
-                             "influence line; deepen the footing or move the run",
+                             "influence line; deepen the footing or move the run"
+                             + _near_miss(ctx, footing, run, i, seg),
                         (run.tag, footing.tag)))
     if not out:
         routed = [r for r in ctx.model.pipe_runs if r.z_m is not None]

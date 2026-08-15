@@ -318,8 +318,13 @@ SECOND_FIXTURES = (
 # the loader raises loader.uneditable_movable_element for a Fixture in a non-editable
 # module, and fixture_types.py is not editable (it uses frozenset).
 GARAGE_FIXTURES = (
+    # No `wall_ref` since 2026-08-15, and that is the point rather than an omission: this
+    # is a yard hydrant on a 6'-0" barrel, and nothing with a 6'-0" bury can stand against
+    # a wall here without its shutoff and weep stone sitting inside the perimeter footing's
+    # 45° influence line. It stands free at (5'-0", 60'-0"), on the service line the buried
+    # run already follows — params/foundations.py carries the arithmetic and the trade.
     Fixture(uid="CGQ801AAAA", tag="FX-G-HYDRANT", type_ref="FX-HYDRANT-Y34SS",
-            room="RM-GARAGE", position=pt(ft(1, 6), ft(62)), wall_ref="W-G-W"),
+            room="RM-GARAGE", position=pt(ft(5), ft(60))),
 )
 
 # --- the two south-face wall hydrants (2026-08-01) -------------------------------------

@@ -87,10 +87,14 @@ def test_the_hydrant_is_on_the_garage_storey_at_the_authored_spot(catlin_model):
     hydrant = _hydrant(catlin_model)
     assert hydrant.room == "RM-GARAGE"
     x, y = hydrant.position.xy_m
-    assert x * _M_TO_FT == pytest.approx(1.5, abs=1e-6)
-    assert y * _M_TO_FT == pytest.approx(62.0, abs=1e-6)
-    # Clear of everything else on that wall: EQ-G-HEATER at y=48', both EV receptacles at
-    # y=41.5', and both north windows.
+    assert x * _M_TO_FT == pytest.approx(5.0, abs=1e-6)
+    assert y * _M_TO_FT == pytest.approx(60.0, abs=1e-6)
+    # It stands free, and that is the design rather than a missing reference: a 6'-0" bury
+    # cannot sit against a wall whose footing bears at -4'-2" without putting its shutoff
+    # and weep stone inside the 45° influence line. → test_the_hydrant_assembly_clears_...
+    assert hydrant.wall_ref is None
+    # Clear of everything else in the room: EQ-G-HEATER and the workbench at y≈48', both EV
+    # receptacles at y=41.5'/56', and both north windows.
     heater = catlin_model.plan.by_tag("EQ-G-HEATER")
     assert abs(heater.position.xy_m[1] - hydrant.position.xy_m[1]) * _M_TO_FT > 10
 
@@ -198,26 +202,69 @@ def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):
     self-drains through a weep at its buried shutoff, into stone packed around the valve —
     not into a separate exterior catch basin, so the pit sits on the hydrant's own stack."""
     pit = catlin_model.plan.by_tag("DRW-G-HYDRANT")
-    assert pit.depth.meters * _M_TO_FT == pytest.approx(4.0, abs=1e-6)
+    assert pit.depth.meters * _M_TO_FT == pytest.approx(1.5, abs=1e-6)
     assert pit.geotextile
     assert "FX-G-HYDRANT" in pit.inlet_refs
     # Collocated with the hydrant's own supply stack (SP-G-HYDRANT), not offset to some
     # exterior spot — the weep has to reach stone at the valve, not stone a pipe carries it to.
     x_ft, y_ft = pit.position.xy_m[0] * _M_TO_FT, pit.position.xy_m[1] * _M_TO_FT
-    assert x_ft == pytest.approx(1.5, abs=1e-6)
-    assert y_ft == pytest.approx(62.0, abs=1e-6)
-    # Top of stone starts a foot above the 6' shutoff — below the footing's -4'-2" bearing,
-    # so the excavation is never beside the footing at the footing's own depth.
+    assert x_ft == pytest.approx(5.0, abs=1e-6)
+    assert y_ft == pytest.approx(60.0, abs=1e-6)
+    # Stone from -5'-6" to -7'-0": the 6' shutoff sits 6" below the top of it with a foot of
+    # stone under the weep. It was 2' across x 4' deep to -9'-0" until 2026-08-15 — 12.6 cu
+    # ft for a weep that discharges quarts, and deep enough that no position in the garage
+    # could stand it off the footings. → test_the_hydrant_assembly_clears_the_footings.
     solid = next(s for s in catlin_model.solids if s.tag == "DRW-G-HYDRANT")
     assert solid.category == "drywell"
-    assert solid.z1_m * _M_TO_FT == pytest.approx(-5.0, abs=1e-6)
-    assert solid.z1_m * _M_TO_FT < -4.1667
+    assert solid.z1_m * _M_TO_FT == pytest.approx(-5.5, abs=1e-6)
+    assert solid.z0_m * _M_TO_FT == pytest.approx(-7.0, abs=1e-6)
     # No drain fixture, and no DRAIN run, anywhere in the garage.
     garage_fixtures = [e for e in catlin_model.plan.storey_elements("garage")
                        if e.element_kind == "Fixture"]
     types = {t.tag: t for t in catlin_model.plan.library.fixture_types}
     assert not [f for f in garage_fixtures
                 if Service.DRAIN in types[f.type_ref].needs]
+
+
+def test_the_hydrant_assembly_clears_the_footings(catlin_model):
+    """The thing that put this fixture where it is, checked as geometry rather than as a
+    position it happens to have.
+
+    Everything at the shutoff is 22" below the garage footings' -4'-2" bearing plane, and
+    the weep stone reaches 34" below it. IRC P2604.3's 45° influence line asks for that much
+    lateral clearance from the footing edge before an excavation stops loading the footing.
+    At the old (1'-6", 62') the riser had 8" and the stone pocket overlapped FT-GF-W's
+    footprint outright; `mep.footing_clearance` walks pipe runs only, so nothing graded the
+    pocket at all and the riser was passing on a sleeve that protected nothing.
+
+    Being *under* a footing is not clearance from it — the cone opens downward — so the one
+    crossing that stays, PR-G-HYDRANT-CW passing beneath FT-GF-S-DR, is sleeved rather than
+    spaced.
+    """
+    from shapely.geometry import Point, Polygon
+    from shapely.ops import unary_union
+
+    footings = [s for s in catlin_model.solids
+                if s.category == "footing" and s.tag.startswith("FT-GF-")]
+    pour = unary_union([Polygon(s.outline) for s in footings])
+    bearing = min(s.z0_m for s in footings)
+
+    pit = next(s for s in catlin_model.solids if s.tag == "DRW-G-HYDRANT")
+    stone = Polygon(pit.outline)
+    assert not stone.intersects(pour), "the weep excavation is under the footing"
+    assert stone.distance(pour.boundary) + 1e-9 >= bearing - pit.z0_m, \
+        "the weep excavation is inside the footings' 45° influence line"
+
+    # The riser, at the deep end where the shutoff is.
+    run = _supply(catlin_model)
+    riser = Point(run.path[-1])
+    assert riser.distance(pour.boundary) + 1e-9 >= bearing - min(run.z_m), \
+        "the hydrant riser is inside the footings' 45° influence line"
+
+    # And the run reaches it without a jog: entry, hydrant, rise. Two legs, one of them
+    # vertical — the west dog-leg out to the old position is what carried the encroachment.
+    assert len(run.path) == 3
+    assert run.path[0][0] == pytest.approx(run.path[1][0], abs=1e-9), "not one straight leg"
 
 
 # --- 4. the check -------------------------------------------------------------------------
@@ -241,6 +288,46 @@ def test_the_freeze_depth_rule_passes_on_the_house_as_built(catlin_model):
     assert "below grade over its whole length" in messages   # bury depth
     assert "SP-G-HYDRANT" in messages                        # the sleeve
     assert "PA-G-HYD-SEAT" in messages and "PA-G-HYD-VB" in messages
+
+
+def test_a_sleeve_the_run_misses_does_not_protect_it(catlin_model):
+    """The defect this fixture's move came out of, pinned as a rule rather than as geometry.
+
+    SP-GF-W-HYD was authored at (0'-9.6", 61'-6") on FT-GF-W, boring the footing's full 20"
+    width east-west at the 6' bury while the pipe it claimed to protect ran *parallel* to
+    that footing 8" away and never crossed it. `mep.footing_clearance` graded three PASSes
+    on it, because the test was only "some sleeve on this pour within 0.3 m" and 8.4" is
+    0.213 m. A sleeve is the hole a pipe goes through; proximity is not the question.
+
+    Re-author that sleeve here — offset from the run by more than its own bore, exactly as
+    the deleted one was — and the crossing it sits on must go back to FAIL, naming the
+    sleeve as present-but-useless so the reader knows to move it rather than add one.
+    """
+    from typehaus.checks.mep.plumbing_concrete import footing_clearance
+    from typehaus.model import ft, pt
+    from typehaus.resolve import resolve
+
+    ctx = _context(catlin_model)
+    sleeve = catlin_model.plan.by_tag("SP-GF-S-HYD")
+    # Slide it 8" off the run's x=5' line, still inside its host footing so it resolves.
+    strayed = sleeve.model_copy(update={"position": pt(ft(5, 8), ft(41))})
+    patched = catlin_model.plan.with_elements(
+        "main", [strayed if e.tag == sleeve.tag else e
+                 for e in catlin_model.plan.storey_elements("main")])
+    model, _ = resolve(patched)
+    findings = [f for f in footing_clearance(
+        type(ctx)(plan=patched, model=model, preferences=ctx.preferences,
+                  profile=ctx.profile))
+        if "PR-G-HYDRANT-CW" in f.element_tags]
+    assert [f.result for f in findings] == [Result.FAIL], \
+        [f.message for f in findings]
+    message = findings[0].message
+    assert "SP-GF-S-HYD" in message and "protects nothing" in message
+
+    # And the unmoved house is the control: same crossing, same sleeve, PASS by name.
+    passing = [f for f in footing_clearance(ctx) if "PR-G-HYDRANT-CW" in f.element_tags]
+    assert [f.result for f in passing] == [Result.PASS]
+    assert "SP-GF-S-HYD" in passing[0].message
 
 
 def test_the_yard_hydrant_and_the_wall_hydrants_are_graded_differently(catlin_model):
@@ -290,10 +377,16 @@ def test_a_run_that_surfaces_mid_way_fails_even_with_deep_ends(catlin_model):
 
     ctx = _context(catlin_model)
     run = catlin_model.plan.by_tag("PR-G-HYDRANT-CW")
-    # Raise one mid-route vertex to -1' while both ends stay deep: the run now has a
-    # genuine high point between deep ends, which is where a supply line freezes.
+    # Raise the last *buried* vertex to -1' while the entry stays deep: the run now surfaces
+    # before it reaches the hydrant, which is where a supply line freezes.
+    #
+    # This is the run's second-to-last vertex, and it is the case the standpipe exemption
+    # used to swallow — it popped every rising vertex off the tail rather than the one
+    # terminal barrel, so a run climbing to -1'-0" graded PASS. The run is only three
+    # vertices long now, so there is nothing left to hide that behind.
     rising = run.model_copy(update={"elevations": tuple(
-        ft(-1) if i == 1 else e for i, e in enumerate(run.elevations))})
+        ft(-1) if i == len(run.elevations) - 2 else e
+        for i, e in enumerate(run.elevations))})
     patched = catlin_model.plan.with_elements(
         "main", [rising if e.tag == run.tag else e
                  for e in catlin_model.plan.storey_elements("main")])

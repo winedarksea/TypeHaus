@@ -616,22 +616,37 @@ WALL_SLEEVES = [
                       purpose=Service.WATER_COLD, center_elevation=ft(-6)),
 ]
 
-# The hydrant line's garage-foundation protection (IRC P2604): the buried run passes
-# under FT-GF-S-DR at its 6' bury (22" below the footing's 4'-2" bearing plane) inside a
-# protection sleeve, and its rise at the hydrant encroaches on FT-GF-W's 45° influence
-# line, protected at the marked point. `mep.footing_clearance` requires both.
+# The hydrant line's garage-foundation protection (IRC P2604): the buried run passes under
+# FT-GF-S-DR at its 6' bury — 22" below the footing's 4'-2" bearing plane, directly beneath
+# it, so lateral offset zero — inside a protection sleeve. `mep.footing_clearance` requires
+# it. Being *under* a footing is not clearance from it: the 45° cone opens downward, and a
+# pipe on the footing's own centreline is the worst case in it, not the best.
 #
-# There was a third sleeve here, SP-G-HYDRANT-PED, the block-out through the 4" topping
-# pedestal the barrel used to pass on its way up. The pedestal was retired 2026-08-03
-# (params/foundations.py) and its block-out went with it: the barrel now rises through
-# SP-G-HYDRANT in SL-G-FLOOR and nothing else.
+# There were two other sleeves here.
+#
+# SP-G-HYDRANT-PED was the block-out through the 4" topping pedestal the barrel used to
+# pass on its way up. The pedestal was retired 2026-08-03 (params/foundations.py) and its
+# block-out went with it: the barrel now rises through SP-G-HYDRANT in SL-G-FLOOR and
+# nothing else.
+#
+# SP-GF-W-HYD (deleted 2026-08-15) claimed to protect the rise where it encroached on
+# FT-GF-W's influence line, and it protected nothing. It was authored at (0'-9.6", 61'-6"),
+# which put its bore straight across FT-GF-W's 20" width — a 2" hole east-west through the
+# footing line, at the 6' bury, with the actual pipe 8" away at x = 1'-6" and running
+# *parallel* to that footing, never crossing it. A sleeve is the hole a pipe passes through;
+# there was no pipe in this one.
+#
+# It graded PASS because `mep.footing_clearance` asked only that *some* sleeve on the pour
+# sit within 0.3 m of the encroaching segment, and 8.4" is 0.213 m. That tolerance is now a
+# real alignment test — the run has to actually thread the sleeve — so this could not come
+# back silently (checks/mep/plumbing_concrete.py).
+#
+# The encroachment it was papering over was real, and the fix was to stop encroaching: the
+# hydrant moved off the wall to (5'-0", 60'-0"), the run lost its west jog, and there is no
+# longer any west-footing interaction to protect. → params/foundations.py.
 GARAGE_SLEEVES = [
     SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S-DR",
                       position=pt(ft(5), ft(41)), pipe_diameter=inch(0.75),
-                      sleeve_diameter=inch(2), axis="horizontal",
-                      purpose=Service.WATER_COLD, center_elevation=ft(-6)),
-    SleevePenetration(uid="CGPW02AAAA", tag="SP-GF-W-HYD", host_ref="FT-GF-W",
-                      position=pt(ft(0, 9.6), ft(61, 6)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-6)),
 ]
@@ -1916,20 +1931,28 @@ LEADER_CLAMPS = [
 # buried end plus the isolation valve immediately downstream of the slab penetration, both
 # of which mep.hydrant_freeze_depth asserts against this run's geometry.
 # Re-routed 2026-07-29: the buried leg now runs at x=5' the whole way north (it used to
-# hug the garage's west footing 8" off its edge for 24', inside the 45° influence line)
-# and turns west only at y=61', crossing *under* FT-GF-S-DR through SP-GF-S-HYD and rising
-# through SP-G-HYDRANT / the pedestal block-out at the fixture. The three basement wall
-# crossings (S1 / CW / N3) are cast horizontal sleeves at the -6' bury; between them the
-# line runs exposed across the heated basement at the same elevation, which is what keeps
-# every buried vertex at the full 72" the fixture is specified for
+# hug the garage's west footing 8" off its edge for 24', inside the 45° influence line),
+# crossing *under* FT-GF-S-DR through SP-GF-S-HYD and rising through SP-G-HYDRANT at the
+# fixture.
+#
+# Finished 2026-08-15. That re-route stopped one vertex short: the line still turned west
+# at y=61' and ran out to x=1'-6" to meet the hydrant, which put its last 4'-6" — and the
+# riser, and the weep stone — back 8" off FT-GF-W's edge at 22" below bearing, the exact
+# condition the re-route existed to leave. Moving the hydrant onto the x=5' service line
+# (params/foundations.py) deletes the jog rather than protecting it, so the run is now a
+# straight line from the water entry to the fixture and touches no footing but FT-GF-S-DR.
+#
+# The three basement wall crossings (S1 / CW / N3) are cast horizontal sleeves at the -6'
+# bury; between them the line runs exposed across the heated basement at the same
+# elevation, which is what keeps every buried vertex at the full 72" the fixture is
+# specified for
 # (`mep.hydrant_freeze_depth` walks all of them; the terminal rise is the hydrant's own
 # self-draining barrel and is exempt).
 WATER_SUPPLY = [
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5), ft(0)), pt(ft(5), ft(61)), pt(ft(1, 6), ft(61)),
-                  pt(ft(1, 6), ft(62)), pt(ft(1, 6), ft(62))),
+            path=(pt(ft(5), ft(0)), pt(ft(5), ft(60)), pt(ft(5), ft(60))),
             diameter=inch(0.75), material="pex",
-            elevations=(ft(-6), ft(-6), ft(-6), ft(-6), ft(0, 4.8)),
+            elevations=(ft(-6), ft(-6), ft(0, 4.8)),
             serves=("FX-G-HYDRANT",)),
 ]
 
@@ -2324,13 +2347,41 @@ SUPPLY_DEVICES_BASEMENT = [
 # grades — and the vacuum breaker screws onto the outlet at the handle, 2'-6" up.
 SUPPLY_DEVICES_GARAGE = [
     PipeAccessory(uid="C9GW5PXV2R", tag="PA-G-HYD-SEAT", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-G-HYDRANT-CW", position=pt(ft(1, 6), ft(62)),
+                  pipe_ref="PR-G-HYDRANT-CW", position=pt(ft(5), ft(60)),
                   room="RM-GARAGE", model="hydrant's own compression seat, 6' bury",
                   serves=("FX-G-HYDRANT",)),
     PipeAccessory(uid="J1DS4RQZ8X", tag="PA-G-HYD-VB",
                   kind=PipeAccessoryKind.VACUUM_BREAKER, pipe_ref="PR-G-HYDRANT-CW",
-                  position=pt(ft(1, 6), ft(62)), elevation=ft(2, 6), room="RM-GARAGE",
+                  position=pt(ft(5), ft(60)), elevation=ft(2, 6), room="RM-GARAGE",
                   model="screw-on hose-bib vacuum breaker, ASSE 1011",
+                  serves=("FX-G-HYDRANT",)),
+    # The weep, answered (2026-08-15). PA-G-HYD-VB above protects the *hose thread*, which
+    # is what P2902.3.1 asks about and the only opening the code names. A self-draining yard
+    # hydrant has a second one: the weep at the buried shutoff, which empties the barrel into
+    # DRW-G-HYDRANT's stone every time the handle closes and sits in wet stone at -6'-0".
+    #
+    # On a Y34 the drain port is open only while the valve is seated and closed while the
+    # valve is open, so the weep and the supply are never both connected in normal operation.
+    # The hazard needs a worn seat *and* a submerged weep *and* negative pressure at once,
+    # which is why nothing in the IRC or the MN plumbing code prohibits this fixture and why
+    # the house keeps it — → notes/garage_hydrant.md for the reasoning and the owner's call.
+    #
+    # This is the cheap insurance against that three-way coincidence, and it is on the branch
+    # rather than at the fixture because the branch is where a device can be reached: the
+    # hydrant's own seat is 6' down in the yard and the tee to the house is at (5', 1'). The
+    # run is exposed across the heated basement between its three wall sleeves at the -6'
+    # bury, which is 3'-0" over the basement floor — head height in the mechanical room,
+    # beside PA-B-MAIN-SHUTOFF, with no elevation authored because a check valve on a pipe
+    # sits on the pipe.
+    #
+    # A dual check, matching PA-B-BFP-BATH/SAUNA, because this is a low-hazard residential
+    # connection — a car gets washed with it. An AHJ that reads a buried weep as a *health*
+    # hazard would want an RPZ instead, which needs a drain and an annual test; that is a
+    # question to ask, not a thing to build in ahead of the answer.
+    PipeAccessory(uid="R7QB4XKD2M", tag="PA-G-HYD-BFP",
+                  kind=PipeAccessoryKind.BACKFLOW_PREVENTER, pipe_ref="PR-G-HYDRANT-CW",
+                  position=pt(ft(5), ft(3)), room="RM-B-FURNACE", accessible=True,
+                  model='3/4" dual-check backflow preventer, testable',
                   serves=("FX-G-HYDRANT",)),
 ]
 

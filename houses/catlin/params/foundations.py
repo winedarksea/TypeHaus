@@ -225,8 +225,39 @@ GARAGE_SLAB = Slab(
 # hydrant's 72" bury is a different number for a different purpose — the depth of its own
 # shutoff valve, 2'-6" below the stem bottom and well clear of the frost line. The two are
 # consistent, not in conflict.
-HYDRANT_X_FT = 1.5          # 1'-6" off the west wall line
-HYDRANT_Y_FT = 62.0         # near the NW corner, clear of both north windows
+# Where the hydrant can stand, and why it is not against a wall (2026-08-15).
+#
+# It was at (1'-6", 62'), tucked into the NW corner, and that position was not buildable.
+# The shutoff is 6'-0" down; the garage footings bear at -4'-2". Anything at the valve is
+# therefore 22" below the bearing plane and needs at least 22" of lateral clearance from
+# the footing's edge before it is outside the 45° influence line — and the weep stone
+# around the valve, which goes deeper still, needs more. At x = 1'-6" the riser had 8" and
+# the stone pocket overlapped FT-GF-W's footprint outright. `mep.footing_clearance` was
+# only passing because SP-GF-W-HYD sat near it, a sleeve boring through concrete the pipe
+# never touched (deleted 2026-08-15, → plan/mep.py).
+#
+# The clear zone that leaves is x >= 4'-8", y <= 60'-4" — which is floor, not wall. There
+# is no wall position in this garage that works: the footing runs the full perimeter and
+# the constraint is the fixture's own bury, not its plan location. So the hydrant stands
+# free, as a *yard* hydrant is built to (it is a Y34 barrel, not a wall hydrant — see the
+# two south-face ones in plan/fixtures.py for the contrast).
+#
+# x = 5'-0" is chosen over the 4'-8" minimum because it is the line the service already
+# runs on: PR-G-HYDRANT-CW comes north at x = 5'-0" from the house water entry, through
+# three basement wall sleeves and SP-GF-S-HYD, all at x = 5'-0". Standing the hydrant on
+# that line makes the run dead straight and deletes the two-vertex west jog that was the
+# thing inside FT-GF-W's influence line in the first place. The 2026-07-29 re-route moved
+# the buried leg to x = 5' for exactly this reason and stopped one fixture short.
+#
+# y = 60'-0" puts the stone pocket 41" clear of FT-GF-N against the 34" it needs, and
+# leaves the fixture at the north edge of the overhead door's y 45'..61' band.
+#
+# **Consequence to accept:** the hydrant is a post standing 5' out from the west wall at
+# the front-left of the north bay, not a fitting on the wall. It is in the parking area
+# because every compliant position in this garage is. A bollard or a wheel stop is the
+# mitigation if it proves to be in the way; moving it back to the wall is not.
+HYDRANT_X_FT = 5.0          # on the service line — the run reaches it without a jog
+HYDRANT_Y_FT = 60.0         # north bay, clear of FT-GF-N's influence line
 HYDRANT_BURY_FT = 6.0       # shutoff depth below grade — the code number for this fixture
 
 # There was a 4" topping pedestal here (SL-G-HYDRANT-PED, an 18" square poured on top of
@@ -259,15 +290,26 @@ GARAGE_HYDRANT_SLEEVE = SleevePenetration(
 # model had, and the cost of that stand-in was real — the excavation perimeter was billing
 # as perimeter drain tile in the sitework take-off, tile that is not there.
 #
-# So it sits right on the hydrant's own stack (HYDRANT_X_FT, HYDRANT_Y_FT), not offset to
-# clear the west footing: the weep needs stone at the valve, not stone somewhere else that
-# a pipe would have to carry it to. What clears the footing is depth, not plan offset — the
-# stone starts a foot above the shutoff (well below the footing's -4'-2" bearing) and runs
-# down past it, so nothing here is beside the footing at the footing's own depth.
+# It sits on the hydrant's own stack (HYDRANT_X_FT, HYDRANT_Y_FT) and has to: the weep
+# needs stone at the valve, not stone somewhere else that a pipe would have to carry it to.
+# That makes the pocket, not the pipe, the thing that sets how far out the fixture stands —
+# it is the deepest excavation in the assembly, so it is the one the 45° influence line
+# grades hardest. → HYDRANT_X_FT above for the arithmetic.
+#
+# Re-sized 2026-08-15, from 2' across x 4' deep. That was 12.6 cu ft of stone for a weep
+# that discharges a few quarts, and its -9'-0" bottom put it 4'-10" below the footings'
+# bearing plane — an excavation that deep has to stand a long way off, and the old one did
+# not stand off at all (it overlapped FT-GF-W's footprint by 4" in plan). Nothing was
+# grading it: `mep.footing_clearance` walks pipe runs, and a Drywell is not one.
+#
+# 1'-6" across x 1'-6" deep, top -5'-6", is what the fixture actually calls for: ~2.6 cu ft
+# of washed stone with the -6'-0" shutoff 6" below the top of it and a foot of stone under
+# the weep. Bottom -7'-0" is 34" below bearing, and the stone's edge stands 41" off both
+# FT-GF-W and FT-GF-N.
 GARAGE_HYDRANT_DRYWELL = Drywell(
     uid="CGP603AAAA", tag="DRW-G-HYDRANT",
     position=pt(ft(HYDRANT_X_FT), ft(HYDRANT_Y_FT)),
-    diameter=ft(2), depth=ft(4), top_elevation=ft(-(HYDRANT_BURY_FT - 1)),
+    diameter=inch(18), depth=inch(18), top_elevation=ft(-(HYDRANT_BURY_FT - 0.5)),
     geotextile=True, inlet_refs=("FX-G-HYDRANT",),
 )
 

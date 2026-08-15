@@ -20,9 +20,14 @@ source:
 
 ## What this is
 
-A frost-free wall hydrant on the garage's west wall near the NW corner (x 1'-6", y 62'),
-for washing a vehicle down and for anything else a hose reaches. It is the project's first
+A frost-free **yard** hydrant standing on the garage slab at (x 5'-0", y 60'-0"), for
+washing a vehicle down and for anything else a hose reaches. It is the project's first
 `PipeSystem.WATER_COLD` run — everything authored before it is drain or vent.
+
+It is not a *wall* hydrant, and since 2026-08-15 it does not stand against a wall either —
+see "Why it stands in the floor" below. The two south-face hydrants (`FX-M-PORCH-HYD`,
+`FX-S-BALC-HYD`) are the wall kind; the difference is the whole design, and
+`mep.hydrant_freeze_depth` grades the two families on different rules.
 
 ## Why there is no floor drain
 
@@ -33,13 +38,18 @@ get. The alternatives are worse rather than better: a drain to daylight becomes 
 plug by December, and a drain to the sanitary system is the thing the code is objecting to.
 
 So the floor is poured to fall toward the overhead door instead, and the wash water leaves
-the building the way it came in — across the apron and into the gravel pit outside the west
-wall (`DRW-G-HYDRANT`). The pit is a `Drywell`: 3' of fabric-wrapped washed stone, 3' across,
-centred 3' outside the west wall line so the excavation clears the footing.
+the building the way it came in — across the apron, onto the driveway. Nothing catches it
+and nothing is meant to.
+
+**`DRW-G-HYDRANT` is not that catch basin,** and this note said it was until 2026-08-15.
+It is a weep pocket: 1'-6" of fabric-wrapped washed stone, 1'-6" across, buried on the
+hydrant's own stack from -5'-6" to -7'-0", taking the few quarts the Y34 self-drains through
+the weep hole at its shutoff each time the handle closes. It is a `Drywell` because that is
+the model's aggregate-filled-hole type, not because a soakaway's worth of water reaches it.
 
 It was modelled as a locally deepened `FootingBedding` for as long as that was the closest
 thing the model had. The stand-in cost something real: a bedding's perimeter bills as
-perimeter drain tile, so the sitework take-off was ordering a ring of tile around a soakaway
+perimeter drain tile, so the sitework take-off was ordering a ring of tile around a pocket
 that has none.
 
 **Consequence to accept:** in deep winter the wash water will not soak away — it will freeze
@@ -49,8 +59,8 @@ a seasonal inconvenience beats a permanent illicit discharge.
 ## Freeze protection
 
 The hydrant's shutoff valve sits **6'-0" below grade** — `PR-G-HYDRANT-CW` runs at −6'-0"
-absolute for its whole 65'-6" length, from the house water entry at (5', 0') out to the
-hydrant. That is a different number from `_FROST` (42") in `params/foundations.py`, and the
+absolute for its whole 60'-0" length, from the house water entry at (5', 0') straight north
+to the hydrant. That is a different number from `_FROST` (42") in `params/foundations.py`, and the
 two are consistent rather than in conflict: 42" is the *footing* frost depth the ICF stem is
 set to, and 6'-0" is this fixture's own bury, 2'-6" below the stem bottom and well clear of
 the frost line.
@@ -80,6 +90,49 @@ Nothing below grade changed, and that is where the freeze protection actually li
 6'-0" bury, `SP-G-HYDRANT` through the slab, and the `DRW-G-HYDRANT` stone the barrel weeps
 into when the handle closes. Those are the system; the pedestal never was.
 
+## Why it stands in the floor (2026-08-15)
+
+It was at (1'-6", 62'), tucked into the NW corner against the west wall, and that position
+was not buildable.
+
+The garage footings bear at −4'-2". The shutoff is 6'-0" down. So everything at the valve
+sits **22" below the bearing plane**, and IRC P2604.3's 45° influence line then asks for 22"
+of lateral clearance from the footing edge before the excavation stops loading the footing.
+The weep stone goes deeper still and needs 34". At x = 1'-6" the riser had 8", and the stone
+pocket — 2' across and 4' deep, as it then was — **overlapped `FT-GF-W`'s footprint by 4" in
+plan and reached 4'-10" below its bearing.** That is a pit dug under the footing edge.
+
+None of it was being caught. `mep.footing_clearance` walks pipe runs, so the pocket was
+graded by nothing at all. The riser was graded, and passed, on `SP-GF-W-HYD` — a sleeve
+authored at (0'-9.6", 61'-6") that bored `FT-GF-W`'s full 20" width east-west at the 6' bury
+while the pipe ran *parallel* to that footing 8" away and never crossed it. The check asked
+only that some sleeve on the pour sit within 0.3 m of the encroaching segment; 8.4" is
+0.213 m. It drew a real hole through concrete with nothing in it. Deleted.
+
+**There is no wall position in this garage that works.** The footing runs the full perimeter
+and the binding constraint is the fixture's own bury, not its plan location: the clear zone
+is x ≥ 4'-8", y ≤ 60'-4", which is floor. So the hydrant stands free, as a yard hydrant is
+built to.
+
+x = 5'-0" rather than the 4'-8" minimum because it is the line the service already runs on —
+the buried leg comes north at x = 5'-0" through three basement wall sleeves and
+`SP-GF-S-HYD`, and standing the fixture on it makes the run dead straight. The 2026-07-29
+re-route had moved that leg to x = 5' for exactly this reason and then turned west at y = 61'
+to meet the hydrant, putting the last 4'-6" back inside the influence line it had just left.
+Moving the fixture deletes the jog instead of protecting it.
+
+y = 60'-0" leaves the stone pocket 41" clear of `FT-GF-N` against the 34" it needs.
+
+**Consequence to accept:** the hydrant is a post standing 5' out from the west wall at the
+front-left of the north bay, not a fitting on a wall, and it is in the parking area because
+every compliant position in this garage is. A bollard or a wheel stop is the mitigation if
+it proves to be in the way. Moving it back to the wall is not.
+
+The one crossing that remains is `PR-G-HYDRANT-CW` passing *beneath* `FT-GF-S-DR` at the
+service door, and that one is sleeved rather than spaced — being under a footing is not
+clearance from it, since the 45° cone opens downward and a pipe on the footing's own
+centreline is the worst case in it.
+
 ## Where the hydrant sits
 
 On `SL-G-FLOOR` at 0'-0", which is **1'-10" below the `garage` storey datum** — that datum
@@ -95,17 +148,74 @@ place and the things standing on it in the wrong one.
 
 ## Specified with the fixture
 
-Both are recorded on `FX-HYDRANT-Y34SS`'s `source` and belong on the plumbing schedule; the
-model has no valve or backflow-preventer element, so `mep.hydrant_freeze_depth` reports them
-UNKNOWN rather than claiming a review it did not perform.
+The coating is recorded on `FX-HYDRANT-Y34SS`'s `source` and belongs on the plumbing
+schedule. The other two stopped being unmodellable on 2026-08-01: `PipeAccessory` is the
+element, `PA-G-HYD-SEAT` and `PA-G-HYD-VB` are the instances, and `mep.hydrant_freeze_depth`
+grades them as a PASS rather than the UNKNOWN it used to emit for want of anywhere to put
+them. This section said otherwise until 2026-08-15.
 
 - **Supplemental epoxy coating** over the buried barrel. The standard finish is not rated for
   chloride immersion and this barrel passes through the salt layer twice a year.
-- **Hose-bib vacuum breaker** screwed onto the outlet — required backflow protection for any
-  hose connection, and the cheapest part of the whole assembly.
-- **Interior shutoff** downstream of the slab penetration, so the run can be isolated without
-  digging.
+- **Hose-bib vacuum breaker** screwed onto the outlet (`PA-G-HYD-VB`, ASSE 1011) — required
+  backflow protection for a hose connection, and the cheapest part of the whole assembly.
+  It answers the *hose thread*, and only that; see below.
+- **Interior shutoff** downstream of the slab penetration (`PA-G-HYD-SEAT`), so the run can
+  be isolated without digging.
 
-Sealant at the slab penetration is a flexible, chloride-tolerant joint sealant, not a rigid
-grout: the barrel and the slab move against each other seasonally. With the pedestal gone
-this joint is the only thing between the salt slush and the sleeve — see above.
+## The weep, and why this is still a Y34
+
+Settled 2026-08-15. The short version: **the standard draining yard hydrant stays**, and a
+dual check on its branch closes the one gap it has.
+
+`PA-G-HYD-VB` protects the hose thread, which is the opening the code names — P2902.3.1
+wants a vacuum breaker at every hose connection on a potable line and there is one. A
+self-draining yard hydrant has a second opening: the weep at the buried shutoff, which
+empties the barrel into `DRW-G-HYDRANT`'s stone every time the handle closes and then sits
+in wet stone at -6'-0". A breaker 2'-6" above the slab is nowhere near that path.
+
+**That is a real opening, and it is not a code violation.** Two reasons, and it is worth
+being precise because the first draft of this section was not:
+
+- On a Y34 the drain port is uncovered only when the plunger is seated, and the plunger
+  covers it as soon as the valve opens. The weep and the supply are never both connected in
+  normal operation. Backsiphonage through the weep needs a worn seat **and** a submerged
+  weep **and** negative pressure in the main, all at once.
+- Nothing in the IRC or in the Minnesota plumbing code prohibits this fixture or requires a
+  listed sanitary one for a single-family yard hydrant. ASSE 1057 "freeze-resistant sanitary
+  yard hydrant" exists and some cross-connection-control programmes specify it, but that
+  history is agricultural — livestock tanks and chemical mixing, where the hose end is the
+  documented failure and a hose-in-tank siphon is the documented mechanism. This one washes
+  a car in a garage, and its weep pocket is under the garage slab rather than in a barnyard.
+
+So the fixture is not the thing to change. What is worth having is cheap insurance against
+that three-way coincidence, and that is `PA-G-HYD-BFP`: a 3/4" dual check on
+`PR-G-HYDRANT-CW` at (5'-0", 3'-0"), in `RM-B-FURNACE` beside `PA-B-MAIN-SHUTOFF`.
+
+It is on the branch rather than at the fixture because the branch is the only place a device
+can be reached. The hydrant's own seat is 6'-0" down in the yard; the tee that feeds the
+house is at (5', 1') and everything past it is buried. But between its three basement wall
+sleeves the run crosses the heated basement exposed at the -6'-0" bury, and -6'-0" absolute
+is **3'-0" above the basement floor** — head height in the mechanical room. No `elevation` is
+authored on the accessory because a check valve on a pipe sits on the pipe.
+
+A dual check, not an RPZ, because this is a low-hazard residential connection; it matches
+`PA-B-BFP-BATH` and `PA-B-BFP-SAUNA`. An AHJ that reads a below-grade weep as a *health*
+hazard would want an RPZ, which needs a drain and an annual test. That is a question for
+permit review, not something to build for ahead of the answer. -> `plans/TODO.md`.
+
+**How the check now reads it (2026-08-15).** `mep.backflow_prevention` used to grade a
+hydrant on its hose thread alone and then rubber-stamp each backflow preventer with a PASS
+restating what it was authored to serve — two loops that never met, so `PA-G-HYD-BFP` could
+be added, scheduled and billed while `FX-G-HYDRANT` read exactly as it had before. It now
+grades the **connection**: the outlet and the run that feeds it are one thing, and every
+guard device on the feed lands in the fixture's own finding.
+
+    FX-G-HYDRANT's hose thread is protected by PA-G-HYD-VB (screw-on hose-bib vacuum
+    breaker, ASSE 1011), and its branch (PR-G-HYDRANT-CW) carries PA-G-HYD-BFP (3/4"
+    dual-check backflow preventer, testable)
+
+The two wall hydrants carry no branch device and say so by omission. Nothing in the check
+knows what a weep is, and nothing needs to — the rule stopped discarding the rest of the
+branch, which is what made the weep's answer invisible. The same pass gave `serves` a
+grader it never had: a device naming a tag the model does not contain now FAILs rather than
+passing on its own say-so.

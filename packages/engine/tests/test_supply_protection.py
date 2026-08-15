@@ -130,6 +130,44 @@ def test_a_hydrant_without_its_vacuum_breaker_fails(catlin_plan):
     assert {"FX-M-PORCH-HYD", "FX-G-HYDRANT"} <= passed
 
 
+def test_a_branch_device_is_part_of_the_hydrant_it_protects(catlin_plan, catlin_model):
+    """The outlet and the run that feeds it are one connection.
+
+    ``PA-G-HYD-BFP`` sits in the mechanical room rather than at the thread, because what it
+    answers is the yard hydrant's *other* opening — the weep at the buried shutoff, which no
+    code section names. A check that graded the hose thread alone read the fixture
+    identically with and without it, which is the state this test exists to catch.
+    """
+    def message_for(plan) -> str:
+        findings = backflow_prevention(_context(plan, _resolved(plan)))
+        return next(f for f in findings if f.element_tags[0] == "FX-G-HYDRANT").message
+
+    protected = message_for(catlin_plan)
+    assert "PA-G-HYD-BFP" in protected
+    assert "PR-G-HYDRANT-CW" in protected  # named as the branch, not as a second fixture
+    assert "PA-G-HYD-BFP" not in message_for(_without(catlin_plan, "PA-G-HYD-BFP"))
+    # And the wall hydrants, which carry no branch device, say so by omission rather than
+    # by reading the same as the one that does.
+    porch = next(f for f in backflow_prevention(_context(catlin_plan, catlin_model))
+                 if f.element_tags[0] == "FX-M-PORCH-HYD")
+    assert "branch" not in porch.message
+
+
+def test_a_backflow_preventer_that_protects_nothing_in_the_model_fails(catlin_plan):
+    """``pipe_ref`` is the resolver's business — an accessory with no host run is an
+    integrity error and never reaches a check. ``serves`` was nobody's: a tag naming no
+    element schedules, prices and installs a device across a connection that is not there.
+    """
+    stray = catlin_plan.by_tag("PA-B-BFP-SAUNA").model_copy(
+        update={"serves": ("FX-B-SAUNA-NOPE",)})
+    plan = _without(catlin_plan, "PA-B-BFP-SAUNA")
+    plan = plan.with_elements(
+        "basement", (*plan.storey_elements("basement"), stray))
+    failed = _fails(backflow_prevention(_context(plan, _resolved(plan))))
+    assert [f.element_tags[0] for f in failed] == ["PA-B-BFP-SAUNA"]
+    assert "FX-B-SAUNA-NOPE" in failed[0].message
+
+
 def test_an_arrestor_is_required_per_supply_not_per_appliance(catlin_plan):
     """The washer slams both solenoids shut; arresting only the cold leaves the hot to
     hammer, and a check that counted devices against appliances would call that done."""

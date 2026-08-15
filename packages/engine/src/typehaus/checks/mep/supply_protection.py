@@ -34,6 +34,17 @@ def _of_kind(ctx: CheckContext, kind: PipeAccessoryKind) -> list:
     return [a for a in ctx.model.pipe_accessories if a.kind == kind.value]
 
 
+# The two device families P2902 counts as protection. A shutoff is not one of them: closing
+# a valve is an operation, and a cross-connection is judged on what holds with nobody there.
+_GUARD_KINDS = frozenset({PipeAccessoryKind.VACUUM_BREAKER.value,
+                          PipeAccessoryKind.BACKFLOW_PREVENTER.value})
+
+
+def _named(device) -> str:
+    """``TAG (model)`` where a model number was authored — what an inspector looks for."""
+    return f"{device.tag} ({device.model})" if device.model else device.tag
+
+
 @check(Tier.CODE, "mep.main_shutoff")
 def main_shutoff(ctx: CheckContext) -> list[Finding]:
     """IRC P2903.9.1 — one main shutoff valve, and it has to be reachable.
@@ -73,13 +84,32 @@ def main_shutoff(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.CODE, "mep.backflow_prevention")
 def backflow_prevention(ctx: CheckContext) -> list[Finding]:
-    """IRC P2902 — cross-connection control, one finding per connection that needs it.
+    """IRC P2902 — cross-connection control, graded per connection rather than per device.
 
-    Hose connections are the ones this house actually has: a hydrant is a hose thread at
-    the end of a potable line, which is the textbook cross-connection (P2902.3.1 answers it
-    with an atmospheric vacuum breaker). The check grades each hydrant against the vacuum
-    breaker on *its own* feed rather than against a house-wide count, because a house with
-    three hydrants and one breaker protects one hydrant.
+    The unit is the *branch*, not the fitting. What a cross-connection asks is what stands
+    between the potable trunk and the opening, and every guard on the feed is part of that
+    answer whether it screws onto the hose thread or sits on the branch in a mechanical
+    room. So an outlet and its run are read as one thing: each hydrant gets one finding
+    naming everything protecting it, and adding a device to the branch changes what that
+    finding says. The earlier shape asked only "is there a vacuum breaker on my feed" and
+    then rubber-stamped each backflow preventer with a PASS restating what it was authored
+    to serve — two loops that never met, so a device could be added, scheduled and billed
+    without moving the grade of the fixture it was bought for.
+
+    This is what makes the garage yard hydrant legible. Its second opening — the weep at
+    the buried shutoff, which empties the barrel into stone every time the handle closes —
+    is one the code never names, so ``PA-G-HYD-BFP`` sits on the branch rather than at the
+    thread. Nothing here knows what a weep is, and nothing here needs to: the check stopped
+    discarding the rest of the branch, and the hydrant that carries a second device now
+    reads differently from the two that do not.
+
+    Still per hydrant, not per house — three hydrants and one breaker protects one hydrant.
+
+    Devices that guard no hydrant are graded on whether they are attached to anything real.
+    ``pipe_ref`` is already the resolver's business (an accessory with no host run is an
+    integrity error before a check ever runs), but ``serves`` is nobody's: a tag that names
+    no element in the model is a device the schedule carries, the estimate prices and the
+    plumber installs across a connection that does not exist.
     """
     cid = "mep.backflow_prevention"
     if not _has_supply(ctx):
@@ -93,23 +123,40 @@ def backflow_prevention(ctx: CheckContext) -> list[Finding]:
         and types[element.type_ref].plan_symbol == "hydrant"
         and Service.WATER_COLD in types[element.type_ref].needs
     ]
-    breakers = _of_kind(ctx, PipeAccessoryKind.VACUUM_BREAKER)
+    guards = [a for a in ctx.model.pipe_accessories if a.kind in _GUARD_KINDS]
     out: list[Finding] = []
+    counted: set[str] = set()
     for hydrant in hydrants:
         feeds = {run.tag for run in ctx.model.pipe_runs if hydrant.tag in run.serves}
-        mine = [b for b in breakers
-                if hydrant.tag in b.serves or (b.pipe_ref in feeds and not b.serves)]
-        if not mine:
+        mine = [g for g in guards
+                if hydrant.tag in g.serves or (g.pipe_ref in feeds and not g.serves)]
+        counted.update(g.tag for g in mine)
+        threads = [g for g in mine if g.kind == PipeAccessoryKind.VACUUM_BREAKER.value]
+        if not threads:
             out.append(_fail(
                 cid, f"hose connection {hydrant.tag} has no vacuum breaker — P2902.3.1 "
                      "requires backflow protection at every hose thread on a potable line",
                 (hydrant.tag,)))
-        else:
-            out.append(_pass(
-                cid, f"{hydrant.tag} is protected by {mine[0].tag}"
-                     f"{' (' + mine[0].model + ')' if mine[0].model else ''}",
-                (hydrant.tag, mine[0].tag)))
+            continue
+        branch = [g for g in mine if g.kind == PipeAccessoryKind.BACKFLOW_PREVENTER.value]
+        message = f"{hydrant.tag}'s hose thread is protected by {_named(threads[0])}"
+        if branch:
+            message += (f", and its branch ({', '.join(sorted(feeds)) or 'its feed'}) "
+                        f"carries {' and '.join(_named(g) for g in branch)}")
+        out.append(_pass(cid, message, (hydrant.tag, *(g.tag for g in mine))))
+    known = {element.tag for storey in ctx.plan.storeys
+             for element in ctx.plan.storey_elements(storey.tag)}
     for device in _of_kind(ctx, PipeAccessoryKind.BACKFLOW_PREVENTER):
+        if device.tag in counted:
+            continue
+        missing = [tag for tag in device.serves if tag not in known]
+        if missing:
+            out.append(_fail(
+                cid, f"backflow preventer {device.tag} declares protection for "
+                     f"{', '.join(missing)}, which the model does not contain — the device "
+                     "would be scheduled and installed across a connection that is not there",
+                (device.tag,)))
+            continue
         served = ", ".join(device.serves) if device.serves else device.pipe_ref or "—"
         out.append(_pass(cid, f"backflow preventer {device.tag} protects {served}",
                          (device.tag,)))

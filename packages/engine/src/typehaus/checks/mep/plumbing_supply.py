@@ -92,10 +92,19 @@ def hydrant_freeze_depth(ctx: CheckContext) -> list[Finding]:
                 # shallowest point anywhere along it. The terminal standpipe (a repeated
                 # final plan point rising through the slab) is the hydrant's own barrel,
                 # which self-drains to the buried shutoff: it is exempt by design.
+                #
+                # Exactly one vertex, which is why this is an `if` and not the `while` it
+                # was until 2026-08-15. The condition tests fixed indices — `run.path[-1]`
+                # and `[-2]` — so a loop never advances past the standpipe it is meant to
+                # drop; it just keeps eating whatever rising tail the run has, exempting
+                # the very high point rule 2 exists to catch. It went unnoticed while
+                # PR-G-HYDRANT-CW had four buried vertices to hide behind. Straightening
+                # that run to (entry → hydrant → rise) left the tail one vertex long and
+                # the bug graded a run surfacing to -1'-0" as frost-protected.
                 elevations = list(run.z_m)
-                while (len(elevations) >= 2 and len(run.path) >= 2
-                       and run.path[-1] == run.path[-2]
-                       and elevations[-1] > elevations[-2] + 1e-9):
+                if (len(elevations) >= 2 and len(run.path) >= 2
+                        and run.path[-1] == run.path[-2]
+                        and elevations[-1] > elevations[-2] + 1e-9):
                     elevations.pop()
             else:
                 elevations = [z for z in (run.z_start_m, run.z_end_m) if z is not None]

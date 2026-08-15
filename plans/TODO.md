@@ -74,122 +74,13 @@ split, so most rows would carry a made-up division.
 
 ## Remaining Work
 
-_Batch of 2026-08-15 — permit-completeness pass. `haus check` went 661/6/33 to **683 pass /
-4 fail / 25 not evaluable of 712**, and the permit gate passes every one of its (now 46)
-checklist items. Six rules were added, five were found to be over-reaching or reading the
-wrong field, and six real gaps in the house were closed. The four residual FAILs are the
-ones this file already accepts by decision: two ventilation terminals and the two
-foundation-wall reinforcement schedules. Detail below; the sources behind each new rule are
-named in the module that encodes it._
-
-**Same-day correction: the house had two water heaters, and should have one (2026-08-15).**
-Authoring `EQ-B-WH`'s TPR relief discharge above surfaced a modelling defect the owner
-caught on review: `EQ-B-WH` (120V, "compressor only") and `EQ-B-WH2` (240V, "resistance
-element") were two `Equipment` instances standing in for one product's two internal power
-draws. The house now carries a single 80-gal Rheem ProTerra hybrid HPWH on one 240V/4,500 VA
-circuit (`CKT-WH-240`, moved to the backup subpanel's SHED tier), governed to a ~500 VA
-Heat-Pump-Only ceiling during a backup event or near the 200A peak by a Home Assistant
-automation (ESPHome's `esphome-econet` bridging the unit's EcoNet API) — modelled as
-`LM-WH`, a single-circuit `LoadManagement`, the same NEC 625.42/220.82 mechanism `LM-EV` and
-`LM-WELLNESS` already use. `takeoff/backup_calc.py` gained `_governed_va` so a load-managed
-circuit's contribution to the backup peak and autonomy averages reflects its enforced
-ceiling rather than its nameplate — previously latent (nothing exercised it), now load-
-bearing. Net effect on the service-load margin: **192.1A against 200A (7.9A of margin)**,
-up from 199.6A that morning, because the water heater's peak-avoidance behavior is now
-credited instead of silently absent. Explicitly supported for later: reverting to a single
-120V plug-in HPWH (no 240V circuit, ~450W, entirely on backup) needs only a `type_ref` swap
-on `EQ-B-WH`, a circuit retag, and deleting `LM-WH` — see the note above
-`EQ-T-WATER-HEATER` in `plan/mep.py`.
-
-**Rules added** (all six on the permit checklist, all six blocking, all six passing):
-
-- **`code.MN_1303_2402_radon`** — Minnesota's own passive radon system rule (MN Rules
-  1303.2400-.2402), which has no IRC parent and which nothing graded, even though this
-  house has modelled the whole system — sealed sump, shared radon/vent riser, exterior
-  junction box — for months. Grades the collection point, the sealed cover, the exhaust's
-  separation from openings, and subpart 6's fan box being outside conditioned space. It
-  found the one thing worth finding on the first run and then unfound it: measured from the
-  *riser line* the exhaust stands 3.2' from WIN-S-BATH-N, but MN's sentence is a copy of IRC
-  AF103's, which measures from the *exhaust point* and exempts any opening 2 ft or more
-  below it. The rule now reads it that way and says so in the finding. See `checks/code/
-  mn_residential/radon.py::_separation_findings` for the argument.
-- **`code.R403_1_6_foundation_anchorage`** — grades the sill-anchor *schedule rule* (4 ft
-  o.c., min 2 per plate run) against R403.1.6's 6 ft maximum, and reports UNKNOWN rather
-  than PASS when no sill-plate construction return resolves at all.
-- **`code.R405_1_foundation_drainage`** and **`code.R406_1_dampproofing`** — the footing
-  tile and the damp-proof layer, both scoped by their own text to walls that *enclose*
-  below-grade interior space. That scoping is the whole rule: screening on "retains fill"
-  alone produced four FAILs against the sunken-garden walls, the yard retaining blocks and
-  the garage ICF stem, none of which has a room behind it.
-- **`code.R303_7_stairway_illumination` / `code.R303_8_exterior_stairway_illumination`** —
-  a light over the treads, and a wall switch at *each* floor level for a flight of six or
-  more risers. The switch half is what drawings miss and what `controlled_by` already
-  records. Illuminance is deliberately not graded: the model carries lamp types, not IES
-  files.
-- **`code.R302_7_under_stair_protection`** — 1/2" gypsum in an enclosed usable space under
-  a stair reached by a door. Scope-passes here; the house has no such closet.
-
-**Checks that were wrong, and are now right:**
-
-- **`code.R310_2_3_window_well` screened every opening big enough**, not the openings R310.1
-  makes the house depend on. Three false subjects: a segmental arch in the basement brick
-  veneer and the two arches in the freestanding garden porch wall, none of which is anybody's
-  way out of a bedroom. It now walks the credited escape openings; the basement escapes
-  through D-B-FURN, so no well is required and the rule says so.
-- **`code.R302_13_floor_protection` only looked for a `FloorSystem`.** The floor over this
-  basement is SL-M-DECK, a 9" cast slab, which has no floor framing member to fasten a
-  membrane to and nothing in it that burns. UNKNOWN became a PASS naming the slab.
-- **`code.P2804_water_heater_relief` read `heater.storey`**, a field elements do not carry,
-  so every heater in every house reported "termination height unmeasured". It walks the
-  plan's own storey grouping now, and the 6"-24" band is actually measured.
-- **Every door got a 90-degree leaf sweep**, whatever its `DoorType.operation`. D-M-MUDC is a
-  bypass slider and carried a permanent `integrity.door_swing_conflict` against the mudroom
-  bench in front of it — and the plan sheets drew an arc for a slider besides. `resolve/
-  pipeline.py::_LEAF_SWEEP_FRACTION` gives a slider, a pocket door and an overhead sectional
-  no sweep, a bifold and a French leaf half a width.
-- **`electrical.service_load` credited a load-management group at 100% of its connected
-  excess**, whatever bucket the load was counted in. An interlock over two fixed appliances
-  is worth 40% of its excess, not 100% — the 220.82(B) remainder factor is the only rate at
-  which that load ever reached the demand. The credit is taken per bucket in
-  `takeoff/electrical.py` now, and the check reads the result rather than recomputing it.
-- **The service size was the literal `200` inside `takeoff/electrical.py`**, so no house
-  could state anything else. `ElectricalDeviceType.service_amps` carries it now (authored on
-  ED-T-METER), distinct from the panel's `bus_amps` that NEC 705.12 measures against.
-
-**Gaps closed in the house:**
-
-- **Both water heaters' TPR relief discharge is drawn** (`PR-B-WH-TPR`, `PR-B-WH2-TPR`,
-  plan/mep.py). 3/4" copper, full size, vertical to 8" then 1'-0" at 2"/ft to an air gap 6"
-  over the slab. It is the one pipe on a water heater whose job is to stop the tank
-  exploding and the model had no instance of it. The east run stands at x=9'-0" rather than
-  against the tank because W-B-STR's inside face is 6" further east and the first attempt
-  cored it — `mep.sleeve_coverage` said so.
-- **System 1's design-temperature shortfall has an answer**: `EQ-S-HP1-STRIP`, a 2 kW duct
-  heater in the supply plenum on `CKT-HP1-STRIP` (the panel's former spare 2-pole, breaker
-  down 30A -> 15A). 16,309 Btu/h of block load against 13,500 + FH-S-BATH1's mat was -1,069
-  Btu/h; it is +5,755 now. This is the ordinary cold-climate detail, not a workaround.
-- **The service fits, with management and no margin.** 254.2A unmanaged; the dryer at its
-  830 W heat-pump nameplate instead of the 14-30R's 5 kVA is -7.0A; `LM-WELLNESS` (spa and
-  sauna interlocked, one at a time) is -15.0A; `LM-EV` tightened 5,760 -> 5,600 VA is -0.7A.
-  **199.6A against 200A — 0.4A of margin, and that is the number to remember.** The next
-  load added to this house puts it over, and the answer then is the 400A service this pass
-  deliberately did not buy (decision, 2026-08-15; the arithmetic is in plan/circuits.py
-  above `LOAD_MANAGEMENTS`).
-- **`ED-M-STORAGE-CAN1` names the room it is in.** The 2026-08-02 closet conversion framed
-  RM-M-MUD-CLOSET around it and the light kept naming the mudroom; its sibling CAN2 took
-  the same correction in July. A label catching up with a wall — nothing moved.
-
 **Deliberately not done, and why:**
 
-- **RM-B-ESS and RM-M-MUD-CLOSET stay in no HVAC zone.** They were added to the zone lists
-  during this pass and then reverted: `test_heating_capacity.py` records why each is
-  unclaimed on purpose (a sealed Type X battery closet whose occupant is a heat source; a
-  storage closet behind a 48" bypass slider that is open air transfer). Unclaimed is the
-  true statement there, not a gap.
 - **The four exterior placeables keep their false room refs** (both wall hydrants, both
   porch curtain rods). Giving them an honest home means unconditioned `Room`s for the porch
   and the balcony — enclosing walls, envelope, energy and ventilation consequences — for
   four UNKNOWNs this file already accepts. Not worth the complexity.
+
 - **The IRC reinforced-foundation tables were not encoded.** Tables R404.1.2(2)-(5) would
   turn the two foundation FAILs into a prescriptive rebar schedule, which is the right
   eventual answer, but no source consulted reproduced the table rows and a made-up
@@ -311,13 +202,6 @@ the future.
   NEMA 1 enclosure, guarded toggle, momentary button, LV ring/plate and 50 ft of 18/6 CL2
   all reach the order without inventing conduit routes nobody has designed. The spec
   section further down this file is kept as the build instruction it is.
-- ~~Able to see the actual studs (or the end cut view of them) on the 2d when framing on~~ —
-  **done 2026-08-07.** Members now draw their plan footprint, not a centreline: a vertical
-  stud is its oriented `width_m × depth_m` end cut, a horizontal one a band on the plate
-  rule, ported from `resolve/framing/footprint.py`. Below 2px of cross-width the old line
-  stays, because a fill that thin antialiases into a smudge. Filed follow-up: the engine
-  does not populate `plan_outline`, so the **PDF/DXF sheets still draw centrelines** — the
-  viewer and the printed set disagree until that lands.
 - Window sealing detail
 - ~~Access panels (mechanical, wall hung toilet)~~ — **answered 2026-08-07.** The wall-hung
   WC gets `FURN-M-BATH1-AP`, a 14x29 in BATH1's face of the W-M-BAE carrier wall. Three tub
@@ -330,12 +214,6 @@ the future.
   Loose end: neither second-storey tub-shower carries a `drain_position`, so their ends
   were read off resolved footprints and the walls touching them. Author one and the suite
   panel should be re-checked against it.
-- ~~Curtain rods (on porch, in living room, master bedroom)~~ — **done 2026-08-07.** Nine
-  interior rods on one 7'-0" head line for the whole storey — above the tallest head
-  (6'-8"), so the living room reads as one line instead of stepping three times — plus two
-  114" outdoor rods across the porch's front pillar bays, which are 9'-6 1/2" clear between
-  6x6 faces. **"Master bedroom" was read as RM-M-BED**, the main-storey bedroom, not the
-  second-storey suite; say so if that was wrong, and the four rods move.
 - ~~Any rooms with fancy ceilings? ... "Resilient channels on ceiling perpendicular to
   joists, hat channels maybe better, or sound isolation clips. Whichever the drywall guy
   prefers/is cheapest" for the Living Room ceiling.~~ — **minimal treatment authored
@@ -353,27 +231,6 @@ the future.
   **Gap worth knowing:** `construction_returns` is not in `cli/prices.py::_SECTIONS`, so
   those 523.7 LF reach the BOM and never the cost estimate. Verified empirically, noted on
   the rule, not fixed here.
-- ~~Getting more estimates prices researched and filled into the price list~~ — **done
-  2026-08-07.** 68 keys filled across `[framing]`, `[concrete]`, `[openings]`,
-  `[envelope_layers]` and `[sheet_goods]`, plus the five new placeable types, each a
-  low/high range with its basis and sources written into the section header and dated. The
-  estimate resolves end to end for the first time: **$149k - $284k**, material only.
-  Read the caveats in the file, not just the total. Everything is material-only with no
-  waste factor and no labour; published window/door/insulation costs are almost all
-  *installed*, so those were backed out at roughly 55-65% material rather than copied; and
-  `[envelope_layers]` is keyed by material tag with no thickness in the key, so each range
-  is the $/SF at the thickness *this* house's assemblies use — change an assembly's
-  thickness and the number silently stops being right.
-  Left blank on purpose, because a made-up number is worse than a gap: the `* panel`
-  profiles and `deck *` widths in `[framing]`, and `composite-deck` — all bought by the
-  piece from named suppliers, not as stock. They want quotes.
-- ~~Reinforcement for exterior doors~~ — **clarified and authored 2026-08-07.** The
-  reinforcement wanted was uplift, not the lockset: `strap_holdown_rows` derives STHDs at
-  the *ends* of each sill-plate run, so the jamb studs beside a door punched through the
-  middle of a run had no load path past the sill plate. Four authored STHDs now tie the
-  first-floor exterior-wall framing at D-M-ENTRY's and D-M-BALC's jambs into the basement
-  concrete. **D-G-SERVICE is deferred** — it stands in the garage ICF stem wall, and an
-  ICF-embedded holdown is a different part with a different embedment.
 - ~~Moving toilet needs to move its flange too in UI~~ — **fixed 2026-08-07, and it was
   live.** A drive-by edit in `76c1871` had already moved FX-M-BATH2-WC 6.46" off its
   cast-in sleeve SP-M-WC2 and drain PR-B-WC2-DRAIN, with nothing complaining; the fixture
@@ -386,13 +243,20 @@ the future.
 - Possibly moving house and sunken garden up (not garage), accounting for split layer
 - Small windows on corners?
 - Balcony railing?
-- Pipe sleeve SP-GF-W-HYD-B3 is either unnecessary or misplaced (only one needed through garage floor slab there, not sideways like this one)
 - Do "drain tile" and "french drain" duplicate at all here?
-- The "draw stud end cuts" of e597019 doesn't seem to have worked? Or else it is just showing the top plate or sill, not the vertical members?
+- The "draw stud end cuts" of e597019 doesn't seem to have worked? Or else it is just showing the top plate or sill, not the vertical members? This is a follow up to this claimed done item, which seems is not fully complete
+- ~~Able to see the actual studs (or the end cut view of them) on the 2d when framing on~~ —
+  **done 2026-08-07.** Members now draw their plan footprint, not a centreline: a vertical
+  stud is its oriented `width_m × depth_m` end cut, a horizontal one a band on the plate
+  rule, ported from `resolve/framing/footprint.py`. Below 2px of cross-width the old line
+  stays, because a fill that thin antialiases into a smudge. Filed follow-up: the engine
+  does not populate `plan_outline`, so the **PDF/DXF sheets still draw centrelines** — the
+  viewer and the printed set disagree until that lands.
 - EQ-M-HP3-STAIR should be on the north wall of the stairs (on the northwest corner, wall W-M-N2 I believe), not the west wall. It also should have a register of some kind (passive, not hooked to the minisplit, just next to it) to allow air to flow from next to it into MUDROOM through wall W-M-STRW
 - We are thinking of switching W-SG-ARCH to be a column and beams like PT-SG-COL and BM-SG-BKE, then replacing the masonry railing right above it with a metal railing more like RL-SG-BALCONY
 - Add a packed gravel bed under the retaining wall blocks (W-RG-*)
 - Improve the symmetry of the windows on the east and west side so they look better from outside, where possible
+- Extend the outdoor curtain rods to cover all three exposed side of the porch (possibly as a single continuous curtain, if that is possible, or else as 4 single bay panels)
 - Permit drawings
 
 ### Plumbing
