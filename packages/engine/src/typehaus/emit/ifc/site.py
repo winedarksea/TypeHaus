@@ -94,9 +94,9 @@ def _emit_footing_bedding(f: Any, body: Any, bedding: Any, storeys: dict[str, An
         f, body, bedding.outline, bedding.z1_m - bedding.z0_m, bedding.z0_m,
     ))
     ll.ensure_pset(f, element, PSET_SOURCE, {"uid": bedding.uid, "tag": bedding.tag,
-                                               "host": bedding.host_footing})
+                                               "host": bedding.host})
     ll.ensure_pset(f, element, "TypeHaus_FootingBedding", {
-        "host": bedding.host_footing,
+        "host": bedding.host,
         "aggregate": bedding.aggregate,
         "geotextile": bedding.geotextile,
         "drain_tile": bedding.drain_tile,

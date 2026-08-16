@@ -620,6 +620,12 @@
 # mygravelbuddy.com delivered #57 pricing.
 # $/cy, by aggregate spec
 "ASTM C33 #57 washed crushed stone" = { low = 45, high = 85 }  # 97.07 cy
+# NOT RESEARCHED — the SRW levelling pad under the raised-garden apron (3.0 cy, added
+# 2026-08-15). Class 5 is a dense-graded pit-run base, the cheap end of the aggregate
+# shelf and reliably under washed #57; this is set at roughly half the researched #57
+# rate as a placeholder, not off a quote. Replace it with a real number before this
+# line is used for anything but a total.
+"MnDOT Class 5 aggregate base" = { low = 22, high = 45 }  # 3.03 cy
 
 [pipe_runs]
 # RESEARCHED 2026-08-08 — [low, high] $/LF of run, material only, INCLUDING a share of

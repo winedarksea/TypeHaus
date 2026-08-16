@@ -18,6 +18,7 @@ from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setback
 from typehaus.resolve.drain_tile import drain_tile_solids, resolved_spec
 from typehaus.resolve.model import (
     BoundaryCondition,
+    Ring,
     ResolvedFootingBedding,
     ResolvedModel,
     ResolvedRoof,
@@ -206,28 +207,53 @@ def _slab_elevations(slab: Slab, elevation: float) -> tuple[float, float]:
     return elevation - thickness, elevation
 
 
+def _bedding_host_footprint(
+    model: ResolvedModel, bedding: FootingBedding
+) -> tuple[Ring | None, float | None, list[Finding]]:
+    """The plan ring the bed fills and the elevation it tops out at (the host's underside).
+
+    A footing host beds its own footprint. A wall host has no footing to take a footprint
+    from, so the bed is a band on the wall's axis — ``width`` wide, defaulting to the wall's
+    own thickness. Like ``_resolve_footing``, the band is not extended past the axis ends:
+    two legs of an L therefore butt at the shared node rather than overlapping, which is
+    what keeps the corner out of the stone order twice.
+    """
+    host = next((s for s in model.solids
+                 if s.tag == bedding.host_ref and s.category == "footing"), None)
+    if host is not None:
+        return host.outline, host.z0_m, []
+    wall = model.wall(bedding.host_ref)
+    if wall is None:
+        return None, None, [element_error(
+            "integrity.footing_bedding_host",
+            f"footing bedding {bedding.tag} references missing footing or wall "
+            f"{bedding.host_ref!r}", bedding.tag)]
+    # The band the layers actually occupy — a ``face(...)``-aligned wall does not straddle
+    # its node line, and a bed centred on that line would be off by half the wall.
+    axis = band_axis(wall.axis, [point for layer in wall.layers for point in layer.polygon])
+    half = (bedding.width.meters if bedding.width is not None else wall.thickness_m) / 2.0
+    return rect_between(axis[0], axis[1], -half, half), wall.z0_m, []
+
+
 def _resolve_footing_bedding(
     model: ResolvedModel, bedding: FootingBedding, storey: str
 ) -> tuple[ResolvedFootingBedding | None, list[Finding]]:
-    host = next((s for s in model.solids if s.tag == bedding.host_ref and s.category == "footing"),
-                None)
-    if host is None:
-        return None, [element_error("integrity.footing_bedding_host",
-                             f"footing bedding {bedding.tag} references missing footing "
-                             f"{bedding.host_ref!r}", bedding.tag)]
+    outline, z1, findings = _bedding_host_footprint(model, bedding)
+    if outline is None or z1 is None:
+        return None, findings
     perimeter_m = (bedding.perimeter_insulation.meters
                   if bedding.perimeter_insulation is not None else None)
-    z0 = host.z0_m - bedding.undercut.meters
+    z0 = z1 - bedding.undercut.meters
     spec = resolved_spec(bedding.drain_tile_spec)
     # The tile is derived, not authored: nobody draws a perimeter ring by hand, it follows
     # the excavation. Emitted here so the drainage toggle and the IFC stormwater system see
     # the ring the take-off has always billed by the foot.
     if bedding.drain_tile:
         model.solids.extend(drain_tile_solids(
-            bedding.uid, bedding.tag, storey, host.outline, z0, spec))
+            bedding.uid, bedding.tag, storey, outline, z0, spec))
     return ResolvedFootingBedding(
-        bedding.uid, bedding.tag, storey, host.tag, host.outline,
-        z0, host.z0_m, bedding.aggregate,
+        bedding.uid, bedding.tag, storey, bedding.host_ref, outline,
+        z0, z1, bedding.aggregate,
         bedding.geotextile, bedding.drain_tile, perimeter_m, bedding.cast_foam_in_aggregate,
         spec,
     ), []

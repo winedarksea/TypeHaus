@@ -235,6 +235,47 @@ def test_the_south_leg_keeps_w_rg_blocks_identity_across_the_rewrite(catlin_mode
     assert all(tag.startswith("W-RG-") for tag in _APRON_TAGS)
 
 
+def test_every_apron_leg_beds_on_a_levelling_pad_under_its_own_footprint(
+        catlin_model) -> None:
+    """A dry-stacked SRW wall has no footing; the compacted pad *is* what it stands on.
+
+    So the bed hosts the wall directly (``FootingBedding.host_ref`` takes either), tops out
+    at the wall underside, and runs 6" past each block face — 24" of band under a 12" block.
+    """
+    beds = {b.host: b for b in catlin_model.footing_beddings
+            if b.host.startswith("W-RG-")}
+    assert set(beds) == set(_APRON_TAGS)
+    for tag in _APRON_TAGS:
+        bed, wall = beds[tag], next(w for w in catlin_model.walls if w.tag == tag)
+        assert bed.z1_m == pytest.approx(wall.z0_m), "the pad tops out at the block underside"
+        assert (bed.z1_m - bed.z0_m) == pytest.approx(6 * INCH)
+        assert _band_width(bed.outline) == pytest.approx(24 * INCH, abs=1e-6)
+        # Bearing prep, not drainage: no tile, but fabric, or the clay silts the voids shut.
+        assert not bed.drain_tile
+        assert bed.geotextile
+
+
+def test_the_apron_pads_butt_at_the_corners_rather_than_overlapping(catlin_model) -> None:
+    """The stone at a corner is billed once. ``rect_between`` is not extended past an axis
+    end (the convention ``_resolve_footing`` follows), so two legs meet at the shared node
+    instead of double-counting a 2' x 2' square of excavation three times over."""
+    beds = [b for b in catlin_model.footing_beddings if b.host.startswith("W-RG-")]
+    south = next(b for b in beds if b.host == "W-RG-BLOCK")
+    west = next(b for b in beds if b.host == "W-RG-WEST")
+    south_y = {round(y, 6) for _, y in south.outline}
+    west_y = {round(y, 6) for _, y in west.outline}
+    # The south leg's band is the only one occupying its own y-range; the west leg stops on
+    # the south leg's axis, which is the middle of that range and not its far edge.
+    assert min(west_y) == pytest.approx((min(south_y) + max(south_y)) / 2.0)
+
+
+def _band_width(outline) -> float:
+    """Short side of a four-point band, in metres."""
+    edges = [((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+             for (x0, y0), (x1, y1) in zip(outline, list(outline[1:]) + [outline[0]])]
+    return min(edges)
+
+
 def test_raised_garden_is_not_part_of_the_thermal_envelope(catlin_model) -> None:
     """A landscape retaining wall has no prescriptive R-value; it encloses no space."""
     from typehaus.checks.code.mn_energy import evaluate_envelope

@@ -280,7 +280,11 @@ def _emit_footing_bedding_note(b: SceneBuilder, model: ResolvedModel) -> None:
         if key in seen:
             continue
         seen.add(key)
-        parts = [f"UNDERCUT {inches(bedding.z1_m - bedding.z0_m)} BELOW FTG, "
+        # A bed hosted on a wall has no footing over it — the wall stands on the bed
+        # itself (the SRW apron, params/raised_garden.py). Saying "BELOW FTG" there names
+        # concrete that is not in the excavation.
+        under = "WALL" if any(w.tag == bedding.host for w in model.walls) else "FTG"
+        parts = [f"UNDERCUT {inches(bedding.z1_m - bedding.z0_m)} BELOW {under}, "
                  f"COMPACTED {bedding.aggregate.upper()}"]
         if bedding.geotextile:
             parts.append("NON-WOVEN GEOTEXTILE LINER")

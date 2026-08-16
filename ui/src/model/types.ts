@@ -1081,7 +1081,7 @@ export interface FootingBedding {
   uid: string;
   tag: string;
   storey: string;
-  host_footing: string;
+  host: string;
   outline: Vec2[];
   z0_m: number;
   z1_m: number;

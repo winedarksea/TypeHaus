@@ -100,7 +100,7 @@ export function FootingBeddingInspector({ bedding }: { bedding: FootingBedding }
   return <div>
     <h3>Footing bedding · {bedding.tag}</h3>
     <div className="kv">
-      <span className="k">Under footing</span><span>{bedding.host_footing}</span>
+      <span className="k">Under</span><span>{bedding.host}</span>
       <span className="k">Aggregate</span><span>{bedding.aggregate}</span>
       <span className="k">Geotextile</span><span>{bedding.geotextile ? "yes" : "no"}</span>
       <span className="k">Drain tile</span><span>{bedding.drain_tile ? "yes" : "no"}</span>

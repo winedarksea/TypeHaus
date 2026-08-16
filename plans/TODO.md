@@ -177,7 +177,19 @@ the future.
 - Balcony railing?
 - Do "drain tile" and "french drain" duplicate at all here?
 - We are thinking of switching W-SG-ARCH to be a column and beams like PT-SG-COL and BM-SG-BKE, then replacing the masonry railing right above it with a metal railing more like RL-SG-BALCONY
-- Add a packed gravel bed under the retaining wall blocks (W-RG-*)
+- ~~Add a packed gravel bed under the retaining wall blocks (W-RG-*)~~ — **done 2026-08-15.**
+  `FootingBedding.host_ref` takes a FoundationWall as well as a Footing now, because a
+  dry-stacked SRW wall stands on the levelling pad itself and inventing a footing to hang
+  the bed off would order concrete nobody pours. `FB-RG-*` is 6" of MnDOT Class 5 on
+  non-woven geotextile, 24" wide under the 12" block (6" past each face), topping out at
+  the block underside (-2'-6"): 3.0 cy. No drain tile — it is bearing prep, and the
+  drainage aggregate *behind* the block is still not modelled.
+  The wall-hosted band is `rect_between` on the wall axis with no end extension, the same
+  convention `_resolve_footing` follows, so the legs butt at the shared corner nodes: the
+  stone is billed once and each 90° corner gives up a 2'x2' notch of its own footprint,
+  ~0.15 cy over the three of them.
+  **Its price is a placeholder** — `prices.toml` carries $22-45/cy for Class 5, set at
+  about half the researched #57 rate rather than off a quote.
 - Improve the symmetry of the windows on the east and west side
 - Extend the outdoor curtain rods to cover all three exposed side of the porch (possibly as a single continuous curtain, if that is possible, or else as 4 single bay panels)
 - Permit drawings

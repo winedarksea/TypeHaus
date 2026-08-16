@@ -614,12 +614,12 @@ class ResolvedDrainTile:
 
 @dataclass(frozen=True)
 class ResolvedFootingBedding:
-    """Sub-footing excavation/bedding prep resolved against its host footing solid."""
+    """Bedding prep resolved against its host — a footing solid, or the wall founded on it."""
 
     uid: str
     tag: str
     storey: str
-    host_footing: str
+    host: str  # Footing tag, or the wall tag when the bed is what the wall stands on
     outline: Ring
     z0_m: float  # bottom of excavation (compacted stone-bed underside)
     z1_m: float  # top of bedding == footing underside

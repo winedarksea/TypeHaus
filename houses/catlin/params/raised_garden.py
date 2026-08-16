@@ -56,11 +56,14 @@ sunken-garden structure (absolute elevations, same as the masonry railing walls)
 house's own main/second wall loops must contain only house walls or storey-orientation
 detection traces this structure by mistake.
 
-Not modelled: the SRW cap unit, the drainage aggregate + filter fabric behind the block, and
-the compacted aggregate levelling pad the base course beds into. None has an element kind
-that fits — a ``Pad``'s top is pinned to its storey datum (here the basement's -9'), and a
-``Footing`` would put fictional concrete under a dry-stacked landscape wall. The growing
-medium is no longer on this list because there is no longer a bed to fill.
+**The levelling pad is modelled now** (2026-08-15), as a ``FootingBedding`` hosted on each
+wall rather than on a footing — ``host_ref`` accepts either since this change, because the
+excavation and the order of stone are the same whether concrete or a base course sits on
+it. A ``Pad`` still does not fit (its top is pinned to the basement's -9' datum) and a
+``Footing`` would put fictional concrete under a dry-stacked landscape wall.
+
+Not modelled: the SRW cap unit, and the drainage aggregate + filter fabric behind the
+block. The growing medium is not on this list because there is no longer a bed to fill.
 
 Known and accepted: the west leg (x ∈ [3.5, 4.5]) runs over the x = 3 sewer and beside the
 x = 5 water line for its whole length. Both are at 5-6' depth against a -2.5' wall bottom, so
@@ -72,7 +75,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from typehaus import FoundationWall, Node, ft, inch, pt
+from typehaus import FootingBedding, FoundationWall, Node, ft, inch, pt
 
 from params.sunken_garden import (
     ARCH_WALL_AXIS_Y_FT,
@@ -95,6 +98,14 @@ class RaisedGardenSpec:
     drop_ft: float = 3.0
     block_thickness_in: float = 12.0  # one SRW unit deep
     block_course_height_in: float = 6.0  # SRW coursing
+    # The compacted levelling pad the base course beds into: 6" of stone, running 6" past
+    # each block face. Both are the ordinary SRW numbers for a wall this short — the pad is
+    # wider than the block so the base course can be shifted into line without ending up
+    # bearing on the pad's own edge, and it is bearing prep, not drainage, so it carries no
+    # tile. It does carry the geotextile: unwrapped stone in this clay silts shut, the same
+    # reasoning DRW-SG-MAIN is fabric-wrapped for.
+    base_pad_depth_in: float = 6.0
+    base_pad_overhang_in: float = 6.0
 
 
 SPEC = RaisedGardenSpec()
@@ -155,4 +166,27 @@ WALLS = [
                    start_node="N-RG-EAST-BALCONY", end_node="N-RG-NE", **_APRON),
 ]
 
-BASEMENT_ELEMENTS = [*NODES, *WALLS]
+# The levelling pad under every leg. Hosted on the wall, not on a footing: there is no
+# footing, and inventing one would order concrete nobody pours. The bed's top is the wall's
+# own underside (-2'-6"), so the excavation runs to -3'-0".
+#
+# The bands butt at the shared corner nodes rather than overlapping — ``rect_between`` is
+# not extended past an axis end, the same convention ``_resolve_footing`` follows — so the
+# stone at each corner is billed once. The trade-off is the other way: each 90° corner
+# leaves a 2' x 2' notch of its own footprint unbilled, about 0.15 cu yd across the three
+# of them. Under a landscape wall that is inside the compaction allowance.
+BEDDINGS = [
+    FootingBedding(
+        uid=f"RGB{i:03d}AAAA",
+        tag=f"FB-{w.tag[2:]}",
+        host_ref=w.tag,
+        undercut=inch(SPEC.base_pad_depth_in),
+        width=inch(SPEC.block_thickness_in + 2 * SPEC.base_pad_overhang_in),
+        aggregate="MnDOT Class 5 aggregate base",
+        geotextile=True,
+        drain_tile=False,
+    )
+    for i, w in enumerate(WALLS, start=1)
+]
+
+BASEMENT_ELEMENTS = [*NODES, *WALLS, *BEDDINGS]

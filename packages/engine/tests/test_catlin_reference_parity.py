@@ -190,12 +190,14 @@ def test_footing_bedding_carries_the_reference_drainage_vocabulary(catlin_model)
     exists and claims those parts — the drain's 4" diameter has nowhere to live on
     ``FootingBedding`` yet (tracked in plans/TODO.md).
     """
-    # Every bedding that beds on *aggregate*. FB-B-BRICK is excluded because it is not one:
-    # the veneer plinth bears on a 2" XPS sheet laid on the house footing's toe (see
-    # params/foundations.py), so there is no stone, no fabric and no tile to claim — it uses
-    # this element for the one thing it does record, ``cast_foam_in_aggregate``.
+    # Every bedding that beds a *footing* on aggregate. Two kinds are excluded:
+    # FB-B-BRICK, because the veneer plinth bears on a 2" XPS sheet laid on the house
+    # footing's toe (see params/foundations.py) — no stone, no fabric, no tile, and it uses
+    # this element only for ``cast_foam_in_aggregate``; and the FB-RG-* levelling pads under
+    # the raised-garden apron, which host a dry-stacked wall rather than a footing and are
+    # bearing prep with no drainage role (params/raised_garden.py).
     beddings = [e for e in catlin_model.plan.elements_of_kind("FootingBedding")
-                if e.tag != "FB-B-BRICK"]
+                if e.tag != "FB-B-BRICK" and not e.tag.startswith("FB-RG-")]
     assert beddings, "every house footing should carry a bearing-prep record"
     for bedding in beddings:
         assert bedding.geotextile

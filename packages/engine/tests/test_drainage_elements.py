@@ -87,7 +87,7 @@ def test_the_garden_drywell_sits_below_the_bearing_bed_it_is_not_part_of(catlin_
     because its floor is 9' down with no downhill side for anything to daylight to."""
     well = next(s for s in catlin_model.solids if s.tag == "DRW-SG-MAIN")
     assert well.category == "drywell"
-    beds = [b for b in catlin_model.footing_beddings if b.host_footing.startswith("FT-SG-")]
+    beds = [b for b in catlin_model.footing_beddings if b.host.startswith("FT-SG-")]
     assert beds
     bed_bottom = min(bed.z0_m for bed in beds)
     assert well.z1_m == pytest.approx(bed_bottom, abs=0.01), \

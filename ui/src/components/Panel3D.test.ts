@@ -258,7 +258,7 @@ export function runEarthGeometryTests() {
 
 export function runFootingBeddingGeometryTests() {
   const bedding = {
-    uid: "FB-1", tag: "FB-1", storey: "L1", host_footing: "F-1",
+    uid: "FB-1", tag: "FB-1", storey: "L1", host: "F-1",
     outline: [[0, 0], [3, 0], [3, 1], [0, 1]], z0_m: -1.2, z1_m: -0.9,
     aggregate: "washed-stone", geotextile: true, drain_tile: true, provenance: null,
   } as FootingBedding;
@@ -456,7 +456,7 @@ export function runSelectionRegistrationTests() {
   const beddingGroup = new THREE.Group();
   const beddings = registry();
   buildFootingBedding(beddingGroup, {
-    uid: "FB-9", tag: "FB-9", storey: "L1", host_footing: "F-1",
+    uid: "FB-9", tag: "FB-9", storey: "L1", host: "F-1",
     outline: [[0, 0], [3, 0], [3, 1], [0, 1]], z0_m: -1.2, z1_m: -0.9,
     aggregate: "washed-stone", geotextile: true, drain_tile: true, provenance: null,
   } as FootingBedding, [0, 0], "schematic", beddings.picks, beddings.byUid);

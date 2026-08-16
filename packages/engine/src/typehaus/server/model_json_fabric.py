@@ -119,7 +119,7 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
         # viewer draws these as a gravel prism so the bearing prep is visible below grade.
         "footing_beddings": [
             {"uid": bedding.uid, "tag": bedding.tag, "storey": bedding.storey,
-             "host_footing": bedding.host_footing,
+             "host": bedding.host,
              "outline": [list(point) for point in bedding.outline],
              "z0_m": bedding.z0_m, "z1_m": bedding.z1_m, "aggregate": bedding.aggregate,
              "geotextile": bedding.geotextile, "drain_tile": bedding.drain_tile,

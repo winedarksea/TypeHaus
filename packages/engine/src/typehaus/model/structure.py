@@ -76,17 +76,27 @@ class DrainTile(HausModel):
 
 @register_element
 class FootingBedding(Element):
-    """Sub-footing excavation/bedding prep beneath a strip Footing.
+    """Excavation/bedding prep beneath a strip Footing — or beneath a wall that has none.
 
-    Digs an extra ``undercut`` below the footing underside for a compacted washed-stone
+    Digs an extra ``undercut`` below the host's underside for a compacted washed-stone
     bed on non-woven geotextile (no-slip) with a drain tile — breaks direct footing-to-wet-
     clay contact (thermal loss) and drains the bearing surface. ``perimeter_insulation``
     continues the foundation wall's exterior rigid foam down over the footing sides;
     ``cast_foam_in_aggregate`` optionally casts foam into the stone itself for a further
-    thermal cut. Never resizes/moves the footing — an annotation + bearing-prep record."""
+    thermal cut. Never resizes/moves the host — an annotation + bearing-prep record.
 
-    host_ref: str  # Footing tag
-    undercut: Length  # additional depth dug below the footing underside
+    ``host_ref`` names a Footing, or a FoundationWall that is founded on the bed itself:
+    a dry-stacked SRW retaining wall beds its base course straight onto a compacted
+    levelling pad and has no concrete under it at all. Both cases are the same excavation
+    and the same order of stone, which is why they are the same element and not two.
+    """
+
+    host_ref: str  # Footing tag, or FoundationWall tag for a wall founded on the bed
+    undercut: Length  # additional depth dug below the host's underside
+    # Band width for a wall-hosted bed, which a levelling pad runs wider than the block it
+    # carries (6" past each face is the usual SRW rule). ``None`` beds the host's own
+    # footprint, which is always what a footing-hosted bedding wants.
+    width: Length | None = None
     aggregate: str = "ASTM C33 #57 washed crushed stone"
     geotextile: bool = True
     drain_tile: bool = True

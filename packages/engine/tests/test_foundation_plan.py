@@ -57,13 +57,13 @@ def test_catlin_house_footings_resolve_bedding(catlin_model):
     house_footings = {tag for tag in
                       (s.tag for s in catlin_model.solids if s.category == "footing")
                       if tag.startswith("FT-B-")}
-    bedding_hosts = {fb.host_footing for fb in catlin_model.footing_beddings}
+    bedding_hosts = {fb.host for fb in catlin_model.footing_beddings}
     assert house_footings
     assert house_footings <= bedding_hosts
 
 
 def test_footing_bedding_undercut_and_insulation(catlin_model):
-    bedding = next(fb for fb in catlin_model.footing_beddings if fb.host_footing == "FT-B-S1")
+    bedding = next(fb for fb in catlin_model.footing_beddings if fb.host == "FT-B-S1")
     assert bedding.z1_m > bedding.z0_m  # bed sits below the footing underside
     assert 0.15 < bedding.z1_m - bedding.z0_m < 0.22  # ~7" undercut
     assert bedding.geotextile and bedding.drain_tile
@@ -77,9 +77,9 @@ def test_sunken_garden_t_wall_footings_bear_on_42_inches_of_aggregate(catlin_mod
         if solid.category == "footing" and solid.tag.startswith("FT-SG-")
     }
     garden_bedding = {
-        bedding.host_footing: bedding
+        bedding.host: bedding
         for bedding in catlin_model.footing_beddings
-        if bedding.host_footing.startswith("FT-SG-")
+        if bedding.host.startswith("FT-SG-")
     }
 
     assert garden_footings
@@ -93,7 +93,7 @@ def test_bedding_drain_tile_resolves_as_a_ring_of_solids(catlin_model):
     """The tile was a geometry-less bool: billed by the foot, drawn in the wall detail, and
     invisible in 3D. It is derived from the bedding it runs in, like an eave's gutter members
     are derived from the eave, so its length is the bedding perimeter it follows."""
-    bedding = next(fb for fb in catlin_model.footing_beddings if fb.host_footing == "FT-B-S1")
+    bedding = next(fb for fb in catlin_model.footing_beddings if fb.host == "FT-B-S1")
     tile = [s for s in catlin_model.solids
             if s.category == "drain_tile" and s.tag.startswith(f"{bedding.tag}-DT-")]
     assert tile, "a bedding that runs tile must resolve one"
