@@ -764,7 +764,7 @@ GARAGE_DEVICES = [
                      position=pt(ft(0, 9.625), ft(56, 0.75)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE", rotation=deg(90)),
     ElectricalDevice(uid="CEE009AAAA", tag="ED-G-EV-1450", kind=DeviceKind.RECEPTACLE_240,
-                     position=pt(ft(19, 11.375), ft(41, 9.625)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
+                     position=pt(ft(19, 11.375), ft(41, 4)), type_ref="ED-T-EV-1450", circuit="CKT-EV-1450",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48)), room="RM-GARAGE"),
 ]
 

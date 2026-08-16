@@ -24,6 +24,7 @@ from typehaus.resolve.construction_geometry import (
     _walls_by_storey,
 )
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.solver import _structure_polygon, band_axis
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.model import (
     ResolvedConstructionReturn,
@@ -68,13 +69,20 @@ def _find_framed_on_concrete(model: ResolvedModel, rule: ConstructionRule) \
                 run = length(sub(p1, p0))
                 direction = unit(sub(p1, p0))
                 z0 = upper.z0_m
+                # ``_stack_overlap`` returns the run on the *lower* wall's axis, but the
+                # plate belongs under the upper wall's studs, and an
+                # ``alignment=face(...)`` wall's axis is not its centreline. Slide the
+                # strip sideways onto the structure band the studs are laid in — the same
+                # correction resolve/floors.py and stairs/bearing.py already make.
+                anchor = add(p0, sub(band_axis(upper.axis, _structure_polygon(upper))[0],
+                                     upper.axis[0]))
                 yield ResolvedConstructionReturn(
                     uid=f"CR-{lower.uid}-{upper.uid}-sill",
                     tag=rule.tag, storey=upper.storey, kind=rule.kind,
                     applies_to=rule.applies_to, takeoff_category=rule.takeoff_category,
                     material_ref="spf",
                     element_tags=(lower.tag, upper.tag),
-                    outline=_strip(p0, direction, run, -width / 2.0, width / 2.0),
+                    outline=_strip(anchor, direction, run, -width / 2.0, width / 2.0),
                     z0_m=z0, z1_m=z0 + lap, thickness_m=width, length_m=run,
                     lap_m=lap, thermal_continuity=False, sealant="sill-gasket",
                     flashing="capillary-break", returning_layer=bearing.name,

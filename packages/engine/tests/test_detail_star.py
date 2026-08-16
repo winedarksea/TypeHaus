@@ -149,7 +149,7 @@ def test_stale_override_keys_are_reported(catlin_model):
     assert len(said) == 1 and "RENAMED" in said[0]
     # A live key the transition's own pattern cannot match is inert, and says so.
     inert = _transition(star=True,
-                        unstarred_conditions=("wall_foundation:GARAGE_ICF_8|GARAGE_WALL_2X6",))
+                        unstarred_conditions=("wall_foundation:GARAGE_ICF_6|GARAGE_WALL_2X6",))
     said = messages(inert)
     assert len(said) == 1 and "does not match" in said[0]
     # A live, matching key is what an override is supposed to look like: silence.

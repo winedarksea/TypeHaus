@@ -97,12 +97,12 @@ SUPPLY_DEVICES_BASEMENT = [
 # grades — and the vacuum breaker screws onto the outlet at the handle, 2'-6" up.
 SUPPLY_DEVICES_GARAGE = [
     PipeAccessory(uid="C9GW5PXV2R", tag="PA-G-HYD-SEAT", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-G-HYDRANT-CW", position=pt(ft(5), ft(60)),
+                  pipe_ref="PR-G-HYDRANT-CW", position=pt(ft(5), ft(59, 6)),
                   room="RM-GARAGE", model="hydrant's own compression seat, 6' bury",
                   serves=("FX-G-HYDRANT",)),
     PipeAccessory(uid="J1DS4RQZ8X", tag="PA-G-HYD-VB",
                   kind=PipeAccessoryKind.VACUUM_BREAKER, pipe_ref="PR-G-HYDRANT-CW",
-                  position=pt(ft(5), ft(60)), elevation=ft(2, 6), room="RM-GARAGE",
+                  position=pt(ft(5), ft(59, 6)), elevation=ft(2, 6), room="RM-GARAGE",
                   model="screw-on hose-bib vacuum breaker, ASSE 1011",
                   serves=("FX-G-HYDRANT",)),
     # The weep, answered (2026-08-15). PA-G-HYD-VB above protects the *hose thread*, which

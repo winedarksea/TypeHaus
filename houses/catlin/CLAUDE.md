@@ -75,6 +75,18 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   `resolve/room_floor.py::room_floor_elevation` rather than the storey elevation for the
   same reason. Raising the stem means re-dropping the door: the tie is enforced by
   `test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade`.
+- **The garage's ICF stem and its wood wall are coplanar on the outside.** The 24'x24'
+  node line (`GARAGE_Y_SOUTH`/`NORTH` in `plan/storeys/garage.py`) is the wood wall's
+  zip-R plane *and* the stem's exterior EPS face: the walls carry
+  `alignment=face("zip-r-ext")` and the stem carries
+  `alignment=face("concrete-ext", offset=GARAGE_ICF_EPS)`. Only the 7/8" of rainscreen +
+  standing seam projects past, so it drips clear. Until 2026-08-15 the stem was unaligned
+  and straddled the line, standing 5 5/8" proud of the cladding — a horizontal shelf right
+  round the garage. Fixing it moved both wall lines 5 5/8" south (the breezeway's uncut 4'
+  panel is measured off the *cladding* now) and took the core from 8" to 6". Do not "fix"
+  it by moving the stem's nodes: `resolve/stacking.py::_axis_match` has a 1/2" tolerance
+  and would silently drop the whole foundation-to-framed stack. `FT-GF-*` follow the stem
+  via `Footing.center_on="wall"`, not the node line.
 - 36'x36' at sheathing; everything on the 16" o.c. module; exterior walls carry
   `alignment=face("sheathing-ext")` so the sheathing plane is the vertical datum (#43).
 - The side-wall stack is 2x6 throughout — one `CATLIN_EXT_2X6` on main, second and

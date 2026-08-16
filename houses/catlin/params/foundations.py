@@ -1,7 +1,7 @@
 """Generated foundation support: house footings, garage ICF stem + slab.
 
 - House: strip footings (20" x 8") under every basement concrete wall.
-- Garage: freestanding ICF stem (8" core) from frost depth to 22" above grade,
+- Garage: freestanding ICF stem (6" core) from frost depth to 22" above grade,
   wood walls bear on top (the ``garage`` storey elevation), footing under.
 - House footings additionally get a bedding-prep record (undercut, geotextile, drain
   tile, compacted washed-stone bed, perimeter foam) — see ``HOUSE_FOOTING_BEDDING``.
@@ -23,10 +23,16 @@ from typehaus import (
     Slab,
     SlabThermalBreak,
     SleevePenetration,
+    face,
     ft,
     inch,
     pt,
 )
+
+# The ICF form's own dimensions, from the assembly that declares them. The stem's
+# alignment and the slab's inset are both measured off the section, so neither is
+# repeated here.
+from plan.assemblies import GARAGE_ICF_CORE, GARAGE_ICF_EPS
 
 # One source of truth for where the garage stands: the wall lines the wood walls above are
 # authored on. The stem must sit under them and the slab inside them, so both derive from
@@ -156,9 +162,25 @@ GARAGE_STEM_NODES = [
                      GARAGE_Y_SOUTH)),
 ]
 
-_STEM = dict(assembly="GARAGE_ICF_8", top_elevation=_STEM_TOP,
+# Where the 11" section sits across the node line. The wood walls above are authored
+# `alignment=face("zip-r-ext")`, so the 24'x24' line IS their zip-R plane; putting the
+# stem's exterior EPS face on that same line makes the two coplanar, and the rainscreen +
+# cladding (7/8") then project past the foam and drip clear of it. Left unaligned the
+# section straddled the line and stood 5 5/8" proud of the cladding — a horizontal shelf
+# right round the garage for rain to pool on (plans/TODO.md).
+#
+# `face("concrete-ext")` and not `face("eps-ext")`: the face matcher in
+# resolve/topology.py is a fuzzy prefix test, so "eps-ext" matches the *eps-int* layer
+# first and silently returns the wrong face. The concrete face is unambiguous, and it is
+# the datum the basement walls already align to. `_axis_offset_from_interior` puts that
+# face on the axis and then shifts the axis outboard by `offset`, so one EPS thickness of
+# offset carries the exterior foam face out to the node line.
+_ALIGN = face("concrete-ext", offset=GARAGE_ICF_EPS)
+
+_STEM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN, top_elevation=_STEM_TOP,
              bottom_elevation=ft(-_FROST))
-_GRADE_BEAM = dict(assembly="GARAGE_ICF_8", top_elevation=_GRADE_BEAM_TOP,
+_GRADE_BEAM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN,
+                   top_elevation=_GRADE_BEAM_TOP,
                    bottom_elevation=ft(-_FROST))
 
 GARAGE_STEM_WALLS = [
@@ -187,29 +209,38 @@ GARAGE_STEM_WALLS = [
 # uid would reassign CGF203/204AAAA (footings that didn't conceptually change) to the new
 # door pieces instead. S/N/W and the E1 remnant of the old single E wall keep their
 # original uids; only the grade beam and the far side of the door split are genuinely new.
+#
+# `center_on="wall"` on every one of them: a Footing otherwise centres its strip on the
+# raw node line, which alignment never reaches. The stem now runs 0"..11" inboard of that
+# line, so a 20" strip centred on it would leave 10" of toe under nothing and hang 1" of
+# stem off the far edge. Centred on the resolved section instead, the toe is a symmetric
+# 4 1/2" each side.
+_GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall")
+
 GARAGE_FOOTINGS = [
-    Footing(uid="CGF201AAAA", tag="FT-GF-S1", under="W-GF-S1", width=inch(20), depth=inch(8)),
-    Footing(uid="CGF207AAAA", tag="FT-GF-S-DR", under="W-GF-S-DR",
-            width=inch(20), depth=inch(8)),
-    Footing(uid="CGF208AAAA", tag="FT-GF-S2", under="W-GF-S2", width=inch(20), depth=inch(8)),
-    Footing(uid="CGF202AAAA", tag="FT-GF-E1", under="W-GF-E1", width=inch(20), depth=inch(8)),
-    Footing(uid="CGF205AAAA", tag="FT-GF-E-DR", under="W-GF-E-DR",
-            width=inch(20), depth=inch(8)),
-    Footing(uid="CGF206AAAA", tag="FT-GF-E2", under="W-GF-E2", width=inch(20), depth=inch(8)),
-    Footing(uid="CGF203AAAA", tag="FT-GF-N", under="W-GF-N", width=inch(20), depth=inch(8)),
-    Footing(uid="CGF204AAAA", tag="FT-GF-W", under="W-GF-W", width=inch(20), depth=inch(8)),
+    Footing(uid="CGF201AAAA", tag="FT-GF-S1", under="W-GF-S1", **_GARAGE_FOOTING),
+    Footing(uid="CGF207AAAA", tag="FT-GF-S-DR", under="W-GF-S-DR", **_GARAGE_FOOTING),
+    Footing(uid="CGF208AAAA", tag="FT-GF-S2", under="W-GF-S2", **_GARAGE_FOOTING),
+    Footing(uid="CGF202AAAA", tag="FT-GF-E1", under="W-GF-E1", **_GARAGE_FOOTING),
+    Footing(uid="CGF205AAAA", tag="FT-GF-E-DR", under="W-GF-E-DR", **_GARAGE_FOOTING),
+    Footing(uid="CGF206AAAA", tag="FT-GF-E2", under="W-GF-E2", **_GARAGE_FOOTING),
+    Footing(uid="CGF203AAAA", tag="FT-GF-N", under="W-GF-N", **_GARAGE_FOOTING),
+    Footing(uid="CGF204AAAA", tag="FT-GF-W", under="W-GF-W", **_GARAGE_FOOTING),
 ]
 
 # Filed on the house's "main" storey key rather than the "garage" storey because the garage
-# storey datum is the ICF stem top (1'-10"), while this slab is poured at grade. The 6"
-# inset from the wall lines keeps the pour inside the ICF stem.
-_SLAB_INSET = ft(0.5)
+# storey datum is the ICF stem top (1'-10"), while this slab is poured at grade. The inset
+# from the wall lines keeps the pour inside the ICF stem: the whole 11" section now stands
+# inboard of the node line, so the inset is that section plus the same 1/2" gap between
+# slab edge and stem interior face the pour has always had.
+_SLAB_GAP = inch(0.5)
+_SLAB_INSET = GARAGE_ICF_CORE + GARAGE_ICF_EPS + GARAGE_ICF_EPS + _SLAB_GAP
 _slab_y_s = GARAGE_Y_SOUTH + _SLAB_INSET
 _slab_y_n = GARAGE_Y_NORTH - _SLAB_INSET
 GARAGE_SLAB = Slab(
     uid="CGS501AAAA", tag="SL-G-FLOOR",
-    outline=(pt(ft(0.5), _slab_y_s), pt(ft(23.5), _slab_y_s),
-             pt(ft(23.5), _slab_y_n), pt(ft(0.5), _slab_y_n)),
+    outline=(pt(_SLAB_INSET, _slab_y_s), pt(ft(24) - _SLAB_INSET, _slab_y_s),
+             pt(ft(24) - _SLAB_INSET, _slab_y_n), pt(_SLAB_INSET, _slab_y_n)),
     thickness=inch(3.5), assembly="GARAGE_SLAB_ON_GRADE",
     perimeter_thermal_break=SlabThermalBreak(material_ref="xps", thickness=inch(1)),
 )
@@ -236,7 +267,11 @@ GARAGE_SLAB = Slab(
 # only passing because SP-GF-W-HYD sat near it, a sleeve boring through concrete the pipe
 # never touched (deleted 2026-08-15, → plan/mep.py).
 #
-# The clear zone that leaves is x >= 4'-8", y <= 60'-4" — which is floor, not wall. There
+# The clear zone that leaves is x >= 4'-10 1/2", y <= 59'-7 7/8" — which is floor, not
+# wall. (It tightened on 2026-08-15: the stem was aligned onto the wall line and the
+# footings re-centred under it with ``center_on="wall"``, which walked FT-GF-W's east edge
+# and FT-GF-N's south edge 5 1/2" further into the room, and the wall lines themselves
+# 5 5/8" south. The zone moved with them; the fixture had to follow.) There
 # is no wall position in this garage that works: the footing runs the full perimeter and
 # the constraint is the fixture's own bury, not its plan location. So the hydrant stands
 # free, as a *yard* hydrant is built to (it is a Y34 barrel, not a wall hydrant — see the
@@ -249,15 +284,15 @@ GARAGE_SLAB = Slab(
 # thing inside FT-GF-W's influence line in the first place. The 2026-07-29 re-route moved
 # the buried leg to x = 5' for exactly this reason and stopped one fixture short.
 #
-# y = 60'-0" puts the stone pocket 41" clear of FT-GF-N against the 34" it needs, and
-# leaves the fixture at the north edge of the overhead door's y 45'..61' band.
+# y = 59'-6" puts the stone pocket 35 7/8" clear of FT-GF-N against the 34" it needs, and
+# leaves the fixture inside the overhead door's y 45'..61' band.
 #
 # **Consequence to accept:** the hydrant is a post standing 5' out from the west wall at
 # the front-left of the north bay, not a fitting on the wall. It is in the parking area
 # because every compliant position in this garage is. A bollard or a wheel stop is the
 # mitigation if it proves to be in the way; moving it back to the wall is not.
 HYDRANT_X_FT = 5.0          # on the service line — the run reaches it without a jog
-HYDRANT_Y_FT = 60.0         # north bay, clear of FT-GF-N's influence line
+HYDRANT_Y_FT = 59.5         # north bay, clear of FT-GF-N's influence line
 HYDRANT_BURY_FT = 6.0       # shutoff depth below grade — the code number for this fixture
 
 # There was a 4" topping pedestal here (SL-G-HYDRANT-PED, an 18" square poured on top of
@@ -304,8 +339,8 @@ GARAGE_HYDRANT_SLEEVE = SleevePenetration(
 #
 # 1'-6" across x 1'-6" deep, top -5'-6", is what the fixture actually calls for: ~2.6 cu ft
 # of washed stone with the -6'-0" shutoff 6" below the top of it and a foot of stone under
-# the weep. Bottom -7'-0" is 34" below bearing, and the stone's edge stands 41" off both
-# FT-GF-W and FT-GF-N.
+# the weep. Bottom -7'-0" is 34" below bearing, and the stone's edge stands 35 1/2" off
+# FT-GF-W and 35 7/8" off FT-GF-N — the two that bind. There is no slack left in either.
 GARAGE_HYDRANT_DRYWELL = Drywell(
     uid="CGP603AAAA", tag="DRW-G-HYDRANT",
     position=pt(ft(HYDRANT_X_FT), ft(HYDRANT_Y_FT)),

@@ -546,7 +546,7 @@
 "BASEMENT_BRICK_VENEER" = { low = 900, high = 1900 }  # 1.37 CY
 "CATLIN_BASEMENT_12" = { low = 320, high = 600 }  # 46.68 CY
 "CATLIN_CONC_12_INT" = { low = 320, high = 600 }  # 22.18 CY
-"GARAGE_ICF_8" = { low = 480, high = 1000 }  # 11.76 CY
+"GARAGE_ICF_6" = { low = 480, high = 1000 }  # 8.82 CY
 "PORCH_RAILING_MASONRY" = { low = 700, high = 1600 }  # 3.15 CY
 "RETAINING_BLOCK_12" = { low = 500, high = 1200 }  # 9.07 CY
 "SAUNA_LINER_ON_CONCRETE" = { low = 320, high = 600 }  # 4.61 CY

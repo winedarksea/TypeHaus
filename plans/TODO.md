@@ -49,7 +49,9 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   - 5 `SUNKEN_GARDEN_WALL` walls retain 9.8' — **FAIL**.
   - `SUNKEN_GARDEN_ARCH_16` is 16" thick, past the table's 12" maximum — UNKNOWN, engineered
     either way.
-  - The 6 `GARAGE_ICF_8` stem walls retain 3.5' against a 5' limit — PASS.
+  - The 8 `GARAGE_ICF_6` stem walls retain 3.5' against a 4' limit — PASS. The limit
+    dropped with the core (8" → 6", 2026-08-15), so the margin is now 6" rather than
+    1'-6"; still a pass, and worth watching if the frost depth ever deepens.
   - `RETAINING_BLOCK_12` (2.5') passes; the interior basement cross walls now author
     `unbalanced_fill=ft(0)` because they have soil on neither side, so they are not screened.
 
@@ -179,7 +181,13 @@ the future.
 - Improve the symmetry of the windows on the east and west side
 - Extend the outdoor curtain rods to cover all three exposed side of the porch (possibly as a single continuous curtain, if that is possible, or else as 4 single bay panels)
 - Permit drawings
-- Garage ICF stem wall and framing should align on the exterior edge (drip flashing probably too). Right now the framing is aligned inwards, leaving a 'shelf' that will likely pool rainwater. Any adjustment will need to carefully consider both ICF form size and consistent stud spacing.
+- The house's own strip footings are eccentric under their walls, the same way the garage
+  stem's were before 2026-08-15: `FT-B-*` is a 20" strip centred on the y=0 node line,
+  under a `face("concrete-ext")` wall whose 12" of concrete runs 0..12" inboard, so the
+  south toe is 10" and the north one is -2". `Footing.center_on="wall"` now exists to
+  fix it, but it is deliberately *not* authored there: the glazed-brick plinth's whole
+  derivation (`params/foundations.py`, `FT-B-BRICK`) leans on that 10" toe being there
+  to bear on. Correcting the footings means re-deriving the plinth with them.
 
 ### Plumbing
 

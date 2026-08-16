@@ -12,6 +12,7 @@ from typehaus.model.refs import ToRoof
 from typehaus.model.enums import ConditionKind
 from typehaus.model.structure import Beam, Footing, FootingBedding, GlazingPanel, Pad, Post
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.solver import band_axis
 from typehaus.resolve.geometry import circle_outline, polygon_area, rect_between
 from typehaus.resolve.roof_layer_setbacks import deck_rise_m, layer_edge_setbacks
 from typehaus.resolve.drain_tile import drain_tile_solids, resolved_spec
@@ -255,7 +256,13 @@ def _roof_wall_conditions(model: ResolvedModel, authored_roof: Roof,
 def _resolve_footing(model: ResolvedModel, footing: Footing, storey: str) -> ResolvedSolid | None:
     wall = model.wall(footing.under)
     if wall is not None:
-        outline = rect_between(wall.axis[0], wall.axis[1], -footing.width.meters / 2,
+        axis = wall.axis
+        if footing.center_on == "wall":
+            # The band the resolved layers actually occupy, which is not the node line
+            # when the wall carries an ``alignment=face(...)``. Same correction the
+            # framing solver makes to put studs inside the structure layer.
+            axis = band_axis(axis, [point for layer in wall.layers for point in layer.polygon])
+        outline = rect_between(axis[0], axis[1], -footing.width.meters / 2,
                                footing.width.meters / 2)
         z1 = wall.z0_m
         return ResolvedSolid(footing.uid, footing.tag, storey, "footing", outline,

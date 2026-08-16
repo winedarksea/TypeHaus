@@ -64,7 +64,7 @@ def main() -> None:
         return float(default)
 
     # Units: inches (schematic)
-    icf_core = _p(icf_p, "core_in", default=8.0)
+    icf_core = _p(icf_p, "core_in", default=6.0)
     icf_eps = _p(icf_p, "eps_in", default=2.5)
     icf_total = _p(icf_p, "total_in", default=icf_core + 2.0 * icf_eps)
     icf_above_grade = _p(icf_p, "above_grade_in", default=22.0)
@@ -119,8 +119,11 @@ def main() -> None:
     x_icf_eps_int0 = x_icf_core0 - icf_eps
     x_icf_eps_int1 = x_icf_core0
 
-    # Place stud wall so sill/bottom plate bears over concrete core (schematic).
-    x_stud_ext = x_icf_core1  # align to exterior face of concrete core
+    # Place stud wall so the sheathing plane and the stem's exterior EPS face are
+    # coplanar — the alignment the model authors (params/foundations.py). 4 1/2" of the
+    # 5 1/2" sill plate still lands on the concrete core, and the rainscreen + siding
+    # project past the foam and drip clear of it instead of ledging back onto it.
+    x_stud_ext = x_icf_eps_ext1 - zip_r
     x_stud_int = x_stud_ext - stud_depth
     x_dry_int = x_stud_int - drywall
     x_zip_ext = x_stud_ext + zip_r
@@ -166,7 +169,7 @@ def main() -> None:
     _rect(ax, x_icf_eps_ext1, grade_y, icf_coating, y_icf_top - grade_y, fc=COL.metal_dark, ec="black", lw=1.2, z=5)
     _rect(ax, x_icf_eps_int0, grade_y, icf_coating, y_icf_top - grade_y, fc=COL.drywall, ec="black", lw=1.2, z=5)
     _leader(ax, (x_icf_eps_ext1 + icf_coating / 2, (grade_y + y_icf_top) / 2), (x_exterior + 30.0, grade_y + 2.0), "Protective coating over exposed\nICF EPS (above grade, both sides)\nInterior: 15-min thermal barrier\n(IRC R316.4)", ha="left", va="bottom")
-    _leader(ax, ((x_icf_core0 + x_icf_core1) / 2, y_icf_bot + 10.0), (x_exterior + 30.0, y_footing_top + 10.0), 'ICF stem wall\n8" concrete core,\n13" total width incl. EPS foam', ha="left")
+    _leader(ax, ((x_icf_core0 + x_icf_core1) / 2, y_icf_bot + 10.0), (x_exterior + 30.0, y_footing_top + 10.0), 'ICF stem wall\n6" concrete core,\n11" total width incl. EPS foam', ha="left")
 
     # Dimensions for ICF depth
     _dim_v(ax, y_footing_top, grade_y, x_exterior + 2.0, '42" to frost (typ.)')

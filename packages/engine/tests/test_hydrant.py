@@ -88,7 +88,7 @@ def test_the_hydrant_is_on_the_garage_storey_at_the_authored_spot(catlin_model):
     assert hydrant.room == "RM-GARAGE"
     x, y = hydrant.position.xy_m
     assert x * _M_TO_FT == pytest.approx(5.0, abs=1e-6)
-    assert y * _M_TO_FT == pytest.approx(60.0, abs=1e-6)
+    assert y * _M_TO_FT == pytest.approx(59.5, abs=1e-6)
     # It stands free, and that is the design rather than a missing reference: a 6'-0" bury
     # cannot sit against a wall whose footing bears at -4'-2" without putting its shutoff
     # and weep stone inside the 45° influence line. → test_the_hydrant_assembly_clears_...
@@ -209,7 +209,7 @@ def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):
     # exterior spot — the weep has to reach stone at the valve, not stone a pipe carries it to.
     x_ft, y_ft = pit.position.xy_m[0] * _M_TO_FT, pit.position.xy_m[1] * _M_TO_FT
     assert x_ft == pytest.approx(5.0, abs=1e-6)
-    assert y_ft == pytest.approx(60.0, abs=1e-6)
+    assert y_ft == pytest.approx(59.5, abs=1e-6)
     # Stone from -5'-6" to -7'-0": the 6' shutoff sits 6" below the top of it with a foot of
     # stone under the weep. It was 2' across x 4' deep to -9'-0" until 2026-08-15 — 12.6 cu
     # ft for a weep that discharges quarts, and deep enough that no position in the garage

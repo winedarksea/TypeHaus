@@ -329,10 +329,12 @@ GARAGE_FIXTURES = (
     # No `wall_ref` since 2026-08-15, and that is the point rather than an omission: this
     # is a yard hydrant on a 6'-0" barrel, and nothing with a 6'-0" bury can stand against
     # a wall here without its shutoff and weep stone sitting inside the perimeter footing's
-    # 45° influence line. It stands free at (5'-0", 60'-0"), on the service line the buried
+    # 45° influence line. It stands free at (5'-0", 59'-6"), on the service line the buried
     # run already follows — params/foundations.py carries the arithmetic and the trade.
+    # The 6" of y came off it when the garage stem was aligned and its footings re-centred
+    # under it: FT-GF-N's south edge moved 11 1/8" into the room and took the slack with it.
     Fixture(uid="CGQ801AAAA", tag="FX-G-HYDRANT", type_ref="FX-HYDRANT-Y34SS",
-            room="RM-GARAGE", position=pt(ft(5), ft(60))),
+            room="RM-GARAGE", position=pt(ft(5), ft(59, 6))),
 )
 
 # --- the two south-face wall hydrants (2026-08-01) -------------------------------------

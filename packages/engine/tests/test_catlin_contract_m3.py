@@ -2,7 +2,8 @@
 
 These are *declared* facts, not a comparison: 36' house at sheathing, 16" o.c., 18' grid,
 4:12 hot roof with knee 5' / ridge 11' over the attic floor, 12" basement walls + 2x2" XPS,
-24' ICF garage 5' north (4'-0 1/2" of clear slot once both skins are on),
+24' ICF garage 4'-6 3/8" north at the wall lines (4'-0 1/2" of clear slot once both
+skins are on),
 the freestanding arched sunken-garden structure — plus the views,
 checks and emitters those numbers feed. They are inlined here because the old repo is being
 archived, and they guard the design against silent drift.
@@ -36,10 +37,17 @@ KNEE_FT = 5.0
 RIDGE_OVER_ATTIC_FT = 11.0
 ATTIC_ELEV_FT = 20.0
 GARAGE_SIZE_FT = 24.0
-# Sheathing-plane to wall-line gap. The finished gap is much tighter: the house's
-# 5" of outsulation and the garage's 13" ICF stem leave 4'-0 1/2" of clear slot,
-# which is what the breezeway's 4'-0" polycarbonate panels are sized to.
-GARAGE_GAP_FT = 5.0
+# House sheathing plane to garage wall line. The finished gap is tighter: the house's 5" of
+# outsulation and the garage's own 7/8" of rainscreen + cladding leave 4'-0 1/2" of clear
+# slot, which is what the breezeway's 4'-0" polycarbonate panels are sized to.
+#
+# 4.53125' (4'-6 3/8"), not the 5'-0" it was until 2026-08-15. The garage's ICF stem used to
+# straddle the wall line and stand 5 5/8" proud of the cladding — a rain shelf right round
+# the building. Aligning the stem's exterior EPS face onto the wall line fixed that, and the
+# wall lines moved 5 5/8" south with it so the clear slot, and the uncut 4'-0" panel in it,
+# are exactly what they were. The *cladding* is the controlling face now, where the stem
+# used to be.
+GARAGE_GAP_FT = 4.53125
 GARAGE_OVERHANG_IN = 16.0
 # eave_z_m is the rafter-top (deck) plane: the 11.875" I-joist rises above the knee-wall
 # plate by its depth less the seat drop across the stud (5.5" 2x6 depth x 4:12 pitch =

@@ -420,19 +420,26 @@ RAILING_DARK_METAL = Assembly(
 )
 
 # --- garage (freestanding: ICF stem + 2x6 wood wall) ---------------------------
-GARAGE_ICF_8 = Assembly(
-    tag="GARAGE_ICF_8",
+# The form's two published dimensions, as constants rather than literals inside the layer
+# stack: params/foundations.py aligns the stem off the EPS thickness (the exterior foam
+# face has to land on the same node line the wood wall's zip-R face uses) and insets the
+# slab off the whole 11" section. Repeating either number there would let the two drift.
+GARAGE_ICF_EPS = inch(2.5)
+GARAGE_ICF_CORE = inch(6.0)
+
+GARAGE_ICF_6 = Assembly(
+    tag="GARAGE_ICF_6",
     layers=(
-        Layer(name="eps-int", material_ref="icf-eps", thickness=inch(2.5),
+        Layer(name="eps-int", material_ref="icf-eps", thickness=GARAGE_ICF_EPS,
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        Layer(name="concrete", material_ref="concrete", thickness=inch(8.0),
+        Layer(name="concrete", material_ref="concrete", thickness=GARAGE_ICF_CORE,
               function=LayerFunction.STRUCTURE,
-              masonry=MasonrySpec(unit_size="ICF-8", core_fill=True,
+              masonry=MasonrySpec(unit_size="ICF-6", core_fill=True,
                                   rebar_spacing=inch(16))),
-        Layer(name="eps-ext", material_ref="icf-eps", thickness=inch(2.5),
+        Layer(name="eps-ext", material_ref="icf-eps", thickness=GARAGE_ICF_EPS,
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     ),
-    source="catlin-house ifcplot/assemblies.py GARAGE_ICF (8\" core)",
+    source="catlin-house ifcplot/assemblies.py GARAGE_ICF (6\" core)",
 )
 
 GARAGE_WALL_2X6 = Assembly(
@@ -907,7 +914,7 @@ ASSEMBLIES = [
     POST_WHITE_PAINT,
     ELM_TIMBER,
     RAILING_DARK_METAL,
-    GARAGE_ICF_8,
+    GARAGE_ICF_6,
     GARAGE_WALL_2X6,
     GARAGE_SLAB_ON_GRADE,
     GARAGE_ROOF,

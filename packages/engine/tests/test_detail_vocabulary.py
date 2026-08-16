@@ -20,7 +20,28 @@ import pytest
 
 from typehaus.emit.draw.details import build_detail, derive_detail_slices
 from typehaus.emit.draw.scene import Hatch, Polyline
+from typehaus.model import (
+    Assembly,
+    Building,
+    FoundationWall,
+    Layer,
+    LayerFunction,
+    Library,
+    Material,
+    Node,
+    PlanModel,
+    Project,
+    Site,
+    Storey,
+    Transition,
+    Wall,
+    degF,
+    face,
+    ft,
+    pt,
+)
 from typehaus.quantities import inch
+from typehaus.resolve import resolve
 
 FIXTURES = Path(__file__).parent / "fixtures" / "catlin_reference"
 
@@ -53,6 +74,73 @@ def _component_tags(scene) -> set[str]:
 def _component_nodes(scene, name: str):
     return [node for node in scene.nodes
             if getattr(node, "tag", None) == f"detail-component:{name}"]
+
+
+# A minimal two-storey stack that genuinely steps out: 12" of concrete under a 6 1/2"
+# framed wall on its sheathing plane, so 5 1/2" of the stem is exposed weather ledge.
+# Catlin has no such stack any more (the garage ICF was aligned flush on 2026-08-15), and
+# the shelf recipe still has to be covered, so this is the model it is covered against.
+_STEP_MATERIALS = (
+    Material(tag="concrete", name="Concrete", r_per_inch=0.08, perm_rating=3.2),
+    Material(tag="spf", name="SPF", r_per_inch=1.25, perm_rating=20.0),
+    Material(tag="osb", name="OSB", r_per_inch=1.0, perm_rating=2.0),
+    Material(tag="siding", name="Siding", r_per_inch=0.1, perm_rating=50.0),
+)
+_STEP_STEM = Assembly(tag="STEP_STEM", layers=(
+    Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+          function=LayerFunction.STRUCTURE),
+))
+_STEP_FRAMED = Assembly(tag="STEP_FRAMED", layers=(
+    Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+          function=LayerFunction.STRUCTURE),
+    Layer(name="sheathing", material_ref="osb", thickness=inch(0.5),
+          function=LayerFunction.SHEATHING),
+    Layer(name="cladding", material_ref="siding", thickness=inch(0.5),
+          function=LayerFunction.CLADDING),
+))
+
+
+@pytest.fixture(scope="module")
+def stepped_model():
+    """A resolved model whose framed walls step in over a wider foundation."""
+    library = Library(materials=_STEP_MATERIALS,
+                      assemblies=(_STEP_STEM, _STEP_FRAMED),
+                      transitions=(Transition(uid="STEPTR0001", tag="TR-STEP-SHELF",
+                                              condition_pattern="stack_width_change:*",
+                                              overlay="stack-width-shelf"),))
+    project = Project(
+        name="STEP", project_uuid="00000000-0000-4000-8000-0000000057e9",
+        site=Site(lat=44.9, lon=-93.2, elevation=ft(830), grade=ft(0),
+                  design_temp_heating=degF(-15), design_temp_cooling=degF(90)),
+        building=Building(name="STEP"))
+    storeys = (Storey(uid="ST0000ab01", tag="stem", elevation=ft(-4),
+                      default_ceiling_height=ft(4)),
+               Storey(uid="ST0000ab02", tag="main", elevation=ft(0),
+                      default_ceiling_height=ft(8)))
+    plan = PlanModel(project=project, library=library, storeys=storeys)
+    corners = ((0, 0), (20, 0), (20, 20), (0, 20))
+    names = ("SW", "SE", "NE", "NW")
+    ring = (*names, "SW")
+    plan = plan.with_elements("stem", (
+        *(Node(uid=f"N0000ab1{i}", tag=f"N-F-{t}", position=pt(ft(x), ft(y)))
+          for i, (t, (x, y)) in enumerate(zip(names, corners))),
+        *(FoundationWall(uid=f"W0000ab1{i}", tag=f"W-F-{i}", start_node=f"N-F-{ring[i]}",
+                         end_node=f"N-F-{ring[i + 1]}", assembly="STEP_STEM",
+                         top_elevation=ft(0), bottom_elevation=ft(-4))
+          for i in range(4)),
+    ))
+    plan = plan.with_elements("main", (
+        *(Node(uid=f"N0000ab2{i}", tag=f"N-M-{t}", position=pt(ft(x), ft(y)))
+          for i, (t, (x, y)) in enumerate(zip(names, corners))),
+        *(Wall(uid=f"W0000ab2{i}", tag=f"W-M-{i}", start_node=f"N-M-{ring[i]}",
+               end_node=f"N-M-{ring[i + 1]}", assembly="STEP_FRAMED",
+               alignment=face("sheathing-ext"), top=ft(8))
+          for i in range(4)),
+    ))
+    model, findings = resolve(plan)
+    assert not [f for f in findings if f.severity.value == "error"], \
+        [f.message for f in findings if f.severity.value == "error"]
+    return model
 
 
 def _authored_scene(model, slice_tag: str):
@@ -138,7 +226,7 @@ def test_no_detail_component_is_ever_a_symbol(catlin_model):
     ("wall_foundation:CATLIN_BASEMENT_12", "bug-screen"),
     # The unheated slab-on-grade base: water on the stem's interior face is turned in
     # onto the sloped slab (``garage_wall_detail_side_ifc.png``).
-    ("wall_foundation:GARAGE_ICF_8", "interior-drip-flashing"),
+    ("wall_foundation:GARAGE_ICF_6", "interior-drip-flashing"),
 ])
 def test_component_is_drawn_as_a_closed_outline_with_a_fill(catlin_model, key_prefix, name):
     """Each named component draws a closed outline, and a hatch shares its boundary."""
@@ -185,25 +273,46 @@ def test_interior_partition_rim_gets_no_air_seal(catlin_model):
 
 # --- stepped-wall shelf -------------------------------------------------------
 
-def test_stepped_wall_leaves_a_flashed_shelf(catlin_model):
-    """The garage framed wall steps in over its ICF stem, leaving a weather ledge."""
-    _derived, scene = _detail_scene(catlin_model,
-                                    "stack_width_change:GARAGE_ICF_8|GARAGE_WALL_2X6")
+def test_stepped_wall_leaves_a_flashed_shelf(stepped_model):
+    """A framed wall stepping in over a wider concrete stem leaves a weather ledge.
+
+    On a synthetic stack rather than catlin: the garage used to be the house's one
+    genuinely stepped stack, and since 2026-08-15 its ICF is aligned flush with the wood
+    wall's sheathing plane precisely so there is no ledge to flash
+    (``test_the_garage_stem_no_longer_steps_out`` below). The component is still correct
+    and still has to be covered, so it gets a model that actually steps.
+    """
+    _derived, scene = _detail_scene(stepped_model,
+                                    "stack_width_change:STEP_FRAMED|STEP_STEM")
     flashings = _component_nodes(scene, "stack-shelf-flashing")
     assert flashings, "an exposed ledge over a wider wall below has to be flashed"
     for flashing in flashings:
         assert isinstance(flashing, Polyline) and flashing.closed
 
 
-def test_shelf_flashing_falls_away_from_the_wall(catlin_model):
+def test_shelf_flashing_falls_away_from_the_wall(stepped_model):
     """A shelf that does not drain is a water trap — the profile must slope outward."""
     from typehaus.emit.draw.detail_components import STACK_WIDTH_SHELF
 
-    _derived, scene = _detail_scene(catlin_model,
-                                    "stack_width_change:GARAGE_ICF_8|GARAGE_WALL_2X6")
+    _derived, scene = _detail_scene(stepped_model,
+                                    "stack_width_change:STEP_FRAMED|STEP_STEM")
     flashing = _component_nodes(scene, "stack-shelf-flashing")[0]
     z_span = max(z for _u, z in flashing.points) - min(z for _u, z in flashing.points)
     assert z_span > STACK_WIDTH_SHELF.slope_fall_in
+
+
+def test_the_garage_stem_no_longer_steps_out(catlin_model):
+    """The ICF is flush with the zip-R, so the condition derives but draws no shelf.
+
+    The stack still changes width — 11" of ICF under a 7 7/8" wall — so the condition is
+    real and stays bound. What changed is *which side* the difference falls on: it is all
+    on the interior now, and the only thing proud on the outside is the 7/8" of rainscreen
+    + cladding on the wall above, which drips clear. A shelf flashing here would draw a
+    ledge that was deliberately designed out.
+    """
+    _derived, scene = _exact_detail_scene(
+        catlin_model, "stack_width_change:GARAGE_ICF_6|GARAGE_WALL_2X6")
+    assert "stack-shelf-flashing" not in _component_tags(scene)
 
 
 def test_interior_partition_step_gets_no_shelf_flashing(catlin_model):
@@ -221,7 +330,7 @@ def test_exposed_foundation_foam_is_protected(catlin_model):
     Reference: ``garage_wall_detail_side_ifc.png`` — "protective coating over exposed ICF EPS
     (above grade, both sides)".
     """
-    _derived, scene = _detail_scene(catlin_model, "wall_foundation:GARAGE_ICF_8")
+    _derived, scene = _detail_scene(catlin_model, "wall_foundation:GARAGE_ICF_6")
     boards = _component_nodes(scene, "foam-protection-board")
     assert boards, "foam surfacing above grade must be shown protected"
     board = boards[0]
@@ -232,7 +341,7 @@ def test_protection_board_starts_at_grade(catlin_model):
     """It protects the *exposed* height only — below grade the backfill does that job."""
     from typehaus.quantities import M_PER_IN
 
-    _derived, scene = _detail_scene(catlin_model, "wall_foundation:GARAGE_ICF_8")
+    _derived, scene = _detail_scene(catlin_model, "wall_foundation:GARAGE_ICF_6")
     board = _component_nodes(scene, "foam-protection-board")[0]
     grade_in = catlin_model.plan.project.site.grade.meters / M_PER_IN
     assert min(z for _u, z in board.points) == pytest.approx(grade_in, abs=0.5)
@@ -255,7 +364,7 @@ def test_garage_slab_base_draws_the_interior_drip_flashing(catlin_model):
     """
     from typehaus.emit.draw.detail_components import INTERIOR_SLAB_DRIP
 
-    _derived, scene = _detail_scene(catlin_model, "wall_foundation:GARAGE_ICF_8")
+    _derived, scene = _detail_scene(catlin_model, "wall_foundation:GARAGE_ICF_6")
     drips = _component_nodes(scene, "interior-drip-flashing")
     assert drips, "an unheated slab-on-grade base must draw the interior drip"
     drip = drips[0]
@@ -310,7 +419,7 @@ def test_slab_thermal_break_and_sealant_match_the_reference(catlin_model):
     assert SLAB_EDGE.thermal_break_in == pytest.approx(float(slab["thermal_break_in"]))
     assert SLAB_EDGE.sealant_cap_in == pytest.approx(float(slab["sealant_in"]))
 
-    _derived, scene = _detail_scene(catlin_model, "wall_foundation:GARAGE_ICF_8")
+    _derived, scene = _detail_scene(catlin_model, "wall_foundation:GARAGE_ICF_6")
     breaks = _component_nodes(scene, "thermal-break")
     assert breaks
     width = (max(u for u, _z in breaks[0].points) - min(u for u, _z in breaks[0].points))

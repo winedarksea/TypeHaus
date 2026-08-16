@@ -63,7 +63,7 @@ DROPPED_REFERENCE_STOREYS = ("breezeway-placeholder",)
 # Reference occurrences with no counterpart in the current model, each with the decision that
 # removed it. A reference element that stops matching without being listed here is a
 # regression: something the old house had and the new one silently lost.
-_GARAGE_MOVED = "the garage moved 7'-0\" south to close the breezeway gap to 4'-0 1/2\""
+_GARAGE_MOVED = "the garage moved 7'-5 5/8\" south to close the breezeway gap to 4'-0 1/2\""
 
 DECLARED_DIVERGENCES = {
     "Basement Shower Recess (placeholder)": (
@@ -114,9 +114,11 @@ DECLARED_DIVERGENCES = {
     # glazed-brick veneer (params/foundations.py), lands 0.6 m from it and the matcher pairs
     # the two. They are not the same element and the north wall is still gone; a strip of
     # concrete simply runs along that line once more, which is all the matcher claims.
-    # The garage moved 7'-0" south, from a 12' sheathing-plane gap to 5', so the breezeway
-    # between it and the house is a 4'-0 1/2" slot sized to one polycarbonate panel. 7' is
-    # far past MAX_PAIRED_PLACEMENT_DELTA_M — deliberately: an element that travelled that
+    # The garage moved 7'-5 5/8" south, from a 12' sheathing-plane gap to 4'-6 3/8", so the
+    # breezeway between it and the house is a 4'-0 1/2" slot sized to one polycarbonate
+    # panel. (7'-0" of that was the 2026 redesign; the last 5 5/8" came on 2026-08-15, when
+    # the ICF stem was aligned flush with the cladding and the wall lines followed it south
+    # so the slot would not open up.) 7'-5 5/8" is far past MAX_PAIRED_PLACEMENT_DELTA_M — deliberately: an element that travelled that
     # far is not the same element in the same place, and the matcher is right to say so.
     # The garage itself is unchanged in size, section and framing; only its y is different.
     "Garage Floor Slab": _GARAGE_MOVED,

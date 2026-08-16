@@ -406,7 +406,7 @@ WALL_SLEEVES = [
 # back silently (checks/mep/plumbing_concrete.py).
 #
 # The encroachment it was papering over was real, and the fix was to stop encroaching: the
-# hydrant moved off the wall to (5'-0", 60'-0"), the run lost its west jog, and there is no
+# hydrant moved off the wall to (5'-0", 59'-6"), the run lost its west jog, and there is no
 # longer any west-footing interaction to protect. → params/foundations.py.
 GARAGE_SLEEVES = [
     SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S-DR",

@@ -950,7 +950,7 @@ GARAGE_LIGHTING = [
                      controlled_by=("ED-G-SW",),
                      mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="QTG0003AAA", tag="ED-G-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8, 6), ft(41, 8.625)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(8, 6), ft(41, 3)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
@@ -972,7 +972,7 @@ GARAGE_LIGHTING = [
     # jamb is at 6'-6"; the shop-light switch sits at 8'-6", this one 6" west of it) —
     # walk in, one reach turns on the shop lights and the apron light both.
     ElectricalDevice(uid="QTG0005AAA", tag="ED-G-EXT-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(8), ft(41, 8.625)), type_ref="ED-T-SWITCH",
+                     position=pt(ft(8), ft(41, 3)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 ]

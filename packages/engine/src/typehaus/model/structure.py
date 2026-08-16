@@ -39,6 +39,13 @@ class Footing(Element):
     under: str  # wall or post tag
     width: Length
     depth: Length
+    # What the strip is centred on. "axis" — the parent wall's raw node line — is the
+    # historical behaviour and stays the default. It is only right where the wall is
+    # centred on its own axis; under an ``alignment=face(...)`` wall the section sits to
+    # one side of the node line, and a strip centred there runs out from under it. "wall"
+    # centres on the midline of the *resolved* layer band instead, which is the wall the
+    # concrete is actually poured as, giving a symmetric toe either side.
+    center_on: Literal["axis", "wall"] = "axis"
 
 
 @register_element

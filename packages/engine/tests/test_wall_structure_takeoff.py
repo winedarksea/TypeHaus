@@ -96,9 +96,9 @@ def test_openings_are_deducted_from_area_and_volume(catlin_model) -> None:
 
 
 def test_icf_and_masonry_walls_are_both_caught(catlin_model) -> None:
-    """The three-armed predicate, pinned. GARAGE_ICF_8 is concrete *with* a `masonry=`
+    """The three-armed predicate, pinned. GARAGE_ICF_6 is concrete *with* a `masonry=`
     spec and CATLIN_BASEMENT_12 is concrete *without* one, so neither "is masonry" nor
     "is not masonry" alone selects the right set — only "no masonry AND has framing"
     frames, and everything else bills here."""
     assemblies = {row["assembly"] for row in wall_structure_takeoff(catlin_model)}
-    assert {"GARAGE_ICF_8", "CATLIN_BASEMENT_12"} <= assemblies
+    assert {"GARAGE_ICF_6", "CATLIN_BASEMENT_12"} <= assemblies

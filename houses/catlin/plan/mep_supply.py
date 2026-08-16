@@ -57,7 +57,7 @@ from typehaus.model import m
 # self-draining barrel and is exempt).
 WATER_SUPPLY = [
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5), ft(0)), pt(ft(5), ft(60)), pt(ft(5), ft(60))),
+            path=(pt(ft(5), ft(0)), pt(ft(5), ft(59, 6)), pt(ft(5), ft(59, 6))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(-6), ft(-6), ft(0, 4.8)),
             serves=("FX-G-HYDRANT",)),

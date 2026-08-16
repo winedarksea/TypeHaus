@@ -32,6 +32,8 @@ source:
 
 - Provide Z-flashing / drip edge at base of exterior wall (liquid flashing recommended) to direct water out over the foundation / protective coating.
 
+- Stem and framing are flush on the outside: the wood wall's Zip-R face and the ICF's exterior EPS face are the same plane, so the only thing standing proud at the base of the wall is the 7/8" of rainscreen + metal siding, which drips clear. The stem must NOT stand out past the sheathing — a 6" core (11" section) is what makes the two reconcile while keeping 4 1/2" of the 5 1/2" PT sill plate bearing on concrete. The leftover 3 3/8" of section shows up on the *inside* as a curb below the drywall, which is where a curb belongs in a garage.
+
 - Roof: gable trusses @16" o.c. with drip edge, fascia board + trim and vented soffit (coated aluminum recommended). OSB sheathing + underlayment (e.g., synthetic or self-adhering) + metal roofing (optional rainscreen mesh). Metal roofing shown with 16" o.c. support spacing per manufacturer system. Vented ridge not shown.
 
 - ICF brick ledge forms may be used per manufacturer guidelines for heavy sidings.

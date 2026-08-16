@@ -32,13 +32,21 @@ from typehaus import (
 # (params/foundations.py), the slab inside them, and the breezeway that spans to the house
 # (params/breezeway.py) all derive from one number instead of four copies of it.
 #
-# 41.0' is set by the breezeway, and by the *stem* rather than the wall above it: the 13"
-# ICF section is wider than the 7 7/8" wood wall, so its exterior face stands 5 5/8" proud
-# of the cladding, at y = 40'-5 1/2". That face — not the cladding — is what the breezeway
-# deck and its glazing actually butt against. It sits 4'-0 1/2" north of the house's own
-# cladding face (y = 36'-5.02"), which is one 4'-0" polycarbonate panel with a 1/2" reveal.
-GARAGE_Y_SOUTH = ft(41)
-GARAGE_Y_NORTH = ft(65)
+# 40'-6 3/8" is set by the breezeway, and by the *cladding* rather than the stem below it.
+# The stem's exterior EPS face is now coplanar with the wood wall's zip-R face — both land
+# on this line (params/foundations.py aligns the ICF to it) — so the most-proud plane on
+# the south side is the 7/8" of rainscreen + standing seam over the zip-R, at
+# y = 40'-5 1/2". That face is what the breezeway deck and its glazing butt against, and it
+# sits 4'-0 1/2" north of the house's own cladding face (y = 36'-5.02"): one 4'-0"
+# polycarbonate panel with a 1/2" reveal.
+#
+# The line moved 5 5/8" south from 41'-0" on 2026-08-15, when the stem was aligned out to
+# it and dropped from an 8" core to a 6" one. Aligning the stem alone would have opened the
+# breezeway slot by exactly that much and cost the uncut panel; moving the wall lines with
+# it puts the controlling face back where the stem's face used to be, so the slot — and the
+# panel — are unchanged.
+GARAGE_Y_SOUTH = ft(40, 6.375)
+GARAGE_Y_NORTH = ft(64, 6.375)
 
 # How far the ICF stem stands above grade — which is the same number as this storey's
 # elevation, because the wood walls sit on the stem top. Published so the storey table
@@ -200,13 +208,15 @@ ROOFS = [
 # spacing at Pg = 50 psf are the manufacturer's calculation, not this model's: the check
 # screens for retention being *authored*, not for it being sufficient.
 #
-# Placed at y = 40'-0", 4" up-slope of the eave. The eave is at y = 39'-8" — the wall line at
-# y = 41'-0" less the 1'-4" overhang — so 4" of run on the 4:12 plane lifts the bar 1 3/8"
-# above the 10'-5 5/8" eave, i.e. z = 10'-7". That is deliberately close to the eave: snow
-# retention holds the pack at the bottom of the slope, where the load it resists lives.
+# Placed 4" up-slope of the eave. The eave is at y = 39'-2 3/8" — the wall line at
+# y = 40'-6 3/8" less the 1'-4" overhang — so the bar goes at y = 39'-6 3/8", where 4" of run
+# on the 4:12 plane lifts it 1 3/8" above the 10'-5 5/8" eave, i.e. z = 10'-7". That is
+# deliberately close to the eave: snow retention holds the pack at the bottom of the slope,
+# where the load it resists lives. (Both numbers moved 5 5/8" south on 2026-08-15 with the
+# wall line; the height did not, because the wall did not get taller.)
 # Written out rather than generated: the editable-plan dialect allows no comprehensions, and
 # six clamps at 1'-4" o.c. read fine as six lines.
-_SNOW_GUARD_Y = ft(40)
+_SNOW_GUARD_Y = ft(39, 6.375)
 _SNOW_GUARD_Z = ft(10, 7)
 _SNOW_GUARD_SIZE = "S-5! ColorGard"
 SNOW_GUARDS = [

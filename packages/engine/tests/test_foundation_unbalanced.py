@@ -166,6 +166,6 @@ def test_catlin_basement_and_garden_fail_and_the_garage_stem_passes(catlin_model
     passes = " | ".join(by_result.get(Result.PASS, []))
     assert "CATLIN_BASEMENT_12" in fails
     assert "SUNKEN_GARDEN_WALL" in fails
-    assert "GARAGE_ICF_8" in passes
+    assert "GARAGE_ICF_6" in passes
     # The interior cross walls author unbalanced_fill=0, so they are not screened at all.
     assert "CATLIN_CONC_12_INT" not in fails + passes

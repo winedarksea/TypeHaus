@@ -111,23 +111,28 @@ from plan.storeys.garage import GARAGE_Y_SOUTH
 # CATLIN_EXT_2X6). This is what the breezeway's south end butts.
 _HOUSE_CLADDING_Y = 36.0 + (0.02 + 2.0 + 2.0 + 0.5 + 0.5) / 12.0  # 36.4183'
 
-# South face of the garage's ICF stem: the wall line less half the 13" ICF section
-# (8" core + 2.5" EPS each side, GARAGE_ICF_8). The stem — not the cladding 5 5/8"
-# behind it — is the obstruction at deck level, so it is what sets the clear gap.
-_GARAGE_STEM_Y = GARAGE_Y_SOUTH.feet - (8.0 + 2.5 + 2.5) / 24.0  # 40.4583'
-# South face of the garage's wood wall above the stem, for the roof's north reach.
-_GARAGE_CLADDING_Y = GARAGE_Y_SOUTH.feet - (0.375 + 0.5) / 12.0  # 40.9271'
+# South face of the garage's ICF stem: the wall line itself. The 11" section is aligned so
+# its exterior EPS face lands on the node line, coplanar with the zip-R of the wood wall
+# above (params/foundations.py), so the stem is no longer the proud face here — the
+# cladding is, 7/8" south of it. It keeps its own name because the deck still butts *this*
+# plane, tucked under that 7/8" of overhang.
+_GARAGE_STEM_Y = GARAGE_Y_SOUTH.feet  # 40.53125'
+# South face of the garage's wood wall above the stem: rainscreen + standing seam over the
+# zip-R plane. That is the obstruction now, at deck level and at roof level both, so it is
+# what sets the clear gap.
+_GARAGE_CLADDING_Y = GARAGE_Y_SOUTH.feet - (0.375 + 0.5) / 12.0  # 40.4583'
 
-_CLEAR_GAP_FT = _GARAGE_STEM_Y - _HOUSE_CLADDING_Y  # 4.0400' = 4'-0 1/2"
+_CLEAR_GAP_FT = _GARAGE_CLADDING_Y - _HOUSE_CLADDING_Y  # 4.0400' = 4'-0 1/2"
 _PANEL_FT = 4.0  # one 4'x8' sheet, uncut
 
-# N-S: post outer faces snug to the house cladding and the garage stem.
+# N-S: post outer faces snug to the house cladding and the garage cladding — the
+# most-proud face at each end is what a post has to clear.
 _POST_HALF_FT = 5.5 / 24.0  # half a dressed 6x6
 _POST_Y0 = _HOUSE_CLADDING_Y + _POST_HALF_FT  # 36.6475'
-_POST_Y1 = _GARAGE_STEM_Y - _POST_HALF_FT  # 40.2292'
+_POST_Y1 = _GARAGE_CLADDING_Y - _POST_HALF_FT  # 40.2292'
 
 # The glazing runs a full uncut 4'-0" from the house cladding north, leaving its 1/2"
-# reveal at the garage stem rather than at the house, where the door is.
+# reveal at the garage cladding rather than at the house, where the door is.
 _GLAZING_Y0 = _HOUSE_CLADDING_Y
 _GLAZING_Y1 = _HOUSE_CLADDING_Y + _PANEL_FT
 
@@ -296,7 +301,8 @@ FLOOR = FloorSystem(
 
 # Composite decking, laid door to door (N-S) across the joists, on breather tape at every
 # joist top so the two never trap water against each other. It reaches out to the post
-# faces on all four sides, which is also the house cladding and the garage stem.
+# faces on all four sides at the house end, and past them at the garage end: the deck
+# runs on to the stem face, tucking 7/8" under the cladding that oversails it.
 DECK = Slab(
     uid="BWSL01AAAA", tag="SL-BW-DECK",
     outline=(pt(ft(_GLAZING_X0), ft(_HOUSE_CLADDING_Y)),
@@ -371,9 +377,10 @@ WALL_GLAZING = [
 _CHANNEL_DEPTH = inch(1.5)   # how far the extrusion laps the sheet face
 _CHANNEL_THICK = inch(1.0)   # its section across the sheet
 _ROOF_EAVE_TOP = _RAFTER_TOP + _GLAZING_THICKNESS_IN / 12.0  # wedge is 0 at the eave
-# The north F-channel spans from the roof panel's edge back to the garage cladding 6 1/8"
-# behind it (the stem below is that much proud of the wall above), so its run sits on the
-# midline of that reach rather than on the panel edge.
+# The north F-channel spans from the roof panel's edge back to the garage cladding, so its
+# run sits on the midline of that reach rather than on the panel edge. That reach is now
+# just the 1/2" reveal the uncut panel leaves at this end; it used to be 6 1/8", because the
+# cladding stood that far behind a proud stem.
 _FCH_N_Y = (_GLAZING_Y1 + _GARAGE_CLADDING_Y) / 2.0
 
 # The shared H channel — the piece the roof eave U and the wall head used to be. An H
@@ -403,8 +410,9 @@ ROOF_TRIM = [
     # No TR-BW-BAR-CROWN: the roof is one sheet bent over the crown, so there is no joint
     # there to cap. A glazing bar with nothing between its slots is a strip of flashing.
     # North and south roof edges run parallel to the flutes and butt the cladding: an
-    # F-channel receiver, with a bent leg covering back to the wall. The north leg is the
-    # long one — the garage's wood wall stands 5 5/8" behind its stem.
+    # F-channel receiver, with a bent leg covering back to the wall. Both legs are short
+    # now that the garage cladding is the proud face at that end — the north one covers the
+    # 1/2" reveal the uncut panel leaves, nothing more.
     GlazingTrim(uid="BWGT04AAAA", tag="TR-BW-FCH-S", kind=TrimKind.GLAZING_CHANNEL,
                 profile="F", path=(pt(ft(_ROOF_X0), ft(_GLAZING_Y0)),
                                    pt(ft(_ROOF_X1), ft(_GLAZING_Y0))),
