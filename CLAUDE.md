@@ -51,8 +51,9 @@ scripts/verify.sh --fast                  # tests + ruff + mypy, skipping builds
 ```
 
 `haus check` exits 1 on any FAIL, not only on an ERROR — `--exit-on error` is the older,
-looser gate (which is what `scripts/verify.sh` uses, because catlin carries four accepted
-advisory FAILs).
+looser gate. `scripts/verify.sh` used it while catlin carried four accepted advisory FAILs;
+catlin carries none since 2026-08-16, so the gate is back on the default and a new advisory
+FAIL stops it.
 
 ## Costs and schedule
 

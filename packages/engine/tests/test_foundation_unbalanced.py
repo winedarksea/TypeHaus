@@ -1,8 +1,13 @@
-"""Unbalanced-backfill screen for plain concrete foundation walls (IRC R404.1.2(1)).
+"""Unbalanced-backfill screen for flat concrete foundation walls (IRC Table R404.1.2(8)).
 
 The interesting behaviour is at the edges: what it refuses to answer (no soil class, an
-untabulated section), what an authored engineering spec does to it, and that an authored
-``unbalanced_fill`` beats the derived proxy. The catlin fixture pins the landed verdicts.
+untabulated section, a wall that does not say whether it is braced), what an authored
+engineering spec does to it, and that an authored ``unbalanced_fill`` beats the derived
+proxy. The catlin fixture pins the landed verdicts.
+
+The table this reads is the real one, and it is far more permissive than the invented table
+this check shipped with until 2026-08-16: a 12" wall at 45 psf/ft retaining 9' on a 9' storey
+needs no vertical steel at all. The old table capped it at 7' and demanded an engineer.
 """
 
 from __future__ import annotations
@@ -87,19 +92,69 @@ def _context(*, thickness_in: float = 12.0, bottom_ft: float = -9.0,
                         profile=_profile(soil_class), resolve_findings=list(findings))
 
 
-def test_under_the_cap_passes() -> None:
-    """12" at 45 psf/ft is good for 7'; 5' of fill is comfortably inside it."""
-    findings = foundation_unbalanced_fill(_context(bottom_ft=-5.0))
+def test_a_tabulated_nr_cell_passes_with_no_steel() -> None:
+    """12" / 45 psf/ft / 5' wall / 5' fill reads NR — plain concrete is the code answer."""
+    findings = foundation_unbalanced_fill(
+        _context(bottom_ft=-5.0, lateral_support="top_and_bottom"))
     assert [f.result for f in findings] == [Result.PASS]
-    assert "within the 7' plain-concrete limit" in findings[0].message
+    assert "needs no vertical reinforcement" in findings[0].message
+    assert "the 5' wall x 5' backfill row" in findings[0].message
 
 
-def test_past_the_cap_fails_and_asks_for_an_engineered_design() -> None:
-    findings = foundation_unbalanced_fill(_context(bottom_ft=-9.0))
-    assert [f.result for f in findings] == [Result.FAIL]
+def test_the_nine_by_nine_cell_that_the_old_invented_table_got_wrong() -> None:
+    """The regression this check was rewritten for.
+
+    A 12" wall on a 9' storey retaining 9' of 45 psf/ft soil is Table R404.1.2(8)'s
+    9' x 9' cell, and that cell reads NR. The table this check used to carry called the same
+    wall a FAIL needing an engineer's reinforcement schedule — wrong, and wrong in the
+    direction that rejects what the code permits.
+    """
+    findings = foundation_unbalanced_fill(
+        _context(bottom_ft=-9.0, lateral_support="top_and_bottom"))
+    assert [f.result for f in findings] == [Result.PASS]
     assert "9.0' of unbalanced fill" in findings[0].message
-    assert "engineered design" in findings[0].message
+    assert "needs no vertical reinforcement" in findings[0].message
+
+
+def test_a_reinforced_cell_fails_until_the_wall_declares_the_bars() -> None:
+    """10' of fill on a 10' wall is #6 @ 38 — prescriptive, but the wall must carry it."""
+    findings = foundation_unbalanced_fill(
+        _context(bottom_ft=-10.0, lateral_support="top_and_bottom"))
+    assert [f.result for f in findings] == [Result.FAIL]
+    assert "needs #6 @ 38\" o.c. vertical reinforcement" in findings[0].message
     assert findings[0].message.startswith("[advisory, not engineering]")
+
+    reinforced = foundation_unbalanced_fill(_context(
+        bottom_ft=-10.0, lateral_support="top_and_bottom",
+        vertical_reinforcement='#6 @ 38" o.c.'))
+    assert [f.result for f in reinforced] == [Result.PASS]
+    assert "is reinforced" in reinforced[0].message
+
+
+def test_an_unsupported_wall_goes_to_r404_4_rather_than_the_table() -> None:
+    """The table is a *basement* wall table; it presumes bracing top and bottom (note g).
+
+    A free retaining wall holding the same soil is R404.4's case, not this table's, and
+    reading the table against it would be the unsafe direction to be wrong in.
+    """
+    findings = foundation_unbalanced_fill(
+        _context(bottom_ft=-9.0, lateral_support="unsupported"))
+    assert [f.result for f in findings] == [Result.UNKNOWN]
+    assert "R404.4" in findings[0].message
+
+
+def test_a_wall_that_does_not_say_whether_it_is_braced_is_unknown() -> None:
+    """Never guess an input: bracing is the precondition for the whole prescriptive path."""
+    findings = foundation_unbalanced_fill(_context(bottom_ft=-9.0))
+    assert [f.result for f in findings] == [Result.UNKNOWN]
+    assert "lateral_support" in findings[0].message
+
+
+def test_under_four_feet_is_not_screened_at_all() -> None:
+    """Below 48" neither R404.1.1 nor R404.4 engages, and the table publishes no row."""
+    findings = foundation_unbalanced_fill(_context(bottom_ft=-3.5))
+    assert [f.result for f in findings] == [Result.PASS]
+    assert "under the 4'" in findings[0].message
 
 
 def test_an_authored_engineering_spec_is_the_design() -> None:
@@ -120,9 +175,11 @@ def test_an_authored_unbalanced_fill_beats_the_derived_proxy() -> None:
     A 9'-deep wall backfilled only 4' up — a walkout, or a wall braced by a slab — is not the
     condition grade-to-footing describes, and the authored number is the one that governs.
     """
-    findings = foundation_unbalanced_fill(_context(bottom_ft=-9.0, unbalanced_fill=ft(4)))
+    findings = foundation_unbalanced_fill(_context(
+        bottom_ft=-9.0, unbalanced_fill=ft(4), lateral_support="top_and_bottom"))
     assert [f.result for f in findings] == [Result.PASS]
     assert "4.0' of unbalanced fill" in findings[0].message
+    assert "the 9' wall x 4' backfill row" in findings[0].message
 
 
 def test_zero_unbalanced_fill_is_not_a_retaining_condition_at_all() -> None:
@@ -139,21 +196,34 @@ def test_unknown_without_a_soil_class() -> None:
 
 
 def test_unknown_off_the_published_thickness() -> None:
-    findings = foundation_unbalanced_fill(_context(thickness_in=16.0))
+    findings = foundation_unbalanced_fill(
+        _context(thickness_in=16.0, lateral_support="top_and_bottom"))
     assert [f.result for f in findings] == [Result.UNKNOWN]
     assert "thicker than the table's 12\" maximum" in findings[0].message
 
 
 def test_identical_walls_aggregate_into_one_finding() -> None:
     """Four identical walls are one condition and one decision, not four copies of it."""
-    findings = foundation_unbalanced_fill(_context(bottom_ft=-9.0))
+    findings = foundation_unbalanced_fill(
+        _context(bottom_ft=-9.0, lateral_support="top_and_bottom"))
     assert len(findings) == 1
     assert len(findings[0].element_tags) == 4
     assert "4 CONC12 wall(s)" in findings[0].message
 
 
-def test_catlin_basement_and_garden_fail_and_the_garage_stem_passes(catlin_model) -> None:
-    """The landed house — accepted by decision, see plans/TODO.md."""
+def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin_model
+                                                                          ) -> None:
+    """The landed house.
+
+    The ten basement walls are the case the old invented table got wrong: 12" concrete, a 9'
+    storey, 9' of GM backfill, braced by SL-B at the foot and FS-MAIN at the head — Table
+    R404.1.2(8)'s 9' x 9' cell, which reads NR. They pass with no steel and no engineer.
+
+    The sunken garden does NOT follow them, and that is the point of keeping the two apart:
+    W-SG-E2/S/W2 are free retaining walls open along their whole top, so R404.4 sends them to
+    an engineered design whatever the table would have said; W-SG-W1/E1 have not yet declared
+    whether the porch deck braces their head; W-SG-ARCH is 16" and off every IRC table.
+    """
     from typehaus.checks.code.mn_residential.profile import MN_2024
 
     ctx = CheckContext(plan=catlin_model.plan, model=catlin_model,
@@ -164,8 +234,17 @@ def test_catlin_basement_and_garden_fail_and_the_garage_stem_passes(catlin_model
         by_result.setdefault(f.result, []).append(f.message)
     fails = " | ".join(by_result.get(Result.FAIL, []))
     passes = " | ".join(by_result.get(Result.PASS, []))
-    assert "CATLIN_BASEMENT_12" in fails
-    assert "SUNKEN_GARDEN_WALL" in fails
+    unknowns = " | ".join(by_result.get(Result.UNKNOWN, []))
+
+    # Nothing in the foundation fails any more — the FAILs this check used to raise were the
+    # check's own, not the house's.
+    assert fails == ""
+    assert "CATLIN_BASEMENT_12" in passes
+    assert "needs no vertical reinforcement" in passes
     assert "GARAGE_ICF_6" in passes
+    # The three free retaining walls, named by R404.4 rather than graded by the table.
+    assert "R404.4" in unknowns
+    # ... and the 16" arch, off the table's thickest published section.
+    assert "thicker than the table's 12\" maximum" in unknowns
     # The interior cross walls author unbalanced_fill=0, so they are not screened at all.
-    assert "CATLIN_CONC_12_INT" not in fails + passes
+    assert "CATLIN_CONC_12_INT" not in fails + passes + unknowns

@@ -418,8 +418,11 @@ SECOND_PLACEABLES = [
     # south glass, seating behind. Plants sit directly under ED-S-PLANT-TUBE1/2 (x=3'-4"/8'-8",
     # 2'-3" below ceiling, on a photoperiod timer) and under WIN-S-PLANT1/2 (same x, WT-3048
     # pair) so each gets daylight plus the tube.
-    # Chairs face south from y 4'-0"..7'-0", 1'-3" clear of the plants' north edge; the 1'-3"
-    # gap between the two chairs straddles REG-S-SUP1 (9', 4'), a floor register. Chair x is
+    # Chairs face south from y 4'-0"..7'-0", 1'-3" clear of the plants' north edge. The 1'-3"
+    # gap between them used to straddle REG-S-SUP1 (9', 4'), a floor register; that terminal
+    # went with the ERV's second-storey supply side on 2026-07-29 and the room's supply is a
+    # ceiling grille now (REG-S-HP-PLANT at 6'-8", 3'-4", plan/mep_registers.py), so the gap
+    # is only a gap — nothing on the floor needs keeping clear between the chairs. Chair x is
     # set by D-S-PLANT's 2'-6" swing (off y=4'-5 1/2", reaching to ~x=15'-5") — both chairs
     # stop 3'-2" short of it.
     Furniture(uid="PLT701AAAA", tag="FURN-S-PLANT-POT1", type_ref="FURN-PLANT-18",

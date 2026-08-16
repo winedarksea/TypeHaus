@@ -87,23 +87,24 @@ def test_unconditioned_room_needs_no_supply():
 # --- catlin coverage ----------------------------------------------------------------
 
 # The 2026-07-29 ERV reduction (plans/TODO.md: "We don't need the 30 some ERV inlets and
-# outlets in the house") left exactly two rooms deliberately unserved, and the check is
-# supposed to keep saying so:
-#   RM-S-PLANT  — the plant room is getting its own dedicated mini-HRV, not yet drawn.
-#   RM-S-STUDY2 — dropped outright by the user; it breathes off the hall it opens onto.
-# Both are named here rather than the assertion being loosened to "mostly pass", so a third
-# room falling out of coverage still fails this test.
-_EXPECTED_UNSERVED = {"RM-S-PLANT", "RM-S-STUDY2"}
+# outlets in the house") left exactly two rooms unserved — RM-S-PLANT ("awaiting its own
+# mini-HRV") and RM-S-STUDY2 ("takes air from the hall it opens onto") — and this test
+# pinned that pair for six weeks. Both were drawn on 2026-08-16: REG-S-HP-PLANT and
+# REG-S-HP-STUDY2, ceiling boots off DU-S-HP-SOUTH, System 1's FS-ATTIC joist-bay branch
+# (houses/catlin/plan/mep_registers.py, mep_hvac.py). The set is empty now and stays named
+# rather than the assertion being loosened to "mostly pass", so ANY room falling out of
+# coverage fails this test.
+_EXPECTED_UNSERVED: set[str] = set()
 
 
-def test_catlin_distribution_passes_except_the_two_deliberate_gaps(catlin_model):
+def test_catlin_distribution_has_no_unserved_rooms(catlin_model):
     findings = _run(catlin_model)
     assert findings
     unexpected = [f for f in findings if f.result != Result.PASS
                   and not _EXPECTED_UNSERVED.intersection(f.element_tags)]
     assert not unexpected, [f.message for f in unexpected]
-    # And the two gaps are really there — if either room gets served again, this test says
-    # so rather than silently tolerating a stale exemption.
+    # And nothing is exempt that the model does not actually flag — a stale entry in
+    # _EXPECTED_UNSERVED is as much a bug as a missing terminal.
     flagged = {t for f in findings if f.result != Result.PASS for t in f.element_tags}
     assert flagged == _EXPECTED_UNSERVED, flagged
 

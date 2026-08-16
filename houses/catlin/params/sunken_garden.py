@@ -192,6 +192,17 @@ NODES = [
 WALLS = [
     # Porch box: 16" arched front cross-wall + two 12" side walls, topping at the porch
     # floor (the balcony above rides on 6x6 pillars, not a concrete box).
+    #
+    # W-SG-W1/E1 deliberately do NOT author `lateral_support`, and the check reports them
+    # UNKNOWN because of it. The question is real and unanswered: FS-SG-PORCH's framing lands
+    # on these two through CN-SG-HGR-W/E, and the garden slab bears at their foot, which is
+    # the shape of support top and bottom — but whether a porch deck of two 2x12 back beams
+    # counts as *permanent lateral support* at the head of a wall holding 9'-9" of fill is a
+    # judgment about the real structure, not something the model can read off its own
+    # geometry. Author it once that is settled: "top_and_bottom" puts them on IRC Table
+    # R404.1.2(8)'s 10' x 10' row, which asks for #6 @ 38" o.c. (prescriptive — R404.1.3 says
+    # drawings using this section need no engineer's seal); "unsupported" sends them to R404.4
+    # with W2/E2/S. W-SG-ARCH is 16" and outside every IRC table either way — engineered.
     FoundationWall(uid="SGW102AAAA", tag="W-SG-ARCH", start_node="N-SG-MW",
                    end_node="N-SG-ME", assembly="SUNKEN_GARDEN_ARCH_16",
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom),
@@ -207,15 +218,27 @@ WALLS = [
                    end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom),
     # Garden retaining run (to just above grade), the U south of the porch.
+    #
+    # `lateral_support="unsupported"` is the honest statement of what these three are: free
+    # retaining walls, open to the sky along their whole top, holding 9'-9" of fill with
+    # nothing bracing the head. That is IRC R404.4's case exactly — a retaining wall not
+    # laterally supported at the top holding more than 48" of unbalanced fill — so it wants
+    # an engineered design to a 1.5 safety factor against sliding and overturning, and Table
+    # R404.1.2(8) (a *basement* wall table, presuming bracing top and bottom) must not be
+    # read against them. The check reports them UNKNOWN — engineered, which is the true
+    # reading and the one that keeps an invented rebar schedule out of the permit set.
     FoundationWall(uid="SGW105AAAA", tag="W-SG-W2", start_node="N-SG-MW",
                    end_node="N-SG-SW", assembly="SUNKEN_GARDEN_WALL",
-                   top_elevation=_ret_top, bottom_elevation=_wall_bottom),
+                   top_elevation=_ret_top, bottom_elevation=_wall_bottom,
+                   lateral_support="unsupported"),
     FoundationWall(uid="SGW106AAAA", tag="W-SG-E2", start_node="N-SG-SE",
                    end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
-                   top_elevation=_ret_top, bottom_elevation=_wall_bottom),
+                   top_elevation=_ret_top, bottom_elevation=_wall_bottom,
+                   lateral_support="unsupported"),
     FoundationWall(uid="SGW107AAAA", tag="W-SG-S", start_node="N-SG-SW",
                    end_node="N-SG-SE", assembly="SUNKEN_GARDEN_WALL",
-                   top_elevation=_ret_top, bottom_elevation=_wall_bottom),
+                   top_elevation=_ret_top, bottom_elevation=_wall_bottom,
+                   lateral_support="unsupported"),
 ]
 
 # --- public geometry for structures that build on this one ------------------------------

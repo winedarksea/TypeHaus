@@ -64,10 +64,12 @@ if [[ -n "$BASELINE_DIR" ]]; then
 fi
 
 echo "== haus check: catlin =="
-# --exit-on error, not the `fail` default: catlin carries four *accepted* advisory FAILs
-# (unbalanced fill awaiting an engineer's schedule, two rooms without a supply register).
-# They are tracked in houses/catlin/CLAUDE.md, not by this gate; an ERROR still stops it.
-$HAUS check houses/catlin --exit-on error | tail -3
+# catlin carried four accepted advisory FAILs until 2026-08-16 — two rooms without a supply
+# register (drawn) and the unbalanced-fill screen (a bug in the check, not the house; see
+# plans/TODO.md). It now carries none, so the default `fail` gate is the honest one and a new
+# advisory FAIL stops the build instead of being waved through. `--exit-on error` is still
+# there if a house ever needs to accept one; using it here would only hide a regression.
+$HAUS check houses/catlin | tail -3
 
 echo "== full build: catlin (IFC + glTF + permit PDFs) =="
 $HAUS build houses/catlin

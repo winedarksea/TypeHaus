@@ -30,6 +30,18 @@ class FoundationWall(Wall):
     # an authored spec IS the design, so the prescriptive table stops applying and the check
     # reports PASS citing it rather than FAIL demanding what is already in hand.
     engineering_spec: str | None = None
+    # The vertical reinforcement actually specified for this wall, verbatim — e.g.
+    # '#6 @ 38" o.c.'. IRC Table R404.1.2(8) answers what a wall NEEDS; this records what it
+    # HAS, and the check compares them. Left None where the table's cell reads NR, since
+    # there is nothing to record.
+    vertical_reinforcement: str | None = None
+    # Whether the wall is permanently braced top and bottom — a slab or footing key at the
+    # base, a floor diaphragm at the head. This is not a detail, it is the precondition for
+    # the whole prescriptive path: IRC Table R404.1.2(8) presumes it (footnote g), and
+    # R404.1.1 sends a wall retaining more than 48" WITHOUT it to an engineered design, as
+    # R404.4 does for a free-standing retaining wall. Unauthored, a wall retaining 4' or more
+    # is UNKNOWN rather than assumed braced — the assumption is the unsafe direction.
+    lateral_support: Literal["top_and_bottom", "unsupported"] | None = None
 
 
 @register_element

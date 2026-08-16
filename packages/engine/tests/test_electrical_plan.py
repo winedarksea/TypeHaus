@@ -21,8 +21,16 @@ def starter_model(starter_dir: Path):
     return model
 
 
-def test_starter_has_no_electrical_content(starter_model):
-    assert not any(has_electrical_content(starter_model, s.tag) for s in starter_model.plan.storeys)
+def test_starter_electrical_content_is_the_radon_fan_box_only(starter_model):
+    """The template models no lighting or power — its one device is the MN 1303.2402 subp. 6
+    junction box beside the radon riser, which is required of every new MN dwelling and so
+    cannot be left out of even the smallest plausible house."""
+    with_content = [s.tag for s in starter_model.plan.storeys
+                    if has_electrical_content(starter_model, s.tag)]
+    assert with_content == ["main"]
+    devices = [e.tag for e in starter_model.plan.storey_elements("main")
+               if e.element_kind == "ElectricalDevice"]
+    assert devices == ["ED-RADON-FAN-JB"]
 
 
 def test_main_plan_symbol_census(catlin_model):

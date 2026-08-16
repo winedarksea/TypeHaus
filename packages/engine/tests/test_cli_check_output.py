@@ -1,11 +1,11 @@
 """`haus check`'s output contract: what it prints, and when it exits non-zero.
 
 Both halves were quietly wrong. ``Finding.render`` led with *severity*, and every passing
-check is built by ``findings.passed()`` at ``Severity.WARN`` — so all 716 of catlin's passing
+check is built by ``findings.passed()`` at ``Severity.WARN`` — so every one of catlin's passing
 checks rendered as ``WARN``, and a reader who trusted the prefix read a green house as 716
-warnings. Meanwhile the exit code gated on ``Severity.ERROR`` only, and catlin's four real
-failures are ``advisory(result=FAIL, severity=WARN)`` — so the command printed failures and
-exited 0, which is why nothing scripted could use it as a gate.
+warnings. Meanwhile the exit code gated on ``Severity.ERROR`` only, and an advisory failure is
+``advisory(result=FAIL, severity=WARN)`` — so the command printed failures and exited 0,
+which is why nothing scripted could use it as a gate.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from typehaus.cli.app import app
 from typehaus.cli.cmd_build import _parse_only
 from typehaus.findings import Finding, Result, Severity
 
-from _helpers import CATLIN
+from _helpers import CATLIN, STARTER
 
 runner = CliRunner()
 
@@ -67,26 +67,59 @@ def test_tier_is_a_choice_so_a_typo_is_not_a_traceback() -> None:
     assert "Traceback" not in result.output
 
 
-def test_check_hides_passing_findings_by_default_and_exits_1_on_a_fail() -> None:
-    """The end-to-end contract, on the real reference house.
+def test_check_hides_passing_findings_by_default() -> None:
+    """Default output is failures + unevaluable rules only — never the passing majority.
 
-    catlin carries four accepted advisory FAILs, all at WARN severity. Default output is
-    failures + unevaluable rules only, and the exit code sees the failures.
+    On catlin that is now the unevaluable ones alone: the house carries no FAIL. The
+    assertion that matters here is the *filter*, so it is stated against both houses.
     """
     result = runner.invoke(app, ["check", str(CATLIN), "--plain"])
-    assert result.exit_code == 1
     lines = [ln for ln in result.output.splitlines() if ln[:1].isupper() and ":" in ln]
     assert lines, result.output
     assert not any(ln.startswith("PASS") for ln in lines)
     assert not any(ln.startswith("WARN") for ln in lines)
-    assert any(ln.startswith("FAIL") for ln in lines)
 
 
-def test_exit_on_error_restores_the_old_gate() -> None:
-    """`scripts/verify.sh` uses this: catlin's four advisory FAILs are accepted and tracked
-    in its own CLAUDE.md, so the CI gate wants ERROR-only while a human wants the default."""
-    result = runner.invoke(app, ["check", str(CATLIN), "--exit-on", ExitOn.error.value])
-    assert result.exit_code == 0
+def test_check_exits_1_on_a_fail() -> None:
+    """The gate half of the contract, on a house that actually fails.
+
+    This used to ride on catlin's four accepted advisory FAILs. Two of those were the
+    ventilation rooms (drawn 2026-08-16) and two were a bug in
+    ``structural.foundation_unbalanced_fill`` (fixed the same day), so catlin exits 0 now and
+    can no longer prove an exit code it does not produce. starter is unfinished by design —
+    it carries real advisory FAILs at WARN severity, which is exactly the case the default
+    gate exists to catch.
+    """
+    result = runner.invoke(app, ["check", str(STARTER), "--plain"])
+    assert result.exit_code == 1
+    lines = [ln for ln in result.output.splitlines() if ln[:1].isupper() and ":" in ln]
+    assert any(ln.startswith("FAIL") for ln in lines), result.output
+
+
+def test_exit_on_error_is_the_looser_gate() -> None:
+    """`scripts/verify.sh` uses this one. It is looser than the default by construction: an
+    advisory FAIL is ``severity=WARN``, so ERROR-only lets it through where the default
+    stops. starter is now the house that shows the gap — it carries advisory FAILs and, since
+    it grew its passive radon system (2026-08-16), no ERROR-severity finding at all, so the
+    default gate closes on it and ERROR-only opens. catlin shows both open."""
+    assert runner.invoke(app, ["check", str(STARTER), "--plain"]).exit_code == 1
+    assert runner.invoke(
+        app, ["check", str(STARTER), "--exit-on", ExitOn.error.value]).exit_code == 0
+    assert runner.invoke(
+        app, ["check", str(CATLIN), "--exit-on", ExitOn.error.value]).exit_code == 0
+
+
+def test_catlin_carries_no_failures(catlin_model) -> None:
+    """The reference house is clean, and stays that way.
+
+    It carried four accepted advisory FAILs until 2026-08-16 — see plans/TODO.md. Two rooms
+    got the supply terminals they always should have had; the other two were
+    ``structural.foundation_unbalanced_fill`` screening against a table that does not exist
+    in the IRC. Pinned so a regression in either shows up as a test failure rather than as a
+    line in a report nobody reads.
+    """
+    result = runner.invoke(app, ["check", str(CATLIN), "--plain"])
+    assert result.exit_code == 0, result.output
 
 
 def test_exit_on_none_never_gates() -> None:

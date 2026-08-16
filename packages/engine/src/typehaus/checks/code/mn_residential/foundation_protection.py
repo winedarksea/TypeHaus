@@ -33,12 +33,12 @@ _MIN_ANCHORS_PER_PIECE = 2
 
 # R405.1's exception: no drainage system is required on Group I well-drained soils. Group I
 # is the 30 psf/ft equivalent-fluid column of IRC Table R405.1 — the clean gravels and sands
-# — so the set is read off the sibling check's copy of that table rather than restated here.
+# — so the set is read off the shared copy of that table rather than restated here.
 # Restating it is how two rules end up disagreeing about what is under the same house.
 def _group_one_soils() -> frozenset:
-    from typehaus.checks.structural.foundation import _SOIL_LATERAL_PSF_PER_FT
+    from typehaus.checks.structural._r404_table import SOIL_LATERAL_PSF_PER_FT
 
-    return frozenset(name for name, psf in _SOIL_LATERAL_PSF_PER_FT.items() if psf == 30)
+    return frozenset(name for name, psf in SOIL_LATERAL_PSF_PER_FT.items() if psf == 30)
 
 
 # R406.1 dampproofs "from the top of the footing to the finished grade". A wall retaining

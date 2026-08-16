@@ -264,6 +264,37 @@ DUCTS_HVAC_SECOND = [
     DuctRun(uid="CSDH03AAAA", tag="DU-S-HP-SUITE", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 4), ft(14, 1.875)), pt(ft(12, 6), ft(14, 1.875))),
             width=inch(10), depth=inch(8), routing=DuctRouting.CHASE, design_cfm=250),
+    # The two south rooms' branch (2026-08-16). RM-S-PLANT and RM-S-STUDY2 were the only
+    # conditioned rooms on this storey with no drawn terminal, which was always the odd
+    # reading: EQ-S-HP1-AH hangs in RM-S-STUDY2's own ceiling soffit.
+    #
+    # Nothing can leave the trunk southward inside SF-S-DUCT: the air handler's 21"x43" case
+    # fills the box from y=6'-0" to y=9'-7", leaving ~5" either side of it — no lane for a
+    # branch. So this one comes off the top instead, riding the FS-ATTIC joist bay centred at
+    # y=3'-4" (8" + 2*16"), a floor cavity that runs unbroken east-west over BOTH rooms. It
+    # feeds off the same riser out of the trunk head at x=19'-4" that DU-A-HP-STUDY leaves
+    # from, dropping into the bay 4" north of that branch's centreline instead of continuing
+    # up onto the attic deck. The riser itself stays undrawn (DuctRun carries no elevation),
+    # exactly as DU-S-ERV-HP-FEED's rise and EQ-S-HP1-AH's condensate drop are — plans/TODO.md.
+    #
+    # JOIST_BAY and not CHASE because the alternative — running west along the attic floor —
+    # cannot get past W-A-C1/C1B, the x=18' bearing wall RB-HOUSE sits on, which does not open
+    # up. Inside the bay the duct passes UNDER that wall's bottom plate; mep.duct_joist_bay
+    # reports the bearing-line crossing as a fire-blocking note (R302.11), not a conflict.
+    # 8x6 fits the 11 7/8" I-joist depth with the 14 1/2" clear bay to spare.
+    #
+    # 150 cfm is 75 per terminal, taken OUT of the trunk's authored 750 by damper, not added
+    # to it: 750 is the air EQ-S-HP1-AH moves, and two more registers redistribute it rather
+    # than increase it. ~450 fpm through 8x6, in line with the rest of System 1.
+    #
+    # Both ends stop ON a terminal — east at REG-S-HP-STUDY2 (22'-8"), west at REG-S-HP-PLANT
+    # (6'-8") — like DU-S-HP-SUITE and DU-A-HP-STUDY. The riser at x=19'-4" lands 3'-4" in
+    # from the east end, so the tee throws a short arm to the study and a long one to the
+    # plant room; there is no duct east of the study's boot to balance that, and none needed.
+    DuctRun(uid="NYRX7TBEGH", tag="DU-S-HP-SOUTH", system=DuctSystem.SUPPLY,
+            path=(pt(ft(22, 8), ft(3, 4)), pt(ft(6, 8), ft(3, 4))),
+            width=inch(8), depth=inch(6), routing=DuctRouting.JOIST_BAY,
+            floor_ref="FS-ATTIC", design_cfm=150),
     # ERV -> System 1 fresh-air feed (2026-07-30), the one place fresh air enters the
     # heat-pump loop. Taps DU-M1-ERV-SUP at y=12'-8" (FS-SECOND bay), rises into the lane
     # DU-S-HP-RET vacated, runs south at x=20'-8" to inject behind REG-S-HP-RET via a

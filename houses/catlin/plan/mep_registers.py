@@ -57,6 +57,35 @@ REGISTERS_HVAC_SECOND = [
              position=pt(ft(12, 6), ft(14, 1.875)), duct_ref="DU-S-HP-SUITE",
              type_ref="REG-T-HP-SUP",
              mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 10))),
+    # The two south rooms (2026-08-16), both on DU-S-HP-SOUTH — the FS-ATTIC joist-bay
+    # branch at y=3'-4" that reaches them from above, because the air handler's case fills
+    # SF-S-DUCT from y=6'-0" to 9'-7" and leaves no lane south inside the soffit. Ceiling
+    # grilles at 9'-0" (the storey's flat ceiling, not the 7'-10" soffit face), each a short
+    # boot down out of the bay.
+    #
+    # RM-S-STUDY2 at (22'-8", 3'-4"): the room's west end, 4'-8" east of W-S-C1 and clear of
+    # FURN-S-STUDY-TABLE's west chair (24'-0 5/8"). Both of the room's ways out are behind
+    # the grille — D-S-STUDY2 north at x=20'-3 5/8", D-S-PLANT west at y=4'-5 1/2" — so the
+    # 12x6 throws east down the room and past WIN-S-STUDY1/2 before the air turns back to
+    # the hall. Nothing short-circuits: the study has no extract of its own, it hands its
+    # air on through the two openings.
+    Register(uid="DMVENAN0DW", tag="REG-S-HP-STUDY2", kind=DuctSystem.SUPPLY, room="RM-S-STUDY2",
+             position=pt(ft(22, 8), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
+             type_ref="REG-T-HP-SUP",
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
+    # RM-S-PLANT at (6'-8", 3'-4"): the branch's west terminus, centred between the room's
+    # two south windows (WIN-S-PLANT1/2 at x 4'-0"/9'-4") so the throw washes the glass a
+    # humid plant room condenses on first. 1'-4" north of the plant line and 2'-11" south of
+    # the two chairs (y 6'-2"/6'-4"), and between — not over — ED-S-PLANT-TUBE1/2, whose
+    # suspended tubes hang at x 3'-4"/8'-8". The room's only opening is D-S-PLANT back into
+    # the study, at the far east end, so the supply is diagonally opposite it and the room's
+    # air crosses the glazing on the way out. (placeables.py still describes the chairs as
+    # straddling a floor register at (9', 4') — that was REG-S-SUP1, retired 2026-07-29;
+    # this terminal is in the ceiling, so nothing straddles it.)
+    Register(uid="CXDCYN7YQ2", tag="REG-S-HP-PLANT", kind=DuctSystem.SUPPLY, room="RM-S-PLANT",
+             position=pt(ft(6, 8), ft(3, 4)), duct_ref="DU-S-HP-SOUTH",
+             type_ref="REG-T-HP-SUP",
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # The one return, at the hall's south end right AT EQ-S-HP1-AH (2026-07-30), 1" north
     # of the unit's rear face, feeding its bottom-return through DU-S-HP-RET's plenum stub.
     # DU-S-ERV-HP-FEED's wye injects the ERV's fresh air into this return plenum (not a
@@ -104,10 +133,16 @@ REGISTERS_HVAC_ATTIC = [
 # REG-S-HP-SUITE (REGISTERS_HVAC_SECOND above), so extracting here is what moves the
 # storey's air: in at the hall soffit, out at the far wall of each room.
 #
-# Dropped outright: REG-S-SUP1 (RM-S-PLANT, awaiting its own mini-HRV — honestly reported
-# unserved by mep.ventilation_distribution until drawn) and REG-S-SUP2 (RM-S-STUDY2, takes
-# air from the hall it opens onto). Also gone for redundancy: REG-S-SUP6 (replaced by
-# REG-S-HP-SUITE) and REG-S-SUP7/REG-S-RET1 (the hall is the plenum, not a served room).
+# Dropped for redundancy: REG-S-SUP6 (replaced by REG-S-HP-SUITE) and REG-S-SUP7/REG-S-RET1
+# (the hall is the plenum, not a served room).
+#
+# REG-S-SUP1 (RM-S-PLANT) and REG-S-SUP2 (RM-S-STUDY2) went with the rest of the ERV's
+# second-storey supply side on 2026-07-29, and the two rooms then stood unserved for six
+# weeks — the plant room "awaiting its own mini-HRV", the study "taking air from the hall it
+# opens onto". Both are back on 2026-08-16 as System 1 terminals, REG-S-HP-PLANT and
+# REG-S-HP-STUDY2 in REGISTERS_HVAC_SECOND above, on the new DU-S-HP-SOUTH branch. The
+# study was always the anomaly: EQ-S-HP1-AH hangs in that room's own ceiling soffit, and a
+# room does not breathe by being next to the machine.
 REGISTERS = [
     # One per bedroom now that the east bedrooms are equal 9'-0" bays: BED1 y 9'-18',
     # BED2 y 18'-27', BED3 y 27'-36'. RM-S-BED2 had no terminal at all before the

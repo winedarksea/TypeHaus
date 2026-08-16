@@ -83,46 +83,65 @@ NODES = [
 
 WALLS = [
     # Perimeter foundation walls (12" + exterior XPS), CCW from SW corner.
+    #
+    # `lateral_support="top_and_bottom"` is the precondition for the prescriptive path, not a
+    # detail: SL-B bears against the inside face at the bottom and FS-MAIN's diaphragm ties
+    # the top, so IRC Table R404.1.2(8) applies (its footnote g presumes exactly this) rather
+    # than R404.1.1 sending a wall retaining more than 48" to an engineered design. Stated on
+    # each wall because the check refuses to assume it — assuming bracing is the unsafe
+    # direction. With it, 12" at 45 psf/ft on a 9' storey retaining 9' reads NR: no vertical
+    # reinforcement required at all. (Horizontal steel is a separate table, R404.1.2(1) —
+    # one #4 within 12" of the top and one at third points above 8' — not screened here.)
     FoundationWall(uid="CBW101AAAA", tag="W-B-S1", start_node="N-B-SW",
                    end_node="N-B-S1", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW102AAAA", tag="W-B-S2", start_node="N-B-S1",
                    end_node="N-B-S2", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW103AAAA", tag="W-B-S3", start_node="N-B-S2",
                    end_node="N-B-SE", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW104AAAA", tag="W-B-E1", start_node="N-B-SE",
                    end_node="N-B-E1", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW105AAAA", tag="W-B-E2", start_node="N-B-E1",
                    end_node="N-B-NE", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW106AAAA", tag="W-B-N1", start_node="N-B-NE",
                    end_node="N-B-N1", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW107AAAA", tag="W-B-N2", start_node="N-B-N1",
                    end_node="N-B-N2", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW108AAAA", tag="W-B-N3", start_node="N-B-N2",
                    end_node="N-B-NW", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW109AAAA", tag="W-B-W1", start_node="N-B-NW",
                    end_node="N-B-W1", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   lateral_support="top_and_bottom"),
     FoundationWall(uid="CBW110AAAA", tag="W-B-W2", start_node="N-B-W1",
                    end_node="N-B-SW", assembly="CATLIN_BASEMENT_12",
                    alignment=face("concrete-ext"),
-                   top_elevation=ft(0), bottom_elevation=ft(-9)),
+                   top_elevation=ft(0), bottom_elevation=ft(-9),
+                   lateral_support="top_and_bottom"),
     # Center cross walls (12" concrete) — the 18' bearing grid. Every wall from here down is
     # an *interior* cross wall with soil on neither side, so `unbalanced_fill=ft(0)` says so
     # explicitly — without it `structural.foundation_unbalanced_fill` would read these eight
