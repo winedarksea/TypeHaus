@@ -3,31 +3,21 @@ from typehaus import (Appliance, ElectricalDevice, Equipment, Fixture, Furniture
                       MountKind, Register)
 from typehaus.model import DeviceKind, deg, ft, inch, m, pt
 
-# Project-local canvas placement targets.  One list per storey keeps source ownership
-# explicit while allowing every placeable domain to use the same writeback contract.
-#
-# The main-floor set is a furnished living/dining zone against the shared starter catalog:
-# rotation 0 puts an object's back at +y (project north), so the sofa faces the media
-# console across the room and the chairs face the table from both sides.
+# Project-local canvas placement targets. One list per storey keeps source ownership
+# explicit. Main-floor rotation 0 puts an object's back at +y (project north).
 
-# FX-1, the furnace-room utility sink, stood here until 2026-07-30. It is gone, not deleted:
-# the owner's decision that day put a bathroom at the foot of the stair and moved the
-# basement's one lavatory into it as FX-B-BATH-LAV (plan/fixtures.py), which carries this
-# fixture's uid forward. What went with it: SP-B-UTILITY became the new WC's stub-up,
-# SP-B-CW-UTIL-DR became SP-B-CW-BATH-DR, and PR-B-UTIL-DRAIN / -VENT / PR-B-CW-UTIL /
-# PR-B-HW-UTIL were all re-pointed at the new room (plan/mep.py).
+# FX-1 (furnace-room utility sink) was removed 2026-07-30: a bathroom went at the foot of
+# the stair and the basement's lavatory became FX-B-BATH-LAV (plan/fixtures.py), inheriting
+# this uid. SP-B-UTILITY -> new WC's stub-up, SP-B-CW-UTIL-DR -> SP-B-CW-BATH-DR, and
+# PR-B-UTIL-DRAIN/-VENT/PR-B-CW-UTIL/PR-B-HW-UTIL re-pointed at the new room (plan/mep.py).
+# Exception: PR-B-COND (heat-pump condensate) no longer air-gaps over this sink — it now
+# terminates over FX-B-SAUNA-FD, the sauna's trapped wet-floor drain, which sees regular
+# water flow the way an air gap wants and a bathroom lavatory does not.
 #
-# The one thing that did *not* simply follow it is the heat-pump condensate: PR-B-COND used to
-# air-gap over this sink's basin. It now terminates over FX-B-SAUNA-FD, the sauna wet floor's
-# drain — a trapped indirect-waste receptor that sees water in normal use, which is what a
-# condensate air gap wants and what a finished bathroom lavatory is not.
-#
-# The sauna benches are dimensioned to *liner faces*, not to the node lines the walls are
-# authored on, because that is the surface the joiner scribes to. Read off the resolved
-# wall layers: west liner x=9'-1 13/16", east liner (the liner-on-concrete centre wall)
-# x=17'-2 1/2", south concrete face y=1'-0", north liner y=13'-6 1/8" — an 8'-0 11/16" x
-# 12'-6 1/8" clear box. notes/sauna_shower_basement_detail.md reserves the north 4' for the
-# shower, so everything below stops at y=9'-6" and the benches never cross into it.
+# Sauna benches are dimensioned to *liner faces* (what the joiner scribes to), not node
+# lines: west liner x=9'-1 13/16", east liner x=17'-2 1/2", south concrete y=1'-0", north
+# liner y=13'-6 1/8" — an 8'-0 11/16" x 12'-6 1/8" clear box. Stops at y=9'-6" to leave the
+# north 4' for the shower (notes/sauna_shower_basement_detail.md).
 BASEMENT_PLACEABLES = [
     # The long two-tier run takes the east wall: it is the only unbroken face in the room —
     # the west wall has D-B-SAUNA, the south wall WIN-B-SAUNA — so the bench lands as one
@@ -69,16 +59,12 @@ MAIN_PLACEABLES = [
               room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(19, 7.1875)), rotation=deg(-90)),
     Furniture(uid="CMB809AAAA", tag="FURN-M-LIVING-BESTA-09", type_ref="FURN-BESTA-2358",
               room="RM-M-LIVING", position=pt(ft(34, 9.125), ft(21, 6.8125)), rotation=deg(-90)),
-    # Dining, at 17'-4" — 4' south of where it sat, which is what the north end of the room
-    # asked for once the island moved down and the 48" pantry took the east wall to 22'-8".
-    # The chair-use zone now runs y=12'-7"..22'-1": clear of the sofa's back at 10'-5", clear
-    # of the pantry by 7", and leaving a 4'-4" circulation band between the table and the
-    # island's seating edge instead of the 7" the old position left.
+    # Dining at 17'-4" (moved 4' south once the island moved down and the 48" pantry took
+    # the east wall to 22'-8"). Chair-use zone y=12'-7"..22'-1": clear of the sofa (10'-5")
+    # and pantry (7"), with a 4'-4" circulation band to the island.
     #
-    # An 8' x 3'-6" table is an eight-*place* table, but only the six side chairs are drawn.
-    # The ends are where the room's long axis runs — an end chair pulled out is exactly what
-    # would block the walk from the hall pass-through to the east windows — so they stay
-    # unset places, brought in from elsewhere when the table is actually filled.
+    # Only the six side chairs are drawn on this 8-place table — end chairs would block the
+    # hall-to-east-windows walk, so those two places stay unset, brought in when needed.
     Furniture(uid="QWCMN48QST", tag="FURN-M-DINING", type_ref="FURN-DINING-8", room="RM-M-LIVING",
               position=pt(m(8.24278), m(5.2201))),
     Furniture(uid="60XVKZHFAS", tag="FURN-M-CHAIR-S1", type_ref="FURN-DINING-CHAIR", room="RM-M-LIVING",
@@ -95,32 +81,21 @@ MAIN_PLACEABLES = [
               position=pt(ft(29, 5), ft(20, 2))),
     # --- kitchen: the NE corner of the open living face (no Room of its own) -------------
     #
-    # Swapped 2026-07-30 (owner's call): the cooking wall and the sink wall traded places, so
-    # the sink now sits under north light instead of east and the range moved to the east
-    # wall. Two datums still set every number below, both finish faces read off the resolved
-    # wall layers rather than off the module lines: the north and east interior gwb are at
-    # 35'-5 3/8" (36' sheathing - 1/2" sheathing - 5 1/2" stud - 5/8" gwb), and the centre
-    # bearing wall's east gwb is at 18'-3 3/8". Cabinet backs sit on those faces, so the runs
-    # are dimensioned the way a millwork shop would measure them, not to wall centrelines.
+    # Cooking wall and sink wall swapped 2026-07-30 (owner's call): sink now under north
+    # light, range on the east wall. Runs are dimensioned to resolved finish faces (a
+    # millwork-shop measurement), not wall centrelines: north/east interior gwb at
+    # 35'-5 3/8", centre bearing wall's east gwb at 18'-3 3/8". Rotation: 0 = back north,
+    # deg(90) = back west/opens east, deg(-90) = back east/opens west, deg(180) = back south.
     #
-    # Rotation says which way a unit opens: 0 = back north, deg(90) = back west/opens east,
-    # deg(-90) = back east/opens west, deg(180) = back south.
-    #
-    # The two runs share one inside corner (35'-5 3/8", 35'-5 3/8") and only one of them can
-    # physically turn it — a run's own 24"-deep footprint can't overlap the perpendicular
-    # run's. Before the swap the sink run (east) claimed the corner and the cooking run
-    # (north) yielded at x=33'-4", 1 3/8" shy of the sink run's depth-zone. Now that's
-    # mirrored: the cooking run (east) claims the corner and the sink run (north) yields at
-    # the same x=33'-4", 1 3/8" shy of the cooking run's depth-zone — same joint, same
-    # numbers, just which run gets to turn it has swapped with them.
+    # The two runs share one inside corner (35'-5 3/8", 35'-5 3/8"); only one 24"-deep run
+    # can physically turn it. Post-swap the cooking run (east) claims it and the sink run
+    # (north) yields at x=33'-4" — same joint/numbers as before the swap, just mirrored.
 
-    # West run — cold storage and pantry against the centre bearing wall, opening east into
-    # the kitchen. Untouched by the swap. Packed from the north wall down: 12" + 18" tall
-    # pull-outs, freezer, refrigerator, then the closet pantry in the nook by the stair tee.
-    # The two cold boxes sit *below* the talls deliberately — their 3' door zones reach
-    # x=24'-1 3/8", and any further north that band would run into the north counter run at
-    # y=33'-5 3/8". Cabinets are 24" deep (centre x = 19'-3 3/8"); the cold boxes are 34"
-    # (centre 19'-8 3/8").
+    # West run — cold storage and pantry against the centre bearing wall, opening east;
+    # untouched by the swap. North to south: 12"+18" tall pull-outs, freezer, refrigerator,
+    # closet pantry. Cold boxes sit below the talls so their 3' door zones (to x=24'-1 3/8")
+    # don't run into the north counter run at y=33'-5 3/8". Cabinets 24" deep (centre
+    # x=19'-3 3/8"); cold boxes 34" deep (centre 19'-8 3/8").
     Furniture(uid="WKMKJHJ7D7", tag="FURN-M-KIT-TALL-N", type_ref="CASE-TALL-PANTRY-12", room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(34, 11.375)), rotation=deg(90)),
     Furniture(uid="RABKK6V43P", tag="FURN-M-KIT-TALL-S", type_ref="CASE-TALL-PANTRY-18", room="RM-M-LIVING",
@@ -131,11 +106,8 @@ MAIN_PLACEABLES = [
               position=pt(ft(19, 8.375), ft(28, 5.375)), rotation=deg(90)),
     Furniture(uid="XTD1N9A693", tag="FURN-M-KIT-PANTRYC", type_ref="CASE-PANTRY-CLOSET-24", room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(25, 11.375)), rotation=deg(90)),
-    # Over the two cold boxes: the 24" between their 72" tops and the 96" top of the tall run
-    # is the cheapest storage in the kitchen, and leaving it open would break the one line the
-    # west run reads by. 24" deep like the talls, so all four fronts land on one plane at
-    # x=20'-3 3/8" and the appliances stand 10" proud of them — which is what lets the fridge
-    # and freezer doors swing clear of the cabinet above.
+    # Over the two cold boxes: 24" deep like the talls, so all four fronts land on x=20'-3 3/8"
+    # and the appliances stand 10" proud — clearing the fridge/freezer door swing.
     Furniture(uid="8T3D1P2QRV", tag="FURN-M-KIT-OVER-FRIDGE", type_ref="CASE-OVER-36", room="RM-M-LIVING",
               position=pt(ft(19, 3.375), ft(31, 5.375)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
@@ -143,12 +115,9 @@ MAIN_PLACEABLES = [
               position=pt(ft(19, 3.375), ft(28, 5.375)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
 
-    # North run — the sink wall. Sink and dishwasher flipped 2026-07-30 (owner's call) to pull
-    # the sink toward the middle of the run: pantry and the base cabinet stay put, but the
-    # sink now sits where the dishwasher used to (closer to the run's centre) and the
-    # dishwasher takes the sink's old spot, immediately east of it — the opposite hand from
-    # before, since the swap put the sink on the pantry side. Bases are 24" deep, centre
-    # y=34'-5 3/8".
+    # North run — the sink wall. Sink and dishwasher flipped 2026-07-30 (owner's call): sink
+    # now sits where the dishwasher used to (closer to run centre, pantry side), dishwasher
+    # takes the sink's old spot immediately east. Bases 24" deep, centre y=34'-5 3/8".
     Furniture(uid="Z0H6MVXC71", tag="FURN-M-KIT-PANTRY-E", type_ref="CASE-PANTRY-CLOSET-48", room="RM-M-LIVING",
               position=pt(ft(22, 7), ft(34, 5.375))),
     Furniture(uid="49B0RDP4NW", tag="FURN-M-KIT-E1", type_ref="CASE-B30", room="RM-M-LIVING",
@@ -157,20 +126,16 @@ MAIN_PLACEABLES = [
     # storeys/main.py), 7" off true centre so the RO still lands on a stud line.
     Furniture(uid="F8A30SK31X", tag="FURN-M-KIT-SINKBASE", type_ref="CASE-SINK-BASE-36", room="RM-M-LIVING",
               position=pt(ft(28, 7), ft(34, 5.375))),
-    # The disposer, hanging off FX-M-KITCH-SINK's drain fitting inside the sink base. It
-    # sits at the sink's `drain_position` (28'-7", 35'-0"), not at the bowl centre — the
-    # unit bolts to the flange, and that flange is where the trap and SP-M-KITCH already
-    # are. The 14 1/2" mount is the *base* of the body: 27" bowl bottom less the 12 1/2"
-    # cylinder. Mount kind WALL is the file's idiom for "hangs at a stated height" (the
-    # uppers and APPL-M-HOOD read the same way); nothing here stands on the floor.
+    # Disposer hangs off FX-M-KITCH-SINK's drain fitting, at the sink's `drain_position`
+    # (28'-7", 35'-0") — the flange, where the trap and SP-M-KITCH already are — not the
+    # bowl centre. 14 1/2" mount = base of body (27" bowl bottom minus 12 1/2" cylinder).
+    # Mount kind WALL is this file's idiom for "hangs at a stated height," same as the
+    # uppers and APPL-M-HOOD.
     #
-    # `install_parts` is the 24V control loop, counted rather than drawn. The decision
-    # (2026-08-07) was a 120V branch for the motor — CKT-DISPOSAL, its own circuit now
-    # that it no longer shares CKT-DISHWASHER — plus a low-voltage loop so the switch on
-    # the counter is a 24V button, not a 120V toggle over a wet sink. The loop's route is
-    # not designed and inventing conduit for it would put geometry in the model that no
-    # drawing supports, so what is modelled is what is known: seven part numbers, billed
-    # through `[install_parts]` alongside the hydrant kits.
+    # `install_parts` (2026-08-07): 120V motor branch on its own CKT-DISPOSAL (no longer
+    # shares CKT-DISHWASHER) plus a low-voltage loop so the counter switch is a 24V button,
+    # not a 120V toggle over a wet sink. Route isn't designed, so only the seven known part
+    # numbers are modelled, billed through `[install_parts]`.
     Appliance(uid="ADCW7VPPC1", tag="APPL-M-DISP", type_ref="APPL-DISPOSAL", room="RM-M-LIVING",
               position=pt(ft(28, 7), ft(35)),
               mount=Mount(kind=MountKind.WALL, elevation=inch(14.5)),
@@ -197,14 +162,9 @@ MAIN_PLACEABLES = [
               mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
 
     # East run — the cooking wall. Range and hood flipped 2026-07-30 (owner's call) further
-    # north, swapping with N3: the corner filler N4 is unchanged, but the range now sits
-    # where N3 used to and N3 takes the range's old spot, closer to N2/N1 to the south. Bases
-    # are 24" deep (centre x = 34'-5 3/8"); the range is 30" deep and centres 3" further out
-    # at 34'-2 3/8", same as it always did, and still the number the island aisle is measured
-    # from.
-    #
-    # This run still claims the corner (N4 runs flush to 35'-5 3/8" — see header): the range
-    # moving doesn't change which run gets to turn it, since N4 didn't move.
+    # north, swapping with N3 (corner filler N4 unchanged). Bases 24" deep (centre
+    # x=34'-5 3/8"); range 30" deep, centres 3" further out at 34'-2 3/8" — the number the
+    # island aisle is measured from. N4 still claims the corner (flush to 35'-5 3/8").
     Furniture(uid="KA0ETVK8F8", tag="FURN-M-KIT-N4", type_ref="CASE-B30", room="RM-M-LIVING",
               position=pt(ft(34, 5.375), ft(34, 2.375)), rotation=deg(-90)),
     Appliance(uid="417H1EH5C3", tag="APPL-M-RANGE", type_ref="APPL-ELECTRIC-RANGE", room="RM-M-LIVING",
@@ -257,50 +217,32 @@ MAIN_PLACEABLES = [
               position=pt(m(2.5945), m(2.89975))),
 
     # --- mudroom (RM-M-MUDROOM), converted from storage 2026-07-28 --------------------
-    # Both mudroom closets are framed rooms now, not furniture: the north one became
-    # RM-M-MECH (2026-07-28) and the south one, FURN-M-MUD-CLOSET-S, became
-    # RM-M-MUD-CLOSET (2026-08-02, storeys/main.py) — same footprint corner, real 2x4
-    # partitions, sliding bypass door.
-    # Back to the west wall (rotation 90 = back west, opens east), centred on WIN-M-MUD at
-    # y=31'-4" so the aisle between RM-M-MECH and RM-M-MUD-CLOSET lands on the window too.
-    # Its south end at y=29'-10" clears RM-M-MUD-CLOSET's north face (29'-9 7/8") by 1/8".
+    # Both mudroom closets are now framed rooms, not furniture (RM-M-MECH 2026-07-28,
+    # RM-M-MUD-CLOSET 2026-08-02, storeys/main.py). Bench: back to the west wall, centred
+    # on WIN-M-MUD at y=31'-4"; south end (29'-10") clears RM-M-MUD-CLOSET's north face
+    # (29'-9 7/8") by 1/8".
     Furniture(uid="CMF803AAAA", tag="FURN-M-MUD-BENCH", type_ref="FURN-M-MUD-BENCH",
               room="RM-M-MUDROOM", position=pt(ft(1, 3.125), ft(31, 4)),
               rotation=deg(90)),
 
     # --- laundry (RM-M-LAUNDRY), 2026-07-31 ------------------------------------------
-    # The fold-down drying rack, on the south wall directly over FX-M-LAUNDRY-SINK and sharing
-    # its x centreline and its 24" width. rotation 180 puts its plate against that wall, the
-    # same way the tub and the stack below it face north into the bifold.
-    #
-    # 48" is the mount, and it is a clearance number rather than a comfort one: the tub's
-    # declared box tops out at 43" (34" rim plus its gooseneck, see library/placeables/
-    # fixtures.py), so 48" leaves the faucet 5" of air to swing under a rack that is stowed
-    # flat and 16" of arm to fall through when it is not. The rack's own RECOMMENDED zone
-    # names FX-LAUNDRY-SINK-24 as its occupant, so the tub underneath groups with it instead
-    # of reporting as an encroachment — the arrangement working, not a conflict.
-    #
-    # The instance restates the type's Mount because the resolver reads the *instance* one; a
-    # type-level recommendation alone would leave this on the floor (same note as
-    # FX-M-KITCH-SINK's 27" in plan/fixtures.py).
+    # Fold-down drying rack over FX-M-LAUNDRY-SINK, sharing its x centreline and 24" width.
+    # 48" mount is a clearance number: the tub tops out at 43" (34" rim + gooseneck), so it
+    # leaves 5" over a stowed rack and 16" when down. The rack's RECOMMENDED zone names the
+    # sink as its occupant so the tub groups instead of reading as an encroachment.
+    # Instance restates the type's Mount because the resolver reads the instance one (same
+    # as FX-M-KITCH-SINK's 27", plan/fixtures.py).
     Furniture(uid="XJSV712BWZ", tag="FURN-M-LAUNDRY-RACK", type_ref="FURN-WALL-RACK-24", room="RM-M-LAUNDRY",
               position=pt(m(3.9378), m(5.8566)), rotation=deg(90),
               mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 
     # --- curtain rods (2026-08-07) -------------------------------------------
-    # One head line for the whole storey: 7'-0". The tallest main-floor head is 6'-8"
-    # (the WT-3048 south glazing and both exterior doors), so a single 7'-0" rod line
-    # clears every opening it serves by at least 4" and reads as one line across a room
-    # that is open from the south glass to the east wall. The alternative — each rod 4"
-    # over its own head — would step three times across the living room and once more in
-    # the bedroom, which is exactly the facade discipline the elevations refuse to break.
-    # WIN-M-LIV-E1/E2 sit lowest (5'-6" head), so their curtains are the long ones; that
-    # is a fabric decision, not a bracket one.
-    #
-    # y = 10" (or x, on the side walls) puts the rod's centre 10" off the wall *line*: the
-    # finish face is 6 1/2" in (1/2" sheathing + 5 1/2" stud + GWB) and a bracket projects
-    # about 3 1/2" past it. Each rod centres on its opening's RO centre, which for the
-    # south pairs is the facade column the elevations stack on.
+    # One head line for the whole storey: 7'-0", 4" above the tallest main-floor head (6'-8",
+    # WT-3048 + exterior doors) so it reads as one line rather than stepping room to room —
+    # the facade discipline the elevations enforce. WIN-M-LIV-E1/E2 (5'-6" head) just get
+    # longer curtains.
+    # y=10" (or x, on side walls) centres the rod 10" off the wall line: 6 1/2" finish face
+    # + ~3 1/2" bracket projection. Each rod centres on its opening's RO centre.
     Furniture(uid="EYJ3ZHXFSF", tag="FURN-M-LIV-ROD-S1", type_ref="FT-CURTAIN-ROD-48", room="RM-M-LIVING",
               position=pt(ft(32, 8), ft(0, 10)), rotation=deg(180),
               mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
@@ -334,23 +276,18 @@ MAIN_PLACEABLES = [
               mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
 
     # --- plumbing access panels (2026-08-07) ---------------------------------
-    # FX-M-BATH1-WC is the house's one wall-hung WC: the bowl bolts to a steel carrier
-    # inside W-M-BAE's stud bay and the waste drops in the wall at SP-M-WC1 (6'-0",
-    # 22'-7"). Everything adjustable about that fixture — the carrier's feet, the flush
-    # valve, the waste connection — is behind drywall, and a 14x29 panel in BATH1's face of
-    # that wall (3 3/8" off the centreline) is the only way back to it. Base at 2'-0" so
-    # the opening spans 2'-0"..4'-5", which is the carrier frame's own band.
+    # FX-M-BATH1-WC is the house's one wall-hung WC: bowl bolts to a steel carrier in
+    # W-M-BAE's stud bay, waste drops at SP-M-WC1 (6'-0", 22'-7"). A 14x29 panel in BATH1's
+    # face of that wall (3 3/8" off centreline, base 2'-0", spanning 2'-0"..4'-5") is the
+    # only access to the carrier. Centred at 23'-0" rather than on the 22'-7" flange: on the
+    # flange a 14"-wide panel would push 2 5/8" through BATH1's south face (22'-2 3/4") into
+    # the hall (`test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other`); pushed
+    # 5" north it clears by 2 3/8" while the opening (22'-5"..23'-7") still contains the
+    # flange.
     #
-    # Centred at 23'-0", not on the flange at 22'-7": BATH1's south face is 22'-2 3/4", so a
-    # 14"-wide panel on the flange would put 2 5/8" of itself through the wall into the hall
-    # (caught by `test_bath1_fixtures_sit_inside_the_room_and_clear_of_each_other`). Pushed
-    # 5" north it clears that face by 2 3/8" and its opening still spans 22'-5"..23'-7" —
-    # the flange stays inside the hole, which is the part that matters.
-    #
-    # NOTE, not fixed here: FX-M-BATH1-WC's authored `position` is (2'-2", 23'-2") with
-    # rotation 180, which stands its bowl ~3'-10" west of the carrier this panel serves.
-    # The sleeve, the drain and the `wall_ref` all agree on W-M-BAE; only the bowl does
-    # not. The panel follows the carrier, because that is where the fittings are.
+    # NOTE unfixed: FX-M-BATH1-WC's authored position (2'-2", 23'-2", rotation 180) stands
+    # its bowl ~3'-10" west of the carrier this panel serves; sleeve/drain/wall_ref all
+    # agree on W-M-BAE, only the bowl doesn't. Panel follows the carrier, not the bowl.
     Furniture(uid="RSDC92XMBB", tag="FURN-M-BATH1-AP", type_ref="FT-ACCESS-PANEL-1429", room="RM-M-BATH1",
               position=pt(ft(5, 8.625), ft(23)), rotation=deg(-90),
               mount=Mount(kind=MountKind.WALL, elevation=ft(2))),
@@ -365,21 +302,15 @@ MAIN_PLACEABLES = [
               mount=Mount(kind=MountKind.WALL, elevation=ft(0, 6))),
 
     # --- porch curtain rods (2026-08-07) --------------------------------------
-    # Two outdoor rods across the sunken garden's front pillar bays, PT-SG-BF1..BF2 and
-    # BF2..BF3. The front row stands at y = -9'-6" on 10'-0" centres, so each clear bay is
-    # 9'-6 1/2" between 6x6 faces and the 114" rod drops into it with half an inch to
-    # spare — which is why that is the length the type carries.
-    #
-    # Filed on `main`, not `second`, even though the pillars themselves are second-storey
-    # elements: `Mount.elevation` is measured from the *room floor*, and the only room that
-    # puts these at the right height is a main-storey one. 8'-6" over the main floor lands
-    # the rod 1 1/2" under the balcony beam soffit (8'-7 1/2"), which is what it hangs from.
-    # Against RM-S-PLANT at second-storey datum the same number would float them at 18'-6".
-    #
-    # `room="RM-M-BED"` follows FX-M-PORCH-HYD exactly: the porch is not a Room, so a
-    # placeable out here names the nearest interior one and accepts the resulting
-    # `integrity.placeable_room_mismatch` advisory. Two more of those are expected and
-    # correct — same standing as the two hydrants.
+    # Two outdoor rods across the sunken garden's front pillar bays (PT-SG-BF1..BF2,
+    # BF2..BF3), front row at y=-9'-6" on 10'-0" centres: 9'-6 1/2" clear between 6x6 faces,
+    # which is why the type is 114" (half an inch of clearance).
+    # Filed on `main` not `second` because Mount.elevation reads off the room floor and only
+    # a main-storey room gives the right height: 8'-6" lands 1 1/2" under the balcony beam
+    # soffit (8'-7 1/2") it hangs from.
+    # `room="RM-M-BED"` follows FX-M-PORCH-HYD: the porch isn't a Room, so this names the
+    # nearest interior one and accepts the `integrity.placeable_room_mismatch` advisory —
+    # expected, same as the two hydrants.
     Furniture(uid="XH1JW70E8D", tag="FURN-M-PORCH-ROD-W", type_ref="FT-CURTAIN-ROD-OUTDOOR-114", room="RM-M-BED",
               position=pt(ft(13), ft(-9.5)),
               mount=Mount(kind=MountKind.WALL, elevation=ft(8, 6))),
@@ -393,22 +324,13 @@ GARAGE_PLACEABLES = [
     Furniture(uid="CGF601AAAA", tag="FURN-G-WORKBENCH", type_ref="FURN-G-WORKBENCH",
               room="RM-GARAGE", position=pt(m(0.596858), m(14.4756)), rotation=deg(90)),
 ]
-# The three east bedrooms are the same 13'-11 3/4" x 8'-10 3/4" clear box, so they get the
-# same bed layout: a queen with its head north (rotation 0 puts the back at +y) and its 2'
-# side-access zones running the *long* way, where there is room for them.
-#
-# Head against the east wall — under the window, where FURN-S-BED1 started — cannot work
-# here. That orientation lays the 5'-4" width across the 8'-10 3/4" dimension, which needs
-# 9'-4" once both 2' side zones are counted; the 5 1/4" shortfall pushed each zone through a
-# long wall and onto the NEC 210.52 fill receptacles at 16" (integrity.placeable_recommended_
-# clearance_conflict, four of them off the one bed). Turning the beds resolves it: the side
-# zones now land in the 14' direction with feet to spare, and only the 2'-6" foot zone is
-# short, which it borrows from the room beyond the wall rather than from a receptacle.
-#
-# The x centreline and the y positions are picked, not rounded: x=30' is the one band whose
-# side zones clear the RC1 (north wall, x~25'-10") and RC2 (east wall) outlets, and the beds
-# sit 9'-7" apart rather than on the rooms' 9'-0" pitch so each foot zone stops short of the
-# headboard of the bed in the room below it. Heads therefore float 5"-6" off the north wall.
+# The three east bedrooms are the same 13'-11 3/4" x 8'-10 3/4" clear box: queen, head
+# north, 2' side-access zones running the long (14') way. Head-against-east-wall (under the
+# window) doesn't fit — the 5'-4" width needs 9'-4" across the 8'-10 3/4" dimension once
+# side zones are counted, pushing zones through the wall onto the NEC 210.52 receptacles at
+# 16". Turning the beds fixes it; only the 2'-6" foot zone comes up short, into open room.
+# x=30' clears the RC1/RC2 outlets; beds sit 9'-7" apart (not the 9'-0" room pitch) so each
+# foot zone stops short of the headboard below it — heads float 5"-6" off the north wall.
 SECOND_PLACEABLES = [
     # BED1 is 7" further east than the other two (2026-07-31): the head goes tight to the
     # east wall so its foot zone leaves the north wall a 4'-0 wardrobe slot clear of
@@ -465,38 +387,17 @@ SECOND_PLACEABLES = [
     Furniture(uid="CSB703AAAA", tag="FURN-S-SUITE-BED", type_ref="FURN-QUEEN-BED",
               room="RM-S-SUITE", position=pt(m(1.52182), m(5.57379)), rotation=deg(0)),
 
-    # Hanging storage for the three east bedrooms, which have no built-in closet: one 48"
-    # sliding-door wardrobe each, backed onto a partition.
+    # Hanging storage for the three east bedrooms (no built-in closet): one 48" sliding-door
+    # wardrobe each, on a north or south partition. Neither the east wall (bed heads against
+    # it) nor the west/hall wall (doors own the only long runs) can take one; every candidate
+    # 4'-0 x 2'-0 slot was checked against resolved footprints, clearance rings and door
+    # swings. BED2 north and BED3 south each had a clean slot. BED1 did not until 2026-07-31:
+    # its door swing (y 13'-11"..16'-5") left only 3'-5 3/4" of clear wall, too short for the
+    # case. Fixed by moving both the bed (7" east, head now 1/2" off the east wall) and the
+    # case (15" east, 2" north) — clears the swing, foot zone and side zones outright.
     #
-    # These rooms are full, and the placement is what the geometry allows rather than what
-    # the elevation would prefer. The east wall — the exterior side, the obvious wall for a
-    # case run — cannot take one: each bed's head is against it (footprints x 28'-4 1/3" to
-    # 35'-4 1/3"), leaving 4 3/4" north of the bed's side-access zone and 2" south of it.
-    # The west wall is the hall wall, and D-S-BED1/2/3 with their 2'-6" swings own the only
-    # runs on it long enough. That leaves the north and south partitions, and the choice
-    # between them is per-room because the desk pairs sit in different halves.
-    #
-    # Every candidate 4'-0 x 2'-0 slot against a wall in each room was enumerated on a 1"
-    # grid against the resolved footprints, the resolved recommended-clearance rings and the
-    # doors' swing polygons (clear faces: x 21'-11 5/8"..35'-11 3/8"; BED1 y 9'-0 5/8"..
-    # 17'-11 3/8", BED2 +9', BED3 +18'). The results:
-    #
-    # - BED2 north partition and BED3 south partition each have a slot that conflicts with
-    #   nothing at all, so both take one.
-    # - BED1 had none while the bed stayed put. Its door lands at y 13'-11" to 16'-5", so the
-    #   north wall's clear run starts where the swing arc leaves the wall, and the bed's 18"
-    #   recommended foot zone ends the run 3'-5 3/4" later — a slot too short for a 4'-0 case,
-    #   so the wardrobe used to stand in the door's sweep. Closed 2026-07-31 by moving *both*:
-    #   the bed 7" east (its head now sits 1/2" off the east wall instead of 7", which is
-    #   where a headboard belongs anyway) and the case 15" east and 2" north. That buys the
-    #   1'-3" the slot was short and clears the swing, the foot zone and the side zones
-    #   outright. The 7" is free because it is an x move — the 9'-7" bed-to-bed *pitch* the
-    #   comment above is built on is a y dimension and does not change.
-    #
-    # BED1's and BED2's wardrobes stand over ED-S-BED1-RC1 / ED-S-BED2-RC1, the north-wall
-    # general receptacles at 16"-18" AFF. That is not a code problem (210.52 spacing counts
-    # the receptacle whether or not a case stands in front of it) but it is worth knowing
-    # before the electrician sets the boxes: neither room has a 4'-0 run of wall without one.
+    # BED1's and BED2's wardrobes sit over ED-S-BED1-RC1 / ED-S-BED2-RC1 (north-wall general
+    # receptacles, 16"-18" AFF) — not a code problem, but worth knowing before boxes are set.
     Furniture(uid="CSB704AAAA", tag="FURN-S-BED1-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED1", position=pt(m(7.74443), m(5.16525)), rotation=deg(0)),
     Furniture(uid="CSB705AAAA", tag="FURN-S-BED2-WARD", type_ref="FURN-WARDROBE-48",
@@ -504,42 +405,23 @@ SECOND_PLACEABLES = [
     Furniture(uid="CSB706AAAA", tag="FURN-S-BED3-WARD", type_ref="FURN-WARDROBE-48",
               room="RM-S-BED3", position=pt(m(7.04819), m(10.1621)), rotation=deg(90)),
 
-    # Linen/towel storage in the hall bath, on the wall the room has nothing else on. The
-    # pantry-closet carcass is the right box for it: 72" x 24" x 96", one plan symbol,
-    # three 24" doors (CASE-PANTRY-CLOSET-72). RM-S-BATH1's clear face runs
-    # x 0'-0 5/8"..9'-11 3/8", y 26'-4 5/8"..35'-11 3/8", and the south wall is the only run
-    # it has free — the west wall above it is taken by the WC (x 1'-3 1/4"..3'-9 1/4",
-    # y 28'-10 1/2"..31'-4 1/2") and by WIN-S-BATH-W, the north wall by the shower pan, the
-    # east wall by the lav and its mirror. Backed onto the south wall (rotation 180 turns the
-    # carcass back to -y) and run out of the SW corner, the unit occupies
-    # x 0'-0 5/8"..6'-0 5/8", y 26'-4 5/8"..28'-4 5/8": still short of D-S-BATH1's opening at
-    # x=7'-3", clear of the WC's REQUIRED 30"/21" zone (which starts at y 28'-10 1/2"), and
-    # of every device on the walls. The 48" it replaces stopped at x 4'-0 5/8".
+    # Linen/towel storage in the hall bath: a 72"x24"x96" pantry-closet carcass
+    # (CASE-PANTRY-CLOSET-72) on the south wall, the only run RM-S-BATH1 has free (west has
+    # the WC + WIN-S-BATH-W, north the shower pan, east the lav/mirror). Backed to the south
+    # wall out of the SW corner, occupying x 0'-0 5/8"..6'-0 5/8", y 26'-4 5/8"..28'-4 5/8":
+    # short of D-S-BATH1's opening (x=7'-3") and clear of the WC's REQUIRED zone. The 48" it
+    # replaced stopped at x 4'-0 5/8".
     Furniture(uid="CSB707AAAA", tag="FURN-S-BATH1-CLOSET", type_ref="CASE-PANTRY-CLOSET-72",
               room="RM-S-BATH1", position=pt(m(1.09343), m(8.42656)),
               rotation=deg(180)),
-    # RM-S-PLANT is furnished as what it is: a place to sit among the plants, not a store
-    # room. The room's clear face is the full x 0'-0 5/8"..17'-11 3/8", y 0'-0 5/8"..8'-11 3/8"
-    # bay, and the program divides along y — plants on the glass, seating behind them.
-    #
-    # The two plants stand directly under ED-S-PLANT-TUBE1/2 (plan/lighting.py:
-    # x=3'-4"/8'-8", y=2', suspended 2'-3" below the ceiling), which is the whole reason
-    # those tubes are on a photoperiod timer: the light has to land on the foliage, not
-    # beside it. That also puts both pots in the south glazing — WIN-S-PLANT1 is centred
-    # x=3'-4" and WIN-S-PLANT2 x=8'-8" (the 30" WT-3048 pair, 2'-8" sills) — so each
-    # plant gets daylight and the tube supplements it. An 18" pot at y=2' occupies
-    # y 1'-3"..2'-9", well off the 5/8" wall face.
-    #
-    # The chairs sit north of the plants facing them (rotation 0 puts a chair's back at +y, so
-    # it looks south down the room and out the windows). Neither reaches the plants: the
-    # armchair spans x 5'-6 1/2"..8'-5 1/2", the rocker x 9'-9"..12'-3", and both run
-    # y 4'-0"..7'-0" against the plants' 2'-9" north edge — 1'-3" of walk-through between the
-    # two zones. The 1'-3" gap the chairs leave each other straddles REG-S-SUP1 at (9', 4'),
-    # which is a recessed floor register: nothing stands on it either way.
-    #
-    # East is the constraint that sets the chairs' x, not the west wall: D-S-PLANT swings off
-    # the centre bearing line at y=4'-5 1/2" and its 2'-6" leaf sweeps back to about
-    # x=15'-5". Both chairs stop 3'-2" short of that arc.
+    # RM-S-PLANT: a place to sit among the plants, program divides along y — plants on the
+    # south glass, seating behind. Plants sit directly under ED-S-PLANT-TUBE1/2 (x=3'-4"/8'-8",
+    # 2'-3" below ceiling, on a photoperiod timer) and under WIN-S-PLANT1/2 (same x, WT-3048
+    # pair) so each gets daylight plus the tube.
+    # Chairs face south from y 4'-0"..7'-0", 1'-3" clear of the plants' north edge; the 1'-3"
+    # gap between the two chairs straddles REG-S-SUP1 (9', 4'), a floor register. Chair x is
+    # set by D-S-PLANT's 2'-6" swing (off y=4'-5 1/2", reaching to ~x=15'-5") — both chairs
+    # stop 3'-2" short of it.
     Furniture(uid="PLT701AAAA", tag="FURN-S-PLANT-POT1", type_ref="FURN-PLANT-18",
               room="RM-S-PLANT", position=pt(ft(3, 4), ft(2))),
     Furniture(uid="PLT702AAAA", tag="FURN-S-PLANT-POT2", type_ref="FURN-PLANT-18",
@@ -555,21 +437,13 @@ SECOND_PLACEABLES = [
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
 
     # --- plumbing access panel (2026-08-07) ----------------------------------
-    # FX-S-SUITEBATH-TUBSH runs north/south with its back on W-S-C2C and its north end
-    # 1" off W-S-SN3, the partition it shares with RM-S-HALL. The waste-and-overflow tee
-    # sits at that end at floor level, so the panel goes in the hall face of W-S-SN3
-    # (2 3/8" off the 4 3/4" partition's centreline) on the tub's own x centre — reachable
-    # standing in the hall instead of standing in the tub.
-    #
-    # FX-S-BATH1-SH gets none, deliberately. Its drain end is the west one, and what is
-    # west of W-S-CH-W is the plumbing chase, not a room: a panel there would open onto
-    # 2 3/4" of stud bay with nowhere to stand. The reachable face is BATH1's own, which
-    # puts the panel over the tub — no better than pulling the apron. Left for the ceiling
-    # below, where the trap actually is.
-    #
-    # Neither fixture carries a `drain_position`; the ends above are read off the resolved
-    # footprints and the walls that touch them. Author one and this placement should be
-    # re-checked against it.
+    # FX-S-SUITEBATH-TUBSH's waste-and-overflow tee is at its north end, 1" off W-S-SN3 (the
+    # RM-S-HALL partition), so the panel goes in the hall face of W-S-SN3 (2 3/8" off the
+    # 4 3/4" partition's centreline) on the tub's x centre — reachable from the hall.
+    # FX-S-BATH1-SH gets none deliberately: its drain end is west, into the plumbing chase
+    # (not a room, no standing room), and the only reachable face puts a panel over the tub
+    # itself — no better than pulling the apron. Left for the ceiling below.
+    # Neither fixture carries a `drain_position`; recheck this placement if one is authored.
     Furniture(uid="NHFPDD49RB", tag="FURN-S-SUITEBATH-AP", type_ref="FT-ACCESS-PANEL-1414", room="RM-S-HALL",
               position=pt(ft(16, 4.5), ft(22, 6.375)), rotation=deg(180),
               mount=Mount(kind=MountKind.WALL, elevation=ft(0, 6))),

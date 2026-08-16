@@ -1,57 +1,46 @@
 # haus: editable
-# Catlin electrical service upgrade (plans/electrical_notes.md): 200A service with a
-# separate meter, 225A panel (type in plan/mep.py), 240V appliance circuits, two EV
-# receptacles in the garage, the smart-relay backup subsystem's DIN enclosure, hot tub +
-# heat-pump disconnects, and the PV junction box beside the radon-vent riser.
+# Catlin electrical service upgrade (plans/electrical_notes.md): 200A service, separate
+# meter, 225A panel (plan/mep.py), 240V appliance circuits, two garage EV receptacles, the
+# backup subsystem's DIN enclosure, hot tub + heat-pump disconnects, PV junction box.
 #
-# All-electric house: no gas service, no furnace. Heat is the three Gree heat-pump systems
-# below plus the electric radiant floor zones (FloorHeat in plan/storeys/):
-#   System 1  EQ-M-HP1-OD (Vireo GEN3) -> EQ-S-HP1-AH, the concealed ducted air handler in
-#             RM-S-STUDY2 feeding the dropped hallway chase (plan/mep.py) — upstairs + the
-#             two attic branches.
-#   System 2  EQ-M-HP2-OD (Multi Ultra 3-port, -22F) -> three wall heads: EQ-B-HP2-GYM,
-#             EQ-M-HP2-BED, EQ-M-HP2-LIVING.
+# All-electric: no gas, no furnace. Three Gree heat-pump systems plus electric radiant
+# floor zones (FloorHeat in plan/storeys/):
+#   System 1  EQ-M-HP1-OD (Vireo GEN3) -> EQ-S-HP1-AH, concealed ducted AH in RM-S-STUDY2
+#             feeding the dropped hallway chase — upstairs + two attic branches.
+#   System 2  EQ-M-HP2-OD (Multi Ultra 3-port, -22F) -> EQ-B-HP2-GYM, EQ-M-HP2-BED,
+#             EQ-M-HP2-LIVING.
 #   System 3  EQ-M-HP3-OD (Sapphire R32, VFD soft start, backup battery circuit) ->
-#             EQ-M-HP3-STAIR, high in the stair well's NW corner on W-M-N2. The mudroom is
-#             reached through REG-M-XFER-MUD, a passive louver in W-M-STRW beside it, not by
-#             the head itself (it was recessed into that wall until 2026-08-15).
-# EQ-B-ERV is still the only thing that moves *ventilation* air — its "supply" is fresh
-# air, not heat.
+#             EQ-M-HP3-STAIR, stair well NW corner on W-M-N2. Mudroom reached via
+#             REG-M-XFER-MUD, a passive louver in W-M-STRW (moved off that wall 2026-08-15).
+# EQ-B-ERV moves *ventilation* air only — its "supply" is fresh air, not heat.
 #
-# Condensate: each head/air handler drains to a collected air-gap drain line into the
-# mechanical-room sink — a planned plumbing item, no geometry yet (see plan/mep.py).
+# Condensate: each head/AH drains via a collected air-gap line to the mech-room sink —
+# planned plumbing, no geometry yet.
 #
-# Instances only, explicit constructors (`# haus: editable` — UI drags round-trip).
-# Circuit assignments live in plan/circuits.py (non-editable); the `circuit=` strings
-# here are the join keys. Uids avoid I/L/O/U (Crockford base32, → model/ids.py).
+# Instances only, explicit constructors (UI drags round-trip). Circuit assignments live in
+# plan/circuits.py; `circuit=` strings here are the join keys. Uids avoid I/L/O/U
+# (Crockford base32, model/ids.py).
 #
-# A device position is a *face* position (2026-08-03). Nothing in the resolver pulls a
-# wall-mounted device onto its wall — the authored point is where the body goes — so the
-# convention this file now holds to is: the point sits half the device's depth off the
-# finish plane, which puts its back on the plane and its plate proud of it, and `rotation`
-# turns the plate along the wall. Author a box at the wall's *axis* and it resolves inside
-# the studs; author it a few feet into the room and it resolves in mid-air. Both were
-# widespread here until that date (46 buried, 41 floating).
-# `test_catlin_contract_m3.py::test_wall_mounted_devices_resolve_against_a_wall_face`
-# is what keeps it true. Two devices are exempt there because they hang on something that
-# is not a Wall: ED-M-LIVING-KGF4 (the island's east end) and ED-M-PORCH-FLOOD (a pillar).
-# Note CATLIN_EXT_2X6's inside face is 6 5/8" in from the sheathing plane the plan datum
-# uses, and its cladding face 5" outboard of it — the two numbers most of the buried boxes
-# were missing.
+# A device position is a *face* position (2026-08-03): the point sits half the device's
+# depth off the finish plane (back on the plane, plate proud of it), `rotation` turns the
+# plate along the wall. Nothing in the resolver pulls a device onto its wall, so a box
+# authored on the wall axis buries in the studs and one authored a few feet in floats in
+# mid-air — both were widespread until this convention. Enforced by
+# `test_catlin_contract_m3.py::test_wall_mounted_devices_resolve_against_a_wall_face`,
+# except ED-M-LIVING-KGF4 (mounts on the island, not a Wall) and ED-M-PORCH-FLOOD (a
+# pillar). CATLIN_EXT_2X6's inside face is 6 5/8" in from the sheathing datum, cladding
+# face 5" outboard of that.
 #
 # Positions worth knowing (project-north frame, house sheathing SW corner at 0,0):
-# - Meter: exterior face of the west wall (W-M-W1), directly outside ED-B-PANEL at
-#   (2', 29') in the basement below — shortest service-entrance run from the underground
-#   POWER UtilityLine entry at (0', 18').
-# - Garage south wall W-G-S runs y=41' with the service door at x=5'-8'; both EV
-#   receptacles sit east of it, clear of the door swing.
-# - Sunken-garden porch: west wall W-SG-W1 axis at x=8', inner face x=8.5', north end at
-#   y=-0.833'. The hot tub disconnect goes 7' south of that north end, under the porch
-#   deck (0') and above the garden floor (-9') — basement storey, so Mount elevation 5'
-#   puts it at -4' absolute.
-# - PV junction box rides the north gable (W-A-N2) beside the radon riser's clamp
-#   cluster; at x=9' the 4:12 rake carries siding to 28', so a box at 25'-6" absolute
-#   (attic Mount 5'-6" over the 20' datum) has cladding to grip.
+# - Meter: exterior face of west wall (W-M-W1), outside ED-B-PANEL at (2', 29') in the
+#   basement — shortest run from the underground POWER entry at (0', 18').
+# - Garage south wall W-G-S at y=41', service door at x=5'-8'; both EV receptacles east
+#   of it, clear of the door swing.
+# - Sunken-garden porch: west wall W-SG-W1 axis x=8', inner face x=8.5', north end
+#   y=-0.833'. Hot tub disconnect 7' south of that, under the deck — basement storey, so
+#   Mount elevation 5' is -4' absolute.
+# - PV junction box on the north gable (W-A-N2) beside the radon riser clamp cluster; at
+#   x=9' the 4:12 rake carries siding to 28', so 25'-6" absolute has cladding to grip.
 
 from typehaus import (
     ConduitRun,
@@ -76,10 +65,9 @@ from typehaus import (
 from typehaus.model import m
 
 DEVICE_TYPES = (
-    # `service_amps` is the service size stated as data rather than only in the product name
-    # (2026-08-15). It is what the 220.82 demand is compared against — before the field
-    # existed that comparison was a literal 200 inside takeoff/electrical.py, so a house
-    # could not say it had anything else. Distinct from the panel's `bus_amps`: the 225A bus
+    # `service_amps` (2026-08-15) is the service size as data, not just in the product name:
+    # it's what 220.82 demand is compared against (was a hardcoded 200 in
+    # takeoff/electrical.py before). Distinct from the panel's `bus_amps` — the 225A bus
     # behind this 200A meter is what NEC 705.12 measures a backfeed against.
     ElectricalDeviceType(tag="ED-T-METER", name="200A meter socket (meter separate from panel)",
                           service_amps=200,
@@ -97,11 +85,10 @@ DEVICE_TYPES = (
                           footprint=(inch(4), inch(4)), height=inch(4),
                           ports=(ServicePort(tag="power", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
-    # The 14-50 is the managed EVSE outlet: an Emporia Vue with dynamic load management
-    # (whole-panel CT sensing) throttles the charger so the EV group never pushes the
-    # service over its ceiling. The EMS arrangement itself is LM-EV in plan/circuits.py
-    # (NEC 625.42); load_va here stays the unmanaged continuous rating so the panel
-    # schedule still shows the connected load the conductors are sized for.
+    # The managed EVSE outlet: an Emporia Vue (whole-panel CT sensing, NEC 625.42) throttles
+    # it so the EV group never pushes the service over its ceiling — that EMS is LM-EV in
+    # plan/circuits.py. load_va stays the unmanaged continuous rating so the schedule shows
+    # what the conductors are sized for.
     ElectricalDeviceType(tag="ED-T-EV-1450",
                           name="EV receptacle, NEMA 14-50R (Emporia Vue managed EVSE)",
                           nema="14-50R", load_va=9600,
@@ -135,30 +122,23 @@ DEVICE_TYPES = (
                           footprint=(inch(6), inch(6)), height=inch(4),
                           ports=(ServicePort(tag="power", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
-    # Radiant-floor thermostat: the line-voltage control the mat's cold lead lands in, with
-    # its floor sensor run back into the slab. `DeviceKind` has no THERMOSTAT member, and a
-    # new one would fall through the IFC map to IfcBuildingElementProxy; SWITCH is a real
-    # line-voltage control device in a single-gang box and maps to IfcSwitchingDevice, which
-    # is what this is.
-    #
-    # No `load_va`: one type serves three zones of three different areas, so a figure here
-    # would be wrong for at least two of them. The mat is the load, not the control, and
-    # each zone's VA is authored on its circuit in plan/circuits.py — which is what
-    # `takeoff.electrical._connected_va` prefers anyway.
+    # Radiant-floor thermostat: line-voltage control for the mat's cold lead. `DeviceKind`
+    # has no THERMOSTAT member (would fall through the IFC map to IfcBuildingElementProxy);
+    # SWITCH maps to IfcSwitchingDevice, which is what this really is.
+    # No `load_va`: one type serves three zones of different sizes, so a single figure would
+    # be wrong. VA is authored per-zone on the circuit in plan/circuits.py instead, which is
+    # what `takeoff.electrical._connected_va` prefers anyway.
     ElectricalDeviceType(tag="ED-T-FLOOR-STAT", name="Radiant floor thermostat, 120V",
                           footprint=(inch(4), inch(2)), height=inch(4),
                           ports=(ServicePort(tag="power", service=Service.POWER_120,
                                              position=(ft(0), ft(0), ft(0))),)),
     # --- structured cabling (plans/electrical_notes.md: "WiFi (energy efficient, POE") ----
-    # All three are DeviceKind.DATA_OUTLET, which is the plan-symbol axis only; what each
-    # one *is* rides `ifc_entity`/`ifc_predefined_type`, so they reach Revit as Communication
-    # Devices instead of proxies and the PoE cameras still to come are one more entry here
-    # rather than a patch to the engine's kind maps.
-    #
-    # The enclosure is the head end: router, PoE switch and the patch field, on CKT-HA with
-    # the HA server. It is the only one of the three that takes power from a branch circuit
-    # — the access points are fed over their data cables, which is why they carry poe_watts
-    # and no `circuit`, and why the panel schedule cannot see them (E-603 totals them).
+    # All three are DeviceKind.DATA_OUTLET (plan-symbol axis only); `ifc_entity`/
+    # `ifc_predefined_type` carry what each one *is*, so they reach Revit as Communication
+    # Devices rather than proxies — future PoE cameras are just another entry here.
+    # The enclosure (router + PoE switch + patch field, on CKT-HA) is the only one of the
+    # three fed from a branch circuit; the APs draw power over their data cables (poe_watts,
+    # no `circuit`), so the panel schedule can't see them — E-603 totals them instead.
     ElectricalDeviceType(tag="ED-T-NET-ENCLOSURE",
                           name="Structured media enclosure, 28in (router + PoE switch + patch)",
                           footprint=(inch(15), inch(4)), height=inch(28),
@@ -190,37 +170,25 @@ DEVICE_TYPES = (
 )
 
 EQUIPMENT_TYPES = (
-    # Electric sauna heater. RM-B-SAUNA's heated zone is 8'-0 11/16" x 8'-6" x 7'-6" ~= 513
-    # cubic feet, and the trade rule is ~1 kW per 45-50 cf, so this room wants 9-10.5 kW —
-    # which is the "240V, 50A GFCI breaker ... max 10.5 kW" the detail notes call for.
-    # Floor-standing, 18" x 16" x 30", stones on top (see the ``sauna-heater`` symbol).
+    # RM-B-SAUNA's heated zone is ~513 cf; trade rule ~1kW/45-50cf wants 9-10.5 kW, matching
+    # the detail notes' "240V, 50A GFCI breaker ... max 10.5 kW".
     EquipmentType(tag="EQ-T-SAUNA-HEATER", name="Electric sauna heater, 9 kW",
                   footprint=(inch(18), inch(16)), height=inch(30),
                   plan_symbol="sauna-heater",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
-    # The only air-moving equipment in the house — there is no furnace and no air handler,
-    # so the SUPPLY_AIR/RETURN_AIR ports that used to hang off EQ-T-FURNACE belong here.
-    # "Supply" is fresh air, not heat: the ERV trunks in plan/mep.py connect to these two
-    # ports — a SUPPLY/RETURN pair on the main and basement storeys (DU-M1-, DU-B-ERV-
-    # SUP/RET), stale-air-only trunks on the second storey and attic (DU-M-ERV-RET,
-    # DU-A-ERV-RET), whose rooms take fresh air off the heat-pump chase (DU-S-HP-SUP /
-    # DU-S-HP-SUITE) instead, and DU-S-ERV-HP-FEED, the 6" fresh feed that wyes into the
-    # chase's return plenum behind REG-S-HP-RET so System 1 recirculates ERV-fresh air
-    # without the two machines being hard-coupled. (The outdoor-side intake and exhaust are the ERV's other pair of
-    # collars; `Service` has no OUTDOOR_AIR/EXHAUST_AIR member to name them with, so they
-    # stay unmodeled rather than mislabeled as house-side ports.)
-    # ventilation_cfm is the continuous balanced rate the trunks in plan/mep.py are sized
-    # for: ASHRAE 62.2 at 0.03 x conditioned ft2 + 7.5 x (5 bedrooms + 1). It was 197,
-    # computed against 5,078 ft2 conditioned; the conditioned area has since drifted to
-    # 5,115 ft2 and the requirement with it (198 cfm), which put code.N1103_6 one cfm short
-    # (2026-08-01). Now 210: the requirement rounded up, plus enough headroom that the next
-    # 400 ft2 of conditioned area does not fail the check again. Still quiet — 210 cfm
-    # through the 10x6 trunk (0.42 ft2) is ~505 fpm.
-    #
-    # The sensible recovery effectiveness is what the block load's ventilation term turns on
-    # — at this rate and an 85 F design ΔT, every 0.05 of SRE is ~2,000 Btu/h — so it is the
-    # one number here that most needs the datasheet.
+    # Only air-moving equipment in the house (no furnace/air handler), so the SUPPLY_AIR/
+    # RETURN_AIR ports live here. "Supply" is fresh air, not heat: plan/mep.py's ERV trunks
+    # connect to these two ports across all four storeys (see mep.py for the branch layout);
+    # outdoor-side intake/exhaust stay unmodeled since `Service` has no OUTDOOR_AIR/
+    # EXHAUST_AIR member.
+    # ventilation_cfm is the ASHRAE 62.2 continuous balanced rate the trunks are sized for
+    # (0.03 x conditioned ft2 + 7.5 x (bedrooms+1)). Bumped 197 -> 210 (2026-08-01) when
+    # conditioned area drift (5,078 -> 5,115 ft2) put code.N1103_6 one cfm short; 210 rounds
+    # up with headroom for the next ~400 ft2 of growth. Still quiet: ~505 fpm through the
+    # 10x6 trunk.
+    # sensible_recovery_effectiveness drives the block load's ventilation term (0.05 SRE ~=
+    # 2,000 Btu/h at this rate and 85F design ΔT) — the number most needing the datasheet.
     EquipmentType(tag="EQ-T-ERV", name="ERV, 240V", footprint=(inch(24), inch(24)), height=inch(30),
                   plan_symbol="erv",
                   ventilation_cfm=210,  # TODO verify datasheet
@@ -233,20 +201,16 @@ EQUIPMENT_TYPES = (
                          ServicePort(tag="return", service=Service.RETURN_AIR,
                                      position=(ft(0), ft(0), inch(24))))),
     # --- The three Gree heat-pump systems (plans/TODO.md §HVAC) ----------------------
+    # Outdoor units carry real Gree datasheet capacities (model # in each `source`), not
+    # placeholders. `heating_capacity_at_design_btuh` linearly interpolates the datasheet
+    # chart points bracketing the site's -15F design temp (plan/site.py) — the model does no
+    # curve interpolation itself, so this field is the authored derate mep.heating_capacity
+    # sizes each zone against. Indoor heads keep `# TODO verify datasheet` on purpose: they
+    # carry no heating rating by design (a multi's heads share one compressor).
     #
-    # The three outdoor units below carry real Gree datasheet capacities (model numbers
-    # in each `source`), not placeholders. `heating_capacity_at_design_btuh` is a linear
-    # interpolation between the manufacturer's published chart points bracketing the
-    # site's -15 F heating design temperature (plan/site.py) — the model does no
-    # performance-curve interpolation of its own, so this field is the authored derate
-    # that mep.heating_capacity sizes each zone against. The indoor heads below the
-    # outdoor units keep `# TODO verify datasheet` on purpose: they carry no heating
-    # rating by design (see the per-block comments), so there is nothing to verify yet.
-    #
-    # System 1 — Gree Slim concealed ducted indoor unit in RM-S-STUDY2, feeding the
-    # dropped hallway chase north to the bedrooms and the two attic branches; Vireo GEN3
-    # outdoor unit. A straight-run duct at low flow, which is why one 24k head covers the
-    # whole upstairs.
+    # System 1 — Gree Slim concealed ducted unit in RM-S-STUDY2 feeding the dropped hallway
+    # chase to bedrooms + two attic branches; Vireo GEN3 outdoor unit. One 24k head covers
+    # the whole upstairs via a straight low-flow duct run.
     EquipmentType(tag="EQ-T-GREE-SLIM24",
                   name="Gree Slim concealed ducted air handler, 24k",
                   footprint=(inch(43), inch(21)), height=inch(11),
@@ -283,10 +247,9 @@ EQUIPMENT_TYPES = (
                   source="Gree MUL30HP230V1R32AO. Datasheet chart: 30,000 Btu/h at 47F, 27,000 Btu/h at 5F, ~24,500 Btu/h at -13F, ~21,500 Btu/h at -22F. -15F at-design (23,500 Btu/h) is linearly interpolated between the -13F and -22F chart points. Cooling 28,400 Btu/h and min_operating_temp_f -22F per datasheet.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
-    # The heads themselves: no heating rating, by design. A multi's three heads share one
-    # compressor, so three head ratings summed would size the zone against a capacity the
-    # outdoor unit cannot deliver simultaneously. Their nominal cooling capacity is kept
-    # because it is what distinguishes the 9k from the 12k on a schedule.
+    # No heating rating by design: three head ratings summed would size a zone against
+    # capacity the shared compressor can't deliver simultaneously. Cooling capacity is kept
+    # since it's what distinguishes the 9k from the 12k on a schedule.
     EquipmentType(tag="EQ-T-GREE-HEAD-9", name="Gree wall-mount head, 9k",
                   footprint=(inch(32), inch(8)), height=inch(12),
                   cooling_capacity_btuh=9000,  # TODO verify datasheet
@@ -317,32 +280,23 @@ EQUIPMENT_TYPES = (
                   source="Gree SAP09HP230V1R32AO. Datasheet chart: 10,600 Btu/h at 47F, ~11,500-13,000 Btu/h at 5F, ~10,000 Btu/h at -13F, ~8,200 Btu/h at -22F. -15F at-design (9,300 Btu/h) is linearly interpolated between the -13F and -22F chart points. Cooling 9,100 Btu/h and min_operating_temp_f -22F per datasheet.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
-    # Wall-mount linear electric fireplace, 1,500 W max on 120V — 12.5A, which is why the
-    # circuit is 20A and not 15A: 12.5 x 1.25 (continuous) = 15.6A needs the 16A a 20A
-    # breaker allows. 48" x 7" cabinet, 21" tall, hard-wired (hence Equipment: the circuit
-    # hook lives on the placeable, so there is no receptacle behind the glass).
-    # Rated as supplemental heat: 1,500 W x 3.412 = 5,118 Btu/h, carried at 5,100. Resistance
-    # heat has no cold-weather derate, so the at-design figure is the same number. It is
-    # `supplemental_heat` so it never opens an HVAC zone of its own — it counts toward the
-    # zone containing RM-M-LIVING (see takeoff/hvac.py supplemental_heat_by_room).
+    # 1,500W/120V = 12.5A; x1.25 continuous = 15.6A needs a 20A breaker (not 15A). Hard-wired
+    # Equipment, not a receptacle. Rated 5,100 Btu/h (1,500W x 3.412, no cold-weather derate).
+    # `supplemental_heat` so it never opens its own HVAC zone — counts toward RM-M-LIVING's
+    # zone (takeoff/hvac.py supplemental_heat_by_room).
     EquipmentType(tag="EQ-T-FIREPLACE-EL", name="Electric fireplace, 1.5 kW linear wall-mount",
                   footprint=(inch(48), inch(7)), height=inch(21),
                   heating_capacity_btuh=5100, heating_capacity_at_design_btuh=5100,
                   supplemental_heat=True,
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
-    # Supplemental duct heater in System 1's supply plenum (2026-08-15). The zone the
-    # EQ-T-GREE-VIREO-GEN3 carries — the whole second storey plus three attic rooms — has a
-    # 16,309 Btu/h block load at the -15 F design temperature against 13,500 Btu/h of
-    # at-design output plus FH-S-BATH1's mat, and `mep.heating_capacity` had been calling
-    # that -1,069 Btu/h shortfall a failure with no answer authored against it. This is the
-    # answer, and it is the ordinary one: a cold-climate ducted heat pump carries resistance
-    # heat downstream of the coil for the handful of design hours a year the compressor
-    # cannot reach the load alone. 2 kW x 3.412 = 6,824 Btu/h, carried at 6,800, and
-    # resistance heat has no cold-weather derate, so the at-design figure is the same number.
-    #
-    # `supplemental_heat` for the same reason the fireplace carries it: this never opens an
-    # HVAC zone of its own, it counts toward the zone the room it sits in belongs to.
+    # Supplemental duct heater in System 1's supply plenum (2026-08-15): EQ-T-GREE-VIREO-GEN3's
+    # zone had a 16,309 Btu/h block load at -15F design against 13,500 Btu/h at-design output
+    # + FH-S-BATH1's mat, a -1,069 Btu/h shortfall `mep.heating_capacity` was failing on. This
+    # is the standard fix — resistance heat downstream of the coil for the few design hours
+    # the compressor can't reach the load. 2kW x 3.412 = 6,800 Btu/h, no cold-weather derate.
+    # `supplemental_heat` like the fireplace: counts toward its room's zone, opens none of
+    # its own.
     EquipmentType(tag="EQ-T-DUCT-HEATER-2KW",
                   name="Inline duct heater, 2 kW, 240V (supply plenum)",
                   footprint=(inch(16), inch(10)), height=inch(10),
@@ -369,16 +323,11 @@ SERVICE_DEVICES = [
 ]
 
 # --- the backup microgrid (2026-08-02, notes/backup_power.md) ------------------------
-#
-# Four pieces, and where each one stands is the whole design:
-#
-#   EQ-B-ESS-BATT   inside RM-B-ESS, the Type X closet. The only thing in that room.
-#   EQ-B-ESS-INV    outside it, on the furnace room's west wall between the closet and the
-#                   panel. The inverter is not the fire risk and does not belong in the
-#                   sealed box; it also has to be reachable to be reset.
-#   ED-B-BACKUP-PANEL  beside the inverter, on its dedicated load output.
-#   ED-B-BACKUP-ENCL   unchanged in place, but demoted: it now holds only the shed-tier
-#                   relays and the 24V bus, not a feed of its own.
+# Four pieces, positions carry the design: EQ-B-ESS-BATT is the only thing in the RM-B-ESS
+# Type X closet; EQ-B-ESS-INV sits outside it on the furnace room's west wall (not a fire
+# risk, needs to be reachable to reset); ED-B-BACKUP-PANEL is beside the inverter on its
+# dedicated load output; ED-B-BACKUP-ENCL stays in place but demoted to shed-tier relays +
+# 24V bus only, no feed of its own.
 BACKUP_ENCLOSURE = [
     # circuit= is gone with CKT-BACKUP-FEED (plan/circuits.py): this enclosure's gear lives
     # downstream of the inverter's load output now, and naming a grid-side branch circuit on
@@ -395,14 +344,10 @@ BACKUP_ENCLOSURE = [
 ]
 
 ESS_EQUIPMENT = [
-    # The battery, on the ESS closet's east face (the 12" concrete of W-B-STR2, which is the
-    # one wall in that closet that will hold 300 lb without question). Its footprint runs
-    # 24" along x and 10" deep in y, so at (8'-4", 20'-3") it stands clear of both framed
-    # partitions and of the door swing.
-    #
-    # RM-B-ESS is what `code.R327_ess_capacity` reads to decide this is storage *inside the
-    # dwelling* — 14.3 kWh of the 40 kWh that article allows indoors. Moving this one line
-    # to a garage room is the whole of the future relocation the TODO asks to keep easy.
+    # On the ESS closet's east face — 12" concrete (W-B-STR2), the one wall rated for 300 lb.
+    # (8'-4", 20'-3") clears both framed partitions and the door swing.
+    # `code.R327_ess_capacity` reads `room="RM-B-ESS"` to count this as indoor storage
+    # (14.3 of the 40 kWh article limit) — a future garage relocation is just this one line.
     Equipment(uid="CEQ020AAAA", tag="EQ-B-ESS-BATT", kind=EquipmentKind.BATTERY,
               position=pt(ft(8, 4), ft(20, 3)), footprint=(inch(24), inch(10)),
               type_ref="EQ-T-ESS-BATT",
@@ -428,10 +373,9 @@ BASEMENT_DEVICES = [
     ElectricalDevice(uid="CEE004AAAA", tag="ED-B-SUMP-RC", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(4, 6), ft(34, 11)), type_ref="ED-T-RECEPTACLE", circuit="CKT-SUMP",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
-    # Sauna heater connection: on the sauna's west liner wall immediately south of
-    # EQ-B-SAUNA-HTR (its footprint is y 8'-0"..9'-6"), low like the heater terminals. It
-    # used to sit at (15', 7'), which was neither on a wall nor in the "NE corner" its
-    # comment claimed — and is now inside FURN-B-SAUNA-BENCH-E.
+    # On the sauna's west liner wall immediately south of EQ-B-SAUNA-HTR (footprint y
+    # 8'-0"..9'-6"), low like the heater terminals. Old (15', 7') position was off-wall and
+    # is now inside FURN-B-SAUNA-BENCH-E.
     ElectricalDevice(uid="CEE005AAAA", tag="ED-B-SAUNA-JB", kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(9, 4.875), ft(7, 9)), type_ref="ED-T-SAUNA-JB", circuit="CKT-SAUNA",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18)), rotation=deg(90)),
@@ -443,13 +387,10 @@ BASEMENT_DEVICES = [
     ElectricalDevice(uid="CEE011AAAA", tag="ED-B-SPA-RC", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(8, 7), ft(-5, -6)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(4)), rotation=deg(90)),
-    # RM-B-BATH's required receptacle (2026-07-30, NEC 210.52(D)): GFCI, on the wall adjacent
-    # to the basin and within 3'-0" of its outside edge — 1'-0" here, on the north partition
-    # just west of the lavatory (which occupies y 19'-0"..21'-0" against the east wall). It
-    # cannot go on the east wall itself: that is 12" cast concrete with the basin against it.
-    # On CKT-RC-BSMT with the basement's other receptacles rather than its own 20A circuit,
-    # which is the trade this house already made for the panel it has (see plans/TODO.md's
-    # open panel_spaces item — nothing here adds a slot).
+    # RM-B-BATH's NEC 210.52(D) receptacle (2026-07-30): GFCI within 3'-0" of the basin's
+    # edge (1'-0" here), on the north partition — not the east wall, which is 12" cast
+    # concrete behind the basin. Rides CKT-RC-BSMT rather than its own 20A circuit (the
+    # panel-slot trade recorded in plans/TODO.md's panel_spaces item).
     ElectricalDevice(uid="CEE040AAAA", tag="ED-B-BATH-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(15, 4), ft(21, 5)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-BSMT", room="RM-B-BATH", rotation=deg(180),
@@ -457,25 +398,19 @@ BASEMENT_DEVICES = [
 ]
 
 BASEMENT_EQUIPMENT = [
-    # EQ-B-WH2, the second ("240V element") tank this basement used to carry beside
-    # EQ-B-WH, was retired 2026-08-15: this house has one water heater, an 80-gal Rheem
-    # ProTerra hybrid HPWH (plan/mep.py::EQ-T-WATER-HEATER), and the two-tank split was a
-    # modelling artifact of the original electrical notes describing one product's two
-    # internal power draws (compressor vs. resistance element) as if they were two
-    # appliances. See the note above `EQ-T-WATER-HEATER` for the corrected design.
+    # EQ-B-WH2 (the second "240V element" tank) was retired 2026-08-15: there's one water
+    # heater, an 80-gal Rheem ProTerra hybrid HPWH (plan/mep.py::EQ-T-WATER-HEATER) — the
+    # two-tank split was a modelling artifact of describing one product's two internal power
+    # draws as two appliances.
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
               position=pt(m(2.09754), m(8.88149)), footprint=(inch(24), inch(24)),
               room="RM-B-FURNACE", type_ref="EQ-T-ERV", circuit="CKT-ERV"),
-    # Sauna heater, NW corner of the sauna's *heated* zone — the south 8'-6" of RM-B-SAUNA,
-    # since notes/sauna_shower_basement_detail.md reserves the north 4' for the shower. Back
-    # to the west liner face (x=9'-1 13/16", so rotation 90 = back west), north face on the
-    # 9'-6" partition line: it is the first thing past the door and diagonally opposite the
-    # bench, which is what keeps 3'-2 11/16" of clear floor between hot metal and bare shins.
-    # System 2's basement head: high on the east face of the centre bearing wall at x=18',
-    # near the gym ceiling (plans/TODO.md §HVAC), backs west (rotation 90) so it throws east
-    # across the open gym. Its zone is the whole conditioned basement — the sauna's own
-    # EQ-B-SAUNA-HTR is a sauna heater, not space heat, and the basement is one open volume
-    # off the stair.
+    # Sauna heater: NW corner of the *heated* zone (south 8'-6" of RM-B-SAUNA — the north 4'
+    # is the shower per notes/sauna_shower_basement_detail.md), back to the west liner face,
+    # diagonally opposite the bench for 3'-2 11/16" of clear floor.
+    # EQ-B-HP2-GYM (System 2's basement head): high on the centre bearing wall's east face at
+    # x=18', backs west, throws east across the gym. zone_rooms is the whole conditioned
+    # basement (one open volume off the stair) — EQ-B-SAUNA-HTR heats the sauna, not space.
     Equipment(uid="CEE031AAAA", tag="EQ-B-HP2-GYM", kind=EquipmentKind.INDOOR_HEAD,
               position=pt(ft(18, 6), ft(9)), footprint=(inch(32), inch(8)),
               room="RM-B-GYM", type_ref="EQ-T-GREE-HEAD-9", rotation=deg(90),
@@ -491,31 +426,23 @@ BASEMENT_EQUIPMENT = [
 
 # --- Main storey: dryer, freezer, heat-pump condensers/heads + disconnects ------------
 MAIN_DEVICES = [
-    # The laundry pair's two outlets, moved to W-M-CLN on 2026-07-31 with the stacked unit,
-    # and north 8" with that wall on 2026-08-03 (y 17'-4 5/8" -> 18'-0 5/8"). They are boxes
-    # in this partition, so they go where it goes — see plan/storeys/main.py's NODES note.
-    # Both are recessed boxes in the south partition directly behind the tower, because that
-    # is the only place they can be: FX-M-LAUNDRY is now 40" deep and 80" tall, and the old
-    # (9'-6", 20') position at 36" is *inside* its footprint — an outlet no one could ever
-    # reach, on a wall the machine covers. A recessed box lets the machine sit flat against
-    # the wall with a plug behind it, which is what the 2x4 partition is deep enough for.
-    # 43" AFF is between the washer's top and the dryer's, so one box height serves both.
-    #
-    # CKT-DRYER stays a 30A 2-pole on a 14-30R even though the dryer is an LG DLHC5502V —
-    # 240V, 830 W, 15 A minimum branch. A ventless heat-pump dryer draws a fraction of what a
-    # resistance dryer does, but it still ships with a 4-prong dryer cord, and a 30A laundry
-    # circuit is what that cord plugs into. The oversize is a provision, not an oversight: it
-    # is also what lets a future owner put a conventional vented dryer back in this alcove
-    # without pulling new wire.
+    # Laundry pair, moved to W-M-CLN (2026-07-31, with the stacked unit) then north 8"
+    # (2026-08-03, y 17'-4 5/8" -> 18'-0 5/8") — boxes in this partition go where it goes
+    # (plan/storeys/main.py NODES). Recessed in the south partition directly behind the
+    # tower: FX-M-LAUNDRY is 40" deep x 80" tall, so a surface box there is unreachable and
+    # covered by the machine; recessed lets it sit flat with the plug behind it. 43" AFF
+    # splits the difference between washer and dryer tops.
+    # CKT-DRYER stays a 30A/14-30R even though the LG DLHC5502V heat-pump dryer only needs
+    # 830W/15A minimum branch: it still ships a 4-prong cord needing 30A, and the oversize
+    # lets a future conventional vented dryer go in without repulling wire.
     ElectricalDevice(uid="CEE007AAAA", tag="ED-M-LAUNDRY-DR1", kind=DeviceKind.RECEPTACLE_240,
                      position=pt(ft(9, 6), ft(18, 0.375)), type_ref="ED-T-RECEPTACLE-1430",
                      circuit="CKT-DRYER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(43),
                                  recessed_into_host_surface=True)),
-    # CKT-LAUNDRY (circuits.py slot 36, 20A, "Laundry receptacle (washer)") had no device on
-    # it at all — the circuit was scheduled and the outlet was never drawn. This is it: the
-    # washer half of the stack, 8" east of the dryer's box in the same wall, same 43" band.
-    # NEC 210.52(F)'s laundry receptacle, and the only 120V outlet this room has.
+    # CKT-LAUNDRY (circuits.py slot 36, 20A) was scheduled but the outlet never drawn — this
+    # is it: washer half of the stack, 8" east of the dryer box, same 43" band. NEC 210.52(F),
+    # the room's only 120V outlet.
     ElectricalDevice(uid="QBSRR1MWVB", tag="ED-M-LAUNDRY-RC1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(10, 2), ft(18, 1.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-LAUNDRY",
@@ -539,16 +466,11 @@ MAIN_DEVICES = [
                      position=pt(ft(4, 9), ft(13, 3.375)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-BATH2", room="RM-M-BATH2",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
-    # FH-M-DINING's thermostat. The zone is free-standing in the middle of a 642 ft2 room,
-    # so its control goes on the nearest real wall: the east wall's interior face — which is
-    # x=35'-5 3/8", not the x=35'-11 3/8" this note claimed until 2026-08-03. CATLIN_EXT_2X6
-    # carries 5" of exterior insulation and cladding outboard of the sheathing plane at 36',
-    # so the *inside* face is 6 5/8" in from it, and a box authored at 35'-11 3/8" sat in the
-    # studs. In the clear stretch between WIN-M-LIV-E2's rough opening (ends
-    # y=13'-1 1/2" after the 2026-07-30 facade pass respaced the east row) and
-    # WIN-M-DIN-E2's (starts y=18'-2 1/2") — a 5'-1" gap, wider than the 2'-5" it had.
-    # ED-M-LIVING-RC3 sits at y=16'-11", so 17'-9" keeps 10" between the two boxes.
-    # The sensor lead runs the 5' back to the zone edge.
+    # FH-M-DINING's thermostat: zone is free-standing mid-room, so control goes on the
+    # nearest real wall — east wall interior face x=35'-5 3/8" (corrected 2026-08-03 from
+    # 35'-11 3/8", which sat in the studs; CATLIN_EXT_2X6's inside face is 6 5/8" in from the
+    # 36' sheathing plane). Sits in the 5'-1" clear stretch between WIN-M-LIV-E2 and
+    # WIN-M-DIN-E2, 10" clear of ED-M-LIVING-RC3 at y=16'-11".
     ElectricalDevice(uid="CEE024AAAA", tag="ED-M-DINING-FH-STAT", kind=DeviceKind.SWITCH,
                      position=pt(ft(35, 4.375), ft(17, 9)), type_ref="ED-T-FLOOR-STAT",
                      circuit="CKT-FH-DINING", room="RM-M-LIVING",
@@ -556,24 +478,19 @@ MAIN_DEVICES = [
 ]
 
 MAIN_EQUIPMENT = [
-    # --- Outdoor units. `zone_rooms` is empty on all three: a condenser's zone is the
-    # union of its indoor units' rooms, and each head/air handler below names its condenser
-    # with `outdoor_ref`. Refrigerant linesets are deliberately not modeled — the pairing
-    # IS the record (plans/TODO.md), and there is no wall penetration riding on it yet.
-    # System 3's outdoor unit, north side beside the mudroom door and under
-    # ED-M-HP3-DISC — the short lineset run to the head over the stairs is why it is here
-    # and not out with the other two. Shorter still since 2026-08-15: this unit stands at
-    # x 10'-0"..12'-7" on the far side of W-M-N2, and EQ-M-HP3-STAIR now hangs at
-    # x 10'-6"..13'-3" on that same wall's inside face, so the lineset is a straight punch
-    # through the wall it is bolted to rather than a run down the inside of the stair.
+    # --- Outdoor units. `zone_rooms` is empty on all three — a condenser's zone is the union
+    # of its indoor units' rooms, named via each head's `outdoor_ref`. Refrigerant linesets
+    # are deliberately not modeled (the outdoor_ref pairing IS the record, plans/TODO.md).
+    # System 3's outdoor unit: north side beside the mudroom door, under ED-M-HP3-DISC, for
+    # the short lineset run to the head over the stairs. Since 2026-08-15 it's a straight
+    # punch through W-M-N2 — the unit (x 10'-0"..12'-7") sits directly opposite
+    # EQ-M-HP3-STAIR (x 10'-6"..13'-3") on that wall's inside face.
     Equipment(uid="CEE027AAAA", tag="EQ-M-HP3-OD", kind=EquipmentKind.HEAT_PUMP,
               position=pt(m(3.44566), m(11.3941)), footprint=(inch(31), inch(13)),
               type_ref="EQ-T-GREE-SAPPHIRE-9-OD", circuit="CKT-HP3", room=None),
-    # --- System 2's main-floor heads. Both hang high on the south wall either side of the
-    # centre wall at x=18' (plans/TODO.md §HVAC), backs south (rotation 180), blowing north
-    # into the length of the room. Power comes from the outdoor unit on a multi, so neither
-    # head carries a `circuit` — CKT-HP2 feeds EQ-M-HP2-OD and the interconnects run from
-    # there.
+    # --- System 2's main-floor heads: high on the south wall either side of the centre wall
+    # at x=18', backs south, blowing north. Neither carries `circuit` — power comes off the
+    # multi's outdoor unit (CKT-HP2 feeds EQ-M-HP2-OD, interconnects run from there).
     Equipment(uid="CEE028AAAA", tag="EQ-M-HP2-BED", kind=EquipmentKind.INDOOR_HEAD,
               position=pt(ft(16), ft(0, 6)), footprint=(inch(35), inch(9)),
               room="RM-M-BED", type_ref="EQ-T-GREE-HEAD-12", rotation=deg(180),
@@ -590,56 +507,32 @@ MAIN_EQUIPMENT = [
               # One 768 sf open room (kitchen/dining/living/hall, and since 2026-07-30 the
               # stair well too, are all inside this claim).
               zone_rooms=("RM-M-LIVING",)),
-    # --- System 3's head: high in the stair well's NW corner, on the north wall.
-    #
-    # Moved off W-M-STRW on 2026-08-15 (plans/TODO.md). It used to hang on the *west* wall
-    # at (10'-6", 30'), backing west and partly recessed into that wall's plywood stair face
-    # so a single unit reached the mudroom through the cutout. Two things were wrong with
-    # that: the recess was the one hole deliberately allowed in a wall whose whole detail is
-    # unbored appearance-grade studs (main.py W-M-STRW), and the unit stood in the middle of
-    # the west lane blowing across the flight rather than down the well. It is now on
-    # W-M-N2, and the mudroom is served by REG-M-XFER-MUD instead — a passive louver in the
-    # same wall, in a stud bay, with nothing mechanical in it (plan/mep_registers.py).
-    #
-    # Position, all four numbers constrained:
-    #   y  35'-1 3/8" — an 8" body with its back on W-M-N2's finished face at 35'-5 3/8".
-    #      Surface-mounted, not recessed: W-M-N2 is the insulated 2x6 envelope, and an 8"
-    #      unit does not fit a 5 1/2" cavity without furring the wall out or breaking the
-    #      sheathing plane. `recessed_into_host_surface` is gone with the old position.
-    #   x  11'-10 1/2" — the 33" case runs 10'-6"..13'-3", its west end on the x=10'-6" line
-    #      that is FO-M-STAIR's west edge and the west lane's face, 2 5/8" clear of
-    #      W-M-STRW's ply-stair face at 10'-3 3/8". Tight into the corner, and square over
-    #      the lane the flight arrives in.
-    #   z  7'-0", unchanged — top at 8'-0", 12" below the 9' ceiling.
-    #   rotation 0 — back north, blowing south down the length of the well. (Back south is
-    #      180 on the two System 2 heads, back east -90 on EQ-M-FIREPLACE.)
-    #
-    # It hangs over open well either way: FO-M-STAIR stops at y=35' and FO-S-STAIR runs
-    # right up to this wall, so there is 5 3/8" of main-floor deck under it and the mid
-    # landing ~4'-6" below that. The old position was over the well too — this is not a new
-    # service problem, it is the same ladder off the landing.
-    #
-    # `room` followed RM-M-STAIR into RM-M-LIVING on 2026-07-30 — the stair well is part of
-    # that room now (see main.py's ROOMS). `zone_rooms` did not, and still does not: it is
-    # the mudroom and the mech closet. What this head is *sized* for is the entry side of
-    # the wall, now reached through the louver rather than a recess, and the stair volume it
-    # blows into belongs to EQ-M-HP2-LIVING's 768 sf claim rather than being counted a
-    # second time here.
+    # --- System 3's head: stair well NW corner, on the north wall (W-M-N2).
+    # Moved off W-M-STRW 2026-08-15 (plans/TODO.md): it used to hang on the west wall,
+    # partly recessed into that wall's appearance-grade plywood stair face (the one hole
+    # deliberately allowed there) and blowing across the flight instead of down the well.
+    # Now surface-mounted on W-M-N2; the mudroom is served instead by REG-M-XFER-MUD, a
+    # passive louver in the same wall (plan/mep_registers.py).
+    # Position: y=35'-1 3/8" (8" body, back on W-M-N2's face, surface-mounted since an 8"
+    # unit won't fit the 5 1/2" insulated cavity); x=11'-10 1/2" (33" case runs
+    # 10'-6"..13'-3", tight into the corner, square over the stair lane, 2 5/8" clear of
+    # W-M-STRW); rotation 0 (back north, blowing south down the well — contrast 180 on the
+    # System 2 heads, -90 on EQ-M-FIREPLACE). Hangs over open well either way (FO-M-STAIR
+    # stops at y=35'), same as the old position.
+    # `room` followed RM-M-STAIR into RM-M-LIVING (2026-07-30, stair well is part of that
+    # room now). `zone_rooms` did not — it's the mudroom + mech closet; the stair volume it
+    # blows into belongs to EQ-M-HP2-LIVING's 768 sf claim, not counted twice here.
     Equipment(uid="CEE030AAAA", tag="EQ-M-HP3-STAIR", kind=EquipmentKind.INDOOR_HEAD,
               position=pt(ft(11, 10.5), ft(35, 1.375)), footprint=(inch(33), inch(8)),
               room="RM-M-LIVING", type_ref="EQ-T-GREE-SAPPHIRE-9", rotation=deg(0),
               outdoor_ref="EQ-M-HP3-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
               zone_rooms=("RM-M-MUDROOM", "RM-M-MECH")),
-    # Electric fireplace, SE corner of the living room, on the east wall. Dropped from a
-    # 36" mount to 7" (2026-07-30) when WIN-M-LIV-E1 restacked to y=4'-0": the window's
-    # RO (y 2'-10 1/2"..5'-1 1/2", sill at 30") now crosses the cabinet's band, so the
-    # unit reads as a hearth *under* the glass instead — the 21" cabinet tops out at
-    # 28", 2" below the sill, the way a radiator sits under a window. The old height
-    # was up rather high anyway (it cleared FURN-M-MEDIA's 30" top for no local reason).
-    # The 48" cabinet keeps y 0'-10"..4'-10" — 9 1/2" off the corner, 7 1/2" short of
-    # ED-M-LIVING-RC4 at y=5'-6 1/2". rotation -90 puts its back east against the wall
-    # (interior face x=35'-11 3/8"; the 7" cabinet centres at 35'-8").
+    # SE corner of the living room, east wall. Dropped 36" -> 7" mount (2026-07-30) when
+    # WIN-M-LIV-E1 restacked to y=4'-0": its RO (sill 30") now crosses the cabinet band, so
+    # the 21" cabinet (tops at 28") reads as a hearth under the glass instead. 48" cabinet
+    # spans y 0'-10"..4'-10", clear of ED-M-LIVING-RC4 at y=5'-6 1/2". rotation -90 backs it
+    # to the wall (interior face x=35'-11 3/8").
     Equipment(uid="CEE022AAAA", tag="EQ-M-FIREPLACE", kind=EquipmentKind.SPACE_HEATER,
               position=pt(ft(35, 8), ft(2, 10)), footprint=(inch(48), inch(7)),
               room="RM-M-LIVING", type_ref="EQ-T-FIREPLACE-EL", rotation=deg(-90),
@@ -649,21 +542,12 @@ MAIN_EQUIPMENT = [
 
 # --- Second storey: the NW bathroom's floor-heat control -------------------------------
 SECOND_DEVICES = [
-    # NEC 440.14 disconnects for the two condensers on the upper balcony, on the
-    # second-storey south wall within sight of the units they serve. Both boxes moved
-    # 2026-07-31 with D-S-DECK-W: at x=12' and x=15' they stood inside that door's
-    # x 11'-2"..16'-2" rough opening. Each now sits on a clear stretch of wall whose
-    # 110.26 working space — 3'-0" out from the wall, 2'-6" wide — no condenser stands in:
-    #   HP1's box in the 15" of wall between the two plant windows (RO edges 5'-1" and
-    #   6'-11", casings 3 1/2" past each), 2'-0" west of its unit's west face.
-    #   HP2's box east of D-S-DECK-E, where the wall runs clear from that door's casing
-    #   (x 25'-1 1/2") to WIN-S-STUDY1's (x 25'-11 1/2"). Its unit is 7' west between the
-    #   two doors, in plain sight across the open deck — 440.14 asks for sight, not reach.
-    # Both are on the wall's *exterior* face (y=-7", the cladding plane less the box's own
-    # 4" depth). They were authored at y=+6" until 2026-08-03, which is 5/8" inside the
-    # interior finish — a weatherproof 3R disconnect standing in RM-S-PLANT and RM-S-STUDY2,
-    # on the wrong side of the wall from the condensers it isolates. HP2's x moved with it:
-    # 24'-6" was inside D-S-DECK-E's rough opening, not east of its casing.
+    # NEC 440.14 disconnects for the two balcony condensers, second-storey south wall within
+    # sight of their units. Moved 2026-07-31 off D-S-DECK-W's rough opening onto clear wall
+    # with 110.26 working space clear of any condenser: HP1's box between the plant windows,
+    # HP2's east of D-S-DECK-E (its unit sits 7' away in plain sight — 440.14 needs sight,
+    # not reach). Both on the wall's exterior face (y=-7"), corrected 2026-08-03 from y=+6"
+    # which put a 3R disconnect on the interior side of the wall from its condenser.
     ElectricalDevice(uid="CEE012AAAA", tag="ED-M-HP1-DISC", kind=DeviceKind.DISCONNECT,
                      position=pt(ft(6), ft(0, -7)), type_ref="ED-T-DISCONNECT-3R",
                      circuit="CKT-HP1", mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
@@ -681,25 +565,15 @@ SECOND_DEVICES = [
 ]
 
 SECOND_EQUIPMENT = [
-    # The Vireo (System 1, the concealed ducted upstairs unit) and the Multi Ultra
-    # (System 2) share the upper balcony, not the main-level porch. The balcony's walking
-    # surface is the second-storey datum (10'); keeping these in SECOND_ELEMENTS gives the
-    # 3D model that elevation rather than drawing them at grade.
-    #
-    # Both turned 90 degrees and re-stationed 2026-07-31 for D-S-DECK-W. Broadside to the
-    # house at x 8'-2 1/2"..11'-4 3/4" and 12'-2 1/2"..15'-3 1/2" they filled the whole of
-    # the plant room's balcony frontage, and the new door's RO (x 11'-2"..16'-2") landed on
-    # both of them. Standing them end-on — 16" of x each instead of 37"/38" — is what makes
-    # the two south doors and two condensers share one 21' deck:
-    #   HP1 at the deck's west end, x 8'-0"..9'-4", 6" inboard of RL-SG-BALCONY's west
-    #   run. It stands in front of WIN-S-PLANT2's west half but tops out below its 2'-8"
-    #   sill, so it takes no glass.
-    #   HP2 in the 2'-8" of wall between the two French doors, x 16'-10"..18'-2" — 8" clear
-    #   of each rough opening, and clear of both leaf sweeps, which stay inside their own
-    #   ROs (each 2'-6" leaf hinges at a jamb and swings out).
-    # Both keep their 1'-0" standoff from the wall, so the line sets penetrate behind the
-    # units as before; the deck is 8'-8" deep, so their 3'-1"/3'-2" of depth leaves over
-    # 4'-6" of walking surface south of them.
+    # Vireo (System 1) and Multi Ultra (System 2) condensers share the upper balcony, not the
+    # main-level porch — kept in SECOND_ELEMENTS so the 3D model uses the balcony's 10'
+    # datum, not grade.
+    # Both turned 90 deg and re-stationed 2026-07-31 for D-S-DECK-W: broadside they filled
+    # the whole balcony frontage and the new door RO (x 11'-2"..16'-2") landed on both.
+    # End-on (16" of x each) lets two doors and two condensers share the 21' deck: HP1 at
+    # x 8'-0"..9'-4" (below WIN-S-PLANT2's sill, so no glass conflict), HP2 in the 2'-8" gap
+    # between the French doors at x 16'-10"..18'-2", clear of both leaf sweeps. Both keep
+    # 1'-0" standoff from the wall for the linesets.
     Equipment(uid="CEE017AAAA", tag="EQ-M-HP1-OD", kind=EquipmentKind.HEAT_PUMP,
               position=pt(ft(8, 8), ft(-2, -7)), footprint=(inch(38), inch(16)),
               rotation=deg(90),
@@ -708,26 +582,16 @@ SECOND_EQUIPMENT = [
               position=pt(ft(17, 6), ft(-2, -6.5)), footprint=(inch(37), inch(16)),
               rotation=deg(90),
               type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2", room=None),
-    # System 1's concealed ducted air handler, INSIDE SF-S-DUCT's dropped box at the south
-    # end of the full hallway trunk (2026-07-30). It cannot go in the floor structure: the
-    # case is 21" wide x 11" deep and an 11 7/8" I-joist bay at 16" o.c. offers ~14 1/2"
-    # clear — and the old spot at (21', 7') with the 43" side running east reached
-    # x=22'-8 1/2", 18" inside FO-A-STAIR's framed opening (x starts 21'-2"), i.e. hanging
-    # in the attic stairwell. The soffit box is the one cavity that actually holds it:
-    # 14" drop x 30 3/4" clear takes the 11" x 21" case with room for the lining. Long
-    # side now runs along the hall (footprint 21" x 43", y 6'-0"..9'-7"), west of the
-    # stair opening by 5 1/2"; discharge faces north into DU-S-HP-SUP at y=9'-7",
-    # bottom-return at the rear through REG-S-HP-RET's plenum stub (plan/mep.py). Ceiling
-    # mount: it hangs at the ceiling plane, the case dropping into the box below it.
-    # This is the one indoor unit with its own branch circuit (CKT-HP1-AH): a ducted
-    # unit's blower is fed at the unit, not from the condenser the way a multi's heads
-    # are.
-    #
-    # zone_rooms is the whole conditioned second storey plus the three attic rooms served:
-    # RM-A-STUDY and RM-A-EAST off the two short attic branches, RM-A-WEST off the suite
-    # branch's REG-A-HP-WEST floor boot (2026-07-30). RM-A-DEN is deliberately NOT in it —
-    # nothing serves it, and mep.heating_capacity reports it as unclaimed rather than
-    # pretending this unit carries it (plans/TODO.md).
+    # System 1's concealed ducted AH, inside SF-S-DUCT's dropped box at the south end of the
+    # hallway trunk (2026-07-30). Can't sit in the floor structure — 21"x11" case vs. ~14 1/2"
+    # clear in an 11 7/8" I-joist bay — and the old (21', 7') spot hung 18" into FO-A-STAIR's
+    # framed opening. The soffit box (14" drop x 30 3/4" clear) is the one cavity that holds
+    # it; footprint 21"x43" runs the hall, discharge north into DU-S-HP-SUP, return through
+    # REG-S-HP-RET's plenum stub. Own branch circuit (CKT-HP1-AH) since a ducted unit's
+    # blower is fed at the unit, unlike a multi's heads.
+    # zone_rooms covers the whole conditioned second storey plus RM-A-STUDY/RM-A-EAST (short
+    # attic branches) and RM-A-WEST (suite branch's REG-A-HP-WEST boot, 2026-07-30).
+    # RM-A-DEN is deliberately excluded — nothing serves it (plans/TODO.md).
     Equipment(uid="CEE032AAAA", tag="EQ-S-HP1-AH",
               kind=EquipmentKind.DUCTED_AIR_HANDLER,
               position=pt(ft(19, 10), ft(7, 9.5)), footprint=(inch(21), inch(43)),
@@ -769,15 +633,10 @@ GARAGE_DEVICES = [
 ]
 
 GARAGE_EQUIPMENT = [
-    # Bench heater on the west wall — the only one of the four with nothing in it:
-    # D-G-OVERHEAD takes 16' of the east wall, D-G-SERVICE the south, WIN-G-N1/N2 the
-    # north. Interior face x=0'-0 5/8", so the 9"-deep box centres at x=0'-5"; rotation 90
-    # puts its back west. Mounted at 6'-0" on an 8'-0" wall, so its 15" case tops out at
-    # 7'-3" and it blows down over a bench instead of at someone's head.
-    #
-    # Hard-wired, not a cord-and-plug unit: NEC 210.8(A)(2) puts GFCI on *receptacles* in a
-    # garage, and CKT-GAR-HEAT therefore carries no GFCI. Plugging this into the wall
-    # instead would drag it onto CKT-RC-GARAGE's GFCI protection and off its own circuit.
+    # West wall — the only wall with nothing else in it. Mounted 6'-0" on an 8' wall, 15"
+    # case tops at 7'-3", blows down over a bench.
+    # Hard-wired, not cord-and-plug: NEC 210.8(A)(2) GFCI applies to garage *receptacles*
+    # only, so CKT-GAR-HEAT carries none — a plug-in unit would need CKT-RC-GARAGE instead.
     Equipment(uid="CEE023AAAA", tag="EQ-G-HEATER", kind=EquipmentKind.SPACE_HEATER,
               position=pt(m(0.227899), m(14.595)), footprint=(inch(14), inch(9)),
               room="RM-GARAGE", type_ref="EQ-T-GARAGE-HEATER", rotation=deg(90),
@@ -802,11 +661,9 @@ PV_JBOX_CLAMP = [
 # storeys). Each run travels its plan polyline flat at start_elevation and rises
 # vertically at its last point to end_elevation; the takeoff bills the developed length.
 CONDUIT_TRUNKS = [
-    # Up the mechanical chase beside the radon vent to the PV junction box. The chase moved
-    # from (3', 33') to (1', 34'-6") on 2026-07-28 when RM-M-MECH was framed around it and
-    # this run did not follow: (3', 33') is 4" south of W-M-MECH-S, i.e. out in the open
-    # mudroom floor with no enclosure. Corrected 2026-08-02 to (1'-6", 34'-6"), the same
-    # line the data riser takes, 6" east of the radon/vent bundle.
+    # Up the mechanical chase beside the radon vent to the PV junction box. Corrected
+    # 2026-08-02 to (1'-6", 34'-6") — the old (3', 33') sat 4" south of W-M-MECH-S, out in
+    # the open mudroom floor with no enclosure.
     ConduitRun(uid="CDT001AAAA", tag="CD-B-ATTIC-RISER", trade_size=inch(1.5),
                path=(pt(ft(2), ft(29)), pt(ft(1, 6), ft(34, 6))),
                start_elevation=ft(-4), end_elevation=ft(25, 6),
@@ -833,12 +690,9 @@ CONDUIT_TRUNKS = [
                path=(pt(ft(2), ft(24, 6)), pt(ft(2), ft(27))),
                start_elevation=ft(-4), end_elevation=ft(-4),
                from_ref="EQ-B-ESS-INV", to_ref="ED-B-BACKUP-PANEL"),
-    # North under the 4'-ish house/garage gap to the EV receptacles on W-G-S.
-    # The east leg runs y=35', not y=36': the north foundation wall's structure sits on the
-    # 36' sheathing line, so the old route travelled 14' *inside* W-B-N2/W-B-N3 and read as
-    # three separate wall crossings. Pulled 1' south it stays in the basement and punches
-    # the wall once, where SP-B-N-GARAGE is (2026-08-02, when conduit joined the pour-day
-    # crossing walk).
+    # North under the house/garage gap to the EV receptacles on W-G-S. East leg runs y=35',
+    # not y=36' (2026-08-02): the old line ran 14' inside W-B-N2/W-B-N3 as three wall
+    # crossings; pulled 1' south it punches the wall once.
     ConduitRun(uid="CDT002AAAA", tag="CD-B-GARAGE", trade_size=inch(1.25),
                path=(pt(ft(2), ft(29)), pt(ft(2), ft(35)), pt(ft(16), ft(35)),
                      pt(ft(16), ft(41, 6))),
@@ -863,26 +717,13 @@ CONDUIT_TRUNKS = [
 ]
 
 # --- Structured cabling: the head end, three access points, and the spine trunk ---------
-#
-# The house already has a full-height chase — the shared radon/plumbing shaft at
-# (1', 34'-6"), enclosed the whole way up by RM-B-FURNACE, RM-M-MECH, the notch in
-# RM-S-BATH1 and out through the attic (plan/mep.py VENT_RISERS). It is the trunk route in
-# everything but name, so the CAT6 rides it too, in its own raceways: NEC 800.133/725
-# forbids comms sharing a raceway with power.
-#
-# Four risers on the y=34'-6" line, 6" apart — enough to pull each without disturbing its
-# neighbours, and >= 5" so mep.sleeve_coverage's matcher cannot confuse two of the sleeves
-# they need through SL-M-DECK:
-#     x=1'-0"   radon + plumbing vent, two 3" pipes (VR-M-RADON-VENT)
-#     x=1'-6"   CD-B-ATTIC-RISER, 1.5" — PV DC up to ED-A-PV-JB
-#     x=2'-0"   CD-B-DATA-CHASE, 1.25" — this one
-#     x=2'-6"   CD-B-SPARE-CHASE, 2" — capped, empty, pull string
-# All four sit inside RM-M-MECH (x 0..6', y 33'-4"..36') where it crosses the main storey.
-#
-# Star topology, not a daisy chain — every run is a home run from ED-B-NET-PATCH, which is
-# how structured wiring is actually pulled and what makes the from_ref/to_ref graph
-# `electrical.data_reachability` walks mean something. The vertical is a fact of the chase,
-# not of the cable.
+# Rides the existing full-height radon/plumbing chase at (1', 34'-6") in its own raceways
+# (NEC 800.133/725 forbids comms sharing a raceway with power). Four risers 6" apart on the
+# y=34'-6" line (>=5" so mep.sleeve_coverage's matcher doesn't confuse sleeves through
+# SL-M-DECK): x=1'-0" radon/vent, x=1'-6" CD-B-ATTIC-RISER (PV DC), x=2'-0"
+# CD-B-DATA-CHASE, x=2'-6" CD-B-SPARE-CHASE (capped, pull string).
+# Star topology, not daisy chain: every run is a home run from ED-B-NET-PATCH, which is
+# what `electrical.data_reachability`'s from_ref/to_ref graph walk needs to mean anything.
 DATA_HEAD_END = [
     # Router, PoE switch and patch field in the basement mechanical room, 2' north of
     # ED-B-PANEL (29') and clear of the ERV duct crossing at 31'-4". It is the only
@@ -963,28 +804,18 @@ ATTIC_DATA_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
 ]
 
-# No porch deck penetration, and the reason is worth keeping: SL-SG-DECK resolves at
-# 10'-0"..10'-1 1/2", while ED-M-PORCH-FAN and ED-M-PORCH-AP both hang at 8'-6" and
-# CD-M-DATA-PORCH tops out at 9'-2". Everything on the porch is *under* the balcony deck, not
-# through it — the raceways leave the house through the framed south wall and run in the
-# soffit, and a framed wall takes a drilled hole, not a cast sleeve. A sleeve authored on
-# SL-SG-DECK (tried 2026-08-02) modelled a penetration nothing makes, and graded UNKNOWN
-# forever because `concrete_crossings` correctly found no run through it.
-#
-# ED-M-PORCH-FAN's supply is still undrawn, as it has always been. That is a branch-wiring
-# gap, not a penetration gap: under the "only main trunks are modeled" rule the last leg to
-# any device is undrawn, and the fan is no different from every receptacle in the house.
+# No porch deck penetration, deliberately: everything on the porch (elev <=9'-2") is
+# *under* the balcony deck (SL-SG-DECK at 10'-0"..10'-1 1/2"), not through it — raceways
+# exit via the framed south wall (drilled hole) into the soffit. A sleeve tried on
+# SL-SG-DECK (2026-08-02) modelled a penetration that doesn't exist and graded UNKNOWN
+# forever. ED-M-PORCH-FAN's undrawn supply is the ordinary "last leg" branch-wiring gap,
+# not a penetration gap.
 
 # --- Raceway penetrations through cast concrete (2026-08-02) ---------------------------
-# Every one of these existed as a hole in the concrete and as nothing in the model:
-# `concrete_crossings` walked only pipe runs, so no check could see that the raceways were
-# crossing decks, foundation walls and footings unsleeved. Teaching it about conduit turned
-# up fifteen, three of them on risers authored in this same pass.
-#
-# Positions are the crossing points the resolver computes, not hand-measured ones — a sleeve
-# has to be where the run actually goes through, and `mep.sleeve_coverage` matches on that.
-# Wall and footing crossings are horizontal and carry the run's elevation; deck and slab
-# crossings are vertical.
+# Fifteen holes existed in the concrete and nothing in the model — `concrete_crossings`
+# walked only pipe runs. Positions are resolver-computed crossing points, not hand-measured
+# (`mep.sleeve_coverage` matches on them). Wall/footing crossings are horizontal, carry the
+# run's elevation; deck/slab crossings are vertical.
 CONDUIT_SLEEVES = [
     # The three risers through SL-M-DECK inside RM-M-MECH, 6" apart on the y=34'-6" line.
     SleevePenetration(uid="CNS002AAAA", tag="SP-M-CD-PV", host_ref="SL-M-DECK",
@@ -1043,10 +874,10 @@ CONDUIT_SLEEVES = [
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120),
     # CD-B-SPA: south out of the basement and under the sunken garden to the hot tub
     # disconnect.
-    # This one was invisible until the sleeve matcher learned to check purpose: the run
-    # passes 2" from SP-B-CW-WC2, the WC2 drain's sleeve, and proximity alone let a 1" power
-    # raceway claim a 3" plumbing sleeve — reported as a PASS, and it also stole the sleeve
-    # from the drain, which is how mep.sewer_exit_invert came to grade CD-B-SPA as a drain.
+    # Invisible until the sleeve matcher learned to check purpose: this run passes 2" from
+    # SP-B-CW-WC2 (the WC2 drain's sleeve), and proximity alone let this power raceway claim
+    # the plumbing sleeve — a false PASS that also made mep.sewer_exit_invert grade CD-B-SPA
+    # as a drain.
     SleevePenetration(uid="CNS017AAAA", tag="SP-B-CW-CD-SPA", host_ref="W-B-CW",
                       position=pt(ft(2), ft(18)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(1.75), purpose=Service.POWER_240,
@@ -1130,36 +961,26 @@ NEC_FILL_MAIN = [
                      position=pt(ft(18, 4.375), ft(21, 1.25)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
-    # The old hall band, 2026-07-28. Opening the centre line under BM-M-HALL merged
-    # RM-M-HALL into this room, and a hallway's walls are exempt from 210.52(A) only while
-    # they *are* a hallway — as habitable-room wall space the same 6'/12' rule reaches them,
-    # and the band had no receptacles at all. Positions are the four gaps
-    # `electrical.receptacle_spacing` measured on the merged clear face, each 0.05' off its
-    # wall like the fills above.
+    # The old hall band (2026-07-28): merging RM-M-HALL into this room via BM-M-HALL lost
+    # its 210.52(A) hallway exemption, and the band had zero receptacles. Positions are the
+    # four gaps `electrical.receptacle_spacing` measured on the merged clear face.
     #
-    # Eight of the outlets on the two storey receptacle circuits are GFCI *devices* rather
-    # than ordinary ones (2026-08-01, code.E3902_gfci_locations). Each is in an E3902
-    # location — RC8 is in RM-M-BATH2, RC9/RC12/BED-RC2/STUDY-RC2 and the three suite
-    # outlets are inside the 6' sink reach of E3902.10 — while the circuits they ride reach
-    # a whole storey. Protection therefore goes at the outlet: CKT-RC-MAIN and
-    # CKT-RC-SECOND stay non-GFCI at the breaker (see plan/circuits.py) so one splashed
-    # bathroom outlet cannot take a floor of receptacles with it.
+    # Eight outlets on the storey receptacle circuits are GFCI *devices*, not breakers
+    # (2026-08-01, code.E3902_gfci_locations): each sits within E3902.10's 6' sink reach
+    # while its circuit (CKT-RC-MAIN/CKT-RC-SECOND) spans a whole storey non-GFCI, so one
+    # splashed bathroom outlet can't take the floor down with it.
     #
-    # y flipped to W-M-HS1's south (living) face (2026-07-28): W-M-BAE's 2' east shift
-    # extended W-M-HS1 to x=6', and the north face at this x is now inside RM-M-BATH1.
+    # y flipped to W-M-HS1's south face (2026-07-28): W-M-BAE's 2' east shift put the north
+    # face inside RM-M-BATH1 at this x.
     ElectricalDevice(uid="NEC066AAAA", tag="ED-M-LIVING-RC8", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(5, 4.75), ft(22, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    # y flipped to W-M-STOS's north (mudroom) face (2026-07-28): W-M-BAE's 2' east shift
-    # extended W-M-STOS's south face — where this device sat — into RM-M-BATH1.
-    # Inside RM-M-MUD-CLOSET since the closet was framed (2026-08-02) — kept, on purpose:
-    # NEC restricts luminaires in clothes closets (410.16), not receptacles, and a
-    # receptacle in a mudroom reach-in is the boot-dryer/vacuum-charger outlet. Moving it
-    # buys nothing: RM-M-MUDROOM is Occupancy.STORAGE, which electrical.receptacle_spacing
-    # never walks (habitable rooms only), so no 210.52 wall space loses coverage by the
-    # enclosure. It stays a GFCI device because its E3902.10 sink-reach location
-    # (RM-M-BATH1's lav, through W-M-STOS) did not move either.
+    # y flipped to W-M-STOS's north face (2026-07-28) when W-M-BAE's shift pushed the south
+    # face into RM-M-BATH1. Inside RM-M-MUD-CLOSET since 2026-08-02, kept on purpose: NEC
+    # 410.16 restricts closet luminaires, not receptacles, and RM-M-MUDROOM is
+    # Occupancy.STORAGE so `electrical.receptacle_spacing` never walks it anyway. Stays GFCI
+    # for its unmoved E3902.10 sink-reach location (RM-M-BATH1's lav, through W-M-STOS).
     ElectricalDevice(uid="NEC067AAAA", tag="ED-M-LIVING-RC9", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(4, 6.625), ft(26, 7.375)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
@@ -1207,11 +1028,9 @@ NEC_FILL_MAIN = [
                      position=pt(ft(0, 7.625), ft(9, 11.5)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(90)),
-    # 2026-08-03: RC1 and RC3 both used to stand in W-M-C3, and RC1 stood in D-M-STUDY's
-    # rough opening. RM-M-STUDY is 4'-8" x 4'-2" and that east wall is nearly all door, so
-    # the pair moved onto the study's south and north walls — which puts them 5'-2" and 5'-10"
-    # from FX-M-LAUNDRY-SINK's bowl, inside E3902.10's 6'. Both are GFCI at the device now,
-    # the same trade ED-M-STUDY-RC2 already made on the wall between them.
+    # 2026-08-03: RC1 sat in D-M-STUDY's rough opening; moved with RC3 onto the study's
+    # south/north walls (RM-M-STUDY is 4'-8"x4'-2", east wall nearly all door), 5'-2"/5'-10"
+    # from FX-M-LAUNDRY-SINK — inside E3902.10's 6', so both are GFCI at the device.
     ElectricalDevice(uid="NEC019AAAA", tag="ED-M-STUDY-RC1", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(17), ft(18, 3.375)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
@@ -1233,13 +1052,10 @@ NEC_FILL_MAIN = [
 # face: none of these devices carries `room=`, so a stale coordinate more than 19 5/8"
 # (`_NEAR_WALL_M`) off simply stops counting toward the room and nothing reports it.
 NEC_FILL_SECOND = [
-    # Moved x=15.89' -> 17.0' (2026-07-31): D-S-DECK-W's rough opening runs
-    # x 11'-2"..16'-2", so the old station was in the doorway. 17'-0" is the middle of the
-    # 1'-10" of wall left between that opening and the centre-line corner — under the 2'-0"
-    # NEC 210.52(A)(2) counts as wall space, so it is a receptacle the spacing rule no
-    # longer demands, kept because the south wall is where the plant gear plugs in. The
-    # stretch west of the door is still ED-S-PLANT-RC2's: from x=5.85' nothing on
-    # x 0'..11'-2" is more than 6' away.
+    # Moved x=15.89' -> 17.0' (2026-07-31): the old station was inside D-S-DECK-W's rough
+    # opening (x 11'-2"..16'-2"). 17'-0" centres the 1'-10" of wall left, under the 2'-0"
+    # 210.52(A)(2) counts as wall space — kept anyway since the south wall is where the
+    # plant gear plugs in.
     ElectricalDevice(uid="NEC021AAAA", tag="ED-S-PLANT-RC1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(17), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-SECOND",
@@ -1387,13 +1203,9 @@ NEC_FILL_ATTIC = [
                      position=pt(ft(26, 6.375), ft(9, 3.375)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
-    # RC1 and RC2 both moved 2026-07-31. FO-A-STAIR takes the north 3'-0" of this room
-    # (x 21'-2"..35'-5 3/8", y 5'-9 5/8"..8'-9 5/8"), leaving 1 3/4" of deck against the north
-    # wall and 6 5/8" against the east wall above the well. RC1 sat on the first of those and
-    # RC2 on the second: boxes you would have to lean over a 9' drop to reach. RC1 takes the
-    # middle of the south wall, between RC4 and RC3 under the windows; RC2 drops to the east
-    # wall south of the well, where it is what closes the 7'-10" run from RC3 round the
-    # southeast corner.
+    # RC1/RC2 moved 2026-07-31: both used to sit over the FO-A-STAIR well (1 3/4"/6 5/8" of
+    # deck, a 9' drop to reach). RC1 -> south wall between RC4/RC3; RC2 -> east wall south of
+    # the well, closing the 7'-10" run from RC3 round the corner.
     ElectricalDevice(uid="NEC056AAAA", tag="ED-A-STUDY-RC1", kind=DeviceKind.RECEPTACLE,
                      position=pt(ft(29), ft(0, 7.625)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",

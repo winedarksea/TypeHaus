@@ -24,18 +24,12 @@ Conventions:
 - ``slot`` is the physical breaker position: odd numbers run down the left column, even
   down the right, and a 2-pole breaker takes ``slot`` and ``slot + 2`` (same column).
   The ESS grid port backfeeds at the bottom of the bus (40/42), opposite the main (120%
-  rule); ``code.NEC_705_12_interconnection`` now grades that arithmetic instead of this
-  comment asserting it.
-  HONEST STATE (2026-08-07, CKT-DISPOSAL): ED-B-PANEL carries 14 two-pole + 17 one-pole =
-  45 spaces of the 54 ED-T-PANEL holds, so nine are spare. The 2026-08-02 backup-microgrid
-  refactor freed eight of those by moving the six backup circuits (7 poles) and retiring
-  CKT-BACKUP-FEED (1 pole) to the subpanel; splitting the disposer off CKT-DISHWASHER has
-  now spent one, at slot 39. ED-B-BACKUP-PANEL carries 1 two-pole + 5 one-pole = 7 of its
-  12. ``electrical.panel_spaces`` reconciles both.
-  (The line this replaced read "15 two-pole + 16 one-pole = 46". Both halves were wrong —
-  the panel has held 14 two-pole circuits since the refactor, and the arithmetic never
-  matched ``test_catlin_panel_spaces_fits_the_54_space_enclosure``'s 44. Counted from the
-  loaded plan this time rather than by hand.)
+  rule); ``code.NEC_705_12_interconnection`` grades that arithmetic.
+  As of 2026-08-07 (CKT-DISPOSAL split): ED-B-PANEL carries 14 two-pole + 17 one-pole =
+  45 of ED-T-PANEL's 54 spaces (nine spare); ED-B-BACKUP-PANEL carries 1 two-pole +
+  5 one-pole = 7 of its 12. ``electrical.panel_spaces`` reconciles both against
+  ``test_catlin_panel_spaces_fits_the_54_space_enclosure``. Count from the loaded plan,
+  not by hand — a hand count has been wrong here before.
 """
 
 from __future__ import annotations
@@ -43,29 +37,25 @@ from __future__ import annotations
 from typehaus import BackupTier, Circuit, LoadManagement
 
 _PANEL = "ED-B-PANEL"
-# The backup subpanel on the EG4 12kPV's dedicated load output (plan/electrical.py). The
-# tiered circuits live here rather than in ED-B-PANEL because that is physically what a
-# hybrid inverter's load port is: a separate bus that stays energized when the grid does
-# not. Slot numbering is the same convention — odd left, even right.
+# The backup subpanel on the EG4 12kPV's dedicated load output (plan/electrical.py) — a
+# separate bus that stays energized when the grid does not, which is why tiered circuits
+# live here rather than in ED-B-PANEL. Slot numbering: same convention, odd left/even right.
 _BACKUP_PANEL = "ED-B-BACKUP-PANEL"
 
 CIRCUITS = (
     # --- 240V dedicated loads (electrical_notes.md line 4) ---------------------------
     Circuit(uid="CKT001AAAA", tag="CKT-RANGE", slot=1, panel_ref=_PANEL, breaker_amps=50, poles=2,
             nema="14-50R", load_va=12000, description="Kitchen range"),
-    # load_va is the *nameplate*, 830 W, not the 5,000 VA the 14-30R receptacle type carries.
-    # This circuit had no authored load, so the connected VA fell back to the receptacle
-    # product — a breaker-shaped estimate for a machine that is an LG DLHC5502V ventless
-    # heat-pump dryer drawing 830 W (see ED-M-LAUNDRY-DR1 in plan/electrical.py, and note
-    # the 30A branch stays, deliberately, as a provision for a future vented dryer).
-    # 220.82(B)(3) counts "the nameplate rating" of a clothes dryer; the 5,000 VA minimum is
-    # 220.54's, which belongs to the standard method in Part III and not to this one. The
-    # difference is 4,170 VA of connected load, ~7A of demand, on a service with no room.
+    # load_va is the *nameplate*, 830 W (LG DLHC5502V ventless heat-pump dryer, see
+    # ED-M-LAUNDRY-DR1 in plan/electrical.py) — not the 5,000 VA the 14-30R receptacle
+    # type carries. 220.82(B)(3) counts a dryer's nameplate rating; 220.54's 5,000 VA
+    # minimum belongs to the standard method, not this one. The 30A branch stays as
+    # deliberate provision for a future vented dryer.
     Circuit(uid="CKT002AAAA", tag="CKT-DRYER", slot=5, panel_ref=_PANEL, breaker_amps=30, poles=2,
             nema="14-30R", load_va=830, description="Dryer"),
-    # The two EV circuits author their load_va explicitly (same figures the receptacle
-    # types carry: 240x40 and 240x16 continuous) because LOAD_MANAGEMENTS below reads the
-    # managed group's connected load off the *circuits*, not the devices.
+    # The two EV circuits author load_va explicitly (same figures as their receptacle
+    # types) because LOAD_MANAGEMENTS below reads the managed group's load off the
+    # *circuits*, not the devices.
     Circuit(uid="CKT003AAAA", tag="CKT-EV-1450", slot=9, panel_ref=_PANEL, breaker_amps=50, poles=2,
             nema="14-50R", load_va=9600,
             description="EV charging, NEMA 14-50 (garage) — Emporia Vue managed"),
@@ -74,10 +64,9 @@ CIRCUITS = (
             description="EV charging, NEMA 6-20 (garage) — Emporia Vue managed"),
     Circuit(uid="CKT005AAAA", tag="CKT-SPA", slot=17, panel_ref=_PANEL, breaker_amps=50, poles=2,
             gfci=True, load_va=11500, description="Hot tub (sunken garden)"),
-    # 50A/2p GFCI per notes/sauna_shower_basement_detail.md ("240V, 50A GFCI breaker and
-    # wiring to sauna heater (max 10.5 kW)"). Was 30A, which only carries ~5.5 kW continuous
-    # — half what RM-B-SAUNA's 513 cf heated volume needs. EQ-B-SAUNA-HTR is 9 kW = 37.5A,
-    # 46.9A at the 125% continuous factor, so 50A is the breaker and 10.5 kW the headroom.
+    # 50A/2p GFCI per notes/sauna_shower_basement_detail.md (max 10.5 kW). Was 30A (only
+    # ~5.5 kW continuous, half what the 513 cf sauna needs); EQ-B-SAUNA-HTR is 9 kW =
+    # 37.5A, 46.9A at the 125% continuous factor, so 50A is the breaker.
     Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", slot=21, panel_ref=_PANEL, breaker_amps=50, poles=2,
             gfci=True, load_va=9000, description="Sauna heater (EQ-B-SAUNA-HTR)"),
     # CKT-WH-240 moved to the backup subpanel 2026-08-15 — see the SHED tier below. Slot 25
@@ -89,71 +78,60 @@ CIRCUITS = (
     # air handler does get its own, because a ducted blower is fed at the unit.
     Circuit(uid="CKT009AAAA", tag="CKT-HP1", slot=6, panel_ref=_PANEL, breaker_amps=25, poles=2,
             load_va=4800, description="Heat pump 1 outdoor, Vireo GEN3 (EQ-M-HP1-OD)"),
-    # uids CKT036/037, not CKT031/032: those two were already spent on the radiant-floor
-    # circuits below, so this pair was a straight duplicate from the day it was authored
-    # (found 2026-08-01). Nothing references a Circuit by uid — devices name the tag — so
-    # renumbering the newer pair is the whole fix.
+    # uids CKT036/037, not CKT031/032: those were already spent on the radiant-floor
+    # circuits below (a duplicate found 2026-08-01). Devices name the tag, not the uid,
+    # so renumbering this pair was the whole fix.
     Circuit(uid="CKT036AAAA", tag="CKT-HP1-AH", slot=50, panel_ref=_PANEL, breaker_amps=15, poles=2,
             load_va=1000,
             description="Heat pump 1 indoor, concealed ducted air handler (EQ-S-HP1-AH)"),
     Circuit(uid="CKT037AAAA", tag="CKT-HP2", slot=49, panel_ref=_PANEL, breaker_amps=30, poles=2,
             load_va=6000,
             description="Heat pump 2 outdoor, Multi Ultra 3-port (EQ-M-HP2-OD; feeds its 3 heads)"),
-    # System 3 is the one on the backup microgrid: a true-VFD compressor soft-starts, which
-    # is what makes it carryable by the battery inverter at all. Lives on the subpanel with
-    # the rest of the backup program — see the microgrid block below.
+    # System 3 (below, backup microgrid) is a true-VFD compressor that soft-starts, which
+    # is what makes it carryable by the battery inverter at all.
     # GFCI at the breaker (2026-08-01, code.E3902_gfci_locations): ED-M-LIVING-KET1 sits
-    # 3.2' from the kitchen sink. E3902.10 reaches it even though it is 240V — the section
-    # covers receptacles from 125V through 250V at 50A or less, not just the 125V ones — and
-    # a 2-pole GFCI breaker is the only place to put protection on a 6-20R.
+    # 3.2' from the kitchen sink. E3902.10 reaches it despite being 240V (it covers 125V
+    # through 250V receptacles at 50A or less), and a 2-pole GFCI breaker is the only
+    # place to protect a 6-20R.
     Circuit(uid="CKT011AAAA", tag="CKT-KETTLE", slot=14, panel_ref=_PANEL, breaker_amps=20, poles=2,
             nema="6-20R", gfci=True, load_va=3840,
             description="Kitchen kettle outlet (6-20R half)"),
     # The EG4 12kPV's grid port, at the opposite end of the bus from the main (120% rule
-    # headroom is why the panel is 225A on a 200A service). Both the PV array and the
-    # battery reach the service through this one breaker now — the array no longer
-    # backfeeds on its own, it lands on the inverter's MPPTs (EQ-B-ESS-INV).
+    # headroom is why the panel is 225A on a 200A service). Both PV and battery reach the
+    # service through this one breaker — the array lands on the inverter's MPPTs
+    # (EQ-B-ESS-INV) rather than backfeeding on its own.
     #
-    # 50A: the 12kPV puts out 8,000 W continuous at 240V = 33.3A, x125% = 41.7A, and 50A is
-    # the next standard size (datasheet 2026-08-02; grid passthrough is rated 80A, which is
-    # the pass-through capability, not the backfeed). The 705.12 ceiling on this bus is
-    # 225 x 1.2 - 200 = 70A, so 50A leaves 20A for a future second source (V2H).
+    # 50A: 8,000 W continuous at 240V = 33.3A, x125% = 41.7A, next standard size up
+    # (datasheet 2026-08-02; the 80A grid-passthrough rating is pass-through capability,
+    # not backfeed). The 705.12 ceiling on this bus is 225x1.2-200=70A, so 50A leaves 20A
+    # for a future second source (V2H).
     #
-    # source=True is what excludes it from the 220.82 load summary and includes it in the
-    # 705.12 busbar check — the string-matching on "pv "/"backfeed" that used to do the
-    # first half is gone.
+    # source=True excludes it from the 220.82 load summary and includes it in the 705.12
+    # busbar check.
     Circuit(uid="CKT012AAAA", tag="CKT-ESS-GRID", slot=40, panel_ref=_PANEL, breaker_amps=50,
             poles=2, source=True, load_va=0,
             description="EG4 12kPV grid port — PV + battery interconnection (EQ-B-ESS-INV)"),
-    # Was the panel's spare 2-pole ("conduit stubbed for future 240V"). Claimed on
-    # 2026-08-15 by EQ-S-HP1-STRIP, the 2 kW duct heater that answers System 1's
-    # design-temperature shortfall — which is exactly the future load the pair was held for.
-    # 2,000 W / 240 V = 8.3 A, x 1.25 continuous = 10.4 A, so the breaker comes down to 15A;
-    # a 30A breaker on a fixed 8.3A heater protects nothing the conductor needs protecting
-    # from. The panel now holds no spare 2-pole (plans/TODO.md).
+    # Was the panel's spare 2-pole ("conduit stubbed for future 240V"). Claimed 2026-08-15
+    # by EQ-S-HP1-STRIP, the 2 kW duct heater answering System 1's design-temperature
+    # shortfall. 2,000W/240V=8.3A, x1.25 continuous=10.4A, so the breaker comes down to
+    # 15A — a 30A breaker protects nothing this conductor needs. Panel now holds no spare
+    # 2-pole (plans/TODO.md).
     Circuit(uid="CKT013AAAA", tag="CKT-HP1-STRIP", slot=18, panel_ref=_PANEL, breaker_amps=15, poles=2,
             load_va=2000, description="System 1 supplemental duct heater (EQ-S-HP1-STRIP)"),
 
     # --- electric space heating (2026-07-25) -----------------------------------------
+    # Supplemental only — the three heat-pump systems do the heating work, these five
+    # take the chill off specific surfaces. The three floor zones are 120V mat at
+    # 12 W/ft2 over polygons in storeys/main.py and storeys/second.py, so each circuit's
+    # VA is zone area x 12. 15A (not 20A) since these are 4-6A loads, each zone on its own
+    # circuit (not shared, to avoid two rooms behind one 5 mA GFCI trip).
     #
-    # Supplemental only: the three heat-pump systems do the heating work and these five take the chill
-    # off specific surfaces. None of them is sized to carry a room.
+    # GFCI on all three: NEC 424.44(G) requires it for bath/kitchen floor heating cable
+    # (CKT-FH-BATH2/BATH1 outright); the dining zone (RM-M-LIVING) is outside the letter
+    # of that rule but mat manufacturers require Class A protection regardless.
     #
-    # The three floor zones are 120V mat at 12 W/ft2 over the polygons authored in
-    # storeys/main.py and storeys/second.py, so each circuit's VA is that zone's area x 12.
-    # 15A rather than 20A because these are 4-6A loads: 12/2 to a 5A mat is wire nobody
-    # needs, and a 15A GFCI breaker is the same part. Each zone keeps its own circuit — a
-    # shared one would put two rooms' floors behind one 5 mA trip, and the two main-storey
-    # stats are 23' apart across the centre bearing wall anyway.
-    #
-    # GFCI on all three: NEC 424.44(G) requires it for heating cable in the floor of a
-    # bathroom or kitchen, which covers CKT-FH-BATH2 and CKT-FH-BATH1 outright. The
-    # dining zone is in RM-M-LIVING and outside the letter of that rule, but mat
-    # manufacturers require Class A protection on every mat regardless, and it would be a
-    # strange schedule that protected two identical mats and not the third.
-    #
-    # Was CKT-FH-SAUNA until 2026-07-25 — RM-B-SAUNA has no floor heat (see the note in
-    # storeys/basement.py), so that zone, its circuit and its stat are all gone.
+    # Was CKT-FH-SAUNA until 2026-07-25 — RM-B-SAUNA has no floor heat (storeys/
+    # basement.py), so that zone, circuit and stat are all gone.
     Circuit(uid="CKT031AAAA", tag="CKT-FH-BATH2", slot=29, panel_ref=_PANEL, breaker_amps=15, poles=1,
             gfci=True, load_va=498,
             description="Radiant floor heat — main bath (FH-M-BATH2, 41.5 ft2)"),
@@ -166,14 +144,12 @@ CIRCUITS = (
     Circuit(uid="CKT033AAAA", tag="CKT-FH-BATH1", slot=33, panel_ref=_PANEL, breaker_amps=15, poles=1,
             gfci=True, load_va=509,
             description="Radiant floor heat — NW bathroom (FH-S-BATH1, 42.4 ft2)"),
-    # 1,500 W at 120V = 12.5A, and both of these run long enough to be continuous loads:
-    # 12.5 x 1.25 = 15.6A, which fits the 16A a 20A breaker allows and does *not* fit a
-    # 15A one (12A). That is why these two are 20A where the mats are 15A.
+    # 1,500W at 120V=12.5A, continuous: 12.5x1.25=15.6A fits a 20A breaker's 16A but not
+    # a 15A one's 12A — why these two are 20A where the mats are 15A.
     #
-    # Neither is GFCI. Both are hard-wired equipment, and NEC 210.8(A) protects
-    # *receptacles* — the garage rule in (A)(2) included. Cord-and-plug versions of either
-    # would need it, which is the reason both are modeled as Equipment with the circuit on
-    # the placeable rather than as a receptacle with something plugged into it.
+    # Neither is GFCI: both are hard-wired equipment, and NEC 210.8(A) (garage rule
+    # (A)(2) included) protects *receptacles*, not fixed wiring. Cord-and-plug versions
+    # would need it — the reason both are modeled as Equipment on their own circuit.
     Circuit(uid="CKT034AAAA", tag="CKT-FIREPLACE", slot=35, panel_ref=_PANEL, breaker_amps=20, poles=1,
             afci=True, load_va=1500,
             description="Electric fireplace, living room SE corner (EQ-M-FIREPLACE)"),
@@ -182,42 +158,36 @@ CIRCUITS = (
             description="Garage infrared heater lamp, 1.5 kW (EQ-G-HEATER)"),
 
     # --- the backup microgrid (notes/backup_power.md) ---------------------------------
-    #
     # Every circuit below is homed to ED-B-BACKUP-PANEL, the 12-space subpanel on the
-    # EG4 12kPV's dedicated load output. Two tiers:
+    # EG4 12kPV's dedicated load output. Two tiers: ALWAYS_ON rides the whole outage
+    # (food, network, enough light for two rooms); SHED drops via relay (or a
+    # relay-driven contactor for 2-pole/over-16A loads) when the battery is low and the
+    # sun isn't out.
     #
-    #   ALWAYS_ON  rides the whole outage — the food, the network, and enough light to
-    #              live in the two rooms that matter.
-    #   SHED       is dropped by a relay (or a relay-driven contactor, for the 2-pole and
-    #              over-16A ones) when the battery is low and the sun is not out.
+    # ``duty_cycle`` on each is an ESTIMATE (basis stated per circuit, authored
+    # 2026-08-02) for the autonomy calc — the least certain numbers here and the ones the
+    # 48-hour verdict is most sensitive to; revise against real metering, not vibes.
     #
-    # ``duty_cycle`` on each is an ESTIMATE with its basis stated, authored 2026-08-02 for
-    # the autonomy calc. They are the least certain numbers in this file and the ones the
-    # 48-hour verdict is most sensitive to — revise them against real metering, not vibes.
-    #
-    # CKT-BACKUP-FEED is retired in the same change: the DIN gear it fed is now downstream
-    # of the inverter's load output like everything else on this bus, and a circuit whose
-    # only job was to feed the backup enclosure from the *grid* side is exactly backwards.
+    # CKT-BACKUP-FEED (retired same change): its DIN gear is now downstream of the
+    # inverter's load output like everything else on this bus, so a circuit feeding the
+    # backup enclosure from the *grid* side was backwards.
 
     # -- ALWAYS_ON --
-    # 800 VA is the *circuit allowance*, not the draw, and the gap between those two is
-    # the whole reason duty_cycle exists. A current-generation fridge averages ~60 W over
-    # its cycle and a chest freezer ~45 W — 105 W of 800 VA = 0.13. Still the largest
-    # always-on term, and the one most worth metering.
+    # 800 VA is the *circuit allowance*, not the draw — the gap is why duty_cycle exists.
+    # Fridge averages ~60W, chest freezer ~45W: 105W of 800VA = 0.13, still the largest
+    # always-on term and the one most worth metering.
     #
-    # The ~15 W PoE allowance this circuit used to carry moved to CKT-HA on 2026-08-02, when
-    # the access points became real elements: they are fed by the switch in ED-B-NET-PATCH,
-    # not from a kitchen receptacle, so the load belongs on the switch's circuit.
+    # The ~15W PoE allowance this circuit used to carry moved to CKT-HA on 2026-08-02: the
+    # access points are fed by the switch in ED-B-NET-PATCH, not a kitchen receptacle.
     Circuit(uid="CKT016AAAA", tag="CKT-FRIDGE", slot=2, panel_ref=_BACKUP_PANEL,
             breaker_amps=20, poles=1, backup_tier=BackupTier.ALWAYS_ON, afci=True,
             load_va=800, duty_cycle=0.13,
             description="Kitchen outlet 1: fridge + freezer"),
-    # 300 VA is again an outlet allowance. The real load is a router (~12 W), a small
-    # always-on HA server (~28 W), and the PoE switch feeding three access points at 15 W
-    # each (~45 W of port load plus conversion loss) — ~90 W of 300 VA = 0.30. Not a duty
-    # cycle in the compressor sense: this load never cycles off, the allowance is simply
-    # generous. The per-device PoE draw is scheduled on E-603 (→ takeoff/data.py), which is
-    # the only place it can be read, since a PoE device names no circuit of its own.
+    # 300 VA is again an outlet allowance; the real load is a router (~12W), an always-on
+    # HA server (~28W), and a PoE switch feeding 3 APs (~45W + conversion loss) — ~90W of
+    # 300VA = 0.30. Not a duty cycle in the compressor sense (this load never cycles off,
+    # the allowance is just generous). Per-device PoE draw is scheduled on E-603
+    # (→ takeoff/data.py) since a PoE device names no circuit of its own.
     Circuit(uid="CKT017AAAA", tag="CKT-HA", slot=4, panel_ref=_BACKUP_PANEL,
             breaker_amps=15, poles=1, backup_tier=BackupTier.ALWAYS_ON, gfci=True,
             load_va=300, duty_cycle=0.30,
@@ -241,61 +211,50 @@ CIRCUITS = (
             duty_cycle=0.4,
             description="Heat pump 3 outdoor, Sapphire R32 VFD (EQ-M-HP3-OD; shed tier)"),
     # ONE circuit for the whole 80-gal ProTerra (EQ-B-WH), moved here from the main panel
-    # 2026-08-15 — not the old two-tank split (CKT-WH-HP compressor-only + CKT-WH-240
-    # elements), which modelled a real product's single power whip as two appliances on
-    # two panels. `load_va=4500` is the nameplate: what the 30A breaker, the panel
-    # schedule and the NEC 220.82 estimate are sized against, because a resistance-element
-    # call can happen any time the automation below hasn't (yet) forced Heat-Pump-Only
-    # mode. `LM-WH` is what actually governs the backup-event draw down to ~500W — see it
-    # and `EQ-T-WATER-HEATER`'s note in plan/mep.py for the mechanism. `duty_cycle=0.15`
-    # is unchanged from the old compressor-only circuit's reasoning: a HPWH makes a
-    # household day of hot water in three to four hours of compressor run.
-    # Slot 9 (not 5): a 2-pole breaker occupies its slot and slot+2 in the same column
-    # (electrical.panel_spaces), and 5+7 collides with CKT-SUMP at slot 7. 9+11 is clear.
+    # 2026-08-15 — replacing the old two-tank split, which modelled one product's single
+    # power whip as two appliances on two panels. `load_va=4500` is the nameplate (what
+    # the breaker/schedule/220.82 estimate size against, since a resistance-element call
+    # can happen whenever `LM-WH` below hasn't forced Heat-Pump-Only mode, which is what
+    # actually governs the ~500W backup-event draw — see EQ-T-WATER-HEATER's note in
+    # plan/mep.py). `duty_cycle=0.15`: a HPWH makes a household day of hot water in 3-4
+    # hours of compressor run.
+    # Slot 9 (not 5): a 2-pole breaker occupies slot and slot+2 in the same column
+    # (electrical.panel_spaces); 5+7 collides with CKT-SUMP at slot 7, 9+11 is clear.
     Circuit(uid="CKT007AAAA", tag="CKT-WH-240", slot=9, panel_ref=_BACKUP_PANEL,
             breaker_amps=30, poles=2, backup_tier=BackupTier.SHED, load_va=4500,
             duty_cycle=0.15,
             description="Water heater, Rheem ProTerra 80gal hybrid HPWH (EQ-B-WH; "
                         "EcoNet-automated to Heat-Pump-Only on backup)"),
     # GFCI at the breaker (2026-08-01): RM-B-FURNACE is unfinished below-grade space under
-    # E3902.11, and the 2020 cycle removed the old sump-pump exception. 0.05 is a pump that
-    # runs a minute or two an hour in wet weather — the peak matters here, not the average,
-    # which is why it is on the shed tier despite the small energy number.
+    # E3902.11 (the 2020 cycle removed the old sump-pump exception). 0.05 is a pump
+    # running a minute or two an hour in wet weather — the peak matters, not the average,
+    # hence the shed tier despite the small energy number.
     Circuit(uid="CKT015AAAA", tag="CKT-SUMP", slot=7, panel_ref=_BACKUP_PANEL,
             breaker_amps=20, poles=1, backup_tier=BackupTier.SHED, gfci=True,
             load_va=1000, duty_cycle=0.05, description="Sump pump"),
 
     # --- general-use 120V ------------------------------------------------------------
-    #
-    # ``afci=True`` on every circuit below (2026-08-01, code.E3902_16_afci): each one reaches
-    # a room on E3902.16's list and each is a 120V 15/20A branch circuit, which is the whole
-    # of what the section covers. The 240V loads — range, dryer, the three heat pumps, the
-    # kettle, the PV backfeed — are outside it and stay as they are.
-    #
-    # Where a circuit is both GFCI and AFCI, that is one dual-function breaker, not two
-    # devices, so the two flags cost no panel spaces between them.
+    # ``afci=True`` on every circuit below (2026-08-01, code.E3902_16_afci): each reaches
+    # a room on E3902.16's list as a 120V 15/20A branch circuit. The 240V loads (range,
+    # dryer, heat pumps, kettle, PV backfeed) are outside the section's scope.
+    # GFCI+AFCI on one circuit is a single dual-function breaker, costing one panel space.
     Circuit(uid="CKT020AAAA", tag="CKT-KITCH-SA1", slot=30, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1500,
             description="Kitchen small-appliance 1 (counter west)"),
     Circuit(uid="CKT021AAAA", tag="CKT-KITCH-SA2", slot=32, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1500,
             description="Kitchen small-appliance 2 (counter east)"),
-    # GFCI here as well: ED-M-LIVING-KDW1 is 2.7' from the kitchen sink (E3902.10), which is
-    # the ordinary place a dishwasher receptacle lands and the ordinary reason its breaker
-    # is dual-function.
+    # GFCI here too: ED-M-LIVING-KDW1 is 2.7' from the kitchen sink (E3902.10).
     Circuit(uid="CKT022AAAA", tag="CKT-DISHWASHER", slot=34, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1200,
             description="Dishwasher (sink base)"),
-    # The disposer came off CKT-DISHWASHER (2026-08-07). Both are cord-and-plug appliances
-    # in the same cabinet, and a shared 20A branch is legal, but the two run together every
-    # time a meal ends: a 3/4 HP motor's locked-rotor inrush on top of a dishwasher's heater
-    # is exactly the nuisance trip that gets a breaker taped on. Its own circuit is the
-    # cheap fix while the wall is open. GFCI at the breaker for the same E3902.10 reason as
-    # its neighbour — ED-M-LIVING-KDS1 is closer to the sink than KDW1 is, being under it.
+    # The disposer came off CKT-DISHWASHER (2026-08-07): a shared 20A branch is legal, but
+    # a 3/4 HP motor's locked-rotor inrush on top of a dishwasher's heater is a nuisance
+    # trip waiting to happen. Its own circuit is the cheap fix while the wall is open.
+    # GFCI for the same E3902.10 reason (ED-M-LIVING-KDS1 sits under the sink).
     #
-    # The 120V branch feeds the motor. The wall control is a 24V loop through a contactor —
-    # see APPL-M-DISP's `install_parts` in plan/placeables.py, which bills that loop as
-    # parts because its route is not designed.
+    # The 120V branch feeds the motor; the wall control is a 24V loop through a
+    # contactor — see APPL-M-DISP's `install_parts` in plan/placeables.py.
     Circuit(uid="CKT038AAAA", tag="CKT-DISPOSAL", slot=39, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=1000,
             description="Food waste disposer (sink base)"),
@@ -307,10 +266,10 @@ CIRCUITS = (
             afci=True, description="General lighting — main storey, porch and garage"),
     Circuit(uid="CKT025AAAA", tag="CKT-LT-UPPER", slot=43, panel_ref=_PANEL, breaker_amps=15, poles=1,
             afci=True, description="General lighting — second + attic"),
-    # The two storey receptacle circuits stay non-GFCI at the breaker on purpose: each reaches
-    # a whole floor, and putting thirty outlets behind one 5 mA trip is not how any of this
-    # gets built. The handful of outlets that *are* in an E3902 location — a bath, a mudroom
-    # sink, a wet bar — are GFCI *devices* instead (plan/electrical.py, plan/mep.py).
+    # The two storey receptacle circuits stay non-GFCI at the breaker on purpose: each
+    # reaches a whole floor, and thirty outlets behind one 5 mA trip is not buildable.
+    # The handful in an E3902 location (bath, mudroom sink, wet bar) are GFCI *devices*
+    # instead (plan/electrical.py, plan/mep.py).
     Circuit(uid="CKT026AAAA", tag="CKT-RC-MAIN", slot=44, panel_ref=_PANEL, breaker_amps=20, poles=1,
             afci=True, load_va=1500, description="General receptacles — main storey"),
     Circuit(uid="CKT027AAAA", tag="CKT-RC-SECOND", slot=45, panel_ref=_PANEL, breaker_amps=20, poles=1,
@@ -325,66 +284,51 @@ CIRCUITS = (
 )
 
 # --- Load management (NEC 625.42 / 220.82) ---------------------------------------------
+# Settles plans/TODO.md's "service load exceeds the service" with management rather than
+# a service upgrade (re-affirmed 2026-08-15). Three groups; LM-WH joined 2026-08-15 when
+# the two-tank water-heater model (plan/mep.py's note) was corrected to the single
+# ProTerra it should always have been.
 #
-# The open decision in plans/TODO.md — "service load exceeds the service" — is settled here
-# with management rather than a service upgrade (re-affirmed by decision, 2026-08-15, with
-# the arithmetic below in front of it). Three groups now: LM-WH joined 2026-08-15 when the
-# two-tank water-heater model (plan/mep.py's note has the full story) was corrected to the
-# single ProTerra it should have been all along, which is also what dropped the unmanaged
-# base by removing a phantom 500 VA appliance that never existed as its own circuit.
-#
-# Where the 220.82 estimate stands, and what each lever is worth (the numbers come out of
-# `haus schedule` / takeoff/electrical.py::service_load_summary, not from here):
+# What each lever is worth (from `haus schedule` / takeoff/electrical.py::
+# service_load_summary, not authored here):
 #
 #   unmanaged                                                     246.4A
 #   LM-EV: EV pair capped 5,760 -> 5,600 VA, credited at 100%     -32.7A  ->  213.7A
 #   LM-WELLNESS: spa + sauna one at a time, 9,000 VA excess *40%  -15.0A  ->  198.7A
 #   LM-WH: ProTerra forced Heat-Pump-Only near peak, 4,000 VA *40% -6.7A  ->  192.1A
 #
-# 7.9A of margin against the 200A service. Better than the 0.4A this pass started the day
-# with, and still not slack: a workshop feeder or a heat kit bigger than EQ-S-HP1-STRIP's
-# 2 kW eats most of it, and the answer past that is the 400A service this pass deliberately
-# did not buy.
+# 7.9A of margin against the 200A service — still not slack; the answer past that is the
+# 400A service this pass deliberately did not buy.
 #
-# Why the credits are worth what they are: a managed group's connected excess is removed in
-# the 220.82 term the load was counted in. The EV pair is added at 100% (already continuous),
-# so its excess comes off one-for-one; the spa/sauna and the water heater are fixed
-# appliances under (B)(3), reached through the 40% remainder factor, so their excess is
-# worth 40 cents on the dollar of demand. Crediting any of them at 100% would overstate the
-# saving, which is what the service_load check used to do before the credit moved into the
-# bucket the load was actually counted in.
+# Credit sizing: a managed group's connected excess is removed from the 220.82 term it was
+# counted in. The EV pair (continuous) is credited at 100%; spa/sauna and the water heater
+# are fixed appliances under (B)(3), reached through the 40% remainder factor, so their
+# excess is worth 40 cents on the dollar. Crediting any at 100% would overstate the saving.
 LOAD_MANAGEMENTS = (
-    # The Emporia Vue's dynamic load management watches the whole-panel CTs and throttles the
-    # 14-50 EVSE. 5,600 VA is 23.3A at 240V across both EV circuits together — above the
-    # 6A/1.4 kW floor an EVSE must never be throttled below, so a car still charges at ~23A
-    # whenever nothing else is competing, and the cap is only the guaranteed floor the
-    # calculation rests on rather than the rate it charges at.
+    # Emporia Vue watches the whole-panel CTs and throttles the 14-50 EVSE. 5,600 VA =
+    # 23.3A at 240V across both EV circuits — above the 6A/1.4kW floor an EVSE must never
+    # be throttled below, so this is the guaranteed floor, not the rate it charges at.
     LoadManagement(uid="EMSEV0AAAA", tag="LM-EV",
                    managed_circuits=("CKT-EV-1450", "CKT-EV-620"),
                    max_simultaneous_va=5600, strategy="ems",
                    source="Emporia Vue dynamic load management (NEC 625.42 EMS)"),
-    # The two wellness loads, interlocked so only one heats at a time: 11,500 VA is the spa,
-    # the larger of the pair, so the group can never draw more than the tub alone does. They
-    # are the right pair to interlock because nobody uses both at once and because they are
-    # the two largest fixed appliances in the house (11.5 kVA + 9 kVA against a 12 kVA range).
-    # Contactor-based priority shedding on the same Emporia controller, not a mechanical
-    # interlock: the sauna is in the basement and the tub is in the sunken garden, 40' apart.
+    # Spa + sauna, interlocked so only one heats at a time: 11,500 VA is the spa (the
+    # larger), so the group never draws more than the tub alone does. The two largest
+    # fixed appliances in the house (11.5kVA + 9kVA vs a 12kVA range), 40' apart, so this
+    # is contactor-based priority shedding on the Emporia controller, not a mechanical
+    # interlock.
     LoadManagement(uid="EMSWL0AAAA", tag="LM-WELLNESS",
                    managed_circuits=("CKT-SPA", "CKT-SAUNA"),
                    max_simultaneous_va=11500, strategy="ems",
                    source="Emporia contactor-based priority shed, spa vs sauna (NEC 220.82 "
                           "connected-load management)"),
-    # CKT-WH-240's own governor, not a panel-level EMS: ESPHome's `esphome-econet` component
-    # bridges the Rheem ProTerra's EcoNet API to Home Assistant, and an automation there
-    # forces the unit into Heat-Pump-Only mode (compressor only, no resistance element)
-    # whenever the house is on battery or the whole-house draw is near the 200A peak,
-    # dropping back to Hybrid mode otherwise. 500 VA is the compressor's own steady-state
-    # ceiling in that mode (EQ-T-WATER-HEATER's note in plan/mep.py has the datasheet
-    # figure); 4,500 VA nameplate is what the breaker and the 220.82 base case still assume
-    # whenever the automation hasn't (yet) intervened. A single-circuit "group" is the
-    # correct shape here, not a simplification of a bigger one — this is one appliance
-    # governing its own two internal loads, the same physical fact the old two-circuit
-    # model was reaching for and got wrong by splitting it into two tanks.
+    # CKT-WH-240's own governor, not a panel-level EMS: ESPHome's `esphome-econet`
+    # bridges the Rheem ProTerra's EcoNet API to Home Assistant, forcing Heat-Pump-Only
+    # mode (compressor only) whenever the house is on battery or near the 200A peak. 500VA
+    # is the compressor's steady-state ceiling in that mode (datasheet figure, see
+    # EQ-T-WATER-HEATER's note in plan/mep.py); 4,500VA nameplate is what the breaker and
+    # 220.82 base case assume otherwise. A single-circuit "group" is correct here — one
+    # appliance governing its own two internal loads, not a simplification of two tanks.
     LoadManagement(uid="EMSWH0AAAA", tag="LM-WH",
                    managed_circuits=("CKT-WH-240",),
                    max_simultaneous_va=500, strategy="ems",

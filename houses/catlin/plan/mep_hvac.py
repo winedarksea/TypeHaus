@@ -30,17 +30,10 @@ from typehaus import (
 )
 from typehaus.model import m
 
-# Two families of air terminal now, and the difference matters on the plan set:
-#
-# REG-T-ERV-SUP / REG-T-ERV-EXH are *ventilation* terminals (ventilation_terminal=True) —
-# small, continuous-flow diffusers on EQ-B-ERV's balanced trunks, sized for the ~197 cfm
-# whole-house rate. They replace REG-T-SUPPLY/REG-T-RETURN, which were drawn and named like
-# old-fashioned furnace grilles (plans/TODO.md §HVAC: "currently styled more like old
-# fashioned grilles, not true ERV inputs/outputs"). The old tags are gone rather than kept
-# as aliases: two names for one terminal is how a schedule ends up printing both.
-#
-# REG-T-HP-SUP / REG-T-HP-RET are the *conditioned-air* terminals on System 1's ducted
-# chase (plan/electrical.py EQ-S-HP1-AH) — a heating CFM, so they are the bigger section.
+# Two terminal families: REG-T-ERV-SUP/EXH are ventilation terminals (small, continuous-
+# flow, ~197 cfm whole-house rate) replacing the old furnace-styled REG-T-SUPPLY/RETURN
+# (plans/TODO.md §HVAC) — old tags dropped, not aliased, so a schedule can't print both.
+# REG-T-HP-SUP/RET are the bigger conditioned-air terminals on System 1's ducted chase.
 REGISTER_TYPES = (
     RegisterType(tag="REG-T-ERV-SUP", name="ERV fresh-air supply diffuser, 6\" round",
                  footprint=(inch(7), inch(7)), height=inch(1),
@@ -81,23 +74,13 @@ REGISTER_TYPES = (
                  plan_symbol="register",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
-    # A third family, and the shortest one: a passive transfer louver. No duct, no fan, no
-    # system — a hole in a wall with a grille on it, moving air on pressure difference
-    # alone. `ports=()` is the whole point: there is nothing to connect it to, so it must
-    # not advertise a service port the way the two families above do. (`needs` still reads
-    # SUPPLY_AIR, the RegisterType default. Nothing consumes `needs` for a register — it is
-    # a Fixture-side field — and the editable dialect has no way to spell an empty
-    # frozenset, so it is left alone rather than worked around.)
-    #
-    # Sized to pass through one 2x6 stud bay without cutting a stud: a 12" face in a 14 1/2"
-    # clear bay leaves 1 1/4" of bay each side, and the 10x8 free opening inside it is the
-    # air path. Anything wider is a header in a bearing wall.
-    #
-    # Dimensioned for a WALL mount, unlike every type above it: `footprint` is a *plan*
-    # footprint, so this one is 12" along the wall by 1" of plate thickness, and `height` is
-    # the 10" the face stands up. The ceiling diffusers read (face x face) x 1" thick
-    # because in plan that is genuinely their footprint. Authored the other way round this
-    # louver resolves as a 12x10 tile lying flat through the studs.
+    # Third family: a passive transfer louver — no duct/fan/system, just a hole with a
+    # grille, moving air on pressure difference alone. `ports=()` is deliberate: nothing to
+    # connect it to. (`needs` still defaults to SUPPLY_AIR — unused by a register, and the
+    # dialect can't spell an empty frozenset, so it's left rather than worked around.)
+    # 12" face fits a 14 1/2" clear 2x6 bay without cutting a stud (10x8 free opening);
+    # wider needs a header. `footprint`/`height` are swapped vs. the ceiling diffusers above
+    # because this one mounts in a wall, not a ceiling — swap them back and it resolves flat.
     RegisterType(tag="REG-T-TRANSFER-1210",
                  name="Passive transfer louver, 12x10 face (10x8 free opening)",
                  footprint=(inch(12), inch(1)), height=inch(10),
@@ -112,30 +95,20 @@ REGISTER_TYPES = (
 # EQ-T-GREE-SLIM24 (plan/electrical.py) — the two things left that push air, neither of
 # which burns anything.
 EQUIPMENT_TYPES = (
-    # ONE 80-gallon hybrid heat-pump water heater (2026-08-15, replacing the two-tank
-    # 120V-compressor/240V-element split this house carried since plans/electrical_notes.md
-    # was first drafted — see the corrected note below). Rheem ProTerra PROPH80, EcoNet-
-    # enabled: 4.5 kW resistance element, 30A/240V dedicated circuit, single power whip —
-    # a real product, not two products standing in for one.
+    # ONE 80-gal hybrid HPWH (2026-08-15), replacing the earlier two-tank 120V-compressor/
+    # 240V-element split. Rheem ProTerra PROPH80, EcoNet-enabled: 4.5 kW resistance element,
+    # 30A/240V dedicated circuit, single power whip.
     #
-    # The compressor's own steady-state draw in the mode EcoNet calls "Heat Pump" /
-    # "Energy Saver" — no resistance backup — is ~360-500W per the datasheet and vendor
-    # documentation; `LM-WH` (plan/circuits.py) carries that as its 500 VA
-    # `max_simultaneous_va` ceiling, the conservative round number. Home automation
-    # (ESPHome's `esphome-econet` component bridging the unit's EcoNet API to Home
-    # Assistant) forces Heat-Pump-Only mode whenever the house is on battery (grid down)
-    # or near the 200A service peak, and drops back to Hybrid mode otherwise. The nameplate
-    # 4.5 kW is what the breaker, the panel schedule and the NEC 220.82 estimate are sized
-    # against — the automation is a demand-response behavior layered on top of a normal
-    # circuit, not a second circuit, so it lives on `LoadManagement`, not on a second
-    # `Equipment`. See `code.P2804_water_heater_relief` for the TPR discharge this needs.
+    # Compressor-only draw ("Heat Pump"/"Energy Saver" mode) is ~360-500W per the datasheet;
+    # `LM-WH` (plan/circuits.py) carries 500 VA as its `max_simultaneous_va` ceiling.
+    # ESPHome's esphome-econet component forces Heat-Pump-Only mode on battery/near-peak,
+    # Hybrid otherwise — a demand-response behavior on the normal circuit (lives on
+    # `LoadManagement`, not a second `Equipment`); the breaker/panel/NEC 220.82 sizing still
+    # goes against the nameplate 4.5 kW. See `code.P2804_water_heater_relief` for the TPR.
     #
-    # Reverting to the original two-implementation note this replaced (single 120V
-    # "plug-in" HPWH, no 240V circuit at all, ~450W max, entirely on backup): swap
-    # `type_ref` on EQ-B-WH to a small 120V-only EquipmentType (power_120 port, no
-    # resistance element), retag its `circuit` to a 1-pole 120V circuit at ~450 VA, and
-    # delete `LM-WH` — the mode-switching automation has nothing left to switch. Nothing
-    # else in the plan (piping, position, room, TPR discharge) needs to move.
+    # Fallback if reverted to a 120V-only plug-in HPWH (~450W, no 240V circuit): swap
+    # `type_ref` on EQ-B-WH to a 120V-only EquipmentType, retag `circuit` to a 1-pole 120V
+    # circuit at ~450 VA, and delete `LM-WH`. Nothing else needs to move.
     EquipmentType(tag="EQ-T-WATER-HEATER", name="Water heater, Rheem ProTerra 80gal hybrid heat pump (EcoNet)",
                   footprint=(inch(24), inch(24)), height=ft(5, 8),
                   plan_symbol="water-heater",
@@ -145,15 +118,11 @@ EQUIPMENT_TYPES = (
                          ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))))),
     # --- the backup microgrid (2026-08-02, notes/backup_power.md) ----------------------
     #
-    # EG4 12kPV. The name is the PV input, not the output: 12,000 W of array in, 8,000 W of
-    # AC out continuous, which is the number the autonomy calc checks the backup loads
-    # against and the number the CKT-ESS-GRID breaker is sized on. Surge is the datasheet's
-    # 16 kW / 0.5 s step (12 kW/1 s, 10 kW/1 min below it); the 0.5 s figure is the one a
-    # compressor start actually asks for.
-    #
-    # UL 9540 belongs to the *battery*, not here — the listing R327.2 wants is on the energy
-    # storage system, and marking an inverter with it would make the check pass on the
-    # strength of the wrong product.
+    # EG4 12kPV: name is the PV input, not the output. 12,000 W array in, 8,000 W AC out
+    # continuous — the number the autonomy calc and CKT-ESS-GRID breaker use. Surge is the
+    # datasheet's 16 kW/0.5 s (12 kW/1 s, 10 kW/1 min) — 0.5 s is what a compressor start asks.
+    # UL 9540 belongs to the battery, not here — marking the inverter would pass R327.2's
+    # check on the strength of the wrong product.
     EquipmentType(tag="EQ-T-EG4-12KPV", name="EG4 12kPV hybrid inverter",
                   footprint=(inch(27), inch(12)), height=inch(35),
                   inverter_kw_continuous=8.0, inverter_kw_surge=16.0, pv_input_kw=12.0,
@@ -162,18 +131,13 @@ EQUIPMENT_TYPES = (
                          ServicePort(tag="load", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),),
                   source="EG4 12kPV spec sheet, read 2026-08-02: 8,000 W continuous AC output (120/240V split phase), 12,000 W PV input over 2 MPPTs at 600 VDC max, 16 kW/0.5 s surge, UL 1741 + UL 9540 listed."),
-    # EG4 PowerPro WallMount Indoor, 14.3 kWh. One unit to start; the R327.5 aggregate check
-    # is what a second one would have to answer to (40 kWh indoors — two of these is 28.6,
-    # three is 42.9 and fails, which is the real ceiling on this closet).
-    #
-    # ``ul_9540_listed=True`` is a declaration about this product, and `code.R327_ess_listing`
-    # reports exactly what is declared here — it never infers a listing from the name.
-    #
-    # The 3'-0" REQUIRED clearance is the owner's separation rule (plans/TODO.md: "Keep a 3'
-    # clearance from other devices"), not a code working space, which is why
-    # `advisory.ess_clearance` grades it and no CODE check does. Authored as a band all the
-    # way around: the concern is a neighbouring device in any direction, not access to a
-    # front face.
+    # EG4 PowerPro WallMount Indoor, 14.3 kWh. One unit to start; R327.5's 40 kWh indoor
+    # aggregate ceiling is what a second (28.6 kWh) or third (42.9, fails) would answer to.
+    # `ul_9540_listed=True` is a declaration `code.R327_ess_listing` reports as-is — it never
+    # infers a listing from the name. The 3'-0" REQUIRED clearance is the owner's separation
+    # rule (plans/TODO.md), not a code working space — `advisory.ess_clearance` grades it,
+    # no CODE check does — authored as a band all around since it's about any neighbouring
+    # device, not front-face access.
     EquipmentType(tag="EQ-T-ESS-BATT", name="EG4 PowerPro WallMount Indoor, 14.3 kWh",
                   footprint=(inch(24), inch(10)), height=inch(43),
                   storage_kwh=14.3, ul_9540_listed=True,
@@ -190,28 +154,17 @@ EQUIPMENT_TYPES = (
 )
 
 # --- Ventilation: ERV fresh-air / stale-air trunks in the FS-SECOND joist bays -------
-# These are ventilation trunks, not heating ducts — EQ-B-ERV (plan/electrical.py) is what
-# they connect to, and nothing on the air side carries heat. Sized for the ASHRAE 62.2 whole-
-# house rate rather than a furnace CFM: 0.03 x 5,115 ft2 conditioned + 7.5 x (5 bedrooms + 1)
-# = 198 cfm required, 210 cfm on the machine (2026-08-01, see EQ-T-ERV), which at 10"x6"
-# (0.42 ft2) is ~505 fpm — quiet enough to run continuously, where the 12"x8"/14"x8" furnace
-# trunks they replace were roughly four times oversized.
-#
-# The balanced pair is modeled as the ERV's SUPPLY and RETURN trunks; dedicated stale
-# pulls (the hall bath's shower takeoff) use DuctSystem.EXHAUST. Distribution now reaches all
-# four storeys: trunks ride joist bays where a floor system exists (FS-SECOND under the
-# second storey, FS-SECOND over the main storey's ceiling, FS-ATTIC under the attic) and
-# drop to CHASE routing in the basement, whose ceiling is the SL-M-DECK concrete.
+# Ventilation trunks (EQ-B-ERV), not heating ducts. Sized to ASHRAE 62.2, not furnace CFM:
+# 0.03 x 5,115 ft2 + 7.5 x 6 = 198 cfm required, 210 cfm on the machine (2026-08-01) — at
+# 10"x6" that's ~505 fpm, quiet enough to run continuously (vs. the ~4x oversized 12"x8"/
+# 14"x8" furnace trunks they replaced). Balanced pair = ERV SUPPLY/RETURN; dedicated stale
+# pulls (hall-bath shower) use EXHAUST. Reaches all four storeys via joist-bay routing
+# (FS-SECOND, FS-ATTIC) dropping to CHASE routing in the basement under SL-M-DECK.
 DUCTS = [
-    # DU-M-ERV-SUP is gone (2026-07-29, with the terminal reduction). Every terminal it fed
-    # was either dropped or flipped to stale pickup: the second storey now takes its fresh
-    # air off System 1's chase — REG-S-HP-BED1/2/3 on DU-S-HP-SUP, the suite on
-    # DU-S-HP-SUITE — and gives stale air back on DU-M-ERV-RET, which is why that trunk
-    # below is untouched and carries seven pickups. A supply trunk with no terminal on it
-    # is not a spare, it is a duct nobody would ever build, so it is deleted rather than
-    # shortened to a stub. (plan/electrical.py and plans/electrical_notes.md were updated
-    # to the per-storey topology on 2026-07-30; the main storey's own pair is
-    # DU-M1-ERV-SUP/RET below.)
+    # DU-M-ERV-SUP is gone (2026-07-29): the second storey now takes fresh air off System 1's
+    # chase (REG-S-HP-BED1/2/3 on DU-S-HP-SUP, suite on DU-S-HP-SUITE) and returns stale air
+    # via DU-M-ERV-RET below (now carrying seven pickups). A supply trunk with no terminal
+    # is deleted, not stubbed. Main storey's own pair is DU-M1-ERV-SUP/RET below.
     DuctRun(uid="CMD902AAAA", tag="DU-M-ERV-RET", system=DuctSystem.RETURN,
            path=(pt(ft(4), ft(23, 4)), pt(ft(32), ft(23, 4))), width=inch(10), depth=inch(6),
            routing=DuctRouting.JOIST_BAY, floor_ref="FS-SECOND"),
@@ -245,42 +198,31 @@ DUCTS_BASEMENT = [
     DuctRun(uid="CBDV02AAAA", tag="DU-B-ERV-RET", system=DuctSystem.RETURN,
            path=(pt(ft(5), ft(29)), pt(ft(5), ft(8)), pt(ft(16), ft(8))),
            width=inch(8), depth=inch(6), routing=DuctRouting.CHASE),
-    # The stair-foot bathroom's branch off that trunk (2026-07-30). 6" x 4" for one 50 cfm
-    # terminal, taken off at y=20' and run east into the room — which means a cast opening
-    # through W-B-STR2's 12" concrete at the ceiling, on the same line as the room's three
-    # service sleeves and set before the pour with them. Ducts carry no SleevePenetration in
-    # this model (the trunk it tees off already crosses W-B-CW the same way), so the opening
-    # lives in this comment and on the concrete crew's drawing rather than as an element.
+    # Stair-foot bathroom branch (2026-07-30): 6"x4" for one 50 cfm terminal, teed off at
+    # y=20' through a cast opening in W-B-STR2's 12" concrete ceiling, set with the room's
+    # three service sleeves before the pour. Ducts carry no SleevePenetration in this model,
+    # so the opening lives here and on the concrete crew's drawing, not as an element.
     DuctRun(uid="CBDV03AAAA", tag="DU-B-ERV-BATH", system=DuctSystem.EXHAUST,
            path=(pt(ft(5), ft(20)), pt(ft(11, 8), ft(20))),
            width=inch(6), depth=inch(4), routing=DuctRouting.CHASE),
-    # The sauna's own fresh-air branch (2026-07-29). 4"x4" — a sauna wants a trickle it can
-    # shut, not a room's worth of air — taken off the supply trunk where it turns east at
-    # (5', 18') and run south down the workshop side of W-B-SA-W to the heater line, then
-    # east into the room above EQ-B-SAUNA-HTR. It ends over the heater on purpose: fresh air
-    # dropped onto the stones is what drives the convection loop down to REG-B-EXH2 at the
-    # floor, which is the only way a sealed hot room turns over at all.
+    # Sauna's fresh-air branch (2026-07-29): 4"x4", a trickle it can shut rather than a
+    # room's worth of air. Taps the supply trunk at (5', 18'), runs south along W-B-SA-W to
+    # the heater line, ending over EQ-B-SAUNA-HTR on purpose — fresh air dropped onto the
+    # stones drives the convection loop down to REG-B-EXH2, the only way the sealed room
+    # turns over.
     DuctRun(uid="CBDV04AAAA", tag="DU-B-SAUNA-SUP", system=DuctSystem.SUPPLY,
            path=(pt(ft(5), ft(18)), pt(ft(5), ft(8, 9)), pt(ft(9, 9.8125), ft(8, 9))),
            width=inch(4), depth=inch(4), routing=DuctRouting.CHASE),
 ]
 
-# Attic distribution rides the FS-ATTIC joist bays. The attic went the same way the second
-# storey did, one step further (2026-07-30): DU-A-ERV-SUP is gone entirely. Its one
-# terminal, REG-A-SUP1, was made redundant by REG-A-HP-WEST — a floor boot off System 1's
-# DU-S-HP-SUITE branch directly below (REGISTERS_ATTIC below) — and a fresh trunk with no
-# terminal on it is a duct nobody would build, so it is deleted rather than stubbed, exactly
-# as DU-M-ERV-SUP was. The attic's air pattern is now the storey pattern everywhere:
-# conditioned/fresh air in off System 1, stale air out through the one ERV extract.
-#
-# The surviving return starts at x=2', beside the maintenance shaft at (1', 34'-6") where
-# VR-M-RADON-VENT's radon/plumbing riser comes up through every storey (RADON_SUMP /
-# VENT_RISERS below) — the ERV branch rides that same shaft up from the basement — and runs
-# 4'-0" east to its terminal in the bay centred at 31'-4" (8"+23*16"); DU-S-BATH1-EXH's bay
-# at 32'-8" stays free. Nothing here goes near FO-A-STAIR (y 5'-9 5/8"..8'-9 5/8").
-#
-# The attic loses no required coverage: RM-A-STUDY is fed by REG-A-HP-STUDY off System 1's
-# own attic branch, and RM-A-WEST by REG-A-HP-WEST off the suite branch.
+# Attic distribution rides the FS-ATTIC joist bays. DU-A-ERV-SUP is gone (2026-07-30, same
+# reasoning as DU-M-ERV-SUP): its terminal REG-A-SUP1 was made redundant by REG-A-HP-WEST,
+# a floor boot off System 1's DU-S-HP-SUITE branch directly below. Attic air pattern is now
+# uniform: conditioned/fresh air in off System 1, stale air out through the one ERV extract.
+# Surviving return starts at x=2' by the maintenance shaft (1', 34'-6", same shaft the ERV
+# branch rides up from the basement) and runs to its terminal at bay-centre 31'-4"
+# (8"+23*16"); DU-S-BATH1-EXH's bay at 32'-8" stays free. Nothing here nears FO-A-STAIR.
+# Coverage held: RM-A-STUDY via REG-A-HP-STUDY, RM-A-WEST via REG-A-HP-WEST off the suite branch.
 DUCTS_ATTIC = [
     DuctRun(uid="CADV02AAAA", tag="DU-A-ERV-RET", system=DuctSystem.RETURN,
            path=(pt(ft(2), ft(31, 4)), pt(ft(6), ft(31, 4))), width=inch(8), depth=inch(6),
@@ -289,22 +231,14 @@ DUCTS_ATTIC = [
 
 # --- System 1: the conditioned-air chase (plans/TODO.md §HVAC) -----------------------
 # EQ-S-HP1-AH (plan/electrical.py) hangs INSIDE the dropped soffit box at its south end
-# (y 6'..9'-7", over RM-S-STUDY2's north strip — see the placement note there) and feeds
-# ONE straight supply trunk north along the second-floor hallway inside that soffit
-# (SOFFITS in plan/storeys/second.py), with a short return-plenum stub at its rear — the
-# return grille sits right at the unit, with the ERV's fresh feed wyed in behind it
-# (DU-S-ERV-HP-FEED below). CHASE
-# routing and no `floor_ref`: this duct is not in a joist bay, it is in a framed box below
-# the ceiling, so the joist-bay geometry checks correctly do not apply to it — and its two
-# crossings of the centre bearing line at x=18' are legal for the same reason.
-#
-# The hall is x 18'-2 3/4" .. 21'-8" clear, so the two ducts sit side by side at x=19'-4"
-# (supply) and x=20'-8" (return) with the soffit spanning the full hall width.
-#
-# `design_cfm` is authored intent, not a solved airflow — this is a straight-run duct meant
-# to operate at low flow, which is the whole reason one 24k unit covers the upstairs. The
-# 14x8 trunk at 750 cfm is ~965 fpm; the return keeps the same section over its short stub
-# (the two coexist side by side only at SF-S-DUCT's south end now).
+# (y 6'..9'-7", over RM-S-STUDY2) and feeds ONE straight supply trunk north along the
+# second-floor hallway inside that soffit, with a short return-plenum stub at its rear
+# (ERV fresh feed wyed in behind it — DU-S-ERV-HP-FEED below). CHASE routing, no
+# `floor_ref`: it's in a framed box, not a joist bay, so joist-bay geometry checks
+# correctly don't apply, and its two crossings of the x=18' bearing line are legal.
+# Hall is x 18'-2 3/4"..21'-8" clear: supply at x=19'-4", return at x=20'-8", side by side.
+# `design_cfm` is authored intent for a low-flow straight run (why one 24k unit covers the
+# upstairs): 14x8 @ 750 cfm is ~965 fpm.
 DUCTS_HVAC_SECOND = [
     # Starts at y=9'-7" — EQ-S-HP1-AH's discharge face — since 2026-07-30: the unit lives
     # INSIDE the soffit box at its south end (y 6'..9'-7", see plan/electrical.py), so the
@@ -312,58 +246,42 @@ DUCTS_HVAC_SECOND = [
     DuctRun(uid="CSDH01AAAA", tag="DU-S-HP-SUP", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 4), ft(9, 7)), pt(ft(19, 4), ft(33))),
             width=inch(14), depth=inch(8), routing=DuctRouting.CHASE, design_cfm=750),
-    # The return is a plenum stub, not a trunk (2026-07-30): REG-S-HP-RET sits right at
-    # EQ-S-HP1-AH's rear corner, and this 6" of duct is the box section carrying grille
-    # air to the unit's bottom-return opening. The rooms do NOT return to the AH: their
-    # only extract is the ERV's stale pickups (REGISTERS below), and the hall — fed back
-    # by every door undercut — is the single place the AH breathes from. That is the
-    # loose coupling the mixing design wants: the ERV's balance is set by its own
-    # terminals, the AH just recirculates the hall plus whatever DU-S-ERV-HP-FEED
-    # injects behind its grille.
+    # Plenum stub, not a trunk (2026-07-30): REG-S-HP-RET sits at the unit's rear corner;
+    # this 6" carries grille air to the bottom-return opening. Rooms do NOT return to the
+    # AH — only extract is the ERV's stale pickups; the hall (fed by door undercuts) is the
+    # AH's sole breathing source. Deliberate loose coupling: ERV balance is set by its own
+    # terminals, AH just recirculates the hall plus whatever DU-S-ERV-HP-FEED injects.
     DuctRun(uid="CSDH02AAAA", tag="DU-S-HP-RET", system=DuctSystem.RETURN,
             path=(pt(ft(20, 8), ft(9, 8)), pt(ft(20, 8), ft(9, 2))),
             width=inch(14), depth=inch(8), routing=DuctRouting.CHASE, design_cfm=750),
-    # The west branch to RM-S-SUITE, rerouted 2026-07-30. It tees off DU-S-HP-SUP at the
-    # centreline of D-S-SUITE (y=14'-1 7/8") and goes straight through W-S-C2B *above the
-    # door* — through the cripple zone between the door's header and the top plate, which
-    # an 8"-deep duct riding the 14" soffit drop (z ~7'-10"..8'-6" against a ~7'-4" header
-    # top and a 9'-0" plate) clears — then west down the suite's entry arm (y 12'-5" ..
-    # 15'-11", RM-S-SUITE's own floor area) to the grille. 6'-10" of 10x8 replaces the old
-    # 10'-10" detour at y=20'-4" that crossed RM-S-SUITEBATH; the arm was always the short
-    # straight route, it just took SF-S-SUITE moving over it (plan/storeys/second.py). It
-    # stops about D-S-SUITEBATH — the soffit ends there too, and the grille in the box's
-    # west end face throws the rest of the way down the arm and into the suite.
-    #
-    # 250 cfm now, not 150: the run feeds two terminals — REG-S-HP-SUITE at its west end
-    # and REG-A-HP-WEST, a floor boot up through FS-ATTIC into RM-A-WEST directly above
-    # the run. 250 cfm through 10x8 is ~450 fpm, still quiet enough for a bedroom ceiling.
+    # West branch to RM-S-SUITE, rerouted 2026-07-30: tees off DU-S-HP-SUP at D-S-SUITE's
+    # centreline (y=14'-1 7/8"), crosses W-S-C2B above the door through the header/top-plate
+    # cripple zone (an 8"-deep duct on the 14" soffit drop clears it), then runs west down
+    # the suite's entry arm to the grille near D-S-SUITEBATH. 6'-10" of 10x8 replaces the
+    # old 10'-10" detour across RM-S-SUITEBATH.
+    # 250 cfm (not 150): feeds two terminals — REG-S-HP-SUITE and REG-A-HP-WEST, a floor
+    # boot up through FS-ATTIC directly above. ~450 fpm through 10x8, still quiet.
     DuctRun(uid="CSDH03AAAA", tag="DU-S-HP-SUITE", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 4), ft(14, 1.875)), pt(ft(12, 6), ft(14, 1.875))),
             width=inch(10), depth=inch(8), routing=DuctRouting.CHASE, design_cfm=250),
-    # The ERV -> System 1 fresh-air feed (2026-07-30): the one place fresh air enters the
-    # heat-pump loop. It taps DU-M1-ERV-SUP where that trunk crosses under the hall
-    # (y=12'-8", FS-SECOND joist bay), rises into SF-S-DUCT's box — the lane DU-S-HP-RET
-    # vacated when it became a stub — and runs south at x=20'-8" to inject just behind
-    # REG-S-HP-RET through a 45-degree wye into the return plenum. The wye (a mixing box in
-    # effect) rather than hard-ducting ERV to AH is deliberate: the two machines run on
-    # independent schedules, so each must breathe without the other — the AH pulls hall air
-    # when the ERV is off, and the ERV supplies past a stopped blower without backpressure.
-    # 6" is the biggest round the joist-bay tap takes, and at ~100 cfm (the storey's share
-    # of the whole-house rate) it runs ~510 fpm. The vertical from the FS-SECOND bay up
-    # into the soffit is not drawn (DuctRun carries no elevation) — same status as
-    # EQ-S-HP1-AH's condensate drop, recorded in plans/TODO.md.
+    # ERV -> System 1 fresh-air feed (2026-07-30), the one place fresh air enters the
+    # heat-pump loop. Taps DU-M1-ERV-SUP at y=12'-8" (FS-SECOND bay), rises into the lane
+    # DU-S-HP-RET vacated, runs south at x=20'-8" to inject behind REG-S-HP-RET via a
+    # 45-degree wye. Wye (not hard-ducted) is deliberate: the ERV and AH run on independent
+    # schedules and each must breathe without the other. 6" is the biggest round the
+    # joist-bay tap takes; ~100 cfm (storey's share of whole-house rate) runs ~510 fpm.
+    # Vertical rise into the soffit is undrawn (DuctRun has no elevation) — same status as
+    # EQ-S-HP1-AH's condensate drop, per plans/TODO.md.
     DuctRun(uid="CSDV02AAAA", tag="DU-S-ERV-HP-FEED", system=DuctSystem.SUPPLY,
             path=(pt(ft(20, 8), ft(12, 8)), pt(ft(20, 8), ft(10))),
             width=inch(6), depth=inch(6), routing=DuctRouting.CHASE, design_cfm=100),
 ]
 
-# One attic branch left (2026-07-30): RM-A-STUDY's, which genuinely needs a horizontal
-# run — the room starts at x=22'-4", east of anything the trunk passes under, so its air
-# has to travel. CHASE routing — it rides the attic floor/knee space, not a joist bay.
-# DU-A-HP-EAST is gone: its grille moved to directly over the hall soffit and became a
-# straight boot off the trunk (REG-A-HP-EAST below), the same pattern as REG-A-HP-WEST —
-# a 6'-8" horizontal run whose only job was reaching a grille that could sit anywhere in
-# a 456 sf open room was length for its own sake.
+# One attic branch left (2026-07-30): RM-A-STUDY's, which genuinely needs a horizontal run
+# since the room starts at x=22'-4", east of anything the trunk passes under. CHASE routing
+# — rides the attic floor/knee space, not a joist bay. DU-A-HP-EAST is gone: its grille
+# became a straight boot off the trunk (REG-A-HP-EAST), same pattern as REG-A-HP-WEST —
+# a 6'-8" run just to reach a grille that could sit anywhere in the open room.
 DUCTS_HVAC_ATTIC = [
     DuctRun(uid="CADH01AAAA", tag="DU-A-HP-STUDY", system=DuctSystem.SUPPLY,
             path=(pt(ft(19, 4), ft(3)), pt(ft(26), ft(3))),

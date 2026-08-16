@@ -2,33 +2,26 @@
 # Catlin lighting layout — every luminaire, LED run, 24V supply and lighting control,
 # room by room, from the "Lighting Notes" section of plans/electrical_notes.md.
 #
-# `# haus: editable` is REQUIRED here, not stylistic: ElectricalDevice is a UI-movable
-# element, and the loader raises `loader.uneditable_movable_element` (a hard build error)
-# for one authored in a plain module. The type catalog these reference is the non-editable
-# plan/lighting_types.py — it uses frozenset, which this dialect forbids.
+# `# haus: editable` is REQUIRED: ElectricalDevice is UI-movable, and the loader raises
+# `loader.uneditable_movable_element` for one authored elsewhere. Type catalog is the
+# non-editable plan/lighting_types.py (uses frozenset, forbidden here).
 #
-# Sixteen generic ED-T-LIGHT fixtures used to stand one per room in plan/mep.py. They are
-# not deleted: each was re-typed in place to the real fixture its room wants, so its uid —
-# and therefore its IFC GlobalId — survives. Everything below is what was *added* around
-# them. ED-T-LIGHT itself is retired; every light in the house now names a real product
-# with a schedule mark, the garage's shop lights included.
+# The sixteen generic ED-T-LIGHT fixtures once one-per-room in plan/mep.py were re-typed
+# in place (uid/IFC GlobalId preserved) rather than deleted; everything below is what got
+# *added* around them. ED-T-LIGHT itself is retired.
 #
 # Conventions used throughout:
 # - Rotation names the wall a fixture backs onto: deg(0) north, deg(90) west,
-#   deg(180) south, deg(-90) east. (Local +y is the object's back — the same rule the
-#   kitchen casework in plan/placeables.py follows.)
+#   deg(180) south, deg(-90) east (local +y is the object's back).
 # - `Mount(CEILING, recessed_into_host_surface=True)` with no elevation puts a can's base
-#   on the ceiling plane and its housing in the joist bay above — which is what recessed
-#   means. Attic cans state an elevation because the ceiling there is a 4:12 cathedral off
-#   a 5' knee wall: its height is 5' + d/3 where d is the distance from the x=18' ridge.
-# - `Mount(CEILING, drop=<the type's height>)` lands a hanging fixture's canopy on the
-#   ceiling; the type's height is the whole assembly, so the shade bottom is ceiling minus
-#   that number (→ model/placeable_symbols/lighting.pendant).
-# - `controlled_by` names the switch(es) on the *load*, because a switch usually drives
-#   several fixtures and a fixture is what a plan reader looks up. Two tags is a 3-way
-#   pair. A fixture whose type carries `integral_switch` names none, by design.
-# - 24V runs carry no `circuit`: their PSU does. The PSU is a JUNCTION_BOX device, sized
-#   at 1.25 x the connected tape watts and checked by `electrical.light_run_psu`.
+#   on the ceiling plane, housing in the joist bay above. Attic cans state an elevation
+#   (5' + d/3, d = distance from the x=18' ridge) because that ceiling is a 4:12 cathedral.
+# - `Mount(CEILING, drop=<type height>)` lands a pendant's canopy on the ceiling; shade
+#   bottom = ceiling minus the type's full assembly height.
+# - `controlled_by` names switch(es) on the *load*. Two tags is a 3-way pair. A fixture
+#   whose type carries `integral_switch` names none, by design.
+# - 24V runs carry no `circuit`: their PSU does, sized at 1.25x connected tape watts and
+#   checked by `electrical.light_run_psu`.
 #
 # Uids are QT/QR + storey letter + serial (Crockford base32, no I/L/O/U → model/ids.py).
 
@@ -133,14 +126,10 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N",
                      controlled_by=("ED-B-PLAY-N-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # Cans 3 and 4 (2026-08-01, code.R303_1_light_and_ventilation). This room has no glazing
-    # at all, so it is habitable only under R303.1 Exception 1, and the exception's first half
-    # is 6 footcandles average at the work plane. Two sconces and two cans is 3,200 lm, which
-    # over 324 sf estimates 4.7 fc — short. Two more cans put it at 5,000 lm / 7.4 fc with
-    # margin to spare, and the room ends up on the same four-can grid RM-B-GYM already runs
-    # at the same 324 sf. On the same dimmer as the other four fixtures: the whole point of
-    # this room is that all of it goes down together, and a code minimum is a *capability*,
-    # not a setting anyone has to sit under.
+    # Cans 3 and 4 (2026-08-01, code.R303_1_light_and_ventilation): this windowless room is
+    # habitable only under R303.1 Exception 1's 6 fc average. Two sconces + two cans was
+    # 3,200 lm / 4.7 fc over 324 sf — short; four cans reaches 5,000 lm / 7.4 fc. Same
+    # dimmer as the rest: the whole room goes down together.
     ElectricalDevice(uid="QTB0010AAA", tag="ED-B-PLAY-N-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(ft(24), ft(30)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-PLAY-N",
@@ -186,12 +175,10 @@ BASEMENT_LIGHTING = [
                      controlled_by=("ED-B-STAIR-SW", "ED-M-STAIR-SW"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
 
-    # RM-B-BATH (2026-07-30). One can and one switch, on the same CKT-LT-BACKUP the rest of
-    # the stair block is on — deliberately, so the light at the bottom of the stair and the
-    # light in the room off it both stay lit when the backup panel is carrying the house.
-    # The can is centred over the room's length at x=14', clear of the exhaust terminal over
-    # the WC at 11'-8". The switch is inside the room on the partition beside the door's latch
-    # jamb (the leaf swings out, so the switch is behind you as you enter, not behind the leaf).
+    # RM-B-BATH (2026-07-30). On CKT-LT-BACKUP, deliberately, so this room and the stair
+    # foot stay lit together on backup power. Can centred at x=14', clear of the exhaust
+    # terminal over the WC at 11'-8"; switch on the latch-jamb side (door swings out, so
+    # it isn't behind the leaf).
     ElectricalDevice(uid="QTB000KAAA", tag="ED-B-BATH-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(14), ft(20)), type_ref="ED-T-LT-CAN4-WET",
                      circuit="CKT-LT-BACKUP", room="RM-B-BATH",
@@ -242,13 +229,10 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-LIVING-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # The daylight set: mark A1, the same 4" can with its module set to 4000K, on its own
-    # switch leg so the lounge can be run warm in the evening and cool when it is being
-    # worked in. Interleaved as a diamond inside the warm 2x2 — points at the mid-span of
-    # each side, all symmetric about (27', 7') — so either set alone still lights the room
-    # evenly instead of lighting half of it. Same CKT-LT-MAIN as the warm cans: this is
-    # 48 VA more on a lighting branch, and it is the switch leg, not the circuit, that has
-    # to be separate for the two colours to be usable independently.
+    # The daylight set: mark A1, same 4" can but 4000K, on its own switch leg so the lounge
+    # can run warm evenings / cool when worked in. Interleaved as a diamond inside the warm
+    # 2x2, symmetric about (27', 7'), so either set alone still lights the room evenly.
+    # Same circuit as the warm cans — only the switch leg needs to be separate.
     ElectricalDevice(uid="QTM0019AAA", tag="ED-M-LIVING-CAND1", kind=DeviceKind.LIGHT,
                      position=pt(ft(27), ft(4)), type_ref="ED-T-LT-CAN4-4000",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
@@ -421,11 +405,10 @@ MAIN_LIGHTING = [
                      position=pt(ft(8, 4.375), ft(16, 10)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-CLOSET", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
-    # room re-pointed to RM-M-MUD-CLOSET (2026-08-15), the same correction its sibling
-    # CAN2 took in 2026-07-28: the 2026-08-02 closet conversion framed a room around this
-    # ceiling point, and the light kept naming the mudroom it used to hang in. It is 8"
-    # inside the closet's clear face; `integrity.placeable_room_mismatch` had been saying so
-    # ever since. Nothing moves — this is a label catching up with a wall.
+    # room re-pointed to RM-M-MUD-CLOSET (2026-08-15), same correction CAN2 took
+    # 2026-07-28: the 2026-08-02 closet conversion framed a room around this ceiling point
+    # but the light kept naming the old mudroom (`integrity.placeable_room_mismatch`).
+    # Nothing moves — a label catching up with a wall.
     ElectricalDevice(uid="QTM000XAAA", tag="ED-M-STORAGE-CAN1", kind=DeviceKind.LIGHT,
                      position=pt(ft(5), ft(29)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-MAIN", room="RM-M-MUD-CLOSET",
@@ -460,12 +443,10 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING",
                      controlled_by=("ED-M-HALL-SW", "ED-M-HALL-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
-    # West end of the run, on W-M-BAE's hall face just south of D-M-BATH1 (the door spans
-    # y 23'-4" to 25'-4", so this is the only piece of that wall a plate fits on). Moved here
-    # 2026-07-31: it was authored at x=4'-5", which is 1'-7" *inside* RM-M-BATH1 — the wall
-    # is at x=6'-0" — so the hall's west 3-way was on the wrong side of the bathroom wall and
-    # `integrity.placeable_room_mismatch` had been reporting it. rotation 90 faces it east
-    # into the hall, which is what it always meant.
+    # West end of the run, on W-M-BAE's hall face just south of D-M-BATH1 (door spans
+    # y 23'-4"..25'-4", the only piece of wall a plate fits on). Moved here 2026-07-31 from
+    # x=4'-5", which was 1'-7" inside RM-M-BATH1 (wall at x=6'-0") — `integrity.
+    # placeable_room_mismatch` had been reporting it. rotation 90 faces east into the hall.
     ElectricalDevice(uid="QTM0013AAA", tag="ED-M-HALL-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(6, 4.375), ft(22, 9)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", room="RM-M-LIVING", rotation=deg(90),
@@ -500,23 +481,19 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
-    # The porch flood (2026-08-02): mark S, the narrow-throw full-cutoff spot, hung on
-    # the balcony's centre rear pillar PT-SG-BR2 (a post, not a Wall — `wall_ref` names
-    # only Walls, so this is a free-positioned device at the pillar's plan point).
-    # rotation 0 backs it onto the pillar's north side, throwing south down the deck;
-    # 8'-0" up the 10' pillar keeps the head above eye line and under the deck edge.
-    # NO `room=`: like the porch fan it stands outside every modeled room, which is how
-    # the wet-location and dark-sky checks know it is exterior. Same CKT-LT-MAIN as the
-    # fan — 20 VA more on the porch's own lighting branch.
+    # The porch flood (2026-08-02): mark S, narrow-throw full-cutoff spot, on the balcony's
+    # centre rear pillar PT-SG-BR2 (a post, not a Wall, so this is free-positioned).
+    # rotation 0 throws south down the deck; 8'-0" up the 10' pillar clears eye line and
+    # deck edge. NO `room=`: like the porch fan, it must read as exterior to the wet-
+    # location and dark-sky checks.
     ElectricalDevice(uid="QTM001EAAA", tag="ED-M-PORCH-FLOOD", kind=DeviceKind.LIGHT,
                      position=pt(ft(18), ft(-0.8333)), type_ref="ED-T-LT-FLOOD-NARROW",
                      circuit="CKT-LT-MAIN", rotation=deg(0),
                      controlled_by=("ED-M-PORCH-FLOOD-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(8))),
-    # Its own switch, second gang 4" below ED-M-PORCH-SW on the same face — separate leg,
-    # not shared control: the fan-light runs whole evenings, the flood is the you-heard-
-    # something light, and one switch for both means the flood glares every night the fan
-    # spins. Two gangs side by side keeps both reaches in the one spot by the door.
+    # Own switch, second gang beside ED-M-PORCH-SW — separate leg, not shared: the fan
+    # runs whole evenings, the flood is the you-heard-something light, and sharing one
+    # switch would glare the flood on every night the fan spins.
     ElectricalDevice(uid="QTM001FAAA", tag="ED-M-PORCH-FLOOD-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(25, 2), ft(0, 7.625)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", rotation=deg(180),
@@ -611,21 +588,12 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-SUITEBATH", rotation=deg(180),
                      controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(6, 6))),
-    # The lit shower niche (plans/TODO.md §Plumbing: "Have lighting in the shower niche of
-    # master bedroom, it looks cool, Schluter-KERDI-BOARD-SNLT").
-    #
-    # It goes in W-S-C2C, the east wall FX-S-SUITEBATH-TUBSH's alcove backs onto — the one
-    # wall of the alcove that is neither the room's glazed south side nor a door. The tape
-    # is 2'-4" of the 28"-wide niche's head channel, centred on the alcove's y 17'-0"..22'-0"
-    # at y=19'-6", so it lights the shelf from above rather than glaring out of it.
-    # x=17'-9" is the recess face, 3" proud of the wall centre line.
-    #
-    # Head at 5'-0": the niche sill sits at 4'-0", which clears the tub deck by 2'-4" and
-    # puts a bottle at hand height standing up, and the channel is at its 1'-0" head.
-    #
-    # 24V like every other tape in the house, so it has no branch circuit of its own — its
-    # driver does. 2'-4" at 3 W/ft is 7 W; the 60 W supply is the smallest catalog size and
-    # it sits in the ceiling above, outside the shower zone, where it can be serviced.
+    # The lit shower niche (plans/TODO.md §Plumbing: Schluter-KERDI-BOARD-SNLT).
+    # In W-S-C2C, the alcove wall that's neither glazed south nor a door: 2'-4" of head
+    # channel centred on the alcove (y 17'-0"..22'-0") at y=19'-6", x=17'-9" (3" proud of
+    # wall centre). Head at 5'-0" — niche sill is 4'-0", clearing the tub deck by 2'-4" and
+    # putting a bottle at hand height. 24V, no branch circuit — driver does. 2'-4" at 3 W/ft
+    # = 7 W, well under the 60 W supply.
     LightRun(uid="QRS0004AAA", tag="LR-S-NICHE", type_ref="ED-T-LT-NICHE-SNLT",
              path=(pt(ft(17, 9), ft(18, 4)), pt(ft(17, 9), ft(20, 8))),
              room="RM-S-SUITEBATH", psu_ref="ED-S-NICHE-PSU",
@@ -668,11 +636,9 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1", rotation=deg(-90),
                      controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
-    # The mirror is hardwired *and* gets an outlet behind it (electrical_notes.md line 80):
-    # a lit mirror is the one bathroom fixture people replace on a whim, and a blank wall
-    # box behind the next one is the difference between an afternoon and an electrician.
-    # 54" puts it inside the 3'-6"..6'-6" band the mirror covers. GFCI at the breaker is
-    # not enough here — 210.8(A)(1) wants the *receptacle* protected in a bathroom.
+    # Mirror is hardwired *and* gets an outlet behind it (electrical_notes.md line 80), so
+    # a future replacement doesn't need an electrician. 54" sits inside the mirror's
+    # 3'-6"..6'-6" band. GFCI at the receptacle, not just the breaker — 210.8(A)(1).
     ElectricalDevice(uid="QTS000MAAA", tag="ED-S-BATH1-RC-MIRROR",
                      kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(9, 7.625), ft(31)), type_ref="ED-T-RECEPTACLE-GFCI",
@@ -683,30 +649,22 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     # The hall bath's lit niche (2026-08-02), mirroring the suite's LR-S-NICHE — same
-    # KERDI-BOARD-SNLT board, same E1 tape, same rules (notes/shower_niche.md: the board
-    # IS the membrane; the driver lead is its only permitted penetration, out through the
-    # head channel, sealed with KERDI-FIX).
-    #
-    # FX-S-BATH1-SH's alcove (x 2'-11 3/4"..7'-11 3/4", y 32'-10 1/2"..35'-4 1/2") backs
-    # onto the glazed north exterior wall (WIN-S-BATH-N sits over the tub's west end), so
-    # the niche cannot go in the back wall the way the suite's did. It goes in the tub's
-    # west END wall instead: W-S-CH-W, the chase's east wall at x=2'-9" — interior, dry
-    # side is a mechanical chase, no window, no door — with the 12"x28" SNLT board stood
-    # VERTICAL (12" wide, 28" tall) because that wall's clear run inside the alcove is
-    # only ~25". The head channel is then 1'-0" of tape at the 5'-0" head — the same
-    # bottle-at-hand-height head the suite's uses — centred on the alcove's clear run at
-    # y=34'-4". x=3'-0" is the recess face, 3" proud of the wall centre line.
+    # KERDI-BOARD-SNLT board and rules (notes/shower_niche.md: board IS the membrane,
+    # driver lead exits through the head channel, sealed with KERDI-FIX).
+    # Alcove's back wall is the glazed exterior, so this niche goes in the tub's west END
+    # wall (W-S-CH-W, a dry mechanical-chase wall) instead, with the 12"x28" board stood
+    # VERTICAL — the alcove's clear run there is only ~25". Head channel: 1'-0" of tape at
+    # the same 5'-0" bottle-height head as the suite's, centred at y=34'-4", x=3'-0"
+    # (3" proud of wall centre).
     LightRun(uid="QRS0005AAA", tag="LR-S-BATH1-NICHE", type_ref="ED-T-LT-NICHE-SNLT",
              path=(pt(ft(3), ft(33, 10)), pt(ft(3), ft(34, 10))),
              room="RM-S-BATH1", psu_ref="ED-S-BATH1-NICHE-PSU",
              controlled_by=("ED-S-BATH1-SW",),
              mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
-    # Its own 60 W driver in the bath's ceiling, south of the tub and outside the shower
-    # zone, where it can be serviced without opening tile. NOT a share of ED-S-NICHE-PSU:
-    # that driver is a storey away across the plan (16'-6", 21'-6"), and the catalog's
-    # per-area-supply rule (plan/lighting_types.py) keeps the long wire at 120V — a 30'
-    # 24V home run for 3 W of tape is exactly what it forbids. 1'-0" at 3 W/ft is 3 W;
-    # x1.25 = 3.75 W against the 60 W box.
+    # Own 60 W driver, in the ceiling outside the shower zone (serviceable without opening
+    # tile). NOT a share of ED-S-NICHE-PSU: that's 30' away across the plan, and the
+    # catalog's per-area-supply rule (plan/lighting_types.py) forbids a 24V home run that
+    # long. 1'-0" at 3 W/ft = 3 W, well under the 60 W box.
     ElectricalDevice(uid="QTS001CAAA", tag="ED-S-BATH1-NICHE-PSU",
                      kind=DeviceKind.JUNCTION_BOX,
                      position=pt(ft(7), ft(31, 6)), type_ref="ED-T-LT-PSU-60",
@@ -807,13 +765,11 @@ SECOND_LIGHTING = [
                      controlled_by=("ED-S-BED3-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
 
-    # The landing end of RM-S-HALL + the stairwell chandelier. The chandelier hangs over
-    # the ST-M2S opening, so it is seen from the stair and from the landing at once —
-    # which is the whole reason a stairwell is the one place a house puts a chandelier.
-    # Its 4' assembly off the 9' ceiling leaves the shade bottom 5' above the second
-    # floor, well clear of anything on the landing and reachable from the flight for a
-    # lamp change. All three now name RM-S-HALL: the landing, the well and the east hall
-    # are one room since the centre line opened up under BM-S-HALL.
+    # The landing end of RM-S-HALL + the stairwell chandelier, hung over the ST-M2S
+    # opening so it reads from both the stair and the landing. 4' assembly off the 9'
+    # ceiling leaves the shade bottom 5' above the floor, clear of the landing and
+    # reachable from the flight. All three name RM-S-HALL — landing, well and east hall
+    # are one room since the centre line opened under BM-S-HALL.
     ElectricalDevice(uid="QTS0019AAA", tag="ED-S-LANDING-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(13), ft(24, 4)), type_ref="ED-T-LT-CAN3",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
@@ -824,13 +780,11 @@ SECOND_LIGHTING = [
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
                      controlled_by=("ED-S-STAIR-SW", "ED-S-LANDING-SW"),
                      mount=Mount(kind=MountKind.CEILING, drop=ft(4))),
-    # Moved off the centre wall's stair-side face (17'-7", 26'-0") when that wall came out,
-    # then off W-S-BD-N2 when *that* came out with O-S-STAIRTOP. Its home is W-S-SN3's
-    # north face at y=22'-6 1/4" — the wall you walk straight at stepping south off the
-    # flight — one two-gang box with ED-S-LANDING-SW (plan/mep.py), which moves with it.
-    # Slid west from x=17' on 2026-07-28: ST-M2S turns left now, so the throat you step out
-    # of is the well's *west* lane (x 10'-3 3/8"..13'-9 3/4") and x=12' is what that lane
-    # walks at. At x=17' the switch was a well's width away from where you arrive.
+    # Moved twice as walls it rode came out; home is now W-S-SN3's north face at
+    # y=22'-6 1/4", the wall you walk straight at off the flight — a two-gang box with
+    # ED-S-LANDING-SW. Slid west to x=12' on 2026-07-28: ST-M2S now turns left, so the
+    # throat is the well's west lane (x 10'-3 3/8"..13'-9 3/4"), and x=17' was a well's
+    # width away from where you arrive.
     ElectricalDevice(uid="QTS001BAAA", tag="ED-S-STAIR-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(12), ft(22, 7.375)), type_ref="ED-T-SWITCH-DIM",
                      circuit="CKT-LT-UPPER", room="RM-S-HALL",
@@ -844,15 +798,10 @@ SECOND_LIGHTING = [
 # sit in the rafter bay rather than a joist bay.
 ATTIC_LIGHTING = [
     # RM-A-DEN: a 43 ft2 nook with no wall on the way in to put a switch on, so the
-    # fixture carries its own (notes: "upper wall spotlight sconce for task lighting with
-    # switch on sconce"). Naming no `controlled_by` is deliberate and `integral_switch`
-    # on the type is what exempts it from `electrical.lighting_controls`.
-    # Moved to x 13'-0" and back to x 14'-0" on 2026-07-31: WIN-A-S-JUL-W was briefly 32"
-    # wide with its west jamb at x 14'-8", which left 8" to the sconce and crowded it
-    # against the charcoal casing and the interior jamb extension. Narrowing the pair to
-    # 18" put that jamb at x 15'-11", so the original position has 1'-11" of clearance —
-    # more than the 20" the temporary move bought — and the sconce goes back on the Den's
-    # own centre line.
+    # fixture carries its own (notes: "spotlight sconce with switch on sconce"). No
+    # `controlled_by`, deliberately — `integral_switch` on the type exempts it from
+    # `electrical.lighting_controls`. Back at x=14'-0" (2026-07-31) after WIN-A-S-JUL-W's
+    # width settled at 18": the original position clears the window jamb by 1'-11".
     ElectricalDevice(uid="QTA0001AAA", tag="ED-A-DEN-SCONCE", kind=DeviceKind.LIGHT,
                      position=pt(ft(14), ft(0, 8.625)), type_ref="ED-T-LT-SPOT-SW",
                      circuit="CKT-LT-UPPER", room="RM-A-DEN", rotation=deg(180),
@@ -934,10 +883,9 @@ ATTIC_LIGHTING = [
 
 # --- Garage ---------------------------------------------------------------------------
 # Two 4' shop lights on their own switch by the service door, on the house's main lighting
-# circuit — the garage is freestanding but fed from ED-B-PANEL, and putting the light on the
-# GFCI-protected receptacle circuit would mean losing it every time a tool trips one.
-# Surface mounted at 8', which is the garage's ceiling: there is nothing above it to recess
-# a can into.
+# circuit (garage is freestanding but fed from ED-B-PANEL) rather than the GFCI receptacle
+# circuit, which would drop the lights every time a tool trips one. Surface mounted at 8' —
+# nothing above the garage ceiling to recess a can into.
 GARAGE_LIGHTING = [
     ElectricalDevice(uid="QTG0001AAA", tag="ED-G-LT1", kind=DeviceKind.LIGHT,
                      position=pt(ft(12), ft(48)), type_ref="ED-T-LT-SHOP4",
@@ -954,15 +902,12 @@ GARAGE_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-GARAGE", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
-    # The garage-door light (2026-08-02): mark R, the full-cutoff exterior sconce, on
-    # W-G-E's outside face beside D-G-OVERHEAD — on the 4' pier south of the door
-    # (the door runs y 45'..61'), where it lights the apron without being struck by the
-    # door panel. x=24'-4" stands it just proud of the wall plane at x=24'; rotation -90
-    # backs it onto the east wall; NO `room=`, deliberately — it stands outside RM-GARAGE
-    # and `electrical.wet_location` / `advisory.dark_sky_lighting` both decide "exterior"
-    # geometrically from that. Elevation 7'-0" is storey-relative (the garage datum is the
-    # stem top at 1'-10" over the slab), so the fixture sits 8'-10" over the apron and
-    # its 9" housing still clears the wall's 8'-0" top plate.
+    # The garage-door light (2026-08-02): mark R, full-cutoff exterior sconce, on W-G-E's
+    # outside face on the 4' pier south of the door (door runs y 45'..61'), clear of the
+    # door panel. NO `room=`, deliberately — outside RM-GARAGE is how `electrical.
+    # wet_location` / `advisory.dark_sky_lighting` know it's exterior. Elevation 7'-0" is
+    # storey-relative (garage datum = stem top at 1'-10" over slab), so it sits 8'-10"
+    # over the apron and its 9" housing still clears the 8'-0" top plate.
     ElectricalDevice(uid="QTG0004AAA", tag="ED-G-EXT-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(24, 3.375), ft(43)), type_ref="ED-T-LT-SCONCE-EXT",
                      circuit="CKT-LT-MAIN", rotation=deg(90),

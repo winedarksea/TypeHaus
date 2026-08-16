@@ -95,28 +95,20 @@ class SunkenGardenSpec:
     arch_opening_height_ft: float = 8.0  # total: 4' straight + 4' semicircular rise
     # porch framing
     column_diameter_in: float = 12.0  # sonotube back-beam support
-    # Sonotube centre set south of the deck's north-edge line. Centred *on* that line the
-    # 12" tube pokes 6" north — through the 5" insulation gap and into the house cladding —
-    # and its 30" bell footing reaches 15" toward the house footing.
-    #
-    # The offset cannot shrink: the *house* footing FT-B-S2 is what the bell runs into, and
-    # its south face already lands on the north-edge line (the 20"-wide strip footing under
-    # the y=0 basement wall reaches y = -10" = -0'-10", which is exactly this structure's
-    # north edge). The bell's north face therefore has to stop 2" short of that line to
-    # leave room for the 40 psi XPS thermal-break block the dowels cross — 15" put the two
-    # footings in hard contact with the foam nowhere to go. 15 + 2 = 17".
+    # Sonotube centre set south of the deck's north-edge line. Centred on that line, the 12"
+    # tube would poke 6" into the house cladding and its 30" bell footing would run 15" into
+    # FT-B-S2, whose south face lands exactly on this north-edge line. 15" (bell reach) + 2"
+    # (clearance for the 40 psi XPS thermal-break block the dowels cross) = 17". Cannot shrink.
     column_south_offset_in: float = 17.0
     porch_joist: str = "2x8"
     porch_joist_oc_in: float = 16.0
-    # Two-ply treated LVL, 11 1/4" deep so the depth constant below and every elevation
-    # derived from it are unchanged from the 2-2x12 this replaced (2026-07-31). The sawn
-    # built-up beam was 1'-9" past IRC Table R507.5(1)'s 8'-3" limit on this 10'-0" span at
-    # the 8' joist-span row; the fix is the member, not the geometry, because the column and
-    # the two side-wall hangers are the only bearings this line can have. Being engineered it
-    # leaves the prescriptive table's scope, so `structural.deck_beam_span` now reports it
-    # UNKNOWN rather than PASS — the manufacturer's span table is the authority instead.
-    # (A 3-ply sawn 2x12 would also have cleared it, at 10'-3", and would have stayed
-    # checkable; the engineered member was the decision.)
+    # Two-ply treated LVL, 11 1/4" deep — same depth as the 2-2x12 it replaced (2026-07-31),
+    # so derived elevations don't move. The sawn beam was 1'-9" past IRC Table R507.5(1)'s
+    # 8'-3" limit on this 10'-0" span; the column + two hangers are the only bearings
+    # available, so the member had to change, not the geometry. Being engineered, it's
+    # outside the prescriptive table's scope, so `structural.deck_beam_span` reports UNKNOWN
+    # rather than PASS (a 3-ply sawn 2x12 would also have cleared it and stayed checkable,
+    # but the engineered member was the decision).
     back_beam: str = "2-1.75x11.25 LVL"
     porch_deck_thickness_in: float = 1.0  # composite plank
     # The porch's two joist ends are not alike, so it cannot share the balcony's symmetric
@@ -127,12 +119,11 @@ class SunkenGardenSpec:
     # balcony framing
     pillar_size: str = "6x6"
     rear_pillar_rise_in: float = 2.0  # rear row taller for drainage slope
-    # Three N-S beams over the pillar lines. Two-ply treated LVL at the 2x10's own 9 1/4"
-    # depth (2026-07-31), so `_balcony_beam_depth_ft` and the soffit plane it sets are
-    # unchanged. The 2-2x10 was nearly 3'-0" past R507.5(1)'s 5'-9" on this 8'-8" span: the
-    # balcony's joists span 10'-6", which reads the table's 12' row, and no built-up sawn
-    # size in that table reaches 8'-8" there (3-2x12, the largest row, stops at 8'-4"). So
-    # unlike the porch this line had no prescriptive answer at all short of re-framing.
+    # Two-ply treated LVL at the 2x10's own 9 1/4" depth (2026-07-31), so
+    # `_balcony_beam_depth_ft` and its soffit plane are unchanged. The 2-2x10 was nearly
+    # 3'-0" past R507.5(1)'s 5'-9" limit on this 8'-8" span, and no built-up sawn size in the
+    # table (even 3-2x12) reaches 8'-8" at the 12' joist-span row — unlike the porch beam,
+    # this had no prescriptive answer short of re-framing.
     balcony_beam: str = "2-1.75x9.25 LVL"
     balcony_joist: str = "2x8"
     balcony_joist_oc_in: float = 16.0
@@ -164,11 +155,10 @@ _y_out_n = -(SPEC.house_ext_layers_in + SPEC.gap_to_house_in) / 12.0  # -0.833'
 _y_ax_n = _y_out_n  # side-wall north-end nodes (open ends terminate here → face at the gap)
 _y_in_n = _y_out_n  # porch deck north edge (back beams + column sit a SPEC offset south)
 _y_in_arch = _y_in_n - SPEC.porch_clear_depth_ft  # north (inner) face of the 16" front wall
-# The 16" front wall is a 12.5" arch/pier section plus a 3.5" joist-bearing ledge on its
-# north face. A PT 2x4 sill lies flat on that ledge (top at the joist soffit, -7.25"), a PT
-# 2x8 rim stands on the plate's south 1.5" (south face -9.125', north face -9.0'), and the
-# joists butt that rim bearing 2" on the plate. So the porch *floor system* runs to the
-# ledge's south edge and nothing overhangs the wall's north 3.5" — see PORCH_JOISTS.
+# The 16" front wall = 12.5" arch/pier section + 3.5" joist-bearing ledge on its north
+# face: PT 2x4 sill flat on the ledge, PT 2x8 rim on the plate's south 1.5", joists bear 2"
+# on the plate. Porch floor system runs to the ledge's south edge; nothing overhangs the
+# wall's north 3.5" — see PORCH_JOISTS.
 _ledge_ft = 3.5 / 12.0
 _y_porch_s = _y_in_arch - _ledge_ft  # -9.125' — floor-system south edge
 _y_ax_arch = _y_in_arch - _arch_half  # front-wall axis (arch nodes + arch railing + front pillars)
@@ -208,11 +198,11 @@ WALLS = [
     FoundationWall(uid="SGW103AAAA", tag="W-SG-W1", start_node="N-SG-NW",
                    end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom),
-    # East runs south→north (and the west runs north→south) so both side walls wind the same
-    # way around the garden: with the basement storey's outward sign of -1, a wall's exterior
-    # is the *right*-hand normal of its authored direction, so the east wall must be authored
-    # ME→NE for its outer face to land east. (Latent here — SUNKEN_GARDEN_WALL is one layer of
-    # concrete — but the same winding drives the layered railing above, so keep them in step.)
+    # East wall runs ME→NE (south→north), opposite the west wall, so both side walls wind
+    # the same way around the garden: with the basement storey's outward sign of -1, a
+    # wall's exterior is the right-hand normal of its authored direction. Latent here (one
+    # concrete layer) but the layered railing above depends on the same winding — keep them
+    # in step.
     FoundationWall(uid="SGW104AAAA", tag="W-SG-E1", start_node="N-SG-ME",
                    end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom),
@@ -243,14 +233,11 @@ RETAINING_WALL_THICKNESS_IN = SPEC.wall_thickness_in
 # garden's legs, which stop here rather than continuing past the balcony.
 ARCH_WALL_AXIS_Y_FT = _y_ax_arch
 
-# Sonotube column (12" round) at midspan, a SPEC south-offset inside the porch rather than
-# on the deck's north-edge line (see ``column_south_offset_in`` — on the line, the tube and
-# its bell footing both poked north into the house). The whole back-beam line re-anchors to
-# the same offset — nodes, hangers, and tie all at ``_y_col`` — so the two beams stay
-# collinear and the deck's north edge cantilevers over them to the house gap.
-# Its top lands on the 2x12 back-beam soffit (one beam depth below the 0' porch deck), so
-# the beams seat directly on the column and it reads "slightly shorter than the arched
-# front wall". Base at the column footing top (basement elevation, -9').
+# Sonotube column (12" round) at midspan, offset south of the deck's north-edge line (see
+# ``column_south_offset_in``). The whole back-beam line re-anchors to the same offset —
+# nodes, hangers, tie all at ``_y_col`` — so the beams stay collinear and the deck edge
+# cantilevers over them to the house gap. Column top lands on the back-beam soffit (one
+# beam depth below the 0' porch deck); base at the footing top (-9').
 _back_beam_depth_ft = 11.25 / 12.0  # 2x12 actual depth
 _y_col = _y_in_n - SPEC.column_south_offset_in / 12.0
 _col_footing_width_in = 30.0  # spread footing (bell) under the sonotube
@@ -283,31 +270,21 @@ FOOTING_BEDDING = [
         host_ref=f.tag,
         undercut=inch(SPEC.aggregate_bedding_depth_in),
         cast_foam_in_aggregate=f.tag in _HOUSE_ADJACENT,
-        # Same 4" sock-wrapped tile as the house footings (params/foundations.py). These
-        # beddings carried the bare bool, which billed their perimeter as an unpriceable run
-        # of nothing in particular and left the garden footings out of the tile order.
-        #
-        # Unlike the house's, this tile cannot daylight: the garden floor is 9' down and
-        # there is no grade to run out to. It falls to the drywell below instead — which is
-        # the whole reason DRW-SG-MAIN exists.
+        # Same 4" sock-wrapped tile as the house footings (params/foundations.py). Unlike
+        # the house's, this tile cannot daylight — the garden floor is 9' down with no grade
+        # to run out to — so it discharges to DRW-SG-MAIN instead.
         drain_tile_spec=DrainTile(diameter=inch(4), sock=True, discharge="DRW-SG-MAIN"),
     )
     for i, f in enumerate(FOOTINGS, start=1)
 ]
 
-# The sunken garden's own soakaway, under the middle of the structure and *below* the
-# 42" bearing bed — not part of it. The aggregate under the footings is a bearing course
-# that happens to drain; this is a hole dug to take water and give it to the soil, and the
-# distinction matters because the garden has no other way out. Its floor sits 9' below
-# grade with no downhill side, so everything that lands in it — the balcony leader, the
-# perimeter tile around the footings, the slab itself — has nowhere to go but down.
-#
-# Top of stone at the underside of the bearing bed, so the two stack rather than intersect;
-# 6' of washed stone below that, per plans/TODO.md. Fabric-wrapped: an unwrapped well in
-# this clay silts its voids shut in a season and becomes a hole full of mud.
-#
-# Tagged DRW-, not DW-: DW- is this house's *dowel* prefix (DOWELS below), and the first
-# drywell authored as DW-SG-MAIN collided outright with the dowel uid beside it.
+# The sunken garden's own soakaway — a hole dug to take water and give it to the soil,
+# below (not part of) the 42" bearing bed. The garden floor sits 9' down with no downhill
+# side, so everything landing here (balcony leader, perimeter tile, the slab itself) has
+# nowhere to go but down. Top of stone sits at the bearing bed's underside so the two stack
+# rather than intersect; 6' of fabric-wrapped stone below (unwrapped, this clay silts its
+# voids shut in a season). Tagged DRW-, not DW-, because DW- is the dowel prefix and the
+# two collided.
 _SG_DRYWELL_TOP = ft(-(SPEC.basement_depth_ft + 0.75)
                      - SPEC.footing_thickness_in / 12.0
                      - SPEC.aggregate_bedding_depth_in / 12.0)
@@ -354,16 +331,13 @@ GARDEN_SLAB = Slab(
 )
 
 # Masonry "railing" on the front + two side walls (not the open north edge). Grouted CMU
-# cores receive the balcony post bases. These stack on the concrete porch walls and render
-# at 0'-3.5' via absolute elevations, so they stay filed with the freestanding structure
-# on the basement storey key (the house's own main/second loops must contain only house
-# walls, or storey-orientation detection traces this porch loop by mistake).
+# cores receive the balcony post bases. Filed on the basement storey key with absolute
+# elevations (0'-3.5') rather than main/second, because those loops must contain only house
+# walls or storey-orientation detection mistraces this porch loop.
 #
-# ``guard=True`` says out loud what "railing" only says in the tag: these three ARE the
-# porch's guard, standing where a metal Railing would otherwise be. It is what lets the
-# R312.1.3 census see them (solid masonry admits no 4" sphere by construction),
-# ``structural.deck_guard`` count the porch as guarded, and
-# ``structural.masonry_guard_bearing`` ask what carries their ~420 plf of dead load.
+# ``guard=True``: these three ARE the porch's guard (solid masonry, no 4" sphere by
+# construction) — lets the R312.1.3 census, ``structural.deck_guard``, and
+# ``structural.masonry_guard_bearing`` (~420 plf dead load) all see them as such.
 RAILING_WALLS = [
     FoundationWall(uid="SGRW01AAAA", tag="W-SG-RAIL-F", start_node="N-SG-MW",
                    end_node="N-SG-ME", assembly="PORCH_RAILING_MASONRY", guard=True,
@@ -400,41 +374,37 @@ BACK_BEAMS = [
          size=SPEC.back_beam, bearing_refs=("PT-SG-COL", "W-SG-E1")),
 ]
 
-# The porch floor's footprint. It used to be authored on a ``SL-SG-PORCH`` Slab that stood
-# in for the framing (a "walking_surface" slab of composite plank) while FS-SG-PORCH drew
-# the joists under it — two elements claiming one floor, and the slab was the one every
-# consumer reached for. The floor system is the floor now; the outline lives here so the
-# joists, the pillar bearings and anything else that wants the porch's extent share one.
+# The porch floor's footprint. Used to be a separate ``SL-SG-PORCH`` Slab standing in for
+# the framing while FS-SG-PORCH drew the joists under it — two elements claiming one floor.
+# The floor system is the floor now; the outline lives here so joists, pillar bearings, etc.
+# share one source.
 _PORCH_OUTLINE = (pt(ft(_x_in_w), ft(_y_porch_s)), pt(ft(_x_in_e), ft(_y_porch_s)),
                   pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n)))
 
 # ============================================================================
 # Second (balcony, ~10'): 6x6 pillars, three 2x10 beams, aluminum deck.
 # ============================================================================
-# Six pillars: front (south) row on the arch railing, rear (north) row — outer two on the
-# side-wall railings, center on the porch decking. The five that land on masonry are
-# *embedded in the CMU*: an ABU66SS standoff base is anchored into the grouted cores, so the
-# exposed 6x6 starts at the top of the railing wall, not 42" lower at the porch deck. Their
-# authored height is therefore measured from the railing top. The rear-center pillar is the
-# one exception — the north edge is open (no railing wall), so it still stands off the
-# composite decking over FS-SG-PORCH, and is that much taller.
-# The rear (north, house-side) row is 2" taller so the deck crowns at the rear and drains
-# south, away from the house.  Beam soffit = balcony level less the 2x10 beam depth (9.25").
+# Six pillars: front row on the arch railing, rear row — outer two on side-wall railings,
+# center on the porch decking. The five landing on masonry are embedded in the CMU (ABU66SS
+# standoff base anchored in the grouted cores), so exposed 6x6 starts at the railing top,
+# not 42" lower at the deck — height is measured from there. The rear-center pillar is the
+# exception: no railing wall on the open north edge, so it stands off the porch decking and
+# is that much taller. Rear row is 2" taller overall so the deck crowns and drains south,
+# away from the house. Beam soffit = balcony level minus 2x10 beam depth (9.25").
 _balcony_beam_depth_ft = 9.25 / 12.0
 _balcony_joist_depth_ft = 7.25 / 12.0  # 2x8 deck joist
-# Pillar-height *input* only. The resolver drops both the beam and the post carrying it by
-# the deck joist depth (resolve/envelope.py::_bearing_stack_drops), so the wood does not
-# land here — see _balcony_beam_soffit below for where it actually ends up. Subtracting the
-# joist depth here as well would double-count it and shorten every pillar by 7.25".
+# Pillar-height *input* only — the resolver drops beam + post by the deck joist depth
+# (resolve/envelope.py::_bearing_stack_drops), so the wood doesn't actually land here (see
+# _balcony_beam_soffit below). Subtracting the joist depth here too would double-count it.
 _beam_soffit = ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft)
 # The *resolved* soffit: the pillar-top plane the beams and E-W girts sit on, and the
 # plane both brace families rise to.
 _balcony_beam_soffit = ft(SPEC.balcony_level_ft - _balcony_joist_depth_ft
                           - _balcony_beam_depth_ft)  # 8.625'
 _girt_depth_ft = 9.25 / 12.0  # 2x10 — same depth as the double-2x10 beams, so tops finish flush
-# The girts ride ON the pillar tops now (not bolted to the faces a girt-depth lower), so
-# their soffit IS the resolved pillar-top / beam-soffit plane and the E-W knee braces land
-# at the same soffit the N-S braces do.
+# Girts ride ON the pillar tops (not bolted to the faces a girt-depth lower), so their
+# soffit IS the resolved pillar-top/beam-soffit plane — E-W and N-S knee braces land at the
+# same soffit.
 _girt_soffit = _balcony_beam_soffit  # 8.625'
 _girt_top = _balcony_beam_soffit + ft(_girt_depth_ft)  # 9.396' — flush with the beam tops
 # Top of the composite boards laid over FS-SG-PORCH: the joist tops are the 0' storey
@@ -462,12 +432,10 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
                             supported_by=_railing or "FS-SG-PORCH",
                             assembly="POST_WHITE_PAINT"))
 
-# PT-SG-BR2 — the rear-centre pillar — is the one that misses the masonry and bears on the
-# porch decking, and the north edge it stands on is the *cantilevered* tip of the porch
-# joists (they run the column's 17" south-offset past the back-beam line). A 6x6 carrying
-# its share of the balcony onto the free end of a single PT 2x8 is the load path the
-# reinforcement below answers; this is the post's own authored point, read back off the
-# loop so the two cannot drift apart.
+# PT-SG-BR2 (rear-centre) misses the masonry and bears on the porch decking, on the
+# *cantilevered* tip of the porch joists (they run the column's 17" south-offset past the
+# back-beam line). That load path is what the joist reinforcement below answers; read the
+# post's authored point back off the loop so the two can't drift apart.
 _BR2_AT = next(p for p in PILLARS if p.tag == "PT-SG-BR2").position
 
 SECOND_NODES = [
@@ -489,26 +457,20 @@ BALCONY_BEAMS = [
          size=SPEC.balcony_beam, bearing_refs=("PT-SG-BR3", "PT-SG-BF3")),
 ]
 
-# E-W girts, one pair of segments per pillar row, up ON the pillar tops in the same
-# horizontal band as the N-S beams (soffit at the resolved pillar-top plane, tops flush
-# with the beam tops one joist depth under the deck datum). They carry no joists — the deck
-# spans E-W onto the beams beside them — and exist so the balcony has a load path in its
-# second principal direction at all. Without an E-W member at the pillar tops there is
-# nothing for an E-W knee brace to reach, and a freestanding deck on standoff post bases
-# (pinned top and bottom) has no other lateral resistance that way.
+# E-W girts, up ON the pillar tops in the same band as the N-S beams — they carry no
+# joists (deck spans E-W onto the beams beside them) and exist purely so the balcony has a
+# lateral load path in its second direction: with standoff post bases pinned top and
+# bottom, an E-W knee brace needs an E-W member at the pillar tops to reach.
 #
-# A girt sharing the beams' band cannot run the full 20' — it would pass *through* the
-# three N-S beams — so each row is two segments meeting the beams cleanly:
-# - Front row: segment ends at the beam faces. The end laps onto the pillar-top strip
-#   beside the N-S beam and butts the beam side.
-# - Rear row: the rear pillars run 2" proud of the shared soffit (the drainage rise), so
-#   the segments stop at the pillar faces (±2.75") and butt that proud pillar top instead;
-#   the rest of the way back to the beam face is the hanger's saddle at each end.
+# Can't run the full 20' (would pass through the three N-S beams), so each row is two
+# segments: front row butts the beam faces directly; rear row's pillars run 2" proud
+# (drainage rise), so those segments stop at the pillar faces and a hanger saddle closes
+# the rest of the gap to the beam.
 #
-# The front-row half-width is read off ``SPEC.balcony_beam`` rather than written down.
-# It was the literal 1.5" that suited the old 3"-wide double-2x10, and the 2026-07-31 swap
-# to a 3 1/2"-wide two-ply LVL drove the girts 1/4" into every beam they butt —
-# `structural.member_interference` caught it, which is the number's whole job.
+# Front-row half-width is read off ``SPEC.balcony_beam`` rather than hardcoded — it was a
+# literal 1.5" for the old 3"-wide double-2x10, and the 2026-07-31 LVL swap (3 1/2" wide)
+# would have driven the girts 1/4" into the beams if left hardcoded
+# (`structural.member_interference` is what catches this class of bug).
 _beam_face_ft = cross_section(SPEC.balcony_beam).width_m / 2 / 0.3048
 _pillar_face_ft = 2.75 / 12.0  # half the 5.5" actual 6x6
 GIRT_NODES = [
@@ -609,12 +571,10 @@ BALCONY_JOISTS = FloorSystem(
 # the joint transfers shear without a thermal bridge. Bars at mid-footing (-9.25').
 # ============================================================================
 _dowel_z = ft(-(SPEC.basement_depth_ft + 0.75) + SPEC.footing_thickness_in / 24.0)  # -9.25'
-# The side-wall dowels sit on the north-edge line; the column's follow the column to its
-# bell footing's *north face* — the plane that actually abuts the house footing now that
-# the column stands a south-offset inside the porch. FT-B-S2's south face sits *on* the
-# north-edge line, so at the 17" offset the bell's north face lands 2" south of it and the
-# bars cross exactly the 2" XPS block — which is the joint this detail is about. (At the
-# old 15" the two footings met with nowhere to put the foam.)
+# Side-wall dowels sit on the north-edge line; the column's follow to its bell footing's
+# north face, the plane that actually abuts FT-B-S2 (whose south face sits ON the
+# north-edge line). At the 17" column offset the bell's north face lands 2" south of it,
+# so the bars cross exactly the 2" XPS block — the old 15" offset left no room for the foam.
 _col_joint_y = _y_col + _col_footing_width_in / 24.0
 _DOWEL_AT = (("W1", _x_ax_w, _y_in_n), ("E1", _x_ax_e, _y_in_n), ("COL", _cx, _col_joint_y))
 DOWELS = [
@@ -665,22 +625,18 @@ CONNECTORS += [
 
 # ============================================================================
 # Knee braces at the balcony pillar tops: 2x6 wood diagonals with a 3' leg, through-bolted,
-# with a Simpson Outdoor Accents APVKB45-6 at each joint.
+# Simpson Outdoor Accents APVKB45-6 at each joint.
 #
-# The four *corner* pillars are braced in both plan directions; the two centre pillars
-# (PT-SG-BR2 / PT-SG-BF2) are deliberately left as leaning columns. Reasoning:
-# - This is a freestanding deck with no ledger into the house, on ABU66SS standoff bases.
-#   Both the base and the beam bearing are pins, so every bit of lateral resistance the
-#   balcony has comes from these braces. It needs them in *both* principal directions, which
-#   is why the E-W girts exist for the "x" braces to reach.
-# - Bracing both ends of the outer bays in each direction is enough with the deck acting as
-#   a diaphragm; the centre pillars then just carry gravity. Bracing them too would push
-#   thrust into PT-SG-BR2, which is the one pillar bearing on the porch decking rather than
-#   on grouted masonry — the worst place in the frame to load laterally.
-# - One brace per element. Each pillar is a beam *end*, so only one brace fits in the beam's
-#   own plane; the second brace at a corner is the E-W one, against the girt segment in its
-#   row — now at the same soffit as the beams, since the girts ride the pillar tops. The
-#   old "matched pair per joint" rule billed 12 braces that could not be built.
+# The four corner pillars are braced in both plan directions; the two centre pillars
+# (PT-SG-BR2/BF2) are deliberately left as leaning columns. This is a freestanding deck
+# on ABU66SS standoff bases (base + beam bearing both pins), so the braces are the only
+# lateral resistance and need both directions — hence the E-W girts, for the "x" braces to
+# reach. Bracing the outer bays each direction is enough with the deck as diaphragm; bracing
+# the centre pillars too would push thrust into PT-SG-BR2, the one pillar bearing on porch
+# decking rather than masonry — the worst place to load laterally. One brace per pillar per
+# direction: the second brace at a corner is the E-W one against the girt segment (now at
+# the same soffit as the beams) — the old "matched pair per joint" rule billed 12 unbuildable
+# braces.
 # ============================================================================
 # (row, pillar index, N-S lean, E-W lean). Rear posts brace south toward the beam's midspan
 # and front posts brace north; the west pillar of each row braces east, the east one west.
@@ -745,9 +701,8 @@ BALCONY_FASCIA = Fascia(
     host_ref="SL-SG-DECK")
 # Front (south, low) edge only.
 _FRONT_PATH = (pt(ft(_deck_x_w), ft(_y_ax_arch)), pt(ft(_deck_x_e), ft(_y_ax_arch)))
-# The gutter's rim meets the drip flashing's lower edge (drip top = deck top, its depth
-# below that), so water shedding off the drip lands straight in the trough. Hung 9" down
-# it cleared the drip by 6" and the sheet overshot the trough entirely.
+# Gutter rim meets the drip flashing's lower edge, so water shedding off the drip lands in
+# the trough. Hung 9" down (an earlier value) it cleared the drip by 6" and overshot it.
 _drip_depth_in = 3.0
 BALCONY_GUTTER = Gutter(
     uid="SGGT01AAAA", tag="TR-SG-GUTTER", kind=TrimKind.GUTTER, path=_FRONT_PATH,
@@ -757,14 +712,13 @@ BALCONY_GUTTER = Gutter(
     # The run goes west→east, so its left-hand normal (resolve/geometry.py::normal) points
     # north (+y) — the porch/house side. The channel's back sheet rides the fascia there.
     back_side="left")
-# The leader TR-SG-GUTTER has always sloped to. It was named in prose only, so the balcony
-# drained to a downspout nobody had authored — the trough simply stopped at the east end.
+# The leader TR-SG-GUTTER slopes to — previously named in prose only, so the trough had no
+# authored downspout and just stopped at the east end.
 #
-# 3" round, not the roof's 4": this catches the balcony deck alone (~200 sq ft), a fraction
-# of the 648 sq ft each house eave sheds. It hangs just inboard of the deck's east edge, on
-# the trough centreline, and drops the full storey into the sunken garden, discharging a foot
-# above the garden slab — where DRW-SG-MAIN, 5' below that slab, is what finally takes it.
-# There is no other way out: the garden floor is 9' down with no downhill side.
+# 3" round, not the roof's 4": catches only the balcony deck (~200 sf) vs. 648 sf per house
+# eave. Sits just inboard of the deck's east edge on the trough centreline and drops the
+# full storey into the sunken garden, discharging above the garden slab where DRW-SG-MAIN
+# takes it — the garden floor is 9' down with no other way out.
 _SG_LEADER_INSET = 0.5   # ft inboard of the deck edge, so the drop clears the fascia return
 _SG_LEADER_BOTTOM = ft(-SPEC.basement_depth_ft) + ft(1)
 BALCONY_LEADER = Downspout(

@@ -1,14 +1,12 @@
 # haus: editable
 # Catlin MEP — concrete penetrations — the sleeves and stubs cast into slabs and walls.
 #
-# Split out of the old 2,515-line plan/mep.py (AGENTS.md §1.1). Every element below moved
-# verbatim; plan/mep.py still re-exports the storey lists, so the manifest is unchanged.
+# Split out of the old 2,515-line plan/mep.py (AGENTS.md §1.1); plan/mep.py re-exports the
+# storey lists so the manifest is unchanged.
 #
-# Sleeve positions are the exact pre-pour centers the concrete crew works from — the resolver
-# validates them against the fixture drain point they serve (`mep.sleeve_alignment`); nothing here
-# is derived. Second-floor hall-bath drains drop through the framed floor into the existing
-# INT_2X6_PLUMBING wet wall (W-S-BD-N) with no sleeve needed — only a cast concrete deck needs a
-# pre-positioned penetration.
+# Positions are the exact pre-pour centers the concrete crew works from, validated against
+# the fixture drain point (`mep.sleeve_alignment`); nothing here is derived. Framed-floor
+# drops (e.g. the second-floor hall bath into wet wall W-S-BD-N) need no sleeve at all.
 
 from typehaus import (
     PipeRun,
@@ -49,40 +47,27 @@ SLEEVES = [
     SleevePenetration(uid="CMP903AAAA", tag="SP-M-LAV1", host_ref="SL-M-DECK",
                       position=pt(ft(6), m(7.00891)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), serves_fixture="FX-M-BATH1-LAV"),
-    # Projection of FX-M-LAUNDRY onto the W-M-BA2E centerline (x=8'). The wall tag in this
-    # comment used to read "W-M-BA2E2", which spans y 13'-4"..18'-0" and so contains neither
-    # this sleeve nor the fixture — a stale tag, corrected 2026-07-31 here and on the
-    # fixture's own `wall_ref` (plan/fixtures.py). The position is unchanged: x=8' is the wet
-    # wall's centreline and y=20' sits inside the stacked pair's band, so the standpipe and
-    # the supply box land behind the machine rather than beside it. It survived the 8" move
-    # north of 2026-08-03 without moving — the band is 18'-0 5/8"..21'-4 5/8" now and y=20'
-    # is still well inside it, as are SP-M-CW-WASH (20'-7.2") and SP-M-HW-WASH (21'-2.4").
+    # Projection of FX-M-LAUNDRY onto the W-M-BA2E centerline (x=8'). y=20' sits inside the
+    # stacked pair's band (18'-0 5/8"..21'-4 5/8"), which it survived unmoved through the
+    # 2026-08-03 8" wall shift, so the standpipe/supply box land behind the machine.
     SleevePenetration(uid="CMP904AAAA", tag="SP-M-WASH", host_ref="SL-M-DECK",
                       position=pt(ft(8), ft(20)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-LAUNDRY"),
-    # The laundry tub's waste, straight down under its basin the way every other main-storey
-    # fixture drops through this 9" cast deck. 2" rather than the 1 1/2" one sink would take,
-    # because the branch below it is the tub's trap arm to the laundry stack and 2" is what
-    # buys the 60" Table 1002.2 allows for the 45" it runs. Authored at exactly the fixture's
-    # `drain_position`, which is what makes `mep.sleeve_alignment` read 0.00".
+    # 2" rather than the 1 1/2" a sink would take: the branch below is the tub's trap arm to
+    # the laundry stack, and 2" buys the 60" Table 1002.2 allows for the 45" it runs.
     SleevePenetration(uid="ZW630NFAAS", tag="SP-M-LSINK", host_ref="SL-M-DECK",
                       position=pt(ft(11, 9), ft(18, 9)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-LAUNDRY-SINK"),
-    # The kitchen sink's waste through the 9" deck. Authored at exactly FX-M-KITCH-SINK's
-    # `drain_position`, which is what makes `mep.sleeve_alignment` read 0.00". Moved to the
-    # north wall 2026-07-30 with the sink, then re-centred the same day with the sink/
-    # dishwasher flip — see plan/fixtures.py.
+    # Authored at FX-M-KITCH-SINK's `drain_position` (0.00" alignment). Moved to the north
+    # wall 2026-07-30 with the sink, re-centred the same day for the sink/dishwasher flip.
     SleevePenetration(uid="BFQH6F04VQ", tag="SP-M-KITCH", host_ref="SL-M-DECK",
                       position=pt(ft(28, 7), ft(35)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-M-KITCH-SINK"),
 ]
 
-# Supply risers through the 9" concrete deck — every hot/cold branch that leaves the
-# basement ceiling for a main- or second-storey wet wall crosses SL-M-DECK, and a PEX
-# riser through cast concrete is a cast-in sleeve exactly like a waste drop
-# (`mep.sleeve_coverage` holds every crossing to one). Positions sit on (or tight to) the
-# wet wall each riser feeds, spaced >= 5" from every neighbouring penetration so the
-# 4"-tolerance sleeve matcher can never confuse two.
+# Supply risers through the 9" concrete deck — every hot/cold branch crossing SL-M-DECK
+# needs its own cast-in sleeve (`mep.sleeve_coverage`). Positions sit on/tight to the wet
+# wall each riser feeds, spaced >= 5" apart so the 4"-tolerance matcher stays unambiguous.
 SUPPLY_SLEEVES = [
     SleevePenetration(uid="CMPS01AAAA", tag="SP-M-CW-BATH1", host_ref="SL-M-DECK",
                       position=pt(ft(6), ft(23, 7.2)), pipe_diameter=inch(0.75),
@@ -127,12 +112,9 @@ SUPPLY_SLEEVES = [
                       position=pt(ft(14, 2.4), ft(16, 10.8)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_HOT),
     # The two south-face wall hydrants' shared riser (2026-08-01). One crossing, not two:
-    # both hydrants are fed from the second-floor joist space, so a single 3/4" branch
-    # leaves the basement here and splits up there. y=13'-0" is W-M-BDN1's line — the
-    # main-storey partition the riser stands inside — and it is over open basement ceiling
-    # at x=6' (W-B-SA-N, the sauna's north partition, starts at x=8'-10"), so the
-    # penetration lands in the deck rather than on top of a wall below it. Nothing else
-    # crosses within 3' of it.
+    # both hydrants are fed from the second-floor joist space, so one 3/4" branch leaves
+    # the basement here and splits up there. y=13'-0" is W-M-BDN1's line; x=6' is over open
+    # basement ceiling (W-B-SA-N starts at x=8'-10"), so it lands in the deck, not a wall.
     SleevePenetration(uid="CMPS16AAAA", tag="SP-M-CW-HYD", host_ref="SL-M-DECK",
                       position=pt(ft(6), ft(13)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.WATER_COLD),
@@ -148,28 +130,20 @@ STACK_SLEEVES = [
     SleevePenetration(uid="CMPS14AAAA", tag="SP-M-S-SUITE", host_ref="SL-M-DECK",
                       position=pt(ft(13), ft(16, 10.8)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-S-SUITEBATH-WC"),
-    # The heat-pump condensate drop from the main-storey wall heads (master bedroom +
-    # living room, both on the south wall by the centre line) down to the collected
-    # air-gap line at the basement ceiling (plans/TODO.md §condensate).
+    # Heat-pump condensate drop from the main-storey wall heads (master bedroom + living
+    # room, south wall) to the collected air-gap line at the basement ceiling.
     SleevePenetration(uid="CMPS15AAAA", tag="SP-M-COND", host_ref="SL-M-DECK",
                       position=pt(ft(17, 6), ft(1)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.DRAIN),
 ]
 
-# Slab-on-grade stub-ups. A fixture standing on grade has no wall drain stack — its trap
-# arm runs *under* the slab — so the penetration is set before the pour exactly like the
-# deck sleeves above. Each fixture authors this same point as its `drain_position` (or, where
-# there is no override, as its own position), which is what makes the alignment check exact.
-#
-# Four of them now (2026-07-30). The basement went from one slab fixture to four in one
-# decision: a bathroom at the foot of the stair, and the sauna's shower end resolved into a
-# curbed pan plus a floor drain.
+# Slab-on-grade stub-ups. A fixture on grade has no wall drain stack — its trap arm runs
+# *under* the slab — so the penetration is set pre-pour like the deck sleeves above, at the
+# fixture's own `drain_position` for an exact alignment match. Four now (2026-07-30): a
+# bathroom at the stair foot, and the sauna's shower end (curbed pan + floor drain).
 SLAB_STUBS = [
-    # Was SP-B-UTILITY, FX-1's stub at (7', 19'-6"), until 2026-07-30. Same cast-in, moved
-    # and upsized to 3" for the bathroom's water closet: the utility sink it used to serve is
-    # gone and the fixture that replaced it is a WC, which needs a 3" closet bend rather than
-    # a 1 1/2" trap arm. The uid rides along because it is the same penetration in the same
-    # pour schedule, not a new one.
+    # Was SP-B-UTILITY (FX-1's 1 1/2" utility-sink stub) until 2026-07-30; same cast-in,
+    # moved and upsized to 3" now that a WC (needing a closet bend) replaced the sink.
     SleevePenetration(uid="CBP901AAAA", tag="SP-B-BATH-WC", host_ref="SL-B-FLOOR",
                       position=pt(ft(11, 8), ft(20)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), serves_fixture="FX-B-BATH-WC"),
@@ -185,25 +159,16 @@ SLAB_STUBS = [
     SleevePenetration(uid="CBP906AAAA", tag="SP-B-SAUNA-FD", host_ref="SL-B-FLOOR",
                       position=pt(ft(13, 6), ft(12, 9)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), serves_fixture="FX-B-SAUNA-FD"),
-    # Where the ceiling collector turns down to become the under-slab building drain
-    # (2026-07-30; 4" since the 2026-07-31 building-drain upsize). A 4" waste through cast
-    # concrete is a cast-in exactly like the fixture stubs; `mep.sleeve_coverage` holds the
-    # crossing to it.
+    # Where the ceiling collector turns down to become the under-slab building drain; 4"
+    # since the 2026-07-31 building-drain upsize. `mep.sleeve_coverage` holds the crossing.
     SleevePenetration(uid="CBP902AAAA", tag="SP-B-SLAB-MAIN", host_ref="SL-B-FLOOR",
                       position=pt(ft(3), ft(15, 6)), pipe_diameter=inch(4),
                       sleeve_diameter=inch(6)),
-    # The bathroom branch's two under-footing crossings on its way to the main (IRC P2604,
-    # the same relieving-arch treatment PR-G-HYDRANT-CW gets under the garage footing).
-    # `mep.footing_clearance` requires both: at each one the pipe's crown sits below the
-    # footing's -9'-8" bearing plane, so it is a crossing *through* the footing, not a pipe
-    # standing clear of its 45° influence line.
-    #
-    # This one was SP-B-CW-UTIL-DR (FX-1's 1 1/2" arm) until 2026-07-30. The crossing point is
-    # unchanged — the new bathroom branch runs the same corridor down the mechanical room, so
-    # the hole stays where the concrete crew already had it — but it carries the 3" bathroom
-    # branch now. Invert at the crossing is -9'-11 1/8" project, so the centre is -9'-9 5/8" —
-    # 1 5/8" below FT-B-CW3's -9'-8" bearing plane, which is what makes this an under-footing
-    # crossing rather than a pipe standing inside the footing's 45 degree influence line.
+    # First of the bathroom branch's two under-footing crossings to the main (IRC P2604,
+    # same relieving-arch treatment as PR-G-HYDRANT-CW). Was SP-B-CW-UTIL-DR (FX-1's 1 1/2"
+    # arm) until 2026-07-30 — same hole, now carrying the 3" bathroom branch. Centre
+    # -9'-9 5/8" is 1 5/8" below FT-B-CW3's -9'-8" bearing plane, which is what makes this a
+    # true under-footing crossing rather than one standing inside the 45° influence line.
     SleevePenetration(uid="CBP903AAAA", tag="SP-B-CW-BATH-DR", host_ref="FT-B-CW3",
                       position=pt(ft(7), ft(18)), pipe_diameter=inch(3),
                       sleeve_diameter=inch(4), axis="horizontal",
@@ -218,12 +183,10 @@ SLAB_STUBS = [
                       center_elevation=ft(-9.675)),
 ]
 
-# Horizontal sleeves through the basement's cast concrete walls. The whole ceiling-level
-# distribution — collector, branches, supply trunks, hydrant line — has to get past the
-# y=18' centre cross walls and out the perimeter, and every one of those crossings is a
-# cast-in-place hole the concrete crew sets before the pour (`mep.sleeve_coverage`).
-# center_elevation is project-frame absolute (the walls span -9'..0'); positions along
-# y=18' keep >= 5" between neighbours so the 4"-tolerance matcher stays unambiguous.
+# Horizontal sleeves through the basement's cast concrete walls: every ceiling-level run
+# crossing the y=18' centre walls or the perimeter is a cast-in hole (`mep.sleeve_coverage`).
+# center_elevation is project-frame absolute (walls span -9'..0'); positions along y=18'
+# keep >= 5" between neighbours so the 4"-tolerance matcher stays unambiguous.
 WALL_SLEEVES = [
     # W-B-CW (y=18', x 0..6'-9"), west centre wall — the mechanical wall of the house.
     # Split at N-B-ESS-S on 2026-08-02 for the ESS closet: the three sleeves east of
@@ -260,14 +223,11 @@ WALL_SLEEVES = [
                       position=pt(ft(6, 6), ft(18)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_HOT, center_elevation=ft(-0.96)),
-    # (SP-B-CW-COND stood at (7', 18') until 2026-07-30, for the condensate collector's run up
-    # to FX-1's basin. PR-B-COND no longer crosses this wall at all — it now terminates over
-    # the sauna's floor drain, which is south of y=18' — so the hole is retired rather than
-    # left cast for a route nothing takes, the same call the SUITE drain sleeve got below.)
-    # The sauna group's vent crossing, on its way north to the shared radon/vent chase. x=9'
-    # is the one free slot on this wall: the supply and drain sleeves either side of it run
-    # 2'-3" to 8' at 5"+ pitch, and 9' leaves 12" to the nearest of them and 6" to W-B-STR's
-    # west face. Elevation is the run's own interpolated centreline where it passes through.
+    # (SP-B-CW-COND retired 2026-07-30: PR-B-COND now terminates over the sauna's floor
+    # drain, south of y=18', and no longer crosses this wall.)
+    # Sauna vent crossing, on its way north to the shared radon/vent chase. x=9' is the one
+    # free slot: neighbouring supply/drain sleeves run 2'-3" to 8', so 9' clears both them
+    # and W-B-STR's west face.
     SleevePenetration(uid="CBPW24AAAA", tag="SP-B-CW-SAUNA-VENT", host_ref="W-B-CW3",
                       position=pt(ft(9), ft(18)), pipe_diameter=inch(2),
                       sleeve_diameter=inch(3), axis="horizontal",
@@ -280,20 +240,14 @@ WALL_SLEEVES = [
                       position=pt(ft(8), ft(18)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-0.87)),
-    # (There is no SUITE drain sleeve here. The ensuite stack drops at x=13' — east of this
-    # wall's x 1'..10' extent — and its collector runs south of y=18' to the main, so it
-    # never crosses W-B-CW. A sleeve was authored at (9', 18') for a route the run does not
-    # take; `mep.sleeve_coverage` had it as the one unclaimed drain sleeve on this wall, and
-    # a hole cast for nothing is the same defect as a missing one.)
+    # (No SUITE drain sleeve here: the ensuite stack at x=13' is east of this wall's 1'..10'
+    # extent and its collector runs south of y=18' to the main, so it never crosses W-B-CW.
+    # A stray sleeve cast for that route was retired — an unused hole is the same defect as
+    # a missing one.)
     # W-B-STR (x=10', y 18'-6"..35'), the stair shaft's west wall — the stair-foot bathroom's
-    # only way out to the mechanical room's trunks (2026-07-30). Three crossings at the
-    # basement ceiling, spread 6"–18" apart along y so the 4"-tolerance sleeve matcher can
-    # tell them apart, and all of them land inside the room's 18'-6"..21'-6" depth:
-    #   vent  at y=21'-0", highest of the three (its riser stands 9" further north, inside
-    #          the partition itself, and the leg turns west just south of it)
-    #   cold   at y=20'-3"
-    #   hot    at y=19'-9"
-    # The fourth service, the drain, goes *under* the footing instead — SP-B-STR-BATH-DR.
+    # only way to the mechanical room's trunks (2026-07-30). Three crossings, 6"-18" apart
+    # so the 4"-tolerance matcher can tell them apart: vent y=21'-0", cold y=20'-3", hot
+    # y=19'-9". The fourth service, the drain, goes under the footing — SP-B-STR-BATH-DR.
     SleevePenetration(uid="CBPW23AAAA", tag="SP-B-STR-BATH-VENT", host_ref="W-B-STR2",
                       position=pt(ft(10), ft(21)), pipe_diameter=inch(1.5),
                       sleeve_diameter=inch(2), axis="horizontal",
@@ -306,12 +260,9 @@ WALL_SLEEVES = [
                       position=pt(ft(10), ft(19, 9)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
                       purpose=Service.WATER_HOT, center_elevation=ft(-1)),
-    # The laundry tub's branch west to PR-B-MAIN-DRAIN (2026-07-31). Its own crossing at
-    # y=18'-9", a foot south of the stair-bathroom group above and 3" clear of W-B-CW2's
-    # north face, which is why the tub's waste drops at 18'-9" rather than under its own
-    # centre — see plan/fixtures.py. PR-B-LSINK-DRAIN's invert at x=10' is -1'-1 3/4"
-    # project, interpolated along its 1.32"/ft fall; the sleeve is cast at the pipe's
-    # centerline, 1" (half a diameter) above that, which is what `mep.sewer_exit_invert`
+    # Laundry tub branch to PR-B-MAIN-DRAIN (2026-07-31), crossing at y=18'-9" — a foot
+    # south of the stair-bathroom group, 3" clear of W-B-CW2's north face. Elevation is the
+    # pipe centerline (invert + half diameter) at x=10', which `mep.sewer_exit_invert`
     # matches to within 1/2".
     SleevePenetration(uid="HTE6ZE86KX", tag="SP-B-STR-LSINK-DR", host_ref="W-B-STR2",
                       position=pt(ft(10), ft(18, 9)), pipe_diameter=inch(2),
@@ -346,9 +297,8 @@ WALL_SLEEVES = [
                       position=pt(ft(18), ft(15, 6)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(2), axis="horizontal",
                       purpose=Service.WATER_HOT, center_elevation=ft(-0.97)),
-    # W-B-CS (x=18', y 0..13'-10") — the condensate collector's two crossings.
-    # Re-levelled 2026-07-30 with PR-B-COND's new termination: same hole, same plan position,
-    # 3/8" lower than the crossing it was cast for.
+    # W-B-CS (x=18', y 0..13'-10") — condensate collector's two crossings. Re-levelled
+    # 2026-07-30 with PR-B-COND's new termination: same hole, 3/8" lower.
     SleevePenetration(uid="CBPW16AAAA", tag="SP-B-CS-COND", host_ref="W-B-CS",
                       position=pt(ft(18), ft(9)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
@@ -358,14 +308,11 @@ WALL_SLEEVES = [
                       sleeve_diameter=inch(1.5), axis="horizontal",
                       center_elevation=ft(-0.987)),
     # Perimeter exits.
-    # The building drain leaves *under* FT-B-S1, not through W-B-S1 (2026-07-30): with the
-    # sewer connection below the slab there is no wall left at that depth — the walls stop at
-    # -9'-0", the slab top — so the exit is an under-footing protection sleeve set at the
-    # footing centerline, y=0. center_elevation is the pipe centreline where it crosses:
-    # PR-B-MAIN-DRAIN's invert there is -10'-6 1/4", so with the 4" building drain
-    # (2026-07-31 upsize) the sleeve centre is invert + 2" = -10'-4 1/4" = ft(-10.356).
-    # `mep.footing_clearance` is what requires this sleeve (IRC P2604) and matches the run to
-    # it; `mep.sewer_exit_invert` holds the invert to the number cast in.
+    # Building drain leaves *under* FT-B-S1, not through W-B-S1 (2026-07-30): the walls stop
+    # at -9'-0" (the slab top), below the sewer connection, so this is an under-footing
+    # protection sleeve (IRC P2604, `mep.footing_clearance`) at the footing centerline.
+    # center_elevation = invert (-10'-6 1/4") + half the 4" pipe = ft(-10.356), matched to
+    # within 1/2" by `mep.sewer_exit_invert`.
     SleevePenetration(uid="CBPW18AAAA", tag="SP-B-SEWER-EXIT", host_ref="FT-B-S1",
                       position=pt(ft(3), ft(0)), pipe_diameter=inch(4),
                       sleeve_diameter=inch(6), axis="horizontal",
@@ -380,34 +327,17 @@ WALL_SLEEVES = [
                       purpose=Service.WATER_COLD, center_elevation=ft(-6)),
 ]
 
-# The hydrant line's garage-foundation protection (IRC P2604): the buried run passes under
-# FT-GF-S-DR at its 6' bury — 22" below the footing's 4'-2" bearing plane, directly beneath
-# it, so lateral offset zero — inside a protection sleeve. `mep.footing_clearance` requires
-# it. Being *under* a footing is not clearance from it: the 45° cone opens downward, and a
-# pipe on the footing's own centreline is the worst case in it, not the best.
+# The hydrant line's garage-foundation protection (IRC P2604): the buried run passes 22"
+# below FT-GF-S-DR's 4'-2" bearing plane, on its centerline, inside a protection sleeve —
+# being *under* a footing is the worst case in its 45° influence cone, not clearance from it.
 #
-# There were two other sleeves here.
-#
-# SP-G-HYDRANT-PED was the block-out through the 4" topping pedestal the barrel used to
-# pass on its way up. The pedestal was retired 2026-08-03 (params/foundations.py) and its
-# block-out went with it: the barrel now rises through SP-G-HYDRANT in SL-G-FLOOR and
-# nothing else.
-#
-# SP-GF-W-HYD (deleted 2026-08-15) claimed to protect the rise where it encroached on
-# FT-GF-W's influence line, and it protected nothing. It was authored at (0'-9.6", 61'-6"),
-# which put its bore straight across FT-GF-W's 20" width — a 2" hole east-west through the
-# footing line, at the 6' bury, with the actual pipe 8" away at x = 1'-6" and running
-# *parallel* to that footing, never crossing it. A sleeve is the hole a pipe passes through;
-# there was no pipe in this one.
-#
-# It graded PASS because `mep.footing_clearance` asked only that *some* sleeve on the pour
-# sit within 0.3 m of the encroaching segment, and 8.4" is 0.213 m. That tolerance is now a
-# real alignment test — the run has to actually thread the sleeve — so this could not come
-# back silently (checks/mep/plumbing_concrete.py).
-#
-# The encroachment it was papering over was real, and the fix was to stop encroaching: the
-# hydrant moved off the wall to (5'-0", 59'-6"), the run lost its west jog, and there is no
-# longer any west-footing interaction to protect. → params/foundations.py.
+# Two other sleeves used to live here and are gone. SP-G-HYDRANT-PED (the topping pedestal's
+# block-out) went with the pedestal's 2026-08-03 retirement. SP-GF-W-HYD (deleted
+# 2026-08-15) protected nothing — its bore crossed FT-GF-W's width while the actual pipe ran
+# 8" away, parallel to it. It graded PASS only because `mep.footing_clearance`'s 0.3 m
+# tolerance didn't yet require the run to thread the sleeve (now it does, see
+# checks/mep/plumbing_concrete.py). The real fix was moving the hydrant to (5'-0", 59'-6")
+# to remove the west-footing encroachment entirely — see params/foundations.py.
 GARAGE_SLEEVES = [
     SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S-DR",
                       position=pt(ft(5), ft(41)), pipe_diameter=inch(0.75),

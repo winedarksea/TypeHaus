@@ -58,46 +58,26 @@ DOOR_TYPES = [
     DoorType(tag="DT-INT-SWING24", width=ft(2), height=ft(6, 8)),
     DoorType(tag="DT-INT-BIFOLD60", width=ft(5), height=ft(6, 8), operation="bifold"),
     DoorType(tag="DT-INT-BIFOLD56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),
-    # RM-M-MUD-CLOSET's opening (2026-08-02): a 48" sliding bypass pair, keeping the
-    # replaced FURN-M-MUD-CLOSET-S's no-swing intent — the closet aisle has no floor to
-    # spare for a swing, same reasoning as library's FURN-WARDROBE-48. "slide" is the
-    # closed DoorOperation vocabulary's bypass form and is handled end to end: coplanar
-    # panel pair + track in resolve/geometry_openings.py, the door-sliding plan symbol
-    # in emit/draw/door_symbols.py, and SLIDING_TO_LEFT in the IFC emitter. 48" is the
-    # largest standard bypass whose RO (50") fits the partition's 63 1/8" framed span
-    # with jamb packs to spare; 60" would leave 1 1/8" total.
+    # RM-M-MUD-CLOSET's bypass pair (2026-08-02): no floor for a swing, same reasoning as
+    # FURN-WARDROBE-48. 48" is the largest standard bypass whose RO (50") still fits the
+    # partition's 63 1/8" framed span with jamb packs to spare — 60" would leave 1 1/8" total.
     DoorType(tag="DT-INT-BYPASS48", width=ft(4), height=ft(6, 8), operation="slide"),
     DoorType(tag="DT-INT-FRENCH60", width=ft(5), height=ft(6, 8),
              operation="double_swing", glazed=True, tempered=True),
     DoorType(tag="DT-EXT-OVERHEAD192", width=ft(16), height=ft(7), exterior=True,
              operation="overhead"),
 ]
-# One size per width family, no exceptions: every placement of a family shares one
-# height, chosen as the tallest that still fits the family's most constrained wall
-# anywhere in the house. The 42" family used to carry a shorter WT-4242 twin for the
-# attic's raked gables; the 2026-07-30 facade pass retired it by giving those gables
-# WT-1424 instead, which is what the rake could always actually take. The 42" family
-# itself is gone as of 2026-08-01, when the south glazing narrowed to WT-3048.
+# One size per width family: every placement shares one height, the tallest that still
+# fits the family's most constrained wall in the house. The 42" family (old WT-4242 twin
+# for the raked gables) is gone as of 2026-08-01, replaced by WT-1424 there and by WT-3048
+# for the south glazing. WT-1864 (18") is a deliberate fifth family, added 2026-07-31 for
+# the attic's south juliet pair — no committed height gives that tall/narrow proportion.
 #
-# The 18" family (WT-1864) is a deliberate fifth family, added 2026-07-31 for the attic's
-# south juliet pair, and it is the same shape of argument that retired WT-4242 — one
-# height per family, so a unit the committed heights cannot express needs its own family
-# rather than a second height on an existing one. No committed height gives the tall narrow
-# proportion the pair is for (the 30" family is 36" tall, little more than half of it).
-#
-# "No exceptions" now has two, both 2026-08-01, and neither is a drift — each is a case
-# where the escape hatch the previous paragraph offers (give it its own width family) costs
-# more than the second height does:
-#
-#   - WT-1448, because the 4:12 rake forbids the hatch outright. Any width above 14" breaks
-#     a stud and takes a header, and it is the *header*, not the glass, that hits the rake;
-#     see WT-1448's own note for the 1.8" that closes WT-1864 out of the position.
-#   - WT-3048, because the 30" family's committed height (WT-3036's 36") would drop the
-#     south head off the 6'-8" door-head line the whole south facade is built on, and a
-#     fresh width family for the same glass is a width the facade columns cannot take.
-#
-# Read the rule as: one height per width family, unless a second height is the only way to
-# keep a fact the roof or the facade already committed to.
+# Two deliberate exceptions to "one height per family", both 2026-08-01, each because a
+# fresh width family costs more than a second height does: WT-1448 (the 4:12 rake forbids
+# any width over 14", which takes a header that hits the rake — see WT-1448's own note) and
+# WT-3048 (the 30" family's committed 36" height would drop the south head off the shared
+# 6'-8" door-head line).
 WINDOW_TYPES = [
     # 14" RO — falls between studs on the 16" grid without breaking a stud line, so it
     # frames with no header, no jacks and no kings. 24" tall because the 5' attic knee
@@ -106,40 +86,19 @@ WINDOW_TYPES = [
     # That combination makes it the house's fallback wherever a bigger unit will not go.
     WindowType(tag="WT-1424", width=inch(14), height=ft(2), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="awning"),
-    # 14" RO, 48" tall — the south gable's flanker size (2026-08-01 facade pass), and the
-    # one place the "one height per family" rule above is broken on purpose. The gable's
-    # two survivors (WIN-A-S2/S3, after the 3'-4"/33'-8" corner pair was retired) needed a
-    # unit tall enough to belong with the 18x64 juliet pair, and every alternative is closed:
-    #
-    #   - WT-1424's 24" is what made them read as vents beside the juliets in the first place.
-    #   - WT-1864, the obvious "own family" answer the rule prescribes, does not fit. An 18"
-    #     RO breaks a stud, so it takes the jamb pack — and on a NONBEARING gable wall
-    #     framing/tables.py header_size(..., bearing=False) is a 2-2x6, 5.5" deep. At the
-    #     nearest stud line the pair can use (x 8'-0" / 28'-0") the header's outer end lands
-    #     at x 7'-0", where the 4:12 roof underside is 8'-3.7" and the header top wants
-    #     8'-5.5": short by 1.8". The rake closes the 18" family out of this position.
-    #
-    # 14" is the only width that ducks it, and for the reason WT-1424's note already gives:
-    # it lands wholly inside a bay, so framing/openings.py needs_jamb_pack skips the pack
-    # entirely and there is no header to collide with the rake — only the RO head, which at
-    # 6'-8" clears the underside by 2'-0" at the outer jamb. 48" is not a new height in the
-    # house either (the south glazing, WT-3048, is 48"), and the 6'-8" head is the main
-    # storey's own head line.
-    # Casement rather than WT-1424's awning: a 48"-tall leaf is far past what a bottom-hinged
-    # awning projects, and it puts the pair on the juliets' operation.
+    # 14" RO, 48" tall — the south gable's flanker size (2026-08-01), and the one deliberate
+    # break of "one height per family". WT-1864 (18") doesn't fit: it breaks a stud, taking a
+    # 5.5"-deep header that at the nearest usable stud line (x 8'-0"/28'-0") clashes with the
+    # 4:12 roof underside by 1.8". 14" lands wholly inside a bay so no header forms, and the
+    # 6'-8" head (the main storey's head line) clears the rake by 2'-0". Casement, not
+    # WT-1424's awning: a 48"-tall leaf is past what an awning projects.
     WindowType(tag="WT-1448", width=inch(14), height=ft(4), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 18" RO — the attic gable's juliet size (2026-07-31, narrowed from a 32" tilt-turn the
-    # same day). One stud broken, so the centre sits on a STUD LINE, not a bay centre: at
-    # 16" o.c. with 1-1/2" studs anything from 16" to 30" wide clears the two flanking stud
-    # lines when it is centred on one, which is the cheap frame (a single header on a jack
-    # and king each side) and, more to the point here, the one that lets the pair sit 32"
-    # apart instead of 48". 64" tall: with the storey-wide 2'-8" south sill the head lands
-    # at 8'-0", and the 4:12 rake is nowhere near it (roof underside is 11'-4" at the outer
-    # jamb), so the height is a proportion decision rather than a clearance one — 18x64
-    # keeps a door-like slot without the pair dominating the gable. Casement, not tilt-turn:
-    # 18" is below the ~500 mm minimum frame any tilt-turn hardware line is made in, and an
-    # in-swing casement leaf is what a juliet unit is anyway.
+    # same day). One stud broken, centred on a STUD LINE (cheap frame, and what lets the
+    # pair sit 32" apart instead of 48"). 64" tall is a proportion choice, not a clearance
+    # one — head lands at 8'-0" with the storey's 2'-8" sill, well clear of the rake.
+    # Casement, not tilt-turn: 18" is below tilt-turn hardware's minimum frame width.
     WindowType(tag="WT-1864", width=inch(18), height=ft(5, 4), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO — bearing-wall size (N*2-9): one stud broken, jacks added. 36" tall
@@ -152,19 +111,12 @@ WINDOW_TYPES = [
     # enlargement this is the north-side size (attic gable pair, hall).
     WindowType(tag="WT-3036", width=inch(30), height=ft(3), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
-    # 30" RO — the south-glazing size, narrowed from the 42" WT-4248 the 2026-07-30 pass
-    # introduced (2026-08-01). One stud broken, not two: the module's ideal position moves
-    # with the RO width, so where 42" had to take a bay centre these take the stud line,
-    # and the four facade columns moved 8" inboard with them (3'-4"/8'-8" -> 4'-0"/9'-4",
-    # 28'-0"/33'-4" -> 27'-4"/32'-8"). The 6'-8" head line and the main-over-second
-    # stacking are untouched.
-    #
-    # A second height in the 30" family, and the second deliberate break of "one height per
-    # width family" (see WT-1448). The alternative — putting these on WT-3036 — would drop
-    # the head from 6'-8" to 5'-8" with the 2'-8" sill, off the door-head line the south face
-    # is built on, and the head line is the fact the facade rules protect. Narrower glass on
-    # the same head is a proportion change; a head 12" lower is a different facade.
-    # Non-bearing walls only (preferences [framing]).
+    # 30" RO — the south-glazing size, narrowed from the 42" WT-4248 (2026-08-01). One stud
+    # broken, not two: the module's ideal position moves with RO width, so the four facade
+    # columns moved 8" inboard with it (3'-4"/8'-8" -> 4'-0"/9'-4", 28'-0"/33'-4" ->
+    # 27'-4"/32'-8"); head line and storey stacking are untouched. Second deliberate break of
+    # "one height per family" (see WT-1448) — WT-3036's 36" would drop the head off the
+    # shared 6'-8" door-head line. Non-bearing walls only (preferences [framing]).
     WindowType(tag="WT-3048", width=inch(30), height=ft(4), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="casement"),
     # 36" RO — concrete basement wall only (no stud module to respect down there).
@@ -185,17 +137,10 @@ WINDOW_TYPES = [
     WindowType(tag="WT-1424-FIX", width=inch(14), height=ft(2), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="fixed"),
     # --- tempered twins (2026-08-01, code.R308_4_safety_glazing) ----------------------
-    #
-    # Four types, each identical to its parent but for the glass. R308.4 makes a *location*
-    # hazardous — in a wet room, within 24" of a door, within 60" of a stair — and it is the
-    # unit that lands there that has to be ordered tempered, not the size. So this is the
-    # WT-3660-FIX/WT-1424-FIX precedent one more time: a different product on the quote gets
-    # its own tag, and the twelve units of these sizes that sit in ordinary locations keep
-    # ordinary glass rather than paying the tempering adder for nothing.
-    #
-    # These are *not* new width families and no facade or framing rule sees them: same RO,
-    # same height, same operation, same ideal position on the 16" module as their parents.
-    # Adding a tempered unit is a retype, never a move.
+    # Four types, identical to their parent but for the glass — R308.4 makes a *location*
+    # hazardous (wet room, within 24" of a door, within 60" of a stair), so only the unit
+    # that lands there gets tempered. Not new width families; no facade/framing rule sees
+    # them. Adding a tempered unit is a retype, never a move.
     WindowType(tag="WT-1424-T", width=inch(14), height=ft(2), u_factor=u_us(0.25),
                shgc=0.35, vt=0.5, operation="awning", tempered=True),
     WindowType(tag="WT-2736-T", width=inch(27), height=ft(3), u_factor=u_us(0.25),
@@ -217,38 +162,23 @@ NODES = [
     Node(uid="CMN007AAAA", tag="N-M-N2", position=pt(ft(10), ft(36))),
     Node(uid="CMN008AAAA", tag="N-M-NW", position=pt(ft(0), ft(36))),
     Node(uid="CMN009AAAA", tag="N-M-W1", position=pt(ft(0), ft(26, 4))),
-    # W-M-HS1..4 (hall/bath2-laundry-study partition) pushed 6" north to y=22'-2"
-    # (2026-07-29): the hall was a flat 4'-2", more than R311.7's minimum, and BATH2
-    # needed the depth to separate the shower from the tub.
-    #
-    # Both of the west wall's interior tees then moved again on 2026-08-15, for the west
-    # facade rather than for a room: W-M-W4 and W-M-W3 lay their studs out from N-M-W3 and
-    # N-M-W2, so those two nodes ARE the phase of the main storey's west stud grid, and at
-    # 13'-4" and 22'-2" that grid was 4" and 2" out of step with the second storey's (whose
-    # own tees, N-S-W3/W2, sit at 9'-0" and 22'-4" — both 12" mod 16"). No west window
-    # could column between the storeys except the two 14" units at 31'-4", which share a
-    # host start node at 33'-4". 13'-0" and 22'-4" are 12" mod 16" too, and four columns
-    # fall out (see WIN-M-BED-W1/W2/BATH2 below). Every node on each line moves together
-    # or the partition kinks — N-M-D3/N-M-C1 on the first, N-M-BA2/D1/E3/C2 on the second
-    # — and so do the boxes and the hydrant riser that hang on them (plan/electrical.py,
-    # plan/lighting.py, plan/mep.py), which no `haus check` catches but
-    # test_wall_mounted_devices_resolve_against_a_wall_face does.
-    #
-    # What it costs the rooms: RM-M-BED gives up 4" of depth, RM-M-BATH2 gains 4" at its
-    # south wall and 2" more at its north (the same direction the 2026-07-29 move went,
-    # for the same reason), and the hall goes 3'-8" -> 3'-6", still 6" clear of R311.6.
-    # N-M-W2 also lands on 22'-4" exactly under N-S-W2, which it never was before.
+    # W-M-HS1..4 pushed 6" north to y=22'-2" (2026-07-29) for BATH2 shower/tub depth.
+    # Both west-wall tees moved again 2026-08-15 for the residue rule: W-M-W4/W-M-W3 lay
+    # studs out from N-M-W3/N-M-W2, and at 13'-4"/22'-2" that grid was 4"/2" out of phase
+    # (mod 16") with the second storey's tees at 9'-0"/22'-4". Moving to 13'-0"/22'-4"
+    # (both 12" mod 16") lets four windows column between storeys (WIN-M-BED-W1/W2/BATH2
+    # below). Every node on each partition line must move together or it kinks — including
+    # boxes/risers that hang on them, checked only by
+    # test_wall_mounted_devices_resolve_against_a_wall_face. Cost: RM-M-BED loses 4" depth,
+    # RM-M-BATH2 gains 6", hall goes 3'-8" -> 3'-6" (still clear of R311.6).
     Node(uid="CMN010AAAA", tag="N-M-W2", position=pt(ft(0), ft(22, 4))),
     Node(uid="CMN011AAAA", tag="N-M-W3", position=pt(ft(0), ft(13))),
     # Center bearing line ties
     Node(uid="CMN012AAAA", tag="N-M-C1", position=pt(ft(18), ft(13))),
     Node(uid="CMN013AAAA", tag="N-M-C2", position=pt(ft(18), ft(22, 4))),
-    # N-M-C3 came south from y=26'-4" to the stair wall's line on 2026-07-28. It used to be
-    # the W-M-C4B/W-M-C5 split; with W-M-C4/C4B gone it is BM-M-HALL's north bearing and
-    # W-M-C5's south end. It stays on y=25'-10" now that W-M-STRS no longer reaches it —
-    # the beam and the wall above it are what fix this point, not the stair wall. That does
-    # make it a one-wall node: BM-M-HALL, not another wall, is what carries the centre line
-    # south of here, so `open_end` is the honest description.
+    # N-M-C3 moved south to the stair wall's line (2026-07-28): with W-M-C4/C4B gone, it's
+    # now BM-M-HALL's north bearing and W-M-C5's south end. `open_end` is honest here since
+    # BM-M-HALL, not another wall, carries the centre line south of it.
     Node(uid="CMN014AAAA", tag="N-M-C3", position=pt(ft(18), ft(25, 10)), open_end=True),
     # Interior tees
     # N-M-STR1 and N-M-C3B moved north from y=25'-0" to y=25'-10" with W-M-STRS (2026-07-28),
@@ -268,15 +198,10 @@ NODES = [
     Node(uid="CMN016AAAA", tag="N-M-BA1", position=pt(ft(6), ft(26, 4))),
     Node(uid="CMN017AAAA", tag="N-M-BA2", position=pt(ft(6), ft(22, 4))),
     Node(uid="CMN018AAAA", tag="N-M-D1", position=pt(ft(8), ft(22, 4))),
-    # The closet/laundry line moved north 8" — y 17'-4" -> 18'-0" — on 2026-08-03, taking
-    # W-M-CLN and W-M-CLN2 (and with them the north edge of RM-M-CLOSET) with it. All three
-    # nodes below move together or the line kinks; N-M-D2 and N-M-E4 are only split points on
-    # the x=8' and x=18' runs, so nothing but the split moves there. What it costs is 8" of
-    # RM-M-LAUNDRY and 8" of RM-M-STUDY, and what bounds it is the laundry: FX-M-LAUNDRY is
-    # 40" deep against a room that was 56 3/4" and is now 48 3/4" nominal clear, so the tower
-    # still stands free of D-M-LAUN's plane with room to spare (see plan/fixtures.py).
-    # y=18'-0" is also where W-B-CW2 runs below — the basement's 12" cast wall is on that same
-    # axis, so the partition now lands over solid concrete rather than mid-span of the deck.
+    # The closet/laundry line moved north 8" (y 17'-4" -> 18'-0", 2026-08-03), taking
+    # W-M-CLN/CLN2 with it. Costs 8" each off RM-M-LAUNDRY and RM-M-STUDY; bounded by
+    # FX-M-LAUNDRY (40" deep, room now 48 3/4" clear). Bonus: y=18'-0" is also where the
+    # basement's 12" cast wall W-B-CW2 runs, so the partition now lands on solid concrete.
     Node(uid="CMN019AAAA", tag="N-M-D2", position=pt(ft(8), ft(18))),
     Node(uid="CMN020AAAA", tag="N-M-D3", position=pt(ft(8), ft(13))),
     Node(uid="CMN021AAAA", tag="N-M-E2", position=pt(ft(13, 4), ft(18))),
@@ -289,15 +214,11 @@ NODES = [
     Node(uid="CMN025AAAA", tag="N-M-MECH1", position=pt(ft(0), ft(33, 4))),
     Node(uid="CMN026AAAA", tag="N-M-MECH2", position=pt(ft(6), ft(33, 4))),
     Node(uid="CMN027AAAA", tag="N-M-MECH3", position=pt(ft(6), ft(36))),
-    # RM-M-MUD-CLOSET: the framed south mudroom closet (2026-08-02), replacing
-    # FURN-M-MUD-CLOSET-S the way RM-M-MECH replaced its north twin. The partition axis
-    # at y=29'-7 1/2" is computed from both of its constraints at once: the interior
-    # depth from W-M-STOS's north face (26'-6 3/8") to the partition's south face
-    # (29'-5 1/8") lands at 34 3/4" — inside the 32"-36" reach-in band — and the
-    # partition's north face (29'-9 7/8") stops 1/8" shy of FURN-M-MUD-BENCH's south end
-    # at y=29'-10". The east end reuses N-M-BA1's x=6' line so the return wall tees into
-    # the existing W-M-STOS/W-M-STOS2 junction; its east face at 6'-2 3/8" keeps 5 5/8"
-    # clear of D-M-MUD's near jamb at 6'-8".
+    # RM-M-MUD-CLOSET: framed south mudroom closet (2026-08-02), replacing
+    # FURN-M-MUD-CLOSET-S. Axis y=29'-7 1/2" satisfies two constraints at once: interior
+    # depth of 34 3/4" (inside the 32"-36" reach-in band) and clearing FURN-M-MUD-BENCH's
+    # south end by 1/8". East end reuses N-M-BA1's x=6' line to tee into the existing
+    # W-M-STOS/STOS2 junction.
     Node(uid="N9H36K3W70", tag="N-M-MUDC1", position=pt(ft(0), ft(29, 7.5))),
     Node(uid="T374Q35GT9", tag="N-M-MUDC2", position=pt(ft(6), ft(29, 7.5))),
 ]
@@ -380,46 +301,26 @@ WALLS = [
          assembly="CATLIN_INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-B-CN"),
     # --- stair / storage block --------------------------------------------------
-    # This wall line carries the cut second-floor joists and stacks directly over the
-    # basement concrete stair wall. It is split at the two tees on it: the mudroom's south
-    # wall at N-M-STRJ and the stair wall at N-M-STR1, 6" apart. W-M-STRW2 is that 6" — the
-    # jog between RM-M-MUDROOM's south wall and the head of the stairs. The split is not a
-    # choice: `resolve/topology.py` builds junction incidents from wall *endpoints* only, so
-    # a wall running through a tee node contributes nothing there and the branch gets no
-    # framing. One wall line, one segment per tee.
+    # This wall line carries the cut second-floor joists and stacks over the basement
+    # concrete stair wall. Split at two tees, N-M-STRJ and N-M-STR1 (6" apart, = W-M-STRW2):
+    # `resolve/topology.py` builds junctions from wall *endpoints* only, so a tee needs its
+    # own segment or the branch gets no framing.
     #
-    # Both segments carry the same assembly and the same alignment as of 2026-07-30. The jog
-    # used to be plain CATLIN_INT_2X6_BRG, which left its mudroom face 1/2" proud of the
-    # exposed-stud wall's and split the bearing line's material (spf vs. df-select-s4s,
-    # which is what `integrity.junction_fallback` was reporting at N-M-STRJ). It is one
-    # continuous plane now, and the tee resolves on matching assemblies.
+    # Both segments are CATLIN_MUDROOM_INT_2X6_EXPOSED, appearance-grade DF studs open to the
+    # mudroom (coat nooks) with 3/4" cabinet plywood on the stair face — `interior_room` picks
+    # the mudroom side as layer 0. Until 2026-07-30 the mudroom segment was plain
+    # CATLIN_INT_2X6_BRG (spf vs. df-select-s4s), which `integrity.junction_fallback` flagged
+    # at N-M-STRJ; it now flags the softer mixed-assembly L at N-M-STR1 instead, where the
+    # 2x4 partition W-M-STRS dies into this wall's end stud — an acceptable finish detail.
     #
-    # `integrity.junction_fallback` did not vanish, it moved: N-M-STR1, where W-M-STRS's 2x4
-    # spf partition dies into the end of this 2x6 df-select-s4s wall, is now the mixed-
-    # assembly L. That is the better place for it — an L where a partition butts a bearing
-    # wall's end stud is a finish detail, where the old one was the solver declining to call
-    # the bearing line itself continuous through a tee.
-    # The mudroom coat wall (plans/TODO.md): no drywall on the mudroom face, so the open
-    # 2x6 bays between appearance-grade DF studs are the coat nooks, and the stair face is
-    # 3/4" cabinet plywood that hooks screw straight into. `interior_room` is what points
-    # layer 0 (the exposed studs) at the mudroom — the assembly is asymmetric, and without
-    # it the storey's outward sign would put the plywood on the mudroom side.
+    # ALIGNMENT: this stack is 6 1/4" vs. CATLIN_INT_2X6_BRG's 6 3/4". The axis is pinned
+    # 3 3/8" inboard of the plywood's stair face (not centred) because FO-S-STAIR's west edge
+    # and both flights' stringers are authored off that exact face (second.py) — the 1/2"
+    # thickness change is taken entirely out of the mudroom side (9'-8 5/8" -> 9'-9 1/8").
     #
-    # ALIGNMENT: the new stack is 6 1/4" (5.5 + 0.75) where CATLIN_INT_2X6_BRG was 6 3/4"
-    # (5.5 + 2 × 0.625). Left centred, both faces would have crept 1/4" and the stair face
-    # would have landed at 10'-3 1/8". That face is constrained geometry, not a result:
-    # FO-S-STAIR's west edge is authored at 10'-3 3/8" off it (second.py) and both flights'
-    # stringers bear on it. So the axis is pinned 3 3/8" inboard of the plywood's stair face,
-    # holding that face exactly where it was; the whole 1/2" of thickness change is taken out
-    # of the mudroom side, whose face moves east from 9'-8 5/8" to 9'-9 1/8".
-    #
-    # MEP: keep wiring and plumbing out of this wall — a bored stud shows. The one deliberate
-    # exception is REG-M-XFER-MUD (plan/mep_registers.py), the passive transfer louver that
-    # lets EQ-M-HP3-STAIR's air reach the mudroom: a 12" face cut in the plywood, centred at
-    # y=34'-0" in the 14 1/2" clear bay between the studs at 33'-4" and 34'-8", so no stud
-    # is cut and this bearing wall needs no header for it. The mudroom side needs no work at
-    # all — that face is the open coat-nook bays. Until 2026-08-15 the exception was the
-    # mini-split itself, recessed into this face; the head is on W-M-N2 now.
+    # MEP: keep wiring/plumbing out — a bored stud shows. One exception: REG-M-XFER-MUD, a
+    # 12" transfer-louver cut centred y=34'-0" in the clear bay between studs at 33'-4" and
+    # 34'-8", so no stud is cut and no header is needed.
     Wall(uid="CMW117AAAA", tag="W-M-STRW", start_node="N-M-N2",
          end_node="N-M-STRJ", assembly="CATLIN_MUDROOM_INT_2X6_EXPOSED", top=ft(9),
          alignment=face("ply-stair-ext", offset=inch(-3.375)),
@@ -435,19 +336,12 @@ WALLS = [
          alignment=face("ply-stair-ext", offset=inch(-3.375)),
          interior_room="RM-M-MUDROOM",
          structural_role=StructuralRole.BEARING, stacks_on="W-B-STR"),
-    # The wall at the top of the stairs, pushed north 10" to y=25'-10" (2026-07-28) so it
-    # closes against the wells again after they moved. Its north face at 26'-0 3/8" is the
-    # wells' south edge, and D-M-STAIR in it opens onto ST-B2M's top nosing in the west lane.
-    #
-    # Shortened 2026-07-30: it used to run the whole 8' to N-M-C3 with RO-1, a 3'-0" cased
-    # opening, standing in front of the east lane. The wall is only structurally and
-    # spatially needed as far as the well partition — it frames D-M-STAIR and dies flush
-    # into the partition's east face at x=14'-2 1/4" — so the east lane is simply open to
-    # the living room now, the full 3'-6 3/8" of ST-M2S's width rather than RO-1's 3'-0".
-    # Nothing bore on the removed length: FO-S-STAIR's south edge runs parallel to FS-SECOND's
-    # E-W joists (a trimmer, not a header) and FO-M-STAIR's is cast concrete in SL-M-DECK.
-    # No guard is needed where the wall went: ST-M2S's first tread is at floor level right
-    # at that edge, so you step onto a flight, not over a drop.
+    # The wall at the top of the stairs, pushed north to y=25'-10" (2026-07-28) to close
+    # against the wells; D-M-STAIR opens onto ST-B2M's top nosing in the west lane.
+    # Shortened 2026-07-30: it now dies flush into the well partition's east face
+    # (x=14'-2 1/4") instead of running the full 8' with a cased RO-1, leaving the east lane
+    # (ST-M2S's full 3'-6 3/8") open to the living room. Nothing structural bore on the
+    # removed length, and no guard is needed — ST-M2S's first tread is at floor level there.
     Wall(uid="CMW118AAAA", tag="W-M-STRS", start_node="N-M-STR1",
          end_node="N-M-STR2", assembly="INT_2X4_PARTITION", top=ft(9)),
     Wall(uid="CMW119AAAA", tag="W-M-STOS", start_node="N-M-W1",
@@ -476,11 +370,9 @@ WALLS = [
     # The closet's north line, y=18'-0" since 2026-08-03 (was 17'-4"). See the NODES note
     # over N-M-D2: the 8" came out of RM-M-LAUNDRY and RM-M-STUDY, and the laundry's 40"
     # stacked pair is what says it could not be more.
-    # Both name W-B-CW2 explicitly. Landing on y=18'-0" put them over the basement's own
-    # y=18' line, and that line is two walls — W-B-CW3 (x 6'-9"..10') and W-B-CW2 (x 10'..18')
-    # — so `integrity.stack_ambiguous` asked which. W-B-CW2 is the answer for both: it carries
-    # all of W-M-CLN2 and 3'-4" of W-M-CLN's 5'-4". Nothing structural rides on the choice —
-    # these are non-bearing partitions on a 9" cast deck, and the deck is what holds them up.
+    # Both name W-B-CW2 explicitly: the basement's y=18' line is actually two walls
+    # (W-B-CW3 and W-B-CW2), so `integrity.stack_ambiguous` needs a pick. Non-structural
+    # either way — these partitions sit on the 9" cast deck.
     Wall(uid="CMW129AAAA", tag="W-M-CLN", start_node="N-M-D2",
          end_node="N-M-E2", assembly="INT_2X4_PARTITION", top=ft(9), stacks_on="W-B-CW2"),
     Wall(uid="CMW130AAAA", tag="W-M-CLN2", start_node="N-M-E2",
@@ -529,31 +421,24 @@ OPENINGS = [
          position=from_node("N-M-STRJ", ft(0, 6))),
     Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING24",
          position=from_node("N-M-BA1", ft(1))),
-    # RM-M-MECH's single utility door, on the closet's east (right, as seen from the
-    # mudroom) wall — a hinged door for the mechanical/shaft closet, not the sliding
-    # bypass style of the mudroom's own storage closets (2026-07-28).
-    # Pulled 2" west of its original 3'-2 15/16" (2026-07-29): at that offset the door's
-    # own king stud landed inside N-M-MECH2's corner square and punched into W-M-MECH-E's
-    # corner stud pack (the N-M-C2-class overlap). This clears it with margin to spare.
+    # RM-M-MECH's hinged utility door (2026-07-28), not the mudroom closets' bypass style.
+    # Pulled 2" west of its original 3'-2 15/16" (2026-07-29): at that offset the king stud
+    # punched into W-M-MECH-E's corner stud pack. This clears it with margin to spare.
     Door(uid="CMD211AAAA", tag="D-M-MECH", host="W-M-MECH-S", type_ref="DT-INT-SWING30",
          position=from_node("N-M-MECH1", ft(3, 0.9375)), flip_swing=True, flip_hinge=True),
-    # RM-M-MUD-CLOSET's bypass slider, opening north into the mudroom aisle — no swing,
-    # so nothing to clear against the bench or D-M-MUD. Near jamb 1'-1" off N-M-MUDC1
-    # centres the 50" RO in the partition's framed span (W-M-W1C's inner face at 6 1/2"
-    # to W-M-MUDC-E's corner at 5'-9 5/8"): 6 1/2" of wall west of the RO and 6 5/8"
-    # east — both clear of the corner stud packs (the D-M-MECH king-stud lesson).
+    # RM-M-MUD-CLOSET's bypass slider, no swing to clear. Near jamb 1'-1" off N-M-MUDC1
+    # centres the 50" RO in the partition's framed span, leaving both corner stud packs clear
+    # (the D-M-MECH king-stud lesson).
     Door(uid="QBTZNWG6AG", tag="D-M-MUDC", host="W-M-MUDC-N", type_ref="DT-INT-BYPASS48",
          position=from_node("N-M-MUDC1", ft(1, 1))),
     Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
          position=from_node("N-M-W3", ft(2)), flip_swing=True, flip_hinge=True),
     Door(uid="CMD207AAAA", tag="D-M-LAUN", host="W-M-HS3", type_ref="DT-INT-BIFOLD56",
          position=from_node("N-M-D1", ft(0, 4))),
-    # Near jamb 6 11/16" off N-M-E4, not the 1'-2 11/16" it was: the node moved north 8"
-    # with the closet line (2026-08-03) and this offset came off it by the same 8" so the
-    # door itself did not move — same leaf, same swing, same spot in the hall's east wall.
-    # 6 11/16" is what is left between the RO and the corner, which is the D-M-MECH margin
-    # (6 1/2") and clears the N-M-E4 corner stud pack; the wall is 4'-2" long now and the
-    # 30" leaf plus its jacks is 3'-8" of it, so the door cannot move any further south.
+    # Offset 6 11/16" off N-M-E4, not the 1'-2 11/16" it was: N-M-E4 moved north 8" with the
+    # closet line (2026-08-03), and this offset moved the same 8" so the door itself did not
+    # move. 6 11/16" clears the corner stud pack (the D-M-MECH margin); the wall is only
+    # 4'-2" long now, so the door cannot move further south.
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30",
          position=from_node("N-M-E4", ft(0, 6.6875)), flip_swing=True),
     Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT-SWING32",
@@ -564,126 +449,83 @@ OPENINGS = [
     # header over the 2'-6" opening on their own — nothing extra to author here.
     Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT-SWING30-TRIMLESS",
          position=from_node("N-M-S1", ft(5))),
-    # O-M-HALL, the 2'-8" cased pass-through from the living room into the hall, retired
-    # 2026-07-28 with its host wall W-M-C4: the whole 4'-2" it stood in is the opening now.
-    # Cased pass-through: living room → dressing corridor (per floorplan).
-    # Sills raised 2'-0" -> 3'-0" (2026-07-30 facade pass): the west facade's 27" units
-    # all sit on the 3'-0" sill (with WIN-S-SUITE1/2 above) and its 14" units on 4'-0",
-    # so every main/second head on that face lands on one 6'-0" line.
+    # O-M-HALL (the old cased pass-through) retired 2026-07-28 with its host wall W-M-C4:
+    # the full 4'-2" is open now. Sills raised 2'-0" -> 3'-0" (2026-07-30 facade pass) so
+    # every main/second head on the west face lands on one shared 6'-0" line (27" units at
+    # 3'-0" sill, 14" units at 4'-0"). Both moved 4" south on 2026-08-15 with W-M-W4's stud
+    # grid (see NODES); offsets are authored off the wall's far node so they don't move
+    # automatically and had to be rewritten by hand.
     #
-    # Both moved 4" south on 2026-08-15, following W-M-W4's stud grid down with N-M-W3
-    # (see NODES). The offsets are authored off N-M-SW at the *far* end of the wall, so
-    # they do not move with the grid and had to be rewritten by hand.
-    #
-    # W1 lands at 5'-0", under WIN-S-PLANT3 — the west face's first column. W2 does not
-    # column, and cannot: WIN-S-SUITE1 above it lives on W-S-W3, which runs 22'-4" down to
-    # 9'-0", while this wall stops at 13'-0", and a shared stud line has to be 12" mod 16"
-    # on both. That leaves exactly 124" and 140" in the overlap, and each needs ~16 1/2"
-    # of clear wall for its jamb pack where only 16" is on offer: 140" was built and its
-    # king stud came out sharing 6.8 in² — 83% of a 2x6 — with W-M-W3's end stud
-    # (structural.member_interference, measured with the junction clear off). 124" puts the
-    # same clash on the second storey instead. Three columns is the answer, per the plan
-    # that opened this: 5'-0" (here), 19'-8" (WIN-M-BATH2) and 31'-4" (WIN-M-MUD), all on
-    # the one 6'-0" head line, up from the single column the face had before.
+    # W1 columns at 5'-0" (under WIN-S-PLANT3). W2 cannot column with WIN-S-SUITE1 above it:
+    # the only two shared stud lines in the overlap (124"/140" from the wall start) each leave
+    # only 16" of clear wall where the jamb pack needs ~16 1/2", so either choice puts a king
+    # stud sharing 83% of a 2x6 with W-M-W3's end stud (structural.member_interference).
+    # Three columns is the answer instead: 5'-0" (here), 19'-8" (WIN-M-BATH2), 31'-4"
+    # (WIN-M-MUD), all on the shared 6'-0" head line.
     Window(uid="CMX301AAAA", tag="WIN-M-BED-W1", host="W-M-W4",
            type_ref="WT-2736", position=from_node("N-M-SW", ft(3, 10.5)),
            sill_height=ft(3)),                                                # y 5'-0"
     Window(uid="CMX302AAAA", tag="WIN-M-BED-W2", host="W-M-W4",
            type_ref="WT-2736", position=from_node("N-M-SW", ft(9, 2.5)),
            sill_height=ft(3)),                                               # y 10'-4"
-    # South pair: centres 4'-0" and 9'-4" are STUD LINES on W-M-S1's grid (one stud broken
-    # each), stacking exactly under WIN-S-PLANT1/2 above — main and second share the wall
-    # start, so the columns line up to the inch. Sill 2'-8" puts the heads at 6'-8" with
-    # the doors.
-    #
-    # Moved 8" east off the 3'-4"/8'-8" bay centres when the units narrowed 42" -> 30"
-    # (WT-3048, 2026-08-01), because the module's ideal position is a property of the RO
-    # width, not of the wall: a 42" RO breaks 3 studs on a stud line and 2 on a bay centre,
-    # so the bay centre was right for it; a 30" RO breaks 1 on the line and 2 off it, so
-    # the same position is now the wasteful one (structural.window_framing_module, held by
-    # test_catlin_contract_m3). Both south segments moved *inboard* — this pair east, the
-    # W-M-S2 pair west — which keeps every RO further from a corner than it was and leaves
-    # the two segments' 8" phase miss exactly where it was.
+    # South pair: centres 4'-0" and 9'-4" are STUD LINES on W-M-S1's grid, stacking exactly
+    # under WIN-S-PLANT1/2. Sill 2'-8" puts heads at 6'-8" with the doors. Moved 8" east off
+    # the old 3'-4"/8'-8" bay centres when units narrowed 42" -> 30" (WT-3048, 2026-08-01) —
+    # a 30" RO wants a stud line, not a bay centre (structural.window_framing_module, held
+    # by test_catlin_contract_m3).
     Window(uid="CMX303AAAA", tag="WIN-M-BED-S1", host="W-M-S1",
            type_ref="WT-3048", position=from_node("N-M-SW", ft(2, 9)),
            sill_height=ft(2, 8)),
     Window(uid="CMX304AAAA", tag="WIN-M-BED-S2", host="W-M-S1",
            type_ref="WT-3048", position=from_node("N-M-SW", ft(8, 1)),
            sill_height=ft(2, 8)),
-    # Offset bumped 4'-5" -> 4'-11" (2026-07-29) when N-M-W2 pushed 6" north for the
-    # hall/bath2 wall move: W-M-W3's stud grid anchors off N-M-W2, so the window has
-    # to move with it to stay on the same bay it was already sitting in.
-    #
-    # Retyped WT-1424-T -> WT-2736-T and moved 19'-8 1/2" -> 19'-8" on 2026-08-15, for the
-    # west face's third column (WIN-S-SUITE2 is directly above it). A 14" RO centres on a
-    # bay centre and a 27" RO on a stud line — 8" apart on the same grid — so a 14" unit
-    # can never column with a 27" one, and SUITE2 is 27". The wider unit is a code gain
-    # either way: code.R303_3_local_exhaust's window alternative wants 3 sf glazed / 1.5 sf
-    # openable and a 27x36 casement delivers 6.75 / 3.375 where the 14x24 delivered
-    # 2.33 / 1.17. The sill drops 4'-0" -> 3'-0" onto the west face's 27" sill line, which
-    # keeps the head on the shared 6'-0" line; `-T` stays because R308.4.5 tempers any
-    # sill under 60" in a bathroom regardless.
+    # Offset bumped 4'-5" -> 4'-11" (2026-07-29) when N-M-W2 pushed 6" north, keeping the
+    # window on the same bay. Retyped WT-1424-T -> WT-2736-T and moved to 19'-8" on
+    # 2026-08-15 for the west face's third column (WIN-S-SUITE2 above it): a 14" RO
+    # centres on a bay centre, a 27" on a stud line — 8" apart, so 14" can never column
+    # with 27" (the 8" rule). Also a code gain: 27x36 delivers 6.75/3.375 sf against
+    # R303.3's 3/1.5 sf where 14x24 gave 2.33/1.17. Sill drops to 3'-0" for the shared
+    # 6'-0" head line; `-T` stays since R308.4.5 tempers any bathroom sill under 60".
     Window(uid="CMX305AAAA", tag="WIN-M-BATH2", host="W-M-W3",
            type_ref="WT-2736-T", position=from_node("N-M-W3", ft(5, 6.5)),
            sill_height=ft(3)),                                               # y 19'-8"
-    # Picture unit centred y=31'-4", the bench/aisle centreline (see FURN-M-MUD-BENCH in
-    # plan/placeables.py). Re-authored off N-M-MECH1 (2026-08-02): the offset was written
-    # as from_node("N-M-NW", 4'-1") when N-M-NW was still this wall's start, but the
-    # resolver measures a from_node offset from the host's *start* node unless the named
-    # node is its end node — so when the 2026-07-28 MECH split made N-M-MECH1 the start,
-    # the window silently slid 2'-8" south to centre y=28'-8", out of line with the bench
-    # and behind the then-furniture closet's 8' carcass. 1'-5" off N-M-MECH1 puts the
-    # centre 2'-0" down the wall — a bay centre on this wall's grid (8"+16n from the
-    # start node), so the 14" RO stays inside a stud bay — which is y=31'-4" exactly,
-    # back on the northern segment after the N-M-MUDC1 split below it.
-    # Sill raised 3'-0" -> 4'-0" (2026-07-30 facade pass) onto the west facade's 14"-unit
-    # sill line, putting its head on the shared 6'-0" line with WIN-M-BATH2 and the
-    # 27" units; it clears FURN-M-MUD-BENCH's 18" seat by even more than it used to.
+    # Picture unit centred y=31'-4", the bench/aisle centreline (FURN-M-MUD-BENCH,
+    # plan/placeables.py). Re-authored off N-M-MECH1 (2026-08-02): a `from_node` offset is
+    # measured from the host's *start* node, so when the 2026-07-28 MECH split made
+    # N-M-MECH1 the start, the window silently slid 2'-8" south. 1'-5" off N-M-MECH1 restores
+    # y=31'-4" — a bay centre, so the 14" RO stays inside a stud bay. Sill raised to 4'-0"
+    # (2026-07-30) puts its head on the shared 6'-0" line.
     Window(uid="CMX306AAAA", tag="WIN-M-MUD", host="W-M-W1",
            type_ref="WT-1424-FIX", position=from_node("N-M-MECH1", ft(1, 5)),
            sill_height=ft(4)),
-    # South pair: centres 27'-4" and 32'-8" are stud lines on W-M-S2's grid (16n off
-    # N-M-S1), stacking exactly under WIN-S-STUDY1/2. Moved 8" west off the old
-    # 28'-0"/33'-4" bay centres with the WT-3048 narrowing — see WIN-M-BED-S1/2 for why a
-    # 30" RO wants the line the 42" RO could not use. The mirror of the bedroom pair about
-    # x=18' would be 28'-8" and 34'-0", but the two south segments lay studs from their own
-    # starts and sit 8" out of phase, so an 8" miss is as close as on-module windows can
-    # mirror — the same miss this pair has always carried, in the same direction.
-    # D-M-BALC's french-door RO (ends 24'-4") stays clear by 1'-9".
+    # South pair: centres 27'-4" and 32'-8" are stud lines on W-M-S2's grid, stacking exactly
+    # under WIN-S-STUDY1/2. Moved 8" west off the old 28'-0"/33'-4" bay centres with the
+    # WT-3048 narrowing (see WIN-M-BED-S1/2). The two south segments are 8" out of phase, so
+    # this pair carries the same phase miss off the bedroom pair's mirror as it always has.
+    # D-M-BALC's french-door RO stays clear by 1'-9".
     Window(uid="CMX307AAAA", tag="WIN-M-LIV-S1", host="W-M-S2",
            type_ref="WT-3048", position=from_node("N-M-SE", ft(2, 1)),
            sill_height=ft(2, 8)),
     Window(uid="CMX308AAAA", tag="WIN-M-LIV-S2", host="W-M-S2",
            type_ref="WT-3048-T", position=from_node("N-M-SE", ft(7, 5)),
            sill_height=ft(2, 8)),
-    # East row respaced (2026-07-30 facade pass): the facade favors within-storey
-    # rhythm over between-storey stacking on this side now — the second storey runs
-    # its own exact 9'-0" beat and this row runs as even as its own grid allows:
-    # 4'-0" / 12'-0" / 19'-4" (8'-0" then 7'-4"; the true-even 11'-8" middle is not
-    # a stud line on W-M-E1). The kitchen stretch north of WIN-M-DIN-E2 stays
-    # deliberately blank. The fireplace that stood across the 4'-0" band dropped to
-    # a 7" hearth mount below the sill (electrical.py). Both sills stay 2'-6": the
-    # BESTA run lining this wall tops out at 29 3/4" on its 2x4 frame (placeables.py),
-    # so the 30" sill line clears the countertop by 1/4" and E2 can cross the run.
+    # East row respaced (2026-07-30 facade pass): the facade favors within-storey rhythm
+    # over between-storey stacking here, so this row runs as even as its own grid allows —
+    # 4'-0" / 12'-0" / 19'-4" (the true-even 11'-8" middle isn't a stud line on W-M-E1).
+    # The kitchen stretch north of WIN-M-DIN-E2 stays deliberately blank. Both sills stay
+    # 2'-6": the BESTA run tops out at 29 3/4" (placeables.py), clearing the countertop
+    # by 1/4".
     Window(uid="CMX309AAAA", tag="WIN-M-LIV-E1", host="W-M-E1",
            type_ref="WT-2736", position=from_node("N-M-SE", ft(2, 10.5)),
            sill_height=ft(2, 6)),
     Window(uid="CMX310AAAA", tag="WIN-M-LIV-E2", host="W-M-E1",
            type_ref="WT-2736", position=from_node("N-M-SE", ft(10, 10.5)),
            sill_height=ft(2, 6)),
-    # WIN-M-DIN-E1 (CMX311AAAA) was retired in the 2026-07-30 east restack. Its two
-    # candidate homes both fought the kitchen swap: stacked under survey-pinned
-    # WIN-S-BED2 at 23'-4" it sat over FURN-M-KIT-N1's counter, forcing a 3'-6" sill
-    # (then a shortened WT-2724) that never sat right against the row's 2'-6"/5'-6"
-    # lines, and every station nearer its old 16'-0" collides with WIN-M-LIV-E2's new
-    # RO. The kitchen keeps WIN-M-KITCH on the north wall; the east facade reads as a
-    # three-window row with two of the three stacked exactly under the storey above.
-    #
-    # E2 cannot take the fourth second-floor column either: WIN-S-BED3 at 32'-4" is
-    # unreachable down here — the kitchen swap put the range, hood and cooking run on
-    # that stretch of wall, and every stud-line station near 32'-4" lands behind them.
-    # It sits at 19'-4" (1 bay up W-M-E2) rather than its old 20'-8" so its king pack
-    # keeps clear of the 23'-4" column band it used to crowd.
+    # WIN-M-DIN-E1 was retired in the 2026-07-30 east restack: every candidate position
+    # either sat over a kitchen counter (forcing an awkward sill) or collided with
+    # WIN-M-LIV-E2's RO. WIN-M-KITCH covers the kitchen instead. E2 also can't take the
+    # fourth second-floor column (WIN-S-BED3 at 32'-4") — that stretch of wall now carries
+    # the range/hood/cooking run — so it sits at 19'-4" instead, clear of that column band.
     Window(uid="CMX312AAAA", tag="WIN-M-DIN-E2", host="W-M-E2",
            type_ref="WT-2736", position=from_node("N-M-E1", ft(0, 2.5)),
            sill_height=ft(2, 6)),
@@ -695,27 +537,18 @@ OPENINGS = [
     Window(uid="CMX313AAAA", tag="WIN-M-KITCH", host="W-M-N1",
            type_ref="WT-2736", position=from_node("N-M-NE", ft(6, 10.5)),
            sill_height=ft(3, 6)),
-    # Relocated to the NE corner 2026-07-30 with the range/sink wall swap: it lost its old job
-    # (clearing a scorched pan next to the range — the range is on the east wall now) and its
-    # old spot (over the cabinet that's now FURN-M-KIT-E2/the sink run). Kept as a small
-    # corner window rather than dropped: centre x=34'-0" is a bay centre on the same 16"
-    # module measured off N-M-NE, clear of WIN-M-KITCH by 20 1/2" and of the corner face
-    # (35'-5 3/8") by 10 3/8".
+    # Relocated to the NE corner 2026-07-30 with the range/sink wall swap. Kept as a small
+    # corner window rather than dropped: centre x=34'-0" is a bay centre off N-M-NE, clear
+    # of WIN-M-KITCH by 20 1/2" and of the corner face by 10 3/8".
     Window(uid="82WVR597PA", tag="WIN-M-KITCH-N", host="W-M-N1", type_ref="WT-1424",
            position=from_node("N-M-NE", ft(1, 5)), sill_height=ft(3, 6)),
 ]
 
 ROOMS = [
-    # RM-M-HALL (CMR408AAAA) was retired into this claim on 2026-07-28, the way the second
-    # storey retired RM-S-LANDING and RM-S-STAIR into RM-S-HALL when *its* centre line
-    # opened. Taking W-M-C4/C4B out under BM-M-HALL leaves one polygonized face spanning the
-    # living room and the old hall band, and two seeds in one face bill the floor twice.
-    #
-    # RM-M-STAIR (CMR410AAAA) followed it on 2026-07-30, for exactly the same reason: with
-    # W-M-STRS stopped at the well partition, the up-flight's lane is open to this room and
-    # the well is inside the same polygonized face. Two seeds in one face billed the 62 sf of
-    # stair well twice — both claims resolved to the identical 768 sf. The 768 sf is the
-    # honest area of the room you can now walk around; the stair is part of it.
+    # RM-M-HALL (2026-07-28) and RM-M-STAIR (2026-07-30) were both retired into this claim:
+    # opening the centre line and shortening W-M-STRS leaves one polygonized face spanning
+    # living room, old hall band and stair well, so a second seed in the same face would
+    # bill the floor twice. 768 sf is the honest walkable area, stair included.
     # Main-floor finishes revised 2026-08-02 (plans/TODO.md §Hardwood): solid oak is the
     # studies' floor (RM-A-STUDY + RM-S-STUDY2) — living/study here go LVP, bed/closet carpet.
     Room(uid="CMR401AAAA", tag="RM-M-LIVING", seed=pt(ft(27), ft(12)),
@@ -755,44 +588,25 @@ ROOMS = [
 ALARMS = [
     Alarm(uid="CMA701AAAA", tag="AL-M-BED", kind=AlarmKind.COMBO, room="RM-M-BED",
           circuit="CKT-LT-BACKUP"),
-    # The R314.3 "outside each separate sleeping area, in the immediate vicinity of the
-    # bedrooms" head. It is hosted by RM-M-LIVING because that is the space it is open to,
-    # but the living room's seed is out at (27', 12') in the middle of the dining end, ~13'
-    # from the bedroom door — nowhere near where the detector actually goes. The position
-    # below is the dressing corridor (the RM-M-CLOSET band, x 8'..18' × y 13'-4"..18'-0"),
-    # centred on the corridor and directly outside D-M-BED, whose leaf runs x 13'..15'-8" in
-    # W-M-BDN2. Clear of the closet's sliding doors, which take the corridor's west end.
-    # y follows the corridor's centre north to 15'-8" with the 2026-08-03 wall move.
+    # The R314.3 "outside each separate sleeping area" alarm. Hosted by RM-M-LIVING (the
+    # space it's open to) but positioned explicitly, since that room's seed is ~13' away in
+    # the dining end: the position below is the dressing corridor, directly outside D-M-BED,
+    # clear of the closet's sliding doors.
     Alarm(uid="CMA702AAAA", tag="AL-M-HALL", kind=AlarmKind.COMBO, room="RM-M-LIVING",
           circuit="CKT-LT-BACKUP", position=pt(ft(14, 4), ft(15, 8))),
 ]
 
-# Electric radiant floor — the two main-storey comfort zones (2026-07-25). Neither is a
-# heating system: the heat pumps carry the house and these warm the two floors people stand
-# on barefoot, both of which sit just south of the 18' midline.
-#
-# Sizing is one number applied twice: mat at 12 W/ft2, which is what a 120V floor cable
-# delivers at the `spacing=3"` serpentine authored here (12 W/ft2 over 4 lineal feet of
-# cable per square foot = 3 W/ft, the working range for floor cable). The circuits in
-# plan/circuits.py carry the resulting VA. `in_slab(1/2")` is the setting bed, not the
-# structure: SL-M-DECK is 9" of concrete and nothing is cast into it — the mat is laid on
-# the cured deck and buried in the thinset/self-leveller under the finish.
-#
-# Zones are drawn 4" in from every clear face, because mat cannot run to a wall. `stat` is
-# the *slab sensor* point; the line-voltage thermostats are ED-M-BATH2-FH-STAT and
-# ED-M-DINING-FH-STAT in plan/electrical.py.
+# Electric radiant floor — the two main-storey comfort zones (2026-07-25). Not a heating
+# system (the heat pumps carry the house); these just warm two barefoot floors. Mat at
+# 12 W/ft2 (the working rate for a 3" serpentine 120V cable); `in_slab(1/2")` is the setting
+# bed in the thinset above SL-M-DECK's cured 9" concrete, not cast structure. Zones are drawn
+# 4" off every clear face since mat can't run to a wall. `stat` is the slab sensor point;
+# line-voltage thermostats are ED-M-BATH2-FH-STAT / ED-M-DINING-FH-STAT (plan/electrical.py).
 FLOOR_HEAT = [
-    # RM-M-BATH2's floor. The zone is an L around the WC, shower and tub: radiant cable
-    # stays in the open south strip and the narrow centre aisle, with a deliberate 2"+
-    # installation gap at every fixture footprint. Keeping the keepouts in this authored
-    # polygon makes `advisory.floor_heat_fixture_keepout` verify the actual loop geometry.
-    # South strip's east edge pulled in from 7'-7" to 4'-7.2", its north edge from 15'-8"
-    # to 15'-6", and the centre aisle shifted west from 3'-8"..4'-0" to 3'-6"..3'-10"
-    # (2026-07-29, with the BATH2 wall move): the old polygon actually ran under
-    # FX-M-BATH2-SH's whole footprint, grazed FX-M-BATH2-TUB's, and clipped a sliver of
-    # FX-M-BATH2-SINK's — which is what `advisory.floor_heat_fixture_keepout` was
-    # catching; it just hadn't been checked against the fixtures' real footprints before.
-    # All three keep >=1" clearance now.
+    # RM-M-BATH2's floor: an L around WC/shower/tub with >=1" clearance at each fixture
+    # footprint, so `advisory.floor_heat_fixture_keepout` can verify the actual loop
+    # geometry. Polygon tightened 2026-07-29 with the BATH2 wall move — the old one ran
+    # under FX-M-BATH2-SH's whole footprint and clipped FX-M-BATH2-SINK's.
     FloorHeat(uid="CMH801AAAA", tag="FH-M-BATH2", room_ref="RM-M-BATH2",
               zone=(pt(ft(0, 5), ft(13, 9)), pt(ft(4, 7.2), ft(13, 9)),
                     pt(ft(4, 7.2), ft(15, 6)), pt(ft(3, 10), ft(15, 6)),
@@ -824,26 +638,13 @@ SLABS = [
          thickness=inch(9), openings=("FO-M-STAIR",), assembly="CATLIN_DECK_9_INT"),
 ]
 
-# The opening is drawn to the *finished* well, not to the wall centrelines: it is the
-# shaft a stair actually climbs, and the u-split resolver anchors its flights to the
-# opening's near corner. West/east are W-B-STR's and W-B-CN's basement concrete faces —
-# 12" concrete is thicker than the 2x6 walls stacked on it, so the basement is the
-# narrowest point of the shaft and the one that sizes the flights.
-#
-# Run, north to south (2026-07-28): the well now *ends* on the wall instead of starting on
-# one. North is W-B-N2's inside concrete face at y=35'-0", which the main deck bears on —
-# the well used to stop 11 7/8" short of it and leave a slab sliver nothing could use.
-#
-# South is W-M-STRS's stair-side face at 26'-0 3/8", which is where the *second* storey's
-# stair puts it and not a free choice. FO-S-STAIR's south edge is ST-M2S's springing point —
-# its first tread starts there — so any wall north of that line would stand on that tread.
-# The two wells therefore share one south edge, the stair wall's north face, and each takes
-# whatever run its own north limit leaves.
-#
-# For this one that is 8'-11 5/8": the IRC R311.7.6 36" landing plus six 11 15/16" treads.
-# Deeper than the 11" the shorter well used to give and deliberately not trimmed back to it
-# — trimming would only reopen the ledge in front of D-M-STAIR. 11 15/16" against a 7 11/16"
-# riser is a slow, comfortable basement flight, well inside R311.7.5.2's 10" minimum.
+# Drawn to the *finished* well, not the wall centrelines — the shaft the stair actually
+# climbs; the u-split resolver anchors flights to its near corner. West/east are the
+# basement's 12" concrete faces (narrower than the 2x6 walls above, so they size the
+# flights). North (2026-07-28) is W-B-N2's inside face at y=35'-0", which the main deck
+# bears on. South (26'-0 3/8") is fixed by FO-S-STAIR's south edge one storey up — ST-M2S's
+# springing point — so both wells share that same south edge. Run here is 8'-11 5/8": IRC
+# R311.7.6's 36" landing plus six 11 15/16" treads, well inside R311.7.5.2's 10" minimum.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CMF601AAAA", tag="FO-M-STAIR",
                  outline=(pt(ft(10, 6), ft(26, 0.375)), pt(ft(17, 6), ft(26, 0.375)),
@@ -851,22 +652,13 @@ FLOOR_OPENINGS = [
                  bearing_refs=("W-M-STRW", "W-M-STRW2")),
 ]
 
-# 7'-0" well = 3'-3 3/4" + 4 1/2" well partition + 3'-3 3/4". Each flight clears the
-# IRC R311.7.1 36" minimum above the handrail with room for the rail to project; the
-# landing is the R311.7.6 36" minimum measured in the direction of travel.
-#
-# `turn_direction="left"` mirrors the pair across the well (2026-07-28): the flight springs
-# from the basement in the *east* lane (x 14'-2 1/4"..17'-6") and arrives on the main floor
-# in the *west* one (x 10'-6"..13'-9 3/4"), which is D-M-STAIR's lane. ST-M2S is mirrored
-# with it, so the east lane is now the flight *up* to the second floor, behind RO-1. Each
-# arriving flight therefore lands behind D-M-STAIR and the springing one stands in the open
-# lane east of the well partition, which is the arrangement it always had — the mirror
-# swapped which stair each side serves.
-#
-# No guard is authored at the head. W-M-STRS closes the west lane and D-M-STAIR in it opens
-# onto ST-B2M's top nosing; east of the well partition the edge is open to the living room,
-# but ST-M2S's first tread is at floor level right on that line. Both lanes are a flight to
-# step onto, not a drop to fall down.
+# 7'-0" well = 3'-3 3/4" + 4 1/2" well partition + 3'-3 3/4", each flight clearing IRC
+# R311.7.1's 36" minimum above the handrail; landing is R311.7.6's 36" minimum.
+# `turn_direction="left"` (2026-07-28): the basement flight springs in the east lane and
+# arrives in the west (D-M-STAIR's lane); ST-M2S is mirrored so the east lane carries the
+# flight up to second. No guard is authored at the head — W-M-STRS closes the west lane and
+# ST-M2S's first tread sits at floor level on the east, so both are a flight to step onto,
+# not a drop.
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
           from_storey="basement", to_storey="main", width=ft(3, 3.75),
@@ -875,13 +667,9 @@ STAIRS = [
 ]
 
 # ST-B2M handrails (R311.7.8): one wall-mounted rail per flight, `serves_stair` rakes each
-# along its flight's nosing line at resolve and code.R311_7_8_handrail grades `top_height`
-# (34"-38" above the nosings), continuity and graspability. Same authoring as ST-M2S's
-# rails one storey up (storeys/second.py STAIR_HANDRAILS): the lower flight springs in the
-# east lane (x 14'-2 1/4"..17'-6"), rail 2" off the well's east wall face, first riser at
-# y 26'-0 3/8" to the lower-landing edge at 31'-0 3/8"; the upper flight climbs back south
-# in the west lane (x 10'-6"..13'-9 3/4"), rail 2" off the west wall (W-M-STRW's stair
-# face), landing edge down to one going past the top riser (y 26'-10 3/8").
+# to its flight's nosing line and code.R311_7_8_handrail grades `top_height` (34"-38"),
+# continuity and graspability. Same authoring as ST-M2S one storey up (second.py
+# STAIR_HANDRAILS): each rail sits 2" off its lane's wall face and runs the flight's span.
 STAIR_HANDRAILS = [
     Railing(
         uid="CMRL01AAAA", tag="RL-M-HANDRAIL-E", path=(
@@ -907,35 +695,20 @@ STAIR_HANDRAILS = [
     ),
 ]
 
-# The beam that lets the main-storey centre line be open between the hall and the living
-# room (2026-07-28) — the twin of BM-S-HALL one storey up, and authored the same way.
+# The beam that lets the main-storey centre line be open between hall and living room
+# (2026-07-28) — twin of BM-S-HALL one storey up. Per CLAUDE.md, x=18' is a bearing line
+# footings-to-ridge; this LVL *is* that bearing line for its 4'-2" span, not a break in it.
 #
-# CLAUDE.md's house fact is that x=18' is a bearing line from the footings to RB-HOUSE.
-# This does not open it up: the LVL is the bearing line for these 4'-2", and the wall lands
-# back on the stack either side.
+# Load: FS-SECOND's 18' tributary (~990 plf) plus a point load — BM-S-HALL above has no
+# centre wall either, so everything above (attic floor, RB-HOUSE, second-storey plate)
+# arrives as that beam's end reaction (~8.1 k) landing 8" north of this beam's own south
+# bearing. Over the 4'-2" clear span: M = 5.7 ft-k, V = 8.9 k. Three plies of 1.75x11.875
+# LVL give Sx = 123 in^3 (26.7 ft-k) and 62 in^2 shear area (11.8 k) — shear, not moment,
+# governs. Same section/ply count as BM-S-HALL and RB-HOUSE (one LVL depth on the job).
 #
-# Load, per foot of beam:
-#   FS-SECOND    18' tributary (half of each 18' I-joist span either side of the centre
-#                line), 40 psf LL + 15 psf DL                              ~ 990 plf
-# plus one point load, not a line: over this stretch the storey above has no centre wall at
-# all — BM-S-HALL replaced it — so everything above (attic floor, RB-HOUSE, the second-storey
-# plate) arrives as that beam's end reactions rather than as a uniform run. Its south
-# reaction, ~8.1 k, lands at y=22'-4", 8" north of this beam's own south bearing.
-#
-# Over the 4'-2" clear span that is M = 5.7 ft-k and V = 8.9 k at the south end, most of the
-# latter being that reaction going almost straight into the jack pack 8" away. Three plies
-# of 1.75x11.875 LVL give Sx = 123 in^3 (26.7 ft-k at Fb = 2,600 psi) and 62 in^2 of shear
-# area (11.8 k), and deflect well inside L/360 = 0.14". Same section and ply count as
-# BM-S-HALL and RB-HOUSE — one LVL depth on the job — and it is the shear, not the moment,
-# that sizes it.
-#
-# It bears on the ends of the wall segments it replaced — W-M-C3 south, W-M-C5 north — each
-# of which needs a jack pack under it, and both stack onto the basement concrete centre wall
-# W-B-CN and down to the footings, so the reaction has somewhere to go.
-# Framed FLUSH, not dropped: `top_elevation` pins its top to the second-storey datum, which
-# is top-of-joist, so FS-SECOND's I-joists hang off it in face-mount hangers and its soffit
-# lands on the 9'-0" plate line of the walls either side. That keeps the 9' ceiling unbroken
-# across the opening — a dropped beam would hang its full 11-7/8" into it.
+# Bears on the ends of the walls it replaced (W-M-C3/W-M-C5), each stacking onto W-B-CN and
+# the footings. Framed FLUSH (`top_elevation` at the joist datum) so FS-SECOND hangs off it
+# and the 9' ceiling stays unbroken — a dropped beam would hang its full 11-7/8" into it.
 BEAMS = [
     Beam(uid="CMBM01AAAA", tag="BM-M-HALL", start_node="N-M-C2", end_node="N-M-C3",
          size="3-1.75x11.875 LVL", bearing_refs=("W-M-C3", "W-M-C5"),
@@ -952,32 +725,19 @@ PANELING = [
 
 
 # --- exterior door-jamb hold-downs -------------------------------------------
-# The two exterior doors on this storey each punch a 3'-0"/5'-0" hole in a wall that is
-# otherwise the continuous shear line between the basement concrete and the roof. The
-# jamb studs beside a hole that wide are where the wall's uplift and overturning collect,
-# and until now nothing carried that load past the sill plate: `strap_holdown_rows`
-# derives STHDs at the *ends* of each sill-plate run, not at openings in the middle of one.
+# The two exterior doors each punch a hole in what is otherwise the continuous shear line
+# from basement concrete to roof; `strap_holdown_rows` only derives STHDs at sill-plate
+# *ends*, not at mid-run openings, so these four fill the gap: embedded strap-tie
+# holdowns, one per jamb, cast into the foundation and nailed up onto the framing above.
 #
-# These four are the missing link — embedded strap-tie holdowns cast into the foundation
-# wall below and nailed up onto the first-floor exterior-wall framing, one at each jamb.
-# `size="STHD"` merges into the existing `[hardware]` price key rather than adding a part.
+# Geometry: 3" outboard of each RO edge is the king stud's outer face, where the strap
+# lies clear of the pack it restrains. `_JAMB_Y_*` centres them 3 1/4" into the 5 1/2"
+# stud layer (measured from CATLIN_EXT_2X6's sheathing-ext plane); the dialect allows no
+# arithmetic, so each offset is written as the number it lands on. Elevation is
+# sill-plate mid-height.
 #
-# Geometry. `from_node` measures to the opening *start*, so each RO is the door type's
-# width run along the wall from that point:
-#   D-M-ENTRY  on W-M-N3 (N-M-N2 x=10' running west): RO x 6'-6"..9'-6"
-#   D-M-BALC   on W-M-S2 (N-M-S1 x=18' running east): RO x 19'-4"..24'-4"
-# A jamb pack is a 1 1/2" jack plus a 1 1/2" king, so 3" outboard of the RO edge is the
-# outer face of the king stud — where the strap lies, clear of the pack it restrains.
-# `_JAMB_Y_*` puts them on the stud-layer centre line: CATLIN_EXT_2X6 aligns its sheathing
-# exterior face to the wall line, so the 5 1/2" stud layer starts 1/2" in and centres 3 1/4"
-# in — 35'-8 3/4" on the north wall (inward is -y), 3 1/4" on the south (+y). The dialect
-# allows no arithmetic here, so every offset above is written out as the number it lands on.
-# Elevation is mid-height of the sill plate, which sits on its 1/4" gasket at the storey
-# datum — the plane the strap crosses on its way from the concrete to the studs.
-#
-# D-G-SERVICE is deliberately not in this list. It stands in the garage's ICF stem wall,
-# not on a poured foundation wall, and an ICF-embedded holdown is a different part with a
-# different embedment; that door is deferred rather than strapped with the wrong hardware.
+# D-G-SERVICE is deliberately excluded: it's in the garage's ICF stem, which needs a
+# different embedded part, not a foundation-wall strap.
 _JAMB_Y_NORTH = ft(35, 8.75)
 _JAMB_Y_SOUTH = inch(3.25)
 _JAMB_Z = inch(1)

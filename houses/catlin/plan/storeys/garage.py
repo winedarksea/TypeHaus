@@ -28,30 +28,25 @@ from typehaus import (
     pt,
 )
 
-# The garage's two N-S wall lines, published so the ICF stem under them
-# (params/foundations.py), the slab inside them, and the breezeway that spans to the house
-# (params/breezeway.py) all derive from one number instead of four copies of it.
+# The garage's two N-S wall lines, published so the ICF stem (params/foundations.py), the
+# slab, and the breezeway (params/breezeway.py) all derive from one number.
 #
-# 40'-6 3/8" is set by the breezeway, and by the *cladding* rather than the stem below it.
-# The stem's exterior EPS face is now coplanar with the wood wall's zip-R face — both land
-# on this line (params/foundations.py aligns the ICF to it) — so the most-proud plane on
-# the south side is the 7/8" of rainscreen + standing seam over the zip-R, at
-# y = 40'-5 1/2". That face is what the breezeway deck and its glazing butt against, and it
-# sits 4'-0 1/2" north of the house's own cladding face (y = 36'-5.02"): one 4'-0"
-# polycarbonate panel with a 1/2" reveal.
+# 40'-6 3/8" is set by the breezeway off the *cladding*, not the stem: the stem's exterior
+# EPS face is coplanar with the wood wall's zip-R face (both land on this line), so the
+# most-proud plane is the 7/8" of rainscreen + standing seam at y = 40'-5 1/2" — what the
+# breezeway deck/glazing butt against, 4'-0 1/2" north of the house's cladding face
+# (y = 36'-5.02"): one 4'-0" polycarbonate panel with a 1/2" reveal.
 #
-# The line moved 5 5/8" south from 41'-0" on 2026-08-15, when the stem was aligned out to
-# it and dropped from an 8" core to a 6" one. Aligning the stem alone would have opened the
-# breezeway slot by exactly that much and cost the uncut panel; moving the wall lines with
-# it puts the controlling face back where the stem's face used to be, so the slot — and the
-# panel — are unchanged.
+# Moved 5 5/8" south from 41'-0" on 2026-08-15 when the stem was aligned to it and dropped
+# from an 8" core to 6". Moving the wall lines with the stem (rather than aligning the stem
+# alone) keeps the breezeway slot and its uncut panel unchanged — see CLAUDE.md's ICF
+# stem/wood-wall coplanarity note; do not move these nodes independently of the stem.
 GARAGE_Y_SOUTH = ft(40, 6.375)
 GARAGE_Y_NORTH = ft(64, 6.375)
 
-# How far the ICF stem stands above grade — which is the same number as this storey's
-# elevation, because the wood walls sit on the stem top. Published so the storey table
-# (plan/manifest.py), the stem itself (params/foundations.py) and the overhead door's
-# drop to grade below all read one value instead of three copies of 22".
+# ICF stem height above grade == this storey's elevation (wood walls sit on the stem top).
+# Published so the storey table, the stem (params/foundations.py) and the overhead door's
+# drop to grade all read one value instead of three copies of 1'-10".
 GARAGE_STEM_REVEAL = ft(1, 10)
 
 NODES = [
@@ -82,53 +77,43 @@ WALLS = [
 OVERHEAD_DOOR_OFFSET = ft(4)
 OVERHEAD_DOOR_WIDTH = ft(16)  # DT-EXT-OVERHEAD192
 
-# The same pair for the service door (2026-08-01). It needs the identical treatment for the
-# identical reason: it opens off the slab at grade, not off the stem top its host wall
-# starts on, so the stem gaps to a grade beam under it too. A person will not climb a 22"
-# curb any more happily than a car does — this door stood 1'-10" above both the garage slab
-# inside it and the breezeway deck outside it, which the breezeway module recorded as a
-# "known, deferred mismatch" and code.R311_3_exterior_landing eventually failed outright.
+# Same pair for the service door (2026-08-01): identical treatment for the identical
+# reason — it opens off the slab at grade, not the stem top its host wall starts on, so
+# the stem gaps to a grade beam here too. Previously stood 1'-10" above the slab and the
+# breezeway deck, a "known, deferred mismatch" that code.R311_3_exterior_landing eventually
+# failed outright.
 SERVICE_DOOR_OFFSET = ft(5)
 SERVICE_DOOR_WIDTH = ft(3)  # DT-EXT-SWING36
 
 OPENINGS = [
-    # The 16' opening is past the prescriptive header table, so the engineered beam
-    # is named on the instance: a 2-ply 14" LVL across the overhead door.
+    # 16' opening is past the prescriptive header table, hence the named engineered beam:
+    # a 2-ply 14" LVL.
     #
-    # A car drives in off the slab, so this door's threshold is the slab at grade — not the
-    # base of the wall hosting it. Every other opening in the house sits on its host wall's
-    # own floor, but W-G-E starts at the stem top, one GARAGE_STEM_REVEAL above the slab
-    # inside it, so the door reaches *down* past its host: the one negative sill_height in
-    # this plan, and the exact negation of that reveal. The dialect bans arithmetic here, so
-    # the two cannot be spelled as one expression — the tie is held instead by a contract
-    # test asserting the resolved threshold lands on SL-G-FLOOR's top
-    # (test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade).
-    # The head follows the threshold down to 7'-0" above the slab (a 7' door is 7' of clear
-    # opening wherever it sits), leaving the LVL and its cripples in the wall's top 2'-10".
-    # params/foundations.py gaps the stem to a grade beam under exactly this opening, so
-    # there is no curb left across the threshold for the car to climb.
+    # Threshold is the slab at grade, not the host wall's own floor: W-G-E starts at the
+    # stem top, GARAGE_STEM_REVEAL above the slab, so the door reaches *down* past its host
+    # — the plan's one negative sill_height, the exact negation of that reveal (spelled out
+    # rather than computed; the dialect bans arithmetic). The tie is held by
+    # test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade.
+    # Head follows the threshold down to 7'-0" above the slab. params/foundations.py gaps
+    # the stem to a grade beam under this opening so there's no curb for the car to climb.
     Door(uid="CGD201AAAA", tag="D-G-OVERHEAD", host="W-G-E",
          type_ref="DT-EXT-OVERHEAD192", position=from_node("N-G-SE", OVERHEAD_DOOR_OFFSET),
          sill_height=ft(-1, -10), header_spec='2-ply 14" LVL'),
-    # Reaches down to the slab exactly as D-G-OVERHEAD does, and for the same reason — see
-    # SERVICE_DOOR_OFFSET above. Same negation of GARAGE_STEM_REVEAL, spelled out for the
-    # same dialect reason (no arithmetic in an editable file), and the head follows the
-    # threshold down so a 6'-8" door is 6'-8" of clear opening off the floor it opens onto.
+    # Reaches down to the slab exactly as D-G-OVERHEAD does (see SERVICE_DOOR_OFFSET above):
+    # same negation of GARAGE_STEM_REVEAL, spelled out for the same dialect reason.
     Door(uid="CGD202AAAA", tag="D-G-SERVICE", host="W-G-S", type_ref="DT-EXT-SWING36",
          position=from_node("N-G-SW", SERVICE_DOOR_OFFSET), sill_height=ft(-1, -10)),
-    # This 8' wall (vs. the house's 10') is why the whole 27" family is 36" tall: a
-    # 60" height at this 42" sill would push the header above the top plate.
-    # Nudged to 1'-5" (2026-07-29): at 1'-4 5/8" the RO missed the 16" module bay's
-    # center by 3/8", enough to break two studs and pull in a header/jacks a 14" RO
-    # should never need (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs).
+    # This 8' wall (vs. the house's 10') is why the 27" family is 36" tall: a 60" height at
+    # this 42" sill would push the header above the top plate. Nudged to 1'-5" (2026-07-29):
+    # at 1'-4 5/8" the RO missed the bay centre by 3/8", enough to break two studs and pull
+    # in a header a 14" RO should never need
+    # (test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs).
     Window(uid="CGX301AAAA", tag="WIN-G-N1", host="W-G-W", type_ref="WT-1424",
            position=from_node("N-G-NW", ft(1, 5)), sill_height=ft(3, 6)),
-    # WIN-G-N1's mirror at the south end of the same wall (2026-07-30): the west wall is
-    # 24'-0" node-to-node and N1's centre sits 2'-0" off the north corner, so 22'-0" off
-    # it — 2'-0" off the south corner — is the exact mirror. It is also a bay centre
-    # (22'-0" = 8" + 16"x16 on W-G-W's grid, which lays out from N-G-NW), so the pair is
-    # symmetric AND both keep the unbroken stud bay a 14" RO exists to get. Same 3'-6"
-    # sill: above a workbench, and the one head line this wall has.
+    # WIN-G-N1's mirror at the south end (2026-07-30): 22'-0" off N-G-NW is the exact mirror
+    # of N1's 2'-0", and also a bay centre (8" + 16"x16 on W-G-W's grid), so the pair stays
+    # symmetric and both keep the unbroken stud bay a 14" RO exists to get. Same 3'-6" sill
+    # (above a workbench).
     Window(uid="CGX302AAAA", tag="WIN-G-S1", host="W-G-W", type_ref="WT-1424",
            position=from_node("N-G-NW", ft(21, 5)), sill_height=ft(3, 6)),
 ]
@@ -139,26 +124,19 @@ ROOMS = [
          floor_finish="sealed-concrete"),
 ]
 
-# Gable roof, ridge E-W (rotated 90° vs the house), 16" overhangs. The gable ends are the
-# E/W walls; they stay flat 8' walls rather than `top=ToRoof` because a raked wall top is a
-# straight line between its two endpoints, so a gable wall must be split at the ridge — and
-# the 16' overhead door is centered exactly on the ridge, so W-G-E cannot be split. Both
-# gable triangles (and the raised-heel band on the eave walls) are instead closed by the
-# wall→roof closure in resolve/roof_edge.py, which carries each wall's zip-r/rainscreen/
-# cladding skin up to the roof underside and splits at the ridge itself.
-# Eave + rake trim is two-layer: a 2x6 wood sub-fascia nailed to the truss tails and barge
-# rafters (the structural nailer), lapped by a 5/4 cellular-PVC fascia (the weather face,
-# which never rots at a drip edge). A vented PVC soffit closes the overhang underside and
-# feeds the eave-to-ridge vent channel. Elevations are derived from the resolved roof plane,
-# so the raised-heel lift carries the trim with it.
+# Gable roof, ridge E-W (rotated 90° vs the house), 16" overhangs. E/W walls stay flat 8'
+# rather than `top=ToRoof`: a raked wall top must split at the ridge, but the 16' overhead
+# door is centered on the ridge, so W-G-E can't be split. Both gable triangles are instead
+# closed by the wall→roof closure in resolve/roof_edge.py.
+# Eave + rake trim is two-layer: a 2x6 wood sub-fascia (structural nailer) lapped by a 5/4
+# cellular-PVC fascia (weather face). A vented PVC soffit closes the overhang and feeds the
+# vent channel. Elevations derive from the resolved roof plane so the raised-heel lift
+# carries the trim with it.
 # The SOUTH eave gets a 5" aluminum gutter: that slope faces the 4' breezeway gap and the
-# house wall across it, so its run-off is the only one that lands on somewhere people walk
-# — and it now also catches what sheds off the breezeway roof tucked under this eave.
-# The north eave sheds onto open ground and stays free-draining. The channel is declared
-# here rather than authored in params/ for the same reason the fascia is — the raised-heel
-# truss lifts the deck plane in the envelope stage, and an absolute elevation would drift off
-# the eave it drains. Its top sits 1/2" below the plane so its back closes the fascia face
-# and its bottom lands on the sub-fascia's underside.
+# house wall people walk under, and now also catches what sheds off the breezeway roof.
+# North eave stays free-draining onto open ground. Declared here rather than in params/
+# for the same reason as the fascia — the raised-heel truss lifts the deck plane at the
+# envelope stage, so an absolute elevation would drift off the eave.
 _GARAGE_EAVE_TRIM = EaveTrim(
     fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),
             FasciaBoard(material="pvc-cellular", thickness=inch(1), depth=inch(6))),
@@ -169,17 +147,12 @@ _GARAGE_EAVE_TRIM = EaveTrim(
                       downspout_ref="TR-G-LEADER-E"),
 )
 
-# The leader the south gutter has always sloped to. It was named in the slope note and never
-# authored, so the garage gutter drained to nothing — the same gap the house eaves had.
-#
-# 3" round, not the house's 4": this slope sheds about 290 sq ft (half of 24'x24' plus the
-# overhang) against each house eave's 648, and a 3" leader clears roughly 425 sq ft at the
-# 8 in/hr design intensity (params/roof_trim.py works the number).
-#
-# Its position and top are read off the *resolved* eave rather than derived here, which the
-# EaveGutter above deliberately is not: a raised-heel truss lifts the deck plane during the
-# envelope stage. test_drainage_elements.py holds the two together, so a change to the roof
-# that moves the trough fails there instead of leaving a leader hanging beside it.
+# The leader the south gutter has always sloped to; named in the slope note but never
+# authored until now, so it drained to nothing. 3" round, not the house's 4": this slope
+# sheds ~290 sq ft against each house eave's 648, and 3" clears ~425 sq ft at the 8 in/hr
+# design intensity (params/roof_trim.py works the number).
+# test_drainage_elements.py holds this and the EaveGutter together so a roof change that
+# moves the trough fails there instead of leaving a leader hanging beside it.
 _GARAGE_LEADER = Downspout(
     uid="CGDS01AAAA", tag="TR-G-LEADER-E",
     position=pt(ft(25), ft(39, 4.5)),   # east end of the trough, on its centreline
@@ -195,27 +168,18 @@ ROOFS = [
          eave_trim=_GARAGE_EAVE_TRIM),
 ]
 
-# Snow retention on the south slope. The garage roof sheds toward the breezeway, whose
-# polycarbonate canopy (GL-BW-ROOF, x 2'-6"..6'-6", top at 7'-5 3/8") sits 3.0' below this
-# eave and squarely in the discharge band — see structural.sliding_snow. A 4:12 standing-seam
-# slope is about the most willing shedding surface there is, and 4' x 8' multiwall
-# polycarbonate is about the least willing receiving one.
-#
-# S-5! ColorGard: a continuous 1"x1" aluminum crossbar carried on seam clamps, so the take-off
-# bills the clamps under it automatically (StructuralHardware.requires_role). The row runs
-# x 1'-4"..8'-0" — the canopy's width plus a full bay of margin at each end, because snow
-# releases at an angle and the canopy edge is not the edge of the problem. Row count and
-# spacing at Pg = 50 psf are the manufacturer's calculation, not this model's: the check
-# screens for retention being *authored*, not for it being sufficient.
-#
-# Placed 4" up-slope of the eave. The eave is at y = 39'-2 3/8" — the wall line at
-# y = 40'-6 3/8" less the 1'-4" overhang — so the bar goes at y = 39'-6 3/8", where 4" of run
-# on the 4:12 plane lifts it 1 3/8" above the 10'-5 5/8" eave, i.e. z = 10'-7". That is
-# deliberately close to the eave: snow retention holds the pack at the bottom of the slope,
-# where the load it resists lives. (Both numbers moved 5 5/8" south on 2026-08-15 with the
-# wall line; the height did not, because the wall did not get taller.)
-# Written out rather than generated: the editable-plan dialect allows no comprehensions, and
-# six clamps at 1'-4" o.c. read fine as six lines.
+# Snow retention on the south slope: the garage roof sheds toward the breezeway's
+# polycarbonate canopy (GL-BW-ROOF), which sits 3.0' below this eave in the discharge band
+# (structural.sliding_snow) — a willing 4:12 standing-seam slope over an unwilling
+# multiwall-polycarbonate target.
+# S-5! ColorGard: a continuous crossbar on seam clamps (StructuralHardware.requires_role
+# bills the clamps automatically). Row runs x 1'-4"..8'-0" — canopy width plus a full bay of
+# margin each end, since snow releases at an angle. Row count/spacing at Pg = 50 psf is the
+# manufacturer's calculation; the check only screens for retention being *authored*.
+# Placed 4" up-slope of the eave (y = 39'-6 3/8", z = 10'-7"), deliberately close to it since
+# retention holds the pack where the load lives. (Position moved 5 5/8" south with the wall
+# line on 2026-08-15; height didn't, since the wall didn't get taller.)
+# Written out, not generated: the editable dialect allows no comprehensions.
 _SNOW_GUARD_Y = ft(39, 6.375)
 _SNOW_GUARD_Z = ft(10, 7)
 _SNOW_GUARD_SIZE = "S-5! ColorGard"
@@ -241,15 +205,10 @@ SNOW_GUARDS = [
 ]
 
 ALARMS = [
-    # A garage gets a *heat* detector, not a smoke alarm: exhaust, dust and a space that runs
-    # to outdoor temperature would nuisance-trip a smoke head, which is why R315 asks for CO
-    # coverage adjacent to the garage rather than a smoke alarm inside it. This is the
-    # rate-of-rise/fixed-temperature head, at the room seed like every other Alarm (the
-    # element carries no position of its own).
-    #
-    # On CKT-LT-BACKUP because R314.4 wants an unswitched circuit and the Shelly backup
-    # subsystem is the only thing here that survives an outage. CKT-RC-GARAGE is GFCI, which
-    # is wrong for a life-safety device, and there is no spare 1-pole.
+    # A garage gets a *heat* detector, not smoke: exhaust, dust and outdoor-swing temps would
+    # nuisance-trip a smoke head, which is why R315 asks for CO coverage adjacent to the
+    # garage rather than a smoke alarm inside it. On CKT-LT-BACKUP because R314.4 wants an
+    # unswitched circuit and CKT-RC-GARAGE (GFCI) is wrong for a life-safety device.
     Alarm(uid="CGA701AAAA", tag="AL-G-HEAT", kind=AlarmKind.HEAT, room="RM-GARAGE",
           circuit="CKT-LT-BACKUP"),
 ]

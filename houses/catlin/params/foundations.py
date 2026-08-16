@@ -65,12 +65,9 @@ HOUSE_FOOTINGS = [
     for i, t in enumerate(_HOUSE_WALL_TAGS, start=1)
 ]
 
-# Bearing prep below every house footing: dig 6-8" (7" nominal) past the footing
-# underside, line with non-woven (no-slip) geotextile, run drain tile through the bed,
-# then compacted ASTM C33 #57 washed crushed stone — a well-drained bearing surface
-# that also breaks direct footing-to-wet-clay thermal contact. Perimeter foam (4",
-# matching CATLIN_BASEMENT_12's 2x2" exterior XPS) continues the wall's insulation
-# down over the footing sides.
+# Bearing prep below every house footing: 7" undercut, geotextile, drain tile, compacted
+# washed stone — a drained bearing surface that also breaks footing-to-wet-clay thermal
+# contact. 4" perimeter foam matches CATLIN_BASEMENT_12's exterior XPS.
 HOUSE_FOOTING_BEDDING = [
     FootingBedding(uid=f"CFB{i:03d}AAAA", tag=f"FB-{f.tag[3:]}", host_ref=f.tag,
                    undercut=inch(7), perimeter_insulation=inch(4),
@@ -81,41 +78,28 @@ HOUSE_FOOTING_BEDDING = [
 
 # --- glazed-brick veneer plinth (W-B-BRICK) ---------------------------------------
 # Deliberately NOT appended to _HOUSE_WALL_TAGS: that loop pours a 20"x8" strip monolithic
-# with the house footing, which is the thermal bridge this detail exists to avoid.
+# with the house footing, which is the thermal bridge this detail exists to avoid. Instead
+# it's a shallow plinth cast ON the house footing's projecting toe (FT-B-S2/S3's toe runs
+# 10" south of the brick face), separated by a 2" XPS bed (FB-B-BRICK) rather than a
+# ``Dowel`` block — ``Dowel.axis`` can't describe a horizontal bed, so the veneer's own
+# masonry ties do that job instead (plans/TODO.md).
 #
-# What it actually is: a shallow plinth cast ON the house footing's projecting toe rather
-# than a strip poured beside it, because there is nowhere beside it to pour. FT-B-S2/
-# FT-B-S3 are 20" wide centred on the y=0 node line, so the toe already runs 10" south,
-# and the veneer's outer brick face lands at -9.175" — inside that edge by 0.8". The wythe
-# has to bear on the toe; the only question is what separates the two pours.
+# 10"x5": 10" wide clears the brick's outer face (-9.175") with ~0.4" to spare and stays
+# inside the house footing's -10" edge; 5" deep over the 2" bed tops out at -8'-5",
+# D-B-PATIO's raised threshold — the highest it can go without crossing the door. Full
+# derivation on W-B-BRICK in plan/storeys/basement.py.
 #
-# So the thermal break is a 2" XPS bed *under* the plinth (FB-B-BRICK below), not a block
-# beside it, and that is why this detail authors no ``Dowel``: the sunken garden's
-# DW-SG-W1/E1/COL cross a vertical joint where two footings meet edge to edge, and
-# ``Dowel.axis`` is "x" or "y" only, so it cannot describe a horizontal bed. The bars that
-# pin the plinth back are the veneer's own masonry ties, which are a construction note here
-# the same way the garden's dowels were before they became elements (plans/TODO.md).
-#
-# 10" x 5". The width is centred on the veneer's own node line at y=-4.55" (a Footing takes
-# its parent wall's axis), and the brick's outer face is at -9.175", so 9" would have left
-# the face 0.12" proud of its own plinth; 10" carries it with ~0.4" to spare and stops well
-# inside the house footing's -10" edge. The 5" of depth over the 2" bed tops out at -8'-5" —
-# D-B-PATIO's raised threshold, which is the highest it can go without stepping across the
-# door. See the note on W-B-BRICK in plan/storeys/basement.py for the full derivation.
-#
-# x=28' coordination: the veneer stops on the sunken garden's east wall axis, where
-# FT-SG-E1 already breaks thermally from the house footing (params/sunken_garden.py). No
-# third break is invented there and no solid collides: FT-SG-E1 is 84" wide but sits in the
-# -9.75'..-10.75' band under a wall whose bottom is -9.75', a clear 1'-5" below this plinth.
+# Stops at x=28' on the sunken garden's east wall axis, where FT-SG-E1 already breaks
+# thermally from the house footing — no third break needed, no collision (FT-SG-E1 sits
+# 1'-5" below this plinth).
 VENEER_PLINTH = [
     Footing(uid="CFV301AAAA", tag="FT-B-BRICK", under="W-B-BRICK",
             width=inch(10), depth=inch(5)),
 ]
 
-# The 2" of 40 psi XPS between the plinth and the house footing it bears on — the same
-# ``cast_foam_in_aggregate`` record the sunken garden's house-adjacent footings carry, used
-# here for a bed rather than a block. No drain tile: this sits a foot above the house
-# footing's own tile, inside the sunken garden, with nothing to collect.
+# Same ``cast_foam_in_aggregate`` record the sunken garden's house-adjacent footings carry
+# (2" 40psi XPS), used here as a bed rather than a block. No drain tile: sits a foot above
+# the house footing's own tile with nothing to collect.
 VENEER_PLINTH_BEDDING = [
     FootingBedding(uid="CFV351AAAA", tag="FB-B-BRICK", host_ref="FT-B-BRICK",
                    undercut=inch(2), geotextile=False, drain_tile=False,
@@ -127,13 +111,11 @@ _FROST = 42.0 / 12.0  # frost depth below grade
 # Exposed above grade, and the garage storey datum besides — one value, authored next to
 # the wall lines it belongs with (plan/storeys/garage.py).
 _STEM_TOP = GARAGE_STEM_REVEAL
-# A car can't climb a 22" ICF stem, so the east stem gaps at the overhead door: the two
-# flanking segments keep the full reveal, and the segment behind the door becomes a grade
-# beam topping out flush with the slab at 0'-0", leaving flat concrete from driveway to
-# slab with no curb across the opening. Nothing above changes — W-G-E still bears on the
-# uniform stem-top datum for its whole length (splitting *that* wall would break the ridge
-# closure it carries), so this is a foundation detail; the *door* is what reaches down to
-# the slab, via the negative sill_height in plan/storeys/garage.py.
+# A car can't climb a 22" ICF stem, so the east stem gaps at the overhead door: the flanking
+# segments keep the full reveal, and the segment behind the door becomes a grade beam flush
+# with the slab (0'-0"), no curb across the opening. W-G-E above is untouched (splitting it
+# would break the ridge closure it carries) — the door reaches down via a negative
+# sill_height in plan/storeys/garage.py instead.
 _GRADE_BEAM_TOP = ft(0)
 # How much wider than the opening the service door's stem gap is formed — see N-GF-S-DRW.
 _SERVICE_GAP_MARGIN = ft(0, 3)
@@ -146,15 +128,11 @@ GARAGE_STEM_NODES = [
     Node(uid="CGF005AAAA", tag="N-GF-E-DRS", position=pt(ft(24), GARAGE_Y_SOUTH + OVERHEAD_DOOR_OFFSET)),
     Node(uid="CGF006AAAA", tag="N-GF-E-DRN",
          position=pt(ft(24), GARAGE_Y_SOUTH + OVERHEAD_DOOR_OFFSET + OVERHEAD_DOOR_WIDTH)),
-    # The service door's gap in the south stem (2026-08-01), the same two nodes one wall
-    # over. W-GF-S runs west-to-east from N-GF-SW, so these are plain x stations.
-    #
-    # 3" of margin each side, where the overhead door's gap has none: the hydrant line
-    # (PR-G-HYDRANT-CW) crosses this wall buried at x = 5'-0", which is the door's west jamb
-    # to the inch. A gap that starts exactly there puts the crossing on the joint between two
-    # footings, belonging to neither, and mep.footing_clearance rightly asks for a sleeve in
-    # both. Forming the block-out a few inches wider than the opening is what actually
-    # happens on site anyway, and it puts the crossing unambiguously inside the grade beam.
+    # Service door gap in the south stem (2026-08-01). Unlike the overhead door's gap, this
+    # one gets 3" margin each side: the hydrant line (PR-G-HYDRANT-CW) crosses buried at
+    # x=5'-0", exactly the door's west jamb, so a flush gap would land the crossing on the
+    # joint between two footings and trip mep.footing_clearance in both. The wider block-out
+    # puts it unambiguously inside the grade beam.
     Node(uid="CGF007AAAA", tag="N-GF-S-DRW",
          position=pt(SERVICE_DOOR_OFFSET - _SERVICE_GAP_MARGIN, GARAGE_Y_SOUTH)),
     Node(uid="CGF008AAAA", tag="N-GF-S-DRE",
@@ -162,19 +140,15 @@ GARAGE_STEM_NODES = [
                      GARAGE_Y_SOUTH)),
 ]
 
-# Where the 11" section sits across the node line. The wood walls above are authored
-# `alignment=face("zip-r-ext")`, so the 24'x24' line IS their zip-R plane; putting the
-# stem's exterior EPS face on that same line makes the two coplanar, and the rainscreen +
-# cladding (7/8") then project past the foam and drip clear of it. Left unaligned the
-# section straddled the line and stood 5 5/8" proud of the cladding — a horizontal shelf
-# right round the garage for rain to pool on (plans/TODO.md).
+# Aligns the stem's exterior EPS face to the 24'x24' node line, which is also the wood
+# walls' zip-R plane (`alignment=face("zip-r-ext")` above) — coplanar, so only the 7/8"
+# rainscreen + cladding projects past and drips clear. Left unaligned it stood 5 5/8" proud
+# of the cladding, a shelf for rain to pool on (plans/TODO.md).
 #
-# `face("concrete-ext")` and not `face("eps-ext")`: the face matcher in
-# resolve/topology.py is a fuzzy prefix test, so "eps-ext" matches the *eps-int* layer
-# first and silently returns the wrong face. The concrete face is unambiguous, and it is
-# the datum the basement walls already align to. `_axis_offset_from_interior` puts that
-# face on the axis and then shifts the axis outboard by `offset`, so one EPS thickness of
-# offset carries the exterior foam face out to the node line.
+# Uses `face("concrete-ext")`, not `face("eps-ext")`: the fuzzy prefix matcher in
+# resolve/topology.py would match "eps-ext" to the *eps-int* layer first. Concrete face is
+# unambiguous and already the basement walls' datum; offsetting the axis outward by one EPS
+# thickness lands the exterior foam face on the node line.
 _ALIGN = face("concrete-ext", offset=GARAGE_ICF_EPS)
 
 _STEM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN, top_elevation=_STEM_TOP,
@@ -205,16 +179,13 @@ GARAGE_STEM_WALLS = [
                    end_node="N-GF-SW", **_STEM),
 ]
 
-# Not a comprehension any more: the east wall split into three, and giving each a fresh
-# uid would reassign CGF203/204AAAA (footings that didn't conceptually change) to the new
-# door pieces instead. S/N/W and the E1 remnant of the old single E wall keep their
-# original uids; only the grade beam and the far side of the door split are genuinely new.
+# Not a comprehension any more: the east wall split into three, and a fresh uid per item
+# would reassign CGF203/204AAAA (footings that didn't conceptually change) to the new door
+# pieces. Original uids are kept; only the grade beam and far door-split piece are new.
 #
-# `center_on="wall"` on every one of them: a Footing otherwise centres its strip on the
-# raw node line, which alignment never reaches. The stem now runs 0"..11" inboard of that
-# line, so a 20" strip centred on it would leave 10" of toe under nothing and hang 1" of
-# stem off the far edge. Centred on the resolved section instead, the toe is a symmetric
-# 4 1/2" each side.
+# `center_on="wall"`: the stem runs 0"..11" inboard of the raw node line, so a 20" strip
+# centred on the node line (the default) would leave 10" of toe under nothing. Centred on
+# the resolved section instead, the toe is a symmetric 4 1/2" each side.
 _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall")
 
 GARAGE_FOOTINGS = [
@@ -228,11 +199,9 @@ GARAGE_FOOTINGS = [
     Footing(uid="CGF204AAAA", tag="FT-GF-W", under="W-GF-W", **_GARAGE_FOOTING),
 ]
 
-# Filed on the house's "main" storey key rather than the "garage" storey because the garage
-# storey datum is the ICF stem top (1'-10"), while this slab is poured at grade. The inset
-# from the wall lines keeps the pour inside the ICF stem: the whole 11" section now stands
-# inboard of the node line, so the inset is that section plus the same 1/2" gap between
-# slab edge and stem interior face the pour has always had.
+# Filed on "main", not "garage": the garage storey datum is the ICF stem top (1'-10"), but
+# this slab pours at grade. Inset from the wall lines = the 11" stem section + the usual
+# 1/2" gap to the stem's interior face, keeping the pour inside the stem.
 _SLAB_GAP = inch(0.5)
 _SLAB_INSET = GARAGE_ICF_CORE + GARAGE_ICF_EPS + GARAGE_ICF_EPS + _SLAB_GAP
 _slab_y_s = GARAGE_Y_SOUTH + _SLAB_INSET
@@ -247,68 +216,41 @@ GARAGE_SLAB = Slab(
 
 # --- garage hydrant: supply sleeve, gravel pit -------------------------------------
 #
-# FX-G-HYDRANT stands on the west wall near the NW corner. Two pieces of foundation work
-# go with it, and neither is UI-movable, which is why they belong in this (non-editable)
-# module while the fixture itself lives in the editable plan/fixtures.py.
+# FX-G-HYDRANT stands on the west wall near the NW corner. The sleeve and drywell below it
+# are not UI-movable, so they live here rather than in editable plan/fixtures.py.
 #
-# Elevations: garage slab top 0'-0", underside -3½"; ICF stem top +1'-10", bottom -3'-6";
-# footings bear at about -4'-2". ``_FROST`` above is the *footing* frost depth (42"). The
-# hydrant's 72" bury is a different number for a different purpose — the depth of its own
-# shutoff valve, 2'-6" below the stem bottom and well clear of the frost line. The two are
-# consistent, not in conflict.
-# Where the hydrant can stand, and why it is not against a wall (2026-08-15).
+# ``_FROST`` above is the *footing* frost depth (42"); the hydrant's 72" bury is a separate
+# number — its own shutoff-valve depth, 2'-6" below the ICF stem bottom, consistent but not
+# the same thing.
 #
-# It was at (1'-6", 62'), tucked into the NW corner, and that position was not buildable.
-# The shutoff is 6'-0" down; the garage footings bear at -4'-2". Anything at the valve is
-# therefore 22" below the bearing plane and needs at least 22" of lateral clearance from
-# the footing's edge before it is outside the 45° influence line — and the weep stone
-# around the valve, which goes deeper still, needs more. At x = 1'-6" the riser had 8" and
-# the stone pocket overlapped FT-GF-W's footprint outright. `mep.footing_clearance` was
-# only passing because SP-GF-W-HYD sat near it, a sleeve boring through concrete the pipe
-# never touched (deleted 2026-08-15, → plan/mep.py).
+# Position (2026-08-15): the hydrant is freestanding, not wall-mounted, because nowhere on
+# a wall clears the footings' 45° bearing-influence line at this bury depth. The old NW
+# corner spot (1'-6", 62') had the weep-stone pocket overlapping FT-GF-W outright — only
+# passing footing_clearance because of a sleeve that bore concrete the pipe never touched
+# (deleted). The clear zone is x >= 4'-10 1/2", y <= 59'-7 7/8", floor not wall — no wall
+# position works here, so it stands free like a yard hydrant should (Y34 barrel, unlike the
+# two wall hydrants in plan/fixtures.py).
 #
-# The clear zone that leaves is x >= 4'-10 1/2", y <= 59'-7 7/8" — which is floor, not
-# wall. (It tightened on 2026-08-15: the stem was aligned onto the wall line and the
-# footings re-centred under it with ``center_on="wall"``, which walked FT-GF-W's east edge
-# and FT-GF-N's south edge 5 1/2" further into the room, and the wall lines themselves
-# 5 5/8" south. The zone moved with them; the fixture had to follow.) There
-# is no wall position in this garage that works: the footing runs the full perimeter and
-# the constraint is the fixture's own bury, not its plan location. So the hydrant stands
-# free, as a *yard* hydrant is built to (it is a Y34 barrel, not a wall hydrant — see the
-# two south-face ones in plan/fixtures.py for the contrast).
+# x=5'-0" sits on the existing supply line (PR-G-HYDRANT-CW runs north at x=5'-0" through
+# three sleeves), keeping the run straight instead of jogging. y=59'-6" clears FT-GF-N by
+# 35 7/8" (34" required) and stays inside the overhead door's 45'..61' band.
 #
-# x = 5'-0" is chosen over the 4'-8" minimum because it is the line the service already
-# runs on: PR-G-HYDRANT-CW comes north at x = 5'-0" from the house water entry, through
-# three basement wall sleeves and SP-GF-S-HYD, all at x = 5'-0". Standing the hydrant on
-# that line makes the run dead straight and deletes the two-vertex west jog that was the
-# thing inside FT-GF-W's influence line in the first place. The 2026-07-29 re-route moved
-# the buried leg to x = 5' for exactly this reason and stopped one fixture short.
-#
-# y = 59'-6" puts the stone pocket 35 7/8" clear of FT-GF-N against the 34" it needs, and
-# leaves the fixture inside the overhead door's y 45'..61' band.
-#
-# **Consequence to accept:** the hydrant is a post standing 5' out from the west wall at
-# the front-left of the north bay, not a fitting on the wall. It is in the parking area
-# because every compliant position in this garage is. A bollard or a wheel stop is the
-# mitigation if it proves to be in the way; moving it back to the wall is not.
+# Consequence: the hydrant sits 5' out into the parking area, not against the wall — every
+# compliant position here is in the room. Mitigate with a bollard/wheel stop if needed;
+# don't move it back to the wall.
 HYDRANT_X_FT = 5.0          # on the service line — the run reaches it without a jog
 HYDRANT_Y_FT = 59.5         # north bay, clear of FT-GF-N's influence line
 HYDRANT_BURY_FT = 6.0       # shutoff depth below grade — the code number for this fixture
 
-# There was a 4" topping pedestal here (SL-G-HYDRANT-PED, an 18" square poured on top of
-# SL-G-FLOOR) whose job was to lift the slab penetration and its sealant joint above the
-# salt-slush wet line a garage floor runs from December to March. It was retired on
-# 2026-08-03 by owner decision: the hydrant stands on the garage's own slab, like everything
-# else in the room. What replaces it is specification, not geometry — a flexible,
-# chloride-tolerant sealant at the penetration, inspected rather than elevated
-# (notes/garage_hydrant.md). Nothing below grade changed; the bury, the sleeve and the
-# drywell are the freeze protection and they are all still here.
+# A 4" topping pedestal (SL-G-HYDRANT-PED) that lifted the slab penetration above the
+# salt-slush wet line was retired 2026-08-03 by owner decision. Replaced by spec, not
+# geometry — a flexible chloride-tolerant sealant at the penetration instead (see
+# notes/garage_hydrant.md). Bury, sleeve, and drywell below grade are unchanged.
 
-# The supply penetration through the garage slab. Filed on ``main`` with the slab it passes
-# through — SL-G-FLOOR is a "main" element because the garage storey datum is the stem top
-# while the slab is poured at grade — because ``_missing_sleeve_findings`` scopes its
-# containment test to ``solid.storey == storey.tag``. The fixture above it is on ``garage``.
-# purpose=WATER_COLD, not the DRAIN default: this carries supply down, and nothing up.
+# Filed on "main" with SL-G-FLOOR (the slab it passes through), because
+# ``_missing_sleeve_findings`` scopes its containment test to ``solid.storey == storey.tag``
+# — the fixture above is on "garage". purpose=WATER_COLD, not the DRAIN default: carries
+# supply down only.
 GARAGE_HYDRANT_SLEEVE = SleevePenetration(
     uid="CGP602AAAA", tag="SP-G-HYDRANT", host_ref="SL-G-FLOOR",
     position=pt(ft(HYDRANT_X_FT), ft(HYDRANT_Y_FT)),
@@ -316,31 +258,21 @@ GARAGE_HYDRANT_SLEEVE = SleevePenetration(
     serves_fixture="FX-G-HYDRANT", purpose=Service.WATER_COLD,
 )
 
-# The gravel bed FX-G-HYDRANT's own weep drains into — a Woodford Y34-style frost-free
-# hydrant self-drains through a weep hole at its buried shutoff when the head closes, and
-# that water has nowhere to go but into stone packed around the valve. It is *not* an
-# exterior catch basin for garage wash-down water and there is no floor drain reading on it
-# (notes/garage_hydrant.md); it exists solely to take the hydrant's own weep. It was a
-# locally deepened FootingBedding only because FootingBedding was the closest thing the
-# model had, and the cost of that stand-in was real — the excavation perimeter was billing
-# as perimeter drain tile in the sitework take-off, tile that is not there.
+# The gravel bed FX-G-HYDRANT's own weep drains into: a Woodford Y34-style frost-free
+# hydrant self-drains through a weep hole at its buried shutoff, into stone packed around
+# the valve. Not a catch basin for wash-down water, no floor-drain reading (see
+# notes/garage_hydrant.md) — solely the hydrant's own weep. Modeled as a FootingBedding only
+# because that was the closest thing available; the stand-in was billing its excavation
+# perimeter as (nonexistent) perimeter drain tile in the sitework take-off.
 #
-# It sits on the hydrant's own stack (HYDRANT_X_FT, HYDRANT_Y_FT) and has to: the weep
-# needs stone at the valve, not stone somewhere else that a pipe would have to carry it to.
-# That makes the pocket, not the pipe, the thing that sets how far out the fixture stands —
-# it is the deepest excavation in the assembly, so it is the one the 45° influence line
-# grades hardest. → HYDRANT_X_FT above for the arithmetic.
+# Sits directly on the hydrant's own stack (HYDRANT_X_FT/Y_FT) — the pocket, being the
+# deepest excavation in the assembly, is what the 45° influence line grades hardest, so it
+# (not the pipe) sets how far out the fixture stands. See HYDRANT_X_FT above.
 #
-# Re-sized 2026-08-15, from 2' across x 4' deep. That was 12.6 cu ft of stone for a weep
-# that discharges a few quarts, and its -9'-0" bottom put it 4'-10" below the footings'
-# bearing plane — an excavation that deep has to stand a long way off, and the old one did
-# not stand off at all (it overlapped FT-GF-W's footprint by 4" in plan). Nothing was
-# grading it: `mep.footing_clearance` walks pipe runs, and a Drywell is not one.
-#
-# 1'-6" across x 1'-6" deep, top -5'-6", is what the fixture actually calls for: ~2.6 cu ft
-# of washed stone with the -6'-0" shutoff 6" below the top of it and a foot of stone under
-# the weep. Bottom -7'-0" is 34" below bearing, and the stone's edge stands 35 1/2" off
-# FT-GF-W and 35 7/8" off FT-GF-N — the two that bind. There is no slack left in either.
+# Re-sized 2026-08-15 from 2'x4' deep (12.6 cu ft, bottom -9'-0", overlapped FT-GF-W by 4"
+# in plan — nothing was grading it, since `mep.footing_clearance` only walks pipe runs) down
+# to 1'-6"x1'-6" deep, top -5'-6", ~2.6 cu ft. Bottom -7'-0" is 34" below bearing; the
+# stone's edge stands 35 1/2" off FT-GF-W and 35 7/8" off FT-GF-N — no slack left in either.
 GARAGE_HYDRANT_DRYWELL = Drywell(
     uid="CGP603AAAA", tag="DRW-G-HYDRANT",
     position=pt(ft(HYDRANT_X_FT), ft(HYDRANT_Y_FT)),

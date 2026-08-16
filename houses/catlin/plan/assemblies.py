@@ -28,22 +28,14 @@ _CONCRETE_BEARING = AssemblyInterface(role="bearing", layer_name="concrete", out
 _STUD_BEARING = AssemblyInterface(role="bearing", layer_name="stud", outboard=False)
 _CMU_BEARING = AssemblyInterface(role="bearing", layer_name="cmu", outboard=False)
 
-# Painted gypsum lining. Layer order is interior -> exterior, so the paint comes FIRST: it
-# is the room-side face, and that position is what makes it the assembly's warm-side vapour
-# retarder in the Glaser walk (IRC R702.7 / R702.7.1 puts latex paint over gypsum in Class
-# III, 1.0-10 perm). Modelling the lining as bare gypsum reads ~30 perm and says the wall has
-# no vapour retarder at all, which is not the wall that gets built.
-#
-# Colour is carried on the `latex-paint` material (a soft off-white), not here: `Layer` has
-# no colour slot, so a different wall colour is a different *material*. That mechanism is
-# real now: `latex-paint-accent` (in MATERIALS below) is the identical film with an authored
-# accent colour, `ACCENT_GWB_LINING` is the lining stack that carries it, and
-# `Room.wall_lining` / `wall_lining_exceptions` swap a room's (or one wall's) lining stack
-# for it — resolve/rooms.py::wall_lining_overrides feeds the swap into the wall-geometry
-# resolve, so the accent reaches the .glb, the viewer, the takeoff and the IFC layer set.
-# Authored per room/wall in the storey files: see RM-S-BED1's feature wall in
-# storeys/second.py (the storey files re-state the two layers inline because the editable
-# dialect only imports from typehaus.*/library.*, not from this sibling module).
+# Painted gypsum lining. Paint comes FIRST (interior->exterior order) because it is the
+# room-side face and so the assembly's warm-side vapour retarder in the Glaser walk (IRC
+# R702.7/.7.1: latex over gypsum is Class III, 1.0-10 perm). Bare gypsum reads ~30 perm —
+# no retarder — which is not the wall that gets built.
+# Colour lives on the `latex-paint` material, not on the Layer (no colour slot): a
+# different wall colour is a different Material. `latex-paint-accent` + `ACCENT_GWB_LINING`
+# below are that mechanism's accent-wall instance, swapped in per room/wall via
+# `Room.wall_lining`/`wall_lining_exceptions` (see RM-S-BED1 in storeys/second.py).
 _PAINT_FINISH = Layer(name="paint", material_ref="latex-paint", thickness=inch(0.01),
                       function=LayerFunction.FINISH,
                       control={ControlLayer.VAPOR})
@@ -119,15 +111,10 @@ CATLIN_ROOF = Assembly(
         Layer(name="rafter", material_ref="spf", thickness=inch(11.875),
               function=LayerFunction.STRUCTURE,
               framing=FramingSpec(member="11.875 I-joist"),
-              # I-joist webs are thin, so the framing fraction is far below a stud wall's.
-              # Cavity fill reduced by decision: total roof assembly targets R-60 (hard
-              # floor R-49), carried mostly by the 6" continuous exterior polyiso rather
-              # than the cavity batt. A 5.5" batt in an 11.875" I-joist bay leaves 6.375"
-              # unfilled against the deck — install the batt tight to the ceiling side.
-              # This warm-side bias is deliberate, not a shortfall: the thick continuous
-              # polyiso above the deck keeps the sheathing/rafter above dew point, so the
-              # vented/unfilled depth between the batt and the deck is intentional — it
-              # is what carries the condensation margin, not extra cavity fill.
+              # Target R-60 total, carried mostly by the 6" continuous exterior polyiso, not
+              # the cavity batt. 5.5" batt tight to the ceiling side leaves 6.375" unfilled
+              # against the deck deliberately — the continuous polyiso keeps the deck above
+              # dew point, so that unfilled depth is the condensation margin, not a shortfall.
               cavity=CavityFill(material_ref="mineral-wool", thickness=inch(5.5),
                                 framing_factor=0.07)),
         Layer(name="deck", material_ref="struct-1-plywood", thickness=inch(0.75),
@@ -165,17 +152,11 @@ CATLIN_BASEMENT_12 = Assembly(
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
-        # Parge coat over mesh — the layer that makes the foam a finished surface rather
-        # than the wall's outermost material (2026-08-01). Two reasons, one of them not
-        # cosmetic: exposed XPS is a UV- and impact-degrading finish, and on this house the
-        # exposure is not a token few inches. The south wall stands open from the sunken
-        # garden's floor all the way to the main-storey siding, so before this the widest
-        # band of "finish" on the south elevation was bare pink foam — which is exactly how
-        # it read in the 3D view. Reuses the porch railing's Portland-cement stucco because
-        # a parge coat is that product; the layer is named for its job, not the material.
-        # It rides outboard of everything, so nothing already resolved moves: these walls
-        # align on face("concrete-ext"), so the concrete face — the datum the footings,
-        # damp-proofing and the drain-tile chain all key off — is untouched.
+        # Parge coat over mesh (2026-08-01): exposed XPS degrades under UV/impact, and here
+        # the exposure runs the full south wall from the sunken garden floor to the
+        # main-storey siding — bare pink foam was reading as the wall's finish. Reuses the
+        # porch railing's Portland-cement stucco; rides outboard of everything so the
+        # concrete face (the footings/damp-proofing/drain-tile datum) is untouched.
         Layer(name="parge", material_ref="stucco", thickness=inch(0.5),
               function=LayerFunction.FINISH),
     ),
@@ -196,12 +177,10 @@ CATLIN_SLAB_FLOOR = Assembly(
     source="catlin-house basement slab: 3\" below-slab XPS, R-15 @ 40 psi compressive",
 )
 
-# Main-floor structural deck: 9" of cast concrete spanning the basement. Nothing separates
-# it from anything cold — the basement below it is conditioned and the main floor above it
-# is conditioned — so it is an interior floor, not an envelope slab, and it carries no
-# insulation. The "INT" token in the tag is this codebase's existing signal for exactly that
-# (CATLIN_CONC_12_INT, INT_2X6_PLUMBING, ...), and it is what tells the prescriptive-energy
-# table to leave this deck alone instead of holding it to the R-10 slab-on-grade minimum.
+# Main-floor structural deck: 9" cast concrete over the (conditioned) basement, so it is an
+# interior floor, not an envelope slab, and carries no insulation. The "INT" tag token is
+# the codebase's signal for that (see CATLIN_CONC_12_INT, INT_2X6_PLUMBING) — it tells the
+# prescriptive-energy table to skip this deck instead of holding it to the R-10 slab minimum.
 CATLIN_DECK_9_INT = Assembly(
     tag="CATLIN_DECK_9_INT",
     layers=(
@@ -274,29 +253,20 @@ PORCH_RAILING_MASONRY = Assembly(
     source="catlin-house porch railing — white brick / air gap / grouted CMU / stucco",
 )
 
-# Glazed-brick veneer over the exposed basement wall, where the sunken garden is excavated
-# against it. Two layers only, and the missing one is the point: unlike PORCH_RAILING_MASONRY
-# there is no CMU backer wythe, because the existing CATLIN_BASEMENT_12 concrete (with its
-# damp-proofing, 4" of XPS and parge already outboard of it) IS the backer. This wall stands
-# 1" off that finished face on masonry ties, so the assembly is nothing but the cavity and
-# the wythe in front of it. Layer order runs backer-side -> exposed (garden) side, matching
-# every other clad wall here.
-#
-# No STRUCTURE layer: ``Assembly.structure_index()`` returns None rather than raising, and
-# inventing a fictional backer layer to satisfy it would double-count the concrete already
-# modeled by W-B-S2/W-B-S3. No ``interfaces`` either — the wythe is non-bearing and nothing
-# transitions onto it.
+# Glazed-brick veneer over the exposed basement wall (sunken garden excavated against it).
+# Two layers only, on purpose: unlike PORCH_RAILING_MASONRY there is no CMU backer wythe,
+# because the existing CATLIN_BASEMENT_12 concrete (damp-proofing + 4" XPS + parge already
+# outboard) IS the backer — this wall stands 1" off it on masonry ties. No STRUCTURE layer
+# either (`structure_index()` returns None, not an error) — a fictional backer would
+# double-count concrete already modeled by W-B-S2/W-B-S3. No `interfaces`: non-bearing.
 BASEMENT_BRICK_VENEER = Assembly(
     tag="BASEMENT_BRICK_VENEER",
     layers=(
         Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.0),
               function=LayerFunction.AIRGAP),
-        # STRUCTURE, not CLADDING, and the reason is what this assembly is: a wythe with
-        # nothing behind it. PORCH_RAILING_MASONRY's brick is cladding because a grouted CMU
-        # backer in the same assembly holds it up; here the backer is a *different wall*, so
-        # if the brick is not this assembly's structure layer nothing is — which is exactly
-        # what integrity.assembly_layers says. The self-supporting single-wythe precedent is
-        # RETAINING_BLOCK_12, which calls its one course STRUCTURE for the same reason.
+        # STRUCTURE, not CLADDING: this wythe has nothing behind it in this assembly (the
+        # backer is a *different wall*), so it has to be the structure layer or
+        # integrity.assembly_layers finds none. Same precedent as RETAINING_BLOCK_12.
         Layer(name="brick", material_ref="glazed-green-brick", thickness=inch(3.625),
               function=LayerFunction.STRUCTURE),
     ),
@@ -333,18 +303,13 @@ PORCH_DECK_COMPOSITE = Assembly(
 )
 
 # --- breezeway enclosure -------------------------------------------------------
-# Two glazing assemblies, both deliberately without insulation, membrane or deck layers:
-# the breezeway is an unheated shelter between two heated buildings, so its envelope has
-# one job (shed water and cut wind) and adding a thermal layer would put it inside an
-# energy check it has no business being in.
-#
-# Both are single-layer sheet assemblies, and deliberately so: the sheet *is* the whole
-# construction. The 2x6 rafters under the roof are authored as real Beams (params/breezeway.py)
-# rather than as a framing layer here, because they sit on drainage wedges at their own
-# absolute elevations and a layered roof assembly cannot express that. Carrying a rafter layer
-# in the assembly anyway would frame nothing and would make every consumer that reads an
-# assembly's *structure* layer — the GLB colour, the viewer, the cut detail — call a sheet of
-# polycarbonate "spf" and paint it wood.
+# Two glazing assemblies, deliberately without insulation, membrane or deck layers: the
+# breezeway is an unheated shelter between two heated buildings, so its envelope only sheds
+# water/cuts wind and must not fall inside an energy check. Single-layer sheet assemblies
+# because the sheet *is* the whole construction — the 2x6 rafters are real Beams
+# (params/breezeway.py, on their own drainage-wedge elevations) rather than a framing layer
+# here, so a rafter layer would frame nothing and would mislabel the polycarbonate "spf" in
+# every consumer that reads an assembly's structure layer (GLB colour, viewer, cut detail).
 BREEZEWAY_ROOF_GLAZING = Assembly(
     tag="BREEZEWAY_ROOF_GLAZING",
     layers=(
@@ -388,19 +353,14 @@ POST_WHITE_PAINT = Assembly(
     source="catlin-house balcony 6x6 pillars — white-painted finish",
 )
 
-# The guards, split off POST_WHITE_PAINT on 2026-08-01. They used to share it with the
-# balcony's 6x6 pillars and knee braces, so there was no way to darken a railing without
-# turning the pillars black too — and the pillars are meant to stay white. Same 5.5"
-# nominal body so nothing about the solids changes but their colour.
-#
-# A guard is metal, not painted PT: `_solid_color` reads the STRUCTURE layer's material, so
-# naming metal-dark-exterior here is what actually darkens the railings in both renderers
-# (the "railing" entry in the category palettes is dead for any solid that has an assembly).
-# The suite bedroom's four elm tudor posts (plans/TODO.md §Hardwood). Same pattern as
-# POST_WHITE_PAINT: a single STRUCTURE layer whose material is what colours the solid in
-# both renderers and names the species the wood_surfaces takeoff bills. 6.125" body = the
-# custom timber, sheathing face to drywall face — a deviation within W-S-W3's stud line,
-# deliberately NOT a change to CATLIN_EXT_2X6.
+# Guards were split off POST_WHITE_PAINT on 2026-08-01 (they shared it with the balcony's
+# 6x6 pillars/knee braces, which must stay white) — same 5.5" body, only the colour differs.
+# Metal, not painted PT: `_solid_color` reads the STRUCTURE layer's material, so
+# metal-dark-exterior here is what darkens the railings in both renderers.
+# The suite bedroom's four elm tudor posts (plans/TODO.md §Hardwood): same pattern as
+# POST_WHITE_PAINT — the STRUCTURE material colours the solid and names the species for the
+# wood_surfaces takeoff. 6.125" body = the custom timber, sheathing to drywall face, a
+# deviation within W-S-W3's stud line, deliberately not a change to CATLIN_EXT_2X6.
 ELM_TIMBER = Assembly(
     tag="ELM_TIMBER",
     layers=(
@@ -500,27 +460,14 @@ GARAGE_ROOF = Assembly(
 )
 
 # --- interior ------------------------------------------------------------------
-# The interior partitions below carry their gypsum in `layers` rather than in a lining, so
-# the paint is authored face by face: `paint-a` / `paint-b`, each outside its own gwb sheet,
-# because both faces of a partition are room faces. These walls separate two conditioned
-# rooms, so no vapour drive crosses them and the Class III retarder earns nothing here — the
-# paint is authored for the finish takeoff and so the model does not claim a bare-gypsum
-# room. Assemblies deliberately left unpainted, and why:
-#   * SAUNA_2X4 / SAUNA_LINER_ON_CONCRETE — the hot face is basswood T&G over foil-faced
-#     polyiso, which is already the Class I vapour/air control layer; a paint film in a
-#     löyly room is not a finish anyone specifies, and the liner is the whole point of the
-#     detail (notes/sauna_basement_wall_detail.md).
-#   * CATLIN_MUDROOM_INT_2X6_EXPOSED — has no gypsum at all. Its two faces are the exposed
-#     Select Structural DF studs and 3/4" cabinet plywood, both already finished with
-#     clear-satin hardwax oil (see their `finish` in MATERIALS below).
-#   * PORCH_RAILING_MASONRY, BASEMENT_BRICK_VENEER, SUNKEN_GARDEN_*, CATLIN_CONC_*_INT,
-#     RETAINING_BLOCK_12,
-#     the deck/glazing assemblies — no gypsum face: stucco, exposed concrete, brick/CMU,
-#     decking and polycarbonate sheet respectively.
-#   * POST_WHITE_PAINT — already a painted assembly, on its own `post-paint-white` material
-#     (exterior paint on PT lumber, not interior latex on gypsum).
-#   * INT_2X4_PARTITION (from library/) — an STC lab-test transcription; see the note in
-#     library/assemblies.py for why a tested stack does not get layers added to it.
+# These partitions carry gypsum in `layers` (not a lining), so paint is authored face by
+# face as `paint-a`/`paint-b`. Both faces separate conditioned rooms, so there's no vapour
+# drive to control — the paint is here purely for the finish takeoff. Deliberately unpainted
+# elsewhere: SAUNA_* (T&G/foil-polyiso is already the vapour/air control, no paint in a
+# löyly room), CATLIN_MUDROOM_INT_2X6_EXPOSED (exposed wood faces, already hardwax-oil
+# finished), the masonry/concrete/deck/glazing assemblies (no gypsum face), POST_WHITE_PAINT
+# (its own exterior-paint material), and INT_2X4_PARTITION (a tested STC assembly — see
+# library/assemblies.py for why it doesn't get layers added).
 CATLIN_INT_2X6_BRG = Assembly(
     tag="CATLIN_INT_2X6_BRG",
     layers=(
@@ -578,24 +525,14 @@ INT_2X6_STAGGERED_PLUMBING = Assembly(
 )
 
 # --- energy storage closet -------------------------------------------------------
-# The ESS closet's partitions (notes/backup_power.md, 2026-08-02). Two departures from
-# every other partition in this house, both owner decisions rather than code:
-#
-# - **Steel studs, not spf.** There is no combustible framing inside the enclosure around
-#   a 14 kWh lithium pack. IRC R327 does not ask for this (it permits an ESS in an
-#   ordinary utility closet outright), which is why `advisory.ess_enclosure` grades it and
-#   `checks/code/mn_residential/energy_storage.py` does not.
-# - **5/8" Type X both faces**, the same membrane R302.6 wants over a garage — the closet
-#   has to hold a fire in for long enough to leave, in both directions, and a battery
-#   closet is the one place in a basement where the fire starts on the *inside*.
-#
-# No cavity fill: mineral wool would be the choice if this were an acoustic wall, but the
-# closet wants its heat to reach the heat alarm outside it (AL-B-ESS-HEAT), not to be
-# insulated away from it.
-# The INT token in the tag is load-bearing, not decoration: `mn_energy._is_interior_assembly`
-# reads it to keep an interior partition out of the prescriptive envelope table, and the IFC
-# emitter's Pset_WallCommon.IsExternal uses the same signal. Without it a closet wall inside
-# a mechanical room is graded against R-21.
+# The ESS closet's partitions (notes/backup_power.md, 2026-08-02), an owner decision not a
+# code requirement (IRC R327 permits an ESS in an ordinary utility closet; that's why
+# `advisory.ess_enclosure`, not the code check, grades it): steel studs (no combustible
+# framing around the 14 kWh lithium pack), 5/8" Type X both faces (R302.6-style fire
+# membrane, both directions — the fire may start *inside* this closet). No cavity fill on
+# purpose: heat should reach AL-B-ESS-HEAT outside, not be insulated away from it.
+# The "INT" tag token is load-bearing: `mn_energy._is_interior_assembly` and the IFC
+# emitter's IsExternal both key off it to keep this out of the R-21 exterior-wall table.
 INT_ESS_CLOSET_STEEL = Assembly(
     tag="INT_ESS_CLOSET_STEEL",
     layers=(
@@ -657,18 +594,13 @@ SAUNA_LINER_ON_CONCRETE = Assembly(
 )
 
 # --- mudroom exposed-stud wall ---------------------------------------------------
-# W-M-STRW only. Asymmetric and, like SAUNA_2X4, carrying NO default_lining: the mudroom
-# face is not "drywall we left off", it is a finished face made of the framing itself, so
-# there is no lining layer to inherit. The open 2x6 bays between the studs are the coat
-# nooks — that is the whole point of the wall — so the structure layer takes no cavity
-# fill either; insulating it would fill the nooks and it separates two conditioned spaces
-# anyway. The stair side closes with 3/4" cabinet plywood, which is both the stair's finish
-# and continuous screw-anywhere backing for hooks on the mudroom side of the studs.
-# The "INT" token in the tag is load-bearing, not decoration: it is this codebase's signal
-# that a wall is a partition rather than envelope (see CATLIN_CONC_12_INT, INT_2X6_PLUMBING,
-# and _is_interior_assembly in checks/code/mn_energy.py). Mudroom and stair are both
-# conditioned, so the prescriptive R-21 wall requirement does not apply here — without the
-# token the uninsulated bays would be read as a failing exterior wall.
+# W-M-STRW only. No default_lining, deliberately (like SAUNA_2X4): the mudroom face is a
+# finished face made of the framing itself, not drywall left off. The open 2x6 bays are the
+# coat nooks, so no cavity fill either — insulating them would fill the nooks, and both
+# sides are conditioned anyway. Stair side closes with 3/4" cabinet plywood: stair finish
+# and screw-anywhere hook backing at once. "INT" in the tag is load-bearing (see
+# CATLIN_CONC_12_INT, INT_2X6_PLUMBING, _is_interior_assembly in mn_energy.py) — without it
+# the uninsulated bays would fail as an exterior wall against R-21.
 CATLIN_MUDROOM_INT_2X6_EXPOSED = Assembly(
     tag="CATLIN_MUDROOM_INT_2X6_EXPOSED",
     layers=(
@@ -684,13 +616,11 @@ CATLIN_MUDROOM_INT_2X6_EXPOSED = Assembly(
 MATERIALS = [
     *STARTER_MATERIALS,
     # --- accent wall paint -------------------------------------------------------
-    # The house's one interior accent: a deep spruce green-blue on a single feature wall
-    # (RM-S-BED1, storeys/second.py). Physically it IS `latex-paint` (library/materials.py)
-    # — same two-coat film, same Class III ~5 perm warm-side retarder, same coating=True so
-    # it bills by coverage and draws no second wall face — because a colour change must not
-    # change the wall's building science. Authored dark on purpose: the viewer's lighting
-    # (0.8 hemisphere + 0.9 key + 0.6 IBL) lifts a dark albedo well above itself, so the
-    # value sits under the tone meant to read on screen (see metal-dark-exterior below).
+    # The house's one interior accent: deep spruce green-blue on RM-S-BED1's feature wall
+    # (storeys/second.py). Physically identical to `latex-paint` (same film, same Class III
+    # ~5 perm retarder, coating=True) — only the colour differs, so building science is
+    # unchanged. Authored dark on purpose: the viewer's lighting lifts a dark albedo well
+    # above itself (see metal-dark-exterior below for the same effect).
     Material(tag="latex-paint-accent", name="Interior latex paint, spruce accent",
              r_per_inch=0.0, vapor_permeance_perms=5.0, color="#2e4a44",
              finish="matte-latex", coating=True,
@@ -756,22 +686,14 @@ MATERIALS = [
     Material(tag="grout", name="Masonry grout", r_per_inch=0.08, density=2240.0,
              perm_rating=2.5, hatch="concrete", color="#9a958c",
              source="fills the CMU cores for balcony post bases; cementitious grout ~2-3 perm-in"),
-    # The house's one exterior dark (2026-08-01). Every dark metal element on the envelope —
-    # the roof's rake/eave/ridge trim coil, the window and door casings, the guards — is this
-    # value, so they read at one weight instead of three near-misses.
-    #
-    # WHY #1c1f24 AND NOT THE #3a3d40 THIS STARTED AT: the authored colour is an albedo, not
-    # a pixel. The viewer lights the scene with a 0.8 hemisphere + 0.9 key + 0.6 IBL, which
-    # is over unit irradiance, so a dark surface leaves the shader well above its albedo —
-    # #3a3d40 arrived on screen near #525252 and read as generic grey, and the corner trim's
-    # cleat band, which faces up into the hemisphere, caught the most of it. #1c1f24 lands
-    # about where #3a3d40 was meant to. Not pure black on purpose: a zero albedo takes the
-    # shading with it and the trim's folds and the guard's posts stop reading as solids.
-    #
-    # Deliberately not named "*seam*": the renderers key the ribbed standing-seam finish off
-    # that substring, and this is flat brake-formed stock. The colour is authored here so the
-    # .glb and the viewer both read it from the catalog rather than inferring "metal" and
-    # landing on a blue-grey.
+    # The house's one exterior dark (2026-08-01): every dark metal element on the
+    # envelope — rake/eave/ridge trim coil, opening casings, guards — shares this value.
+    # #1c1f24, not the #3a3d40 it started at: colour here is an albedo, and the viewer's
+    # lighting (0.8 hemisphere + 0.9 key + 0.6 IBL) lifts a dark surface well above its
+    # albedo — #3a3d40 arrived near #525252 (generic grey). Not pure black either: zero
+    # albedo kills the shading that makes folds/posts read as solids.
+    # Deliberately not named "*seam*" — renderers key the ribbed standing-seam finish off
+    # that substring and this is flat brake-formed stock.
     Material(tag="metal-dark-exterior", name="Near-black painted metal (exterior)",
              r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
              color="#1c1f24",
@@ -799,16 +721,12 @@ MATERIALS = [
              color="#a8a49c", finish="cmu",
              source="raised garden outer face — dry-stacked SRW units, no mortar"),
     # --- breezeway glazing -----------------------------------------------------
-    # 16mm five-wall polycarbonate. `color` is authored, not inferred, and deliberately:
-    # the palette's family inference is substring-ordered and ("poly", "rigid") matches
-    # first, so an unauthored "polycarbonate-multiwall" renders as bright-yellow rigid foam
-    # in both the GLB and the viewer. The alpha byte is what makes it read as glazing rather
-    # than a solid panel (emit/gltf/scene.py switches to alphaMode BLEND below 1.0).
-    # EN 16153's default PC-sheet permeability is 3.8e-5 mg/(m·h·Pa). Converted to US
-    # perm-inch and divided across this 16 mm sheet, that is about 0.012 perms. Store the
-    # result as product permeance: the source is for multiwall sheet, and dividing it again
-    # by nominal thickness would understate resistance. This is Class I (<0.1 perm), which
-    # is the expected lower-than-Class-II result for a relatively thick structural panel.
+    # 16mm five-wall polycarbonate. `color` is authored, not inferred: the palette's
+    # substring-ordered family inference matches ("poly","rigid") first and would render this
+    # as bright-yellow rigid foam otherwise. The alpha byte is what reads as glazing rather
+    # than a solid panel (alphaMode BLEND below 1.0 in emit/gltf/scene.py).
+    # Permeance ~0.012 perms, from EN 16153's 3.8e-5 mg/(m·h·Pa) converted and stored as
+    # product permeance across the 16mm sheet (not divided again by thickness) — Class I.
     Material(tag="polycarbonate-multiwall", name="Multiwall polycarbonate glazing (16mm)",
              r_per_inch=1.54, density=1200.0, vapor_permeance_perms=0.012,
              hatch="glass", color="#cfe3e8b0",
@@ -824,12 +742,10 @@ MATERIALS = [
 ]
 
 # --- construction rules: pre-resolve returns at mixed-assembly junctions (#45) ----------
-# Typed, pre-resolve declarations of the physical returns the junction solver leaves for
-# framing/takeoff. Each is documented (never drawn) by a Transition overlay; none mutates
-# construction geometry. They record the real material that closes a resolved return: a PT
-# sill where framed walls land on concrete, the sauna liner wrapping onto the center wall,
-# the exterior foundation foam turning the corner for thermal continuity, and the masonry
-# guard's corner return.
+# Typed declarations of the physical returns the junction solver leaves for framing/takeoff
+# (documented via a Transition overlay, never drawn; none mutate construction geometry):
+# a PT sill where framed walls land on concrete, the sauna liner wrapping the center wall,
+# foundation foam turning the corner, the masonry guard's corner return.
 CONSTRUCTION_RULES = [
     ConstructionRule(
         tag="CR-CONC-TO-FRAMED-SILL",
@@ -870,20 +786,13 @@ CONSTRUCTION_RULES = [
         dimension=inch(7.625),
         takeoff_category="masonry-corner-return",
     ),
-    # Resilient channel under the living room only. The bedrooms sit directly over it, and
-    # 5/8" gypsum screwed straight to the I-joists carries footfall down as impact noise;
-    # hanging it on channel at 16" o.c. across the joists breaks that path for the price of
-    # the channel. Scoped to RM-M-LIVING because it is a room decision, not a property of
-    # FS-SECOND — the rest of that deck's ceiling is screwed direct.
-    #
-    # The full layered ceiling (channel + insulation + a finish layer as an authored
-    # assembly) is deliberately deferred; this bills the two materials that are actually
-    # bought — the gypsum via FS-SECOND's `ceiling_below`, the channel here.
-    #
-    # KNOWN GAP: the `construction_returns` BOM section is not one of the sections
-    # `cli/prices.py::_SECTIONS` prices, so these lineal feet show up in the bill of
-    # materials and never in the cost estimate — as is already true of every PT sill plate,
-    # liner and foam return above. Flagged, not fixed here.
+    # Resilient channel under the living room only: bedrooms sit directly over it, and 5/8"
+    # gypsum screwed straight to the I-joists would carry footfall as impact noise. Scoped to
+    # RM-M-LIVING (a room decision, not FS-SECOND's) — the rest of that ceiling is screwed
+    # direct. A full layered-ceiling assembly is deliberately deferred; this just bills the
+    # channel (gypsum comes via FS-SECOND's `ceiling_below`).
+    # KNOWN GAP: `construction_returns` isn't priced by `cli/prices.py::_SECTIONS`, so these
+    # lineal feet show up in the BOM but never the cost estimate (true of every rule above too).
     ConstructionRule(
         tag="CR-LIVING-CEIL-RC",
         applies_to="floor:ceiling_channel",
