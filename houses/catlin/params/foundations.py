@@ -47,6 +47,19 @@ from plan.storeys.garage import (
     SERVICE_DOOR_WIDTH,
 )
 
+# --- the site datum ---------------------------------------------------------------
+#
+# Finished grade, in the project frame. The vertical datum of this model is the main floor
+# (FFE = 0'-0"), so "raising the house 2'-6" out of the ground" is authored the way a
+# drawing set states it: the floor stays at 0'-0" and grade goes down. Everything pinned to
+# soil rather than to the house — the garage that is still driven into at grade, its stem
+# reveal, the breezeway's frost pads, the hydrant's bury — derives from here.
+#
+# ``plan/site.py`` is ``# haus: editable`` and may hold only literals, so it repeats this
+# number as ``Site.grade``. ``plan/manifest.py`` asserts the two agree; do not edit one
+# without the other.
+SITE_GRADE = ft(-2, -6)
+
 # --- house strip footings --------------------------------------------------------
 _HOUSE_WALL_TAGS = [
     "W-B-S1", "W-B-S2", "W-B-S3", "W-B-E1", "W-B-E2", "W-B-N1", "W-B-N2",
@@ -107,16 +120,22 @@ VENEER_PLINTH_BEDDING = [
 ]
 
 # --- garage ICF stem (basement storey; absolute elevations) -----------------------
+#
+# Every elevation in this block is measured from ``SITE_GRADE``, not from the project datum.
+# The garage is driven into at grade and stays there; when grade moved 2'-6" down, the whole
+# garage foundation went with it, while the house it stands beside did not move at all.
+_GRADE_FT = SITE_GRADE.feet
 _FROST = 42.0 / 12.0  # frost depth below grade
-# Exposed above grade, and the garage storey datum besides — one value, authored next to
-# the wall lines it belongs with (plan/storeys/garage.py).
-_STEM_TOP = GARAGE_STEM_REVEAL
+# Exposed above grade, and the garage storey datum besides — ``GARAGE_STEM_REVEAL`` is the
+# *reveal*, a height above soil, authored next to the wall lines it belongs with
+# (plan/storeys/garage.py); grade is what it is a reveal above.
+_STEM_TOP = ft(_GRADE_FT + GARAGE_STEM_REVEAL.feet)
 # A car can't climb a 22" ICF stem, so the east stem gaps at the overhead door: the flanking
 # segments keep the full reveal, and the segment behind the door becomes a grade beam flush
-# with the slab (0'-0"), no curb across the opening. W-G-E above is untouched (splitting it
+# with the slab (grade), no curb across the opening. W-G-E above is untouched (splitting it
 # would break the ridge closure it carries) — the door reaches down via a negative
 # sill_height in plan/storeys/garage.py instead.
-_GRADE_BEAM_TOP = ft(0)
+_GRADE_BEAM_TOP = SITE_GRADE
 # How much wider than the opening the service door's stem gap is formed — see N-GF-S-DRW.
 _SERVICE_GAP_MARGIN = ft(0, 3)
 
@@ -152,10 +171,10 @@ GARAGE_STEM_NODES = [
 _ALIGN = face("concrete-ext", offset=GARAGE_ICF_EPS)
 
 _STEM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN, top_elevation=_STEM_TOP,
-             bottom_elevation=ft(-_FROST))
+             bottom_elevation=ft(_GRADE_FT - _FROST))
 _GRADE_BEAM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN,
                    top_elevation=_GRADE_BEAM_TOP,
-                   bottom_elevation=ft(-_FROST))
+                   bottom_elevation=ft(_GRADE_FT - _FROST))
 
 GARAGE_STEM_WALLS = [
     # South stem, split three ways at the service door on 2026-08-01 — the east wall's
@@ -199,9 +218,12 @@ GARAGE_FOOTINGS = [
     Footing(uid="CGF204AAAA", tag="FT-GF-W", under="W-GF-W", **_GARAGE_FOOTING),
 ]
 
-# Filed on "main", not "garage": the garage storey datum is the ICF stem top (1'-10"), but
-# this slab pours at grade. Inset from the wall lines = the 11" stem section + the usual
-# 1/2" gap to the stem's interior face, keeping the pour inside the stem.
+# Filed on "garage", where it belongs, with an absolute ``top_elevation``: the garage storey
+# datum is the ICF stem top, but this slab pours at grade, and ``Slab.top_elevation`` is how
+# a slab says so without being re-filed onto whichever storey happens to sit at its
+# elevation. (It lived on "main" until 2026-08-18 precisely because that override did not
+# exist and "main" was at 0'-0".) Inset from the wall lines = the 11" stem section + the
+# usual 1/2" gap to the stem's interior face, keeping the pour inside the stem.
 _SLAB_GAP = inch(0.5)
 _SLAB_INSET = GARAGE_ICF_CORE + GARAGE_ICF_EPS + GARAGE_ICF_EPS + _SLAB_GAP
 _slab_y_s = GARAGE_Y_SOUTH + _SLAB_INSET
@@ -210,9 +232,48 @@ GARAGE_SLAB = Slab(
     uid="CGS501AAAA", tag="SL-G-FLOOR",
     outline=(pt(_SLAB_INSET, _slab_y_s), pt(ft(24) - _SLAB_INSET, _slab_y_s),
              pt(ft(24) - _SLAB_INSET, _slab_y_n), pt(_SLAB_INSET, _slab_y_n)),
-    thickness=inch(3.5), assembly="GARAGE_SLAB_ON_GRADE",
+    thickness=inch(3.5), assembly="GARAGE_SLAB_ON_GRADE", top_elevation=SITE_GRADE,
     perimeter_thermal_break=SlabThermalBreak(material_ref="xps", thickness=inch(1)),
 )
+
+# --- garage service-door step-down -------------------------------------------------
+#
+# D-G-SERVICE's threshold is at 0'-0", level with the breezeway deck outside it (that pairing
+# is a house rule — see houses/catlin/CLAUDE.md). The garage slab is at grade, -2'-6". So
+# from 2026-08-18 there are five 6" risers between the two, inside the garage, and this is
+# them: a 3'-0"-wide straight run north out of the door, a 3'-0" landing at the threshold
+# and four 11" treads below it, 6'-8" of floor in all out of the garage's 576 sf.
+#
+# It lands in the south-west corner, on the door's own 5'-0"..8'-0" band. The 16' overhead
+# door is in the *east* wall between y=45' and y=61', so the drive path never crosses this;
+# the run stops at y=47'-2 3/8", clear of it.
+#
+# Each step is its own Slab with an absolute ``top_elevation`` — the field that also lets
+# GARAGE_SLAB be filed on the garage storey. A ``Stair`` cannot express this: ``Stair`` takes
+# its rise from a pair of storey elevations through a FloorOpening in the storey above, and
+# this run is a step-down *within* one storey with no floor to open.
+_STEP_X0 = SERVICE_DOOR_OFFSET
+_STEP_X1 = SERVICE_DOOR_OFFSET + SERVICE_DOOR_WIDTH
+_STEP_RISER_FT = 0.5           # 5 risers x 6" = the full 2'-6"
+_STEP_TREAD_FT = 11.0 / 12.0   # 11" board, 10" going past a 1" nose — R311.7.5.2
+_STEP_LANDING_FT = 3.0         # R311.7.6: a landing at least as deep as the run is wide
+_STEP_THICKNESS = inch(6)
+_step_y = GARAGE_Y_SOUTH.feet
+_GARAGE_STEPS_SPEC = []
+for _index in range(5):
+    _depth = _STEP_LANDING_FT if _index == 0 else _STEP_TREAD_FT
+    _GARAGE_STEPS_SPEC.append((_index, _step_y, _step_y + _depth,
+                               SITE_GRADE.feet + (5 - _index) * _STEP_RISER_FT))
+    _step_y += _depth
+
+GARAGE_STEPS = [
+    Slab(uid=f"CGS51{_index}AAAA", tag=f"SL-G-STEP-{_index}",
+         outline=(pt(_STEP_X0, ft(_y0)), pt(_STEP_X1, ft(_y0)),
+                  pt(_STEP_X1, ft(_y1)), pt(_STEP_X0, ft(_y1))),
+         thickness=_STEP_THICKNESS, assembly="GARAGE_STEP_CONCRETE",
+         top_elevation=ft(_top))
+    for _index, _y0, _y1, _top in _GARAGE_STEPS_SPEC
+]
 
 # --- garage hydrant: supply sleeve, gravel pit -------------------------------------
 #
@@ -247,10 +308,10 @@ HYDRANT_BURY_FT = 6.0       # shutoff depth below grade — the code number for 
 # geometry — a flexible chloride-tolerant sealant at the penetration instead (see
 # notes/garage_hydrant.md). Bury, sleeve, and drywell below grade are unchanged.
 
-# Filed on "main" with SL-G-FLOOR (the slab it passes through), because
-# ``_missing_sleeve_findings`` scopes its containment test to ``solid.storey == storey.tag``
-# — the fixture above is on "garage". purpose=WATER_COLD, not the DRAIN default: carries
-# supply down only.
+# Filed on "garage" with SL-G-FLOOR, the slab it passes through — the sleeve resolver looks
+# its host up by tag across the whole plan, so the storey only labels the resolved sleeve,
+# and labelling it with the structure it belongs to is the honest answer. purpose=WATER_COLD,
+# not the DRAIN default: carries supply down only.
 GARAGE_HYDRANT_SLEEVE = SleevePenetration(
     uid="CGP602AAAA", tag="SP-G-HYDRANT", host_ref="SL-G-FLOOR",
     position=pt(ft(HYDRANT_X_FT), ft(HYDRANT_Y_FT)),
@@ -276,11 +337,12 @@ GARAGE_HYDRANT_SLEEVE = SleevePenetration(
 GARAGE_HYDRANT_DRYWELL = Drywell(
     uid="CGP603AAAA", tag="DRW-G-HYDRANT",
     position=pt(ft(HYDRANT_X_FT), ft(HYDRANT_Y_FT)),
-    diameter=inch(18), depth=inch(18), top_elevation=ft(-(HYDRANT_BURY_FT - 0.5)),
+    diameter=inch(18), depth=inch(18),
+    top_elevation=ft(_GRADE_FT - (HYDRANT_BURY_FT - 0.5)),
     geotextile=True, inlet_refs=("FX-G-HYDRANT",),
 )
 
 BASEMENT_ELEMENTS = [*HOUSE_FOOTINGS, *HOUSE_FOOTING_BEDDING, *VENEER_PLINTH,
                      *VENEER_PLINTH_BEDDING, *GARAGE_STEM_NODES,
                      *GARAGE_STEM_WALLS, *GARAGE_FOOTINGS, GARAGE_HYDRANT_DRYWELL]
-MAIN_ELEMENTS = [GARAGE_SLAB, GARAGE_HYDRANT_SLEEVE]
+GARAGE_ELEMENTS = [GARAGE_SLAB, *GARAGE_STEPS, GARAGE_HYDRANT_SLEEVE]

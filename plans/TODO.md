@@ -3,6 +3,15 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
+- **Zoning height, after the 2'-6" lift (raised 2026-08-18).** Grade moved to -2'-6" so the
+  house stands out of the ground; the building's peak above average grade grew by exactly
+  that much with it (`building_height_summary.peak_above_grade_m`, and the north/south
+  elevations' ridge dimension). Nothing in the engine enforces a height limit — `SetbackSpec`
+  is plan-only, and there is no `height_limit` on a jurisdiction profile — so this is a note
+  rather than a check, but it is a real 2'-6" against whatever the Minneapolis limit for this
+  district is. Worth confirming against the zoning code before the lift is committed to; if a
+  limit is close, the levers are the attic's 11' ceiling and the 4:12 ridge, not the lift.
+
 - **Do the porch side walls `W-SG-W1` / `W-SG-E1` count as laterally supported at the top?**
   (raised 2026-08-16) These two 12" walls hold 9'-9" of fill and carry `FS-SG-PORCH`'s
   framing through `CN-SG-HGR-W`/`E`, with the garden slab at their foot. That is the *shape*

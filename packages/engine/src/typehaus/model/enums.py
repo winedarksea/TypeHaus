@@ -18,6 +18,21 @@ class LayerFunction(Enum):
     FINISH = "finish"
 
 
+class LayerDatum(Enum):
+    """What a :class:`~typehaus.model.assembly.LayerBound` measures from.
+
+    An ``Assembly`` is a *type*: many walls share one, and it cannot know its own z. So a
+    layer's vertical extent is stated against a datum the wall resolves, never as an
+    absolute elevation. ``GRADE`` is the one that makes "above grade" expressible on a type
+    at all, and it is what a foundation-protection band, a water table, or a splash course
+    is actually described by on a drawing.
+    """
+
+    WALL_BASE = "wall_base"
+    WALL_TOP = "wall_top"
+    GRADE = "grade"
+
+
 class ControlLayer(Enum):
     """Which building control layer(s) a layer provides (→ 11b continuity checks)."""
 

@@ -28,9 +28,23 @@ from typehaus.emit.ifc.structural import _emit_framed_member
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.geometry import rect_between
-from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.room_floor import room_floor_elevation
 from typehaus.resolve.topology import _added_thicknesses
+
+
+def _full_height_layers(wall: ResolvedWall) -> tuple[ResolvedLayer, ...]:
+    """The depth-bearing layers that run the whole wall — the ones a layer set may hold.
+
+    ``IfcMaterialLayerSet`` has no vertical variation: it describes one stack that is true
+    everywhere on the element. A layer with a ``Layer.extent`` is true over part of the
+    wall only, so it cannot be a member of one — it exports as an ``IfcBuildingElementPart``
+    aggregated to the wall instead (see ``_emit_banded_layer_parts``). The consequence,
+    stated because it is a real deviation: the layer set of a banded wall sums to less than
+    the wall's full depth, by the thickness of whatever bands it. That is the same trade
+    Revit makes when it exports a vertically compound wall as parts.
+    """
+    return tuple(ly for ly in wall.depth_layers() if not getattr(ly, "is_banded", False))
 
 
 def _wall_type_key(wall: ResolvedWall) -> tuple:
@@ -41,17 +55,23 @@ def _wall_type_key(wall: ResolvedWall) -> tuple:
     layer set, and one representative would file both under one (wrong) IfcMaterialLayerSet.
     """
     return (wall.assembly, tuple((ly.name, ly.material_ref, round(ly.thickness_m, 6))
-                                 for ly in wall.depth_layers()))
+                                 for ly in _full_height_layers(wall)))
 
 
 def _assembly_default_signature(model: ResolvedModel, assembly_tag: str) -> tuple | None:
-    """The layer signature a wall of this assembly resolves to with NO lining override."""
+    """The layer signature a wall of this assembly resolves to with NO lining override.
+
+    Banded layers are excluded here for the same reason ``_wall_type_key`` excludes them:
+    the two must describe the same thing, or the assembly's own default stack never matches
+    any wall's key and every wall of it is exported as a ``~lining`` variant.
+    """
     assembly = model.plan.library.resolve_assembly(assembly_tag)
     if assembly is None:
         return None
     stack = list(assembly.default_lining) + list(assembly.layers)
     return tuple((layer.name, layer.material_ref, round(layer.thickness.meters, 6))
-                 for (layer, _added, cavity) in _added_thicknesses(stack) if not cavity)
+                 for (layer, _added, cavity) in _added_thicknesses(stack)
+                 if not cavity and getattr(layer, "extent", None) is None)
 
 
 def _emit_wall_types(f: Any, model: ResolvedModel,
@@ -79,7 +99,7 @@ def _emit_wall_types(f: Any, model: ResolvedModel,
                 f, wall_type,
                 [{"name": layer.name, "material_ref": layer.material_ref,
                   "thickness_m": layer.thickness_m, "category": layer.function}
-                 for layer in representative.depth_layers()],
+                 for layer in _full_height_layers(representative)],
                 name=name,
             )
             result[key] = (wall_type, layer_set)
@@ -95,7 +115,7 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
     wall.GlobalId = guid
     body_representation = ll.add_prisms_from_profiles(
         f, body,
-        [layer.polygon for layer in rw.depth_layers() if len(layer.polygon) >= 3],
+        [layer.polygon for layer in _full_height_layers(rw) if len(layer.polygon) >= 3],
         rw.z1_m - rw.z0_m, rw.z0_m,
     )
     axis_representation = ll.add_axis_representation(f, body, rw.axis)
@@ -114,13 +134,43 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
         ll.ensure_pset(f, wall, "Pset_HF_FoundationWall", {"IsFoundation": True})
     ll.assign_container(f, wall, storeys[rw.storey])
 
+    children = _emit_banded_layer_parts(f, body, rw, project_uuid)
     if lod == "framed" and rw.members:
-        members = []
         for m in sorted(rw.members, key=lambda x: x.child_key):
-            member = _emit_framed_member(f, body, rw.tag, rw.uid, m, project_uuid)
-            members.append(member)
-        ll.aggregate(f, wall, members)
+            children.append(_emit_framed_member(f, body, rw.tag, rw.uid, m, project_uuid))
+    if children:
+        # One aggregation call, not two: ``IfcRelAggregates`` is a single relationship per
+        # parent, and assigning twice replaces the first set rather than extending it.
+        ll.aggregate(f, wall, children)
     return wall
+
+
+def _emit_banded_layer_parts(f: Any, body: Any, rw: ResolvedWall,
+                             project_uuid: Any) -> list[Any]:
+    """Each vertically banded layer of ``rw``, as its own aggregated part.
+
+    A layer with a ``Layer.extent`` — catlin's above-grade foundation protection panel is
+    the first — occupies only part of the wall's height, which ``IfcMaterialLayerSet``
+    cannot say. It is exported the way Revit exports a vertically compound wall: as
+    ``IfcBuildingElementPart`` bodies aggregated to the host wall, each with its own
+    material. The prism is the layer's own plan polygon over its own resolved band, so the
+    exported solid matches what the viewer and the drawings show rather than being a
+    property nobody can see.
+    """
+    parts = []
+    for layer in rw.depth_layers():
+        if not getattr(layer, "is_banded", False) or len(layer.polygon) < 3:
+            continue
+        z0, z1 = layer.band(rw)
+        if z1 - z0 <= 1e-9:
+            continue
+        key = f"{rw.uid}/{layer.name}"
+        parts.append(ll.create_building_element_part(
+            f, body, f"{rw.tag}:{layer.name}",
+            derive_child_guid(project_uuid, "wall-parts", key),
+            list(layer.polygon), z0, z1, layer.material_ref,
+        ))
+    return parts
 
 
 def _assign_wall_material(f: Any, wall: Any, rw: ResolvedWall,

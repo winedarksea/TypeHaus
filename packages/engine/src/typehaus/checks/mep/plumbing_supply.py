@@ -66,7 +66,11 @@ def hydrant_freeze_depth(ctx: CheckContext) -> list[Finding]:
     if not hydrants:
         return []
 
-    grade = ctx.plan.project.site.grade.meters
+    site_grade = ctx.plan.project.site.grade
+    if site_grade is None:
+        return [_unknown(cid, "the site declares no grade datum to measure bury depth "
+                              "against")]
+    grade = site_grade.meters
     supply = [run for run in ctx.model.pipe_runs if run.system == PipeSystem.WATER_COLD.value]
     envelope_protected = _envelope_protected_hydrants(ctx)
     out: list[Finding] = []

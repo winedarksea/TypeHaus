@@ -24,7 +24,7 @@ from typehaus.resolve.accessories import (
     screens_rainscreen_base,
 )
 from typehaus.resolve.geometry import length, sub
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 
 _M2_TO_FT2 = 10.7639104
 _M_TO_FT = 3.280839895
@@ -70,6 +70,40 @@ def wall_net_areas_m2(model: ResolvedModel) -> dict[str, float]:
     return areas
 
 
+def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
+                           layer: ResolvedLayer, wall_net_m2: float) -> float:
+    """The net face one layer of ``wall`` actually covers.
+
+    A full-height layer covers the whole wall face, which is ``wall_net_m2`` and needs no
+    second calculation. A layer with a ``Layer.extent`` — a protection panel above grade,
+    a splash course at the base — covers ``run x band height`` less only the openings that
+    fall *inside its band*. Billing the wall's whole face for it would order the panel for
+    every buried foot of foam it never reaches, which is the exact failure this exists to
+    stop: catlin's parge coat was claimed full height over 9' of basement wall.
+
+    The opening clip is the same one ``resolve/paneling.py`` runs for a wainscot band —
+    intersect the opening's rectangle with the band and subtract — because it is the same
+    question asked of a different band.
+    """
+    if not getattr(layer, "is_banded", False):
+        return wall_net_m2
+    band_z0, band_z1 = layer.band(wall)
+    mean_top = ((wall.top_z0_m or wall.z1_m) + (wall.top_z1_m or wall.z1_m)) / 2.0
+    band_z1 = min(band_z1, mean_top)
+    if band_z1 - band_z0 <= 0.0:
+        return 0.0
+    run: float = length(sub(wall.axis[1], wall.axis[0]))
+    area = run * (band_z1 - band_z0)
+    for opening in model.openings:
+        if opening.host_wall != wall.tag:
+            continue
+        overlap = (min(band_z1, wall.z0_m + opening.sill_m + opening.height_m)
+                   - max(band_z0, wall.z0_m + opening.sill_m))
+        if overlap > 0.0:
+            area -= opening.width_m * overlap
+    return max(0.0, area)
+
+
 def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Net square feet per (scope, layer function, material, thickness).
 
@@ -83,18 +117,20 @@ def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         net = net_areas[wall.tag]
         scope = "foundation wall" if wall.is_foundation else "wall"
         for layer in wall.layers:
+            covered = wall_layer_net_area_m2(model, wall, layer, net)
             # A cavity layer shares the structure layer's polygon and adds no depth; billing
             # it as its own area would order insulation for a wall band twice.
             if getattr(layer, "is_cavity", False):
                 areas[(scope, "insulation (cavity)", layer.material_ref,
-                       layer.thickness_m)] += net
+                       layer.thickness_m)] += covered
                 continue
             try:
                 function = LayerFunction(layer.function)
             except ValueError:
                 continue
             if function in _BILLABLE:
-                areas[(scope, function.value, layer.material_ref, layer.thickness_m)] += net
+                areas[(scope, function.value, layer.material_ref,
+                       layer.thickness_m)] += covered
 
     for roof in model.roofs:
         assembly = model.plan.library.resolve_assembly(roof.assembly)

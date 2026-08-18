@@ -125,16 +125,25 @@ def test_the_eave_u_and_the_wall_head_are_gone(catlin_model):
         assert retired not in tags, retired
 
 
-def test_the_sill_is_the_only_drainage_path_left(catlin_model):
-    """The eave U-channel's weep holes went with it, so the sill's are all there is. A
-    breezeway whose only vented channel lost its weeps drains nowhere."""
+def test_every_sheet_that_can_hold_water_sits_in_a_weeping_channel(catlin_model):
+    """The eave U-channel's weep holes went with it, so a U at the foot of each sheet is all
+    the drainage this assembly has. A breezeway whose only vented channel lost its weeps
+    drains nowhere — and a *skirt* sheet standing in an unweeped channel at the soil line is
+    the same failure one storey down."""
     weeping = [e for e in catlin_model.plan.all_elements()
                if getattr(e, "tag", "").startswith("TR-BW-") and getattr(e, "weep_holes", False)]
-    assert {e.tag for e in weeping} == {"TR-BW-SILL-W", "TR-BW-SILL-E"}
-    # The sill sits at the deck surface, which the sheet now passes rather than starts at.
+    assert {e.tag for e in weeping} == {"TR-BW-SILL-W", "TR-BW-SILL-E",
+                                        "TR-BW-SKIRT-SILL-W", "TR-BW-SKIRT-SILL-E"}
+    # The wall sill sits at the deck surface, which the sheet passes rather than starts at.
     sill = _solid(catlin_model, "TR-BW-SILL-W-1")
     sheet = _solid(catlin_model, "GL-BW-WALL-W")
     assert sheet.z0_m < sill.z0_m, "the sheet runs below the sill, down to the beam soffit"
+    # The skirt's does start at its sheet's foot, at grade — it is the bottom of the assembly
+    # and there is nothing under it to drain onto but soil.
+    grade_m = catlin_model.plan.project.site.grade.meters
+    skirt = _solid(catlin_model, "GL-BW-SKIRT-W")
+    assert skirt.z0_m == pytest.approx(grade_m)
+    assert skirt.z1_m == pytest.approx(sheet.z0_m), "skirt head meets the standing sheet's foot"
 
 
 # --- 3. the takeoff ------------------------------------------------------------------------

@@ -11,6 +11,9 @@ from typehaus import (
     ControlLayer,
     FramingSpec,
     Layer,
+    LayerBound,
+    LayerDatum,
+    LayerExtent,
     LayerFunction,
     MasonrySpec,
     Material,
@@ -140,8 +143,55 @@ CATLIN_ROOF = Assembly(
 )
 
 # --- concrete family -----------------------------------------------------------
+#
+# **Two basement assemblies, because the north/east/west walls and the south wall are two
+# genuinely different conditions.** Both are the same 12" pour with the same damp-proofing
+# and the same 4" of exterior XPS; they differ only in what covers that foam, and they
+# differ because what exposes it is different.
+#
+# On N/E/W the foam is buried except for the 2'-6" band the 2026-08-18 lift raised out of
+# the ground, so it gets a protection panel *over that band only* — below grade the backfill
+# protects the XPS and above grade the panel does, and nothing is bought for the 6'-6" in
+# between. That band is authored, not derived: ``Layer.extent`` off the GRADE datum.
+#
+# On the south the sunken garden exposes the foam from -9'-0" to 0'-0", which is not a band
+# off grade at all — grade is above the garden floor by nine feet there — so that wall keeps
+# the full-height parge coat, and keeps CATLIN_BASEMENT_12_GARDEN to say so.
+#
+# Both carry the same 4.55" outboard of the concrete face (damp-proof + 2x XPS + a 1/2"
+# outer skin), which is what N-B-BRICK-W/-E's inch(-4.55) stand-off is measured from — the
+# panel is deliberately the same 1/2" as the parge it replaces so that number never moves.
 CATLIN_BASEMENT_12 = Assembly(
     tag="CATLIN_BASEMENT_12",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+              function=LayerFunction.STRUCTURE),
+        Layer(name="damp-proof", material_ref="air-barrier", thickness=inch(0.05),
+              function=LayerFunction.MEMBRANE,
+              control={ControlLayer.AIR, ControlLayer.WATER}),
+        Layer(name="xps-a", material_ref="xps", thickness=inch(2.0),
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+        Layer(name="xps-b", material_ref="xps", thickness=inch(2.0),
+              function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
+        # The exposed-foundation band (2026-08-18). Runs from 6" *below* grade — so no foam
+        # edge shows at the soil line, and so the panel is what the shovel hits rather than
+        # the XPS — up to the top of the wall at 0'-0", where its head tucks under the
+        # rainscreen's Z-flashing with the bug screen above it. It replaces the full-height
+        # parge this wall used to claim over nine feet of buried foam: the parge was added
+        # 2026-08-01 for the *south* wall's exposure and applied to all four sides because a
+        # layer had no way to say "only here".
+        Layer(name="protection-panel", material_ref="foundation-protection-panel",
+              thickness=inch(0.5), function=LayerFunction.CLADDING,
+              extent=LayerExtent(
+                  bottom=LayerBound(datum=LayerDatum.GRADE, offset=inch(-6)))),
+    ),
+    interfaces=(_CONCRETE_BEARING,),
+    source="catlin-house basement N/E/W: 12\" wall + 2x2\" exterior XPS + above-grade protection panel",
+)
+
+# The south wall, which the sunken garden opens to the air over its whole 9'.
+CATLIN_BASEMENT_12_GARDEN = Assembly(
+    tag="CATLIN_BASEMENT_12_GARDEN",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE),
@@ -156,12 +206,13 @@ CATLIN_BASEMENT_12 = Assembly(
         # the exposure runs the full south wall from the sunken garden floor to the
         # main-storey siding — bare pink foam was reading as the wall's finish. Reuses the
         # porch railing's Portland-cement stucco; rides outboard of everything so the
-        # concrete face (the footings/damp-proofing/drain-tile datum) is untouched.
+        # concrete face (the footings/damp-proofing/drain-tile datum) is untouched. Full
+        # height and staying that way: this face has no grade line on it to band against.
         Layer(name="parge", material_ref="stucco", thickness=inch(0.5),
               function=LayerFunction.FINISH),
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house basement: 12\" wall + 2x2\" exterior XPS + parge",
+    source="catlin-house basement south: 12\" wall + 2x2\" exterior XPS + full-height parge over the sunken garden",
 )
 
 # Basement slab-on-grade: 3" XPS below the slab (R-15 @ 40 psi compressive — rated for
@@ -438,6 +489,20 @@ GARAGE_SLAB_ON_GRADE = Assembly(
     source="catlin-house detached garage floor — 3\" below-slab XPS on compacted base",
 )
 
+# The step-down inside the garage service door (ST-G-STEPS in params/foundations.py). The
+# door threshold stayed at 0'-0" with the breezeway deck when grade dropped 2'-6" on
+# 2026-08-18, and the slab stayed at grade, so five 6" risers now stand between them. Plain
+# 6" concrete on compacted base: no below-slab XPS, because these bear on the fill inside
+# the stem's own thermal break rather than on the ground plane the slab insulates.
+GARAGE_STEP_CONCRETE = Assembly(
+    tag="GARAGE_STEP_CONCRETE",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(6.0),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="catlin-house garage service-door step-down — 6\" concrete on compacted base",
+)
+
 GARAGE_ROOF = Assembly(
     tag="GARAGE_ROOF",
     layers=(
@@ -698,6 +763,18 @@ MATERIALS = [
              r_per_inch=0.0, density=7850.0, perm_rating=0.0, hatch="metal",
              color="#1c1f24",
              source="RF-HOUSE rake/eave/ridge trim coil, opening casings, exterior guards"),
+    # The above-grade foundation band on CATLIN_BASEMENT_12 (2026-08-18). Aluminium-faced
+    # rigid protection panel — the trade product for exactly this, and what
+    # notes/basement_to_framed_wall_detail.md already called for in prose ("rigid metal/PVC
+    # trim") and what the detail sheet has always drawn here in "metal-dark". 1/2" so it
+    # matches ``FOUNDATION_FACE.protection_board_in`` and the drawing needs no change; the
+    # house's one exterior dark (#1c1f24) so the band reads with the rake trim and the
+    # opening casings above it rather than as a grey skirt under them.
+    Material(tag="foundation-protection-panel",
+             name="Aluminium-faced foundation protection panel (1/2\")",
+             r_per_inch=0.0, density=1100.0, perm_rating=0.0, hatch="metal",
+             color="#1c1f24",
+             source="above-grade band over basement exterior XPS, N/E/W (CATLIN_BASEMENT_12)"),
     Material(tag="stucco", name="Portland-cement stucco", r_per_inch=0.20, density=1900.0,
              perm_rating=10.0, hatch="concrete", color="#d9d2c4",
              # Two jobs, one product: the porch railing's CMU back-face finish, and the
@@ -807,6 +884,7 @@ ASSEMBLIES = [
     CATLIN_EXT_2X6,
     CATLIN_ROOF,
     CATLIN_BASEMENT_12,
+    CATLIN_BASEMENT_12_GARDEN,
     CATLIN_SLAB_FLOOR,
     CATLIN_DECK_9_INT,
     CATLIN_CONC_12_INT,
@@ -826,6 +904,7 @@ ASSEMBLIES = [
     GARAGE_ICF_6,
     GARAGE_WALL_2X6,
     GARAGE_SLAB_ON_GRADE,
+    GARAGE_STEP_CONCRETE,
     GARAGE_ROOF,
     CATLIN_INT_2X6_BRG,
     INT_2X6_PLUMBING,

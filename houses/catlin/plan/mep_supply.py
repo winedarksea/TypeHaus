@@ -20,8 +20,15 @@ from typehaus.model import m
 #
 # The project's first WATER_COLD run: from the water entry (5', 0') to the garage hydrant,
 # staying at the service's own 6' bury the whole way — a supply line that rises above frost
-# anywhere along its length freezes there. Filed on ``main`` (datum 0'=grade) so the authored
-# -6' elevation reads as six feet down; on ``basement`` (-9' datum) it would resolve to -15'.
+# anywhere along its length freezes there. Filed on ``main`` (datum 0'-0") so the authored
+# elevations read straight off the drawing set; on ``basement`` (-9' datum) they would
+# resolve nine feet lower.
+#
+# **The bury is 6' below *grade*, and grade is -2'-6" (2026-08-18), so the run sits at
+# -8'-6".** It dropped with the soil it is buried in, exactly as the garage foundation it
+# passes under did: FT-GF-S-DR's bearing plane went from -4'-2" to -6'-8", and this run from
+# -6'-0" to -8'-6", so the 22" of cover between them is unchanged. The terminal rise ends
+# 4 4/5" above the garage slab, which is also 2'-6" lower than it was.
 #
 # Straightened 2026-07-29 through 2026-08-15 into a straight line from entry to hydrant at
 # x=5', touching only FT-GF-S-DR — earlier routes jogged around the garage footing and
@@ -31,7 +38,7 @@ WATER_SUPPLY = [
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5), ft(0)), pt(ft(5), ft(59, 6)), pt(ft(5), ft(59, 6))),
             diameter=inch(0.75), material="pex",
-            elevations=(ft(-6), ft(-6), ft(0, 4.8)),
+            elevations=(ft(-8, -6), ft(-8, -6), ft(-2, -1.2)),
             serves=("FX-G-HYDRANT",)),
 ]
 

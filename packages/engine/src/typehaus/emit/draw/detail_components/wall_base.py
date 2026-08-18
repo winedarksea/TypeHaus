@@ -32,6 +32,7 @@ from typehaus.emit.draw.detail_components.geometry import (
 from typehaus.emit.draw.scene import IRNode
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.accessories import BUG_SCREEN_HEIGHT_IN, BUG_SCREEN_MATERIAL
+from typehaus.resolve.model import ResolvedLayer, ResolvedWall
 
 
 def basement_framed_wall(model, framed, concrete, crop, direction,
@@ -246,14 +247,44 @@ def interior_slab_drip_flashing(model, wall, crop, direction, station) -> list[I
     return flashing_nodes(path, tag="interior-drip-flashing")
 
 
+def _authored_protection_band(wall: ResolvedWall) -> ResolvedLayer | None:
+    """The resolved layer that *is* the protection panel, when the assembly models one.
+
+    A protection panel is an ordinary outboard layer carrying a ``Layer.extent`` — a band
+    off the GRADE datum — so once an assembly authors one the drawing must read it rather
+    than deriving a second band beside it. Two derivations of one detail diverge: the
+    drawing showed 2'-6" of trim while the order billed a parge coat over the whole 9'.
+    Consolidating here is the same move ``wall_base`` already made for the bug screen, whose
+    material and height it imports straight from ``resolve/accessories.py``.
+    """
+    banded = [layer for layer in wall.layers
+              if getattr(layer, "is_banded", False)
+              and not getattr(layer, "is_cavity", False)]
+    return banded[-1] if banded else None
+
+
+def _foam_is_already_covered(wall: ResolvedWall) -> bool:
+    """Whether a full-height layer stands outboard of the wall's outermost insulation."""
+    layers = [ly for ly in wall.layers if not getattr(ly, "is_cavity", False)]
+    last_foam = max((index for index, ly in enumerate(layers)
+                     if ly.function == "insulation"), default=None)
+    if last_foam is None:
+        return False
+    return any(not getattr(ly, "is_banded", False) for ly in layers[last_foam + 1:])
+
+
 def foam_protection_board(model, wall, crop, direction, station) -> list[IRNode]:
     """Protection board over foundation insulation wherever it surfaces above grade.
 
     Rigid foam left exposed above grade fails: UV degrades it and the first wheelbarrow
     damages it, so both the basement notes and the garage reference call for a coating or
-    trim over the exposed height. Derived — the band runs from the site grade to the top of
-    the foundation wall, on whichever side the outboard insulation actually is, and draws
-    nothing at all when no foam surfaces in frame.
+    trim over the exposed height.
+
+    Where the assembly *models* the panel — an outboard layer with a ``Layer.extent`` off
+    the grade datum — its own resolved band and thickness are drawn, so the sheet and the
+    order are the same piece of material. Otherwise the band is derived, running from the
+    site grade to the top of the foundation wall on whichever side the outboard insulation
+    actually is; either way it draws nothing at all when no foam surfaces in frame.
     """
     site = model.plan.project.site
     if site.grade is None or crop is None:
@@ -266,16 +297,32 @@ def foam_protection_board(model, wall, crop, direction, station) -> list[IRNode]
     if foam is None:
         return []
     (_cu0, cz0), (_cu1, cz1) = crop
-    grade_z = site.grade.meters
     wall_top = (wall.top_z1_m if wall.top_z1_m is not None else wall.z1_m)
-    exposed_top = min(wall_top, max(cz0, cz1))
-    exposed_bottom = max(grade_z, min(cz0, cz1))
+    authored = _authored_protection_band(wall)
+    if authored is not None:
+        band_z0, band_z1 = authored.band(wall)
+        thickness_in = authored.thickness_m / M_PER_IN
+        panel = intervals.get(authored.name)
+        face_in = (face_of(panel, is_outboard_high, outer=False) if panel is not None
+                   else face_of(foam, is_outboard_high, outer=True))
+    elif _foam_is_already_covered(wall):
+        # Something full-height already stands outboard of the foam — catlin's south
+        # basement wall wears a parge coat over its whole nine feet, because the sunken
+        # garden exposes it over its whole nine feet. Drawing a protection board on top of
+        # that is a second skin over a face that has one, and an order for material nobody
+        # applies. The rule is "protect foam that surfaces *bare*", not "surfaces".
+        return []
+    else:
+        band_z0, band_z1 = site.grade.meters, wall_top
+        thickness_in = FOUNDATION_FACE.protection_board_in
+        face_in = face_of(foam, is_outboard_high, outer=True)
+    exposed_top = min(band_z1, max(cz0, cz1))
+    exposed_bottom = max(band_z0, min(cz0, cz1))
     height_in = (exposed_top - exposed_bottom) / M_PER_IN
     if height_in < FOUNDATION_FACE.min_exposed_height_in:
         return []
     out_sign = 1.0 if is_outboard_high else -1.0
-    foam_out = face_of(foam, is_outboard_high, outer=True)
-    return rect_region(foam_out, exposed_bottom / M_PER_IN,
-                       foam_out + out_sign * FOUNDATION_FACE.protection_board_in,
+    return rect_region(face_in, exposed_bottom / M_PER_IN,
+                       face_in + out_sign * thickness_in,
                        exposed_top / M_PER_IN,
                        "foam-protection-board", "metal-dark", "SOLID", lineweight=0.4)

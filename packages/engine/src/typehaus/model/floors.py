@@ -128,6 +128,14 @@ class Slab(Element):
     # coincidentally-congruent elements (a patio slab under a deck, say) from silently
     # swapping conventions.
     datum: Literal["structure", "walking_surface"] = "structure"
+    # Absolute top-of-slab elevation, in the project frame, when this slab does not sit on
+    # its storey's datum at all — a garage slab left at grade while the house floor above it
+    # stays at 0'-0", say. Mirrors ``FoundationWall.top_elevation``. When set it wins over
+    # the storey datum outright and ``datum`` no longer applies: the slab hangs its
+    # thickness below this elevation. Leave it None (the norm) and the storey datum plus
+    # ``datum`` decide, exactly as before. Authoring it is what lets a slab be filed on the
+    # storey it belongs to rather than on whichever storey happens to sit at its elevation.
+    top_elevation: Length | None = None
     # Slab-on-grade only: rigid-insulation edge break against the abutting stem/foundation
     # wall. None = slab edge pours directly against the concrete it meets.
     perimeter_thermal_break: SlabThermalBreak | None = None

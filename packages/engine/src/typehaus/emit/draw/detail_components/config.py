@@ -135,7 +135,10 @@ class FoundationFaceConfig:
     has to show the protection board wherever the foam surfaces.
     """
 
-    #: Thickness of the protection board / parge coat drawn over the exposed foam.
+    #: Thickness of the protection board / parge coat drawn over the exposed foam, when the
+    #: assembly does not model one. An assembly that authors the panel as a banded layer
+    #: (``Layer.extent``) supplies its own thickness and band, and that wins — the drawing
+    #: reads the resolved layer so the sheet and the order describe one piece of material.
     protection_board_in: float = 0.5
     #: Minimum exposed height worth drawing — below this the band is a smear at detail scale.
     min_exposed_height_in: float = 1.5

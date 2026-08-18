@@ -23,10 +23,12 @@ That reading falls straight out of the sheet:
   a vestibule and cost a third more of everything.
 * The roof is **one** 4'-0" x 4'-0" sheet: half of an 8'x4', cut once.
 
-The bill is therefore three sheets again, and only one cut in the lot: two 8'x4' sheets
-standing whole, one 8'x4' halved for the roof. (The "10' stock" era — when the standing
-sheet ran 9'-10 3/4" — is retired; it existed only because the enclosure was 8'-0" clear
-*above the decking* rather than 8'-0" of sheet.)
+The bill is therefore three sheets for the enclosure itself, and only one cut among them:
+two 8'x4' sheets standing whole, one 8'x4' halved for the roof. (The "10' stock" era — when
+the standing sheet ran 9'-10 3/4" — is retired; it existed only because the enclosure was
+8'-0" clear *above the decking* rather than 8'-0" of sheet.) A fourth sheet, halved, skirts
+the gap the 2026-08-18 lift opened under the deck — below the enclosure, so it costs the
+brief's three dimensions nothing.
 
 The two sheets meet, so one ``profile="H"`` channel per side receives both — the wall sheet
 in its lower slot, the roof sheet in its upper — replacing the eave U and the wall F-head
@@ -56,6 +58,24 @@ Framing directions (the brief's "opposite rotation"):
      |===================|  lines           |===================|  crown at x = 4'-6"
      house      E-W joists @ 16"            house    (wedges on every rafter)
                 deck boards N-S
+
+**What the 2026-08-18 lift did to it.** Grade dropped 2'-6" to bring the house out of the
+ground. The breezeway's *foundations* went with the soil — the pads still bear at 42" below
+grade, so the piers grew 2'-6" — and nothing above ``_FLOOR_BEAM_TOP`` moved at all, because
+this is a bridge between two doors and both thresholds are still at 0'-0". Two consequences,
+both answered rather than left:
+
+* **The 1'-10 3/4" that opened up under the deck is skirted** (``SKIRT_GLAZING`` below),
+  in the same 16mm multiwall and the same channels. Nobody uses that space — the enclosure's
+  only two openings are the two buildings' doors — but it is a 4'-wide slot between two
+  buildings at the house's own entry, and an open crawl there packs with drifted snow and
+  houses whatever wants to live under a vestibule. It is the assembly's only other cut.
+* **No guard is required, and none is authored.** The walking surface is 2'-6" above grade,
+  right at IRC R312.1's trigger, and ``structural.deck_guard`` grades it a PASS at exactly
+  30". The question the number raises is answered by the enclosure rather than by the
+  number: all four sides are closed — 8'-0" of glazing east and west, a door at each end —
+  so there is no open edge to fall from. A guard on a glazed vestibule would be a rail
+  inside a wall.
 
 Three places this deviates from the brief or from the plan it was built to, each on purpose:
 
@@ -101,7 +121,8 @@ from typehaus import (
     pt,
 )
 
-from plan.storeys.garage import GARAGE_Y_SOUTH
+from params.foundations import SITE_GRADE
+from plan.storeys.garage import GARAGE_STEM_REVEAL, GARAGE_Y_SOUTH
 
 # ============================================================================
 # Plan geometry — every number here is derived, never repeated.
@@ -178,9 +199,15 @@ DETAIL_CUT_Y_FT = _POST_Y0
 # ============================================================================
 # Vertical stack (project-frame absolute; +Z up, 0'-0" is the main-floor datum).
 # ============================================================================
-_FROST_FT = 42.0 / 12.0  # MN profile frost depth; the pads bear at or below this
+# Frost depth is measured from soil, and the soil is 2'-6" below the main floor. The pads
+# are the only part of this structure pinned to the ground rather than to the two doors it
+# joins: when grade dropped on 2026-08-18 they went down with it and the piers grew 2'-6",
+# while _FLOOR_BEAM_TOP and everything derived from it below stayed exactly where it was.
+_GRADE_FT = SITE_GRADE.feet
+_FROST_FT = 42.0 / 12.0  # MN profile frost depth *below grade*; the pads bear at or below it
 _PAD_THICKNESS_FT = 1.0
-_PAD_TOP = -_FROST_FT + _PAD_THICKNESS_FT  # -2.5'
+_PAD_BOTTOM = _GRADE_FT - _FROST_FT       # -6'-0"
+_PAD_TOP = _PAD_BOTTOM + _PAD_THICKNESS_FT  # -5'-0"
 
 _JOIST = "2x8"
 _JOIST_DEPTH_FT = 7.25 / 12.0
@@ -188,6 +215,9 @@ _BEAM = "2-2x8"  # same depth as the joists, so they hang flush
 _DECK_THICKNESS_IN = 1.0
 _RAFTER_DEPTH_FT = 5.5 / 12.0
 
+# The floor does **not** follow grade: the breezeway is a bridge between two doors, and both
+# thresholds are at 0'-0". Since grade dropped 2'-6" the deck stands proud of the soil rather
+# than sitting on it — see the "open under the deck" note in the docstring.
 _FLOOR_BEAM_TOP = 0.0  # the main datum: joist tops and beam top are one plane
 _PIER_TOP = _FLOOR_BEAM_TOP - _JOIST_DEPTH_FT  # -7 1/4", the floor-beam soffit
 _DECK_SURFACE = _DECK_THICKNESS_IN / 12.0  # +1", the walking surface
@@ -224,22 +254,37 @@ PADS = [
     Pad(uid=f"CP{i}00AAAAA", tag=f"PD-BW-{i}",
         outline=(pt(ft(x - 1), ft(y - 1)), pt(ft(x + 1), ft(y - 1)),
                  pt(ft(x + 1), ft(y + 1)), pt(ft(x - 1), ft(y + 1))),
-        thickness=ft(_PAD_THICKNESS_FT), bottom_elevation=ft(-_FROST_FT))
+        thickness=ft(_PAD_THICKNESS_FT), bottom_elevation=ft(_PAD_BOTTOM))
     for i, (x, y) in enumerate(_POST_XY, start=1)
 ]
 
 # 12" round concrete piers carry the wood clear of the ground, pad top up to the floor-beam
 # soffit. The 6x6 above is ground-contact rated anyway (the brief), but a post standing in
 # soil rots from the end grain first whatever its treatment.
+#
+# The two garage-end piers stop one course lower, at the ICF stem top, and their posts run
+# down to meet them. A 12" round is 6 1/2" fatter than the 5 1/2" post it carries, so it
+# spills 3 1/4" past the post's north face — which was harmless while the garage's wood wall
+# started 1'-10" *above* the datum, and stopped being harmless on 2026-08-18 when grade
+# dropped and the whole garage went down with it: W-G-S's bottom plate now sits at -0'-8",
+# three quarters of an inch under the -0'-7 1/4" floor-beam soffit these piers top out at,
+# and concrete and plate wanted the same band (structural.member_interference). The post is
+# exactly as wide as the cladding is proud of the stem, so it passes where the pier cannot.
+# Nothing in plan moves: the enclosure, the deck and the uncut sheets are all measured off
+# the post lines, and the post lines are untouched.
+_GARAGE_STEM_TOP = _GRADE_FT + GARAGE_STEM_REVEAL.feet  # -0'-8"
+_PIER_TOPS = [_PIER_TOP, _PIER_TOP,
+              min(_PIER_TOP, _GARAGE_STEM_TOP), min(_PIER_TOP, _GARAGE_STEM_TOP)]
+
 PIERS = [
     Post(uid=f"BWPR{i}AAAAA", tag=f"PR-BW-{i}", position=pt(ft(x), ft(y)),
-         size="12 round", height=ft(_PIER_TOP - _PAD_TOP), supported_by=f"PD-BW-{i}")
+         size="12 round", height=ft(_PIER_TOPS[i - 1] - _PAD_TOP), supported_by=f"PD-BW-{i}")
     for i, (x, y) in enumerate(_POST_XY, start=1)
 ]
 
 POSTS = [
     Post(uid=f"CP{i}50AAAAA", tag=f"PT-BW-{i}", position=pt(ft(x), ft(y)),
-         size="6x6", height=ft(_POST_TOP - _PIER_TOP), supported_by=f"PR-BW-{i}")
+         size="6x6", height=ft(_POST_TOP - _PIER_TOPS[i - 1]), supported_by=f"PR-BW-{i}")
     for i, (x, y) in enumerate(_POST_XY, start=1)
 ]
 
@@ -460,6 +505,69 @@ for _i, (_tag, _x, _ref) in enumerate(
             thickness=_CHANNEL_THICK, material="aluminum-extrusion"))
 
 # ============================================================================
+# Skirt: the 1'-10 3/4" the 2026-08-18 lift opened up under the deck.
+# ============================================================================
+# The standing sheets start at the floor-beam soffit (-0'-7 1/4") because that is where an
+# uncut 4'x8' sheet's foot lands, and until 2026-08-18 the ground was 7 1/4" below it. Then
+# grade went to -2'-6" and the breezeway did not go with it — it is a bridge between two
+# doors, and both thresholds stayed at 0'-0" — so the slot between the house and the garage
+# opened up under the deck.
+#
+# That gap is closed rather than accepted. Nobody uses the space (the enclosure has no
+# exterior door; its only two openings are the two buildings' doors), so it is not a room —
+# but it is a 4'-wide slot between two buildings at the house's own entry, which is where
+# snow drifts pack, and an open crawl under a vestibule door is where a skunk lives.
+#
+# Same 16mm multiwall as the walls above, same channels, same trade, and the elevation
+# reads as one glazed side to the ground rather than a glass box on stilts. It is the
+# assembly's only other cut: one 4'x8' sheet halved gives both strips with a foot to spare.
+# The sill U weeps, as the one above the deck does, and the head F-channel caps the cut top
+# edge under the standing sheet's own uncapped foot.
+_SKIRT_BOTTOM = _GRADE_FT            # -2'-6", in a weeping U at the soil line
+_SKIRT_TOP = _PIER_TOP               # -0'-7 1/4", the floor-beam soffit
+_SKIRT_HEIGHT = ft(_SKIRT_TOP - _SKIRT_BOTTOM)   # 1'-10 3/4"
+
+SKIRT_GLAZING = [
+    GlazingPanel(
+        uid="BWGP05AAAA", tag="GL-BW-SKIRT-W",
+        outline=(pt(ft(_GLAZING_X0), ft(_GLAZING_Y0)), pt(ft(_GLAZING_X0), ft(_GLAZING_Y1))),
+        thickness=inch(_GLAZING_THICKNESS_IN), plane="vertical",
+        base_elevation=ft(_SKIRT_BOTTOM), top_elevation=ft(_SKIRT_TOP),
+        assembly="BREEZEWAY_GLAZED_WALL", film=_BIRD_FILM),
+    GlazingPanel(
+        uid="BWGP06AAAA", tag="GL-BW-SKIRT-E",
+        outline=(pt(ft(_GLAZING_X1), ft(_GLAZING_Y0)), pt(ft(_GLAZING_X1), ft(_GLAZING_Y1))),
+        thickness=inch(_GLAZING_THICKNESS_IN), plane="vertical",
+        base_elevation=ft(_SKIRT_BOTTOM), top_elevation=ft(_SKIRT_TOP),
+        assembly="BREEZEWAY_GLAZED_WALL", film=_BIRD_FILM),
+]
+
+SKIRT_TRIM = []
+for _i, (_tag, _x, _ref) in enumerate(
+        (("W", _GLAZING_X0, "GL-BW-SKIRT-W"), ("E", _GLAZING_X1, "GL-BW-SKIRT-E")), start=1):
+    _run = (pt(ft(_x), ft(_GLAZING_Y0)), pt(ft(_x), ft(_GLAZING_Y1)))
+    SKIRT_TRIM += [
+        GlazingTrim(uid=f"BWGS{_i}AAAAA", tag=f"TR-BW-SKIRT-SILL-{_tag}",
+                    kind=TrimKind.GLAZING_CHANNEL, profile="U", weep_holes=True,
+                    glazing_ref=_ref, path=_run,
+                    top_elevation=ft(_SKIRT_BOTTOM) + _CHANNEL_DEPTH, depth=_CHANNEL_DEPTH,
+                    thickness=_CHANNEL_THICK, material="aluminum-extrusion"),
+        GlazingTrim(uid=f"BWGH{_i}AAAAA", tag=f"TR-BW-SKIRT-HEAD-{_tag}",
+                    kind=TrimKind.GLAZING_CHANNEL, profile="F",
+                    glazing_ref=_ref, path=_run,
+                    top_elevation=ft(_SKIRT_TOP), depth=_CHANNEL_DEPTH,
+                    thickness=_CHANNEL_THICK, material="aluminum-extrusion"),
+    ]
+    for _side, _y in (("S", _GLAZING_Y0), ("N", _GLAZING_Y1)):
+        _half = _GLAZING_THICKNESS_IN / 24.0
+        SKIRT_TRIM.append(GlazingTrim(
+            uid=f"BWSJ{_side}{_i}AAAA", tag=f"TR-BW-SKIRT-JAMB-{_tag}{_side}",
+            kind=TrimKind.GLAZING_CHANNEL, profile="F", glazing_ref=_ref, vertical=True,
+            path=(pt(ft(_x - _half), ft(_y)), pt(ft(_x + _half), ft(_y))),
+            top_elevation=ft(_SKIRT_TOP), depth=_SKIRT_HEIGHT,
+            thickness=_CHANNEL_THICK, material="aluminum-extrusion"))
+
+# ============================================================================
 # Hardware.
 # ============================================================================
 # ABU66SS stainless standoff bases hold the 6x6 clear of the pier top so end grain never
@@ -478,5 +586,5 @@ CONNECTORS = [
 ]
 
 MAIN_ELEMENTS = [*NODES, *PADS, *PIERS, *POSTS, *FLOOR_BEAMS, FLOOR, DECK,
-                 *ROOF_BEAMS, *RAFTERS, *ROOF_GLAZING, *WALL_GLAZING,
-                 *ROOF_TRIM, *WALL_TRIM, *CONNECTORS]
+                 *ROOF_BEAMS, *RAFTERS, *ROOF_GLAZING, *WALL_GLAZING, *SKIRT_GLAZING,
+                 *ROOF_TRIM, *WALL_TRIM, *SKIRT_TRIM, *CONNECTORS]

@@ -38,7 +38,15 @@ def _guid(project_uuid: uuid.UUID, uid: str) -> str:
 
 def _wall_geometry(w: ResolvedWall) -> tuple[tuple[float, float, float], tuple[float, float, float], tuple[float, float]]:
     _origin, dir_, _normal, _length = wall_frame(w)
-    points = [point for layer in w.layers for point in layer.polygon]
+    # Banded layers (``Layer.extent``) are excluded, because the IFC wall this is reconciled
+    # against excludes them too: a layer that runs only part of the wall's height exports as
+    # an ``IfcBuildingElementPart`` aggregated to the wall, not as part of the wall's own
+    # body (see ``emit/ifc/architectural.py::_full_height_layers``). Measuring the baseline
+    # over a width the export does not carry reports every banded wall as RESIZED on a
+    # self-diff — a reconciliation task that does not exist.
+    points = [point for layer in w.layers
+              if not getattr(layer, "is_banded", False)
+              for point in layer.polygon]
     centroid, bbox = _bounds(points, w.z0_m, w.z1_m)
     return centroid, bbox, dir_
 

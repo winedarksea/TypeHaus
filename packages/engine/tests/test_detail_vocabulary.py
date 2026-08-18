@@ -348,9 +348,35 @@ def test_protection_board_starts_at_grade(catlin_model):
 
 
 def test_buried_foundation_foam_gets_no_protection_board(catlin_model):
-    """The house basement's XPS tops out at grade — nothing is exposed to protect."""
-    _derived, scene = _detail_scene(catlin_model, "wall_foundation:CATLIN_BASEMENT_12")
+    """Buried foam gets no board — the backfill protects it. The south basement wall is the
+    house's one wall where that is still the whole story below its top: the sunken garden
+    exposes it from -9'-0" to 0'-0", which is not a band off grade at all, so it carries a
+    full-height parge and no banded panel for the component to draw.
+
+    (Until the 2026-08-18 lift the *whole* basement was this case, because the wall topped
+    out at grade. N/E/W now stand 2'-6" out of the ground — see the test below.)"""
+    _derived, scene = _exact_detail_scene(
+        catlin_model, "wall_foundation:CATLIN_BASEMENT_12_GARDEN|CATLIN_EXT_2X6")
     assert "foam-protection-board" not in _component_tags(scene)
+
+
+def test_the_exposed_basement_band_draws_the_layer_the_order_bills(catlin_model):
+    """The N/E/W basement walls stand 2'-6" above grade since the lift, and the protection
+    panel over that band is an authored layer with a ``Layer.extent`` rather than something
+    the detail component derives beside it. Two derivations of one detail diverge: the sheet
+    used to draw 2'-6" of trim while the order billed a parge coat over all nine feet."""
+    from typehaus.quantities import M_PER_IN
+
+    _derived, scene = _exact_detail_scene(
+        catlin_model, "wall_foundation:CATLIN_BASEMENT_12|CATLIN_EXT_2X6")
+    board = _component_nodes(scene, "foam-protection-board")[0]
+    grade_in = catlin_model.plan.project.site.grade.meters / M_PER_IN
+    # Drawn from the resolved layer: its head is the top of the wall, where the Z-flashing
+    # and the bug screen above it are, and its foot runs down past grade (the band starts 6"
+    # under it; how much of that the sheet shows is the detail crop's business, not the
+    # layer's — test_layer_extent.py holds the band itself).
+    assert max(z for _u, z in board.points) == pytest.approx(0.0, abs=0.5)
+    assert min(z for _u, z in board.points) <= grade_in + 0.5
 
 
 # --- interior slab drip (unheated slab-on-grade) ------------------------------
@@ -504,7 +530,9 @@ def test_opening_and_ridge_conditions_scaffold_detail_slices(catlin_model):
     """
     keys = {d.key for d in derive_detail_slices(catlin_model)}
     assert "opening_perimeter:CATLIN_EXT_2X6" in keys
-    assert "opening_perimeter:CATLIN_BASEMENT_12" in keys
+    # The south wall's assembly: the basement's openings (D-B-PATIO, WIN-B-SAUNA) are all
+    # in the sunken-garden face. TR-CATLIN-BASEMENT-OPENING binds both with a `*` pattern.
+    assert "opening_perimeter:CATLIN_BASEMENT_12_GARDEN" in keys
     assert "roof_ridge:RF-HOUSE" in keys
 
 

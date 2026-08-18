@@ -94,7 +94,8 @@ def _wall_geometry(wall: ResolvedWall, openings) -> ElementGeometry:
     for layer in wall.depth_layers():
         if not layer.polygon:
             continue
-        solids = layer_solids(wall, layer.polygon, openings)
+        solids = layer_solids(wall, layer.polygon, openings,
+                              band=layer.band(wall) if layer.is_banded else None)
         if not solids:
             continue
         function = (layer.function.value if hasattr(layer.function, "value")

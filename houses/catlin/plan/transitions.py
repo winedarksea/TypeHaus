@@ -62,8 +62,14 @@ TRANSITIONS = (
     Transition(uid="CATR006AAAA", tag="TR-CATLIN-CONCRETE-OPENING",
                condition_pattern="opening_perimeter:CATLIN_CONC_*",
                notes="notes/sauna_basement_wall_detail.md", overlay="concrete-opening"),
+    # ``CATLIN_BASEMENT_12*`` covers both basement assemblies: the N/E/W wall with its
+    # above-grade protection band and the south wall with its full-height parge over the
+    # sunken garden (2026-08-18). The two differ in what covers the exterior XPS, which is a
+    # field condition well outside an opening's perimeter — the buck, the frame and the
+    # flashing at a window in 12" of concrete are the same detail on either wall, and one
+    # sheet is what draws them.
     Transition(uid="CATR007AAAA", tag="TR-CATLIN-BASEMENT-OPENING",
-               condition_pattern="opening_perimeter:CATLIN_BASEMENT_12",
+               condition_pattern="opening_perimeter:CATLIN_BASEMENT_12*",
                notes="notes/basement_to_framed_wall_detail.md", overlay="foundation-window"),
     # Bound but deliberately sheetless: the arch already reads on plans and sections.
     Transition(uid="CATR008AAAA", tag="TR-CATLIN-GARDEN-ARCH",

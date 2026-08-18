@@ -9,6 +9,7 @@ from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import StructuralRole
+from typehaus.resolve.site_earth import site_grade_elevation_m
 
 # Simplified allowable joist spans (ft) at 16" o.c., residential floor (40 psf live).
 # I-joists by depth; dimensional lumber per IRC R502.3.1(1), SPF #2.
@@ -167,9 +168,12 @@ def ijoist_span(ctx: CheckContext) -> list[Finding]:
 def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
     """Check resolved footings and pads against the profile frost depth.
 
-    The project datum is grade, so a negative solid base is directly comparable to the
-    jurisdictional frost depth.  This deliberately does not size foundations or replace
-    engineering; it catches the common omission of a shallow detached-structure pad.
+    Frost depth is measured **from finished grade**, not from the project datum: the two
+    coincide only while ``Site.grade`` is 0. Every sibling grade-dependent rule reads
+    ``site.grade``, and this one now does too (via ``site_grade_elevation_m``, which falls
+    back to the main-floor datum when the site declares no grade). This deliberately does
+    not size foundations or replace engineering; it catches the common omission of a
+    shallow detached-structure pad.
     """
     minimum_in = ctx.profile.frost_depth_in
     if minimum_in is None:
@@ -183,11 +187,12 @@ def footing_frost_depth(ctx: CheckContext) -> list[Finding]:
                         message="UNKNOWN — no resolved footings or pads",
                         result=Result.UNKNOWN)]
     minimum_m = minimum_in * 0.0254
-    shallow = [solid for solid in supports if solid.z0_m > -minimum_m + 1e-9]
+    grade_m = site_grade_elevation_m(ctx.model)
+    shallow = [solid for solid in supports if solid.z0_m > grade_m - minimum_m + 1e-9]
     if shallow:
         return [_advisory(
             "structural.frost_depth",
-            f"{solid.tag} base is {-solid.z0_m / 0.0254:.0f}\" below grade; "
+            f"{solid.tag} base is {(grade_m - solid.z0_m) / 0.0254:.0f}\" below grade; "
             f"{minimum_in:.0f}\" minimum is required by the MN profile",
             (solid.tag,), Result.FAIL,
         ) for solid in shallow]

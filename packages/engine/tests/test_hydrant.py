@@ -129,20 +129,23 @@ def test_the_supply_run_stays_six_feet_down_for_its_whole_length(catlin_model):
 
 
 def test_the_supply_sleeve_is_a_water_penetration_on_the_slabs_own_storey(catlin_model):
-    """Two things go wrong here if nobody says them. The sleeve's purpose defaults to DRAIN,
-    which this is not; and SL-G-FLOOR is filed on `main` while the garage walls are on
-    `garage`, so a sleeve filed with the fixture would sit on a storey with no slab and
-    `_missing_sleeve_findings` — which scopes its containment test to solid.storey ==
-    storey.tag — would never see it."""
+    """The sleeve's purpose defaults to DRAIN, which this is not — say it or the takeoff and
+    every purpose-scoped check read it as waste.
+
+    The sleeve is filed on `garage`, with SL-G-FLOOR and with the fixture it serves. That
+    became possible when ``Slab.top_elevation`` did: the slab used to be filed on `main`
+    (the only storey standing at grade) with the sleeve dragged along behind it, and the
+    storey tags of the three said nothing about the structure they belong to."""
     sleeve = catlin_model.plan.by_tag("SP-G-HYDRANT")
     assert sleeve.purpose is Service.WATER_COLD
     assert sleeve.host_ref == "SL-G-FLOOR"
     resolved = next(s for s in catlin_model.sleeves if s.tag == "SP-G-HYDRANT")
-    assert resolved.storey == "main"
+    assert resolved.storey == "garage"
     assert resolved.serves_fixture == "FX-G-HYDRANT"
-    # The fixture itself is on the garage storey — the split is deliberate.
     assert next(o for o in catlin_model.canvas_objects
                 if o.tag == "FX-G-HYDRANT").storey == "garage"
+    slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
+    assert slab.storey == "garage"
 
 
 def test_the_hydrant_stands_on_the_garage_slab_not_on_the_storey_datum(catlin_model):
@@ -210,14 +213,18 @@ def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):
     x_ft, y_ft = pit.position.xy_m[0] * _M_TO_FT, pit.position.xy_m[1] * _M_TO_FT
     assert x_ft == pytest.approx(5.0, abs=1e-6)
     assert y_ft == pytest.approx(59.5, abs=1e-6)
-    # Stone from -5'-6" to -7'-0": the 6' shutoff sits 6" below the top of it with a foot of
-    # stone under the weep. It was 2' across x 4' deep to -9'-0" until 2026-08-15 — 12.6 cu
-    # ft for a weep that discharges quarts, and deep enough that no position in the garage
-    # could stand it off the footings. → test_the_hydrant_assembly_clears_the_footings.
+    # Stone from 5'-6" to 7'-0" *below grade*: the 6' shutoff sits 6" below the top of it
+    # with a foot of stone under the weep. It was 2' across x 4' deep until 2026-08-15 —
+    # 12.6 cu ft for a weep that discharges quarts, and deep enough that no position in the
+    # garage could stand it off the footings. → test_the_hydrant_assembly_clears_the_footings.
+    # Depths are read from grade, not from the house datum: on 2026-08-18 grade went to
+    # -2'-6" and the whole buried garage assembly went down with the soil, so the absolute
+    # elevations are -8'-0" / -9'-6" and the bury is unchanged.
+    grade_ft = catlin_model.plan.project.site.grade.meters * _M_TO_FT
     solid = next(s for s in catlin_model.solids if s.tag == "DRW-G-HYDRANT")
     assert solid.category == "drywell"
-    assert solid.z1_m * _M_TO_FT == pytest.approx(-5.5, abs=1e-6)
-    assert solid.z0_m * _M_TO_FT == pytest.approx(-7.0, abs=1e-6)
+    assert (solid.z1_m * _M_TO_FT - grade_ft) == pytest.approx(-5.5, abs=1e-6)
+    assert (solid.z0_m * _M_TO_FT - grade_ft) == pytest.approx(-7.0, abs=1e-6)
     # No drain fixture, and no DRAIN run, anywhere in the garage.
     garage_fixtures = [e for e in catlin_model.plan.storey_elements("garage")
                        if e.element_kind == "Fixture"]
@@ -347,14 +354,18 @@ def test_the_yard_hydrant_and_the_wall_hydrants_are_graded_differently(catlin_mo
 
 
 def test_a_shallow_supply_run_fails_the_freeze_depth_rule(catlin_model):
-    """A rule that only ever passes proves nothing. Raise the run to 3' and it must fail."""
+    """A rule that only ever passes proves nothing. Raise the run to 3' below grade and it
+    must fail. *Below grade* — the depth the rule grades is bury, and since 2026-08-18 grade
+    is 2'-6" under the datum, so a bare ft(-3) here would be a 6" bury and the message would
+    quote a number this test never meant."""
     from typehaus.checks.mep.plumbing import hydrant_freeze_depth
     from typehaus.model import ft
 
     ctx = _context(catlin_model)
     run = catlin_model.plan.by_tag("PR-G-HYDRANT-CW")
+    shallow_z = catlin_model.plan.project.site.grade + ft(-3)
     shallow = run.model_copy(update={"elevations": tuple(
-        ft(-3) if e.feet < 0 else e for e in run.elevations)})
+        shallow_z if e.feet < 0 else e for e in run.elevations)})
     patched = catlin_model.plan.with_elements(
         "main", [shallow if e.tag == run.tag else e
                  for e in catlin_model.plan.storey_elements("main")])

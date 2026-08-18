@@ -8,12 +8,13 @@ from typehaus.model.base import HausModel
 from typehaus.model.enums import (
     ControlLayer,
     JunctionPolicy,
+    LayerDatum,
     LayerFunction,
     PartitionLayout,
 )
 from typehaus.model.refs import LayerSpan
 from typehaus.model.registry import register_constructor
-from typehaus.quantities import Length
+from typehaus.quantities import Length, inch
 
 
 class FramingSpec(HausModel):
@@ -84,6 +85,30 @@ class CavityFill(HausModel):
     control: frozenset[ControlLayer] = frozenset()
 
 
+class LayerBound(HausModel):
+    """One end of a layer's vertical extent: a datum, plus a signed offset from it."""
+
+    datum: LayerDatum
+    offset: Length = inch(0)
+
+
+class LayerExtent(HausModel):
+    """How far up a wall one layer of the stack actually runs.
+
+    This is the "vertically compound wall" of a BIM authoring tool — a layer row split into
+    regions at a height — expressed on the *type* rather than on each wall, which is the only
+    place it can live: an ``Assembly`` is shared by many walls and knows none of their
+    elevations. Two layers occupying the same slot in the stack with non-overlapping extents
+    are the two regions of one split row.
+
+    ``None`` on either end means the wall's own end, which is what every layer written before
+    this existed still says by carrying no ``extent`` at all.
+    """
+
+    bottom: LayerBound | None = None   # None -> the wall's base
+    top: LayerBound | None = None      # None -> the wall's top
+
+
 class Layer(HausModel):
     """One layer of an assembly stack (→ 10 §Element model)."""
 
@@ -96,6 +121,14 @@ class Layer(HausModel):
     control: frozenset[ControlLayer] = frozenset()
     # STRUCTURE layers only: insulation in the framing bays (non-additive, → CavityFill).
     cavity: CavityFill | None = None
+    # Vertical extent, when this layer does not run the wall's full height — a protection
+    # panel above grade, a splash course at the base, a water table. ``None`` is full height,
+    # and is what the whole catalog said before this field existed. A banded layer still
+    # occupies its full depth in the stack: it displaces the layers outboard of it over the
+    # whole wall, exactly as a full-height layer of the same thickness would, because the
+    # alternative — a stack whose total thickness varies with elevation — is not something
+    # ``Wall.alignment`` or any junction rule can answer.
+    extent: LayerExtent | None = None
 
 
 class AssemblyInterface(HausModel):
@@ -172,6 +205,8 @@ class ConstructionRule(HausModel):
 
 for _name, _obj in (
     ("Layer", Layer),
+    ("LayerBound", LayerBound),
+    ("LayerExtent", LayerExtent),
     ("CavityFill", CavityFill),
     ("FramingSpec", FramingSpec),
     ("MasonrySpec", MasonrySpec),

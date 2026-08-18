@@ -10,17 +10,25 @@ with this change meaning W-RG-INNER can likely be deleted (W-SG-* replace it eff
 two parallel cheeks — a cast inner one continuing ``W-SG-S`` up above its top, and an SRW
 block outer one — holding 36" of soil between them, standing 3'-6" proud of grade. What it
 builds now is a *retaining apron*: one SRW run wrapping the sunken garden's west, south and
-east sides, topping out level with the retaining wall and running 3' down, most of it below
-grade. The soil it retains is the yard, not a planting bed.
+east sides, topping out level with the retaining wall and running 3' down. The soil it
+retains is the yard, not a planting bed.
+
+**The apron is fully above grade since 2026-08-18, and this is what the house was lifted
+for.** Its base sits at -2'-6", and -2'-6" is now finished grade: the house came out of the
+ground by moving grade down to the apron's own footing line, so all three 6"-course feet of
+it stand proud of the soil instead of two and a half of them being buried. Which also
+reverses what it retains. It used to hold the yard back off the sunken garden; the yard is
+now *below* its base, and what it holds is the 3'-0" raised terrace between it and the
+sunken-garden walls — the same 3 feet, retained from the other side.
 
 Section, at a side leg, west (yard) to east (sunken garden):
 
     +0'-6"   +----+          +----+   <- apron top = W-SG-* top, both sides level
-             |    |   yard   |    |
-     0'-0"   | SRW|-- grade -| SG |   <- ~2'-6" of the apron is buried. Fine for now.
+             |    | terrace  |    |
+             | SRW|##########| SG |   <- the 3'-0" of fill the apron now retains, inboard
              |    |          |wall|
-    -2'-6"   +----+          |    |   <- apron base, 6 whole 6" SRW courses down
-                             |    |
+    -2'-6"   +----+-- grade -|    |   <- apron base *at* finished grade; yard falls away
+        (yard)                     |
 
 Plan — a U whose north corners return three feet to the balcony railing:
 
@@ -66,9 +74,9 @@ Not modelled: the SRW cap unit, and the drainage aggregate + filter fabric behin
 block. The growing medium is not on this list because there is no longer a bed to fill.
 
 Known and accepted: the west leg (x ∈ [3.5, 4.5]) runs over the x = 3 sewer and beside the
-x = 5 water line for its whole length. Both are at 5-6' depth against a -2.5' wall bottom, so
-there is no physical conflict — and no check exists for utility clearance to catch one if a
-future change brought them together.
+x = 5 water line for its whole length. Both are 5-6' below grade against a wall bottom that
+now sits *at* grade, so there is no physical conflict — and no check exists for utility
+clearance to catch one if a future change brought them together.
 """
 
 from __future__ import annotations
@@ -147,7 +155,16 @@ NODES = [
          position=pt(ft(X_EAST - 3.0), ft(Y_NORTH)), open_end=True),
 ]
 
-_APRON = dict(assembly="RETAINING_BLOCK_12", top_elevation=TOP, bottom_elevation=BASE)
+# ``unbalanced_fill`` is authored rather than derived, and has to be. The engine derives
+# unbalanced fill as the depth of soil standing against a wall *below grade*, which for
+# these five legs is now zero — their base is grade. That is a true statement about the
+# outboard (yard) side and a false one about the wall: the 3'-0" of terrace between the
+# apron and the sunken-garden walls bears on the apron's inboard face over its whole height,
+# and a dry-stacked SRW run needs exactly that fill (plus its batter and its drainage stone)
+# to stand at all. Nothing in the model can infer a retained height on the high side of a
+# freestanding wall, so it is stated: 3'-0", the apron's full run.
+_APRON = dict(assembly="RETAINING_BLOCK_12", top_elevation=TOP, bottom_elevation=BASE,
+              unbalanced_fill=ft(3))
 
 WALLS = [
     # The south leg keeps W-RG-BLOCK's tag *and* its uid: the tag is what the energy and
@@ -168,7 +185,8 @@ WALLS = [
 
 # The levelling pad under every leg. Hosted on the wall, not on a footing: there is no
 # footing, and inventing one would order concrete nobody pours. The bed's top is the wall's
-# own underside (-2'-6"), so the excavation runs to -3'-0".
+# own underside (-2'-6", which is finished grade since 2026-08-18), so the excavation runs
+# to -3'-0" — 6" below grade, which is what a levelling pad is.
 #
 # The bands butt at the shared corner nodes rather than overlapping — ``rect_between`` is
 # not extended past an axis end, the same convention ``_resolve_footing`` follows — so the

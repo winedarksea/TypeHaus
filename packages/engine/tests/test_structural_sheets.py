@@ -97,7 +97,12 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
     poured = {row[1]: row[2] for row in slabs.rows}
     assert poured["SL-B-FLOOR"] == '3-1/2"' and poured["SL-G-FLOOR"] == '3-1/2"'
     assert "SL-G-HYDRANT-PED" not in poured
-    assert all(thickness == '3-1/2"' for thickness in poured.values()), poured
+    # Every *floor* pour is 3-1/2". The five SL-G-STEP-* are 6" — the step-down from the
+    # garage service door's 0'-0" threshold to the slab at grade (2026-08-18), and a 6"
+    # riser is the pour, not a rounding of one.
+    assert all(thickness == '3-1/2"' for tag, thickness in poured.items()
+               if not tag.startswith("SL-G-STEP-")), poured
+    assert {poured[tag] for tag in poured if tag.startswith("SL-G-STEP-")} == {'6"'}
 
 
 def test_s100_calls_frost_depth_drainage_and_steps(catlin_model):

@@ -17,13 +17,35 @@ from typehaus.resolve.model import ResolvedModel
 _DRAIN_VENT = {"drain", "vent"}
 
 
+#: How far a candidate storey may sit *below* this storey's own ceiling plane and still be
+#: called the floor above it. Slack for a raised-heel lift or a sloped deck, not for a
+#: different structure standing beside the house.
+_CEILING_SLACK_M = 0.05
+
+
 def storey_above(model: ResolvedModel, storey_tag: str) -> str | None:
+    """The storey whose floor is this storey's ceiling, or ``None``.
+
+    Not simply the next storey by elevation. A freestanding structure files its own storey
+    in the same table as the house's, and once it stops sharing the house's datum it lands
+    *between* two house storeys: catlin's garage sits at -0'-8" — above the basement at -9'
+    but 8" below the main floor — since grade dropped 2'-6" under the house on 2026-08-18.
+    Taking it as "the storey above the basement" put a garage yard-hydrant sleeve on the
+    basement's ceiling plan and dropped the 42 sleeves cast in the deck actually overhead.
+
+    So the candidate must reach this storey's own ceiling. A floor that sits below the
+    ceiling of the storey under it is not that storey's ceiling; it is something standing
+    next to it.
+    """
     storeys = sorted(model.plan.storeys, key=lambda s: s.elevation.meters)
     tags = [s.tag for s in storeys]
     if storey_tag not in tags:
         return None
-    index = tags.index(storey_tag)
-    return tags[index + 1] if index + 1 < len(tags) else None
+    here = storeys[tags.index(storey_tag)]
+    ceiling = here.elevation.meters + here.default_ceiling_height.meters - _CEILING_SLACK_M
+    return next((s.tag for s in storeys
+                 if s.elevation.meters > here.elevation.meters
+                 and s.elevation.meters >= ceiling), None)
 
 
 def _sleeves_for(model: ResolvedModel, storey_tag: str):

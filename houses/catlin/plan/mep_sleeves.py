@@ -317,18 +317,22 @@ WALL_SLEEVES = [
                       position=pt(ft(3), ft(0)), pipe_diameter=inch(4),
                       sleeve_diameter=inch(6), axis="horizontal",
                       center_elevation=ft(-10.356)),
+    # Both follow PR-G-HYDRANT-CW down to -8'-6" (2026-08-18): the run holds 6' under a
+    # grade that is now -2'-6", and a sleeve that stayed at -6'-0" would be a bore the pipe
+    # misses by 2'-6". They sit 6" above the basement walls' own bottom, which is as low as
+    # this crossing can go before it is in the footing instead.
     SleevePenetration(uid="CBPW19AAAA", tag="SP-B-S1-HYD", host_ref="W-B-S1",
                       position=pt(ft(5), ft(0, 6)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
-                      purpose=Service.WATER_COLD, center_elevation=ft(-6)),
+                      purpose=Service.WATER_COLD, center_elevation=ft(-8, -6)),
     SleevePenetration(uid="CBPW20AAAA", tag="SP-B-N3-HYD", host_ref="W-B-N3",
                       position=pt(ft(5), ft(35, 6)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
-                      purpose=Service.WATER_COLD, center_elevation=ft(-6)),
+                      purpose=Service.WATER_COLD, center_elevation=ft(-8, -6)),
 ]
 
 # The hydrant line's garage-foundation protection (IRC P2604): the buried run passes 22"
-# below FT-GF-S-DR's 4'-2" bearing plane, on its centerline, inside a protection sleeve —
+# below FT-GF-S-DR's 6'-8" bearing plane, on its centerline, inside a protection sleeve —
 # being *under* a footing is the worst case in its 45° influence cone, not clearance from it.
 #
 # Two other sleeves used to live here and are gone. SP-G-HYDRANT-PED (the topping pedestal's
@@ -342,5 +346,5 @@ GARAGE_SLEEVES = [
     SleevePenetration(uid="CGPW01AAAA", tag="SP-GF-S-HYD", host_ref="FT-GF-S-DR",
                       position=pt(ft(5), ft(41)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(2), axis="horizontal",
-                      purpose=Service.WATER_COLD, center_elevation=ft(-6)),
+                      purpose=Service.WATER_COLD, center_elevation=ft(-8, -6)),
 ]

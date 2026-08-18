@@ -65,6 +65,15 @@ _library = Library(
 _basemap = load_basemap_geojson(Path(__file__).with_name("basemap.geojson"))
 _site = site.SITE.model_copy(update={"contours": _basemap.contours})
 
+# ``plan/site.py`` is ``# haus: editable`` and may hold only literals, so finished grade is
+# written there as a literal and again in ``params/foundations.py`` as the value everything
+# pinned to soil derives from. This is the only place the two meet; if they ever disagree,
+# the garage would float or bury itself relative to the ground it stands on.
+assert _site.grade is not None and (
+    abs(_site.grade.meters - foundations.SITE_GRADE.meters) < 1e-9
+), (f"plan/site.py grade {_site.grade.meters}m disagrees with "
+    f"params/foundations.py SITE_GRADE {foundations.SITE_GRADE.meters}m")
+
 _project = Project(
     name="Catlin House",
     project_uuid=PROJECT_UUID,
@@ -82,10 +91,13 @@ _storeys = (
            default_ceiling_height=ft(9)),
     Storey(uid="STMAINAAAA", tag="main", elevation=ft(0),
            default_ceiling_height=ft(9)),
-    # The garage storey *is* the stem top: its wood walls bear there. The slab it floors
-    # stays down at grade, one GARAGE_STEM_REVEAL below — which is why the overhead door
-    # carries a negative sill (plan/storeys/garage.py).
-    Storey(uid="STGARAAAAA", tag="garage", elevation=garage.GARAGE_STEM_REVEAL,
+    # The garage storey *is* the stem top: its wood walls bear there. The stem tops out
+    # GARAGE_STEM_REVEAL above *grade*, not above the house datum, because the garage is
+    # driven into off the ground and the ground is 2'-6" below the main floor. The slab it
+    # floors stays down at grade, one GARAGE_STEM_REVEAL below this storey — which is why
+    # the overhead door carries a negative sill (plan/storeys/garage.py).
+    Storey(uid="STGARAAAAA", tag="garage",
+           elevation=ft(foundations.SITE_GRADE.feet + garage.GARAGE_STEM_REVEAL.feet),
            default_ceiling_height=ft(8)),
     # Platform framing: 9' stud wall plus the nominal 12" floor system above it.
     Storey(uid="STSECDAAAA", tag="second", elevation=ft(10),
@@ -109,11 +121,12 @@ PLAN = (
         "main",
         [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *fixtures.PORCH_HYDRANT,
          *sunken_garden.MAIN_ELEMENTS,
-         *foundations.MAIN_ELEMENTS, *breezeway.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
+         *breezeway.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
          *electrical.MAIN_ELEMENTS, *lighting.MAIN_LIGHTING,
          *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES],
     )
-    .with_elements("garage", [*garage.ELEMENTS, *electrical.GARAGE_ELEMENTS,
+    .with_elements("garage", [*garage.ELEMENTS, *foundations.GARAGE_ELEMENTS,
+                              *electrical.GARAGE_ELEMENTS,
                               *fixtures.GARAGE_FIXTURES,
                               *lighting.GARAGE_LIGHTING,
                               *placeables.GARAGE_PLACEABLES])

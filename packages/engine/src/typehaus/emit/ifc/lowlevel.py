@@ -357,6 +357,34 @@ def assign_material_layer_set(f: Any, element: Any, layers: list[dict[str, Any]]
     return layer_set
 
 
+def create_building_element_part(f: Any, body_ctx: Any, name: str, guid: str,
+                                 points_m: list[tuple[float, float]],
+                                 z0_m: float, z1_m: float, material_ref: str) -> Any:
+    """One ``IfcBuildingElementPart`` prism, with its own single material.
+
+    This is how a wall whose content varies *vertically* is exported. ``IfcMaterialLayerSet``
+    has no vertical variation at all, and its layer thicknesses are required to sum to the
+    element's thickness, so a layer that runs only part-way up a wall cannot be a member of
+    one without lying about the wall's depth. The standard answer — and the one Revit takes
+    for a vertically compound wall, its "export parts as building elements" path — is to
+    emit the varying content as parts aggregated to the host element via
+    ``IfcRelAggregates``, each part carrying its own material association.
+
+    (``IfcCovering`` + ``IfcRelCoversBldgElements`` is the alternative, and is arguably the
+    better semantics for an applied finish band specifically — it is what Revit uses for a
+    wall sweep. ``IfcBuildingElementPart`` is the more general answer, covers a banded layer
+    that is *not* a finish, and is what Bonsai and Navisworks read without surprises.)
+    """
+    part = create_entity(f, "IfcBuildingElementPart", name=name)
+    part.GlobalId = guid
+    assign_representation(f, part,
+                          add_prism_from_profile(f, body_ctx, points_m, z1_m - z0_m, z0_m))
+    material = f.create_entity("IfcMaterial", Name=material_ref)
+    f.create_entity("IfcRelAssociatesMaterial", GlobalId=new_guid(),
+                    RelatedObjects=[part], RelatingMaterial=material)
+    return part
+
+
 def assign_material_layer_usage(f: Any, element: Any, layer_set: Any,
                                 offset_from_reference_line_m: float) -> Any:
     # IfcOpenShell's type assignment creates a default occurrence usage when the wall

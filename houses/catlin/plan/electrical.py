@@ -847,7 +847,12 @@ CONDUIT_SLEEVES = [
                       position=pt(ft(16), ft(35, 6)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2), purpose=Service.POWER_240,
                       axis="horizontal", center_elevation=ft(-4)),
-    SleevePenetration(uid="CNS009AAAA", tag="SP-GF-CD-GAR", host_ref="FT-GF-S2",
+    # Through the ICF *stem*, not the footing under it. The run holds -4'-0" the whole way
+    # (it is pinned to the basement it leaves, which did not move), and when grade dropped
+    # 2'-6" on 2026-08-18 the garage foundation went down with the soil: FT-GF-S2 now bears
+    # at -6'-8" and its top is -6'-0", two feet clear below this crossing, while W-GF-S2
+    # spans -6'-0" to -0'-8" and is what the conduit actually passes through.
+    SleevePenetration(uid="CNS009AAAA", tag="SP-GF-CD-GAR", host_ref="W-GF-S2",
                       position=pt(ft(16), ft(40, 10)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2), purpose=Service.POWER_240,
                       axis="horizontal", center_elevation=ft(-4)),

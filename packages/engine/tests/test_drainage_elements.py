@@ -59,7 +59,10 @@ def test_the_garage_leader_takes_its_water_from_the_resolved_trough(catlin_model
     leader = next(s for s in catlin_model.solids if s.tag == "TR-G-LEADER-E")
     assert floor.z0_m <= leader.z1_m <= floor.z1_m, \
         "the leader's outlet must sit in the trough floor, not above or below it"
-    assert 0.0 < leader.z0_m < 0.5, "and run down to a splash block just above the apron"
+    grade_m = catlin_model.plan.project.site.grade.meters
+    assert grade_m < leader.z0_m < grade_m + 0.5, \
+        "and run down to a splash block just above the apron — measured from grade, which "\
+        "the garage stands on and which is 2'-6\" below the house datum since 2026-08-18"
 
 
 def test_the_balcony_leader_drops_the_full_storey_into_the_garden(catlin_model):

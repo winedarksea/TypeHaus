@@ -314,10 +314,16 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, direction, station, crop,
     wall_top = _wall_top_at_cut(wall, direction, station)
     for layer in wall.layers:
         term = joints.termination(wall.uid, layer.name) if joints is not None else None
+        # A banded layer (``Layer.extent``) states its own bottom and top. A ``LayerJoin``
+        # termination is the drawing-only extension of a layer past the wall top and still
+        # wins where it is authored; the band is the second plane, at the bottom, and it
+        # caps the top too for a layer that stops short of the wall (a protection panel
+        # dying under the Z-flashing).
+        band_z0, band_z1 = layer.band(wall)
         for (u0, u1) in ring_cut_intervals(layer.polygon, direction, station):
-            layer_top_l = term.z(u0) if term is not None else wall_top
-            layer_top_r = term.z(u1) if term is not None else wall_top
-            rect = _clip_rect(u0, u1, wall.z0_m, max(layer_top_l, layer_top_r), crop)
+            layer_top_l = term.z(u0) if term is not None else min(wall_top, band_z1)
+            layer_top_r = term.z(u1) if term is not None else min(wall_top, band_z1)
+            rect = _clip_rect(u0, u1, band_z0, max(layer_top_l, layer_top_r), crop)
             if rect is None:
                 continue
             ru0, ru1, rz0, rz1 = rect

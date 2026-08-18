@@ -218,7 +218,9 @@ def test_site_context_serializes_grade_parcel_and_spot_elevations(catlin_payload
 
 def test_model_json_serializes_finished_height_above_average_grade(catlin_payload):
     summary = catlin_payload["building_height_summary"]
-    assert summary["average_ground_grade_m"] == pytest.approx(0.0)
+    # -2'-6": grade sits that far below the main floor since the 2026-08-18 lift, and the
+    # zoning height every roof is measured for grew by exactly that much with it.
+    assert summary["average_ground_grade_m"] == pytest.approx(-0.762)
     assert {row["roof_tag"] for row in summary["roofs"]} == {"RF-HOUSE", "RF-GARAGE"}
     assert all(row["peak_above_grade_m"] > row["midpoint_above_grade_m"] > 0
                for row in summary["roofs"])

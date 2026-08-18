@@ -200,8 +200,17 @@ def _slab_elevations(slab: Slab, elevation: float) -> tuple[float, float]:
     already top out at the datum, so it rides on top — exactly like that FloorSystem's own
     subfloor sheet. Hanging the latter below the datum buried the boards inside the top inch
     of their own joists.
+
+    An authored ``top_elevation`` overrides the storey datum entirely — the slab tops out
+    there and hangs its thickness below, whatever ``datum`` says. Mixing an authored
+    elevation with a storey-derived one is the bug ``Pad.bottom_elevation`` records above:
+    take one end from the author and the other from the storey and the thickness stops being
+    the pour.
     """
     thickness = slab.thickness.meters
+    if slab.top_elevation is not None:
+        top = slab.top_elevation.meters
+        return top - thickness, top
     if slab.datum == "walking_surface":
         return elevation, elevation + thickness
     return elevation - thickness, elevation

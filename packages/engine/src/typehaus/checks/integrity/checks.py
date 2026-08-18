@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from typehaus.checks._authoring import advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
+from typehaus.model.assembly import Layer, LayerExtent
+from typehaus.model.enums import LayerDatum
 from typehaus.model.patterns import matches as _matches
 
 
@@ -67,10 +71,78 @@ def assembly_layer_sanity(ctx: CheckContext) -> list[Finding]:
                 out.append(_err("integrity.assembly_layers",
                                 f"assembly {asm.tag} layer {layer.name} has thickness <= 0",
                                 (asm.tag,)))
+            out.extend(_layer_extent_findings(asm.tag, layer))
+        out.extend(_overlapping_band_findings(asm.tag, resolved.layers))
         if resolved.structure_index() is None:
             out.append(_err("integrity.assembly_layers",
                             f"assembly {asm.tag} has no STRUCTURE layer", (asm.tag,)))
     return out
+
+
+def _layer_extent_findings(assembly_tag: str, layer: Layer) -> list[Finding]:
+    """A banded layer must describe a band that can exist.
+
+    Only bounds sharing a datum are comparable without a wall: ``GRADE`` against
+    ``WALL_TOP`` is a different answer on every wall the assembly is used by, which is the
+    whole reason the extent is stated against datums instead of elevations. Where the two
+    ends *are* comparable, an inverted band is an authoring error and nothing else — it
+    resolves to a layer of zero height that silently disappears from the model, the
+    drawings and the order.
+    """
+    extent = getattr(layer, "extent", None)
+    if extent is None or extent.bottom is None or extent.top is None:
+        return []
+    if extent.bottom.datum is not extent.top.datum:
+        return []
+    if extent.bottom.offset.meters < extent.top.offset.meters - 1e-9:
+        return []
+    return [_err("integrity.assembly_layers",
+                 f"assembly {assembly_tag} layer {layer.name} has an extent whose bottom "
+                 f"({extent.bottom.offset.inches:+.1f}\") is at or above its top "
+                 f"({extent.top.offset.inches:+.1f}\") off the same "
+                 f"{extent.bottom.datum.value} datum", (assembly_tag,),
+                 "put the lower elevation in `bottom`")]
+
+
+def _overlapping_band_findings(assembly_tag: str,
+                               layers: Sequence[Layer]) -> list[Finding]:
+    """Two banded layers of the same material must not claim the same elevations.
+
+    This is the split-row case — a parge coat below grade and a protection panel above it,
+    the two regions of one row of the stack. Regions of a split row are exclusive by
+    definition; two that overlap are one wall wearing two coats of the same thing over the
+    same band, which is a bill for stuff nobody applies. Only bands stated off the same
+    datum are compared, for the reason ``_layer_extent_findings`` gives.
+    """
+    banded = [layer for layer in layers if getattr(layer, "extent", None) is not None]
+    out: list[Finding] = []
+    for index, first in enumerate(banded):
+        for second in banded[index + 1:]:
+            if first.material_ref != second.material_ref:
+                continue
+            span_a = _comparable_span(first.extent)
+            span_b = _comparable_span(second.extent)
+            if span_a is None or span_b is None or span_a[0] is not span_b[0]:
+                continue
+            _datum, a0, a1 = span_a
+            _datum, b0, b1 = span_b
+            if min(a1, b1) - max(a0, b0) > 1e-9:
+                out.append(_err(
+                    "integrity.assembly_layers",
+                    f"assembly {assembly_tag} layers {first.name} and {second.name} are the "
+                    f"same material over overlapping bands of the {_datum.value} datum",
+                    (assembly_tag,),
+                    "split rows of one layer must not overlap — move one band's end"))
+    return out
+
+
+def _comparable_span(extent: LayerExtent | None) -> tuple[LayerDatum, float, float] | None:
+    """``(datum, bottom_offset_m, top_offset_m)`` when both ends share one datum."""
+    if extent is None or extent.bottom is None or extent.top is None:
+        return None
+    if extent.bottom.datum is not extent.top.datum:
+        return None
+    return (extent.bottom.datum, extent.bottom.offset.meters, extent.top.offset.meters)
 
 
 @check(Tier.INTEGRITY, "integrity.opening_fits")

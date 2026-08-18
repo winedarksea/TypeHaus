@@ -37,6 +37,23 @@ class ResolvedLayer:
     is_cavity: bool = False
     # For a cavity layer, the name of the STRUCTURE layer whose bays it fills.
     cavity_host: str | None = None
+    # Absolute vertical extent of this layer, when its assembly bands it (``Layer.extent``:
+    # a protection panel above grade, a splash course at the base). ``None`` means "the
+    # wall's own extent", which is what every full-height layer says and what every layer
+    # said before banding existed. Consumers should read :meth:`band` rather than these two
+    # fields, so the fallback lives in exactly one place.
+    z0_m: float | None = None
+    z1_m: float | None = None
+
+    def band(self, wall: ResolvedWall) -> tuple[float, float]:
+        """This layer's absolute (z0, z1), falling back to the wall's where unbanded."""
+        return (wall.z0_m if self.z0_m is None else self.z0_m,
+                wall.z1_m if self.z1_m is None else self.z1_m)
+
+    @property
+    def is_banded(self) -> bool:
+        """Whether this layer states an extent of its own rather than the wall's."""
+        return self.z0_m is not None or self.z1_m is not None
 
 
 @dataclass(frozen=True)

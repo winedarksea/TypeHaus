@@ -234,8 +234,15 @@ def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
                  for other in decks
                  if other.tag != deck.tag and other.deck_outline
                  and other.deck_z1_m < surface - 1e-6]
+        # Deliberately **not** filtered by storey. A storey tag is a filing convention, not
+        # a level: this project's freestanding structures share tags with whatever house
+        # storey they were convenient to file on (the sunken garden's masonry guards are on
+        # ``basement`` while the porch deck they stand on is on ``main``), and a guard that
+        # is physically at the edge, at full height, guards it whatever it is filed under.
+        # The two z tests below are the real question and answer it on their own —
+        # ``structural.deck_guard`` has credited guard walls this way since it was written.
         walls = [w for w in ctx.model.walls
-                 if w.storey == deck.storey and w.z0_m <= surface + 0.1
+                 if w.z0_m <= surface + 0.1
                  and w.z1_m >= surface + _GUARD_MIN_HEIGHT.meters - 0.02]
         near_railings = [r for r in railings
                          if abs(r.base_elevation.meters - surface) < _EDGE_RAILING_BASE_TOL_M]

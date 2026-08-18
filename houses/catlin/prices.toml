@@ -130,6 +130,9 @@
 "2x4" = { low = 0.6, high = 1 }  # 7850 LF
 "2x6" = { low = 0.95, high = 1.55 }  # 10612 LF
 "2x8" = { low = 1.35, high = 2.1 }  # 672 LF
+# D-G-SERVICE's continuous header (2026-08-18). Three plies at $3-5/LF per 1.75" ply, on
+# the same basis as the rows above; shallow stock, so the low end of that band.
+"3-1.75x5.5 LVL" = { low = 6, high = 10 }
 "3-1.75x11.875 LVL" = { low = 9, high = 15 }  # 36 LF
 "3x6 rim" = { low = 1.9, high = 3.1 }  # 8 LF
 "4x0.5 panel" = { low = 1.5, high = 5 }  # 28 LF — formed gutter stock
@@ -503,6 +506,14 @@
 "cabinet-plywood" = { low = 2.5, high = 4.5 }  # 101.2 SF
 "eps" = { low = 0.7, high = 1.4 }  # 3515.7 SF
 "fiberglass" = { low = 0.45, high = 0.9 }  # 438.8 SF
+"foundation-protection-panel" = { low = 3.5, high = 7.5 }  # 324 SF
+# 2026-08-18: the above-grade foundation band on the N/E/W basement walls, 324 SF
+# (108 LF of perimeter x the 3'-0" the panel runs, 6" of it below grade). Aluminium-faced
+# rigid protection panel, sold in 4' x 8' sheets and fastened into the XPS with washered
+# pins; it costs more per SF than the parge coat it replaces and covers a quarter of the
+# area, because the parge was claimed over 9' of wall that is backfilled.
+# Sources: homewyse.com 2026 foundation insulation protection board, and the same range
+# the trade quotes for aluminium foundation coving.
 "gwb" = { low = 0.45, high = 0.75 }  # 11078.9 SF
 "gwb-x" = { low = 0.6, high = 1 }  # 92.3 SF
 "icf-eps" = { low = 2.2, high = 3.8 }  # 952.5 SF
@@ -517,7 +528,8 @@
 "sauna-tg" = { low = 4.5, high = 9 }  # 297.4 SF
 "standing-seam" = { low = 2.5, high = 6 }  # 6326.9 SF
 "struct-1-plywood" = { low = 0.9, high = 1.7 }  # 5695.6 SF
-"stucco" = { low = 2, high = 4.5 }  # 1394.1 SF
+"stucco" = { low = 2, high = 4.5 }  # 422.1 SF (was 1394.1 SF: the N/E/W walls' parge was
+# replaced 2026-08-18 by `foundation-protection-panel` over the exposed band only)
 "white-brick" = { low = 6, high = 12 }  # 133.8 SF
 "xps" = { low = 0.9, high = 1.8 }  # 2520.7 SF
 "zip-r" = { low = 2.2, high = 4.2 }  # 631.3 SF
@@ -545,6 +557,10 @@
 # $/cy placed, by wall assembly
 "BASEMENT_BRICK_VENEER" = { low = 900, high = 1900 }  # 1.37 CY
 "CATLIN_BASEMENT_12" = { low = 320, high = 600 }  # 46.68 CY
+# The south wall, split out 2026-08-18 so its full-height parge could stay while the other
+# three took an above-grade panel instead. Identical 12" pour, identical formwork, so
+# identical basis — the assemblies differ only outboard of the concrete.
+"CATLIN_BASEMENT_12_GARDEN" = { low = 320, high = 600 }
 "CATLIN_CONC_12_INT" = { low = 320, high = 600 }  # 22.18 CY
 "GARAGE_ICF_6" = { low = 480, high = 1000 }  # 8.82 CY
 "PORCH_RAILING_MASONRY" = { low = 700, high = 1600 }  # 3.15 CY

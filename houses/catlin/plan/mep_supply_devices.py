@@ -22,7 +22,7 @@ from typehaus import (
 # valve sitting on its pipe). Only devices off that line — a stub, a breaker at handle
 # height — author one.
 SUPPLY_DEVICES_BASEMENT = [
-    # P2903.9.1. The service (buried -6'-0", PR-G-HYDRANT-CW) tees off at (5', 1') and rises
+    # P2903.9.1. The service (buried -8'-6", PR-G-HYDRANT-CW) tees off at (5', 1') and rises
     # to the basement ceiling; this valve sits on that riser at 4'-0" — head height,
     # reachable with one hand, which is what "accessible" means.
     #
@@ -78,8 +78,9 @@ SUPPLY_DEVICES_BASEMENT = [
 ]
 
 # The garage yard hydrant's two devices, on the service run (filed on ``main``). The seat
-# takes the run's elevation, its own buried valve at -6'-0" (the 72" bury
-# `mep.hydrant_freeze_depth` grades); the vacuum breaker screws onto the outlet, 2'-6" up.
+# takes the run's elevation, its own buried valve at -8'-6" (the 72" bury
+# `mep.hydrant_freeze_depth` grades, measured from the -2'-6" grade); the vacuum breaker
+# screws onto the outlet, 2'-6" above the garage slab, which puts it at 0'-0".
 SUPPLY_DEVICES_GARAGE = [
     PipeAccessory(uid="C9GW5PXV2R", tag="PA-G-HYD-SEAT", kind=PipeAccessoryKind.SHUTOFF,
                   pipe_ref="PR-G-HYDRANT-CW", position=pt(ft(5), ft(59, 6)),
@@ -87,7 +88,7 @@ SUPPLY_DEVICES_GARAGE = [
                   serves=("FX-G-HYDRANT",)),
     PipeAccessory(uid="J1DS4RQZ8X", tag="PA-G-HYD-VB",
                   kind=PipeAccessoryKind.VACUUM_BREAKER, pipe_ref="PR-G-HYDRANT-CW",
-                  position=pt(ft(5), ft(59, 6)), elevation=ft(2, 6), room="RM-GARAGE",
+                  position=pt(ft(5), ft(59, 6)), elevation=ft(0), room="RM-GARAGE",
                   model="screw-on hose-bib vacuum breaker, ASSE 1011",
                   serves=("FX-G-HYDRANT",)),
     # The weep, answered (2026-08-15). PA-G-HYD-VB above protects the hose thread (the only

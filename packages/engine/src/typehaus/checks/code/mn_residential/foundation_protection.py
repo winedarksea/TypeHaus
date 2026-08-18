@@ -20,6 +20,7 @@ from typehaus.checks.code.mn_residential._common import (_fail, _pass,
                                                          _storey_is_below_grade,
                                                          _unknown)
 from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.model.assembly import Layer
 from typehaus.findings import Finding
 from typehaus.model.enums import ControlLayer, LayerFunction
 from typehaus.model.structure import Footing, FootingBedding, FoundationWall
@@ -208,6 +209,12 @@ def foundation_dampproofing(ctx: CheckContext) -> list[Finding]:
     made of. A layer qualifies when it carries the WATER control layer — which is the same
     property the envelope's water-control continuity checks read, so a wall cannot satisfy
     one and fail the other for a naming reason.
+
+    R406.1 asks for the layer "from the top of the footing to finished grade", and until
+    ``Layer.extent`` existed only *presence* could be tested: a layer had one vertical
+    extent, the wall's, so there was nothing to compare against grade. A layer that now
+    states a band has to reach that far, and a band that stops short of grade is graded
+    exactly as a missing layer is — it is missing over the height that matters.
     """
     cid, code = "code.R406_1_dampproofing", "R406.1"
     grade = ctx.plan.project.site.grade
@@ -236,8 +243,16 @@ def foundation_dampproofing(ctx: CheckContext) -> list[Finding]:
                    and layer.function in (LayerFunction.MEMBRANE, LayerFunction.SHEATHING,
                                           LayerFunction.CLADDING)]
         if proofed:
-            out.append(_pass(cid, f"{assembly_tag} ({len(tags)} wall(s)) dampproofs the earth "
-                                  f"side with '{proofed[0].name}'", code))
+            short = _bands_short_of_grade(proofed)
+            if short:
+                out.append(_fail(
+                    cid, f"{assembly_tag} ({len(tags)} wall(s)) dampproofs the earth side "
+                         f"with '{proofed[0].name}', but its authored extent stops "
+                         f"{short}; R406.1 wants it from the top of the footing to "
+                         "finished grade: " + ", ".join(tags), tuple(tags), code))
+            else:
+                out.append(_pass(cid, f"{assembly_tag} ({len(tags)} wall(s)) dampproofs the "
+                                      f"earth side with '{proofed[0].name}'", code))
         else:
             out.append(_fail(cid, f"{assembly_tag} ({len(tags)} wall(s) retaining earth "
                                   "against interior space) carries no water-control layer; "
@@ -245,6 +260,32 @@ def foundation_dampproofing(ctx: CheckContext) -> list[Finding]:
                                   "to finished grade: " + ", ".join(tags),
                              tuple(tags), code))
     return out
+
+
+def _bands_short_of_grade(proofed: list[Layer]) -> str | None:
+    """Why the first water-control layer's authored band fails to reach finished grade.
+
+    ``None`` — the ordinary answer — when no band is authored at all (the layer runs the
+    wall's full height, which is from the footing to the top of the wall and so past grade
+    by definition), or when the band does reach. The two ways it can fall short are a
+    bottom that starts above the footing and a top that dies below grade; both are stated
+    against a datum, so both are answerable without a wall.
+    """
+    from typehaus.model.enums import LayerDatum
+
+    extent = getattr(proofed[0], "extent", None)
+    if extent is None:
+        return None
+    top, bottom = extent.top, extent.bottom
+    if top is not None:
+        if top.datum is LayerDatum.GRADE and top.offset.meters < -1e-9:
+            return f'{-top.offset.inches:.1f}" below grade'
+        if top.datum is LayerDatum.WALL_BASE:
+            return "at the wall base"
+    if bottom is not None and bottom.datum is LayerDatum.GRADE \
+            and bottom.offset.meters > 1e-9:
+        return f'{bottom.offset.inches:.1f}" above grade at its bottom'
+    return None
 
 
 __all__ = ["foundation_anchorage", "foundation_dampproofing", "foundation_drainage"]

@@ -125,17 +125,37 @@ def _arch_spandrel_mesh(edges, opening_start: float, opening_end: float, z1: flo
                  normals=tuple(normals), curved_vertices=frozenset(curved))
 
 
-def layer_solids(wall: ResolvedWall, polygon, openings) -> tuple[GSolid, ...]:
-    """Every solid one depth-bearing layer of ``wall`` contributes."""
+def layer_solids(wall: ResolvedWall, polygon, openings,
+                 band: tuple[float, float] | None = None) -> tuple[GSolid, ...]:
+    """Every solid one depth-bearing layer of ``wall`` contributes.
+
+    ``band`` is the layer's own absolute (z0, z1) when its assembly gives it one
+    (``Layer.extent`` — a protection panel above grade, a splash course at the base);
+    ``None`` means the layer runs the wall's full height, which is what every layer did
+    before banding existed. Every renderer and exporter of a wall body comes through here,
+    so clamping in this one function is what makes a banded layer real in glTF, in IFC and
+    in ``geometry_build`` at once.
+
+    A raked top still wins over the band's top: the band says how far up the layer *wants*
+    to run, and a gable rake is where the wall itself stops.
+    """
     top_at = (lambda x, y: wall_top_at(wall, x, y)) if is_raked(wall) else None
+    z0, z1 = band if band is not None else (wall.z0_m, wall.z1_m)
+    if z1 - z0 <= 1e-9:
+        return ()
+    if top_at is not None and band is not None:
+        # A rake and a band both cap this layer, and the lower of the two wins. Clamping to
+        # the band's floor as well keeps a rake that has already fallen past it — the far
+        # end of a gable wall, under a band that starts partway up — from inverting the
+        # prism instead of producing nothing.
+        top_at = lambda x, y, _rake=top_at, _floor=z0: max(min(_rake(x, y), z1), _floor)  # noqa: E731
     ops = sorted(openings, key=lambda o: o.center_along_m)
     if not ops:
-        return (_prism(polygon, wall.z0_m, wall.z1_m, top_at),)
+        return (_prism(polygon, z0, z1, top_at),)
 
     _origin, _tangent, _normal, axis_length = wall_frame(wall)
     length = axis_length or 1.0
     edges = _thin_rect_edges(polygon, wall.axis)
-    z0, z1 = wall.z0_m, wall.z1_m
 
     # The piers are the [0, 1]-fraction band not claimed by any opening's cutout — a gap
     # computation, the same one ``framing/furring.py`` runs per station (→
@@ -160,14 +180,19 @@ def layer_solids(wall: ResolvedWall, polygon, openings) -> tuple[GSolid, ...]:
         while pier_index < len(piers) and piers[pier_index][1] <= o0 + 1e-6:
             solids.append(_prism(_slice(edges, *piers[pier_index]), z0, z1, top_at))
             pier_index += 1
-        bottom = min(z0 + op.sill_m, z1)
-        head = min(bottom + op.height_m, z1)
+        # Openings are positioned from the *wall* base — a sill height is a property of the
+        # wall, not of whichever layer happens to be in front of it — then clipped into this
+        # layer's band, which is what makes a band that misses an opening entirely simply
+        # not cut for it.
+        raw_bottom = wall.z0_m + op.sill_m
+        bottom = min(max(raw_bottom, z0), z1)
+        head = min(max(raw_bottom + op.height_m, z0), z1)
         if bottom > z0 + 1e-6:  # sill band — always flat, below the rake
             solids.append(GPrism(ring=tuple(_slice(edges, o0, o1)), z0_m=z0, z1_m=bottom))
         if op.arch_rise_m > 1e-6:
             # v1: arch heads stay flat-topped even under a rake (a rare combination); the
             # raked square header below handles the common gable-end case.
-            springline = bottom + max(0.0, op.height_m - op.arch_rise_m)
+            springline = raw_bottom + max(0.0, op.height_m - op.arch_rise_m)
             if z1 > springline + 1e-6:
                 solids.append(_arch_spandrel_mesh(edges, o0, o1, z1, springline,
                                                   op.width_m / 2.0, op.arch_rise_m))

@@ -931,10 +931,18 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
 
 def test_basement_walls_carry_two_exterior_xps_layers(catlin_model):
     """Old: 4 perimeter segments x 2 XPS layers; new: every perimeter segment
-    carries both 2" XPS layers in its resolved stack."""
+    carries both 2" XPS layers in its resolved stack.
+
+    Ten segments across two assemblies since 2026-08-18: seven on N/E/W with an above-grade
+    protection band, three on the south with a full-height parge into the sunken garden. The
+    concrete and the foam are identical on both — the split is only about what covers it.
+    """
     perimeter = [w for w in catlin_model.walls
-                 if w.storey == "basement" and w.assembly == "CATLIN_BASEMENT_12"]
+                 if w.storey == "basement"
+                 and w.assembly in ("CATLIN_BASEMENT_12", "CATLIN_BASEMENT_12_GARDEN")]
     assert len(perimeter) == 10  # same wall line, split at grid/tee nodes
+    assert len([w for w in perimeter
+                if w.assembly == "CATLIN_BASEMENT_12_GARDEN"]) == 3
     for wall in perimeter:
         xps = [l for l in wall.layers if l.name.startswith("xps")]
         assert len(xps) == 2
@@ -954,16 +962,24 @@ def test_garage_is_freestanding_north_of_the_house_with_icf_stem(catlin_model):
     ys = [p[1] for w in stem for p in w.axis]
     assert min(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT).meters)
     assert max(ys) == pytest.approx(ft(HOUSE_SIZE_FT + GARAGE_GAP_FT + GARAGE_SIZE_FT).meters)
-    # Stem runs frost depth (-42") to +22" — absolute elevations, walkout-style — except
-    # under the overhead door, where it becomes a grade beam topping out *flush with the
-    # slab* rather than at any reveal at all: a low curb across a 16' vehicle door is still
-    # a curb the car has to climb.
+    # Stem runs 42" below grade to 22" above it — absolute elevations, walkout-style —
+    # except under the overhead door, where it becomes a grade beam topping out *flush with
+    # the slab* rather than at any reveal at all: a low curb across a 16' vehicle door is
+    # still a curb the car has to climb.
+    #
+    # Every one of those numbers is measured from **grade**, not from the project datum. The
+    # two were the same thing until 2026-08-18, when grade went to -2'-6" to lift the house
+    # out of the ground and the garage — driven into at grade, and staying there — went down
+    # with the soil. Reading them off ``site.grade`` is the assertion: the reveal, the bury
+    # and the slab are properties of the ground, and the house datum is not the ground.
+    grade_m = catlin_model.plan.project.site.grade.meters
     grade_beams = {w.tag for w in stem if w.tag in ("W-GF-E-DR", "W-GF-S-DR")}
     assert grade_beams == {"W-GF-E-DR", "W-GF-S-DR"}
     slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
+    assert slab.z1_m == pytest.approx(grade_m)
     for wall in stem:
-        assert wall.z0_m == pytest.approx(-inch(42.0).meters)
-        expected_top = slab.z1_m if wall.tag in grade_beams else inch(22.0).meters
+        assert wall.z0_m == pytest.approx(grade_m - inch(42.0).meters)
+        expected_top = slab.z1_m if wall.tag in grade_beams else grade_m + inch(22.0).meters
         assert wall.z1_m == pytest.approx(expected_top)
     # Garage roof: ridge E-W (rotated 90° vs the house), 16" overhangs.
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
@@ -1004,26 +1020,39 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
     assert header.z0_m == pytest.approx(plate_top + door.sill_m + door.height_m)
 
 
-def test_garage_service_door_opens_from_the_slab_at_grade(catlin_model):
-    """The second negative sill, added 2026-08-01 for the same reason as the first.
+def test_garage_service_door_opens_onto_the_breezeway_deck_not_the_slab(catlin_model):
+    """D-G-SERVICE follows the *deck*, and D-G-OVERHEAD follows the *slab*. That split is
+    the whole shape of the 2026-08-18 lift at the garage.
 
-    D-G-SERVICE hung on its host wall's own base until then, which put its threshold 1'-10"
-    above the garage slab inside it and the same 1'-10" above the breezeway deck outside it
-    — a 22" step in both directions, recorded in params/breezeway.py as a "known, deferred
-    mismatch" and failed outright by code.R311_3_exterior_landing. Same fix as the vehicle
-    door: drop the reveal, and gap the stem to a grade beam under the opening so no curb is
-    left across it.
+    Both doors carried the same negative sill from 2026-08-01, when the service door was
+    dropped to the slab to meet a breezeway deck that also sat at 0'-0". Then grade went to
+    -2'-6" and the garage went down with it while the breezeway deck — a bridge between two
+    doors, not a thing standing on soil — stayed. The deck is still this door's landing
+    (code.R311_3_exterior_landing, and houses/catlin/CLAUDE.md's rule that both breezeway
+    doors open onto it at one level), so the threshold stays at 0'-0" and the sill turns
+    positive: +0'-8" over a garage storey at -0'-8". The 2'-6" is taken inside instead, by
+    SL-G-STEP-0..4.
     """
     wall = catlin_model.wall("W-G-S")
     door = next(o for o in catlin_model.openings if o.tag == "D-G-SERVICE")
     slab = next(s for s in catlin_model.solids if s.tag == "SL-G-FLOOR")
+    deck = next(s for s in catlin_model.solids if s.tag == "SL-BW-DECK")
 
     threshold = wall.z0_m + door.sill_m
-    assert threshold == pytest.approx(slab.z1_m)
-    assert door.sill_m == pytest.approx(-(wall.z0_m - slab.z1_m))
-    # The breezeway deck outside it is within R311.3.1's 1 1/2" of that threshold.
-    deck = next(s for s in catlin_model.solids if s.tag == "SL-BW-DECK")
+    # The landing outside, not the floor inside: within R311.3.1's 1 1/2" of the deck, and a
+    # full 2'-6" above the slab.
     assert abs(deck.z1_m - threshold) <= inch(1.5).meters
+    assert threshold - slab.z1_m == pytest.approx(inch(30.0).meters)
+
+    # Five 6" risers inside close that 2'-6", top step level with the threshold and bottom
+    # step one riser above the slab.
+    steps = sorted((s for s in catlin_model.solids if s.tag.startswith("SL-G-STEP-")),
+                   key=lambda s: -s.z1_m)
+    assert len(steps) == 5
+    assert steps[0].z1_m == pytest.approx(threshold)
+    assert steps[-1].z1_m - slab.z1_m == pytest.approx(inch(6.0).meters)
+    for upper, lower in zip(steps, steps[1:]):
+        assert upper.z1_m - lower.z1_m == pytest.approx(inch(6.0).meters)
 
 
 def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):

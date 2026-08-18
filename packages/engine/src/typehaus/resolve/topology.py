@@ -16,7 +16,8 @@ from shapely.geometry import GeometryCollection, MultiPolygon, Polygon
 from shapely.ops import unary_union
 
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.enums import LayerFunction
+from typehaus.model.assembly import LayerBound
+from typehaus.model.enums import LayerDatum, LayerFunction
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.geometry import length, polygon_area, rect_between, sub, unit
 from typehaus.resolve.model import (
@@ -98,6 +99,28 @@ def _face_offset_from_interior(layers: list, added: list, alignment: object,
     return total / 2.0
 
 
+def site_grade_elevation_m_from_plan(plan: PlanModel) -> float:
+    """Finished grade in the project frame, or the main-floor datum when unstated.
+
+    The same fallback ``resolve.site_earth.site_grade_elevation_m`` applies, read off the
+    plan rather than the resolved model because wall geometry is resolved before there is a
+    ``ResolvedModel`` to ask. Only ``LayerDatum.GRADE`` needs it.
+    """
+    grade = plan.project.site.grade
+    return grade.meters if grade is not None else 0.0
+
+
+def _bound_elevation(bound: LayerBound | None, z0: float, z1: float,
+                     grade_m: float) -> float | None:
+    """One end of a ``LayerExtent``, resolved to an absolute elevation."""
+    if bound is None:
+        return None
+    base = {LayerDatum.WALL_BASE: z0,
+            LayerDatum.WALL_TOP: z1,
+            LayerDatum.GRADE: grade_m}[bound.datum]
+    return base + bound.offset.meters
+
+
 def _storey_nodes(plan: PlanModel, storey_tag: str) -> dict[str, object]:
     return {e.tag: e for e in plan.storey_elements(storey_tag) if e.element_kind == "Node"}
 
@@ -149,10 +172,37 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
         if not cavity:
             pos += add_t
 
+    if is_foundation:
+        # Foundation elevations are absolute project elevations so a walkout wall
+        # can differ from the storey's ordinary wall height without a shadow model.
+        z0 = wall.bottom_elevation.meters if wall.bottom_elevation is not None else z0
+        z1 = wall.top_elevation.meters if wall.top_elevation is not None else z1
+    elif getattr(wall, "top", None) is not None and hasattr(wall.top, "meters"):
+        z1 = z0 + wall.top.meters
+
     def _ring(span_in: float, span_out: float):
         return rect_between(p0, p1, (span_in - axis_from_int) * outward_sign,
                             (span_out - axis_from_int) * outward_sign, ext0, ext1)
 
+    def _band(layer: object) -> tuple[float | None, float | None]:
+        """The layer's absolute vertical extent, or (None, None) for a full-height layer.
+
+        ``Layer.extent`` states its ends against a *datum* rather than an elevation, because
+        an ``Assembly`` is a type shared by many walls and knows none of their z. Resolving
+        it is this function: the wall supplies WALL_BASE/WALL_TOP, the site supplies GRADE.
+        A band is clamped to the wall — a panel whose top runs past the wall top is simply
+        the wall top, not a layer floating above the wall.
+        """
+        extent = getattr(layer, "extent", None)
+        if extent is None:
+            return None, None
+        bottom = _bound_elevation(extent.bottom, z0, z1, grade_m)
+        top = _bound_elevation(extent.top, z0, z1, grade_m)
+        bottom = z0 if bottom is None else min(max(bottom, z0), z1)
+        top = z1 if top is None else min(max(top, z0), z1)
+        return bottom, top
+
+    grade_m = site_grade_elevation_m_from_plan(plan)
     layers: list[ResolvedLayer] = []
     for index, (layer, _add_t, cavity) in enumerate(added):
         host_index = _cavity_host(stack, index) if cavity else None
@@ -163,6 +213,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
         else:
             span_in, span_out = spans[index]
         host_name = stack[host_index].name if host_index is not None else None
+        band_z0, band_z1 = _band(layer)
         layers.append(
             ResolvedLayer(
                 name=layer.name,
@@ -173,6 +224,8 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                 control=frozenset(c.value for c in layer.control),
                 is_cavity=cavity,
                 cavity_host=host_name,
+                z0_m=band_z0,
+                z1_m=band_z1,
             )
         )
         fill = getattr(layer, "cavity", None)
@@ -189,16 +242,10 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                     control=frozenset(c.value for c in fill.control),
                     is_cavity=True,
                     cavity_host=layer.name,
+                    z0_m=band_z0,
+                    z1_m=band_z1,
                 )
             )
-
-    if is_foundation:
-        # Foundation elevations are absolute project elevations so a walkout wall
-        # can differ from the storey's ordinary wall height without a shadow model.
-        z0 = wall.bottom_elevation.meters if wall.bottom_elevation is not None else z0
-        z1 = wall.top_elevation.meters if wall.top_elevation is not None else z1
-    elif getattr(wall, "top", None) is not None and hasattr(wall.top, "meters"):
-        z1 = z0 + wall.top.meters
 
     return ResolvedWall(
         uid=wall.uid, tag=wall.tag, storey=storey_tag, assembly=wall.assembly,

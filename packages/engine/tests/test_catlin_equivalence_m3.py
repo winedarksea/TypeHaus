@@ -230,7 +230,12 @@ def test_spatial_hierarchy_carries_every_reference_storey(equivalence):
 DECLARED_STOREY_ELEVATION_MOVES = {
     "second": (3.048, "the main storey grew from 9' to 10' floor-to-floor"),
     "attic": (6.096, "rides the taller stack: 10' + 10' instead of 9' + 9'"),
-    "garage": (0.5588, "the garage storey sits at its ICF stem top, 1'-10\" above main"),
+    "garage": (-0.2032, "the garage storey sits at its ICF stem top, which is 1'-10\" above "
+                        "*grade* — and grade is 2'-6\" below the main floor since the "
+                        "2026-08-18 lift, so the stem top is -0'-8\". The reference model "
+                        "put the garage at the house datum because it had the house at "
+                        "grade; the garage has not moved relative to the ground it is "
+                        "driven into, the ground moved relative to the house"),
 }
 
 

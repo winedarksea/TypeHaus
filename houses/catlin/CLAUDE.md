@@ -62,18 +62,33 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
   4'-0" enclosure centred between `D-M-ENTRY` and `D-G-SERVICE`; when either door moves,
   `_GLAZING_CENTER_X` moves with it. It did not, once: the 2026-07-28 mudroom conversion
   pushed the entry 4'-0" east and the shelter stood 3'-6" off its own door until 2026-08-01,
-  when `code.R311_3_exterior_landing` finally caught it. Both doors now open onto the deck
-  at 0'-0" — `D-G-SERVICE` carries the same negative `sill_height` as `D-G-OVERHEAD`, with
-  the ICF stem gapped to a grade beam under it in `params/foundations.py`.
+  when `code.R311_3_exterior_landing` finally caught it. Both doors still open onto the deck
+  at 0'-0", and since the 2026-08-18 lift they reach it from opposite directions:
+  `D-M-ENTRY` from the house floor it shares, `D-G-SERVICE` *up* +0'-8" from a garage storey
+  that now sits at -0'-8". The breezeway deck did not move with grade — it is a bridge
+  between two doors, and only its pads and piers followed the soil down.
+- **Grade is 2'-6" below the main floor, and the house is what stands out of the ground.**
+  The model's vertical datum is the main floor, so the 2026-08-18 lift is authored as
+  `Site.grade = -2'-6"` with FFE, the basement, the sunken garden, the porch and the balcony
+  all unmoved. What follows the soil down is everything pinned to it: the garage and its
+  whole foundation, the breezeway's frost pads and piers, the hydrant's bury, the site's
+  nine house-perimeter spot elevations and both impervious surfaces. The number lives in
+  `params/foundations.py::SITE_GRADE`, is repeated as a literal in the editable
+  `plan/site.py`, and `plan/manifest.py` asserts the two agree.
 - **The garage storey datum is not the garage floor.** Its wood walls bear on the ICF stem
-  at `GARAGE_STEM_REVEAL` (1'-10"), which is the `garage` storey elevation; the slab they
-  enclose is poured at grade, 1'-10" lower, and filed on `main`. Anything that has to sit
-  on the garage floor must say so explicitly — D-G-OVERHEAD carries the plan's only
-  negative `sill_height` to reach it, and the stem becomes a grade beam flush with the slab
-  under that door so there is no curb across it. Emitters — and, since 2026-08-03, the
-  placeable resolver that decides how high anything in the garage stands — read
-  `resolve/room_floor.py::room_floor_elevation` rather than the storey elevation for the
-  same reason. Raising the stem means re-dropping the door: the tie is enforced by
+  at `GARAGE_STEM_REVEAL` (1'-10") *above grade*, which since the lift puts the `garage`
+  storey at -0'-8"; the slab they enclose is poured at grade, 1'-10" lower, and is filed on
+  the `garage` storey with an absolute `Slab.top_elevation` (it lived on `main` until
+  2026-08-18, when that field was added, purely because `main` was the only storey at
+  grade). Anything that has to sit on the garage floor must say so explicitly —
+  D-G-OVERHEAD carries the plan's only negative `sill_height` to reach it, and the stem
+  becomes a grade beam flush with the slab under that door so there is no curb across it.
+  D-G-SERVICE no longer does: its threshold stays at 0'-0" with the breezeway deck, so it
+  carries `+0'-8"` and `SL-G-STEP-0..4` take the 2'-6" down to the slab inside the garage.
+  Emitters — and, since 2026-08-03, the placeable resolver that decides how high anything in
+  the garage stands — read `resolve/room_floor.py::room_floor_elevation` rather than the
+  storey elevation for the same reason. Raising the stem means re-dropping the overhead
+  door: the tie is enforced by
   `test_catlin_contract_m3.py::test_garage_overhead_door_opens_from_the_slab_at_grade`.
 - **The garage's ICF stem and its wood wall are coplanar on the outside.** The 24'x24'
   node line (`GARAGE_Y_SOUTH`/`NORTH` in `plan/storeys/garage.py`) is the wood wall's
@@ -206,6 +221,16 @@ module. Params-generated geometry (no constructor to write back to) is exempt.
     them; the jack/king/header pack is what pays for it. The margin is 0.05 sf — growing
     either room's clear face fails R303.1 again, and the answer then is a taller unit, not
     a wider one.
+- **Two basement assemblies, and the split is a condition, not a preference.**
+  `CATLIN_BASEMENT_12` (N/E/W: `W-B-E1/E2`, `W-B-N1/N2/N3`, `W-B-W1/W2`) covers its exterior
+  XPS with a 1/2" `foundation-protection-panel` banded from 6" below grade to the top of the
+  wall — 2'-6" of exposure the 2026-08-18 lift created, 324 SF, authored as a
+  `Layer.extent` off the `GRADE` datum. `CATLIN_BASEMENT_12_GARDEN` (south: `W-B-S1/S2/S3`)
+  keeps the full-height parge coat, because the sunken garden exposes that face from -9'-0"
+  to 0'-0" and a grade-datum band cannot describe that. Both carry exactly 4.55" outboard of
+  the concrete face — the panel is the same 1/2" as the parge it replaces — which is what
+  `N-B-BRICK-W`/`-E`'s `inch(-4.55)` stand-off is measured from; changing either thickness
+  moves the brick veneer. See `notes/basement_to_framed_wall_detail.md`.
 - **One exterior dark, `#1c1f24`** (2026-08-01), carried by every dark metal element on the
   envelope so they read at one weight: the opening casings, the roof's rake/eave/ridge trim
   coil, the eave water chain (drip edge, box gutter, downspouts), and the guards.
