@@ -304,8 +304,8 @@ OPENINGS = [
     # WIN-B-SAUNA and D-B-PATIO stay on the concrete walls; these are RoughOpenings for the
     # holes the wythe in front of them needs, each with its own segmental brick arch — not a
     # duplicate Window/Door, which would double the schedule and takeoff.
-    # Positioned off N-B-BRICK-W (shares N-B-S1's x). Segmental, not semicircular like
-    # W-SG-ARCH: rise ~1/7 of clear width; ``height`` includes that rise so the springline
+    # Positioned off N-B-BRICK-W (shares N-B-S1's x). Segmental, not semicircular: the
+    # rise is ~1/7 of clear width; ``height`` includes that rise so the springline
     # lands on the real head. ``sill_height`` is re-datumed off W-B-BRICK's own base
     # (-8'-5", not -9'): the window's 3'-0" becomes 2'-5", the door's 7" threshold becomes 0.
     RoughOpening(uid="CBO601AAAA", tag="AO-B-BRICK-WIN", host="W-B-BRICK",

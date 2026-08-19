@@ -437,7 +437,7 @@ def test_infill_never_lands_on_the_frame_category(catlin_model) -> None:
     the BOM's frame row all key on. Infill landing there would put 147 near-coincident
     squares on every floor plan and silently move the frame row's count."""
     frame = [s for s in catlin_model.solids if s.category == "railing"]
-    assert len(frame) == 78, "posts + rails only"
+    assert len(frame) == 90, "posts + rails only"
     assert all("POST" in s.tag or "RAIL" in s.tag for s in frame)
 
 

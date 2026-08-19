@@ -27,13 +27,18 @@ def bom(catlin_model):
 
 def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     """``length_ft`` is what prices a railing and none of the new columns may disturb it:
-    nine authored railings, grouped by product and storey, at their plan run."""
+    ten authored railings, grouped by product and storey, at their plan run.
+
+    The tenth is RL-SG-PORCH (2026-08-18), which replaced the porch's masonry parapet — so
+    the fascia-mount product now bills two guards, 36.3 LF of porch under 38.3 LF of
+    balcony, and the ``style == "masonry"`` group this test used to exclude is empty."""
     rows = [row for row in bom["railings"] if row["style"] != "masonry"]
-    assert sum(int(row["count"]) for row in rows) == 9
+    assert sum(int(row["count"]) for row in rows) == 10
+    assert not [row for row in bom["railings"] if row["style"] == "masonry"]
     by_type = {}
     for row in rows:
         by_type[row["type"]] = by_type.get(row["type"], 0.0) + float(row["length_ft"])
-    assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(38.3, abs=0.1)
+    assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(74.6, abs=0.1)
     assert by_type["RAILING-INT-STAIR-GUARD"] == pytest.approx(23.0, abs=0.1)
     assert by_type["(untyped railing)"] == pytest.approx(30.0, abs=0.1)
 
@@ -74,25 +79,12 @@ def test_a_raking_guards_top_rail_is_longer_than_its_plan_run(bom):
         assert float(row["top_rail_length_ft"]) > float(row["length_ft"]) * 1.15, row
 
 
-def test_the_masonry_guard_bills_its_run_and_nothing_that_double_prices_it(bom):
-    """The porch parapets appear in the railing schedule so a reader looking for "what
-    guards the porch" finds them, and carry the note saying their masonry volume bills by
-    the cubic yard in ``wall_structure`` — the "price it in one table only" rule."""
-    masonry = [row for row in bom["railings"] if row["style"] == "masonry"]
-    assert len(masonry) == 1
-    row = masonry[0]
-    assert int(row["count"]) == 3
-    assert row["tags"] == ["W-SG-RAIL-E", "W-SG-RAIL-F", "W-SG-RAIL-W"]
-    assert row["post_count"] == 0 and "baluster_count" not in row
-    assert "wall_structure" in str(row["note"])
-
-
 def test_the_railing_frame_row_in_structural_solids_is_still_the_frame_alone(bom):
     """Infill landing back on ``category="railing"`` would inflate this row and the plan
-    sheet at once. 78 is posts + rails across all nine railings."""
+    sheet at once. 90 is posts + rails across all ten railings."""
     frame = [row for row in bom["structural_solids"]
              if row["category"] == "railing" and row["assembly"] == "RAILING_DARK_METAL"]
-    assert len(frame) == 1 and int(frame[0]["count"]) == 78
+    assert len(frame) == 1 and int(frame[0]["count"]) == 90
 
 
 # --- floor finishes: the half of S3 that makes a finish purchasable ------------------------

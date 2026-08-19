@@ -191,10 +191,12 @@ def _coverage_findings(transitions, conditions):
     return condition_coverage(ctx)
 
 
-_ARCH_COND = BoundaryCondition(
-    kind=ConditionKind.OPENING_PERIMETER, assemblies=("SUNKEN_GARDEN_ARCH_16",),
-    detail="rough_opening", element_tags=("AO-ARCH-G1",),
-    key="opening_perimeter:SUNKEN_GARDEN_ARCH_16",
+#: A synthetic opening-perimeter condition, shaped like catlin's suppressed one: an
+#: open-air reveal in a masonry wythe, where nothing is applied at the perimeter.
+_REVEAL_COND = BoundaryCondition(
+    kind=ConditionKind.OPENING_PERIMETER, assemblies=("BASEMENT_BRICK_VENEER",),
+    detail="rough_opening", element_tags=("AO-B-BRICK-WIN",),
+    key="opening_perimeter:BASEMENT_BRICK_VENEER",
 )
 
 
@@ -202,9 +204,9 @@ def test_a_suppressing_transition_still_counts_as_coverage():
     """suppress=True is a *binding* — the coverage check must stay clean, or suppression
     would trade a noise detail for a hard permit FAIL."""
     tr = Transition(uid="TESTTR00001", tag="TR-TEST-SUPPRESS",
-                    condition_pattern="opening_perimeter:SUNKEN_GARDEN_*",
+                    condition_pattern="opening_perimeter:BASEMENT_*",
                     suppress=True, suppress_reason="open-air opening; nothing applied")
-    assert _coverage_findings([tr], [_ARCH_COND]) == []
+    assert _coverage_findings([tr], [_REVEAL_COND]) == []
 
 
 def test_an_unbound_condition_still_warns():
@@ -212,20 +214,23 @@ def test_an_unbound_condition_still_warns():
     tr = Transition(uid="TESTTR00002", tag="TR-TEST-OTHER",
                     condition_pattern="wall_roof:*", suppress=True,
                     suppress_reason="irrelevant binding")
-    findings = _coverage_findings([tr], [_ARCH_COND])
+    findings = _coverage_findings([tr], [_REVEAL_COND])
     assert len(findings) == 1
     assert findings[0].check_id == "integrity.condition_coverage"
 
 
 def test_suppressed_bindings_derive_no_detail_sheets(catlin_model):
-    """Catlin end-to-end: the arch opening and the two surviving assembly-change
-    conditions are present and bound, but scaffold nothing."""
+    """Catlin end-to-end: the veneer reveals and the surviving assembly-change conditions
+    are present and bound, but scaffold nothing.
+
+    This read the sunken garden's arch opening until 2026-08-18; the brick veneer's reveals
+    are the same shape of suppression (TR-CATLIN-VENEER-OPENING) and outlived it."""
     from typehaus.emit.draw.details import derive_detail_slices
 
     cond_keys = {c.key for c in catlin_model.conditions}
-    assert "opening_perimeter:SUNKEN_GARDEN_ARCH_16" in cond_keys
+    assert "opening_perimeter:BASEMENT_BRICK_VENEER" in cond_keys
     derived_keys = {d.key for d in derive_detail_slices(catlin_model)}
-    assert "opening_perimeter:SUNKEN_GARDEN_ARCH_16" not in derived_keys
+    assert "opening_perimeter:BASEMENT_BRICK_VENEER" not in derived_keys
     assert not {k for k in derived_keys if k.startswith("assembly_change:")}
 
 
@@ -234,6 +239,10 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
 
     Each entry is a genuine assembly transition authored in the catlin plan, not
     junction-solver noise.
+
+    A fifth entry, PORCH_RAILING_MASONRY|SUNKEN_GARDEN_WALL, was where the porch parapet met
+    the sunken garden's side walls at N-SG-MW/ME. It went with the parapet on 2026-08-18 —
+    a metal railing on a deck is not an assembly change along a wall line.
 
     A CATLIN_INT_2X6_BRG|CATLIN_MUDROOM_INT_2X6_EXPOSED entry sat here between the
     two 2026-07-30 batches: the first put the stair-face wall W-M-STRW on the new
@@ -261,5 +270,4 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         "assembly_change:CATLIN_CONC_12_INT|SAUNA_LINER_ON_CONCRETE",
         "assembly_change:INT_2X4_PARTITION|INT_2X6_STAGGERED_PLUMBING",
         "assembly_change:INT_2X6_STAGGERED_PLUMBING|INT_ESS_CLOSET_STEEL",
-        "assembly_change:PORCH_RAILING_MASONRY|SUNKEN_GARDEN_WALL",
     ]

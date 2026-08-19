@@ -200,11 +200,16 @@ def test_openings_serialize_swing_and_framing_overlays(catlin_payload):
     assert len(door["framing_bumper"]) == 4
 
 
-def test_sunken_garden_arch_openings_serialize_their_rise(catlin_payload):
-    arches = [opening for opening in catlin_payload["openings"]
-              if opening["tag"].startswith("AO-ARCH-")]
-    assert len(arches) == 2
-    assert all(opening["arch_rise_m"] == pytest.approx(1.2192) for opening in arches)
+def test_arched_openings_serialize_their_rise(catlin_payload):
+    """The brick veneer's two segmental reveals. They took this over from the sunken garden's
+    two semicircular AO-ARCH-G* when its arched cross-wall was retired (2026-08-18) — the
+    payload field is the same one, and a segmental rise exercises it better than a
+    semicircular one, whose rise is also its half-span."""
+    arches = {opening["tag"]: opening for opening in catlin_payload["openings"]
+              if opening["tag"].startswith("AO-B-BRICK-")}
+    assert set(arches) == {"AO-B-BRICK-WIN", "AO-B-BRICK-DOOR"}
+    assert arches["AO-B-BRICK-WIN"]["arch_rise_m"] == pytest.approx(0.0508)   # 2"
+    assert arches["AO-B-BRICK-DOOR"]["arch_rise_m"] == pytest.approx(0.2032)  # 8"
 
 
 def test_site_context_serializes_grade_parcel_and_spot_elevations(catlin_payload):

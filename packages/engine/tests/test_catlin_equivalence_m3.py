@@ -103,10 +103,19 @@ DECLARED_DIVERGENCES = {
     "Sunken Garden East Wall (Porch Box)": "porch/balcony redesign (→ contract test)",
     "Sunken Garden West Wall (Porch Box)": "porch/balcony redesign (→ contract test)",
     "Sunken Garden Porch North Arch Wall (Lower)": (
-        "the two-tier arch stack became a single 16\" arched front wall with two 8' arches"
+        "the two-tier arch stack became a single 16\" arched front wall with two 8' arches, "
+        "and that wall became PT-SG-FCOL + BM-SG-FRW/FRE on 2026-08-18 — the porch's front "
+        "edge is a column and two beams now, mirroring its back edge"
     ),
     "Sunken Garden Porch South Arch Wall (Upper)": (
-        "the two-tier arch stack became a single 16\" arched front wall with two 8' arches"
+        "the two-tier arch stack became a single 16\" arched front wall with two 8' arches, "
+        "and that wall became PT-SG-FCOL + BM-SG-FRW/FRE on 2026-08-18 — the porch's front "
+        "edge is a column and two beams now, mirroring its back edge"
+    ),
+    "Sunken Garden Porch South Arch Wall (Lower)": (
+        "the porch's south edge carries no wall at all since 2026-08-18: PT-SG-FCOL, a 16\" "
+        "square cast column, and two flush LVL beams into the side walls replaced the arched "
+        "cross-wall, and the 42\" masonry parapet over it became RL-SG-PORCH (→ contract test)"
     ),
     # "Sunken Garden North Wall Footing" was declared here until 2026-08-03 — the garden's
     # north wall was removed in the redesign and nothing stood on its footing line. It is

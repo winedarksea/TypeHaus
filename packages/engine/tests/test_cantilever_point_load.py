@@ -298,12 +298,18 @@ def test_the_check_is_registered_in_the_structural_tier() -> None:
 
 def test_the_catlin_porch_pillar_is_the_one_finding_and_it_is_reinforced(catlin_findings):
     """PT-SG-BR2 stands on the porch's 17" north overhang and is the only post in the house
-    that does. WP1 answered it — 3-ply PT 2x8, solid blocking, and CN-SG-TIE-BR2 at the
-    arch-wall back span — so all three arms match and the verdict is UNKNOWN, not FAIL."""
+    that does. WP1 answered it — 3-ply PT 2x8, solid blocking, and CN-SG-TIE-BR2 at the far
+    bearing — so all three arms match and the verdict is UNKNOWN, not FAIL.
+
+    Two ties are named since 2026-08-18, not one: retiring the arched cross-wall put
+    PT-SG-FCOL at the same midspan x, so CN-SG-TIE-FCOL (beams down to the column) lands on
+    the same point as CN-SG-TIE-BR2 (joist line down to the beams). Both are genuinely
+    uplift hardware at that bearing; the check lists what it finds and sums no capacity."""
     assert len(catlin_findings) == 1, [f.message for f in catlin_findings]
     finding = catlin_findings[0]
     assert finding.result is Result.UNKNOWN, finding.message
-    assert finding.element_tags == ("FS-SG-PORCH", "PT-SG-BR2", "CN-SG-TIE-BR2")
+    assert finding.element_tags == ("FS-SG-PORCH", "PT-SG-BR2",
+                                    "CN-SG-TIE-BR2", "CN-SG-TIE-FCOL")
     assert '17" cantilever at its high-y edge' in finding.message
     # Each arm of the contract, named — a silently-unmatched arm is how this check rots.
     assert "an authored 3-ply JoistReinforcement" in finding.message

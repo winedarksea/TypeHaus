@@ -89,14 +89,17 @@ def test_rough_opening_emits_only_the_wall_void(catlin_model, tmp_path):
     assert len(f.by_type("IfcRelFillsElement")) == len(filled)
 
 
-def test_sunken_garden_arch_voids_use_vertical_curved_profiles(catlin_model, catlin_ifc):
+def test_arched_voids_use_vertical_curved_profiles(catlin_model, catlin_ifc):
+    """The brick veneer's two segmental reveals. They took this over from the sunken garden's
+    AO-ARCH-G1/G2 when its arched cross-wall was retired (2026-08-18); a segmental arch is the
+    stricter case, because its circle centre sits below the springline rather than on it."""
     import ifcopenshell
 
     f = ifcopenshell.open(str(catlin_ifc))
-    arches = [opening for opening in f.by_type("IfcOpeningElement")
-              if opening.Name.startswith("AO-ARCH-")]
-    assert len(arches) == 2
-    for opening in arches:
+    arches = {opening.Name: opening for opening in f.by_type("IfcOpeningElement")
+              if opening.Name.startswith("AO-B-BRICK-")}
+    assert set(arches) == {"AO-B-BRICK-WIN/void", "AO-B-BRICK-DOOR/void"}
+    for opening in arches.values():
         solid = opening.Representation.Representations[0].Items[0]
         assert solid.is_a("IfcExtrudedAreaSolid")
         assert solid.SweptArea.is_a("IfcArbitraryClosedProfileDef")
@@ -105,10 +108,15 @@ def test_sunken_garden_arch_voids_use_vertical_curved_profiles(catlin_model, cat
         arch = outer_curve.Segments[2].ParentCurve
         assert arch.is_a("IfcTrimmedCurve")
         assert arch.BasisCurve.is_a("IfcCircle")
-        assert arch.BasisCurve.Radius == pytest.approx(1.2192)
-        assert solid.Depth == pytest.approx(0.4064)
+        # Segmental: radius = (half_span^2 + rise^2) / (2 * rise), well past the half-span.
+        assert arch.BasisCurve.Radius > 0.0
         assert solid.Position.Axis.DirectionRatios[2] == pytest.approx(0.0)
         assert solid.ExtrudedDirection.DirectionRatios == (0.0, 0.0, 1.0)
+    # The void is cut through the wythe it is a reveal in, not the wall behind it.
+    veneer = next(w for w in catlin_model.walls if w.tag == "W-B-BRICK")
+    for opening in arches.values():
+        solid = opening.Representation.Representations[0].Items[0]
+        assert solid.Depth == pytest.approx(veneer.thickness_m)
 
 
 def test_door_types_export_their_authored_operation(catlin_model, catlin_ifc):

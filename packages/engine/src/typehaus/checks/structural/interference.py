@@ -292,9 +292,13 @@ def _flush_framed_pairs(plan) -> set[tuple[str, str]]:
 
 def _flush_framed_into_beam(a: _Candidate, b: _Candidate,
                             flush_pairs: set[tuple[str, str]]) -> bool:
-    """True for a joist of a deck hung flush into one of that deck's own pinned beams."""
+    """True for a joist of a deck hung flush into one of that deck's own pinned beams.
+
+    ``sister_joist`` counts as a joist here: a reinforcing ply is the same stock in the same
+    hanger as the line it doubles, so it hangs flush wherever that line does.
+    """
     for joist, beam in ((a, b), (b, a)):
-        if joist.kind == "joist" and beam.kind == "beam" \
+        if joist.kind in ("joist", "sister_joist") and beam.kind == "beam" \
                 and (joist.parent, beam.label) in flush_pairs:
             return True
     return False

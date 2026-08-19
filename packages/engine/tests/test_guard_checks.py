@@ -7,14 +7,14 @@
 * ``code.R308_4_4_glass_guard`` — glass used *as* the guard, which R308.4's location test
   never reaches.
 
-The porch guard is three ``FoundationWall``s rather than three ``Railing``s, and that is the
-right call: it keeps its four-layer stucco/CMU/air/brick stack, the grouted cores that hold
-the balcony pillar bases, and its cubic-yard take-off. What it costs is a load path nobody
-was asking about — a 42" grouted-CMU-and-brick parapet runs about 420 plf, and a wood deck
-rim designed to R507's 40 psf live + 10 psf dead cannot carry that. The load is derived from
-the guard's own assembly, so these tests check the arithmetic against the catalog rather than
-against a magic number, and check that a stack the catalog cannot weigh reports UNKNOWN
-rather than a comfortable pass.
+Catlin used to carry the motivating case: the porch guard was three ``FoundationWall``s with
+a stucco/CMU/air/brick stack, and what that cost was a load path nobody was asking about — a
+42" grouted-CMU-and-brick parapet runs about 420 plf, and a wood deck rim designed to R507's
+40 psf live + 10 psf dead cannot carry it. Those three walls were replaced by RL-SG-PORCH, a
+metal fascia-mount railing, on 2026-08-18, so the house now has no ``Wall.guard`` at all and
+the rule reports one UNKNOWN saying so. The arithmetic it was written for is exercised
+against synthetic walls below, where the catalog densities can be stated and varied — a
+stack the catalog cannot weigh must report UNKNOWN rather than a comfortable pass.
 """
 
 from __future__ import annotations
@@ -32,8 +32,8 @@ from typehaus.findings import Result
 from typehaus.quantities import inch
 from _helpers import CATLIN as CATLIN_DIR
 
-#: The porch parapet at the 3'-6" the plan set draws it, rather than at its resolved
-#: 3'-6 15/16" (the railing top sits a shade over the porch top).
+#: A 3'-6" guard — the height R312.1.2's 36" minimum is cleared by, and the height the
+#: retired porch parapet was drawn at.
 GUARD_HEIGHT_M = inch(42).meters
 
 
@@ -49,30 +49,23 @@ def catlin_ctx():
     return ctx
 
 
-def _guard_wall(catlin_ctx, tag="W-SG-RAIL-F"):
-    return next(w for w in catlin_ctx.model.walls if w.tag == tag)
+def test_catlin_has_no_masonry_guard_left_to_grade(catlin_ctx):
+    """One UNKNOWN, and it says why rather than silently returning nothing.
 
-
-def test_the_porch_parapet_weighs_what_its_own_layers_weigh(catlin_ctx):
-    """~120 psf of face x 3'-6" = ~420 plf. Every term comes from the catalog: 7-5/8" of
-    2000 kg/m3 grouted CMU, 3-5/8" of 1920 kg/m3 white brick, 1/2" of 1900 kg/m3 stucco —
-    and the 1" air gap, which weighs nothing and is skipped rather than treated as a
-    material whose density nobody stated."""
-    load = _dead_load_plf(catlin_ctx, _guard_wall(catlin_ctx), GUARD_HEIGHT_M)
-    assert load == pytest.approx(420.0, rel=0.05)
-
-
-def test_all_three_porch_parapets_pass_on_the_concrete_under_them(catlin_ctx):
-    """They land on the sunken-garden walls and the arch — concrete the whole run. This is
-    the finding that makes the FAIL below meaningful: the rule is not simply failing every
-    masonry guard it sees."""
-    findings = [f for f in masonry_guard_bearing(catlin_ctx)]
-    assert sorted(f.element_tags[0] for f in findings) == [
-        "W-SG-RAIL-E", "W-SG-RAIL-F", "W-SG-RAIL-W"]
-    assert {f.result for f in findings} == {Result.PASS}
-    for finding in findings:
-        assert "[advisory, not engineering]" in finding.message, (
-            "a prescriptive load lookup is not an engineered design and must say so")
+    A rule that emits no findings is indistinguishable from a rule that never ran, which is
+    the failure mode this asserts against: the house has no ``Wall.guard`` since 2026-08-18
+    and the check has to say so, and to name the two rules that do grade the stick guard
+    that replaced it.
+    """
+    findings = masonry_guard_bearing(catlin_ctx)
+    assert len(findings) == 1, [f.message for f in findings]
+    finding = findings[0]
+    assert finding.result is Result.UNKNOWN
+    assert "no wall" in finding.message and "guard" in finding.message
+    assert "structural.deck_guard" in finding.message
+    assert "code.R312_1_guard_height" in finding.message
+    assert not [w for w in catlin_ctx.plan.all_elements()
+                if getattr(w, "guard", False)]
 
 
 # --- synthetic supports --------------------------------------------------------------------

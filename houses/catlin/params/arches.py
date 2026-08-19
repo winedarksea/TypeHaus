@@ -3,6 +3,10 @@
 Ported from ``catlin_house.py::_arch_voids_for_wall``: N arches of equal clear width,
 fixed outer piers, remaining length split into equal interior piers. Returns offsets
 along the wall axis (from the wall's start node) to each arch opening's start edge.
+
+No current caller: the sunken garden's arched front cross-wall was replaced by a column
+and two beams (2026-08-18). Kept because the math is generic — the next arcade in any house
+wants exactly this — and because re-deriving it from the git history is worse than a file.
 """
 
 from __future__ import annotations

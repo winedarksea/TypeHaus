@@ -369,10 +369,14 @@ def test_opaque_materials_single_sided_translucent_double(plan):
 def test_thin_rect_edges_survive_collinear_ring_padding():
     """Junction resolution splits a layer's long edges, so an authored rectangle arrives with
     collinear vertices. Sorting the raw ring picked two points off the *same* face and exported
-    catlin's 16" arched wall as 8"; reducing to real corners first restores the true thickness."""
+    catlin's 16" arched wall as 8"; reducing to real corners first restores the true thickness.
+
+    The literals below are that retired wall's serialized layer, kept verbatim: the geometry is
+    the fixture, and re-deriving it from a wall that still exists would only make the numbers
+    harder to check by hand."""
     from typehaus.emit.gltf.emitter import _thin_rect_edges, _without_collinear_vertices
 
-    # W-SG-ARCH's serialized concrete layer: one 16" (0.4064 m) rectangle as six points.
+    # A 16" (0.4064 m) concrete layer as six points, one edge padded with a collinear vertex.
     padded = [(2.5908, -3.0988), (2.5908, -2.8956), (2.5908, -2.6924),
               (8.382, -2.6924), (8.382, -2.8956), (8.382, -3.0988)]
     axis = ((2.4384, -2.8956), (8.5344, -2.8956))
@@ -416,11 +420,22 @@ def test_roof_sticks_export_to_framing_and_skin_stays_with_the_shell(catlin_mode
 
 
 def test_arched_wall_layer_exports_its_authored_thickness(catlin_model):
-    """End-to-end: catlin's arched sunken-garden wall reaches the .glb at its authored 16",
-    not the 8" half-thickness the raw-ring edge pick produced."""
+    """End-to-end: an arched wall's layer reaches the .glb at its authored thickness, not the
+    half-thickness the raw-ring edge pick produced.
+
+    W-B-BRICK carries this now: the glazed-brick veneer over the exposed south basement wall,
+    whose two reveals (AO-B-BRICK-WIN/DOOR) are segmental arches. It took over from
+    W-SG-ARCH when the sunken garden's arched cross-wall was retired (2026-08-18). Two layers
+    rather than one, so the assertion is against the *thick* layer (3 5/8" of brick) rather
+    than the wall — which is the sharper test anyway: a half-thickness pick on the brick would
+    land at 1 13/16", indistinguishable from nothing in particular, while the 1" air gap
+    beside it proves the per-layer depths are not being merged."""
     from typehaus.emit.gltf import emit_gltf_dict
 
-    wall = next(w for w in catlin_model.walls if w.tag == "W-SG-ARCH")
+    wall = next(w for w in catlin_model.walls if w.tag == "W-B-BRICK")
+    brick = next(layer for layer in wall.layers if layer.name == "brick")
+    assert [o.tag for o in catlin_model.openings if o.host_wall == wall.tag] == [
+        "AO-B-BRICK-WIN", "AO-B-BRICK-DOOR"]
     gltf, blob = emit_gltf_dict(catlin_model)
     node = next(n for n in gltf["nodes"] if n.get("extras", {}).get("uid") == wall.uid)
     depths = []
@@ -428,8 +443,8 @@ def test_arched_wall_layer_exports_its_authored_thickness(catlin_model):
         accessor = gltf["accessors"][prim["attributes"]["POSITION"]]
         # The wall runs east-west, so its depth is the glTF z extent (model -y).
         depths.append(accessor["max"][2] - accessor["min"][2])
-    assert max(depths) == pytest.approx(wall.thickness_m, abs=1e-6)
-    assert wall.thickness_m == pytest.approx(0.4064)
+    assert max(depths) == pytest.approx(brick.thickness_m, abs=1e-6)
+    assert brick.thickness_m == pytest.approx(0.092075)
 
 
 def test_arch_soffit_ships_smooth_cylinder_normals():

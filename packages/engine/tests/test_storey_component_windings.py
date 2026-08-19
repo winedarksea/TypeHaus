@@ -119,7 +119,13 @@ def test_catlin_basement_structures_resolve_independently(catlin_model) -> None:
     house = next(w for w in basement_walls if w.start_node.startswith("N-B-"))
     assert (windings.component_key_for_wall(sunken_garden)
             != windings.component_key_for_wall(house))
-    # Catlin authors both clockwise-in-plan today; the point is that each was traced on its
-    # own outer loop rather than one borrowing the other's scalar.
-    assert windings.sign_for_wall(sunken_garden) == -1.0
+    # The house is a closed loop, authored clockwise-in-plan, and traces to -1 on its own
+    # outer ring rather than borrowing anyone's scalar.
     assert windings.sign_for_wall(house) == -1.0
+    # The sunken garden has no closed loop to trace since 2026-08-18: retiring the arched
+    # cross-wall left its five walls as one open chain (NW→MW→SW→SE→ME→NE) whose signed area
+    # is zero, so it takes the fallback. That is latent *here* — every SUNKEN_GARDEN_WALL is
+    # one centred concrete layer, so the sign only reverses two layer polygons' vertex order
+    # and moves no face — and would stop being latent the moment one of them took a second
+    # layer, which is what the retired masonry parapet above them was.
+    assert windings.sign_for_wall(sunken_garden) == UNRECOVERABLE_WINDING_OUTWARD_SIGN

@@ -35,36 +35,16 @@ from typehaus.source import load_plan
 from _helpers import CATLIN
 
 
-# The porch railing's brick wythe must land on the outboard face of each of the three walls:
-# the front wall faces the garden (south, -y) and the side walls face away from the porch
-# (west / east). Compared against the wall's own interior finish so the test is independent
-# of where the porch happens to sit in plan.
-_RAILING_OUTBOARD = {
-    "W-SG-RAIL-F": (0.0, -1.0),
-    "W-SG-RAIL-W": (-1.0, 0.0),
-    "W-SG-RAIL-E": (1.0, 0.0),
-}
-
-
 def _centroid(polygon):
     return (sum(p[0] for p in polygon) / len(polygon),
             sum(p[1] for p in polygon) / len(polygon))
 
 
-@pytest.mark.parametrize("wall_tag", sorted(_RAILING_OUTBOARD))
-def test_porch_railing_brick_faces_outboard(catlin_model, wall_tag) -> None:
-    wall = catlin_model.wall(wall_tag)
-    assert wall is not None, f"{wall_tag} missing from the resolved model"
-    layers = wall.depth_layers()
-    brick = next(ly for ly in layers if ly.function == "cladding")
-    assert brick.material_ref == "white-brick"
-    inner, outer = _centroid(layers[0].polygon), _centroid(brick.polygon)
-    direction = _RAILING_OUTBOARD[wall_tag]
-    outboard = ((outer[0] - inner[0]) * direction[0] + (outer[1] - inner[1]) * direction[1])
-    assert outboard > 0.0, (
-        f"{wall_tag}: brick sits on the porch side, not the exterior "
-        f"(interior {inner} -> cladding {outer})"
-    )
+# The catlin case this file was written for — the porch railing's three W-SG-RAIL-* walls,
+# whose white-brick wythe had to land outboard on each — was retired 2026-08-18 with the
+# masonry guard itself. The house-wide mismatch sweep below still covers every clad wall it
+# has, and the L-corner fixtures further down reproduce the winding mistake that flipped
+# W-SG-RAIL-E's brick onto the porch, synthetically and in both directions.
 
 
 def test_catlin_has_no_cladding_side_mismatch() -> None:
@@ -160,7 +140,8 @@ _CLAD = Assembly(tag="CLAD", layers=(
 
 def _corner_plan(project, east_reversed: bool) -> PlanModel:
     """An L of two clad walls. ``east_reversed`` authors the second leg end-to-start, the
-    exact mistake that flipped W-SG-RAIL-E's brick onto the porch."""
+    exact mistake that once flipped the porch parapet's brick onto the porch (W-SG-RAIL-E,
+    retired 2026-08-18 — this synthetic pair is what keeps the lesson)."""
     library = Library(
         materials=(Material(tag="gwb", name="GWB", r_per_inch=0.9),
                    Material(tag="cmu", name="CMU", r_per_inch=0.11),

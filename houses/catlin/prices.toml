@@ -261,7 +261,7 @@
 # ~$250-700 hole — small, but it is a hole, not a zero.
 # $/cy placed, by solid category
 "beam" = { low = 260, high = 420 }  # 0.86 cy
-"column" = { low = 260, high = 420 }  # 1.25 cy
+"column" = { low = 260, high = 420 }  # 1.78 cy
 "drain_tile" = { low = 240, high = 400 }  # 3.31 cy
 "drywell" = { low = 70, high = 180 }  # 4.71 cy
 # "dowel" =    # 0 cy
@@ -563,10 +563,8 @@
 "CATLIN_BASEMENT_12_GARDEN" = { low = 320, high = 600 }
 "CATLIN_CONC_12_INT" = { low = 320, high = 600 }  # 22.18 CY
 "GARAGE_ICF_6" = { low = 480, high = 1000 }  # 8.82 CY
-"PORCH_RAILING_MASONRY" = { low = 700, high = 1600 }  # 3.15 CY
 "RETAINING_BLOCK_12" = { low = 500, high = 1200 }  # 9.07 CY
 "SAUNA_LINER_ON_CONCRETE" = { low = 320, high = 600 }  # 4.61 CY
-"SUNKEN_GARDEN_ARCH_16" = { low = 600, high = 1200 }  # 3.31 CY
 "SUNKEN_GARDEN_WALL" = { low = 350, high = 650 }  # 28.91 CY
 
 [wood_surfaces]
@@ -775,7 +773,9 @@
 # feet billed here; that understatement is deliberate (see takeoff/railings.py) and is
 # worth remembering when reading their line totals.
 #
-#   RAILING-EXT-ALUMINUM-FASCIA  38.3 LF, the sunken-garden balcony guard, fascia-mounted.
+#   RAILING-EXT-ALUMINUM-FASCIA  74.6 LF over two guards, both fascia-mounted: the balcony's
+#                                (38.3 LF) and the porch's (36.3 LF, RL-SG-PORCH, which
+#                                replaced the masonry parapet on 2026-08-18).
 #                                Trex Signature per the owner: a 6' x 36" aluminium rail
 #                                kit is $129-259 at Lowe's ($21.50-43/LF) and the posts are
 #                                separate at roughly $70-110 each, ~$12-18/LF at 6' o.c.
@@ -790,19 +790,11 @@
 #                                takeoff stopped emitting a raw null here — the group key
 #                                the reader saw and the key the estimator matched on were
 #                                two different strings.)
-#   (masonry guard wall)         The porch's three W-SG-RAIL-* parapets, 37.3 LF. PRICED AT
-#                                ZERO ON PURPOSE: their CMU/brick/stucco volume already
-#                                bills by the cubic yard in [wall_structure]. The row exists
-#                                so a reader looking for "what guards the porch" finds it in
-#                                the railing schedule instead of having to know it is filed
-#                                as a wall. See the "price it in one table only" warning
-#                                above.
 # Sources: lowes.com Trex Signature 6' rail kits, decksdirect.com Signature component
 # pricing, homeadvisor.com 2026 deck railing replacement, trex.com Signature product page.
 # $/LF of guard line, by railing product type
 "(untyped railing)" = { low = 25, high = 60 }  # 30 LF — untyped handrails, placeholder
-"(masonry guard wall)" = { low = 0, high = 0 }  # 37.3 LF — bills in [wall_structure], not here
-"RAILING-EXT-ALUMINUM-FASCIA" = { low = 38, high = 70 }  # 38.3 LF — Trex Signature
+"RAILING-EXT-ALUMINUM-FASCIA" = { low = 38, high = 70 }  # 74.6 LF — Trex Signature
 "RAILING-INT-STAIR-GUARD" = { low = 40, high = 90 }  # 23 LF
 
 [drainage]

@@ -227,3 +227,37 @@ def test_check_still_flags_a_genuine_overlap():
     prefs = SimpleNamespace(framing=SimpleNamespace(interference_tolerance_in=0.25))
     ctx = SimpleNamespace(model=model, preferences=prefs)
     assert member_interference(ctx)
+
+
+def _flush_candidates(joist_kind: str):
+    """A deck member of ``joist_kind`` hung flush in its own pinned beam."""
+    from shapely.geometry import box
+
+    from typehaus.checks.structural.interference import _Candidate
+
+    joist = _Candidate("FS-1:joist-000", box(0.0, 0.0, 3.0, 0.04), 0.0, 0.184,
+                       seg=((0.0, 0.02), (3.0, 0.02)), kind=joist_kind, parent="FS-1")
+    beam = _Candidate("BM-1", box(-0.1, -0.05, 3.1, 0.02), 0.0, 0.184,
+                      seg=((-0.1, 0.0), (3.1, 0.0)), kind="beam", parent="BM-1")
+    return joist, beam
+
+
+def test_a_sistered_ply_hangs_flush_where_its_joist_does():
+    """A reinforcing ply is the same stock in the same hanger as the line it doubles.
+
+    ``_flush_framed_pairs`` keys on the *floor system*, so both plies of a reinforced line
+    belong to the same authored pair — but the resolver gives the extra plies category
+    ``sister_joist``, which the kind test used to exclude. On catlin that is PT-SG-BR2's
+    3-ply cluster against the two flush front beams: two findings for a joinery detail the
+    single-ply line beside it is already cleared for.
+    """
+    from typehaus.checks.structural.interference import _flush_framed_into_beam
+
+    pairs = {("FS-1", "BM-1")}
+    for kind in ("joist", "sister_joist"):
+        joist, beam = _flush_candidates(kind)
+        assert _flush_framed_into_beam(joist, beam, pairs), kind
+        assert _flush_framed_into_beam(beam, joist, pairs), kind  # order-independent
+    # Still authored, never guessed: an unpinned beam (absent from the pair set) reports.
+    joist, beam = _flush_candidates("sister_joist")
+    assert not _flush_framed_into_beam(joist, beam, set())

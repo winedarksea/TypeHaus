@@ -71,12 +71,6 @@ TRANSITIONS = (
     Transition(uid="CATR007AAAA", tag="TR-CATLIN-BASEMENT-OPENING",
                condition_pattern="opening_perimeter:CATLIN_BASEMENT_12*",
                notes="notes/basement_to_framed_wall_detail.md", overlay="foundation-window"),
-    # Bound but deliberately sheetless: the arch already reads on plans and sections.
-    Transition(uid="CATR008AAAA", tag="TR-CATLIN-GARDEN-ARCH",
-               condition_pattern="opening_perimeter:SUNKEN_GARDEN_*",
-               suppress=True,
-               # (single literal: the editable dialect forbids concatenated strings)
-               suppress_reason="the sunken-garden arch is an open-air rough opening in exposed concrete — no buck, no frame, no flashing is applied at its perimeter; the arch geometry the plans and sections draw is the whole story, so a perimeter detail sheet would add nothing"),
     # Starred: the garage/breezeway threshold condition — both doors open onto the slab
     # at grade, with the ICF stem dropped to a grade beam under them, so the perimeter
     # flashing here is nothing like a standard framed opening.

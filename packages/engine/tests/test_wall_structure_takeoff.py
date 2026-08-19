@@ -14,9 +14,11 @@ from typehaus.takeoff.wall_structure import wall_structure_takeoff
 def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     rows = wall_structure_takeoff(catlin_model)
     assert rows, "catlin's basement, garage and garden walls are all monolithic"
-    assert sum(int(row["count"]) for row in rows) == 43
+    # 39 since 2026-08-18: the sunken garden's 16" arched cross-wall and the three
+    # W-SG-RAIL-* masonry parapets over it went, and with them the last `cmu` in the house.
+    assert sum(int(row["count"]) for row in rows) == 39
     assert {row["material"] for row in rows} == {
-        "concrete", "cmu", "retaining-block", "glazed-green-brick"}
+        "concrete", "retaining-block", "glazed-green-brick"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing.
     assert sum(float(row["volume_cubic_yards"]) for row in rows) > 100
@@ -56,7 +58,7 @@ def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) 
     """Grouped by assembly, so garden work never merges into the foundation pour — they
     are both `concrete` and they are not the same order or the same price."""
     by_assembly = {row["assembly"]: row for row in wall_structure_takeoff(catlin_model)}
-    for assembly in ("SUNKEN_GARDEN_WALL", "RETAINING_BLOCK_12", "PORCH_RAILING_MASONRY",
+    for assembly in ("SUNKEN_GARDEN_WALL", "RETAINING_BLOCK_12",
                      "BASEMENT_BRICK_VENEER", "CATLIN_BASEMENT_12"):
         assert assembly in by_assembly, f"{assembly} lost its own row"
     house = by_assembly["CATLIN_BASEMENT_12"]

@@ -1104,27 +1104,42 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
 
 
 def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
-    """Freestanding porch/balcony redesign: no north wall, single 16" arched front wall
-    with two arches, a masonry railing, a sonotube column + PT back beams, six 6x6 pillars
-    + three balcony beams, and a 19x28 garden."""
-    walls = [w for w in catlin_model.walls if w.tag.startswith("W-SG-")]
-    # 6 concrete (ARCH + W1/E1/W2/E2/S) + 3 masonry railing (RAIL-F/W/E); no north wall.
-    assert len(walls) == 9
-    assert all(w.is_foundation for w in walls)
-    assert not any(w.tag == "W-SG-N" for w in walls)
-    arch_wall = next(w for w in walls if w.tag == "W-SG-ARCH")
-    assert arch_wall.assembly == "SUNKEN_GARDEN_ARCH_16"
-    railings = [w for w in walls if w.tag.startswith("W-SG-RAIL-")]
-    assert len(railings) == 3
-    assert all(w.assembly == "PORCH_RAILING_MASONRY" for w in railings)
+    """Freestanding porch/balcony redesign: no north or front wall, two 12" side walls, a
+    column + two beams on each open porch edge, a metal porch guard, six 6x6 pillars +
+    three balcony beams, and a 19x28 garden.
 
-    # A single garden-level tier of two 8'-wide arches across the front wall.
-    # "AO-" alone is no longer this structure's: the basement's glazed-brick veneer
-    # (W-B-BRICK) carries two arched reveals of its own, AO-B-BRICK-*.
-    arches = [o for o in catlin_model.openings if o.tag.startswith("AO-ARCH-")]
-    assert len(arches) == 2
-    assert all(o.width_m == pytest.approx(ft(8).meters) for o in arches)
-    assert all(o.host_wall == "W-SG-ARCH" for o in arches)
+    The porch's south edge was a 16" arched cross-wall under a 42" masonry parapet until
+    2026-08-18. It is a 16" square cast column and two flush LVL beams now — the same
+    detail the north edge has carried all along — with RL-SG-PORCH in place of the parapet.
+    """
+    walls = [w for w in catlin_model.walls if w.tag.startswith("W-SG-")]
+    # 5 concrete: two porch side walls (W1/E1) + the retaining U (W2/E2/S). No north wall,
+    # no front wall, and no masonry railing over any of them.
+    assert {w.tag for w in walls} == {"W-SG-W1", "W-SG-E1", "W-SG-W2", "W-SG-E2", "W-SG-S"}
+    assert all(w.is_foundation for w in walls)
+    assert all(w.assembly == "SUNKEN_GARDEN_WALL" for w in walls)
+    assert not any(w.tag.startswith("W-SG-RAIL-") for w in walls)
+
+    # Both open porch edges are a column at midspan carrying two beams into the side walls.
+    front = next(s for s in catlin_model.solids if s.tag == "PT-SG-FCOL")
+    assert front.category == "column" and front.assembly == "SUNKEN_GARDEN_COLUMN_16"
+    xs = [p[0] for p in front.outline]
+    ys = [p[1] for p in front.outline]
+    assert max(xs) - min(xs) == pytest.approx(inch(16).meters)   # a true 16" square:
+    assert max(ys) - min(ys) == pytest.approx(inch(16).meters)   # "16x16" would read 1.5x5.5
+    front_beams = {b.tag: b for b in catlin_model.solids
+                   if b.tag in ("BM-SG-FRW", "BM-SG-FRE")}
+    assert len(front_beams) == 2
+    # Flush-framed: the beams top out at the 0' joist datum and the column stops at their
+    # soffit, which is what keeps the pour clear of the 16"-o.c. joist band above it.
+    assert all(b.z1_m == pytest.approx(0.0) for b in front_beams.values())
+    assert front.z1_m == pytest.approx(min(b.z0_m for b in front_beams.values()))
+
+    # The porch guard is a Railing now, matching RL-SG-BALCONY one storey up.
+    guard = catlin_model.plan.by_tag("RL-SG-PORCH")
+    assert guard.type_ref == "RAILING-EXT-ALUMINUM-FASCIA"
+    assert guard.height.inches == pytest.approx(42.0)
+    assert len(guard.path) == 4  # west / south / east; the north edge is the house gap
 
     garden = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
     xs = [p[0] for p in garden.outline]
@@ -1137,12 +1152,13 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
                 for el in catlin_model.plan.storey_elements(tag)]
     posts = {el.tag for el in elements if el.element_kind == "Post" and el.tag.startswith("PT-SG-")}
     beams = {el.tag for el in elements if el.element_kind == "Beam" and el.tag.startswith("BM-SG-")}
-    assert "PT-SG-COL" in posts  # sonotube column
+    assert {"PT-SG-COL", "PT-SG-FCOL"} <= posts  # sonotube + front square column
     assert len([t for t in posts if t.startswith("PT-SG-B")]) == 6  # 6x6 pillars
-    # 2 PT 2x12 back beams + 3 double-2x10 N-S balcony beams + 4 E-W girt segments (two
-    # per pillar row, butting the beams; the girts give the freestanding balcony a member
-    # to brace against in its second principal direction).
-    assert len(beams) == 9
+    # 2 LVL back beams + 2 LVL front beams + 3 double-2x10 N-S balcony beams + 4 E-W girt
+    # segments (two per pillar row, butting the beams; the girts give the freestanding
+    # balcony a member to brace against in its second principal direction).
+    assert len(beams) == 11
+    assert {"BM-SG-BKW", "BM-SG-BKE", "BM-SG-FRW", "BM-SG-FRE"} <= beams
     assert {"BM-SG-GIRT-RW", "BM-SG-GIRT-RE",
             "BM-SG-GIRT-FW", "BM-SG-GIRT-FE"} <= beams
 

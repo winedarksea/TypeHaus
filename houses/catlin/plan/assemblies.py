@@ -29,7 +29,6 @@ from library import INT_2X4_PARTITION, STARTER_MATERIALS
 # never by layer name or index. Variants inherit these from their base assembly.
 _CONCRETE_BEARING = AssemblyInterface(role="bearing", layer_name="concrete", outboard=False)
 _STUD_BEARING = AssemblyInterface(role="bearing", layer_name="stud", outboard=False)
-_CMU_BEARING = AssemblyInterface(role="bearing", layer_name="cmu", outboard=False)
 
 # Painted gypsum lining. Paint comes FIRST (interior->exterior order) because it is the
 # room-side face and so the assembly's warm-side vapour retarder in the Glaser walk (IRC
@@ -271,41 +270,27 @@ SUNKEN_GARDEN_WALL = Assembly(
     source="catlin-house sunken_garden_retaining_wall_detail.py",
 )
 
-# The porch "front" (arched) cross-wall is 16" so it reads as three piers + an arched
-# beam AND gives the porch-floor joists 3.5" of bearing on top of the sill plate.
-SUNKEN_GARDEN_ARCH_16 = Assembly(
-    tag="SUNKEN_GARDEN_ARCH_16",
+# PT-SG-FCOL, the 16" square cast column carrying the porch's front beams (it replaced a
+# 16" arched cross-wall and a 42" masonry parapet).
+#
+# The assembly is required, not cosmetic. Without one, ``emit/draw/section.py::
+# _solid_material`` sees a "column" whose size does not end in "round" and falls back to
+# "spf" — a 16" pour would hatch as lumber in every section. One concrete STRUCTURE layer
+# resolves it correctly in all three renderers (section hatch, glTF palette, the viewer's
+# solidColor).
+SUNKEN_GARDEN_COLUMN_16 = Assembly(
+    tag="SUNKEN_GARDEN_COLUMN_16",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(16.0),
               function=LayerFunction.STRUCTURE),
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house porch arched front wall — 16\" for joist bearing (3.5\") + arch piers",
-)
-
-# Masonry "railing" / parapet on top of the porch front + side walls. The balcony 6x6
-# pillars land in the grout-filled CMU cores. Layer order interior (porch/deck side) ->
-# exterior (garden side): stucco on the CMU back, grout-filled CMU, air gap, white face brick.
-PORCH_RAILING_MASONRY = Assembly(
-    tag="PORCH_RAILING_MASONRY",
-    layers=(
-        Layer(name="stucco", material_ref="stucco", thickness=inch(0.5),
-              function=LayerFunction.FINISH),
-        Layer(name="cmu", material_ref="cmu", thickness=inch(7.625),
-              function=LayerFunction.STRUCTURE,
-              masonry=MasonrySpec(unit_size="8x8x16 CMU", core_fill=True,
-                                  rebar_spacing=inch(48))),
-        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(1.0),
-              function=LayerFunction.AIRGAP),
-        Layer(name="brick", material_ref="white-brick", thickness=inch(3.625),
-              function=LayerFunction.CLADDING),
-    ),
-    interfaces=(_CMU_BEARING,),
-    source="catlin-house porch railing — white brick / air gap / grouted CMU / stucco",
+    # (single literal: the editable dialect forbids concatenated strings)
+    source="catlin-house porch front column — 16\" square cast concrete, 3/4\" chamfered arrises, >=15 degree top wash with a >=1\" drip lip (BIA Tech Note 36A), beam bearing on a level non-shrink-grout island (Five Star TB-411: 45 degree shoulders, shoulder width <= grout depth, <= 3\"); 4,000-4,500 psi, w/cm <= 0.45, 6.0-6.5% air at 3/4\" aggregate (Minn. R. 1309.0402 + ACI 318-19 class F2); broom or float finish, never steel-trowelled (NRMCA CIP 2); silane/siloxane repellent",
 )
 
 # Glazed-brick veneer over the exposed basement wall (sunken garden excavated against it).
-# Two layers only, on purpose: unlike PORCH_RAILING_MASONRY there is no CMU backer wythe,
+# Two layers only, on purpose: there is no CMU backer wythe here,
 # because the existing CATLIN_BASEMENT_12 concrete (damp-proofing + 4" XPS + parge already
 # outboard) IS the backer — this wall stands 1" off it on masonry ties. No STRUCTURE layer
 # either (`structure_index()` returns None, not an error) — a fictional backer would
@@ -321,7 +306,7 @@ BASEMENT_BRICK_VENEER = Assembly(
         Layer(name="brick", material_ref="glazed-green-brick", thickness=inch(3.625),
               function=LayerFunction.STRUCTURE),
     ),
-    source="basement south veneer over the sunken garden — glazed green brick, 1\" airgap, corrugated masonry ties back to the existing CATLIN_BASEMENT_12 wall (no CMU backer: the basement concrete is the backer, unlike PORCH_RAILING_MASONRY)",
+    source="basement south veneer over the sunken garden — glazed green brick, 1\" airgap, corrugated masonry ties back to the existing CATLIN_BASEMENT_12 wall (no CMU backer: the basement concrete is the backer)",
 )
 
 # Raised-garden outer face: dry-stacked segmental retaining-wall block, one unit deep. No
@@ -831,17 +816,6 @@ CONSTRUCTION_RULES = [
         dimension=inch(1.5),
         takeoff_category="pt-sill-plate",
     ),
-    # The same physical return one element down: a joisted deck bearing on a concrete wall
-    # rather than a framed wall doing so. FS-SG-PORCH lands on the sunken garden's 16" arch
-    # wall, and without this the joists would butt a rim sitting on bare concrete — no PT
-    # plate, no sill seal, no capillary break, and none of the three on the order.
-    ConstructionRule(
-        tag="CR-DECK-ON-CONCRETE-SILL",
-        applies_to="floor:on_concrete_wall",
-        kind="bearing_plate",
-        dimension=inch(1.5),
-        takeoff_category="pt-sill-plate",
-    ),
     ConstructionRule(
         tag="CR-SAUNA-LINER-RETURN",
         applies_to="wall:sauna_liner_return",
@@ -856,6 +830,11 @@ CONSTRUCTION_RULES = [
         dimension=inch(24.0),
         takeoff_category="foundation-foam-return",
     ),
+    # Named for the porch parapet it was written for, but that was never its only host: it
+    # binds every masonry-to-masonry corner, and with the porch parapet retired (2026-08-18)
+    # its eight remaining returns are all on the raised garden's dry-stacked SRW block
+    # corners (N-RG-NE/NW/SE/SW). Kept under the old tag on purpose — the returns are stable
+    # GlobalIds, and renaming the rule would reissue every one of them.
     ConstructionRule(
         tag="CR-PORCH-MASONRY-RETURN",
         applies_to="wall:porch_masonry_return",
@@ -890,8 +869,7 @@ ASSEMBLIES = [
     CATLIN_CONC_12_INT,
     CATLIN_CONC_8_INT,
     SUNKEN_GARDEN_WALL,
-    SUNKEN_GARDEN_ARCH_16,
-    PORCH_RAILING_MASONRY,
+    SUNKEN_GARDEN_COLUMN_16,
     BASEMENT_BRICK_VENEER,
     RETAINING_BLOCK_12,
     PORCH_DECK_COMPOSITE,

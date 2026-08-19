@@ -161,29 +161,37 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
                if row["role"] == ROLE_SLOPED_JOIST_HANGER)
     assert row["part_number"] == "LSSR" and row["count"] == len(ridge_rafters)
 
-    # Every catlin floor joist *bears* — on a plate, or on top of the porch/balcony beams —
-    # with three exceptions, all flush-framed on purpose: the breezeway deck's joists (so the
-    # deck can be 7 1/4" deep instead of 14 1/2" at a walking surface that has to meet the
-    # house threshold), and the joists over each of the two hall LVLs — BM-S-HALL, which
-    # replaced 8'-6" of the second-storey centre wall, and BM-M-HALL, which replaced 4'-2" of
-    # the main-storey one under it. Both beams are flush so their storey keeps its 9'
-    # ceiling, which is exactly what makes the joists hang rather than bear. All must be
-    # billed a hanger each; nothing else may be.
+    # Every catlin floor joist *bears* — on a plate, or on top of a beam — with four
+    # exceptions, all flush-framed on purpose and all of which must be billed a hanger each:
+    #
+    #  - the breezeway deck's joists, so the deck can be 7 1/4" deep instead of 14 1/2" at a
+    #    walking surface that has to meet the house threshold;
+    #  - the joists over each of the two hall LVLs — BM-S-HALL, which replaced 8'-6" of the
+    #    second-storey centre wall, and BM-M-HALL, which replaced 4'-2" of the main-storey
+    #    one under it. Both are flush so their storey keeps its 9' ceiling, which is exactly
+    #    what makes the joists hang rather than bear;
+    #  - the porch deck's joists at their *south* end (2026-08-18), where BM-SG-FRW/FRE
+    #    replaced the 16" arched cross-wall. Those two are flush so PT-SG-FCOL can top out at
+    #    their soffit and stay clear of the 16"-o.c. joist band — a column reaching the deck
+    #    datum cannot miss it. The same joists still bear on BM-SG-BKW/BKE at their north end.
+    #
+    # Nothing else may hang.
     breezeway = next(f for f in catlin_model.floors if f.tag == "FS-BW-FLOOR")
     hung_keys = {item.member_key for item in connections}
     breezeway_joists = {f"{m.parent_uid}:{m.child_key}" for m in breezeway.members
                         if m.category == "joist"}
     assert breezeway_joists <= hung_keys, "flush-framed deck joists must be billed hangers"
-    hall_beam_keys = {item.member_key for item in connections
-                      if item.carrier_tag in ("BM-S-HALL", "BM-M-HALL")}
-    for beam in ("BM-S-HALL", "BM-M-HALL"):
+    flush_beams = ("BM-S-HALL", "BM-M-HALL", "BM-SG-FRW", "BM-SG-FRE")
+    flush_beam_keys = {item.member_key for item in connections
+                       if item.carrier_tag in flush_beams}
+    for beam in flush_beams:
         assert any(item.carrier_tag == beam for item in connections), \
-            f"the joists over the open hall hang in {beam}"
+            f"the joists flush-framed into {beam} must hang in it"
     bearing_keys = {f"{member.parent_uid}:{member.child_key}"
                     for floor in catlin_model.floors for member in floor.members
                     if floor.tag != "FS-BW-FLOOR"}
     assert bearing_keys
-    assert not (bearing_keys & hung_keys - hall_beam_keys)
+    assert not (bearing_keys & hung_keys - flush_beam_keys)
 
 
 # --- sill anchorage ------------------------------------------------------------------

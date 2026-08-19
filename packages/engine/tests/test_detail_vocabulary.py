@@ -181,13 +181,15 @@ def test_recipes_and_reasons_do_not_overlap():
 def test_suppressed_transitions_scaffold_no_detail_sheets(catlin_model):
     """A ``suppress=True`` binding is coverage without a sheet.
 
-    ``TR-CATLIN-ASSEMBLY-JOG`` and ``TR-CATLIN-GARDEN-ARCH`` bind their conditions (so
+    ``TR-CATLIN-ASSEMBLY-JOG`` and ``TR-CATLIN-VENEER-OPENING`` bind their conditions (so
     ``integrity.condition_coverage`` stays clean) but record that the derived cut cannot
     show the junction — so nothing derives, rather than a sheet that lies by omission.
+    (``TR-CATLIN-GARDEN-ARCH`` was the third until 2026-08-18, when the sunken garden's
+    arched cross-wall it suppressed the perimeter of became a column and two beams.)
     """
     keys = {d.key for d in derive_detail_slices(catlin_model)}
     assert not {k for k in keys if k.startswith("assembly_change:")}
-    assert "opening_perimeter:SUNKEN_GARDEN_ARCH_16" not in keys
+    assert "opening_perimeter:BASEMENT_BRICK_VENEER" not in keys
     suppressed = [t for t in catlin_model.plan.library.transitions if t.suppress]
     assert suppressed and all(t.suppress_reason.strip() for t in suppressed)
 

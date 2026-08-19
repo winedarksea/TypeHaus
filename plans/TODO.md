@@ -12,6 +12,47 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   district is. Worth confirming against the zoning code before the lift is committed to; if a
   limit is close, the levers are the attic's 11' ceiling and the 4:12 ridge, not the lift.
 
+- **What braces the porch and balcony east-west, now that the arch is gone?**
+  (raised 2026-08-18, and the one item on this list that the arch swap *created*.) Removing
+  `W-SG-ARCH` and the three `W-SG-RAIL-*` parapets removed the structure's only E-W shear
+  element: the two side walls run N-S and brace that direction only, and the masonry the
+  balcony pillars were grouted into was the de facto fixity for five of the six. Simpson say
+  so themselves — ESR-1622/ESR-3050: *"post bases do not provide adequate resistance to
+  prevent members from rotating about the base"*, and they are *"not recommended for
+  non-top-supported installations (such as … guard rails)."* Nothing is authored for this and
+  **nothing should be until it is decided** — a number invented in the model is worse than an
+  open question. The options, in ascending cost:
+  - **Extend the knee-brace rule to the centre pillars.** DCA6-2015 p.10 wants a brace on any
+    post over 2'-0"; `PT-SG-BR2`/`BF2` are deliberately left as leaning columns today
+    (`params/sunken_garden.py`, KNEE_BRACES) because bracing them pushes thrust into
+    `PT-SG-BR2`, the one pillar bearing on porch decking. That reasoning is still right, so
+    this is the cheap option and not obviously the correct one.
+  - **A moment base at the four corner pillars.** `MPB66Z`, ESR-3050 Table 11: 2,680 lb-ft
+    unreinforced — but it needs **5" of side cover**, which the new 16" square `PT-SG-FCOL`
+    has and the 12" round `PT-SG-COL` does not. The four pillars that want it bear on 12"
+    concrete wall tops, so it is not free there either.
+  - **An engineer's lateral design.** The honest answer, and the same consultant the two
+    side walls below already need.
+
+- **The exposed LVL beams are untreated, and ICC-ES says they should not be.**
+  (raised 2026-08-18, deliberately out of scope of that day's change.) `BM-SG-BKW`/`BKE`,
+  `BM-SG-FRW`/`FRE` and the three balcony beams are all authored as plain LVL. **ESR-1387
+  §5.3** limits Microllam/Parallam/TimberStrand to *"covered end-use installations with dry
+  conditions of use in which the in-service equilibrium moisture content is less than 16
+  percent"* — an open porch under a slatted balcony generally is not "covered". The right
+  product is treated **Parallam Plus PSL** (Weyerhaeuser TJ-7102). It was not folded into the
+  arch swap on purpose: PSL comes in 9¼ / 11⅞ / 14 / 16" depths, and 11.25" was chosen
+  precisely so derived elevations would not move (`params/sunken_garden.py`'s `back_beam`
+  note). Changing it moves the porch joist soffit, the column tops and the hanger elevations
+  together, which is its own change with its own check diff.
+
+- **`CN-SG-HGR-W`/`E` are wood-to-wood hangers landing in 12" of concrete.**
+  (raised 2026-08-18.) They are `LUS210`. The front pair authored the same day are
+  `HUCQ410-SDS` — the concealed-flange hanger Simpson publishes for a wood member on concrete
+  or masonry (`library/hardware.py`, `ROLE_CONCRETE_FACE_MOUNT_HANGER`) — which is what these
+  two should be as well. Left alone only because it is a different decision from the arch
+  swap and deserves its own line rather than a silent retype.
+
 - **Do the porch side walls `W-SG-W1` / `W-SG-E1` count as laterally supported at the top?**
   (raised 2026-08-16) These two 12" walls hold 9'-9" of fill and carry `FS-SG-PORCH`'s
   framing through `CN-SG-HGR-W`/`E`, with the garden slab at their foot. That is the *shape*
@@ -26,8 +67,10 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     engineer's seal — so it needs no consultant, just `vertical_reinforcement` authored.
   - **"unsupported"** puts them with `W-SG-E2`/`S`/`W2` under R404.4: engineered design, 1.5
     safety factor against sliding and overturning.
-  - Either way `W-SG-ARCH` (16", off every IRC table) stays engineered, so if an engineer is
-    being engaged for the arch anyway, folding these two into that scope costs little.
+  - The 16" `W-SG-ARCH` used to be the free rider here — off every IRC table and engineered
+    either way, so folding these two into its scope cost little. It was retired 2026-08-18,
+    and these two are now the *only* unanswered walls in the house; nobody else is paying
+    for the engineer.
 
 - ~~**PT-SG-BR2 bearing — reinforce locally, don't move it**~~ — **approved and authored
   2026-08-07.** `FloorSystem.reinforcements` is the way to author it: a
@@ -36,7 +79,8 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   nearest joist line and emits 2 extra `sister_joist` 2x8 plies face-to-face toward the
   load — full length, cantilever included — plus 2 `blocking` members to the adjacent
   lines, all billing automatically. `CN-SG-TIE-BR2` (H2.5A, ~455 lb vs the ~0.45 kip
-  demand) is the uplift tie at the W-SG-ARCH back-span bearing; the part was already in
+  demand) is the uplift tie at the far bearing of that line — the arch-wall sill until
+  2026-08-18, the `BM-SG-FRW`/`FRE` hangers since; the part was already in
   `library/hardware.py` and the price table, so nothing new to price.
 
   The check that was wanted also exists: **`structural.cantilever_point_load`** finds Posts
@@ -93,7 +137,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     *basement* wall table and presumes bracing top and bottom (footnote g). They author
     `lateral_support="unsupported"` and report **UNKNOWN — engineered**, honestly.
   - 2 `SUNKEN_GARDEN_WALL` walls (`W-SG-W1`/`E1`): **open question, see Questions below.**
-  - `SUNKEN_GARDEN_ARCH_16` is 16", off every IRC table — UNKNOWN, engineered either way.
   - The 8 `GARAGE_ICF_6` stem walls retain 3.5', under the 4' at which R404.1.1 and the
     table engage at all — PASS. Watch footnote d if that ever crosses 4': a 6" wall in a
     stay-in-place form still takes #4 @ 48 even where the cell reads NR.
@@ -237,7 +280,16 @@ the future.
 - Small windows on corners?
 - Balcony railing?
 - Do "drain tile" and "french drain" duplicate at all here?
-- We are thinking of switching W-SG-ARCH to be a column and beams like PT-SG-COL and BM-SG-BKE, then replacing the masonry railing right above it with a metal railing more like RL-SG-BALCONY
+- ~~We are thinking of switching W-SG-ARCH to be a column and beams like PT-SG-COL and BM-SG-BKE, then replacing the masonry railing right above it with a metal railing more like RL-SG-BALCONY~~ — **done 2026-08-18.**
+  `PT-SG-FCOL` (16" square cast concrete, chamfered, on its own spread footing) carries
+  `BM-SG-FRW`/`FRE` into the side walls on `HUCQ410-SDS` hangers, mirroring the back edge.
+  The beams are **flush** and the column stops at their soffit, which is not a style choice:
+  a 16"-o.c. joist grid cannot miss a 16" column at midspan, so a column reaching the deck
+  datum reads as three clashes in `structural.member_interference`. All three masonry guard
+  walls went, not just the front one, and `RL-SG-PORCH` (36.3 LF of the balcony's own
+  fascia-mount product) replaced them — a pair of LVL beams cannot carry ~420 plf of parapet
+  the way 16" of concrete could. Measured saving **$5,395 – $11,257**; see
+  `plans/cost-options.md`. Three follow-ons are open under "Needs your decision" above.
 - ~~Add a packed gravel bed under the retaining wall blocks (W-RG-*)~~ — **done 2026-08-15.**
   `FootingBedding.host_ref` takes a FoundationWall as well as a Footing now, because a
   dry-stacked SRW wall stands on the levelling pad itself and inventing a footing to hang
@@ -273,7 +325,7 @@ The starter template gained 4 advisory FAILs. Clearing its radon ERROR required 
 
 scripts/verify.sh still exits 1 — at ruff, not at anything I touched. The engine carries ~560 ruff findings and ~2171 mypy errors, all present at HEAD (I confirmed against a clean worktree; my changes are at exact parity on both). The distribution — line-length, import sorting, PEP-604 annotations, zip strict — is tool-version drift from ruff 0.16.3, not code rot. That's a lint migration of a few thousand call sites, well outside "tests, build checks, permit checks," so I left it. I did run every gate step past ruff manually: builds, bench, UI typecheck/test/build all pass.
 
-The sunken garden's 16" arch wall and three free retaining walls remain UNKNOWN — engineered. That's unchanged and correct: R404.4 sends a free-standing wall retaining 9'-9" to an engineered design regardless of thickness, and no research closes that.
+The sunken garden's 16" arch wall and three free retaining walls remain UNKNOWN — engineered. That's unchanged and correct: R404.4 sends a free-standing wall retaining 9'-9" to an engineered design regardless of thickness, and no research closes that. (The arch wall itself went on 2026-08-18, taking its UNKNOWN with it; the three retaining walls still stand and still report exactly this.)
 
 ### Plumbing
 
@@ -298,7 +350,8 @@ Architectural lighting on facade (try to aim to be dark sky friendly)
 
 ### Potential cost cutting (just ideas, not a TODO)
 Remove the attic level and switch to truss/blown in insulation
-Remove the arched concrete and switch to a metal railing on wood beam and columns
+~~Remove the arched concrete and switch to a metal railing on wood beam and columns~~ —
+priced, then **taken 2026-08-18**; it is in `plans/cost-options.md` under "Taken".
 
 Once an idea here has a number against it, it moves to `plans/cost-options.md` — the
-priced upgrade/downgrade menu (started 2026-08-08). Both of the two above are in it now.
+priced upgrade/downgrade menu (started 2026-08-08).

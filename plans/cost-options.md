@@ -28,20 +28,16 @@ expect to stay wet.
 **Cost of the cut:** service life at the one detail nobody re-does without jacking the
 structure. This is the wrong $1,000 to save unless everything else has already been cut.
 
-### Balcony guard: Trex Signature → builder-grade aluminium
-`railings:RAILING-EXT-ALUMINUM-FASCIA`, 38.3 LF — **$1,455 – $2,681 → ~$770 – $1,340 at
-$20-35/LF. Saves ~$700 – $1,340.**
+### Exterior guards: Trex Signature → builder-grade aluminium
+`railings:RAILING-EXT-ALUMINUM-FASCIA`, 74.6 LF — **$2,835 – $5,222 → ~$1,492 – $2,611 at
+$20-35/LF. Saves ~$1,343 – $2,611.**
 
-**Cost of the cut:** it is the guard you see from the sunken garden, and the powder-coat
-finish is most of what you are buying.
+Twice the run it was written against: since 2026-08-18 this line carries both the balcony
+guard (38.3 LF) and RL-SG-PORCH (36.3 LF), which replaced the porch's masonry parapet. They
+are the same product and would be downgraded together, or the two levels stop matching.
 
-### Sunken-garden arch: 16" curved concrete → metal railing on wood beam and columns
-`wall_structure:SUNKEN_GARDEN_ARCH_16`, 3.31 cy — **$1,986 – $3,972**, plus whatever
-`PORCH_RAILING_MASONRY` (3.15 cy, **$2,205 – $5,040**) goes with it. Together **$4,191 –
-$9,012** against a framed-and-railed alternative in the low thousands.
-
-Already in TODO.md as an idea; this is the number behind it. Curved formwork is the
-expensive part — the yard of concrete is the cheap part.
+**Cost of the cut:** these are the guards you see from the sunken garden, from both levels
+at once now, and the powder-coat finish is most of what you are buying.
 
 ### Basement brick veneer: delete
 `wall_structure:BASEMENT_BRICK_VENEER`, 1.37 cy — **$1,233 – $2,603.**
@@ -66,6 +62,35 @@ true VFD inverter soft-starts, which is what lets it run off the battery — a h
 compressor is what a battery inverter cannot carry (see plan/electrical.py). Swapping it
 means giving up backup heat on that zone, or resizing the inverter. Do not treat this as a
 like-for-like $1,000.
+
+## Taken
+
+### Sunken-garden arch → column, beams and a metal railing — **done 2026-08-18**
+Measured against the tree immediately before the change, not estimated:
+**$282,561 – $580,402 → $277,166 – $569,145. Saved $5,395 – $11,257.**
+
+| line | before | after |
+|---|---|---|
+| `wall_structure` | $47,822 – $94,192 | $43,630 – $85,180 (**−$4,191 – −$9,012**) |
+| `envelope_layers` | $56,568 – $116,051 | $55,497 – $113,843 (**−$1,070 – −$2,208**) |
+| `footing_bedding` | $4,435 – $8,387 | $3,670 – $6,944 (**−$764 – −$1,443**) |
+| `concrete` | $19,974 – $32,346 | $19,233 – $31,181 (**−$741 – −$1,166**) |
+| `railings` | $3,125 – $6,551 | $4,505 – $9,092 (**+$1,379 – +$2,541**) |
+| `hardware` | $8,606 – $15,454 | $8,598 – $15,485 (−$8 – +$31) |
+
+The `wall_structure` line is exactly the $4,191 – $9,012 this row was written against —
+`SUNKEN_GARDEN_ARCH_16` (3.31 cy) and `PORCH_RAILING_MASONRY` (3.15 cy) both deleted. The
+rest was not in the original estimate and is why the real saving is a third larger again:
+`FT-SG-ARCH` and its 42" aggregate bed went with the wall it carried, and the parapet took
+its brick/CMU/stucco face area out of `envelope_layers`.
+
+What was bought back: `RL-SG-PORCH`, 36.3 LF of the same fascia-mount guard as the balcony,
+which is the whole `railings` increase; `PT-SG-FCOL` (0.53 cy) and its footing;
+`BM-SG-FRW`/`FRE`; and about 17 LF of extra 6x6, because five of the six balcony pillars now
+start at a concrete wall top or the decking rather than 42" up on masonry.
+
+Curved formwork was the expensive part, as this row predicted — the yard of concrete was
+always the cheap part.
 
 ## Upgrades (money out)
 

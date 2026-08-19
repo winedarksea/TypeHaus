@@ -87,7 +87,12 @@ def test_s100_schedules_size_bearing_elevation_and_thickness(catlin_model):
                  if row[5].startswith("W-B-") and row[5] != "W-B-BRICK")
     assert strip[2] == '20" W × 8" D' and strip[3] == "-9.67'"
     walls = tables["FOUNDATION WALL SCHEDULE"]
-    assert any(row[2] == '16"' and row[3].endswith("LF") for row in walls.rows)
+    # A whole-inch monolithic pour, thickness and run both stated. This used to read the
+    # sunken garden's 16" arched cross-wall; it reads the 12" side/retaining walls that
+    # outlived it (2026-08-18). Every THK is an inch string and every RUN a lineal foot.
+    assert any(row[1] == "SUNKEN_GARDEN_WALL" and row[2] == '12"' and row[3].endswith("LF")
+               for row in walls.rows)
+    assert all(row[2].endswith('"') and row[3].endswith("LF") for row in walls.rows)
     slabs = tables["SLAB-ON-GRADE SCHEDULE"]
     # Thickness keeps its eighth-inch fraction rather than rounding a 3-1/2" slab to 4".
     # The counterexample this used to lean on — SL-G-HYDRANT-PED, a genuinely 4" topping

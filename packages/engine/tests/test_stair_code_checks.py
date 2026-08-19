@@ -235,17 +235,20 @@ def test_handrail_not_required_under_four_risers():
 
 
 def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
-    """R312.1.3 measures all four authored guards plus the three masonry ones: baluster
-    infill at a 4" clear gap — the largest opening the sphere rule admits — flips the census
-    from UNKNOWN to PASS. The handrail-only railings are deliberately absent: they are not
-    guards. The porch's W-SG-RAIL-* parapets are guards that happen to be walls
-    (``Wall.guard``), and pass by construction: solid masonry admits no sphere."""
+    """R312.1.3 measures all five authored guards: baluster infill at a 4" clear gap — the
+    largest opening the sphere rule admits — flips the census from UNKNOWN to PASS. The
+    handrail-only railings are deliberately absent: they are not guards.
+
+    There is no ``Wall.guard`` in the plan any more. Until 2026-08-18 the porch was guarded
+    by three W-SG-RAIL-* masonry parapets, which passed by construction (solid masonry
+    admits no sphere); RL-SG-PORCH replaced all three and is measured like every other
+    railing, off its drawn pickets."""
     from typehaus.checks.code.mn_residential.fall_protection import guard_opening_limit
 
     findings = guard_opening_limit(catlin_ctx)
     tags = sorted(t for f in findings for t in (f.message.split()[0],))
-    assert tags == ["RL-A-STAIR", "RL-S-STAIR", "RL-S-STAIRHEAD", "RL-SG-BALCONY",
-                    "W-SG-RAIL-E", "W-SG-RAIL-F", "W-SG-RAIL-W"], [f.message for f in findings]
+    assert tags == ["RL-A-STAIR", "RL-S-STAIR", "RL-S-STAIRHEAD",
+                    "RL-SG-BALCONY", "RL-SG-PORCH"], [f.message for f in findings]
     assert {f.result for f in findings} == {Result.PASS}
 
 
@@ -259,7 +262,7 @@ def test_the_sphere_rule_is_measured_off_the_drawn_infill_not_only_the_field(cat
 
     drawn = [f for f in guard_opening_limit(catlin_ctx) if "draws" in f.message]
     assert sorted(f.message.split()[0] for f in drawn) == [
-        "RL-A-STAIR", "RL-S-STAIR", "RL-S-STAIRHEAD", "RL-SG-BALCONY"]
+        "RL-A-STAIR", "RL-S-STAIR", "RL-S-STAIRHEAD", "RL-SG-BALCONY", "RL-SG-PORCH"]
 
 
 # --- R312.1 stair-well guards ----------------------------------------------------------

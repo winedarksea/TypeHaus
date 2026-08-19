@@ -141,7 +141,9 @@ export function runArchGeometryTests() {
   assert(archSoffitSegmentCount(1.2192) > archSoffitSegmentCount(0.3),
     "Tessellation follows the arch radius rather than a flat constant");
 
-  // W-SG-ARCH's serialized 16" concrete layer: one rectangle, six points.
+  // A 16" concrete layer as one rectangle padded to six points — the shape a junction-solved
+  // arched wall arrives in. The literals are self-contained; the wall they were taken from
+  // (the sunken garden's arched cross-wall) was retired 2026-08-18.
   const archWall = wall([[0, 0], [6, 0]]);
   const paddedThinRect: [number, number][] = [[0.5, -0.2], [0.5, 0], [0.5, 0.2], [5.5, 0.2], [5.5, 0], [5.5, -0.2]];
   const arch = opening(3, 0.1, 2.4, 1.2, 2.4);

@@ -222,7 +222,8 @@ def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin
     The sunken garden does NOT follow them, and that is the point of keeping the two apart:
     W-SG-E2/S/W2 are free retaining walls open along their whole top, so R404.4 sends them to
     an engineered design whatever the table would have said; W-SG-W1/E1 have not yet declared
-    whether the porch deck braces their head; W-SG-ARCH is 16" and off every IRC table.
+    whether the porch deck braces their head. A third UNKNOWN sat here until 2026-08-18 —
+    W-SG-ARCH, 16" and so off the table's thickest published section — and went with the wall.
     """
     from typehaus.checks.code.mn_residential.profile import MN_2024
 
@@ -244,7 +245,7 @@ def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin
     assert "GARAGE_ICF_6" in passes
     # The three free retaining walls, named by R404.4 rather than graded by the table.
     assert "R404.4" in unknowns
-    # ... and the 16" arch, off the table's thickest published section.
-    assert "thicker than the table's 12\" maximum" in unknowns
+    # Nothing in this house is off the table on *thickness* any more.
+    assert "thicker than the table's 12\" maximum" not in unknowns
     # The interior cross walls author unbalanced_fill=0, so they are not screened at all.
     assert "CATLIN_CONC_12_INT" not in fails + passes + unknowns
